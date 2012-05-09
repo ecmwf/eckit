@@ -1,0 +1,82 @@
+/*
+ * (C) Copyright 1996-2012 ECMWF.
+ * 
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+// File TxnEvent.h
+// Baudouin Raoult - ECMWF Jan 97
+
+#ifndef TxnEvent_H
+#define TxnEvent_H
+
+#include "eclib/Streamable.h"
+
+typedef unsigned long long TxnID;
+
+class TxnEvent : public Streamable {
+public:
+
+// -- Contructors
+
+	TxnEvent();
+	TxnEvent(Stream&);
+
+// -- Destructor
+
+	virtual ~TxnEvent();
+
+// -- Methods
+
+	const TxnID& transactionID() const { return txnID_; }
+	void transactionID(const TxnID& id){ txnID_ = id; }
+
+// -- Overridden methods
+
+    // From Streamble
+
+    virtual void encode(Stream&) const;
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+
+
+// -- Class members
+
+	static const ClassSpec&  classSpec()        { return classSpec_;}
+
+protected:
+
+// -- Methods
+	
+	virtual void print(ostream&) const;
+
+private:
+
+// No copy allowed
+
+	TxnEvent(const TxnEvent&);
+	TxnEvent& operator=(const TxnEvent&);
+
+// -- Members
+
+	TxnID txnID_;
+
+// -- Class members
+
+	static ClassSpec              classSpec_;
+	static Reanimator<TxnEvent>   reanimator_;
+
+// -- Friends
+
+	friend ostream& operator<<(ostream& s,const TxnEvent& p)
+		{ p.print(s); return s; }
+
+};
+
+
+
+
+#endif

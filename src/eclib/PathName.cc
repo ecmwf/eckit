@@ -1,0 +1,348 @@
+/*
+ * (C) Copyright 1996-2012 ECMWF.
+ * 
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+// File PathName.cc
+// Baudouin Raoult - (c) ECMWF Jun 11
+
+#include "eclib/BasePathName.h"
+#include "eclib/BasePathNameT.h"
+#include "eclib/ClusterDisks.h"
+#include "eclib/Length.h"
+#include "eclib/LocalPathName.h"
+#include "eclib/LocalPathName.h"
+#include "eclib/MarsFSPath.h"
+#include "eclib/PathName.h"
+
+static BasePathName* make(const string& p) {
+
+    if(p.find("marsfs:") == 0) 
+        return new BasePathNameT<MarsFSPath>(p);
+
+    /*
+    const string& node = ClusterDisks::node(p);
+    if(node.length())
+        return new BasePathNameT<MarsFSPath>(string("marsfs://") + node +  p , ext);
+    */
+
+    return new BasePathNameT<LocalPathName>(p);
+}
+
+PathName::PathName(const char* p)
+{
+	path_ = make(p);
+}
+
+PathName::PathName(const string& p)
+{
+	path_ = make(p);
+}
+
+PathName::PathName(const PathName& other):
+	path_(other.path_->clone())
+{
+}
+
+PathName::PathName(const LocalPathName& other):
+	path_(new BasePathNameT<LocalPathName>(other))
+{
+}
+
+
+PathName::PathName(BasePathName* path):
+	path_(path)
+{
+	ASSERT(path);
+}
+
+PathName& PathName::operator=(const PathName& other)
+{
+	if(this != &other) {
+		delete path_;
+		path_ = other.path_->clone();
+	}
+	return *this;
+}
+
+PathName& PathName::operator=(const string& s)
+{
+	// TODO: Review me
+	*this = PathName(s);
+	return *this;
+}
+
+PathName& PathName::operator=(const char* s)
+{
+	// TODO: Review me
+	*this = PathName(s);
+	return *this;
+}
+
+PathName::~PathName()
+{
+	delete path_;
+}
+
+
+void PathName::print(ostream& s) const
+{
+	s << *path_;
+}
+
+const char* PathName::localPath() const
+{
+	return path_->localPath();
+}
+
+PathName PathName::clusterName() const
+{
+    return PathName(path_->clusterName());
+}
+
+Length PathName::size() const
+{
+	return path_->size();
+}
+
+time_t PathName::lastAccess() const
+{
+	return path_->lastAccess();
+}
+
+time_t PathName::lastModified() const
+{
+	return path_->lastModified();
+}
+
+time_t PathName::created() const
+{
+	return path_->created();
+}
+
+bool PathName::exists() const
+{
+	return path_->exists();
+}
+
+bool PathName::available() const
+{
+	return path_->available();
+}
+
+void PathName::unlink() const
+{
+	path_->unlink();
+}
+
+void PathName::rmdir() const
+{
+	path_->rmdir();
+}
+
+void PathName::touch() const
+{
+	path_->touch();
+}
+
+void PathName::mkdir(short mode) const
+{
+	path_->mkdir(mode);
+}
+
+void PathName::rename(const PathName& from, const PathName& to)
+{
+	from.path_->rename(*to.path_);
+}
+
+void PathName::link(const PathName& from, const PathName& to)
+{
+	from.path_->link(*to.path_);
+}
+
+void PathName::children(vector<PathName>& dirs,vector<PathName>& files) const
+{
+	vector<BasePathName*> d;
+	vector<BasePathName*> f;
+
+	path_->children(d,f);
+
+	for(vector<BasePathName*>::iterator j = d.begin(); j != d.end(); ++j)
+		dirs.push_back(PathName(*j));
+
+	for(vector<BasePathName*>::iterator j = f.begin(); j != f.end(); ++j)
+		files.push_back(PathName(*j));
+}
+
+void PathName::match(const PathName& path, vector<PathName>& result, bool rec)
+{
+	vector<BasePathName*> v;
+	path.path_->match(v, rec);
+	for(vector<BasePathName*>::iterator j = v.begin(); j != v.end(); ++j)
+		result.push_back(PathName(*j));
+}
+
+bool PathName::operator <(const PathName& other) const
+{
+	return this->asString() < other.asString();
+}
+
+bool PathName::operator >(const PathName& other) const
+{
+	return this->asString() > other.asString();
+}
+
+bool PathName::operator !=(const PathName& other) const
+{
+	return this->asString() != other.asString();
+}
+
+bool PathName::operator ==(const PathName& other) const
+{
+	return this->asString() == other.asString();
+}
+
+bool PathName::operator <=(const PathName& other) const
+{
+	return this->asString() <= other.asString();
+}
+
+bool PathName::operator >=(const PathName& other) const
+{
+	return this->asString() >= other.asString();
+}
+
+PathName PathName::unique(const PathName& path)
+{
+	return PathName(path.path_->unique());
+}
+
+PathName PathName::dirName() const
+{
+	return PathName(path_->dirName());
+}
+
+PathName PathName::orphanName() const
+{
+	return PathName(path_->orphanName());
+}
+
+PathName PathName::checkClusterNode() const
+{
+	return PathName(path_->checkClusterNode());
+}
+
+PathName PathName::baseName(bool ext) const
+{
+	return PathName(path_->baseName(ext));
+}
+
+PathName PathName::fullName() const
+{
+	return PathName(path_->fullName());
+}
+
+void PathName::reserve(const Length& length) const
+{
+	path_->reserve(length);
+}
+
+void PathName::fileSystemSize(FileSystemSize& fs) const
+{
+	path_->fileSystemSize(fs);
+}
+
+PathName PathName::mountPoint() const
+{
+	return PathName(path_->mountPoint());
+}
+
+bool PathName::sameAs(const PathName& other) const
+{
+	return path_->sameAs(*other.path_);
+}
+
+DataHandle* PathName::fileHandle(bool overwrite) const
+{
+    return path_->fileHandle(overwrite);
+}
+
+DataHandle* PathName::partHandle(const OffsetList& o, const LengthList& l) const
+{
+    return path_->partHandle(o,l);
+}
+
+DataHandle* PathName::partHandle(const Offset& o, const Length& l) const
+{
+    return path_->partHandle(o,l);
+}
+
+string PathName::asString() const
+{
+	return path_->asString();
+}
+
+PathName operator+(const PathName& p,const string& s)
+{
+	// TODO: delegate that to "path_"
+	return PathName(p.asString() + s);
+}
+
+PathName operator+(const PathName& p,const char* s)
+{
+	// TODO: delegate that to "path_"
+	return PathName(p.asString() + s);
+}
+
+PathName operator+(const PathName& p,char s)
+{
+	// TODO: delegate that to "path_"
+	return PathName(p.asString() + s);
+}
+
+
+void operator<<(Stream& s,const PathName& path)
+{
+	// TODO: delegate that to "path_"
+	s << path.asString();
+}
+
+void operator>>(Stream& s,PathName& path)
+{
+	// TODO: delegate that to "path_"
+	string p;
+	s >> p;
+	path = PathName(p);
+}
+
+
+string PathName::shorten(const string& s) {
+	// TODO: Read from ~etc/disk/...
+
+
+	if(s.find("/locked/") != string::npos) return ".../locked/...";
+	if(s.find("/transfer/") != string::npos) return ".../transfer/...";
+	if(s.find("/defrag/") != string::npos) return ".../defrag/...";
+	if(s.find("/temp/") != string::npos) return ".../temp/...";
+	if(s.find("/obstmp/") != string::npos) return ".../obstmp/...";
+	if(s.find("/infrequent/") != string::npos) return ".../infrequent/...";
+	if(s.find("/prearc/") != string::npos) return ".../prearc/...";
+	if(s.find("/cache/") != string::npos) return ".../cache/...";
+	return s.substr(0,10) + "...";
+}
+
+const string& PathName::node() const
+{
+	return path_->node();
+}
+
+const string& PathName::path() const
+{
+	return path_->path();
+}
+

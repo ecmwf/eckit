@@ -1,0 +1,57 @@
+/*
+ * (C) Copyright 1996-2012 ECMWF.
+ * 
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+#include <pwd.h>
+
+#include "eclib/Log.h"
+#include "eclib/Password.h"
+
+bool Password::check(const string& user,const string& password)
+{
+	struct passwd p;	
+	char line[1024];
+
+	int n = getpwnam_r(user.c_str(),&p,line,sizeof(line),0);
+
+	if(n != 0)
+	{
+		Log::error() << "User " << user << " is unknown" << endl;
+		return false;
+	}
+
+	bool match =  password == p.pw_passwd;
+
+	if(match)
+		Log::error() << "User " << user << " gave an valid password" << endl;
+	else
+		Log::error() << "User " << user << " gave an invalid password" << endl;
+
+	return match;
+
+}
+
+string Password::salt(const string& user)
+{
+	struct passwd p;	
+	char line[1024];
+	int n = getpwnam_r(user.c_str(),&p,line,sizeof(line),0);
+
+	if(n != 0)
+	{
+		Log::error() << "User " << user << " is unknown" << endl;
+		return "";
+	}
+
+	char salt[3];
+	strncpy(salt,p.pw_passwd,2);
+	salt[2] = 0;
+
+	return salt;
+}

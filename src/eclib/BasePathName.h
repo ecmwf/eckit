@@ -1,0 +1,141 @@
+/*
+ * (C) Copyright 1996-2012 ECMWF.
+ * 
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+// File BasePathName.h
+// Baudouin Raoult - (c) ECMWF Jun 11
+
+#ifndef BasePathName_H
+#define BasePathName_H
+
+#include "eclib/machine.h"
+
+#include "eclib/DataHandle.h"
+#include "eclib/Length.h"
+
+struct FileSystemSize;
+
+class BasePathName {
+public:
+
+// -- Exceptions
+	// None
+
+// -- Contructors
+
+	BasePathName() {}
+
+// -- Destructor
+
+	virtual ~BasePathName() {} // Change to virtual if base class
+
+// -- Convertors
+	// None
+
+// -- Operators
+	// None
+
+// -- Methods
+
+    virtual BasePathName* clone() const = 0;
+    virtual const char* localPath() const = 0;
+    virtual Length size() const = 0;
+    virtual time_t lastAccess() const = 0;
+    virtual time_t lastModified() const = 0;
+    virtual time_t created() const = 0;
+
+    virtual void rename(const BasePathName&) const = 0;
+    virtual void link(const BasePathName&) const = 0;
+    virtual bool sameAs(const BasePathName&) const = 0;
+    virtual BasePathName* mountPoint() const = 0;
+    virtual bool exists() const = 0;
+    virtual bool available() const = 0;
+    virtual void mkdir(short) const = 0;
+    virtual void unlink() const = 0;
+    virtual void rmdir() const = 0;
+    virtual void touch() const = 0;
+    virtual void children(vector<BasePathName*>&,vector<BasePathName*>&) const = 0;
+    virtual void match(vector<BasePathName*>&,bool) const = 0;
+    virtual void reserve(const Length&) const = 0;
+
+    virtual BasePathName* unique() const = 0;
+    virtual BasePathName* dirName() const = 0;
+    virtual BasePathName* fullName() const = 0;
+    virtual BasePathName* orphanName() const = 0;
+    virtual BasePathName* checkClusterNode() const = 0;
+    virtual BasePathName* baseName(bool) const = 0;
+
+    virtual string clusterName() const = 0;
+
+    virtual string asString() const = 0;
+    virtual void fileSystemSize(FileSystemSize&) const = 0;
+    virtual DataHandle* fileHandle(bool overwrite) const = 0;
+    virtual DataHandle* partHandle(const OffsetList&, const LengthList&) const = 0;
+    virtual DataHandle* partHandle(const Offset&, const Length&) const = 0;
+
+    virtual const string& node() const = 0;
+    virtual const string& path() const = 0;
+
+// -- Overridden methods
+	// None
+
+// -- Class members
+	// None
+
+// -- Class methods
+	// None
+
+protected:
+
+// -- Members
+	// None
+
+// -- Methods
+	
+	virtual void print(ostream&) const = 0; // Change to virtual if base class	
+
+// -- Overridden methods
+	// None
+
+// -- Class members
+	// None
+
+// -- Class methods
+	// None
+
+private:
+
+// No copy allowed
+
+	BasePathName(const BasePathName&);
+	BasePathName& operator=(const BasePathName&);
+
+// -- Members
+	// None
+
+// -- Methods
+	// None
+
+// -- Overridden methods
+	// None
+
+// -- Class members
+	// None
+
+// -- Class methods
+	// None
+
+// -- Friends
+
+	friend ostream& operator<<(ostream& s,const BasePathName& p)
+		{ p.print(s); return s; }
+
+};
+
+#endif

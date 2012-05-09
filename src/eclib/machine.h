@@ -117,6 +117,16 @@ struct output_iterator {
 #define mmap64      mmap
 #endif
 
+#if (!defined EC_HAVE_AIO64) && (defined EC_HAVE_AIO)
+#define  aio_read64    aio_read
+#define  aio_write64   aio_write
+#define  aio_suspend64 aio_suspend
+#define  aio_fsync64   aio_fsync
+#define  aio_error64   aio_error
+#define  aio_return64  aio_return
+#define  aiocb64       aiocb
+#endif
+
 #if (!defined EC_HAVE_STRUCT_STATVFS64) && (defined EC_HAVE_STRUCT_STATVFS)
 #define  statvfs64    statvfs
 #endif

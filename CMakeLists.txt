@@ -49,7 +49,6 @@ ecmwf_declare_project()
 # define installation paths
 include(ecmwf_define_paths)
 
-
 ###############################################################################
 # contents
 

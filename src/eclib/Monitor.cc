@@ -125,7 +125,7 @@ static ThreadSingleton<Monitor> monitor;
 
 Monitor& Monitor::instance()
 {
-	Monitor& m =  monitor.instance();
+	Monitor& m = monitor.instance();
 	if(!m.ready_) m.init();
 	return m;
 }
@@ -138,8 +138,7 @@ TaskInfo* Monitor::operator->()
 		return &info;
 	}
 
-	Monitor& m =  monitor.instance();
-	if(!m.ready_) m.init();
+	Monitor& m = Monitor::instance(); // insure is initialized
 
 	TaskArray& a = info();
 	return &a[slot_];

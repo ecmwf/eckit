@@ -82,6 +82,8 @@ static void catch_exit()
 
 Application::Application(int argc,char **argv)
 {
+	name_ = PathName(argv[0]).baseName(false);
+    
     Context::instance().setup( argc, argv, new DHSBehavior() );
     
 	// mallopt(M_DISCLAIM,0);
@@ -92,15 +94,14 @@ Application::Application(int argc,char **argv)
 	if(instance_)
 		throw SeriousBug("An instance of application already exists");
 
+    instance_ = this;
+    
     // TODO: maybe this should also be part of the ContextBehavior
     
 	set_new_handler(catch_new_handler);
 	set_terminate(catch_terminate);
 	set_unexpected(catch_unexpected);
 	
-	instance_ = this;
-	PathName path = Context::instance().argv(0);
-	name_ = path.baseName(false);
 	Loader::callAll(&Loader::execute);
 }
 

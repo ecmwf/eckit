@@ -34,6 +34,17 @@ public:
 	operator string() const;
 	friend ostream& operator<<(ostream&,const Bytes&);
 
+// -- Class methods
+    
+    static unsigned long long KiB( unsigned long long n ) { return 1024*n; }
+    static unsigned long long MiB( unsigned long long n ) { return 1024*KiB(n); }
+    static unsigned long long GiB( unsigned long long n ) { return 1024*MiB(n); }
+    static unsigned long long TiB( unsigned long long n ) { return 1024*GiB(n); }
+    static unsigned long long PiB( unsigned long long n ) { return 1024*TiB(n); }
+    static unsigned long long EiB( unsigned long long n ) { return 1024*PiB(n); }
+    static unsigned long long ZiB( unsigned long long n ) { return 1024*EiB(n); }
+    static unsigned long long YiB( unsigned long long n ) { return 1024*ZiB(n); }
+    
 private:
 
 // There is no private copy constructor as this will confuse g++ 4.x.x

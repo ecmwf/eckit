@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <fcntl.h>
+
 #include "eclib/AIOHandle.h"
 
 #if 0

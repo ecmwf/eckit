@@ -16,7 +16,7 @@
 #include "eclib/NonCopyable.h"
 #include "eclib/CodeLocation.h"
 
-class Logger : NonCopyable<Logger> {
+class Logger : public NonCopyable<Logger> {
 public:
 
     // -- Constructor

@@ -28,9 +28,6 @@ ecmwf_declare_project()
 ###############################################################################
 # macro processing
 
-# define installation paths
-include(ecmwf_define_paths)
-
 ###############################################################################
 # contents
 

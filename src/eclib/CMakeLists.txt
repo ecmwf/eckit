@@ -18,6 +18,8 @@ Port.cc
 Port.h
 AIOHandle.cc
 AIOHandle.h
+CallbackLogger.cc
+CallbackLogger.h
 Colour.cc
 Colour.h
 CodeLocation.h

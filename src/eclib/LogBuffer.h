@@ -131,7 +131,7 @@ public:
 class LogStream: public ostream {
 public:
 
-    LogStream( Logger* logger);
+    LogStream( Logger* logger );
 
   	~LogStream();
 

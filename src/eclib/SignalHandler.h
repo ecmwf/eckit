@@ -8,33 +8,28 @@
  * does it submit to any jurisdiction.
  */
 
-// File SignalHandler.h
-// Manuel Fuentes - ECMWF Jan 97
-
 #ifndef SignalHandler_H
 #define SignalHandler_H
 
 #include <signal.h>
 #include <setjmp.h>
 
-#include "eclib/Exceptions.h"
-
 #include "eclib/machine.h"
+
 #include "eclib/Exceptions.h"
+#include "eclib/NonCopyable.h"
 
 // WARNING: This class has not been widely tested, and we don't
 //          know if they delete objects properly when the signal is caugth
 
-class SignalHandler {
-public:
+class SignalHandler : public NonCopyable<SignalHandler> {
+
+public: // methods
   
 	enum Signal { 
 			SigInt  = 2, 
 			SigQuit = 3
 	};
-
-// -- Exceptions
-	
 
 // -- Contructors
 
@@ -46,14 +41,11 @@ public:
 	
 	static void checkInterrupt();
 
-private:
+private: // methods
 
-// No copy allowed
+	static void interrupt(int);
 
-	SignalHandler(const SignalHandler&);
-	SignalHandler& operator=(const SignalHandler&);
-
-// -- Members
+private: // members
 
 	int         signal_;
 
@@ -63,9 +55,6 @@ private:
 	SignalHandler*        next_;
 	static SignalHandler* current_;
 
-// -- Methods
-
-	static void interrupt(int);
 };
 
 

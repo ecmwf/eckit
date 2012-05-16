@@ -166,7 +166,7 @@ void TaskInfo::done()
 }
 
 void TaskInfo::touch()
-{
+{ 
 	checkAbort();
 
 	check_ = last_ = ::time(0);

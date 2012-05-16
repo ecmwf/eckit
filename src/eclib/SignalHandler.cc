@@ -52,6 +52,8 @@ static bool interrupted_ = false;
 
 void SignalHandler::interrupt(int sig)
 {
+    printf(" >>> received interrupt %d", sig );
+    
     if(interrupted_) {
         ::kill(0, SIGTERM);
     }
@@ -61,6 +63,8 @@ void SignalHandler::interrupt(int sig)
 
 void SignalHandler::checkInterrupt()
 {
+    printf(".\n");
+    
     if(interrupted_ && !Exception::throwing())
     {
         interrupted_ = false;

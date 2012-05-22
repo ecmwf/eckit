@@ -9,9 +9,12 @@
  */
 
 #include <unistd.h>
-#include <execinfo.h>  // for backtrace
 
 #include "eclib/machine.h"
+
+#ifdef EC_HAVE_EXECINFO_BACKTRACE
+#include <execinfo.h>  // for backtrace
+#endif
 
 #ifdef EC_HAVE_CXXABI_H
   #include <cxxabi.h>
@@ -24,6 +27,9 @@
 
 std::string BackTrace::dump()
 {
+    std::ostringstream oss;
+    
+#ifdef  EC_HAVE_EXECINFO_BACKTRACE 
     static Ordinal count = 0;
     ++count;
     
@@ -36,7 +42,6 @@ std::string BackTrace::dump()
 
 #undef BUFFER_SIZE
     
-    std::ostringstream oss;
    
     oss << "backtrace [" << count << "] stack has " << addsize << " addresses\n";
     
@@ -55,5 +60,10 @@ std::string BackTrace::dump()
     
     oss << "\nexit dumping backtrace ...";
     
+#else
+    oss << "\ndumping backtrace not supported on this system";
+#endif
+    
     return oss.str();
+    
 }

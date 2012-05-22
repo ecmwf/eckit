@@ -6,6 +6,8 @@ AutoAlarm.cc
 AutoAlarm.h
 AutoLock.h
 AutoLocker.cc
+BackTrace.h
+BackTrace.cc
 BadValue.h
 BasePathName.h
 BasePathNameT.cc

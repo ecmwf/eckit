@@ -21,9 +21,6 @@
 class Regex {
 public:
 
-// -- Exceptions
-	// None
-
 // -- Contructors
 
 	Regex(const string& = ".*",bool shell = false);
@@ -37,65 +34,24 @@ public:
 
 	bool match(const string& s) const;
 
-	operator const string&() const
-		{ return str_; }
+	operator const string&() const  { return str_; }
+    
+	bool operator==(const Regex& other) const { return str_ == other.str_; }
 
-	bool operator==(const Regex& other) const
-		{ return str_ == other.str_; }
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
+protected: // methods
 
 	void print(ostream&) const; // Change to virtual if base class
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-private:
-
-
-// -- Members
+private: // members
 
 	string str_;
 	regex_t re_;
 
-// -- Methods
+private: // methods
 
 	void compile(const char*);
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
-
-	friend ostream& operator<<(ostream& s,const Regex& p)
-		{ p.print(s); return s; }
+	friend ostream& operator<<(ostream& s,const Regex& p) { p.print(s); return s; }
 
 };
 

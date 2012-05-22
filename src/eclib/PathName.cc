@@ -16,7 +16,6 @@
 #include "eclib/ClusterDisks.h"
 #include "eclib/Length.h"
 #include "eclib/LocalPathName.h"
-#include "eclib/LocalPathName.h"
 #include "eclib/MarsFSPath.h"
 #include "eclib/PathName.h"
 

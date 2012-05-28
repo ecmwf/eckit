@@ -25,12 +25,12 @@ public:
 
 // -- Contructors
 
-	Streamable() 			{};
+	Streamable() 			{}
 	Streamable(Stream&);
 
 // -- Destructor
 
-	virtual ~Streamable()   {};
+	virtual ~Streamable()   {}
 
 // -- Methods
 	

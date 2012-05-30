@@ -16,14 +16,12 @@
 
 #include "eclib/machine.h"
 
+#include "eclib/NonCopyable.h"
 #include "eclib/Mutex.h"
 
 
-class EtcTable {
+class EtcTable : public NonCopyable<EtcTable> {
 public:
-
-// -- Exceptions
-	// None
 
 // -- Contructors
 
@@ -33,56 +31,14 @@ public:
 
     virtual ~EtcTable();
 
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
-// -- Methods
-	// None
-
 	const vector<string>& lookUp(const string&);
     vector<string> keys();
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-
-	// void print(ostream&) const; // Change to virtual if base class
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-private:
-
-// No copy allowed
-
-	EtcTable(const EtcTable&);
-	EtcTable& operator=(const EtcTable&);
+private: // methods
 
     void load();
 
-// -- Members
-	// None
+private: // members
 
     time_t last_;
     string name_;
@@ -91,30 +47,15 @@ private:
 
     Mutex mutex_;
 
-
     vector<vector<string> > lines_;
 
-
-// -- Methods
-	// None
+private: // methods
 
     virtual bool match(const string&, const vector<string>&) const  = 0;
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
-
-	//friend ostream& operator<<(ostream& s,const EtcTable& p)
-	//	{ p.print(s); return s; }
-
 };
+
+//-----------------------------------------------------------------------------
 
 class EtcKeyTable : public EtcTable {
     bool match(const string& query, const vector<string>& line) const { return query == line[0]; }
@@ -122,6 +63,8 @@ public:
     EtcKeyTable(const string& name, int size = 0, const string& dir= "etc"):
         EtcTable(name, size, dir) {}
 };
+
+//-----------------------------------------------------------------------------
 
 class EtcStartWithTable : public EtcTable {
     bool match(const string& query, const vector<string>& line) const { return query.find(line[0]) == 0; }

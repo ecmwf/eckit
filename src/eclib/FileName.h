@@ -21,9 +21,6 @@ class DataHandle;
 class FileName {
 public:
 
-// -- Exceptions
-	// None
-
 // -- Contructors
 
 	FileName(const string&);
@@ -34,13 +31,9 @@ public:
 
 	~FileName(); // Change to virtual if base class
 
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
 // -- Methods
+    
+    bool exists() const;
 
 	DataHandle*  newWriteHandle() const;
 	DataHandle*  newReadHandle(const OffsetList&, const LengthList&) const;
@@ -49,58 +42,14 @@ public:
 	const string& name() const { return name_; }
 	const string& scheme() const { return scheme_; }
 
-// -- Overridden methods
-	// None
+protected: // methods
 
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-	
 	void print(ostream&) const;
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-private:
-
-// No copy allowed
-
-	//FileName(const FileName&);
-	//FileName& operator=(const FileName&);
-
-// -- Members
+private: // members
 
 	string name_;
 	string scheme_;
-
-// -- Methods
-	// None
-
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
 
 // -- Friends
 
@@ -108,6 +57,5 @@ private:
 		{ p.print(s); return s; }
 
 };
-
 
 #endif

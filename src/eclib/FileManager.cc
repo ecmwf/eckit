@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/FileName.h"
 #include "eclib/FileManager.h"
 #include "eclib/AutoLock.h"
@@ -39,6 +38,8 @@ static void init(void)
 static Mutex mutex;
 static map<string,FileManager*> m;
 
+//-----------------------------------------------------------------------------
+
 FileManager::FileManager(const string& name):
         name_(name)
 {
@@ -54,8 +55,6 @@ FileManager::~FileManager()
     m.erase(name_);
    
 }
-
-
 
 FileManager& FileManager::lookUp(const string& name)
 {
@@ -76,6 +75,8 @@ FileManager& FileManager::lookUp(const string& name)
 
     return *((*j).second);
 }
+
+//-----------------------------------------------------------------------------
 
 #if 0
 
@@ -139,11 +140,14 @@ void FileManager::print(ostream& s) const
     s << "FileManager[" << name_ << "]";
 }
 
-
-
+//-----------------------------------------------------------------------------
 
 class LocalFileManager : public FileManager {
-  
+      
+    virtual bool exists(const FileName& f) {
+        return PathName(f.name()).exists();
+    }
+    
     virtual DataHandle*  newWriteHandle(const FileName& f) {
         return PathName(f.name()).fileHandle();
     }
@@ -160,8 +164,14 @@ public:
     LocalFileManager(const string& name) : FileManager(name) {}
 };
 
+//-----------------------------------------------------------------------------
+
 class MarsFSFileManager : public FileManager {
   
+    virtual bool exists(const FileName& f) {
+        return PathName(f.scheme() + ":" + f.name()).exists();
+    }
+    
     virtual DataHandle*  newWriteHandle(const FileName& f) {
         return PathName(f.scheme() + ":" + f.name()).fileHandle();
     }
@@ -178,6 +188,8 @@ public:
     MarsFSFileManager(const string& name) : FileManager(name) {}
 };
 
-static LocalFileManager manager1("unix");
-static MarsFSFileManager manager2("marsfs");
+//-----------------------------------------------------------------------------
 
+static LocalFileManager  manager1("unix");
+static LocalFileManager  manager3("file");
+static MarsFSFileManager manager2("marsfs");

@@ -44,11 +44,16 @@ FileName::~FileName()
 {
 }
 
+bool FileName::exists() const
+{
+    return FileManager::lookUp(scheme_).exists(*this);
+}
+
 DataHandle*  FileName::newWriteHandle() const
 {
     return FileManager::lookUp(scheme_).newWriteHandle(*this);
-
 }
+
 DataHandle*  FileName::newReadHandle(const OffsetList& ol, const LengthList& ll) const
 {
     return FileManager::lookUp(scheme_).newReadHandle(*this, ol, ll);

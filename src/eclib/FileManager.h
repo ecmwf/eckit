@@ -26,12 +26,13 @@ public:
 
 // - Methods
 
+    virtual bool exists(const FileName&) = 0;
+    
 	virtual DataHandle*  newWriteHandle(const FileName&) = 0;
 	virtual DataHandle*  newReadHandle(const FileName&) = 0;
 	virtual DataHandle*  newReadHandle(const FileName&,const OffsetList&, const LengthList&) = 0;
 
 	static FileManager& lookUp(const string&);
-
 
 protected:
 
@@ -47,8 +48,9 @@ private:
 	friend ostream& operator<<(ostream& s,const FileManager& p)
 			{ p.print(s); return s; }
 
-
 };
+
+//-----------------------------------------------------------------------------
 
 class FileManagerFactory {
 	string name_;
@@ -65,6 +67,5 @@ class FileManagerBuilder : public FileManagerFactory {
 public:
 	FileManagerBuilder(const string& name) : FileManagerFactory(name) {}
 };
-
 
 #endif

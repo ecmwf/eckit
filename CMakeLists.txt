@@ -11,11 +11,11 @@
 
 cmake_minimum_required( VERSION 2.6.4 FATAL_ERROR )
 
-project( eclib C CXX )
+project( eclib )
 
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} )
 
-include( ecbuild_build_system )
+include( ecbuild_system )
 
 ###############################################################################
 # local project
@@ -31,9 +31,11 @@ ecbuild_declare_project()
 ###############################################################################
 # contents
 
-set( ECLIB_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src PARENT_SCOPE )
-set( ECLIB_LIBRARIES      Ec   PARENT_SCOPE )
-set( ECLIB_FOUND          TRUE PARENT_SCOPE )
+if( NOT ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
+    set( ECLIB_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src PARENT_SCOPE )
+    set( ECLIB_LIBRARIES      Ec   PARENT_SCOPE )
+    set( ECLIB_FOUND          TRUE PARENT_SCOPE )
+endif()
 
 # source files
 add_subdirectory( src )

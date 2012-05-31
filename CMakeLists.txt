@@ -15,12 +15,12 @@ project( eclib C CXX )
 
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} )
 
-include( ecmwf_build_system )
+include( ecbuild_build_system )
 
 ###############################################################################
 # local project
 
-ecmwf_declare_project()
+ecbuild_declare_project()
 
 ###############################################################################
 # some variables/options of this project
@@ -41,11 +41,11 @@ add_subdirectory( src )
 ############################################################################################
 # installation
 
-ecmwf_install_project( NAME eclib )
+ecbuild_install_project( NAME eclib )
 
 ###############################################################################
 # summary
 
 # print the summary of the configuration
-include( ecmwf_print_summary )
+include( ecbuild_print_summary )
 

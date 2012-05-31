@@ -335,7 +335,7 @@ macosx.h
 sgi.h
 )
 
-ecmwf_add_library( TARGET Ec
+ecbuild_add_library( TARGET Ec
                   COMPONENT server
                   SOURCES ${eclib_src_files}
                   TEMPLATES

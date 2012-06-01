@@ -18,12 +18,14 @@ Regex::Regex(const string& s,bool shell):
 {
 	//Log::debug() << "Regex " << str_ << endl;
 	if(shell) {
-		long len = s.length()*3;
+		long len = s.length()*3 + 1;
 		Buffer buffer(len);
 		char *re = buffer;
 
 		int i = 0;
 		int j = 0;
+
+        if(shell) { re[j++] = '^'; }
 
 		while(i < s.length())
 		{
@@ -57,6 +59,7 @@ Regex::Regex(const string& s,bool shell):
 			i++;
 			ASSERT(j < len);
 		}
+        if(shell) { re[j++] = '$'; }
 		re[j] = 0;
 		str_ = re;
 	}

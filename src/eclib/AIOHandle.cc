@@ -25,6 +25,7 @@ inline size_t round(size_t x, size_t n)
 AIOHandle::AIOHandle(const PathName& path, size_t count,size_t size,bool fsync):
         path_(path),
         buffers_(count),
+        len_(count),
         aio_(count),
         aiop_(count),
         count_(count),
@@ -92,6 +93,7 @@ long AIOHandle::write(const void* buffer,long length)
                 throw FailedSystemCall("aio_suspend64");
         }
 
+        bool ok = false;
         for (n = 0 ; n < count_ ; n++)
         {
             int e = aio_error64(&aio_[n]);
@@ -105,6 +107,7 @@ long AIOHandle::write(const void* buffer,long length)
                     os << "AIOHandle: only " << len << " bytes written instead of " << len_[n] << StrStream::ends;
                     throw WriteError(string(os));
                 }
+                ok = true;
                 break;
             } else
             {
@@ -112,6 +115,7 @@ long AIOHandle::write(const void* buffer,long length)
             }
 
         }
+        ASSERT(ok);
     }
 
     if (buffers_[n] == 0 || buffers_[n]->size() < length)

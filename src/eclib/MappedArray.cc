@@ -82,7 +82,7 @@ MappedArray<T>::MappedArray(const PathName& path,unsigned long size):
 	}
 
 	map_ = ::mmap64(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0);
-	if(map_ == 0) {
+	if(map_ == MAP_FAILED) {
 		Log::error() << "open(" << path << ',' << length << ')'
 			<< Log::syserr << endl;
 		throw FailedSystemCall("mmap");

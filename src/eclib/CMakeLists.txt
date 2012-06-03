@@ -99,8 +99,8 @@ Exceptions.cc
 Exceptions.h
 Exporter.cc
 Exporter.h
-FILEHandle.cc
-FILEHandle.h
+StdFileHandle.cc
+StdFileHandle.h
 FileName.cc
 FileName.h
 FTPHandle.cc

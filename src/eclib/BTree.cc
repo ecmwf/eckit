@@ -77,7 +77,7 @@ template<class K,class V, int S>
 void BTree<K, V, S>::Page::print(ostream& s) const
 {
     s << ((this->node_) ? "NODE" : "LEAF" )
-    <<  "_PAGE[id=" << this->id_ << ",count=" << this->count_ << "]";
+        <<  "_PAGE[id=" << this->id_ << ",count=" << this->count_ << "]";
 
     // For some strange reason "this" is required...
     if (this->node_) {
@@ -119,8 +119,10 @@ void BTree<K, V, S>::_NodePage::print(ostream& s) const
 
 template<class K,class V, int S>
 BTree<K,V,S>::BTree(const PathName& path):
-        fd_(-1),
-        path_(path)
+    fd_(-1),
+    path_(path),
+    cacheReads_(false),
+    cacheWrites_(false)
 {
     SYSCALL(fd_ = ::open64(path.localPath(),O_RDWR|O_CREAT,0777));
 
@@ -150,10 +152,30 @@ BTree<K,V,S>::BTree(const PathName& path):
     //cout << "::BTree : maxLeafEntries_=" << maxLeafEntries_ << ", maxNodeEntries_=" << maxNodeEntries_ << endl;
 }
 
+
 template<class K, class V, int S>
 BTree<K,V,S>::~BTree()
 {
-    if (fd_>=0) SYSCALL(::close(fd_));
+    if (fd_>=0) {
+        flush();
+        SYSCALL(::close(fd_));
+    }
+
+    for(typename Cache::iterator j = cache_.begin(); j != cache_.end(); ++j)
+        delete (*j).second.page_;
+}
+
+template<class K, class V, int S>
+void BTree<K,V,S>::flush()
+{
+    for(typename Cache::iterator j = cache_.begin(); j != cache_.end(); ++j)
+    {
+        if((*j).second.dirty_)
+        {
+            _savePage(*(*j).second.page_); 
+            (*j).second.dirty_ = false;
+        }
+    }
 }
 
 template<class K, class V, int S>
@@ -172,6 +194,8 @@ void BTree<K,V,S>::dump(ostream& s, unsigned long page, int depth) const
             dump(s, p.nodePage().nentries_[i].page_, depth+1);
     }
 }
+
+
 template<class K, class V, int S>
 void BTree<K,V,S>::dump(ostream& s) const
 {
@@ -189,6 +213,7 @@ bool BTree<K,V,S>::set(const K& key, const V& value)
     vector<unsigned long> path;
     return insert(1,key,value,path);
 }
+
 
 template<class K, class V, int S>
 unsigned long BTree<K,V,S>::next(const K& key, const Page& p) const
@@ -218,6 +243,7 @@ unsigned long BTree<K,V,S>::next(const K& key, const Page& p) const
     return (*e).page_;
 }
 
+
 template<class K, class V, int S>
 bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, vector<unsigned long>& path)
 {
@@ -232,7 +258,7 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, vect
         return insert(next(key, p), key, value, path);
     }
 
-     LeafEntry *begin = p.leafPage().lentries_;
+    LeafEntry *begin = p.leafPage().lentries_;
     LeafEntry *end   = begin + p.count_;
 
     LeafEntry* e = std::lower_bound(begin, end, key);
@@ -305,20 +331,20 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, vect
                 // It's a leaf, Copy-up
 
                 k = n.leafPage().lentries_[0].key_;
-		
-		
-		if(p.right_) {
-		  // TODO: do an I/O just for the linked list
-		  Page r;
-		  loadPage(p.right_,r);
-		  r.left_ = n.id_;
-		  savePage(r);
-		  
-		}
-		
-		n.right_ = p.right_;
-		n.left_  = p.id_;
-		p.right_ = n.id_;
+
+
+                if(p.right_) {
+                    // TODO: do an I/O just for the linked list
+                    Page r;
+                    loadPage(p.right_,r);
+                    r.left_ = n.id_;
+                    savePage(r);
+
+                }
+
+                n.right_ = p.right_;
+                n.left_  = p.id_;
+                p.right_ = n.id_;
             }
 
             savePage(n);
@@ -332,8 +358,8 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, vect
 
             NodeEntry* begin = p.nodePage().nentries_;
             NodeEntry* end   = p.nodePage().nentries_ + p.count_;
-	    
-	    
+
+
             ASSERT(begin != end);
 
             NodeEntry* e = std::lower_bound(begin, end, k);
@@ -358,6 +384,7 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, vect
     }
     return false;
 }
+
 
 template<class K, class V, int S>
 void BTree<K,V,S>::splitRoot()
@@ -412,16 +439,16 @@ void BTree<K,V,S>::splitRoot()
         }
 
         key = pright.leafPage().lentries_[0].key_;
-	
-	pleft.right_ = pright.id_;
-	pright.left_ = pleft.id_;
+
+        pleft.right_ = pright.id_;
+        pright.left_ = pleft.id_;
     }
 
     zero(p);
     p.id_    = 1;
     p.count_ = 1;
     p.node_  = true;
-    
+
     p.left_  = pleft.id_;
 
     p.nodePage().nentries_[0].key_  = key;
@@ -431,6 +458,7 @@ void BTree<K,V,S>::splitRoot()
     savePage(pleft);
     savePage(p);
 }
+
 
 template<class K, class V, int S>
 bool BTree<K,V,S>::get(const K& key, V& value)
@@ -450,6 +478,7 @@ bool BTree<K,V,S>::get(const K& key, V& value)
     return false;
 }
 
+
 template<class K, class V, int S>
 bool BTree<K,V,S>::search(unsigned long page, const K& key, V& result) const
 {
@@ -461,8 +490,8 @@ bool BTree<K,V,S>::search(unsigned long page, const K& key, V& result) const
     if (p.node_) {
         return search(next(key,p), key, result);
     }
-    
-     const LeafEntry *begin = p.leafPage().lentries_;
+
+    const LeafEntry *begin = p.leafPage().lentries_;
     const LeafEntry *end   = begin + p.count_;
 
     const LeafEntry* e = std::lower_bound(begin, end, key);
@@ -476,6 +505,7 @@ bool BTree<K,V,S>::search(unsigned long page, const K& key, V& result) const
     return false;
 }
 
+
 template<class K, class V, int S>
 off64_t BTree<K,V,S>::pageOffset(unsigned long page) const
 {
@@ -483,8 +513,9 @@ off64_t BTree<K,V,S>::pageOffset(unsigned long page) const
     return sizeof(Page) * off64_t(page-1);
 }
 
+
 template<class K, class V, int S>
-void BTree<K,V,S>::loadPage(unsigned long page, Page& p) const
+void BTree<K,V,S>::_loadPage(unsigned long page, Page& p) const
 {
     //cout << "Load " << page << endl;
 
@@ -500,7 +531,32 @@ void BTree<K,V,S>::loadPage(unsigned long page, Page& p) const
 }
 
 template<class K, class V, int S>
-void BTree<K,V,S>::savePage(const Page& p)
+void BTree<K,V,S>::loadPage(unsigned long page, Page& p) const
+{
+	BTree<K,V,S>* self = const_cast<BTree<K,V,S>*>(this);
+
+    typename Cache::iterator j = self->cache_.find(page);
+    if(j != self->cache_.end()) 
+    {
+        // TODO: find someting better...
+        memcpy(&p, (*j).second.page_, sizeof(Page));
+        return;
+    }
+
+
+    _loadPage(page, p);
+
+    //if(cacheReads_) 
+    {
+        Page* q = new Page();
+        memcpy(q, &p, sizeof(Page));
+		self->cache_[p.id_] = _PageInfo(q);
+    }
+
+}
+
+template<class K, class V, int S>
+void BTree<K,V,S>::_savePage(const Page& p)
 {
     //cout << "Save " << p << endl;
 
@@ -514,8 +570,36 @@ void BTree<K,V,S>::savePage(const Page& p)
     ASSERT(len == sizeof(p));
 }
 
+template<class K, class V, int S>
+void BTree<K,V,S>::savePage(const Page& p)
+{
+	BTree<K,V,S>* self = const_cast<BTree<K,V,S>*>(this);
+    typename Cache::iterator j = self->cache_.find(p.id_);
+	if(j != self->cache_.end()) 
+    {
+        // TODO: find someting better...
+        memcpy((*j).second.page_, &p, sizeof(Page));
+        (*j).second.dirty_ = true;
+        (*j).second.count_++;
+        return;
+    }
+
+    //if(cacheReads_)
+    {
+        Page* q = new Page();
+        memcpy(q, &p, sizeof(Page));
+        self->cache_[p.id_] = _PageInfo(q);
+		j = self->cache_.find(p.id_);
+        (*j).second.dirty_ = true;
+        (*j).second.count_++;
+        return;
+    }
+
+    _savePage(p);
+}
+
 template<class K, class V,int S>
-void BTree<K,V,S>::newPage(Page& p)
+void BTree<K,V,S>::_newPage(Page& p)
 {
     off64_t here;
     SYSCALL(here = lseek64(fd_,0,SEEK_END));
@@ -536,6 +620,19 @@ void BTree<K,V,S>::newPage(Page& p)
     //return p.id_;
 }
 
+template<class K, class V,int S>
+void BTree<K,V,S>::newPage(Page& p)
+{
+    _newPage(p);
+
+	{
+		Page* q = new Page();
+		memcpy(q, &p, sizeof(Page));
+		cache_[p.id_] = _PageInfo(q);
+	}
+}
+
+
 template<class K, class V, int S>
 void BTree<K,V,S>::lockRange(off64_t start,off64_t len,int cmd,int type)
 {
@@ -550,17 +647,20 @@ void BTree<K,V,S>::lockRange(off64_t start,off64_t len,int cmd,int type)
     SYSCALL(::fcntl(fd_, cmd, &lock));
 }
 
+
 template<class K, class V,int S>
 void BTree<K,V,S>::lockShared()
 {
     lockRange(0,0,F_SETLKW64,F_RDLCK);
 }
 
+
 template<class K, class V,int S>
 void BTree<K,V,S>::lock()
 {
     lockRange(0,0,F_SETLKW64,F_WRLCK);
 }
+
 
 template<class K, class V,int S>
 void BTree<K,V,S>::unlock()

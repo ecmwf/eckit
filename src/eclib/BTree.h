@@ -119,6 +119,8 @@ public:
     void lockShared();
     void unlock();
 
+    void flush();
+
 // -- Overridden methods
     // None
 
@@ -345,6 +347,25 @@ private:
 
     PathName path_;
     int fd_;
+    
+    bool cacheReads_;
+    bool cacheWrites_;
+    
+    struct _PageInfo {
+        time_t last_;
+        Page* page_;
+        bool dirty_;
+        unsigned long long count_;
+
+        _PageInfo(Page* page = 0):
+            page_(page),
+            count_(0),
+            last_(time(0)),
+            dirty_(false) {}
+    };
+ 
+    typedef map<unsigned long,_PageInfo> Cache;
+    Cache cache_;
 
     void lockRange(off64_t start,off64_t len,int cmd,int type);
     bool search(unsigned long page, const K&, V&) const;
@@ -355,6 +376,10 @@ private:
     void savePage(const Page&);
     void loadPage(unsigned long,Page&) const;
     void newPage(Page&);
+
+    void _savePage(const Page&);
+    void _loadPage(unsigned long,Page&) const;
+    void _newPage(Page&);
 
     bool insert(unsigned long page, const K& key, const V& value, vector<unsigned long>& path);
     bool store(unsigned long page, const K& key, const V& value, vector<unsigned long>& path);

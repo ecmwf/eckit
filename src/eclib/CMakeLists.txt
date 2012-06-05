@@ -16,6 +16,8 @@ BigNum.cc
 BigNum.h
 BTree.cc
 BTree.h
+FixedString.cc
+FixedString.h
 Port.cc
 Port.h
 ETA.cc
@@ -345,6 +347,7 @@ ecbuild_add_library( TARGET Ec
                     ClassExtent.cc
                     Dispatcher.cc
                     BTree.cc
+					FixedString.cc
                     FileBase.cc
                     MappedArray.cc
                     PipeHandler.cc

@@ -27,59 +27,6 @@
 #include "eclib/PathName.h"
 #include "eclib/Padded.h"
 
-// To be used as a key or value
-template<int size>
-class FixedString {
-public:
-
-    FixedString();
-    FixedString(const string&);
-    FixedString(const FixedString&);
-    FixedString(const char*);
-
-    FixedString& operator=(const FixedString& other);
-
-    bool operator<(const FixedString& other) const {
-        return memcmp(data_, other.data_, size) < 0;
-    }
-
-    bool operator>(const FixedString& other) const {
-        return memcmp(data_, other.data_, size) > 0;
-    }
-
-    bool operator==(const FixedString& other) const {
-        return memcmp(data_, other.data_, size) == 0;
-    }
-
-    bool operator!=(const FixedString& other) const {
-        return memcmp(data_, other.data_, size) != 0;
-    }
-
-    bool operator>=(const FixedString& other) const {
-        return memcmp(data_, other.data_, size) >= 0;
-    }
-
-    bool operator<=(const FixedString& other) const {
-        return memcmp(data_, other.data_, size) <= 0;
-    }
-
-    size_t length() const;
-
-    operator string() const;
-
-private:
-
-    char data_[size];
-
-    void print(ostream& s) const ;
-
-    friend ostream& operator<<(ostream& s,const FixedString& p)
-    {
-        p.print(s);
-        return s;
-    }
-};
-
 template<class K,class V, int S = 64*1024 >
 class BTree {
 public:
@@ -132,21 +79,9 @@ public:
 
 protected:
 
-// -- Members
-    // None
-
 // -- Methods
 
     void print(ostream&) const; // Change to virtual if base class
-
-// -- Overridden methods
-    // None
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
 
 private:
 
@@ -154,22 +89,6 @@ private:
 
     BTree(const BTree&);
     BTree& operator=(const BTree&);
-
-// -- Members
-    // None
-
-// -- Methods
-    // None
-
-// -- Overridden methods
-    // None
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
-
 
 
     struct _Header {

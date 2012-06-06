@@ -55,6 +55,8 @@ public:
 
     bool get(const K&, V&);
     bool set(const K&, const V&);
+    void range(const K& key1, const K& key2, vector<pair<K,V> >& result);
+
 
     bool remove(const K&);
 
@@ -288,6 +290,8 @@ private:
 
     void lockRange(off64_t start,off64_t len,int cmd,int type);
     bool search(unsigned long page, const K&, V&) const;
+    void search(unsigned long page, const K& key1, const K& key2, vector<pair<K,V> >& result);
+
 
     void splitRoot();
 

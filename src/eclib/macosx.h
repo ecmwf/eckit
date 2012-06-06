@@ -15,10 +15,7 @@
 #include <pthread.h>
 #include <errno.h>
 #include <unistd.h>
-
 #include <string.h>
-
-
 #include <stdint.h>
 
 // GCC 3.3 is confused about offsetof

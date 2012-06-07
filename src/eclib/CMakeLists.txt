@@ -50,8 +50,6 @@ ClusterNode.cc
 ClusterNode.h
 ClusterNodes.cc
 ClusterNodes.h
-CodeLocation.h
-CodeLocation.cc
 CommandStream.cc
 CommandStream.h
 Configurable.cc
@@ -80,7 +78,6 @@ DayOfYear.cc
 DayOfYear.h
 DblBuffer.cc
 DblBuffer.h
-DHSBehavior.cc
 DHSBehavior.cc
 DHSBehavior.h
 DHSLogger.cc

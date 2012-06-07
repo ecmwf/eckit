@@ -11,7 +11,7 @@
 #ifndef machine_H
 #define machine_H
 
-#include "ecbase_config.h"
+#include "ecbuild_config.h"
 
 #define _(A) A
 

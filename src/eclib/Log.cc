@@ -301,11 +301,23 @@ void Log::init()
     status();
 }
 
+// GNU implementation is not POSIX compliant and returns char* instead of int
+
+static bool ok( int e )
+{
+    return e == 0;
+}
+
+static bool ok( char* p )
+{
+    return p != 0;
+}
+
 ostream& Log::syserr(ostream& s)
 {
         int e = errno;
         char estr [256];
-        if( strerror_r( e, estr, sizeof(estr) ) == 0 )
+        if( ok( strerror_r( e, estr, sizeof(estr) ) ) )
         {
             s << " (" << estr << ") " ;
         }

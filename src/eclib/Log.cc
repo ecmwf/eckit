@@ -303,32 +303,29 @@ void Log::init()
 
 // GNU implementation is not POSIX compliant and returns char* instead of int
 
-static bool ok( int e )
+static void handle_strerror_r(ostream& s, int e, char es[], int hs )
 {
-    return e == 0;
+    if( hs == 0 )
+        s << " (" << es << ") " ;
+    else
+        s << " (errno = " << e << ") ";
 }
 
-static bool ok( char* p )
+static void handle_strerror_r(ostream& s, int e, char[], char* p )
 {
-    return p != 0;
+    if( p != 0 )
+        s << " (" << p << ") " ;
+    else
+        s << " (errno = " << e << ") ";
 }
 
 ostream& Log::syserr(ostream& s)
 {
         int e = errno;
         char estr [256];
-        if( ok( strerror_r( e, estr, sizeof(estr) ) ) )
-        {
-            s << " (" << estr << ") " ;
-        }
-        else
-        {
-            s << " (errno = " << e << ") ";
-        }
+        handle_strerror_r(s, e, estr, strerror_r( e, estr, sizeof(estr) ) );
         return s;
 }
-
-
 
 static int xindex = ios::xalloc();
 

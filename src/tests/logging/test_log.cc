@@ -9,6 +9,7 @@
  */
 
 #include "eclib/Application.h"
+#include "eclib/LocalPathName.h"
 #include "eclib/Log.h"
 
 class TestApp : public Application {
@@ -26,6 +27,7 @@ public:
     void test_warning();
     void test_error();
     void test_panic();
+    void test_strerr();
 };
 
 
@@ -59,6 +61,12 @@ void TestApp::test_panic()
     Log::panic( Here() ) << "panic message 2" << std::endl;
 }
 
+void TestApp::test_strerr()
+{
+    LocalPathName p("/tmp/edfpmjq3480hfnsribnzasdfibv");
+    p.unlink();
+}
+
 void TestApp::run()
 {
     test_debug();
@@ -66,6 +74,7 @@ void TestApp::run()
     test_warning();
     test_error();
     test_panic();
+    test_strerr();
 }
 
 int main(int argc,char **argv)

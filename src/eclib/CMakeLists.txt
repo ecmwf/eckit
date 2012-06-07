@@ -328,6 +328,7 @@ VerifyingDate.cc
 VerifyingDate.h
 Watcher.cc
 Watcher.h
+# architecture dependent headers - to be removed
 aix.h
 hpux.h
 linux.h

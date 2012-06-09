@@ -8,27 +8,27 @@
  * does it submit to any jurisdiction.
  */
 
-// File StringContent.h
+// File BoolContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef StringContent_H
-#define StringContent_H
+#ifndef BoolContent_H
+#define BoolContent_H
 
 #include "eclib/Content.h"
+#include "eclib/Value.h"
 
-class StringContent : public Content {
+class BoolContent : public Content {
 
 protected:
 
     // -- Constructor
 
-    StringContent(const string&);
-    StringContent(const char*);
-    StringContent(Stream&);
+    BoolContent(bool);
+    BoolContent(Stream&);
 
     // -- Destructor
 
-    virtual ~StringContent();
+    virtual ~BoolContent();
 
     // -- Overridden methods
 
@@ -36,7 +36,7 @@ protected:
 
     virtual int compare(const Content& other) const;
 
-    virtual void value(bool& n)                 const { Content::value(n); }
+    virtual void value(bool& n)                 const;
     virtual void value(long long& n)            const { Content::value(n); }
     virtual void value(double& n)               const { Content::value(n); }
     virtual void value(string& n)               const;
@@ -46,10 +46,10 @@ protected:
     virtual void value(vector<Value>& n)        const { Content::value(n); }
     virtual void value(map<Value,Value>& n)     const { Content::value(n); }
 
-    virtual int  compareBool(const BoolContent&)            const {return -1; }
-    virtual int  compareNumber(const NumberContent&)        const {return -1; }
-    virtual int  compareDouble(const DoubleContent&)        const {return -1; }
-    virtual int  compareString(const StringContent&)        const;
+    virtual int  compareBool(const BoolContent&)            const;
+    virtual int  compareNumber(const NumberContent&)        const {return 1; }
+    virtual int  compareDouble(const DoubleContent&)        const {return 1; }
+    virtual int  compareString(const StringContent&)        const {return 1; }
     virtual int  compareNil(const NilContent&)              const {return 1; }
     virtual int  compareList(const ListContent&)            const {return 1; }
     virtual int  compareMap(const MapContent&)              const {return 1; }
@@ -57,18 +57,26 @@ protected:
     virtual int  compareTime(const TimeContent&)            const {return 1; }
     virtual int  compareDateTime(const DateTimeContent&)    const {return 1; }
 
-    virtual Content* add(const Content&)             const;
+    virtual Content* add(const Content&)  const;
     virtual Content* sub(const Content&) const;
     virtual Content* mul(const Content&) const;
     virtual Content* div(const Content&) const;
     virtual Content* mod(const Content&) const;
 
-    virtual Content* addString(const StringContent&) const;
+    //        virtual Content* addBool(const BoolContent&) const;
+    //        virtual Content* subBool(const BoolContent&) const;
+    //        virtual Content* mulBool(const BoolContent&) const;
+    //        virtual Content* divBool(const BoolContent&) const;
+
+    //        virtual Content* addNumber(const NumberContent&) const;
+    //        virtual Content* subNumber(const NumberContent&) const;
+    //        virtual Content* mulNumber(const NumberContent&) const;
+    //        virtual Content* divNumber(const NumberContent&) const;
 
     virtual void    print(ostream&) const;
     virtual void   json(JSON&)     const;
-    virtual string  typeName() const      { return "String"; }
-    virtual bool    isString() const      { return true; }
+    virtual string  typeName()      const { return "Bool"; }
+    virtual bool    isBool()      const { return true; }
 
     // -- From Streamable
 
@@ -77,26 +85,27 @@ protected:
 
     // -- Class methods
 
-    static  const ClassSpec&  classSpec()         { return classSpec_;}
+    static  const ClassSpec&  classSpec()            { return classSpec_;}
 
 private:
 
-    // -- No copy allowed
-
-    StringContent(const StringContent&);
-    StringContent& operator=(const StringContent&);
+    BoolContent(const BoolContent&);
+    BoolContent& operator=(const BoolContent&);
 
     // -- Members
 
-    string value_;
+    bool value_;
+
+    // -- Class Members
 
     static  ClassSpec                  classSpec_;
-    static  Reanimator<StringContent>  reanimator_;
+    static  Reanimator<BoolContent>  reanimator_;
 
     // -- Friends
 
-    friend class Reanimator<StringContent>;
+    friend class Reanimator<BoolContent>;
     friend class Value;
+    friend class DateContent;
 };
 
 #endif

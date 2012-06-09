@@ -27,7 +27,6 @@ ostream& operator<<(ostream& s,const ETA&  sec)
 {
 	double t = sec.ETA_;
     long n  = t;
-    long flg = 0;
 
     long hour = n / (60 * 60); n %= (60 * 60);
     long minutes = n / 60 ; n %= 60 ;

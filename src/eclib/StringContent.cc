@@ -10,31 +10,32 @@
 
 
 #include "eclib/StringContent.h"
+#include "eclib/JSON.h"
 
 ClassSpec StringContent::classSpec_ = {&Content::classSpec(),"StringContent",};
 Reanimator<StringContent> StringContent::reanimator_;
 
 
 StringContent::StringContent(const string& s): 
-	str_(s) 
+	value_(s) 
 { 
 }
 
 StringContent::StringContent(const char* s): 
-	str_(s) 
+	value_(s) 
 { 
 }
 
 StringContent::StringContent(Stream& s):
 	Content(s)
 {
-	s >> str_;
+	s >> value_;
 }
 
 void StringContent::encode(Stream& s) const
 {
 	Content::encode(s);
-	s << str_;
+	s << value_;
 }
 
 StringContent::~StringContent()
@@ -43,7 +44,12 @@ StringContent::~StringContent()
 
 void StringContent::print(ostream& s) const
 {
-	s << str_;
+	s << value_;
+}
+
+void StringContent::json(JSON& s) const
+{
+    s << value_;
 }
 
 int StringContent::compare(const Content& other) const
@@ -53,12 +59,12 @@ int StringContent::compare(const Content& other) const
 
 int StringContent::compareString(const StringContent& other) const
 {
-	return ::strcmp(str_.c_str(),other.str_.c_str());
+	return ::strcmp(value_.c_str(),other.value_.c_str());
 }
 
 void StringContent::value(string& s) const 
 { 
-	s = str_; 
+	s = value_; 
 }
 
 Content* StringContent::add(const Content& other) const
@@ -68,24 +74,25 @@ Content* StringContent::add(const Content& other) const
 
 Content* StringContent::addString(const StringContent& other) const
 {
-	return new StringContent(other.str_ + str_);
+	return new StringContent(other.value_ + value_);
 }
 
 Content* StringContent::sub(const Content& other) const
 {
-	NOTIMP;
-	return 0;
+    return other.subString(*this);
 }
 
 Content* StringContent::mul(const Content& other) const
 {
-	NOTIMP;
-	return 0;
+    return other.mulString(*this);
 }
 
 Content* StringContent::div(const Content& other) const
 {
-	NOTIMP;
-	return 0;
+    return other.divString(*this);
 }
 
+Content* StringContent::mod(const Content& other) const
+{
+    return other.modString(*this);
+}

@@ -448,55 +448,6 @@ bool BTree<K,V,S>::search(unsigned long page, const K& key, V& result) const
     return false;
 }
 
-template<class K, class V, int S>
-void BTree<K,V,S>::range(const K& key1, const K& key2, vector<pair<K,V> >& result)
-{
-    AutoSharedLock<BTree<K,V,S> > lock(this);
-    result.clear();
-    search(1, key1, key2, result);
-}
-
-
-template<class K, class V, int S>
-void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, vector<pair<K,V> >& result)
-{
-    Page p;
-    loadPage(page, p);
-
-    //cout << "Search " << key << ", Visit " << p << endl;
-
-    if (p.node_) {
-        return search(next(key1,p), key1, key2, result);
-    }
-
-    const LeafEntry *begin = p.leafPage().lentries_;
-    const LeafEntry *end   = begin + p.count_;
-
-    const LeafEntry* e = std::lower_bound(begin, end, key1);
-
-    if (e == end) 
-        return;
-
-    while( !(key2 < (*e).key_) )
-    {
-        result.push_back(pair<K,V>((*e).key_,(*e).value_));
-
-        ++e;
-        if(e == end)
-        {
-            if(p.right_) {
-                loadPage(p.right_, p);
-                ASSERT(!p.node_);
-                e = p.leafPage().lentries_;
-            }
-            else
-            {
-                return;
-            }
-        }
-    }
-}
-
 
 template<class K, class V, int S>
 off64_t BTree<K,V,S>::pageOffset(unsigned long page) const

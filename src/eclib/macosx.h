@@ -23,4 +23,15 @@ static double _offset;
 #define member_offset(Z,z)  size_t( reinterpret_cast<char*>(&reinterpret_cast<Z*>(&_offset)->z) - reinterpret_cast<char*>(&_offset))
 #define member_size(Z,z)    size_t( sizeof(reinterpret_cast<Z*>(&_offset)->z))
 
+static double keep_gcc_quiet_about_offset_2(double d);
+static double keep_gcc_quiet_about_offset_1(double d)
+{
+    return d*keep_gcc_quiet_about_offset_2(_offset);
+}
+
+static double keep_gcc_quiet_about_offset_2(double d)
+{
+    return d*keep_gcc_quiet_about_offset_1(_offset);
+}
+
 #endif /* mars_macosx_h */

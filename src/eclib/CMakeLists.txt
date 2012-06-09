@@ -16,6 +16,8 @@ BigNum.cc
 BigNum.h
 BTree.cc
 BTree.h
+JSONParser.cc
+JSONParser.h
 FixedString.cc
 FixedString.h
 Port.cc
@@ -193,6 +195,12 @@ NodeInfo.h
 NonCopyable.h
 NumberContent.cc
 NumberContent.h
+DoubleContent.cc
+DoubleContent.h
+BoolContent.cc
+BoolContent.h
+MapContent.cc
+MapContent.h
 Offset.cc
 Offset.h
 Padded.h

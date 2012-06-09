@@ -33,34 +33,50 @@ protected:
 // -- Overridden methods
 
 	// -- From Content
-	virtual void value(long long&) const;
-	virtual void value(string& n) const;
-	virtual void value(vector<Value>& n) const { Content::value(n); }
-	virtual void value(Date& n) const          { Content::value(n); }
-	virtual void value(Time& n) const          { Content::value(n); }
-	virtual void value(DateTime& n) const      { Content::value(n); }
 
-	virtual int compare(const Content&)             const;
+    virtual int compare(const Content& other) const;
 
-	virtual int  compareNil(const NilContent&) const       { return  1; }
-    virtual int  compareNumber(const NumberContent&) const;
-	virtual int  compareString(const StringContent&) const { return  -1; }
-	virtual int  compareList(const ListContent&) const     { return  -1; }
-	virtual int  compareTime(const TimeContent&) const     { return  -1; }
-	virtual int  compareDate(const DateContent&) const     { return  -1; }
-	virtual int  compareDateTime(const DateTimeContent&) const { return  -1; }
+    virtual void value(bool& n)                 const { Content::value(n); }
+    virtual void value(long long& n)            const;
+    virtual void value(double& n)               const;
+    virtual void value(string& n)               const;
+    virtual void value(Date& n)                 const { Content::value(n); }
+    virtual void value(Time& n)                 const { Content::value(n); }
+    virtual void value(DateTime& n)             const { Content::value(n); }
+    virtual void value(vector<Value>& n)        const { Content::value(n); }
+    virtual void value(map<Value,Value>& n)     const { Content::value(n); }
 
-	virtual Content* add(const Content&)             const;
+    virtual int  compareBool(const BoolContent&)            const {return -1; }
+    virtual int  compareNumber(const NumberContent&)        const;
+    virtual int  compareDouble(const DoubleContent&)        const;
+    virtual int  compareString(const StringContent&)        const {return 1; }
+    virtual int  compareNil(const NilContent&)              const {return 1; }
+    virtual int  compareList(const ListContent&)            const {return 1; }
+    virtual int  compareMap(const MapContent&)              const {return 1; }
+    virtual int  compareDate(const DateContent&)            const {return 1; }
+    virtual int  compareTime(const TimeContent&)            const {return 1; }
+    virtual int  compareDateTime(const DateTimeContent&)    const {return 1; }
+
+    virtual Content* add(const Content&) const;
 	virtual Content* sub(const Content&) const;
 	virtual Content* mul(const Content&) const;
 	virtual Content* div(const Content&) const;
+    virtual Content* mod(const Content&) const;
 
-	virtual Content* addNumber(const NumberContent&) const;
-	virtual Content* subNumber(const NumberContent&) const;
-	virtual Content* mulNumber(const NumberContent&) const;
-	virtual Content* divNumber(const NumberContent&) const;
+    virtual Content* addNumber(const NumberContent&) const;
+    virtual Content* subNumber(const NumberContent&) const;
+    virtual Content* mulNumber(const NumberContent&) const;
+    virtual Content* divNumber(const NumberContent&) const;
 
-	virtual void    print(ostream&) const;
+    virtual Value negate() const;
+
+//    virtual Content* addDouble(const DoubleContent&) const;
+//    virtual Content* subDouble(const DoubleContent&) const;
+//    virtual Content* mulDouble(const DoubleContent&) const;
+//    virtual Content* divDouble(const DoubleContent&) const;
+
+    virtual void    print(ostream&) const;
+    virtual void   json(JSON&)     const;
 	virtual string  typeName()      const { return "Number"; }
 	virtual bool    isNumber()      const { return true; }
 
@@ -80,7 +96,7 @@ private:
 
 // -- Members
 
-	long long num_;
+    long long value_;
 
 // -- Class Members
 
@@ -91,7 +107,8 @@ private:
 
 	friend class Reanimator<NumberContent>;
 	friend class Value;
-	friend class DateContent;
+    friend class DateContent;
+    friend class DoubleContent;
 };
 
 #endif

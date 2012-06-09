@@ -76,9 +76,29 @@ void Content::badOperator(const string& op, const string& to) const
 	throw BadOperator(str);
 }
 
+Value& Content::element(const Value&)
+{
+    NOTIMP;
+}
+
+Value Content::negate() const
+{
+    NOTIMP;
+}
+
 void Content::value(long long&) const 
 { 
 	badConvertion("long long");
+}
+
+void Content::value(bool&) const
+{
+    badConvertion("bool");
+}
+
+void Content::value(double&) const
+{
+    badConvertion("double");
 }
 
 void Content::value(string&) const
@@ -101,6 +121,12 @@ void Content::value(DateTime&) const
 	badConvertion("DateTime");
 }
 
+void Content::value(map<Value,Value>& v) const
+{
+    badConvertion("Map");
+}
+
+
 void Content::value(vector<Value>& v) const
 {
 	// Cast away constness, so the Contnt can be attached by the value
@@ -118,46 +144,65 @@ bool Content::operator<(const Content& other) const
 	return (this->compare(other) < 0);
 }
 
+
 int Content::compareNumber(const NumberContent&) const
 {
-	badComparison("Number");
-	return 0;
+    badComparison("Number");
+    return 0;
+}
+
+int Content::compareBool(const BoolContent&) const
+{
+    badComparison("Bool");
+    return 0;
+}
+
+int Content::compareDouble(const DoubleContent&) const
+{
+    badComparison("Double");
+    return 0;
 }
 
 int Content::compareString(const StringContent&) const
 {
-	badComparison("String");
-	return 0;
+    badComparison("String");
+    return 0;
 }
 
 int Content::compareNil(const NilContent&) const
 {
-	badComparison("Nil");
-	return 0;
+    badComparison("Nil");
+    return 0;
 }
 
 int Content::compareList(const ListContent&) const
 {
-	badComparison("List");
-	return 0;
+    badComparison("List");
+    return 0;
+}
+
+int Content::compareMap(const MapContent&) const
+{
+    badComparison("Map");
+    return 0;
 }
 
 int Content::compareDate(const DateContent&) const
 {
-	badComparison("Date");
-	return 0;
+    badComparison("Date");
+    return 0;
 }
 
 int Content::compareTime(const TimeContent&) const
 {
-	badComparison("Time");
-	return 0;
+    badComparison("Time");
+    return 0;
 }
 
 int Content::compareDateTime(const DateTimeContent&) const
 {
-	badComparison("DateTime");
-	return 0;
+    badComparison("DateTime");
+    return 0;
 }
 
 Content* Content::operator+(const Content& other) const
@@ -177,6 +222,18 @@ Content* Content::addNumber(const NumberContent&) const
 	return 0;
 }
 
+Content* Content::addBool(const BoolContent&) const
+{
+    badOperator("+","Bool");
+    return 0;
+}
+
+Content* Content::addDouble(const DoubleContent&) const
+{
+    badOperator("+","Number");
+    return 0;
+}
+
 Content* Content::addString(const StringContent&) const
 {
 	badOperator("+","String");
@@ -193,6 +250,12 @@ Content* Content::addList(const ListContent&) const
 {
 	badOperator("+","List");
 	return 0;
+}
+
+Content* Content::addMap(const MapContent&) const
+{
+    badOperator("+","List");
+    return 0;
 }
 
 Content* Content::addDate(const DateContent&) const
@@ -230,6 +293,18 @@ Content* Content::subNumber(const NumberContent&) const
 	return 0;
 }
 
+Content* Content::subDouble(const DoubleContent&) const
+{
+    badOperator("-","Double");
+    return 0;
+}
+
+Content* Content::subBool(const BoolContent&) const
+{
+    badOperator("-","Bool");
+    return 0;
+}
+
 Content* Content::subString(const StringContent&) const
 {
 	badOperator("-","String");
@@ -246,6 +321,12 @@ Content* Content::subList(const ListContent&) const
 {
 	badOperator("-","List");
 	return 0;
+}
+
+Content* Content::subMap(const MapContent&) const
+{
+    badOperator("-","Map");
+    return 0;
 }
 
 Content* Content::subDate(const DateContent&) const
@@ -283,6 +364,18 @@ Content* Content::mulNumber(const NumberContent&) const
 	return 0;
 }
 
+Content* Content::mulBool(const BoolContent&) const
+{
+    badOperator("*","Bool");
+    return 0;
+}
+
+Content* Content::mulDouble(const DoubleContent&) const
+{
+    badOperator("*","Double");
+    return 0;
+}
+
 Content* Content::mulString(const StringContent&) const
 {
 	badOperator("*","String");
@@ -299,6 +392,12 @@ Content* Content::mulList(const ListContent&) const
 {
 	badOperator("*","List");
 	return 0;
+}
+
+Content* Content::mulMap(const MapContent&) const
+{
+    badOperator("*","Map");
+    return 0;
 }
 
 Content* Content::mulDate(const DateContent&) const
@@ -330,11 +429,24 @@ Content* Content::div(const Content& other) const
 	return 0;
 }
 
-Content* Content::divNumber(const NumberContent&) const
+Content* Content::divDouble(const DoubleContent&) const
 {
-	badOperator("/","Number");
+    badOperator("/","Double");
 	return 0;
 }
+
+Content* Content::divNumber(const NumberContent&) const
+{
+    badOperator("/","Number");
+    return 0;
+}
+
+Content* Content::divBool(const BoolContent&) const
+{
+    badOperator("/","Bool");
+    return 0;
+}
+
 
 Content* Content::divString(const StringContent&) const
 {
@@ -354,6 +466,12 @@ Content* Content::divList(const ListContent&) const
 	return 0;
 }
 
+Content* Content::divMap(const MapContent&) const
+{
+    badOperator("/","Map");
+    return 0;
+}
+
 Content* Content::divDate(const DateContent&) const
 {
 	badOperator("/","Date");
@@ -370,6 +488,74 @@ Content* Content::divDateTime(const DateTimeContent&) const
 {
 	badOperator("/","DateTime");
 	return 0;
+}
+
+
+Content* Content::mod(const Content& other) const
+{
+    badOperator("%",other.typeName());
+    return 0;
+}
+
+Content* Content::modDouble(const DoubleContent&) const
+{
+    badOperator("%","Double");
+    return 0;
+}
+
+Content* Content::modNumber(const NumberContent&) const
+{
+    badOperator("%","Number");
+    return 0;
+}
+
+Content* Content::modBool(const BoolContent&) const
+{
+    badOperator("%","Bool");
+    return 0;
+}
+
+
+Content* Content::modString(const StringContent&) const
+{
+    badOperator("%","String");
+    return 0;
+}
+
+Content* Content::modNil(const NilContent&) const
+{
+    badOperator("%","Nil");
+    return 0;
+}
+
+Content* Content::modList(const ListContent&) const
+{
+    badOperator("%","List");
+    return 0;
+}
+
+Content* Content::modMap(const MapContent&) const
+{
+    badOperator("%","Map");
+    return 0;
+}
+
+Content* Content::modDate(const DateContent&) const
+{
+    badOperator("%","Date");
+    return 0;
+}
+
+Content* Content::modTime(const TimeContent&) const
+{
+    badOperator("%","Time");
+    return 0;
+}
+
+Content* Content::modDateTime(const DateTimeContent&) const
+{
+    badOperator("/%","DateTime");
+    return 0;
 }
 
 #ifndef IBM

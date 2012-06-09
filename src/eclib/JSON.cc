@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -31,7 +31,7 @@ void JSON::sep()
 {
     null_ = false;
     out_ << sep_.back();
-    if(indict() && sep_.back() != ":") 
+    if(indict() && sep_.back() != ":")
         sep_.back() = ":";
     else
         sep_.back() = ",";
@@ -43,21 +43,37 @@ static ostream& encode(ostream& s,const char *p) {
     {
         switch(*p) {
 
-            case '\\':
-                s << "\\\\";
-                break;
+        case '\\':
+            s << "\\\\";
+            break;
 
-            case '\n':
-                s << "\\n";
-                break;
+        case '\n':
+            s << "\\n";
+            break;
 
-            case '"':
-                s << "\\\"";
-                break;
+        case '\t':
+            s << "\\t";
+            break;
 
-            default:
-                s << *p;
-                break;
+        case '\b':
+            s << "\\b";
+            break;
+
+        case '\f':
+            s << "\\f";
+            break;
+
+        case '\r':
+            s << "\\r";
+            break;
+
+        case '"':
+            s << "\\\"";
+            break;
+
+        default:
+            s << *p;
+            break;
         }
         p++;
     }
@@ -70,10 +86,18 @@ static ostream& encode(ostream& s,const char *p) {
 JSON& JSON::startObject() 
 {
     null_ = false;
-     sep();
+    sep();
     sep_.push_back("");
     state_.push_back(true);
     out_ << "{";
+    return *this;
+}
+
+JSON& JSON::null()
+{
+    null_ = false;
+    sep();
+    out_ << "null";
     return *this;
 }
 

@@ -32,26 +32,34 @@ protected:
 
 	// From Content
 
-	virtual void value(long long& n)     const { Content::value(n); }
-	virtual void value(string& n)        const { Content::value(n); }
-	virtual void value(vector<Value>& n) const { }
-	virtual void value(Date& n)      const { Content::value(n); }
-	virtual void value(Time& n)      const { Content::value(n); }
-	virtual void value(DateTime& n)  const { Content::value(n); }
+    virtual int compare(const Content& other) const;
 
-	virtual int  compare(const Content&)       const;
-	virtual int  compareNil(const NilContent&) const;
-	virtual int  compareNumber(const NumberContent&) const { return  -1; }
-	virtual int  compareString(const StringContent&) const { return  -1; }
-	virtual int  compareList(const ListContent&)     const { return  -1; }
-	virtual int  compareTime(const TimeContent&)         const { return  -1; }
-	virtual int  compareDate(const DateContent&)         const { return  -1; }
-	virtual int  compareDateTime(const DateTimeContent&) const { return  -1; }
+    virtual void value(bool& n)                 const { Content::value(n); }
+    virtual void value(long long& n)            const { Content::value(n); }
+    virtual void value(double& n)               const { Content::value(n); }
+    virtual void value(string& n)               const { Content::value(n); }
+    virtual void value(Date& n)                 const { Content::value(n); }
+    virtual void value(Time& n)                 const { Content::value(n); }
+    virtual void value(DateTime& n)             const { Content::value(n); }
+    virtual void value(vector<Value>& n)        const;
+    virtual void value(map<Value,Value>& n)     const { Content::value(n); }
 
-	virtual Content* add(const Content&)        const;
+    virtual int  compareBool(const BoolContent&)            const {return -1; }
+    virtual int  compareNumber(const NumberContent&)        const {return -1; }
+    virtual int  compareDouble(const DoubleContent&)        const {return -1; }
+    virtual int  compareString(const StringContent&)        const {return -1; }
+    virtual int  compareNil(const NilContent&)              const;
+    virtual int  compareList(const ListContent&)            const {return 1; }
+    virtual int  compareMap(const MapContent&)              const {return 1; }
+    virtual int  compareDate(const DateContent&)            const {return 1; }
+    virtual int  compareTime(const TimeContent&)            const {return 1; }
+    virtual int  compareDateTime(const DateTimeContent&)    const {return 1; }
+
+    virtual Content* add(const Content&) const;
 	virtual Content* sub(const Content&) const;
 	virtual Content* mul(const Content&) const;
 	virtual Content* div(const Content&) const;
+    virtual Content* mod(const Content&) const;
 
 	virtual Content* addNil(const NilContent&)  const;
 	virtual Content* subNil(const NilContent&)  const;
@@ -61,6 +69,7 @@ protected:
 	virtual bool     isNil()     const  { return true; }
 	virtual string   typeName()  const  { return "Nil"; }
 	virtual void     print(ostream&) const;
+    virtual void   json(JSON&)     const;
 
 	// From Streamable
 

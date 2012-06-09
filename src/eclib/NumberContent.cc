@@ -11,25 +11,27 @@
 
 #include "eclib/NumberContent.h"
 #include "eclib/Translator.h"
+#include "eclib/DoubleContent.h"
+#include "eclib/JSON.h"
 
 ClassSpec NumberContent::classSpec_ = {&Content::classSpec(),"NumberContent",};
 Reanimator<NumberContent> NumberContent::reanimator_;
 
 NumberContent::NumberContent(long long l): 
-	num_(l)     
+    value_(l)
 {
 }
 
 NumberContent::NumberContent(Stream& s):
 	Content(s)
 {
-	s >> num_;
+    s >> value_;
 }
 
 void NumberContent::encode(Stream& s) const
 {
 	Content::encode(s);
-	s << num_;
+    s << value_;
 }
 
 NumberContent::~NumberContent()
@@ -38,7 +40,12 @@ NumberContent::~NumberContent()
 
 void NumberContent::print(ostream& s) const
 {
-	s << num_;
+    s << value_;
+}
+
+void NumberContent::json(JSON& s) const
+{
+    s << value_;
 }
 
 int NumberContent::compare(const Content& other) const
@@ -48,9 +55,7 @@ int NumberContent::compare(const Content& other) const
 
 int NumberContent::compareNumber(const NumberContent& other) const
 {
-	// num_ can be a long long
-	// return num_ - other.num_;
-	long long dif = (num_ - other.num_);
+    long long dif = (value_ - other.value_);
 	if(dif == 0)
 		return dif;
 	if(dif<0)
@@ -59,14 +64,29 @@ int NumberContent::compareNumber(const NumberContent& other) const
 	return 1;
 }
 
+int NumberContent::compareDouble(const DoubleContent& other) const
+{
+    double dif = (value_ - other.value_);
+    if(dif == 0)
+        return dif;
+    if(dif<0)
+        return -1;
+    return 1;
+}
+
 void NumberContent::value(long long& l) const 
 { 
-	l = num_; 
+    l = value_;
+}
+
+void NumberContent::value(double& l) const
+{
+    l = value_;
 }
 
 void NumberContent::value(string& s) const 
 { 
-	s = Translator<long long,string>()(num_); 
+    s = Translator<long long,string>()(value_);
 }
 
 Content* NumberContent::add(const Content& other) const
@@ -76,7 +96,7 @@ Content* NumberContent::add(const Content& other) const
 
 Content* NumberContent::addNumber(const NumberContent& other) const
 {
-	return new NumberContent(other.num_ + num_);
+    return new NumberContent(other.value_ + value_);
 }
 
 Content* NumberContent::sub(const Content& other) const
@@ -86,7 +106,7 @@ Content* NumberContent::sub(const Content& other) const
 
 Content* NumberContent::subNumber(const NumberContent& other) const
 {
-	return new NumberContent(other.num_ - num_);
+    return new NumberContent(other.value_ - value_);
 }
 
 Content* NumberContent::mul(const Content& other) const
@@ -94,9 +114,14 @@ Content* NumberContent::mul(const Content& other) const
 	return other.mulNumber(*this);
 }
 
+Content* NumberContent::mod(const Content& other) const
+{
+    return other.modNumber(*this);
+}
+
 Content* NumberContent::mulNumber(const NumberContent& other) const
 {
-	return new NumberContent(other.num_ * num_);
+    return new NumberContent(other.value_ * value_);
 }
 
 Content* NumberContent::div(const Content& other) const
@@ -106,6 +131,10 @@ Content* NumberContent::div(const Content& other) const
 
 Content* NumberContent::divNumber(const NumberContent& other) const
 {
-	return new NumberContent(other.num_ / num_);
+    return new NumberContent(other.value_ / value_);
 }
 
+Value NumberContent::negate() const
+{
+    return Value(-value_);
+}

@@ -14,6 +14,9 @@
 #include "eclib/NilContent.h"
 #include "eclib/NumberContent.h"
 #include "eclib/StringContent.h"
+#include "eclib/BoolContent.h"
+#include "eclib/DoubleContent.h"
+#include "eclib/MapContent.h"
 #include "eclib/Value.h"
 #include "eclib/Length.h"
 #include "eclib/PathName.h"
@@ -24,10 +27,54 @@ Value::Value():
 	content_->attach();
 }
 
+Value::Value(int l):
+    content_(new NumberContent(l))
+{
+    content_->attach();
+}
+
 Value::Value(long long l):
 	content_(new NumberContent(l))
 {
 	content_->attach();
+}
+
+Value::Value(unsigned long long l):
+    content_(new NumberContent(l))
+{
+    content_->attach();
+}
+
+Value::Value(unsigned long l):
+    content_(new NumberContent(l))
+{
+    content_->attach();
+}
+
+
+Value::Value(unsigned int l):
+    content_(new NumberContent(l))
+{
+    content_->attach();
+}
+
+Value::Value(long l):
+    content_(new NumberContent(l))
+{
+    content_->attach();
+}
+
+
+Value::Value(bool l):
+    content_(new BoolContent(l))
+{
+    content_->attach();
+}
+
+Value::Value(double l):
+    content_(new DoubleContent(l))
+{
+    content_->attach();
 }
 
 Value::Value(const string& s):
@@ -131,14 +178,40 @@ Value& Value::operator/=(const Value& v)
 	return *this;
 }
 
+Value Value::operator%(const Value& v) const
+{
+    return Value(content_->mod(*(v.content_)));
+}
+
+Value& Value::operator%=(const Value& v)
+{
+    *this = *this % v;
+    return *this;
+}
+
 Value Value::makeList()
 {
 	return Value(new ListContent());
 }
 
+Value Value::makeMap()
+{
+    return Value(new MapContent());
+}
+
+Value Value::makeMap(const map<Value, Value> & m)
+{
+    return Value(new MapContent(m));
+}
+
 Value Value::makeList(const Value& v)
 {
 	return Value(new ListContent(v));
+}
+
+Value Value::makeList(const vector<Value>& v)
+{
+    return Value(new ListContent(v));
 }
 
 Value::Value(const ValueList& v):
@@ -185,3 +258,26 @@ Value::operator ValueList() const
 	content_->value(v); 
 	return v; 
 }
+
+
+Value Value::operator[](const Value& key) const
+{
+    return content_->element(key);
+}
+
+Value Value::operator[](const char* key) const
+{
+    return content_->element(Value(string(key)));
+}
+
+
+Value Value::operator[](int key) const
+{
+    return content_->element(Value(key));
+}
+
+Value Value::operator-() const
+{
+    return content_->negate();
+}
+

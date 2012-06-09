@@ -55,6 +55,8 @@ public:
 	// None
     //
 
+    JSON& null();
+
     JSON& startObject();
     JSON& endObject();
 

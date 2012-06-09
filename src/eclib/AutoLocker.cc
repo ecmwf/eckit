@@ -10,8 +10,11 @@
 
 /* #define CHECK_DEAD_LOCKS */
 
+
 #include "eclib/AutoLock.h"
 #include "eclib/Mutex.h"
+
+#ifdef CHECK_DEAD_LOCKS
 
 typedef map<void*,pthread_t,less<void*> > GotMap;
 typedef map<pthread_t,void*,less<pthread_t> > WantMap;
@@ -31,9 +34,7 @@ static void lock()
 
 static void unlock()
 {
-#ifdef CHECK_DEAD_LOCKS
 	mutex->unlock();
-#endif
 }
 
 static void init(void)
@@ -43,7 +44,7 @@ static void init(void)
 	gotMap  = new GotMap;
 	pthread_atfork(lock,unlock,unlock);
 }
-
+#endif
 
 void AutoLocker::want(void* resource)
 {
@@ -89,6 +90,7 @@ void AutoLocker::release(void* resource)
 #endif
 }
 
+#ifdef CHECK_DEAD_LOCKS
 static void visit(pthread_t p, Set& s,void *resource)
 {
 	if(s.find(p) != s.end())
@@ -109,9 +111,12 @@ static void visit(pthread_t p, Set& s,void *resource)
 
 	s.erase(p);
 }
+#endif
 
 void AutoLocker::analyse(void *resource)
 {
+#ifdef CHECK_DEAD_LOCKS
 	Set set;
 	visit(pthread_self(),set,resource);
+#endif
 }

@@ -10,6 +10,7 @@
 
 
 #include "eclib/ListContent.h"
+#include "eclib/JSON.h"
 
 ClassSpec ListContent::classSpec_ = {&Content::classSpec(),"ListContent",};
 Reanimator<ListContent>  ListContent::reanimator_;
@@ -21,12 +22,12 @@ ListContent::ListContent()
 
 ListContent::ListContent(const vector<Value>& v)
 {
-	::copy(v.begin(),v.end(),back_inserter(values_));
+    ::copy(v.begin(),v.end(),back_inserter(value_));
 }
 
 ListContent::ListContent(const Value& v)
 {
-	values_.push_back(v);
+    value_.push_back(v);
 }
 
 ListContent::ListContent(Stream& s):
@@ -35,17 +36,17 @@ ListContent::ListContent(Stream& s):
 	long count;
 	s >> count;
 	for(int i = 0; i< count; i++)
-		values_.push_back(Value(s));
+        value_.push_back(Value(s));
 
 }
 
 void ListContent::encode(Stream& s) const
 {
 	Content::encode(s);
-	long count = values_.size();
+    long count = value_.size();
 	s << count;
 	for(int i = 0; i < count; ++i)
-		s << values_[i]; 
+        s << value_[i];
 
 }
 
@@ -55,7 +56,7 @@ ListContent::~ListContent()
 
 void ListContent::value(vector<Value>& v) const
 {
-	v = values_;
+    v = value_;
 }
 
 int ListContent::compare(const Content& other)const
@@ -65,31 +66,40 @@ int ListContent::compare(const Content& other)const
 
 int ListContent::compareList(const ListContent& other) const
 {
-	long size      = values_.size();
-	long othersize = other.values_.size();
+    if(value_ == other.value_)
+        return 0;
+    if(value_ < other.value_)
+        return -1;
+    return 1;
 
-	long s = min(size,othersize);
-	int  c = 0;
-
-	for(long i = 0; i < s; ++i)
-		if((c = values_[i].compare(other.values_[i])))
-			return c;
-
-	return size - othersize;
 }
+
+void ListContent::json(JSON& s) const
+{
+    s.startList();
+
+    for(int i = 0; i < value_.size(); i++)
+	{
+        s << value_[i];
+	}
+
+    s.endList();
+}
+
 
 void ListContent::print(ostream& s) const
 {
-	s << '(';
+    s << '(';
 
-	for(int i = 0; i < values_.size(); i++)
-	{
-		if(i>0) s << ',';
-		s << values_[i]; 
-	}
+    for(int i = 0; i < value_.size(); i++)
+    {
+        if(i>0) s << ',';
+        s << value_[i];
+    }
 
-	s << ')';
+    s << ')';
 }
+
 
 Content* ListContent::add(const Content& other) const
 {
@@ -99,55 +109,77 @@ Content* ListContent::add(const Content& other) const
 Content* ListContent::addList(const ListContent& other) const
 {
 	vector<Value> tmp;
-	::copy(other.values_.begin(),other.values_.end(),back_inserter(tmp));
-	::copy(values_.begin(),values_.end(),back_inserter(tmp));
+    ::copy(other.value_.begin(),other.value_.end(),back_inserter(tmp));
+    ::copy(value_.begin(),value_.end(),back_inserter(tmp));
 	return new ListContent(tmp);
 }
 
 Content* ListContent::sub(const Content& other) const
 {
-	NOTIMP;
-	return 0;
+    return other.subList(*this);
 }
 
 Content* ListContent::mul(const Content& other) const
 {
-	NOTIMP;
-	return 0;
+    return other.mulList(*this);
 }
 
 Content* ListContent::div(const Content& other) const
 {
-	NOTIMP;
-	return 0;
+    return other.divList(*this);
 }
+
+Content* ListContent::mod(const Content& other) const
+{
+    return other.modList(*this);
+}
+
 
 void ListContent::value(long long& n) const 
 {
-	if(values_.size() == 1) n = values_[0];
+    if(value_.size() == 1) n = value_[0];
 	else Content::value(n);
+}
+
+void ListContent::value(bool& n) const
+{
+    if(value_.size() == 1) n = value_[0];
+    else Content::value(n);
+}
+
+void ListContent::value(double& n) const
+{
+    if(value_.size() == 1) n = value_[0];
+    else Content::value(n);
 }
 
 void ListContent::value(string& n) const 
 {
-	if(values_.size() == 1) n = string(values_[0]); 
+    if(value_.size() == 1) n = string(value_[0]);
 	else Content::value(n); 
 }
 
 void ListContent::value(Date& n) const 
 { 
-	if(values_.size() == 1) n = values_[0]; 
+    if(value_.size() == 1) n = value_[0];
 	else Content::value(n); 
 }
 
 void ListContent::value(Time& n) const 
 { 
-	if(values_.size() == 1) n = values_[0]; 
+    if(value_.size() == 1) n = value_[0];
 	else Content::value(n); 
 }
 
 void ListContent::value(DateTime& n) const 
 { 
-	if(values_.size() == 1) n = values_[0]; 
+    if(value_.size() == 1) n = value_[0];
 	else Content::value(n); 
+}
+
+Value& ListContent::element(const Value& v)
+{
+    long long n = v;
+    ASSERT(n >=0 && n < value_.size());
+    return value_.at(n);
 }

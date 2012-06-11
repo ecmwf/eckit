@@ -14,6 +14,7 @@
 #ifndef ThreadPool_H
 #define ThreadPool_H
 
+#include "eclib/machine.h"
 #include "eclib/MutexCond.h"
 
 class ThreadPoolTask {

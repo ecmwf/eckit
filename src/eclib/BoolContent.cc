@@ -39,7 +39,7 @@ BoolContent::~BoolContent()
 
 void BoolContent::print(ostream& s) const
 {
-    s << value_ ? "true" : "false";
+    s << ( value_ ? "true" : "false" );
 }
 
 void BoolContent::json(JSON& s) const

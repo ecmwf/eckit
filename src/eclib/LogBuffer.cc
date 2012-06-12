@@ -14,6 +14,7 @@
 #include "eclib/Logger.h"
 #include "eclib/LogBuffer.h"
 #include "eclib/Monitor.h"
+#include "eclib/AutoLock.h"
 
 LogStream::LogStream(Logger* logger):
     ostream( new LogBuffer( logger ) )
@@ -40,17 +41,20 @@ LogBuffer::LogBuffer( Logger* logger ) :
 
 void LogBuffer::source(const CodeLocation &where)
 {
+    AutoLock<Mutex> lock(mutex_);
     logger_->location(where);
 }
 
 LogBuffer::~LogBuffer()
 {
+    AutoLock<Mutex> lock(mutex_);
     dumpBuffer();
     logger_->out() << flush;
 }
 
 int	LogBuffer::overflow(int c)
 {
+    AutoLock<Mutex> lock(mutex_);
     if (c == EOF) {
         sync();
         return 0;
@@ -64,6 +68,7 @@ int	LogBuffer::overflow(int c)
 
 int	LogBuffer::sync()
 {
+    AutoLock<Mutex> lock(mutex_);
     dumpBuffer();
     start_ = true;
     logger_->out() << flush;
@@ -74,6 +79,7 @@ static void _debug(const char*,const char*);
 
 void LogBuffer::dumpBuffer(void)
 {
+    AutoLock<Mutex> lock(mutex_);
     Monitor::out(pbase(),pptr());
     
     const char *p = pbase();

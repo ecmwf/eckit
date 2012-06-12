@@ -33,6 +33,9 @@ public:
 	void detach();
 	unsigned long count() const { return count_; }
 
+	void lock()   { mutex_.lock(); }
+	void unlock() { mutex_.unlock(); }
+
 // -- Operators
 
 //	void *operator new(size_t s)  { return MemoryPool::fastAllocate(s);}
@@ -53,6 +56,15 @@ private:
 
 	unsigned long count_;
 	Mutex mutex_;
+};
+
+class AutoAttach {
+    Counted& counted_;
+public:
+
+    AutoAttach(Counted& counted) : counted_(counted) { counted_.attach(); }
+    ~AutoAttach()  { counted_.detach(); }
+
 };
 
 #endif

@@ -36,7 +36,7 @@ public: // interface methods
     virtual std::string home() const = 0;    
     
     virtual long taskId() const = 0;
-    
+
     virtual Logger* createInfoLogger() = 0;
     virtual Logger* createDebugLogger() = 0;
     virtual Logger* createWarningLogger() = 0;

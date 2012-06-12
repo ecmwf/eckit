@@ -9,10 +9,15 @@
  */
 
 #include "eclib/Application.h"
+#include "eclib/AutoLock.h"
+#include "eclib/Mutex.h"
 #include "eclib/PathName.h"
 #include "eclib/Resource.h"
 #include "eclib/RotLogger.h"
 #include "eclib/TimeStamp.h"
+
+
+static Mutex mutex;
 
 static ofstream* last     = 0;
 static time_t   lastTime  = 0;
@@ -27,6 +32,8 @@ RotLogger::~RotLogger()
 
 std::ostream& RotLogger::out()
 {
+    AutoLock<Mutex> lock(mutex);
+
     time_t now = ::time(0) / 86400;
     if(now != lastTime || last == 0)
     {

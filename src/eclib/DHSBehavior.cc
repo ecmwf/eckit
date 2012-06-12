@@ -18,11 +18,13 @@
 #include "eclib/Resource.h"
 #include "eclib/RotLogger.h"
 
-DHSBehavior::DHSBehavior()
+DHSBehavior::DHSBehavior() :
+    taskId_(0)
 {
     try 
     {
         Monitor::startup();
+        taskId_ = Monitor::self();
 	}
 	catch(exception& e) {
 		std::cerr << "** " << e.what() << " Caught in " << Here() <<  std::endl;
@@ -47,7 +49,7 @@ string DHSBehavior::home() const
 
 long DHSBehavior::taskId() const
 {
-    return Monitor::self();
+    return taskId_;
 }
 
 bool DHSBehavior::toFile()

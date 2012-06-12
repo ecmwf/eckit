@@ -40,6 +40,7 @@ protected:
     
 private: // members
     
+    long taskId_;
     
 };
 

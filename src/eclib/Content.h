@@ -35,10 +35,10 @@ class DateTime;
 class Value;
 class JSON;
 
+//=============================================================================
+
 // Assuptions for comparisons:
 // Nil < Number < String < List
-
-// =================================================================
 
 class Content : public Counted, public Streamable {
 

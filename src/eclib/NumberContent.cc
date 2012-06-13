@@ -8,11 +8,22 @@
  * does it submit to any jurisdiction.
  */
 
-
-#include "eclib/NumberContent.h"
-#include "eclib/Translator.h"
 #include "eclib/DoubleContent.h"
+#include "eclib/Exceptions.h"
 #include "eclib/JSON.h"
+#include "eclib/NumberContent.h"
+#include "eclib/StrStream.h"
+#include "eclib/Translator.h"
+
+//=============================================================================
+
+class BadBoolConversion:  public Exception { 
+	public: 
+		BadBoolConversion(const string& w):
+			Exception(string("Bad Bool Conversion: ") + w)   {  }
+};
+
+//=============================================================================
 
 ClassSpec NumberContent::classSpec_ = {&Content::classSpec(),"NumberContent",};
 Reanimator<NumberContent> NumberContent::reanimator_;
@@ -72,6 +83,18 @@ int NumberContent::compareDouble(const DoubleContent& other) const
     if(dif<0)
         return -1;
     return 1;
+}
+
+void NumberContent::value(bool& b) const 
+{ 
+    if( value_ != 1 && value_ != 0 )
+    {
+        StrStream s;
+        s << "Cannot convert " << *this << " (" << typeName() << ") to bool because value [" << value_ << "] is not 0 or 1" << StrStream::ends;
+        throw BadBoolConversion( s.str() );
+    }
+    else
+        b = value_;
 }
 
 void NumberContent::value(long long& l) const 

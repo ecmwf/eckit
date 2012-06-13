@@ -33,6 +33,8 @@ ecbuild_declare_project()
 ###############################################################################
 # contents
 
+ecbuild_find_project_files()
+
 if( NOT ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     set( ECLIB_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src PARENT_SCOPE )
     set( ECLIB_LIBRARIES      Ec   PARENT_SCOPE )

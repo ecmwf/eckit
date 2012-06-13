@@ -14,6 +14,8 @@ BasePathNameT.cc
 BasePathNameT.h
 BigNum.cc
 BigNum.h
+BoolContent.h
+BoolContent.cc
 BTree.cc
 BTree.h
 JSONParser.cc
@@ -197,8 +199,6 @@ NumberContent.cc
 NumberContent.h
 DoubleContent.cc
 DoubleContent.h
-BoolContent.cc
-BoolContent.h
 MapContent.cc
 MapContent.h
 Offset.cc

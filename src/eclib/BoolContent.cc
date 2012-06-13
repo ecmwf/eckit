@@ -72,6 +72,16 @@ void BoolContent::value(string& s) const
     s = value_ ? "true" : "false";
 }
 
+void BoolContent::value(long long& l) const
+{ 
+    l = value_;
+}
+
+void BoolContent::value(double& d) const
+{ 
+    d = value_;
+}
+
 Content* BoolContent::add(const Content& other) const
 {
     return other.addBool(*this);

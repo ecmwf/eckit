@@ -538,7 +538,7 @@ void BTree<K,V,S>::loadPage(unsigned long page, Page& p) const
 
     _loadPage(page, p);
 
-    //if(cacheReads_) 
+    if(cacheReads_)
     {
         Page* q = new Page();
         memcpy(q, &p, sizeof(Page));
@@ -576,7 +576,7 @@ void BTree<K,V,S>::savePage(const Page& p)
         return;
     }
 
-    //if(cacheReads_)
+    if(cacheWrites_)
     {
         Page* q = new Page();
         memcpy(q, &p, sizeof(Page));
@@ -617,6 +617,7 @@ void BTree<K,V,S>::newPage(Page& p)
 {
     _newPage(p);
 
+    if(cacheReads_ || cacheWrites_)
 	{
 		Page* q = new Page();
 		memcpy(q, &p, sizeof(Page));

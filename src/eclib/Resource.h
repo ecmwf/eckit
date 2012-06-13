@@ -81,9 +81,12 @@ public:
     Resource(Configurable* owner,const string& str,const T& value):
 		ResourceBase(owner,str), value_(value) {}
 
+    // returns a copy of the resource value
+    T value() { init(); return value_; }
+    
 // -- Convertors
 
-	operator T&()                { init(); return value_;        }
+	operator T&()                { init(); return value_; }
 
 private:
 

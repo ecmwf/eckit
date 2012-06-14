@@ -39,18 +39,30 @@ MutexCond::~MutexCond()
 
 void MutexCond::lock()
 {
+	if(!inited_){
+		cout << "MutexCond::lock: object not initialised" << endl;
+		abort();
+	}
 	ASSERT(inited_);
 	THRCALL(pthread_mutex_lock(&mutex_));
 }
 
 void MutexCond::unlock()
 {
+	if(!inited_){
+		cout << "MutexCond::lock: object not initialised" << endl;
+		abort();
+	}
 	ASSERT(inited_);
 	THRCALL(pthread_mutex_unlock(&mutex_));
 }
 
 void MutexCond::wait()
 {
+	if(!inited_){
+		cout << "MutexCond::lock: object not initialised" << endl;
+		abort();
+	}
 	ASSERT(inited_);
 //	AutoState x('.');
 	THRCALL(pthread_cond_wait(&cond_,&mutex_));
@@ -58,6 +70,10 @@ void MutexCond::wait()
 
 bool MutexCond::wait(int sec)
 {
+	if(!inited_){
+		cout << "MutexCond::lock: object not initialised" << endl;
+		abort();
+	}
 	ASSERT(inited_);
 //	AutoState x(':');
 	timespec timeout = { ::time(0) + sec ,0};
@@ -68,12 +84,20 @@ bool MutexCond::wait(int sec)
 
 void MutexCond::signal()
 {
+	if(!inited_){
+		cout << "MutexCond::lock: object not initialised" << endl;
+		abort();
+	}
 	ASSERT(inited_);
 	pthread_cond_signal(&cond_);
 }
 
 void MutexCond::broadcast()
 {
+	if(!inited_){
+		cout << "MutexCond::lock: object not initialised" << endl;
+		abort();
+	}
 	ASSERT(inited_);
 	pthread_cond_broadcast(&cond_);
 }

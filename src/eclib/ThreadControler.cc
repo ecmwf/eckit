@@ -39,7 +39,9 @@ ThreadControler::~ThreadControler()
 	}
 	else
 	{
+        Log::warning() << "Deleting Thread in ThreadControler::~ThreadControler()" << endl;
 		delete proc_;
+        proc_ = 0;
 	}
 }
 
@@ -56,7 +58,6 @@ void ThreadControler::execute()
 
 	//============
 
-	Thread *proc = proc_;
 
 	{ // Signal that we are running
 
@@ -78,16 +79,18 @@ void ThreadControler::execute()
 	sigaddset(&set, SIGCHLD);
 	sigaddset(&set, SIGPIPE);
 
-#ifdef IBM
+#ifdef XXXXIBM
 	SYSCALL(sigthreadmask(SIG_BLOCK, &set, &old_set));
 #else
-	SYSCALL(pthread_sigmask(SIG_BLOCK, &set, &old_set));
+    THRCALL(pthread_sigmask(SIG_BLOCK, &set, &old_set));
 #endif
 
 	//=============
 
+    ASSERT(proc_);
+
 	try {
-		proc->run();
+        proc_->run();
 	}
 	catch(exception& e){
 		Log::error() << "** " << e.what() << " Caught in " 
@@ -96,21 +99,18 @@ void ThreadControler::execute()
 			<< pthread_self() << endl;
 	}
 
-
-#ifdef linux
-	if(proc->data_)
-		MemoryPool::largeDeallocate(proc->data_);
-#endif
-
-	if(proc->autodel_)
-		delete proc;
+    if(proc_->autodel_)
+    {
+        delete proc_;
+        proc_ = 0;
+    }
 
 
 }
 
 void *ThreadControler::startThread(void *data)
 {
-	((ThreadControler*)data)->execute(); // static_cast or dynamic_cast ??
+    static_cast<ThreadControler*>(data)->execute(); // static_cast or dynamic_cast ??
 	return 0;
 }
 
@@ -121,28 +121,10 @@ void ThreadControler::start()
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 
-
-#ifdef linux
-
-	proc_->data_ = 0;
-
-#if 0
-	const size_t size = 2*1024*1024;
-	void *stack = MemoryPool::largeAllocate(size);
-
-	pthread_attr_setstacksize(&attr,size);
-	pthread_attr_setstackaddr(&attr,(char*)stack + size);
-
-	proc_->data_ = stack;
-#endif
-
-#endif
-
-
 	if(detached_)
-		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+        THRCALL(pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED));
 	else
-		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+        THRCALL(pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE));
 
 	AutoLock<MutexCond> lock(cond_);
 

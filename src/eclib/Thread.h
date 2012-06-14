@@ -51,9 +51,6 @@ private:
 
 	bool    stop_;
 	bool    autodel_;
-#ifdef linux
-	void*   data_;
-#endif
 
 // -- Methods
 	

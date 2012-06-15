@@ -11,7 +11,8 @@
 #include <stdlib.h>
 
 #include "eclib/Application.h"
-#include "eclib/DHSBehavior.h"
+#include "eclib/DHSBehaviorLogFile.h"
+#include "eclib/DHSBehaviorStdout.h"
 #include "eclib/Log.h"
 #include "eclib/Monitor.h"
 #include "eclib/PathName.h"
@@ -84,7 +85,10 @@ Application::Application(int argc,char **argv)
 {
 	name_ = PathName(argv[0]).baseName(false);
     
-    Context::instance().setup( argc, argv, new DHSBehavior() );
+    if(getenv("DHS_FILE_LOGGING") && atoi(getenv("DHS_FILE_LOGGING")))
+        Context::instance().setup( argc, argv, new DHSBehaviorLogFile() );
+    else
+        Context::instance().setup( argc, argv, new DHSBehaviorStdout(std::cout) );
     
 	// mallopt(M_DISCLAIM,0);
 	::srand(::getpid() + ::time(0));

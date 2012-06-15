@@ -52,65 +52,34 @@ long DHSBehavior::taskId() const
     return taskId_;
 }
 
-bool DHSBehavior::toFile()
-{
-    return Resource<bool>("$DHS_FILE_LOGGING",false);
-}
-
 Logger* DHSBehavior::createInfoLogger()
 {
-    DHSLogger * logger = 0;
-    if( ! toFile() )    
-        logger = new DHSStdLogger( std::cout );
-    else
-        logger = new RotLogger(); 
-    
+    DHSLogger * logger = getLogger();
     logger->prefix("(I) ");
-    
     return logger;
 }
 
 Logger* DHSBehavior::createDebugLogger()
 {    
-    DHSLogger * logger = 0;
-    if( ! toFile() )  
-        logger = new DHSStdLogger( std::cout );
-    else
-        logger = new RotLogger();        
-    
+    DHSLogger * logger = getLogger();
     logger->prefix("(D) ");
-    
     return logger;
 }
 
 Logger* DHSBehavior::createWarningLogger()
 {    
-    DHSLogger * logger = 0;
-    if( ! toFile() )    
-        logger = new DHSStdLogger( std::cerr );
-    else
-        logger = new RotLogger();        
-    
+    DHSLogger * logger = getLogger();
     logger->prefix("(W) ");
     logger->setColor(&Colour::yellow);
     logger->resetColor(&Colour::reset);
-    
     return logger;
 }
 
 Logger* DHSBehavior::createErrorLogger()
 {    
-    DHSLogger * logger = 0;
-    if( ! toFile() )    
-        logger = new DHSStdLogger( std::cerr );
-    else
-        logger = new RotLogger();        
-    
+    DHSLogger * logger = getLogger();
     logger->prefix("(E) ");
     logger->setColor(&Colour::red);
     logger->resetColor(&Colour::reset);
-    
     return logger;
 }
-
-

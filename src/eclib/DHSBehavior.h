@@ -13,6 +13,8 @@
 
 #include "eclib/ContextBehavior.h"
 
+class DHSLogger;
+
 class DHSBehavior : public ContextBehavior {
 public:
 
@@ -24,8 +26,11 @@ public:
 
     ~DHSBehavior();
     
-public: // interface methods
     
+private: // members
+    
+    long taskId_;
+
     virtual std::string home() const;
     virtual long taskId() const;
     
@@ -34,13 +39,7 @@ public: // interface methods
     virtual Logger* createWarningLogger();
     virtual Logger* createErrorLogger();
 
-protected:
-    
-    bool toFile();
-    
-private: // members
-    
-    long taskId_;
+    virtual DHSLogger* getLogger() = 0;
     
 };
 

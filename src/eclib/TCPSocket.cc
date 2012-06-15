@@ -129,7 +129,7 @@ long TCPSocket::write(const void *buf,long length)
     return sent;
 }
 
-static  Resource<long> socketSelectTimeout("socketSelectTimeout", 0);
+//static  Resource<long> socketSelectTimeout("socketSelectTimeout", 0);
 
 long TCPSocket::read(void *buf,long length)
 {
@@ -139,10 +139,13 @@ long TCPSocket::read(void *buf,long length)
     char *p = (char*)buf;
     bool nonews = false;
 
+
     while(length > 0)
     {
-        Select select(socket_);
 
+        long len = -1;
+#if 0
+        Select select(socket_);
         bool more = socketSelectTimeout > 0;
         while(more)
         {
@@ -172,7 +175,7 @@ long TCPSocket::read(void *buf,long length)
             }
         }
 
-        long len = -1;
+        len = -1;
 
         if(nonews)
         {
@@ -181,6 +184,7 @@ long TCPSocket::read(void *buf,long length)
             len = ::read(socket_,p,length);
         }
         else
+#endif
             len = ::read(socket_,p,length);
 
         if(len <  0) {

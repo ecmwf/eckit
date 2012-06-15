@@ -84,6 +84,10 @@ DblBuffer.cc
 DblBuffer.h
 DHSBehavior.cc
 DHSBehavior.h
+DHSBehaviorLogFile.cc
+DHSBehaviorLogFile.h
+DHSBehaviorStdout.cc
+DHSBehaviorStdout.h
 DHSLogger.cc
 DHSLogger.h
 DHSStdLogger.cc

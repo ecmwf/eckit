@@ -11,6 +11,10 @@
 #include "eclib/DHSLogger.h"
 #include "eclib/Monitor.h"
 #include "eclib/TimeStamp.h"
+#include "eclib/AutoLock.h"
+#include "eclib/Mutex.h"
+
+static Mutex mutex;
 
 DHSLogger::DHSLogger() :
     begin_(noop),
@@ -24,6 +28,7 @@ DHSLogger::~DHSLogger()
 
 void DHSLogger::beginLine()
 {       
+    AutoLock<Mutex> lock(mutex);
     out() << begin_
           << setw(3)
           << setfill('0')
@@ -34,6 +39,7 @@ void DHSLogger::beginLine()
 
 void DHSLogger::endLine()
 {
+    AutoLock<Mutex> lock(mutex);
     if(hasLoc_)
     {
         out() << " " << where_;

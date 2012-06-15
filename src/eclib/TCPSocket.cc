@@ -544,7 +544,7 @@ string TCPSocket::addrToHost(in_addr addr)
     hostent *h;
 
 // For some reason, sgi verion of gethostbyname_r is broken
-#if 1
+#ifdef AIX
 
 
 

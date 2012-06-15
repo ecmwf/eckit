@@ -129,6 +129,8 @@ long TCPSocket::write(const void *buf,long length)
     return sent;
 }
 
+static  Resource<long> socketSelectTimeout("socketSelectTimeout", 0);
+
 long TCPSocket::read(void *buf,long length)
 {
     if(length <= 0 ) return length;
@@ -136,7 +138,6 @@ long TCPSocket::read(void *buf,long length)
     long received = 0;
     char *p = (char*)buf;
     bool nonews = false;
-	static long socketSelectTimeout = Resource<long>("socketSelectTimeout", 0);
 
     while(length > 0)
     {
@@ -543,7 +544,7 @@ string TCPSocket::addrToHost(in_addr addr)
     hostent *h;
 
 // For some reason, sgi verion of gethostbyname_r is broken
-#if 0
+#if 1
 
 
 

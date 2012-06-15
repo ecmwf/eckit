@@ -16,6 +16,12 @@
 #include "eclib/Monitor.h"
 #include "eclib/AutoLock.h"
 
+// This is a mutex that serialize all calls to LogStream
+// This is overkilled, but it protects cout and cerr.
+// Unfortinatly, it will also serialize other usage of this class (e.g. sockets...)
+
+static Mutex mutex;
+
 LogStream::LogStream(Logger* logger):
     ostream( new LogBuffer( logger ) )
 {
@@ -41,20 +47,20 @@ LogBuffer::LogBuffer( Logger* logger ) :
 
 void LogBuffer::source(const CodeLocation &where)
 {
-    AutoLock<Mutex> lock(mutex_);
+    AutoLock<Mutex> lock(mutex);
     logger_->location(where);
 }
 
 LogBuffer::~LogBuffer()
 {
-    AutoLock<Mutex> lock(mutex_);
+    AutoLock<Mutex> lock(mutex);
     dumpBuffer();
     logger_->out() << flush;
 }
 
 int	LogBuffer::overflow(int c)
 {
-    AutoLock<Mutex> lock(mutex_);
+    AutoLock<Mutex> lock(mutex);
     if (c == EOF) {
         sync();
         return 0;
@@ -68,7 +74,7 @@ int	LogBuffer::overflow(int c)
 
 int	LogBuffer::sync()
 {
-    AutoLock<Mutex> lock(mutex_);
+    AutoLock<Mutex> lock(mutex);
     dumpBuffer();
     start_ = true;
     logger_->out() << flush;
@@ -79,7 +85,7 @@ static void _debug(const char*,const char*);
 
 void LogBuffer::dumpBuffer(void)
 {
-    AutoLock<Mutex> lock(mutex_);
+    AutoLock<Mutex> lock(mutex);
     Monitor::out(pbase(),pptr());
     
     const char *p = pbase();

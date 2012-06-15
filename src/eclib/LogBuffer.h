@@ -19,7 +19,6 @@
 #include "eclib/machine.h"
 
 #include "eclib/Context.h"
-#include "eclib/Mutex.h"
 
 class Logger;
 
@@ -43,7 +42,6 @@ public:
 private:
 
   std::auto_ptr<Logger> logger_;
-  Mutex mutex_;
   
   bool      start_;
   

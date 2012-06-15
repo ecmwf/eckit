@@ -31,7 +31,7 @@ public:
 
 // -- Contructors
 
-	ThreadPool(const string& name, int count);
+    ThreadPool(const string& name, int count, size_t stack = 0);
 
 // -- Destructor
 

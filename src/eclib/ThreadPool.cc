@@ -69,7 +69,7 @@ void ThreadPoolThread::run()
     owner_.notifyEnd();
 }
 
-ThreadPool::ThreadPool(const string& name,int count):
+ThreadPool::ThreadPool(const string& name,int count, size_t stack):
     name_(name),
     count_(count),
     running_(0),
@@ -80,7 +80,7 @@ ThreadPool::ThreadPool(const string& name,int count):
 
     for(int i = 0; i < count ; i++)
     {
-        ThreadControler c(new ThreadPoolThread(*this), true);
+        ThreadControler c(new ThreadPoolThread(*this), true, stack);
         c.start();
     }
 }

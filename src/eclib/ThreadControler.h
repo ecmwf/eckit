@@ -29,7 +29,7 @@ public:
 	
 	// ThreadControler takes ownership of Thread
 
-	ThreadControler(Thread*,bool detached = true);
+    ThreadControler(Thread*,bool detached = true, size_t stack = 0);
 
 // -- Destructor
 	
@@ -61,9 +61,10 @@ private:
 
 // -- Members
 	
-	pthread_t      thread_;
+    pthread_t   thread_;
 	Thread     *proc_;
-	bool           running_;
+    bool        running_;
+    size_t      stack_;
 
 // -- Methods
 	

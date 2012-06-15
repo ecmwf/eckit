@@ -33,7 +33,7 @@ void ThreadPoolThread::run()
     static const char *here = __FUNCTION__;
     Monitor::name(owner_.name());
 
-    Log::info() << "Start of ThreadPoolThread " << endl;
+    //Log::info() << "Start of ThreadPoolThread " << endl;
 
 
     for(;;)
@@ -76,7 +76,7 @@ ThreadPool::ThreadPool(const string& name,int count):
     error_(false)
 {
 
-	Log::info() << "ThreadPool::ThreadPool " << name_ << " " << count << endl;
+    //Log::info() << "ThreadPool::ThreadPool " << name_ << " " << count << endl;
 
     for(int i = 0; i < count ; i++)
     {
@@ -89,7 +89,7 @@ ThreadPool::~ThreadPool()
 {
     static const char *here = __FUNCTION__;
 
-	Log::info() << "ThreadPool::~ThreadPool " << name_ <<  endl;
+    //Log::info() << "ThreadPool::~ThreadPool " << name_ <<  endl;
 
     try {
         waitForThreads();
@@ -109,10 +109,10 @@ void ThreadPool::waitForThreads()
 
 
     AutoLock<MutexCond> lock(done_);
-	Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << endl;
+    //Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << endl;
     while(running_)
 	{	
-		Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << endl;
+        //Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << endl;
         done_.wait();
 	}
 
@@ -128,7 +128,7 @@ void ThreadPool::notifyStart()
     AutoLock<MutexCond> lock(done_);
     running_++;
     done_.signal();
-Log::info() << "ThreadPool::notifyStart " << name_ << " running: " << running_ << endl;
+//Log::info() << "ThreadPool::notifyStart " << name_ << " running: " << running_ << endl;
 }
 
 void ThreadPool::notifyEnd()
@@ -136,7 +136,7 @@ void ThreadPool::notifyEnd()
     AutoLock<MutexCond> lock(done_);
     running_--;
     done_.signal();
-Log::info() << "ThreadPool::notifyEnd " << name_ << " running: " << running_ << endl;
+//Log::info() << "ThreadPool::notifyEnd " << name_ << " running: " << running_ << endl;
 }
 
 void ThreadPool::error(const string& msg)

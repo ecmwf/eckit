@@ -25,10 +25,12 @@ ThreadControler::ThreadControler(Thread* proc,bool detached):
 	running_(false),
 	detached_(detached)
 {
+    //cout << "ThreadControler::ThreadControler(" << this << ")" << " " << hex << pthread_self() <<endl;
 }
 
 ThreadControler::~ThreadControler()
 {
+    //cout << "ThreadControler::~ThreadControler(" << this << ")" << " " <<hex <<  pthread_self() <<endl;
 	AutoLock<MutexCond> lock(cond_);
 
 	if(running_)
@@ -39,7 +41,7 @@ ThreadControler::~ThreadControler()
 	}
 	else
 	{
-        Log::warning() << "Deleting Thread in ThreadControler::~ThreadControler()" << endl;
+        //Log::warning() << "Deleting Thread in ThreadControler::~ThreadControler()" << " " << hex << pthread_self() <<endl;
 		delete proc_;
         proc_ = 0;
 	}
@@ -49,6 +51,11 @@ ThreadControler::~ThreadControler()
 
 void ThreadControler::execute()
 {
+    // Make a copy, because "this" will deasapear
+    Thread* proc = proc_;
+    proc_ = 0;
+
+    //cout << "ThreadControler::execute(" << this << ")" <<  " " << hex << pthread_self() << endl;
 	//=================
 	// Make sure the logs are created...
 
@@ -65,6 +72,8 @@ void ThreadControler::execute()
 		running_ = true;
 		cond_.signal();
 
+        // NOTE: "this" is not valid any more after this point
+
 	}
 
 	//=============
@@ -79,18 +88,14 @@ void ThreadControler::execute()
 	sigaddset(&set, SIGCHLD);
 	sigaddset(&set, SIGPIPE);
 
-#ifdef XXXXIBM
-	SYSCALL(sigthreadmask(SIG_BLOCK, &set, &old_set));
-#else
     THRCALL(pthread_sigmask(SIG_BLOCK, &set, &old_set));
-#endif
 
 	//=============
 
-    ASSERT(proc_);
+    ASSERT(proc);
 
 	try {
-        proc_->run();
+        proc->run();
 	}
 	catch(exception& e){
 		Log::error() << "** " << e.what() << " Caught in " 
@@ -99,23 +104,22 @@ void ThreadControler::execute()
 			<< pthread_self() << endl;
 	}
 
-    if(proc_->autodel_)
+    if(proc->autodel_)
     {
-        delete proc_;
-        proc_ = 0;
+        delete proc;
     }
-
-
 }
 
 void *ThreadControler::startThread(void *data)
 {
-    static_cast<ThreadControler*>(data)->execute(); // static_cast or dynamic_cast ??
+    //cout << "ThreadControler::startThread(" << data << ")" << " " << hex << pthread_self() <<endl;
+    reinterpret_cast<ThreadControler*>(data)->execute(); // static_cast or dynamic_cast ??
 	return 0;
 }
 
 void ThreadControler::start()
 {
+    //cout << "ThreadControler::start(" << this << ")" << " " << hex << pthread_self() <<endl;
 	ASSERT(thread_ == 0);
 
 	pthread_attr_t attr;

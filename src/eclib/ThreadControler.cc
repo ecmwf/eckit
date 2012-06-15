@@ -125,6 +125,17 @@ void ThreadControler::start()
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 
+#ifdef AIX
+	size_t stacksize = 0;
+	THRCALL(pthread_attr_getstacksize(&attr, &stacksize)); 
+	cout << "Stack size is " << stacksize << endl;
+
+	stacksize = 10*1024*1024;
+	THRCALL(pthread_attr_setstacksize(&attr, stacksize));
+
+
+#endif
+
 	if(detached_)
         THRCALL(pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED));
 	else

@@ -38,7 +38,7 @@ TeeHandle::TeeHandle(Stream& s):
 
 	datahandles_.reserve(size);
 
-	for(int i=0; i < size; i++)
+    for(size_t i=0; i < size; i++)
 	{
 		DataHandle* dh = Reanimator<DataHandle>::reanimate(s); ASSERT(dh);
 		datahandles_.push_back(dh);
@@ -49,13 +49,13 @@ void TeeHandle::encode(Stream& s) const
 {
 	DataHandle::encode(s);
 	s << datahandles_.size();
-	for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
 		s << *(datahandles_[i]);
 }
 
 TeeHandle::~TeeHandle() 
 {
-	for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
 		delete datahandles_[i];
 }
 
@@ -72,7 +72,7 @@ Length TeeHandle::openForRead()
 
 void TeeHandle::openForWrite(const Length& length)
 {
-    for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
         datahandles_[i]->openForWrite(length);
 }
 
@@ -89,7 +89,7 @@ long TeeHandle::read(void* buffer,long length)
 long TeeHandle::write(const void* buffer,long length)
 {
     long len = 0;
-    for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
     {
         long l = datahandles_[i]->write(buffer, length);
         if(i) ASSERT(len == l);
@@ -100,7 +100,7 @@ long TeeHandle::write(const void* buffer,long length)
 
 void TeeHandle::close()
 {
-    for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
         datahandles_[i]->close();
 }
 
@@ -116,7 +116,7 @@ void TeeHandle::print(ostream& s) const
 	else 
     {
 		s << "TeeHandle[";
-		for(int i=0;i<datahandles_.size();i++)
+        for(size_t i=0;i<datahandles_.size();i++)
 		{
 			if(i != 0) 
 				s << ",(";
@@ -133,7 +133,7 @@ void TeeHandle::toRemote(Stream &s) const
     s << className();
 	DataHandle::encode(s);
 	s << datahandles_.size();
-	for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
 		datahandles_[i]->toRemote(s);
     s.endObject();
 }
@@ -144,14 +144,14 @@ void TeeHandle::toLocal(Stream &s) const
     s << className();
 	DataHandle::encode(s);
 	s << datahandles_.size();
-	for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
 		datahandles_[i]->toLocal(s);
     s.endObject();
 }
 
 DataHandle* TeeHandle::toLocal()
 {
-    for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
     {
         DataHandle* loc = datahandles_[i]->toLocal();
         if(loc != datahandles_[i])
@@ -165,6 +165,6 @@ DataHandle* TeeHandle::toLocal()
 
 void TeeHandle::cost(map<string,Length>& c, bool read) const
 {
-    for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
         datahandles_[i]->cost(c, read);
 }

@@ -139,7 +139,6 @@ LocalPathName LocalPathName::unique(const LocalPathName& path)
 
 	static string format = "%Y%m%d.%H%M%S";
 
-	char buffer[PATH_MAX+1];
 	static unsigned long long n = (((unsigned long long)::getpid()) << 32);
 
 	string s;
@@ -198,20 +197,24 @@ void LocalPathName::unlink() const
 {
 	Log::info() << "Unlink " << path_ << endl;
 	if(::unlink(path_.c_str()) != 0)
+    {
         if(errno != ENOENT)
             throw FailedSystemCall(string("unlink ") + path_);
         else
             Log::info() << "Unlink failed " << path_ << Log::syserr << endl;
+    }
 }
 
 void LocalPathName::rmdir() const
 {
 	Log::info() << "Rmdir " << path_ << endl;
 	if(::rmdir(path_.c_str()) != 0)
+    {
         if(errno != ENOENT)
             throw FailedSystemCall(string("rmdir ") + path_);
         else
             Log::info() << "Rmdir failed " << path_ << Log::syserr << endl;
+    }
 }
 
 
@@ -306,7 +309,7 @@ LocalPathName& LocalPathName::tidy()
 
 	path_ = "";
 
-	for(int i = 0; i < v.size() ; i++)
+    for(size_t i = 0; i < v.size() ; i++)
 	{
 		path_ += v[i];
 		if(i != v.size() - 1)
@@ -337,7 +340,7 @@ void LocalPathName::match(const LocalPathName& root,vector<LocalPathName>& resul
 
 	// all those call should be members of LocalPathName
 
-	long len = base.length() * 2 + 2;
+    //long len = base.length() * 2 + 2;
 
 	Regex re(base,true);
 
@@ -358,10 +361,12 @@ void LocalPathName::match(const LocalPathName& root,vector<LocalPathName>& resul
 #ifdef EC_HAVE_READDIR_R
 		errno = 0;
 		if(readdir_r(d,&buf,&e) != 0)
+        {
 			if(errno)
 				throw FailedSystemCall("readdir_r");
 			else
 				e = 0;
+        }
 #else
 		e = readdir(d);
 #endif
@@ -408,10 +413,12 @@ void LocalPathName::children(vector<LocalPathName>& files,vector<LocalPathName>&
 #ifdef EC_HAVE_READDIR_R
 		errno = 0;
 		if(readdir_r(d,&buf,&e) != 0)
+        {
 			if(errno)
 				throw FailedSystemCall("readdir_r");
 			else
 				e = 0;
+        }
 #else
 		e = readdir(d);
 #endif

@@ -77,7 +77,7 @@ MappedArray<T>::MappedArray(const PathName& path,unsigned long size):
 		char buf1[sizeof(PaddedHeader)]; memset(buf1,0,sizeof(buf1));
 		char buf2[sizeof(T)];            memset(buf2,0,sizeof(buf2));
 	    SYSCALL(write(fd_,buf1,sizeof(buf1)));
-		for(int i = 0; i < size_ ; i++)
+        for(size_t i = 0; i < size_ ; i++)
 			SYSCALL(write(fd_,buf2,sizeof(buf2)));
 	}
 

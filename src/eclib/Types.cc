@@ -44,7 +44,7 @@ void operator>>(Stream& s,vector<T>& t)
 
 template<class T>
 output_list<T>::output_list(ostream& s):
-	s_(s),first_(true)
+    first_(true), s_(s)
 {
 	s_ << '[';
 }

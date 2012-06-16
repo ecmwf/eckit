@@ -34,7 +34,7 @@ FileName::FileName(const string& path)
     default:
         scheme_ = s[0];
         name_   = s[1];
-        for (int j = 2; j < s.size() ; j++)
+        for (size_t j = 2; j < s.size() ; j++)
             name_ = name_ + ':' + s[j];
         break;
     }

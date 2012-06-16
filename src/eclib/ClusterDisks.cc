@@ -353,7 +353,7 @@ string ClusterDisks::node(const string& path)
                 {
                     const FileSpace &fs = FileSpace::lookUp(tokens[0]);
                     const vector<PathName>& v = fs.fileSystems();
-                    for(int j = 0; j<v.size(); ++j)
+                    for(size_t j = 0; j<v.size(); ++j)
                     {
                         if(path.find(v[j].asString()) == 0)
                         {

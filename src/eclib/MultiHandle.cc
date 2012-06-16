@@ -36,7 +36,7 @@ MultiHandle::MultiHandle(Stream& s):
 
     datahandles_.reserve(size);
 
-    for(int i=0; i < size; i++)
+    for(size_t i=0; i < size; i++)
     {
         DataHandle* dh = Reanimator<DataHandle>::reanimate(s); ASSERT(dh);
         datahandles_.push_back(dh);
@@ -49,14 +49,14 @@ void MultiHandle::encode(Stream& s) const
 {
     DataHandle::encode(s);
     s << datahandles_.size();
-    for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
         s << *(datahandles_[i]);
     s << length_;
 }
 
 MultiHandle::~MultiHandle()
 {
-    for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
         delete datahandles_[i];
 }
 
@@ -140,13 +140,16 @@ void MultiHandle::openForAppend(const Length& )
 void MultiHandle::openCurrent()
 {
     if(current_ != datahandles_.end())
+    {
         if(read_)
         {
             Log::debug() << *(*current_) << endl;
             Log::debug() << "Multi handle: open " << (*current_)->openForRead() << endl;
         }
-        else
+        else {
             (*current_)->openForWrite(*curlen_);
+        }
+    }
 }
 
 long MultiHandle::read1(char* buffer, long length)
@@ -252,7 +255,7 @@ void MultiHandle::print(ostream& s) const
     else
     {
         s << "MultiHandle[";
-        for(int i=0;i<datahandles_.size();i++)
+        for(size_t i=0;i<datahandles_.size();i++)
         {
             if(i != 0)
                 s << ",(";
@@ -282,7 +285,7 @@ bool MultiHandle::merge(DataHandle* other)
 
     // Merge in all datahandles
 
-    for(int i = 0; i < handle->datahandles_.size() ; i++)
+    for(size_t i = 0; i < handle->datahandles_.size() ; i++)
         (*this) += handle->datahandles_[i];
 
     handle->datahandles_.clear();
@@ -298,7 +301,7 @@ bool MultiHandle::compress(bool sorted)
 Length MultiHandle::estimate()
 {
     Length total = 0;
-    for(int i = 0; i < datahandles_.size(); i++)
+    for(size_t i = 0; i < datahandles_.size(); i++)
         total += datahandles_[i]->estimate();
     return total;
 }
@@ -334,7 +337,7 @@ void MultiHandle::toRemote(Stream &s) const
     s << className();
     DataHandle::encode(s);
     s << datahandles_.size();
-    for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
         datahandles_[i]->toRemote(s);
     s << length_;
     s.endObject();
@@ -346,7 +349,7 @@ void MultiHandle::toLocal(Stream &s) const
     s << className();
     DataHandle::encode(s);
     s << datahandles_.size();
-    for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
         datahandles_[i]->toLocal(s);
     s << length_;
     s.endObject();
@@ -354,7 +357,7 @@ void MultiHandle::toLocal(Stream &s) const
 
 DataHandle* MultiHandle::toLocal()
 {
-    for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
     {
         DataHandle* loc = datahandles_[i]->toLocal();
         if(loc != datahandles_[i])
@@ -368,13 +371,13 @@ DataHandle* MultiHandle::toLocal()
 
 void MultiHandle::cost(map<string,Length>& c, bool read) const
 {
-    for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
         datahandles_[i]->cost(c, read);
 }
 
 bool MultiHandle::moveable() const
 {
-    for(int i=0; i < datahandles_.size(); i++)
+    for(size_t i=0; i < datahandles_.size(); i++)
         if(!datahandles_[i]->moveable())
             return false;
     return datahandles_.size() > 0;

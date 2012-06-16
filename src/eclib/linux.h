@@ -19,19 +19,23 @@
 #include <stdint.h>
 
 // GCC 3.3 is confused about offsetof
-static double _offset;
-#define member_offset(Z,z)  size_t( reinterpret_cast<char*>(&reinterpret_cast<Z*>(&_offset)->z) - reinterpret_cast<char*>(&_offset))
-#define member_size(Z,z)    size_t( sizeof(reinterpret_cast<Z*>(&_offset)->z))
+static char _offset_dummy[80];
+static void* _offset = &_offset_dummy;
+#define member_offset(Z,z)  size_t( reinterpret_cast<char*>(&reinterpret_cast<Z*>(_offset)->z) - reinterpret_cast<char*>(_offset))
+//#define member_size(Z,z)    size_t( sizeof(reinterpret_cast<Z*>(&_offset)->z))
+#define member_size(Z,z)    sizeof(Z::z)
 
-static double keep_gcc_quiet_about_offset_2(double d);
-static double keep_gcc_quiet_about_offset_1(double d)
+
+static void* keep_gcc_quiet_about_offset_2(void* d);
+static void* keep_gcc_quiet_about_offset_1(void* d)
 {
-	return d*keep_gcc_quiet_about_offset_2(_offset);
+    return keep_gcc_quiet_about_offset_2(_offset);
 }
 
-static double keep_gcc_quiet_about_offset_2(double d)
+static void* keep_gcc_quiet_about_offset_2(void* d)
 {
-	return d*keep_gcc_quiet_about_offset_1(_offset);
+    return keep_gcc_quiet_about_offset_1(_offset);
 }
+
 
 #endif /* mars_linux_h */

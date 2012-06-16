@@ -11,8 +11,8 @@
 #include "eclib/ContextBehavior.h"
 
 ContextBehavior::ContextBehavior() : 
-    debug_(0),
-    debugResource_(this,"debug;$DEBUG;-debug",0)
+    debugResource_(this,"debug;$DEBUG;-debug",0),
+    debug_(0)
 {
     debug( debugResource_ );    
 }

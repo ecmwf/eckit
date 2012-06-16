@@ -16,15 +16,15 @@
 #include "eclib/Stream.h"
 
 BufferCache::BufferCache(size_t size):
-	buffer_(size),
-	count_(0),
+    count_(0),
+    buffer_(size),
 	updated_(::time(0))
 {
 }
 
 BufferCache::BufferCache(const BufferCache& other):
+    count_(other.count_),
 	buffer_(other.buffer_.size()),
-	count_(other.count_),
 	updated_(::time(0))
 {
 	::memcpy((char*)buffer_, (const char*)other.buffer_, count_);

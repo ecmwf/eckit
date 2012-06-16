@@ -23,16 +23,16 @@ inline size_t round(size_t x, size_t n)
 }
 
 AIOHandle::AIOHandle(const PathName& path, size_t count,size_t size,bool fsync):
-        path_(path),
-        buffers_(count),
-        len_(count),
-        aio_(count),
-        aiop_(count),
-        count_(count),
-        used_(0),
-        pos_(0),
-        fd_(-1),
-        fsync_(fsync)
+    path_(path),
+    buffers_(count),
+    len_(count),
+    aio_(count),
+    aiop_(count),
+    count_(count),
+    used_(0),
+    fd_(-1),
+    pos_(0),
+    fsync_(fsync)
 {
     for (size_t i = 0; i < count_ ; i++)
     {
@@ -209,8 +209,8 @@ void AIOHandle::close()
         const struct aiocb64* aiop = &aio;
         while (aio_suspend64(&aiop, 1, NULL) < 0)
         {
-             if (errno != EINTR)
-                    throw FailedSystemCall("aio_suspend64");
+            if (errno != EINTR)
+                throw FailedSystemCall("aio_suspend64");
         }
 
         int e = aio_error64(&aio);

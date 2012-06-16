@@ -57,8 +57,8 @@ private:
 
 // -- Members
 
+    size_t size_;
 	void*  buffer_;
-	size_t size_;
 
 };
 

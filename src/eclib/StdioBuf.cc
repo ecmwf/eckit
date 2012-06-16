@@ -34,9 +34,10 @@ StdioBuf::~StdioBuf()
 
 int StdioBuf::sync()
 {
-
-	if(::fwrite(pbase(),1,pptr() - pbase(),file_) < 0)	
-		return EOF;	
+    size_t s = pptr() - pbase();
+    if(s)
+        if(::fwrite(pbase(),1,s,file_) != s)
+            return EOF;
 
 	setp(pbase(), epptr());
 

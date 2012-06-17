@@ -64,8 +64,8 @@ template<class K,class V, int S>
 BTree<K,V,S>::BTree(const PathName& path):
     fd_(-1),
     path_(path),
-    cacheReads_(false),
-    cacheWrites_(false)
+    cacheReads_(true),
+    cacheWrites_(true)
 {
     SYSCALL(fd_ = ::open64(path.localPath(),O_RDWR|O_CREAT,0777));
 
@@ -113,6 +113,7 @@ void BTree<K,V,S>::flush()
 {
     for(typename Cache::iterator j = cache_.begin(); j != cache_.end(); ++j)
     {
+        Log::info() << "BTree<K,V,S>::flush() " << path_ << (*j).first << ", " << (*j).second.dirty_ << endl;
         if((*j).second.dirty_)
         {
             _savePage(*(*j).second.page_); 

@@ -212,8 +212,8 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, vect
 
     if ((e != end) && ((*e).key_ == key))
     {
-        cout << "Page " << p.id_ << " at pos " << e - begin << endl;
-        cout << "Replace " << key << endl << (*e).value_ << endl << value << endl;
+        //cout << "Page " << p.id_ << " at pos " << e - begin << endl;
+        //cout << "Replace " << key << endl << (*e).value_ << endl << value << endl;
         (*e).value_ = value;
         savePage(p);
         return true;

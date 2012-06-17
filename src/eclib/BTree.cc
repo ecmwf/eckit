@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -20,7 +20,7 @@ template<class K,class V, int S>
 void BTree<K, V, S>::Page::print(ostream& s) const
 {
     s << ((this->node_) ? "NODE" : "LEAF" )
-        <<  "_PAGE[id=" << this->id_ << ",count=" << this->count_ << "]";
+      <<  "_PAGE[id=" << this->id_ << ",count=" << this->count_ << "]";
 
     // For some strange reason "this" is required...
     if (this->node_) {
@@ -62,8 +62,8 @@ void BTree<K, V, S>::_NodePage::print(ostream& s) const
 
 template<class K,class V, int S>
 BTree<K,V,S>::BTree(const PathName& path):
-    fd_(-1),
     path_(path),
+    fd_(-1),
     cacheReads_(true),
     cacheWrites_(true)
 {
@@ -113,10 +113,10 @@ void BTree<K,V,S>::flush()
 {
     for(typename Cache::iterator j = cache_.begin(); j != cache_.end(); ++j)
     {
-        Log::info() << "BTree<K,V,S>::flush() " << path_ << (*j).first << ", " << (*j).second.dirty_ << endl;
+        Log::info() << "BTree<K,V,S>::flush() " << path_ << " " << (*j).first << ", " << (*j).second.dirty_ << endl;
         if((*j).second.dirty_)
         {
-            _savePage(*(*j).second.page_); 
+            _savePage(*(*j).second.page_);
             (*j).second.dirty_ = false;
         }
     }
@@ -247,7 +247,7 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, vect
 
                 //cout << "SPLIT-NODE " << p << endl;
 
-                for (int i = middle+1; i < p.count_ ; i ++ ) {
+                for (size_t i = middle+1; i < p.count_ ; i ++ ) {
                     n.nodePage().nentries_[n.count_++] = p.nodePage().nentries_[i];
                 }
 
@@ -266,7 +266,7 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, vect
             {
                 //cout << "SPLIT-LEAF " << p << endl;
 
-                for (int i = middle; i < p.count_ ; i ++ ) {
+                for (size_t i = middle; i < p.count_ ; i ++ ) {
                     n.leafPage().lentries_[n.count_++] = p.leafPage().lentries_[i];
                 }
 
@@ -361,7 +361,7 @@ void BTree<K,V,S>::splitRoot()
         }
 
         pright.left_ = p.nodePage().nentries_[middle].page_;
-        for (int i = middle+1; i < p.count_ ; i ++ ) {
+        for (size_t i = middle+1; i < p.count_ ; i ++ ) {
             pright.nodePage().nentries_[pright.count_++] = p.nodePage().nentries_[i];
         }
 
@@ -378,7 +378,7 @@ void BTree<K,V,S>::splitRoot()
         }
 
 
-        for (int i = middle; i < p.count_ ; i ++ ) {
+        for (size_t i = middle; i < p.count_ ; i ++ ) {
             pright.leafPage().lentries_[pright.count_++] = p.leafPage().lentries_[i];
         }
 
@@ -475,7 +475,7 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, vect
 
     const LeafEntry* e = std::lower_bound(begin, end, key1);
 
-    if (e == end) 
+    if (e == end)
         return;
 
     while( !(key2 < (*e).key_) )
@@ -526,10 +526,10 @@ void BTree<K,V,S>::_loadPage(unsigned long page, Page& p) const
 template<class K, class V, int S>
 void BTree<K,V,S>::loadPage(unsigned long page, Page& p) const
 {
-	BTree<K,V,S>* self = const_cast<BTree<K,V,S>*>(this);
+    BTree<K,V,S>* self = const_cast<BTree<K,V,S>*>(this);
 
     typename Cache::iterator j = self->cache_.find(page);
-    if(j != self->cache_.end()) 
+    if(j != self->cache_.end())
     {
         // TODO: find someting better...
         memcpy(&p, (*j).second.page_, sizeof(Page));
@@ -543,7 +543,7 @@ void BTree<K,V,S>::loadPage(unsigned long page, Page& p) const
     {
         Page* q = new Page();
         memcpy(q, &p, sizeof(Page));
-		self->cache_[p.id_] = _PageInfo(q);
+        self->cache_[p.id_] = _PageInfo(q);
     }
 
 }
@@ -566,9 +566,9 @@ void BTree<K,V,S>::_savePage(const Page& p)
 template<class K, class V, int S>
 void BTree<K,V,S>::savePage(const Page& p)
 {
-	BTree<K,V,S>* self = const_cast<BTree<K,V,S>*>(this);
+    BTree<K,V,S>* self = const_cast<BTree<K,V,S>*>(this);
     typename Cache::iterator j = self->cache_.find(p.id_);
-	if(j != self->cache_.end()) 
+    if(j != self->cache_.end())
     {
         // TODO: find someting better...
         memcpy((*j).second.page_, &p, sizeof(Page));
@@ -582,7 +582,7 @@ void BTree<K,V,S>::savePage(const Page& p)
         Page* q = new Page();
         memcpy(q, &p, sizeof(Page));
         self->cache_[p.id_] = _PageInfo(q);
-		j = self->cache_.find(p.id_);
+        j = self->cache_.find(p.id_);
         (*j).second.dirty_ = true;
         (*j).second.count_++;
         return;
@@ -617,13 +617,14 @@ template<class K, class V,int S>
 void BTree<K,V,S>::newPage(Page& p)
 {
     _newPage(p);
+    cout << "New page " << p.id_ << endl;
 
     if(cacheReads_ || cacheWrites_)
-	{
-		Page* q = new Page();
-		memcpy(q, &p, sizeof(Page));
-		cache_[p.id_] = _PageInfo(q);
-	}
+    {
+        Page* q = new Page();
+        memcpy(q, &p, sizeof(Page));
+        cache_[p.id_] = _PageInfo(q);
+    }
 }
 
 

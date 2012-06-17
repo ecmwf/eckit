@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -27,31 +27,31 @@
 #include "eclib/PathName.h"
 #include "eclib/Padded.h"
 
-template<class K,class V, int S = 64*1024 >
+template<class K,class V, int S>
 class BTree {
 public:
 
     typedef K key_type;
     typedef V value_type;
 
-// -- Exceptions
+    // -- Exceptions
 
 
-// -- Contructors
+    // -- Contructors
 
     BTree(const PathName&);
 
-// -- Destructor
+    // -- Destructor
 
     ~BTree(); // Change to virtual if base class
 
-// -- Convertors
+    // -- Convertors
     // None
 
-// -- Operators
+    // -- Operators
     // None
 
-// -- Methods
+    // -- Methods
 
     bool get(const K&, V&);
     bool set(const K&, const V&);
@@ -70,24 +70,24 @@ public:
 
     void flush();
 
-// -- Overridden methods
+    // -- Overridden methods
     // None
 
-// -- Class members
+    // -- Class members
     // None
 
-// -- Class methods
+    // -- Class methods
     // None
 
 protected:
 
-// -- Methods
+    // -- Methods
 
     void print(ostream&) const; // Change to virtual if base class
 
 private:
 
-// No copy allowed
+    // No copy allowed
 
     BTree(const BTree&);
     BTree& operator=(const BTree&);
@@ -207,7 +207,7 @@ private:
         unsigned long  count_;
         unsigned long  node_;
         unsigned long  left_;
-	unsigned long  right_;
+        unsigned long  right_;
 
     };
 
@@ -273,10 +273,10 @@ private:
     bool cacheWrites_;
     
     struct _PageInfo {
-        time_t last_;
         Page* page_;
-        bool dirty_;
         unsigned long long count_;
+        time_t last_;
+        bool dirty_;
 
         _PageInfo(Page* page = 0):
             page_(page),
@@ -284,7 +284,7 @@ private:
             last_(time(0)),
             dirty_(false) {}
     };
- 
+
     typedef map<unsigned long,_PageInfo> Cache;
     Cache cache_;
 
@@ -310,7 +310,7 @@ private:
     unsigned long next(const K&, const Page&) const;
 
 
-// -- Friends
+    // -- Friends
 
     friend ostream& operator<<(ostream& s,const BTree& p)
     {

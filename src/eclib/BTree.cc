@@ -480,6 +480,12 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, vect
     if (e == end)
         return;
 
+    while((*e).key_ < key1) {
+        e++;
+        if (e == end)
+            return;
+    }
+
     cout << p << endl;
     cout << "range " << (*e).key_ << " .... " << p.count_ << " " << (e - begin) << endl;
     cout << " key1 " << key1 << endl;

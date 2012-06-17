@@ -113,7 +113,7 @@ void BTree<K,V,S>::flush()
 {
     for(typename Cache::iterator j = cache_.begin(); j != cache_.end(); ++j)
     {
-        Log::info() << "BTree<K,V,S>::flush() " << path_ << " " << (*j).first << ", " << (*j).second.dirty_ << endl;
+        //Log::info() << "BTree<K,V,S>::flush() " << path_ << " " << (*j).first << ", " << (*j).second.dirty_ << endl;
         if((*j).second.dirty_)
         {
             _savePage(*(*j).second.page_);
@@ -482,13 +482,13 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, vect
 
     //while((*e).key_ < key1) { e++; if (e == end) return; }
 
-    cout << "range " << (*e).key_ << " .... " << p.count_ << " " << (e - begin) << endl;
-    cout << " key1 " << key1 << endl;
-    cout << " key2 " << key2 << endl;
+    //cout << "range " << (*e).key_ << " .... " << p.count_ << " " << (e - begin) << endl;
+    //cout << " key1 " << key1 << endl;
+    //cout << " key2 " << key2 << endl;
 
     while( !(key2 < (*e).key_) )
     {
-        cout << "match " << p.id_ << " pos " << (e - begin) << " " << (*e).key_ << endl;
+        //cout << "match " << p.id_ << " pos " << (e - begin) << " " << (*e).key_ << endl;
         result.push_back(pair<K,V>((*e).key_,(*e).value_));
 
         ++e;

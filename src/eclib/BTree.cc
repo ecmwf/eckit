@@ -64,8 +64,8 @@ template<class K,class V, int S>
 BTree<K,V,S>::BTree(const PathName& path):
     fd_(-1),
     path_(path),
-    cacheReads_(true),
-    cacheWrites_(true)
+    cacheReads_(false),
+    cacheWrites_(false)
 {
     SYSCALL(fd_ = ::open64(path.localPath(),O_RDWR|O_CREAT,0777));
 

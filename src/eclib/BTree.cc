@@ -625,7 +625,6 @@ template<class K, class V,int S>
 void BTree<K,V,S>::newPage(Page& p)
 {
     _newPage(p);
-    cout << "New page " << p.id_ << endl;
 
     if(cacheReads_ || cacheWrites_)
     {

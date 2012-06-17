@@ -216,7 +216,8 @@ Length DblBuffer::copy(DataHandle& in,DataHandle& out,const Length& estimate)
 
         buffers[i].cond_.signal();
 
-        i = (++i) % count_;
+        i++;
+        i %= count_;
 
     }
 
@@ -321,7 +322,8 @@ void DblBufferTask::run()
 
         buffers_[i].cond_.signal();
 
-        i = (++i) % owner_.count_;
+        i++;
+        i %= owner_.count_;
     }
 
     Log::info() << "Write done " << Bytes(owner_.outBytes_) << endl;

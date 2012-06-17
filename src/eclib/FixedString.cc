@@ -8,7 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eclib/machine.h"
 #include "eclib/FixedString.h"
+#include "eclib/Exceptions.h"
 
 //===========================================================================================
 // For use with BTree or other persitant classes

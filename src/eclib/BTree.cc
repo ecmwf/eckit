@@ -212,7 +212,7 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, vect
 
     if ((e != end) && ((*e).key_ == key))
     {
-        cout << "Page " << p.id_ << endl;
+        cout << "Page " << p.id_ << " at pos " << e - begin << endl;
         cout << "Replace " << key << endl << (*e).value_ << endl << value << endl;
         (*e).value_ = value;
         savePage(p);
@@ -480,20 +480,15 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, vect
     if (e == end)
         return;
 
-    while((*e).key_ < key1) {
-        e++;
-        if (e == end)
-            return;
-    }
+    //while((*e).key_ < key1) { e++; if (e == end) return; }
 
-    cout << p << endl;
     cout << "range " << (*e).key_ << " .... " << p.count_ << " " << (e - begin) << endl;
     cout << " key1 " << key1 << endl;
     cout << " key2 " << key2 << endl;
 
     while( !(key2 < (*e).key_) )
     {
-        //cout << "range " << (*e).key_ << endl;
+        cout << "match " << p.id_ << " pos " << (e - begin) << " " << (*e).key_ << endl;
         result.push_back(pair<K,V>((*e).key_,(*e).value_));
 
         ++e;

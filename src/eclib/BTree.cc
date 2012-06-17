@@ -480,8 +480,14 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, vect
     if (e == end)
         return;
 
+    cout << p << endl;
+    cout << "range " << (*e).key_ << " .... " << p.count_ << " " << (e - begin) << endl;
+    cout << " key1 " << key1 << endl;
+    cout << " key2 " << key2 << endl;
+
     while( !(key2 < (*e).key_) )
     {
+        //cout << "range " << (*e).key_ << endl;
         result.push_back(pair<K,V>((*e).key_,(*e).value_));
 
         ++e;
@@ -572,7 +578,6 @@ void BTree<K,V,S>::savePage(const Page& p)
     typename Cache::iterator j = self->cache_.find(p.id_);
     if(j != self->cache_.end())
     {
-        cout << "A" << endl;
         // TODO: find someting better...
         memcpy((*j).second.page_, &p, sizeof(Page));
         (*j).second.dirty_ = true;
@@ -582,7 +587,6 @@ void BTree<K,V,S>::savePage(const Page& p)
 
     if(cacheWrites_)
     {
-        cout << "B" << endl;
         Page* q = new Page();
         memcpy(q, &p, sizeof(Page));
         self->cache_[p.id_] = _PageInfo(q);

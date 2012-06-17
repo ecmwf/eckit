@@ -212,6 +212,8 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, vect
 
     if ((e != end) && ((*e).key_ == key))
     {
+        cout << "Page " << p.id_ << endl;
+        cout << "Replace " << key << endl << (*e).value_ << endl << value << endl;
         (*e).value_ = value;
         savePage(p);
         return true;
@@ -570,6 +572,7 @@ void BTree<K,V,S>::savePage(const Page& p)
     typename Cache::iterator j = self->cache_.find(p.id_);
     if(j != self->cache_.end())
     {
+        cout << "A" << endl;
         // TODO: find someting better...
         memcpy((*j).second.page_, &p, sizeof(Page));
         (*j).second.dirty_ = true;
@@ -579,6 +582,7 @@ void BTree<K,V,S>::savePage(const Page& p)
 
     if(cacheWrites_)
     {
+        cout << "B" << endl;
         Page* q = new Page();
         memcpy(q, &p, sizeof(Page));
         self->cache_[p.id_] = _PageInfo(q);

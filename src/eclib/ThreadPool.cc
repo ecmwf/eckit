@@ -38,9 +38,11 @@ void ThreadPoolThread::run()
 
     for(;;)
     {
+        Monitor::show(false);
         Log::status() << "-" << endl;
         ThreadPoolTask* r = owner_.next();
         if(!r) break;
+        Monitor::show(true);
 
         r->pool_ = &owner_;
 

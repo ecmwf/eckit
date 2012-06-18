@@ -17,10 +17,17 @@
 #include "eclib/machine.h"
 #include "eclib/MutexCond.h"
 
+class ThreadPool;
+
 class ThreadPoolTask {
+    ThreadPool* pool_;
+protected:
+    ThreadPool& pool() { return *pool_; }
 public:
     virtual ~ThreadPoolTask() {}
     virtual void execute() = 0;
+
+    friend class ThreadPoolThread;
 };
 
 class ThreadPool {

@@ -42,6 +42,8 @@ void ThreadPoolThread::run()
         ThreadPoolTask* r = owner_.next();
         if(!r) break;
 
+        r->pool_ = &owner_;
+
         try {
             r->execute();
         }

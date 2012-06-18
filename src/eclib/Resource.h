@@ -64,8 +64,6 @@ private:
 };
 
 
-
-
 template<class T> class Resource : public ResourceBase {
 public:
 

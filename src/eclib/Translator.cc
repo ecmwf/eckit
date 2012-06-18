@@ -150,6 +150,19 @@ vector<string> Translator<string, vector<string> >::operator()(const string& s)
     return result;
 }
 
+vector<long> Translator<string, vector<long> >::operator()(const string& s)
+{
+    vector<string> r;
+    Tokenizer parse(", \t");
+
+    parse(s,r);
+
+    vector<long> result;
+    for(size_t i = 0; i < r.size(); i++)
+        result.push_back(Translator<string,long>()(r[i]));
+    return result;
+}
+
 string Translator<vector<string>, string>::operator()(const vector<string>& v)
 {
     string result;

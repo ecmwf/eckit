@@ -95,6 +95,10 @@ struct Translator<string, vector<string> >
     { vector<string> operator()(const string&); };
 
 template<>
+struct Translator<string, vector<long> >
+    { vector<long> operator()(const string&); };
+
+template<>
 struct Translator<vector<string>, string>
     { string  operator()(const vector<string>&); };
 

@@ -349,10 +349,7 @@ macosx.h
 sgi.h
 )
 
-ecbuild_add_library( TARGET Ec
-                  COMPONENT server
-                  SOURCES ${eclib_src_files}
-                  TEMPLATES
+list( APPEND eclib_templates 
                     BasePathNameT.cc
                     ClassExtent.cc
                     Dispatcher.cc
@@ -368,7 +365,9 @@ ecbuild_add_library( TARGET Ec
                     TxnLog.cc
                     Types.cc
 					Recycler.cc
-                  PERSISTENT
+)
+
+list( APPEND eclib_persistent 
                      ClimateDate
                      Date
                      DayOfYear
@@ -381,5 +380,13 @@ ecbuild_add_library( TARGET Ec
                      Seconds
                      Time
                      VerifyingDate
+)
+
+ecbuild_add_library( TARGET Ec
+                  COMPONENT server
+                  INSTALL_HEADERS LISTED
+                  SOURCES    ${eclib_src_files}
+                  TEMPLATES  ${eclib_templates}
+                  PERSISTENT ${eclib_persistent}
                   LIBS ${CMAKE_THREAD_LIBS_INIT} ${RT_LIB} )
 

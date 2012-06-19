@@ -11,21 +11,19 @@
 #ifndef eclib_NonCopyable_H
 #define eclib_NonCopyable_H
 
-/// Inherit from this class to have a noncopyable class
+/// Inherit from this class to make a NonCopyable class
 
-template < typename T > 
 class NonCopyable {
-public:
+protected:
 
     NonCopyable() {}
+    ~NonCopyable() {}
     
-private:
+private: // No copy allowed    
     
-    // No copy allowed    
-    
-    NonCopyable(const NonCopyable<T>&);
-	NonCopyable<T>& operator=(const NonCopyable<T>&);
+    NonCopyable(const NonCopyable&);
+	NonCopyable& operator=(const NonCopyable&);
 
 };
 
-#endif // eclib_NonCopyable_h
+#endif

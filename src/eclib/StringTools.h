@@ -15,7 +15,7 @@
 
 #include "eclib/NonCopyable.h"
 
-class StringTools : public NonCopyable<StringTools> {
+class StringTools : private NonCopyable {
 public:
 
     static string substitute(const string&, const map<string, string>&);

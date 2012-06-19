@@ -19,7 +19,7 @@
 
 // This should be a Task
 
-class Thread : public NonCopyable<Thread> {
+class Thread : private NonCopyable {
 public:
 	friend class ThreadControler;
 

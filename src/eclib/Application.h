@@ -23,7 +23,7 @@ class Stream;
 
 class Application : public Task, 
                     public Configurable, 
-                    public NonCopyable<Application> {
+                    private NonCopyable {
 public:
 
 // -- Contructors

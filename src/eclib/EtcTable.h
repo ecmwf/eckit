@@ -20,7 +20,7 @@
 #include "eclib/Mutex.h"
 
 
-class EtcTable : public NonCopyable<EtcTable> {
+class EtcTable : private NonCopyable {
 public:
 
 // -- Contructors

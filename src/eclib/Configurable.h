@@ -22,7 +22,7 @@ class Url;
 class ResourceBase;
 
 class Configurable : public ClassExtent<Configurable>, 
-                     public NonCopyable<Configurable> {
+                     private NonCopyable {
 public:
 
 // -- Contructors

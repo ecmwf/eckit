@@ -22,7 +22,7 @@
 // WARNING: This class has not been widely tested, and we don't
 //          know if they delete objects properly when the signal is caugth
 
-class SignalHandler : public NonCopyable<SignalHandler> {
+class SignalHandler : private NonCopyable {
 
 public: // methods
   

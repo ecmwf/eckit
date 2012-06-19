@@ -21,7 +21,7 @@
 class Configurable;
 class Url;
 
-class ResourceBase : public NonCopyable<ResourceBase> {
+class ResourceBase : private NonCopyable {
 public:
 
 // -- Contructors

@@ -21,7 +21,7 @@
 class Stream;
 
 class NetUser : public Thread,
-                public NonCopyable<NetUser> {
+                private NonCopyable {
 public:
 
 

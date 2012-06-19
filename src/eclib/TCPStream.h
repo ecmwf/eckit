@@ -24,7 +24,7 @@ class TCPServer;
 // Choose from 
 
 class TCPStreamBase : public Stream,
-                      public NonCopyable<TCPStreamBase> {
+                      private NonCopyable {
 public:
 
 // -- Contructors
@@ -60,7 +60,7 @@ private:
 };
 
 class TCPStream : public TCPStreamBase,
-                  public NonCopyable<TCPStream> {
+                  private NonCopyable {
 public:
 
 // -- Contructors

@@ -19,8 +19,8 @@
 
 class Logger;
 
-class ContextBehavior : public Configurable, 
-                        public NonCopyable<ContextBehavior> {
+class ContextBehavior : public Configurable,
+                        private NonCopyable {
 public:
 
     // -- Contructors

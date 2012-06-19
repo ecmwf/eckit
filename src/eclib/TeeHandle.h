@@ -67,11 +67,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	TeeHandle(const TeeHandle&);
-	TeeHandle& operator=(const TeeHandle&);
-
 // -- Members
 
 	HandleList			    datahandles_;

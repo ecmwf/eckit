@@ -8,20 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-// File .h
-// Baudouin Raoult - ECMWF Oct 96
-
 #ifndef NetUser_H
 #define NetUser_H
 
-#include "eclib/NonCopyable.h"
 #include "eclib/TCPSocket.h"
 #include "eclib/Thread.h"
 
 class Stream;
 
-class NetUser : public Thread,
-                private NonCopyable {
+class NetUser : public Thread {
 public:
 
 

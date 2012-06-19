@@ -15,10 +15,11 @@
 #define Streamable_H
 
 #include "eclib/MemoryPool.h"
+#include "eclib/NonCopyable.h"
 #include "eclib/Reanimator.h"
 #include "eclib/Stream.h"
 
-class Streamable {
+class Streamable : private NonCopyable {
 public:
 
 	friend Stream& operator<<(Stream&,const Streamable&);
@@ -56,11 +57,6 @@ protected:
 	bool sameClass(const Streamable&) const;
 
 private:
-
-// No copy allowed
-
-	Streamable(const Streamable&);
-	Streamable& operator=(const Streamable&);
 
 // -- Class members
 	

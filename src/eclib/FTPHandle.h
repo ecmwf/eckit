@@ -59,11 +59,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	FTPHandle(const FTPHandle&);
-	FTPHandle& operator=(const FTPHandle&);
-
 // -- Members
 
 	string        remote_;

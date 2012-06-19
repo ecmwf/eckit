@@ -53,11 +53,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	EmptyHandle(const EmptyHandle&);
-	EmptyHandle& operator=(const EmptyHandle&);
-
 // -- Class members
 
     static  ClassSpec                 classSpec_;

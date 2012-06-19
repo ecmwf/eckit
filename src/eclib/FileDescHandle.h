@@ -49,11 +49,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	FileDescHandle(const FileDescHandle&);
-	FileDescHandle& operator=(const FileDescHandle&);
-
 // -- Members
 
 	int fd_;

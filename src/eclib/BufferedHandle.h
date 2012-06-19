@@ -64,11 +64,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	BufferedHandle(const BufferedHandle&);
-	BufferedHandle& operator=(const BufferedHandle&);
-
 // -- Members
 
 	auto_ptr<DataHandle> handle_;

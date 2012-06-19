@@ -71,11 +71,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	MarsFSPartHandle(const MarsFSPartHandle&);
-	MarsFSPartHandle& operator=(const MarsFSPartHandle&);
-
 // -- Members
 
 	MarsFSPath         path_;

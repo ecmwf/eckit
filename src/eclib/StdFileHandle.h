@@ -50,11 +50,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	StdFileHandle(const StdFileHandle&);
-	StdFileHandle& operator=(const StdFileHandle&);
-
 // -- Members
 
 	FILE* f_;

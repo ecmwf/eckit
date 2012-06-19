@@ -37,11 +37,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	CommandStream(const CommandStream&);
-	CommandStream& operator=(const CommandStream&);
-
 // -- Members
 	
 	FILE* file_;

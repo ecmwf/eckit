@@ -72,10 +72,6 @@ protected:
 
 private:
 
-// No copy allowed
-
-	MoverHandle(const MoverHandle&);
-	MoverHandle& operator=(const MoverHandle&);
 
 // -- Members
 

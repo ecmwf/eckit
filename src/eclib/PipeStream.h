@@ -42,11 +42,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	PipeStream(const PipeStream&);
-	PipeStream& operator=(const PipeStream&);
-
 // -- Members
 
 	int toChild_[2];

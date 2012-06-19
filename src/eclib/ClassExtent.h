@@ -15,9 +15,10 @@
 #define ClassExtent_H
 
 #include "eclib/Mutex.h"
+#include "eclib/NonCopyable.h"
 
 template<class T>
-class ClassExtent {
+class ClassExtent : private NonCopyable {
 public:
 
 // -- Contructors
@@ -32,16 +33,8 @@ public:
 	
 	static size_t size();
 
-private:
-
-// No copy allowed
-
-	ClassExtent(const ClassExtent<T>&);
-	ClassExtent<T>& operator=(const ClassExtent<T>&);
-
-// -- Members
-	
-public:
+public: // methods
+    
 	static void callAll(void (T::*)());
 	static void callAll(void (T::*)() const);
 
@@ -63,7 +56,8 @@ public:
 	template<class P1,class P2> 
 	static void callAll(void (T::*)(P1&,P2&),P1&,P2&);
 
-private:
+private: // members
+    
 	struct Extent {
 		typedef map<ClassExtent<T>*,T*,less<ClassExtent<T>*> > Map;
 		Mutex   mutex_;
@@ -72,7 +66,9 @@ private:
 		Extent();
 		~Extent();
 	};
+    
 	static Extent extent_;
+
 };
 
 #include "ClassExtent.cc"

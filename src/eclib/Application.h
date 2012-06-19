@@ -16,14 +16,12 @@
 
 #include "eclib/Context.h"
 #include "eclib/Configurable.h"
-#include "eclib/NonCopyable.h"
 #include "eclib/Task.h"
 
 class Stream;
 
 class Application : public Task, 
-                    public Configurable, 
-                    private NonCopyable {
+                    public Configurable {
 public:
 
 // -- Contructors

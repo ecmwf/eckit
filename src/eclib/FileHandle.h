@@ -72,11 +72,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	FileHandle(const FileHandle&);
-	FileHandle& operator=(const FileHandle&);
-
 // -- Members
 
 	string        name_;

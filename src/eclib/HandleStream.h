@@ -33,11 +33,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	HandleStream(const HandleStream&);
-	HandleStream& operator=(const HandleStream&);
-
 // -- Members
 	
 	DataHandle& handle_;

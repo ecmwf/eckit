@@ -15,7 +15,6 @@
 #define TCPStream_H
 
 #include "eclib/Counted.h"
-#include "eclib/NonCopyable.h"
 #include "eclib/Stream.h"
 #include "eclib/TCPSocket.h"
 
@@ -23,8 +22,7 @@ class TCPServer;
 
 // Choose from 
 
-class TCPStreamBase : public Stream,
-                      private NonCopyable {
+class TCPStreamBase : public Stream {
 public:
 
 // -- Contructors
@@ -59,8 +57,7 @@ private:
 
 };
 
-class TCPStream : public TCPStreamBase,
-                  private NonCopyable {
+class TCPStream : public TCPStreamBase {
 public:
 
 // -- Contructors
@@ -107,11 +104,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	InstantTCPStream(const InstantTCPStream&);
-	InstantTCPStream& operator=(const InstantTCPStream&);
-
 	InstantTCPStream(TCPServer&);
 
 // -- Members
@@ -139,11 +131,8 @@ private:
 
 	~SharedTCPStream();
 
-// No copy allowed
-
-	SharedTCPStream(const SharedTCPStream&);
-	SharedTCPStream& operator=(const SharedTCPStream&);
-
+// -- Contructors
+    
 	SharedTCPStream(TCPServer&);
 
 // -- Members

@@ -111,11 +111,6 @@ public:
 
 private:
 
-// No copy allowed
-
-    DataHandle(const DataHandle&);
-    DataHandle& operator=(const DataHandle&);
-
 // -- Class members
 
     static  ClassSpec               classSpec_;

@@ -13,14 +13,12 @@
 
 #include "eclib/Configurable.h"
 #include "eclib/Exceptions.h"
-#include "eclib/NonCopyable.h"
 
 class ContextBehavior;
 
 class Logger;
 
-class Context : public Configurable, 
-                private NonCopyable {
+class Context : public Configurable {
 public:
 
     // -- Contructors

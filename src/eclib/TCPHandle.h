@@ -64,11 +64,6 @@ protected:
 
 private:
 
-// No copy allowed
-
-	TCPHandle(const TCPHandle&);
-	TCPHandle& operator=(const TCPHandle&);
-
 
 // -- Class members
 

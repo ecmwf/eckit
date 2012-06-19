@@ -19,12 +19,17 @@
 #include "eclib/Stream.h"
 #include "eclib/TCPSocket.h"
 #include "eclib/Length.h"
+
+//-----------------------------------------------------------------------------
+
 class ConnectorException : public Exception {
 	virtual bool retryOnServer() const        { return true; }
 	virtual bool retryOnClient() const        { return true; }
 public:
 	ConnectorException(const string& what) : Exception(what) {}
 };
+
+//-----------------------------------------------------------------------------
 
 class Connector : public Stream {
 public:
@@ -40,12 +45,6 @@ public:
 
 	~Connector(); // Change to virtual if base class
 
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
 // -- Methods
 
 	void lock();
@@ -53,17 +52,11 @@ public:
     void reset();
     void check();
 
-	bool locked() const { return locked_; };
+	bool locked() const { return locked_; }
 
 	const string& host() const { return host_; }
 
 	void memoize(bool on, unsigned long time);
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
 
 // -- Class methods
 	// None
@@ -84,9 +77,6 @@ protected:
 	
 	void print(ostream&) const; // Change to virtual if base class	
 
-// -- Overridden methods
-	// None
-
 // -- Class members
 	// None
     static Connector& get(const string& host, int port);
@@ -96,11 +86,6 @@ protected:
 	// None
 
 private:
-
-// No copy allowed
-
-	Connector(const Connector&);
-	Connector& operator=(const Connector&);
 
 // -- Members
 
@@ -139,12 +124,6 @@ private:
 	virtual long write(const void* buf,long len) ;
 	virtual long read(void* buf,long len);
     virtual string name() const;
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
 
 // -- Friends
 

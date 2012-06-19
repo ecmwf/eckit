@@ -37,13 +37,6 @@ public:
 	virtual long write(const void*,long);
 	virtual void rewind();
 
-private:
-
-// No copy allowed
-
-	FileStream(const FileStream&);
-	FileStream& operator=(const FileStream&);
-
 protected:
 // -- Members
 	FILE* 		file_;

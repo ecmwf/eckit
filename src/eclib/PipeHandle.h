@@ -68,11 +68,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	PipeHandle(const PipeHandle&);
-	PipeHandle& operator=(const PipeHandle&);
-
 // -- Members
 
 	string        name_;

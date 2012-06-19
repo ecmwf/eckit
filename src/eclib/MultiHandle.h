@@ -76,11 +76,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	MultiHandle(const MultiHandle&);
-	MultiHandle& operator=(const MultiHandle&);
-
 // -- Members
 
 	HandleList			    datahandles_;

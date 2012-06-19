@@ -14,15 +14,13 @@
 #ifndef Configurable_H
 #define Configurable_H
 
-#include "eclib/NonCopyable.h"
 #include "eclib/ClassExtent.h"
 #include "eclib/Mutex.h"
 
 class Url;
 class ResourceBase;
 
-class Configurable : public ClassExtent<Configurable>, 
-                     private NonCopyable {
+class Configurable : public ClassExtent<Configurable> {
 public:
 
 // -- Contructors

@@ -15,6 +15,7 @@
 
 #include "eclib/Exceptions.h"
 #include "eclib/Mutex.h"
+#include "eclib/NonCopyable.h"
 
 template<class T>
 class BufferedWriter;
@@ -25,7 +26,7 @@ class IOBuffer;
 
 class Buffer;
 
-class Stream {
+class Stream : private NonCopyable {
 public:
 
 // -- Exceptions
@@ -164,11 +165,6 @@ private:
         tag_eof,
         last_tag
     };
-
-// No copy allowed
-
-    Stream(const Stream&);
-    Stream& operator=(const Stream&);
 
 // -- Members
 

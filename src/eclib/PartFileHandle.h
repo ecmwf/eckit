@@ -70,11 +70,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	PartFileHandle(const PartFileHandle&);
-	PartFileHandle& operator=(const PartFileHandle&);
-
 // -- Members
 
 	PathName           name_;

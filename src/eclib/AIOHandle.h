@@ -66,11 +66,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	AIOHandle(const AIOHandle&);
-	AIOHandle& operator=(const AIOHandle&);
-
 // -- Members
 
 	PathName path_;

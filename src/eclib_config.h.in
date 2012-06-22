@@ -1,0 +1,8 @@
+#ifndef eclib_config_h
+#define eclib_config_h
+
+#include "ecbuild_config.h"
+
+#include "eclib_version.h"
+
+#endif // eclib_config_h

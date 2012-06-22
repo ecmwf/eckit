@@ -10,6 +10,7 @@
 #       -DCMAKE_C_COMPILER=g++
 #
 #       -DCMAKE_PREFIX_PATH=/path/to/jasper:/path/to/any/package/out/of/place
+#       -DBUILD_SHARED_LIBS=OFF
 
 cmake_minimum_required( VERSION 2.6.4 FATAL_ERROR )
 

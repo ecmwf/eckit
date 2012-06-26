@@ -46,13 +46,8 @@ endif()
 add_subdirectory( src )
 
 ############################################################################################
-# installation
+# finalize
 
 ecbuild_install_project( NAME eclib )
 
-###############################################################################
-# summary
-
-# print the summary of the configuration
-include( ecbuild_print_summary )
-
+ecbuild_print_summary()

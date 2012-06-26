@@ -20,10 +20,7 @@
 #include "eclib/TaskInfo.h"
 #include "eclib/ThreadSingleton.h"
 
-// static Mutex* mutex = new Mutex;
-
 static bool active_ = (getenv("DHSHOME") != 0);
-
 
 Monitor::Monitor():
 	ready_(false),

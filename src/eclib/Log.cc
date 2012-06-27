@@ -8,8 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-
-
 #include "eclib/Application.h"
 #include "eclib/Inited.h"
 #include "eclib/Log.h"
@@ -20,7 +18,6 @@
 
 // This assume that iostream are thread safe during a single
 // call to the << inserter
-//
 
 //=============================================================================
 

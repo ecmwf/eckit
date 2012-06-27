@@ -16,7 +16,9 @@
 
 #include <pthread.h>
 
-template<class T> class ThreadSingleton {
+#include "eclib/NonCopyable.h"
+
+template<class T> class ThreadSingleton : private NonCopyable {
 public:
 
 // -- Contructors
@@ -32,11 +34,6 @@ public:
 	static T& instance();
 
 private:
-
-// No copy allowed
-
-	ThreadSingleton(const ThreadSingleton<T>&);
-	ThreadSingleton<T>& operator=(const ThreadSingleton<T>&);
 
 // -- Class members
 

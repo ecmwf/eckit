@@ -579,10 +579,12 @@ string TCPSocket::hostName(const string& h, bool full)
 {
     in_addr_t addr = ::inet_addr(h.c_str());
     if(addr == (in_addr_t)-1)
+    {
         if(full)
-        return h;
+            return h;
         else
-        return h.substr(0,h.find('.'));
+            return h.substr(0,h.find('.'));
+    }
 
     struct in_addr a;
     a.s_addr = addr;

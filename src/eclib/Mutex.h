@@ -15,8 +15,9 @@
 #define Mutex_H
 
 #include "eclib/machine.h"
+#include "eclib/NonCopyable.h"
 
-class Mutex {
+class Mutex : private NonCopyable {
 public:
 
 // -- Contructors
@@ -36,13 +37,6 @@ public:
 // -- Class methods
 
 	static Mutex& global();
-
-private:
-
-// No copy allowed
-
-	Mutex(const Mutex&);
-	Mutex& operator=(const Mutex&);
 
 protected:
 

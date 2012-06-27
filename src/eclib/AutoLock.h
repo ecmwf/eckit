@@ -8,24 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-// File AutoLock.h
-// Baudouin Raoult - ECMWF May 96
-
 #ifndef AutoLock_H
 #define AutoLock_H
 
+#include "eclib/AutoLocker.h"
+#include "eclib/NonCopyable.h"
+
 // The class AutoLock is used to AutoLock a mutex in a multi-threaded
-// environment. AutoLocks are exceptions safe.
+// environment. AutoLocks are exception safe.
 
-class AutoLocker {
-public:
-	static void want(void*);
-	static void got(void*);
-	static void release(void*);
-	static void analyse(void*);
-};
-
-template<class T> class AutoLock : public AutoLocker {
+template<class T> class AutoLock : public AutoLocker,
+                                   private NonCopyable {
 public:
 
 // -- Contructors
@@ -39,20 +32,13 @@ public:
 
     ~AutoLock() { release(&resource_); resource_.unlock(); }
 
-private:
-
-// No copy allowed
-
-	AutoLock(const AutoLock<T>&);
-	AutoLock<T>& operator=(const AutoLock<T>&);
-
-// -- Members
+private: // members
 	
     T& resource_;
 
 };
 
-template<class T> class AutoSharedLock  {
+template<class T> class AutoSharedLock : private NonCopyable {
 public:
 
 // -- Contructors
@@ -66,14 +52,7 @@ public:
 
     ~AutoSharedLock() { resource_.unlock(); }
 
-private:
-
-// No copy allowed
-
-	AutoSharedLock(const AutoSharedLock<T>&);
-	AutoSharedLock<T>& operator=(const AutoSharedLock<T>&);
-
-// -- Members
+private: // members
 	
     T& resource_;
 

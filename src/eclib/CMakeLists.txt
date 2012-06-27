@@ -5,6 +5,7 @@ Area.h
 AutoAlarm.cc
 AutoAlarm.h
 AutoLock.h
+AutoLocker.h
 AutoLocker.cc
 BackTrace.h
 BackTrace.cc

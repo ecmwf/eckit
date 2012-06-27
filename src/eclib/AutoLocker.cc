@@ -10,8 +10,7 @@
 
 /* #define CHECK_DEAD_LOCKS */
 
-
-#include "eclib/AutoLock.h"
+#include "eclib/AutoLocker.h"
 #include "eclib/Mutex.h"
 
 #ifdef CHECK_DEAD_LOCKS
@@ -27,9 +26,7 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 
 static void lock()
 {
-#ifdef CHECK_DEAD_LOCKS
 	 mutex->lock();
-#endif
 }
 
 static void unlock()
@@ -44,11 +41,9 @@ static void init(void)
 	gotMap  = new GotMap;
 	pthread_atfork(lock,unlock,unlock);
 }
-#endif
 
 void AutoLocker::want(void* resource)
 {
-#ifdef CHECK_DEAD_LOCKS
 	pthread_once(&once,init);
 	mutex->lock();
 
@@ -66,31 +61,25 @@ void AutoLocker::want(void* resource)
 	}
 
 	mutex->unlock();
-#endif
 }
 
 void AutoLocker::got(void* resource)
 {
-#ifdef CHECK_DEAD_LOCKS
 	mutex->lock();
 	cerr << "AutoLocker " << pthread_self() << " got " << resource << endl;
 	(*gotMap)[resource] = pthread_self();
 	wantMap->erase(pthread_self());
 	mutex->unlock();
-#endif
 }
 
 void AutoLocker::release(void* resource)
 {
-#ifdef CHECK_DEAD_LOCKS
 	mutex->lock();
 	cerr << "AutoLocker " << pthread_self() << " release " << resource << endl;
 	gotMap->erase(resource);
 	mutex->unlock();
-#endif
 }
 
-#ifdef CHECK_DEAD_LOCKS
 static void visit(pthread_t p, Set& s,void *resource)
 {
 	if(s.find(p) != s.end())
@@ -111,12 +100,29 @@ static void visit(pthread_t p, Set& s,void *resource)
 
 	s.erase(p);
 }
-#endif
 
 void AutoLocker::analyse(void *resource)
 {
-#ifdef CHECK_DEAD_LOCKS
 	Set set;
 	visit(pthread_self(),set,resource);
-#endif
 }
+
+#else
+
+void AutoLocker::want(void* resource)
+{
+}
+
+void AutoLocker::got(void* resource)
+{
+}
+
+void AutoLocker::release(void* resource)
+{
+}
+
+void AutoLocker::analyse(void* resource)
+{
+}
+
+#endif

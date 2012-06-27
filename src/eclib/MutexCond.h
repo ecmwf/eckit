@@ -16,10 +16,12 @@
 
 #include <pthread.h>
 
+#include "eclib/NonCopyable.h"
+
 // A mutex and a condition variable
 // for Producer/Consumer architectures
 
-class MutexCond {
+class MutexCond : private NonCopyable {
 public:
 
 // -- Contructors
@@ -41,11 +43,6 @@ public:
 	char tag() const { return tag_; }
 
 private:
-
-// No copy allowed
-
-	MutexCond(const MutexCond&);
-	MutexCond& operator=(const MutexCond&);
 
 // -- Members
 

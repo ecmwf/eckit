@@ -8,11 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-
-
 #include "eclib/Exceptions.h"
 #include "eclib/Mutex.h"
-
 
 Mutex::Mutex(char tag) :
 	exists_(false),

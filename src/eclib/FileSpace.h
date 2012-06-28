@@ -15,12 +15,12 @@
 #define FileSpace_H
 
 #include "eclib/PathName.h"
+#include "eclib/NonCopyable.h"
 
-class FileSpace {
+class FileSpace : private NonCopyable {
 public:
 
 // -- Methods
-
 
 	const PathName& sameFileSystem(const PathName&) const;
 	const vector<PathName>& fileSystems() const { return fileSystems_; }
@@ -42,11 +42,6 @@ private:
 	FileSpace(const string&);
 	~FileSpace(); // Change to virtual if base class
 
-// No copy allowed
-
-	FileSpace(const FileSpace&);
-	FileSpace& operator=(const FileSpace&);
-
 // -- Methods
 
 	void load() const;
@@ -60,8 +55,5 @@ private:
 	vector<PathName> fileSystems_;
 
 };
-
-
-
 
 #endif

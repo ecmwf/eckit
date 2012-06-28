@@ -19,11 +19,13 @@
 typedef map<string, FileSpace*> Map;
 
 CREATE_MUTEX();
+
 static Map space;
 
 FileSpace::FileSpace(const string& name) :
 	name_(name), last_(0)
 {
+    INIT_MUTEX();    
 	AutoLock<Mutex> lock(mutex);
 	space[name] = this;
 	load();
@@ -32,7 +34,6 @@ FileSpace::FileSpace(const string& name) :
 FileSpace::~FileSpace()
 {
 	AutoLock<Mutex> lock(mutex);
-
 	space.erase(name_);
 }
 
@@ -343,6 +344,7 @@ const PathName& FileSpace::find(const PathName& path, bool& found) const
 
 const FileSpace& FileSpace::lookUp(const string& name)
 {
+    INIT_MUTEX();
 	AutoLock<Mutex> lock(mutex);
 
 	Map::iterator j = space.find(name);

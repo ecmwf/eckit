@@ -179,8 +179,10 @@ class AutoLockTag {
 	AutoState state_;
 	AutoLock<T> lock_;
 public:
-	AutoLockTag(T& t): state_(t.tag()), lock_(t) 
+    AutoLockTag(T& t): state_(t.tag()), lock_(t) 
 		{ state_.set(t.tag() - 'a' + 'A'); }
+    AutoLockTag(T* t): state_(t->tag()), lock_(t) 
+		{ state_.set(t->tag() - 'a' + 'A'); }
 };
 
 #endif

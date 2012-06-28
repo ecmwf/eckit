@@ -15,10 +15,12 @@
 #define Monitorable_H
 
 #include "eclib/ClassExtent.h"
+#include "eclib/NonCopyable.h"
 
 class JSON;
 
-class Monitorable : public ClassExtent<Monitorable> {
+class Monitorable : private NonCopyable,
+                    public ClassExtent<Monitorable> {
 public:
 
 	Monitorable();
@@ -44,11 +46,6 @@ protected:
 	virtual void print(ostream&) const;
 
 private:
-
-// No copy allowed
-
-	Monitorable(const Monitorable&);
-	Monitorable& operator=(const Monitorable&);
 
 	friend ostream& operator<<(ostream& s,const Monitorable& p)
 		{ p.print(s); return s; }

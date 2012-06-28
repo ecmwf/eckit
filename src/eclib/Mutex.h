@@ -14,6 +14,8 @@
 #ifndef Mutex_H
 #define Mutex_H
 
+#include <pthread.h>
+
 #include "eclib/machine.h"
 #include "eclib/NonCopyable.h"
 
@@ -52,33 +54,12 @@ protected:
 
 #define CREATE_MUTEX()                              \
 static Mutex* mutex;                                \
-static pthread_once_t once = PTHREAD_ONCE_INIT;     \
-static void init()                                  \
+static pthread_once_t mutex_once = PTHREAD_ONCE_INIT;     \
+static void init_global_mutex()                     \
 {                                                   \
     mutex = new Mutex();                            \
 }
 
-#define INIT_MUTEX() pthread_once(&once, init);
-
-//-----------------------------------------------------------------
-
-#if 0
-
-class MutexWrapper : private NonCopyable {
-    
-    // -- Methods
-    
-    MutexWrapper() : mutex_(0) {}
-    
-    void lock();
-    void unlock();
-    char tag() const { return mutex_.tag(); }
-    
-private:
-    Mutex* mutex_;
-    pthread_once_t once_;
-};
-
-#endif
+#define INIT_MUTEX() pthread_once(&mutex_once, init_global_mutex);
 
 #endif

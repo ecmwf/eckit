@@ -20,7 +20,7 @@
 // This is overkilled, but it protects cout and cerr.
 // Unfortinatly, it will also serialize other usage of this class (e.g. sockets...)
 
-static Mutex mutex;
+CREATE_MUTEX();
 
 LogStream::LogStream(Logger* logger):
     ostream( new LogBuffer( logger ) )

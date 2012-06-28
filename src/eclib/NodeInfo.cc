@@ -19,7 +19,7 @@
 #include "eclib/StrStream.h"
 #include "eclib/ThreadSingleton.h"
 
-static Mutex mutex;
+CREATE_MUTEX();
 
 NodeInfo::NodeInfo() :
 	port_(0), id_(0), task_(-1)
@@ -28,6 +28,7 @@ NodeInfo::NodeInfo() :
 
 NodeInfo& NodeInfo::init()
 {
+    INIT_MUTEX();
     AutoLock<Mutex> lock(mutex);
 	if(!name_.length())
 	{

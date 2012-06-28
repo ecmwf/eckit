@@ -14,7 +14,9 @@
 #ifndef Task_H
 #define Task_H
 
-class Task {
+#include "eclib/NonCopyable.h"
+
+class Task : private NonCopyable {
 public:
 
 // -- Contructors
@@ -32,13 +34,6 @@ public:
 	virtual void wait()   = 0;
 	virtual bool active() = 0;
 	virtual void kill()   = 0;
-
-private:
-
-// No copy allowed
-
-	Task(const Task&);
-	Task& operator=(const Task&);
 
 };
 

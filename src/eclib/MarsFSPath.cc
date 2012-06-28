@@ -21,11 +21,6 @@
 #include "eclib/NodeInfo.h"
 #include "eclib/StrStream.h"
 
-static Mutex mutex;
-
-
-
-
 MarsFSPath::MarsFSPath(const string& path)
 {
     string p = path;

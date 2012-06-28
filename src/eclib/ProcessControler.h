@@ -17,7 +17,8 @@
 #include "eclib/ClassExtent.h"
 #include "eclib/Task.h"
 
-class ProcessControler : public Task , public ClassExtent<ProcessControler> {
+class ProcessControler : public Task, 
+                         public ClassExtent<ProcessControler> {
 public:
 
 	struct result { bool found_; pid_t pid_; int status_; };
@@ -50,11 +51,6 @@ public:
     
 
 private:
-
-// No copy allowed
-
-	ProcessControler(const ProcessControler&);
-	ProcessControler& operator=(const ProcessControler&);
 
 // -- Members
 

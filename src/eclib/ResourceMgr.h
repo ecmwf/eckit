@@ -14,10 +14,14 @@
 #ifndef ResourceMgr_H
 #define ResourceMgr_H
 
+#include "eclib/NonCopyable.h"
 
 class LocalPathName;
 
-class ResourceMgr {
+// this class is a singleton
+// TODO: make it a real one -- removing the static function and providing a GetInstance()
+
+class ResourceMgr : private NonCopyable {
 public:
 
 // -- Class methods
@@ -29,11 +33,6 @@ public:
 private:
 
 	ResourceMgr();
-
-// No copy allowed
-
-	ResourceMgr(const ResourceMgr&);
-	ResourceMgr& operator=(const ResourceMgr&);
 
 // -- Members
 
@@ -65,4 +64,5 @@ public:
 	int operator<(const ResourceQualifier&) const;
 
 };
+
 #endif

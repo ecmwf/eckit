@@ -58,11 +58,6 @@ protected:
 
 private:
 
-// No copy allowed
-
-	PipeHandler(const PipeHandler<Request>&);
-	PipeHandler<Request>& operator=(const PipeHandler<Request>&);
-
 // -- Members
 
 	PipeStream *pipe_;

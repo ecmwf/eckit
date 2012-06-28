@@ -23,8 +23,6 @@
 #include "eclib/Thread.h"
 #include "eclib/ThreadControler.h"
 
-static Mutex mutex;
-
 class ClusterHeartBeat : public Thread {
     ClusterNode& owner_;
     virtual void run();

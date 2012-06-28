@@ -18,7 +18,7 @@
 
 typedef map<string, FileSpace*> Map;
 
-static Mutex mutex;
+CREATE_MUTEX();
 static Map space;
 
 FileSpace::FileSpace(const string& name) :

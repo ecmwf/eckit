@@ -36,7 +36,7 @@ typedef void (*sighandler_t) (int);
 
 static in_addr none = { INADDR_NONE };
 
-static Mutex mutex;
+CREATE_MUTEX();
 
 TCPSocket::UnknownHost::UnknownHost(const string& host):
     Exception(string("Unknown host ") + host)
@@ -237,6 +237,7 @@ TCPSocket& TCPClient::connect(const string& remote,int port,int retries, int tim
 
     { // Block for mutex
 
+        INIT_MUTEX();
         AutoLock<Mutex> lock(mutex);
 
         sin.sin_port   = htons(port);
@@ -488,6 +489,7 @@ int TCPSocket::newSocket(int port)
         ::sleep(5);
     }
 
+    INIT_MUTEX();
     AutoLock<Mutex> lock(mutex);
 #ifdef SGI
     int    len = sizeof(sin);
@@ -533,12 +535,12 @@ static map<uint32_t,string> cache;
 
 string TCPSocket::addrToHost(in_addr addr)
 {
+    INIT_MUTEX();
     AutoLock<Mutex> lock(mutex);
 
     // For some reason IBM's gethostbyaddr_r dumps core
     // from time to time, so let's cache the result
     // to minimise the cores
-
 
     map<uint32_t,string>::iterator j = cache.find(addr.s_addr);
 

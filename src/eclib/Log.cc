@@ -21,7 +21,7 @@
 
 //=============================================================================
 
-static Mutex mutex;
+CREATE_MUTEX();
 
 StatusStream::StatusStream():
     ostream(new StatusBuffer)
@@ -177,12 +177,14 @@ void MonitorBuffer::dumpBuffer()
 
 void Log::lock()
 {
-        //mutex.lock();
+    //INIT_MUTEX();
+    //mutex.lock();
 }
 
 void Log::unlock()
 {
-        //mutex.unlock();
+    //INIT_MUTEX();
+    //mutex.unlock();
 }
 
 //=============================================================================

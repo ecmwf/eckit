@@ -35,7 +35,8 @@ static void init(void)
 
 #endif
 
-static Mutex mutex;
+CREATE_MUTEX();
+
 static map<string,FileManager*> m;
 
 //-----------------------------------------------------------------------------
@@ -43,6 +44,8 @@ static map<string,FileManager*> m;
 FileManager::FileManager(const string& name):
         name_(name)
 {
+    INIT_MUTEX();
+    
     AutoLock<Mutex> lock(mutex);
 
     ASSERT(m.find(name) == m.end());

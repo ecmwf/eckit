@@ -15,7 +15,7 @@
 #include "eclib/Mutex.h"
 #include "eclib/ResourceMgr.h"
 
-static Mutex mutex;
+CREATE_MUTEX();
 
 // this should be a member of ResourceMgr
 // it will be when I have tamed the xlC
@@ -28,6 +28,7 @@ bool ResourceMgr::inited_ = false;
 
 void ResourceMgr::reset()
 {
+    INIT_MUTEX();
 	AutoLock<Mutex> lock(mutex);
 	resmap.clear();
 	inited_ = false;
@@ -111,6 +112,7 @@ void ResourceMgr::readConfigFile(const LocalPathName& file)
 
 void ResourceMgr::set(const string& name,const string& value)
 {
+    INIT_MUTEX();    
 	AutoLock<Mutex> lock(mutex);
 	string s = name + ": " + value;
 	if(!parse(s.c_str()))
@@ -120,7 +122,7 @@ void ResourceMgr::set(const string& name,const string& value)
 bool ResourceMgr::lookUp(const string& kind,const string& owner,
 	const string& name,string& result)
 {
-
+    INIT_MUTEX();
 	AutoLock<Mutex> lock(mutex);
 
 	if(!inited_)

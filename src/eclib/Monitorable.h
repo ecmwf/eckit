@@ -15,12 +15,10 @@
 #define Monitorable_H
 
 #include "eclib/ClassExtent.h"
-#include "eclib/NonCopyable.h"
 
 class JSON;
 
-class Monitorable : private NonCopyable,
-                    public ClassExtent<Monitorable> {
+class Monitorable : public ClassExtent<Monitorable> {
 public:
 
 	Monitorable();

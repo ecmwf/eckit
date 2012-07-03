@@ -21,7 +21,6 @@
 
 //=============================================================================
 
-CREATE_MUTEX();
 
 StatusStream::StatusStream():
     ostream(new StatusBuffer)

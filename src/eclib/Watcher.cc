@@ -20,3 +20,4 @@ Watcher& Watcher::dummy()
 	static DummyWatcher x;
 	return x;
 }
+

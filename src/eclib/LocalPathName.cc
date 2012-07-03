@@ -30,7 +30,7 @@
 #include "eclib/StrStream.h"
 #include "eclib/TimeStamp.h"
 
-CREATE_MUTEX();
+static Mutex mutex;
 
 // I need to come back here when we have a proper string class
 
@@ -135,7 +135,7 @@ bool LocalPathName::available() const
 
 LocalPathName LocalPathName::unique(const LocalPathName& path)
 {
-    INIT_MUTEX();
+
     AutoLock<Mutex> lock(mutex);
 
 	static string format = "%Y%m%d.%H%M%S";

@@ -16,7 +16,7 @@
 #include "eclib/RotLogger.h"
 #include "eclib/TimeStamp.h"
 
-CREATE_MUTEX();
+static Mutex mutex;
 
 static ofstream* last     = 0;
 static time_t   lastTime  = 0;
@@ -31,7 +31,6 @@ RotLogger::~RotLogger()
 
 std::ostream& RotLogger::out()
 {
-    INIT_MUTEX();
     AutoLock<Mutex> lock(mutex);
 
     time_t now = ::time(0) / 86400;

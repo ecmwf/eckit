@@ -13,14 +13,14 @@
 #include "eclib/TimeStamp.h"
 #include "eclib/AutoLock.h"
 #include "eclib/Mutex.h"
+#include "eclib/Once.h"
 
-CREATE_MUTEX();
+static Once<Mutex> mutex;
 
 DHSLogger::DHSLogger() :
     begin_(noop),
     end_(noop)
 {
-    INIT_MUTEX()
 }
 
 DHSLogger::~DHSLogger()

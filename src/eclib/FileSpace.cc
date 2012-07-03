@@ -15,17 +15,17 @@
 #include "eclib/Mutex.h"
 #include "eclib/Resource.h"
 #include "eclib/Types.h"
+#include "eclib/Once.h"
 
 typedef map<string, FileSpace*> Map;
 
-CREATE_MUTEX();
+static Once<Mutex> mutex;
 
 static Map space;
 
 FileSpace::FileSpace(const string& name) :
 	name_(name), last_(0)
 {
-    INIT_MUTEX();    
 	AutoLock<Mutex> lock(mutex);
 	space[name] = this;
 	load();
@@ -344,7 +344,6 @@ const PathName& FileSpace::find(const PathName& path, bool& found) const
 
 const FileSpace& FileSpace::lookUp(const string& name)
 {
-    INIT_MUTEX();
 	AutoLock<Mutex> lock(mutex);
 
 	Map::iterator j = space.find(name);

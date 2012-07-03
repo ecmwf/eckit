@@ -50,16 +50,4 @@ protected:
 
 };
 
-//-----------------------------------------------------------------
-
-#define CREATE_MUTEX()                              \
-static Mutex* mutex;                                \
-static pthread_once_t mutex_once = PTHREAD_ONCE_INIT;     \
-static void init_global_mutex()                     \
-{                                                   \
-    mutex = new Mutex();                            \
-}
-
-#define INIT_MUTEX() pthread_once(&mutex_once, init_global_mutex);
-
 #endif

@@ -13,6 +13,7 @@
 #include "eclib/AutoLock.h"
 #include "eclib/Mutex.h"
 #include "eclib/PathName.h"
+#include "eclib/PathName.h"
 
 #if 0
 typedef map<string,FileManager*>    FileManagerMap;
@@ -35,8 +36,7 @@ static void init(void)
 
 #endif
 
-CREATE_MUTEX();
-
+static Mutex mutex;
 static map<string,FileManager*> m;
 
 //-----------------------------------------------------------------------------
@@ -44,7 +44,6 @@ static map<string,FileManager*> m;
 FileManager::FileManager(const string& name):
         name_(name)
 {
-    INIT_MUTEX();
     
     AutoLock<Mutex> lock(mutex);
 

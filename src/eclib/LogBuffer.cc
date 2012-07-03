@@ -15,12 +15,13 @@
 #include "eclib/LogBuffer.h"
 #include "eclib/Monitor.h"
 #include "eclib/AutoLock.h"
+#include "eclib/Once.h"
 
 // This is a mutex that serialize all calls to LogStream
 // This is overkilled, but it protects cout and cerr.
 // Unfortunatly, it will also serialize other usage of this class (e.g. sockets...)
 
-CREATE_MUTEX();
+static Once<Mutex> mutex;
 
 LogStream::LogStream(Logger* logger):
     ostream( new LogBuffer( logger ) )
@@ -40,7 +41,7 @@ LogBuffer::LogBuffer( Logger* logger ) :
     line_(0),
     len_(0)
 {
-    INIT_MUTEX();
+    AutoLock<Mutex> lock(mutex);
     setp(buffer_, buffer_ + sizeof(buffer_));
     setg(0, 0, 0);
     //	unbuffered(1);

@@ -311,6 +311,8 @@ ThreadPool.cc
 ThreadPool.h
 ThreadSingleton.cc
 ThreadSingleton.h
+Once.cc
+Once.h
 Time.cc
 Time.h
 TimeInterval.cc
@@ -366,6 +368,7 @@ list( APPEND eclib_templates
                     TxnLog.cc
                     Types.cc
 					Recycler.cc
+					Once.cc
 )
 
 list( APPEND eclib_persistent 

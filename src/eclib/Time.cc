@@ -8,8 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-
-
 #include "eclib/machine.h"
 
 #include "eclib/DumpLoad.h"

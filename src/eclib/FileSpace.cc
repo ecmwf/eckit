@@ -15,12 +15,10 @@
 #include "eclib/Mutex.h"
 #include "eclib/Resource.h"
 #include "eclib/Types.h"
-#include "eclib/Once.h"
 
 typedef map<string, FileSpace*> Map;
 
-static Once<Mutex> mutex;
-
+static Mutex mutex;
 static Map space;
 
 FileSpace::FileSpace(const string& name) :
@@ -34,6 +32,7 @@ FileSpace::FileSpace(const string& name) :
 FileSpace::~FileSpace()
 {
 	AutoLock<Mutex> lock(mutex);
+
 	space.erase(name_);
 }
 

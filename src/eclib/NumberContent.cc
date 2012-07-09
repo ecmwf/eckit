@@ -87,14 +87,10 @@ int NumberContent::compareDouble(const DoubleContent& other) const
 
 void NumberContent::value(bool& b) const 
 { 
-    if( value_ != 1 && value_ != 0 )
-    {
-        StrStream s;
-        s << "Cannot convert " << *this << " (" << typeName() << ") to bool because value [" << value_ << "] is not 0 or 1" << StrStream::ends;
-        throw BadBoolConversion( s.str() );
-    }
+    if( value_ == 0 )
+        b = false;
     else
-        b = value_;
+        b = true;
 }
 
 void NumberContent::value(long long& l) const 

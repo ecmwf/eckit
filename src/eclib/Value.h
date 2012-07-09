@@ -66,10 +66,18 @@ public:
 
 // -- Operators
 
+    operator short() const              { long long l;  content_->value(l); return l; }
+    operator unsigned short() const     { long long l;  content_->value(l); return l; }
+
+    operator int() const                { long long l;  content_->value(l); return l; }
+    operator unsigned int() const       { long long l;  content_->value(l); return l; }
+
     operator long() const               { long long l;  content_->value(l); return l; }
     operator unsigned long() const      { long long l;  content_->value(l); return l; }
-    operator unsigned long long() const { long long l;  content_->value(l); return l; }
+
     operator long long() const          { long long l;  content_->value(l); return l; }
+    operator unsigned long long() const { long long l;  content_->value(l); return l; }
+
     operator double() const             { double d;     content_->value(d); return d; }
     operator bool() const               { bool d;       content_->value(d); return d; }
 

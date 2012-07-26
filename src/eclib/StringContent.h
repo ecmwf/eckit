@@ -36,7 +36,7 @@ protected:
 
     virtual int compare(const Content& other) const;
 
-    virtual void value(bool& n)                 const { Content::value(n); }
+    virtual void value(bool& n)                 const;
     virtual void value(long long& n)            const { Content::value(n); }
     virtual void value(double& n)               const { Content::value(n); }
     virtual void value(string& n)               const;

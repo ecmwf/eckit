@@ -22,7 +22,7 @@ StringContent::StringContent(const string& s):
 }
 
 StringContent::StringContent(const char* s): 
-	value_(s) 
+	value_(s)
 { 
 }
 
@@ -65,6 +65,21 @@ int StringContent::compareString(const StringContent& other) const
 void StringContent::value(string& s) const 
 { 
 	s = value_; 
+}
+
+void StringContent::value(bool& b) const 
+{ 
+    if( value_ == "true" || value_ == "on" || value_ == "yes" || value_ == "1" )
+    {
+        b = true;
+    }
+    else
+    {
+            if( value_ == "false" || value_ == "off" || value_ == "no" || value_ == "0" )
+                b = false;
+            else
+                Content::value(n);
+    }
 }
 
 Content* StringContent::add(const Content& other) const

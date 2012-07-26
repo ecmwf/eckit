@@ -78,7 +78,7 @@ void StringContent::value(bool& b) const
             if( value_ == "false" || value_ == "off" || value_ == "no" || value_ == "0" )
                 b = false;
             else
-                Content::value(n);
+                Content::value(b);
     }
 }
 

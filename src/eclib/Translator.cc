@@ -60,6 +60,13 @@ string Translator<int,string>::operator()(int value)
     return string(s);
 }
 
+string Translator<unsigned int,string>::operator()(unsigned int value)
+{
+    StrStream s;
+    s << value << StrStream::ends;
+    return string(s);
+}
+
 int Translator<string,int>::operator()(const string& s)
 {
 
@@ -69,6 +76,18 @@ int Translator<string,int>::operator()(const string& s)
     // Catter for ints
     char *more;
     int result =  strtol(s.c_str(),&more,10);
+    return result * multiplier(more);
+}
+
+unsigned int Translator<string,unsigned int>::operator()(const string& s)
+{
+
+    if(s == "no" || s == "off" || s == "false") return false;
+    if(s == "yes"|| s == "on"  || s == "true")  return true;
+
+    // Catter for ints
+    char *more;
+    unsigned int result =  strtoul(s.c_str(),&more,10);
     return result * multiplier(more);
 }
 

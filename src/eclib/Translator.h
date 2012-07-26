@@ -39,8 +39,16 @@ struct Translator<int,string>
     { string operator()(int);          };
 
 template<>
+struct Translator<unsigned int,string>
+    { string operator()(unsigned int);  };
+
+template<>
 struct Translator<string,int>
     { int   operator()(const string&); };
+
+template<>
+struct Translator<string,unsigned int>
+    { unsigned int operator()(const string&); };
 
 template<>
 struct Translator<double,string>

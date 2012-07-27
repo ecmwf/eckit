@@ -18,7 +18,7 @@
 
 class Logger : private NonCopyable {
 public:
-
+    
     // -- Constructor
 
     Logger();

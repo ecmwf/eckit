@@ -8,14 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <cassert>
 
 #include "eclib/LibBehavior.h"
-#include "eclib/StdLogger.h"
 
 using namespace std;
 
-LibBehavior::LibBehavior()
+LibBehavior::LibBehavior() :
+    info_ (0),
+    debug_(0),
+    warn_ (0),
+    error_(0)
 {
 }
 
@@ -23,8 +27,49 @@ LibBehavior::~LibBehavior()
 {
 }
 
+void LibBehavior::register_logger_callback( CallbackLogger::callback* c, void* ctxt )
+{
+    assert(info_);
+    assert(debug_);
+    assert(warn_);
+    assert(error_);
+    
+    info_->register_callback (c, (int)'I', ctxt);
+    debug_->register_callback(c, (int)'D', ctxt);
+    warn_->register_callback (c, (int)'W', ctxt);
+    error_->register_callback(c, (int)'E', ctxt);
+}
+
+
 string LibBehavior::home() const
 {
 //    "/usr/local/etc/" + Context::instance().appName()
     return string( getenv( "HOME" ) );
 }
+
+Logger* LibBehavior::createInfoLogger()
+{    
+    info_ = new CallbackLogger();
+    return info_;
+}
+
+Logger* LibBehavior::createDebugLogger()
+{    
+    debug_ = new CallbackLogger();
+    return debug_;
+}
+
+Logger* LibBehavior::createWarningLogger()
+{   
+    warn_ = new CallbackLogger();
+    return warn_;
+}
+
+Logger* LibBehavior::createErrorLogger()
+{    
+    error_ = new CallbackLogger();
+    return error_;
+}
+
+
+

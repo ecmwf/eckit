@@ -176,13 +176,11 @@ void MonitorBuffer::dumpBuffer()
 
 void Log::lock()
 {
-    //INIT_MUTEX();
     //mutex.lock();
 }
 
 void Log::unlock()
 {
-    //INIT_MUTEX();
     //mutex.unlock();
 }
 

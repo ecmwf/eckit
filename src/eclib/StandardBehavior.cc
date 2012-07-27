@@ -28,7 +28,6 @@ string StandardBehavior::home() const
     return string( getenv( "HOME" ) );
 }
 
-
 long StandardBehavior::taskId() const
 {
     return 0;

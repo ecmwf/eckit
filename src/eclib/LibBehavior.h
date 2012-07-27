@@ -11,6 +11,7 @@
 #ifndef eclib_LibBehavior_H
 #define eclib_LibBehavior_H
 
+#include "eclib/CallbackLogger.h"
 #include "eclib/StandardBehavior.h"
 
 class LibBehavior : public StandardBehavior {
@@ -24,10 +25,23 @@ public:
 
 	~LibBehavior();
     
+    void register_logger_callback( CallbackLogger::callback* c, void* ctxt );
+    
 public: // interface methods
     
     virtual std::string home() const;    
     
+    virtual Logger* createInfoLogger();
+    virtual Logger* createDebugLogger();
+    virtual Logger* createWarningLogger();
+    virtual Logger* createErrorLogger();
+    
+protected:
+    
+    CallbackLogger* info_;
+    CallbackLogger* debug_;
+    CallbackLogger* warn_;
+    CallbackLogger* error_;
 };
 
 #endif // eclib_LibBehavior_h

@@ -15,12 +15,18 @@
 
 #include "eclib/Logger.h"
 
+class CallbackBuffer;
+
 class CallbackLogger : public Logger {
 public:
     
+    // typedefs
+    
+    typedef void (*callback) (void* ctxt, int level, const char* msg);
+
     // -- Constructor
 
-    CallbackLogger( std::ostream& out );
+    CallbackLogger();
 
     // -- Destructor
 
@@ -28,15 +34,18 @@ public:
     
     // -- Methods
     
+    void register_callback( callback* c, int level, void* ctxt);
+    
     virtual void beginLine();
     
     virtual void endLine();
     
-    virtual std::ostream& out() = 0;
+    virtual std::ostream& out();
     
 private:
     
-    std::ostream* out_;
+    CallbackBuffer* buffer_;
+    std::ostream*   out_;
   
 };
 

@@ -34,13 +34,21 @@ public:
     
     // -- Methods
     
-    void register_callback( callback* c, int level, void* ctxt);
+    void register_callback(callback c, int level, void* ctxt);
     
     virtual void beginLine();
     
     virtual void endLine();
     
     virtual std::ostream& out();
+
+protected:
+  
+  std::streambuf::int_type overflow (std::streambuf::int_type);
+  
+  std::streambuf::int_type sync();
+  
+  bool  dumpBuffer();
     
 private:
     

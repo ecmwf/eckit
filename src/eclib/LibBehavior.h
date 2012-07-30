@@ -25,7 +25,7 @@ public:
 
 	~LibBehavior();
     
-    void register_logger_callback( CallbackLogger::callback* c, void* ctxt );
+    void register_logger_callback(CallbackLogger::callback c, void* ctxt = 0 );
     
 public: // interface methods
     

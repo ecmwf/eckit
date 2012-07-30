@@ -12,9 +12,13 @@
 
 #include "eclib/CallbackLogger.h"
 #include "eclib/Monitor.h"
+#include "eclib/Mutex.h"
+#include "eclib/Once.h"
 #include "eclib/TimeStamp.h"
 
 //-----------------------------------------------------------------------------
+
+static Once<Mutex> mutex;
 
 class CallbackBuffer : public std::streambuf,
                        public NonCopyable {
@@ -24,13 +28,14 @@ public:
         call_(0),
         level_(0),
         ctxt_(0),
-        internal_buf_( size + 2 ) // smallest possible size of buffer is 1 plus another for the '\0'
+        internal_buf_( size + 1 ) // + 1 so we can always write the '\0'
     {
+        assert( size );
         char *base = &internal_buf_.front();
-        setp(base, base + internal_buf_.size() - 1); // -1 to make overflow() easier
+        setp(base, base + internal_buf_.size() - 1 ); // don't consider the space for '\0'
     }
 
-    void register_callback( CallbackLogger::callback* c, int level, void* ctxt )
+    void register_callback( CallbackLogger::callback c, int level, void* ctxt )
     {
         call_  = c;
         level_ = level;
@@ -45,38 +50,36 @@ public:
         int sync();
 
     private:
-        CallbackLogger::callback* call_;
+        CallbackLogger::callback call_;
         int level_;
         void* ctxt_;
         std::vector<char> internal_buf_;
 };
 
-CallbackBuffer::int_type CallbackBuffer::overflow(int_type ch)
+std::streambuf::int_type CallbackBuffer::overflow( std::streambuf::int_type ch )
 {
-    if( ch != traits_type::eof() )
-    {
-        assert(std::less_equal<char *>()(pptr(), epptr()));
-        *pptr() = ch; // we can always write because we reserved an extra character
-        pbump(1);
-        if( dumpBuffer() ) return ch; // success returns anything but traits_type::eof()
+    AutoLock<Mutex> lock(mutex);
+    if (ch == traits_type::eof() ) {
+        return sync();
     }
 
-    return traits_type::eof();
+    dumpBuffer();
+    sputc(ch);
+
+    return ch;    
 }
 
-int CallbackBuffer::sync()
+std::streambuf::int_type CallbackBuffer::sync()
 {
+    AutoLock<Mutex> lock(mutex);
 	return dumpBuffer() ? 0 : -1;
 }
 
 bool CallbackBuffer::dumpBuffer()
 {    
-    // forward the output to the callback function
-    
-    if( call_ )
+    if( call_ && pbase() != pptr() ) // forward the output to the callback function
     {
-        // insert '\0' at pptr()
-        // we can always write '\0' because we reserved an extra character
+        // insert '\0' at pptr() -- e can do it because we reserved an extra character
         
         *pptr() = '\0';                       
         pbump(1);
@@ -91,7 +94,7 @@ bool CallbackBuffer::dumpBuffer()
     std::ptrdiff_t n = pptr() - pbase();
     pbump(-n);
         
-    return 0;
+    return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -123,10 +126,13 @@ std::ostream& CallbackLogger::out()
     return *out_;
 }
 
-void CallbackLogger::register_callback( callback* c, int level, void* ctxt )
+void CallbackLogger::register_callback( callback c, int level, void* ctxt )
 {
+    AutoLock<Mutex> lock(mutex);
+
     assert( c );
-    assert( ctxt );
+
+    // context 'ctxt' may be null
     
     buffer_->register_callback( c, level, ctxt );
 }

@@ -11,6 +11,8 @@
 #ifndef Exceptions_H
 #define Exceptions_H
 
+#include <errno.h>
+
 #include "eclib/machine.h"
 
 #include "eclib/CodeLocation.h"

@@ -14,11 +14,31 @@
 
 cmake_minimum_required( VERSION 2.6.4 FATAL_ERROR )
 
-project( eclib )
+project( eclib CXX )
 
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} )
 
 include( ecbuild_system )
+
+############################################################################################
+# go-no-go tests
+
+# if we use off_t instead of real off64_t,
+# then lets check it has size 8
+if( NOT EC_HAVE_OFF64T AND EC_HAVE_OFFT )
+    if( NOT EC_SIZEOF_OFF_T EQUAL 8 )
+        message( FATAL_ERROR "off_t hasn't 64 bits [${EC_SIZEOF_OFF_T}] and off64_t is not available" )
+    endif()
+endif()
+
+# print warning if off_t is 4 bytes
+if( EC_SIZEOF_OFF_T EQUAL 4 AND EC_HAVE_OFF64T )
+  message( STATUS "\n" )
+  message( STATUS "********************************************" )
+  message( STATUS "NOTE: off_t has 32 bits -- using off64_t" )
+  message( STATUS "********************************************" )
+  message( STATUS "\n" )
+endif()
 
 ###############################################################################
 # local project

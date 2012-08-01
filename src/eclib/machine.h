@@ -33,7 +33,7 @@
 #include "eclib/hpux.h"
 #endif
 
-#ifdef macosx
+#ifdef MacOSX
 #include "eclib/macosx.h"
 #endif
 

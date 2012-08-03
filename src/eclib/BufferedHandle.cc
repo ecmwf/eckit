@@ -79,6 +79,7 @@ long BufferedHandle::read(void* buffer,long length)
                 eof_ = true;
                 len = len ? len : used_;
                 if(len > 0) position_ += len;
+				if(len == 0) return -1;
                 return len;
             }
             left = used_;

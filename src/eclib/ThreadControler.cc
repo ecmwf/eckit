@@ -111,7 +111,7 @@ void ThreadControler::execute()
     }
 }
 
-void *ThreadControler::startThread(void *data)
+void* ThreadControler::startThread (void* data)
 {
     //cout << "ThreadControler::startThread(" << data << ")" << " " << hex << pthread_self() <<endl;
     reinterpret_cast<ThreadControler*>(data)->execute(); // static_cast or dynamic_cast ??

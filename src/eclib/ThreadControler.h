@@ -14,21 +14,18 @@
 #ifndef ThreadControler_H
 #define ThreadControler_H
 
-
 #include "eclib/MutexCond.h"
 #include "eclib/Task.h"
 
-// Don't subclass from ThreadControler put from Thread
-
 class Thread;
 
+/// @note Don't subclass from ThreadControler but from Thread
 class ThreadControler : public Task {
 public:
 
 // -- Contructors
 	
-	// ThreadControler takes ownership of Thread
-
+	/// @note ThreadControler takes ownership of Thread
     ThreadControler(Thread*,bool detached = true, size_t stack = 0);
 
 // -- Destructor
@@ -54,11 +51,6 @@ protected:
 
 private:
 
-// No copy allowed
-
-	ThreadControler(const ThreadControler&);
-	ThreadControler& operator=(const ThreadControler&);
-
 // -- Members
 	
     pthread_t   thread_;
@@ -70,11 +62,8 @@ private:
 	
 	void execute();
 
-// -- Class methods
-
-	static void *startThread(void *);
+    static void* startThread (void *data);
 
 };
-
 
 #endif

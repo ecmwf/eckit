@@ -16,7 +16,9 @@
 
 #include "eclib/machine.h"
 
-class Tokenizer {
+#include "eclib/NonCopyable.h"
+
+class Tokenizer : private NonCopyable {
 public:
 
 // -- Contructors
@@ -25,19 +27,14 @@ public:
 
 // -- Destructor
 
-	~Tokenizer(); // Change to virtual if base class
-
+	~Tokenizer(); 
+    
 // -- Methods
 	
 	void operator()(const string&, vector<string>&);
 	void operator()(istream&,vector<string>&);
 
 private:
-
-// No copy allowed
-
-	Tokenizer(const Tokenizer&);
-	Tokenizer& operator=(const Tokenizer&);
 
 // -- Members
 

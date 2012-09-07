@@ -23,9 +23,6 @@ class BasePathName;
 class MarsFSPath {
 public:
 
-// -- Exceptions
-	// None
-
 // -- Contructors
 
 	MarsFSPath(const string&);
@@ -40,11 +37,7 @@ public:
 
 	~MarsFSPath(); // Change to virtual if base class
 
-// -- Convertors
-	// None
-
 // -- Operators
-	// None
 
     bool operator==(const MarsFSPath& other) const
         { return node_ == other.node_ && path_ == other.path_; }
@@ -84,6 +77,8 @@ public:
     time_t lastModified() const;
     time_t created()      const;
 
+    bool isDir() const;
+    
     void mkdir(short mode = 0777) const;
     void unlink() const;
     void rmdir() const;
@@ -105,54 +100,18 @@ public:
     DataHandle* partHandle(const OffsetList&, const LengthList&) const;
     DataHandle* partHandle(const Offset&, const Length&) const;
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-
-
 protected:
-
-// -- Members
-	// None
 
 // -- Methods
 	
 	void print(ostream&) const; // Change to virtual if base class	
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
 private:
-
-// No copy allowed
-
 
 // -- Members
 
     string  node_;
     string  path_;
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
 
 // -- Friends
 

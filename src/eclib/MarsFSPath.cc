@@ -166,6 +166,11 @@ time_t MarsFSPath::created() const
     return MarsFSClient(*this).created(path_);
 }
 
+bool MarsFSPath::isDir() const
+{
+    throw NotImplemented(Here());
+}
+
 time_t MarsFSPath::lastAccess() const
 {
     return MarsFSClient(*this).lastAccess(path_);

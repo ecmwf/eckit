@@ -18,14 +18,12 @@
 
 #include "eclib/DataHandle.h"
 #include "eclib/Length.h"
+#include "eclib/NonCopyable.h"
 
 struct FileSystemSize;
 
-class BasePathName {
+class BasePathName : protected NonCopyable {
 public:
-
-// -- Exceptions
-	// None
 
 // -- Contructors
 
@@ -34,12 +32,6 @@ public:
 // -- Destructor
 
 	virtual ~BasePathName() {} // Change to virtual if base class
-
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
 
 // -- Methods
 
@@ -50,6 +42,8 @@ public:
     virtual time_t lastModified() const = 0;
     virtual time_t created() const = 0;
 
+    virtual bool isDir() const = 0;
+    
     virtual void rename(const BasePathName&) const = 0;
     virtual void link(const BasePathName&) const = 0;
     virtual bool sameAs(const BasePathName&) const = 0;
@@ -82,56 +76,11 @@ public:
     virtual const string& node() const = 0;
     virtual const string& path() const = 0;
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
 protected:
 
-// -- Members
-	// None
-
-// -- Methods
-	
-	virtual void print(ostream&) const = 0; // Change to virtual if base class	
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    virtual void print(ostream&) const = 0; // Change to virtual if base class	
 
 private:
-
-// No copy allowed
-
-	BasePathName(const BasePathName&);
-	BasePathName& operator=(const BasePathName&);
-
-// -- Members
-	// None
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
 
 	friend ostream& operator<<(ostream& s,const BasePathName& p)
 		{ p.print(s); return s; }

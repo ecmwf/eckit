@@ -121,7 +121,12 @@ time_t PathName::lastModified() const
 
 time_t PathName::created() const
 {
-	return path_->created();
+    return path_->created();
+}
+
+bool PathName::isDir() const
+{
+    return path_->isDir();
 }
 
 bool PathName::exists() const
@@ -304,6 +309,23 @@ PathName operator+(const PathName& p,char s)
 	return PathName(p.asString() + s);
 }
 
+PathName operator/(const PathName& p,const string& s)
+{
+	// TODO: delegate that to "path_"
+    return PathName(p.asString() + "/" + s);
+}
+
+PathName operator/(const PathName& p,const char* s)
+{
+	// TODO: delegate that to "path_"
+	return PathName(p.asString() + "/" + s);
+}
+
+PathName operator/(const PathName& p,char s)
+{
+	// TODO: delegate that to "path_"
+	return PathName(p.asString() + "/" + s);
+}
 
 void operator<<(Stream& s,const PathName& path)
 {

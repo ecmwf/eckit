@@ -16,15 +16,13 @@
 
 #include "eclib/Connector.h"
 #include "eclib/Length.h"
+#include "eclib/NonCopyable.h"
 
 class FileSystemSize;
 class MarsFSPath;
 
-class MarsFSClient {
+class MarsFSClient : protected NonCopyable {
 public:
-
-// -- Exceptions
-	// None
 
 // -- Contructors
 
@@ -34,16 +32,8 @@ public:
 
 	~MarsFSClient(); // Change to virtual if base class
 
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
 // -- Methods
-
-
-
+    
     void mkdir(const string&,short);
     bool exists(const string&);
     string mountPoint(const string&);
@@ -71,15 +61,6 @@ public:
     vector<string> getFileSpaces();
     vector<string> getFileSystems(const string&);
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-
-// -- Class methods
-	// None
-
-
 protected:
 
 
@@ -87,41 +68,7 @@ protected:
 
 	Connector& connector_;
 
-// -- Methods
-
-	// void print(ostream&) const; // Change to virtual if base class
-    //
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
 private:
-
-// No copy allowed
-
-	MarsFSClient(const MarsFSClient&);
-	MarsFSClient& operator=(const MarsFSClient&);
-
-// -- Members
-
-
-// -- Methods
-
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
 
 // -- Friends
 

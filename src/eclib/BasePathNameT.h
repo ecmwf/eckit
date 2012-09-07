@@ -20,9 +20,6 @@ template<class T>
 class BasePathNameT : public BasePathName {
 public:
 
-// -- Exceptions
-	// None
-
 // -- Contructors
 
 	BasePathNameT(const T& path):
@@ -34,59 +31,17 @@ public:
 	BasePathNameT(const string& path):
 		path_(path) {}
 
-// -- Destructor
-
-	//~BasePathNameT(); // Change to virtual if base class
-
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
 protected:
-
-// -- Members
-	// None
 
 // -- Methods
 	
 	void print(ostream&) const; // Change to virtual if base class
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
 private:
-
-// No copy allowed
-
-	BasePathNameT(const BasePathNameT&);
-	BasePathNameT& operator=(const BasePathNameT&);
 
 // -- Members
 
 	T path_;
-
-// -- Methods
-	// None
 
 // -- Overridden methods
 
@@ -96,6 +51,8 @@ private:
     virtual time_t lastAccess() const;
     virtual time_t lastModified() const;
     virtual time_t created() const;
+    
+    virtual bool isDir() const;    
 
     virtual void rename(const BasePathName&) const;
     virtual void link(const BasePathName&) const;
@@ -129,12 +86,6 @@ private:
 
     virtual const string& node() const;
     virtual const string& path() const;
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
 
 // -- Friends
 

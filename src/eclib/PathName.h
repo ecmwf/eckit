@@ -160,6 +160,9 @@ private:
 	friend PathName operator+(const PathName& p,const char* s);
 	friend PathName operator+(const PathName& p,char s);
 
+    friend PathName operator/(const PathName& p,const string& s);
+    friend PathName operator/(const PathName& p,const char* s);
+	friend PathName operator/(const PathName& p,char s);
 
 };
 

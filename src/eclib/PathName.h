@@ -63,9 +63,13 @@ public:
 
 // Operators
 
-	PathName& operator+=(const string& s);
+    PathName& operator+=(const string& s);
 	PathName& operator+=(const char* s);
 	PathName& operator+=(char s);
+
+    PathName& operator/=(const string& s);
+	PathName& operator/=(const char* s);
+	PathName& operator/=(char s);
 
 	bool operator<(const PathName& other) const;
 	bool operator>(const PathName& other) const;

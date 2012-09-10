@@ -104,6 +104,12 @@ void TeeHandle::close()
         datahandles_[i]->close();
 }
 
+void TeeHandle::flush()
+{
+    for(size_t i=0; i < datahandles_.size(); i++)
+        datahandles_[i]->flush();
+}
+
 void TeeHandle::rewind()
 {
     NOTIMP;

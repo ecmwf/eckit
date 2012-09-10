@@ -47,6 +47,7 @@ public:
     virtual long read(void*,long);
     virtual long write(const void*,long);
     virtual void close();
+    virtual void flush();
     virtual void rewind();
     virtual void print(ostream&) const;
 

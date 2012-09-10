@@ -43,6 +43,7 @@ public:
     virtual long read(void*,long);
     virtual long write(const void*,long);
     virtual void close();
+    virtual void flush();
     virtual void rewind();
     virtual void print(ostream&) const;
 
@@ -63,6 +64,8 @@ public:
 #endif
 
 private:
+    
+    void bufferFlush();
 
 // -- Members
 
@@ -76,10 +79,6 @@ private:
     Offset               position_;
 
     virtual string title() const;
-
-// -- Methods
-
-	void flush();
 
 // -- Class members
 

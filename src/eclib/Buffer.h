@@ -16,9 +16,11 @@
 
 #include "eclib/machine.h"
 
+#include "eclib/NonCopyable.h"
+
 // A simple class to implement buffers
 
-class Buffer {
+class Buffer : private NonCopyable {
 public:
 
 // -- Contructors
@@ -44,11 +46,6 @@ public:
 	size_t size() const		 { return size_; }
 
 private:
-
-// No copy allowed
-
-	Buffer(const Buffer&);
-	Buffer& operator=(const Buffer&);
 
 // -- Methods
 

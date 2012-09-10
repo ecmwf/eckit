@@ -227,6 +227,13 @@ void AIOHandle::close()
     SYSCALL(::close(fd_));
 }
 
+void AIOHandle::flush()
+{
+    NOTIMP;
+    
+    // this should wait for the async requests to finish
+}
+
 void AIOHandle::rewind()
 {
     NOTIMP;

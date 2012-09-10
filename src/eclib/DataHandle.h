@@ -27,6 +27,7 @@ public:
 	const Offset& from() const { return from_; }
 };
 
+//-----------------------------------------------------------------------------
 
 class DataHandle : public Streamable {
 public:
@@ -120,6 +121,8 @@ private:
 	static Reanimator<DataHandle>  reanimator_;
 
 };
+
+//-----------------------------------------------------------------------------
 
 class AutoClose {
 	DataHandle& handle_;

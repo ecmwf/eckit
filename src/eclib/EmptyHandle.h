@@ -38,6 +38,7 @@ public:
     virtual long   read(void*,long)			{ return 0; }
     virtual long   write(const void*,long n){ return n; }
     virtual void   close()					{ }
+    virtual void   flush()					{ }
     virtual void   rewind()					{ }
     virtual void   print(ostream& s) const	{ s << "Empty Handle"; }
 	virtual bool   isEmpty() const          { return true; }

@@ -45,6 +45,7 @@ public:
     virtual long read(void*,long);
     virtual long write(const void*,long);
     virtual void close();
+    virtual void flush();
     virtual void rewind();
     virtual void print(ostream&) const;
 
@@ -68,18 +69,18 @@ private:
 
 // -- Members
 
-	PathName path_;
-	vector<Buffer*>      buffers_;
+	PathName                path_;
+	vector<Buffer*>         buffers_;
 	vector<const aiocb64 *> aiop_;
-	vector<aiocb64>		   aio_;
+	vector<aiocb64>         aio_;
 	vector<long>			len_;
 	
-	size_t               used_;
-	size_t count_;
+	size_t                  used_;
+	size_t                  count_;
 	
-	int fd_;
-	off64_t pos_;
-	bool fsync_;
+	int                     fd_;
+	off64_t                 pos_;
+	bool                    fsync_;
 	
 
     virtual string title() const;

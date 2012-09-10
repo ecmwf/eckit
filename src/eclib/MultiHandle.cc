@@ -238,6 +238,14 @@ void MultiHandle::close()
     current_ = datahandles_.end();
 }
 
+void MultiHandle::flush()
+{
+    for(size_t i=0; i < datahandles_.size(); ++i)
+    {
+        datahandles_[i]->flush();
+    }
+}
+
 void MultiHandle::rewind()
 {
     ASSERT(read_);

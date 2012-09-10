@@ -106,7 +106,7 @@ long BufferedHandle::write(const void* buffer,long length)
 
 	if(length > left)
 	{
-		flush();
+		bufferFlush();
 		left = size_;
 	}
 
@@ -124,8 +124,15 @@ long BufferedHandle::write(const void* buffer,long length)
 
 void BufferedHandle::close()
 {
-	if(!read_) flush();
-	handle_->close();
+	if(!read_) 
+        bufferFlush();
+    handle_->close();
+}
+
+void BufferedHandle::flush()
+{
+    bufferFlush();
+    handle_->flush();
 }
 
 void BufferedHandle::rewind()
@@ -153,7 +160,7 @@ Offset BufferedHandle::position()
     return position_;
 }
 
-void BufferedHandle::flush()
+void BufferedHandle::bufferFlush()
 {
 	if(pos_)
 	{

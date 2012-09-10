@@ -36,7 +36,7 @@ public:
 
 // -- Contructors
 
-    DataHandle()        {}
+    DataHandle();
     DataHandle(Stream&);
 
 // -- Destructor
@@ -47,38 +47,41 @@ public:
 
 	virtual void print(ostream& s) const = 0;
 
-    virtual Length openForRead()             = 0; // Return estimated length
+    virtual Length openForRead()              = 0; // Return estimated length
     virtual void openForWrite(const Length&)  = 0; // Receive estimated length
     virtual void openForAppend(const Length&) = 0; // Receive estimated length
 
     virtual long read(void*,long)        = 0;
     virtual long write(const void*,long) = 0;
     virtual void close()                 = 0;
+    virtual void flush();
 
 	virtual Length estimate()            { return 0; }
 	virtual Offset position();
 	virtual Offset seek(const Offset&);
 	virtual void skip(size_t);
 
-	    virtual void rewind();
+	virtual void rewind();
 	virtual void restartReadFrom(const Offset&);
 	virtual void restartWriteFrom(const Offset&);
 
 	// Save into an other datahandle
 
-	virtual Length saveInto(DataHandle&,
-		TransferWatcher& = TransferWatcher::dummy());   
+	virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy());   
 
-	Length saveInto(const PathName&,
-		TransferWatcher& = TransferWatcher::dummy()); // Save into a file
+	Length saveInto(const PathName&, TransferWatcher& = TransferWatcher::dummy()); // Save into a file
 
-	Length appendTo(DataHandle&);   // Save into an other datahandle
-	Length appendTo(const PathName&); // Save into a file
+    /// Save into an other datahandle
+	Length appendTo(DataHandle&);   
+	
+    /// Save into a file
+    Length appendTo(const PathName&); 
 
 	virtual string name() const;
 
 
-	bool compare(DataHandle&); // Compare bytes
+    /// Compare bytes
+	bool compare(DataHandle&); 
 
 	// Merge-in an other datahandle
 

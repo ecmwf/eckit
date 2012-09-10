@@ -131,22 +131,16 @@ long FileHandle::write(const void* buffer,long length)
     return written;
 }
 
-void FileHandle::close()
+void FileHandle::flush()
 {
     if( file_ == 0 ) return;
     
-    if (file_) {
-
+    if (file_) 
+    {
         if (!read_)
         {
             if (::fflush(file_))
                 throw WriteError(string("FileHandle::~FileHandle(fflush(") + name_ + "))");
-
-            // Because AIX has large system buffers,
-            // the close may be successful without the
-            // data being physicaly on disk. If there is
-            // a power failure, we lose some data. So we
-            // need to fsync
 
             int ret = fsync(fileno(file_));
 
@@ -155,6 +149,7 @@ void FileHandle::close()
             if (ret < 0) {
                 Log::error() << "Cannot fsync(" << name_ << ") " <<fileno(file_) <<  Log::syserr << endl;
             }
+            
             //if(ret<0)
             //throw FailedSystemCall(string("fsync(") + name_ + ")");
 
@@ -179,8 +174,24 @@ void FileHandle::close()
 #endif
 
         }
+    }
+}
 
 
+void FileHandle::close()
+{
+    if( file_ == 0 ) return;
+    
+    if (file_) 
+    {
+        // Because AIX has large system buffers, 
+        // the close may be successful without the
+        // data being physicaly on disk. If there is
+        // a power failure, we lose some data. So we
+        // need to fsync
+
+        flush();
+        
         if (::fclose(file_) != 0)
         {
             throw WriteError(string("fclose ") + name());
@@ -188,9 +199,7 @@ void FileHandle::close()
     }
     else
     {
-
         Log::warning() << "Closing FileHandle " << name_ << ", file is not opened" << endl;
-
     }
 }
 

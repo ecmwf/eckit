@@ -23,9 +23,8 @@
 ClassSpec DataHandle::classSpec_ = {&Streamable::classSpec(),"DataHandle",};
 Reanimator<DataHandle> DataHandle::reanimator_;
 
-void DataHandle::encode(Stream& s) const
+DataHandle::DataHandle()
 {
-    Streamable::encode(s);
 }
 
 DataHandle::DataHandle(Stream& s):
@@ -71,6 +70,16 @@ static double rate(double x,char& c)
         return long(x*10+0.5)/10.0;
 }
 
+void DataHandle::encode(Stream& s) const
+{
+    Streamable::encode(s);
+}
+
+void DataHandle::flush()
+{
+    Log::error() << *this << endl;
+    NOTIMP;
+}
 
 Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
 {

@@ -148,27 +148,31 @@ long AIOHandle::write(const void* buffer,long length)
 
 void AIOHandle::close()
 {
-    size_t n;
+    flush(); // this should wait for the async requests to finish
+    
+    SYSCALL( ::close(fd_) );
+}
 
+void AIOHandle::flush()
+{
     struct aiocb64 aio;
 
-    if (fsync_) {
+    if (fsync_) // request all current operations to the synchronized I/O completion state
+    {
         zero(aio);
 
         aio.aio_fildes                = fd_;
         aio.aio_sigevent.sigev_notify = SIGEV_NONE;
 
         SYSCALL(aio_fsync64(O_SYNC,&aio));
-
     }
 
-
     bool more = true;
-    while (more)
+    while (more) 
     {
         more = false;
 
-        for (n = 0 ; n < used_ ; n++)
+        for( size_t n = 0 ; n < used_ ; ++n )
         {
             /* wait */
             while (aio_suspend64(&aiop_[n], 1, NULL) < 0)
@@ -223,15 +227,6 @@ void AIOHandle::close()
             throw FailedSystemCall("aio_error64");
         }
     }
-
-    SYSCALL(::close(fd_));
-}
-
-void AIOHandle::flush()
-{
-    NOTIMP;
-    
-    // this should wait for the async requests to finish
 }
 
 void AIOHandle::rewind()

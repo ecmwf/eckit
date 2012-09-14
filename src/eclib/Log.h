@@ -120,4 +120,7 @@ public:
 ostream& setformat(ostream&,int);
 int format(ostream&);
 
+#define DEBUG_HERE     Log::info() " DEBUG @ " << Here() << std::endl;
+#define DEBUG_VAR(x)   Log::info() << #x << " : [" << x << "] @ " << Here() << std::endl;
+
 #endif

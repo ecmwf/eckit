@@ -11,8 +11,8 @@
 // File JSON.h
 // Baudouin Raoult - (c) ECMWF Jun 12
 
-#include <eclib/machine.h>
-#include <eclib/Value.h>
+#include "eclib/machine.h"
+#include "eclib/Value.h"
 
 class JSONParser {
 

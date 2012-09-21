@@ -11,8 +11,8 @@
 // File JSON.h
 // Baudouin Raoult - (c) ECMWF Jun 12
 
-#include <eclib/JSONParser.h>
-#include <eclib/Translator.h>
+#include "eclib/JSONParser.h"
+#include "eclib/Translator.h"
 
 class JSONTokenizerError : public exception {
     string what_;

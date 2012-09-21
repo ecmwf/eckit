@@ -16,25 +16,17 @@
 
 #include "eclib/machine.h"
 
-class JSON {
-public:
+#include "eclib/NonCopyable.h"
 
-// -- Exceptions
-	// None
+class JSON : private NonCopyable {
 
-// -- Contructors
+public: // methods
 
+    /// Contructor
 	JSON(ostream&);
 
-// -- Destructor
-
-	~JSON(); // Change to virtual if base class
-
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
+    /// Destructor
+	~JSON();
 
 	JSON& operator<<(bool);
 	JSON& operator<<(char);
@@ -51,10 +43,6 @@ public:
 	JSON& operator<<(const string&);
 	JSON& operator<<(const char*);
 
-// -- Methods
-	// None
-    //
-
     JSON& null();
 
     JSON& startObject();
@@ -63,67 +51,18 @@ public:
     JSON& startList();
     JSON& endList();
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-	
-	// void print(ostream&) const; // Change to virtual if base class	
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-private:
-
-// No copy allowed
-
-	JSON(const JSON&);
-	JSON& operator=(const JSON&);
-
-// -- Members
+private: // members
 
     ostream& out_;
     vector<string> sep_;
     vector<bool> state_;
     bool null_;
 
-// -- Methods
-	// None
+private: // methods
 
     void sep();
     bool inlist() { return !state_.back(); }
     bool indict() { return  state_.back(); }
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
-
-	//friend ostream& operator<<(ostream& s,const JSON& p)
-	//	{ p.print(s); return s; }
 
 };
 

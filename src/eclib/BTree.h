@@ -24,11 +24,13 @@
 // K and V needs to be PODs
 
 #include "eclib/machine.h"
+
+#include "eclib/NonCopyable.h"
 #include "eclib/PathName.h"
 #include "eclib/Padded.h"
 
 template<class K,class V, int S>
-class BTree {
+class BTree : private NonCopyable {
 public:
 
     typedef K key_type;
@@ -86,12 +88,6 @@ protected:
     void print(ostream&) const; // Change to virtual if base class
 
 private:
-
-    // No copy allowed
-
-    BTree(const BTree&);
-    BTree& operator=(const BTree&);
-
 
     struct _Header {
     };

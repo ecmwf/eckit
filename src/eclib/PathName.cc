@@ -367,8 +367,6 @@ const string& PathName::path() const
 	return path_->path();
 }
 
-
-
 PathName &PathName::operator /=(const string &s)
 {
     // TODO: Review me
@@ -387,5 +385,25 @@ PathName &PathName::operator /=(char s)
 {
     // TODO: Review me
     *this = PathName(this->asString() + "/" + s);
+	return *this;
+}
+PathName &PathName::operator +=(const string &s)
+{
+    // TODO: Review me
+    *this = PathName(this->asString() + s);
+	return *this;
+}
+
+PathName &PathName::operator +=(const char *s)
+{
+    // TODO: Review me
+    *this = PathName(this->asString() + s );
+	return *this;
+}
+
+PathName &PathName::operator +=(char s)
+{
+    // TODO: Review me
+    *this = PathName(this->asString() + s);
 	return *this;
 }

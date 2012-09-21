@@ -57,6 +57,12 @@ size_t FixedString<size>::length() const
 }
 
 template<int size>
+string FixedString<size>::asString() const
+{
+    return string(data_, data_ + length());
+}
+
+template<int size>
 void FixedString<size>::print(ostream& s) const
 {
     s.write(data_,length());

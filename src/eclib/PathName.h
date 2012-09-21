@@ -80,17 +80,14 @@ public:
 
 // Methods
 
-	// dirName() return the directory part of the path
-
+	/// @returns the directory part of the path
 	PathName dirName() const;
+    
 	PathName fullName() const;
-
 	PathName clusterName() const;
 
-
-	// baseName() returns the name part of the path. If ext if false
-	// the extension is stipped
-
+	/// @returns the name part of the path
+    /// @param ext if false the extension is stripped
 	PathName baseName(bool ext = true) const;
 
 	bool exists() const;

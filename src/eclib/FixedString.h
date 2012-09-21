@@ -54,6 +54,8 @@ public:
 
     size_t length() const;
 
+    std::string asString() const;
+    
     operator string() const;
 
 private:

@@ -16,8 +16,6 @@
 class BadValue: public Exception {
 public:
 	BadValue(const string& s) : Exception(string("BadValue:") + s) {}
-
 };
-
 
 #endif

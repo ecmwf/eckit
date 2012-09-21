@@ -459,6 +459,11 @@ void BTree<K,V,S>::range(const K& key1, const K& key2, vector<pair<K,V> >& resul
     search(1, key1, key2, result);
 }
 
+template<class K, class V, int S>
+bool BTree<K,V,S>::remove(const K &)
+{
+    NOTIMP;
+}
 
 template<class K, class V, int S>
 void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, vector<pair<K,V> >& result)

@@ -17,7 +17,7 @@ Reanimator<BufferedHandle> BufferedHandle::reanimator_;
 #endif
 
 
-BufferedHandle::BufferedHandle(DataHandle* h,size_t size):
+BufferedHandle::BufferedHandle(DataHandle* h, size_t size):
 	handle_(h),
 	buffer_(size),
 	size_(size),
@@ -25,12 +25,28 @@ BufferedHandle::BufferedHandle(DataHandle* h,size_t size):
     used_(0),
     read_(false),
     eof_(false),
-    position_(0)
+    position_(0),
+    owned_(true)
+{
+}
+
+BufferedHandle::BufferedHandle(DataHandle& h, size_t size):
+	handle_(&h),
+	buffer_(size),
+	size_(size),
+	pos_(0),
+    used_(0),
+    read_(false),
+    eof_(false),
+    position_(0),
+    owned_(false)
 {
 }
 
 BufferedHandle::~BufferedHandle() 
 {
+    if( owned_ )
+        delete handle_;
 }
 
 Length BufferedHandle::openForRead()

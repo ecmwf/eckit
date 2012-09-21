@@ -21,13 +21,17 @@ class BufferedHandle : public DataHandle {
 public:
 
 
-// -- Contructors
+    /// Contructor, taking ownership
 
 	BufferedHandle(DataHandle*,size_t = 1024*1024);
 
-// -- Destructor
+    /// Contructor, not taking ownership
 
-	~BufferedHandle();
+	BufferedHandle(DataHandle&,size_t = 1024*1024);
+
+    /// Destructor
+
+	virtual ~BufferedHandle();
 
 // -- Operators
 
@@ -63,13 +67,13 @@ public:
     static  const ClassSpec&  classSpec()        { return classSpec_;}
 #endif
 
-private:
+private: // methods
     
     void bufferFlush();
 
-// -- Members
-
-	auto_ptr<DataHandle> handle_;
+private: // members
+    
+    DataHandle*          handle_;
 	Buffer               buffer_;
 	size_t               pos_;
 	size_t               size_;
@@ -78,6 +82,8 @@ private:
     bool                 read_;
     Offset               position_;
 
+    bool                 owned_;
+    
     virtual string title() const;
 
 // -- Class members

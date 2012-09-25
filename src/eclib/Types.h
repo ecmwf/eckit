@@ -24,8 +24,9 @@ class Stream;
 // For counting
 typedef unsigned long Ordinal;
 
-typedef vector<Ordinal> OrdinalList;
-typedef vector<string>  StringList;
+typedef vector<Ordinal>     OrdinalList;
+typedef vector<string>      StringList;
+typedef map<string,string>  StringDict;
 
 template<class T>
 class output_list {

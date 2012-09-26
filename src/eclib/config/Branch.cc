@@ -16,7 +16,13 @@ config::Branch::Branch(config::Compiler &c)
 {
     if_.reset( new config::Condition(c) );
     then_.reset( new config::Block(c) );
-    else_.reset();
+    if( c.peek() == '|' )
+    {
+        c.consume('|');
+        else_.reset( new config::Block(c) );
+    }
+     else
+        else_.reset();
 }
 
 config::Branch::~Branch()

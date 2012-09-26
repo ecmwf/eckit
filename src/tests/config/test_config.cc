@@ -39,6 +39,8 @@ void TestConfig::test()
             " "
             " [ class = od & stream = oper ]"   // condition with multiple statement
             " {  "
+            "   fdbRoot = \'/tmp/fdb\';  "       // paths
+            " "
             "   c1 = \"4 x 4\"; "               // double quote
             "   [ date = today ] "              // nested branch
             "   {"
@@ -51,6 +53,8 @@ void TestConfig::test()
             " "
             " [ xxx = yyy ] { f = ignored; }"   // branch not visited
             " "
+            " [ xxx = yyy ] {} | { s = ss; } "  // else branch visited
+            " "
             " [ class = od ] {} "               // empty branch
             " "
             " [ class = od | rd ] { m = 22; }"  // double or in branch
@@ -62,7 +66,7 @@ void TestConfig::test()
             " { } "                             // empty block
             " "
             " { k = koko; } "                   // stand alone block
-            ;
+            ; 
      
     istringstream in(code.str());
     
@@ -83,6 +87,20 @@ void TestConfig::test()
     s.execute(din,dout);
     
     std::cout << dout << std::endl;
+    
+    ASSERT( dout["a"] == "1" );
+    ASSERT( dout["b"] == "lolo" );
+    ASSERT( dout["fdbRoot"] == "/tmp/fdb" );
+    ASSERT( dout["c1"] == "4 x 4" );
+    ASSERT( dout["d"] == "4" );
+    ASSERT( dout["c2"] == "5 x 5" );
+    ASSERT( dout["e"] == "66" );
+    ASSERT( dout["s"] == "ss" );
+    ASSERT( dout["m"] == "22" );
+    ASSERT( dout["h"] == "here" );
+    ASSERT( dout["g"] == "go" );
+    ASSERT( dout["k"] == "koko" );
+    
 }
 
 void TestConfig::run()

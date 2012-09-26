@@ -15,13 +15,17 @@
 
 config::Condition::Condition( config::Compiler& c )
 {
+    c.consume('[');
+    
     parseSentence(c);
-    while(c.peek()==',')
+    
+    while(c.peek()=='&')
     {
-        c.consume(',');
+        c.consume('&');
         parseSentence(c);
     }
-    c.consume(';');
+    
+    c.consume(']');
 }
 
 config::Condition::~Condition()
@@ -55,6 +59,7 @@ bool config::Condition::eval( const StringDict& in, StringDict& out )
 
 void config::Condition::print( std::ostream& out )
 {
+    out << "[";
     for( size_t i = 0; i < sentences_.size(); ++i )
     {
         out << sentences_[i].first << " = ";
@@ -65,23 +70,20 @@ void config::Condition::print( std::ostream& out )
             out << " | " << rightValues[j];
         }
         if( i != sentences_.size() -1 )
-            out << ", ";
+            out << " & ";
         else
-            out << ";";
+            out << "]";
     }
     out << std::endl;
 }
 
 void config::Condition::parseSentence(Compiler& c)
 {
-    if( c.peek() == ']' )
+    if( c.peek() == ']' ) // for empty conditions
         return;
     
     string variable = c.parseIdentifier();
     c.consume('=');
-    string value = c.parseValue();        
-    sentences_.push_back( make_pair( variable, StringList() ));
-    Tokenizer parse("|");
-    parse( value, sentences_.back().second );
+    sentences_.push_back( make_pair( variable, c.parseCondition() ));
 }
 

@@ -24,7 +24,7 @@ class Block : public Statement {
     
 public: // methods
 
-    Block( Compiler& c, bool skipBraces = false );
+    Block(Compiler& c);
 
     virtual ~Block();
     

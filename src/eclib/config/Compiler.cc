@@ -69,6 +69,23 @@ string Compiler::parseValue()
     return s;
 }
 
+StringList Compiler::parseCondition()
+{
+    StringList s;
+
+    s.push_back( parseValue() );
+    
+    char c = peek();
+    while( c == '|' )
+    {
+       consume('|');
+       s.push_back( parseValue() );
+       c = peek();
+    }
+
+    return s;
+}
+
 bool Compiler::isIdentifier(char c)
 {
     return ( isalnum(c) || isUnderscore(c) );

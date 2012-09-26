@@ -15,6 +15,7 @@
 
 #include "eclib/NonCopyable.h"
 #include "eclib/StreamParser.h"
+#include "eclib/Types.h"
 
 namespace config {
 
@@ -27,6 +28,7 @@ public: // methods
     
     string parseIdentifier();
     string parseValue();
+    StringList parseCondition();
 
 protected:
     

@@ -14,10 +14,8 @@
 
 config::Branch::Branch(config::Compiler &c)
 {
-    c.consume('[');
     if_.reset( new config::Condition(c) );
     then_.reset( new config::Block(c) );
-    c.consume(']');    
     else_.reset();
 }
 
@@ -38,10 +36,8 @@ void config::Branch::execute(const StringDict &in, StringDict &out)
 
 void config::Branch::print(ostream &out)
 {
-    out << "[ ";
     if_->print(out);
     then_->print(out);
-    out << " ]" << std::endl;
     if( hasElse() )
         else_->print(out);
 }

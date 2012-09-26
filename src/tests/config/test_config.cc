@@ -29,30 +29,39 @@ public:
 
 //-----------------------------------------------------------------------------
 
-class Statement : private NonCopyable
-{
-    
-};
-
-//-----------------------------------------------------------------------------
-
 void TestConfig::test()
 {
     ostringstream code;
      
-    code << " a = 1; "                          // assign digit
+    code << 
+            " a = 1; "                          // assign digit
             " b = lolo; "                       // assign string
-            " [ class = od, stream = oper;"     // condition with multiple statement
+            " "
+            " [ class = od & stream = oper ]"   // condition with multiple statement
+            " {  "
             "   c1 = \"4 x 4\"; "               // double quote
-            "   [ date = today; "               // nested branch
-            "      d = 4; ]"                    // close after semi-colon
+            "   [ date = today ] "              // nested branch
+            "   {"
+            "       d = 4; "
+            "   }"                              // close after semi-colon
             "   c2 = '5 x 5'; "                 // single quote
             "   e = '6'; "
             "   e = '66'; "                     // override
-            "  ]"
-            " [ xxx = yyy; f = ignored; ]"      // branch not visited
-            " [ xxx = yyy; ]"                   // empty branch
-//            " [; g = go ] "
+            " }"
+            " "
+            " [ xxx = yyy ] { f = ignored; }"   // branch not visited
+            " "
+            " [ class = od ] {} "               // empty branch
+            " "
+            " [ class = od | rd ] { m = 22; }"  // double or in branch
+            " "
+            " [ ] { h = here ; }"               // always true
+            " "
+            " g = go; "                         // isolated sataement
+            " "
+            " { } "                             // empty block
+            " "
+            " { k = koko; } "                   // stand alone block
             ;
      
     istringstream in(code.str());

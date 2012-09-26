@@ -14,16 +14,23 @@
 
 namespace config {
 
-Block::Block(Compiler &c, bool skipBraces) : Statement()
+Block::Block( Compiler& c ) : Statement()
 {
+    if( c.peek() == '{' )
+        c.consume('{');
+    
     while( true )
     {
         switch( c.peek() )
         {
             case 0:
                 return;
-            case ']':
+            case '}':
+                c.consume('}');
                 return;
+            case '{':
+                statements_.push_back( new Block(c) );
+                break;
             case '[':
                 statements_.push_back( new Branch(c) );
                 break;
@@ -48,8 +55,10 @@ void Block::execute(const StringDict &in, StringDict &out)
 
 void Block::print(ostream &out)
 {
+    out << "{" << std::endl;
     for( std::deque<Statement*>::iterator s = statements_.begin(); s != statements_.end(); ++s )
         (*s)->print(out);
+    out << "}" << std::endl;
 }
 
 } // namespace config

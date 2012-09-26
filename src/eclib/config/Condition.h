@@ -36,7 +36,7 @@ public: // methods
 
 protected: // method
     
-    void parseSentence(Compiler& c);
+    void parseSentence(Compiler& comp);
     
 private: // members
     

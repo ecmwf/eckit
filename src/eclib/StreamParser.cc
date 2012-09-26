@@ -13,8 +13,11 @@
 /// @author Tiago Quintino
 /// @date Sep 2012
 
+#include "eclib/BackTrace.h"
 #include "eclib/StreamParser.h"
 #include "eclib/Translator.h"
+
+#include "eclib/Log.h"
 
 //-----------------------------------------------------------------------------
 
@@ -69,4 +72,11 @@ void StreamParser::consume(char c)
 void StreamParser::consume(const char* p)
 {
     while(*p) consume(*p++);
+}
+
+
+StreamParser::Error::Error(const string &what) : what_(what) 
+{
+    Log::info() << "=== StreamParser::Error -- Backtrace ===" << std::endl;    
+    Log::info() << BackTrace::dump() << std::endl;    
 }

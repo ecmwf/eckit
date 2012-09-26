@@ -28,7 +28,7 @@ public: // types
         string what_;
         virtual const char* what() const  throw() { return what_.c_str(); }
     public:
-        Error(const string& what) : what_(what) {}
+        Error(const string& what);
         virtual ~Error() throw() {}
     };
     

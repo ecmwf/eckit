@@ -13,6 +13,8 @@
 config::Script::Script(config::Compiler &c)
     : Block(c)
 {
+    DEBUG_HERE;
+        
     ASSERT(c.peek() == 0);
 }
 

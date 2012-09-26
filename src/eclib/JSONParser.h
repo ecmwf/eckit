@@ -8,29 +8,25 @@
  * does it submit to any jurisdiction.
  */
 
-// File JSON.h
-// Baudouin Raoult - (c) ECMWF Jun 12
+/// @file JSONParser.h
+/// @author Baudouin Raoult
+/// @date Jun 2012
 
-#include "eclib/machine.h"
+#ifndef eclib_JSONParser_H
+#define eclib_JSONParser_H
+
+#include "eclib/StreamParser.h"
 #include "eclib/Value.h"
 
-class JSONParser {
+class JSONParser : public StreamParser {
 
-public:
-    JSONParser(istream& in) : in_(in) {}
+public: // methods
+
+    JSONParser(istream& in);
+    
     Value parse();
 
-private:
-    istream& in_;
-
-
-    char peek();
-    char next(bool spaces = false);
-
-    void consume(char);
-    void consume(const char*);
-
-    void expect(const char*);
+private: // methods
 
     Value parseTrue();
     Value parseFalse();
@@ -42,5 +38,6 @@ private:
     Value parseNumber();
     void parseKeyValue(map<Value, Value> &);
 
-
 };
+
+#endif

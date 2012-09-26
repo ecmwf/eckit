@@ -8,8 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/NonCopyable.h"
+#include "eclib/config/Script.h"
 
-NonCopyable::NonCopyable(){}
+config::Script::Script(config::Compiler &c)
+    : Block(c)
+{
+    ASSERT(c.peek() == 0);
+}
 
-NonCopyable::~NonCopyable(){}
+config::Script::~Script()
+{
+}

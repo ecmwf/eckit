@@ -14,6 +14,8 @@
 #include "eclib/StrStream.h"
 #include "eclib/ThreadSingleton.h"
 
+#include "eclib/BackTrace.h"
+
 static Exception*& first()
 {
 	static ThreadSingleton<Exception*> p;
@@ -36,6 +38,10 @@ Exception::Exception():
 	next_(first())
 {
 	first() = this;
+
+//    Log::info() << "=== BackTrace ===" << std::endl;
+//    Log::info() << BackTrace::dump() << std::endl;
+    
 	xldb_throw("?");
 }
 
@@ -70,6 +76,10 @@ Exception::Exception(const string& w):
         Log::error() << "Exception: stack is empty" << endl;
     }
     */
+
+//    Log::info() << "=== BackTrace ===" << std::endl;
+//    Log::info() << BackTrace::dump() << std::endl;
+    
 
 	first() = this;
 	xldb_throw(w.c_str());

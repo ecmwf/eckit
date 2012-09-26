@@ -8,8 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/NonCopyable.h"
+#include "eclib/config/Statement.h"
 
-NonCopyable::NonCopyable(){}
+config::Statement::Statement()
+{
+}
 
-NonCopyable::~NonCopyable(){}
+config::Statement::~Statement()
+{
+}

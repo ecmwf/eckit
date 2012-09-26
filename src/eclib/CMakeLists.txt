@@ -1,3 +1,22 @@
+list( APPEND eclib_config_src_files 
+    config/Assignment.cc
+    config/Assignment.h
+    config/Block.cc
+    config/Block.h
+    config/Branch.cc
+    config/Branch.h
+    config/Compiler.cc
+    config/Compiler.h
+    config/Condition.cc
+    config/Condition.h
+    config/Function.cc
+    config/Function.h
+    config/Script.cc
+    config/Script.h
+    config/Statement.cc
+    config/Statement.h
+)
+
 list( APPEND eclib_src_files
 Application.cc
 Application.h
@@ -200,6 +219,7 @@ NilContent.h
 NodeInfo.cc
 NodeInfo.h
 NonCopyable.h
+NonCopyable.cc
 NumberContent.cc
 NumberContent.h
 DoubleContent.cc
@@ -244,6 +264,7 @@ ResourceMgr.cc
 ResourceMgr.h
 RotLogger.cc
 RotLogger.h
+ScopedPtr.h
 STL.cc
 Seconds.cc
 Seconds.h
@@ -274,6 +295,8 @@ StringTools.cc
 StringTools.h
 Stream.cc
 Stream.h
+StreamParser.cc
+StreamParser.h
 Streamable.cc
 Streamable.h
 StringContent.cc
@@ -389,7 +412,9 @@ list( APPEND eclib_persistent
 ecbuild_add_library( TARGET Ec
                   COMPONENT server
                   INSTALL_HEADERS LISTED
-                  SOURCES    ${eclib_src_files}
+                  SOURCES    
+                        ${eclib_src_files}
+                        ${eclib_config_src_files}
                   TEMPLATES  ${eclib_templates}
                   PERSISTENT ${eclib_persistent}
                   LIBS ${CMAKE_THREAD_LIBS_INIT} ${RT_LIB} )

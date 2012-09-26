@@ -8,8 +8,26 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/NonCopyable.h"
+#include "eclib/config/Function.h"
 
-NonCopyable::NonCopyable(){}
 
-NonCopyable::~NonCopyable(){}
+
+
+config::Function::Function(config::Compiler &c, const string &name) : 
+    Statement()
+{
+}
+
+config::Function::~Function()
+{
+}
+
+void config::Function::execute(const StringDict &in, StringDict &out)
+{
+    body_->execute(in,out);
+}
+
+void config::Function::print(ostream &out)
+{
+    out << "call " <<  name_ << std::endl;
+}

@@ -14,6 +14,8 @@
 #include "eclib/JSONParser.h"
 #include "eclib/Translator.h"
 
+//-----------------------------------------------------------------------------
+
 class JSONTokenizerError : public exception {
     string what_;
     virtual const char* what() const  throw()
@@ -25,55 +27,7 @@ public:
     virtual ~JSONTokenizerError() throw() {}
 };
 
-
-char JSONParser::peek()
-{ 
-    char c;
-    for(;;)
-    {
-        c = in_.peek();
-        if(in_.eof())
-            return 0;
-        if(!isspace(c))
-        {
-            //cout << "peek(" << c << ")" << endl;
-            return c;
-        }
-        else {
-            //cout << "skip(" << c << ")" << endl;
-            in_.get(c);
-        }
-    }
-}
-
-char JSONParser::next(bool spaces)
-{
-    char c;
-    for(;;)
-    {
-        if(in_.eof())
-            throw JSONTokenizerError(string("JSONTokenizer::next reached eof"));
-        in_.get(c);
-        if(spaces || !isspace(c))
-        {
-            //cout << "next(" << c << ")" << endl;
-            return c;
-        }
-    }
-
-}
-
-void JSONParser::consume(char c)
-{
-    char n = next();
-    if(c != n)
-        throw JSONTokenizerError(string("JSONTokenizer::consume expecting '") + c + "', got '" + n + "'");
-}
-
-void JSONParser::consume(const char* p)
-{
-    while(*p) consume(*p++);
-}
+//-----------------------------------------------------------------------------
 
 Value JSONParser::parseTrue()
 {
@@ -333,6 +287,10 @@ Value JSONParser::parseValue()
         throw JSONTokenizerError(string("JSONTokenizer::parseValue unexpected char '") + c + "'");
         break;
     }
+}
+
+JSONParser::JSONParser(istream &in) : StreamParser(in)
+{
 }
 
 Value JSONParser::parse()

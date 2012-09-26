@@ -8,22 +8,32 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_NonCopyable_H
-#define eclib_NonCopyable_H
+#ifndef eclib_config_Compiler_H
+#define eclib_config_Compiler_H
 
-/// Inherit from this class to make a NonCopyable class
+#include "eclib/machine.h"
 
-class NonCopyable {
+#include "eclib/NonCopyable.h"
+#include "eclib/StreamParser.h"
+
+namespace config {
+
+class Compiler : public StreamParser {
+public: // methods
+
+    Compiler( istream& in );
+    
+    virtual ~Compiler();
+    
+    string parseIdentifier();
+    string parseValue();
+
 protected:
-
-    NonCopyable();
-    ~NonCopyable();
     
-private: // No copy allowed    
+    bool isIdentifier( char c );    
     
-    NonCopyable(const NonCopyable&);
-	NonCopyable& operator=(const NonCopyable&);
-
 };
+
+} // namespace config
 
 #endif

@@ -8,37 +8,38 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_config_Statement_H
-#define eclib_config_Statement_H
+#ifndef eclib_config_Scope_H
+#define eclib_config_Scope_H
 
 #include "eclib/machine.h"
 
-#include "eclib/NonCopyable.h"
-#include "eclib/Types.h"
-
-#include "eclib/config/Scope.h"
-
 namespace config {
+
+class Function;
 
 //-----------------------------------------------------------------------------
 
-class Statement : private NonCopyable {
-
+class Scope {
+    
 public: // methods
 
-    Statement( Scope& scope );
+    Scope( Scope * upper = 0 );
     
-    virtual ~Statement();
-    
-    virtual void execute( const StringDict& in, StringDict& out ) = 0;
+    virtual ~Scope();
 
-    virtual void print( std::ostream& out ) = 0;
+    bool existsFunction( const std::string& name ) const;
+
+    Function& function( const std::string& name ) const;
     
-    Scope& scope() { return scope_; }
+    void function( const std::string& name, Function* f );
     
 private: // members
     
-    Scope& scope_;
+    typedef std::map< std::string, Function* > FunctionStore;
+    
+    FunctionStore functions_; // owns functions
+
+    Scope* upper_; // not owned
     
 };
 

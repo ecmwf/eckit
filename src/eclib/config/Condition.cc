@@ -15,7 +15,8 @@
 
 config::Condition::Condition( config::Compiler& c )
 {
-    c.consume('[');
+    // '[' consumed outside    
+    c.consume("if"); // branch keyword
     
     parseSentence(c);
     

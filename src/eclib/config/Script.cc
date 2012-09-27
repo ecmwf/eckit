@@ -10,8 +10,8 @@
 
 #include "eclib/config/Script.h"
 
-config::Script::Script(config::Compiler &c)
-    : Block(c)
+config::Script::Script(config::Compiler& c)
+    : Block(c, new config::Scope() )
 {
     DEBUG_HERE;
         

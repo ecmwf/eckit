@@ -13,6 +13,7 @@
 
 #include "eclib/machine.h"
 
+#include "eclib/config/Block.h"
 #include "eclib/config/Compiler.h"
 #include "eclib/config/Statement.h"
 
@@ -24,7 +25,7 @@ class Function : public Statement {
 
 public: // methods
     
-    Function( Compiler& c, const std::string& name );
+    Function( Compiler& c, Scope& scope );
     
     virtual ~Function();
     
@@ -35,7 +36,27 @@ public: // methods
 private: // members
 
     std::string name_;
-    Statement*  body_;
+    ScopedPtr<Statement>  body_;
+    
+};
+
+//-----------------------------------------------------------------------------
+
+class FunctionCall : public Statement {
+
+public: // methods
+    
+    FunctionCall( Compiler& c, Scope& scope );
+    
+    virtual ~FunctionCall();
+    
+    virtual void execute( const StringDict& in, StringDict& out );
+
+    virtual void print( std::ostream& out );
+    
+private: // members
+
+    std::string name_;
     
 };
 

@@ -9,13 +9,19 @@
  */
 
 #include "eclib/config/Function.h"
+#include "eclib/config/Scope.h"
 
+//-----------------------------------------------------------------------------
 
-
-
-config::Function::Function(config::Compiler &c, const string &name) : 
-    Statement()
+config::Function::Function(config::Compiler& c, config::Scope& scope) : 
+    Statement(scope)
 {
+    // '[' consumed outside    
+    c.consume("function");
+    name_ = c.parseIdentifier();
+    c.consume(']');
+    body_.reset( new config::Block(c,new config::Scope(scope)) );
+    scope.function(name_,this);
 }
 
 config::Function::~Function()
@@ -29,5 +35,33 @@ void config::Function::execute(const StringDict &in, StringDict &out)
 
 void config::Function::print(ostream &out)
 {
-    out << "call " <<  name_ << std::endl;
+    out << "[ function " <<  name_  << "]" << std::endl;
+    body_->print(out);
+}
+
+//-----------------------------------------------------------------------------
+
+config::FunctionCall::FunctionCall(config::Compiler& c, config::Scope &scope) :
+    Statement(scope)
+{
+    // '[' consumed outside        
+    c.consume("call");
+    name_ = c.parseIdentifier();
+    c.consume(']');
+    
+    scope.existsFunction(name_);
+}
+
+config::FunctionCall::~FunctionCall()
+{
+}
+
+void config::FunctionCall::execute(const StringDict &in, StringDict &out)
+{
+    scope().function(name_).execute(in,out);
+}
+
+void config::FunctionCall::print(ostream &out)
+{
+    out << "[ call " <<  name_  << "]" << std::endl;    
 }

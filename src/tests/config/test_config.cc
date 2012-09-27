@@ -37,29 +37,30 @@ void TestConfig::test()
             " a = 1; "                          // assign digit
             " b = lolo; "                       // assign string
             " "
-            " [ class = od && stream = oper ]"   // condition with multiple statement
+            " [ if class = od && stream = oper ]"   // condition with multiple statement
             " {  "
             "   fdbRoot = \'/tmp/fdb\';  "       // paths
             " "
             "   c1 = \"4 x 4\"; "               // double quote
-            "   [ date = today ] "              // nested branch
+            "   [ if date = today ] "              // nested branch
             "   {"
             "       d = 4; "
             "   }"                              // close after semi-colon
             "   c2 = '5 x 5'; "                 // single quote
             "   e = '6'; "
-            "   e = '66'; "                     // override
+            "   e = '66'; "                       // override
+            "   f : 'fofo'; "                     // assign with :
             " }"
             " "
-            " [ xxx = yyy ] { f = ignored; }"   // branch not visited
+            " [ if xxx = yyy ] { f = ignored; }"   // branch not visited
             " "
-            " [ xxx = yyy ] {} || { s = ss } "  // else branch visited
+            " [ if xxx = yyy ] {} || { s = ss } "  // else branch visited
             " "
-            " [ class = od ] {} "               // empty branch
+            " [ if class = od ] {} "               // empty branch
             " "
-            " [ class = od || rd ] { m = 22 }"  // double or in branch
+            " [ if class = od || rd ] { t = 22 }"  // double or in branch
             " "
-            " [ ] { h = here ; }"               // always true
+            " [ if ] { h = here ; }"               // always true
             " "
             " g = go; "                         // isolated sataement
             " "
@@ -67,6 +68,10 @@ void TestConfig::test()
             " "
             " { j = jojo  } "                   // assigment without ';' @ end
             " { k = koko; } "                   // stand alone block
+            " "
+            " [ function foo ] { m = momo }"   // function definition
+            " "
+            " [ call foo ]"                    // function call
             ; 
      
     istringstream in(code.str());
@@ -97,11 +102,12 @@ void TestConfig::test()
     ASSERT( dout["c2"] == "5 x 5" );
     ASSERT( dout["e"] == "66" );
     ASSERT( dout["s"] == "ss" );
-    ASSERT( dout["m"] == "22" );
+    ASSERT( dout["t"] == "22" );
     ASSERT( dout["h"] == "here" );
     ASSERT( dout["g"] == "go" );
     ASSERT( dout["k"] == "koko" );
     ASSERT( dout["j"] == "jojo" );
+    ASSERT( dout["m"] == "momo" );
     
 }
 

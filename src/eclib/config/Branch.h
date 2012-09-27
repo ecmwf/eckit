@@ -27,7 +27,7 @@ class Condition;
 class Branch : public Statement {
 public: // methods
     
-    Branch( Compiler& c );
+    Branch(Compiler& c , Scope& scope);
     
     virtual ~Branch();
 

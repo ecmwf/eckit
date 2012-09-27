@@ -10,7 +10,8 @@
 
 #include "eclib/config/Statement.h"
 
-config::Statement::Statement()
+config::Statement::Statement( Scope& scope ) :
+    scope_(scope)
 {
 }
 

@@ -11,6 +11,8 @@ list( APPEND eclib_config_src_files
     config/Condition.h
     config/Function.cc
     config/Function.h
+    config/Scope.cc
+    config/Scope.h
     config/Script.cc
     config/Script.h
     config/Statement.cc

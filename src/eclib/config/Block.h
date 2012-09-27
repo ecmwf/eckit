@@ -13,10 +13,14 @@
 
 #include "eclib/machine.h"
 
+#include "eclib/ScopedPtr.h"
+
 #include "eclib/config/Compiler.h"
 #include "eclib/config/Statement.h"
 
 namespace config {
+
+class Function;
 
 //-----------------------------------------------------------------------------
 
@@ -24,7 +28,9 @@ class Block : public Statement {
     
 public: // methods
 
-    Block(Compiler& c);
+    /// takes ownership of the scope
+    /// @pre scope must not be null
+    Block( Compiler& c, Scope* scope );
 
     virtual ~Block();
     
@@ -35,6 +41,8 @@ public: // methods
 private: // members
     
     std::deque<Statement*> statements_;
+    
+    ScopedPtr<Scope> scope_;
 
 };
 

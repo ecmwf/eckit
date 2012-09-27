@@ -12,14 +12,15 @@
 #include "eclib/config/Branch.h"
 #include "eclib/config/Condition.h"
 
-config::Branch::Branch(config::Compiler &c)
+config::Branch::Branch(config::Compiler &c, config::Scope& scope) :
+    Statement(scope)
 {
     if_.reset( new config::Condition(c) );
-    then_.reset( new config::Block(c) );
+    then_.reset( new config::Block(c, new config::Scope(&scope)) );
     if( c.peek() == '|' )
     {
         c.consume("||");
-        else_.reset( new config::Block(c) );
+        else_.reset( new config::Block(c, new config::Scope(&scope)) );
     }
      else
         else_.reset();

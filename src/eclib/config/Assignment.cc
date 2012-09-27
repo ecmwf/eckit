@@ -10,10 +10,17 @@
 
 #include "eclib/config/Assignment.h"
 
-config::Assignment::Assignment(config::Compiler &c)
+config::Assignment::Assignment(config::Compiler &c, config::Scope& scope) :
+    Statement(scope)
 {
     variable_ = c.parseIdentifier();
-    c.consume('=');
+    
+    char n = c.peek();
+    if( n == ':' )
+        c.consume(':');
+    else
+        c.consume('=');
+    
     value_ = c.parseValue();
     if( c.peek() != '}')  
         c.consume(';');   // accept missing ';' @ block end

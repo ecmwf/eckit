@@ -11,11 +11,14 @@
 #include "eclib/config/Assignment.h"
 #include "eclib/config/Block.h"
 #include "eclib/config/Branch.h"
+#include "eclib/config/Function.h"
 
 namespace config {
 
-Block::Block( Compiler& c ) : Statement()
-{
+Block::Block( Compiler& c, Scope* scope ) : 
+    Statement(*scope),
+    scope_(scope)
+{    
     if( c.peek() == '{' )
         c.consume('{');
     
@@ -29,13 +32,28 @@ Block::Block( Compiler& c ) : Statement()
                 c.consume('}');
                 return;
             case '{':
-                statements_.push_back( new Block(c) );
+                statements_.push_back( new Block(c, new Scope(*scope_) ) );
                 break;
             case '[':
-                statements_.push_back( new Branch(c) );
+                c.consume('[');
+                switch(c.peek())
+                {
+                    case 'i':
+                        statements_.push_back( new Branch(c,*scope_) );
+                        break;
+                    case 'f':
+                        statements_.push_back( new Function(c,*scope_) );
+                        break;
+                    case 'c':
+                        statements_.push_back( new FunctionCall(c,*scope_) );
+                        break;
+                    default:
+                        string id = c.parseIdentifier();
+                        throw StreamParser::Error( string( "Unrecognized keyword " + id ) );
+                }
                 break;
             default:
-                statements_.push_back( new Assignment(c) );
+                statements_.push_back( new Assignment(c,*scope_) );
                 break;
         }
     }

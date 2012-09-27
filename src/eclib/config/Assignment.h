@@ -26,7 +26,7 @@ class Assignment : public Statement {
 
 public: // methods
     
-    Assignment( Compiler& c );
+    Assignment( Compiler& c, Scope& scope );
     
     virtual ~Assignment();
 

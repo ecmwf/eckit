@@ -98,6 +98,7 @@ void ReadConfig::run()
     
     s.execute(din,dout);
     
+    std::cout << "in :" << din << std::endl;    
     std::cout << "out:" << dout << std::endl;    
 }
 

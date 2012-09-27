@@ -41,7 +41,7 @@ bool config::Condition::eval( const StringDict& in, StringDict& out )
     {
         StringDict::const_iterator key = in.find( sentences_[i].first );
         if( key == in.end() )
-            ret &= false;
+            return false;
 //            throw BadValue( "key not found in input dictionary : " + sentences_[i].first );
         
         const string& left = key->second;

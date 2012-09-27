@@ -9,7 +9,7 @@
  */
 
 #include "eclib/Application.h"
-#include "eclib/Buffer.h"
+#include "eclib/BadValue.h"
 #include "eclib/Context.h"
 #include "eclib/DataHandle.h"
 #include "eclib/Log.h"
@@ -35,22 +35,6 @@ public:
 
 void ReadConfig::run()
 {
-    // get file
-    
-    string filename = Resource<string>("-file","");    
-    
-    if( filename.empty() )
-    {
-        Log::error() << "empty config filename. use -file to specify filename" << std::endl;
-        return;
-    }
-    
-    PathName filepath(filename);
-    
-    DataHandle* file ( filepath.fileHandle() );
-    file->openForRead();
-    AutoClose close(*file);
-
     // get values
     
     string valueStr  = Resource<string>("-values","");
@@ -71,22 +55,24 @@ void ReadConfig::run()
     for( size_t i = 0; i < values.size(); ++i, ++i )
         din[ values[i] ] = values[i+1];
             
+    // get file
+    
+    string filename = Resource<string>("-file","");    
+    
+    if( filename.empty() )
+    {
+        Log::error() << "empty config filename. use -file to specify filename" << std::endl;
+        return;
+    }
+    
+    PathName filepath(filename);
+    
+    if( ! filepath.exists() )
+        throw BadValue( "file does not exist -- " + filename );
+    
+    ifstream in (filepath.localPath());
+    
     // read the file
-    
-    size_t length  = file->estimate();
-    ASSERT( length );
-    
-    Buffer buffer( length );
-    
-    file->read(buffer,length);
-    
-    // compile the file contents    
-    
-    const char * b = buffer;
-    
-    std::cout << b << std::endl;
-    
-    istringstream in( b );
     
     config::Compiler c(in);
     
@@ -98,8 +84,10 @@ void ReadConfig::run()
     
     s.execute(din,dout);
     
-    std::cout << "in :" << din << std::endl;    
-    std::cout << "out:" << dout << std::endl;    
+//    std::cout << "in :" << din << std::endl;    
+//    std::cout << "out:" << dout << std::endl;  
+    
+    std::cout << dout << std::endl;
 }
 
 //-----------------------------------------------------------------------------

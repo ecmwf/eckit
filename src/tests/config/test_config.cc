@@ -37,7 +37,7 @@ void TestConfig::test()
             " a = 1; "                          // assign digit
             " b = lolo; "                       // assign string
             " "
-            " [ class = od & stream = oper ]"   // condition with multiple statement
+            " [ class = od && stream = oper ]"   // condition with multiple statement
             " {  "
             "   fdbRoot = \'/tmp/fdb\';  "       // paths
             " "
@@ -53,11 +53,11 @@ void TestConfig::test()
             " "
             " [ xxx = yyy ] { f = ignored; }"   // branch not visited
             " "
-            " [ xxx = yyy ] {} | { s = ss; } "  // else branch visited
+            " [ xxx = yyy ] {} || { s = ss } "  // else branch visited
             " "
             " [ class = od ] {} "               // empty branch
             " "
-            " [ class = od | rd ] { m = 22; }"  // double or in branch
+            " [ class = od || rd ] { m = 22 }"  // double or in branch
             " "
             " [ ] { h = here ; }"               // always true
             " "
@@ -65,6 +65,7 @@ void TestConfig::test()
             " "
             " { } "                             // empty block
             " "
+            " { j = jojo  } "                   // assigment without ';' @ end
             " { k = koko; } "                   // stand alone block
             ; 
      
@@ -100,6 +101,7 @@ void TestConfig::test()
     ASSERT( dout["h"] == "here" );
     ASSERT( dout["g"] == "go" );
     ASSERT( dout["k"] == "koko" );
+    ASSERT( dout["j"] == "jojo" );
     
 }
 

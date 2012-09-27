@@ -15,7 +15,8 @@ config::Assignment::Assignment(config::Compiler &c)
     variable_ = c.parseIdentifier();
     c.consume('=');
     value_ = c.parseValue();
-    c.consume(';');
+    if( c.peek() != '}')  
+        c.consume(';');   // accept missing ';' @ block end
 }
 config::Assignment::~Assignment()
 {

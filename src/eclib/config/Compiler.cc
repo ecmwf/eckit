@@ -78,7 +78,7 @@ StringList Compiler::parseCondition()
     char c = peek();
     while( c == '|' )
     {
-       consume('|');
+       consume("||");
        s.push_back( parseValue() );
        c = peek();
     }

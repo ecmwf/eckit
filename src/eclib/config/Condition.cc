@@ -21,7 +21,7 @@ config::Condition::Condition( config::Compiler& c )
     
     while(c.peek()=='&')
     {
-        c.consume('&');
+        c.consume("&&");
         parseSentence(c);
     }
     

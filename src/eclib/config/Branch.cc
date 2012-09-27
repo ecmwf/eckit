@@ -18,7 +18,7 @@ config::Branch::Branch(config::Compiler &c)
     then_.reset( new config::Block(c) );
     if( c.peek() == '|' )
     {
-        c.consume('|');
+        c.consume("||");
         else_.reset( new config::Block(c) );
     }
      else

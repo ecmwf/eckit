@@ -25,7 +25,9 @@ public: // methods
     Compiler( istream& in );
     
     virtual ~Compiler();
-    
+
+    void consumeComment();
+    string consumeToEOL();    
     string parseIdentifier();
     string parseValue();
     StringList parseCondition();

@@ -18,10 +18,32 @@
 namespace config {
 
 static bool isUnderscore( char c ) { return c == '_'; }
+static bool isDot( char c )        { return c == '.'; }
+static bool isSpace( char c )      { return c == ' '; }
 
 Compiler::Compiler( istream& in ) : StreamParser(in) {}
 
 Compiler::~Compiler() {}
+
+static const bool with_spaces = true;
+
+string Compiler::consumeToEOL()
+{
+    string s;
+    char n = peek(with_spaces);
+    while( n && n != '\n' )
+    {
+        s += next(with_spaces);
+        n = peek(with_spaces);
+    }
+    return s;
+}
+
+void Compiler::consumeComment()
+{
+    consume('#');
+    consumeToEOL();
+}
 
 string Compiler::parseIdentifier()
 {
@@ -47,25 +69,26 @@ string Compiler::parseValue()
     string s;
     char c = peek();
     
-    bool quoted = false;
-    char quote;
-    if( c == '\'' || c == '\"')
+    if( c == '\'' || c == '"')
     {
-        quote = c;
-        quoted = true;
+        char quote = c;
         consume(quote);
-        c = peek();
+        c = peek(with_spaces);
+        while( c != quote )
+        {
+            s += next(with_spaces);
+            c = peek(with_spaces);
+        }
+        consume(quote);
+        return s;
     }
     
-    while( c && isIdentifier(c) || (quoted && ( c != quote )) )
+    while( c && !isspace(c) && c != '\n' && c != '#' )
     {
-        s += next(quoted);
-        c = peek(quoted);
+        s += next(with_spaces);
+        c = peek(with_spaces);
     }
     
-    if( c == quote )
-        consume(quote);
-
     return s;
 }
 
@@ -88,7 +111,7 @@ StringList Compiler::parseCondition()
 
 bool Compiler::isIdentifier(char c)
 {
-    return ( isalnum(c) || isUnderscore(c) );
+    return ( isalnum(c) || isUnderscore(c) || isDot(c) );
 }
 
 } // namespace config

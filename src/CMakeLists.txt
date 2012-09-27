@@ -9,4 +9,6 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/eclib_config.h
 
 add_subdirectory( eclib  )
 
+add_subdirectory( apps )
+
 add_subdirectory( tests )

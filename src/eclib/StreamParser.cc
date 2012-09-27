@@ -55,7 +55,7 @@ char StreamParser::next(bool spaces)
         in_.get(c);
         if(spaces || !isspace(c))
         {
-            //cout << "next(" << c << ")" << endl;
+//            cout << "next(" << c << ")" << endl;
             return c;
         }
     }

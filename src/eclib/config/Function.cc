@@ -16,6 +16,7 @@
 config::Function::Function(config::Compiler& c, config::Scope& scope) : 
     Statement(scope)
 {
+    DEBUG_HERE;
     // '[' consumed outside    
     c.consume("function");
     name_ = c.parseIdentifier();
@@ -44,6 +45,8 @@ void config::Function::print(ostream &out)
 config::FunctionCall::FunctionCall(config::Compiler& c, config::Scope &scope) :
     Statement(scope)
 {
+//    DEBUG_HERE;
+    
     // '[' consumed outside        
     c.consume("call");
     name_ = c.parseIdentifier();

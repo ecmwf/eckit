@@ -34,10 +34,12 @@ void TestConfig::test()
     ostringstream code;
      
     code << 
+                        
             " a = 1; "                          // assign digit
             " b = lolo; "                       // assign string
             " "
-            " [ if class = od && stream = oper ]"   // condition with multiple statement
+//            " [ if class in [ od , rd ] && stream = oper ]"   // condition with multiple statement
+            " [ if class = od || rds && stream = oper ]"   // condition with multiple statement
             " {  "
             "   fdbRoot = \'/tmp/fdb\';  "       // paths
             " "
@@ -58,7 +60,7 @@ void TestConfig::test()
             " "
             " [ if class = od ] {} "               // empty branch
             " "
-            " [ if class = od || rd ] { t = 22 }"  // double or in branch
+            " [ if class = od || class = rd ] { t = 22 }"  // double or in branch
             " "
             " [ if ] { h = here ; }"               // always true
             " "

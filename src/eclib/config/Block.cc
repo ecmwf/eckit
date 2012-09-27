@@ -19,6 +19,8 @@ Block::Block( Compiler& c, Scope* scope ) :
     Statement(*scope),
     scope_(scope)
 {    
+//    DEBUG_HERE;
+    
     if( c.peek() == '{' )
         c.consume('{');
     
@@ -33,6 +35,9 @@ Block::Block( Compiler& c, Scope* scope ) :
                 return;
             case '{':
                 statements_.push_back( new Block(c, new Scope(*scope_) ) );
+                break;
+            case '#':
+                c.consumeComment();
                 break;
             case '[':
                 c.consume('[');

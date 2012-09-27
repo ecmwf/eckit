@@ -20,8 +20,6 @@ Scope::Scope(Scope *upper) :
 
 Scope::~Scope()
 {
-    for( FunctionStore::iterator f = functions_.begin(); f != functions_.end(); ++f )
-        delete f->second;    
 }
 
 bool Scope::existsFunction(const string &name) const

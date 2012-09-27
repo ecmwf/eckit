@@ -37,7 +37,7 @@ private: // members
     
     typedef std::map< std::string, Function* > FunctionStore;
     
-    FunctionStore functions_; // owns functions
+    FunctionStore functions_; // doesnt own functions
 
     Scope* upper_; // not owned
     

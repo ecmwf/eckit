@@ -13,6 +13,8 @@
 config::Assignment::Assignment(config::Compiler &c, config::Scope& scope) :
     Statement(scope)
 {
+//    DEBUG_HERE;
+    
     variable_ = c.parseIdentifier();
     
     char n = c.peek();
@@ -22,9 +24,23 @@ config::Assignment::Assignment(config::Compiler &c, config::Scope& scope) :
         c.consume('=');
     
     value_ = c.parseValue();
-    if( c.peek() != '}')  
-        c.consume(';');   // accept missing ';' @ block end
+    
+    bool with_spaces = true;
+    switch( c.peek(with_spaces) )
+    {
+        case '\n':
+            break;
+        case '}':
+            break;
+        case ';':
+            c.consume(';');   // accept missing ';' @ block end
+            break;
+        case '#':
+            c.consumeComment();
+            break;
+    }
 }
+
 config::Assignment::~Assignment()
 {
 }

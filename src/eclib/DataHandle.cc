@@ -34,7 +34,6 @@ DataHandle::DataHandle(Stream& s):
 
 AutoClose::~AutoClose() 
 { 
-    static const char* here = __FUNCTION__;
     bool fail = !Exception::throwing();
 
     try {
@@ -42,7 +41,7 @@ AutoClose::~AutoClose()
     }
     catch(exception& e)
     {
-        Log::error() << "** " << e.what() << " Caught in " << here <<  endl;
+        Log::error() << "** " << e.what() << " Caught in " << Here() <<  endl;
         if(fail)
         {
             Log::error() << "** Exception is re-thrown" << endl;

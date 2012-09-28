@@ -61,6 +61,9 @@ string Compiler::parseIdentifier()
     
     if( s.empty() )
         throw StreamParser::Error(string("Compiler::parseIdentifier -- empty identifier"));
+    
+//    std::cout << "identifier [" << s << "]" << std::endl;    
+    
     return s;
 }
 
@@ -83,11 +86,13 @@ string Compiler::parseValue()
         return s;
     }
     
-    while( c && !isspace(c) && c != '\n' && c != '#' )
+    while( c && !isspace(c) && c != '\n' && c != '#' && c != ';' && c != '}' )
     {
         s += next(with_spaces);
         c = peek(with_spaces);
     }
+    
+//    std::cout << "value [" << s << "]" << std::endl;    
     
     return s;
 }
@@ -105,6 +110,8 @@ StringList Compiler::parseCondition()
        s.push_back( parseValue() );
        c = peek();
     }
+    
+//    std::cout << "condition [" << s << "]" << std::endl;
 
     return s;
 }

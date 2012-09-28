@@ -10,6 +10,8 @@
 
 #include "eclib/Application.h"
 #include "eclib/Log.h"
+#include "eclib/Resource.h"
+#include "eclib/ResourceMgr.h"
 #include "eclib/Types.h"
 
 #include "eclib/config/Script.h"
@@ -24,22 +26,22 @@ public:
 
     virtual void run();
 
-    void test();
+    void test_parse();
+    void test_resource();
 };
 
 //-----------------------------------------------------------------------------
 
-void TestConfig::test()
+void TestConfig::test_parse()
 {
     ostringstream code;
      
-    code << 
-                        
+    code <<        
             " a = 1; "                          // assign digit
             " b = lolo; "                       // assign string
             " "
 //            " [ if class in [ od , rd ] && stream = oper ]"   // condition with multiple statement
-            " [ if class = od || rds && stream = oper ]"   // condition with multiple statement
+            " [ if class = od || rd && stream = oper ]"   // condition with multiple statement
             " {  "
             "   fdbRoot = \'/tmp/fdb\';  "       // paths
             " "
@@ -60,7 +62,7 @@ void TestConfig::test()
             " "
             " [ if class = od ] {} "               // empty branch
             " "
-            " [ if class = od || class = rd ] { t = 22 }"  // double or in branch
+            " [ if class = od || rd ] { t = 22 }"  // double or in branch
             " "
             " [ if ] { h = here ; }"               // always true
             " "
@@ -82,7 +84,7 @@ void TestConfig::test()
     
     config::Script s(c);
     
-    s.print( std::cout );
+//    s.print( std::cout );
     
     StringDict din;
     
@@ -111,11 +113,39 @@ void TestConfig::test()
     ASSERT( dout["j"] == "jojo" );
     ASSERT( dout["m"] == "momo" );
     
+    
 }
 
+//-----------------------------------------------------------------------------
+
+void TestConfig::test_resource()
+{
+    ostringstream code;
+     
+    code << " b = foo " << std::endl                  
+         << " [ if class = od ] b = bar " << std::endl;
+    
+    istringstream in(code.str());
+    
+    ResourceMgr::appendConfig(in);
+
+    StringDict args;
+    
+    args["class"] = "od";
+    
+    string b = Resource<string>("b","none",args);
+    
+    std::cout << "b [" << b << "]" << std::endl;
+    
+    ASSERT( b == "bar");
+}
+
+//-----------------------------------------------------------------------------
+            
 void TestConfig::run()
 {
-    test();
+    test_parse();
+    test_resource();
 }
 
 //-----------------------------------------------------------------------------

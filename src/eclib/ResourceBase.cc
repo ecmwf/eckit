@@ -49,12 +49,22 @@ ResourceBase::ResourceBase(Configurable* owner,const string& str):
 	}
 }
 
+ResourceBase::ResourceBase(const string& name, const StringDict& args):
+			owner_( &Context::instance() ),
+			inited_(false),
+            name_(name)
+{
+	if(owner_) owner_->add(this);	
+    
+    init(&args);
+}
+
 ResourceBase::~ResourceBase()
 {
 	if(owner_) owner_->remove(this);
 }
 
-void ResourceBase::init()
+void ResourceBase::init(const StringDict* args)
 {
 	if(inited_) return;
 
@@ -95,12 +105,12 @@ void ResourceBase::init()
 		string s;
 
 		if(owner_)
-			found = ResourceMgr::lookUp(owner_->kind(),owner_->name(),name_,s);
+			found = ResourceMgr::lookUp(owner_->kind(),owner_->name(),name_,args,s);
 		else
-			found = ResourceMgr::lookUp("","",name_,s);	
+			found = ResourceMgr::lookUp("","",name_,args,s);	
 		
 		if(found) setValue(s);
-
+        
 		inited_ = true;
 		return;
 	}

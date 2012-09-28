@@ -17,6 +17,8 @@
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
+#include "eclib/Translator.h"
+#include "eclib/Types.h"
 
 class Configurable;
 class Url;
@@ -26,7 +28,8 @@ public:
 
 // -- Contructors
 
-    ResourceBase(Configurable* owner,const std::string& str);
+    ResourceBase(Configurable* owner, const std::string& str );
+    ResourceBase( const std::string& name, const StringDict& args );
 
 // -- Destructor
 
@@ -44,7 +47,7 @@ protected:
 
 // -- Methods
 
-	void init();
+	void init( const StringDict* args = 0 );
 
 private:
 
@@ -64,37 +67,32 @@ private:
 };
 
 
-template<class T> class Resource : public ResourceBase {
-public:
+template<class T> 
+class Resource : public ResourceBase {
 
-// -- Contructors
-
-	// Standalone
+public: // methods
 
     Resource(const string& str,const T& value):
 		ResourceBase(0,str),     value_(value) {}
+
+    Resource(const string& name,const T& value, const StringDict& args ):
+		ResourceBase(name,args),     value_(value) {}
 
 	// Part of a configurable
 
     Resource(Configurable* owner,const string& str,const T& value):
 		ResourceBase(owner,str), value_(value) {}
 
-    // returns a copy of the resource value
+    /// @returns a copy of the resource value
     T value() { init(); return value_; }
     
-// -- Convertors
-
 	operator T&()                { init(); return value_; }
 
-private:
-
-// -- Members
+private: // members
 
 	T value_;
 
-// -- Overridden methods
-
-	// From ResourceBase
+private: // overridden methods
 
 	virtual void setValue(const string&);
 	virtual string getValue() const;

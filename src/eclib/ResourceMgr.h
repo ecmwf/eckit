@@ -15,53 +15,31 @@
 #define ResourceMgr_H
 
 #include "eclib/NonCopyable.h"
+#include "eclib/Types.h"
 
 class LocalPathName;
 
-// this class is a singleton
-// TODO: make it a real one -- removing the static function and providing a GetInstance()
-
 class ResourceMgr : private NonCopyable {
-public:
 
-// -- Class methods
+public: // methods
 
 	static void reset();
-	static bool lookUp(const string&,const string&,const string&,string&);
+	static bool lookUp(const string&, const string&, const string&, const StringDict* args, string&);
 	static void set(const string&,const string&);
 
-private:
+    static void appendConfig( istream& in );
+    
+protected: // methods
+    
+    static void readConfigFiles();
+    
+private: // methods
 
 	ResourceMgr();
 
-// -- Members
+private: // members
 
 	static bool inited_;
-
-// -- Methods
-
-	static void readConfigFile(const LocalPathName&);
-	static bool parse(const char*);
-
-};
-
-// A resource specifier
-
-class ResourceQualifier {
-
-    string kind_;  // Kind,  e.g. "Application"
-    string owner_; // Owner, e.g. "mars"
-    string name_;  // Name,  e.g. "debug"
-
-public:
-
-	ResourceQualifier();
-    ResourceQualifier(const string&,const string&,const string&);
-
-    ResourceQualifier(const ResourceQualifier&);
-    ResourceQualifier& operator=(const ResourceQualifier&);
-
-	int operator<(const ResourceQualifier&) const;
 
 };
 

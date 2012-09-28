@@ -122,7 +122,7 @@ static ThreadSingleton<Monitor> monitor;
 
 Monitor& Monitor::instance()
 {
-	Monitor& m = monitor.instance();
+    Monitor& m = monitor.instance();
 	if(!m.ready_) m.init();
 	return m;
 }

@@ -56,7 +56,6 @@ private: // methods
     
 protected: // members
    
-    Resource<int> debugResource_;
     int debug_;
     
 };

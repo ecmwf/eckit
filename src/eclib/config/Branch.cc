@@ -15,7 +15,7 @@
 config::Branch::Branch(config::Compiler &c, config::Scope& scope) :
     Statement(scope)
 {
-//    DEBUG_HERE;
+//    std::cout << "Branch()" << std::endl;
     
     if_.reset( new config::Condition(c) );
     then_.reset( new config::Block(c, new config::Scope(&scope)) );

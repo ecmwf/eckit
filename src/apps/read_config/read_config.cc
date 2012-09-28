@@ -70,15 +70,18 @@ void ReadConfig::run()
     if( ! filepath.exists() )
         throw BadValue( "file does not exist -- " + filename );
     
-    ifstream in (filepath.localPath());
+    config::Script s;
     
-    // read the file
+    s.readFile(filepath);
+
+    // print ???
     
-    config::Compiler c(in);
-    
-    config::Script s(c);
-    
-//    s.print( std::cout );
+    bool print = Resource<bool>("-print",false);    
+   
+    if(print)
+        s.print( std::cout );
+
+    // evaluate the configuration
     
     StringDict dout;
     
@@ -86,8 +89,10 @@ void ReadConfig::run()
     
 //    std::cout << "in :" << din << std::endl;    
 //    std::cout << "out:" << dout << std::endl;  
+
+    for( StringDict::const_iterator i = dout.begin(); i != dout.end(); ++i )
+        std::cout << i->first << " : " << i->second << std::endl;    
     
-    std::cout << dout << std::endl;
 }
 
 //-----------------------------------------------------------------------------

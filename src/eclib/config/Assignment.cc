@@ -10,10 +10,12 @@
 
 #include "eclib/config/Assignment.h"
 
-config::Assignment::Assignment(config::Compiler &c, config::Scope& scope) :
+namespace config {
+
+Assignment::Assignment(Compiler &c, Scope& scope) :
     Statement(scope)
 {
-//    DEBUG_HERE;
+//    std::cout << "Assignment()" << std::endl;
     
     variable_ = c.parseIdentifier();
     
@@ -25,32 +27,44 @@ config::Assignment::Assignment(config::Compiler &c, config::Scope& scope) :
     
     value_ = c.parseValue();
     
-    bool with_spaces = true;
-    switch( c.peek(with_spaces) )
+    const bool with_spaces = true;
+
+    while( true )
     {
-        case '\n':
-            break;
-        case '}':
-            break;
-        case ';':
-            c.consume(';');   // accept missing ';' @ block end
-            break;
-        case '#':
-            c.consumeComment();
-            break;
+        n = c.peek(with_spaces);
+        switch( n )
+        {
+            case '\n':
+                return;
+            case '}':
+                return;
+            case ';':
+                c.consume(';');   // accept missing ';' @ block end
+                return;
+            case '#':
+                c.consumeComment();
+                return;
+            case ' ':
+                c.next(with_spaces);
+                break;
+            default:
+                throw StreamParser::Error( string("unexpected character after assignment : ") + n );
+        }
     }
 }
 
-config::Assignment::~Assignment()
+Assignment::~Assignment()
 {
 }
 
-void config::Assignment::execute(const StringDict &in, StringDict &out)
+void Assignment::execute(const StringDict &in, StringDict &out)
 {
     out[ variable_ ] = value_;
 }
 
-void config::Assignment::print(ostream &out)
+void Assignment::print(ostream &out)
 {
     out << variable_ << " = " << value_  << ";" << std::endl;
 }
+
+} // namespace config

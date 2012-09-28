@@ -11,10 +11,8 @@
 #include "eclib/ContextBehavior.h"
 
 ContextBehavior::ContextBehavior() : 
-    debugResource_(this,"debug;$DEBUG;-debug",0),
     debug_(0)
 {
-    debug( debugResource_ );    
 }
 
 ContextBehavior::~ContextBehavior()
@@ -24,5 +22,4 @@ ContextBehavior::~ContextBehavior()
 void ContextBehavior::reconfigure()
 {
 	Log::info() << "ContextBehavior::reconfigure" << endl;
-    debug( debugResource_ );
 }

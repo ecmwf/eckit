@@ -8,16 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/Resource.h"
 #include "eclib/Translator.h"
 
-template<class T> void Resource<T>::setValue(const string& s)
+template<class T> 
+void Resource<T>::setValue(const string& s)
 {
     value_ = Translator<string,T>()(s);
 }
 
-template<class T> string Resource<T>::getValue() const
+template<class T> 
+string Resource<T>::getValue() const
 {
     return Translator<T,string>()(value_);
 }

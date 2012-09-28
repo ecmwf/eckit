@@ -41,6 +41,7 @@ public:
 	string argv(int n) const;
     
     int  debug() const;
+    void debug( const int );
     
     long self() const;
     

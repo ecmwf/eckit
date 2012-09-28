@@ -13,20 +13,40 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/config/Block.h"
+#include "eclib/NonCopyable.h"
+#include "eclib/PathName.h"
+#include "eclib/Types.h"
+
+#include "eclib/config/Statement.h"
 #include "eclib/config/Compiler.h"
 
 namespace config {
 
+class Block;
+
 //-----------------------------------------------------------------------------
 
-class Script : public Block {
+class Script : private NonCopyable {
     
 public: // methods
 
+    Script();
     Script( Compiler& c );
     
     virtual ~Script();
+    
+    void execute( const StringDict& in, StringDict& out );
+
+    void print( std::ostream& out );
+    
+    void readFile( const PathName& path );
+    void readStream( istream& in );
+ 
+private: // members
+    
+    typedef std::vector<Block*> BlockStore;
+    
+    BlockStore blocks_;
     
 };
 

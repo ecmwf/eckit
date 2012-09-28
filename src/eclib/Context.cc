@@ -57,6 +57,12 @@ int  Context::debug() const
         return 0;
 }
 
+void Context::debug( const int d )
+{
+    if( is_setup() ) 
+        behavior_->debug(d);
+}
+
 int  Context::argc() const 
 { 
     return argc_; 

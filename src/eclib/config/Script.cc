@@ -8,14 +8,76 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eclib/Buffer.h"
+#include "eclib/DataHandle.h"
+#include "eclib/Length.h"
+
 #include "eclib/config/Script.h"
+#include "eclib/config/Block.h"
 
-config::Script::Script(config::Compiler& c)
-    : Block(c, new config::Scope() )
+namespace config {
+
+Script::Script()
 {
+}
+
+Script::Script( Compiler& c )
+{
+    Block* blk = new Block(c, new Scope() );
+    
     ASSERT(c.peek() == 0);
+    
+    blocks_.push_back(blk);
 }
 
-config::Script::~Script()
+Script::~Script()
 {
+    for( BlockStore::iterator i = blocks_.begin(); i != blocks_.end(); ++i )
+        delete (*i);
 }
+
+void Script::execute(const StringDict &in, StringDict &out)
+{
+    for( BlockStore::iterator i = blocks_.begin(); i != blocks_.end(); ++i )
+        (*i)->execute(in,out);
+}
+
+void Script::print(ostream &out)
+{
+    for( BlockStore::iterator i = blocks_.begin(); i != blocks_.end(); ++i )
+        (*i)->print(out);
+}
+
+void Script::readFile(const PathName& path)
+{       
+    if( path.exists() )
+    {
+        ifstream in;
+        in.open ( path.asString().c_str() );
+        if (!in)
+            throw CantOpenFile( path.asString() );
+
+        std::cout << "reading config file [" << path.asString() << "]" << std::endl;
+        
+        Compiler c(in);
+        
+        Block* blk = new Block(c, new Scope() );
+        
+        ASSERT(c.peek() == 0);
+        
+        blocks_.push_back(blk);
+    }
+}
+
+void Script::readStream(istream &in)
+{
+    Compiler c(in);
+    
+    Block* blk = new Block(c, new Scope() );
+    
+    ASSERT(c.peek() == 0);
+    
+    blocks_.push_back(blk);
+}
+
+} // namespace config

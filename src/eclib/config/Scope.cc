@@ -57,7 +57,7 @@ void Scope::function( const string& name, Function* f )
 {
     ASSERT( f );
     FunctionStore::iterator fi = functions_.find(name);
-    if( fi != functions_.end() );
+    if( fi != functions_.end() )
         delete fi->second;
     functions_[name] = f;
 }

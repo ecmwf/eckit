@@ -16,6 +16,7 @@
 #include "eclib/Log.h"
 #include "eclib/Monitor.h"
 #include "eclib/PathName.h"
+#include "eclib/Resource.h"
 #include "eclib/Semaphore.h"
 #include "eclib/Loader.h"
 
@@ -89,17 +90,21 @@ Application::Application(int argc,char **argv)
         Context::instance().setup( argc, argv, new DHSBehaviorLogFile() );
     else
         Context::instance().setup( argc, argv, new DHSBehaviorStdout(std::cout) );
+
+    int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
+    
+    Context::instance().debug( debug );
     
 	// mallopt(M_DISCLAIM,0);
 	::srand(::getpid() + ::time(0));
 
 	memoryReserve = new char[20*1024];
 
-	if(instance_)
+    if(instance_)
 		throw SeriousBug("An instance of application already exists");
 
     instance_ = this;
-    
+        
     // TODO: maybe this should also be part of the ContextBehavior
     
 	set_new_handler(catch_new_handler);
@@ -119,8 +124,12 @@ void Application::reconfigure()
 {
     Log::info() << "Application::reconfigure" << endl;
     
+    int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
+    
+    Context::instance().debug( debug );
+
     // forward to context
-    Context::instance().reconfigure(); 
+    Context::instance().reconfigure();     
 }
 
 Application& Application::instance()

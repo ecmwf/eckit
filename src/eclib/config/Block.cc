@@ -19,7 +19,7 @@ Block::Block( Compiler& c, Scope* scope ) :
     Statement(*scope),
     scope_(scope)
 {    
-//    DEBUG_HERE;
+//    std::cout << "Block()" << std::endl;
     
     if( c.peek() == '{' )
         c.consume('{');

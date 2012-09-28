@@ -96,6 +96,30 @@ long Context::self() const
     return behavior_->taskId();    
 }
 
+string Context::runName() const
+{
+    ASSERT( is_setup() );
+    return behavior_->runName();    
+}
+
+void Context::runName(const string &name)
+{
+    ASSERT( is_setup() );
+    behavior_->runName(name);    
+}
+
+string Context::displayName() const
+{
+    ASSERT( is_setup() );
+    return behavior_->displayName();    
+}
+
+void Context::displayName(const string &name)
+{
+    ASSERT( is_setup() );
+    behavior_->displayName(name);    
+}
+
 Logger* Context::createInfoLogger()
 {
     return behavior_->createInfoLogger();       

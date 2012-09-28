@@ -26,11 +26,11 @@ public:
 
     ~DHSBehavior();
     
+protected: // methods
     
-private: // members
+    virtual string runName() const;
+    virtual void runName( const string& name ); 
     
-    long taskId_;
-
     virtual std::string home() const;
     virtual long taskId() const;
     
@@ -40,6 +40,12 @@ private: // members
     virtual Logger* createErrorLogger();
 
     virtual DHSLogger* getLogger() = 0;
+    
+private: // members
+    
+    long taskId_;
+    
+    string name_;
     
 };
 

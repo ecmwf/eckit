@@ -11,12 +11,26 @@
 #include "eclib/ContextBehavior.h"
 
 ContextBehavior::ContextBehavior() : 
-    debug_(0)
+    debug_(0),
+    displayName_()
 {
 }
 
 ContextBehavior::~ContextBehavior()
 {
+}
+
+string ContextBehavior::displayName() const
+{
+    if( displayName_.empty() )
+        return runName();
+    else
+        return displayName_;
+}
+
+void ContextBehavior::displayName(const string &name)
+{
+    displayName_ = name;
 }
 
 void ContextBehavior::reconfigure()

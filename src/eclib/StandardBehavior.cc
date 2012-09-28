@@ -15,12 +15,23 @@
 
 using namespace std;
 
-StandardBehavior::StandardBehavior()
+StandardBehavior::StandardBehavior() :
+    name_("undefined")
 {
 }
 
 StandardBehavior::~StandardBehavior()
 {
+}
+
+string StandardBehavior::runName() const
+{
+    return name_;
+}
+
+void StandardBehavior::runName(const string& name)
+{
+    name_ = name;
 }
 
 string StandardBehavior::home() const

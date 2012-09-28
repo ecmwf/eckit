@@ -356,6 +356,8 @@ TransferWatcher.cc
 TransferWatcher.h
 Translator.cc
 Translator.h
+Tool.h
+Tool.cc
 TxnEvent.cc
 TxnEvent.h
 TxnLog.cc

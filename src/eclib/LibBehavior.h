@@ -24,11 +24,11 @@ public:
     // -- Destructor
 
 	~LibBehavior();
-    
+        
     void register_logger_callback(CallbackLogger::callback c, void* ctxt = 0 );
     
 public: // interface methods
-    
+        
     virtual std::string home() const;    
     
     virtual Logger* createInfoLogger();

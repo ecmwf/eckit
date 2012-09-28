@@ -8,6 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date Sep 2012
+
 #ifndef eclib_config_Compiler_H
 #define eclib_config_Compiler_H
 

@@ -24,43 +24,43 @@ class Configurable;
 class Url;
 
 class ResourceBase : private NonCopyable {
-public:
 
-// -- Contructors
+public: // methods
 
+    /// Contructor
     ResourceBase(Configurable* owner, const std::string& str );
+
+    /// Contructor for temporary resources that may depend on a input dictionary
     ResourceBase( const std::string& name, const StringDict& args );
 
-// -- Destructor
-
+    /// Destructor
 	virtual ~ResourceBase();
 
-// -- Methods
-
-	void reset()            { inited_ = false;   }
+	void reset() { inited_ = false; converted_ = false;  }
 	void dump(ostream&) const;
 	void html(ostream&,Url&);
 
 	std::string name() const;
 
-protected:
+protected: // methods
 
-// -- Methods
+    void init( const StringDict* args = 0 );
+    void convert();
 
-	void init( const StringDict* args = 0 );
+private: // members
 
-private:
-
-// -- Members
-
-	bool           inited_;
-	Configurable*  owner_;
-	std::string         name_;        // In the config file
+    Configurable*       owner_;
+	
+    bool                inited_;
+    bool                converted_;
+    
+    std::string         name_;        // In the config file
 	std::string         environment_; // In the environment variables
 	std::string         options_;     // For the command line options
+    std::string         valueStr_;    // keeps the value in string form
 
-// -- Methods
-
+private: // methods
+    
     virtual void setValue(const string&) = 0;
 	virtual string getValue() const      = 0;
 
@@ -84,9 +84,9 @@ public: // methods
 		ResourceBase(owner,str), value_(value) {}
 
     /// @returns a copy of the resource value
-    T value() { init(); return value_; }
+    T value() { init(); convert(); return value_; }
     
-	operator T&()                { init(); return value_; }
+    operator T&() { init(); convert(); return value_; }
 
 private: // members
 

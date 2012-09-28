@@ -16,6 +16,7 @@
 #include "eclib/BasePathNameT.h"
 #include "eclib/Bytes.h"
 #include "eclib/ClusterDisks.h"
+#include "eclib/Context.h"
 #include "eclib/FileHandle.h"
 #include "eclib/FileHandle.h"
 #include "eclib/Length.h"
@@ -247,13 +248,9 @@ LocalPathName& LocalPathName::tidy()
 
 	if(path_[0] == '~')
 	{
-		static string homeDir = Resource<string>("$DHSHOME",".");
-		if(homeDir == "")
-		{
-			cout << "DHSHOME is undefined" << endl;
-			exit(1);
-		}
-		path_ =  homeDir + "/" + path_.substr(1);
+		static string homeDir = Context::instance().home();
+
+        path_ =  homeDir + "/" + path_.substr(1);
 	}
 
 

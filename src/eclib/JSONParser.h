@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file JSONParser.h
 /// @author Baudouin Raoult
 /// @date Jun 2012
 

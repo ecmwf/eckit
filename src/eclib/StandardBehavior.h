@@ -16,15 +16,18 @@
 class StandardBehavior : public ContextBehavior {
 public:
 
-    // -- Contructors
+    /// Contructors
 
 	StandardBehavior();
 
-    // -- Destructor
+    /// Destructor
 
 	~StandardBehavior();
     
-public: // interface methods
+public: // methods
+    
+    virtual string runName() const;
+    virtual void runName( const string& name ); 
     
     virtual std::string home() const;    
     
@@ -35,6 +38,10 @@ public: // interface methods
     virtual Logger* createWarningLogger();
     virtual Logger* createErrorLogger();
 
+private: // members
+    
+    std::string name_;
+    
 };
 
 #endif // eclib_StandardBehavior_h

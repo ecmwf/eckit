@@ -31,6 +31,12 @@ public:
 
 public: // interface methods
     
+    virtual string runName() const = 0;
+    virtual void runName( const string& name ) = 0; 
+    
+    virtual string displayName() const;
+    virtual void displayName( const string& name ); 
+    
     virtual std::string home() const = 0;    
     
     virtual long taskId() const = 0;
@@ -42,7 +48,7 @@ public: // interface methods
     
     int  debug() const  { return debug_; }    
     void debug( int d ) { debug_ = d; }    
-
+    
     // From Configurable
 
 	virtual void   reconfigure();
@@ -56,7 +62,8 @@ private: // methods
     
 protected: // members
    
-    int debug_;
+    int     debug_;
+    string  displayName_;
     
 };
 

@@ -8,19 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Application.h"
 #include "eclib/Log.h"
 #include "eclib/Resource.h"
 #include "eclib/ResourceMgr.h"
 #include "eclib/Types.h"
+#include "eclib/Tool.h"
 
 #include "eclib/config/Script.h"
 #include "eclib/config/Compiler.h"
 
-class TestConfig : public Application {
+class TestConfig : public Tool {
 public:
 
-    TestConfig(int argc,char **argv): Application(argc,argv) {}
+    TestConfig(int argc,char **argv): Tool(argc,argv) {}
 
     ~TestConfig() {}
 
@@ -96,7 +96,8 @@ void TestConfig::test_parse()
     
     s.execute(din,dout);
     
-    std::cout << dout << std::endl;
+//    for( StringDict::const_iterator i = dout.begin(); i != dout.end(); ++i )
+//        std::cout << i->first << " : " << i->second << std::endl;    
     
     ASSERT( dout["a"] == "1" );
     ASSERT( dout["b"] == "lolo" );
@@ -135,7 +136,7 @@ void TestConfig::test_resource()
     
     string b = Resource<string>("b","none",args);
     
-    std::cout << "b [" << b << "]" << std::endl;
+//    std::cout << "b [" << b << "]" << std::endl;
     
     ASSERT( b == "bar");
 }

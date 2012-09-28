@@ -15,30 +15,21 @@
 #define Loader_H
 
 #include "eclib/machine.h"
+
 #include "eclib/ClassExtent.h"
 
-// Forward declarations
-
-
 class Loader : public ClassExtent<Loader> {
-public:
 
-// -- Contructors
+public: // methods
 
 	Loader();
 	virtual ~Loader();
 
 	virtual void execute() = 0;
 
-// -- Operators
-
-private:
-
+private: // methods
 
 // There is no private copy constructor as this will confuse g++ 4.x.x
-
-// -- Members
-
 
 };
 

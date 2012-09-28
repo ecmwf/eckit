@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 
+#include "eclib/Application.h"
 #include "eclib/Colour.h"
 #include "eclib/DHSBehavior.h"
 #include "eclib/DHSStdLogger.h"
@@ -19,7 +20,8 @@
 #include "eclib/RotLogger.h"
 
 DHSBehavior::DHSBehavior() :
-    taskId_(0)
+    taskId_(0),
+    name_()
 {
     try 
     {
@@ -36,6 +38,19 @@ DHSBehavior::DHSBehavior() :
 DHSBehavior::~DHSBehavior()
 {
     Monitor::shutdown();    
+}
+
+string DHSBehavior::runName() const
+{
+    if( name_.empty())
+        return Application::appName();
+    else 
+        return name_;
+}
+
+void DHSBehavior::runName( const string& name )
+{
+    name_ = name;
 }
 
 string DHSBehavior::home() const

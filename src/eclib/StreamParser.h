@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file StreamParser.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date Sep 2012

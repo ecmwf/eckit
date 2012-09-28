@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Application.h"
+#include "eclib/Tool.h"
 #include "eclib/BadValue.h"
 #include "eclib/Context.h"
 #include "eclib/DataHandle.h"
@@ -21,10 +21,10 @@
 #include "eclib/config/Script.h"
 #include "eclib/config/Compiler.h"
 
-class ReadConfig : public Application {
+class ReadConfig : public Tool {
 public:
 
-    ReadConfig(int argc,char **argv): Application(argc,argv) {}
+    ReadConfig(int argc,char **argv): Tool(argc,argv) {}
 
     ~ReadConfig() {}
 

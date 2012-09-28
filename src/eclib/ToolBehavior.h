@@ -24,10 +24,10 @@ public:
 
 	~ToolBehavior();
     
-public: // interface methods
+public: // methods
     
     virtual std::string home() const;    
-    
+        
 };
 
 #endif // eclib_ToolBehavior_h

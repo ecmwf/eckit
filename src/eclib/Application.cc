@@ -93,6 +93,7 @@ Application::Application(int argc,char **argv)
 
     int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
     
+    Context::instance().runName( name_ );
     Context::instance().debug( debug );
     
 	// mallopt(M_DISCLAIM,0);
@@ -142,7 +143,11 @@ void Application::start()
 {
 	int status = 0;
 
-	Monitor::name(Resource<string>("-name",name_));
+    string displayName = Resource<string>("-name",name_);
+    
+    Context::instance().displayName( displayName );
+    
+	Monitor::name( displayName );
 
 	Log::info() << "** Start of " << name() << " ** pid is " << getpid() << endl;
 	

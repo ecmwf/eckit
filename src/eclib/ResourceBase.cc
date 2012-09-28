@@ -14,9 +14,10 @@
 #include "eclib/Resource.h"
 #include "eclib/ResourceMgr.h"
 
-ResourceBase::ResourceBase(Configurable* owner,const string& str):
-			owner_( owner ? owner : &Context::instance() ),
-			inited_(false)
+ResourceBase::ResourceBase(Configurable* owner,const string& str) :
+    owner_( owner ? owner : &Context::instance() ),
+	inited_(false),
+    converted_(false)
 {
 	if(owner_) owner_->add(this);	
 
@@ -77,9 +78,9 @@ void ResourceBase::init(const StringDict* args)
 			if(options_ == Context::instance().argv(i))
 			{
                 if( i+1 == Context::instance().argc() || Context::instance().argv(i+1)[0] == '-' )
-                    setValue("true");
+                    valueStr_ = "true";
 				else
-                    setValue(Context::instance().argv(i+1));
+                    valueStr_ = Context::instance().argv(i+1);
 				inited_ = true;
 				return;
 			}
@@ -91,7 +92,7 @@ void ResourceBase::init(const StringDict* args)
 	{
 		const char *p = ::getenv(environment_.c_str()+1);
 		if(p) {
-			setValue(p);
+			valueStr_ = p;
 			inited_ = true;
 			return;
 		}
@@ -109,7 +110,7 @@ void ResourceBase::init(const StringDict* args)
 		else
 			found = ResourceMgr::lookUp("","",name_,args,s);	
 		
-		if(found) setValue(s);
+		if(found) valueStr_ = s;
         
 		inited_ = true;
 		return;
@@ -117,7 +118,16 @@ void ResourceBase::init(const StringDict* args)
 
 	// Else use default. This is done in Resource
 
-	inited_ = true;
+    inited_ = true;
+}
+
+void ResourceBase::convert()
+{
+    if(!converted_)
+    {
+        setValue(valueStr_);
+        converted_ = true;
+    }
 }
 
 string ResourceBase::name() const

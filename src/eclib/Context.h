@@ -45,6 +45,12 @@ public:
     
     long self() const;
     
+    string runName() const;
+    void runName( const string& name ); 
+    
+    string displayName() const;
+    void displayName( const string& name ); 
+    
     string home() const;
 
     Logger* createInfoLogger();

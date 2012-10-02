@@ -27,10 +27,7 @@ Tool::Tool(int argc,char **argv) :
     
     Context::instance().setup( argc, argv, new ToolBehavior() );
 
-    int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
-    
     Context::instance().runName( name_ );
-    Context::instance().debug( debug );
     
 	Loader::callAll(&Loader::execute);
 }
@@ -55,9 +52,12 @@ void Tool::start()
 {
 	int status = 0;
 
+    int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
+    
+    Context::instance().debug( debug );
+
     string displayName = Resource<string>("-name",name_);
     
-    Context::instance().runName( name_ );
     Context::instance().displayName( displayName );
     
 	try 

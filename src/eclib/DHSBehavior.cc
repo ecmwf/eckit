@@ -25,6 +25,7 @@ DHSBehavior::DHSBehavior() :
 {
     try 
     {
+        Monitor::active( true );
         Monitor::startup();
         taskId_ = Monitor::self();
 	}

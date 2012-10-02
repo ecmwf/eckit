@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eclib/machine.h"
+
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <fcntl.h>
-
-#include "eclib/machine.h"
 
 #include "eclib/AutoLock.h"
 #include "eclib/MappedArray.h"

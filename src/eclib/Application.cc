@@ -83,7 +83,7 @@ static void catch_exit()
 }
 
 Application::Application(int argc,char **argv)
-{
+{    
 	name_ = PathName(argv[0]).baseName(false);
     
     if(getenv("DHS_FILE_LOGGING") && atoi(getenv("DHS_FILE_LOGGING")))

@@ -18,42 +18,25 @@
 
 #include "eclib/AutoLock.h"
 #include "eclib/MappedArray.h"
+#include "eclib/NonCopyable.h"
 #include "eclib/TaskInfo.h"
 
-class Monitor {
+class Monitor : private NonCopyable {
 public:
 
 	typedef MappedArray<TaskInfo> TaskArray;
 
-// -- Exceptions
-	// None
-
-// -- Contructors
+    /// Contructors
 
 	Monitor();
 
-// -- Destructor
+    /// Destructor
 
 	~Monitor(); // Change to virtual if base class
 
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
-// -- Methods
-
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
+    static bool active();
+    static void active( bool a );
+    
 	static void startup();
 	static void shutdown();
 	static void out(char*,char*); // called from Log
@@ -101,39 +84,13 @@ public:
 	static void abort();
 	static void checkAbort();
 
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-	
-	// void print(ostream&) const; // Change to virtual if base class	
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-private:
-
-// No copy allowed
-
-	Monitor(const Monitor&);
-	Monitor& operator=(const Monitor&);
-
-// -- Members
+private: // members
 
 	unsigned long slot_;
 	bool ready_;
 	bool check_;
 
-// -- Methods
+private: // methods
 
 	unsigned long hash();
 	static Monitor& instance();
@@ -141,23 +98,9 @@ private:
 
 	void init();
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-
-// -- Class methods
-	// None
-
-// -- Friends
-
-	//friend ostream& operator<<(ostream& s,const Monitor& p)
-	//	{ p.print(s); return s; }
-
 };
 
+//-----------------------------------------------------------------------------
 
 // Wrap the setting of Monitor::state
 
@@ -174,6 +117,8 @@ public:
 		{ Monitor::state(c); }
 };
 
+//-----------------------------------------------------------------------------
+
 template<class T>
 class AutoLockTag {
 	AutoState state_;
@@ -184,5 +129,7 @@ public:
     AutoLockTag(T* t): state_(t->tag()), lock_(t) 
 		{ state_.set(t->tag() - 'a' + 'A'); }
 };
+
+//-----------------------------------------------------------------------------
 
 #endif

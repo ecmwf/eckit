@@ -88,6 +88,7 @@ static void _debug(const char*,const char*);
 void LogBuffer::dumpBuffer(void)
 {
     AutoLock<Mutex> lock(mutex);
+    
     Monitor::out(pbase(),pptr());
     
     const char *p = pbase();

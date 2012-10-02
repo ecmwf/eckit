@@ -57,7 +57,7 @@ void Script::readFile(const PathName& path)
         if (!in)
             throw CantOpenFile( path.asString() );
 
-        std::cout << "reading config file [" << path.asString() << "]" << std::endl;
+//        std::cout << "reading config file [" << path.asString() << "]" << std::endl;
         
         Compiler c(in);
         

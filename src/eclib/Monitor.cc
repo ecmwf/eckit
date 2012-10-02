@@ -20,7 +20,7 @@
 #include "eclib/TaskInfo.h"
 #include "eclib/ThreadSingleton.h"
 
-static bool active_ = (getenv("DHSHOME") != 0);
+static bool active_ = false;
 
 Monitor::Monitor():
 	ready_(false),
@@ -83,7 +83,17 @@ Monitor::~Monitor()
 		TaskArray& a = info();
 		AutoLock<TaskArray> lock(a);
 		a[slot_].TaskInfo::~TaskInfo();
-	}
+    }
+}
+
+bool Monitor::active()
+{
+    return active_;
+}
+
+void Monitor::active( bool a ) 
+{
+    active_ = a;
 }
 
 void Monitor::startup()

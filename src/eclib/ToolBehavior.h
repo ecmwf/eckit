@@ -24,9 +24,10 @@ public:
 
 	~ToolBehavior();
     
-public: // methods
+private: // methods
     
     virtual std::string home() const;    
+	void setup(int argc, char** argv);
         
 };
 

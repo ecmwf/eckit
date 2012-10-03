@@ -27,3 +27,6 @@ string ToolBehavior::home() const
     return string( getenv( "HOME" ) );
 }
 
+void ToolBehavior::setup(int argc, char** argv)
+{
+}

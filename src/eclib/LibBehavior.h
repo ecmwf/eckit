@@ -27,7 +27,7 @@ public:
         
     void register_logger_callback(CallbackLogger::callback c, void* ctxt = 0 );
     
-public: // interface methods
+private: // interface methods
         
     virtual std::string home() const;    
     
@@ -35,6 +35,8 @@ public: // interface methods
     virtual Logger* createDebugLogger();
     virtual Logger* createWarningLogger();
     virtual Logger* createErrorLogger();
+	
+	void setup(int argc, char** argv);
     
 protected:
     

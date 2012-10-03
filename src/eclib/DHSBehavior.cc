@@ -23,6 +23,10 @@ DHSBehavior::DHSBehavior() :
     taskId_(0),
     name_()
 {
+}
+
+void DHSBehavior::setup(int argc,char **argv)
+{
     try 
     {
         Monitor::active( true );

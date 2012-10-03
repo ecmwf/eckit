@@ -30,6 +30,10 @@ LibBehavior::~LibBehavior()
     // within some destructor
 }
 
+void LibBehavior::setup(int argc, char** argv)
+{
+}
+
 void LibBehavior::register_logger_callback( CallbackLogger::callback c, void* ctxt )
 {    
     info_->register_callback (c, (int)'I', ctxt);

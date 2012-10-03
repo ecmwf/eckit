@@ -29,6 +29,9 @@ public:
 
 	virtual ~ContextBehavior();
 
+
+	virtual void setup(int argc, char** argv) = 0;
+
 public: // interface methods
     
     virtual string runName() const = 0;

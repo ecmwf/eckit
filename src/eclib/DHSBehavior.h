@@ -42,6 +42,8 @@ protected: // methods
     virtual DHSLogger* getLogger() = 0;
     
 private: // members
+
+    virtual void setup(int,char**);
     
     long taskId_;
     

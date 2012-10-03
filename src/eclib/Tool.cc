@@ -29,7 +29,9 @@ Tool::Tool(int argc,char **argv) :
 
     Context::instance().runName( name_ );
     
-	Loader::callAll(&Loader::execute);
+    Context::instance().behavior()->initialize();
+
+    Loader::callAll(&Loader::execute);
 }
 
 Tool::~Tool()

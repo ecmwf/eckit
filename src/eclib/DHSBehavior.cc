@@ -25,24 +25,28 @@ DHSBehavior::DHSBehavior() :
 {
 }
 
-void DHSBehavior::setup(int argc,char **argv)
+DHSBehavior::~DHSBehavior()
 {
-    try 
+    Monitor::shutdown();
+}
+
+void DHSBehavior::initialize()
+{
+    try
     {
         Monitor::active( true );
         Monitor::startup();
         taskId_ = Monitor::self();
-	}
-	catch(exception& e) {
-		std::cerr << "** " << e.what() << " Caught in " << Here() <<  std::endl;
-		std::cerr << "** Exception is re-thrown" << std::endl;
-		throw;
-	}
+    }
+    catch(exception& e) {
+        std::cerr << "** " << e.what() << " Caught in " << Here() <<  std::endl;
+        std::cerr << "** Exception is re-thrown" << std::endl;
+        throw;
+    }
 }
 
-DHSBehavior::~DHSBehavior()
+void DHSBehavior::finalize()
 {
-    Monitor::shutdown();    
 }
 
 string DHSBehavior::runName() const

@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eclib/BackTrace.h"
 #include "eclib/Context.h"
 #include "eclib/ContextBehavior.h"
 #include "eclib/Log.h"
@@ -82,42 +83,53 @@ void Context::reconfigure()
     
     // forward to ContextBehavior
     if( is_setup() ) 
-        return behavior_->reconfigure();    
+        return behavior_->reconfigure();
+}
+
+void Context::checkInit() const
+{
+    if( !is_setup() )
+    {
+        std::cerr << "[ERROR] Context used before being created [ERROR] " << std::endl;
+        std::cerr << "Backtrace: " << std::endl;
+        std::cerr << BackTrace::dump() << std::endl;
+        throw InitError( "Context used before being created" );
+    }
 }
 
 string Context::home() const
 {
-    ASSERT( is_setup() );
+    checkInit();
     return behavior_->home();
 }
 
 long Context::self() const
 {
-    ASSERT( is_setup() );
+    checkInit();
     return behavior_->taskId();    
 }
 
 string Context::runName() const
 {
-    ASSERT( is_setup() );
+    checkInit();
     return behavior_->runName();    
 }
 
 void Context::runName(const string &name)
 {
-    ASSERT( is_setup() );
+    checkInit();
     behavior_->runName(name);    
 }
 
 string Context::displayName() const
 {
-    ASSERT( is_setup() );
+    checkInit();
     return behavior_->displayName();    
 }
 
 void Context::displayName(const string &name)
 {
-    ASSERT( is_setup() );
+    checkInit();
     behavior_->displayName(name);    
 }
 

@@ -27,6 +27,9 @@ public:
     ~DHSBehavior();
     
 protected: // methods
+
+    virtual void initialize();
+    virtual void finalize();
     
     virtual string runName() const;
     virtual void runName( const string& name ); 

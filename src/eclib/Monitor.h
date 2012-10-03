@@ -41,7 +41,7 @@ public:
 	static void shutdown();
 	static void out(char*,char*); // called from Log
 
-	static void name(const string&);
+    static void name(const string&);
 	static void kind(const string&);
 
 	static void progress(const string&,unsigned long long,unsigned long long);

@@ -18,6 +18,17 @@ ContextBehavior::ContextBehavior() :
 
 ContextBehavior::~ContextBehavior()
 {
+    finalize(); // should do nothing if not initialized
+}
+
+void ContextBehavior::initialize()
+{
+    // empty -- derived classes add init behavior
+}
+
+void ContextBehavior::finalize()
+{
+    // empty -- derived classes add final behavior
 }
 
 string ContextBehavior::displayName() const

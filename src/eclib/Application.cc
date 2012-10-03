@@ -91,6 +91,8 @@ Application::Application(int argc,char **argv)
     else
         Context::instance().setup( argc, argv, new DHSBehaviorStdout(std::cout) );
 
+    Context::instance().behavior()->initialize();
+
     int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
     
     Context::instance().runName( name_ );

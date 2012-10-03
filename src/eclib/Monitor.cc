@@ -174,6 +174,9 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 static void init(void)
 {
     string  monitor = Resource<string>("monitorPath","~/etc/monitor");
+
+    std::cerr << "monitor [" << monitor << "]" << std::endl;
+
 	long    size    = Resource<long>("monitorSize",1000);
     mapArray = new Monitor::TaskArray(monitor,size);
 }

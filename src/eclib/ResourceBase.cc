@@ -53,8 +53,8 @@ ResourceBase::ResourceBase(Configurable* owner,const string& str) :
 ResourceBase::ResourceBase(const string& name, const StringDict& args):
 			owner_( &Context::instance() ),
 			inited_(false),
-			converted_(false),
-            name_(name)
+            name_(name),
+            converted_(false)
 {
 	if(owner_) owner_->add(this);	
     
@@ -103,22 +103,16 @@ void ResourceBase::init(const StringDict* args)
 
 	if(name_ != "")
 	{
-		bool found = false;
-		string s;
-
 		if(owner_)
-			found = ResourceMgr::lookUp(owner_->kind(),owner_->name(),name_,args,s);
+            ResourceMgr::lookUp(owner_->kind(),owner_->name(),name_,args,valueStr_);
 		else
-			found = ResourceMgr::lookUp("","",name_,args,s);	
-		
-		if(found) valueStr_ = s;
-
+            ResourceMgr::lookUp("","",name_,args,valueStr_);
 	}
 
 	// Else use default. This is done in Resource
 
     inited_ = true;
-	converted_ = true;
+    converted_ = true;
 }
 
 void ResourceBase::convert()

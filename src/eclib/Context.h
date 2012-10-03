@@ -19,7 +19,19 @@ class ContextBehavior;
 class Logger;
 
 class Context : public Configurable {
-public:
+
+public: // types
+
+    class InitError : public std::exception {
+    public:
+        InitError(const string& what) : what_(what) {}
+        virtual ~InitError()  throw() {}
+        const char* what() const throw() {  return what_.c_str(); }
+    private:
+        string what_;
+    };
+
+public: // methods
 
     // -- Contructors
 
@@ -36,7 +48,9 @@ public:
     void setup( int argc, char **argv, ContextBehavior* b );
     
     bool is_setup() const { return behavior_.get() != 0; }
-    
+
+    ContextBehavior* behavior() const { checkInit(); return behavior_.get(); }
+
     int argc() const;
 	string argv(int n) const;
     
@@ -70,6 +84,8 @@ private: // methods
 
 	virtual string kind() const  { return "Context"; }
     
+    void checkInit() const;
+
 protected:
     
     // -- Members

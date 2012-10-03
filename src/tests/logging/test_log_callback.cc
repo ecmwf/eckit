@@ -92,6 +92,7 @@ int main(int argc,char **argv)
     LibBehavior* behavior = new LibBehavior();
     
     Context::instance().setup( argc, argv, behavior );
+    Context::instance().behavior()->initialize();
 
     test_callback_none(behavior);
     test_callback_noctxt(behavior);

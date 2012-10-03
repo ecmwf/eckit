@@ -45,9 +45,8 @@ void Context::setup( int argc, char **argv, ContextBehavior* b )
     if( behavior_.get() )
 		throw SeriousBug("Context is already setup with a behavior");
     
-    behavior_ = auto_ptr<ContextBehavior>( b );
-	behavior_->setup(argc, argv);
-    
+    behavior_.reset(b);
+
     Log::init(); // should not logging before this line
 }
 

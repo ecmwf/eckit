@@ -18,13 +18,14 @@
 #include "eclib/Types.h"
 
 class LocalPathName;
+class Configurable;
 
 class ResourceMgr : private NonCopyable {
 
 public: // methods
 
 	static void reset();
-	static bool lookUp(const string&, const string&, const string&, const StringDict* args, string&);
+    static bool lookUp( Configurable*, const string&, const StringDict* args, string&);
 	static void set(const string&,const string&);
 
     static void appendConfig( istream& in );

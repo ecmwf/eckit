@@ -17,7 +17,7 @@
 ResourceBase::ResourceBase(Configurable* owner,const string& str) :
     owner_( owner ? owner : &Context::instance() ),
 	inited_(false),
-    converted_(false)
+    converted_(true) // initial value is already set
 {
 	if(owner_) owner_->add(this);	
 
@@ -54,7 +54,7 @@ ResourceBase::ResourceBase(const string& name, const StringDict& args):
 			owner_( &Context::instance() ),
 			inited_(false),
             name_(name),
-            converted_(false)
+            converted_(true) // initial value is already set
 {
 	if(owner_) owner_->add(this);	
     
@@ -70,10 +70,11 @@ void ResourceBase::init(const StringDict* args)
 {
 	if(inited_) return;
 
-	// First look in config file
-	// First look for an option on the command line
+    inited_ = true;
 
-	if(options_ != "")
+    // (1) first look for an option on the command line
+
+    if( !options_.empty() )
 	{
 		for(int i = 1; i < Context::instance().argc(); i++)
 			if(options_ == Context::instance().argv(i))
@@ -82,36 +83,34 @@ void ResourceBase::init(const StringDict* args)
                     valueStr_ = "true";
 				else
                     valueStr_ = Context::instance().argv(i+1);
-				inited_ = true;
-				return;
+
+                converted_ = false;
+                return;
 			}
 	}
 
-	// Then look for an environment variable
+    // (2) then look for an environment variable
 
-	if(environment_ != "")
+    if( !environment_.empty() )
 	{
 		const char *p = ::getenv(environment_.c_str()+1);
-		if(p) {
+        if( p )
+        {
 			valueStr_ = p;
-			inited_ = true;
-			return;
+            converted_ = false;
+            return;
 		}
 	}
 
-	// Otherwise look in the config file
+    // (3) otherwise look in the config file
 
-	if(name_ != "")
+    if( !name_.empty() )
 	{
-		if(owner_)
-            ResourceMgr::lookUp(owner_->kind(),owner_->name(),name_,args,valueStr_);
-		else
-            ResourceMgr::lookUp("","",name_,args,valueStr_);
-	}
+        if( ResourceMgr::lookUp(owner_,name_,args,valueStr_) )
+            converted_ = false;
+    }
 
-	// Else use default. This is done in Resource
-
-    inited_ = true;
+    // (4) else use default
     converted_ = true;
 }
 

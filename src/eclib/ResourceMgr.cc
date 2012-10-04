@@ -10,6 +10,7 @@
 
 #include "eclib/Application.h"
 #include "eclib/AutoLock.h"
+#include "eclib/Configurable.h"
 #include "eclib/LocalPathName.h"
 #include "eclib/Log.h"
 #include "eclib/Mutex.h"
@@ -65,47 +66,55 @@ void ResourceMgr::readConfigFiles()
 	}
 }
 
-bool ResourceMgr::lookUp( const string& kind, 
-                          const string& owner,
+bool ResourceMgr::lookUp( Configurable* owner,
                           const string& name, 
                           const StringDict* args, 
                           string& result)
 {
     AutoLock<Mutex> lock(mutex);
     
-    StringDict resmap;
-    
     readConfigFiles();
     
+    StringDict resmap;
+
     if(args)
         script.execute( *args, resmap );
     else
     {
         script.execute( StringDict(), resmap );
     }
-    
+
+//    std::cerr << "name [" << name << "]" << std::endl;
+
+    script.print( std::cerr );
         
 	StringDict::iterator i;
     
-    i = resmap.find( string( kind + "." + owner + "." + name ) );
+    if( owner )
+    {
+        string kind  = owner->kind();
+        string owner_name = owner->name();
 
-	if(i != resmap.end())
-	{
-		result = (*i).second;
-		return true;
-	}
+        i = resmap.find( string( kind + "." + owner_name + "." + name ) );
 
-    i = resmap.find( string( owner + "." + name ) );
+        if(i != resmap.end())
+        {
+            result = (*i).second;
+            return true;
+        }
 
-	if(i != resmap.end())
-	{
-		result = (*i).second;
-		return true;
-	}
+        i = resmap.find( string( owner_name + "." + name ) );
+
+        if(i != resmap.end())
+        {
+            result = (*i).second;
+            return true;
+        }
+    }
 
     i = resmap.find( string( name ) );
 
-	if(i != resmap.end())
+    if( i != resmap.end() )
 	{
 		result = (*i).second;
 		return true;

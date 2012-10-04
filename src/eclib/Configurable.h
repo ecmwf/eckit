@@ -41,6 +41,11 @@ public:
 	static void dumpAllResources(ostream&); // Dump the configuration to a file
 	static void htmlAllResources(ostream&,Url&);
 
+    /// @returns the name of the class
+    virtual string kind() const  { return "Configurable"; }
+    /// @returns the name of the instance
+    virtual string name() const  { return "Unknown"; }
+
 private:
 
 	friend class ResourceBase;
@@ -59,9 +64,6 @@ private:
 	void resetResources();
 	void dumpResources(ostream&) const;       // Dump all resources to a stream
 	void htmlResources(ostream&,Url&);  
-
-	virtual string kind() const  { return "Configurable"; } // Should return the name of the class
-	virtual string name() const  { return "Unknown"; }      // Should return the name of the instance
 
 };
 

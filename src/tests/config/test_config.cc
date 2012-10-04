@@ -124,7 +124,7 @@ void TestConfig::test_resource()
     ostringstream code;
      
     code << " b = foo " << std::endl                  
-         << " [ if class = od ] b = bar " << std::endl;
+         << " [ if class = od ] { b = bar }" << std::endl;
     
     istringstream in(code.str());
     
@@ -136,9 +136,9 @@ void TestConfig::test_resource()
     
     string b = Resource<string>("b","none",args);
     
-//    std::cout << "b [" << b << "]" << std::endl;
+    std::cout << "b [" << b << "]" << std::endl;
     
-    ASSERT( b == "bar");
+    ASSERT( b == "bar" );
 }
 
 //-----------------------------------------------------------------------------

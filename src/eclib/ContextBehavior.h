@@ -39,9 +39,7 @@ public: // interface methods
     
     virtual string displayName() const;
     virtual void displayName( const string& name ); 
-    
-    virtual std::string home() const = 0;    
-    
+        
     virtual long taskId() const = 0;
 
     virtual Logger* createInfoLogger() = 0;
@@ -52,6 +50,8 @@ public: // interface methods
     int  debug() const  { return debug_; }    
     void debug( int d ) { debug_ = d; }    
     
+    std::string home() const { return home_; }
+
     // From Configurable
 
 	virtual void   reconfigure();
@@ -67,7 +67,8 @@ protected: // members
    
     int     debug_;
     string  displayName_;
-    
+    string  home_;
+
 };
 
 #endif // eclib_ContextBehavior_h

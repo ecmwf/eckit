@@ -12,7 +12,8 @@
 
 ContextBehavior::ContextBehavior() : 
     debug_(0),
-    displayName_()
+    displayName_(),
+    home_()
 {
 }
 

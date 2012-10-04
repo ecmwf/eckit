@@ -21,6 +21,8 @@ LibBehavior::LibBehavior() :
     warn_ ( new CallbackLogger() ),
     error_( new CallbackLogger() )
 {
+    //    "/usr/local/etc/" + Context::instance().appName() ???
+    home_ = getenv( "HOME" );
 }
 
 LibBehavior::~LibBehavior()
@@ -30,23 +32,12 @@ LibBehavior::~LibBehavior()
     // within some destructor
 }
 
-void LibBehavior::setup(int argc, char** argv)
-{
-}
-
 void LibBehavior::register_logger_callback( CallbackLogger::callback c, void* ctxt )
 {    
     info_->register_callback (c, (int)'I', ctxt);
     debug_->register_callback(c, (int)'D', ctxt);
     warn_->register_callback (c, (int)'W', ctxt);
     error_->register_callback(c, (int)'E', ctxt);
-}
-
-
-string LibBehavior::home() const
-{
-//    "/usr/local/etc/" + Context::instance().appName()
-    return string( getenv( "HOME" ) );
 }
 
 Logger* LibBehavior::createInfoLogger()

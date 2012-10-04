@@ -15,13 +15,14 @@
 #include "eclib/StandardBehavior.h"
 
 class LibBehavior : public StandardBehavior {
-public:
 
-    // -- Contructors
+public: // methods
+
+    /// Contructors
 
 	LibBehavior();
 
-    // -- Destructor
+    /// Destructor
 
 	~LibBehavior();
         
@@ -29,16 +30,12 @@ public:
     
 private: // interface methods
         
-    virtual std::string home() const;    
-    
     virtual Logger* createInfoLogger();
     virtual Logger* createDebugLogger();
     virtual Logger* createWarningLogger();
     virtual Logger* createErrorLogger();
-	
-	void setup(int argc, char** argv);
-    
-protected:
+
+protected: // members
     
     CallbackLogger* info_;
     CallbackLogger* debug_;

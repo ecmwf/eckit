@@ -23,6 +23,7 @@ DHSBehavior::DHSBehavior() :
     taskId_(0),
     name_()
 {
+    home_ = getenv( "DHSHOME" );
 }
 
 DHSBehavior::~DHSBehavior()
@@ -61,15 +62,6 @@ void DHSBehavior::runName( const string& name )
 {
     name_ = name;
 }
-
-string DHSBehavior::home() const
-{
-    static const char * dhshome = getenv( "DHSHOME" );
-    if( !dhshome )
-        throw SeriousBug("DHSHOME is not defined");
-    return string( dhshome );
-}
-
 
 long DHSBehavior::taskId() const
 {

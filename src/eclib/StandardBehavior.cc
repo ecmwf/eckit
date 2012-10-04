@@ -18,6 +18,7 @@ using namespace std;
 StandardBehavior::StandardBehavior() :
     name_("undefined")
 {
+    home_ = getenv( "HOME" );
 }
 
 StandardBehavior::~StandardBehavior()
@@ -32,11 +33,6 @@ string StandardBehavior::runName() const
 void StandardBehavior::runName(const string& name)
 {
     name_ = name;
-}
-
-string StandardBehavior::home() const
-{
-    return string( getenv( "HOME" ) );
 }
 
 long StandardBehavior::taskId() const

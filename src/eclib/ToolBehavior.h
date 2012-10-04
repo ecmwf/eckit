@@ -14,7 +14,8 @@
 #include "eclib/StandardBehavior.h"
 
 class ToolBehavior : public StandardBehavior {
-public:
+
+public: // methods
 
     // -- Contructors
 
@@ -25,10 +26,7 @@ public:
 	~ToolBehavior();
     
 private: // methods
-    
-    virtual std::string home() const;    
-	void setup(int argc, char** argv);
-        
+            
 };
 
 #endif // eclib_ToolBehavior_h

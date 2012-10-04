@@ -34,7 +34,6 @@ protected: // methods
     virtual string runName() const;
     virtual void runName( const string& name ); 
     
-    virtual std::string home() const;
     virtual long taskId() const;
     
     virtual Logger* createInfoLogger();

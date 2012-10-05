@@ -180,6 +180,8 @@ public:
     static void link(const LocalPathName& from,const LocalPathName& to);
     static void rename(const LocalPathName& from,const LocalPathName& to);
     static void rename(const LocalPathName& from,const string& newBase);
+    
+    static LocalPathName cwd();
 
 private:
 

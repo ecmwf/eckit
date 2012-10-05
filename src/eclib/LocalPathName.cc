@@ -8,6 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eclib/machine.h"
+
+#include "limits.h"
+#include "stdlib.h"
+
 #include <sys/stat.h>
 #include <dirent.h>
 #include <sys/statvfs.h>
@@ -132,6 +137,15 @@ bool LocalPathName::exists() const
 bool LocalPathName::available() const
 {
 	return true;
+}
+
+LocalPathName LocalPathName::cwd()
+{
+    AutoLock<Mutex> lock(mutex);
+    char buf [PATH_MAX+1];
+	if(!getcwd(buf, sizeof(buf)))
+		throw FailedSystemCall("getcwd");    
+    return LocalPathName( buf );
 }
 
 LocalPathName LocalPathName::unique(const LocalPathName& path)

@@ -10,4 +10,4 @@ ecbuild_add_test(   TARGET      test_resource
                     ARGS        -integer 100
                     LIBS        Ec )
 
-set_tests_properties( test_resource PROPERTIES ENVIRONMENT TEST_ENV_INT=333 )
+# set_tests_properties( test_resource PROPERTIES ENVIRONMENT TEST_ENV_INT=333 )

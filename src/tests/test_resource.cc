@@ -56,8 +56,8 @@ void TestResource::test_command_line()
 
 void TestResource::test_environment_var()
 {
-    // TEST_ENV_INT is given from the testing system
-
+    putenv("TEST_ENV_INT=333");
+    
     ASSERT( Resource<int>("intEnv;$TEST_ENV_INT",777) == 333 );
 
     putenv("FOO=1Mb");

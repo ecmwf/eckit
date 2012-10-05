@@ -119,34 +119,9 @@ void TestConfig::test_parse()
 
 //-----------------------------------------------------------------------------
 
-void TestConfig::test_resource()
-{
-    ostringstream code;
-     
-    code << " b = foo " << std::endl                  
-         << " [ if class = od ] { b = bar }" << std::endl;
-    
-    istringstream in(code.str());
-    
-    ResourceMgr::appendConfig(in);
-
-    StringDict args;
-    
-    args["class"] = "od";
-    
-    string b = Resource<string>("b","none",args);
-    
-    std::cout << "b [" << b << "]" << std::endl;
-    
-    ASSERT( b == "bar" );
-}
-
-//-----------------------------------------------------------------------------
-            
 void TestConfig::run()
 {
     test_parse();
-    test_resource();
 }
 
 //-----------------------------------------------------------------------------

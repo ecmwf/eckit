@@ -107,7 +107,10 @@ void ResourceBase::init(const StringDict* args)
     if( !name_.empty() )
 	{
         if( ResourceMgr::lookUp(owner_,name_,args,valueStr_) )
+        {
             converted_ = false;
+            return;
+        }
     }
 
     // (4) else use default

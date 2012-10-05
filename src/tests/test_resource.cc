@@ -13,6 +13,7 @@
 #include "eclib/Log.h"
 #include "eclib/Tool.h"
 #include "eclib/Resource.h"
+#include "eclib/ResourceMgr.h"
 #include "eclib/Types.h"
 
 class TestResource : public Tool {
@@ -48,32 +49,47 @@ void TestResource::test_default()
 
 void TestResource::test_command_line()
 {
-    int integer = Resource<int>("integer;-integer",0);
-
-    ASSERT( integer == 100 );
+    ASSERT( Resource<int>("integer;-integer",0) == 100 );
 }
 
 //-----------------------------------------------------------------------------
 
 void TestResource::test_environment_var()
 {
-    int intEnv = Resource<int>("intEnv;$TEST_ENV_INT",777);
+    // TEST_ENV_INT is given from the testing system
 
-    ASSERT( intEnv == 333 );
+    ASSERT( Resource<int>("intEnv;$TEST_ENV_INT",777) == 333 );
 
     putenv("FOO=1Mb");
 
-    ASSERT(Resource<long>("$FOO",0) == 1024*1024);
-    ASSERT(Resource<long>("$FOO;-foo",0) == 1024*1024);
-    ASSERT(Resource<long>("-foo;$FOO",0) == 1024*1024);
-    ASSERT(Resource<long>("$FOO;foo;-foo",0) == 1024*1024);
-
+    ASSERT( Resource<long>("$FOO",0) == 1024*1024);
+    ASSERT( Resource<long>("$FOO;-foo",0) == 1024*1024);
+    ASSERT( Resource<long>("-foo;$FOO",0) == 1024*1024);
+    ASSERT( Resource<long>("$FOO;foo;-foo",0) == 1024*1024);
 }
 
 //-----------------------------------------------------------------------------
 
 void TestResource::test_config_file()
 {
+    ostringstream code;
+
+    code << " b = foo " << std::endl
+         << " [ if class = od ] { b = bar }" << std::endl;
+
+    istringstream in(code.str());
+
+    ResourceMgr::appendConfig(in);
+
+    StringDict args;
+
+    args["class"] = "od";
+
+    string b = Resource<string>("b","none",args);
+
+    std::cout << "b [" << b << "]" << std::endl;
+
+    ASSERT( b == "bar" );
 }
 
 //-----------------------------------------------------------------------------

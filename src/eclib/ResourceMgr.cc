@@ -84,10 +84,12 @@ bool ResourceMgr::lookUp( Configurable* owner,
         script.execute( StringDict(), resmap );
     }
 
-//    std::cerr << "name [" << name << "]" << std::endl;
-
+#if 0 // DEBUG
+    std::cerr << "name [" << name << "]" << std::endl;
+    std::cerr << "resmap [" << resmap << "]" << std::endl;
     script.print( std::cerr );
-        
+#endif
+
 	StringDict::iterator i;
     
     if( owner )
@@ -120,7 +122,7 @@ bool ResourceMgr::lookUp( Configurable* owner,
 		return true;
 	}
 
-	return false;
+    return false;
 }
 
 

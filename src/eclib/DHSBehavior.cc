@@ -28,7 +28,7 @@ DHSBehavior::DHSBehavior() :
     {
         /// @note can't use Log::error() here because it depends on this constructor
 
-        std::cerr << "WARNING: DHSHOME environment variable not defined -- trying to use HOME instead @ " << Here() <<  std::endl;
+        std::cout << "WARNING: DHSHOME environment variable not defined -- trying to use HOME instead @ " << Here() <<  std::endl;
         home = getenv( "HOME" );
         if( ! home )
         {

@@ -117,7 +117,7 @@ PartFileHandle::~PartFileHandle()
 
 Length PartFileHandle::openForRead()
 {
-    static long bufSize  = Resource<long>("partFileHandleBufferSize",0);
+    static long bufSize  = Resource<long>("FileHandleIOBufferSize",0);
     static bool best     = Resource<bool>("bestPartFileHandleBufferSize",false);
 
 //    Log::info() << "PartFileHandle::openForRead " << name_ << endl;

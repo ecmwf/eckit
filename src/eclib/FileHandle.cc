@@ -56,6 +56,7 @@ FileHandle::~FileHandle()
 
 void FileHandle::open(const char* mode)
 {
+    static long bufSize  = Resource<long>("FileHandleIOBufferSize",0);
     file_ = ::fopen64(name_.c_str(),mode);
     if (file_ == 0)
         throw CantOpenFile(name_);
@@ -67,6 +68,17 @@ void FileHandle::open(const char* mode)
 
     if (!(::strcmp(mode,"r") == 0))
         setbuf(file_,0);
+	else
+	{
+		long size = bufSize;
+		if(size)
+		{
+			Log::debug() << "FileHandle using " << Bytes(size) << endl;
+			buffer_.reset(new Buffer(size));
+			Buffer& b = *(buffer_.get());
+			::setvbuf(file_,b,_IOFBF,size);
+		}
+	}
 
     Log::info() << "FileHandle::open " << name_ << " " << mode << " " << fileno(file_) << endl;
 

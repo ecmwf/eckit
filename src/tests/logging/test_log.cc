@@ -8,14 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Application.h"
+#include "eclib/Tool.h"
 #include "eclib/LocalPathName.h"
 #include "eclib/Log.h"
 
-class TestApp : public Application {
+class TestApp : public Tool {
 public:
 
-    TestApp(int argc,char **argv): Application(argc,argv)
+    TestApp(int argc,char **argv): Tool(argc,argv)
     {
     }
     ~TestApp() {}

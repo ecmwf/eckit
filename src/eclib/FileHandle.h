@@ -16,6 +16,7 @@
 
 
 #include "eclib/DataHandle.h"
+#include "eclib/Buffer.h"
 
 class FileHandle : public DataHandle {
 public:
@@ -79,6 +80,7 @@ private:
 	bool          overwrite_;
 	FILE*         file_;
 	bool          read_;
+	auto_ptr<Buffer>   buffer_;
 
 // -- Methods
 

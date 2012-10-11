@@ -15,10 +15,12 @@
 
 
 #include "eclib/FileHandle.h"
+#include "eclib/Bytes.h"
 #include "eclib/Log.h"
 #include "eclib/MarsFSHandle.h"
 #include "eclib/MarsFSPath.h"
 #include "eclib/NodeInfo.h"
+#include "eclib/Resource.h"
 
 ClassSpec FileHandle::classSpec_ = {&DataHandle::classSpec(),"FileHandle",};
 Reanimator<FileHandle> FileHandle::reanimator_;
@@ -56,7 +58,7 @@ FileHandle::~FileHandle()
 
 void FileHandle::open(const char* mode)
 {
-    static long bufSize  = Resource<long>("FileHandleIOBufferSize",0);
+    static long bufSize  = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize",0);
     file_ = ::fopen64(name_.c_str(),mode);
     if (file_ == 0)
         throw CantOpenFile(name_);
@@ -213,6 +215,7 @@ void FileHandle::close()
     {
         Log::warning() << "Closing FileHandle " << name_ << ", file is not opened" << endl;
     }
+    buffer_.reset(0);
 }
 
 void FileHandle::rewind()

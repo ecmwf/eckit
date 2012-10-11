@@ -23,7 +23,21 @@ DHSBehavior::DHSBehavior() :
     taskId_(0),
     name_()
 {
-    home_ = getenv( "DHSHOME" );
+    char* home = getenv( "DHSHOME" );
+    if( ! home )
+    {
+        /// @note can't use Log::error() here because it depends on this constructor
+
+        std::cerr << "WARNING: DHSHOME environment variable not defined -- trying to use HOME instead @ " << Here() <<  std::endl;
+        home = getenv( "HOME" );
+        if( ! home )
+        {
+            std::cerr << "ERROR: neither DHSHOME or HOME environment variables are defined -- cannot initialize DHSBehavior @ " << Here() <<  std::endl;
+            ::exit(1);
+        }
+    }
+
+    home_ = home;
 }
 
 DHSBehavior::~DHSBehavior()

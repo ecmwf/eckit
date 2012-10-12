@@ -56,11 +56,13 @@ void TestResource::test_command_line()
 
 void TestResource::test_environment_var()
 {
-    putenv("TEST_ENV_INT=333");
+    char v [] = "TEST_ENV_INT=333";
+    putenv(v);
     
     ASSERT( Resource<int>("intEnv;$TEST_ENV_INT",777) == 333 );
 
-    putenv("FOO=1Mb");
+    char foo [] = "FOO=1Mb";
+    putenv(foo);
 
     ASSERT( Resource<long>("$FOO",0) == 1024*1024);
     ASSERT( Resource<long>("$FOO;-foo",0) == 1024*1024);

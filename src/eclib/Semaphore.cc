@@ -8,6 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstdio>
+#include <errno.h>
+
 #include <sys/sem.h>
 
 #include "eclib/Semaphore.h"
@@ -20,7 +23,6 @@ struct sembuf _lock[] = {
 struct sembuf _unlock[] = {
 	{ 0, -1, SEM_UNDO }, /* ulck */
 };
-
 
 Semaphore::Semaphore(const PathName& name,int count):
 	count_(count),
@@ -38,8 +40,10 @@ Semaphore::Semaphore(const PathName& name,int count):
 	if(key == key_t(-1))
 		throw FailedSystemCall(string("ftok(") + name + string(")"));
 
-	//Log::debug() << "Creating semaphore path=" << name << ", count=" << count << ", key=" << hex << key << dec << endl; 
-	SYSCALL(semaphore_ = semget(key, count_, 0666 | IPC_CREAT));
+    /// @note cannot use Log::debug() of SYSCALL here, because Log is not yet initialized
+	// std::cout << "Creating semaphore path=" << name << ", count=" << count << ", key=" << hex << key << dec << std::endl; 
+	if( (semaphore_ = semget(key, count_, 0666 | IPC_CREAT)) < 0 )
+        perror("semget failed"), throw FailedSystemCall("semget");
 }
 
 Semaphore::~Semaphore()

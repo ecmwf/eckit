@@ -31,7 +31,7 @@ public: // methods
     ResourceBase(Configurable* owner, const std::string& str );
 
     /// Contructor for temporary resources that may depend on a input dictionary
-    ResourceBase( const std::string& name, const StringDict& args );
+    ResourceBase(const std::string& str, const StringDict& args );
 
     /// Destructor
 	virtual ~ResourceBase();
@@ -75,8 +75,8 @@ public: // methods
     Resource(const string& str,const T& value):
 		ResourceBase(0,str),     value_(value) {}
 
-    Resource(const string& name,const T& value, const StringDict& args ):
-		ResourceBase(name,args),     value_(value) {}
+    Resource(const string& str,const T& value, const StringDict& args ):
+		ResourceBase(str,args),     value_(value) {}
 
 	// Part of a configurable
 

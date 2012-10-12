@@ -14,25 +14,20 @@
 #include "eclib/Resource.h"
 #include "eclib/ResourceMgr.h"
 
-ResourceBase::ResourceBase(Configurable* owner,const string& str) :
-    owner_( owner ? owner : &Context::instance() ),
-	inited_(false),
-    converted_(true) // initial value is already set
+static void parse_name( const std::string& str, std::string& name, std::string& environment, std::string& options )
 {
-	if(owner_) owner_->add(this);	
-
-	const char *p = str.c_str();
+    const char *p = str.c_str();
 
 	while(*p)
 	{
-		string *s = &name_;
+		string *s = &name;
 		char   x  = *p;
 		int len   = 0;
 
 		switch(x)
 		{
-			case '$': s = &environment_; break;
-			case '-': s = &options_;     break;
+			case '$': s = &environment; break;
+			case '-': s = &options;     break;
 		}
 
 		*s = p;
@@ -46,18 +41,25 @@ ResourceBase::ResourceBase(Configurable* owner,const string& str) :
 		s->resize(len);
 
 		if(*p) p++; 
-
 	}
 }
 
-ResourceBase::ResourceBase(const string& name, const StringDict& args):
+ResourceBase::ResourceBase(Configurable* owner,const string& str) :
+    owner_( owner ? owner : &Context::instance() ),
+	inited_(false),
+    converted_(true) // initial value is already set
+{
+	if(owner_) owner_->add(this);	
+    parse_name(str,name_,environment_,options_);
+}
+
+ResourceBase::ResourceBase(const string& str, const StringDict& args):
 			owner_( &Context::instance() ),
 			inited_(false),
-            name_(name),
             converted_(true) // initial value is already set
 {
 	if(owner_) owner_->add(this);	
-    
+    parse_name(str,name_,environment_,options_);
     init(&args);
 }
 

@@ -8,8 +8,40 @@
  * does it submit to any jurisdiction.
  */
 
+#include <iterator>
 
 #include "eclib/Tokenizer.h"
+
+//-----------------------------------------------------------------------------
+
+template < class Container >
+void tokenizeInsert(const set<char,less<char> >& separator, const string& raw, insert_iterator<Container> ins )
+{
+    int    index  = 0;
+	int    length = raw.length();
+	string token  = "";
+
+	while(index < length)
+	{
+		char c = raw[index];
+        
+		if( separator.find(c) != separator.end() )
+		{
+			if(token.length()>0)
+				ins = token;
+			token ="";
+		}
+		else
+			token += c;
+
+		index++;
+	}
+
+	if(token.length()>0)
+		ins = token;
+}
+
+//-----------------------------------------------------------------------------
 
 Tokenizer::Tokenizer(const string& separators)
 {
@@ -21,30 +53,9 @@ Tokenizer::~Tokenizer()
 {
 }
 
-
 void Tokenizer::operator()(const string& raw, vector<string>& v)
 {
-	int    index  = 0;
-	int    length = raw.length();
-	string token  = "";
-
-	while(index < length)
-	{
-		char c = raw[index];
-		if(find(separator_.begin(),separator_.end(),c) != separator_.end())
-		{
-			if(token.length()>0)
-				v.push_back(token);
-			token ="";
-		}
-		else
-			token += c;
-
-		index++;
-	}
-
-	if(token.length()>0)
-		v.push_back(token);
+    tokenizeInsert( separator_, raw, std::inserter(v, v.end()));
 }
 
 void Tokenizer::operator()(istream& in, vector<string>& v)
@@ -55,5 +66,21 @@ void Tokenizer::operator()(istream& in, vector<string>& v)
 	while(in.get(c) && c != EOF && c != '\n')
 		raw += c;
 
-	operator()(raw,v);
+    tokenizeInsert( separator_, raw, std::inserter(v, v.end()));
+}
+
+void Tokenizer::operator()(const string& raw, set<string>& s)
+{
+    tokenizeInsert( separator_, raw, std::inserter(s, s.end()));
+}
+
+void Tokenizer::operator()(istream& in, set<string>& s)
+{
+	string raw;
+	char c;
+
+	while(in.get(c) && c != EOF && c != '\n')
+		raw += c;
+
+    tokenizeInsert( separator_, raw, std::inserter(s, s.end()));
 }

@@ -19,14 +19,19 @@
 #include "eclib/Length.h"
 #include "eclib/Offset.h"
 
+//-----------------------------------------------------------------------------
+
 class Stream;
 
-// For counting
-typedef unsigned long Ordinal;
+typedef unsigned long Ordinal;  ///< for counting
 
-typedef vector<Ordinal>     OrdinalList;
-typedef vector<string>      StringList;
-typedef map<string,string>  StringDict;
+typedef std::vector<Ordinal>                OrdinalList;
+
+typedef std::vector<std::string>            StringList;
+typedef std::set<std::string>               StringSet;
+typedef std::map<std::string,std::string>   StringDict;
+
+//-----------------------------------------------------------------------------
 
 template<class T>
 class output_list {
@@ -94,16 +99,31 @@ inline ostream& operator<<(ostream& s, const map<K,V>& m)
 	return s;
 }
 
-// Send vectors in streams
+template< typename T >
+inline ostream& operator<<(ostream& s, const std::set<T>& m)
+{
+	s << "{";
+    for (typename std::set<T>::const_iterator it = m.begin(); it != m.end(); ++it )
+	{
+		s << *it << ", ";
+	}
+	s << "}";
+	return s;
+}
+
+//-----------------------------------------------------------------------------
+
+/// Operators to send vectors in streams
 template<class T> void operator<<(Stream&,const vector<T>&);
 template<class T> void operator>>(Stream&,vector<T>&);
 
 #include "eclib/Types.cc"
 
-// ReferenceID
+//-----------------------------------------------------------------------------
+
+/// @todo maybe this should be moved out of EcLib 
 
 typedef unsigned long long DSRequestID;
 typedef unsigned long long MarsID;
-
 
 #endif

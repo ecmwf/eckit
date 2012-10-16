@@ -19,33 +19,32 @@
 #include "eclib/NonCopyable.h"
 
 class Tokenizer : private NonCopyable {
-public:
 
-// -- Contructors
+public: // methods
+
+    /// Contructor
 
     Tokenizer(const string&);
 
-// -- Destructor
+    /// Destructor
 
 	~Tokenizer(); 
     
-// -- Methods
-	
-	void operator()(const string&, vector<string>&);
+    void operator()(const string&, vector<string>&);
 	void operator()(istream&,vector<string>&);
 
-private:
+    void operator()(const string&, set<string>&);
+	void operator()(istream&, set<string>&);
 
-// -- Members
+private: // members
 
 	set<char,less<char> > separator_;     // To make searching faster
 
-// -- Methods
-
+private: // methods
+    
 	void print(ostream&) const;
 
-	friend ostream& operator<<(ostream& s,const Tokenizer& p)
-		{ p.print(s); return s; }
+	friend ostream& operator<<(ostream& s,const Tokenizer& p) { p.print(s); return s; }
 
 };
 

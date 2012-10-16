@@ -72,6 +72,11 @@ void TestTokenizer::test_multi()
 //        std::cout << *i << " ??? " << s.str() << std::endl;
         ASSERT( *i == s.str() );
     }
+
+    parse(source,target);
+
+    ASSERT( target.size() == 10 );
+
 }
 
 //-----------------------------------------------------------------------------

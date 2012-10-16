@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
+
 #include "eclib/Exceptions.h"
 #include "eclib/StrStream.h"
 #include "eclib/StringTools.h"
@@ -69,6 +71,52 @@ string StringTools::substitute(const string& s,const map<string,string>& m)
     return result;
 }
 
+vector<string> StringTools::substituteVariables(const string & s)
+{
+    vector<string> result;
+    size_t len = s.length();
+    bool var = false;
+    string word;
+
+    for(size_t i = 0; i < len; i++)
+    {
+        switch(s[i])
+        {
+            case '{':
+                if(var) {
+                    StrStream os;
+                    os << "StringTools::substituteVariables: unexpected { found in " <<s << " at position " << i << StrStream::ends;
+                    throw UserError(string(os));
+                }
+                var = true;
+                word = "";
+                break;
+
+            case '}':
+                if(!var) {
+                    StrStream os;
+                    os << "StringTools::substituteVariables: unexpected } found in " <<s << " at position " << i << StrStream::ends;
+                    throw UserError(string(os));
+                }
+                var = false;
+                result.push_back(word);
+                break;
+
+            default:
+                if(var)
+                    word += s[i];
+                break;
+
+        }
+    }
+    if(var) {
+        StrStream os;
+        os << "StringTools::substituteVariables: missing } in " << s << StrStream::ends;
+        throw UserError(string(os));
+    }
+    return result;
+}
+
 std::string StringTools::upper(const string& v)
 {
 	string r = v;
@@ -111,5 +159,17 @@ std::string StringTools::join(const string &delimiter, const vector<std::string>
 			r += delimiter;
 		r += words[i];
 	}
-	return r;
+    return r;
+}
+
+bool StringTools::startsWith(const string& str, const string& substr)
+{
+    if( ! substr.size() || str.size() < substr.size() )
+        return false;
+    
+    for( string::size_type i = 0; i < substr.size();  ++i )
+        if( substr[i] != str[i] )
+            return false;
+    
+    return true;
 }

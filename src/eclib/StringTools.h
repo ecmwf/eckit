@@ -19,6 +19,7 @@ class StringTools : private NonCopyable {
 public:
 
     static string substitute(const string&, const map<string, string>&);
+    static vector<std::string>  substituteVariables( const string& );
 
 	static std::string upper(const std::string &);
 	static std::string lower(const std::string &);
@@ -28,6 +29,8 @@ public:
     static vector<std::string> split(const string& delim, const string& text);
 	static std::string join(const string &, const vector<std::string>&);
 
+    static bool startsWith( const string& str, const string& substr );
+    
 private:
     
     StringTools(); // Non instantiable

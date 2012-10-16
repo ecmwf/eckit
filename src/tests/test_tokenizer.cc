@@ -22,16 +22,17 @@ public:
 
     virtual void run();
 
-    void test_single();
-    void test_multi();
+    template< class Container >  void test_single();
+    template< class Container >  void test_multi();
 };
 
 //-----------------------------------------------------------------------------
 
+template< class Container >
 void TestTokenizer::test_single()
 {
-    std::string source (":lolo:lolo:lolo");
-    StringList  target;
+    std::string source (":lolo1:lolo2:lolo3");
+    Container  target;
 
     Tokenizer parse(":");
 
@@ -39,16 +40,23 @@ void TestTokenizer::test_single()
 
     ASSERT( target.size() == 3 );
 
-    for( size_t i = 0; i < target.size(); ++i )
-        ASSERT( target[i] == "lolo" );
+    size_t c = 1;
+    for( typename Container::const_iterator i = target.begin(); i != target.end(); ++i, ++c )
+    {
+        ostringstream s;
+        s << "lolo" << c;
+//        std::cout << *i << " ??? " << s.str() << std::endl;
+        ASSERT( *i == s.str() );
+    }
 }
 
 //-----------------------------------------------------------------------------
 
+template< class Container >  
 void TestTokenizer::test_multi()
 {
-    std::string source ("-lolo-lolo-lolo;lolo:lolo-");
-    StringList  target;
+    std::string source ("-lolo1-lolo2-lolo3;lolo4:lolo5-");
+    Container  target;
 
     Tokenizer parse("-:;");
 
@@ -56,15 +64,25 @@ void TestTokenizer::test_multi()
 
     ASSERT( target.size() == 5 );
 
-    for( size_t i = 0; i < target.size(); ++i )
-        ASSERT( target[i] == "lolo" );}
+    size_t c = 1;
+    for( typename Container::const_iterator i = target.begin(); i != target.end(); ++i, ++c )
+    {
+        ostringstream s;
+        s << "lolo" << c;
+//        std::cout << *i << " ??? " << s.str() << std::endl;
+        ASSERT( *i == s.str() );
+    }
+}
 
 //-----------------------------------------------------------------------------
             
 void TestTokenizer::run()
 {
-    test_single();
-    test_multi();
+    test_single< StringList >();
+    test_multi < StringList >();
+
+    test_single< StringSet >();
+    test_multi < StringSet >();
 }
 
 //-----------------------------------------------------------------------------

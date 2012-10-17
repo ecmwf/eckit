@@ -87,28 +87,42 @@ inline ostream& operator<<(ostream& s,const vector<T>& v)
 	return s;
 }
 
+//-----------------------------------------------------------------------------
+
 template<typename K, typename V>
-inline ostream& operator<<(ostream& s, const map<K,V>& m)
+inline ostream& printTo(ostream& s, const map<K,V>& m)
 {
-	s << "{";
+    s << "{";
 	for (typename map<K,V>::const_iterator it = m.begin(); it != m.end(); ++it)
 	{
 		s << it->first << " : " << it->second << ", ";
 	}
 	s << "}";
-	return s;
+    return s;    
 }
 
-template< typename T >
-inline ostream& operator<<(ostream& s, const std::set<T>& m)
+template<typename K, typename V>
+inline ostream& operator<<(ostream& s, const map<K,V>& m)
 {
-	s << "{";
+    return printTo(s,m);
+}
+
+template<typename T>
+inline ostream& printTo(ostream& s, const std::set<T>& m)
+{
+    s << "{";
     for (typename std::set<T>::const_iterator it = m.begin(); it != m.end(); ++it )
 	{
 		s << *it << ", ";
 	}
 	s << "}";
-	return s;
+    return s;
+}
+
+template< typename T >
+inline ostream& operator<<(ostream& s, const std::set<T>& m)
+{
+    return printTo(s,m);
 }
 
 //-----------------------------------------------------------------------------

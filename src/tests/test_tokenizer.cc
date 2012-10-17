@@ -55,16 +55,16 @@ void TestTokenizer::test_single()
 template< class Container >  
 void TestTokenizer::test_multi()
 {
-    std::string source ("-lolo1-lolo2-lolo3;lolo4:lolo5-");
     Container  target;
 
     Tokenizer parse("-:;");
 
-    parse(source,target);
+    std::string source1 ("-lolo0-lolo1-lolo2;lolo3:lolo4-");
+    parse(source1,target);
 
     ASSERT( target.size() == 5 );
 
-    size_t c = 1;
+    size_t c = 0;
     for( typename Container::const_iterator i = target.begin(); i != target.end(); ++i, ++c )
     {
         ostringstream s;
@@ -73,10 +73,23 @@ void TestTokenizer::test_multi()
         ASSERT( *i == s.str() );
     }
 
-    parse(source,target);
+//    DEBUG_VAR( target );
+    
+    std::string source2 ("-lolo5-lolo6-lolo7;lolo8:lolo9-");
+    parse(source2,target);
 
+//    DEBUG_VAR( target );
+    
     ASSERT( target.size() == 10 );
 
+    c = 0;
+    for( typename Container::const_iterator i = target.begin(); i != target.end(); ++i, ++c )
+    {
+        ostringstream s;
+        s << "lolo" << c;
+//        std::cout << *i << " ??? " << s.str() << std::endl;
+        ASSERT( *i == s.str() );
+    }
 }
 
 //-----------------------------------------------------------------------------

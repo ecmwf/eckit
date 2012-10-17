@@ -66,7 +66,7 @@ public:
 //-----------------------------------------------------------------------------
 
 template<class T>
-inline ostream& __print_container(ostream& s,const T& t)
+inline ostream& __print_list(ostream& s,const T& t)
 {
 	output_list<typename T::value_type> l(s);
 	output_list_iterator<typename T::value_type> os(&l);
@@ -74,7 +74,7 @@ inline ostream& __print_container(ostream& s,const T& t)
     return s;
 }
 
-inline ostream& __print_container(ostream& s,const vector<string>& t)
+inline ostream& __print_list(ostream& s,const vector<string>& t)
 {
 	s << '[';
 	for(Ordinal i = 0; i < t.size(); i++)
@@ -86,7 +86,7 @@ inline ostream& __print_container(ostream& s,const vector<string>& t)
 template<class T>
 inline ostream& operator<<(ostream& s,const vector<T>& v)
 {
-	return __print_container(s,v);
+	return __print_list(s,v);
 }
 
 //-----------------------------------------------------------------------------

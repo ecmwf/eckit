@@ -63,34 +63,36 @@ public:
     output_list_iterator<T>& operator++(int) { return *this; }
 };
 
+//-----------------------------------------------------------------------------
+
 template<class T>
-inline void __print_list(ostream& s,const T& t)
+inline ostream& __print_container(ostream& s,const T& t)
 {
 	output_list<typename T::value_type> l(s);
 	output_list_iterator<typename T::value_type> os(&l);
 	copy(t.begin(),t.end(),os);
+    return s;
 }
 
-inline
-void __print_list(ostream& s,const vector<string>& t)
+inline ostream& __print_container(ostream& s,const vector<string>& t)
 {
 	s << '[';
 	for(Ordinal i = 0; i < t.size(); i++)
 		if(i) s << ',' << t[i]; else s << t[i];
 	s << ']';
+    return s;    
 }
 
 template<class T>
 inline ostream& operator<<(ostream& s,const vector<T>& v)
 {
-	__print_list(s,v);
-	return s;
+	return __print_container(s,v);
 }
 
 //-----------------------------------------------------------------------------
 
 template<typename K, typename V>
-inline ostream& printTo(ostream& s, const map<K,V>& m)
+inline ostream& __print_container(ostream& s, const map<K,V>& m)
 {
     s << "{";
 	for (typename map<K,V>::const_iterator it = m.begin(); it != m.end(); ++it)
@@ -104,11 +106,11 @@ inline ostream& printTo(ostream& s, const map<K,V>& m)
 template<typename K, typename V>
 inline ostream& operator<<(ostream& s, const map<K,V>& m)
 {
-    return printTo(s,m);
+    return __print_container(s,m);
 }
 
 template<typename T>
-inline ostream& printTo(ostream& s, const std::set<T>& m)
+inline ostream& __print_container(ostream& s, const std::set<T>& m)
 {
     s << "{";
     for (typename std::set<T>::const_iterator it = m.begin(); it != m.end(); ++it )
@@ -122,7 +124,7 @@ inline ostream& printTo(ostream& s, const std::set<T>& m)
 template< typename T >
 inline ostream& operator<<(ostream& s, const std::set<T>& m)
 {
-    return printTo(s,m);
+    return __print_container(s,m);
 }
 
 //-----------------------------------------------------------------------------

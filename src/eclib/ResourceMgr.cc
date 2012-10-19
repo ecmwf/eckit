@@ -15,6 +15,7 @@
 #include "eclib/Log.h"
 #include "eclib/Mutex.h"
 #include "eclib/ResourceMgr.h"
+#include "eclib/Types.h"
 
 #include "eclib/config/Compiler.h"
 #include "eclib/config/Script.h"
@@ -86,7 +87,8 @@ bool ResourceMgr::lookUp( Configurable* owner,
 
 #if 0 // DEBUG
     std::cerr << "name [" << name << "]" << std::endl;
-    std::cerr << "resmap [" << resmap << "]" << std::endl;
+    if(args)  { std::cerr << "args [" ; __print_container(std::cerr,*args); std::cerr << "]" << std::endl; }
+    std::cerr << "resmap [" ; __print_container(std::cerr,resmap); std::cerr << "]" << std::endl;
     script.print( std::cerr );
 #endif
 

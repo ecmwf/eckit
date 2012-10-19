@@ -60,7 +60,7 @@ bool config::Condition::eval( const StringDict& in, StringDict& out )
 
 void config::Condition::print( std::ostream& out )
 {
-    out << "[";
+    out << "[ if ";
     for( size_t i = 0; i < sentences_.size(); ++i )
     {
         out << sentences_[i].first << " = ";

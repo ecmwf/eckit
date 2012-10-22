@@ -30,7 +30,7 @@ public: // methods
 
     /// Destructor
 
-	~AIOHandle();
+	virtual ~AIOHandle();
 
     // From DataHandle
 

@@ -9,6 +9,9 @@
  */
 
 #include "eclib/AIOHandle.h"
+#include "eclib/Buffer.h"
+#include "eclib/FileHandle.h"
+#include "eclib/PathName.h"
 #include "eclib/Log.h"
 #include "eclib/Tool.h"
 #include "eclib/Types.h"
@@ -22,20 +25,55 @@ public:
 
     virtual void run();
     
-    void test_1();
+    void test_write();
 
 };
 
 //-----------------------------------------------------------------------------
             
-void TestAIOHandle::test_1()
+void TestAIOHandle::test_write()
 {
+    PathName path ( "lolo" );
+    path = PathName::unique( path );
+    path += ".dat";
+        
+    DataHandle* aioh = new AIOHandle(path);
+    
+    aioh->openForWrite(0);
+    
+    std::string buf ( "dvnj4795gvzsdmklcneoaghwuth" );
+    
+    aioh->write(&buf[0],buf.size());
+    
+    aioh->flush();
+    aioh->close();
+    
+    delete aioh;
+    
+    DataHandle* fh = path.fileHandle();
+    
+    fh->openForRead();
+    
+    Buffer buf2(1024);
+    
+    fh->read(buf2,buf2.size());
+    fh->close();
+    
+    delete fh;
+    
+    DEBUG_VAR(buf);
+    DEBUG_VAR(string(buf2));
+    
+//    ASSERT( buf == string(buf2) );
+    
+//    path.unlink();
 }
 
 //-----------------------------------------------------------------------------
             
 void TestAIOHandle::run()
 {
+    test_write();
 }
 
 //-----------------------------------------------------------------------------

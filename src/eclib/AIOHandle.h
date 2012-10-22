@@ -20,21 +20,17 @@
 #include "eclib/PathName.h"
 
 class AIOHandle : public DataHandle {
-public:
+
+public: // methods
 
 
-// -- Contructors
+    /// Contructor
 
 	AIOHandle(const PathName& path,size_t count = 64, size_t = 1024*1024,bool fsync = false);
 
-// -- Destructor
+    /// Destructor
 
 	~AIOHandle();
-
-// -- Operators
-
-
-// -- Overridden methods
 
     // From DataHandle
 
@@ -65,9 +61,7 @@ public:
     static  const ClassSpec&  classSpec()        { return classSpec_;}
 #endif
 
-private:
-
-// -- Members
+private: // members
 
 	PathName                path_;
 	vector<Buffer*>         buffers_;
@@ -85,9 +79,6 @@ private:
 
     virtual string title() const;
 
-// -- Methods
-
-
 // -- Class members
 
 #if 0
@@ -96,6 +87,5 @@ private:
 #endif
 
 };
-
 
 #endif

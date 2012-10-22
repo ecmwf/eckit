@@ -13,6 +13,11 @@
 
 #include "eclib/CodeLocation.h"
 
+CodeLocation::CodeLocation()
+    : line_(0), file_(0), func_(0)
+{
+}
+
 CodeLocation::CodeLocation(const char *file, int line, const char *func)
     : line_(line), file_(file), func_(func)
 {
@@ -27,8 +32,13 @@ std::string CodeLocation::asString() const
 
 void CodeLocation::print(ostream& os) const
 {
-    os << file_ << " +" << line_;
-    if( strlen(func_) )
-        os << " : " << func_;
+    if( file_ )
+    {
+        os << file_ << " +" << line_;
+        if( strlen(func_) )
+            os << " : " << func_;
+    }
+    else
+        os << "(null)";
 }
 

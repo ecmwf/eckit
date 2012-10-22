@@ -19,12 +19,12 @@ public:
     
     friend ostream& operator<<( ostream& s, const CodeLocation& loc ) { loc.print(s); return s; }
 	
-    // -- Contructors
-    
+    /// Empty contructor
+    /// Equivalent to a null location that won't print anything
+    CodeLocation();
+    /// Full Contructor
     CodeLocation( const char * file, int line, const char * func );
 
-    // -- Class methods
-    
     /// @return as std::string
     std::string asString() const;
     

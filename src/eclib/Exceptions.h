@@ -29,11 +29,16 @@ void Panic(const char *msg,int line,const char *file,const char *proc);
 
 class Exception : public exception {
 
+public: // methods
 
-public:
-    virtual const char *what() const throw() {  return what_.c_str(); }
-    Exception(const string&);
+    /// Constructor with message
+    Exception(const string& what, const CodeLocation& location = CodeLocation() );
+
+    /// Destructor
+    /// @throws nothing
     ~Exception() throw();
+    
+    virtual const char *what() const throw() {  return what_.c_str(); }
     virtual bool retryOnServer() const        { return false; }
     virtual bool retryOnClient() const        { return false; }
     virtual bool terminateApplication() const { return false; }
@@ -41,14 +46,21 @@ public:
     static bool throwing();
     static void exceptionStack(ostream&);
 
-protected:
+protected: // methods
+    
     void reason(const string&);
     Exception();
-private:
-    string what_;
-    SaveStatus save_;
-    Exception* next_;
+    
+private: // members
+    
+    string          what_; //< description
+    SaveStatus      save_; 
+    Exception*      next_;
+    CodeLocation    location_; //< where exception was first thrown
+    
 };
+
+//-----------------------------------------------------------------------------
 
 class SeriousBug : public Exception {
 public:

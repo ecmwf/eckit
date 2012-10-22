@@ -62,12 +62,14 @@ void Exception::exceptionStack(ostream& out)
 	out << "End stack" << endl;
 }
 
-Exception::Exception(const string& w):
+Exception::Exception(const string& w, const CodeLocation& location):
 	what_(w),
-	next_(first())
+	next_(first()),
+    location_(location)
 {
-	Log::error() << "Exception: " << w << endl;
-    /*
+    Log::error() << "Exception: " << w << " @ " << location_ << std::endl;
+    
+#if 0
     if(next_) {
         Log::error() << "Exception: stack containts " << next_->what() << endl;
     }
@@ -75,15 +77,14 @@ Exception::Exception(const string& w):
     {
         Log::error() << "Exception: stack is empty" << endl;
     }
-    */
+#endif
 
 //    Log::info() << "=== BackTrace ===" << std::endl;
 //    Log::info() << BackTrace::dump() << std::endl;
     
-
 	first() = this;
 	xldb_throw(w.c_str());
-	Log::status() << "** " << w << endl;
+    Log::status() << "** " << w << " @ " << location_ << std::endl;
 }
 
 void Exception::reason(const string& w)

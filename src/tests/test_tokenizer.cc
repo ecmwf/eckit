@@ -73,13 +73,9 @@ void TestTokenizer::test_multi()
         ASSERT( *i == s.str() );
     }
 
-//    DEBUG_VAR( target );
-    
     std::string source2 ("-lolo5-lolo6-lolo7;lolo8:lolo9-");
     parse(source2,target);
 
-//    DEBUG_VAR( target );
-    
     ASSERT( target.size() == 10 );
 
     c = 0;

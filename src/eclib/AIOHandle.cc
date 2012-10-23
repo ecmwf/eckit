@@ -122,10 +122,11 @@ long AIOHandle::write(const void* buffer,long length)
     {
         delete buffers_[n];
         buffers_[n] = new Buffer(::round(length,64*1024));
+        
         ASSERT(buffers_[n]);
     }
 
-    memcpy(buffers_[n], buffer, length);
+    memcpy( *(buffers_[n]), buffer, length);
     len_[n] = length;
 
     struct aiocb64  *aio = &aio_[n];
@@ -136,7 +137,7 @@ long AIOHandle::write(const void* buffer,long length)
     aio->aio_offset = pos_;
     pos_ += length;
 
-    aio->aio_buf = buffers_[n];
+    aio->aio_buf = *(buffers_[n]);
     aio->aio_nbytes = length;
     aio->aio_sigevent.sigev_notify = SIGEV_NONE;
 

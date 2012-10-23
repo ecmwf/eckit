@@ -16,6 +16,8 @@
 
 #include "eclib/machine.h"
 
+#include "eclib/NonCopyable.h"
+
 struct memblk;
 
 struct MemPool {
@@ -29,10 +31,9 @@ struct MemPool {
 };
 
 
-class MemoryPool {
-public:
+class MemoryPool : private NonCopyable {
 
-// -- Class methods
+public: // class methods
 
 
 	static void dump(ostream&);
@@ -42,16 +43,14 @@ public:
 	static void  largeDeallocate(void*);
 
 	static void* fastAllocate(size_t,MemPool& = MemPool::transientPool);
-	static void fastDeallocate(void*,MemPool& = MemPool::transientPool);
+	static void  fastDeallocate(void*,MemPool& = MemPool::transientPool);
 
 	static void info(ostream&);
 
-private:
+private: // methods
 
 	MemoryPool();
 	~MemoryPool(); // Change to virtual if base class
-	MemoryPool(const MemoryPool&);
-	MemoryPool& operator=(const MemoryPool&);
 
 };
 

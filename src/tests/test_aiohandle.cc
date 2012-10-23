@@ -41,11 +41,11 @@ void TestAIOHandle::test_write()
     
     aioh->openForWrite(0);
     
-    std::string buf ( "dvnj4795gvzsdmklcneoaghwuth" );
+    const char buf [] = "dvnj4795gvzsdmklcneoaghwuth";
     
-    aioh->write(&buf[0],buf.size());
+    aioh->write(buf,sizeof(buf));
     
-    aioh->flush();
+//    aioh->flush();
     aioh->close();
     
     delete aioh;
@@ -61,12 +61,9 @@ void TestAIOHandle::test_write()
     
     delete fh;
     
-    DEBUG_VAR(buf);
-    DEBUG_VAR(string(buf2));
+    ASSERT( buf == string(buf2) );
     
-//    ASSERT( buf == string(buf2) );
-    
-//    path.unlink();
+    path.unlink();
 }
 
 //-----------------------------------------------------------------------------

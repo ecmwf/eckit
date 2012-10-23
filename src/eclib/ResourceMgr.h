@@ -15,6 +15,7 @@
 #define ResourceMgr_H
 
 #include "eclib/NonCopyable.h"
+#include "eclib/PathName.h"
 #include "eclib/Types.h"
 
 class LocalPathName;
@@ -29,6 +30,7 @@ public: // methods
 	static void set(const string&,const string&);
 
     static void appendConfig( istream& in );
+    static void appendConfig( const PathName& );
     
 protected: // methods
     

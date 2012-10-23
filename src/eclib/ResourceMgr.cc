@@ -52,6 +52,12 @@ void ResourceMgr::appendConfig(istream &in)
     script.readStream(in);
 }
 
+void ResourceMgr::appendConfig(const PathName& path)
+{
+    AutoLock<Mutex> lock(mutex);
+    script.readFile(path);
+}
+
 void ResourceMgr::readConfigFiles()
 {
     AutoLock<Mutex> lock(mutex);

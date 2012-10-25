@@ -65,8 +65,8 @@ void AIOHandle::openForWrite(const Length&)
 void AIOHandle::openForAppend(const Length& length)
 {
     used_ = 0;
-    pos_ = length;
     SYSCALL( fd_ = ::open(path_.localPath(),0777,O_APPEND) );
+    SYSCALL( pos_ = ::lseek64(fd_,0,SEEK_END) );
 }
 
 long AIOHandle::read(void* buffer,long length)
@@ -250,7 +250,7 @@ Length AIOHandle::estimate()
 
 Offset AIOHandle::position()
 {
-    NOTIMP;
+    return pos_;
 }
 
 

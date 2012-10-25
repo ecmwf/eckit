@@ -65,7 +65,7 @@ void AIOHandle::openForWrite(const Length&)
 void AIOHandle::openForAppend(const Length& length)
 {
     used_ = 0;
-    SYSCALL( fd_ = ::open(path_.localPath(),0777,O_APPEND) );
+    SYSCALL( fd_ = ::open(path_.localPath(),0777, O_WRONLY | O_APPEND) );
     SYSCALL( pos_ = ::lseek64(fd_,0,SEEK_END) );
 }
 

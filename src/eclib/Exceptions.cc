@@ -39,8 +39,7 @@ Exception::Exception():
 {
 	first() = this;
 
-//    Log::info() << "=== BackTrace ===" << std::endl;
-//    Log::info() << BackTrace::dump() << std::endl;
+    std::cerr << "BACKTRACE: " << BackTrace::dump() << std::endl;
     
 	xldb_throw("?");
 }
@@ -79,8 +78,7 @@ Exception::Exception(const string& w, const CodeLocation& location):
     }
 #endif
 
-//    Log::info() << "=== BackTrace ===" << std::endl;
-//    Log::info() << BackTrace::dump() << std::endl;
+    std::cerr << "BACKTRACE: " << BackTrace::dump() << std::endl;
     
 	first() = this;
 	xldb_throw(w.c_str());

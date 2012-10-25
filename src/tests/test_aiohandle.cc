@@ -25,32 +25,33 @@ public:
 
     virtual void run();
     
-    void test_write();
+    void setup();
+    void teardown();
 
+    void test_write();
+    void test_append();
+    
+    PathName path_;
+    
 };
 
 //-----------------------------------------------------------------------------
             
 void TestAIOHandle::test_write()
 {
-    PathName path ( "lolo" );
-    path = PathName::unique( path );
-    path += ".dat";
-        
-    DataHandle* aioh = new AIOHandle(path);
+    DataHandle* aioh = new AIOHandle(path_);
     
     aioh->openForWrite(0);
     
-    const char buf [] = "dvnj4795gvzsdmklcneoaghwuth";
+    const char buf [] = "74e1feb8d0b1d328cbea63832c2dcfb2b4fa1adf";
     
     aioh->write(buf,sizeof(buf));
     
-//    aioh->flush();
     aioh->close();
     
     delete aioh;
     
-    DataHandle* fh = path.fileHandle();
+    DataHandle* fh = path_.fileHandle();
     
     fh->openForRead();
     
@@ -62,15 +63,63 @@ void TestAIOHandle::test_write()
     delete fh;
     
     ASSERT( buf == string(buf2) );
+}
+
+//-----------------------------------------------------------------------------
+            
+void TestAIOHandle::test_append()
+{
+    DataHandle* aioh = new AIOHandle(path_);
     
-    path.unlink();
+    aioh->openForAppend(0);
+    
+    const char buf [] = "53d50e63a50fba73f0151028a695a238ff06491c";
+    
+    aioh->write(buf,sizeof(buf));
+    
+    aioh->close();
+    
+    delete aioh;
+    
+    DataHandle* fh = path_.fileHandle();
+    
+    fh->openForRead();
+    
+    fh->seek( sizeof(buf) );
+    
+    Buffer buf2(1024);
+    
+    fh->read(buf2,buf2.size());
+    fh->close();
+    
+    delete fh;
+    
+    ASSERT( buf == string(buf2) );
+}
+
+//-----------------------------------------------------------------------------
+
+void TestAIOHandle::setup()
+{
+    path_ = PathName::unique( PathName( "lolo" ) );
+    path_ += ".dat";
+}
+
+void TestAIOHandle::teardown()
+{
+    path_.unlink();    
 }
 
 //-----------------------------------------------------------------------------
             
 void TestAIOHandle::run()
 {
+    setup();
+    
     test_write();
+    test_append();
+    
+    teardown();
 }
 
 //-----------------------------------------------------------------------------

@@ -55,17 +55,18 @@ Length AIOHandle::openForRead()
     NOTIMP;
 }
 
-void AIOHandle::openForWrite(const Length& length)
+void AIOHandle::openForWrite(const Length&)
 {
-
     used_ = 0;
     pos_ = 0;
-    SYSCALL(fd_ = ::creat(path_.localPath(),0777));
+    SYSCALL(fd_ = ::creat(path_.localPath(),0777) );
 }
 
-void AIOHandle::openForAppend(const Length& )
+void AIOHandle::openForAppend(const Length& length)
 {
-    NOTIMP;
+    used_ = 0;
+    pos_ = length;
+    SYSCALL( fd_ = ::open(path_.localPath(),0777,O_APPEND) );
 }
 
 long AIOHandle::read(void* buffer,long length)

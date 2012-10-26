@@ -37,10 +37,20 @@ public: // methods
     
     void execute( const StringDict& in, StringDict& out );
 
+    /// prints the script 
+    /// @param out stream where to print
     void print( std::ostream& out );
     
-    void readFile( const PathName& path );
+    /// reads the contents of the file into the script
+    /// @param path to the file
+    /// @returns true if the file was found and successfully parsed
+    bool readFile( const PathName& path );
+    
+    /// reads the contents of the stream into the script
     void readStream( istream& in );
+    
+    /// clears the contents of the script, effectively making it an empty script
+    void clear();
  
 private: // members
     

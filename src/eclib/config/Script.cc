@@ -32,8 +32,7 @@ Script::Script( Compiler& c )
 
 Script::~Script()
 {
-    for( BlockStore::iterator i = blocks_.begin(); i != blocks_.end(); ++i )
-        delete (*i);
+    clear();
 }
 
 void Script::execute(const StringDict &in, StringDict &out)
@@ -48,7 +47,7 @@ void Script::print(ostream &out)
         (*i)->print(out);
 }
 
-void Script::readFile(const PathName& path)
+bool Script::readFile(const PathName& path)
 {       
     if( path.exists() )
     {
@@ -66,7 +65,10 @@ void Script::readFile(const PathName& path)
         ASSERT(c.peek() == 0);
         
         blocks_.push_back(blk);
+        
+        return true;
     }
+    return false;
 }
 
 void Script::readStream(istream &in)
@@ -78,6 +80,12 @@ void Script::readStream(istream &in)
     ASSERT(c.peek() == 0);
     
     blocks_.push_back(blk);
+}
+
+void Script::clear()
+{
+    for( BlockStore::iterator i = blocks_.begin(); i != blocks_.end(); ++i )
+        delete (*i);
 }
 
 } // namespace config

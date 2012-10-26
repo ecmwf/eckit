@@ -21,16 +21,39 @@
 #include "eclib/config/Script.h"
 
 static Mutex mutex;
+static Mutex mutex_instance;
 
-static config::Script script;
+ResourceMgr::ResourceMgr() :
+    inited_(false),
+    script_( new config::Script() ),
+    parsed_()
+{
+}
 
-bool ResourceMgr::inited_ = false;
+ResourceMgr::~ResourceMgr()
+{
+    delete script_;
+}
+
+ResourceMgr& ResourceMgr::instance()
+{
+    AutoLock<Mutex> lock(mutex_instance);
+    
+    static ResourceMgr* obj = 0;
+    
+    if( !obj )
+        obj = new ResourceMgr();
+    
+    return *obj;
+}
 
 void ResourceMgr::reset()
 {
 	AutoLock<Mutex> lock(mutex);
     
     inited_ = false;
+    parsed_.clear();
+    script_->clear();
 }
 
 void ResourceMgr::set(const string& name,const string& value)
@@ -42,20 +65,25 @@ void ResourceMgr::set(const string& name,const string& value)
     
     istringstream in( code.str() );
     
-    script.readStream(in);
+    script_->readStream(in);
 }
 
 void ResourceMgr::appendConfig(istream &in)
 {
     AutoLock<Mutex> lock(mutex);
 
-    script.readStream(in);
+    script_->readStream(in);
 }
 
 void ResourceMgr::appendConfig(const PathName& path)
 {
     AutoLock<Mutex> lock(mutex);
-    script.readFile(path);
+    
+    if( parsed_.find(path) == parsed_.end() )
+    {
+        script_->readFile(path);
+        parsed_.insert(path);
+    }
 }
 
 void ResourceMgr::readConfigFiles()
@@ -66,10 +94,15 @@ void ResourceMgr::readConfigFiles()
 	{
 		inited_ = true;
         
-        script.readFile( "~/etc/config/general" );
-        script.readFile( "~/etc/config/local" );
-        script.readFile( string("~/etc/config/" ) + Application::appName() );
-        script.readFile( string("~/etc/config/" ) + Application::appName() + ".local" );
+        PathName general ("~/etc/config/general");
+        PathName local ("~/etc/config/general");
+        PathName app ( string("~/etc/config/" ) + Application::appName() );
+        PathName applocal ( string("~/etc/config/" ) + Application::appName() + ".local" );
+        
+        if( script_->readFile( general  ) ) parsed_.insert(general);
+        if( script_->readFile( local    ) ) parsed_.insert(local);
+        if( script_->readFile( app      ) ) parsed_.insert(app);
+        if( script_->readFile( applocal ) ) parsed_.insert(applocal);
 	}
 }
 
@@ -85,17 +118,17 @@ bool ResourceMgr::lookUp( Configurable* owner,
     StringDict resmap;
 
     if(args)
-        script.execute( *args, resmap );
+        script_->execute( *args, resmap );
     else
     {
-        script.execute( StringDict(), resmap );
+        script_->execute( StringDict(), resmap );
     }
 
 #if 0 // DEBUG
     std::cerr << "name [" << name << "]" << std::endl;
     if(args)  { std::cerr << "args [" ; __print_container(std::cerr,*args); std::cerr << "]" << std::endl; }
     std::cerr << "resmap [" ; __print_container(std::cerr,resmap); std::cerr << "]" << std::endl;
-    script.print( std::cerr );
+    script_->print( std::cerr );
 #endif
 
 	StringDict::iterator i;
@@ -122,7 +155,7 @@ bool ResourceMgr::lookUp( Configurable* owner,
         }
     }
 
-    i = resmap.find( string( name ) );
+    i = resmap.find( name );
 
     if( i != resmap.end() )
 	{

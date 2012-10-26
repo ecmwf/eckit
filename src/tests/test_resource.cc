@@ -81,7 +81,7 @@ void TestResource::test_config_file()
 
     istringstream in(code.str());
 
-    ResourceMgr::appendConfig(in);
+    ResourceMgr::instance().appendConfig(in);
 
     StringDict args;
 

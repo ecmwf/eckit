@@ -14,6 +14,8 @@
 #ifndef ResourceMgr_H
 #define ResourceMgr_H
 
+#include <set>
+
 #include "eclib/NonCopyable.h"
 #include "eclib/PathName.h"
 #include "eclib/Types.h"
@@ -21,29 +23,42 @@
 class LocalPathName;
 class Configurable;
 
+namespace config { class Script; }
+
+/// ResourceMgr is a singleton class
 class ResourceMgr : private NonCopyable {
 
 public: // methods
 
-	static void reset();
-    static bool lookUp( Configurable*, const string&, const StringDict* args, string&);
-	static void set(const string&,const string&);
+    /// destructor for singleton
+	~ResourceMgr();
 
-    static void appendConfig( istream& in );
-    static void appendConfig( const PathName& );
+    /// @returns the singleton instance of this class
+    static ResourceMgr& instance();
+    
+	void reset();
+    bool lookUp( Configurable*, const string&, const StringDict* args, string&);
+	void set(const string&,const string&);
+
+    void appendConfig( istream& in );
+    void appendConfig( const PathName& );
     
 protected: // methods
     
-    static void readConfigFiles();
+    void readConfigFiles();
     
 private: // methods
 
+    /// private contructor for singleton
 	ResourceMgr();
 
 private: // members
 
-	static bool inited_;
+	bool inited_;
+    
+    config::Script* script_;
 
+    std::set<PathName> parsed_;
 };
 
 #endif

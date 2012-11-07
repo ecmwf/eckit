@@ -40,6 +40,7 @@ BoolContent.h
 BoolContent.cc
 BTree.cc
 BTree.h
+Cache.h
 JSONParser.cc
 JSONParser.h
 FixedString.cc

@@ -4,6 +4,10 @@ ecbuild_add_test(   TARGET      test_aiohandle
                     SOURCES     test_aiohandle.cc
                     LIBS        Ec )
 
+ecbuild_add_test(   TARGET      test_cache
+                    SOURCES     test_cache.cc
+                    LIBS        Ec )
+
 ecbuild_add_test(   TARGET      test_log
                     SOURCES     test_log.cc
                     LIBS        Ec )

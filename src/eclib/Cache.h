@@ -27,6 +27,18 @@ public: // types
 
     typedef K key_type;
     typedef V value_type;
+    
+    struct Entry {
+        Entry( const value_type& v ) : 
+            expired_(false),
+            v_(v) 
+        {}
+
+        bool        expired_;
+        value_type  v_;
+    };
+    
+    typedef std::map<K,Entry> store_type;
 
 public: // methods
 
@@ -46,11 +58,11 @@ public: // methods
 
     /// accesses an object in the cache
     /// @param v returns the object
-    bool fetch( const K& key, V& v);
+    bool fetch( const K&, V&);
 
-    /// removes an object from the cache
-    /// @returns true if object was present and is removed
-    bool evict( const K& );
+    /// marks an object as expired
+    /// @returns true if object was present and is marked as expired
+    bool expire( const K& );
 
     /// evicts entries that are considered expired
     void purge();
@@ -58,13 +70,11 @@ public: // methods
     /// evicts all entries
     void clear();
 
-    /// @returns true if entry exists in cache
-    bool exists( const K& ) const;
+    /// @returns true if entry exists and is not expired in cache
+    bool valid( const K& ) const;
 
-    /// @returns the number of entries in the cache
+    /// @returns the number of entries in the cache, expired or not
     size_t size() const;
-
-protected: // methods
 
     void print(ostream&) const;
 
@@ -73,58 +83,133 @@ protected: // methods
         p.print(s);
         return s;
     }
+    
+private: // members
+
+    store_type storage_; 
+
 };
 
 //-----------------------------------------------------------------------------
 
 template< typename K, typename V >
-Cache::Cache()
+Cache<K,V>::Cache() : 
+    storage_()
 {
 }
 
 template< typename K, typename V >
-Cache::~Cache()
+Cache<K,V>::~Cache()
 {
+    clear();
 }
 
 template< typename K, typename V >
-bool Cache::insert(const K &, const V &)
+bool Cache<K,V>::insert(const K& k, const V& v)
 {
+    typename store_type::iterator i = storage_.find(k);
+    if( i != storage_.end() )
+    {   
+        Entry& e = i->second;
+        if( !e.expired_ ) return false;
+
+        e.expired_ = false;
+        e.v_       = v;
+    }
+    else
+        storage_.insert( make_pair(k,Entry(v)) );
+    
+    return true;
 }
 
 template< typename K, typename V >
-bool Cache::fetch(const K &, V &)
+bool Cache<K,V>::update(const K& k, const V& v)
 {
+    typename store_type::iterator i = storage_.find(k);
+    if( i != storage_.end() )
+    {   
+        Entry& e = i->second;
+        e.expired_ = false;
+        e.v_       = v;
+        return true;
+    }
+    else
+    {
+        storage_.insert( make_pair(k,Entry(v)) );
+        return false;
+    }
 }
 
 template< typename K, typename V >
-bool Cache::evict(const K &)
+bool Cache<K,V>::fetch(const K& k, V& v)
 {
+    typename store_type::iterator i = storage_.find(k);
+    if( i != storage_.end() )
+    {
+        Entry& e = i->second;
+        if( !e.expired_ )
+        {
+            v = e.v_;
+            return true;
+        }
+    }
+    return false;
 }
 
 template< typename K, typename V >
-void Cache::purge()
+bool Cache<K,V>::expire(const K& k)
 {
+    typename store_type::iterator i = storage_.find(k);
+    if( i != storage_.end() )
+    {
+        Entry& e = i->second;
+        e.expired_ = true;
+        return true;
+    }
+    return false;
 }
 
 template< typename K, typename V >
-void Cache::clear()
+void Cache<K,V>::purge()
 {
+    // collect all expired
+    typedef typename store_type::iterator siterator;
+    std::vector< siterator > expired;
+    for( siterator i = storage_.begin(); i != storage_.end(); ++i )
+        if( i->second.expired_ )
+            expired.push_back(i);
+    // remove them
+    for( typename std::vector< siterator >::iterator e = expired.begin(); e != expired.end(); ++e )
+        storage_.erase(*e);
 }
 
 template< typename K, typename V >
-bool Cache::exists(const K &) const
+void Cache<K,V>::clear()
 {
+    storage_.clear();
 }
 
 template< typename K, typename V >
-size_t Cache::size() const
+bool Cache<K,V>::valid(const K& k) const
 {
+    typename store_type::const_iterator i = storage_.find(k);
+    if( i != storage_.end() && !i->second.expired_ )
+        return true;
+    return false;
 }
 
 template< typename K, typename V >
-void Cache::print(ostream &) const
+size_t Cache<K,V>::size() const
 {
+    return storage_.size();
+}
+
+template< typename K, typename V >
+void Cache<K,V>::print(ostream& out) const
+{
+    typedef typename store_type::const_iterator siterator;
+    for( siterator i = storage_.begin(); i != storage_.end(); ++i )
+        out << i->second.v_ << std::endl;
 }
 
 //-----------------------------------------------------------------------------

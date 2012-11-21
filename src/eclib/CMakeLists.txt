@@ -249,6 +249,10 @@ PipeStream.h
 Plural.h
 ProcessControler.cc
 ProcessControler.h
+ProducerConsumer.cc
+ProducerConsumer.h
+Pipe.cc
+Pipe.h
 Progress.cc
 Progress.h
 RLE.cc
@@ -395,6 +399,8 @@ list( APPEND eclib_templates
                     ThreadSingleton.cc
                     TxnLog.cc
                     Types.cc
+					ProducerConsumer.cc
+					Pipe.cc
 					Recycler.cc
 					Once.cc
 )

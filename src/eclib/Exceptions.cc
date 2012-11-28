@@ -57,7 +57,8 @@ Exception::Exception():
             std::cerr.write(buffer, n);
         pclose(f);
     }
-#else
+#endif
+#ifndef AIX
     std::cerr << "BACKTRACE: " << BackTrace::dump() << std::endl;
 #endif
 

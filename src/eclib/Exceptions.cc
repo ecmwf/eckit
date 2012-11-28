@@ -39,12 +39,16 @@ Exception::Exception():
 {
     first() = this;
 
-/// @todo implement this using the cxxabi demangle, if CMake detects it
-#ifdef linux_SKIP_THIS_FAILS_IN_OS_WITHOUT_PSTACK_OR_CPPFILT
+#if defined( PSTACK_COMMAND )
     std::ostringstream cmd;
-    cmd << "pstack " << getpid() << " | c++filt";
+    
+#if defined( CPPFILT_COMMAND )
+    cmd << PSTACK_COMMAND << getpid() << " | " << CPPFILT_COMMAND;
+#else
+    cmd << PSTACK_COMMAND << getpid();
+#endif
+    
     FILE* f = popen(cmd.str().c_str(), "r");
-
     if(f)
     {
         char buffer[1024];

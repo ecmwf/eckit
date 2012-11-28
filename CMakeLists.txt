@@ -48,6 +48,12 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
+find_program( PSTACK_COMMAND "pstack" DOC "path to the pstack executable" )
+mark_as_advanced(PSTACK_COMMAND)
+
+find_program( CPPFILT_COMMAND "c++filt" DOC "path to the c++filt executable" )
+mark_as_advanced(CPPFILT_COMMAND)
+
 ###############################################################################
 # macro processing
 

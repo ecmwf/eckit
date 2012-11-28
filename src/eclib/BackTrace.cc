@@ -27,21 +27,21 @@
 
 std::string BackTrace::dump()
 {
+    /// @todo implement this using the cxxabi demangle, if CMake detects it
+    
     std::ostringstream oss;
     
-#ifdef  EC_HAVE_EXECINFO_BACKTRACE 
+#if defined( EC_HAVE_EXECINFO_BACKTRACE ) && !defined( AIX )
+
     static Ordinal count = 0;
     ++count;
     
-#define BUFFER_SIZE 256
+#define BS_BUFF_SIZE 256
 
-    void*   buffer[BUFFER_SIZE];
+    void*   buffer[BS_BUFF_SIZE];
     char**  strings;
 
-    int addsize = backtrace(buffer, BUFFER_SIZE);
-
-#undef BUFFER_SIZE
-    
+    int addsize = backtrace(buffer, BS_BUFF_SIZE);    
    
     oss << "backtrace [" << count << "] stack has " << addsize << " addresses\n";
     

@@ -21,7 +21,7 @@
 class FileSystemSize;
 class MarsFSPath;
 
-class MarsFSClient : protected NonCopyable {
+class MarsFSClient : private NonCopyable {
 public:
 
 // -- Contructors

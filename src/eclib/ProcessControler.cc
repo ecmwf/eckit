@@ -260,7 +260,7 @@ bool ProcessControler::isRunning(pid_t pid)
 #else
 
 	char buf[1024];
-	sprintf(buf,"/proc/%d",pid);
+	snprintf(buf,1024,"/proc/%d",pid);
 	return access(buf,F_OK) == 0;
 
 #endif

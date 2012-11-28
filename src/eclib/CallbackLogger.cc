@@ -21,7 +21,7 @@
 static Once<Mutex> mutex;
 
 class CallbackBuffer : public std::streambuf,
-                       public NonCopyable {
+                       private NonCopyable {
 public:
         
     CallbackBuffer( std::size_t size = 1024 ) : 

@@ -21,12 +21,12 @@
 
 class ClusterNodeEntry {
 	bool active_;
-	time_t lastSeen_;
 	bool offLine_;
 	char node_[256];
 	char type_[256];
 	char host_[256];
 	int port_;
+    time_t lastSeen_;
 
 public:
 	ClusterNodeEntry(const string& node, const string& type, const string& host, int port) :

@@ -14,13 +14,14 @@
 #ifndef MappedArray_H
 #define MappedArray_H
 
+#include "eclib/NonCopyable.h"
 #include "eclib/PathName.h"
 #include "eclib/Semaphore.h"
 
 // Used to map an array to a file 
 
 template<class T>
-class MappedArray {
+class MappedArray : private NonCopyable {
 public:
 
 	// stl compatibility
@@ -35,12 +36,6 @@ public:
 // -- Destructor
 
 	~MappedArray(); // Change to virtual if base class
-
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
 
 // -- Methods
 
@@ -58,41 +53,7 @@ public:
 	unsigned long size()           { return size_;     }
 	T& operator[](unsigned long n) { return array_[n]; }
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-	
-	// void print(ostream&) const; // Change to virtual if base class	
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-private:
-
-// No copy allowed
-
-	MappedArray(const MappedArray<T>&);
-	MappedArray<T>& operator=(const MappedArray<T>&);
-
-// -- Members
+private: // members
 
 	Semaphore     sem_;
 	void*         map_;
@@ -100,23 +61,6 @@ private:
 
 	T*            array_;
 	unsigned long size_;
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
-
-	//friend ostream& operator<<(ostream& s,const MappedArray& p)
-	//	{ p.print(s); return s; }
 
 };
 

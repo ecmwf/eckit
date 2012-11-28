@@ -612,7 +612,7 @@ DataHandle* LocalPathName::partHandle(const Offset& o, const Length& l) const
 
 LocalPathName LocalPathName::mountPoint() const
 {
-	dev_t last;
+//	dev_t last;
     struct stat64 s;
 	LocalPathName p(*this);
 

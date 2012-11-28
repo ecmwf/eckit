@@ -24,19 +24,19 @@
 
 class MoverHandleThread : public Thread {
 
-	MoverHandle& owner_;
+    bool      read_;
+    bool      fail_;
+    MoverHandle& owner_;
 	TCPServer server_;
 	TCPHandle local_;
-	bool      read_;
-	bool      fail_;
 	Mutex     mutex_;
 
 	public:
 
 	MoverHandleThread(MoverHandle& owner, bool read):
 		read_(read),
-		owner_(owner),
 		fail_(false),
+        owner_(owner),
 		local_(NodeInfo::thisNode().host(), server_.localPort())
 	{
 	}

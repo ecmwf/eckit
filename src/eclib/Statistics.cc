@@ -15,6 +15,9 @@
 #include "eclib/Statistics.h"
 #include "eclib/TimeStamp.h"
 
+
+#ifdef COME_BACK
+
 static Semaphore *sem  = 0;
 static PathName  *stats  = 0;
 
@@ -25,6 +28,7 @@ static void init(void)
 	stats = new PathName("~/stat/statistics");
 	sem  = new Semaphore(*stats);
 }
+#endif
 
 void Statistics::readFile(const MarsID& id,const PathName& path,
 	const Length& length)

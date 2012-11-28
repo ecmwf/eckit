@@ -15,7 +15,7 @@
 #include "eclib/Exceptions.h"
 
 template < typename T >
-class ScopedPtr : public NonCopyable {
+class ScopedPtr : private NonCopyable {
 
 public: // types
 

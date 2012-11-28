@@ -25,9 +25,9 @@ struct sembuf _unlock[] = {
 };
 
 Semaphore::Semaphore(const PathName& name,int count):
+    semaphore_(-1),
 	count_(count),
-	level_(0),
-	semaphore_(-1)
+	level_(0)
 {
 	key_t key = ftok(name.localPath(),1);
 

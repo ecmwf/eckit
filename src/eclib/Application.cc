@@ -73,6 +73,7 @@ static void catch_new_handler()
 
 static bool abortExit = true;
 
+#if 0 // unused
 static void catch_exit()
 {
 	if(abortExit)
@@ -81,6 +82,7 @@ static void catch_exit()
 		Panic("Exit was called");
 	}
 }
+#endif
 
 Application::Application(int argc,char **argv)
 {    

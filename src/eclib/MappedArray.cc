@@ -47,8 +47,8 @@ void Header<T>::validate()
 
 template<class T>
 MappedArray<T>::MappedArray(const PathName& path,unsigned long size):
-	size_(size),
-	sem_(path)
+	sem_(path),
+    size_(size)    
 {
 
 	AutoLock<Semaphore> lock(sem_);
@@ -65,7 +65,7 @@ MappedArray<T>::MappedArray(const PathName& path,unsigned long size):
 	struct stat64 s;
 	SYSCALL(::stat64(path.localPath(),&s));
 
-	bool initHeader = s.st_size < sizeof(PaddedHeader);
+    bool initHeader = s.st_size < static_cast<long int>( sizeof(PaddedHeader) );
 
 	off64_t length = size_ * sizeof(T) + sizeof(PaddedHeader);
 

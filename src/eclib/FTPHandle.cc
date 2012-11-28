@@ -87,7 +87,7 @@ void FTPHandle::open(const string& cmd)
 	string addr = ::inet_ntoa(server.localAddr());
 
 	char p[1024];
-	sprintf(p,"PORT %s,%d,%d",addr.c_str(),port/256,port%256);
+	snprintf(p,1024,"PORT %s,%d,%d",addr.c_str(),port/256,port%256);
 	char *q = p;
 	while(*q)
 	{
@@ -97,7 +97,7 @@ void FTPHandle::open(const string& cmd)
 	}
 	ftpCommand(p);
 
-	sprintf(p,"%s %s",cmd.c_str(),remote_.c_str());
+	snprintf(p,1024,"%s %s",cmd.c_str(),remote_.c_str());
 
 	ftpCommand(p);
 

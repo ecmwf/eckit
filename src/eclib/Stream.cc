@@ -651,9 +651,9 @@ bool Stream::next()
 }
 
 class StreamDecoder : public Stream {
-    size_t len_;
-    size_t pos_;
     const char* buffer_;
+    size_t pos_;
+    size_t len_;
 
     virtual long write(const void* buf,long len) { NOTIMP; }
 

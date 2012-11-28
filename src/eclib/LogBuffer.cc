@@ -83,8 +83,6 @@ int	LogBuffer::sync()
     return 0;
 }
 
-static void _debug(const char*,const char*);
-
 void LogBuffer::dumpBuffer(void)
 {
     AutoLock<Mutex> lock(mutex);

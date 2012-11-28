@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include <sys/mman.h>
 
 #include "eclib/machine.h"
@@ -29,8 +28,8 @@ MapAllocatorTooSmall::MapAllocatorTooSmall(size_t,size_t):
 MapAllocator::MapAllocator(size_t length):
         fd_(-1),    
         length_(whole_page(length)),
-        more_(0),
-        count_(0)
+        count_(0),
+        more_(0)
 {
         addr_ = mmap64(0,length_,PROT_READ|PROT_WRITE,MAP_PRIVATE|MAP_ANONYMOUS,fd_,0);
 

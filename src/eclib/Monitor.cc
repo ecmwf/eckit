@@ -53,7 +53,7 @@ void Monitor::init()
 
 	for(bool check = false; !check && !found ; check = true)
 	{
-		for(int i = 0 ; i < a.size() && !found ; i++)
+		for( size_t i = 0 ; i < a.size() && !found ; ++i )
 		{
 			slot_ = (slot+i) % a.size();
 			if(!a[slot_].busy(check))
@@ -112,7 +112,7 @@ void Monitor::shutdown()
 
 	pid_t pid = getpid();
 
-	for(int i = 0; i < a.size() ; i++)
+	for( size_t i = 0; i < a.size() ; ++i )
 		if(a[i].pid() == pid)
 			a[i].TaskInfo::~TaskInfo();
 
@@ -145,7 +145,7 @@ TaskInfo* Monitor::operator->()
 		return &info;
 	}
 
-	Monitor& m = Monitor::instance(); // insure is initialized
+    Monitor::instance(); // insure is initialized
 
 	TaskArray& a = info();
 	return &a[slot_];
@@ -163,7 +163,7 @@ long Monitor::self()
 
 void Monitor::out(char* from,char *to)
 {
-	Monitor& m =  monitor.instance();
+	monitor.instance(); // insure is initialized
 	instance()->out(from,to);
 }
 
@@ -280,7 +280,7 @@ string Monitor::statusTree()
 
 	TaskArray& p = info();
 
-	for(int j = 0 ; j < p.size(); j++)
+	for( size_t j = 0 ; j < p.size(); ++j )
 		if((p[j].parent() == n) && p[j].show() && p[j].busy(true))
 		{
             os << "|" << p[j].status();
@@ -297,7 +297,7 @@ void Monitor::start(const string& app)
 
 	TaskArray& p = info();
 
-	for(int j = 0 ; j < p.size(); j++)
+	for( size_t j = 0 ; j < p.size(); ++j )
 		if(p[j].busy(true) && app == p[j].application() && 
 			p[j].depth() == 0)
 		{
@@ -362,7 +362,7 @@ int Monitor::kill(const string& name, int sig)
 	int        n    = 0;
 
 	// Name. Look for Unix process ID
-	for(int i = 0; i<info.size(); ++i)
+	for( size_t i = 0; i < info.size(); ++i )
 		if(info[i].busy(true) && info[i].application() == name)
 		{
 			pid_t pid = info[i].pid();

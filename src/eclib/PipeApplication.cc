@@ -198,10 +198,10 @@ void PipeApplication::init(Stream&)
 
 void PipeApplication::launch(const string& name, int input, int output)
 {
-
-    char in[20];  sprintf(in,"%d", input);
-    char out[20]; sprintf(out,"%d",output);
-    char par[20]; sprintf(par,"%ld",Monitor::self());
+    
+    char in [20]; snprintf(in,20,"%d", input);
+    char out[20]; snprintf(out,20,"%d",output);
+    char par[20]; snprintf(par,20,"%ld",Monitor::self());
 
     PathName cmd = string("~/bin/") + name;
 
@@ -228,8 +228,8 @@ void PipeApplication::launch(const string& name, int input, int output)
 
     ASSERT(sizeof(command)-1 > string(cmd).length());
 
-    sprintf(command,"%s", cmd.localPath());
-    sprintf(basename,"%s", cmd.baseName().localPath());
+    snprintf(command,1024,"%s", cmd.localPath());
+    snprintf(basename,1024,"%s", cmd.baseName().localPath());
 
     ::execlp(command, basename,
         "-in",in,

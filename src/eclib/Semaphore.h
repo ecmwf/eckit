@@ -14,21 +14,21 @@
 #ifndef Semaphore_H
 #define Semaphore_H
 
+#include "eclib/NonCopyable.h"
 #include "eclib/Mutex.h"
 #include "eclib/PathName.h"
 
-class Semaphore {
-public:
+class Semaphore : private NonCopyable {
 
-// -- Contructors
+public: // methods
+
+    /// Contructors
 
     Semaphore(const PathName& name,int count = 1);
 
-// -- Destructor
+    /// Destructor
 
     ~Semaphore();
-
-// -- Methods
 
     void lock(void);
     void unlock(void);
@@ -42,22 +42,13 @@ public:
 
     pid_t getpid()  const;
 
-protected:
-
-// -- Members
+protected: // members
 
     int semaphore_;
     int count_;
     int level_;
 
     Mutex mutex_;
-
-private:
-
-// No copy allowed
-
-    Semaphore(const Semaphore&);
-    Semaphore& operator=(const Semaphore&);
 
 };
 

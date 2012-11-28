@@ -65,7 +65,7 @@ void FileHandle::open(const char* mode)
 
     // Don't buffer writes, so we know when the filesystems
     // are full at fwrite time, and not at fclose time.
-    // There should not bw any performances issues are
+    // There should not be any performances issues as
     // this class is used with large buffers anyway
 
     if (!(::strcmp(mode,"r") == 0))

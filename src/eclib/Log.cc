@@ -135,8 +135,8 @@ void MonitorStream::flags(char type,long mode)
 }
 
 MonitorBuffer::MonitorBuffer():
-        start_(true),
-        streambuf()
+    streambuf(),
+    start_(true)
 {
         setp(buffer_, buffer_ + sizeof(buffer_));
         setg(0, 0, 0);
@@ -297,7 +297,7 @@ void Log::init()
     status();
 }
 
-// GNU implementation is not POSIX compliant and returns char* instead of int
+#ifndef _GNU_SOURCE
 
 static void handle_strerror_r(ostream& s, int e, char es[], int hs )
 {
@@ -307,6 +307,8 @@ static void handle_strerror_r(ostream& s, int e, char es[], int hs )
         s << " (errno = " << e << ") ";
 }
 
+#else // GNU implementation is not XSI compliant and returns char* instead of int
+
 static void handle_strerror_r(ostream& s, int e, char[], char* p )
 {
     if( p != 0 )
@@ -314,6 +316,8 @@ static void handle_strerror_r(ostream& s, int e, char[], char* p )
     else
         s << " (errno = " << e << ") ";
 }
+
+#endif
 
 ostream& Log::syserr(ostream& s)
 {

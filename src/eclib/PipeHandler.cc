@@ -211,9 +211,9 @@ void PipeHandler<Request>::run()
     pipe_->childProcess();
 
 
-    char in[20];  sprintf(in,"%d", pipe_->in());
-    char out[20]; sprintf(out,"%d",pipe_->out());
-    char par[20]; sprintf(par,"%ld",Monitor::self());
+    char in[20];  snprintf(in,20,"%d", pipe_->in());
+    char out[20]; snprintf(out,20,"%d",pipe_->out());
+    char par[20]; snprintf(par,20,"%ld",Monitor::self());
 
     PathName cmd = string("~/bin/") + Request::commandName();
 
@@ -240,8 +240,8 @@ void PipeHandler<Request>::run()
 
     ASSERT(sizeof(command)-1 > string(cmd).length());
 
-    sprintf(command,"%s", cmd.localPath());
-    sprintf(basename,"%s", cmd.baseName().localPath());
+    snprintf(command,1024,"%s", cmd.localPath());
+    snprintf(basename,1024,"%s", cmd.baseName().localPath());
 
     ::execlp(command, basename,
         "-in",in,

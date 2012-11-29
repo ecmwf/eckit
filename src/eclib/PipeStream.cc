@@ -45,6 +45,8 @@ PipeStream::~PipeStream()
 
 void PipeStream::parentProcess()
 {
+    /// @todo change this to sigaction
+    
 	::signal(SIGPIPE,SIG_IGN);
 
 	in_  = toParent_[0];
@@ -66,7 +68,9 @@ void PipeStream::parentProcess()
 
 void PipeStream::childProcess()
 {
-	::signal(SIGPIPE,SIG_IGN);
+    /// @todo change this to sigaction
+
+    ::signal(SIGPIPE,SIG_IGN);
 
 	in_  = toChild_[0];
 	out_ = toParent_[1];

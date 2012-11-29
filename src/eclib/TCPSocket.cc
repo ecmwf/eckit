@@ -293,6 +293,7 @@ TCPSocket& TCPClient::connect(const string& remote,int port,int retries, int tim
                 alarm(timeout);
                 status = ::connect(socket_,reinterpret_cast<sockaddr*>(&sin),sizeof(sin));
                 alarm(0);
+                /// @todo change this to sigaction
                 signal(SIGALRM,old);
             }
             else
@@ -378,6 +379,7 @@ TCPSocket& TCPClient::connect(const string& remote,int port,int retries, int tim
     remoteAddr_ = sin.sin_addr;
     remoteHost_ = addrToHost(sin.sin_addr);
 
+    /// @todo change this to sigaction
     ::signal(SIGPIPE,SIG_IGN);
     return *this;
 }

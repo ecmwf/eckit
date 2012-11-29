@@ -28,6 +28,7 @@ void AutoAlarm::sigAlarm(int)
 
 AutoAlarm::AutoAlarm(int sec,bool t)
 {
+    /// @todo change this to sigaction
 
 	old_        = ::signal(SIGALRM,sigAlarm);
 	saveThrow_  = throw_;

@@ -131,7 +131,8 @@ static void init()
 
 /*
 	// For now, ignore the sig childs...
-	signal(SIGCHLD, SIG_IGN);
+	// should use sigaction instead of signal
+    signal(SIGCHLD, SIG_IGN);
 */
 }
 

@@ -78,6 +78,8 @@ TCPSocket& TCPServer::accept(const string& message, int timeout, bool* connected
 	if(closeExec_)
 	  SYSCALL(fcntl(socket_,F_SETFD,FD_CLOEXEC));
 
+    /// @todo change this to sigaction
+
     ::signal(SIGPIPE,SIG_IGN);
 
     Log::status() << "Get connection from " << remoteHost() << endl;

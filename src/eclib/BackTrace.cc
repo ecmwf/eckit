@@ -52,7 +52,7 @@ std::string BackTrace::dump()
 #if 0 // EC_HAVE_CXXABI_H
     /// here we can parse the output of the dump and demangle the symbols using the cxxabi
 #else
-    for (size_t s = 0; s < addsize; ++s)
+    for (int s = 0; s < addsize; ++s)
       oss << strings[s] << "\n";
 #endif
     

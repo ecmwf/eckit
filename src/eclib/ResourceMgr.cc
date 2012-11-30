@@ -95,7 +95,7 @@ void ResourceMgr::readConfigFiles()
 		inited_ = true;
         
         PathName general ("~/etc/config/general");
-        PathName local ("~/etc/config/general");
+        PathName local ("~/etc/config/local");
         PathName app ( string("~/etc/config/" ) + Application::appName() );
         PathName applocal ( string("~/etc/config/" ) + Application::appName() + ".local" );
         

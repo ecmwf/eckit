@@ -2,6 +2,8 @@
 #define Pipe_H
 
 #include "eclib/machine.h"
+
+#include "eclib/NonCopyable.h"
 #include "eclib/Mutex.h"
 #include "eclib/ThreadControler.h"
 
@@ -12,7 +14,7 @@ template<class PAYLOAD>
 struct OnePayload;
 
 template<class PAYLOAD>
-class Pipe {
+class Pipe : private NonCopyable {
 public:
 
     typedef void (*Proc)(Pipe<PAYLOAD>&);
@@ -40,12 +42,6 @@ private:
 
     bool   error();
     void   error(const string&);
-
-
-    // No copy allowed
-
-    Pipe(const Pipe&);
-    Pipe& operator=(const Pipe&);
 
     // -- Methods
 

@@ -101,7 +101,7 @@ long AIOHandle::write(const void* buffer,long length)
             if (e == EINPROGRESS) continue;
             if (e == 0)
             {
-                size_t len = aio_return64(&aio_[n]);
+                ssize_t len = aio_return64(&aio_[n]);
                 if (len != len_[n]) {
                     // TODO: retry when filesystems are full
                     StrStream os;
@@ -119,7 +119,7 @@ long AIOHandle::write(const void* buffer,long length)
         ASSERT(ok);
     }
 
-    if (buffers_[n] == 0 || buffers_[n]->size() < length)
+    if( buffers_[n] == 0 || buffers_[n]->size() < (size_t) length )
     {
         delete buffers_[n];
         buffers_[n] = new Buffer(::round(length,64*1024));
@@ -190,7 +190,7 @@ void AIOHandle::flush()
             }
             if (e == 0)
             {
-                size_t len = aio_return64(&aio_[n]);
+                ssize_t len = aio_return64(&aio_[n]);
                 if (len != len_[n]) {
                     // TODO: retry when filesystems are full
                     StrStream os;

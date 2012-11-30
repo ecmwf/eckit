@@ -20,7 +20,7 @@
 #include "eclib/ThreadSingleton.h"
 
 Connector::Connector(const string& host, int port) :
-	host_(host), port_(port), locked_(false), memoize_(false), life_(0), sent_(false)
+	host_(host), port_(port), locked_(false), memoize_(false), sent_(false), life_(0)
 {
 	Log::info() << "Connector::Connector(" << host << "," << port << ")" << endl;
 }

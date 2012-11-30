@@ -44,7 +44,7 @@ ostream& operator<<(ostream& s, const Bytes& b)
 		x = -x;
 	}
 
-	while(x>=1024.0 && n < NUMBER(names) )
+    while(x>=1024.0 && (size_t) n < NUMBER(names) )
 	{
 		x /= 1024.0;
 		n++;

@@ -45,10 +45,10 @@ FileHandle::FileHandle(Stream& s):
 }
 
 FileHandle::FileHandle(const string& name,bool overwrite):
-        file_(0),
-        name_(name),
-        overwrite_(overwrite),
-        read_(false)
+    name_(name),
+    overwrite_(overwrite),
+    file_(0),
+    read_(false)
 {
 }
 

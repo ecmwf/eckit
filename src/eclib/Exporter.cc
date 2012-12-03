@@ -73,11 +73,11 @@ class Endian {
 
 Exporter::Exporter(DataHandle& handle):
     handle_(handle),
-    objectCount_(0),
-    subCount_(0),
     type_(0),
     location_(0),
     objectId_(0),
+    objectCount_(0),
+    subCount_(0),
     inObject_(false)
 {
 }
@@ -113,10 +113,10 @@ void Exporter::writeString(const string &s)
 
     writeTag(TAG_STRING);
     writeUnsigned(len);
-    for(int i = 0;  i < len; i++) 
+    for(size_t i = 0;  i < len; i++) 
         buffer[i] = s[i];
 
-    ASSERT(handle_.write(buffer,len) == len);
+    ASSERT( (size_t) handle_.write(buffer,len) == len);
 }
 
 void Exporter::writeString(const char* s)
@@ -127,7 +127,7 @@ void Exporter::writeString(const char* s)
     writeUnsigned(len);
 	ASSERT(sizeof(s[0]) == 1);
 
-    ASSERT(handle_.write(s,len) == len);
+    ASSERT( (size_t) handle_.write(s,len) == len);
 }
 
 string Exporter::_readString()
@@ -136,7 +136,7 @@ string Exporter::_readString()
         string s;
 
         size_t len = readUnsigned();
-        for(int i = 0;  i < len; i++) {
+        for( size_t i = 0;  i < len; i++) {
             char c;
             ASSERT(handle_.read(&c,1) == 1);
             s += c;
@@ -548,8 +548,8 @@ Evolve::Evolve(Exporter& e):
 
 Evolve::Evolve(Evolve* e, char const* klass, char const* name):
     e_(e->e_),
-    parent_(e),
-    path_(e->path())
+    path_(e->path()),
+    parent_(e)
 {
     if(path_.length()) path_ += ".";
     path_ += klass;
@@ -627,22 +627,22 @@ Exporter::Datatype::Datatype():
 
 Exporter::Datatype::Datatype(double d):
     type_(TAG_DOUBLE),
-    double_(d),
-    used_(false)
+    used_(false),
+    double_(d)
 {
 }
 
 Exporter::Datatype::Datatype(long long d):
     type_(TAG_SIGNED),
-    signed_(d),
-    used_(false)
+    used_(false),
+    signed_(d)
 {
 }
 
 Exporter::Datatype::Datatype(unsigned long long d):
     type_(TAG_UNSIGNED),
-    unsigned_(d),
-    used_(false)
+    used_(false),
+    unsigned_(d)
 {
 }
 

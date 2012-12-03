@@ -16,10 +16,11 @@
 
 #include "eclib/DataHandle.h"
 #include "eclib/Length.h"
+#include "eclib/NonCopyable.h"
 #include "eclib/Mutex.h"
 #include "eclib/TransferWatcher.h"
 
-class DblBuffer {
+class DblBuffer : private NonCopyable {
 public:
 
 // -- Contructors
@@ -38,37 +39,31 @@ public:
 	void   error(const string&);
 	void   restart(RestartTransfer&);
 
-private:
+private: // methods
 
-// No copy allowed
-
-	DblBuffer(const DblBuffer&);
-	DblBuffer& operator=(const DblBuffer&);
-
-// -- Methods
 	Length copy(DataHandle&,DataHandle&,const Length&);
 
-// -- Members
+private: // members
 
 	Mutex  mutex_;
 
+    long   count_;
 	long   bufSize_;
-	long   count_;
 
 	Length inBytes_;
 	Length outBytes_;
 
-	bool   error_;
-	string why_;
+	bool error_;
+    string why_;
 
-	bool restart_;
+    bool restart_;
+
 	Offset restartFrom_;
 	TransferWatcher& watcher_;
 
 // -- Friends
 
 	friend class DblBufferTask;
-
 
 };
 

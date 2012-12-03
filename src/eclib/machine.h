@@ -194,7 +194,6 @@ public:
 
     Evolve operator() (const char*, const char* = 0);
 
-
     operator bool();
     operator double();
 
@@ -213,7 +212,6 @@ public:
     const string& path() const { return path_; }
 
 private:
-
 
     Exporter&      e_;
     string         path_;

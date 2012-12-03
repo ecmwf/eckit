@@ -65,7 +65,7 @@ private:
 	string        host_;
 	int           port_;
 	TCPClient     cmds_;
-	TCPSocket   data_;
+	TCPSocket     data_;
 
 // -- Methods
 	

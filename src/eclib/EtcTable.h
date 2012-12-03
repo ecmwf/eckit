@@ -41,9 +41,9 @@ private: // methods
 private: // members
 
     time_t last_;
-    string name_;
     string dir_;
-    int  size_;
+    string name_;
+    size_t size_;
 
     Mutex mutex_;
 

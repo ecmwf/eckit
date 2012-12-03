@@ -76,11 +76,11 @@ private:
 
 // -- Members
 
-	string        name_;
-	bool          overwrite_;
-	FILE*         file_;
-	bool          read_;
-	auto_ptr<Buffer>   buffer_;
+	string              name_;
+	bool                overwrite_;
+	FILE*               file_;
+	bool                read_;
+	auto_ptr<Buffer>    buffer_;
 
 // -- Methods
 

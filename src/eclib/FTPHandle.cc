@@ -65,8 +65,8 @@ void FTPHandle::ftpCommand(const string& s)
 }
 
 FTPHandle::FTPHandle(const string& host,const string& remote,int port):
+    remote_(remote),
 	host_(host),
-	remote_(remote),
 	port_(port)
 {
 }

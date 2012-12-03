@@ -293,7 +293,6 @@ string Connector::name() const
 template<class T, class F>
 long Connector::socketIo(F proc, T buf, long len, const char* msg)
 {
-	static const char *here = __FUNCTION__;
 	TCPSocket& s = socket();
 	long l = (s.*proc)(buf, len);
 	if (l != len)
@@ -358,7 +357,7 @@ long Connector::read(void *buf, long len)
 				cached_.buffer_ = 0;
 				try
 				{
-					ASSERT(socketIo(&TCPSocket::write,out_.buffer(), out_.count(), "written") == out_.count());
+                    ASSERT( (size_t) socketIo(&TCPSocket::write,out_.buffer(), out_.count(), "written") == out_.count());
 				} catch (...)
 				{
 					reset();

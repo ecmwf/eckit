@@ -17,11 +17,11 @@
 
 #include "eclib/machine.h"
 
+#include "eclib/NonCopyable.h"
 
 class DataHandle;
 
-
-class Exporter {
+class Exporter : private NonCopyable {
 
     class Datatype  {
         char type_;
@@ -151,14 +151,7 @@ protected:
 // -- Class methods
 	// None
 
-private:
-
-// No copy allowed
-
-	Exporter(const Exporter&);
-	Exporter& operator=(const Exporter&);
-
-// -- Members
+private: // members
 
     DataHandle& handle_;
     unsigned long long type_;

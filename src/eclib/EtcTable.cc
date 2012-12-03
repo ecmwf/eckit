@@ -90,8 +90,8 @@ void EtcTable::load()
 		vector<string> s;
 		parse(line,s);
 
-		int i = 0;
-		while(i < s.size())
+		size_t i = 0;
+        while( i < s.size() )
 		{
 			if(s[i].length() == 0)
 				s.erase(s.begin()+i);

@@ -51,10 +51,10 @@ class DblBufferTask : public Thread {
 DblBuffer::DblBuffer(long count,long size,TransferWatcher& watcher):
     count_(count),
     bufSize_(size),
-	watcher_(watcher),
     error_(false),
     restart_(false),
-    restartFrom_(0)
+    restartFrom_(0),
+    watcher_(watcher)    
 {
     Log::info() << "Double buffering: " << 
         count_ <<  " buffers of " << Bytes(size) << " is " << Bytes(count*size) 
@@ -243,10 +243,10 @@ Length DblBuffer::copy(DataHandle& in,DataHandle& out,const Length& estimate)
 DblBufferTask::DblBufferTask(DataHandle& out,DblBuffer& owner,OneBuffer* buffers,
         const Length& estimate):
     Thread(false),
-    out_(out),
     owner_(owner),
-    buffers_(buffers),
-    estimate_(estimate)
+    out_(out),
+    estimate_(estimate),
+    buffers_(buffers)
 {
 }
 

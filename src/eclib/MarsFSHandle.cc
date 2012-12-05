@@ -39,8 +39,8 @@ MarsFSHandle::MarsFSHandle(Stream& s):
 MarsFSHandle::MarsFSHandle(const MarsFSPath& path, bool overwrite):
 	path_(path),
 	read_(false),
-	overwrite_(overwrite),
-    position_(0)
+    position_(0),
+    overwrite_(overwrite)    
 {
 	//Log::info() << "CREATE " << *this << endl;
 }

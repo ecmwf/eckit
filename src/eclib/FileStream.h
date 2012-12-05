@@ -19,33 +19,33 @@
 #include "eclib/Stream.h"
 
 class FileStream : public Stream {
-public:
 
-// -- Contructors
+public: // methods
+
+    /// Contructor
 	
 	FileStream(const PathName& name,const char *mode);
 
-// -- Destructor
+    /// Destructor
 
 	~FileStream();
-
-// -- Overridden methods
 	
-	// From Stream
+    // Overriden from Stream
 
 	virtual long read(void*,long);
 	virtual long write(const void*,long);
 	virtual void rewind();
 
-protected:
-// -- Members
-	FILE* 		file_;
+protected: // members
+
+    FILE* 		file_;
     bool        read_;
     PathName    name_;
 
-// -- Overridden methods
+protected: // methods
 
-	// From Stream
+    // Overriden from Stream
+    
 	virtual string name() const;
 };
 

@@ -39,7 +39,7 @@ FileSpace::~FileSpace()
 static const PathName& leastUsed(const vector<PathName>& fileSystems)
 {
 	static const char *here = __FUNCTION__;
-	long long free = -1;
+	unsigned long long free = 0;
 	Ordinal best = 0;
 	Ordinal checked = 0;
 
@@ -64,7 +64,7 @@ static const PathName& leastUsed(const vector<PathName>& fileSystems)
 				continue;
 			}
 
-			if(fs.available > free || checked == 0)
+			if(fs.available >= free || checked == 0)
 			{
 				free = fs.available;
 				best = i;

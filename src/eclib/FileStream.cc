@@ -17,8 +17,8 @@
 
 FileStream::FileStream(const PathName& name,const char *mode):
     file_(fopen64(name.localPath(),mode)),
-    name_(name),
-    read_(string(mode) == "r")
+    read_(string(mode) == "r"),
+    name_(name)
 {
     if(file_ == 0)
         throw CantOpenFile(name);
@@ -27,8 +27,8 @@ FileStream::FileStream(const PathName& name,const char *mode):
 
 FileStream::~FileStream()
 {
-
     ASSERT(file_);
+    
     if(!read_)
     {
         if (::fflush(file_))

@@ -85,7 +85,7 @@ struct MemBlk {
 	// Must be last member
 	unsigned long check_;
 
-	MemBlk(size_t s): left_(0),right_(0),size_(s),check_(0),reuse_(0) {}
+	MemBlk(size_t s): left_(0),right_(0),size_(s),reuse_(0),check_(0) {}
 
 	void* addr() { return ((char*)&check_ + sizeof(check_)); }
 

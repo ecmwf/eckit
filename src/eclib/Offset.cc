@@ -17,7 +17,7 @@
 void sort(OffsetList& offset,LengthList& length)
 {
 	ASSERT(offset.size() == length.size());
-	int i = 0;
+	size_t i = 0;
 
 	typedef map<Offset,Length,less<Offset> > OffsetLengthMap;
 
@@ -37,8 +37,8 @@ bool compress(OffsetList& offset,LengthList& length)
 {
 	ASSERT(offset.size() == length.size());
 
-	int j = 0;
-	for(int i = 1; i < offset.size() ; i++)
+	size_t j = 0;
+	for(size_t i = 1; i < offset.size() ; i++)
 		if( (offset[j] + length[j]) == offset[i])
 			length[j] += length[i];
 		else
@@ -63,7 +63,7 @@ void accumulate(const LengthList& length,OffsetList& offset,const Offset& from)
 	offset.clear(); offset.reserve(length.size());
 
 	Offset o(from);
-	for(long i = 0; i < length.size(); i++)
+	for( size_t i = 0; i < length.size(); i++)
 	{
 		offset.push_back(o);
 		o += length[i];

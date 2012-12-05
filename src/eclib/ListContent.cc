@@ -78,7 +78,7 @@ void ListContent::json(JSON& s) const
 {
     s.startList();
 
-    for(int i = 0; i < value_.size(); i++)
+    for(size_t i = 0; i < value_.size(); i++)
 	{
         s << value_[i];
 	}
@@ -91,7 +91,7 @@ void ListContent::print(ostream& s) const
 {
     s << '(';
 
-    for(int i = 0; i < value_.size(); i++)
+    for(size_t i = 0; i < value_.size(); i++)
     {
         if(i>0) s << ',';
         s << value_[i];
@@ -180,6 +180,6 @@ void ListContent::value(DateTime& n) const
 Value& ListContent::element(const Value& v)
 {
     long long n = v;
-    ASSERT(n >=0 && n < value_.size());
+    ASSERT( n >= 0 && (size_t) n < value_.size() );
     return value_.at(n);
 }

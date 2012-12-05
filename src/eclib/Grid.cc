@@ -200,7 +200,7 @@ const Grid& Grid::bestMatch(const vector<Grid>& v) const
 	long   smax = score(v[0]);
 	int    choice = 0;
 
-	for(int j = 1; j < v.size(); ++j)
+	for(size_t j = 1; j < v.size(); ++j)
 	{
 		long   s = score(v[j]);
 

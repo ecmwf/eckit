@@ -32,8 +32,8 @@ PipeHandle::PipeHandle(Stream& s):
 }
 
 PipeHandle::PipeHandle(const string& name):
+    name_(name),
 	file_(0),
-	name_(name),
 	read_(false)
 {
 }

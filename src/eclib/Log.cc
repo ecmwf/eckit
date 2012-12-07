@@ -232,7 +232,11 @@ ostream& Log::error(const CodeLocation& where)
 
 ostream& Log::panic()
 {
-        try {
+    /// @todo this should not be an exception
+    ///       we should check if Log is initialized and use if we can
+    
+        try 
+        {
                 return Log::error();
         }
         catch(exception&)
@@ -243,7 +247,11 @@ ostream& Log::panic()
 
 ostream& Log::panic(const CodeLocation& where)
 {
-        try {
+    /// @todo this should not be an exception
+    ///       we should check if Log is initialized and use if we can
+
+        try 
+        {
                 return Log::error(where);
         }
         catch(exception&)

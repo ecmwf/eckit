@@ -20,7 +20,7 @@ public:
 // -- Methods
 
 	virtual void watch(const void*,long) = 0;
-	virtual ~TransferWatcher() {};
+	virtual ~TransferWatcher() {}
 
 // -- Class methods
 

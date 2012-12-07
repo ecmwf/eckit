@@ -28,12 +28,14 @@ static PathName pathName(const string& name)
 	return path;
 }
 
+#if 0 // unused
 static PathName lockName(const string& name)
 {
 	PathName path = string("~/txn/") + name + "/lock";
 	path.touch();
 	return path;
 }
+#endif
 
 template<class T>
 TxnLog<T>::TxnLog(const string& name):
@@ -120,8 +122,8 @@ RecoverThread<T>::RecoverThread(const PathName& path,
 		MappedArray<TxnID>& nextID,
 		TxnRecoverer<T>& client,
 		long age):
+    nextID_(nextID),
 	client_(client),
-	nextID_(nextID),
 	age_(age),
 	now_(::time(0))
 {

@@ -53,6 +53,7 @@ PartFileHandle::PartFileHandle(Stream& s):
     ASSERT(offset_.size() == length_.size());
 }
 
+#ifdef USE_LINKS
 static string linkName(const string& name)
 {
     static int n = 1;
@@ -67,11 +68,12 @@ static string linkName(const string& name)
     }
     return path;
 }
+#endif
 
 PartFileHandle::PartFileHandle(const PathName& name,
     const OffsetList& offset,const LengthList& length):
-    file_(0),
     name_(name),
+    file_(0),
 #ifdef USE_LINKS
     link_(linkName(name)),
 #endif
@@ -85,8 +87,8 @@ PartFileHandle::PartFileHandle(const PathName& name,
 
 PartFileHandle::PartFileHandle(const PathName& name,
     const Offset& offset,const Length& length):
-    file_(0),
     name_(name),
+    file_(0),
 #ifdef USE_LINKS
     link_(linkName(name)),
 #endif

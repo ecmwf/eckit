@@ -61,12 +61,3 @@ void Mutex::unlock(void)
 	}
 	THRCALL(pthread_mutex_unlock(&mutex_));
 }
-
-//=============================================================
-
-static Mutex globalMutex;
-
-Mutex& Mutex::global()
-{
-	return globalMutex;
-}

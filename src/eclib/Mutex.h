@@ -38,7 +38,7 @@ public:
 
 // -- Class methods
 
-	static Mutex& global();
+//	static Mutex& global();
 
 protected:
 

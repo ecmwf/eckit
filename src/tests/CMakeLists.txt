@@ -16,6 +16,10 @@ ecbuild_add_test(   TARGET      test_log_callback
                     SOURCES     test_log_callback.cc
                     LIBS        Ec )
 
+ecbuild_add_test(   TARGET      test_mutex
+                    SOURCES     test_mutex.cc
+                    LIBS        Ec )
+
 ecbuild_add_test(   TARGET      test_resource
                     SOURCES     test_resource.cc
                     ARGS        -integer 100

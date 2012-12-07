@@ -36,10 +36,6 @@ public:
 	void unlock();
 	char tag() const { return tag_; }
 
-// -- Class methods
-
-//	static Mutex& global();
-
 protected:
 
 // -- Members

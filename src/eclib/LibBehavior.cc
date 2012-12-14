@@ -21,7 +21,6 @@ LibBehavior::LibBehavior() :
     warn_ ( new CallbackLogger() ),
     error_( new CallbackLogger() )
 {
-    //    "/usr/local/etc/" + Context::instance().appName() ???
     home_ = getenv( "HOME" );
 }
 

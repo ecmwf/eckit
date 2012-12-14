@@ -12,6 +12,20 @@
 #       -DCMAKE_PREFIX_PATH=/path/to/jasper:/path/to/any/package/out/of/place
 #       -DBUILD_SHARED_LIBS=OFF
 
+### TODO
+#
+#   * add control of behavior on Exception
+#       - output on constructor
+#       - backtrace on contructor
+#       - abort on constructor
+#       - abort on double exception
+#
+#   * new Logging 
+#       - allows reconfiguration
+#       - allows control on format ( eg [%time][%pid] message )
+#       - always available (not dependent on ContextBehavior or have default)
+#       - simpler ?
+
 cmake_minimum_required( VERSION 2.6.4 FATAL_ERROR )
 
 project( eclib CXX )

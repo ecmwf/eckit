@@ -300,7 +300,9 @@ void Panic(const char *msg)
         Log::panic() << "Use dbx -a " << getpid() << " or xldb -a " << getpid() << endl;
         ::kill(::getpid(),SIGSTOP);
     }
-    else ::kill(::getpid(),SIGABRT);
+    else 
+        ::kill(::getpid(),SIGABRT);
+    
     ::pause();
 }
 

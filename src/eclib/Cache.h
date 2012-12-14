@@ -73,13 +73,13 @@ public: // types
     {
         /// Expires the Least Recently Used (LRU) entries
         /// @returns true if any entries were expired
-        static bool expireLRU( store_type& c, const size_t& maxsize);    
+        static bool expireLRU( store_type& c, const size_t& maxSize);    
         /// Expires the Least Frequently Used (LFU) entries
         /// @returns true if any entries were expired
-        static bool expireLFU( store_type& c, const size_t& maxsize);    
+        static bool expireLFU( store_type& c, const size_t& maxSize);    
         /// Expires the entries older than a certain age
         /// @returns true if any entries were expired
-        static bool expireAge( store_type& c, struct timeval& maxage);
+        static bool expireAge( store_type& c, struct timeval& maxAge);
     };
     
 public: // methods
@@ -268,7 +268,7 @@ void Cache<K,V>::print(ostream& out) const
 //-----------------------------------------------------------------------------
 
 template< typename K, typename V>
-bool Cache<K,V>::Policy::expireLRU( typename Cache<K,V>::store_type& c, const size_t& maxsize )
+bool Cache<K,V>::Policy::expireLRU( typename Cache<K,V>::store_type& c, const size_t& maxSize )
 {
 //    typedef std::vector< std::pair<
 //    typedef typename store_type::iterator siterator;

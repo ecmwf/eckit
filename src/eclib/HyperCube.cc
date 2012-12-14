@@ -27,7 +27,7 @@ static void addLoop(
 	else {
 
 		int k = 0;
-		for(int i = 0; i < dims[d]; i++,k++)
+		for( size_t i = 0; i < dims[d]; i++,k++)
 		{
 			if(which == d && i == where) k += count;
 			coord[d]   = k;

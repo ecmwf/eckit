@@ -78,9 +78,9 @@ public:
 
 	enum {
 		Unix   = 'U',
-		Ostore = 'O',
+		Ostore = 'O', // unused
 		Adsm   = 'A',
-		Mars   = 'M',
+		Mars   = 'M', // unused
 		Other  = 'X'
 	};
 

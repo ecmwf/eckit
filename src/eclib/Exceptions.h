@@ -164,10 +164,14 @@ public:
     ShortFile(const string&);
 };
 
-
 class RemoteException : public Exception {
 public:
     RemoteException(const string& msg, const string& from);
+};
+
+class UnexpectedState : public Exception {
+public:
+    UnexpectedState(const string& msg) : Exception(msg) {}
 };
 
 // =======================================

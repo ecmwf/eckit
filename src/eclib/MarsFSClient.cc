@@ -68,7 +68,6 @@ MarsFSClient::~MarsFSClient()
 
 Length MarsFSClient::size(const string& path)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::size);
 
 	for(;;)
@@ -89,7 +88,7 @@ Length MarsFSClient::size(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -97,8 +96,6 @@ Length MarsFSClient::size(const string& path)
 
 bool MarsFSClient::exists(const string& path)
 {
-	static const char *here = __FUNCTION__;
-
 	X(MarsFSClient::exit);
 
 	for(;;)
@@ -120,7 +117,7 @@ bool MarsFSClient::exists(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -128,12 +125,10 @@ bool MarsFSClient::exists(const string& path)
 
 string MarsFSClient::mountPoint(const string& path)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::mountPoint);
 
 	for(;;)
 	{
-
 		try
 		{
 			AutoMemoize m(connector_, 60);
@@ -149,7 +144,7 @@ string MarsFSClient::mountPoint(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -157,12 +152,10 @@ string MarsFSClient::mountPoint(const string& path)
 
 string MarsFSClient::baseName(const string& path, bool ext)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::baseName);
 
 	for(;;)
 	{
-
 		try
 		{
 			AutoMemoize m(connector_, 60);
@@ -179,7 +172,7 @@ string MarsFSClient::baseName(const string& path, bool ext)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -187,12 +180,10 @@ string MarsFSClient::baseName(const string& path, bool ext)
 
 string MarsFSClient::dirName(const string& path)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::dirName);
 
 	for(;;)
 	{
-
 		try
 		{
 			AutoMemoize m(connector_, 60);
@@ -208,7 +199,7 @@ string MarsFSClient::dirName(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -216,12 +207,10 @@ string MarsFSClient::dirName(const string& path)
 
 string MarsFSClient::fullName(const string& path)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::fullName);
 
 	for(;;)
 	{
-
 		try
 		{
 			AutoMemoize m(connector_, 60);
@@ -237,7 +226,7 @@ string MarsFSClient::fullName(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -245,12 +234,10 @@ string MarsFSClient::fullName(const string& path)
 
 string MarsFSClient::unique(const string& path)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::unique);
 
 	for(;;)
 	{
-
 		try
 		{
 			string u;
@@ -264,7 +251,7 @@ string MarsFSClient::unique(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -272,12 +259,10 @@ string MarsFSClient::unique(const string& path)
 
 bool MarsFSClient::sameAs(const string& path1, const string& path2)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::sameAs);
 
 	for(;;)
 	{
-
 		try
 		{
 			AutoMemoize m(connector_, 10);
@@ -294,7 +279,7 @@ bool MarsFSClient::sameAs(const string& path1, const string& path2)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -302,12 +287,10 @@ bool MarsFSClient::sameAs(const string& path1, const string& path2)
 
 void MarsFSClient::mkdir(const string& path, short mode)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::mkdir);
 
 	for(;;)
 	{
-
 		try
 		{
 			bool ok;
@@ -322,7 +305,7 @@ void MarsFSClient::mkdir(const string& path, short mode)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -330,12 +313,10 @@ void MarsFSClient::mkdir(const string& path, short mode)
 
 void MarsFSClient::match(const string& path, vector<string>& result, bool recurse)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::match);
 
 	for(;;)
 	{
-
 		try
 		{
 			AutoMemoize m(connector_, 2);
@@ -363,7 +344,7 @@ void MarsFSClient::match(const string& path, vector<string>& result, bool recurs
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -371,12 +352,10 @@ void MarsFSClient::match(const string& path, vector<string>& result, bool recurs
 
 void MarsFSClient::children(const string& path, vector<string>& dirs, vector<string>& files)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::children);
 
 	for(;;)
 	{
-
 		try
 		{
 			AutoMemoize m(connector_, 2);
@@ -414,7 +393,7 @@ void MarsFSClient::children(const string& path, vector<string>& dirs, vector<str
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -422,11 +401,9 @@ void MarsFSClient::children(const string& path, vector<string>& dirs, vector<str
 
 vector<string> MarsFSClient::getFileSpaces()
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::getFileSpaces);
 	for(;;)
 	{
-
 		try
 		{
 
@@ -454,7 +431,7 @@ vector<string> MarsFSClient::getFileSpaces()
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -462,12 +439,10 @@ vector<string> MarsFSClient::getFileSpaces()
 
 vector<string> MarsFSClient::getFileSystems(const string& name)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::getFileSystems);
 
 	for(;;)
 	{
-
 		try
 		{
 			AutoMemoize m(connector_, 20);
@@ -495,7 +470,7 @@ vector<string> MarsFSClient::getFileSystems(const string& name)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -504,11 +479,9 @@ vector<string> MarsFSClient::getFileSystems(const string& name)
 
 void MarsFSClient::rename(const string& from, const string& to)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::rename);
 	for(;;)
 	{
-
 		try
 		{
 			bool ok;
@@ -523,7 +496,7 @@ void MarsFSClient::rename(const string& from, const string& to)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -531,11 +504,9 @@ void MarsFSClient::rename(const string& from, const string& to)
 
 void MarsFSClient::link(const string& from, const string& to)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::link);
 	for(;;)
 	{
-
 		try
 		{
 
@@ -551,7 +522,7 @@ void MarsFSClient::link(const string& from, const string& to)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -559,11 +530,9 @@ void MarsFSClient::link(const string& from, const string& to)
 
 void MarsFSClient::unlink(const string& path)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::unlink);
 	for(;;)
 	{
-
 		try
 		{
 
@@ -578,7 +547,7 @@ void MarsFSClient::unlink(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -586,7 +555,6 @@ void MarsFSClient::unlink(const string& path)
 
 void MarsFSClient::rmdir(const string& path)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::rmdir);
 	for(;;)
 	{
@@ -605,7 +573,7 @@ void MarsFSClient::rmdir(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -613,7 +581,6 @@ void MarsFSClient::rmdir(const string& path)
 
 void MarsFSClient::touch(const string& path)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::touch);
 	for(;;)
 	{
@@ -632,7 +599,7 @@ void MarsFSClient::touch(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -640,14 +607,11 @@ void MarsFSClient::touch(const string& path)
 
 void MarsFSClient::fileSystemSize(const string& path, FileSystemSize& fs)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::fileSystemSize);
 	for(;;)
 	{
-
 		try
 		{
-
 			AutoMemoize m(connector_, 10);
 
 			Stream& s = connector_;
@@ -662,7 +626,7 @@ void MarsFSClient::fileSystemSize(const string& path, FileSystemSize& fs)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -670,7 +634,6 @@ void MarsFSClient::fileSystemSize(const string& path, FileSystemSize& fs)
 
 time_t MarsFSClient::created(const string& path)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::created);
 	for(;;)
 	{
@@ -691,7 +654,7 @@ time_t MarsFSClient::created(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -699,7 +662,6 @@ time_t MarsFSClient::created(const string& path)
 
 time_t MarsFSClient::lastAccess(const string& path)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::lastAccess);
 	for(;;)
 	{
@@ -720,7 +682,7 @@ time_t MarsFSClient::lastAccess(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}
@@ -728,7 +690,6 @@ time_t MarsFSClient::lastAccess(const string& path)
 
 time_t MarsFSClient::lastModified(const string& path)
 {
-	static const char *here = __FUNCTION__;
 	X(MarsFSClient::lastModified);
 	for(;;)
 	{
@@ -749,7 +710,7 @@ time_t MarsFSClient::lastModified(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
 			Log::error() << "** Exception is ignored" << endl;
 		}
 	}

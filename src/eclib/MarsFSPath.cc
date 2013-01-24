@@ -292,8 +292,8 @@ string MarsFSPath::clusterName() const
 
 BasePathName* MarsFSPath::checkClusterNode() const
 {
-    static const char *here = __FUNCTION__;
-    try {
+    try 
+    {
         string n = ClusterDisks::node(path_);
         ASSERT(n != NodeInfo::thisNode().node()); // TODO: code mo, if a remote file becomes local
         if(n != node_) {
@@ -303,8 +303,7 @@ BasePathName* MarsFSPath::checkClusterNode() const
     }
     catch(Exception& e)
     {
-        Log::error() << "** " << e.what() << " Caught in " <<
-            here <<  endl;
+        Log::error() << "** " << e.what() << " Caught in " << Here() <<  endl;
         Log::error() << "** Exception is handled" << endl;
         return new BasePathNameT<MarsFSPath>(MarsFSPath(node_, path_));
     }

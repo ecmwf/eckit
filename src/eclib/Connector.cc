@@ -15,9 +15,19 @@
 #include "eclib/ClusterNodes.h"
 #include "eclib/Connector.h"
 #include "eclib/StrStream.h"
+#include "eclib/Resource.h"
 #include "eclib/TCPClient.h"
 #include "eclib/TCPStream.h"
 #include "eclib/ThreadSingleton.h"
+
+
+static void offLine( const string& host, int port)
+{
+    static bool setNodeOfflineOnError = Resource<bool>("setNodeOfflineOnError", false);
+
+    if(setNodeOfflineOnError)
+        ClusterNodes::offLine(host, port);
+}
 
 Connector::Connector(const string& host, int port) :
 	host_(host), port_(port), locked_(false), memoize_(false), sent_(false), life_(0)
@@ -67,7 +77,7 @@ TCPSocket& Connector::socket()
 			Log::error() << "** " << e.what() << " Caught in " << here << endl;
 			Log::error() << "** Exception is handled" << endl;
 
-            ClusterNodes::offLine(host_, port_);
+            ::offLine(host_, port_);
 
             StrStream os;
 			os << name() << ": " << e.what() << StrStream::ends;
@@ -89,14 +99,14 @@ void Connector::check()
 			if (!socket_.stillConnected())
 			{
 				socket_.close();
-                ClusterNodes::offLine(host_, port_);
+                ::offLine(host_, port_); /// @todo maybe remove this from here, substitute with a descriptive exception
 			}
 		} catch (exception& e)
 		{
 			Log::error() << "** " << e.what() << " Caught in " << here << endl;
 			Log::error() << "** Exception is handled" << endl;
 			socket_.close();
-            ClusterNodes::offLine(host_, port_);
+            ::offLine(host_, port_); /// @todo maybe remove this from here
 		}
 	}
 }

@@ -253,7 +253,7 @@ FileError::FileError(const string& msg)
 CantOpenFile::CantOpenFile(const string& file, bool retry):
     retry_(retry)
 {   
-    std::cout << "cannot open file [" << file << "]" << std::endl;
+    /* std::cout << "cannot open file [" << file << "]" << std::endl; */
     StrStream s;
     s << "Cannot open " << file << " " << Log::syserr;
     if(retry) s << " (retry ok)";

@@ -13,6 +13,8 @@
 #include "eclib/StringTools.h"
 #include "eclib/Types.h"
 
+using namespace eclib;
+
 class TestStringTools : public Tool {
 public:
 

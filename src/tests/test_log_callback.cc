@@ -14,6 +14,8 @@
 #include "eclib/LocalPathName.h"
 #include "eclib/Log.h"
 
+using namespace eclib;
+
 struct CTxt { std::string name_; };
 
 //-----------------------------------------------------------------------------

@@ -18,6 +18,8 @@
 
 #include "eclib/Cache.h"
 
+using namespace eclib;
+
 class TestCache : public Tool {
 public:
 

@@ -13,6 +13,8 @@
 #include "eclib/Tokenizer.h"
 #include "eclib/Types.h"
 
+using namespace eclib;
+
 class TestTokenizer : public Tool {
 public:
 

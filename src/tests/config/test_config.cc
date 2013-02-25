@@ -17,6 +17,8 @@
 #include "eclib/config/Script.h"
 #include "eclib/config/Compiler.h"
 
+using namespace eclib;
+
 class TestConfig : public Tool {
 public:
 

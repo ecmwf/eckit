@@ -16,6 +16,8 @@
 #include "eclib/Tool.h"
 #include "eclib/Types.h"
 
+using namespace eclib;
+
 class TestAIOHandle : public Tool {
 public:
 

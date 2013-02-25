@@ -11,6 +11,8 @@
 #include "eclib/Mutex.h"
 #include "eclib/Tool.h"
 
+using namespace eclib;
+
 class TestMutex : public Tool {
 public:
 

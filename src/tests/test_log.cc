@@ -12,6 +12,8 @@
 #include "eclib/LocalPathName.h"
 #include "eclib/Log.h"
 
+using namespace eclib;
+
 class TestApp : public Tool {
 public:
 

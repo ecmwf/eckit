@@ -21,6 +21,8 @@
 #include "eclib/config/Script.h"
 #include "eclib/config/Compiler.h"
 
+using namespace eclib;
+
 class ReadConfig : public Tool {
 public:
 

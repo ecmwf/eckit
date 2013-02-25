@@ -16,6 +16,8 @@
 #include "eclib/ResourceMgr.h"
 #include "eclib/Types.h"
 
+using namespace eclib;
+
 class TestResource : public Tool {
 public:
 

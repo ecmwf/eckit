@@ -11,14 +11,20 @@
 // File DataHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef DataHandle_H
-#define DataHandle_H
+#ifndef eclib_DataHandle_h
+#define eclib_DataHandle_h
 
 #include "eclib/Length.h"
 #include "eclib/Offset.h"
 #include "eclib/PathName.h"
 #include "eclib/Streamable.h"
 #include "eclib/TransferWatcher.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class RestartTransfer  {
 	Offset from_;
@@ -139,5 +145,10 @@ Streamable* Reanimator<DataHandle>::ressucitate(Stream& s) const
 #else
 ;
 #endif
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

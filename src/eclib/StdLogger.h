@@ -8,12 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_StdLogger_H
-#define eclib_StdLogger_H
+#ifndef eclib_StdLogger_h
+#define eclib_StdLogger_h
 
 #include "eclib/machine.h"
 
 #include "eclib/Logger.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class StdLogger : public Logger {
 public:
@@ -39,5 +46,10 @@ private:
     std::ostream& out_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_StdLogger_h

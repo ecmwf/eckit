@@ -13,6 +13,12 @@
 #include "eclib/Exceptions.h"
 #include "eclib/MemoryPool.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static pthread_mutex_t the_lock;
 
 static void get_lock()
@@ -404,4 +410,8 @@ get_lock();
 	}
 release_lock();
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

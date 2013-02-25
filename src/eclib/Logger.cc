@@ -10,6 +10,12 @@
 
 #include "eclib/Logger.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 Logger::Logger() : 
   hasLoc_(false),
   where_(Here())
@@ -25,4 +31,8 @@ void Logger::location( const CodeLocation& where )
     hasLoc_ = true;
     where_ = where;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

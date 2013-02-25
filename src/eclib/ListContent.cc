@@ -12,6 +12,12 @@
 #include "eclib/ListContent.h"
 #include "eclib/JSON.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ClassSpec ListContent::classSpec_ = {&Content::classSpec(),"ListContent",};
 Reanimator<ListContent>  ListContent::reanimator_;
 
@@ -183,3 +189,8 @@ Value& ListContent::element(const Value& v)
     ASSERT( n >= 0 && (size_t) n < value_.size() );
     return value_.at(n);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

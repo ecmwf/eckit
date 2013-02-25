@@ -11,10 +11,16 @@
 // File BasePathNameT.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef BasePathNameT_H
-#define BasePathNameT_H
+#ifndef eclib_BasePathNameT_h
+#define eclib_BasePathNameT_h
 
 #include "eclib/BasePathName.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 template<class T>
 class BasePathNameT : public BasePathName {
@@ -93,6 +99,10 @@ private:
 		{ p.print(s); return s; }
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #include "eclib/BasePathNameT.cc"
 

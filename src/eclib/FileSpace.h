@@ -11,11 +11,17 @@
 // File FileSpace.h
 // Baudouin Raoult - ECMWF Mar 98
 
-#ifndef FileSpace_H
-#define FileSpace_H
+#ifndef eclib_FileSpace_h
+#define eclib_FileSpace_h
 
 #include "eclib/PathName.h"
 #include "eclib/NonCopyable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class FileSpace : private NonCopyable {
 public:
@@ -55,5 +61,10 @@ private:
 	vector<PathName> fileSystems_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

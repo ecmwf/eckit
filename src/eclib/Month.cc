@@ -8,11 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-
-
 #include "eclib/Month.h"
 #include "eclib/StrStream.h"
 #include "eclib/Tokenizer.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 Month::Month(long year,long month):
 	date_(year,month,1)
@@ -111,3 +115,8 @@ void Month::load(DumpLoad& a)
 {
 	date_.load(a);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

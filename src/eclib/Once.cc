@@ -11,6 +11,12 @@
 #include "eclib/Exceptions.h"
 #include "eclib/Once.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 template<class T> pthread_once_t Once<T>::once_ = PTHREAD_ONCE_INIT;
 template<class T> pthread_mutex_t Once<T>::mutex_;
 
@@ -40,3 +46,8 @@ template<class T> void Once<T>::init()
     //::pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE);
 	pthread_mutex_init(&mutex_,&attr);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

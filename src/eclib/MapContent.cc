@@ -12,6 +12,12 @@
 #include "eclib/MapContent.h"
 #include "eclib/JSON.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ClassSpec MapContent::classSpec_ = {&Content::classSpec(),"MapContent",};
 Reanimator<MapContent>  MapContent::reanimator_;
 
@@ -130,3 +136,8 @@ Content* MapContent::mod(const Content& other) const
 {
     return other.modMap(*this);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

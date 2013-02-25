@@ -13,9 +13,67 @@
 #include "eclib/DataHandle.h"
 #include "eclib/Exporter.h"
 
+//-----------------------------------------------------------------------------
+
+void *operator new(size_t, void* addr, eclib::Evolve&) {
+    return addr;
+}
+
+//-----------------------------------------------------------------------------
+
+void _export(eclib::Exporter& out, unsigned char what) { 
+    out.writeUnsigned(what);
+} 
+
+void _export(eclib::Exporter& out, char what) { 
+    out.writeSigned(what);
+}
+
+void _export(eclib::Exporter& out, unsigned int what) { 
+    out.writeUnsigned(what);
+} 
+void _export(eclib::Exporter& out, int what) { 
+    out.writeSigned(what);
+}
+
+void _export(eclib::Exporter& out, unsigned long what) { 
+    out.writeUnsigned(what);
+} 
+
+void _export(eclib::Exporter& out, long what) { 
+    out.writeSigned(what);
+}
+
+void _export(eclib::Exporter& out, unsigned short what) { 
+    out.writeUnsigned(what);
+} 
+
+void _export(eclib::Exporter& out, short what) { 
+    out.writeSigned(what);
+}
+
+void _export(eclib::Exporter& out, unsigned long long what) { 
+    out.writeUnsigned(what);
+} 
+
+void _export(eclib::Exporter& out, long long what) { 
+    out.writeSigned(what);
+}
+
+void _export(eclib::Exporter& out, double what) { 
+    out.writeDouble(what);
+}
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 const int MAX_STRING_LEN = 10240;
 
 enum {
+    
     TAG_EOF          = 'X',
 
     TAG_START_CLASS  = 'C',
@@ -37,7 +95,7 @@ enum {
     TAG_END_SCHEMAS   = '}',
 
     TAG_START_DATABASE  = '[',
-    TAG_END_DATABASE    = ']',
+    TAG_END_DATABASE    = ']'
 
 };
 
@@ -213,77 +271,32 @@ unsigned long long Exporter::readUnsigned() {
     return _readUnsigned();
 }
 
-
-
-void _export(Exporter& out, unsigned char what) { 
-    out.writeUnsigned(what);
-} 
-
-void _export(Exporter& out, char what) { 
-    out.writeSigned(what);
-}
-
-void _export(Exporter& out, unsigned int what) { 
-    out.writeUnsigned(what);
-} 
-void _export(Exporter& out, int what) { 
-    out.writeSigned(what);
-}
-
-void _export(Exporter& out, unsigned long what) { 
-    out.writeUnsigned(what);
-} 
-
-void _export(Exporter& out, long what) { 
-    out.writeSigned(what);
-}
-
-void _export(Exporter& out, unsigned short what) { 
-    out.writeUnsigned(what);
-} 
-
-void _export(Exporter& out, short what) { 
-    out.writeSigned(what);
-}
-
-void _export(Exporter& out, unsigned long long what) { 
-    out.writeUnsigned(what);
-} 
-
-void _export(Exporter& out, long long what) { 
-    out.writeSigned(what);
-}
-
-void _export(Exporter& out, double what) { 
-    out.writeDouble(what);
-}
-
-void _startClass(Exporter& out, const string& name) {
+void _startClass(eclib::Exporter& out, const string& name) {
     out.writeTag(TAG_START_CLASS);
     out.writeString(name);
 }
 
-void _endClass(Exporter& out, const string& name) {
+void _endClass(eclib::Exporter& out, const string& name) {
     out.writeTag(TAG_END_CLASS);
     //out.writeString(name);
 }
 
-void _startClass(Exporter& out, const char* name) {
+void _startClass(eclib::Exporter& out, const char* name) {
     out.writeTag(TAG_START_CLASS);
     out.writeString(name);
 }
 
-void _endClass(Exporter& out, const char* name) {
+void _endClass(eclib::Exporter& out, const char* name) {
     out.writeTag(TAG_END_CLASS);
     //out.writeString(name);
 }
 
-void _startMember(Exporter& out, const char* name) {
+void _startMember(eclib::Exporter& out, const char* name) {
     out.writeTag(TAG_START_MEMBER);
     out.writeString(name);
 }
 
-void _endMember(Exporter& out, const char* name) {
+void _endMember(eclib::Exporter& out, const char* name) {
     out.writeTag(TAG_END_MEMBER);
     //out.writeString(name);
 }
@@ -300,7 +313,7 @@ void Exporter::startObject(unsigned long long type, unsigned long long location,
     subCount_ = 0;
 }
 
-void _startObject(Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count) 
+void _startObject(eclib::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count) 
 {
     e.startObject(type, location, id, count);
 }
@@ -327,7 +340,7 @@ void Exporter::startSubObject()
     subCount_++;
 }
 
-void _startSubObject(Exporter& e)
+void _startSubObject(eclib::Exporter& e)
 {
     e.startSubObject();
 }
@@ -337,12 +350,12 @@ void Exporter::endSubObject()
     writeTag(TAG_END_SUBOBJECT);
 }
 
-void _endSubObject(Exporter& e)
+void _endSubObject(eclib::Exporter& e)
 {
     e.endSubObject();
 }
 
-void _endObject(Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count) 
+void _endObject(eclib::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count) 
 {
     e.endObject(type, location, id, count);
 }
@@ -415,7 +428,7 @@ size_t Exporter::nextObject() {
 
 }
 
-void _nextSubObject(Exporter& e)
+void _nextSubObject(eclib::Exporter& e)
 {
     e.nextSubObject();
 }
@@ -541,7 +554,7 @@ unsigned long long Exporter::getUnsignedMember(const string& name)
     return 0;
 }
 
-Evolve::Evolve(Exporter& e):
+Evolve::Evolve(eclib::Exporter& e):
     e_(e)
 {
 }
@@ -613,10 +626,6 @@ Evolve::operator double()
 Evolve::operator long()
 {
     return e_.getSignedMember(path_);
-}
-
-void *operator new(size_t, void* addr, Evolve&) {
-    return addr;
 }
 
 Exporter::Datatype::Datatype():
@@ -740,3 +749,7 @@ void Exporter::endDatabase(const string&, unsigned long id)
     writeUnsigned(objectCount_);
     objectCount_ = 0;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

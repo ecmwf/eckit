@@ -14,6 +14,12 @@
 #include "eclib/Exceptions.h"
 #include "eclib/FileLocker.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 FileLocker::FileLocker(int fd):
 	fd_(fd)
 {
@@ -50,3 +56,7 @@ void FileLocker::lockRange(off64_t start,off64_t len,int cmd,int type)
 
     SYSCALL(::fcntl(fd_, cmd, &lock));
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

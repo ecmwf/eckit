@@ -36,6 +36,12 @@
 #include "eclib/StrStream.h"
 #include "eclib/TimeStamp.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static Mutex mutex;
 
 // I need to come back here when we have a proper string class
@@ -648,3 +654,8 @@ string LocalPathName::clusterName() const
     os << "marsfs://" << node() << fullName() << StrStream::ends;
     return string(os);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

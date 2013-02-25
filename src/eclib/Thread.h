@@ -11,11 +11,18 @@
 // File Thread.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef Thread_H
-#define Thread_H
+#ifndef eclib_Thread_h
+#define eclib_Thread_h
 
 #include "eclib/NonCopyable.h"
 #include "eclib/Mutex.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 
 // This should be a Task
 
@@ -57,5 +64,10 @@ private:
 	virtual void run() = 0;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

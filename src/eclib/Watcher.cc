@@ -11,6 +11,13 @@
 
 #include "eclib/Watcher.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+
 struct DummyWatcher : public Watcher {
 	void watch() {}
 };
@@ -20,4 +27,8 @@ Watcher& Watcher::dummy()
 	static DummyWatcher x;
 	return x;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

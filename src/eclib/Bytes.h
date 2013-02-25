@@ -11,10 +11,16 @@
 // File Bytes.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef Bytes_H
-#define Bytes_H
+#ifndef eclib_Bytes_h
+#define eclib_Bytes_h
 
 #include "eclib/machine.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // Forward declarations
 
@@ -55,5 +61,10 @@ private:
 	bool   rate_;
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+
 
 #endif

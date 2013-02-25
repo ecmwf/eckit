@@ -11,10 +11,17 @@
 // File Translator.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef Translator_H
-#define Translator_H
+#ifndef eclib_Translator_h
+#define eclib_Translator_h
 
 #include "eclib/machine.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 
 // Translate a type from From to To
 
@@ -117,5 +124,10 @@ struct Translator<string, set<string> >
 template<>
 struct Translator<set<string>, string>
     { string  operator()(const set<string>&); };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

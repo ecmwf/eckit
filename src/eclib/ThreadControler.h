@@ -11,11 +11,18 @@
 // File ThreadControler.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef ThreadControler_H
-#define ThreadControler_H
+#ifndef eclib_ThreadControler_h
+#define eclib_ThreadControler_h
 
 #include "eclib/MutexCond.h"
 #include "eclib/Task.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 
 class Thread;
 
@@ -65,5 +72,10 @@ private:
     static void* startThread (void *data);
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

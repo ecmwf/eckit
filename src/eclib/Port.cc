@@ -12,9 +12,20 @@
 #include "eclib/Port.h"
 #include "eclib/Resource.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 Port::Port(const string& name, int port):
     port_(port)
 {
     int offset = Resource<int>("portOffset",0);
     port_ = Resource<int>(name + "Port", port) + offset;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

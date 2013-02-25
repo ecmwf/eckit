@@ -15,6 +15,13 @@
 #include "eclib/StringTools.h"
 #include "eclib/Tokenizer.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+
 string StringTools::substitute(const string& s,const map<string,string>& m) 
 {
     string result;
@@ -173,3 +180,8 @@ bool StringTools::startsWith(const string& str, const string& substr)
     
     return true;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

@@ -11,16 +11,21 @@
 // File Offset.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef Offset_H
-#define Offset_H
+#ifndef eclib_Offset_h
+#define eclib_Offset_h
 
 #include "eclib/Length.h"
 #include "eclib/Stream.h"
 
-class Bless;
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // Forwarded declarations
 
+class Bless;
 
 // But because the compiler aligns long longs
 // on 64bits boundaries and longs on 32 bits boundaries,
@@ -49,7 +54,6 @@ public:
 	Offset(const Offset& other) : value_(other.value_) {}
 
 #include "eclib/Offset.b"
-
 
 // -- Operators
 
@@ -94,11 +98,8 @@ public:
 	void load(DumpLoad&);
 // -- Class methods
 
-	
-
 private:
-
-
+    
 // -- Members
 
 	long long value_;
@@ -108,7 +109,7 @@ private:
 
 typedef vector<Offset> OffsetList;
 
-
+//-----------------------------------------------------------------------------
 
 // Global routines
 
@@ -120,5 +121,9 @@ void accumulate(const LengthList&,OffsetList&,const Offset& = 0);
 #ifdef AIX
 #pragma options align=reset
 #endif
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

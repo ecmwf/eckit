@@ -9,13 +9,24 @@
  */
 
 #pragma once
-#ifndef eclib_FileSystemSize_H
-#define eclib_FileSystemSize_H
+#ifndef eclib_FileSystemSize_h
+#define eclib_FileSystemSize_h
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 struct FileSystemSize {
 	unsigned long long available;
 	unsigned long long total;
 	FileSystemSize() : available(0), total(0) {}
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_FileSystemSize_H

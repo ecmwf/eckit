@@ -11,6 +11,13 @@
 
 #include "eclib/StdFileHandle.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+
 void StdFileHandle::print(ostream& s) const
 {
 	s << "StdFileHandle[" << "TODO" << ']';
@@ -59,3 +66,8 @@ void StdFileHandle::close()
 {
 	// May be we should close fd_ here ?
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

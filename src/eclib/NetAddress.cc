@@ -6,6 +6,12 @@
 #include "eclib/Tokenizer.h"
 #include "eclib/Translator.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 Stream& operator<<(Stream& s,const NetAddress& addr)
 {
     s << addr.host_ << addr.port_;
@@ -69,3 +75,8 @@ void NetAddress::print(ostream& s) const
 {
     s << host_ << ":" << port_;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

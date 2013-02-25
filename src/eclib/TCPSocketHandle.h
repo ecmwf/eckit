@@ -11,11 +11,17 @@
 // File TCPSocketHandle.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef TCPSocketHandle_H
-#define TCPSocketHandle_H
+#ifndef eclib_TCPSocketHandle_h
+#define eclib_TCPSocketHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/TCPSocket.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class TCPSocketHandle : public DataHandle {
 public:
@@ -65,5 +71,10 @@ private:
 
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

@@ -15,7 +15,12 @@
 
 #include "eclib/config/Compiler.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
 namespace config {
+
+//-----------------------------------------------------------------------------
 
 static bool isUnderscore( char c ) { return c == '_'; }
 static bool isDot( char c )        { return c == '.'; }
@@ -121,4 +126,7 @@ bool Compiler::isIdentifier(char c)
     return ( isalnum(c) || isUnderscore(c) || isDot(c) );
 }
 
+//-----------------------------------------------------------------------------
+
 } // namespace config
+} // namespace eclib

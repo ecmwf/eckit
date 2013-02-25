@@ -8,9 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/EmptyHandle.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 ClassSpec EmptyHandle::classSpec_ = {&DataHandle::classSpec(),"EmptyHandle",};
 Reanimator<EmptyHandle> EmptyHandle::reanimator_;
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+
 

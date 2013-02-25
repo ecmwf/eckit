@@ -14,6 +14,12 @@
 #include "eclib/NumberContent.h"
 #include "eclib/JSON.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ClassSpec DoubleContent::classSpec_ = {&Content::classSpec(),"DoubleContent",};
 Reanimator<DoubleContent> DoubleContent::reanimator_;
 
@@ -134,3 +140,8 @@ Value DoubleContent::negate() const
 {
     return Value(-value_);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

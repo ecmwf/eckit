@@ -11,18 +11,23 @@
 // File Value.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef Value_H
-#define Value_H
+#ifndef eclib_Value_h
+#define eclib_Value_h
 
 #include "eclib/Content.h"
 #include "eclib/Date.h"
 #include "eclib/DateTime.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 class Length;
 class PathName;
 class JSON;
-
-
 
 typedef vector<Value>     ValueList;
 typedef map<Value,Value>  ValueMap;
@@ -171,5 +176,10 @@ private:
 	friend class Content;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

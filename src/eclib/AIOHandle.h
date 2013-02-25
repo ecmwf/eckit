@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef AIOHandle_H
-#define AIOHandle_H
+#ifndef eclib_AIOHandle_h
+#define eclib_AIOHandle_h
 
 #include <aio.h>
 
@@ -18,6 +18,12 @@
 #include "eclib/Buffer.h"
 #include "eclib/DataHandle.h"
 #include "eclib/PathName.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class AIOHandle : public DataHandle {
 
@@ -87,5 +93,10 @@ private: // members
 #endif
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

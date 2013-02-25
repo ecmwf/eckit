@@ -11,8 +11,15 @@
 // File RLE.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef RLE_H
-#define RLE_H
+#ifndef eclib_RLE_h
+#define eclib_RLE_h
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Stream;
 
@@ -50,6 +57,11 @@ Stream& RLEDIFFwrite(Stream&,InputIterator,InputIterator,long long);
 
 template<class OutputIterator,class T>
 Stream& RLEDIFFread(Stream&,OutputIterator,T*);
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #include "eclib/RLE.cc"
 

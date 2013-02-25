@@ -8,13 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_ContextBehavior_H
-#define eclib_ContextBehavior_H
+#ifndef eclib_ContextBehavior_h
+#define eclib_ContextBehavior_h
 
 #include <string>
 
 #include "eclib/Configurable.h"
 #include "eclib/Resource.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Logger;
 
@@ -70,5 +76,10 @@ protected: // members
     string  home_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_ContextBehavior_h

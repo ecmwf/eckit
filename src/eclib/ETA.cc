@@ -8,10 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-
-
 #include "eclib/ETA.h"
 #include "eclib/StrStream.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 ETA::ETA(double ETA):
 	ETA_(ETA)
@@ -42,3 +46,7 @@ ETA::operator string() const
 	s << *this << StrStream::ends;
 	return string(s);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

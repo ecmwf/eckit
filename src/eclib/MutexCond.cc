@@ -12,6 +12,12 @@
 #include "eclib/Exceptions.h"
 #include "eclib/MutexCond.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 MutexCond::MutexCond(char tag):
 	tag_(tag)
 {
@@ -101,3 +107,8 @@ void MutexCond::broadcast()
 	ASSERT(inited_);
 	pthread_cond_broadcast(&cond_);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

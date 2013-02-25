@@ -12,6 +12,13 @@
 #include "eclib/Telnet.h"
 #include "eclib/Telnetable.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 Telnetable::Telnetable(int port):
 	telnet_(new Telnet(port))
 {
@@ -23,3 +30,8 @@ Telnetable::~Telnetable()
 {
 	telnet_.stop();
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

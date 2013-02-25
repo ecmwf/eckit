@@ -11,11 +11,17 @@
 // File MapAllocator.h
 // MARS (Baudouin Raoult) - ECMWF Nov 01
 
-#ifndef MapAllocator_H
-#define MapAllocator_H
+#ifndef eclib_MapAllocator_h
+#define eclib_MapAllocator_h
 
 #include "eclib/Exceptions.h"
 #include "eclib/Types.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class MapAllocatorTooSmall : public Exception {
 public:	
@@ -110,5 +116,10 @@ private:
 	//	{ p.print(s); return s; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

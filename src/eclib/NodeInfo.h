@@ -11,11 +11,17 @@
 // File NodeInfo.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef NodeInfo_H
-#define NodeInfo_H
+#ifndef eclib_NodeInfo_h
+#define eclib_NodeInfo_h
 
 #include "eclib/machine.h"
 #include "eclib/Types.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class NodeInfo {
 public:
@@ -97,5 +103,10 @@ private:
 // Used by MappedArray
 
 inline unsigned long version(NodeInfo*) { return 1; }
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

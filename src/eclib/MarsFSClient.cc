@@ -13,12 +13,17 @@
 #include "eclib/MarsFSPath.h"
 #include "eclib/ThreadSingleton.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 //#define X(a) Log::userInfo() << #a << endl; Log::info() << #a << endl; 
 #define X(a) /**/
 
 // TODO: Return errno
 //
-
 
 class MarsFSClientSettings {
 	bool forever_;
@@ -715,3 +720,8 @@ time_t MarsFSClient::lastModified(const string& path)
 		}
 	}
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

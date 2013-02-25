@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef SignalHandler_H
-#define SignalHandler_H
+#ifndef eclib_SignalHandler_h
+#define eclib_SignalHandler_h
 
 #include <signal.h>
 #include <setjmp.h>
@@ -19,8 +19,14 @@
 #include "eclib/Exceptions.h"
 #include "eclib/NonCopyable.h"
 
-// WARNING: This class has not been widely tested, and we don't
-//          know if they delete objects properly when the signal is caugth
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+/// @warning This class has not been widely tested, and we don't
+//           know if they delete objects properly when the signal is caugth
 
 class SignalHandler : private NonCopyable {
 
@@ -57,6 +63,8 @@ private: // members
 
 };
 
+//-----------------------------------------------------------------------------
 
+} // namespace eclib
 
 #endif

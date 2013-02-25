@@ -11,14 +11,19 @@
 // File EtcTable.h
 // Baudouin Raoult - (c) ECMWF Aug 11
 
-#ifndef EtcTable_H
-#define EtcTable_H
+#ifndef eclib_EtcTable_h
+#define eclib_EtcTable_h
 
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
 #include "eclib/Mutex.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class EtcTable : private NonCopyable {
 public:
@@ -72,5 +77,9 @@ public:
     EtcStartWithTable(const string& name, int size = 0, const string& dir= "etc"):
         EtcTable(name, size, dir) {}
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

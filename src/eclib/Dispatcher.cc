@@ -19,6 +19,12 @@
 #include "eclib/Thread.h"
 #include "eclib/ThreadControler.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 template<class Traits> 
 class DispatchTask : public Thread, public Monitorable {
 public:
@@ -408,3 +414,8 @@ void DefaultHandler<Request>::json(JSON& s,const Request& r)
 {
 	r.json(s);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

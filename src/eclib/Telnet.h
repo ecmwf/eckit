@@ -11,10 +11,17 @@
 // File Telnet.h
 // Baudouin Raoult - ECMWF Oct 96
 
-#ifndef Telnet_H
-#define Telnet_H
+#ifndef eclib_Telnet_h
+#define eclib_Telnet_h
 
 #include "eclib/NetService.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Telnet : public NetService {
 public:
@@ -42,5 +49,10 @@ private:
 	virtual string   name() { return "telnet"; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

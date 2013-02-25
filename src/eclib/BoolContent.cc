@@ -8,10 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/BoolContent.h"
 #include "eclib/Translator.h"
 #include "eclib/JSON.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 ClassSpec BoolContent::classSpec_ = {&Content::classSpec(),"BoolContent",};
 Reanimator<BoolContent> BoolContent::reanimator_;
@@ -107,3 +112,8 @@ Content* BoolContent::mod(const Content& other) const
 {
     return other.modBool(*this);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

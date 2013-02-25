@@ -15,6 +15,12 @@
 #include "eclib/FileStream.h"
 #include "eclib/Log.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 FileStream::FileStream(const PathName& name,const char *mode):
     file_(fopen64(name.localPath(),mode)),
     read_(string(mode) == "r"),
@@ -101,3 +107,7 @@ void FileStream::rewind()
     ::fseeko64(file_,0,SEEK_SET);
     resetBytesWritten();
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

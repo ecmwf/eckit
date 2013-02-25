@@ -13,6 +13,13 @@
 #include "eclib/Seconds.h"
 #include "eclib/Timer.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 timeval operator-(const timeval& a,const timeval& b)
 {
 	timeval diff;
@@ -55,3 +62,8 @@ double Timer::elapsed()
     timeval diff = stop - start_;
     return (double)diff.tv_sec + ((double)diff.tv_usec / 1000000.);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

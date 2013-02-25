@@ -11,10 +11,16 @@
 // File NilContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef NilContent_H
-#define NilContent_H
+#ifndef eclib_NilContent_h
+#define eclib_NilContent_h
 
 #include "eclib/Content.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class NilContent : public Content {
 protected:
@@ -94,5 +100,10 @@ private:
 	friend class Reanimator<NilContent>;
 	friend class Value;
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

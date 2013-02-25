@@ -13,6 +13,12 @@
 #include "eclib/Types.h"
 #include "eclib/Stream.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 template<class T>
 void operator<<(Stream& s,const vector<T>& t)
 {
@@ -110,3 +116,8 @@ void output_list<T>::flush()
 	v_.clear();
 	first_ = false;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

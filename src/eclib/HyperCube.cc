@@ -11,6 +11,12 @@
 
 #include "eclib/HyperCube.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static void addLoop(
 	Ordinal      d,   
 	Ordinal      which,
@@ -68,3 +74,7 @@ void HyperCube::coordinates(Ordinal index,Coordinates& result) const
 
 	ASSERT(index == 0);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

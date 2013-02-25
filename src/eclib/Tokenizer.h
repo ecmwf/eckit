@@ -11,12 +11,19 @@
 // File Tokenizer.h
 // Manuel Fuentes - ECMWF Jan 97
 
-#ifndef Tokenizer_H
-#define Tokenizer_H
+#ifndef eclib_Tokenizer_h
+#define eclib_Tokenizer_h
 
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Tokenizer : private NonCopyable {
 
@@ -47,6 +54,11 @@ private: // methods
 	friend ostream& operator<<(ostream& s,const Tokenizer& p) { p.print(s); return s; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 
 

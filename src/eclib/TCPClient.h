@@ -11,11 +11,17 @@
 // File TCPClient.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef TCPClient_H
-#define TCPClient_H
+#ifndef eclib_TCPClient_h
+#define eclib_TCPClient_h
 
 #include "eclib/NetAddress.h"
 #include "eclib/TCPSocket.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class TCPClient : public TCPSocket {
 public:
@@ -51,5 +57,10 @@ private:
 	virtual string bindingAddress() const;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // TCPClient_H

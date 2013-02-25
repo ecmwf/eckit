@@ -13,7 +13,12 @@
 #include "eclib/config/Branch.h"
 #include "eclib/config/Function.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
 namespace config {
+
+//-----------------------------------------------------------------------------
 
 Block::Block( Compiler& c, Scope* scope ) : 
     Statement(*scope),
@@ -84,4 +89,7 @@ void Block::print(ostream &out)
     out << "}" << std::endl;
 }
 
+//-----------------------------------------------------------------------------
+
 } // namespace config
+} // namespace eclib

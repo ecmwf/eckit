@@ -11,12 +11,19 @@
 // File Semaphore.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef Semaphore_H
-#define Semaphore_H
+#ifndef eclib_Semaphore_h
+#define eclib_Semaphore_h
 
 #include "eclib/NonCopyable.h"
 #include "eclib/Mutex.h"
 #include "eclib/PathName.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Semaphore : private NonCopyable {
 
@@ -51,5 +58,10 @@ protected: // members
     Mutex mutex_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

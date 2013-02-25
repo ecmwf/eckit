@@ -14,6 +14,12 @@
 
 #include "eclib/BasePathNameT.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 template<class T>
 void BasePathNameT<T>::print(ostream& s) const
 {
@@ -240,4 +246,8 @@ const string& BasePathNameT<T>::path() const
 {
     return path_.path();
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

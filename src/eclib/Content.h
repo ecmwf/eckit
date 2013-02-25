@@ -11,11 +11,17 @@
 // File Content.h
 // Manuel Fuentes - ECMWF Jun 96
 
-#ifndef Content_H
-#define Content_H
+#ifndef eclib_Content_h
+#define eclib_Content_h
 
 #include "eclib/Counted.h"
 #include "eclib/Streamable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // List here all the Content's
 
@@ -225,5 +231,10 @@ Streamable* Reanimator<Content>::ressucitate(Stream& s) const
 #else
 ;
 #endif
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

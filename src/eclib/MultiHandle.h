@@ -11,10 +11,16 @@
 // File MultiHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef MultiHandle_H
-#define MultiHandle_H
+#ifndef eclib_MultiHandle_h
+#define eclib_MultiHandle_h
 
 #include "eclib/DataHandle.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class MultiHandle : public DataHandle {
 public:
@@ -99,5 +105,8 @@ private:
 
 };
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

@@ -19,7 +19,11 @@
 #include "eclib/Resource.h"
 #include "eclib/StrStream.h"
 
+//-----------------------------------------------------------------------------
 
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 ClassSpec PartFileHandle::classSpec_ = {&DataHandle::classSpec(),"PartFileHandle",};
 Reanimator<PartFileHandle> PartFileHandle::reanimator_;
@@ -100,8 +104,8 @@ PartFileHandle::PartFileHandle(const PathName& name,
 bool PartFileHandle::compress(bool sorted)
 {
     if(sorted)
-        ::sort(offset_,length_);
-    return ::compress(offset_,length_);
+        eclib::sort(offset_,length_);
+    return eclib::compress(offset_,length_);
 }
 
 PartFileHandle::~PartFileHandle()
@@ -351,3 +355,8 @@ string PartFileHandle::title() const
     os << PathName::shorten(name_) << " (" << length_.size() << ")" << StrStream::ends;
     return string(os);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

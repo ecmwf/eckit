@@ -14,6 +14,11 @@
 #include "eclib/PartFileHandle.h"
 #include "eclib/StrStream.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 
 ClassSpec MarsFSPartHandle::classSpec_ = {&DataHandle::classSpec(),"MarsFSPartHandle",};
@@ -69,8 +74,8 @@ MarsFSPartHandle::MarsFSPartHandle(const MarsFSPath& path,
 bool MarsFSPartHandle::compress(bool sorted)
 {
     if(sorted)
-        ::sort(offset_,length_);
-    return ::compress(offset_,length_);
+        eclib::sort(offset_,length_);
+    return eclib::compress(offset_,length_);
 }
 
 MarsFSPartHandle::~MarsFSPartHandle()
@@ -270,3 +275,8 @@ string MarsFSPartHandle::title() const
         << " (" << length_.size() << ")" << StrStream::ends;
     return string(os);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

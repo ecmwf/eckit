@@ -10,6 +10,12 @@
 
 #include "eclib/ContextBehavior.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ContextBehavior::ContextBehavior() : 
     debug_(0),
     displayName_(),
@@ -49,3 +55,8 @@ void ContextBehavior::reconfigure()
 {
 	Log::info() << "ContextBehavior::reconfigure" << endl;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

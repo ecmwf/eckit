@@ -13,6 +13,12 @@
 #include "eclib/AutoLocker.h"
 #include "eclib/Mutex.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 #ifdef CHECK_DEAD_LOCKS
 
 typedef map<void*,pthread_t,less<void*> > GotMap;
@@ -124,5 +130,9 @@ void AutoLocker::release(void* resource)
 void AutoLocker::analyse(void* resource)
 {
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

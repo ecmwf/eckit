@@ -11,10 +11,17 @@
 // File StringContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef StringContent_H
-#define StringContent_H
+#ifndef eclib_StringContent_h
+#define eclib_StringContent_h
 
 #include "eclib/Content.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 
 class StringContent : public Content {
 
@@ -98,5 +105,10 @@ private:
     friend class Reanimator<StringContent>;
     friend class Value;
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

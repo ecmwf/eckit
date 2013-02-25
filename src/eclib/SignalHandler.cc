@@ -12,6 +12,13 @@
 #include "eclib/Log.h"
 #include "eclib/SignalHandler.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 SignalHandler* SignalHandler::current_ = 0;
 
 SignalHandler::SignalHandler(void (*handler)(int),
@@ -71,3 +78,8 @@ void SignalHandler::checkInterrupt()
         throw Cancel("Process interrupted");
     }
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

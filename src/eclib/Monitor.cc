@@ -20,6 +20,12 @@
 #include "eclib/TaskInfo.h"
 #include "eclib/ThreadSingleton.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static bool active_ = false;
 
 Monitor::Monitor():
@@ -180,7 +186,7 @@ static void init(void)
 
 Monitor::TaskArray& Monitor::info()
 {
-    pthread_once(&once, ::init);
+    pthread_once(&once, eclib::init);
 	return *mapArray;
 }
 
@@ -382,3 +388,8 @@ int Monitor::kill(const string& name, int sig)
 
 	return n;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

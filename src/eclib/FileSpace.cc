@@ -16,6 +16,12 @@
 #include "eclib/Resource.h"
 #include "eclib/Types.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 typedef map<string, FileSpace*> Map;
 
 static Mutex mutex;
@@ -409,3 +415,7 @@ void FileSpace::load() const
 	}
 
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

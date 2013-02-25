@@ -11,11 +11,18 @@
 // File StdPipe.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef StdPipe_H
-#define StdPipe_H
+#ifndef eclib_StdPipe_h
+#define eclib_StdPipe_h
 
 #include <stdio.h>
 #include <string>
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 
 // Simple wrapper around a stdio file
@@ -47,5 +54,10 @@ private:
 	FILE *file_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

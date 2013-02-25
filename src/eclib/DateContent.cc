@@ -13,6 +13,12 @@
 #include "eclib/NumberContent.h"
 #include "eclib/JSON.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ClassSpec DateContent::classSpec_ = {&Content::classSpec(),"DateContent",};
 Reanimator<DateContent> DateContent::reanimator_;
 
@@ -105,3 +111,6 @@ Content* DateContent::mod(const Content& other) const
     return other.modDate(*this);
 }
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

@@ -11,10 +11,16 @@
 // File Password.h
 // Baudouin Raoult - ECMWF Dec 97
 
-#ifndef Password_H
-#define Password_H
+#ifndef eclib_Password_h
+#define eclib_Password_h
 
 #include "eclib/machine.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Password {
 public:
@@ -23,5 +29,10 @@ public:
 	static string salt(const string&);
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

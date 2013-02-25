@@ -11,12 +11,18 @@
 // File Port.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef Port_H
-#define Port_H
+#ifndef eclib_Port_h
+#define eclib_Port_h
 
 #include "eclib/machine.h"
 
-// Forward declarations
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 
 
 class Port {
@@ -40,5 +46,10 @@ private:
 	int   port_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

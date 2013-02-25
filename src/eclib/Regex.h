@@ -11,12 +11,19 @@
 // File Regex.h
 // Baudouin Raoult - ECMWF Jan 98
 
-#ifndef Regex_H
-#define Regex_H
+#ifndef eclib_Regex_h
+#define eclib_Regex_h
 
 #include <regex.h>
 
 #include "eclib/machine.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Regex {
 public:
@@ -54,5 +61,10 @@ private: // methods
 	friend ostream& operator<<(ostream& s,const Regex& p) { p.print(s); return s; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

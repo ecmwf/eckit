@@ -13,6 +13,12 @@
 #include "eclib/MarsFSHandle.h"
 #include "eclib/StrStream.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ClassSpec MarsFSHandle::classSpec_ = {&DataHandle::classSpec(),"MarsFSHandle",};
 Reanimator<MarsFSHandle> MarsFSHandle::reanimator_;
 
@@ -184,4 +190,8 @@ string MarsFSHandle::title() const
 	os << "marsfs:/" << path_.node() << "/" << PathName::shorten(path_.path()) << StrStream::ends;
 	return string(os);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

@@ -14,6 +14,12 @@
 
 #include "eclib/MarsFSFile.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 MarsFSFile::MarsFSFile(const MarsFSPath& path):
     MarsFSClient(path),
     path_(path),
@@ -119,3 +125,8 @@ Length MarsFSFile::length()
 {
     return size(path_.path());
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

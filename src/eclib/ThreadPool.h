@@ -11,11 +11,17 @@
 // File ThreadPool.h
 // Baudouin Raoult - (c) ECMWF Feb 12
 
-#ifndef ThreadPool_H
-#define ThreadPool_H
+#ifndef eclib_ThreadPool_h
+#define eclib_ThreadPool_h
 
 #include "eclib/machine.h"
 #include "eclib/MutexCond.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class ThreadPool;
 
@@ -125,5 +131,10 @@ private:
 	//	{ p.print(s); return s; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

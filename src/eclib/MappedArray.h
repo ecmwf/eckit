@@ -11,12 +11,18 @@
 // File MappedArray.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef MappedArray_H
-#define MappedArray_H
+#ifndef eclib_MappedArray_h
+#define eclib_MappedArray_h
 
 #include "eclib/NonCopyable.h"
 #include "eclib/PathName.h"
 #include "eclib/Semaphore.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // Used to map an array to a file 
 
@@ -64,6 +70,10 @@ private: // members
 
 };
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #include "MappedArray.cc"
 

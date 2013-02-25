@@ -11,10 +11,16 @@
 // File FileDescHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef FileDescHandle_H
-#define FileDescHandle_H
+#ifndef eclib_FileDescHandle_h
+#define eclib_FileDescHandle_h
 
 #include "eclib/DataHandle.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class FileDescHandle : public DataHandle {
 public:
@@ -56,5 +62,10 @@ private:
 // -- Class members
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

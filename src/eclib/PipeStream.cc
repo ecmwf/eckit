@@ -15,6 +15,12 @@
 #include "eclib/Mutex.h"
 #include "eclib/PipeStream.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 PipeStream::PipeStream():
 	in_(-1),
 	out_(-1)
@@ -94,3 +100,8 @@ long PipeStream::read(void *buf, long len)
 {
 	return ::read(in_,buf,len);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

@@ -15,6 +15,12 @@
 #include "eclib/PathName.h"
 #include "eclib/PathName.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 #if 0
 typedef map<string,FileManager*>    FileManagerMap;
 typedef map<string,FileManagerFactory*> FactoryManagerMap;
@@ -195,3 +201,7 @@ public:
 static LocalFileManager  manager1("unix");
 static LocalFileManager  manager3("file");
 static MarsFSFileManager manager2("marsfs");
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

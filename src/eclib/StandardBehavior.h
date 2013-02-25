@@ -8,10 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_StandardBehavior_H
-#define eclib_StandardBehavior_H
+#ifndef eclib_StandardBehavior_h
+#define eclib_StandardBehavior_h
 
 #include "eclib/ContextBehavior.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class StandardBehavior : public ContextBehavior {
 public:
@@ -41,5 +47,9 @@ private: // members
     std::string name_;
     
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_StandardBehavior_h

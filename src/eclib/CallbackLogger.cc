@@ -18,6 +18,10 @@
 
 //-----------------------------------------------------------------------------
 
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static Once<Mutex> mutex;
 
 class CallbackBuffer : public std::streambuf,
@@ -136,3 +140,7 @@ void CallbackLogger::register_callback( callback c, int level, void* ctxt )
     
     buffer_->register_callback( c, level, ctxt );
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

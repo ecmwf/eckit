@@ -11,10 +11,17 @@
 // File StdioBuf.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef StdioBuf_H
-#define StdioBuf_H
+#ifndef eclib_StdioBuf_h
+#define eclib_StdioBuf_h
 
 #include "eclib/machine.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class StdioBuf : public streambuf  {
 public:
@@ -50,5 +57,10 @@ private:
 //	virtual int uflow();
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

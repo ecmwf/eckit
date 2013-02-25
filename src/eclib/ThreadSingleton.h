@@ -11,12 +11,19 @@
 // File ThreadSingleton.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef ThreadSingleton_H
-#define ThreadSingleton_H
+#ifndef eclib_ThreadSingleton_h
+#define eclib_ThreadSingleton_h
 
 #include <pthread.h>
 
 #include "eclib/NonCopyable.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 template<class T> class ThreadSingleton : private NonCopyable {
 public:
@@ -47,6 +54,11 @@ private:
 
 };
 
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #include "eclib/ThreadSingleton.cc"
 

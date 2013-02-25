@@ -13,6 +13,12 @@
 #include "eclib/Value.h"
 #include "eclib/JSON.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ClassSpec NilContent::classSpec_ = {&Content::classSpec(),"NilContent",};
 Reanimator<NilContent> NilContent::reanimator_;
 
@@ -106,5 +112,7 @@ Content* NilContent::mod(const Content& other) const
     return other.divNil(*this);
 }
 
+//-----------------------------------------------------------------------------
 
+} // namespace eclib
 

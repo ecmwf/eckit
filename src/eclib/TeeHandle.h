@@ -11,10 +11,16 @@
 // File TeeHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef TeeHandle_H
-#define TeeHandle_H
+#ifndef eclib_TeeHandle_h
+#define eclib_TeeHandle_h
 
 #include "eclib/DataHandle.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class TeeHandle : public DataHandle {
 public:
@@ -81,5 +87,10 @@ private:
 
 };
 
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

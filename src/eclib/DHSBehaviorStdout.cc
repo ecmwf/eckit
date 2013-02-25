@@ -12,6 +12,12 @@
 #include "eclib/DHSBehaviorStdout.h"
 #include "eclib/DHSStdLogger.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 DHSBehaviorStdout::DHSBehaviorStdout(ostream& out) :
     DHSBehavior(),
     out_(out)
@@ -27,3 +33,7 @@ DHSLogger* DHSBehaviorStdout::getLogger()
     return new DHSStdLogger(out_);
 }
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

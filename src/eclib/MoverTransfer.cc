@@ -23,6 +23,12 @@
 #include "eclib/ThreadControler.h"
 #include "eclib/ClusterNodes.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 MoverTransfer::MoverTransfer(TransferWatcher& watcher):
         watcher_(watcher)
 {
@@ -103,3 +109,8 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to)
     return len;
 
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

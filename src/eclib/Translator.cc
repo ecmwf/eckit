@@ -13,6 +13,13 @@
 #include "eclib/Tokenizer.h"
 #include "eclib/Translator.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+
 static unsigned long long multiplier(const char* p) {
     while(isspace(*p)) p++;
 
@@ -229,3 +236,8 @@ string Translator<char,string>::operator()(char c)
     s = c;
     return s;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

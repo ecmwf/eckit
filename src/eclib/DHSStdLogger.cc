@@ -12,6 +12,12 @@
 #include "eclib/Resource.h"
 #include "eclib/TimeStamp.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static bool useCerr = false;
 static bool useNull = false;
 
@@ -36,3 +42,8 @@ std::ostream& DHSStdLogger::out()
 {
     return *out_;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

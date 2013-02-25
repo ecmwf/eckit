@@ -11,11 +11,18 @@
 // File StdFileHandle.h
 // Piotr Kuchta - ECMWF April 09
 
-#ifndef StdFileHandle_H
-#define StdFileHandle_H
+#ifndef eclib_StdFileHandle_h
+#define eclib_StdFileHandle_h
 
 
 #include "eclib/DataHandle.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class StdFileHandle : public DataHandle {
 public:
@@ -57,5 +64,10 @@ private:
 // -- Class members
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

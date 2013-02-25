@@ -8,8 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef AutoLocker_H
-#define AutoLocker_H
+#ifndef eclib_AutoLocker_h
+#define eclib_AutoLocker_h
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class AutoLocker {
 public:
@@ -18,5 +24,9 @@ public:
 	static void release(void*);
 	static void analyse(void*);
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

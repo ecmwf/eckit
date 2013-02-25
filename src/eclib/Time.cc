@@ -16,6 +16,13 @@
 #include "eclib/Tokenizer.h"
 #include "eclib/Translator.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 inline void printTime(ostream& s, long n)
 {
 	if(n<10) s << '0';
@@ -204,3 +211,8 @@ void Time::load(DumpLoad& a)
 {
 	a.load(seconds_);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

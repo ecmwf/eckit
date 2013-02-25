@@ -14,6 +14,12 @@
 #include "eclib/Exceptions.h"
 #include "eclib/Log.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 bool AutoAlarm::caught_ = false;
 bool AutoAlarm::throw_  = false;
 int  AutoAlarm::sec_    = 0;
@@ -47,3 +53,8 @@ AutoAlarm::~AutoAlarm()
 	::signal(SIGALRM,old_);
 	::alarm(0);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

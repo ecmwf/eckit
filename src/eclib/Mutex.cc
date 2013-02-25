@@ -11,6 +11,12 @@
 #include "eclib/Exceptions.h"
 #include "eclib/Mutex.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 Mutex::Mutex(char tag) :
 	exists_(false),
 	tag_(tag)
@@ -61,3 +67,8 @@ void Mutex::unlock(void)
 	}
 	THRCALL(pthread_mutex_unlock(&mutex_));
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

@@ -18,6 +18,12 @@
 #include "eclib/MappedArray.h"
 #include "eclib/Padded.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 inline unsigned long version(unsigned long long*) { return 1; }
 
 template<class T>
@@ -112,3 +118,8 @@ void MappedArray<T>::sync()
 	while(ret < 0 && errno == EINTR)
 		ret = fsync(fd_);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

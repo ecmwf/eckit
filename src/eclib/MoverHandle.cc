@@ -22,6 +22,12 @@
 #include "eclib/Thread.h"
 #include "eclib/ThreadControler.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 class MoverHandleThread : public Thread {
 
     MoverHandle& owner_;
@@ -194,3 +200,8 @@ string MoverHandle::title() const
 {
 	return string("->") + handle_->title();
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

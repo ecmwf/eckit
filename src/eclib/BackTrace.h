@@ -8,10 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef BackTrace_H
-#define BackTrace_H
+#ifndef eclib_BackTrace_h
+#define eclib_BackTrace_h
 
 #include "eclib/machine.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class BackTrace {
 public:
@@ -19,5 +25,9 @@ public:
     static std::string dump();
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

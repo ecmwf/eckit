@@ -11,14 +11,18 @@
 // File BufferCache.h
 // Baudouin Raoult - (c) ECMWF Jul 11
 
-#ifndef BufferCache_H
-#define BufferCache_H
+#ifndef eclib_BufferCache_h
+#define eclib_BufferCache_h
 
 #include "eclib/machine.h"
 
 #include "eclib/ResizableBuffer.h"
 
-// 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class BufferCache {
 public:
@@ -111,5 +115,10 @@ private:
 		{ p.print(s); return s; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

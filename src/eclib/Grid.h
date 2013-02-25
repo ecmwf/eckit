@@ -11,11 +11,17 @@
 // File Grid.h
 // Baudouin Raoult - ECMWF Dec 97
 
-#ifndef Grid_H
-#define Grid_H
+#ifndef eclib_Grid_h
+#define eclib_Grid_h
 
 #include "eclib/machine.h"
 #include "eclib/Exceptions.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class DumpLoad;
 
@@ -131,5 +137,9 @@ private:
 
 };
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

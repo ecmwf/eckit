@@ -11,12 +11,18 @@
 // File Loader.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef Loader_H
-#define Loader_H
+#ifndef eclib_Loader_h
+#define eclib_Loader_h
 
 #include "eclib/machine.h"
 
 #include "eclib/ClassExtent.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Loader : public ClassExtent<Loader> {
 
@@ -32,5 +38,10 @@ private: // methods
 // There is no private copy constructor as this will confuse g++ 4.x.x
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

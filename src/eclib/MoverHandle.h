@@ -11,13 +11,19 @@
 // File MoverHandle.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef MoverHandle_H
-#define MoverHandle_H
+#ifndef eclib_MoverHandle_h
+#define eclib_MoverHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/Mutex.h"
 #include "eclib/TCPSocket.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class MoverHandle : public DataHandle {
 public:
@@ -109,5 +115,10 @@ private:
 	//	{ p.print(s); return s; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

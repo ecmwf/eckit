@@ -11,11 +11,17 @@
 // File CommandStream.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef CommandStream_H
-#define CommandStream_H
+#ifndef eclib_CommandStream_h
+#define eclib_CommandStream_h
 
 
 #include "eclib/Stream.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class CommandStream : public Stream {
 public:
@@ -46,5 +52,10 @@ private:
 	// From Stream
 	virtual string name() const;
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

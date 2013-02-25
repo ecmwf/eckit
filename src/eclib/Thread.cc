@@ -12,6 +12,13 @@
 #include "eclib/AutoLock.h"
 #include "eclib/Thread.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+
 Thread::Thread(bool autodel):
 	stop_(false),
 	autodel_(autodel)
@@ -33,3 +40,8 @@ bool Thread::stopped()
 	AutoLock<Mutex> lock(mutex_);
 	return stop_;	
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

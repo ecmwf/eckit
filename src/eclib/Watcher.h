@@ -11,8 +11,14 @@
 // File Watcher.h
 // Baudouin Raoult - ECMWF Jun 98
 
-#ifndef Watcher_H
-#define Watcher_H
+#ifndef eclib_Watcher_h
+#define eclib_Watcher_h
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Watcher {
 public:
@@ -27,5 +33,8 @@ public:
 
 };
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

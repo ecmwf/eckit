@@ -11,14 +11,19 @@
 // File PartFileHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef PartFileHandle_H
-#define PartFileHandle_H
-
+#ifndef eclib_PartFileHandle_h
+#define eclib_PartFileHandle_h
 
 #include "eclib/Buffer.h"
 #include "eclib/DataHandle.h"
 #include "eclib/PathName.h"
 #include "eclib/Types.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class PartFileHandle : public DataHandle {
 public:
@@ -93,5 +98,10 @@ private:
 	static  Reanimator<PartFileHandle>  reanimator_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

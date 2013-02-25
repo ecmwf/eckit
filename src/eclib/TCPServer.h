@@ -11,11 +11,16 @@
 // File TCPServer.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef TCPServer_H
-#define TCPServer_H
-
+#ifndef eclib_TCPServer_h
+#define eclib_TCPServer_h
 
 #include "eclib/TCPSocket.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // AIX #define accept to naccept. It took me a while :-(
 // this clashes with the method accept()
@@ -81,5 +86,10 @@ private:
     bool closeExec_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

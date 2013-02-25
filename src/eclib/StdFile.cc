@@ -13,6 +13,13 @@
 #include "eclib/PathName.h"
 #include "eclib/StdFile.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 StdFile::StdFile(const PathName& name,const string& mode)
 {
 	file_ = fopen64(name.localPath(),mode.c_str());
@@ -27,3 +34,8 @@ StdFile::~StdFile()
 		if(fclose(file_) == -1)
 			throw FailedSystemCall("fclose");
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

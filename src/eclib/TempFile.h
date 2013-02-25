@@ -11,10 +11,17 @@
 // File TempFile.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef TempFile_H
-#define TempFile_H
+#ifndef eclib_TempFile_h
+#define eclib_TempFile_h
 
 #include "eclib/PathName.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class TempFile : public PathName {
 public:
@@ -34,5 +41,10 @@ private:
 
 	static PathName dir(const string&);
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

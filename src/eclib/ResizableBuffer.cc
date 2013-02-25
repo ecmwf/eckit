@@ -14,6 +14,13 @@
 #include "eclib/Exceptions.h"
 #include "eclib/ResizableBuffer.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ResizableBuffer::ResizableBuffer(size_t size):
         size_(size),
         fd_(-1),
@@ -73,3 +80,8 @@ void ResizableBuffer::resize(size_t size)
         size_ = size;
         create();
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

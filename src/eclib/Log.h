@@ -11,10 +11,16 @@
 // File Log.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef Log_H
-#define Log_H
+#ifndef eclib_Log_h
+#define eclib_Log_h
 
 #include "eclib/CodeLocation.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // The Log class in designed for logging messages
 // Each line is prefixed by a time stamp, a message
@@ -32,6 +38,8 @@ public:
 	virtual void errorMsg(const string&)   = 0;
 	virtual void notifyClient(const string&)   = 0;
 };
+
+//-----------------------------------------------------------------------------
 
 class Log {
 public:
@@ -120,7 +128,13 @@ public:
 ostream& setformat(ostream&,int);
 int format(ostream&);
 
+//-----------------------------------------------------------------------------
+
 #define DEBUG_HERE     std::cerr << " DEBUG @ " << Here() << std::endl;
 #define DEBUG_VAR(x)   std::cerr << #x << " : [" << x << "] @ " << Here() << std::endl;
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

@@ -10,10 +10,16 @@
 
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef VerifyingDate_H
-#define VerifyingDate_H
+#ifndef eclib_VerifyingDate_h
+#define eclib_VerifyingDate_h
 
 #include "eclib/DateTime.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class VerifyingDate : public DateTime {
 public:
@@ -73,5 +79,9 @@ private:
 
 };
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

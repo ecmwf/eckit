@@ -16,7 +16,11 @@
 #include "eclib/Mutex.h"
 #include "eclib/PipeHandler.h"
 
-//=========================================================================
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 template<class Request>
 PipeHandler<Request>::PipeHandler():
@@ -323,3 +327,8 @@ template<class Request>
 void PipeHandler<Request>::endBatch(Stream&)
 {
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

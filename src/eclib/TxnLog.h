@@ -11,12 +11,19 @@
 // File TxnLog.h
 // Baudouin Raoult - ECMWF Jan 97
 
-#ifndef TxnLog_H
-#define TxnLog_H
+#ifndef eclib_TxnLog_h
+#define eclib_TxnLog_h
 
 #include "eclib/Application.h"
 #include "eclib/MappedArray.h"
 #include "eclib/TxnEvent.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // T should be a subclass of TxnEvent
 
@@ -69,7 +76,11 @@ private:
 
 };
 
-#include "TxnLog.cc"
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+
+#include "TxnLog.cc"
 
 #endif

@@ -11,11 +11,17 @@
 // File DoubleContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef DoubleContent_H
-#define DoubleContent_H
+#ifndef eclib_DoubleContent_h
+#define eclib_DoubleContent_h
 
 #include "eclib/Content.h"
 #include "eclib/Value.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class DoubleContent : public Content {
 
@@ -111,5 +117,10 @@ private:
 	friend class DateContent;
     friend class NumberContent;
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

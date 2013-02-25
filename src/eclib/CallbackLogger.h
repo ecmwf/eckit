@@ -8,12 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_CallbackLogger_H
-#define eclib_CallbackLogger_H
+#ifndef eclib_CallbackLogger_h
+#define eclib_CallbackLogger_h
 
 #include "eclib/machine.h"
 
 #include "eclib/Logger.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class CallbackBuffer;
 
@@ -56,5 +62,9 @@ private:
     std::ostream*   out_;
   
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_CallbackLogger_h

@@ -11,12 +11,17 @@
 // File FileStream.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef FileStream_H
-#define FileStream_H
-
+#ifndef eclib_FileStream_h
+#define eclib_FileStream_h
 
 #include "eclib/PathName.h"
 #include "eclib/Stream.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class FileStream : public Stream {
 
@@ -48,5 +53,10 @@ protected: // methods
     
 	virtual string name() const;
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

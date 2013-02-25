@@ -19,6 +19,12 @@
 #include "eclib/Seconds.h"
 #include "eclib/Select.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 PipeApplication::PipeApplication(int argc,char **argv): 
 	Application(argc,argv),
 	in_(this,"-in",-1),
@@ -248,3 +254,8 @@ void PipeApplication::waiting()
 {
   Log::status() << "-" << endl;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

@@ -13,7 +13,11 @@
 
 #include "eclib/LibBehavior.h"
 
-using namespace std;
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 LibBehavior::LibBehavior() :
     info_ ( new CallbackLogger() ),
@@ -59,5 +63,7 @@ Logger* LibBehavior::createErrorLogger()
     return error_;
 }
 
+//-----------------------------------------------------------------------------
 
+} // namespace eclib
 

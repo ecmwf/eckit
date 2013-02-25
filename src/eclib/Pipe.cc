@@ -15,6 +15,12 @@
 #include "eclib/MutexCond.h"
 #include "eclib/AutoLock.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 template<class PAYLOAD>
 struct OnePayload {
     MutexCond cond_;
@@ -208,3 +214,8 @@ PAYLOAD& Pipe<PAYLOAD>::receive()
 
     return p;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

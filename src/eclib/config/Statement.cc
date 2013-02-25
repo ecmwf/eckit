@@ -10,11 +10,24 @@
 
 #include "eclib/config/Statement.h"
 
-config::Statement::Statement( Scope& scope ) :
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+namespace config {
+
+//-----------------------------------------------------------------------------
+
+Statement::Statement( Scope& scope ) :
     scope_(scope)
 {
 }
 
-config::Statement::~Statement()
+Statement::~Statement()
 {
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace config
+} // namespace eclib
+

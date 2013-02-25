@@ -12,6 +12,13 @@
 #include "eclib/FileSpace.h"
 #include "eclib/TempFile.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 TempFile::TempFile():
 	PathName(dir("temp"))
 {
@@ -31,3 +38,8 @@ PathName TempFile::dir(const string& s)
 {
 	return PathName::unique(FileSpace::lookUp(s).selectFileSystem()+ "/tmp");
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

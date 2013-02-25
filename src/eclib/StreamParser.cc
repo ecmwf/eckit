@@ -18,7 +18,13 @@
 
 #include "eclib/Log.h"
 
+
 //-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 
 StreamParser::StreamParser(istream &in) : in_(in)
 {
@@ -79,3 +85,8 @@ StreamParser::Error::Error(const string &what) : what_(what)
     Log::info() << "=== StreamParser::Error -- Backtrace ===" << std::endl;    
     Log::info() << BackTrace::dump() << std::endl;    
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

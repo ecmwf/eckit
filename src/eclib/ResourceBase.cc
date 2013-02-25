@@ -8,11 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/Context.h"
 #include "eclib/Configurable.h"
 #include "eclib/Resource.h"
 #include "eclib/ResourceMgr.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 static void parse_name( const std::string& str, std::string& name, std::string& environment, std::string& options )
 {
@@ -165,3 +171,8 @@ void ResourceBase::dump(ostream& s) const
 #pragma define(Resource<long>)
 #pragma define(Resource<string>)
 #endif
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

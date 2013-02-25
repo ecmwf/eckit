@@ -8,10 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_DHSStdLogger_H
-#define eclib_DHSStdLogger_H
+#ifndef eclib_DHSStdLogger_h
+#define eclib_DHSStdLogger_h
 
 #include "eclib/DHSLogger.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class DHSStdLogger : public DHSLogger {
 public:
@@ -33,5 +39,10 @@ private:
     std::ostream* out_;    
     
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_DHSStdLogger_h

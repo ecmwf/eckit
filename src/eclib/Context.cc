@@ -14,6 +14,12 @@
 #include "eclib/Log.h"
 #include "eclib/Monitor.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 Context::Context() :
     behavior_(0),
     argc_(0),
@@ -152,3 +158,8 @@ Logger* Context::createErrorLogger()
 {
     return behavior_->createErrorLogger();       
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

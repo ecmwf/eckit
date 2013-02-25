@@ -14,6 +14,12 @@
 #include "eclib/MapAllocator.h"
 #include "eclib/Exceptions.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static size_t whole_page(size_t size)
 {
         static size_t page = sysconf(_SC_PAGE_SIZE);
@@ -112,3 +118,8 @@ void MapAllocator::deallocate(void* addr)
                 }
         }
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

@@ -8,13 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef TCPSocket_H
-#define TCPSocket_H
+#ifndef eclib_TCPSocket_h
+#define eclib_TCPSocket_h
 
 #include <netinet/in.h>
 
 #include "eclib/machine.h"
 #include "eclib/Exceptions.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // NOTE: I am not realy happy about those classes, so they may change...
 //       Note that this class calls:
@@ -116,5 +122,10 @@ private:
 };
 
 ostream& operator<<(ostream&,in_addr);
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

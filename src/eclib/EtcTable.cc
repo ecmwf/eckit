@@ -14,6 +14,12 @@
 #include "eclib/LocalPathName.h"
 #include "eclib/Tokenizer.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static const vector<string> empty;
 
 EtcTable::EtcTable(const string& name, int size, const string& dir):
@@ -110,3 +116,6 @@ void EtcTable::load()
 
 }
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

@@ -16,6 +16,13 @@
 #include "eclib/AutoLock.h"
 #include "eclib/Recycler.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 template<class T>
 Recycler<T>::Recycler(const PathName& path):
         path_(path),
@@ -121,3 +128,8 @@ void Recycler<T>::push(const T& value)
     const T* p = &value;
     push(p,p+1);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

@@ -11,17 +11,23 @@
 // File EmptyHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef EmptyHandle_H
-#define EmptyHandle_H
+#ifndef eclib_EmptyHandle_h
+#define eclib_EmptyHandle_h
 
 #include "eclib/DataHandle.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class EmptyHandle :  public DataHandle {
 public:
 
 // -- Contructors
 	EmptyHandle()							{ }
-	EmptyHandle(Stream& s): DataHandle(s) 	{ };
+	EmptyHandle(Stream& s): DataHandle(s) 	{ }
 
 // -- Destructor
 
@@ -60,5 +66,10 @@ private:
     static  Reanimator<EmptyHandle>  reanimator_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

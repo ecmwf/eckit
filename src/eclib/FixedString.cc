@@ -12,7 +12,12 @@
 #include "eclib/FixedString.h"
 #include "eclib/Exceptions.h"
 
-//===========================================================================================
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 // For use with BTree or other persitant classes
 
 template<int size>
@@ -73,3 +78,7 @@ FixedString<size>::operator string() const
 {
     return string(data_, data_ + length());
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

@@ -8,11 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_ScopedPtr_H
-#define eclib_ScopedPtr_H
+#ifndef eclib_ScopedPtr_h
+#define eclib_ScopedPtr_h
 
 #include "eclib/NonCopyable.h"
 #include "eclib/Exceptions.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 template < typename T >
 class ScopedPtr : private NonCopyable {
@@ -74,5 +81,10 @@ void swap( ScopedPtr<T>& a, ScopedPtr<T>& b )
 {
     a.swap(b);
 }
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

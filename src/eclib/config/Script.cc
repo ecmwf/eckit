@@ -15,7 +15,12 @@
 #include "eclib/config/Script.h"
 #include "eclib/config/Block.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
 namespace config {
+
+//-----------------------------------------------------------------------------
 
 Script::Script()
 {
@@ -88,4 +93,7 @@ void Script::clear()
         delete (*i);
 }
 
+//-----------------------------------------------------------------------------
+
 } // namespace config
+} // namespace eclib

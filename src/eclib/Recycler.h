@@ -11,11 +11,18 @@
 // File Recycler.h
 // Baudouin Raoult - ECMWF Apr 97
 
-#ifndef Recycler_H
-#define Recycler_H
+#ifndef eclib_Recycler_h
+#define eclib_Recycler_h
 
 #include "eclib/PathName.h"
 #include "eclib/Types.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 template<class T>
 class Recycler {
@@ -120,6 +127,9 @@ private:
 
 };
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #include "Recycler.cc"
 

@@ -11,13 +11,18 @@
 // File Types.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef Types_H
-#define Types_H
+#ifndef eclib_Types_h
+#define eclib_Types_h
 
 #include "eclib/machine.h"
 
 #include "eclib/Length.h"
 #include "eclib/Offset.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
 
 //-----------------------------------------------------------------------------
 
@@ -133,13 +138,18 @@ inline ostream& operator<<(ostream& s, const std::set<T>& m)
 template<class T> void operator<<(Stream&,const vector<T>&);
 template<class T> void operator>>(Stream&,vector<T>&);
 
-#include "eclib/Types.cc"
-
 //-----------------------------------------------------------------------------
 
 /// @todo maybe this should be moved out of EcLib 
 
 typedef unsigned long long DSRequestID;
 typedef unsigned long long MarsID;
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+
+#include "eclib/Types.cc"
 
 #endif

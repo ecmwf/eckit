@@ -20,6 +20,11 @@
 #include "eclib/TCPStream.h"
 #include "eclib/ThreadSingleton.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 static void offLine( const string& host, int port)
 {
@@ -77,7 +82,7 @@ TCPSocket& Connector::socket()
 			Log::error() << "** " << e.what() << " Caught in " << here << endl;
 			Log::error() << "** Exception is handled" << endl;
 
-            ::offLine(host_, port_);
+            offLine(host_, port_);
 
             StrStream os;
 			os << name() << ": " << e.what() << StrStream::ends;
@@ -99,14 +104,14 @@ void Connector::check()
 			if (!socket_.stillConnected())
 			{
 				socket_.close();
-                ::offLine(host_, port_); /// @todo maybe remove this from here, substitute with a descriptive exception
+                offLine(host_, port_); /// @todo maybe remove this from here, substitute with a descriptive exception
 			}
 		} catch (exception& e)
 		{
 			Log::error() << "** " << e.what() << " Caught in " << here << endl;
 			Log::error() << "** Exception is handled" << endl;
 			socket_.close();
-            ::offLine(host_, port_); /// @todo maybe remove this from here
+            offLine(host_, port_); /// @todo maybe remove this from here
 		}
 	}
 }
@@ -458,3 +463,7 @@ void Connector::memoize(bool on, unsigned long life)
 	}
 
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

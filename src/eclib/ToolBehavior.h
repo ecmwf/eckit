@@ -8,10 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_ToolBehavior_H
-#define eclib_ToolBehavior_H
+#ifndef eclib_ToolBehavior_h
+#define eclib_ToolBehavior_h
 
 #include "eclib/StandardBehavior.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 
 class ToolBehavior : public StandardBehavior {
 
@@ -28,5 +35,10 @@ public: // methods
 private: // methods
             
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_ToolBehavior_h

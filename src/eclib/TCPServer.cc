@@ -16,6 +16,12 @@
 #include "eclib/Select.h"
 #include "eclib/TCPServer.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 TCPServer::TCPServer(int port,const string& addr):
     TCPSocket(),
     listen_(-1),
@@ -122,3 +128,8 @@ string TCPServer::bindingAddress() const
 {
     return addr_;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

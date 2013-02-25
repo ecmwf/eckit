@@ -16,6 +16,13 @@
 #include "eclib/StrStream.h"
 #include "eclib/Stream.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 #define UNSIGNED(type,var) ((unsigned type)(var))
 #define SIGNED(type,var)   ((type)(var))
  
@@ -735,3 +742,8 @@ void Stream::dump(ostream& out,const char* p, size_t len)
         }
     }
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

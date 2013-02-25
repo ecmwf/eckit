@@ -11,11 +11,17 @@
 // File Configurable.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef Configurable_H
-#define Configurable_H
+#ifndef eclib_Configurable_h
+#define eclib_Configurable_h
 
 #include "eclib/ClassExtent.h"
 #include "eclib/Mutex.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Url;
 class ResourceBase;
@@ -67,7 +73,9 @@ private:
 
 };
 
+//-----------------------------------------------------------------------------
 
+} // namespace eclib
 
 #endif
 

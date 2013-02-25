@@ -11,12 +11,16 @@
 // File Month.h
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef Month_H
-#define Month_H
+#ifndef eclib_Month_h
+#define eclib_Month_h
 
 #include "eclib/Date.h"
 
-// Forwarded declarations
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Month {
 public:
@@ -105,5 +109,9 @@ private:
 // -- Class methods
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

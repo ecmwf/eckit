@@ -8,14 +8,24 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef BadValue_H
-#define BadValue_H
+#ifndef eclib_BadValue_h
+#define eclib_BadValue_h
 
 #include "eclib/Exceptions.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class BadValue: public Exception {
 public:
 	BadValue(const string& s) : Exception(string("BadValue:") + s) {}
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

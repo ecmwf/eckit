@@ -11,10 +11,17 @@
 // File HandleBuf.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef HandleBuf_H
-#define HandleBuf_H
+#ifndef eclib_HandleBuf_h
+#define eclib_HandleBuf_h
 
 #include "eclib/DataHandle.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class HandleBuf : public streambuf  {
 public:
@@ -50,5 +57,10 @@ private:
 //	virtual int uflow();
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

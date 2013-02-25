@@ -11,10 +11,17 @@
 // File TxnEvent.h
 // Baudouin Raoult - ECMWF Jan 97
 
-#ifndef TxnEvent_H
-#define TxnEvent_H
+#ifndef eclib_TxnEvent_h
+#define eclib_TxnEvent_h
 
 #include "eclib/Streamable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 
 typedef unsigned long long TxnID;
 
@@ -76,7 +83,8 @@ private:
 
 };
 
+//-----------------------------------------------------------------------------
 
-
+} // namespace eclib
 
 #endif

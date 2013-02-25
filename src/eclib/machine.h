@@ -8,12 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef machine_H
-#define machine_H
+#ifndef eclib_machine_h
+#define eclib_machine_h
 
 #include "ecbuild_config.h"
 
 #define _(A) A
+
+//-----------------------------------------------------------------------------
 
 /* all machine dependant stuff should go here */
 
@@ -41,6 +43,8 @@
 #include "eclib/cygwin.h"
 #endif
 
+//-----------------------------------------------------------------------------
+
 /* STL */
 
 #include <set>
@@ -63,17 +67,7 @@
 
 using namespace std;
 
-template<bool b> struct compile_assert {};
-template<>       struct compile_assert<true> { static void check() {} };
-
-
-struct output_iterator {
-  typedef output_iterator_tag iterator_category;
-  typedef void                value_type;
-  typedef void                difference_type;
-  typedef void                pointer;
-  typedef void                reference;
-};
+//-----------------------------------------------------------------------------
 
 /* some defines for 64 bit functions */
 
@@ -149,7 +143,7 @@ struct output_iterator {
 #define fdatasync  fsync
 #endif
 
-#ifndef EC_HAVE_FUNCTION_DEF
+#ifndef eclib_EC_hAVE_FUNCTION_DEF
 #define __FUNCTION__ ""
 #endif
 
@@ -158,6 +152,22 @@ struct output_iterator {
 #ifndef NUMBER
 #define NUMBER(x) (sizeof(x)/sizeof(x[0]))
 #endif
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+template<bool b> struct compile_assert {};
+template<>       struct compile_assert<true> { static void check() {} };
+
+
+struct output_iterator {
+  typedef output_iterator_tag iterator_category;
+  typedef void                value_type;
+  typedef void                difference_type;
+  typedef void                pointer;
+  typedef void                reference;
+};
 
 template<class T>
 inline void zero(T& p) { ::memset(&p,0,sizeof(T)); }
@@ -183,13 +193,12 @@ public:
     Bless&        operator() (T*)               { return *this; }
 };
 
-
 class Exporter;
 class Evolve {
 
 public:
 
-    Evolve(Exporter&);
+    Evolve(eclib::Exporter&);
     Evolve(Evolve*,const char*, const char*);
 
     Evolve operator() (const char*, const char* = 0);
@@ -218,21 +227,17 @@ private:
     Evolve*        parent_;
 
 };
-void* operator new(size_t,void* addr,Evolve&);
-
 
 class TypeInfo;
 class Isa {
 public:
     Isa* next_;
     TypeInfo* type_;
-    Isa(TypeInfo* t,Isa* n) : next_(n), type_(t) {};
+    Isa(TypeInfo* t,Isa* n) : next_(n), type_(t) {}
     static void add(TypeInfo* t,const string&);
     static Isa* get(const string&);
 
-
 };
-
 
 #ifndef member_size
 #define member_size(a,b)   size_t(sizeof(((a*)0)->b))
@@ -280,50 +285,59 @@ void _describe(ostream& s,int depth,const string& name,const T& what)
     _describe(s,depth,what);
     _endMember(s,depth,name);
 }
-//----------------------
-//
 
 class Exporter;
 
+void _startObject(eclib::Exporter&,unsigned long long type, unsigned long long location, unsigned long long id, size_t count);
+void _endObject(eclib::Exporter&,unsigned long long type, unsigned long long location, unsigned long long id, size_t count);
+void _startSubObject(eclib::Exporter&);
+void _endSubObject(eclib::Exporter&);
+void _nextSubObject(eclib::Exporter&);
+void _startClass(eclib::Exporter&,const string& name);
+void _endClass(eclib::Exporter&,const string& name);
+void _startClass(eclib::Exporter&,const char* name);
+void _endClass(eclib::Exporter&,const char* name);
+void _startMember(eclib::Exporter&,const char* name);
+void _endMember(eclib::Exporter&,const char* name);
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+
+//-----------------------------------------------------------------------------
+
+void* operator new(size_t,void* addr, eclib::Evolve&);
+
+//-----------------------------------------------------------------------------
+
 template<class T>
-void _export(Exporter& h,const T& what)
+void _export(eclib::Exporter& h,const T& what)
 {
     what._export(h);
 }
 
-void _export(Exporter&,int what);
-void _export(Exporter&,unsigned int what);
-void _export(Exporter&,short what);
-void _export(Exporter&,bool what);
-void _export(Exporter&,unsigned short what);
-void _export(Exporter&,long what);
-void _export(Exporter&,long long what);
-void _export(Exporter&,unsigned long long what);
-void _export(Exporter&,unsigned long what);
-void _export(Exporter&,char what);
-void _export(Exporter&,unsigned char what);
-void _export(Exporter&,double what);
-
-void _startObject(Exporter&,unsigned long long type, unsigned long long location, unsigned long long id, size_t count);
-void _endObject(Exporter&,unsigned long long type, unsigned long long location, unsigned long long id, size_t count);
-void _startSubObject(Exporter&);
-void _endSubObject(Exporter&);
-void _nextSubObject(Exporter&);
-void _startClass(Exporter&,const string& name);
-void _endClass(Exporter&,const string& name);
-void _startClass(Exporter&,const char* name);
-void _endClass(Exporter&,const char* name);
-void _startMember(Exporter&,const char* name);
-void _endMember(Exporter&,const char* name);
+void _export(eclib::Exporter&,int what);
+void _export(eclib::Exporter&,unsigned int what);
+void _export(eclib::Exporter&,short what);
+void _export(eclib::Exporter&,bool what);
+void _export(eclib::Exporter&,unsigned short what);
+void _export(eclib::Exporter&,long what);
+void _export(eclib::Exporter&,long long what);
+void _export(eclib::Exporter&,unsigned long long what);
+void _export(eclib::Exporter&,unsigned long what);
+void _export(eclib::Exporter&,char what);
+void _export(eclib::Exporter&,unsigned char what);
+void _export(eclib::Exporter&,double what);
 
 template<class T>
-void _export(Exporter& s ,const char* name,const T& what)
+void _export(eclib::Exporter& s ,const char* name,const T& what)
 {
     _startMember(s,name);
     _export(s,what);
     _endMember(s,name);
 }
 
+//-----------------------------------------------------------------------------
 
 #endif
 

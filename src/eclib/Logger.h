@@ -8,13 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_Logger_H
-#define eclib_Logger_H
+#ifndef eclib_Logger_h
+#define eclib_Logger_h
 
 #include <iosfwd>
 
 #include "eclib/NonCopyable.h"
 #include "eclib/CodeLocation.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Logger : private NonCopyable {
 public:
@@ -43,5 +49,10 @@ protected:
     CodeLocation where_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_Logger_h

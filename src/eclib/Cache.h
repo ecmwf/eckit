@@ -11,8 +11,8 @@
 // File Cache.h
 // Tiago Quintino - (c) ECMWF Oct 12
 
-#ifndef EcLib_Cache_H
-#define EcLib_Cache_H
+#ifndef eclib_Cache_h
+#define eclib_Cache_h
 
 #include <sys/time.h>
 
@@ -21,6 +21,11 @@
 #include "eclib/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 
 /// @todo make an apply() method
 /// @todo implement the expire() and the different policies
@@ -289,5 +294,7 @@ bool Cache<K,V>::Policy::expireLRU( typename Cache<K,V>::store_type& c, const si
 }
 
 //-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

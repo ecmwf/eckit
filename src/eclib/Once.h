@@ -11,12 +11,18 @@
 // File Once.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef Once_H
-#define Once_H
+#ifndef eclib_Once_h
+#define eclib_Once_h
 
 #include <pthread.h>
 
 #include "eclib/NonCopyable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 template<class T> class Once : private NonCopyable {
 public:
@@ -49,6 +55,10 @@ private:
 
 };
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #include "eclib/Once.cc"
 

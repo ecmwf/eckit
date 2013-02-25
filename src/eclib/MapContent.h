@@ -11,10 +11,16 @@
 // File MapContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef MapContent_H
-#define MapContent_H
+#ifndef eclib_MapContent_h
+#define eclib_MapContent_h
 
 #include "eclib/Value.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class MapContent : public Content {
 
@@ -104,5 +110,10 @@ private:
 	friend class Value;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

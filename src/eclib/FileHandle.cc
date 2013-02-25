@@ -13,7 +13,6 @@
 
 #include "eclib/machine.h"
 
-
 #include "eclib/FileHandle.h"
 #include "eclib/Bytes.h"
 #include "eclib/Log.h"
@@ -21,6 +20,12 @@
 #include "eclib/MarsFSPath.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/Resource.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 ClassSpec FileHandle::classSpec_ = {&DataHandle::classSpec(),"FileHandle",};
 Reanimator<FileHandle> FileHandle::reanimator_;
@@ -343,3 +348,7 @@ string FileHandle::title() const
     //os << "Client[" << host_ << ":" << port_ << "]" << StrStream::ends;
     return PathName::shorten(name_);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

@@ -8,10 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/Stream.h"
 
-//======================================================================
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 // Version 2: warning all numbers must be signed but positive...
 
 template<class T>
@@ -331,3 +336,8 @@ Stream& RLEDIFFread(Stream& s,OutputIterator result,T* dummy)
 	}
 	return s;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

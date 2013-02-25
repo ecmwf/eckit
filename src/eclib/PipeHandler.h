@@ -11,13 +11,19 @@
 // File PipeHandler.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef PipeHandler_H
-#define PipeHandler_H
+#ifndef eclib_PipeHandler_h
+#define eclib_PipeHandler_h
 
 #include "eclib/ClassExtent.h"
 #include "eclib/PipeStream.h"
 #include "eclib/ProcessControler.h"
 #include "eclib/Dispatcher.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 template<class Request>
 class PipeHandler : public ProcessControler,
@@ -77,6 +83,11 @@ private:
 
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #include "eclib/PipeHandler.cc"
 

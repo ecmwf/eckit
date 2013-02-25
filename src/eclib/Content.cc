@@ -13,7 +13,11 @@
 #include "eclib/StrStream.h"
 #include "eclib/Value.h"
 
-// =============================================================
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class BadConversion:  public Exception { 
 	public: 
@@ -564,4 +568,9 @@ Streamable* Reanimator<Content>::ressucitate(Stream& s) const
 { 
 	return 0; 
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+
 #endif

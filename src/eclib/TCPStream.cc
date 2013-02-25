@@ -8,11 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/StrStream.h"
 #include "eclib/TCPStream.h"
 
-// Server
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 TCPStream::TCPStream(TCPSocket& socket):
 	socket_(socket)
@@ -54,4 +57,9 @@ SharedTCPStream::SharedTCPStream(TCPSocket& s):
 SharedTCPStream::~SharedTCPStream() 
 { 
 }
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

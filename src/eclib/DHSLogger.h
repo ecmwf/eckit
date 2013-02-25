@@ -8,12 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_DHSLogger_H
-#define eclib_DHSLogger_H
+#ifndef eclib_DHSLogger_h
+#define eclib_DHSLogger_h
 
 #include "eclib/machine.h"
 
 #include "eclib/Logger.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class DHSLogger : public Logger {
 public:
@@ -51,5 +57,10 @@ protected:
     oproc         end_;    
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_DHSLogger_h

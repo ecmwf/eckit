@@ -11,11 +11,17 @@
 // File MoverTransfer.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef MoverTransfer_H
-#define MoverTransfer_H
+#ifndef eclib_MoverTransfer_h
+#define eclib_MoverTransfer_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/Length.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class TransferWatcher;
 
@@ -100,5 +106,10 @@ private:
 	//	{ p.print(s); return s; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

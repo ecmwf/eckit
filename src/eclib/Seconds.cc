@@ -8,10 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-
-
 #include "eclib/Seconds.h"
 #include "eclib/StrStream.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 Seconds::Seconds(double seconds):
 	seconds_(seconds)
@@ -64,3 +68,8 @@ Seconds::operator string() const
 	s << *this << StrStream::ends;
 	return string(s);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

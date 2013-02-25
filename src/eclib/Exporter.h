@@ -11,13 +11,18 @@
 // File Exporter.h
 // Baudouin Raoult - (c) ECMWF Oct 10
 
-#ifndef Exporter_H
-#define Exporter_H
-
+#ifndef eclib_Exporter_h
+#define eclib_Exporter_h
 
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class DataHandle;
 
@@ -190,5 +195,9 @@ private: // members
 		{ p.print(s); return s; }
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

@@ -11,11 +11,17 @@
 // File TCPHandle.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef TCPHandle_H
-#define TCPHandle_H
+#ifndef eclib_TCPHandle_h
+#define eclib_TCPHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/TCPClient.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class TCPHandle : public DataHandle {
 public:
@@ -71,5 +77,10 @@ private:
 	static  Reanimator<TCPHandle>  reanimator_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

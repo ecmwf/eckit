@@ -8,8 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/FileDescHandle.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 void FileDescHandle::print(ostream& s) const
 {
@@ -57,3 +62,7 @@ void FileDescHandle::close()
 {
 	// May be we should close fd_ here ?
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

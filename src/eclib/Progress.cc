@@ -12,6 +12,13 @@
 #include "eclib/Monitor.h"
 #include "eclib/Progress.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 Progress::Progress(const string& name, unsigned long long min, unsigned long long  max )
 {
 	Monitor::progress(name,min,max);
@@ -26,3 +33,8 @@ void Progress::operator()(unsigned long long value)
 {
 	Monitor::progress(value);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

@@ -11,12 +11,18 @@
 // File Telnetable.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef Telnetable_H
-#define Telnetable_H
+#ifndef eclib_Telnetable_h
+#define eclib_Telnetable_h
 
 #include "eclib/ThreadControler.h"
 
-// A telnet-able object
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+/// A telnet-able object
 
 class Telnetable {
 public:
@@ -41,5 +47,10 @@ private:
 	ThreadControler telnet_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

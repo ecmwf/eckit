@@ -12,6 +12,13 @@
 #include "eclib/StringContent.h"
 #include "eclib/JSON.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+
 ClassSpec StringContent::classSpec_ = {&Content::classSpec(),"StringContent",};
 Reanimator<StringContent> StringContent::reanimator_;
 
@@ -111,3 +118,8 @@ Content* StringContent::mod(const Content& other) const
 {
     return other.modString(*this);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

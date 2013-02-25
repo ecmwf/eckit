@@ -11,14 +11,20 @@
 // File DblBuffer.h
 // Baudouin Raoult - ECMWF Feb 97
 
-#ifndef DblBuffer_H
-#define DblBuffer_H
+#ifndef eclib_DblBuffer_h
+#define eclib_DblBuffer_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/Length.h"
 #include "eclib/NonCopyable.h"
 #include "eclib/Mutex.h"
 #include "eclib/TransferWatcher.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class DblBuffer : private NonCopyable {
 public:
@@ -67,5 +73,9 @@ private: // members
 
 };
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

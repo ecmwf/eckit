@@ -11,11 +11,16 @@
 // File PipeHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef PipeHandle_H
-#define PipeHandle_H
-
+#ifndef eclib_PipeHandle_h
+#define eclib_PipeHandle_h
 
 #include "eclib/DataHandle.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class PipeHandle : public DataHandle {
 public:
@@ -84,5 +89,10 @@ private:
 	static  Reanimator<PipeHandle>  reanimator_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

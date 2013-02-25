@@ -11,11 +11,17 @@
 // File NumberContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef NumberContent_H
-#define NumberContent_H
+#ifndef eclib_NumberContent_h
+#define eclib_NumberContent_h
 
 #include "eclib/Content.h"
 #include "eclib/Value.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class NumberContent : public Content {
 
@@ -110,5 +116,10 @@ private:
     friend class DateContent;
     friend class DoubleContent;
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

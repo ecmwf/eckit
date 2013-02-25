@@ -11,12 +11,18 @@
 // File Application.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef Application_H
-#define Application_H
+#ifndef eclib_Application_h
+#define eclib_Application_h
 
 #include "eclib/Context.h"
 #include "eclib/Configurable.h"
 #include "eclib/Task.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Stream;
 
@@ -93,5 +99,9 @@ private:
 	friend class AppCommand; // in order to call reconfigure
 	friend class ResourceBase;
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

@@ -11,10 +11,16 @@
 // File ListContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef ListContent_H
-#define ListContent_H
+#ifndef eclib_ListContent_h
+#define eclib_ListContent_h
 
 #include "eclib/Value.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class ListContent : public Content {
 
@@ -103,5 +109,10 @@ private:
 	friend class Value;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

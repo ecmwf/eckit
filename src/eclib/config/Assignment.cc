@@ -10,7 +10,12 @@
 
 #include "eclib/config/Assignment.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
 namespace config {
+
+//-----------------------------------------------------------------------------
 
 Assignment::Assignment(Compiler &c, Scope& scope) :
     Statement(scope)
@@ -67,4 +72,7 @@ void Assignment::print(ostream &out)
     out << variable_ << " = " << value_  << ";" << std::endl;
 }
 
+//-----------------------------------------------------------------------------
+
 } // namespace config
+} // namespace eclib

@@ -12,7 +12,11 @@
 #include "eclib/DumpLoad.h"
 #include "eclib/Offset.h"
 
+//-----------------------------------------------------------------------------
 
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 void sort(OffsetList& offset,LengthList& length)
 {
@@ -75,3 +79,6 @@ void Offset::load(DumpLoad& a)
 	a.load(value_);
 }
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

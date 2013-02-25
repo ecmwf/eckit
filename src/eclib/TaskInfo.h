@@ -11,11 +11,17 @@
 // File TaskInfo.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef TaskInfo_H
-#define TaskInfo_H
+#ifndef eclib_TaskInfo_h
+#define eclib_TaskInfo_h
 
 #include "eclib/Padded.h"
 #include "eclib/Types.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 struct Info { 
 protected:
@@ -192,5 +198,10 @@ private:
 // Used by MappedArray
 
 inline unsigned long version(TaskInfo*) { return 1; }
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

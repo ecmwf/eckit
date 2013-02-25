@@ -11,6 +11,13 @@
 
 #include "eclib/TransferWatcher.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+
 struct DummyTransferWatcher : public TransferWatcher {
 	void watch(const void*,long) {}
 };
@@ -20,3 +27,8 @@ TransferWatcher& TransferWatcher::dummy()
 	static DummyTransferWatcher x;
 	return x;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

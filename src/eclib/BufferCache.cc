@@ -15,6 +15,12 @@
 #include "eclib/BufferCache.h"
 #include "eclib/Stream.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 BufferCache::BufferCache(size_t size):
     count_(0),
     buffer_(size),
@@ -70,3 +76,8 @@ void BufferCache::print(ostream& s) const
 {
 	Stream::dump(s, buffer_, count_);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

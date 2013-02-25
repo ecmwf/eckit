@@ -12,6 +12,13 @@
 #include "eclib/StrStream.h"
 #include "eclib/TimeStamp.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 const char* TimeStamp::defaultFormat_ = "%Y-%m-%d %H:%M:%S";
 
 TimeStamp::TimeStamp(const string& format):
@@ -47,3 +54,8 @@ TimeStamp::operator string() const
 	s << *this << StrStream::ends;
 	return string(s);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

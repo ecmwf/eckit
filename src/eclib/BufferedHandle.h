@@ -11,11 +11,17 @@
 // File BufferedHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef BufferedHandle_H
-#define BufferedHandle_H
+#ifndef eclib_BufferedHandle_h
+#define eclib_BufferedHandle_h
 
 #include "eclib/Buffer.h"
 #include "eclib/DataHandle.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class BufferedHandle : public DataHandle {
 public:
@@ -94,6 +100,10 @@ private: // members
 #endif
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 
 #endif

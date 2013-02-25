@@ -19,6 +19,12 @@
 #include "eclib/StrStream.h"
 #include "eclib/ThreadSingleton.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static Mutex mutex;
 
 NodeInfo::NodeInfo() :
@@ -169,3 +175,8 @@ NodeInfo NodeInfo::sendLogin(Stream& s)
 
 	return remote;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

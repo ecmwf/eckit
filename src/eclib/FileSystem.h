@@ -11,10 +11,16 @@
 // File FileSystem.h
 // MARS (Baudouin Raoult) - ECMWF Nov 01
 
-#ifndef FileSystem_H
-#define FileSystem_H
+#ifndef eclib_FileSystem_h
+#define eclib_FileSystem_h
 
 #include "eclib/PathName.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class FileSystem {
 public:
@@ -112,5 +118,9 @@ private:
 
 };
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

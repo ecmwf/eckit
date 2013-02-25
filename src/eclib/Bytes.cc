@@ -8,10 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/Bytes.h"
 #include "eclib/StrStream.h"
 #include "eclib/Timer.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 Bytes::Bytes(double bytes):
 	bytes_(bytes),
@@ -64,3 +69,8 @@ Bytes::operator string() const
 	s << *this << StrStream::ends;
 	return string(s);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

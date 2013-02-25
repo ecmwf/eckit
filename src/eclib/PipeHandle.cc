@@ -11,6 +11,12 @@
 #include "eclib/Log.h"
 #include "eclib/PipeHandle.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ClassSpec PipeHandle::classSpec_ = {&DataHandle::classSpec(),"PipeHandle",};
 Reanimator<PipeHandle> PipeHandle::reanimator_;
 
@@ -114,4 +120,9 @@ Offset PipeHandle::seek(const Offset& from)
 {
     NOTIMP;
 }
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

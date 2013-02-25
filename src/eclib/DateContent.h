@@ -11,11 +11,17 @@
 // File DateContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef DateContent_H
-#define DateContent_H
+#ifndef eclib_DateContent_h
+#define eclib_DateContent_h
 
 #include "eclib/Content.h"
 #include "eclib/Value.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class DateContent : public Content {
 
@@ -99,5 +105,10 @@ private:
 	friend class Reanimator<DateContent>;
 	friend class Value;
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

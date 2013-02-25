@@ -11,14 +11,19 @@
 // File Date.h
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef Date_H
-#define Date_H
+#ifndef eclib_Date_h
+#define eclib_Date_h
 
 #include "eclib/BadValue.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 class DumpLoad;
 class Bless;
-
 
 class Date {
 public:
@@ -160,5 +165,10 @@ public:
 	BadDate(const string& t);
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

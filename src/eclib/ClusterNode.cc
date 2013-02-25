@@ -23,6 +23,12 @@
 #include "eclib/Thread.h"
 #include "eclib/ThreadControler.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 class ClusterHeartBeat : public Thread {
     ClusterNode& owner_;
     virtual void run();
@@ -104,3 +110,8 @@ void ClusterNode::heartbeat()
     ThreadControler t(new ClusterHeartBeat(*this));
     t.start();
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

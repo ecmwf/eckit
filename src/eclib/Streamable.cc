@@ -11,6 +11,13 @@
 
 #include "eclib/Streamable.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ClassSpec Streamable::classSpec_ = {0,"Streamable",};
 Reanimator<Streamable> Streamable::reanimator_;
 
@@ -40,3 +47,8 @@ bool Streamable::sameClass(const Streamable& other) const
 {
 	return &reanimator() == &other.reanimator();
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

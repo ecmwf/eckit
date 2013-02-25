@@ -11,8 +11,14 @@
 // File TransferWatcher.h
 // Baudouin Raoult - ECMWF Jun 98
 
-#ifndef TransferWatcher_H
-#define TransferWatcher_H
+#ifndef eclib_TransferWatcher_h
+#define eclib_TransferWatcher_h
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class TransferWatcher {
 public:
@@ -27,6 +33,11 @@ public:
 	static TransferWatcher& dummy();
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 
 #endif

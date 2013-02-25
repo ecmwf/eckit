@@ -8,10 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef Colour_H
-#define Colour_H
+#ifndef eclib_Colour_h
+#define eclib_Colour_h
 
 #include "eclib/machine.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Colour {
 public:
@@ -47,5 +53,10 @@ public:
 
 };
 
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

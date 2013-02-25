@@ -11,15 +11,19 @@
 // File ClusterDisks.h
 // Baudouin Raoult - (c) ECMWF Jul 11
 
-#ifndef ClusterDisks_H
-#define ClusterDisks_H
+#ifndef eclib_ClusterDisks_h
+#define eclib_ClusterDisks_h
 
 #include "eclib/machine.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 class NodeInfo;
 class JSON;
-
-//
 
 class ClusterDisks {
 public:
@@ -43,5 +47,9 @@ public:
 
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

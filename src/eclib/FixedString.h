@@ -10,10 +10,16 @@
 
 // Baudouin Raoult - (c) ECMWF Feb 12
 
-#ifndef FixedString_H
-#define FixedString_H
+#ifndef eclib_FixedString_h
+#define eclib_FixedString_h
 
 #include "eclib/machine.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // To be used as a key or value in BTree or other file-based classed
 
@@ -71,5 +77,11 @@ private:
     }
 };
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+
 #include "FixedString.cc"
+
 #endif

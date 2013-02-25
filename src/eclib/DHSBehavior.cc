@@ -19,6 +19,12 @@
 #include "eclib/Resource.h"
 #include "eclib/RotLogger.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 DHSBehavior::DHSBehavior() :
     taskId_(0),
     name_()
@@ -113,3 +119,8 @@ Logger* DHSBehavior::createErrorLogger()
     logger->resetColor(&Colour::reset);
     return logger;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

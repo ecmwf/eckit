@@ -11,12 +11,17 @@
 // File FileHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef FileHandle_H
-#define FileHandle_H
-
+#ifndef eclib_FileHandle_h
+#define eclib_FileHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/Buffer.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class FileHandle : public DataHandle {
 public:
@@ -92,5 +97,9 @@ private:
 	static  Reanimator<FileHandle>  reanimator_;
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

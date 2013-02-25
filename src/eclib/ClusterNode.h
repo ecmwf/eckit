@@ -11,8 +11,14 @@
 // File ClusterNode.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef ClusterNode_H
-#define ClusterNode_H
+#ifndef eclib_ClusterNode_h
+#define eclib_ClusterNode_h
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Stream;
 class NodeInfo;
@@ -75,5 +81,10 @@ private:
 // -- Class members
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

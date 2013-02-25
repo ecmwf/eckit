@@ -8,11 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_DHSBehaviorStdout_H
-#define eclib_DHSBehaviorStdout_H
+#ifndef eclib_DHSBehaviorStdout_h
+#define eclib_DHSBehaviorStdout_h
 
 #include "eclib/machine.h"
 #include "eclib/DHSBehavior.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class DHSBehaviorStdout : public DHSBehavior {
 public:
@@ -29,5 +35,10 @@ public:
     virtual DHSLogger* getLogger();
     ostream& out_;
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_DHSBehaviorStdout_h

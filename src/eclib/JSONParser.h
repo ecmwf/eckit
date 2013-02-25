@@ -11,11 +11,17 @@
 /// @author Baudouin Raoult
 /// @date Jun 2012
 
-#ifndef eclib_JSONParser_H
-#define eclib_JSONParser_H
+#ifndef eclib_JSONParser_h
+#define eclib_JSONParser_h
 
 #include "eclib/StreamParser.h"
 #include "eclib/Value.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class JSONParser : public StreamParser {
 
@@ -38,5 +44,9 @@ private: // methods
     void parseKeyValue(map<Value, Value> &);
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

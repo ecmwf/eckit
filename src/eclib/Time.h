@@ -11,14 +11,19 @@
 // File Time.h
 // Manuel Fuentes - ECMWF Oct 96
 
-#ifndef Time_H
-#define Time_H
+#ifndef eclib_Time_h
+#define eclib_Time_h
 
 #include "eclib/BadValue.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 class DumpLoad;
 class Bless;
-
 
 // Forwarded declarations
 
@@ -122,5 +127,10 @@ public:
 	BadTime(const string& t);
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

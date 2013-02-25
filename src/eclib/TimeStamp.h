@@ -11,10 +11,17 @@
 // File TimeStamp.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef TimeStamp_H
-#define TimeStamp_H
+#ifndef eclib_TimeStamp_h
+#define eclib_TimeStamp_h
 
 #include "eclib/machine.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class TimeStamp {
 public:
@@ -43,5 +50,10 @@ private:
 
 	static const char* defaultFormat_;
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

@@ -11,6 +11,12 @@
 #include "eclib/Colour.h"
 #include "eclib/Resource.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static int xindex = ios::xalloc();
 
 enum { RESET = 0, BOLD  =  1,  UNDERLINE  =  4, BLINK =  5, REVERSE = 7, HIDDEN =8 } ;
@@ -159,3 +165,8 @@ ostream& Colour::cyanBackground(ostream& s) {
 ostream& Colour::whiteBackground(ostream& s) {
     return put(s,-1,WHITE,-1);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

@@ -11,12 +11,18 @@
 // File MarsFSClient.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef MarsFSClient_H
-#define MarsFSClient_H
+#ifndef eclib_MarsFSClient_h
+#define eclib_MarsFSClient_h
 
 #include "eclib/Connector.h"
 #include "eclib/Length.h"
 #include "eclib/NonCopyable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class FileSystemSize;
 class MarsFSPath;
@@ -83,5 +89,9 @@ public:
     MarsFSClientRetry(bool on);
     ~MarsFSClientRetry();
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

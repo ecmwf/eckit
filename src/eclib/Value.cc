@@ -21,6 +21,12 @@
 #include "eclib/Length.h"
 #include "eclib/PathName.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 Value::Value():
 	content_(new NilContent())
 {
@@ -280,4 +286,8 @@ Value Value::operator-() const
 {
     return content_->negate();
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

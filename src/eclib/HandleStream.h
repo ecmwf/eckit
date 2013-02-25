@@ -11,11 +11,17 @@
 // File HandleStream.h
 // Baudouin Raoult - ECMWF Oct 96
 
-#ifndef HandleStream_H
-#define HandleStream_H
+#ifndef eclib_HandleStream_h
+#define eclib_HandleStream_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/Stream.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 
 // Adaptor: allow Stream operations on a DataHandle;
@@ -51,5 +57,10 @@ private:
 		{ return "HandleStream"; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

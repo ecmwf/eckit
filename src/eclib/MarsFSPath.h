@@ -11,12 +11,18 @@
 // File MarsFSPath.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef MarsFSPath_H
-#define MarsFSPath_H
+#ifndef eclib_MarsFSPath_h
+#define eclib_MarsFSPath_h
 
 #include "eclib/machine.h"
 
 #include "eclib/PathName.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class BasePathName;
 
@@ -122,5 +128,10 @@ private:
 //	friend void operator>>(Stream&,MarsFSPath&);
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

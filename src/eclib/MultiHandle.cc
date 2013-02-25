@@ -12,6 +12,12 @@
 #include "eclib/StrStream.h"
 #include "eclib/Types.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ClassSpec MultiHandle::classSpec_ = {&DataHandle::classSpec(),"MultiHandle",};
 Reanimator<MultiHandle> MultiHandle::reanimator_;
 
@@ -401,3 +407,6 @@ string MultiHandle::title() const
     return string(os);
 }
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

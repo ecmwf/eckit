@@ -11,10 +11,17 @@
 // File SockBuf.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef SockBuf_H
-#define SockBuf_H
+#ifndef eclib_SockBuf_h
+#define eclib_SockBuf_h
 
 #include "eclib/TCPSocket.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class SockBuf : public streambuf  {
 public:
@@ -50,5 +57,10 @@ private:
 //	virtual int uflow();
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

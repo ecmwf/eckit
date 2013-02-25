@@ -11,14 +11,20 @@
 // File LogBuffer.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef LogBuffer_H
-#define LogBuffer_H
+#ifndef eclib_LogBuffer_h
+#define eclib_LogBuffer_h
 
 #include <memory>
 
 #include "eclib/machine.h"
 
 #include "eclib/Context.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Logger;
 
@@ -205,6 +211,8 @@ public:
 	~MonitorStream();
 };
 
+//-----------------------------------------------------------------------------
 
+} // namespace eclib
 
 #endif

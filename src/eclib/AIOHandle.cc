@@ -12,6 +12,12 @@
 
 #include "eclib/AIOHandle.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 #if 0
 ClassSpec AIOHandle::classSpec_ = {&DataHandle::classSpec(),"AIOHandle",};
 Reanimator<AIOHandle> AIOHandle::reanimator_;
@@ -122,7 +128,7 @@ long AIOHandle::write(const void* buffer,long length)
     if( buffers_[n] == 0 || buffers_[n]->size() < (size_t) length )
     {
         delete buffers_[n];
-        buffers_[n] = new Buffer(::round(length,64*1024));
+        buffers_[n] = new Buffer(eclib::round(length,64*1024));
         
         ASSERT(buffers_[n]);
     }
@@ -257,3 +263,7 @@ Offset AIOHandle::position()
 string AIOHandle::title() const {
     return string("AIO[") + PathName::shorten(path_) + "]";
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

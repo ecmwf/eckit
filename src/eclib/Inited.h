@@ -11,12 +11,18 @@
 // File Inited.h
 // Manuel Fuentes - ECMWF Jan 97
 
-#ifndef Inited_H
-#define Inited_H
+#ifndef eclib_Inited_h
+#define eclib_Inited_h
 
 #include "eclib/Types.h"
 
-// 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 // Serves to initialise to 0 numerical or pointer values (which
 // should be removed when the compilator supports it)
 // i.e. long() gets the value which is in the stack
@@ -66,5 +72,9 @@ Inited<Ordinal>& Inited<Ordinal>::operator -= (const Inited<Ordinal>& other)
 	return *this;
 }
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

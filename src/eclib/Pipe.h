@@ -1,11 +1,17 @@
-#ifndef Pipe_H
-#define Pipe_H
+#ifndef eclib_Pipe_h
+#define eclib_Pipe_h
 
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
 #include "eclib/Mutex.h"
 #include "eclib/ThreadControler.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 template<class PAYLOAD>
 class PipeTask;
@@ -68,6 +74,11 @@ private:
     friend class PipeTask<PAYLOAD>;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #include "eclib/Pipe.cc"
 

@@ -13,6 +13,13 @@
 #include "eclib/Exceptions.h"
 #include "eclib/Regex.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 Regex::Regex(const string& s,bool shell):
 	str_(s)
 {
@@ -108,3 +115,8 @@ Regex& Regex::operator=(const Regex& other)
 	compile(str_.c_str());
 	return *this;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

@@ -8,17 +8,24 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef AutoLock_H
-#define AutoLock_H
+#ifndef eclib_AutoLock_h
+#define eclib_AutoLock_h
 
 #include "eclib/AutoLocker.h"
 #include "eclib/NonCopyable.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 // The class AutoLock is used to AutoLock a mutex in a multi-threaded
 // environment. AutoLocks are exception safe.
 
-template<class T> class AutoLock : public AutoLocker,
-                                   private NonCopyable {
+template<class T> 
+class AutoLock : public AutoLocker,
+                 private NonCopyable {
 public:
 
 // -- Contructors
@@ -38,7 +45,10 @@ private: // members
 
 };
 
-template<class T> class AutoSharedLock : private NonCopyable {
+//-----------------------------------------------------------------------------
+
+template<class T> 
+class AutoSharedLock : private NonCopyable {
 public:
 
 // -- Contructors
@@ -57,5 +67,9 @@ private: // members
     T& resource_;
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

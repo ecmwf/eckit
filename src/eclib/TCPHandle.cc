@@ -11,6 +11,12 @@
 #include "eclib/StrStream.h"
 #include "eclib/TCPHandle.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ClassSpec TCPHandle::classSpec_ = {&DataHandle::classSpec(),"TCPHandle",};
 Reanimator<TCPHandle> TCPHandle::reanimator_;
 
@@ -87,3 +93,8 @@ string TCPHandle::title() const
 	os << "TCP[" << host_ << ":" << port_ << "]" << StrStream::ends;
 	return string(os);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

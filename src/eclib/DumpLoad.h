@@ -11,10 +11,16 @@
 // File DumpLoad.h
 // Baudouin Raoult - ECMWF Sep 99
 
-#ifndef DumpLoad_H
-#define DumpLoad_H
+#ifndef eclib_DumpLoad_h
+#define eclib_DumpLoad_h
 
 #include "eclib/machine.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class DumpLoad {
 public:
@@ -199,5 +205,10 @@ inline void dump(DumpLoad& a,unsigned long long b) { a.dump(b); }
 inline void dump(DumpLoad& a,char b)               { a.dump(b); }
 inline void dump(DumpLoad& a,unsigned char b)      { a.dump(b); }
 
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

@@ -11,10 +11,17 @@
 // File Statistics.h
 // Baudouin Raoult - ECMWF Sep 97
 
-#ifndef Statistics_H
-#define Statistics_H
+#ifndef eclib_Statistics_h
+#define eclib_Statistics_h
 
 #include "eclib/Types.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Statistics {
 public:
@@ -98,6 +105,11 @@ private:
 	//	{ p.print(s); return s; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 
 #endif

@@ -8,12 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-
-
 #include "eclib/Date.h"
 #include "eclib/DumpLoad.h"
 #include "eclib/StrStream.h"
 #include "eclib/Tokenizer.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 static const char* months[] = 
 { "jan","feb","mar","apr","may","jun",
@@ -330,3 +334,7 @@ void Date::load(DumpLoad& a)
 {
 	a.load(julian_);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

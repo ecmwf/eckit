@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/AutoLock.h"
 #include "eclib/FileStream.h"
 #include "eclib/Monitor.h"
@@ -20,6 +19,12 @@
 #include "eclib/TimeStamp.h"
 #include "eclib/Translator.h"
 #include "eclib/TxnLog.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 static PathName pathName(const string& name)
 {
@@ -271,3 +276,8 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 		}
 	}
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

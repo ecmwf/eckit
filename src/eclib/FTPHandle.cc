@@ -14,6 +14,12 @@
 #include "eclib/Log.h"
 #include "eclib/TCPServer.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ClassSpec FTPHandle::classSpec_ = {&DataHandle::classSpec(),"FTPHandle",};
 Reanimator<FTPHandle> FTPHandle::reanimator_;
 
@@ -144,4 +150,8 @@ void FTPHandle::rewind()
 	NOTIMP;
 }
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

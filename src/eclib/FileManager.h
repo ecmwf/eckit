@@ -11,12 +11,18 @@
 // File Length.h
 // Baudouin Raoult - ECMWF Aug 98
 
-#ifndef FileManager_H
-#define FileManager_H
+#ifndef eclib_FileManager_h
+#define eclib_FileManager_h
 
 #include "eclib/machine.h"
 #include "eclib/Offset.h"
 #include "eclib/Length.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class FileName;
 class DataHandle;
@@ -67,5 +73,10 @@ class FileManagerBuilder : public FileManagerFactory {
 public:
 	FileManagerBuilder(const string& name) : FileManagerFactory(name) {}
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

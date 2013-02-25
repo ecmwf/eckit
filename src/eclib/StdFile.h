@@ -11,12 +11,19 @@
 // File StdFile.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef StdFile_H
-#define StdFile_H
+#ifndef eclib_StdFile_h
+#define eclib_StdFile_h
 
 #include <stdio.h>
 
 #include "eclib/PathName.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // Simple wrapper around a stdio file
 
@@ -49,5 +56,10 @@ private:
 	FILE *file_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

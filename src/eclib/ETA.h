@@ -11,10 +11,16 @@
 // File ETA.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef ETA_H
-#define ETA_H
+#ifndef eclib_ETA_h
+#define eclib_ETA_h
 
 #include "eclib/machine.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class ETA {
 public:
@@ -39,5 +45,10 @@ private:
 	double ETA_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

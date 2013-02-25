@@ -11,6 +11,13 @@
 #include "eclib/Exceptions.h"
 #include "eclib/StdPipe.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 StdPipe::StdPipe(const string& name,const string& mode)
 {
 	file_ = popen(name.c_str(),mode.c_str());
@@ -25,3 +32,8 @@ StdPipe::~StdPipe()
 		if(pclose(file_) == -1)
 			throw FailedSystemCall("pclose");
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

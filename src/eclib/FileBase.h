@@ -11,12 +11,18 @@
 // File FileBase.h
 // Baudouin Raoult - ECMWF Jun 97
 
-#ifndef FileBase_H
-#define FileBase_H
+#ifndef eclib_FileBase_h
+#define eclib_FileBase_h
 
 #include "eclib/machine.h"
 
 #include "eclib/PathName.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 template<class T>
 class FileBase {
@@ -108,6 +114,11 @@ private:
 	//	{ p.print(s); return s; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #include "eclib/FileBase.cc"
 

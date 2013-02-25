@@ -13,6 +13,12 @@
 #include "eclib/Tokenizer.h"
 #include "eclib/FileManager.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 FileName::FileName(const string& path)
 {
     Tokenizer parse(":");
@@ -68,3 +74,7 @@ void FileName::print(ostream& s) const
 {
     s << "FileName[scheme=" << scheme_ << ",name=" << name_ << "]";
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

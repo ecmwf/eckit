@@ -8,10 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-
-
 #include "eclib/DayOfYear.h"
 #include "eclib/StrStream.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 static long date2Value(const Date& date)
 {
@@ -64,4 +68,9 @@ void DayOfYear::load(DumpLoad& a)
 {
 	NOTIMP;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+
 

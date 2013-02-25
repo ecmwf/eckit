@@ -11,12 +11,18 @@
 // File BigNum.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef BigNum_H
-#define BigNum_H
+#ifndef eclib_BigNum_h
+#define eclib_BigNum_h
 
 #include "eclib/machine.h"
 
-// Class used to print large numbers
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+/// Class used to print large numbers
 
 class BigNum {
 public:
@@ -47,5 +53,9 @@ private:
 		{ p.print(s); return s; }
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

@@ -11,13 +11,19 @@
 // File PathName.h
 // B.Raoult - ECMWF May 96
 
-#ifndef PathName_H
-#define PathName_H
+#ifndef eclib_PathName_h
+#define eclib_PathName_h
 
 #include "eclib/Length.h"
 #include "eclib/Offset.h"
 #include "eclib/FileSystemSize.h"
 #include "eclib/Stream.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Length;
 class BasePathName;
@@ -167,5 +173,8 @@ private:
 
 };
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

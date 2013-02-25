@@ -11,6 +11,12 @@
 
 #include "eclib/BufferedHandle.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 #if 0
 ClassSpec BufferedHandle::classSpec_ = {&DataHandle::classSpec(),"BufferedHandle",};
 Reanimator<BufferedHandle> BufferedHandle::reanimator_;
@@ -189,3 +195,8 @@ void BufferedHandle::bufferFlush()
 string BufferedHandle::title() const {
     return string("{") + handle_->title() + "}";
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

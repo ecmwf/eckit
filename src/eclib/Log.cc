@@ -15,6 +15,11 @@
 #include "eclib/Monitor.h"
 #include "eclib/ThreadSingleton.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // This assume that iostream are thread safe during a single
 // call to the << inserter
@@ -509,3 +514,6 @@ template class ThreadSingleton<UserWarningStream>;
 template class ThreadSingleton<StatusStream>;
 template class ThreadSingleton<UserErrorStream>;
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

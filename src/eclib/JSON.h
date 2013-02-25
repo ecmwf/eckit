@@ -11,12 +11,18 @@
 // File JSON.h
 // Baudouin Raoult - (c) ECMWF Aug 11
 
-#ifndef JSON_H
-#define JSON_H
+#ifndef eclib_JSON_h
+#define eclib_JSON_h
 
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class JSON : private NonCopyable {
 
@@ -65,5 +71,10 @@ private: // methods
     bool indict() { return  state_.back(); }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

@@ -11,10 +11,17 @@
 // File TmpFile.h
 // Baudouin Raoult - ECMWF Sep 01
 
-#ifndef TmpFile_H
-#define TmpFile_H
+#ifndef eclib_TmpFile_h
+#define eclib_TmpFile_h
 
 #include "eclib/PathName.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class TmpFile : public PathName {
 public:
@@ -96,6 +103,11 @@ private:
 
 };
 
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 
 #endif

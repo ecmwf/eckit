@@ -8,9 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/ClimateDate.h"
 #include "eclib/StrStream.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // Climate date is a 30 day date
 
@@ -84,3 +89,8 @@ void ClimateDate::load(DumpLoad& a)
 {
 	date_.load(a);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

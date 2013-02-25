@@ -8,8 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/TxnEvent.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 
 ClassSpec TxnEvent::classSpec_ = {&Streamable::classSpec(),"TxnEvent",};
 Reanimator<TxnEvent> TxnEvent::reanimator_;
@@ -38,3 +44,8 @@ void TxnEvent::print(ostream& s) const
 {
 	s << "TxnEvent " << txnID_;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

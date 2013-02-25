@@ -8,11 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef Plural_H
-#define Plural_H
+#ifndef eclib_Plural_h
+#define eclib_Plural_h
 
 #include "eclib/BigNum.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Plural {
 public:
@@ -48,5 +53,10 @@ private:
 		{ p.print(s); return s; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

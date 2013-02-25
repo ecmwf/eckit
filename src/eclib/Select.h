@@ -11,8 +11,8 @@
 // File Select.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef Select_H
-#define Select_H
+#ifndef eclib_Select_h
+#define eclib_Select_h
 
 #if 0
 #ifdef __hpux
@@ -24,11 +24,19 @@
 
 #include <sys/select.h>
 
-// Class to wrap calls to select:
+#include "eclib/NonCopyable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class TCPSocket;
 
-class Select {
+/// Wraps calls to select
+class Select : private NonCopyable {
+
 public:
 
 // -- Contructors
@@ -40,12 +48,6 @@ public:
 // -- Destructor
 
 	~Select(); // Change to virtual if base class
-
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
 
 // -- Methods
 
@@ -60,40 +62,7 @@ public:
 	bool set(TCPSocket&);
 	bool set(int);
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-
-	// void print(ostream&) const; // Change to virtual if base class
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
 private:
-
-// No copy allowed
-
-	Select(const Select&);
-	Select& operator=(const Select&);
 
 // -- Members
 
@@ -101,24 +70,10 @@ private:
 	fd_set set_;
 	int    last_;
 
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
-
-	//friend ostream& operator<<(ostream& s,const Select& p)
-	//	{ p.print(s); return s; }
-
 };
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

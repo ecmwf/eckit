@@ -8,10 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_DHSBehavior_H
-#define eclib_DHSBehavior_H
+#ifndef eclib_DHSBehavior_h
+#define eclib_DHSBehavior_h
 
 #include "eclib/ContextBehavior.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class DHSLogger;
 
@@ -50,5 +56,10 @@ private: // members
     string name_;
     
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_DHSBehavior_h

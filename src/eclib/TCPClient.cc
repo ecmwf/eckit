@@ -12,6 +12,12 @@
 #include "eclib/Resource.h"
 #include "eclib/TCPClient.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 TCPClient::TCPClient(int port):
 	TCPSocket(),
 	port_(port)
@@ -33,3 +39,8 @@ string TCPClient::bindingAddress() const
 	//return  Resource<string>("localBindingAddr","127.0.0.1");
 	return  Resource<string>("localBindingAddr","");
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

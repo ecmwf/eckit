@@ -11,13 +11,19 @@
 // File Mutex.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef Mutex_H
-#define Mutex_H
+#ifndef eclib_Mutex_h
+#define eclib_Mutex_h
 
 #include <pthread.h>
 
 #include "eclib/machine.h"
 #include "eclib/NonCopyable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Mutex : private NonCopyable {
 public:
@@ -45,5 +51,9 @@ protected:
 	char            tag_;
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

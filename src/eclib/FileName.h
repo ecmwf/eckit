@@ -8,12 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef FileName_H
-#define FileName_H
+#ifndef eclib_FileName_h
+#define eclib_FileName_h
 
 #include "eclib/machine.h"
 #include "eclib/Offset.h"
 #include "eclib/Length.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Stream;
 class DataHandle;
@@ -57,5 +63,9 @@ private: // members
 		{ p.print(s); return s; }
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

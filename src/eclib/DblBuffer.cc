@@ -20,6 +20,12 @@
 #include "eclib/ThreadControler.h"
 #include "eclib/Timer.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 class DblBufferError : public Exception {
     public:
         DblBufferError(const string& what)
@@ -331,3 +337,8 @@ void DblBufferTask::run()
     if(rate != first)
         Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_/(rate-first)) << "/s" << endl;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

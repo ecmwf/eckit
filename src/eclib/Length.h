@@ -11,14 +11,19 @@
 // File Length.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef Length_H
-#define Length_H
+#ifndef eclib_Length_h
+#define eclib_Length_h
 
 #include "eclib/Stream.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 class Bless;
 class DumpLoad;
-
 
 // But because the compiler aligns long longs
 // on 64bits boundaries and longs on 32 bits boundaries,
@@ -93,5 +98,8 @@ typedef vector<Length> LengthList;
 #pragma options align=reset
 #endif
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

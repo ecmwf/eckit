@@ -19,6 +19,12 @@
 #include "eclib/MarsFSPath.h"
 #include "eclib/PathName.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static BasePathName* make(const string& p) {
 
     if(p.find("marsfs:") == 0) 
@@ -407,3 +413,7 @@ PathName &PathName::operator +=(char s)
     *this = PathName(this->asString() + s);
 	return *this;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

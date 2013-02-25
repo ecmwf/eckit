@@ -12,6 +12,12 @@
 #include "eclib/CommandStream.h"
 #include "eclib/Log.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 CommandStream::CommandStream(const string& name,const char *mode):
 	file_(popen(name.c_str(),mode))
 {
@@ -42,3 +48,8 @@ string CommandStream::name() const
 {
 	return "CommandStream";
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

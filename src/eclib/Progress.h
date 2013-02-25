@@ -11,10 +11,17 @@
 // File Progress.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef Progress_H
-#define Progress_H
+#ifndef eclib_Progress_h
+#define eclib_Progress_h
 
 #include <string>
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Progress {
 public:
@@ -97,5 +104,8 @@ private:
 
 };
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

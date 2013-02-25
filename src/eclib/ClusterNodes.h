@@ -11,12 +11,18 @@
 // File ClusterNodes.h
 // Baudouin Raoult - (c) ECMWF Jul 11
 
-#ifndef ClusterNodes_H
-#define ClusterNodes_H
+#ifndef eclib_ClusterNodes_h
+#define eclib_ClusterNodes_h
 
 #include "eclib/machine.h"
 
 #include "eclib/NodeInfo.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Stream;
 class JSON;
@@ -50,5 +56,10 @@ public:
     static vector<NodeInfo> all();
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

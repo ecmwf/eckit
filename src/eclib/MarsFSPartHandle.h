@@ -11,13 +11,18 @@
 // File MarsFSPartHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef MarsFSPartHandle_H
-#define MarsFSPartHandle_H
-
+#ifndef eclib_MarsFSPartHandle_h
+#define eclib_MarsFSPartHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/MarsFSFile.h"
 #include "eclib/MarsFSPath.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class MarsFSPartHandle : public DataHandle {
 public:
@@ -91,5 +96,10 @@ private:
 	static  Reanimator<MarsFSPartHandle>  reanimator_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

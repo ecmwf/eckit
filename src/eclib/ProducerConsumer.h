@@ -1,8 +1,15 @@
-#ifndef ProducerConsumer_H
-#define ProducerConsumer_H
+#ifndef eclib_ProducerConsumer_h
+#define eclib_ProducerConsumer_h
 
 #include "eclib/machine.h"
 #include "eclib/Mutex.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 template<class PAYLOAD>
 class Producer {
@@ -65,6 +72,11 @@ private:
     friend class ProducerConsumerTask<PAYLOAD>;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #include "eclib/ProducerConsumer.cc"
 

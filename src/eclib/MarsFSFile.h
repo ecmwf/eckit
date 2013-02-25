@@ -11,13 +11,19 @@
 // File MarsFSFile.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef MarsFSFile_H
-#define MarsFSFile_H
+#ifndef eclib_MarsFSFile_h
+#define eclib_MarsFSFile_h
 
 #include "eclib/AutoLock.h"
 #include "eclib/MarsFSClient.h"
 #include "eclib/MarsFSPath.h"
 #include "eclib/TCPClient.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class MarsFSFile : private MarsFSClient {
 public:
@@ -108,5 +114,10 @@ private:
 		{ p.print(s); return s; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

@@ -11,12 +11,18 @@
 // File FTPHandle.h
 // Manuel Fuentes - ECMWF May 96
 
-#ifndef FTPHandle_H
-#define FTPHandle_H
+#ifndef eclib_FTPHandle_h
+#define eclib_FTPHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/TCPClient.h"
 #include "eclib/TCPSocket.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class FTPHandle : public DataHandle {
 public:
@@ -79,5 +85,10 @@ private:
 	static  Reanimator<FTPHandle>  reanimator_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

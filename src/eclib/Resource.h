@@ -11,14 +11,20 @@
 // File Resource.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef Resource_H
-#define Resource_H
+#ifndef eclib_Resource_h
+#define eclib_Resource_h
 
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
 #include "eclib/Translator.h"
 #include "eclib/Types.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Configurable;
 class Url;
@@ -99,6 +105,22 @@ private: // overridden methods
 
 };
 
-#include "eclib/Resource.cc"
+//-----------------------------------------------------------------------------
+
+template<class T> 
+void Resource<T>::setValue(const string& s)
+{
+    value_ = Translator<string,T>()(s);
+}
+
+template<class T> 
+string Resource<T>::getValue() const
+{
+    return Translator<T,string>()(value_);
+}
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

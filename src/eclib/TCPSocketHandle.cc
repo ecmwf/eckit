@@ -10,6 +10,12 @@
 
 #include "eclib/TCPSocketHandle.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 void TCPSocketHandle::print(ostream& s) const
 {
 	s << "TCPSocketHandle[]";
@@ -58,3 +64,8 @@ void TCPSocketHandle::rewind()
 {
 	NOTIMP;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

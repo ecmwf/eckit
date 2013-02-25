@@ -13,7 +13,13 @@
 #include "eclib/Telnet.h"
 #include "eclib/TelnetUser.h"
 
-//=======================================================================
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 
 Telnet::Telnet(int port):
 	NetService(port)
@@ -57,3 +63,8 @@ void TelnetUser::serve(Stream&, istream& in,ostream& out)
 	}
 	Log::info() << "Exiting telnet user loop..." << endl;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

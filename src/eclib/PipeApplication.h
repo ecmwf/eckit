@@ -11,12 +11,18 @@
 // File PipeApplication.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef PipeApplication_H
-#define PipeApplication_H
+#ifndef eclib_PipeApplication_h
+#define eclib_PipeApplication_h
 
 #include "eclib/Application.h"
 #include "eclib/Stream.h"
 #include "eclib/Resource.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class PipeApplication : public Application {
 public:
@@ -58,5 +64,10 @@ private:
 	virtual void run();
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

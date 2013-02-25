@@ -11,6 +11,13 @@
 
 #include "eclib/Streamable.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 // Should protected with a mutex...
 
 typedef map<string,ReanimatorBase*,less<string> > Map;
@@ -80,3 +87,8 @@ Streamable* ReanimatorBase::reanimate(Stream& s,const ClassSpec *c)
 	s.skipEndObject();
 	return x;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

@@ -10,19 +10,24 @@
 
 // File Stream.h
 // Baudouin Raoult - ECMWF May 96
-#ifndef Stream_H
-#define Stream_H
+
+#ifndef eclib_Stream_h
+#define eclib_Stream_h
 
 #include "eclib/Exceptions.h"
 #include "eclib/Mutex.h"
 #include "eclib/NonCopyable.h"
 
-template<class T>
-class BufferedWriter;
-template<class T>
-class BufferedReader;
-template<class T>
-class IOBuffer;
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+template<class T> class BufferedWriter;
+template<class T> class BufferedReader;
+template<class T> class IOBuffer;
 
 class Buffer;
 
@@ -199,5 +204,10 @@ private:
     friend class BufferedReader<Stream>;
     friend class IOBuffer<Stream>;
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

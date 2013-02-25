@@ -11,11 +11,17 @@
 // File BoolContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef BoolContent_H
-#define BoolContent_H
+#ifndef eclib_BoolContent_h
+#define eclib_BoolContent_h
 
 #include "eclib/Content.h"
 #include "eclib/Value.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class BoolContent : public Content {
 
@@ -107,5 +113,9 @@ private:
     friend class Value;
     friend class DateContent;
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

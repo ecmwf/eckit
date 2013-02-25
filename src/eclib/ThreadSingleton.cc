@@ -11,6 +11,13 @@
 #include "eclib/Exceptions.h"
 #include "eclib/ThreadSingleton.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 template<class T> pthread_once_t ThreadSingleton<T>::once_ = PTHREAD_ONCE_INIT;
 template<class T> pthread_key_t ThreadSingleton<T>::key_;
 
@@ -47,3 +54,8 @@ template<class T> void ThreadSingleton<T>::init()
 {
 	pthread_key_create(&key_,cleanUp);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

@@ -15,6 +15,12 @@
 
 using namespace std;
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 StandardBehavior::StandardBehavior() :
     name_("undefined")
 {
@@ -60,4 +66,7 @@ Logger* StandardBehavior::createErrorLogger()
     return new StdLogger( std::cerr );
 }
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

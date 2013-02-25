@@ -19,6 +19,13 @@
 #include "eclib/Thread.h"
 #include "eclib/ThreadControler.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+
 ThreadControler::ThreadControler(Thread* proc,bool detached,size_t stack):
     thread_(0),
     proc_(proc),
@@ -181,3 +188,8 @@ bool ThreadControler::active()
     }
     return thread_ != 0;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

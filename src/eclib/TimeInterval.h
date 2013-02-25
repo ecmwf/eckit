@@ -11,12 +11,17 @@
 // File TimeInterval.h
 // Manuel Fuentes - ECMWF Oct 96
 
-#ifndef TimeInterval_H
-#define TimeInterval_H
+#ifndef eclib_TimeInterval_h
+#define eclib_TimeInterval_h
 
 #include "eclib/DateTime.h"
 
-// Forward declarations
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class TimeInterval {
 public:
@@ -59,5 +64,10 @@ private:
 	friend bool operator==(const TimeInterval& p1, const TimeInterval& p2)
 		{ return p1.begin_ == p2.begin_ && p1.end_ == p2.end_; }
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

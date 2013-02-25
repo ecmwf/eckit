@@ -11,14 +11,20 @@
 // File ResourceMgr.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef ResourceMgr_H
-#define ResourceMgr_H
+#ifndef eclib_ResourceMgr_h
+#define eclib_ResourceMgr_h
 
 #include <set>
 
 #include "eclib/NonCopyable.h"
 #include "eclib/PathName.h"
 #include "eclib/Types.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class LocalPathName;
 class Configurable;
@@ -60,5 +66,10 @@ private: // members
 
     std::set<PathName> parsed_;
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

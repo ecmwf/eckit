@@ -19,6 +19,12 @@
 #include "eclib/NodeInfo.h"
 #include "eclib/Resource.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 class ClusterNodeEntry {
 	bool active_;
 	time_t lastSeen_;
@@ -253,11 +259,11 @@ void ClusterNodes::refresh(const NodeInfo& info)
         }
 	}
 
-	sort(nodeArray->begin(), nodeArray->end());
+	std::sort(nodeArray->begin(), nodeArray->end());
 	ClusterNodeEntry c(info.node(), info.name(), info.host(), info.port());
 	ASSERT(!(*nodeArray)[0].active());
 	(*nodeArray)[0] = c;
-	sort(nodeArray->begin(), nodeArray->end());
+	std::sort(nodeArray->begin(), nodeArray->end());
 }
 
 NodeInfo ClusterNodes::lookUp(const string& type, const string& node)
@@ -455,4 +461,9 @@ void ClusterNodes::receive(Stream& s)
 	}
 
 }
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

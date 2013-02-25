@@ -11,7 +11,12 @@
 #include "eclib/config/Scope.h"
 #include "eclib/config/Function.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
 namespace config {
+
+//-----------------------------------------------------------------------------
 
 Scope::Scope(Scope *upper) :
     upper_(upper)
@@ -62,5 +67,8 @@ void Scope::function( const string& name, Function* f )
     functions_[name] = f;
 }
 
+//-----------------------------------------------------------------------------
+
 } // namespace config
+} // namespace eclib
 

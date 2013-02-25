@@ -11,10 +11,16 @@
 /// @author Tiago Quintino
 /// @date Sep 2012
 
-#ifndef eclib_Tool_H
-#define eclib_Tool_H
+#ifndef eclib_Tool_h
+#define eclib_Tool_h
 
 #include "eclib/Configurable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Tool : public Configurable {
 
@@ -42,5 +48,10 @@ private: // members
     std::string name_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

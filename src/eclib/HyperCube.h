@@ -11,10 +11,16 @@
 // File HyperCube.h
 // Baudouin Raoult - ECMWF Oct 96
 
-#ifndef HyperCube_H
-#define HyperCube_H
+#ifndef eclib_HyperCube_h
+#define eclib_HyperCube_h
 
 #include "eclib/Types.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // Helper class to handle multi-dimension objects
 // The first dimension should be the one most likely to change
@@ -108,5 +114,10 @@ void HyperCube::combine(Remapping& map1,const Remapping& map2)
 		*i = map2[*i];
 	}
 }
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

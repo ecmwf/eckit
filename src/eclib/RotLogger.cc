@@ -16,6 +16,13 @@
 #include "eclib/RotLogger.h"
 #include "eclib/TimeStamp.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static Mutex mutex;
 
 static ofstream* last     = 0;
@@ -56,3 +63,8 @@ std::ostream& RotLogger::out()
 
     return *last;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

@@ -11,12 +11,18 @@
 // File MutexCond.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef MutexCond_H
-#define MutexCond_H
+#ifndef eclib_MutexCond_h
+#define eclib_MutexCond_h
 
 #include <pthread.h>
 
 #include "eclib/NonCopyable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // A mutex and a condition variable
 // for Producer/Consumer architectures
@@ -52,5 +58,10 @@ private:
 	bool inited_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

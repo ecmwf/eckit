@@ -15,6 +15,13 @@
 #include "eclib/MutexCond.h"
 #include "eclib/AutoLock.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 template<class PAYLOAD>
 struct OnePayload {
     MutexCond cond_;
@@ -200,4 +207,9 @@ void ProducerConsumerTask<PAYLOAD>::run()
     }
 
 }
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

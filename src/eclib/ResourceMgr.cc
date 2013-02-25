@@ -20,6 +20,13 @@
 #include "eclib/config/Compiler.h"
 #include "eclib/config/Script.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static Mutex mutex;
 static Mutex mutex_instance;
 
@@ -166,4 +173,7 @@ bool ResourceMgr::lookUp( Configurable* owner,
     return false;
 }
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

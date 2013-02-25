@@ -11,6 +11,13 @@
 
 #include "eclib/Streamable.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 template<class T> 
 Reanimator<T>::Reanimator():
 	 ReanimatorBase(T::classSpec())
@@ -29,3 +36,8 @@ T*  Reanimator<T>::reanimate(Stream& s)
 { 
 	return (T*)ReanimatorBase::reanimate(s,&T::classSpec()); 
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

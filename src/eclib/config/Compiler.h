@@ -21,7 +21,12 @@
 #include "eclib/StreamParser.h"
 #include "eclib/Types.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
 namespace config {
+
+//-----------------------------------------------------------------------------
 
 class Compiler : public StreamParser {
 public: // methods
@@ -42,6 +47,9 @@ protected:
     
 };
 
+//-----------------------------------------------------------------------------
+
 } // namespace config
+} // namespace eclib
 
 #endif

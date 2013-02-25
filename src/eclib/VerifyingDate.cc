@@ -8,8 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/VerifyingDate.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 VerifyingDate::VerifyingDate(const Date& d, const Time& t):
 	DateTime(d,t)
@@ -45,3 +50,8 @@ void VerifyingDate::print(ostream& s) const
 {
 	s << date_;	
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

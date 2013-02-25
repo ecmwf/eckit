@@ -11,13 +11,16 @@
 // File ClimateDate.h
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef ClimateDate_H
-#define ClimateDate_H
+#ifndef eclib_ClimateDate_h
+#define eclib_ClimateDate_h
 
 #include "eclib/Date.h"
 
-// Forwarded declarations
+//-----------------------------------------------------------------------------
 
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 
 class ClimateDate {
@@ -104,5 +107,10 @@ private:
 // -- Class methods
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+
 
 #endif

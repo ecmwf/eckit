@@ -11,14 +11,18 @@
 // File Connector.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef Connector_H
-#define Connector_H
+#ifndef eclib_Connector_h
+#define eclib_Connector_h
 
 #include "eclib/BufferCache.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/Stream.h"
 #include "eclib/TCPSocket.h"
 #include "eclib/Length.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
 
 //-----------------------------------------------------------------------------
 
@@ -141,5 +145,10 @@ public:
 	AutoMemoize(Connector& c,unsigned long t): c_(c), t_(t) { c_.memoize(true,t_); }
 	~AutoMemoize() { c_.memoize(false,t_); }
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

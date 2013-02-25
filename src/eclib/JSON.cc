@@ -11,8 +11,13 @@
 // File JSON.cc
 // Baudouin Raoult - (c) ECMWF Aug 11
 
-
 #include "eclib/JSON.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 JSON::JSON(ostream& out):
     out_(out) ,
@@ -206,3 +211,7 @@ JSON& JSON::operator<<(double n)
     out_ << n;
     return *this;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

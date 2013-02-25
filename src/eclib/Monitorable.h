@@ -11,10 +11,16 @@
 // File Monitorable.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef Monitorable_H
-#define Monitorable_H
+#ifndef eclib_Monitorable_h
+#define eclib_Monitorable_h
 
 #include "eclib/ClassExtent.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class JSON;
 
@@ -50,5 +56,8 @@ private:
 
 };
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

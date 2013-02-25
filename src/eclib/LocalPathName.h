@@ -10,13 +10,18 @@
 
 // File LocalPathName.h
 // B.Raoult - ECMWF May 96
-#ifndef LocalPathName_H
-#define LocalPathName_H
-
+#ifndef eclib_LocalPathName_h
+#define eclib_LocalPathName_h
 
 #include "eclib/Length.h"
 #include "eclib/Offset.h"
 #include "eclib/Stream.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Length;
 struct FileSystemSize;
@@ -213,5 +218,9 @@ private:
 
 };
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

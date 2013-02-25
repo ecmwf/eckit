@@ -11,12 +11,18 @@
 // File MemoryPool.h
 // Baudouin Raoult - ECMWF May 97
 
-#ifndef MemoryPool_H
-#define MemoryPool_H
+#ifndef eclib_MemoryPool_h
+#define eclib_MemoryPool_h
 
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 struct memblk;
 
@@ -54,5 +60,8 @@ private: // methods
 
 };
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

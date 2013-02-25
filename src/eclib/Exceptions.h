@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef Exceptions_H
-#define Exceptions_H
+#ifndef eclib_Exceptions_h
+#define eclib_Exceptions_h
 
 #include <errno.h>
 
@@ -18,6 +18,12 @@
 #include "eclib/CodeLocation.h"
 #include "eclib/Log.h"
 #include "eclib/StrStream.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 void Panic(const char*);
 void Panic(const char *msg,int line,const char *file,const char *proc);
@@ -221,9 +227,9 @@ inline void Panic(int code,const char *msg,int line,const char *file,
         Panic(msg,line,file,proc);
 }
 
-//--------------------------------------------------------------
-// For compatibility
-//--------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+/// For compatibility
 class OutOfMemory : public Exception {
     virtual bool terminateApplication() const { return true; }
     virtual const char *what() const throw() {  return "OutOfMemory"; }
@@ -232,6 +238,8 @@ public:
 
 };
 
+//-----------------------------------------------------------------------------
+
 #define THRCALL(a) ThrCall(a,#a,__LINE__,__FILE__,__FUNCTION__)
 #define SYSCALL(a)   SysCall(a,#a,__LINE__,__FILE__,__FUNCTION__)
 #define SYSCALL2(a,b) SysCall(a,#a,b,__LINE__,__FILE__,__FUNCTION__)
@@ -239,5 +247,8 @@ public:
 #define PANIC(a)   Panic((a),#a,__LINE__,__FILE__,__FUNCTION__)
 #define NOTIMP     throw NotImplemented( Here() )
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

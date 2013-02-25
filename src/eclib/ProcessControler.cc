@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 
+
 // WARNING: on linux, threads are different processes,
 // so a thread cannot call waitpid on a process forked by an other
 // thread....
@@ -39,6 +40,12 @@
 #include "eclib/ProcessControler.h"
 #include "eclib/Thread.h"
 #include "eclib/ThreadControler.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 
@@ -267,3 +274,8 @@ bool ProcessControler::isRunning(pid_t pid)
 #endif
 
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

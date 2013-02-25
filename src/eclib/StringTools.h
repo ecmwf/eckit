@@ -8,12 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef StringTools_H
-#define StringTools_H
+#ifndef eclib_StringTools_h
+#define eclib_StringTools_h
 
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 
 class StringTools : private NonCopyable {
 public:
@@ -36,5 +43,10 @@ private:
     StringTools(); // Non instantiable
     
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

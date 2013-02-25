@@ -8,9 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/DumpLoad.h"
 #include "eclib/Length.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 void Length::dump(DumpLoad& a) const
 {
@@ -21,3 +26,8 @@ void Length::load(DumpLoad& a)
 {
 	a.load(value_);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

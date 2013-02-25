@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/BasePathNameT.h"
 #include "eclib/ClusterDisks.h"
 #include "eclib/ClusterNodes.h"
@@ -20,6 +19,12 @@
 #include "eclib/Mutex.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/StrStream.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 MarsFSPath::MarsFSPath(const string& path)
 {
@@ -308,3 +313,8 @@ BasePathName* MarsFSPath::checkClusterNode() const
         return new BasePathNameT<MarsFSPath>(MarsFSPath(node_, path_));
     }
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

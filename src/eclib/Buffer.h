@@ -11,12 +11,18 @@
 // File Buffer.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef Buffer_H
-#define Buffer_H
+#ifndef eclib_Buffer_h
+#define eclib_Buffer_h
 
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // A simple class to implement buffers
 
@@ -58,5 +64,10 @@ private:
 	void*  buffer_;
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+
 
 #endif

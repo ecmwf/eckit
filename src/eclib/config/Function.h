@@ -17,6 +17,9 @@
 #include "eclib/config/Compiler.h"
 #include "eclib/config/Statement.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
 namespace config {
 
 //-----------------------------------------------------------------------------
@@ -63,5 +66,6 @@ private: // members
 //-----------------------------------------------------------------------------
 
 } // namespace config
+} // namespace eclib
 
 #endif

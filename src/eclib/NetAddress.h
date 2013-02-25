@@ -1,11 +1,16 @@
 // File NetAddress.h
 // T. Quintino - ECMWF Feb 2012
 
-#ifndef NetAddress_H
-#define NetAddress_H
+#ifndef eclib_NetAddress_h
+#define eclib_NetAddress_h
 
 #include "eclib/Stream.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // The class NetAddress represents a host plus its connection port
 
@@ -59,5 +64,10 @@ private:
 
     void print(ostream&) const;
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

@@ -20,7 +20,12 @@
 #include "eclib/config/Statement.h"
 #include "eclib/config/Compiler.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
 namespace config {
+
+//-----------------------------------------------------------------------------
 
 class Block;
 
@@ -63,5 +68,7 @@ private: // members
 //-----------------------------------------------------------------------------
 
 } // namespace config
+} // namespace eclib
+
 
 #endif

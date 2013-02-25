@@ -11,8 +11,8 @@
 // File Monitor.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef Monitor_H
-#define Monitor_H
+#ifndef eclib_Monitor_h
+#define eclib_Monitor_h
 
 #include "eclib/machine.h"
 
@@ -20,6 +20,12 @@
 #include "eclib/MappedArray.h"
 #include "eclib/NonCopyable.h"
 #include "eclib/TaskInfo.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Monitor : private NonCopyable {
 public:
@@ -131,5 +137,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

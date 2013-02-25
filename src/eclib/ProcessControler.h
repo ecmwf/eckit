@@ -11,11 +11,18 @@
 // File ProcessControler.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef ProcessControler_H
-#define ProcessControler_H
+#ifndef eclib_ProcessControler_h
+#define eclib_ProcessControler_h
 
 #include "eclib/ClassExtent.h"
 #include "eclib/Task.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class ProcessControler : public Task, 
                          public ClassExtent<ProcessControler> {
@@ -71,10 +78,11 @@ private:
 
 	friend class ChildReaper;
 
-
-public:
 };
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 
 #endif

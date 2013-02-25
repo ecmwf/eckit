@@ -11,15 +11,27 @@
 // File StrStream.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef StrStream_H
-#define StrStream_H
+#ifndef eclib_StrStream_h
+#define eclib_StrStream_h
 
 #include "eclib/machine.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 
 class StrStream : public ostringstream {
 public:
     operator string() { return str(); }
     static ostream&  ends(ostream& os)  { return os; }
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

@@ -11,10 +11,17 @@
 // File Seconds.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef Seconds_H
-#define Seconds_H
+#ifndef eclib_Seconds_h
+#define eclib_Seconds_h
 
 #include "eclib/machine.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Bless;
 
@@ -44,5 +51,10 @@ private:
 	double seconds_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

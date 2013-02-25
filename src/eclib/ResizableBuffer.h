@@ -11,12 +11,19 @@
 // File ResizableBuffer.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef ResizableBuffer_H
-#define ResizableBuffer_H
+#ifndef eclib_ResizableBuffer_h
+#define eclib_ResizableBuffer_h
 
 #include "eclib/machine.h"
 
 // A simple class to implement buffers
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class ResizableBuffer {
 public:
@@ -63,5 +70,10 @@ private:
 	int    fd_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

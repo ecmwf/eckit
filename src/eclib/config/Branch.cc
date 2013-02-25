@@ -12,27 +12,34 @@
 #include "eclib/config/Branch.h"
 #include "eclib/config/Condition.h"
 
-config::Branch::Branch(config::Compiler &c, config::Scope& scope) :
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+namespace config {
+
+//-----------------------------------------------------------------------------
+
+Branch::Branch(Compiler &c, Scope& scope) :
     Statement(scope)
 {
 //    std::cout << "Branch()" << std::endl;
     
-    if_.reset( new config::Condition(c) );
-    then_.reset( new config::Block(c, new config::Scope(&scope)) );
+    if_.reset( new Condition(c) );
+    then_.reset( new Block(c, new Scope(&scope)) );
     if( c.peek() == '|' )
     {
         c.consume("||");
-        else_.reset( new config::Block(c, new config::Scope(&scope)) );
+        else_.reset( new Block(c, new Scope(&scope)) );
     }
      else
         else_.reset();
 }
 
-config::Branch::~Branch()
+Branch::~Branch()
 {
 }
 
-void config::Branch::execute(const StringDict &in, StringDict &out)
+void Branch::execute(const StringDict &in, StringDict &out)
 {
     if( if_->eval(in,out) )
     {
@@ -43,10 +50,15 @@ void config::Branch::execute(const StringDict &in, StringDict &out)
             else_->execute(in,out);
 }
 
-void config::Branch::print(ostream &out)
+void Branch::print(ostream &out)
 {
     if_->print(out);
     then_->print(out);
     if( hasElse() )
         else_->print(out);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace config
+} // namespace eclib

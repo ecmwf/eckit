@@ -13,6 +13,12 @@
 #include "eclib/Log.h"
 #include "eclib/Password.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 bool Password::check(const string& user,const string& password)
 {
 	struct passwd p;	
@@ -55,3 +61,8 @@ string Password::salt(const string& user)
 
 	return salt;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

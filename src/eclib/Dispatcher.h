@@ -11,8 +11,8 @@
 // File Dispatcher.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef Dispatcher_H
-#define Dispatcher_H
+#ifndef eclib_Dispatcher_h
+#define eclib_Dispatcher_h
 
 #include "eclib/machine.h"
 
@@ -20,6 +20,12 @@
 #include "eclib/Mutex.h"
 #include "eclib/MutexCond.h"
 #include "eclib/Resource.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class JSON;
 
@@ -114,6 +120,9 @@ private:
 
 };
 
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #include "eclib/Dispatcher.cc"
 

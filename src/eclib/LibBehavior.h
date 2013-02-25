@@ -8,11 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_LibBehavior_H
-#define eclib_LibBehavior_H
+#ifndef eclib_LibBehavior_h
+#define eclib_LibBehavior_h
 
 #include "eclib/CallbackLogger.h"
 #include "eclib/StandardBehavior.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class LibBehavior : public StandardBehavior {
 
@@ -42,5 +48,10 @@ protected: // members
     CallbackLogger* warn_;
     CallbackLogger* error_;
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_LibBehavior_h

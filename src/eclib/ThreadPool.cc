@@ -18,6 +18,12 @@
 #include "eclib/ThreadControler.h"
 #include "eclib/ThreadPool.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 class ThreadPoolThread : public Thread {
     ThreadPool& owner_;
     void run();
@@ -184,4 +190,9 @@ ThreadPoolTask* ThreadPool::next()
 
     return r;
 }
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

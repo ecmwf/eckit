@@ -12,12 +12,19 @@
 /// @author Tiago Quintino
 /// @date Sep 2012
 
-#ifndef eclib_StreamParser_H
-#define eclib_StreamParser_H
+#ifndef eclib_StreamParser_h
+#define eclib_StreamParser_h
 
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class StreamParser : private NonCopyable  {
 
@@ -48,5 +55,10 @@ private: // members
     std::istream& in_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

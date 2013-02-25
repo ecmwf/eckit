@@ -11,12 +11,18 @@
 // File TCPStream.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef TCPStream_H
-#define TCPStream_H
+#ifndef eclib_TCPStream_h
+#define eclib_TCPStream_h
 
 #include "eclib/Counted.h"
 #include "eclib/Stream.h"
 #include "eclib/TCPSocket.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class TCPServer;
 
@@ -138,5 +144,10 @@ private:
 // -- Members
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

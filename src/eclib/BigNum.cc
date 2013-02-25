@@ -8,8 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/BigNum.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 void BigNum::print(ostream& s,long long v)
 {
@@ -34,3 +39,8 @@ void BigNum::print(ostream& s) const
 	print(s,v);
 	s << setfill(oldfill);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

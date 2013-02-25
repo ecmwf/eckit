@@ -13,7 +13,12 @@
 
 //-----------------------------------------------------------------------------
 
-config::Function::Function(config::Compiler& c, config::Scope& scope) : 
+namespace eclib {
+namespace config {
+
+//-----------------------------------------------------------------------------
+
+Function::Function(config::Compiler& c, config::Scope& scope) : 
     Statement(scope)
 {
 //    std::cout << "Function()" << std::endl;    
@@ -26,7 +31,7 @@ config::Function::Function(config::Compiler& c, config::Scope& scope) :
     scope.function(name_,this);
 }
 
-config::Function::~Function()
+Function::~Function()
 {
 }
 
@@ -43,7 +48,7 @@ void config::Function::print(ostream &out)
 
 //-----------------------------------------------------------------------------
 
-config::FunctionCall::FunctionCall(config::Compiler& c, config::Scope &scope) :
+FunctionCall::FunctionCall(config::Compiler& c, config::Scope &scope) :
     Statement(scope)
 {   
     //    std::cout << "FunctionCall()" << std::endl;    
@@ -56,16 +61,21 @@ config::FunctionCall::FunctionCall(config::Compiler& c, config::Scope &scope) :
     scope.existsFunction(name_);
 }
 
-config::FunctionCall::~FunctionCall()
+FunctionCall::~FunctionCall()
 {
 }
 
-void config::FunctionCall::execute(const StringDict &in, StringDict &out)
+void FunctionCall::execute(const StringDict &in, StringDict &out)
 {
     scope().function(name_).execute(in,out);
 }
 
-void config::FunctionCall::print(ostream &out)
+void FunctionCall::print(ostream &out)
 {
     out << "[ call " <<  name_  << "]" << std::endl;    
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace config
+} // namespace eclib

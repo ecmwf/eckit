@@ -11,10 +11,17 @@
 // File Reanimator.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef Reanimator_H
-#define Reanimator_H
+#ifndef eclib_Reanimator_h
+#define eclib_Reanimator_h
 
 #include "eclib/Stream.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Streamable;
 
@@ -97,6 +104,10 @@ public:
 static T*  reanimate(Stream& s);
 };
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #include "eclib/Reanimator.cc"
 

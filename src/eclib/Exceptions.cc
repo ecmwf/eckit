@@ -16,6 +16,12 @@
 
 #include "eclib/BackTrace.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static Exception*& first()
 {
     static ThreadSingleton<Exception*> p;
@@ -318,3 +324,7 @@ OutOfMemory::OutOfMemory():
     Exception("out of memory")
 {
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

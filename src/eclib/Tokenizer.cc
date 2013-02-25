@@ -12,6 +12,11 @@
 
 #include "eclib/Tokenizer.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
 //-----------------------------------------------------------------------------
 
 template < class Container >
@@ -84,3 +89,8 @@ void Tokenizer::operator()(istream& in, set<string>& s)
 
     tokenizeInsert( separator_, raw, std::inserter(s, s.end()));
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

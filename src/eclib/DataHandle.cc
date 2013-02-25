@@ -20,6 +20,12 @@
 #include "eclib/StrStream.h"
 #include "eclib/Timer.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 ClassSpec DataHandle::classSpec_ = {&Streamable::classSpec(),"DataHandle",};
 Reanimator<DataHandle> DataHandle::reanimator_;
 
@@ -325,3 +331,7 @@ void DataHandle::toRemote(Stream& s) const
 void DataHandle::cost(map<string,Length>& c, bool read) const
 {
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

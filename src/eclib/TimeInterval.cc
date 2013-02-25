@@ -12,6 +12,13 @@
 #include "eclib/TimeInterval.h"
 #include "eclib/DateTime.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 TimeInterval::TimeInterval(const DateTime& t1, const DateTime& t2):
 	begin_(t1),
 	end_(t2)
@@ -27,3 +34,8 @@ TimeInterval TimeInterval::intersect(const TimeInterval& other) const
 {
 	return TimeInterval(::max(begin_,other.begin_),::min(end_,other.end_));
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

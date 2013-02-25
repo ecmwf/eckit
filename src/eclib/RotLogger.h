@@ -8,10 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_RotLogger_H
-#define eclib_RotLogger_H
+#ifndef eclib_RotLogger_h
+#define eclib_RotLogger_h
 
 #include "eclib/DHSLogger.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class RotLogger : public DHSLogger {
 public:
@@ -29,5 +36,10 @@ public:
     virtual ostream& out();
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_RotLogger_h

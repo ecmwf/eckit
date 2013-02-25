@@ -67,7 +67,6 @@ Bytes.cc
 Bytes.h
 Loader.cc
 Loader.h
-ClassExtent.cc
 ClassExtent.h
 ClimateDate.cc
 ClimateDate.h
@@ -264,7 +263,6 @@ Regex.cc
 Regex.h
 ResizableBuffer.cc
 ResizableBuffer.h
-Resource.cc
 Resource.h
 ResourceBase.cc
 ResourceMgr.cc
@@ -272,7 +270,6 @@ ResourceMgr.h
 RotLogger.cc
 RotLogger.h
 ScopedPtr.h
-STL.cc
 Seconds.cc
 Seconds.h
 Select.cc
@@ -386,7 +383,6 @@ sgi.h
 
 list( APPEND eclib_templates 
                     BasePathNameT.cc
-                    ClassExtent.cc
                     Dispatcher.cc
                     BTree.cc
 					FixedString.cc
@@ -395,7 +391,6 @@ list( APPEND eclib_templates
                     PipeHandler.cc
                     RLE.cc
                     Reanimator.cc
-                    Resource.cc
                     ThreadSingleton.cc
                     TxnLog.cc
                     Types.cc

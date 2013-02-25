@@ -11,10 +11,16 @@
 // File Task.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef Task_H
-#define Task_H
+#ifndef eclib_Task_h
+#define eclib_Task_h
 
 #include "eclib/NonCopyable.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Task : private NonCopyable {
 public:
@@ -36,5 +42,10 @@ public:
 	virtual void kill()   = 0;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

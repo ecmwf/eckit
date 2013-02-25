@@ -11,16 +11,19 @@
 // File Padded.h
 // Baudouin Raoult - ECMWF Jan 97
 
-#ifndef Padded_H
-#define Padded_H
+#ifndef eclib_Padded_h
+#define eclib_Padded_h
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // Use this class to pad an object to a given size
 
-
 template<class T,int size>
 class Padded : public T {
-
-
 private:
 
 	// Add the padding 
@@ -33,5 +36,9 @@ private:
 	char padding_[((osize_+align_-1)/align_)*align_ - osize_];
 };
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

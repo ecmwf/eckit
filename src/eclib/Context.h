@@ -8,11 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_Context_H
-#define eclib_Context_H
+#ifndef eclib_Context_h
+#define eclib_Context_h
 
 #include "eclib/Configurable.h"
 #include "eclib/Exceptions.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class ContextBehavior;
 
@@ -98,5 +104,10 @@ protected:
     long    self_; // Monitor ID
     
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_Context_h

@@ -11,23 +11,25 @@
 // File BTree.h
 // Baudouin Raoult - (c) ECMWF Feb 12
 
-#ifndef BTree_H
-#define BTree_H
-
-#include "eclib/Padded.h"
-#include "eclib/PathName.h"
-
-// IMPLEMENTS a B+Tree index
-// TODO: Deletion
-// TODO: Cache pages
-//
-// K and V needs to be PODs
+#ifndef eclib_BTree_h
+#define eclib_BTree_h
 
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
-#include "eclib/PathName.h"
 #include "eclib/Padded.h"
+#include "eclib/PathName.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+/// B+Tree index
+/// @todo Deletion
+/// @todo Cache pages
+/// @invariant K and V needs to be PODs
 
 template<class K,class V, int S>
 class BTree : private NonCopyable {
@@ -317,8 +319,10 @@ private:
 
 };
 
+//-----------------------------------------------------------------------------
 
-
+} // namespace eclib
 
 #include "BTree.cc"
+
 #endif

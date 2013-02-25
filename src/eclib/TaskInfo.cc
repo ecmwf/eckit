@@ -18,11 +18,17 @@
 #include "eclib/Timer.h"
 #include "eclib/SignalHandler.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 TaskInfo::TaskInfo()
 {
 	ASSERT(busy_ == false);
 
-	::zero(*this);
+	eclib::zero(*this);
 
 	pid_    = getpid();
 	thread_ = pthread_self();
@@ -199,3 +205,8 @@ void TaskInfo::parent(long p)
 	depth_  = 0;
 	if(p != -1) depth_ = Monitor::info()[p].depth() + 1;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

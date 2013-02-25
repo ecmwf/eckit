@@ -11,8 +11,14 @@
 // File AutoAlarm.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef AutoAlarm_H
-#define AutoAlarm_H
+#ifndef eclib_AutoAlarm_h
+#define eclib_AutoAlarm_h
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class AutoAlarm {
 public:
@@ -54,5 +60,9 @@ private:
 	static void sigAlarm(int);
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

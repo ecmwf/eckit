@@ -8,8 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_NonCopyable_H
-#define eclib_NonCopyable_H
+#ifndef eclib_NonCopyable_h
+#define eclib_NonCopyable_h
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 /// Inherit from this class to make a NonCopyable class
 
@@ -25,5 +31,9 @@ private: // No copy allowed
 	NonCopyable& operator=(const NonCopyable&);
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

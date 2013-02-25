@@ -13,6 +13,12 @@
 #include "eclib/SockBuf.h"
 #include "eclib/TCPStream.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 NetUser::NetUser(TCPSocket& protocol):
 	protocol_(protocol)
 {
@@ -33,3 +39,8 @@ void NetUser::run()
 
 	serve(stream,in,out);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

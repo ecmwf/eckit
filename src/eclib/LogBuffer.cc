@@ -17,6 +17,12 @@
 #include "eclib/AutoLock.h"
 #include "eclib/Once.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 // This is a mutex that serialize all calls to LogStream
 // This is overkilled, but it protects cout and cerr.
 // Unfortunatly, it will also serialize other usage of this class (e.g. sockets...)
@@ -113,3 +119,8 @@ void LogBuffer::dumpBuffer(void)
 
     logger_->out() << flush;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

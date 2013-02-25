@@ -34,6 +34,12 @@
 typedef void (*sighandler_t) (int);
 #endif
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static in_addr none = { INADDR_NONE };
 
 static Mutex mutex;
@@ -688,3 +694,8 @@ bool TCPSocket::stillConnected() const
     }
 
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

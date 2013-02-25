@@ -15,6 +15,12 @@
 #include "eclib/StrStream.h"
 #include "eclib/Translator.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 Double::Double(double d):
 	value_(d)
 {
@@ -55,4 +61,8 @@ Double::operator string() const
 	os << *this << StrStream::ends;
 	return string(os);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

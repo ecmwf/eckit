@@ -8,9 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/Buffer.h"
 #include "eclib/MemoryPool.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 Buffer::Buffer(size_t size):
 	size_(size),
@@ -50,3 +55,8 @@ void Buffer::destroy()
 {
 	MemoryPool::largeDeallocate(buffer_);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

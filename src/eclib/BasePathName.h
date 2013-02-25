@@ -11,8 +11,8 @@
 // File BasePathName.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef BasePathName_H
-#define BasePathName_H
+#ifndef eclib_BasePathName_h
+#define eclib_BasePathName_h
 
 #include "eclib/machine.h"
 
@@ -21,6 +21,12 @@
 #include "eclib/NonCopyable.h"
 
 struct FileSystemSize;
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class BasePathName : protected NonCopyable {
 public:
@@ -86,5 +92,9 @@ private:
 		{ p.print(s); return s; }
 
 };
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

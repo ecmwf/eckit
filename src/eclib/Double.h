@@ -11,13 +11,18 @@
 // File Double.h
 // Baudouin Raoult - ECMWF Dec 97
 
-#ifndef Double_H
-#define Double_H
+#ifndef eclib_Double_h
+#define eclib_Double_h
 
 #include "eclib/machine.h"
 
-class DumpLoad;
+//-----------------------------------------------------------------------------
 
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+class DumpLoad;
 
 class Double {
 public:
@@ -103,5 +108,10 @@ private:
 		{ p.print(s); return s; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

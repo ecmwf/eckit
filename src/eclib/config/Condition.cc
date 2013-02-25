@@ -13,7 +13,14 @@
 
 #include "eclib/config/Condition.h"
 
-config::Condition::Condition( config::Compiler& c )
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+namespace config {
+
+//-----------------------------------------------------------------------------
+
+Condition::Condition( Compiler& c )
 {
     // '[' consumed outside    
     c.consume("if"); // branch keyword
@@ -29,12 +36,12 @@ config::Condition::Condition( config::Compiler& c )
     c.consume(']');
 }
 
-config::Condition::~Condition()
+Condition::~Condition()
 {
 }
 
 
-bool config::Condition::eval( const StringDict& in, StringDict& out )
+bool Condition::eval( const StringDict& in, StringDict& out )
 {
     bool ret( true );
     for( size_t i = 0; i < sentences_.size(); ++i )
@@ -58,7 +65,7 @@ bool config::Condition::eval( const StringDict& in, StringDict& out )
     return ret;
 }
 
-void config::Condition::print( std::ostream& out )
+void Condition::print( std::ostream& out )
 {
     out << "[ if ";
     for( size_t i = 0; i < sentences_.size(); ++i )
@@ -78,7 +85,7 @@ void config::Condition::print( std::ostream& out )
     out << std::endl;
 }
 
-void config::Condition::parseSentence(Compiler& c)
+void Condition::parseSentence(Compiler& c)
 {
     if( c.peek() == ']' ) // for empty conditions
         return;
@@ -87,4 +94,9 @@ void config::Condition::parseSentence(Compiler& c)
     c.consume('=');
     sentences_.push_back( make_pair( variable, c.parseCondition() ));
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace config
+} // namespace eclib
 

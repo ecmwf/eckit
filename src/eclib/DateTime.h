@@ -10,12 +10,18 @@
 
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef DateTime_H
-#define DateTime_H
+#ifndef eclib_DateTime_h
+#define eclib_DateTime_h
 
 
 #include "eclib/Date.h"
 #include "eclib/Time.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class DateTime {
 public:
@@ -110,5 +116,9 @@ private:
 		{ p.print(s); return s; }
 };
 
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

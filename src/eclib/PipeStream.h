@@ -11,10 +11,16 @@
 // File PipeStream.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef PipeStream_H
-#define PipeStream_H
+#ifndef eclib_PipeStream_h
+#define eclib_PipeStream_h
 
 #include "eclib/Stream.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // Stream using pipes
 
@@ -59,5 +65,10 @@ private:
 	virtual string name() const { return "pipe"; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

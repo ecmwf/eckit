@@ -10,6 +10,12 @@
 
 #include "eclib/machine.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 static map<string,Isa*> *map_ = 0;
 
 void Isa::add(TypeInfo* t,const string& s)
@@ -62,3 +68,7 @@ void _endMember(ostream& s,int depth,const string& name)
 {
 	//s << endl;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

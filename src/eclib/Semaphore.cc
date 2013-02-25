@@ -15,6 +15,13 @@
 
 #include "eclib/Semaphore.h"
 
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 struct sembuf _lock[] = {
 	{ 0, 0,  SEM_UNDO }, /* test */
 	{ 0, 1,  SEM_UNDO }, /* lock */
@@ -122,3 +129,8 @@ void Semaphore::lower(int n)
 	struct sembuf op = { n,-1,SEM_UNDO};
 	SYSCALL(semop(semaphore_,&op,1));
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

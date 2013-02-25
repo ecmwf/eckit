@@ -8,11 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef NetUser_H
-#define NetUser_H
+#ifndef eclib_NetUser_h
+#define eclib_NetUser_h
 
 #include "eclib/TCPSocket.h"
 #include "eclib/Thread.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Stream;
 
@@ -47,5 +53,10 @@ private:
 	virtual void run();
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

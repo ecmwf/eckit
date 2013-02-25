@@ -8,8 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/TeeHandle.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 ClassSpec TeeHandle::classSpec_ = {&DataHandle::classSpec(),"TeeHandle",};
 Reanimator<TeeHandle> TeeHandle::reanimator_;
@@ -174,3 +179,8 @@ void TeeHandle::cost(map<string,Length>& c, bool read) const
     for(size_t i=0; i < datahandles_.size(); i++)
         datahandles_[i]->cost(c, read);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

@@ -8,10 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_DHSBehaviorLogFile_H
-#define eclib_DHSBehaviorLogFile_H
+#ifndef eclib_DHSBehaviorLogFile_h
+#define eclib_DHSBehaviorLogFile_h
 
 #include "eclib/DHSBehavior.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class DHSBehaviorLogFile : public DHSBehavior {
 public:
@@ -29,5 +35,10 @@ private:
     virtual DHSLogger* getLogger();
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif // eclib_DHSBehaviorLogFile_h

@@ -11,10 +11,17 @@
 // File Timer.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef Timer_H
-#define Timer_H
+#ifndef eclib_Timer_h
+#define eclib_Timer_h
 
 #include "eclib/Log.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // This stack object prints the elapse time between the call to
 // its contructor and the call to its destructor
@@ -55,6 +62,11 @@ private:
 };
 
 timeval operator-(const timeval&,const timeval&);
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 
 #endif

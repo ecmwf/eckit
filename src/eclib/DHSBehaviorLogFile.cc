@@ -11,6 +11,12 @@
 #include "eclib/DHSBehaviorLogFile.h"
 #include "eclib/RotLogger.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 DHSBehaviorLogFile::DHSBehaviorLogFile() :
     DHSBehavior()
 {
@@ -25,4 +31,6 @@ DHSLogger* DHSBehaviorLogFile::getLogger()
     return new RotLogger();
 }
 
+//-----------------------------------------------------------------------------
 
+} // namespace eclib

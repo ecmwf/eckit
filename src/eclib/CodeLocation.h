@@ -13,6 +13,12 @@
 
 #include "eclib/machine.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 class CodeLocation {
 
 public:
@@ -52,4 +58,8 @@ private:
 
 #define Here() CodeLocation( __FILE__ , __LINE__ , __FUNCTION__ )
 
-#endif // eclib_CodeLocation_h
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+
+#endif

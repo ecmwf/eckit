@@ -20,6 +20,12 @@
 #include "eclib/Semaphore.h"
 #include "eclib/Loader.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 string  Application::name_  = "unknown";
 Application* Application::instance_ = 0;
 
@@ -221,3 +227,7 @@ time_t Application::uptime()
 
 	return now - uptime;
 }
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

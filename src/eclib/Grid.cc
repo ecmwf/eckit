@@ -16,7 +16,13 @@
 #include "eclib/StrStream.h"
 #include "eclib/Tokenizer.h"
 
-// Not thread safe
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
+/// @note Not thread safe
 
 // =========================================================
 // Helper which contains all possible grids
@@ -226,3 +232,7 @@ void Grid::load(DumpLoad& a)
 	a.load(northSouth_);
 	a.load(eastWest_);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

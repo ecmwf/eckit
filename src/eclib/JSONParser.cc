@@ -16,6 +16,10 @@
 
 //-----------------------------------------------------------------------------
 
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 class JSONTokenizerError : public exception {
     string what_;
     virtual const char* what() const  throw()
@@ -303,9 +307,6 @@ Value JSONParser::parse()
 
 }
 
-//int main()
-//{
-//    JSONParser j(cin);
-//    j.parse();
-//    return 0;
-//}
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

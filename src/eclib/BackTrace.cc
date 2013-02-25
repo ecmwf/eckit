@@ -23,7 +23,11 @@
 #include "eclib/BackTrace.h"
 #include "eclib/Types.h"
 
-////////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 std::string BackTrace::dump()
 {
@@ -49,8 +53,9 @@ std::string BackTrace::dump()
     if (strings == NULL)
       oss << " --- no backtrace_symbols found ---\n";
     
+/// @todo here we should parse the output of the dump and demangle the symbols using the cxxabi
+
 #if 0 // EC_HAVE_CXXABI_H
-    /// here we can parse the output of the dump and demangle the symbols using the cxxabi
 #else
     for (int s = 0; s < addsize; ++s)
       oss << strings[s] << "\n";
@@ -64,6 +69,10 @@ std::string BackTrace::dump()
     oss << "\ndumping backtrace not supported on this system";
 #endif
     
-    return oss.str();
-    
+    return oss.str(); 
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

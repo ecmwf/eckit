@@ -14,6 +14,11 @@
 #include "eclib/StrStream.h"
 #include "eclib/Tokenizer.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 DateTime::DateTime(const Date& d, const Time& t):
 	date_(d), time_(t)
@@ -119,3 +124,8 @@ void DateTime::load(DumpLoad& a)
 	date_.load(a);
 	time_.load(a);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

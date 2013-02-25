@@ -11,10 +11,17 @@
 // File SharedInt.h
 // Baudouin Raoult - ECMWF Jul 97
 
-#ifndef SharedInt_H
-#define SharedInt_H
+#ifndef eclib_SharedInt_h
+#define eclib_SharedInt_h
 
 #include "eclib/Semaphore.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class SharedInt : public Semaphore {
 public:
@@ -101,5 +108,10 @@ private:
 
 };
 
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

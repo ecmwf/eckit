@@ -11,10 +11,16 @@
 // File FileLocker.h
 // Baudouin Raoult - ECMWF Feb 02
 
-#ifndef FileLocker_H
-#define FileLocker_H
+#ifndef eclib_FileLocker_h
+#define eclib_FileLocker_h
 
 #include "eclib/machine.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class FileLocker {
 public:
@@ -101,5 +107,10 @@ private:
 	//	{ p.print(s); return s; }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

@@ -8,8 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eclib/FileSystem.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 FileSystem::FileSystem(const PathName& name):
 	name_(name),
@@ -60,3 +65,7 @@ void FileSystem::print(ostream& s) const
 {
 	s << name_;
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

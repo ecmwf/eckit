@@ -13,6 +13,11 @@
 #include "eclib/machine.h"
 #include "eclib/Exceptions.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 template<class T>
 FileBase<T>::FileBase(const PathName& path):
@@ -76,3 +81,7 @@ void FileBase<T>::write(long rec,const T& data)
 	pos_ += size;
 	ASSERT(size == sizeof(Record));
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib

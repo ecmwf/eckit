@@ -11,13 +11,20 @@
 // File Streamable.h
 // B.Raoult - ECMWF May-1996
 
-#ifndef Streamable_H
-#define Streamable_H
+#ifndef eclib_Streamable_h
+#define eclib_Streamable_h
 
 #include "eclib/MemoryPool.h"
 #include "eclib/NonCopyable.h"
 #include "eclib/Reanimator.h"
 #include "eclib/Stream.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class Streamable : private NonCopyable {
 public:
@@ -64,5 +71,10 @@ private:
 	static  Reanimator<Streamable> reanimator_;
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

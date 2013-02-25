@@ -11,10 +11,16 @@
 // File Counted.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef Counted_H
-#define Counted_H
+#ifndef eclib_Counted_h
+#define eclib_Counted_h
 
 #include "eclib/Mutex.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 // Subclass from this class if you want reference counting
 // object. Remember to use 'virtual' inheritance in case of
@@ -66,5 +72,10 @@ public:
     ~AutoAttach()  { counted_.detach(); }
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

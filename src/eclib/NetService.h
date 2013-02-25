@@ -11,11 +11,17 @@
 // File NetService.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef NetService_H
-#define NetService_H
+#ifndef eclib_NetService_h
+#define eclib_NetService_h
 
 #include "eclib/TCPServer.h"
 #include "eclib/Thread.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class NetUser;
 
@@ -59,6 +65,11 @@ private:
 
 
 };
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif
 

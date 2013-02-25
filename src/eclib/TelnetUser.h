@@ -11,10 +11,17 @@
 // File TelnetUser.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef TelnetUser_H
-#define TelnetUser_H
+#ifndef eclib_TelnetUser_h
+#define eclib_TelnetUser_h
 
 #include "eclib/NetUser.h"
+
+
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
 
 class TelnetUser : public NetUser {
 public:
@@ -27,5 +34,10 @@ private:
 	string from_;
 };
 
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 
 #endif

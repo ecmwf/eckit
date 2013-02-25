@@ -22,6 +22,12 @@
 #include "eclib/StrStream.h"
 #include "eclib/Tokenizer.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 class ClusterDisk {
 	bool active_;
 	bool offLine_;
@@ -227,7 +233,7 @@ void ClusterDisks::update(const string& node, const string& type, const vector<s
 			ASSERT(!(*clusterDisks)[0].active());
 			//	Log::info() << "================ New " << node << "-" << type << " " << * j << endl;
 			(*clusterDisks)[0] = c;
-			sort(clusterDisks->begin(), clusterDisks->end());
+			std::sort(clusterDisks->begin(), clusterDisks->end());
 		}
 	}
 
@@ -374,4 +380,8 @@ string ClusterDisks::node(const string& path)
 	return (*j).node();
 
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
 

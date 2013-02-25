@@ -12,6 +12,12 @@
 #include "eclib/JSON.h"
 #include "eclib/Monitorable.h"
 
+//-----------------------------------------------------------------------------
+
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 Monitorable::Monitorable():
 	ClassExtent<Monitorable>(this)
 {
@@ -43,3 +49,8 @@ void Monitorable::allJSON(JSON& s)
 	callAll(&Monitorable::json,s);
     s.endList();
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+

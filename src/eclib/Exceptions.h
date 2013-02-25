@@ -240,12 +240,12 @@ public:
 
 //-----------------------------------------------------------------------------
 
-#define THRCALL(a) ThrCall(a,#a,__LINE__,__FILE__,__FUNCTION__)
-#define SYSCALL(a)   SysCall(a,#a,__LINE__,__FILE__,__FUNCTION__)
-#define SYSCALL2(a,b) SysCall(a,#a,b,__LINE__,__FILE__,__FUNCTION__)
-#define ASSERT(a)  Assert(!(a),#a, Here() )
-#define PANIC(a)   Panic((a),#a,__LINE__,__FILE__,__FUNCTION__)
-#define NOTIMP     throw eclib::NotImplemented( Here() )
+#define THRCALL(a)    eclib::ThrCall(a,#a,__LINE__,__FILE__,__FUNCTION__)
+#define SYSCALL(a)    eclib::SysCall(a,#a,__LINE__,__FILE__,__FUNCTION__)
+#define SYSCALL2(a,b) eclib::SysCall(a,#a,b,__LINE__,__FILE__,__FUNCTION__)
+#define ASSERT(a)     eclib::Assert(!(a),#a, Here() )
+#define PANIC(a)      eclib::Panic((a),#a,__LINE__,__FILE__,__FUNCTION__)
+#define NOTIMP  throw eclib::NotImplemented( Here() )
 
 //-----------------------------------------------------------------------------
 

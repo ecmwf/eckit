@@ -17,13 +17,14 @@
 #include "eclib/ClassExtent.h"
 #include "eclib/Mutex.h"
 
+class Url;
+
 //-----------------------------------------------------------------------------
 
 namespace eclib {
 
 //-----------------------------------------------------------------------------
 
-class Url;
 class ResourceBase;
 
 class Configurable : public ClassExtent<Configurable> {

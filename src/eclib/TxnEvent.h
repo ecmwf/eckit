@@ -22,7 +22,6 @@ namespace eclib {
 
 //-----------------------------------------------------------------------------
 
-
 typedef unsigned long long TxnID;
 
 class TxnEvent : public Streamable {

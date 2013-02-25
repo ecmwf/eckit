@@ -20,6 +20,8 @@
 #include "eclib/Translator.h"
 #include "eclib/Types.h"
 
+class Url;
+
 //-----------------------------------------------------------------------------
 
 namespace eclib {
@@ -27,7 +29,6 @@ namespace eclib {
 //-----------------------------------------------------------------------------
 
 class Configurable;
-class Url;
 
 class ResourceBase : private NonCopyable {
 

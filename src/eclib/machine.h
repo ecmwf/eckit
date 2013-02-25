@@ -155,6 +155,10 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 
+class TypeInfo;
+
+//-----------------------------------------------------------------------------
+
 namespace eclib {
 
 template<bool b> struct compile_assert {};
@@ -228,7 +232,6 @@ private:
 
 };
 
-class TypeInfo;
 class Isa {
 public:
     Isa* next_;

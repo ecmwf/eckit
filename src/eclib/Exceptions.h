@@ -245,7 +245,7 @@ public:
 #define SYSCALL2(a,b) SysCall(a,#a,b,__LINE__,__FILE__,__FUNCTION__)
 #define ASSERT(a)  Assert(!(a),#a, Here() )
 #define PANIC(a)   Panic((a),#a,__LINE__,__FILE__,__FUNCTION__)
-#define NOTIMP     throw NotImplemented( Here() )
+#define NOTIMP     throw eclib::NotImplemented( Here() )
 
 //-----------------------------------------------------------------------------
 

@@ -56,7 +56,7 @@ private:
 
 // Macros
 
-#define Here() CodeLocation( __FILE__ , __LINE__ , __FUNCTION__ )
+#define Here() eclib::CodeLocation( __FILE__ , __LINE__ , __FUNCTION__ )
 
 //-----------------------------------------------------------------------------
 

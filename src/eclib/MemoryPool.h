@@ -36,7 +36,6 @@ struct MemPool {
 	static MemPool permanentPool;
 };
 
-
 class MemoryPool : private NonCopyable {
 
 public: // class methods
@@ -56,7 +55,7 @@ public: // class methods
 private: // methods
 
 	MemoryPool();
-	~MemoryPool(); // Change to virtual if base class
+	~MemoryPool();
 
 };
 

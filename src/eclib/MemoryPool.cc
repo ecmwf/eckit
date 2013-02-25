@@ -65,6 +65,8 @@ static void init()
 	pthread_once(&once,_init);
 }
 
+//-----------------------------------------------------------------------------
+
 union Align {
 	char      char_;
 	double    double_;
@@ -72,6 +74,8 @@ union Align {
 	void*     voidstar_;
 	float     float_;
 };
+
+//-----------------------------------------------------------------------------
 
 struct MemBlk {
 
@@ -105,6 +109,8 @@ struct MemBlk {
 	void dump(ostream&,int depth = 0);
 	void size(unsigned long long&,unsigned long long&);
 };
+
+//-----------------------------------------------------------------------------
 
 MemBlk* MemBlk::memList_ = 0;
 unsigned long long MemBlk::allocateCount_ = 0;
@@ -223,7 +229,7 @@ void MemoryPool::handler()
 	throw OutOfMemory();
 }
 
-//========================================================================
+//-----------------------------------------------------------------------------
 
 const long WORD = sizeof(Align);
 
@@ -237,17 +243,19 @@ struct memblk {
 
 const long HEADER_SIZE = (sizeof(memblk) - WORD);
 
+//-----------------------------------------------------------------------------
 
-MemPool MemPool::transientPool = {
+eclib::MemPool eclib::MemPool::transientPool = {
 	1, // 1 page
 	0, // don't zero
 };
 
-MemPool MemPool::permanentPool = {
+eclib::MemPool eclib::MemPool::permanentPool = {
 	1, // 1 page
 	0, // don't zero
 };
 
+//-----------------------------------------------------------------------------
 
 void *MemoryPool::fastAllocate(size_t s,MemPool& pool)
 {
@@ -337,7 +345,7 @@ void MemoryPool::fastDeallocate(void *p,MemPool& pool)
 	abort();
 }
 
-//========================================================================
+//-----------------------------------------------------------------------------
 
 inline size_t round(size_t n)
 {
@@ -347,41 +355,42 @@ inline size_t round(size_t n)
 
 void MemoryPool::info(ostream& out)
 {
-{
-	init();
-get_lock();
-
+    {
+        init();
+        
+        get_lock();
+    
 #if 0
-
-	static struct mallinfo l = { 0,};
-	struct mallinfo m = mallinfo();
-	out << "total " << m.arena 
-		<<  "  "  << m.arena - l.arena << endl;
-	out << "used  " << m.uordblks << " (" << int(double(m.uordblks)/double(m.arena)*100 + 0.5) << "%)" 
-		<<  "  "  << m.uordblks - l.uordblks << endl;
-	out << "free  " << m.fordblks << " (" << int(double(m.fordblks)/double(m.arena)*100 + 0.5) << "%)" 
-		<<  "  "  << m.fordblks - l.fordblks << endl;
-	l = m;
-    out << m.arena << " (total space in arena)" << endl;
-    out << m.ordblks << " (number of ordinary blocks)" << endl;
-    out << m.smblks << " (number of small blocks)" << endl;
-    out << m.hblks << " (number of holding blocks)" << endl;
-    out << m.hblkhd << " (space in holding block headers)" << endl;
-    out << m.usmblks << " (space in small blocks in use)" << endl;
-    out << m.fsmblks << " (space in free small blocks)" << endl;
-    out << m.uordblks << " (space in ordinary blocks in use)" << endl;
-    out << m.fordblks << " (space in free ordinary blocks)" << endl;
-    out << m.keepcost << " (cost of enabling keep option)" << endl;
+    
+        static struct mallinfo l = { 0,};
+        struct mallinfo m = mallinfo();
+        out << "total " << m.arena 
+            <<  "  "  << m.arena - l.arena << endl;
+        out << "used  " << m.uordblks << " (" << int(double(m.uordblks)/double(m.arena)*100 + 0.5) << "%)" 
+            <<  "  "  << m.uordblks - l.uordblks << endl;
+        out << "free  " << m.fordblks << " (" << int(double(m.fordblks)/double(m.arena)*100 + 0.5) << "%)" 
+            <<  "  "  << m.fordblks - l.fordblks << endl;
+        l = m;
+        out << m.arena << " (total space in arena)" << endl;
+        out << m.ordblks << " (number of ordinary blocks)" << endl;
+        out << m.smblks << " (number of small blocks)" << endl;
+        out << m.hblks << " (number of holding blocks)" << endl;
+        out << m.hblkhd << " (space in holding block headers)" << endl;
+        out << m.usmblks << " (space in small blocks in use)" << endl;
+        out << m.fsmblks << " (space in free small blocks)" << endl;
+        out << m.uordblks << " (space in ordinary blocks in use)" << endl;
+        out << m.fordblks << " (space in free ordinary blocks)" << endl;
+        out << m.keepcost << " (cost of enabling keep option)" << endl;
 #ifdef SUNINFO
-    out << m.mxfast << " (max size of small block)" << endl;
-    out << m.nblks << " (number of small blocks in holding block)" << endl;
-    out << m.grain << " (small block rounding factor)" << endl;
-    out << m.uordbytes << " (space allocated in ordinary blocks)" << endl;
-    out << m.allocated << " (number of ordinary blocks allocated)" << endl;
-    out << m.treeoverhead << " (bytes used in maintaining in free tree)" << endl;
+        out << m.mxfast << " (max size of small block)" << endl;
+        out << m.nblks << " (number of small blocks in holding block)" << endl;
+        out << m.grain << " (small block rounding factor)" << endl;
+        out << m.uordbytes << " (space allocated in ordinary blocks)" << endl;
+        out << m.allocated << " (number of ordinary blocks allocated)" << endl;
+        out << m.treeoverhead << " (bytes used in maintaining in free tree)" << endl;
 #endif
 #endif
-}
+    }
 
 	out << "---" << endl;
 	out << "allocate " << MemBlk::allocateCount_ << endl;
@@ -408,7 +417,8 @@ get_lock();
 			 << " count = " << m->count_ << endl;
 		m = m->next_;
 	}
-release_lock();
+
+    release_lock();
 }
 
 //-----------------------------------------------------------------------------

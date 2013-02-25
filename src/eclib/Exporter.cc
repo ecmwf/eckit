@@ -21,6 +21,10 @@ void *operator new(size_t, void* addr, eclib::Evolve&) {
 
 //-----------------------------------------------------------------------------
 
+namespace eclib {
+
+//-----------------------------------------------------------------------------
+
 void _export(eclib::Exporter& out, unsigned char what) { 
     out.writeUnsigned(what);
 } 
@@ -63,10 +67,6 @@ void _export(eclib::Exporter& out, long long what) {
 void _export(eclib::Exporter& out, double what) { 
     out.writeDouble(what);
 }
-
-//-----------------------------------------------------------------------------
-
-namespace eclib {
 
 //-----------------------------------------------------------------------------
 

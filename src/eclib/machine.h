@@ -302,14 +302,6 @@ void _endMember(eclib::Exporter&,const char* name);
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
-
-//-----------------------------------------------------------------------------
-
-void* operator new(size_t,void* addr, eclib::Evolve&);
-
-//-----------------------------------------------------------------------------
-
 template<class T>
 void _export(eclib::Exporter& h,const T& what)
 {
@@ -336,6 +328,14 @@ void _export(eclib::Exporter& s ,const char* name,const T& what)
     _export(s,what);
     _endMember(s,name);
 }
+
+//-----------------------------------------------------------------------------
+
+} // namespace eclib
+
+//-----------------------------------------------------------------------------
+
+void* operator new(size_t,void* addr, eclib::Evolve&);
 
 //-----------------------------------------------------------------------------
 

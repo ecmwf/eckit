@@ -47,15 +47,11 @@ public:
 	friend Stream& operator>>(Stream& s,Offset& x)
 		{ s >> x.value_; return s;}
 
-// -- Contructors
-
 	//Offset(fpos_t); <- To implement
 	Offset(long long l = 0) : value_(l) {}
 	Offset(const Offset& other) : value_(other.value_) {}
 
 #include "eclib/Offset.b"
-
-// -- Operators
 
 	Offset& operator=(const Offset& other) 
 		{ value_ = other.value_; return *this;}
@@ -90,13 +86,11 @@ public:
 	Length operator-(const Offset& other) const
 		{ return value_ - other.value_;}
 
-// -- Methods
 	
 	operator long long() const { return value_; }		
 
 	void dump(DumpLoad&) const;
 	void load(DumpLoad&);
-// -- Class methods
 
 private:
     

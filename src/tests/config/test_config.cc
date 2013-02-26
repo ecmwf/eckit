@@ -39,21 +39,22 @@ void TestConfig::test_parse()
     ostringstream code;
      
     code <<        
-            " a = 1; "                          // assign digit
-            " b = lolo; "                       // assign string
+            " a = 1; "                            // assign digit
+            " b = lolo; "                         // assign string
             " "
 //            " [ if class in [ od , rd ] && stream = oper ]"   // condition with multiple statement
             " [ if class = od || rd && stream = oper ]"   // condition with multiple statement
             " {  "
-            "   fdbRoot = \'/tmp/fdb\';  "       // paths
+            "   fdbRoot = \'/tmp/fdb\';  "        // paths
             " "
-            "   c1 = \"4 x 4\"; "               // double quote
-            "   [ if date = today ] "              // nested branch
+            "   c1 = \"4 x 4\"; "                 // double quote
+            "   [ if date = today ] "             // nested branch
             "   {"
             "       d = 4; "
-            "   }"                              // close after semi-colon
-            "   c2 = '5 x 5'; "                 // single quote
-            "   e = '6'; "
+            "   }"                                // close after semi-colon
+            "   c2 = '5 x 5'; "                   // single quote
+            "   cc = lolo popo   gege  ;"         // string with spaces and not quotes 'lolo popo'
+            "   e = '6'; " 
             "   e = '66'; "                       // override
             "   f : 'fofo'; "                     // assign with :
             " }"
@@ -68,16 +69,19 @@ void TestConfig::test_parse()
             " "
             " [ if ] { h = here ; }"               // always true
             " "
-            " g = go; "                         // isolated sataement
+            " g = go; "                         // isolated statement
             " "
             " { } "                             // empty block
             " "
-            " { j = jojo  } "                   // assigment without ';' @ end
             " { k = koko; } "                   // stand alone block
             " "
-            " [ function foo ] { m = momo }"   // function definition
+            " [ function foo ] { m = momo }"    // function definition
             " "
-            " [ call foo ]"                    // function call
+            " [ call foo ]"                     // function call
+            " "
+            " { j = jojo  } "                   // finish assignement with block
+            " z1 = 11 \n"                       // finish assignement with \n
+            " z2 = 22 #"                        // finish assignement with #
             ; 
      
     istringstream in(code.str());
@@ -98,8 +102,8 @@ void TestConfig::test_parse()
     
     s.execute(din,dout);
     
-//    for( StringDict::const_iterator i = dout.begin(); i != dout.end(); ++i )
-//        std::cout << i->first << " : " << i->second << std::endl;    
+    for( StringDict::const_iterator i = dout.begin(); i != dout.end(); ++i )
+        std::cout << i->first << " : " << i->second << std::endl;    
     
     ASSERT( dout["a"] == "1" );
     ASSERT( dout["b"] == "lolo" );
@@ -107,6 +111,7 @@ void TestConfig::test_parse()
     ASSERT( dout["c1"] == "4 x 4" );
     ASSERT( dout["d"] == "4" );
     ASSERT( dout["c2"] == "5 x 5" );
+    ASSERT( dout["cc"] == "lolo popo   gege" );
     ASSERT( dout["e"] == "66" );
     ASSERT( dout["s"] == "ss" );
     ASSERT( dout["t"] == "22" );
@@ -115,6 +120,8 @@ void TestConfig::test_parse()
     ASSERT( dout["k"] == "koko" );
     ASSERT( dout["j"] == "jojo" );
     ASSERT( dout["m"] == "momo" );
+    ASSERT( dout["z1"] == "11" );
+    ASSERT( dout["z2"] == "22" );
     
     
 }

@@ -30,13 +30,15 @@ Assignment::Assignment(Compiler &c, Scope& scope) :
     else
         c.consume('=');
     
-    value_ = c.parseValue();
+    const bool dontBreakOnSpace = true;
     
-    const bool with_spaces = true;
+    value_ = c.parseValue(dontBreakOnSpace);
+    
+    const bool include_spaces = true;
 
     while( true )
     {
-        n = c.peek(with_spaces);
+        n = c.peek(include_spaces);
         switch( n )
         {
             case '\n':
@@ -50,7 +52,7 @@ Assignment::Assignment(Compiler &c, Scope& scope) :
                 c.consumeComment();
                 return;
             case ' ':
-                c.next(with_spaces);
+                c.next(include_spaces);
                 break;
             default:
                 throw StreamParser::Error( string("unexpected character after assignment : ") + n );

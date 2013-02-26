@@ -38,7 +38,7 @@ public: // methods
     void consumeComment();
     string consumeToEOL();    
     string parseIdentifier();
-    string parseValue();
+    string parseValue( bool dontBreakOnSpace = false );
     StringList parseCondition();
 
 protected:

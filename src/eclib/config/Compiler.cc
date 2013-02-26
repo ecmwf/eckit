@@ -12,6 +12,7 @@
 
 #include "eclib/Log.h"
 #include "eclib/Tokenizer.h"
+#include "eclib/StringTools.h"
 
 #include "eclib/config/Compiler.h"
 
@@ -72,7 +73,7 @@ string Compiler::parseIdentifier()
     return s;
 }
 
-string Compiler::parseValue()
+string Compiler::parseValue( bool dontBreakOnSpace )
 {    
     string s;
     char c = peek();
@@ -91,15 +92,17 @@ string Compiler::parseValue()
         return s;
     }
     
-    while( c && !isspace(c) && c != '\n' && c != '#' && c != ';' && c != '}' )
+    while( c && ( dontBreakOnSpace || !isspace(c) ) && c != '\n' && c != '#' && c != ';' && c != '}' )
     {
         s += next(with_spaces);
         c = peek(with_spaces);
     }
     
 //    std::cout << "value [" << s << "]" << std::endl;    
-    
-    return s;
+    if( dontBreakOnSpace )
+        return StringTools::trim(s);
+    else
+        return s;
 }
 
 StringList Compiler::parseCondition()

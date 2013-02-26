@@ -10,6 +10,7 @@
 
 #include <cmath>
 
+#include "eclib/Bytes.h"
 #include "eclib/Log.h"
 #include "eclib/Tool.h"
 #include "eclib/Resource.h"
@@ -44,6 +45,7 @@ void TestResource::test_default()
 
     double d = Resource<double>("d", 777.7);
 
+    DEBUG_VAR(d);
     ASSERT( ( abs(d - 777.7) ) <= 10E-6 );
 }
 
@@ -78,7 +80,8 @@ void TestResource::test_config_file()
 {
     ostringstream code;
 
-    code << " b = foo " << std::endl
+    code << " buffer = 60 MB " << std::endl
+         << " b = foo " << std::endl
          << " [ if class = od ] { b = bar }" << std::endl;
 
     istringstream in(code.str());
@@ -91,9 +94,15 @@ void TestResource::test_config_file()
 
     string b = Resource<string>("b","none",args);
 
-    std::cout << "b [" << b << "]" << std::endl;
+    DEBUG_VAR(b);
 
     ASSERT( b == "bar" );
+
+    long buffer = Resource<long>("buffer",0);
+
+    DEBUG_VAR(buffer);
+    
+    ASSERT( buffer == Bytes::MiB(60) );
 }
 
 //-----------------------------------------------------------------------------

@@ -11,14 +11,14 @@
 // File MapContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef eclib_MapContent_h
-#define eclib_MapContent_h
+#ifndef eckit_MapContent_h
+#define eckit_MapContent_h
 
 #include "eclib/Value.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -114,6 +114,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

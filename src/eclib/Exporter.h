@@ -11,8 +11,8 @@
 // File Exporter.h
 // Baudouin Raoult - (c) ECMWF Oct 10
 
-#ifndef eclib_Exporter_h
-#define eclib_Exporter_h
+#ifndef eckit_Exporter_h
+#define eckit_Exporter_h
 
 #include "eclib/machine.h"
 
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -198,6 +198,6 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

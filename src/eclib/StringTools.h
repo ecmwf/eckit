@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_StringTools_h
-#define eclib_StringTools_h
+#ifndef eckit_StringTools_h
+#define eckit_StringTools_h
 
 #include "eclib/machine.h"
 
@@ -17,7 +17,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -47,6 +47,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

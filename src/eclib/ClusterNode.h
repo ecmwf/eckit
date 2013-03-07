@@ -11,12 +11,12 @@
 // File ClusterNode.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_ClusterNode_h
-#define eclib_ClusterNode_h
+#ifndef eckit_ClusterNode_h
+#define eckit_ClusterNode_h
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -85,6 +85,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,14 +11,14 @@
 // File HyperCube.h
 // Baudouin Raoult - ECMWF Oct 96
 
-#ifndef eclib_HyperCube_h
-#define eclib_HyperCube_h
+#ifndef eckit_HyperCube_h
+#define eckit_HyperCube_h
 
 #include "eclib/Types.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -118,6 +118,6 @@ void HyperCube::combine(Remapping& map1,const Remapping& map2)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

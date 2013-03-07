@@ -11,8 +11,8 @@
 // File ResizableBuffer.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_ResizableBuffer_h
-#define eclib_ResizableBuffer_h
+#ifndef eckit_ResizableBuffer_h
+#define eckit_ResizableBuffer_h
 
 #include "eclib/machine.h"
 
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -74,6 +74,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

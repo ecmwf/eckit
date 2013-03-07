@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -104,8 +104,8 @@ PartFileHandle::PartFileHandle(const PathName& name,
 bool PartFileHandle::compress(bool sorted)
 {
     if(sorted)
-        eclib::sort(offset_,length_);
-    return eclib::compress(offset_,length_);
+        eckit::sort(offset_,length_);
+    return eckit::compress(offset_,length_);
 }
 
 PartFileHandle::~PartFileHandle()
@@ -358,5 +358,5 @@ string PartFileHandle::title() const
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

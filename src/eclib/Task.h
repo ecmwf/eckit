@@ -11,14 +11,14 @@
 // File Task.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_Task_h
-#define eclib_Task_h
+#ifndef eckit_Task_h
+#define eckit_Task_h
 
 #include "eclib/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -46,6 +46,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

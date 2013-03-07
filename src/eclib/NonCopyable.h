@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_NonCopyable_h
-#define eclib_NonCopyable_h
+#ifndef eckit_NonCopyable_h
+#define eckit_NonCopyable_h
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -34,6 +34,6 @@ private: // No copy allowed
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

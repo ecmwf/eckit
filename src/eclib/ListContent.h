@@ -11,14 +11,14 @@
 // File ListContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef eclib_ListContent_h
-#define eclib_ListContent_h
+#ifndef eckit_ListContent_h
+#define eckit_ListContent_h
 
 #include "eclib/Value.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -113,6 +113,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

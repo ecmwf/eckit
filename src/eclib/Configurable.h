@@ -11,8 +11,8 @@
 // File Configurable.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_Configurable_h
-#define eclib_Configurable_h
+#ifndef eckit_Configurable_h
+#define eckit_Configurable_h
 
 #include "eclib/ClassExtent.h"
 #include "eclib/Mutex.h"
@@ -21,7 +21,7 @@ class Url;
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -76,7 +76,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif
 

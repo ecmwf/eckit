@@ -11,15 +11,15 @@
 // File FileStream.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_FileStream_h
-#define eclib_FileStream_h
+#ifndef eckit_FileStream_h
+#define eckit_FileStream_h
 
 #include "eclib/PathName.h"
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -57,6 +57,6 @@ protected: // methods
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

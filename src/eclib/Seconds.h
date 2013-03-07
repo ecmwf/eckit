@@ -11,15 +11,15 @@
 // File Seconds.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_Seconds_h
-#define eclib_Seconds_h
+#ifndef eckit_Seconds_h
+#define eckit_Seconds_h
 
 #include "eclib/machine.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -55,6 +55,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

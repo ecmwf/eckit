@@ -11,14 +11,14 @@
 // File Log.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_Log_h
-#define eclib_Log_h
+#ifndef eckit_Log_h
+#define eckit_Log_h
 
 #include "eclib/CodeLocation.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -135,6 +135,6 @@ int format(ostream&);
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

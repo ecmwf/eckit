@@ -11,15 +11,15 @@
 // File TmpFile.h
 // Baudouin Raoult - ECMWF Sep 01
 
-#ifndef eclib_TmpFile_h
-#define eclib_TmpFile_h
+#ifndef eckit_TmpFile_h
+#define eckit_TmpFile_h
 
 #include "eclib/PathName.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -107,7 +107,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 
 #endif

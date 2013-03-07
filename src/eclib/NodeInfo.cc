@@ -10,18 +10,18 @@
 
 #include <pwd.h>
 
-#include "eclib/Application.h"
 #include "eclib/AutoLock.h"
+#include "eclib/Context.h"
 #include "eclib/Monitor.h"
 #include "eclib/Mutex.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/Resource.h"
 #include "eclib/StrStream.h"
-#include "eclib/ThreadSingleton.h"
+#include "eclib/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -41,8 +41,7 @@ NodeInfo& NodeInfo::init()
         static string myHost = Resource<string> ("host", "");
         static string myUser;
 
-
-		name_ = Application::appName();
+		name_ = Context::instance().runName();
 
 		host_ = myHost;
 		if(host_.length() == 0)
@@ -178,5 +177,5 @@ NodeInfo NodeInfo::sendLogin(Stream& s)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

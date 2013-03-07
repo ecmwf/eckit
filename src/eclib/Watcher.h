@@ -11,12 +11,12 @@
 // File Watcher.h
 // Baudouin Raoult - ECMWF Jun 98
 
-#ifndef eclib_Watcher_h
-#define eclib_Watcher_h
+#ifndef eckit_Watcher_h
+#define eckit_Watcher_h
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -35,6 +35,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

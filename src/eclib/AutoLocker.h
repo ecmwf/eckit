@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_AutoLocker_h
-#define eclib_AutoLocker_h
+#ifndef eckit_AutoLocker_h
+#define eckit_AutoLocker_h
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -27,6 +27,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,14 +11,14 @@
 // File ClimateDate.h
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef eclib_ClimateDate_h
-#define eclib_ClimateDate_h
+#ifndef eckit_ClimateDate_h
+#define eckit_ClimateDate_h
 
 #include "eclib/Date.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -110,7 +110,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 
 #endif

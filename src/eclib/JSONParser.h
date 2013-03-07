@@ -11,15 +11,15 @@
 /// @author Baudouin Raoult
 /// @date Jun 2012
 
-#ifndef eclib_JSONParser_h
-#define eclib_JSONParser_h
+#ifndef eckit_JSONParser_h
+#define eckit_JSONParser_h
 
 #include "eclib/StreamParser.h"
 #include "eclib/Value.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -47,6 +47,6 @@ private: // methods
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

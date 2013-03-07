@@ -9,8 +9,8 @@
  */
 
 
-#include "eclib/ThreadControler.h"
-#include "eclib/Thread.h"
+#include "eclib/thread/ThreadControler.h"
+#include "eclib/thread/Thread.h"
 #include "eclib/Mutex.h"
 #include "eclib/MutexCond.h"
 #include "eclib/AutoLock.h"
@@ -18,7 +18,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -211,5 +211,5 @@ void ProducerConsumerTask<PAYLOAD>::run()
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

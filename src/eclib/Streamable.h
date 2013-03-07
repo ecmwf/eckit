@@ -11,8 +11,8 @@
 // File Streamable.h
 // B.Raoult - ECMWF May-1996
 
-#ifndef eclib_Streamable_h
-#define eclib_Streamable_h
+#ifndef eckit_Streamable_h
+#define eckit_Streamable_h
 
 #include "eclib/MemoryPool.h"
 #include "eclib/NonCopyable.h"
@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -75,6 +75,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

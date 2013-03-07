@@ -11,8 +11,8 @@
 // File MemoryPool.h
 // Baudouin Raoult - ECMWF May 97
 
-#ifndef eclib_MemoryPool_h
-#define eclib_MemoryPool_h
+#ifndef eckit_MemoryPool_h
+#define eckit_MemoryPool_h
 
 #include "eclib/machine.h"
 
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -61,6 +61,6 @@ private: // methods
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,13 +11,13 @@
 // File RLE.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_RLE_h
-#define eclib_RLE_h
+#ifndef eckit_RLE_h
+#define eckit_RLE_h
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ Stream& RLEDIFFread(Stream&,OutputIterator,T*);
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #include "eclib/RLE.cc"
 

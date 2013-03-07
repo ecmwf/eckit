@@ -11,8 +11,8 @@
 // File FTPHandle.h
 // Manuel Fuentes - ECMWF May 96
 
-#ifndef eclib_FTPHandle_h
-#define eclib_FTPHandle_h
+#ifndef eckit_FTPHandle_h
+#define eckit_FTPHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/TCPClient.h"
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -89,6 +89,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

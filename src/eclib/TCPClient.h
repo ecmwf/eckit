@@ -11,15 +11,15 @@
 // File TCPClient.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_TCPClient_h
-#define eclib_TCPClient_h
+#ifndef eckit_TCPClient_h
+#define eckit_TCPClient_h
 
 #include "eclib/NetAddress.h"
 #include "eclib/TCPSocket.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -61,6 +61,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif // TCPClient_H

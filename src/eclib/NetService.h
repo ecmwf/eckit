@@ -11,15 +11,15 @@
 // File NetService.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_NetService_h
-#define eclib_NetService_h
+#ifndef eckit_NetService_h
+#define eckit_NetService_h
 
 #include "eclib/TCPServer.h"
-#include "eclib/Thread.h"
+#include "eclib/thread/Thread.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -69,7 +69,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif
 

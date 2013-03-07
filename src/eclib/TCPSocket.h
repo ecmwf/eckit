@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_TCPSocket_h
-#define eclib_TCPSocket_h
+#ifndef eckit_TCPSocket_h
+#define eckit_TCPSocket_h
 
 #include <netinet/in.h>
 
@@ -18,7 +18,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -126,6 +126,6 @@ ostream& operator<<(ostream&,in_addr);
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

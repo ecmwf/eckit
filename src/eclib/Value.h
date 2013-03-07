@@ -11,8 +11,8 @@
 // File Value.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef eclib_Value_h
-#define eclib_Value_h
+#ifndef eckit_Value_h
+#define eckit_Value_h
 
 #include "eclib/Content.h"
 #include "eclib/Date.h"
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -180,6 +180,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

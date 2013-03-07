@@ -11,8 +11,8 @@
 // File StdPipe.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_StdPipe_h
-#define eclib_StdPipe_h
+#ifndef eckit_StdPipe_h
+#define eckit_StdPipe_h
 
 #include <stdio.h>
 #include <string>
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -58,6 +58,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

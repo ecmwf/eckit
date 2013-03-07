@@ -19,13 +19,13 @@
 #include "eclib/Resource.h"
 #include "eclib/TCPServer.h"
 #include "eclib/TCPStream.h"
-#include "eclib/Thread.h"
-#include "eclib/ThreadControler.h"
+#include "eclib/thread/Thread.h"
+#include "eclib/thread/ThreadControler.h"
 #include "eclib/ClusterNodes.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -112,5 +112,5 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

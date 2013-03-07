@@ -11,14 +11,14 @@
 // File FileSystem.h
 // MARS (Baudouin Raoult) - ECMWF Nov 01
 
-#ifndef eclib_FileSystem_h
-#define eclib_FileSystem_h
+#ifndef eckit_FileSystem_h
+#define eckit_FileSystem_h
 
 #include "eclib/PathName.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -121,6 +121,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

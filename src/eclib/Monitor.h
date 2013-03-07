@@ -11,8 +11,8 @@
 // File Monitor.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef eclib_Monitor_h
-#define eclib_Monitor_h
+#ifndef eckit_Monitor_h
+#define eckit_Monitor_h
 
 #include "eclib/machine.h"
 
@@ -23,7 +23,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -138,6 +138,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

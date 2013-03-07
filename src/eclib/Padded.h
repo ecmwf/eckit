@@ -11,12 +11,12 @@
 // File Padded.h
 // Baudouin Raoult - ECMWF Jan 97
 
-#ifndef eclib_Padded_h
-#define eclib_Padded_h
+#ifndef eckit_Padded_h
+#define eckit_Padded_h
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -39,6 +39,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -10,9 +10,10 @@
 
 #include "eclib/machine.h"
 
+#include <stdint.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
-#include <fcntl.h>
 
 #include "eclib/AutoLock.h"
 #include "eclib/MappedArray.h"
@@ -20,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -121,5 +122,5 @@ void MappedArray<T>::sync()
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

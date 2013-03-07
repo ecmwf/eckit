@@ -11,14 +11,14 @@
 // File Monitorable.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef eclib_Monitorable_h
-#define eclib_Monitorable_h
+#ifndef eckit_Monitorable_h
+#define eckit_Monitorable_h
 
 #include "eclib/ClassExtent.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -58,6 +58,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

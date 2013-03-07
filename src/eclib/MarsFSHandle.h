@@ -11,8 +11,8 @@
 // File MarsFSHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_MarsFSHandle_h
-#define eclib_MarsFSHandle_h
+#ifndef eckit_MarsFSHandle_h
+#define eckit_MarsFSHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/MarsFSFile.h"
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -103,6 +103,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -10,8 +10,8 @@
 
 // File LocalPathName.h
 // B.Raoult - ECMWF May 96
-#ifndef eclib_LocalPathName_h
-#define eclib_LocalPathName_h
+#ifndef eckit_LocalPathName_h
+#define eckit_LocalPathName_h
 
 #include "eclib/Length.h"
 #include "eclib/Offset.h"
@@ -19,7 +19,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -221,6 +221,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

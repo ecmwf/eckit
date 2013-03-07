@@ -11,15 +11,15 @@
 // File FileSpace.h
 // Baudouin Raoult - ECMWF Mar 98
 
-#ifndef eclib_FileSpace_h
-#define eclib_FileSpace_h
+#ifndef eckit_FileSpace_h
+#define eckit_FileSpace_h
 
 #include "eclib/PathName.h"
 #include "eclib/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -65,6 +65,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

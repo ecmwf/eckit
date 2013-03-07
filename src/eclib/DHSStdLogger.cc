@@ -14,7 +14,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -27,8 +27,8 @@ DHSStdLogger::DHSStdLogger( std::ostream& out ) :
     DHSLogger(),
     out_( &out )    
 {
-    useCerr = Resource<bool>("$ECLIB_LOG_TO_CERR;-log2cerr",false);
-    useNull = Resource<bool>("$ECLIB_LOG_TO_DEVNULL;-log2devnull",false);
+    useCerr = Resource<bool>("$ECKIT_LOG_TO_CERR;-log2cerr",false);
+    useNull = Resource<bool>("$ECKIT_LOG_TO_DEVNULL;-log2devnull",false);
     
     if(useCerr) out_ = &std::cerr;
     if(useNull) out_ = &null;    

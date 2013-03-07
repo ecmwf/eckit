@@ -1,14 +1,14 @@
 // File NetAddress.h
 // T. Quintino - ECMWF Feb 2012
 
-#ifndef eclib_NetAddress_h
-#define eclib_NetAddress_h
+#ifndef eckit_NetAddress_h
+#define eckit_NetAddress_h
 
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -68,6 +68,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

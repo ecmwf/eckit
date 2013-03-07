@@ -11,15 +11,15 @@
 // File TelnetUser.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef eclib_TelnetUser_h
-#define eclib_TelnetUser_h
+#ifndef eckit_TelnetUser_h
+#define eckit_TelnetUser_h
 
 #include "eclib/NetUser.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -38,6 +38,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

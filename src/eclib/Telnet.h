@@ -11,15 +11,15 @@
 // File Telnet.h
 // Baudouin Raoult - ECMWF Oct 96
 
-#ifndef eclib_Telnet_h
-#define eclib_Telnet_h
+#ifndef eckit_Telnet_h
+#define eckit_Telnet_h
 
 #include "eclib/NetService.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -53,6 +53,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

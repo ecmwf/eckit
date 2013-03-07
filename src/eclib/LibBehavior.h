@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_LibBehavior_h
-#define eclib_LibBehavior_h
+#ifndef eckit_LibBehavior_h
+#define eckit_LibBehavior_h
 
 #include "eclib/CallbackLogger.h"
 #include "eclib/StandardBehavior.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -52,6 +52,6 @@ protected: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
-#endif // eclib_LibBehavior_h
+#endif // eckit_LibBehavior_h

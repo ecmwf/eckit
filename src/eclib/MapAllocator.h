@@ -11,15 +11,15 @@
 // File MapAllocator.h
 // MARS (Baudouin Raoult) - ECMWF Nov 01
 
-#ifndef eclib_MapAllocator_h
-#define eclib_MapAllocator_h
+#ifndef eckit_MapAllocator_h
+#define eckit_MapAllocator_h
 
 #include "eclib/Exceptions.h"
 #include "eclib/Types.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -120,6 +120,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

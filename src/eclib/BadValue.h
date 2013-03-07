@@ -8,14 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_BadValue_h
-#define eclib_BadValue_h
+#ifndef eckit_BadValue_h
+#define eckit_BadValue_h
 
 #include "eclib/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -26,6 +26,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

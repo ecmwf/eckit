@@ -11,14 +11,14 @@
 // File Telnetable.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_Telnetable_h
-#define eclib_Telnetable_h
+#ifndef eckit_Telnetable_h
+#define eckit_Telnetable_h
 
-#include "eclib/ThreadControler.h"
+#include "eclib/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -51,6 +51,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

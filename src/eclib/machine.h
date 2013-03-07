@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_machine_h
-#define eclib_machine_h
+#ifndef eckit_machine_h
+#define eckit_machine_h
 
 #include "ecbuild_config.h"
 
@@ -17,31 +17,9 @@
 
 //-----------------------------------------------------------------------------
 
-/* all machine dependant stuff should go here */
+/* POSIX */
 
-#ifdef aix
-#include "eclib/aix.h"
-#endif
-
-#ifdef linux
-#include "eclib/linux.h"
-#endif
-
-#ifdef __sgi
-#include "eclib/sgi.h"
-#endif
-
-#ifdef __hpux
-#include "eclib/hpux.h"
-#endif
-
-#ifdef MacOSX
-#include "eclib/macosx.h"
-#endif
-
-#ifdef cygwin
-#include "eclib/cygwin.h"
-#endif
+#include <string.h>
 
 //-----------------------------------------------------------------------------
 
@@ -143,7 +121,7 @@ using namespace std;
 #define fdatasync  fsync
 #endif
 
-#ifndef eclib_EC_hAVE_FUNCTION_DEF
+#ifndef EC_HAVE_FUNCTION_DEF
 #define __FUNCTION__ ""
 #endif
 
@@ -155,11 +133,38 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 
+#ifdef __GNUC__ /* GCC gets confused about offsetof */
+
+/// @todo eckit fixme
+// static double _offset; // on macosx ?
+
+static char _offset_dummy[80];
+static void* _offset = &_offset_dummy;
+
+#define member_offset(Z,z)  size_t( reinterpret_cast<char*>(&reinterpret_cast<Z*>(_offset)->z) - reinterpret_cast<char*>(_offset))
+#define member_size(Z,z)    size_t( sizeof(reinterpret_cast<Z*>(_offset)->z))
+
+static void* keep_gcc_quiet_about_offset_2(void* d);
+static void* keep_gcc_quiet_about_offset_1(void* d) { return keep_gcc_quiet_about_offset_2(_offset); }
+static void* keep_gcc_quiet_about_offset_2(void* d) { return keep_gcc_quiet_about_offset_1(_offset); }
+
+#endif /* __GNUC__ */
+
+#ifndef member_size
+#define member_size(a,b)   size_t(sizeof(((a*)0)->b))
+#endif
+
+#ifndef member_offset
+#define member_offset(a,b) size_t(&(((a*)0)->b))
+#endif
+
+//-----------------------------------------------------------------------------
+
 class TypeInfo;
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 template<bool b> struct compile_assert {};
 template<>       struct compile_assert<true> { static void check() {} };
@@ -202,7 +207,7 @@ class Evolve {
 
 public:
 
-    Evolve(eclib::Exporter&);
+    Evolve(eckit::Exporter&);
     Evolve(Evolve*,const char*, const char*);
 
     Evolve operator() (const char*, const char* = 0);
@@ -241,14 +246,6 @@ public:
     static Isa* get(const string&);
 
 };
-
-#ifndef member_size
-#define member_size(a,b)   size_t(sizeof(((a*)0)->b))
-#endif
-
-#ifndef member_offset
-#define member_offset(a,b) size_t(&(((a*)0)->b))
-#endif
 
 class Schema {
 public:
@@ -291,41 +288,41 @@ void _describe(ostream& s,int depth,const string& name,const T& what)
 
 class Exporter;
 
-void _startObject(eclib::Exporter&,unsigned long long type, unsigned long long location, unsigned long long id, size_t count);
-void _endObject(eclib::Exporter&,unsigned long long type, unsigned long long location, unsigned long long id, size_t count);
-void _startSubObject(eclib::Exporter&);
-void _endSubObject(eclib::Exporter&);
-void _nextSubObject(eclib::Exporter&);
-void _startClass(eclib::Exporter&,const string& name);
-void _endClass(eclib::Exporter&,const string& name);
-void _startClass(eclib::Exporter&,const char* name);
-void _endClass(eclib::Exporter&,const char* name);
-void _startMember(eclib::Exporter&,const char* name);
-void _endMember(eclib::Exporter&,const char* name);
+void _startObject(eckit::Exporter&,unsigned long long type, unsigned long long location, unsigned long long id, size_t count);
+void _endObject(eckit::Exporter&,unsigned long long type, unsigned long long location, unsigned long long id, size_t count);
+void _startSubObject(eckit::Exporter&);
+void _endSubObject(eckit::Exporter&);
+void _nextSubObject(eckit::Exporter&);
+void _startClass(eckit::Exporter&,const string& name);
+void _endClass(eckit::Exporter&,const string& name);
+void _startClass(eckit::Exporter&,const char* name);
+void _endClass(eckit::Exporter&,const char* name);
+void _startMember(eckit::Exporter&,const char* name);
+void _endMember(eckit::Exporter&,const char* name);
 
 //-----------------------------------------------------------------------------
 
 template<class T>
-void _export(eclib::Exporter& h,const T& what)
+void _export(eckit::Exporter& h,const T& what)
 {
     what._export(h);
 }
 
-void _export(eclib::Exporter&,int what);
-void _export(eclib::Exporter&,unsigned int what);
-void _export(eclib::Exporter&,short what);
-void _export(eclib::Exporter&,bool what);
-void _export(eclib::Exporter&,unsigned short what);
-void _export(eclib::Exporter&,long what);
-void _export(eclib::Exporter&,long long what);
-void _export(eclib::Exporter&,unsigned long long what);
-void _export(eclib::Exporter&,unsigned long what);
-void _export(eclib::Exporter&,char what);
-void _export(eclib::Exporter&,unsigned char what);
-void _export(eclib::Exporter&,double what);
+void _export(eckit::Exporter&,int what);
+void _export(eckit::Exporter&,unsigned int what);
+void _export(eckit::Exporter&,short what);
+void _export(eckit::Exporter&,bool what);
+void _export(eckit::Exporter&,unsigned short what);
+void _export(eckit::Exporter&,long what);
+void _export(eckit::Exporter&,long long what);
+void _export(eckit::Exporter&,unsigned long long what);
+void _export(eckit::Exporter&,unsigned long what);
+void _export(eckit::Exporter&,char what);
+void _export(eckit::Exporter&,unsigned char what);
+void _export(eckit::Exporter&,double what);
 
 template<class T>
-void _export(eclib::Exporter& s ,const char* name,const T& what)
+void _export(eckit::Exporter& s ,const char* name,const T& what)
 {
     _startMember(s,name);
     _export(s,what);
@@ -334,11 +331,11 @@ void _export(eclib::Exporter& s ,const char* name,const T& what)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 //-----------------------------------------------------------------------------
 
-void* operator new(size_t,void* addr, eclib::Evolve&);
+void* operator new(size_t,void* addr, eckit::Evolve&);
 
 //-----------------------------------------------------------------------------
 

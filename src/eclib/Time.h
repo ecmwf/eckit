@@ -11,14 +11,14 @@
 // File Time.h
 // Manuel Fuentes - ECMWF Oct 96
 
-#ifndef eclib_Time_h
-#define eclib_Time_h
+#ifndef eckit_Time_h
+#define eckit_Time_h
 
 #include "eclib/BadValue.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -131,6 +131,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

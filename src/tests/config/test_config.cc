@@ -12,12 +12,12 @@
 #include "eclib/Resource.h"
 #include "eclib/ResourceMgr.h"
 #include "eclib/Types.h"
-#include "eclib/Tool.h"
+#include "eclib/runtime/Tool.h"
 
 #include "eclib/config/Script.h"
 #include "eclib/config/Compiler.h"
 
-using namespace eclib;
+using namespace eckit;
 
 class TestConfig : public Tool {
 public:

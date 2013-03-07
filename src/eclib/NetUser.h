@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_NetUser_h
-#define eclib_NetUser_h
+#ifndef eckit_NetUser_h
+#define eckit_NetUser_h
 
 #include "eclib/TCPSocket.h"
-#include "eclib/Thread.h"
+#include "eclib/thread/Thread.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -57,6 +57,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -15,7 +15,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -109,7 +109,7 @@ bool Select::ready(long sec)
 				//SYSCALL(ioctl(i,FIONREAD,&nbytes));
                 //
 
-                // On LINUX, a socket in acceoct() mode will return "Invalid argument"
+                // On Linux, a socket in acceoct() mode will return "Invalid argument"
                 // so we simply ignor ethe error here....
 				if((ioctl(i,FIONREAD,&nbytes) == 0) && (nbytes > 0))
 				{
@@ -150,5 +150,5 @@ bool Select::ready(long sec)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

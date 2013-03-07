@@ -11,14 +11,14 @@
 // File Counted.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_Counted_h
-#define eclib_Counted_h
+#ifndef eckit_Counted_h
+#define eckit_Counted_h
 
 #include "eclib/Mutex.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -76,6 +76,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

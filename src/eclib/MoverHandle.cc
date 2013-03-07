@@ -19,12 +19,12 @@
 #include "eclib/NodeInfo.h"
 #include "eclib/TCPHandle.h"
 #include "eclib/TCPServer.h"
-#include "eclib/Thread.h"
-#include "eclib/ThreadControler.h"
+#include "eclib/thread/Thread.h"
+#include "eclib/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -203,5 +203,5 @@ string MoverHandle::title() const
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

@@ -10,8 +10,8 @@
 
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef eclib_DateTime_h
-#define eclib_DateTime_h
+#ifndef eckit_DateTime_h
+#define eckit_DateTime_h
 
 
 #include "eclib/Date.h"
@@ -19,7 +19,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -119,6 +119,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

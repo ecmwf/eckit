@@ -11,15 +11,15 @@
 // File Offset.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_Offset_h
-#define eclib_Offset_h
+#ifndef eckit_Offset_h
+#define eckit_Offset_h
 
 #include "eclib/Length.h"
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -118,6 +118,6 @@ void accumulate(const LengthList&,OffsetList&,const Offset& = 0);
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

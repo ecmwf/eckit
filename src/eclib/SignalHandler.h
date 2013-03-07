@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_SignalHandler_h
-#define eclib_SignalHandler_h
+#ifndef eckit_SignalHandler_h
+#define eckit_SignalHandler_h
 
 #include <signal.h>
 #include <setjmp.h>
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -65,6 +65,6 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

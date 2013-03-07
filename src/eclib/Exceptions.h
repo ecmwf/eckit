@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_Exceptions_h
-#define eclib_Exceptions_h
+#ifndef eckit_Exceptions_h
+#define eckit_Exceptions_h
 
 #include <errno.h>
 
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -240,15 +240,15 @@ public:
 
 //-----------------------------------------------------------------------------
 
-#define THRCALL(a)    eclib::ThrCall(a,#a,__LINE__,__FILE__,__FUNCTION__)
-#define SYSCALL(a)    eclib::SysCall(a,#a,__LINE__,__FILE__,__FUNCTION__)
-#define SYSCALL2(a,b) eclib::SysCall(a,#a,b,__LINE__,__FILE__,__FUNCTION__)
-#define ASSERT(a)     eclib::Assert(!(a),#a, Here() )
-#define PANIC(a)      eclib::Panic((a),#a,__LINE__,__FILE__,__FUNCTION__)
-#define NOTIMP  throw eclib::NotImplemented( Here() )
+#define THRCALL(a)    eckit::ThrCall(a,#a,__LINE__,__FILE__,__FUNCTION__)
+#define SYSCALL(a)    eckit::SysCall(a,#a,__LINE__,__FILE__,__FUNCTION__)
+#define SYSCALL2(a,b) eckit::SysCall(a,#a,b,__LINE__,__FILE__,__FUNCTION__)
+#define ASSERT(a)     eckit::Assert(!(a),#a, Here() )
+#define PANIC(a)      eckit::Panic((a),#a,__LINE__,__FILE__,__FUNCTION__)
+#define NOTIMP  throw eckit::NotImplemented( Here() )
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

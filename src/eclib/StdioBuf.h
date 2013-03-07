@@ -11,15 +11,15 @@
 // File StdioBuf.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef eclib_StdioBuf_h
-#define eclib_StdioBuf_h
+#ifndef eckit_StdioBuf_h
+#define eckit_StdioBuf_h
 
 #include "eclib/machine.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -61,6 +61,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

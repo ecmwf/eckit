@@ -11,14 +11,14 @@
 // File Double.h
 // Baudouin Raoult - ECMWF Dec 97
 
-#ifndef eclib_Double_h
-#define eclib_Double_h
+#ifndef eckit_Double_h
+#define eckit_Double_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -112,6 +112,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

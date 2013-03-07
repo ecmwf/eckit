@@ -14,7 +14,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -128,7 +128,7 @@ long AIOHandle::write(const void* buffer,long length)
     if( buffers_[n] == 0 || buffers_[n]->size() < (size_t) length )
     {
         delete buffers_[n];
-        buffers_[n] = new Buffer(eclib::round(length,64*1024));
+        buffers_[n] = new Buffer(eckit::round(length,64*1024));
         
         ASSERT(buffers_[n]);
     }
@@ -266,4 +266,4 @@ string AIOHandle::title() const {
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit

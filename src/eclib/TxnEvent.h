@@ -11,14 +11,14 @@
 // File TxnEvent.h
 // Baudouin Raoult - ECMWF Jan 97
 
-#ifndef eclib_TxnEvent_h
-#define eclib_TxnEvent_h
+#ifndef eckit_TxnEvent_h
+#define eckit_TxnEvent_h
 
 #include "eclib/Streamable.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -84,6 +84,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

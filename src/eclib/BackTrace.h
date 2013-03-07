@@ -8,14 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_BackTrace_h
-#define eclib_BackTrace_h
+#ifndef eckit_BackTrace_h
+#define eckit_BackTrace_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -28,6 +28,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

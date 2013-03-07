@@ -11,8 +11,8 @@
 // File Length.h
 // Baudouin Raoult - ECMWF Aug 98
 
-#ifndef eclib_FileManager_h
-#define eclib_FileManager_h
+#ifndef eckit_FileManager_h
+#define eckit_FileManager_h
 
 #include "eclib/machine.h"
 #include "eclib/Offset.h"
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -77,6 +77,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

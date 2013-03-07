@@ -13,7 +13,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 namespace config {
 
 //-----------------------------------------------------------------------------
@@ -70,5 +70,5 @@ void Scope::function( const string& name, Function* f )
 //-----------------------------------------------------------------------------
 
 } // namespace config
-} // namespace eclib
+} // namespace eckit
 

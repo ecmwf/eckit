@@ -11,11 +11,11 @@
 
 #include "eclib/MarsFSClient.h"
 #include "eclib/MarsFSPath.h"
-#include "eclib/ThreadSingleton.h"
+#include "eclib/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -723,5 +723,5 @@ time_t MarsFSClient::lastModified(const string& path)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

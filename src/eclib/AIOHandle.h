@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_AIOHandle_h
-#define eclib_AIOHandle_h
+#ifndef eckit_AIOHandle_h
+#define eckit_AIOHandle_h
 
 #include <aio.h>
 
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -97,6 +97,6 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

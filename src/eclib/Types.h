@@ -11,8 +11,8 @@
 // File Types.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_Types_h
-#define eclib_Types_h
+#ifndef eckit_Types_h
+#define eckit_Types_h
 
 #include "eclib/machine.h"
 
@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -148,7 +148,7 @@ typedef unsigned long long MarsID;
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #include "eclib/Types.cc"
 

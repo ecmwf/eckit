@@ -11,14 +11,14 @@
 // File Password.h
 // Baudouin Raoult - ECMWF Dec 97
 
-#ifndef eclib_Password_h
-#define eclib_Password_h
+#ifndef eckit_Password_h
+#define eckit_Password_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -33,6 +33,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,15 +11,15 @@
 // File TimeStamp.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_TimeStamp_h
-#define eclib_TimeStamp_h
+#ifndef eckit_TimeStamp_h
+#define eckit_TimeStamp_h
 
 #include "eclib/machine.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -54,6 +54,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

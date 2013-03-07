@@ -11,15 +11,15 @@
 // File NumberContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef eclib_NumberContent_h
-#define eclib_NumberContent_h
+#ifndef eckit_NumberContent_h
+#define eckit_NumberContent_h
 
 #include "eclib/Content.h"
 #include "eclib/Value.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -120,6 +120,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

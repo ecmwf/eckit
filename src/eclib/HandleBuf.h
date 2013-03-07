@@ -11,15 +11,15 @@
 // File HandleBuf.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef eclib_HandleBuf_h
-#define eclib_HandleBuf_h
+#ifndef eckit_HandleBuf_h
+#define eckit_HandleBuf_h
 
 #include "eclib/DataHandle.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -61,6 +61,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

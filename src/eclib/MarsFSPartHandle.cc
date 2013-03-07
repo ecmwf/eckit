@@ -16,7 +16,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -74,8 +74,8 @@ MarsFSPartHandle::MarsFSPartHandle(const MarsFSPath& path,
 bool MarsFSPartHandle::compress(bool sorted)
 {
     if(sorted)
-        eclib::sort(offset_,length_);
-    return eclib::compress(offset_,length_);
+        eckit::sort(offset_,length_);
+    return eckit::compress(offset_,length_);
 }
 
 MarsFSPartHandle::~MarsFSPartHandle()
@@ -278,5 +278,5 @@ string MarsFSPartHandle::title() const
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

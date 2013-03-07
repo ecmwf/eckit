@@ -11,8 +11,8 @@
 // File FileBase.h
 // Baudouin Raoult - ECMWF Jun 97
 
-#ifndef eclib_FileBase_h
-#define eclib_FileBase_h
+#ifndef eckit_FileBase_h
+#define eckit_FileBase_h
 
 #include "eclib/machine.h"
 
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -118,7 +118,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #include "eclib/FileBase.cc"
 

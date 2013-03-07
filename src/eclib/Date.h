@@ -11,14 +11,14 @@
 // File Date.h
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef eclib_Date_h
-#define eclib_Date_h
+#ifndef eckit_Date_h
+#define eckit_Date_h
 
 #include "eclib/BadValue.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -169,6 +169,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

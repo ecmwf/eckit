@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_Context_h
-#define eclib_Context_h
+#ifndef eckit_Context_h
+#define eckit_Context_h
 
 #include "eclib/Configurable.h"
 #include "eclib/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -108,6 +108,6 @@ protected:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
-#endif // eclib_Context_h
+#endif // eckit_Context_h

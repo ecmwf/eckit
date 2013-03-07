@@ -12,8 +12,8 @@
 /// @author Tiago Quintino
 /// @date Sep 2012
 
-#ifndef eclib_StreamParser_h
-#define eclib_StreamParser_h
+#ifndef eckit_StreamParser_h
+#define eckit_StreamParser_h
 
 #include "eclib/machine.h"
 
@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -59,6 +59,6 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,14 +11,14 @@
 // File StrStream.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef eclib_StrStream_h
-#define eclib_StrStream_h
+#ifndef eckit_StrStream_h
+#define eckit_StrStream_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -32,6 +32,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

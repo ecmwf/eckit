@@ -11,14 +11,14 @@
 // File NilContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef eclib_NilContent_h
-#define eclib_NilContent_h
+#ifndef eckit_NilContent_h
+#define eckit_NilContent_h
 
 #include "eclib/Content.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -104,6 +104,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

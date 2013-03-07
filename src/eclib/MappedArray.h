@@ -11,8 +11,8 @@
 // File MappedArray.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef eclib_MappedArray_h
-#define eclib_MappedArray_h
+#ifndef eckit_MappedArray_h
+#define eckit_MappedArray_h
 
 #include "eclib/NonCopyable.h"
 #include "eclib/PathName.h"
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #include "MappedArray.cc"
 

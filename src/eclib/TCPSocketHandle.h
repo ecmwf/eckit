@@ -11,15 +11,15 @@
 // File TCPSocketHandle.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_TCPSocketHandle_h
-#define eclib_TCPSocketHandle_h
+#ifndef eckit_TCPSocketHandle_h
+#define eckit_TCPSocketHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/TCPSocket.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -75,6 +75,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -1,15 +1,15 @@
-#ifndef eclib_Pipe_h
-#define eclib_Pipe_h
+#ifndef eckit_Pipe_h
+#define eckit_Pipe_h
 
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
 #include "eclib/Mutex.h"
-#include "eclib/ThreadControler.h"
+#include "eclib/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -78,7 +78,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #include "eclib/Pipe.cc"
 

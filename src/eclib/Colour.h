@@ -8,14 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_Colour_h
-#define eclib_Colour_h
+#ifndef eckit_Colour_h
+#define eckit_Colour_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -57,6 +57,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -8,16 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Application.h"
 #include "eclib/Inited.h"
 #include "eclib/Log.h"
 #include "eclib/LogBuffer.h"
 #include "eclib/Monitor.h"
-#include "eclib/ThreadSingleton.h"
+#include "eclib/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -516,4 +515,4 @@ template class ThreadSingleton<UserErrorStream>;
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit

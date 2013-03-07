@@ -11,15 +11,15 @@
 // File Statistics.h
 // Baudouin Raoult - ECMWF Sep 97
 
-#ifndef eclib_Statistics_h
-#define eclib_Statistics_h
+#ifndef eckit_Statistics_h
+#define eckit_Statistics_h
 
 #include "eclib/Types.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -109,7 +109,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 
 #endif

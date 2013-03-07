@@ -11,15 +11,15 @@
 // File TaskInfo.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef eclib_TaskInfo_h
-#define eclib_TaskInfo_h
+#ifndef eckit_TaskInfo_h
+#define eckit_TaskInfo_h
 
 #include "eclib/Padded.h"
 #include "eclib/Types.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -202,6 +202,6 @@ inline unsigned long version(TaskInfo*) { return 1; }
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

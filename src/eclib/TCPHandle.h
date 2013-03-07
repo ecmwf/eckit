@@ -11,15 +11,15 @@
 // File TCPHandle.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_TCPHandle_h
-#define eclib_TCPHandle_h
+#ifndef eckit_TCPHandle_h
+#define eckit_TCPHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/TCPClient.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -81,6 +81,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

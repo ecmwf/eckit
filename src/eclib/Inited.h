@@ -11,15 +11,15 @@
 // File Inited.h
 // Manuel Fuentes - ECMWF Jan 97
 
-#ifndef eclib_Inited_h
-#define eclib_Inited_h
+#ifndef eckit_Inited_h
+#define eckit_Inited_h
 
 #include "eclib/Types.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -75,6 +75,6 @@ Inited<Ordinal>& Inited<Ordinal>::operator -= (const Inited<Ordinal>& other)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

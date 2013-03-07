@@ -9,7 +9,6 @@
  */
 
 
-#include "eclib/Application.h"
 #include "eclib/ClusterNode.h"
 #include "eclib/ClusterNodes.h"
 #include "eclib/Monitor.h"
@@ -20,12 +19,12 @@
 #include "eclib/TCPClient.h"
 #include "eclib/TCPStream.h"
 #include "eclib/TCPStream.h"
-#include "eclib/Thread.h"
-#include "eclib/ThreadControler.h"
+#include "eclib/thread/Thread.h"
+#include "eclib/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -79,7 +78,7 @@ void ClusterHeartBeat::run()
                 }
 
                 if(reply == "exit") {
-                    Application::terminate();
+                    ::exit(0);
                 }
 
                 ::sleep(20);
@@ -113,5 +112,5 @@ void ClusterNode::heartbeat()
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

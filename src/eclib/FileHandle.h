@@ -11,15 +11,15 @@
 // File FileHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_FileHandle_h
-#define eclib_FileHandle_h
+#ifndef eckit_FileHandle_h
+#define eckit_FileHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/Buffer.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -100,6 +100,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

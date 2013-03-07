@@ -8,14 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_Plural_h
-#define eclib_Plural_h
+#ifndef eckit_Plural_h
+#define eckit_Plural_h
 
 #include "eclib/BigNum.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -57,6 +57,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

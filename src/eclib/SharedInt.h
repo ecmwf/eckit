@@ -11,15 +11,15 @@
 // File SharedInt.h
 // Baudouin Raoult - ECMWF Jul 97
 
-#ifndef eclib_SharedInt_h
-#define eclib_SharedInt_h
+#ifndef eckit_SharedInt_h
+#define eckit_SharedInt_h
 
 #include "eclib/Semaphore.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -112,6 +112,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

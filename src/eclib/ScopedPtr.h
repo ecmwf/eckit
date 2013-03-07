@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_ScopedPtr_h
-#define eclib_ScopedPtr_h
+#ifndef eckit_ScopedPtr_h
+#define eckit_ScopedPtr_h
 
 #include "eclib/NonCopyable.h"
 #include "eclib/Exceptions.h"
@@ -17,7 +17,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -85,6 +85,6 @@ void swap( ScopedPtr<T>& a, ScopedPtr<T>& b )
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

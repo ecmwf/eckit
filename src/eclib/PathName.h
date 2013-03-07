@@ -11,8 +11,8 @@
 // File PathName.h
 // B.Raoult - ECMWF May 96
 
-#ifndef eclib_PathName_h
-#define eclib_PathName_h
+#ifndef eckit_PathName_h
+#define eckit_PathName_h
 
 #include "eclib/Length.h"
 #include "eclib/Offset.h"
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -175,6 +175,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -15,7 +15,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -245,12 +245,12 @@ const long HEADER_SIZE = (sizeof(memblk) - WORD);
 
 //-----------------------------------------------------------------------------
 
-eclib::MemPool eclib::MemPool::transientPool = {
+eckit::MemPool eckit::MemPool::transientPool = {
 	1, // 1 page
 	0, // don't zero
 };
 
-eclib::MemPool eclib::MemPool::permanentPool = {
+eckit::MemPool eckit::MemPool::permanentPool = {
 	1, // 1 page
 	0, // don't zero
 };
@@ -423,5 +423,5 @@ void MemoryPool::info(ostream& out)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

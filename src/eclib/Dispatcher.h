@@ -11,8 +11,8 @@
 // File Dispatcher.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_Dispatcher_h
-#define eclib_Dispatcher_h
+#ifndef eckit_Dispatcher_h
+#define eckit_Dispatcher_h
 
 #include "eclib/machine.h"
 
@@ -23,7 +23,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -122,7 +122,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #include "eclib/Dispatcher.cc"
 

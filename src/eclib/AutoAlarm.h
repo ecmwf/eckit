@@ -11,12 +11,12 @@
 // File AutoAlarm.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_AutoAlarm_h
-#define eclib_AutoAlarm_h
+#ifndef eckit_AutoAlarm_h
+#define eckit_AutoAlarm_h
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -63,6 +63,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

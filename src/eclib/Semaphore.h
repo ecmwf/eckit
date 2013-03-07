@@ -11,8 +11,8 @@
 // File Semaphore.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_Semaphore_h
-#define eclib_Semaphore_h
+#ifndef eckit_Semaphore_h
+#define eckit_Semaphore_h
 
 #include "eclib/NonCopyable.h"
 #include "eclib/Mutex.h"
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -62,6 +62,6 @@ protected: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

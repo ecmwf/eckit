@@ -12,13 +12,13 @@
 
 #include "eclib/Exceptions.h"
 #include "eclib/StrStream.h"
-#include "eclib/ThreadSingleton.h"
+#include "eclib/thread/ThreadSingleton.h"
 
 #include "eclib/BackTrace.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -327,4 +327,4 @@ OutOfMemory::OutOfMemory():
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit

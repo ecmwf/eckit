@@ -11,15 +11,15 @@
 // File SockBuf.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef eclib_SockBuf_h
-#define eclib_SockBuf_h
+#ifndef eckit_SockBuf_h
+#define eckit_SockBuf_h
 
 #include "eclib/TCPSocket.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -61,6 +61,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,8 +11,8 @@
 // File MarsFSPath.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef eclib_MarsFSPath_h
-#define eclib_MarsFSPath_h
+#ifndef eckit_MarsFSPath_h
+#define eckit_MarsFSPath_h
 
 #include "eclib/machine.h"
 
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -132,6 +132,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

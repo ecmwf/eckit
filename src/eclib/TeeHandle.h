@@ -11,14 +11,14 @@
 // File TeeHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef eclib_TeeHandle_h
-#define eclib_TeeHandle_h
+#ifndef eckit_TeeHandle_h
+#define eckit_TeeHandle_h
 
 #include "eclib/DataHandle.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -91,6 +91,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

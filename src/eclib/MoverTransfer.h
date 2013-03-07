@@ -11,15 +11,15 @@
 // File MoverTransfer.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef eclib_MoverTransfer_h
-#define eclib_MoverTransfer_h
+#ifndef eckit_MoverTransfer_h
+#define eckit_MoverTransfer_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/Length.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -110,6 +110,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,8 +11,8 @@
 // File MarsFSFile.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef eclib_MarsFSFile_h
-#define eclib_MarsFSFile_h
+#ifndef eckit_MarsFSFile_h
+#define eckit_MarsFSFile_h
 
 #include "eclib/AutoLock.h"
 #include "eclib/MarsFSClient.h"
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -118,6 +118,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

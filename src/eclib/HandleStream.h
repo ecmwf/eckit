@@ -11,15 +11,15 @@
 // File HandleStream.h
 // Baudouin Raoult - ECMWF Oct 96
 
-#ifndef eclib_HandleStream_h
-#define eclib_HandleStream_h
+#ifndef eckit_HandleStream_h
+#define eckit_HandleStream_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -61,6 +61,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

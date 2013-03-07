@@ -11,14 +11,14 @@
 // File Area.h
 // Claude Gibert - ECMWF Dec 97
 
-#ifndef eclib_Area_h
-#define eclib_Area_h
+#ifndef eckit_Area_h
+#define eckit_Area_h
 
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -101,6 +101,6 @@ typedef vector<Area> AreaList;
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

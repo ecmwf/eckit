@@ -8,14 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_CodeLocation_h
-#define eclib_CodeLocation_h
+#ifndef eckit_CodeLocation_h
+#define eckit_CodeLocation_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -56,10 +56,10 @@ private:
 
 // Macros
 
-#define Here() eclib::CodeLocation( __FILE__ , __LINE__ , __FUNCTION__ )
+#define Here() eckit::CodeLocation( __FILE__ , __LINE__ , __FUNCTION__ )
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

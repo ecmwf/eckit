@@ -18,11 +18,11 @@
 #include "eclib/Resource.h"
 #include "eclib/StrStream.h"
 #include "eclib/TaskInfo.h"
-#include "eclib/ThreadSingleton.h"
+#include "eclib/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -186,7 +186,7 @@ static void init(void)
 
 Monitor::TaskArray& Monitor::info()
 {
-    pthread_once(&once, eclib::init);
+    pthread_once(&once, eckit::init);
 	return *mapArray;
 }
 
@@ -391,5 +391,5 @@ int Monitor::kill(const string& name, int sig)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

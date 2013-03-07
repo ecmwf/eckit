@@ -11,14 +11,14 @@
 // File ETA.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_ETA_h
-#define eclib_ETA_h
+#ifndef eckit_ETA_h
+#define eckit_ETA_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -49,6 +49,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

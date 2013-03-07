@@ -4,11 +4,11 @@ add_definitions( -D${EC_OS_NAME} )
 
 ### config headers
 
-configure_file( eclib_config.h.in   eclib_config.h  )
-configure_file( eclib_version.h.in  eclib_version.h )
+configure_file( eckit_config.h.in   eckit_config.h  )
+configure_file( eckit_version.h.in  eckit_version.h )
 
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/eclib_config.h 
-               ${CMAKE_CURRENT_BINARY_DIR}/eclib_version.h 
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/eckit_config.h 
+               ${CMAKE_CURRENT_BINARY_DIR}/eckit_version.h 
          DESTINATION include/${PROJECT_NAME} )
 
 ### include directories

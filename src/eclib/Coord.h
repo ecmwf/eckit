@@ -11,14 +11,14 @@
 // File Coord.h
 // Claude  Gibert - ECMWF Dec 97
 
-#ifndef eclib_Coord_h
-#define eclib_Coord_h
+#ifndef eckit_Coord_h
+#define eckit_Coord_h
 
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -100,8 +100,8 @@ typedef vector<Coord> CoordList;
 //---------------------------------------------------------
 // Longitude
 //---------------------------------------------------------
-#ifndef eclib_Longitude_h
-#define eclib_Longitude_h
+#ifndef eckit_Longitude_h
+#define eckit_Longitude_h
 
 class Longitude: public Coord {
 public:
@@ -117,8 +117,8 @@ public:
 //---------------------------------------------------------
 // Latitude
 //---------------------------------------------------------
-#ifndef eclib_Latitude_h
-#define eclib_Latitude_h
+#ifndef eckit_Latitude_h
+#define eckit_Latitude_h
 
 class Latitude: public Coord {
 public:
@@ -134,8 +134,8 @@ public:
 //---------------------------------------------------------
 // Point
 //---------------------------------------------------------
-#ifndef eclib_Point_h
-#define eclib_Point_h
+#ifndef eckit_Point_h
+#define eckit_Point_h
 
 class Point {
 
@@ -158,6 +158,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

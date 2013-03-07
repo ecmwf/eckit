@@ -16,12 +16,12 @@
 #include "eclib/Monitor.h"
 #include "eclib/Monitorable.h"
 #include "eclib/Plural.h"
-#include "eclib/Thread.h"
-#include "eclib/ThreadControler.h"
+#include "eclib/thread/Thread.h"
+#include "eclib/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -417,5 +417,5 @@ void DefaultHandler<Request>::json(JSON& s,const Request& r)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

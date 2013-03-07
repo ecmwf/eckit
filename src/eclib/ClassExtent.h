@@ -11,8 +11,8 @@
 // File ClassExtent.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_ClassExtent_h
-#define eclib_ClassExtent_h
+#ifndef eckit_ClassExtent_h
+#define eckit_ClassExtent_h
 
 #include "eclib/AutoLock.h"
 #include "eclib/Exceptions.h"
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -249,6 +249,6 @@ ClassExtent<T>::Extent::~Extent()
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

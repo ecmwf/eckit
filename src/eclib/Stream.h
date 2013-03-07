@@ -11,8 +11,8 @@
 // File Stream.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_Stream_h
-#define eclib_Stream_h
+#ifndef eckit_Stream_h
+#define eckit_Stream_h
 
 #include "eclib/Exceptions.h"
 #include "eclib/Mutex.h"
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -208,6 +208,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

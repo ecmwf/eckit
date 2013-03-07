@@ -8,14 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_StandardBehavior_h
-#define eclib_StandardBehavior_h
+#ifndef eckit_StandardBehavior_h
+#define eckit_StandardBehavior_h
 
 #include "eclib/ContextBehavior.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -50,6 +50,6 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
-#endif // eclib_StandardBehavior_h
+#endif // eckit_StandardBehavior_h

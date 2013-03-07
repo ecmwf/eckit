@@ -11,8 +11,8 @@
 // File Recycler.h
 // Baudouin Raoult - ECMWF Apr 97
 
-#ifndef eclib_Recycler_h
-#define eclib_Recycler_h
+#ifndef eckit_Recycler_h
+#define eckit_Recycler_h
 
 #include "eclib/PathName.h"
 #include "eclib/Types.h"
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -129,7 +129,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #include "Recycler.cc"
 

@@ -11,14 +11,14 @@
 // File DumpLoad.h
 // Baudouin Raoult - ECMWF Sep 99
 
-#ifndef eclib_DumpLoad_h
-#define eclib_DumpLoad_h
+#ifndef eckit_DumpLoad_h
+#define eckit_DumpLoad_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -209,6 +209,6 @@ inline void dump(DumpLoad& a,unsigned char b)      { a.dump(b); }
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

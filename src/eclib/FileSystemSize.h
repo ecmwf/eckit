@@ -9,12 +9,12 @@
  */
 
 #pragma once
-#ifndef eclib_FileSystemSize_h
-#define eclib_FileSystemSize_h
+#ifndef eckit_FileSystemSize_h
+#define eckit_FileSystemSize_h
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -27,6 +27,6 @@ struct FileSystemSize {
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
-#endif // eclib_FileSystemSize_H
+#endif // eckit_FileSystemSize_H

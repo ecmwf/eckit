@@ -11,8 +11,8 @@
 // File Resource.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_Resource_h
-#define eclib_Resource_h
+#ifndef eckit_Resource_h
+#define eckit_Resource_h
 
 #include "eclib/machine.h"
 
@@ -24,7 +24,7 @@ class Url;
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -122,6 +122,6 @@ string Resource<T>::getValue() const
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

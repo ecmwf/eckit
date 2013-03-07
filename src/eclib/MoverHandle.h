@@ -11,8 +11,8 @@
 // File MoverHandle.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef eclib_MoverHandle_h
-#define eclib_MoverHandle_h
+#ifndef eckit_MoverHandle_h
+#define eckit_MoverHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/Mutex.h"
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -119,6 +119,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

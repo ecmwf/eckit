@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_FileName_h
-#define eclib_FileName_h
+#ifndef eckit_FileName_h
+#define eckit_FileName_h
 
 #include "eclib/machine.h"
 #include "eclib/Offset.h"
@@ -17,7 +17,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -66,6 +66,6 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,8 +11,8 @@
 // File Connector.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef eclib_Connector_h
-#define eclib_Connector_h
+#ifndef eckit_Connector_h
+#define eckit_Connector_h
 
 #include "eclib/BufferCache.h"
 #include "eclib/NodeInfo.h"
@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -149,6 +149,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_config_Function_H
-#define eclib_config_Function_H
+#ifndef eckit_config_Function_H
+#define eckit_config_Function_H
 
 #include "eclib/machine.h"
 
@@ -19,7 +19,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 namespace config {
 
 //-----------------------------------------------------------------------------
@@ -66,6 +66,6 @@ private: // members
 //-----------------------------------------------------------------------------
 
 } // namespace config
-} // namespace eclib
+} // namespace eckit
 
 #endif

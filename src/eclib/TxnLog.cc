@@ -14,15 +14,15 @@
 #include "eclib/PathName.h"
 #include "eclib/Seconds.h"
 #include "eclib/StrStream.h"
-#include "eclib/Thread.h"
-#include "eclib/ThreadControler.h"
+#include "eclib/thread/Thread.h"
+#include "eclib/thread/ThreadControler.h"
 #include "eclib/TimeStamp.h"
 #include "eclib/Translator.h"
 #include "eclib/TxnLog.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -279,5 +279,5 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

@@ -11,8 +11,8 @@
 // File LogBuffer.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_LogBuffer_h
-#define eclib_LogBuffer_h
+#ifndef eckit_LogBuffer_h
+#define eckit_LogBuffer_h
 
 #include <memory>
 
@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -213,6 +213,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

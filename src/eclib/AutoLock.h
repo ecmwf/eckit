@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_AutoLock_h
-#define eclib_AutoLock_h
+#ifndef eckit_AutoLock_h
+#define eckit_AutoLock_h
 
 #include "eclib/AutoLocker.h"
 #include "eclib/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -70,6 +70,6 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

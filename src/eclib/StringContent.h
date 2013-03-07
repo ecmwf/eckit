@@ -11,14 +11,14 @@
 // File StringContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef eclib_StringContent_h
-#define eclib_StringContent_h
+#ifndef eckit_StringContent_h
+#define eckit_StringContent_h
 
 #include "eclib/Content.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -109,6 +109,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,8 +11,8 @@
 // File ResourceMgr.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_ResourceMgr_h
-#define eclib_ResourceMgr_h
+#ifndef eckit_ResourceMgr_h
+#define eckit_ResourceMgr_h
 
 #include <set>
 
@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -70,6 +70,6 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

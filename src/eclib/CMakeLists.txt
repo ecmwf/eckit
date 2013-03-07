@@ -1,4 +1,4 @@
-list( APPEND eclib_config_src_files 
+list( APPEND eckit_config_srcs 
     config/Assignment.cc
     config/Assignment.h
     config/Block.cc
@@ -19,9 +19,27 @@ list( APPEND eclib_config_src_files
     config/Statement.h
 )
 
-list( APPEND eclib_src_files
-Application.cc
-Application.h
+list( APPEND eckit_runtime_srcs 
+runtime/Application.cc
+runtime/Application.h
+runtime/Tool.h
+runtime/Tool.cc
+runtime/ToolBehavior.h
+runtime/ToolBehavior.cc
+)
+
+list( APPEND eckit_thread_srcs 
+    thread/Once.h
+    thread/Thread.cc
+    thread/Thread.h
+    thread/ThreadControler.cc
+    thread/ThreadControler.h
+    thread/ThreadPool.cc
+    thread/ThreadPool.h
+    thread/ThreadSingleton.h
+)
+
+list( APPEND eckit_src_files
 Area.h
 AutoAlarm.cc
 AutoAlarm.h
@@ -104,16 +122,6 @@ DayOfYear.cc
 DayOfYear.h
 DblBuffer.cc
 DblBuffer.h
-DHSBehavior.cc
-DHSBehavior.h
-DHSBehaviorLogFile.cc
-DHSBehaviorLogFile.h
-DHSBehaviorStdout.cc
-DHSBehaviorStdout.h
-DHSLogger.cc
-DHSLogger.h
-DHSStdLogger.cc
-DHSStdLogger.h
 Dispatcher.cc
 Dispatcher.h
 Double.cc
@@ -267,8 +275,6 @@ Resource.h
 ResourceBase.cc
 ResourceMgr.cc
 ResourceMgr.h
-RotLogger.cc
-RotLogger.h
 ScopedPtr.h
 Seconds.cc
 Seconds.h
@@ -330,16 +336,6 @@ Telnetable.cc
 Telnetable.h
 TempFile.cc
 TempFile.h
-Thread.cc
-Thread.h
-ThreadControler.cc
-ThreadControler.h
-ThreadPool.cc
-ThreadPool.h
-ThreadSingleton.cc
-ThreadSingleton.h
-Once.cc
-Once.h
 Time.cc
 Time.h
 TimeInterval.cc
@@ -352,14 +348,10 @@ TmpFile.cc
 TmpFile.h
 Tokenizer.cc
 Tokenizer.h
-ToolBehavior.h
-ToolBehavior.cc
 TransferWatcher.cc
 TransferWatcher.h
 Translator.cc
 Translator.h
-Tool.h
-Tool.cc
 TxnEvent.cc
 TxnEvent.h
 TxnLog.cc
@@ -372,16 +364,10 @@ VerifyingDate.cc
 VerifyingDate.h
 Watcher.cc
 Watcher.h
-# architecture dependent headers - to be removed
-aix.h
-hpux.h
-linux.h
 machine.h
-macosx.h
-sgi.h
 )
 
-list( APPEND eclib_templates 
+list( APPEND eckit_templates 
                     BasePathNameT.cc
                     Dispatcher.cc
                     BTree.cc
@@ -391,16 +377,14 @@ list( APPEND eclib_templates
                     PipeHandler.cc
                     RLE.cc
                     Reanimator.cc
-                    ThreadSingleton.cc
                     TxnLog.cc
                     Types.cc
 					ProducerConsumer.cc
 					Pipe.cc
 					Recycler.cc
-					Once.cc
 )
 
-list( APPEND eclib_persistent 
+list( APPEND eckit_persistent 
                      ClimateDate
                      Date
                      DayOfYear
@@ -415,13 +399,17 @@ list( APPEND eclib_persistent
                      VerifyingDate
 )
 
-ecbuild_add_library( TARGET Ec
-                  COMPONENT server
-                  INSTALL_HEADERS LISTED
-                  SOURCES    
-                        ${eclib_src_files}
-                        ${eclib_config_src_files}
-                  TEMPLATES  ${eclib_templates}
-                  PERSISTENT ${eclib_persistent}
-                  LIBS ${CMAKE_THREAD_LIBS_INIT} ${RT_LIB} )
+ecbuild_add_library( TARGET eckit
+                     INSTALL_HEADERS LISTED
+                     SOURCES    
+                        ${eckit_src_files}
+                        ${eckit_config_srcs}
+                        ${eckit_thread_srcs}
+                        ${eckit_runtime_srcs}
+                     TEMPLATES  
+                        ${eckit_templates}
+                     PERSISTENT 
+                        ${eckit_persistent}
+                     LIBS 
+                        ${CMAKE_THREAD_LIBS_INIT} ${RT_LIB} )
 

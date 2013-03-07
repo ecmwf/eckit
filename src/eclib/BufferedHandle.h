@@ -11,15 +11,15 @@
 // File BufferedHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef eclib_BufferedHandle_h
-#define eclib_BufferedHandle_h
+#ifndef eckit_BufferedHandle_h
+#define eckit_BufferedHandle_h
 
 #include "eclib/Buffer.h"
 #include "eclib/DataHandle.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -103,7 +103,7 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 
 #endif

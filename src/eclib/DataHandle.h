@@ -11,8 +11,8 @@
 // File DataHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_DataHandle_h
-#define eclib_DataHandle_h
+#ifndef eckit_DataHandle_h
+#define eckit_DataHandle_h
 
 #include "eclib/Length.h"
 #include "eclib/Offset.h"
@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -149,6 +149,6 @@ Streamable* Reanimator<DataHandle>::ressucitate(Stream& s) const
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

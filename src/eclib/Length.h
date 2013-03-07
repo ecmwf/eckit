@@ -11,14 +11,14 @@
 // File Length.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_Length_h
-#define eclib_Length_h
+#ifndef eckit_Length_h
+#define eckit_Length_h
 
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -100,6 +100,6 @@ typedef vector<Length> LengthList;
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,8 +11,8 @@
 // File BasePathName.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef eclib_BasePathName_h
-#define eclib_BasePathName_h
+#ifndef eckit_BasePathName_h
+#define eckit_BasePathName_h
 
 #include "eclib/machine.h"
 
@@ -24,7 +24,7 @@ struct FileSystemSize;
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -95,6 +95,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

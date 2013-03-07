@@ -11,8 +11,8 @@
 // File JSON.h
 // Baudouin Raoult - (c) ECMWF Aug 11
 
-#ifndef eclib_JSON_h
-#define eclib_JSON_h
+#ifndef eckit_JSON_h
+#define eckit_JSON_h
 
 #include "eclib/machine.h"
 
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -75,6 +75,6 @@ private: // methods
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

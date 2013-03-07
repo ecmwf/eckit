@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Tool.h"
+#include "eclib/runtime/Tool.h"
 #include "eclib/BadValue.h"
 #include "eclib/Context.h"
 #include "eclib/DataHandle.h"
@@ -21,7 +21,7 @@
 #include "eclib/config/Script.h"
 #include "eclib/config/Compiler.h"
 
-using namespace eclib;
+using namespace eckit;
 
 class ReadConfig : public Tool {
 public:

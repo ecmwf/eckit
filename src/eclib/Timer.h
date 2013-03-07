@@ -11,15 +11,15 @@
 // File Timer.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_Timer_h
-#define eclib_Timer_h
+#ifndef eckit_Timer_h
+#define eckit_Timer_h
 
 #include "eclib/Log.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -66,7 +66,7 @@ timeval operator-(const timeval&,const timeval&);
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 
 #endif

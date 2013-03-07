@@ -1,5 +1,5 @@
-#ifndef eclib_ProducerConsumer_h
-#define eclib_ProducerConsumer_h
+#ifndef eckit_ProducerConsumer_h
+#define eckit_ProducerConsumer_h
 
 #include "eclib/machine.h"
 #include "eclib/Mutex.h"
@@ -7,7 +7,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -76,7 +76,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #include "eclib/ProducerConsumer.cc"
 

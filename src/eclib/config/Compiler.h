@@ -12,8 +12,8 @@
 /// @author Tiago Quintino
 /// @date Sep 2012
 
-#ifndef eclib_config_Compiler_H
-#define eclib_config_Compiler_H
+#ifndef eckit_config_Compiler_H
+#define eckit_config_Compiler_H
 
 #include "eclib/machine.h"
 
@@ -23,7 +23,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 namespace config {
 
 //-----------------------------------------------------------------------------
@@ -50,6 +50,6 @@ protected:
 //-----------------------------------------------------------------------------
 
 } // namespace config
-} // namespace eclib
+} // namespace eckit
 
 #endif

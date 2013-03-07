@@ -11,15 +11,15 @@
 // File DoubleContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef eclib_DoubleContent_h
-#define eclib_DoubleContent_h
+#ifndef eckit_DoubleContent_h
+#define eckit_DoubleContent_h
 
 #include "eclib/Content.h"
 #include "eclib/Value.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -121,6 +121,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

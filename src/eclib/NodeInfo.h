@@ -11,15 +11,15 @@
 // File NodeInfo.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef eclib_NodeInfo_h
-#define eclib_NodeInfo_h
+#ifndef eckit_NodeInfo_h
+#define eckit_NodeInfo_h
 
 #include "eclib/machine.h"
 #include "eclib/Types.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -107,6 +107,6 @@ inline unsigned long version(NodeInfo*) { return 1; }
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

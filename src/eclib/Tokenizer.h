@@ -11,8 +11,8 @@
 // File Tokenizer.h
 // Manuel Fuentes - ECMWF Jan 97
 
-#ifndef eclib_Tokenizer_h
-#define eclib_Tokenizer_h
+#ifndef eckit_Tokenizer_h
+#define eckit_Tokenizer_h
 
 #include "eclib/machine.h"
 
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -58,7 +58,7 @@ private: // methods
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 
 

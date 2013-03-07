@@ -11,16 +11,16 @@
 // File PipeApplication.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_PipeApplication_h
-#define eclib_PipeApplication_h
+#ifndef eckit_PipeApplication_h
+#define eckit_PipeApplication_h
 
-#include "eclib/Application.h"
+#include "eclib/runtime/Application.h"
 #include "eclib/Stream.h"
 #include "eclib/Resource.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -68,6 +68,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,8 +11,8 @@
 // File DblBuffer.h
 // Baudouin Raoult - ECMWF Feb 97
 
-#ifndef eclib_DblBuffer_h
-#define eclib_DblBuffer_h
+#ifndef eckit_DblBuffer_h
+#define eckit_DblBuffer_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/Length.h"
@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -76,6 +76,6 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

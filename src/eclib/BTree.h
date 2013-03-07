@@ -11,8 +11,8 @@
 // File BTree.h
 // Baudouin Raoult - (c) ECMWF Feb 12
 
-#ifndef eclib_BTree_h
-#define eclib_BTree_h
+#ifndef eckit_BTree_h
+#define eckit_BTree_h
 
 #include "eclib/machine.h"
 
@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -321,7 +321,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #include "BTree.cc"
 

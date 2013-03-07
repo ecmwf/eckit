@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_CallbackLogger_h
-#define eclib_CallbackLogger_h
+#ifndef eckit_CallbackLogger_h
+#define eckit_CallbackLogger_h
 
 #include "eclib/machine.h"
 
@@ -17,7 +17,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -65,6 +65,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
-#endif // eclib_CallbackLogger_h
+#endif // eckit_CallbackLogger_h

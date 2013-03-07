@@ -13,12 +13,12 @@
 #include "eclib/CallbackLogger.h"
 #include "eclib/Monitor.h"
 #include "eclib/Mutex.h"
-#include "eclib/Once.h"
+#include "eclib/thread/Once.h"
 #include "eclib/TimeStamp.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -143,4 +143,4 @@ void CallbackLogger::register_callback( callback c, int level, void* ctxt )
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit

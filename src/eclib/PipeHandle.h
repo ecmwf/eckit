@@ -11,14 +11,14 @@
 // File PipeHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_PipeHandle_h
-#define eclib_PipeHandle_h
+#ifndef eckit_PipeHandle_h
+#define eckit_PipeHandle_h
 
 #include "eclib/DataHandle.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -93,6 +93,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

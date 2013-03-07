@@ -1,0 +1,11 @@
+#ifndef eckit_config_h
+#define eckit_config_h
+
+#include "ecbuild_config.h"
+
+#include "eckit_version.h"
+
+#cmakedefine PSTACK_COMMAND  "@PSTACK_COMMAND@"
+#cmakedefine CPPFILT_COMMAND "@CPPFILT_COMMAND@"
+
+#endif // eckit_config_h

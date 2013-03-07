@@ -10,14 +10,14 @@
 
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef eclib_VerifyingDate_h
-#define eclib_VerifyingDate_h
+#ifndef eckit_VerifyingDate_h
+#define eckit_VerifyingDate_h
 
 #include "eclib/DateTime.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -82,6 +82,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

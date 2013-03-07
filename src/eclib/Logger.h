@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_Logger_h
-#define eclib_Logger_h
+#ifndef eckit_Logger_h
+#define eckit_Logger_h
 
 #include <iosfwd>
 
@@ -18,7 +18,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -53,6 +53,6 @@ protected:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
-#endif // eclib_Logger_h
+#endif // eckit_Logger_h

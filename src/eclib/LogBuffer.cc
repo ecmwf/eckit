@@ -9,17 +9,16 @@
  */
 
 
-#include "eclib/Application.h"
 #include "eclib/Log.h"
 #include "eclib/Logger.h"
 #include "eclib/LogBuffer.h"
 #include "eclib/Monitor.h"
 #include "eclib/AutoLock.h"
-#include "eclib/Once.h"
+#include "eclib/thread/Once.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -122,5 +121,5 @@ void LogBuffer::dumpBuffer(void)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

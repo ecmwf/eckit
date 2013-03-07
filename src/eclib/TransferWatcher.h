@@ -11,12 +11,12 @@
 // File TransferWatcher.h
 // Baudouin Raoult - ECMWF Jun 98
 
-#ifndef eclib_TransferWatcher_h
-#define eclib_TransferWatcher_h
+#ifndef eckit_TransferWatcher_h
+#define eckit_TransferWatcher_h
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 
 #endif

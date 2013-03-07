@@ -11,8 +11,8 @@
 // File TCPStream.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_TCPStream_h
-#define eclib_TCPStream_h
+#ifndef eckit_TCPStream_h
+#define eckit_TCPStream_h
 
 #include "eclib/Counted.h"
 #include "eclib/Stream.h"
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -148,6 +148,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

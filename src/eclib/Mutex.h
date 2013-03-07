@@ -11,8 +11,8 @@
 // File Mutex.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_Mutex_h
-#define eclib_Mutex_h
+#ifndef eckit_Mutex_h
+#define eckit_Mutex_h
 
 #include <pthread.h>
 
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -54,6 +54,6 @@ protected:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

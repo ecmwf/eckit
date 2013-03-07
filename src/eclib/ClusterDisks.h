@@ -11,14 +11,14 @@
 // File ClusterDisks.h
 // Baudouin Raoult - (c) ECMWF Jul 11
 
-#ifndef eclib_ClusterDisks_h
-#define eclib_ClusterDisks_h
+#ifndef eckit_ClusterDisks_h
+#define eckit_ClusterDisks_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -50,6 +50,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

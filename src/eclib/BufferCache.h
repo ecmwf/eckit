@@ -11,8 +11,8 @@
 // File BufferCache.h
 // Baudouin Raoult - (c) ECMWF Jul 11
 
-#ifndef eclib_BufferCache_h
-#define eclib_BufferCache_h
+#ifndef eckit_BufferCache_h
+#define eckit_BufferCache_h
 
 #include "eclib/machine.h"
 
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -119,6 +119,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

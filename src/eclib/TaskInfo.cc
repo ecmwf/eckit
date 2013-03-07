@@ -11,7 +11,7 @@
 #include <signal.h>
 #include <sys/time.h>
 
-#include "eclib/Application.h"
+#include "eclib/Context.h"
 #include "eclib/Monitor.h"
 #include "eclib/ProcessControler.h"
 #include "eclib/TaskInfo.h"
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -28,13 +28,13 @@ TaskInfo::TaskInfo()
 {
 	ASSERT(busy_ == false);
 
-	eclib::zero(*this);
+	eckit::zero(*this);
 
 	pid_    = getpid();
 	thread_ = pthread_self();
 	pos_    = 0;
 	start_  = ::time(0);
-	strncpy(name_,Application::appName().c_str(),sizeof(name_)-1);
+	strncpy(name_,Context::instance().runName().c_str(),sizeof(name_)-1);
 	strcpy(kind_,name_);
 	strcpy(application_,name_);
 	strcpy(status_,"Starting");
@@ -208,5 +208,5 @@ void TaskInfo::parent(long p)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

@@ -11,8 +11,8 @@
 // File PartFileHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_PartFileHandle_h
-#define eclib_PartFileHandle_h
+#ifndef eckit_PartFileHandle_h
+#define eckit_PartFileHandle_h
 
 #include "eclib/Buffer.h"
 #include "eclib/DataHandle.h"
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -102,6 +102,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,8 +11,8 @@
 // File ClusterNodes.h
 // Baudouin Raoult - (c) ECMWF Jul 11
 
-#ifndef eclib_ClusterNodes_h
-#define eclib_ClusterNodes_h
+#ifndef eckit_ClusterNodes_h
+#define eckit_ClusterNodes_h
 
 #include "eclib/machine.h"
 
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -60,6 +60,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,14 +11,14 @@
 // File EmptyHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef eclib_EmptyHandle_h
-#define eclib_EmptyHandle_h
+#ifndef eckit_EmptyHandle_h
+#define eckit_EmptyHandle_h
 
 #include "eclib/DataHandle.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -70,6 +70,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

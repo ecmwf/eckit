@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eclib_ContextBehavior_h
-#define eclib_ContextBehavior_h
+#ifndef eckit_ContextBehavior_h
+#define eckit_ContextBehavior_h
 
 #include <string>
 
@@ -18,7 +18,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -80,6 +80,6 @@ protected: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
-#endif // eclib_ContextBehavior_h
+#endif // eckit_ContextBehavior_h

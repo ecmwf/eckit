@@ -11,8 +11,8 @@
 // File PipeHandler.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_PipeHandler_h
-#define eclib_PipeHandler_h
+#ifndef eckit_PipeHandler_h
+#define eckit_PipeHandler_h
 
 #include "eclib/ClassExtent.h"
 #include "eclib/PipeStream.h"
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -87,7 +87,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #include "eclib/PipeHandler.cc"
 

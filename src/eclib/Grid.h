@@ -11,15 +11,15 @@
 // File Grid.h
 // Baudouin Raoult - ECMWF Dec 97
 
-#ifndef eclib_Grid_h
-#define eclib_Grid_h
+#ifndef eckit_Grid_h
+#define eckit_Grid_h
 
 #include "eclib/machine.h"
 #include "eclib/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -140,6 +140,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

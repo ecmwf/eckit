@@ -11,8 +11,8 @@
 // File Loader.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_Loader_h
-#define eclib_Loader_h
+#ifndef eckit_Loader_h
+#define eckit_Loader_h
 
 #include "eclib/machine.h"
 
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -42,6 +42,6 @@ private: // methods
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

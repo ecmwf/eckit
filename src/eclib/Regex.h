@@ -11,8 +11,8 @@
 // File Regex.h
 // Baudouin Raoult - ECMWF Jan 98
 
-#ifndef eclib_Regex_h
-#define eclib_Regex_h
+#ifndef eckit_Regex_h
+#define eckit_Regex_h
 
 #include <regex.h>
 
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -65,6 +65,6 @@ private: // methods
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

@@ -11,17 +11,17 @@
 // File TxnLog.h
 // Baudouin Raoult - ECMWF Jan 97
 
-#ifndef eclib_TxnLog_h
-#define eclib_TxnLog_h
+#ifndef eckit_TxnLog_h
+#define eckit_TxnLog_h
 
-#include "eclib/Application.h"
+#include "eclib/Context.h"
 #include "eclib/MappedArray.h"
 #include "eclib/TxnEvent.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ public:
 
 // -- Contructors
 
-	TxnLog(const string& = Application::appName());
+	TxnLog(const string& = Context::instance().runName());
 
 // -- Destructor
 
@@ -79,7 +79,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #include "TxnLog.cc"
 

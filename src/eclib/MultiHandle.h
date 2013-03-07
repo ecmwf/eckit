@@ -11,14 +11,14 @@
 // File MultiHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef eclib_MultiHandle_h
-#define eclib_MultiHandle_h
+#ifndef eckit_MultiHandle_h
+#define eckit_MultiHandle_h
 
 #include "eclib/DataHandle.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -107,6 +107,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

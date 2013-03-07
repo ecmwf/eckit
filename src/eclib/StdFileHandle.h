@@ -11,8 +11,8 @@
 // File StdFileHandle.h
 // Piotr Kuchta - ECMWF April 09
 
-#ifndef eclib_StdFileHandle_h
-#define eclib_StdFileHandle_h
+#ifndef eckit_StdFileHandle_h
+#define eckit_StdFileHandle_h
 
 
 #include "eclib/DataHandle.h"
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -68,6 +68,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

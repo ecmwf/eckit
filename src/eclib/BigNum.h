@@ -11,14 +11,14 @@
 // File BigNum.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef eclib_BigNum_h
-#define eclib_BigNum_h
+#ifndef eckit_BigNum_h
+#define eckit_BigNum_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -56,6 +56,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

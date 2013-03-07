@@ -11,8 +11,8 @@
 // File Buffer.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_Buffer_h
-#define eclib_Buffer_h
+#ifndef eckit_Buffer_h
+#define eckit_Buffer_h
 
 #include "eclib/machine.h"
 
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 
 #endif

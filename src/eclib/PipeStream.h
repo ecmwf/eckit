@@ -11,14 +11,14 @@
 // File PipeStream.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_PipeStream_h
-#define eclib_PipeStream_h
+#ifndef eckit_PipeStream_h
+#define eckit_PipeStream_h
 
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -69,6 +69,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

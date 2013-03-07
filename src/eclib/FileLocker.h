@@ -11,14 +11,14 @@
 // File FileLocker.h
 // Baudouin Raoult - ECMWF Feb 02
 
-#ifndef eclib_FileLocker_h
-#define eclib_FileLocker_h
+#ifndef eckit_FileLocker_h
+#define eckit_FileLocker_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -111,6 +111,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

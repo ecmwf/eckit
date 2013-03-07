@@ -14,7 +14,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -27,8 +27,8 @@ MutexCond::MutexCond(char tag):
 	THRCALL(::pthread_mutexattr_init(&attr));
 	THRCALL(::pthread_condattr_init(&cattr));
 
-	THRCALL(pthread_mutex_init(&mutex_,&attr));
-	THRCALL(pthread_cond_init(&cond_,&cattr));
+	THRCALL(::pthread_mutex_init(&mutex_,&attr));
+	THRCALL(::pthread_cond_init(&cond_,&cattr));
 
 	inited_ = true;
 	THRCALL(::pthread_mutexattr_destroy(&attr));
@@ -37,7 +37,7 @@ MutexCond::MutexCond(char tag):
 
 MutexCond::~MutexCond()
 {
-	THRCALL(pthread_mutex_destroy(&mutex_));
+	THRCALL(::pthread_mutex_destroy(&mutex_));
 
 	pthread_cond_destroy(&cond_); // Don't use THRCALL as some thread may be waiting for that condition
 	inited_ = false;
@@ -50,7 +50,7 @@ void MutexCond::lock()
 		abort();
 	}
 	ASSERT(inited_);
-	THRCALL(pthread_mutex_lock(&mutex_));
+	THRCALL(::pthread_mutex_lock(&mutex_));
 }
 
 void MutexCond::unlock()
@@ -60,7 +60,7 @@ void MutexCond::unlock()
 		abort();
 	}
 	ASSERT(inited_);
-	THRCALL(pthread_mutex_unlock(&mutex_));
+	THRCALL(::pthread_mutex_unlock(&mutex_));
 }
 
 void MutexCond::wait()
@@ -71,7 +71,7 @@ void MutexCond::wait()
 	}
 	ASSERT(inited_);
 //	AutoState x('.');
-	THRCALL(pthread_cond_wait(&cond_,&mutex_));
+	THRCALL(::pthread_cond_wait(&cond_,&mutex_));
 }
 
 bool MutexCond::wait(int sec)
@@ -110,5 +110,5 @@ void MutexCond::broadcast()
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

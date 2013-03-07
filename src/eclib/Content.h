@@ -11,15 +11,15 @@
 // File Content.h
 // Manuel Fuentes - ECMWF Jun 96
 
-#ifndef eclib_Content_h
-#define eclib_Content_h
+#ifndef eckit_Content_h
+#define eckit_Content_h
 
 #include "eclib/Counted.h"
 #include "eclib/Streamable.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -235,6 +235,6 @@ Streamable* Reanimator<Content>::ressucitate(Stream& s) const
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

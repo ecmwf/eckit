@@ -11,14 +11,14 @@
 // File Month.h
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef eclib_Month_h
-#define eclib_Month_h
+#ifndef eckit_Month_h
+#define eckit_Month_h
 
 #include "eclib/Date.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -112,6 +112,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

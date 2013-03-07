@@ -10,14 +10,14 @@
 
 // Baudouin Raoult - (c) ECMWF Feb 12
 
-#ifndef eclib_FixedString_h
-#define eclib_FixedString_h
+#ifndef eckit_FixedString_h
+#define eckit_FixedString_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -80,7 +80,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #include "FixedString.cc"
 

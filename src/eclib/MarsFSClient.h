@@ -11,8 +11,8 @@
 // File MarsFSClient.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef eclib_MarsFSClient_h
-#define eclib_MarsFSClient_h
+#ifndef eckit_MarsFSClient_h
+#define eckit_MarsFSClient_h
 
 #include "eclib/Connector.h"
 #include "eclib/Length.h"
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -92,6 +92,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

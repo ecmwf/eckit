@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Application.h"
 #include "eclib/AutoLock.h"
 #include "eclib/Configurable.h"
+#include "eclib/Context.h"
 #include "eclib/LocalPathName.h"
 #include "eclib/Log.h"
 #include "eclib/Mutex.h"
@@ -23,7 +23,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -101,10 +101,12 @@ void ResourceMgr::readConfigFiles()
 	{
 		inited_ = true;
         
+        std::string appName = Context::instance().runName();
+        
         PathName general ("~/etc/config/general");
         PathName local ("~/etc/config/local");
-        PathName app ( string("~/etc/config/" ) + Application::appName() );
-        PathName applocal ( string("~/etc/config/" ) + Application::appName() + ".local" );
+        PathName app ( string("~/etc/config/" ) + appName );
+        PathName applocal ( string("~/etc/config/" ) + appName + ".local" );
         
         if( script_->readFile( general  ) ) parsed_.insert(general);
         if( script_->readFile( local    ) ) parsed_.insert(local);
@@ -175,5 +177,5 @@ bool ResourceMgr::lookUp( Configurable* owner,
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

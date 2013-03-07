@@ -11,14 +11,14 @@
 // File DayOfYear.h
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef eclib_DayOfYear_h
-#define eclib_DayOfYear_h
+#ifndef eckit_DayOfYear_h
+#define eckit_DayOfYear_h
 
 #include "eclib/Date.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -110,6 +110,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

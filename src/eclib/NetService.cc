@@ -13,11 +13,11 @@
 #include "eclib/Monitor.h"
 #include "eclib/NetService.h"
 #include "eclib/NetUser.h"
-#include "eclib/ThreadControler.h"
+#include "eclib/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -48,5 +48,5 @@ void NetService::run()
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

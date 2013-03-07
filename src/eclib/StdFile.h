@@ -11,8 +11,8 @@
 // File StdFile.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_StdFile_h
-#define eclib_StdFile_h
+#ifndef eckit_StdFile_h
+#define eckit_StdFile_h
 
 #include <stdio.h>
 
@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -60,6 +60,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

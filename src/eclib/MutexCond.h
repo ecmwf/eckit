@@ -11,8 +11,8 @@
 // File MutexCond.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_MutexCond_h
-#define eclib_MutexCond_h
+#ifndef eckit_MutexCond_h
+#define eckit_MutexCond_h
 
 #include <pthread.h>
 
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -62,6 +62,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

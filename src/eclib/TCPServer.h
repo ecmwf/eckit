@@ -11,14 +11,14 @@
 // File TCPServer.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_TCPServer_h
-#define eclib_TCPServer_h
+#ifndef eckit_TCPServer_h
+#define eckit_TCPServer_h
 
 #include "eclib/TCPSocket.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -90,6 +90,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

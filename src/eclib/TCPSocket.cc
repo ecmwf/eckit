@@ -29,14 +29,14 @@
 #include "eclib/TCPSocket.h"
 #include "eclib/Seconds.h"
 
-#ifdef IBM
+#ifdef AIX
 //TODO: Add check to cmake
 typedef void (*sighandler_t) (int);
 #endif
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -697,5 +697,5 @@ bool TCPSocket::stillConnected() const
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

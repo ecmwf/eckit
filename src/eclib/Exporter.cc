@@ -15,56 +15,56 @@
 
 //-----------------------------------------------------------------------------
 
-void *operator new(size_t, void* addr, eclib::Evolve&) {
+void *operator new(size_t, void* addr, eckit::Evolve&) {
     return addr;
 }
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-void _export(eclib::Exporter& out, unsigned char what) { 
+void _export(eckit::Exporter& out, unsigned char what) { 
     out.writeUnsigned(what);
 } 
 
-void _export(eclib::Exporter& out, char what) { 
+void _export(eckit::Exporter& out, char what) { 
     out.writeSigned(what);
 }
 
-void _export(eclib::Exporter& out, unsigned int what) { 
+void _export(eckit::Exporter& out, unsigned int what) { 
     out.writeUnsigned(what);
 } 
-void _export(eclib::Exporter& out, int what) { 
+void _export(eckit::Exporter& out, int what) { 
     out.writeSigned(what);
 }
 
-void _export(eclib::Exporter& out, unsigned long what) { 
-    out.writeUnsigned(what);
-} 
-
-void _export(eclib::Exporter& out, long what) { 
-    out.writeSigned(what);
-}
-
-void _export(eclib::Exporter& out, unsigned short what) { 
+void _export(eckit::Exporter& out, unsigned long what) { 
     out.writeUnsigned(what);
 } 
 
-void _export(eclib::Exporter& out, short what) { 
+void _export(eckit::Exporter& out, long what) { 
     out.writeSigned(what);
 }
 
-void _export(eclib::Exporter& out, unsigned long long what) { 
+void _export(eckit::Exporter& out, unsigned short what) { 
     out.writeUnsigned(what);
 } 
 
-void _export(eclib::Exporter& out, long long what) { 
+void _export(eckit::Exporter& out, short what) { 
     out.writeSigned(what);
 }
 
-void _export(eclib::Exporter& out, double what) { 
+void _export(eckit::Exporter& out, unsigned long long what) { 
+    out.writeUnsigned(what);
+} 
+
+void _export(eckit::Exporter& out, long long what) { 
+    out.writeSigned(what);
+}
+
+void _export(eckit::Exporter& out, double what) { 
     out.writeDouble(what);
 }
 
@@ -271,32 +271,32 @@ unsigned long long Exporter::readUnsigned() {
     return _readUnsigned();
 }
 
-void _startClass(eclib::Exporter& out, const string& name) {
+void _startClass(eckit::Exporter& out, const string& name) {
     out.writeTag(TAG_START_CLASS);
     out.writeString(name);
 }
 
-void _endClass(eclib::Exporter& out, const string& name) {
+void _endClass(eckit::Exporter& out, const string& name) {
     out.writeTag(TAG_END_CLASS);
     //out.writeString(name);
 }
 
-void _startClass(eclib::Exporter& out, const char* name) {
+void _startClass(eckit::Exporter& out, const char* name) {
     out.writeTag(TAG_START_CLASS);
     out.writeString(name);
 }
 
-void _endClass(eclib::Exporter& out, const char* name) {
+void _endClass(eckit::Exporter& out, const char* name) {
     out.writeTag(TAG_END_CLASS);
     //out.writeString(name);
 }
 
-void _startMember(eclib::Exporter& out, const char* name) {
+void _startMember(eckit::Exporter& out, const char* name) {
     out.writeTag(TAG_START_MEMBER);
     out.writeString(name);
 }
 
-void _endMember(eclib::Exporter& out, const char* name) {
+void _endMember(eckit::Exporter& out, const char* name) {
     out.writeTag(TAG_END_MEMBER);
     //out.writeString(name);
 }
@@ -313,7 +313,7 @@ void Exporter::startObject(unsigned long long type, unsigned long long location,
     subCount_ = 0;
 }
 
-void _startObject(eclib::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count) 
+void _startObject(eckit::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count) 
 {
     e.startObject(type, location, id, count);
 }
@@ -340,7 +340,7 @@ void Exporter::startSubObject()
     subCount_++;
 }
 
-void _startSubObject(eclib::Exporter& e)
+void _startSubObject(eckit::Exporter& e)
 {
     e.startSubObject();
 }
@@ -350,12 +350,12 @@ void Exporter::endSubObject()
     writeTag(TAG_END_SUBOBJECT);
 }
 
-void _endSubObject(eclib::Exporter& e)
+void _endSubObject(eckit::Exporter& e)
 {
     e.endSubObject();
 }
 
-void _endObject(eclib::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count) 
+void _endObject(eckit::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count) 
 {
     e.endObject(type, location, id, count);
 }
@@ -428,7 +428,7 @@ size_t Exporter::nextObject() {
 
 }
 
-void _nextSubObject(eclib::Exporter& e)
+void _nextSubObject(eckit::Exporter& e)
 {
     e.nextSubObject();
 }
@@ -554,7 +554,7 @@ unsigned long long Exporter::getUnsignedMember(const string& name)
     return 0;
 }
 
-Evolve::Evolve(eclib::Exporter& e):
+Evolve::Evolve(eckit::Exporter& e):
     e_(e)
 {
 }
@@ -752,4 +752,4 @@ void Exporter::endDatabase(const string&, unsigned long id)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit

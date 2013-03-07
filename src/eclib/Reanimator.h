@@ -11,15 +11,15 @@
 // File Reanimator.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_Reanimator_h
-#define eclib_Reanimator_h
+#ifndef eckit_Reanimator_h
+#define eckit_Reanimator_h
 
 #include "eclib/Stream.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -107,7 +107,7 @@ static T*  reanimate(Stream& s);
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #include "eclib/Reanimator.cc"
 

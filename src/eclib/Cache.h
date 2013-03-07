@@ -11,9 +11,10 @@
 // File Cache.h
 // Tiago Quintino - (c) ECMWF Oct 12
 
-#ifndef eclib_Cache_h
-#define eclib_Cache_h
+#ifndef eckit_Cache_h
+#define eckit_Cache_h
 
+#include <stdint.h>
 #include <sys/time.h>
 
 #include "eclib/machine.h"
@@ -22,7 +23,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -295,6 +296,6 @@ bool Cache<K,V>::Policy::expireLRU( typename Cache<K,V>::store_type& c, const si
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

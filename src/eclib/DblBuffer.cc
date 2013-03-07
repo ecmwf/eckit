@@ -16,13 +16,13 @@
 #include "eclib/Log.h"
 #include "eclib/MutexCond.h"
 #include "eclib/Progress.h"
-#include "eclib/Thread.h"
-#include "eclib/ThreadControler.h"
+#include "eclib/thread/Thread.h"
+#include "eclib/thread/ThreadControler.h"
 #include "eclib/Timer.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -340,5 +340,5 @@ void DblBufferTask::run()
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

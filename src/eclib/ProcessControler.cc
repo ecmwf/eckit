@@ -38,12 +38,12 @@
 #include "eclib/Log.h"
 #include "eclib/Monitor.h"
 #include "eclib/ProcessControler.h"
-#include "eclib/Thread.h"
-#include "eclib/ThreadControler.h"
+#include "eclib/thread/Thread.h"
+#include "eclib/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -277,5 +277,5 @@ bool ProcessControler::isRunning(pid_t pid)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

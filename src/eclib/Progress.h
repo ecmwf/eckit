@@ -11,15 +11,15 @@
 // File Progress.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef eclib_Progress_h
-#define eclib_Progress_h
+#ifndef eckit_Progress_h
+#define eckit_Progress_h
 
 #include <string>
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -106,6 +106,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

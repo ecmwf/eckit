@@ -11,14 +11,14 @@
 // File Translator.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eclib_Translator_h
-#define eclib_Translator_h
+#ifndef eckit_Translator_h
+#define eckit_Translator_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -128,6 +128,6 @@ struct Translator<set<string>, string>
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

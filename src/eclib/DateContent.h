@@ -11,15 +11,15 @@
 // File DateContent.h
 // Manuel Fuentes - ECMWF Jun 97
 
-#ifndef eclib_DateContent_h
-#define eclib_DateContent_h
+#ifndef eckit_DateContent_h
+#define eckit_DateContent_h
 
 #include "eclib/Content.h"
 #include "eclib/Value.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -109,6 +109,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

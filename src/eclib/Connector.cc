@@ -18,11 +18,11 @@
 #include "eclib/Resource.h"
 #include "eclib/TCPClient.h"
 #include "eclib/TCPStream.h"
-#include "eclib/ThreadSingleton.h"
+#include "eclib/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -466,4 +466,4 @@ void Connector::memoize(bool on, unsigned long life)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit

@@ -11,15 +11,15 @@
 // File Port.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_Port_h
-#define eclib_Port_h
+#ifndef eckit_Port_h
+#define eckit_Port_h
 
 #include "eclib/machine.h"
 
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -50,6 +50,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

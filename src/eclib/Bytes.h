@@ -11,14 +11,14 @@
 // File Bytes.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eclib_Bytes_h
-#define eclib_Bytes_h
+#ifndef eckit_Bytes_h
+#define eckit_Bytes_h
 
 #include "eclib/machine.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -64,7 +64,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 
 #endif

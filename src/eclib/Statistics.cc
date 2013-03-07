@@ -9,8 +9,8 @@
  */
 
 
-#include "eclib/Application.h"
 #include "eclib/AutoLock.h"
+#include "eclib/Context.h"
 #include "eclib/Semaphore.h"
 #include "eclib/Statistics.h"
 #include "eclib/TimeStamp.h"
@@ -18,7 +18,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ void Statistics::readFile(const MarsID& id,const PathName& path,
 		ofstream out(stats->c_str(),ios::app);
 		out << TimeStamp("%Y%m%d:%H%M%S") 
 			<< ",request=" << id
-			<< ",application=" << Application::appName()
+			<< ",application=" << Context::instance().runName()
 			<< ",action=read_file"
 			<< ",filesystem=" << fs
 			<< ",path="       << path
@@ -90,7 +90,7 @@ void Statistics::createFile(const MarsID& id,const PathName& path,
 		ofstream out(stats->c_str(),ios::app);
 		out << TimeStamp("%Y%m%d:%H%M%S") 
 			<< ",request=" << id 
-			<< ",application=" << Application::appName()
+			<< ",application=" << Context::instance().runName()
 			<< ",action=create_file"
 			<< ",filesystem=" << fs
 			<< ",path="       << path
@@ -125,7 +125,7 @@ void Statistics::deleteFile(const PathName& path)
 
 		ofstream out(stats->c_str(),ios::app);
 		out << TimeStamp("%Y%m%d:%H%M%S") 
-			<< ",application=" << Application::appName()
+			<< ",application=" << Context::instance().runName()
 			<< ",action=delete_file"
 			<< ",filesystem=" << fs
 			<< ",path="       << path
@@ -143,5 +143,5 @@ void Statistics::deleteFile(const PathName& path)
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

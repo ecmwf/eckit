@@ -11,8 +11,8 @@
 // File Select.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef eclib_Select_h
-#define eclib_Select_h
+#ifndef eckit_Select_h
+#define eckit_Select_h
 
 #if 0
 #ifdef __hpux
@@ -28,7 +28,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -74,6 +74,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

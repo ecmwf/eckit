@@ -11,14 +11,14 @@
 // File FileDescHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_FileDescHandle_h
-#define eclib_FileDescHandle_h
+#ifndef eckit_FileDescHandle_h
+#define eckit_FileDescHandle_h
 
 #include "eclib/DataHandle.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -66,6 +66,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

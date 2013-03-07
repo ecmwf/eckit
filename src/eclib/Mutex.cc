@@ -13,7 +13,7 @@
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ Mutex::Mutex(char tag) :
 	THRCALL(::pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE));
 //#endif
 
-	THRCALL(pthread_mutex_init(&mutex_,&attr));
+	THRCALL(::pthread_mutex_init(&mutex_,&attr));
 
 	exists_ = true;
 	THRCALL(::pthread_mutexattr_destroy(&attr));
@@ -41,7 +41,7 @@ Mutex::Mutex(char tag) :
 
 Mutex::~Mutex() 
 {
-	THRCALL(pthread_mutex_destroy(&mutex_));
+	THRCALL(::pthread_mutex_destroy(&mutex_));
 }
 
 void Mutex::lock(void) 
@@ -54,7 +54,7 @@ void Mutex::lock(void)
 		return;
 	}
 
-	THRCALL(pthread_mutex_lock(&mutex_)); 
+	THRCALL(::pthread_mutex_lock(&mutex_)); 
 }
 
 void Mutex::unlock(void) 
@@ -65,10 +65,10 @@ void Mutex::unlock(void)
 		abort();
 		return;
 	}
-	THRCALL(pthread_mutex_unlock(&mutex_));
+	THRCALL(::pthread_mutex_unlock(&mutex_));
 }
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 

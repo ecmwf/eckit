@@ -11,15 +11,15 @@
 // File CommandStream.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eclib_CommandStream_h
-#define eclib_CommandStream_h
+#ifndef eckit_CommandStream_h
+#define eckit_CommandStream_h
 
 
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------
 
-namespace eclib {
+namespace eckit {
 
 //-----------------------------------------------------------------------------
 
@@ -56,6 +56,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eclib
+} // namespace eckit
 
 #endif

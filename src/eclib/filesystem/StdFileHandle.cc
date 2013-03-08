@@ -8,7 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/FileDescHandle.h"
+
+#include "eclib/filesystem/StdFileHandle.h"
 
 //-----------------------------------------------------------------------------
 
@@ -16,49 +17,52 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-void FileDescHandle::print(ostream& s) const
+
+void StdFileHandle::print(ostream& s) const
 {
-	s << "FileDescHandle[fd=" << fd_ << ']';
+	s << "StdFileHandle[" << "TODO" << ']';
+	//s << "StdFileHandle[fd=" << fd_ << ']';
 }
 
-void FileDescHandle::encode(Stream& s) const
+void StdFileHandle::encode(Stream& s) const
 {
 	NOTIMP;
 }
 
-FileDescHandle::FileDescHandle(int fd):
-	fd_(fd)
+StdFileHandle::StdFileHandle(FILE* f):
+	f_(f)
 {
 }
 
-FileDescHandle::~FileDescHandle()
+StdFileHandle::~StdFileHandle()
 {
 }
 
-Length FileDescHandle::openForRead()
+Length StdFileHandle::openForRead()
 {
 	return 0;
 }
 
-void FileDescHandle::openForWrite(const Length&)
+void StdFileHandle::openForWrite(const Length&)
 {
 }
 
-void FileDescHandle::openForAppend(const Length&)
+void StdFileHandle::openForAppend(const Length&)
 {
 }
 
-long FileDescHandle::read(void* buffer,long length)
+long StdFileHandle::read(void* buffer, long length)
 {
-	return ::read(fd_,buffer,length);
+	size_t n = ::fread(buffer, 1, length, f_);
+	return n;
 }
 
-long FileDescHandle::write(const void* buffer,long length)
+long StdFileHandle::write(const void* buffer, long length)
 {
-	return ::write(fd_,buffer,length);
+	return ::fwrite(buffer, 1, length, f_);
 }
 
-void FileDescHandle::close()
+void StdFileHandle::close()
 {
 	// May be we should close fd_ here ?
 }
@@ -66,3 +70,4 @@ void FileDescHandle::close()
 //-----------------------------------------------------------------------------
 
 } // namespace eckit
+

@@ -22,19 +22,20 @@
 #include "eclib/Bytes.h"
 #include "eclib/ClusterDisks.h"
 #include "eclib/Context.h"
-#include "eclib/FileHandle.h"
-#include "eclib/FileHandle.h"
 #include "eclib/Length.h"
 #include "eclib/LocalPathName.h"
 #include "eclib/MarsFSPath.h"
 #include "eclib/Mutex.h"
 #include "eclib/NodeInfo.h"
-#include "eclib/PartFileHandle.h"
 #include "eclib/Regex.h"
 #include "eclib/Resource.h"
 #include "eclib/StdFile.h"
 #include "eclib/StrStream.h"
 #include "eclib/TimeStamp.h"
+
+#include "eclib/filesystem/FileHandle.h"
+#include "eclib/filesystem/FileHandle.h"
+#include "eclib/filesystem/PartFileHandle.h"
 
 //-----------------------------------------------------------------------------
 

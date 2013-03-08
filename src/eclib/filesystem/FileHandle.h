@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File FileHandle.h
+// File filesystem/FileHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_FileHandle_h
-#define eckit_FileHandle_h
+#ifndef eckit_filesystem_FileHandle_h
+#define eckit_filesystem_FileHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/Buffer.h"

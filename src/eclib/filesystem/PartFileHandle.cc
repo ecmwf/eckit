@@ -12,12 +12,13 @@
 
 #include "eclib/Bytes.h"
 #include "eclib/Log.h"
-#include "eclib/MarsFSPartHandle.h"
 #include "eclib/MarsFSPath.h"
 #include "eclib/NodeInfo.h"
-#include "eclib/PartFileHandle.h"
 #include "eclib/Resource.h"
 #include "eclib/StrStream.h"
+
+#include "eclib/filesystem/MarsFSPartHandle.h"
+#include "eclib/filesystem/PartFileHandle.h"
 
 //-----------------------------------------------------------------------------
 

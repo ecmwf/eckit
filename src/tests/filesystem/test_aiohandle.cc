@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/AIOHandle.h"
+#include "eclib/filesystem/AIOHandle.h"
 #include "eclib/Buffer.h"
-#include "eclib/FileHandle.h"
+#include "eclib/filesystem/FileHandle.h"
 #include "eclib/PathName.h"
 #include "eclib/Log.h"
 #include "eclib/runtime/Tool.h"

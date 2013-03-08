@@ -8,14 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-// File TCPHandle.h
-// Baudouin Raoult - ECMWF Jul 96
+// File filesystem/MarsFSPartHandle.h
+// Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_TCPHandle_h
-#define eckit_TCPHandle_h
+#ifndef eckit_filesystem_MarsFSPartHandle_h
+#define eckit_filesystem_MarsFSPartHandle_h
 
 #include "eclib/DataHandle.h"
-#include "eclib/TCPClient.h"
+#include "eclib/MarsFSFile.h"
+#include "eclib/MarsFSPath.h"
 
 //-----------------------------------------------------------------------------
 
@@ -23,17 +24,22 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class TCPHandle : public DataHandle {
+class MarsFSPartHandle : public DataHandle {
 public:
 
 // -- Contructors
-	
-	TCPHandle(Stream&);
-	TCPHandle(const string& host,int port);
+
+	MarsFSPartHandle(const MarsFSPath&,const OffsetList&,const LengthList&);
+	MarsFSPartHandle(const MarsFSPath&,const Offset&,const Length&);
+	MarsFSPartHandle(Stream&);
 
 // -- Destructor
 
-	~TCPHandle();
+	~MarsFSPartHandle();
+
+// -- Methods
+
+	const MarsFSPath& path() const { return path_; }
 
 // -- Overridden methods
 
@@ -48,7 +54,15 @@ public:
 	virtual void close();
 	virtual void rewind();
 	virtual void print(ostream&) const;
-	virtual string title() const;
+	virtual bool merge(DataHandle*);
+	virtual bool compress(bool = false);
+	virtual Length estimate();
+	virtual void restartReadFrom(const Offset& from);
+
+    virtual DataHandle* toLocal();
+    virtual void toLocal(Stream&) const;
+    virtual void cost(map<string,Length>&, bool) const;
+    virtual string title() const;
     virtual bool moveable() const { return true; }
 
 	// From Streamable
@@ -58,23 +72,28 @@ public:
 
 // -- Class methods
 
-	static  const ClassSpec&  classSpec()         { return classSpec_;}
-
-protected:
-
-// -- Members
-
-	string      host_;
-	int         port_;
-	TCPClient   connection_;
+	static  const ClassSpec&  classSpec()        { return classSpec_;}
 
 private:
 
+// -- Members
+
+	MarsFSPath         path_;
+	long long          pos_;
+	Ordinal            index_;
+	OffsetList         offset_;
+	LengthList         length_;
+
+    auto_ptr<MarsFSFile>  file_;
+
+// -- Methods
+
+	long read1(char*,long);
 
 // -- Class members
 
     static  ClassSpec               classSpec_;
-	static  Reanimator<TCPHandle>  reanimator_;
+	static  Reanimator<MarsFSPartHandle>  reanimator_;
 
 };
 

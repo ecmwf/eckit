@@ -8,12 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-// File MultiHandle.h
+// File filesystem/BufferedHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef eckit_MultiHandle_h
-#define eckit_MultiHandle_h
+#ifndef eckit_filesystem_BufferedHandle_h
+#define eckit_filesystem_BufferedHandle_h
 
+#include "eclib/Buffer.h"
 #include "eclib/DataHandle.h"
 
 //-----------------------------------------------------------------------------
@@ -22,27 +23,24 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class MultiHandle : public DataHandle {
+class BufferedHandle : public DataHandle {
 public:
 
-	typedef vector<DataHandle*> HandleList;
 
-// -- Contructors
+    /// Contructor, taking ownership
 
-	MultiHandle();
-	MultiHandle(const LengthList&);
-	MultiHandle(const HandleList&);
-	MultiHandle(const HandleList&,const LengthList&);
-	MultiHandle(Stream&);
+	BufferedHandle(DataHandle*,size_t = 1024*1024);
 
-// -- Destructor
+    /// Contructor, not taking ownership
 
-	~MultiHandle();
+	BufferedHandle(DataHandle&,size_t = 1024*1024);
+
+    /// Destructor
+
+	virtual ~BufferedHandle();
 
 // -- Operators
 
-	virtual void operator+=(DataHandle*);
-	virtual void operator+=(const Length&);
 
 // -- Overridden methods
 
@@ -55,58 +53,57 @@ public:
     virtual long read(void*,long);
     virtual long write(const void*,long);
     virtual void close();
-    virtual void flush();    
+    virtual void flush();
     virtual void rewind();
     virtual void print(ostream&) const;
-	void restartReadFrom(const Offset& from);
-
-
-	virtual bool merge(DataHandle*);
-	virtual bool compress(bool = false);
 
 	virtual Length estimate();
-    virtual void toRemote(Stream&) const;
-    virtual void toLocal(Stream&) const;
-    virtual DataHandle* toLocal();
-    virtual void cost(map<string,Length>&, bool) const;
-    virtual string title() const;
-    virtual bool moveable() const;
+	virtual Offset position();
 
     // From Streamable
 
+#if 0
     virtual void encode(Stream&) const;
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+#endif
 
 // -- Class methods
 
+#if 0
     static  const ClassSpec&  classSpec()        { return classSpec_;}
+#endif
 
-private:
+private: // methods
+    
+    void bufferFlush();
 
-// -- Members
+private: // members
+    
+    DataHandle*          handle_;
+	Buffer               buffer_;
+	size_t               pos_;
+	size_t               size_;
+	size_t               used_;
+    bool                 eof_;
+    bool                 read_;
+    Offset               position_;
 
-	HandleList			    datahandles_;
-	HandleList::iterator 	current_;
-	LengthList::iterator    curlen_;
-	LengthList              length_;
-	Length                  written_;
-	bool                    read_;
-
-// -- Methods
-
-	void openCurrent();
-	void open();
-	long read1(char*,long);
+    bool                 owned_;
+    
+    virtual string title() const;
 
 // -- Class members
 
+#if 0
 	static  ClassSpec                 classSpec_;
-    static  Reanimator<MultiHandle>  reanimator_;
+    static  Reanimator<BufferedHandle>  reanimator_;
+#endif
 
 };
 
 //-----------------------------------------------------------------------------
 
 } // namespace eckit
+
 
 #endif

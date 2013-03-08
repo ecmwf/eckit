@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File FileDescHandle.h
+// File filesystem/FileDescHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_FileDescHandle_h
-#define eckit_FileDescHandle_h
+#ifndef eckit_filesystem_FileDescHandle_h
+#define eckit_filesystem_FileDescHandle_h
 
 #include "eclib/DataHandle.h"
 

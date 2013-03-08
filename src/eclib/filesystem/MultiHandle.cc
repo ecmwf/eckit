@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/MultiHandle.h"
+#include "eclib/filesystem/MultiHandle.h"
 #include "eclib/StrStream.h"
 #include "eclib/Types.h"
 

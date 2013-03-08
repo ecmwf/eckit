@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/TeeHandle.h"
+#include "eclib/filesystem/TeeHandle.h"
 
 //-----------------------------------------------------------------------------
 

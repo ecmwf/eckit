@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File MoverHandle.h
+// File filesystem/MoverHandle.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef eckit_MoverHandle_h
-#define eckit_MoverHandle_h
+#ifndef eckit_filesystem_MoverHandle_h
+#define eckit_filesystem_MoverHandle_h
 
 #include "eclib/DataHandle.h"
 #include "eclib/Mutex.h"

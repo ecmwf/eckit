@@ -8,15 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-// File MarsFSHandle.h
+// File Partfilesystem/FileHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_MarsFSHandle_h
-#define eckit_MarsFSHandle_h
+#ifndef eckit_filesystem_PartFileHandle_h
+#define eckit_filesystem_PartFileHandle_h
 
+#include "eclib/Buffer.h"
 #include "eclib/DataHandle.h"
-#include "eclib/MarsFSFile.h"
-#include "eclib/MarsFSPath.h"
+#include "eclib/PathName.h"
+#include "eclib/Types.h"
 
 //-----------------------------------------------------------------------------
 
@@ -24,47 +25,42 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class MarsFSHandle : public DataHandle {
+class PartFileHandle : public DataHandle {
 public:
 
 // -- Contructors
 
-	MarsFSHandle(const MarsFSPath&, bool overwrite = false);
-	MarsFSHandle(Stream&);
+	PartFileHandle(const PathName&,const OffsetList&,const LengthList&);
+	PartFileHandle(const PathName&,const Offset&,const Length&);
+	PartFileHandle(Stream&);
 
 // -- Destructor
 
-	~MarsFSHandle();
+	~PartFileHandle();
 
-// --  Methods
+// -- Methods
 
-	void advance(const Length&); 
-	const MarsFSPath& path() const { return path_; }
+	const PathName& path() const { return name_; }
 
 // -- Overridden methods
 
 	// From DataHandle
 
-	virtual Length openForRead();
-	virtual void   openForWrite(const Length&);
-	virtual void   openForAppend(const Length&);
+    virtual Length openForRead();
+    virtual void openForWrite(const Length&);
+    virtual void openForAppend(const Length&);
 
-	virtual long   read(void*,long);
-	virtual long   write(const void*,long);
-	virtual void   close();
-	virtual void   rewind();
-	virtual void   skip(size_t);
-	virtual void   print(ostream&) const;
+	virtual long read(void*,long);
+	virtual long write(const void*,long);
+	virtual void close();
+	virtual void rewind();
+	virtual void print(ostream&) const;
+	virtual bool merge(DataHandle*);
+	virtual bool compress(bool = false);
 	virtual Length estimate();
-	virtual Offset position();
-	virtual bool isEmpty() const;
 	virtual void restartReadFrom(const Offset& from);
-	virtual void restartWriteFrom(const Offset& from);
-
-    virtual DataHandle* toLocal();
-	virtual void toLocal(Stream&) const;
+    virtual void toRemote(Stream&) const;
     virtual void cost(map<string,Length>&, bool) const;
-
     virtual string title() const;
     virtual bool moveable() const { return true; }
 
@@ -81,22 +77,25 @@ private:
 
 // -- Members
 
-	MarsFSPath    path_;
-	bool          read_;
-    Length        length_;
-    Offset        position_;
-    bool          overwrite_;
-    
-    auto_ptr<MarsFSFile>  file_;
+	PathName           name_;
+#ifdef USE_LINKS
+	PathName           link_;
+#endif
+	FILE*              file_;
+	long long          pos_;
+	Ordinal            index_;
+	OffsetList         offset_;
+	LengthList         length_;
+	auto_ptr<Buffer>   buffer_;
 
 // -- Methods
 
-	void open(const char*);
+	long read1(char*,long);
 
 // -- Class members
 
     static  ClassSpec               classSpec_;
-	static  Reanimator<MarsFSHandle>  reanimator_;
+	static  Reanimator<PartFileHandle>  reanimator_;
 
 };
 

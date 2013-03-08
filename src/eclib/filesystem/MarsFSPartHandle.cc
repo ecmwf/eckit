@@ -10,9 +10,10 @@
 
 
 #include "eclib/Log.h"
-#include "eclib/MarsFSPartHandle.h"
-#include "eclib/PartFileHandle.h"
 #include "eclib/StrStream.h"
+
+#include "eclib/filesystem/MarsFSPartHandle.h"
+#include "eclib/filesystem/PartFileHandle.h"
 
 //-----------------------------------------------------------------------------
 

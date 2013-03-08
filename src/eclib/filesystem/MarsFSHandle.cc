@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/FileHandle.h"
+#include "eclib/filesystem/FileHandle.h"
 #include "eclib/Log.h"
-#include "eclib/MarsFSHandle.h"
+#include "eclib/filesystem/MarsFSHandle.h"
 #include "eclib/StrStream.h"
 
 //-----------------------------------------------------------------------------

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/EmptyHandle.h"
+#include "eclib/filesystem/EmptyHandle.h"
 
 //-----------------------------------------------------------------------------
 

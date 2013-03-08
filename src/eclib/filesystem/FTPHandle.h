@@ -8,13 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-// File PipeHandle.h
-// Baudouin Raoult - ECMWF May 96
+// File filesystem/FTPHandle.h
+// Manuel Fuentes - ECMWF May 96
 
-#ifndef eckit_PipeHandle_h
-#define eckit_PipeHandle_h
+#ifndef eckit_filesystem_FTPHandle_h
+#define eckit_filesystem_FTPHandle_h
 
 #include "eclib/DataHandle.h"
+#include "eclib/TCPClient.h"
+#include "eclib/TCPSocket.h"
 
 //-----------------------------------------------------------------------------
 
@@ -22,45 +24,35 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class PipeHandle : public DataHandle {
+class FTPHandle : public DataHandle {
 public:
+
+// -- Exceptions
+
+	class FTPError : public exception { virtual const char *what() const throw(); };
 
 // -- Contructors
 
-	PipeHandle(const string&);
-	PipeHandle(Stream&);
+	FTPHandle(const string&,const string&,int port = 21);
+	FTPHandle(Stream&);
 
 // -- Destructor
 
-	~PipeHandle();
-
-// --  Methods
-
-	void advance(const Length&); 
+	~FTPHandle() {}
 
 // -- Overridden methods
 
 	// From DataHandle
 
-	virtual Length openForRead();
-	virtual void   openForWrite(const Length&);
-	virtual void   openForAppend(const Length&);
+    virtual Length openForRead();
+    virtual void openForWrite(const Length&);
+    virtual void openForAppend(const Length&);
 
-	virtual long   read(void*,long);
-	virtual long   write(const void*,long);
-	virtual void   close();
-	virtual void   rewind();
-	virtual void   print(ostream&) const;
-    /*
-	virtual void restartReadFrom(const Offset& from);
-	virtual void restartWriteFrom(const Offset& from);
-    */
-    /* virtual void toRemote(Stream&) const; */
-    /* virtual void cost(map<string,Length>&, bool) const; */
-    /* virtual string title() const; */
-    virtual bool moveable() const { return false; }
-
-    virtual Offset seek(const Offset&);
+	virtual long read(void*,long);
+	virtual long write(const void*,long);
+	virtual void close();
+	virtual void rewind();
+	virtual void print(ostream&) const;
 
 	// From Streamable
 
@@ -75,18 +67,22 @@ private:
 
 // -- Members
 
-	string        name_;
-	FILE*         file_;
-	bool          read_;
+	string        remote_;
+	string        host_;
+	int           port_;
+	TCPClient     cmds_;
+	TCPSocket     data_;
 
 // -- Methods
-
-	void open(const char*);
+	
+	void   ftpCommand(const string&);
+	string readLine();
+	void   open(const string&);
 
 // -- Class members
 
     static  ClassSpec               classSpec_;
-	static  Reanimator<PipeHandle>  reanimator_;
+	static  Reanimator<FTPHandle>  reanimator_;
 
 };
 

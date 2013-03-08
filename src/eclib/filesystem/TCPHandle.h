@@ -8,15 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-// File StdFileHandle.h
-// Piotr Kuchta - ECMWF April 09
+// File filesystem/TCPHandle.h
+// Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_StdFileHandle_h
-#define eckit_StdFileHandle_h
-
+#ifndef eckit_filesystem_TCPHandle_h
+#define eckit_filesystem_TCPHandle_h
 
 #include "eclib/DataHandle.h"
-
+#include "eclib/TCPClient.h"
 
 //-----------------------------------------------------------------------------
 
@@ -24,16 +23,17 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class StdFileHandle : public DataHandle {
+class TCPHandle : public DataHandle {
 public:
 
 // -- Contructors
-
-	StdFileHandle(FILE *);
+	
+	TCPHandle(Stream&);
+	TCPHandle(const string& host,int port);
 
 // -- Destructor
 
-	~StdFileHandle();
+	~TCPHandle();
 
 // -- Overridden methods
 
@@ -43,25 +43,38 @@ public:
     virtual void openForWrite(const Length&);
     virtual void openForAppend(const Length&);
 
-	virtual long   read(void*,long);
-	virtual long   write(const void*,long);
-	virtual void   close();
-	virtual void   print(ostream&) const;
+	virtual long read(void*,long);
+	virtual long write(const void*,long);
+	virtual void close();
+	virtual void rewind();
+	virtual void print(ostream&) const;
+	virtual string title() const;
+    virtual bool moveable() const { return true; }
 
 	// From Streamable
 
 	virtual void encode(Stream&) const;
+	virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
 // -- Class methods
 
+	static  const ClassSpec&  classSpec()         { return classSpec_;}
 
-private:
+protected:
 
 // -- Members
 
-	FILE* f_;
+	string      host_;
+	int         port_;
+	TCPClient   connection_;
+
+private:
+
 
 // -- Class members
+
+    static  ClassSpec               classSpec_;
+	static  Reanimator<TCPHandle>  reanimator_;
 
 };
 

@@ -13,10 +13,10 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/FileHandle.h"
+#include "eclib/filesystem/FileHandle.h"
 #include "eclib/Bytes.h"
 #include "eclib/Log.h"
-#include "eclib/MarsFSHandle.h"
+#include "eclib/filesystem/MarsFSHandle.h"
 #include "eclib/MarsFSPath.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/Resource.h"

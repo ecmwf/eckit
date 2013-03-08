@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File EmptyHandle.h
+// File filesystem/EmptyHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef eckit_EmptyHandle_h
-#define eckit_EmptyHandle_h
+#ifndef eckit_filesystem_EmptyHandle_h
+#define eckit_filesystem_EmptyHandle_h
 
 #include "eclib/DataHandle.h"
 

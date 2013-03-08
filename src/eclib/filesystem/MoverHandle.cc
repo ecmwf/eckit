@@ -8,16 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-// File MoverHandle.cc
+// File filesystem/MoverHandle.cc
 // Baudouin Raoult - (c) ECMWF Jun 11
 
 
 #include "eclib/AutoLock.h"
 #include "eclib/Monitor.h"
-#include "eclib/MoverHandle.h"
+#include "eclib/filesystem/MoverHandle.h"
 #include "eclib/MoverTransfer.h"
 #include "eclib/NodeInfo.h"
-#include "eclib/TCPHandle.h"
+#include "eclib/filesystem/TCPHandle.h"
 #include "eclib/TCPServer.h"
 #include "eclib/thread/Thread.h"
 #include "eclib/thread/ThreadControler.h"
@@ -109,6 +109,8 @@ class MoverHandleThread : public Thread {
 		}
 	}
 };
+
+//-----------------------------------------------------------------------------
 
 MoverHandle::MoverHandle(DataHandle* handle):
 	handle_(handle),

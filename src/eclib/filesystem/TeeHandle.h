@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File TeeHandle.h
+// File filesystem/TeeHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef eckit_TeeHandle_h
-#define eckit_TeeHandle_h
+#ifndef eckit_filesystem_TeeHandle_h
+#define eckit_filesystem_TeeHandle_h
 
 #include "eclib/DataHandle.h"
 

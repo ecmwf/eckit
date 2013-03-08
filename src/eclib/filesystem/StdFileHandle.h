@@ -8,14 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-// File TCPSocketHandle.h
-// Baudouin Raoult - ECMWF Jul 96
+// File Stdfilesystem/FileHandle.h
+// Piotr Kuchta - ECMWF April 09
 
-#ifndef eckit_TCPSocketHandle_h
-#define eckit_TCPSocketHandle_h
+#ifndef eckit_filesystem_StdFileHandle_h
+#define eckit_filesystem_StdFileHandle_h
+
 
 #include "eclib/DataHandle.h"
-#include "eclib/TCPSocket.h"
+
 
 //-----------------------------------------------------------------------------
 
@@ -23,16 +24,16 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class TCPSocketHandle : public DataHandle {
+class StdFileHandle : public DataHandle {
 public:
 
 // -- Contructors
-	
-	TCPSocketHandle(TCPSocket&);
+
+	StdFileHandle(FILE *);
 
 // -- Destructor
 
-	~TCPSocketHandle();
+	~StdFileHandle();
 
 // -- Overridden methods
 
@@ -42,33 +43,25 @@ public:
     virtual void openForWrite(const Length&);
     virtual void openForAppend(const Length&);
 
-	virtual long read(void*,long);
-	virtual long write(const void*,long);
-	virtual void close();
-	virtual void rewind();
-	virtual void print(ostream&) const;
+	virtual long   read(void*,long);
+	virtual long   write(const void*,long);
+	virtual void   close();
+	virtual void   print(ostream&) const;
 
 	// From Streamable
 
+	virtual void encode(Stream&) const;
 
 // -- Class methods
 
-protected:
-
-// -- Members
-
-	TCPSocket   connection_;
 
 private:
 
-// No copy allowed
+// -- Members
 
-	TCPSocketHandle(const TCPSocketHandle&);
-	TCPSocketHandle& operator=(const TCPSocketHandle&);
-
+	FILE* f_;
 
 // -- Class members
-
 
 };
 

@@ -8,14 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-// File FTPHandle.h
-// Manuel Fuentes - ECMWF May 96
+// File filesystem/TCPSocketHandle.h
+// Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_FTPHandle_h
-#define eckit_FTPHandle_h
+#ifndef eckit_filesystem_TCPSocketHandle_h
+#define eckit_filesystem_TCPSocketHandle_h
 
 #include "eclib/DataHandle.h"
-#include "eclib/TCPClient.h"
 #include "eclib/TCPSocket.h"
 
 //-----------------------------------------------------------------------------
@@ -24,21 +23,16 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class FTPHandle : public DataHandle {
+class TCPSocketHandle : public DataHandle {
 public:
 
-// -- Exceptions
-
-	class FTPError : public exception { virtual const char *what() const throw(); };
-
 // -- Contructors
-
-	FTPHandle(const string&,const string&,int port = 21);
-	FTPHandle(Stream&);
+	
+	TCPSocketHandle(TCPSocket&);
 
 // -- Destructor
 
-	~FTPHandle() {}
+	~TCPSocketHandle();
 
 // -- Overridden methods
 
@@ -56,33 +50,25 @@ public:
 
 	// From Streamable
 
-	virtual void encode(Stream&) const;
-	virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
 // -- Class methods
 
-	static  const ClassSpec&  classSpec()        { return classSpec_;}
-
-private:
+protected:
 
 // -- Members
 
-	string        remote_;
-	string        host_;
-	int           port_;
-	TCPClient     cmds_;
-	TCPSocket     data_;
+	TCPSocket   connection_;
 
-// -- Methods
-	
-	void   ftpCommand(const string&);
-	string readLine();
-	void   open(const string&);
+private:
+
+// No copy allowed
+
+	TCPSocketHandle(const TCPSocketHandle&);
+	TCPSocketHandle& operator=(const TCPSocketHandle&);
+
 
 // -- Class members
 
-    static  ClassSpec               classSpec_;
-	static  Reanimator<FTPHandle>  reanimator_;
 
 };
 

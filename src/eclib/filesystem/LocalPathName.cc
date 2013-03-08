@@ -18,12 +18,12 @@
 #include <sys/statvfs.h>
 
 #include "eclib/AutoLock.h"
-#include "eclib/BasePathNameT.h"
+#include "eclib/filesystem/BasePathNameT.h"
 #include "eclib/Bytes.h"
 #include "eclib/ClusterDisks.h"
 #include "eclib/Context.h"
 #include "eclib/Length.h"
-#include "eclib/LocalPathName.h"
+#include "eclib/filesystem/LocalPathName.h"
 #include "eclib/MarsFSPath.h"
 #include "eclib/Mutex.h"
 #include "eclib/NodeInfo.h"

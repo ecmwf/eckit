@@ -18,7 +18,7 @@
 
 #include "eclib/NonCopyable.h"
 #include "eclib/Padded.h"
-#include "eclib/PathName.h"
+#include "eclib/filesystem/PathName.h"
 
 //-----------------------------------------------------------------------------
 

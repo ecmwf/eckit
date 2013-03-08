@@ -11,7 +11,7 @@
 #include "eclib/AutoLock.h"
 #include "eclib/Configurable.h"
 #include "eclib/Context.h"
-#include "eclib/LocalPathName.h"
+#include "eclib/filesystem/LocalPathName.h"
 #include "eclib/Log.h"
 #include "eclib/Mutex.h"
 #include "eclib/ResourceMgr.h"

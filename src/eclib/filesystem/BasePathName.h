@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File BasePathName.h
+// File filesystem/BasePathName.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef eckit_BasePathName_h
-#define eckit_BasePathName_h
+#ifndef eckit_filesystem_BasePathName_h
+#define eckit_filesystem_BasePathName_h
 
 #include "eclib/machine.h"
 

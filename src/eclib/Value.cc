@@ -19,7 +19,7 @@
 #include "eclib/MapContent.h"
 #include "eclib/Value.h"
 #include "eclib/Length.h"
-#include "eclib/PathName.h"
+#include "eclib/filesystem/PathName.h"
 
 //-----------------------------------------------------------------------------
 

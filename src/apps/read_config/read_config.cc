@@ -13,7 +13,7 @@
 #include "eclib/Context.h"
 #include "eclib/DataHandle.h"
 #include "eclib/Log.h"
-#include "eclib/PathName.h"
+#include "eclib/filesystem/PathName.h"
 #include "eclib/Resource.h"
 #include "eclib/Tokenizer.h"
 #include "eclib/Types.h"

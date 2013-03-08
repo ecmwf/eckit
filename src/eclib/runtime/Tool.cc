@@ -13,7 +13,7 @@
 #include "eclib/Context.h"
 #include "eclib/Loader.h"
 #include "eclib/Log.h"
-#include "eclib/PathName.h"
+#include "eclib/filesystem/PathName.h"
 #include "eclib/Resource.h"
 
 #include "eclib/runtime/Tool.h"

@@ -17,7 +17,7 @@
 #include <set>
 
 #include "eclib/NonCopyable.h"
-#include "eclib/PathName.h"
+#include "eclib/filesystem/PathName.h"
 #include "eclib/Types.h"
 
 //-----------------------------------------------------------------------------

@@ -14,7 +14,7 @@
 #include "eclib/AutoLock.h"
 #include "eclib/AutoLock.h"
 #include "eclib/Monitor.h"
-#include "eclib/PathName.h"
+#include "eclib/filesystem/PathName.h"
 #include "eclib/Resource.h"
 #include "eclib/StrStream.h"
 #include "eclib/TaskInfo.h"

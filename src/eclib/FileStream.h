@@ -14,7 +14,7 @@
 #ifndef eckit_FileStream_h
 #define eckit_FileStream_h
 
-#include "eclib/PathName.h"
+#include "eclib/filesystem/PathName.h"
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------

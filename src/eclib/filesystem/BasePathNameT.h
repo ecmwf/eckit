@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-// File BasePathNameT.h
+// File filesystem/BasePathNameT.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef eckit_BasePathNameT_h
-#define eckit_BasePathNameT_h
+#ifndef eckit_filesystem_BasePathNameT_h
+#define eckit_filesystem_BasePathNameT_h
 
-#include "eclib/BasePathName.h"
+#include "eclib/filesystem/BasePathName.h"
 
 //-----------------------------------------------------------------------------
 
@@ -104,6 +104,6 @@ private:
 
 } // namespace eckit
 
-#include "eclib/BasePathNameT.cc"
+#include "eclib/filesystem/BasePathNameT.cc"
 
 #endif

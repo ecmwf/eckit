@@ -9,7 +9,7 @@
  */
 
 #include "eclib/runtime/Tool.h"
-#include "eclib/LocalPathName.h"
+#include "eclib/filesystem/LocalPathName.h"
 #include "eclib/Log.h"
 
 using namespace eckit;

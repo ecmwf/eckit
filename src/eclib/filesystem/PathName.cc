@@ -8,16 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-// File PathName.cc
+// File filesystem/PathName.cc
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#include "eclib/BasePathName.h"
-#include "eclib/BasePathNameT.h"
 #include "eclib/ClusterDisks.h"
 #include "eclib/Length.h"
-#include "eclib/LocalPathName.h"
 #include "eclib/MarsFSPath.h"
-#include "eclib/PathName.h"
+
+#include "eclib/filesystem/BasePathName.h"
+#include "eclib/filesystem/BasePathNameT.h"
+#include "eclib/filesystem/LocalPathName.h"
+#include "eclib/filesystem/PathName.h"
 
 //-----------------------------------------------------------------------------
 

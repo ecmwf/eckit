@@ -16,7 +16,7 @@
 
 #include <stdio.h>
 
-#include "eclib/PathName.h"
+#include "eclib/filesystem/PathName.h"
 
 
 //-----------------------------------------------------------------------------

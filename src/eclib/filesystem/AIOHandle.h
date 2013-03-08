@@ -17,7 +17,7 @@
 
 #include "eclib/Buffer.h"
 #include "eclib/DataHandle.h"
-#include "eclib/PathName.h"
+#include "eclib/filesystem/PathName.h"
 
 //-----------------------------------------------------------------------------
 

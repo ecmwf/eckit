@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-// File PathName.h
+// File filesystem/PathName.h
 // B.Raoult - ECMWF May 96
 
-#ifndef eckit_PathName_h
-#define eckit_PathName_h
+#ifndef eckit_filesystem_PathName_h
+#define eckit_filesystem_PathName_h
 
 #include "eclib/Length.h"
 #include "eclib/Offset.h"
-#include "eclib/FileSystemSize.h"
+#include "eclib/filesystem/FileSystemSize.h"
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------

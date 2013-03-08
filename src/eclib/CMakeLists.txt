@@ -84,9 +84,9 @@ AutoLocker.cc
 BackTrace.h
 BackTrace.cc
 BadValue.h
-BasePathName.h
-BasePathNameT.cc
-BasePathNameT.h
+filesystem/BasePathName.h
+filesystem/BasePathNameT.cc
+filesystem/BasePathNameT.h
 BigNum.cc
 BigNum.h
 BoolContent.h
@@ -181,7 +181,7 @@ FileSystem.cc
 FileSystem.h
 FileManager.cc
 FileManager.h
-FileSystemSize.h
+filesystem/FileSystemSize.h
 Grid.cc
 Grid.h
 HandleBuf.cc
@@ -199,8 +199,8 @@ LibBehavior.h
 LibBehavior.cc
 ListContent.cc
 ListContent.h
-LocalPathName.cc
-LocalPathName.h
+filesystem/LocalPathName.cc
+filesystem/LocalPathName.h
 Log.cc
 Log.h
 Logger.cc
@@ -254,8 +254,8 @@ Offset.h
 Padded.h
 Password.cc
 Password.h
-PathName.cc
-PathName.h
+filesystem/PathName.cc
+filesystem/PathName.h
 PipeApplication.cc
 PipeApplication.h
 PipeHandler.cc
@@ -371,7 +371,7 @@ machine.h
 )
 
 list( APPEND eckit_templates 
-                    BasePathNameT.cc
+                    filesystem/BasePathNameT.cc
                     Dispatcher.cc
                     BTree.cc
 					FixedString.cc

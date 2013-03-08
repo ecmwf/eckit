@@ -14,7 +14,7 @@
 #include "eclib/DataHandle.h"
 #include "eclib/DblBuffer.h"
 #include "eclib/MoverTransfer.h"
-#include "eclib/PathName.h"
+#include "eclib/filesystem/PathName.h"
 #include "eclib/Progress.h"
 #include "eclib/Resource.h"
 #include "eclib/StrStream.h"

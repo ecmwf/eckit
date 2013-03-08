@@ -14,7 +14,7 @@
 #include "eclib/StandardBehavior.h"
 #include "eclib/Log.h"
 #include "eclib/Monitor.h"
-#include "eclib/PathName.h"
+#include "eclib/filesystem/PathName.h"
 #include "eclib/Resource.h"
 #include "eclib/Semaphore.h"
 #include "eclib/Loader.h"

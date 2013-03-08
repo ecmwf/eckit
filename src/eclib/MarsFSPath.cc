@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/BasePathNameT.h"
+#include "eclib/filesystem/BasePathNameT.h"
 #include "eclib/ClusterDisks.h"
 #include "eclib/ClusterNodes.h"
 #include "eclib/Length.h"

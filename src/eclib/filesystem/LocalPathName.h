@@ -8,10 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-// File LocalPathName.h
+// File filesystem/LocalPathName.h
 // B.Raoult - ECMWF May 96
-#ifndef eckit_LocalPathName_h
-#define eckit_LocalPathName_h
+#ifndef eckit_filesystem_LocalPathName_h
+#define eckit_filesystem_LocalPathName_h
 
 #include "eclib/Length.h"
 #include "eclib/Offset.h"

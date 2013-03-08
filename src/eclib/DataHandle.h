@@ -16,7 +16,7 @@
 
 #include "eclib/Length.h"
 #include "eclib/Offset.h"
-#include "eclib/PathName.h"
+#include "eclib/filesystem/PathName.h"
 #include "eclib/Streamable.h"
 #include "eclib/TransferWatcher.h"
 

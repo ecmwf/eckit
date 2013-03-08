@@ -9,8 +9,8 @@
  */
 
 #pragma once
-#ifndef eckit_FileSystemSize_h
-#define eckit_FileSystemSize_h
+#ifndef eckit_filesystem_FileSystemSize_h
+#define eckit_filesystem_FileSystemSize_h
 
 //-----------------------------------------------------------------------------
 

@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File BasePathNameT.cc
+// File filesystem/BasePathNameT.cc
 // Baudouin Raoult - (c) ECMWF Jun 11
 
 
-#include "eclib/BasePathNameT.h"
+#include "eclib/filesystem/BasePathNameT.h"
 
 //-----------------------------------------------------------------------------
 

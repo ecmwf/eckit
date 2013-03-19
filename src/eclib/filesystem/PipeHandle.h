@@ -11,8 +11,8 @@
 // File filesystem/PipeHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_filesystem_PipeHandle.h
-#define eckit_filesystem_PipeHandle.h
+#ifndef eckit_filesystem_PipeHandle_h
+#define eckit_filesystem_PipeHandle_h
 
 #include "eclib/DataHandle.h"
 

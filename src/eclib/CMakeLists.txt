@@ -213,8 +213,8 @@ MappedArray.cc
 MappedArray.h
 MarsFSClient.cc
 MarsFSClient.h
-MarsFSFile.cc
-MarsFSFile.h
+filesystem/marsfs/MarsFSFile.cc
+filesystem/marsfs/MarsFSFile.h
 MarsFSPath.cc
 MarsFSPath.h
 MemoryPool.cc

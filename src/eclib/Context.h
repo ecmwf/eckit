@@ -11,7 +11,7 @@
 #ifndef eckit_Context_h
 #define eckit_Context_h
 
-#include "eclib/Configurable.h"
+#include "eclib/config/Configurable.h"
 #include "eclib/Exceptions.h"
 
 //-----------------------------------------------------------------------------

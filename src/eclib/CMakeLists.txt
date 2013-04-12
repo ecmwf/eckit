@@ -93,7 +93,7 @@ BoolContent.h
 BoolContent.cc
 BTree.cc
 BTree.h
-Cache.h
+tools/Cache.h
 JSONParser.cc
 JSONParser.h
 FixedString.cc
@@ -127,8 +127,8 @@ ClusterNodes.cc
 ClusterNodes.h
 CommandStream.cc
 CommandStream.h
-Configurable.cc
-Configurable.h
+config/Configurable.cc
+config/Configurable.h
 Connector.cc
 Connector.h
 Content.cc

@@ -9,7 +9,7 @@
  */
 
 #include "eclib/AutoLock.h"
-#include "eclib/Configurable.h"
+#include "eclib/config/Configurable.h"
 #include "eclib/Context.h"
 #include "eclib/filesystem/LocalPathName.h"
 #include "eclib/Log.h"

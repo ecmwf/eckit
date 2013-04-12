@@ -14,7 +14,7 @@
 #ifndef eckit_Tool_h
 #define eckit_Tool_h
 
-#include "eclib/Configurable.h"
+#include "eclib/config/Configurable.h"
 
 //-----------------------------------------------------------------------------
 

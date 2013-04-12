@@ -16,7 +16,7 @@
 #include "eclib/ResourceMgr.h"
 #include "eclib/Types.h"
 
-#include "eclib/Cache.h"
+#include "eclib/tools/Cache.h"
 
 using namespace eckit;
 

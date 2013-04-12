@@ -13,7 +13,7 @@
 
 #include <string>
 
-#include "eclib/Configurable.h"
+#include "eclib/config/Configurable.h"
 #include "eclib/Resource.h"
 
 //-----------------------------------------------------------------------------

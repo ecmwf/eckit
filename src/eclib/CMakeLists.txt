@@ -407,9 +407,12 @@ ecbuild_add_library( TARGET eckit
                      SOURCES    
                         ${eckit_src_files}
                         ${eckit_config_srcs}
-                        ${eckit_thread_srcs}
-                        ${eckit_runtime_srcs}
                         ${eckit_filesystem_srcs}
+                        ${eckit_log_srcs}
+                        ${eckit_runtime_srcs}
+                        ${eckit_thread_srcs}
+                        ${eckit_tools_srcs}
+                        ${eckit_types_srcs}
                      TEMPLATES  
                         ${eckit_templates}
                      PERSISTENT 

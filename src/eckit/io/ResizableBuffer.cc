@@ -12,7 +12,7 @@
 #include <sys/mman.h>
 
 #include "eckit/exception/Exceptions.h"
-#include "eclib/ResizableBuffer.h"
+#include "eckit/io/ResizableBuffer.h"
 
 
 //-----------------------------------------------------------------------------

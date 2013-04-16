@@ -16,7 +16,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/ResizableBuffer.h"
+#include "eckit/io/ResizableBuffer.h"
 
 //-----------------------------------------------------------------------------
 

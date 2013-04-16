@@ -17,7 +17,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"
 #include "eckit/os/Semaphore.h"
-#include "eclib/Loader.h"
+#include "eckit/bases/Loader.h"
 
 //-----------------------------------------------------------------------------
 

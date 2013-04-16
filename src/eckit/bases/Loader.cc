@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Loader.h"
+#include "eckit/bases/Loader.h"
 
 //-----------------------------------------------------------------------------
 

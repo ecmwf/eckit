@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "eckit/runtime/Context.h"
-#include "eclib/Loader.h"
+#include "eckit/bases/Loader.h"
 #include "eckit/log/Log.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"

@@ -14,7 +14,7 @@
 #ifndef eckit_Task_h
 #define eckit_Task_h
 
-#include "eclib/NonCopyable.h"
+#include "eckit/memory/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
 

@@ -15,7 +15,7 @@
 #define eckit_FileSpace_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eclib/NonCopyable.h"
+#include "eckit/memory/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
 

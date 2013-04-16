@@ -16,7 +16,7 @@
 
 #include "eckit/net/Connector.h"
 #include "eckit/io/Length.h"
-#include "eclib/NonCopyable.h"
+#include "eckit/memory/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
 

@@ -17,7 +17,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/NonCopyable.h"
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/parser/StreamParser.h"
 #include "eckit/types/Types.h"
 

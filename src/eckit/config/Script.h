@@ -13,7 +13,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/NonCopyable.h"
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/types/Types.h"
 

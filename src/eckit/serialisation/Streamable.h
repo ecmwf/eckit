@@ -15,7 +15,7 @@
 #define eckit_Streamable_h
 
 #include "eckit/memory/MemoryPool.h"
-#include "eclib/NonCopyable.h"
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/serialisation/Reanimator.h"
 #include "eckit/serialisation/Stream.h"
 

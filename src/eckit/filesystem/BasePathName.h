@@ -18,7 +18,7 @@
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
-#include "eclib/NonCopyable.h"
+#include "eckit/memory/NonCopyable.h"
 
 struct FileSystemSize;
 

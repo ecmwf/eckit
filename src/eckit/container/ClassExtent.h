@@ -17,7 +17,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/Mutex.h"
-#include "eclib/NonCopyable.h"
+#include "eckit/memory/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
 

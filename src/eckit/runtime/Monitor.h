@@ -18,7 +18,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/container/MappedArray.h"
-#include "eclib/NonCopyable.h"
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/runtime/TaskInfo.h"
 
 //-----------------------------------------------------------------------------

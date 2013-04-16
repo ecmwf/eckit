@@ -14,7 +14,7 @@
 #ifndef eckit_Thread_h
 #define eckit_Thread_h
 
-#include "eclib/NonCopyable.h"
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 //-----------------------------------------------------------------------------

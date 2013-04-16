@@ -12,7 +12,7 @@
 #define eckit_AutoLock_h
 
 #include "eckit/thread/AutoLocker.h"
-#include "eclib/NonCopyable.h"
+#include "eckit/memory/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
 

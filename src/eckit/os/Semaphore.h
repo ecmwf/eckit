@@ -14,7 +14,7 @@
 #ifndef eckit_Semaphore_h
 #define eckit_Semaphore_h
 
-#include "eclib/NonCopyable.h"
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/filesystem/PathName.h"
 

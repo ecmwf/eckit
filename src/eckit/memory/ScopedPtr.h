@@ -11,7 +11,7 @@
 #ifndef eckit_ScopedPtr_h
 #define eckit_ScopedPtr_h
 
-#include "eclib/NonCopyable.h"
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"
 
 

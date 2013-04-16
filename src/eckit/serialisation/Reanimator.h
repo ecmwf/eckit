@@ -109,6 +109,6 @@ static T*  reanimate(Stream& s);
 
 } // namespace eckit
 
-#include "eclib/Reanimator.cc"
+#include "eckit/serialisation/Reanimator.cc"
 
 #endif

@@ -16,7 +16,7 @@
 
 #include "eclib/MemoryPool.h"
 #include "eclib/NonCopyable.h"
-#include "eclib/Reanimator.h"
+#include "eckit/serialisation/Reanimator.h"
 #include "eckit/serialisation/Stream.h"
 
 

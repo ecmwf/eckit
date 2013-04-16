@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/TimeInterval.h"
+#include "eckit/types/TimeInterval.h"
 #include "eckit/types/DateTime.h"
 
 

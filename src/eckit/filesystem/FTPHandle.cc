@@ -10,7 +10,7 @@
 
 #include <arpa/inet.h>
 
-#include "eclib/filesystem/FTPHandle.h"
+#include "eckit/filesystem/FTPHandle.h"
 #include "eclib/Log.h"
 #include "eclib/TCPServer.h"
 

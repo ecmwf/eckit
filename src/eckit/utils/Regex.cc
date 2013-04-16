@@ -11,7 +11,7 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/exception/Exceptions.h"
-#include "eclib/Regex.h"
+#include "eckit/utils/Regex.h"
 
 
 //-----------------------------------------------------------------------------

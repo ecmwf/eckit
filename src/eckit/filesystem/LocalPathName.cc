@@ -27,7 +27,7 @@
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/io/cluster/eclib/NodeInfo.h"
-#include "eclib/Regex.h"
+#include "eckit/utils/Regex.h"
 #include "eckit/config/Resource.h"
 #include "eckit/io/StdFile.h"
 #include "eclib/StrStream.h"

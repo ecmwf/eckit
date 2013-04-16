@@ -10,7 +10,7 @@
 
 #include <sys/ioctl.h>
 
-#include "eclib/Select.h"
+#include "eckit/io/Select.h"
 #include "eclib/TCPSocket.h"
 
 //-----------------------------------------------------------------------------

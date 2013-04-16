@@ -13,7 +13,7 @@
 #include <signal.h>
 
 #include "eckit/log/Log.h"
-#include "eclib/Select.h"
+#include "eckit/io/Select.h"
 #include "eclib/TCPServer.h"
 
 //-----------------------------------------------------------------------------

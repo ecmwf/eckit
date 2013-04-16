@@ -17,7 +17,7 @@
 #include "eclib/PipeStream.h"
 #include "eckit/config/Resource.h"
 #include "eckit/log/Seconds.h"
-#include "eclib/Select.h"
+#include "eckit/io/Select.h"
 
 //-----------------------------------------------------------------------------
 

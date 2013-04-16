@@ -24,7 +24,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/config/Resource.h"
-#include "eclib/Select.h"
+#include "eckit/io/Select.h"
 #include "eclib/TCPClient.h"
 #include "eclib/TCPSocket.h"
 #include "eckit/log/Seconds.h"

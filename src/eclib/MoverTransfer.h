@@ -15,7 +15,7 @@
 #define eckit_MoverTransfer_h
 
 #include "eclib/DataHandle.h"
-#include "eclib/Length.h"
+#include "eckit/io/Length.h"
 
 //-----------------------------------------------------------------------------
 

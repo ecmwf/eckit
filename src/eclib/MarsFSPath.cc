@@ -11,7 +11,7 @@
 #include "eclib/filesystem/BasePathNameT.h"
 #include "eclib/ClusterDisks.h"
 #include "eclib/ClusterNodes.h"
-#include "eclib/Length.h"
+#include "eckit/io/Length.h"
 #include "eclib/MarsFSClient.h"
 #include "eclib/filesystem/MarsFSHandle.h"
 #include "eclib/filesystem/MarsFSPartHandle.h"

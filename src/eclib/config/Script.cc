@@ -10,7 +10,7 @@
 
 #include "eclib/Buffer.h"
 #include "eclib/DataHandle.h"
-#include "eclib/Length.h"
+#include "eckit/io/Length.h"
 
 #include "eclib/config/Script.h"
 #include "eclib/config/Block.h"

@@ -15,7 +15,7 @@
 #define eckit_MarsFSClient_h
 
 #include "eclib/Connector.h"
-#include "eclib/Length.h"
+#include "eckit/io/Length.h"
 #include "eclib/NonCopyable.h"
 
 //-----------------------------------------------------------------------------

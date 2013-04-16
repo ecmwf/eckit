@@ -18,7 +18,7 @@
 #include "eclib/NodeInfo.h"
 #include "eclib/Stream.h"
 #include "eclib/TCPSocket.h"
-#include "eclib/Length.h"
+#include "eckit/io/Length.h"
 
 //-----------------------------------------------------------------------------
 

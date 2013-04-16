@@ -17,7 +17,7 @@
 #include "eclib/machine.h"
 
 #include "eclib/DataHandle.h"
-#include "eclib/Length.h"
+#include "eckit/io/Length.h"
 #include "eclib/NonCopyable.h"
 
 struct FileSystemSize;

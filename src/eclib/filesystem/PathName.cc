@@ -12,7 +12,7 @@
 // Baudouin Raoult - (c) ECMWF Jun 11
 
 #include "eclib/ClusterDisks.h"
-#include "eclib/Length.h"
+#include "eckit/io/Length.h"
 #include "eclib/MarsFSPath.h"
 
 #include "eclib/filesystem/BasePathName.h"

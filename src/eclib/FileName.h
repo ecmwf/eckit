@@ -13,7 +13,7 @@
 
 #include "eclib/machine.h"
 #include "eclib/Offset.h"
-#include "eclib/Length.h"
+#include "eckit/io/Length.h"
 
 //-----------------------------------------------------------------------------
 

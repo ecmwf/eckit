@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/BackTrace.h"
+#include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Context.h"
 #include "eckit/runtime/ContextBehavior.h"
 #include "eckit/log/Log.h"

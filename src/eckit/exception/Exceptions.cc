@@ -14,7 +14,7 @@
 #include "eclib/StrStream.h"
 #include "eckit/thread/ThreadSingleton.h"
 
-#include "eclib/BackTrace.h"
+#include "eckit/os/BackTrace.h"
 
 //-----------------------------------------------------------------------------
 

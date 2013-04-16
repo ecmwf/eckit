@@ -20,7 +20,7 @@
   #include <cxxabi.h>
 #endif
 
-#include "eclib/BackTrace.h"
+#include "eckit/os/BackTrace.h"
 #include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------

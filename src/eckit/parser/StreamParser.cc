@@ -12,7 +12,7 @@
 /// @author Tiago Quintino
 /// @date Sep 2012
 
-#include "eclib/BackTrace.h"
+#include "eckit/os/BackTrace.h"
 #include "eckit/parser/StreamParser.h"
 #include "eckit/parser/Translator.h"
 

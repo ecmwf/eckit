@@ -35,7 +35,7 @@
 
 #include "eckit/filesystem/FileHandle.h"
 #include "eckit/filesystem/FileHandle.h"
-#include "eclib/filesystem/PartFileHandle.h"
+#include "eckit/filesystem/PartFileHandle.h"
 
 //-----------------------------------------------------------------------------
 

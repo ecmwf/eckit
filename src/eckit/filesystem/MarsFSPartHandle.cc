@@ -13,7 +13,7 @@
 #include "eclib/StrStream.h"
 
 #include "eckit/filesystem/MarsFSPartHandle.h"
-#include "eclib/filesystem/PartFileHandle.h"
+#include "eckit/filesystem/PartFileHandle.h"
 
 //-----------------------------------------------------------------------------
 

@@ -80,6 +80,6 @@ private:
 
 } // namespace eckit
 
-#include "eclib/Pipe.cc"
+#include "eckit/Pipe.cc"
 
 #endif

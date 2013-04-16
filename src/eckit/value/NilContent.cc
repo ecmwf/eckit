@@ -10,7 +10,7 @@
 
 
 #include "eckit/value/NilContent.h"
-#include "eclib/Value.h"
+#include "eckit/value/Value.h"
 #include "eckit/parser/JSON.h"
 
 //-----------------------------------------------------------------------------

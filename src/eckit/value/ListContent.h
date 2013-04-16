@@ -14,7 +14,7 @@
 #ifndef eckit_ListContent_h
 #define eckit_ListContent_h
 
-#include "eclib/Value.h"
+#include "eckit/value/Value.h"
 
 //-----------------------------------------------------------------------------
 

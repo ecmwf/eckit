@@ -11,7 +11,7 @@
 
 #include "eckit/value/Content.h"
 #include "eclib/StrStream.h"
-#include "eclib/Value.h"
+#include "eckit/value/Value.h"
 
 //-----------------------------------------------------------------------------
 

@@ -14,7 +14,7 @@
 #ifndef eckit_MapContent_h
 #define eckit_MapContent_h
 
-#include "eclib/Value.h"
+#include "eckit/value/Value.h"
 
 //-----------------------------------------------------------------------------
 

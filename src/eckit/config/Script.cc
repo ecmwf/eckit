@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Buffer.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 

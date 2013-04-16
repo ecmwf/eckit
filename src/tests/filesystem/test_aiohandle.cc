@@ -9,7 +9,7 @@
  */
 
 #include "eckit/filesystem/AIOHandle.h"
-#include "eclib/Buffer.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/filesystem/FileHandle.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"

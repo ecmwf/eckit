@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/Buffer.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/io/DataHandle.h"
 #include "eclib/DblBuffer.h"

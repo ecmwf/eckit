@@ -15,7 +15,7 @@
 #define eckit_filesystem_FileHandle_h
 
 #include "eckit/io/DataHandle.h"
-#include "eclib/Buffer.h"
+#include "eckit/io/Buffer.h"
 
 //-----------------------------------------------------------------------------
 

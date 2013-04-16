@@ -14,7 +14,7 @@
 #ifndef eckit_filesystem_BufferedHandle_h
 #define eckit_filesystem_BufferedHandle_h
 
-#include "eclib/Buffer.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 
 //-----------------------------------------------------------------------------

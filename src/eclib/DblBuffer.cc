@@ -10,7 +10,7 @@
 
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/Buffer.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
 #include "eclib/DblBuffer.h"
 #include "eckit/log/Log.h"

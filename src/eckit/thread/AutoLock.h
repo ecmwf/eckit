@@ -11,7 +11,7 @@
 #ifndef eckit_AutoLock_h
 #define eckit_AutoLock_h
 
-#include "eclib/AutoLocker.h"
+#include "eckit/thread/AutoLocker.h"
 #include "eclib/NonCopyable.h"
 
 //-----------------------------------------------------------------------------

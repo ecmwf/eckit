@@ -10,7 +10,7 @@
 
 /* #define CHECK_DEAD_LOCKS */
 
-#include "eclib/AutoLocker.h"
+#include "eckit/thread/AutoLocker.h"
 #include "eckit/thread/Mutex.h"
 
 //-----------------------------------------------------------------------------

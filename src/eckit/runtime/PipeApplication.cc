@@ -13,7 +13,7 @@
 #include "eclib/BigNum.h"
 #include "eclib/Bytes.h"
 #include "eckit/runtime/Monitor.h"
-#include "eclib/PipeApplication.h"
+#include "eckit/runtime/PipeApplication.h"
 #include "eclib/PipeStream.h"
 #include "eckit/config/Resource.h"
 #include "eclib/Seconds.h"

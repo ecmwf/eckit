@@ -14,7 +14,7 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/io/cluster/eclib/NodeInfo.h"
-#include "eclib/Port.h"
+#include "eckit/net/Port.h"
 #include "eckit/config/Resource.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPStream.h"

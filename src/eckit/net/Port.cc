@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/Port.h"
+#include "eckit/net/Port.h"
 #include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------

@@ -17,8 +17,8 @@
 #include "eclib/Port.h"
 #include "eckit/config/Resource.h"
 #include "eckit/net/TCPClient.h"
-#include "eclib/TCPStream.h"
-#include "eclib/TCPStream.h"
+#include "eckit/net/TCPStream.h"
+#include "eckit/net/TCPStream.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 

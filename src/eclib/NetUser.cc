@@ -11,7 +11,7 @@
 
 #include "eclib/NetUser.h"
 #include "eckit/io/SockBuf.h"
-#include "eclib/TCPStream.h"
+#include "eckit/net/TCPStream.h"
 
 //-----------------------------------------------------------------------------
 

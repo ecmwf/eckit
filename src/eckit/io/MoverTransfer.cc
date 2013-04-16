@@ -18,7 +18,7 @@
 #include "eckit/log/Progress.h"
 #include "eckit/config/Resource.h"
 #include "eclib/TCPServer.h"
-#include "eclib/TCPStream.h"
+#include "eckit/net/TCPStream.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 #include "eckit/io/cluster/ClusterNodes.h"

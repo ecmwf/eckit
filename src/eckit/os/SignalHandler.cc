@@ -10,7 +10,7 @@
 
 
 #include "eckit/log/Log.h"
-#include "eclib/SignalHandler.h"
+#include "eckit/os/SignalHandler.h"
 
 
 //-----------------------------------------------------------------------------

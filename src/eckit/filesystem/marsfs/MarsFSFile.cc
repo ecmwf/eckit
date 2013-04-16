@@ -12,7 +12,7 @@
 // Baudouin Raoult - (c) ECMWF Jun 11
 
 
-#include "eclib/filesystem/marsfs/MarsFSFile.h"
+#include "eckit/filesystem/marsfs/MarsFSFile.h"
 
 //-----------------------------------------------------------------------------
 

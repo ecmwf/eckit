@@ -12,7 +12,7 @@
 
 #include "eclib/AutoAlarm.h"
 #include "eclib/Exceptions.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 
 //-----------------------------------------------------------------------------
 

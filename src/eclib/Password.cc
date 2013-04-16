@@ -10,7 +10,7 @@
 
 #include <pwd.h>
 
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eclib/Password.h"
 
 //-----------------------------------------------------------------------------

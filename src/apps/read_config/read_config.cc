@@ -12,7 +12,7 @@
 #include "eclib/BadValue.h"
 #include "eckit/runtime/Context.h"
 #include "eclib/DataHandle.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"
 #include "eclib/Tokenizer.h"

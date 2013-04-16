@@ -14,7 +14,7 @@
 #ifndef eckit_Timer_h
 #define eckit_Timer_h
 
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 
 
 //-----------------------------------------------------------------------------

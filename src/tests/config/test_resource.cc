@@ -11,7 +11,7 @@
 #include <cmath>
 
 #include "eclib/Bytes.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"

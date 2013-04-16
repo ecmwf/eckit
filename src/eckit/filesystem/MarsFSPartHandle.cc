@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eclib/StrStream.h"
 
 #include "eckit/filesystem/MarsFSPartHandle.h"

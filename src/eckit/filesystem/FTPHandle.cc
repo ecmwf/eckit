@@ -11,7 +11,7 @@
 #include <arpa/inet.h>
 
 #include "eckit/filesystem/FTPHandle.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eclib/TCPServer.h"
 
 //-----------------------------------------------------------------------------

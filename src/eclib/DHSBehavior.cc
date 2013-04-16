@@ -14,7 +14,7 @@
 #include "eclib/Colour.h"
 #include "eclib/DHSBehavior.h"
 #include "eclib/DHSStdLogger.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/config/Resource.h"
 #include "eclib/RotLogger.h"

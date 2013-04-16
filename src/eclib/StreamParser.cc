@@ -16,7 +16,7 @@
 #include "eclib/StreamParser.h"
 #include "eclib/Translator.h"
 
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 
 
 //-----------------------------------------------------------------------------

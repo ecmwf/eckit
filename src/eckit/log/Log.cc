@@ -9,7 +9,7 @@
  */
 
 #include "eclib/Inited.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eclib/LogBuffer.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/ThreadSingleton.h"

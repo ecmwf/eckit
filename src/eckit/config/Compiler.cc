@@ -10,7 +10,7 @@
 
 #include <ctype.h>
 
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eclib/Tokenizer.h"
 #include "eclib/StringTools.h"
 

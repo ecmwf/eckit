@@ -13,7 +13,7 @@
 #include "eclib/machine.h"
 
 #include "eclib/FileStream.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 
 //-----------------------------------------------------------------------------
 

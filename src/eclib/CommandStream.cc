@@ -10,7 +10,7 @@
 
 
 #include "eclib/CommandStream.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 
 //-----------------------------------------------------------------------------
 

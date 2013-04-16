@@ -13,7 +13,7 @@
 #include "eclib/Buffer.h"
 #include "eclib/Bytes.h"
 #include "eclib/DblBuffer.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eckit/thread/MutexCond.h"
 #include "eclib/Progress.h"
 #include "eckit/thread/Thread.h"

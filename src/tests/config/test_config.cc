@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
 #include "eclib/Types.h"

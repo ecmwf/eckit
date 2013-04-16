@@ -12,7 +12,7 @@
 #include <fcntl.h>
 #include <signal.h>
 
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eclib/Select.h"
 #include "eclib/TCPServer.h"
 

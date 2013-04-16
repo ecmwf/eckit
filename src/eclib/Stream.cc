@@ -12,7 +12,7 @@
 #include <assert.h>
 
 #include "eclib/Buffer.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eclib/StrStream.h"
 #include "eclib/Stream.h"
 

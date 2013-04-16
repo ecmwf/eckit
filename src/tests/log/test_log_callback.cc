@@ -12,7 +12,7 @@
 #include "eckit/runtime/Context.h"
 #include "eckit/runtime/LibBehavior.h"
 #include "eckit/filesystem/LocalPathName.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 
 using namespace eckit;
 

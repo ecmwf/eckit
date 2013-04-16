@@ -11,7 +11,7 @@
 #include "eclib/BackTrace.h"
 #include "eckit/runtime/Context.h"
 #include "eckit/runtime/ContextBehavior.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
 
 //-----------------------------------------------------------------------------

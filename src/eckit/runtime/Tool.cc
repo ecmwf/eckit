@@ -12,7 +12,7 @@
 
 #include "eckit/runtime/Context.h"
 #include "eclib/Loader.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"
 

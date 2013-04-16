@@ -12,7 +12,7 @@
 #include "eckit/config/Configurable.h"
 #include "eckit/runtime/Context.h"
 #include "eckit/filesystem/LocalPathName.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/config/ResourceMgr.h"
 #include "eclib/Types.h"

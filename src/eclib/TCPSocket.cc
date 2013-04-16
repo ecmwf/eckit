@@ -21,7 +21,7 @@
 
 #include "eclib/AutoAlarm.h"
 #include "eckit/thread/AutoLock.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/config/Resource.h"
 #include "eclib/Select.h"

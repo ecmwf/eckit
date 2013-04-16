@@ -12,7 +12,7 @@
 
 #include "eckit/runtime/Application.h"
 #include "eckit/runtime/StandardBehavior.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"

@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
 #include "eclib/NetService.h"
 #include "eclib/NetUser.h"

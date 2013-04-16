@@ -12,7 +12,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eclib/Dispatcher.h"
 #include "eclib/JSON.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/Monitorable.h"
 #include "eclib/Plural.h"

@@ -16,7 +16,7 @@
 #include "eclib/machine.h"
 
 #include "eclib/CodeLocation.h"
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 #include "eclib/StrStream.h"
 
 //-----------------------------------------------------------------------------

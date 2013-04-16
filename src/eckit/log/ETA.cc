@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/ETA.h"
+#include "eckit/log/ETA.h"
 #include "eclib/StrStream.h"
 
 //-----------------------------------------------------------------------------

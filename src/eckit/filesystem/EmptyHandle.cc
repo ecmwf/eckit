@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/filesystem/EmptyHandle.h"
+#include "eckit/filesystem/EmptyHandle.h"
 
 //-----------------------------------------------------------------------------
 

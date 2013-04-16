@@ -10,7 +10,7 @@
 
 
 #include "eclib/DumpLoad.h"
-#include "eclib/Offset.h"
+#include "eckit/io/Offset.h"
 
 //-----------------------------------------------------------------------------
 

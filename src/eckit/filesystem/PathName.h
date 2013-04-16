@@ -15,7 +15,7 @@
 #define eckit_filesystem_PathName_h
 
 #include "eckit/io/Length.h"
-#include "eclib/Offset.h"
+#include "eckit/io/Offset.h"
 #include "eckit/filesystem/FileSystemSize.h"
 #include "eclib/Stream.h"
 

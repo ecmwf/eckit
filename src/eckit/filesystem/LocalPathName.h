@@ -14,7 +14,7 @@
 #define eckit_filesystem_LocalPathName_h
 
 #include "eckit/io/Length.h"
-#include "eclib/Offset.h"
+#include "eckit/io/Offset.h"
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------

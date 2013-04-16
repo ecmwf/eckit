@@ -51,7 +51,7 @@ public:
 	Offset(long long l = 0) : value_(l) {}
 	Offset(const Offset& other) : value_(other.value_) {}
 
-#include "eclib/Offset.b"
+#include "eckit/io/Offset.b"
 
 	Offset& operator=(const Offset& other) 
 		{ value_ = other.value_; return *this;}

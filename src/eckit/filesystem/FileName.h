@@ -12,7 +12,7 @@
 #define eckit_FileName_h
 
 #include "eclib/machine.h"
-#include "eclib/Offset.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
 
 //-----------------------------------------------------------------------------

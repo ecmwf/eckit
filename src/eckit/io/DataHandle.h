@@ -15,7 +15,7 @@
 #define eckit_DataHandle_h
 
 #include "eckit/io/Length.h"
-#include "eclib/Offset.h"
+#include "eckit/io/Offset.h"
 #include "eckit/filesystem/PathName.h"
 #include "eclib/Streamable.h"
 #include "eclib/TransferWatcher.h"

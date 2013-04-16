@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/FileName.h"
+#include "eckit/filesystem/FileName.h"
 #include "eckit/filesystem/FileManager.h"
 #include "eclib/AutoLock.h"
 #include "eclib/Mutex.h"

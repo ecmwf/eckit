@@ -9,7 +9,7 @@
  */
 
 #include "eclib/machine.h"
-#include "eclib/FixedString.h"
+#include "eckit/types/FixedString.h"
 #include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------

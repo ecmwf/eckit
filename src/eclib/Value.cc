@@ -11,7 +11,7 @@
 
 #include "eclib/DateContent.h"
 #include "eclib/ListContent.h"
-#include "eclib/NilContent.h"
+#include "eckit/value/NilContent.h"
 #include "eclib/NumberContent.h"
 #include "eclib/StringContent.h"
 #include "eclib/BoolContent.h"

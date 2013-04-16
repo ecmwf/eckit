@@ -11,7 +11,7 @@
 // File JSON.cc
 // Baudouin Raoult - (c) ECMWF Aug 11
 
-#include "eclib/JSON.h"
+#include "eckit/parser/JSON.h"
 
 //-----------------------------------------------------------------------------
 

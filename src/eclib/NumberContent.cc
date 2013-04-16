@@ -10,7 +10,7 @@
 
 #include "eclib/DoubleContent.h"
 #include "eckit/exception/Exceptions.h"
-#include "eclib/JSON.h"
+#include "eckit/parser/JSON.h"
 #include "eclib/NumberContent.h"
 #include "eclib/StrStream.h"
 #include "eckit/parser/Translator.h"

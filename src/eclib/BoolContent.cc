@@ -10,7 +10,7 @@
 
 #include "eclib/BoolContent.h"
 #include "eckit/parser/Translator.h"
-#include "eclib/JSON.h"
+#include "eckit/parser/JSON.h"
 
 //-----------------------------------------------------------------------------
 

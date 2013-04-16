@@ -11,7 +11,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eclib/Dispatcher.h"
-#include "eclib/JSON.h"
+#include "eckit/parser/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/Monitorable.h"

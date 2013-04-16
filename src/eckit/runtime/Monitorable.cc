@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/JSON.h"
+#include "eckit/parser/JSON.h"
 #include "eckit/runtime/Monitorable.h"
 
 //-----------------------------------------------------------------------------

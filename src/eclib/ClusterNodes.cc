@@ -14,7 +14,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eclib/ClusterNodes.h"
-#include "eclib/JSON.h"
+#include "eckit/parser/JSON.h"
 #include "eclib/MappedArray.h"
 #include "eclib/NodeInfo.h"
 #include "eckit/config/Resource.h"

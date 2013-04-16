@@ -15,7 +15,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eclib/ClusterDisks.h"
 #include "eckit/filesystem/FileSpace.h"
-#include "eclib/JSON.h"
+#include "eckit/parser/JSON.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eclib/MappedArray.h"
 #include "eclib/NodeInfo.h"

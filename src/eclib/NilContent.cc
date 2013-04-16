@@ -11,7 +11,7 @@
 
 #include "eclib/NilContent.h"
 #include "eclib/Value.h"
-#include "eclib/JSON.h"
+#include "eckit/parser/JSON.h"
 
 //-----------------------------------------------------------------------------
 

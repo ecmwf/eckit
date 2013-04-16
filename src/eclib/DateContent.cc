@@ -11,7 +11,7 @@
 
 #include "eclib/DateContent.h"
 #include "eclib/NumberContent.h"
-#include "eclib/JSON.h"
+#include "eckit/parser/JSON.h"
 
 //-----------------------------------------------------------------------------
 

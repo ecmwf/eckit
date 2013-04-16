@@ -10,7 +10,7 @@
 
 
 #include "eclib/StringContent.h"
-#include "eclib/JSON.h"
+#include "eckit/parser/JSON.h"
 
 //-----------------------------------------------------------------------------
 

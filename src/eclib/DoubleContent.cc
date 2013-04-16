@@ -12,7 +12,7 @@
 #include "eclib/DoubleContent.h"
 #include "eckit/parser/Translator.h"
 #include "eclib/NumberContent.h"
-#include "eclib/JSON.h"
+#include "eckit/parser/JSON.h"
 
 //-----------------------------------------------------------------------------
 

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/filesystem/TCPSocketHandle.h"
+#include "eckit/filesystem/TCPSocketHandle.h"
 
 //-----------------------------------------------------------------------------
 

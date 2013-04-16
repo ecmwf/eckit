@@ -14,7 +14,7 @@
 #include "eclib/JSON.h"
 #include "eclib/Log.h"
 #include "eckit/runtime/Monitor.h"
-#include "eclib/Monitorable.h"
+#include "eckit/runtime/Monitorable.h"
 #include "eclib/Plural.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"

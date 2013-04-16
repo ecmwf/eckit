@@ -13,7 +13,7 @@
 #include "eckit/runtime/Context.h"
 #include "eclib/Semaphore.h"
 #include "eclib/Statistics.h"
-#include "eclib/TimeStamp.h"
+#include "eckit/log/TimeStamp.h"
 
 
 //-----------------------------------------------------------------------------

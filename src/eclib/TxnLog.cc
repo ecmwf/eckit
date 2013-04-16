@@ -16,7 +16,7 @@
 #include "eclib/StrStream.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-#include "eclib/TimeStamp.h"
+#include "eckit/log/TimeStamp.h"
 #include "eclib/Translator.h"
 #include "eclib/TxnLog.h"
 

@@ -10,7 +10,7 @@
 
 #include "eclib/DHSLogger.h"
 #include "eckit/runtime/Monitor.h"
-#include "eclib/TimeStamp.h"
+#include "eckit/log/TimeStamp.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eclib/Once.h"

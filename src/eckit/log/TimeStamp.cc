@@ -10,7 +10,7 @@
 
 
 #include "eclib/StrStream.h"
-#include "eclib/TimeStamp.h"
+#include "eckit/log/TimeStamp.h"
 
 
 //-----------------------------------------------------------------------------

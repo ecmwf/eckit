@@ -10,7 +10,7 @@
 
 #include "eclib/DHSStdLogger.h"
 #include "eckit/config/Resource.h"
-#include "eclib/TimeStamp.h"
+#include "eckit/log/TimeStamp.h"
 
 //-----------------------------------------------------------------------------
 

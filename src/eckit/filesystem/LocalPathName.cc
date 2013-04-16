@@ -31,7 +31,7 @@
 #include "eckit/config/Resource.h"
 #include "eclib/StdFile.h"
 #include "eclib/StrStream.h"
-#include "eclib/TimeStamp.h"
+#include "eckit/log/TimeStamp.h"
 
 #include "eckit/filesystem/FileHandle.h"
 #include "eckit/filesystem/FileHandle.h"

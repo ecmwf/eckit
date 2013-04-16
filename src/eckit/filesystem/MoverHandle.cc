@@ -15,7 +15,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/MoverHandle.h"
-#include "eclib/MoverTransfer.h"
+#include "eckit/io/MoverTransfer.h"
 #include "eclib/NodeInfo.h"
 #include "eckit/filesystem/TCPHandle.h"
 #include "eclib/TCPServer.h"

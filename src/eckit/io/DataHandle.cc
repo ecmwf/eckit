@@ -13,7 +13,7 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/DblBuffer.h"
-#include "eclib/MoverTransfer.h"
+#include "eckit/io/MoverTransfer.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Progress.h"
 #include "eckit/config/Resource.h"

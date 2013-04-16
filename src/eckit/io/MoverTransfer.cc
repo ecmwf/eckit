@@ -13,7 +13,7 @@
 #include "eckit/log/Bytes.h"
 #include "eclib/Connector.h"
 #include "eckit/runtime/Monitor.h"
-#include "eclib/MoverTransfer.h"
+#include "eckit/io/MoverTransfer.h"
 #include "eclib/NodeInfo.h"
 #include "eckit/log/Progress.h"
 #include "eckit/config/Resource.h"

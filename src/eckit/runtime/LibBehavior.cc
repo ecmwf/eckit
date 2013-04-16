@@ -11,7 +11,7 @@
 #include <cstdlib>
 #include <cassert>
 
-#include "eclib/LibBehavior.h"
+#include "eckit/runtime/LibBehavior.h"
 
 //-----------------------------------------------------------------------------
 

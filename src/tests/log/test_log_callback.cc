@@ -10,7 +10,7 @@
 
 #include "eclib/BackTrace.h"
 #include "eckit/runtime/Context.h"
-#include "eclib/LibBehavior.h"
+#include "eckit/runtime/LibBehavior.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eclib/Log.h"
 

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/FileSystem.h"
+#include "eckit/filesystem/FileSystem.h"
 
 //-----------------------------------------------------------------------------
 

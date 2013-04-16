@@ -12,7 +12,7 @@
 // Baudouin Raoult - (c) ECMWF Jul 11
 
 
-#include "eclib/BufferCache.h"
+#include "eckit/io/BufferCache.h"
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------

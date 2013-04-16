@@ -11,7 +11,7 @@
 #include "eclib/machine.h"
 
 #include "eckit/filesystem/PathName.h"
-#include "eclib/StdFile.h"
+#include "eckit/io/StdFile.h"
 
 
 //-----------------------------------------------------------------------------

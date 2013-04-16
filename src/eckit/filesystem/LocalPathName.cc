@@ -29,7 +29,7 @@
 #include "eclib/NodeInfo.h"
 #include "eclib/Regex.h"
 #include "eckit/config/Resource.h"
-#include "eclib/StdFile.h"
+#include "eckit/io/StdFile.h"
 #include "eclib/StrStream.h"
 #include "eckit/log/TimeStamp.h"
 

@@ -120,6 +120,6 @@ private:
 
 } // namespace eckit
 
-#include "eclib/FileBase.cc"
+#include "eckit/io/FileBase.cc"
 
 #endif

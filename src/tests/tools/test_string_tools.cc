@@ -10,7 +10,7 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
-#include "eclib/StringTools.h"
+#include "eckit/utils/StringTools.h"
 #include "eckit/types/Types.h"
 
 using namespace eckit;

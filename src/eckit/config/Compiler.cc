@@ -12,7 +12,7 @@
 
 #include "eckit/log/Log.h"
 #include "eclib/Tokenizer.h"
-#include "eclib/StringTools.h"
+#include "eckit/utils/StringTools.h"
 
 #include "eckit/config/Compiler.h"
 

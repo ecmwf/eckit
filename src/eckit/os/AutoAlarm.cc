@@ -10,7 +10,7 @@
 
 #include <signal.h>
 
-#include "eclib/AutoAlarm.h"
+#include "eckit/os/AutoAlarm.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 

@@ -19,7 +19,7 @@
 #include <setjmp.h>
 
 
-#include "eclib/AutoAlarm.h"
+#include "eckit/os/AutoAlarm.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/Mutex.h"

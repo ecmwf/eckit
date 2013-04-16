@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Inited.h"
+#include "eckit/compat/Inited.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/LogBuffer.h"
 #include "eckit/runtime/Monitor.h"

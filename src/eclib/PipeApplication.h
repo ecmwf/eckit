@@ -14,7 +14,7 @@
 #ifndef eckit_PipeApplication_h
 #define eckit_PipeApplication_h
 
-#include "eclib/runtime/Application.h"
+#include "eckit/runtime/Application.h"
 #include "eclib/Stream.h"
 #include "eckit/config/Resource.h"
 

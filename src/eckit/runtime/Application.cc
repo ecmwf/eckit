@@ -10,7 +10,7 @@
 
 #include <stdlib.h>
 
-#include "eclib/runtime/Application.h"
+#include "eckit/runtime/Application.h"
 #include "eclib/StandardBehavior.h"
 #include "eclib/Log.h"
 #include "eclib/Monitor.h"

@@ -12,7 +12,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/net/NetService.h"
-#include "eclib/NetUser.h"
+#include "eckit/net/NetUser.h"
 #include "eckit/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------

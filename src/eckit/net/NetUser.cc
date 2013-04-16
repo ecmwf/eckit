@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/NetUser.h"
+#include "eckit/net/NetUser.h"
 #include "eckit/io/SockBuf.h"
 #include "eckit/net/TCPStream.h"
 

@@ -14,7 +14,7 @@
 #ifndef eckit_TelnetUser_h
 #define eckit_TelnetUser_h
 
-#include "eclib/NetUser.h"
+#include "eckit/net/NetUser.h"
 
 
 //-----------------------------------------------------------------------------

@@ -37,7 +37,7 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
-#include "eclib/ProcessControler.h"
+#include "eckit/runtime/ProcessControler.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 

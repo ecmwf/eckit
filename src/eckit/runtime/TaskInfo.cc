@@ -13,7 +13,7 @@
 
 #include "eckit/runtime/Context.h"
 #include "eckit/runtime/Monitor.h"
-#include "eclib/ProcessControler.h"
+#include "eckit/runtime/ProcessControler.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/utils/Timer.h"
 #include "eckit/os/SignalHandler.h"

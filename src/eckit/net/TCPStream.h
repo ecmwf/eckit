@@ -14,7 +14,7 @@
 #ifndef eckit_TCPStream_h
 #define eckit_TCPStream_h
 
-#include "eclib/Counted.h"
+#include "eckit/memory/Counted.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/net/TCPSocket.h"
 

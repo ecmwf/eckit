@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/Counted.h"
+#include "eckit/memory/Counted.h"
 
 //-----------------------------------------------------------------------------
 

@@ -12,7 +12,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
-#include "eclib/DblBuffer.h"
+#include "eckit/io/DblBuffer.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/MutexCond.h"
 #include "eckit/log/Progress.h"

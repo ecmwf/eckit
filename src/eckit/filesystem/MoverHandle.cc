@@ -18,7 +18,7 @@
 #include "eckit/io/MoverTransfer.h"
 #include "eckit/io/cluster/eclib/NodeInfo.h"
 #include "eckit/filesystem/TCPHandle.h"
-#include "eclib/TCPServer.h"
+#include "eckit/net/TCPServer.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 

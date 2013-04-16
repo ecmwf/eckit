@@ -12,7 +12,7 @@
 
 #include "eckit/filesystem/FTPHandle.h"
 #include "eckit/log/Log.h"
-#include "eclib/TCPServer.h"
+#include "eckit/net/TCPServer.h"
 
 //-----------------------------------------------------------------------------
 

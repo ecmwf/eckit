@@ -14,7 +14,7 @@
 #ifndef eckit_NetService_h
 #define eckit_NetService_h
 
-#include "eclib/TCPServer.h"
+#include "eckit/net/TCPServer.h"
 #include "eckit/thread/Thread.h"
 
 //-----------------------------------------------------------------------------

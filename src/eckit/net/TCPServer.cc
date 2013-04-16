@@ -14,7 +14,7 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/io/Select.h"
-#include "eclib/TCPServer.h"
+#include "eckit/net/TCPServer.h"
 
 //-----------------------------------------------------------------------------
 

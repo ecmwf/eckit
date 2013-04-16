@@ -17,7 +17,7 @@
 #include "eckit/io/cluster/eclib/NodeInfo.h"
 #include "eckit/log/Progress.h"
 #include "eckit/config/Resource.h"
-#include "eclib/TCPServer.h"
+#include "eckit/net/TCPServer.h"
 #include "eckit/net/TCPStream.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"

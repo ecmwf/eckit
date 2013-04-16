@@ -11,7 +11,7 @@
 
 #include "eckit/runtime/Monitor.h"
 #include "eckit/net/Telnet.h"
-#include "eclib/TelnetUser.h"
+#include "eckit/net/TelnetUser.h"
 
 
 //-----------------------------------------------------------------------------

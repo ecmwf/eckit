@@ -40,7 +40,7 @@ public: // methods
     
     /// Resets the pointee
     /// @throws nothing
-    void reset( T* ptr = 0)
+    void reset( T* ptr = 0 )
     {
         release();
         ptr_ = ptr;
@@ -63,12 +63,14 @@ public: // methods
     /// @throws nothing
     void swap( ScopedPtr<T>& other ) 
     {
-        T* tmp( ptr_ ); ptr_ = other.ptr_; other.ptr_ = tmp;
+        T* tmp( ptr_ ); 
+        ptr_ = other.ptr_; 
+        other.ptr_ = tmp;
     }
     
 protected: // methods
     
-    void release() { if(ptr_) delete ptr_; }
+    void release() { if(ptr_) delete ptr_; ptr_ = 0; }
     
 private: // members 
 

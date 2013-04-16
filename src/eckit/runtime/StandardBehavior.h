@@ -11,7 +11,7 @@
 #ifndef eckit_StandardBehavior_h
 #define eckit_StandardBehavior_h
 
-#include "eclib/ContextBehavior.h"
+#include "eckit/runtime/ContextBehavior.h"
 
 //-----------------------------------------------------------------------------
 

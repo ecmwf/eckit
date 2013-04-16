@@ -10,7 +10,7 @@
 
 #include "eclib/BackTrace.h"
 #include "eckit/runtime/Context.h"
-#include "eclib/ContextBehavior.h"
+#include "eckit/runtime/ContextBehavior.h"
 #include "eclib/Log.h"
 #include "eckit/runtime/Monitor.h"
 

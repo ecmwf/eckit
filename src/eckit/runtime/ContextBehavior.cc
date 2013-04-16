@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/ContextBehavior.h"
+#include "eckit/runtime/ContextBehavior.h"
 
 //-----------------------------------------------------------------------------
 

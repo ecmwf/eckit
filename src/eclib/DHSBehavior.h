@@ -11,7 +11,7 @@
 #ifndef eclib_DHSBehavior_h
 #define eclib_DHSBehavior_h
 
-#include "eclib/ContextBehavior.h"
+#include "eckit/runtime/ContextBehavior.h"
 
 //-----------------------------------------------------------------------------
 

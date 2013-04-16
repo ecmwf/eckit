@@ -11,7 +11,7 @@
 
 #include "eckit/value/DoubleContent.h"
 #include "eckit/parser/Translator.h"
-#include "eclib/NumberContent.h"
+#include "eckit/value/NumberContent.h"
 #include "eckit/parser/JSON.h"
 
 //-----------------------------------------------------------------------------

@@ -12,7 +12,7 @@
 #include "eckit/value/DateContent.h"
 #include "eckit/value/ListContent.h"
 #include "eckit/value/NilContent.h"
-#include "eclib/NumberContent.h"
+#include "eckit/value/NumberContent.h"
 #include "eckit/value/StringContent.h"
 #include "eckit/value/BoolContent.h"
 #include "eckit/value/DoubleContent.h"

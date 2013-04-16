@@ -11,7 +11,7 @@
 #include "eckit/value/DoubleContent.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/JSON.h"
-#include "eclib/NumberContent.h"
+#include "eckit/value/NumberContent.h"
 #include "eclib/StrStream.h"
 #include "eckit/parser/Translator.h"
 

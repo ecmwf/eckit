@@ -10,7 +10,7 @@
 
 
 #include "eckit/value/DateContent.h"
-#include "eclib/NumberContent.h"
+#include "eckit/value/NumberContent.h"
 #include "eckit/parser/JSON.h"
 
 //-----------------------------------------------------------------------------

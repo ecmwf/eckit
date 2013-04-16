@@ -16,7 +16,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"
 #include "eclib/Tokenizer.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 #include "eckit/config/Script.h"
 #include "eckit/config/Compiler.h"

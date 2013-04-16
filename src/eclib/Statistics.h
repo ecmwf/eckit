@@ -14,7 +14,7 @@
 #ifndef eckit_Statistics_h
 #define eckit_Statistics_h
 
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 
 //-----------------------------------------------------------------------------

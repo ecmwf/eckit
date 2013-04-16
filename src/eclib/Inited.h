@@ -14,7 +14,7 @@
 #ifndef eckit_Inited_h
 #define eckit_Inited_h
 
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 
 //-----------------------------------------------------------------------------

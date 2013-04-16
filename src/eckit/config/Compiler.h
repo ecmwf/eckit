@@ -19,7 +19,7 @@
 
 #include "eclib/NonCopyable.h"
 #include "eclib/StreamParser.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
 

@@ -15,7 +15,7 @@
 #define eckit_MapAllocator_h
 
 #include "eckit/exception/Exceptions.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
 

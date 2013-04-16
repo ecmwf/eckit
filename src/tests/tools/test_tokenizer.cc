@@ -11,7 +11,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eclib/Tokenizer.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 using namespace eckit;
 

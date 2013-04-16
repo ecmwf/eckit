@@ -146,6 +146,6 @@ typedef unsigned long long MarsID;
 
 } // namespace eckit
 
-#include "eclib/Types.cc"
+#include "eckit/types/Types.cc"
 
 #endif

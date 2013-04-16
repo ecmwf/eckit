@@ -11,7 +11,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 #include "eckit/runtime/Tool.h"
 
 #include "eckit/config/Script.h"

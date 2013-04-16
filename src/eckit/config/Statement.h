@@ -14,7 +14,7 @@
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 #include "eckit/config/Scope.h"
 

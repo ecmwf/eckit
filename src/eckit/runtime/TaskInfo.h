@@ -15,7 +15,7 @@
 #define eckit_TaskInfo_h
 
 #include "eclib/Padded.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
 

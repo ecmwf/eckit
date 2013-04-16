@@ -13,7 +13,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 #include "eckit/config/Compiler.h"
 #include "eckit/config/Statement.h"

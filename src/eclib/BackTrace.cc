@@ -21,7 +21,7 @@
 #endif
 
 #include "eclib/BackTrace.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
 

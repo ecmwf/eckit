@@ -14,7 +14,7 @@
 #ifndef eckit_HyperCube_h
 #define eckit_HyperCube_h
 
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
 

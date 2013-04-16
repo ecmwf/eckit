@@ -15,7 +15,7 @@
 #define eckit_Recycler_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 
 //-----------------------------------------------------------------------------

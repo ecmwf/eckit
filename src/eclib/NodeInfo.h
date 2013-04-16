@@ -15,7 +15,7 @@
 #define eckit_NodeInfo_h
 
 #include "eclib/machine.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
 

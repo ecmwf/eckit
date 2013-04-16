@@ -18,7 +18,7 @@
 
 #include "eclib/NonCopyable.h"
 #include "eclib/Translator.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 class Url;
 

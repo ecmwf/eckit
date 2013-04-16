@@ -10,7 +10,7 @@
 
 #include "eckit/filesystem/MultiHandle.h"
 #include "eclib/StrStream.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
 

@@ -10,7 +10,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------

@@ -15,7 +15,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/config/ResourceMgr.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 #include "eckit/config/Compiler.h"
 #include "eckit/config/Script.h"

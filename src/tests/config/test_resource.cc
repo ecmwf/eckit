@@ -15,7 +15,7 @@
 #include "eckit/runtime/Tool.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 using namespace eckit;
 

@@ -14,7 +14,7 @@
 #include "eckit/filesystem/FileSpace.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/config/Resource.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
 

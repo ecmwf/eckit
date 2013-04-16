@@ -15,7 +15,7 @@
 
 #include "eclib/NonCopyable.h"
 #include "eckit/filesystem/PathName.h"
-#include "eclib/Types.h"
+#include "eckit/types/Types.h"
 
 #include "eckit/config/Statement.h"
 #include "eckit/config/Compiler.h"

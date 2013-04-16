@@ -15,7 +15,7 @@
 #include "eclib/Monitor.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-#include "eclib/thread/ThreadPool.h"
+#include "eckit/thread/ThreadPool.h"
 
 //-----------------------------------------------------------------------------
 

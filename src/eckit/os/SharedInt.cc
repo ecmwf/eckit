@@ -11,7 +11,7 @@
 
 #include <sys/sem.h>
 
-#include "eclib/SharedInt.h"
+#include "eckit/os/SharedInt.h"
 
 
 //-----------------------------------------------------------------------------

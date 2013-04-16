@@ -14,7 +14,7 @@
 #ifndef eckit_DblBuffer_h
 #define eckit_DblBuffer_h
 
-#include "eclib/DataHandle.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 #include "eclib/NonCopyable.h"
 #include "eckit/thread/Mutex.h"

@@ -16,7 +16,7 @@
 #include "eclib/machine.h"
 
 #include "eclib/Buffer.h"
-#include "eclib/DataHandle.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/filesystem/PathName.h"
 
 //-----------------------------------------------------------------------------

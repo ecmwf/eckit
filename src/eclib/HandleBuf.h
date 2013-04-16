@@ -14,7 +14,7 @@
 #ifndef eckit_HandleBuf_h
 #define eckit_HandleBuf_h
 
-#include "eclib/DataHandle.h"
+#include "eckit/io/DataHandle.h"
 
 
 //-----------------------------------------------------------------------------

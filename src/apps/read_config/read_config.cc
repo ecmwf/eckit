@@ -11,7 +11,7 @@
 #include "eckit/runtime/Tool.h"
 #include "eckit/exception/BadValue.h"
 #include "eckit/runtime/Context.h"
-#include "eclib/DataHandle.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/log/Log.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"

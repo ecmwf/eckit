@@ -15,7 +15,7 @@
 #define eckit_filesystem_StdFileHandle_h
 
 
-#include "eclib/DataHandle.h"
+#include "eckit/io/DataHandle.h"
 
 
 //-----------------------------------------------------------------------------

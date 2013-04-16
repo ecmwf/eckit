@@ -14,7 +14,7 @@
 #ifndef eckit_filesystem_PipeHandle_h
 #define eckit_filesystem_PipeHandle_h
 
-#include "eclib/DataHandle.h"
+#include "eckit/io/DataHandle.h"
 
 //-----------------------------------------------------------------------------
 

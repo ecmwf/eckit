@@ -14,7 +14,7 @@
 #ifndef eckit_filesystem_MarsFSPartHandle_h
 #define eckit_filesystem_MarsFSPartHandle_h
 
-#include "eclib/DataHandle.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/filesystem/marsfs/MarsFSFile.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 

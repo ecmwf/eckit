@@ -14,7 +14,7 @@
 #ifndef eckit_HandleStream_h
 #define eckit_HandleStream_h
 
-#include "eclib/DataHandle.h"
+#include "eckit/io/DataHandle.h"
 #include "eclib/Stream.h"
 
 //-----------------------------------------------------------------------------

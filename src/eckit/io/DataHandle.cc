@@ -11,7 +11,7 @@
 
 #include "eclib/Buffer.h"
 #include "eckit/log/Bytes.h"
-#include "eclib/DataHandle.h"
+#include "eckit/io/DataHandle.h"
 #include "eclib/DblBuffer.h"
 #include "eclib/MoverTransfer.h"
 #include "eckit/filesystem/PathName.h"

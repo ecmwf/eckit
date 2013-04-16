@@ -12,7 +12,7 @@
 // Baudouin Raoult - (c) ECMWF Feb 12
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 #include "eckit/thread/ThreadPool.h"

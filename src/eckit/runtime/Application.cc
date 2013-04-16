@@ -13,7 +13,7 @@
 #include "eckit/runtime/Application.h"
 #include "eclib/StandardBehavior.h"
 #include "eclib/Log.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"
 #include "eclib/Semaphore.h"

@@ -14,7 +14,7 @@
 #include "eckit/runtime/Context.h"
 #include "eclib/Log.h"
 #include "eclib/MemoryPool.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 

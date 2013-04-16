@@ -10,7 +10,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eclib/FileStream.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/PathName.h"
 #include "eclib/Seconds.h"
 #include "eclib/StrStream.h"

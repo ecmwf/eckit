@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eclib/Progress.h"
 
 

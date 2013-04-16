@@ -9,7 +9,7 @@
  */
 
 #include "eclib/DHSLogger.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eclib/TimeStamp.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"

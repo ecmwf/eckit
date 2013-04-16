@@ -12,7 +12,7 @@
 #include <sys/time.h>
 
 #include "eckit/runtime/Context.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eclib/ProcessControler.h"
 #include "eclib/TaskInfo.h"
 #include "eclib/Timer.h"

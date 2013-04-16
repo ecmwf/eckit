@@ -13,7 +13,7 @@
 
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/MoverHandle.h"
 #include "eclib/MoverTransfer.h"
 #include "eclib/NodeInfo.h"

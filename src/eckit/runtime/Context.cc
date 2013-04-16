@@ -12,7 +12,7 @@
 #include "eckit/runtime/Context.h"
 #include "eclib/ContextBehavior.h"
 #include "eclib/Log.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 
 //-----------------------------------------------------------------------------
 

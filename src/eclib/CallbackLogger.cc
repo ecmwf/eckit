@@ -11,7 +11,7 @@
 #include <cassert>
 
 #include "eclib/CallbackLogger.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"
 #include "eclib/TimeStamp.h"

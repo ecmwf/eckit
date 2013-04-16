@@ -12,7 +12,7 @@
 #include "eclib/Log.h"
 #include "eclib/Logger.h"
 #include "eclib/LogBuffer.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Once.h"
 

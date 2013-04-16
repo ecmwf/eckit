@@ -12,7 +12,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/runtime/Context.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Mutex.h"
 #include "eclib/NodeInfo.h"
 #include "eckit/config/Resource.h"

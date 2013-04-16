@@ -36,7 +36,7 @@
 #include "eclib/machine.h"
 
 #include "eclib/Log.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eclib/ProcessControler.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"

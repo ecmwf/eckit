@@ -10,7 +10,7 @@
 
 
 #include "eclib/Log.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eclib/NetService.h"
 #include "eclib/NetUser.h"
 #include "eckit/thread/ThreadControler.h"

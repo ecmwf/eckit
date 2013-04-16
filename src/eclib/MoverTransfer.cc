@@ -12,7 +12,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eclib/Bytes.h"
 #include "eclib/Connector.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eclib/MoverTransfer.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/Progress.h"

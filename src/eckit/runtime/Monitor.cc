@@ -13,7 +13,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/AutoLock.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"
 #include "eclib/StrStream.h"

@@ -11,7 +11,7 @@
 #include "eclib/Inited.h"
 #include "eclib/Log.h"
 #include "eclib/LogBuffer.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------

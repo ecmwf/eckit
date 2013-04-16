@@ -13,7 +13,7 @@
 #include "eclib/Dispatcher.h"
 #include "eclib/JSON.h"
 #include "eclib/Log.h"
-#include "eclib/Monitor.h"
+#include "eckit/runtime/Monitor.h"
 #include "eclib/Monitorable.h"
 #include "eclib/Plural.h"
 #include "eckit/thread/Thread.h"

@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/CommandStream.h"
+#include "eckit/io/CommandStream.h"
 #include "eckit/log/Log.h"
 
 //-----------------------------------------------------------------------------

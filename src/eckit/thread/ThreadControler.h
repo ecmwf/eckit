@@ -15,7 +15,7 @@
 #define eckit_ThreadControler_h
 
 #include "eckit/thread/MutexCond.h"
-#include "eclib/Task.h"
+#include "eckit/runtime/Task.h"
 
 //-----------------------------------------------------------------------------
 

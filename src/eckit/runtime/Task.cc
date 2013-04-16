@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Task.h"
+#include "eckit/runtime/Task.h"
 
 //-----------------------------------------------------------------------------
 

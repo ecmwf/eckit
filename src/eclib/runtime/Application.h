@@ -16,7 +16,7 @@
 
 #include "eclib/Context.h"
 #include "eckit/config/Configurable.h"
-#include "eclib/Task.h"
+#include "eckit/runtime/Task.h"
 
 //-----------------------------------------------------------------------------
 

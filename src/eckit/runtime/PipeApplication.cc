@@ -10,7 +10,7 @@
 
 #include <sys/resource.h>
 
-#include "eclib/BigNum.h"
+#include "eckit/log/BigNum.h"
 #include "eclib/Bytes.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/PipeApplication.h"

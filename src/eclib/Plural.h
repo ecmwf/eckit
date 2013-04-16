@@ -11,7 +11,7 @@
 #ifndef eckit_Plural_h
 #define eckit_Plural_h
 
-#include "eclib/BigNum.h"
+#include "eckit/log/BigNum.h"
 
 //-----------------------------------------------------------------------------
 

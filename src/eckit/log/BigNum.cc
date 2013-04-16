@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/BigNum.h"
+#include "eckit/log/BigNum.h"
 
 //-----------------------------------------------------------------------------
 

@@ -14,7 +14,7 @@
 #ifndef eckit_TaskInfo_h
 #define eckit_TaskInfo_h
 
-#include "eclib/Padded.h"
+#include "eckit/memory/Padded.h"
 #include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------

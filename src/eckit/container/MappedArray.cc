@@ -17,7 +17,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/container/MappedArray.h"
-#include "eclib/Padded.h"
+#include "eckit/memory/Padded.h"
 
 //-----------------------------------------------------------------------------
 

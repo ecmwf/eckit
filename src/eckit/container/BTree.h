@@ -17,7 +17,7 @@
 #include "eclib/machine.h"
 
 #include "eclib/NonCopyable.h"
-#include "eclib/Padded.h"
+#include "eckit/memory/Padded.h"
 #include "eckit/filesystem/PathName.h"
 
 //-----------------------------------------------------------------------------

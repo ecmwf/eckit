@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/Coord.h"
+#include "eckit/types/Coord.h"
 #include "eclib/DumpLoad.h"
 
 //-----------------------------------------------------------------------------

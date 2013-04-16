@@ -14,7 +14,7 @@
 #ifndef eckit_Telnet_h
 #define eckit_Telnet_h
 
-#include "eclib/NetService.h"
+#include "eckit/net/NetService.h"
 
 
 //-----------------------------------------------------------------------------

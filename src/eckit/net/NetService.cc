@@ -11,7 +11,7 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
-#include "eclib/NetService.h"
+#include "eckit/net/NetService.h"
 #include "eclib/NetUser.h"
 #include "eckit/thread/ThreadControler.h"
 

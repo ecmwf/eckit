@@ -10,7 +10,7 @@
 
 #include "eckit/config/Assignment.h"
 #include "eckit/config/Block.h"
-#include "eclib/config/Branch.h"
+#include "eckit/config/Branch.h"
 #include "eclib/config/Function.h"
 
 //-----------------------------------------------------------------------------

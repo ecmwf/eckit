@@ -9,7 +9,7 @@
  */
 
 #include "eckit/config/Block.h"
-#include "eclib/config/Branch.h"
+#include "eckit/config/Branch.h"
 #include "eclib/config/Condition.h"
 
 //-----------------------------------------------------------------------------

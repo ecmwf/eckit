@@ -17,7 +17,7 @@
 #include "eclib/machine.h"
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/MappedArray.h"
+#include "eckit/container/MappedArray.h"
 #include "eclib/NonCopyable.h"
 #include "eckit/runtime/TaskInfo.h"
 

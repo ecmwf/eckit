@@ -15,7 +15,7 @@
 #define eckit_TxnLog_h
 
 #include "eckit/runtime/Context.h"
-#include "eclib/MappedArray.h"
+#include "eckit/container/MappedArray.h"
 #include "eclib/TxnEvent.h"
 
 

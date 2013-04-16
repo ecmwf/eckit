@@ -14,7 +14,7 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eclib/Log.h"
 #include "eckit/thread/Mutex.h"
-#include "eclib/ResourceMgr.h"
+#include "eckit/config/ResourceMgr.h"
 #include "eclib/Types.h"
 
 #include "eclib/config/Compiler.h"

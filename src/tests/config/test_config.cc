@@ -10,7 +10,7 @@
 
 #include "eclib/Log.h"
 #include "eckit/config/Resource.h"
-#include "eclib/ResourceMgr.h"
+#include "eckit/config/ResourceMgr.h"
 #include "eclib/Types.h"
 #include "eclib/runtime/Tool.h"
 

@@ -12,7 +12,7 @@
 
 #include "eclib/Exceptions.h"
 #include "eclib/StrStream.h"
-#include "eclib/thread/ThreadSingleton.h"
+#include "eckit/thread/ThreadSingleton.h"
 
 #include "eclib/BackTrace.h"
 

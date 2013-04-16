@@ -18,7 +18,7 @@
 #include "eclib/Resource.h"
 #include "eclib/TCPClient.h"
 #include "eclib/TCPStream.h"
-#include "eclib/thread/ThreadSingleton.h"
+#include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 

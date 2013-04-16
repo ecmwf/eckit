@@ -17,7 +17,7 @@
 #include "eclib/NodeInfo.h"
 #include "eclib/Resource.h"
 #include "eclib/StrStream.h"
-#include "eclib/thread/ThreadSingleton.h"
+#include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 

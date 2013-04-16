@@ -18,7 +18,7 @@
 #include "eclib/Resource.h"
 #include "eclib/StrStream.h"
 #include "eclib/TaskInfo.h"
-#include "eclib/thread/ThreadSingleton.h"
+#include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 

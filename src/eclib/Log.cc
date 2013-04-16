@@ -12,7 +12,7 @@
 #include "eclib/Log.h"
 #include "eclib/LogBuffer.h"
 #include "eclib/Monitor.h"
-#include "eclib/thread/ThreadSingleton.h"
+#include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 

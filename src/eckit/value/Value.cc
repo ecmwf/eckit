@@ -16,7 +16,7 @@
 #include "eckit/value/StringContent.h"
 #include "eckit/value/BoolContent.h"
 #include "eckit/value/DoubleContent.h"
-#include "eclib/MapContent.h"
+#include "eckit/value/MapContent.h"
 #include "eckit/value/Value.h"
 #include "eckit/io/Length.h"
 #include "eckit/filesystem/PathName.h"

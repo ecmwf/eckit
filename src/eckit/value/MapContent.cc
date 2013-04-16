@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/MapContent.h"
+#include "eckit/value/MapContent.h"
 #include "eckit/parser/JSON.h"
 
 //-----------------------------------------------------------------------------

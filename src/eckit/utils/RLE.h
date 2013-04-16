@@ -63,6 +63,6 @@ Stream& RLEDIFFread(Stream&,OutputIterator,T*);
 
 } // namespace eckit
 
-#include "eclib/RLE.cc"
+#include "eckit/utils/RLE.cc"
 
 #endif

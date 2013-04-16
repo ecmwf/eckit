@@ -10,7 +10,7 @@
 
 
 #include "eckit/log/Log.h"
-#include "eclib/Logger.h"
+#include "eckit/log/Logger.h"
 #include "eckit/log/LogBuffer.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/AutoLock.h"

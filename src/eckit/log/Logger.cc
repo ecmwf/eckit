@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Logger.h"
+#include "eckit/log/Logger.h"
 
 //-----------------------------------------------------------------------------
 

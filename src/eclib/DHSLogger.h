@@ -13,7 +13,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/Logger.h"
+#include "eckit/log/Logger.h"
 
 //-----------------------------------------------------------------------------
 

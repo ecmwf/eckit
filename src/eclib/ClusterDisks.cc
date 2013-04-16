@@ -16,7 +16,7 @@
 #include "eclib/ClusterDisks.h"
 #include "eclib/FileSpace.h"
 #include "eclib/JSON.h"
-#include "eclib/filesystem/LocalPathName.h"
+#include "eckit/filesystem/LocalPathName.h"
 #include "eclib/MappedArray.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/StrStream.h"

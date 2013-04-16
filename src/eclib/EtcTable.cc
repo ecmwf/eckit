@@ -11,7 +11,7 @@
 
 #include "eclib/AutoLock.h"
 #include "eclib/EtcTable.h"
-#include "eclib/filesystem/LocalPathName.h"
+#include "eckit/filesystem/LocalPathName.h"
 #include "eclib/Tokenizer.h"
 
 //-----------------------------------------------------------------------------

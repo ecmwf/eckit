@@ -23,7 +23,7 @@
 #include "eclib/ClusterDisks.h"
 #include "eclib/Context.h"
 #include "eckit/io/Length.h"
-#include "eclib/filesystem/LocalPathName.h"
+#include "eckit/filesystem/LocalPathName.h"
 #include "eclib/MarsFSPath.h"
 #include "eclib/Mutex.h"
 #include "eclib/NodeInfo.h"

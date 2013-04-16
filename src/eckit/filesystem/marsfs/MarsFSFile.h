@@ -16,7 +16,7 @@
 
 #include "eclib/AutoLock.h"
 #include "eclib/MarsFSClient.h"
-#include "eclib/MarsFSPath.h"
+#include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eclib/TCPClient.h"
 
 //-----------------------------------------------------------------------------

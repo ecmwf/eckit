@@ -15,7 +15,7 @@
 #include "eclib/MarsFSClient.h"
 #include "eckit/filesystem/MarsFSHandle.h"
 #include "eckit/filesystem/MarsFSPartHandle.h"
-#include "eclib/MarsFSPath.h"
+#include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eclib/Mutex.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/StrStream.h"

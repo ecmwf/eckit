@@ -17,7 +17,7 @@
 #include "eclib/Bytes.h"
 #include "eclib/Log.h"
 #include "eckit/filesystem/MarsFSHandle.h"
-#include "eclib/MarsFSPath.h"
+#include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/Resource.h"
 

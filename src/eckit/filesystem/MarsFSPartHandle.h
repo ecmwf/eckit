@@ -16,7 +16,7 @@
 
 #include "eclib/DataHandle.h"
 #include "eckit/filesystem/marsfs/MarsFSFile.h"
-#include "eclib/MarsFSPath.h"
+#include "eckit/filesystem/marsfs/MarsFSPath.h"
 
 //-----------------------------------------------------------------------------
 

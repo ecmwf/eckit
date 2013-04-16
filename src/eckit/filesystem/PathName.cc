@@ -13,7 +13,7 @@
 
 #include "eclib/ClusterDisks.h"
 #include "eckit/io/Length.h"
-#include "eclib/MarsFSPath.h"
+#include "eckit/filesystem/marsfs/MarsFSPath.h"
 
 #include "eckit/filesystem/BasePathName.h"
 #include "eckit/filesystem/BasePathNameT.h"

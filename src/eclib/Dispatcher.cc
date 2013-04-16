@@ -15,7 +15,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/Monitorable.h"
-#include "eclib/Plural.h"
+#include "eckit/log/Plural.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 

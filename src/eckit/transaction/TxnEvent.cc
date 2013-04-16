@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/TxnEvent.h"
+#include "eckit/transaction/TxnEvent.h"
 
 //-----------------------------------------------------------------------------
 

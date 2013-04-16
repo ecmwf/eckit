@@ -16,7 +16,7 @@
 
 #include "eckit/runtime/Context.h"
 #include "eckit/container/MappedArray.h"
-#include "eclib/TxnEvent.h"
+#include "eckit/transaction/TxnEvent.h"
 
 
 //-----------------------------------------------------------------------------

@@ -16,7 +16,7 @@
 #include "eclib/MarsFSPath.h"
 
 #include "eclib/filesystem/BasePathName.h"
-#include "eclib/filesystem/BasePathNameT.h"
+#include "eckit/filesystem/BasePathNameT.h"
 #include "eclib/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
 

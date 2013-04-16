@@ -12,7 +12,7 @@
 // Baudouin Raoult - (c) ECMWF Jun 11
 
 
-#include "eclib/filesystem/BasePathNameT.h"
+#include "eckit/filesystem/BasePathNameT.h"
 
 //-----------------------------------------------------------------------------
 

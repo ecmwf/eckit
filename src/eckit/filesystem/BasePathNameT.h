@@ -104,6 +104,6 @@ private:
 
 } // namespace eckit
 
-#include "eclib/filesystem/BasePathNameT.cc"
+#include "eckit/filesystem/BasePathNameT.cc"
 
 #endif

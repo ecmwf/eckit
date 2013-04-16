@@ -18,7 +18,7 @@
 #include "eckit/log/Progress.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-#include "eclib/Timer.h"
+#include "eckit/utils/Timer.h"
 
 //-----------------------------------------------------------------------------
 

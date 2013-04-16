@@ -10,7 +10,7 @@
 
 #include "eckit/log/Bytes.h"
 #include "eclib/StrStream.h"
-#include "eclib/Timer.h"
+#include "eckit/utils/Timer.h"
 
 //-----------------------------------------------------------------------------
 

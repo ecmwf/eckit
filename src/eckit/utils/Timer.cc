@@ -11,7 +11,7 @@
 #include "sys/time.h"
 
 #include "eckit/log/Seconds.h"
-#include "eclib/Timer.h"
+#include "eckit/utils/Timer.h"
 
 
 //-----------------------------------------------------------------------------

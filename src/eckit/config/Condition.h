@@ -16,7 +16,7 @@
 #include "eclib/NonCopyable.h"
 #include "eclib/Types.h"
 
-#include "eclib/config/Compiler.h"
+#include "eckit/config/Compiler.h"
 
 //-----------------------------------------------------------------------------
 

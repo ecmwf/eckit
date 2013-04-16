@@ -19,7 +19,7 @@
 #include "eclib/Types.h"
 
 #include "eclib/config/Script.h"
-#include "eclib/config/Compiler.h"
+#include "eckit/config/Compiler.h"
 
 using namespace eckit;
 

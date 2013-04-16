@@ -18,7 +18,7 @@
 #include "eclib/Types.h"
 
 #include "eclib/config/Statement.h"
-#include "eclib/config/Compiler.h"
+#include "eckit/config/Compiler.h"
 
 //-----------------------------------------------------------------------------
 

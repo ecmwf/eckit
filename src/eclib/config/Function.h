@@ -14,7 +14,7 @@
 #include "eclib/machine.h"
 
 #include "eckit/config/Block.h"
-#include "eclib/config/Compiler.h"
+#include "eckit/config/Compiler.h"
 #include "eclib/config/Statement.h"
 
 //-----------------------------------------------------------------------------

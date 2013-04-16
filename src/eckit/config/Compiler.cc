@@ -14,7 +14,7 @@
 #include "eclib/Tokenizer.h"
 #include "eclib/StringTools.h"
 
-#include "eclib/config/Compiler.h"
+#include "eckit/config/Compiler.h"
 
 //-----------------------------------------------------------------------------
 

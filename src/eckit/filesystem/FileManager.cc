@@ -9,7 +9,7 @@
  */
 
 #include "eclib/FileName.h"
-#include "eclib/FileManager.h"
+#include "eckit/filesystem/FileManager.h"
 #include "eclib/AutoLock.h"
 #include "eclib/Mutex.h"
 #include "eckit/filesystem/PathName.h"

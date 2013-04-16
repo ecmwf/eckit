@@ -11,7 +11,7 @@
 
 #include "eclib/FileName.h"
 #include "eclib/Tokenizer.h"
-#include "eclib/FileManager.h"
+#include "eckit/filesystem/FileManager.h"
 
 //-----------------------------------------------------------------------------
 

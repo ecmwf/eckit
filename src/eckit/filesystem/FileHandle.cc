@@ -18,7 +18,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/filesystem/MarsFSHandle.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
-#include "eclib/NodeInfo.h"
+#include "eckit/io/cluster/eclib/NodeInfo.h"
 #include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------

@@ -14,7 +14,7 @@
 #include "eckit/runtime/Context.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Mutex.h"
-#include "eclib/NodeInfo.h"
+#include "eckit/io/cluster/eclib/NodeInfo.h"
 #include "eckit/config/Resource.h"
 #include "eclib/StrStream.h"
 #include "eckit/thread/ThreadSingleton.h"

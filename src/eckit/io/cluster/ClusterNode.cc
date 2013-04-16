@@ -13,7 +13,7 @@
 #include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Mutex.h"
-#include "eclib/NodeInfo.h"
+#include "eckit/io/cluster/eclib/NodeInfo.h"
 #include "eclib/Port.h"
 #include "eckit/config/Resource.h"
 #include "eclib/TCPClient.h"

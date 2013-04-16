@@ -15,7 +15,7 @@
 #define eckit_Connector_h
 
 #include "eckit/io/BufferCache.h"
-#include "eclib/NodeInfo.h"
+#include "eckit/io/cluster/eclib/NodeInfo.h"
 #include "eclib/Stream.h"
 #include "eclib/TCPSocket.h"
 #include "eckit/io/Length.h"

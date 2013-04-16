@@ -16,7 +16,7 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/MoverHandle.h"
 #include "eckit/io/MoverTransfer.h"
-#include "eclib/NodeInfo.h"
+#include "eckit/io/cluster/eclib/NodeInfo.h"
 #include "eckit/filesystem/TCPHandle.h"
 #include "eclib/TCPServer.h"
 #include "eckit/thread/Thread.h"

@@ -26,7 +26,7 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/thread/Mutex.h"
-#include "eclib/NodeInfo.h"
+#include "eckit/io/cluster/eclib/NodeInfo.h"
 #include "eclib/Regex.h"
 #include "eckit/config/Resource.h"
 #include "eckit/io/StdFile.h"

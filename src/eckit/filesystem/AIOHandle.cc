@@ -10,7 +10,7 @@
 
 #include <fcntl.h>
 
-#include "eclib/filesystem/AIOHandle.h"
+#include "eckit/filesystem/AIOHandle.h"
 
 //-----------------------------------------------------------------------------
 

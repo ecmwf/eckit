@@ -15,7 +15,7 @@
 #define eckit_Content_h
 
 #include "eclib/Counted.h"
-#include "eclib/Streamable.h"
+#include "eckit/serialisation/Streamable.h"
 
 //-----------------------------------------------------------------------------
 

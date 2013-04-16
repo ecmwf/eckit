@@ -17,7 +17,7 @@
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/filesystem/PathName.h"
-#include "eclib/Streamable.h"
+#include "eckit/serialisation/Streamable.h"
 #include "eckit/io/TransferWatcher.h"
 
 //-----------------------------------------------------------------------------

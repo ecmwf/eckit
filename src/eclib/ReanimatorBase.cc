@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/Streamable.h"
+#include "eckit/serialisation/Streamable.h"
 
 
 //-----------------------------------------------------------------------------

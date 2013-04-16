@@ -14,7 +14,7 @@
 #ifndef eckit_TxnEvent_h
 #define eckit_TxnEvent_h
 
-#include "eclib/Streamable.h"
+#include "eckit/serialisation/Streamable.h"
 
 //-----------------------------------------------------------------------------
 

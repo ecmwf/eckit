@@ -3,7 +3,7 @@
 
 #include "NetAddress.h"
 
-#include "eclib/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/parser/Translator.h"
 
 //-----------------------------------------------------------------------------

@@ -10,7 +10,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eclib/StrStream.h"
-#include "eclib/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/parser/Translator.h"
 
 //-----------------------------------------------------------------------------

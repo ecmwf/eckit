@@ -10,7 +10,7 @@
 
 
 #include "eckit/filesystem/FileName.h"
-#include "eclib/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/filesystem/FileManager.h"
 
 //-----------------------------------------------------------------------------

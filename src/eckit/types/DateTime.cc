@@ -12,7 +12,7 @@
 
 #include "eckit/types/DateTime.h"
 #include "eclib/StrStream.h"
-#include "eclib/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 
 //-----------------------------------------------------------------------------
 

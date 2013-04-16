@@ -11,7 +11,7 @@
 #include "eckit/types/Date.h"
 #include "eckit/persist/DumpLoad.h"
 #include "eclib/StrStream.h"
-#include "eclib/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 
 //-----------------------------------------------------------------------------
 

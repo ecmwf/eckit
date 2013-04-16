@@ -10,7 +10,7 @@
 
 #include <iterator>
 
-#include "eclib/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 
 
 //-----------------------------------------------------------------------------

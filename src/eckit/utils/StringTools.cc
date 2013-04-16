@@ -13,7 +13,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eclib/StrStream.h"
 #include "eckit/utils/StringTools.h"
-#include "eclib/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 
 //-----------------------------------------------------------------------------
 

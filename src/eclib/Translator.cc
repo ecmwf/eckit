@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eclib/StrStream.h"
 #include "eclib/Tokenizer.h"
 #include "eclib/Translator.h"

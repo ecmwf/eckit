@@ -10,7 +10,7 @@
 
 #include <cstring>
 
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eclib/StrStream.h"
 #include "eclib/StringTools.h"
 #include "eclib/Tokenizer.h"

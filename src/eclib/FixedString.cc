@@ -10,7 +10,7 @@
 
 #include "eclib/machine.h"
 #include "eclib/FixedString.h"
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 

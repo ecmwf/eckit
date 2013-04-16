@@ -10,7 +10,7 @@
 
 
 #include "eckit/log/Bytes.h"
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eclib/MemoryPool.h"
 
 //-----------------------------------------------------------------------------

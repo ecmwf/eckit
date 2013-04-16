@@ -10,7 +10,7 @@
 
 
 #include "eclib/Buffer.h"
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eclib/Regex.h"
 
 

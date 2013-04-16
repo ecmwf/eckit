@@ -16,7 +16,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eclib/NonCopyable.h"
 
 //-----------------------------------------------------------------------------

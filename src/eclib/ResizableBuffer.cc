@@ -11,7 +11,7 @@
 
 #include <sys/mman.h>
 
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eclib/ResizableBuffer.h"
 
 

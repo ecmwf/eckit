@@ -12,7 +12,7 @@
 
 #include "eclib/machine.h"
 #include "eclib/MapAllocator.h"
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 

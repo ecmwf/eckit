@@ -10,7 +10,7 @@
 
 #include <signal.h>
 
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eclib/StrStream.h"
 #include "eckit/thread/ThreadSingleton.h"
 

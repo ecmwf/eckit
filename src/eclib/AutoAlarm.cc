@@ -11,7 +11,7 @@
 #include <signal.h>
 
 #include "eclib/AutoAlarm.h"
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 
 //-----------------------------------------------------------------------------

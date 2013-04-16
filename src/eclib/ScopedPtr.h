@@ -12,7 +12,7 @@
 #define eckit_ScopedPtr_h
 
 #include "eclib/NonCopyable.h"
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 
 
 //-----------------------------------------------------------------------------

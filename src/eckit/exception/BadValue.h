@@ -11,7 +11,7 @@
 #ifndef eckit_BadValue_h
 #define eckit_BadValue_h
 
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 

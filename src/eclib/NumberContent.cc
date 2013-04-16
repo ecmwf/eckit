@@ -9,7 +9,7 @@
  */
 
 #include "eclib/DoubleContent.h"
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eclib/JSON.h"
 #include "eclib/NumberContent.h"
 #include "eclib/StrStream.h"

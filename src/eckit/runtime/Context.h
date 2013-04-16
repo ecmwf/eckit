@@ -12,7 +12,7 @@
 #define eckit_Context_h
 
 #include "eckit/config/Configurable.h"
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 

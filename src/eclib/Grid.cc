@@ -12,7 +12,7 @@
 #include "eclib/DumpLoad.h"
 #include "eclib/Grid.h"
 #include "eckit/log/Log.h"
-#include "eclib/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eclib/StrStream.h"
 #include "eclib/Tokenizer.h"
 

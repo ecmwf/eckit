@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 
 
 //-----------------------------------------------------------------------------

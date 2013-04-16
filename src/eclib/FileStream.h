@@ -15,7 +15,7 @@
 #define eckit_FileStream_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 
 //-----------------------------------------------------------------------------
 

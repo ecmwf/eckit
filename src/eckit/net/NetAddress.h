@@ -4,7 +4,7 @@
 #ifndef eckit_NetAddress_h
 #define eckit_NetAddress_h
 
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 
 //-----------------------------------------------------------------------------
 

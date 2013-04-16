@@ -15,7 +15,7 @@
 #define eckit_PipeApplication_h
 
 #include "eckit/runtime/Application.h"
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------

@@ -15,7 +15,7 @@
 #define eckit_Offset_h
 
 #include "eckit/io/Length.h"
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 
 //-----------------------------------------------------------------------------
 

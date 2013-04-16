@@ -17,7 +17,7 @@
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/filesystem/FileSystemSize.h"
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 
 //-----------------------------------------------------------------------------
 

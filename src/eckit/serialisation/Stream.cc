@@ -14,7 +14,7 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
 #include "eclib/StrStream.h"
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 
 
 //-----------------------------------------------------------------------------

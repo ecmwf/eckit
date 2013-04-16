@@ -14,7 +14,7 @@
 #ifndef eckit_Length_h
 #define eckit_Length_h
 
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 
 //-----------------------------------------------------------------------------
 

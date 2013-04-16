@@ -14,7 +14,7 @@
 #ifndef eckit_Area_h
 #define eckit_Area_h
 
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 
 //-----------------------------------------------------------------------------
 

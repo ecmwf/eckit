@@ -15,7 +15,7 @@
 #define eckit_HandleStream_h
 
 #include "eckit/io/DataHandle.h"
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 
 //-----------------------------------------------------------------------------
 

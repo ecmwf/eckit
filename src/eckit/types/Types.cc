@@ -11,7 +11,7 @@
 #include "eclib/machine.h"
 
 #include "eckit/types/Types.h"
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 
 //-----------------------------------------------------------------------------
 

@@ -16,7 +16,7 @@
 
 #include "eckit/io/BufferCache.h"
 #include "eckit/io/cluster/eclib/NodeInfo.h"
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/net/TCPSocket.h"
 #include "eckit/io/Length.h"
 

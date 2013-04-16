@@ -14,7 +14,7 @@
 #ifndef eckit_Reanimator_h
 #define eckit_Reanimator_h
 
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 
 
 //-----------------------------------------------------------------------------

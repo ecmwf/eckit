@@ -14,7 +14,7 @@
 #ifndef eckit_Coord_h
 #define eckit_Coord_h
 
-#include "eclib/Stream.h"
+#include "eckit/serialisation/Stream.h"
 
 //-----------------------------------------------------------------------------
 

@@ -11,7 +11,7 @@
 #include "eclib/machine.h"
 
 #include "eckit/io/DataHandle.h"
-#include "eclib/Exporter.h"
+#include "eckit/persist/Exporter.h"
 
 //-----------------------------------------------------------------------------
 

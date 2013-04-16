@@ -10,7 +10,7 @@
 
 #include <cassert>
 
-#include "eclib/CallbackLogger.h"
+#include "eckit/log/CallbackLogger.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"

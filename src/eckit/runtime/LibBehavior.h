@@ -11,7 +11,7 @@
 #ifndef eckit_LibBehavior_h
 #define eckit_LibBehavior_h
 
-#include "eclib/CallbackLogger.h"
+#include "eckit/log/CallbackLogger.h"
 #include "eckit/runtime/StandardBehavior.h"
 
 //-----------------------------------------------------------------------------

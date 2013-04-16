@@ -14,7 +14,7 @@
 #include "eclib/machine.h"
 
 #include "eckit/filesystem/FileHandle.h"
-#include "eclib/Bytes.h"
+#include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
 #include "eckit/filesystem/MarsFSHandle.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"

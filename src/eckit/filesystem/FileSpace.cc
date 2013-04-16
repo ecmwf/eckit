@@ -9,7 +9,7 @@
  */
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/Bytes.h"
+#include "eckit/log/Bytes.h"
 #include "eclib/ClusterDisks.h"
 #include "eckit/filesystem/FileSpace.h"
 #include "eckit/thread/Mutex.h"

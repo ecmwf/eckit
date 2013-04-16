@@ -10,7 +10,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/Bytes.h"
+#include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eclib/NodeInfo.h"

@@ -11,7 +11,7 @@
 #include <sys/resource.h>
 
 #include "eckit/log/BigNum.h"
-#include "eclib/Bytes.h"
+#include "eckit/log/Bytes.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/PipeApplication.h"
 #include "eclib/PipeStream.h"

@@ -10,7 +10,7 @@
 
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/Bytes.h"
+#include "eckit/log/Bytes.h"
 #include "eclib/Connector.h"
 #include "eckit/runtime/Monitor.h"
 #include "eclib/MoverTransfer.h"

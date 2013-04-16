@@ -10,7 +10,7 @@
 
 
 #include "eclib/Buffer.h"
-#include "eclib/Bytes.h"
+#include "eckit/log/Bytes.h"
 #include "eclib/DataHandle.h"
 #include "eclib/DblBuffer.h"
 #include "eclib/MoverTransfer.h"

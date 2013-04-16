@@ -10,7 +10,7 @@
 
 #include <cmath>
 
-#include "eclib/Bytes.h"
+#include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/config/Resource.h"

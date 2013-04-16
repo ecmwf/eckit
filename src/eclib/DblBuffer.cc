@@ -11,7 +11,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eclib/Buffer.h"
-#include "eclib/Bytes.h"
+#include "eckit/log/Bytes.h"
 #include "eclib/DblBuffer.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/MutexCond.h"

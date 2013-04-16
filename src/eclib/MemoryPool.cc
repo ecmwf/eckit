@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/Bytes.h"
+#include "eckit/log/Bytes.h"
 #include "eclib/Exceptions.h"
 #include "eclib/MemoryPool.h"
 

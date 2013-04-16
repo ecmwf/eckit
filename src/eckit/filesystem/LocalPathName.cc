@@ -19,7 +19,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/filesystem/BasePathNameT.h"
-#include "eclib/Bytes.h"
+#include "eckit/log/Bytes.h"
 #include "eclib/ClusterDisks.h"
 #include "eckit/runtime/Context.h"
 #include "eckit/io/Length.h"

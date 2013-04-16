@@ -20,7 +20,7 @@
 #include "eckit/filesystem/TCPHandle.h"
 #include "eclib/TCPServer.h"
 #include "eckit/thread/Thread.h"
-#include "eclib/thread/ThreadControler.h"
+#include "eckit/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
 

@@ -39,7 +39,7 @@
 #include "eclib/Monitor.h"
 #include "eclib/ProcessControler.h"
 #include "eckit/thread/Thread.h"
-#include "eclib/thread/ThreadControler.h"
+#include "eckit/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
 

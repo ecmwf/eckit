@@ -14,7 +14,7 @@
 #ifndef eckit_Telnetable_h
 #define eckit_Telnetable_h
 
-#include "eclib/thread/ThreadControler.h"
+#include "eckit/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
 

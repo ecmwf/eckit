@@ -15,7 +15,7 @@
 #include "eclib/Seconds.h"
 #include "eclib/StrStream.h"
 #include "eckit/thread/Thread.h"
-#include "eclib/thread/ThreadControler.h"
+#include "eckit/thread/ThreadControler.h"
 #include "eclib/TimeStamp.h"
 #include "eclib/Translator.h"
 #include "eclib/TxnLog.h"

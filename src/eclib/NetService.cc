@@ -13,7 +13,7 @@
 #include "eclib/Monitor.h"
 #include "eclib/NetService.h"
 #include "eclib/NetUser.h"
-#include "eclib/thread/ThreadControler.h"
+#include "eckit/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
 

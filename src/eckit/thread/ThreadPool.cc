@@ -14,7 +14,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eclib/Monitor.h"
 #include "eckit/thread/Thread.h"
-#include "eclib/thread/ThreadControler.h"
+#include "eckit/thread/ThreadControler.h"
 #include "eclib/thread/ThreadPool.h"
 
 //-----------------------------------------------------------------------------

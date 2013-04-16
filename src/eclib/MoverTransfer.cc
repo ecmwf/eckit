@@ -20,7 +20,7 @@
 #include "eclib/TCPServer.h"
 #include "eclib/TCPStream.h"
 #include "eckit/thread/Thread.h"
-#include "eclib/thread/ThreadControler.h"
+#include "eckit/thread/ThreadControler.h"
 #include "eclib/ClusterNodes.h"
 
 //-----------------------------------------------------------------------------

@@ -10,7 +10,7 @@
 
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/EtcTable.h"
+#include "eckit/config/EtcTable.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eclib/Tokenizer.h"
 

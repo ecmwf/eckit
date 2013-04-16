@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/filesystem/StdFileHandle.h"
+#include "eckit/filesystem/StdFileHandle.h"
 
 //-----------------------------------------------------------------------------
 

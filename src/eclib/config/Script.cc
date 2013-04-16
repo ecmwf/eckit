@@ -13,7 +13,7 @@
 #include "eckit/io/Length.h"
 
 #include "eclib/config/Script.h"
-#include "eclib/config/Block.h"
+#include "eckit/config/Block.h"
 
 //-----------------------------------------------------------------------------
 

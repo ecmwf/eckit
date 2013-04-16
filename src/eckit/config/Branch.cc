@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/config/Block.h"
+#include "eckit/config/Block.h"
 #include "eclib/config/Branch.h"
 #include "eclib/config/Condition.h"
 

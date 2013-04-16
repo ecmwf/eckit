@@ -13,7 +13,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/config/Block.h"
+#include "eckit/config/Block.h"
 #include "eclib/config/Compiler.h"
 #include "eclib/config/Statement.h"
 

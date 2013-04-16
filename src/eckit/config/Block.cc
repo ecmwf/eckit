@@ -11,7 +11,7 @@
 #include "eckit/config/Assignment.h"
 #include "eckit/config/Block.h"
 #include "eckit/config/Branch.h"
-#include "eclib/config/Function.h"
+#include "eckit/config/Function.h"
 
 //-----------------------------------------------------------------------------
 

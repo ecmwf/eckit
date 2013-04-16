@@ -11,7 +11,7 @@
 // File ThreadPool.cc
 // Baudouin Raoult - (c) ECMWF Feb 12
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eclib/Monitor.h"
 #include "eclib/thread/Thread.h"
 #include "eclib/thread/ThreadControler.h"

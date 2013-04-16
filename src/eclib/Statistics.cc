@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eclib/Context.h"
 #include "eclib/Semaphore.h"
 #include "eclib/Statistics.h"

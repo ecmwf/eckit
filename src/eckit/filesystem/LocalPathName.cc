@@ -17,7 +17,7 @@
 #include <dirent.h>
 #include <sys/statvfs.h>
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eclib/Bytes.h"
 #include "eclib/ClusterDisks.h"

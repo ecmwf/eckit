@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eclib/EtcTable.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eclib/Tokenizer.h"

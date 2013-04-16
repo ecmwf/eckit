@@ -11,7 +11,7 @@
 #include "eclib/DHSLogger.h"
 #include "eclib/Monitor.h"
 #include "eclib/TimeStamp.h"
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eclib/Once.h"
 

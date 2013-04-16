@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eclib/Bytes.h"
 #include "eclib/ClusterDisks.h"
 #include "eckit/filesystem/FileSpace.h"

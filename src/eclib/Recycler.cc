@@ -13,7 +13,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eclib/Recycler.h"
 
 

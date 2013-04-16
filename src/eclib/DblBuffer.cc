@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eclib/Buffer.h"
 #include "eclib/Bytes.h"
 #include "eclib/DblBuffer.h"

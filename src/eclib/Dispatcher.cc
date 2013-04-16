@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eclib/Dispatcher.h"
 #include "eclib/JSON.h"
 #include "eclib/Log.h"

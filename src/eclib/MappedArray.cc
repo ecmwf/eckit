@@ -15,7 +15,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eclib/MappedArray.h"
 #include "eclib/Padded.h"
 

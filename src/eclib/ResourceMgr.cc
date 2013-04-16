@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eclib/config/Configurable.h"
 #include "eclib/Context.h"
 #include "eckit/filesystem/LocalPathName.h"

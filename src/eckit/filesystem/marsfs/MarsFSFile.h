@@ -14,7 +14,7 @@
 #ifndef eckit_MarsFSFile_h
 #define eckit_MarsFSFile_h
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eckit/filesystem/marsfs/MarsFSClient.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eclib/TCPClient.h"

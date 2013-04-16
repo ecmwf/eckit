@@ -10,7 +10,7 @@
 
 #include "eckit/filesystem/FileName.h"
 #include "eckit/filesystem/FileManager.h"
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathName.h"

@@ -14,7 +14,7 @@
 #ifndef eckit_ClassExtent_h
 #define eckit_ClassExtent_h
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eclib/Exceptions.h"
 #include "eckit/thread/Mutex.h"
 #include "eclib/NonCopyable.h"

@@ -12,7 +12,7 @@
 // Baudouin Raoult - (c) ECMWF Jul 11
 
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eclib/ClusterNodes.h"
 #include "eclib/JSON.h"
 #include "eclib/MappedArray.h"

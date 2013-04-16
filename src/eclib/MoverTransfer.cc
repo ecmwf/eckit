@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eclib/Bytes.h"
 #include "eclib/Connector.h"
 #include "eclib/Monitor.h"

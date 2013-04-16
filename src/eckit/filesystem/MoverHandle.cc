@@ -12,7 +12,7 @@
 // Baudouin Raoult - (c) ECMWF Jun 11
 
 
-#include "eclib/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
 #include "eclib/Monitor.h"
 #include "eckit/filesystem/MoverHandle.h"
 #include "eclib/MoverTransfer.h"

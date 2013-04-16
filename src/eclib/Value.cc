@@ -14,7 +14,7 @@
 #include "eckit/value/NilContent.h"
 #include "eclib/NumberContent.h"
 #include "eclib/StringContent.h"
-#include "eclib/BoolContent.h"
+#include "eckit/value/BoolContent.h"
 #include "eclib/DoubleContent.h"
 #include "eclib/MapContent.h"
 #include "eclib/Value.h"

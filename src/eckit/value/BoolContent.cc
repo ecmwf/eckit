@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/BoolContent.h"
+#include "eckit/value/BoolContent.h"
 #include "eckit/parser/Translator.h"
 #include "eckit/parser/JSON.h"
 

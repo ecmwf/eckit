@@ -9,7 +9,7 @@
  */
 
 #include "eckit/exception/Exceptions.h"
-#include "eclib/StdPipe.h"
+#include "eckit/io/StdPipe.h"
 
 
 //-----------------------------------------------------------------------------

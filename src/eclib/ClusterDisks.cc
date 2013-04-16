@@ -14,7 +14,7 @@
 
 #include "eclib/AutoLock.h"
 #include "eclib/ClusterDisks.h"
-#include "eclib/FileSpace.h"
+#include "eckit/filesystem/FileSpace.h"
 #include "eclib/JSON.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eclib/MappedArray.h"

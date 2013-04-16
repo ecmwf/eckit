@@ -11,7 +11,7 @@
 #include "eclib/AutoLock.h"
 #include "eclib/Bytes.h"
 #include "eclib/ClusterDisks.h"
-#include "eclib/FileSpace.h"
+#include "eckit/filesystem/FileSpace.h"
 #include "eclib/Mutex.h"
 #include "eclib/Resource.h"
 #include "eclib/Types.h"

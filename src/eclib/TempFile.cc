@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/FileSpace.h"
+#include "eckit/filesystem/FileSpace.h"
 #include "eclib/TempFile.h"
 
 

@@ -12,7 +12,7 @@
 #define eckit_LibBehavior_h
 
 #include "eclib/CallbackLogger.h"
-#include "eclib/StandardBehavior.h"
+#include "eckit/runtime/StandardBehavior.h"
 
 //-----------------------------------------------------------------------------
 

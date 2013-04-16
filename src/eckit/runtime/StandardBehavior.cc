@@ -10,7 +10,7 @@
 
 #include <stdlib.h>
 
-#include "eclib/StandardBehavior.h"
+#include "eckit/runtime/StandardBehavior.h"
 #include "eclib/StdLogger.h"
 
 using namespace std;

@@ -11,7 +11,7 @@
 #ifndef eckit_ToolBehavior_h
 #define eckit_ToolBehavior_h
 
-#include "eclib/StandardBehavior.h"
+#include "eckit/runtime/StandardBehavior.h"
 
 //-----------------------------------------------------------------------------
 

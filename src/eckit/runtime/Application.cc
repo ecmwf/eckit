@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "eckit/runtime/Application.h"
-#include "eclib/StandardBehavior.h"
+#include "eckit/runtime/StandardBehavior.h"
 #include "eclib/Log.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/PathName.h"

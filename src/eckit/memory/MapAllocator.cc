@@ -11,7 +11,7 @@
 #include <sys/mman.h>
 
 #include "eclib/machine.h"
-#include "eclib/MapAllocator.h"
+#include "eckit/memory/MapAllocator.h"
 #include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------

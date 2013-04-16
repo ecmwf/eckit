@@ -10,7 +10,7 @@
 
 #include "eckit/filesystem/AIOHandle.h"
 #include "eclib/Buffer.h"
-#include "eclib/filesystem/FileHandle.h"
+#include "eckit/filesystem/FileHandle.h"
 #include "eclib/filesystem/PathName.h"
 #include "eclib/Log.h"
 #include "eclib/runtime/Tool.h"

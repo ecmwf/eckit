@@ -13,7 +13,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/filesystem/FileHandle.h"
+#include "eckit/filesystem/FileHandle.h"
 #include "eclib/Bytes.h"
 #include "eclib/Log.h"
 #include "eclib/filesystem/MarsFSHandle.h"

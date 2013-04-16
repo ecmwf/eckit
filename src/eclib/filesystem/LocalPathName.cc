@@ -33,8 +33,8 @@
 #include "eclib/StrStream.h"
 #include "eclib/TimeStamp.h"
 
-#include "eclib/filesystem/FileHandle.h"
-#include "eclib/filesystem/FileHandle.h"
+#include "eckit/filesystem/FileHandle.h"
+#include "eckit/filesystem/FileHandle.h"
 #include "eclib/filesystem/PartFileHandle.h"
 
 //-----------------------------------------------------------------------------

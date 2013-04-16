@@ -13,7 +13,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/ScopedPtr.h"
+#include "eckit/memory/ScopedPtr.h"
 
 #include "eckit/config/Compiler.h"
 #include "eckit/config/Statement.h"

@@ -14,7 +14,7 @@
 #include <iosfwd>
 
 #include "eclib/NonCopyable.h"
-#include "eclib/CodeLocation.h"
+#include "eckit/log/CodeLocation.h"
 
 //-----------------------------------------------------------------------------
 

@@ -14,7 +14,7 @@
 #ifndef eckit_Log_h
 #define eckit_Log_h
 
-#include "eclib/CodeLocation.h"
+#include "eckit/log/CodeLocation.h"
 
 //-----------------------------------------------------------------------------
 

@@ -11,7 +11,7 @@
 #include <sstream>
 #include <cstring>
 
-#include "eclib/CodeLocation.h"
+#include "eckit/log/CodeLocation.h"
 
 //-----------------------------------------------------------------------------
 

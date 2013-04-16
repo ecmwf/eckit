@@ -31,7 +31,7 @@ public:
 	DayOfYear(long,long);
 	DayOfYear(const string&);
     
-#include "eclib/DayOfYear.b"
+#include "eckit/types/DayOfYear.b"
 
 // -- Destructor
 

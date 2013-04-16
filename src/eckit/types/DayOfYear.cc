@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/DayOfYear.h"
+#include "eckit/types/DayOfYear.h"
 #include "eclib/StrStream.h"
 
 //-----------------------------------------------------------------------------

@@ -16,17 +16,11 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/Length.h"
-#include "eclib/Offset.h"
-
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
-
-class Stream;
 
 typedef unsigned long Ordinal;  ///< for counting
 
@@ -133,6 +127,8 @@ inline ostream& operator<<(ostream& s, const std::set<T>& m)
 }
 
 //-----------------------------------------------------------------------------
+
+class Stream; // forward
 
 /// Operators to send vectors in streams
 template<class T> void operator<<(Stream&,const vector<T>&);

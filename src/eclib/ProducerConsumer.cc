@@ -12,7 +12,7 @@
 #include "eclib/thread/ThreadControler.h"
 #include "eclib/thread/Thread.h"
 #include "eckit/thread/Mutex.h"
-#include "eclib/MutexCond.h"
+#include "eckit/thread/MutexCond.h"
 #include "eclib/AutoLock.h"
 
 

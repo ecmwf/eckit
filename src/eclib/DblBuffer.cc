@@ -14,7 +14,7 @@
 #include "eclib/Bytes.h"
 #include "eclib/DblBuffer.h"
 #include "eclib/Log.h"
-#include "eclib/MutexCond.h"
+#include "eckit/thread/MutexCond.h"
 #include "eclib/Progress.h"
 #include "eclib/thread/Thread.h"
 #include "eclib/thread/ThreadControler.h"

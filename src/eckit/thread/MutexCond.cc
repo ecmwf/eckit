@@ -10,7 +10,7 @@
 
 
 #include "eclib/Exceptions.h"
-#include "eclib/MutexCond.h"
+#include "eckit/thread/MutexCond.h"
 
 //-----------------------------------------------------------------------------
 

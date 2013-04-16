@@ -18,7 +18,7 @@
 
 #include "eclib/config/Configurable.h"
 #include "eckit/thread/Mutex.h"
-#include "eclib/MutexCond.h"
+#include "eckit/thread/MutexCond.h"
 #include "eclib/Resource.h"
 
 //-----------------------------------------------------------------------------

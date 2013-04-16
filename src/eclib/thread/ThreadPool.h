@@ -12,7 +12,7 @@
 #define eckit_ThreadPool_h
 
 #include "eclib/machine.h"
-#include "eclib/MutexCond.h"
+#include "eckit/thread/MutexCond.h"
 
 //-----------------------------------------------------------------------------
 

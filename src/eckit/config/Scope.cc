@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/config/Scope.h"
+#include "eckit/config/Scope.h"
 #include "eckit/config/Function.h"
 
 //-----------------------------------------------------------------------------

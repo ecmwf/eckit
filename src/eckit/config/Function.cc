@@ -9,7 +9,7 @@
  */
 
 #include "eckit/config/Function.h"
-#include "eclib/config/Scope.h"
+#include "eckit/config/Scope.h"
 
 //-----------------------------------------------------------------------------
 

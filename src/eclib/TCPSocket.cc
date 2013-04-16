@@ -22,7 +22,7 @@
 #include "eclib/AutoAlarm.h"
 #include "eclib/AutoLock.h"
 #include "eclib/Log.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/Resource.h"
 #include "eclib/Select.h"
 #include "eclib/TCPClient.h"

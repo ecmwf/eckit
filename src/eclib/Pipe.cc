@@ -11,7 +11,7 @@
 
 #include "eclib/thread/ThreadControler.h"
 #include "eclib/thread/Thread.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/MutexCond.h"
 #include "eclib/AutoLock.h"
 

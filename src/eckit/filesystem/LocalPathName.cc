@@ -25,7 +25,7 @@
 #include "eckit/io/Length.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/Regex.h"
 #include "eclib/Resource.h"

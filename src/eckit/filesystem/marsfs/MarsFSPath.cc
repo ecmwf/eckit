@@ -16,7 +16,7 @@
 #include "eckit/filesystem/MarsFSHandle.h"
 #include "eckit/filesystem/MarsFSPartHandle.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/StrStream.h"
 

@@ -17,7 +17,7 @@
 #include "eclib/DataHandle.h"
 #include "eckit/io/Length.h"
 #include "eclib/NonCopyable.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/TransferWatcher.h"
 
 //-----------------------------------------------------------------------------

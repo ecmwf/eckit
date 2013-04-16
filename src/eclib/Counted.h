@@ -14,7 +14,7 @@
 #ifndef eckit_Counted_h
 #define eckit_Counted_h
 
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 
 //-----------------------------------------------------------------------------
 

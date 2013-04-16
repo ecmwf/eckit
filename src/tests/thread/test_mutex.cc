@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/runtime/Tool.h"
 
 using namespace eckit;

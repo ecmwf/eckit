@@ -15,7 +15,7 @@
 #define eckit_Stream_h
 
 #include "eclib/Exceptions.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/NonCopyable.h"
 
 

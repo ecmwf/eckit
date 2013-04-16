@@ -15,7 +15,7 @@
 #define eckit_Thread_h
 
 #include "eclib/NonCopyable.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 
 //-----------------------------------------------------------------------------
 

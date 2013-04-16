@@ -15,7 +15,7 @@
 #define eckit_filesystem_MoverHandle_h
 
 #include "eclib/DataHandle.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/TCPSocket.h"
 
 

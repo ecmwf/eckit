@@ -13,7 +13,7 @@
 #include "eclib/Context.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eclib/Log.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/ResourceMgr.h"
 #include "eclib/Types.h"
 

@@ -9,7 +9,7 @@
  */
 
 #include "eclib/Exceptions.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 
 //-----------------------------------------------------------------------------
 

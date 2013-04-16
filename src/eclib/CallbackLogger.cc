@@ -12,7 +12,7 @@
 
 #include "eclib/CallbackLogger.h"
 #include "eclib/Monitor.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/thread/Once.h"
 #include "eclib/TimeStamp.h"
 

@@ -12,7 +12,7 @@
 #include "eclib/Bytes.h"
 #include "eclib/ClusterDisks.h"
 #include "eckit/filesystem/FileSpace.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/Resource.h"
 #include "eclib/Types.h"
 

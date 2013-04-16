@@ -12,7 +12,7 @@
 #include <signal.h>
 #include <fcntl.h>
 
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/PipeStream.h"
 
 //-----------------------------------------------------------------------------

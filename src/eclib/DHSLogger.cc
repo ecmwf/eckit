@@ -12,7 +12,7 @@
 #include "eclib/Monitor.h"
 #include "eclib/TimeStamp.h"
 #include "eclib/AutoLock.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/Once.h"
 
 //-----------------------------------------------------------------------------

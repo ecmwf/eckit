@@ -12,7 +12,7 @@
 #include "eclib/ClusterNode.h"
 #include "eclib/ClusterNodes.h"
 #include "eclib/Monitor.h"
-#include "eclib/Mutex.h"
+#include "eckit/thread/Mutex.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/Port.h"
 #include "eclib/Resource.h"

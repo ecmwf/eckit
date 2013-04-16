@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/Telnet.h"
+#include "eckit/net/Telnet.h"
 #include "eckit/net/Telnetable.h"
 
 

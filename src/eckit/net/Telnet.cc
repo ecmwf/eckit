@@ -10,7 +10,7 @@
 
 
 #include "eckit/runtime/Monitor.h"
-#include "eclib/Telnet.h"
+#include "eckit/net/Telnet.h"
 #include "eclib/TelnetUser.h"
 
 

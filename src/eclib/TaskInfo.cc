@@ -11,7 +11,7 @@
 #include <signal.h>
 #include <sys/time.h>
 
-#include "eclib/Context.h"
+#include "eckit/runtime/Context.h"
 #include "eclib/Monitor.h"
 #include "eclib/ProcessControler.h"
 #include "eclib/TaskInfo.h"

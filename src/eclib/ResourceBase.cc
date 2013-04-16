@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Context.h"
+#include "eckit/runtime/Context.h"
 #include "eckit/config/Configurable.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"

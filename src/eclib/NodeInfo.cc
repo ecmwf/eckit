@@ -11,7 +11,7 @@
 #include <pwd.h>
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/Context.h"
+#include "eckit/runtime/Context.h"
 #include "eclib/Monitor.h"
 #include "eckit/thread/Mutex.h"
 #include "eclib/NodeInfo.h"

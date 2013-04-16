@@ -10,7 +10,7 @@
 
 #include <stdlib.h>
 
-#include "eclib/Context.h"
+#include "eckit/runtime/Context.h"
 #include "eclib/Loader.h"
 #include "eclib/Log.h"
 #include "eckit/filesystem/PathName.h"

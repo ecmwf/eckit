@@ -10,7 +10,7 @@
 
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/Context.h"
+#include "eckit/runtime/Context.h"
 #include "eclib/Semaphore.h"
 #include "eclib/Statistics.h"
 #include "eclib/TimeStamp.h"

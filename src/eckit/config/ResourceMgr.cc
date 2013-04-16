@@ -10,7 +10,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/config/Configurable.h"
-#include "eclib/Context.h"
+#include "eckit/runtime/Context.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eclib/Log.h"
 #include "eckit/thread/Mutex.h"

@@ -11,7 +11,7 @@
 #include <signal.h>
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/Context.h"
+#include "eckit/runtime/Context.h"
 #include "eclib/Log.h"
 #include "eclib/MemoryPool.h"
 #include "eclib/Monitor.h"

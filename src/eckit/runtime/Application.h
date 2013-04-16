@@ -14,7 +14,7 @@
 #ifndef eckit_Application_h
 #define eckit_Application_h
 
-#include "eclib/Context.h"
+#include "eckit/runtime/Context.h"
 #include "eckit/config/Configurable.h"
 #include "eckit/runtime/Task.h"
 

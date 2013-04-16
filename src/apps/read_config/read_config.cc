@@ -10,7 +10,7 @@
 
 #include "eclib/runtime/Tool.h"
 #include "eclib/BadValue.h"
-#include "eclib/Context.h"
+#include "eckit/runtime/Context.h"
 #include "eclib/DataHandle.h"
 #include "eclib/Log.h"
 #include "eckit/filesystem/PathName.h"

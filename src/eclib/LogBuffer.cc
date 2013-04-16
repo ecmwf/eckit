@@ -14,7 +14,7 @@
 #include "eclib/LogBuffer.h"
 #include "eclib/Monitor.h"
 #include "eckit/thread/AutoLock.h"
-#include "eclib/thread/Once.h"
+#include "eckit/thread/Once.h"
 
 //-----------------------------------------------------------------------------
 

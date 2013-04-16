@@ -33,7 +33,7 @@ public:
 	ClimateDate(const string& s);
 	ClimateDate(long,long,long);
 
-#include "eclib/ClimateDate.b"
+#include "eckit/types/ClimateDate.b"
 
 // -- Destructor
 

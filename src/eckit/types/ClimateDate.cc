@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/ClimateDate.h"
+#include "eckit/types/ClimateDate.h"
 #include "eclib/StrStream.h"
 
 //-----------------------------------------------------------------------------

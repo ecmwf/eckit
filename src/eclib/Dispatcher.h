@@ -16,7 +16,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/config/Configurable.h"
+#include "eckit/config/Configurable.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/MutexCond.h"
 #include "eckit/config/Resource.h"

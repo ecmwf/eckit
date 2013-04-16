@@ -13,7 +13,7 @@
 
 #include <string>
 
-#include "eclib/config/Configurable.h"
+#include "eckit/config/Configurable.h"
 #include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------

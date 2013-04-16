@@ -9,7 +9,7 @@
  */
 
 #include "eclib/Context.h"
-#include "eclib/config/Configurable.h"
+#include "eckit/config/Configurable.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
 

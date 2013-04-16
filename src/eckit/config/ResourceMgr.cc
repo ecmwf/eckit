@@ -9,7 +9,7 @@
  */
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/config/Configurable.h"
+#include "eckit/config/Configurable.h"
 #include "eclib/Context.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eclib/Log.h"

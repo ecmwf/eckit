@@ -13,7 +13,7 @@
 
 #include <errno.h>
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"

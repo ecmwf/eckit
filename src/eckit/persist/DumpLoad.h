@@ -14,7 +14,7 @@
 #ifndef eckit_DumpLoad_h
 #define eckit_DumpLoad_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 //-----------------------------------------------------------------------------
 

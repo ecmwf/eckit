@@ -14,7 +14,7 @@
 #ifndef eckit_Tokenizer_h
 #define eckit_Tokenizer_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/memory/NonCopyable.h"
 

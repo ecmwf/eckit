@@ -10,7 +10,7 @@
 
 #include <sys/mman.h>
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 #include "eckit/memory/MapAllocator.h"
 #include "eckit/exception/Exceptions.h"
 

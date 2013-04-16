@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include <stdint.h>
 #include <fcntl.h>

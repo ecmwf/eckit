@@ -14,7 +14,7 @@
 #ifndef eckit_JSON_h
 #define eckit_JSON_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/memory/NonCopyable.h"
 

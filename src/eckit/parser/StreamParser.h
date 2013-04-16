@@ -15,7 +15,7 @@
 #ifndef eckit_StreamParser_h
 #define eckit_StreamParser_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/memory/NonCopyable.h"
 

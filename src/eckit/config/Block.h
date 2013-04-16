@@ -11,7 +11,7 @@
 #ifndef eckit_config_Block_H
 #define eckit_config_Block_H
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/memory/ScopedPtr.h"
 

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/types/Types.h"
 #include "eckit/serialisation/Stream.h"

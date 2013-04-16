@@ -14,7 +14,7 @@
 #ifndef eckit_ETA_h
 #define eckit_ETA_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 //-----------------------------------------------------------------------------
 

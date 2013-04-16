@@ -14,7 +14,7 @@
 #ifndef eckit_StrStream_h
 #define eckit_StrStream_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 //-----------------------------------------------------------------------------
 

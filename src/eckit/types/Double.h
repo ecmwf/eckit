@@ -14,7 +14,7 @@
 #ifndef eckit_Double_h
 #define eckit_Double_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 //-----------------------------------------------------------------------------
 

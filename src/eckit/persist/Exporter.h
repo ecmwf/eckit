@@ -14,7 +14,7 @@
 #ifndef eckit_Exporter_h
 #define eckit_Exporter_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/memory/NonCopyable.h"
 

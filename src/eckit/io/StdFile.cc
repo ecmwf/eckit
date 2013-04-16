@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/StdFile.h"

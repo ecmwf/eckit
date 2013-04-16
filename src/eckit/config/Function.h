@@ -11,7 +11,7 @@
 #ifndef eckit_config_Function_H
 #define eckit_config_Function_H
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/config/Block.h"
 #include "eckit/config/Compiler.h"

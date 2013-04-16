@@ -1,7 +1,7 @@
 #ifndef eckit_Pipe_h
 #define eckit_Pipe_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"

@@ -14,7 +14,7 @@
 #ifndef eckit_EtcTable_h
 #define eckit_EtcTable_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"

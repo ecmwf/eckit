@@ -11,7 +11,7 @@
 #ifndef eclib_DHSLogger_h
 #define eclib_DHSLogger_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/log/Logger.h"
 

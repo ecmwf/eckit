@@ -14,7 +14,7 @@
 #ifndef eckit_Monitor_h
 #define eckit_Monitor_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/container/MappedArray.h"

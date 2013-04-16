@@ -11,7 +11,7 @@
 #ifndef eckit_config_Assignment_H
 #define eckit_config_Assignment_H
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/types/Types.h"
 

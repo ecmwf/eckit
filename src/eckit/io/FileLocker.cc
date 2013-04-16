@@ -10,7 +10,7 @@
 
 #include <fcntl.h>
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/FileLocker.h"
 

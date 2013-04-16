@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 #include "eckit/thread/AutoLock.h"
 #include "eclib/BTree.h"
 

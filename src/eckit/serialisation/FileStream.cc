@@ -10,7 +10,7 @@
 
 #include <dirent.h>
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/log/Log.h"

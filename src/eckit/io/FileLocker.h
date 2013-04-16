@@ -14,7 +14,7 @@
 #ifndef eckit_FileLocker_h
 #define eckit_FileLocker_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 //-----------------------------------------------------------------------------
 

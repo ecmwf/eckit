@@ -16,7 +16,7 @@
 
 #include <memory>
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/runtime/Context.h"
 

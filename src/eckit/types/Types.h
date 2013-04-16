@@ -14,7 +14,7 @@
 #ifndef eckit_Types_h
 #define eckit_Types_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 //-----------------------------------------------------------------------------
 

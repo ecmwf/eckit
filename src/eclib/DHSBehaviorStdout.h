@@ -11,7 +11,7 @@
 #ifndef eclib_DHSBehaviorStdout_h
 #define eclib_DHSBehaviorStdout_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 #include "eclib/DHSBehavior.h"
 
 //-----------------------------------------------------------------------------

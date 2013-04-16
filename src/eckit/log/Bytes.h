@@ -14,7 +14,7 @@
 #ifndef eckit_Bytes_h
 #define eckit_Bytes_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 //-----------------------------------------------------------------------------
 

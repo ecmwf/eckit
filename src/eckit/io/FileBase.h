@@ -14,7 +14,7 @@
 #ifndef eckit_FileBase_h
 #define eckit_FileBase_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/filesystem/PathName.h"
 

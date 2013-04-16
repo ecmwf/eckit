@@ -14,7 +14,7 @@
 #ifndef eckit_BTree_h
 #define eckit_BTree_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/memory/Padded.h"

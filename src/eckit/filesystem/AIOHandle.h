@@ -13,7 +13,7 @@
 
 #include <aio.h>
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"

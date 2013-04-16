@@ -14,7 +14,7 @@
 #ifndef eckit_FileManager_h
 #define eckit_FileManager_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
 

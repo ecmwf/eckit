@@ -14,7 +14,7 @@
 #ifndef eckit_Loader_h
 #define eckit_Loader_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/container/ClassExtent.h"
 

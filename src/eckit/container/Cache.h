@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include <sys/time.h>
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 #include "eckit/memory/NonCopyable.h"
 

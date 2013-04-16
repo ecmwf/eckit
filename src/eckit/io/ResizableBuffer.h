@@ -14,7 +14,7 @@
 #ifndef eckit_ResizableBuffer_h
 #define eckit_ResizableBuffer_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 
 // A simple class to implement buffers
 

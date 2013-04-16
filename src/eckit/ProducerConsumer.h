@@ -1,7 +1,7 @@
 #ifndef eckit_ProducerConsumer_h
 #define eckit_ProducerConsumer_h
 
-#include "eclib/machine.h"
+#include "eckit/machine.h"
 #include "eckit/thread/Mutex.h"
 
 

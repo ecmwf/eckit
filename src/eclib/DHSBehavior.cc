@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "eclib/Application.h"
-#include "eclib/Colour.h"
+#include "eckit/log/Colour.h"
 #include "eclib/DHSBehavior.h"
 #include "eclib/DHSStdLogger.h"
 #include "eckit/log/Log.h"

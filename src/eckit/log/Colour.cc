@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Colour.h"
+#include "eckit/log/Colour.h"
 #include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------

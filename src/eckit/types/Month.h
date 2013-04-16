@@ -31,7 +31,7 @@ public:
 	Month(long,long);
 	Month(const string&);
 
-#include "eclib/Month.b"
+#include "eckit/types/Month.b"
 
 // -- Destructor
 

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Month.h"
+#include "eckit/types/Month.h"
 #include "eclib/StrStream.h"
 #include "eclib/Tokenizer.h"
 

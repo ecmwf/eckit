@@ -17,7 +17,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eclib/Types.h"
 
-#include "eclib/config/Statement.h"
+#include "eckit/config/Statement.h"
 #include "eckit/config/Compiler.h"
 
 //-----------------------------------------------------------------------------

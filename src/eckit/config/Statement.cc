@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/config/Statement.h"
+#include "eckit/config/Statement.h"
 
 //-----------------------------------------------------------------------------
 

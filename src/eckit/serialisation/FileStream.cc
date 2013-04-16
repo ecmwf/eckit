@@ -12,7 +12,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/FileStream.h"
+#include "eckit/serialisation/FileStream.h"
 #include "eckit/log/Log.h"
 
 //-----------------------------------------------------------------------------

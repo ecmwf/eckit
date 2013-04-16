@@ -9,7 +9,7 @@
  */
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/FileStream.h"
+#include "eckit/serialisation/FileStream.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Seconds.h"

@@ -14,7 +14,7 @@
 #ifndef eckit_StringContent_h
 #define eckit_StringContent_h
 
-#include "eclib/Content.h"
+#include "eckit/value/Content.h"
 
 //-----------------------------------------------------------------------------
 

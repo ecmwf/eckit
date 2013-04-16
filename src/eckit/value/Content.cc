@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/Content.h"
+#include "eckit/value/Content.h"
 #include "eclib/StrStream.h"
 #include "eclib/Value.h"
 

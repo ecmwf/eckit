@@ -14,7 +14,7 @@
 #ifndef eckit_DoubleContent_h
 #define eckit_DoubleContent_h
 
-#include "eclib/Content.h"
+#include "eckit/value/Content.h"
 #include "eclib/Value.h"
 
 //-----------------------------------------------------------------------------

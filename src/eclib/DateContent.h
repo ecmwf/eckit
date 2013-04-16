@@ -14,7 +14,7 @@
 #ifndef eckit_DateContent_h
 #define eckit_DateContent_h
 
-#include "eclib/Content.h"
+#include "eckit/value/Content.h"
 #include "eclib/Value.h"
 
 //-----------------------------------------------------------------------------

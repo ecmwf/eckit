@@ -14,7 +14,7 @@
 #ifndef eckit_NilContent_h
 #define eckit_NilContent_h
 
-#include "eclib/Content.h"
+#include "eckit/value/Content.h"
 
 //-----------------------------------------------------------------------------
 

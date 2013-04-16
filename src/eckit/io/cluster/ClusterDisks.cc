@@ -13,7 +13,7 @@
 
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/ClusterDisks.h"
+#include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/filesystem/FileSpace.h"
 #include "eckit/parser/JSON.h"
 #include "eckit/filesystem/LocalPathName.h"

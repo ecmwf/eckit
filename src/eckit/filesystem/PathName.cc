@@ -11,7 +11,7 @@
 // File filesystem/PathName.cc
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#include "eclib/ClusterDisks.h"
+#include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/io/Length.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 

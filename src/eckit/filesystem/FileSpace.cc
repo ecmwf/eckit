@@ -10,7 +10,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/log/Bytes.h"
-#include "eclib/ClusterDisks.h"
+#include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/filesystem/FileSpace.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/config/Resource.h"

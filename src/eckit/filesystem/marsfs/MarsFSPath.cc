@@ -12,7 +12,7 @@
 #include "eclib/ClusterDisks.h"
 #include "eclib/ClusterNodes.h"
 #include "eckit/io/Length.h"
-#include "eclib/MarsFSClient.h"
+#include "eckit/filesystem/marsfs/MarsFSClient.h"
 #include "eckit/filesystem/MarsFSHandle.h"
 #include "eckit/filesystem/MarsFSPartHandle.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"

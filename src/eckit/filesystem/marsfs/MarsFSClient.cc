@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/MarsFSClient.h"
+#include "eckit/filesystem/marsfs/MarsFSClient.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eclib/thread/ThreadSingleton.h"
 

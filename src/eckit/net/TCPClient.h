@@ -14,7 +14,7 @@
 #ifndef eckit_TCPClient_h
 #define eckit_TCPClient_h
 
-#include "eclib/NetAddress.h"
+#include "eckit/net/NetAddress.h"
 #include "eckit/net/TCPSocket.h"
 
 //-----------------------------------------------------------------------------

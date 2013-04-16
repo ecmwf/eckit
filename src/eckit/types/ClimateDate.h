@@ -14,7 +14,7 @@
 #ifndef eckit_ClimateDate_h
 #define eckit_ClimateDate_h
 
-#include "eclib/Date.h"
+#include "eckit/types/Date.h"
 
 //-----------------------------------------------------------------------------
 

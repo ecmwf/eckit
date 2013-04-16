@@ -14,7 +14,7 @@
 #ifndef eckit_DayOfYear_h
 #define eckit_DayOfYear_h
 
-#include "eclib/Date.h"
+#include "eckit/types/Date.h"
 
 //-----------------------------------------------------------------------------
 

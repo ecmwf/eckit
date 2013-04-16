@@ -14,7 +14,7 @@
 #ifndef eckit_Month_h
 #define eckit_Month_h
 
-#include "eclib/Date.h"
+#include "eckit/types/Date.h"
 
 //-----------------------------------------------------------------------------
 

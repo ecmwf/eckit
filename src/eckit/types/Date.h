@@ -36,7 +36,7 @@ public:
 	Date(const string&);
 	Date(long,long);
 
-#include "eclib/Date.b"
+#include "eckit/types/Date.b"
 
 // -- Copy
 

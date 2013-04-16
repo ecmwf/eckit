@@ -14,7 +14,7 @@
 #define eckit_DateTime_h
 
 
-#include "eclib/Date.h"
+#include "eckit/types/Date.h"
 #include "eclib/Time.h"
 
 //-----------------------------------------------------------------------------

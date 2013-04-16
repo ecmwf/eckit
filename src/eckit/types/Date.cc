@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Date.h"
+#include "eckit/types/Date.h"
 #include "eclib/DumpLoad.h"
 #include "eclib/StrStream.h"
 #include "eclib/Tokenizer.h"

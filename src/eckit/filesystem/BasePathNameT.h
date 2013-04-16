@@ -14,7 +14,7 @@
 #ifndef eckit_filesystem_BasePathNameT_h
 #define eckit_filesystem_BasePathNameT_h
 
-#include "eclib/filesystem/BasePathName.h"
+#include "eckit/filesystem/BasePathName.h"
 
 //-----------------------------------------------------------------------------
 

@@ -14,7 +14,7 @@
 #include "eckit/io/Length.h"
 #include "eclib/MarsFSClient.h"
 #include "eckit/filesystem/MarsFSHandle.h"
-#include "eclib/filesystem/MarsFSPartHandle.h"
+#include "eckit/filesystem/MarsFSPartHandle.h"
 #include "eclib/MarsFSPath.h"
 #include "eclib/Mutex.h"
 #include "eclib/NodeInfo.h"

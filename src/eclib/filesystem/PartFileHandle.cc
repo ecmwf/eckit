@@ -17,7 +17,7 @@
 #include "eclib/Resource.h"
 #include "eclib/StrStream.h"
 
-#include "eclib/filesystem/MarsFSPartHandle.h"
+#include "eckit/filesystem/MarsFSPartHandle.h"
 #include "eclib/filesystem/PartFileHandle.h"
 
 //-----------------------------------------------------------------------------

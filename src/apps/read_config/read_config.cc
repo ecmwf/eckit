@@ -9,7 +9,7 @@
  */
 
 #include "eckit/runtime/Tool.h"
-#include "eclib/BadValue.h"
+#include "eckit/exception/BadValue.h"
 #include "eckit/runtime/Context.h"
 #include "eclib/DataHandle.h"
 #include "eckit/log/Log.h"

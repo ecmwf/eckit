@@ -14,7 +14,7 @@
 #ifndef eckit_Time_h
 #define eckit_Time_h
 
-#include "eclib/BadValue.h"
+#include "eckit/exception/BadValue.h"
 
 //-----------------------------------------------------------------------------
 

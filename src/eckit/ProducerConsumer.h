@@ -78,6 +78,6 @@ private:
 
 } // namespace eckit
 
-#include "eclib/ProducerConsumer.cc"
+#include "eckit/ProducerConsumer.cc"
 
 #endif

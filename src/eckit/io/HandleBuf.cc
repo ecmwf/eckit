@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/HandleBuf.h"
+#include "eckit/io/HandleBuf.h"
 
 //-----------------------------------------------------------------------------
 

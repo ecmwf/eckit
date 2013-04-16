@@ -18,7 +18,7 @@
 #include "eckit/thread/ThreadControler.h"
 #include "eckit/log/TimeStamp.h"
 #include "eckit/parser/Translator.h"
-#include "eclib/TxnLog.h"
+#include "eckit/transaction/TxnLog.h"
 
 //-----------------------------------------------------------------------------
 

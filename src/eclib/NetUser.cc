@@ -10,7 +10,7 @@
 
 
 #include "eclib/NetUser.h"
-#include "eclib/SockBuf.h"
+#include "eckit/io/SockBuf.h"
 #include "eclib/TCPStream.h"
 
 //-----------------------------------------------------------------------------

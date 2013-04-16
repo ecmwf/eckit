@@ -9,7 +9,7 @@
  */
 
 #include "eckit/io/Buffer.h"
-#include "eclib/MemoryPool.h"
+#include "eckit/memory/MemoryPool.h"
 
 //-----------------------------------------------------------------------------
 

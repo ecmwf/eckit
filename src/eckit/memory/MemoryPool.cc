@@ -11,7 +11,7 @@
 
 #include "eckit/log/Bytes.h"
 #include "eckit/exception/Exceptions.h"
-#include "eclib/MemoryPool.h"
+#include "eckit/memory/MemoryPool.h"
 
 //-----------------------------------------------------------------------------
 

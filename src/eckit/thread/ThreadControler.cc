@@ -13,7 +13,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/runtime/Context.h"
 #include "eckit/log/Log.h"
-#include "eclib/MemoryPool.h"
+#include "eckit/memory/MemoryPool.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"

@@ -10,7 +10,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/DumpLoad.h"
+#include "eckit/persist/DumpLoad.h"
 #include "eclib/StrStream.h"
 #include "eckit/types/Time.h"
 #include "eclib/Tokenizer.h"

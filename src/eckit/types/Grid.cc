@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/DumpLoad.h"
+#include "eckit/persist/DumpLoad.h"
 #include "eckit/types/Grid.h"
 #include "eckit/log/Log.h"
 #include "eckit/exception/Exceptions.h"

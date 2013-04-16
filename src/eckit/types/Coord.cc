@@ -10,7 +10,7 @@
 
 
 #include "eckit/types/Coord.h"
-#include "eclib/DumpLoad.h"
+#include "eckit/persist/DumpLoad.h"
 
 //-----------------------------------------------------------------------------
 

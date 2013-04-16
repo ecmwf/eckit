@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/DumpLoad.h"
+#include "eckit/persist/DumpLoad.h"
 
 //-----------------------------------------------------------------------------
 

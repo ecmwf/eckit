@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/DumpLoad.h"
+#include "eckit/persist/DumpLoad.h"
 #include "eckit/io/Offset.h"
 
 //-----------------------------------------------------------------------------

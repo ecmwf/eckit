@@ -27,7 +27,7 @@
 #include "eclib/Select.h"
 #include "eclib/TCPClient.h"
 #include "eclib/TCPSocket.h"
-#include "eclib/Seconds.h"
+#include "eckit/log/Seconds.h"
 
 #ifdef AIX
 //TODO: Add check to cmake

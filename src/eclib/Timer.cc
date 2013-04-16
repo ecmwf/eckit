@@ -10,7 +10,7 @@
 
 #include "sys/time.h"
 
-#include "eclib/Seconds.h"
+#include "eckit/log/Seconds.h"
 #include "eclib/Timer.h"
 
 

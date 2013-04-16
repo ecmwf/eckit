@@ -12,7 +12,7 @@
 #include "eclib/FileStream.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/PathName.h"
-#include "eclib/Seconds.h"
+#include "eckit/log/Seconds.h"
 #include "eclib/StrStream.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"

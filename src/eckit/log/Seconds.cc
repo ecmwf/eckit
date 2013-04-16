@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/Seconds.h"
+#include "eckit/log/Seconds.h"
 #include "eclib/StrStream.h"
 
 //-----------------------------------------------------------------------------

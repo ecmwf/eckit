@@ -14,7 +14,7 @@
 #include "eclib/Log.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Mutex.h"
-#include "eclib/PipeHandler.h"
+#include "eckit/runtime/PipeHandler.h"
 
 //-----------------------------------------------------------------------------
 

@@ -89,6 +89,6 @@ private:
 
 } // namespace eckit
 
-#include "eclib/PipeHandler.cc"
+#include "eckit/runtime/PipeHandler.cc"
 
 #endif

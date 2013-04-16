@@ -19,7 +19,7 @@
 #include "eclib/Resource.h"
 #include "eclib/TCPServer.h"
 #include "eclib/TCPStream.h"
-#include "eclib/thread/Thread.h"
+#include "eckit/thread/Thread.h"
 #include "eclib/thread/ThreadControler.h"
 #include "eclib/ClusterNodes.h"
 

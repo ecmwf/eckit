@@ -10,7 +10,7 @@
 
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/thread/Thread.h"
+#include "eckit/thread/Thread.h"
 
 //-----------------------------------------------------------------------------
 

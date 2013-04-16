@@ -16,7 +16,7 @@
 #include "eclib/Log.h"
 #include "eckit/thread/MutexCond.h"
 #include "eclib/Progress.h"
-#include "eclib/thread/Thread.h"
+#include "eckit/thread/Thread.h"
 #include "eclib/thread/ThreadControler.h"
 #include "eclib/Timer.h"
 

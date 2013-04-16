@@ -38,7 +38,7 @@
 #include "eclib/Log.h"
 #include "eclib/Monitor.h"
 #include "eclib/ProcessControler.h"
-#include "eclib/thread/Thread.h"
+#include "eckit/thread/Thread.h"
 #include "eclib/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------

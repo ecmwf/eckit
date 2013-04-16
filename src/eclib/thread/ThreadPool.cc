@@ -13,7 +13,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eclib/Monitor.h"
-#include "eclib/thread/Thread.h"
+#include "eckit/thread/Thread.h"
 #include "eclib/thread/ThreadControler.h"
 #include "eclib/thread/ThreadPool.h"
 

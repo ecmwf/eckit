@@ -16,7 +16,7 @@
 #include "eclib/Monitor.h"
 #include "eclib/Monitorable.h"
 #include "eclib/Plural.h"
-#include "eclib/thread/Thread.h"
+#include "eckit/thread/Thread.h"
 #include "eclib/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------

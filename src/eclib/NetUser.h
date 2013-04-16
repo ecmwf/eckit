@@ -12,7 +12,7 @@
 #define eckit_NetUser_h
 
 #include "eclib/TCPSocket.h"
-#include "eclib/thread/Thread.h"
+#include "eckit/thread/Thread.h"
 
 //-----------------------------------------------------------------------------
 

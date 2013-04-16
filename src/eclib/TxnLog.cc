@@ -14,7 +14,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eclib/Seconds.h"
 #include "eclib/StrStream.h"
-#include "eclib/thread/Thread.h"
+#include "eckit/thread/Thread.h"
 #include "eclib/thread/ThreadControler.h"
 #include "eclib/TimeStamp.h"
 #include "eclib/Translator.h"

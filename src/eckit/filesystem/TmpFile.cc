@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/TmpFile.h"
+#include "eckit/filesystem/TmpFile.h"
 
 
 //-----------------------------------------------------------------------------

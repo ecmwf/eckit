@@ -13,7 +13,7 @@
 #include "eclib/Bytes.h"
 #include "eclib/Log.h"
 #include "eclib/runtime/Tool.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/ResourceMgr.h"
 #include "eclib/Types.h"
 

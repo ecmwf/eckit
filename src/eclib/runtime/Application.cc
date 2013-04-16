@@ -15,7 +15,7 @@
 #include "eclib/Log.h"
 #include "eclib/Monitor.h"
 #include "eckit/filesystem/PathName.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/Semaphore.h"
 #include "eclib/Loader.h"
 

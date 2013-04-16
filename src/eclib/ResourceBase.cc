@@ -10,7 +10,7 @@
 
 #include "eclib/Context.h"
 #include "eclib/config/Configurable.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/ResourceMgr.h"
 
 

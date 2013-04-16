@@ -16,7 +16,7 @@
 #include "eclib/MoverTransfer.h"
 #include "eckit/filesystem/PathName.h"
 #include "eclib/Progress.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/StrStream.h"
 #include "eclib/Timer.h"
 

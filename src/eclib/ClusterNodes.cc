@@ -17,7 +17,7 @@
 #include "eclib/JSON.h"
 #include "eclib/MappedArray.h"
 #include "eclib/NodeInfo.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------
 

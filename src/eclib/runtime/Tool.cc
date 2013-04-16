@@ -14,7 +14,7 @@
 #include "eclib/Loader.h"
 #include "eclib/Log.h"
 #include "eckit/filesystem/PathName.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 
 #include "eclib/runtime/Tool.h"
 #include "eclib/runtime/ToolBehavior.h"

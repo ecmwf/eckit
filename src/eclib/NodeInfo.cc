@@ -15,7 +15,7 @@
 #include "eclib/Monitor.h"
 #include "eckit/thread/Mutex.h"
 #include "eclib/NodeInfo.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/StrStream.h"
 #include "eckit/thread/ThreadSingleton.h"
 

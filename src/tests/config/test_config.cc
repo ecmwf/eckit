@@ -9,7 +9,7 @@
  */
 
 #include "eclib/Log.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/ResourceMgr.h"
 #include "eclib/Types.h"
 #include "eclib/runtime/Tool.h"

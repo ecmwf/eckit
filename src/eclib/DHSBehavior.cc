@@ -16,7 +16,7 @@
 #include "eclib/DHSStdLogger.h"
 #include "eclib/Log.h"
 #include "eclib/Monitor.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/RotLogger.h"
 
 //-----------------------------------------------------------------------------

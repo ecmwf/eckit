@@ -23,7 +23,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eclib/Log.h"
 #include "eckit/thread/Mutex.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/Select.h"
 #include "eclib/TCPClient.h"
 #include "eclib/TCPSocket.h"

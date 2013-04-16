@@ -28,7 +28,7 @@
 #include "eckit/thread/Mutex.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/Regex.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/StdFile.h"
 #include "eclib/StrStream.h"
 #include "eclib/TimeStamp.h"

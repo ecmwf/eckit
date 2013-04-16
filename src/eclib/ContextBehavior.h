@@ -14,7 +14,7 @@
 #include <string>
 
 #include "eclib/config/Configurable.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------
 

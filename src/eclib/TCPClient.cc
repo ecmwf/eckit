@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/TCPClient.h"
 
 //-----------------------------------------------------------------------------

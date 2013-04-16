@@ -19,7 +19,7 @@
 #include "eclib/config/Configurable.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/MutexCond.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------
 

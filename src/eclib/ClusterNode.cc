@@ -15,7 +15,7 @@
 #include "eckit/thread/Mutex.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/Port.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/TCPClient.h"
 #include "eclib/TCPStream.h"
 #include "eclib/TCPStream.h"

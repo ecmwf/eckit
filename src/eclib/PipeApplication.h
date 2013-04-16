@@ -16,7 +16,7 @@
 
 #include "eclib/runtime/Application.h"
 #include "eclib/Stream.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------
 

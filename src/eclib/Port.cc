@@ -10,7 +10,7 @@
 
 
 #include "eclib/Port.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------
 

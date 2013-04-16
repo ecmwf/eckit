@@ -15,7 +15,7 @@
 #include "eclib/Monitor.h"
 #include "eclib/PipeApplication.h"
 #include "eclib/PipeStream.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/Seconds.h"
 #include "eclib/Select.h"
 

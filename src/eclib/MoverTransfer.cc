@@ -16,7 +16,7 @@
 #include "eclib/MoverTransfer.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/Progress.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/TCPServer.h"
 #include "eclib/TCPStream.h"
 #include "eckit/thread/Thread.h"

@@ -15,7 +15,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eclib/Monitor.h"
 #include "eckit/filesystem/PathName.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/StrStream.h"
 #include "eclib/TaskInfo.h"
 #include "eckit/thread/ThreadSingleton.h"

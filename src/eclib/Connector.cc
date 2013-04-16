@@ -15,7 +15,7 @@
 #include "eclib/ClusterNodes.h"
 #include "eclib/Connector.h"
 #include "eclib/StrStream.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/TCPClient.h"
 #include "eclib/TCPStream.h"
 #include "eckit/thread/ThreadSingleton.h"

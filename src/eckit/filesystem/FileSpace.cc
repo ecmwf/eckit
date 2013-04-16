@@ -13,7 +13,7 @@
 #include "eclib/ClusterDisks.h"
 #include "eckit/filesystem/FileSpace.h"
 #include "eckit/thread/Mutex.h"
-#include "eclib/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eclib/Types.h"
 
 //-----------------------------------------------------------------------------

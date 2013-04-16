@@ -9,7 +9,7 @@
  */
 
 #include "eclib/Log.h"
-#include "eclib/filesystem/PipeHandle.h"
+#include "eckit/filesystem/PipeHandle.h"
 
 //-----------------------------------------------------------------------------
 

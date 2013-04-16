@@ -35,7 +35,7 @@ public:
 	Double(double = 0);
 	Double(const string&);
 
-#include "eclib/Double.b"
+#include "eckit/types/Double.b"
 
 // -- Destructor
 

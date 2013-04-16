@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/DoubleContent.h"
+#include "eckit/value/DoubleContent.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/JSON.h"
 #include "eclib/NumberContent.h"

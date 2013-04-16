@@ -13,7 +13,7 @@
 #include "eclib/JSON.h"
 #include "eclib/NumberContent.h"
 #include "eclib/StrStream.h"
-#include "eclib/Translator.h"
+#include "eckit/parser/Translator.h"
 
 //-----------------------------------------------------------------------------
 

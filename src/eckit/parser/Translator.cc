@@ -11,7 +11,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eclib/StrStream.h"
 #include "eclib/Tokenizer.h"
-#include "eclib/Translator.h"
+#include "eckit/parser/Translator.h"
 
 //-----------------------------------------------------------------------------
 

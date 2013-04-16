@@ -14,7 +14,7 @@
 #include "eclib/StrStream.h"
 #include "eckit/types/Time.h"
 #include "eclib/Tokenizer.h"
-#include "eclib/Translator.h"
+#include "eckit/parser/Translator.h"
 
 
 //-----------------------------------------------------------------------------

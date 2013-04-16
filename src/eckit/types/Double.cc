@@ -13,7 +13,7 @@
 #include "eckit/types/Double.h"
 #include "eclib/DumpLoad.h"
 #include "eclib/StrStream.h"
-#include "eclib/Translator.h"
+#include "eckit/parser/Translator.h"
 
 //-----------------------------------------------------------------------------
 

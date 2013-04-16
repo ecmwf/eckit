@@ -18,7 +18,7 @@
 #include "eclib/Types.h"
 
 #include "eckit/config/Compiler.h"
-#include "eclib/config/Script.h"
+#include "eckit/config/Script.h"
 
 
 //-----------------------------------------------------------------------------

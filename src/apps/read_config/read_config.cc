@@ -18,7 +18,7 @@
 #include "eclib/Tokenizer.h"
 #include "eclib/Types.h"
 
-#include "eclib/config/Script.h"
+#include "eckit/config/Script.h"
 #include "eckit/config/Compiler.h"
 
 using namespace eckit;

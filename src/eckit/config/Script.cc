@@ -12,7 +12,7 @@
 #include "eclib/DataHandle.h"
 #include "eckit/io/Length.h"
 
-#include "eclib/config/Script.h"
+#include "eckit/config/Script.h"
 #include "eckit/config/Block.h"
 
 //-----------------------------------------------------------------------------

@@ -11,7 +11,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/runtime/Context.h"
-#include "eclib/Semaphore.h"
+#include "eckit/os/Semaphore.h"
 #include "eclib/Statistics.h"
 #include "eckit/log/TimeStamp.h"
 

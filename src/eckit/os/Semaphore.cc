@@ -13,7 +13,7 @@
 
 #include <sys/sem.h>
 
-#include "eclib/Semaphore.h"
+#include "eckit/os/Semaphore.h"
 
 
 //-----------------------------------------------------------------------------

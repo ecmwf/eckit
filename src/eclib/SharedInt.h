@@ -14,7 +14,7 @@
 #ifndef eckit_SharedInt_h
 #define eckit_SharedInt_h
 
-#include "eclib/Semaphore.h"
+#include "eckit/os/Semaphore.h"
 
 
 //-----------------------------------------------------------------------------

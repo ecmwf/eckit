@@ -16,7 +16,7 @@
 
 #include "eclib/NonCopyable.h"
 #include "eckit/filesystem/PathName.h"
-#include "eclib/Semaphore.h"
+#include "eckit/os/Semaphore.h"
 
 //-----------------------------------------------------------------------------
 

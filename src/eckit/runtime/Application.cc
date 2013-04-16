@@ -16,7 +16,7 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"
-#include "eclib/Semaphore.h"
+#include "eckit/os/Semaphore.h"
 #include "eclib/Loader.h"
 
 //-----------------------------------------------------------------------------

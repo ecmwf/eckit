@@ -11,7 +11,7 @@
 #include "eclib/BadValue.h"
 #include "eclib/Tokenizer.h"
 
-#include "eclib/config/Condition.h"
+#include "eckit/config/Condition.h"
 
 //-----------------------------------------------------------------------------
 

@@ -10,7 +10,7 @@
 
 #include <stdlib.h>
 
-#include "eclib/runtime/ToolBehavior.h"
+#include "eckit/runtime/ToolBehavior.h"
 
 using namespace std;
 

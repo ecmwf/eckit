@@ -17,7 +17,7 @@
 #include "eckit/config/Resource.h"
 
 #include "eckit/runtime/Tool.h"
-#include "eclib/runtime/ToolBehavior.h"
+#include "eckit/runtime/ToolBehavior.h"
 
 //-----------------------------------------------------------------------------
 

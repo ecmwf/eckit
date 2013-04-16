@@ -10,7 +10,7 @@
 
 
 #include "eckit/runtime/Monitor.h"
-#include "eclib/Progress.h"
+#include "eckit/log/Progress.h"
 
 
 //-----------------------------------------------------------------------------

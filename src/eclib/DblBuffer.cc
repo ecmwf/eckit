@@ -15,7 +15,7 @@
 #include "eclib/DblBuffer.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/MutexCond.h"
-#include "eclib/Progress.h"
+#include "eckit/log/Progress.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 #include "eclib/Timer.h"

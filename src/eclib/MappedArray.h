@@ -15,7 +15,7 @@
 #define eckit_MappedArray_h
 
 #include "eclib/NonCopyable.h"
-#include "eclib/filesystem/PathName.h"
+#include "eckit/filesystem/PathName.h"
 #include "eclib/Semaphore.h"
 
 //-----------------------------------------------------------------------------

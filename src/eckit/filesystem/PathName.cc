@@ -18,7 +18,7 @@
 #include "eclib/filesystem/BasePathName.h"
 #include "eclib/filesystem/BasePathNameT.h"
 #include "eclib/filesystem/LocalPathName.h"
-#include "eclib/filesystem/PathName.h"
+#include "eckit/filesystem/PathName.h"
 
 //-----------------------------------------------------------------------------
 

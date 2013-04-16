@@ -14,7 +14,7 @@
 #ifndef eckit_TmpFile_h
 #define eckit_TmpFile_h
 
-#include "eclib/filesystem/PathName.h"
+#include "eckit/filesystem/PathName.h"
 
 
 //-----------------------------------------------------------------------------

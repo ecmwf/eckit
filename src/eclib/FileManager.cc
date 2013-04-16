@@ -12,8 +12,8 @@
 #include "eclib/FileManager.h"
 #include "eclib/AutoLock.h"
 #include "eclib/Mutex.h"
-#include "eclib/filesystem/PathName.h"
-#include "eclib/filesystem/PathName.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/PathName.h"
 
 //-----------------------------------------------------------------------------
 

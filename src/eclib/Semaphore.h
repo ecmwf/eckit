@@ -16,7 +16,7 @@
 
 #include "eclib/NonCopyable.h"
 #include "eclib/Mutex.h"
-#include "eclib/filesystem/PathName.h"
+#include "eckit/filesystem/PathName.h"
 
 
 //-----------------------------------------------------------------------------

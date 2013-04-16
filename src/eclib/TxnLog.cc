@@ -11,7 +11,7 @@
 #include "eclib/AutoLock.h"
 #include "eclib/FileStream.h"
 #include "eclib/Monitor.h"
-#include "eclib/filesystem/PathName.h"
+#include "eckit/filesystem/PathName.h"
 #include "eclib/Seconds.h"
 #include "eclib/StrStream.h"
 #include "eclib/thread/Thread.h"

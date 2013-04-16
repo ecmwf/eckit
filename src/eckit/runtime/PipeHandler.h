@@ -14,7 +14,7 @@
 #ifndef eckit_PipeHandler_h
 #define eckit_PipeHandler_h
 
-#include "eclib/ClassExtent.h"
+#include "eckit/container/ClassExtent.h"
 #include "eclib/PipeStream.h"
 #include "eclib/ProcessControler.h"
 #include "eclib/Dispatcher.h"

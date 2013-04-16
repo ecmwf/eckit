@@ -16,7 +16,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/ClassExtent.h"
+#include "eckit/container/ClassExtent.h"
 
 //-----------------------------------------------------------------------------
 

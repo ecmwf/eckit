@@ -14,7 +14,7 @@
 #ifndef eckit_ProcessControler_h
 #define eckit_ProcessControler_h
 
-#include "eclib/ClassExtent.h"
+#include "eckit/container/ClassExtent.h"
 #include "eckit/runtime/Task.h"
 
 

@@ -14,7 +14,7 @@
 #ifndef eckit_Monitorable_h
 #define eckit_Monitorable_h
 
-#include "eclib/ClassExtent.h"
+#include "eckit/container/ClassExtent.h"
 
 //-----------------------------------------------------------------------------
 

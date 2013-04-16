@@ -14,7 +14,7 @@
 #ifndef eckit_Configurable_h
 #define eckit_Configurable_h
 
-#include "eclib/ClassExtent.h"
+#include "eckit/container/ClassExtent.h"
 #include "eckit/thread/Mutex.h"
 
 class Url;

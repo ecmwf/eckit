@@ -15,7 +15,7 @@
 
 
 #include "eckit/types/Date.h"
-#include "eclib/Time.h"
+#include "eckit/types/Time.h"
 
 //-----------------------------------------------------------------------------
 

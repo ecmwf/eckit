@@ -42,7 +42,7 @@ public:
 	Time(long seconds = 0);
 	Time(const string&);
 
-#include "eclib/Time.b"
+#include "eckit/types/Time.b"
 
 // -- Copy
 

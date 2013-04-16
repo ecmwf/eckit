@@ -12,7 +12,7 @@
 
 #include "eclib/DumpLoad.h"
 #include "eclib/StrStream.h"
-#include "eclib/Time.h"
+#include "eckit/types/Time.h"
 #include "eclib/Tokenizer.h"
 #include "eclib/Translator.h"
 

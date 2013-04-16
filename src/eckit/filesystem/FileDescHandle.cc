@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/filesystem/FileDescHandle.h"
+#include "eckit/filesystem/FileDescHandle.h"
 
 //-----------------------------------------------------------------------------
 

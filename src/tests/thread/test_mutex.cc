@@ -9,7 +9,7 @@
  */
 
 #include "eckit/thread/Mutex.h"
-#include "eclib/runtime/Tool.h"
+#include "eckit/runtime/Tool.h"
 
 using namespace eckit;
 

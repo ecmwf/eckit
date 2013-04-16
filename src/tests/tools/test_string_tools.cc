@@ -9,7 +9,7 @@
  */
 
 #include "eclib/Log.h"
-#include "eclib/runtime/Tool.h"
+#include "eckit/runtime/Tool.h"
 #include "eclib/StringTools.h"
 #include "eclib/Types.h"
 

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/runtime/Tool.h"
+#include "eckit/runtime/Tool.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eclib/Log.h"
 

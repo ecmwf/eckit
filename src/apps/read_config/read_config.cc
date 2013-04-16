@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/runtime/Tool.h"
+#include "eckit/runtime/Tool.h"
 #include "eclib/BadValue.h"
 #include "eckit/runtime/Context.h"
 #include "eclib/DataHandle.h"

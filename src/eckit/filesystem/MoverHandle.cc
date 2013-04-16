@@ -14,7 +14,7 @@
 
 #include "eclib/AutoLock.h"
 #include "eclib/Monitor.h"
-#include "eclib/filesystem/MoverHandle.h"
+#include "eckit/filesystem/MoverHandle.h"
 #include "eclib/MoverTransfer.h"
 #include "eclib/NodeInfo.h"
 #include "eclib/filesystem/TCPHandle.h"

@@ -12,7 +12,7 @@
 
 #include "eclib/machine.h"
 #include "eckit/exception/Exceptions.h"
-#include "eclib/FileLocker.h"
+#include "eckit/io/FileLocker.h"
 
 //-----------------------------------------------------------------------------
 

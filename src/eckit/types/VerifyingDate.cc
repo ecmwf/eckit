@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/VerifyingDate.h"
+#include "eckit/types/VerifyingDate.h"
 
 //-----------------------------------------------------------------------------
 

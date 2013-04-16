@@ -31,7 +31,7 @@ public:
 	VerifyingDate(const string&);
 	VerifyingDate(const DateTime&);
 
-#include "eclib/VerifyingDate.b"
+#include "eckit/types/VerifyingDate.b"
     
 // -- Destructor
 

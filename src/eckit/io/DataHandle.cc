@@ -17,7 +17,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Progress.h"
 #include "eckit/config/Resource.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/utils/Timer.h"
 
 //-----------------------------------------------------------------------------

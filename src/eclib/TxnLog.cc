@@ -13,7 +13,7 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Seconds.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 #include "eckit/log/TimeStamp.h"

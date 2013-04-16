@@ -17,7 +17,7 @@
 
 #include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------
 

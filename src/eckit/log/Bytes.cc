@@ -9,7 +9,7 @@
  */
 
 #include "eckit/log/Bytes.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/utils/Timer.h"
 
 //-----------------------------------------------------------------------------

@@ -30,7 +30,7 @@
 #include "eckit/utils/Regex.h"
 #include "eckit/config/Resource.h"
 #include "eckit/io/StdFile.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/log/TimeStamp.h"
 
 #include "eckit/filesystem/FileHandle.h"

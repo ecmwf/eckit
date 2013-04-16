@@ -13,7 +13,7 @@
 #include "eckit/types/Grid.h"
 #include "eckit/log/Log.h"
 #include "eckit/exception/Exceptions.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/utils/Tokenizer.h"
 
 //-----------------------------------------------------------------------------

@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/log/TimeStamp.h"
 
 

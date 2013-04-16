@@ -10,7 +10,7 @@
 
 
 #include "eckit/value/Content.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/value/Value.h"
 
 //-----------------------------------------------------------------------------

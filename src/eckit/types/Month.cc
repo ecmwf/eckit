@@ -9,7 +9,7 @@
  */
 
 #include "eckit/types/Month.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/utils/Tokenizer.h"
 
 //-----------------------------------------------------------------------------

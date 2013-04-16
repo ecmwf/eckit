@@ -11,7 +11,7 @@
 #include "eclib/machine.h"
 
 #include "eckit/persist/DumpLoad.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/types/Time.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/parser/Translator.h"

@@ -11,7 +11,7 @@
 #include <cstring>
 
 #include "eckit/exception/Exceptions.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Tokenizer.h"
 

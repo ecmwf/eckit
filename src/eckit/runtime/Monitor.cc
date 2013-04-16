@@ -16,7 +16,7 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/thread/ThreadSingleton.h"
 

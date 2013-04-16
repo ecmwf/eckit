@@ -10,7 +10,7 @@
 
 
 #include "eckit/log/Log.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 
 #include "eckit/filesystem/MarsFSPartHandle.h"
 #include "eckit/filesystem/PartFileHandle.h"

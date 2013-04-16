@@ -11,7 +11,7 @@
 #include <signal.h>
 
 #include "eckit/exception/Exceptions.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/thread/ThreadSingleton.h"
 
 #include "eckit/os/BackTrace.h"

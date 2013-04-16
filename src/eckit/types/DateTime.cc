@@ -11,7 +11,7 @@
 #include "eclib/machine.h"
 
 #include "eckit/types/DateTime.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/utils/Tokenizer.h"
 
 //-----------------------------------------------------------------------------

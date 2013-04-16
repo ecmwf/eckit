@@ -9,7 +9,7 @@
  */
 
 #include "eckit/types/DayOfYear.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------
 

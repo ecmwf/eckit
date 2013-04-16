@@ -9,7 +9,7 @@
  */
 
 #include "eckit/log/ETA.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------
 

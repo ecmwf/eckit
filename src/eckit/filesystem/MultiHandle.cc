@@ -9,7 +9,7 @@
  */
 
 #include "eckit/filesystem/MultiHandle.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 #include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------

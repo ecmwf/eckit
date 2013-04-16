@@ -9,7 +9,7 @@
  */
 
 #include "eckit/types/ClimateDate.h"
-#include "eclib/StrStream.h"
+#include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------
 

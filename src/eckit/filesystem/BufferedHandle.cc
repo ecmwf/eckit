@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/filesystem/BufferedHandle.h"
+#include "eckit/filesystem/BufferedHandle.h"
 
 //-----------------------------------------------------------------------------
 

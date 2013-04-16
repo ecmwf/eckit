@@ -16,7 +16,7 @@
 #include "eclib/Connector.h"
 #include "eclib/StrStream.h"
 #include "eckit/config/Resource.h"
-#include "eclib/TCPClient.h"
+#include "eckit/net/TCPClient.h"
 #include "eclib/TCPStream.h"
 #include "eckit/thread/ThreadSingleton.h"
 

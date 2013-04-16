@@ -15,7 +15,7 @@
 #define eckit_filesystem_FTPHandle_h
 
 #include "eckit/io/DataHandle.h"
-#include "eclib/TCPClient.h"
+#include "eckit/net/TCPClient.h"
 #include "eclib/TCPSocket.h"
 
 //-----------------------------------------------------------------------------

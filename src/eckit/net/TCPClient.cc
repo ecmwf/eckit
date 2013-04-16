@@ -10,7 +10,7 @@
 
 
 #include "eckit/config/Resource.h"
-#include "eclib/TCPClient.h"
+#include "eckit/net/TCPClient.h"
 
 //-----------------------------------------------------------------------------
 

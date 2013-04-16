@@ -16,7 +16,7 @@
 #include "eckit/io/cluster/eclib/NodeInfo.h"
 #include "eclib/Port.h"
 #include "eckit/config/Resource.h"
-#include "eclib/TCPClient.h"
+#include "eckit/net/TCPClient.h"
 #include "eclib/TCPStream.h"
 #include "eclib/TCPStream.h"
 #include "eckit/thread/Thread.h"

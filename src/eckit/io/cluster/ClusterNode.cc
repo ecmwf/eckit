@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/ClusterNode.h"
+#include "eckit/io/cluster/ClusterNode.h"
 #include "eclib/ClusterNodes.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Mutex.h"

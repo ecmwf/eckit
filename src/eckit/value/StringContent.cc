@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/StringContent.h"
+#include "eckit/value/StringContent.h"
 #include "eckit/parser/JSON.h"
 
 //-----------------------------------------------------------------------------

@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/HyperCube.h"
+#include "eckit/utils/HyperCube.h"
 
 //-----------------------------------------------------------------------------
 

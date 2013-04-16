@@ -9,7 +9,7 @@
  */
 
 #include "eclib/StrStream.h"
-#include "eclib/filesystem/TCPHandle.h"
+#include "eckit/filesystem/TCPHandle.h"
 
 //-----------------------------------------------------------------------------
 

@@ -14,7 +14,7 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/PipeApplication.h"
-#include "eclib/PipeStream.h"
+#include "eckit/serialisation/PipeStream.h"
 #include "eckit/config/Resource.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/io/Select.h"

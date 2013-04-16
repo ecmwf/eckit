@@ -13,7 +13,7 @@
 #include <fcntl.h>
 
 #include "eckit/thread/Mutex.h"
-#include "eclib/PipeStream.h"
+#include "eckit/serialisation/PipeStream.h"
 
 //-----------------------------------------------------------------------------
 

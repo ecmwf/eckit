@@ -14,7 +14,7 @@
 #ifndef eckit_TCPServer_h
 #define eckit_TCPServer_h
 
-#include "eclib/TCPSocket.h"
+#include "eckit/net/TCPSocket.h"
 
 //-----------------------------------------------------------------------------
 

@@ -11,7 +11,7 @@
 #ifndef eckit_NetUser_h
 #define eckit_NetUser_h
 
-#include "eclib/TCPSocket.h"
+#include "eckit/net/TCPSocket.h"
 #include "eckit/thread/Thread.h"
 
 //-----------------------------------------------------------------------------

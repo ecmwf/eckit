@@ -26,7 +26,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/io/Select.h"
 #include "eckit/net/TCPClient.h"
-#include "eclib/TCPSocket.h"
+#include "eckit/net/TCPSocket.h"
 #include "eckit/log/Seconds.h"
 
 #ifdef AIX

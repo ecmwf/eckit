@@ -15,7 +15,7 @@
 #define eckit_filesystem_TCPSocketHandle_h
 
 #include "eckit/io/DataHandle.h"
-#include "eclib/TCPSocket.h"
+#include "eckit/net/TCPSocket.h"
 
 //-----------------------------------------------------------------------------
 

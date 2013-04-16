@@ -16,7 +16,7 @@
 
 #include "eclib/Counted.h"
 #include "eclib/Stream.h"
-#include "eclib/TCPSocket.h"
+#include "eckit/net/TCPSocket.h"
 
 //-----------------------------------------------------------------------------
 

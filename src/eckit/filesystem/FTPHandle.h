@@ -16,7 +16,7 @@
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/net/TCPClient.h"
-#include "eclib/TCPSocket.h"
+#include "eckit/net/TCPSocket.h"
 
 //-----------------------------------------------------------------------------
 

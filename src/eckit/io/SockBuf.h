@@ -14,7 +14,7 @@
 #ifndef eckit_SockBuf_h
 #define eckit_SockBuf_h
 
-#include "eclib/TCPSocket.h"
+#include "eckit/net/TCPSocket.h"
 
 
 //-----------------------------------------------------------------------------

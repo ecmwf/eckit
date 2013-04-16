@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "eckit/runtime/StandardBehavior.h"
-#include "eclib/StdLogger.h"
+#include "eckit/log/StdLogger.h"
 
 using namespace std;
 

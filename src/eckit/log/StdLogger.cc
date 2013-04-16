@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eclib/StdLogger.h"
+#include "eckit/log/StdLogger.h"
 
 
 //-----------------------------------------------------------------------------

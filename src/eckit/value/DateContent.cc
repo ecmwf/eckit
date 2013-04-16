@@ -9,7 +9,7 @@
  */
 
 
-#include "eclib/DateContent.h"
+#include "eckit/value/DateContent.h"
 #include "eclib/NumberContent.h"
 #include "eckit/parser/JSON.h"
 

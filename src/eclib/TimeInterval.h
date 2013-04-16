@@ -14,7 +14,7 @@
 #ifndef eckit_TimeInterval_h
 #define eckit_TimeInterval_h
 
-#include "eclib/DateTime.h"
+#include "eckit/types/DateTime.h"
 
 
 //-----------------------------------------------------------------------------

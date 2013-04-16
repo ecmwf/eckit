@@ -32,7 +32,7 @@ public:
 	DateTime(const Date&, const Time&);
 	DateTime(const string&);
 
-#include "eclib/DateTime.b"
+#include "eckit/types/DateTime.b"
 
 // -- Destructor
 

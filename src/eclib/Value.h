@@ -16,7 +16,7 @@
 
 #include "eclib/Content.h"
 #include "eclib/Date.h"
-#include "eclib/DateTime.h"
+#include "eckit/types/DateTime.h"
 
 
 //-----------------------------------------------------------------------------

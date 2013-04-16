@@ -10,7 +10,7 @@
 
 #include "eclib/machine.h"
 
-#include "eclib/DateTime.h"
+#include "eckit/types/DateTime.h"
 #include "eclib/StrStream.h"
 #include "eclib/Tokenizer.h"
 

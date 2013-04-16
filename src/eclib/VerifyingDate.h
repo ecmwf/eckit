@@ -13,7 +13,7 @@
 #ifndef eckit_VerifyingDate_h
 #define eckit_VerifyingDate_h
 
-#include "eclib/DateTime.h"
+#include "eckit/types/DateTime.h"
 
 //-----------------------------------------------------------------------------
 

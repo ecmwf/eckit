@@ -19,7 +19,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eclib/MappedArray.h"
 #include "eclib/NonCopyable.h"
-#include "eclib/TaskInfo.h"
+#include "eckit/runtime/TaskInfo.h"
 
 //-----------------------------------------------------------------------------
 

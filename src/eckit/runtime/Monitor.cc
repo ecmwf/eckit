@@ -17,7 +17,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"
 #include "eclib/StrStream.h"
-#include "eclib/TaskInfo.h"
+#include "eckit/runtime/TaskInfo.h"
 #include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------

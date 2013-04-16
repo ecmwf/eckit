@@ -14,7 +14,7 @@
 #include "eckit/runtime/Context.h"
 #include "eckit/runtime/Monitor.h"
 #include "eclib/ProcessControler.h"
-#include "eclib/TaskInfo.h"
+#include "eckit/runtime/TaskInfo.h"
 #include "eclib/Timer.h"
 #include "eclib/SignalHandler.h"
 

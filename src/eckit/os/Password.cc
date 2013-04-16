@@ -11,7 +11,7 @@
 #include <pwd.h>
 
 #include "eckit/log/Log.h"
-#include "eclib/Password.h"
+#include "eckit/os/Password.h"
 
 //-----------------------------------------------------------------------------
 

@@ -10,7 +10,7 @@
 
 
 #include "eclib/DumpLoad.h"
-#include "eclib/Grid.h"
+#include "eckit/types/Grid.h"
 #include "eckit/log/Log.h"
 #include "eckit/exception/Exceptions.h"
 #include "eclib/StrStream.h"

@@ -47,7 +47,7 @@ public:
 
 	Grid(const vector<double>&);
 
-#include "eclib/Grid.b"
+#include "eckit/types/Grid.b"
 
 // -- Destructor
 

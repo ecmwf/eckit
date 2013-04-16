@@ -12,7 +12,7 @@
 // Baudouin Raoult - (c) ECMWF Jun 11
 
 
-#include "eclib/ClusterNodes.h"
+#include "eckit/io/cluster/ClusterNodes.h"
 #include "eclib/Connector.h"
 #include "eclib/StrStream.h"
 #include "eckit/config/Resource.h"

@@ -10,7 +10,7 @@
 
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/io/cluster/ClusterDisks.h"
-#include "eclib/ClusterNodes.h"
+#include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/io/Length.h"
 #include "eckit/filesystem/marsfs/MarsFSClient.h"
 #include "eckit/filesystem/MarsFSHandle.h"

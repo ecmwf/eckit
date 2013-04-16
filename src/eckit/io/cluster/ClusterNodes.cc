@@ -13,7 +13,7 @@
 
 
 #include "eckit/thread/AutoLock.h"
-#include "eclib/ClusterNodes.h"
+#include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/parser/JSON.h"
 #include "eclib/MappedArray.h"
 #include "eclib/NodeInfo.h"

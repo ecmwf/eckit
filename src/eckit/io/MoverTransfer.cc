@@ -21,7 +21,7 @@
 #include "eclib/TCPStream.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-#include "eclib/ClusterNodes.h"
+#include "eckit/io/cluster/ClusterNodes.h"
 
 //-----------------------------------------------------------------------------
 

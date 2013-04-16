@@ -13,7 +13,7 @@
 /// @date Sep 2012
 
 #include "eclib/BackTrace.h"
-#include "eclib/StreamParser.h"
+#include "eckit/parser/StreamParser.h"
 #include "eckit/parser/Translator.h"
 
 #include "eckit/log/Log.h"

@@ -14,7 +14,7 @@
 #ifndef eckit_JSONParser_h
 #define eckit_JSONParser_h
 
-#include "eclib/StreamParser.h"
+#include "eckit/parser/StreamParser.h"
 #include "eclib/Value.h"
 
 //-----------------------------------------------------------------------------

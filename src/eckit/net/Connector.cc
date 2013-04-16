@@ -13,7 +13,7 @@
 
 
 #include "eckit/io/cluster/ClusterNodes.h"
-#include "eclib/Connector.h"
+#include "eckit/net/Connector.h"
 #include "eclib/StrStream.h"
 #include "eckit/config/Resource.h"
 #include "eckit/net/TCPClient.h"

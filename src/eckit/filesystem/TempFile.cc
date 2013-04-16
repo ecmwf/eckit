@@ -10,7 +10,7 @@
 
 
 #include "eckit/filesystem/FileSpace.h"
-#include "eclib/TempFile.h"
+#include "eckit/filesystem/TempFile.h"
 
 
 //-----------------------------------------------------------------------------

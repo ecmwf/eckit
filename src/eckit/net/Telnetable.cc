@@ -10,7 +10,7 @@
 
 
 #include "eclib/Telnet.h"
-#include "eclib/Telnetable.h"
+#include "eckit/net/Telnetable.h"
 
 
 //-----------------------------------------------------------------------------

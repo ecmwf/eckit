@@ -207,8 +207,6 @@ log/ETA.cc
 log/Plural.h
 log/Progress.h
 log/Progress.cc
-log/Seconds.h
-log/Seconds.cc
 log/StdLogger.h
 log/StdLogger.cc
 log/TimeStamp.h
@@ -248,7 +246,9 @@ types/Date.cc
 types/Time.h
 types/Time.cc
 types/VerifyingDate.h
-types/VerifyingDate.cc )
+types/VerifyingDate.cc 
+types/Seconds.h
+types/Seconds.cc )
 
 list( APPEND eckit_parser_srcs
 parser/Translator.h
@@ -403,20 +403,20 @@ foreach( dir ${eckit_dirs} )
 endforeach()
 
 list( APPEND eckit_templates 
-                    filesystem/BasePathNameT.cc
+					Pipe.cc
+					ProducerConsumer.cc
+					Recycler.cc
                     Dispatcher.cc
                     container/BTree.cc
-					types/FixedString.cc
-                    io/FileBase.cc
                     container/MappedArray.cc
+                    filesystem/BasePathNameT.cc
+                    io/FileBase.cc
                     runtime/PipeHandler.cc
-                    utils/RLE.cc
                     serialisation/Reanimator.cc
                     transaction/TxnLog.cc
                     types/Types.cc
-					ProducerConsumer.cc
-					Pipe.cc
-					Recycler.cc
+					types/FixedString.cc
+                    utils/RLE.cc
 )
 
 list( APPEND eckit_persistent 
@@ -429,9 +429,9 @@ list( APPEND eckit_persistent
                      types/Month
                      types/Time
                      types/VerifyingDate
+                     types/Seconds
                      io/Length
                      io/Offset
-                     log/Seconds
 )
 
 ecbuild_add_library( TARGET eckit

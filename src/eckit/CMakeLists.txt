@@ -420,7 +420,7 @@ list( APPEND eckit_templates
 )
 
 list( APPEND eckit_persistent 
-                     types/ClimateDate
+                     types/ClimateDate.h
                      types/Date
                      types/DayOfYear
                      types/DateTime

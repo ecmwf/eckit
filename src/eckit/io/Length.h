@@ -50,7 +50,7 @@ public:
 	Length(long long l = 0) : value_(l) {}
 	Length(const Length& other) : value_(other.value_) {}
 
-#include "eclib/Length.b"
+#include "eckit/io/Length.b"
 
 // -- Operators
 

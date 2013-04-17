@@ -9,7 +9,7 @@
  */
 
 #include "eckit/persist/DumpLoad.h"
-#include "eclib/Length.h"
+#include "eckit/io/Length.h"
 
 //-----------------------------------------------------------------------------
 

@@ -13,7 +13,7 @@
 
 #include "eckit/machine.h"
 #include "eckit/thread/AutoLock.h"
-#include "eclib/BTree.h"
+#include "eckit/container/BTree.h"
 
 //-----------------------------------------------------------------------------
 

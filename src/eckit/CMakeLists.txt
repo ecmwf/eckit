@@ -421,17 +421,17 @@ list( APPEND eckit_templates
 
 list( APPEND eckit_persistent 
                      types/ClimateDate.h
-                     types/Date
-                     types/DayOfYear
-                     types/DateTime
-                     types/Double
-                     types/Grid
-                     types/Month
-                     types/Time
-                     types/VerifyingDate
-                     types/Seconds
-                     io/Length
-                     io/Offset
+                     types/Date.h
+                     types/DayOfYear.h
+                     types/DateTime.h
+                     types/Double.h
+                     types/Grid.h
+                     types/Month.h
+                     types/Time.h
+                     types/VerifyingDate.h
+                     types/Seconds.h
+                     io/Length.h
+                     io/Offset.h
 )
 
 ecbuild_add_library( TARGET eckit

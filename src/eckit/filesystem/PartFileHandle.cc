@@ -13,7 +13,7 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
-#include "eckit/io/cluster/eclib/NodeInfo.h"
+#include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/config/Resource.h"
 #include "eckit/compat/StrStream.h"
 

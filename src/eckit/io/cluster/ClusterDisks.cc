@@ -18,7 +18,7 @@
 #include "eckit/parser/JSON.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/container/MappedArray.h"
-#include "eckit/io/cluster/eclib/NodeInfo.h"
+#include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/compat/StrStream.h"
 #include "eckit/utils/Tokenizer.h"
 

@@ -49,8 +49,8 @@ io/cluster/ClusterNode.h
 io/cluster/ClusterNode.cc
 io/cluster/ClusterNodes.h
 io/cluster/ClusterNodes.cc
-io/cluster/eclib/NodeInfo.h
-io/cluster/eclib/NodeInfo.cc )
+io/cluster/NodeInfo.h
+io/cluster/NodeInfo.cc )
 
 list( APPEND eckit_filesystem_srcs
 filesystem/AIOHandle.h

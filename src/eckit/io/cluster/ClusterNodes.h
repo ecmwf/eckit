@@ -16,7 +16,7 @@
 
 #include "eckit/machine.h"
 
-#include "eckit/io/cluster/eclib/NodeInfo.h"
+#include "eckit/io/cluster/NodeInfo.h"
 
 //-----------------------------------------------------------------------------
 

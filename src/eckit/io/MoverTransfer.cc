@@ -14,7 +14,7 @@
 #include "eckit/net/Connector.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/io/MoverTransfer.h"
-#include "eckit/io/cluster/eclib/NodeInfo.h"
+#include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Progress.h"
 #include "eckit/config/Resource.h"
 #include "eckit/net/TCPServer.h"

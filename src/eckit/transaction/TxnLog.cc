@@ -12,7 +12,7 @@
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/log/Seconds.h"
+#include "eckit/types/Seconds.h"
 #include "eckit/compat/StrStream.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"

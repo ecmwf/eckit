@@ -16,7 +16,7 @@
 #include "eckit/runtime/PipeApplication.h"
 #include "eckit/serialisation/PipeStream.h"
 #include "eckit/config/Resource.h"
-#include "eckit/log/Seconds.h"
+#include "eckit/types/Seconds.h"
 #include "eckit/io/Select.h"
 
 //-----------------------------------------------------------------------------

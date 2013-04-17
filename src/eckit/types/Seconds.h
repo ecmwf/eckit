@@ -33,7 +33,7 @@ public:
 	Seconds(double);
 	Seconds(const struct timeval&);
 
-#include "eckit/log/Seconds.b"
+#include "eckit/types/Seconds.b"
 
 // -- Operators
 

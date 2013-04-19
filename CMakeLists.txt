@@ -27,6 +27,10 @@ set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} 
 
 include( ecbuild_system )
 
+if( ECBUILD_MACRO_VERSION VERSION_LESS 1.1 )
+    message( FATAL_ERROR "${PROJECT_NAME} needs ecbuild >= 1.1" )
+endif() 
+
 set( PERSISTENT_NAMESPACE eckit CACHE INTERNAL "" )
 
 ###############################################################################
@@ -60,11 +64,9 @@ mark_as_advanced(CPPFILT_COMMAND)
 
 ecbuild_find_project_files()
 
-if( NOT ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
-    set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src PARENT_SCOPE )
-    set( ECKIT_LIBRARIES      eckit PARENT_SCOPE )
-    set( ECKIT_FOUND          TRUE  PARENT_SCOPE )
-endif()
+set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
+set( ECKIT_LIBRARIES      eckit )
+set( ECKIT_TPLS           "" )
 
 # source files
 add_subdirectory( src )

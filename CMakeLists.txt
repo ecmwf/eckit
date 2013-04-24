@@ -66,9 +66,15 @@ ecbuild_find_project_files()
 
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
 set( ECKIT_LIBRARIES      eckit )
+set( ECKIT_DEFINITIONS    -D${EC_OS_NAME} ) # TODO: eventually this should be removed as ifdef's should be based on features not for OS name
 set( ECKIT_TPLS           "" )
 
+add_definitions( ${ECKIT_DEFINITIONS} )
+
+include_directories( ${ECKIT_INCLUDE_DIRS} )
+
 # source files
+
 add_subdirectory( src )
 
 ############################################################################################

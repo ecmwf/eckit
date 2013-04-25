@@ -14,7 +14,7 @@
 #ifndef eckit_Seconds_h
 #define eckit_Seconds_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 
 //-----------------------------------------------------------------------------

@@ -11,7 +11,7 @@
 #ifndef eckit_StdLogger_h
 #define eckit_StdLogger_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/log/Logger.h"
 

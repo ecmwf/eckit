@@ -14,7 +14,7 @@
 #ifndef eckit_Password_h
 #define eckit_Password_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 

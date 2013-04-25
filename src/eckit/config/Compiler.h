@@ -15,7 +15,7 @@
 #ifndef eckit_config_Compiler_H
 #define eckit_config_Compiler_H
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/parser/StreamParser.h"

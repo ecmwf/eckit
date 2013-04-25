@@ -11,7 +11,7 @@
 #ifndef eckit_config_Condition_H
 #define eckit_config_Condition_H
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/types/Types.h"

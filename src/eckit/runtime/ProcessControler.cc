@@ -33,7 +33,7 @@
 #endif
 #endif
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"

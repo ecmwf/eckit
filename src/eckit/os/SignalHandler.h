@@ -14,7 +14,7 @@
 #include <signal.h>
 #include <setjmp.h>
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/NonCopyable.h"

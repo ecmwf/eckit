@@ -14,7 +14,7 @@
 #ifndef eckit_ClusterDisks_h
 #define eckit_ClusterDisks_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 

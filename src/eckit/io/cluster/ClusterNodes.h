@@ -14,7 +14,7 @@
 #ifndef eckit_ClusterNodes_h
 #define eckit_ClusterNodes_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/io/cluster/NodeInfo.h"
 

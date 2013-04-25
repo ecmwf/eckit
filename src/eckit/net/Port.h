@@ -14,7 +14,7 @@
 #ifndef eckit_Port_h
 #define eckit_Port_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 
 //-----------------------------------------------------------------------------

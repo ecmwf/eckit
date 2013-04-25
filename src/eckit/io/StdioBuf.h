@@ -14,7 +14,7 @@
 #ifndef eckit_StdioBuf_h
 #define eckit_StdioBuf_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 
 //-----------------------------------------------------------------------------

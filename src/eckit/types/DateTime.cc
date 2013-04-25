@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/types/DateTime.h"
 #include "eckit/compat/StrStream.h"

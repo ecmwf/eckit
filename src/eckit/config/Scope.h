@@ -11,7 +11,7 @@
 #ifndef eckit_config_Scope_H
 #define eckit_config_Scope_H
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 

@@ -14,7 +14,7 @@
 #ifndef eckit_Resource_h
 #define eckit_Resource_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/parser/Translator.h"

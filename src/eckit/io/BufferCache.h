@@ -14,7 +14,7 @@
 #ifndef eckit_BufferCache_h
 #define eckit_BufferCache_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/io/ResizableBuffer.h"
 

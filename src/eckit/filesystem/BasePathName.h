@@ -14,7 +14,7 @@
 #ifndef eckit_filesystem_BasePathName_h
 #define eckit_filesystem_BasePathName_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"

@@ -14,7 +14,7 @@
 #ifndef eckit_NodeInfo_h
 #define eckit_NodeInfo_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 #include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------

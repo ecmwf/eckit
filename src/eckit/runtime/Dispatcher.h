@@ -14,7 +14,7 @@
 #ifndef eckit_Dispatcher_h
 #define eckit_Dispatcher_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/config/Configurable.h"
 #include "eckit/thread/Mutex.h"

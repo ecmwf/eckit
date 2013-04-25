@@ -11,7 +11,7 @@
 #ifndef eckit_FileName_h
 #define eckit_FileName_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
 

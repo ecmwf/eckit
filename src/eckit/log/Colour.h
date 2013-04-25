@@ -11,7 +11,7 @@
 #ifndef eckit_Colour_h
 #define eckit_Colour_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 

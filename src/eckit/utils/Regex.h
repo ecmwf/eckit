@@ -16,7 +16,7 @@
 
 #include <regex.h>
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 
 //-----------------------------------------------------------------------------

@@ -11,7 +11,7 @@
 #ifndef eckit_config_Branch_H
 #define eckit_config_Branch_H
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/memory/ScopedPtr.h"
 

@@ -14,7 +14,7 @@
 #ifndef eckit_TimeStamp_h
 #define eckit_TimeStamp_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 
 //-----------------------------------------------------------------------------

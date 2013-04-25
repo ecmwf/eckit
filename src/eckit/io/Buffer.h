@@ -14,7 +14,7 @@
 #ifndef eckit_Buffer_h
 #define eckit_Buffer_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"
 

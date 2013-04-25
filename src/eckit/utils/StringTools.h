@@ -11,7 +11,7 @@
 #ifndef eckit_StringTools_h
 #define eckit_StringTools_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"
 

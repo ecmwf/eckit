@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/filesystem/FileHandle.h"
 #include "eckit/log/Bytes.h"

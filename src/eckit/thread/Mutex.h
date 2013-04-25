@@ -16,7 +16,7 @@
 
 #include <pthread.h>
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 #include "eckit/memory/NonCopyable.h"
 
 //-----------------------------------------------------------------------------

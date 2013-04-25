@@ -11,7 +11,7 @@
 
 #include <fcntl.h>
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/container/Recycler.h"

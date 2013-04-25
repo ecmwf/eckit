@@ -14,7 +14,7 @@
 #ifndef eckit_Grid_h
 #define eckit_Grid_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------

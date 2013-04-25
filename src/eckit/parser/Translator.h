@@ -14,7 +14,7 @@
 #ifndef eckit_Translator_h
 #define eckit_Translator_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 

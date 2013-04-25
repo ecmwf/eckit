@@ -11,7 +11,7 @@
 #ifndef eckit_ThreadPool_h
 #define eckit_ThreadPool_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 #include "eckit/thread/MutexCond.h"
 
 //-----------------------------------------------------------------------------

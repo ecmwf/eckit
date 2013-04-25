@@ -14,7 +14,7 @@
 #ifndef eckit_MemoryPool_h
 #define eckit_MemoryPool_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"
 

@@ -11,7 +11,7 @@
 #ifndef eckit_BackTrace_h
 #define eckit_BackTrace_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 

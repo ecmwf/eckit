@@ -14,7 +14,7 @@
 #ifndef eckit_MarsFSPath_h
 #define eckit_MarsFSPath_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #include "eckit/filesystem/PathName.h"
 

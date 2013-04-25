@@ -13,7 +13,7 @@
 #ifndef eckit_FixedString_h
 #define eckit_FixedString_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 

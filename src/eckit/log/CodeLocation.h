@@ -11,7 +11,7 @@
 #ifndef eckit_CodeLocation_h
 #define eckit_CodeLocation_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 

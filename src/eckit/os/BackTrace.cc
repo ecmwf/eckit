@@ -10,7 +10,7 @@
 
 #include <unistd.h>
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 #ifdef EC_HAVE_EXECINFO_BACKTRACE
 #include <execinfo.h>  // for backtrace

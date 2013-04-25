@@ -14,7 +14,7 @@
 #ifndef eckit_BigNum_h
 #define eckit_BigNum_h
 
-#include "eckit/machine.h"
+#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 

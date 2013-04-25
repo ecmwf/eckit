@@ -14,7 +14,7 @@
 #include "eckit/machine.h"
 
 #include "eckit/thread/AutoLock.h"
-#include "eckit/Recycler.h"
+#include "eckit/container/Recycler.h"
 
 
 //-----------------------------------------------------------------------------

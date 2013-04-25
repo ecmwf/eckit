@@ -124,6 +124,6 @@ private:
 
 } // namespace eckit
 
-#include "eckit/Dispatcher.cc"
+#include "eckit/runtime/Dispatcher.cc"
 
 #endif

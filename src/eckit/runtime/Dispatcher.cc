@@ -10,7 +10,7 @@
 
 
 #include "eckit/thread/AutoLock.h"
-#include "eckit/Dispatcher.h"
+#include "eckit/runtime/Dispatcher.h"
 #include "eckit/parser/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"

@@ -17,7 +17,7 @@
 #include "eckit/container/ClassExtent.h"
 #include "eckit/serialisation/PipeStream.h"
 #include "eckit/runtime/ProcessControler.h"
-#include "eckit/Dispatcher.h"
+#include "eckit/runtime/Dispatcher.h"
 
 //-----------------------------------------------------------------------------
 

@@ -88,6 +88,6 @@ private:
 
 } // namespace eckit
 
-#include "eckit/ProducerConsumer.cc"
+#include "eckit/runtime/ProducerConsumer.cc"
 
 #endif

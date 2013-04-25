@@ -90,6 +90,6 @@ private:
 
 } // namespace eckit
 
-#include "eckit/Pipe.cc"
+#include "eckit/runtime/Pipe.cc"
 
 #endif

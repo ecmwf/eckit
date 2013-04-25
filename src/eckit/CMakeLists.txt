@@ -2,6 +2,8 @@ list( APPEND eckit_container_srcs
 container/BTree.h
 container/BTree.cc
 container/Cache.h
+container/Recycler.h
+container/Recycler.cc
 container/ClassExtent.h
 container/MappedArray.h
 container/MappedArray.cc )
@@ -185,7 +187,13 @@ runtime/PipeApplication.cc
 runtime/PipeHandler.h
 runtime/PipeHandler.cc
 runtime/ProcessControler.h
-runtime/ProcessControler.cc )
+runtime/ProcessControler.cc
+runtime/Dispatcher.h
+runtime/Dispatcher.cc
+runtime/Pipe.h
+runtime/Pipe.cc
+runtime/ProducerConsumer.h
+runtime/ProducerConsumer.cc )
 
 list( APPEND eckit_log_srcs
 log/Log.h
@@ -384,18 +392,7 @@ transaction/TxnLog.cc
 transaction/TxnEvent.h
 transaction/TxnEvent.cc )
 
-list( APPEND eckit_srcs
-Dispatcher.h
-Dispatcher.cc
-Recycler.h
-Recycler.cc
-Pipe.h
-Pipe.cc
-ProducerConsumer.h
-ProducerConsumer.cc
-machine.h
-Statistics.h
-Statistics.cc )
+list( APPEND eckit_srcs eckit.h )
 
 list( APPEND eckit_dirs container io filesystem thread config runtime log exception types parser value os net serialisation persist utils memory compat bases transaction )
 foreach( dir ${eckit_dirs} )
@@ -403,10 +400,10 @@ foreach( dir ${eckit_dirs} )
 endforeach()
 
 list( APPEND eckit_templates 
-					Pipe.cc
-					ProducerConsumer.cc
-					Recycler.cc
-                    Dispatcher.cc
+					runtime/Pipe.cc
+					runtime/ProducerConsumer.cc
+					container/Recycler.cc
+                    runtime/Dispatcher.cc
                     container/BTree.cc
                     container/MappedArray.cc
                     filesystem/BasePathNameT.cc

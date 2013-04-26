@@ -442,3 +442,24 @@ ecbuild_add_library( TARGET eckit
                      LIBS 
                         ${CMAKE_THREAD_LIBS_INIT} ${RT_LIB} )
 
+get_filename_component( currdir ${CMAKE_CURRENT_SOURCE_DIR} NAME )
+
+foreach( file ${eckit_persistent} )
+
+    get_filename_component( _file_dir    ${file} PATH )
+
+    install( FILES ${file} DESTINATION "${INSTALL_INCLUDE_DIR}/${currdir}/${_file_dir}" )
+
+endforeach()
+
+foreach( file ${eckit_persistent} )
+
+      get_filename_component( _file_dir    ${file} PATH )
+      get_filename_component( _file_we     ${file} NAME_WE )
+
+      set( pfile "${CMAKE_CURRENT_BINARY_DIR}/${_file_dir}/${_file_we}.b" )
+
+      install( FILES ${pfile} DESTINATION "${INSTALL_INCLUDE_DIR}/${currdir}/${_file_dir}" )
+
+endforeach()
+

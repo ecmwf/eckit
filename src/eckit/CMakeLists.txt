@@ -444,7 +444,7 @@ ecbuild_add_library( TARGET eckit
 
 get_filename_component( currdir ${CMAKE_CURRENT_SOURCE_DIR} NAME )
 
-foreach( file ${eckit_persistent} )
+foreach( file ${eckit_templates} )
 
     get_filename_component( _file_dir    ${file} PATH )
 

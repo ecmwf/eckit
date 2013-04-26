@@ -432,7 +432,7 @@ list( APPEND eckit_persistent
 )
 
 ecbuild_add_library( TARGET eckit
-                     INSTALL_HEADERS LISTED
+                     INSTALL_HEADERS ALL
                      SOURCES    
                         ${eckit_srcs}
                      TEMPLATES

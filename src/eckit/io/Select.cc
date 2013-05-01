@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+
+#include <unistd.h>
 #include <sys/ioctl.h>
 
 #include "eckit/io/Select.h"

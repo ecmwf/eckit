@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <pthread.h>
 
 #include "eckit/log/Bytes.h"
 #include "eckit/exception/Exceptions.h"

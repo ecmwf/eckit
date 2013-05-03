@@ -392,8 +392,6 @@ transaction/TxnLog.cc
 transaction/TxnEvent.h
 transaction/TxnEvent.cc )
 
-list( APPEND eckit_srcs eckit.h )
-
 list( APPEND eckit_dirs container io filesystem thread config runtime log exception types parser value os net serialisation persist utils memory compat bases transaction )
 foreach( dir ${eckit_dirs} )
   list( APPEND eckit_srcs ${eckit_${dir}_srcs} )
@@ -431,10 +429,16 @@ list( APPEND eckit_persistent
                      io/Offset.h
 )
 
+configure_file( eckit_version.cc.in  eckit_version.cc )
+
+list( APPEND eckit_srcs eckit.h eckit_version.cc )
+
 ecbuild_add_library( TARGET eckit
                      INSTALL_HEADERS ALL
-                     SOURCES    
+                     SOURCES
                         ${eckit_srcs}
+                     GENERATED   
+                        eckit_version.cc
                      TEMPLATES
                         ${eckit_templates}
                      PERSISTENT 

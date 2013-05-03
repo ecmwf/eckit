@@ -1,0 +1,15 @@
+#include "eckit_version.h"
+
+const char eckit_git_sha1[] = ECKIT_GIT_SHA1;
+
+const char * get_eckit_version()     { return ECKIT_VERSION; }
+const char * get_eckit_version_str() { return ECKIT_VERSION_STR; }
+
+unsigned int get_eckit_version_int()
+{
+  return 10000*ECKIT_MAJOR_VERSION + 100*ECKIT_MINOR_VERSION + 1*ECKIT_PATCH_VERSION;
+}
+
+
+const char * get_eckit_git_sha1() { return "@ECKIT_GIT_SHA1@"; }
+

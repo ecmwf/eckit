@@ -120,7 +120,7 @@ void operator>>(Stream& s, NodeInfo& info)
 	s >> l;
 	info.port(l);
 
-	MarsID id;
+	TaskID id;
 	s >> id;
 	info.id(id);
 

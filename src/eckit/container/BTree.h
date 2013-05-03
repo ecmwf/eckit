@@ -74,15 +74,6 @@ public:
 
     void flush();
 
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 protected:
 
     // -- Methods

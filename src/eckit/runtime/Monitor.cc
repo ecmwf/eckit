@@ -343,14 +343,14 @@ string Monitor::host()
 	return instance()->host();
 }
 
-void Monitor::marsID(const MarsID& id)
+void Monitor::taskID(const TaskID& id)
 {
-	instance()->marsID(id);
+	instance()->taskID(id);
 }
 
-MarsID Monitor::marsID() 
+TaskID Monitor::taskID() 
 {
-	return instance()->marsID();
+	return instance()->taskID();
 }
 
 void Monitor::show(bool on)

@@ -16,6 +16,11 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/ThreadControler.h"
+#include "eckit/thread/ThreadControler.h"
+#include "eckit/thread/Thread.h"
+#include "eckit/thread/Mutex.h"
+#include "eckit/thread/MutexCond.h"
+#include "eckit/thread/AutoLock.h"
 
 //-----------------------------------------------------------------------------
 
@@ -85,11 +90,204 @@ private:
 
 };
 
+//-----------------------------------------------------------------------------
+
+template<class PAYLOAD>
+struct OnePayload {
+    MutexCond cond_;
+    bool      ready_;
+    bool       done_;
+    PAYLOAD   payload_;
+    OnePayload(): ready_(false), done_(false), payload_() {}
+};
+
+template<class PAYLOAD>
+class Pipe;
+
+template<class PAYLOAD>
+class PipeTask : public Thread {
+
+    typedef typename Pipe<PAYLOAD>::Proc Proc;
+
+    Pipe<PAYLOAD>&         owner_;
+    Proc&        consumer_;
+    OnePayload<PAYLOAD>*  payloads_;
+public:
+    PipeTask(Proc&,Pipe<PAYLOAD>&,OnePayload<PAYLOAD>*);
+    virtual void run();
+};
+
+
+template<class PAYLOAD>
+Pipe<PAYLOAD>::Pipe(long count):
+    controler_(0),
+    payloads_(0),
+    count_(count),
+    error_(false),
+    done_(false),
+    wi_(0),
+    ri_(0),
+    pi_(-1)
+{
+
+}
+template<class PAYLOAD>
+Pipe<PAYLOAD>::~Pipe()
+{
+    close();
+}
+
+template<class PAYLOAD>
+void Pipe<PAYLOAD>::close()
+{
+    if(controler_) {
+        {
+            AutoLock<Mutex> lock(mutex_);
+            done_ = true;
+        }
+        {
+            AutoLock<MutexCond> lock(payloads_[wi_].cond_);
+            payloads_[wi_].ready_ = true;
+            payloads_[wi_].cond_.signal();
+        }
+        controler_->wait();
+    }
+    delete[] payloads_;
+    controler_ = 0;
+    payloads_ = 0;
+}
+
+
+template<class PAYLOAD>
+inline void Pipe<PAYLOAD>::error(const string& why)
+{
+    AutoLock<Mutex> lock(mutex_);
+    error_ = true;
+    why_   = why;
+}
+
+template<class PAYLOAD>
+inline bool Pipe<PAYLOAD>::error()
+{
+    AutoLock<Mutex> lock(mutex_);
+    return error_;
+}
+
+
+template<class PAYLOAD>
+void Pipe<PAYLOAD>::spawn(Proc proc)
+{
+
+    static const char *here = __FUNCTION__;
+
+    payloads_ = new OnePayload<PAYLOAD>[count_];
+
+    error_   = false;
+
+    controler_ = new ThreadControler(new PipeTask<PAYLOAD>(proc, *this, payloads_), false);
+    controler_->start();
+
+}
+
+template<class PAYLOAD>
+PipeTask<PAYLOAD>::PipeTask(Proc &consumer,
+                            Pipe<PAYLOAD>& owner,
+                            OnePayload<PAYLOAD>* payloads):
+    Thread(false),
+    consumer_(consumer),
+    owner_(owner),
+    payloads_(payloads)
+{
+}
+
+template<class PAYLOAD>
+void PipeTask<PAYLOAD>::run()
+{
+    static const char *here = __FUNCTION__;
+
+    try {
+        consumer_(owner_);
+    }
+    catch(exception& e)
+    {
+        Log::error() << "** " << e.what() << " Caught in " <<
+                        here <<  endl;
+        Log::error() << "** Exception is handled" << endl;
+        owner_.error(e.what());
+    }
+}
+
+template<class PAYLOAD>
+bool Pipe<PAYLOAD>::eof()
+{
+    AutoLock<Mutex> lock(mutex_);
+    return done_;
+}
+
+template<class PAYLOAD>
+PAYLOAD& Pipe<PAYLOAD>::message()
+{
+    AutoLock<MutexCond> lock(payloads_[wi_].cond_);
+
+    while(payloads_[wi_].ready_)
+        payloads_[wi_].cond_.wait();
+
+    if(error()) {
+        AutoLock<Mutex> lck(mutex_);
+        done_  = true;
+        error_ = false;
+        throw SeriousBug(why_);
+    }
+
+    return payloads_[wi_].payload_;
+}
+
+template<class PAYLOAD>
+void Pipe<PAYLOAD>::send()
+{
+    AutoLock<MutexCond> lock(payloads_[wi_].cond_);
+
+    payloads_[wi_].ready_ = true;
+    payloads_[wi_].cond_.signal();
+
+    wi_++;
+    wi_ %= count_;
+}
+
+template<class PAYLOAD>
+PAYLOAD& Pipe<PAYLOAD>::receive()
+{
+
+    {
+        AutoLock<Mutex> lck(mutex_);
+        if(pi_ >= 0) {
+            AutoLock<MutexCond> lock(payloads_[pi_].cond_);
+            payloads_[pi_].ready_ = false;
+            payloads_[pi_].cond_.signal();
+        }
+    }
+
+    AutoLock<MutexCond> lock(payloads_[ri_].cond_);
+
+    while(!payloads_[ri_].ready_)
+        payloads_[ri_].cond_.wait();
+
+    if(error()) {
+        AutoLock<Mutex> lck(mutex_);
+        throw SeriousBug(why_);
+    }
+
+    pi_ = ri_;
+
+    PAYLOAD& p = payloads_[ri_].payload_;
+    ri_++;
+    ri_ %= count_;
+
+    return p;
+}
 
 //-----------------------------------------------------------------------------
 
 } // namespace eckit
-
-#include "eckit/runtime/Pipe.cc"
 
 #endif

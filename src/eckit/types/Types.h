@@ -136,11 +136,7 @@ template<class T> void operator>>(Stream&,vector<T>&);
 
 //-----------------------------------------------------------------------------
 
-/// @todo maybe this should be moved out of EcLib 
-
-typedef unsigned long long DSRequestID;
-typedef unsigned long long MarsID;
-
+typedef unsigned long long TaskID;
 
 //-----------------------------------------------------------------------------
 

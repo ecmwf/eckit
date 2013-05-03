@@ -56,8 +56,8 @@ public:
 	const string&    node() const             { return node_; }
 
 
-	void  id(MarsID p)    { id_ = p; }
-	MarsID   id() const   { return id_; }
+	void  id(TaskID p)    { id_ = p; }
+	TaskID   id() const   { return id_; }
 
 	void  task(long p)    { task_ = p; }
 	long   task() const   { return task_; }
@@ -84,7 +84,7 @@ private:
 	string host_;
 	int    port_;
     bool   active_;
-	MarsID id_;
+	TaskID id_;
 	long   task_;
 
 // -- Methods

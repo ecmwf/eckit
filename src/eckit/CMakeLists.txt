@@ -1,9 +1,23 @@
+### config headers
+
+configure_file( eckit_config.h.in   eckit_config.h  )
+configure_file( eckit_version.h.in  eckit_version.h )
+
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/eckit_config.h 
+               ${CMAKE_CURRENT_BINARY_DIR}/eckit_version.h 
+         DESTINATION ${INSTALL_INCLUDE_DIR} )
+
+configure_file( eckit_version.c.in  eckit_version.c )
+
+### eckit sources
+
+list( APPEND eckit_srcs eckit.h eckit_version.c )
+
 list( APPEND eckit_container_srcs
 container/BTree.h
 container/BTree.cc
 container/Cache.h
 container/Recycler.h
-container/Recycler.cc
 container/ClassExtent.h
 container/MappedArray.h
 container/MappedArray.cc )
@@ -189,11 +203,8 @@ runtime/PipeHandler.cc
 runtime/ProcessControler.h
 runtime/ProcessControler.cc
 runtime/Dispatcher.h
-runtime/Dispatcher.cc
 runtime/Pipe.h
-runtime/Pipe.cc
-runtime/ProducerConsumer.h
-runtime/ProducerConsumer.cc )
+runtime/ProducerConsumer.h )
 
 list( APPEND eckit_log_srcs
 log/Log.h
@@ -398,10 +409,6 @@ foreach( dir ${eckit_dirs} )
 endforeach()
 
 list( APPEND eckit_templates 
-					runtime/Pipe.cc
-					runtime/ProducerConsumer.cc
-					container/Recycler.cc
-                    runtime/Dispatcher.cc
                     container/BTree.cc
                     container/MappedArray.cc
                     filesystem/BasePathNameT.cc
@@ -429,22 +436,22 @@ list( APPEND eckit_persistent
                      io/Offset.h
 )
 
-configure_file( eckit_version.cc.in  eckit_version.cc )
-
-list( APPEND eckit_srcs eckit.h eckit_version.cc )
+### eckit library
 
 ecbuild_add_library( TARGET eckit
                      INSTALL_HEADERS ALL
                      SOURCES
                         ${eckit_srcs}
                      GENERATED   
-                        eckit_version.cc
+                        eckit_version.c
                      TEMPLATES
                         ${eckit_templates}
                      PERSISTENT 
                         ${eckit_persistent}
                      LIBS 
                         ${CMAKE_THREAD_LIBS_INIT} ${RT_LIB} )
+
+### eckit header installation
 
 get_filename_component( currdir ${CMAKE_CURRENT_SOURCE_DIR} NAME )
 

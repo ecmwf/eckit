@@ -8,6 +8,10 @@
 #define ECKIT_MINOR_VERSION @ECKIT_MINOR_VERSION@
 #define ECKIT_PATCH_VERSION @ECKIT_PATCH_VERSION@
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 const char * get_eckit_version();
 
 unsigned int get_eckit_version_int();
@@ -15,5 +19,9 @@ unsigned int get_eckit_version_int();
 const char * get_eckit_version_str();
 
 const char * get_eckit_git_sha1();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // eckit_version_h

@@ -78,8 +78,8 @@ public:
 	static void    host(const string& );
 	static string  host();
 
-	static MarsID marsID();
-	static void marsID(const MarsID&);
+	static TaskID taskID();
+	static void taskID(const TaskID&);
 
 	static void show(bool);
 

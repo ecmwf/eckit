@@ -63,7 +63,7 @@ protected:
 
 	Progress  progress_;
 
-	MarsID  marsID_;
+	TaskID  taskID_;
 
 	bool           stop_;
 	bool           abort_;
@@ -114,8 +114,8 @@ public:
 	unsigned long   late()       const  { return late_;  }
 	void   late(unsigned long n)        { touch();late_ = n;     }
 
-	const MarsID& marsID()       { return marsID_; }
-	void marsID(const MarsID& n) { marsID_ = n; }
+	const TaskID& taskID()       { return taskID_; }
+	void taskID(const TaskID& n) { taskID_ = n; }
 
 	void stop()                         { stop_ = true; }
 	bool stopped()        const         { return stopped_; }
@@ -198,7 +198,6 @@ private:
 // Used by MappedArray
 
 inline unsigned long version(TaskInfo*) { return 1; }
-
 
 //-----------------------------------------------------------------------------
 

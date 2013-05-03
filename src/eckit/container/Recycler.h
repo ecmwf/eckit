@@ -246,6 +246,4 @@ void Recycler<T>::push(const T& value)
 
 } // namespace eckit
 
-#include "Recycler.cc"
-
 #endif

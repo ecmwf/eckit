@@ -3,7 +3,7 @@
 
 #include "ecbuild_config.h"
 
-#include "eckit_version.h"
+# include "eckit/eckit_version.h"
 
 #cmakedefine PSTACK_COMMAND  "@PSTACK_COMMAND@"
 #cmakedefine CPPFILT_COMMAND "@CPPFILT_COMMAND@"

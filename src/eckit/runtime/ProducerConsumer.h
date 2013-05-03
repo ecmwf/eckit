@@ -279,6 +279,4 @@ void ProducerConsumerTask<PAYLOAD>::run()
 
 } // namespace eckit
 
-#include "eckit/runtime/ProducerConsumer.cc"
-
 #endif

@@ -14,8 +14,10 @@
 #ifndef eckit_Timer_h
 #define eckit_Timer_h
 
-#include "eckit/log/Log.h"
+#include "sys/time.h"
 
+#include "eckit/log/Log.h"
+#include "eckit/memory/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
 
@@ -26,45 +28,31 @@ namespace eckit {
 // This stack object prints the elapse time between the call to
 // its contructor and the call to its destructor
 
-class Timer {
+class Timer : private NonCopyable {
 public:
-
-// -- Contructors
 
 	Timer(const string& name, ostream& = Log::info());
 
-// -- Destructor
-
 	~Timer();
-
-// -- Methods
 
 	double elapsed();
 
     string name() const { return name_; }
 
-private:
-
-    // No copy allowed
-
-    Timer(const Timer&);
-    Timer& operator=(const Timer&);
-
-// -- Members
+private: // members
 	
 	string         name_;
 	struct timeval start_;
 	clock_t        cpu_;
 	ostream&       out_;
 
-// -- Methods
+private: // methods
 	
 	ostream& put(ostream&,double);
 
 };
 
 timeval operator-(const timeval&,const timeval&);
-
 
 //-----------------------------------------------------------------------------
 

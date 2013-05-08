@@ -8,11 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include "sys/time.h"
-
 #include "eckit/types/Seconds.h"
 #include "eckit/utils/Timer.h"
-
 
 //-----------------------------------------------------------------------------
 

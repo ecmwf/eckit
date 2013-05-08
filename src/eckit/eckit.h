@@ -135,9 +135,6 @@ using namespace std;
 
 #ifdef __GNUC__ /* GCC gets confused about offsetof */
 
-/// @todo eckit fixme
-// static double _offset; // on macosx ?
-
 static char _offset_dummy[80];
 static void* _offset = &_offset_dummy;
 

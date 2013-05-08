@@ -76,6 +76,8 @@ static void catch_new_handler()
 	throw OutOfMemory();
 }
 
+//-----------------------------------------------------------------------------
+
 Application::Application(int argc,char **argv)
 {    
 	name_ = PathName(argv[0]).baseName(false);
@@ -84,20 +86,12 @@ Application::Application(int argc,char **argv)
     
     ctxt.setup( argc, argv, new StandardBehavior() );
 
-
-/// @todo eckit fixme
-//    if(getenv("DHS_FILE_LOGGING") && atoi(getenv("DHS_FILE_LOGGING")))
-//        ctxt.setup( argc, argv, new DHSBehaviorLogFile() );
-//    else
-//        ctxt.setup( argc, argv, new DHSBehaviorStdout(std::cout) );
-    
     ctxt.behavior()->initialize();
 
     ctxt.runName( name_ );
     
     ctxt.debug( Resource<int>(this,"debug;$DEBUG;-debug",0) );
     
-	// mallopt(M_DISCLAIM,0);
 	::srand(::getpid() + ::time(0));
 
 	memoryReserve = new char[20*1024];

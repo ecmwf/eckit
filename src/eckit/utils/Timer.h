@@ -41,12 +41,14 @@ public:
 
 	double elapsed();
 
+    string name() const { return name_; }
+
 private:
 
-// No copy allowed
+    // No copy allowed
 
-	Timer(const Timer&);
-	Timer& operator=(const Timer&);
+    Timer(const Timer&);
+    Timer& operator=(const Timer&);
 
 // -- Members
 	

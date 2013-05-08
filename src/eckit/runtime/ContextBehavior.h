@@ -46,8 +46,6 @@ public: // interface methods
     virtual string displayName() const;
     virtual void displayName( const string& name ); 
         
-    virtual long taskId() const = 0;
-
     virtual Logger* createInfoLogger() = 0;
     virtual Logger* createDebugLogger() = 0;
     virtual Logger* createWarningLogger() = 0;

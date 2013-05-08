@@ -63,8 +63,6 @@ public: // methods
     int  debug() const;
     void debug( const int );
     
-    long self() const;
-    
     string runName() const;
     void runName( const string& name ); 
     
@@ -92,17 +90,12 @@ private: // methods
     
     void checkInit() const;
 
-protected:
-    
-    // -- Members
+protected: // members
     
     std::auto_ptr<ContextBehavior> behavior_;
     
     int     argc_;
-	char**  argv_;
-	
-    long    self_; // Monitor ID
-    
+    char**  argv_;
 };
 
 

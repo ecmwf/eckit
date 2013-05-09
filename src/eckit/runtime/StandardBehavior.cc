@@ -41,6 +41,11 @@ void StandardBehavior::runName(const string& name)
     name_ = name;
 }
 
+long StandardBehavior::taskId() const
+{
+    return 0;
+}
+
 Logger* StandardBehavior::createInfoLogger()
 {    
     return new StdLogger( std::cout );

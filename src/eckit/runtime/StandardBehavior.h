@@ -35,6 +35,8 @@ public: // methods
     virtual string runName() const;
     virtual void runName( const string& name ); 
         
+    virtual long taskId() const;
+    
     virtual Logger* createInfoLogger();
     virtual Logger* createDebugLogger();
     virtual Logger* createWarningLogger();

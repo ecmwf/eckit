@@ -86,10 +86,8 @@ public:
 
 	enum {
 		Unix   = 'U',
-		Ostore = 'O', // unused
-		Adsm   = 'A',
-		Mars   = 'M', // unused
-		Other  = 'X'
+        Adsm   = 'A',
+        Other  = 'X'
 	};
 
 	static  ostream& monitor(char,long); // Stream for operator monitor

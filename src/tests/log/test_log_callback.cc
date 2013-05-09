@@ -16,6 +16,12 @@
 
 using namespace eckit;
 
+//-----------------------------------------------------------------------------
+
+namespace eckit_test {
+
+//-----------------------------------------------------------------------------
+
 struct CTxt { std::string name_; };
 
 //-----------------------------------------------------------------------------
@@ -89,17 +95,21 @@ void test_callback_withctxt( LibBehavior* b )
 
 //-----------------------------------------------------------------------------
 
+} // namespace eckit_test
+
+//-----------------------------------------------------------------------------
+
+using namespace eckit_test;
+
 int main(int argc,char **argv)
 {
-    LibBehavior* behavior = new LibBehavior();
-    
-    Context::instance().setup( argc, argv, behavior );
-    Context::instance().behavior()->initialize();
+    LibBehavior* b = new LibBehavior();
 
-    test_callback_none(behavior);
-    test_callback_noctxt(behavior);
-    test_callback_withctxt(behavior);
+    Context::instance().behavior( b );
+
+    test_callback_none(b);
+    test_callback_noctxt(b);
+    test_callback_withctxt(b);
     
     return 0;
 }
-

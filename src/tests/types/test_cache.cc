@@ -20,6 +20,8 @@
 
 using namespace eckit;
 
+namespace eckit_test {
+
 class TestCache : public Tool {
 public:
 
@@ -208,10 +210,13 @@ void TestCache::run()
 
 //-----------------------------------------------------------------------------
 
+} // namespace eckit_test
+
+//-----------------------------------------------------------------------------
+
 int main(int argc,char **argv)
 {
-    TestCache mytest(argc,argv);
+    eckit_test::TestCache mytest(argc,argv);
     mytest.start();
     return 0;
 }
-

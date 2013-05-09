@@ -15,6 +15,12 @@
 
 using namespace eckit;
 
+//-----------------------------------------------------------------------------
+
+namespace eckit_test {
+
+//-----------------------------------------------------------------------------
+
 class TestStringTools : public Tool {
 public:
 
@@ -83,9 +89,13 @@ void TestStringTools::test_startsWith()
 
 //-----------------------------------------------------------------------------
 
+} // namespace eckit_test
+
+//-----------------------------------------------------------------------------
+
 int main(int argc,char **argv)
 {
-    TestStringTools mytest(argc,argv);
+    eckit_test::TestStringTools mytest(argc,argv);
     mytest.start();
     return 0;
 }

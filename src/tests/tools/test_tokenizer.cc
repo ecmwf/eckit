@@ -15,6 +15,10 @@
 
 using namespace eckit;
 
+namespace eckit_test {
+
+//-----------------------------------------------------------------------------
+
 class TestTokenizer : public Tool {
 public:
 
@@ -103,9 +107,13 @@ void TestTokenizer::run()
 
 //-----------------------------------------------------------------------------
 
+} // namespace eckit_test
+
+//-----------------------------------------------------------------------------
+
 int main(int argc,char **argv)
 {
-    TestTokenizer mytest(argc,argv);
+    eckit_test::TestTokenizer mytest(argc,argv);
     mytest.start();
     return 0;
 }

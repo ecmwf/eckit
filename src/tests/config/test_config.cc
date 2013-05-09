@@ -19,6 +19,12 @@
 
 using namespace eckit;
 
+//-----------------------------------------------------------------------------
+
+namespace eckit_test {
+
+//-----------------------------------------------------------------------------
+
 class TestConfig : public Tool {
 public:
 
@@ -135,9 +141,13 @@ void TestConfig::run()
 
 //-----------------------------------------------------------------------------
 
+} // namespace eckit_test
+
+//-----------------------------------------------------------------------------
+
 int main(int argc,char **argv)
 {
-    TestConfig mytest(argc,argv);
+    eckit_test::TestConfig mytest(argc,argv);
     mytest.start();
     return 0;
 }

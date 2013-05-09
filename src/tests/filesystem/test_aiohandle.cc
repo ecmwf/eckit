@@ -18,6 +18,12 @@
 
 using namespace eckit;
 
+//-----------------------------------------------------------------------------
+
+namespace eckit_test {
+
+//-----------------------------------------------------------------------------
+
 class TestAIOHandle : public Tool {
 public:
 
@@ -126,9 +132,13 @@ void TestAIOHandle::run()
 
 //-----------------------------------------------------------------------------
 
+} // namespace eckit_test
+
+//-----------------------------------------------------------------------------
+
 int main(int argc,char **argv)
 {
-    TestAIOHandle mytest(argc,argv);
+    eckit_test::TestAIOHandle mytest(argc,argv);
     mytest.start();
     return 0;
 }

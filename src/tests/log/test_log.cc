@@ -14,6 +14,12 @@
 
 using namespace eckit;
 
+//-----------------------------------------------------------------------------
+
+namespace eckit_test {
+
+//-----------------------------------------------------------------------------
+
 class TestApp : public Tool {
 public:
 
@@ -79,9 +85,15 @@ void TestApp::run()
     test_strerr();
 }
 
+//-----------------------------------------------------------------------------
+
+} // namespace eckit_test
+
+//-----------------------------------------------------------------------------
+
 int main(int argc,char **argv)
 {
-    TestApp mytest(argc,argv);
+    eckit_test::TestApp mytest(argc,argv);
     mytest.start();
     return 0;
 }

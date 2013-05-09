@@ -13,6 +13,12 @@
 
 using namespace eckit;
 
+//-----------------------------------------------------------------------------
+
+namespace eckit_test {
+
+//-----------------------------------------------------------------------------
+
 class TestMutex : public Tool {
 public:
 
@@ -50,9 +56,13 @@ void TestMutex::run()
 
 //-----------------------------------------------------------------------------
 
+} // namespace eckit_test
+
+//-----------------------------------------------------------------------------
+
 int main(int argc,char **argv)
 {
-    TestMutex mytest(argc,argv);
+    eckit_test::TestMutex mytest(argc,argv);
     mytest.start();
     return 0;
 }

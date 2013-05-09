@@ -19,6 +19,12 @@
 
 using namespace eckit;
 
+//-----------------------------------------------------------------------------
+
+namespace eckit_test {
+
+//-----------------------------------------------------------------------------
+
 class TestResource : public Tool {
 public:
 
@@ -117,9 +123,13 @@ void TestResource::run()
 
 //-----------------------------------------------------------------------------
 
+} // namespace eckit_test
+
+//-----------------------------------------------------------------------------
+
 int main(int argc,char **argv)
 {
-    TestResource mytest(argc,argv);
+    eckit_test::TestResource mytest(argc,argv);
     mytest.start();
     return 0;
 }

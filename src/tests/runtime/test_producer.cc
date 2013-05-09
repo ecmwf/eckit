@@ -8,64 +8,71 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eckit/runtime/Tool.h"
 #include "eckit/runtime/ProducerConsumer.h"
 #include "eckit/parser/Translator.h"
 
-
 using namespace eckit;
 
-class Test : public Tool {
-    virtual void run();
+//-----------------------------------------------------------------------------
 
-public:
+namespace eckit_test {
 
-    Test(int argc, char** argv): Tool(argc,argv) {}
+//-----------------------------------------------------------------------------
 
-};
+    class TestProducer : public Tool {
+        virtual void run();
+
+    public:
+
+        TestProducer(int argc, char** argv): Tool(argc,argv) {}
+
+    };
 
 
-struct C : public Consumer<string> {
+    struct C : public Consumer<string> {
 
-    virtual void consume(string& s) {
-        Log::info() << "Consume " << s << endl;
-        ::sleep(5);
+        virtual void consume(string& s) {
+            Log::info() << "Consume " << s << endl;
+            ::sleep(5);
+        }
+
+    };
+
+    struct P : public Producer<string> {
+
+        int count_;
+
+        virtual bool done() {
+            return count_ <= 0;
+        }
+
+        virtual void produce(string& s) {
+            Log::info() << "Produce " << count_ << endl;
+            ::sleep(count_);
+            ASSERT(count_); s = string("Hello, world! ") + Translator<int,string>()(count_); count_--;
+        }
+
+        P() : count_(5) {}
+    };
+
+    void TestProducer::run()
+    {
+        P p;
+        C c;
+        ProducerConsumer<string> pc;
+        pc.execute(p, c);
     }
 
-};
+//-----------------------------------------------------------------------------
 
-struct P : public Producer<string> {
-
-    int count_;
-
-    virtual bool done() {
-        return count_ <= 0;
-    }
-
-    virtual void produce(string& s) {
-        Log::info() << "Produce " << count_ << endl;
-        ::sleep(count_);
-        ASSERT(count_); s = string("Hello, world! ") + Translator<int,string>()(count_); count_--;
-    }
-
-    P() : count_(5) {}
-};
-
-
-void Test::run()
-{
-    P p;
-    C c;
-    ProducerConsumer<string> pc;
-    pc.execute(p, c);
-}
+} // namespace eckit_test
 
 //-----------------------------------------------------------------------------
 
 int main(int argc,char **argv)
 {
-    Test app(argc,argv);
+    eckit_test::TestProducer app(argc,argv);
     app.start();
     return 0;
 }

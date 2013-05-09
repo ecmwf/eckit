@@ -220,16 +220,6 @@ void MemoryPool::largeDeallocate(void* addr)
 	release_lock();
 }
 
-static char *reserve = new char[1024*4];
-
-void MemoryPool::handler()
-{
-	delete reserve;
-	reserve = 0;
-
-	throw OutOfMemory();
-}
-
 //-----------------------------------------------------------------------------
 
 const long WORD = sizeof(Align);

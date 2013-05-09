@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
+
 #include "eckit/runtime/Tool.h"
 #include "eckit/runtime/ProducerConsumer.h"
 #include "eckit/parser/Translator.h"
@@ -34,7 +36,7 @@ namespace eckit_test {
 
         virtual void consume(string& s) {
             Log::info() << "Consume " << s << endl;
-            ::sleep(5);
+            ::usleep(10000);
         }
 
     };
@@ -49,7 +51,7 @@ namespace eckit_test {
 
         virtual void produce(string& s) {
             Log::info() << "Produce " << count_ << endl;
-            ::sleep(count_);
+            ::usleep(count_*10000);
             ASSERT(count_); s = string("Hello, world! ") + Translator<int,string>()(count_); count_--;
         }
 

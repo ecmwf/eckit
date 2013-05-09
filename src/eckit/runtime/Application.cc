@@ -84,9 +84,9 @@ Application::Application(int argc,char **argv)
     
     Context& ctxt = Context::instance();
     
-    ctxt.setup( argc, argv, new StandardBehavior() );
+    ctxt.setup( argc, argv );
 
-    ctxt.behavior()->initialize();
+    ctxt.behavior( new StandardBehavior() );
 
     ctxt.runName( name_ );
     

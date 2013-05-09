@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-// File thread/ThreadSingleton.h
-// Baudouin Raoult - ECMWF Jun 96
+/// @file ThreadSingleton.h
+/// @author Baudouin Raoult
 
 #ifndef eckit_ThreadSingleton_h
 #define eckit_ThreadSingleton_h
@@ -75,7 +75,6 @@ T& ThreadSingleton<T>::instance()
 	T* value = (T*)pthread_getspecific(key_);
 	if(!value)
 	{
-
 		value = new T();
 		THRCALL(::pthread_setspecific(key_,value));
 	}

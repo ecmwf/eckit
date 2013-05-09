@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-// File PipeApplication.h
-// Baudouin Raoult - ECMWF Jul 96
+/// @file PipeApplication.h
+/// @author Baudouin Raoult
 
 #ifndef eckit_PipeApplication_h
 #define eckit_PipeApplication_h
@@ -25,46 +25,29 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 class PipeApplication : public Application {
-public:
 
-// -- Contructors
-	
+public: // methods
+
 	PipeApplication(int,char**);
 
-// -- Destructor
-
 	~PipeApplication();
-
-// -- Methods
 
 	virtual void process(Stream&) = 0;
 	virtual void endBatch();
     virtual void init(Stream&);
-	virtual void waiting();
-	
+	virtual void waiting();	
 	
 	static void launch(const string& name, int in, int out);
 
-private:
-
-// No copy allowed
-
-	PipeApplication(const PipeApplication&);
-	PipeApplication& operator=(const PipeApplication&);
-
-// -- Members
+private: // members
 
 	Resource<long> in_;
 	Resource<long> out_;
 
-// -- Overridden methods
-
-	// From Application
-
+    /// overridden from Application
 	virtual void run();
 
 };
-
 
 //-----------------------------------------------------------------------------
 

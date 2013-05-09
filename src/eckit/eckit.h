@@ -141,9 +141,13 @@ static void* _offset = &_offset_dummy;
 #define member_offset(Z,z)  size_t( reinterpret_cast<char*>(&reinterpret_cast<Z*>(_offset)->z) - reinterpret_cast<char*>(_offset))
 #define member_size(Z,z)    size_t( sizeof(reinterpret_cast<Z*>(_offset)->z))
 
-static void* keep_gcc_quiet_about_offset_2(void* d);
-static void* keep_gcc_quiet_about_offset_1(void* d) { return keep_gcc_quiet_about_offset_2(_offset); }
-static void* keep_gcc_quiet_about_offset_2(void* d) { return keep_gcc_quiet_about_offset_1(_offset); }
+namespace eckit  {
+namespace _detail {
+    static void* keep_gcc_quiet_about_offset_2(void* d);
+    static void* keep_gcc_quiet_about_offset_1(void* d) { return keep_gcc_quiet_about_offset_2(_offset); }
+    static void* keep_gcc_quiet_about_offset_2(void* d) { return keep_gcc_quiet_about_offset_1(_offset); }
+    }
+}
 
 #endif /* __GNUC__ */
 

@@ -51,11 +51,11 @@ public: // methods
 
     static Context& instance();
     
-    void setup( int argc, char **argv, ContextBehavior* b );
-    
-    bool is_setup() const { return behavior_.get() != 0; }
+    void setup( int argc, char **argv );
 
-    ContextBehavior* behavior() const { checkInit(); return behavior_.get(); }
+    void behavior( ContextBehavior* b );
+    
+    ContextBehavior& behavior() const;
 
     int argc() const;
 	string argv(int n) const;
@@ -90,8 +90,6 @@ private: // methods
 
 	virtual string kind() const  { return "Context"; }
     
-    void checkInit() const;
-
 protected:
     
     // -- Members

@@ -21,7 +21,9 @@
 #include "eckit/config/Script.h"
 #include "eckit/config/Compiler.h"
 
-using namespace eckit;
+//-----------------------------------------------------------------------------
+
+namespace eckit {
 
 class ReadConfig : public Tool {
 public:
@@ -32,8 +34,6 @@ public:
 
     virtual void run();
 };
-
-//-----------------------------------------------------------------------------
 
 void ReadConfig::run()
 {
@@ -97,7 +97,11 @@ void ReadConfig::run()
     
 }
 
+} // namespace eckit
+
 //-----------------------------------------------------------------------------
+
+using namespace eckit;
 
 int main(int argc,char **argv)
 {

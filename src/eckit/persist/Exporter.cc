@@ -15,7 +15,8 @@
 
 //-----------------------------------------------------------------------------
 
-void *operator new(size_t, void* addr, eckit::Evolve&) {
+void *operator new(size_t, void* addr, eckit::Evolve&)
+{
     return addr;
 }
 

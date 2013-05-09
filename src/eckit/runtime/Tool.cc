@@ -30,11 +30,9 @@ Tool::Tool(int argc,char **argv) :
 {
 	name_ = PathName(argv[0]).baseName(false);
     
-    Context::instance().setup( argc, argv, new ToolBehavior() );
-
+    Context::instance().setup( argc, argv );
+    Context::instance().behavior( new ToolBehavior() );
     Context::instance().runName( name_ );
-    
-    Context::instance().behavior()->initialize();
 
     Loader::callAll(&Loader::execute);
 }

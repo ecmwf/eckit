@@ -37,9 +37,6 @@ public:
 
 public: // interface methods
 
-    virtual void initialize();
-    virtual void finalize();
-
     virtual string runName() const = 0;
     virtual void runName( const string& name ) = 0; 
     

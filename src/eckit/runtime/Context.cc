@@ -8,11 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/log/Log.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Context.h"
 #include "eckit/runtime/ContextBehavior.h"
-#include "eckit/log/Log.h"
+#include "eckit/runtime/StandardBehavior.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/thread/Mutex.h"
+#include "eckit/thread/Once.h"
+#include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 
@@ -20,12 +24,14 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+static Once<Mutex> mutex;
+
 Context::Context() :
-    behavior_(0),
     argc_(0),
     argv_(0),
     self_(0)
 {
+    behavior_.reset( new StandardBehavior() );
 }
 
 Context::~Context()
@@ -34,50 +40,56 @@ Context::~Context()
 
 Context& Context::instance()
 {
-    static Context theContext;
-    return theContext;
+    AutoLock<Mutex> lock(mutex);
+    static Context ctxt;
+    return ctxt;
 }
 
-void Context::setup( int argc, char **argv, ContextBehavior* b )
+void Context::setup( int argc, char **argv )
 {   
     if( argc <= 0 || argv == 0 ) 
         throw SeriousBug("Context setup with bad command line arguments");
-    if( !b )
-        throw SeriousBug("Context setup with bad context behavior");
 
     argc_ = argc;
     argv_ = argv;
 
-    if( behavior_.get() )
-		throw SeriousBug("Context is already setup with a behavior");
-    
-    behavior_.reset(b);
-
     Log::init(); // should not logging before this line
+}
+
+void Context::behavior( ContextBehavior* b )
+{
+    AutoLock<Mutex> lock(mutex);
+    if( !b )
+        throw SeriousBug("Context setup with bad context behavior");
+    behavior_.reset(b);
+}
+
+ContextBehavior& Context::behavior() const
+{
+    AutoLock<Mutex> lock(mutex);
+    return *behavior_.get();
 }
 
 int  Context::debug() const
 {
-    if( is_setup() ) 
-        return behavior_->debug();
-    else
-        return 0;
+   return behavior_->debug();
 }
 
 void Context::debug( const int d )
 {
-    if( is_setup() ) 
-        behavior_->debug(d);
+    behavior_->debug(d);
 }
 
 int  Context::argc() const 
 { 
-    return argc_; 
+    AutoLock<Mutex> lock(mutex);
+    return argc_;
 }
 
 string Context::argv(int n) const
 { 
-    ASSERT( argc_ != 0 && argv_ != 0 ); // check initialized 
+    AutoLock<Mutex> lock(mutex);
+    ASSERT( argc_ != 0 && argv_ != 0 ); // check initialized
     ASSERT( n < argc_ && n >= 0);       // check bounds
     return argv_[n]; 
 }
@@ -85,56 +97,36 @@ string Context::argv(int n) const
 void Context::reconfigure()
 {
 	Log::info() << "Context::reconfigure" << endl;
-    
-    // forward to ContextBehavior
-    if( is_setup() ) 
-        return behavior_->reconfigure();
-}
-
-void Context::checkInit() const
-{
-    if( !is_setup() )
-    {
-        std::cerr << "[ERROR] Context used before being created [ERROR] " << std::endl;
-        std::cerr << "Backtrace: " << std::endl;
-        std::cerr << BackTrace::dump() << std::endl;
-        throw InitError( "Context used before being created" );
-    }
+    behavior_->reconfigure();
 }
 
 string Context::home() const
 {
-    checkInit();
     return behavior_->home();
 }
 
 long Context::self() const
 {
-    checkInit();
     return behavior_->taskId();    
 }
 
 string Context::runName() const
 {
-    checkInit();
     return behavior_->runName();    
 }
 
 void Context::runName(const string &name)
 {
-    checkInit();
     behavior_->runName(name);    
 }
 
 string Context::displayName() const
 {
-    checkInit();
     return behavior_->displayName();    
 }
 
 void Context::displayName(const string &name)
 {
-    checkInit();
     behavior_->displayName(name);    
 }
 

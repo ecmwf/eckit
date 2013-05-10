@@ -8,11 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
+#include <locale>
+
 #include "eckit/eckit.h"
 
 #include "eckit/types/DateTime.h"
 #include "eckit/compat/StrStream.h"
 #include "eckit/utils/Tokenizer.h"
+
+using namespace std;
 
 //-----------------------------------------------------------------------------
 
@@ -37,7 +41,52 @@ DateTime::DateTime(const string& s)
 	time_ = Time(result[1]);
 }
 
+static std::locale& getLocale()
+{
+    static locale loc = locale::classic();
+    try {
+        loc = locale("");
+    }
+    catch (...)
+    {
+        Log::error() << "Problem to setup the locale\n"
+                     << "Check your LANG variable - current value: " <<  getenv("LANG") << endl;
+        loc = locale::classic();
+    }
+    return loc;
+}
 
+string DateTime::format( const string& fmt )
+{
+      ostringstream out;
+
+      struct tm convert = { 0, 0, 0, 0, 0, 0, 0, 0 };
+      convert.tm_mday = date().day();
+      convert.tm_mon = date().month() - 1;
+      convert.tm_year = date().year() - 1900;
+
+      int mm =date(). month();
+      int yy = date().year();
+      if (mm < 3)
+      {
+          mm += 12;
+          --yy;
+      }
+      
+      convert.tm_wday  = (date().day() + (13 * mm - 27)/5 + yy + yy/4 - yy/100 + yy/400) % 7;
+      convert.tm_sec = time().seconds();
+      convert.tm_min = time().minutes();
+      convert.tm_hour = time().hours();
+
+      out.imbue( getLocale() );
+
+      const std::time_put<char>& tfac = use_facet<time_put<char> >(getLocale());
+
+      tfac.put(out, out, ' ', &convert, fmt.c_str(), fmt.c_str() + fmt.length());
+
+      return out.str();
+}
+  
 DateTime::DateTime(time_t thetime)
 {
 #ifdef EC_HAVE_GMTIME_R

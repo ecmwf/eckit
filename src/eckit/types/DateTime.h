@@ -26,7 +26,7 @@ namespace eckit {
 class DateTime {
 public:
 
-// -- Contructors
+    // Contructors
 
 	DateTime(time_t = ::time(0));
 	DateTime(const Date&, const Time&);
@@ -34,11 +34,7 @@ public:
 
 #include "eckit/types/DateTime.b"
 
-// -- Destructor
-
 	~DateTime() {}
-
-// -- Operators
 
 	bool operator<(const DateTime& other) const
 		{ return (date_ == other.date_)
@@ -69,8 +65,6 @@ public:
 
 	operator string() const;
 
-// -- Methods
-
 	const Date& date() const { return date_; }
 	const Time& time() const { return time_; }
 
@@ -78,39 +72,17 @@ public:
 
 	void dump(DumpLoad&) const;
 	void load(DumpLoad&);
-
-	// -- Class methods
-protected:
-
-// -- Members
+    
+    string format( const string& fmt );
+    
+protected: // members
 
 	Date date_;
 	Time time_;
 
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-private:
-
-// -- Members
-	// None
-
-// -- Methods
+private: // methods
 
 	void print(ostream&) const;
-
-// -- Class methods
-
-// -- Friends
 
 	friend ostream& operator<<(ostream& s,const DateTime& p)
 		{ p.print(s); return s; }

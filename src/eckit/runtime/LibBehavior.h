@@ -36,10 +36,10 @@ public: // methods
     
 private: // interface methods
         
-    virtual Logger* createInfoLogger();
-    virtual Logger* createDebugLogger();
-    virtual Logger* createWarningLogger();
-    virtual Logger* createErrorLogger();
+    virtual LogStream* infoStream();
+    virtual LogStream* warnStream();
+    virtual LogStream* errorStream();
+    virtual LogStream* debugStream();
 
 protected: // members
     

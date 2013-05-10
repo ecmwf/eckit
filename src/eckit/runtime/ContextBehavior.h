@@ -22,7 +22,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class Logger;
+class LogStream;
 
 class ContextBehavior : public Configurable {
 public:
@@ -45,11 +45,11 @@ public: // interface methods
         
     virtual long taskId() const = 0;
 
-    virtual Logger* createInfoLogger() = 0;
-    virtual Logger* createDebugLogger() = 0;
-    virtual Logger* createWarningLogger() = 0;
-    virtual Logger* createErrorLogger() = 0;
-    
+    virtual LogStream& infoStream()  = 0;
+    virtual LogStream& warnStream()  = 0;
+    virtual LogStream& errorStream() = 0;
+    virtual LogStream& debugStream() = 0;
+
     int  debug() const  { return debug_; }    
     void debug( int d ) { debug_ = d; }    
     

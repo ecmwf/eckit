@@ -130,25 +130,24 @@ void Context::displayName(const string &name)
     behavior_->displayName(name);    
 }
 
-Logger* Context::createInfoLogger()
+LogStream& Context::infoStream()
 {
-    return behavior_->createInfoLogger();       
+    return behavior_->infoStream();
 }
 
-
-Logger* Context::createDebugLogger()
+LogStream& Context::warnStream()
 {
-    return behavior_->createDebugLogger();       
+    return behavior_->warnStream();
 }
 
-Logger* Context::createWarningLogger()
+LogStream& Context::errorStream()
 {
-    return behavior_->createWarningLogger();       
+    return behavior_->errorStream();
 }
 
-Logger* Context::createErrorLogger()
+LogStream& Context::debugStream()
 {
-    return behavior_->createErrorLogger();       
+    return behavior_->debugStream();
 }
 
 //-----------------------------------------------------------------------------

@@ -22,7 +22,7 @@ namespace eckit {
 
 class ContextBehavior;
 
-class Logger;
+class LogStream;
 
 class Context : public Configurable {
 
@@ -73,11 +73,10 @@ public: // methods
     
     string home() const;
 
-    Logger* createInfoLogger();
-    Logger* createDebugLogger();
-    Logger* createWarningLogger();
-    Logger* createErrorLogger();
-    
+    LogStream& infoStream();
+    LogStream& warnStream();
+    LogStream& errorStream();
+    LogStream& debugStream();
     
     // From Configurable
 

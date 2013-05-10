@@ -97,9 +97,6 @@ public:
 
 	static	ostream& syserr(ostream&);
 
-	// Called when a new thread is started
-	static void init();
-
 	// Called at fork
 	static void lock();
 	static void unlock();

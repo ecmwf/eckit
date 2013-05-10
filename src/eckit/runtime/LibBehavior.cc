@@ -30,9 +30,10 @@ LibBehavior::LibBehavior() :
 
 LibBehavior::~LibBehavior()
 {
-    // we will leak the callback loggers since 
-    // they should only be destroyed on program exit since we might still output
-    // within some destructor
+    delete info_;
+    delete debug_;
+    delete warn_;
+    delete error_;
 }
 
 void LibBehavior::register_logger_callback( CallbackLogger::callback c, void* ctxt )
@@ -42,6 +43,15 @@ void LibBehavior::register_logger_callback( CallbackLogger::callback c, void* ct
     warn_->register_callback (c, (int)'W', ctxt);
     error_->register_callback(c, (int)'E', ctxt);
 }
+
+LogStream* LibBehavior::infoStream()
+{
+
+}
+
+LogStream* warnStream();
+LogStream* errorStream();
+LogStream* debugStream();
 
 Logger* LibBehavior::createInfoLogger()
 {    

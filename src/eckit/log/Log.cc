@@ -212,34 +212,27 @@ ostream& Log::message()
 
 ostream& Log::info()
 {
-        static ThreadSingleton<InfoStream> x;
-        return x.instance();
+    return Context::instance().infoStream();
 }
 
 ostream& Log::info(const CodeLocation& where)
 {
-        static ThreadSingleton<InfoStream> x;
-        return x.instance().source(where);
+    return Context::instance().infoStream().source(where);
 }
 
 ostream& Log::error()
 {
-        static ThreadSingleton<ErrorStream> x;
-        return x.instance();
+    return Context::instance().errorStream();
 }
 
 ostream& Log::error(const CodeLocation& where)
 {
-        static ThreadSingleton<ErrorStream> x;
-        return x.instance().source(where);
+    return Context::instance().infoStream().source(where);
 }
 
 ostream& Log::panic()
 {
-    /// @todo this should not be an exception
-    ///       we should check if Log is initialized and use if we can
-    
-        try 
+        try
         {
                 return Log::error();
         }
@@ -251,9 +244,6 @@ ostream& Log::panic()
 
 ostream& Log::panic(const CodeLocation& where)
 {
-    /// @todo this should not be an exception
-    ///       we should check if Log is initialized and use if we can
-
         try 
         {
                 return Log::error(where);
@@ -267,46 +257,30 @@ ostream& Log::panic(const CodeLocation& where)
 
 ostream& Log::warning()
 {
-        static ThreadSingleton<WarningStream> x;
-        return x.instance();
+    return Context::instance().warnStream();
 }
 
 ostream& Log::warning(const CodeLocation& where)
 {
-        static ThreadSingleton<WarningStream> x;
-        return x.instance().source(where);
+    return Context::instance().warnStream().source(where);
 }
 
 ostream& Log::debug(int level)
 {
-        static ThreadSingleton<DebugStream> x;
         static ofstream devnull("/dev/null");
-
         if(level >= Context::instance().debug())
                 return devnull;
         else
-                return x.instance();
+            return Context::instance().debugStream();
 }
 
 ostream& Log::debug(const CodeLocation& where, int level)
 {
-        static ThreadSingleton<DebugStream> x;
         static ofstream devnull("/dev/null");
-
         if(level >= Context::instance().debug())
                 return devnull;
         else
-                return x.instance().source(where);
-}
-
-void Log::init()
-{
-    // Force the creation of the streams ...
-    error();
-    warning();
-    debug();
-    info();
-    status();
+            return Context::instance().debugStream().source(where);
 }
 
 #ifndef _GNU_SOURCE

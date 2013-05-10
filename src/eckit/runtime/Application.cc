@@ -112,6 +112,8 @@ Application::Application(int argc,char **argv)
 
 Application::~Application()
 {
+    if( !memoryReserve )
+        { delete[] memoryReserve; memoryReserve = 0; }
 	instance_ = 0;
 }
 

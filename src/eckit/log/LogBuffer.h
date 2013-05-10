@@ -151,7 +151,7 @@ public:
 
 class InfoStream : public LogStream {
 public:
-    InfoStream() : LogStream( Context::instance().createInfoLogger() ){}
+    InfoStream( Logger* logger ) : LogStream( logger ){}
 };
 
 class DebugStream : public LogStream {

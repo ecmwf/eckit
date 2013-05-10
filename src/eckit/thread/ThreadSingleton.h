@@ -25,12 +25,21 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-template<class T> class ThreadSingleton : private NonCopyable {
+template< typename TYPE >
+struct NewAlloc : public allocator {
+    TYPE* operator() () { return new T(); }
+};
+
+//-----------------------------------------------------------------------------
+
+template< typename T, typename A = NewAlloc< TYPE > >
+class ThreadSingleton : private NonCopyable {
 public:
 
 // -- Contructors
 
-	ThreadSingleton();
+    ThreadSingleton();
+    ThreadSingleton( A alloc );
 
 // -- Destructor
 
@@ -38,7 +47,7 @@ public:
 
 // -- Class methods
 
-	static T& instance();
+     T& instance();
 
 private:
 
@@ -56,18 +65,26 @@ private:
 
 //-----------------------------------------------------------------------------
 
-template<class T> pthread_once_t ThreadSingleton<T>::once_ = PTHREAD_ONCE_INIT;
-template<class T> pthread_key_t ThreadSingleton<T>::key_;
+template< typename T, typename A> pthread_once_t ThreadSingleton<T>::once_ = PTHREAD_ONCE_INIT;
+template< typename T, typename A> pthread_key_t ThreadSingleton<T>::key_;
 
-template<class T> ThreadSingleton<T>::ThreadSingleton()
+template< typename T, typename A>
+ThreadSingleton<T,A>::ThreadSingleton()
 {
 }
 
-template<class T> ThreadSingleton<T>::~ThreadSingleton()
+template< typename T, typename A>
+ThreadSingleton<T,A>::ThreadSingleton( A alloc )
+{
+
+}
+
+template< typename T, typename A>
+ThreadSingleton<T,A>::~ThreadSingleton()
 {
 }
 
-template<class T> 
+template< typename T, typename A>
 T& ThreadSingleton<T>::instance()
 {
 	pthread_once(&once_,init);
@@ -75,19 +92,21 @@ T& ThreadSingleton<T>::instance()
 	T* value = (T*)pthread_getspecific(key_);
 	if(!value)
 	{
-		value = new T();
+        value = alloc_();
 		THRCALL(::pthread_setspecific(key_,value));
 	}
 	return *value;
 }
 
-template<class T> void ThreadSingleton<T>::cleanUp(void* data)
+template< typename T, typename A>
+void ThreadSingleton<T>::cleanUp(void* data)
 {
 	delete (T*)data;
 	pthread_setspecific(key_,0);
 }
 
-template<class T> void ThreadSingleton<T>::init()
+template< typename T, typename A>
+void ThreadSingleton<T>::init()
 {
 	pthread_key_create(&key_,cleanUp);
 }

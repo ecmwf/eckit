@@ -11,7 +11,9 @@
 #include <cstdlib>
 #include <cassert>
 
+#include "eckit/log/LogBuffer.h"
 #include "eckit/runtime/LibBehavior.h"
+#include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 
@@ -30,10 +32,11 @@ LibBehavior::LibBehavior() :
 
 LibBehavior::~LibBehavior()
 {
-    delete info_;
-    delete debug_;
-    delete warn_;
-    delete error_;
+    /// @todo check if ownership is really passed to the stream
+    //    delete info_;
+    //    delete debug_;
+    //    delete warn_;
+    //    delete error_;
 }
 
 void LibBehavior::register_logger_callback( CallbackLogger::callback c, void* ctxt )
@@ -44,33 +47,36 @@ void LibBehavior::register_logger_callback( CallbackLogger::callback c, void* ct
     error_->register_callback(c, (int)'E', ctxt);
 }
 
-LogStream* LibBehavior::infoStream()
+LogStream& LibBehavior::infoStream()
 {
-
+    typedef NewAlloc1<InfoStream,Logger*> Alloc;
+    static Alloc a (info_);
+    static ThreadSingleton<InfoStream,Alloc> x( a );
+    return x.instance();
 }
 
-LogStream* warnStream();
-LogStream* errorStream();
-LogStream* debugStream();
-
-Logger* LibBehavior::createInfoLogger()
-{    
-    return info_;
+LogStream& LibBehavior::warnStream()
+{
+    typedef NewAlloc1<WarnStream,Logger*> Alloc;
+    static Alloc a (warn_);
+    static ThreadSingleton<WarnStream,Alloc> x( a );
+    return x.instance();
 }
 
-Logger* LibBehavior::createDebugLogger()
-{    
-    return debug_;
+LogStream& LibBehavior::errorStream()
+{
+    typedef NewAlloc1<ErrorStream,Logger*> Alloc;
+    static Alloc a (error_);
+    static ThreadSingleton<ErrorStream,Alloc> x( a );
+    return x.instance();
 }
 
-Logger* LibBehavior::createWarningLogger()
-{   
-    return warn_;
-}
-
-Logger* LibBehavior::createErrorLogger()
-{    
-    return error_;
+LogStream& LibBehavior::debugStream()
+{
+    typedef NewAlloc1<DebugStream,Logger*> Alloc;
+    static Alloc a (debug_);
+    static ThreadSingleton<DebugStream,Alloc> x( a );
+    return x.instance();
 }
 
 //-----------------------------------------------------------------------------

@@ -475,13 +475,13 @@ ostream& Log::userWarning()
 
 // Explicit instantiations.
 template class ThreadSingleton<Exception*>;
-template class ThreadSingleton<InfoStream>;
-template class ThreadSingleton<WarningStream>;
+//template class ThreadSingleton<InfoStream>;
+//template class ThreadSingleton<WarnStream>;
 template class ThreadSingleton<MessageStream>;
-template class ThreadSingleton<ErrorStream>;
+//template class ThreadSingleton<ErrorStream>;
 template class ThreadSingleton<MonitorStream>;
 template class ThreadSingleton<UserInfoStream>;
-template class ThreadSingleton<DebugStream>;
+//template class ThreadSingleton<DebugStream>;
 template class ThreadSingleton<UserStreamP>;
 template class ThreadSingleton<UserWarningStream>;
 template class ThreadSingleton<StatusStream>;

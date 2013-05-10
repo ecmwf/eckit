@@ -52,8 +52,6 @@ void Context::setup( int argc, char **argv )
 
     argc_ = argc;
     argv_ = argv;
-
-    Log::init(); // should not logging before this line
 }
 
 void Context::behavior( ContextBehavior* b )

@@ -156,17 +156,17 @@ public:
 
 class DebugStream : public LogStream {
 public:
-	DebugStream() : LogStream(  Context::instance().createDebugLogger() ){}
+    DebugStream( Logger* logger ) : LogStream( logger ){}
 };
 
-class WarningStream : public LogStream {
+class WarnStream : public LogStream {
 public:
-	WarningStream() : LogStream( Context::instance().createWarningLogger() ){}
+    WarnStream( Logger* logger ) : LogStream( logger ){}
 };
 
 class ErrorStream : public LogStream {
 public:
-	ErrorStream() : LogStream( Context::instance().createErrorLogger() ){}
+    ErrorStream( Logger* logger ) : LogStream( logger ){}
 };
 
 class StatusStream: public ostream

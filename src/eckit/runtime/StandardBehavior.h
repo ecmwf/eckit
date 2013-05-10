@@ -37,10 +37,10 @@ public: // methods
         
     virtual long taskId() const;
     
-    virtual LogStream* infoStream();
-    virtual LogStream* warnStream();
-    virtual LogStream* errorStream();
-    virtual LogStream* debugStream();
+    virtual LogStream& infoStream();
+    virtual LogStream& warnStream();
+    virtual LogStream& errorStream();
+    virtual LogStream& debugStream();
 
 private: // members
     

@@ -11,7 +11,9 @@
 #include <stdlib.h>
 
 #include "eckit/runtime/StandardBehavior.h"
+#include "eckit/log/LogBuffer.h"
 #include "eckit/log/StdLogger.h"
+#include "eckit/thread/ThreadSingleton.h"
 
 using namespace std;
 
@@ -46,24 +48,34 @@ long StandardBehavior::taskId() const
     return 0;
 }
 
-Logger* StandardBehavior::createInfoLogger()
-{    
-    return new StdLogger( std::cout );
+//-----------------------------------------------------------------------------
+
+LogStream& StandardBehavior::infoStream()
+{
+    typedef NewAlloc1<InfoStream,Logger*> Alloc;
+    static ThreadSingleton<InfoStream,Alloc> x( Alloc( new StdLogger( std::cout ) ) );
+    return x.instance();
 }
 
-Logger* StandardBehavior::createDebugLogger()
-{    
-    return new StdLogger( std::cout );
+LogStream& StandardBehavior::warnStream()
+{
+    typedef NewAlloc1<WarnStream,Logger*> Alloc;
+    static ThreadSingleton<WarnStream,Alloc> x( Alloc( new StdLogger( std::cerr ) ) );
+    return x.instance();
 }
 
-Logger* StandardBehavior::createWarningLogger()
-{    
-    return new StdLogger( std::cerr );
+LogStream& StandardBehavior::errorStream()
+{
+    typedef NewAlloc1<ErrorStream,Logger*> Alloc;
+    static ThreadSingleton<ErrorStream,Alloc> x( Alloc( new StdLogger( std::cerr ) ) );
+    return x.instance();
 }
 
-Logger* StandardBehavior::createErrorLogger()
-{    
-    return new StdLogger( std::cerr );
+LogStream& StandardBehavior::debugStream()
+{
+    typedef NewAlloc1<DebugStream,Logger*> Alloc;
+    static ThreadSingleton<DebugStream,Alloc> x( Alloc( new StdLogger( std::cout ) ) );
+    return x.instance();
 }
 
 //-----------------------------------------------------------------------------

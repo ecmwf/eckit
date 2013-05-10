@@ -26,37 +26,40 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 template< typename TYPE >
-struct NewAlloc : public allocator {
-    TYPE* operator() () { return new T(); }
+struct NewAlloc0 {
+    TYPE* operator() () { return new TYPE(); }
+};
+
+template< typename TYPE, typename P1 >
+struct NewAlloc1 {
+    NewAlloc1( const P1& p1 ) : p1_(p1) {}
+    TYPE* operator() () { return new TYPE( p1_ ); }
+    P1 p1_;
 };
 
 //-----------------------------------------------------------------------------
 
-template< typename T, typename A = NewAlloc< TYPE > >
+template< typename T, typename A = NewAlloc0<T> >
 class ThreadSingleton : private NonCopyable {
 public:
 
-// -- Contructors
-
     ThreadSingleton();
-    ThreadSingleton( A alloc );
-
-// -- Destructor
+    ThreadSingleton( const A& alloc );
 
 	~ThreadSingleton();
 
-// -- Class methods
+    T& instance();
 
-     T& instance();
+private: // members
 
-private:
+    A alloc_;
 
-// -- Class members
+private: // class members
 
 	static pthread_once_t once_;
 	static pthread_key_t  key_;
 
-// -- Class methods
+private: // class methods
 
 	static void init(void);
 	static void cleanUp(void*);
@@ -65,16 +68,16 @@ private:
 
 //-----------------------------------------------------------------------------
 
-template< typename T, typename A> pthread_once_t ThreadSingleton<T>::once_ = PTHREAD_ONCE_INIT;
-template< typename T, typename A> pthread_key_t ThreadSingleton<T>::key_;
+template< typename T, typename A> pthread_once_t ThreadSingleton<T,A>::once_ = PTHREAD_ONCE_INIT;
+template< typename T, typename A> pthread_key_t ThreadSingleton<T,A>::key_;
 
 template< typename T, typename A>
-ThreadSingleton<T,A>::ThreadSingleton()
+ThreadSingleton<T,A>::ThreadSingleton() : alloc_( A() )
 {
 }
 
 template< typename T, typename A>
-ThreadSingleton<T,A>::ThreadSingleton( A alloc )
+ThreadSingleton<T,A>::ThreadSingleton( const A& alloc ) : alloc_( alloc )
 {
 
 }
@@ -85,7 +88,7 @@ ThreadSingleton<T,A>::~ThreadSingleton()
 }
 
 template< typename T, typename A>
-T& ThreadSingleton<T>::instance()
+T& ThreadSingleton<T,A>::instance()
 {
 	pthread_once(&once_,init);
 
@@ -99,14 +102,14 @@ T& ThreadSingleton<T>::instance()
 }
 
 template< typename T, typename A>
-void ThreadSingleton<T>::cleanUp(void* data)
+void ThreadSingleton<T,A>::cleanUp(void* data)
 {
 	delete (T*)data;
 	pthread_setspecific(key_,0);
 }
 
 template< typename T, typename A>
-void ThreadSingleton<T>::init()
+void ThreadSingleton<T,A>::init()
 {
 	pthread_key_create(&key_,cleanUp);
 }

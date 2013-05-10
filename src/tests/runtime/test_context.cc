@@ -9,6 +9,8 @@
  */
 
 #include "eckit/log/Log.h"
+#include "eckit/runtime/Context.h"
+#include "eckit/runtime/ToolBehavior.h"
 
 using namespace eckit;
 
@@ -25,6 +27,14 @@ int main(int argc,char **argv)
     /* log before context build */
 
     Log::info() << "logging before calling Context" << std::endl;
+
+    /* setting context another time */
+
+    Context::instance().behavior( new ToolBehavior() );
+    Log::info()   << "logging after resetting behavior" << std::endl;
+    Log::debug()  << "logging after resetting behavior" << std::endl;
+    Log::warning()<< "logging after resetting behavior" << std::endl;
+    Log::error()  << "logging after resetting behavior" << std::endl;
 
     return 0;
 }

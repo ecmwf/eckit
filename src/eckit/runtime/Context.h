@@ -96,10 +96,7 @@ protected:
     std::auto_ptr<ContextBehavior> behavior_;
     
     int     argc_;
-	char**  argv_;
-	
-    long    self_; // Monitor ID
-    
+	char**  argv_;    
 };
 
 

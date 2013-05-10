@@ -28,8 +28,7 @@ static Once<Mutex> mutex;
 
 Context::Context() :
     argc_(0),
-    argv_(0),
-    self_(0)
+    argv_(0)
 {
     behavior_.reset( new StandardBehavior() );
 }

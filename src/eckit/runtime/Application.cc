@@ -86,8 +86,6 @@ Application::Application(int argc,char **argv)
     
     ctxt.setup( argc, argv );
 
-    ctxt.behavior( new StandardBehavior() );
-
     ctxt.runName( name_ );
     
     ctxt.debug( Resource<int>(this,"debug;$DEBUG;-debug",0) );

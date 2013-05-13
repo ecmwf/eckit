@@ -13,13 +13,14 @@
 
 #include "eckit/eckit.h"
 
+#include "eckit/config/Resource.h"
 #include "eckit/filesystem/FileHandle.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Log.h"
 #include "eckit/filesystem/MarsFSHandle.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/config/Resource.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/Log.h"
+#include "eckit/os/Stat.h"
 
 //-----------------------------------------------------------------------------
 
@@ -230,19 +231,17 @@ void FileHandle::rewind()
 
 Length FileHandle::estimate()
 {
-    struct stat64 info;
-    SYSCALL(::stat64(name_.c_str(),&info));
+    Stat::Struct info;
+    SYSCALL(Stat::stat(name_.c_str(),&info));
     return info.st_size;
 }
 
 bool FileHandle::isEmpty() const
 {
-
-    struct stat64 info;
-    if (::stat64(name_.c_str(),&info) == -1)
+    Stat::Struct info;
+    if( Stat::stat(name_.c_str(),&info) == -1 )
         return false; // File does not exists
     return info.st_size == 0;
-
 }
 
 // Try to be clever ....

@@ -12,6 +12,7 @@
 #include <fcntl.h>
 
 #include "eckit/eckit.h"
+#include "eckit/os/Stat.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/container/BTree.h"
 
@@ -75,9 +76,8 @@ BTree<K,V,S>::BTree(const PathName& path):
     SYSCALL(fd_ = ::open64(path.localPath(),O_RDWR|O_CREAT,0777));
 
     AutoLock<BTree<K,V,S> > lock(this);
-    struct stat64 s;
-    SYSCALL(fstat64(fd_, &s));
-
+    Stat::Struct s;
+    SYSCALL(Stat::fstat(fd_, &s));
 
     if (s.st_size == 0) {
 

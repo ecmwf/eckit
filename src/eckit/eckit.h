@@ -47,22 +47,19 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 
-/* some defines for 64 bit functions */
+/* paranoid consistency check */
 
-#if (!defined EC_HAVE_OFF64T) && (defined EC_HAVE_OFFT)
-#define off64_t     off_t
-#endif
-
-#if (!defined EC_HAVE_STAT64) && (defined EC_HAVE_STAT)
-#if (defined EC_HAVE_STRUCT_STAT64)
+#if (!defined EC_HAVE_STAT64) && (defined EC_HAVE_STRUCT_STAT64)
 #error "system has struct stat64 but no function stat64"
 #endif
-#define  stat64    stat
+
+/* define off64_t if not available */
+
+#if (!defined EC_HAVE_OFF64T) && (defined EC_HAVE_OFFT)
+#define  off64_t     off_t
 #endif
 
-#if (!defined EC_HAVE_FSTAT64) && (defined EC_HAVE_FSTAT)
-#define  fstat64    fstat
-#endif
+/* some defines for 64 bit functions */
 
 #if (!defined EC_HAVE_FTRUNCATE64) && (defined EC_HAVE_FTRUNCATE)
 #define ftruncate64     ftruncate

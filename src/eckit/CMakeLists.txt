@@ -302,6 +302,7 @@ value/MapContent.h
 value/MapContent.cc )
 
 list( APPEND eckit_os_srcs
+os/Stat.h
 os/Semaphore.h
 os/Semaphore.cc
 os/SignalHandler.h

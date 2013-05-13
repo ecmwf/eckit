@@ -21,6 +21,8 @@
 #include "eckit/container/MappedArray.h"
 #include "eckit/memory/Padded.h"
 
+#include "eckit/os/Stat.h"
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -71,8 +73,8 @@ MappedArray<T>::MappedArray(const PathName& path,unsigned long size):
 		throw FailedSystemCall("open");
 	}
 
-	struct stat64 s;
-	SYSCALL(::stat64(path.localPath(),&s));
+    Stat::Struct s;
+    SYSCALL(Stat::stat(path.localPath(),&s));
 
     bool initHeader = s.st_size < static_cast<long int>( sizeof(PaddedHeader) );
 

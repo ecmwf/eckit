@@ -17,25 +17,24 @@
 #include <dirent.h>
 #include <sys/statvfs.h>
 
-#include "eckit/thread/AutoLock.h"
-#include "eckit/filesystem/BasePathNameT.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/io/cluster/ClusterDisks.h"
-#include "eckit/runtime/Context.h"
-#include "eckit/io/Length.h"
-#include "eckit/filesystem/LocalPathName.h"
-#include "eckit/filesystem/marsfs/MarsFSPath.h"
-#include "eckit/thread/Mutex.h"
-#include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/utils/Regex.h"
-#include "eckit/config/Resource.h"
-#include "eckit/io/StdFile.h"
 #include "eckit/compat/StrStream.h"
-#include "eckit/log/TimeStamp.h"
-
+#include "eckit/config/Resource.h"
+#include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/filesystem/FileHandle.h"
-#include "eckit/filesystem/FileHandle.h"
+#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PartFileHandle.h"
+#include "eckit/filesystem/marsfs/MarsFSPath.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/StdFile.h"
+#include "eckit/io/cluster/ClusterDisks.h"
+#include "eckit/io/cluster/NodeInfo.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/TimeStamp.h"
+#include "eckit/os/Stat.h"
+#include "eckit/runtime/Context.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
+#include "eckit/utils/Regex.h"
 
 //-----------------------------------------------------------------------------
 
@@ -402,11 +401,10 @@ void LocalPathName::match(const LocalPathName& root,vector<LocalPathName>& resul
 		if(rec && e->d_name[0] != '.')
 		{
 			LocalPathName full = dir + "/" + e->d_name;
-            struct stat64 info;
-            SYSCALL(::stat64(full.c_str(),&info));
+            Stat::Struct info;
+            SYSCALL(Stat::stat(full.c_str(),&info));
 			if(S_ISDIR(info.st_mode))
 				match(full+"/"+base,result,true);
-				
 		}
 	}
 
@@ -450,8 +448,8 @@ void LocalPathName::children(vector<LocalPathName>& files,vector<LocalPathName>&
 				continue;
 
 		LocalPathName full = *this + "/" + e->d_name;
-        struct stat64 info;
-        if(::stat64(full.c_str(),&info) == 0)
+        Stat::Struct info;
+        if(Stat::stat(full.c_str(),&info) == 0)
 		{
 			if(S_ISDIR(info.st_mode))
 				directories.push_back(full);
@@ -492,9 +490,9 @@ void LocalPathName::backup() const
 
 Length LocalPathName::size() const
 {
-    struct stat64 info;
+    Stat::Struct info;
 
-    if(::stat64(path_.c_str(),&info) < 0)
+    if(Stat::stat(path_.c_str(),&info) < 0)
 		throw FailedSystemCall(path_);
 
 	// Should ASSERT(is file)
@@ -504,31 +502,31 @@ Length LocalPathName::size() const
 
 time_t LocalPathName::created() const
 {
-    struct stat64 info;
-    if(::stat64(path_.c_str(),&info) < 0)
+    Stat::Struct info;
+    if(Stat::stat(path_.c_str(),&info) < 0)
 		throw FailedSystemCall(path_);
 	return info.st_ctime;
 }
 
 time_t LocalPathName::lastModified() const
 {
-    struct stat64 info;
-    if(::stat64(path_.c_str(),&info) < 0)
+    Stat::Struct info;
+    if(Stat::stat(path_.c_str(),&info) < 0)
 		throw FailedSystemCall(path_);
 	return info.st_mtime;
 }
 
 time_t LocalPathName::lastAccess() const
 {
-    struct stat64 info;
-    SYSCALL(::stat64(path_.c_str(),&info));
+    Stat::Struct info;
+    SYSCALL(Stat::stat(path_.c_str(),&info));
 	return info.st_atime;
 }
 
 bool LocalPathName::isDir() const
 {
-    struct stat64 info;
-    SYSCALL(::stat64(path_.c_str(),&info));
+    Stat::Struct info;
+    SYSCALL(Stat::stat(path_.c_str(),&info));
 	return S_ISDIR(info.st_mode);
 }
 
@@ -537,8 +535,8 @@ bool LocalPathName::sameAs(const LocalPathName& other) const
 	if(!exists() || !other.exists())
 		return false;
 
-    struct stat64 info1; SYSCALL(::stat64(path_.c_str(),&info1));
-    struct stat64 info2; SYSCALL(::stat64(other.path_.c_str(),&info2));
+    Stat::Struct info1; SYSCALL(Stat::stat(path_.c_str(),&info1));
+    Stat::Struct info2; SYSCALL(Stat::stat(other.path_.c_str(),&info2));
 	return (info1.st_dev == info2.st_dev) && (info1.st_ino == info2.st_ino);
 }
 
@@ -620,17 +618,17 @@ DataHandle* LocalPathName::partHandle(const Offset& o, const Length& l) const
 LocalPathName LocalPathName::mountPoint() const
 {
 //	dev_t last;
-    struct stat64 s;
+    Stat::Struct s;
 	LocalPathName p(*this);
 
 	ASSERT(p.path_.length() > 0 && p.path_[0] == '/');
 
-    SYSCALL2(::stat64(p.c_str(),&s),p);
+    SYSCALL2(Stat::stat(p.c_str(),&s),p);
 	dev_t dev = s.st_dev;
 
 	while(p != "/") {
 		LocalPathName q(p.dirName());
-        SYSCALL(::stat64(q.c_str(),&s));
+        SYSCALL(Stat::stat(q.c_str(),&s));
 		if(s.st_dev != dev)
 			return p;
 		p = q;

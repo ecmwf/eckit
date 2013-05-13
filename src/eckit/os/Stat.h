@@ -34,18 +34,17 @@ struct Stat
     static int lstat(const char *path, Struct *s){ return ::lstat(path,s); }
     static int fstat(int fd, Struct *s)          { return ::fstat(fd,s); }
 
-    #elif
-
+    #else
+        #if (defined EC_HAVE_STAT64)
     typedef Struct stat64;
 
     static int stat (const char *path, Struct *s){ return ::stat64(path,s);  }
     static int lstat(const char *path, Struct *s){ return ::lstat64(path,s); }
     static int fstat(int fd, Struct *s)          { return ::fstat64(fd,s);   }
 
-    #else
-
-    #error "could not define if to use stat or stat64"
-
+        #else
+            #error "could not define if to use stat or stat64"
+        #endif
     #endif
 
 private:

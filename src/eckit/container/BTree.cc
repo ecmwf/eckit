@@ -670,7 +670,7 @@ void BTree<K,V,S>::lock()
 template<class K, class V,int S>
 void BTree<K,V,S>::unlock()
 {
-    lockRange(0,0,F_SETLK64,F_UNLCK);
+    lockRange(0,0,F_SETLK,F_UNLCK);
 }
 
 //-----------------------------------------------------------------------------

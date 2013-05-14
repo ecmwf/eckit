@@ -94,20 +94,20 @@ long AIOHandle::write(const void* buffer,long length)
     else
     {
         /* wait */
-        while (aio_suspend64(&aiop_[0], count_, NULL) < 0)
+        while (aio_suspend(&aiop_[0], count_, NULL) < 0)
         {
             if (errno != EINTR)
-                throw FailedSystemCall("aio_suspend64");
+                throw FailedSystemCall("aio_suspend");
         }
 
         bool ok = false;
         for (n = 0 ; n < count_ ; n++)
         {
-            int e = aio_error64(&aio_[n]);
+            int e = aio_error(&aio_[n]);
             if (e == EINPROGRESS) continue;
             if (e == 0)
             {
-                ssize_t len = aio_return64(&aio_[n]);
+                ssize_t len = aio_return(&aio_[n]);
                 if (len != len_[n]) {
                     // TODO: retry when filesystems are full
                     StrStream os;
@@ -118,7 +118,7 @@ long AIOHandle::write(const void* buffer,long length)
                 break;
             } else
             {
-                throw FailedSystemCall("aio_error64");
+                throw FailedSystemCall("aio_error");
             }
 
         }
@@ -136,9 +136,9 @@ long AIOHandle::write(const void* buffer,long length)
     memcpy( *(buffers_[n]), buffer, length);
     len_[n] = length;
 
-    struct aiocb64  *aio = &aio_[n];
+    struct aiocb  *aio = &aio_[n];
 
-    memset(aio,0,sizeof(struct aiocb64));
+    memset(aio,0,sizeof(struct aiocb));
 
     aio->aio_fildes = fd_;
     aio->aio_offset = pos_;
@@ -148,7 +148,7 @@ long AIOHandle::write(const void* buffer,long length)
     aio->aio_nbytes = length;
     aio->aio_sigevent.sigev_notify = SIGEV_NONE;
 
-    SYSCALL(aio_write64(aio));
+    SYSCALL(aio_write(aio));
 
     return length;
 
@@ -163,7 +163,7 @@ void AIOHandle::close()
 
 void AIOHandle::flush()
 {
-    struct aiocb64 aio;
+    struct aiocb aio;
 
     if (fsync_) // request all current operations to the synchronized I/O completion state
     {
@@ -172,7 +172,7 @@ void AIOHandle::flush()
         aio.aio_fildes                = fd_;
         aio.aio_sigevent.sigev_notify = SIGEV_NONE;
 
-        SYSCALL(aio_fsync64(O_SYNC,&aio));
+        SYSCALL(aio_fsync(O_SYNC,&aio));
     }
 
     bool more = true;
@@ -183,20 +183,20 @@ void AIOHandle::flush()
         for( size_t n = 0 ; n < used_ ; ++n )
         {
             /* wait */
-            while (aio_suspend64(&aiop_[n], 1, NULL) < 0)
+            while (aio_suspend(&aiop_[n], 1, NULL) < 0)
             {
                 if (errno != EINTR)
-                    throw FailedSystemCall("aio_suspend64");
+                    throw FailedSystemCall("aio_suspend");
             }
 
-            int e = aio_error64(&aio_[n]);
+            int e = aio_error(&aio_[n]);
             if (e == EINPROGRESS) {
                 more = true;
                 continue;
             }
             if (e == 0)
             {
-                ssize_t len = aio_return64(&aio_[n]);
+                ssize_t len = aio_return(&aio_[n]);
                 if (len != len_[n]) {
                     // TODO: retry when filesystems are full
                     StrStream os;
@@ -207,7 +207,7 @@ void AIOHandle::flush()
             }
             else
             {
-                throw FailedSystemCall("aio_return64");
+                throw FailedSystemCall("aio_return");
             }
 
         }
@@ -218,21 +218,21 @@ void AIOHandle::flush()
     {
         more = false;
         /* wait */
-        const struct aiocb64* aiop = &aio;
-        while (aio_suspend64(&aiop, 1, NULL) < 0)
+        const struct aiocb* aiop = &aio;
+        while (aio_suspend(&aiop, 1, NULL) < 0)
         {
             if (errno != EINTR)
-                throw FailedSystemCall("aio_suspend64");
+                throw FailedSystemCall("aio_suspend");
         }
 
-        int e = aio_error64(&aio);
+        int e = aio_error(&aio);
 
         if (e == EINPROGRESS) {
             more = 1;
         }
         else if (e != 0)
         {
-            throw FailedSystemCall("aio_error64");
+            throw FailedSystemCall("aio_error");
         }
     }
 }

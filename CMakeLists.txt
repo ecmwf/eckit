@@ -70,11 +70,8 @@ set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
 set( ECKIT_LIBRARIES      eckit )
 
-get_directory_property( COMPILE_DEFINITIONS ECKIT_DEFINITIONS )
+get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
     
-debug_var( ECKIT_INCLUDE_DIRS )
-debug_var( ECKIT_DEFINITIONS )
-
 include_directories( ${ECKIT_INCLUDE_DIRS} )
 
 # source files

@@ -224,7 +224,7 @@ Ordinal Recycler<T>::pop(Iter begin, Ordinal count)
         *(begin++) = value;
     }
 
-    SYSCALL(::ftruncate64(fd_, here));
+    SYSCALL(::ftruncate(fd_, here));
     
     return cnt;
 }

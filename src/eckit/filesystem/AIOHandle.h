@@ -71,8 +71,8 @@ private: // members
 
 	PathName                path_;
 	vector<Buffer*>         buffers_;
-	vector<const aiocb64 *> aiop_;
-	vector<aiocb64>         aio_;
+    vector<const aiocb*>   aiop_;
+    vector<aiocb>           aio_;
 	vector<long>			len_;
 	
 	size_t                  used_;

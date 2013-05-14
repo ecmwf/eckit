@@ -84,7 +84,7 @@ MappedArray<T>::MappedArray(const PathName& path,unsigned long size):
 
 	if(s.st_size != length)
 	{
-		SYSCALL(ftruncate64(fd_,length));
+        SYSCALL(::ftruncate(fd_,length));
 		char buf1[sizeof(PaddedHeader)]; memset(buf1,0,sizeof(buf1));
 		char buf2[sizeof(T)];            memset(buf2,0,sizeof(buf2));
 	    SYSCALL(write(fd_,buf1,sizeof(buf1)));

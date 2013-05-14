@@ -8,14 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sys/stat.h>
-#include <fcntl.h>
-
-#include "eckit/eckit.h"
-#include "eckit/os/Stat.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/container/BTree.h"
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -73,7 +65,7 @@ BTree<K,V,S>::BTree(const PathName& path):
     cacheReads_(true),
     cacheWrites_(true)
 {
-    SYSCALL(fd_ = ::open64(path.localPath(),O_RDWR|O_CREAT,0777));
+    SYSCALL(fd_ = ::open(path.localPath(),O_RDWR|O_CREAT,0777));
 
     AutoLock<BTree<K,V,S> > lock(this);
     Stat::Struct s;
@@ -519,10 +511,10 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, vect
 
 
 template<class K, class V, int S>
-off64_t BTree<K,V,S>::pageOffset(unsigned long page) const
+off_t BTree<K,V,S>::pageOffset(unsigned long page) const
 {
     ASSERT(page > 0); // Root page is 1. 0 in leaf marker
-    return sizeof(Page) * off64_t(page-1);
+    return sizeof(Page) * off_t(page-1);
 }
 
 
@@ -531,9 +523,9 @@ void BTree<K,V,S>::_loadPage(unsigned long page, Page& p) const
 {
     //cout << "Load " << page << endl;
 
-    off64_t o = pageOffset(page);
-    off64_t here;
-    SYSCALL(here = lseek64(fd_,o,SEEK_SET));
+    off_t o = pageOffset(page);
+    off_t here;
+    SYSCALL(here = ::lseek(fd_,o,SEEK_SET));
     ASSERT(here == o);
 
     size_t len;
@@ -572,9 +564,9 @@ void BTree<K,V,S>::_savePage(const Page& p)
 {
     //cout << "Save " << p << endl;
 
-    off64_t o = pageOffset(p.id_);
-    off64_t here;
-    SYSCALL(here = lseek64(fd_,o,SEEK_SET));
+    off_t o = pageOffset(p.id_);
+    off_t here;
+    SYSCALL(here = ::lseek(fd_,o,SEEK_SET));
     ASSERT(here == o);
 
     size_t len;
@@ -613,8 +605,8 @@ void BTree<K,V,S>::savePage(const Page& p)
 template<class K, class V,int S>
 void BTree<K,V,S>::_newPage(Page& p)
 {
-    off64_t here;
-    SYSCALL(here = lseek64(fd_,0,SEEK_END));
+    off_t here;
+    SYSCALL(here = ::lseek(fd_,0,SEEK_END));
 
     unsigned long long page = here/sizeof(Page) + 1;
 
@@ -647,10 +639,10 @@ void BTree<K,V,S>::newPage(Page& p)
 
 
 template<class K, class V, int S>
-void BTree<K,V,S>::lockRange(off64_t start,off64_t len,int cmd,int type)
+void BTree<K,V,S>::lockRange(off_t start,off_t len,int cmd,int type)
 {
 
-    struct flock64 lock;
+    struct flock lock;
 
     lock.l_type   = type;
     lock.l_whence = SEEK_SET;
@@ -664,14 +656,14 @@ void BTree<K,V,S>::lockRange(off64_t start,off64_t len,int cmd,int type)
 template<class K, class V,int S>
 void BTree<K,V,S>::lockShared()
 {
-    lockRange(0,0,F_SETLKW64,F_RDLCK);
+    lockRange(0,0,F_SETLKW,F_RDLCK);
 }
 
 
 template<class K, class V,int S>
 void BTree<K,V,S>::lock()
 {
-    lockRange(0,0,F_SETLKW64,F_WRLCK);
+    lockRange(0,0,F_SETLKW,F_WRLCK);
 }
 
 

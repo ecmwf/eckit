@@ -25,7 +25,7 @@ FileBase<T>::FileBase(const PathName& path):
 	fd_(-1),
 	pos_(0)
 {
-	SYSCALL(fd_ = ::open64(path.localPath(),O_RDWR|O_CREAT,0777));
+	SYSCALL(fd_ = ::open(path.localPath(),O_RDWR|O_CREAT,0777));
 }
 
 template<class T>
@@ -38,9 +38,9 @@ FileBase<T>::~FileBase()
 template<class T>
 bool FileBase<T>::read(long rec,T& data)
 {
-	off64_t pos = rec * sizeof(Record);
+	off_t pos = rec * sizeof(Record);
 	if(pos != pos_)
-		SYSCALL(pos_ = ::lseek64(fd_,pos,SEEK_SET));
+		SYSCALL(pos_ = ::lseek(fd_,pos,SEEK_SET));
 
 	long size = 0;
 
@@ -63,9 +63,9 @@ bool FileBase<T>::read(long rec,T& data)
 template<class T>
 void FileBase<T>::write(long rec,const T& data)
 {
-	off64_t pos = rec * sizeof(Record);
+	off_t pos = rec * sizeof(Record);
 	if(pos != pos_)
-		SYSCALL(pos_ = ::lseek64(fd_,pos,SEEK_SET));
+		SYSCALL(pos_ = ::lseek(fd_,pos,SEEK_SET));
 
 	long size = 0;
 

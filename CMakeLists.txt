@@ -64,12 +64,16 @@ mark_as_advanced(CPPFILT_COMMAND)
 
 ecbuild_find_project_files()
 
+add_definitions( -D${EC_OS_NAME} )
+
+set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
 set( ECKIT_LIBRARIES      eckit )
-# set( ECKIT_DEFINITIONS    -D${EC_OS_NAME} ) # TODO: eventually this should be removed as ifdef's should be based on features not for OS name
-set( ECKIT_TPLS           "" )
 
-add_definitions( -D${EC_OS_NAME} )
+get_directory_property( COMPILE_DEFINITIONS ECKIT_DEFINITIONS )
+    
+debug_var( ECKIT_INCLUDE_DIRS )
+debug_var( ECKIT_DEFINITIONS )
 
 include_directories( ${ECKIT_INCLUDE_DIRS} )
 

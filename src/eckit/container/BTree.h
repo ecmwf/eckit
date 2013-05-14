@@ -14,11 +14,17 @@
 #ifndef eckit_BTree_h
 #define eckit_BTree_h
 
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "eckit/eckit.h"
 
+#include "eckit/container/BTree.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/memory/Padded.h"
-#include "eckit/filesystem/PathName.h"
+#include "eckit/os/Stat.h"
+#include "eckit/thread/AutoLock.h"
 
 //-----------------------------------------------------------------------------
 
@@ -277,14 +283,14 @@ private:
     typedef map<unsigned long,_PageInfo> Cache;
     Cache cache_;
 
-    void lockRange(off64_t start,off64_t len,int cmd,int type);
+    void lockRange(off_t start,off_t len,int cmd,int type);
     bool search(unsigned long page, const K&, V&) const;
     void search(unsigned long page, const K& key1, const K& key2, vector<pair<K,V> >& result);
 
 
     void splitRoot();
 
-    off64_t pageOffset(unsigned long) const;
+    off_t pageOffset(unsigned long) const;
     void savePage(const Page&);
     void loadPage(unsigned long,Page&) const;
     void newPage(Page&);

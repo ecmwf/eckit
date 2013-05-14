@@ -592,8 +592,8 @@ void LocalPathName::reserve(const Length& len) const
 
 void LocalPathName::fileSystemSize(FileSystemSize& fs) const
 {
-    struct statvfs64 d;
-    SYSCALL(::statvfs64(path_.c_str(),&d));
+    struct statvfs d;
+    SYSCALL(::statvfs(path_.c_str(),&d));
 	long unavail = (d.f_bfree - d.f_bavail);
     fs.available = (unsigned long long)d.f_bavail*(unsigned long long)d.f_bsize;
     fs.total     = (unsigned long long)(d.f_blocks-unavail)*(unsigned long long)d.f_bsize;

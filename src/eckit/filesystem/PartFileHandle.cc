@@ -130,9 +130,9 @@ Length PartFileHandle::openForRead()
 //    Log::info() << "PartFileHandle::openForRead " << name_ << endl;
 
 #ifdef USE_LINKS
-    file_ = ::fopen64(link_.localPath(),"r");
+    file_ = ::fopen(link_.localPath(),"r");
 #else
-    file_ = ::fopen64(name_.localPath(),"r");
+    file_ = ::fopen(name_.localPath(),"r");
 #endif
 
     if(file_ == 0)
@@ -191,20 +191,20 @@ long PartFileHandle::read1(char *buffer,long length)
 
 
     Length ll  = (long long)offset_[index_] + Length(pos_);
-    off64_t pos = ll;
+    off_t pos = ll;
 
     //ASSERT( Length(pos) == ll);
 
     // try llseek()
 
-    if(::fseeko64(file_,pos ,SEEK_SET) != 0)
+    if(fseeko(file_,pos ,SEEK_SET) != 0)
     {
         StrStream s;
         s << name_ << ": cannot seek to " << pos << " (file=" << fileno(file_) << ")" << StrStream::ends;
         throw ReadError(string(s));
     }
 
-    ASSERT(::ftello64(file_) == pos);
+    ASSERT(::ftello(file_) == pos);
 
     ll        = length_[index_] - Length(pos_);
     Length lsize = ::min(Length(length),ll);

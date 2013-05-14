@@ -47,69 +47,6 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 
-/* paranoid consistency check */
-
-#if (!defined EC_HAVE_STAT64) && (defined EC_HAVE_STRUCT_STAT64)
-#error "system has struct stat64 but no function stat64"
-#endif
-
-/* define off64_t if not available */
-
-#if (!defined EC_HAVE_OFF64T) && (defined EC_HAVE_OFFT)
-#define  off64_t     off_t
-#endif
-
-/* some defines for 64 bit functions */
-
-#if (!defined EC_HAVE_FTRUNCATE64) && (defined EC_HAVE_FTRUNCATE)
-#define ftruncate64     ftruncate
-#endif
-#if (!defined EC_HAVE_FLOCK64) && (defined EC_HAVE_FLOCK)
-#define flock64  flock
-#endif
-#if (!defined EC_HAVE_LSEEK64) && (defined EC_HAVE_LSEEK)
-#define lseek64  lseek
-#endif
-#if (!defined EC_HAVE_OPEN64) && (defined EC_HAVE_OPEN)
-#define open64  open
-#endif
-#if (!defined EC_HAVE_FOPEN64) && (defined EC_HAVE_FOPEN)
-#define fopen64  fopen
-#endif
-#if (!defined EC_HAVE_FSEEKO64) && (defined EC_HAVE_FSEEKO)
-#define fseeko64  fseeko
-#endif
-#if (!defined EC_HAVE_FTELLO64) && (defined EC_HAVE_FTELLO)
-#define ftello64  ftello
-#endif
-#if (!defined EC_HAVE_MMAP64) && (defined EC_HAVE_MMAP)
-#define mmap64      mmap
-#endif
-
-#if (!defined EC_HAVE_AIO64) && (defined EC_HAVE_AIO)
-#define  aio_read64    aio_read
-#define  aio_write64   aio_write
-#define  aio_suspend64 aio_suspend
-#define  aio_fsync64   aio_fsync
-#define  aio_error64   aio_error
-#define  aio_return64  aio_return
-#define  aiocb64       aiocb
-#endif
-
-#if (!defined EC_HAVE_STRUCT_STATVFS64) && (defined EC_HAVE_STRUCT_STATVFS)
-#define  statvfs64    statvfs
-#endif
-
-#if (!defined EC_HAVE_F_GETLK64) && (defined EC_HAVE_F_GETLK)
-#define F_GETLK64   F_GETLK
-#endif
-#if (!defined EC_HAVE_F_SETLK64) && (defined EC_HAVE_F_SETLK)
-#define F_SETLK64   F_SETLK
-#endif
-#if (!defined EC_HAVE_F_SETLKW64) && (defined EC_HAVE_F_SETLKW)
-#define F_SETLKW64   F_SETLKW
-#endif
-
 #if (!defined EC_HAVE_MAP_ANONYMOUS) && (defined EC_HAVE_MAP_ANON)
 #define MAP_ANONYMOUS MAP_ANON
 #endif

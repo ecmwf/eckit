@@ -66,7 +66,7 @@ MappedArray<T>::MappedArray(const PathName& path,unsigned long size):
 
 	typedef Padded<Header<T>,4096> PaddedHeader;
 
-	fd_ = ::open64(path.localPath(),O_RDWR | O_CREAT, 0777);
+	fd_ = ::open(path.localPath(),O_RDWR | O_CREAT, 0777);
 	if(fd_ < 0)
 	{
 		Log::error() << "open(" << path << ')' << Log::syserr << endl;
@@ -78,7 +78,7 @@ MappedArray<T>::MappedArray(const PathName& path,unsigned long size):
 
     bool initHeader = s.st_size < static_cast<long int>( sizeof(PaddedHeader) );
 
-	off64_t length = size_ * sizeof(T) + sizeof(PaddedHeader);
+	off_t length = size_ * sizeof(T) + sizeof(PaddedHeader);
 
 	// Resize if needed
 
@@ -92,7 +92,7 @@ MappedArray<T>::MappedArray(const PathName& path,unsigned long size):
 			SYSCALL(write(fd_,buf2,sizeof(buf2)));
 	}
 
-	map_ = ::mmap64(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0);
+	map_ = ::mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0);
 	if(map_ == MAP_FAILED) {
 		Log::error() << "open(" << path << ',' << length << ')'
 			<< Log::syserr << endl;

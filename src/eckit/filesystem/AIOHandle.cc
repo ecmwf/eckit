@@ -64,15 +64,15 @@ Length AIOHandle::openForRead()
 void AIOHandle::openForWrite(const Length&)
 {
     used_ = 0;
-    SYSCALL( fd_ = ::open64(path_.localPath(),O_WRONLY|O_CREAT|O_TRUNC,0777));
+    SYSCALL( fd_ = ::open(path_.localPath(),O_WRONLY|O_CREAT|O_TRUNC,0777));
     pos_ = 0;
 }
 
 void AIOHandle::openForAppend(const Length& length)
 {
     used_ = 0;
-    SYSCALL( fd_  = ::open64(path_.localPath(),O_WRONLY|O_CREAT|O_APPEND,0777));
-    SYSCALL( pos_ = ::lseek64(fd_,0,SEEK_CUR) );
+    SYSCALL( fd_  = ::open(path_.localPath(),O_WRONLY|O_CREAT|O_APPEND,0777));
+    SYSCALL( pos_ = ::lseek(fd_,0,SEEK_CUR) );
 }
 
 long AIOHandle::read(void* buffer,long length)

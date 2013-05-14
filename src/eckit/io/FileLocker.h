@@ -44,9 +44,9 @@ public:
 
 // -- Methods
 
-	void lockShared(off64_t off = 0, off64_t len = 0);
-	void lockExclusive(off64_t off = 0, off64_t len = 0);
-	void unlock(off64_t off = 0, off64_t len = 0);
+	void lockShared(off_t off = 0, off_t len = 0);
+	void lockExclusive(off_t off = 0, off_t len = 0);
+	void unlock(off_t off = 0, off_t len = 0);
 
 // -- Overridden methods
 	// None
@@ -90,7 +90,7 @@ private:
 // -- Methods
 	// None
 
-	void lockRange(off64_t,off64_t,int cmd,int type);
+	void lockRange(off_t,off_t,int cmd,int type);
 
 // -- Overridden methods
 	// None

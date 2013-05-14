@@ -79,7 +79,7 @@ private: // members
 	size_t                  count_;
 	
 	int                     fd_;
-	off64_t                 pos_;
+	off_t                 pos_;
 	bool                    fsync_;
 	
 

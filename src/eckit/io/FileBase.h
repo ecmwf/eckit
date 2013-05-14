@@ -94,7 +94,7 @@ private:
 	int      fd_;
 	PathName path_;
 	Record   buffer_;
-	off64_t  pos_;
+	off_t  pos_;
 
 // -- Methods
 	// None

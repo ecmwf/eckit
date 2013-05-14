@@ -37,7 +37,7 @@ MapAllocator::MapAllocator(size_t length):
         count_(0),
         more_(0)
 {
-        addr_ = mmap64(0,length_,PROT_READ|PROT_WRITE,MAP_PRIVATE|MAP_ANONYMOUS,fd_,0);
+        addr_ = ::mmap(0,length_,PROT_READ|PROT_WRITE,MAP_PRIVATE|MAP_ANONYMOUS,fd_,0);
 
         if(addr_ == MAP_FAILED)
                 throw FailedSystemCall("mmap");

@@ -29,25 +29,25 @@ FileLocker::~FileLocker()
 {
 }
 
-void FileLocker::lockExclusive(off64_t off,off64_t len)
+void FileLocker::lockExclusive(off_t off,off_t len)
 {
-	lockRange(off,len,F_SETLKW64,F_WRLCK);
+	lockRange(off,len,F_SETLKW,F_WRLCK);
 }
 
-void FileLocker::lockShared(off64_t off,off64_t len)
+void FileLocker::lockShared(off_t off,off_t len)
 {
-	lockRange(off,len,F_SETLKW64,F_RDLCK);
+	lockRange(off,len,F_SETLKW,F_RDLCK);
 }
 
-void FileLocker::unlock(off64_t off,off64_t len)
+void FileLocker::unlock(off_t off,off_t len)
 {
-	lockRange(off,len,F_SETLK64,F_UNLCK);
+	lockRange(off,len,F_SETLK,F_UNLCK);
 }    
 
-void FileLocker::lockRange(off64_t start,off64_t len,int cmd,int type)
+void FileLocker::lockRange(off_t start,off_t len,int cmd,int type)
 {
 
-	struct flock64 lock;
+	struct flock lock;
 
     lock.l_type   = type;
     lock.l_whence = SEEK_SET;

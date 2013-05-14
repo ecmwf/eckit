@@ -141,7 +141,7 @@ Recycler<T>::Recycler(const PathName& path):
         path_(path),
         fd_(-1)
 {
-    SYSCALL(fd_ = ::open64(path_.localPath(),O_RDWR|O_CREAT,0777));
+    SYSCALL(fd_ = ::open(path_.localPath(),O_RDWR|O_CREAT,0777));
 }
 
 template<class T>
@@ -156,14 +156,14 @@ template<class T>
 void Recycler<T>::lock()
 {
 
-    struct flock64 lock;
+    struct flock lock;
 
     lock.l_type   = F_WRLCK;
     lock.l_whence = SEEK_SET;
     lock.l_start  = 0;
     lock.l_len    = 0;
 
-    SYSCALL(::fcntl(fd_, F_SETLK64, &lock));
+    SYSCALL(::fcntl(fd_, F_SETLK, &lock));
 
 }
 
@@ -171,14 +171,14 @@ template<class T>
 void Recycler<T>::unlock()
 {
 
-    struct flock64 lock;
+    struct flock lock;
 
     lock.l_type   = F_UNLCK;
     lock.l_whence = SEEK_SET;
     lock.l_start  = 0;
     lock.l_len    = 0;
 
-    SYSCALL(::fcntl(fd_, F_SETLK64, &lock));
+    SYSCALL(::fcntl(fd_, F_SETLK, &lock));
 
 }
 
@@ -190,8 +190,8 @@ void Recycler<T>::push(Iter begin, Iter end)
 
     AutoLock<Recycler<T> > lock(this);
 
-    off64_t here;
-    SYSCALL(here = lseek64(fd_,0,SEEK_END));
+    off_t here;
+    SYSCALL(here = ::lseek(fd_,0,SEEK_END));
     ASSERT((here % sizeof(T)) == 0);
 
     for (Iter j = begin; j != end; ++j)
@@ -205,15 +205,15 @@ Ordinal Recycler<T>::pop(Iter begin, Ordinal count)
 
     AutoLock<Recycler<T> > lock(this);
 
-    off64_t here, there;
-    SYSCALL(here = lseek64(fd_,0,SEEK_END));
+    off_t here, there;
+    SYSCALL(here = ::lseek(fd_,0,SEEK_END));
     ASSERT((here % sizeof(T)) == 0);
 
     Ordinal cnt = std::min(Ordinal(here/sizeof(T)), count);
     
     here -= cnt * sizeof(T);
 
-    SYSCALL(there = lseek64(fd_, here ,SEEK_SET));
+    SYSCALL(there = ::lseek(fd_, here ,SEEK_SET));
     ASSERT(there == here);
 
 

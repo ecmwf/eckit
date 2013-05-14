@@ -22,7 +22,7 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 FileStream::FileStream(const PathName& name,const char *mode):
-    file_(fopen64(name.localPath(),mode)),
+    file_(::fopen(name.localPath(),mode)),
     read_(string(mode) == "r"),
     name_(name)
 {
@@ -104,7 +104,7 @@ string FileStream::name() const
 void FileStream::rewind()
 {
     ::fflush(file_);
-    ::fseeko64(file_,0,SEEK_SET);
+    fseeko(file_,0,SEEK_SET);
     resetBytesWritten();
 }
 

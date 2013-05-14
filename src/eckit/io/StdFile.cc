@@ -22,7 +22,7 @@ namespace eckit {
 
 StdFile::StdFile(const PathName& name,const string& mode)
 {
-	file_ = fopen64(name.localPath(),mode.c_str());
+	file_ = ::fopen(name.localPath(),mode.c_str());
 
 	if(file_ == 0)
 		throw CantOpenFile(name);

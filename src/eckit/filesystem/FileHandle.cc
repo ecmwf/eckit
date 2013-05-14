@@ -65,7 +65,7 @@ FileHandle::~FileHandle()
 void FileHandle::open(const char* mode)
 {
     static long bufSize  = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize",0);
-    file_ = ::fopen64(name_.c_str(),mode);
+    file_ = ::fopen(name_.c_str(),mode);
     if (file_ == 0)
         throw CantOpenFile(name_);
 
@@ -273,13 +273,13 @@ Length FileHandle::saveInto(DataHandle& other,TransferWatcher& w)
 Offset FileHandle::position()
 {
     ASSERT(file_);
-    return ::ftello64(file_);
+    return ::ftello(file_);
 }
 
 void FileHandle::advance(const Length& len)
 {
-    off64_t l = len;
-    if (::fseeko64(file_,l,SEEK_CUR) < 0)
+    off_t l = len;
+    if (::fseeko(file_,l,SEEK_CUR) < 0)
         throw ReadError(name_);
 }
 
@@ -287,37 +287,37 @@ void FileHandle::restartReadFrom(const Offset& from)
 {
     ASSERT(read_);
     Log::warning() << *this << " restart read from " << from << endl;
-    off64_t l = from;
-    if (::fseeko64(file_,l,SEEK_SET) < 0)
+    off_t l = from;
+    if (::fseeko(file_,l,SEEK_SET) < 0)
         throw ReadError(name_);
 
-    ASSERT(::ftello64(file_) == l);
+    ASSERT(::ftello(file_) == l);
 }
 
 void FileHandle::restartWriteFrom(const Offset& from)
 {
     ASSERT(!read_);
     Log::warning() << *this << " restart write from " << from << endl;
-    off64_t l = from;
-    if (::fseeko64(file_,l,SEEK_SET) < 0)
+    off_t l = from;
+    if (::fseeko(file_,l,SEEK_SET) < 0)
         throw ReadError(name_);
 
-    ASSERT(::ftello64(file_) == l);
+    ASSERT(::ftello(file_) == l);
 }
 
 Offset FileHandle::seek(const Offset& from)
 {
-    off64_t l = from;
-    if (::fseeko64(file_,l,SEEK_SET) < 0)
+    off_t l = from;
+    if (::fseeko(file_,l,SEEK_SET) < 0)
         throw ReadError(name_);
-    off64_t w = ::ftello64(file_);
+    off_t w = ::ftello(file_);
     ASSERT(w == l);
     return w;
 }
 
 void FileHandle::skip(size_t n)
 {
-    if (::fseeko64(file_,n,SEEK_CUR) < 0)
+    if (::fseeko(file_,n,SEEK_CUR) < 0)
         throw ReadError(name_);
 }
 

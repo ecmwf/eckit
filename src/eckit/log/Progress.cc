@@ -21,17 +21,17 @@ namespace eckit {
 
 Progress::Progress(const string& name, unsigned long long min, unsigned long long  max )
 {
-	Monitor::progress(name,min,max);
+	Monitor::instance().progress(name,min,max);
 }
 
 Progress::~Progress()
 {
-	Monitor::progress();
+	Monitor::instance().progress();
 }
 
 void Progress::operator()(unsigned long long value)
 {
-	Monitor::progress(value);
+	Monitor::instance().progress(value);
 }
 
 //-----------------------------------------------------------------------------

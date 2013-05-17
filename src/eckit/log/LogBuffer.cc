@@ -92,7 +92,7 @@ void LogBuffer::dumpBuffer(void)
 {
     AutoLock<Mutex> lock(mutex);
     
-    Monitor::out(pbase(),pptr());
+    Monitor::instance().out(pbase(),pptr());
     
     const char *p = pbase();
     

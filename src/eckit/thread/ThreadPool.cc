@@ -36,18 +36,18 @@ void ThreadPoolThread::run()
     owner_.notifyStart();
 
     static const char *here = __FUNCTION__;
-    Monitor::name(owner_.name());
+    Monitor::instance().name(owner_.name());
 
     //Log::info() << "Start of ThreadPoolThread " << endl;
 
 
     for(;;)
     {
-        Monitor::show(false);
+        Monitor::instance().show(false);
         Log::status() << "-" << endl;
         ThreadPoolTask* r = owner_.next();
         if(!r) break;
-        Monitor::show(true);
+        Monitor::instance().show(true);
 
         r->pool_ = &owner_;
 

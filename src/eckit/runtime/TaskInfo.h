@@ -87,7 +87,8 @@ protected:
 	char           message_[80];
 };
 
-class TaskInfo : public Padded<Info,4096> {
+class TaskInfo : public Padded<Info,4096>,
+                 public NonCopyable {
 public:
 
 // -- Contructors
@@ -178,11 +179,6 @@ public:
 	string   host() const             { return host_; }
 
 private:
-
-// No copy allowed
-
-	TaskInfo(const TaskInfo&);
-	TaskInfo& operator=(const TaskInfo&);
 
 // -- Methods
 

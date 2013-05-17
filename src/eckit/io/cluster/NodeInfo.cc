@@ -78,7 +78,7 @@ NodeInfo& NodeInfo::init()
             myUser = user_;
         }
 
-		task_ = Monitor::self();
+		task_ = Monitor::instance().self();
 	}
 	return *this;
 }

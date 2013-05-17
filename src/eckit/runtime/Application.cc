@@ -10,14 +10,16 @@
 
 #include <stdlib.h>
 
-#include "eckit/runtime/Application.h"
-#include "eckit/runtime/StandardBehavior.h"
-#include "eckit/log/Log.h"
-#include "eckit/runtime/Monitor.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/config/Resource.h"
-#include "eckit/os/Semaphore.h"
 #include "eckit/bases/Loader.h"
+#include "eckit/config/Resource.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/log/Log.h"
+#include "eckit/os/Semaphore.h"
+#include "eckit/runtime/Application.h"
+#include "eckit/runtime/Monitor.h"
+#include "eckit/runtime/StandardBehavior.h"
+
+#include "eckit/os/BackTrace.h"
 
 //-----------------------------------------------------------------------------
 
@@ -25,10 +27,9 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-string  Application::name_  = "unknown";
-Application* Application::instance_ = 0;
+template<> Application<>* Application<>::instance_ = 0;
 
-bool    Application::running_  = false;
+//-----------------------------------------------------------------------------
 
 static char* memoryReserve;
 
@@ -60,156 +61,34 @@ static void end(const char* msg)
 	//Panic(msg);
 }
 
-static void catch_terminate()
+//-----------------------------------------------------------------------------
+
+StdSignalRegist::StdSignalRegist() : regist_(false)
+{
+    memoryReserve = new char[20*1024];    
+}
+
+StdSignalRegist::~StdSignalRegist()
+{
+    if( !memoryReserve ) { delete[] memoryReserve;  memoryReserve = 0; }
+}
+
+void StdSignalRegist::catch_terminate()
 {
 	end("Terminate was called");
 }
 
-static void catch_unexpected()
+void StdSignalRegist::catch_unexpected()
 {
 	end("Unexpected was called");
 }
 
-static void catch_new_handler()
+void StdSignalRegist::catch_new_handler()
 {
 	delete[] memoryReserve; memoryReserve = 0;
 	throw OutOfMemory();
 }
 
-//-----------------------------------------------------------------------------
-
-Application::Application(int argc,char **argv)
-{    
-	name_ = PathName(argv[0]).baseName(false);
-    
-    Context& ctxt = Context::instance();
-    
-    ctxt.setup( argc, argv );
-
-    ctxt.runName( name_ );
-    
-    ctxt.debug( Resource<int>(this,"debug;$DEBUG;-debug",0) );
-    
-	::srand(::getpid() + ::time(0));
-
-	memoryReserve = new char[20*1024];
-
-    if(instance_)
-		throw SeriousBug("An instance of application already exists");
-
-    instance_ = this;
-        
-    // TODO: maybe this should also be part of the ContextBehavior
-    
-	set_new_handler(catch_new_handler);
-	set_terminate(catch_terminate);
-	set_unexpected(catch_unexpected);
-	
-	Loader::callAll(&Loader::execute);
-}
-
-Application::~Application()
-{
-    if( !memoryReserve )
-        { delete[] memoryReserve; memoryReserve = 0; }
-	instance_ = 0;
-}
-
-void Application::reconfigure()
-{
-    Log::info() << "Application::reconfigure" << endl;
-    
-    int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
-    
-    Context::instance().debug( debug );
-
-    // forward to context
-    Context::instance().reconfigure();     
-}
-
-Application& Application::instance()
-{
-	PANIC(instance_ == 0);
-	return *instance_;
-}
-
-void Application::start()
-{
-	int status = 0;
-
-    string displayName = Resource<string>("-name",name_);
-    
-    Context::instance().displayName( displayName );
-    
-	Monitor::name( displayName );
-
-	Log::info() << "** Start of " << name() << " ** pid is " << getpid() << endl;
-	
-	try {
-		Log::status() << "Running" << endl;
-        running_ = true;
-		run();
-        running_ = false;
-	}
-	catch(exception& e){
-		status = 1;
-		Log::error() << "** " << e.what() << " Caught in "  << Here() <<  endl;
-		Log::error() << "** Exception is terminates " << name() << endl;
-	}
-
-
-    Log::info() << "** End of " << name() << " (" << Context::instance().argv(0) << ")  **"  << endl;
-	
-	::exit(status);
-}
-
-void Application::stop()
-{
-	::exit(0); // or: throw Stop();
-}
-
-void Application::kill()
-{
-	::exit(1);
-}
-
-void Application::terminate()
-{
-	PANIC(instance_ == 0);
-	instance_->stop();
-}
-
-void Application::unique()
-{
-	PathName  lockFile("~/locks/" + name());
-
-	if(!lockFile.exists())
-		lockFile.touch();	
-
-	Semaphore* sem = new Semaphore(lockFile);
-
-	if(sem->test())
-	{
-		ifstream os(lockFile.localPath());
-		string s;
-		os >> s;
-		throw SeriousBug("Application " + name() + " is already running as pid " + s);
-	}
-
-	sem->lock(); // OS should reset the semaphore
-
-	ofstream os(lockFile.localPath());
-	os << getpid();
-}
-
-time_t Application::uptime()
-{
-	Monitor::TaskArray& info = Monitor::info();
-	time_t uptime = info[Context::instance().self()].start();
-	time_t now    = ::time(0);
-
-	return now - uptime;
-}
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

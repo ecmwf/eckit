@@ -69,7 +69,7 @@ int	StatusBuffer::sync()
 void StatusBuffer::dumpBuffer()
 {
         ::replace(pbase(),pptr(),'\n','\0');
-        Monitor::status(pbase());
+        Monitor::instance().status(pbase());
         setp(pbase(), epptr());
 }
 //=============================================================================
@@ -117,7 +117,7 @@ int	MessageBuffer::sync()
 void MessageBuffer::dumpBuffer()
 {
         ::replace(pbase(),pptr(),'\n','\0');
-        Monitor::message(pbase());
+        Monitor::instance().message(pbase());
         setp(pbase(), epptr());
 }
 
@@ -328,13 +328,13 @@ ostream& setformat(ostream& s,int n)
 
 
 SaveStatus::SaveStatus():
-        status_(Monitor::status())
+        status_(Monitor::instance().status())
 {
 }
 
 SaveStatus::~SaveStatus()
 {
-        Monitor::status(status_);
+        Monitor::instance().status(status_);
 }
 
 //=============================================================================

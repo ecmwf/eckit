@@ -53,8 +53,8 @@ void TelnetUser::serve(Stream&, istream& in,ostream& out)
 
 	Log::debug() << "Starting a telnet connection " << endl;
 
-	Monitor::kind("telnet");
-	Monitor::name(from_);
+	Monitor::instance().kind("telnet");
+	Monitor::instance().name(from_);
 
 	while(!stopped())
 	{

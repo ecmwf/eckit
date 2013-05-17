@@ -23,29 +23,12 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-StandardBehavior::StandardBehavior() :
-    name_("undefined")
+StandardBehavior::StandardBehavior()
 {
-    home_ = getenv( "HOME" );
 }
 
 StandardBehavior::~StandardBehavior()
 {
-}
-
-string StandardBehavior::runName() const
-{
-    return name_;
-}
-
-void StandardBehavior::runName(const string& name)
-{
-    name_ = name;
-}
-
-long StandardBehavior::taskId() const
-{
-    return 0;
 }
 
 //-----------------------------------------------------------------------------

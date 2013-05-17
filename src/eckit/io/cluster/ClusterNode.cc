@@ -40,7 +40,7 @@ void ClusterHeartBeat::run()
 {
     static const char *here = __FUNCTION__;
 
-    Monitor::name("heartbeat");
+    Monitor::instance().name("heartbeat");
     string host   = Resource<string>("clusterHost","localhost");
     int port =  Port("cluster",9555);
     string reply;
@@ -67,7 +67,7 @@ void ClusterHeartBeat::run()
             int n = 0;
 
             for(;;) {
-                Monitor::state(x[n]); n = 1 - n;
+                Monitor::instance().state(x[n]); n = 1 - n;
                 s << "heartbeat";
                 s >> reply;
 

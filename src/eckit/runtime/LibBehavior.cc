@@ -27,16 +27,14 @@ LibBehavior::LibBehavior() :
     warn_ ( new CallbackLogger() ),
     error_( new CallbackLogger() )
 {
-    home_ = getenv( "HOME" );
 }
 
 LibBehavior::~LibBehavior()
 {
-    /// @todo check if ownership is really passed to the stream
-    //    delete info_;
-    //    delete debug_;
-    //    delete warn_;
-    //    delete error_;
+    delete info_;
+    delete debug_;
+    delete warn_;
+    delete error_;
 }
 
 void LibBehavior::register_logger_callback( CallbackLogger::callback c, void* ctxt )

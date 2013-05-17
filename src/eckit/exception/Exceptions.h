@@ -25,8 +25,8 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-void Panic(const char*);
-void Panic(const char *msg,int line,const char *file,const char *proc);
+void handle_panic(const char*);
+void handle_panic(const char *msg,int line,const char *file,const char *proc);
 
 // General purpose exception
 // Other exceptions must be defined in the class that throw them
@@ -206,7 +206,7 @@ inline void ThrCall(int code,const char *msg,int line,const char *file,
     const char *proc)
 {
     if(code != 0) // Threads return errno in return code
-        Panic(msg,line,file,proc);
+        handle_panic(msg,line,file,proc);
     /*
     {
         throw FailedSystemCall(msg,line,file,proc,code);
@@ -220,11 +220,10 @@ inline void Assert(int code,const char *msg, const CodeLocation& loc )
         throw AssertionFailed(msg,loc);
 }
 
-inline void Panic(int code,const char *msg,int line,const char *file,
-    const char *proc)
+inline void Panic(int code,const char *msg,int line,const char *file, const char *proc)
 {
     if(code != 0)
-        Panic(msg,line,file,proc);
+        handle_panic(msg,line,file,proc);
 }
 
 //-----------------------------------------------------------------------------

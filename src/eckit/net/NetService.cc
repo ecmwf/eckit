@@ -33,9 +33,9 @@ NetService::~NetService()
 void NetService::run()
 {
 
-	Monitor::show(false);
-	Monitor::name(name());
-	Monitor::kind(name());
+	Monitor::instance().show(false);
+	Monitor::instance().name(name());
+	Monitor::instance().kind(name());
 
 	while(!stopped())
 	{

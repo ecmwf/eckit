@@ -203,7 +203,7 @@ void TaskInfo::parent(long p)
 {
 	parent_ = p;
 	depth_  = 0;
-	if(p != -1) depth_ = Monitor::info()[p].depth() + 1;
+	if(p != -1) depth_ = Monitor::instance().tasks()[p].depth() + 1;
 }
 
 //-----------------------------------------------------------------------------

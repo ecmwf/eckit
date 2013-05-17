@@ -32,19 +32,10 @@ public:
     
 public: // methods
     
-    virtual string runName() const;
-    virtual void runName( const string& name ); 
-        
-    virtual long taskId() const;
-    
     virtual LogStream& infoStream();
     virtual LogStream& warnStream();
     virtual LogStream& errorStream();
     virtual LogStream& debugStream();
-
-private: // members
-    
-    std::string name_;
     
 };
 

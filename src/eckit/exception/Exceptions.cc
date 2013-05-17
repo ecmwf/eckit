@@ -37,7 +37,7 @@ void xldb_throw(const char *c) // To set a break point in xldb
     }
 
     if(getenv("ABORT_EXCEPTIONS"))
-        Panic(c);
+        handle_panic(c);
 }
 
 Exception::Exception():
@@ -288,9 +288,8 @@ RemoteException::RemoteException(const string& msg, const string& from):
 {
 }
 
-void Panic(const char *msg)
+void handle_panic(const char *msg)
 {
-
     msg = msg ? msg : "(null message)";
 
     cout << "PANIC: " << msg << endl;
@@ -300,6 +299,13 @@ void Panic(const char *msg)
 
     Log::panic() << "PANIC IS CALLED!!!" << endl;
     Log::panic() << msg << endl;
+    
+    Log::panic() << "----------------------------------------\n"
+                 << "BACKTRACE\n" 
+                 << "----------------------------------------\n"
+                 << BackTrace::dump() << std::endl
+                 << "----------------------------------------\n"
+                 << std::endl;
 
     if(getenv("SLEEP_ON_PANIC"))
     {
@@ -312,12 +318,12 @@ void Panic(const char *msg)
     ::pause();
 }
 
-void Panic(const char* msg,int line,const char* file, const char* proc)
+void handle_panic(const char* msg,int line,const char* file, const char* proc)
 {
     StrStream s;
     s << msg << " in " << proc << ", line " << line << " of " << file << StrStream::ends;
     string t(s);
-    Panic(t.c_str());
+    handle_panic(t.c_str());
 }
 
 OutOfMemory::OutOfMemory():

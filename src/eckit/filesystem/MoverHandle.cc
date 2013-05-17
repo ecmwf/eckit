@@ -60,7 +60,7 @@ class MoverHandleThread : public Thread {
 		try
 		{
 			DataHandle& remote = owner_.handle();
-			Monitor::name("mover");
+			Monitor::instance().name("mover");
 			Log::status() << "Using mover" << endl;
 			MoverTransfer mover;
 			if(read_) {

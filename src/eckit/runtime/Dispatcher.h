@@ -215,7 +215,7 @@ void DispatchTask<Traits>::run()
 
 	Log::info() << "Start of " << owner_.name() << " thread " << id_ << endl;
 
-	Monitor::name(owner_.name());
+	Monitor::instance().name(owner_.name());
 
 	Handler handler;
 
@@ -273,11 +273,11 @@ void DispatchTask<Traits>::run()
 template<class Traits> 
 void DispatchInfo<Traits>::run()
 {
-	Monitor::name(owner_.name());
+	Monitor::instance().name(owner_.name());
 	for(;;)
 	{
 		int n = owner_.size();
-		Monitor::show(n>0);
+		Monitor::instance().show(n>0);
 		Log::status() << Plural(n,"request") << " queued" << endl;
 		::sleep(1);
 		/* owner_.sleep(3); */

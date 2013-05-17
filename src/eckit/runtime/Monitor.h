@@ -16,10 +16,11 @@
 
 #include "eckit/eckit.h"
 
-#include "eckit/thread/AutoLock.h"
 #include "eckit/container/MappedArray.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/runtime/TaskInfo.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 
@@ -28,67 +29,63 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 class Monitor : private NonCopyable {
-public:
+public: // typedefs
 
 	typedef MappedArray<TaskInfo> TaskArray;
 
-    /// Contructors
-
-	Monitor();
-
-    /// Destructor
-
-	~Monitor(); // Change to virtual if base class
+public: // methods
+    
+    static Monitor& instance();    
 
     static bool active();
     static void active( bool a );
     
-	static void startup();
-	static void shutdown();
-	static void out(char*,char*); // called from Log
+	void startup();
+	void shutdown();
+	void out(char*,char*); // called from Log
 
-    static void name(const string&);
-	static void kind(const string&);
+    void name(const string&);
+	void kind(const string&);
 
-	static void progress(const string&,unsigned long long,unsigned long long);
-	static void progress(unsigned long long);
-	static void progress();
+	void progress(const string&,unsigned long long,unsigned long long);
+	void progress(unsigned long long);
+	void progress();
 
-	static char state(char);
+	char state(char);
 
-	static void message(const string&);
-	static string message();
+	void message(const string&);
+	string message();
 
-	static void status(const string&);
-	static string status();
-	static string statusTree();
-	static void stoppable(bool);
-	static bool stopped();
+	void status(const string&);
+	string status();
+	string statusTree();
+	void stoppable(bool);
+	bool stopped();
 
-	static TaskArray& info();
-	static long       self();
-	static void parent(long);
+	TaskArray& tasks();
+	long       self();
+	void parent(long);
 
-	static void start(const string&);
-	static int  kill(const string& , int = 15);
+	void start(const string&);
+	int  kill(const string& , int = 15);
 
-	static void port(int );
-	static int  port();
+	void port(int );
+	int  port();
 
-	static void    host(const string& );
-	static string  host();
+	void    host(const string& );
+	string  host();
 
-	static TaskID taskID();
-	static void taskID(const TaskID&);
+	TaskID taskID();
+	void taskID(const TaskID&);
 
-	static void show(bool);
+	void show(bool);
 
-	static void cancel(const string&);
-	static string cancelMessage();
-	static bool  canceled();
+	void cancel(const string&);
+	string cancelMessage();
+	bool  canceled();
 
-	static void abort();
-	static void checkAbort();
+	void abort();
+	void checkAbort();
 
 private: // members
 
@@ -98,29 +95,40 @@ private: // members
 
 private: // methods
 
+    /// Contructors
+
+	Monitor();
+
+    /// Destructor
+
+	~Monitor();
+
 	unsigned long hash();
-	static Monitor& instance();
-	TaskInfo* operator->();
+    
+    TaskInfo* task();
 
 	void init();
 
+    friend class ThreadSingleton<Monitor>;
+    friend class NewAlloc0<Monitor>;
+    
 };
 
 //-----------------------------------------------------------------------------
 
-// Wrap the setting of Monitor::state
+// Wrap the setting of Monitor::instance().state
 
 class AutoState {
 	char old_;
 public:
 	AutoState(char c): 
-		old_(Monitor::state(c)) {}
+		old_(Monitor::instance().state(c)) {}
 
 	~AutoState()
-		{ Monitor::state(old_); }
+		{ Monitor::instance().state(old_); }
 
 	void set(char c) 
-		{ Monitor::state(c); }
+		{ Monitor::instance().state(c); }
 };
 
 //-----------------------------------------------------------------------------

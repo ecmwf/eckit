@@ -66,8 +66,8 @@ void ThreadControler::execute()
     //=================
     // Make sure the logs are created...
 
-    Monitor::startup();
-    Monitor::parent(Context::instance().self());
+    Monitor::instance().startup();
+    Monitor::instance().parent(Context::instance().self());
 
     //============
 

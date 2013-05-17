@@ -17,27 +17,12 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 ContextBehavior::ContextBehavior() : 
-    debug_(0),
-    displayName_(),
-    home_()
+    debug_(0)
 {
 }
 
 ContextBehavior::~ContextBehavior()
 {
-}
-
-string ContextBehavior::displayName() const
-{
-    if( displayName_.empty() )
-        return runName();
-    else
-        return displayName_;
-}
-
-void ContextBehavior::displayName(const string &name)
-{
-    displayName_ = name;
 }
 
 void ContextBehavior::reconfigure()

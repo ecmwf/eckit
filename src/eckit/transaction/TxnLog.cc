@@ -152,7 +152,7 @@ RecoverThread<T>::RecoverThread(const PathName& path,
 template<class T>
 void RecoverThread<T>::run()
 {
-	Monitor::name("recover");
+	Monitor::instance().name("recover");
 	recover();
 }
 

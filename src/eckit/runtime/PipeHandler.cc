@@ -29,7 +29,7 @@ PipeHandler<Request>::PipeHandler():
     busy_(false),
     last_(0)
 {
-    Monitor::show(false);
+    Monitor::instance().show(false);
 }
 
 //=========================================================================
@@ -52,7 +52,7 @@ void PipeHandler<Request>::send(Request* r)
 
     static const char *here = __FUNCTION__;
 
-    Monitor::show(true);
+    Monitor::instance().show(true);
 
     for(;;)
     {
@@ -167,7 +167,7 @@ void PipeHandler<Request>::handle(const vector<Request*>& v)
 template<class Request>
 void PipeHandler<Request>::idle()
 {
-    Monitor::show(active());
+    Monitor::instance().show(active());
 }
 
 //=========================================================================
@@ -217,7 +217,7 @@ void PipeHandler<Request>::run()
 
     char in[20];  snprintf(in,20,"%d", pipe_->in());
     char out[20]; snprintf(out,20,"%d",pipe_->out());
-    char par[20]; snprintf(par,20,"%ld",Monitor::self());
+    char par[20]; snprintf(par,20,"%ld",Monitor::instance().self());
 
     PathName cmd = string("~/bin/") + Request::commandName();
 

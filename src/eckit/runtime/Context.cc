@@ -28,8 +28,16 @@ static Once<Mutex> mutex;
 
 Context::Context() :
     argc_(0),
-    argv_(0)
+    argv_(0),
+    taskID_(0),    
+    home_("/"),
+    runName_("undef"),
+    displayName_()
 {
+    char * h = getenv( "HOME" );
+    if(h)
+        home_ = h;
+
     behavior_.reset( new StandardBehavior() );
 }
 
@@ -99,32 +107,46 @@ void Context::reconfigure()
 
 string Context::home() const
 {
-    return behavior_->home();
+    return home_;
+}
+
+void Context::home(const string &h)
+{
+    AutoLock<Mutex> lock(mutex);    
+    home_ = h;
 }
 
 long Context::self() const
 {
-    return behavior_->taskId();    
+    return taskID_;
+}
+
+void Context::self(long id)
+{
+    taskID_ = id;
 }
 
 string Context::runName() const
 {
-    return behavior_->runName();    
+    return runName_;
 }
 
 void Context::runName(const string &name)
 {
-    behavior_->runName(name);    
+    runName_ = name;
 }
 
 string Context::displayName() const
 {
-    return behavior_->displayName();    
+    if(displayName_.empty())
+        return runName();
+    else
+        return displayName_;
 }
 
 void Context::displayName(const string &name)
 {
-    behavior_->displayName(name);    
+    displayName_ = name;
 }
 
 LogStream& Context::infoStream()

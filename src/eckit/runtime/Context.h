@@ -63,7 +63,10 @@ public: // methods
     int  debug() const;
     void debug( const int );
     
+    /// @returns Process task ID in the Monitor, same for all threads.
+    ///          Threads may have different returned by Monitor::self()
     long self() const;
+    void self( long );
     
     string runName() const;
     void runName( const string& name ); 
@@ -72,6 +75,7 @@ public: // methods
     void displayName( const string& name ); 
     
     string home() const;
+    void home( const std::string& h );
 
     LogStream& infoStream();
     LogStream& warnStream();
@@ -96,7 +100,14 @@ protected:
     std::auto_ptr<ContextBehavior> behavior_;
     
     int     argc_;
-	char**  argv_;    
+	char**  argv_;
+
+    long taskID_;
+    
+    std::string  home_;  ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
+    std::string  runName_;      ///< name of running application
+    std::string  displayName_;  ///< name to be displayed of running application
+    
 };
 
 

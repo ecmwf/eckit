@@ -36,15 +36,7 @@ public:
 	virtual ~ContextBehavior();
 
 public: // interface methods
-
-    virtual string runName() const = 0;
-    virtual void runName( const string& name ) = 0; 
-    
-    virtual string displayName() const;
-    virtual void displayName( const string& name ); 
         
-    virtual long taskId() const = 0;
-
     virtual LogStream& infoStream()  = 0;
     virtual LogStream& warnStream()  = 0;
     virtual LogStream& errorStream() = 0;
@@ -53,8 +45,6 @@ public: // interface methods
     int  debug() const  { return debug_; }    
     void debug( int d ) { debug_ = d; }    
     
-    std::string home() const { return home_; }
-
     // From Configurable
 
 	virtual void   reconfigure();
@@ -69,8 +59,6 @@ private: // methods
 protected: // members
    
     int     debug_;
-    string  displayName_;
-    string  home_;
 
 };
 

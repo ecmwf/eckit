@@ -268,9 +268,7 @@ LocalPathName& LocalPathName::tidy()
 
 	if(path_[0] == '~')
 	{
-		static string homeDir = Context::instance().home();
-
-        path_ =  homeDir + "/" + path_.substr(1);
+        path_ =  Context::instance().home() + "/" + path_.substr(1);
 	}
 
 

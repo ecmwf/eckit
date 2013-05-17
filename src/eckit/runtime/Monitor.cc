@@ -11,14 +11,16 @@
 #include <pthread.h>
 #include <signal.h>
 
-#include "eckit/thread/AutoLock.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/runtime/Monitor.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/config/Resource.h"
 #include "eckit/compat/StrStream.h"
+#include "eckit/config/Resource.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/TaskInfo.h"
-#include "eckit/thread/ThreadSingleton.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/AutoLock.h"
+
+#include "eckit/os/BackTrace.h"
 
 //-----------------------------------------------------------------------------
 
@@ -27,6 +29,36 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 static bool active_ = false;
+
+static Monitor::TaskArray* mapArray = 0;
+static pthread_once_t once = PTHREAD_ONCE_INIT;
+
+static void taskarray_init(void)
+{
+    string  monitor = Resource<string>("monitorPath","~/etc/monitor");
+	long    size    = Resource<long>("monitorSize",1000);
+    mapArray = new Monitor::TaskArray(monitor,size);
+}
+
+Monitor::TaskArray& Monitor::tasks()
+{
+    pthread_once(&once, taskarray_init);
+	return *mapArray;
+}
+
+//-----------------------------------------------------------------------------
+
+template class ThreadSingleton<Monitor>;
+
+Monitor& Monitor::instance()
+{
+    static ThreadSingleton<Monitor> monitor;
+    Monitor& m = monitor.instance();
+	if(!m.ready_) m.init();
+	return m;
+}
+
+//-----------------------------------------------------------------------------
 
 Monitor::Monitor():
 	ready_(false),
@@ -38,18 +70,12 @@ void Monitor::init()
 {
 	if(ready_) return;
 
-	if(!active_) {
-		ready_ = true;
-		return;
-	}
+    if(!active_) {  ready_ = true;  return; }  // this is for processes that don't use Monitor
 
-    //  Monitor is being inited twice...
-	
-	if(check_) ::abort();
-
+	if(check_) return; // safely ignore double initialization
 	check_ = true;
 
-	TaskArray& a = info();
+	TaskArray& a = tasks();
 
 	AutoLock<TaskArray> lock(a);
 
@@ -70,9 +96,10 @@ void Monitor::init()
 		}
 	}
 
-    if(!found) {
-    cout << "No free monitor slots" << endl;
-    cerr << "No free monitor slots" << endl;
+    if(!found) 
+    {
+        cout << "No free monitor slots" << endl;
+        cerr << "No free monitor slots" << endl;
     }
 
 	// No free monitor slots
@@ -86,11 +113,13 @@ void Monitor::init()
 Monitor::~Monitor() 
 { 
 	if(ready_ && active_) {
-		TaskArray& a = info();
+		TaskArray& a = tasks();
 		AutoLock<TaskArray> lock(a);
 		a[slot_].TaskInfo::~TaskInfo();
     }
 }
+
+//-----------------------------------------------------------------------------
 
 bool Monitor::active()
 {
@@ -104,16 +133,14 @@ void Monitor::active( bool a )
 
 void Monitor::startup()
 {
-	if(!active_) return;
-	// Create the instance	
-	Monitor::instance();
+    if(!ready_) init();
 }
 
 void Monitor::shutdown()
 {
 	if(!active_) return;
 
-	TaskArray& a = info();
+	TaskArray& a = tasks();
 	AutoLock<TaskArray> lock(a);
 
 	pid_t pid = getpid();
@@ -130,30 +157,15 @@ unsigned long Monitor::hash()
 	return (((unsigned long)pthread_self() << 16) | (unsigned long)getpid());
 }
 
-//============================================================================
-
-template class ThreadSingleton<Monitor>;
-
-static ThreadSingleton<Monitor> monitor;
-
-Monitor& Monitor::instance()
+TaskInfo* Monitor::task()
 {
-    Monitor& m = monitor.instance();
-	if(!m.ready_) m.init();
-	return m;
-}
-
-TaskInfo* Monitor::operator->()
-{
-	if(!active_)
+	if( !active_ || !ready_ )
 	{
 		static TaskInfo info;
 		return &info;
 	}
 
-    Monitor::instance(); // insure is initialized
-
-	TaskArray& a = info();
+    TaskArray& a = tasks();
 	return &a[slot_];
 }
 
@@ -161,120 +173,101 @@ TaskInfo* Monitor::operator->()
 long Monitor::self()
 {
 	if(!active_) return 0;
-
-	Monitor& m =  monitor.instance();
-	if(!m.ready_)  return -1;
-	return instance().slot_;	
+	if(!ready_)  return -1;
+	return slot_;	
 }
 
 void Monitor::out(char* from,char *to)
 {
-	monitor.instance(); // insure is initialized
-	instance()->out(from,to);
-}
-
-
-static Monitor::TaskArray* mapArray = 0;
-static pthread_once_t once = PTHREAD_ONCE_INIT;
-
-static void init(void)
-{
-    string  monitor = Resource<string>("monitorPath","~/etc/monitor");
-	long    size    = Resource<long>("monitorSize",1000);
-    mapArray = new Monitor::TaskArray(monitor,size);
-}
-
-Monitor::TaskArray& Monitor::info()
-{
-    pthread_once(&once, eckit::init);
-	return *mapArray;
+    if(!ready_) return;    
+    task()->out(from,to);
 }
 
 void Monitor::name(const string& s) 
 {
-	instance()->name(s);
+    if(!ready_) return;    
+	task()->name(s);
 }
 
 void Monitor::kind(const string& s) 
 {
-	instance()->kind(s);
+    if(!ready_) return;    
+	task()->kind(s);
 }
 
-void Monitor::progress(const string& name,
-	unsigned long long min,unsigned long long max)
+void Monitor::progress(const string& name, unsigned long long min,unsigned long long max)
 {
-	instance()->progressName(name);
-	instance()->start(min,max);
+    if(!ready_) return;    
+	task()->progressName(name);
+	task()->start(min,max);
 }
 
 void Monitor::progress(unsigned long long value)
 {
-	instance()->progress(value);
+    if(!ready_) return;    
+	task()->progress(value);
 }
 
 void Monitor::progress()
 {
-	instance()->done();
+    if(!ready_) return;    
+	task()->done();
 }
 
 char Monitor::state(char c)
 {
-	char x = instance()->state();
-	instance()->state(c);
+	char x = task()->state();
+	task()->state(c);
 	return x;
 }
 
 void Monitor::status(const string& msg)
 {
-	Monitor& m =  monitor.instance();
-	if(!m.ready_) return;
-	instance()->status(msg);
+	if(!ready_) return;
+	task()->status(msg);
 }
 
 string Monitor::status()
 {
-	Monitor& m =  monitor.instance();
-	if(!m.ready_) return string();
-	return instance()->status();
+	if(!ready_) return string();
+	return task()->status();
 }
 
 void Monitor::message(const string& msg)
 {
-	Monitor& m =  monitor.instance();
-	if(!m.ready_) return;
-	instance()->message(msg);
+	if(!ready_) return;
+	task()->message(msg);
 }
 
 string Monitor::message()
 {
-	Monitor& m =  monitor.instance();
-	if(!m.ready_) return string();
-	return instance()->message();
+	if(!ready_) return string();
+	return task()->message();
 }
 
 void Monitor::stoppable(bool b)
 {
-	instance()->stoppable(b);
+	task()->stoppable(b);
 }
 
 bool Monitor::stopped()
 {
-	return instance()->stopped();
+	return task()->stopped();
 }
 
 void Monitor::abort()
 {
-	instance()->abort();
+	task()->abort();
 }
 
 void Monitor::checkAbort()
 {
-	instance()->checkAbort();
+	task()->checkAbort();
 }
 
 void Monitor::parent(long p)
 {
-	instance()->parent(p);
+	task()->parent(p);
 }
 
 
@@ -284,7 +277,7 @@ string Monitor::statusTree()
     os << status();
     int n = self();
 
-	TaskArray& p = info();
+	TaskArray& p = tasks();
 
 	for( size_t j = 0 ; j < p.size(); ++j )
 		if((p[j].parent() == n) && p[j].show() && p[j].busy(true))
@@ -301,7 +294,7 @@ void Monitor::start(const string& app)
 {
 	if(!active_) return;
 
-	TaskArray& p = info();
+	TaskArray& p = tasks();
 
 	for( size_t j = 0 ; j < p.size(); ++j )
 		if(p[j].busy(true) && app == p[j].application() && 
@@ -325,37 +318,37 @@ void Monitor::start(const string& app)
 
 void Monitor::port(int p)
 {
-	instance()->port(p);
+	task()->port(p);
 }
 
 int Monitor::port() 
 {
-	return instance()->port();
+	return task()->port();
 }
 
 void Monitor::host(const string& h)
 {
-	instance()->host(h);
+	task()->host(h);
 }
 
 string Monitor::host() 
 {
-	return instance()->host();
+	return task()->host();
 }
 
 void Monitor::taskID(const TaskID& id)
 {
-	instance()->taskID(id);
+	task()->taskID(id);
 }
 
 TaskID Monitor::taskID() 
 {
-	return instance()->taskID();
+	return task()->taskID();
 }
 
 void Monitor::show(bool on)
 {
-	instance()->show(on);
+	task()->show(on);
 }
 
 int Monitor::kill(const string& name, int sig)
@@ -363,7 +356,7 @@ int Monitor::kill(const string& name, int sig)
 
 	if(!active_) return 0;
 
-	Monitor::TaskArray& info = Monitor::info();
+    Monitor::TaskArray& info = tasks();
 	pid_t      me   = ::getpid();
 	int        n    = 0;
 

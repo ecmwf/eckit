@@ -103,7 +103,7 @@ void ChildReaper::run()
 	sigaddset(&newmask, SIGCHLD);
 	pthread_sigmask(SIG_UNBLOCK,&newmask,&oldmask);
 
-	Monitor::name("reaper");
+	Monitor::instance().name("reaper");
 
 	for(;;)
 	{
@@ -111,9 +111,9 @@ void ChildReaper::run()
 		r.found_ = false;
 		Log::status() << "Waiting" << endl;
 
-        Monitor::show(false);
+        Monitor::instance().show(false);
 		r.pid_ = ::waitpid(-1, &r.status_, 0);
-        Monitor::show(true);
+        Monitor::instance().show(true);
 
 		if(r.pid_ == -1) {
 			// Todo: use mutex cond....

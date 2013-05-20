@@ -33,16 +33,11 @@ static void callback_logger( void* ctxt, int level, const char* msg )
 
 void test_callback_output()
 {    
-    Log::debug()         << "debug message 1" << std::endl; // should not print if debug not set
-    
-    Log::info()         << "info message 1" << std::endl;
-    
-    Log::warning()         << "warning message 1" << std::endl;
-    
-    Log::error()         << "error message 1" << std::endl;
-    
-    Log::panic()         << "panic message 1" << std::endl;
-
+    Log::debug()    << "debug message"   << std::endl; // should not print if debug not set
+    Log::info()     << "info message"    << std::endl;
+    Log::warning()  << "warning message" << std::endl;
+    Log::error()    << "error message"   << std::endl;
+    Log::panic()    << "panic message"   << std::endl;
 }
 
 template< int N >
@@ -51,11 +46,14 @@ class TLog : public Thread
     void run()
     {
         for( int i = 0; i < 3*N; ++i )
-//        for(;;)
         {
            ::usleep(N*1000000);
-            Log::info() << "thread [" << N << "]" << std::endl;
-//            test_callback_output();
+
+           Log::info() << "thread [" << N << "] -- " << i << std::endl;
+           
+           test_callback_output();
+
+           Log::info() << std::endl;
         }
     }
 };
@@ -71,11 +69,11 @@ using namespace eckit_test;
 
 int main(int argc,char **argv)
 {
-//    LibBehavior* b = new LibBehavior();
-//    Context::instance().behavior( b );
-//    b->register_logger_callback( &callback_logger );
+    LibBehavior* b = new LibBehavior();
+    Context::instance().behavior( b );
+    b->register_logger_callback( &callback_logger );
 
-//    test_callback_output();
+    test_callback_output();
     
     ThreadControler t1( new TLog<1>(), false );
     ThreadControler t2( new TLog<2>(), false );
@@ -85,9 +83,6 @@ int main(int argc,char **argv)
     
     t1.wait();
     t2.wait();
-    
-//    t1.stop();
-//    t2.stop();
     
     return 0;
 }

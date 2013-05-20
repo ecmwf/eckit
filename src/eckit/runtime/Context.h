@@ -104,7 +104,7 @@ protected:
 
     long taskID_;
     
-    std::string  home_;  ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
+    std::string  home_;         ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
     std::string  runName_;      ///< name of running application
     std::string  displayName_;  ///< name to be displayed of running application
     

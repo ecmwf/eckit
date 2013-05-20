@@ -21,58 +21,68 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-LibBehavior::LibBehavior() :
-    info_ ( new CallbackLogger() ),
-    debug_( new CallbackLogger() ),
-    warn_ ( new CallbackLogger() ),
-    error_( new CallbackLogger() )
+template< typename TYPE, int L >
+struct CallBackAlloc {
+    CallBackAlloc( CallbackLogger::callback c, void* ctxt ) : c_(c),ctxt_(ctxt) {}
+    TYPE* operator() () 
+    { 
+        CallbackLogger* lg = new CallbackLogger();
+        lg->register_callback( c_, L, ctxt_ );
+        return new TYPE( lg ); 
+    }
+    CallbackLogger::callback c_;
+    void* ctxt_;
+};
+
+//-----------------------------------------------------------------------------
+
+LibBehavior::LibBehavior() : c_(0),ctxt_(0)
 {
 }
 
 LibBehavior::~LibBehavior()
 {
-    delete info_;
-    delete debug_;
-    delete warn_;
-    delete error_;
 }
 
 void LibBehavior::register_logger_callback( CallbackLogger::callback c, void* ctxt )
 {    
-    info_->register_callback (c, (int)'I', ctxt);
-    debug_->register_callback(c, (int)'D', ctxt);
-    warn_->register_callback (c, (int)'W', ctxt);
-    error_->register_callback(c, (int)'E', ctxt);
+    ASSERT(c);
+    c_ = c;
+    ctxt_ = ctxt;
 }
 
 LogStream& LibBehavior::infoStream()
 {
-    typedef NewAlloc1<InfoStream,Logger*> Alloc;
-    static Alloc a (info_);
+    if(!c_) throw SeriousBug("Forgot to register callback before logging?");
+    typedef CallBackAlloc<InfoStream,(int)'I'> Alloc;
+    static Alloc a (c_,ctxt_);
     static ThreadSingleton<InfoStream,Alloc> x( a );
     return x.instance();
 }
 
 LogStream& LibBehavior::warnStream()
 {
-    typedef NewAlloc1<WarnStream,Logger*> Alloc;
-    static Alloc a (warn_);
+    if(!c_) throw SeriousBug("Forgot to register callback before logging?");
+    typedef CallBackAlloc<WarnStream,(int)'W'> Alloc;
+    static Alloc a (c_,ctxt_);
     static ThreadSingleton<WarnStream,Alloc> x( a );
     return x.instance();
 }
 
 LogStream& LibBehavior::errorStream()
 {
-    typedef NewAlloc1<ErrorStream,Logger*> Alloc;
-    static Alloc a (error_);
+    if(!c_) throw SeriousBug("Forgot to register callback before logging?");
+    typedef CallBackAlloc<ErrorStream,(int)'E'> Alloc;
+    static Alloc a (c_,ctxt_);
     static ThreadSingleton<ErrorStream,Alloc> x( a );
     return x.instance();
 }
 
 LogStream& LibBehavior::debugStream()
 {
-    typedef NewAlloc1<DebugStream,Logger*> Alloc;
-    static Alloc a (debug_);
+    if(!c_) throw SeriousBug("Forgot to register callback before logging?");
+    typedef CallBackAlloc<DebugStream,(int)'D'> Alloc;
+    static Alloc a (c_,ctxt_);
     static ThreadSingleton<DebugStream,Alloc> x( a );
     return x.instance();
 }

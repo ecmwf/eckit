@@ -33,31 +33,39 @@ StandardBehavior::~StandardBehavior()
 
 //-----------------------------------------------------------------------------
 
+template< typename TYPE >
+struct OutAlloc {
+    OutAlloc() {}
+    TYPE* operator() () { return new TYPE( new StdLogger( std::cout ) ); }
+};
+
+template< typename TYPE >
+struct ErrAlloc {
+    ErrAlloc() {}
+    TYPE* operator() () { return new TYPE( new StdLogger( std::cerr ) ); }
+};
+
 LogStream& StandardBehavior::infoStream()
 {
-    typedef NewAlloc1<InfoStream,Logger*> Alloc;
-    static ThreadSingleton<InfoStream,Alloc> x( Alloc( new StdLogger( std::cout ) ) );
+    static ThreadSingleton<InfoStream,OutAlloc<InfoStream> > x;
     return x.instance();
 }
 
 LogStream& StandardBehavior::warnStream()
 {
-    typedef NewAlloc1<WarnStream,Logger*> Alloc;
-    static ThreadSingleton<WarnStream,Alloc> x( Alloc( new StdLogger( std::cerr ) ) );
+    static ThreadSingleton<WarnStream,ErrAlloc<WarnStream> > x;
     return x.instance();
 }
 
 LogStream& StandardBehavior::errorStream()
 {
-    typedef NewAlloc1<ErrorStream,Logger*> Alloc;
-    static ThreadSingleton<ErrorStream,Alloc> x( Alloc( new StdLogger( std::cerr ) ) );
+    static ThreadSingleton<ErrorStream,ErrAlloc<ErrorStream> > x;
     return x.instance();
 }
 
 LogStream& StandardBehavior::debugStream()
 {
-    typedef NewAlloc1<DebugStream,Logger*> Alloc;
-    static ThreadSingleton<DebugStream,Alloc> x( Alloc( new StdLogger( std::cout ) ) );
+    static ThreadSingleton<DebugStream,OutAlloc<DebugStream> > x;
     return x.instance();
 }
 

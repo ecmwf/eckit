@@ -43,10 +43,9 @@ private: // interface methods
 
 protected: // members
     
-    CallbackLogger* info_;
-    CallbackLogger* debug_;
-    CallbackLogger* warn_;
-    CallbackLogger* error_;
+    CallbackLogger::callback c_;
+    void* ctxt_;
+    
 };
 
 

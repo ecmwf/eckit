@@ -47,7 +47,7 @@ class TLog : public Thread
     {
         for( int i = 0; i < 3*N; ++i )
         {
-           ::usleep(N*1000000);
+           ::usleep(N*100000);
 
            Log::info() << "thread [" << N << "] -- " << i << std::endl;
            

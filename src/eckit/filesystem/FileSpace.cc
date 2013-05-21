@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
+
 #include "eckit/thread/AutoLock.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/io/cluster/ClusterDisks.h"

@@ -9,6 +9,7 @@
  */
 
 #include <fcntl.h>
+#include <unistd.h>
 
 #include "eckit/filesystem/AIOHandle.h"
 

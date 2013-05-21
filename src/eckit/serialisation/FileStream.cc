@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
 #include <dirent.h>
 
 #include "eckit/eckit.h"

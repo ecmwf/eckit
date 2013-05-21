@@ -8,13 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/thread/Thread.h"
-#include "eckit/thread/ThreadControler.h"
+#include <unistd.h>
+
+#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/log/Log.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Context.h"
 #include "eckit/runtime/LibBehavior.h"
-#include "eckit/filesystem/LocalPathName.h"
-#include "eckit/log/Log.h"
+#include "eckit/thread/Thread.h"
+#include "eckit/thread/ThreadControler.h"
 
 using namespace eckit;
 

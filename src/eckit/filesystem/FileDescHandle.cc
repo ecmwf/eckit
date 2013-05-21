@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
+
 #include "eckit/filesystem/FileDescHandle.h"
 
 //-----------------------------------------------------------------------------

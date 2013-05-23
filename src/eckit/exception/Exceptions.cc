@@ -148,27 +148,23 @@ FailedSystemCall::FailedSystemCall(const string& w)
     Log::monitor(Log::Unix,errno) << what() << endl;
 }
 
-FailedSystemCall::FailedSystemCall(const char* msg,int line,
-        const char* file, const char* proc,int err)
+FailedSystemCall::FailedSystemCall(const char* msg,const CodeLocation& loc,int err)
 {
     StrStream s;
 
     errno = err;
-    s << "Failed system call: " << msg << " in " << proc 
-        << ", line " << line << " of " << file << Log::syserr << StrStream::ends;
+    s << "Failed system call: " << msg << " in " << loc << Log::syserr << StrStream::ends;
 
     reason(string(s));
     Log::monitor(Log::Unix,errno) << what() << endl;
 }
 
-FailedSystemCall::FailedSystemCall(const string& ctx, const char* msg,int line,
-        const char* file, const char* proc,int err)
+FailedSystemCall::FailedSystemCall(const string& ctx, const char* msg, const CodeLocation& loc,int err)
 {
     StrStream s;
 
     errno = err;
-    s << "Failed system call: " << msg << " in " << proc 
-        << ", line " << line << " of " << file << Log::syserr << " [" << ctx << "]" << StrStream::ends;
+    s << "Failed system call: " << msg << " in " << loc << Log::syserr << " [" << ctx << "]" << StrStream::ends;
 
     reason(string(s));
     Log::monitor(Log::Unix,errno) << what() << endl;
@@ -319,10 +315,10 @@ void handle_panic(const char *msg)
     ::pause();
 }
 
-void handle_panic(const char* msg,int line,const char* file, const char* proc)
+void handle_panic(const char* msg, const CodeLocation& location )
 {
     StrStream s;
-    s << msg << " in " << proc << ", line " << line << " of " << file << StrStream::ends;
+    s << msg << " in " << location << StrStream::ends;
     string t(s);
     handle_panic(t.c_str());
 }

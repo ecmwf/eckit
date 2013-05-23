@@ -45,7 +45,7 @@ void CodeLocation::print(ostream& os) const
             os << " : " << func_;
     }
     else
-        os << "(null)";
+        os << "(unknown location)";
 }
 
 

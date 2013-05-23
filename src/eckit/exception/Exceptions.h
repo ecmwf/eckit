@@ -26,7 +26,7 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 void handle_panic(const char*);
-void handle_panic(const char *msg,int line,const char *file,const char *proc);
+void handle_panic(const char*, const CodeLocation&);
 
 // General purpose exception
 // Other exceptions must be defined in the class that throw them
@@ -88,14 +88,14 @@ public:
 class FailedSystemCall : public Exception {
 public:
     FailedSystemCall(const string&);
-    FailedSystemCall(const char*,int,const char*,const char*,int);
-    FailedSystemCall(const string&,const char*,int,const char*,const char*,int);
+    FailedSystemCall(const char*,const CodeLocation&,int);
+    FailedSystemCall(const string&,const char*,const CodeLocation&,int);
 };
 
 class AssertionFailed : public Exception {
 public:
     AssertionFailed(const string&);
-    AssertionFailed(const char*, const CodeLocation& loc );
+    AssertionFailed(const char*, const CodeLocation& );
 };
 
 class BadParameter : public Exception {
@@ -182,31 +182,28 @@ public:
 
 // =======================================
 
-inline void SysCall(long long code,const char *msg,int line,const char *file,
-    const char *proc)
+inline void SysCall(long long code,const char *msg,const CodeLocation& loc)
 {
     if(code<0)
-        throw FailedSystemCall(msg,line,file,proc,errno);
+        throw FailedSystemCall(msg,loc,errno);
 }
 // =======================================
 template<class T>
-inline void SysCall(long long code,const char *msg,const T& ctx,int line,const char *file,
-    const char *proc)
+inline void SysCall(long long code,const char *msg,const T& ctx,const CodeLocation& loc)
 {
     if(code<0)
     {
         StrStream os;
         os << ctx << StrStream::ends;
-        throw FailedSystemCall(string(os),msg,line,file,proc,errno);
+        throw FailedSystemCall(string(os),msg,loc,errno);
     }
 }
 // =======================================
 
-inline void ThrCall(int code,const char *msg,int line,const char *file,
-    const char *proc)
+inline void ThrCall(int code,const char *msg, const CodeLocation& loc)
 {
     if(code != 0) // Threads return errno in return code
-        handle_panic(msg,line,file,proc);
+        handle_panic(msg,loc);
     /*
     {
         throw FailedSystemCall(msg,line,file,proc,code);
@@ -220,10 +217,10 @@ inline void Assert(int code,const char *msg, const CodeLocation& loc )
         throw AssertionFailed(msg,loc);
 }
 
-inline void Panic(int code,const char *msg,int line,const char *file, const char *proc)
+inline void Panic(int code,const char *msg, const CodeLocation& loc )
 {
     if(code != 0)
-        handle_panic(msg,line,file,proc);
+        handle_panic(msg,loc);
 }
 
 //-----------------------------------------------------------------------------
@@ -239,12 +236,12 @@ public:
 
 //-----------------------------------------------------------------------------
 
-#define THRCALL(a)    eckit::ThrCall(a,#a,__LINE__,__FILE__,__FUNCTION__)
-#define SYSCALL(a)    eckit::SysCall(a,#a,__LINE__,__FILE__,__FUNCTION__)
-#define SYSCALL2(a,b) eckit::SysCall(a,#a,b,__LINE__,__FILE__,__FUNCTION__)
-#define ASSERT(a)     eckit::Assert(!(a),#a, Here() )
-#define PANIC(a)      eckit::Panic((a),#a,__LINE__,__FILE__,__FUNCTION__)
-#define NOTIMP  throw eckit::NotImplemented( Here() )
+#define THRCALL(a)    eckit::ThrCall(a,#a,Here())
+#define SYSCALL(a)    eckit::SysCall(a,#a,Here())
+#define SYSCALL2(a,b) eckit::SysCall(a,#a,b,Here())
+#define ASSERT(a)     eckit::Assert(!(a),#a,Here())
+#define PANIC(a)      eckit::Panic((a),#a,Here())
+#define NOTIMP  throw eckit::NotImplemented(Here())
 
 //-----------------------------------------------------------------------------
 

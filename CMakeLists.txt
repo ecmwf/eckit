@@ -48,7 +48,7 @@ set(Boost_USE_MULTITHREADED        ON )
 
 find_package( Boost 1.50.0 COMPONENTS filesystem program_options date_time thread system unit_test_framework test_exec_monitor )
 
-list( APPEND ECKIT_BOOST_LIBS      ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
+list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
 
 find_program( PSTACK_COMMAND "pstack" DOC "path to the pstack executable" )
 mark_as_advanced(PSTACK_COMMAND)
@@ -57,7 +57,16 @@ find_program( CPPFILT_COMMAND "c++filt" DOC "path to the c++filt executable" )
 mark_as_advanced(CPPFILT_COMMAND)
 
 ###############################################################################
-# macro processing
+# checks
+
+# fail if we dont have bool
+if( NOT EC_HAVE_CXX_BOOL )
+    message( FATAL_ERROR "MARS cannot build -- c++ compiler does not support bool" )
+endif()
+# fail if we dont have sstream
+if( NOT EC_HAVE_CXX_SSTREAM )
+    message( FATAL_ERROR "c++ compiler does not support stringstream" )
+endif()
 
 ###############################################################################
 # contents

@@ -169,7 +169,6 @@ int	MonitorBuffer::sync()
         return 0;
 }
 
-// constance#marsb#19970925:001609#ANR0400I Session 1200 started for node MARS...
 void MonitorBuffer::dumpBuffer()
 {
         setp(pbase(), epptr());
@@ -178,17 +177,6 @@ void MonitorBuffer::dumpBuffer()
 
 //=============================================================================
 
-void Log::lock()
-{
-    //mutex.lock();
-}
-
-void Log::unlock()
-{
-    //mutex.unlock();
-}
-
-//=============================================================================
 ostream& Log::monitor(char type,long mode)
 {
         static ThreadSingleton<MonitorStream> x;

@@ -97,10 +97,6 @@ public:
 
 	static	ostream& syserr(ostream&);
 
-	// Called at fork
-	static void lock();
-	static void unlock();
-
 private:
 
 	// Log instances do not exist

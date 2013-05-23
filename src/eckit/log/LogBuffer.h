@@ -27,11 +27,9 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 class Logger;
+class UserOutStream;
 
-//
-// This class assumes that iostream are thread safe during a single
-// call to the << inserter
-//
+//-----------------------------------------------------------------------------
 
 class LogBuffer: public streambuf {
 public:
@@ -94,8 +92,6 @@ public:
   ~MessageBuffer();
 };
 
-class UserOutStream;
-
 class UserOutBuffer: public streambuf {
 private:
 
@@ -133,6 +129,8 @@ public:
   MonitorBuffer();
   ~MonitorBuffer();
 };
+
+//-----------------------------------------------------------------------------
 
 class LogStream: public ostream {
 public:

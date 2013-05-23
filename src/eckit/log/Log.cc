@@ -314,17 +314,6 @@ ostream& setformat(ostream& s,int n)
         return s;
 }
 
-
-SaveStatus::SaveStatus():
-        status_(Monitor::instance().status())
-{
-}
-
-SaveStatus::~SaveStatus()
-{
-        Monitor::instance().status(status_);
-}
-
 //=============================================================================
 
 UserOutStream::UserOutStream():

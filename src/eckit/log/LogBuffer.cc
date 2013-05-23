@@ -22,8 +22,8 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-// This is a mutex that serialize all calls to LogStream
-// This is overkilled, but it protects cout and cerr.
+// This is a mutex that serialize all calls to LogBuffer
+// This is overkill, but it protects cout and cerr.
 // Unfortunatly, it will also serialize other usage of this class (e.g. sockets...)
 
 static Once<Mutex> mutex;

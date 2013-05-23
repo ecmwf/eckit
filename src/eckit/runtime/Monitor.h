@@ -146,6 +146,17 @@ public:
 
 //-----------------------------------------------------------------------------
 
+/// Saves and Restores Monitor status line
+
+class SaveStatus {
+	string status_;
+public:
+	SaveStatus();
+	~SaveStatus();
+};
+
+//-----------------------------------------------------------------------------
+
 } // namespace eckit
 
 #endif

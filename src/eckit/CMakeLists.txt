@@ -206,6 +206,8 @@ runtime/Pipe.h
 runtime/ProducerConsumer.h )
 
 list( APPEND eckit_log_srcs
+log/Channel.h
+log/Channel.cc
 log/Log.h
 log/Log.cc
 log/LogBuffer.h

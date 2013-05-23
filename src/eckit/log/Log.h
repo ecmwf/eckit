@@ -92,9 +92,7 @@ public:
 
 	static  ostream& monitor(char,long); // Stream for operator monitor
 
-	// manipulator that will print the last error message
-	// as in perror(2)
-
+    /// manipulator that will print the last error message as in perror(2)
 	static	ostream& syserr(ostream&);
 
 private:
@@ -104,16 +102,6 @@ private:
 	Log();
 	~Log();
 
-};
-
-
-// -- Save/restore status line
-
-class SaveStatus {
-	string status_;
-public:
-	SaveStatus();
-	~SaveStatus();
 };
 
 ostream& setformat(ostream&,int);

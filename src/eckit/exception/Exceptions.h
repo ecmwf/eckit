@@ -58,7 +58,7 @@ protected: // methods
 private: // members
     
     string            what_;     ///< description
-    log::SavedStatus  save_;     ///< saved monitor status to recover after destruction
+    SavedStatus       save_;     ///< saved monitor status to recover after destruction
     Exception*        next_;
     CodeLocation      location_; ///< where exception was first thrown
     

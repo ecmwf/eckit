@@ -159,7 +159,7 @@ long TCPSocket::read(void *buf,long length)
             more = false;
             if(!select.ready(socketSelectTimeout)) 
             {
-                log::SavedStatus save;
+                SavedStatus save;
 				
 				Log::warning() << "No news from " << remoteHost()
                               << " from " << Seconds(socketSelectTimeout) << endl;

@@ -17,6 +17,7 @@
 
 #include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
+#include "eckit/log/SavedStatus.h"
 #include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------
@@ -28,12 +29,9 @@ namespace eckit {
 void handle_panic(const char*);
 void handle_panic(const char*, const CodeLocation&);
 
-// General purpose exception
-// Other exceptions must be defined in the class that throw them
-
-// Misc. errors
-
-class Exception : public exception {
+/// @brief General purpose exception
+/// Derive other exceptions from this class and implement then in the class that throws them.
+class Exception : public std::exception {
 
 public: // methods
 
@@ -59,10 +57,10 @@ protected: // methods
     
 private: // members
     
-    string          what_; //< description
-    SaveStatus      save_; 
-    Exception*      next_;
-    CodeLocation    location_; //< where exception was first thrown
+    string            what_;     ///< description
+    log::SavedStatus  save_;     ///< saved monitor status to recover after destruction
+    Exception*        next_;
+    CodeLocation      location_; ///< where exception was first thrown
     
 };
 

@@ -29,10 +29,11 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 class Monitor : private NonCopyable {
-public: // typedefs
+
+public: // types
 
 	typedef MappedArray<TaskInfo> TaskArray;
-
+    
 public: // methods
     
     static Monitor& instance();    
@@ -142,17 +143,6 @@ public:
 		{ state_.set(t.tag() - 'a' + 'A'); }
     AutoLockTag(T* t): state_(t->tag()), lock_(t) 
 		{ state_.set(t->tag() - 'a' + 'A'); }
-};
-
-//-----------------------------------------------------------------------------
-
-/// Saves and Restores Monitor status line
-
-class SaveStatus {
-	string status_;
-public:
-	SaveStatus();
-	~SaveStatus();
 };
 
 //-----------------------------------------------------------------------------

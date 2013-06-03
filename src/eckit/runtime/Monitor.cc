@@ -384,16 +384,5 @@ int Monitor::kill(const string& name, int sig)
 
 //-----------------------------------------------------------------------------
 
-SaveStatus::SaveStatus(): status_(Monitor::instance().status())
-{
-}
-
-SaveStatus::~SaveStatus()
-{
-    Monitor::instance().status(status_);
-}
-
-//-----------------------------------------------------------------------------
-
 } // namespace eckit
 

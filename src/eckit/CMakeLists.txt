@@ -229,6 +229,8 @@ log/Progress.h
 log/Progress.cc
 log/StdLogger.h
 log/StdLogger.cc
+log/SavedStatus.h
+log/SavedStatus.cc
 log/TimeStamp.h
 log/TimeStamp.cc
 log/CodeLocation.h

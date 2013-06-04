@@ -70,15 +70,10 @@ private:
       int j = 0;
       for( streams_t::iterator i = streams_.begin(); i != streams_.end(); ++i )
       {
-          ++j;
-          DEBUG_(j);
-          DEBUG_(i->first);
-          DEBUG_(i->second);
           std::ostream& os = *(i->second);
           const char *p = pbase();
           while( p != pptr() )
           {
-              DEBUG_(*p);
               os << *p;
               p++;
           }
@@ -128,13 +123,13 @@ public:
             i->second->flush();
             delete i->second;
             streams.erase(i);
+            return true;
         }
+        return false;
     }
     
     void add( const std::string& k, std::ostream* s )
     {
-        DEBUG_(k);
-        DEBUG_(s);
         if(!s) return;
         remove(k);
         buff_->streams_[k] = s;
@@ -176,17 +171,17 @@ public:
         setp(buffer_, buffer_ + sizeof(buffer_));
         setg(0, 0, 0);
     }
-    
-    ~ForwardBuffer() 
+
+    ~ForwardBuffer()
     {
         sync();
     }
-        
+
 private:
 
     std::ostream& os_;
     char buffer_[1024];
-  
+
     void dumpBuffer(void)
     {
         const char *p = pbase();
@@ -199,7 +194,7 @@ private:
     }
 
 protected:
-  
+
   int overflow(int c)
   {
       if (c == EOF) { sync(); return 0; }
@@ -207,23 +202,128 @@ protected:
       sputc(c);
       return 0;
   }
-  
+
   int sync()
   {
       dumpBuffer();
       os_ << std::flush;
       return 0;
   }
-  
+
 };
 
 class ForwardChannel : public Channel {
 public:
-    
+
     ForwardChannel( std::ostream& os ) : Channel( new ForwardBuffer(os) ) {}
-   
+
     ~ForwardChannel() {}
 };
+
+//-----------------------------------------------------------------------------
+
+typedef void (*callback_t) (void* ctxt, const char* msg);
+
+class CallbackBuffer: public std::streambuf {
+public:
+
+    CallbackBuffer( std::size_t size = 1024 ) : std::streambuf(),
+      call_(0),
+      ctxt_(0),
+      internal_buf_( size + 1 ) // + 1 so we can always write the '\0'
+    {
+        ASSERT( size );
+        char *base = &internal_buf_.front();
+        setp(base, base + internal_buf_.size() - 1 ); // don't consider the space for '\0'
+    }
+
+    ~CallbackBuffer()
+    {
+        sync();
+    }
+
+    void register_callback(callback_t c, void* ctxt)
+    {
+        call_  = c;
+        ctxt_  = ctxt;
+    }
+
+private:
+
+    callback_t call_;
+    void* ctxt_;
+    std::vector<char> internal_buf_;
+
+protected:
+    bool dumpBuffer()
+    {
+        if( call_ && pbase() != pptr() ) // forward the output to the callback function
+        {
+            // insert '\0' at pptr() -- e can do it because we reserved an extra character
+
+            *pptr() = '\0';
+            pbump(1);
+
+            // callback -- context can be null
+
+            (*call_)( ctxt_, pbase() );
+        }
+
+        // rollback -- even if no forward was made
+
+        std::ptrdiff_t n = pptr() - pbase();
+        pbump(-n);
+
+        return true;
+    }
+
+private:
+
+    int_type overflow(int_type ch)
+    {
+        /* AutoLock<Mutex> lock(mutex); */
+        if (ch == traits_type::eof() ) {
+            return sync();
+        }
+
+        dumpBuffer();
+        sputc(ch);
+
+        return ch;
+    }
+
+    int sync()
+    {
+        /* AutoLock<Mutex> lock(mutex); */
+        return dumpBuffer() ? 0 : -1;
+    }
+
+};
+
+class CallbackChannel : public Channel {
+public:
+
+    CallbackChannel() : Channel( new CallbackBuffer() ) {}
+
+    ~CallbackChannel() {}
+
+    void register_callback(callback_t c, void* ctxt)
+    {
+        static_cast<CallbackBuffer*>(rdbuf())->register_callback(c,ctxt);
+    }
+
+};
+
+//-----------------------------------------------------------------------------
+
+static void callback_empty( void* ctxt, const char* msg )
+{
+}
+
+static void callback_noctxt( void* ctxt, const char* msg )
+{
+    std::cout << "[CALLBACK OUT] : -- " << msg ;
+}
 
 //-----------------------------------------------------------------------------
 
@@ -274,21 +374,18 @@ void TestApp::test_1()
     ASSERT( oss.str() == string("testing 3\n") );
 
     DEBUG_H;
-        
+
+    CallbackChannel* cbc = new CallbackChannel();
+    cbc->register_callback(&callback_noctxt,0);
+    mc.add("cbc",cbc);
+
+    mc << "testing 4" << std::endl;
+
     /// @todo
-    /// * callback
     /// * filter
     /// * formatting
     /// * user / netwroking...
-    
-//    mc << "testing 3" << std::endl;
-    
-//    CallbackChannel cc;
-//    cc.register_callback( &testcallback );
-//    mc.add(cc);
-    
-    mc << "testing 4" << std::endl;
-    
+        
 }
 
 //-----------------------------------------------------------------------------

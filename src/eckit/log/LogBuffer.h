@@ -50,8 +50,6 @@ private:
   bool      start_;
   
   char      buffer_[1024];
-  char*     line_;
-  int       len_;
 
   void		dumpBuffer(void);
 

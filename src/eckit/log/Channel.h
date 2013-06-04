@@ -14,6 +14,8 @@
 #ifndef eckit_log_Channel_h
 #define eckit_log_Channel_h
 
+#include <ostream>
+
 #include "eckit/log/CodeLocation.h"
 
 //-----------------------------------------------------------------------------
@@ -22,7 +24,14 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+class Channel: public ostream {
+public:
 
+    Channel();
+
+  	~Channel();
+
+};
 
 //-----------------------------------------------------------------------------
 

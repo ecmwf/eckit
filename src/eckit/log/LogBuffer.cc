@@ -28,6 +28,8 @@ namespace eckit {
 
 static Once<Mutex> mutex;
 
+//-----------------------------------------------------------------------------
+
 LogStream::LogStream(Logger* logger):
     ostream( new LogBuffer( logger ) )
 {
@@ -39,12 +41,12 @@ LogStream::~LogStream()
     delete (LogBuffer*)rdbuf();
 }
 
+//-----------------------------------------------------------------------------
+
 LogBuffer::LogBuffer( Logger* logger ) :
     streambuf(),
     logger_(logger),
-    start_(true),
-    line_(0),
-    len_(0)
+    start_(true)
 {
     AutoLock<Mutex> lock(mutex);
     setp(buffer_, buffer_ + sizeof(buffer_));

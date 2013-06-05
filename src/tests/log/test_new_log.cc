@@ -8,9 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
+
+#include <signal.h>
+
+#include <locale>
 #include <iosfwd>
 #include <fstream>
 
+#include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/filesystem/LocalPathName.h"
 
@@ -47,9 +52,13 @@ public:
 
     typedef std::map<std::string,std::ostream*> streams_t;
     
-    MultiplexBuffer() : std::streambuf()
+    MultiplexBuffer( std::size_t size = 1024 ) : 
+        std::streambuf(),
+        buffer_( size + 1 ) // + 1 so we can always write the '\0'        
     {
-        setp(buffer_, buffer_ + sizeof(buffer_));
+        ASSERT( size );        
+        char *base = &buffer_.front();
+        setp( base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
         setg(0, 0, 0);
     }
     
@@ -64,41 +73,48 @@ public:
     
 private:
 
-  char buffer_[1024];
+  std::vector<char> buffer_;
   
-  void dumpBuffer(void)
+  bool dumpBuffer()
   {
-      int j = 0;
       for( streams_t::iterator i = streams_.begin(); i != streams_.end(); ++i )
       {
           std::ostream& os = *(i->second);
           const char *p = pbase();
+#if 0
+          os.write(p,pptr() - pbase());
+#else
           while( p != pptr() )
           {
               os << *p;
               p++;
           }
+#endif
 //          os << std::flush;
       }      
       setp(pbase(), epptr());
+      return true;
   }
 
 protected:
   
-  int overflow(int c)
+  int_type overflow(int_type ch)
   {
-      if (c == EOF) { sync(); return 0; }
+      if (ch == traits_type::eof() ) { return sync(); }
       dumpBuffer();
-      sputc(c);
-      return 0;
+      sputc(ch);
+      return traits_type::to_int_type(ch);
   }
   
-  int sync()
+  int_type sync()
   {
-      dumpBuffer();
-      for( streams_t::iterator i = streams_.begin(); i != streams_.end(); ++i )
-          *(i->second) << std::flush;
-      return 0;
+      if( dumpBuffer() )
+      {
+          for( streams_t::iterator i = streams_.begin(); i != streams_.end(); ++i )
+              *(i->second) << std::flush;
+          return 0;
+      }
+      else return -1;
   }
   
 };
@@ -167,10 +183,14 @@ public:
 class ForwardBuffer: public std::streambuf {
 public:
 
-    ForwardBuffer( std::ostream& os ) : std::streambuf(), os_(os)
+    ForwardBuffer( std::ostream& os, std::size_t size = 1024 ) : 
+        std::streambuf(), 
+        os_(os),
+        buffer_( size + 1 ) // + 1 so we can always write the '\0'        
     {
-        setp(buffer_, buffer_ + sizeof(buffer_));
-        setg(0, 0, 0);
+        ASSERT( size );
+        char *base = &buffer_.front();
+        setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
     }
 
     ~ForwardBuffer()
@@ -181,9 +201,9 @@ public:
 private:
 
     std::ostream& os_;
-    char buffer_[1024];
+    std::vector<char> buffer_;
 
-    void dumpBuffer(void)
+    bool dumpBuffer()
     {
         const char *p = pbase();
         while( p != pptr() )
@@ -192,23 +212,25 @@ private:
             p++;
         }
         setp(pbase(), epptr());
+        return true;
     }
 
 protected:
 
-  int overflow(int c)
-  {
-      if (c == EOF) { sync(); return 0; }
-      dumpBuffer();
-      sputc(c);
-      return 0;
-  }
+    int_type overflow(int_type ch)
+    {
+        /* AutoLock<Mutex> lock(mutex); */
+        if (ch == traits_type::eof() ) { return sync(); }
+        dumpBuffer();
+        sputc(ch);
+        return traits_type::to_int_type(ch);
+    }
 
-  int sync()
+  int_type sync()
   {
-      dumpBuffer();
-      os_ << std::flush;
-      return 0;
+      if( dumpBuffer() ) { os_ << std::flush; return 0; }
+      else
+        return -1;
   }
 
 };
@@ -228,16 +250,18 @@ typedef void (*callback_t) (void* ctxt, const char* msg);
 class CallbackBuffer: public std::streambuf {
 public:
 
-    CallbackBuffer( std::size_t size = 1024 ) : std::streambuf(),
-      call_(0),
-      ctxt_(0),
-      internal_buf_( size + 1 ) // + 1 so we can always write the '\0'
+    CallbackBuffer( callback_t c = 0, void* ctxt = 0, std::size_t size = 1024 ) : std::streambuf(),
+      call_(c),
+      ctxt_(ctxt),
+      buffer_( size + 1 ) // + 1 so we can always write the '\0'
     {
         ASSERT( size );
-        char *base = &internal_buf_.front();
-        setp(base, base + internal_buf_.size() - 1 ); // don't consider the space for '\0'
+        char *base = &buffer_.front();
+        setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
+        
+        if(c) register_callback(c,ctxt);
     }
-
+    
     ~CallbackBuffer()
     {
         sync();
@@ -253,9 +277,10 @@ private:
 
     callback_t call_;
     void* ctxt_;
-    std::vector<char> internal_buf_;
+    std::vector<char> buffer_;
 
 protected:
+    
     bool dumpBuffer()
     {
         if( call_ && pbase() != pptr() ) // forward the output to the callback function
@@ -274,7 +299,6 @@ protected:
 
         std::ptrdiff_t n = pptr() - pbase();
         pbump(-n);
-
         return true;
     }
 
@@ -283,17 +307,13 @@ private:
     int_type overflow(int_type ch)
     {
         /* AutoLock<Mutex> lock(mutex); */
-        if (ch == traits_type::eof() ) {
-            return sync();
-        }
-
+        if (ch == traits_type::eof() ) { return sync(); }
         dumpBuffer();
         sputc(ch);
-
-        return ch;
+        return traits_type::to_int_type(ch);
     }
 
-    int sync()
+    int_type sync()
     {
         /* AutoLock<Mutex> lock(mutex); */
         return dumpBuffer() ? 0 : -1;
@@ -305,6 +325,7 @@ class CallbackChannel : public Channel {
 public:
 
     CallbackChannel() : Channel( new CallbackBuffer() ) {}
+    CallbackChannel(callback_t c, void* ctxt = 0) : Channel( new CallbackBuffer(c,ctxt) ) {}
 
     ~CallbackChannel() {}
 
@@ -317,12 +338,102 @@ public:
 
 //-----------------------------------------------------------------------------
 
+class FormatBuffer: public std::streambuf {
+public:
+
+    FormatBuffer( std::size_t size = 1024 ) : 
+        std::streambuf(),
+        start_(true),
+        buffer_( size + 1 ) // + 1 so we can always write the '\0'
+    {
+        ASSERT( size );
+        char *base = &buffer_.front();
+        setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
+    }
+
+    virtual ~FormatBuffer() { sync(); }
+
+    virtual void beginLine() {}
+    
+    virtual void endLine() {}
+    
+    void target(std::ostream* os) { os_ = os; }
+    std::ostream* target() const  { return os_; }
+    
+private:
+    std::ostream* os_;
+    bool      start_;
+    std::vector<char> buffer_;
+    locale loc_;
+
+protected:
+
+    virtual bool dumpBuffer()
+    {
+        
+        /* AutoLock<Mutex> lock(mutex); */
+        
+        const char *p = pbase();
+        while( p != pptr() )
+        {
+            if(start_)
+            {
+                this->beginLine();
+                start_ = false;
+            }
+    
+            if(*p == '\n')
+            {
+                this->endLine();
+                start_ = true;
+            }
+    
+            if(os_)
+                *os_ << toupper(*p,loc_);
+            
+            p++;
+        }
+    
+        setp(pbase(), epptr());
+    
+        if(os_)
+            *os_ << std::flush;
+        return true;
+    }
+
+private:
+
+    virtual int_type overflow(int_type ch)
+    {
+        /* AutoLock<Mutex> lock(mutex); */
+        if (ch == traits_type::eof() ) { return sync(); }
+        dumpBuffer();
+        sputc(ch);
+        return ch;
+    }
+
+    virtual int_type sync()
+    {
+        /* AutoLock<Mutex> lock(mutex); */
+        return dumpBuffer() ? 0 : -1;
+    }
+
+};
+
 class FormatChannel : public Channel {
 public:
 
-    FormatChannel( std::ostream& os ) : Channel( new ForwardBuffer(os) ) {}
+    FormatChannel( std::ostream& os, FormatBuffer* buff ) : 
+        Channel( buff ),
+        os_(os)
+    {
+        buff->target(&os_);
+    }
 
     ~FormatChannel() {}
+    
+    std::ostream& os_;
+
 };
 
 //-----------------------------------------------------------------------------
@@ -358,24 +469,37 @@ public:
 
 void TestApp::test_1()
 {
-    DEBUG_H;
-    
     MultiChannel mc;
     
+#if 1
     DEBUG_H;
 
     mc.add("file", new FileChannel( LocalPathName("test.txt") ) );
+#endif
     
+#if 1
+    DEBUG_H;
+    
+    mc << "testing 0" << std::endl;
+#endif
+    
+#if 1
+    DEBUG_H;
+
     std::ofstream of ("test.txt.2");
     mc.add("of", new ForwardChannel(of) );
     
     mc << "testing 1" << std::endl;
-
+#endif
+    
+#if 1
     DEBUG_H;
     
     mc.add("stdout", new ForwardChannel( std::cout ) );
     mc << "testing 2" << std::endl;
-
+#endif
+    
+#if 1
     DEBUG_H;
     
     std::ostringstream oss;
@@ -383,7 +507,9 @@ void TestApp::test_1()
     mc << "testing 3" << std::endl;
     
     ASSERT( oss.str() == string("testing 3\n") );
-
+#endif
+    
+#if 1
     DEBUG_H;
 
     CallbackChannel* cbc = new CallbackChannel();
@@ -391,10 +517,20 @@ void TestApp::test_1()
     mc.add("cbc",cbc);
 
     mc << "testing 4" << std::endl;
+#endif
+    
+#if 1
+    DEBUG_H;
 
+    mc.add("fc", new FormatChannel(std::cerr,new FormatBuffer()));
+
+    mc << "testing 5" << std::endl;
+#endif
+    
     /// @todo
     /// * filter / formatting
     /// * user / netwroking...
+    /// * locks (?)
         
 }
 
@@ -404,8 +540,17 @@ void TestApp::test_1()
 
 //-----------------------------------------------------------------------------
 
+void on_signal_dumpbacktrace(int signum)
+{
+    printf("Caught signal %d\n",signum);
+    std::cerr << BackTrace::dump() << std::endl;
+    ::abort();
+}
+
 int main(int argc,char **argv)
 {
+    signal(SIGSEGV, on_signal_dumpbacktrace );
+    
     eckit_test::TestApp mytest(argc,argv);
     mytest.start();
     return 0;

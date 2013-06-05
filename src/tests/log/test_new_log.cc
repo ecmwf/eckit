@@ -30,7 +30,8 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-class Channel : public std::ostream {
+class Channel : public std::ostream,
+                private eckit::NonCopyable {
 public:
     
     Channel( std::streambuf* b ) : std::ostream( b ) {}
@@ -316,6 +317,16 @@ public:
 
 //-----------------------------------------------------------------------------
 
+class FormatChannel : public Channel {
+public:
+
+    FormatChannel( std::ostream& os ) : Channel( new ForwardBuffer(os) ) {}
+
+    ~FormatChannel() {}
+};
+
+//-----------------------------------------------------------------------------
+
 static void callback_empty( void* ctxt, const char* msg )
 {
 }
@@ -382,8 +393,7 @@ void TestApp::test_1()
     mc << "testing 4" << std::endl;
 
     /// @todo
-    /// * filter
-    /// * formatting
+    /// * filter / formatting
     /// * user / netwroking...
         
 }

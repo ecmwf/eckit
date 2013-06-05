@@ -35,6 +35,30 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
+class ostream_handle : private NonCopyable {
+public:
+    
+    ostream_handle( std::ostream* os = 0 ) : ptr_(os),  owned_(true)  {}
+    ostream_handle( std::ostream& os ) : ptr_(&os), owned_(false) {}
+    ~ostream_handle(){ release(); }
+    
+    /// Dereferences the pointee
+    std::ostream& operator*() const { ASSERT(ptr_); return *ptr_; }
+
+    /// Calling operator
+    std::ostream* operator->() const { ASSERT(ptr_); return ptr_; }
+
+    /// @returns true if pointer is not null
+    operator bool() const { return (ptr_ != 0); }
+
+private:
+    void release() { if(owned_ && ptr_) delete ptr_; ptr_ = 0; }
+    std::ostream* ptr_;
+    bool owned_;
+};
+
+//-----------------------------------------------------------------------------
+
 class Channel : public std::ostream,
                 private eckit::NonCopyable {
 public:
@@ -182,7 +206,17 @@ public:
 
 class ForwardBuffer: public std::streambuf {
 public:
-
+    
+    ForwardBuffer( std::ostream* os, std::size_t size = 1024 ) : 
+        std::streambuf(), 
+        os_(os),
+        buffer_( size + 1 ) // + 1 so we can always write the '\0'        
+    {
+        ASSERT( size );
+        char *base = &buffer_.front();
+        setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
+    }
+    
     ForwardBuffer( std::ostream& os, std::size_t size = 1024 ) : 
         std::streambuf(), 
         os_(os),
@@ -200,7 +234,7 @@ public:
 
 private:
 
-    std::ostream& os_;
+    ostream_handle os_;
     std::vector<char> buffer_;
 
     bool dumpBuffer()
@@ -208,7 +242,7 @@ private:
         const char *p = pbase();
         while( p != pptr() )
         {
-            os_ << *p;
+            *os_ << *p;
             p++;
         }
         setp(pbase(), epptr());
@@ -228,7 +262,7 @@ protected:
 
   int_type sync()
   {
-      if( dumpBuffer() ) { os_ << std::flush; return 0; }
+      if( dumpBuffer() ) { *os_ << std::flush; return 0; }
       else
         return -1;
   }

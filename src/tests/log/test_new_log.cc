@@ -10,24 +10,30 @@
 
 
 #include <signal.h>
+#include <stdlib.h>
 
+#include <vector>
+#include <map>
+#include <iostream>
+#include <sstream>
 #include <locale>
-#include <iosfwd>
 #include <fstream>
+#include <cassert>
 
-#include "eckit/os/BackTrace.h"
-#include "eckit/runtime/Tool.h"
-#include "eckit/filesystem/LocalPathName.h"
+//#include "eckit/os/BackTrace.h"
+//#include "eckit/runtime/Tool.h"
+//#include "eckit/filesystem/LocalPathName.h"
+
+//using namespace eckit;
+
 
 #if 1
     #define DEBUG_H
     #define DEBUG_(x)
 #else
-    #define DEBUG_H     std::cerr << " DEBUG @ " << Here() << std::endl;
-    #define DEBUG_(x)   std::cerr << #x << " : [" << x << "] @ " << Here() << std::endl;
+    #define DEBUG_H     std::cerr << " DEBUG @ " << __FILE__ << " +" << __LINE__ << std::endl;
+    #define DEBUG_(x)   std::cerr << #x << " : [" << x << "] @ " <<  __FILE__ << " +" << __LINE__ << std::endl;
 #endif
-
-using namespace eckit;
 
 //-----------------------------------------------------------------------------
 
@@ -35,16 +41,25 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-class ostream_handle : private NonCopyable {
+class ostream_handle {
 public:
     
-    ostream_handle( std::ostream* os = 0 ) : ptr_(os), owned_(true)  {}
-    ostream_handle( std::ostream& os ) : ptr_(&os), owned_(false) {}
+    explicit ostream_handle() : ptr_(0), owned_(false) {}
+    
+    explicit ostream_handle( std::ostream* os ) : ptr_(os), owned_(true) {}
+    
+    explicit ostream_handle( std::ostream& os ) : ptr_(&os), owned_(false) {}
 
     ~ostream_handle(){ release(); }
     
     /// copy transfers ownership
-    ostream_handle(const ostream_handle& o) { *this = o; }
+    ostream_handle(const ostream_handle& o) 
+    { 
+        ptr_ = o.ptr_;
+        owned_ = o.owned_;
+        o.owned_ = false;
+    }
+
     /// assigment transfers ownership
     ostream_handle& operator=(const ostream_handle& o)
     {
@@ -55,6 +70,8 @@ public:
         return *this;
     }
 
+    std::ostream* get() const { return ptr_; }
+    
     void reset( std::ostream* os )
     {
         release();
@@ -70,30 +87,41 @@ public:
     }
 
     /// Dereferences the pointee
-    std::ostream& operator*() const { ASSERT(ptr_); return *ptr_; }
+    std::ostream& operator*() const { assert(ptr_); return *ptr_; }
 
     /// Calling operator
-    std::ostream* operator->() const { ASSERT(ptr_); return ptr_; }
+    std::ostream* operator->() const { assert(ptr_); return ptr_; }
 
     /// @returns true if pointer is not null
-    operator bool() const { return (ptr_ != 0); }
+    operator bool() const { return valid(); }
 
 private:
-    void release() { if(owned_ && ptr_) delete ptr_; ptr_ = 0; }
+    
+    bool valid() const { return (ptr_ != 0); }
+    void release() 
+    {
+        if( owned_ && valid() ) delete ptr_; 
+        ptr_ = 0; 
+    }
+    
     std::ostream* ptr_;
     mutable bool owned_;
 };
 
 //-----------------------------------------------------------------------------
 
-class Channel : public std::ostream,
-                private eckit::NonCopyable {
+class Channel : public std::ostream {
 public:
     
     Channel( std::streambuf* b ) : std::ostream( b ) {}
     
     ~Channel() { delete rdbuf(); }
     
+private:
+    
+    Channel(const Channel& o);
+    Channel& operator=(const Channel& o);
+ 
 };
 
 //-----------------------------------------------------------------------------
@@ -107,7 +135,7 @@ public:
         std::streambuf(),
         buffer_( size + 1 ) // + 1 so we can always write the '\0'        
     {
-        ASSERT( size );        
+        assert( size );        
         char *base = &buffer_.front();
         setp( base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
         setg(0, 0, 0);
@@ -137,7 +165,7 @@ private:
 
 protected:
   
-  int_type overflow(int_type ch)
+  virtual int_type overflow(int_type ch)
   {
       if (ch == traits_type::eof() ) { return sync(); }
       dumpBuffer();
@@ -145,7 +173,7 @@ protected:
       return traits_type::to_int_type(ch);
   }
   
-  int_type sync()
+  virtual int_type sync()
   {
       if( dumpBuffer() )
       {
@@ -165,7 +193,7 @@ public:
         Channel( new MultiplexBuffer() ),
         buff_( dynamic_cast<MultiplexBuffer*>( rdbuf() ) )
     {
-        ASSERT( buff_ );
+        assert( buff_ );
     }
     
     ~MultiChannel() {}
@@ -185,15 +213,19 @@ public:
     
     void add( const std::string& k, std::ostream* s )
     {
+        DEBUG_H;
         if(!s) return;
+        DEBUG_H;
         remove(k);
-        buff_->streams_[k] = s;
+        DEBUG_H;
+        buff_->streams_[k].reset(s);
+        DEBUG_H;
     }
 
     void add( const std::string& k, std::ostream& s )
     {
         remove(k);
-        buff_->streams_[k] = s;
+        buff_->streams_[k].reset(s);
     }
 
 protected:
@@ -204,6 +236,7 @@ protected:
 
 //-----------------------------------------------------------------------------
 
+#if 0
 class FileBuffer : public std::filebuf {
 public:
     
@@ -221,6 +254,7 @@ public:
     {
     }
 };
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -232,7 +266,7 @@ public:
         os_(os),
         buffer_( size + 1 ) // + 1 so we can always write the '\0'        
     {
-        ASSERT( size );
+        assert( size );
         char *base = &buffer_.front();
         setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
     }
@@ -242,7 +276,7 @@ public:
         os_(os),
         buffer_( size + 1 ) // + 1 so we can always write the '\0'        
     {
-        ASSERT( size );
+        assert( size );
         char *base = &buffer_.front();
         setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
     }
@@ -263,7 +297,7 @@ private:
 
 protected:
 
-    int_type overflow(int_type ch)
+    virtual int_type overflow(int_type ch)
     {
         /* AutoLock<Mutex> lock(mutex); */
         if (ch == traits_type::eof() ) { return sync(); }
@@ -272,13 +306,13 @@ protected:
         return traits_type::to_int_type(ch);
     }
 
-  int_type sync()
-  {
-      if( dumpBuffer() ) { os_->flush(); return 0; }
-      else
-        return -1;
-  }
-
+    virtual int_type sync()
+    {
+        if( dumpBuffer() ) { os_->flush(); return 0; }
+        else
+            return -1;
+    }
+    
 };
 
 class ForwardChannel : public Channel {
@@ -300,7 +334,7 @@ public:
       ctxt_(ctxt),
       buffer_( size + 1 ) // + 1 so we can always write the '\0'
     {
-        ASSERT( size );
+        assert( size );
         char *base = &buffer_.front();
         setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
         
@@ -392,81 +426,99 @@ public:
         start_(true),
         buffer_( size + 1 ) // + 1 so we can always write the '\0'
     {
-        ASSERT( size );
+        assert( size );
         char *base = &buffer_.front();
         setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
     }
 
-    virtual ~FormatBuffer() { sync(); }
+    virtual ~FormatBuffer() {}
 
-    virtual void beginLine() {}
+    void target(std::ostream* os) { os_.reset(os); }
+    void target(std::ostream& os) { os_.reset(os); }
+    std::ostream* target() const  { return os_.get(); }
     
-    virtual void endLine() {}
+protected: // members
     
-    void target(std::ostream* os) { os_ = os; }
-    void target(std::ostream& os) { os_ = os; }
-    std::ostream& target() const  { return *os_; }
-    
-private:
     ostream_handle os_;
     bool start_;
-    locale loc_;
+    std::locale loc_;
     std::vector<char> buffer_;
 
-protected:
+protected: // methods
+    
+    virtual void beginLine() {}
+    virtual void endLine() {}
+    virtual void process( const char* begin, const char* end ) = 0;
 
-    virtual bool dumpBuffer()
+    bool dumpBuffer()
     {
-        
         /* AutoLock<Mutex> lock(mutex); */
-        
-        const char *p = pbase();
-        while( p != pptr() )
+        if( target() )
         {
-            if(start_)
+            const char *p = pbase();
+            const char *begin = p;
+            while( p != pptr() )
             {
-                this->beginLine();
-                start_ = false;
+                if(start_)
+                {
+                    this->beginLine();
+                    start_ = false;
+                }
+        
+                if(*p == '\n')
+                {
+                    this->process(begin,p);
+                    this->endLine();
+                    *os_ << *p;
+                    begin = ++p;
+                    start_ = true;
+                    continue;
+                }            
+                p++;
             }
-    
-            if(*p == '\n')
-            {
-                this->endLine();
-                start_ = true;
-            }
-    
-            if(os_)
-                *os_ << toupper(*p,loc_);
-            
-            p++;
-        }
-    
+            this->process(begin,p);
+        }    
         setp(pbase(), epptr());
         return true;
     }
 
 private:
 
-    int_type overflow(int_type ch)
+    virtual int_type overflow(int_type ch)
     {
         /* AutoLock<Mutex> lock(mutex); */
         if (ch == traits_type::eof() ) { return sync(); }
-        dumpBuffer();
+        this->dumpBuffer();
         sputc(ch);
         return ch;
     }
 
-    int_type sync()
+    virtual int_type sync()
     {
         if( dumpBuffer() )
         {
-            os_->flush();
+            if( target() ) target()->flush();
             return 0;
         }
         else return -1;
     }
 
+};
 
+class Capitalizer : public FormatBuffer {
+public:
+    Capitalizer( std::size_t size = 1024 ) : FormatBuffer(size) {}
+    virtual ~Capitalizer(){ pubsync(); }
+    virtual void beginLine() { *target() << " << "; }
+    virtual void endLine()   { *target() << " >> "; }    
+    virtual void process(const char *begin, const char *end)
+    {
+        const char* p = begin;
+        while (p != end) {
+            *target() << std::toupper(*p,loc_);
+            ++p;
+        }
+    }
 };
 
 class FormatChannel : public Channel {
@@ -475,7 +527,7 @@ public:
     FormatChannel( std::ostream* os, FormatBuffer* buff ) :
         Channel( buff )
     {
-        ASSERT(os);
+        assert(os);
         buff->target(os);
     }
 
@@ -502,10 +554,10 @@ static void callback_noctxt( void* ctxt, const char* msg )
 /// @todo
 /// * user / networking...
 /// * thread / locks (?)
-class TestApp : public Tool {
+class TestApp {  // : public Tool {
 public:
 
-    TestApp(int argc,char **argv): Tool(argc,argv)
+    TestApp(int argc,char **argv) /* : Tool(argc,argv) */
     {
     }
     ~TestApp() {}
@@ -529,18 +581,22 @@ void TestApp::test_multi_channel()
 {
     std::cout << "---> test_multi_channel()" << std::endl;
 
-    int t;
+    int t = 0;
     
     MultiChannel mc;
 
-    mc << "testing [" << t++ << "]" << std::endl;
-    
-#if 1
     DEBUG_H;
-
-    mc.add("file", new FileChannel( LocalPathName("test.txt") ) );
     
     mc << "testing [" << t++ << "]" << std::endl;
+    
+#if 0
+    DEBUG_H;
+    FileChannel* fc = new FileChannel( LocalPathName("test.txt") );
+    DEBUG_H;
+    mc.add("file", fc );
+    DEBUG_H;    
+    mc << "testing [" << t++ << "]" << std::endl;
+    DEBUG_H;    
 #endif
     
 #if 1
@@ -548,6 +604,15 @@ void TestApp::test_multi_channel()
 
     std::ofstream of ("test.txt.2");
     mc.add("of", new ForwardChannel(of) );
+    
+    mc << "testing [" << t++ << "]" << std::endl;
+#endif
+    
+#if 1
+    DEBUG_H;
+
+    std::ofstream of3 ("test.txt.3");
+    mc.add("of3", of3 );
     
     mc << "testing [" << t++ << "]" << std::endl;
 #endif
@@ -573,7 +638,7 @@ void TestApp::test_multi_channel()
     mc.add("oss", new ForwardChannel( oss ) );
     mc << "testing [" << t++ << "]" << std::endl;
     
-//    ASSERT( oss.str() == string("testing 3\n") );
+//    assert( oss.str() == string("testing 3\n") );
     
 #endif
     
@@ -590,7 +655,7 @@ void TestApp::test_multi_channel()
 #if 1
     DEBUG_H;
 
-    mc.add("fc", new FormatChannel(std::cerr,new FormatBuffer()));
+    mc.add("fc", new FormatChannel(std::cerr,new Capitalizer()));
 
     mc << "testing [" << t++ << "]" << std::endl;
 #endif        
@@ -600,22 +665,26 @@ void TestApp::test_multi_channel()
 
 void TestApp::test_long_channel()
 {
+#if 1
     std::cout << "---> test_long_channel()" << std::endl;
 
     int t = 0;
     
     ForwardChannel* fw = new ForwardChannel(std::cout);
-    FormatChannel*  fm = new FormatChannel( fw , new FormatBuffer() );
+    FormatChannel*  fm = new FormatChannel( fw , new Capitalizer() );
     ForwardChannel os( fm );
 
-    os << "testing [" << t++ << "]" << std::endl;
+    os << " testing [" << t++ << "]\n more stuff " << std::endl;
+#endif
 }
 
 //-----------------------------------------------------------------------------
 
 void TestApp::test_thread_logging()
 {
+#if 0
     std::cout << "---> test_thread_logging()" << std::endl;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -627,7 +696,7 @@ void TestApp::test_thread_logging()
 void on_signal_dumpbacktrace(int signum)
 {
     printf("Caught signal %d\n",signum);
-    std::cerr << BackTrace::dump() << std::endl;
+//    std::cerr << BackTrace::dump() << std::endl;
     ::abort();
 }
 
@@ -636,7 +705,7 @@ int main(int argc,char **argv)
     signal(SIGSEGV, on_signal_dumpbacktrace );
     
     eckit_test::TestApp mytest(argc,argv);
-    mytest.start();
+    mytest.run();
     return 0;
 }
 

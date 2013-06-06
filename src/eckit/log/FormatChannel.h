@@ -8,16 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Channel.h
+/// @file FormatChannel.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_Channel_h
-#define eckit_log_Channel_h
+#ifndef eckit_log_FormatChannel_h
+#define eckit_log_FormatChannel_h
 
 #include <iosfwd>
 
-#include "eckit/log/CodeLocation.h"
-#include "eckit/memory/NonCopyable.h"
+#include "eckit/log/Channel.h"
 
 //-----------------------------------------------------------------------------
 
@@ -25,17 +24,15 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class Channel : 
-        public std::ostream, 
-        private NonCopyable {
+class FormatBuffer;
+
+class FormatChannel : public Channel {
 public:
+
+    FormatChannel( std::ostream* os, FormatBuffer* buff );
+
+    FormatChannel( std::ostream& os, FormatBuffer* buff );
     
-    /// constructor takes ownership of buffer
-    Channel( std::streambuf* b );
-    
-    /// destructor deallocates buffer
-    ~Channel();
- 
 };
 
 //-----------------------------------------------------------------------------

@@ -8,7 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/log/Channel.h"
+#include <cassert>
+
+#include "eckit/log/FormatChannel.h"
+#include "eckit/log/FormatBuffer.h"
 
 //-----------------------------------------------------------------------------
 
@@ -16,9 +19,18 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-Channel::Channel(streambuf *b) : std::ostream( b ) {}
+FormatChannel::FormatChannel(ostream *os, FormatBuffer *buff) :
+      Channel( buff )
+{
+    assert(os);
+    buff->target(os);
+}
 
-Channel::~Channel() { delete rdbuf(); }
+FormatChannel::FormatChannel(ostream &os, FormatBuffer *buff) :
+    Channel( buff )
+{
+    buff->target(os);
+}
 
 //-----------------------------------------------------------------------------
 

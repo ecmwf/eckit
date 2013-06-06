@@ -8,7 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/log/Channel.h"
+#include <ostream>
+
+#include "eckit/log/ColorizeFormat.h"
 
 //-----------------------------------------------------------------------------
 
@@ -16,9 +18,19 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-Channel::Channel(streambuf *b) : std::ostream( b ) {}
+static std::ostream& noop(std::ostream& s) { return s; }
 
-Channel::~Channel() { delete rdbuf(); }
+ColorizeFormat::ColorizeFormat(std::size_t size)
+ : FormatBuffer(size),
+   begin_(noop),
+   end_(noop)
+{
+}
+
+void ColorizeFormat::process(const char *begin, const char *end)
+{
+    target()->write(begin,end-begin);
+}
 
 //-----------------------------------------------------------------------------
 

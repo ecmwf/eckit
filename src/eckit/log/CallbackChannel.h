@@ -8,16 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Channel.h
+/// @file CallbackChannel.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_Channel_h
-#define eckit_log_Channel_h
+#ifndef eckit_log_CallbackChannel_h
+#define eckit_log_CallbackChannel_h
 
-#include <iosfwd>
-
-#include "eckit/log/CodeLocation.h"
-#include "eckit/memory/NonCopyable.h"
+#include "eckit/log/Channel.h"
 
 //-----------------------------------------------------------------------------
 
@@ -25,17 +22,17 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class Channel : 
-        public std::ostream, 
-        private NonCopyable {
+class CallbackChannel : public Channel {
 public:
+
+    typedef void (*callback_t) (void* ctxt, const char* msg);
     
-    /// constructor takes ownership of buffer
-    Channel( std::streambuf* b );
-    
-    /// destructor deallocates buffer
-    ~Channel();
- 
+    CallbackChannel();
+    CallbackChannel(callback_t c, void* ctxt = 0);
+
+    ~CallbackChannel();
+
+    void register_callback(callback_t c, void* ctxt);
 };
 
 //-----------------------------------------------------------------------------

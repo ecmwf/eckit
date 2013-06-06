@@ -8,16 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Channel.h
+/// @file MultiChannel.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_Channel_h
-#define eckit_log_Channel_h
+#ifndef eckit_log_MultiChannel_h
+#define eckit_log_MultiChannel_h
 
-#include <iosfwd>
+#include <vector>
+#include <map>
+#include <streambuf>
 
-#include "eckit/log/CodeLocation.h"
-#include "eckit/memory/NonCopyable.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/OStreamHandle.h"
 
 //-----------------------------------------------------------------------------
 
@@ -25,17 +27,25 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class Channel : 
-        public std::ostream, 
-        private NonCopyable {
+class MultiplexBuffer;
+
+class MultiChannel : public Channel {
 public:
     
-    /// constructor takes ownership of buffer
-    Channel( std::streambuf* b );
+    MultiChannel();
     
-    /// destructor deallocates buffer
-    ~Channel();
- 
+    ~MultiChannel();
+    
+    bool remove( const std::string& k );
+    
+    void add( const std::string& k, std::ostream* s );
+
+    void add( const std::string& k, std::ostream& s );
+
+protected:
+    
+    MultiplexBuffer* buff_;
+    
 };
 
 //-----------------------------------------------------------------------------

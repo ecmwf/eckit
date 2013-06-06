@@ -113,6 +113,10 @@ void MultiChannel::add(const string &k, ostream &s)
     buff_->streams_[k].reset(s);
 }
 
+void MultiChannel::clear()
+{
+}
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

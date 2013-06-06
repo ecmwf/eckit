@@ -26,6 +26,7 @@
 #include "eckit/log/Channel.h"
 #include "eckit/log/MultiChannel.h"
 #include "eckit/log/CallbackChannel.h"
+#include "eckit/log/FileChannel.h"
 #include "eckit/log/FormatChannel.h"
 #include "eckit/log/FormatBuffer.h"
 #include "eckit/log/ColorizeFormat.h"
@@ -47,28 +48,8 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-#if 0
-class FileBuffer : public std::filebuf {
-public:
-    
-    FileBuffer( const LocalPathName& file ) : std::filebuf()
-    {
-        this->open(file.c_str(),std::ios::out|std::ios::trunc);
-    }
-    
-    ~FileBuffer() { this->close(); }
-};
-
-class FileChannel : public Channel {
-public:
-    FileChannel( const LocalPathName& file ) : Channel( new FileBuffer(file) )
-    {
-    }
-};
-#endif
-
-//-----------------------------------------------------------------------------
-
+/// Example of a third-party buffer
+/// @see ForwardChannel
 class ForwardBuffer: public std::streambuf {
 public:
     
@@ -126,22 +107,45 @@ protected:
     
 };
 
+/// Example of a third-party Channel
+/// @see ForwardBuffer
 class ForwardChannel : public Channel {
 public:
-
     ForwardChannel( std::ostream& os ) : Channel( new ForwardBuffer(os) ) {}
     ForwardChannel( std::ostream* os ) : Channel( new ForwardBuffer(os) ) {}
 };
 
 //-----------------------------------------------------------------------------
 
-static void callback_empty( void* ctxt, const char* msg )
+/// Example of a formating channel
+class Spacer : public FormatBuffer {
+public:
+
+    Spacer( std::size_t size = 1024 ) : FormatBuffer(size) {}
+
+    virtual ~Spacer(){ pubsync(); }
+
+    virtual void process( const char* begin, const char* end )
+    {
+        const char* p = begin;
+        while( p != end )
+        {
+            *target() << *p << "_";
+            ++p;
+        }
+    }
+};
+
+//-----------------------------------------------------------------------------
+
+static void callback_ctxt( void* ctxt, const char* msg )
 {
+    std::cout << "[" << *((int*)ctxt) << "] : -- " << msg << std::endl ;
 }
 
-static void callback_noctxt( void* ctxt, const char* msg )
+static void callback_noctxt( void* , const char* msg )
 {
-    std::cout << "[CALLBACK OUT] : -- " << msg ;
+    std::cout << "[CALLBACK OUT] : -- " << msg << std::endl ;
 }
 
 //-----------------------------------------------------------------------------
@@ -182,94 +186,66 @@ void TestApp::test_multi_channel()
     int t = 0;
     
     MultiChannel mc;
-
-    DEBUG_H;
     
     mc << "testing [" << t++ << "]" << std::endl;
     
-#if 0
-    DEBUG_H;
     FileChannel* fc = new FileChannel( LocalPathName("test.txt") );
-    DEBUG_H;
     mc.add("file", fc );
-    DEBUG_H;    
     mc << "testing [" << t++ << "]" << std::endl;
-    DEBUG_H;    
-#endif
     
-#if 1
-    DEBUG_H;
-
     std::ofstream of ("test.txt.2");
     mc.add("of", new ForwardChannel(of) );
     
     mc << "testing [" << t++ << "]" << std::endl;
-#endif
-    
-#if 1
-    DEBUG_H;
 
     std::ofstream of3 ("test.txt.3");
     mc.add("of3", of3 );
     
     mc << "testing [" << t++ << "]" << std::endl;
-#endif
-    
-#if 1
-    DEBUG_H;
 
     mc.add("cout", std::cout );
     mc << "testing [" << t++ << "]" << std::endl;
-#endif
-
-#if 1
-    DEBUG_H;
 
     mc.add("fwd_cout", new ForwardChannel( std::cout ) );
     mc << "testing [" << t++ << "]" << std::endl;
-#endif
-
-#if 1
-    DEBUG_H;
     
     std::ostringstream oss;
     mc.add("oss", new ForwardChannel( oss ) );
     mc << "testing [" << t++ << "]" << std::endl;
         
-#endif
-    
-#if 0
-    DEBUG_H;
-
     CallbackChannel* cbc = new CallbackChannel();
     cbc->register_callback(&callback_noctxt,0);
     mc.add("cbc",cbc);
 
-    mc << "testing [" << t++ << "]" << std::endl;
-#endif
-    
-#if 1
-    DEBUG_H;
-
-    mc.add("fc", new FormatChannel(std::cerr,new Capitalizer()));
+    CallbackChannel* cbw = new CallbackChannel();
+    cbw->register_callback(&callback_ctxt, &t);
+    mc.add("cbw",cbw);
 
     mc << "testing [" << t++ << "]" << std::endl;
-#endif        
 
-    DEBUG_H;
+    mc.add("fc", new FormatChannel(std::cerr,new Spacer()));
+
+    mc << "testing [" << t++ << "]" << std::endl;
+
+    ColorizeFormat* cfb = new ColorizeFormat();
+    cfb->setColor(&Colour::red);
+    cfb->resetColor(&Colour::reset);
+    mc.add("cc", new FormatChannel( new FormatChannel(std::cerr, cfb), new Spacer() ));
+
+    mc << "testing color" << std::endl;
 }
 
 //-----------------------------------------------------------------------------
 
 void TestApp::test_long_channel()
 {
-#if 1
+#if 0
     std::cout << "---> test_long_channel()" << std::endl;
 
     int t = 0;
     
     ForwardChannel* fw = new ForwardChannel(std::cout);
-    FormatChannel*  fm = new FormatChannel( fw , new Capitalizer() );
+    FormatChannel*  fm = new FormatChannel( fw , new Spacer() );
     ForwardChannel os( fm );
 
     os << " testing [" << t++ << "]\n more stuff " << std::endl;
@@ -280,7 +256,7 @@ void TestApp::test_long_channel()
 
 void TestApp::test_thread_logging()
 {
-#if 1
+#if 0
     std::cout << "---> test_thread_logging()" << std::endl;
 #endif
 }

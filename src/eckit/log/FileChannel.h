@@ -8,18 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file MultiChannel.h
+/// @file FileChannel.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_MultiChannel_h
-#define eckit_log_MultiChannel_h
-
-#include <vector>
-#include <map>
-#include <streambuf>
+#ifndef eckit_log_FileChannel_h
+#define eckit_log_FileChannel_h
 
 #include "eckit/log/Channel.h"
-#include "eckit/log/OStreamHandle.h"
+#include "eckit/filesystem/LocalPathName.h"
 
 //-----------------------------------------------------------------------------
 
@@ -27,31 +23,9 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class MultiplexBuffer;
-
-class MultiChannel : public Channel {
+class FileChannel : public Channel {
 public:
-    
-    MultiChannel();
-    
-    ~MultiChannel();
-    
-    /// remove a stream associated to key
-    bool remove( const std::string& k );
-    
-    /// add a stream, passing ownership
-    void add( const std::string& k, std::ostream* s );
-
-    /// add a stream, not passing ownership
-    void add( const std::string& k, std::ostream& s );
-
-    /// clears all streams from this channel
-    void clear();
-
-protected:
-    
-    MultiplexBuffer* buff_;
-    
+    FileChannel( const LocalPathName& file );
 };
 
 //-----------------------------------------------------------------------------

@@ -41,14 +41,13 @@ protected: // members
     
     ostream_handle os_;
     bool start_;
-    std::locale loc_;
     std::vector<char> buffer_;
 
 protected: // methods
     
     virtual void beginLine() {}
     virtual void endLine() {}
-    virtual void process( const char* begin, const char* end ) = 0;
+    virtual void process( const char* begin, const char* end );
 
     bool dumpBuffer();
 

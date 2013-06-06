@@ -19,10 +19,10 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class CallbackBuffer: public std::streambuf {
+class CallBackBuffer: public std::streambuf {
 public:
 
-    CallbackBuffer( CallbackChannel::callback_t c = 0, void* ctxt = 0, std::size_t size = 1024 ) : std::streambuf(),
+    CallBackBuffer( CallbackChannel::callback_t c = 0, void* ctxt = 0, std::size_t size = 1024 ) : std::streambuf(),
       call_(c),
       ctxt_(ctxt),
       buffer_( size + 1 ) // + 1 so we can always write the '\0'
@@ -34,7 +34,7 @@ public:
         if(c) register_callback(c,ctxt);
     }
     
-    ~CallbackBuffer()
+    ~CallBackBuffer()
     {
         sync();
     }
@@ -57,12 +57,9 @@ protected:
     {
         if( call_ && pbase() != pptr() ) // forward the output to the callback function
         {
-            // insert '\0' at pptr() -- e can do it because we reserved an extra character
-
+            // insert '\0' at pptr(), using reserved extra char
             *pptr() = '\0';
             pbump(1);
-
-            // callback -- context can be null
 
             (*call_)( ctxt_, pbase() );
         }
@@ -95,12 +92,12 @@ private:
 
 //-----------------------------------------------------------------------------
 
-CallbackChannel::CallbackChannel() : Channel( new CallbackBuffer() ) 
+CallbackChannel::CallbackChannel() : Channel( new CallBackBuffer() )
 {
 }
 
 CallbackChannel::CallbackChannel(callback_t c, void *ctxt)
- : Channel( new CallbackBuffer(c,ctxt) ) 
+ : Channel( new CallBackBuffer(c,ctxt) )
 {
 }
 
@@ -110,7 +107,7 @@ CallbackChannel::~CallbackChannel()
 
 void CallbackChannel::register_callback(callback_t c, void *ctxt)
 {
-    static_cast<CallbackBuffer*>(rdbuf())->register_callback(c,ctxt);
+    static_cast<CallBackBuffer*>(rdbuf())->register_callback(c,ctxt);
 }
 
 //-----------------------------------------------------------------------------

@@ -210,6 +210,8 @@ log/Channel.h
 log/Channel.cc
 log/CallbackChannel.h
 log/CallbackChannel.cc
+log/FileChannel.h
+log/FileChannel.cc
 log/FormatChannel.h
 log/FormatChannel.cc
 log/FormatBuffer.h

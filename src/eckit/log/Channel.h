@@ -25,6 +25,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+/// @todo consider merging Channel with MultiChannel
 class Channel : 
         public std::ostream, 
         private NonCopyable {

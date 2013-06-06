@@ -33,6 +33,11 @@ FormatBuffer::~FormatBuffer()
 {
 }
 
+void FormatBuffer::process(const char *begin, const char *end)
+{
+    target()->write(begin,end-begin);
+}
+
 bool FormatBuffer::dumpBuffer()
 {
     /* AutoLock<Mutex> lock(mutex); */

@@ -14,29 +14,12 @@
 #ifndef eckit_log_ColorizeFormat_h
 #define eckit_log_ColorizeFormat_h
 
+#include "eckit/log/Colour.h"
 #include "eckit/log/FormatBuffer.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
-
-//-----------------------------------------------------------------------------
-
-class Capitalizer : public FormatBuffer {
-public:
-    Capitalizer( std::size_t size = 1024 ) : FormatBuffer(size) {}
-    virtual ~Capitalizer(){ pubsync(); }
-    virtual void beginLine() { *target() << " << "; }
-    virtual void endLine()   { *target() << " >> "; }    
-    virtual void process(const char *begin, const char *end)
-    {
-        const char* p = begin;
-        while (p != end) {
-            *target() << std::toupper(*p,loc_);
-            ++p;
-        }
-    }
-};
 
 //-----------------------------------------------------------------------------
 
@@ -49,9 +32,8 @@ public:
     
     virtual ~ColorizeFormat(){ pubsync(); }
     
-    virtual void beginLine() {}
-    virtual void endLine()   {}    
-    virtual void process(const char *begin, const char *end);
+    virtual void beginLine();
+    virtual void endLine();
 
     void setColor( oproc c )   { begin_ = c; }
     void resetColor( oproc c ) { end_   = c; }

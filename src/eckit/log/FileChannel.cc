@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <ostream>
-
-#include "eckit/log/ColorizeFormat.h"
+#include "eckit/log/FileChannel.h"
 
 //-----------------------------------------------------------------------------
 
@@ -18,23 +16,22 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static std::ostream& noop(std::ostream& s) { return s; }
+class FileBuffer : public std::filebuf {
+public:
 
-ColorizeFormat::ColorizeFormat(std::size_t size)
- : FormatBuffer(size),
-   begin_(noop),
-   end_(noop)
-{
-}
+    FileBuffer( const LocalPathName& file ) : std::filebuf()
+    {
+        this->open(file.c_str(),std::ios::out|std::ios::trunc);
+    }
 
-void ColorizeFormat::beginLine()
-{
-    *target() << begin_;
-}
+    ~FileBuffer() { this->close(); }
+};
 
-void ColorizeFormat::endLine()
+//-----------------------------------------------------------------------------
+
+FileChannel::FileChannel(const LocalPathName &file)
+    : Channel( new FileBuffer(file) )
 {
-    *target() << end_;
 }
 
 //-----------------------------------------------------------------------------

@@ -19,7 +19,7 @@
 #include "eckit/runtime/Tool.h"
 #include "eckit/filesystem/LocalPathName.h"
 
-#if 0
+#if 1
     #define DEBUG_H
     #define DEBUG_(x)
 #else
@@ -38,10 +38,37 @@ namespace eckit_test {
 class ostream_handle : private NonCopyable {
 public:
     
-    ostream_handle( std::ostream* os = 0 ) : ptr_(os),  owned_(true)  {}
+    ostream_handle( std::ostream* os = 0 ) : ptr_(os), owned_(true)  {}
     ostream_handle( std::ostream& os ) : ptr_(&os), owned_(false) {}
+
     ~ostream_handle(){ release(); }
     
+    /// copy transfers ownership
+    ostream_handle(const ostream_handle& o) { *this = o; }
+    /// assigment transfers ownership
+    ostream_handle& operator=(const ostream_handle& o)
+    {
+        release();
+        ptr_ = o.ptr_;
+        owned_ = o.owned_;
+        o.owned_ = false;
+        return *this;
+    }
+
+    void reset( std::ostream* os )
+    {
+        release();
+        ptr_ = os;
+        owned_ = true;
+    }
+
+    void reset( std::ostream& os)
+    {
+        release();
+        ptr_ = &os;
+        owned_ = false;
+    }
+
     /// Dereferences the pointee
     std::ostream& operator*() const { ASSERT(ptr_); return *ptr_; }
 
@@ -54,7 +81,7 @@ public:
 private:
     void release() { if(owned_ && ptr_) delete ptr_; ptr_ = 0; }
     std::ostream* ptr_;
-    bool owned_;
+    mutable bool owned_;
 };
 
 //-----------------------------------------------------------------------------
@@ -74,7 +101,7 @@ public:
 class MultiplexBuffer: public std::streambuf {
 public:
 
-    typedef std::map<std::string,std::ostream*> streams_t;
+    typedef std::map<std::string,ostream_handle> streams_t;
     
     MultiplexBuffer( std::size_t size = 1024 ) : 
         std::streambuf(),
@@ -89,8 +116,6 @@ public:
     ~MultiplexBuffer() 
     {
         sync();
-        for( streams_t::iterator i = streams_.begin(); i != streams_.end(); ++i )
-            delete i->second;       
     }
     
     streams_t streams_;
@@ -104,18 +129,8 @@ private:
       for( streams_t::iterator i = streams_.begin(); i != streams_.end(); ++i )
       {
           std::ostream& os = *(i->second);
-          const char *p = pbase();
-#if 0
-          os.write(p,pptr() - pbase());
-#else
-          while( p != pptr() )
-          {
-              os << *p;
-              p++;
-          }
-#endif
-//          os << std::flush;
-      }      
+          os.write(pbase(),pptr() - pbase());
+      }
       setp(pbase(), epptr());
       return true;
   }
@@ -135,7 +150,7 @@ protected:
       if( dumpBuffer() )
       {
           for( streams_t::iterator i = streams_.begin(); i != streams_.end(); ++i )
-              *(i->second) << std::flush;
+              i->second->flush();
           return 0;
       }
       else return -1;
@@ -162,7 +177,6 @@ public:
         if( i != streams.end() )
         {
             i->second->flush();
-            delete i->second;
             streams.erase(i);
             return true;
         }
@@ -175,7 +189,13 @@ public:
         remove(k);
         buff_->streams_[k] = s;
     }
-    
+
+    void add( const std::string& k, std::ostream& s )
+    {
+        remove(k);
+        buff_->streams_[k] = s;
+    }
+
 protected:
     
     MultiplexBuffer* buff_;
@@ -227,10 +247,7 @@ public:
         setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
     }
 
-    ~ForwardBuffer()
-    {
-        sync();
-    }
+    ~ForwardBuffer() { sync(); }
 
 private:
 
@@ -239,12 +256,7 @@ private:
 
     bool dumpBuffer()
     {
-        const char *p = pbase();
-        while( p != pptr() )
-        {
-            *os_ << *p;
-            p++;
-        }
+        os_->write(pbase(),pptr() - pbase());
         setp(pbase(), epptr());
         return true;
     }
@@ -262,7 +274,7 @@ protected:
 
   int_type sync()
   {
-      if( dumpBuffer() ) { *os_ << std::flush; return 0; }
+      if( dumpBuffer() ) { os_->flush(); return 0; }
       else
         return -1;
   }
@@ -273,8 +285,7 @@ class ForwardChannel : public Channel {
 public:
 
     ForwardChannel( std::ostream& os ) : Channel( new ForwardBuffer(os) ) {}
-
-    ~ForwardChannel() {}
+    ForwardChannel( std::ostream* os ) : Channel( new ForwardBuffer(os) ) {}
 };
 
 //-----------------------------------------------------------------------------
@@ -377,6 +388,7 @@ public:
 
     FormatBuffer( std::size_t size = 1024 ) : 
         std::streambuf(),
+        os_(),
         start_(true),
         buffer_( size + 1 ) // + 1 so we can always write the '\0'
     {
@@ -392,13 +404,14 @@ public:
     virtual void endLine() {}
     
     void target(std::ostream* os) { os_ = os; }
-    std::ostream* target() const  { return os_; }
+    void target(std::ostream& os) { os_ = os; }
+    std::ostream& target() const  { return *os_; }
     
 private:
-    std::ostream* os_;
-    bool      start_;
-    std::vector<char> buffer_;
+    ostream_handle os_;
+    bool start_;
     locale loc_;
+    std::vector<char> buffer_;
 
 protected:
 
@@ -429,15 +442,12 @@ protected:
         }
     
         setp(pbase(), epptr());
-    
-        if(os_)
-            *os_ << std::flush;
         return true;
     }
 
 private:
 
-    virtual int_type overflow(int_type ch)
+    int_type overflow(int_type ch)
     {
         /* AutoLock<Mutex> lock(mutex); */
         if (ch == traits_type::eof() ) { return sync(); }
@@ -446,28 +456,34 @@ private:
         return ch;
     }
 
-    virtual int_type sync()
+    int_type sync()
     {
-        /* AutoLock<Mutex> lock(mutex); */
-        return dumpBuffer() ? 0 : -1;
+        if( dumpBuffer() )
+        {
+            os_->flush();
+            return 0;
+        }
+        else return -1;
     }
+
 
 };
 
 class FormatChannel : public Channel {
 public:
 
-    FormatChannel( std::ostream& os, FormatBuffer* buff ) : 
-        Channel( buff ),
-        os_(os)
+    FormatChannel( std::ostream* os, FormatBuffer* buff ) :
+        Channel( buff )
     {
-        buff->target(&os_);
+        ASSERT(os);
+        buff->target(os);
     }
 
-    ~FormatChannel() {}
-    
-    std::ostream& os_;
-
+    FormatChannel( std::ostream& os, FormatBuffer* buff ) :
+        Channel( buff )
+    {
+        buff->target(os);
+    }
 };
 
 //-----------------------------------------------------------------------------
@@ -511,6 +527,8 @@ public:
 
 void TestApp::test_multi_channel()
 {
+    std::cout << "---> test_multi_channel()" << std::endl;
+
     int t;
     
     MultiChannel mc;
@@ -536,11 +554,18 @@ void TestApp::test_multi_channel()
     
 #if 1
     DEBUG_H;
-    
-    mc.add("stdout", new ForwardChannel( std::cout ) );
+
+    mc.add("cout", std::cout );
     mc << "testing [" << t++ << "]" << std::endl;
 #endif
-    
+
+#if 1
+    DEBUG_H;
+
+    mc.add("fwd_cout", new ForwardChannel( std::cout ) );
+    mc << "testing [" << t++ << "]" << std::endl;
+#endif
+
 #if 1
     DEBUG_H;
     
@@ -575,26 +600,22 @@ void TestApp::test_multi_channel()
 
 void TestApp::test_long_channel()
 {
+    std::cout << "---> test_long_channel()" << std::endl;
+
     int t = 0;
     
-    ForwardChannel fw(std::cout);
-    FormatChannel  fm( fw, new FormatBuffer() );
+    ForwardChannel* fw = new ForwardChannel(std::cout);
+    FormatChannel*  fm = new FormatChannel( fw , new FormatBuffer() );
     ForwardChannel os( fm );
 
-    DEBUG_H;
     os << "testing [" << t++ << "]" << std::endl;
-    DEBUG_H;
-    
-//    delete fm; /// @todo FIXME because ForwardChannel does not take ownership
-//    delete fw; /// @todo FIXME because FormatChannel does not take ownership
-
-    DEBUG_H;
 }
 
 //-----------------------------------------------------------------------------
 
 void TestApp::test_thread_logging()
 {
+    std::cout << "---> test_thread_logging()" << std::endl;
 }
 
 //-----------------------------------------------------------------------------

@@ -8,9 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sys/socket.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <sys/socket.h>
 
 #include "eckit/log/Log.h"
 #include "eckit/io/Select.h"

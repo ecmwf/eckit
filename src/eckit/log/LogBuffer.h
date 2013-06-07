@@ -90,22 +90,6 @@ public:
   ~MessageBuffer();
 };
 
-class UserOutBuffer: public streambuf {
-private:
-
-  UserOutStream* owner_;
-  char          buffer_[1024];
-  void		    dumpBuffer(void);
-
-protected:
-  int	overflow(int);
-  int	sync();
-
-public:
-  UserOutBuffer(UserOutStream*);
-  ~UserOutBuffer();
-};
-
 class MonitorBuffer: public streambuf {
 private:
 
@@ -177,26 +161,6 @@ class MessageStream: public ostream
 public:
 	MessageStream();
 	~MessageStream();
-};
-
-class UserOutStream: public ostream
-{
-public:
-	UserOutStream();
-	~UserOutStream();
-	virtual void out(const string&) = 0;
-};
-
-class UserInfoStream: public UserOutStream {
-	virtual void out(const string&);
-};
-
-class UserWarningStream: public UserOutStream {
-	virtual void out(const string&);
-};
-
-class UserErrorStream: public UserOutStream {
-	virtual void out(const string&);
 };
 
 class MonitorStream: public ostream

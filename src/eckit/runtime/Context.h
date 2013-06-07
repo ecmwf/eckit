@@ -77,10 +77,10 @@ public: // methods
     string home() const;
     void home( const std::string& h );
 
-    LogStream& infoStream();
-    LogStream& warnStream();
-    LogStream& errorStream();
-    LogStream& debugStream();
+    Channel& infoChannel();
+    Channel& warnChannel();
+    Channel& errorChannel();
+    Channel& debugChannel();
     
     // From Configurable
 

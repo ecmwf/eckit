@@ -8,23 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/compat/Inited.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/LogBuffer.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
-
-// This assume that iostream are thread safe during a single
-// call to the << inserter
-
-//=============================================================================
-
 
 StatusStream::StatusStream():
     ostream(new StatusBuffer)
@@ -72,7 +64,8 @@ void StatusBuffer::dumpBuffer()
         Monitor::instance().status(pbase());
         setp(pbase(), epptr());
 }
-//=============================================================================
+
+//-----------------------------------------------------------------------------
 
 MessageStream::MessageStream():
     ostream(new MessageBuffer)
@@ -121,7 +114,7 @@ void MessageBuffer::dumpBuffer()
         setp(pbase(), epptr());
 }
 
-//=============================================================================
+//-----------------------------------------------------------------------------
 
 MonitorStream::MonitorStream():
     ostream(new MonitorBuffer)
@@ -175,7 +168,7 @@ void MonitorBuffer::dumpBuffer()
         cerr << flush;
 }
 
-//=============================================================================
+//-----------------------------------------------------------------------------
 
 ostream& Log::monitor(char type,long mode)
 {
@@ -200,22 +193,22 @@ ostream& Log::message()
 
 ostream& Log::info()
 {
-    return Context::instance().infoStream();
+    return Context::instance().infoChannel();
 }
 
 ostream& Log::info(const CodeLocation& where)
 {
-    return Context::instance().infoStream().source(where);
+    return Context::instance().infoChannel().source(where);
 }
 
 ostream& Log::error()
 {
-    return Context::instance().errorStream();
+    return Context::instance().errorChannel();
 }
 
 ostream& Log::error(const CodeLocation& where)
 {
-    return Context::instance().infoStream().source(where);
+    return Context::instance().infoChannel().source(where);
 }
 
 ostream& Log::panic()
@@ -245,12 +238,12 @@ ostream& Log::panic(const CodeLocation& where)
 
 ostream& Log::warning()
 {
-    return Context::instance().warnStream();
+    return Context::instance().warnChannel();
 }
 
 ostream& Log::warning(const CodeLocation& where)
 {
-    return Context::instance().warnStream().source(where);
+    return Context::instance().warnChannel().source(where);
 }
 
 ostream& Log::debug(int level)
@@ -259,7 +252,7 @@ ostream& Log::debug(int level)
         if(level >= Context::instance().debug())
                 return devnull;
         else
-            return Context::instance().debugStream();
+            return Context::instance().debugChannel();
 }
 
 ostream& Log::debug(const CodeLocation& where, int level)
@@ -268,8 +261,10 @@ ostream& Log::debug(const CodeLocation& where, int level)
         if(level >= Context::instance().debug())
                 return devnull;
         else
-            return Context::instance().debugStream().source(where);
+            return Context::instance().debugChannel().source(where);
 }
+
+//-----------------------------------------------------------------------------
 
 #ifndef _GNU_SOURCE
 
@@ -293,6 +288,8 @@ static void handle_strerror_r(ostream& s, int e, char[], char* p )
 
 #endif
 
+//-----------------------------------------------------------------------------
+
 ostream& Log::syserr(ostream& s)
 {
         int e = errno;
@@ -300,6 +297,8 @@ ostream& Log::syserr(ostream& s)
         handle_strerror_r(s, e, estr, strerror_r( e, estr, sizeof(estr) ) );
         return s;
 }
+
+//-----------------------------------------------------------------------------
 
 static int xindex = ios::xalloc();
 
@@ -314,155 +313,17 @@ ostream& setformat(ostream& s,int n)
         return s;
 }
 
-//=============================================================================
+//-----------------------------------------------------------------------------
 
-UserOutStream::UserOutStream():
-    ostream(new UserOutBuffer(this))
-{
-}
-
-UserOutStream::~UserOutStream()
-{
-        delete (UserOutBuffer*)rdbuf();
-}
-
-UserOutBuffer::UserOutBuffer(UserOutStream* owner):
-        streambuf(),
-        owner_(owner)
-{
-        setp(buffer_, buffer_ + sizeof(buffer_));
-        setg(0, 0, 0);
-}
-
-UserOutBuffer::~UserOutBuffer()
-{
-        dumpBuffer();
-}
-
-int	UserOutBuffer::overflow(int c)
-{
-        if (c == EOF) {
-                sync();
-                return 0;
-        }
-
-        dumpBuffer();
-        sputc(c);
-        return 0;
-}
-
-int	UserOutBuffer::sync()
-{
-        dumpBuffer();
-        return 0;
-}
-
-void UserOutBuffer::dumpBuffer()
-{
-        ::replace(pbase(),epptr(),'\n','\0');
-        owner_->out(pbase());
-        setp(pbase(), epptr());
-}
-
-//=============================================================================
-
-typedef Inited<UserStream*> UserStreamP;
-
-static UserStreamP& getUserStream()
-{
-        static ThreadSingleton<UserStreamP> x;
-        return x.instance();
-}
-
-void UserInfoStream::out(const string& msg)
-{
-        UserStreamP& h = getUserStream();
-        UserStream*  x = h;
-        if(x) x->infoMsg(msg);
-}
-
-#if 0
-static void _debug(const char* a,const char *b)
-{
-        static int check = 0;
-        if(check) return;
-        check = 1;
-
-        try {
-
-                UserStreamP& h = getUserStream();
-                UserStream*  x = h;
-                if(x) x->infoMsg(a);
-        }
-        catch(exception&)
-        {
-                Log::setUserStream(0);
-                check = 0;
-        }
-
-        check = 0;
-}
-#endif
-
-void UserWarningStream::out(const string& msg)
-{
-        UserStreamP& h = getUserStream();
-        UserStream*  x = h;
-        if(x) x->warningMsg(msg);
-}
-
-void UserErrorStream::out(const string& msg)
-{
-        UserStreamP& h = getUserStream();
-        UserStream*  x = h;
-        if(x) x->errorMsg(msg);
-}
-
-void Log::notifyClient(const string& msg)
-{
-        UserStreamP& h = getUserStream();
-        UserStream*  x = h;
-        if(x) x->notifyClient(msg);
-}
-
-void Log::setUserStream(UserStream* s)
-{
-        UserStreamP& h = getUserStream();
-        h = s;
-}
-
-ostream& Log::userInfo()
-{
-        static ThreadSingleton<UserInfoStream> x;
-        return x.instance();
-}
-
-ostream& Log::userError()
-{
-        static ThreadSingleton<UserErrorStream> x;
-        return x.instance();
-}
-
-ostream& Log::userWarning()
-{
-        static ThreadSingleton<UserWarningStream> x;
-        return x.instance();
-}
-
-
-// Explicit instantiations.
+/// @note some explicit template instantiations
+///
 template class ThreadSingleton<Exception*>;
 //template class ThreadSingleton<InfoStream>;
 //template class ThreadSingleton<WarnStream>;
 template class ThreadSingleton<MessageStream>;
 //template class ThreadSingleton<ErrorStream>;
 template class ThreadSingleton<MonitorStream>;
-template class ThreadSingleton<UserInfoStream>;
 //template class ThreadSingleton<DebugStream>;
-template class ThreadSingleton<UserStreamP>;
-template class ThreadSingleton<UserWarningStream>;
-template class ThreadSingleton<StatusStream>;
-template class ThreadSingleton<UserErrorStream>;
 
 //-----------------------------------------------------------------------------
 

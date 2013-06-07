@@ -149,24 +149,24 @@ void Context::displayName(const string &name)
     displayName_ = name;
 }
 
-LogStream& Context::infoStream()
+Channel& Context::infoChannel()
 {
-    return behavior_->infoStream();
+    return behavior_->infoChannel();
 }
 
-LogStream& Context::warnStream()
+Channel& Context::warnChannel()
 {
-    return behavior_->warnStream();
+    return behavior_->warnChannel();
 }
 
-LogStream& Context::errorStream()
+Channel& Context::errorChannel()
 {
-    return behavior_->errorStream();
+    return behavior_->errorChannel();
 }
 
-LogStream& Context::debugStream()
+Channel& Context::debugChannel()
 {
-    return behavior_->debugStream();
+    return behavior_->debugChannel();
 }
 
 //-----------------------------------------------------------------------------

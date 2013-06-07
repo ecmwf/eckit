@@ -8,8 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_CodeLocation_h
-#define eckit_CodeLocation_h
+/// @file CodeLocation.h
+/// @author Tiago Quintino
+
+#ifndef eckit_log_CodeLocation_h
+#define eckit_log_CodeLocation_h
 
 #include "eckit/eckit.h"
 

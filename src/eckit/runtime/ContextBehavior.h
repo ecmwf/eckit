@@ -16,6 +16,8 @@
 #include "eckit/config/Configurable.h"
 #include "eckit/config/Resource.h"
 
+#include "eckit/log/Channel.h"
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -37,10 +39,10 @@ public:
 
 public: // interface methods
         
-    virtual LogStream& infoStream()  = 0;
-    virtual LogStream& warnStream()  = 0;
-    virtual LogStream& errorStream() = 0;
-    virtual LogStream& debugStream() = 0;
+    virtual Channel& infoChannel()  = 0;
+    virtual Channel& warnChannel()  = 0;
+    virtual Channel& errorChannel() = 0;
+    virtual Channel& debugChannel() = 0;
 
     int  debug() const  { return debug_; }    
     void debug( int d ) { debug_ = d; }    

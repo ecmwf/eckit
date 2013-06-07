@@ -18,15 +18,16 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-FormatBuffer::FormatBuffer(std::size_t size) : 
-    std::streambuf(),
-    os_(),
-    start_(true),
-    buffer_( size + 1 ) // + 1 so we can always write the '\0'
+FormatBuffer::FormatBuffer(std::ostream *os, std::size_t size) : 
+    ChannelBuffer(os,size),
+    start_(true)
 {
-    assert( size );
-    char *base = &buffer_.front();
-    setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
+}
+
+FormatBuffer::FormatBuffer(std::ostream &os, std::size_t size) :
+    ChannelBuffer(os,size),
+    start_(true)
+{
 }
 
 FormatBuffer::~FormatBuffer()
@@ -35,13 +36,14 @@ FormatBuffer::~FormatBuffer()
 
 void FormatBuffer::process(const char *begin, const char *end)
 {
-    target()->write(begin,end-begin);
+    if( has_target() )
+        target()->write(begin,end - begin);
 }
 
 bool FormatBuffer::dumpBuffer()
 {
     /* AutoLock<Mutex> lock(mutex); */
-    if( target() )
+    if( has_target() )
     {
         const char *p = pbase();
         const char *begin = p;
@@ -68,25 +70,6 @@ bool FormatBuffer::dumpBuffer()
     }    
     setp(pbase(), epptr());
     return true;
-}
-
-std::streambuf::int_type FormatBuffer::overflow(std::streambuf::int_type ch)
-{
-    /* AutoLock<Mutex> lock(mutex); */
-    if (ch == traits_type::eof() ) { return sync(); }
-    this->dumpBuffer();
-    sputc(ch);
-    return ch;
-}
-
-std::streambuf::int_type FormatBuffer::sync()
-{
-    if( dumpBuffer() )
-    {
-        if( target() ) target()->flush();
-        return 0;
-    }
-    else return -1;
 }
 
 //-----------------------------------------------------------------------------

@@ -14,11 +14,7 @@
 #ifndef eckit_log_FormatBuffer_h
 #define eckit_log_FormatBuffer_h
 
-#include <vector>
-#include <streambuf>
-#include <cassert>
-
-#include "eckit/log/OStreamHandle.h"
+#include "eckit/log/ChannelBuffer.h"
 
 //-----------------------------------------------------------------------------
 
@@ -26,36 +22,26 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class FormatBuffer: public std::streambuf {
+class FormatBuffer: public ChannelBuffer {
 public:
 
-    FormatBuffer( std::size_t size = 1024 );
+    FormatBuffer( std::ostream* os = 0, std::size_t size = 1024 );
+    FormatBuffer( std::ostream& os, std::size_t size = 1024 );
 
     virtual ~FormatBuffer();
-
-    void target(std::ostream* os) { os_.reset(os); }
-    void target(std::ostream& os) { os_.reset(os); }
-    std::ostream* target() const  { return os_.get(); }
     
 protected: // members
     
-    ostream_handle os_;
     bool start_;
-    std::vector<char> buffer_;
 
 protected: // methods
     
     virtual void beginLine() {}
     virtual void endLine() {}
+    
     virtual void process( const char* begin, const char* end );
 
-    bool dumpBuffer();
-
-private:
-
-    virtual int_type overflow(int_type ch);
-
-    virtual int_type sync();
+    virtual bool dumpBuffer();
 };
 
 //-----------------------------------------------------------------------------

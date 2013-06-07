@@ -11,8 +11,8 @@
 #include <stdlib.h>
 
 #include "eckit/runtime/StandardBehavior.h"
-#include "eckit/log/LogBuffer.h"
-#include "eckit/log/StdLogger.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/ChannelBuffer.h"
 #include "eckit/thread/ThreadSingleton.h"
 
 using namespace std;
@@ -36,36 +36,36 @@ StandardBehavior::~StandardBehavior()
 template< typename TYPE >
 struct OutAlloc {
     OutAlloc() {}
-    TYPE* operator() () { return new TYPE( new StdLogger( std::cout ) ); }
+    TYPE* operator() () { return new TYPE( new ChannelBuffer( std::cout ) ); }
 };
 
 template< typename TYPE >
 struct ErrAlloc {
     ErrAlloc() {}
-    TYPE* operator() () { return new TYPE( new StdLogger( std::cerr ) ); }
+    TYPE* operator() () { return new TYPE( new ChannelBuffer( std::cerr ) ); }
 };
 
-LogStream& StandardBehavior::infoStream()
+Channel& StandardBehavior::infoChannel()
 {
-    static ThreadSingleton<InfoStream,OutAlloc<InfoStream> > x;
+    static ThreadSingleton<Channel,OutAlloc<Channel> > x;
     return x.instance();
 }
 
-LogStream& StandardBehavior::warnStream()
+Channel& StandardBehavior::warnChannel()
 {
-    static ThreadSingleton<WarnStream,ErrAlloc<WarnStream> > x;
+    static ThreadSingleton<Channel,OutAlloc<Channel> > x;
     return x.instance();
 }
 
-LogStream& StandardBehavior::errorStream()
+Channel& StandardBehavior::errorChannel()
 {
-    static ThreadSingleton<ErrorStream,ErrAlloc<ErrorStream> > x;
+    static ThreadSingleton<Channel,ErrAlloc<Channel> > x;
     return x.instance();
 }
 
-LogStream& StandardBehavior::debugStream()
+Channel& StandardBehavior::debugChannel()
 {
-    static ThreadSingleton<DebugStream,OutAlloc<DebugStream> > x;
+    static ThreadSingleton<Channel,OutAlloc<Channel> > x;
     return x.instance();
 }
 

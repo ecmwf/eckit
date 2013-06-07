@@ -26,9 +26,8 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 /// @todo consider merging Channel with MultiChannel
-class Channel : 
-        public std::ostream, 
-        private NonCopyable {
+class Channel : public std::ostream, 
+                private NonCopyable {
 public:
     
     /// constructor takes ownership of buffer
@@ -36,7 +35,10 @@ public:
     
     /// destructor deallocates buffer
     ~Channel();
- 
+    
+    /// sets the code location from where next log will be
+    Channel& source( const CodeLocation& );
+
 };
 
 //-----------------------------------------------------------------------------

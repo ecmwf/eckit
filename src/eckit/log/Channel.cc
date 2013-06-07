@@ -9,6 +9,7 @@
  */
 
 #include "eckit/log/Channel.h"
+#include "eckit/log/ChannelBuffer.h"
 
 //-----------------------------------------------------------------------------
 
@@ -19,6 +20,14 @@ namespace eckit {
 Channel::Channel(streambuf *b) : std::ostream( b ) {}
 
 Channel::~Channel() { delete rdbuf(); }
+
+Channel& Channel::source(const CodeLocation& where)
+{
+    ChannelBuffer* buf = dynamic_cast<ChannelBuffer*>(rdbuf());
+    if (buf) 
+        buf->location(where);
+    return *this;
+}
 
 //-----------------------------------------------------------------------------
 

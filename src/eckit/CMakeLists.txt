@@ -208,6 +208,8 @@ runtime/ProducerConsumer.h )
 list( APPEND eckit_log_srcs
 log/Channel.h
 log/Channel.cc
+log/ChannelBuffer.h
+log/ChannelBuffer.cc
 log/CallbackChannel.h
 log/CallbackChannel.cc
 log/FileChannel.h

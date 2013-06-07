@@ -8,13 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-// File Log.h
-// Baudouin Raoult - ECMWF May 96
+/// @file Log.h
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date May 1996
 
-#ifndef eckit_Log_h
-#define eckit_Log_h
+#ifndef eckit_log_Log_h
+#define eckit_log_Log_h
 
 #include "eckit/log/CodeLocation.h"
+#include "eckit/log/Channel.h"
 
 //-----------------------------------------------------------------------------
 
@@ -22,37 +25,26 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-// The Log class in designed for logging messages
-// Each line is prefixed by a time stamp, a message
-// level (debug, info, warning or error) as well as
-// the application name.
-
-// Warning: these streams are thread safe. A lock is
-// set when one of the stream is return, and is reset
-// on end of line. Don't forget to call endl.
-
-class UserStream {
-public:
-	virtual void infoMsg(const string&)    = 0;
-	virtual void warningMsg(const string&) = 0;
-	virtual void errorMsg(const string&)   = 0;
-	virtual void notifyClient(const string&)   = 0;
-};
-
-//-----------------------------------------------------------------------------
+/// Singleton holding global streams for logging
+///
+/// @warning these streams are thread safe. A lock is
+///          set when one of the stream is return, and is reset
+///          on end of line. Don't forget to call endl.
 
 class Log {
-public:
+    
+public: // types
 
-	// How to format outputs
-	enum {
+	/// Output formats
+	enum 
+    {
 		compactFormat = 0,
 		normalFormat  = 1,
 		fullFormat    = 2,
 		monitorFormat = 3
 	};
 
-// -- Class methods
+public: // methods
 
 	static	ostream& debug(int level = 1);    // Stream for debug output
 	static	ostream& debug(const CodeLocation& where, int level = 1);
@@ -73,36 +65,23 @@ public:
 	
     static	ostream& message();    // Stream for status messages (monitor)
 
-	static	ostream& userInfo();     // Stream for informative messages
-    
-	static	ostream& userWarning();  // Stream for warning messages
-	
-    static	ostream& userError();    // Stream for error messages
+    /// characters to identify origin of monitoring messages
+    enum { Unix = 'U', App  = 'X' }; 
 
-	static void setUserStream(UserStream*);
-	static void notifyClient(const string&); // Send messages to client
-
-	// TODO: is this still necessary? can it be easily removed?
-
-	enum {
-		Unix   = 'U',
-        Adsm   = 'A',
-        Other  = 'X'
-	};
-
-	static  ostream& monitor(char,long); // Stream for operator monitor
+    /// stream for application monitor
+	static  ostream& monitor(char,long);
 
     /// manipulator that will print the last error message as in perror(2)
 	static	ostream& syserr(ostream&);
 
 private:
 
-	// Log instances do not exist
-
-	Log();
-	~Log();
+	Log();  ///< Private, non-instanciatable class
+	~Log(); ///< Private, non-instanciatable class
 
 };
+
+//-----------------------------------------------------------------------------
 
 ostream& setformat(ostream&,int);
 int format(ostream&);

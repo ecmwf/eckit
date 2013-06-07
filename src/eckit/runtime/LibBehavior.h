@@ -11,7 +11,7 @@
 #ifndef eckit_LibBehavior_h
 #define eckit_LibBehavior_h
 
-#include "eckit/log/CallbackLogger.h"
+#include "eckit/log/CallbackChannel.h"
 #include "eckit/runtime/StandardBehavior.h"
 
 //-----------------------------------------------------------------------------
@@ -31,21 +31,14 @@ public: // methods
     /// Destructor
 
 	~LibBehavior();
-        
-    void register_logger_callback(CallbackLogger::callback c, void* ctxt = 0 );
-    
+            
 private: // interface methods
         
-    virtual LogStream& infoStream();
-    virtual LogStream& warnStream();
-    virtual LogStream& errorStream();
-    virtual LogStream& debugStream();
+    virtual Channel& infoChannel();
+    virtual Channel& warnChannel();
+    virtual Channel& errorChannel();
+    virtual Channel& debugChannel();
 
-protected: // members
-    
-    CallbackLogger::callback c_;
-    void* ctxt_;
-    
 };
 
 

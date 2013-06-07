@@ -38,8 +38,12 @@ public:
     void setColor( oproc c )   { begin_ = c; }
     void resetColor( oproc c ) { end_   = c; }
         
+    std::string prefix() const;
+    void prefix(const std::string &);
+    
 protected:
     
+    std::string   prefix_;
     oproc         begin_;
     oproc         end_;    
     

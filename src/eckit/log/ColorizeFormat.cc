@@ -21,7 +21,7 @@ namespace eckit {
 static std::ostream& noop(std::ostream& s) { return s; }
 
 ColorizeFormat::ColorizeFormat(std::size_t size)
- : FormatBuffer(size),
+ : FormatBuffer(0,size),
    begin_(noop),
    end_(noop)
 {
@@ -29,12 +29,22 @@ ColorizeFormat::ColorizeFormat(std::size_t size)
 
 void ColorizeFormat::beginLine()
 {
-    *target() << begin_;
+    *target() << begin_ << prefix_;
 }
 
 void ColorizeFormat::endLine()
 {
     *target() << end_;
+}
+
+std::string ColorizeFormat::prefix() const
+{
+    return prefix_;
+}
+
+void ColorizeFormat::prefix(const std::string& p)
+{
+    prefix_ = p;
 }
 
 //-----------------------------------------------------------------------------

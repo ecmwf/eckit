@@ -173,7 +173,7 @@ FailedSystemCall::FailedSystemCall(const string& ctx, const char* msg, const Cod
 AssertionFailed::AssertionFailed(const string& w): 
     Exception(string("Assertion failed: ") + w)
 {   
-    Log::monitor(Log::Other,1) << what() << endl;
+    Log::monitor(Log::App,1) << what() << endl;
 } 
 
 AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
@@ -184,7 +184,7 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
         << ", line " << loc.line() << " of " << loc.file() << StrStream::ends;
 
     reason(string(s));
-    Log::monitor(Log::Other,2) << what() << endl;
+    Log::monitor(Log::App,2) << what() << endl;
 }
 
 BadParameter::BadParameter(const string& w):
@@ -200,7 +200,7 @@ NotImplemented::NotImplemented( const CodeLocation& loc )
         << ", line " << loc.line() << " of " << loc.file() << StrStream::ends;
 
     reason(string(s));
-    Log::monitor(Log::Other,2) << what() << endl;
+    Log::monitor(Log::App,2) << what() << endl;
     string t = string(s);
     //	Panic(t.c_str());
 
@@ -292,7 +292,7 @@ void handle_panic(const char *msg)
     cout << "PANIC: " << msg << endl;
     cerr << "PANIC: " << msg << endl;
 
-    Log::monitor(Log::Other,9999) << msg << endl;
+    Log::monitor(Log::App,9999) << msg << endl;
 
     Log::panic() << "PANIC IS CALLED!!!" << endl;
     Log::panic() << msg << endl;

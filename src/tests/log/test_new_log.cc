@@ -30,6 +30,7 @@
 #include "eckit/log/FormatChannel.h"
 #include "eckit/log/FormatBuffer.h"
 #include "eckit/log/ColorizeFormat.h"
+#include "eckit/log/ChannelBuffer.h"
 
 using namespace eckit;
 
@@ -49,70 +50,23 @@ namespace eckit_test {
 //-----------------------------------------------------------------------------
 
 /// Example of a third-party buffer
-/// @see ForwardChannel
-class ForwardBuffer: public std::streambuf {
+/// To use with Channel
+class ForwardBuffer: public ChannelBuffer {
 public:
     
-    ForwardBuffer( std::ostream* os, std::size_t size = 1024 ) : 
-        std::streambuf(), 
-        os_(os),
-        buffer_( size + 1 ) // + 1 so we can always write the '\0'        
-    {
-        assert( size );
-        char *base = &buffer_.front();
-        setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
-    }
+    ForwardBuffer( std::ostream* os ) :  ChannelBuffer(os) {}
     
-    ForwardBuffer( std::ostream& os, std::size_t size = 1024 ) : 
-        std::streambuf(), 
-        os_(os),
-        buffer_( size + 1 ) // + 1 so we can always write the '\0'        
-    {
-        assert( size );
-        char *base = &buffer_.front();
-        setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
-    }
+    ForwardBuffer( std::ostream& os) :  ChannelBuffer(os) {}
 
-    ~ForwardBuffer() { sync(); }
+protected:
 
-private:
-
-    ostream_handle os_;
-    std::vector<char> buffer_;
-
-    bool dumpBuffer()
+    virtual bool dumpBuffer()
     {
         os_->write(pbase(),pptr() - pbase());
         setp(pbase(), epptr());
         return true;
     }
 
-protected:
-
-    virtual int_type overflow(int_type ch)
-    {
-        /* AutoLock<Mutex> lock(mutex); */
-        if (ch == traits_type::eof() ) { return sync(); }
-        dumpBuffer();
-        sputc(ch);
-        return traits_type::to_int_type(ch);
-    }
-
-    virtual int_type sync()
-    {
-        if( dumpBuffer() ) { os_->flush(); return 0; }
-        else
-            return -1;
-    }
-    
-};
-
-/// Example of a third-party Channel
-/// @see ForwardBuffer
-class ForwardChannel : public Channel {
-public:
-    ForwardChannel( std::ostream& os ) : Channel( new ForwardBuffer(os) ) {}
-    ForwardChannel( std::ostream* os ) : Channel( new ForwardBuffer(os) ) {}
 };
 
 //-----------------------------------------------------------------------------
@@ -194,7 +148,7 @@ void TestApp::test_multi_channel()
     mc << "testing [" << t++ << "]" << std::endl;
     
     std::ofstream of ("test.txt.2");
-    mc.add("of", new ForwardChannel(of) );
+    mc.add("of", new Channel( new ForwardBuffer(of) ) );
     
     mc << "testing [" << t++ << "]" << std::endl;
 
@@ -206,11 +160,11 @@ void TestApp::test_multi_channel()
     mc.add("cout", std::cout );
     mc << "testing [" << t++ << "]" << std::endl;
 
-    mc.add("fwd_cout", new ForwardChannel( std::cout ) );
+    mc.add("fwd_cout", new Channel( new ForwardBuffer(std::cout) ) );
     mc << "testing [" << t++ << "]" << std::endl;
     
     std::ostringstream oss;
-    mc.add("oss", new ForwardChannel( oss ) );
+    mc.add("oss", new Channel( new ForwardBuffer(oss) ) );
     mc << "testing [" << t++ << "]" << std::endl;
         
     CallbackChannel* cbc = new CallbackChannel();

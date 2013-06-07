@@ -32,10 +32,10 @@ public:
     
 public: // methods
     
-    virtual LogStream& infoStream();
-    virtual LogStream& warnStream();
-    virtual LogStream& errorStream();
-    virtual LogStream& debugStream();
+    virtual Channel& infoChannel();
+    virtual Channel& warnChannel();
+    virtual Channel& errorChannel();
+    virtual Channel& debugChannel();
     
 };
 

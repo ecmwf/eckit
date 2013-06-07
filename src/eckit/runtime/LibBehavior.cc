@@ -21,22 +21,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-template< typename TYPE, int L >
-struct CallBackAlloc {
-    CallBackAlloc( CallbackLogger::callback c, void* ctxt ) : c_(c),ctxt_(ctxt) {}
-    TYPE* operator() () 
-    { 
-        CallbackLogger* lg = new CallbackLogger();
-        lg->register_callback( c_, L, ctxt_ );
-        return new TYPE( lg ); 
-    }
-    CallbackLogger::callback c_;
-    void* ctxt_;
-};
-
-//-----------------------------------------------------------------------------
-
-LibBehavior::LibBehavior() : c_(0),ctxt_(0)
+LibBehavior::LibBehavior()
 {
 }
 
@@ -44,46 +29,27 @@ LibBehavior::~LibBehavior()
 {
 }
 
-void LibBehavior::register_logger_callback( CallbackLogger::callback c, void* ctxt )
-{    
-    ASSERT(c);
-    c_ = c;
-    ctxt_ = ctxt;
-}
-
-LogStream& LibBehavior::infoStream()
+Channel& LibBehavior::infoChannel()
 {
-    if(!c_) throw SeriousBug("Forgot to register callback before logging?");
-    typedef CallBackAlloc<InfoStream,(int)'I'> Alloc;
-    static Alloc a (c_,ctxt_);
-    static ThreadSingleton<InfoStream,Alloc> x( a );
+    static ThreadSingleton<CallbackChannel> x;
     return x.instance();
 }
 
-LogStream& LibBehavior::warnStream()
+Channel& LibBehavior::warnChannel()
 {
-    if(!c_) throw SeriousBug("Forgot to register callback before logging?");
-    typedef CallBackAlloc<WarnStream,(int)'W'> Alloc;
-    static Alloc a (c_,ctxt_);
-    static ThreadSingleton<WarnStream,Alloc> x( a );
+    static ThreadSingleton<CallbackChannel> x;
     return x.instance();
 }
 
-LogStream& LibBehavior::errorStream()
+Channel& LibBehavior::errorChannel()
 {
-    if(!c_) throw SeriousBug("Forgot to register callback before logging?");
-    typedef CallBackAlloc<ErrorStream,(int)'E'> Alloc;
-    static Alloc a (c_,ctxt_);
-    static ThreadSingleton<ErrorStream,Alloc> x( a );
+    static ThreadSingleton<CallbackChannel> x;
     return x.instance();
 }
 
-LogStream& LibBehavior::debugStream()
+Channel& LibBehavior::debugChannel()
 {
-    if(!c_) throw SeriousBug("Forgot to register callback before logging?");
-    typedef CallBackAlloc<DebugStream,(int)'D'> Alloc;
-    static Alloc a (c_,ctxt_);
-    static ThreadSingleton<DebugStream,Alloc> x( a );
+    static ThreadSingleton<CallbackChannel> x;
     return x.instance();
 }
 

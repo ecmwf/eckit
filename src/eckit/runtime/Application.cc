@@ -45,7 +45,7 @@ static void end(const char* msg)
     in_end = true;
 
 	delete[] memoryReserve; memoryReserve = 0;
-	Log::monitor(Log::Other,9998) << msg << endl;
+	Log::monitor(Log::App,9998) << msg << endl;
 
 	try {
 		throw;

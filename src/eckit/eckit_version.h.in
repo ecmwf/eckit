@@ -12,13 +12,13 @@
 extern "C" {
 #endif
 
-const char * get_eckit_version();
+const char * eckit_version();
 
-unsigned int get_eckit_version_int();
+unsigned int eckit_version_int();
 
-const char * get_eckit_version_str();
+const char * eckit_version_str();
 
-const char * get_eckit_git_sha1();
+const char * eckit_git_sha1();
 
 #ifdef __cplusplus
 }

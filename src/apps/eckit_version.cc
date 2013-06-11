@@ -34,9 +34,9 @@ namespace eckit {
         if( Resource<bool>("-long",false) )
         {
             Log::info() << "eckit" << std::endl
-                        << "    version: " << get_eckit_version() << std::endl
-                        << "    version str: " << get_eckit_version_str() << std::endl
-                        << "    sha1: " << get_eckit_git_sha1() << std::endl;
+                        << "    version: " << eckit_version() << std::endl
+                        << "    version str: " << eckit_version_str() << std::endl
+                        << "    sha1: " << eckit_git_sha1() << std::endl;
 
             if( Resource<bool>("-build",false) )
             {
@@ -52,7 +52,7 @@ namespace eckit {
         }
         else
         {
-            Log::info() << get_eckit_version() << std::endl;
+            Log::info() << eckit_version() << std::endl;
         }
 
     }

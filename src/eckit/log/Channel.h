@@ -25,20 +25,23 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+/// Output channel that is an std::ostream but more functional
 /// @todo consider merging Channel with MultiChannel
 class Channel : public std::ostream, 
                 private NonCopyable {
-public:
+public: // methods
     
     /// constructor takes ownership of buffer
-    Channel( std::streambuf* b );
-    
+    Channel( std::streambuf* b );    
+
     /// destructor deallocates buffer
     ~Channel();
     
     /// sets the code location from where next log will be
     Channel& source( const CodeLocation& );
 
+    friend Channel& operator<<( Channel&, const CodeLocation& );
+    
 };
 
 //-----------------------------------------------------------------------------

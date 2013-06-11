@@ -11,10 +11,17 @@
 #include <unistd.h>
 
 #include "eckit/filesystem/LocalPathName.h"
+
 #include "eckit/log/Log.h"
+
 #include "eckit/os/BackTrace.h"
+
 #include "eckit/runtime/Context.h"
 #include "eckit/runtime/LibBehavior.h"
+
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
+#include "eckit/thread/Once.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 
@@ -26,37 +33,42 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-static void callback_logger( void* ctxt, int level, const char* msg )
+static Once<Mutex> mutex; 
+
+static void callback_logger( void* ctxt, const char* msg )
 {
+    AutoLock<Mutex> lock(mutex); ///< usually global resources like this need to be protected by mutex
+    
     std::cout << "[TEST] -- " << msg ;
+}
+
+static void callback_special( void* ctxt, const char* msg )
+{
+    std::cout << ">>> " << msg ;
 }
 
 //-----------------------------------------------------------------------------
 
-void test_callback_output()
-{    
-    Log::debug()    << "debug message"   << std::endl; // should not print if debug not set
-    Log::info()     << "info message"    << std::endl;
-    Log::warning()  << "warning message" << std::endl;
-    Log::error()    << "error message"   << std::endl;
-    Log::panic()    << "panic message"   << std::endl;
-}
+#define LOOPS 3
+#define WAIT  10000
 
 template< int N >
 class TLog : public Thread
 {
     void run()
-    {
-        for( int i = 0; i < 3*N; ++i )
+    {   
+        // this shows how you can change the callback per thread 
+        if( N == 2 )
+            dynamic_cast<CallbackChannel&>(Log::info()).register_callback(&callback_special);
+        
+        for( int i = 0; i < LOOPS*N; ++i )
         {
-           ::usleep(N*100000);
+           ::usleep(N*WAIT);
 
            Log::info() << "thread [" << N << "] -- " << i << std::endl;
-           
-           test_callback_output();
-
-           Log::info() << std::endl;
         }
+        
+        Log::info() << "thread [" << N << "] -- done !" << std::endl;
     }
 };
 
@@ -73,18 +85,23 @@ int main(int argc,char **argv)
 {
     LibBehavior* b = new LibBehavior();
     Context::instance().behavior( b );
-    b->register_logger_callback( &callback_logger );
-
-    test_callback_output();
+    b->default_callback( &callback_logger ); // establish the default callback for all threads
+            
+    Log::info() << ">>> starting ... " << std::endl;    
     
     ThreadControler t1( new TLog<1>(), false );
     ThreadControler t2( new TLog<2>(), false );
+    ThreadControler t3( new TLog<3>(), false );
 
     t1.start();
     t2.start();
+    t3.start();
     
     t1.wait();
     t2.wait();
+    t3.wait();
+
+    Log::info() << ">>> finished!" << std::endl;    
     
     return 0;
 }

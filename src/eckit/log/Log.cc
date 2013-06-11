@@ -9,8 +9,14 @@
  */
 
 #include "eckit/log/Log.h"
-#include "eckit/log/LogBuffer.h"
-#include "eckit/runtime/Monitor.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/MultiChannel.h"
+#include "eckit/log/MonitorChannel.h"
+#include "eckit/log/UserChannel.h"
+
+#include "eckit/runtime/Context.h"
+
+#include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
 
@@ -18,250 +24,162 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-StatusStream::StatusStream():
-    ostream(new StatusBuffer)
+struct CreateMonitorChannel
 {
-}
+    MonitorChannel* operator()() { return new MonitorChannel( MonitorChannel::NONE ); }
+};
 
-StatusStream::~StatusStream()
+Channel& Log::monitor(char type,long mode)
 {
-        delete (StatusBuffer*)rdbuf();
-}
-
-StatusBuffer::StatusBuffer():
-        streambuf()
-{
-        setp(buffer_, buffer_ + sizeof(buffer_));
-        setg(0, 0, 0);
-}
-
-StatusBuffer::~StatusBuffer()
-{
-        //dumpBuffer();
-}
-
-int	StatusBuffer::overflow(int c)
-{
-        if (c == EOF) {
-                sync();
-                return 0;
-        }
-
-        dumpBuffer();
-        sputc(c);
-        return 0;
-}
-
-int	StatusBuffer::sync()
-{
-        dumpBuffer();
-        return 0;
-}
-
-void StatusBuffer::dumpBuffer()
-{
-        ::replace(pbase(),pptr(),'\n','\0');
-        Monitor::instance().status(pbase());
-        setp(pbase(), epptr());
+    static ThreadSingleton<MonitorChannel,CreateMonitorChannel> x;
+    MonitorChannel& y = x.instance();
+    y.flags(type,mode);
+    return y;
 }
 
 //-----------------------------------------------------------------------------
 
-MessageStream::MessageStream():
-    ostream(new MessageBuffer)
+struct CreateMonitorStatusChannel
 {
-}
+    MonitorChannel* operator()() { return new MonitorChannel( MonitorChannel::STATUS ); }
+};
 
-MessageStream::~MessageStream()
+Channel& Log::status()
 {
-        delete (MessageBuffer*)rdbuf();
-}
-
-MessageBuffer::MessageBuffer():
-        streambuf()
-{
-        setp(buffer_, buffer_ + sizeof(buffer_));
-        setg(0, 0, 0);
-}
-
-MessageBuffer::~MessageBuffer()
-{
-        dumpBuffer();
-}
-
-int	MessageBuffer::overflow(int c)
-{
-        if (c == EOF) {
-                sync();
-                return 0;
-        }
-
-        dumpBuffer();
-        sputc(c);
-        return 0;
-}
-
-int	MessageBuffer::sync()
-{
-        dumpBuffer();
-        return 0;
-}
-
-void MessageBuffer::dumpBuffer()
-{
-        ::replace(pbase(),pptr(),'\n','\0');
-        Monitor::instance().message(pbase());
-        setp(pbase(), epptr());
+    static ThreadSingleton<MonitorChannel,CreateMonitorStatusChannel> x;
+    return x.instance();
 }
 
 //-----------------------------------------------------------------------------
 
-MonitorStream::MonitorStream():
-    ostream(new MonitorBuffer)
+struct CreateMonitorMessageChannel
 {
-}
+    MonitorChannel* operator()() { return new MonitorChannel( MonitorChannel::MESSAGE ); }
+};
 
-MonitorStream::~MonitorStream()
+Channel& Log::message()
 {
-        delete (MonitorBuffer*)rdbuf();
-}
-
-void MonitorStream::flags(char type,long mode)
-{
-        ((MonitorBuffer*)rdbuf())->flags(type,mode);
-}
-
-MonitorBuffer::MonitorBuffer():
-    streambuf(),
-    start_(true)
-{
-        setp(buffer_, buffer_ + sizeof(buffer_));
-        setg(0, 0, 0);
-}
-
-MonitorBuffer::~MonitorBuffer()
-{
-        dumpBuffer();
-}
-
-int	MonitorBuffer::overflow(int c)
-{
-        if (c == EOF) {
-                sync();
-                return 0;
-        }
-
-        dumpBuffer();
-        sputc(c);
-        return 0;
-}
-
-int	MonitorBuffer::sync()
-{
-        dumpBuffer();
-        return 0;
-}
-
-void MonitorBuffer::dumpBuffer()
-{
-        setp(pbase(), epptr());
-        cerr << flush;
+    static ThreadSingleton<MonitorChannel,CreateMonitorMessageChannel> x;
+    return x.instance();
 }
 
 //-----------------------------------------------------------------------------
 
-ostream& Log::monitor(char type,long mode)
-{
-        static ThreadSingleton<MonitorStream> x;
-        MonitorStream& y = x.instance();
-        y.flags(type,mode);
-        return y;
-}
-
-
-ostream& Log::status()
-{
-        static ThreadSingleton<StatusStream> x;
-        return x.instance();
-}
-
-ostream& Log::message()
-{
-        static ThreadSingleton<MessageStream> x;
-        return x.instance();
-}
-
-ostream& Log::info()
+Channel& Log::info()
 {
     return Context::instance().infoChannel();
 }
 
-ostream& Log::info(const CodeLocation& where)
+Channel& Log::info(const CodeLocation& where)
 {
     return Context::instance().infoChannel().source(where);
 }
 
-ostream& Log::error()
+//-----------------------------------------------------------------------------
+
+Channel& Log::error()
 {
     return Context::instance().errorChannel();
 }
 
-ostream& Log::error(const CodeLocation& where)
+Channel& Log::error(const CodeLocation& where)
 {
     return Context::instance().infoChannel().source(where);
 }
 
-ostream& Log::panic()
+//-----------------------------------------------------------------------------
+
+std::ostream& Log::panic()
 {
-        try
-        {
-                return Log::error();
-        }
-        catch(exception&)
-        {
-                return cerr;
-        }
+    try
+    {
+        return Log::error();
+    }
+    catch(exception&)
+    {
+        return  std::cerr;
+    }
 }
 
-ostream& Log::panic(const CodeLocation& where)
+std::ostream& Log::panic(const CodeLocation& where)
 {
-        try 
-        {
-                return Log::error(where);
-        }
-        catch(exception&)
-        {
-                cerr << "[" << where << "]";
-                return cerr;
-        }
+    try 
+    {
+        return Log::error(where);
+    }
+    catch(exception&)
+    {
+        std::cerr << "[" << where << "]";
+        return  std::cerr;
+    }
 }
 
-ostream& Log::warning()
+//-----------------------------------------------------------------------------
+
+Channel& Log::warning()
 {
     return Context::instance().warnChannel();
 }
 
-ostream& Log::warning(const CodeLocation& where)
+Channel& Log::warning(const CodeLocation& where)
 {
     return Context::instance().warnChannel().source(where);
 }
 
-ostream& Log::debug(int level)
+//-----------------------------------------------------------------------------
+
+Channel& Log::debug(int level)
 {
-        static ofstream devnull("/dev/null");
-        if(level >= Context::instance().debug())
-                return devnull;
-        else
-            return Context::instance().debugChannel();
+    static MultiChannel no_output;
+    if(level >= Context::instance().debug())
+        return no_output;
+    else
+        return Context::instance().debugChannel();
 }
 
-ostream& Log::debug(const CodeLocation& where, int level)
+Channel& Log::debug(const CodeLocation& where, int level)
 {
-        static ofstream devnull("/dev/null");
-        if(level >= Context::instance().debug())
-                return devnull;
-        else
-            return Context::instance().debugChannel().source(where);
+    static MultiChannel no_output;
+    if(level >= Context::instance().debug())
+        return no_output;
+    else
+        return Context::instance().debugChannel().source(where);
+}
+
+//-----------------------------------------------------------------------------
+
+UserChannel& Log::user()
+{
+    static ThreadSingleton<UserChannel> x;
+    return x.instance();
+}
+
+Channel& Log::userInfo()
+{
+    UserChannel& u = user();
+    u.msgType(UserChannel::INFO);
+    return u;
+}
+
+Channel& Log::userError()
+{
+    UserChannel& u = user();
+    u.msgType(UserChannel::ERROR);
+    return u;
+}
+
+Channel& Log::userWarning()
+{
+    UserChannel& u = user();
+    u.msgType(UserChannel::WARN);
+    return u;
+}
+
+void Log::notifyClient(const string& msg)
+{
+    UserChannel& u = user();
+    UserMsg* um = u.userMsg();
+    if(um) um->notifyClient(msg);
 }
 
 //-----------------------------------------------------------------------------
@@ -315,15 +233,7 @@ ostream& setformat(ostream& s,int n)
 
 //-----------------------------------------------------------------------------
 
-/// @note some explicit template instantiations
-///
-template class ThreadSingleton<Exception*>;
-//template class ThreadSingleton<InfoStream>;
-//template class ThreadSingleton<WarnStream>;
-template class ThreadSingleton<MessageStream>;
-//template class ThreadSingleton<ErrorStream>;
-template class ThreadSingleton<MonitorStream>;
-//template class ThreadSingleton<DebugStream>;
+template class ThreadSingleton<UserChannel>;
 
 //-----------------------------------------------------------------------------
 

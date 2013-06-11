@@ -26,71 +26,65 @@ struct CTxt { std::string name_; };
 
 //-----------------------------------------------------------------------------
 
-static void output_callback_none( void* ctxt, int level, const char* msg )
-{
-}
-
-static void output_callback_noctxt( void* ctxt, int level, const char* msg )
+static void output_callback_noctxt( void* ctxt, const char* msg )
 {
 //    std::cout << "[DEBUG] -- " << Here() << "\n" << BackTrace::dump() << "\n" << std::endl;
-    std::cout << "[FORWARD OUT] : Level [" << level << "] -- " << msg ;
+    std::cout << "[FORWARD OUT] -- " << msg ;
 }
 
-static void output_callback_withctxt( void* ctxt, int level, const char* msg )
+static void output_callback_withctxt( void* ctxt, const char* msg )
 {
 //    std::cout << "[DEBUG] -- " << Here() << "\n" << BackTrace::dump() << "\n" << std::endl;
-    std::cout << "[FORWARD OUT] : Level [" << level << "] CTXT [" << static_cast<CTxt*>(ctxt)->name_ << "] -- " << msg ;
+    std::cout << "[FORWARD OUT] -- CTXT [" << static_cast<CTxt*>(ctxt)->name_ << "] -- " << msg ;
 }
 
 //-----------------------------------------------------------------------------
 
 /// tests without callback
-void test_callback_none( LibBehavior* b )
+void test_callback_none()
 {
-    b->register_logger_callback( &output_callback_none );
+    dynamic_cast<CallbackChannel&>(Log::info()).register_callback( 0 );
+
+    Log::info()          << "info message 1" << std::endl;
+    
+    Log::warning()       << "warning message 1" << std::endl;
+    
+    Log::error()         << "error message 1" << std::endl;
 }
 
 //-----------------------------------------------------------------------------
 
 /// tests with null context
-void test_callback_noctxt( LibBehavior* b )
+void test_callback_noctxt()
 {
-    b->register_logger_callback( &output_callback_noctxt );
+    dynamic_cast<CallbackChannel&>(Log::info()).register_callback( &output_callback_noctxt );
     
-    Log::debug()         << "debug message 1" << std::endl; // should not print if debug not set
+    Log::info()          << "info message 1" << std::endl;
     
-    Log::info()         << "info message 1" << std::endl;
-    
-    Log::warning()         << "warning message 1" << std::endl;
+    Log::warning()       << "warning message 1" << std::endl;
     
     Log::error()         << "error message 1" << std::endl;
     
-    Log::panic()         << "panic message 1" << std::endl;
-
-    b->register_logger_callback( &output_callback_none );
+    dynamic_cast<CallbackChannel&>(Log::info()).register_callback( 0 );
 }
 
 //-----------------------------------------------------------------------------
 
 /// tests with context
-void test_callback_withctxt( LibBehavior* b )
+void test_callback_withctxt()
 {
     CTxt ctxt;
     ctxt.name_ = "MyTest";
 
-    b->register_logger_callback( &output_callback_withctxt , &ctxt );
+    dynamic_cast<CallbackChannel&>(Log::info()).register_callback( &output_callback_withctxt, &ctxt );
+       
+    Log::info()          << "info message 1" << std::endl;
     
-    Log::debug()         << "debug message 1" << std::endl; // should not print if debug not set
-    
-    Log::info()         << "info message 1" << std::endl;
-    
-    Log::warning()         << "warning message 1" << std::endl;
+    Log::warning()       << "warning message 1" << std::endl;
     
     Log::error()         << "error message 1" << std::endl;
-    
-    Log::panic()         << "panic message 1" << std::endl;
-    
-    b->register_logger_callback( &output_callback_none );    
+        
+    dynamic_cast<CallbackChannel&>(Log::info()).register_callback( 0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -107,9 +101,9 @@ int main(int argc,char **argv)
 
     Context::instance().behavior( b );
 
-    test_callback_none(b);
-    test_callback_noctxt(b);
-    test_callback_withctxt(b);
+    test_callback_none();
+    test_callback_noctxt();
+    test_callback_withctxt();
     
     return 0;
 }

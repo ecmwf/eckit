@@ -18,6 +18,7 @@
 
 #include "eckit/log/CodeLocation.h"
 #include "eckit/log/Channel.h"
+#include "eckit/log/UserChannel.h"
 
 //-----------------------------------------------------------------------------
 
@@ -46,30 +47,46 @@ public: // types
 
 public: // methods
 
-	static	ostream& debug(int level = 1);    // Stream for debug output
-	static	ostream& debug(const CodeLocation& where, int level = 1);
+    /// Channel for debug output
+	static	Channel& debug(int level = 1);    
+	static	Channel& debug(const CodeLocation& where, int level = 1);
     
-	static	ostream& info();     // Stream for informative messages
-	static	ostream& info(const CodeLocation& where);
+    /// Channel for informative messages
+	static	Channel& info();
+	static	Channel& info(const CodeLocation& where);
 	
-    static	ostream& warning();  // Stream for warning messages
-	static	ostream& warning(const CodeLocation& where);
+    /// Channel for warning messages
+    static	Channel& warning();
+	static	Channel& warning(const CodeLocation& where);
 	
-    static	ostream& error();    // Stream for error messages
-	static	ostream& error(const CodeLocation& where);
+    /// Channel for error messages
+    static	Channel& error();    
+	static	Channel& error(const CodeLocation& where);
 	
-    static	ostream& panic();    // Stream for panic messages
-	static	ostream& panic(const CodeLocation& where);
-
-	static	ostream& status();    // Stream for status messages (monitor)
-	
-    static	ostream& message();    // Stream for status messages (monitor)
+    /// Channel for panic messages
+    static	std::ostream& panic();    
+	static	std::ostream& panic(const CodeLocation& where);
 
     /// characters to identify origin of monitoring messages
     enum { Unix = 'U', App  = 'X' }; 
 
-    /// stream for application monitor
-	static  ostream& monitor(char,long);
+    /// Channel for application monitor
+	static  Channel& monitor(char,long);
+    /// Channel for status messages to Application Monitor
+	static	Channel& status();    
+    /// Channel for status messages to Application Monitor
+    static	Channel& message();
+
+    /// Get the channel for the user
+    static  UserChannel& user();    
+    /// Channel for informative messages tp remote user
+    static  Channel& userInfo();    
+    /// Channel for warning messages to remote user
+    static  Channel& userWarning(); 
+    /// Channel for error messages to remote user
+    static  Channel& userError();   
+    /// Send messages to remote user directly -- not using a channel
+    static void notifyClient(const string&);
 
     /// manipulator that will print the last error message as in perror(2)
 	static	ostream& syserr(ostream&);

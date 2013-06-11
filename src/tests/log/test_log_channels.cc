@@ -75,7 +75,7 @@ protected:
 class Spacer : public FormatBuffer {
 public:
 
-    Spacer( std::size_t size = 1024 ) : FormatBuffer(size) {}
+    Spacer( std::size_t size = 1024 ) : FormatBuffer(0,size) {}
 
     virtual ~Spacer(){ pubsync(); }
 
@@ -104,9 +104,6 @@ static void callback_noctxt( void* , const char* msg )
 
 //-----------------------------------------------------------------------------
 
-/// @todo
-/// * user / networking...
-/// * thread / locks (?)
 class TestApp : public Tool {
 public:
 
@@ -118,16 +115,12 @@ public:
 
     virtual void run()
     {
-        DEBUG_H;
         test_multi_channel();
         test_long_channel();
-        test_thread_logging();
-        DEBUG_H;
     }
 
     void test_multi_channel();
     void test_long_channel();
-    void test_thread_logging();
     
 };
 
@@ -203,15 +196,6 @@ void TestApp::test_long_channel()
     ForwardChannel os( fm );
 
     os << " testing [" << t++ << "]\n more stuff " << std::endl;
-#endif
-}
-
-//-----------------------------------------------------------------------------
-
-void TestApp::test_thread_logging()
-{
-#if 0
-    std::cout << "---> test_thread_logging()" << std::endl;
 #endif
 }
 

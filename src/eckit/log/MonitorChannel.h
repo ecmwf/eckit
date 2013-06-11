@@ -8,13 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file CallbackChannel.h
+/// @file MonitorChannel.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_CallbackChannel_h
-#define eckit_log_CallbackChannel_h
-
-#include <utility>
+#ifndef eckit_log_MonitorChannel_h
+#define eckit_log_MonitorChannel_h
 
 #include "eckit/log/Channel.h"
 
@@ -24,20 +22,18 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class CallbackChannel : public Channel {
-public:
+/// Channel for Monitor messages
+class MonitorChannel : public Channel {
 
-    typedef void (*callback_t) (void* ctxt, const char* msg);
+public: // methods
     
-    CallbackChannel();
-    CallbackChannel(callback_t c, void* ctxt = 0);
-
-    ~CallbackChannel();
-
-    void register_callback(callback_t c, void* ctxt = 0);
-    void register_callback( const std::pair<callback_t,void*>& );
-    std::pair<callback_t,void*> current_callback();
+    enum Out { NONE, STATUS, MESSAGE };
     
+    /// constructor
+    MonitorChannel( MonitorChannel::Out );
+    
+    void flags(char type,long code);
+        
 };
 
 //-----------------------------------------------------------------------------

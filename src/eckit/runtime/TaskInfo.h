@@ -87,6 +87,8 @@ protected:
 	char           message_[80];
 };
 
+//-----------------------------------------------------------------------------
+
 class TaskInfo : public Padded<Info,4096>,
                  public NonCopyable {
 public:

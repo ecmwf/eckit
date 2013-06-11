@@ -46,6 +46,8 @@ public:
     }
 
 private:
+    
+    friend class CallbackChannel;
 
     CallbackChannel::callback_t call_;
     void* ctxt_;
@@ -105,9 +107,20 @@ CallbackChannel::~CallbackChannel()
 {
 }
 
-void CallbackChannel::register_callback(callback_t c, void *ctxt)
+void CallbackChannel::register_callback(callback_t c, void *ctxt )
 {
     static_cast<CallBackBuffer*>(rdbuf())->register_callback(c,ctxt);
+}
+
+void CallbackChannel::register_callback(const std::pair<CallbackChannel::callback_t, void *>& p)
+{
+    static_cast<CallBackBuffer*>(rdbuf())->register_callback(p.first,p.second);
+}
+
+std::pair<CallbackChannel::callback_t, void *> CallbackChannel::current_callback()
+{
+    CallBackBuffer& b = static_cast<CallBackBuffer&>(*rdbuf());
+    return std::make_pair( b.call_, b.ctxt_ );
 }
 
 //-----------------------------------------------------------------------------

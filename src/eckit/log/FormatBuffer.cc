@@ -42,7 +42,6 @@ void FormatBuffer::process(const char *begin, const char *end)
 
 bool FormatBuffer::dumpBuffer()
 {
-    /* AutoLock<Mutex> lock(mutex); */
     if( has_target() )
     {
         const char *p = pbase();

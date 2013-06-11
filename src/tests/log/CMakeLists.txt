@@ -2,8 +2,8 @@ ecbuild_add_test(   TARGET      test_log
                     SOURCES     test_log.cc
                     LIBS        eckit )
 
-ecbuild_add_test(   TARGET      test_new_log
-                    SOURCES     test_new_log.cc
+ecbuild_add_test(   TARGET      test_log_channels
+                    SOURCES     test_log_channels.cc
                     LIBS        eckit )
 
 ecbuild_add_test(   TARGET      test_log_callback

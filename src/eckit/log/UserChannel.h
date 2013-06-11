@@ -8,18 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file MultiChannel.h
+/// @file UserChannel.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_MultiChannel_h
-#define eckit_log_MultiChannel_h
-
-#include <vector>
-#include <map>
-#include <streambuf>
+#ifndef eckit_log_UserChannel_h
+#define eckit_log_UserChannel_h
 
 #include "eckit/log/Channel.h"
-#include "eckit/log/OStreamHandle.h"
 
 //-----------------------------------------------------------------------------
 
@@ -27,34 +22,40 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class MultiplexBuffer;
-
-class MultiChannel : public Channel {
+class UserMsg {
 public:
+	virtual void infoMsg(const string&)      = 0;
+	virtual void warningMsg(const string&)   = 0;
+	virtual void errorMsg(const string&)     = 0;
+	virtual void notifyClient(const string&) = 0;
+};
+
+//-----------------------------------------------------------------------------
+
+class UserBuffer;
+
+class UserChannel : public Channel {
+public: // types
+    
+    enum MsgType { NONE, INFO, ERROR, WARN };
+    
+public: // methods
     
     /// Constructor
-    /// No parameters, add target streams later with add() function
-    MultiChannel();
+    UserChannel();
     
     /// Destructor
-    ~MultiChannel();
+    ~UserChannel();
     
-    /// remove a stream associated to key
-    bool remove( const std::string& k );
+    /// type for next message
+    void msgType( MsgType t );
     
-    /// add a stream, passing ownership
-    void add( const std::string& k, std::ostream* s );
-
-    /// add a stream, not passing ownership
-    void add( const std::string& k, std::ostream& s );
-
-    /// clears all streams from this channel
-    void clear();
+    void userMsg( UserMsg* );
+    UserMsg* userMsg() const;
 
 protected:
-    
-    MultiplexBuffer* buff_; ///< storage of output streams
-    
+
+    UserBuffer* buffer_;    
 };
 
 //-----------------------------------------------------------------------------

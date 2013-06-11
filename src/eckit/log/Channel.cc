@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/exception/Exceptions.h"
+
 #include "eckit/log/Channel.h"
 #include "eckit/log/ChannelBuffer.h"
 
@@ -17,7 +19,10 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-Channel::Channel(streambuf *b) : std::ostream( b ) {}
+Channel::Channel(streambuf *b) : std::ostream( b ) 
+{
+    ASSERT(b);
+}
 
 Channel::~Channel() { delete rdbuf(); }
 
@@ -27,6 +32,11 @@ Channel& Channel::source(const CodeLocation& where)
     if (buf) 
         buf->location(where);
     return *this;
+}
+
+Channel& operator<<( Channel& ch, const CodeLocation & loc)
+{
+    return ch.source(loc);
 }
 
 //-----------------------------------------------------------------------------

@@ -12,6 +12,7 @@
 #define eckit_LibBehavior_h
 
 #include "eckit/log/CallbackChannel.h"
+#include "eckit/thread/Mutex.h"
 #include "eckit/runtime/StandardBehavior.h"
 
 //-----------------------------------------------------------------------------
@@ -23,24 +24,34 @@ namespace eckit {
 class LibBehavior : public StandardBehavior {
 
 public: // methods
+    
+    typedef CallbackChannel::callback_t callback_t;
 
-    /// Contructors
-
+    /// Contructor
 	LibBehavior();
 
     /// Destructor
-
 	~LibBehavior();
-            
+    
+    /// Register a default callback for logging
+    void default_callback(callback_t c, void* ctxt = 0);
+    /// Get the current default callback for logging
+    std::pair<callback_t,void*> default_callback();
+
 private: // interface methods
         
     virtual Channel& infoChannel();
     virtual Channel& warnChannel();
     virtual Channel& errorChannel();
     virtual Channel& debugChannel();
+    
+private: // members
 
+    Mutex mutex_;
+    callback_t defcall_;
+    void* defctxt_;
+    
 };
-
 
 //-----------------------------------------------------------------------------
 

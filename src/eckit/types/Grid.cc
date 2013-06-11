@@ -188,9 +188,9 @@ bool Grid::operator<(const Grid& other) const
 const Grid& Grid::bestMatch(const vector<Grid>& v) const
 {
 
-		Log::userInfo() << "Grid::bestMatch " << v.size() << endl;
-		Log::info() << "Grid::bestMatch " << v.size() << endl;
-	for(vector<Grid>::const_iterator j = v.begin(); j != v.end(); ++j)
+    Log::userInfo() << "Grid::bestMatch " << v.size() << endl;
+    Log::info() << "Grid::bestMatch " << v.size() << endl;
+    for(vector<Grid>::const_iterator j = v.begin(); j != v.end(); ++j)
 	{
 		Log::userInfo() << "Grid::bestMatch " << (*j) << endl;
 		Log::info() << "Grid::bestMatch " << (*j) << endl;

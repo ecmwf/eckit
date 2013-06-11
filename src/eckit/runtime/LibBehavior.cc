@@ -11,8 +11,9 @@
 #include <cstdlib>
 #include <cassert>
 
-#include "eckit/log/LogBuffer.h"
 #include "eckit/runtime/LibBehavior.h"
+#include "eckit/runtime/Context.h"
+
 #include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
@@ -21,7 +22,9 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-LibBehavior::LibBehavior()
+LibBehavior::LibBehavior() : 
+    defcall_(0),
+    defctxt_(0)
 {
 }
 
@@ -29,27 +32,58 @@ LibBehavior::~LibBehavior()
 {
 }
 
+void LibBehavior::default_callback(callback_t c, void *ctxt)
+{
+    AutoLock<Mutex> lock(mutex_);
+    defcall_ = c;
+    defctxt_ = ctxt;
+}
+
+std::pair< CallbackChannel::callback_t, void *> LibBehavior::default_callback()
+{
+    AutoLock<Mutex> lock(mutex_);
+    return std::make_pair( defcall_, defctxt_  );
+}
+
+//-----------------------------------------------------------------------------
+
+struct CreateCallbackChannel 
+{
+    CallbackChannel* operator()() 
+    { 
+        CallbackChannel* ch = new CallbackChannel();
+        
+        // take the default callback in the context behavior
+        
+        ch->register_callback( dynamic_cast<LibBehavior&>( Context::instance().behavior() ).default_callback() );
+                
+        return ch;
+    }
+};
+
+//-----------------------------------------------------------------------------
+
 Channel& LibBehavior::infoChannel()
 {
-    static ThreadSingleton<CallbackChannel> x;
+    static ThreadSingleton<CallbackChannel,CreateCallbackChannel> x;
     return x.instance();
 }
 
 Channel& LibBehavior::warnChannel()
 {
-    static ThreadSingleton<CallbackChannel> x;
+    static ThreadSingleton<CallbackChannel,CreateCallbackChannel> x;
     return x.instance();
 }
 
 Channel& LibBehavior::errorChannel()
 {
-    static ThreadSingleton<CallbackChannel> x;
+    static ThreadSingleton<CallbackChannel,CreateCallbackChannel> x;
     return x.instance();
 }
 
 Channel& LibBehavior::debugChannel()
 {
-    static ThreadSingleton<CallbackChannel> x;
+    static ThreadSingleton<CallbackChannel,CreateCallbackChannel> x;
     return x.instance();
 }
 

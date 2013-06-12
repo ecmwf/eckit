@@ -68,6 +68,7 @@ private:
       }
       
       setp(pbase(), epptr());
+      return true;
   }
   
 protected:

@@ -10,8 +10,8 @@
 
 #include "eckit/eckit.h"
 
-#include "limits.h"
-#include "stdlib.h"
+#include <limits.h>
+#include <stdlib.h>
 
 #include <sys/stat.h>
 #include <dirent.h>

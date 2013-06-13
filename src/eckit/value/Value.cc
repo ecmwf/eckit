@@ -265,6 +265,12 @@ Value::operator ValueList() const
 	return v; 
 }
 
+Value::operator ValueMap() const 
+{ 
+	ValueMap v; 
+	content_->value(v); 
+	return v; 
+}
 
 Value Value::operator[](const Value& key) const
 {

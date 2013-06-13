@@ -203,8 +203,6 @@ void JSONParser::parseKeyValue(map<Value,Value>& m)
 
 Value JSONParser::parseObject()
 {
-
-
     consume("{");
     char c = peek();
     if(c == '}')
@@ -233,7 +231,6 @@ Value JSONParser::parseObject()
 
 Value JSONParser::parseArray()
 {
-
     consume("[");
     char c = peek();
     if(c == ']')
@@ -304,7 +301,18 @@ Value JSONParser::parse()
     if(c != 0)
         throw JSONTokenizerError(string("JSONTokenizer::parse extra char '") + c + "'");
     return v;
+    
+}
 
+void JSONParser::toStrDict( Value& json, StringDict& dict )
+{
+    if( json.isMap() )
+    {
+        ValueMap m ( json );
+        
+        for( ValueMap::iterator i = m.begin(); i != m.end(); ++i )
+            dict[ i->first ] = string(i->second);
+    }
 }
 
 //-----------------------------------------------------------------------------

@@ -15,6 +15,7 @@
 #define eckit_JSONParser_h
 
 #include "eckit/parser/StreamParser.h"
+#include "eckit/types/Types.h"
 #include "eckit/value/Value.h"
 
 //-----------------------------------------------------------------------------
@@ -30,6 +31,8 @@ public: // methods
     JSONParser(istream& in);
     
     Value parse();
+    
+    static void toStrDict(Value&, StringDict& );
 
 private: // methods
 
@@ -41,6 +44,7 @@ private: // methods
     Value parseArray();
     Value parseString();
     Value parseNumber();
+    
     void parseKeyValue(map<Value, Value> &);
 
 };

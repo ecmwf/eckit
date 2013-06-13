@@ -101,7 +101,7 @@ private:
 // -- Class members
 
 	static  ClassSpec                 classSpec_;
-    static  Reanimator<MultiHandle>  reanimator_;
+    static  Reanimator<MultiHandle>   reanimator_;
 
 };
 

@@ -63,7 +63,7 @@ void ReadConfig::run()
     
     if( filename.empty() )
     {
-        std::cerr << "empty config filename. use -file to specify filename" << std::endl;
+        Log::error() << "missing config filename. use -file to specify filename" << std::endl;
         return;
     }
     

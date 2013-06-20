@@ -174,23 +174,29 @@ void FileHandle::flush()
             //throw FailedSystemCall(string("fsync(") + name_ + ")");
 
             // On Linux, you must also flush the directory
-
+            
 #ifdef EC_HAVE_DIRFD
-            PathName directory = PathName(name_).dirName();
-            DIR *d = opendir(directory.localPath());
-            if (!d) SYSCALL(-1);
 
-            int dir;
-            SYSCALL(dir = dirfd(d));
-            ret = fsync(dir);
-
-            while (ret < 0 && errno == EINTR)
+            static bool syncDirOnFileFlush = Resource<bool>("syncDirOnFileFlush",true);
+            
+            if( syncDirOnFileFlush )
+            {
+                PathName directory = PathName(name_).dirName();
+                DIR *d = opendir(directory.localPath());
+                if (!d) SYSCALL(-1);
+    
+                int dir;
+                SYSCALL(dir = dirfd(d));
                 ret = fsync(dir);
-
-            if (ret < 0) {
-                Log::error() << "Cannot fsync(" << directory << ")" << Log::syserr << endl;
+    
+                while (ret < 0 && errno == EINTR)
+                    ret = fsync(dir);
+    
+                if (ret < 0) {
+                    Log::error() << "Cannot fsync(" << directory << ")" << Log::syserr << endl;
+                }
+                ::closedir(d);
             }
-            ::closedir(d);
 #endif
 
         }

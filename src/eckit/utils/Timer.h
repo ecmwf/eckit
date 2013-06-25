@@ -14,7 +14,8 @@
 #ifndef eckit_Timer_h
 #define eckit_Timer_h
 
-#include "sys/time.h"
+#include <time.h>
+#include <sys/time.h>
 
 #include "eckit/log/Log.h"
 #include "eckit/memory/NonCopyable.h"
@@ -25,38 +26,55 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-// This stack object prints the elapse time between the call to
-// its contructor and the call to its destructor
-
 class Timer : private NonCopyable {
 public:
 
-	Timer(const string& name, ostream& = Log::info());
+    /// @param name of the timer, used for output
+    /// @param output flag, to dump time on destruction or not
+    Timer( bool output = false );
 
-	~Timer();
+    /// @param name of the timer, used for output
+    /// @param o output stream to use  for output
+    Timer( const std::string& name, std::ostream& o = Log::info() );
+
+    ~Timer();
+
+    void start();
+    void stop();
 
 	double elapsed();
+    double elapsed_cpu();
 
     string name() const { return name_; }
 
+    bool running() const { return !stopped_; }
+
+protected: // methods
+
+    void takeTime();
+
 private: // members
-	
+
 	string         name_;
-	struct timeval start_;
-	clock_t        cpu_;
-	ostream&       out_;
 
-private: // methods
-	
-	ostream& put(ostream&,double);
+    bool           stopped_;
+    bool           outputAtExit_;
 
+    struct timeval timeStart_;
+    struct timeval timeStop_;
+
+    clock_t        cpuStart_;
+    clock_t        cpuStop_;
+
+    std::ostream&  out_;
 };
+
+//-----------------------------------------------------------------------------
 
 timeval operator-(const timeval&,const timeval&);
 
 //-----------------------------------------------------------------------------
 
 } // namespace eckit
-
 
 #endif

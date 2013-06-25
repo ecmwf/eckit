@@ -32,7 +32,7 @@ public:
 // -- Contructors
 
 	Bytes(double);
-	Bytes(double,Timer&); // computes a rate
+    Bytes(double,Timer&); // computes a rate
 	Bytes(double,double); // computes a rate
 
 // -- Operators

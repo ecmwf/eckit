@@ -8,8 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File Value.h
-// Manuel Fuentes - ECMWF Jun 97
+/// @file Value.h
+/// @author Manuel Fuentes
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date Jun 97
 
 #ifndef eckit_Value_h
 #define eckit_Value_h
@@ -17,7 +20,10 @@
 #include "eckit/value/Content.h"
 #include "eckit/types/Date.h"
 #include "eckit/types/DateTime.h"
+#include "eckit/types/Date.h"
 
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 
 //-----------------------------------------------------------------------------
 
@@ -90,6 +96,8 @@ public:
     operator Date() const      { Date d; content_->value(d); return d; }
     operator Time() const      { Time t; content_->value(t); return t; }
     operator DateTime() const  { DateTime d; content_->value(d); return d; }
+    operator Length() const    { long long l;  content_->value(l); return l; }
+    operator Offset() const    { long long l;  content_->value(l); return l; }
 
     operator ValueList() const;
     operator ValueMap() const;

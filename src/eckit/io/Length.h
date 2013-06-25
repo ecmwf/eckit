@@ -34,7 +34,12 @@ class DumpLoad;
 #endif
 
 class Length {
-public:
+
+public: // types
+
+    typedef long long value_t;
+
+public: // methods
 	
 	friend ostream& operator<<(ostream& s,const Length& x)
 		{ return s << x.value_; }
@@ -52,7 +57,7 @@ public:
 
 #include "eckit/io/Length.b"
 
-// -- Operators
+public: // operators
 
 	Length& operator=(const Length& other) 
 		{ value_ = other.value_; return *this;}
@@ -71,22 +76,15 @@ public:
 
 	operator long long() const { return value_; }
 
-// -- 
 	long long operator-(const Length& other) const
 		{ return value_ - other.value_;}
 
 	void dump(DumpLoad&) const;
 	void load(DumpLoad&);
 
-// -- Class methods
+private: // members
 
-
-private:
-
-
-// -- Members
-
-	long long value_;
+    value_t value_;
 	
 	friend class Offset;
 };

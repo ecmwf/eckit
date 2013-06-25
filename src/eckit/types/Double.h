@@ -27,24 +27,14 @@ class DumpLoad;
 class Double {
 public:
 
-// -- Exceptions
-	// None
-
-// -- Contructors
-
 	Double(double = 0);
 	Double(const string&);
 
 #include "eckit/types/Double.b"
 
-// -- Destructor
-
 	~Double() {}
 
-// -- Convertors
-	// None
-
-// -- Operators
+public: // operators
 
 	operator string() const;
 
@@ -60,49 +50,20 @@ public:
 	bool operator>(const Double& other) const
 		{ return round() > other.round(); }
 
-// -- Methods
+public: // methods
 
 	void dump(DumpLoad&) const;
 	void load(DumpLoad&);
 
 	double round() const;
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
+protected: // methods
 
 	void print(ostream& s) const;
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-private:
-
-// No copy allowed
-
-// -- Members
+private: // members
 
 	double value_;
-
-// -- Friends
 
 	friend ostream& operator<<(ostream& s,const Double& p)
 		{ p.print(s); return s; }

@@ -8,6 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+/// @file   StringTools.h
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+
 #ifndef eckit_StringTools_h
 #define eckit_StringTools_h
 
@@ -32,7 +36,14 @@ public:
 	static std::string lower(const std::string &);
     
     static std::string trim(const std::string &);
-    
+    static std::string trim(const std::string &, const std::string &);
+
+    static std::string front_trim(const std::string &);
+    static std::string front_trim(const std::string &, const std::string &);
+
+    static std::string back_trim(const std::string &);
+    static std::string back_trim(const std::string &, const std::string &);
+
     static vector<std::string> split(const string& delim, const string& text);
 	static std::string join(const string &, const vector<std::string>&);
 

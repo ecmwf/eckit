@@ -34,8 +34,11 @@ protected:
     
     void test_substitute();
     void test_substituteVariables();
-    void test_startsWith();    
-    
+    void test_startsWith();
+    void test_trim();
+    void test_front_trim();
+    void test_back_trim();
+
 };
 
 //-----------------------------------------------------------------------------
@@ -45,6 +48,9 @@ void TestStringTools::run()
     test_substitute();
     test_substituteVariables();
     test_startsWith();
+    test_trim();
+    test_front_trim();
+    test_back_trim();
 }
 
 void TestStringTools::test_substitute()
@@ -79,12 +85,87 @@ void TestStringTools::test_startsWith()
     string s2 ( "lolo" );
     string s3 ( "_lolo_test_bigger" );
 
-    ASSERT( !StringTools::startsWith(in,"") );    
-    ASSERT(  StringTools::startsWith(in,in) );    
-    ASSERT(  StringTools::startsWith(in,s1) );    
-    ASSERT(  StringTools::startsWith(in,"_") );    
-    ASSERT( !StringTools::startsWith(in,s2) );    
-    ASSERT( !StringTools::startsWith(in,s3) );    
+    ASSERT( !StringTools::startsWith(in,"") );
+    ASSERT(  StringTools::startsWith(in,in) );
+    ASSERT(  StringTools::startsWith(in,s1) );
+    ASSERT(  StringTools::startsWith(in,"_") );
+    ASSERT( !StringTools::startsWith(in,s2) );
+    ASSERT( !StringTools::startsWith(in,s3) );
+}
+
+void TestStringTools::test_trim()
+{
+    string t1 ( "   lolo_test    " );
+    ASSERT(  StringTools::trim(t1) == string("lolo_test") );
+
+    string t2 ( "   lolo_test" );
+    ASSERT(  StringTools::trim(t2) == string("lolo_test") );
+
+    string t3 ( "lolo_test   " );
+    ASSERT(  StringTools::trim(t3) == string("lolo_test") );
+
+    string t4 ( "" );
+    ASSERT(  StringTools::trim(t4) == string("") );
+
+    string t5 ( "nothing_here" );
+    ASSERT(  StringTools::trim(t5) == string("nothing_here") );
+
+    string t6 ( "XXXXXXusefullXXXXX" );
+    ASSERT(  StringTools::trim(t6,"X") == string("usefull") );
+
+    string t7 ( "0000010" );
+    ASSERT(  StringTools::trim(t7,"0") == string("1") );
+}
+
+void TestStringTools::test_front_trim()
+{
+    string t1 ( "   lolo_test    " );
+    ASSERT(  StringTools::front_trim(t1) == string("lolo_test    ") );
+
+    string t2 ( "   lolo_test" );
+    ASSERT(  StringTools::front_trim(t2) == string("lolo_test") );
+
+    string t3 ( "lolo_test   " );
+    ASSERT(  StringTools::front_trim(t3) == string("lolo_test   ") );
+
+    string t4 ( "" );
+    ASSERT(  StringTools::front_trim(t4) == string("") );
+
+    string t5 ( "nothing_here" );
+    ASSERT(  StringTools::front_trim(t5) == string("nothing_here") );
+
+    string t6 ( "XXXXXXusefullXXXXX" );
+    ASSERT(  StringTools::front_trim(t6,"X") == string("usefullXXXXX") );
+
+    string t7 ( "0000010" );
+    ASSERT(  StringTools::front_trim(t7,"0") == string("10") );
+}
+
+void TestStringTools::test_back_trim()
+{
+    string t1 ( "   lolo_test    " );
+
+    Log::info() << StringTools::back_trim(t1) << std::endl;
+
+    ASSERT(  StringTools::back_trim(t1) == string("   lolo_test") );
+
+    string t2 ( "   lolo_test" );
+    ASSERT(  StringTools::back_trim(t2) == string("   lolo_test") );
+
+    string t3 ( "lolo_test   " );
+    ASSERT(  StringTools::back_trim(t3) == string("lolo_test") );
+
+    string t4 ( "" );
+    ASSERT(  StringTools::back_trim(t4) == string("") );
+
+    string t5 ( "nothing_here" );
+    ASSERT(  StringTools::back_trim(t5) == string("nothing_here") );
+
+    string t6 ( "XXXXXXusefullXXXXX" );
+    ASSERT(  StringTools::back_trim(t6,"X") == string("XXXXXXusefull") );
+
+    string t7 ( "0000010" );
+    ASSERT(  StringTools::back_trim(t7,"0") == string("000001") );
 }
 
 //-----------------------------------------------------------------------------

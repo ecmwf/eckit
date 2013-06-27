@@ -8,8 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-// File Translator.h
-// Baudouin Raoult - ECMWF Jun 96
+/// @file   Translator.h
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Jun 1996
 
 #ifndef eckit_Translator_h
 #define eckit_Translator_h

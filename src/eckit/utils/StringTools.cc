@@ -138,15 +138,50 @@ std::string StringTools::lower(const string& v)
 	return r;
 }
 
-std::string StringTools::trim(const std::string &str)
+std::string StringTools::trim(const std::string& str)
 {
-    size_t startpos = str.find_first_not_of(" \t");
-    size_t endpos = str.find_last_not_of(" \t");
+    return trim(str," \t");
+}
+
+std::string StringTools::trim(const std::string& str, const std::string& chars)
+{
+    size_t startpos = str.find_first_not_of(chars);
+    size_t endpos = str.find_last_not_of(chars);
 
     if((string::npos == startpos) || (string::npos == endpos))
         return "";
     else
         return str.substr(startpos, endpos - startpos + 1);
+}
+
+string StringTools::front_trim(const string& str)
+{
+    return front_trim(str," \t");
+}
+
+string StringTools::front_trim(const string& str, const string& chars)
+{
+    size_t startpos = str.find_first_not_of(chars);
+
+    if(string::npos == startpos)
+        return "";
+    else
+        return str.substr( startpos );
+}
+
+string StringTools::back_trim(const string& str)
+{
+    return back_trim(str," \t");
+}
+
+string StringTools::back_trim(const string& str, const string& chars)
+{
+    size_t endpos = str.find_last_not_of(chars);
+
+    if( string::npos == endpos )
+        return "";
+    else
+        return str.substr( 0, endpos + 1 );
 }
 
 vector<std::string> StringTools::split(const string &delim, const string &text)

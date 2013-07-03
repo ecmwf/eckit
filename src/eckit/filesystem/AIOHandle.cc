@@ -117,7 +117,8 @@ long AIOHandle::write(const void* buffer,long length)
                 }
                 ok = true;
                 break;
-            } else
+            }
+            else
             {
                 throw FailedSystemCall("aio_error");
             }

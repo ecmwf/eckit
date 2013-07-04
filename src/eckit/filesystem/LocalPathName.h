@@ -43,43 +43,37 @@ public:
 
 // Contructors
 
-    LocalPathName(const char* p = "/") : path_(p) {
-        tidy();
-    }
-    LocalPathName(const string& p)     : path_(p) {
-        tidy();
-    }
-    LocalPathName(const LocalPathName& p)            : path_(p.path_) {         }
-
-// Destructor
-    // Implicite
+    LocalPathName(const char* p = "/")    : path_(p) { tidy(); }
+    LocalPathName(const string& p)        : path_(p) { tidy(); }
+    LocalPathName(const LocalPathName& p) : path_(p.path_) {}
 
 // Assignment
 
-    LocalPathName& operator=(const LocalPathName& p) {
+    LocalPathName& operator=(const LocalPathName& p)
+    {
         path_ = p.path_;
         return *this;
     }
-    LocalPathName& operator=(const string& p)   {
+
+    LocalPathName& operator=(const string& p)
+    {
         path_ = p      ;
         return tidy();
     }
-    LocalPathName& operator=(const char* p)     {
+
+    LocalPathName& operator=(const char* p)
+    {
         path_ = p      ;
         return tidy();
     }
 
 // Convertors
 
-    operator const string&() const {
-        return path_;
-    }
-    const char* localPath() const  {
-        return path_.c_str();
-    }
-    const char* c_str() const  {
-        return path_.c_str();
-    }
+    operator const string&() const { return path_; }
+
+    const char* localPath() const  { return path_.c_str(); }
+
+    const char* c_str() const  { return path_.c_str();  }
 
 // Operators
 

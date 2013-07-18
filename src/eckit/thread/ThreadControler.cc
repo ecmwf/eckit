@@ -58,7 +58,7 @@ ThreadControler::~ThreadControler()
 
 void ThreadControler::execute()
 {
-    // Make a copy, because "this" will deasapear
+    // Make a copy, because "this" will desappear
     Thread* proc = proc_;
     proc_ = 0;
 

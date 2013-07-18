@@ -7,11 +7,11 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/eckit_config.h
                ${CMAKE_CURRENT_BINARY_DIR}/eckit_version.h 
          DESTINATION ${INSTALL_INCLUDE_DIR} )
 
-configure_file( eckit_version.c.in  eckit_version.c )
+configure_file( eckit_version.cc.in  eckit_version.cc )
 
 ### eckit sources
 
-list( APPEND eckit_srcs eckit.h eckit_version.c )
+list( APPEND eckit_srcs eckit.h eckit_version.cc )
 
 list( APPEND eckit_container_srcs
 container/BTree.h
@@ -458,7 +458,7 @@ ecbuild_add_library( TARGET eckit
                      SOURCES
                         ${eckit_srcs}
                      GENERATED   
-                        eckit_version.c
+                        eckit_version.cc
                      TEMPLATES
                         ${eckit_templates}
                      PERSISTENT 

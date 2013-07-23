@@ -47,7 +47,7 @@ public:
 
 // -- Destructor
 
-	~Connector(); // Change to virtual if base class
+	~Connector(); 
 
 // -- Methods
 
@@ -79,7 +79,7 @@ protected:
 
 // -- Methods
 	
-	void print(ostream&) const; // Change to virtual if base class	
+	void print(ostream&) const; 	
 
 // -- Class members
 	// None

@@ -22,11 +22,9 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+/// Helper which contains all possible grids
 /// @note Not thread safe
 
-// =========================================================
-// Helper which contains all possible grids
-//
 struct Grids {
 public:
 	static char        lookUp(const Grid& g);
@@ -67,7 +65,7 @@ const Grid& Grids::lookUp(char c)
 	return (*i).second;
 }
 
-// ===========================================================
+//-----------------------------------------------------------------------------
 
 Grid::Grid(const vector<double>& n)
 {

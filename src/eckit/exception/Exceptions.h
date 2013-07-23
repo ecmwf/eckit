@@ -178,14 +178,16 @@ public:
     UnexpectedState(const string& msg) : Exception(msg) {}
 };
 
-// =======================================
+//-----------------------------------------------------------------------------
 
 inline void SysCall(long long code,const char *msg,const CodeLocation& loc)
 {
     if(code<0)
         throw FailedSystemCall(msg,loc,errno);
 }
-// =======================================
+
+//-----------------------------------------------------------------------------
+
 template<class T>
 inline void SysCall(long long code,const char *msg,const T& ctx,const CodeLocation& loc)
 {
@@ -196,7 +198,8 @@ inline void SysCall(long long code,const char *msg,const T& ctx,const CodeLocati
         throw FailedSystemCall(string(os),msg,loc,errno);
     }
 }
-// =======================================
+
+//-----------------------------------------------------------------------------
 
 inline void ThrCall(int code,const char *msg, const CodeLocation& loc)
 {
@@ -234,12 +237,12 @@ public:
 
 //-----------------------------------------------------------------------------
 
-#define THRCALL(a)    eckit::ThrCall(a,#a,Here())
-#define SYSCALL(a)    eckit::SysCall(a,#a,Here())
-#define SYSCALL2(a,b) eckit::SysCall(a,#a,b,Here())
-#define ASSERT(a)     eckit::Assert(!(a),#a,Here())
-#define PANIC(a)      eckit::Panic((a),#a,Here())
-#define NOTIMP  throw eckit::NotImplemented(Here())
+#define THRCALL(a)    ::eckit::ThrCall(a,#a,Here())
+#define SYSCALL(a)    ::eckit::SysCall(a,#a,Here())
+#define SYSCALL2(a,b) ::eckit::SysCall(a,#a,b,Here())
+#define ASSERT(a)     ::eckit::Assert(!(a),#a,Here())
+#define PANIC(a)      ::eckit::Panic((a),#a,Here())
+#define NOTIMP  throw ::eckit::NotImplemented(Here())
 
 //-----------------------------------------------------------------------------
 

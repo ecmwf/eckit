@@ -45,7 +45,7 @@ public:
 
 // -- Destructor
 
-    ~Recycler(); // Change to virtual if base class
+    ~Recycler(); 
 
 // -- Convertors
     // None
@@ -87,7 +87,7 @@ protected:
 
 // -- Methods
 
-    void print(ostream&) const; // Change to virtual if base class
+    void print(ostream&) const; 
 
 // -- Overridden methods
     // None

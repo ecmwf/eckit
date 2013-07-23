@@ -37,7 +37,7 @@ public:
 
 // -- Destructor
 
-	virtual ~BasePathName() {} // Change to virtual if base class
+	virtual ~BasePathName() {} 
 
 // -- Methods
 
@@ -84,7 +84,7 @@ public:
 
 protected:
 
-    virtual void print(ostream&) const = 0; // Change to virtual if base class	
+    virtual void print(ostream&) const = 0; 	
 
 private:
 

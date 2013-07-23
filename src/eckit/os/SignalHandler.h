@@ -43,7 +43,7 @@ public: // methods
 
 // -- Destructor
 
-	~SignalHandler(); // Change to virtual if base class
+	~SignalHandler(); 
 	
 	static void checkInterrupt();
 

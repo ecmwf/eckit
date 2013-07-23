@@ -41,7 +41,7 @@ public:
 
 // -- Destructor
 
-	~MarsFSPath(); // Change to virtual if base class
+	~MarsFSPath(); 
 
 // -- Operators
 
@@ -110,7 +110,7 @@ protected:
 
 // -- Methods
 	
-	void print(ostream&) const; // Change to virtual if base class	
+	void print(ostream&) const; 	
 
 private:
 

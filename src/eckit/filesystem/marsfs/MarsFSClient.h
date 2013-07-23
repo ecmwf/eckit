@@ -36,7 +36,7 @@ public:
 
 // -- Destructor
 
-	~MarsFSClient(); // Change to virtual if base class
+	~MarsFSClient(); 
 
 // -- Methods
     

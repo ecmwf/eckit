@@ -23,7 +23,6 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-
 // This should be a Task
 
 class Thread : private NonCopyable {

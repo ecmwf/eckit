@@ -55,7 +55,7 @@ private:
 	DateTime end_;
 
 // -- Methods
-	void print(ostream&) const; // Change to virtual if base class	
+	void print(ostream&) const; 	
 
 // -- Friends
 	friend ostream& operator<<(ostream& s,const TimeInterval& p)

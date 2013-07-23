@@ -34,7 +34,7 @@ public:
 
 // -- Destructor
 
-	~DumpLoad(); // Change to virtual if base class
+	~DumpLoad(); 
 
 // -- Convertors
 	// None
@@ -120,7 +120,7 @@ protected:
 
 // -- Methods
 
-	// void print(ostream&) const; // Change to virtual if base class
+	// void print(ostream&) const; 
 
 // -- Overridden methods
 	// None

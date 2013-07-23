@@ -1,0 +1,106 @@
+/*
+ * (C) Copyright 1996-2013 ECMWF.
+ * 
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+#include "eckit/io/Buffer.h"
+#include "eckit/io/ResizableBuffer.h"
+#include "eckit/web/AgentResource.h"
+#include "eckit/web/JavaAgent.h"
+#include "eckit/web/Url.h"
+
+//-----------------------------------------------------------------------------
+
+namespace eckit {
+
+//-----------------------------------------------------------------------------
+
+class MemStream : public eckit::Stream {
+
+	Buffer in_;
+	ResizableBuffer out_;
+	long   pos_;
+	long   length_;
+
+	virtual long write(const void* buf,long len);
+	virtual long read(void* buf,long len);
+	virtual string name() const { return "MemStream"; }
+
+public:
+	MemStream(const char* p,long len);
+
+	long length()      const { return length_; }
+	const char* data() const { return out_; }
+};
+
+
+MemStream::MemStream(const char* p,long len):
+	in_(p,len),
+	out_(10240),
+	length_(0),
+	pos_(0)
+{
+}
+
+long MemStream::write(const void* buf,long len)
+{
+	if(out_.size() - length_ < len)
+		out_.resize(out_.size()*2);
+
+	::memcpy((char*)out_ + length_, buf , len);
+
+	length_ += len;
+	return len;
+}
+
+long MemStream::read(void* buf,long len)
+{
+	long size = ::min(long(len),long(in_.size() - pos_));
+
+	if(size <= 0)
+		return -1;
+
+	::memcpy(buf,(char*)in_ + pos_,size);
+	pos_ += size;
+
+	return size;
+}
+
+AgentResource::AgentResource():
+	HtmlResource("/agent")
+{
+}
+
+AgentResource::~AgentResource()
+{
+}
+
+void AgentResource::html(ostream&,Url& url)
+{
+	static ifstream in("/dev/null");	
+	static ofstream out("/dev/null");	
+
+	MemStream s(url.headerIn().content(), url.headerIn().contentLength());
+
+	string token = url.headerIn().getHeader("mars-token");
+
+	cout << "Token is " << token << endl;
+	
+	JavaAgent::serve(s,in,out);
+	url.headerOut().content(s.data(),s.length());
+
+	token = "token";
+	url.headerOut().setHeader("mars-token",token);
+}
+
+static AgentResource agentResourceInstance;
+
+//-----------------------------------------------------------------------------
+
+} // namespace eckit
+

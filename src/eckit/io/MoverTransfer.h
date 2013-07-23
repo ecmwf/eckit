@@ -37,7 +37,7 @@ public:
 
 // -- Destructor
 
-	~MoverTransfer(); // Change to virtual if base class
+	~MoverTransfer(); 
 
 // -- Convertors
 	// None
@@ -66,7 +66,7 @@ protected:
 
 // -- Methods
 	
-	// void print(ostream&) const; // Change to virtual if base class	
+	// void print(ostream&) const; 	
 
 // -- Overridden methods
 	// None

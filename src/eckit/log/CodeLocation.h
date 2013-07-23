@@ -59,7 +59,7 @@ private:
 
 // Macros
 
-#define Here() eckit::CodeLocation( __FILE__ , __LINE__ , __FUNCTION__ )
+#define Here() ::eckit::CodeLocation( __FILE__ , __LINE__ , __FUNCTION__ )
 
 //-----------------------------------------------------------------------------
 

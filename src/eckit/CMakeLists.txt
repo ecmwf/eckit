@@ -418,7 +418,46 @@ transaction/TxnLog.cc
 transaction/TxnEvent.h
 transaction/TxnEvent.cc )
 
-list( APPEND eckit_dirs container io filesystem thread config runtime log exception types parser value os net serialisation persist utils memory compat bases transaction )
+list( APPEND eckit_web_srcs
+web/AgentResource.cc
+web/AgentResource.h
+web/CgiResource.cc
+web/CgiResource.h
+web/Configure.cc
+web/FileResource.cc
+web/FileResource.h
+web/FtpRequest.h
+web/Html.cc
+web/Html.h
+web/HtmlObject.cc
+web/HtmlObject.h
+web/HtmlResource.cc
+web/HtmlResource.h
+web/HttpBuf.cc
+web/HttpBuf.h
+web/HttpHeader.cc
+web/HttpHeader.h
+web/HttpServer.cc
+web/HttpServer.h
+web/HttpService.cc
+web/HttpService.h
+web/HttpUser.h
+web/JSONResource.cc
+web/JSONResource.h
+web/JavaAgent.cc
+web/JavaAgent.h
+web/JavaResource.cc
+web/JavaResource.h
+web/JavaServer.cc
+web/JavaServer.h
+web/JavaService.cc
+web/JavaService.h
+web/JavaUser.cc
+web/JavaUser.h
+web/Url.cc
+web/Url.h )
+
+list( APPEND eckit_dirs container io filesystem thread config runtime log exception types parser value os net serialisation persist utils memory compat bases transaction web )
 foreach( dir ${eckit_dirs} )
   list( APPEND eckit_srcs ${eckit_${dir}_srcs} )
 endforeach()
@@ -447,6 +486,7 @@ list( APPEND eckit_persistent
                      types/Time.h
                      types/VerifyingDate.h
                      types/Seconds.h
+                     web/HtmlObject
                      io/Length.h
                      io/Offset.h
 )

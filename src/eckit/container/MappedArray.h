@@ -41,7 +41,7 @@ public:
 
 // -- Destructor
 
-	~MappedArray(); // Change to virtual if base class
+	~MappedArray(); 
 
 // -- Methods
 

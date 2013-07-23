@@ -37,7 +37,7 @@ public:
 
 // -- Destructor
 
-	virtual ~MoverHandle(); // Change to virtual if base class
+	virtual ~MoverHandle(); 
 
 // -- Convertors
 	// None
@@ -101,7 +101,7 @@ private:
     virtual void close();
     virtual string title() const;
 
-	void print(ostream&) const; // Change to virtual if base class	
+	void print(ostream&) const; 	
 
 // -- Class members
 	// None

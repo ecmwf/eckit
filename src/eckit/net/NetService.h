@@ -48,11 +48,6 @@ public:
 
 private:
 
-// No copy allowed
-
-	NetService(const NetService&);
-	NetService& operator=(const NetService&);
-
 // -- Members
 
 	TCPServer server_;
@@ -61,8 +56,6 @@ private:
 
 	virtual NetUser* newUser(TCPSocket&) = 0;	
 	virtual string   name() = 0;
-
-
 
 };
 

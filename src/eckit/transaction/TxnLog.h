@@ -48,7 +48,7 @@ public:
 
 // -- Destructor
 
-	~TxnLog(); // Change to virtual if base class
+	~TxnLog(); 
 
 // -- Methods
 

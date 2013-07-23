@@ -37,7 +37,7 @@ class BadOperator:  public Exception {
 			Exception(string("Bad operator: ") + w)   {  }
 };
 
-// =============================================================
+//-----------------------------------------------------------------------------
 
 ClassSpec Content::classSpec_ = {&Streamable::classSpec(),"Content",};
 Reanimator<Content> Content::reanimator_;

@@ -32,7 +32,7 @@ public:
 
 // -- Destructor
 
-	~NetUser(); // Change to virtual if base class
+	~NetUser(); 
 
 
 protected:

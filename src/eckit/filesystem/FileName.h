@@ -35,7 +35,7 @@ public:
 
 // -- Destructor
 
-	~FileName(); // Change to virtual if base class
+	~FileName(); 
 
 // -- Methods
     

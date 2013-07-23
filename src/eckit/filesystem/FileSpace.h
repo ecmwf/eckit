@@ -46,7 +46,7 @@ public:
 private:
 
 	FileSpace(const string&);
-	~FileSpace(); // Change to virtual if base class
+	~FileSpace(); 
 
 // -- Methods
 

@@ -47,7 +47,7 @@ public:
 
 protected: // methods
 
-	void print(ostream&) const; // Change to virtual if base class
+	void print(ostream&) const; 
 
 private: // members
 

@@ -47,7 +47,7 @@ public:
 
 // -- Destructor
 
-	~Select(); // Change to virtual if base class
+	~Select(); 
 
 // -- Methods
 

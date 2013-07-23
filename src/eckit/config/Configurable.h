@@ -17,14 +17,13 @@
 #include "eckit/container/ClassExtent.h"
 #include "eckit/thread/Mutex.h"
 
-class Url;
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+class Url;
 class ResourceBase;
 
 class Configurable : public ClassExtent<Configurable> {

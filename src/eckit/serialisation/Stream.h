@@ -18,7 +18,6 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/memory/NonCopyable.h"
 
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -115,9 +114,9 @@ public:
     void startObject();
     void endObject();
 
-    virtual void rewind() { NOTIMP; }
+    virtual void rewind()      { NOTIMP; }
     virtual void closeOutput() { NOTIMP; }
-    virtual void closeInput() { NOTIMP; }
+    virtual void closeInput()  { NOTIMP; }
 
     long long bytesWritten() { return writeCount_; }
     void resetBytesWritten() { writeCount_ = 0; }

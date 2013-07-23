@@ -37,7 +37,7 @@ public:
 
 // -- Destructor
 
-	~MarsFSFile(); // Change to virtual if base class
+	~MarsFSFile(); 
 
 // -- Convertors
 	// None
@@ -72,7 +72,7 @@ protected:
 
 // -- Methods
 	
-	void print(ostream&) const; // Change to virtual if base class
+	void print(ostream&) const; 
 
 // -- Overridden methods
 	// None

@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File Counted.h
-// Baudouin Raoult - ECMWF Jun 96
+/// @file Counted.h
+/// @author Baudouin Raoult
+/// @date Jun 1996
 
 #ifndef eckit_Counted_h
 #define eckit_Counted_h
@@ -22,10 +23,9 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-// Subclass from this class if you want reference counting
-// object. Remember to use 'virtual' inheritance in case of
-// multiple inheritance
-
+/// Reference counting objects
+/// Subclass from this class if you want reference counting object.
+/// @note Remember to use 'virtual' inheritance in case of multiple inheritance
 class Counted {
 public:
 
@@ -64,6 +64,8 @@ private:
 	Mutex mutex_;
 };
 
+//-----------------------------------------------------------------------------
+
 class AutoAttach {
     Counted& counted_;
 public:
@@ -72,7 +74,6 @@ public:
     ~AutoAttach()  { counted_.detach(); }
 
 };
-
 
 //-----------------------------------------------------------------------------
 

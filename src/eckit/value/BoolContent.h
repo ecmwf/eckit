@@ -80,7 +80,7 @@ protected:
     //        virtual Content* divNumber(const NumberContent&) const;
 
     virtual void    print(ostream&) const;
-    virtual void   json(JSON&)     const;
+    virtual void    json(JSON&)     const;
     virtual string  typeName()      const { return "Bool"; }
     virtual bool    isBool()      const { return true; }
 

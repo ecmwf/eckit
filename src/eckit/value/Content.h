@@ -167,16 +167,16 @@ protected:
 	virtual string typeName()      const = 0;
     virtual void   json(JSON&)     const  = 0;
 
-	virtual bool   isNil()     const  { return false; }
-	virtual bool   isNumber()  const  { return false; }
-    virtual bool   isBool()  const  { return false; }
-    virtual bool   isDouble()  const  { return false; }
-	virtual bool   isString()  const  { return false; }
-	virtual bool   isList()    const  { return false; }
-    virtual bool   isMap()    const  { return false; }
-	virtual bool   isDate()    const  { return false; }
-	virtual bool   isTime()    const  { return false; }
-	virtual bool   isDateTime()const  { return false; }
+    virtual bool   isNil()      const  { return false; }
+    virtual bool   isNumber()   const  { return false; }
+    virtual bool   isBool()     const  { return false; }
+    virtual bool   isDouble()   const  { return false; }
+    virtual bool   isString()   const  { return false; }
+    virtual bool   isList()     const  { return false; }
+    virtual bool   isMap()      const  { return false; }
+    virtual bool   isDate()     const  { return false; }
+    virtual bool   isTime()     const  { return false; }
+    virtual bool   isDateTime() const  { return false; }
 
 
     virtual Value& element(const Value&);

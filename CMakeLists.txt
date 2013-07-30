@@ -14,10 +14,7 @@
 #       - abort on double exception
 #
 #   * new Logging 
-#       - allows reconfiguration
 #       - allows control on format ( eg [%time][%pid] message )
-#       - always available (not dependent on ContextBehavior or have default)
-#       - simpler ?
 
 cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )
 

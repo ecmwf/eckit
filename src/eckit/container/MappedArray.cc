@@ -57,7 +57,7 @@ void Header<T>::validate()
 }
 
 template<class T>
-MappedArray<T>::MappedArray(const PathName& path,unsigned long size):
+MappedArray<T>::MappedArray(const PathName& path, unsigned long size):
 	sem_(path),
     size_(size)    
 {
@@ -69,8 +69,8 @@ MappedArray<T>::MappedArray(const PathName& path,unsigned long size):
 	fd_ = ::open(path.localPath(),O_RDWR | O_CREAT, 0777);
 	if(fd_ < 0)
 	{
-		Log::error() << "open(" << path << ')' << Log::syserr << endl;
-		throw FailedSystemCall("open");
+        Log::error() << "open(" << path << ')' << Log::syserr << endl;
+        throw FailedSystemCall("open",Here());
 	}
 
     Stat::Struct s;
@@ -93,11 +93,12 @@ MappedArray<T>::MappedArray(const PathName& path,unsigned long size):
 	}
 
 	map_ = ::mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0);
-	if(map_ == MAP_FAILED) {
-		Log::error() << "open(" << path << ',' << length << ')'
-			<< Log::syserr << endl;
-		throw FailedSystemCall("mmap");
-	}
+    if(map_ == MAP_FAILED)
+    {
+        Log::error() << "mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0)"
+                     << Log::syserr << std::endl;
+        throw FailedSystemCall("mmap",Here());
+    }
 
 	// If first time in, init header
 

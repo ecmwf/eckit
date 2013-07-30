@@ -58,7 +58,7 @@ void ResizableBuffer::create()
                 fd_ = -1;
                 buffer_ = ::mmap(0,size_,PROT_READ|PROT_WRITE,MAP_PRIVATE|MAP_ANONYMOUS,fd_,0);
                 if(buffer_ == MAP_FAILED)
-                        throw FailedSystemCall("mmap");
+                    throw FailedSystemCall("mmap",Here());
         }
 }
 

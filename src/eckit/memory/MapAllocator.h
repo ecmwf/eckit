@@ -15,6 +15,7 @@
 #define eckit_MapAllocator_h
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
@@ -28,92 +29,28 @@ public:
 	MapAllocatorTooSmall(size_t,size_t);
 };
 
-class MapAllocator {
+//-----------------------------------------------------------------------------
+
+class MapAllocator : private eckit::NonCopyable {
 public:
-
-// -- Exceptions
-	// None
-
-// -- Contructors
 
 	MapAllocator(size_t);
 
-// -- Destructor
-
 	~MapAllocator(); 
-
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
-// -- Methods
 
 	void *allocate(size_t);
 	void deallocate(void*);
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-	
-	// void print(ostream&) const; 	
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-private:
-
-// No copy allowed
-
-	MapAllocator(const MapAllocator&);
-	MapAllocator& operator=(const MapAllocator&);
-
-// -- Members
+private: // members
 
 	int      fd_;
-	void    *addr_;
-	char    *next_;
+    void*    addr_;
+    char*    next_;
 	size_t   length_;
 	size_t   left_;
 	Ordinal  count_;
 
 	MapAllocator* more_;
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
-
-	//friend ostream& operator<<(ostream& s,const MapAllocator& p)
-	//	{ p.print(s); return s; }
 
 };
 

@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eckit/memory/Counted.h"
 
 //-----------------------------------------------------------------------------

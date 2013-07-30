@@ -86,6 +86,7 @@ public:
 class FailedSystemCall : public Exception {
 public:
     FailedSystemCall(const string&);
+    FailedSystemCall(const string&,const CodeLocation&);
     FailedSystemCall(const char*,const CodeLocation&,int);
     FailedSystemCall(const string&,const char*,const CodeLocation&,int);
 };

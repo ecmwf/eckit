@@ -148,12 +148,20 @@ FailedSystemCall::FailedSystemCall(const string& w)
     Log::monitor(Log::Unix,errno) << what() << endl;
 }
 
+FailedSystemCall::FailedSystemCall(const string& msg, const CodeLocation& loc)
+{
+    StrStream s;
+    s << "Failed system call: " << msg << " " << " in " << loc << " " << Log::syserr << StrStream::ends;
+    reason(string(s));
+    Log::monitor(Log::Unix,errno) << what() << endl;
+}
+
 FailedSystemCall::FailedSystemCall(const char* msg,const CodeLocation& loc,int err)
 {
     StrStream s;
 
     errno = err;
-    s << "Failed system call: " << msg << " in " << loc << Log::syserr << StrStream::ends;
+    s << "Failed system call: " << msg << " in " << loc << " " << Log::syserr << StrStream::ends;
 
     reason(string(s));
     Log::monitor(Log::Unix,errno) << what() << endl;
@@ -164,7 +172,7 @@ FailedSystemCall::FailedSystemCall(const string& ctx, const char* msg, const Cod
     StrStream s;
 
     errno = err;
-    s << "Failed system call: " << msg << " in " << loc << Log::syserr << " [" << ctx << "]" << StrStream::ends;
+    s << "Failed system call: " << msg << " in " << loc << " " << Log::syserr << " [" << ctx << "]" << StrStream::ends;
 
     reason(string(s));
     Log::monitor(Log::Unix,errno) << what() << endl;

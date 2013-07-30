@@ -77,6 +77,8 @@ public:
 
 // -- Operators
 
+    template< typename T > T as() { T r; content_->value(r); return r; }
+
     operator short() const              { long long l;  content_->value(l); return l; }
     operator unsigned short() const     { long long l;  content_->value(l); return l; }
 
@@ -138,15 +140,16 @@ public:
 
     int      compare(const Value& v) const { return content_->compare(*(v.content_)); }
 
-    bool     isNil()     const { return content_->isNil(); }
-    bool     isNumber()  const { return content_->isNumber(); }
-    bool     isDouble()  const { return content_->isDouble(); }
-    bool     isString()  const { return content_->isString(); }
-    bool     isList()    const { return content_->isList(); }
-    bool     isMap()     const { return content_->isMap(); }
-    bool     isDate()    const { return content_->isDate(); }
-    bool     isTime()    const { return content_->isTime(); }
-    bool     isDateTime()const { return content_->isDateTime(); }
+    bool     isNil()      const { return content_->isNil(); }
+    bool     isNumber()   const { return content_->isNumber(); }
+    bool     isBool()     const { return content_->isBool(); }
+    bool     isDouble()   const { return content_->isDouble(); }
+    bool     isString()   const { return content_->isString(); }
+    bool     isList()     const { return content_->isList(); }
+    bool     isMap()      const { return content_->isMap(); }
+    bool     isDate()     const { return content_->isDate(); }
+    bool     isTime()     const { return content_->isTime(); }
+    bool     isDateTime() const { return content_->isDateTime(); }
 
     Value	 tail() const;
     Value	 head() const;

@@ -28,7 +28,7 @@ enum { BLACK = 0, RED     =  1, GREEN = 2,  YELLOW    = 3, BLUE = 4, MAGENTA = 5
 
 static ostream& put(ostream& out, int fg, int bg, int attr)
 {
-    static bool colourOutput = Resource<bool>("$ECKIT_COLOUR_OUTPUT;-colour;colourOutput", false);
+    static bool colourOutput = Resource<bool>("$ECKIT_COLOUR_OUTUT;-colour;colourOutput", false);
     
 	if (colourOutput && out.iword(xindex) == 0)
     {

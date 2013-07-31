@@ -33,10 +33,12 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 /// B+Tree index
+///
 /// @todo Deletion
 /// @todo Cache pages
 /// @invariant K and V needs to be PODs
-
+/// @invariant S is the page size padding
+///
 template<class K,class V, int S>
 class BTree : private NonCopyable {
 public:

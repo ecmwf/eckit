@@ -20,13 +20,10 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-class TestApp : public Tool {
+class TestLog : public Tool {
 public:
 
-    TestApp(int argc,char **argv): Tool(argc,argv)
-    {
-    }
-    ~TestApp() {}
+    TestLog(int argc,char **argv): Tool(argc,argv) {}
 
     virtual void run();
 
@@ -39,43 +36,43 @@ public:
 };
 
 
-void TestApp::test_debug()
+void TestLog::test_debug()
 {
     Log::debug()         << "debug message 1" << std::endl;
     Log::debug( Here() ) << "debug message 2" << std::endl;
 }
 
-void TestApp::test_info()
+void TestLog::test_info()
 {
     Log::info()         << "info message 1" << std::endl;
     Log::info( Here() ) << "info message 2" << std::endl;
 }
 
-void TestApp::test_warning()
+void TestLog::test_warning()
 {
     Log::warning()         << "warning message 1" << std::endl;
     Log::warning( Here() ) << "warning message 2" << std::endl;
 }
 
-void TestApp::test_error()
+void TestLog::test_error()
 {
     Log::error()         << "error message 1" << std::endl;
     Log::error( Here() ) << "error message 2" << std::endl;
 }
 
-void TestApp::test_panic()
+void TestLog::test_panic()
 {
     Log::panic()         << "panic message 1" << std::endl;
     Log::panic( Here() ) << "panic message 2" << std::endl;
 }
 
-void TestApp::test_strerr()
+void TestLog::test_strerr()
 {
     LocalPathName p("/tmp/edfpmjq3480hfnsribnzasdfibv");
     p.unlink();
 }
 
-void TestApp::run()
+void TestLog::run()
 {
     test_debug();
     test_info();
@@ -93,7 +90,7 @@ void TestApp::run()
 
 int main(int argc,char **argv)
 {
-    eckit_test::TestApp mytest(argc,argv);
+    eckit_test::TestLog mytest(argc,argv);
     mytest.start();
     return 0;
 }

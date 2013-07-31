@@ -14,3 +14,7 @@ ecbuild_add_test(   TARGET      test_log_threads
                     SOURCES     test_log_threads.cc
                     LIBS        eckit )
 
+ecbuild_add_test(   TARGET      test_colour
+                    SOURCES     test_colour.cc
+                    LIBS        eckit )
+

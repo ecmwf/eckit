@@ -22,26 +22,36 @@ namespace eckit {
 
 class ThreadPool;
 
+//-----------------------------------------------------------------------------
+
 class ThreadPoolTask {
-    ThreadPool* pool_;
-protected:
-    ThreadPool& pool() { return *pool_; }
 public:
+
     virtual ~ThreadPoolTask() {}
     virtual void execute() = 0;
 
     friend class ThreadPoolThread;
+
+protected:
+
+    ThreadPool& pool() { return *pool_; }
+
+private:
+
+    ThreadPool* pool_;
+
 };
 
+//-----------------------------------------------------------------------------
+
 class ThreadPool : private NonCopyable {
-public:
+
+public: // methods
 
     ThreadPool(const string& name, int count, size_t stack = 0);
 
 	~ThreadPool();
     
-// -- Methods
-
     void push(ThreadPoolTask*);
     void push(list<ThreadPoolTask*>&);
     ThreadPoolTask* next();

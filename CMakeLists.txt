@@ -38,7 +38,9 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-set(Boost_USE_MULTITHREADED        ON )
+ecbuild_add_extra_search_paths( boost )
+
+set(Boost_USE_MULTITHREADED      ON )
 # set(Boost_DEBUG                  ON )
 # set(Boost_USE_STATIC_LIBS        ON )
 # set(Boost_NO_SYSTEM_PATHS        ON )

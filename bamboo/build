@@ -6,4 +6,6 @@
     -DCMAKE_PREFIX_PATH=$4 \
     -DCMAKE_INSTALL_PREFIX=$4
     
+/usr/local/apps/cmake/current/bin/cmake $2 -LAH > build-info.txt
+
 make -j $6 install

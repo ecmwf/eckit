@@ -503,6 +503,8 @@ ecbuild_add_library( TARGET eckit
                         ${eckit_templates}
                      PERSISTENT 
                         ${eckit_persistent}
+                     HEADER_DESTINATION
+                        include/eckit
                      LIBS 
                         ${CMAKE_THREAD_LIBS_INIT} ${RT_LIB} )
 

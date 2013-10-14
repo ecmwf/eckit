@@ -1,0 +1,23 @@
+eckit README
+============
+
+1. Getting the source
+=====================
+
+The tarball of the source can be downloaded from 
+
+     https://software.ecmwf.int/ecsdk/Releases
+
+
+2. Installation
+===============
+
+Please read the installation guide:
+
+  https://software.ecmwf.int/ecsdk/Installation+Guide
+
+
+3. License
+==========
+
+Please read COPYING and LICENSE.

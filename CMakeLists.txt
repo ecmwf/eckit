@@ -76,7 +76,7 @@ add_definitions( -D${EC_OS_NAME} )
 
 set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
-set( ECKIT_LIBRARIES      eckit )
+set( ECKIT_LIBRARIES      eckit eckit_web )
 
 get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
     

@@ -8,7 +8,7 @@ ecbuild_add_library( TARGET eckit_grid
 					 SOURCES
 						${eckit_grid_srcs}
 					 HEADER_DESTINATION
-						include/eckit/grid
+						${INSTALL_INCLUDE_DIR}/eckit/grid
 					 LIBS
 						eckit )
 

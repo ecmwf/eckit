@@ -13,6 +13,7 @@
 
 #include "eckit/grid/Grid.h"
 #include "eckit/grid/LatLon.h"
+#include "eckit/grid/Field.h"
 
 using namespace eckit;
 
@@ -22,12 +23,12 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-class TestLatLon : public Tool {
+class TestField : public Tool {
 public:
 
-    TestLatLon(int argc,char **argv): Tool(argc,argv) {}
+    TestField(int argc,char **argv): Tool(argc,argv) {}
 
-    ~TestLatLon() {}
+    ~TestField() {}
 
     virtual void run();
 
@@ -36,48 +37,32 @@ public:
 
 //-----------------------------------------------------------------------------
 
-void TestLatLon::test_constructor()
+void TestField::test_constructor()
 {
     using namespace eckit::grid;
 
     BoundBox2D earth ( Point2D(-90.,0.), Point2D(90.,360.) );
-    Grid* g = NULL;
-
-    // standard case
-
-    g = new LatLon( 4, 4, earth );
-
+    Grid* g = new LatLon( 4, 4, earth );
     ASSERT( g );
-    ASSERT( g->dataSize() == 25 );
 
-    /// @todo substitute these comparisons with proper floating point comparisons
-    ASSERT( g->boundingBox().bottom_left_.lat_ == -90. );
-    ASSERT( g->boundingBox().bottom_left_.lon_ ==   0. );
-    ASSERT( g->boundingBox().top_right_.lat_ ==  90. );
-    ASSERT( g->boundingBox().top_right_.lon_ == 360. );
+    Field::MetaData* meta = new Field::MetaData();
+    ASSERT( meta );
 
-    delete g; g = NULL;
+    Field::Data*     data = new Field::Data();
+    ASSERT( data );
 
-    // 1x1 case
+    Field* f = new Field(meta,data);
+    ASSERT( f );
 
-    g = new LatLon( 1, 1, earth );
+    ASSERT( f->data() == data );
+    ASSERT( f->metadata() == meta );
 
-    ASSERT( g );
-    ASSERT( g->dataSize() == 4 );
-
-    /// @todo substitute these comparisons with proper floating point comparisons
-    ASSERT( g->boundingBox().bottom_left_.lat_ == -90. );
-    ASSERT( g->boundingBox().bottom_left_.lon_ ==   0. );
-    ASSERT( g->boundingBox().top_right_.lat_ ==  90. );
-    ASSERT( g->boundingBox().top_right_.lon_ == 360. );
-
-    delete g; g = NULL;
 
 }
 
 //-----------------------------------------------------------------------------
 
-void TestLatLon::run()
+void TestField::run()
 {
     test_constructor();
 }
@@ -90,7 +75,7 @@ void TestLatLon::run()
 
 int main(int argc,char **argv)
 {
-    eckit_test::TestLatLon mytest(argc,argv);
+    eckit_test::TestField mytest(argc,argv);
     mytest.start();
     return 0;
 }

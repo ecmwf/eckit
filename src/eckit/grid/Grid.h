@@ -18,6 +18,7 @@
 #include <cstddef>
 
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
@@ -39,7 +40,12 @@ struct BoundBox2D
 {
     BoundBox2D( const Point2D& bottom_left, const Point2D& top_right ) :
         bottom_left_(bottom_left),
-        top_right_(top_right) {}
+        top_right_(top_right)
+    {
+        ASSERT( bottom_left_.lat_ < top_right_.lat_ );
+        ASSERT( bottom_left_.lon_ < top_right_.lon_ );
+    }
+
     Point2D bottom_left_;
     Point2D top_right_;
 };

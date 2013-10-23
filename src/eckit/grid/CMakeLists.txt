@@ -1,6 +1,11 @@
 list( APPEND eckit_grid_srcs
+Field.cc
 Field.h
-Field.cc )
+Grid.cc
+Grid.h
+LatLon.cc
+LatLon.h
+ )
 
 
 ecbuild_add_library( TARGET eckit_grid

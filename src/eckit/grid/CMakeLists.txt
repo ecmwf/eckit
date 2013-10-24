@@ -8,12 +8,13 @@ LatLon.h
  )
 
 
-ecbuild_add_library( TARGET eckit_grid
-					 INSTALL_HEADERS ALL
-					 SOURCES
+ecbuild_add_library(TARGET eckit_grid
+					INSTALL_HEADERS ALL
+					CONDITION	ECKIT_GRID
+					SOURCES
 						${eckit_grid_srcs}
-					 HEADER_DESTINATION
+					HEADER_DESTINATION
 						${INSTALL_INCLUDE_DIR}/eckit/grid
-					 LIBS
+					LIBS
 						eckit )
 

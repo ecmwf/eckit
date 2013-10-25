@@ -27,8 +27,8 @@ namespace grid {
 class FieldSet;
 
 //-----------------------------------------------------------------------------
-//
-// possibly rename to operation.. fieldop?
+
+/// @note possibly rename to operation.. fieldop?
 class Action : private eckit::NonCopyable {
 
 public: // methods
@@ -37,11 +37,100 @@ public: // methods
 
     virtual ~Action();
 
-    void execute(const FieldSet& input, FieldSet& output) = 0; 
+    void operator() (const FieldSet& input, FieldSet& output) = 0;
 
 protected:
 
 };
+
+#if 0
+
+class Var : public boost::any
+{
+
+};
+
+class Op {
+public:
+    Op( Var& in ) { *this = in; }
+    Op& operator= (Var& in);
+    virtual Var result() = 0;
+};
+
+struct WrapVar : public Op
+{
+    WrapVar( Var in ) : store_(in) {}
+    Var store_;
+
+    Var result() { return store_; }
+};
+
+class Add : public Op
+{
+public:
+
+    Op operator() ( Var a, Var b )
+    {
+        a_ = a;
+        b_ = b;
+        return this;
+    }
+
+    Op operator() ( Op a, Var b )
+    {
+        a_ = a;
+        b_ = b;
+        return this;
+    }
+
+    Op operator() ( Var a, Op b );
+    {
+        a_ = a;
+        b_ = b;
+        return this;
+    }
+
+    Op operator() ( Op a, Op b );
+    {
+        a_ = a;
+        b_ = b;
+        return this;
+    }
+
+    virtual Var result()
+    {
+        return a_.result() + b_.result();
+    }
+
+private:
+
+    Op a_;
+    Op b_;
+
+};
+
+class Not : public Op
+{
+public:
+    Op& operator() ( Var a )
+    {
+        a_ = a;
+        return this;
+    }
+
+    virtual Var result()
+    {
+        return ! a_.result();
+    }
+
+private:
+
+    Op a_;
+};
+
+Var r = Add( Add( 2, 3) , Not( 0 ) ).result();
+
+#endif
 
 /// @todo implement sublcasses for functionality intepolate / extract etc 
 //

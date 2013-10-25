@@ -77,7 +77,7 @@ private:
 
     int_type overflow(int_type ch)
     {
-        /* AutoLock<Mutex> lock(mutex); */
+        /* AutoLock<Mutex> lock(local_mutex); */
         if (ch == traits_type::eof() ) { return sync(); }
         dumpBuffer();
         sputc(ch);
@@ -86,7 +86,7 @@ private:
 
     int_type sync()
     {
-        /* AutoLock<Mutex> lock(mutex); */
+        /* AutoLock<Mutex> lock(local_mutex); */
         return dumpBuffer() ? 0 : -1;
     }
 

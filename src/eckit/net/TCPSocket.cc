@@ -43,7 +43,7 @@ namespace eckit {
 
 static in_addr none = { INADDR_NONE };
 
-static Mutex mutex;
+static Mutex local_mutex;
 
 TCPSocket::UnknownHost::UnknownHost(const string& host):
     Exception(string("Unknown host ") + host)
@@ -242,9 +242,9 @@ TCPSocket& TCPClient::connect(const string& remote,int port,int retries, int tim
     ::memset(&sin,0,sizeof(sin));
 
 
-    { // Block for mutex
+    { // Block for local_mutex
 
-        AutoLock<Mutex> lock(mutex);
+        AutoLock<Mutex> lock(local_mutex);
 
         sin.sin_port   = htons(port);
         sin.sin_family = AF_INET;
@@ -281,7 +281,7 @@ TCPSocket& TCPClient::connect(const string& remote,int port,int retries, int tim
             ::memcpy(&sin.sin_addr,him->h_addr_list[0],him->h_length);
         }
 
-    } // End of mutex
+    } // End of local_mutex
 
     int tries = 0;
     int status = 0;
@@ -497,7 +497,7 @@ int TCPSocket::newSocket(int port)
         ::sleep(5);
     }
 
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
 #ifdef SGI
     int    len = sizeof(sin);
 #else
@@ -512,7 +512,7 @@ int TCPSocket::newSocket(int port)
     {
         if(addr.length() == 0)
         {
-            AutoLock<Mutex> lock(mutex);
+            AutoLock<Mutex> lock(local_mutex);
             localHost_= Resource<string> ("host", "");
             if(localHost_.length() == 0)
             {
@@ -542,7 +542,7 @@ static map<uint32_t,string> cache;
 
 string TCPSocket::addrToHost(in_addr addr)
 {
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
 
     // For some reason IBM's gethostbyaddr_r dumps core
     // from time to time, so let's cache the result

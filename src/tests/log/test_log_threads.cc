@@ -33,11 +33,11 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-static Once<Mutex> mutex; 
+static Once<Mutex> local_mutex; 
 
 static void callback_logger( void* ctxt, const char* msg )
 {
-    AutoLock<Mutex> lock(mutex); ///< usually global resources like this need to be protected by mutex
+    AutoLock<Mutex> lock(local_mutex); ///< usually global resources like this need to be protected by local_mutex
     
     std::cout << "[TEST] -- " << msg ;
 }

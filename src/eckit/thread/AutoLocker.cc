@@ -25,24 +25,24 @@ typedef map<void*,pthread_t,less<void*> > GotMap;
 typedef map<pthread_t,void*,less<pthread_t> > WantMap;
 static WantMap*   wantMap = 0;
 static GotMap*   gotMap = 0;
-static Mutex* mutex = 0;
+static Mutex* local_mutex = 0;
 typedef set<pthread_t,less<pthread_t> > Set;
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 
 static void lock()
 {
-	 mutex->lock();
+	 local_mutex->lock();
 }
 
 static void unlock()
 {
-	mutex->unlock();
+	local_mutex->unlock();
 }
 
 static void init(void)
 {
-	mutex   = new Mutex;
+	local_mutex   = new Mutex;
 	wantMap = new WantMap;
 	gotMap  = new GotMap;
 	pthread_atfork(lock,unlock,unlock);
@@ -51,7 +51,7 @@ static void init(void)
 void AutoLocker::want(void* resource)
 {
 	pthread_once(&once,init);
-	mutex->lock();
+	local_mutex->lock();
 
 	cerr << "AutoLocker " << pthread_self() << " want " << resource << endl;
 
@@ -66,24 +66,24 @@ void AutoLocker::want(void* resource)
 		}
 	}
 
-	mutex->unlock();
+	local_mutex->unlock();
 }
 
 void AutoLocker::got(void* resource)
 {
-	mutex->lock();
+	local_mutex->lock();
 	cerr << "AutoLocker " << pthread_self() << " got " << resource << endl;
 	(*gotMap)[resource] = pthread_self();
 	wantMap->erase(pthread_self());
-	mutex->unlock();
+	local_mutex->unlock();
 }
 
 void AutoLocker::release(void* resource)
 {
-	mutex->lock();
+	local_mutex->lock();
 	cerr << "AutoLocker " << pthread_self() << " release " << resource << endl;
 	gotMap->erase(resource);
-	mutex->unlock();
+	local_mutex->unlock();
 }
 
 static void visit(pthread_t p, Set& s,void *resource)

@@ -25,7 +25,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static Mutex mutex;
+static Mutex local_mutex;
 
 NodeInfo::NodeInfo() :
 	port_(0), id_(0), task_(-1)
@@ -34,7 +34,7 @@ NodeInfo::NodeInfo() :
 
 NodeInfo& NodeInfo::init()
 {
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
 	if(!name_.length())
 	{
         static string myNode = Resource<string> ("node", "<missing-node-name>");

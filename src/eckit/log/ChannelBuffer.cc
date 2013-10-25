@@ -61,7 +61,7 @@ bool ChannelBuffer::dumpBuffer()
 
 std::streambuf::int_type ChannelBuffer::overflow(std::streambuf::int_type ch)
 {
-    /* AutoLock<Mutex> lock(mutex); */
+    /* AutoLock<Mutex> lock(local_mutex); */
     if (ch == traits_type::eof() ) { return sync(); }
     dumpBuffer();
     sputc(ch);

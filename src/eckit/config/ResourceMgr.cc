@@ -27,7 +27,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static Mutex mutex;
+static Mutex local_mutex;
 static Mutex mutex_instance;
 
 ResourceMgr::ResourceMgr() :
@@ -56,7 +56,7 @@ ResourceMgr& ResourceMgr::instance()
 
 void ResourceMgr::reset()
 {
-	AutoLock<Mutex> lock(mutex);
+	AutoLock<Mutex> lock(local_mutex);
     
     inited_ = false;
     parsed_.clear();
@@ -65,7 +65,7 @@ void ResourceMgr::reset()
 
 void ResourceMgr::set(const string& name,const string& value)
 {
-	AutoLock<Mutex> lock(mutex);
+	AutoLock<Mutex> lock(local_mutex);
 
     ostringstream code;
     code << name << " = " << value << std::endl;
@@ -77,14 +77,14 @@ void ResourceMgr::set(const string& name,const string& value)
 
 void ResourceMgr::appendConfig(istream &in)
 {
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
 
     script_->readStream(in);
 }
 
 void ResourceMgr::appendConfig(const PathName& path)
 {
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
     
     if( parsed_.find(path) == parsed_.end() )
     {
@@ -95,7 +95,7 @@ void ResourceMgr::appendConfig(const PathName& path)
 
 void ResourceMgr::readConfigFiles()
 {
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
 
     if(!inited_)
 	{
@@ -120,7 +120,7 @@ bool ResourceMgr::lookUp( Configurable* owner,
                           const StringDict* args, 
                           string& result)
 {
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
     
     readConfigFiles();
     

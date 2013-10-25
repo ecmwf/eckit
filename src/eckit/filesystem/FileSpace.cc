@@ -26,20 +26,20 @@ namespace eckit {
 
 typedef map<string, FileSpace*> Map;
 
-static Mutex mutex;
+static Mutex local_mutex;
 static Map space;
 
 FileSpace::FileSpace(const string& name) :
 	name_(name), last_(0)
 {
-	AutoLock<Mutex> lock(mutex);
+	AutoLock<Mutex> lock(local_mutex);
 	space[name] = this;
 	load();
 }
 
 FileSpace::~FileSpace()
 {
-	AutoLock<Mutex> lock(mutex);
+	AutoLock<Mutex> lock(local_mutex);
 
 	space.erase(name_);
 }
@@ -351,7 +351,7 @@ const PathName& FileSpace::find(const PathName& path, bool& found) const
 
 const FileSpace& FileSpace::lookUp(const string& name)
 {
-	AutoLock<Mutex> lock(mutex);
+	AutoLock<Mutex> lock(local_mutex);
 
 	Map::iterator j = space.find(name);
 	if(j == space.end())

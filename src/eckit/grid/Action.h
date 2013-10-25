@@ -27,19 +27,25 @@ namespace grid {
 class FieldSet;
 
 //-----------------------------------------------------------------------------
-
+//
+// possibly rename to operation.. fieldop?
 class Action : private eckit::NonCopyable {
 
 public: // methods
 
-    Action();
+    Action();/// @todo add configuration
 
     virtual ~Action();
 
-    bool execute(const FieldSet& input, FieldSet& output); /// @todo add configuration
+    void execute(const FieldSet& input, FieldSet& output) = 0; 
+
 protected:
 
 };
+
+/// @todo implement sublcasses for functionality intepolate / extract etc 
+//
+//e.g. Interpolate : public Action etc
 
 //-----------------------------------------------------------------------------
 

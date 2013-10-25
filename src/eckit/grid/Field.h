@@ -71,11 +71,15 @@ public: // methods
 
     ~FieldSet();
 
+    // passes ownership to the caller
+    Fieldset* operator() (size_t i, size_t j, size_t k = 1); ///@todo implement
+
 protected:
 
     /// @todo: make this a shared pointer
     Grid* grid_;
 
+    // It is important that the order of the fields is respected
     Field::Vector fields_;
 };
 

@@ -28,12 +28,6 @@ Action::~Action()
 {
 }
 
-bool Action::execute(const FieldSet& input, FieldSet& output)
-{
-
-    return true;
-}
-
 //-----------------------------------------------------------------------------
 
 } // namespace grid

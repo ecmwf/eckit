@@ -37,7 +37,7 @@ public: // methods
 
     virtual ~Action();
 
-    void operator() (const FieldSet& input, FieldSet& output) = 0;
+    void operator() (const FieldSet& input, FieldSet& output){}
 
 protected:
 

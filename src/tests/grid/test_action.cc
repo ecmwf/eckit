@@ -55,7 +55,7 @@ void TestAction::test_execute()
 
     Action a;
 
-    ASSERT(a.execute(*fs_in, *fs_out));
+    a( *fs_in, *fs_out );
 
     delete fs_in;
     delete fs_out;

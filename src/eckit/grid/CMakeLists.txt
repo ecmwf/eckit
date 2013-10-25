@@ -1,14 +1,20 @@
 list( APPEND eckit_grid_srcs
+Field.cc
 Field.h
-Field.cc )
+Grid.cc
+Grid.h
+LatLon.cc
+LatLon.h
+ )
 
 
-ecbuild_add_library( TARGET eckit_grid
-					 INSTALL_HEADERS ALL
-					 SOURCES
+ecbuild_add_library(TARGET eckit_grid
+					INSTALL_HEADERS ALL
+					CONDITION	ECKIT_GRID
+					SOURCES
 						${eckit_grid_srcs}
-					 HEADER_DESTINATION
-						include/eckit/grid
-					 LIBS
+					HEADER_DESTINATION
+						${INSTALL_INCLUDE_DIR}/eckit/grid
+					LIBS
 						eckit )
 

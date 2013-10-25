@@ -10,7 +10,7 @@
 
 #include "eckit/log/Log.h"
 
-#include "eckit/grid/Field.h"
+#include "eckit/grid/Grid.h"
 
 //-----------------------------------------------------------------------------
 
@@ -19,45 +19,16 @@ namespace grid {
 
 //-----------------------------------------------------------------------------
 
-Field::MetaData::MetaData()
+Grid::Grid()
 {
+    Log::info() << "Build a Grid" << std::endl;
 }
 
-//-----------------------------------------------------------------------------
-
-Field::Field(MetaData* metadata, std::vector<double>* data) :
-    metadata_(metadata),
-    data_(data)
+Grid::~Grid()
 {
-    ASSERT(metadata_);
-    ASSERT(data_);
-
-    Log::info() << "Build a Field" << std::endl;
-}
-
-Field::~Field()
-{
-    if(metadata_) delete metadata_;
-    if(data_) delete data_;
-}
-
-//-----------------------------------------------------------------------------
-
-FieldSet::FieldSet(Grid *grid, const Field::Vector& fields) :
-    grid_(grid),
-    fields_(fields)
-{
-    ASSERT(grid_);
-}
-
-FieldSet::~FieldSet()
-{
-    for( size_t i = 0; i < fields_.size(); ++i )
-        if(fields_[i]) delete fields_[i];
 }
 
 //-----------------------------------------------------------------------------
 
 } // namespace grid
 } // namespace eckit
-

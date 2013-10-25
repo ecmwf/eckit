@@ -1,0 +1,10 @@
+ecbuild_add_test(   TARGET      test_latlon
+					SOURCES     test_latlon.cc
+					CONDITION	ECKIT_GRID
+					LIBS        eckit eckit_grid )
+
+ecbuild_add_test(   TARGET      test_field
+					SOURCES     test_field.cc
+					CONDITION	ECKIT_GRID
+					LIBS        eckit eckit_grid )
+

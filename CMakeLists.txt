@@ -6,14 +6,14 @@
 #
 #   * remove architecture dependent headers
 #   * remove using std::
-#   
+#
 #   * add control of behavior on Exception
 #       - output on constructor
 #       - backtrace on contructor
 #       - abort on constructor
 #       - abort on double exception
 #
-#   * new Logging 
+#   * new Logging
 #       - allows control on format ( eg [%time][%pid] message )
 
 cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )
@@ -24,9 +24,7 @@ set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} 
 
 include( ecbuild_system )
 
-if( ECBUILD_MACRO_VERSION VERSION_LESS 1.1 )
-    message( FATAL_ERROR "${PROJECT_NAME} needs ecbuild >= 1.1" )
-endif() 
+ecbuild_requires_macro_version( 1.2 )
 
 set( PERSISTENT_NAMESPACE eckit CACHE INTERNAL "" )
 
@@ -38,16 +36,21 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-ecbuild_add_extra_search_paths( boost )
+option( ECKIT_BOOST "Boost support  [NOT IMPLEMENTED]" OFF )
+option( ECKIT_GRID  "eckit::grid extension [EXPERIMENTAL]" OFF )
 
-set(Boost_USE_MULTITHREADED      ON )
-# set(Boost_DEBUG                  ON )
-# set(Boost_USE_STATIC_LIBS        ON )
-# set(Boost_NO_SYSTEM_PATHS        ON )
+if( ECKIT_BOOST )
+	ecbuild_add_extra_search_paths( boost )
 
-find_package( Boost 1.50.0 COMPONENTS filesystem program_options date_time thread system unit_test_framework test_exec_monitor )
+	set(Boost_USE_MULTITHREADED      ON )
+	# set(Boost_DEBUG                  ON )
+	# set(Boost_USE_STATIC_LIBS        ON )
+	# set(Boost_NO_SYSTEM_PATHS        ON )
 
-list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
+	find_package( Boost 1.50.0 COMPONENTS filesystem program_options date_time thread system unit_test_framework test_exec_monitor )
+
+	list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
+endif()
 
 find_program( PSTACK_COMMAND "pstack" DOC "path to the pstack executable" )
 mark_as_advanced(PSTACK_COMMAND)
@@ -60,11 +63,11 @@ mark_as_advanced(CPPFILT_COMMAND)
 
 # fail if we dont have bool
 if( NOT EC_HAVE_CXX_BOOL )
-    message( FATAL_ERROR "eckit cannot build -- c++ compiler does not support bool" )
+	message( FATAL_ERROR "eckit cannot build -- c++ compiler does not support bool" )
 endif()
 # fail if we dont have sstream
 if( NOT EC_HAVE_CXX_SSTREAM )
-    message( FATAL_ERROR "eckit cannot build -- c++ compiler does not support stringstream" )
+	message( FATAL_ERROR "eckit cannot build -- c++ compiler does not support stringstream" )
 endif()
 
 ###############################################################################
@@ -79,7 +82,7 @@ set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY
 set( ECKIT_LIBRARIES      eckit eckit_web )
 
 get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
-    
+
 include_directories( ${ECKIT_INCLUDE_DIRS} )
 
 # source files

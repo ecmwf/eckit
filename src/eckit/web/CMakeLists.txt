@@ -45,7 +45,7 @@ ecbuild_add_library( TARGET eckit_web
 					 PERSISTENT
 						HtmlObject
 					 HEADER_DESTINATION
-						include/eckit/web
+						${INSTALL_INCLUDE_DIR}/eckit/web
 					 LIBS
 						eckit )
 

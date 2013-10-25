@@ -3,9 +3,11 @@
 configure_file( eckit_config.h.in   eckit_config.h  )
 configure_file( eckit_version.h.in  eckit_version.h )
 
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/eckit_config.h 
-               ${CMAKE_CURRENT_BINARY_DIR}/eckit_version.h 
-         DESTINATION ${INSTALL_INCLUDE_DIR} )
+install(FILES
+			${CMAKE_CURRENT_BINARY_DIR}/eckit_config.h
+			${CMAKE_CURRENT_BINARY_DIR}/eckit_version.h
+		DESTINATION
+			${INSTALL_INCLUDE_DIR}/eckit )
 
 configure_file( eckit_version.cc.in  eckit_version.cc )
 
@@ -279,7 +281,7 @@ types/Date.cc
 types/Time.h
 types/Time.cc
 types/VerifyingDate.h
-types/VerifyingDate.cc 
+types/VerifyingDate.cc
 types/Seconds.h
 types/Seconds.cc )
 
@@ -423,73 +425,50 @@ foreach( dir ${eckit_dirs} )
   list( APPEND eckit_srcs ${eckit_${dir}_srcs} )
 endforeach()
 
-list( APPEND eckit_templates 
-                    container/BTree.cc
-                    container/MappedArray.cc
-                    filesystem/BasePathNameT.cc
-                    io/FileBase.cc
-                    runtime/PipeHandler.cc
-                    serialisation/Reanimator.cc
-                    transaction/TxnLog.cc
-                    types/Types.cc
+list( APPEND eckit_templates
+					container/BTree.cc
+					container/MappedArray.cc
+					filesystem/BasePathNameT.cc
+					io/FileBase.cc
+					runtime/PipeHandler.cc
+					serialisation/Reanimator.cc
+					transaction/TxnLog.cc
+					types/Types.cc
 					types/FixedString.cc
-                    utils/RLE.cc
+					utils/RLE.cc
 )
 
-list( APPEND eckit_persistent 
-                     types/ClimateDate.h
-                     types/Date.h
-                     types/DayOfYear.h
-                     types/DateTime.h
-                     types/Double.h
-                     types/Grid.h
-                     types/Month.h
-                     types/Time.h
-                     types/VerifyingDate.h
-                     types/Seconds.h
-                     io/Length.h
-                     io/Offset.h
+list( APPEND eckit_persistent
+					types/ClimateDate.h
+					types/Date.h
+					types/DayOfYear.h
+					types/DateTime.h
+					types/Double.h
+					types/Grid.h
+					types/Month.h
+					types/Time.h
+					types/VerifyingDate.h
+					types/Seconds.h
+					io/Length.h
+					io/Offset.h
 )
 
 ### eckit library
 
-ecbuild_add_library( TARGET eckit
-                     INSTALL_HEADERS ALL
-                     SOURCES
-                        ${eckit_srcs}
-                     GENERATED   
-                        eckit_version.cc
-                     TEMPLATES
-                        ${eckit_templates}
-                     PERSISTENT 
-                        ${eckit_persistent}
-                     HEADER_DESTINATION
-                        include/eckit
-                     LIBS 
-                        ${CMAKE_THREAD_LIBS_INIT} ${RT_LIB} )
-
-### eckit header installation
-
-get_filename_component( currdir ${CMAKE_CURRENT_SOURCE_DIR} NAME )
-
-foreach( file ${eckit_templates} )
-
-    get_filename_component( _file_dir    ${file} PATH )
-
-    install( FILES ${file} DESTINATION "${INSTALL_INCLUDE_DIR}/${currdir}/${_file_dir}" )
-
-endforeach()
-
-foreach( file ${eckit_persistent} )
-
-      get_filename_component( _file_dir    ${file} PATH )
-      get_filename_component( _file_we     ${file} NAME_WE )
-
-      set( pfile "${CMAKE_CURRENT_BINARY_DIR}/${_file_dir}/${_file_we}.b" )
-
-      install( FILES ${pfile} DESTINATION "${INSTALL_INCLUDE_DIR}/${currdir}/${_file_dir}" )
-
-endforeach()
+ecbuild_add_library(TARGET eckit
+					INSTALL_HEADERS LISTED
+					HEADER_DESTINATION
+						${INSTALL_INCLUDE_DIR}/eckit
+					SOURCES
+						${eckit_srcs}
+					GENERATED
+						eckit_version.cc
+					TEMPLATES
+						${eckit_templates}
+					PERSISTENT
+						${eckit_persistent}
+					LIBS
+						${CMAKE_THREAD_LIBS_INIT} ${RT_LIB} )
 
 ### sub-driectories
 

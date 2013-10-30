@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 2013 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -9,7 +9,6 @@
  */
 
 #include "eckit/log/Log.h"
-
 #include "eckit/grid/Action.h"
 
 //-----------------------------------------------------------------------------
@@ -29,6 +28,19 @@ Action::~Action()
 }
 
 //-----------------------------------------------------------------------------
+
+Interpolate::Interpolate(StringDict& config)
+{
+    for (StringDict::const_iterator it = config.begin(); it != config.end(); ++it)
+        Log::info() << "Interpolate config " << it->first << " = " << it->second << std::endl;
+}
+
+Interpolate::~Interpolate()
+{
+
+}
+
+
 
 } // namespace grid
 } // namespace eckit

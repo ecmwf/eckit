@@ -12,10 +12,7 @@
 #include "eckit/runtime/Tool.h"
 
 #include "eckit/grid/Grid.h"
-#include "eckit/grid/LatLon.h"
-#include "eckit/grid/Field.h"
-#include "eckit/grid/Action.h"
-#include "eckit/types/Types.h"
+#include "eckit/grid/Gaussian.h"
 
 using namespace eckit;
 
@@ -25,51 +22,49 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-class TestAction : public Tool {
+class TestGaussian : public Tool {
 public:
 
-    TestAction(int argc,char **argv): Tool(argc,argv) {}
+    TestGaussian(int argc,char **argv): Tool(argc,argv) {}
 
-    ~TestAction() {}
+    ~TestGaussian() {}
 
     virtual void run();
 
-    void test_execute();
+    void test_constructor();
 };
 
 //-----------------------------------------------------------------------------
 
-void TestAction::test_execute()
+void TestGaussian::test_constructor()
 {
     using namespace eckit::grid;
 
     BoundBox2D earth ( Point2D(-90.,0.), Point2D(90.,360.) );
-    Grid* g_in = new LatLon( 4, 4, earth );
-    ASSERT( g_in );
+    Grid* g = NULL;
 
-    FieldSet* fs_in = new FieldSet(g_in);
-    
-    Grid* g_out = new LatLon( 3, 3, earth );
-    ASSERT( g_out );
-    
-    FieldSet* fs_out = new FieldSet(g_out);
-    
-    StringDict config;
-    config["interpolator"] = "bilinear";
-    Interpolate interpolate(config);
+    // standard case
 
-    interpolate( *fs_in, *fs_out );
+    g = new Gaussian( 48, earth );
 
-    delete fs_in;
-    delete fs_out;
+    ASSERT( g );
+    std::cout << "data size is " << g->dataSize() << std::endl;
+    /// @todo review this: we wrap from 0 to 360 inclusive as we do for latlon
+    ASSERT( g->dataSize() == (48 * 2 * ( 48 * 4 + 1) ) );
+
+    /// @todo substitute these comparisons with proper floating point comparisons
+    ASSERT( g->boundingBox().bottom_left_.lat_ == -90. );
+    ASSERT( g->boundingBox().bottom_left_.lon_ ==   0. );
+    ASSERT( g->boundingBox().top_right_.lat_ ==  90. );
+    ASSERT( g->boundingBox().top_right_.lon_ == 360. );
 
 }
 
 //-----------------------------------------------------------------------------
 
-void TestAction::run()
+void TestGaussian::run()
 {
-    test_execute();
+    test_constructor();
 }
 
 //-----------------------------------------------------------------------------
@@ -80,7 +75,7 @@ void TestAction::run()
 
 int main(int argc,char **argv)
 {
-    eckit_test::TestAction mytest(argc,argv);
+    eckit_test::TestGaussian mytest(argc,argv);
     mytest.start();
     return 0;
 }

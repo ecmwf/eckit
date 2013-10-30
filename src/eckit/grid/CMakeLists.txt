@@ -7,6 +7,8 @@ Grid.cc
 Grid.h
 LatLon.cc
 LatLon.h
+Gaussian.cc
+Gaussian.h
  )
 
 

@@ -12,10 +12,11 @@
 /// @author Tiago Quintino
 /// @date Oct 2013
 
-#ifndef eckit_grid_LatLon_H
-#define eckit_grid_LatLon_H
+#ifndef eckit_grid_Gaussian_H
+#define eckit_grid_Gaussian_H
 
 #include <cstddef>
+#include <vector>
 
 #include "eckit/types/Coord.h"
 #include "eckit/grid/Grid.h"
@@ -27,26 +28,35 @@ namespace grid {
 
 //-----------------------------------------------------------------------------
 
-class LatLon : public Grid {
+class Gaussian : public Grid {
 
 public: // methods
 
-    LatLon( size_t nlat, size_t nlon, const BoundBox2D& bb );
+    Gaussian( size_t resolution, const BoundBox2D& bb );
 
-    virtual ~LatLon();
+    virtual ~Gaussian();
 
     virtual size_t dataSize() const;
     virtual BoundBox2D boundingBox() const;
 
 protected:
 
-    size_t nlat_;                       ///< number of latitude  increments - ODD number for coindidence with 0,0 on Earth 
-    size_t nlon_;                       ///< number of longitude increments - can be any size as no requirement for 
+    // Generates latitudes in N hemisphere 
+    void generateLatitudes(std::vector<double>& lats);
+
+    size_t resolution_;                 ///< number of longitude increments - can be any size as no requirement for 
 
     std::vector< Point2D > points_;     ///< storage of coordinate points
 
     BoundBox2D bound_box_;              ///< bounding box for the domain
 
+private:
+
+    // Generates latitudes in N hemisphere 
+    void initialGaussianLatitudes(std::vector<double>& lats);
+    
+    // Only tested on in N hemisphere 
+    void refineLatitude(double& value);
 };
 
 //-----------------------------------------------------------------------------

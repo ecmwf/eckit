@@ -15,11 +15,15 @@
 #ifndef eckit_grid_Action_H
 #define eckit_grid_Action_H
 
+#include <map>
+#include <string>
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
+
 namespace grid {
 
 //-----------------------------------------------------------------------------
@@ -33,13 +37,24 @@ class Action : private eckit::NonCopyable {
 
 public: // methods
 
-    Action();/// @todo add configuration
+    Action();
 
     virtual ~Action();
 
-    void operator() (const FieldSet& input, FieldSet& output){}
+    virtual void operator() (const FieldSet& input, FieldSet& output) = 0;
 
 protected:
+
+};
+
+
+class Interpolate : public Action {
+
+public:
+    Interpolate(StringDict& config);
+    virtual ~Interpolate();
+
+    virtual void operator() (const FieldSet& input, FieldSet& output)  {};
 
 };
 

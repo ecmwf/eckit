@@ -35,8 +35,9 @@ public: // methods
 
     virtual ~LatLon();
 
-    virtual size_t dataSize() const;
-    virtual BoundBox2D boundingBox() const;
+     virtual size_t dataSize() const;
+     virtual const std::vector< Point2D >& gridData() const { return points_; }
+     virtual BoundBox2D boundingBox() const;
 
 protected:
 

@@ -74,8 +74,6 @@ Gaussian::Gaussian( size_t resolution, const BoundBox2D& bb) :
        }
     }
 
-    for (std::vector< Point2D >::const_iterator it = points_.begin(); it != points_.end(); it++)
-        Log::info() << std::fixed << std::setprecision(6) <<  "Point at " << it->lat_ << ", " << it->lon_ << std::endl;
 }
 
 Gaussian::~Gaussian()

@@ -1,6 +1,4 @@
 list( APPEND eckit_grid_srcs
-Action.cc
-Action.h
 Field.cc
 Field.h
 Grid.cc

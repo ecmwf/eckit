@@ -130,6 +130,8 @@ bool Comm::isFinalised() const
 
 bool Comm::isActive() const
 {
+    AutoLock<Mutex> lock(local_mutex_);
+
     return isInitialised() && !isFinalised()  && ( comm_ != MPI_COMM_NULL );
 }
 

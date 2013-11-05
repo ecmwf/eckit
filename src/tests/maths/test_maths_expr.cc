@@ -39,21 +39,24 @@ void TestExp::run()
 
 void TestExp::test_add()
 {
-    using namespace maths;
-#if 0
+    using namespace eckit::maths;
+
     ExpPtr a = scalar( 2. );
     ExpPtr c = scalar( 4. );
 
     VarPtr v1 = maths::vector( 10, 5. );
     VarPtr v2 = maths::vector( 10, 7. );
 
-    ExpPtr e = add( prod( a, v1) , prod( c, v2 ));
+    ExpPtr e = maths::add( prod( a, v1) , prod( c, v2 ));
 
     std::cout << *e << std::endl;
-    std::cout << *e->signature() << std::endl;
+    std::cout << e->signature() << std::endl;
 
     e = e->reduce();
-#endif
+
+    std::cout << *e << std::endl;
+    std::cout << e->signature() << std::endl;
+
 }
 
 //-----------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 ecbuild_add_test(   TARGET      test_maths_expr
-                    SOURCES     test_maths_expr.cc
-                    CONDITION   ECKIT_MATHS
-                    LIBS        eckit_maths eckit )
+					CONDITION   ECKIT_MATHS AND Boost_FOUND
+					SOURCES     test_maths_expr.cc
+					INCLUDES    ${Boost_INCLUDE_DIRS}
+					LIBS        eckit_maths eckit )
 

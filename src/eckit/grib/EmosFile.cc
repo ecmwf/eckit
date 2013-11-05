@@ -51,6 +51,11 @@ void EmosFile::rewind()
 	handle_->rewind();
 }
 
+void EmosFile::seek(const Offset& where)
+{
+    handle_->seek(where);
+}
+
 EmosFile::~EmosFile() 
 {
     handle_->close();

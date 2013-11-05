@@ -31,7 +31,7 @@ public:
 
 // -- Methods
 
-
+    double* getDataValues(size_t&) const;
 
 private: // members
 

@@ -9,6 +9,16 @@ EmosFile.cc
 EmosFile.h
 GribHandle.cc
 GribHandle.h
+GribFieldSet.cc
+GribFieldSet.h
+GribFieldState.cc
+GribFieldState.h
+GribFieldStateFile.cc
+GribFieldStateFile.h
+GribFieldStateExpanded.cc
+GribFieldStateExpanded.h
+GribFieldStateHandle.cc
+GribFieldStateHandle.h
  )
 
 

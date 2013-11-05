@@ -4,7 +4,6 @@
 #include "GribFile.h"
 #include "GribFieldSet.h"
 #include "EmosFile.h"
-#include "GribHandle.h"
 #include "GribField.h"
 
 #include "eckit/io/Buffer.h"
@@ -32,10 +31,16 @@ void GribFile::print(ostream& os) const
     os << "GribFile[" << path_ << "]";
 }
 
-GribFieldSet* GribFile::getFieldSet(bool load) const
+GribFieldSet* GribFile::getFieldSet() const
+{
+    GribFieldSet* fs = new GribFieldSet();
+    getFieldSet(*fs);
+    return fs;
+}
+
+void GribFile::getFieldSet(GribFieldSet& fs) const
 {
     Buffer buffer(1024*1024*64);
-    GribFieldSet* fs = new GribFieldSet();
     EmosFile file(path_);
     GribFile* self = const_cast<GribFile*>(this);
 
@@ -44,27 +49,31 @@ GribFieldSet* GribFile::getFieldSet(bool load) const
     while( (len = file.readSome(buffer)) != 0 )
     {
             ASSERT(len < buffer.size());
-            
+
             const char *p = buffer + len - 4;
-            
+
             if(p[0] != '7' || p[1] != '7' || p[2] != '7' || p[3] != '7')
                 throw eckit::SeriousBug("No 7777 found");
-            
+
             Offset where = file.position();
+            GribField* g = new GribField(self, Offset((unsigned long long)where - len), Length(len));
 
-            GribHandle* h = 0;
-            if(load) {
-                h = new GribHandle(buffer, len);
-            }
-
-            GribField* g = new GribField(self, Offset((unsigned long long)where - len), Length(len), h);
-
-            fs->add(g);
+            fs.add(g);
 
     }
 
-    return fs;
+}
 
+void GribFile::getBuffer(Buffer& buffer, const Offset& offset, const Length& length)
+{
+    EmosFile file(path_);
+    file.seek(offset);
+    Length len = file.readSome(buffer);
+    ASSERT(len == length);
+    const char *p = buffer + len - 4;
+
+    if(p[0] != '7' || p[1] != '7' || p[2] != '7' || p[3] != '7')
+        throw eckit::SeriousBug("No 7777 found");
 }
 
 

@@ -32,7 +32,7 @@ public:
 // -- Contructors
 
     GribFieldSet();
-	GribFieldSet(const eckit::PathName& path);
+    GribFieldSet(const PathName& path);
 
 // -- Destructor
 
@@ -47,6 +47,9 @@ public:
 // -- Methods
 
     void add(GribField*);
+
+    size_t count() const { return fields_.size(); }
+    const GribField* get(size_t i) const { return fields_[i]; }
 
 // -- Overridden methods
 	// None

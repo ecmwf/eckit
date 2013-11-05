@@ -6,6 +6,9 @@
 
 #include "eckit/memory/Counted.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/Offset.h"
+#include "eckit/io/Length.h"
 
 namespace eckit {
 
@@ -33,7 +36,9 @@ public:
 
 // -- Methods
 
-    GribFieldSet* getFieldSet(bool load = false) const;
+    GribFieldSet* getFieldSet() const;
+    void getFieldSet(GribFieldSet&) const;
+    void getBuffer(Buffer&, const Offset&, const Length&);
 
 // -- Overridden methods
 	// None

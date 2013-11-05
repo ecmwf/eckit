@@ -164,6 +164,14 @@ void BufferedHandle::rewind()
 	handle_->rewind();
 }
 
+Offset BufferedHandle::seek(const Offset& off)
+{
+    used_ = pos_ = 0;
+    eof_  = false;
+    return handle_->seek(off);
+}
+
+
 void BufferedHandle::print(ostream& s) const
 {
 	s << "BufferedHandle[";

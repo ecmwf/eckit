@@ -1,31 +1,19 @@
-// File GribField.h
+// File GribFieldStateFile.h
 // Baudouin Raoult - (c) ECMWF Nov 13
 
-#ifndef GribField_H
-#define GribField_H
+#ifndef GribFieldStateFile_H
+#define GribFieldStateFile_H
 
-// namespace mpi;
+#include "GribFieldState.h"
 
-// Headers
-// #ifndef   machine_H
-// #include "machine.h"
-// #endif
-
-// Forward declarations
-
-// class ostream;
-
-// 
-#include "eckit/memory/Counted.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
 
 namespace eckit {
 
 class GribFile;
-class GribFieldState;
 
-class GribField : public eckit::Counted {
+class GribFieldStateFile : public GribFieldState {
 public:
 
 // -- Exceptions
@@ -33,11 +21,11 @@ public:
 
 // -- Contructors
 
-    GribField(GribFile *, const Offset&, const Length&);
+    GribFieldStateFile(GribFile*, const Offset& offset, const Length& length, GribFieldState* next = 0);
 
 // -- Destructor
 
-	~GribField(); // Change to virtual if base class
+	~GribFieldStateFile(); // Change to virtual if base class
 
 // -- Convertors
 	// None
@@ -46,8 +34,7 @@ public:
 	// None
 
 // -- Methods
-
-    const double *getValues(size_t&) const;
+	// None
 
 // -- Overridden methods
 	// None
@@ -68,7 +55,7 @@ protected:
     void print(ostream&) const; // Change to virtual if base class
 
 // -- Overridden methods
-	// None
+
 
 // -- Class members
 	// None
@@ -80,18 +67,23 @@ private:
 
 // No copy allowed
 
-	GribField(const GribField&);
-	GribField& operator=(const GribField&);
+	GribFieldStateFile(const GribFieldStateFile&);
+	GribFieldStateFile& operator=(const GribFieldStateFile&);
 
 // -- Members
 
-    GribFieldState* state_;
+    GribFile* file_;
+    Offset    offset_;
+    Length    length_;
 
 // -- Methods
 	// None
 
 // -- Overridden methods
-	// None
+	
+    virtual GribFieldState* returnValues(double*&, size_t&) const;
+    virtual GribFieldState* returnHandle(GribHandle*&) const;
+
 
 // -- Class members
 	// None
@@ -101,10 +93,11 @@ private:
 
 // -- Friends
 
-    friend ostream& operator<<(ostream& s,const GribField& p)
-        { p.print(s); return s; }
+	//friend ostream& operator<<(ostream& s,const GribFieldStateFile& p)
+	//	{ p.print(s); return s; }
 
 };
+
 }
 
 #endif

@@ -45,6 +45,7 @@ public: // methods
 
     eckit::Offset position();
 	void rewind();
+    void seek(const eckit::Offset&);
 
 private: // members
 

@@ -3,27 +3,32 @@
 
 #include "GribField.h"
 #include "GribFile.h"
+#include "GribFieldStateFile.h"
 
 namespace eckit {
 
-GribField::GribField(GribFile* file, const eckit::Offset& offset, const eckit::Length& length, GribHandle *handle):
-    file_(file),
-    offset_(offset),
-    length_(length),
-    handle_(handle)
+GribField::GribField(GribFile* file, const Offset& offset, const Length& length):
+    state_(new GribFieldStateFile(file, offset, length))
 {
-    file_->attach();
 }
 
 GribField::~GribField()
 {
-    file_->detach();
+    delete state_;
 }
 
 
 void GribField::print(ostream& os) const
 {
-    os << "GribField[file=" << (*file_) << ",offset=" << offset_ << ",length=" << length_ << "]";
+    os << "GribField[" << (*state_) << "]";
 }
 
+const double* GribField::getValues(size_t& count) const
+{
+    GribField* self = const_cast<GribField*>(this);
+    double* result = 0;
+    self->state_ = self->state_->returnValues(result, count);
+    return result;
 }
+
+} // namespace

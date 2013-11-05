@@ -11,6 +11,12 @@ GribFieldSet::GribFieldSet()
 {
 }
 
+GribFieldSet::GribFieldSet(const PathName& path)
+{
+    GribFile* file = GribFile::newGribFile("/tmp/data.grib");
+    file->getFieldSet(*this);
+}
+
 GribFieldSet::~GribFieldSet()
 {
     for(std::vector<GribField*>::iterator j = fields_.begin(); j != fields_.end(); ++j) {

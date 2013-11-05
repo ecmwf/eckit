@@ -36,6 +36,7 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
+option( ECKIT_MATHS "eckit::maths extension [NOT EXPERIMENTAL]" ON )
 option( ECKIT_BOOST "Boost support  [NOT IMPLEMENTED]"     ON )
 option( ECKIT_GRID  "eckit::grid extension [EXPERIMENTAL]" ON )
 

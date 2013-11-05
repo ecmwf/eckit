@@ -3,13 +3,12 @@
 
 #include "GribFieldSet.h"
 #include "GribFile.h"
+#include "GribField.h"
 
-GribFieldSet::GribFieldSet(const eckit::PathName& path)
+namespace eckit {
+
+GribFieldSet::GribFieldSet()
 {
-    GribFile* f = new GribFile(path);
-    f->attach();
-
-    f->detach();
 }
 
 GribFieldSet::~GribFieldSet()
@@ -19,8 +18,14 @@ GribFieldSet::~GribFieldSet()
     }
 }
 
-
 void GribFieldSet::print(ostream& os) const
 {
     os << "GribFieldSet[" << fields_.size() << "]";
+}
+
+void GribFieldSet::add(GribField *f) {
+    f->attach();
+    fields_.push_back(f);
+}
+
 }

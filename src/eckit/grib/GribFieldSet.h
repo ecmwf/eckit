@@ -19,7 +19,7 @@
 #include "eckit/memory/Counted.h"
 #include "eckit/filesystem/PathName.h"
 
-namespace "eckit" {
+namespace eckit {
 
 class GribField;
 
@@ -45,7 +45,8 @@ public:
 	// None
 
 // -- Methods
-	// None
+
+    void add(GribField*);
 
 // -- Overridden methods
 	// None

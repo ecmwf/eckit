@@ -7,9 +7,11 @@
 #include "eckit/memory/Counted.h"
 #include "eckit/filesystem/PathName.h"
 
-namespace "eckit" {
+namespace eckit {
 
-class GribFile : public eckit::Counted {
+class GribFieldSet;
+
+class GribFile : public Counted {
 public:
 
 // -- Exceptions
@@ -17,11 +19,11 @@ public:
 
 // -- Contructors
 
-	GribFile(const eckit::PathName&);
+
 
 // -- Destructor
 
-	~GribFile(); // Change to virtual if base class
+
 
 // -- Convertors
 	// None
@@ -30,7 +32,8 @@ public:
 	// None
 
 // -- Methods
-	// None
+
+    GribFieldSet* getFieldSet(bool load = false) const;
 
 // -- Overridden methods
 	// None
@@ -39,12 +42,16 @@ public:
 	// None
 
 // -- Class methods
-	// None
+
+    static GribFile* newGribFile(const PathName&);
 
 protected:
 
 // -- Members
-	// None
+
+    // Use "newGribFile" intead
+    GribFile(const PathName&);
+    ~GribFile(); // Change to virtual if base class
 
 // -- Methods
 	
@@ -68,7 +75,7 @@ private:
 
 // -- Members
 //
-	eckit::PathName path_;
+	PathName path_;
 
 // -- Methods
 	// None

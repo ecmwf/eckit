@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2012 ECMWF.
+ * (C) Copyright 1996-2013 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -11,24 +11,25 @@
 #ifndef EmosFile_H
 #define EmosFile_H
 
-#include "eclib/DataHandle.h"
-#include "eclib/NonCopyable.h"
+#include "eckit/io/DataHandle.h"
+#include "eckit/memory/NonCopyable.h"
 
 // Forward declarations
 
-namespace eckit { 
+namespace eckit { class Buffer; }
+namespace eckit { class PathName; }
 
-class EmosFile : private NonCopyable {
+class EmosFile : private eckit::NonCopyable {
 
 public: // methods
 
     /// Contructor
 
-    EmosFile(const PathName&);
+    EmosFile(const eckit::PathName&);
 
-    /// Contructor, does not take ownership of eclib::DataHandle
+    /// Contructor, does not take ownership of eckit::DataHandle
 
-    EmosFile( DataHandle& dh );
+    EmosFile( eckit::DataHandle& dh );
 
     /// Destructor
 
@@ -36,20 +37,18 @@ public: // methods
 
 public: // methods
 	
-	long read(eclib::Buffer&);
+	long read(eckit::Buffer&);
 
 	// Don't fail if buffer is too small
 
-	long readSome(eclib::Buffer&);
+	long readSome(eckit::Buffer&);
 
-    eclib::Offset position();
+    eckit::Offset position();
 	void rewind();
 
 private: // members
 
-    auto_ptr<DataHandle> handle_;
-
-};
+    auto_ptr<eckit::DataHandle> handle_;
 
 };
 

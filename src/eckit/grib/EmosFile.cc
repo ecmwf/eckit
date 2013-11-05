@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2012 ECMWF.
+ * (C) Copyright 1996-2013 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -10,22 +10,22 @@
 
 #include "grib_api.h"
 
-#include "eclib/Buffer.h"
-#include "eclib/BufferedHandle.h"
-#include "eclib/MoverHandle.h"
-#include "eclib/PathName.h"
-#include "eclib/Resource.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/filesystem/BufferedHandle.h"
+#include "eckit/filesystem/MoverHandle.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/config/Resource.h"
 
-#include "marslib/EmosFile.h"
+#include "EmosFile.h"
 
-#include "eclib/Log.h"
+#include "eckit/log/Log.h"
 
-using namespace eclib;
+using namespace eckit;
 
 
 static long readcb(void *data, void *buffer, long len)
 {
-    DataHandle *handle = reinterpret_cast<eclib::DataHandle*>(data);
+    DataHandle *handle = reinterpret_cast<eckit::DataHandle*>(data);
     return handle->read(buffer,len);
 }
 

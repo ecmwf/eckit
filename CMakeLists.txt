@@ -38,7 +38,13 @@ ecbuild_declare_project()
 
 option( ECKIT_BOOST	"Boost support  [NOT IMPLEMENTED]"		OFF )
 option( ECKIT_GRID  "eckit::grid extension [EXPERIMENTAL]"	OFF )
+option( ECKIT_GRIB  "eckit::grib extension [EXPERIMENTAL]"	OFF )
 option( ECKIT_MPI   "eckit::mpi  extension [EXPERIMENTAL]"	ON  )
+
+if( ECKIT_GRIB )
+	ecbuild_use_package(PROJECT grib_api)
+endif()
+
 
 # boost support
 

@@ -20,9 +20,10 @@
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
 
-namespace "eckit" {
+namespace eckit {
 
 class GribFile;
+class GribHandle;
 
 class GribField : public eckit::Counted {
 public:
@@ -32,7 +33,7 @@ public:
 
 // -- Contructors
 
-    GribField(GribFile *, const eckit::Offset&, const eckit::Length&);
+    GribField(GribFile *, const eckit::Offset&, const eckit::Length&, GribHandle* = 0);
 
 // -- Destructor
 
@@ -86,6 +87,7 @@ private:
     eckit::Offset offset_;
     eckit::Length length_;
     GribFile*     file_;
+    std::auto_ptr<GribHandle> handle_;
 
 // -- Methods
 	// None

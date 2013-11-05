@@ -13,6 +13,8 @@
 #include "eckit/runtime/Context.h"
 
 #include "eckit/mpi/Comm.h"
+#include "eckit/grib/GribFieldSet.h"
+#include "eckit/grib/GribFile.h"
 
 using namespace eckit;
 
@@ -51,6 +53,10 @@ void TestMPIComm::run()
                 << comm.rank()
                 << " of "
                 << comm.size() << std::endl;
+
+    GribFile* file = GribFile::newGribFile("/tmp/data.grib");
+    std::auto_ptr<GribFieldSet> fs(file->getFieldSet());
+    Log::info() << *fs << endl;
 }
 
 //-----------------------------------------------------------------------------

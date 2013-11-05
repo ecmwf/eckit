@@ -58,8 +58,9 @@ public: // methods
     ContextBehavior& behavior() const;
 
     int argc() const;
-	string argv(int n) const;
-    
+    string argv(int n) const;
+    char** argvs() const;
+
     int  debug() const;
     void debug( const int );
     

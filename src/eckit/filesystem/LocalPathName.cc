@@ -42,7 +42,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static Mutex mutex;
+static Mutex local_mutex;
 
 // I need to come back here when we have a proper string class
 
@@ -147,7 +147,7 @@ bool LocalPathName::available() const
 
 LocalPathName LocalPathName::cwd()
 {
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
     char buf [PATH_MAX+1];
 	if(!getcwd(buf, sizeof(buf)))
 		throw FailedSystemCall("getcwd");    
@@ -157,7 +157,7 @@ LocalPathName LocalPathName::cwd()
 LocalPathName LocalPathName::unique(const LocalPathName& path)
 {
 
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
 
 	static string format = "%Y%m%d.%H%M%S";
 

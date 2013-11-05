@@ -24,7 +24,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static Once<Mutex> mutex;
+static Once<Mutex> local_mutex;
 
 Context::Context() :
     argc_(0),
@@ -47,7 +47,7 @@ Context::~Context()
 
 Context& Context::instance()
 {
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
     static Context ctxt;
     return ctxt;
 }
@@ -63,7 +63,7 @@ void Context::setup( int argc, char **argv )
 
 void Context::behavior( ContextBehavior* b )
 {
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
     if( !b )
         throw SeriousBug("Context setup with bad context behavior");
     behavior_.reset(b);
@@ -71,7 +71,7 @@ void Context::behavior( ContextBehavior* b )
 
 ContextBehavior& Context::behavior() const
 {
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
     return *behavior_.get();
 }
 
@@ -87,16 +87,21 @@ void Context::debug( const int d )
 
 int  Context::argc() const 
 { 
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
     return argc_;
 }
 
 string Context::argv(int n) const
 { 
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<Mutex> lock(local_mutex);
     ASSERT( argc_ != 0 && argv_ != 0 ); // check initialized
     ASSERT( n < argc_ && n >= 0);       // check bounds
     return argv_[n]; 
+}
+
+char** Context::argvs() const
+{
+    return argv_;
 }
 
 void Context::reconfigure()
@@ -112,7 +117,7 @@ string Context::home() const
 
 void Context::home(const string &h)
 {
-    AutoLock<Mutex> lock(mutex);    
+    AutoLock<Mutex> lock(local_mutex);
     home_ = h;
 }
 

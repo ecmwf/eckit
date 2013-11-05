@@ -57,6 +57,8 @@ public:
     virtual void rewind();
     virtual void print(ostream&) const;
 
+    virtual Offset seek(const Offset&);
+
 	virtual Length estimate();
 	virtual Offset position();
 

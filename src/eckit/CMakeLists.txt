@@ -475,3 +475,7 @@ ecbuild_add_library(TARGET eckit
 add_subdirectory( web )
 
 add_subdirectory( grid )
+
+add_subdirectory( grib )
+
+add_subdirectory( mpi )

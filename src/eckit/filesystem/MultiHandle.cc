@@ -22,15 +22,13 @@ ClassSpec MultiHandle::classSpec_ = {&DataHandle::classSpec(),"MultiHandle",};
 Reanimator<MultiHandle> MultiHandle::reanimator_;
 
 MultiHandle::MultiHandle():
-    current_(datahandles_.end()),
-    curlen_(0)
+    current_(datahandles_.end())
 {
 }
 
 MultiHandle::MultiHandle(const vector<DataHandle*>& v):
     datahandles_(v),
-    current_(datahandles_.end()),
-    curlen_(0)
+    current_(datahandles_.end())
 {
 }
 

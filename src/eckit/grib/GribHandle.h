@@ -23,7 +23,7 @@ public:
 
 // -- Contructors
 
-    GribHandle(const eckit::Buffer&,size_t);
+    GribHandle(const eckit::Buffer&,size_t, bool copy = true);
 
 // -- Destructor
 

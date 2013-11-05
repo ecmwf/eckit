@@ -29,12 +29,18 @@ static int grib_call(int code, const char* msg) {
 
 #define GRIB_CALL(a) grib_call(a, #a)
 
-GribHandle::GribHandle(const Buffer& buffer,size_t size)
+GribHandle::GribHandle(const Buffer& buffer,size_t size, bool copy)
     :handle_(0)
 {
     const char *message = buffer;
     ASSERT(strncmp(message,"GRIB", 4) == 0);
-    grib_handle *h = grib_handle_new_from_message_copy(0,const_cast<char*>(message),size);
+    grib_handle *h = 0;
+    if(copy) {
+        h = grib_handle_new_from_message_copy(0,const_cast<char*>(message),size);
+    }
+    else {
+        h = grib_handle_new_from_message(0,const_cast<char*>(message),size);
+    }
     ASSERT(h);
     handle_ = h;
 

@@ -5,19 +5,9 @@
 #define GribFile_H
 
 #include "eckit/memory/Counted.h"
+#include "eckit/filesystem/PathName.h"
 
-// namespace mpi;
-
-// Headers
-// #ifndef   machine_H
-// #include "machine.h"
-// #endif
-
-// Forward declarations
-
-// class ostream;
-
-// 
+namespace "eckit" {
 
 class GribFile : public eckit::Counted {
 public:
@@ -27,7 +17,7 @@ public:
 
 // -- Contructors
 
-	GribFile();
+	GribFile(const eckit::PathName&);
 
 // -- Destructor
 
@@ -77,7 +67,8 @@ private:
 	GribFile& operator=(const GribFile&);
 
 // -- Members
-	// None
+//
+	eckit::PathName path_;
 
 // -- Methods
 	// None
@@ -97,5 +88,6 @@ private:
         { p.print(s); return s; }
 
 };
+}
 
 #endif

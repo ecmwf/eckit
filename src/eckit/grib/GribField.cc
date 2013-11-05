@@ -20,5 +20,5 @@ GribField::~GribField()
 
 void GribField::print(ostream& os) const
 {
-    os << "GribField[file=" << (*file_) << ",offset=" << offset_ << ",length=" << length_ << std::endl;
+    os << "GribField[file=" << (*file_) << ",offset=" << offset_ << ",length=" << length_ << "]";
 }

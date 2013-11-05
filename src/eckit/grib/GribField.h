@@ -20,6 +20,8 @@
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
 
+namespace "eckit" {
+
 class GribFile;
 
 class GribField : public eckit::Counted {
@@ -103,5 +105,6 @@ private:
         { p.print(s); return s; }
 
 };
+}
 
 #endif

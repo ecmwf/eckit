@@ -17,7 +17,11 @@
 
 // 
 #include "eckit/memory/Counted.h"
-using namespace eckit;
+#include "eckit/filesystem/PathName.h"
+
+namespace "eckit" {
+
+class GribField;
 
 class GribFieldSet {
 public:
@@ -27,7 +31,8 @@ public:
 
 // -- Contructors
 
-	GribFieldSet();
+    GribFieldSet();
+	GribFieldSet(const eckit::PathName& path);
 
 // -- Destructor
 
@@ -77,7 +82,8 @@ private:
 	GribFieldSet& operator=(const GribFieldSet&);
 
 // -- Members
-	// None
+//
+    std::vector<GribField*> fields_;
 
 // -- Methods
 	// None
@@ -97,5 +103,6 @@ private:
         { p.print(s); return s; }
 
 };
+}
 
 #endif

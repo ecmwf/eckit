@@ -13,7 +13,7 @@
 namespace eckit {
 namespace maths {
 
-Exp::~Exp()
+Expression::~Expression()
 {
 }
 

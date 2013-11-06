@@ -42,7 +42,7 @@ void CodeLocation::print(ostream& os) const
     {
         os << file_ << " +" << line_;
         if( strlen(func_) )
-            os << " : " << func_;
+            os << " (" << func_ << ")";
     }
     else
         os << "(unknown location)";

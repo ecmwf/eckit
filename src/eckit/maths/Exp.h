@@ -32,13 +32,14 @@
 #include <vector>
 #include <map>
 #include <utility>
+#include <functional>
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
+
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
@@ -47,110 +48,135 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
+#if 1
+#define DBG     std::cout << Here() << std::endl;
+#define DBGX(x) std::cout << Here() << " " << #x << " -> " << x << std::endl;
+#else
+#define DBG
+#define DBGX(x)
+#endif
+
+//--------------------------------------------------------------------------------------------
+
 typedef double scalar_t;
 
-class Var;
-class Exp;
+class Value;
+class Expression;
 
-typedef boost::shared_ptr<Var> VarPtr;
-typedef boost::shared_ptr<Exp> ExpPtr;
+typedef boost::shared_ptr<Value> ValPtr;
+typedef boost::shared_ptr<Expression> ExpPtr;
 
 ExpPtr add( ExpPtr, ExpPtr );
 ExpPtr prod( ExpPtr, ExpPtr );
 ExpPtr prod_add( ExpPtr, ExpPtr, ExpPtr );
+ExpPtr linear( ExpPtr, ExpPtr, ExpPtr, ExpPtr );
 
 //--------------------------------------------------------------------------------------------
 
-class Exp : public boost::enable_shared_from_this<Exp>,
-            private boost::noncopyable {
+/// Expression Error
+class Error: public eckit::Exception {
 public:
+    Error(const eckit::CodeLocation& loc, const string& s) : Exception( s, loc ) {}
+};
+
+//--------------------------------------------------------------------------------------------
+
+class Expression :
+    public boost::enable_shared_from_this<Expression>,
+    private boost::noncopyable {
+
+public: // methods
 
     static std::string class_name() { return "Exp"; }
 
-    typedef boost::shared_ptr<Exp> Ptr;
-
-    enum Type { SCALAR, VECTOR, OP };
-
-    virtual Exp::Type type() const = 0;
-    virtual std::string type_name() const = 0;
-
-    virtual bool isTerminal() const = 0;
-
-    virtual ~Exp();
-
-    virtual VarPtr eval() = 0;
-    virtual ExpPtr optimise() = 0;
-    virtual ExpPtr reduce();
-
-    virtual size_t arity() const = 0;
-    virtual ExpPtr param( const size_t& ) const = 0;
-    virtual void param( const size_t&, ExpPtr p ) { assert(false); }
+    virtual ~Expression();
 
     ExpPtr self() { return shared_from_this(); }
 
-    bool isVar() const { return isTerminal(); }
-    bool isOpr() const { return ! isTerminal(); }
-
     template< typename T >
-    boost::shared_ptr<T> as() { return boost::dynamic_pointer_cast<T,Exp>( shared_from_this() ); }
+    boost::shared_ptr<T> as() { return boost::dynamic_pointer_cast<T,Expression>( shared_from_this() ); }
 
+    friend std::ostream& operator<<( std::ostream& os, const Expression& v) { v.print(os); return os; }
+
+    ValPtr eval()
+    {
+       return reduce()->evaluate();
+    }
+
+public: // virtual methods
+
+    virtual std::string type_name() const = 0;
+    virtual ValPtr evaluate() = 0;
+    virtual ExpPtr reduce() = 0;
     virtual void print( std::ostream& ) const = 0;
     virtual std::string signature() const = 0;
 
-    friend std::ostream& operator<<( std::ostream& os, const Exp& v) { v.print(os); return os; }
+    virtual size_t arity() const = 0;
+    virtual ExpPtr param( const size_t& ) const = 0;
+    virtual void param( const size_t&, ExpPtr p ) = 0;
 
 };
 
 //--------------------------------------------------------------------------------------------
 
-class Var : public Exp {
-public:
+class Value : public Expression {
+public: // methods
 
-    static std::string class_name() { return "Var"; }
+    static std::string class_name() { return "Value"; }
 
-    virtual size_t arity() const { return 0; }
-    virtual ExpPtr param( const size_t& ) const { assert( false ); } // should not be called
+    Value(){}
 
-    virtual bool isTerminal() const { return true; }
-
-    virtual VarPtr eval() { return boost::static_pointer_cast<Var>( shared_from_this() ); }
-    virtual ExpPtr optimise() { return shared_from_this(); }
-
-    virtual size_t size() const = 0;
+    virtual ValPtr evaluate() { return boost::static_pointer_cast<Value>( shared_from_this() ); }
 
 };
 
 //--------------------------------------------------------------------------------------------
 
-class Scalar : public Var {
+#define SCALAR_SIG "s"
+
+class Scalar : public Value {
 public: // methods
 
     static std::string class_name() { return "Scalar"; }
+    static bool is ( const ExpPtr& e ) { return e->signature() == SCALAR_SIG; }
+    static scalar_t extract ( const ExpPtr& e )
+    {
+        assert( Scalar::is(e) );
+        return e->as<Scalar>()->value();
+    }
 
     Scalar( const scalar_t& v ) : v_(v) {}
 
-    virtual Exp::Type type() const { return Exp::SCALAR; }
-    virtual std::string type_name() const { return Scalar::class_name(); }
-
-    virtual size_t size() const { return 1; }
+    /// @returns the size of the data, one since it is a scalar
+    size_t size() const { return 1; }
+    /// @returns the value of the scalar
     scalar_t value() const { return v_; }
-
-    /// returns a reference to the scalar
+    /// @returns a reference to the scalar
     scalar_t& ref_value() { return v_; }
+
+public: // virtual methods
+
+    virtual std::string type_name() const { return Scalar::class_name(); }
+    virtual ExpPtr reduce() { shared_from_this(); }
+    virtual std::string signature() const { return SCALAR_SIG; }
+
+    virtual size_t arity() const { return 0; }
+    virtual ExpPtr param( const size_t& ) const  { NOTIMP; return ExpPtr(); }
+    virtual void param( const size_t&, ExpPtr p ) {}
 
     virtual void print( std::ostream& o ) const { o << v_; }
 
-    virtual std::string signature() const { return "s"; }
-
-protected:
+protected: // members
     scalar_t v_;
 };
 
-VarPtr scalar( const scalar_t& s  ) { return VarPtr( new Scalar(s) ); }
+ExpPtr scalar( const scalar_t& s  ) { return ExpPtr( new Scalar(s) ); }
 
 //--------------------------------------------------------------------------------------------
 
-class Vector : public Var {
+#define VECTOR_SIG "v"
+
+class Vector : public Value {
 public: // types
 
     typedef scalar_t value_t;
@@ -159,20 +185,32 @@ public: // types
 public: // methods
 
     static std::string class_name() { return "Vector"; }
+    static bool is ( const ExpPtr& e ) { return e->signature() == VECTOR_SIG; }
+    static storage_t& extract ( const ExpPtr& e )
+    {
+        assert( Vector::is(e) );
+        return e->as<Vector>()->ref_value();
+    }
 
     Vector( const size_t& s, const scalar_t& v = scalar_t() ) : v_(s,v) {}
     Vector( const storage_t& v ) : v_(v) {}
 
-    virtual Exp::Type type() const { return Exp::VECTOR; }
-    virtual std::string type_name() const { return Vector::class_name(); }
-
-    virtual size_t size() const { return v_.size(); }
-
-    /// returns a copy of the internal vector
+    /// @returns the size of the internal vector
+    size_t size() const { return v_.size(); }
+    /// @returns a copy of the internal vector
     storage_t value() const { return v_; }
-
-    /// returns a reference to the internal vector
+    /// @returns a reference to the internal vector
     storage_t& ref_value() { return v_; }
+
+public: // virtual methods
+
+    virtual std::string type_name() const { return Vector::class_name(); }
+    virtual ExpPtr reduce() { shared_from_this(); }
+    virtual std::string signature() const { return VECTOR_SIG; }
+
+    virtual size_t arity() const { return 0; }
+    virtual ExpPtr param( const size_t& ) const  { return ExpPtr(); }
+    virtual void param( const size_t&, ExpPtr p ) {}
 
     virtual void print( std::ostream& o ) const
     {
@@ -185,27 +223,26 @@ public: // methods
         o << "]";
     }
 
-    virtual std::string signature() const { return "v"; }
-
-protected:
+protected: // members
     storage_t v_;
 };
 
-VarPtr vector( const size_t& sz, const scalar_t& v = scalar_t()  ) { return VarPtr( new Vector(sz,v) ); }
-VarPtr vector( const Vector::storage_t& v  ) { return VarPtr( new Vector(v) ); }
+ExpPtr vector( const size_t& sz, const scalar_t& v = scalar_t()  ) { return ExpPtr( new Vector(sz,v) ); }
+ExpPtr vector( const Vector::storage_t& v  ) { return ExpPtr( new Vector(v) ); }
 
 //--------------------------------------------------------------------------------------------
 
-class Func : public Exp {
+/// Represents a Function with some arguments
+class Func : public Expression {
 
 public: // types
 
     typedef std::vector< ExpPtr > params_t;
 
     typedef std::string key_t;
-    typedef boost::function< VarPtr ( const params_t& ) > value_t;
+    typedef boost::function< ValPtr ( const params_t& ) > func_t;
 
-    typedef std::map< key_t, value_t > dispatcher_t;
+    typedef std::map< key_t, func_t > dispatcher_t;
 
 protected: // members
 
@@ -229,41 +266,32 @@ public: // methods
 
     static std::string class_name() { return "Func"; }
 
-    virtual bool isTerminal() const { return false; }
+public: // virtual methods
 
-    virtual Exp::Type type() const { return Exp::OP; }
-    virtual std::string type_name() const { return Func::class_name(); }
-
-    virtual std::string opName() const = 0;
-
-    VarPtr eval()
+    virtual ValPtr evaluate()
     {
-        dispatcher_t& d = dispatcher();
-        dispatcher_t::iterator itr = d.find( signature() );
-        if( itr != d.end() )
-            return ((*itr).second)( params_ );
-
         for( params_t::iterator i = params_.begin(); i != params_.end(); ++i )
             *i = (*i)->eval();
 
-        return eval(); // recall eval
+        std::string sig = signature();
+        dispatcher_t& d = dispatcher();
+        dispatcher_t::iterator itr = d.find( sig );
+        if( itr == d.end() )
+        {
+            ostringstream msg;
+            msg << "could not dispatch to function with signature: " << sig;
+            throw Error( Here(), msg.str() );
+        }
+
+        return ((*itr).second)( params_ );
     }
 
-    virtual void print( std::ostream& o ) const
-    {
-        o << opName() << "(";
-        for( size_t i = 0; i < arity(); ++i )
-        {
-            if(i) o << ", ";
-            o << *param(i);
-        }
-        o << ")";
-    }
+    virtual ExpPtr reduce();
 
     virtual std::string signature() const
     {
         std::ostringstream o;
-        o << opName() << "(";
+        o << type_name() << "(";
         for( size_t i = 0; i < arity(); ++i )
         {
             if(i) o << ",";
@@ -273,411 +301,187 @@ public: // methods
         return o.str();
     }
 
-    ExpPtr optimise()
-    {
-        for( size_t i = 0; i < arity(); ++i )
-        {
-            ExpPtr e = param(i);
-            param(i, e->optimise() );
-        }
-
-//        BinOp::key_t k = boost::make_tuple( p1_->type(), p2_->type(), opName() );
-
-//        BinOp::optimiser_t& d = optimiser();
-//        BinOp::optimiser_t::iterator itr = d.find(k);
-//        if( itr != d.end() )
-//            return ((*itr).second)( shared_from_this() );
-
-        return shared_from_this();
-    }
-
-    virtual ExpPtr reduce();
+    virtual size_t arity() const { return params_.size(); }
 
     virtual ExpPtr param( const size_t& i ) const
     {
         assert( i < params_.size() );
+        assert( params_[i] );
         return params_[i];
     }
 
     virtual void param( const size_t& i, ExpPtr p )
     {
+        DBGX( *p );
         assert( i < params_.size() );
-        params_[i] = p;
+        if( p != params_[i] )
+            params_[i] = p;
     }
 
+    virtual void print( std::ostream& o ) const
+    {
+        o << type_name() << "(";
+        for( size_t i = 0; i < arity(); ++i )
+        {
+            if(i) o << ", ";
+            o << *param(i);
+        }
+        o << ")";
+    }
+
+    struct Register
+    {
+        Register( const std::string& signature, Func::func_t f  )
+        {
+            Func::dispatcher()[ signature ] = f;
+        }
+    };
 };
 
 typedef boost::shared_ptr<Func> OprPtr;
 
 //--------------------------------------------------------------------------------------------
 
-class BinOp : public Func {
+typedef multiplies<scalar_t>  Multiply;
+typedef divides<scalar_t>     Divide;
+typedef plus<scalar_t>        Plus;
+typedef minus<scalar_t>       Minus;
 
-public: // types
-
-    typedef boost::tuple< Exp::Type, Exp::Type, std::string > key_t;
-    typedef boost::function< VarPtr ( ExpPtr& , ExpPtr& ) >   value_t;
-    typedef std::map< key_t, value_t > dispatcher_t;
-
-    typedef boost::function< ExpPtr ( ExpPtr ) > optim_t;
-    typedef std::map< key_t, optim_t > optimiser_t;
-
-public: // methods
-
-    BinOp( ExpPtr p1, ExpPtr p2 ) : p1_(p1), p2_(p2) {}
-
-    virtual std::string type_name() const { return BinOp::class_name(); }
-
-    VarPtr eval()
-    {
-        BinOp::key_t k = boost::make_tuple( p1_->type(), p2_->type(), opName() );
-
-        BinOp::dispatcher_t& d = dispatcher();
-        BinOp::dispatcher_t::iterator itr = d.find(k);
-        if( itr != d.end() )
-            return ((*itr).second)( p1_, p2_ );
-
-        assert( p1_->isOpr() || p2_->isOpr() ); // either one is an Op
-
-        p1_ = p1_->eval(); // possibly creates temporary
-        p2_ = p2_->eval(); // possibly creates temporary
-
-        return eval(); // recall eval
-    }
-
-    ExpPtr optimise()
-    {
-        p1_ = p1_->optimise();
-        p2_ = p2_->optimise();
-
-        BinOp::key_t k = boost::make_tuple( p1_->type(), p2_->type(), opName() );
-
-        BinOp::optimiser_t& d = optimiser();
-        BinOp::optimiser_t::iterator itr = d.find(k);
-        if( itr != d.end() )
-            return ((*itr).second)( shared_from_this() );
-
-        return shared_from_this();
-    }
-
-    static dispatcher_t& dispatcher() { static dispatcher_t d; return d; }
-    static optimiser_t& optimiser() { static optimiser_t o; return o; }
-
-    virtual size_t arity() const { return 2; }
-    virtual ExpPtr param( const size_t& i ) const
-    {
-        assert( i < 2 );
-        if( i ) return p2_;
-        return p1_;
-    }
-
-    virtual void param( const size_t& i, ExpPtr p )
-    {
-        assert( i < 2 );
-        if( i )
-            p2_ = p;
-        else
-            p1_ = p;
-    }
-
-protected:
-
-    ExpPtr p1_;
-    ExpPtr p2_;
-
-};
+inline const char *opname(const Multiply&)     { return "Mult";  }
+inline const char *opname(const Divide&)       { return "Divide";}
+inline const char *opname(const Plus&)         { return "Plus";  }
+inline const char *opname(const Minus&)        { return "Minus"; }
 
 //--------------------------------------------------------------------------------------------
 
-class TriOp : public Func {
-
-public: // types
-
-    typedef boost::tuple< Exp::Type, Exp::Type, Exp::Type, std::string >   key_t;
-    typedef boost::function< VarPtr ( ExpPtr&, ExpPtr&, ExpPtr& ) >        value_t;
-    typedef std::map< key_t, value_t > dispatcher_t;
-
-    typedef boost::function< ExpPtr ( ExpPtr ) > optim_t;
-    typedef std::map< key_t, optim_t > optimiser_t;
-
-public: // methods
-
-    TriOp( ExpPtr p1, ExpPtr p2, ExpPtr p3 ) : p1_(p1), p2_(p2), p3_(p3) {}
-
-    VarPtr eval()
-    {
-        TriOp::key_t k = boost::make_tuple( p1_->type(),
-                                            p2_->type(),
-                                            p3_->type(),
-                                            opName() );
-
-        TriOp::dispatcher_t& d = dispatcher();
-        TriOp::dispatcher_t::iterator itr = d.find(k);
-        if( itr != d.end() )
-            return ((*itr).second)( p1_, p2_, p3_ );
-
-        assert( p1_->isOpr() || p2_->isOpr() || p3_->isOpr() ); // either one is an Op
-
-        /// @todo optimize this dispatch by looking into possible reduction of temporaries
-
-        p1_ = p1_->eval(); // possibly creates temporary
-        p2_ = p2_->eval(); // possibly creates temporary
-        p3_ = p3_->eval(); // possibly creates temporary
-
-        return eval(); // recall eval
-    }
-
-    ExpPtr optimise()
-    {
-        p1_ = p1_->optimise();
-        p2_ = p2_->optimise();
-        p3_ = p3_->optimise();
-
-        TriOp::key_t k = boost::make_tuple( p1_->type(),
-                                            p2_->type(),
-                                            p3_->type(),
-                                            opName() );
-
-        TriOp::optimiser_t& d = optimiser();
-        TriOp::optimiser_t::iterator itr = d.find(k);
-        if( itr != d.end() )
-            return ((*itr).second)( shared_from_this() );
-
-        return shared_from_this();
-    }
-
-    virtual std::string type_name() const { return "TriOp"; }
-
-    ExpPtr& p1() { return p1_; }
-    ExpPtr& p2() { return p2_; }
-    ExpPtr& p3() { return p3_; }
-
-    static dispatcher_t& dispatcher() { static dispatcher_t d; return d; }
-    static optimiser_t& optimiser() { static optimiser_t o; return o; }
-
-    virtual size_t arity() const { return 3; }
-    virtual ExpPtr param( const size_t& i ) const
-    {
-        assert( i < arity() );
-        if( i == 0 ) return p1_;
-        if( i == 1 ) return p2_;
-        return p3_;
-    }
-
-protected:
-
-    ExpPtr p1_;
-    ExpPtr p2_;
-    ExpPtr p3_;
-
-};
-
-//--------------------------------------------------------------------------------------------
-
-/// Generates a Add expressions
-class Add {
+/// Generates a expressions
+template <class T>
+class BinaryFunc  {
 public:
 
-    static std::string class_name() { return "Add"; }
+    static std::string class_name() { return opname( T() ); }
 
-    struct Op : public BinOp
+    /// The actual function expression
+    struct Op : public Func
     {
-        Op( ExpPtr lhs, ExpPtr rhs ) : BinOp(lhs,rhs) {}
-        virtual std::string opName() const { return Add::class_name(); }
+        Op( const Func::params_t& args ) : Func( args ) {}
+        virtual std::string type_name() const { return BinaryFunc<T>::class_name(); }
     };
 
-    static VarPtr eval_scalar_scalar( ExpPtr& lhs, ExpPtr& rhs )
+    static ValPtr eval_scalar_scalar( const Func::params_t& p )
     {
-        assert( lhs->type() == Exp::SCALAR );
-        assert( rhs->type() == Exp::SCALAR );
-        return maths::scalar( lhs->as<Scalar>()->value() + rhs->as<Scalar>()->value() );
+        assert( p.size() == 2 );
+
+        scalar_t a = Scalar::extract( p[0] );
+        scalar_t b = Scalar::extract( p[1] );
+
+        return ValPtr( new Scalar( T()( a , b ) ) );
     }
 
-    static VarPtr eval_vector_scalar( ExpPtr& v, ExpPtr& s )
+    static Vector* apply_alpha_vector( scalar_t a, const Vector::storage_t& v )
     {
-        return eval_scalar_vector(s,v);
-    }
-
-    static VarPtr eval_scalar_vector( ExpPtr& s, ExpPtr& v )
-    {
-        assert( s->type() == Exp::SCALAR );
-        assert( v->type() == Exp::VECTOR );
-
-        scalar_t lhs = s->as<Scalar>()->value();                     /// @todo could this be a static_cast?
-        Vector::storage_t& rhs = v->as<Vector>()->ref_value();       /// @todo could this be a static_cast?
-
-        Vector* res = new Vector( rhs.size() );
+        Vector* res = new Vector( v.size() );
         Vector::storage_t& rv = res->ref_value();
 
         for( size_t i = 0; i < rv.size(); ++i )
-            rv[i] = lhs + rhs[i];
+            rv[i] = T()( a , v[i] );
 
-        return VarPtr(res);
+        return res;
     }
 
-    static VarPtr eval_vector_vector( ExpPtr& v1, ExpPtr& v2 )
+    static Vector* apply_vector_vector( const Vector::storage_t& v1, const Vector::storage_t& v2 )
     {
-        assert( v1->type() == Exp::VECTOR );
-        assert( v2->type() == Exp::VECTOR );
+        assert( v1.size() == v2.size() );
 
-        Vector::storage_t& lhs = v1->as<Vector>()->ref_value();
-        Vector::storage_t& rhs = v2->as<Vector>()->ref_value();
-
-        assert( lhs.size() == rhs.size() );
-
-        Vector* res = new Vector( rhs.size() );
+        Vector* res = new Vector( v1.size() );
         Vector::storage_t& rv = res->ref_value();
 
         for( size_t i = 0; i < rv.size(); ++i )
-            rv[i] = lhs[i] + rhs[i];
+            rv[i] = T()( v1[i] , v2[i] );
 
-        return VarPtr(res);
+        return res;
     }
 
-    ExpPtr operator() ( ExpPtr p1, ExpPtr p2 ) { return ExpPtr( new Add::Op(p1,p2) ); }
+    static ValPtr eval_vector_scalar( const Func::params_t& p )
+    {
+        assert( p.size() == 2 );
+
+        /// @todo maybe these casts could be static casts
+
+        Vector::storage_t& v = Vector::extract( p[0] );
+
+        scalar_t a = Scalar::extract( p[1] );
+
+        return ValPtr( apply_alpha_vector(a,v) );
+    }
+
+    static ValPtr eval_scalar_vector( const Func::params_t& p )
+    {
+        assert( p.size() == 2 );
+
+        /// @todo maybe these casts could be static casts
+
+        scalar_t a = Scalar::extract( p[0] );
+
+        Vector::storage_t& v = Vector::extract( p[1] );
+
+        return ValPtr( apply_alpha_vector(a,v) );
+    }
+
+    static ValPtr eval_vector_vector( const Func::params_t& p )
+    {
+        assert( p.size() == 2 );
+
+        /// @todo maybe these casts could be static casts
+
+        Vector::storage_t& v0 = Vector::extract( p[0] );
+        Vector::storage_t& v1 = Vector::extract( p[1] );
+
+
+        return ValPtr( apply_vector_vector(v0,v1) );
+    }
+
+    /// Expression generator function
+    ExpPtr operator() ( ExpPtr p0, ExpPtr p1 )
+    {
+        Func::params_t args;
+        args.push_back( p0 );
+        args.push_back( p1 );
+        return ExpPtr( new Op(args) );
+    }
 
     struct Register
     {
         Register()
         {
-            std::string add( Add::class_name() );
-            BinOp::dispatcher()[ boost::make_tuple( Exp::SCALAR, Exp::SCALAR, add ) ] = &(Add::eval_scalar_scalar);
-            BinOp::dispatcher()[ boost::make_tuple( Exp::SCALAR, Exp::VECTOR, add ) ] = &(Add::eval_scalar_vector);
-            BinOp::dispatcher()[ boost::make_tuple( Exp::VECTOR, Exp::SCALAR, add ) ] = &(Add::eval_vector_scalar);
-            BinOp::dispatcher()[ boost::make_tuple( Exp::VECTOR, Exp::VECTOR, add ) ] = &(Add::eval_vector_vector);
+            Func::dispatcher()[ class_name() + "(s,s)" ] = &eval_scalar_scalar;
+            Func::dispatcher()[ class_name() + "(s,v)" ] = &eval_scalar_vector;
+            Func::dispatcher()[ class_name() + "(v,s)" ] = &eval_vector_scalar;
+            Func::dispatcher()[ class_name() + "(v,v)" ] = &eval_vector_vector;
         }
     };
 };
+
+static BinaryFunc<Multiply>::Register multiply_register;
+static BinaryFunc<Divide>::Register   divide_register;
+static BinaryFunc<Plus>::Register     plus_register;
+static BinaryFunc<Minus>::Register    minus_register;
 
 // version with stand alone functions
 
-ExpPtr add( ExpPtr l, ExpPtr r ) { return ExpPtr( new Add::Op(l,r) ); }
-ExpPtr add( Exp&   l, ExpPtr r ) { return ExpPtr( new Add::Op(l.self(),r) ); }
-ExpPtr add( ExpPtr l, Exp&   r ) { return ExpPtr( new Add::Op(l,r.self()) ); }
-ExpPtr add( Exp&   l, Exp&   r ) { return ExpPtr( new Add::Op(l.self(),r.self()) ); }
+#define GEN_BINFUNC( f, c )                                                                  \
+ExpPtr f( ExpPtr l, ExpPtr r )           { return ExpPtr( c()(l,r) ); }                      \
+ExpPtr f( Expression& l, ExpPtr r )      { return ExpPtr( c()(l.self(),r) ); }               \
+ExpPtr f( ExpPtr l, Expression& r )      { return ExpPtr( c()(l,r.self()) ); }               \
+ExpPtr f( Expression& l, Expression& r ) { return ExpPtr( c()(l.self(),r.self()) ); }
 
-static Add::Register add_register;
+GEN_BINFUNC(mul,BinaryFunc<Multiply>)
+GEN_BINFUNC(div,BinaryFunc<Divide>)
+GEN_BINFUNC(prod,BinaryFunc<Multiply>)
+GEN_BINFUNC(add,BinaryFunc<Plus>)
+GEN_BINFUNC(sub,BinaryFunc<Minus>)
 
-//--------------------------------------------------------------------------------------------
-
-class ProdOptimser {
-public:
-    static ExpPtr optimise_var_op( ExpPtr x )
-    {
-        assert( x->isOpr() );
-        Func& op = *(x->as<Func>());
-
-        assert( op.opName() == "Prod" );
-        assert( op.arity() == 2 );
-
-        ExpPtr p0 = op.param(0);
-        ExpPtr p1 = op.param(1);
-
-        assert( p0->isTerminal() );
-        assert( p1->isOpr()  );
-
-        OprPtr op1 = p1->as<Func>();
-
-        if( op1->opName()  == "Add" )
-        {
-            assert( op1->arity() == 2);
-            return prod_add( p0, op1->param(0), op1->param(1) );
-        }
-
-        return x; // no optimisation was possible
-    }
-};
-
-//--------------------------------------------------------------------------------------------
-
-/// Generates a Prod expressions
-class Prod {
-public:
-
-    static std::string class_name() { return "Prod"; }
-
-    /// Represents a Prod expression
-    struct Op : public BinOp
-    {
-        Op( ExpPtr lhs, ExpPtr rhs ) : BinOp(lhs,rhs) {}
-        virtual std::string opName() const { return Prod::class_name(); }
-    };
-
-    static VarPtr eval_scalar_scalar( ExpPtr& lhs, ExpPtr& rhs )
-    {
-        assert( lhs->type() == Exp::SCALAR );
-        assert( rhs->type() == Exp::SCALAR );
-        return maths::scalar( lhs->as<Scalar>()->value() * rhs->as<Scalar>()->value() );
-    }
-
-    static VarPtr eval_scalar_vector( ExpPtr& s, ExpPtr& v )
-    {
-        assert( s->type() == Exp::SCALAR );
-        assert( v->type() == Exp::VECTOR );
-
-        scalar_t lhs = s->as<Scalar>()->value();
-        Vector::storage_t& rhs = v->as<Vector>()->ref_value();
-
-        Vector* res = new Vector( rhs.size() );
-        Vector::storage_t& rv = res->ref_value();
-
-        for( size_t i = 0; i < rv.size(); ++i )
-            rv[i] = lhs * rhs[i];
-
-        return VarPtr(res);
-    }
-
-    static VarPtr eval_vector_scalar( ExpPtr& v, ExpPtr& s )
-    {
-        return eval_scalar_vector(s,v);
-    }
-
-    static VarPtr eval_vector_vector( ExpPtr& v1, ExpPtr& v2 )
-    {
-        assert( v1->type() == Exp::VECTOR );
-        assert( v2->type() == Exp::VECTOR );
-
-        Vector::storage_t& lhs = v1->as<Vector>()->ref_value();
-        Vector::storage_t& rhs = v2->as<Vector>()->ref_value();
-
-        assert( lhs.size() == rhs.size() );
-
-        Vector* res = new Vector( rhs.size() );
-        Vector::storage_t& rv = res->ref_value();
-
-        for( size_t i = 0; i < rv.size(); ++i )
-            rv[i] = lhs[i] * rhs[i];
-
-        return VarPtr(res);
-    }
-
-    ExpPtr operator() ( ExpPtr l, ExpPtr r ) { return ExpPtr( new Prod::Op(l,r) ); }
-
-    struct Register
-    {
-        Register()
-        {
-            std::string prod( Prod::class_name() );
-
-            BinOp::dispatcher()[ boost::make_tuple( Exp::SCALAR, Exp::SCALAR, prod ) ] = &(Prod::eval_scalar_scalar);
-            BinOp::dispatcher()[ boost::make_tuple( Exp::SCALAR, Exp::VECTOR, prod ) ] = &(Prod::eval_scalar_vector);
-            BinOp::dispatcher()[ boost::make_tuple( Exp::VECTOR, Exp::SCALAR, prod ) ] = &(Prod::eval_vector_scalar);
-            BinOp::dispatcher()[ boost::make_tuple( Exp::VECTOR, Exp::VECTOR, prod ) ] = &(Prod::eval_vector_vector);
-
-            BinOp::optimiser()[ boost::make_tuple( Exp::SCALAR, Exp::OP, prod ) ] = &(ProdOptimser::optimise_var_op);
-            BinOp::optimiser()[ boost::make_tuple( Exp::VECTOR, Exp::OP, prod ) ] = &(ProdOptimser::optimise_var_op);
-        }
-    };
-};
-
-static Prod::Register prod_register;
-
-// version with stand alone functions
-
-ExpPtr prod( ExpPtr l, ExpPtr r ) { return ExpPtr( new Prod::Op(l,r) ); }
-ExpPtr prod( Exp&   l, ExpPtr r ) { return ExpPtr( new Prod::Op(l.self(),r) ); }
-ExpPtr prod( ExpPtr l, Exp&   r ) { return ExpPtr( new Prod::Op(l,r.self()) ); }
-ExpPtr prod( Exp&   l, Exp&   r ) { return ExpPtr( new Prod::Op(l.self(),r.self()) ); }
+#undef GEN_BINFUNC
 
 //--------------------------------------------------------------------------------------------
 
@@ -707,27 +511,21 @@ public: // methods
 
     static std::string class_name() { return "Linear"; }
 
-    virtual std::string type_name() const { return class_name(); }
-    virtual std::string opName()  const { return class_name(); }
+    virtual std::string type_name() const { return Linear::class_name(); }
 
     virtual size_t arity() const { return 4; }
 
-    static VarPtr eval_svsv( const Func::params_t& p )
+    static ValPtr eval_svsv( const Func::params_t& p )
     {
         assert(p.size() == 4);
 
-        assert( p[0]->type() == Exp::SCALAR );
-        assert( p[1]->type() == Exp::VECTOR );
-        assert( p[2]->type() == Exp::SCALAR );
-        assert( p[3]->type() == Exp::VECTOR );
+        scalar_t a = Scalar::extract( p[0] );
 
-        scalar_t a = p[0]->as<Scalar>()->value();
+        Vector::storage_t& v1 = Vector::extract( p[1] );
 
-        Vector::storage_t& v1 = p[1]->as<Vector>()->ref_value();
+        scalar_t b = Scalar::extract( p[2] );
 
-        scalar_t b = p[2]->as<Scalar>()->value();
-
-        Vector::storage_t& v2 = p[3]->as<Vector>()->ref_value();
+        Vector::storage_t& v2 = Vector::extract( p[3] );
 
         assert( v1.size() == v2.size() );
 
@@ -737,10 +535,12 @@ public: // methods
         for( size_t i = 0; i < rv.size(); ++i )
             rv[i] = a * v1[i] + b * v2[i];
 
-        return VarPtr(res);
+        return ValPtr(res);
     }
 
 };
+
+static Func::Register rExecLinear("Linear(s,v,s,v)", &Linear::eval_svsv );
 
 //--------------------------------------------------------------------------------------------
 
@@ -751,6 +551,8 @@ public:
 
     static ExpPtr apply( ExpPtr e )
     {
+        DBGX( *e );
+
         std::string signature = e->signature();
 
         reducers_t& reducer = reducers();
@@ -792,23 +594,7 @@ private:
 
 //--------------------------------------------------------------------------------------------
 
-static ReducerT<Linear> optimLinear("Add(Prod(s,v),Prod(s,v))");
-
-//--------------------------------------------------------------------------------------------
-
-class Executer {
-public:
-
-    Executer( const std::string& signature, Func::value_t f  )
-    {
-        Func::dispatcher()[ signature ] = f;
-    }
-
-};
-
-//--------------------------------------------------------------------------------------------
-
-static Executer execLinear("Linear(s,v,s,v)", &Linear::eval_svsv );
+//static ReducerT<Linear> optimLinear("Add(Prod(s,v),Prod(s,v))");
 
 //--------------------------------------------------------------------------------------------
 
@@ -819,22 +605,19 @@ public:
     static std::string class_name() { return "ProdAdd"; }
 
     /// Represents a ProdAdd expression
-    struct Op : public TriOp
+    struct Op : public Func
     {
-        Op( ExpPtr p1, ExpPtr p2, ExpPtr p3 ) : TriOp(p1,p2,p3) {}
-        virtual std::string opName() const { return ProdAdd::class_name(); }
+        Op( const Func::params_t& args ) : Func( args ) {}
+        virtual std::string type_name() const { return ProdAdd::class_name(); }
     };
 
-    static VarPtr eval_svv( ExpPtr& ps, ExpPtr& pv1, ExpPtr& pv2  )
+    static ValPtr eval_svv( const Func::params_t& p )
     {
-        assert( ps->type() == Exp::SCALAR );
-        assert( pv1->type() == Exp::VECTOR );
-        assert( pv2->type() == Exp::VECTOR );
+        assert( p.size() == 3 );
 
-        scalar_t s = ps->as<Scalar>()->value();
-
-        Vector::storage_t& v1 = pv1->as<Vector>()->ref_value();
-        Vector::storage_t& v2 = pv2->as<Vector>()->ref_value();
+        scalar_t a = Scalar::extract( p[0] );
+        Vector::storage_t& v1 = Vector::extract( p[1] );
+        Vector::storage_t& v2 = Vector::extract( p[2] );
 
         assert( v1.size() == v2.size() );
 
@@ -842,65 +625,61 @@ public:
         Vector::storage_t& rv = res->ref_value();
 
         for( size_t i = 0; i < rv.size(); ++i )
-            rv[i] = s * ( v1[i] + v2[i] );
+            rv[i] = a * ( v1[i] + v2[i] );
 
-        return VarPtr(res);
+        return ValPtr(res);
     }
 
-    static VarPtr eval_vvv( ExpPtr& pv1, ExpPtr& pv2, ExpPtr& pv3  )
+    static ValPtr eval_vvv( const Func::params_t& p )
     {
-        assert( pv1->type() == Exp::VECTOR );
-        assert( pv2->type() == Exp::VECTOR );
-        assert( pv3->type() == Exp::VECTOR );
+        assert( p.size() == 3 );
 
-        Vector::storage_t& v1 = pv1->as<Vector>()->ref_value();
-        Vector::storage_t& v2 = pv2->as<Vector>()->ref_value();
-        Vector::storage_t& v3 = pv3->as<Vector>()->ref_value();
+        Vector::storage_t& v0 = Vector::extract( p[0] );
+        Vector::storage_t& v1 = Vector::extract( p[1] );
+        Vector::storage_t& v2 = Vector::extract( p[2] );
 
         assert( v1.size() == v2.size() );
-        assert( v1.size() == v3.size() );
 
         Vector* res = new Vector( v1.size() );
         Vector::storage_t& rv = res->ref_value();
 
-        std::cout << "running optimized prod_add svv" << std::endl;
-
         for( size_t i = 0; i < rv.size(); ++i )
-            rv[i] = v1[i] * ( v2[i] + v3[i] );
+            rv[i] = v0[i] * ( v1[i] + v2[i] );
 
-        return VarPtr(res);
+        return ValPtr(res);
     }
 
     /// Generic prod_add implementation based on calling first add() then prod()
-    static VarPtr eval_ggg( ExpPtr& p1, ExpPtr& p2, ExpPtr& p3  )
+    static ValPtr eval_ggg( const Func::params_t& p )
     {
-        return prod(p1,add(p2,p3))->eval();
+        return prod(p[0],add(p[1],p[2]))->eval();
     }
 
-    ExpPtr operator() ( ExpPtr p1, ExpPtr p2, ExpPtr p3 ) { return ExpPtr( new ProdAdd::Op(p1,p2,p3) ); }
+    /// Expression generator function
+    ExpPtr operator() ( ExpPtr p0, ExpPtr p1, ExpPtr p2 )
+    {
+        Func::params_t args;
+        args.push_back( p0 );
+        args.push_back( p1 );
+        args.push_back( p2 );
+        return ExpPtr( new Op(args) );
+    }
 
     struct Register
     {
         Register()
         {
-            std::string op( ProdAdd::class_name() );
+            Func::dispatcher()[ class_name() + "(s,s,s)" ] = &eval_ggg;
+            Func::dispatcher()[ class_name() + "(s,v,s)" ] = &eval_ggg;
+            Func::dispatcher()[ class_name() + "(s,s,v)" ] = &eval_ggg;
 
-            // generic cases
-            TriOp::dispatcher()[ boost::make_tuple( Exp::SCALAR, Exp::SCALAR, Exp::SCALAR, op ) ] = &(ProdAdd::eval_ggg);
-            TriOp::dispatcher()[ boost::make_tuple( Exp::SCALAR, Exp::SCALAR, Exp::VECTOR, op ) ] = &(ProdAdd::eval_ggg);
+            Func::dispatcher()[ class_name() + "(s,v,v)" ] = &eval_svv;
 
-            TriOp::dispatcher()[ boost::make_tuple( Exp::SCALAR, Exp::VECTOR, Exp::SCALAR, op ) ] = &(ProdAdd::eval_ggg);
-//            TriOp::dispatcher()[ boost::make_tuple( Exp::SCALAR, Exp::VECTOR, Exp::VECTOR, op ) ] = &(ProdAdd::eval_ggg);
+            Func::dispatcher()[ class_name() + "(v,s,s)" ] = &eval_ggg;
+            Func::dispatcher()[ class_name() + "(v,s,v)" ] = &eval_ggg;
+            Func::dispatcher()[ class_name() + "(v,v,s)" ] = &eval_ggg;
 
-            TriOp::dispatcher()[ boost::make_tuple( Exp::VECTOR, Exp::SCALAR, Exp::SCALAR, op ) ] = &(ProdAdd::eval_ggg);
-            TriOp::dispatcher()[ boost::make_tuple( Exp::VECTOR, Exp::SCALAR, Exp::VECTOR, op ) ] = &(ProdAdd::eval_ggg);
-
-            TriOp::dispatcher()[ boost::make_tuple( Exp::VECTOR, Exp::VECTOR, Exp::SCALAR, op ) ] = &(ProdAdd::eval_ggg);
-//            TriOp::dispatcher()[ boost::make_tuple( Exp::VECTOR, Exp::VECTOR, Exp::VECTOR, op ) ] = &(ProdAdd::eval_ggg);
-
-            // special cases
-            TriOp::dispatcher()[ boost::make_tuple( Exp::SCALAR, Exp::VECTOR, Exp::VECTOR, op ) ] = &(ProdAdd::eval_svv);
-            TriOp::dispatcher()[ boost::make_tuple( Exp::VECTOR, Exp::VECTOR, Exp::VECTOR, op ) ] = &(ProdAdd::eval_vvv);
+            Func::dispatcher()[ class_name() + "(v,v,v)" ] = &eval_vvv;
         }
     };
 
@@ -910,32 +689,45 @@ static ProdAdd::Register prodadd_register;
 
 // version with stand alone functions
 
-ExpPtr prod_add( ExpPtr p1, ExpPtr p2, ExpPtr p3 ) { return ExpPtr( new ProdAdd::Op(p1,p2,p3) ); }
+ExpPtr prod_add( ExpPtr p0, ExpPtr p1, ExpPtr p2 ) { return ExpPtr( ProdAdd()(p0,p1,p2) ); }
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr operator+ ( VarPtr p1, VarPtr p2 ) { return add( p1, p2 ); }
-ExpPtr operator+ ( VarPtr p1, ExpPtr p2 ) { return add( p1, p2 ); }
-ExpPtr operator+ ( ExpPtr p1, VarPtr p2 ) { return add( p1, p2 ); }
-ExpPtr operator+ ( ExpPtr p1, ExpPtr p2 ) { return add( p1, p2 ); }
+//ExpPtr operator+ ( ValPtr p1, ValPtr p2 ) { return add( p1, p2 ); }
+//ExpPtr operator+ ( ValPtr p1, ExpPtr p2 ) { return add( p1, p2 ); }
+//ExpPtr operator+ ( ExpPtr p1, ValPtr p2 ) { return add( p1, p2 ); }
+//ExpPtr operator+ ( ExpPtr p1, ExpPtr p2 ) { return add( p1, p2 ); }
 
-ExpPtr operator* ( VarPtr p1, VarPtr p2 ) { return prod( p1, p2 ); }
-ExpPtr operator* ( VarPtr p1, ExpPtr p2 ) { return prod( p1, p2 ); }
-ExpPtr operator* ( ExpPtr p1, VarPtr p2 ) { return prod( p1, p2 ); }
-ExpPtr operator* ( ExpPtr p1, ExpPtr p2 ) { return prod( p1, p2 ); }
+//ExpPtr operator* ( ValPtr p1, ValPtr p2 ) { return prod( p1, p2 ); }
+//ExpPtr operator* ( ValPtr p1, ExpPtr p2 ) { return prod( p1, p2 ); }
+//ExpPtr operator* ( ExpPtr p1, ValPtr p2 ) { return prod( p1, p2 ); }
+//ExpPtr operator* ( ExpPtr p1, ExpPtr p2 ) { return prod( p1, p2 ); }
 
 //--------------------------------------------------------------------------------------------
-
-ExpPtr Exp::reduce(){ return Reducer::apply( shared_from_this() ); }
 
 ExpPtr Func::reduce()
 {
+    DBGX( *this );
+    DBG;
+    DBGX( signature() );
+    DBG;
+
     /// first reduce children
     for( size_t i = 0; i < arity(); ++i )
     {
-        ExpPtr e = param(i);
-        param(i,e->reduce() );
+        DBGX( i );
+        DBGX( *param(i) );
+        DBG;
+
+        ExpPtr b = param(i);
+        ExpPtr e = b->reduce();
+        if( b != e )
+            param( i, e );
     }
+
+    DBG;
+
+    DBGX( signature() );
 
     /// now try to reduce self
     return Reducer::apply( shared_from_this() );

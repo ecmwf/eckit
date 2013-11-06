@@ -196,7 +196,7 @@ VarPtr vector( const Vector::storage_t& v  ) { return VarPtr( new Vector(v) ); }
 
 //--------------------------------------------------------------------------------------------
 
-class Opr : public Exp {
+class Func : public Exp {
 
 public: // types
 
@@ -215,24 +215,24 @@ protected: // methods
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves
-    Opr() {}
+    Func() {}
 
     /// Contructor taking a list of parameters
     /// handle the setup of the parameters themselves
-    Opr( const params_t& p ) : params_(p) {}
+    Func( const params_t& p ) : params_(p) {}
 
 public: // methods
 
-    virtual ~Opr() {}
+    virtual ~Func() {}
 
     static dispatcher_t& dispatcher() { static dispatcher_t d; return d; }
 
-    static std::string class_name() { return "Opr"; }
+    static std::string class_name() { return "Func"; }
 
     virtual bool isTerminal() const { return false; }
 
     virtual Exp::Type type() const { return Exp::OP; }
-    virtual std::string type_name() const { return Opr::class_name(); }
+    virtual std::string type_name() const { return Func::class_name(); }
 
     virtual std::string opName() const = 0;
 
@@ -307,11 +307,11 @@ public: // methods
 
 };
 
-typedef boost::shared_ptr<Opr> OprPtr;
+typedef boost::shared_ptr<Func> OprPtr;
 
 //--------------------------------------------------------------------------------------------
 
-class BinOp : public Opr {
+class BinOp : public Func {
 
 public: // types
 
@@ -389,7 +389,7 @@ protected:
 
 //--------------------------------------------------------------------------------------------
 
-class TriOp : public Opr {
+class TriOp : public Func {
 
 public: // types
 
@@ -565,7 +565,7 @@ public:
     static ExpPtr optimise_var_op( ExpPtr x )
     {
         assert( x->isOpr() );
-        Opr& op = *(x->as<Opr>());
+        Func& op = *(x->as<Func>());
 
         assert( op.opName() == "Prod" );
         assert( op.arity() == 2 );
@@ -576,7 +576,7 @@ public:
         assert( p0->isTerminal() );
         assert( p1->isOpr()  );
 
-        OprPtr op1 = p1->as<Opr>();
+        OprPtr op1 = p1->as<Func>();
 
         if( op1->opName()  == "Add" )
         {
@@ -682,10 +682,10 @@ ExpPtr prod( Exp&   l, Exp&   r ) { return ExpPtr( new Prod::Op(l.self(),r.self(
 //--------------------------------------------------------------------------------------------
 
 /// Generates a Linear combination of vectors
-class Linear : public Opr {
+class Linear : public Func {
 public: // methods
 
-    Linear( ExpPtr e ) : Opr()
+    Linear( ExpPtr e ) : Func()
     {
         assert( e->arity() == 2 );
 
@@ -712,7 +712,7 @@ public: // methods
 
     virtual size_t arity() const { return 4; }
 
-    static VarPtr eval_svsv( const Opr::params_t& p )
+    static VarPtr eval_svsv( const Func::params_t& p )
     {
         assert(p.size() == 4);
 
@@ -799,9 +799,9 @@ static ReducerT<Linear> optimLinear("Add(Prod(s,v),Prod(s,v))");
 class Executer {
 public:
 
-    Executer( const std::string& signature, Opr::value_t f  )
+    Executer( const std::string& signature, Func::value_t f  )
     {
-        Opr::dispatcher()[ signature ] = f;
+        Func::dispatcher()[ signature ] = f;
     }
 
 };
@@ -928,7 +928,7 @@ ExpPtr operator* ( ExpPtr p1, ExpPtr p2 ) { return prod( p1, p2 ); }
 
 ExpPtr Exp::reduce(){ return Reducer::apply( shared_from_this() ); }
 
-ExpPtr Opr::reduce()
+ExpPtr Func::reduce()
 {
     /// first reduce children
     for( size_t i = 0; i < arity(); ++i )

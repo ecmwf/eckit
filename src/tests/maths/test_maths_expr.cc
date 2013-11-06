@@ -62,6 +62,8 @@ void TestExp::test_add()
 
     std::cout << *(e->eval()) << std::endl;
 
+    std::cout << *(maths::add(a,b)->reduce()) << std::endl;
+
 }
 
 //-----------------------------------------------------------------------------

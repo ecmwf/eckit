@@ -100,7 +100,8 @@ public: // methods
 
     ValPtr eval()
     {
-       return reduce()->evaluate();
+//        return reduce()->evaluate();
+        return evaluate();
     }
 
 public: // virtual methods
@@ -515,9 +516,9 @@ public: // methods
 
     virtual size_t arity() const { return 4; }
 
-    static ValPtr eval_svsv( const Func::params_t& p )
+    virtual ValPtr evaluate()
     {
-        assert(p.size() == 4);
+        Func::params_t& p = params_;
 
         scalar_t a = Scalar::extract( p[0] );
 
@@ -540,7 +541,7 @@ public: // methods
 
 };
 
-static Func::Register rExecLinear("Linear(s,v,s,v)", &Linear::eval_svsv );
+//static Func::Register rExecLinear("Linear(s,v,s,v)", &Linear::eval_svsv );
 
 //--------------------------------------------------------------------------------------------
 
@@ -594,7 +595,7 @@ private:
 
 //--------------------------------------------------------------------------------------------
 
-//static ReducerT<Linear> optimLinear("Add(Prod(s,v),Prod(s,v))");
+static ReducerT<Linear> optimLinear("Plus(Mult(s,v),Mult(s,v))");
 
 //--------------------------------------------------------------------------------------------
 
@@ -712,20 +713,18 @@ ExpPtr Func::reduce()
     DBGX( signature() );
     DBG;
 
-    /// first reduce children
-    for( size_t i = 0; i < arity(); ++i )
-    {
-        DBGX( i );
-        DBGX( *param(i) );
-        DBG;
+//    /// first reduce children
+//    for( size_t i = 0; i < arity(); ++i )
+//    {
+//        DBGX( i );
+//        DBGX( *param(i) );
+//        DBG;
 
-        ExpPtr b = param(i);
-        ExpPtr e = b->reduce();
-        if( b != e )
-            param( i, e );
-    }
-
-    DBG;
+//        ExpPtr b = param(i);
+//        ExpPtr e = b->reduce();
+//        if( b != e )
+//            param( i, e );
+//    }
 
     DBGX( signature() );
 

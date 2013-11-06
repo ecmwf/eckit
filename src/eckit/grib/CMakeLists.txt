@@ -17,6 +17,8 @@ GribFieldStateFile.cc
 GribFieldStateFile.h
 GribFieldStateExpanded.cc
 GribFieldStateExpanded.h
+GribCompute.cc
+GribCompute.h
 GribFieldStateHandle.cc
 GribFieldStateHandle.h
  )

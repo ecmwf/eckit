@@ -197,7 +197,35 @@ VarPtr vector( const Vector::storage_t& v  ) { return VarPtr( new Vector(v) ); }
 //--------------------------------------------------------------------------------------------
 
 class Opr : public Exp {
+
+public: // types
+
+    typedef std::vector< ExpPtr > params_t;
+
+    typedef std::string key_t;
+    typedef boost::function< VarPtr ( const params_t& ) > value_t;
+
+    typedef std::map< key_t, value_t > dispatcher_t;
+
+protected: // members
+
+    params_t params_; ///< parameters of this expression
+
+protected: // methods
+
+    /// Empty contructor is usually used by derived classes that
+    /// handle the setup of the parameters themselves
+    Opr() {}
+
+    /// Contructor taking a list of parameters
+    /// handle the setup of the parameters themselves
+    Opr( const params_t& p ) : params_(p) {}
+
 public: // methods
+
+    virtual ~Opr() {}
+
+    static dispatcher_t& dispatcher() { static dispatcher_t d; return d; }
 
     static std::string class_name() { return "Opr"; }
 
@@ -207,6 +235,19 @@ public: // methods
     virtual std::string type_name() const { return Opr::class_name(); }
 
     virtual std::string opName() const = 0;
+
+    VarPtr eval()
+    {
+        dispatcher_t& d = dispatcher();
+        dispatcher_t::iterator itr = d.find( signature() );
+        if( itr != d.end() )
+            return ((*itr).second)( params_ );
+
+        for( params_t::iterator i = params_.begin(); i != params_.end(); ++i )
+            *i = (*i)->eval();
+
+        return eval(); // recall eval
+    }
 
     virtual void print( std::ostream& o ) const
     {
@@ -232,14 +273,36 @@ public: // methods
         return o.str();
     }
 
-    virtual ExpPtr reduce()
+    ExpPtr optimise()
     {
         for( size_t i = 0; i < arity(); ++i )
         {
             ExpPtr e = param(i);
-            param(i,e->reduce() );
+            param(i, e->optimise() );
         }
+
+//        BinOp::key_t k = boost::make_tuple( p1_->type(), p2_->type(), opName() );
+
+//        BinOp::optimiser_t& d = optimiser();
+//        BinOp::optimiser_t::iterator itr = d.find(k);
+//        if( itr != d.end() )
+//            return ((*itr).second)( shared_from_this() );
+
         return shared_from_this();
+    }
+
+    virtual ExpPtr reduce();
+
+    virtual ExpPtr param( const size_t& i ) const
+    {
+        assert( i < params_.size() );
+        return params_[i];
+    }
+
+    virtual void param( const size_t& i, ExpPtr p )
+    {
+        assert( i < params_.size() );
+        params_[i] = p;
     }
 
 };
@@ -619,10 +682,10 @@ ExpPtr prod( Exp&   l, Exp&   r ) { return ExpPtr( new Prod::Op(l.self(),r.self(
 //--------------------------------------------------------------------------------------------
 
 /// Generates a Linear combination of vectors
-class Linear : public Var {
-public:
+class Linear : public Opr {
+public: // methods
 
-    Linear( ExpPtr e )
+    Linear( ExpPtr e ) : Opr()
     {
         assert( e->arity() == 2 );
 
@@ -632,46 +695,61 @@ public:
         assert( left->arity() == 2 );
         assert( right->arity() == 2 );
 
-        s1_ = left->param(0);
-        v1_ = left->param(1);
-        s2_ = right->param(0);
-        v2_ = right->param(1);
+        params_.push_back( left->param(0) );
+        params_.push_back( left->param(1) );
+        params_.push_back( right->param(0) );
+        params_.push_back( right->param(1) );
 
-        /// should check vectors of smae size
+        /// @todo should check vectors of same size
     }
 
-    virtual void print( std::ostream& o ) const
+    virtual ~Linear() {}
+
+    static std::string class_name() { return "Linear"; }
+
+    virtual std::string type_name() const { return class_name(); }
+    virtual std::string opName()  const { return class_name(); }
+
+    virtual size_t arity() const { return 4; }
+
+    static VarPtr eval_svsv( const Opr::params_t& p )
     {
-        o << "linear(" << *s1_ << "," << *v1_ << "," << *s2_ << "," << *v2_ << ")";
+        assert(p.size() == 4);
+
+        assert( p[0]->type() == Exp::SCALAR );
+        assert( p[1]->type() == Exp::VECTOR );
+        assert( p[2]->type() == Exp::SCALAR );
+        assert( p[3]->type() == Exp::VECTOR );
+
+        scalar_t a = p[0]->as<Scalar>()->value();
+
+        Vector::storage_t& v1 = p[1]->as<Vector>()->ref_value();
+
+        scalar_t b = p[2]->as<Scalar>()->value();
+
+        Vector::storage_t& v2 = p[3]->as<Vector>()->ref_value();
+
+        assert( v1.size() == v2.size() );
+
+        Vector* res = new Vector( v1.size() );
+        Vector::storage_t& rv = res->ref_value();
+
+        for( size_t i = 0; i < rv.size(); ++i )
+            rv[i] = a * v1[i] + b * v2[i];
+
+        return VarPtr(res);
     }
-
-    virtual std::string signature() const
-    {
-        return "l";
-    }
-
-    virtual size_t size() const { assert( false ); return 0; }
-
-    virtual Exp::Type type() const { assert( false ); }
-    virtual std::string type_name() const { assert( false ); }
-
-    virtual bool isTerminal() const { assert( false ); }
-
-private:
-
-    ExpPtr s1_;
-    ExpPtr v1_;
-    ExpPtr s2_;
-    ExpPtr v2_;
 
 };
+
+//--------------------------------------------------------------------------------------------
 
 class Reducer {
 public:
 
     typedef std::map<std::string,Reducer*> reducers_t;
 
-    static ExpPtr build( ExpPtr e )
+    static ExpPtr apply( ExpPtr e )
     {
         std::string signature = e->signature();
 
@@ -679,9 +757,8 @@ public:
         std::map<std::string,Reducer*>::const_iterator itr = reducer.find(signature);
         if( itr == reducer.end() )
             return e;
-        return (*itr).second->make(e);
+        return (*itr).second->reduce(e);
     }
-
 
 protected:
 
@@ -690,7 +767,7 @@ protected:
         reducers()[signature] = this;
     }
 
-    virtual ExpPtr make( ExpPtr ) const = 0;
+    virtual ExpPtr reduce( ExpPtr ) const = 0;
 
     static reducers_t& reducers()
     {
@@ -700,17 +777,38 @@ protected:
 };
 
 template< typename T>
-class Optimiser : public Reducer {
+class ReducerT : public Reducer {
 public:
-    Optimiser( const std::string& signature ) : Reducer(signature) {}
- private:
-    ExpPtr make( ExpPtr e ) const
+
+    ReducerT( const std::string& signature ) : Reducer(signature) {}
+
+private:
+
+    ExpPtr reduce( ExpPtr e ) const
     {
         return ExpPtr( new T(e) );
     }
 };
 
-static Optimiser<Linear> optimLinear("Add(Prod(s,v),Prod(s,v))");
+//--------------------------------------------------------------------------------------------
+
+static ReducerT<Linear> optimLinear("Add(Prod(s,v),Prod(s,v))");
+
+//--------------------------------------------------------------------------------------------
+
+class Executer {
+public:
+
+    Executer( const std::string& signature, Opr::value_t f  )
+    {
+        Opr::dispatcher()[ signature ] = f;
+    }
+
+};
+
+//--------------------------------------------------------------------------------------------
+
+static Executer execLinear("Linear(s,v,s,v)", &Linear::eval_svsv );
 
 //--------------------------------------------------------------------------------------------
 
@@ -828,7 +926,20 @@ ExpPtr operator* ( ExpPtr p1, ExpPtr p2 ) { return prod( p1, p2 ); }
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr Exp::reduce(){ return Reducer::build( shared_from_this() ); }
+ExpPtr Exp::reduce(){ return Reducer::apply( shared_from_this() ); }
+
+ExpPtr Opr::reduce()
+{
+    /// first reduce children
+    for( size_t i = 0; i < arity(); ++i )
+    {
+        ExpPtr e = param(i);
+        param(i,e->reduce() );
+    }
+
+    /// now try to reduce self
+    return Reducer::apply( shared_from_this() );
+}
 
 //--------------------------------------------------------------------------------------------
 

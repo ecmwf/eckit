@@ -41,13 +41,13 @@ void TestExp::test_add()
 {
     using namespace eckit::maths;
 
-    ExpPtr a = scalar( 2. );
-    ExpPtr c = scalar( 4. );
+    ExpPtr a = maths::scalar( 2. );
+    ExpPtr b = maths::scalar( 4. );
 
-    VarPtr v1 = maths::vector( 10, 5. );
-    VarPtr v2 = maths::vector( 10, 7. );
+    VarPtr x = maths::vector( 10, 5. );
+    VarPtr y = maths::vector( 10, 7. );
 
-    ExpPtr e = maths::add( prod( a, v1) , prod( c, v2 ));
+    ExpPtr e = maths::add( prod( a, x) , prod( b, y ));
 
     std::cout << *e << std::endl;
     std::cout << e->signature() << std::endl;
@@ -56,6 +56,8 @@ void TestExp::test_add()
 
     std::cout << *e << std::endl;
     std::cout << e->signature() << std::endl;
+
+    std::cout << *(e->eval()) << std::endl;
 
 }
 

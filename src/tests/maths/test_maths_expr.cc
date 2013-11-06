@@ -44,25 +44,30 @@ void TestExp::test_add()
     ExpPtr a = maths::scalar( 2. );
     ExpPtr b = maths::scalar( 4. );
 
+    ExpPtr c = maths::add( a, b);
+
     ExpPtr x = maths::vector( 10, 5. );
     ExpPtr y = maths::vector( 10, 7. );
 
-    std::cout << *(maths::add( a ,a )->eval()) << std::endl;
+//    std::cout << *(maths::add( a ,a )->eval()) << std::endl;
 
-
-    ExpPtr e = maths::add( prod( a, x) , prod( b, y ));
-
-    std::cout << *e << std::endl;
-    std::cout << e->signature() << std::endl;
-
-    e = e->reduce();
+    ExpPtr e = maths::add( prod( c, x) , prod( b, y ));
 
     std::cout << *e << std::endl;
     std::cout << e->signature() << std::endl;
+
+//    e = e->reduce();
+
+//    std::cout << *e << std::endl;
+//    std::cout << e->signature() << std::endl;
 
     std::cout << *(e->eval()) << std::endl;
 
-    std::cout << *(maths::add(a,b)->reduce()) << std::endl;
+//    std::cout << *(maths::add(a,b)->reduce()) << std::endl;
+
+//    std::cout << *(maths::add(a,b)->eval()) << std::endl;
+
+//    std::cout << *(maths::add(a,x)->eval()) << std::endl;
 
 }
 

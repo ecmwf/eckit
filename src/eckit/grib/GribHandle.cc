@@ -13,6 +13,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/utils/StringTools.h"
+#include "eckit/io/DataHandle.h"
 #include "GribHandle.h"
 
 using namespace eckit;
@@ -63,4 +64,18 @@ double* GribHandle::getDataValues(size_t& count) const
     ASSERT(n == count);
     cout << "GribHandle::getDataValues " << n << endl;
     return values;
+}
+
+void GribHandle::setDataValues(const double *values, size_t count)
+{
+    ASSERT(values);
+    GRIB_CALL(grib_set_double_array(handle_,"values",values,count));
+}
+
+void GribHandle::write(DataHandle & handle)
+{
+    const void* message;
+    size_t length;
+    GRIB_CALL(grib_get_message(handle_, &message, &length));
+    ASSERT(handle.write(message, length) == length);
 }

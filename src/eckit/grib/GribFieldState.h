@@ -9,6 +9,7 @@
 namespace eckit {
 
 class GribHandle;
+class DataHandle;
 
 class GribFieldState {
 public:
@@ -33,7 +34,8 @@ public:
 // -- Methods
 
     virtual GribFieldState* returnValues(double*&, size_t&) const = 0;
-    virtual GribFieldState* returnHandle(GribHandle*&) const = 0;
+    virtual GribFieldState* returnHandle(GribHandle*&, bool copy) const = 0;
+    virtual void write(DataHandle&) const = 0;
 
 // -- Overridden methods
 	// None

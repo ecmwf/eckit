@@ -7,6 +7,7 @@
 #include "GribFieldStateExpanded.h"
 
 #include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
 
 namespace eckit {
 
@@ -52,9 +53,21 @@ GribFieldState* GribFieldStateFile::returnValues(double *& values, size_t& count
     }
 }
 
-GribFieldState* GribFieldStateFile::returnHandle(GribHandle*&) const
+GribFieldState* GribFieldStateFile::returnHandle(GribHandle*& handle, bool copy) const
 {
-    NOTIMP;
+    GribFieldStateFile* self = const_cast<GribFieldStateFile*>(this);
+    ASSERT(copy);
+    Buffer buffer(length_);
+    file_->getBuffer(buffer, offset_, length_);
+    handle = new GribHandle(buffer, length_, false);
+    return self;
+}
+
+void GribFieldStateFile::write(DataHandle& handle) const
+{
+    Buffer buffer(length_);
+    file_->getBuffer(buffer, offset_, length_);
+    ASSERT(handle.write(buffer, length_) == length_);
 }
 
 }

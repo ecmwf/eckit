@@ -1,20 +1,19 @@
-// File GribFieldStateHandle.h
+// File GribFieldStateResult.h
 // Baudouin Raoult - (c) ECMWF Nov 13
 
-#ifndef GribFieldStateHandle_H
-#define GribFieldStateHandle_H
+#ifndef GribFieldStateResult_H
+#define GribFieldStateResult_H
 
 #include "GribFieldState.h"
-#include "GribHandle.h"
 
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
 
 namespace eckit {
 
-class GribHandle;
+class GribField;
 
-class GribFieldStateHandle : public GribFieldState {
+class GribFieldStateResult : public GribFieldState {
 public:
 
 // -- Exceptions
@@ -22,11 +21,11 @@ public:
 
 // -- Contructors
 
-    GribFieldStateHandle(GribHandle*, GribFieldState* next);
+    GribFieldStateResult(GribField*, double*, size_t);
 
 // -- Destructor
 
-	~GribFieldStateHandle(); // Change to virtual if base class
+	~GribFieldStateResult(); // Change to virtual if base class
 
 // -- Convertors
 	// None
@@ -68,12 +67,14 @@ private:
 
 // No copy allowed
 
-	GribFieldStateHandle(const GribFieldStateHandle&);
-	GribFieldStateHandle& operator=(const GribFieldStateHandle&);
+	GribFieldStateResult(const GribFieldStateResult&);
+	GribFieldStateResult& operator=(const GribFieldStateResult&);
 
 // -- Members
 
-    GribHandle* handle_;
+    double* values_;
+    size_t  count_;
+    GribField* headers_;
 
 // -- Methods
 	// None
@@ -92,7 +93,7 @@ private:
 
 // -- Friends
 
-	//friend ostream& operator<<(ostream& s,const GribFieldStateHandle& p)
+	//friend ostream& operator<<(ostream& s,const GribFieldStateResult& p)
 	//	{ p.print(s); return s; }
 
 };

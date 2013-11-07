@@ -22,6 +22,7 @@
 namespace eckit {
 
 class GribField;
+class DataHandle;
 
 class GribFieldSet {
 public:
@@ -31,8 +32,12 @@ public:
 
 // -- Contructors
 
-    GribFieldSet();
+    GribFieldSet(size_t size = 0);
     GribFieldSet(const PathName& path);
+
+    GribFieldSet(const GribFieldSet&);
+
+
 
 // -- Destructor
 
@@ -42,14 +47,32 @@ public:
 	// None
 
 // -- Operators
-	// None
+
+    GribFieldSet& operator=(const GribFieldSet&);
+
+
+    //====================================================================================
+
+
+    //====================================================================================
+
+
+
 
 // -- Methods
+
+    void write(const PathName& path) const;
+    void write(DataHandle& handle) const;
 
     void add(GribField*);
 
     size_t count() const { return fields_.size(); }
     const GribField* get(size_t i) const { return fields_[i]; }
+
+
+    // Must be adopted 
+    GribField* willAdopt(size_t i) const { return fields_[i]; }
+
 
 // -- Overridden methods
 	// None
@@ -81,9 +104,6 @@ protected:
 private:
 
 // No copy allowed
-
-	GribFieldSet(const GribFieldSet&);
-	GribFieldSet& operator=(const GribFieldSet&);
 
 // -- Members
 //

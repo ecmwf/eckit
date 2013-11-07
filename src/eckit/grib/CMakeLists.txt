@@ -21,6 +21,8 @@ GribCompute.cc
 GribCompute.h
 GribFieldStateHandle.cc
 GribFieldStateHandle.h
+GribFieldStateResult.cc
+GribFieldStateResult.h
  )
 
 

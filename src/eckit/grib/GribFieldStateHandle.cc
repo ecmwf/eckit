@@ -33,10 +33,14 @@ GribFieldState* GribFieldStateHandle::returnValues(double*& values, size_t& coun
     return h->returnValues(values, count);
 }
 
-GribFieldState* GribFieldStateHandle::returnHandle(GribHandle*&) const
+GribFieldState* GribFieldStateHandle::returnHandle(GribHandle*&, bool copy) const
 {
     NOTIMP;
 }
 
+void GribFieldStateHandle::write(DataHandle&) const
+{
+    NOTIMP;
+}
 
 }

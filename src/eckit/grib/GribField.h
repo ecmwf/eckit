@@ -24,6 +24,8 @@ namespace eckit {
 
 class GribFile;
 class GribFieldState;
+class DataHandle;
+class GribHandle;
 
 class GribField : public eckit::Counted {
 public:
@@ -34,6 +36,7 @@ public:
 // -- Contructors
 
     GribField(GribFile *, const Offset&, const Length&);
+    GribField(GribField*,double*,  size_t);
 
 // -- Destructor
 
@@ -48,6 +51,9 @@ public:
 // -- Methods
 
     const double *getValues(size_t&) const;
+    GribHandle* getHandle(bool copy) const;
+
+    void write(DataHandle&) const;
 
 // -- Overridden methods
 	// None

@@ -36,9 +36,13 @@ public: // methods
 
     virtual size_t arity() const { return 4; }
 
-    virtual ValPtr evaluate( const args_t& p );
-
     virtual std::string ret_signature() const;
+
+    struct Register { Register(); };
+
+protected: // methods
+
+    static ValPtr compute( const args_t& p );
 
 };
 

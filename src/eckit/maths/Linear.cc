@@ -20,27 +20,47 @@ namespace maths {
 
 Linear::Linear(ExpPtr e) : Func()
 {
-    assert( e->arity() == 2 );
+    ASSERT( e->arity() == 2 );
 
     ExpPtr left  = e->param(0);
     ExpPtr right = e->param(1);
 
-    assert( left->arity() == 2 );
-    assert( right->arity() == 2 );
+    // cater for swap in s,v pairs -> insures final signature is linear(s,v,s,v)
 
-    Scalar::is( left->param(0) );
-    Vector::is( left->param(1) );
+    ASSERT( left->arity() == 2 );
 
-    Scalar::is( right->param(0) );
-    Vector::is( right->param(1) );
+    ASSERT( Scalar::is( left->param(0) ) || Scalar::is( left->param(1) ) );
+    ASSERT( Vector::is( left->param(0) ) || Vector::is( left->param(1) ) );
 
-    args_.push_back( left->param(0) );
-    args_.push_back( left->param(1) );
-    args_.push_back( right->param(0) );
-    args_.push_back( right->param(1) );
+    if( Scalar::is( left->param(0) ) )
+    {
+        args_.push_back( left->param(0) );
+        args_.push_back( left->param(1) );
+    }
+    else
+    {
+        args_.push_back( left->param(1) );
+        args_.push_back( left->param(0) );
+    }
+
+    ASSERT( right->arity() == 2 );
+
+    ASSERT( Scalar::is( right->param(0) ) || Scalar::is( right->param(1) ) );
+    ASSERT( Vector::is( right->param(0) ) || Vector::is( right->param(1) ) );
+
+    if( Scalar::is( right->param(0) ) )
+    {
+        args_.push_back( right->param(0) );
+        args_.push_back( right->param(1) );
+    }
+    else
+    {
+        args_.push_back( right->param(1) );
+        args_.push_back( right->param(0) );
+    }
 }
 
-ValPtr Linear::evaluate(const args_t &p)
+ValPtr Linear::compute( const args_t& p )
 {
     scalar_t a = Scalar::extract( p[0] );
 
@@ -50,7 +70,7 @@ ValPtr Linear::evaluate(const args_t &p)
 
     Vector::value_t& v2 = Vector::extract( p[3] );
 
-    assert( v1.size() == v2.size() );
+    ASSERT( v1.size() == v2.size() );
 
     Vector* res = new Vector( v1.size() );
     Vector::value_t& rv = res->ref_value();
@@ -66,9 +86,19 @@ string Linear::ret_signature() const
     return Vector::sig();
 }
 
+Linear::Register::Register()
+{
+    Func::dispatcher()[ class_name() + "(s,v,s,v)" ] = &compute;
+}
+
 //--------------------------------------------------------------------------------------------
 
-static ReduceTo<Linear> reduce_linear("Add(Prod(s,v),Prod(s,v))");
+static Linear::Register linear_register;
+
+static ReduceTo<Linear> reduce_linear_svsv("Add(Prod(s,v),Prod(s,v))");
+static ReduceTo<Linear> reduce_linear_vsvs("Add(Prod(v,s),Prod(v,s))");
+static ReduceTo<Linear> reduce_linear_vssv("Add(Prod(v,s),Prod(s,v))");
+static ReduceTo<Linear> reduce_linear_svvs("Add(Prod(s,v),Prod(v,s))");
 
 //--------------------------------------------------------------------------------------------
 

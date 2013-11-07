@@ -66,20 +66,6 @@ public: // virtual methods
         return signature_args( args_ );
     }
 
-    std::string signature_args( const args_t& args ) const
-    {
-        std::ostringstream o;
-        o << type_name() << "(";
-        for( size_t i = 0; i < args.size(); ++i )
-        {
-            if(i) o << ",";
-            o << args[i]->signature();
-        }
-        o << ")";
-        return o.str();
-    }
-
-
     virtual size_t arity() const { return args_.size(); }
 
     virtual ExpPtr param( const size_t& i ) const
@@ -97,15 +83,21 @@ public: // virtual methods
             args_[i] = p;
     }
 
-    virtual void print( std::ostream& o ) const
+    virtual void print( std::ostream& o ) const;
+
+protected: // methods
+
+    std::string signature_args( const args_t& args ) const
     {
+        std::ostringstream o;
         o << type_name() << "(";
-        for( size_t i = 0; i < arity(); ++i )
+        for( size_t i = 0; i < args.size(); ++i )
         {
-            if(i) o << ", ";
-            o << *param(i);
+            if(i) o << ",";
+            o << args[i]->signature();
         }
         o << ")";
+        return o.str();
     }
 };
 

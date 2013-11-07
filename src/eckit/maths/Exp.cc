@@ -17,5 +17,11 @@ Expression::~Expression()
 {
 }
 
+ValPtr Expression::eval()
+{
+//        return reduce()->evaluate();
+      return evaluate();
+}
+
 } // namespace maths
 } // namespace eckit

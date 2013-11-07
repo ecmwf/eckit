@@ -54,15 +54,17 @@ void TestExp::test_add()
 
 //    std::cout << *(maths::add( a ,a )->eval()) << std::endl;
 
-    ExpPtr e = maths::add( prod( a, x) , prod( b, y ));
+    ExpPtr e = maths::add( prod( maths::add( a ,a ) , x ) , prod( b, y ));
+
+    ASSERT( e->ret_signature() == Vector::sig() );
 
     std::cout << *e << std::endl;
-    std::cout << e->signature() << std::endl;
+    std::cout << "original signature: " << e->signature() << std::endl;
 
-//    e = e->reduce();
+    e = e->reduce();
 
-//    std::cout << *e << std::endl;
-//    std::cout << e->signature() << std::endl;
+    std::cout << *e << std::endl;
+    std::cout << "reduced signature: " <<e->signature() << std::endl;
 
     std::cout << *(e->eval()) << std::endl;
 

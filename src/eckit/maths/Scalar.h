@@ -59,7 +59,7 @@ public: // virtual methods
     virtual ExpPtr param( const size_t& ) const  { NOTIMP; return ExpPtr(); }
     virtual void param( const size_t&, ExpPtr p ) {}
 
-    virtual void print( std::ostream& o ) const { o << "s(" << v_ << ")"; }
+    virtual void print( std::ostream& o ) const { o << class_name() << "(" << v_ << ")"; }
 
 protected: // members
 

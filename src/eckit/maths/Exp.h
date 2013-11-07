@@ -108,11 +108,7 @@ public: // methods
         return os;
     }
 
-    ValPtr eval()
-    {
-//        return reduce()->evaluate();
-          return evaluate();
-    }
+    ValPtr eval();
 
 public: // virtual methods
 

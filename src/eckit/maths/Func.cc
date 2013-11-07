@@ -54,11 +54,29 @@ ValPtr Func::evaluate()
 
 ExpPtr Func::reduce()
 {
-    DBGX( *this );
-    DBGX( signature() );
+    //    DBGX( *this );
+    //    DBGX( signature() );
 
-    /// now try to reduce self
+    // reduce first children
+
+    for( size_t i = 0; i < args_.size(); ++i )
+    {
+        args_[i] = args_[i]->reduce()->self();
+    }
+
+    // now try to reduce self
     return Reducer::apply( shared_from_this() );
+}
+
+void Func::print(ostream &o) const
+{
+    o << type_name() << "(";
+    for( size_t i = 0; i < arity(); ++i )
+    {
+        if(i) o << ", ";
+        o << *param(i);
+    }
+    o << ")";
 }
 
 //--------------------------------------------------------------------------------------------

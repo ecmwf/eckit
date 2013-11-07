@@ -19,10 +19,10 @@ Scalar::Scalar( const scalar_t& v ) : v_(v)
 {
 }
 
-Scalar::Scalar(const ExpPtr &e) : v_(0)
+Scalar::Scalar(const ExpPtr& e) : v_(0)
 {
    ASSERT( e->ret_signature() == Scalar::sig() );
-   Scalar::extract( e->evaluate() );
+   v_ = Scalar::extract( e->evaluate() );
 }
 
 //--------------------------------------------------------------------------------------------

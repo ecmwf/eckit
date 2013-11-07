@@ -19,8 +19,7 @@ Expression::~Expression()
 
 ValPtr Expression::eval()
 {
-//        return reduce()->evaluate();
-      return evaluate();
+    return reduce()->evaluate();
 }
 
 } // namespace maths

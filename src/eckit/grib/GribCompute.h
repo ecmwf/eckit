@@ -105,59 +105,146 @@ void binop(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
 
 }
 
-void multiplies(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
+template<class OPERATOR>
+void binop(const GribFieldSet& a, const double& b, GribFieldSet& out) {
+
+    Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
+
+    size_t nfields = a.count();
+
+
+    ASSERT(out.count() == 0);
+
+    if(!nfields) {
+        return;
+    }
+
+
+    for(size_t j = 0; j < nfields; ++j) {
+        GribField* fa = a.willAdopt(j);
+
+        size_t na, nb;
+        const double* va = fa->getValues(na);
+
+        ASSERT(na == nb);
+
+        double* result = new double[na];
+        ASSERT(result);
+
+        for(size_t i = 0; i < na; ++i) {
+            result[i] = OPERATOR()(va[i], b);
+        }
+
+        out.add(new GribField(fa, result, na));
+
+    }
+
+}
+
+template<class OPERATOR>
+void binop(const double& b, const GribFieldSet& a, GribFieldSet& out) {
+
+    Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
+
+    size_t nfields = a.count();
+
+
+    ASSERT(out.count() == 0);
+
+    if(!nfields) {
+        return;
+    }
+
+
+    for(size_t j = 0; j < nfields; ++j) {
+        GribField* fa = a.willAdopt(j);
+
+        size_t na, nb;
+        const double* va = fa->getValues(na);
+
+        ASSERT(na == nb);
+
+        double* result = new double[na];
+        ASSERT(result);
+
+        for(size_t i = 0; i < na; ++i) {
+            result[i] = OPERATOR()(b, va[i]);
+        }
+
+        out.add(new GribField(fa, result, na));
+
+    }
+
+}
+
+
+template<class A, class B>
+void multiplies(const A& a, const B& b, GribFieldSet& out) {
     binop<std::multiplies<double> >(a, b, out);
 }
 
+template<class A, class B>
 void divides(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
     binop<std::divides<double> >(a, b, out);
 }
 
-void plus(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
+template<class A, class B>
+void plus(const A& a, const B& b, GribFieldSet& out) {
     binop<std::plus<double> >(a, b, out);
 }
 
-void minus(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
+template<class A, class B>
+void minus(const A& a, const B& b, GribFieldSet& out) {
     binop<std::minus<double> >(a, b, out);
 }
 
-void greater(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
+template<class A, class B>
+void greater(const A& a, const B& b, GribFieldSet& out) {
     binop<std::greater<double> >(a, b, out);
 }
 
-void equal_to(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
+template<class A, class B>
+void equal_to(const A& a, const B& b, GribFieldSet& out) {
     binop<std::equal_to<double> >(a, b, out);
 }
 
-void less(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
+template<class A, class B>
+void less(const A& a, const B& b, GribFieldSet& out) {
     binop<std::less<double> >(a, b, out);
 }
 
-void greater_equal(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
+template<class A, class B>
+void greater_equal(const A& a, const B& b, GribFieldSet& out) {
     binop<std::greater_equal<double> >(a, b, out);
 }
 
-void not_equal_to(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
+template<class A, class B>
+void not_equal_to(const A& a, const B& b, GribFieldSet& out) {
     binop<std::not_equal_to<double> >(a, b, out);
 }
 
-void less_equal(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
+template<class A, class B>
+void less_equal(const A& a, const B& b, GribFieldSet& out) {
     binop<std::less_equal<double> >(a, b, out);
 }
 
-void logical_and(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
+template<class A, class B>
+void logical_and(const A& a, const B& b, GribFieldSet& out) {
     binop<std::logical_and<double> >(a, b, out);
 }
 
-void logical_or(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
+template<class A, class B>
+void logical_or(const A& a, const B& b, GribFieldSet& out) {
     binop<std::logical_or<double> >(a, b, out);
 }
 
-void negate(const GribFieldSet& in, GribFieldSet& out) {
+template<class A>
+void negate(const A& in, A& out) {
     unop<std::negate<double> >(in, out);
 }
 
-void logical_not(const GribFieldSet& in, GribFieldSet& out) {
+template<class A>
+void logical_not(const A& in, A& out) {
     unop<std::logical_not<double> >(in, out);
 }
 

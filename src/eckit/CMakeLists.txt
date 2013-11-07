@@ -304,6 +304,7 @@ value/BoolContent.h
 value/BoolContent.cc
 value/ListContent.h
 value/ListContent.cc
+value/Expression.h
 value/Value.h
 value/Value.cc
 value/DateContent.h

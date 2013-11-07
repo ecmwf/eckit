@@ -36,6 +36,8 @@ public:
 
     /// Tests a scalar-scalar reduction within another more complex expression
     void test_reduce_scalars();
+    /// Tests a scalar-scalar recursive reduction
+    void test_reduce_recursive_scalars();
     /// Tests a prod(s,v,v) reduction
     void test_reduce_prodadd();
 
@@ -52,7 +54,8 @@ void TestExp::run()
 {
     setup();
 
-//    test_reduce_scalars();
+    test_reduce_scalars();
+    test_reduce_recursive_scalars();
     test_reduce_prodadd();
 
     teardown();
@@ -76,17 +79,35 @@ void TestExp::test_reduce_scalars()
 
     ASSERT( e->ret_signature() == Vector::sig() );
 
-    std::cout << "before expr " << *e << std::endl;
-    std::cout << "before signature: " << e->signature() << std::endl;
+    // signature before reducing
+    ASSERT( e->signature() == "Add(Prod(Add(s,s),v),Prod(s,v))" );
 
-    std::cout << "reduced signature: " << e->reduce()->signature() << std::endl;
+    // eval() first calls reduce internally
+    ASSERT( e->eval()->str() == "Vector(58, 58, 58, 58, 58, 58, 58, 58, 58, 58)" );
 
-    std::cout << "after expr " << *e << std::endl;
-    std::cout << "after signature: " << e->signature() << std::endl;
+    // signature after reducing
+    ASSERT( e->signature() == "Add(Prod(s,v),Prod(s,v))" );
+}
 
-    std::cout << *(e->eval()) << std::endl;
+void TestExp::test_reduce_recursive_scalars()
+{
+    ExpPtr c1 = maths::add(a_,b_);
+    ExpPtr c2 = maths::add(c1,c1);
+    ExpPtr c3 = maths::add(c2,c2);
+    ExpPtr c4 = maths::add(c3,c3);
+    ExpPtr e  = maths::add(c4,c4);
 
-    std::cout << "reduced signature: " << e->signature() << std::endl;
+    ASSERT( e->ret_signature() == Scalar::sig() );
+
+    // signature before reducing
+    ASSERT( e->signature() == "Add(Add(Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s))),Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s)))),Add(Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s))),Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s)))))" );
+
+    // got fully reduced to a scalar
+    ASSERT( e->reduce()->signature() == Scalar::sig() );
+
+    // correct reduction
+    ASSERT( e->eval()->str() == "Scalar(96)" );
+
 }
 
 void TestExp::test_reduce_prodadd()

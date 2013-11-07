@@ -144,6 +144,8 @@ public: // methods
             args_[i] = p;
     }
 
+    std::string str() const;
+
 public: // virtual methods
 
     virtual std::string type_name() const = 0;

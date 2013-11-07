@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <sstream>
+
 #include "eckit/maths/Exp.h"
 
 namespace eckit {
@@ -20,6 +22,13 @@ Expression::~Expression()
 ValPtr Expression::eval()
 {
     return reduce()->evaluate();
+}
+
+string Expression::str() const
+{
+    std::ostringstream os;
+    print(os);
+    return os.str();
 }
 
 } // namespace maths

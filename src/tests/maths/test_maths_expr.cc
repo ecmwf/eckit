@@ -51,7 +51,7 @@ void TestExp::test_add()
 
 //    std::cout << *(maths::add( a ,a )->eval()) << std::endl;
 
-    ExpPtr e = maths::add( prod( c, x) , prod( b, y ));
+    ExpPtr e = maths::add( prod( a, x) , prod( b, y ));
 
     std::cout << *e << std::endl;
     std::cout << e->signature() << std::endl;

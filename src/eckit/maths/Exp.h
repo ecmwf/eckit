@@ -102,7 +102,8 @@ public: // methods
 
     ValPtr eval()
     {
-        return reduce()->evaluate();
+//        return reduce()->evaluate();
+          return evaluate();
     }
 
 public: // virtual methods
@@ -168,11 +169,6 @@ public: // methods
     value_t& ref_value() { return v_; }
 
 public: // virtual methods
-
-//    virtual ValPtr evaluate()
-//    {
-//        return ValPtr(new Scalar(v_));
-//    }
 
     virtual std::string type_name() const { return Scalar::class_name(); }
     virtual std::string signature() const { return sig(); }
@@ -285,12 +281,12 @@ public: // virtual methods
 
     virtual ValPtr evaluate()
     {
-        std::string sig = signature();
-
         for( args_t::iterator i = params_.begin(); i != params_.end(); ++i )
         {
-            (*i) = (*i)->reduce();
+            (*i) = (*i)->evaluate();
         }
+
+        std::string sig = signature();
 
         dispatcher_t& d = dispatcher();
         dispatcher_t::iterator itr = d.find( sig );

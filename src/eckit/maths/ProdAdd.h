@@ -34,6 +34,7 @@ public: // methods
     struct Op : public Func
     {
         Op( const args_t& args ) : Func( args ) {}
+        Op( const ExpPtr& e );
         virtual std::string type_name() const { return ProdAdd::class_name(); }
         virtual std::string ret_signature() const;
     };

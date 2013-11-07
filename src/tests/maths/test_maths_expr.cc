@@ -17,6 +17,7 @@
 #include "eckit/maths/BinaryFunc.h"
 
 using namespace eckit;
+using namespace eckit::maths;
 
 //-----------------------------------------------------------------------------
 
@@ -31,49 +32,74 @@ public:
 
     virtual void run();
 
-    void test_add();
+    void setup();
 
+    /// Tests a scalar-scalar reduction within another more complex expression
+    void test_reduce_scalars();
+    /// Tests a prod(s,v,v) reduction
+    void test_reduce_prodadd();
+
+    void teardown();
+
+protected:
+    ExpPtr a_;
+    ExpPtr b_;
+    ExpPtr x_;
+    ExpPtr y_;
 };
 
 void TestExp::run()
 {
-    test_add();
+    setup();
+
+//    test_reduce_scalars();
+    test_reduce_prodadd();
+
+    teardown();
 }
 
-void TestExp::test_add()
+void TestExp::setup()
 {
-    using namespace eckit::maths;
+    a_ = maths::scalar( 2. );
+    b_ = maths::scalar( 4. );
+    x_ = maths::vector( 10, 5. );
+    y_ = maths::vector( 10, 7. );
+}
 
-    ExpPtr a = maths::scalar( 2. );
-    ExpPtr b = maths::scalar( 4. );
+void TestExp::teardown() {}
 
-    ExpPtr c = maths::add( a, b);
+void TestExp::test_reduce_scalars()
+{
+    ExpPtr c = maths::add(a_,b_); // scalar-scalar
 
-    ExpPtr x = maths::vector( 10, 5. );
-    ExpPtr y = maths::vector( 10, 7. );
-
-//    std::cout << *(maths::add( a ,a )->eval()) << std::endl;
-
-    ExpPtr e = maths::add( prod( maths::add( a ,a ) , x ) , prod( b, y ));
+    ExpPtr e = maths::add( prod( c , x_ ) , prod( b_, y_ ));
 
     ASSERT( e->ret_signature() == Vector::sig() );
 
-    std::cout << *e << std::endl;
-    std::cout << "original signature: " << e->signature() << std::endl;
+    std::cout << "before expr " << *e << std::endl;
+    std::cout << "before signature: " << e->signature() << std::endl;
 
-    e = e->reduce();
+    std::cout << "reduced signature: " << e->reduce()->signature() << std::endl;
 
-    std::cout << *e << std::endl;
-    std::cout << "reduced signature: " <<e->signature() << std::endl;
+    std::cout << "after expr " << *e << std::endl;
+    std::cout << "after signature: " << e->signature() << std::endl;
 
     std::cout << *(e->eval()) << std::endl;
 
-//    std::cout << *(maths::add(a,b)->reduce()) << std::endl;
+    std::cout << "reduced signature: " << e->signature() << std::endl;
+}
 
-//    std::cout << *(maths::add(a,b)->eval()) << std::endl;
+void TestExp::test_reduce_prodadd()
+{
+    ExpPtr e0 = maths::prod( a_, maths::add(y_, x_ ) );
+    ASSERT( e0->reduce()->signature() == "ProdAdd(s,v,v)" );
 
-//    std::cout << *(maths::add(a,x)->eval()) << std::endl;
+    ExpPtr e1 = maths::prod( x_, maths::add(y_, x_ ) );
+    ASSERT( e1->reduce()->signature() == "ProdAdd(v,v,v)" );
 
+    // involves also reducing the scalar-scalar
+    ExpPtr e2 = maths::prod( maths::prod(a_,b_), maths::add(y_, x_ ) );
+    ASSERT( e2->reduce()->signature() == "ProdAdd(s,v,v)" );
 }
 
 //-----------------------------------------------------------------------------

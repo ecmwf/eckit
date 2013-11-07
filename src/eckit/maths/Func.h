@@ -33,10 +33,6 @@ public: // types
 
     typedef std::map< key_t, func_t > dispatcher_t;
 
-protected: // members
-
-    args_t args_; ///< parameters of this expression
-
 protected: // methods
 
     /// Empty contructor is usually used by derived classes that
@@ -45,7 +41,7 @@ protected: // methods
 
     /// Contructor taking a list of parameters
     /// handle the setup of the parameters themselves
-    Func( const args_t& p ) : args_(p) {}
+    Func( const args_t& args ) : Expression(args) {}
 
 public: // methods
 
@@ -64,23 +60,6 @@ public: // virtual methods
     virtual std::string signature() const
     {
         return signature_args( args_ );
-    }
-
-    virtual size_t arity() const { return args_.size(); }
-
-    virtual ExpPtr param( const size_t& i ) const
-    {
-        assert( i < args_.size() );
-        assert( args_[i] );
-        return args_[i];
-    }
-
-    virtual void param( const size_t& i, ExpPtr p )
-    {
-        DBGX( *p );
-        assert( i < args_.size() );
-        if( p != args_[i] )
-            args_[i] = p;
     }
 
     virtual void print( std::ostream& o ) const;

@@ -55,11 +55,7 @@ public: // virtual methods
     virtual std::string signature() const { return Scalar::sig(); }
     virtual std::string ret_signature() const { return Scalar::sig(); }
 
-    virtual size_t arity() const { return 0; }
-    virtual ExpPtr param( const size_t& ) const  { NOTIMP; return ExpPtr(); }
-    virtual void param( const size_t&, ExpPtr p ) {}
-
-    virtual void print( std::ostream& o ) const { o << class_name() << "(" << v_ << ")"; }
+    virtual void print( std::ostream& o ) const;
 
 protected: // members
 

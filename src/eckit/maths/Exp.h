@@ -22,6 +22,17 @@
 
 #include "eckit/eckit.h"
 
+/// @todo look into currying / binding -- add2 = curry ( add , 2 )
+/// @todo list --  list 1 2
+/// @todo map
+/// @todo fold
+/// @todo comparison operator Equal()(v,2) -- returns what?
+/// @todo unary operator
+/// @todo operator returning scalar
+/// @todo operator returning multiple outputs
+/// @todo how to support multiple implementations ( MKL, CuBLAS, etc. )
+/// @todo create a expression tree Visitor class that takes an operation as parameter
+
 //--------------------------------------------------------------------------------------------
 
 #include <algorithm>
@@ -47,9 +58,7 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-/// @todo rename params_ to args_
 /// @todo move args_ to Exp
-
 
 //--------------------------------------------------------------------------------------------
 
@@ -92,6 +101,14 @@ public: // methods
 
     static std::string class_name() { return "Exp"; }
 
+    /// Empty contructor is usually used by derived classes that
+    /// handle the setup of the parameters themselves
+    Expression() {}
+
+    /// Contructor taking a list of parameters
+    /// handle the setup of the parameters themselves
+    Expression( const args_t& args ) : args_(args) {}
+
     virtual ~Expression();
 
     ExpPtr self() { return shared_from_this(); }
@@ -110,6 +127,23 @@ public: // methods
 
     ValPtr eval();
 
+    size_t arity() const { return args_.size(); }
+
+    ExpPtr param( const size_t& i ) const
+    {
+        assert( i < args_.size() );
+        assert( args_[i] );
+        return args_[i];
+    }
+
+    void param( const size_t& i, ExpPtr p )
+    {
+        assert( i < args_.size() );
+        assert( p );
+        if( p != args_[i] )
+            args_[i] = p;
+    }
+
 public: // virtual methods
 
     virtual std::string type_name() const = 0;
@@ -119,9 +153,9 @@ public: // virtual methods
     virtual std::string signature() const = 0;
     virtual std::string ret_signature() const = 0;
 
-    virtual size_t arity() const = 0;
-    virtual ExpPtr param( const size_t& ) const = 0;
-    virtual void param( const size_t&, ExpPtr p ) = 0;
+protected: // members
+
+    args_t args_; ///< parameters of this expression
 
 };
 

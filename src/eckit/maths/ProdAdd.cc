@@ -12,11 +12,34 @@
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/Vector.h"
 #include "eckit/maths/BinaryFunc.h"
+#include "eckit/maths/Reducer.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
+
+ProdAdd::Op::Op(const ExpPtr& e)
+{
+    ASSERT( e );
+    ASSERT( e->arity() == 2 );
+
+    ASSERT( e->type_name() == opname(Prod()) );
+    ASSERT( e->param(1)->type_name() == opname(Add()) );
+
+    ExpPtr a0 = e->param(0);
+    ExpPtr a1 = e->param(1)->param(0);
+    ExpPtr a2 = e->param(1)->param(1);
+
+    ASSERT( Scalar::is( a0 ) || Vector::is( a0 ) );
+    args_.push_back(a0);
+
+    ASSERT( Vector::is( a1 ) );
+    args_.push_back(a1);
+
+    ASSERT( Vector::is( a2 ) );
+    args_.push_back(a2);
+}
 
 string ProdAdd::Op::ret_signature() const
 {
@@ -89,6 +112,10 @@ ProdAdd::Register::Register()
 //--------------------------------------------------------------------------------------------
 
 static ProdAdd::Register prodadd_register;
+
+static ReduceTo<ProdAdd::Op> reduce_prodadd_svv("Prod(s,Add(v,v))");
+static ReduceTo<ProdAdd::Op> reduce_prodadd_vvv("Prod(v,Add(v,v))");
+
 
 //--------------------------------------------------------------------------------------------
 

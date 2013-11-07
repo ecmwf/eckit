@@ -80,6 +80,11 @@ typedef divides<scalar_t>     Div;
 typedef plus<scalar_t>        Add;
 typedef minus<scalar_t>       Sub;
 
+const char *opname(const Prod&);
+const char *opname(const Div&);
+const char *opname(const Add&);
+const char *opname(const Sub&);
+
 //--------------------------------------------------------------------------------------------
 
 // version with stand alone functions

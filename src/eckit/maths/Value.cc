@@ -19,6 +19,16 @@ Value::~Value()
 {
 }
 
+ExpPtr Value::reduce()
+{
+    return shared_from_this();
+}
+
+ValPtr Value::evaluate()
+{
+    return boost::static_pointer_cast<Value>( shared_from_this() );
+}
+
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths

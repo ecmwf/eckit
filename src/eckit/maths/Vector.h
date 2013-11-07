@@ -24,6 +24,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 class Vector : public Value {
+
 public: // types
 
     typedef scalar_t elemt_t;
@@ -57,23 +58,12 @@ public: // virtual methods
     virtual std::string signature() const { return Vector::sig(); }
     virtual std::string ret_signature() const { return Vector::sig(); }
 
-    virtual size_t arity() const { return 0; }
-    virtual ExpPtr param( const size_t& ) const  { return ExpPtr(); }
-    virtual void param( const size_t&, ExpPtr p ) {}
-
-    virtual void print( std::ostream& o ) const
-    {
-        o << class_name() << "(";
-        for( size_t i = 0; i < v_.size(); ++i )
-        {
-            if(i) o << ", ";
-            o << v_[i];
-        }
-        o << ")";
-    }
+    virtual void print( std::ostream& o ) const;
 
 protected: // members
+
     value_t v_;
+
 };
 
 //--------------------------------------------------------------------------------------------

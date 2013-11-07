@@ -19,6 +19,11 @@ Scalar::Scalar( const scalar_t& v ) : v_(v)
 {
 }
 
+void Scalar::print(ostream &o) const
+{
+    o << class_name() << "(" << v_ << ")";
+}
+
 Scalar::Scalar(const ExpPtr& e) : v_(0)
 {
    ASSERT( e->ret_signature() == Scalar::sig() );

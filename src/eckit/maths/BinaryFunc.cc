@@ -33,10 +33,10 @@ GEN_BINFUNC_IMPL(sub,BinaryFunc<Sub>)
 
 //--------------------------------------------------------------------------------------------
 
-inline const char *opname(const Prod&)  { return "Prod";  }
-inline const char *opname(const Div&)   { return "Div";}
-inline const char *opname(const Add&)   { return "Add";  }
-inline const char *opname(const Sub&)   { return "Sub"; }
+const char *opname(const Prod&)  { return "Prod";  }
+const char *opname(const Div&)   { return "Div";}
+const char *opname(const Add&)   { return "Add";  }
+const char *opname(const Sub&)   { return "Sub"; }
 
 //--------------------------------------------------------------------------------------------
 

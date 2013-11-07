@@ -33,16 +33,9 @@ public: // methods
 
     virtual ~Value();
 
-    virtual ExpPtr reduce() { return shared_from_this(); }
+    virtual ExpPtr reduce();
 
-    virtual ValPtr evaluate()
-    {
-        return boost::static_pointer_cast<Value>( shared_from_this() );
-    }
-
-protected: // methods
-
-private: // members
+    virtual ValPtr evaluate();
 
 };
 

@@ -25,6 +25,17 @@ Vector::Vector( const value_t& v )
 {
 }
 
+void Vector::print(ostream &o) const
+{
+    o << class_name() << "(";
+    for( size_t i = 0; i < v_.size(); ++i )
+    {
+        if(i) o << ", ";
+        o << v_[i];
+    }
+    o << ")";
+}
+
 //--------------------------------------------------------------------------------------------
 
 ExpPtr vector( const size_t& sz, const scalar_t& v )

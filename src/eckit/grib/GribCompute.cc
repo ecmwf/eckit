@@ -9,7 +9,13 @@ namespace compute {
 
 
 void mean(const GribFieldSet& in, GribFieldSet& out) {
+
+
+
     size_t nfields = in.count();
+
+    Log::info() << "mean(" << nfields << ")" << endl;
+
     ASSERT(out.count() == 0);
 
     if(!nfields) {

@@ -81,7 +81,8 @@ private:
 // -- Overridden methods
 	
     virtual GribFieldState* returnValues(double*&, size_t&) const;
-    virtual GribFieldState* returnHandle(GribHandle*&) const;
+    virtual GribFieldState* returnHandle(GribHandle*&, bool copy) const;
+    virtual void write(DataHandle&) const;
 
 // -- Class members
 	// None

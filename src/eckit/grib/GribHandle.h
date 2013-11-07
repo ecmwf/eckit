@@ -15,6 +15,8 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/serialisation/Stream.h"
 
+class DataHandle;
+
 struct grib_handle;
 namespace eckit {
 
@@ -32,6 +34,8 @@ public:
 // -- Methods
 
     double* getDataValues(size_t&) const;
+    void setDataValues(const double*, size_t);
+    void write(DataHandle&);
 
 private: // members
 

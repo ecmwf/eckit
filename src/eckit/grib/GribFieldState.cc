@@ -6,7 +6,7 @@
 namespace eckit {
 
 GribFieldState::GribFieldState(GribFieldState *next):
-    next_(0)
+    next_(next)
 {
 }
 

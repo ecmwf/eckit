@@ -22,6 +22,7 @@
 namespace eckit {
 
 class GribField;
+class DataHandle;
 
 class GribFieldSet {
 public:
@@ -45,6 +46,9 @@ public:
 	// None
 
 // -- Methods
+
+    void write(const PathName& path) const;
+    void write(DataHandle& handle) const;
 
     void add(GribField*);
 

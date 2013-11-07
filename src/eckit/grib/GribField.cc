@@ -38,4 +38,16 @@ const double* GribField::getValues(size_t& count) const
     return result;
 }
 
+GribHandle* GribField::getHandle(bool copy) const
+{
+    GribField* self = const_cast<GribField*>(this);
+    GribHandle* result = 0;
+    self->state_ = self->state_->returnHandle(result, copy);
+    return result;
+}
+
+void GribField::write(DataHandle& handle) const {
+    this->state_->write(handle);
+}
+
 } // namespace

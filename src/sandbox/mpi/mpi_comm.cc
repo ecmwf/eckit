@@ -60,6 +60,7 @@ void TestMPIComm::run()
     compute::mean(fs, m);
 
     Log::info() << m << endl;
+    m.write("/tmp/mean.grib");
 }
 
 //-----------------------------------------------------------------------------

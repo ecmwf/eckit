@@ -3,6 +3,7 @@
 
 #include "GribField.h"
 #include "GribFieldStateResult.h"
+#include "GribHandle.h"
 
 namespace eckit {
 
@@ -34,11 +35,19 @@ GribFieldState* GribFieldStateResult::returnValues(double*& values, size_t& coun
     return const_cast<GribFieldStateResult*>(this);
 }
 
-GribFieldState* GribFieldStateResult::returnHandle(GribHandle*&) const
+GribFieldState* GribFieldStateResult::returnHandle(GribHandle*&, bool copy) const
 {
     NOTIMP;
 }
 
+void GribFieldStateResult::write(DataHandle& handle) const
+{
+    GribHandle* h = headers_->getHandle(true);
+    h->setDataValues(values_, count_);
+    h->write(handle);
+    //@@todo: ...
+    delete h;
+}
 
 
 }

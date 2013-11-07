@@ -1,31 +1,19 @@
-// File GribField.h
+// File GribFieldStateResult.h
 // Baudouin Raoult - (c) ECMWF Nov 13
 
-#ifndef GribField_H
-#define GribField_H
+#ifndef GribFieldStateResult_H
+#define GribFieldStateResult_H
 
-// namespace mpi;
+#include "GribFieldState.h"
 
-// Headers
-// #ifndef   machine_H
-// #include "machine.h"
-// #endif
-
-// Forward declarations
-
-// class ostream;
-
-// 
-#include "eckit/memory/Counted.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
 
 namespace eckit {
 
-class GribFile;
-class GribFieldState;
+class GribField;
 
-class GribField : public eckit::Counted {
+class GribFieldStateResult : public GribFieldState {
 public:
 
 // -- Exceptions
@@ -33,12 +21,11 @@ public:
 
 // -- Contructors
 
-    GribField(GribFile *, const Offset&, const Length&);
-    GribField(GribField*,double*,  size_t);
+    GribFieldStateResult(GribField*, double*, size_t);
 
 // -- Destructor
 
-	~GribField(); // Change to virtual if base class
+	~GribFieldStateResult(); // Change to virtual if base class
 
 // -- Convertors
 	// None
@@ -47,8 +34,7 @@ public:
 	// None
 
 // -- Methods
-
-    const double *getValues(size_t&) const;
+	// None
 
 // -- Overridden methods
 	// None
@@ -81,18 +67,22 @@ private:
 
 // No copy allowed
 
-	GribField(const GribField&);
-	GribField& operator=(const GribField&);
+	GribFieldStateResult(const GribFieldStateResult&);
+	GribFieldStateResult& operator=(const GribFieldStateResult&);
 
 // -- Members
 
-    GribFieldState* state_;
+    double* values_;
+    size_t  count_;
+    GribField* headers_;
 
 // -- Methods
 	// None
 
 // -- Overridden methods
-	// None
+	
+    virtual GribFieldState* returnValues(double*&, size_t&) const;
+    virtual GribFieldState* returnHandle(GribHandle*&) const;
 
 // -- Class members
 	// None
@@ -102,10 +92,11 @@ private:
 
 // -- Friends
 
-    friend ostream& operator<<(ostream& s,const GribField& p)
-        { p.print(s); return s; }
+	//friend ostream& operator<<(ostream& s,const GribFieldStateResult& p)
+	//	{ p.print(s); return s; }
 
 };
+
 }
 
 #endif

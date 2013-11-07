@@ -51,6 +51,11 @@ public:
     size_t count() const { return fields_.size(); }
     const GribField* get(size_t i) const { return fields_[i]; }
 
+
+    // Must be adopted 
+    GribField* willAdopt(size_t i) const { return fields_[i]; }
+
+
 // -- Overridden methods
 	// None
 

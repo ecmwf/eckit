@@ -4,14 +4,15 @@
 #ifndef GribCompute_H
 #define GribCompute_H
 
-#include "eckit/value/Expression.h"
 #include "GribFieldSet.h"
 
 namespace eckit {
+namespace compute {
 
-typedef Expression<GribFieldSet> GribExpression;
+void mean(const GribFieldSet& in, GribFieldSet& out);
 
 
+} // namespace
 } // namespace
 
 #endif

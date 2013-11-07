@@ -56,14 +56,10 @@ void TestMPIComm::run()
     GribFieldSet fs("/tmp/data.grib");
     Log::info() << fs << endl;
 
-    GribExpression* e = new CondBinary<plus<eckit::Value>, GribFieldSet>(0,0);
+    GribFieldSet m;
+    compute::mean(fs, m);
 
-    for(size_t i = 0; i < fs.count(); ++i) {
-        const GribField* f = fs.get(i);
-        size_t n = 0;
-        f->getValues(n);
-        Log::info() << i << " : " << n << endl;
-    }
+    Log::info() << m << endl;
 }
 
 //-----------------------------------------------------------------------------

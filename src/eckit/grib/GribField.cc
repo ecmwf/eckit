@@ -4,6 +4,7 @@
 #include "GribField.h"
 #include "GribFile.h"
 #include "GribFieldStateFile.h"
+#include "GribFieldStateResult.h"
 
 namespace eckit {
 
@@ -11,6 +12,12 @@ GribField::GribField(GribFile* file, const Offset& offset, const Length& length)
     state_(new GribFieldStateFile(file, offset, length))
 {
 }
+
+GribField::GribField(GribField* headers,double* values,  size_t nvalues):
+    state_(new GribFieldStateResult(headers, values, nvalues))
+{
+}
+
 
 GribField::~GribField()
 {

@@ -31,6 +31,8 @@ inline const char *opname(const logical_or<double>&)     { return "||";}
 
 
 GribFieldSet mean(const GribFieldSet& in);
+double maxvalue(const GribFieldSet& in);
+double minvalue(const GribFieldSet& in);
 
 template<class OPERATOR>
 void unop(const double& in, double& out) {
@@ -47,7 +49,7 @@ GribFieldSet unop(const GribFieldSet& in) {
 
     GribFieldSet out(in.count());
 
-    Log::info() << "unop(" << opname(OPERATOR()) << ")" << endl;
+//    Log::info() << "unop(" << opname(OPERATOR()) << ")" << endl;
 
     size_t nfields = in.count();
 
@@ -77,11 +79,10 @@ GribFieldSet binop(const GribFieldSet& a, const GribFieldSet& b) {
 
     GribFieldSet out(a.count());
 
-    Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
+ //   Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
 
     size_t nfields = a.count();
     ASSERT(b.count() == nfields);
-
 
     ASSERT(out.count() == 0);
 
@@ -115,20 +116,15 @@ GribFieldSet binop(const GribFieldSet& a, const double& b) {
 
     GribFieldSet out(a.count());
 
-
-    Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
+//    Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
 
     size_t nfields = a.count();
-
-
 
     for(size_t j = 0; j < nfields; ++j) {
         GribField* fa = a.willAdopt(j);
 
-        size_t na, nb;
+        size_t na;
         const double* va = fa->getValues(na);
-
-        ASSERT(na == nb);
 
         double* result = new double[na];
         ASSERT(result);
@@ -147,10 +143,9 @@ template<class OPERATOR>
 GribFieldSet binop(const double& b, const GribFieldSet& a) {
     GribFieldSet out(a.count());
 
-    Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
+//   Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
 
     size_t nfields = a.count();
-
 
     for(size_t j = 0; j < nfields; ++j) {
         GribField* fa = a.willAdopt(j);
@@ -181,7 +176,7 @@ A multiplies(const A& a, const B& b) {
 }
 
 template<class A, class B>
-A divides(const GribFieldSet& a, const GribFieldSet& b) {
+A divides(const A& a, const B& b) {
     return binop<std::divides<double> >(a, b);
 }
 
@@ -245,6 +240,13 @@ A logical_not(const A& in, A& out) {
     return unop<std::logical_not<double> >(in);
 }
 
+GribFieldSet operator-(const GribFieldSet& a, double b) {
+    return minus(a, b);
+}
+
+GribFieldSet operator/(const GribFieldSet& a, double b) {
+    return divides(a, b);
+}
 
 } // namespace
 } // namespace

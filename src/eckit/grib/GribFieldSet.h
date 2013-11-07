@@ -24,14 +24,19 @@ namespace eckit {
 class GribField;
 class DataHandle;
 
+
+
 class GribFieldSet {
 public:
+
+
 
 // -- Exceptions
 	// None
 
 // -- Contructors
 
+    GribFieldSet(GribField*);
     GribFieldSet(size_t size = 0);
     GribFieldSet(const PathName& path);
 
@@ -72,6 +77,35 @@ public:
 
     // Must be adopted 
     GribField* willAdopt(size_t i) const { return fields_[i]; }
+
+
+
+    class iterator {
+
+        std::vector<GribField*>::iterator j_;
+
+        iterator& operator++(int);
+
+    public:
+
+        iterator(const std::vector<GribField*>::iterator& j): j_(j) {}
+
+        bool operator!=(const iterator& other) const
+            { return j_ != other.j_; }
+
+        iterator& operator++() {
+            ++j_;
+            return *this;
+        }
+
+        GribFieldSet operator*() {
+            return GribFieldSet(*j_);
+        }
+
+    };
+
+    iterator begin() { return iterator(fields_.begin()); }
+    iterator end()   { return iterator(fields_.end());   }
 
 
 // -- Overridden methods

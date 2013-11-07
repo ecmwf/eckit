@@ -13,6 +13,12 @@ GribFieldSet::GribFieldSet(size_t size)
     fields_.reserve(size);
 }
 
+GribFieldSet::GribFieldSet(GribField* field):
+    fields_(1, field)
+{
+    fields_[0]->attach();
+}
+
 GribFieldSet::GribFieldSet(const GribFieldSet& other)
 {
     fields_.reserve(other.fields_.size());

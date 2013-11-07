@@ -13,14 +13,11 @@ GribFieldSet mean(const GribFieldSet& in)
 
     GribFieldSet out(1);
 
-
     size_t nfields = in.count();
 
     Log::info() << "mean(" << nfields << ")" << endl;
 
-
     ASSERT(nfields) ;
-
 
     size_t npoints = 0;
     GribField* first = in.willAdopt(0);
@@ -31,13 +28,13 @@ GribFieldSet mean(const GribFieldSet& in)
     std::copy(values, values + npoints, result);
 
     for(size_t j = 1; j < nfields; ++j) {
-         size_t n = 0;
+        size_t n = 0;
         const GribField* first = in.get(0);
         const double* values = first->getValues(n);
         ASSERT(n == npoints);
-         for(size_t i = 0; i < npoints; ++i) {
-             result[i] += values[i];
-         }
+        for(size_t i = 0; i < npoints; ++i) {
+            result[i] += values[i];
+        }
     }
 
     for(size_t i = 0; i < npoints; ++i) {
@@ -47,6 +44,45 @@ GribFieldSet mean(const GribFieldSet& in)
     out.add(new GribField(first, result, npoints));
 
     return out;
+}
+
+template<class OPERATOR>
+double minmaxvalue(const GribFieldSet& in)
+{
+    size_t nfields = in.count();
+
+    ASSERT(nfields) ;
+
+    double result;
+
+    for(size_t j = 0; j < nfields; ++j) {
+        size_t npoints = 0;
+        const GribField* f = in.get(j);
+        const double* values = f->getValues(npoints);
+        ASSERT(npoints);
+        if(j == 0) {
+            result = values[0];
+        }
+
+        for(size_t i = 0; i < npoints; ++i) {
+            if( OPERATOR()(values[i],result)) {
+                result = values[i];
+            }
+        }
+    }
+
+    return result;
+
+}
+
+double minvalue(const GribFieldSet& in)
+{
+    return minmaxvalue<std::less<double> >(in);
+}
+
+double maxvalue(const GribFieldSet& in)
+{
+    return minmaxvalue<std::greater<double> >(in);
 }
 
 } // namespace compute

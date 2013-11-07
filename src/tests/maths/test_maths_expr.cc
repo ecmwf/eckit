@@ -12,6 +12,9 @@
 #include "eckit/runtime/Tool.h"
 
 #include "eckit/maths/Exp.h"
+#include "eckit/maths/Scalar.h"
+#include "eckit/maths/Vector.h"
+#include "eckit/maths/BinaryFunc.h"
 
 using namespace eckit;
 

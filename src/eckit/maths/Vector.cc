@@ -8,15 +8,33 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/Const.h"
+#include "eckit/maths/Vector.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Const::~Const()
+Vector::Vector( const size_t& s, const scalar_t& v )
+    : v_(s,v)
 {
+}
+
+Vector::Vector( const value_t& v )
+    : v_(v)
+{
+}
+
+//--------------------------------------------------------------------------------------------
+
+ExpPtr vector( const size_t& sz, const scalar_t& v )
+{
+    return ExpPtr( new Vector(sz,v) );
+}
+
+ExpPtr vector( const Vector::value_t& v  )
+{
+    return ExpPtr( new Vector(v) );
 }
 
 //--------------------------------------------------------------------------------------------

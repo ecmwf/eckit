@@ -8,28 +8,37 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Const.h
+/// @file Value.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Const_h
-#define eckit_maths_Const_h
+#ifndef eckit_maths_Value_h
+#define eckit_maths_Value_h
 
 #include "eckit/eckit.h"
+
+#include "eckit/maths/Exp.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-class Const {
-	
+class Value : public Expression {
+
 public: // methods
 
-    static std::string class_name() { return "Const"; }
+    static std::string class_name() { return "Value"; }
 
-    ~Const();
+    virtual ~Value();
+
+    virtual ExpPtr reduce() { return shared_from_this(); }
+
+    virtual ValPtr evaluate()
+    {
+        return boost::static_pointer_cast<Value>( shared_from_this() );
+    }
 
 protected: // methods
 

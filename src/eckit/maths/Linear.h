@@ -8,32 +8,37 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Const.h
+/// @file Linear.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Const_h
-#define eckit_maths_Const_h
+#ifndef eckit_maths_Linear_h
+#define eckit_maths_Linear_h
 
-#include "eckit/eckit.h"
+#include "eckit/maths/Func.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-class Const {
-	
+/// Generates a Linear combination of vectors
+class Linear : public Func {
+
 public: // methods
 
-    static std::string class_name() { return "Const"; }
+    static std::string class_name() { return "Linear"; }
 
-    ~Const();
+    Linear( ExpPtr e );
 
-protected: // methods
+    virtual std::string type_name() const { return Linear::class_name(); }
 
-private: // members
+    virtual size_t arity() const { return 4; }
+
+    virtual ValPtr evaluate( const args_t& p );
+
+    virtual std::string ret_signature() const;
 
 };
 

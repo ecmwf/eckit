@@ -8,15 +8,28 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/Const.h"
+#include "eckit/maths/Scalar.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Const::~Const()
+Scalar::Scalar( const scalar_t& v ) : v_(v)
 {
+}
+
+Scalar::Scalar(const ExpPtr &e) : v_(0)
+{
+   ASSERT( e->ret_signature() == Scalar::sig() );
+   Scalar::extract( e->evaluate() );
+}
+
+//--------------------------------------------------------------------------------------------
+
+ExpPtr scalar(const scalar_t &s)
+{
+    return ExpPtr( new Scalar(s) );
 }
 
 //--------------------------------------------------------------------------------------------

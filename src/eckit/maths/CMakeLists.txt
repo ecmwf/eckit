@@ -1,8 +1,24 @@
 list( APPEND eckit_maths_srcs
-Exp.h
-Exp.cc
-Const.h
+BinaryFunc.cc
+BinaryFunc.h
 Const.cc
+Const.h
+Exp.cc
+Exp.h
+Func.cc
+Func.h
+Linear.cc
+Linear.h
+ProdAdd.cc
+ProdAdd.h
+Reducer.cc
+Reducer.h
+Scalar.cc
+Scalar.h
+Value.cc
+Value.h
+Vector.cc
+Vector.h
 )
 
 

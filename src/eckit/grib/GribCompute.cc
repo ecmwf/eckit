@@ -8,19 +8,18 @@ namespace eckit {
 namespace compute {
 
 
-void mean(const GribFieldSet& in, GribFieldSet& out) {
+GribFieldSet mean(const GribFieldSet& in)
+{
 
+    GribFieldSet out(1);
 
 
     size_t nfields = in.count();
 
     Log::info() << "mean(" << nfields << ")" << endl;
 
-    ASSERT(out.count() == 0);
 
-    if(!nfields) {
-        return;
-    }
+    ASSERT(nfields) ;
 
 
     size_t npoints = 0;
@@ -46,6 +45,8 @@ void mean(const GribFieldSet& in, GribFieldSet& out) {
     }
 
     out.add(new GribField(first, result, npoints));
+
+    return out;
 }
 
 } // namespace compute

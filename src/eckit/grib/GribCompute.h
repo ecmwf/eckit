@@ -30,22 +30,26 @@ inline const char *opname(const logical_or<double>&)     { return "||";}
 //====================================================================
 
 
-void mean(const GribFieldSet& in, GribFieldSet& out);
+GribFieldSet mean(const GribFieldSet& in);
 
 template<class OPERATOR>
-void unop(const GribFieldSet& in, GribFieldSet& out) {
+void unop(const double& in, double& out) {
+    out = OPERATOR()(in);
+}
+
+template<class OPERATOR>
+void binop(const double& a, const double& b, double& out) {
+    out = OPERATOR()(a, b);
+}
+
+template<class OPERATOR>
+GribFieldSet unop(const GribFieldSet& in) {
+
+    GribFieldSet out(in.count());
 
     Log::info() << "unop(" << opname(OPERATOR()) << ")" << endl;
 
     size_t nfields = in.count();
-
-
-    ASSERT(out.count() == 0);
-
-    if(!nfields) {
-        return;
-    }
-
 
     for(size_t j = 0; j < nfields; ++j) {
         GribField* f = in.willAdopt(j);
@@ -64,10 +68,14 @@ void unop(const GribFieldSet& in, GribFieldSet& out) {
 
     }
 
+    return out;
+
 }
 
 template<class OPERATOR>
-void binop(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
+GribFieldSet binop(const GribFieldSet& a, const GribFieldSet& b) {
+
+    GribFieldSet out(a.count());
 
     Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
 
@@ -76,11 +84,6 @@ void binop(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
 
 
     ASSERT(out.count() == 0);
-
-    if(!nfields) {
-        return;
-    }
-
 
     for(size_t j = 0; j < nfields; ++j) {
         GribField* fa = a.willAdopt(j);
@@ -103,21 +106,20 @@ void binop(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
 
     }
 
+    return out;
+
 }
 
 template<class OPERATOR>
-void binop(const GribFieldSet& a, const double& b, GribFieldSet& out) {
+GribFieldSet binop(const GribFieldSet& a, const double& b) {
+
+    GribFieldSet out(a.count());
+
 
     Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
 
     size_t nfields = a.count();
 
-
-    ASSERT(out.count() == 0);
-
-    if(!nfields) {
-        return;
-    }
 
 
     for(size_t j = 0; j < nfields; ++j) {
@@ -138,22 +140,16 @@ void binop(const GribFieldSet& a, const double& b, GribFieldSet& out) {
         out.add(new GribField(fa, result, na));
 
     }
-
+    return out;
 }
 
 template<class OPERATOR>
-void binop(const double& b, const GribFieldSet& a, GribFieldSet& out) {
+GribFieldSet binop(const double& b, const GribFieldSet& a) {
+    GribFieldSet out(a.count());
 
     Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
 
     size_t nfields = a.count();
-
-
-    ASSERT(out.count() == 0);
-
-    if(!nfields) {
-        return;
-    }
 
 
     for(size_t j = 0; j < nfields; ++j) {
@@ -175,77 +171,78 @@ void binop(const double& b, const GribFieldSet& a, GribFieldSet& out) {
 
     }
 
+    return out;
 }
 
 
 template<class A, class B>
-void multiplies(const A& a, const B& b, GribFieldSet& out) {
-    binop<std::multiplies<double> >(a, b, out);
+A multiplies(const A& a, const B& b) {
+    return binop<std::multiplies<double> >(a, b);
 }
 
 template<class A, class B>
-void divides(const GribFieldSet& a, const GribFieldSet& b, GribFieldSet& out) {
-    binop<std::divides<double> >(a, b, out);
+A divides(const GribFieldSet& a, const GribFieldSet& b) {
+    return binop<std::divides<double> >(a, b);
 }
 
 template<class A, class B>
-void plus(const A& a, const B& b, GribFieldSet& out) {
-    binop<std::plus<double> >(a, b, out);
+A plus(const A& a, const B& b) {
+    return binop<std::plus<double> >(a, b);
 }
 
 template<class A, class B>
-void minus(const A& a, const B& b, GribFieldSet& out) {
-    binop<std::minus<double> >(a, b, out);
+A minus(const A& a, const B& b) {
+    return binop<std::minus<double> >(a, b);
 }
 
 template<class A, class B>
-void greater(const A& a, const B& b, GribFieldSet& out) {
-    binop<std::greater<double> >(a, b, out);
+A greater(const A& a, const B& b) {
+    return binop<std::greater<double> >(a, b);
 }
 
 template<class A, class B>
-void equal_to(const A& a, const B& b, GribFieldSet& out) {
-    binop<std::equal_to<double> >(a, b, out);
+A equal_to(const A& a, const B& b) {
+    return binop<std::equal_to<double> >(a, b);
 }
 
 template<class A, class B>
-void less(const A& a, const B& b, GribFieldSet& out) {
-    binop<std::less<double> >(a, b, out);
+void less(const A& a, const B& b) {
+    return binop<std::less<double> >(a, b);
 }
 
 template<class A, class B>
-void greater_equal(const A& a, const B& b, GribFieldSet& out) {
-    binop<std::greater_equal<double> >(a, b, out);
+A greater_equal(const A& a, const B& b) {
+    return binop<std::greater_equal<double> >(a, b);
 }
 
 template<class A, class B>
-void not_equal_to(const A& a, const B& b, GribFieldSet& out) {
-    binop<std::not_equal_to<double> >(a, b, out);
+A not_equal_to(const A& a, const B& b) {
+    return binop<std::not_equal_to<double> >(a, b);
 }
 
 template<class A, class B>
-void less_equal(const A& a, const B& b, GribFieldSet& out) {
-    binop<std::less_equal<double> >(a, b, out);
+A less_equal(const A& a, const B& b) {
+    return binop<std::less_equal<double> >(a, b);
 }
 
 template<class A, class B>
-void logical_and(const A& a, const B& b, GribFieldSet& out) {
-    binop<std::logical_and<double> >(a, b, out);
+A logical_and(const A& a, const B& b) {
+   return  binop<std::logical_and<double> >(a, b);
 }
 
 template<class A, class B>
-void logical_or(const A& a, const B& b, GribFieldSet& out) {
-    binop<std::logical_or<double> >(a, b, out);
+A logical_or(const A& a, const B& b) {
+    return binop<std::logical_or<double> >(a, b);
 }
 
 template<class A>
-void negate(const A& in, A& out) {
-    unop<std::negate<double> >(in, out);
+A negate(const A& in, A& out) {
+     return unop<std::negate<double> >(in);
 }
 
 template<class A>
-void logical_not(const A& in, A& out) {
-    unop<std::logical_not<double> >(in, out);
+A logical_not(const A& in, A& out) {
+    return unop<std::logical_not<double> >(in);
 }
 
 

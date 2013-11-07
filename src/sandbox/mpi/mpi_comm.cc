@@ -56,15 +56,13 @@ void TestMPIComm::run()
     GribFieldSet fs("/tmp/data.grib");
     Log::info() << fs << endl;
 
-    GribFieldSet m;
-    compute::mean(fs, m);
+    GribFieldSet m = compute::mean(fs);
 
     Log::info() << m << endl;
     m.write("/tmp/mean.grib");
 
 
-    GribFieldSet a;
-    compute::plus(m, m, a);
+    GribFieldSet a = compute::plus(m, m);
     Log::info() << a << endl;
 }
 

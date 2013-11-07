@@ -32,8 +32,12 @@ public:
 
 // -- Contructors
 
-    GribFieldSet();
+    GribFieldSet(size_t size = 0);
     GribFieldSet(const PathName& path);
+
+    GribFieldSet(const GribFieldSet&);
+
+
 
 // -- Destructor
 
@@ -43,7 +47,18 @@ public:
 	// None
 
 // -- Operators
-	// None
+
+    GribFieldSet& operator=(const GribFieldSet&);
+
+
+    //====================================================================================
+
+
+    //====================================================================================
+
+    GribFieldSet mean() const;
+
+
 
 // -- Methods
 
@@ -90,9 +105,6 @@ protected:
 private:
 
 // No copy allowed
-
-	GribFieldSet(const GribFieldSet&);
-	GribFieldSet& operator=(const GribFieldSet&);
 
 // -- Members
 //

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -32,13 +32,15 @@ Func::dispatcher_t &Func::dispatcher()
 
 ValPtr Func::evaluate()
 {
-    const size_t nargs = args_.size();
+    args_t args = args_; // create temporary args
+
+    const size_t nargs = args.size();
     for( size_t i = 0; i < nargs; ++i )
     {
-        args_[i] = args_[i]->evaluate()->self();
+        args[i] = args[i]->evaluate()->self();
     }
 
-    std::string sig = signature();
+    std::string sig = signature_args( args );
 
     dispatcher_t& d = dispatcher();
     dispatcher_t::iterator itr = d.find( sig );
@@ -49,7 +51,7 @@ ValPtr Func::evaluate()
         throw Error( Here(), msg.str() );
     }
 
-    return ((*itr).second)( args_ );
+    return ((*itr).second)( args );
 }
 
 ExpPtr Func::reduce()

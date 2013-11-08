@@ -1,3 +1,4 @@
+# This is a comment
 list( APPEND eckit_maths_srcs
 BinaryFunc.cc
 BinaryFunc.h

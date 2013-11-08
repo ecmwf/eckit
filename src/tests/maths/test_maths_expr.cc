@@ -135,6 +135,12 @@ void TestExp::test_operators()
 
     ASSERT( e0->reduce()->signature() == "ProdAdd(s,v,v)" );
     ASSERT( e0->eval()->str() == "Vector(24, 24, 24, 24, 24, 24, 24, 24, 24, 24)" );
+
+    ExpPtr e1 =  maths::vector( 10, 10. ) / maths::vector( 10, 5. );
+    ASSERT( e1->eval()->str() == "Vector(2, 2, 2, 2, 2, 2, 2, 2, 2, 2)" );
+
+    ExpPtr e2 =  maths::vector( 10, 13. ) - maths::vector( 10, 5. );
+    ASSERT( e2->eval()->str() == "Vector(8, 8, 8, 8, 8, 8, 8, 8, 8, 8)" );
 }
 
 //-----------------------------------------------------------------------------

@@ -61,6 +61,7 @@ public: // methods
     virtual ~Grid();
 
     virtual size_t dataSize() const = 0;
+    virtual const std::vector<Point2D>& gridData() const = 0;
     virtual BoundBox2D boundingBox() const = 0;
 
 protected:

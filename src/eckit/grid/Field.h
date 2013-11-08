@@ -62,6 +62,7 @@ protected:
 //-----------------------------------------------------------------------------
 
 /// Represents a set of fields
+/// @todo add an iterator class to this collection
 class FieldSet : private eckit::NonCopyable {
 
 public: // methods
@@ -71,11 +72,18 @@ public: // methods
 
     ~FieldSet();
 
+    // passes ownership to the caller
+    FieldSet* operator() (size_t i, size_t j, size_t k = 1); ///@todo implement
+
+    // helps iterate over the fields of this FieldSet
+    Field* next(); /// @todo implement
+
 protected:
 
     /// @todo: make this a shared pointer
     Grid* grid_;
 
+    // It is important that the order of the fields is respected
     Field::Vector fields_;
 };
 

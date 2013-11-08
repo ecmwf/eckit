@@ -40,6 +40,8 @@ public:
     void test_reduce_recursive_scalars();
     /// Tests a prod(s,v,v) reduction
     void test_reduce_prodadd();
+    /// Tests operators like s * ( v + v )
+    void test_operators();
 
     void teardown();
 
@@ -57,6 +59,7 @@ void TestExp::run()
     test_reduce_scalars();
     test_reduce_recursive_scalars();
     test_reduce_prodadd();
+    test_operators();
 
     teardown();
 }
@@ -114,13 +117,24 @@ void TestExp::test_reduce_prodadd()
 {
     ExpPtr e0 = maths::prod( a_, maths::add(y_, x_ ) );
     ASSERT( e0->reduce()->signature() == "ProdAdd(s,v,v)" );
+    ASSERT( e0->eval()->str() == "Vector(24, 24, 24, 24, 24, 24, 24, 24, 24, 24)" );
 
     ExpPtr e1 = maths::prod( x_, maths::add(y_, x_ ) );
     ASSERT( e1->reduce()->signature() == "ProdAdd(v,v,v)" );
+    ASSERT( e1->eval()->str() == "Vector(60, 60, 60, 60, 60, 60, 60, 60, 60, 60)" );
 
     // involves also reducing the scalar-scalar
     ExpPtr e2 = maths::prod( maths::prod(a_,b_), maths::add(y_, x_ ) );
     ASSERT( e2->reduce()->signature() == "ProdAdd(s,v,v)" );
+    ASSERT( e2->eval()->str() == "Vector(96, 96, 96, 96, 96, 96, 96, 96, 96, 96)" );
+}
+
+void TestExp::test_operators()
+{
+    ExpPtr e0 =  a_ * ( y_ +  x_ );
+
+    ASSERT( e0->reduce()->signature() == "ProdAdd(s,v,v)" );
+    ASSERT( e0->eval()->str() == "Vector(24, 24, 24, 24, 24, 24, 24, 24, 24, 24)" );
 }
 
 //-----------------------------------------------------------------------------

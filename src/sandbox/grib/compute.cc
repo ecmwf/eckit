@@ -158,7 +158,7 @@ end <>
 
 void Compute::run()
 {
-    GribFieldSet members("/tmp/data.grib", true);
+    GribFieldSet members("/tmp/data.grib");
     Log::info() << members << endl;
     Log::info() << "MAX: " << maxvalue(members) << endl;
     Log::info() << "MIN: " << minvalue(members) << endl;

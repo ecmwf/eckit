@@ -28,7 +28,7 @@ GribFieldState* GribFieldStateExpanded::returnValues(double*& values, size_t& co
 {
     values = values_;
     count = count_;
-    return const_cast<GribFieldStateExpanded*>(this);
+    return 0;
 }
 
 GribFieldState* GribFieldStateExpanded::returnHandle(GribHandle*& handle, bool copy) const
@@ -44,6 +44,12 @@ void GribFieldStateExpanded::write(DataHandle&) const
     NOTIMP;
 }
 
+GribFieldState* GribFieldStateExpanded::release() const
+{
+    if(next_)
+        return next_->release();
+    return 0;
+}
 
 
 }

@@ -43,4 +43,11 @@ void GribFieldStateHandle::write(DataHandle&) const
     NOTIMP;
 }
 
+GribFieldState* GribFieldStateHandle::release() const
+{
+    if(next_)
+        return next_->release();
+    return 0;
+}
+
 }

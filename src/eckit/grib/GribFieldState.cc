@@ -8,13 +8,12 @@ namespace eckit {
 GribFieldState::GribFieldState(GribFieldState *next):
     next_(next)
 {
+    if(next_) next_->attach();
 }
 
 GribFieldState::~GribFieldState()
 {
-    delete next_;
+    if(next_) next_->detach();
 }
-
-
 
 }

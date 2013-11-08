@@ -5,13 +5,14 @@
 #define GribFieldState_H
 
 #include "eckit/eckit.h"
+#include "eckit/memory/Counted.h"
 
 namespace eckit {
 
 class GribHandle;
 class DataHandle;
 
-class GribFieldState {
+class GribFieldState : public Counted {
 public:
 
 // -- Exceptions
@@ -36,6 +37,8 @@ public:
     virtual GribFieldState* returnValues(double*&, size_t&) const = 0;
     virtual GribFieldState* returnHandle(GribHandle*&, bool copy) const = 0;
     virtual void write(DataHandle&) const = 0;
+
+    virtual GribFieldState* release() const = 0;
 
 // -- Overridden methods
 	// None

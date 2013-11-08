@@ -36,9 +36,11 @@ public:
 
 // -- Methods
 
-    GribFieldSet* getFieldSet(bool preload) const;
-    void getFieldSet(GribFieldSet&, bool preload) const;
+    GribFieldSet* getFieldSet() const;
+    void getFieldSet(GribFieldSet&) const;
     void getBuffer(Buffer&, const Offset&, const Length&);
+
+    const PathName& path() const { return path_; }
 
 // -- Overridden methods
 	// None

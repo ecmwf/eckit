@@ -62,7 +62,6 @@ double* GribHandle::getDataValues(size_t& count) const
     size_t n = count;
     GRIB_CALL(grib_get_double_array(handle_,"values",values,&n));
     ASSERT(n == count);
-    cout << "GribHandle::getDataValues " << n << endl;
     return values;
 }
 

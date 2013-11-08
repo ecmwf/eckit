@@ -1,6 +1,7 @@
 // File GribCompute.cc
 // Baudouin Raoult - (c) ECMWF Nov 13
 
+#include "eckit/utils/Timer.h"
 #include "GribCompute.h"
 #include "GribField.h"
 
@@ -22,6 +23,7 @@ GribFieldSet merge(const GribFieldSet& a, const GribFieldSet& b) {
 GribFieldSet mean(const GribFieldSet& in)
 {
 
+    Timer timer("mean");
     GribFieldSet out(1);
 
     size_t nfields = in.count();
@@ -40,12 +42,13 @@ GribFieldSet mean(const GribFieldSet& in)
 
     for(size_t j = 1; j < nfields; ++j) {
         size_t n = 0;
-        const GribField* first = in.get(0);
-        const double* values = first->getValues(n);
+        const GribField* f = in.get(j);
+        const double* values = f->getValues(n);
         ASSERT(n == npoints);
         for(size_t i = 0; i < npoints; ++i) {
             result[i] += values[i];
         }
+        f->release();
     }
 
     for(size_t i = 0; i < npoints; ++i) {
@@ -60,6 +63,9 @@ GribFieldSet mean(const GribFieldSet& in)
 template<class OPERATOR>
 double minmaxvalue(const GribFieldSet& in)
 {
+
+    Timer timer("minmaxvalue");
+
     size_t nfields = in.count();
 
     ASSERT(nfields) ;
@@ -80,6 +86,8 @@ double minmaxvalue(const GribFieldSet& in)
                 result = values[i];
             }
         }
+        f->release();
+        cout << j << endl;
     }
 
     return result;

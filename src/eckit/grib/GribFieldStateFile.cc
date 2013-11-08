@@ -70,4 +70,11 @@ void GribFieldStateFile::write(DataHandle& handle) const
     ASSERT(handle.write(buffer, length_) == length_);
 }
 
+GribFieldState* GribFieldStateFile::release() const
+{
+    if(next_)
+        return next_->release();
+    return 0;
+}
+
 }

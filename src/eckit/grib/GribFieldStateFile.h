@@ -84,6 +84,7 @@ private:
     virtual GribFieldState* returnValues(double*&, size_t&) const;
     virtual GribFieldState* returnHandle(GribHandle*& handle, bool copy) const;
     virtual void write(DataHandle& handle) const;
+    virtual GribFieldState* release() const;
 
 
 // -- Class members

@@ -32,7 +32,7 @@ GribFieldState* GribFieldStateResult::returnValues(double*& values, size_t& coun
 {
     values = values_;
     count = count_;
-    return const_cast<GribFieldStateResult*>(this);
+    return 0;
 }
 
 GribFieldState* GribFieldStateResult::returnHandle(GribHandle*&, bool copy) const
@@ -49,5 +49,11 @@ void GribFieldStateResult::write(DataHandle& handle) const
     delete h;
 }
 
+GribFieldState* GribFieldStateResult::release() const
+{
+    if(next_)
+        return next_->release();
+    return 0;
+}
 
 }

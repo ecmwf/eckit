@@ -27,7 +27,7 @@ class GribFieldState;
 class DataHandle;
 class GribHandle;
 
-class GribField : public eckit::Counted {
+class GribField : public Counted {
 public:
 
 // -- Exceptions
@@ -55,6 +55,8 @@ public:
     GribHandle* getHandle(bool copy) const;
 
     void write(DataHandle&) const;
+
+    void release() const;
 
 // -- Overridden methods
 	// None
@@ -95,7 +97,8 @@ private:
     GribFieldState* state_;
 
 // -- Methods
-	// None
+
+    void mutate(GribFieldState*) const;
 
 // -- Overridden methods
 	// None

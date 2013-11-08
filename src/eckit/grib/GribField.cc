@@ -12,23 +12,26 @@ namespace eckit {
 GribField::GribField(GribFile* file, const Offset& offset, const Length& length):
     state_(new GribFieldStateFile(file, offset, length))
 {
+    state_->attach();
 }
 
 GribField::GribField(GribHandle* handle, GribFile* file, const Offset& offset, const Length& length):
     state_(new GribFieldStateHandle(handle, new GribFieldStateFile(file, offset, length)))
 {
+    state_->attach();
 }
 
 
 GribField::GribField(GribField* headers,double* values,  size_t nvalues):
     state_(new GribFieldStateResult(headers, values, nvalues))
 {
+    state_->attach();
 }
 
 
 GribField::~GribField()
 {
-    delete state_;
+    state_->detach();
 }
 
 
@@ -37,24 +40,38 @@ void GribField::print(ostream& os) const
     os << "GribField[" << (*state_) << "]";
 }
 
+
+void GribField::mutate(GribFieldState *state) const {
+    if(state) {
+        if(state != state_) {
+            GribField* self = const_cast<GribField*>(this);
+            state->attach();
+            self->state_->detach();
+            self->state_ = state;
+        }
+    }
+}
+
 const double* GribField::getValues(size_t& count) const
 {
-    GribField* self = const_cast<GribField*>(this);
     double* result = 0;
-    self->state_ = self->state_->returnValues(result, count);
+    mutate(state_->returnValues(result, count));
     return result;
 }
 
 GribHandle* GribField::getHandle(bool copy) const
 {
-    GribField* self = const_cast<GribField*>(this);
     GribHandle* result = 0;
-    self->state_ = self->state_->returnHandle(result, copy);
+    mutate(state_->returnHandle(result, copy));
     return result;
 }
 
 void GribField::write(DataHandle& handle) const {
-    this->state_->write(handle);
+    state_->write(handle);
+}
+
+void GribField::release() const {
+    //mutate(state_->release());
 }
 
 } // namespace

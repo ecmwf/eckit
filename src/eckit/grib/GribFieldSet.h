@@ -38,7 +38,7 @@ public:
 
     GribFieldSet(GribField*);
     GribFieldSet(size_t size = 0);
-    GribFieldSet(const PathName& path, bool preload);
+    GribFieldSet(const PathName& path);
 
     GribFieldSet(const GribFieldSet&);
 

@@ -158,18 +158,23 @@ end <>
 
 void Compute::run()
 {
-    GribFieldSet members("/tmp/data.grib");
+    GribFieldSet members("/tmp/data.grib", true);
     Log::info() << members << endl;
     Log::info() << "MAX: " << maxvalue(members) << endl;
     Log::info() << "MIN: " << minvalue(members) << endl;
 
+    GribFieldSet p;
     for(GribFieldSet::iterator j = members.begin(); j != members.end() ; ++j) {
         GribFieldSet m(*j);
         double mx = maxvalue(m);
         double mn = minvalue(m);
         double dd = mx - mn;
         m = (m-mn)/dd;
+        p = merge(p, m);
     }
+
+    Log::info() << "MAX: " << maxvalue(p) << endl;
+    Log::info() << "MIN: " << minvalue(p) << endl;
 
 #if 0
     x = nil

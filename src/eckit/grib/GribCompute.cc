@@ -7,6 +7,17 @@
 namespace eckit {
 namespace compute {
 
+GribFieldSet merge(const GribFieldSet& a, const GribFieldSet& b) {
+     GribFieldSet out(a.count() + b.count());
+     for(size_t j = 0; j < a.count(); ++j) {
+        out.add(a.willAdopt(j));
+     }
+     for(size_t j = 0; j < b.count(); ++j) {
+        out.add(b.willAdopt(j));
+     }
+     return out;
+}
+
 
 GribFieldSet mean(const GribFieldSet& in)
 {

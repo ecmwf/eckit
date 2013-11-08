@@ -36,8 +36,8 @@ public:
 
 // -- Methods
 
-    GribFieldSet* getFieldSet() const;
-    void getFieldSet(GribFieldSet&) const;
+    GribFieldSet* getFieldSet(bool preload) const;
+    void getFieldSet(GribFieldSet&, bool preload) const;
     void getBuffer(Buffer&, const Offset&, const Length&);
 
 // -- Overridden methods

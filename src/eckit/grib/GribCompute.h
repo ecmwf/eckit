@@ -34,6 +34,8 @@ GribFieldSet mean(const GribFieldSet& in);
 double maxvalue(const GribFieldSet& in);
 double minvalue(const GribFieldSet& in);
 
+GribFieldSet merge(const GribFieldSet& a, const GribFieldSet& b);
+
 template<class OPERATOR>
 void unop(const double& in, double& out) {
     out = OPERATOR()(in);

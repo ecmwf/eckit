@@ -53,7 +53,7 @@ void TestMPIComm::run()
                 << " of "
                 << comm.size() << std::endl;
 
-    GribFieldSet fs("/tmp/data.grib");
+    GribFieldSet fs("/tmp/data.grib", true);
     Log::info() << fs << endl;
 
     GribFieldSet m = compute::mean(fs);

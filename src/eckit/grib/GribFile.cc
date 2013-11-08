@@ -8,6 +8,7 @@
 #include "GribHandle.h"
 
 #include "eckit/io/Buffer.h"
+#include "eckit/util/Timer.h"
 
 
 namespace eckit {
@@ -34,6 +35,7 @@ void GribFile::print(ostream& os) const
 
 GribFieldSet* GribFile::getFieldSet(bool preload) const
 {
+    Timer timer("GribFile::getFieldSet");
     GribFieldSet* fs = new GribFieldSet();
     getFieldSet(*fs, preload);
     return fs;

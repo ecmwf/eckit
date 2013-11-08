@@ -44,10 +44,10 @@ GribFieldSet& GribFieldSet::operator=(const GribFieldSet& other)
     }
 }
 
-GribFieldSet::GribFieldSet(const PathName& path)
+GribFieldSet::GribFieldSet(const PathName& path, bool preload)
 {
     GribFile* file = GribFile::newGribFile("/tmp/data.grib");
-    file->getFieldSet(*this);
+    file->getFieldSet(*this, preload);
 }
 
 GribFieldSet::~GribFieldSet()

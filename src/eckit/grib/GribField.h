@@ -36,6 +36,7 @@ public:
 // -- Contructors
 
     GribField(GribFile *, const Offset&, const Length&);
+    GribField(GribHandle*, GribFile *, const Offset&, const Length&);
     GribField(GribField*,double*,  size_t);
 
 // -- Destructor

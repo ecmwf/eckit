@@ -54,8 +54,6 @@ GribFieldSet unop(const GribFieldSet& in) {
 
     GribFieldSet out(in.count());
 
-//    Log::info() << "unop(" << opname(OPERATOR()) << ")" << endl;
-
     size_t nfields = in.count();
 
     for(size_t j = 0; j < nfields; ++j) {
@@ -83,8 +81,6 @@ template<class OPERATOR>
 GribFieldSet binop(const GribFieldSet& a, const GribFieldSet& b) {
 
     GribFieldSet out(a.count());
-
- //   Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
 
     size_t nfields = a.count();
     ASSERT(b.count() == nfields);
@@ -120,8 +116,6 @@ template<class OPERATOR>
 GribFieldSet binop(const GribFieldSet& a, const double& b) {
 
     GribFieldSet out(a.count());
-
-//    Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
 
     size_t nfields = a.count();
 

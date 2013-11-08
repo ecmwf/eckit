@@ -10,7 +10,6 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/utils/Timer.h"
 
-#include "eckit/container/Cache.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/AutoLock.h"
 
@@ -18,33 +17,15 @@
 namespace eckit {
 
 
-static Mutex mutex;
-static Cache<const GribFile*, EmosFile*> cache_;
-
-static EmosFile& getFile(const GribFile* file) {
-    AutoLock<Mutex> lock(mutex);
-    EmosFile* result = 0;
-
-    if(cache_.fetch(file, result)) {
-        return *result;
-    }
-
-    result = new EmosFile(file->path());
-    ASSERT(result);
-    cache_.update(file, result);
-
-    return *result;
-}
-
 GribFile::GribFile(const PathName& path):
-    path_(path)
+    path_(path),
+    file_(0)
 {
 }
 
 GribFile::~GribFile()
 {
-    AutoLock<Mutex> lock(mutex);
-    cache_.expire(this);
+    delete file_;
 }
 
 GribFile* GribFile::newGribFile(const PathName& path) {
@@ -58,7 +39,6 @@ void GribFile::print(ostream& os) const
 
 GribFieldSet* GribFile::getFieldSet() const
 {
-    Timer timer("GribFile::getFieldSet");
     GribFieldSet* fs = new GribFieldSet();
     getFieldSet(*fs);
     return fs;
@@ -66,10 +46,9 @@ GribFieldSet* GribFile::getFieldSet() const
 
 void GribFile::getFieldSet(GribFieldSet& fs) const
 {
-    Timer timer(string("Load ") + path_);
+    EmosFile file(path_, true);
 
     Buffer buffer(1024*1024*64);
-    EmosFile& file = getFile(this);
     GribFile* self = const_cast<GribFile*>(this);
 
     size_t len = 0;
@@ -88,14 +67,19 @@ void GribFile::getFieldSet(GribFieldSet& fs) const
 
             fs.add(g);
     }
+
 }
 
 void GribFile::getBuffer(Buffer& buffer, const Offset& offset, const Length& length)
 {
-    EmosFile& file = getFile(this);
-    file.seek(offset);
+    if(!file_) {
+        GribFile* self = const_cast<GribFile*>(this);
+        self->file_ = new EmosFile(path_, false);
+    }
 
-    Length len = file.readSome(buffer);
+    file_->seek(offset);
+
+    Length len = file_->readSome(buffer);
     ASSERT(len == length);
     const char *p = buffer + len - 4;
 

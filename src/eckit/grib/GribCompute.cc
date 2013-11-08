@@ -63,23 +63,21 @@ GribFieldSet mean(const GribFieldSet& in)
 template<class OPERATOR>
 double minmaxvalue(const GribFieldSet& in)
 {
-
-    Timer timer("minmaxvalue");
-
     size_t nfields = in.count();
 
-    ASSERT(nfields) ;
+    ASSERT(nfields);
 
     double result;
+    size_t npoints;
+
+    const GribField* f = in.get(0);
+    const double* values = f->getValues(npoints);
+    ASSERT(npoints);
+    result = values[0];
 
     for(size_t j = 0; j < nfields; ++j) {
-        size_t npoints = 0;
-        const GribField* f = in.get(j);
-        const double* values = f->getValues(npoints);
-        ASSERT(npoints);
-        if(j == 0) {
-            result = values[0];
-        }
+        f = in.get(j);
+        values = f->getValues(npoints);
 
         for(size_t i = 0; i < npoints; ++i) {
             if( OPERATOR()(values[i],result)) {
@@ -87,7 +85,6 @@ double minmaxvalue(const GribFieldSet& in)
             }
         }
         f->release();
-        cout << j << endl;
     }
 
     return result;

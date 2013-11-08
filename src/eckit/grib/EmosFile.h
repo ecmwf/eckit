@@ -16,8 +16,9 @@
 
 // Forward declarations
 
-namespace eckit { class Buffer; }
-namespace eckit { class PathName; }
+namespace eckit {
+class Buffer;
+class PathName;
 
 class EmosFile : private eckit::NonCopyable {
 
@@ -25,7 +26,7 @@ public: // methods
 
     /// Contructor
 
-    EmosFile(const eckit::PathName&);
+    EmosFile(const eckit::PathName&, bool buffered);
 
     /// Contructor, does not take ownership of eckit::DataHandle
 
@@ -52,5 +53,7 @@ private: // members
     auto_ptr<eckit::DataHandle> handle_;
 
 };
+
+}
 
 #endif

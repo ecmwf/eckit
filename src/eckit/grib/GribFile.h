@@ -13,6 +13,7 @@
 namespace eckit {
 
 class GribFieldSet;
+class EmosFile;
 
 class GribFile : public Counted {
 public:
@@ -83,6 +84,7 @@ private:
 // -- Members
 //
 	PathName path_;
+    EmosFile* file_;
 
 // -- Methods
 	// None

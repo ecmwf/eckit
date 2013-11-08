@@ -29,8 +29,12 @@ static long readcb(void *data, void *buffer, long len)
     return handle->read(buffer,len);
 }
 
-EmosFile::EmosFile(const PathName& path): 
-	handle_(new BufferedHandle(path.fileHandle(), 64*1024*1024)) 
+EmosFile::EmosFile(const PathName& path, bool buffered):
+    handle_(
+        buffered
+            ? new BufferedHandle(path.fileHandle(), 64*1024*1024)
+            : path.fileHandle()
+        )
 {
     handle_->openForRead();
 }

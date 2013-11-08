@@ -42,6 +42,8 @@ GribFieldSet& GribFieldSet::operator=(const GribFieldSet& other)
     for(std::vector<GribField*>::iterator j = old.begin(); j != old.end(); ++j) {
         (*j)->detach();
     }
+
+    return *this;
 }
 
 GribFieldSet::GribFieldSet(const PathName& path)

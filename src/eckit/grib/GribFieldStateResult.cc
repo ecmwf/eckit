@@ -28,14 +28,13 @@ void GribFieldStateResult::print(ostream& os) const
     os << "GribFieldStateResult";
 }
 
-GribFieldState* GribFieldStateResult::returnValues(double*& values, size_t& count) const
+double *GribFieldStateResult::returnValues(size_t& count) const
 {
-    values = values_;
     count = count_;
-    return 0;
+    return values_;
 }
 
-GribFieldState* GribFieldStateResult::returnHandle(GribHandle*&, bool copy) const
+GribHandle* GribFieldStateResult::returnHandle(bool copy) const
 {
     NOTIMP;
 }
@@ -49,11 +48,5 @@ void GribFieldStateResult::write(DataHandle& handle) const
     delete h;
 }
 
-GribFieldState* GribFieldStateResult::release() const
-{
-    if(next_)
-        return next_->release();
-    return 0;
-}
 
 }

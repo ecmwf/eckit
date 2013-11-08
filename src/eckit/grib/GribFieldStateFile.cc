@@ -32,7 +32,7 @@ void GribFieldStateFile::print(ostream& os) const
     os << "GribFieldStateFile[file=" << (*file_) << ",offset=" << offset_ << ",length=" << length_ << "]";
 }
 
-GribFieldState* GribFieldStateFile::returnValues(double *& values, size_t& count) const
+double *GribFieldStateFile::returnValues(size_t& count) const
 {
     GribFieldStateFile* self = const_cast<GribFieldStateFile*>(this);
     Buffer buffer(length_);
@@ -40,27 +40,24 @@ GribFieldState* GribFieldStateFile::returnValues(double *& values, size_t& count
 
     if(0) {
         // Create a handle in between
-        GribFieldState *h = new GribFieldStateHandle(new GribHandle(buffer, length_), self);
-        return h->returnValues(values, count);
+        //GribFieldState *h = new GribFieldStateHandle(new GribHandle(buffer, length_), self);
+        //return h->returnValues(values, count);
     }
     else
     {
         // Direct read
-        size_t n = 0;
-        double* v = GribHandle(buffer, length_, false).getDataValues(n);
-        GribFieldState *h = new GribFieldStateExpanded(v, n, self);
-        return h->returnValues(values, count);
+        return GribHandle(buffer, length_, false).getDataValues(count);
+        //GribFieldState *h = new GribFieldStateExpanded(v, n, self);
+        //return h->returnValues(values, count);
     }
 }
 
-GribFieldState* GribFieldStateFile::returnHandle(GribHandle*& handle, bool copy) const
+GribHandle* GribFieldStateFile::returnHandle(bool copy) const
 {
-    GribFieldStateFile* self = const_cast<GribFieldStateFile*>(this);
     ASSERT(copy);
     Buffer buffer(length_);
     file_->getBuffer(buffer, offset_, length_);
-    handle = new GribHandle(buffer, length_, false);
-    return self;
+    return new GribHandle(buffer, length_, false);
 }
 
 void GribFieldStateFile::write(DataHandle& handle) const
@@ -70,11 +67,5 @@ void GribFieldStateFile::write(DataHandle& handle) const
     ASSERT(handle.write(buffer, length_) == length_);
 }
 
-GribFieldState* GribFieldStateFile::release() const
-{
-    if(next_)
-        return next_->release();
-    return 0;
-}
 
 }

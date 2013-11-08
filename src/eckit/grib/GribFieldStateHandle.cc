@@ -24,16 +24,12 @@ void GribFieldStateHandle::print(ostream& os) const
     os << "GribFieldStateHandle[]";
 }
 
-GribFieldState* GribFieldStateHandle::returnValues(double*& values, size_t& count) const
+double* GribFieldStateHandle::returnValues(size_t& count) const
 {
-    GribFieldStateHandle* self = const_cast<GribFieldStateHandle*>(this);
-    size_t n = 0;
-    double* v = handle_->getDataValues(n);
-    GribFieldState *h = new GribFieldStateExpanded(v, n, self);
-    return h->returnValues(values, count);
+    return handle_->getDataValues(count);
 }
 
-GribFieldState* GribFieldStateHandle::returnHandle(GribHandle*&, bool copy) const
+GribHandle* GribFieldStateHandle::returnHandle(bool copy) const
 {
     NOTIMP;
 }
@@ -43,11 +39,5 @@ void GribFieldStateHandle::write(DataHandle&) const
     NOTIMP;
 }
 
-GribFieldState* GribFieldStateHandle::release() const
-{
-    if(next_)
-        return next_->release();
-    return 0;
-}
 
 }

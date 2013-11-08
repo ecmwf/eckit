@@ -24,17 +24,16 @@ void GribFieldStateExpanded::print(ostream& os) const
     os << "GribFieldStateExpanded";
 }
 
-GribFieldState* GribFieldStateExpanded::returnValues(double*& values, size_t& count) const
+double* GribFieldStateExpanded::returnValues(size_t& count) const
 {
-    values = values_;
     count = count_;
-    return 0;
+    return values_;
 }
 
-GribFieldState* GribFieldStateExpanded::returnHandle(GribHandle*& handle, bool copy) const
+GribHandle *GribFieldStateExpanded::returnHandle(bool copy) const
 {
     if(next_) {
-        return next_->returnHandle(handle, copy);
+        return next_->returnHandle(copy);
     }
     NOTIMP;
 }
@@ -44,12 +43,6 @@ void GribFieldStateExpanded::write(DataHandle&) const
     NOTIMP;
 }
 
-GribFieldState* GribFieldStateExpanded::release() const
-{
-    if(next_)
-        return next_->release();
-    return 0;
-}
 
 
 }

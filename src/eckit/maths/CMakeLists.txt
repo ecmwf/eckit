@@ -1,8 +1,6 @@
 list( APPEND eckit_maths_srcs
 BinaryFunc.cc
 BinaryFunc.h
-Const.cc
-Const.h
 Exp.cc
 Exp.h
 Func.cc

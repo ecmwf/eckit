@@ -1,4 +1,3 @@
-# this should conflict
 list( APPEND eckit_maths_srcs
 BinaryFunc.cc
 BinaryFunc.h

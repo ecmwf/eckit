@@ -39,13 +39,13 @@ public: // methods
 
     void lock(void);
     void unlock(void);
-    bool test(int n = 0);
+    bool test(unsigned short n = 0);
 
     int  get(int n = 0) const;
     void set(int, int n = 0);
 
-    void raise(int n = 0);
-    void lower(int n = 0);
+    void raise(unsigned short n = 0);
+    void lower(unsigned short n = 0);
 
     pid_t getpid()  const;
 

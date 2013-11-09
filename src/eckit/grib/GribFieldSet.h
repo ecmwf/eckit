@@ -86,7 +86,7 @@ public:
 
 
 
-    class iterator {
+    class iterator: public std::iterator<std::forward_iterator_tag, GribFieldSet> {
 
         std::vector<GribField*>::iterator j_;
 
@@ -197,6 +197,9 @@ private:
         { p.print(s); return s; }
 
 };
-}
+
+} // Namespace
+
+
 
 #endif

@@ -2,8 +2,8 @@
 // Baudouin Raoult - (c) ECMWF Nov 13
 
 #include "eckit/utils/Timer.h"
-#include "GribCompute.h"
 #include "GribField.h"
+#include "GribCompute.h"
 
 namespace eckit {
 namespace compute {

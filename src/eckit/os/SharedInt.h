@@ -50,7 +50,7 @@ public:
 
 	int  free(int n = 0) const;
 	int  limit(int n = 0)   const;
-	void newLimit(int val,int n = 0);
+    void newLimit(short val,unsigned short n = 0);
 
 // -- Overridden methods
 	// None

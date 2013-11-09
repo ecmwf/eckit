@@ -37,9 +37,9 @@ public:
 // -- Contructors
 
     GribFieldSet();
-    GribFieldSet(GribField*);
-    GribFieldSet(size_t size);
-    GribFieldSet(const PathName& path);
+    explicit GribFieldSet(GribField*);
+    explicit GribFieldSet(size_t size);
+    explicit GribFieldSet(const PathName& path);
 
     GribFieldSet(const GribFieldSet&);
     GribFieldSet(const vector<GribFieldSet>&);

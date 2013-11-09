@@ -194,6 +194,18 @@ public:
     static size_t size(const KDWrapper& w) {
         return w.count_;
     }
+
+    static double distance(const KDWrapper& a, const KDWrapper& b)
+    {
+        GribFieldSet c = a-b;
+        return std::sqrt(compute::accumulate(c*c));
+    }
+
+    static double distance(const KDWrapper& a, const KDWrapper& b, size_t axis)
+    {
+        double c = a.x(axis) - b.x(axis);
+        return std::fabs(c);
+    }
 };
 
 void Compute::kdtree(GribFieldSet & members)
@@ -205,7 +217,17 @@ void Compute::kdtree(GribFieldSet & members)
 
     std::copy(members.begin(), members.end(), std::back_inserter(v));
 
+    {
+    Timer timer("build");
     tree.build(v.begin(), v.end());
+    cout << v.size() << endl;
+    }
+
+    size_t i = 0;
+    for(vector<KDWrapper>::const_iterator j = v.begin(); j != v.end(); ++j, ++i) {
+        KDTree<KDWrapper>::NodeList x = tree.findInSphere(*j, 12.0);
+        cout << i << ' ' << x.size() << endl;
+    }
 
 
     //GribFieldSet result(centroids);

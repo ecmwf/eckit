@@ -18,6 +18,8 @@
 #include "eckit/grib/GribField.h"
 #include "eckit/grib/GribCompute.h"
 
+#include "eckit/utils/Timer.h"
+
 
 using namespace eckit;
 using namespace eckit::compute;

@@ -25,6 +25,7 @@ public:
 
 // -- Contructors
 
+    GribHandle(grib_handle*);
     GribHandle(const eckit::Buffer&,size_t, bool copy = true);
 
 // -- Destructor
@@ -32,6 +33,8 @@ public:
 	~GribHandle(); 
 
 // -- Methods
+
+    GribHandle* clone() const;
 
     double* getDataValues(size_t&) const;
     void setDataValues(const double*, size_t);

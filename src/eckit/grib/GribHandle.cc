@@ -30,6 +30,12 @@ static int grib_call(int code, const char* msg) {
 
 #define GRIB_CALL(a) grib_call(a, #a)
 
+GribHandle::GribHandle(grib_handle* handle)
+    :handle_(handle)
+{
+
+}
+
 GribHandle::GribHandle(const Buffer& buffer,size_t size, bool copy)
     :handle_(0)
 {
@@ -77,4 +83,10 @@ void GribHandle::write(DataHandle & handle)
     size_t length;
     GRIB_CALL(grib_get_message(handle_, &message, &length));
     ASSERT(handle.write(message, length) == length);
+}
+
+
+GribHandle* GribHandle::clone() const
+{
+    return new GribHandle(grib_handle_clone(handle_));
 }

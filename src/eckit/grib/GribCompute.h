@@ -4,6 +4,8 @@
 #ifndef GribCompute_H
 #define GribCompute_H
 
+#include <cmath>
+
 #include "GribFieldSet.h"
 #include "GribField.h"
 
@@ -34,20 +36,14 @@ GribFieldSet mean(const GribFieldSet& in);
 double maxvalue(const GribFieldSet& in);
 double minvalue(const GribFieldSet& in);
 
+double accumulate(const GribFieldSet& in);
+
+
 GribFieldSet max(const GribFieldSet& in);
 GribFieldSet min(const GribFieldSet& in);
 
 GribFieldSet merge(const GribFieldSet& a, const GribFieldSet& b);
 
-template<class OPERATOR>
-void unop(const double& in, double& out) {
-    out = OPERATOR()(in);
-}
-
-template<class OPERATOR>
-void binop(const double& a, const double& b, double& out) {
-    out = OPERATOR()(a, b);
-}
 
 template<class OPERATOR>
 GribFieldSet unop(const GribFieldSet& in) {
@@ -243,8 +239,25 @@ GribFieldSet operator-(const GribFieldSet& a, double b) {
     return minus(a, b);
 }
 
+GribFieldSet operator-(const GribFieldSet& a, const GribFieldSet& b) {
+    return minus(a, b);
+}
+
 GribFieldSet operator/(const GribFieldSet& a, double b) {
     return divides(a, b);
+}
+
+GribFieldSet operator*(const GribFieldSet& a, const GribFieldSet& b) {
+    return multiplies(a, b);
+}
+
+GribFieldSet sqrt(const GribFieldSet& x) {
+
+    struct op {
+        double operator()(double x) { return std::sqrt(x); }
+    };
+
+    return unop<op>(x);
 }
 
 } // namespace

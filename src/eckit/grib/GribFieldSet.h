@@ -36,8 +36,9 @@ public:
 
 // -- Contructors
 
+    GribFieldSet();
     GribFieldSet(GribField*);
-    GribFieldSet(size_t size = 0);
+    GribFieldSet(size_t size);
     GribFieldSet(const PathName& path);
 
     GribFieldSet(const GribFieldSet&);
@@ -55,6 +56,9 @@ public:
 
     GribFieldSet& operator=(const GribFieldSet&);
 
+    GribFieldSet operator[](int i)  const;
+    GribFieldSet slice(size_t from, size_t to, size_t step = 1) const;
+    GribFieldSet slice(const vector<size_t>&) const;
 
     //====================================================================================
 
@@ -70,6 +74,7 @@ public:
     void write(DataHandle& handle) const;
 
     void add(GribField*);
+
 
     size_t count() const { return fields_.size(); }
     const GribField* get(size_t i) const { return fields_[i]; }

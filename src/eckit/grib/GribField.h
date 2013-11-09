@@ -35,9 +35,8 @@ public:
 
 // -- Contructors
 
-    GribField(GribFile *, const Offset&, const Length&);
-    GribField(GribHandle*, GribFile *, const Offset&, const Length&);
-    GribField(GribField*,double*,  size_t);
+    GribField(GribFile *, const Offset&, const Length&, GribHandle *handle = 0);
+    GribField(GribField*, double* values,  size_t count);
 
 // -- Destructor
 
@@ -94,11 +93,21 @@ private:
 
 // -- Members
 
-    GribFieldState* state_;
+    GribFile* file_;
+    Offset    offset_;
+    Length    length_;
+
+    GribHandle* handle_;
+
+    double*    values_;
+    size_t     count_;
+    GribField* headers_;
+
+
+    void pack();
 
 // -- Methods
 
-    void mutate(GribFieldState*) const;
 
 // -- Overridden methods
 	// None

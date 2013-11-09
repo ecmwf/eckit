@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <random>
+
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/runtime/Context.h"
@@ -38,123 +40,13 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-#if 0
-
-# Use the euclidian distance
-
-function distance(a,b)
-	c = a-b
-	return sqrt(accumulate(c*c))
-end distance
 
 
-# Read data
-
-members   = read("/tmp/mab/phd/all_era.grib")
-
-# Normalize
-if 0 then
-	centroids = read("clusters")
-else
-x = nil
-loop m in members
-	mx = maxvalue(m)
-	mn = minvalue(m)
-	dd = mx - mn
-	m = (m-mn) / dd
-	x = x & m
-end loop
-members = x
-
-
-	K=12
-	choices = []
-	for i = 1 to K do
-		x = int(random() * count(members)) + 1
-		while x in choices do
-			x = int(random() * count(members)) + 1
-		end while
-		choices = choices & [x]
-	end for
-
-	print (choices)
-	centroids = nil
-	loop c in choices
-		centroids = centroids & members[c]
-	end loop
-
-
-
-end if
-
-# Define the number of clusters
-
-K = count(centroids)
-print(K)
-
-rank      = [nil,nil]
-last_rank = [nil]
-
-# Iterrate until the classification is unchanged
-
-while not(rank = last_rank) do
-
-	for i = 1 to count(last_rank) do
-		print(count(last_rank[i]))
-	end for
-	print()
-
-	last_rank = rank
-
-	rank     = []
-	clusters = []
-	samples  = []
-	for n=1 to K do
-		clusters = clusters  & [nil]
-		samples  = samples  & [nil]
-		rank     = rank      & [[]]
-	end for
-	minimum   = nil;
-
-	# Assign each member to a cluster based on distance to centroid
-
-	for j = 1 to count(members) do
-		min_distance = distance(members[j],centroids[1])
-		min_index    = 1
-		for i = 2 to K do
-			x = distance(members[j],centroids[i])
-			if x < min_distance then
-				min_distance = x
-				min_index    = i
-			end if
-		end for
-		clusters[min_index] = clusters[min_index] & members[j]
-		rank[min_index]     = rank[min_index] & [j]
-
-
-	end for
-
-	# Adjust centroids
-
-	for n=1 to K do
-		centroids[n] = mean(clusters[n])
-		samples[n]   = clusters[n][1]
-	end for
-
-	print(centroids)
-	write("clusters",centroids)
-	write("samples",samples)
-
-end while
-
-# Output cluster
-
-write("clusters",centroids)
-
-function <>(a,b)
-	return not(a=b)
-end <>
-#endif
+double distance(const GribFieldSet& a, const GribFieldSet& b)
+{
+    GribFieldSet c = a-b;
+    return std::sqrt(compute::accumulate(c*c));
+}
 
 void Compute::run()
 {
@@ -173,29 +65,70 @@ void Compute::run()
         p = merge(p, m);
     }
 
-    Log::info() << "MAX: " << maxvalue(p) << endl;
-    Log::info() << "MIN: " << minvalue(p) << endl;
-
-#if 0
-    x = nil
-    loop m in members
-        mx = maxvalue(m)
-        mn = minvalue(m)
-        dd = mx - mn
-        m = (m-mn) / dd
-        x = x & m
-    end loop
-    members = x
-#endif
-
-    GribFieldSet m = compute::mean(members);
-
-    Log::info() << m << endl;
-    m.write("/tmp/mean.grib");
+    members = p;
+    Log::info() << members << endl;
+    Log::info() << "MAX: " << maxvalue(members) << endl;
+    Log::info() << "MIN: " << minvalue(members) << endl;
 
 
-    GribFieldSet a = compute::plus(m, m);
-    Log::info() << a << endl;
+    int K = 12;
+
+
+    vector<vector<size_t> > last;
+    vector<GribFieldSet> centroids(K);
+    std::default_random_engine generator;
+    std::uniform_int_distribution<size_t> distribution(0, members.count()-1);
+    std::set<size_t> seen;
+
+    for(size_t i = 0; i < K; i++) {
+        size_t choice = distribution(generator);
+        while(seen.find(choice) != seen.end()) {
+            choice = distribution(generator);
+        }
+        seen.insert(choice);
+        centroids[i] = members[choice];
+    }
+
+    Timer timer("k-mean");
+
+    for(;;)
+    {
+        vector<vector<size_t> > ranks(K);
+
+        for(size_t j = 0 ; j < members.count(); ++j)
+        {
+            GribFieldSet m = members[j];
+
+            double min_distance = distance(m, centroids[0]);
+            int    min_index    = 0;
+            for(size_t i = 1; i < K; ++i)
+            {
+                double x = distance(m, centroids[i]);
+                if(x < min_distance) {
+                    min_distance = x;
+                    min_index    = i;
+                }
+            }
+
+            ranks[min_index].push_back(j);
+
+        }
+
+        for(size_t i = 0; i < K; i++) {
+            cout << ranks[i].size() << ' ';
+        }
+        cout << endl;
+
+        for(size_t i = 0; i < K; i++) {
+            centroids[i] = mean(members.slice(ranks[i]));
+        }
+
+        if (ranks == last)
+            break;
+
+        last = ranks;
+    }
+
 }
 
 //-----------------------------------------------------------------------------

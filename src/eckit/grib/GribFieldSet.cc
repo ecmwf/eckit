@@ -8,6 +8,11 @@
 
 namespace eckit {
 
+
+GribFieldSet::GribFieldSet()
+{
+}
+
 GribFieldSet::GribFieldSet(size_t size)
 {
     fields_.reserve(size);
@@ -80,6 +85,40 @@ void GribFieldSet::write(DataHandle& h) const {
     for(std::vector<GribField*>::const_iterator j = fields_.begin(); j != fields_.end(); ++j) {
         (*j)->write(h);
     }
+}
+
+
+GribFieldSet GribFieldSet::operator[](int i)  const {
+    ASSERT(i >= 0 && i < fields_.size());
+    return GribFieldSet(willAdopt(i));
+}
+
+GribFieldSet GribFieldSet::slice(size_t from, size_t to, size_t step) const
+{
+    GribFieldSet out(count());
+    ASSERT(from <= to && step >= 1);
+    for(size_t i = from; i < to ; i += step) {
+        if(i >= 0 && i < fields_.size()) {
+            out.add(willAdopt(i));
+        }
+    }
+    return out;
+}
+
+
+GribFieldSet GribFieldSet::slice(const vector<size_t>& v) const
+{
+    size_t n = count();
+    GribFieldSet out(v.size());
+
+    for(vector<size_t>::const_iterator j = v.begin(); j != v.end(); ++j) {
+        size_t i = *j;
+        ASSERT(i>=0 && i < n);
+
+        out.add(willAdopt(i));
+
+    }
+    return out;
 }
 
 //========================================================================================================

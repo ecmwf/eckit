@@ -21,6 +21,8 @@ container/BTree.cc
 container/Cache.h
 container/Recycler.h
 container/ClassExtent.h
+container/KDTree.h
+container/KDTree.cc
 container/MappedArray.h
 container/MappedArray.cc )
 
@@ -429,6 +431,7 @@ endforeach()
 list( APPEND eckit_templates
 					container/BTree.cc
 					container/MappedArray.cc
+                                        container/KDTree.cc
 					filesystem/BasePathNameT.cc
 					io/FileBase.cc
 					runtime/PipeHandler.cc

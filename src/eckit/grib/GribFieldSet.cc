@@ -33,6 +33,26 @@ GribFieldSet::GribFieldSet(const GribFieldSet& other)
     }
 }
 
+GribFieldSet::GribFieldSet(const vector<GribFieldSet>& v)
+{
+    size_t n = 0;
+
+    for(std::vector<GribFieldSet>::const_iterator j = v.begin(); j != v.end(); ++j)
+    {
+        n += (*j).size();
+    }
+
+    fields_.reserve(n);
+
+    for(std::vector<GribFieldSet>::const_iterator j = v.begin(); j != v.end(); ++j)
+    {
+        for(std::vector<GribField*>::const_iterator k = (*j).fields_.begin(); k != (*j).fields_.end(); ++k)
+        {
+            add((*k));
+        }
+    }
+}
+
 GribFieldSet& GribFieldSet::operator=(const GribFieldSet& other)
 {
     std::vector<GribField*> old = fields_;
@@ -95,10 +115,10 @@ GribFieldSet GribFieldSet::operator[](int i)  const {
 
 GribFieldSet GribFieldSet::slice(size_t from, size_t to, size_t step) const
 {
-    GribFieldSet out(count());
+    GribFieldSet out(size());
     ASSERT(from <= to && step >= 1);
     for(size_t i = from; i < to ; i += step) {
-        if(i >= 0 && i < fields_.size()) {
+        if(i < fields_.size()) {
             out.add(willAdopt(i));
         }
     }
@@ -108,12 +128,12 @@ GribFieldSet GribFieldSet::slice(size_t from, size_t to, size_t step) const
 
 GribFieldSet GribFieldSet::slice(const vector<size_t>& v) const
 {
-    size_t n = count();
+    size_t n = size();
     GribFieldSet out(v.size());
 
     for(vector<size_t>::const_iterator j = v.begin(); j != v.end(); ++j) {
         size_t i = *j;
-        ASSERT(i>=0 && i < n);
+        ASSERT(i < n);
 
         out.add(willAdopt(i));
 

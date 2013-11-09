@@ -9,11 +9,11 @@ namespace eckit {
 namespace compute {
 
 GribFieldSet merge(const GribFieldSet& a, const GribFieldSet& b) {
-    GribFieldSet out(a.count() + b.count());
-    for(size_t j = 0; j < a.count(); ++j) {
+    GribFieldSet out(a.size() + b.size());
+    for(size_t j = 0; j < a.size(); ++j) {
         out.add(a.willAdopt(j));
     }
-    for(size_t j = 0; j < b.count(); ++j) {
+    for(size_t j = 0; j < b.size(); ++j) {
         out.add(b.willAdopt(j));
     }
     return out;
@@ -25,7 +25,7 @@ GribFieldSet mean(const GribFieldSet& in)
 
     GribFieldSet out(1);
 
-    size_t nfields = in.count();
+    size_t nfields = in.size();
 
     ASSERT(nfields) ;
 
@@ -71,7 +71,7 @@ GribFieldSet mean(const GribFieldSet& in)
 template<class OPERATOR>
 double minmaxvalue(const GribFieldSet& in)
 {
-    size_t nfields = in.count();
+    size_t nfields = in.size();
 
     ASSERT(nfields);
 
@@ -111,7 +111,7 @@ double maxvalue(const GribFieldSet& in)
 
 double accumulate(const GribFieldSet& in)
 {
-    size_t nfields = in.count();
+    size_t nfields = in.size();
 
     ASSERT(nfields);
 
@@ -128,6 +128,71 @@ double accumulate(const GribFieldSet& in)
             result += values[i];
         }
         f->release();
+    }
+
+    return result;
+
+}
+
+double dot(const GribFieldSet& a, const GribFieldSet& b)
+{
+    ASSERT(a.size() == 1 && b.size() == 1);
+
+    size_t na, nb;
+
+    const GribField *fa = a.get(0);
+    const double* va = fa->getValues(na);
+
+    const GribField *fb = b.get(0);
+    const double* vb = fb->getValues(nb);
+
+    ASSERT(na == nb);
+
+    double result = 0;
+
+
+    result = 0;
+
+    for(size_t i = 0; i < na; ++i) {
+        result += va[i]*vb[i];
+    }
+
+    fa->release();
+    fb->release();
+
+    return result;
+
+}
+
+Matrix kernel(const GribFieldSet& in)
+{
+    Timer timer("kernel");
+    size_t nfields = in.size();
+    Matrix result(nfields, nfields);
+
+    size_t na, nb;
+
+    for(size_t i = 0; i < nfields; ++i) {
+        const GribField *fa = in.get(i);
+        const double* va = fa->getValues(na);
+
+
+        for(size_t j = 0; j <= i; ++j) {
+            const GribField *fb = in.get(j);
+            const double* vb = fb->getValues(nb);
+            ASSERT(na == nb);
+            double dot = 0;
+
+            for(size_t k = 0; k < na; ++k) {
+                dot += va[k]*vb[k];
+            }
+
+            result(i,j) = result(j,i) = dot;
+            fb->release();
+        }
+
+        if((i%1000)==0)
+        cout << i << endl;
     }
 
     return result;

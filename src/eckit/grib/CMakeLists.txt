@@ -1,29 +1,21 @@
 list( APPEND eckit_grib_srcs
+EmosFile.cc
+EmosFile.h
+GribCompute.cc
+GribCompute.h
 GribField.cc
 GribField.h
 GribFieldSet.cc
+GribFieldSet.cc
+GribFieldSet.h
 GribFieldSet.h
 GribFile.cc
 GribFile.h
-EmosFile.cc
-EmosFile.h
 GribHandle.cc
 GribHandle.h
-GribFieldSet.cc
-GribFieldSet.h
-GribFieldState.cc
-GribFieldState.h
-GribFieldStateFile.cc
-GribFieldStateFile.h
-GribFieldStateExpanded.cc
-GribFieldStateExpanded.h
-GribCompute.cc
-GribCompute.h
-GribFieldStateHandle.cc
-GribFieldStateHandle.h
-GribFieldStateResult.cc
-GribFieldStateResult.h
- )
+Matrix.h 
+Matrix.cc
+)
 
 
 ecbuild_add_library(TARGET eckit_grib

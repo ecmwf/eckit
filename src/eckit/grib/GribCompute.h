@@ -8,6 +8,7 @@
 
 #include "GribFieldSet.h"
 #include "GribField.h"
+#include "Matrix.h"
 
 namespace eckit {
 namespace compute {
@@ -44,13 +45,15 @@ GribFieldSet min(const GribFieldSet& in);
 
 GribFieldSet merge(const GribFieldSet& a, const GribFieldSet& b);
 
+double dot(const GribFieldSet& a, const GribFieldSet& b);
+Matrix kernel(const GribFieldSet& in);
 
 template<class OPERATOR>
 GribFieldSet unop(const GribFieldSet& in) {
 
-    GribFieldSet out(in.count());
+    GribFieldSet out(in.size());
 
-    size_t nfields = in.count();
+    size_t nfields = in.size();
 
     for(size_t j = 0; j < nfields; ++j) {
         GribField* f = in.willAdopt(j);
@@ -76,12 +79,12 @@ GribFieldSet unop(const GribFieldSet& in) {
 template<class OPERATOR>
 GribFieldSet binop(const GribFieldSet& a, const GribFieldSet& b) {
 
-    GribFieldSet out(a.count());
+    GribFieldSet out(a.size());
 
-    size_t nfields = a.count();
-    ASSERT(b.count() == nfields);
+    size_t nfields = a.size();
+    ASSERT(b.size() == nfields);
 
-    ASSERT(out.count() == 0);
+    ASSERT(out.size() == 0);
 
     for(size_t j = 0; j < nfields; ++j) {
         GribField* fa = a.willAdopt(j);
@@ -111,9 +114,9 @@ GribFieldSet binop(const GribFieldSet& a, const GribFieldSet& b) {
 template<class OPERATOR>
 GribFieldSet binop(const GribFieldSet& a, const double& b) {
 
-    GribFieldSet out(a.count());
+    GribFieldSet out(a.size());
 
-    size_t nfields = a.count();
+    size_t nfields = a.size();
 
     for(size_t j = 0; j < nfields; ++j) {
         GribField* fa = a.willAdopt(j);
@@ -136,11 +139,11 @@ GribFieldSet binop(const GribFieldSet& a, const double& b) {
 
 template<class OPERATOR>
 GribFieldSet binop(const double& b, const GribFieldSet& a) {
-    GribFieldSet out(a.count());
+    GribFieldSet out(a.size());
 
 //   Log::info() << "binop(" << opname(OPERATOR()) << ")" << endl;
 
-    size_t nfields = a.count();
+    size_t nfields = a.size();
 
     for(size_t j = 0; j < nfields; ++j) {
         GribField* fa = a.willAdopt(j);
@@ -251,13 +254,11 @@ GribFieldSet operator*(const GribFieldSet& a, const GribFieldSet& b) {
     return multiplies(a, b);
 }
 
+struct sqrt_op {
+    double operator()(double x) { return std::sqrt(x); }
+};
 GribFieldSet sqrt(const GribFieldSet& x) {
-
-    struct op {
-        double operator()(double x) { return std::sqrt(x); }
-    };
-
-    return unop<op>(x);
+    return unop<sqrt_op>(x);
 }
 
 } // namespace

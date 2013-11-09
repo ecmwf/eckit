@@ -42,6 +42,7 @@ public:
     GribFieldSet(const PathName& path);
 
     GribFieldSet(const GribFieldSet&);
+    GribFieldSet(const vector<GribFieldSet>&);
 
 
 
@@ -76,7 +77,7 @@ public:
     void add(GribField*);
 
 
-    size_t count() const { return fields_.size(); }
+    size_t size() const { return fields_.size(); }
     const GribField* get(size_t i) const { return fields_[i]; }
 
 
@@ -109,8 +110,37 @@ public:
 
     };
 
+    class const_iterator {
+
+        std::vector<GribField*>::const_iterator j_;
+
+        const_iterator& operator++(int);
+
+    public:
+
+        const_iterator(const std::vector<GribField*>::const_iterator& j): j_(j) {}
+
+        bool operator!=(const const_iterator& other) const
+            { return j_ != other.j_; }
+
+        const_iterator& operator++() {
+            ++j_;
+            return *this;
+        }
+
+        GribFieldSet operator*() {
+            return GribFieldSet(*j_);
+        }
+
+    };
+
+
+
     iterator begin() { return iterator(fields_.begin()); }
     iterator end()   { return iterator(fields_.end());   }
+
+    const_iterator begin() const { return const_iterator(fields_.begin()); }
+    const_iterator end()   const { return const_iterator(fields_.end());   }
 
 
 // -- Overridden methods
@@ -120,7 +150,8 @@ public:
 	// None
 
 // -- Class methods
-	// None
+
+
 
 protected:
 

@@ -20,6 +20,8 @@
 
 #include "eckit/utils/Timer.h"
 
+#include "eckit/container/KDTree.h"
+
 
 using namespace eckit;
 using namespace eckit::compute;
@@ -38,6 +40,11 @@ public:
     ~Compute() {
     }
 
+    void kmeans(GribFieldSet&);
+    void kernel(GribFieldSet&);
+     void dbscan(GribFieldSet&);
+      void kdtree(GribFieldSet&);
+
     virtual void run();
 };
 
@@ -48,6 +55,161 @@ double distance(const GribFieldSet& a, const GribFieldSet& b)
 {
     GribFieldSet c = a-b;
     return std::sqrt(compute::accumulate(c*c));
+}
+
+void Compute::kernel(GribFieldSet & members)
+{
+    Matrix k = compute::kernel(members);
+    Log::info() << k << endl;
+}
+
+void Compute::kmeans(GribFieldSet & fields)
+{
+    int K = 12;
+
+
+    vector<vector<size_t> > last;
+    vector<GribFieldSet> centroids(K);
+    std::default_random_engine generator;
+    std::uniform_int_distribution<size_t> distribution(0, fields.size()-1);
+    std::set<size_t> seen;
+
+    for(size_t i = 0; i < K; i++) {
+        size_t choice = distribution(generator);
+        while(seen.find(choice) != seen.end()) {
+            choice = distribution(generator);
+        }
+        seen.insert(choice);
+        centroids[i] = fields[choice];
+    }
+
+    Timer timer("k-mean");
+
+    for(;;)
+    {
+        vector<vector<size_t> > ranks(K);
+
+        for(size_t j = 0 ; j < fields.size(); ++j)
+        {
+            GribFieldSet m = fields[j];
+
+            double min_distance = distance(m, centroids[0]);
+            int    min_index    = 0;
+            for(size_t i = 1; i < K; ++i)
+            {
+                double x = distance(m, centroids[i]);
+                if(x < min_distance) {
+                    min_distance = x;
+                    min_index    = i;
+                }
+            }
+
+            ranks[min_index].push_back(j);
+
+        }
+
+        for(size_t i = 0; i < K; i++) {
+            cout << ranks[i].size() << ' ';
+        }
+        cout << endl;
+
+        for(size_t i = 0; i < K; i++) {
+            centroids[i] = mean(fields.slice(ranks[i]));
+        }
+
+        if (ranks == last)
+            break;
+
+        last = ranks;
+    }
+
+    for(size_t i = 0; i < K; i++) {
+        GribFieldSet members = fields.slice(last[i]);
+        double max  = 0;
+        for(size_t j = 0 ; j < members.size(); ++j) {
+            double d = distance(members[j], centroids[i]);
+            if(d > max) {
+                max = d;
+            }
+        }
+        cout << i << " " << max << endl;
+    }
+
+    GribFieldSet result(centroids);
+    result.write("/tmp/centroids.grid");
+}
+
+
+void Compute::dbscan(GribFieldSet & members)
+{
+    // Page 417
+
+    double epsilon = 12.0;
+    size_t minpts = 1000;
+
+    Timer timer("dbscan");
+
+
+    for(size_t i = 0 ; i < members.size(); ++i)
+    {
+        GribFieldSet n = members[i];
+        int N = 0;
+
+        for(size_t j = 0 ; j < members.size(); ++j)
+        {
+
+            GribFieldSet m = members[j];
+            if(distance(m, n) < epsilon) {
+                N++;
+            }
+
+        }
+
+        if(N > minpts) {
+            cout << i << " " << N << endl;
+        }
+    }
+
+
+
+    //GribFieldSet result(centroids);
+    //result.write("/tmp/dbscan.grid");
+}
+
+
+class KDWrapper : public GribFieldSet {
+    const double* values_;
+    size_t count_;
+public:
+    KDWrapper(const GribFieldSet& fs):
+        GribFieldSet(fs) {
+        ASSERT(fs.size() == 1);
+        values_ = get(0)->getValues(count_);
+    }
+
+    double x(size_t i) const {
+        return values_[i];
+    }
+
+    static size_t size(const KDWrapper& w) {
+        return w.count_;
+    }
+};
+
+void Compute::kdtree(GribFieldSet & members)
+{
+    Timer timer("kdtree");
+
+    KDTree<KDWrapper> tree;
+    vector<KDWrapper> v;
+
+    std::copy(members.begin(), members.end(), std::back_inserter(v));
+
+    tree.build(v.begin(), v.end());
+
+
+    //GribFieldSet result(centroids);
+    //result.write("/tmp/dbscan.grid");
 }
 
 void Compute::run()
@@ -73,63 +235,7 @@ void Compute::run()
     Log::info() << "MIN: " << minvalue(members) << endl;
 
 
-    int K = 12;
-
-
-    vector<vector<size_t> > last;
-    vector<GribFieldSet> centroids(K);
-    std::default_random_engine generator;
-    std::uniform_int_distribution<size_t> distribution(0, members.count()-1);
-    std::set<size_t> seen;
-
-    for(size_t i = 0; i < K; i++) {
-        size_t choice = distribution(generator);
-        while(seen.find(choice) != seen.end()) {
-            choice = distribution(generator);
-        }
-        seen.insert(choice);
-        centroids[i] = members[choice];
-    }
-
-    Timer timer("k-mean");
-
-    for(;;)
-    {
-        vector<vector<size_t> > ranks(K);
-
-        for(size_t j = 0 ; j < members.count(); ++j)
-        {
-            GribFieldSet m = members[j];
-
-            double min_distance = distance(m, centroids[0]);
-            int    min_index    = 0;
-            for(size_t i = 1; i < K; ++i)
-            {
-                double x = distance(m, centroids[i]);
-                if(x < min_distance) {
-                    min_distance = x;
-                    min_index    = i;
-                }
-            }
-
-            ranks[min_index].push_back(j);
-
-        }
-
-        for(size_t i = 0; i < K; i++) {
-            cout << ranks[i].size() << ' ';
-        }
-        cout << endl;
-
-        for(size_t i = 0; i < K; i++) {
-            centroids[i] = mean(members.slice(ranks[i]));
-        }
-
-        if (ranks == last)
-            break;
-
-        last = ranks;
-    }
+    kdtree(members);
 
 }
 

@@ -3,9 +3,7 @@
 
 #include "GribField.h"
 #include "GribFile.h"
-#include "GribFieldStateFile.h"
-#include "GribFieldStateResult.h"
-#include "GribFieldStateHandle.h"
+#include "GribHandle.h"
 
 namespace eckit {
 
@@ -134,13 +132,13 @@ void GribField::write(DataHandle& handle) const {
 
 void GribField::release() const {
     GribField* self = const_cast<GribField*>(this);
-    /*
+/*
     self->pack();
     if(self->file_ && self->handle_) {
         delete self->handle_;
         self->handle_ = 0;
-    }
-    */
+    }*/
+
 }
 
 } // namespace

@@ -18,16 +18,20 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-#define GEN_BINFUNC_IMPL( f, c )                                                             \
+#define GEN_BINFUNC_IMPL( f, c, op )                                                         \
 ExpPtr f( ExpPtr l, ExpPtr r )           { return ExpPtr( c()(l,r) ); }                      \
 ExpPtr f( Expression& l, ExpPtr r )      { return ExpPtr( c()(l.self(),r) ); }               \
 ExpPtr f( ExpPtr l, Expression& r )      { return ExpPtr( c()(l,r.self()) ); }               \
-ExpPtr f( Expression& l, Expression& r ) { return ExpPtr( c()(l.self(),r.self()) ); }
+ExpPtr f( Expression& l, Expression& r ) { return ExpPtr( c()(l.self(),r.self()) ); }        \
+ExpPtr operator op ( ValPtr p1, ValPtr p2 ) { return f( p1, p2 ); }                          \
+ExpPtr operator op ( ValPtr p1, ExpPtr p2 ) { return f( p1, p2 ); }                          \
+ExpPtr operator op ( ExpPtr p1, ValPtr p2 ) { return f( p1, p2 ); }                          \
+ExpPtr operator op ( ExpPtr p1, ExpPtr p2 ) { return f( p1, p2 ); }
 
-GEN_BINFUNC_IMPL(prod,BinaryFunc<Prod>)
-GEN_BINFUNC_IMPL(div,BinaryFunc<Div>)
-GEN_BINFUNC_IMPL(add,BinaryFunc<Add>)
-GEN_BINFUNC_IMPL(sub,BinaryFunc<Sub>)
+GEN_BINFUNC_IMPL(prod,BinaryFunc<Prod>,*)
+GEN_BINFUNC_IMPL(div,BinaryFunc<Div>,/)
+GEN_BINFUNC_IMPL(add,BinaryFunc<Add>,+)
+GEN_BINFUNC_IMPL(sub,BinaryFunc<Sub>,-)
 
 #undef GEN_BINFUNC_IMPL
 

@@ -89,30 +89,22 @@ const char *opname(const Sub&);
 
 // version with stand alone functions
 
-#define GEN_BINFUNC_DECL( f, c )            \
+#define GEN_BINFUNC_DECL( f, c, op )        \
 ExpPtr f( ExpPtr l, ExpPtr r );             \
 ExpPtr f( Expression& l, ExpPtr r );        \
 ExpPtr f( ExpPtr l, Expression& r );        \
-ExpPtr f( Expression& l, Expression& r );
+ExpPtr f( Expression& l, Expression& r );   \
+ExpPtr operator op ( ValPtr p1, ValPtr p2 );  \
+ExpPtr operator op ( ValPtr p1, ExpPtr p2 );  \
+ExpPtr operator op ( ExpPtr p1, ValPtr p2 );  \
+ExpPtr operator op ( ExpPtr p1, ExpPtr p2 );
 
-GEN_BINFUNC_DECL(prod,BinaryFunc<Prod>)
-GEN_BINFUNC_DECL(div,BinaryFunc<Div>)
-GEN_BINFUNC_DECL(add,BinaryFunc<Add>)
-GEN_BINFUNC_DECL(sub,BinaryFunc<Sub>)
+GEN_BINFUNC_DECL(prod,BinaryFunc<Prod>,*)
+GEN_BINFUNC_DECL(div,BinaryFunc<Div>,/)
+GEN_BINFUNC_DECL(add,BinaryFunc<Add>,+)
+GEN_BINFUNC_DECL(sub,BinaryFunc<Sub>,-)
 
 #undef GEN_BINFUNC_DECL
-
-//--------------------------------------------------------------------------------------------
-
-//ExpPtr operator+ ( ValPtr p1, ValPtr p2 ) { return add( p1, p2 ); }
-//ExpPtr operator+ ( ValPtr p1, ExpPtr p2 ) { return add( p1, p2 ); }
-//ExpPtr operator+ ( ExpPtr p1, ValPtr p2 ) { return add( p1, p2 ); }
-//ExpPtr operator+ ( ExpPtr p1, ExpPtr p2 ) { return add( p1, p2 ); }
-
-//ExpPtr operator* ( ValPtr p1, ValPtr p2 ) { return prod( p1, p2 ); }
-//ExpPtr operator* ( ValPtr p1, ExpPtr p2 ) { return prod( p1, p2 ); }
-//ExpPtr operator* ( ExpPtr p1, ValPtr p2 ) { return prod( p1, p2 ); }
-//ExpPtr operator* ( ExpPtr p1, ExpPtr p2 ) { return prod( p1, p2 ); }
 
 //--------------------------------------------------------------------------------------------
 

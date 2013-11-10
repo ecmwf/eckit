@@ -9,6 +9,7 @@
  */
 
 #include <random>
+#include <cmath>
 
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
@@ -20,7 +21,7 @@
 
 #include "eckit/utils/Timer.h"
 
-#include "eckit/container/KDTree.h"
+#include "eckit/container/BSPTree.h"
 
 
 using namespace eckit;
@@ -42,8 +43,8 @@ public:
 
     void kmeans(GribFieldSet&);
     void kernel(GribFieldSet&);
-     void dbscan(GribFieldSet&);
-      void kdtree(GribFieldSet&);
+    void dbscan(GribFieldSet&);
+    void bsptree(GribFieldSet&);
 
     virtual void run();
 };
@@ -176,58 +177,74 @@ void Compute::dbscan(GribFieldSet & members)
     //result.write("/tmp/dbscan.grid");
 }
 
+size_t compares = 0;
 
-class KDWrapper : public GribFieldSet {
+class BSPWrapper : public GribFieldSet {
     const double* values_;
     size_t count_;
 public:
-    KDWrapper(const GribFieldSet& fs):
+    BSPWrapper(const GribFieldSet& fs):
         GribFieldSet(fs) {
         ASSERT(fs.size() == 1);
         values_ = get(0)->getValues(count_);
     }
 
-    double x(size_t i) const {
-        return values_[i];
-    }
-
-    static size_t size(const KDWrapper& w) {
-        return w.count_;
-    }
-
-    static double distance(const KDWrapper& a, const KDWrapper& b)
+    static BSPWrapper mean(const vector<BSPWrapper>& v)
     {
-        GribFieldSet c = a-b;
-        return std::sqrt(compute::accumulate(c*c));
+        vector<GribFieldSet> f;
+        f.resize(v.size());
+        std::copy(v.begin(), v.end(), std::back_inserter(f));
+        return compute::mean(GribFieldSet(f));
     }
 
-    static double distance(const KDWrapper& a, const KDWrapper& b, size_t axis)
-    {
-        double c = a.x(axis) - b.x(axis);
-        return std::fabs(c);
+    static BSPWrapper symetrical(const BSPWrapper& w, const BSPWrapper& c) {
+        return BSPWrapper(w-(c-w));
     }
+
+    static double distance(const BSPWrapper& a, const BSPWrapper& b) {
+        return ::distance(a, b);
+    }
+
+    friend bool operator==(const BSPWrapper& a, const BSPWrapper& b) {
+        const double epsilon = 1e-15;
+        if(a.count_ == b.count_ ) {
+            for(size_t j = 0; j < a.count_ ; ++j) {
+                double x = std::fabs(a.values_[j] - b.values_[j]);
+                if(x > epsilon) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
 };
 
-void Compute::kdtree(GribFieldSet & members)
-{
-    Timer timer("kdtree");
 
-    KDTree<KDWrapper> tree;
-    vector<KDWrapper> v;
+
+void Compute::bsptree(GribFieldSet & members)
+{
+    Timer timer("bsptree");
+
+    BSPTree<BSPWrapper> tree;
+    vector<BSPWrapper> v;
 
     std::copy(members.begin(), members.end(), std::back_inserter(v));
 
     {
-    Timer timer("build");
-    tree.build(v.begin(), v.end());
-    cout << v.size() << endl;
+        Timer timer("build");
+        tree.build(v);
     }
 
+    /*
     size_t i = 0;
-    for(vector<KDWrapper>::const_iterator j = v.begin(); j != v.end(); ++j, ++i) {
-        KDTree<KDWrapper>::NodeList x = tree.findInSphere(*j, 12.0);
-        cout << i << ' ' << x.size() << endl;
+    for(vector<BSPWrapper>::const_iterator j = v.begin(); j != v.end(); ++j, ++i) {
+        compares = 0;
+        BSPTree<BSPWrapper>::NodeList x = tree.findInSphere(*j, 12.0);
+        cout << i << ' ' << x.size() << " " << compares << endl;
     }
+    */
 
 
     //GribFieldSet result(centroids);
@@ -257,7 +274,7 @@ void Compute::run()
     Log::info() << "MIN: " << minvalue(members) << endl;
 
 
-    kdtree(members);
+    bsptree(members);
 
 }
 

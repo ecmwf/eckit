@@ -39,14 +39,15 @@ void SharedInt::release(int n)
 	Semaphore::raise(2*n);
 }
 
-void SharedInt::newLimit(int val,int n)
+void SharedInt::newLimit(short val,unsigned short n)
 {
 	int v;
 	while( (v = semctl(semaphore_,2*n+1,GETVAL,0)) != val)
 	{
 		if(v<0) throw FailedSystemCall("semctl GETVAL");
-		int delta = val - v;
-		struct sembuf set[] = {{ 2*n, delta, 0,},{ 2*n+1, delta, 0,}};
+        short delta = val - v;
+        typedef unsigned short int U;
+        struct sembuf set[] = {{ U(2*n), delta, 0,},{ U(2*n+1), delta, 0,}};
 		SYSCALL(semop(semaphore_,set,NUMBER(set)));
 	}
 }

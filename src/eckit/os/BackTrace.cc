@@ -66,6 +66,9 @@ std::string BackTrace::dump()
 
             switch(*p) {
             case ' ':
+            case '(':
+            case ')':
+            case '+':
             case '\t':
                 oss << *p;
                 if(i) {

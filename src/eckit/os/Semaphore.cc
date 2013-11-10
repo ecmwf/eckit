@@ -83,7 +83,7 @@ void Semaphore::unlock(void)
 	mutex_.unlock();
 }
 
-bool Semaphore::test(int n)
+bool Semaphore::test(short unsigned int n)
 {
 	struct sembuf test = { n, 0 , IPC_NOWAIT};
 
@@ -118,13 +118,13 @@ int Semaphore::get(int n) const
 	return val;
 }
 
-void Semaphore::raise(int n)
+void Semaphore::raise(short unsigned int n)
 {
 	struct sembuf op = { n,1,SEM_UNDO};
 	SYSCALL(semop(semaphore_,&op,1));
 }
 
-void Semaphore::lower(int n)
+void Semaphore::lower(short unsigned int n)
 {
 	struct sembuf op = { n,-1,SEM_UNDO};
 	SYSCALL(semop(semaphore_,&op,1));

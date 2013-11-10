@@ -36,10 +36,11 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-option( ECKIT_BOOST	"Boost support  [NOT IMPLEMENTED]"		OFF )
-option( ECKIT_GRID  "eckit::grid extension [EXPERIMENTAL]"	OFF )
-option( ECKIT_GRIB  "eckit::grib extension [EXPERIMENTAL]"	OFF )
-option( ECKIT_MPI   "eckit::mpi  extension [EXPERIMENTAL]"	OFF  )
+option( ECKIT_BOOST  "Boost support  [NOT IMPLEMENTED]"		OFF )
+option( ECKIT_GRID   "eckit::grid extension [EXPERIMENTAL]"	OFF )
+option( ECKIT_GRIB   "eckit::grib extension [EXPERIMENTAL]"	OFF )
+option( ECKIT_MPI    "eckit::mpi  extension [EXPERIMENTAL]"	OFF  )
+option( ECKIT_MINING "eckit::mining  extension [EXPERIMENTAL]"	OFF  )
 
 if( ECKIT_GRIB )
 	ecbuild_use_package(PROJECT grib_api)

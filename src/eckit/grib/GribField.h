@@ -23,7 +23,6 @@
 namespace eckit {
 
 class GribFile;
-class GribFieldState;
 class DataHandle;
 class GribHandle;
 

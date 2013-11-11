@@ -24,6 +24,10 @@
 #include "eckit/container/BSPTree.h"
 
 
+#include "eckit/mining/SmallestSphere.h"
+
+
+
 using namespace eckit;
 using namespace eckit::compute;
 
@@ -253,6 +257,20 @@ void Compute::bsptree(GribFieldSet & members)
 
 void Compute::run()
 {
+    vector<vector<double> > points;
+
+    for(int i = 0; i < 5; i++) {
+        for(int j = 0; j < 5; j++) {
+            vector<double> p;
+            p.push_back(i);
+            p.push_back(j);
+            points.push_back(p);
+        }
+    }
+
+    smallestSphere(points);
+
+    /*
     GribFieldSet members("/tmp/data.grib");
     Log::info() << members << endl;
     Log::info() << "MAX: " << maxvalue(members) << endl;
@@ -275,6 +293,7 @@ void Compute::run()
 
 
     bsptree(members);
+    */
 
 }
 

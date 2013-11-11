@@ -1,6 +1,8 @@
 list( APPEND eckit_mining_srcs
 	BisectingKMean.h
 	BisectingKMean.cc
+SmallestSphere.cc
+SmallestSphere.h
 )
 
 

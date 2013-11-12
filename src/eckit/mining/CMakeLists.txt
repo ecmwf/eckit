@@ -11,5 +11,6 @@ ecbuild_add_library(TARGET eckit_mining
 					CONDITION	ECKIT_MINING
 					SOURCES ${eckit_mining_srcs}
 					HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/mining
+                                        INCLUDES ${EIGEN3_INCLUDE_DIRS}
 					LIBS eckit )
 

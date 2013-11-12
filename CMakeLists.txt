@@ -42,10 +42,15 @@ option( ECKIT_GRIB   "eckit::grib extension [EXPERIMENTAL]"	OFF )
 option( ECKIT_MPI    "eckit::mpi  extension [EXPERIMENTAL]"	OFF  )
 option( ECKIT_MINING "eckit::mining  extension [EXPERIMENTAL]"	OFF  )
 
+option( ECKIT_EIGEN  "Eigen support  [NOT IMPLEMENTED]"		OFF )
+
 if( ECKIT_GRIB )
 	ecbuild_use_package(PROJECT grib_api)
 endif()
 
+if( ECKIT_EIGEN )
+	find_package(Eigen3)
+endif()
 
 # boost support
 

@@ -241,14 +241,14 @@ void Compute::bsptree(GribFieldSet & members)
         tree.build(v);
     }
 
-    /*
+
     size_t i = 0;
     for(vector<BSPWrapper>::const_iterator j = v.begin(); j != v.end(); ++j, ++i) {
         compares = 0;
         BSPTree<BSPWrapper>::NodeList x = tree.findInSphere(*j, 12.0);
         cout << i << ' ' << x.size() << " " << compares << endl;
     }
-    */
+
 
 
     //GribFieldSet result(centroids);
@@ -257,6 +257,7 @@ void Compute::bsptree(GribFieldSet & members)
 
 void Compute::run()
 {
+    /*
     vector<vector<double> > points;
 
     for(int i = 0; i < 5; i++) {
@@ -270,7 +271,7 @@ void Compute::run()
 
     smallestSphere(points);
 
-    /*
+    */
     GribFieldSet members("/tmp/data.grib");
     Log::info() << members << endl;
     Log::info() << "MAX: " << maxvalue(members) << endl;
@@ -293,7 +294,7 @@ void Compute::run()
 
 
     bsptree(members);
-    */
+
 
 }
 

@@ -27,7 +27,7 @@ namespace eckit {
 
 template<class Point, class Alloc>
 BSPNode<Point,Alloc>::BSPNode(const vector<Point>& p):
-    // point_(p),
+    point_(Point::mean(p)),
     left_(0),
     right_(0)
 {
@@ -255,8 +255,8 @@ BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const vector<Point>&
     if(nodes.size() == 1)
         return a.newNode(nodes,(BSPNode*)0);
 
-    if(depth == 3)
-        return a.newNode(nodes,(BSPNode*)0);
+    //if(depth == 3)
+    //    return a.newNode(nodes,(BSPNode*)0);
 
     vector<Point>  left;
     vector<Point>  right;

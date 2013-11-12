@@ -5,6 +5,9 @@
 #include "SmallestSphere.h"
 #include <cmath>
 
+#include <Eigen/Dense>
+using namespace Eigen;
+
 namespace eckit {
 
 SmallestSphere::SmallestSphere()
@@ -26,13 +29,18 @@ static double distance(const vector<double>& a, const vector<double>& b ) {
 }
 
 void smallestSphere(const vector<vector<double> >& points) {
+    /*
     ASSERT(points.size());
     size_t dims = points[0].size();
     ASSERT(dims >= 2);
     for(vector<vector<double> >::const_iterator j = points.begin(); j != points.end(); ++j) {
         ASSERT((*j).size() == dims);
     }
-
+    */
+    MatrixXd m(10, 10);
+    cout << m << endl;
+    cout << endl;
+    cout << m.determinant() << endl;
 
 }
 

@@ -37,10 +37,10 @@ void smallestSphere(const vector<vector<double> >& points) {
         ASSERT((*j).size() == dims);
     }
     */
-    MatrixXd m(10, 10);
-    cout << m << endl;
-    cout << endl;
-    cout << m.determinant() << endl;
+    //MatrixXd m(10, 10);
+   // cout << m << endl;
+    //cout << endl;
+   // cout << m.determinant() << endl;
 
 }
 

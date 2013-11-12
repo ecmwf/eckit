@@ -44,11 +44,15 @@ option( ECKIT_MINING "eckit::mining  extension [EXPERIMENTAL]"	OFF  )
 
 option( ECKIT_EIGEN  "Eigen support  [NOT IMPLEMENTED]"		OFF )
 
+if(ECKIT_MINING)
+    set(ECKIT_EIGEN ON)
+endif()
+
 if( ECKIT_GRIB )
 	ecbuild_use_package(PROJECT grib_api)
 endif()
 
-if( ECKIT_EIGEN )
+if( ECKIT_EIGEN)
 	find_package(Eigen3)
 endif()
 

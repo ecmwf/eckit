@@ -14,6 +14,8 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/runtime/Context.h"
+#include "eckit/filesystem/FileHandle.h"
+
 
 #include "eckit/grib/GribFieldSet.h"
 #include "eckit/grib/GribField.h"
@@ -23,6 +25,7 @@
 
 #include "eckit/container/BSPTree.h"
 
+#include "eckit/mining/Tools.h"
 
 #include "eckit/mining/SmallestSphere.h"
 
@@ -55,6 +58,11 @@ public:
 
 //-----------------------------------------------------------------------------
 
+
+GribFieldSet normalise(const GribFieldSet& s) {
+    //return normalise2(s);
+    return s;
+}
 
 double distance(const GribFieldSet& a, const GribFieldSet& b)
 {
@@ -98,11 +106,11 @@ void Compute::kmeans(GribFieldSet & fields)
         {
             GribFieldSet m = fields[j];
 
-            double min_distance = distance(m, centroids[0]);
+            double min_distance = ::distance(m, centroids[0]);
             int    min_index    = 0;
             for(size_t i = 1; i < K; ++i)
             {
-                double x = distance(m, centroids[i]);
+                double x = ::distance(m, centroids[i]);
                 if(x < min_distance) {
                     min_distance = x;
                     min_index    = i;
@@ -132,7 +140,7 @@ void Compute::kmeans(GribFieldSet & fields)
         GribFieldSet members = fields.slice(last[i]);
         double max  = 0;
         for(size_t j = 0 ; j < members.size(); ++j) {
-            double d = distance(members[j], centroids[i]);
+            double d = ::distance(members[j], centroids[i]);
             if(d > max) {
                 max = d;
             }
@@ -164,7 +172,7 @@ void Compute::dbscan(GribFieldSet & members)
         {
 
             GribFieldSet m = members[j];
-            if(distance(m, n) < epsilon) {
+            if(::distance(m, n) < epsilon) {
                 N++;
             }
 
@@ -186,7 +194,9 @@ size_t compares = 0;
 class BSPWrapper : public GribFieldSet {
     const double* values_;
     size_t count_;
+
 public:
+
     BSPWrapper(const GribFieldSet& fs):
         GribFieldSet(fs) {
         ASSERT(fs.size() == 1);
@@ -207,8 +217,11 @@ public:
 
     static double distance(const BSPWrapper& a, const BSPWrapper& b) {
         return ::distance(a, b);
+
     }
 
+
+    /*
     friend bool operator==(const BSPWrapper& a, const BSPWrapper& b) {
         const double epsilon = 1e-15;
         if(a.count_ == b.count_ ) {
@@ -222,6 +235,7 @@ public:
         }
         return false;
     }
+    */
 
 };
 
@@ -234,21 +248,79 @@ void Compute::bsptree(GribFieldSet & members)
     BSPTree<BSPWrapper> tree;
     vector<BSPWrapper> v;
 
+    cout << "copy" << endl;
     std::copy(members.begin(), members.end(), std::back_inserter(v));
 
     {
+        cout << "Build" << endl;
         Timer timer("build");
         tree.build(v);
     }
 
+    if(true) {
 
+        vector<DataHandle*> files;
+
+
+        struct V {
+            void enter(const BSPWrapper& node, bool, size_t depth)  {
+                while(depth >= files_.size()) {
+                    StrStream os;
+                    os << "node_" << depth << ".grib" << StrStream::ends;
+                    cout << string(os) << endl;
+                    DataHandle* h = new FileHandle(string(os));
+                    h->openForWrite(0);
+                    files_.push_back(h);
+                }
+                node.write(*(files_[depth]));
+
+            }
+            void leave(const BSPWrapper&, bool, size_t depth)  {
+            }
+
+            vector<DataHandle*> files_;
+
+            V(vector<DataHandle*> files):files_(files) {}
+        };
+
+        V vv(files);
+
+        tree.visit(vv);
+
+
+        for(vector<DataHandle*>::const_iterator j =  files.begin(); j != files.end(); ++j) {
+            DataHandle *h = *j;
+            h->close();
+            delete h;
+        }
+    }
+
+    {
+        GribFieldSet f("/tmp/today.grib");
+        f = normalise(f);
+        f.write("normalised.grib");
+
+        BSPTree<BSPWrapper>::NodeInfo x = tree.nearestNeighbour(f);
+        cout << "nearestNeighbour :" << x << endl;
+        x.point().write("nearest.grib");
+    }
+
+    {
+        GribFieldSet today("/tmp/today.grib");
+        today = normalise(today);
+        BSPTree<BSPWrapper>::NodeInfo x = tree.nearestNeighbourBruteForce(today);
+        cout << "nearestNeighbourBruteForce :" << x << endl;
+        x.point().write("brute.grib");
+    }
+
+#if 0
     size_t i = 0;
     for(vector<BSPWrapper>::const_iterator j = v.begin(); j != v.end(); ++j, ++i) {
         compares = 0;
         BSPTree<BSPWrapper>::NodeList x = tree.findInSphere(*j, 12.0);
         cout << i << ' ' << x.size() << " " << compares << endl;
     }
-
+#endif
 
 
     //GribFieldSet result(centroids);
@@ -257,38 +329,16 @@ void Compute::bsptree(GribFieldSet & members)
 
 void Compute::run()
 {
-    /*
-    vector<vector<double> > points;
 
-    for(int i = 0; i < 5; i++) {
-        for(int j = 0; j < 5; j++) {
-            vector<double> p;
-            p.push_back(i);
-            p.push_back(j);
-            points.push_back(p);
-        }
-    }
-
-    smallestSphere(points);
-
-    */
     GribFieldSet members("/tmp/data.grib");
-    Log::info() << members << endl;
+
+    Log::info() << "Before: " << members << endl;
     Log::info() << "MAX: " << maxvalue(members) << endl;
     Log::info() << "MIN: " << minvalue(members) << endl;
 
-    GribFieldSet p;
-    for(GribFieldSet::iterator j = members.begin(); j != members.end() ; ++j) {
-        GribFieldSet m(*j);
-        double mx = maxvalue(m);
-        double mn = minvalue(m);
-        double dd = mx - mn;
-        m = (m-mn)/dd;
-        p = merge(p, m);
-    }
+    members = normalise(members);
 
-    members = p;
-    Log::info() << members << endl;
+    Log::info() << "After: " << members << endl;
     Log::info() << "MAX: " << maxvalue(members) << endl;
     Log::info() << "MIN: " << minvalue(members) << endl;
 

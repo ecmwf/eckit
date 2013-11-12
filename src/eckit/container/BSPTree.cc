@@ -39,45 +39,38 @@ BSPNodeInfo<Point,Alloc> BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const P
     double max = numeric_limits<double>::max();
     BSPNode* best = 0;
     nearestNeighbour(a, p, best, max, 0);
-    return NodeInfo(best,max);
+    return NodeInfo(best, max);
 }
 
 template<class Point, class Alloc>
 void BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& best, double& max, int depth)
 {
-    /*
-    if(p.x(axis_) < point_.x(axis_))
-    {
-        if(left_) left(a)->nearestNeighbour(a, p, best, max, depth+1);
+    if(left_ && right_) {
+        const Point& l =   left(a)->point();
+        const Point& r =   right(a)->point();
+
+        double dl = Point::distance(p, l);
+        double dr = Point::distance(p, r);
+
+        if(dl <= dr) {
+            left(a)->nearestNeighbour(a, p, best, max, depth+1);
+        }
+        else {
+            right(a)->nearestNeighbour(a, p, best, max, depth+1);
+        }
     }
     else
     {
-        if(right_) right(a)->nearestNeighbour(a, p, best, max, depth+1);
-    }
+
+        ASSERT(!left_ || !right_);
 
     double d   = Point::distance(p, point_);
     if(d < max) {
         max = d;
         best = this;
     }
-
-
-    if(Point::distance(p, point_, axis_) < max)
-    {
-
-        // Visit other subtree...
-
-        if(p.x(axis_) < point_.x(axis_))
-        {
-            if(right_) right(a)->nearestNeighbour(a, p, best, max, depth+1);
-
-        }
-        else {
-
-            if(left_) left(a)->nearestNeighbour(a, p, best, max, depth+1);
-        }
     }
-*/
+
 }
 
 
@@ -87,24 +80,27 @@ BSPNodeInfo<Point,Alloc> BSPNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc&
     double max = numeric_limits<double>::max();
     BSPNode* best = 0;
     nearestNeighbourBruteForce(a, p, best, max, 0);
-    return NodeInfo(best,max);
+    return NodeInfo(best, max);
 }
 
 
 template<class Point, class Alloc>
 void BSPNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p, BSPNode<Point,Alloc>*& best, double& max, int depth)
 {
-    /*
-    double d = Point::distance(p,point_);
-    if(d < max)
-    {
-        best = this;
-        max  = d;
+    if(left_ && right_) {
+        right(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
+        left(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
     }
+    else
+    {
+        ASSERT(!left_ && !right_);
 
-    if(left_)  left(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
-    if(right_) right(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
-    */
+        double d   = Point::distance(p, point_);
+        if(d < max) {
+            max = d;
+            best = this;
+        }
+    }
 }
 
 //===
@@ -112,35 +108,7 @@ void BSPNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p, B
 template<class Point, class Alloc>
 void BSPNode<Point,Alloc>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth)
 {
-    /*
-    if(p.x(axis_) < point_.x(axis_))
-    {
-        if(left_) left(a)->kNearestNeighbours(a, p, k, result, depth+1);
-    }
-    else
-    {
-        if(right_) right(a)->kNearestNeighbours(a, p, k, result, depth+1);
-    }
 
-    double d   = Point::distance(p, point_);
-    result.push(this, d);
-
-    if(Point::distance(p, point_, axis_) <= result.largest())
-    {
-
-        // Visit other subtree...
-
-        if(p.x(axis_) < point_.x(axis_))
-        {
-            if(right_) right(a)->kNearestNeighbours(a, p,k, result, depth+1);
-
-        }
-        else {
-
-            if(left_) left(a)->kNearestNeighbours(a, p, k, result, depth+1);
-        }
-    }
-    */
 }
 
 
@@ -157,24 +125,20 @@ typename BSPNode<Point,Alloc>::NodeList BSPNode<Point,Alloc>::kNearestNeighbours
 template<class Point, class Alloc>
 void BSPNode<Point,Alloc>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth)
 {
-    /*
     double d = Point::distance(p,point_);
     result.push(this, d);
     if(left_)  left(a)->kNearestNeighboursBruteForce(a, p, k, result, depth+1);
     if(right_) right(a)->kNearestNeighboursBruteForce(a, p, k, result, depth+1);
-    */
 }
 
 template<class Point, class Alloc>
 template<class Visitor>
 void BSPNode<Point,Alloc>::visit(Alloc& a,Visitor& v,int depth)
 {
-    /*
     v.enter(point_, !left_ && !right_, depth);
     if(left_)  left(a)->visit(a, v, depth+1);
     if(right_) right(a)->visit(a, v, depth+1);
     v.leave(point_,!left_ && !right_, depth);
-    */
 }
 
 
@@ -183,7 +147,7 @@ typename BSPNode<Point,Alloc>::NodeList BSPNode<Point,Alloc>::kNearestNeighbours
 {
     NodeQueue queue(k);
     NodeList result;
-    kNearestNeighboursBruteForce(a,p,k,queue,0);
+    kNearestNeighboursBruteForce(a, p, k, queue, 0);
     queue.fill(result);
     return result;
 }
@@ -197,7 +161,7 @@ struct sorter {
 };
 
 template<class Point, class Alloc>
-void BSPNode<Point,Alloc>::kmean(const vector<Point>& in, vector<Point>& ml, vector<Point>& mr)
+void BSPNode<Point,Alloc>::kmean(const vector<Point>& in, vector<Point>& ml, vector<Point>& mr, int depth)
 {
 
     // Bisecting k-mean
@@ -212,15 +176,22 @@ void BSPNode<Point,Alloc>::kmean(const vector<Point>& in, vector<Point>& ml, vec
     ml.reserve(in.size());
     mr.reserve(in.size());
 
+    vector<size_t> prev;
+    vector<size_t> curr;
+
     for(;;) {
         ml.clear();
         mr.clear();
+        curr.clear();
 
-        for(typename vector<Point>::const_iterator j = in.begin(); j != in.end(); ++j) {
+        size_t i = 0;
+
+        for(typename vector<Point>::const_iterator j = in.begin(); j != in.end(); ++j, ++i) {
             double dl = Point::distance(cl, *j);
             double dr = Point::distance(cr, *j);
             if(dl <= dr) {
                 ml.push_back(*j);
+                curr.push_back(i);
             }
             else
             {
@@ -232,14 +203,21 @@ void BSPNode<Point,Alloc>::kmean(const vector<Point>& in, vector<Point>& ml, vec
         Point wl = Point::mean(ml);
         Point wr = Point::mean(mr);
 
+        //cout << Point::distance(cl, wl) << " - " << Point::distance(cr, wr) << endl;
 
-        if(cl == wl && cr == wr) {
+        //if(cl == wl && cr == wr)
+        if(curr == prev)
+        {
+            for(int i = 0; i < depth; i++)
+                cout << "  ";
             cout << Point::distance(cl, wl) << " - " << Point::distance(cr, wr) << endl;
+            //cout << "======================" << endl;
             break;
         }
 
         cl = wl;
         cr = wr;
+        prev = curr;
     }
 
 
@@ -261,7 +239,7 @@ BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const vector<Point>&
     vector<Point>  left;
     vector<Point>  right;
 
-    kmean(nodes, left, right);
+    kmean(nodes, left, right, depth);
 
 
     BSPNode* n = a.newNode(nodes,(BSPNode*)0);

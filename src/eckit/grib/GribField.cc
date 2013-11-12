@@ -38,7 +38,7 @@ GribField::~GribField()
 {
     if(file_) file_->detach();
     if(headers_) headers_->detach();
-    delete values_;
+    delete[] values_;
     delete handle_;
 }
 
@@ -122,23 +122,23 @@ void GribField::write(DataHandle& handle) const {
     GribField* self = const_cast<GribField*>(this);
     self->pack();
 
-    ASSERT(!file_);
+    //ASSERT(!file_);
     ASSERT(!headers_);
-    ASSERT(!values_);
+    //ASSERT(!values_);
 
-    handle_->write(handle);
+    getHandle(false)->write(handle);
 
 }
 
 void GribField::release() const {
     GribField* self = const_cast<GribField*>(this);
-/*
+#if 0
     self->pack();
     if(self->file_ && self->handle_) {
         delete self->handle_;
         self->handle_ = 0;
-    }*/
-
+    }
+#endif
 }
 
 } // namespace

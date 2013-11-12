@@ -110,7 +110,7 @@ public:
 
     };
 
-    class const_iterator {
+    class const_iterator: public std::iterator<std::forward_iterator_tag, GribFieldSet> {
 
         std::vector<GribField*>::const_iterator j_;
 

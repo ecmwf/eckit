@@ -192,13 +192,122 @@ Matrix kernel(const GribFieldSet& in)
         }
 
         if((i%1000)==0)
-        cout << i << endl;
+            cout << i << endl;
     }
 
     return result;
 
 }
 
+GribFieldSet normalise1(const GribFieldSet& in) {
+    size_t nfields = in.size();
+
+    GribFieldSet out(nfields);
+
+    for(size_t j = 0; j < nfields; ++j) {
+
+        ASSERT(nfields) ;
+
+        size_t npoints = 0;
+        GribField* header = in.willAdopt(j);
+        const double* values = header->getValues(npoints);
+
+        ASSERT(npoints);
+        double min = values[0];
+        double max = values[0];
+
+        for(size_t i = 1; i < npoints; i++) {
+            if(values[i] > max) { max = values[i]; }
+            if(values[i] < min) { min = values[i]; }
+        }
+
+
+        double* result = new double[npoints];
+        ASSERT(result);
+
+        for(size_t i = 0; i < npoints; i++) {
+            result[i] = (values[i] - min)/(max-min);
+        }
+
+        header->release();
+        out.add(new GribField(header, result, npoints));
+    }
+
+    return out;
+}
+
+GribFieldSet normalise2(const GribFieldSet& in) {
+    size_t nfields = in.size();
+
+    GribFieldSet out(nfields);
+
+    for(size_t j = 0; j < nfields; ++j) {
+
+        ASSERT(nfields) ;
+
+        size_t npoints = 0;
+        GribField* header = in.willAdopt(j);
+        const double* values = header->getValues(npoints);
+
+        double avg = 0;
+
+        for(size_t i = 0; i < npoints; i++) {
+            avg += values[i];
+        }
+
+        avg /= npoints;
+
+        double* result = new double[npoints];
+        ASSERT(result);
+
+        for(size_t i = 0; i < npoints; i++) {
+            result[i] = (values[i] - avg);
+        }
+
+        header->release();
+        out.add(new GribField(header, result, npoints));
+    }
+
+    return out;
+}
+
+GribFieldSet normalise3(const GribFieldSet& in) {
+    size_t nfields = in.size();
+
+    GribFieldSet out(nfields);
+
+    for(size_t j = 0; j < nfields; ++j) {
+
+        ASSERT(nfields) ;
+
+        size_t npoints = 0;
+        GribField* header = in.willAdopt(j);
+        const double* values = header->getValues(npoints);
+
+        double avg = 0;
+        double stdev = 0;
+
+        for(size_t i = 0; i < npoints; i++) {
+            avg += values[i];
+            stdev += values[i] * values[i];
+        }
+
+        avg /= npoints;
+        stdev = std::sqrt(stdev/npoints - avg*avg);
+
+        double* result = new double[npoints];
+        ASSERT(result);
+
+        for(size_t i = 0; i < npoints; i++) {
+            result[i] = (values[i] - avg)/stdev;
+        }
+
+        header->release();
+        out.add(new GribField(header, result, npoints));
+    }
+
+    return out;
+}
 
 } // namespace compute
 } // namespace eckit

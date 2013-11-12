@@ -137,7 +137,7 @@ public:
     const Point& point() const { return point_; }
 
     static BSPNode* build(Alloc& a, const vector<Point>& nodes, int depth= 0);
-    static void kmean(const vector<Point>& in, vector<Point>& ml, vector<Point>& mr) ;
+    static void kmean(const vector<Point>& in, vector<Point>& ml, vector<Point>& mr, int depth) ;
 
     // For testing only
 

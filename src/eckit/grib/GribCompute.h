@@ -39,6 +39,9 @@ double minvalue(const GribFieldSet& in);
 
 double accumulate(const GribFieldSet& in);
 
+GribFieldSet normalise1(const GribFieldSet& in); // Between 0 and 1
+GribFieldSet normalise2(const GribFieldSet& in); // With respect to average
+GribFieldSet normalise3(const GribFieldSet& in); // With respect to average and stdev
 
 GribFieldSet max(const GribFieldSet& in);
 GribFieldSet min(const GribFieldSet& in);

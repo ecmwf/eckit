@@ -60,7 +60,7 @@ public:
 
 
 GribFieldSet normalise(const GribFieldSet& s) {
-    //return normalise2(s);
+    return normalise3(s);
     return s;
 }
 
@@ -295,8 +295,16 @@ void Compute::bsptree(GribFieldSet & members)
         }
     }
 
+    StrStream os;
+    os << ::getenv("HOME")
+       << "/Dropbox/phd/metview/storm.grib"
+       << StrStream::ends;
+
+    string s(os);
+    PathName path(s);
+
     {
-        GribFieldSet f("/tmp/today.grib");
+        GribFieldSet f(path);
         f = normalise(f);
         f.write("normalised.grib");
 
@@ -306,7 +314,7 @@ void Compute::bsptree(GribFieldSet & members)
     }
 
     {
-        GribFieldSet today("/tmp/today.grib");
+        GribFieldSet today(path);
         today = normalise(today);
         BSPTree<BSPWrapper>::NodeInfo x = tree.nearestNeighbourBruteForce(today);
         cout << "nearestNeighbourBruteForce :" << x << endl;

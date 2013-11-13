@@ -329,8 +329,16 @@ void Compute::bsptree(GribFieldSet & members)
 
 void Compute::run()
 {
+    StrStream os ;
 
-    GribFieldSet members("/tmp/data.grib");
+    os << ::getenv("HOME")
+       << "/Dropbox/phd/metview/z500_ei.grib"
+       << StrStream::ends;
+
+    string s(os);
+    PathName path(s);
+
+    GribFieldSet members(path);
 
     Log::info() << "Before: " << members << endl;
     Log::info() << "MAX: " << maxvalue(members) << endl;

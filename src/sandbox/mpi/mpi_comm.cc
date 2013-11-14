@@ -13,10 +13,6 @@
 #include "eckit/runtime/Context.h"
 
 #include "eckit/mpi/Comm.h"
-#include "eckit/grib/GribFieldSet.h"
-#include "eckit/grib/GribField.h"
-#include "eckit/grib/GribCompute.h"
-
 
 using namespace eckit;
 
@@ -52,18 +48,6 @@ void TestMPIComm::run()
                 << comm.rank()
                 << " of "
                 << comm.size() << std::endl;
-
-    GribFieldSet fs("/tmp/data.grib");
-    Log::info() << fs << endl;
-
-    GribFieldSet m = compute::mean(fs);
-
-    Log::info() << m << endl;
-    m.write("/tmp/mean.grib");
-
-
-    GribFieldSet a = compute::plus(m, m);
-    Log::info() << a << endl;
 }
 
 //-----------------------------------------------------------------------------

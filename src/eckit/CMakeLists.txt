@@ -488,5 +488,3 @@ add_subdirectory( grid )
 add_subdirectory( grib )
 
 add_subdirectory( mpi )
-
-add_subdirectory( mining )

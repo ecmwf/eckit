@@ -8,10 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_machine_h
-#define eckit_machine_h
+#ifndef eckit_eckit_h
+#define eckit_eckit_h
 
 #include "ecbuild_config.h"
+
+#include "eckit/eckit_config.h"
 
 #define _(A) A
 

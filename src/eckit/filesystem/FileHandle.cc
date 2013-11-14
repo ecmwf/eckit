@@ -88,7 +88,7 @@ void FileHandle::open(const char* mode)
 		}
 	}
 
-    Log::info() << "FileHandle::open " << name_ << " " << mode << " " << fileno(file_) << endl;
+    //Log::info() << "FileHandle::open " << name_ << " " << mode << " " << fileno(file_) << endl;
 
 }
 

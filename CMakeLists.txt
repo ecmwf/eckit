@@ -36,8 +36,27 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-option( ECKIT_BOOST "Boost support  [NOT IMPLEMENTED]" OFF )
-option( ECKIT_GRID  "eckit::grid extension [EXPERIMENTAL]" OFF )
+option( ECKIT_BOOST  "Boost support  [NOT IMPLEMENTED]"		OFF )
+option( ECKIT_GRID   "eckit::grid extension [EXPERIMENTAL]"	OFF )
+option( ECKIT_GRIB   "eckit::grib extension [EXPERIMENTAL]"	OFF )
+option( ECKIT_MPI    "eckit::mpi  extension [EXPERIMENTAL]"	OFF  )
+option( ECKIT_MINING "eckit::mining  extension [EXPERIMENTAL]"	OFF  )
+
+option( ECKIT_EIGEN  "Eigen support  [NOT IMPLEMENTED]"		OFF )
+
+if(ECKIT_MINING)
+    set(ECKIT_EIGEN ON)
+endif()
+
+if( ECKIT_GRIB )
+	ecbuild_use_package(PROJECT grib_api)
+endif()
+
+if( ECKIT_EIGEN)
+	find_package(Eigen3)
+endif()
+
+# boost support
 
 if( ECKIT_BOOST )
 	ecbuild_add_extra_search_paths( boost )
@@ -52,11 +71,21 @@ if( ECKIT_BOOST )
 	list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
 endif()
 
+# stack inspection
+
 find_program( PSTACK_COMMAND "pstack" DOC "path to the pstack executable" )
 mark_as_advanced(PSTACK_COMMAND)
 
 find_program( CPPFILT_COMMAND "c++filt" DOC "path to the c++filt executable" )
 mark_as_advanced(CPPFILT_COMMAND)
+
+# MPI support
+
+find_package( MPI )
+
+if( NOT MPI_CXX_FOUND )
+	set( ECKIT_MPI OFF )
+endif()
 
 ###############################################################################
 # checks

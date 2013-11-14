@@ -99,6 +99,11 @@ string Context::argv(int n) const
     return argv_[n]; 
 }
 
+char** Context::argvs() const
+{
+    return argv_;
+}
+
 void Context::reconfigure()
 {
 	Log::info() << "Context::reconfigure" << endl;

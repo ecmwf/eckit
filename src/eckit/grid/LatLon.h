@@ -35,13 +35,14 @@ public: // methods
 
     virtual ~LatLon();
 
-    virtual size_t dataSize() const;
-    virtual BoundBox2D boundingBox() const;
+     virtual size_t dataSize() const;
+     virtual const std::vector< Point2D >& gridData() const { return points_; }
+     virtual BoundBox2D boundingBox() const;
 
 protected:
 
-    size_t nlat_;                       ///< number of latitude  increments
-    size_t nlon_;                       ///< number of longitude increments
+    size_t nlat_;                       ///< number of latitude  increments - ODD number for coindidence with 0,0 on Earth 
+    size_t nlon_;                       ///< number of longitude increments - can be any size as no requirement for 
 
     std::vector< Point2D > points_;     ///< storage of coordinate points
 

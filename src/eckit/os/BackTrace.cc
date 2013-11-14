@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -17,7 +17,7 @@
 #endif
 
 #ifdef EC_HAVE_CXXABI_H
-  #include <cxxabi.h>
+#include <cxxabi.h>
 #endif
 
 #include "eckit/os/BackTrace.h"
@@ -45,20 +45,70 @@ std::string BackTrace::dump()
     void*   buffer[BS_BUFF_SIZE];
     char**  strings;
 
-    int addsize = backtrace(buffer, BS_BUFF_SIZE);    
-   
+    int addsize = backtrace(buffer, BS_BUFF_SIZE);
+
     oss << "backtrace [" << count << "] stack has " << addsize << " addresses\n";
     
     strings = backtrace_symbols(buffer, addsize);
     if (strings == NULL)
-      oss << " --- no backtrace_symbols found ---\n";
+        oss << " --- no backtrace_symbols found ---\n";
     
-/// @todo here we should parse the output of the dump and demangle the symbols using the cxxabi
-
 #if 0 // EC_HAVE_CXXABI_H
 #else
-    for (int s = 0; s < addsize; ++s)
-      oss << strings[s] << "\n";
+    for (int s = 0; s < addsize; ++s) {
+        int status;
+        char buffer[10240];
+        bool overflow = false;
+
+        char *p = strings[s];
+        size_t i = 0;
+        while(*p) {
+
+            switch(*p) {
+            case ' ':
+            case '(':
+            case ')':
+            case '+':
+            case '\t':
+                oss << *p;
+                if(i) {
+                    buffer[i++] = 0;
+                    char* d = abi::__cxa_demangle(buffer, 0, 0, &status);
+                    if(status == 0) {
+                        oss << d;
+                    }
+                    else {
+                        oss << buffer;
+                    }
+                    if(d) free(d);
+                }
+                i = 0;
+                break;
+
+            default:
+                if(overflow) {
+                    oss << *p;
+                }
+                else {
+                    if(i < sizeof(buffer)) {
+                        buffer[i++] = *p;
+                    }
+                    else {
+                        overflow = true;
+                        for(size_t j = 0; j < i ; j++) {
+                            oss << buffer[j];
+                        }
+                        i = 0;
+                    }
+                }
+            }
+
+            p++;
+        }
+        oss << '\n';
+
+
+    }
 #endif
     
     free(strings);
@@ -69,7 +119,7 @@ std::string BackTrace::dump()
     oss << "\ndumping backtrace not supported on this system";
 #endif
     
-    return oss.str(); 
+    return oss.str();
 }
 
 //-----------------------------------------------------------------------------

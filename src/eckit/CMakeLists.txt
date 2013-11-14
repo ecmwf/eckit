@@ -21,6 +21,10 @@ container/BTree.cc
 container/Cache.h
 container/Recycler.h
 container/ClassExtent.h
+container/KDTree.h
+container/KDTree.cc
+container/BSPTree.h
+container/BSPTree.cc
 container/MappedArray.h
 container/MappedArray.cc )
 
@@ -304,6 +308,7 @@ value/BoolContent.h
 value/BoolContent.cc
 value/ListContent.h
 value/ListContent.cc
+value/Expression.h
 value/Value.h
 value/Value.cc
 value/DateContent.h
@@ -428,6 +433,8 @@ endforeach()
 list( APPEND eckit_templates
 					container/BTree.cc
 					container/MappedArray.cc
+					container/KDTree.cc
+					container/BSPTree.cc
 					filesystem/BasePathNameT.cc
 					io/FileBase.cc
 					runtime/PipeHandler.cc
@@ -472,6 +479,12 @@ ecbuild_add_library(TARGET eckit
 
 ### sub-driectories
 
+add_subdirectory( maths )
+
 add_subdirectory( web )
 
 add_subdirectory( grid )
+
+add_subdirectory( grib )
+
+add_subdirectory( mpi )

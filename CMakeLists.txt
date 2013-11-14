@@ -49,7 +49,7 @@ if(ECKIT_MINING)
 endif()
 
 if( ECKIT_GRIB )
-	ecbuild_use_package(PROJECT grib_api)
+	ecbuild_use_package( PROJECT grib_api VERSION 1.9.16 )
 endif()
 
 if( ECKIT_EIGEN)
@@ -109,6 +109,14 @@ add_definitions( -D${EC_OS_NAME} )
 set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
 set( ECKIT_LIBRARIES      eckit eckit_web )
+
+if( ECKIT_GRID )
+	list( APPEND ECKIT_LIBRARIES eckit_grid )
+endif()
+
+if( ECKIT_GRIB AND GRIB_API_FOUND )
+	list( APPEND ECKIT_TPLS grib_api )
+endif()
 
 get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
 

@@ -5,8 +5,12 @@ Exp.cc
 Exp.h
 Func.cc
 Func.h
+Count.cc
+Count.h
 Linear.cc
 Linear.h
+List.h
+List.cc
 ProdAdd.cc
 ProdAdd.h
 Reducer.cc

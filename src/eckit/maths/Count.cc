@@ -8,34 +8,39 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sstream>
-
-#include "eckit/maths/Exp.h"
+#include "eckit/maths/Count.h"
+#include "eckit/maths/Scalar.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Expression::Expression()
-{}
-
-Expression::Expression(const args_t &args) : args_(args)
-{}
-
-Expression::~Expression()
-{}
-
-ValPtr Expression::eval()
+Count::Count(ExpPtr e) : Func()
 {
-    return reduce()->evaluate();
+    args_.push_back(e);
 }
 
-string Expression::str() const
+string Count::ret_signature() const
 {
-    std::ostringstream os;
-    print(os);
-    return os.str();
+    return Scalar::sig();
+}
+
+ValPtr Count::evaluate()
+{
+    return maths::scalar( param(0)->arity() )->as<Value>();
+}
+
+ExpPtr Count::reduce()
+{
+    return maths::scalar( param(0)->arity() );
+}
+
+//--------------------------------------------------------------------------------------------
+
+ExpPtr count( ExpPtr e )
+{
+    return ExpPtr( new Count(e) );
 }
 
 //--------------------------------------------------------------------------------------------

@@ -8,43 +8,43 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Value.h
-/// @author Baudouin Raoult
+/// @file Count.h
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Value_h
-#define eckit_maths_Value_h
+#ifndef eckit_maths_Count_h
+#define eckit_maths_Count_h
 
-#include "eckit/eckit.h"
-
-#include "eckit/maths/Exp.h"
+#include "eckit/maths/Func.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-class Value : public Expression {
+/// Generates a Count combination of vectors
+class Count : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "Value"; }
+    static std::string class_name() { return "Count"; }
 
-    /// Empty contructor is usually used by derived classes that
-    /// handle the setup of the parameters themselves
-    Value() {}
+    Count( ExpPtr e );
 
-    /// Contructor taking a list of parameters
-    Value( const args_t& args ) : Expression(args) {}
+    virtual std::string type_name() const { return Count::class_name(); }
 
-    virtual ~Value();
+    virtual size_t arity() const { return 1; }
 
-    virtual ExpPtr reduce();
+    virtual std::string ret_signature() const;
 
     virtual ValPtr evaluate();
 
+    virtual ExpPtr reduce();
 };
+
+//--------------------------------------------------------------------------------------------
+
+ExpPtr count( ExpPtr e );
 
 //--------------------------------------------------------------------------------------------
 

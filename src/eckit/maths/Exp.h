@@ -73,12 +73,13 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 class Value;
-class Func;
+class List;
 class Expression;
 
 typedef double scalar_t;
 
-typedef boost::shared_ptr<Value> ValPtr;
+typedef boost::shared_ptr<Value>      ValPtr;
+typedef boost::shared_ptr<List>       ListPtr;
 typedef boost::shared_ptr<Expression> ExpPtr;
 
 typedef std::vector< ExpPtr > args_t;
@@ -103,11 +104,11 @@ public: // methods
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves
-    Expression() {}
+    Expression();
 
     /// Contructor taking a list of parameters
     /// handle the setup of the parameters themselves
-    Expression( const args_t& args ) : args_(args) {}
+    Expression( const args_t& args );
 
     virtual ~Expression();
 

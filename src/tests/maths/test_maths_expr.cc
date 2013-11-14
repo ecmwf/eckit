@@ -15,6 +15,8 @@
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/Vector.h"
 #include "eckit/maths/BinaryFunc.h"
+#include "eckit/maths/List.h"
+#include "eckit/maths/Count.h"
 
 using namespace eckit;
 using namespace eckit::maths;
@@ -42,6 +44,8 @@ public:
     void test_reduce_prodadd();
     /// Tests operators like s * ( v + v )
     void test_operators();
+    /// Tests list functions
+    void test_list();
 
     void teardown();
 
@@ -60,6 +64,7 @@ void TestExp::run()
     test_reduce_recursive_scalars();
     test_reduce_prodadd();
     test_operators();
+    test_list();
 
     teardown();
 }
@@ -141,6 +146,29 @@ void TestExp::test_operators()
 
     ExpPtr e2 =  maths::vector( 10, 13. ) - maths::vector( 10, 5. );
     ASSERT( e2->eval()->str() == "Vector(8, 8, 8, 8, 8, 8, 8, 8, 8, 8)" );
+}
+
+void TestExp::test_list()
+{
+    ExpPtr l0 =  maths::list( y_ , x_ );
+
+    ASSERT( l0->eval()->str() == "List(Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5))" );
+    ASSERT( l0->as<List>()->size() == 2 );
+
+    ExpPtr l1 = maths::list()->append(a_, b_, x_, y_, x_, y_);
+
+    ASSERT( l1->eval()->str() == "List(Scalar(2), Scalar(4), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7))" );
+    ASSERT( l1->as<List>()->size() == 6 );
+
+    ExpPtr l2 = maths::list( a_, b_, a_, b_, a_ );
+
+    ASSERT( l2->eval()->str() == "List(Scalar(2), Scalar(4), Scalar(2), Scalar(4), Scalar(2))" );
+    ASSERT( l2->as<List>()->size() == 5 );
+
+    ExpPtr c3 = maths::count( maths::list( a_, b_, a_, b_, a_ ) );
+
+    ASSERT( c3->eval()->str() == "Scalar(5)" );
+    ASSERT( Scalar::extract(c3->eval()) == 5 );
 }
 
 //-----------------------------------------------------------------------------

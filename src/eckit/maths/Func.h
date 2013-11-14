@@ -40,7 +40,6 @@ protected: // methods
     Func() {}
 
     /// Contructor taking a list of parameters
-    /// handle the setup of the parameters themselves
     Func( const args_t& args ) : Expression(args) {}
 
 public: // methods

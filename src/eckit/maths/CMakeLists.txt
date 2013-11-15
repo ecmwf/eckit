@@ -7,6 +7,8 @@ Func.cc
 Func.h
 Count.cc
 Count.h
+FMap.cc
+FMap.h
 Linear.cc
 Linear.h
 List.h

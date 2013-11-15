@@ -29,7 +29,7 @@ public: // methods
 
     static std::string class_name() { return "Count"; }
 
-    Count( ExpPtr e );
+    Count( ExpPtr e = Expression::undef() );
 
     virtual std::string type_name() const { return Count::class_name(); }
 

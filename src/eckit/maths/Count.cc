@@ -26,9 +26,9 @@ string Count::ret_signature() const
     return Scalar::sig();
 }
 
-ValPtr Count::evaluate()
+ValPtr Count::evaluate( Context& ctx )
 {
-    return maths::scalar( param(0)->arity() )->as<Value>();
+    return maths::scalar( param(0,ctx)->arity() )->as<Value>();
 }
 
 ExpPtr Count::reduce()

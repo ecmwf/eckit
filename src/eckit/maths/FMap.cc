@@ -9,7 +9,7 @@
  */
 
 #include "eckit/maths/FMap.h"
-#include "eckit/maths/Scalar.h"
+#include "eckit/maths/List.h"
 
 namespace eckit {
 namespace maths {
@@ -27,9 +27,22 @@ string FMap::ret_signature() const
     return Scalar::sig();
 }
 
-ValPtr FMap::evaluate()
+ValPtr FMap::evaluate( context_t& ctx )
 {
-    return maths::scalar( param(0)->arity() )->as<Value>();
+    ListPtr res ( new List() );
+
+    ExpPtr f = param(0,ctx);
+
+    List::value_t& list = List::extract( param(1,ctx) );
+
+    const size_t nlist = list.size();
+    for( size_t i = 0; i < nlist; ++i )
+    {
+        ExpPtr e = list[i]->evaluate(ctx);
+        res->append( f->eval(e) );
+    }
+
+    return res;
 }
 
 //--------------------------------------------------------------------------------------------

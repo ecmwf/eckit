@@ -28,7 +28,42 @@ Expression::~Expression()
 
 ValPtr Expression::eval()
 {
-    return reduce()->evaluate();
+    context_t ctx;
+    return reduce()->evaluate(ctx);
+}
+ValPtr Expression::eval( ExpPtr e )
+{
+    context_t ctx;
+    ctx.push_back(e);
+    ExpPtr res = reduce()->evaluate(ctx);
+    ASSERT( ctx.empty() );
+    return res;
+}
+
+ValPtr Expression::eval(  ExpPtr a, ExpPtr b )
+{
+    context_t ctx;
+    ctx.push_back(a);
+    ctx.push_back(b);
+    ExpPtr res = reduce()->evaluate(ctx);
+    ASSERT( ctx.empty() );
+    return res;
+}
+
+ExpPtr Expression::param(const size_t &i, context_t& ctx) const
+{
+    ASSERT( i < args_.size() );
+    ASSERT( args_[i] );
+
+    if( args_[i] == ExpPtr::undef )
+    {
+        ASSERT( !ctx.empty() );
+        ExpPtr e = ctx.front();
+        ctx.pop_front();
+        return e;
+    }
+
+    return args_[i];
 }
 
 string Expression::str() const

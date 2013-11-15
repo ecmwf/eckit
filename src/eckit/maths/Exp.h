@@ -84,6 +84,8 @@ typedef boost::shared_ptr<Expression> ExpPtr;
 
 typedef std::vector< ExpPtr > args_t;
 
+typedef std::deque< ExpPtr > context_t;
+
 //--------------------------------------------------------------------------------------------
 
 /// Expression Error
@@ -99,6 +101,8 @@ class Expression :
     private boost::noncopyable {
 
 public: // methods
+
+    const ExpPtr undef = nullptr;
 
     static std::string class_name() { return "Exp"; }
 
@@ -127,15 +131,12 @@ public: // methods
     }
 
     ValPtr eval();
+    ValPtr eval( ExpPtr );
+    ValPtr eval( ExpPtr, ExpPtr );
 
     size_t arity() const { return args_.size(); }
 
-    ExpPtr param( const size_t& i ) const
-    {
-        assert( i < args_.size() );
-        assert( args_[i] );
-        return args_[i];
-    }
+    ExpPtr param( const size_t& i ) const;
 
     void param( const size_t& i, ExpPtr p )
     {
@@ -150,7 +151,7 @@ public: // methods
 public: // virtual methods
 
     virtual std::string type_name() const = 0;
-    virtual ValPtr evaluate() = 0;
+    virtual ValPtr evaluate( context_t& ) = 0;
     virtual ExpPtr reduce() = 0;
     virtual void print( std::ostream& ) const = 0;
     virtual std::string signature() const = 0;

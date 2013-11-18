@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -11,7 +11,7 @@
 #include "eckit/maths/Linear.h"
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/Vector.h"
-#include "eckit/maths/Reducer.h"
+#include "eckit/maths/Optimiser.h"
 
 namespace eckit {
 namespace maths {
@@ -95,10 +95,10 @@ Linear::Register::Register()
 
 static Linear::Register linear_register;
 
-static ReduceTo<Linear> reduce_linear_svsv("Add(Prod(s,v),Prod(s,v))");
-static ReduceTo<Linear> reduce_linear_vsvs("Add(Prod(v,s),Prod(v,s))");
-static ReduceTo<Linear> reduce_linear_vssv("Add(Prod(v,s),Prod(s,v))");
-static ReduceTo<Linear> reduce_linear_svvs("Add(Prod(s,v),Prod(v,s))");
+static OptimiseTo<Linear> optimise_linear_svsv("Add(Prod(s,v),Prod(s,v))");
+static OptimiseTo<Linear> optimise_linear_vsvs("Add(Prod(v,s),Prod(v,s))");
+static OptimiseTo<Linear> optimise_linear_vssv("Add(Prod(v,s),Prod(s,v))");
+static OptimiseTo<Linear> optimise_linear_svvs("Add(Prod(s,v),Prod(v,s))");
 
 //--------------------------------------------------------------------------------------------
 

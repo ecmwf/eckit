@@ -1,17 +1,17 @@
-ecbuild_add_library( TARGET      testfactory
+ecbuild_add_library( TARGET      test_factory
                      NOINSTALL
                      SOURCES     TestFactory.cc TestFactory.h )
 
-ecbuild_add_library( TARGET      testbuilder1
+ecbuild_add_library( TARGET      test_builder1
                      NOINSTALL
                      SOURCES     TestBuilder1.cc
-                     LIBS        testfactory )
+                     LIBS        test_factory )
 
-ecbuild_add_library( TARGET      testbuilder2
+ecbuild_add_library( TARGET      test_builder2
                      NOINSTALL
                      SOURCES     TestBuilder2.cc
-                     LIBS        testfactory )
+                     LIBS        test_factory )
 
 ecbuild_add_test( TARGET      test_singleton
                   SOURCES     test_singleton.cc
-                  LIBS        testbuilder1 testbuilder2 )
+                  LIBS        test_builder1 test_builder2 )

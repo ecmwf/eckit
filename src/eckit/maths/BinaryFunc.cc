@@ -11,23 +11,27 @@
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/Vector.h"
 #include "eckit/maths/BinaryFunc.h"
-#include "eckit/maths/Reducer.h"
+#include "eckit/maths/Optimiser.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-#define GEN_BINFUNC_IMPL( f, c )                                                             \
+#define GEN_BINFUNC_IMPL( f, c, op )                                                         \
 ExpPtr f( ExpPtr l, ExpPtr r )           { return ExpPtr( c()(l,r) ); }                      \
 ExpPtr f( Expression& l, ExpPtr r )      { return ExpPtr( c()(l.self(),r) ); }               \
 ExpPtr f( ExpPtr l, Expression& r )      { return ExpPtr( c()(l,r.self()) ); }               \
-ExpPtr f( Expression& l, Expression& r ) { return ExpPtr( c()(l.self(),r.self()) ); }
+ExpPtr f( Expression& l, Expression& r ) { return ExpPtr( c()(l.self(),r.self()) ); }        \
+ExpPtr operator op ( ValPtr p1, ValPtr p2 ) { return f( p1, p2 ); }                          \
+ExpPtr operator op ( ValPtr p1, ExpPtr p2 ) { return f( p1, p2 ); }                          \
+ExpPtr operator op ( ExpPtr p1, ValPtr p2 ) { return f( p1, p2 ); }                          \
+ExpPtr operator op ( ExpPtr p1, ExpPtr p2 ) { return f( p1, p2 ); }
 
-GEN_BINFUNC_IMPL(prod,BinaryFunc<Prod>)
-GEN_BINFUNC_IMPL(div,BinaryFunc<Div>)
-GEN_BINFUNC_IMPL(add,BinaryFunc<Add>)
-GEN_BINFUNC_IMPL(sub,BinaryFunc<Sub>)
+GEN_BINFUNC_IMPL(prod,BinaryFunc<Prod>,*)
+GEN_BINFUNC_IMPL(div,BinaryFunc<Div>,/)
+GEN_BINFUNC_IMPL(add,BinaryFunc<Add>,+)
+GEN_BINFUNC_IMPL(sub,BinaryFunc<Sub>,-)
 
 #undef GEN_BINFUNC_IMPL
 
@@ -160,10 +164,10 @@ ValPtr BinaryFunc<T>::Computer<U,V,I>::compute(const args_t &p)
 
 //--------------------------------------------------------------------------------------------
 
-static ReduceTo<Scalar> reduce_add_ss ( std::string(opname( Add() )) + "(s,s)" );
-static ReduceTo<Scalar> reduce_sub_ss ( std::string(opname( Sub() )) + "(s,s)" );
-static ReduceTo<Scalar> reduce_prod_ss( std::string(opname(Prod() )) + "(s,s)" );
-static ReduceTo<Scalar> reduce_div_ss ( std::string(opname( Div() )) + "(s,s)" );
+static OptimiseTo<Scalar> optimise_add_ss ( std::string(opname( Add() )) + "(s,s)" );
+static OptimiseTo<Scalar> optimise_sub_ss ( std::string(opname( Sub() )) + "(s,s)" );
+static OptimiseTo<Scalar> optimise_prod_ss( std::string(opname(Prod() )) + "(s,s)" );
+static OptimiseTo<Scalar> optimise_div_ss ( std::string(opname( Div() )) + "(s,s)" );
 
 //--------------------------------------------------------------------------------------------
 } // namespace maths

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -13,12 +13,20 @@
 
 #include "eckit/maths/Func.h"
 #include "eckit/maths/Value.h"
-#include "eckit/maths/Reducer.h"
+#include "eckit/maths/Optimiser.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
+
+Func::Func() : Expression()
+{
+}
+
+Func::Func(const args_t &args) : Expression(args)
+{
+}
 
 Func::~Func()
 {
@@ -30,15 +38,21 @@ Func::dispatcher_t &Func::dispatcher()
     return d;
 }
 
-ValPtr Func::evaluate()
+ValPtr Func::evaluate( context_t& ctx )
 {
-    const size_t nargs = args_.size();
+    DBG;
+
+    args_t args = args_; // create temporary args
+
+    const size_t nargs = args.size();
     for( size_t i = 0; i < nargs; ++i )
     {
-        args_[i] = args_[i]->evaluate()->self();
+        args[i] = param(i,&ctx)->evaluate(ctx)->self();
     }
 
-    std::string sig = signature();
+    std::string sig = signature_args( args );
+
+    DBGX(sig);
 
     dispatcher_t& d = dispatcher();
     dispatcher_t::iterator itr = d.find( sig );
@@ -49,23 +63,23 @@ ValPtr Func::evaluate()
         throw Error( Here(), msg.str() );
     }
 
-    return ((*itr).second)( args_ );
+    return ((*itr).second)( args );
 }
 
-ExpPtr Func::reduce()
+ExpPtr Func::optimise()
 {
-    //    DBGX( *this );
-    //    DBGX( signature() );
+    DBGX( *this );
+    DBGX( signature() );
 
-    // reduce first children
+    // optimise first children
 
     for( size_t i = 0; i < args_.size(); ++i )
     {
-        args_[i] = args_[i]->reduce()->self();
+        args_[i] = args_[i]->optimise()->self();
     }
 
-    // now try to reduce self
-    return Reducer::apply( shared_from_this() );
+    // now try to optimise self
+    return Optimiser::apply( shared_from_this() );
 }
 
 void Func::print(ostream &o) const
@@ -74,7 +88,7 @@ void Func::print(ostream &o) const
     for( size_t i = 0; i < arity(); ++i )
     {
         if(i) o << ", ";
-        o << *param(i);
+        o << *args_[i]; // no context applied
     }
     o << ")";
 }

@@ -1,16 +1,24 @@
 list( APPEND eckit_maths_srcs
 BinaryFunc.cc
 BinaryFunc.h
+UnaryFunc.cc
+UnaryFunc.h
 Exp.cc
 Exp.h
 Func.cc
 Func.h
+Count.cc
+Count.h
+FMap.cc
+FMap.h
 Linear.cc
 Linear.h
+List.h
+List.cc
 ProdAdd.cc
 ProdAdd.h
-Reducer.cc
-Reducer.h
+Optimiser.cc
+Optimiser.h
 Scalar.cc
 Scalar.h
 Value.cc

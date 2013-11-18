@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -27,7 +27,8 @@ void Scalar::print(ostream &o) const
 Scalar::Scalar(const ExpPtr& e) : v_(0)
 {
    ASSERT( e->ret_signature() == Scalar::sig() );
-   v_ = Scalar::extract( e->evaluate() );
+   context_t ctx;
+   v_ = Scalar::extract( e->evaluate(ctx) );
 }
 
 //--------------------------------------------------------------------------------------------

@@ -112,7 +112,7 @@ void TestCache::test_purge()
     
     cache.purge();
     
-//    cache.print(std::cout);
+    cache.print(std::cout);
 
     ASSERT(  cache.size() == 2 );
     
@@ -166,9 +166,10 @@ void TestCache::test_fetch()
 
     Obj o;
 
-    ASSERT( !cache.fetch("f",o) );
+    ASSERT( !cache.fetch("f",o) ); // no obj f exists
     
-    ASSERT( cache.fetch("b",o) );
+    ASSERT( cache.fetch("b",o) );  // obj b exists
+
     ASSERT( o.s_ == "bbb" );
     ASSERT( o.d_ ==  22222  );
 }

@@ -11,8 +11,8 @@
 #include "grib_api.h"
 
 #include "eckit/io/Buffer.h"
-#include "eckit/filesystem/BufferedHandle.h"
-#include "eckit/filesystem/MoverHandle.h"
+#include "eckit/io/BufferedHandle.h"
+#include "eckit/io/MoverHandle.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"
 

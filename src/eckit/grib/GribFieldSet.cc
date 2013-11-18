@@ -4,7 +4,7 @@
 #include "GribFieldSet.h"
 #include "GribFile.h"
 #include "GribField.h"
-#include "eckit/filesystem/FileHandle.h"
+#include "eckit/io/FileHandle.h"
 
 namespace eckit {
 

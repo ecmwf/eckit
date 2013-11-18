@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/maths/Count.h"
 #include "eckit/maths/Scalar.h"
 
 namespace eckit {
@@ -15,27 +16,34 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Scalar::Scalar( const scalar_t& v ) : v_(v)
+Count::Count(ExpPtr e) : Func()
 {
+    args_.push_back(e);
 }
 
-void Scalar::print(ostream &o) const
+string Count::ret_signature() const
 {
-    o << class_name() << "(" << v_ << ")";
+    return Scalar::sig();
 }
 
-Scalar::Scalar(const ExpPtr& e) : v_(0)
+ValPtr Count::evaluate( context_t& ctx )
 {
-   ASSERT( e->ret_signature() == Scalar::sig() );
-   context_t ctx;
-   v_ = Scalar::extract( e->evaluate(ctx) );
+    return maths::scalar( param(0,&ctx)->arity() )->as<Value>();
+}
+
+ExpPtr Count::optimise()
+{
+    if( Undef::is( args_[0] ) )
+        return shared_from_this();
+    else
+        return maths::scalar( args_[0]->arity() );
 }
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr scalar(const scalar_t &s)
+ExpPtr count( ExpPtr e )
 {
-    return ExpPtr( new Scalar(s) );
+    return ExpPtr( new Count(e) );
 }
 
 //--------------------------------------------------------------------------------------------

@@ -31,11 +31,18 @@ public: // methods
 
     static std::string class_name() { return "Value"; }
 
+    /// Empty contructor is usually used by derived classes that
+    /// handle the setup of the parameters themselves
+    Value() {}
+
+    /// Contructor taking a list of parameters
+    Value( const args_t& args ) : Expression(args) {}
+
     virtual ~Value();
 
-    virtual ExpPtr reduce();
+    virtual ExpPtr optimise();
 
-    virtual ValPtr evaluate();
+    virtual ValPtr evaluate( context_t& );
 
 };
 

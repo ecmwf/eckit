@@ -36,13 +36,13 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-option( ECKIT_BOOST  "Boost support  [NOT IMPLEMENTED]"		OFF )
-option( ECKIT_GRID   "eckit::grid extension [EXPERIMENTAL]"	OFF )
-option( ECKIT_GRIB   "eckit::grib extension [EXPERIMENTAL]"	OFF )
-option( ECKIT_MPI    "eckit::mpi  extension [EXPERIMENTAL]"	OFF  )
-option( ECKIT_MINING "eckit::mining  extension [EXPERIMENTAL]"	OFF  )
-
-option( ECKIT_EIGEN  "Eigen support  [NOT IMPLEMENTED]"		OFF )
+option( ECKIT_BOOST  "Boost support  [NOT IMPLEMENTED]"		        OFF )
+option( ECKIT_MATHS  "eckit::maths extension [EXPERIMENTAL]"        OFF )
+option( ECKIT_GRID   "eckit::grid extension [EXPERIMENTAL]"	        OFF )
+option( ECKIT_GRIB   "eckit::grib extension [EXPERIMENTAL]"	        OFF )
+option( ECKIT_MPI    "eckit::mpi  extension [EXPERIMENTAL]"	        OFF )
+option( ECKIT_MINING "eckit::mining  extension [EXPERIMENTAL]"	    OFF )
+option( ECKIT_EIGEN  "Eigen support  [NOT IMPLEMENTED]"		        OFF )
 
 if(ECKIT_MINING)
     set(ECKIT_EIGEN ON)

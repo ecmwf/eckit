@@ -62,7 +62,7 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-#if 1
+#if 0
 #define DBG     std::cout << Here() << std::endl;
 #define DBGX(x) std::cout << Here() << " " << #x << " -> " << x << std::endl;
 #else
@@ -73,15 +73,18 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 class Value;
-class Func;
+class List;
 class Expression;
 
 typedef double scalar_t;
 
-typedef boost::shared_ptr<Value> ValPtr;
+typedef boost::shared_ptr<Value>      ValPtr;
+typedef boost::shared_ptr<List>       ListPtr;
 typedef boost::shared_ptr<Expression> ExpPtr;
 
 typedef std::vector< ExpPtr > args_t;
+
+typedef std::deque< ExpPtr > context_t;
 
 //--------------------------------------------------------------------------------------------
 
@@ -103,11 +106,11 @@ public: // methods
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves
-    Expression() {}
+    Expression();
 
     /// Contructor taking a list of parameters
     /// handle the setup of the parameters themselves
-    Expression( const args_t& args ) : args_(args) {}
+    Expression( const args_t& args );
 
     virtual ~Expression();
 
@@ -126,40 +129,58 @@ public: // methods
     }
 
     ValPtr eval();
+    ValPtr eval( ExpPtr );
+    ValPtr eval( ExpPtr, ExpPtr );
 
     size_t arity() const { return args_.size(); }
 
-    ExpPtr param( const size_t& i ) const
-    {
-        assert( i < args_.size() );
-        assert( args_[i] );
-        return args_[i];
-    }
+    ExpPtr param( const size_t& i, context_t* ctx = nullptr ) const;
 
-    void param( const size_t& i, ExpPtr p )
-    {
-        assert( i < args_.size() );
-        assert( p );
-        if( p != args_[i] )
-            args_[i] = p;
-    }
+    void param( const size_t& i, ExpPtr p );
 
     std::string str() const;
 
 public: // virtual methods
 
     virtual std::string type_name() const = 0;
-    virtual ValPtr evaluate() = 0;
-    virtual ExpPtr reduce() = 0;
+    virtual ValPtr evaluate( context_t& ) = 0;
+    virtual ExpPtr optimise() = 0;
     virtual void print( std::ostream& ) const = 0;
     virtual std::string signature() const = 0;
     virtual std::string ret_signature() const = 0;
 
 protected: // members
 
-    args_t args_; ///< parameters of this expression
+    args_t args_;     ///< parameters of this expression
 
 };
+
+//--------------------------------------------------------------------------------------------
+
+class Undef : public Expression {
+public: //  methods
+
+    static std::string class_name() { return "Undef"; }
+    static std::string sig() { return "?"; }
+    static bool is ( const ExpPtr& e ) { return e->signature() == Undef::sig(); }
+
+    Undef();
+
+    virtual ~Undef();
+
+    virtual ExpPtr optimise() { return shared_from_this(); }
+
+    virtual ValPtr evaluate( context_t& ctx );
+
+    virtual std::string type_name() const { return Undef::class_name(); }
+    virtual std::string signature() const { return Undef::sig(); }
+    virtual std::string ret_signature() const { return Undef::sig(); }
+
+    virtual void print( std::ostream& o ) const { o << Undef::sig(); }
+
+};
+
+ExpPtr undef();
 
 //--------------------------------------------------------------------------------------------
 

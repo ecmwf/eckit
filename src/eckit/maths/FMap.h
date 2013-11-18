@@ -8,37 +8,49 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/Scalar.h"
+/// @file FMap.h
+/// @author Tiago Quintino
+/// @date November 2013
+
+#ifndef eckit_maths_FMap_h
+#define eckit_maths_FMap_h
+
+#include "eckit/maths/Func.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Scalar::Scalar( const scalar_t& v ) : v_(v)
-{
-}
+/// @todo Need 'pure functions' as first class members to be able to fmap
+///       instead of closed expressions
 
-void Scalar::print(ostream &o) const
-{
-    o << class_name() << "(" << v_ << ")";
-}
+/// Generates a FMap combination of vectors
+class FMap : public Func {
 
-Scalar::Scalar(const ExpPtr& e) : v_(0)
-{
-   ASSERT( e->ret_signature() == Scalar::sig() );
-   context_t ctx;
-   v_ = Scalar::extract( e->evaluate(ctx) );
-}
+public: // methods
+
+    static std::string class_name() { return "FMap"; }
+
+    FMap( ExpPtr f, ExpPtr l );
+
+    virtual std::string type_name() const { return FMap::class_name(); }
+
+    virtual size_t arity() const { return 2; }
+
+    virtual std::string ret_signature() const;
+
+    virtual ValPtr evaluate( context_t& ctx );
+
+};
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr scalar(const scalar_t &s)
-{
-    return ExpPtr( new Scalar(s) );
-}
+ExpPtr fmap( ExpPtr f, ExpPtr l );
 
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths
 } // namespace eckit
+
+#endif

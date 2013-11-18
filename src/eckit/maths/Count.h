@@ -8,37 +8,47 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/Scalar.h"
+/// @file Count.h
+/// @author Tiago Quintino
+/// @date November 2013
+
+#ifndef eckit_maths_Count_h
+#define eckit_maths_Count_h
+
+#include "eckit/maths/Func.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Scalar::Scalar( const scalar_t& v ) : v_(v)
-{
-}
+/// Generates a Count combination of vectors
+class Count : public Func {
 
-void Scalar::print(ostream &o) const
-{
-    o << class_name() << "(" << v_ << ")";
-}
+public: // methods
 
-Scalar::Scalar(const ExpPtr& e) : v_(0)
-{
-   ASSERT( e->ret_signature() == Scalar::sig() );
-   context_t ctx;
-   v_ = Scalar::extract( e->evaluate(ctx) );
-}
+    static std::string class_name() { return "Count"; }
+
+    Count( ExpPtr e = undef() );
+
+    virtual std::string type_name() const { return Count::class_name(); }
+
+    virtual size_t arity() const { return 1; }
+
+    virtual std::string ret_signature() const;
+
+    virtual ValPtr evaluate( context_t& ctx );
+
+    virtual ExpPtr optimise();
+};
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr scalar(const scalar_t &s)
-{
-    return ExpPtr( new Scalar(s) );
-}
+ExpPtr count( ExpPtr e );
 
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths
 } // namespace eckit
+
+#endif

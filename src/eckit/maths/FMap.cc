@@ -8,34 +8,51 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/Scalar.h"
+#include "eckit/maths/FMap.h"
+#include "eckit/maths/List.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Scalar::Scalar( const scalar_t& v ) : v_(v)
+FMap::FMap( ExpPtr f,  ExpPtr list ) : Func()
 {
+    args_.push_back(f);
+    args_.push_back(list);
 }
 
-void Scalar::print(ostream &o) const
+string FMap::ret_signature() const
 {
-    o << class_name() << "(" << v_ << ")";
+    return List::sig();
 }
 
-Scalar::Scalar(const ExpPtr& e) : v_(0)
+ValPtr FMap::evaluate( context_t& ctx )
 {
-   ASSERT( e->ret_signature() == Scalar::sig() );
-   context_t ctx;
-   v_ = Scalar::extract( e->evaluate(ctx) );
+    ListPtr res ( new List() );
+
+    ExpPtr f = param(0,&ctx);
+
+    List::value_t& list = List::extract( param(1,&ctx) );
+
+    const size_t nlist = list.size();
+    for( size_t i = 0; i < nlist; ++i )
+    {
+        ExpPtr e = list[i]->evaluate(ctx);
+        DBGX(*e);
+        ExpPtr v = f->eval(e);
+        DBGX(*v);
+        res->append( v );
+    }
+
+    return res;
 }
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr scalar(const scalar_t &s)
+ExpPtr fmap( ExpPtr f,  ExpPtr list )
 {
-    return ExpPtr( new Scalar(s) );
+    return ExpPtr( new FMap(f,list) );
 }
 
 //--------------------------------------------------------------------------------------------

@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file BinaryFunc.h
+/// @file UnaryFunc.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_BinaryFunc_h
-#define eckit_maths_BinaryFunc_h
+#ifndef eckit_maths_UnaryFunc_h
+#define eckit_maths_UnaryFunc_h
 
 #include <functional>
 
@@ -26,8 +26,9 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Generates a expressions
+/// T is the operator type
 template <class T>
-class BinaryFunc  {
+class UnaryFunc  {
 public:
 
     static std::string class_name();
@@ -36,27 +37,24 @@ public:
     struct Op : public Func
     {
         Op( const args_t& args );
+
         virtual std::string type_name() const;
 
         virtual std::string ret_signature() const;
-
     };
 
     /// Expression generator function
-    ExpPtr operator() ( ExpPtr p0, ExpPtr p1 )
+    ExpPtr operator() ( ExpPtr p0 )
     {
         args_t args;
         args.push_back( p0 );
-        args.push_back( p1 );
         return ExpPtr( new Op(args) );
     }
 
-    /// Applies an implementation of the binary operator
-    /// T is the operator type ( Add, Sub, etc ... )
+    /// Applies an implementation of the unary operator
     /// U is the left operand type ( Scalar, Vector, ... )
-    /// V is the right operand type ( Scalar, Vector, ... )
     /// I is the implementation type
-    template < class U, class V, class I >
+    template < class U, class I >
     class Computer {
     public:
 
@@ -75,36 +73,23 @@ public:
 
 //--------------------------------------------------------------------------------------------
 
-typedef multiplies<scalar_t>  Prod;
-typedef divides<scalar_t>     Div;
-typedef plus<scalar_t>        Add;
-typedef minus<scalar_t>       Sub;
+typedef negate<scalar_t>  Neg;
 
-const char *opname(const Prod&);
-const char *opname(const Div&);
-const char *opname(const Add&);
-const char *opname(const Sub&);
+const char *opname( const Neg& );
 
 //--------------------------------------------------------------------------------------------
 
 // version with stand alone functions
 
-#define GEN_BINFUNC_DECL( f, c, op )        \
-ExpPtr f( ExpPtr l, ExpPtr r );             \
-ExpPtr f( Expression& l, ExpPtr r );        \
-ExpPtr f( ExpPtr l, Expression& r );        \
-ExpPtr f( Expression& l, Expression& r );   \
-ExpPtr operator op ( ValPtr p1, ValPtr p2 );  \
-ExpPtr operator op ( ValPtr p1, ExpPtr p2 );  \
-ExpPtr operator op ( ExpPtr p1, ValPtr p2 );  \
-ExpPtr operator op ( ExpPtr p1, ExpPtr p2 );
+#define GEN_UNFUNC_DECL( f, c, op )   \
+ExpPtr f( ExpPtr e = undef() );       \
+ExpPtr f( Expression& e );            \
+ExpPtr operator op ( ValPtr e  );     \
+ExpPtr operator op ( ExpPtr p1 );
 
-GEN_BINFUNC_DECL(prod,BinaryFunc<Prod>,*)
-GEN_BINFUNC_DECL(div,BinaryFunc<Div>,/)
-GEN_BINFUNC_DECL(add,BinaryFunc<Add>,+)
-GEN_BINFUNC_DECL(sub,BinaryFunc<Sub>,-)
+GEN_UNFUNC_DECL(neg,UnaryFunc<Neg>,-)
 
-#undef GEN_BINFUNC_DECL
+#undef GEN_UNFUNC_DECL
 
 //--------------------------------------------------------------------------------------------
 

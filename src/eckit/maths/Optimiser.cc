@@ -8,34 +8,44 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/Scalar.h"
+#include "eckit/maths/Optimiser.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Scalar::Scalar( const scalar_t& v ) : v_(v)
+ExpPtr Optimiser::apply(ExpPtr e)
 {
+    DBGX(*e);
+
+    std::string signature = e->signature();
+
+    DBGX(signature);
+
+    optimisers_t& optimiser = optimisers();
+    std::map<std::string,Optimiser*>::const_iterator itr = optimiser.find(signature);
+    if( itr == optimiser.end() )
+    {
+        DBGX("NOT OPTIMISING");
+        return e;
+    }
+    else
+    {
+        DBGX("OPTIMISING");
+        return (*itr).second->optimise(e);
+    }
 }
 
-void Scalar::print(ostream &o) const
+Optimiser::Optimiser(const string &signature)
 {
-    o << class_name() << "(" << v_ << ")";
+    optimisers()[signature] = this;
 }
 
-Scalar::Scalar(const ExpPtr& e) : v_(0)
+Optimiser::optimisers_t& Optimiser::optimisers()
 {
-   ASSERT( e->ret_signature() == Scalar::sig() );
-   context_t ctx;
-   v_ = Scalar::extract( e->evaluate(ctx) );
-}
-
-//--------------------------------------------------------------------------------------------
-
-ExpPtr scalar(const scalar_t &s)
-{
-    return ExpPtr( new Scalar(s) );
+    static optimisers_t optimisers_;
+    return optimisers_;
 }
 
 //--------------------------------------------------------------------------------------------

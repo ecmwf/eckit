@@ -49,7 +49,7 @@ if(ECKIT_MINING)
 endif()
 
 if( ECKIT_GRIB )
-	ecbuild_use_package( PROJECT grib_api VERSION 1.9.16 )
+	ecbuild_use_package( PROJECT grib_api VERSION 1.9.9 )
 endif()
 
 if( ECKIT_EIGEN)

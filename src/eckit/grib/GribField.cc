@@ -4,8 +4,18 @@
 #include "GribField.h"
 #include "GribFile.h"
 #include "GribHandle.h"
+#include "GribFieldMemoryStrategy.h"
 
 namespace eckit {
+
+static GribFieldMemoryStrategy defaultStrategy;
+
+static GribFieldMemoryStrategy* strategy = &defaultStrategy;
+
+void GribField::setStrategy(GribFieldMemoryStrategy& s)
+{
+    strategy = &s;
+}
 
 GribField::GribField(GribFile* file, const Offset& offset, const Length& length, GribHandle* handle):
     file_(file),
@@ -14,12 +24,15 @@ GribField::GribField(GribFile* file, const Offset& offset, const Length& length,
     handle_(handle),
     values_(0),
     count_(0),
-    headers_(0)
+    headers_(0),
+    last_(0),
+    accesses_(0),
+    strategy_(0)
 {
     file_->attach();
+
+    strategy->touch(*this);
 }
-
-
 
 
 GribField::GribField(GribField* headers, double* values, size_t count):
@@ -29,13 +42,22 @@ GribField::GribField(GribField* headers, double* values, size_t count):
     handle_(0),
     values_(values),
     count_(count),
-    headers_(headers)
+    headers_(headers),
+    last_(0),
+    accesses_(0),
+    strategy_(0)
 {
     headers_->attach();
+
+    GribField* self = const_cast<GribField*>(this);
+    strategy->touch(*self);
+
 }
 
 GribField::~GribField()
 {
+    strategy->remove(*this);
+
     if(file_) file_->detach();
     if(headers_) headers_->detach();
     delete[] values_;
@@ -50,6 +72,7 @@ void GribField::print(ostream& os) const
 const double* GribField::getValues(size_t& count) const
 {
     GribField* self = const_cast<GribField*>(this);
+    strategy->touch(*self);
 
     if(values_) {
         count = count_;
@@ -57,6 +80,7 @@ const double* GribField::getValues(size_t& count) const
     }
 
     if(handle_) {
+        strategy->newValues(*self);
         self->values_ = handle_->getDataValues(self->count_);
         count = count_;
         return values_;
@@ -67,6 +91,7 @@ const double* GribField::getValues(size_t& count) const
     Buffer buffer(length_);
     file_->getBuffer(buffer, offset_, length_);
 
+    strategy->newValues(*self);
     self->values_ = GribHandle(buffer, length_, false).getDataValues(self->count_);
     count = count_;
     return values_;
@@ -75,6 +100,9 @@ const double* GribField::getValues(size_t& count) const
 GribHandle* GribField::getHandle(bool copy) const
 {
     GribField* self = const_cast<GribField*>(this);
+    strategy->touch(*self);
+
+
     self->pack();
 
     if(handle_) {
@@ -95,6 +123,7 @@ GribHandle* GribField::getHandle(bool copy) const
         return new GribHandle(buffer, length_, false);
     }
     else {
+        strategy->newHandle(*self);
         self->handle_ = new GribHandle(buffer, length_, false);
     }
 
@@ -132,13 +161,22 @@ void GribField::write(DataHandle& handle) const {
 
 void GribField::release() const {
     GribField* self = const_cast<GribField*>(this);
-#if 0
-    self->pack();
-    if(self->file_ && self->handle_) {
-        delete self->handle_;
-        self->handle_ = 0;
-    }
-#endif
+    strategy->release(*self);
 }
 
+void GribField::purge(bool temp)
+{
+    pack();
+    if(file_ && handle_) {
+        delete handle_;
+        handle_ = 0;
+        delete[] values_;
+        values_ = 0;
+    }
+
+    if(handle_ && values_) {
+        delete[] values_;
+        values_ = 0;
+    }
+}
 } // namespace

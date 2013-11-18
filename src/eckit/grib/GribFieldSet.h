@@ -24,6 +24,8 @@ namespace eckit {
 class GribField;
 class DataHandle;
 
+class GribFieldMemoryStrategy;
+
 
 
 class GribFieldSet {
@@ -152,6 +154,7 @@ public:
 // -- Class methods
 
 
+    static void setStrategy(GribFieldMemoryStrategy&);
 
 protected:
 

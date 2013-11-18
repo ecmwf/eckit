@@ -11,6 +11,8 @@ GribFile.cc
 GribFile.h
 GribHandle.cc
 GribHandle.h
+GribFieldMemoryStrategy.h
+GribFieldMemoryStrategy.cc
 )
 
 

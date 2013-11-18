@@ -25,6 +25,7 @@ namespace eckit {
 class GribFile;
 class DataHandle;
 class GribHandle;
+class GribFieldMemoryStrategy;
 
 class GribField : public Counted {
 public:
@@ -63,7 +64,8 @@ public:
 	// None
 
 // -- Class methods
-	// None
+
+    static void setStrategy(GribFieldMemoryStrategy&);
 
 protected:
 
@@ -102,11 +104,17 @@ private:
     size_t     count_;
     GribField* headers_;
 
+    time_t last_;
+    size_t accesses_;
+
+    GribFieldMemoryStrategy* strategy_;
+
 
     void pack();
 
 // -- Methods
 
+    void purge(bool temp = false) ;
 
 // -- Overridden methods
 	// None
@@ -118,6 +126,8 @@ private:
 	// None
 
 // -- Friends
+
+    friend class GribFieldMemoryStrategy;
 
     friend ostream& operator<<(ostream& s,const GribField& p)
         { p.print(s); return s; }

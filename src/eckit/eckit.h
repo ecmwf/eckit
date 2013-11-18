@@ -13,10 +13,6 @@
 
 #include "ecbuild_config.h"
 
-#include "eckit/eckit_config.h"
-
-#define _(A) A
-
 //-----------------------------------------------------------------------------
 
 /* POSIX */

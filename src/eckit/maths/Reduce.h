@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file FMap.h
+/// @file Reduce.h
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_FMap_h
-#define eckit_maths_FMap_h
+#ifndef eckit_maths_Reduce_h
+#define eckit_maths_Reduce_h
 
 #include "eckit/maths/Func.h"
 
@@ -22,16 +22,16 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-/// Generates a FMap combination of vectors
-class FMap : public Func {
+/// Generates a Reduce combination of vectors
+class Reduce : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "FMap"; }
+    static std::string class_name() { return "Reduce"; }
 
-    FMap( ExpPtr f, ExpPtr l );
+    Reduce( ExpPtr f, ExpPtr l );
 
-    virtual std::string type_name() const { return FMap::class_name(); }
+    virtual std::string type_name() const { return Reduce::class_name(); }
 
     virtual size_t arity() const { return 2; }
 
@@ -43,7 +43,7 @@ public: // methods
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr fmap( ExpPtr f, ExpPtr l );
+ExpPtr reduce( ExpPtr f, ExpPtr l );
 
 //--------------------------------------------------------------------------------------------
 

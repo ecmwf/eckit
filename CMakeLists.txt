@@ -127,6 +127,10 @@ if( ECKIT_GRIB AND GRIB_API_FOUND )
 	list( APPEND ECKIT_TPLS grib_api )
 endif()
 
+if( ECKIT_EIGEN3 AND EIGEN3_FOUND )
+	list( APPEND ECKIT_TPLS Eigen3 )
+endif()
+
 get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
 
 include_directories( ${ECKIT_INCLUDE_DIRS} )

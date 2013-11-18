@@ -45,8 +45,9 @@ public:
 
 
     void touch(GribField&);
-    void release(GribField&);
+    void purgeable(GribField&);
     void remove(GribField&);
+
     void newValues(GribField&);
     void newHandle(GribField&);
 

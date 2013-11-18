@@ -56,6 +56,15 @@ if( ECKIT_EIGEN)
 	find_package(Eigen3)
 endif()
 
+if( ECKIT_MATHS AND CMAKE_COMPILER_IS_GNUCXX )
+	set( ECKIT_BOOST ON )
+	if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7 )
+		cmake_add_cxx_flags("-std=c++0x")
+	else()
+		cmake_add_cxx_flags("-std=c++11")
+	endif()
+endif()
+
 # boost support
 
 if( ECKIT_BOOST )

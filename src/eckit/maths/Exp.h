@@ -134,7 +134,7 @@ public: // methods
 
     size_t arity() const { return args_.size(); }
 
-    ExpPtr param( const size_t& i, context_t* ctx = nullptr ) const;
+    ExpPtr param( const size_t& i, context_t* ctx = 0 ) const;
 
     void param( const size_t& i, ExpPtr p );
 

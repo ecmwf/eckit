@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/TCPHandle.h
+// File io/TCPHandle.h
 // Baudouin Raoult - ECMWF Jul 96
 
 #ifndef eckit_filesystem_TCPHandle_h

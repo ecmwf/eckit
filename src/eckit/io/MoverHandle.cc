@@ -8,16 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/MoverHandle.cc
+// File io/MoverHandle.cc
 // Baudouin Raoult - (c) ECMWF Jun 11
 
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/filesystem/MoverHandle.h"
+#include "eckit/io/MoverHandle.h"
 #include "eckit/io/MoverTransfer.h"
 #include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/filesystem/TCPHandle.h"
+#include "eckit/io/TCPHandle.h"
 #include "eckit/net/TCPServer.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"

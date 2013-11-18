@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/FTPHandle.h
+// File io/FTPHandle.h
 // Manuel Fuentes - ECMWF May 96
 
 #ifndef eckit_filesystem_FTPHandle_h

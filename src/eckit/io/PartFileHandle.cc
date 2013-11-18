@@ -17,8 +17,8 @@
 #include "eckit/config/Resource.h"
 #include "eckit/compat/StrStream.h"
 
-#include "eckit/filesystem/MarsFSPartHandle.h"
-#include "eckit/filesystem/PartFileHandle.h"
+#include "eckit/io/MarsFSPartHandle.h"
+#include "eckit/io/PartFileHandle.h"
 
 //-----------------------------------------------------------------------------
 

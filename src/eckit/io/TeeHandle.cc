@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/filesystem/TeeHandle.h"
+#include "eckit/io/TeeHandle.h"
 
 //-----------------------------------------------------------------------------
 

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/MultiHandle.h
+// File io/MultiHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
 #ifndef eckit_filesystem_MultiHandle_h

@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/filesystem/FileHandle.h"
+#include "eckit/io/FileHandle.h"
 #include "eckit/log/Log.h"
-#include "eckit/filesystem/MarsFSHandle.h"
+#include "eckit/io/MarsFSHandle.h"
 #include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------

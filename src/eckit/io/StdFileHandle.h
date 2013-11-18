@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// File Stdfilesystem/FileHandle.h
+// File Stdio/FileHandle.h
 // Piotr Kuchta - ECMWF April 09
 
 #ifndef eckit_filesystem_StdFileHandle_h

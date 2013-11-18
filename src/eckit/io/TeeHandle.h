@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/TeeHandle.h
+// File io/TeeHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
 #ifndef eckit_filesystem_TeeHandle_h

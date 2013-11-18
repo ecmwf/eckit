@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/MoverHandle.h
+// File io/MoverHandle.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
 #ifndef eckit_filesystem_MoverHandle_h

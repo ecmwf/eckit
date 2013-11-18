@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/EmptyHandle.h
+// File io/EmptyHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
 #ifndef eckit_filesystem_EmptyHandle_h

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/filesystem/MultiHandle.h"
+#include "eckit/io/MultiHandle.h"
 #include "eckit/compat/StrStream.h"
 #include "eckit/types/Types.h"
 

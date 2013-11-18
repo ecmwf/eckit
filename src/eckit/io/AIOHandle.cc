@@ -11,7 +11,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "eckit/filesystem/AIOHandle.h"
+#include "eckit/io/AIOHandle.h"
 
 //-----------------------------------------------------------------------------
 

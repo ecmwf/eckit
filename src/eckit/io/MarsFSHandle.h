@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/MarsFSHandle.h
+// File io/MarsFSHandle.h
 // Baudouin Raoult - ECMWF May 96
 
 #ifndef eckit_filesystem_MarsFSHandle_h

@@ -9,7 +9,7 @@
  */
 
 #include "eckit/compat/StrStream.h"
-#include "eckit/filesystem/TCPHandle.h"
+#include "eckit/io/TCPHandle.h"
 
 //-----------------------------------------------------------------------------
 

@@ -14,8 +14,8 @@
 #include "eckit/eckit.h"
 
 #include "eckit/config/Resource.h"
-#include "eckit/filesystem/FileHandle.h"
-#include "eckit/filesystem/MarsFSHandle.h"
+#include "eckit/io/FileHandle.h"
+#include "eckit/io/MarsFSHandle.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/TCPSocketHandle.h
+// File io/TCPSocketHandle.h
 // Baudouin Raoult - ECMWF Jul 96
 
 #ifndef eckit_filesystem_TCPSocketHandle_h

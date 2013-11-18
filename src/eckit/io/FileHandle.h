@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/FileHandle.h
+// File io/FileHandle.h
 // Baudouin Raoult - ECMWF May 96
 
 #ifndef eckit_filesystem_FileHandle_h

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/PipeHandle.h
+// File io/PipeHandle.h
 // Baudouin Raoult - ECMWF May 96
 
 #ifndef eckit_filesystem_PipeHandle_h

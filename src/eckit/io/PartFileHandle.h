@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// File Partfilesystem/FileHandle.h
+// File Partio/FileHandle.h
 // Baudouin Raoult - ECMWF May 96
 
 #ifndef eckit_filesystem_PartFileHandle_h

@@ -10,7 +10,7 @@
 
 #include <unistd.h>
 
-#include "eckit/filesystem/FileDescHandle.h"
+#include "eckit/io/FileDescHandle.h"
 
 //-----------------------------------------------------------------------------
 

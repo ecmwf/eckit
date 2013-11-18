@@ -11,12 +11,14 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 
-#include "eckit/maths/Exp.h"
-#include "eckit/maths/Scalar.h"
-#include "eckit/maths/Vector.h"
 #include "eckit/maths/BinaryFunc.h"
-#include "eckit/maths/List.h"
 #include "eckit/maths/Count.h"
+#include "eckit/maths/Exp.h"
+#include "eckit/maths/FMap.h"
+#include "eckit/maths/List.h"
+#include "eckit/maths/Scalar.h"
+#include "eckit/maths/UnaryFunc.h"
+#include "eckit/maths/Vector.h"
 
 using namespace eckit;
 using namespace eckit::maths;
@@ -37,15 +39,17 @@ public:
     void setup();
 
     /// Tests a scalar-scalar reduction within another more complex expression
-    void test_reduce_scalars();
+    void test_optimise_scalars();
     /// Tests a scalar-scalar recursive reduction
-    void test_reduce_recursive_scalars();
+    void test_optimise_recursive_scalars();
     /// Tests a prod(s,v,v) reduction
-    void test_reduce_prodadd();
+    void test_optimise_prodadd();
     /// Tests operators like s * ( v + v )
     void test_operators();
     /// Tests list functions
     void test_list();
+    /// Tests fmap expression
+    void test_fmap();
 
     void teardown();
 
@@ -60,45 +64,60 @@ void TestExp::run()
 {
     setup();
 
-    test_reduce_scalars();
-    test_reduce_recursive_scalars();
-    test_reduce_prodadd();
+    test_optimise_scalars();
+    test_optimise_recursive_scalars();
+    test_optimise_prodadd();
     test_operators();
     test_list();
+    test_fmap();
 
     teardown();
 }
 
 void TestExp::setup()
 {
+    DBG;
+
     a_ = maths::scalar( 2. );
     b_ = maths::scalar( 4. );
     x_ = maths::vector( 10, 5. );
     y_ = maths::vector( 10, 7. );
 }
 
-void TestExp::teardown() {}
-
-void TestExp::test_reduce_scalars()
+void TestExp::teardown()
 {
+    DBG;
+}
+
+void TestExp::test_optimise_scalars()
+{
+    DBG;
+
     ExpPtr c = maths::add(a_,b_); // scalar-scalar
 
     ExpPtr e = maths::add( prod( c , x_ ) , prod( b_, y_ ));
 
+    DBG;
+
     ASSERT( e->ret_signature() == Vector::sig() );
 
+    DBG;
     // signature before reducing
     ASSERT( e->signature() == "Add(Prod(Add(s,s),v),Prod(s,v))" );
 
-    // eval() first calls reduce internally
+    DBG;
+    // eval() first calls optimise internally
     ASSERT( e->eval()->str() == "Vector(58, 58, 58, 58, 58, 58, 58, 58, 58, 58)" );
 
+    DBG;
     // signature after reducing
     ASSERT( e->signature() == "Add(Prod(s,v),Prod(s,v))" );
 }
 
-void TestExp::test_reduce_recursive_scalars()
+void TestExp::test_optimise_recursive_scalars()
 {
+    DBG;
+
     ExpPtr c1 = maths::add(a_,b_);
     ExpPtr c2 = maths::add(c1,c1);
     ExpPtr c3 = maths::add(c2,c2);
@@ -110,35 +129,39 @@ void TestExp::test_reduce_recursive_scalars()
     // signature before reducing
     ASSERT( e->signature() == "Add(Add(Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s))),Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s)))),Add(Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s))),Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s)))))" );
 
-    // got fully reduced to a scalar
-    ASSERT( e->reduce()->signature() == Scalar::sig() );
+    // got fully optimised to a scalar
+    ASSERT( e->optimise()->signature() == Scalar::sig() );
 
     // correct reduction
     ASSERT( e->eval()->str() == "Scalar(96)" );
 
 }
 
-void TestExp::test_reduce_prodadd()
+void TestExp::test_optimise_prodadd()
 {
+    DBG;
+
     ExpPtr e0 = maths::prod( a_, maths::add(y_, x_ ) );
-    ASSERT( e0->reduce()->signature() == "ProdAdd(s,v,v)" );
+    ASSERT( e0->optimise()->signature() == "ProdAdd(s,v,v)" );
     ASSERT( e0->eval()->str() == "Vector(24, 24, 24, 24, 24, 24, 24, 24, 24, 24)" );
 
     ExpPtr e1 = maths::prod( x_, maths::add(y_, x_ ) );
-    ASSERT( e1->reduce()->signature() == "ProdAdd(v,v,v)" );
+    ASSERT( e1->optimise()->signature() == "ProdAdd(v,v,v)" );
     ASSERT( e1->eval()->str() == "Vector(60, 60, 60, 60, 60, 60, 60, 60, 60, 60)" );
 
     // involves also reducing the scalar-scalar
     ExpPtr e2 = maths::prod( maths::prod(a_,b_), maths::add(y_, x_ ) );
-    ASSERT( e2->reduce()->signature() == "ProdAdd(s,v,v)" );
+    ASSERT( e2->optimise()->signature() == "ProdAdd(s,v,v)" );
     ASSERT( e2->eval()->str() == "Vector(96, 96, 96, 96, 96, 96, 96, 96, 96, 96)" );
 }
 
 void TestExp::test_operators()
 {
+    DBG;
+
     ExpPtr e0 =  a_ * ( y_ +  x_ );
 
-    ASSERT( e0->reduce()->signature() == "ProdAdd(s,v,v)" );
+    ASSERT( e0->optimise()->signature() == "ProdAdd(s,v,v)" );
     ASSERT( e0->eval()->str() == "Vector(24, 24, 24, 24, 24, 24, 24, 24, 24, 24)" );
 
     ExpPtr e1 =  maths::vector( 10, 10. ) / maths::vector( 10, 5. );
@@ -150,6 +173,8 @@ void TestExp::test_operators()
 
 void TestExp::test_list()
 {
+    DBG;
+
     ExpPtr l0 =  maths::list( y_ , x_ );
 
     ASSERT( l0->eval()->str() == "List(Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5))" );
@@ -169,6 +194,15 @@ void TestExp::test_list()
 
     ASSERT( c3->eval()->str() == "Scalar(5)" );
     ASSERT( Scalar::extract(c3->eval()) == 5 );
+}
+
+void TestExp::test_fmap()
+{
+    ExpPtr f =  maths::fmap( neg(), maths::list( a_ , b_, a_, b_ ) );
+
+    ASSERT( f->str() == "FMap(Neg(?), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
+
+    ASSERT( f->eval()->str() == "List(Scalar(-2), Scalar(-4), Scalar(-2), Scalar(-4))" );
 }
 
 //-----------------------------------------------------------------------------

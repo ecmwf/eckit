@@ -32,7 +32,7 @@ public: // methods
 
     static std::string class_name() { return "FMap"; }
 
-    FMap( MappingFunc f, ExpPtr l );
+    FMap( ExpPtr f, ExpPtr l );
 
     virtual std::string type_name() const { return FMap::class_name(); }
 
@@ -40,13 +40,13 @@ public: // methods
 
     virtual std::string ret_signature() const;
 
-    virtual ValPtr evaluate();
+    virtual ValPtr evaluate( context_t& ctx );
 
 };
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr fmap( MappingFunc f, ExpPtr l );
+ExpPtr fmap( ExpPtr f, ExpPtr l );
 
 //--------------------------------------------------------------------------------------------
 

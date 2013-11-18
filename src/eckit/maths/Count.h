@@ -29,7 +29,7 @@ public: // methods
 
     static std::string class_name() { return "Count"; }
 
-    Count( ExpPtr e = Expression::undef() );
+    Count( ExpPtr e = undef() );
 
     virtual std::string type_name() const { return Count::class_name(); }
 
@@ -37,9 +37,9 @@ public: // methods
 
     virtual std::string ret_signature() const;
 
-    virtual ValPtr evaluate();
+    virtual ValPtr evaluate( context_t& ctx );
 
-    virtual ExpPtr reduce();
+    virtual ExpPtr optimise();
 };
 
 //--------------------------------------------------------------------------------------------

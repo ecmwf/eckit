@@ -11,7 +11,7 @@
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/Vector.h"
 #include "eckit/maths/BinaryFunc.h"
-#include "eckit/maths/Reducer.h"
+#include "eckit/maths/Optimiser.h"
 
 namespace eckit {
 namespace maths {
@@ -164,10 +164,10 @@ ValPtr BinaryFunc<T>::Computer<U,V,I>::compute(const args_t &p)
 
 //--------------------------------------------------------------------------------------------
 
-static ReduceTo<Scalar> reduce_add_ss ( std::string(opname( Add() )) + "(s,s)" );
-static ReduceTo<Scalar> reduce_sub_ss ( std::string(opname( Sub() )) + "(s,s)" );
-static ReduceTo<Scalar> reduce_prod_ss( std::string(opname(Prod() )) + "(s,s)" );
-static ReduceTo<Scalar> reduce_div_ss ( std::string(opname( Div() )) + "(s,s)" );
+static OptimiseTo<Scalar> optimise_add_ss ( std::string(opname( Add() )) + "(s,s)" );
+static OptimiseTo<Scalar> optimise_sub_ss ( std::string(opname( Sub() )) + "(s,s)" );
+static OptimiseTo<Scalar> optimise_prod_ss( std::string(opname(Prod() )) + "(s,s)" );
+static OptimiseTo<Scalar> optimise_div_ss ( std::string(opname( Div() )) + "(s,s)" );
 
 //--------------------------------------------------------------------------------------------
 } // namespace maths

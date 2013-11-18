@@ -52,13 +52,13 @@ public: // methods
     /// @returns a reference to the internal vector
     value_t& ref_value() { return args_; }
 
-    /// Append an element to the list
-    ListPtr append( ExpPtr e );
     /// Append a list to
     ListPtr append( const List& l );
 
-//    ListPtr operator, ( ExpPtr e );
+    /// Append an element to the list
+    ListPtr append( ExpPtr e );
 
+    /// Append multiple elements to the list
     template <class Arg1, class ...ArgN>
     ListPtr append(const Arg1& a1, const ArgN& ...an)
     {

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -12,7 +12,7 @@
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/Vector.h"
 #include "eckit/maths/BinaryFunc.h"
-#include "eckit/maths/Reducer.h"
+#include "eckit/maths/Optimiser.h"
 
 namespace eckit {
 namespace maths {
@@ -113,8 +113,8 @@ ProdAdd::Register::Register()
 
 static ProdAdd::Register prodadd_register;
 
-static ReduceTo<ProdAdd::Op> reduce_prodadd_svv("Prod(s,Add(v,v))");
-static ReduceTo<ProdAdd::Op> reduce_prodadd_vvv("Prod(v,Add(v,v))");
+static OptimiseTo<ProdAdd::Op> optimise_prodadd_svv("Prod(s,Add(v,v))");
+static OptimiseTo<ProdAdd::Op> optimise_prodadd_vvv("Prod(v,Add(v,v))");
 
 
 //--------------------------------------------------------------------------------------------

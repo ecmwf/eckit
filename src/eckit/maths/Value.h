@@ -40,9 +40,9 @@ public: // methods
 
     virtual ~Value();
 
-    virtual ExpPtr reduce();
+    virtual ExpPtr optimise();
 
-    virtual ValPtr evaluate();
+    virtual ValPtr evaluate( context_t& );
 
 };
 

@@ -37,10 +37,10 @@ protected: // methods
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves
-    Func() {}
+    Func();
 
     /// Contructor taking a list of parameters
-    Func( const args_t& args ) : Expression(args) {}
+    Func( const args_t& args );
 
 public: // methods
 
@@ -52,9 +52,9 @@ public: // methods
 
 public: // virtual methods
 
-    virtual ValPtr evaluate();
+    virtual ValPtr evaluate( context_t& ctx );
 
-    virtual ExpPtr reduce();
+    virtual ExpPtr optimise();
 
     virtual std::string signature() const
     {

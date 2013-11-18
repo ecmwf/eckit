@@ -13,12 +13,20 @@
 
 #include "eckit/maths/Func.h"
 #include "eckit/maths/Value.h"
-#include "eckit/maths/Reducer.h"
+#include "eckit/maths/Optimiser.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
+
+Func::Func() : Expression()
+{
+}
+
+Func::Func(const args_t &args) : Expression(args)
+{
+}
 
 Func::~Func()
 {
@@ -30,17 +38,21 @@ Func::dispatcher_t &Func::dispatcher()
     return d;
 }
 
-ValPtr Func::evaluate()
+ValPtr Func::evaluate( context_t& ctx )
 {
+    DBG;
+
     args_t args = args_; // create temporary args
 
     const size_t nargs = args.size();
     for( size_t i = 0; i < nargs; ++i )
     {
-        args[i] = args[i]->evaluate()->self();
+        args[i] = param(i,&ctx)->evaluate(ctx)->self();
     }
 
     std::string sig = signature_args( args );
+
+    DBGX(sig);
 
     dispatcher_t& d = dispatcher();
     dispatcher_t::iterator itr = d.find( sig );
@@ -54,20 +66,20 @@ ValPtr Func::evaluate()
     return ((*itr).second)( args );
 }
 
-ExpPtr Func::reduce()
+ExpPtr Func::optimise()
 {
-    //    DBGX( *this );
-    //    DBGX( signature() );
+    DBGX( *this );
+    DBGX( signature() );
 
-    // reduce first children
+    // optimise first children
 
     for( size_t i = 0; i < args_.size(); ++i )
     {
-        args_[i] = args_[i]->reduce()->self();
+        args_[i] = args_[i]->optimise()->self();
     }
 
-    // now try to reduce self
-    return Reducer::apply( shared_from_this() );
+    // now try to optimise self
+    return Optimiser::apply( shared_from_this() );
 }
 
 void Func::print(ostream &o) const
@@ -76,7 +88,7 @@ void Func::print(ostream &o) const
     for( size_t i = 0; i < arity(); ++i )
     {
         if(i) o << ", ";
-        o << *param(i);
+        o << *args_[i]; // no context applied
     }
     o << ")";
 }

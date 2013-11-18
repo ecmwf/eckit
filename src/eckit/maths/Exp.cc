@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include "eckit/maths/Exp.h"
+#include "eckit/maths/Value.h"
 
 namespace eckit {
 namespace maths {
@@ -20,7 +21,8 @@ namespace maths {
 Expression::Expression()
 {}
 
-Expression::Expression(const args_t &args) : args_(args)
+Expression::Expression(const args_t &args) :
+    args_(args)
 {}
 
 Expression::~Expression()
@@ -29,13 +31,14 @@ Expression::~Expression()
 ValPtr Expression::eval()
 {
     context_t ctx;
-    return reduce()->evaluate(ctx);
+    return optimise()->evaluate(ctx);
 }
+
 ValPtr Expression::eval( ExpPtr e )
 {
     context_t ctx;
     ctx.push_back(e);
-    ExpPtr res = reduce()->evaluate(ctx);
+    ValPtr res = optimise()->evaluate(ctx);
     ASSERT( ctx.empty() );
     return res;
 }
@@ -45,25 +48,33 @@ ValPtr Expression::eval(  ExpPtr a, ExpPtr b )
     context_t ctx;
     ctx.push_back(a);
     ctx.push_back(b);
-    ExpPtr res = reduce()->evaluate(ctx);
+    ValPtr res = optimise()->evaluate(ctx);
     ASSERT( ctx.empty() );
     return res;
 }
 
-ExpPtr Expression::param(const size_t &i, context_t& ctx) const
+ExpPtr Expression::param( const size_t& i, context_t* ctx ) const
 {
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );
 
-    if( args_[i] == ExpPtr::undef )
+    if( ctx && Undef::is(args_[i]) )
     {
-        ASSERT( !ctx.empty() );
-        ExpPtr e = ctx.front();
-        ctx.pop_front();
+        ASSERT( !ctx->empty() );
+        ExpPtr e = ctx->front();
+        ctx->pop_front();
         return e;
     }
 
     return args_[i];
+}
+
+void Expression::param(const size_t &i, ExpPtr p)
+{
+    assert( i < args_.size() );
+    assert( p );
+    if( p != args_[i] )
+        args_[i] = p;
 }
 
 string Expression::str() const
@@ -71,6 +82,26 @@ string Expression::str() const
     std::ostringstream os;
     print(os);
     return os.str();
+}
+
+//--------------------------------------------------------------------------------------------
+
+Undef::Undef() : Expression()
+{
+}
+
+Undef::~Undef()
+{
+}
+
+ValPtr Undef::evaluate( context_t& ctx )
+{
+    return boost::static_pointer_cast<Value>( shared_from_this() );
+}
+
+ExpPtr undef()
+{
+    return ExpPtr( new Undef() );
 }
 
 //--------------------------------------------------------------------------------------------

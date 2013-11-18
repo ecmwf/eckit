@@ -26,14 +26,17 @@ string Count::ret_signature() const
     return Scalar::sig();
 }
 
-ValPtr Count::evaluate( Context& ctx )
+ValPtr Count::evaluate( context_t& ctx )
 {
-    return maths::scalar( param(0,ctx)->arity() )->as<Value>();
+    return maths::scalar( param(0,&ctx)->arity() )->as<Value>();
 }
 
-ExpPtr Count::reduce()
+ExpPtr Count::optimise()
 {
-    return maths::scalar( param(0)->arity() );
+    if( Undef::is( args_[0] ) )
+        return shared_from_this();
+    else
+        return maths::scalar( args_[0]->arity() );
 }
 
 //--------------------------------------------------------------------------------------------

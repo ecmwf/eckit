@@ -15,6 +15,7 @@
 #include "eckit/maths/Count.h"
 #include "eckit/maths/Exp.h"
 #include "eckit/maths/FMap.h"
+#include "eckit/maths/Reduce.h"
 #include "eckit/maths/List.h"
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/UnaryFunc.h"
@@ -50,6 +51,8 @@ public:
     void test_list();
     /// Tests fmap expression
     void test_fmap();
+    /// Tests reduce expression
+    void test_reduce();
 
     void teardown();
 
@@ -70,6 +73,7 @@ void TestExp::run()
     test_operators();
     test_list();
     test_fmap();
+    test_reduce();
 
     teardown();
 }
@@ -216,6 +220,27 @@ void TestExp::test_fmap()
     ASSERT( f1->str() == "FMap(Neg(?), List(Add(Scalar(2), Scalar(4)), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)))" );
 
     ASSERT( f1->eval()->str() == "List(Scalar(-6), Vector(-5, -5, -5, -5, -5, -5, -5, -5, -5, -5))" );
+
+}
+
+void TestExp::test_reduce()
+{
+    // simple reduce
+
+    ExpPtr f0 =  reduce( maths::add(), maths::list( a_ , b_, a_, b_ ) );
+
+    ASSERT( f0->str() == "Reduce(Add(?, ?), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
+    ASSERT( f0->eval()->str() == "Scalar(12)" );
+
+    // reduce with different types
+
+    ExpPtr f1 =  reduce( maths::prod(), maths::list( a_, x_, x_ ) );
+
+    std::cout << f1->str() << std::endl;
+    std::cout << f1->eval()->str() << std::endl;
+
+    ASSERT( f1->str() == "Reduce(Prod(?, ?), List(Scalar(2), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)))" );
+    ASSERT( f1->eval()->str() == "Vector(50, 50, 50, 50, 50, 50, 50, 50, 50, 50)" );
 
 }
 

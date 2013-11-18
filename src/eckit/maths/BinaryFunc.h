@@ -90,7 +90,7 @@ const char *opname(const Sub&);
 // version with stand alone functions
 
 #define GEN_BINFUNC_DECL( f, c, op )        \
-ExpPtr f( ExpPtr l, ExpPtr r );             \
+ExpPtr f( ExpPtr l = undef(), ExpPtr r = undef() ); \
 ExpPtr f( Expression& l, ExpPtr r );        \
 ExpPtr f( ExpPtr l, Expression& r );        \
 ExpPtr f( Expression& l, Expression& r );   \

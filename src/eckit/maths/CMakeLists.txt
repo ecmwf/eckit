@@ -11,6 +11,8 @@ Count.cc
 Count.h
 FMap.cc
 FMap.h
+Reduce.cc
+Reduce.h
 Linear.cc
 Linear.h
 List.h

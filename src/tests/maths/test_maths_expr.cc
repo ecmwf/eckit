@@ -198,11 +198,25 @@ void TestExp::test_list()
 
 void TestExp::test_fmap()
 {
-    ExpPtr f =  maths::fmap( neg(), maths::list( a_ , b_, a_, b_ ) );
+    // simple fmap
 
-    ASSERT( f->str() == "FMap(Neg(?), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
+    ExpPtr f0 =  fmap( neg(), maths::list( a_ , b_, a_, b_ ) );
 
-    ASSERT( f->eval()->str() == "List(Scalar(-2), Scalar(-4), Scalar(-2), Scalar(-4))" );
+    ASSERT( f0->str() == "FMap(Neg(?), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
+
+    ASSERT( f0->eval()->str() == "List(Scalar(-2), Scalar(-4), Scalar(-2), Scalar(-4))" );
+
+    // fmap with different types
+
+    ExpPtr f1 =  fmap( neg(), maths::list( a_ + b_, x_ ) );
+
+//    std::cout << f1->str() << std::endl;
+//    std::cout << f1->eval()->str() << std::endl;
+
+    ASSERT( f1->str() == "FMap(Neg(?), List(Add(Scalar(2), Scalar(4)), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)))" );
+
+    ASSERT( f1->eval()->str() == "List(Scalar(-6), Vector(-5, -5, -5, -5, -5, -5, -5, -5, -5, -5))" );
+
 }
 
 //-----------------------------------------------------------------------------

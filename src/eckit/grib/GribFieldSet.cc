@@ -8,6 +8,11 @@
 
 namespace eckit {
 
+void GribFieldSet::setStrategy(GribFieldMemoryStrategy& s)
+{
+    GribField::setStrategy(s);
+}
+
 
 GribFieldSet::GribFieldSet()
 {

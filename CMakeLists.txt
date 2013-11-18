@@ -36,9 +36,9 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-option( ECKIT_MATHS "eckit::maths extension [NOT EXPERIMENTAL]" ON )
-option( ECKIT_BOOST "Boost support  [NOT IMPLEMENTED]"     ON )
-option( ECKIT_GRID  "eckit::grid extension [EXPERIMENTAL]" ON )
+option( ECKIT_MATHS "eckit::maths extension [NOT EXPERIMENTAL]" OFF )
+option( ECKIT_BOOST "Boost support  [NOT IMPLEMENTED]"          OFF )
+option( ECKIT_GRID  "eckit::grid extension [EXPERIMENTAL]"      OFF )
 
 if( ECKIT_BOOST )
 	ecbuild_add_extra_search_paths( boost )

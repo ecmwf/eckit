@@ -57,6 +57,8 @@ public:
     void test_reduce();
     /// Tests predicate expressions
     void test_predicates();
+    /// Test filter
+    void test_filter();
 
     void teardown();
 
@@ -79,6 +81,7 @@ void TestExp::run()
     test_fmap();
     test_reduce();
     test_predicates();
+    test_filter();
 
     teardown();
 }
@@ -244,48 +247,55 @@ void TestExp::test_reduce()
     ASSERT( f1->str() == "Reduce(Prod(?, ?), List(Scalar(2), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)))" );
     ASSERT( f1->eval()->str() == "Vector(50, 50, 50, 50, 50, 50, 50, 50, 50, 50)" );
 
+
+    // reduce one element list
+
+    ExpPtr f2 =  reduce( maths::add(), maths::list( a_ ) );
+
+    ASSERT(  f2->str() == "Reduce(Add(?, ?), List(Scalar(2)))" );
+    ASSERT(  f2->eval()->str() == "Scalar(2)" );
+
+    // reduce empty element list
+
+    ExpPtr f3 =  reduce( maths::add(), maths::list() );
+
+    ASSERT(  f3->str() == "Reduce(Add(?, ?), List())" );
+    ASSERT(  f3->eval()->str() == "List()" );
+
+//    std::cout << f3->str() << std::endl;
+//    std::cout << f3->eval()->str() << std::endl;
 }
 
 void TestExp::test_predicates()
 {
-    // simple reduce
+    // NotEqual
 
     ExpPtr f0 =  maths::not_equal( a_ , b_ );
 
-    std::cout << f0->str() << std::endl;
-    std::cout << f0->eval()->str() << std::endl;
+    ASSERT( f0->str() == "NotEqual(Scalar(2), Scalar(4))" );
+    ASSERT( f0->eval()->str() == "Boolean(1)" );
 
-    // simple reduce
+    // Greater
 
     ExpPtr f1 =  maths::greater( a_ , b_ );
 
-    std::cout << f1->str() << std::endl;
-    std::cout << f1->eval()->str() << std::endl;
+    ASSERT( f1->str() == "Greater(Scalar(2), Scalar(4))" );
+    ASSERT( f1->eval()->str() == "Boolean(0)" );
 
-    // simple reduce
+    // Less
 
     ExpPtr f2 =  maths::less( a_ , b_ );
 
-    std::cout << f2->str() << std::endl;
-    std::cout << f2->eval()->str() << std::endl;
+    ASSERT( f2->str() == "Less(Scalar(2), Scalar(4))" );
+    ASSERT( f2->eval()->str() == "Boolean(1)" );
+}
 
-//    ASSERT( f0->str() == "Reduce(Add(?, ?), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
-//    ASSERT( f0->eval()->str() == "Scalar(12)" );
-
-    std::vector<scalar_t> v;
-    v.push_back(1.);
-    v.push_back(2.);
-    v.push_back(3.);
-    v.push_back(1.);
-
-    /// @todo make this work
-    //  ExpPtr f3 = maths::filter( maths::greater( undef(), maths::scalar(2) ), maths::vector(v) );
-
+void TestExp::test_filter()
+{
     ExpPtr f3 = maths::filter( maths::greater( undef(), maths::scalar(2) ),maths::list( a_ , b_, a_, b_ ) );
 
-    std::cout << f3->str() << std::endl;
-    std::cout << f3->eval()->str() << std::endl;
-
+    ASSERT( f3->str() == "Filter(Greater(?, Scalar(2)), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
+    ASSERT( f3->eval()->str() == "List(Scalar(4), Scalar(4))" );
 }
 
 //-----------------------------------------------------------------------------

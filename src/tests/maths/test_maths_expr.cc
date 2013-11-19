@@ -12,9 +12,11 @@
 #include "eckit/runtime/Tool.h"
 
 #include "eckit/maths/BinaryFunc.h"
+#include "eckit/maths/BinaryPredicate.h"
 #include "eckit/maths/Count.h"
 #include "eckit/maths/Exp.h"
 #include "eckit/maths/FMap.h"
+#include "eckit/maths/Filter.h"
 #include "eckit/maths/Reduce.h"
 #include "eckit/maths/List.h"
 #include "eckit/maths/Scalar.h"
@@ -53,6 +55,8 @@ public:
     void test_fmap();
     /// Tests reduce expression
     void test_reduce();
+    /// Tests predicate expressions
+    void test_predicates();
 
     void teardown();
 
@@ -74,6 +78,7 @@ void TestExp::run()
     test_list();
     test_fmap();
     test_reduce();
+    test_predicates();
 
     teardown();
 }
@@ -236,11 +241,50 @@ void TestExp::test_reduce()
 
     ExpPtr f1 =  reduce( maths::prod(), maths::list( a_, x_, x_ ) );
 
+    ASSERT( f1->str() == "Reduce(Prod(?, ?), List(Scalar(2), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)))" );
+    ASSERT( f1->eval()->str() == "Vector(50, 50, 50, 50, 50, 50, 50, 50, 50, 50)" );
+
+}
+
+void TestExp::test_predicates()
+{
+    // simple reduce
+
+    ExpPtr f0 =  maths::not_equal( a_ , b_ );
+
+    std::cout << f0->str() << std::endl;
+    std::cout << f0->eval()->str() << std::endl;
+
+    // simple reduce
+
+    ExpPtr f1 =  maths::greater( a_ , b_ );
+
     std::cout << f1->str() << std::endl;
     std::cout << f1->eval()->str() << std::endl;
 
-    ASSERT( f1->str() == "Reduce(Prod(?, ?), List(Scalar(2), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)))" );
-    ASSERT( f1->eval()->str() == "Vector(50, 50, 50, 50, 50, 50, 50, 50, 50, 50)" );
+    // simple reduce
+
+    ExpPtr f2 =  maths::less( a_ , b_ );
+
+    std::cout << f2->str() << std::endl;
+    std::cout << f2->eval()->str() << std::endl;
+
+//    ASSERT( f0->str() == "Reduce(Add(?, ?), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
+//    ASSERT( f0->eval()->str() == "Scalar(12)" );
+
+    std::vector<scalar_t> v;
+    v.push_back(1.);
+    v.push_back(2.);
+    v.push_back(3.);
+    v.push_back(1.);
+
+    /// @todo make this work
+    //  ExpPtr f3 = maths::filter( maths::greater( undef(), maths::scalar(2) ), maths::vector(v) );
+
+    ExpPtr f3 = maths::filter( maths::greater( undef(), maths::scalar(2) ),maths::list( a_ , b_, a_, b_ ) );
+
+    std::cout << f3->str() << std::endl;
+    std::cout << f3->eval()->str() << std::endl;
 
 }
 

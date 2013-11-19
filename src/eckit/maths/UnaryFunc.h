@@ -43,7 +43,7 @@ public:
         virtual std::string ret_signature() const;
     };
 
-    /// Expression generator function
+    /// Expr generator function
     ExpPtr operator() ( ExpPtr p0 )
     {
         args_t args;
@@ -83,7 +83,7 @@ const char *opname( const Neg& );
 
 #define GEN_UNFUNC_DECL( f, c, op )   \
 ExpPtr f( ExpPtr e = undef() );       \
-ExpPtr f( Expression& e );            \
+ExpPtr f( Expr& e );            \
 ExpPtr operator op ( ValPtr e  );     \
 ExpPtr operator op ( ExpPtr p1 );
 

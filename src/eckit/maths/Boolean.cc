@@ -8,43 +8,34 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/Optimiser.h"
+#include "eckit/maths/Boolean.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr Optimiser::apply(ExpPtr e)
+Boolean::Boolean( const Boolean::value_t& v ) : v_(v)
 {
-    DBGX(*e);
-
-    std::string signature = e->signature();
-
-    optimisers_t& optimiser = optimisers();
-    std::map<std::string,Optimiser*>::const_iterator itr = optimiser.find(signature);
-    if( itr == optimiser.end() )
-    {
-        return e;
-    }
-    else
-    {        
-        ExpPtr re = (*itr).second->optimise(e);
-        DBGX("... optimising ...");
-        DBGX(*re);
-        return re;
-    }
 }
 
-Optimiser::Optimiser(const string &signature)
+void Boolean::print(ostream &o) const
 {
-    optimisers()[signature] = this;
+    o << class_name() << "(" << v_ << ")";
 }
 
-Optimiser::optimisers_t& Optimiser::optimisers()
+Boolean::Boolean(const ExpPtr& e) : v_(0)
 {
-    static optimisers_t optimisers_;
-    return optimisers_;
+   ASSERT( e->ret_signature() == Boolean::sig() );
+   context_t ctx;
+   v_ = Boolean::extract( e->evaluate(ctx) );
+}
+
+//--------------------------------------------------------------------------------------------
+
+ExpPtr boolean(const Boolean::value_t &s)
+{
+    return ExpPtr( new Boolean(s) );
 }
 
 //--------------------------------------------------------------------------------------------

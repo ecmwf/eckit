@@ -39,7 +39,7 @@ public: // methods
         virtual std::string ret_signature() const;
     };
 
-    /// Expression generator function
+    /// Expr generator function
     ExpPtr operator() ( ExpPtr p0, ExpPtr p1, ExpPtr p2 )
     {
         args_t args;

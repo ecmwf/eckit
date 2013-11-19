@@ -20,11 +20,11 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Func::Func() : Expression()
+Func::Func() : Expr()
 {
 }
 
-Func::Func(const args_t &args) : Expression(args)
+Func::Func(const args_t &args) : Expr(args)
 {
 }
 

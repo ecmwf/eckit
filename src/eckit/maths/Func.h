@@ -24,7 +24,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Represents a Function with some arguments
-class Func : public Expression {
+class Func : public Expr {
 
 public: // types
 

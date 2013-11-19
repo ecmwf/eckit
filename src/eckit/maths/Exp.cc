@@ -71,8 +71,8 @@ ExpPtr Expr::param( const size_t& i, context_t* ctx ) const
 
 void Expr::param(const size_t &i, ExpPtr p)
 {
-    assert( i < args_.size() );
-    assert( p );
+    ASSERT( i < args_.size() );
+    ASSERT( p );
     if( p != args_[i] )
         args_[i] = p;
 }

@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Filter.h
+/// @file Bind.h
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Filter_h
-#define eckit_maths_Filter_h
+#ifndef eckit_maths_Bind_h
+#define eckit_maths_Bind_h
 
 #include "eckit/maths/Func.h"
 
@@ -22,27 +22,36 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-/// Generates a Filter combination of vectors
-class Filter : public Func {
+/// Generates a Bind combination of vectors
+class Bind : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "Filter"; }
+    static std::string class_name() { return "Bind"; }
 
-    Filter( ExpPtr pred, ExpPtr list );
+    Bind( size_t i, ExpPtr pred, ExpPtr e );
 
-    virtual std::string type_name() const { return Filter::class_name(); }
+    virtual std::string type_name() const;
 
     virtual size_t arity() const { return 2; }
 
     virtual std::string ret_signature() const;
 
     virtual ValPtr evaluate( context_t& ctx );
+
+private:
+
+    size_t idx_;
+
 };
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr filter( ExpPtr f, ExpPtr l );
+template < int i >
+ExpPtr bind( ExpPtr f, ExpPtr p )
+{
+    return ExpPtr( new Bind( i, f, p) );
+}
 
 //--------------------------------------------------------------------------------------------
 

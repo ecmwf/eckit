@@ -22,6 +22,7 @@
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/UnaryFunc.h"
 #include "eckit/maths/Vector.h"
+#include "eckit/maths/Bind.h"
 
 using namespace eckit;
 using namespace eckit::maths;
@@ -59,6 +60,8 @@ public:
     void test_predicates();
     /// Test filter
     void test_filter();
+    /// Test bind
+    void test_bind();
 
     void teardown();
 
@@ -82,6 +85,7 @@ void TestExp::run()
     test_reduce();
     test_predicates();
     test_filter();
+    test_bind();
 
     teardown();
 }
@@ -261,9 +265,6 @@ void TestExp::test_reduce()
 
     ASSERT(  f3->str() == "Reduce(Add(?, ?), List())" );
     ASSERT(  f3->eval()->str() == "List()" );
-
-//    std::cout << f3->str() << std::endl;
-//    std::cout << f3->eval()->str() << std::endl;
 }
 
 void TestExp::test_predicates()
@@ -296,6 +297,19 @@ void TestExp::test_filter()
 
     ASSERT( f3->str() == "Filter(Greater(?, Scalar(2)), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
     ASSERT( f3->eval()->str() == "List(Scalar(4), Scalar(4))" );
+}
+
+void TestExp::test_bind()
+{
+    ExpPtr pred = maths::bind<2>( maths::greater(), maths::scalar(2) );
+
+    ExpPtr f0 = maths::filter( pred, maths::list( a_ , b_, a_, b_ ) );
+
+        std::cout << f0->str() << std::endl;
+        std::cout << f0->eval()->str() << std::endl;
+
+    ASSERT( f0->str() == "Filter(Bind<2>(Greater(?, ?), Scalar(2)), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
+    ASSERT( f0->eval()->str() == "List(Scalar(4), Scalar(4))" );
 }
 
 //-----------------------------------------------------------------------------

@@ -7,6 +7,8 @@ Boolean.cc
 Boolean.h
 UnaryFunc.cc
 UnaryFunc.h
+Bind.cc
+Bind.h
 Exp.cc
 Exp.h
 Func.cc

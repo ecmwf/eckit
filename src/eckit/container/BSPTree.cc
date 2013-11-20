@@ -10,20 +10,19 @@
 
 #ifndef BSPtree_CC
 #define BSPTree_CC
-#include <eckit/eckit.h>
 
 #include <stdio.h>
 #include <limits>
+#include <random>
 
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include "eckit/eckit.h"
 
 namespace eckit {
-
-
 
 template<class Point, class Alloc>
 BSPNode<Point,Alloc>::BSPNode(const vector<Point>& p):

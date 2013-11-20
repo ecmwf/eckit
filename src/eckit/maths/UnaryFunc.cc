@@ -20,7 +20,7 @@ namespace maths {
 
 #define GEN_UNFUNC_IMPL( f, c, op )                                                         \
 ExpPtr f( ExpPtr e )           { return ExpPtr( c()(e) ); }                                  \
-ExpPtr f( Expression& e )      { return ExpPtr( c()(e.self()) ); }                           \
+ExpPtr f( Expr& e )      { return ExpPtr( c()(e.self()) ); }                           \
 ExpPtr operator op ( ValPtr e ){ return f( e ); }                                            \
 ExpPtr operator op ( ExpPtr e ){ return f( e ); }
 

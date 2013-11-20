@@ -8,43 +8,41 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Value.h
-/// @author Baudouin Raoult
+/// @file Filter.h
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Value_h
-#define eckit_maths_Value_h
+#ifndef eckit_maths_Filter_h
+#define eckit_maths_Filter_h
 
-#include "eckit/eckit.h"
-
-#include "eckit/maths/Exp.h"
+#include "eckit/maths/Func.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-class Value : public Expr {
+/// Generates a Filter combination of vectors
+class Filter : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "Value"; }
+    static std::string class_name() { return "Filter"; }
 
-    /// Empty contructor is usually used by derived classes that
-    /// handle the setup of the parameters themselves
-    Value() {}
+    Filter( ExpPtr pred, ExpPtr list );
 
-    /// Contructor taking a list of parameters
-    Value( const args_t& args ) : Expr(args) {}
+    virtual std::string type_name() const { return Filter::class_name(); }
 
-    virtual ~Value();
+    virtual size_t arity() const { return 2; }
 
-    virtual ExpPtr optimise();
+    virtual std::string ret_signature() const;
 
-    virtual ValPtr evaluate( context_t& );
-
+    virtual ValPtr evaluate( context_t& ctx );
 };
+
+//--------------------------------------------------------------------------------------------
+
+ExpPtr filter( ExpPtr f, ExpPtr l );
 
 //--------------------------------------------------------------------------------------------
 

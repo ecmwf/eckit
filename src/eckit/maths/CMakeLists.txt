@@ -1,8 +1,14 @@
 list( APPEND eckit_maths_srcs
 BinaryFunc.cc
 BinaryFunc.h
+BinaryPredicate.cc
+BinaryPredicate.h
+Boolean.cc
+Boolean.h
 UnaryFunc.cc
 UnaryFunc.h
+Bind.cc
+Bind.h
 Exp.cc
 Exp.h
 Func.cc
@@ -11,6 +17,8 @@ Count.cc
 Count.h
 FMap.cc
 FMap.h
+Filter.cc
+Filter.h
 Reduce.cc
 Reduce.h
 Linear.cc

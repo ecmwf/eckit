@@ -38,7 +38,7 @@ public: // methods
     static bool is ( const ExpPtr& e ) { return e->signature() == Vector::sig(); }
     static value_t& extract ( const ExpPtr& e )
     {
-        assert( Vector::is(e) );
+        ASSERT( Vector::is(e) );
         return e->as<Vector>()->ref_value();
     }
 

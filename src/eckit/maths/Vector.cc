@@ -25,6 +25,11 @@ Vector::Vector( const value_t& v )
 {
 }
 
+ExpPtr Vector::clone()
+{
+    return maths::vector( value() );
+}
+
 void Vector::print(ostream &o) const
 {
     o << class_name() << "(";

@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file FMap.h
+/// @file Filter.h
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_FMap_h
-#define eckit_maths_FMap_h
+#ifndef eckit_maths_Filter_h
+#define eckit_maths_Filter_h
 
 #include "eckit/maths/Func.h"
 
@@ -22,30 +22,29 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-/// Generates a FMap combination of vectors
-class FMap : public Func {
+/// Generates a Filter combination of vectors
+class Filter : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "FMap"; }
+    static std::string class_name() { return "Filter"; }
 
-    FMap( const args_t& args );
+    Filter( const args_t& args );
 
-    FMap( ExpPtr f, ExpPtr l );
+    Filter( ExpPtr pred = undef(), ExpPtr list = undef() );
 
-    virtual std::string type_name() const { return FMap::class_name(); }
+    virtual std::string type_name() const { return Filter::class_name(); }
 
     virtual size_t arity() const { return 2; }
 
     virtual std::string ret_signature() const;
 
     virtual ValPtr evaluate( context_t& ctx );
-
 };
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr fmap( ExpPtr f, ExpPtr l );
+ExpPtr filter( ExpPtr f, ExpPtr l );
 
 //--------------------------------------------------------------------------------------------
 

@@ -8,40 +8,43 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file BinaryFunc.h
-/// @author Baudouin Raoult
+/// @file BinaryPredicate.h
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_BinaryFunc_h
-#define eckit_maths_BinaryFunc_h
+#ifndef eckit_maths_BinaryPredicate_h
+#define eckit_maths_BinaryPredicate_h
 
 #include <functional>
 
 #include "eckit/maths/Func.h"
+#include "eckit/maths/Boolean.h"
+#include "eckit/maths/Scalar.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-/// Generates a expressions
+/// @todo could this apply to vectors?
+///       what means Greater( Vector( 1, 2, 3 ), Vector( 2, 0, 3 ) ) ?= Vector( 0, 1, 0 )
+
 template <class T>
-class BinaryFunc : public Func  {
+class BinaryPredicate : public Func  {
 public:
 
-    /// generator of of this expression type
+    /// generator for this expression type
     static ExpPtr make( ExpPtr p0, ExpPtr p1 )
     {
         args_t args;
         args.push_back( p0 );
         args.push_back( p1 );
-        return ExpPtr( new BinaryFunc<T>(args) );
+        return ExpPtr( new BinaryPredicate<T>(args) );
     }
 
     static std::string class_name();
 
-    BinaryFunc( const args_t& args );
+    BinaryPredicate( const args_t& args );
 
     virtual std::string type_name() const;
 
@@ -67,27 +70,39 @@ public:
         /// Computes the expression with the passed arguments
         static ValPtr compute( const args_t& p );
     };
+
 };
 
 //--------------------------------------------------------------------------------------------
 
-typedef std::multiplies<scalar_t>  Prod;
-typedef std::divides<scalar_t>     Div;
-typedef std::plus<scalar_t>        Add;
-typedef std::minus<scalar_t>       Sub;
-typedef std::modulus<scalar_t>     Mod;
+// only for scalar
 
-const char *opname(const Prod&);
-const char *opname(const Div&);
-const char *opname(const Add&);
-const char *opname(const Sub&);
-const char *opname(const Mod&);
+typedef std::greater<Scalar::value_t>           Greater;
+typedef std::greater_equal<Scalar::value_t>     GreaterEqual;
+typedef std::less<Scalar::value_t>              Less;
+typedef std::less_equal<Scalar::value_t>        LessEqual;
+typedef std::equal_to<Scalar::value_t>         Equal;
+typedef std::not_equal_to<Scalar::value_t>     NotEqual;
+
+/// @todo handle these
+
+typedef std::logical_and<Scalar::value_t>      And;
+typedef std::logical_or<Scalar::value_t>       Or;
+
+const char *opname(const Greater&);
+const char *opname(const GreaterEqual&);
+const char *opname(const Less&);
+const char *opname(const LessEqual&);
+const char *opname(const Equal&);
+const char *opname(const NotEqual&);
+const char *opname(const And&);
+const char *opname(const Or&);
 
 //--------------------------------------------------------------------------------------------
 
 // version with stand alone functions
 
-#define GEN_BINFUNC_DECL( f, c, op )        \
+#define GEN_BINPRED_DECL( f, c, op )        \
 ExpPtr f( ExpPtr l = undef(), ExpPtr r = undef() ); \
 ExpPtr f( Expr& l, ExpPtr r );        \
 ExpPtr f( ExpPtr l, Expr& r );        \
@@ -97,13 +112,16 @@ ExpPtr operator op ( ValPtr p1, ExpPtr p2 );  \
 ExpPtr operator op ( ExpPtr p1, ValPtr p2 );  \
 ExpPtr operator op ( ExpPtr p1, ExpPtr p2 );
 
-GEN_BINFUNC_DECL(prod,BinaryFunc<Prod>,*)
-GEN_BINFUNC_DECL(div,BinaryFunc<Div>,/)
-GEN_BINFUNC_DECL(add,BinaryFunc<Add>,+)
-GEN_BINFUNC_DECL(sub,BinaryFunc<Sub>,-)
-GEN_BINFUNC_DECL(mod,BinaryFunc<Mod>,%)
+GEN_BINPRED_DECL(greater,Greater,>)
+GEN_BINPRED_DECL(greater_equal,GreaterEqual,>=)
+GEN_BINPRED_DECL(less,Less,<)
+GEN_BINPRED_DECL(less_equal,LessEqual,<=)
+GEN_BINPRED_DECL(equal,Equal,==)
+GEN_BINPRED_DECL(not_equal,NotEqual,!=)
+//GEN_BINPRED_DECL(and,And,&&)
+//GEN_BINPRED_DECL(or,Or,||)
 
-#undef GEN_BINFUNC_DECL
+#undef GEN_BINPRED_DECL
 
 //--------------------------------------------------------------------------------------------
 

@@ -18,6 +18,12 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
+static Func::RegisterFactory< Linear > count_register;
+
+Linear::Linear(const args_t &args) : Func(args)
+{
+}
+
 Linear::Linear(ExpPtr e) : Func()
 {
     ASSERT( e->arity() == 2 );

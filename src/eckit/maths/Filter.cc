@@ -8,58 +8,62 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/Reduce.h"
+#include "eckit/maths/Filter.h"
 #include "eckit/maths/List.h"
+#include "eckit/maths/Boolean.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-static Func::RegisterFactory< Reduce > filter_register;
+static Func::RegisterFactory< Filter > filter_register;
 
-Reduce::Reduce(const args_t &args) : Func(args)
+Filter::Filter(const args_t& args) : Func(args)
 {
 }
 
-Reduce::Reduce( ExpPtr f,  ExpPtr list ) : Func()
+Filter::Filter( ExpPtr pred,  ExpPtr list ) : Func()
 {
-    args_.push_back(f);
+    args_.push_back(pred);
     args_.push_back(list);
 }
 
-string Reduce::ret_signature() const
+string Filter::ret_signature() const
 {
-    return Undef::sig(); /// @todo review this -- it could be the signature iterated over the list
+    return List::sig();
 }
 
-ValPtr Reduce::evaluate( context_t& ctx )
+ValPtr Filter::evaluate( context_t& ctx )
 {
+    ListPtr res ( new List() );
+
     ExpPtr f = param(0,&ctx);
+    DBGX(*f);
 
     List::value_t& list = List::extract( param(1,&ctx) );
 
     const size_t nlist = list.size();
-
-    if(!nlist) // empty list
-        return ValPtr( new List() );
-
-    ExpPtr e = list[0]->evaluate(ctx);
-
-    for( size_t i = 1; i < nlist; ++i )
+    for( size_t i = 0; i < nlist; ++i )
     {
+        ExpPtr e = list[i]->evaluate(ctx);
         DBGX(*e);
-        e = f->eval( e, list[i]->evaluate(ctx) );
+
+        ExpPtr b = f->eval(e);
+        DBGX(*b);
+
+        if( Boolean::extract(b) )
+            res->append( e );
     }
 
-    return e->evaluate(ctx);
+    return res;
 }
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr reduce( ExpPtr f,  ExpPtr list )
+ExpPtr filter( ExpPtr f,  ExpPtr list )
 {
-    return ExpPtr( new Reduce(f,list) );
+    return ExpPtr( new Filter(f,list) );
 }
 
 //--------------------------------------------------------------------------------------------

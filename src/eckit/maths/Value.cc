@@ -15,6 +15,14 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
+Value::Value()
+{
+}
+
+Value::Value(const args_t &args) : Expr(args)
+{
+}
+
 Value::~Value()
 {
 }

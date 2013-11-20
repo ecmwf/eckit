@@ -19,7 +19,11 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-ProdAdd::Op::Op(const ExpPtr& e)
+ProdAdd::ProdAdd(const args_t &args) : Func( args )
+{
+}
+
+ProdAdd::ProdAdd(const ExpPtr& e)
 {
     ASSERT( e );
     ASSERT( e->arity() == 2 );
@@ -41,7 +45,7 @@ ProdAdd::Op::Op(const ExpPtr& e)
     args_.push_back(a2);
 }
 
-string ProdAdd::Op::ret_signature() const
+string ProdAdd::ret_signature() const
 {
     for( args_t::const_iterator i = args_.begin(); i != args_.end(); ++i )
     {
@@ -96,6 +100,8 @@ ValPtr ProdAdd::compute_ggg(const args_t &p)
 
 ProdAdd::Register::Register()
 {
+    Func::RegisterFactory< ProdAdd > factory_register;
+
     Func::dispatcher()[ class_name() + "(s,s,s)" ] = &compute_ggg;
     Func::dispatcher()[ class_name() + "(s,v,s)" ] = &compute_ggg;
     Func::dispatcher()[ class_name() + "(s,s,v)" ] = &compute_ggg;
@@ -113,8 +119,8 @@ ProdAdd::Register::Register()
 
 static ProdAdd::Register prodadd_register;
 
-static OptimiseTo<ProdAdd::Op> optimise_prodadd_svv("Prod(s,Add(v,v))");
-static OptimiseTo<ProdAdd::Op> optimise_prodadd_vvv("Prod(v,Add(v,v))");
+static OptimiseTo<ProdAdd> optimise_prodadd_svv("Prod(s,Add(v,v))");
+static OptimiseTo<ProdAdd> optimise_prodadd_vvv("Prod(v,Add(v,v))");
 
 
 //--------------------------------------------------------------------------------------------

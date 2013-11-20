@@ -41,12 +41,7 @@ option( ECKIT_MATHS  "eckit::maths extension [EXPERIMENTAL]"        OFF )
 option( ECKIT_GRID   "eckit::grid extension [EXPERIMENTAL]"	        OFF )
 option( ECKIT_GRIB   "eckit::grib extension [EXPERIMENTAL]"	        OFF )
 option( ECKIT_MPI    "eckit::mpi  extension [EXPERIMENTAL]"	        OFF )
-option( ECKIT_MINING "eckit::mining  extension [EXPERIMENTAL]"	    OFF )
 option( ECKIT_EIGEN  "Eigen support  [NOT IMPLEMENTED]"		        OFF )
-
-if(ECKIT_MINING)
-    set(ECKIT_EIGEN ON)
-endif()
 
 if( ECKIT_GRIB )
 	ecbuild_use_package( PROJECT grib_api VERSION 1.9.9 )

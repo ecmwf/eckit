@@ -58,11 +58,7 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-/// @todo move args_ to Exp
-
-//--------------------------------------------------------------------------------------------
-
-#if 0
+#if 1
 #define DBG     std::cout << Here() << std::endl;
 #define DBGX(x) std::cout << Here() << " " << #x << " -> " << x << std::endl;
 #else
@@ -74,13 +70,13 @@ namespace maths {
 
 class Value;
 class List;
-class Expression;
+class Expr;
 
 typedef double scalar_t;
 
 typedef boost::shared_ptr<Value>      ValPtr;
 typedef boost::shared_ptr<List>       ListPtr;
-typedef boost::shared_ptr<Expression> ExpPtr;
+typedef boost::shared_ptr<Expr> ExpPtr;
 
 typedef std::vector< ExpPtr > args_t;
 
@@ -88,7 +84,7 @@ typedef std::deque< ExpPtr > context_t;
 
 //--------------------------------------------------------------------------------------------
 
-/// Expression Error
+/// Expr Error
 class Error: public eckit::Exception {
 public:
     Error(const eckit::CodeLocation& loc, const string& s) : Exception( s, loc ) {}
@@ -96,8 +92,8 @@ public:
 
 //--------------------------------------------------------------------------------------------
 
-class Expression :
-    public boost::enable_shared_from_this<Expression>,
+class Expr :
+    public boost::enable_shared_from_this<Expr>,
     private boost::noncopyable {
 
 public: // methods
@@ -106,23 +102,23 @@ public: // methods
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves
-    Expression();
+    Expr();
 
     /// Contructor taking a list of parameters
     /// handle the setup of the parameters themselves
-    Expression( const args_t& args );
+    Expr( const args_t& args );
 
-    virtual ~Expression();
+    virtual ~Expr();
 
     ExpPtr self() { return shared_from_this(); }
 
     template< typename T >
     boost::shared_ptr<T> as()
     {
-        return boost::dynamic_pointer_cast<T,Expression>( shared_from_this() );
+        return boost::dynamic_pointer_cast<T,Expr>( shared_from_this() );
     }
 
-    friend std::ostream& operator<<( std::ostream& os, const Expression& v)
+    friend std::ostream& operator<<( std::ostream& os, const Expr& v)
     {
         v.print(os);
         return os;
@@ -145,6 +141,7 @@ public: // virtual methods
     virtual std::string type_name() const = 0;
     virtual ValPtr evaluate( context_t& ) = 0;
     virtual ExpPtr optimise() = 0;
+    virtual ExpPtr clone() = 0;
     virtual void print( std::ostream& ) const = 0;
     virtual std::string signature() const = 0;
     virtual std::string ret_signature() const = 0;
@@ -157,7 +154,7 @@ protected: // members
 
 //--------------------------------------------------------------------------------------------
 
-class Undef : public Expression {
+class Undef : public Expr {
 public: //  methods
 
     static std::string class_name() { return "Undef"; }
@@ -171,6 +168,8 @@ public: //  methods
     virtual ExpPtr optimise() { return shared_from_this(); }
 
     virtual ValPtr evaluate( context_t& ctx );
+
+    virtual ExpPtr clone();
 
     virtual std::string type_name() const { return Undef::class_name(); }
     virtual std::string signature() const { return Undef::sig(); }

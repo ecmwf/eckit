@@ -8,61 +8,54 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/FMap.h"
-#include "eckit/maths/List.h"
+/// @file Bind.h
+/// @author Tiago Quintino
+/// @date November 2013
+
+#ifndef eckit_maths_Bind_h
+#define eckit_maths_Bind_h
+
+#include "eckit/maths/Func.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-static Func::RegisterFactory< FMap > fmap_register;
+/// Generates a Bind combination of vectors
+class Bind : public Func {
 
-FMap::FMap(const args_t& args) : Func(args)
-{
-}
+public: // methods
 
-FMap::FMap( ExpPtr f,  ExpPtr list ) : Func()
-{
-    args_.push_back(f);
-    args_.push_back(list);
-}
+    static std::string class_name() { return "Bind"; }
 
-string FMap::ret_signature() const
-{
-    return List::sig();
-}
+    Bind( const args_t& args );
 
-ValPtr FMap::evaluate( context_t& ctx )
-{
-    ExpPtr f = param(0,&ctx);
+    Bind( size_t i, ExpPtr f, ExpPtr e );
 
-    List::value_t& list = List::extract( param(1,&ctx) );
+    Bind( ExpPtr i, ExpPtr f, ExpPtr e );
 
-    const size_t nlist = list.size();
+    virtual std::string type_name() const;
 
-    ListPtr res ( new List() );
+    virtual size_t arity() const { return 2; }
 
-    for( size_t i = 0; i < nlist; ++i )
-    {
-        ExpPtr e = list[i]->evaluate(ctx);
+    virtual std::string ret_signature() const;
 
-        ExpPtr v = f->eval(e);
+    virtual ValPtr evaluate( context_t& ctx );
 
-        res->append( v );
-    }
-
-    return res;
-}
+};
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr fmap( ExpPtr f,  ExpPtr list )
+template < int i >
+ExpPtr bind( ExpPtr f, ExpPtr p )
 {
-    return ExpPtr( new FMap(f,list) );
+    return ExpPtr( new Bind( i, f, p ) );
 }
 
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths
 } // namespace eckit
+
+#endif

@@ -25,7 +25,7 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-class Value : public Expression {
+class Value : public Expr {
 
 public: // methods
 
@@ -33,10 +33,10 @@ public: // methods
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves
-    Value() {}
+    Value();
 
     /// Contructor taking a list of parameters
-    Value( const args_t& args ) : Expression(args) {}
+    Value( const args_t& args );
 
     virtual ~Value();
 

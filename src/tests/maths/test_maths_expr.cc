@@ -12,15 +12,18 @@
 #include "eckit/runtime/Tool.h"
 
 #include "eckit/maths/BinaryFunc.h"
+#include "eckit/maths/BinaryPredicate.h"
 #include "eckit/maths/Count.h"
 #include "eckit/maths/Exp.h"
 #include "eckit/maths/FMap.h"
+#include "eckit/maths/Filter.h"
 #include "eckit/maths/Reduce.h"
 #include "eckit/maths/List.h"
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/UnaryFunc.h"
 #include "eckit/maths/Vector.h"
 #include "eckit/maths/ZipWith.h"
+#include "eckit/maths/Bind.h"
 
 using namespace eckit;
 using namespace eckit::maths;
@@ -56,6 +59,12 @@ public:
     void test_reduce();
     /// Tests zipwith expression
     void test_zipwith();
+    /// Tests predicate expressions
+    void test_predicates();
+    /// Test filter
+    void test_filter();
+    /// Test bind
+    void test_bind();
 
     void teardown();
 
@@ -78,6 +87,9 @@ void TestExp::run()
     test_fmap();
     test_reduce();
     test_zipwith();
+    test_predicates();
+    test_filter();
+    test_bind();
 
     teardown();
 }
@@ -186,17 +198,17 @@ void TestExp::test_list()
     ExpPtr l0 =  maths::list( y_ , x_ );
 
     ASSERT( l0->eval()->str() == "List(Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5))" );
-    ASSERT( l0->as<List>()->size() == 2 );
+    ASSERT( l0->arity() == 2 );
 
     ExpPtr l1 = maths::list()->append(a_, b_, x_, y_, x_, y_);
 
     ASSERT( l1->eval()->str() == "List(Scalar(2), Scalar(4), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7))" );
-    ASSERT( l1->as<List>()->size() == 6 );
+    ASSERT( l1->arity() == 6 );
 
     ExpPtr l2 = maths::list( a_, b_, a_, b_, a_ );
 
     ASSERT( l2->eval()->str() == "List(Scalar(2), Scalar(4), Scalar(2), Scalar(4), Scalar(2))" );
-    ASSERT( l2->as<List>()->size() == 5 );
+    ASSERT( l2->arity() == 5 );
 
     ExpPtr c3 = maths::count( maths::list( a_, b_, a_, b_, a_ ) );
 
@@ -243,6 +255,65 @@ void TestExp::test_reduce()
     ASSERT( f1->str() == "Reduce(Prod(?, ?), List(Scalar(2), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)))" );
     ASSERT( f1->eval()->str() == "Vector(50, 50, 50, 50, 50, 50, 50, 50, 50, 50)" );
 
+
+    // reduce one element list
+
+    ExpPtr f2 =  reduce( maths::add(), maths::list( a_ ) );
+
+    ASSERT(  f2->str() == "Reduce(Add(?, ?), List(Scalar(2)))" );
+    ASSERT(  f2->eval()->str() == "Scalar(2)" );
+
+    // reduce empty element list
+
+    ExpPtr f3 =  reduce( maths::add(), maths::list() );
+
+    ASSERT(  f3->str() == "Reduce(Add(?, ?), List())" );
+    ASSERT(  f3->eval()->str() == "List()" );
+}
+
+void TestExp::test_predicates()
+{
+    // NotEqual
+
+    ExpPtr f0 =  maths::not_equal( a_ , b_ );
+
+    ASSERT( f0->str() == "NotEqual(Scalar(2), Scalar(4))" );
+    ASSERT( f0->eval()->str() == "Boolean(1)" );
+
+    // Greater
+
+    ExpPtr f1 =  maths::greater( a_ , b_ );
+
+    ASSERT( f1->str() == "Greater(Scalar(2), Scalar(4))" );
+    ASSERT( f1->eval()->str() == "Boolean(0)" );
+
+    // Less
+
+    ExpPtr f2 =  maths::less( a_ , b_ );
+
+    ASSERT( f2->str() == "Less(Scalar(2), Scalar(4))" );
+    ASSERT( f2->eval()->str() == "Boolean(1)" );
+}
+
+void TestExp::test_filter()
+{
+    ExpPtr f3 = maths::filter( maths::greater( undef(), maths::scalar(2) ),maths::list( a_ , b_, a_, b_ ) );
+
+    ASSERT( f3->str() == "Filter(Greater(?, Scalar(2)), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
+    ASSERT( f3->eval()->str() == "List(Scalar(4), Scalar(4))" );
+}
+
+void TestExp::test_bind()
+{
+    ExpPtr pred = maths::bind<2>( maths::greater(), maths::scalar(2) );
+
+    ExpPtr f0 = maths::filter( pred, maths::list( a_ , b_, a_, b_ ) );
+
+        std::cout << f0->str() << std::endl;
+        std::cout << f0->eval()->str() << std::endl;
+
+    ASSERT( f0->str() == "Filter(Bind(Scalar(2), Greater(?, ?), Scalar(2)), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
+    ASSERT( f0->eval()->str() == "List(Scalar(4), Scalar(4))" );
 }
 
 void TestExp::test_zipwith()

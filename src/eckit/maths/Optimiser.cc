@@ -21,19 +21,18 @@ ExpPtr Optimiser::apply(ExpPtr e)
 
     std::string signature = e->signature();
 
-    DBGX(signature);
-
     optimisers_t& optimiser = optimisers();
     std::map<std::string,Optimiser*>::const_iterator itr = optimiser.find(signature);
     if( itr == optimiser.end() )
     {
-        DBGX("NOT OPTIMISING");
         return e;
     }
     else
-    {
-        DBGX("OPTIMISING");
-        return (*itr).second->optimise(e);
+    {        
+        ExpPtr re = (*itr).second->optimise(e);
+        DBGX("... optimising ...");
+        DBGX(*re);
+        return re;
     }
 }
 

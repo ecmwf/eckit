@@ -18,23 +18,23 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Expression::Expression()
+Expr::Expr()
 {}
 
-Expression::Expression(const args_t &args) :
+Expr::Expr(const args_t &args) :
     args_(args)
 {}
 
-Expression::~Expression()
+Expr::~Expr()
 {}
 
-ValPtr Expression::eval()
+ValPtr Expr::eval()
 {
     context_t ctx;
     return optimise()->evaluate(ctx);
 }
 
-ValPtr Expression::eval( ExpPtr e )
+ValPtr Expr::eval( ExpPtr e )
 {
     context_t ctx;
     ctx.push_back(e);
@@ -43,7 +43,7 @@ ValPtr Expression::eval( ExpPtr e )
     return res;
 }
 
-ValPtr Expression::eval(  ExpPtr a, ExpPtr b )
+ValPtr Expr::eval(  ExpPtr a, ExpPtr b )
 {
     context_t ctx;
     ctx.push_back(a);
@@ -53,7 +53,7 @@ ValPtr Expression::eval(  ExpPtr a, ExpPtr b )
     return res;
 }
 
-ExpPtr Expression::param( const size_t& i, context_t* ctx ) const
+ExpPtr Expr::param( const size_t& i, context_t* ctx ) const
 {
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );
@@ -69,15 +69,15 @@ ExpPtr Expression::param( const size_t& i, context_t* ctx ) const
     return args_[i];
 }
 
-void Expression::param(const size_t &i, ExpPtr p)
+void Expr::param(const size_t &i, ExpPtr p)
 {
-    assert( i < args_.size() );
-    assert( p );
+    ASSERT( i < args_.size() );
+    ASSERT( p );
     if( p != args_[i] )
         args_[i] = p;
 }
 
-string Expression::str() const
+string Expr::str() const
 {
     std::ostringstream os;
     print(os);
@@ -86,7 +86,7 @@ string Expression::str() const
 
 //--------------------------------------------------------------------------------------------
 
-Undef::Undef() : Expression()
+Undef::Undef() : Expr()
 {
 }
 
@@ -97,6 +97,11 @@ Undef::~Undef()
 ValPtr Undef::evaluate( context_t& ctx )
 {
     return boost::static_pointer_cast<Value>( shared_from_this() );
+}
+
+ExpPtr Undef::clone()
+{
+    return undef();
 }
 
 ExpPtr undef()

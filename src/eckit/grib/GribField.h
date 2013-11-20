@@ -106,6 +106,7 @@ private:
 
     time_t last_;
     size_t accesses_;
+    size_t purges_;
 
     GribFieldMemoryStrategy* strategy_;
 

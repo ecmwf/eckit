@@ -38,7 +38,7 @@ public: // methods
     static bool is ( const ExpPtr& e ) { return e->signature() == Vector::sig(); }
     static value_t& extract ( const ExpPtr& e )
     {
-        assert( Vector::is(e) );
+        ASSERT( Vector::is(e) );
         return e->as<Vector>()->ref_value();
     }
 
@@ -57,6 +57,8 @@ public: // virtual methods
     virtual std::string type_name() const { return Vector::class_name(); }
     virtual std::string signature() const { return Vector::sig(); }
     virtual std::string ret_signature() const { return Vector::sig(); }
+
+    virtual ExpPtr clone();
 
     virtual void print( std::ostream& o ) const;
 

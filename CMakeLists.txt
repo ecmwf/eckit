@@ -119,6 +119,7 @@ if( ECKIT_GRID )
 endif()
 
 if( ECKIT_GRIB AND GRIB_API_FOUND )
+	list( APPEND ECKIT_LIBRARIES eckit_grib )
 	list( APPEND ECKIT_TPLS grib_api )
 endif()
 

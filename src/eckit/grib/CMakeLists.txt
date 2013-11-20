@@ -22,5 +22,5 @@ ecbuild_add_library(TARGET eckit_grib
 					SOURCES ${eckit_grib_srcs}
 					HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/grib
 					INCLUDES ${GRIB_API_INCLUDE_DIRS}
-					LIBS eckit ${GRIB_API_LIBRARIES})
+					LIBS eckit ${GRIB_API_LIBRARIES} )
 

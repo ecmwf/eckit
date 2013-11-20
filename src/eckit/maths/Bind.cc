@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <strstream>
+#include <sstream>
 
 #include "eckit/maths/Bind.h"
 #include "eckit/maths/List.h"

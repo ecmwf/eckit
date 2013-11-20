@@ -58,7 +58,7 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-#if 1
+#if 0
 #define DBG     std::cout << Here() << std::endl;
 #define DBGX(x) std::cout << Here() << " " << #x << " -> " << x << std::endl;
 #else

@@ -16,6 +16,10 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
+ZipWith::ZipWith(const args_t& args) : Func(args)
+{
+}
+
 ZipWith::ZipWith( ExpPtr f, ExpPtr list0, ExpPtr list1 ) : Func()
 {
     args_.push_back(f);
@@ -53,6 +57,10 @@ ValPtr ZipWith::evaluate( context_t& ctx )
 
     return res;
 }
+
+//--------------------------------------------------------------------------------------------
+
+static Func::RegisterFactory< ZipWith > zipwith_register;                                                  \
 
 //--------------------------------------------------------------------------------------------
 

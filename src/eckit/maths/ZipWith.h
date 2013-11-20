@@ -29,6 +29,8 @@ public: // methods
 
     static std::string class_name() { return "ZipWith"; }
 
+    ZipWith( const args_t& args );
+
     ZipWith( ExpPtr f, ExpPtr l0, ExpPtr l1 );
 
     virtual std::string type_name() const { return ZipWith::class_name(); }

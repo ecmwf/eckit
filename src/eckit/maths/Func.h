@@ -29,9 +29,12 @@ class Func : public Expr {
 public: // types
 
     typedef std::string key_t;
-    typedef boost::function< ValPtr ( const args_t& ) > func_t;
 
+    typedef boost::function< ValPtr ( const args_t& ) > func_t;
     typedef std::map< key_t, func_t > dispatcher_t;
+
+    typedef boost::function< ExpPtr ( const args_t& ) > builder_t;
+    typedef std::map< key_t, builder_t > factory_t;
 
 protected: // methods
 
@@ -47,6 +50,7 @@ public: // methods
     virtual ~Func();
 
     static dispatcher_t& dispatcher();
+    static factory_t& factory();
 
     static std::string class_name() { return "Func"; }
 
@@ -56,27 +60,26 @@ public: // virtual methods
 
     virtual ExpPtr optimise();
 
-    virtual std::string signature() const
-    {
-        return signature_args( args_ );
-    }
+    virtual ExpPtr clone();
+
+    virtual std::string signature() const;
 
     virtual void print( std::ostream& o ) const;
 
+    template< typename T >
+    struct RegisterFactory
+    {
+        RegisterFactory() { factory()[ T::class_name() ] = &(RegisterFactory<T>::build); }
+        static ExpPtr build( const args_t& args )
+        {
+            return ExpPtr( new T( args ) );
+        }
+    };
+
 protected: // methods
 
-    std::string signature_args( const args_t& args ) const
-    {
-        std::ostringstream o;
-        o << type_name() << "(";
-        for( size_t i = 0; i < args.size(); ++i )
-        {
-            if(i) o << ",";
-            o << args[i]->signature();
-        }
-        o << ")";
-        return o.str();
-    }
+    std::string signature_args( const args_t& args ) const;
+
 };
 
 //--------------------------------------------------------------------------------------------

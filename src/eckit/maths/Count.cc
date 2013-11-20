@@ -16,6 +16,12 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
+static Func::RegisterFactory< Count > count_register;
+
+Count::Count(const args_t& args) : Func(args)
+{
+}
+
 Count::Count(ExpPtr e) : Func()
 {
     args_.push_back(e);

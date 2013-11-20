@@ -58,7 +58,7 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-#if 0
+#if 1
 #define DBG     std::cout << Here() << std::endl;
 #define DBGX(x) std::cout << Here() << " " << #x << " -> " << x << std::endl;
 #else
@@ -141,6 +141,7 @@ public: // virtual methods
     virtual std::string type_name() const = 0;
     virtual ValPtr evaluate( context_t& ) = 0;
     virtual ExpPtr optimise() = 0;
+    virtual ExpPtr clone() = 0;
     virtual void print( std::ostream& ) const = 0;
     virtual std::string signature() const = 0;
     virtual std::string ret_signature() const = 0;
@@ -167,6 +168,8 @@ public: //  methods
     virtual ExpPtr optimise() { return shared_from_this(); }
 
     virtual ValPtr evaluate( context_t& ctx );
+
+    virtual ExpPtr clone();
 
     virtual std::string type_name() const { return Undef::class_name(); }
     virtual std::string signature() const { return Undef::sig(); }

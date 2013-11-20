@@ -17,6 +17,12 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
+static Func::RegisterFactory< Filter > filter_register;
+
+Filter::Filter(const args_t& args) : Func(args)
+{
+}
+
 Filter::Filter( ExpPtr pred,  ExpPtr list ) : Func()
 {
     args_.push_back(pred);
@@ -33,6 +39,7 @@ ValPtr Filter::evaluate( context_t& ctx )
     ListPtr res ( new List() );
 
     ExpPtr f = param(0,&ctx);
+    DBGX(*f);
 
     List::value_t& list = List::extract( param(1,&ctx) );
 

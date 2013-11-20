@@ -29,7 +29,11 @@ public: // methods
 
     static std::string class_name() { return "Bind"; }
 
-    Bind( size_t i, ExpPtr pred, ExpPtr e );
+    Bind( const args_t& args );
+
+    Bind( size_t i, ExpPtr f, ExpPtr e );
+
+    Bind( ExpPtr i, ExpPtr f, ExpPtr e );
 
     virtual std::string type_name() const;
 
@@ -39,10 +43,6 @@ public: // methods
 
     virtual ValPtr evaluate( context_t& ctx );
 
-private:
-
-    size_t idx_;
-
 };
 
 //--------------------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ private:
 template < int i >
 ExpPtr bind( ExpPtr f, ExpPtr p )
 {
-    return ExpPtr( new Bind( i, f, p) );
+    return ExpPtr( new Bind( i, f, p ) );
 }
 
 //--------------------------------------------------------------------------------------------

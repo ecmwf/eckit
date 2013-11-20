@@ -13,27 +13,37 @@
 #include "eckit/maths/Bind.h"
 #include "eckit/maths/List.h"
 #include "eckit/maths/Boolean.h"
+#include "eckit/maths/Scalar.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Bind::Bind( size_t i, ExpPtr f, ExpPtr e ) : Func(),
-    idx_(i)
+Bind::Bind(const args_t& args) : Func(args)
+{
+}
+
+Bind::Bind( size_t i, ExpPtr f, ExpPtr e ) : Func()
 {
     ASSERT( i > 0 );
     ASSERT( i <= f->arity() );
 
+    args_.push_back( maths::scalar( (scalar_t)i ) ); // casted to scalar_t (real)
+    args_.push_back(f);
+    args_.push_back(e);
+}
+
+Bind::Bind( ExpPtr i, ExpPtr f, ExpPtr e ) : Func()
+{
+    args_.push_back(i);
     args_.push_back(f);
     args_.push_back(e);
 }
 
 string Bind::type_name() const
 {
-    std::ostringstream os;
-    os << Bind::class_name() << "<" << idx_ << ">";
-    return os.str();
+    return Bind::class_name();
 }
 
 string Bind::ret_signature() const
@@ -43,13 +53,39 @@ string Bind::ret_signature() const
 
 ValPtr Bind::evaluate( context_t& ctx )
 {    
-    ExpPtr f = param(0,&ctx);
-    ExpPtr e = param(1,&ctx);
+    DBGX(*this);
 
-    f->param( (idx_ - 1), e );
+    ExpPtr ix = param(0,&ctx);
 
-    return f->evaluate(ctx);
+    DBGX(*ix);
+
+    const size_t i = static_cast<size_t>( Scalar::extract(ix) );
+
+    ExpPtr f = param(1,&ctx);
+
+    DBGX(*f);
+
+    ASSERT( i > 0 );
+    ASSERT( i <= f->arity() );
+
+    ExpPtr e = param(2,&ctx);
+
+    DBGX(*e);
+
+    ExpPtr fx = f->clone();
+
+    DBGX(*fx);
+
+    fx->param( (i - 1), e );
+
+    DBGX(*fx);
+
+    return fx->evaluate(ctx);
 }
+
+//--------------------------------------------------------------------------------------------
+
+static Func::RegisterFactory< Bind > bind_register;                                                  \
 
 //--------------------------------------------------------------------------------------------
 

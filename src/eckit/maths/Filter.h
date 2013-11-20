@@ -29,7 +29,9 @@ public: // methods
 
     static std::string class_name() { return "Filter"; }
 
-    Filter( ExpPtr pred, ExpPtr list );
+    Filter( const args_t& args );
+
+    Filter( ExpPtr pred = undef(), ExpPtr list = undef() );
 
     virtual std::string type_name() const { return Filter::class_name(); }
 

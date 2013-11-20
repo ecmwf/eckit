@@ -46,8 +46,6 @@ public: // methods
     List( const value_t& v );
 
     /// @returns the size of the internal vector
-    size_t size() const { return args_.size(); }
-    /// @returns the size of the internal vector
     value_t value() const { return args_; }
     /// @returns a reference to the internal vector
     value_t& ref_value() { return args_; }
@@ -73,8 +71,9 @@ public: // virtual methods
     virtual std::string signature() const { return List::sig(); }
     virtual std::string ret_signature() const { return List::sig(); }
 
-    virtual void print( std::ostream& o ) const;
+    virtual ExpPtr clone();
 
+    virtual void print( std::ostream& o ) const;
 };
 
 typedef boost::shared_ptr< List > ListPtr;

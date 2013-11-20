@@ -19,6 +19,11 @@ Boolean::Boolean( const Boolean::value_t& v ) : v_(v)
 {
 }
 
+ExpPtr Boolean::clone()
+{
+    return maths::boolean( value() );
+}
+
 void Boolean::print(ostream &o) const
 {
     o << class_name() << "(" << v_ << ")";

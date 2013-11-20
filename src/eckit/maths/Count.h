@@ -29,6 +29,8 @@ public: // methods
 
     static std::string class_name() { return "Count"; }
 
+    Count( const args_t& args );
+
     Count( ExpPtr e = undef() );
 
     virtual std::string type_name() const { return Count::class_name(); }

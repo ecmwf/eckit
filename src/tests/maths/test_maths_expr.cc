@@ -194,17 +194,17 @@ void TestExp::test_list()
     ExpPtr l0 =  maths::list( y_ , x_ );
 
     ASSERT( l0->eval()->str() == "List(Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5))" );
-    ASSERT( l0->as<List>()->size() == 2 );
+    ASSERT( l0->arity() == 2 );
 
     ExpPtr l1 = maths::list()->append(a_, b_, x_, y_, x_, y_);
 
     ASSERT( l1->eval()->str() == "List(Scalar(2), Scalar(4), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7))" );
-    ASSERT( l1->as<List>()->size() == 6 );
+    ASSERT( l1->arity() == 6 );
 
     ExpPtr l2 = maths::list( a_, b_, a_, b_, a_ );
 
     ASSERT( l2->eval()->str() == "List(Scalar(2), Scalar(4), Scalar(2), Scalar(4), Scalar(2))" );
-    ASSERT( l2->as<List>()->size() == 5 );
+    ASSERT( l2->arity() == 5 );
 
     ExpPtr c3 = maths::count( maths::list( a_, b_, a_, b_, a_ ) );
 
@@ -308,7 +308,7 @@ void TestExp::test_bind()
         std::cout << f0->str() << std::endl;
         std::cout << f0->eval()->str() << std::endl;
 
-    ASSERT( f0->str() == "Filter(Bind<2>(Greater(?, ?), Scalar(2)), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
+    ASSERT( f0->str() == "Filter(Bind(Scalar(2), Greater(?, ?), Scalar(2)), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
     ASSERT( f0->eval()->str() == "List(Scalar(4), Scalar(4))" );
 }
 

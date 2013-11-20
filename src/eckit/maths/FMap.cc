@@ -16,6 +16,12 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
+static Func::RegisterFactory< FMap > fmap_register;
+
+FMap::FMap(const args_t& args) : Func(args)
+{
+}
+
 FMap::FMap( ExpPtr f,  ExpPtr list ) : Func()
 {
     args_.push_back(f);

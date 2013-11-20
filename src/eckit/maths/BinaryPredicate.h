@@ -30,29 +30,25 @@ namespace maths {
 ///       what means Greater( Vector( 1, 2, 3 ), Vector( 2, 0, 3 ) ) ?= Vector( 0, 1, 0 )
 
 template <class T>
-class BinaryPredicate  {
+class BinaryPredicate : public Func  {
 public:
 
-    static std::string class_name();
-
-    /// The actual function expression
-    struct Op : public Func
-    {
-        Op( const args_t& args );
-
-        virtual std::string type_name() const;
-
-        virtual std::string ret_signature() const;
-    };
-
-    /// Expr generator function
-    ExpPtr operator() ( ExpPtr p0, ExpPtr p1 )
+    /// generator for this expression type
+    static ExpPtr make( ExpPtr p0, ExpPtr p1 )
     {
         args_t args;
         args.push_back( p0 );
         args.push_back( p1 );
-        return ExpPtr( new Op(args) );
+        return ExpPtr( new BinaryPredicate<T>(args) );
     }
+
+    static std::string class_name();
+
+    BinaryPredicate( const args_t& args );
+
+    virtual std::string type_name() const;
+
+    virtual std::string ret_signature() const;
 
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )

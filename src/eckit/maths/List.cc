@@ -38,6 +38,15 @@ List::List( const value_t& v ) : Value(v)
 {
 }
 
+ExpPtr List::clone()
+{
+    ListPtr l = maths::list();
+    for( size_t i = 0; i < args_.size(); ++i )
+    {
+        l->append( args_[i]->clone() );
+    }
+}
+
 ListPtr List::append(ExpPtr e)
 {
     args_.push_back(e);

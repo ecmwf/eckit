@@ -44,10 +44,11 @@ struct Generic
 //--------------------------------------------------------------------------------------------
 
 #define GEN_BINPRED_IMPL( f, c, op )                                                           \
-ExpPtr f( ExpPtr l, ExpPtr r ){ return ExpPtr( BinaryPredicate< c >()(l,r) ); }                \
-ExpPtr f( Expr& l, ExpPtr r ) { return ExpPtr( BinaryPredicate< c >()(l.self(),r) ); }         \
-ExpPtr f( ExpPtr l, Expr& r ) { return ExpPtr( BinaryPredicate< c >()(l,r.self()) ); }         \
-ExpPtr f( Expr& l, Expr& r )  { return ExpPtr( BinaryPredicate< c >()(l.self(),r.self()) ); }  \
+static Func::RegisterFactory<  BinaryPredicate< c > > f ## _register;                          \
+ExpPtr f( ExpPtr l, ExpPtr r ){ return ExpPtr( BinaryPredicate< c >::make(l,r) ); }                \
+ExpPtr f( Expr& l, ExpPtr r ) { return ExpPtr( BinaryPredicate< c >::make(l.self(),r) ); }         \
+ExpPtr f( ExpPtr l, Expr& r ) { return ExpPtr( BinaryPredicate< c >::make(l,r.self()) ); }         \
+ExpPtr f( Expr& l, Expr& r )  { return ExpPtr( BinaryPredicate< c >::make(l.self(),r.self()) ); }  \
                                                                                                \
 ExpPtr operator op ( ValPtr p1, ValPtr p2 ) { return f( p1, p2 ); }                            \
 ExpPtr operator op ( ValPtr p1, ExpPtr p2 ) { return f( p1, p2 ); }                            \
@@ -78,18 +79,18 @@ GEN_BINPRED_IMPL(not_equal,NotEqual,!=)
 //--------------------------------------------------------------------------------------------
 
 template < class T >
-BinaryPredicate<T>::Op::Op(const args_t &args) : Func( args )
+BinaryPredicate<T>::BinaryPredicate(const args_t &args) : Func( args )
 {
 }
 
 template < class T >
-string BinaryPredicate<T>::Op::ret_signature() const
+string BinaryPredicate<T>::ret_signature() const
 {
     return Boolean::sig();
 }
 
 template < class T >
-std::string BinaryPredicate<T>::Op::type_name() const
+std::string BinaryPredicate<T>::type_name() const
 {
     return BinaryPredicate<T>::class_name();
 }

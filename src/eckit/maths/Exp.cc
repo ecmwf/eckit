@@ -99,6 +99,11 @@ ValPtr Undef::evaluate( context_t& ctx )
     return boost::static_pointer_cast<Value>( shared_from_this() );
 }
 
+ExpPtr Undef::clone()
+{
+    return undef();
+}
+
 ExpPtr undef()
 {
     return ExpPtr( new Undef() );

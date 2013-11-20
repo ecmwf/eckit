@@ -27,29 +27,25 @@ namespace maths {
 
 /// Generates a expressions
 template <class T>
-class BinaryFunc  {
+class BinaryFunc : public Func  {
 public:
 
-    static std::string class_name();
-
-    /// The actual function expression
-    struct Op : public Func
-    {
-        Op( const args_t& args );
-
-        virtual std::string type_name() const;
-
-        virtual std::string ret_signature() const;
-    };
-
-    /// Expr generator function
-    ExpPtr operator() ( ExpPtr p0, ExpPtr p1 )
+    /// generator of of this expression type
+    static ExpPtr make( ExpPtr p0, ExpPtr p1 )
     {
         args_t args;
         args.push_back( p0 );
         args.push_back( p1 );
-        return ExpPtr( new Op(args) );
+        return ExpPtr( new BinaryFunc<T>(args) );
     }
+
+    static std::string class_name();
+
+    BinaryFunc( const args_t& args );
+
+    virtual std::string type_name() const;
+
+    virtual std::string ret_signature() const;
 
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )

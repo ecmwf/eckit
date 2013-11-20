@@ -16,6 +16,12 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
+static Func::RegisterFactory< Reduce > filter_register;
+
+Reduce::Reduce(const args_t &args) : Func(args)
+{
+}
+
 Reduce::Reduce( ExpPtr f,  ExpPtr list ) : Func()
 {
     args_.push_back(f);

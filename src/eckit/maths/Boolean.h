@@ -54,6 +54,8 @@ public: // virtual methods
     virtual std::string signature() const { return Boolean::sig(); }
     virtual std::string ret_signature() const { return Boolean::sig(); }
 
+    virtual ExpPtr clone();
+
     virtual void print( std::ostream& o ) const;
 
 protected: // members

@@ -8,55 +8,45 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/FMap.h"
-#include "eckit/maths/List.h"
+/// @file ZipWith.h
+/// @author Tiago Quintino
+/// @date November 2013
+
+#ifndef eckit_maths_ZipWith_h
+#define eckit_maths_ZipWith_h
+
+#include "eckit/maths/Func.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-FMap::FMap( ExpPtr f,  ExpPtr list ) : Func()
-{
-    args_.push_back(f);
-    args_.push_back(list);
-}
+/// Generates a ZipWith combination of vectors
+class ZipWith : public Func {
 
-string FMap::ret_signature() const
-{
-    return List::sig();
-}
+public: // methods
 
-ValPtr FMap::evaluate( context_t& ctx )
-{
-    ExpPtr f = param(0,&ctx);
+    static std::string class_name() { return "ZipWith"; }
 
-    List::value_t& list = List::extract( param(1,&ctx) );
+    ZipWith( ExpPtr f, ExpPtr l0, ExpPtr l1 );
 
-    const size_t nlist = list.size();
+    virtual std::string type_name() const { return ZipWith::class_name(); }
 
-    ListPtr res ( new List() );
+    virtual size_t arity() const { return 3; }
 
-    for( size_t i = 0; i < nlist; ++i )
-    {
-        ExpPtr e = list[i]->evaluate(ctx);
+    virtual std::string ret_signature() const;
 
-        ExpPtr v = f->eval(e);
-
-        res->append( v );
-    }
-
-    return res;
-}
+    virtual ValPtr evaluate( context_t& ctx );
+};
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr fmap( ExpPtr f,  ExpPtr list )
-{
-    return ExpPtr( new FMap(f,list) );
-}
+ExpPtr zipWith( ExpPtr f, ExpPtr l0, ExpPtr l1 );
 
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths
 } // namespace eckit
+
+#endif

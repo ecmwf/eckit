@@ -27,6 +27,8 @@ Value.cc
 Value.h
 Vector.cc
 Vector.h
+ZipWith.cc
+ZipWith.h
 )
 
 

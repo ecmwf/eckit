@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/FMap.h"
+#include "eckit/maths/ZipWith.h"
 #include "eckit/maths/List.h"
 
 namespace eckit {
@@ -16,32 +16,37 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-FMap::FMap( ExpPtr f,  ExpPtr list ) : Func()
+ZipWith::ZipWith( ExpPtr f, ExpPtr list0, ExpPtr list1 ) : Func()
 {
     args_.push_back(f);
-    args_.push_back(list);
+    args_.push_back(list0);
+    args_.push_back(list1);
 }
 
-string FMap::ret_signature() const
+string ZipWith::ret_signature() const
 {
     return List::sig();
 }
 
-ValPtr FMap::evaluate( context_t& ctx )
+ValPtr ZipWith::evaluate( context_t& ctx )
 {
     ExpPtr f = param(0,&ctx);
 
-    List::value_t& list = List::extract( param(1,&ctx) );
+    List::value_t& l0 = List::extract( param(1,&ctx) );
+    List::value_t& l1 = List::extract( param(2,&ctx) );
 
-    const size_t nlist = list.size();
+    ASSERT( l0.size() == l1.size() );
+
+    const size_t nlist = l0.size();
 
     ListPtr res ( new List() );
 
     for( size_t i = 0; i < nlist; ++i )
     {
-        ExpPtr e = list[i]->evaluate(ctx);
+        ExpPtr e0 = l0[i]->evaluate(ctx);
+        ExpPtr e1 = l1[i]->evaluate(ctx);
 
-        ExpPtr v = f->eval(e);
+        ExpPtr v = f->eval( e0, e1 );
 
         res->append( v );
     }
@@ -51,9 +56,9 @@ ValPtr FMap::evaluate( context_t& ctx )
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr fmap( ExpPtr f,  ExpPtr list )
+ExpPtr zipWith( ExpPtr f, ExpPtr l0, ExpPtr l1 )
 {
-    return ExpPtr( new FMap(f,list) );
+    return ExpPtr( new ZipWith(f,l0,l1) );
 }
 
 //--------------------------------------------------------------------------------------------

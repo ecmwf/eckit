@@ -20,6 +20,7 @@
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/UnaryFunc.h"
 #include "eckit/maths/Vector.h"
+#include "eckit/maths/ZipWith.h"
 
 using namespace eckit;
 using namespace eckit::maths;
@@ -53,6 +54,8 @@ public:
     void test_fmap();
     /// Tests reduce expression
     void test_reduce();
+    /// Tests zipwith expression
+    void test_zipwith();
 
     void teardown();
 
@@ -74,6 +77,7 @@ void TestExp::run()
     test_list();
     test_fmap();
     test_reduce();
+    test_zipwith();
 
     teardown();
 }
@@ -236,11 +240,21 @@ void TestExp::test_reduce()
 
     ExpPtr f1 =  reduce( maths::prod(), maths::list( a_, x_, x_ ) );
 
-    std::cout << f1->str() << std::endl;
-    std::cout << f1->eval()->str() << std::endl;
-
     ASSERT( f1->str() == "Reduce(Prod(?, ?), List(Scalar(2), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)))" );
     ASSERT( f1->eval()->str() == "Vector(50, 50, 50, 50, 50, 50, 50, 50, 50, 50)" );
+
+}
+
+void TestExp::test_zipwith()
+{
+    // simple reduce
+
+    ExpPtr f0 =  zipWith( maths::add(), maths::list( a_ , b_, a_, b_ ), maths::list( a_ , b_, a_, b_ ) );
+
+    std::cout << f0->str() << std::endl;
+    std::cout << f0->eval()->str() << std::endl;
+
+    ASSERT( f0->eval()->str() == fmap( maths::prod(scalar(2.)), maths::list( a_ , b_, a_, b_ ) )->eval()->str() );
 
 }
 

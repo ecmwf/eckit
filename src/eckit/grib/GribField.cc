@@ -27,7 +27,8 @@ GribField::GribField(GribFile* file, const Offset& offset, const Length& length,
     headers_(0),
     last_(0),
     accesses_(0),
-    strategy_(0)
+    strategy_(0),
+    purges_(0)
 {
     file_->attach();
 
@@ -45,7 +46,8 @@ GribField::GribField(GribField* headers, double* values, size_t count):
     headers_(headers),
     last_(0),
     accesses_(0),
-    strategy_(0)
+    strategy_(0),
+    purges_(0)
 {
     headers_->attach();
 
@@ -161,12 +163,15 @@ void GribField::write(DataHandle& handle) const {
 
 void GribField::release() const {
     GribField* self = const_cast<GribField*>(this);
-    strategy->release(*self);
+    strategy->purgeable(*self);
 }
 
 void GribField::purge(bool temp)
 {
+    purges_++;
+    cout << "Purge " << purges_ << endl;
     pack();
+
     if(file_ && handle_) {
         delete handle_;
         handle_ = 0;

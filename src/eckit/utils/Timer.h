@@ -31,11 +31,16 @@ public:
 
     /// @param name of the timer, used for output
     /// @param output flag, to dump time on destruction or not
-    Timer( bool output = false );
+    explicit Timer( bool output = false );
 
     /// @param name of the timer, used for output
     /// @param o output stream to use  for output
-    Timer( const std::string& name, std::ostream& o = Log::info() );
+    explicit Timer( const std::string& name, std::ostream& o = Log::info() );
+
+    /// @param name of the timer, used for output
+    /// @param o output stream to use  for output
+    explicit Timer( const char* name, std::ostream& o = Log::info() );
+
 
     ~Timer();
 

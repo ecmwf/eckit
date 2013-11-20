@@ -26,6 +26,12 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+class LogObserver {
+
+};
+
+//-----------------------------------------------------------------------------
+
 /// Singleton holding global streams for logging
 ///
 /// @warning these streams are thread safe. A lock is
@@ -91,12 +97,23 @@ public: // methods
     /// manipulator that will print the last error message as in perror(2)
 	static	ostream& syserr(ostream&);
 
+
+    // For Magics
+    static void registerObserver(LogObserver*);
+    static void unregisterObserver(LogObserver*);
+    static ostream& dev() { return cout; }
+    static void broadcast();
+
 private:
 
 	Log();  ///< Private, non-instanciatable class
 	~Log(); ///< Private, non-instanciatable class
 
 };
+
+
+
+
 
 //-----------------------------------------------------------------------------
 

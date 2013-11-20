@@ -37,7 +37,7 @@ void GribFieldMemoryStrategy::touch(GribField& f)
     }
 }
 
-void GribFieldMemoryStrategy::release(GribField& f)
+void GribFieldMemoryStrategy::purgeable(GribField& f)
 {
     if(f.strategy_) {
         ASSERT(f.strategy_ == this);

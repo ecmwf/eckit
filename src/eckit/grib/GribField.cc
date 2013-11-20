@@ -163,7 +163,7 @@ void GribField::write(DataHandle& handle) const {
 
 void GribField::release() const {
     GribField* self = const_cast<GribField*>(this);
-    strategy->release(*self);
+    strategy->purgeable(*self);
 }
 
 void GribField::purge(bool temp)

@@ -54,6 +54,8 @@ protected: // methods
     
     void reason(const string&);
     Exception();
+
+    virtual void print(ostream&) const;
     
 private: // members
     
@@ -62,7 +64,14 @@ private: // members
     Exception*        next_;
     CodeLocation      location_; ///< where exception was first thrown
     
+
+    friend ostream& operator<<(ostream& s,const Exception& p)
+    {
+        p.print(s);
+        return s;
+    }
 };
+
 
 //-----------------------------------------------------------------------------
 
@@ -137,6 +146,11 @@ public:
 class OutOfRange : public Exception {
 public:
     OutOfRange(unsigned long long, unsigned long long);
+};
+
+class MethodNotYetImplemented : public Exception {
+public:
+    MethodNotYetImplemented(const string& msg);
 };
 
 // File errors

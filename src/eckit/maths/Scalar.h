@@ -34,7 +34,7 @@ public: // methods
     static bool is ( const ExpPtr& e ) { return e->signature() == Scalar::sig(); }
     static scalar_t extract ( const ExpPtr& e )
     {
-        assert( Scalar::is(e) );
+        ASSERT( Scalar::is(e) );
         return e->as<Scalar>()->value();
     }
 
@@ -42,8 +42,6 @@ public: // methods
 
     Scalar( const scalar_t& v );
 
-    /// @returns the size of the data, one since it is a scalar
-    size_t size() const { return 1; }
     /// @returns the value of the scalar
     value_t value() const { return v_; }
     /// @returns a reference to the scalar
@@ -54,6 +52,8 @@ public: // virtual methods
     virtual std::string type_name() const { return Scalar::class_name(); }
     virtual std::string signature() const { return Scalar::sig(); }
     virtual std::string ret_signature() const { return Scalar::sig(); }
+
+    virtual ExpPtr clone();
 
     virtual void print( std::ostream& o ) const;
 

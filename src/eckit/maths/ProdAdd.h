@@ -24,30 +24,28 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Generates a ProdAdd expressions
-class ProdAdd {
+class ProdAdd : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "ProdAdd"; }
-
-    /// Represents a ProdAdd expression
-    struct Op : public Func
-    {
-        Op( const args_t& args ) : Func( args ) {}
-        Op( const ExpPtr& e );
-        virtual std::string type_name() const { return ProdAdd::class_name(); }
-        virtual std::string ret_signature() const;
-    };
-
-    /// Expression generator function
-    ExpPtr operator() ( ExpPtr p0, ExpPtr p1, ExpPtr p2 )
+    /// generator for this expression type
+    static ExpPtr make ( ExpPtr p0, ExpPtr p1, ExpPtr p2 )
     {
         args_t args;
         args.push_back( p0 );
         args.push_back( p1 );
         args.push_back( p2 );
-        return ExpPtr( new Op(args) );
+        return ExpPtr( new ProdAdd(args) );
     }
+
+    static std::string class_name() { return "ProdAdd"; }
+
+    ProdAdd( const args_t& args );
+
+    ProdAdd( const ExpPtr& e );
+
+    virtual std::string type_name() const { return ProdAdd::class_name(); }
+    virtual std::string ret_signature() const;
 
     struct Register
     {
@@ -69,7 +67,7 @@ protected: // methods
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr prod_add( ExpPtr p0, ExpPtr p1, ExpPtr p2 ) { return ExpPtr( ProdAdd()(p0,p1,p2) ); }
+ExpPtr prod_add( ExpPtr p0, ExpPtr p1, ExpPtr p2 ) { return ExpPtr( ProdAdd::make(p0,p1,p2) ); }
 
 //--------------------------------------------------------------------------------------------
 

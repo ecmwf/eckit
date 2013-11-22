@@ -77,6 +77,11 @@ Exception::~Exception() throw()
     first() = next_;
 }
 
+void Exception::print(ostream & out) const
+{
+    out << what_;
+}
+
 void Exception::exceptionStack(ostream& out)
 {
     out << "Exception stack: " << endl;
@@ -271,6 +276,11 @@ CantOpenFile::CantOpenFile(const string& file, bool retry):
     s << StrStream::ends;
     reason(string(s));
     Log::monitor(Log::Unix,errno) << what() << endl;
+}
+
+MethodNotYetImplemented::MethodNotYetImplemented(const string &msg):
+    Exception(string("Method not yet implemented: " + msg))
+{
 }
 
 WriteError::WriteError(const string& file): 

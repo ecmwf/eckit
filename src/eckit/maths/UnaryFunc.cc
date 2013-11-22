@@ -19,8 +19,9 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 #define GEN_UNFUNC_IMPL( f, c, op )                                                         \
-ExpPtr f( ExpPtr e )           { return ExpPtr( c()(e) ); }                                  \
-ExpPtr f( Expression& e )      { return ExpPtr( c()(e.self()) ); }                           \
+static Func::RegisterFactory< c > f ## _register;                                           \
+ExpPtr f( ExpPtr e )           { return ExpPtr( c::make(e) ); }                                  \
+ExpPtr f( Expr& e )            { return ExpPtr( c::make(e.self()) ); }                           \
 ExpPtr operator op ( ValPtr e ){ return f( e ); }                                            \
 ExpPtr operator op ( ExpPtr e ){ return f( e ); }
 
@@ -63,18 +64,18 @@ static UnaryFunc<Neg>::Computer<Vector,Generic> neg_vg;
 //--------------------------------------------------------------------------------------------
 
 template < class T >
-UnaryFunc<T>::Op::Op(const args_t &args) : Func( args )
+UnaryFunc<T>::UnaryFunc(const args_t &args) : Func( args )
 {
 }
 
 template < class T >
-string UnaryFunc<T>::Op::ret_signature() const
+string UnaryFunc<T>::ret_signature() const
 {
     return args_[0]->ret_signature();
 }
 
 template < class T >
-std::string UnaryFunc<T>::Op::type_name() const
+std::string UnaryFunc<T>::type_name() const
 {
     return UnaryFunc<T>::class_name();
 }

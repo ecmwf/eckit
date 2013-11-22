@@ -191,9 +191,10 @@ struct sorter {
 
 
 template<class Point, class Alloc>
+template<typename ITER>
 KDNode<Point,Alloc>* KDNode<Point,Alloc>::build(Alloc& a,
-                                                const typename vector<Point>::iterator& begin,
-                                                const typename vector<Point>::iterator& end, int depth)
+                                                const ITER& begin,
+                                                const ITER& end, int depth)
 {
     if(end == begin)
         return 0;
@@ -207,8 +208,8 @@ KDNode<Point,Alloc>* KDNode<Point,Alloc>::build(Alloc& a,
 
     std::nth_element(begin, begin + median, end, sorter<Point>(axis));
 
-    typename vector<Point>::iterator e2 = begin + median;
-    typename vector<Point>::iterator b2 = begin + median+1;
+    ITER e2 = begin + median;
+    ITER b2 = begin + median+1;
 
     KDNode* n = a.newNode(*e2,axis,(KDNode*)0);
 

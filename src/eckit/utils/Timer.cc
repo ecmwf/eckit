@@ -18,7 +18,7 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 Timer::Timer( bool output ):
-    name_(),
+    name_("unnamed timer"),
     stopped_(true),
     outputAtExit_(output),
     out_( Log::info() )
@@ -34,6 +34,16 @@ Timer::Timer(const string& name, std::ostream& o ):
 {
     this->start();
 }
+
+Timer::Timer(const char* name, std::ostream& o ):
+    name_(name),
+    stopped_(true),
+    outputAtExit_(true),
+    out_(o)
+{
+    this->start();
+}
+
 
 Timer::~Timer()
 {

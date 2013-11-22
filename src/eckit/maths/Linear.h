@@ -30,6 +30,8 @@ public: // methods
 
     static std::string class_name() { return "Linear"; }
 
+    Linear( const args_t& args );
+
     Linear( ExpPtr e );
 
     virtual std::string type_name() const { return Linear::class_name(); }

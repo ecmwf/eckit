@@ -28,28 +28,24 @@ namespace maths {
 /// Generates a expressions
 /// T is the operator type
 template <class T>
-class UnaryFunc  {
+class UnaryFunc : public Func {
 public:
 
-    static std::string class_name();
-
-    /// The actual function expression
-    struct Op : public Func
-    {
-        Op( const args_t& args );
-
-        virtual std::string type_name() const;
-
-        virtual std::string ret_signature() const;
-    };
-
-    /// Expression generator function
-    ExpPtr operator() ( ExpPtr p0 )
+    /// generator for this expression type
+    static ExpPtr make ( ExpPtr p0 )
     {
         args_t args;
         args.push_back( p0 );
-        return ExpPtr( new Op(args) );
+        return ExpPtr( new UnaryFunc<T>(args) );
     }
+
+    static std::string class_name();
+
+    UnaryFunc( const args_t& args );
+
+    virtual std::string type_name() const;
+
+    virtual std::string ret_signature() const;
 
     /// Applies an implementation of the unary operator
     /// U is the left operand type ( Scalar, Vector, ... )
@@ -83,7 +79,7 @@ const char *opname( const Neg& );
 
 #define GEN_UNFUNC_DECL( f, c, op )   \
 ExpPtr f( ExpPtr e = undef() );       \
-ExpPtr f( Expression& e );            \
+ExpPtr f( Expr& e );            \
 ExpPtr operator op ( ValPtr e  );     \
 ExpPtr operator op ( ExpPtr p1 );
 

@@ -19,6 +19,11 @@ Scalar::Scalar( const scalar_t& v ) : v_(v)
 {
 }
 
+ExpPtr Scalar::clone()
+{
+    return maths::scalar( value() );
+}
+
 void Scalar::print(ostream &o) const
 {
     o << class_name() << "(" << v_ << ")";

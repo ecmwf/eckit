@@ -16,6 +16,12 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
+static Func::RegisterFactory< FMap > fmap_register;
+
+FMap::FMap(const args_t& args) : Func(args)
+{
+}
+
 FMap::FMap( ExpPtr f,  ExpPtr list ) : Func()
 {
     args_.push_back(f);
@@ -29,19 +35,20 @@ string FMap::ret_signature() const
 
 ValPtr FMap::evaluate( context_t& ctx )
 {
-    ListPtr res ( new List() );
-
     ExpPtr f = param(0,&ctx);
 
     List::value_t& list = List::extract( param(1,&ctx) );
 
     const size_t nlist = list.size();
+
+    ListPtr res ( new List() );
+
     for( size_t i = 0; i < nlist; ++i )
     {
         ExpPtr e = list[i]->evaluate(ctx);
-        DBGX(*e);
+
         ExpPtr v = f->eval(e);
-        DBGX(*v);
+
         res->append( v );
     }
 

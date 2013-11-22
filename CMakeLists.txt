@@ -41,12 +41,7 @@ option( ECKIT_MATHS  "eckit::maths extension [EXPERIMENTAL]"        OFF )
 option( ECKIT_GRID   "eckit::grid extension [EXPERIMENTAL]"	        OFF )
 option( ECKIT_GRIB   "eckit::grib extension [EXPERIMENTAL]"	        OFF )
 option( ECKIT_MPI    "eckit::mpi  extension [EXPERIMENTAL]"	        OFF )
-option( ECKIT_MINING "eckit::mining  extension [EXPERIMENTAL]"	    OFF )
 option( ECKIT_EIGEN  "Eigen support  [NOT IMPLEMENTED]"		        OFF )
-
-if(ECKIT_MINING)
-    set(ECKIT_EIGEN ON)
-endif()
 
 if( ECKIT_GRIB )
 	ecbuild_use_package( PROJECT grib_api VERSION 1.9.9 )
@@ -75,9 +70,10 @@ if( ECKIT_BOOST )
 	# set(Boost_USE_STATIC_LIBS        ON )
 	# set(Boost_NO_SYSTEM_PATHS        ON )
 
-	find_package( Boost 1.50.0 COMPONENTS filesystem program_options date_time thread system unit_test_framework test_exec_monitor )
+	#find_package( Boost 1.45.0 COMPONENTS filesystem program_options date_time thread system unit_test_framework test_exec_monitor )
+	find_package( Boost 1.45.0 )
 
-	list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
+	#list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
 endif()
 
 # stack inspection
@@ -124,6 +120,7 @@ if( ECKIT_GRID )
 endif()
 
 if( ECKIT_GRIB AND GRIB_API_FOUND )
+	list( APPEND ECKIT_LIBRARIES eckit_grib )
 	list( APPEND ECKIT_TPLS grib_api )
 endif()
 

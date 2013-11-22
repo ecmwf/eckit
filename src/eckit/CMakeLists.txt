@@ -21,12 +21,19 @@ container/BTree.cc
 container/Cache.h
 container/Recycler.h
 container/ClassExtent.h
+container/KDMemory.h
+container/KDPoint.h
+container/KDMapped.cc
+container/KDMapped.h
 container/KDTree.h
 container/KDTree.cc
 container/BSPTree.h
 container/BSPTree.cc
 container/MappedArray.h
-container/MappedArray.cc )
+container/MappedArray.cc 
+container/SimpleMappedArray.cc
+container/SimpleMappedArray.h
+)
 
 list( APPEND eckit_io_srcs
 io/Length.h
@@ -443,6 +450,7 @@ list( APPEND eckit_templates
 					types/Types.cc
 					types/FixedString.cc
 					utils/RLE.cc
+                                        container/SimpleMappedArray.cc
 )
 
 list( APPEND eckit_persistent

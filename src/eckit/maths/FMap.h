@@ -29,6 +29,8 @@ public: // methods
 
     static std::string class_name() { return "FMap"; }
 
+    FMap( const args_t& args );
+
     FMap( ExpPtr f, ExpPtr l );
 
     virtual std::string type_name() const { return FMap::class_name(); }

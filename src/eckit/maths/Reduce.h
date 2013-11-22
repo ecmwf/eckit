@@ -29,7 +29,9 @@ public: // methods
 
     static std::string class_name() { return "Reduce"; }
 
-    Reduce( ExpPtr f, ExpPtr l );
+    Reduce( const args_t& args );
+
+    Reduce( ExpPtr f = undef(), ExpPtr l = undef() );
 
     virtual std::string type_name() const { return Reduce::class_name(); }
 
@@ -38,7 +40,6 @@ public: // methods
     virtual std::string ret_signature() const;
 
     virtual ValPtr evaluate( context_t& ctx );
-
 };
 
 //--------------------------------------------------------------------------------------------

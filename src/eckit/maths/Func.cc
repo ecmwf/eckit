@@ -20,11 +20,11 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Func::Func() : Expression()
+Func::Func() : Expr()
 {
 }
 
-Func::Func(const args_t &args) : Expression(args)
+Func::Func(const args_t &args) : Expr(args)
 {
 }
 
@@ -32,10 +32,21 @@ Func::~Func()
 {
 }
 
-Func::dispatcher_t &Func::dispatcher()
+Func::dispatcher_t& Func::dispatcher()
 {
     static dispatcher_t d;
     return d;
+}
+
+Func::factory_t& Func::factory()
+{
+    static factory_t f;
+    return f;
+}
+
+string Func::signature() const
+{
+    return signature_args( args_ );
 }
 
 ValPtr Func::evaluate( context_t& ctx )
@@ -82,6 +93,26 @@ ExpPtr Func::optimise()
     return Optimiser::apply( shared_from_this() );
 }
 
+ExpPtr Func::clone()
+{
+    key_t k = type_name();
+    factory_t& f = factory();
+    factory_t::iterator itr = f.find( k );
+    if( itr == f.end() )
+    {
+        ostringstream msg;
+        msg << "could not find factory function for type: " << k;
+        throw Error( Here(), msg.str() );
+    }
+
+    // clone the arguments
+    args_t args;
+    for( size_t i = 0; i < args_.size(); ++i )
+        args.push_back( args_[i]->clone() );
+
+    return ((*itr).second)( args );
+}
+
 void Func::print(ostream &o) const
 {
     o << type_name() << "(";
@@ -91,6 +122,19 @@ void Func::print(ostream &o) const
         o << *args_[i]; // no context applied
     }
     o << ")";
+}
+
+string Func::signature_args(const args_t &args) const
+{
+    std::ostringstream o;
+    o << type_name() << "(";
+    for( size_t i = 0; i < args.size(); ++i )
+    {
+        if(i) o << ",";
+        o << args[i]->signature();
+    }
+    o << ")";
+    return o.str();
 }
 
 //--------------------------------------------------------------------------------------------

@@ -27,29 +27,25 @@ namespace maths {
 
 /// Generates a expressions
 template <class T>
-class BinaryFunc  {
+class BinaryFunc : public Func  {
 public:
 
-    static std::string class_name();
-
-    /// The actual function expression
-    struct Op : public Func
-    {
-        Op( const args_t& args );
-        virtual std::string type_name() const;
-
-        virtual std::string ret_signature() const;
-
-    };
-
-    /// Expression generator function
-    ExpPtr operator() ( ExpPtr p0, ExpPtr p1 )
+    /// generator of of this expression type
+    static ExpPtr make( ExpPtr p0, ExpPtr p1 )
     {
         args_t args;
         args.push_back( p0 );
         args.push_back( p1 );
-        return ExpPtr( new Op(args) );
+        return ExpPtr( new BinaryFunc<T>(args) );
     }
+
+    static std::string class_name();
+
+    BinaryFunc( const args_t& args );
+
+    virtual std::string type_name() const;
+
+    virtual std::string ret_signature() const;
 
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
@@ -75,15 +71,17 @@ public:
 
 //--------------------------------------------------------------------------------------------
 
-typedef multiplies<scalar_t>  Prod;
-typedef divides<scalar_t>     Div;
-typedef plus<scalar_t>        Add;
-typedef minus<scalar_t>       Sub;
+typedef std::multiplies<scalar_t>  Prod;
+typedef std::divides<scalar_t>     Div;
+typedef std::plus<scalar_t>        Add;
+typedef std::minus<scalar_t>       Sub;
+typedef std::modulus<scalar_t>     Mod;
 
 const char *opname(const Prod&);
 const char *opname(const Div&);
 const char *opname(const Add&);
 const char *opname(const Sub&);
+const char *opname(const Mod&);
 
 //--------------------------------------------------------------------------------------------
 
@@ -91,9 +89,9 @@ const char *opname(const Sub&);
 
 #define GEN_BINFUNC_DECL( f, c, op )        \
 ExpPtr f( ExpPtr l = undef(), ExpPtr r = undef() ); \
-ExpPtr f( Expression& l, ExpPtr r );        \
-ExpPtr f( ExpPtr l, Expression& r );        \
-ExpPtr f( Expression& l, Expression& r );   \
+ExpPtr f( Expr& l, ExpPtr r );        \
+ExpPtr f( ExpPtr l, Expr& r );        \
+ExpPtr f( Expr& l, Expr& r );   \
 ExpPtr operator op ( ValPtr p1, ValPtr p2 );  \
 ExpPtr operator op ( ValPtr p1, ExpPtr p2 );  \
 ExpPtr operator op ( ExpPtr p1, ValPtr p2 );  \
@@ -103,6 +101,7 @@ GEN_BINFUNC_DECL(prod,BinaryFunc<Prod>,*)
 GEN_BINFUNC_DECL(div,BinaryFunc<Div>,/)
 GEN_BINFUNC_DECL(add,BinaryFunc<Add>,+)
 GEN_BINFUNC_DECL(sub,BinaryFunc<Sub>,-)
+GEN_BINFUNC_DECL(mod,BinaryFunc<Mod>,%)
 
 #undef GEN_BINFUNC_DECL
 

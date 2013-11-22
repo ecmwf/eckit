@@ -19,28 +19,23 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 #define GEN_BINFUNC_IMPL( f, c, op )                                                         \
-ExpPtr f( ExpPtr l, ExpPtr r )           { return ExpPtr( c()(l,r) ); }                      \
-ExpPtr f( Expression& l, ExpPtr r )      { return ExpPtr( c()(l.self(),r) ); }               \
-ExpPtr f( ExpPtr l, Expression& r )      { return ExpPtr( c()(l,r.self()) ); }               \
-ExpPtr f( Expression& l, Expression& r ) { return ExpPtr( c()(l.self(),r.self()) ); }        \
+static Func::RegisterFactory< BinaryFunc< c > > f ## _register;                                                  \
+const char *opname(const c &)  { return #c; }                                            \
+ExpPtr f( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryFunc< c >::make(l,r) ); }                      \
+ExpPtr f( Expr& l, ExpPtr r )  { return ExpPtr( BinaryFunc< c >::make(l.self(),r) ); }                     \
+ExpPtr f( ExpPtr l, Expr& r )  { return ExpPtr( BinaryFunc< c >::make(l,r.self()) ); }                     \
+ExpPtr f( Expr& l, Expr& r )   { return ExpPtr( BinaryFunc< c >::make(l.self(),r.self()) ); }                    \
 ExpPtr operator op ( ValPtr p1, ValPtr p2 ) { return f( p1, p2 ); }                          \
 ExpPtr operator op ( ValPtr p1, ExpPtr p2 ) { return f( p1, p2 ); }                          \
 ExpPtr operator op ( ExpPtr p1, ValPtr p2 ) { return f( p1, p2 ); }                          \
 ExpPtr operator op ( ExpPtr p1, ExpPtr p2 ) { return f( p1, p2 ); }
 
-GEN_BINFUNC_IMPL(prod,BinaryFunc<Prod>,*)
-GEN_BINFUNC_IMPL(div,BinaryFunc<Div>,/)
-GEN_BINFUNC_IMPL(add,BinaryFunc<Add>,+)
-GEN_BINFUNC_IMPL(sub,BinaryFunc<Sub>,-)
+GEN_BINFUNC_IMPL(prod,Prod,*)
+GEN_BINFUNC_IMPL(div,Div,/)
+GEN_BINFUNC_IMPL(add,Add,+)
+GEN_BINFUNC_IMPL(sub,Sub,-)
 
 #undef GEN_BINFUNC_IMPL
-
-//--------------------------------------------------------------------------------------------
-
-const char *opname(const Prod&)  { return "Prod";  }
-const char *opname(const Div&)   { return "Div";}
-const char *opname(const Add&)   { return "Add";  }
-const char *opname(const Sub&)   { return "Sub"; }
 
 //--------------------------------------------------------------------------------------------
 
@@ -110,12 +105,12 @@ static BinaryFunc<Sub>::Computer<Vector,Vector,Generic> sub_vvg;
 //--------------------------------------------------------------------------------------------
 
 template < class T >
-BinaryFunc<T>::Op::Op(const args_t &args) : Func( args )
+BinaryFunc<T>::BinaryFunc(const args_t &args) : Func( args )
 {
 }
 
 template < class T >
-string BinaryFunc<T>::Op::ret_signature() const
+string BinaryFunc<T>::ret_signature() const
 {
     for( args_t::const_iterator i = args_.begin(); i != args_.end(); ++i )
     {
@@ -126,7 +121,7 @@ string BinaryFunc<T>::Op::ret_signature() const
 }
 
 template < class T >
-std::string BinaryFunc<T>::Op::type_name() const
+std::string BinaryFunc<T>::type_name() const
 {
     return BinaryFunc<T>::class_name();
 }

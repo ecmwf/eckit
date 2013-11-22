@@ -70,9 +70,10 @@ if( ECKIT_BOOST )
 	# set(Boost_USE_STATIC_LIBS        ON )
 	# set(Boost_NO_SYSTEM_PATHS        ON )
 
-	find_package( Boost 1.50.0 COMPONENTS filesystem program_options date_time thread system unit_test_framework test_exec_monitor )
+	#find_package( Boost 1.45.0 COMPONENTS filesystem program_options date_time thread system unit_test_framework test_exec_monitor )
+	find_package( Boost 1.45.0 )
 
-	list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
+	#list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
 endif()
 
 # stack inspection

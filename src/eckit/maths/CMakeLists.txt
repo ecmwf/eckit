@@ -17,6 +17,8 @@ Count.cc
 Count.h
 FMap.cc
 FMap.h
+IfElse.cc
+IfElse.h
 Filter.cc
 Filter.h
 Reduce.cc

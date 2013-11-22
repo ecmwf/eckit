@@ -9,7 +9,7 @@
  */
 
 #include "eckit/maths/IfElse.h"
-#include "eckit/maths/Scalar.h"
+#include "eckit/maths/Boolean.h"
 
 namespace eckit {
 namespace maths {
@@ -24,8 +24,6 @@ IfElse::IfElse(const args_t& args) : Func(args)
 
 IfElse::IfElse( ExpPtr f,  ExpPtr i, ExpPtr e ) : Func()
 {
-    ASSERT( Scalar::is( f ) );
-
     args_.push_back(f);
     args_.push_back(i);
     args_.push_back(e);
@@ -52,7 +50,7 @@ ValPtr IfElse::evaluate( context_t& ctx )
     ExpPtr i = param(1, &ctx);
     ExpPtr e = param(2, &ctx);
 
-    scalar_t b = Scalar::extract( v );
+    bool b = Boolean::extract( v );
 
     if(b) {
         return i->eval();

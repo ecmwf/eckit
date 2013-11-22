@@ -19,6 +19,8 @@ FMap.cc
 FMap.h
 IfElse.cc
 IfElse.h
+Function.cc
+Function.h
 Filter.cc
 Filter.h
 Reduce.cc

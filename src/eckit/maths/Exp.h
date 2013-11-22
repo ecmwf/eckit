@@ -127,6 +127,7 @@ public: // methods
     ValPtr eval();
     ValPtr eval( ExpPtr );
     ValPtr eval( ExpPtr, ExpPtr );
+    ValPtr eval( const args_t& );
 
     size_t arity() const { return args_.size(); }
 

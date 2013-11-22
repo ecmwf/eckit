@@ -53,6 +53,15 @@ ValPtr Expr::eval(  ExpPtr a, ExpPtr b )
     return res;
 }
 
+ValPtr Expr::eval( const args_t& args) {
+    context_t ctx;
+    std::copy(args.begin(), args.end(), std::back_inserter(ctx));
+    ValPtr res = optimise()->evaluate(ctx);
+    ASSERT( ctx.empty() );
+    return res;
+}
+
+
 ExpPtr Expr::param( const size_t& i, context_t* ctx ) const
 {
     ASSERT( i < args_.size() );

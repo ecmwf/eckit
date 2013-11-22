@@ -184,6 +184,40 @@ ExpPtr undef();
 
 //--------------------------------------------------------------------------------------------
 
+class Param : public Expr {
+
+    size_t n_;
+
+public: //  methods
+
+    static std::string class_name() { return "Param"; }
+    static std::string sig() { return "_"; }
+    static bool is ( const ExpPtr& e ) { return e->signature() == Param::sig(); }
+
+    Param(size_t);
+
+    virtual ~Param();
+
+    size_t n() const { return n_; }
+
+    virtual ExpPtr optimise() { return shared_from_this(); }
+
+    virtual ValPtr evaluate( context_t& ctx );
+
+    virtual ExpPtr clone();
+
+    virtual std::string type_name() const { return Param::class_name(); }
+    virtual std::string signature() const { return Param::sig(); }
+    virtual std::string ret_signature() const { return Param::sig(); }
+
+    virtual void print( std::ostream& o ) const;
+
+};
+
+ExpPtr parameter(size_t n);
+
+//--------------------------------------------------------------------------------------------
+
 } // namespace maths
 } // namespace eckit
 

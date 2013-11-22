@@ -25,6 +25,7 @@
 #include "eckit/maths/ZipWith.h"
 #include "eckit/maths/Bind.h"
 #include "eckit/maths/IfElse.h"
+#include "eckit/maths/Function.h"
 
 using namespace eckit;
 using namespace eckit::maths;
@@ -55,7 +56,7 @@ public:
 
 void YCombinator::run()
 {
-    ExpPtr a = maths::scalar( 0. );
+    ExpPtr a = maths::scalar( 2. );
     ExpPtr b = maths::scalar( 4. );
     ExpPtr c = maths::scalar( 7. );
     ExpPtr z = maths::scalar( 0. );
@@ -81,7 +82,9 @@ void YCombinator::run()
     );
 #endif
 
-     ExpPtr e = maths::ifelse(a, b, c);
+     ExpPtr e = maths::function(
+                 maths::parameter(1),maths::parameter(2),
+                 ifelse(maths::greater(maths::parameter(1), maths::parameter(2)), b, c));
 
      cout << e->str() << endl;
 

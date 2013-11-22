@@ -49,14 +49,23 @@ ValPtr Function::evaluate( context_t& ctx )
 {
     ASSERT(arity());
 
+    cout << "Function ... " << arity() << endl;
+
     ExpPtr body = param(arity()-1, &ctx);
 
-    args_t args;
+    cout << "Function body " << body->str() << endl;
+
+    args_t params;
     for(size_t i = 0; i < arity()-1; ++i) {
-        args.push_back(param(i, &ctx));
+        ExpPtr a = param(i);
+        ASSERT(Param::is(a));
+        ASSERT(a->as<Param>()->n() == i+1);
+        params.push_back(a);
     }
 
-    return body->eval(args);
+     cout << "Function ---.. " << params.size() << endl;
+
+    return body->eval(params);
 
 
 }

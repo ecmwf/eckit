@@ -84,6 +84,12 @@ void YCombinator::run()
     );
 #endif
 
+
+    ExpPtr g = maths::greater(a, z);
+    cout << g->str() << endl;
+
+    cout << g->eval(a, z)->str() << endl;
+
      ExpPtr e = maths::function(
                  maths::paramdef("1"), maths::paramdef("2"),
                  ifelse(maths::greater(maths::parameter("1"), maths::parameter("2")), b, c));

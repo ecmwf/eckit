@@ -8,60 +8,48 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Exp.h
-/// @author Baudouin Raoult
+/// @file Call.h
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Context_h
-#define eckit_maths_Context_h
+#ifndef eckit_maths_Call_h
+#define eckit_maths_Call_h
 
-#include "eckit/maths/Expr.h"
-
-//--------------------------------------------------------------------------------------------
+#include "eckit/maths/Func.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
+/// Generates a Call combination of vectors
+class Call : public Func {
 
-class Context : private boost::noncopyable {
-public:
+public: // methods
 
-    Context(Context* = 0);
-    Context(ExpPtr, Context* = 0);
-    Context(ExpPtr, ExpPtr, Context* = 0);
+    static std::string class_name() { return "Call"; }
 
-    ~Context();
+    Call( const args_t& args );
 
+    Call( ExpPtr f );
+    Call( ExpPtr f, ExpPtr a );
+    Call( ExpPtr f, ExpPtr a, ExpPtr b );
 
-    ExpPtr nextArg();
-    void pushArg(ExpPtr);
+    virtual std::string type_name() const { return Call::class_name(); }
 
-    ExpPtr param(const string&) const;
-    void param(const string&, ExpPtr);
+    //virtual size_t arity() const { return 2; }
 
-private:
+    virtual std::string ret_signature() const;
 
-    Context* parent_;
-
-    std::map< string, ExpPtr > params_;
-    std::deque< ExpPtr > args_;
-
-    void print( std::ostream& ) const;
-
-
-    friend std::ostream& operator<<( std::ostream& os, const Context& v)
-    {
-        v.print(os);
-        return os;
-    }
+    virtual ValPtr evaluate( Context& ctx );
 
 };
 
 //--------------------------------------------------------------------------------------------
 
+ExpPtr call( ExpPtr f);
+ExpPtr call( ExpPtr f, ExpPtr a);
+ExpPtr call( ExpPtr f, ExpPtr a, ExpPtr b);
 
 //--------------------------------------------------------------------------------------------
 

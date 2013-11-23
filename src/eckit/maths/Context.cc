@@ -52,6 +52,11 @@ ExpPtr Context::nextArg()
     return e;
 }
 
+void Context::pushArg(ExpPtr e)
+{
+   args_.push_back(e);
+}
+
 ExpPtr Context::param(const string& name) const
 {
     map<string, ExpPtr>::const_iterator j = params_.find(name);

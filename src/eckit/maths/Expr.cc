@@ -40,9 +40,18 @@ ValPtr Expr::eval()
     return optimise()->evaluate(ctx);
 }
 
-
-ValPtr Expr::eval(Context& ctx, bool)
+ValPtr Expr::eval( Context& ctx, bool)
 {
+    return optimise()->evaluate(ctx);
+}
+
+
+ValPtr Expr::eval(Context& scope, const args_t& args)
+{
+    Context ctx(&scope);
+    for(args_t::const_iterator j = args.begin(); j != args.end(); ++j) {
+        ctx.pushArg(*j);
+    }
     return optimise()->evaluate(ctx);
 }
 

@@ -33,11 +33,11 @@ string FMap::ret_signature() const
     return List::sig();
 }
 
-ValPtr FMap::evaluate( context_t& ctx )
+ValPtr FMap::evaluate( Context &ctx )
 {
-    ExpPtr f = param(0,&ctx);
+    ExpPtr f = param(0, ctx);
 
-    List::value_t& list = List::extract( param(1,&ctx) );
+    List::value_t& list = List::extract( param(1, ctx) );
 
     const size_t nlist = list.size();
 
@@ -45,7 +45,7 @@ ValPtr FMap::evaluate( context_t& ctx )
 
     for( size_t i = 0; i < nlist; ++i )
     {
-        ExpPtr e = list[i]->evaluate(ctx);
+        ExpPtr e = list[i]->eval(ctx);
 
         ExpPtr v = f->eval(e);
 

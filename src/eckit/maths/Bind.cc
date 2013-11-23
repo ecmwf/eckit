@@ -51,24 +51,24 @@ string Bind::ret_signature() const
     return args_[0]->ret_signature();
 }
 
-ValPtr Bind::evaluate( context_t& ctx )
+ValPtr Bind::evaluate( Context &ctx )
 {    
     DBGX(*this);
 
-    ExpPtr ix = param(0,&ctx);
+    ExpPtr ix = param(0,ctx);
 
     DBGX(*ix);
 
     const size_t i = static_cast<size_t>( Scalar::extract(ix) );
 
-    ExpPtr f = param(1,&ctx);
+    ExpPtr f = param(1,ctx);
 
     DBGX(*f);
 
     ASSERT( i > 0 );
     ASSERT( i <= f->arity() );
 
-    ExpPtr e = param(2,&ctx);
+    ExpPtr e = param(2,ctx);
 
     DBGX(*e);
 
@@ -80,7 +80,7 @@ ValPtr Bind::evaluate( context_t& ctx )
 
     DBGX(*fx);
 
-    return fx->evaluate(ctx);
+    return fx->eval(ctx);
 }
 
 //--------------------------------------------------------------------------------------------

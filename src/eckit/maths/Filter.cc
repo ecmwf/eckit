@@ -34,19 +34,19 @@ string Filter::ret_signature() const
     return List::sig();
 }
 
-ValPtr Filter::evaluate( context_t& ctx )
+ValPtr Filter::evaluate( Context &ctx )
 {
     ListPtr res ( new List() );
 
-    ExpPtr f = param(0,&ctx);
+    ExpPtr f = param(0, ctx);
     DBGX(*f);
 
-    List::value_t& list = List::extract( param(1,&ctx) );
+    List::value_t& list = List::extract( param(1, ctx) );
 
     const size_t nlist = list.size();
     for( size_t i = 0; i < nlist; ++i )
     {
-        ExpPtr e = list[i]->evaluate(ctx);
+        ExpPtr e = list[i]->eval(ctx);
         DBGX(*e);
 
         ExpPtr b = f->eval(e);

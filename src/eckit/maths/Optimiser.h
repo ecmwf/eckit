@@ -16,7 +16,7 @@
 #ifndef eckit_maths_Optimiser_h
 #define eckit_maths_Optimiser_h
 
-#include "eckit/maths/Exp.h"
+#include "eckit/maths/Expr.h"
 
 namespace eckit {
 namespace maths {

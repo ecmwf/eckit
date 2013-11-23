@@ -14,7 +14,7 @@
 #include "eckit/maths/BinaryFunc.h"
 #include "eckit/maths/BinaryPredicate.h"
 #include "eckit/maths/Count.h"
-#include "eckit/maths/Exp.h"
+#include "eckit/maths/Expr.h"
 #include "eckit/maths/FMap.h"
 #include "eckit/maths/Filter.h"
 #include "eckit/maths/Reduce.h"

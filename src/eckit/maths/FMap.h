@@ -35,11 +35,11 @@ public: // methods
 
     virtual std::string type_name() const { return FMap::class_name(); }
 
-    virtual size_t arity() const { return 2; }
+    //virtual size_t arity() const { return 2; }
 
     virtual std::string ret_signature() const;
 
-    virtual ValPtr evaluate( context_t& ctx );
+    virtual ValPtr evaluate( Context& ctx );
 
 };
 

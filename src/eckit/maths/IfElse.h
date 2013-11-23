@@ -35,11 +35,9 @@ public: // methods
 
     virtual std::string type_name() const { return IfElse::class_name(); }
 
-    virtual size_t arity() const { return 3; }
-
     virtual std::string ret_signature() const;
 
-    virtual ValPtr evaluate( context_t& ctx );
+    virtual ValPtr evaluate( Context& ctx );
 
 };
 

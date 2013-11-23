@@ -10,6 +10,8 @@
 
 #include "eckit/maths/IfElse.h"
 #include "eckit/maths/Boolean.h"
+#include "eckit/maths/Context.h"
+
 
 namespace eckit {
 namespace maths {
@@ -20,6 +22,7 @@ namespace maths {
 
 IfElse::IfElse(const args_t& args) : Func(args)
 {
+    ASSERT(arity() == 3);
 }
 
 IfElse::IfElse( ExpPtr f,  ExpPtr i, ExpPtr e ) : Func()
@@ -27,6 +30,8 @@ IfElse::IfElse( ExpPtr f,  ExpPtr i, ExpPtr e ) : Func()
     args_.push_back(f);
     args_.push_back(i);
     args_.push_back(e);
+
+    ASSERT(arity() == 3);
 }
 
 string IfElse::ret_signature() const
@@ -42,21 +47,23 @@ string IfElse::ret_signature() const
     }
 }
 
-ValPtr IfElse::evaluate( context_t& ctx )
+ValPtr IfElse::evaluate( Context &ctx )
 {
-    ExpPtr f = param(0, &ctx);
-    ExpPtr v = f->eval();
+    std::cout << "evalute " << *this << " with " << ctx << endl;
 
-    ExpPtr i = param(1, &ctx);
-    ExpPtr e = param(2, &ctx);
+    ExpPtr f = param(0, ctx); cout << "0: " << *f << endl;
+    ExpPtr i = param(1, ctx);cout << "1: " << *i << endl;
+    ExpPtr e = param(2, ctx);cout << "2: " << *e << endl;
+
+    ExpPtr v = f->eval(ctx);
 
     bool b = Boolean::extract( v );
 
     if(b) {
-        return i->eval();
+        return i->eval(ctx);
     }
     else {
-        return e->eval();
+        return e->eval(ctx);
     }
 
 

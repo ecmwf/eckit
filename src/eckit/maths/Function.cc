@@ -10,6 +10,9 @@
 
 #include "eckit/maths/Function.h"
 #include "eckit/maths/Boolean.h"
+#include "eckit/maths/Context.h"
+#include "eckit/maths/ParamDef.h"
+
 
 namespace eckit {
 namespace maths {
@@ -27,65 +30,70 @@ Function::Function( ExpPtr body ) : Func()
     args_.push_back(body);
 }
 
-Function::Function( ExpPtr arg, ExpPtr body ) : Func()
+Function::Function( ExpPtr a, ExpPtr b, ExpPtr body ) : Func()
 {
-    args_.push_back(arg);
+    args_.push_back(a);
+    args_.push_back(b);
     args_.push_back(body);
 }
 
-Function::Function( ExpPtr arg1, ExpPtr arg2, ExpPtr body ) : Func()
+Function::Function( ExpPtr a, ExpPtr body ) : Func()
 {
-    args_.push_back(arg1);
-    args_.push_back(arg2);
+    args_.push_back(a);
     args_.push_back(body);
 }
+
+
 
 string Function::ret_signature() const
 {
-    return "?";
+    return "()";
 }
 
-ValPtr Function::evaluate( context_t& ctx )
+ValPtr Function::evaluate( Context &ctx )
 {
+    std::cout << "evalute " << *this << " with " << ctx << endl;
+
+
     ASSERT(arity());
+    size_t last = arity()-1;
+    ExpPtr body = param(last, ctx);
 
-    cout << "Function ... " << arity() << endl;
+    Context scope(&ctx);
 
-    ExpPtr body = param(arity()-1, &ctx);
+    for(size_t i = 0; i < last; ++i) {
 
-    cout << "Function body " << body->str() << endl;
-
-    args_t params;
-    for(size_t i = 0; i < arity()-1; ++i) {
         ExpPtr a = param(i);
-        ASSERT(Param::is(a));
-        ASSERT(a->as<Param>()->n() == i+1);
-        params.push_back(a);
+        ASSERT(ParamDef::is(a));
+        const string& name = a->as<ParamDef>()->name();
+
+        ExpPtr b = param(i, ctx);
+        scope.param(name, b);
     }
 
-     cout << "Function ---.. " << params.size() << endl;
+   std::cout << "scope is " << scope << endl;
 
-    return body->eval(params);
-
-
+    return body->eval(scope);
 }
 
 //--------------------------------------------------------------------------------------------
+
+ExpPtr function( ExpPtr a, ExpPtr b, ExpPtr body )
+{
+    return ExpPtr( new Function(a, b, body) );
+}
+
+ExpPtr function( ExpPtr a, ExpPtr body )
+{
+    return ExpPtr( new Function(a, body) );
+}
+
 
 ExpPtr function( ExpPtr body )
 {
     return ExpPtr( new Function(body) );
 }
 
-ExpPtr function( ExpPtr arg,  ExpPtr body )
-{
-    return ExpPtr( new Function(arg, body) );
-}
-
-ExpPtr function( ExpPtr arg1,  ExpPtr arg2, ExpPtr body )
-{
-    return ExpPtr( new Function(arg1, arg2, body) );
-}
 
 //--------------------------------------------------------------------------------------------
 

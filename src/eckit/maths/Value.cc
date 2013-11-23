@@ -32,7 +32,7 @@ ExpPtr Value::optimise()
     return shared_from_this();
 }
 
-ValPtr Value::evaluate( context_t& ctx )
+ValPtr Value::evaluate( Context &ctx )
 {
     return boost::static_pointer_cast<Value>( shared_from_this() );
 }

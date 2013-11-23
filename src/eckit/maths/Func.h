@@ -16,7 +16,7 @@
 #ifndef eckit_maths_Func_h
 #define eckit_maths_Func_h
 
-#include "eckit/maths/Exp.h"
+#include "eckit/maths/Expr.h"
 
 namespace eckit {
 namespace maths {
@@ -56,7 +56,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual ValPtr evaluate( context_t& ctx );
+    virtual ValPtr evaluate( Context& ctx );
 
     virtual ExpPtr optimise();
 

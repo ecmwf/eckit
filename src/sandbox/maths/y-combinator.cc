@@ -14,7 +14,7 @@
 #include "eckit/maths/BinaryFunc.h"
 #include "eckit/maths/BinaryPredicate.h"
 #include "eckit/maths/Count.h"
-#include "eckit/maths/Exp.h"
+#include "eckit/maths/Expr.h"
 #include "eckit/maths/FMap.h"
 #include "eckit/maths/Filter.h"
 #include "eckit/maths/Reduce.h"
@@ -26,6 +26,8 @@
 #include "eckit/maths/Bind.h"
 #include "eckit/maths/IfElse.h"
 #include "eckit/maths/Function.h"
+#include "eckit/maths/Param.h"
+#include "eckit/maths/ParamDef.h"
 
 using namespace eckit;
 using namespace eckit::maths;
@@ -83,12 +85,12 @@ void YCombinator::run()
 #endif
 
      ExpPtr e = maths::function(
-                 maths::parameter(1),maths::parameter(2),
-                 ifelse(maths::greater(maths::parameter(1), maths::parameter(2)), b, c));
+                 maths::paramdef("1"), maths::paramdef("2"),
+                 ifelse(maths::greater(maths::parameter("1"), maths::parameter("2")), b, c));
 
      cout << e->str() << endl;
 
-     cout << e->eval()->str() << endl;
+     cout << e->eval(a, z)->str() << endl;
 }
 
 //-----------------------------------------------------------------------------

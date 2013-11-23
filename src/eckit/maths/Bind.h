@@ -41,7 +41,7 @@ public: // methods
 
     virtual std::string ret_signature() const;
 
-    virtual ValPtr evaluate( context_t& ctx );
+    virtual ValPtr evaluate( Context& ctx );
 
 };
 

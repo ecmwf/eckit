@@ -32,12 +32,12 @@ string ZipWith::ret_signature() const
     return List::sig();
 }
 
-ValPtr ZipWith::evaluate( context_t& ctx )
+ValPtr ZipWith::evaluate( Context &ctx )
 {
-    ExpPtr f = param(0,&ctx);
+    ExpPtr f = param(0, ctx);
 
-    List::value_t& l0 = List::extract( param(1,&ctx) );
-    List::value_t& l1 = List::extract( param(2,&ctx) );
+    List::value_t& l0 = List::extract( param(1, ctx) );
+    List::value_t& l1 = List::extract( param(2, ctx) );
 
     ASSERT( l0.size() == l1.size() );
 
@@ -47,8 +47,8 @@ ValPtr ZipWith::evaluate( context_t& ctx )
 
     for( size_t i = 0; i < nlist; ++i )
     {
-        ExpPtr e0 = l0[i]->evaluate(ctx);
-        ExpPtr e1 = l1[i]->evaluate(ctx);
+        ExpPtr e0 = l0[i]->eval(ctx);
+        ExpPtr e1 = l1[i]->eval(ctx);
 
         ExpPtr v = f->eval( e0, e1 );
 

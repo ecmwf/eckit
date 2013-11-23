@@ -32,22 +32,22 @@ public: // methods
     Function( const args_t& args );
 
     Function( ExpPtr body);
-    Function( ExpPtr arg, ExpPtr body);
-    Function( ExpPtr arg1, ExpPtr arg2, ExpPtr body);
+    Function( ExpPtr a, ExpPtr body);
+    Function( ExpPtr a, ExpPtr b, ExpPtr body);
 
     virtual std::string type_name() const { return Function::class_name(); }
 
     virtual std::string ret_signature() const;
 
-    virtual ValPtr evaluate( context_t& ctx );
+    virtual ValPtr evaluate( Context& ctx );
 
 };
 
 //--------------------------------------------------------------------------------------------
 
 ExpPtr function( ExpPtr body);
-ExpPtr function( ExpPtr arg, ExpPtr body);
-ExpPtr function( ExpPtr arg1, ExpPtr arg2, ExpPtr body);
+ExpPtr function( ExpPtr a, ExpPtr body);
+ExpPtr function( ExpPtr a, ExpPtr b, ExpPtr body);
 
 
 //--------------------------------------------------------------------------------------------

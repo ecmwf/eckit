@@ -32,9 +32,9 @@ string Count::ret_signature() const
     return Scalar::sig();
 }
 
-ValPtr Count::evaluate( context_t& ctx )
+ValPtr Count::evaluate( Context &ctx )
 {
-    return maths::scalar( param(0,&ctx)->arity() )->as<Value>();
+    return maths::scalar( param(0, ctx)->arity() )->as<Value>();
 }
 
 ExpPtr Count::optimise()

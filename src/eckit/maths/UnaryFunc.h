@@ -19,6 +19,8 @@
 #include <functional>
 
 #include "eckit/maths/Func.h"
+#include "eckit/maths/Undef.h"
+
 
 namespace eckit {
 namespace maths {

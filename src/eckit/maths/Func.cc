@@ -49,7 +49,7 @@ string Func::signature() const
     return signature_args( args_ );
 }
 
-ValPtr Func::evaluate( context_t& ctx )
+ValPtr Func::evaluate( Context &ctx )
 {
     DBG;
 
@@ -58,7 +58,7 @@ ValPtr Func::evaluate( context_t& ctx )
     const size_t nargs = args.size();
     for( size_t i = 0; i < nargs; ++i )
     {
-        args[i] = param(i,&ctx)->evaluate(ctx)->self();
+        args[i] = param(i, ctx)->eval(ctx)->self();
     }
 
     std::string sig = signature_args( args );
@@ -130,7 +130,7 @@ string Func::signature_args(const args_t &args) const
     o << type_name() << "(";
     for( size_t i = 0; i < args.size(); ++i )
     {
-        if(i) o << ",";
+        if(i) o << ", ";
         o << args[i]->signature();
     }
     o << ")";

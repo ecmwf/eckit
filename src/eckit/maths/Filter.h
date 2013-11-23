@@ -16,6 +16,7 @@
 #define eckit_maths_Filter_h
 
 #include "eckit/maths/Func.h"
+#include "eckit/maths/Undef.h"
 
 namespace eckit {
 namespace maths {
@@ -39,7 +40,7 @@ public: // methods
 
     virtual std::string ret_signature() const;
 
-    virtual ValPtr evaluate( context_t& ctx );
+    virtual ValPtr evaluate( Context& ctx );
 };
 
 //--------------------------------------------------------------------------------------------

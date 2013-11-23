@@ -9,8 +9,8 @@ UnaryFunc.cc
 UnaryFunc.h
 Bind.cc
 Bind.h
-Exp.cc
-Exp.h
+Expr.cc
+Expr.h
 Func.cc
 Func.h
 Count.cc
@@ -41,6 +41,14 @@ Vector.cc
 Vector.h
 ZipWith.cc
 ZipWith.h
+Context.cc
+Context.h
+Param.cc
+Param.h
+ParamDef.cc
+ParamDef.h
+Undef.cc
+Undef.h
 )
 
 

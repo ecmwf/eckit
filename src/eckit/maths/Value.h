@@ -18,7 +18,7 @@
 
 #include "eckit/eckit.h"
 
-#include "eckit/maths/Exp.h"
+#include "eckit/maths/Expr.h"
 
 namespace eckit {
 namespace maths {
@@ -42,7 +42,7 @@ public: // methods
 
     virtual ExpPtr optimise();
 
-    virtual ValPtr evaluate( context_t& );
+    virtual ValPtr evaluate( Context& );
 
 };
 

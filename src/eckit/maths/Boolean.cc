@@ -9,6 +9,7 @@
  */
 
 #include "eckit/maths/Boolean.h"
+#include "eckit/maths/Context.h"
 
 namespace eckit {
 namespace maths {
@@ -32,8 +33,7 @@ void Boolean::print(ostream &o) const
 Boolean::Boolean(const ExpPtr& e) : v_(0)
 {
    ASSERT( e->ret_signature() == Boolean::sig() );
-   context_t ctx;
-   v_ = Boolean::extract( e->evaluate(ctx) );
+   v_ = Boolean::extract( e->eval() );
 }
 
 //--------------------------------------------------------------------------------------------

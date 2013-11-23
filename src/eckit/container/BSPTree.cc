@@ -11,6 +11,9 @@
 #ifndef BSPtree_CC
 #define BSPTree_CC
 
+#include <random>
+#include <eckit/eckit.h>
+
 #include <stdio.h>
 #include <limits>
 #include <random>

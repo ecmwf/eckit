@@ -9,6 +9,8 @@ UnaryFunc.cc
 UnaryFunc.h
 Call.cc
 Call.h
+Math.cc
+Math.h
 Bind.cc
 Bind.h
 Expr.cc

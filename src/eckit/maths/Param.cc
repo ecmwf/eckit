@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include "eckit/maths/Param.h"
+#include "eckit/maths/Context.h"
 
 namespace eckit {
 namespace maths {
@@ -41,7 +42,8 @@ ExpPtr parameter(const string& name)
 
 ValPtr Param::evaluate( Context &ctx )
 {
-    NOTIMP;
+    ExpPtr e = ctx.param(name_);
+    return e->eval();
     //return boost::static_pointer_cast<Value>( shared_from_this() );
 }
 

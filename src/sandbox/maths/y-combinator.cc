@@ -11,24 +11,26 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 
-#include "eckit/maths/BinaryFunc.h"
-#include "eckit/maths/BinaryPredicate.h"
-#include "eckit/maths/Count.h"
-#include "eckit/maths/Expr.h"
-#include "eckit/maths/FMap.h"
-#include "eckit/maths/Filter.h"
-#include "eckit/maths/Reduce.h"
-#include "eckit/maths/List.h"
-#include "eckit/maths/Scalar.h"
-#include "eckit/maths/UnaryFunc.h"
-#include "eckit/maths/Vector.h"
-#include "eckit/maths/ZipWith.h"
-#include "eckit/maths/Bind.h"
+//#include "eckit/maths/BinaryFunc.h"
+//#include "eckit/maths/BinaryPredicate.h"
+//#include "eckit/maths/Count.h"
+//#include "eckit/maths/Expr.h"
+//#include "eckit/maths/FMap.h"
+//#include "eckit/maths/Filter.h"
+//#include "eckit/maths/Reduce.h"
+//#include "eckit/maths/List.h"
+//#include "eckit/maths/Scalar.h"
+//#include "eckit/maths/UnaryFunc.h"
+//#include "eckit/maths/Vector.h"
+//#include "eckit/maths/ZipWith.h"
+//#include "eckit/maths/Bind.h"
 #include "eckit/maths/IfElse.h"
 #include "eckit/maths/Function.h"
-#include "eckit/maths/Param.h"
+//#include "eckit/maths/Param.h"
 #include "eckit/maths/ParamDef.h"
 #include "eckit/maths/Call.h"
+
+#include "eckit/maths/Math.h"
 
 using namespace eckit;
 using namespace eckit::maths;
@@ -59,75 +61,49 @@ public:
 
 void YCombinator::run()
 {
-    ExpPtr a = maths::scalar( 2. );
-    ExpPtr b = maths::scalar( 4. );
-    ExpPtr c = maths::scalar( 7. );
-    ExpPtr z = maths::scalar( 0. );
+    Math a( 2. );
+    Math b( 4. );
+    Math c( 7. );
+    Math z( 0. );
 
 
+    Math g = a > z;
+    cout << g << endl;
 
+    cout << g() << endl;
 
-    ExpPtr g = maths::greater(a, z);
-    cout << g->str() << endl;
+    Math e = maths::function(
+                maths::paramdef("1"), maths::paramdef("2"),
+                ifelse(Math("1") > Math("2"), b, c));
 
-    cout << g->eval()->str() << endl;
+    cout << e << endl;
+    cout << e(a, z) << endl;
 
-     ExpPtr e = maths::function(
-                 maths::paramdef("1"), maths::paramdef("2"),
-                 ifelse(maths::greater(maths::parameter("1"), maths::parameter("2")), b, c));
-
-     cout << e->str() << endl;
-     cout << e->eval(a, z)->str() << endl;
-
-#if 0
-    // Here's the function that we want to recurse.
-    X = function (recurse, n) {
-      if (0 == n)
-        return 1;
-      else
-        return n * recurse(recurse, n - 1);
-    };
-
-    // This will get X to recurse.
-    Y = function (builder, n) {
-      return builder(builder, n);
-    };
-
-    // Here it is in action.
-    Y(
-      X,
-      5
-    );
-#endif
-
-{
-    ExpPtr s = maths::sub(maths::parameter("a"), maths::parameter("b"));
-    ExpPtr f = maths::function(maths::paramdef("a"), maths::paramdef("b"), s);
-    ExpPtr c = maths::call(f, maths::scalar(1), maths::scalar(3));
-            cout << *c << endl;
-            cout << c->eval()->str() << endl;
-            }
-
-#if 1
-{
-            ExpPtr s = maths::sub(maths::parameter("n"), maths::scalar(1));
-            ExpPtr r = maths::call(maths::parameter("recurse"), maths::parameter("recurse"), s);
-            ExpPtr e = maths::equal(maths::parameter("n"), maths::scalar(0));
-            ExpPtr i = maths::ifelse(e, maths::scalar(1.0),  maths::prod(maths::parameter("n"),r));
-
-             ExpPtr X = maths::function(maths::paramdef("recurse"), maths::paramdef("n"), i);
-
-    ExpPtr Y = maths::function(maths::paramdef("builder"), maths::paramdef("x"),
-                               maths::call(maths::parameter("builder"),  maths::parameter("builder"), maths::parameter("x")
-                                           ));
-    cout << *X << endl;
-    cout << *Y << endl;
-    cout << Y->eval(X, maths::scalar(5))->str() << endl;
+    {
+        Math s = Math("a") - Math("b");
+        Math f = maths::function(maths::paramdef("a"), maths::paramdef("b"), s);
+        Math c = maths::call(f, Math(1.0), Math(3.0));
+        cout << c << endl;
+        cout << c() << endl;
     }
 
-#endif
+    {
+        Math s = Math("n") - Math(1.0);
+        Math r = maths::call(Math("recurse"), Math("recurse"), s);
+        Math e = Math("n") == Math(0.0);
+        Math i = maths::ifelse(e, Math(1.0),  r * Math("n"));
 
-    //cout << X->eval( maths::scalar(1),  maths::scalar(1) )->str() << endl;
+        Math X = maths::function(maths::paramdef("recurse"), maths::paramdef("n"), i);
+
+        Math Y = maths::function(maths::paramdef("builder"), maths::paramdef("x"),
+                                 maths::call(Math("builder"),  Math("builder"), Math("x")
+                                             ));
+        cout << X << endl;
+        cout << Y << endl;
+        cout << Y(X, Math(5.0)) << endl;
+    }
+
+
 }
 
 //-----------------------------------------------------------------------------

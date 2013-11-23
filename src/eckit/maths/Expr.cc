@@ -93,14 +93,14 @@ ExpPtr Expr::param( size_t i, Context& ctx ) const
     {
         return ctx.nextArg();
     }
-
+/*
     if(Param::is(args_[i]) ) {
 
         const string& name = args_[i]->as<Param>()->name();
         cout << "    param '" << name << "' " << *(ctx.param(name)) << endl;
 
         return ctx.param(name);
-    }
+    }*/
 
     return args_[i];
 }

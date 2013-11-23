@@ -35,8 +35,9 @@ public:
      Math(const string&);
      Math(const char*);
 
-     Math(const Math&);
-     Math& operator=(const Math&);
+     // Default copy OK
+     //Math(const Math&);
+     //Math& operator=(const Math&);
 
      // eval
      Math operator()() const;

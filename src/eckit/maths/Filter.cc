@@ -34,7 +34,7 @@ string Filter::ret_signature() const
     return List::sig();
 }
 
-ValPtr Filter::evaluate( Context &ctx )
+ValPtr Filter::evaluate( Scope &ctx )
 {
     ListPtr res ( new List() );
 

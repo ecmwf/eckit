@@ -33,7 +33,7 @@ string Reduce::ret_signature() const
     return Undef::sig(); /// @todo review this -- it could be the signature iterated over the list
 }
 
-ValPtr Reduce::evaluate( Context &ctx )
+ValPtr Reduce::evaluate( Scope &ctx )
 {
     ExpPtr f = param(0, ctx);
 

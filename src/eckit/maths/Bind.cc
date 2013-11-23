@@ -51,7 +51,7 @@ string Bind::ret_signature() const
     return args_[0]->ret_signature();
 }
 
-ValPtr Bind::evaluate( Context &ctx )
+ValPtr Bind::evaluate( Scope &ctx )
 {    
     DBGX(*this);
 

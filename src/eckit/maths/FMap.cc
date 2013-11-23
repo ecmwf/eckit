@@ -33,7 +33,7 @@ string FMap::ret_signature() const
     return List::sig();
 }
 
-ValPtr FMap::evaluate( Context &ctx )
+ValPtr FMap::evaluate( Scope &ctx )
 {
     ExpPtr f = param(0, ctx);
 

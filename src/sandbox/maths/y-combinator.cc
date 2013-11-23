@@ -25,7 +25,7 @@
 //#include "eckit/maths/ZipWith.h"
 //#include "eckit/maths/Bind.h"
 #include "eckit/maths/IfElse.h"
-#include "eckit/maths/Function.h"
+#include "eckit/maths/Lambda.h"
 //#include "eckit/maths/Param.h"
 #include "eckit/maths/ParamDef.h"
 #include "eckit/maths/Call.h"
@@ -61,6 +61,7 @@ public:
 
 void YCombinator::run()
 {
+    /*
     Math a( 2. );
     Math b( 4. );
     Math c( 7. );
@@ -86,21 +87,23 @@ void YCombinator::run()
         cout << c << endl;
         cout << c() << endl;
     }
-
+*/
     {
         Math s = Math("n") - Math(1.0);
         Math r = maths::call(Math("recurse"), Math("recurse"), s);
         Math e = Math("n") == Math(0.0);
         Math i = maths::ifelse(e, Math(1.0),  r * Math("n"));
 
-        Math X = maths::function(maths::paramdef("recurse"), maths::paramdef("n"), i);
+        Math X = maths::lambda("recurse", "n", i);
 
-        Math Y = maths::function(maths::paramdef("builder"), maths::paramdef("x"),
+        Math Y = maths::lambda("builder", "x",
                                  maths::call(Math("builder"),  Math("builder"), Math("x")
                                              ));
         cout << X << endl;
         cout << Y << endl;
-        cout << Y(X, Math(5.0)) << endl;
+
+        Y = maths::call(Y);
+        cout << Y(X, Math(0.0)) << endl;
     }
 
 

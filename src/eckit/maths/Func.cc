@@ -49,7 +49,7 @@ string Func::signature() const
     return signature_args( args_ );
 }
 
-ValPtr Func::evaluate( Context &ctx )
+ValPtr Func::evaluate( Scope &ctx )
 {
     DBG;
 

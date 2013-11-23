@@ -12,7 +12,7 @@
 
 #include "eckit/maths/Math.h"
 #include "eckit/maths/Value.h"
-#include "eckit/maths/Context.h"
+#include "eckit/maths/Scope.h"
 #include "eckit/maths/Undef.h"
 #include "eckit/maths/Param.h"
 #include "eckit/maths/ParamDef.h"
@@ -30,9 +30,8 @@
 #include "eckit/maths/ZipWith.h"
 #include "eckit/maths/Bind.h"
 #include "eckit/maths/IfElse.h"
-#include "eckit/maths/Function.h"
+#include "eckit/maths/Lambda.h"
 #include "eckit/maths/Param.h"
-#include "eckit/maths/ParamDef.h"
 #include "eckit/maths/Call.h"
 
 #include "eckit/maths/Math.h"

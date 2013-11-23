@@ -12,7 +12,7 @@
 
 #include "eckit/maths/Expr.h"
 #include "eckit/maths/Value.h"
-#include "eckit/maths/Context.h"
+#include "eckit/maths/Scope.h"
 #include "eckit/maths/Undef.h"
 #include "eckit/maths/Param.h"
 #include "eckit/maths/ParamDef.h"
@@ -36,37 +36,41 @@ Expr::~Expr()
 
 ValPtr Expr::eval()
 {
-    Context ctx;
-    return optimise()->evaluate(ctx);
+    Scope ctx("Expr::eval()");
+    return /*optimise()->*/evaluate(ctx);
 }
 
-ValPtr Expr::eval( Context& ctx, bool)
+ValPtr Expr::eval( Scope& ctx, bool)
 {
-    return optimise()->evaluate(ctx);
+    return /*optimise()->*/evaluate(ctx);
 }
 
 
-ValPtr Expr::eval(Context& scope, const args_t& args)
+ValPtr Expr::eval(Scope& scope, const args_t& args)
 {
-    Context ctx(&scope);
+    Scope ctx("Expr::eval(Scope& scope, const args_t& args)", &scope);
     for(args_t::const_iterator j = args.begin(); j != args.end(); ++j) {
         ctx.pushArg(*j);
     }
-    return optimise()->evaluate(ctx);
+    return /*optimise()->*/evaluate(ctx);
 }
 
+ExpPtr Expr::resolve(Scope & ctx)
+{
+    return self();
+}
 
 ValPtr Expr::eval( ExpPtr e )
 {
-    Context ctx(e);
-    ValPtr res = optimise()->evaluate(ctx);
+    Scope ctx("Expr::eval( ExpPtr e )", e);
+    ValPtr res = /*optimise()->*/evaluate(ctx);
     return res;
 }
 
 ValPtr Expr::eval(  ExpPtr a, ExpPtr b )
 {
-    Context ctx(a, b);
-    ValPtr res = optimise()->evaluate(ctx);
+    Scope ctx("Expr::eval(  ExpPtr a, ExpPtr b )", a, b);
+    ValPtr res = /*optimise()->*/evaluate(ctx);
     return res;
 }
 
@@ -77,32 +81,16 @@ ExpPtr Expr::param( size_t i) const
     return args_[i];
 }
 
-ExpPtr Expr::param( size_t i, Context& ctx ) const
+ExpPtr Expr::param( size_t i, Scope& ctx ) const
 {
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );
 
     cout << "   PARAM " << i << " -> " << (*args_[i]) << endl;
+    ExpPtr r = args_[i]->resolve(ctx);
+    cout << "          " << *r << endl;
 
-    if(Undef::is(args_[i]) )
-    {
-        return ctx.nextArg();
-    }
-
-    if(ParamDef::is(args_[i]) )
-    {
-        return ctx.nextArg();
-    }
-/*
-    if(Param::is(args_[i]) ) {
-
-        const string& name = args_[i]->as<Param>()->name();
-        cout << "    param '" << name << "' " << *(ctx.param(name)) << endl;
-
-        return ctx.param(name);
-    }*/
-
-    return args_[i];
+    return r;
 }
 
 void Expr::param(size_t i, ExpPtr p)

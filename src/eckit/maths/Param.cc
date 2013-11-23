@@ -11,7 +11,7 @@
 #include <sstream>
 
 #include "eckit/maths/Param.h"
-#include "eckit/maths/Context.h"
+#include "eckit/maths/Scope.h"
 
 namespace eckit {
 namespace maths {
@@ -40,14 +40,16 @@ ExpPtr parameter(const string& name)
     return ExpPtr( new Param(name) );
 }
 
-ValPtr Param::evaluate( Context &ctx )
+ValPtr Param::evaluate( Scope &ctx )
 {
     ExpPtr e = ctx.param(name_);
     return e->eval();
-    //return boost::static_pointer_cast<Value>( shared_from_this() );
 }
 
-
+ExpPtr Param::resolve( Scope &ctx )
+{
+   return ctx.nextArg();
+}
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths

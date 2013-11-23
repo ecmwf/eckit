@@ -9,7 +9,9 @@
  */
 
 #include "eckit/maths/Call.h"
-#include "eckit/maths/List.h"
+#include "eckit/maths/Lambda.h"
+#include "eckit/maths/Scope.h"
+
 
 namespace eckit {
 namespace maths {
@@ -43,21 +45,24 @@ Call::Call( ExpPtr f,  ExpPtr a, ExpPtr b ) : Func()
 
 string Call::ret_signature() const
 {
-    return List::sig();
+    return ";";
 }
 
-ValPtr Call::evaluate( Context &ctx )
+ValPtr Call::evaluate( Scope &ctx )
 {
     ExpPtr f = param(0, ctx);
 
     args_t args;
 
+    Scope scope("Call::evaluate", &ctx);
+
     for( size_t i = 1; i < arity(); ++i )
     {
-        args.push_back(param(i, ctx));
+        scope.pushArg(param(i, ctx));
     }
 
-    return f->eval(ctx, args);
+    //ASSERT(Function::is(f));
+    return f->as<Lambda>()->call(scope);
 }
 
 //--------------------------------------------------------------------------------------------

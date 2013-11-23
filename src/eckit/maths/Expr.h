@@ -75,7 +75,7 @@ namespace maths {
 class Value;
 class List;
 class Expr;
-class Context;
+class Scope;
 
 typedef double scalar_t;
 
@@ -133,17 +133,20 @@ public: // methods
     ValPtr eval( ExpPtr );
     ValPtr eval( ExpPtr, ExpPtr );
     ValPtr eval( const args_t& );
-    ValPtr eval( Context&, bool );
-    ValPtr eval( Context&, const args_t& );
+    ValPtr eval( Scope&, bool );
+    ValPtr eval( Scope&, const args_t& );
 
     size_t arity() const { return args_.size(); }
 
     ExpPtr param( size_t i) const;
-    ExpPtr param( size_t i, Context& ctx ) const;
+    ExpPtr param( size_t i, Scope& ctx ) const;
 
     void param(size_t i, ExpPtr p );
 
     std::string str() const;
+
+    // Used to bind undef() and lambda parameters
+    virtual ExpPtr resolve(Scope &);
 
 public: // virtual methods
 
@@ -153,8 +156,7 @@ public: // virtual methods
     virtual std::string ret_signature() const = 0;
 
     virtual ExpPtr optimise() = 0;
-    virtual ValPtr evaluate( Context& ) = 0;
-
+    virtual ValPtr evaluate( Scope& ) = 0;
 
 protected: // members
 

@@ -10,7 +10,7 @@
 
 #include <sstream>
 
-#include "eckit/maths/Context.h"
+#include "eckit/maths/Scope.h"
 
 
 namespace eckit {
@@ -18,47 +18,64 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Context::Context(Context* parent): parent_(parent)
+Scope::Scope(const char* name, Scope* parent): parent_(parent), name_(name)
 {
+    if(parent) {
+        args_ = parent->args_;
+        params_ = parent->params_;
+    }
 }
 
-Context::Context(ExpPtr a, Context* parent): parent_(parent)
-{
+Scope::Scope(const char* name, ExpPtr a, Scope* parent): parent_(parent), name_(name)
+{if(parent) {
+        args_ = parent->args_;
+        params_ = parent->params_;
+    }
     args_.push_back(a);
 }
 
-Context::Context(ExpPtr a, ExpPtr b, Context* parent): parent_(parent)
+Scope::Scope(const char* name, ExpPtr a, ExpPtr b, Scope* parent): parent_(parent), name_(name)
 {
+    if(parent) {
+        args_ = parent->args_;
+        params_ = parent->params_;
+    }
+
     args_.push_back(a);
     args_.push_back(b);
 }
 
-Context::~Context() {
-    // Check that all the arguments have been consumed
+Scope::~Scope() {
 
-    if(args_.size()) {
-        cout << "Context::~Context() leftovers: " << *this << endl;
+    if(!Exception::throwing()) {
+        // Check that all the arguments have been consumed
+
+        if(args_.size()) {
+            cout << "Context::~Context() leftovers: " << *this << endl;
+        }
+
+       // ASSERT(!args_.size());
     }
-
-    ASSERT(!args_.size());
 }
 
-
-ExpPtr Context::nextArg()
+ExpPtr Scope::nextArg()
 {
+
+    cout << "NextArg " << *this << endl;
     ASSERT(args_.size());
     ExpPtr e = args_.front();
     args_.pop_front();
     return e;
 }
 
-void Context::pushArg(ExpPtr e)
+void Scope::pushArg(ExpPtr e)
 {
-   args_.push_back(e);
+    args_.push_back(e);
 }
 
-ExpPtr Context::param(const string& name) const
+ExpPtr Scope::param(const string& name) const
 {
+    cout << "Scope::param " << name << " " << *this << endl;
     map<string, ExpPtr>::const_iterator j = params_.find(name);
     if(j == params_.end()) {
         if(parent_) {
@@ -70,15 +87,16 @@ ExpPtr Context::param(const string& name) const
     return (*j).second;
 }
 
-void Context::param(const string& name, ExpPtr e)
+void Scope::param(const string& name, ExpPtr e)
 {
     ASSERT(params_.find(name) == params_.end());
     params_[name] = e;
 }
 
-void Context::print( std::ostream& out) const
+void Scope::print( std::ostream& out) const
 {
-    out << "Context[parent=";
+    out << "Context[name=" << name_;
+    out << ",parent=";
     if(parent_) {
         out << *parent_;
     }

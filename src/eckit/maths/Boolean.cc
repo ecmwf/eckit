@@ -33,7 +33,8 @@ void Boolean::print(ostream &o) const
 Boolean::Boolean(const ExpPtr& e) : v_(0)
 {
    ASSERT( e->ret_signature() == Boolean::sig() );
-   v_ = Boolean::extract( e->eval() );
+   Context dummy;
+   v_ = Boolean::extract( e->evaluate(dummy) );
 }
 
 //--------------------------------------------------------------------------------------------

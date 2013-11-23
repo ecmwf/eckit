@@ -58,7 +58,7 @@ ValPtr Func::evaluate( Context &ctx )
     const size_t nargs = args.size();
     for( size_t i = 0; i < nargs; ++i )
     {
-        args[i] = param(i, ctx)->eval(ctx)->self();
+        args[i] = param(i, ctx)->evaluate(ctx)->self();
     }
 
     std::string sig = signature_args( args );
@@ -118,7 +118,7 @@ void Func::print(ostream &o) const
     o << type_name() << "(";
     for( size_t i = 0; i < arity(); ++i )
     {
-        if(i) o << ",";
+        if(i) o << ", ";
         o << *args_[i]; // no context applied
     }
     o << ")";

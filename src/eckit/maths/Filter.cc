@@ -46,7 +46,7 @@ ValPtr Filter::evaluate( Context &ctx )
     const size_t nlist = list.size();
     for( size_t i = 0; i < nlist; ++i )
     {
-        ExpPtr e = list[i]->eval(ctx);
+        ExpPtr e = list[i]->evaluate(ctx);
         DBGX(*e);
 
         ExpPtr b = f->eval(e);

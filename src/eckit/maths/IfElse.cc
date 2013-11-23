@@ -55,15 +55,15 @@ ValPtr IfElse::evaluate( Context &ctx )
     ExpPtr i = param(1, ctx);cout << "1: " << *i << endl;
     ExpPtr e = param(2, ctx);cout << "2: " << *e << endl;
 
-    ExpPtr v = f->eval(ctx);
+    ExpPtr v = f->evaluate(ctx);
 
     bool b = Boolean::extract( v );
 
     if(b) {
-        return i->eval(ctx);
+        return i->eval(ctx, true);
     }
     else {
-        return e->eval(ctx);
+        return e->eval(ctx, true);
     }
 
 

@@ -41,7 +41,7 @@ ValPtr Expr::eval()
 }
 
 
-ValPtr Expr::eval(Context& ctx)
+ValPtr Expr::eval(Context& ctx, bool)
 {
     return optimise()->evaluate(ctx);
 }

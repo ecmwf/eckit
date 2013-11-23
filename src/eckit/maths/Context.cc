@@ -35,13 +35,12 @@ Context::Context(ExpPtr a, ExpPtr b, Context* parent): parent_(parent)
 
 Context::~Context() {
     // Check that all the arguments have been consumed
-    ASSERT(!args_.size());
+
     if(args_.size()) {
-        cout << "Context::~Context() leftovers:" << endl;
-        for(int i = 0; i < args_.size(); i++ ) {
-            cout << args_[i]->str() << endl;
-        }
+        cout << "Context::~Context() leftovers: " << *this << endl;
     }
+
+    ASSERT(!args_.size());
 }
 
 

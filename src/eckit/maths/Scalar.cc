@@ -9,7 +9,7 @@
  */
 
 #include "eckit/maths/Scalar.h"
-#include "eckit/maths/Scalar.h"
+#include "eckit/maths/Context.h"
 
 namespace eckit {
 namespace maths {
@@ -33,7 +33,8 @@ void Scalar::print(ostream &o) const
 Scalar::Scalar(const ExpPtr& e) : v_(0)
 {
    ASSERT( e->ret_signature() == Scalar::sig() );
-   v_ = Scalar::extract( e->eval() );
+   Context dummy;
+   v_ = Scalar::extract( e->evaluate(dummy) );
 }
 
 //--------------------------------------------------------------------------------------------

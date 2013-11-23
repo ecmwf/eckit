@@ -45,7 +45,7 @@ ValPtr FMap::evaluate( Context &ctx )
 
     for( size_t i = 0; i < nlist; ++i )
     {
-        ExpPtr e = list[i]->eval(ctx);
+        ExpPtr e = list[i]->evaluate(ctx);
 
         ExpPtr v = f->eval(e);
 

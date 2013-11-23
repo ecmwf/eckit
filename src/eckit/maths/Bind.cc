@@ -80,7 +80,7 @@ ValPtr Bind::evaluate( Context &ctx )
 
     DBGX(*fx);
 
-    return fx->eval(ctx);
+    return fx->evaluate(ctx);
 }
 
 //--------------------------------------------------------------------------------------------

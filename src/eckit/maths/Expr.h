@@ -133,7 +133,7 @@ public: // methods
     ValPtr eval( ExpPtr );
     ValPtr eval( ExpPtr, ExpPtr );
     ValPtr eval( const args_t& );
-    ValPtr eval( Context& );
+    ValPtr eval( Context&, bool );
 
     size_t arity() const { return args_.size(); }
 
@@ -152,6 +152,7 @@ public: // virtual methods
     virtual std::string ret_signature() const = 0;
 
     virtual ExpPtr optimise() = 0;
+    virtual ValPtr evaluate( Context& ) = 0;
 
 
 protected: // members
@@ -163,7 +164,6 @@ protected: // members
 private:
 
     virtual void print( std::ostream& ) const = 0;
-    virtual ValPtr evaluate( Context& ) = 0;
 
     // For unit tests....
     friend class eckit_test::TestExp;

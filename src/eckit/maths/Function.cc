@@ -73,7 +73,7 @@ ValPtr Function::evaluate( Context &ctx )
 
    std::cout << "scope is " << scope << endl;
 
-    return body->eval(scope);
+    return body->eval(scope, true);
 }
 
 //--------------------------------------------------------------------------------------------

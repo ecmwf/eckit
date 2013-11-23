@@ -47,8 +47,8 @@ ValPtr ZipWith::evaluate( Context &ctx )
 
     for( size_t i = 0; i < nlist; ++i )
     {
-        ExpPtr e0 = l0[i]->eval(ctx);
-        ExpPtr e1 = l1[i]->eval(ctx);
+        ExpPtr e0 = l0[i]->evaluate(ctx);
+        ExpPtr e1 = l1[i]->evaluate(ctx);
 
         ExpPtr v = f->eval( e0, e1 );
 

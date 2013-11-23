@@ -44,15 +44,15 @@ ValPtr Reduce::evaluate( Context &ctx )
     if(!nlist) // empty list
         return ValPtr( new List() );
 
-    ExpPtr e = list[0]->eval(ctx);
+    ExpPtr e = list[0]->evaluate(ctx);
 
     for( size_t i = 1; i < nlist; ++i )
     {
         DBGX(*e);
-        e = f->eval( e, list[i]->eval(ctx) );
+        e = f->eval( e, list[i]->evaluate(ctx) );
     }
 
-    return e->eval(ctx);
+    return e->evaluate(ctx);
 }
 
 //--------------------------------------------------------------------------------------------

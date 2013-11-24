@@ -48,6 +48,7 @@ Scope::~Scope() {
 
 ExpPtr Scope::nextArg()
 {
+
     if(args_.size() == 0) {
         if(parent_) {
             return parent_->nextArg();

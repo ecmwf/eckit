@@ -62,7 +62,6 @@ void YCombinator::run()
               );
 
 
-
     Math fact = lambda("recurse",
                        call(lambda("n",
                                    ifelse(
@@ -90,6 +89,22 @@ void YCombinator::run()
     cout << "-----------------------" << endl;
     cout << factorial(5.0) << endl;
 
+    if(false) {
+     // Not yet working....
+
+    Math fib = lambda("recurse",
+                      call(lambda("n",
+                                  ifelse(
+                                      Math("n") > Math(1.0),
+                                      Math(call(Math("recurse"), Math("n") - Math(1.0))) +
+                                      Math(call(Math("recurse"), Math("n") - Math(2.0))),
+                                  Math("n")
+                          ))));
+
+    Math fibonnaci = call(Y, fib);
+
+    cout << fibonnaci(2.0) << endl;
+    }
 
 }
 

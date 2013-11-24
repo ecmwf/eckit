@@ -35,7 +35,9 @@ public: // methods
     static std::string className() { return "Vector"; }
 
     static std::string sig() { return "v"; }
-    static bool is ( const ExpPtr& e ) { return e->signature() == Vector::sig(); }
+
+    static bool is ( const ExpPtr& e );
+
     static value_t& extract ( const ExpPtr& e )
     {
         ASSERT( Vector::is(e) );

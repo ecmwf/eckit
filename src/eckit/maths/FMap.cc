@@ -58,7 +58,7 @@ ValPtr FMap::evaluate( Scope &ctx )
 
 void FMap::asCode(ostream &o) const
 {
-    o << "maths::fmap(" << printArgs(o) << ")";
+    o << "maths::fmap("; printArgs(o); o << ")";
 }
 
 

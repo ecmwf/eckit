@@ -62,7 +62,7 @@ ValPtr Filter::evaluate( Scope &ctx )
 
 void Filter::asCode(ostream &o) const
 {
-    o << "maths::filter(" << printArgs(o) << ")";
+    o << "maths::filter("; printArgs(o); o <<")";
 }
 
 

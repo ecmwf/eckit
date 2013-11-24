@@ -160,7 +160,7 @@ public: // virtual methods
 
 protected: // members
 
-    ostream &printArgs(std::ostream& ) const;
+    void printArgs(std::ostream& ) const;
     virtual void asCode( std::ostream& ) const = 0;
 
 

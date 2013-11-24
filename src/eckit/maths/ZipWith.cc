@@ -61,7 +61,7 @@ ValPtr ZipWith::evaluate( Scope &ctx )
 
 void ZipWith::asCode(ostream &o) const
 {
-    o << "maths::zipWith(" << printArgs(o) << ")";
+    o << "maths::zipWith("; printArgs(o); o <<")";
 }
 
 //--------------------------------------------------------------------------------------------

@@ -33,7 +33,9 @@ public: // methods
     static std::string className() { return "List"; }
 
     static std::string sig() { return "l"; }
-    static bool is ( const ExpPtr& e ) { return e->signature() == List::sig(); }
+
+    static bool is ( const ExpPtr& e );
+
     static value_t& extract ( const ExpPtr& e )
     {
         assert( List::is(e) );

@@ -31,7 +31,9 @@ public: // methods
 
     static std::string sig() { return "s"; }
     static std::string className() { return "Scalar"; }
-    static bool is ( const ExpPtr& e ) { return e->signature() == Scalar::sig(); }
+
+    static bool is ( const ExpPtr& e ) ;
+
     static scalar_t extract ( const ExpPtr& e )
     {
         ASSERT( Scalar::is(e) );

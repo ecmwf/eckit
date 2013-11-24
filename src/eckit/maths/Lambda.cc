@@ -90,7 +90,7 @@ ValPtr Lambda::call( Scope &ctx )
 
 void Lambda::asCode(ostream &o) const
 {
-    o << "maths::lambda(" << printArgs(o) << ")";
+    o << "maths::lambda("; printArgs(o); o <<")";
 }
 
 

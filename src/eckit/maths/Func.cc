@@ -115,7 +115,7 @@ ExpPtr Func::clone()
 
 void Func::print(ostream &o) const
 {
-    o << typeName() << "(" << printArgs(o) << ")";
+    o << typeName() << "("; printArgs(o); o << ")";
 }
 
 string Func::signatureArguments(const args_t &args) const

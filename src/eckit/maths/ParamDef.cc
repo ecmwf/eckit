@@ -57,6 +57,12 @@ void ParamDef::asCode(ostream &o) const
 }
 
 
+bool ParamDef::is(const ExpPtr &e) {
+    return dynamic_cast<ParamDef*>(e.get()) != 0;
+}
+
+
+
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths

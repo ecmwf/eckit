@@ -25,6 +25,10 @@ Vector::Vector( const value_t& v )
 {
 }
 
+bool Vector::is(const ExpPtr &e) {
+    return dynamic_cast<Vector*>(e.get()) != 0;
+}
+
 ExpPtr Vector::clone()
 {
     return maths::vector( value() );
@@ -44,7 +48,6 @@ void Vector::print(ostream &o) const
 void Vector::asCode(ostream &o) const
 {
     o << "maths::vector(";
-    o << className() << "(";
     for( size_t i = 0; i < v_.size(); ++i )
     {
         if(i) o << ", ";

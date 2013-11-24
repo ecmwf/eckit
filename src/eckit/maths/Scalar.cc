@@ -20,6 +20,10 @@ Scalar::Scalar( const scalar_t& v ) : v_(v)
 {
 }
 
+bool Scalar::is(const ExpPtr &e) {
+    return dynamic_cast<Scalar*>(e.get()) != 0;
+}
+
 ExpPtr Scalar::clone()
 {
     return maths::scalar( value() );

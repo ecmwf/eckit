@@ -58,7 +58,7 @@ string ProdAdd::returnSignature() const
 
 void ProdAdd::asCode(ostream &o) const
 {
-    o << "(" << param(0) << " * (" << param(1) << " + " << param(2) << "))";
+    o << "(" << *param(0) << " * (" << *param(1) << " + " << *param(2) << "))";
 }
 
 ValPtr ProdAdd::compute_svv(const args_t &p)

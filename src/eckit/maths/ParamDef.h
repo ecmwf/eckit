@@ -34,7 +34,8 @@ public: //  methods
 
     static std::string className() { return "ParamDef"; }
     static std::string sig() { return ":"; }
-    static bool is ( const ExpPtr& e ) { return e->signature() == ParamDef::sig(); }
+
+    static bool is ( const ExpPtr& e );
 
     ParamDef(const string& name);
 

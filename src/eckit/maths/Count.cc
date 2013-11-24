@@ -49,7 +49,7 @@ ExpPtr Count::optimise()
 
 void Count::asCode(ostream &o) const
 {
-    o << "maths::count(" << printArgs(o) << ")";
+    o << "maths::count("; printArgs(o); o << ")";
 }
 
 //--------------------------------------------------------------------------------------------

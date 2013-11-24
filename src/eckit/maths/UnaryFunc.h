@@ -69,7 +69,7 @@ public:
     };
 
     virtual void asCode( std::ostream& o ) const {
-        o << opsymbol(T()) << '(' << args_[0] << ')';
+        o << opsymbol(T()) << '(' << *args_[0] << ')';
     }
 };
 

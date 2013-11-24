@@ -87,7 +87,7 @@ ValPtr Bind::evaluate( Scope &ctx )
 
 void Bind::asCode(ostream &o) const
 {
-    o << "maths::bind(" << printArgs(o) << ")";
+    o << "maths::bind("; printArgs(o); o << ")";
 }
 
 

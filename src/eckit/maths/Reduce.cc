@@ -59,7 +59,7 @@ ValPtr Reduce::evaluate( Scope &ctx )
 
 void Reduce::asCode(ostream &o) const
 {
-    o << "maths::reduce(" << printArgs(o) << ")";
+    o << "maths::reduce("; printArgs(o); o <<")";
 }
 
 //--------------------------------------------------------------------------------------------

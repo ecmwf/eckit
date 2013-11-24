@@ -25,6 +25,10 @@ ExpPtr Boolean::clone()
     return maths::boolean( value() );
 }
 
+bool Boolean::is(const ExpPtr &e) {
+    return dynamic_cast<Boolean*>(e.get()) != 0;
+}
+
 void Boolean::print(ostream &o) const
 {
     o << className() << "(" << v_ << ")";

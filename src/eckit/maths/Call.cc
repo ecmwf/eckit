@@ -82,7 +82,7 @@ ExpPtr call( ExpPtr f, ExpPtr a, ExpPtr b)
 
 void Call::asCode(ostream &o) const
 {
-    o << "maths::call(" << printArgs(o) << ")";
+    o << "maths::call("; printArgs(o); o << ")";
 }
 
 //--------------------------------------------------------------------------------------------

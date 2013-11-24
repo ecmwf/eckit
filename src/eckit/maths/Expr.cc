@@ -114,14 +114,13 @@ string Expr::str() const
 }
 
 
-ostream& Expr::printArgs(ostream &out) const
+void Expr::printArgs(ostream &out) const
 {
     size_t count = arity();
     for(size_t i = 0; i < count; ++i) {
         if(i) out << ", ";
         out << *args_[i];
     }
-    return out;
 }
 
 std::ostream& operator<<( std::ostream& os, const Expr& v)

@@ -91,7 +91,7 @@ ValPtr Linear::compute( const args_t& p )
 
 void Linear::asCode(ostream &o) const
 {
-    o << "((" << param(0) << " + " << param(1) << ") * (" << param(2) << " + " << param(3) << "))";
+    o << "((" << *param(0) << " + " << *param(1) << ") * (" << *param(2) << " + " << *param(3) << "))";
 }
 
 string Linear::returnSignature() const

@@ -41,7 +41,11 @@ List::List( const value_t& v ) : Value(v)
 
 void List::asCode(ostream &o) const
 {
-    o << "maths::list(" << printArgs(o) << ")";
+    o << "maths::list("; printArgs(o); o <<")";
+}
+
+bool List::is(const ExpPtr &e) {
+    return dynamic_cast<List*>(e.get()) != 0;
 }
 
 

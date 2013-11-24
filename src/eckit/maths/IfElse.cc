@@ -72,7 +72,7 @@ ValPtr IfElse::evaluate( Scope &ctx )
 
 void IfElse::asCode(ostream &o) const
 {
-    o << "maths::ifelse(" << printArgs(o) << ")";
+    o << "maths::ifelse("; printArgs(o); o <<")";
 }
 
 

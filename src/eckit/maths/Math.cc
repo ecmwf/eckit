@@ -118,6 +118,11 @@ Math Math::operator -(const Math& other) const
 {
     return maths::sub(*this, other);
 }
+
+Math Math::operator +(const Math& other) const
+{
+    return maths::add(*this, other);
+}
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths

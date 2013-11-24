@@ -32,7 +32,7 @@ string Count::ret_signature() const
     return Scalar::sig();
 }
 
-ValPtr Count::evaluate( Context &ctx )
+ValPtr Count::evaluate( Scope &ctx )
 {
     return maths::scalar( param(0, ctx)->arity() )->as<Value>();
 }

@@ -9,6 +9,8 @@ UnaryFunc.cc
 UnaryFunc.h
 Call.cc
 Call.h
+Math.cc
+Math.h
 Bind.cc
 Bind.h
 Expr.cc
@@ -21,8 +23,8 @@ FMap.cc
 FMap.h
 IfElse.cc
 IfElse.h
-Function.cc
-Function.h
+Lambda.cc
+Lambda.h
 Filter.cc
 Filter.h
 Reduce.cc
@@ -43,8 +45,8 @@ Vector.cc
 Vector.h
 ZipWith.cc
 ZipWith.h
-Context.cc
-Context.h
+Scope.cc
+Scope.h
 Param.cc
 Param.h
 ParamDef.cc

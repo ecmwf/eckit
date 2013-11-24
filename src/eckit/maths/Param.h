@@ -28,6 +28,9 @@ class Param : public Expr {
 
     string name_;
 
+    virtual ExpPtr resolve(Scope & ctx);
+
+
 public: //  methods
 
     static std::string class_name() { return "Param"; }
@@ -42,7 +45,7 @@ public: //  methods
 
     virtual ExpPtr optimise() { return shared_from_this(); }
 
-    virtual ValPtr evaluate( Context& ctx );
+    virtual ValPtr evaluate( Scope& ctx );
 
     virtual ExpPtr clone();
 

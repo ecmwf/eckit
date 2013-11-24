@@ -24,6 +24,9 @@ namespace maths {
 
 
 class Undef : public Expr {
+
+    virtual ExpPtr resolve(Scope & ctx);
+
 public: //  methods
 
     static std::string class_name() { return "Undef"; }
@@ -36,7 +39,7 @@ public: //  methods
 
     virtual ExpPtr optimise() { return shared_from_this(); }
 
-    virtual ValPtr evaluate( Context& ctx );
+    virtual ValPtr evaluate( Scope& ctx );
 
     virtual ExpPtr clone();
 

@@ -26,6 +26,8 @@ namespace maths {
 
 class ParamDef : public Expr {
 
+    virtual ExpPtr resolve(Scope & ctx);
+
     string name_;
 
 public: //  methods
@@ -42,7 +44,7 @@ public: //  methods
 
     virtual ExpPtr optimise() { return shared_from_this(); }
 
-    virtual ValPtr evaluate( Context& ctx );
+    virtual ValPtr evaluate( Scope& ctx );
 
     virtual ExpPtr clone();
 

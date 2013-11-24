@@ -42,7 +42,7 @@ public: // methods
 
     virtual ExpPtr optimise();
 
-    virtual ValPtr evaluate( Context& );
+    virtual ValPtr evaluate( Scope& );
 
 };
 

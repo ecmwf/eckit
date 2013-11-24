@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Function.h
+/// @file Lambda.h
 /// @author Baudouin Raoult
 /// @date November 2013
 
-#ifndef eckit_maths_Function_h
-#define eckit_maths_Function_h
+#ifndef eckit_maths_Lambda_h
+#define eckit_maths_Lambda_h
 
 #include "eckit/maths/Func.h"
 
@@ -22,32 +22,34 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-/// Generates a Function combination of vectors
-class Function : public Func {
+/// Generates a Lambda combination of vectors
+class Lambda : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "Function"; }
+    static std::string class_name() { return "Lambda"; }
 
-    Function( const args_t& args );
+    Lambda( const args_t& args );
 
-    Function( ExpPtr body);
-    Function( ExpPtr a, ExpPtr body);
-    Function( ExpPtr a, ExpPtr b, ExpPtr body);
+    Lambda( ExpPtr body);
+    Lambda( const string& a, ExpPtr body);
+    Lambda( const string& a, const string& b, ExpPtr body);
 
-    virtual std::string type_name() const { return Function::class_name(); }
+    virtual std::string type_name() const { return Lambda::class_name(); }
 
     virtual std::string ret_signature() const;
 
-    virtual ValPtr evaluate( Context& ctx );
+    virtual ValPtr evaluate( Scope& ctx );
+
+    ValPtr call( Scope& ctx );
 
 };
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr function( ExpPtr body);
-ExpPtr function( ExpPtr a, ExpPtr body);
-ExpPtr function( ExpPtr a, ExpPtr b, ExpPtr body);
+ExpPtr lambda( ExpPtr body);
+ExpPtr lambda( const string& a, ExpPtr body);
+ExpPtr lambda( const string& a, const string &b, ExpPtr body);
 
 
 //--------------------------------------------------------------------------------------------

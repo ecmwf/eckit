@@ -9,7 +9,9 @@
  */
 
 #include "eckit/maths/Call.h"
-#include "eckit/maths/List.h"
+#include "eckit/maths/Lambda.h"
+#include "eckit/maths/Scope.h"
+
 
 namespace eckit {
 namespace maths {
@@ -28,36 +30,23 @@ Call::Call( ExpPtr f) : Func()
 }
 
 
-Call::Call( ExpPtr f,  ExpPtr a ) : Func()
-{
-    args_.push_back(f);
-    args_.push_back(a);
-}
-
-Call::Call( ExpPtr f,  ExpPtr a, ExpPtr b ) : Func()
-{
-    args_.push_back(f);
-    args_.push_back(a);
-    args_.push_back(b);
-}
-
 string Call::ret_signature() const
 {
-    return List::sig();
+    return ";";
 }
 
-ValPtr Call::evaluate( Context &ctx )
+ValPtr Call::evaluate( Scope &ctx )
 {
     ExpPtr f = param(0, ctx);
 
     args_t args;
 
-    for( size_t i = 1; i < arity(); ++i )
-    {
-        args.push_back(param(i, ctx));
-    }
+    Scope scope("Call::evaluate", &ctx);
 
-    return f->eval(ctx, args);
+    //ctx.tranferArgs(scope);
+
+    //ASSERT(Function::is(f));
+    return f->as<Lambda>()->call(scope);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -67,16 +56,6 @@ ExpPtr call( ExpPtr f)
     return ExpPtr( new Call(f) );
 }
 
-ExpPtr call( ExpPtr f, ExpPtr a)
-{
-    return ExpPtr( new Call(f, a) );
-}
-
-
-ExpPtr call( ExpPtr f, ExpPtr a, ExpPtr b)
-{
-    return ExpPtr( new Call(f, a, b ) );
-}
 
 //--------------------------------------------------------------------------------------------
 

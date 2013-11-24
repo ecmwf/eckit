@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include "eckit/maths/ParamDef.h"
+#include "eckit/maths/Scope.h"
 
 namespace eckit {
 namespace maths {
@@ -22,6 +23,11 @@ ParamDef::ParamDef(const string& name) : Expr(), name_(name)
 
 ParamDef::~ParamDef()
 {
+}
+
+ExpPtr ParamDef::resolve(Scope & ctx)
+{
+    return ctx.param(name_);
 }
 
 ExpPtr ParamDef::clone()
@@ -39,7 +45,7 @@ ExpPtr paramdef(const string& name)
     return ExpPtr( new ParamDef(name) );
 }
 
-ValPtr ParamDef::evaluate( Context &ctx )
+ValPtr ParamDef::evaluate( Scope &ctx )
 {
     NOTIMP;
     //return boost::static_pointer_cast<Value>( shared_from_this() );

@@ -40,7 +40,7 @@ public: // methods
 
     virtual std::string ret_signature() const;
 
-    virtual ValPtr evaluate( Context& ctx );
+    virtual ValPtr evaluate( Scope& ctx );
 };
 
 //--------------------------------------------------------------------------------------------

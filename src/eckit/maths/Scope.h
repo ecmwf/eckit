@@ -13,8 +13,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Context_h
-#define eckit_maths_Context_h
+#ifndef eckit_maths_Scope_h
+#define eckit_maths_Scope_h
 
 #include "eckit/maths/Expr.h"
 
@@ -26,14 +26,14 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 
-class Context : private boost::noncopyable {
+class Scope : private boost::noncopyable {
 public:
 
-    Context(Context* = 0);
-    Context(ExpPtr, Context* = 0);
-    Context(ExpPtr, ExpPtr, Context* = 0);
+    Scope(const char* name, Scope* = 0);
+    Scope(const char* name, ExpPtr, Scope* = 0);
+    Scope(const char* name, ExpPtr, ExpPtr, Scope* = 0);
 
-    ~Context();
+    ~Scope();
 
 
     ExpPtr nextArg();
@@ -44,7 +44,8 @@ public:
 
 private:
 
-    Context* parent_;
+    Scope* parent_;
+    string name_;
 
     std::map< string, ExpPtr > params_;
     std::deque< ExpPtr > args_;
@@ -52,7 +53,7 @@ private:
     void print( std::ostream& ) const;
 
 
-    friend std::ostream& operator<<( std::ostream& os, const Context& v)
+    friend std::ostream& operator<<( std::ostream& os, const Scope& v)
     {
         v.print(os);
         return os;

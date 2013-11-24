@@ -11,6 +11,8 @@
 #include <sstream>
 
 #include "eckit/maths/Undef.h"
+#include "eckit/maths/Scope.h"
+
 
 namespace eckit {
 namespace maths {
@@ -25,10 +27,15 @@ Undef::~Undef()
 {
 }
 
-ValPtr Undef::evaluate( Context &ctx )
+ValPtr Undef::evaluate( Scope &ctx )
 {
     NOTIMP;
     //return boost::static_pointer_cast<Value>( shared_from_this() );
+}
+
+ExpPtr Undef::resolve( Scope &ctx )
+{
+   return ctx.nextArg();
 }
 
 ExpPtr Undef::clone()

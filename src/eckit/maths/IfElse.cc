@@ -10,7 +10,7 @@
 
 #include "eckit/maths/IfElse.h"
 #include "eckit/maths/Boolean.h"
-#include "eckit/maths/Context.h"
+#include "eckit/maths/Scope.h"
 
 
 namespace eckit {
@@ -47,7 +47,7 @@ string IfElse::ret_signature() const
     }
 }
 
-ValPtr IfElse::evaluate( Context &ctx )
+ValPtr IfElse::evaluate( Scope &ctx )
 {
     std::cout << "evalute " << *this << " with " << ctx << endl;
 

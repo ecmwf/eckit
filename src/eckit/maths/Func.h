@@ -56,7 +56,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual ValPtr evaluate( Context& ctx );
+    virtual ValPtr evaluate( Scope& ctx );
 
     virtual ExpPtr optimise();
 

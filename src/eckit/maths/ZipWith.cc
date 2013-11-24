@@ -32,7 +32,7 @@ string ZipWith::ret_signature() const
     return List::sig();
 }
 
-ValPtr ZipWith::evaluate( Context &ctx )
+ValPtr ZipWith::evaluate( Scope &ctx )
 {
     ExpPtr f = param(0, ctx);
 

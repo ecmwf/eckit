@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file FMap.h
+/// @file Map.h
 /// @author Tiago Quintino
 /// @date November 2013
 
@@ -22,20 +22,20 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-/// Generates a FMap combination of vectors
-class FMap : public Function {
+/// Generates a Map combination of vectors
+class Map : public Function {
 
 public: // methods
 
-    static std::string className() { return "FMap"; }
+    static std::string className() { return "Map"; }
 
-    FMap( const args_t& args );
+    Map( const args_t& args );
 
-    FMap( ExpPtr f, ExpPtr l );
+    Map( ExpPtr f, ExpPtr l );
 
 private:
 
-    virtual std::string typeName() const { return FMap::className(); }
+    virtual std::string typeName() const { return Map::className(); }
 
     virtual std::string returnSignature() const;
 
@@ -47,7 +47,7 @@ private:
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr fmap( ExpPtr f, ExpPtr l );
+ExpPtr map( ExpPtr f, ExpPtr l );
 
 //--------------------------------------------------------------------------------------------
 

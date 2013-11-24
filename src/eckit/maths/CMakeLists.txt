@@ -19,8 +19,8 @@ Function.cc
 Function.h
 Count.cc
 Count.h
-FMap.cc
-FMap.h
+Map.cc
+Map.h
 IfElse.cc
 IfElse.h
 Lambda.cc

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/FMap.h"
+#include "eckit/maths/Map.h"
 #include "eckit/maths/List.h"
 
 namespace eckit {
@@ -16,24 +16,24 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-static Function::RegisterFactory< FMap > fmap_register;
+static Function::RegisterFactory< Map > fmap_register;
 
-FMap::FMap(const args_t& args) : Function(args)
+Map::Map(const args_t& args) : Function(args)
 {
 }
 
-FMap::FMap( ExpPtr f,  ExpPtr list ) : Function()
+Map::Map( ExpPtr f,  ExpPtr list ) : Function()
 {
     args_.push_back(f);
     args_.push_back(list);
 }
 
-string FMap::returnSignature() const
+string Map::returnSignature() const
 {
     return List::sig();
 }
 
-ValPtr FMap::evaluate( Scope &ctx )
+ValPtr Map::evaluate( Scope &ctx )
 {
     ExpPtr f = param(0, ctx);
 
@@ -56,17 +56,17 @@ ValPtr FMap::evaluate( Scope &ctx )
 }
 
 
-void FMap::asCode(ostream &o) const
+void Map::asCode(ostream &o) const
 {
-    o << "maths::fmap("; printArgs(o); o << ")";
+    o << "maths::map("; printArgs(o); o << ")";
 }
 
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr fmap( ExpPtr f,  ExpPtr list )
+ExpPtr map( ExpPtr f,  ExpPtr list )
 {
-    return ExpPtr( new FMap(f,list) );
+    return ExpPtr( new Map(f,list) );
 }
 
 //--------------------------------------------------------------------------------------------

@@ -20,7 +20,7 @@
 #include "eckit/maths/BinaryPredicate.h"
 #include "eckit/maths/Count.h"
 #include "eckit/maths/Expression.h"
-#include "eckit/maths/FMap.h"
+#include "eckit/maths/Map.h"
 #include "eckit/maths/Filter.h"
 #include "eckit/maths/Reduce.h"
 #include "eckit/maths/List.h"

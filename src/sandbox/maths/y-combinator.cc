@@ -47,20 +47,7 @@ public:
 void YCombinator::run()
 {
 
-
-    Math Y = lambda("f",
-                    call(lambda("g",
-                         call(lambda("h",
-                              call(lambda("x",
-                                    call(Math("h"), Math("h"), Math("x"))
-                                   ))
-                                   ),
-                              Math("f"),
-                              Math("g"))
-                          )
-                    )
-              );
-
+    Math Y = lambda("f", call(Math("f"), Math("f")));
 
     Math fact = lambda("recurse",
                        call(lambda("n",
@@ -77,13 +64,9 @@ void YCombinator::run()
 
 
     setformat(cout, maths::CodeFormat);
-    cout << "-----------------------" << endl;
-    cout << Y << endl;
-
-    cout << "-----------------------" << endl;
 
     Math factorial = call(Y, fact);
-
+    cout << factorial << endl;
     setformat(cout, 0);
 
     cout << "-----------------------" << endl;

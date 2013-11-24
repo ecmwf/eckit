@@ -49,8 +49,13 @@ public: // methods
 
     /// @returns the size of the internal vector
     size_t size() const { return v_.size(); }
+
+    // FIXME: Return a const-ref
     /// @returns a copy of the internal vector
     value_t value() const { return v_; }
+
+    // FIXME: This should not exists
+    // FIXME: Use camelCase()
     /// @returns a reference to the internal vector
     value_t& ref_value() { return v_; }
 

@@ -47,23 +47,49 @@ public:
 void YCombinator::run()
 {
 
-    Math Y = maths::call(
-            maths::lambda("m",
-            maths::call(maths::lambda("builder", "x",
-                         maths::call(Math("builder"),Math("builder"), Math("x"))),
-                         maths::lambda("recurse", "n",
-                         maths::ifelse(Math("n") == Math(0.0), Math(1.0),
-                                       Math(maths::call(Math("recurse"),Math("recurse"), Math("n") - Math(1.0))) * Math("n"))),
-                                     Math("m"))));
+
+    Math Y = lambda("f",
+                    call(lambda("g",
+                         call(lambda("h",
+                              call(lambda("x",
+                                    call(Math("h"), Math("h"), Math("x"))
+                                   ))
+                                   ),
+                              Math("f"),
+                              Math("g"))
+                          )
+                    )
+              );
+
+
+
+    Math fact = lambda("recurse",
+                       call(lambda("n",
+                                   ifelse(
+                                       Math("n") == Math(0.0),
+                                       Math(1.0),
+                                       Math("n") * call(
+                                           Math("recurse"), Math("recurse"), Math("n") - Math(1.0)
+                                           )
+                                       )
+                                   )
+                            )
+                       );
+
 
     setformat(cout, maths::CodeFormat);
     cout << "-----------------------" << endl;
     cout << Y << endl;
 
+    cout << "-----------------------" << endl;
+
+    Math factorial = call(Y, fact);
+
     setformat(cout, 0);
 
     cout << "-----------------------" << endl;
-    cout << Y(5.0) << endl;
+    cout << factorial(5.0) << endl;
+
 
 }
 

@@ -20,27 +20,15 @@ namespace maths {
 
 Scope::Scope(const char* name, Scope* parent): parent_(parent), name_(name)
 {
-    if(parent) {
-        args_ = parent->args_;
-        params_ = parent->params_;
-    }
 }
 
 Scope::Scope(const char* name, ExpPtr a, Scope* parent): parent_(parent), name_(name)
-{if(parent) {
-        args_ = parent->args_;
-        params_ = parent->params_;
-    }
+{
     args_.push_back(a);
 }
 
 Scope::Scope(const char* name, ExpPtr a, ExpPtr b, Scope* parent): parent_(parent), name_(name)
 {
-    if(parent) {
-        args_ = parent->args_;
-        params_ = parent->params_;
-    }
-
     args_.push_back(a);
     args_.push_back(b);
 }
@@ -54,12 +42,17 @@ Scope::~Scope() {
             cout << "Context::~Context() leftovers: " << *this << endl;
         }
 
-       // ASSERT(!args_.size());
+       ASSERT(!args_.size());
     }
 }
 
 ExpPtr Scope::nextArg()
 {
+    if(args_.size() == 0) {
+        if(parent_) {
+            return parent_->nextArg();
+        }
+    }
 
     cout << "NextArg " << *this << endl;
     ASSERT(args_.size());

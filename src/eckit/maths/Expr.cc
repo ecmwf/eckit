@@ -24,25 +24,28 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 Expr::Expr()
-{}
+{
+}
 
 Expr::Expr(const args_t &args) :
     args_(args)
-{}
+{
+}
 
 Expr::~Expr()
-{}
+{
+}
 
 
 ValPtr Expr::eval()
 {
     Scope ctx("Expr::eval()");
-    return /*optimise()->*/evaluate(ctx);
+    return optimise()->evaluate(ctx);
 }
 
 ValPtr Expr::eval( Scope& ctx, bool)
 {
-    return /*optimise()->*/evaluate(ctx);
+    return optimise()->evaluate(ctx);
 }
 
 
@@ -52,7 +55,7 @@ ValPtr Expr::eval(Scope& scope, const args_t& args)
     for(args_t::const_iterator j = args.begin(); j != args.end(); ++j) {
         ctx.pushArg(*j);
     }
-    return /*optimise()->*/evaluate(ctx);
+    return optimise()->evaluate(ctx);
 }
 
 ExpPtr Expr::resolve(Scope & ctx)
@@ -63,14 +66,14 @@ ExpPtr Expr::resolve(Scope & ctx)
 ValPtr Expr::eval( ExpPtr e )
 {
     Scope ctx("Expr::eval( ExpPtr e )", e);
-    ValPtr res = /*optimise()->*/evaluate(ctx);
+    ValPtr res = optimise()->evaluate(ctx);
     return res;
 }
 
 ValPtr Expr::eval(  ExpPtr a, ExpPtr b )
 {
     Scope ctx("Expr::eval(  ExpPtr a, ExpPtr b )", a, b);
-    ValPtr res = /*optimise()->*/evaluate(ctx);
+    ValPtr res = optimise()->evaluate(ctx);
     return res;
 }
 
@@ -87,6 +90,7 @@ ExpPtr Expr::param( size_t i, Scope& ctx ) const
     ASSERT( args_[i] );
 
     cout << "   PARAM " << i << " -> " << (*args_[i]) << endl;
+    cout << "         " << ctx << endl;
     ExpPtr r = args_[i]->resolve(ctx);
     cout << "          " << *r << endl;
 

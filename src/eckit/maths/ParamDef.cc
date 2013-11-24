@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include "eckit/maths/ParamDef.h"
+#include "eckit/maths/Scope.h"
 
 namespace eckit {
 namespace maths {
@@ -22,6 +23,11 @@ ParamDef::ParamDef(const string& name) : Expr(), name_(name)
 
 ParamDef::~ParamDef()
 {
+}
+
+ExpPtr ParamDef::resolve(Scope & ctx)
+{
+    return ctx.param(name_);
 }
 
 ExpPtr ParamDef::clone()

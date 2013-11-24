@@ -56,49 +56,52 @@ public:
 
 //-----------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
-
 void YCombinator::run()
 {
-    /*
+
+
     Math a( 2. );
     Math b( 4. );
     Math c( 7. );
     Math z( 0. );
 
+    if(0)
+    {
+        Math g = a > z;
+        cout << g << endl;
 
-    Math g = a > z;
-    cout << g << endl;
+        cout << g() << endl;
+    }
 
-    cout << g() << endl;
-
-    Math e = maths::function(
-                maths::paramdef("1"), maths::paramdef("2"),
-                ifelse(Math("1") > Math("2"), b, c));
+    Math e = maths::lambda("1", "2",
+                           ifelse(Math("1") > Math("2"), b, c));
 
     cout << e << endl;
+
+    e = maths::call(e);
     cout << e(a, z) << endl;
 
+    if(1)
     {
         Math s = Math("a") - Math("b");
-        Math f = maths::function(maths::paramdef("a"), maths::paramdef("b"), s);
-        Math c = maths::call(f, Math(1.0), Math(3.0));
+        Math f = maths::lambda("a", "b", s);
+        Math c = Math(maths::call(f))( Math(1.0), Math(3.0));
         cout << c << endl;
         cout << c() << endl;
     }
-*/
+
+    if(1)
     {
         Math s = Math("n") - Math(1.0);
-        Math r = maths::call(Math("recurse"), Math("recurse"), s);
+        Math r = Math(maths::call(Math("recurse")))(Math("recurse"), s);
         Math e = Math("n") == Math(0.0);
         Math i = maths::ifelse(e, Math(1.0),  r * Math("n"));
 
         Math X = maths::lambda("recurse", "n", i);
 
         Math Y = maths::lambda("builder", "x",
-                                 maths::call(Math("builder"),  Math("builder"), Math("x")
-                                             ));
+                               Math(maths::call(Math("builder")))(Math("builder"), Math("x")
+                                                                  ));
         cout << X << endl;
         cout << Y << endl;
 

@@ -32,8 +32,6 @@ public: // methods
     Call( const args_t& args );
 
     Call( ExpPtr f );
-    Call( ExpPtr f, ExpPtr a );
-    Call( ExpPtr f, ExpPtr a, ExpPtr b );
 
     virtual std::string type_name() const { return Call::class_name(); }
 
@@ -48,8 +46,6 @@ public: // methods
 //--------------------------------------------------------------------------------------------
 
 ExpPtr call( ExpPtr f);
-ExpPtr call( ExpPtr f, ExpPtr a);
-ExpPtr call( ExpPtr f, ExpPtr a, ExpPtr b);
 
 //--------------------------------------------------------------------------------------------
 

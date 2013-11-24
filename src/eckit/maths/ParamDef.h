@@ -26,6 +26,8 @@ namespace maths {
 
 class ParamDef : public Expr {
 
+    virtual ExpPtr resolve(Scope & ctx);
+
     string name_;
 
 public: //  methods

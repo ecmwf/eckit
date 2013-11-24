@@ -45,22 +45,19 @@ public:
 void YCombinator::run()
 {
 
+    Math Y = maths::call(
+            maths::lambda("m",
+            maths::call(maths::lambda("builder", "x",
+                         maths::call(Math("builder"),Math("builder"), Math("x"))),
+                         maths::lambda("recurse", "n",
+                         maths::ifelse(Math("n") == Math(0.0), Math(1.0),
+                                       Math(maths::call(Math("recurse"),Math("recurse"), Math("n") - Math(1.0))) * Math("n"))),
+                                     Math("m"))));
 
-
-    Math X = maths::lambda("recurse", "n",
-                           maths::ifelse(Math("n") == Math(0.0), Math(1.0),
-                                         Math(maths::call(Math("recurse"),Math("recurse"), Math("n") - Math(1.0))) * Math("n")));
-
-    Math Y = maths::lambda("builder", "x",
-                           maths::call(Math("builder"),Math("builder"), Math("x")
-                                       ));
-
-
-    Math Z = maths::call(Y, X, Math(5.0));
     cout << "-----------------------" << endl;
-    cout << Z << endl;
+    cout << Y << endl;
     cout << "-----------------------" << endl;
-    cout << Z() << endl;
+    cout << Y(5.0) << endl;
 
 }
 

@@ -10,7 +10,7 @@
 
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/Vector.h"
-#include "eckit/maths/UnaryFunc.h"
+#include "eckit/maths/UnaryOperator.h"
 #include "eckit/maths/Optimiser.h"
 
 namespace eckit {
@@ -19,13 +19,13 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 #define GEN_UNFUNC_IMPL( f, c, op )                                                         \
-static Func::RegisterFactory< c > f ## _register;                                           \
+static Function::RegisterFactory< c > f ## _register;                                           \
 ExpPtr f( ExpPtr e )           { return ExpPtr( c::make(e) ); }                                  \
-ExpPtr f( Expr& e )            { return ExpPtr( c::make(e.self()) ); }                           \
+ExpPtr f( Expression& e )            { return ExpPtr( c::make(e.self()) ); }                           \
 ExpPtr operator op ( ValPtr e ){ return f( e ); }                                            \
 ExpPtr operator op ( ExpPtr e ){ return f( e ); }
 
-GEN_UNFUNC_IMPL(neg,UnaryFunc<Neg>,-)
+GEN_UNFUNC_IMPL(neg,UnaryOperator<Neg>,-)
 
 #undef GEN_UNFUNC_IMPL
 
@@ -59,51 +59,51 @@ struct Generic
 
 //--------------------------------------------------------------------------------------------
 
-static UnaryFunc<Neg>::Computer<Scalar,Generic> neg_sg;
-static UnaryFunc<Neg>::Computer<Vector,Generic> neg_vg;
+static UnaryOperator<Neg>::Computer<Scalar,Generic> neg_sg;
+static UnaryOperator<Neg>::Computer<Vector,Generic> neg_vg;
 
 //--------------------------------------------------------------------------------------------
 
 template < class T >
-UnaryFunc<T>::UnaryFunc(const args_t &args) : Func( args )
+UnaryOperator<T>::UnaryOperator(const args_t &args) : Function( args )
 {
 }
 
 template < class T >
-string UnaryFunc<T>::returnSignature() const
+string UnaryOperator<T>::returnSignature() const
 {
     return args_[0]->returnSignature();
 }
 
 template < class T >
-std::string UnaryFunc<T>::typeName() const
+std::string UnaryOperator<T>::typeName() const
 {
-    return UnaryFunc<T>::className();
+    return UnaryOperator<T>::className();
 }
 
 template < class T >
-string UnaryFunc<T>::className()
+string UnaryOperator<T>::className()
 {
     return opname( T() );
 }
 
 template < class T >
 template < class U, class I >
-UnaryFunc<T>::Computer<U,I>::Computer()
+UnaryOperator<T>::Computer<U,I>::Computer()
 {
-    Func::dispatcher()[ sig() ] = &compute;
+    Function::dispatcher()[ sig() ] = &compute;
 }
 
 template < class T >
 template < class U, class I >
-std::string UnaryFunc<T>::Computer<U,I>::sig()
+std::string UnaryOperator<T>::Computer<U,I>::sig()
 {
     return opname( T() ) + string("(") + U::sig() + string(")");
 }
 
 template < class T >
 template < class U, class I >
-ValPtr UnaryFunc<T>::Computer<U,I>::compute(const args_t &p)
+ValPtr UnaryOperator<T>::Computer<U,I>::compute(const args_t &p)
 {
     typename U::value_t a = U::extract(p[0]);
     return I::apply(T(),a);

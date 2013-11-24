@@ -16,7 +16,7 @@
 #ifndef eckit_maths_Linear_h
 #define eckit_maths_Linear_h
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 
 namespace eckit {
 namespace maths {
@@ -24,7 +24,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Generates a Linear combination of vectors
-class Linear : public Func {
+class Linear : public Function {
 
 public: // methods
 

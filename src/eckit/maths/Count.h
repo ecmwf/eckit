@@ -15,7 +15,7 @@
 #ifndef eckit_maths_Count_h
 #define eckit_maths_Count_h
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 #include "eckit/maths/Undef.h"
 
 
@@ -25,7 +25,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Generates a Count combination of vectors
-class Count : public Func {
+class Count : public Function {
 
 public: // methods
 

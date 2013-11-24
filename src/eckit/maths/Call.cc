@@ -20,23 +20,23 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 
-Call::Call(const args_t& args) : Func(args)
+Call::Call(const args_t& args) : Function(args)
 {
     ASSERT(arity() > 0);
 }
 
-Call::Call( ExpPtr f) : Func()
+Call::Call( ExpPtr f) : Function()
 {
     args_.push_back(f);
 }
 
-Call::Call( ExpPtr f, ExpPtr a) : Func()
+Call::Call( ExpPtr f, ExpPtr a) : Function()
 {
     args_.push_back(f);
     args_.push_back(a);
 }
 
-Call::Call( ExpPtr f, ExpPtr a, ExpPtr b) : Func()
+Call::Call( ExpPtr f, ExpPtr a, ExpPtr b) : Function()
 {
     args_.push_back(f);
     args_.push_back(a);

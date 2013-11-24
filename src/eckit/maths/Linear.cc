@@ -18,14 +18,14 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-static Func::RegisterFactory< Linear > count_register;
+static Function::RegisterFactory< Linear > count_register;
 
-Linear::Linear(const args_t &args) : Func(args)
+Linear::Linear(const args_t &args) : Function(args)
 {
     ASSERT(arity() == 4);
 }
 
-Linear::Linear(ExpPtr e) : Func()
+Linear::Linear(ExpPtr e) : Function()
 {
     ASSERT( e->arity() == 2 );
 
@@ -101,7 +101,7 @@ string Linear::returnSignature() const
 
 Linear::Register::Register()
 {
-    Func::dispatcher()[ className() + "(s,v,s,v)" ] = &compute;
+    Function::dispatcher()[ className() + "(s,v,s,v)" ] = &compute;
 }
 
 //--------------------------------------------------------------------------------------------

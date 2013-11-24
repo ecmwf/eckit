@@ -16,7 +16,7 @@
 #ifndef eckit_maths_ParamDef_h
 #define eckit_maths_ParamDef_h
 
-#include "Expr.h"
+#include "Expression.h"
 
 //--------------------------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ namespace eckit {
 namespace maths {
 
 
-class ParamDef : public Expr {
+class ParamDef : public Expression {
 
     virtual ExpPtr resolve(Scope & ctx);
 

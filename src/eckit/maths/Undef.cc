@@ -19,7 +19,7 @@ namespace maths {
 
 
 
-Undef::Undef() : Expr()
+Undef::Undef() : Expression()
 {
 }
 

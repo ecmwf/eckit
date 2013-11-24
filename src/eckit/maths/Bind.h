@@ -15,7 +15,7 @@
 #ifndef eckit_maths_Bind_h
 #define eckit_maths_Bind_h
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 
 namespace eckit {
 namespace maths {
@@ -23,7 +23,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Generates a Bind combination of vectors
-class Bind : public Func {
+class Bind : public Function {
 
 public: // methods
 

@@ -16,12 +16,12 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-ZipWith::ZipWith(const args_t& args) : Func(args)
+ZipWith::ZipWith(const args_t& args) : Function(args)
 {
     ASSERT(arity() == 3);
 }
 
-ZipWith::ZipWith( ExpPtr f, ExpPtr list0, ExpPtr list1 ) : Func()
+ZipWith::ZipWith( ExpPtr f, ExpPtr list0, ExpPtr list1 ) : Function()
 {
     args_.push_back(f);
     args_.push_back(list0);
@@ -66,7 +66,7 @@ void ZipWith::asCode(ostream &o) const
 
 //--------------------------------------------------------------------------------------------
 
-static Func::RegisterFactory< ZipWith > zipwith_register;                                                  \
+static Function::RegisterFactory< ZipWith > zipwith_register;                                                  \
 
 //--------------------------------------------------------------------------------------------
 

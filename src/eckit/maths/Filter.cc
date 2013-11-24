@@ -17,13 +17,13 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-static Func::RegisterFactory< Filter > filter_register;
+static Function::RegisterFactory< Filter > filter_register;
 
-Filter::Filter(const args_t& args) : Func(args)
+Filter::Filter(const args_t& args) : Function(args)
 {
 }
 
-Filter::Filter( ExpPtr pred,  ExpPtr list ) : Func()
+Filter::Filter( ExpPtr pred,  ExpPtr list ) : Function()
 {
     args_.push_back(pred);
     args_.push_back(list);

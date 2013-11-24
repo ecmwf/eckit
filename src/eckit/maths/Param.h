@@ -16,7 +16,7 @@
 #ifndef eckit_maths_Param_h
 #define eckit_maths_Param_h
 
-#include "Expr.h"
+#include "Expression.h"
 
 //--------------------------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ namespace eckit {
 namespace maths {
 
 
-class Param : public Expr {
+class Param : public Expression {
 
     string name_;
 

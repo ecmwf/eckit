@@ -15,7 +15,7 @@
 #ifndef eckit_maths_IfElse_h
 #define eckit_maths_IfElse_h
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 
 namespace eckit {
 namespace maths {
@@ -23,7 +23,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Generates a IfElse combination of vectors
-class IfElse : public Func {
+class IfElse : public Function {
 
 public: // methods
 

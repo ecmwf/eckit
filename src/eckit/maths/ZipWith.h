@@ -15,7 +15,7 @@
 #ifndef eckit_maths_ZipWith_h
 #define eckit_maths_ZipWith_h
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 
 namespace eckit {
 namespace maths {
@@ -23,7 +23,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Generates a ZipWith combination of vectors
-class ZipWith : public Func {
+class ZipWith : public Function {
 
 public: // methods
 

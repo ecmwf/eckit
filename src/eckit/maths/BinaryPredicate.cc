@@ -54,11 +54,11 @@ struct Generic
 //--------------------------------------------------------------------------------------------
 
 #define GEN_BINPRED_IMPL( f, c, op )                                                           \
-static Func::RegisterFactory<  BinaryPredicate< c > > f ## _register;                          \
+static Function::RegisterFactory<  BinaryPredicate< c > > f ## _register;                          \
 ExpPtr f( ExpPtr l, ExpPtr r ){ return ExpPtr( BinaryPredicate< c >::make(l,r) ); }                \
-ExpPtr f( Expr& l, ExpPtr r ) { return ExpPtr( BinaryPredicate< c >::make(l.self(),r) ); }         \
-ExpPtr f( ExpPtr l, Expr& r ) { return ExpPtr( BinaryPredicate< c >::make(l,r.self()) ); }         \
-ExpPtr f( Expr& l, Expr& r )  { return ExpPtr( BinaryPredicate< c >::make(l.self(),r.self()) ); }  \
+ExpPtr f( Expression& l, ExpPtr r ) { return ExpPtr( BinaryPredicate< c >::make(l.self(),r) ); }         \
+ExpPtr f( ExpPtr l, Expression& r ) { return ExpPtr( BinaryPredicate< c >::make(l,r.self()) ); }         \
+ExpPtr f( Expression& l, Expression& r )  { return ExpPtr( BinaryPredicate< c >::make(l.self(),r.self()) ); }  \
                                                                                                \
 ExpPtr operator op ( ValPtr p1, ValPtr p2 ) { return f( p1, p2 ); }                            \
 ExpPtr operator op ( ValPtr p1, ExpPtr p2 ) { return f( p1, p2 ); }                            \
@@ -89,7 +89,7 @@ GEN_BINPRED_IMPL(not_equal,NotEqual,!=)
 //--------------------------------------------------------------------------------------------
 
 template < class T >
-BinaryPredicate<T>::BinaryPredicate(const args_t &args) : Func( args )
+BinaryPredicate<T>::BinaryPredicate(const args_t &args) : Function( args )
 {
 }
 
@@ -115,7 +115,7 @@ template < class T >
 template < class U, class V, class I >
 BinaryPredicate<T>::Computer<U,V,I>::Computer()
 {
-    Func::dispatcher()[ sig() ] = &compute;
+    Function::dispatcher()[ sig() ] = &compute;
 }
 
 template < class T >

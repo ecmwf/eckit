@@ -19,7 +19,7 @@ Value::Value()
 {
 }
 
-Value::Value(const args_t &args) : Expr(args)
+Value::Value(const args_t &args) : Expression(args)
 {
 }
 

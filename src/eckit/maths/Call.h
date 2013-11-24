@@ -15,7 +15,7 @@
 #ifndef eckit_maths_Call_h
 #define eckit_maths_Call_h
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 
 namespace eckit {
 namespace maths {
@@ -23,7 +23,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Generates a Call combination of vectors
-class Call : public Func {
+class Call : public Function {
 
 public: // methods
 

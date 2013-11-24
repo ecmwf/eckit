@@ -20,12 +20,12 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Bind::Bind(const args_t& args) : Func(args)
+Bind::Bind(const args_t& args) : Function(args)
 {
     ASSERT(arity() == 2);
 }
 
-Bind::Bind( size_t i, ExpPtr f, ExpPtr e ) : Func()
+Bind::Bind( size_t i, ExpPtr f, ExpPtr e ) : Function()
 {
     ASSERT( i > 0 );
     ASSERT( i <= f->arity() );
@@ -35,7 +35,7 @@ Bind::Bind( size_t i, ExpPtr f, ExpPtr e ) : Func()
     args_.push_back(e);
 }
 
-Bind::Bind( ExpPtr i, ExpPtr f, ExpPtr e ) : Func()
+Bind::Bind( ExpPtr i, ExpPtr f, ExpPtr e ) : Function()
 {
     args_.push_back(i);
     args_.push_back(f);
@@ -93,7 +93,7 @@ void Bind::asCode(ostream &o) const
 
 //--------------------------------------------------------------------------------------------
 
-static Func::RegisterFactory< Bind > bind_register;                                                  \
+static Function::RegisterFactory< Bind > bind_register;                                                  \
 
 //--------------------------------------------------------------------------------------------
 

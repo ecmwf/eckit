@@ -15,7 +15,7 @@
 #ifndef eckit_maths_Math_h
 #define eckit_maths_Math_h
 
-#include "eckit/maths/Expr.h"
+#include "eckit/maths/Expression.h"
 
 namespace eckit {
 namespace maths {

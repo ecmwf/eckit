@@ -16,14 +16,14 @@
 #ifndef eckit_maths_Undef_h
 #define eckit_maths_Undef_h
 
-#include "eckit/maths/Expr.h"
+#include "eckit/maths/Expression.h"
 
 
 namespace eckit {
 namespace maths {
 
 
-class Undef : public Expr {
+class Undef : public Expression {
 
     virtual ExpPtr resolve(Scope & ctx);
 

@@ -11,7 +11,7 @@
 #include "eckit/maths/ProdAdd.h"
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/Vector.h"
-#include "eckit/maths/BinaryFunc.h"
+#include "eckit/maths/BinaryOperator.h"
 #include "eckit/maths/Optimiser.h"
 
 namespace eckit {
@@ -19,7 +19,7 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-ProdAdd::ProdAdd(const args_t &args) : Func( args )
+ProdAdd::ProdAdd(const args_t &args) : Function( args )
 {
     ASSERT(arity() == 3);
 }
@@ -106,19 +106,19 @@ ValPtr ProdAdd::compute_ggg(const args_t &p)
 
 ProdAdd::Register::Register()
 {
-    Func::RegisterFactory< ProdAdd > factory_register;
+    Function::RegisterFactory< ProdAdd > factory_register;
 
-    Func::dispatcher()[ className() + "(s,s,s)" ] = &compute_ggg;
-    Func::dispatcher()[ className() + "(s,v,s)" ] = &compute_ggg;
-    Func::dispatcher()[ className() + "(s,s,v)" ] = &compute_ggg;
+    Function::dispatcher()[ className() + "(s,s,s)" ] = &compute_ggg;
+    Function::dispatcher()[ className() + "(s,v,s)" ] = &compute_ggg;
+    Function::dispatcher()[ className() + "(s,s,v)" ] = &compute_ggg;
 
-    Func::dispatcher()[ className() + "(s,v,v)" ] = &compute_svv;
+    Function::dispatcher()[ className() + "(s,v,v)" ] = &compute_svv;
 
-    Func::dispatcher()[ className() + "(v,s,s)" ] = &compute_ggg;
-    Func::dispatcher()[ className() + "(v,s,v)" ] = &compute_ggg;
-    Func::dispatcher()[ className() + "(v,v,s)" ] = &compute_ggg;
+    Function::dispatcher()[ className() + "(v,s,s)" ] = &compute_ggg;
+    Function::dispatcher()[ className() + "(v,s,v)" ] = &compute_ggg;
+    Function::dispatcher()[ className() + "(v,v,s)" ] = &compute_ggg;
 
-    Func::dispatcher()[ className() + "(v,v,v)" ] = &compute_vvv;
+    Function::dispatcher()[ className() + "(v,v,v)" ] = &compute_vvv;
 }
 
 //--------------------------------------------------------------------------------------------

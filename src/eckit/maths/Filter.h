@@ -15,7 +15,7 @@
 #ifndef eckit_maths_Filter_h
 #define eckit_maths_Filter_h
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 #include "eckit/maths/Undef.h"
 
 namespace eckit {
@@ -24,7 +24,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Generates a Filter combination of vectors
-class Filter : public Func {
+class Filter : public Function {
 
 public: // methods
 

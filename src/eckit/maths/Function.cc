@@ -11,7 +11,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 #include "eckit/maths/Value.h"
 #include "eckit/maths/Optimiser.h"
 
@@ -20,36 +20,36 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Func::Func() : Expr()
+Function::Function() : Expression()
 {
 }
 
-Func::Func(const args_t &args) : Expr(args)
+Function::Function(const args_t &args) : Expression(args)
 {
 }
 
-Func::~Func()
+Function::~Function()
 {
 }
 
-Func::dispatcher_t& Func::dispatcher()
+Function::dispatcher_t& Function::dispatcher()
 {
     static dispatcher_t d;
     return d;
 }
 
-Func::factory_t& Func::factory()
+Function::factory_t& Function::factory()
 {
     static factory_t f;
     return f;
 }
 
-string Func::signature() const
+string Function::signature() const
 {
     return signatureArguments( args_ );
 }
 
-ValPtr Func::evaluate( Scope &ctx )
+ValPtr Function::evaluate( Scope &ctx )
 {
     DBG;
 
@@ -77,7 +77,7 @@ ValPtr Func::evaluate( Scope &ctx )
     return ((*itr).second)( args );
 }
 
-ExpPtr Func::optimise()
+ExpPtr Function::optimise()
 {
     DBGX( *this );
     DBGX( signature() );
@@ -93,7 +93,7 @@ ExpPtr Func::optimise()
     return Optimiser::apply( shared_from_this() );
 }
 
-ExpPtr Func::clone()
+ExpPtr Function::clone()
 {
     key_t k = typeName();
     factory_t& f = factory();
@@ -113,12 +113,12 @@ ExpPtr Func::clone()
     return ((*itr).second)( args );
 }
 
-void Func::print(ostream &o) const
+void Function::print(ostream &o) const
 {
     o << typeName() << "("; printArgs(o); o << ")";
 }
 
-string Func::signatureArguments(const args_t &args) const
+string Function::signatureArguments(const args_t &args) const
 {
     std::ostringstream o;
     o << typeName() << "(";

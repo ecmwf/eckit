@@ -17,7 +17,7 @@ namespace eckit {
 namespace maths {
 
 
-ParamDef::ParamDef(const string& name) : Expr(), name_(name)
+ParamDef::ParamDef(const string& name) : Expression(), name_(name)
 {
 }
 

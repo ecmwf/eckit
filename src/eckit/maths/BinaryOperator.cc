@@ -10,7 +10,7 @@
 
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/Vector.h"
-#include "eckit/maths/BinaryFunc.h"
+#include "eckit/maths/BinaryOperator.h"
 #include "eckit/maths/Optimiser.h"
 
 namespace eckit {
@@ -19,13 +19,13 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 #define GEN_BINFUNC_IMPL( f, c, op )                                                         \
-static Func::RegisterFactory< BinaryFunc< c > > f ## _register;                                                  \
+static Function::RegisterFactory< BinaryOperator< c > > f ## _register;                                                  \
 const char *opname(const c &)  { return #c; }                                            \
 const char *opsymbol(const c &)  { return #op; }                                            \
-ExpPtr f( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryFunc< c >::make(l,r) ); }                      \
-ExpPtr f( Expr& l, ExpPtr r )  { return ExpPtr( BinaryFunc< c >::make(l.self(),r) ); }                     \
-ExpPtr f( ExpPtr l, Expr& r )  { return ExpPtr( BinaryFunc< c >::make(l,r.self()) ); }                     \
-ExpPtr f( Expr& l, Expr& r )   { return ExpPtr( BinaryFunc< c >::make(l.self(),r.self()) ); }                    \
+ExpPtr f( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryOperator< c >::make(l,r) ); }                      \
+ExpPtr f( Expression& l, ExpPtr r )  { return ExpPtr( BinaryOperator< c >::make(l.self(),r) ); }                     \
+ExpPtr f( ExpPtr l, Expression& r )  { return ExpPtr( BinaryOperator< c >::make(l,r.self()) ); }                     \
+ExpPtr f( Expression& l, Expression& r )   { return ExpPtr( BinaryOperator< c >::make(l.self(),r.self()) ); }                    \
 ExpPtr operator op ( ValPtr p1, ValPtr p2 ) { return f( p1, p2 ); }                          \
 ExpPtr operator op ( ValPtr p1, ExpPtr p2 ) { return f( p1, p2 ); }                          \
 ExpPtr operator op ( ExpPtr p1, ValPtr p2 ) { return f( p1, p2 ); }                          \
@@ -83,35 +83,35 @@ struct Generic
 
 //--------------------------------------------------------------------------------------------
 
-static BinaryFunc<Prod>::Computer<Scalar,Scalar,Generic> prod_ssg;
-static BinaryFunc<Prod>::Computer<Scalar,Vector,Generic> prod_svg;
-static BinaryFunc<Prod>::Computer<Vector,Scalar,Generic> prod_vsg;
-static BinaryFunc<Prod>::Computer<Vector,Vector,Generic> prod_vvg;
+static BinaryOperator<Prod>::Computer<Scalar,Scalar,Generic> prod_ssg;
+static BinaryOperator<Prod>::Computer<Scalar,Vector,Generic> prod_svg;
+static BinaryOperator<Prod>::Computer<Vector,Scalar,Generic> prod_vsg;
+static BinaryOperator<Prod>::Computer<Vector,Vector,Generic> prod_vvg;
 
-static BinaryFunc<Div>::Computer<Scalar,Scalar,Generic> div_ssg;
-static BinaryFunc<Div>::Computer<Scalar,Vector,Generic> div_svg;
-static BinaryFunc<Div>::Computer<Vector,Scalar,Generic> div_vsg;
-static BinaryFunc<Div>::Computer<Vector,Vector,Generic> div_vvg;
+static BinaryOperator<Div>::Computer<Scalar,Scalar,Generic> div_ssg;
+static BinaryOperator<Div>::Computer<Scalar,Vector,Generic> div_svg;
+static BinaryOperator<Div>::Computer<Vector,Scalar,Generic> div_vsg;
+static BinaryOperator<Div>::Computer<Vector,Vector,Generic> div_vvg;
 
-static BinaryFunc<Add>::Computer<Scalar,Scalar,Generic> add_ssg;
-static BinaryFunc<Add>::Computer<Scalar,Vector,Generic> add_svg;
-static BinaryFunc<Add>::Computer<Vector,Scalar,Generic> add_vsg;
-static BinaryFunc<Add>::Computer<Vector,Vector,Generic> add_vvg;
+static BinaryOperator<Add>::Computer<Scalar,Scalar,Generic> add_ssg;
+static BinaryOperator<Add>::Computer<Scalar,Vector,Generic> add_svg;
+static BinaryOperator<Add>::Computer<Vector,Scalar,Generic> add_vsg;
+static BinaryOperator<Add>::Computer<Vector,Vector,Generic> add_vvg;
 
-static BinaryFunc<Sub>::Computer<Scalar,Scalar,Generic> sub_ssg;
-static BinaryFunc<Sub>::Computer<Scalar,Vector,Generic> sub_svg;
-static BinaryFunc<Sub>::Computer<Vector,Scalar,Generic> sub_vsg;
-static BinaryFunc<Sub>::Computer<Vector,Vector,Generic> sub_vvg;
+static BinaryOperator<Sub>::Computer<Scalar,Scalar,Generic> sub_ssg;
+static BinaryOperator<Sub>::Computer<Scalar,Vector,Generic> sub_svg;
+static BinaryOperator<Sub>::Computer<Vector,Scalar,Generic> sub_vsg;
+static BinaryOperator<Sub>::Computer<Vector,Vector,Generic> sub_vvg;
 
 //--------------------------------------------------------------------------------------------
 
 template < class T >
-BinaryFunc<T>::BinaryFunc(const args_t &args) : Func( args )
+BinaryOperator<T>::BinaryOperator(const args_t &args) : Function( args )
 {
 }
 
 template < class T >
-string BinaryFunc<T>::returnSignature() const
+string BinaryOperator<T>::returnSignature() const
 {
     for( args_t::const_iterator i = args_.begin(); i != args_.end(); ++i )
     {
@@ -122,34 +122,34 @@ string BinaryFunc<T>::returnSignature() const
 }
 
 template < class T >
-std::string BinaryFunc<T>::typeName() const
+std::string BinaryOperator<T>::typeName() const
 {
-    return BinaryFunc<T>::className();
+    return BinaryOperator<T>::className();
 }
 
 template < class T >
-string BinaryFunc<T>::className()
+string BinaryOperator<T>::className()
 {
     return opname( T() );
 }
 
 template < class T >
 template < class U, class V, class I >
-BinaryFunc<T>::Computer<U,V,I>::Computer()
+BinaryOperator<T>::Computer<U,V,I>::Computer()
 {
-    Func::dispatcher()[ sig() ] = &compute;
+    Function::dispatcher()[ sig() ] = &compute;
 }
 
 template < class T >
 template < class U, class V, class I >
-std::string BinaryFunc<T>::Computer<U,V,I>::sig()
+std::string BinaryOperator<T>::Computer<U,V,I>::sig()
 {
     return opname( T() ) + string("(") + U::sig() + string(",") + V::sig() + string(")");
 }
 
 template < class T >
 template < class U, class V, class I >
-ValPtr BinaryFunc<T>::Computer<U,V,I>::compute(const args_t &p)
+ValPtr BinaryOperator<T>::Computer<U,V,I>::compute(const args_t &p)
 {
     T op;
     typename U::value_t a = U::extract(p[0]);

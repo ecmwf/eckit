@@ -10,7 +10,7 @@
 
 #include <sstream>
 
-#include "eckit/maths/Expr.h"
+#include "eckit/maths/Expression.h"
 #include "eckit/maths/Value.h"
 #include "eckit/maths/Scope.h"
 #include "eckit/maths/Undef.h"
@@ -23,61 +23,61 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Expr::Expr()
+Expression::Expression()
 {
 }
 
-Expr::Expr(const args_t &args) :
+Expression::Expression(const args_t &args) :
     args_(args)
 {
 }
 
-Expr::~Expr()
+Expression::~Expression()
 {
 }
 
 
-ValPtr Expr::eval()
+ValPtr Expression::eval()
 {
-    Scope ctx("Expr::eval()");
+    Scope ctx("Expression::eval()");
     return optimise()->evaluate(ctx);
 }
 
-ValPtr Expr::eval( Scope& ctx, bool)
+ValPtr Expression::eval( Scope& ctx, bool)
 {
     return optimise()->evaluate(ctx);
 }
 
 
-ValPtr Expr::eval(Scope& scope, const args_t& args)
+ValPtr Expression::eval(Scope& scope, const args_t& args)
 {
-    Scope ctx("Expr::eval(Scope& scope, const args_t& args)", &scope);
+    Scope ctx("Expression::eval(Scope& scope, const args_t& args)", &scope);
     for(args_t::const_iterator j = args.begin(); j != args.end(); ++j) {
         ctx.pushArg(*j);
     }
     return optimise()->evaluate(ctx);
 }
 
-ExpPtr Expr::resolve(Scope & ctx)
+ExpPtr Expression::resolve(Scope & ctx)
 {
     return self();
 }
 
-ValPtr Expr::eval( ExpPtr e )
+ValPtr Expression::eval( ExpPtr e )
 {
-    Scope ctx("Expr::eval( ExpPtr e )", e);
+    Scope ctx("Expression::eval( ExpPtr e )", e);
     ValPtr res = optimise()->evaluate(ctx);
     return res;
 }
 
-ValPtr Expr::eval(  ExpPtr a, ExpPtr b )
+ValPtr Expression::eval(  ExpPtr a, ExpPtr b )
 {
-    Scope ctx("Expr::eval(  ExpPtr a, ExpPtr b )", a, b);
+    Scope ctx("Expression::eval(  ExpPtr a, ExpPtr b )", a, b);
     ValPtr res = optimise()->evaluate(ctx);
     return res;
 }
 
-ExpPtr Expr::param( size_t i) const
+ExpPtr Expression::param( size_t i) const
 {
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );
@@ -85,7 +85,7 @@ ExpPtr Expr::param( size_t i) const
 }
 
 
-ExpPtr Expr::param( size_t i, Scope& ctx ) const
+ExpPtr Expression::param( size_t i, Scope& ctx ) const
 {
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );
@@ -98,7 +98,7 @@ ExpPtr Expr::param( size_t i, Scope& ctx ) const
     return r;
 }
 
-void Expr::param(size_t i, ExpPtr p)
+void Expression::param(size_t i, ExpPtr p)
 {
     ASSERT( i < args_.size() );
     ASSERT( p );
@@ -106,7 +106,7 @@ void Expr::param(size_t i, ExpPtr p)
         args_[i] = p;
 }
 
-string Expr::str() const
+string Expression::str() const
 {
     std::ostringstream os;
     print(os);
@@ -114,7 +114,7 @@ string Expr::str() const
 }
 
 
-void Expr::printArgs(ostream &out) const
+void Expression::printArgs(ostream &out) const
 {
     size_t count = arity();
     for(size_t i = 0; i < count; ++i) {
@@ -123,7 +123,7 @@ void Expr::printArgs(ostream &out) const
     }
 }
 
-std::ostream& operator<<( std::ostream& os, const Expr& v)
+std::ostream& operator<<( std::ostream& os, const Expression& v)
 {
     if(format(os) == maths::CodeFormat)
     {

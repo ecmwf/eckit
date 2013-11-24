@@ -18,14 +18,14 @@
 
 #include "eckit/eckit.h"
 
-#include "eckit/maths/Expr.h"
+#include "eckit/maths/Expression.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-class Value : public Expr {
+class Value : public Expression {
 
 public: // methods
 
@@ -39,6 +39,8 @@ public: // methods
     Value( const args_t& args );
 
     virtual ~Value();
+
+private:
 
     virtual ExpPtr optimise();
 

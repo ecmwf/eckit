@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file BinaryFunc.h
+/// @file BinaryOperator.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date November 2013
@@ -18,7 +18,7 @@
 
 #include <functional>
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 #include "eckit/maths/Undef.h"
 
 
@@ -29,7 +29,7 @@ namespace maths {
 
 /// Generates a expressions
 template <class T>
-class BinaryFunc : public Func  {
+class BinaryOperator : public Function  {
 public:
 
     /// generator of of this expression type
@@ -38,12 +38,12 @@ public:
         args_t args;
         args.push_back( p0 );
         args.push_back( p1 );
-        return ExpPtr( new BinaryFunc<T>(args) );
+        return ExpPtr( new BinaryOperator<T>(args) );
     }
 
     static std::string className();
 
-    BinaryFunc( const args_t& args );
+    BinaryOperator( const args_t& args );
 
     virtual std::string typeName() const;
 
@@ -63,7 +63,7 @@ public:
         /// The signature that this computer implements
         static std::string sig();
 
-        /// Constructor regists the implementation of this computer in the Func::dispatcher()
+        /// Constructor regists the implementation of this computer in the Function::dispatcher()
         Computer();
 
         /// Computes the expression with the passed arguments
@@ -101,19 +101,19 @@ const char *opsymbol(const Mod&);
 
 #define GEN_BINFUNC_DECL( f, c, op )        \
 ExpPtr f( ExpPtr l = undef(), ExpPtr r = undef() ); \
-ExpPtr f( Expr& l, ExpPtr r );        \
-ExpPtr f( ExpPtr l, Expr& r );        \
-ExpPtr f( Expr& l, Expr& r );   \
+ExpPtr f( Expression& l, ExpPtr r );        \
+ExpPtr f( ExpPtr l, Expression& r );        \
+ExpPtr f( Expression& l, Expression& r );   \
 ExpPtr operator op ( ValPtr p1, ValPtr p2 );  \
 ExpPtr operator op ( ValPtr p1, ExpPtr p2 );  \
 ExpPtr operator op ( ExpPtr p1, ValPtr p2 );  \
 ExpPtr operator op ( ExpPtr p1, ExpPtr p2 );
 
-GEN_BINFUNC_DECL(prod,BinaryFunc<Prod>,*)
-GEN_BINFUNC_DECL(div,BinaryFunc<Div>,/)
-GEN_BINFUNC_DECL(add,BinaryFunc<Add>,+)
-GEN_BINFUNC_DECL(sub,BinaryFunc<Sub>,-)
-GEN_BINFUNC_DECL(mod,BinaryFunc<Mod>,%)
+GEN_BINFUNC_DECL(prod,BinaryOperator<Prod>,*)
+GEN_BINFUNC_DECL(div,BinaryOperator<Div>,/)
+GEN_BINFUNC_DECL(add,BinaryOperator<Add>,+)
+GEN_BINFUNC_DECL(sub,BinaryOperator<Sub>,-)
+GEN_BINFUNC_DECL(mod,BinaryOperator<Mod>,%)
 
 #undef GEN_BINFUNC_DECL
 

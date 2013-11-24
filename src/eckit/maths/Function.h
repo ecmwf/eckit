@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Func.h
+/// @file Function.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Func_h
-#define eckit_maths_Func_h
+#ifndef eckit_maths_Function_h
+#define eckit_maths_Function_h
 
-#include "eckit/maths/Expr.h"
+#include "eckit/maths/Expression.h"
 
 namespace eckit {
 namespace maths {
@@ -24,7 +24,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Represents a Function with some arguments
-class Func : public Expr {
+class Function : public Expression {
 
 public: // types
 
@@ -40,19 +40,19 @@ protected: // methods
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves
-    Func();
+    Function();
 
     /// Contructor taking a list of parameters
-    Func( const args_t& args );
+    Function( const args_t& args );
 
 public: // methods
 
-    virtual ~Func();
+    virtual ~Function();
 
     static dispatcher_t& dispatcher();
     static factory_t& factory();
 
-    static std::string className() { return "Func"; }
+    static std::string className() { return "Function"; }
 
 public: // virtual methods
 

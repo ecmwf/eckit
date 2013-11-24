@@ -19,25 +19,25 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-//static Func::RegisterFactory< Lambda > fmap_register;
+//static Function::RegisterFactory< Lambda > fmap_register;
 
-Lambda::Lambda(const args_t& args) : Func(args)
+Lambda::Lambda(const args_t& args) : Function(args)
 {
 }
 
-Lambda::Lambda( ExpPtr body ) : Func()
+Lambda::Lambda( ExpPtr body ) : Function()
 {
     args_.push_back(body);
 }
 
-Lambda::Lambda( const string& a, const string& b, ExpPtr body ) : Func()
+Lambda::Lambda( const string& a, const string& b, ExpPtr body ) : Function()
 {
     args_.push_back(maths::paramdef(a));
     args_.push_back(maths::paramdef(b));
     args_.push_back(body);
 }
 
-Lambda::Lambda( const string &a, ExpPtr body ) : Func()
+Lambda::Lambda( const string &a, ExpPtr body ) : Function()
 {
     args_.push_back(maths::paramdef(a));
     args_.push_back(body);

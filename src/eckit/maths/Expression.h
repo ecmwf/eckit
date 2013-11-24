@@ -13,8 +13,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Exp_h
-#define eckit_maths_Exp_h
+#ifndef eckit_maths_Expression_h
+#define eckit_maths_Expression_h
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
@@ -78,21 +78,21 @@ const int CodeFormat = 42; // To use with format() in Log..
 
 class Value;
 class List;
-class Expr;
+class Expression;
 class Scope;
 
 typedef double scalar_t;
 
 typedef boost::shared_ptr<Value>      ValPtr;
 typedef boost::shared_ptr<List>       ListPtr;
-typedef boost::shared_ptr<Expr> ExpPtr;
+typedef boost::shared_ptr<Expression> ExpPtr;
 
 typedef std::vector< ExpPtr > args_t;
 
 
 //--------------------------------------------------------------------------------------------
 
-/// Expr Error
+/// Expression Error
 class Error: public eckit::Exception {
 public:
     Error(const eckit::CodeLocation& loc, const string& s) : Exception( s, loc ) {}
@@ -101,8 +101,8 @@ public:
 //--------------------------------------------------------------------------------------------
 
 
-class Expr :
-    public boost::enable_shared_from_this<Expr>,
+class Expression :
+    public boost::enable_shared_from_this<Expression>,
     private boost::noncopyable {
 
 public: // methods
@@ -111,23 +111,23 @@ public: // methods
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves
-    Expr();
+    Expression();
 
     /// Contructor taking a list of parameters
     /// handle the setup of the parameters themselves
-    Expr( const args_t& args );
+    Expression( const args_t& args );
 
-    virtual ~Expr();
+    virtual ~Expression();
 
     ExpPtr self() { return shared_from_this(); }
 
     template< typename T >
     boost::shared_ptr<T> as()
     {
-        return boost::dynamic_pointer_cast<T,Expr>( shared_from_this() );
+        return boost::dynamic_pointer_cast<T,Expression>( shared_from_this() );
     }
 
-    friend std::ostream& operator<<( std::ostream& os, const Expr& v);
+    friend std::ostream& operator<<( std::ostream& os, const Expression& v);
 
     ValPtr eval();
     ValPtr eval( ExpPtr );

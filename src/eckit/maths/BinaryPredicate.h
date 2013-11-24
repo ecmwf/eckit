@@ -17,7 +17,7 @@
 
 #include <functional>
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 #include "eckit/maths/Boolean.h"
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/Undef.h"
@@ -31,7 +31,7 @@ namespace maths {
 ///       what means Greater( Vector( 1, 2, 3 ), Vector( 2, 0, 3 ) ) ?= Vector( 0, 1, 0 )
 
 template <class T>
-class BinaryPredicate : public Func  {
+class BinaryPredicate : public Function  {
 public:
 
     /// generator for this expression type
@@ -65,7 +65,7 @@ public:
         /// The signature that this computer implements
         static std::string sig();
 
-        /// Constructor regists the implementation of this computer in the Func::dispatcher()
+        /// Constructor regists the implementation of this computer in the Function::dispatcher()
         Computer();
 
         /// Computes the expression with the passed arguments
@@ -117,9 +117,9 @@ const char *opsymbol(const Or&);
 
 #define GEN_BINPRED_DECL( f, c, op )        \
 ExpPtr f( ExpPtr l = undef(), ExpPtr r = undef() ); \
-ExpPtr f( Expr& l, ExpPtr r );        \
-ExpPtr f( ExpPtr l, Expr& r );        \
-ExpPtr f( Expr& l, Expr& r );   \
+ExpPtr f( Expression& l, ExpPtr r );        \
+ExpPtr f( ExpPtr l, Expression& r );        \
+ExpPtr f( Expression& l, Expression& r );   \
 ExpPtr operator op ( ValPtr p1, ValPtr p2 );  \
 ExpPtr operator op ( ValPtr p1, ExpPtr p2 );  \
 ExpPtr operator op ( ExpPtr p1, ValPtr p2 );  \

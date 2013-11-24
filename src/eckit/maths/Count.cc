@@ -16,13 +16,13 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-static Func::RegisterFactory< Count > count_register;
+static Function::RegisterFactory< Count > count_register;
 
-Count::Count(const args_t& args) : Func(args)
+Count::Count(const args_t& args) : Function(args)
 {
 }
 
-Count::Count(ExpPtr e) : Func()
+Count::Count(ExpPtr e) : Function()
 {
     args_.push_back(e);
 }

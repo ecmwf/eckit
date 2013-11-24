@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file UnaryFunc.h
+/// @file UnaryOperator.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date November 2013
@@ -18,7 +18,7 @@
 
 #include <functional>
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 #include "eckit/maths/Undef.h"
 
 
@@ -30,7 +30,7 @@ namespace maths {
 /// Generates a expressions
 /// T is the operator type
 template <class T>
-class UnaryFunc : public Func {
+class UnaryOperator : public Function {
 public:
 
     /// generator for this expression type
@@ -38,12 +38,12 @@ public:
     {
         args_t args;
         args.push_back( p0 );
-        return ExpPtr( new UnaryFunc<T>(args) );
+        return ExpPtr( new UnaryOperator<T>(args) );
     }
 
     static std::string className();
 
-    UnaryFunc( const args_t& args );
+    UnaryOperator( const args_t& args );
 
     virtual std::string typeName() const;
 
@@ -61,7 +61,7 @@ public:
         /// The signature that this computer implements
         static std::string sig();
 
-        /// Constructor regists the implementation of this computer in the Func::dispatcher()
+        /// Constructor regists the implementation of this computer in the Function::dispatcher()
         Computer();
 
         /// Computes the expression with the passed arguments
@@ -86,11 +86,11 @@ const char *opsymbol( const Neg& );
 
 #define GEN_UNFUNC_DECL( f, c, op )   \
 ExpPtr f( ExpPtr e = undef() );       \
-ExpPtr f( Expr& e );            \
+ExpPtr f( Expression& e );            \
 ExpPtr operator op ( ValPtr e  );     \
 ExpPtr operator op ( ExpPtr p1 );
 
-GEN_UNFUNC_DECL(neg,UnaryFunc<Neg>,-)
+GEN_UNFUNC_DECL(neg,UnaryOperator<Neg>,-)
 
 #undef GEN_UNFUNC_DECL
 

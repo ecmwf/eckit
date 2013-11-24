@@ -15,7 +15,7 @@
 #ifndef eckit_maths_FMap_h
 #define eckit_maths_FMap_h
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 
 namespace eckit {
 namespace maths {
@@ -23,7 +23,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Generates a FMap combination of vectors
-class FMap : public Func {
+class FMap : public Function {
 
 public: // methods
 

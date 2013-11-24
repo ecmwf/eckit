@@ -16,7 +16,7 @@
 #ifndef eckit_maths_ProdAdd_h
 #define eckit_maths_ProdAdd_h
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 
 namespace eckit {
 namespace maths {
@@ -24,7 +24,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Generates a ProdAdd expressions
-class ProdAdd : public Func {
+class ProdAdd : public Function {
 
 public: // methods
 

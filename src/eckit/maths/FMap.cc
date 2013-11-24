@@ -16,13 +16,13 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-static Func::RegisterFactory< FMap > fmap_register;
+static Function::RegisterFactory< FMap > fmap_register;
 
-FMap::FMap(const args_t& args) : Func(args)
+FMap::FMap(const args_t& args) : Function(args)
 {
 }
 
-FMap::FMap( ExpPtr f,  ExpPtr list ) : Func()
+FMap::FMap( ExpPtr f,  ExpPtr list ) : Function()
 {
     args_.push_back(f);
     args_.push_back(list);

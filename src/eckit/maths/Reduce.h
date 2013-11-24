@@ -15,7 +15,7 @@
 #ifndef eckit_maths_Reduce_h
 #define eckit_maths_Reduce_h
 
-#include "eckit/maths/Func.h"
+#include "eckit/maths/Function.h"
 #include "eckit/maths/Undef.h"
 
 
@@ -25,7 +25,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Generates a Reduce combination of vectors
-class Reduce : public Func {
+class Reduce : public Function {
 
 public: // methods
 

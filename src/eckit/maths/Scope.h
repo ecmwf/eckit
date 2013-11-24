@@ -16,7 +16,7 @@
 #ifndef eckit_maths_Scope_h
 #define eckit_maths_Scope_h
 
-#include "eckit/maths/Expr.h"
+#include "eckit/maths/Expression.h"
 
 //--------------------------------------------------------------------------------------------
 

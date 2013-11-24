@@ -54,7 +54,7 @@ public:
     /// Tests list functions
     void test_list();
     /// Tests fmap expression
-    void test_fmap();
+    void test_map();
     /// Tests reduce expression
     void test_reduce();
     /// Tests zipwith expression
@@ -84,7 +84,7 @@ void TestExp::run()
     test_optimise_prodadd();
     test_operators();
     test_list();
-    test_fmap();
+    test_map();
     test_reduce();
     test_zipwith();
     test_predicates();
@@ -216,24 +216,24 @@ void TestExp::test_list()
     ASSERT( Scalar::extract(c3->eval()) == 5 );
 }
 
-void TestExp::test_fmap()
+void TestExp::test_map()
 {
     // simple fmap
 
-    ExpPtr f0 =  fmap( neg(), maths::list( a_ , b_, a_, b_ ) );
+    ExpPtr f0 =  maths::map( neg(), maths::list( a_ , b_, a_, b_ ) );
 
-    ASSERT( f0->str() == "FMap(Neg(?), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
+    ASSERT( f0->str() == "Map(Neg(?), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
 
     ASSERT( f0->eval()->str() == "List(Scalar(-2), Scalar(-4), Scalar(-2), Scalar(-4))" );
 
     // fmap with different types
 
-    ExpPtr f1 =  fmap( neg(), maths::list( a_ + b_, x_ ) );
+    ExpPtr f1 =  maths::map( neg(), maths::list( a_ + b_, x_ ) );
 
 //    std::cout << f1->str() << std::endl;
 //    std::cout << f1->eval()->str() << std::endl;
 
-    ASSERT( f1->str() == "FMap(Neg(?), List(Add(Scalar(2), Scalar(4)), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)))" );
+    ASSERT( f1->str() == "Map(Neg(?), List(Add(Scalar(2), Scalar(4)), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)))" );
 
     ASSERT( f1->eval()->str() == "List(Scalar(-6), Vector(-5, -5, -5, -5, -5, -5, -5, -5, -5, -5))" );
 
@@ -325,7 +325,7 @@ void TestExp::test_zipwith()
     std::cout << f0->str() << std::endl;
     std::cout << f0->eval()->str() << std::endl;
 
-    ASSERT( f0->eval()->str() == fmap( maths::prod(scalar(2.)), maths::list( a_ , b_, a_, b_ ) )->eval()->str() );
+    ASSERT( f0->eval()->str() == maths::map( maths::prod(scalar(2.)), maths::list( a_ , b_, a_, b_ ) )->eval()->str() );
 
 }
 

@@ -28,7 +28,7 @@ class Param : public Expr {
 
     string name_;
 
-    virtual ExpPtr resolve(Scope & ctx);
+    //virtual ExpPtr resolve(Scope & ctx);
 
 
 public: //  methods
@@ -40,8 +40,6 @@ public: //  methods
     Param(const string& name);
 
     virtual ~Param();
-
-    const string& name() const { return name_; }
 
     virtual ExpPtr optimise() { return shared_from_this(); }
 

@@ -54,7 +54,6 @@ ExpPtr Scope::nextArg()
         }
     }
 
-    cout << "NextArg " << *this << endl;
     ASSERT(args_.size());
     ExpPtr e = args_.front();
     args_.pop_front();
@@ -68,7 +67,7 @@ void Scope::pushArg(ExpPtr e)
 
 ExpPtr Scope::param(const string& name) const
 {
-    cout << "Scope::param " << name << " " << *this << endl;
+    //cout << endl << "LOOKING FOR '" << name << "' in " << *this << endl;
     map<string, ExpPtr>::const_iterator j = params_.find(name);
     if(j == params_.end()) {
         if(parent_) {
@@ -88,23 +87,16 @@ void Scope::param(const string& name, ExpPtr e)
 
 void Scope::print( std::ostream& out) const
 {
-    out << "Context[name=" << name_;
-    out << ",parent=";
-    if(parent_) {
-        out << *parent_;
-    }
-    else {
-        out << "null";
-    }
+    out << "Scope[name=" << name_;
 
-    out << ",args=(";
+    out << ", args=(";
 
     for(size_t i = 0; i < args_.size(); ++i) {
         if(i) out << ",";
         out << *(args_[i]);
     }
 
-    out << "),params={";
+    out << "), params={";
 
     size_t i = 0;
     for(map<string, ExpPtr>::const_iterator j = params_.begin(); j != params_.end(); ++j, ++i) {
@@ -114,6 +106,15 @@ void Scope::print( std::ostream& out) const
 
 
     out << "}";
+
+    out << ", parent=";
+    if(parent_) {
+        out << *parent_;
+    }
+    else {
+        out << "null";
+    }
+
 
     out << "]";
 }

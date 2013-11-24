@@ -49,11 +49,11 @@ string IfElse::ret_signature() const
 
 ValPtr IfElse::evaluate( Scope &ctx )
 {
-    std::cout << "evalute " << *this << " with " << ctx << endl;
+    //std::cout << "evalute " << *this << " with " << ctx << endl;
 
-    ExpPtr f = param(0, ctx); cout << "0: " << *f << endl;
-    ExpPtr i = param(1, ctx);cout << "1: " << *i << endl;
-    ExpPtr e = param(2, ctx);cout << "2: " << *e << endl;
+    ExpPtr f = param(0, ctx);
+    ExpPtr i = param(1, ctx);
+    ExpPtr e = param(2, ctx);
 
     ExpPtr v = f->evaluate(ctx);
 

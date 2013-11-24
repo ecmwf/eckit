@@ -89,10 +89,10 @@ ExpPtr Expr::param( size_t i, Scope& ctx ) const
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );
 
-    cout << "   PARAM " << i << " -> " << (*args_[i]) << endl;
-    cout << "         " << ctx << endl;
+    //cout << "   PARAM " << i << " -> " << (*args_[i]) << endl;
+    //cout << "         " << ctx << endl;
     ExpPtr r = args_[i]->resolve(ctx);
-    cout << "          " << *r << endl;
+    //cout << "          " << *r << endl;
 
     return r;
 }

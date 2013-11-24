@@ -27,7 +27,7 @@ ParamDef::~ParamDef()
 
 ExpPtr ParamDef::resolve(Scope & ctx)
 {
-    return ctx.param(name_);
+    return ctx.nextArg();
 }
 
 ExpPtr ParamDef::clone()

@@ -11,22 +11,8 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 
-//#include "eckit/maths/BinaryFunc.h"
-//#include "eckit/maths/BinaryPredicate.h"
-//#include "eckit/maths/Count.h"
-//#include "eckit/maths/Expr.h"
-//#include "eckit/maths/FMap.h"
-//#include "eckit/maths/Filter.h"
-//#include "eckit/maths/Reduce.h"
-//#include "eckit/maths/List.h"
-//#include "eckit/maths/Scalar.h"
-//#include "eckit/maths/UnaryFunc.h"
-//#include "eckit/maths/Vector.h"
-//#include "eckit/maths/ZipWith.h"
-//#include "eckit/maths/Bind.h"
 #include "eckit/maths/IfElse.h"
 #include "eckit/maths/Lambda.h"
-//#include "eckit/maths/Param.h"
 #include "eckit/maths/ParamDef.h"
 #include "eckit/maths/Call.h"
 
@@ -73,15 +59,18 @@ void YCombinator::run()
         cout << g() << endl;
     }
 
-    Math e = maths::lambda("1", "2",
-                           ifelse(Math("1") > Math("2"), b, c));
+    if(0) {
 
-    cout << e << endl;
+        Math e = maths::lambda("1", "2",
+                               ifelse(Math("1") > Math("2"), b, c));
 
-    e = maths::call(e);
-    cout << e(a, z) << endl;
+        cout << e << endl;
 
-    if(1)
+        e = maths::call(e);
+        cout << e(a, z) << endl;
+    }
+
+    if(0)
     {
         Math s = Math("a") - Math("b");
         Math f = maths::lambda("a", "b", s);
@@ -93,20 +82,22 @@ void YCombinator::run()
     if(1)
     {
         Math s = Math("n") - Math(1.0);
-        Math r = Math(maths::call(Math("recurse")))(Math("recurse"), s);
+        Math r = maths::call(Math("recurse"),Math("recurse"), s);
         Math e = Math("n") == Math(0.0);
         Math i = maths::ifelse(e, Math(1.0),  r * Math("n"));
 
         Math X = maths::lambda("recurse", "n", i);
 
         Math Y = maths::lambda("builder", "x",
-                               Math(maths::call(Math("builder")))(Math("builder"), Math("x")
+                               maths::call(Math("builder"),Math("builder"), Math("x")
                                                                   ));
-        cout << X << endl;
-        cout << Y << endl;
+        //cout << X << endl;
+        //cout << Y << endl;
 
-        Y = maths::call(Y);
-        cout << Y(X, Math(0.0)) << endl;
+        Math Z = maths::call(Y, X, Math(5.0));
+        cout << "-----------------------" << endl;
+        cout << Z << endl;
+        cout << Z() << endl;
     }
 
 

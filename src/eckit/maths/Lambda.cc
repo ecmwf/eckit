@@ -58,26 +58,31 @@ ValPtr Lambda::evaluate( Scope &ctx )
 ValPtr Lambda::call( Scope &ctx )
 {
 
-    std::cout << "evalute " << *this << " with " << ctx << endl;
-
+    //std::cout << endl << "EVALUATE LAMBDA " << *this << endl << " WITH " << ctx << endl;
+    //std::cout << "LAMBDA ARITY " << arity() << endl;
 
     ASSERT(arity());
     size_t last = arity()-1;
     ExpPtr body = param(last, ctx);
+
+   // std::cout << "LAMBDA BODY IS " << *body << endl;
 
     Scope scope("Lambda::evaluate",&ctx);
 
     for(size_t i = 0; i < last; ++i) {
 
         ExpPtr a = param(i);
+        //cout << "LAMBDA ARG " << i << " IS " << *a << endl;
         ASSERT(ParamDef::is(a));
         const string& name = a->as<ParamDef>()->name();
+        //cout << "LAMBDA NAME " << i << " IS " << name << endl;
 
         ExpPtr b = param(i, ctx);
+        //cout << "LAMBDA " << name << " IS " << *b << endl;
         scope.param(name, b);
     }
 
-    std::cout << "scope is " << scope << endl;
+    //std::cout << endl << "SCOPE OF LAMBDA IS " << scope << endl;
 
     return body->eval(scope, true);
 }

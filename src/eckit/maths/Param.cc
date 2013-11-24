@@ -46,10 +46,10 @@ ValPtr Param::evaluate( Scope &ctx )
     return e->eval();
 }
 
-ExpPtr Param::resolve( Scope &ctx )
+/*ExpPtr Param::resolve( Scope &ctx )
 {
-   return ctx.nextArg();
-}
+   return ctx.param(name_);
+}*/
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths

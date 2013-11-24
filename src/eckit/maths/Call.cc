@@ -11,6 +11,7 @@
 #include "eckit/maths/Call.h"
 #include "eckit/maths/Lambda.h"
 #include "eckit/maths/Scope.h"
+#include "eckit/maths/Value.h"
 
 
 namespace eckit {
@@ -29,6 +30,18 @@ Call::Call( ExpPtr f) : Func()
     args_.push_back(f);
 }
 
+Call::Call( ExpPtr f, ExpPtr a) : Func()
+{
+    args_.push_back(f);
+    args_.push_back(a);
+}
+
+Call::Call( ExpPtr f, ExpPtr a, ExpPtr b) : Func()
+{
+    args_.push_back(f);
+    args_.push_back(a);
+    args_.push_back(b);
+}
 
 string Call::ret_signature() const
 {
@@ -39,14 +52,14 @@ ValPtr Call::evaluate( Scope &ctx )
 {
     ExpPtr f = param(0, ctx);
 
-    args_t args;
-
     Scope scope("Call::evaluate", &ctx);
+    for(size_t i = 1; i < arity(); ++i) {
+        scope.pushArg(param(i, ctx)->eval(ctx, true));
+    }
 
-    //ctx.tranferArgs(scope);
+    //cout << endl << "SCOPE OF CALL is " << scope << endl;
 
-    //ASSERT(Function::is(f));
-    return f->as<Lambda>()->call(scope);
+    return f->eval(scope, true)->as<Lambda>()->call(scope);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -54,6 +67,16 @@ ValPtr Call::evaluate( Scope &ctx )
 ExpPtr call( ExpPtr f)
 {
     return ExpPtr( new Call(f) );
+}
+
+ExpPtr call( ExpPtr f, ExpPtr a)
+{
+    return ExpPtr( new Call(f, a) );
+}
+
+ExpPtr call( ExpPtr f, ExpPtr a, ExpPtr b)
+{
+    return ExpPtr( new Call(f, a, b) );
 }
 
 

@@ -24,6 +24,7 @@ List::List() : Value()
 
 List::List( ExpPtr e ) : Value()
 {
+    //FIXME: Wrong behaviour, cannot create a list of 1 list
     if( List::is(e) )
         args_ = List::extract(e); // copy
     else
@@ -38,6 +39,12 @@ List::List( const value_t& v ) : Value(v)
 {
 }
 
+void List::asCode(ostream &o) const
+{
+    o << "maths::list(" << printArgs(o) << ")";
+}
+
+
 ExpPtr List::clone()
 {
     ListPtr l = maths::list();
@@ -49,12 +56,15 @@ ExpPtr List::clone()
 
 ListPtr List::append(ExpPtr e)
 {
+    //FIXME: Not functional()
+
     args_.push_back(e);
     return this->as<List>();
 }
 
 ListPtr List::append(const List& l)
 {
+    //FIXME: Not functional()
     const value_t& t = l.args_;
     args_.reserve(args_.size() + t.size());
     std::copy(t.begin(), t.end(), std::back_inserter(args_) );
@@ -71,7 +81,7 @@ ListPtr List::append(const List& l)
 
 void List::print(ostream &o) const
 {
-    o << class_name() << "(";
+    o << className() << "(";
     for( size_t i = 0; i < args_.size(); ++i )
     {
         if(i) o << ", ";

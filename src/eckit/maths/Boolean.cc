@@ -27,12 +27,17 @@ ExpPtr Boolean::clone()
 
 void Boolean::print(ostream &o) const
 {
-    o << class_name() << "(" << v_ << ")";
+    o << className() << "(" << v_ << ")";
+}
+
+void Boolean::asCode(ostream &o) const
+{
+    o << "Math(" << (v_? "true" : "false") << ")";
 }
 
 Boolean::Boolean(const ExpPtr& e) : v_(0)
 {
-   ASSERT( e->ret_signature() == Boolean::sig() );
+   ASSERT( e->returnSignature() == Boolean::sig() );
    Scope dummy("Boolean::Boolean");
    v_ = Boolean::extract( e->evaluate(dummy) );
 }

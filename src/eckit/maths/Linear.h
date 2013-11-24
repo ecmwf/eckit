@@ -28,19 +28,22 @@ class Linear : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "Linear"; }
+    static std::string className() { return "Linear"; }
 
     Linear( const args_t& args );
 
     Linear( ExpPtr e );
 
-    virtual std::string type_name() const { return Linear::class_name(); }
-
-    virtual size_t arity() const { return 4; }
-
-    virtual std::string ret_signature() const;
-
     struct Register { Register(); };
+
+private:
+    virtual std::string typeName() const { return Linear::className(); }
+
+
+    virtual std::string returnSignature() const;
+
+
+    virtual void asCode( std::ostream& ) const;
 
 protected: // methods
 

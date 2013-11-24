@@ -20,6 +20,7 @@ static Func::RegisterFactory< Reduce > filter_register;
 
 Reduce::Reduce(const args_t &args) : Func(args)
 {
+    ASSERT(arity() == 2);
 }
 
 Reduce::Reduce( ExpPtr f,  ExpPtr list ) : Func()
@@ -28,7 +29,7 @@ Reduce::Reduce( ExpPtr f,  ExpPtr list ) : Func()
     args_.push_back(list);
 }
 
-string Reduce::ret_signature() const
+string Reduce::returnSignature() const
 {
     return Undef::sig(); /// @todo review this -- it could be the signature iterated over the list
 }
@@ -53,6 +54,12 @@ ValPtr Reduce::evaluate( Scope &ctx )
     }
 
     return e->evaluate(ctx);
+}
+
+
+void Reduce::asCode(ostream &o) const
+{
+    o << "maths::reduce(" << printArgs(o) << ")";
 }
 
 //--------------------------------------------------------------------------------------------

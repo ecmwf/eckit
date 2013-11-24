@@ -30,7 +30,7 @@ public: // types
 
 public: // methods
 
-    static std::string class_name() { return "List"; }
+    static std::string className() { return "List"; }
 
     static std::string sig() { return "l"; }
     static bool is ( const ExpPtr& e ) { return e->signature() == List::sig(); }
@@ -65,15 +65,17 @@ public: // methods
         return as<List>();
     }
 
-public: // virtual methods
+private: // virtual methods
 
-    virtual std::string type_name() const { return List::class_name(); }
+    virtual std::string typeName() const { return List::className(); }
     virtual std::string signature() const { return List::sig(); }
-    virtual std::string ret_signature() const { return List::sig(); }
+    virtual std::string returnSignature() const { return List::sig(); }
 
     virtual ExpPtr clone();
 
     virtual void print( std::ostream& o ) const;
+    virtual void asCode( std::ostream& ) const;
+
 };
 
 typedef boost::shared_ptr< List > ListPtr;

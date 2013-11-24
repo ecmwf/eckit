@@ -27,7 +27,7 @@ class Bind : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "Bind"; }
+    static std::string className() { return "Bind"; }
 
     Bind( const args_t& args );
 
@@ -35,13 +35,14 @@ public: // methods
 
     Bind( ExpPtr i, ExpPtr f, ExpPtr e );
 
-    virtual std::string type_name() const;
+private:
+    virtual std::string typeName() const;
 
-    virtual size_t arity() const { return 2; }
-
-    virtual std::string ret_signature() const;
+    virtual std::string returnSignature() const;
 
     virtual ValPtr evaluate( Scope& ctx );
+    virtual void asCode( std::ostream& o ) const;
+
 
 };
 

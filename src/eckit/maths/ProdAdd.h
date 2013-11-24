@@ -38,14 +38,12 @@ public: // methods
         return ExpPtr( new ProdAdd(args) );
     }
 
-    static std::string class_name() { return "ProdAdd"; }
+    static std::string className() { return "ProdAdd"; }
 
     ProdAdd( const args_t& args );
 
     ProdAdd( const ExpPtr& e );
 
-    virtual std::string type_name() const { return ProdAdd::class_name(); }
-    virtual std::string ret_signature() const;
 
     struct Register
     {
@@ -62,6 +60,15 @@ protected: // methods
 
     /// Generic prod_add implementation based on calling first add() then prod()
     static ValPtr compute_ggg( const args_t& p );
+
+private:
+
+    virtual std::string typeName() const { return ProdAdd::className(); }
+
+    virtual std::string returnSignature() const;
+
+    virtual void asCode( std::ostream& ) const;
+
 
 };
 

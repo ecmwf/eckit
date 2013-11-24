@@ -43,13 +43,13 @@ public:
         return ExpPtr( new BinaryPredicate<T>(args) );
     }
 
-    static std::string class_name();
+    static std::string className();
 
     BinaryPredicate( const args_t& args );
 
-    virtual std::string type_name() const;
+    virtual std::string typeName() const;
 
-    virtual std::string ret_signature() const;
+    virtual std::string returnSignature() const;
 
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
@@ -72,6 +72,9 @@ public:
         static ValPtr compute( const args_t& p );
     };
 
+    virtual void asCode( std::ostream& o ) const {
+        o << '(' << args_[0] << ' ' << opsymbol(T()) << ' ' << args_[0] << ')';
+    }
 };
 
 //--------------------------------------------------------------------------------------------
@@ -98,6 +101,15 @@ const char *opname(const Equal&);
 const char *opname(const NotEqual&);
 const char *opname(const And&);
 const char *opname(const Or&);
+
+const char *opsymbol(const Greater&);
+const char *opsymbol(const GreaterEqual&);
+const char *opsymbol(const Less&);
+const char *opsymbol(const LessEqual&);
+const char *opsymbol(const Equal&);
+const char *opsymbol(const NotEqual&);
+const char *opsymbol(const And&);
+const char *opsymbol(const Or&);
 
 //--------------------------------------------------------------------------------------------
 

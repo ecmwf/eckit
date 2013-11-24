@@ -29,21 +29,26 @@ class Count : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "Count"; }
+    static std::string className() { return "Count"; }
 
     Count( const args_t& args );
 
     Count( ExpPtr e = undef() );
 
-    virtual std::string type_name() const { return Count::class_name(); }
+private:
+
+    virtual std::string typeName() const { return Count::className(); }
 
     virtual size_t arity() const { return 1; }
 
-    virtual std::string ret_signature() const;
+    virtual std::string returnSignature() const;
 
     virtual ValPtr evaluate( Scope& ctx );
 
     virtual ExpPtr optimise();
+
+    virtual void asCode( std::ostream& ) const;
+
 };
 
 //--------------------------------------------------------------------------------------------

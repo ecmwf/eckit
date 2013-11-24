@@ -62,6 +62,10 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
+const int CodeFormat = 42; // To use with format() in Log..
+
+//--------------------------------------------------------------------------------------------
+
 #if 0
 #define DBG     std::cout << Here() << std::endl;
 #define DBGX(x) std::cout << Here() << " " << #x << " -> " << x << std::endl;
@@ -103,7 +107,7 @@ class Expr :
 
 public: // methods
 
-    static std::string class_name() { return "Exp"; }
+    static std::string className() { return "Exp"; }
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves
@@ -123,11 +127,7 @@ public: // methods
         return boost::dynamic_pointer_cast<T,Expr>( shared_from_this() );
     }
 
-    friend std::ostream& operator<<( std::ostream& os, const Expr& v)
-    {
-        v.print(os);
-        return os;
-    }
+    friend std::ostream& operator<<( std::ostream& os, const Expr& v);
 
     ValPtr eval();
     ValPtr eval( ExpPtr );
@@ -150,16 +150,18 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string type_name() const = 0;
+    virtual std::string typeName() const = 0;
     virtual ExpPtr clone() = 0;
     virtual std::string signature() const = 0;
-    virtual std::string ret_signature() const = 0;
+    virtual std::string returnSignature() const = 0;
 
     virtual ExpPtr optimise() = 0;
     virtual ValPtr evaluate( Scope& ) = 0;
 
 protected: // members
 
+    ostream &printArgs(std::ostream& ) const;
+    virtual void asCode( std::ostream& ) const = 0;
 
 
     args_t args_;     ///< parameters of this expression

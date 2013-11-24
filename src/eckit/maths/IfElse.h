@@ -27,17 +27,22 @@ class IfElse : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "IfElse"; }
+    static std::string className() { return "IfElse"; }
 
     IfElse( const args_t& args );
 
     IfElse( ExpPtr f, ExpPtr i, ExpPtr e );
 
-    virtual std::string type_name() const { return IfElse::class_name(); }
+private:
 
-    virtual std::string ret_signature() const;
+    virtual std::string typeName() const { return IfElse::className(); }
+
+    virtual std::string returnSignature() const;
 
     virtual ValPtr evaluate( Scope& ctx );
+
+    virtual void asCode( std::ostream& ) const;
+
 
 };
 

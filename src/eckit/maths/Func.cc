@@ -46,7 +46,7 @@ Func::factory_t& Func::factory()
 
 string Func::signature() const
 {
-    return signature_args( args_ );
+    return signatureArguments( args_ );
 }
 
 ValPtr Func::evaluate( Scope &ctx )
@@ -61,7 +61,7 @@ ValPtr Func::evaluate( Scope &ctx )
         args[i] = param(i, ctx)->evaluate(ctx)->self();
     }
 
-    std::string sig = signature_args( args );
+    std::string sig = signatureArguments( args );
 
     DBGX(sig);
 
@@ -95,7 +95,7 @@ ExpPtr Func::optimise()
 
 ExpPtr Func::clone()
 {
-    key_t k = type_name();
+    key_t k = typeName();
     factory_t& f = factory();
     factory_t::iterator itr = f.find( k );
     if( itr == f.end() )
@@ -115,19 +115,13 @@ ExpPtr Func::clone()
 
 void Func::print(ostream &o) const
 {
-    o << type_name() << "(";
-    for( size_t i = 0; i < arity(); ++i )
-    {
-        if(i) o << ", ";
-        o << *args_[i]; // no context applied
-    }
-    o << ")";
+    o << typeName() << "(" << printArgs(o) << ")";
 }
 
-string Func::signature_args(const args_t &args) const
+string Func::signatureArguments(const args_t &args) const
 {
     std::ostringstream o;
-    o << type_name() << "(";
+    o << typeName() << "(";
     for( size_t i = 0; i < args.size(); ++i )
     {
         if(i) o << ",";

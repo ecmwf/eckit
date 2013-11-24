@@ -29,7 +29,7 @@ public: // static methods
     typedef bool value_t;
 
     static std::string sig() { return "b"; }
-    static std::string class_name() { return "Boolean"; }
+    static std::string className() { return "Boolean"; }
     static bool is ( const ExpPtr& e ) { return e->signature() == Boolean::sig(); }
     static scalar_t extract ( const ExpPtr& e )
     {
@@ -48,15 +48,17 @@ public: // methods
     /// @returns a reference to the scalar
     value_t& ref_value() { return v_; }
 
-public: // virtual methods
+private: // virtual methods
 
-    virtual std::string type_name() const { return Boolean::class_name(); }
+    virtual std::string typeName() const { return Boolean::className(); }
     virtual std::string signature() const { return Boolean::sig(); }
-    virtual std::string ret_signature() const { return Boolean::sig(); }
+    virtual std::string returnSignature() const { return Boolean::sig(); }
 
     virtual ExpPtr clone();
 
     virtual void print( std::ostream& o ) const;
+    virtual void asCode( std::ostream& o ) const;
+
 
 protected: // members
 

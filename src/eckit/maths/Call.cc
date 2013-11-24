@@ -43,7 +43,7 @@ Call::Call( ExpPtr f, ExpPtr a, ExpPtr b) : Func()
     args_.push_back(b);
 }
 
-string Call::ret_signature() const
+string Call::returnSignature() const
 {
     return ";";
 }
@@ -79,6 +79,11 @@ ExpPtr call( ExpPtr f, ExpPtr a, ExpPtr b)
     return ExpPtr( new Call(f, a, b) );
 }
 
+
+void Call::asCode(ostream &o) const
+{
+    o << "maths::call(" << printArgs(o) << ")";
+}
 
 //--------------------------------------------------------------------------------------------
 

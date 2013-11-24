@@ -41,13 +41,13 @@ public:
         return ExpPtr( new UnaryFunc<T>(args) );
     }
 
-    static std::string class_name();
+    static std::string className();
 
     UnaryFunc( const args_t& args );
 
-    virtual std::string type_name() const;
+    virtual std::string typeName() const;
 
-    virtual std::string ret_signature() const;
+    virtual std::string returnSignature() const;
 
     /// Applies an implementation of the unary operator
     /// U is the left operand type ( Scalar, Vector, ... )
@@ -67,6 +67,10 @@ public:
         /// Computes the expression with the passed arguments
         static ValPtr compute( const args_t& p );
     };
+
+    virtual void asCode( std::ostream& o ) const {
+        o << opsymbol(T()) << '(' << args_[0] << ')';
+    }
 };
 
 //--------------------------------------------------------------------------------------------
@@ -74,6 +78,7 @@ public:
 typedef negate<scalar_t>  Neg;
 
 const char *opname( const Neg& );
+const char *opsymbol( const Neg& );
 
 //--------------------------------------------------------------------------------------------
 

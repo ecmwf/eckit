@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <iomanip>
+
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 
@@ -54,8 +56,12 @@ void YCombinator::run()
                                        Math(maths::call(Math("recurse"),Math("recurse"), Math("n") - Math(1.0))) * Math("n"))),
                                      Math("m"))));
 
+    setformat(cout, maths::CodeFormat);
     cout << "-----------------------" << endl;
     cout << Y << endl;
+
+    setformat(cout, 0);
+
     cout << "-----------------------" << endl;
     cout << Y(5.0) << endl;
 

@@ -46,10 +46,11 @@ ValPtr Param::evaluate( Scope &ctx )
     return e->eval();
 }
 
-/*ExpPtr Param::resolve( Scope &ctx )
+void Param::asCode(ostream &o) const
 {
-   return ctx.param(name_);
-}*/
+    o << "Math(\"" << name_ << "\")";
+}
+
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths

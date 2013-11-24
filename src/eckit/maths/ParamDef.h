@@ -32,7 +32,7 @@ class ParamDef : public Expr {
 
 public: //  methods
 
-    static std::string class_name() { return "ParamDef"; }
+    static std::string className() { return "ParamDef"; }
     static std::string sig() { return ":"; }
     static bool is ( const ExpPtr& e ) { return e->signature() == ParamDef::sig(); }
 
@@ -42,17 +42,20 @@ public: //  methods
 
     const string& name() const { return name_; }
 
+private:
+
     virtual ExpPtr optimise() { return shared_from_this(); }
 
     virtual ValPtr evaluate( Scope& ctx );
 
     virtual ExpPtr clone();
 
-    virtual std::string type_name() const { return ParamDef::class_name(); }
+    virtual std::string typeName() const { return ParamDef::className(); }
     virtual std::string signature() const { return ParamDef::sig(); }
-    virtual std::string ret_signature() const { return ParamDef::sig(); }
+    virtual std::string returnSignature() const { return ParamDef::sig(); }
 
     virtual void print( std::ostream& o ) const;
+    virtual void asCode( std::ostream& ) const;
 
 };
 

@@ -34,10 +34,10 @@ IfElse::IfElse( ExpPtr f,  ExpPtr i, ExpPtr e ) : Func()
     ASSERT(arity() == 3);
 }
 
-string IfElse::ret_signature() const
+string IfElse::returnSignature() const
 {
-    string i = param(1)->ret_signature();
-    string e = param(2)->ret_signature();
+    string i = param(1)->returnSignature();
+    string e = param(2)->returnSignature();
 
     if(i == e) {
         return i;
@@ -68,6 +68,13 @@ ValPtr IfElse::evaluate( Scope &ctx )
 
 
 }
+
+
+void IfElse::asCode(ostream &o) const
+{
+    o << "maths::ifelse(" << printArgs(o) << ")";
+}
+
 
 //--------------------------------------------------------------------------------------------
 

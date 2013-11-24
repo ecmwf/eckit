@@ -29,7 +29,7 @@ Filter::Filter( ExpPtr pred,  ExpPtr list ) : Func()
     args_.push_back(list);
 }
 
-string Filter::ret_signature() const
+string Filter::returnSignature() const
 {
     return List::sig();
 }
@@ -58,6 +58,13 @@ ValPtr Filter::evaluate( Scope &ctx )
 
     return res;
 }
+
+
+void Filter::asCode(ostream &o) const
+{
+    o << "maths::filter(" << printArgs(o) << ")";
+}
+
 
 //--------------------------------------------------------------------------------------------
 

@@ -27,12 +27,12 @@ ExpPtr Scalar::clone()
 
 void Scalar::print(ostream &o) const
 {
-    o << class_name() << "(" << v_ << ")";
+    o << className() << "(" << v_ << ")";
 }
 
 Scalar::Scalar(const ExpPtr& e) : v_(0)
 {
-   ASSERT( e->ret_signature() == Scalar::sig() );
+   ASSERT( e->returnSignature() == Scalar::sig() );
    Scope dummy("Scalar::Scalar");
    v_ = Scalar::extract( e->evaluate(dummy) );
 }
@@ -43,6 +43,12 @@ ExpPtr scalar(const scalar_t &s)
 {
     return ExpPtr( new Scalar(s) );
 }
+
+void Scalar::asCode(ostream &o) const
+{
+    o << "Math(" << v_ << ")";
+}
+
 
 //--------------------------------------------------------------------------------------------
 

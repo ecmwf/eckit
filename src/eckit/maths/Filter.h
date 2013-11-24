@@ -28,19 +28,25 @@ class Filter : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "Filter"; }
+    static std::string className() { return "Filter"; }
 
     Filter( const args_t& args );
 
     Filter( ExpPtr pred = undef(), ExpPtr list = undef() );
 
-    virtual std::string type_name() const { return Filter::class_name(); }
+private:
 
-    virtual size_t arity() const { return 2; }
+    virtual std::string typeName() const { return Filter::className(); }
 
-    virtual std::string ret_signature() const;
+    //virtual size_t arity() const { return 2; }
+
+    virtual std::string returnSignature() const;
 
     virtual ValPtr evaluate( Scope& ctx );
+
+    virtual void asCode( std::ostream& ) const;
+
+
 };
 
 //--------------------------------------------------------------------------------------------

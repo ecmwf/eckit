@@ -32,7 +32,7 @@ public: // types
 
 public: // methods
 
-    static std::string class_name() { return "Vector"; }
+    static std::string className() { return "Vector"; }
 
     static std::string sig() { return "v"; }
     static bool is ( const ExpPtr& e ) { return e->signature() == Vector::sig(); }
@@ -54,13 +54,14 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string type_name() const { return Vector::class_name(); }
+    virtual std::string typeName() const { return Vector::className(); }
     virtual std::string signature() const { return Vector::sig(); }
-    virtual std::string ret_signature() const { return Vector::sig(); }
+    virtual std::string returnSignature() const { return Vector::sig(); }
 
     virtual ExpPtr clone();
 
     virtual void print( std::ostream& o ) const;
+    virtual void asCode( std::ostream& o ) const;
 
 protected: // members
 

@@ -27,6 +27,16 @@ const char *opname(const NotEqual&)      { return "NotEqual";  }
 const char *opname(const And&)           { return "And";  }
 const char *opname(const Or&)            { return "Or";  }
 
+const char *opsymbol(const Greater&)       { return ">";  }
+const char *opsymbol(const GreaterEqual&)  { return ">=";  }
+const char *opsymbol(const Less&)          { return "<";  }
+const char *opsymbol(const LessEqual&)     { return "<=";  }
+const char *opsymbol(const Equal&)         { return "==";  }
+const char *opsymbol(const NotEqual&)      { return "!=";  }
+const char *opsymbol(const And&)           { return "&&";  }
+const char *opsymbol(const Or&)            { return "||";  }
+
+
 //--------------------------------------------------------------------------------------------
 
 struct Generic
@@ -84,19 +94,19 @@ BinaryPredicate<T>::BinaryPredicate(const args_t &args) : Func( args )
 }
 
 template < class T >
-string BinaryPredicate<T>::ret_signature() const
+string BinaryPredicate<T>::returnSignature() const
 {
     return Boolean::sig();
 }
 
 template < class T >
-std::string BinaryPredicate<T>::type_name() const
+std::string BinaryPredicate<T>::typeName() const
 {
-    return BinaryPredicate<T>::class_name();
+    return BinaryPredicate<T>::className();
 }
 
 template < class T >
-string BinaryPredicate<T>::class_name()
+string BinaryPredicate<T>::className()
 {
     return opname( T() );
 }

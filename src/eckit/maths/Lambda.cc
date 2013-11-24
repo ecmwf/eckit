@@ -45,7 +45,7 @@ Lambda::Lambda( const string &a, ExpPtr body ) : Func()
 
 
 
-string Lambda::ret_signature() const
+string Lambda::returnSignature() const
 {
     return "()";
 }
@@ -86,6 +86,13 @@ ValPtr Lambda::call( Scope &ctx )
 
     return body->eval(scope, true);
 }
+
+
+void Lambda::asCode(ostream &o) const
+{
+    o << "maths::lambda(" << printArgs(o) << ")";
+}
+
 
 //--------------------------------------------------------------------------------------------
 

@@ -51,6 +51,11 @@ ValPtr ParamDef::evaluate( Scope &ctx )
     //return boost::static_pointer_cast<Value>( shared_from_this() );
 }
 
+void ParamDef::asCode(ostream &o) const
+{
+    o << '"' << name_ << '"';
+}
+
 
 //--------------------------------------------------------------------------------------------
 

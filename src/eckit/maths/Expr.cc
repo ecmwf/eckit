@@ -84,6 +84,7 @@ ExpPtr Expr::param( size_t i) const
     return args_[i];
 }
 
+
 ExpPtr Expr::param( size_t i, Scope& ctx ) const
 {
     ASSERT( i < args_.size() );
@@ -112,6 +113,28 @@ string Expr::str() const
     return os.str();
 }
 
+
+ostream& Expr::printArgs(ostream &out) const
+{
+    size_t count = arity();
+    for(size_t i = 0; i < count; ++i) {
+        if(i) out << ", ";
+        out << *args_[i];
+    }
+    return out;
+}
+
+std::ostream& operator<<( std::ostream& os, const Expr& v)
+{
+    if(format(os) == maths::CodeFormat)
+    {
+        v.asCode(os);
+    }
+    else {
+        v.print(os);
+    }
+    return os;
+}
 
 //--------------------------------------------------------------------------------------------
 

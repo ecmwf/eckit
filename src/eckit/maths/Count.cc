@@ -27,7 +27,7 @@ Count::Count(ExpPtr e) : Func()
     args_.push_back(e);
 }
 
-string Count::ret_signature() const
+string Count::returnSignature() const
 {
     return Scalar::sig();
 }
@@ -39,10 +39,17 @@ ValPtr Count::evaluate( Scope &ctx )
 
 ExpPtr Count::optimise()
 {
+    //FIXME: Wrong behaviour
     if( Undef::is( args_[0] ) )
         return shared_from_this();
     else
         return maths::scalar( args_[0]->arity() );
+}
+
+
+void Count::asCode(ostream &o) const
+{
+    o << "maths::count(" << printArgs(o) << ")";
 }
 
 //--------------------------------------------------------------------------------------------

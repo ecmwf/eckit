@@ -18,6 +18,7 @@ namespace maths {
 
 ZipWith::ZipWith(const args_t& args) : Func(args)
 {
+    ASSERT(arity() == 3);
 }
 
 ZipWith::ZipWith( ExpPtr f, ExpPtr list0, ExpPtr list1 ) : Func()
@@ -27,7 +28,7 @@ ZipWith::ZipWith( ExpPtr f, ExpPtr list0, ExpPtr list1 ) : Func()
     args_.push_back(list1);
 }
 
-string ZipWith::ret_signature() const
+string ZipWith::returnSignature() const
 {
     return List::sig();
 }
@@ -56,6 +57,11 @@ ValPtr ZipWith::evaluate( Scope &ctx )
     }
 
     return res;
+}
+
+void ZipWith::asCode(ostream &o) const
+{
+    o << "maths::zipWith(" << printArgs(o) << ")";
 }
 
 //--------------------------------------------------------------------------------------------

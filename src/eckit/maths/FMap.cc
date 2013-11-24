@@ -28,7 +28,7 @@ FMap::FMap( ExpPtr f,  ExpPtr list ) : Func()
     args_.push_back(list);
 }
 
-string FMap::ret_signature() const
+string FMap::returnSignature() const
 {
     return List::sig();
 }
@@ -54,6 +54,13 @@ ValPtr FMap::evaluate( Scope &ctx )
 
     return res;
 }
+
+
+void FMap::asCode(ostream &o) const
+{
+    o << "maths::fmap(" << printArgs(o) << ")";
+}
+
 
 //--------------------------------------------------------------------------------------------
 

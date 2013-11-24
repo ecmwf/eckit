@@ -21,6 +21,7 @@ namespace maths {
 #define GEN_BINFUNC_IMPL( f, c, op )                                                         \
 static Func::RegisterFactory< BinaryFunc< c > > f ## _register;                                                  \
 const char *opname(const c &)  { return #c; }                                            \
+const char *opsymbol(const c &)  { return #op; }                                            \
 ExpPtr f( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryFunc< c >::make(l,r) ); }                      \
 ExpPtr f( Expr& l, ExpPtr r )  { return ExpPtr( BinaryFunc< c >::make(l.self(),r) ); }                     \
 ExpPtr f( ExpPtr l, Expr& r )  { return ExpPtr( BinaryFunc< c >::make(l,r.self()) ); }                     \
@@ -110,24 +111,24 @@ BinaryFunc<T>::BinaryFunc(const args_t &args) : Func( args )
 }
 
 template < class T >
-string BinaryFunc<T>::ret_signature() const
+string BinaryFunc<T>::returnSignature() const
 {
     for( args_t::const_iterator i = args_.begin(); i != args_.end(); ++i )
     {
-        if ( (*i)->ret_signature() == Vector::sig() )
+        if ( (*i)->returnSignature() == Vector::sig() )
             return Vector::sig();
     }
     return Scalar::sig();
 }
 
 template < class T >
-std::string BinaryFunc<T>::type_name() const
+std::string BinaryFunc<T>::typeName() const
 {
-    return BinaryFunc<T>::class_name();
+    return BinaryFunc<T>::className();
 }
 
 template < class T >
-string BinaryFunc<T>::class_name()
+string BinaryFunc<T>::className()
 {
     return opname( T() );
 }

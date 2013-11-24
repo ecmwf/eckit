@@ -32,7 +32,7 @@ ExpPtr Vector::clone()
 
 void Vector::print(ostream &o) const
 {
-    o << class_name() << "(";
+    o << className() << "(";
     for( size_t i = 0; i < v_.size(); ++i )
     {
         if(i) o << ", ";
@@ -40,6 +40,19 @@ void Vector::print(ostream &o) const
     }
     o << ")";
 }
+
+void Vector::asCode(ostream &o) const
+{
+    o << "maths::vector(";
+    o << className() << "(";
+    for( size_t i = 0; i < v_.size(); ++i )
+    {
+        if(i) o << ", ";
+        o << v_[i];
+    }
+    o << ")";
+}
+
 
 //--------------------------------------------------------------------------------------------
 

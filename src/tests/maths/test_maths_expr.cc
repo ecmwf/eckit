@@ -119,7 +119,7 @@ void TestExp::test_optimise_scalars()
 
     DBG;
 
-    ASSERT( e->ret_signature() == Vector::sig() );
+    ASSERT( e->returnSignature() == Vector::sig() );
 
     DBG;
     // signature before reducing
@@ -144,7 +144,7 @@ void TestExp::test_optimise_recursive_scalars()
     ExpPtr c4 = maths::add(c3,c3);
     ExpPtr e  = maths::add(c4,c4);
 
-    ASSERT( e->ret_signature() == Scalar::sig() );
+    ASSERT( e->returnSignature() == Scalar::sig() );
 
     // signature before reducing
     ASSERT( e->signature() == "Add(Add(Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s))),Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s)))),Add(Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s))),Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s)))))" );

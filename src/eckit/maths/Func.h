@@ -52,7 +52,7 @@ public: // methods
     static dispatcher_t& dispatcher();
     static factory_t& factory();
 
-    static std::string class_name() { return "Func"; }
+    static std::string className() { return "Func"; }
 
 public: // virtual methods
 
@@ -69,7 +69,7 @@ public: // virtual methods
     template< typename T >
     struct RegisterFactory
     {
-        RegisterFactory() { factory()[ T::class_name() ] = &(RegisterFactory<T>::build); }
+        RegisterFactory() { factory()[ T::className() ] = &(RegisterFactory<T>::build); }
         static ExpPtr build( const args_t& args )
         {
             return ExpPtr( new T( args ) );
@@ -78,7 +78,7 @@ public: // virtual methods
 
 protected: // methods
 
-    std::string signature_args( const args_t& args ) const;
+    std::string signatureArguments( const args_t& args ) const;
 
 };
 

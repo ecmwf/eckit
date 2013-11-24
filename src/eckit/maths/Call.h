@@ -27,7 +27,7 @@ class Call : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "Call"; }
+    static std::string className() { return "Call"; }
 
     Call( const args_t& args );
 
@@ -35,13 +35,14 @@ public: // methods
     Call( ExpPtr f, ExpPtr a);
     Call( ExpPtr f, ExpPtr a, ExpPtr b);
 
-    virtual std::string type_name() const { return Call::class_name(); }
+    virtual std::string typeName() const { return Call::className(); }
 
     //virtual size_t arity() const { return 2; }
 
-    virtual std::string ret_signature() const;
+    virtual std::string returnSignature() const;
 
     virtual ValPtr evaluate( Scope& ctx );
+    virtual void asCode( std::ostream& o ) const;
 
 };
 

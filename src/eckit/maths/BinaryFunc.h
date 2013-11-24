@@ -41,13 +41,13 @@ public:
         return ExpPtr( new BinaryFunc<T>(args) );
     }
 
-    static std::string class_name();
+    static std::string className();
 
     BinaryFunc( const args_t& args );
 
-    virtual std::string type_name() const;
+    virtual std::string typeName() const;
 
-    virtual std::string ret_signature() const;
+    virtual std::string returnSignature() const;
 
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
@@ -69,6 +69,10 @@ public:
         /// Computes the expression with the passed arguments
         static ValPtr compute( const args_t& p );
     };
+
+    virtual void asCode( std::ostream& o ) const {
+        o << '(' << args_[0] << ' ' << opsymbol(T()) << ' ' << args_[0] << ')';
+    }
 };
 
 //--------------------------------------------------------------------------------------------
@@ -84,6 +88,12 @@ const char *opname(const Div&);
 const char *opname(const Add&);
 const char *opname(const Sub&);
 const char *opname(const Mod&);
+
+const char *opsymbol(const Prod&);
+const char *opsymbol(const Div&);
+const char *opsymbol(const Add&);
+const char *opsymbol(const Sub&);
+const char *opsymbol(const Mod&);
 
 //--------------------------------------------------------------------------------------------
 

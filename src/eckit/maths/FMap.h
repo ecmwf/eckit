@@ -27,19 +27,21 @@ class FMap : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "FMap"; }
+    static std::string className() { return "FMap"; }
 
     FMap( const args_t& args );
 
     FMap( ExpPtr f, ExpPtr l );
 
-    virtual std::string type_name() const { return FMap::class_name(); }
+private:
 
-    //virtual size_t arity() const { return 2; }
+    virtual std::string typeName() const { return FMap::className(); }
 
-    virtual std::string ret_signature() const;
+    virtual std::string returnSignature() const;
 
     virtual ValPtr evaluate( Scope& ctx );
+
+    virtual void asCode( std::ostream& ) const;
 
 };
 

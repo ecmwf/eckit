@@ -22,6 +22,7 @@ static Func::RegisterFactory< Linear > count_register;
 
 Linear::Linear(const args_t &args) : Func(args)
 {
+    ASSERT(arity() == 4);
 }
 
 Linear::Linear(ExpPtr e) : Func()
@@ -87,14 +88,20 @@ ValPtr Linear::compute( const args_t& p )
     return ValPtr(res);
 }
 
-string Linear::ret_signature() const
+
+void Linear::asCode(ostream &o) const
+{
+    o << "((" << param(0) << " + " << param(1) << ") * (" << param(2) << " + " << param(3) << "))";
+}
+
+string Linear::returnSignature() const
 {
     return Vector::sig();
 }
 
 Linear::Register::Register()
 {
-    Func::dispatcher()[ class_name() + "(s,v,s,v)" ] = &compute;
+    Func::dispatcher()[ className() + "(s,v,s,v)" ] = &compute;
 }
 
 //--------------------------------------------------------------------------------------------

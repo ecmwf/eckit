@@ -32,6 +32,7 @@ GEN_UNFUNC_IMPL(neg,UnaryFunc<Neg>,-)
 //--------------------------------------------------------------------------------------------
 
 const char *opname(const Neg&)  { return "Neg";  }
+const char *opsymbol(const Neg&)  { return "-";  }
 
 //--------------------------------------------------------------------------------------------
 
@@ -69,19 +70,19 @@ UnaryFunc<T>::UnaryFunc(const args_t &args) : Func( args )
 }
 
 template < class T >
-string UnaryFunc<T>::ret_signature() const
+string UnaryFunc<T>::returnSignature() const
 {
-    return args_[0]->ret_signature();
+    return args_[0]->returnSignature();
 }
 
 template < class T >
-std::string UnaryFunc<T>::type_name() const
+std::string UnaryFunc<T>::typeName() const
 {
-    return UnaryFunc<T>::class_name();
+    return UnaryFunc<T>::className();
 }
 
 template < class T >
-string UnaryFunc<T>::class_name()
+string UnaryFunc<T>::className()
 {
     return opname( T() );
 }

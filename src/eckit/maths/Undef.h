@@ -29,25 +29,28 @@ class Undef : public Expr {
 
 public: //  methods
 
-    static std::string class_name() { return "Undef"; }
+    static std::string className() { return "Undef"; }
     static std::string sig() { return "?"; }
-    static bool is ( const ExpPtr& e ) { return e->signature() == Undef::sig(); }
+    static bool is ( const ExpPtr& e );
 
     Undef();
 
     virtual ~Undef();
 
+private:
     virtual ExpPtr optimise() { return shared_from_this(); }
 
     virtual ValPtr evaluate( Scope& ctx );
 
     virtual ExpPtr clone();
 
-    virtual std::string type_name() const { return Undef::class_name(); }
+    virtual std::string typeName() const { return Undef::className(); }
     virtual std::string signature() const { return Undef::sig(); }
-    virtual std::string ret_signature() const { return Undef::sig(); }
+    virtual std::string returnSignature() const { return Undef::sig(); }
 
-    virtual void print( std::ostream& o ) const { o << Undef::sig(); }
+    virtual void print( std::ostream& o ) const;
+    virtual void asCode( std::ostream& ) const;
+
 
 };
 

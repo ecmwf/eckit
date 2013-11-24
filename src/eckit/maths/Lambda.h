@@ -27,7 +27,7 @@ class Lambda : public Func {
 
 public: // methods
 
-    static std::string class_name() { return "Lambda"; }
+    static std::string className() { return "Lambda"; }
 
     Lambda( const args_t& args );
 
@@ -35,13 +35,19 @@ public: // methods
     Lambda( const string& a, ExpPtr body);
     Lambda( const string& a, const string& b, ExpPtr body);
 
-    virtual std::string type_name() const { return Lambda::class_name(); }
+    ValPtr call( Scope& ctx );
 
-    virtual std::string ret_signature() const;
+private:
+
+    virtual std::string typeName() const { return Lambda::className(); }
+
+    virtual std::string returnSignature() const;
 
     virtual ValPtr evaluate( Scope& ctx );
 
-    ValPtr call( Scope& ctx );
+
+    virtual void asCode( std::ostream& ) const;
+
 
 };
 

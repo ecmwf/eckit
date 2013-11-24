@@ -22,6 +22,7 @@ namespace maths {
 
 Bind::Bind(const args_t& args) : Func(args)
 {
+    ASSERT(arity() == 2);
 }
 
 Bind::Bind( size_t i, ExpPtr f, ExpPtr e ) : Func()
@@ -41,14 +42,14 @@ Bind::Bind( ExpPtr i, ExpPtr f, ExpPtr e ) : Func()
     args_.push_back(e);
 }
 
-string Bind::type_name() const
+string Bind::typeName() const
 {
-    return Bind::class_name();
+    return Bind::className();
 }
 
-string Bind::ret_signature() const
+string Bind::returnSignature() const
 {
-    return args_[0]->ret_signature();
+    return args_[0]->returnSignature();
 }
 
 ValPtr Bind::evaluate( Scope &ctx )
@@ -82,6 +83,13 @@ ValPtr Bind::evaluate( Scope &ctx )
 
     return fx->evaluate(ctx);
 }
+
+
+void Bind::asCode(ostream &o) const
+{
+    o << "maths::bind(" << printArgs(o) << ")";
+}
+
 
 //--------------------------------------------------------------------------------------------
 

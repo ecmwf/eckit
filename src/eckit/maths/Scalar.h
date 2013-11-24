@@ -30,7 +30,7 @@ public: // methods
     typedef scalar_t value_t;
 
     static std::string sig() { return "s"; }
-    static std::string class_name() { return "Scalar"; }
+    static std::string className() { return "Scalar"; }
     static bool is ( const ExpPtr& e ) { return e->signature() == Scalar::sig(); }
     static scalar_t extract ( const ExpPtr& e )
     {
@@ -49,13 +49,14 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string type_name() const { return Scalar::class_name(); }
+    virtual std::string typeName() const { return Scalar::className(); }
     virtual std::string signature() const { return Scalar::sig(); }
-    virtual std::string ret_signature() const { return Scalar::sig(); }
+    virtual std::string returnSignature() const { return Scalar::sig(); }
 
     virtual ExpPtr clone();
 
     virtual void print( std::ostream& o ) const;
+    virtual void asCode( std::ostream& o ) const;
 
 protected: // members
 

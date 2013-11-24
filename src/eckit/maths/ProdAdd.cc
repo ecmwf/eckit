@@ -21,6 +21,7 @@ namespace maths {
 
 ProdAdd::ProdAdd(const args_t &args) : Func( args )
 {
+    ASSERT(arity() == 3);
 }
 
 ProdAdd::ProdAdd(const ExpPtr& e)
@@ -28,8 +29,8 @@ ProdAdd::ProdAdd(const ExpPtr& e)
     ASSERT( e );
     ASSERT( e->arity() == 2 );
 
-    ASSERT( e->type_name() == opname(Prod()) );
-    ASSERT( e->param(1)->type_name() == opname(Add()) );
+    ASSERT( e->typeName() == opname(Prod()) );
+    ASSERT( e->param(1)->typeName() == opname(Add()) );
 
     ExpPtr a0 = e->param(0);
     ExpPtr a1 = e->param(1)->param(0);
@@ -45,14 +46,19 @@ ProdAdd::ProdAdd(const ExpPtr& e)
     args_.push_back(a2);
 }
 
-string ProdAdd::ret_signature() const
+string ProdAdd::returnSignature() const
 {
     for( args_t::const_iterator i = args_.begin(); i != args_.end(); ++i )
     {
-        if ( (*i)->ret_signature() == Vector::sig() )
+        if ( (*i)->returnSignature() == Vector::sig() )
             return Vector::sig();
     }
     return Scalar::sig();
+}
+
+void ProdAdd::asCode(ostream &o) const
+{
+    o << "(" << param(0) << " * (" << param(1) << " + " << param(2) << "))";
 }
 
 ValPtr ProdAdd::compute_svv(const args_t &p)
@@ -102,17 +108,17 @@ ProdAdd::Register::Register()
 {
     Func::RegisterFactory< ProdAdd > factory_register;
 
-    Func::dispatcher()[ class_name() + "(s,s,s)" ] = &compute_ggg;
-    Func::dispatcher()[ class_name() + "(s,v,s)" ] = &compute_ggg;
-    Func::dispatcher()[ class_name() + "(s,s,v)" ] = &compute_ggg;
+    Func::dispatcher()[ className() + "(s,s,s)" ] = &compute_ggg;
+    Func::dispatcher()[ className() + "(s,v,s)" ] = &compute_ggg;
+    Func::dispatcher()[ className() + "(s,s,v)" ] = &compute_ggg;
 
-    Func::dispatcher()[ class_name() + "(s,v,v)" ] = &compute_svv;
+    Func::dispatcher()[ className() + "(s,v,v)" ] = &compute_svv;
 
-    Func::dispatcher()[ class_name() + "(v,s,s)" ] = &compute_ggg;
-    Func::dispatcher()[ class_name() + "(v,s,v)" ] = &compute_ggg;
-    Func::dispatcher()[ class_name() + "(v,v,s)" ] = &compute_ggg;
+    Func::dispatcher()[ className() + "(v,s,s)" ] = &compute_ggg;
+    Func::dispatcher()[ className() + "(v,s,v)" ] = &compute_ggg;
+    Func::dispatcher()[ className() + "(v,v,s)" ] = &compute_ggg;
 
-    Func::dispatcher()[ class_name() + "(v,v,v)" ] = &compute_vvv;
+    Func::dispatcher()[ className() + "(v,v,v)" ] = &compute_vvv;
 }
 
 //--------------------------------------------------------------------------------------------

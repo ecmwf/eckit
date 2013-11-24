@@ -73,6 +73,7 @@ ValPtr Bind::evaluate( Scope &ctx )
 
     DBGX(*e);
 
+    //FIXME: This should not be called
     ExpPtr fx = f->clone();
 
     DBGX(*fx);

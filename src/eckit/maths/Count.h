@@ -39,8 +39,6 @@ private:
 
     virtual std::string typeName() const { return Count::className(); }
 
-    virtual size_t arity() const { return 1; }
-
     virtual std::string returnSignature() const;
 
     virtual ValPtr evaluate( Scope& ctx );

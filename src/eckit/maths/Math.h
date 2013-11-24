@@ -24,45 +24,46 @@ namespace maths {
 class Math {
 public:
 
-     Math(ExpPtr);
-     ~Math();
-     
-     // From a double
-     Math(double);
-     Math(bool);
+    Math(ExpPtr);
+    ~Math();
 
-     // A parameter
-     Math(const string&);
-     Math(const char*);
+    // From a double
+    Math(double);
+    Math(bool);
 
-     // Default copy OK
-     //Math(const Math&);
-     //Math& operator=(const Math&);
+    // A parameter
+    Math(const string&);
+    Math(const char*);
 
-     // eval
-     Math operator()() const;
-     Math operator()(const Math&) const;
-     Math operator()(const Math&, const Math&) const;
+    // Default copy OK
+    //Math(const Math&);
+    //Math& operator=(const Math&);
 
-     // Make it compatible with ExpPtr
-     operator ExpPtr() const;
+    // eval
+    Math operator()() const;
+    Math operator()(const Math&) const;
+    Math operator()(const Math&, const Math&) const;
 
-     // Nice stuff
-     Math operator -(const Math&) const;
-     Math operator +(const Math&) const;
-     Math operator /(const Math&) const;
-     Math operator *(const Math&) const;
-     Math operator ==(const Math&) const;
-     Math operator !=(const Math&) const;
-     Math operator >(const Math&) const;
-     Math operator <(const Math&) const;
-     Math operator >=(const Math&) const;
-     Math operator <=(const Math&) const;
+    // Make it compatible with ExpPtr
+    operator ExpPtr() const;
+
+    // Nice stuff
+    Math operator -(const Math&) const;
+    Math operator +(const Math&) const;
+    Math operator /(const Math&) const;
+    Math operator *(const Math&) const;
+    Math operator ==(const Math&) const;
+    Math operator !=(const Math&) const;
+    Math operator >(const Math&) const;
+    Math operator <(const Math&) const;
+    Math operator >=(const Math&) const;
+    Math operator <=(const Math&) const;
 
 private:
 
-     ExpPtr expr_;
-     void print( std::ostream& ) const;
+    ExpPtr expr_;
+
+    void print(std::ostream&) const;
 
     friend std::ostream& operator<<( std::ostream& os, const Math& v)
     {

@@ -37,8 +37,6 @@ public: // methods
 
     virtual std::string typeName() const { return Call::className(); }
 
-    //virtual size_t arity() const { return 2; }
-
     virtual std::string returnSignature() const;
 
     virtual ValPtr evaluate( Scope& ctx );

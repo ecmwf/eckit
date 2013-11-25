@@ -67,9 +67,9 @@ void Currying::run()
         cout << Y(2.3) << endl;
     }
 
-/// @todo this does not work
-//    std::cout << maths::call(maths::lambda("i", maths::call(maths::lambda("j", (Math("i") + Math("j"))))), Math(1.0))->eval() << std::endl;
-
+    Math m = maths::call(maths::lambda("i", maths::call(maths::lambda("j", (Math("i") + Math("j"))))), Math(1.0));
+    cout << m << endl;
+    cout << m(9.0) << endl;
 }
 
 //-----------------------------------------------------------------------------

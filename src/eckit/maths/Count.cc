@@ -40,11 +40,18 @@ ValPtr Count::evaluate( Scope &ctx )
 
 ExpPtr Count::optimise()
 {
-    //FIXME: Wrong behaviour
-    if( Undef::is( args_[0] ) )
-        return shared_from_this();
-    else
-        return maths::scalar( args_[0]->arity() );
+    return shared_from_this();
+
+    /// @todo write a correct optimiser for Count ...
+
+    // if( Undef::is( args_[0] ) )
+    //     return shared_from_this();
+    // else
+    // {
+    //     if( args_[0]->isArityComputable() )
+    //         return maths::scalar( args_[0]->computedArity() );
+    // }
+
 }
 
 

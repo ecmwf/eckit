@@ -30,6 +30,8 @@ public: // types
     typedef scalar_t elemt_t;
     typedef std::vector<elemt_t> value_t;
 
+    struct Swap {};
+
 public: // methods
 
     static std::string className() { return "Vector"; }
@@ -38,26 +40,21 @@ public: // methods
 
     static bool is ( const ExpPtr& e );
 
-    static value_t& extract ( const ExpPtr& e )
+    static const value_t& extract ( const ExpPtr& e )
     {
         ASSERT( Vector::is(e) );
-        return e->as<Vector>()->ref_value();
+        return e->as<Vector>()->value();
     }
 
     Vector( const size_t& s, const scalar_t& v = scalar_t() );
     Vector( const value_t& v );
+    Vector( value_t& v, Swap );
 
     /// @returns the size of the internal vector
     size_t size() const { return v_.size(); }
 
-    // FIXME: Return a const-ref
     /// @returns a copy of the internal vector
-    value_t value() const { return v_; }
-
-    // FIXME: This should not exists
-    // FIXME: Use camelCase()
-    /// @returns a reference to the internal vector
-    value_t& ref_value() { return v_; }
+    const value_t& value() const { return v_; }
 
 public: // virtual methods
 

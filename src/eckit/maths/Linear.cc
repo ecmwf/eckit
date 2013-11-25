@@ -71,21 +71,20 @@ ValPtr Linear::compute( const args_t& p )
 {
     scalar_t a = Scalar::extract( p[0] );
 
-    Vector::value_t& v1 = Vector::extract( p[1] );
+    const Vector::value_t& v1 = Vector::extract( p[1] );
 
     scalar_t b = Scalar::extract( p[2] );
 
-    Vector::value_t& v2 = Vector::extract( p[3] );
+    const Vector::value_t& v2 = Vector::extract( p[3] );
 
     ASSERT( v1.size() == v2.size() );
 
-    Vector* res = new Vector( v1.size() );
-    Vector::value_t& rv = res->ref_value();
+    Vector::value_t rv( v1.size() );
 
     for( size_t i = 0; i < rv.size(); ++i )
         rv[i] = a * v1[i] + b * v2[i];
 
-    return ValPtr(res);
+    return ValPtr( new Vector( rv, Vector::Swap() ));
 }
 
 

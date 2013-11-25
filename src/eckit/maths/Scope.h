@@ -47,11 +47,10 @@ private:
     Scope* parent_;
     string name_;
 
-    std::map< string, ExpPtr > params_;
-    std::deque< ExpPtr > args_;
+    std::map< string, ExpPtr > params_;  ///< named variables
+    std::deque< ExpPtr > args_;          ///< to resolve anonymous undef()
 
     void print( std::ostream& ) const;
-
 
     friend std::ostream& operator<<( std::ostream& os, const Scope& v)
     {

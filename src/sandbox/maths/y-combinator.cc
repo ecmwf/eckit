@@ -49,13 +49,12 @@ void YCombinator::run()
 
     Math Y = lambda("f", call(Math("f"), Math("f")));
 
-    Math fact = lambda("recurse",
+    Math fact = lambda("r",
                        call(lambda("n",
                                    ifelse(
                                        Math("n") == Math(0.0),
                                        Math(1.0),
-                                       Math("n") * call(
-                                           Math("recurse"), Math("recurse"), Math("n") - Math(1.0)
+                                       Math("n") * call( Math("r"), Math("r"), Math("n") - Math(1.0)
                                            )
                                        )
                                    )

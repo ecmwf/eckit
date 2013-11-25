@@ -45,6 +45,7 @@ public:
 void Currying::run()
 {
 
+    setformat(cout,maths::CodeFormat);
     {
         Math X = maths::lambda("i", "j", Math("i") + Math("j"));
         Math Y = maths::call(X);
@@ -65,6 +66,9 @@ void Currying::run()
         cout << "-----------------------" << endl;
         cout << Y(2.3) << endl;
     }
+
+/// @todo this does not work
+//    std::cout << maths::call(maths::lambda("i", maths::call(maths::lambda("j", (Math("i") + Math("j"))))), Math(1.0))->eval() << std::endl;
 
 }
 

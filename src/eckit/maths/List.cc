@@ -24,11 +24,7 @@ List::List() : Value()
 
 List::List( ExpPtr e ) : Value()
 {
-    //FIXME: Wrong behaviour, cannot create a list of 1 list
-    if( List::is(e) )
-        args_ = List::extract(e); // copy
-    else
-        args_.push_back(e); // or make a list with one entry
+    args_.push_back(e);
 }
 
 List::List( const ListPtr& l ) : Value( l->args_ )

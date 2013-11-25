@@ -51,13 +51,12 @@ struct Generic
     template <class T>
     static ValPtr apply( T op, const Scalar::value_t& a, const Vector::value_t& v )
     {
-        Vector* res = new Vector( v.size() );
-        Vector::value_t& rv = res->ref_value();
+        Vector::value_t rv( v.size() );
 
         for( size_t i = 0; i < rv.size(); ++i )
             rv[i] = op( a , v[i] );
 
-        return ValPtr( res );
+        return ValPtr( new Vector(rv,Vector::Swap()) );
     }
 
     template <class T>
@@ -69,15 +68,14 @@ struct Generic
     template <class T>
     static ValPtr apply( T op, const Vector::value_t& v1, const Vector::value_t& v2 )
     {
-        assert( v1.size() == v2.size() );
+        ASSERT( v1.size() == v2.size() );
 
-        Vector* res = new Vector( v1.size() );
-        Vector::value_t& rv = res->ref_value();
+        Vector::value_t rv( v1.size() );
 
         for( size_t i = 0; i < rv.size(); ++i )
             rv[i] = op( v1[i] , v2[i] );
 
-        return ValPtr( res );
+        return ValPtr( new Vector( rv, Vector::Swap() ));
     }
 };
 

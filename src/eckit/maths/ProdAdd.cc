@@ -63,40 +63,39 @@ void ProdAdd::asCode(ostream &o) const
 
 ValPtr ProdAdd::compute_svv(const args_t &p)
 {
-    assert( p.size() == 3 );
+    ASSERT( p.size() == 3 );
 
     scalar_t a = Scalar::extract( p[0] );
-    Vector::value_t& v1 = Vector::extract( p[1] );
-    Vector::value_t& v2 = Vector::extract( p[2] );
+    const Vector::value_t& v1 = Vector::extract( p[1] );
+    const Vector::value_t& v2 = Vector::extract( p[2] );
 
-    assert( v1.size() == v2.size() );
+    ASSERT( v1.size() == v2.size() );
 
-    Vector* res = new Vector( v1.size() );
-    Vector::value_t& rv = res->ref_value();
+    Vector::value_t rv( v1.size() );
 
     for( size_t i = 0; i < rv.size(); ++i )
         rv[i] = a * ( v1[i] + v2[i] );
 
-    return ValPtr(res);
+    return ValPtr( new Vector( rv, Vector::Swap() ));
 }
 
 ValPtr ProdAdd::compute_vvv(const args_t &p)
 {
-    assert( p.size() == 3 );
+    ASSERT( p.size() == 3 );
 
-    Vector::value_t& v0 = Vector::extract( p[0] );
-    Vector::value_t& v1 = Vector::extract( p[1] );
-    Vector::value_t& v2 = Vector::extract( p[2] );
+    const Vector::value_t& v0 = Vector::extract( p[0] );
+    const Vector::value_t& v1 = Vector::extract( p[1] );
+    const Vector::value_t& v2 = Vector::extract( p[2] );
 
-    assert( v1.size() == v2.size() );
+    ASSERT( v0.size() == v1.size() );
+    ASSERT( v1.size() == v2.size() );
 
-    Vector* res = new Vector( v1.size() );
-    Vector::value_t& rv = res->ref_value();
+    Vector::value_t rv( v1.size() );
 
     for( size_t i = 0; i < rv.size(); ++i )
         rv[i] = v0[i] * ( v1[i] + v2[i] );
 
-    return ValPtr(res);
+    return ValPtr( new Vector( rv, Vector::Swap() ) );
 }
 
 ValPtr ProdAdd::compute_ggg(const args_t &p)

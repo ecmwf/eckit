@@ -17,26 +17,29 @@ namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
+static const char *opname(const Prod&)  { return "Prod";  }
+static const char *opname(const Div&)   { return "Div";  }
+static const char *opname(const Add&)   { return "Add";  }
+static const char *opname(const Sub&)   { return "Sub";  }
+static const char *opname(const Mod&)   { return "Mod";  }
 
-#define GEN_BINFUNC_IMPL( f, c, op )                                                         \
-static Function::RegisterFactory< BinaryOperator< c > > f ## _register;                                                  \
-const char *opname(const c &)  { return #c; }                                            \
-const char *opsymbol(const c &)  { return #op; }                                            \
-ExpPtr f( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryOperator< c >::make(l,r) ); }                      \
-ExpPtr f( Expression& l, ExpPtr r )  { return ExpPtr( BinaryOperator< c >::make(l.self(),r) ); }                     \
-ExpPtr f( ExpPtr l, Expression& r )  { return ExpPtr( BinaryOperator< c >::make(l,r.self()) ); }                     \
-ExpPtr f( Expression& l, Expression& r )   { return ExpPtr( BinaryOperator< c >::make(l.self(),r.self()) ); }                    \
-ExpPtr operator op ( ValPtr p1, ValPtr p2 ) { return f( p1, p2 ); }                          \
-ExpPtr operator op ( ValPtr p1, ExpPtr p2 ) { return f( p1, p2 ); }                          \
-ExpPtr operator op ( ExpPtr p1, ValPtr p2 ) { return f( p1, p2 ); }                          \
-ExpPtr operator op ( ExpPtr p1, ExpPtr p2 ) { return f( p1, p2 ); }
+static const char *opsymbol(const Prod&)  { return "*";  }
+static const char *opsymbol(const Div&)   { return "/";  }
+static const char *opsymbol(const Add&)   { return "+";  }
+static const char *opsymbol(const Sub&)   { return "-";  }
+static const char *opsymbol(const Mod&)   { return "%";  }
 
-GEN_BINFUNC_IMPL(prod,Prod,*)
-GEN_BINFUNC_IMPL(div,Div,/)
-GEN_BINFUNC_IMPL(add,Add,+)
-GEN_BINFUNC_IMPL(sub,Sub,-)
+static Function::RegisterFactory< BinaryOperator< Prod > > f_prod_register;
+static Function::RegisterFactory< BinaryOperator< Div > > f_div_register;
+static Function::RegisterFactory< BinaryOperator< Add > > f_add_register;
+static Function::RegisterFactory< BinaryOperator< Sub > > f_sub_register;
+static Function::RegisterFactory< BinaryOperator< Mod > > f_mod_register;
 
-#undef GEN_BINFUNC_IMPL
+ExpPtr prod( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryOperator< Prod >::make(l,r) ); }
+ExpPtr div( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryOperator< Div >::make(l,r) ); }
+ExpPtr add( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryOperator< Add >::make(l,r) ); }
+ExpPtr sub( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryOperator< Sub >::make(l,r) ); }
+ExpPtr mod( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryOperator< Mod >::make(l,r) ); }
 
 //--------------------------------------------------------------------------------------------
 
@@ -134,6 +137,11 @@ string BinaryOperator<T>::className()
 }
 
 template < class T >
+void BinaryOperator<T>::asCode( std::ostream& o ) const {
+    o << '(' << *args_[0] << ' ' << opsymbol(T()) << ' ' << *args_[1] << ')';
+}
+
+template < class T >
 template < class U, class V, class I >
 BinaryOperator<T>::Computer<U,V,I>::Computer()
 {
@@ -157,6 +165,8 @@ ValPtr BinaryOperator<T>::Computer<U,V,I>::compute(const args_t &p)
 
     return I::apply(op,a,b);
 }
+
+
 
 //--------------------------------------------------------------------------------------------
 

@@ -68,31 +68,20 @@ public:
         static ValPtr compute( const args_t& p );
     };
 
-    virtual void asCode( std::ostream& o ) const {
-        o << opsymbol(T()) << '(' << *args_[0] << ')';
-    }
+    virtual void asCode( std::ostream& o ) const;
 };
 
 //--------------------------------------------------------------------------------------------
 
 typedef negate<scalar_t>  Neg;
 
-const char *opname( const Neg& );
-const char *opsymbol( const Neg& );
-
 //--------------------------------------------------------------------------------------------
 
 // version with stand alone functions
 
-#define GEN_UNFUNC_DECL( f, c, op )   \
-ExpPtr f( ExpPtr e = undef() );       \
-ExpPtr f( Expression& e );            \
-ExpPtr operator op ( ValPtr e  );     \
-ExpPtr operator op ( ExpPtr p1 );
+ExpPtr neg( ExpPtr e = undef() );
+ExpPtr neg( Expression& e );
 
-GEN_UNFUNC_DECL(neg,UnaryOperator<Neg>,-)
-
-#undef GEN_UNFUNC_DECL
 
 //--------------------------------------------------------------------------------------------
 

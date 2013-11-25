@@ -72,9 +72,7 @@ public:
         static ValPtr compute( const args_t& p );
     };
 
-    virtual void asCode( std::ostream& o ) const {
-        o << '(' << *args_[0] << ' ' << opsymbol(T()) << ' ' << *args_[1] << ')';
-    }
+    virtual void asCode( std::ostream& o ) const;
 };
 
 //--------------------------------------------------------------------------------------------
@@ -93,48 +91,18 @@ typedef std::not_equal_to<Scalar::value_t>     NotEqual;
 typedef std::logical_and<Scalar::value_t>      And;
 typedef std::logical_or<Scalar::value_t>       Or;
 
-const char *opname(const Greater&);
-const char *opname(const GreaterEqual&);
-const char *opname(const Less&);
-const char *opname(const LessEqual&);
-const char *opname(const Equal&);
-const char *opname(const NotEqual&);
-const char *opname(const And&);
-const char *opname(const Or&);
-
-const char *opsymbol(const Greater&);
-const char *opsymbol(const GreaterEqual&);
-const char *opsymbol(const Less&);
-const char *opsymbol(const LessEqual&);
-const char *opsymbol(const Equal&);
-const char *opsymbol(const NotEqual&);
-const char *opsymbol(const And&);
-const char *opsymbol(const Or&);
-
 //--------------------------------------------------------------------------------------------
 
 // version with stand alone functions
 
-#define GEN_BINPRED_DECL( f, c, op )        \
-ExpPtr f( ExpPtr l = undef(), ExpPtr r = undef() ); \
-ExpPtr f( Expression& l, ExpPtr r );        \
-ExpPtr f( ExpPtr l, Expression& r );        \
-ExpPtr f( Expression& l, Expression& r );   \
-ExpPtr operator op ( ValPtr p1, ValPtr p2 );  \
-ExpPtr operator op ( ValPtr p1, ExpPtr p2 );  \
-ExpPtr operator op ( ExpPtr p1, ValPtr p2 );  \
-ExpPtr operator op ( ExpPtr p1, ExpPtr p2 );
-
-GEN_BINPRED_DECL(greater,Greater,>)
-GEN_BINPRED_DECL(greater_equal,GreaterEqual,>=)
-GEN_BINPRED_DECL(less,Less,<)
-GEN_BINPRED_DECL(less_equal,LessEqual,<=)
-GEN_BINPRED_DECL(equal,Equal,==)
-GEN_BINPRED_DECL(not_equal,NotEqual,!=)
-//GEN_BINPRED_DECL(and,And,&&)
-//GEN_BINPRED_DECL(or,Or,||)
-
-#undef GEN_BINPRED_DECL
+ExpPtr greater( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr greater_equal( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr less( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr less_equal( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr equal( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr not_equal( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr logical_and( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr logical_or( ExpPtr l = undef(), ExpPtr r = undef() );
 
 //--------------------------------------------------------------------------------------------
 

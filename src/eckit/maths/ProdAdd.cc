@@ -29,8 +29,8 @@ ProdAdd::ProdAdd(const ExpPtr& e)
     ASSERT( e );
     ASSERT( e->arity() == 2 );
 
-    ASSERT( e->typeName() == opname(Prod()) );
-    ASSERT( e->param(1)->typeName() == opname(Add()) );
+    //ASSERT( e->typeName() == opname(Prod()) );
+    //ASSERT( e->param(1)->typeName() == opname(Add()) );
 
     ExpPtr a0 = e->param(0);
     ExpPtr a1 = e->param(1)->param(0);

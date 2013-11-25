@@ -21,9 +21,7 @@ namespace maths {
 #define GEN_UNFUNC_IMPL( f, c, op )                                                         \
 static Function::RegisterFactory< c > f ## _register;                                           \
 ExpPtr f( ExpPtr e )           { return ExpPtr( c::make(e) ); }                                  \
-ExpPtr f( Expression& e )            { return ExpPtr( c::make(e.self()) ); }                           \
-ExpPtr operator op ( ValPtr e ){ return f( e ); }                                            \
-ExpPtr operator op ( ExpPtr e ){ return f( e ); }
+ExpPtr f( Expression& e )            { return ExpPtr( c::make(e.self()) ); }
 
 GEN_UNFUNC_IMPL(neg,UnaryOperator<Neg>,-)
 
@@ -31,8 +29,8 @@ GEN_UNFUNC_IMPL(neg,UnaryOperator<Neg>,-)
 
 //--------------------------------------------------------------------------------------------
 
-const char *opname(const Neg&)  { return "Neg";  }
-const char *opsymbol(const Neg&)  { return "-";  }
+static const char *opname(const Neg&)  { return "Neg";  }
+static const char *opsymbol(const Neg&)  { return "-";  }
 
 //--------------------------------------------------------------------------------------------
 
@@ -85,6 +83,11 @@ template < class T >
 string UnaryOperator<T>::className()
 {
     return opname( T() );
+}
+
+template < class T >
+void UnaryOperator<T>::asCode( std::ostream& o ) const {
+    o << opsymbol(T()) << '(' << *args_[0] << ')';
 }
 
 template < class T >

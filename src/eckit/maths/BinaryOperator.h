@@ -70,9 +70,7 @@ public:
         static ValPtr compute( const args_t& p );
     };
 
-    virtual void asCode( std::ostream& o ) const {
-        o << '(' << *args_[0] << ' ' << opsymbol(T()) << ' ' << *args_[1] << ')';
-    }
+    virtual void asCode( std::ostream& o ) const;
 };
 
 //--------------------------------------------------------------------------------------------
@@ -83,39 +81,17 @@ typedef std::plus<scalar_t>        Add;
 typedef std::minus<scalar_t>       Sub;
 typedef std::modulus<scalar_t>     Mod;
 
-const char *opname(const Prod&);
-const char *opname(const Div&);
-const char *opname(const Add&);
-const char *opname(const Sub&);
-const char *opname(const Mod&);
-
-const char *opsymbol(const Prod&);
-const char *opsymbol(const Div&);
-const char *opsymbol(const Add&);
-const char *opsymbol(const Sub&);
-const char *opsymbol(const Mod&);
-
 //--------------------------------------------------------------------------------------------
 
 // version with stand alone functions
 
-#define GEN_BINFUNC_DECL( f, c, op )        \
-ExpPtr f( ExpPtr l = undef(), ExpPtr r = undef() ); \
-ExpPtr f( Expression& l, ExpPtr r );        \
-ExpPtr f( ExpPtr l, Expression& r );        \
-ExpPtr f( Expression& l, Expression& r );   \
-ExpPtr operator op ( ValPtr p1, ValPtr p2 );  \
-ExpPtr operator op ( ValPtr p1, ExpPtr p2 );  \
-ExpPtr operator op ( ExpPtr p1, ValPtr p2 );  \
-ExpPtr operator op ( ExpPtr p1, ExpPtr p2 );
+ExpPtr prod( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr div( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr add( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr sub( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr mod( ExpPtr l = undef(), ExpPtr r = undef() );
+//ExpPtr mod( Expression& l, Expression& r );
 
-GEN_BINFUNC_DECL(prod,BinaryOperator<Prod>,*)
-GEN_BINFUNC_DECL(div,BinaryOperator<Div>,/)
-GEN_BINFUNC_DECL(add,BinaryOperator<Add>,+)
-GEN_BINFUNC_DECL(sub,BinaryOperator<Sub>,-)
-GEN_BINFUNC_DECL(mod,BinaryOperator<Mod>,%)
-
-#undef GEN_BINFUNC_DECL
 
 //--------------------------------------------------------------------------------------------
 

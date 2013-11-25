@@ -47,8 +47,6 @@ public: // methods
 
     /// @returns the value of the scalar
     value_t value() const { return v_; }
-    /// @returns a reference to the scalar
-    value_t& ref_value() { return v_; }
 
 private: // virtual methods
 

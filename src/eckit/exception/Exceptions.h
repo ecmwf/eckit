@@ -48,7 +48,9 @@ public: // methods
     virtual bool terminateApplication() const { return false; }
 
     static bool throwing();
-    static void exceptionStack(ostream&);
+    static void exceptionStack(ostream&,bool callStack = false);
+
+    const std::string& callStack() const { return callStack_; }
 
 protected: // methods
     
@@ -59,10 +61,11 @@ protected: // methods
     
 private: // members
     
-    string            what_;     ///< description
-    SavedStatus       save_;     ///< saved monitor status to recover after destruction
+    string            what_;      ///< description
+    string            callStack_; ///< call stack
+    SavedStatus       save_;      ///< saved monitor status to recover after destruction
     Exception*        next_;
-    CodeLocation      location_; ///< where exception was first thrown
+    CodeLocation      location_;  ///< where exception was first thrown
     
 
     friend ostream& operator<<(ostream& s,const Exception& p)

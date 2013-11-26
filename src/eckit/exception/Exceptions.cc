@@ -29,47 +29,11 @@ static Exception*& first()
     return p.instance();
 }
 
-void xldb_throw(const char *c) // To set a break point in xldb
-{
-    if(getenv("PAUSE_EXCEPTIONS"))
-    {
-        cout << "debug me " << getpid() << endl;
-        pause();
-    }
-
-    if(getenv("ABORT_EXCEPTIONS"))
-        handle_panic(c);
-}
-
-Exception::Exception():
-    next_(first())
+Exception::Exception():  next_(first())
 {
     first() = this;
 
-#if defined( PSTACK_COMMAND )
-    std::ostringstream cmd;
-    
-#if defined( CPPFILT_COMMAND )
-    cmd << PSTACK_COMMAND << getpid() << " | " << CPPFILT_COMMAND;
-#else
-    cmd << PSTACK_COMMAND << getpid();
-#endif
-    
-    FILE* f = popen(cmd.str().c_str(), "r");
-    if(f)
-    {
-        char buffer[1024];
-        int n;
-        while ((n = fread(buffer, 1, sizeof buffer, f)) > 0)
-            std::cerr.write(buffer, n);
-        pclose(f);
-    }
-#endif
-#ifndef AIX
-    std::cerr << "BACKTRACE: " << BackTrace::dump() << std::endl;
-#endif
-
-    xldb_throw("?");
+    callStack_ = BackTrace::dump();
 }
 
 Exception::~Exception() throw()
@@ -82,13 +46,17 @@ void Exception::print(ostream & out) const
     out << what_;
 }
 
-void Exception::exceptionStack(ostream& out)
+void Exception::exceptionStack(ostream& out, bool callStack)
 {
     out << "Exception stack: " << endl;
     Exception* e =  first();
     while(e)
     {
         out << e->what() << endl;
+
+        if(callStack)
+            out << e->callStack() << endl << endl;
+
         e = e->next_;
     }
     out << "End stack" << endl;
@@ -111,10 +79,9 @@ Exception::Exception(const string& w, const CodeLocation& location):
     }
 #endif
 
-    std::cerr << "BACKTRACE: " << BackTrace::dump() << std::endl;
+    callStack_ = BackTrace::dump();
 
     first() = this;
-    xldb_throw(w.c_str());
     Log::status() << "** " << w << " @ " << location_ << std::endl;
 }
 

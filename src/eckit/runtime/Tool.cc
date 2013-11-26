@@ -69,7 +69,13 @@ void Tool::start()
     {
         run();
 	}
-	catch(exception& e){
+    catch(Exception& e){
+        status = 1;
+        Log::error() << "** " << e.what() << " Caught in "  << Here() <<  endl;
+        Log::error() << "** Exception is terminates " << name() << endl;
+        Exception::exceptionStack( Log::error(), true );
+    }
+    catch(exception& e){
 		status = 1;
 		Log::error() << "** " << e.what() << " Caught in "  << Here() <<  endl;
 		Log::error() << "** Exception is terminates " << name() << endl;

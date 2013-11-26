@@ -16,6 +16,7 @@
 #define eckit_maths_List_h
 
 #include "eckit/maths/Value.h"
+#include "eckit/maths/Math.h"
 
 namespace eckit {
 namespace maths {
@@ -57,6 +58,8 @@ public: // methods
 
     /// Append an element to the list
     ListPtr append( ExpPtr e );
+    /// Append an element to the list
+    ListPtr append( Math e );
 
     /// Append multiple elements to the list
     template <class Arg1, class ...ArgN>
@@ -86,11 +89,11 @@ typedef boost::shared_ptr< List > ListPtr;
 
 ListPtr list();
 ListPtr list( const List::value_t& v  );
-ListPtr list( ExpPtr e );
-ListPtr list( ExpPtr v0, ExpPtr v1 );
+
+//--------------------------------------------------------------------------------------------
 
 template <class Arg1, class ...ArgN>
-ListPtr list(const Arg1& a1, const ArgN& ...an)
+ExpPtr list(const Arg1& a1, const ArgN& ...an)
 {
     return maths::list()->append(a1,an...);
 }

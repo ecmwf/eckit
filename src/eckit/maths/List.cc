@@ -63,6 +63,12 @@ ListPtr List::append(ExpPtr e)
     return this->as<List>();
 }
 
+ListPtr List::append(Math e)
+{
+    args_.push_back(e);
+    return this->as<List>();
+}
+
 ListPtr List::append(const List& l)
 {
     //FIXME: Not functional()
@@ -71,12 +77,6 @@ ListPtr List::append(const List& l)
     std::copy(t.begin(), t.end(), std::back_inserter(args_) );
     return this->as<List>();
 }
-
-//ListPtr List::operator, ( ExpPtr e)
-//{
-//    DBGX(*e);
-//    return append(e);
-//}
 
 //--------------------------------------------------------------------------------------------
 
@@ -101,16 +101,6 @@ ListPtr list()
 ListPtr list( const List::value_t& v  )
 {
     return ListPtr( new List(v) );
-}
-
-ListPtr list(ExpPtr e)
-{
-    return ListPtr( new List(e) );
-}
-
-ListPtr list(ExpPtr v0, ExpPtr v1)
-{
-    return list(v0)->append(v1);
 }
 
 //--------------------------------------------------------------------------------------------

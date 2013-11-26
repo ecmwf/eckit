@@ -16,6 +16,8 @@
 #include "eckit/maths/IfElse.h"
 #include "eckit/maths/Lambda.h"
 #include "eckit/maths/ParamDef.h"
+#include "eckit/maths/List.h"
+#include "eckit/maths/Take.h"
 #include "eckit/maths/Call.h"
 
 #include "eckit/maths/Math.h"
@@ -68,22 +70,31 @@ void YCombinator::run()
     setformat(cout, 0);
 
     std::cout << "-----------------------" << std::endl;
-    std::cout << factorial(5.0) << std::endl;
+    std::cout << factorial( 3.) << std::endl;
+    std::cout << factorial( 5.) << std::endl;
+    std::cout << factorial( 8.) << std::endl;
 
-
+    Math fibtable = maths::list( Math(0.), Math(1.), Math(1.), Math(2.), Math(3.), Math(5.),
+                                 Math(8.), Math(13.), Math(21.), Math(34.), Math(55.) );
 
     Math fib = lambda("f",
                       call(lambda("n",
                                   ifelse(
-                                      Math("n") > Math(1.0),
+                                      Math("n") > Math(10.),
                                       Math(call(Math("f"), Math("f"), Math("n") - Math(1.0))) +
                                       Math(call(Math("f"), Math("f"), Math("n") - Math(2.0))),
-                                      Math("n")
-                                      ))));
+                                      take( Math("n"), fibtable )
+                                      )
+                                  )
+                           )
+                      );
 
     Math fibonnaci = call(Y, fib);
 
-    std::cout << fibonnaci(20.0) << std::endl;
+    std::cout << fibonnaci( 5.) << std::endl;
+    std::cout << fibonnaci(10.) << std::endl;
+    std::cout << fibonnaci(20.) << std::endl;
+    std::cout << fibonnaci(30.) << std::endl;
 }
 
 

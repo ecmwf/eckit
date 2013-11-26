@@ -39,7 +39,7 @@ Expression::~Expression()
 ExpPtr Expression::eval()
 {
     Scope ctx("Expression::eval()");
-    return optimise()->evaluate(ctx);
+    return /*optimise()->*/evaluate(ctx);
 }
 
 ExpPtr Expression::eval(Scope& ctx)
@@ -56,14 +56,14 @@ ExpPtr Expression::resolve(Scope & ctx)
 ExpPtr Expression::eval( ExpPtr e )
 {
     Scope ctx("Expression::eval( ExpPtr e )", e);
-    ExpPtr res = optimise()->evaluate(ctx);
+    ExpPtr res = /*optimise()->*/evaluate(ctx);
     return res;
 }
 
 ExpPtr Expression::eval(  ExpPtr a, ExpPtr b )
 {
     Scope ctx("Expression::eval(  ExpPtr a, ExpPtr b )", a, b);
-    ExpPtr res = optimise()->evaluate(ctx);
+    ExpPtr res = /*optimise()->*/evaluate(ctx);
     return res;
 }
 

@@ -42,7 +42,10 @@ Scope::~Scope() {
             cout << "Context::~Context() leftovers: " << *this << endl;
         }
 
-       ASSERT(!args_.size());
+        if( args_.size() )
+        {
+            throw UserError("Too many arguments provided to expression");
+        }
     }
 }
 
@@ -55,7 +58,11 @@ ExpPtr Scope::nextArg()
         }
     }
 
-    ASSERT(args_.size());
+    if( !args_.size() )
+    {
+        throw UserError("Not enough arguments provided to expression");
+    }
+
     ExpPtr e = args_.front();
     args_.pop_front();
     return e;

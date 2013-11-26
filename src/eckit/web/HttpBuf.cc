@@ -25,7 +25,7 @@ static int xindex = std::ios::xalloc();
 
 typedef vector<char> VC;
 
-class back_encoder_iterator : public std::iterator<output_iterator_tag,char>
+class back_encoder_iterator : public std::iterator<std::output_iterator_tag,char>
 {
 	VC& container;
 	void push(const char* p) { while(*p) container.push_back(*p++); }

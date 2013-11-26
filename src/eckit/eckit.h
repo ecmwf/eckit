@@ -41,7 +41,6 @@
 #include <new>
 #include <sstream>
 
-using std::output_iterator_tag;
 using std::string;
 using std::vector;
 using std::map;
@@ -107,7 +106,7 @@ template<>       struct compile_assert<true> { static void check() {} };
 
 
 struct output_iterator {
-  typedef output_iterator_tag iterator_category;
+  typedef std::output_iterator_tag iterator_category;
   typedef void                value_type;
   typedef void                difference_type;
   typedef void                pointer;

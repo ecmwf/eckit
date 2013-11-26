@@ -45,15 +45,15 @@ ExpPtr Reduce::evaluate( Scope &ctx )
     if(!nlist) // empty list
         return ExpPtr( new List() );
 
-    ExpPtr e = list[0]->evaluate(ctx);
+    ExpPtr e = list[0]->eval(ctx);
 
     for( size_t i = 1; i < nlist; ++i )
     {
         DBGX(*e);
-        e = f->eval( e, list[i]->evaluate(ctx) );
+        e = f->eval( e, list[i]->eval(ctx) );
     }
 
-    return e->evaluate(ctx);
+    return e->eval(ctx);
 }
 
 

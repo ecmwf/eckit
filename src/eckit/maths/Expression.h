@@ -132,15 +132,14 @@ public: // methods
     ExpPtr eval( ExpPtr );
     ExpPtr eval( ExpPtr, ExpPtr );
     ExpPtr eval( const args_t& );
-    ExpPtr eval( Scope&, bool );
-    ExpPtr eval( Scope&, const args_t& );
+
+    ExpPtr eval( Scope& );
+    //ExpPtr eval( Scope&, const args_t& );
 
     size_t arity() const { return args_.size(); }
 
     ExpPtr param( size_t i) const;
     ExpPtr param( size_t i, Scope& ctx ) const;
-
-    void param(size_t i, ExpPtr p );
 
     std::string str() const;
 
@@ -155,7 +154,6 @@ public: // virtual methods
     virtual std::string returnSignature() const = 0;
 
     virtual ExpPtr optimise() = 0;
-    virtual ExpPtr evaluate( Scope& ) = 0;
 
 protected: // members
 
@@ -167,6 +165,7 @@ protected: // members
 
 private:
 
+    virtual ExpPtr evaluate( Scope& ) = 0;
     virtual void print( std::ostream& ) const = 0;
 
     // For unit tests....

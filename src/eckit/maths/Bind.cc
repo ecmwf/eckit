@@ -14,6 +14,8 @@
 #include "eckit/maths/List.h"
 #include "eckit/maths/Boolean.h"
 #include "eckit/maths/Scalar.h"
+#include "eckit/maths/Scope.h"
+
 
 namespace eckit {
 namespace maths {
@@ -27,9 +29,7 @@ Bind::Bind(const args_t& args) : Function(args)
 
 Bind::Bind( size_t i, ExpPtr f, ExpPtr e ) : Function()
 {
-    ASSERT( i > 0 );
-    ASSERT( i <= f->arity() );
-
+    ASSERT( i > 1 );
     args_.push_back( maths::scalar( (scalar_t)i ) ); // casted to scalar_t (real)
     args_.push_back(f);
     args_.push_back(e);
@@ -54,37 +54,18 @@ string Bind::returnSignature() const
 
 ExpPtr Bind::evaluate( Scope &ctx )
 {    
-    DBGX(*this);
-
-    ExpPtr ix = param(0,ctx);
-
-    DBGX(*ix);
+    ExpPtr ix = param(0, ctx);
 
     const size_t i = static_cast<size_t>( Scalar::extract(ix) );
 
-    ExpPtr f = param(1,ctx);
+    ExpPtr f = param(1, ctx);
+    ExpPtr e = param(2, ctx);
 
-    DBGX(*f);
+    ASSERT(i>=1);
+    ctx.insertArg(i-1, e);
 
-    ASSERT( i > 0 );
-    ASSERT( i <= f->arity() );
-
-    ExpPtr e = param(2,ctx);
-
-    DBGX(*e);
-
-    //FIXME: This should not be called
-    ExpPtr fx = f->clone();
-
-    DBGX(*fx);
-
-    fx->param( (i - 1), e );
-
-    DBGX(*fx);
-
-    return fx->evaluate(ctx);
+    return f->eval(ctx);
 }
-
 
 void Bind::asCode(ostream &o) const
 {

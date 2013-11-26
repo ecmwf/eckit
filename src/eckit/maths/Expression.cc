@@ -36,19 +36,19 @@ Expression::~Expression()
 {
 }
 
-
 ExpPtr Expression::eval()
 {
     Scope ctx("Expression::eval()");
     return optimise()->evaluate(ctx);
 }
 
-ExpPtr Expression::eval( Scope& ctx, bool)
+ExpPtr Expression::eval(Scope& ctx)
 {
-    return optimise()->evaluate(ctx);
+    // FIXME: We assume that the code is already optimised. Needs reviewing
+    return /*optimise()->*/evaluate(ctx);
 }
 
-
+/*
 ExpPtr Expression::eval(Scope& scope, const args_t& args)
 {
     Scope ctx("Expression::eval(Scope& scope, const args_t& args)", &scope);
@@ -57,6 +57,7 @@ ExpPtr Expression::eval(Scope& scope, const args_t& args)
     }
     return optimise()->evaluate(ctx);
 }
+*/
 
 ExpPtr Expression::resolve(Scope & ctx)
 {
@@ -90,20 +91,9 @@ ExpPtr Expression::param( size_t i, Scope& ctx ) const
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );
 
-    //cout << "   PARAM " << i << " -> " << (*args_[i]) << endl;
-    //cout << "         " << ctx << endl;
     ExpPtr r = args_[i]->resolve(ctx);
-    //cout << "          " << *r << endl;
 
     return r;
-}
-
-void Expression::param(size_t i, ExpPtr p)
-{
-    ASSERT( i < args_.size() );
-    ASSERT( p );
-    if( p != args_[i] )
-        args_[i] = p;
 }
 
 string Expression::str() const

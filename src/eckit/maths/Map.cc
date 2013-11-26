@@ -45,10 +45,8 @@ ExpPtr Map::evaluate( Scope &ctx )
 
     for( size_t i = 0; i < nlist; ++i )
     {
-        ExpPtr e = list[i]->evaluate(ctx);
-
+        ExpPtr e = list[i]->eval(ctx);
         ExpPtr v = f->eval(e);
-
         res->append( v );
     }
 

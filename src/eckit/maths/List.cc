@@ -52,6 +52,7 @@ ExpPtr List::clone()
     {
         l->append( args_[i]->clone() );
     }
+    return l;
 }
 
 ListPtr List::append(ExpPtr e)

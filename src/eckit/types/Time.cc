@@ -23,7 +23,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-inline void printTime(ostream& s, long n)
+inline void printTime(std::ostream& s, long n)
 {
 	if(n<10) s << '0';
 	s << n;
@@ -169,7 +169,7 @@ long Time::hhmmss() const
 	return hours() * 10000 + minutes() * 100 + seconds();
 }
 
-void Time::print(ostream& s) const
+void Time::print(std::ostream& s) const
 {
 	printTime(s,hours());
 	s << ':';

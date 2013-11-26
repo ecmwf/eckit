@@ -14,6 +14,7 @@
 #include "eckit/runtime/ProducerConsumer.h"
 #include "eckit/parser/Translator.h"
 
+using namespace std;
 using namespace eckit;
 
 //-----------------------------------------------------------------------------
@@ -35,7 +36,7 @@ namespace eckit_test {
     struct C : public Consumer<string> {
 
         virtual void consume(string& s) {
-            Log::info() << "Consume " << s << endl;
+            Log::info() << "Consume " << s << std::endl;
             ::usleep(10000);
         }
 
@@ -50,7 +51,7 @@ namespace eckit_test {
         }
 
         virtual void produce(string& s) {
-            Log::info() << "Produce " << count_ << endl;
+            Log::info() << "Produce " << count_ << std::endl;
             ::usleep(count_*10000);
             ASSERT(count_); s = string("Hello, world! ") + Translator<int,string>()(count_); count_--;
         }

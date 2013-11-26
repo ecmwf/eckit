@@ -49,7 +49,7 @@ string IfElse::returnSignature() const
 
 ExpPtr IfElse::evaluate( Scope &ctx )
 {
-    //std::cout << "evalute " << *this << " with " << ctx << endl;
+    //std::cout << "evalute " << *this << " with " << ctx << std::endl;
 
     ExpPtr f = param(0, ctx);
     ExpPtr i = param(1, ctx);
@@ -70,7 +70,7 @@ ExpPtr IfElse::evaluate( Scope &ctx )
 }
 
 
-void IfElse::asCode(ostream &o) const
+void IfElse::asCode(std::ostream&o) const
 {
     o << "maths::ifelse("; printArgs(o); o <<")";
 }

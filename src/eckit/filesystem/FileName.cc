@@ -70,7 +70,7 @@ DataHandle*  FileName::newReadHandle() const
     return FileManager::lookUp(scheme_).newReadHandle(*this);
 }
 
-void FileName::print(ostream& s) const 
+void FileName::print(std::ostream& s) const 
 {
     s << "FileName[scheme=" << scheme_ << ",name=" << name_ << "]";
 }

@@ -201,21 +201,21 @@ string Translator<vector<string>, string>::operator()(const vector<string>& v)
     return result;
 }
 
-set<string> Translator<string, set<string> >::operator()(const string& s)
+std::set<string> Translator<string, std::set<string> >::operator()(const string& s)
 {
-    vector<string> v;
+    std::vector<string> v;
     Tokenizer parse(", \t");
 
     parse(s,v);
 
-    set<string> result(v.begin(),v.end());
+    std::set<string> result(v.begin(),v.end());
     return result;
 }
 
-string Translator<set<string>, string>::operator()(const set<string>& v)
+string Translator<std::set<string>, string>::operator()(const std::set<string>& v)
 {
     string result;
-    for(set<string>::const_iterator i= v.begin(); i != v.end(); ++i)
+    for(std::set<string>::const_iterator i= v.begin(); i != v.end(); ++i)
     {
         if(result.length()) result += ",";
         result += *i;

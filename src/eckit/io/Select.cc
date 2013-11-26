@@ -104,7 +104,7 @@ bool Select::ready(long sec)
 			{
 				int nbytes = 0;
 
-                //cout << "ioctl(i,FIONREAD,&nbytes) " << i << " .... " << ioctl(i,FIONREAD,&nbytes) << " " << nbytes << endl;
+                //cout << "ioctl(i,FIONREAD,&nbytes) " << i << " .... " << ioctl(i,FIONREAD,&nbytes) << " " << nbytes << std::endl;
                 nbytes = 0;
 
 

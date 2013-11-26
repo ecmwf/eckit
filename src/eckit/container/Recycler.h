@@ -87,7 +87,7 @@ protected:
 
 // -- Methods
 
-    void print(ostream&) const; 
+    void print(std::ostream&) const; 
 
 // -- Overridden methods
     // None
@@ -126,7 +126,7 @@ private:
 
 // -- Friends
 
-    friend ostream& operator<<(ostream& s,const Recycler<T>& p)
+    friend std::ostream& operator<<(std::ostream& s,const Recycler<T>& p)
     {
         p.print(s);
         return s;

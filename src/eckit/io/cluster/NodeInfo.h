@@ -89,11 +89,11 @@ private:
 
 // -- Methods
 
-	void print(ostream&) const; 
+	void print(std::ostream&) const; 
 
 // -- Friends
 
-	friend ostream& operator<<(ostream& s,const NodeInfo& p)
+	friend std::ostream& operator<<(std::ostream& s,const NodeInfo& p)
 		{ p.print(s); return s; }
 
 	friend void operator<<(Stream&,const NodeInfo&);

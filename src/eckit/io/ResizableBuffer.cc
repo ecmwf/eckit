@@ -52,7 +52,7 @@ ResizableBuffer::~ResizableBuffer()
 
 void ResizableBuffer::create()
 {
-//	Log::info() << "ResizableBuffer::create " << size_ << endl;
+//	Log::info() << "ResizableBuffer::create " << size_ << std::endl;
         if(size_)
         {
                 fd_ = -1;
@@ -64,7 +64,7 @@ void ResizableBuffer::create()
 
 void ResizableBuffer::destroy()
 {
-//	Log::info() << "ResizableBuffer::destroy " << size_ << endl;
+//	Log::info() << "ResizableBuffer::destroy " << size_ << std::endl;
         if(size_)
         {
                 munmap(buffer_,size_);

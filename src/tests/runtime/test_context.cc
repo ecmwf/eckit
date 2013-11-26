@@ -12,6 +12,7 @@
 #include "eckit/runtime/Context.h"
 #include "eckit/runtime/ToolBehavior.h"
 
+using namespace std;
 using namespace eckit;
 
 //-----------------------------------------------------------------------------

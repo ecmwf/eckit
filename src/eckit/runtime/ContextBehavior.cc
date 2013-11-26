@@ -27,7 +27,7 @@ ContextBehavior::~ContextBehavior()
 
 void ContextBehavior::reconfigure()
 {
-	Log::info() << "ContextBehavior::reconfigure" << endl;
+	Log::info() << "ContextBehavior::reconfigure" << std::endl;
 }
 
 //-----------------------------------------------------------------------------

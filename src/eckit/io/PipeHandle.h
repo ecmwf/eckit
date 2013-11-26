@@ -50,7 +50,7 @@ public:
 	virtual long   write(const void*,long);
 	virtual void   close();
 	virtual void   rewind();
-	virtual void   print(ostream&) const;
+	virtual void   print(std::ostream&) const;
     /*
 	virtual void restartReadFrom(const Offset& from);
 	virtual void restartWriteFrom(const Offset& from);

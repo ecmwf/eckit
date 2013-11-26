@@ -20,10 +20,10 @@
 
 #include "eckit/maths/Math.h"
 
-using namespace eckit;
-using namespace eckit::maths;
+using namespace std;
 
 using namespace eckit;
+using namespace eckit::maths;
 
 //-----------------------------------------------------------------------------
 
@@ -64,11 +64,11 @@ void YCombinator::run()
     setformat(cout, maths::CodeFormat);
 
     Math factorial = call(Y, fact);
-    cout << factorial << endl;
+    std::cout << factorial << std::endl;
     setformat(cout, 0);
 
-    cout << "-----------------------" << endl;
-    cout << factorial(5.0) << endl;
+    std::cout << "-----------------------" << std::endl;
+    std::cout << factorial(5.0) << std::endl;
 
 
 
@@ -83,7 +83,7 @@ void YCombinator::run()
 
     Math fibonnaci = call(Y, fib);
 
-    cout << fibonnaci(20.0) << endl;
+    std::cout << fibonnaci(20.0) << std::endl;
 }
 
 

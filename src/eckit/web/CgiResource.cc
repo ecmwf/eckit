@@ -30,7 +30,7 @@ CgiResource::~CgiResource()
 {
 }
 
-void CgiResource::html(ostream& s,Url& url)
+void CgiResource::html(std::ostream& s,Url& url)
 {
 	eckit::PathName path("~/http/" + url.name());
 	StrStream cmd;

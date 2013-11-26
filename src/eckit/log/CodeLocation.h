@@ -26,7 +26,7 @@ class CodeLocation {
 
 public:
     
-    friend ostream& operator<<( ostream& s, const CodeLocation& loc ) { loc.print(s); return s; }
+    friend std::ostream& operator<<( std::ostream& s, const CodeLocation& loc ) { loc.print(s); return s; }
 	
     /// Empty contructor
     /// Equivalent to a null location that won't print anything
@@ -54,7 +54,7 @@ private:
 
     // Methods
     
-     void print(ostream&) const;
+     void print(std::ostream&) const;
 };
 
 // Macros

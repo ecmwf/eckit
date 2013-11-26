@@ -13,6 +13,7 @@
 #include "eckit/parser/JSONParser.h"
 #include "eckit/parser/JSON.h"
 
+using namespace std;
 using namespace eckit;
 
 //-----------------------------------------------------------------------------
@@ -44,7 +45,7 @@ public:
 
 void TestJson::test_parse_to_value()
 {
-    istringstream in("{ \"a\" : [true, false, 3], \"b\" : 42.3 , \"c\" : null, \"d\" : \"y\n\tr\rh\", \"e\" : \"867017db84f4bc2b5078ca56ffd3b9b9\"}");
+    std::istringstream in("{ \"a\" : [true, false, 3], \"b\" : 42.3 , \"c\" : null, \"d\" : \"y\n\tr\rh\", \"e\" : \"867017db84f4bc2b5078ca56ffd3b9b9\"}");
     JSONParser p(in);
 
     Value v = p.parse();

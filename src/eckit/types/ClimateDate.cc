@@ -60,7 +60,7 @@ ClimateDate::operator string() const
 	return string(os);
 }
 
-void ClimateDate::print(ostream& s) const
+void ClimateDate::print(std::ostream& s) const
 {
 
 	long year      = date_.year();
@@ -70,13 +70,13 @@ void ClimateDate::print(ostream& s) const
 	long day       = dayOfYear % 30 + 1;
 
 	char oldfill = s.fill();
-	s << year << '-' << setw(2) << setfill('0') << month
-		<< '-' << setw(2) << setfill('0') << day << setfill(oldfill);
+	s << year << '-' << std::setw(2) << std::setfill('0') << month
+		<< '-' << std::setw(2) << std::setfill('0') << day << std::setfill(oldfill);
 #else
 
 	char oldfill = s.fill();
-	 s << year << '-' << setw(3) << setfill('0') << (dayOfYear + 1)
-		<< setfill(oldfill);
+	 s << year << '-' << std::setw(3) << std::setfill('0') << (dayOfYear + 1)
+		<< std::setfill(oldfill);
 #endif
 }
 

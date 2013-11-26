@@ -45,7 +45,7 @@ private:
 
 // -- Methods
 
-	virtual void serve(Stream&, istream&,ostream&) = 0;
+    virtual void serve(Stream&, std::istream&, std::ostream&) = 0;
 
 // -- Overridden methods
 	// From Task

@@ -93,10 +93,10 @@ void PipeApplication<APP>::run()
 	if(getenv("PIPE_DEBUG"))
 	{
 		debug = true;
-		cout << "PIPE_DEBUG[" << Context::instance().runName() << "]" <<endl;
+		std::cout << "PIPE_DEBUG[" << Context::instance().runName() << "]" << std::endl;
         if( APP::name() == getenv("PIPE_DEBUG") )
 		{
-		cout << "debug me " << getpid() << endl;
+		std::cout << "debug me " << getpid() << std::endl;
 		::sleep(10);
 
 		::sleep(10);
@@ -127,7 +127,7 @@ void PipeApplication<APP>::run()
 		{
 			if(!debug)
 			{
-				Log::warning() << "Timeout, exiting" << endl;
+				Log::warning() << "Timeout, exiting" << std::endl;
 				return;
 			}
 		}
@@ -140,10 +140,10 @@ void PipeApplication<APP>::run()
 			else
 				process(pipe);
 		}
-		catch(exception& e) {
+		catch(std::exception& e) {
 			Log::error() << "** " << e.what() << " Caught in " <<
-				here <<  endl;
-			Log::error() << "** Exception is re-thrown" << endl;
+				here << std::endl;
+			Log::error() << "** Exception is re-thrown" << std::endl;
 			pipe << e;
 			throw;
 		}
@@ -163,13 +163,13 @@ void PipeApplication<APP>::run()
 			        << ", CPU: "         << Seconds(usage.ru_utime.tv_sec + usage.ru_utime.tv_sec)
 					<< ", Memory: "      << Bytes(usage.ru_maxrss*1024)
 					<< ", Swaps: "       << BigNum(usage.ru_nswap)
-					<< endl;
+					<< std::endl;
 
 		if(maxRequests && (count >= maxRequests))
 		{
 			Log::info() << "Maximum number of requests reached (" 
 						<< BigNum(maxRequests)
-						<< "), exiting" << endl;
+						<< "), exiting" << std::endl;
 			return;
 		}
 
@@ -177,7 +177,7 @@ void PipeApplication<APP>::run()
 		{
 			Log::info() << "Maximum uptime reached (" 
 						<< Seconds(maxUptime)
-				        << "), exiting" << endl;
+				        << "), exiting" << std::endl;
 			return;
 		}
 
@@ -185,7 +185,7 @@ void PipeApplication<APP>::run()
 		{
 			Log::info() << "Maximum CPU usage reached (" 
 						<< Seconds(maxCpu)
-				        << "), exiting" << endl;
+				        << "), exiting" << std::endl;
 			return;
 		}
 
@@ -195,7 +195,7 @@ void PipeApplication<APP>::run()
 						<< Bytes(usage.ru_maxrss*1024) 
 						<< " > "
 						<< Bytes(maxMemory * 1024 *1024)
-				        << "), exiting" << endl;
+				        << "), exiting" << std::endl;
 			return;
 		}
 
@@ -203,13 +203,13 @@ void PipeApplication<APP>::run()
 		{
 			Log::info() << "Maximum memory usage reached (" 
 						<< BigNum(maxSwaps)
-				        << "), exiting" << endl;
+				        << "), exiting" << std::endl;
 			return;
 		}
 
 
 
-// #define X(a) Log::info() << "Usage " << #a << ": " << usage.a << endl;
+// #define X(a) Log::info() << "Usage " << #a << ": " << usage.a << std::endl;
 #define X(a) 
 		X(ru_utime.tv_sec);
 		X(ru_utime.tv_sec);
@@ -256,7 +256,7 @@ void PipeApplication<APP>::launch(const string& name, int input, int output)
                  << cmd.baseName().localPath() << ','
                  << "-in," << in << ','
                  << "-out," << out << ','
-                 << "-parent," << par << ")" << endl;
+                 << "-parent," << par << ")" << std::endl;
 
 #if 0
     if(getenv("PIPE_DEBUG"))
@@ -264,7 +264,7 @@ void PipeApplication<APP>::launch(const string& name, int input, int output)
         ::execlp(getenv("PIPE_DEBUG"),getenv("PIPE_DEBUG"),
             cmd.c_str(), "-in",in, "-out",out, "-parent",par, 0);
 
-        cerr << "Exec failed " << getenv("PIPE_DEBUG") << Log::syserr  << endl;
+        std::cerr << "Exec failed " << getenv("PIPE_DEBUG") << Log::syserr  << std::endl;
         ::kill(getpid(),SIGTERM);
     }
     else
@@ -284,7 +284,7 @@ void PipeApplication<APP>::launch(const string& name, int input, int output)
         "-parent",par,
         (void*)0);
 
-    cerr << "Exec failed " << cmd << Log::syserr << endl;
+    std::cerr << "Exec failed " << cmd << Log::syserr << std::endl;
 
     // exit is not enough: some destructor of ostore objects
     // are waiting for some locks
@@ -294,7 +294,7 @@ void PipeApplication<APP>::launch(const string& name, int input, int output)
 template< class APP >
 void PipeApplication<APP>::waiting()
 {
-  Log::status() << "-" << endl;
+  Log::status() << "-" << std::endl;
 }
 
 //-----------------------------------------------------------------------------

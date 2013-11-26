@@ -39,7 +39,7 @@ public:
 	static void forget(const NodeInfo&);
 	static void offLine(const NodeInfo&);
 	static void refresh(const NodeInfo&);
-    static void list(ostream& out);
+    static void list(std::ostream& out);
     static void json(JSON& out);
 
     static void send(Stream& s);

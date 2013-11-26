@@ -20,7 +20,7 @@ namespace eckit {
 ClassSpec PipeHandle::classSpec_ = {&DataHandle::classSpec(),"PipeHandle",};
 Reanimator<PipeHandle> PipeHandle::reanimator_;
 
-void PipeHandle::print(ostream& s) const
+void PipeHandle::print(std::ostream& s) const
 {
 	s << "PipeHandle[file=" << name_ << ']';
 }
@@ -89,7 +89,7 @@ void PipeHandle::close()
     
     if( ::pclose(file_) != 0)
 	{
-		Log::error() << "pclose(" << name_ << ')' << Log::syserr << endl;
+		Log::error() << "pclose(" << name_ << ')' << Log::syserr << std::endl;
 		throw WriteError(name());
 	}
 }

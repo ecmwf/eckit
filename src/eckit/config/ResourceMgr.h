@@ -46,7 +46,7 @@ public: // methods
     bool lookUp( Configurable*, const string&, const StringDict* args, string&);
 	void set(const string&,const string&);
 
-    void appendConfig( istream& in );
+    void appendConfig( std::istream& in );
     void appendConfig( const PathName& );
     
 protected: // methods

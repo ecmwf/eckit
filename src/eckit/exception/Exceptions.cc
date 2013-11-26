@@ -41,25 +41,25 @@ Exception::~Exception() throw()
     first() = next_;
 }
 
-void Exception::print(ostream & out) const
+void Exception::print(std::ostream& out) const
 {
     out << what_;
 }
 
-void Exception::exceptionStack(ostream& out, bool callStack)
+void Exception::exceptionStack(std::ostream& out, bool callStack)
 {
-    out << "Exception stack: " << endl;
+    out << "Exception stack: " << std::endl;
     Exception* e =  first();
     while(e)
     {
-        out << e->what() << endl;
+        out << e->what() << std::endl;
 
         if(callStack)
-            out << e->callStack() << endl << endl;
+            out << e->callStack() << std::endl << std::endl;
 
         e = e->next_;
     }
-    out << "End stack" << endl;
+    out << "End stack" << std::endl;
 }
 
 Exception::Exception(const string& w, const CodeLocation& location):
@@ -71,11 +71,11 @@ Exception::Exception(const string& w, const CodeLocation& location):
 
 #if 0
     if(next_) {
-        Log::error() << "Exception: stack containts " << next_->what() << endl;
+        Log::error() << "Exception: stack containts " << next_->what() << std::endl;
     }
     else
     {
-        Log::error() << "Exception: stack is empty" << endl;
+        Log::error() << "Exception: stack is empty" << std::endl;
     }
 #endif
 
@@ -87,7 +87,7 @@ Exception::Exception(const string& w, const CodeLocation& location):
 
 void Exception::reason(const string& w)
 {
-    Log::error() << "Exception: " << w << endl;
+    Log::error() << "Exception: " << w << std::endl;
     what_ = w;
 }
 
@@ -101,7 +101,7 @@ TooManyRetries::TooManyRetries(const int retries)
     StrStream s;
     s << "Too many retries: " << retries << StrStream::ends;
     reason(string(s)); 
-    Log::monitor(Log::Unix,errno) << what() << endl;
+    Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 TimeOut::TimeOut(const string& msg, const unsigned long timeout)
@@ -117,7 +117,7 @@ FailedSystemCall::FailedSystemCall(const string& w)
     StrStream s;
     s << "Failed system call: " << w << " " << Log::syserr << StrStream::ends;
     reason(string(s));
-    Log::monitor(Log::Unix,errno) << what() << endl;
+    Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 FailedSystemCall::FailedSystemCall(const string& msg, const CodeLocation& loc)
@@ -125,7 +125,7 @@ FailedSystemCall::FailedSystemCall(const string& msg, const CodeLocation& loc)
     StrStream s;
     s << "Failed system call: " << msg << " " << " in " << loc << " " << Log::syserr << StrStream::ends;
     reason(string(s));
-    Log::monitor(Log::Unix,errno) << what() << endl;
+    Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 FailedSystemCall::FailedSystemCall(const char* msg,const CodeLocation& loc,int err)
@@ -136,7 +136,7 @@ FailedSystemCall::FailedSystemCall(const char* msg,const CodeLocation& loc,int e
     s << "Failed system call: " << msg << " in " << loc << " " << Log::syserr << StrStream::ends;
 
     reason(string(s));
-    Log::monitor(Log::Unix,errno) << what() << endl;
+    Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 FailedSystemCall::FailedSystemCall(const string& ctx, const char* msg, const CodeLocation& loc,int err)
@@ -147,13 +147,13 @@ FailedSystemCall::FailedSystemCall(const string& ctx, const char* msg, const Cod
     s << "Failed system call: " << msg << " in " << loc << " " << Log::syserr << " [" << ctx << "]" << StrStream::ends;
 
     reason(string(s));
-    Log::monitor(Log::Unix,errno) << what() << endl;
+    Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 AssertionFailed::AssertionFailed(const string& w): 
     Exception(string("Assertion failed: ") + w)
 {   
-    Log::monitor(Log::App,1) << what() << endl;
+    Log::monitor(Log::App,1) << what() << std::endl;
 } 
 
 AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
@@ -164,7 +164,7 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
         << ", line " << loc.line() << " of " << loc.file() << StrStream::ends;
 
     reason(string(s));
-    Log::monitor(Log::App,2) << what() << endl;
+    Log::monitor(Log::App,2) << what() << std::endl;
 }
 
 BadParameter::BadParameter(const string& w):
@@ -180,7 +180,7 @@ NotImplemented::NotImplemented( const CodeLocation& loc )
         << ", line " << loc.line() << " of " << loc.file() << StrStream::ends;
 
     reason(string(s));
-    Log::monitor(Log::App,2) << what() << endl;
+    Log::monitor(Log::App,2) << what() << std::endl;
     string t = string(s);
     //	Panic(t.c_str());
 
@@ -230,7 +230,7 @@ FileError::FileError(const string& msg)
     s << msg <<  Log::syserr;
     s << StrStream::ends;
     reason(string(s));
-    Log::monitor(Log::Unix,errno) << what() << endl;
+    Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 CantOpenFile::CantOpenFile(const string& file, bool retry):
@@ -242,7 +242,7 @@ CantOpenFile::CantOpenFile(const string& file, bool retry):
     if(retry) s << " (retry ok)";
     s << StrStream::ends;
     reason(string(s));
-    Log::monitor(Log::Unix,errno) << what() << endl;
+    Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 MethodNotYetImplemented::MethodNotYetImplemented(const string &msg):
@@ -274,13 +274,13 @@ void handle_panic(const char *msg)
 {
     msg = msg ? msg : "(null message)";
 
-    cout << "PANIC: " << msg << endl;
-    cerr << "PANIC: " << msg << endl;
+    std::cout << "PANIC: " << msg << std::endl;
+    std::cerr << "PANIC: " << msg << std::endl;
 
-    Log::monitor(Log::App,9999) << msg << endl;
+    Log::monitor(Log::App,9999) << msg << std::endl;
 
-    Log::panic() << "PANIC IS CALLED!!!" << endl;
-    Log::panic() << msg << endl;
+    Log::panic() << "PANIC IS CALLED!!!" << std::endl;
+    Log::panic() << msg << std::endl;
     
     Log::panic() << "----------------------------------------\n"
                  << "BACKTRACE\n" 
@@ -291,7 +291,7 @@ void handle_panic(const char *msg)
 
     if(getenv("SLEEP_ON_PANIC"))
     {
-        Log::panic() << "Use dbx -a " << getpid() << " or xldb -a " << getpid() << endl;
+        Log::panic() << "Use dbx -a " << getpid() << " or xldb -a " << getpid() << std::endl;
         ::kill(::getpid(),SIGSTOP);
     }
     else 

@@ -45,16 +45,16 @@ AutoClose::~AutoClose()
     try {
         handle_.close(); 
     }
-    catch(exception& e)
+    catch(std::exception& e)
     {
-        Log::error() << "** " << e.what() << " Caught in " << Here() <<  endl;
+        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
         if(fail)
         {
-            Log::error() << "** Exception is re-thrown" << endl;
+            Log::error() << "** Exception is re-thrown" << std::endl;
             throw;
         }
-        Log::error() << "** An exception is already in progress" << endl;
-        Log::error() << "** Exception is ignored" << endl;
+        Log::error() << "** An exception is already in progress" << std::endl;
+        Log::error() << "** Exception is ignored" << std::endl;
     }
 }
 
@@ -82,7 +82,7 @@ void DataHandle::encode(Stream& s) const
 
 void DataHandle::flush()
 {
-    Log::error() << *this << endl;
+    Log::error() << *this << std::endl;
     NOTIMP;
 }
 
@@ -93,11 +93,11 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
 
     compress();
 
-    Log::status() << Bytes(estimate()) << " " << title() << " => " << other.title() << endl;
+    Log::status() << Bytes(estimate()) << " " << title() << " => " << other.title() << std::endl;
 
     if(moverTransfer && moveable() && other.moveable())
     {
-        //Log::info() << "Using MoverTransfer" << endl;
+        //Log::info() << "Using MoverTransfer" << std::endl;
         MoverTransfer mover(watcher);
         return mover.transfer(*this,other);
     }
@@ -159,27 +159,27 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
                     lastRead = timer.elapsed();
 
                     char c1,c2;
-                    //			Log::message() << rate(length/r,c1)  << c1 << " " << rate(length/w,c2) << c2 << endl;
-                    Log::message() << rate(total/readTime,c1)  << c1 << " " << rate(total/writeTime,c2) << c2 << endl;
+                    //			Log::message() << rate(length/r,c1)  << c1 << " " << rate(length/w,c2) << c2 << std::endl;
+                    Log::message() << rate(total/readTime,c1)  << c1 << " " << rate(total/writeTime,c2) << c2 << std::endl;
                 }
             }
             catch(RestartTransfer& retry)
             {
-                Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")" << endl;
+                Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")" << std::endl;
                 restartReadFrom(retry.from());
                 other.restartWriteFrom(retry.from());
-                Log::warning() << "Total so far " << total << endl;
+                Log::warning() << "Total so far " << total << std::endl;
                 total = Length(0) + retry.from();
-                Log::warning() << "New total " << total << endl;
+                Log::warning() << "New total " << total << std::endl;
                 more = true;
             }
         }
 
-        Log::message() <<  "" << endl;
+        Log::message() <<  "" << std::endl;
 
 
-        Log::info() << "Read  rate: " << Bytes(total/readTime)  << "/s" << endl;
-        Log::info() << "Write rate: " << Bytes(total/writeTime) << "/s" << endl;
+        Log::info() << "Read  rate: " << Bytes(total/readTime)  << "/s" << std::endl;
+        Log::info() << "Write rate: " << Bytes(total/writeTime) << "/s" << std::endl;
 
         if(length < 0)
             throw ReadError(name() + " into " + other.name());
@@ -197,7 +197,7 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
 
 Length DataHandle::saveInto(const PathName& path,TransferWatcher& w)
 {
-    auto_ptr<DataHandle> file(path.fileHandle());
+    std::auto_ptr<DataHandle> file(path.fileHandle());
     return saveInto(*file,w);
 }
 
@@ -237,11 +237,11 @@ bool DataHandle::compare(DataHandle& other)
 
     if(estimate1 != estimate2) {
         Log::error() << "DataHandle::compare(" << self << "," << other <<") failed: openForRead() returns " <<
-            estimate1 << " and " << estimate2 << endl;
+            estimate1 << " and " << estimate2 << std::endl;
         return false;
     }
 
-    Log::status() << "Comparing data" << endl;
+    Log::status() << "Comparing data" << std::endl;
 
     Progress progress("Comparing data",0,estimate1);
     Length total = 0;
@@ -253,13 +253,13 @@ bool DataHandle::compare(DataHandle& other)
 
         if(len1 != len2) {
             Log::error() << "DataHandle::compare(" << self << "," << other <<") failed: read() returns " <<
-                len1 << " and " << len2 << endl;
+                len1 << " and " << len2 << std::endl;
             return false;
         }
 
         if(len1 <= 0 && len2 <= 0) 
         {
-            Log::info() << "DataHandle::compare(" << self << "," << other <<") is successful" << endl;
+            Log::info() << "DataHandle::compare(" << self << "," << other <<") is successful" << std::endl;
             return true;
         }
 
@@ -268,7 +268,7 @@ bool DataHandle::compare(DataHandle& other)
 
         if(::memcmp(buffer1,buffer2,len1))
         {
-            Log::error() << "DataHandle::compare(" << self << "," << other <<") failed: memcmp() returns non-zero value" << endl;
+            Log::error() << "DataHandle::compare(" << self << "," << other <<") failed: memcmp() returns non-zero value" << std::endl;
             return false;
         }
 
@@ -276,12 +276,12 @@ bool DataHandle::compare(DataHandle& other)
 }
 
 Offset DataHandle::position() {
-    Log::error() << *this << endl;
+    Log::error() << *this << std::endl;
     NOTIMP;
 }
 
 void DataHandle::rewind() {
-    Log::error() << *this << endl;
+    Log::error() << *this << std::endl;
 	StrStream os;
 	os << "NOT IMPLEMENTED DataHandle::rewind(" << *this << ")" << StrStream::ends;
 	throw SeriousBug(string(os));
@@ -290,26 +290,26 @@ void DataHandle::rewind() {
 
 Offset DataHandle::seek(const Offset& from)
 {
-    Log::error() << *this << endl;
+    Log::error() << *this << std::endl;
     NOTIMP;
 }
 
 void DataHandle::skip(size_t len)
 {
-    Log::error() << *this << endl;
+    Log::error() << *this << std::endl;
     NOTIMP;
 }
 
 
 void DataHandle::restartReadFrom(const Offset& from)
 {
-    Log::error() << *this << endl;
+    Log::error() << *this << std::endl;
     NOTIMP;
 }
 
 void DataHandle::restartWriteFrom(const Offset&)
 {
-    Log::error() << *this << endl;
+    Log::error() << *this << std::endl;
     NOTIMP;
 }
 

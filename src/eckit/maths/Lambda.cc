@@ -58,37 +58,37 @@ ExpPtr Lambda::evaluate( Scope &ctx )
 ExpPtr Lambda::call( Scope &ctx )
 {
 
-    //std::cout << endl << "EVALUATE LAMBDA " << *this << endl << " WITH " << ctx << endl;
-    //std::cout << "LAMBDA ARITY " << arity() << endl;
+    //std::cout << std::endl << "EVALUATE LAMBDA " << *this << std::endl << " WITH " << ctx << std::endl;
+    //std::cout << "LAMBDA ARITY " << arity() << std::endl;
 
     ASSERT(arity());
     size_t last = arity()-1;
     ExpPtr body = param(last, ctx);
 
-   // std::cout << "LAMBDA BODY IS " << *body << endl;
+   // std::cout << "LAMBDA BODY IS " << *body << std::endl;
 
     Scope scope("Lambda::evaluate",&ctx);
 
     for(size_t i = 0; i < last; ++i) {
 
         ExpPtr a = param(i);
-        //cout << "LAMBDA ARG " << i << " IS " << *a << endl;
+        //cout << "LAMBDA ARG " << i << " IS " << *a << std::endl;
         ASSERT(ParamDef::is(a));
         const string& name = a->as<ParamDef>()->name();
-        //cout << "LAMBDA NAME " << i << " IS " << name << endl;
+        //cout << "LAMBDA NAME " << i << " IS " << name << std::endl;
 
         ExpPtr b = param(i, ctx);
-        //cout << "LAMBDA " << name << " IS " << *b << endl;
+        //cout << "LAMBDA " << name << " IS " << *b << std::endl;
         scope.param(name, b);
     }
 
-    //std::cout << endl << "SCOPE OF LAMBDA IS " << scope << endl;
+    //std::cout << std::endl << "SCOPE OF LAMBDA IS " << scope << std::endl;
 
     return body->eval(scope, true);
 }
 
 
-void Lambda::asCode(ostream &o) const
+void Lambda::asCode(std::ostream&o) const
 {
     o << "maths::lambda("; printArgs(o); o <<")";
 }

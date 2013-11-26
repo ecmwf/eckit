@@ -28,7 +28,7 @@ JavaUser::~JavaUser()
 {
 }
 
-void JavaUser::serve(eckit::Stream& s,istream& in,ostream& out)
+void JavaUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out)
 {
 	JavaAgent::serve(s,in,out);
 }

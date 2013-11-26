@@ -82,9 +82,9 @@ protected: // members
 
 private: // methods
 
-	void print(ostream&) const;
+	void print(std::ostream&) const;
 
-	friend ostream& operator<<(ostream& s,const DateTime& p)
+	friend std::ostream& operator<<(std::ostream& s,const DateTime& p)
 		{ p.print(s); return s; }
 };
 

@@ -57,7 +57,7 @@ TCPSocket& TCPServer::accept(const string& message, int timeout, bool* connected
     int delay = timeout ? timeout : 10;
 
     Select select(listen_);
-    Log::status() << message << endl;
+    Log::status() << message << std::endl;
 
     while(!select.ready(delay)) {
         if(timeout && !connected) throw TimeOut(message, timeout);
@@ -65,7 +65,7 @@ TCPSocket& TCPServer::accept(const string& message, int timeout, bool* connected
             *connected = false;
             return *this;
         }
-        Log::status() << message << endl;
+        Log::status() << message << std::endl;
     }
 
         if((socket_ = ::accept(listen_,
@@ -89,7 +89,7 @@ TCPSocket& TCPServer::accept(const string& message, int timeout, bool* connected
 
     ::signal(SIGPIPE,SIG_IGN);
 
-    Log::status() << "Get connection from " << remoteHost() << endl;
+    Log::status() << "Get connection from " << remoteHost() << std::endl;
 
         if(connected) {
             *connected = true;

@@ -38,13 +38,13 @@ void ThreadPoolThread::run()
     static const char *here = __FUNCTION__;
     Monitor::instance().name(owner_.name());
 
-    //Log::info() << "Start of ThreadPoolThread " << endl;
+    //Log::info() << "Start of ThreadPoolThread " << std::endl;
 
 
     for(;;)
     {
         Monitor::instance().show(false);
-        Log::status() << "-" << endl;
+        Log::status() << "-" << std::endl;
         ThreadPoolTask* r = owner_.next();
         if(!r) break;
         Monitor::instance().show(true);
@@ -54,26 +54,26 @@ void ThreadPoolThread::run()
         try {
             r->execute();
         }
-        catch(exception& e)
+        catch(std::exception& e)
         {
-            Log::error() << "** " << e.what() << " Caught in " << here <<  endl;
-            Log::error() << "** Exception is reported" << endl;
+            Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+            Log::error() << "** Exception is reported" << std::endl;
             owner_.error(e.what());
         }
 
         try {
             delete r;
         }
-        catch(exception& e)
+        catch(std::exception& e)
         {
-            Log::error() << "** " << e.what() << " Caught in " << here <<  endl;
-            Log::error() << "** Exception is reported" << endl;
+            Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+            Log::error() << "** Exception is reported" << std::endl;
             owner_.error(e.what());
         }
     }
 
 
-    Log::info() << "End of ThreadPoolThread " << endl;
+    Log::info() << "End of ThreadPoolThread " << std::endl;
 
     owner_.notifyEnd();
 }
@@ -85,7 +85,7 @@ ThreadPool::ThreadPool(const string& name,int count, size_t stack):
     error_(false)
 {
 
-    //Log::info() << "ThreadPool::ThreadPool " << name_ << " " << count << endl;
+    //Log::info() << "ThreadPool::ThreadPool " << name_ << " " << count << std::endl;
 
     for(int i = 0; i < count ; i++)
     {
@@ -98,15 +98,15 @@ ThreadPool::~ThreadPool()
 {
     static const char *here = __FUNCTION__;
 
-    //Log::info() << "ThreadPool::~ThreadPool " << name_ <<  endl;
+    //Log::info() << "ThreadPool::~ThreadPool " << name_ << std::endl;
 
     try {
         waitForThreads();
     }
-    catch(exception& e)
+    catch(std::exception& e)
     {       
-        Log::error() << "** " << e.what() << " Caught in " << here <<  endl;
-        Log::error() << "** Exception is ignored" << endl;
+        Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+        Log::error() << "** Exception is ignored" << std::endl;
     }
 }
 
@@ -118,10 +118,10 @@ void ThreadPool::waitForThreads()
 
 
     AutoLock<MutexCond> lock(done_);
-    //Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << endl;
+    //Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << std::endl;
     while(running_)
 	{	
-        //Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << endl;
+        //Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << std::endl;
         done_.wait();
 	}
 
@@ -137,7 +137,7 @@ void ThreadPool::notifyStart()
     AutoLock<MutexCond> lock(done_);
     running_++;
     done_.signal();
-//Log::info() << "ThreadPool::notifyStart " << name_ << " running: " << running_ << endl;
+//Log::info() << "ThreadPool::notifyStart " << name_ << " running: " << running_ << std::endl;
 }
 
 void ThreadPool::notifyEnd()
@@ -145,7 +145,7 @@ void ThreadPool::notifyEnd()
     AutoLock<MutexCond> lock(done_);
     running_--;
     done_.signal();
-//Log::info() << "ThreadPool::notifyEnd " << name_ << " running: " << running_ << endl;
+//Log::info() << "ThreadPool::notifyEnd " << name_ << " running: " << running_ << std::endl;
 }
 
 void ThreadPool::error(const string& msg)
@@ -164,11 +164,11 @@ void ThreadPool::push(ThreadPoolTask* r)
     ready_.signal();
 }
 
-void ThreadPool::push(list<ThreadPoolTask*>& l)
+void ThreadPool::push(std::list<ThreadPoolTask*>& l)
 {
     AutoLock<MutexCond> lock(ready_);
 
-    for(list<ThreadPoolTask*>::iterator j = l.begin(); j != l.end(); ++j)
+    for(std::list<ThreadPoolTask*>::iterator j = l.begin(); j != l.end(); ++j)
         queue_.push_back((*j));
 
     l.clear();

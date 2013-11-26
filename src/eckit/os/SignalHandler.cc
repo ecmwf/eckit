@@ -26,7 +26,7 @@ SignalHandler::SignalHandler(void (*handler)(int),
         signal_(sig),
         next_(current_)
 {
-//	Log::info() << "Installing signal handler " << signal_ << endl;
+//	Log::info() << "Installing signal handler " << signal_ << std::endl;
     current_ = this;
 
     struct sigaction a;
@@ -39,7 +39,7 @@ SignalHandler::SignalHandler(void (*handler)(int),
     //if(sigtype == 0)
     sigaction(signal_,&a,&save_);
     //else {
-    //Log::warning() << "Got signal " << sigtype << endl;
+    //Log::warning() << "Got signal " << sigtype << std::endl;
     //throw Abort("Signal recieved");
     //}
 }
@@ -52,7 +52,7 @@ SignalHandler::~SignalHandler()
     struct sigaction ignore;
     sigaction(signal_,&save_,&ignore);
 
-//	Log::info() << "Removing signal handler " << signal_ << endl;
+//	Log::info() << "Removing signal handler " << signal_ << std::endl;
 }
 
 static bool interrupted_ = false;

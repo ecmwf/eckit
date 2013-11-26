@@ -63,7 +63,7 @@ protected:
 
 // -- Methods
 	
-    void print(ostream&) const; // Change to virtual if base class
+    void print(std::ostream&) const; // Change to virtual if base class
 
 // -- Overridden methods
 	// None
@@ -100,7 +100,7 @@ private:
 
 // -- Friends
 
-    friend ostream& operator<<(ostream& s,const GribFile& p)
+    friend std::ostream& operator<<(std::ostream& s,const GribFile& p)
         { p.print(s); return s; }
 
 };

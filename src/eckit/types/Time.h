@@ -108,7 +108,7 @@ protected:
 
 // -- Methods
 
-	void print(ostream&) const;
+	void print(std::ostream&) const;
 
 private:
 
@@ -116,7 +116,7 @@ private:
 
 	Second seconds_;
 
-	friend ostream& operator<<(ostream& s,const Time& t)
+	friend std::ostream& operator<<(std::ostream& s,const Time& t)
 		{ t.print(s); return s; }
 
 };

@@ -72,7 +72,7 @@ public:
 
 // -- Friends
 
-	friend ostream& operator<< (ostream& s, const DayOfYear& month)
+	friend std::ostream& operator<< (std::ostream& s, const DayOfYear& month)
 		{ month.print(s); return s; }
 
 protected:
@@ -101,7 +101,7 @@ private:
 
 // -- Methods
 
-	void print(ostream&) const;
+	void print(std::ostream&) const;
 
 // -- Class methods
 

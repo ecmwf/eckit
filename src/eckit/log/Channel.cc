@@ -19,7 +19,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-Channel::Channel(streambuf *b) : std::ostream( b ) 
+Channel::Channel(std::streambuf *b) : std::ostream( b )
 {
     ASSERT(b);
 }

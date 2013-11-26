@@ -27,7 +27,7 @@ public:
 	HttpUser(eckit::TCPSocket&);
 	virtual ~HttpUser();
 private:
-	virtual void serve(eckit::Stream&, istream&,ostream&);
+    virtual void serve(eckit::Stream&, std::istream&, std::ostream&);
 };
 
 //-----------------------------------------------------------------------------

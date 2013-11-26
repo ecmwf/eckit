@@ -58,6 +58,7 @@ int get_pagesize()
 #define SIZE_UP  (ELEM_UP*sizeof(int))
 #define SIZE_LW  (ELEM_LW*sizeof(int))
 
+using namespace std;
 using namespace eckit;
 
 int main(int argc, char *argv[])

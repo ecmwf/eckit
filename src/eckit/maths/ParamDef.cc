@@ -35,7 +35,7 @@ ExpPtr ParamDef::clone()
     return paramdef(name_);
 }
 
-void ParamDef::print(ostream &o) const
+void ParamDef::print(std::ostream&o) const
 {
     o << "=(" << name_ << ")";
 }
@@ -51,7 +51,7 @@ ExpPtr ParamDef::evaluate( Scope &ctx )
     //return boost::static_pointer_cast<Value>( shared_from_this() );
 }
 
-void ParamDef::asCode(ostream &o) const
+void ParamDef::asCode(std::ostream&o) const
 {
     o << '"' << name_ << '"';
 }

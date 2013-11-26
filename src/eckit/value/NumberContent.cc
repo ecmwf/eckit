@@ -54,7 +54,7 @@ NumberContent::~NumberContent()
 {
 }
 
-void NumberContent::print(ostream& s) const
+void NumberContent::print(std::ostream& s) const
 {
     s << value_;
 }

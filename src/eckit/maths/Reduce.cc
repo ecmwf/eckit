@@ -57,7 +57,7 @@ ExpPtr Reduce::evaluate( Scope &ctx )
 }
 
 
-void Reduce::asCode(ostream &o) const
+void Reduce::asCode(std::ostream&o) const
 {
     o << "maths::reduce("; printArgs(o); o <<")";
 }

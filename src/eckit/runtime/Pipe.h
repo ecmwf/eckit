@@ -208,11 +208,11 @@ void PipeTask<PAYLOAD>::run()
     try {
         consumer_(owner_);
     }
-    catch(exception& e)
+    catch(std::exception& e)
     {
         Log::error() << "** " << e.what() << " Caught in " <<
-                        here <<  endl;
-        Log::error() << "** Exception is handled" << endl;
+                        here << std::endl;
+        Log::error() << "** Exception is handled" << std::endl;
         owner_.error(e.what());
     }
 }

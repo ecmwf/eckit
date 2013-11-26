@@ -45,6 +45,7 @@ public:
 
     typedef K key_type;
     typedef V value_type;
+    typedef std::pair<K,V> result_type;
 
     // -- Exceptions
 
@@ -67,13 +68,13 @@ public:
 
     bool get(const K&, V&);
     bool set(const K&, const V&);
-    void range(const K& key1, const K& key2, vector<pair<K,V> >& result);
+    void range(const K& key1, const K& key2, std::vector< result_type >& result);
 
 
     bool remove(const K&);
 
-    void dump(ostream& s = cout) const;
-    void dump(ostream&, unsigned long page, int depth) const;
+    void dump(std::ostream& s = std::cout) const;
+    void dump(std::ostream&, unsigned long page, int depth) const;
 
 
     void lock();
@@ -86,7 +87,7 @@ protected:
 
     // -- Methods
 
-    void print(ostream&) const; 
+    void print(std::ostream&) const; 
 
 private:
 
@@ -213,14 +214,14 @@ private:
     struct _LeafPage : public _Page {
 
         LeafEntry lentries_[1];
-        void print(ostream& s) const ;
+        void print(std::ostream& s) const ;
     };
 
 
     struct _NodePage : public _Page  {
 
         NodeEntry nentries_[1];
-        void print(ostream& s) const ;
+        void print(std::ostream& s) const ;
     };
 
 
@@ -247,9 +248,9 @@ private:
         }
         
         
-        void print(ostream& s) const ;
+        void print(std::ostream& s) const ;
 
-        friend ostream& operator<<(ostream& s,const Page& p)
+        friend std::ostream& operator<<(std::ostream& s,const Page& p)
         {
             p.print(s);
             return s;
@@ -287,7 +288,7 @@ private:
 
     void lockRange(off_t start,off_t len,int cmd,int type);
     bool search(unsigned long page, const K&, V&) const;
-    void search(unsigned long page, const K& key1, const K& key2, vector<pair<K,V> >& result);
+    void search(unsigned long page, const K& key1, const K& key2, vector< result_type >& result);
 
 
     void splitRoot();
@@ -309,7 +310,7 @@ private:
 
     // -- Friends
 
-    friend ostream& operator<<(ostream& s,const BTree& p)
+    friend std::ostream& operator<<(std::ostream& s,const BTree& p)
     {
         p.print(s);
         return s;

@@ -29,12 +29,12 @@ bool Boolean::is(const ExpPtr &e) {
     return dynamic_cast<Boolean*>(e.get()) != 0;
 }
 
-void Boolean::print(ostream &o) const
+void Boolean::print(std::ostream&o) const
 {
     o << className() << "(" << v_ << ")";
 }
 
-void Boolean::asCode(ostream &o) const
+void Boolean::asCode(std::ostream&o) const
 {
     o << "Math(" << (v_? "true" : "false") << ")";
 }

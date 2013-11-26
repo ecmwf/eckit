@@ -43,12 +43,12 @@ public: // methods
     {
         if(out_ == MonitorChannel::STATUS)
         {
-            ::replace(pbase(),pptr(),'\n','\0');
+            std::replace(pbase(),pptr(),'\n','\0');
             Monitor::instance().status(pbase());
         }
         if(out_ == MonitorChannel::MESSAGE)
         {
-            ::replace(pbase(),pptr(),'\n','\0');
+            std::replace(pbase(),pptr(),'\n','\0');
             Monitor::instance().message(pbase());
         }
 

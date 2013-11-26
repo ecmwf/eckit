@@ -69,7 +69,7 @@ void Assignment::execute(const StringDict &in, StringDict &out)
     out[ variable_ ] = value_;
 }
 
-void Assignment::print(ostream &out)
+void Assignment::print(std::ostream&out)
 {
     out << variable_ << " = " << value_  << ";" << std::endl;
 }

@@ -96,7 +96,7 @@ PathName::~PathName()
 }
 
 
-void PathName::print(ostream& s) const
+void PathName::print(std::ostream& s) const
 {
 	s << *path_;
 }

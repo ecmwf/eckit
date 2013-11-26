@@ -38,7 +38,7 @@ public:
 class DataHandle : public Streamable {
 public:
 
-	friend ostream& operator<<(ostream& s,const DataHandle& handle) 
+	friend std::ostream& operator<<(std::ostream& s,const DataHandle& handle) 
 		{ handle.print(s); return s;}
 
 // -- Contructors
@@ -52,7 +52,7 @@ public:
 
 // -- Methods
 
-	virtual void print(ostream& s) const = 0;
+	virtual void print(std::ostream& s) const = 0;
 
     virtual Length openForRead()              = 0; // Return estimated length
     virtual void openForWrite(const Length&)  = 0; // Receive estimated length

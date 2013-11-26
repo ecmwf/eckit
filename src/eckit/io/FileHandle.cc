@@ -31,7 +31,7 @@ namespace eckit {
 ClassSpec FileHandle::classSpec_ = {&DataHandle::classSpec(),"FileHandle",};
 Reanimator<FileHandle> FileHandle::reanimator_;
 
-void FileHandle::print(ostream& s) const
+void FileHandle::print(std::ostream& s) const
 {
     s << "FileHandle[file=" << name_ << ']';
 }
@@ -81,14 +81,14 @@ void FileHandle::open(const char* mode)
 		long size = bufSize;
 		if(size)
 		{
-			Log::debug() << "FileHandle using " << Bytes(size) << endl;
+			Log::debug() << "FileHandle using " << Bytes(size) << std::endl;
 			buffer_.reset(new Buffer(size));
 			Buffer& b = *(buffer_.get());
 			::setvbuf(file_,b,_IOFBF,size);
 		}
 	}
 
-    //Log::info() << "FileHandle::open " << name_ << " " << mode << " " << fileno(file_) << endl;
+    //Log::info() << "FileHandle::open " << name_ << " " << mode << " " << fileno(file_) << std::endl;
 
 }
 
@@ -135,7 +135,7 @@ long FileHandle::write(const void* buffer,long length)
 
             clearerr(file_);
 
-            Log::status() << "Disk is full, waiting..." << endl;
+            Log::status() << "Disk is full, waiting..." << std::endl;
             ::sleep(60);
 
             errno   = 0;
@@ -167,7 +167,7 @@ void FileHandle::flush()
             while (ret < 0 && errno == EINTR)
                 ret = fsync(fileno(file_));
             if (ret < 0) {
-                Log::error() << "Cannot fsync(" << name_ << ") " <<fileno(file_) <<  Log::syserr << endl;
+                Log::error() << "Cannot fsync(" << name_ << ") " <<fileno(file_) <<  Log::syserr << std::endl;
             }
             
             //if(ret<0)
@@ -193,7 +193,7 @@ void FileHandle::flush()
                     ret = fsync(dir);
     
                 if (ret < 0) {
-                    Log::error() << "Cannot fsync(" << directory << ")" << Log::syserr << endl;
+                    Log::error() << "Cannot fsync(" << directory << ")" << Log::syserr << std::endl;
                 }
                 ::closedir(d);
             }
@@ -225,7 +225,7 @@ void FileHandle::close()
     }
     else
     {
-        Log::warning() << "Closing FileHandle " << name_ << ", file is not opened" << endl;
+        Log::warning() << "Closing FileHandle " << name_ << ", file is not opened" << std::endl;
     }
     buffer_.reset(0);
 }
@@ -265,11 +265,11 @@ Length FileHandle::saveInto(DataHandle& other,TransferWatcher& w)
     FileHandle* handle = dynamic_cast<FileHandle*>(&other);
 
     if (::link(name_.c_str(),handle->name_.c_str()) == 0)
-        Log::debug() << "Saved ourselves a file to file copy!!!" << endl;
+        Log::debug() << "Saved ourselves a file to file copy!!!" << std::endl;
     else {
         Log::debug() << "Failed to link " <<  name_
-        << " to " << handle->name_ << Log::syserr << endl;
-        Log::debug() << "Using defaut method" << endl;
+        << " to " << handle->name_ << Log::syserr << std::endl;
+        Log::debug() << "Using defaut method" << std::endl;
         return DataHandle::saveInto(other,w);
     }
 
@@ -292,7 +292,7 @@ void FileHandle::advance(const Length& len)
 void FileHandle::restartReadFrom(const Offset& from)
 {
     ASSERT(read_);
-    Log::warning() << *this << " restart read from " << from << endl;
+    Log::warning() << *this << " restart read from " << from << std::endl;
     off_t l = from;
     if (::fseeko(file_,l,SEEK_SET) < 0)
         throw ReadError(name_);
@@ -303,7 +303,7 @@ void FileHandle::restartReadFrom(const Offset& from)
 void FileHandle::restartWriteFrom(const Offset& from)
 {
     ASSERT(!read_);
-    Log::warning() << *this << " restart write from " << from << endl;
+    Log::warning() << *this << " restart write from " << from << std::endl;
     off_t l = from;
     if (::fseeko(file_,l,SEEK_SET) < 0)
         throw ReadError(name_);

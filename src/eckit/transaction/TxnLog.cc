@@ -49,7 +49,7 @@ TxnLog<T>::TxnLog(const string& name):
 	nextID_(next_,1)
 {
 	AutoLock<MappedArray<TxnID> > lock(nextID_);
-	Log::debug() << "TxnLog file is " << path_ << endl;
+	Log::debug() << "TxnLog file is " << path_ << std::endl;
 
 	PathName done = path_ + "/done";
 	done.mkdir();
@@ -64,7 +64,7 @@ template<class T>
 PathName TxnLog<T>::name(T& event)
 {
 	StrStream s;
-	s << setfill('0') << setw(10) << event.transactionID() << StrStream::ends;
+	s << std::setfill('0') << std::setw(10) << event.transactionID() << StrStream::ends;
 	return path_ + "/" + string(s);
 }
 
@@ -137,7 +137,7 @@ RecoverThread<T>::RecoverThread(const PathName& path,
 	
 	// Sort by ID to preserve order
 	std::sort(result_.begin(),result_.end());
-	Log::info() << result_.size() << " task(s) found in log files" << endl;
+	Log::info() << result_.size() << " task(s) found in log files" << std::endl;
 
 	if(result_.size())
 	{
@@ -165,7 +165,7 @@ void RecoverThread<T>::recover()
 
 		if(now_ - result_[i].created() < age_)
 			Log::info() << "Skipping " << result_[i] << ", created " << 
-				Seconds(now_ - result_[i].created()) << " ago." << endl;
+				Seconds(now_ - result_[i].created()) << " ago." << std::endl;
 		else
 			try {
 				FileStream log(result_[i],"r");
@@ -175,11 +175,11 @@ void RecoverThread<T>::recover()
 					client_.push(task);
 				}
 			}
-			catch(exception& e)
+			catch(std::exception& e)
 			{
 				Log::error() << "** " << e.what() << " Caught in " <<
-					here <<  endl;
-				Log::error() << "** Exception is ignored" << endl;
+					here << std::endl;
+				Log::error() << "** Exception is ignored" << std::endl;
 			}
 	}
 }
@@ -213,7 +213,7 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 	{
 		try {
 			 FileStream log(active[j],"r");
-			 auto_ptr<T> task(Reanimator<T>::reanimate(log));
+			 std::auto_ptr<T> task(Reanimator<T>::reanimate(log));
 			 if(task.get()) 
 				if(!r.found(*task))
 				return;
@@ -221,15 +221,15 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 		catch(Abort& e)
 		{
 			Log::error() << "** " << e.what() << " Caught in " <<
-				here <<  endl;
-			Log::error() << "** Exception is re-thrown" << endl;
+				here << std::endl;
+			Log::error() << "** Exception is re-thrown" << std::endl;
 			throw;
 		}
-		catch(exception& e)
+		catch(std::exception& e)
 		{
 			Log::error() << "** " << e.what() << " Caught in " <<
-							here <<  endl;
-			Log::error() << "** Exception is ignored" << endl;
+							here << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 
@@ -250,7 +250,7 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 
 		for(Ordinal k = 0 ; k < dates.size() ; k++)
 		{
-			Log::info() << "Searching " << dates[k] << endl;
+			Log::info() << "Searching " << dates[k] << std::endl;
 			try {
 				FileStream log(dates[k],"r");
 				T *task = 0;
@@ -263,15 +263,15 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 			catch(Abort& e)
 			{
 				Log::error() << "** " << e.what() << " Caught in " <<
-					here <<  endl;
-				Log::error() << "** Exception is re-thrown" << endl;
+					here << std::endl;
+				Log::error() << "** Exception is re-thrown" << std::endl;
 				throw;
 			}
-			catch(exception& e)
+			catch(std::exception& e)
 			{
 				Log::error() << "** " << e.what() << " Caught in " <<
-					here <<  endl;
-				Log::error() << "** Exception is ignored" << endl;
+					here << std::endl;
+				Log::error() << "** Exception is ignored" << std::endl;
 			}
 		}
 	}

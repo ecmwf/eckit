@@ -75,17 +75,17 @@ void EtcTable::load()
     last_ = 1; // TODP: Check timestamp
 
 	LocalPathName path(string("~/") + dir_ + "/" + name_);
-	ifstream in(path.localPath());
+    std::ifstream in(path.localPath());
 
-    Log::info() << "EtcTable::load " << path << endl;
+    Log::info() << "EtcTable::load " << path << std::endl;
 
     lines_.clear();
 
-	//Log::info() << "Loading table " << path << endl;
+	//Log::info() << "Loading table " << path << std::endl;
 
 	if(in.bad())
 	{
-		Log::error() << path << Log::syserr << endl;
+		Log::error() << path << Log::syserr << std::endl;
 		return;
 	}
 
@@ -109,7 +109,7 @@ void EtcTable::load()
 			continue;
 
         if(size_ && s.size() != size_)
-            Log::warning() << "Ignoring " << line << endl;
+            Log::warning() << "Ignoring " << line << std::endl;
 
         lines_.push_back(s);
 	}

@@ -78,7 +78,7 @@ private:
 inline  // For speed
 Ordinal HyperCube::count() const
 {
-	return accumulate(dimensions_.begin(),dimensions_.end(),1,multiplies<Ordinal>());
+    return accumulate(dimensions_.begin(),dimensions_.end(),1,std::multiplies<Ordinal>());
 }
 
 

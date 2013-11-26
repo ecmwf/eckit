@@ -50,7 +50,7 @@ void Branch::execute(const StringDict &in, StringDict &out)
             else_->execute(in,out);
 }
 
-void Branch::print(ostream &out)
+void Branch::print(std::ostream&out)
 {
     if_->print(out);
     then_->print(out);

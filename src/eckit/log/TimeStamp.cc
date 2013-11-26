@@ -33,7 +33,7 @@ TimeStamp::TimeStamp(time_t t,const string& format):
 {
 }
 
-ostream& operator<<(ostream& s,const TimeStamp&  x)
+std::ostream& operator<<(std::ostream& s,const TimeStamp&  x)
 {
 	char buf[80];
 #ifdef EC_HAVE_GMTIME_R

@@ -55,7 +55,7 @@ static const PathName& leastUsed(const vector<PathName>& fileSystems)
 
 	for(Ordinal i = 0; i < fileSystems.size(); i++)
 	{
-		Log::info() << "leastUsed: " << fileSystems[i] << " " << fileSystems[i].available() << endl;
+		Log::info() << "leastUsed: " << fileSystems[i] << " " << fileSystems[i].available() << std::endl;
 		if(fileSystems[i].available())
 		{
 			FileSystemSize fs;
@@ -64,11 +64,11 @@ static const PathName& leastUsed(const vector<PathName>& fileSystems)
 			{
 				fileSystems[i].fileSystemSize(fs);
 			}
-			catch(exception& e)
+			catch(std::exception& e)
 			{
-				Log::error() << "** " << e.what() << " Caught in " << here << endl;
-				Log::error() << "** Exception is ignored" << endl;
-				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << endl;
+				Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+				Log::error() << "** Exception is ignored" << std::endl;
+				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
 				continue;
 			}
 
@@ -85,7 +85,7 @@ static const PathName& leastUsed(const vector<PathName>& fileSystems)
 	if(!checked)
         throw Retry(string("No available filesystem (") + fileSystems[0] + ")");
 
-	Log::info() << "Least used file system: " << fileSystems[best] << " " << Bytes(free) << " available" << endl;
+	Log::info() << "Least used file system: " << fileSystems[best] << " " << Bytes(free) << " available" << std::endl;
 
 	return fileSystems[best];
 }
@@ -104,7 +104,7 @@ static const PathName& roundRobin(const vector<PathName>& fileSystems)
 	value++;
 	value %= fileSystems.size();
 
-	Log::info() << "roundRobin selection " << value << " out of " << fileSystems.size() << endl;
+	Log::info() << "roundRobin selection " << value << " out of " << fileSystems.size() << std::endl;
 
 	for(Ordinal j = 0; j < fileSystems.size(); j++)
 	{
@@ -117,17 +117,17 @@ static const PathName& roundRobin(const vector<PathName>& fileSystems)
 			{
 				fileSystems[i].fileSystemSize(fs);
 			}
-			catch(exception& e)
+			catch(std::exception& e)
 			{
-				Log::error() << "** " << e.what() << " Caught in " << here << endl;
-				Log::error() << "** Exception is ignored" << endl;
-				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << endl;
+				Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+				Log::error() << "** Exception is ignored" << std::endl;
+				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
 				continue;
 			}
 
 			if(fs.total == 0)
 			{
-				Log::info() << "roundRobin: cannot get total size of " << fileSystems[i] << endl;
+				Log::info() << "roundRobin: cannot get total size of " << fileSystems[i] << std::endl;
 				return leastUsed(fileSystems);
 			}
 
@@ -143,7 +143,7 @@ static const PathName& roundRobin(const vector<PathName>& fileSystems)
 			if(percent <= candidate)
 			{
 				value = i;
-				Log::info() << "Round robin file system: " << fileSystems[value] << " " << Bytes(fs.available) << " available" << endl;
+				Log::info() << "Round robin file system: " << fileSystems[value] << " " << Bytes(fs.available) << " available" << std::endl;
 				return fileSystems[value];
 
 			}
@@ -151,7 +151,7 @@ static const PathName& roundRobin(const vector<PathName>& fileSystems)
 		}
 	}
 
-	Log::info() << "roundRobin reverting to leastUsed" << endl;
+	Log::info() << "roundRobin reverting to leastUsed" << std::endl;
 
 	return leastUsed(fileSystems);
 
@@ -178,11 +178,11 @@ static const PathName& pureRandom(const vector<PathName>& fileSystems)
 			{
 				fileSystems[i].fileSystemSize(fs);
 			}
-			catch(exception& e)
+			catch(std::exception& e)
 			{
-				Log::error() << "** " << e.what() << " Caught in " << here << endl;
-				Log::error() << "** Exception is ignored" << endl;
-				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << endl;
+				Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+				Log::error() << "** Exception is ignored" << std::endl;
+				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
 				continue;
 			}
 
@@ -194,7 +194,7 @@ static const PathName& pureRandom(const vector<PathName>& fileSystems)
 			if(percent <= candidate)
 			{
 				value = i;
-				Log::info() << "Pure random file system: " << fileSystems[value] << " " << Bytes(fs.available) << " available" << endl;
+				Log::info() << "Pure random file system: " << fileSystems[value] << " " << Bytes(fs.available) << " available" << std::endl;
 				return fileSystems[value];
 			}
 
@@ -226,11 +226,11 @@ static const PathName& weightedRandom(const vector<PathName>& fileSystems)
 			{
 				fileSystems[i].fileSystemSize(fs);
 			}
-			catch(exception& e)
+			catch(std::exception& e)
 			{
-				Log::error() << "** " << e.what() << " Caught in " << here << endl;
-				Log::error() << "** Exception is ignored" << endl;
-				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << endl;
+				Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+				Log::error() << "** Exception is ignored" << std::endl;
+				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
 				continue;
 			}
 
@@ -264,14 +264,14 @@ static const PathName& weightedRandom(const vector<PathName>& fileSystems)
 	{
 		long s = (*j).second / scale;
 #if 0
-		Log::info() << "Choice " << choice << " free_space = " << free_space << " last = " << last << " s = " << s << " scale = " << scale << endl;
+		Log::info() << "Choice " << choice << " free_space = " << free_space << " last = " << last << " s = " << s << " scale = " << scale << std::endl;
 #endif
 		if(choice >= last && choice < last + s)
 			value = (*j).first;
 		last += s;
 	}
 
-	Log::info() << "Weighted random file system: " << fileSystems[value] << " " << Bytes(scores[value]) << " available" << endl;
+	Log::info() << "Weighted random file system: " << fileSystems[value] << " " << Bytes(scores[value]) << " available" << std::endl;
 
 	return fileSystems[value];
 }
@@ -286,7 +286,7 @@ const PathName& FileSpace::selectFileSystem(const string& s) const
 		throw Retry(string("FileSpace [") + name_ + "] is undefined");
 	}
 
-	Log::info() << "FileSpace::selectFileSystem is " << s << endl;
+	Log::info() << "FileSpace::selectFileSystem is " << s << std::endl;
 
 	if(s == "roundRobin")
 		return roundRobin(fileSystems_);
@@ -306,7 +306,7 @@ const PathName& FileSpace::selectFileSystem() const
 
 bool FileSpace::owns(const PathName& path) const
 {
-	//Log::info() << "FileSpace::owns " <<  name_ << " " << path << endl;
+	//Log::info() << "FileSpace::owns " <<  name_ << " " << path << std::endl;
 	bool found = false;
 	find(path, found);
 	return found;
@@ -314,19 +314,19 @@ bool FileSpace::owns(const PathName& path) const
 
 const PathName& FileSpace::sameFileSystem(const PathName& path) const
 {
-	//Log::info() << "FileSpace::sameFileSystem " <<  name_ << " " << path << endl;
+	//Log::info() << "FileSpace::sameFileSystem " <<  name_ << " " << path << std::endl;
 
 	bool found = false;
 	const PathName& f = find(path, found);
 
 	if(found)
 	{
-		Log::info() << f << " matches " << path << endl;
+		Log::info() << f << " matches " << path << std::endl;
 		return f;
 	}
 	else
 	{
-		Log::warning() << "Cannot find matching file system for " << path << endl;
+		Log::warning() << "Cannot find matching file system for " << path << std::endl;
 		return selectFileSystem();
 	}
 }
@@ -356,7 +356,7 @@ const FileSpace& FileSpace::lookUp(const string& name)
 	Map::iterator j = space.find(name);
 	if(j == space.end())
 	{
-		pair<string, FileSpace*> p(name, new FileSpace(name));
+        std::pair<string, FileSpace*> p(name, new FileSpace(name));
 		j = space.insert(p).first;
 	}
 	return *(*j).second;
@@ -376,7 +376,7 @@ void FileSpace::load() const
 	PathName config(string("~/etc/disks/") + name_);
 	time_t mod1 = config.lastModified();
 	time_t mod2 = ClusterDisks::lastModified(name_);
-	time_t modified = ::max(mod1, mod2);
+    time_t modified = std::max(mod1, mod2);
 
 	if(last_ == modified)
 		return;
@@ -386,9 +386,9 @@ void FileSpace::load() const
 	self->last_ = modified;
 	self->fileSystems_.clear();
 
-	//Log::info() << "Loading FileSpace " << name_ << " modified " << TimeStamp(last_) << endl;
+	//Log::info() << "Loading FileSpace " << name_ << " modified " << TimeStamp(last_) << std::endl;
 
-	ifstream in(config.localPath());
+    std::ifstream in(config.localPath());
 	if(!in)
 		throw CantOpenFile(config);
 
@@ -410,9 +410,9 @@ void FileSpace::load() const
 				path.mkdir();
 			self->fileSystems_.push_back(path);
 		}
-		catch(Exception& e)
+		catch(std::exception& e)
 		{
-			Log::error() << "mkdir(" << path << ") failed : " << e.what() << endl;
+			Log::error() << "mkdir(" << path << ") failed : " << e.what() << std::endl;
 		}
 	}
 

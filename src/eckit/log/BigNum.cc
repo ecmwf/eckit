@@ -16,19 +16,19 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-void BigNum::print(ostream& s,long long v)
+void BigNum::print(std::ostream& s,long long v)
 {
 	if(v >=1000)
 	{
 		print(s,v/1000);
 		s << ',';
-		s << setw(3) << setfill('0') << (v % 1000);
+        s << std::setw(3) << std::setfill('0') << (v % 1000);
 	}
 	else
 		s << v;
 }
 
-void BigNum::print(ostream& s) const
+void BigNum::print(std::ostream& s) const
 {
 	long long v = value_;
 	if(v<0) {
@@ -37,7 +37,7 @@ void BigNum::print(ostream& s) const
 	}
 	char oldfill = s.fill();
 	print(s,v);
-	s << setfill(oldfill);
+    s << std::setfill(oldfill);
 }
 
 //-----------------------------------------------------------------------------

@@ -68,13 +68,13 @@ private:
 	
 // -- Methods
 
-	void print(ostream&) const;
+	void print(std::ostream&) const;
 
 // -- Class methods
 
 // -- Friends
 
-	friend ostream& operator<<(ostream& s,const VerifyingDate& p)
+	friend std::ostream& operator<<(std::ostream& s,const VerifyingDate& p)
 		{ p.print(s); return s; }
 
 };

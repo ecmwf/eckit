@@ -36,22 +36,22 @@ public:
 // -- Methods
 
 	virtual void json(JSON&) const = 0;
-	virtual void status(ostream&) const;
+	virtual void status(std::ostream&) const;
 
 // -- Class methods
 
-	static void allStatuses(ostream&);
+	static void allStatuses(std::ostream&);
 	static void allJSON(JSON&);
 
 protected:
 
 // -- Methods
 	
-	virtual void print(ostream&) const;
+	virtual void print(std::ostream&) const;
 
 private:
 
-	friend ostream& operator<<(ostream& s,const Monitorable& p)
+	friend std::ostream& operator<<(std::ostream& s,const Monitorable& p)
 		{ p.print(s); return s; }
 
 };

@@ -55,7 +55,7 @@ ExpPtr Count::optimise()
 }
 
 
-void Count::asCode(ostream &o) const
+void Count::asCode(std::ostream&o) const
 {
     o << "maths::count("; printArgs(o); o << ")";
 }

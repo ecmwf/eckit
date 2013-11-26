@@ -47,7 +47,7 @@ public:
 	virtual long write(const void*,long);
 	virtual void close();
 	virtual void rewind();
-	virtual void print(ostream&) const;
+	virtual void print(std::ostream&) const;
 	virtual string title() const;
     virtual bool moveable() const { return true; }
 

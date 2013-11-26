@@ -163,7 +163,7 @@ protected:
 
 // -- Methods
 
-	virtual void   print(ostream&) const  = 0;
+	virtual void   print(std::ostream&) const  = 0;
 	virtual string typeName()      const = 0;
     virtual void   json(JSON&)     const  = 0;
 
@@ -216,7 +216,7 @@ private:
 
 // -- Friends
 
-	friend ostream& operator<<(ostream& s, const Content& content) 
+	friend std::ostream& operator<<(std::ostream& s, const Content& content) 
 		{ content.print(s); return s; }
     friend JSON& operator<<(JSON& s, const Content& content)
         { content.json(s); return s; }

@@ -88,7 +88,7 @@ int MapContent::compareMap(const MapContent& other) const
 
 }
 
-void MapContent::print(ostream& s) const
+void MapContent::print(std::ostream& s) const
 {
     s << '{';
     for(map<Value,Value>::const_iterator j = value_.begin(); j != value_.end(); ++j)

@@ -66,7 +66,7 @@ void PipeStream::parentProcess()
 	SYSCALL(fcntl(out_,F_SETFD,FD_CLOEXEC));
 
 	Log::debug() << "parentProcess : "<<
-		in_ << '/' << out_ << " closing " << toChild_[0] << '/' << toParent_[1] << endl;
+		in_ << '/' << out_ << " closing " << toChild_[0] << '/' << toParent_[1] << std::endl;
 
 	toChild_[0] = toChild_[1] = toParent_[0] = toParent_[1] = -1;
 
@@ -85,7 +85,7 @@ void PipeStream::childProcess()
 	::close(toParent_[0]);
 
 	Log::debug() << "childProcess : "<<
-		in_ << '/' << out_ << " closing " << toChild_[1] << '/' << toParent_[0] << endl;
+		in_ << '/' << out_ << " closing " << toChild_[1] << '/' << toParent_[0] << std::endl;
 
 	toChild_[0] = toChild_[1] = toParent_[0] = toParent_[1] = -1;
 

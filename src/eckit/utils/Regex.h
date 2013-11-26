@@ -47,7 +47,7 @@ public:
 
 protected: // methods
 
-	void print(ostream&) const; 
+	void print(std::ostream&) const; 
 
 private: // members
 
@@ -58,7 +58,7 @@ private: // methods
 
 	void compile(const char*);
 
-	friend ostream& operator<<(ostream& s,const Regex& p) { p.print(s); return s; }
+	friend std::ostream& operator<<(std::ostream& s,const Regex& p) { p.print(s); return s; }
 
 };
 

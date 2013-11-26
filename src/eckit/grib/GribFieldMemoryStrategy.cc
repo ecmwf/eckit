@@ -11,6 +11,8 @@
 #include "eckit/grib/GribFieldMemoryStrategy.h"
 #include "eckit/grib/GribField.h"
 
+using namespace std;
+
 namespace eckit {
 
 //--------------------------------------------------------------------------------------------
@@ -63,10 +65,10 @@ void GribFieldMemoryStrategy::newValues(GribField& f)
     while(count_ > max_) {
         ASSERT(released_.size());
 
-        set<GribField*>::iterator k = released_.begin();
+        std::set<GribField*>::iterator k = released_.begin();
         pair<time_t, size_t> min = make_pair((*k)->last_, (*k)->accesses_);
 
-        for(set<GribField*>::iterator j = released_.begin(); j != released_.end(); ++j) {
+        for(std::set<GribField*>::iterator j = released_.begin(); j != released_.end(); ++j) {
             pair<time_t, size_t> m = make_pair((*k)->last_, (*k)->accesses_);
             if(m < min) {
                 min = m;

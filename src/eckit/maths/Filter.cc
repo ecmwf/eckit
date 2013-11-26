@@ -61,7 +61,7 @@ ExpPtr Filter::evaluate( Scope &ctx )
 }
 
 
-void Filter::asCode(ostream &o) const
+void Filter::asCode(std::ostream&o) const
 {
     o << "maths::filter("; printArgs(o); o <<")";
 }

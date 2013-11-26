@@ -68,9 +68,9 @@ private:
 
     char data_[size];
 
-    void print(ostream& s) const ;
+    void print(std::ostream& s) const ;
 
-    friend ostream& operator<<(ostream& s,const FixedString& p)
+    friend std::ostream& operator<<(std::ostream& s,const FixedString& p)
     {
         p.print(s);
         return s;

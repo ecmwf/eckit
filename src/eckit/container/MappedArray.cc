@@ -69,7 +69,7 @@ MappedArray<T>::MappedArray(const PathName& path, unsigned long size):
 	fd_ = ::open(path.localPath(),O_RDWR | O_CREAT, 0777);
 	if(fd_ < 0)
 	{
-        Log::error() << "open(" << path << ')' << Log::syserr << endl;
+        Log::error() << "open(" << path << ')' << Log::syserr << std::endl;
         throw FailedSystemCall("open",Here());
 	}
 

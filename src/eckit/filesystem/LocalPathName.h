@@ -36,7 +36,7 @@ public:
     friend void operator<<(Stream&,const LocalPathName&);
     friend void operator>>(Stream&,LocalPathName&);
 
-    friend ostream& operator<<(ostream& s,const LocalPathName& p)
+    friend std::ostream& operator<<(std::ostream& s,const LocalPathName& p)
     {
         return s << p.path_;
     }

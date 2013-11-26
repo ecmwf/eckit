@@ -38,7 +38,7 @@ public:
 // -- Operators
 
 	operator string() const;
-	friend ostream& operator<<(ostream&,const Bytes&);
+    friend std::ostream& operator<<(std::ostream&,const Bytes&);
 
 // -- Class methods
     

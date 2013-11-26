@@ -142,27 +142,27 @@ string ResourceBase::name() const
 		return name_;
 }
 
-void ResourceBase::dump(ostream& s) const
+void ResourceBase::dump(std::ostream& s) const
 {
 
 	// need const_cast here
 	((ResourceBase*)this)->init();
 
-	s << "# " << name_ <<":" << endl;
+	s << "# " << name_ <<":" << std::endl;
 
-	if(options_ != "")     s << "#   command line option  " << options_     << endl;
+	if(options_ != "")     s << "#   command line option  " << options_     << std::endl;
 	if(environment_ != "") 
 	{
 		s << "#   environment variable " << environment_ << " ";
 		const char *p = getenv(environment_.c_str()+1);
 		if(p) s << "(defined as " << p << ")";
 		else  s << "(undefined)";
-		s << endl;
+		s << std::endl;
 	}
 
 	s << name() << " : " << getValue();
 
-	s << endl;
+	s << std::endl;
 }
 
 #ifdef AIX

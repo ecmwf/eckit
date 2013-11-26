@@ -44,11 +44,11 @@ KDMapped::KDMapped(const PathName& path, size_t size):
         lseek(fd_, size_ - 1, SEEK_SET);
         SYSCALL(write(fd_,&c,1));
     }
-    Log::info() << "Mapping " << path << " " << size << endl;
+    Log::info() << "Mapping " << path << " " << size << std::endl;
     addr_ = ::mmap(0,size_,PROT_READ|PROT_WRITE, MAP_SHARED, fd_, 0 );
     if(addr_ == MAP_FAILED) {
         Log::error() << "open(" << path << ',' << size << ')'
-                     << Log::syserr << endl;
+                     << Log::syserr << std::endl;
         throw FailedSystemCall("mmap");
     }
 }

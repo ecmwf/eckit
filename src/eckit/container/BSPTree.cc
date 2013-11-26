@@ -205,15 +205,15 @@ void BSPNode<Point,Alloc>::kmean(const vector<Point>& in, vector<Point>& ml, vec
         Point wl = Point::mean(ml);
         Point wr = Point::mean(mr);
 
-        //cout << Point::distance(cl, wl) << " - " << Point::distance(cr, wr) << endl;
+        //cout << Point::distance(cl, wl) << " - " << Point::distance(cr, wr) << std::endl;
 
         //if(cl == wl && cr == wr)
         if(curr == prev)
         {
             for(int i = 0; i < depth; i++)
-                cout << "  ";
-            cout << Point::distance(cl, wl) << " - " << Point::distance(cr, wr) << endl;
-            //cout << "======================" << endl;
+                std::cout << "  ";
+            std::cout << Point::distance(cl, wl) << " - " << Point::distance(cr, wr) << std::endl;
+            //cout << "======================" << std::endl;
             break;
         }
 

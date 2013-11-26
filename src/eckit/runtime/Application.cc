@@ -45,16 +45,16 @@ static void end(const char* msg)
     in_end = true;
 
 	delete[] memoryReserve; memoryReserve = 0;
-	Log::monitor(Log::App,9998) << msg << endl;
+	Log::monitor(Log::App,9998) << msg << std::endl;
 
 	try {
 		throw;
 	}
-	catch(exception& e)
+	catch(std::exception& e)
 	{
         Log::panic() << "!!!!!!!!!!!!!!!!!! " ;
-		Log::panic() << msg <<  " with the exception:" << endl;
-		Log::panic() << e.what() << endl;
+		Log::panic() << msg <<  " with the exception:" << std::endl;
+		Log::panic() << e.what() << std::endl;
 	//	Exception::exceptionStack(Log::panic());
 	}
     _exit(1);

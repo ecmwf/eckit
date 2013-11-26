@@ -79,7 +79,7 @@ protected:
 
 // -- Methods
 	
-	void print(ostream&) const; 	
+	void print(std::ostream&) const; 	
 
 // -- Class members
 	// None
@@ -131,7 +131,7 @@ private:
 
 // -- Friends
 
-	friend ostream& operator<<(ostream& s,const Connector& p)
+	friend std::ostream& operator<<(std::ostream& s,const Connector& p)
 		{ p.print(s); return s; }
 
     friend class ConnectorCache;

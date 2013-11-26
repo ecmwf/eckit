@@ -25,13 +25,13 @@ namespace eckit {
 class Area {
 public:
 
-	friend ostream& operator<<(ostream& s,const Area& x)
+	friend std::ostream& operator<<(std::ostream& s,const Area& x)
 		{ x.print(s); return s; }
 
 	friend Stream& operator>>(Stream& s,Area& x)
 		{ return s >> x.top_ >> x.left_ >> x.bottom_ >> x.right_; }
 
-	void print(ostream& s) const;
+	void print(std::ostream& s) const;
 	
 // -- Contructors
 

@@ -27,18 +27,18 @@ Monitorable::~Monitorable()
 {
 }
 
-void Monitorable::status(ostream& s) const 
+void Monitorable::status(std::ostream& s) const 
 { 
 	print(s); 
-	s << endl; 
+	s << std::endl; 
 }
 
-void Monitorable::print(ostream& s) const 
+void Monitorable::print(std::ostream& s) const 
 { 
-	s << "No print method" << endl;
+	s << "No print method" << std::endl;
 }
 
-void Monitorable::allStatuses(ostream& s)
+void Monitorable::allStatuses(std::ostream& s)
 {
 	callAll(&Monitorable::status,s);
 }

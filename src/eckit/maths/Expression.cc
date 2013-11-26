@@ -90,10 +90,10 @@ ExpPtr Expression::param( size_t i, Scope& ctx ) const
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );
 
-    //cout << "   PARAM " << i << " -> " << (*args_[i]) << endl;
-    //cout << "         " << ctx << endl;
+    //cout << "   PARAM " << i << " -> " << (*args_[i]) << std::endl;
+    //cout << "         " << ctx << std::endl;
     ExpPtr r = args_[i]->resolve(ctx);
-    //cout << "          " << *r << endl;
+    //cout << "          " << *r << std::endl;
 
     return r;
 }
@@ -114,7 +114,7 @@ string Expression::str() const
 }
 
 
-void Expression::printArgs(ostream &out) const
+void Expression::printArgs(std::ostream&out) const
 {
     size_t count = arity();
     for(size_t i = 0; i < count; ++i) {

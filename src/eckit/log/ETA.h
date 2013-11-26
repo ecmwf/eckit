@@ -34,7 +34,7 @@ public:
 
 	operator string() const;
 
-	friend ostream& operator<<(ostream&,const ETA&);
+	friend std::ostream& operator<<(std::ostream&,const ETA&);
 
 private:
 

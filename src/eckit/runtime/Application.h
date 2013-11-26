@@ -70,7 +70,7 @@ struct DoMonitor
             Monitor::instance().startup();
             Context::instance().self( Monitor::instance().self() );
         }
-        catch(exception& e) {
+        catch(std::exception& e) {
             Log::error() << "** " << e.what() << " Caught in " << Here() <<  std::endl;
             Log::error() << "** Exception is re-thrown" << std::endl;
             throw;
@@ -108,18 +108,18 @@ struct StdSignalRegist
     void regist() 
     {
         if(regist_) return;
-        nh = ::set_new_handler( StdSignalRegist::catch_new_handler );
-        th = ::set_terminate( StdSignalRegist::catch_terminate );
-        uh = ::set_unexpected( StdSignalRegist::catch_unexpected );
+        nh = std::set_new_handler( StdSignalRegist::catch_new_handler );
+        th = std::set_terminate( StdSignalRegist::catch_terminate );
+        uh = std::set_unexpected( StdSignalRegist::catch_unexpected );
         regist_ = true;
     }
     
     void unregist() 
     {
         if(!regist_) return;
-        if(nh) ::set_new_handler( nh );
-        if(th) ::set_terminate( th );
-        if(uh) ::set_unexpected( uh );
+        if(nh) std::set_new_handler( nh );
+        if(th) std::set_terminate( th );
+        if(uh) std::set_unexpected( uh );
         regist_ = false;
     }
     
@@ -250,7 +250,7 @@ Application<LG,MN,LC,SH>& Application<LG,MN,LC,SH>::instance()
 template< class LG, class MN, class LC, class SH >
 void Application<LG,MN,LC,SH>::reconfigure()
 {
-    Log::info() << "Application::reconfigure" << endl;
+    Log::info() << "Application::reconfigure" << std::endl;
     
     int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
     
@@ -270,22 +270,22 @@ void Application<LG,MN,LC,SH>::start()
     
 	Monitor::instance().name( displayName );
 
-	Log::info() << "** Start of " << name() << " ** pid is " << getpid() << endl;
+	Log::info() << "** Start of " << name() << " ** pid is " << getpid() << std::endl;
 	
 	try {
-		Log::status() << "Running" << endl;
+		Log::status() << "Running" << std::endl;
         running_ = true;
 		run();
         running_ = false;
 	}
-	catch(exception& e){
+	catch(std::exception& e){
 		status = 1;
-		Log::error() << "** " << e.what() << " Caught in "  << Here() <<  endl;
-		Log::error() << "** Exception is terminates " << name() << endl;
+		Log::error() << "** " << e.what() << " Caught in "  << Here() << std::endl;
+		Log::error() << "** Exception is terminates " << name() << std::endl;
 	}
 
 
-    Log::info() << "** End of " << name() << " (" << Context::instance().argv(0) << ")  **"  << endl;
+    Log::info() << "** End of " << name() << " (" << Context::instance().argv(0) << ")  **"  << std::endl;
 	
 	::exit(status);
 }
@@ -320,7 +320,7 @@ void Application<LG,MN,LC,SH>::unique()
 
 	if(sem->test())
 	{
-		ifstream os(lockFile.localPath());
+		std::ifstream os(lockFile.localPath());
 		string s;
 		os >> s;
 		throw SeriousBug("Application " + name() + " is already running as pid " + s);
@@ -328,7 +328,7 @@ void Application<LG,MN,LC,SH>::unique()
 
 	sem->lock(); // OS should reset the semaphore
 
-	ofstream os(lockFile.localPath());
+    std::ofstream os(lockFile.localPath());
 	os << getpid();
 }
 

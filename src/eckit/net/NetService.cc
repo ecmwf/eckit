@@ -39,7 +39,7 @@ void NetService::run()
 
 	while(!stopped())
 	{
-		//Log::info() << "Wait for " << name() << " connection on port "<< port() << endl;
+		//Log::info() << "Wait for " << name() << " connection on port "<< port() << std::endl;
 		ThreadControler t(newUser(server_.accept()));
 		t.start();
 	}

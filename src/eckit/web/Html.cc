@@ -23,7 +23,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-ostream& operator<<(ostream& s,const Html::Tag& tag)
+std::ostream& operator<<(std::ostream& s,const Html::Tag& tag)
 {
 	s << HttpBuf::dontEncode;	
 	tag.print(s);
@@ -122,17 +122,17 @@ Html::Include::Include(const string& name,HtmlObject& sub):
 
 //=======================================================
 
-void Html::Include::print(ostream& s) const
+void Html::Include::print(std::ostream& s) const
 {
 	eckit::PathName path = eckit::Resource<PathName>("htmlPath","~/html");
 
 	path = path + '/' + name_;
 
-	ifstream in(path.localPath());
+	std::ifstream in(path.localPath());
 
 	if(!in) 
 	{
-		s << path << ": " << Log::syserr << endl;
+		s << path << ": " << Log::syserr << std::endl;
 		return ;
 	}
 
@@ -178,7 +178,7 @@ Html::Image::Image(const string& name):
 {
 }
 
-void Html::Image::print(ostream& s) const
+void Html::Image::print(std::ostream& s) const
 {
 	s << "<IMG SRC=\"" << resource() + '/' + name_ << "\">";
 }
@@ -196,7 +196,7 @@ Html::Link::Link(Url& url):
 {
 }
 
-void Html::Link::print(ostream& s) const
+void Html::Link::print(std::ostream& s) const
 {
 	if(url_.length())
 		s << "<A HREF=\"" <<  url_ << "\">" ;
@@ -206,9 +206,9 @@ void Html::Link::print(ostream& s) const
 
 //=======================================================
 
-void Html::Substitute::substitute(ostream& s,const string& p)
+void Html::Substitute::substitute(std::ostream& s,const string& p)
 {
-	map<string,string,less<string> >::iterator i = map_.find(p);
+    map<string,string,std::less<string> >::iterator i = map_.find(p);
 	if(i ==  map_.end())
 		s << '%' << p << '%';
 	else
@@ -230,7 +230,7 @@ string& Html::Substitute::operator[](const string& p)
 }
 
 
-void Html::Class::print(ostream& s) const
+void Html::Class::print(std::ostream& s) const
 {
 	string p;
 	long len = str_.length();
@@ -252,7 +252,7 @@ void Html::Class::print(ostream& s) const
 	if(p.length()) s << Link(base+p) << p << Link();
 }
 
-void Html::BeginForm::print(ostream& s) const  
+void Html::BeginForm::print(std::ostream& s) const  
 { 
 	s << "<FORM METHOD=\"POST\""; 
 
@@ -262,45 +262,45 @@ void Html::BeginForm::print(ostream& s) const
 	s << ">";
 }
 
-void Html::EndForm::print(ostream& s) const
+void Html::EndForm::print(std::ostream& s) const
 { 
 	s << "</FORM>"; 
 }
 
-void Html::TextField::print(ostream& s) const
+void Html::TextField::print(std::ostream& s) const
 {
 	s << title_ << HttpBuf::dontEncode;	
 	s << "<INPUT NAME=\"" << name_ << "\" VALUE=\"" << value_ << "\">";
 	s << HttpBuf::doEncode;	
 }
 
-void Html::HiddenField::print(ostream& s) const
+void Html::HiddenField::print(std::ostream& s) const
 {
 	s << "<INPUT TYPE=\"hidden\" NAME=\"" << name_ << "\" VALUE=\"" << value_ << "\">";
 }
 
-void Html::CheckBox::print(ostream& s) const
+void Html::CheckBox::print(std::ostream& s) const
 {
 	s << "<INPUT TYPE=\"checkbox\" ";
 	if(on_) s << "checked ";
 	s << "NAME=\"" << name_ << "\" VALUE=\"" << value_ << "\">";
 }
 
-void Html::Button::print(ostream& s) const
+void Html::Button::print(std::ostream& s) const
 {
 	s << "<INPUT TYPE=\"" << type_ << "\" VALUE=\"" << title_ << "\">";
 }
 
-void Html::BeginTextArea::print(ostream& s) const
+void Html::BeginTextArea::print(std::ostream& s) const
 {
 	s << HttpBuf::dontEncode;
 	s << "<TEXTAREA NAME=\"" << name_ 
 	   << "\" ROWS=" << row_ << " COLS=" << col_ << ">";
 }
 
-void Html::EndTextArea::print(ostream& s) const
+void Html::EndTextArea::print(std::ostream& s) const
 {
-	s << "</TEXTAREA>" << endl << HttpBuf::doEncode;
+    s << "</TEXTAREA>" << std::endl << HttpBuf::doEncode;
 }
 
 //-----------------------------------------------------------------------------
@@ -308,12 +308,12 @@ void Html::EndTextArea::print(ostream& s) const
 class ImageProvider : public HtmlResource {
 public:
     ImageProvider(): HtmlResource(Html::Image::resource()) { }
-    void html(ostream& , Url&);
+    void html(std::ostream& , Url&);
 };
 
 static ImageProvider imageProvider;
 
-void ImageProvider::html(ostream& out, Url& url)
+void ImageProvider::html(std::ostream& out, Url& url)
 {
 	eckit::PathName path = eckit::Resource<PathName>("imagePath","~/html/image");
 	char c;
@@ -321,11 +321,11 @@ void ImageProvider::html(ostream& out, Url& url)
 	for(int i = 1; i < url.size() ; i++)
 		path = path + "/" + url[i] ;
 
-	ifstream in(path.localPath());
+	std::ifstream in(path.localPath());
 	if(!in)	
 	{
 		(url.headerOut()).status(404);  // Not Found
-		out << path << ": " << Log::syserr << endl;
+		out << path << ": " << Log::syserr << std::endl;
 	}
 	else
 	{
@@ -343,12 +343,12 @@ void ImageProvider::html(ostream& out, Url& url)
 class HtmlProvider : public HtmlResource {
 public:
 	HtmlProvider(): HtmlResource("/html") { }
-	void html(ostream& , Url&);
+	void html(std::ostream& , Url&);
 };
 
 static HtmlProvider htmlProvider;
 
-void HtmlProvider::html(ostream& s, Url& url)
+void HtmlProvider::html(std::ostream& s, Url& url)
 {
 	string path; 
 
@@ -363,7 +363,7 @@ void HtmlProvider::html(ostream& s, Url& url)
 
 //-----------------------------------------------------------------------------
 
-void Html::BeginTable::print(ostream& s) const
+void Html::BeginTable::print(std::ostream& s) const
 {
 	s << "<TABLE";
 	if(border_)  s << " BORDER";
@@ -374,7 +374,7 @@ void Html::BeginTable::print(ostream& s) const
 	s << ">";
 }
 
-void Html::TableTag::print(ostream& s) const
+void Html::TableTag::print(std::ostream& s) const
 {
 	s << '<' << tag_;
 

@@ -72,7 +72,7 @@ protected:
 
     virtual Content* addString(const StringContent&) const;
 
-    virtual void    print(ostream&) const;
+    virtual void    print(std::ostream&) const;
     virtual void   json(JSON&)     const;
     virtual string  typeName() const      { return "String"; }
     virtual bool    isString() const      { return true; }

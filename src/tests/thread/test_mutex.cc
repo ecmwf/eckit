@@ -11,6 +11,7 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/runtime/Tool.h"
 
+using namespace std;
 using namespace eckit;
 
 //-----------------------------------------------------------------------------

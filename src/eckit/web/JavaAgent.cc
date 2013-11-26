@@ -48,12 +48,12 @@ void JavaAgent::endObject()
 	stream_.endObject();
 }
 
-void JavaAgent::serve(eckit::Stream& s,istream& in,ostream& out)
+void JavaAgent::serve(eckit::Stream& s,std::istream& in,std::ostream& out)
 {
-	auto_ptr<JavaAgent> a(Reanimator<JavaAgent>::reanimate(s));
+    std::auto_ptr<JavaAgent> a(Reanimator<JavaAgent>::reanimate(s));
 	ASSERT(a.get());
 
-	Log::info() << *a << endl;
+	Log::info() << *a << std::endl;
 
 	int agentClearance = a->clearance();
 

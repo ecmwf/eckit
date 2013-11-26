@@ -39,7 +39,7 @@ static struct  {
     {0,0,},
 };
 
-ostream& operator<<(ostream& s,const Seconds&  sec)
+std::ostream& operator<<(std::ostream& s,const Seconds&  sec)
 {
 	double t = sec.seconds_;
     long n  = t;

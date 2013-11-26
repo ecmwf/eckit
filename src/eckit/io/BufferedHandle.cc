@@ -172,7 +172,7 @@ Offset BufferedHandle::seek(const Offset& off)
 }
 
 
-void BufferedHandle::print(ostream& s) const
+void BufferedHandle::print(std::ostream& s) const
 {
 	s << "BufferedHandle[";
 	handle_->print(s);

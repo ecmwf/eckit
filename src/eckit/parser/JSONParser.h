@@ -28,7 +28,7 @@ class JSONParser : public StreamParser {
 
 public: // methods
 
-    JSONParser(istream& in);
+    JSONParser(std::istream& in);
     
     Value parse();
     

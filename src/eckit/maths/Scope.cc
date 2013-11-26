@@ -39,7 +39,7 @@ Scope::~Scope() {
         // Check that all the arguments have been consumed
 
         if(args_.size()) {
-            cout << "Context::~Context() leftovers: " << *this << endl;
+            std::cout << "Context::~Context() leftovers: " << *this << std::endl;
         }
 
         if( args_.size() )
@@ -75,13 +75,13 @@ void Scope::pushArg(ExpPtr e)
 
 ExpPtr Scope::param(const string& name) const
 {
-    //cout << endl << "LOOKING FOR '" << name << "' in " << *this << endl;
+    //cout << std::endl << "LOOKING FOR '" << name << "' in " << *this << std::endl;
     map<string, ExpPtr>::const_iterator j = params_.find(name);
     if(j == params_.end()) {
         if(parent_) {
             return parent_->param(name);
         }
-        cout << *this << endl;
+        std::cout << *this << std::endl;
         throw UserError(string("param not found: " + name));
     }
     return (*j).second;

@@ -13,6 +13,7 @@
 #include "eckit/runtime/Tool.h"
 #include "eckit/log/Colour.h"
 
+using namespace std;
 using namespace eckit;
 
 //-----------------------------------------------------------------------------
@@ -32,7 +33,7 @@ public:
 void TestColour::run()
 {
   
-  Log::info() << "Hello, worlds" <<endl;
+  Log::info() << "Hello, worlds" << std::endl;
 
   std::cout << Colour::red << "Red" << Colour::reset << std::endl;
   std::cout << Colour::off;

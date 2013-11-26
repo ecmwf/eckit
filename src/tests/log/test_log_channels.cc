@@ -32,6 +32,7 @@
 #include "eckit/log/ColorizeFormat.h"
 #include "eckit/log/ChannelBuffer.h"
 
+using namespace std;
 using namespace eckit;
 
 

@@ -72,7 +72,7 @@ void BufferCache::add(const void *buffer, size_t len)
 }
 
 
-void BufferCache::print(ostream& s) const
+void BufferCache::print(std::ostream& s) const
 {
 	Stream::dump(s, buffer_, count_);
 }

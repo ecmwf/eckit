@@ -36,96 +36,96 @@ template<class From,class To> struct Translator {
 // Those are predefined
 
 template<>
-struct Translator<bool,string>
-    { string operator()(bool);          };
+struct Translator<bool,std::string>
+    { std::string operator()(bool);          };
 
 template<>
-struct Translator<string,bool>
-    { bool   operator()(const string&); };
+struct Translator<std::string,bool>
+    { bool   operator()(const std::string&); };
 
 template<>
-struct Translator<int,string>
-    { string operator()(int);          };
+struct Translator<int,std::string>
+    { std::string operator()(int);          };
 
 template<>
-struct Translator<unsigned int,string>
-    { string operator()(unsigned int);  };
+struct Translator<unsigned int,std::string>
+    { std::string operator()(unsigned int);  };
 
 template<>
-struct Translator<string,int>
-    { int   operator()(const string&); };
+struct Translator<std::string,int>
+    { int   operator()(const std::string&); };
 
 template<>
-struct Translator<string,unsigned int>
-    { unsigned int operator()(const string&); };
+struct Translator<std::string,unsigned int>
+    { unsigned int operator()(const std::string&); };
 
 template<>
-struct Translator<double,string>
-    { string operator()(double);          };
+struct Translator<double,std::string>
+    { std::string operator()(double);          };
 
 template<>
-struct Translator<string,double>
-    { double   operator()(const string&); };
+struct Translator<std::string,double>
+    { double   operator()(const std::string&); };
 
 template<>
-struct Translator<long,string>
-    { string operator()(long);          };
+struct Translator<long,std::string>
+    { std::string operator()(long);          };
 
 template<>
-struct Translator<string,long>
-    { long   operator()(const string&); };
+struct Translator<std::string,long>
+    { long   operator()(const std::string&); };
 
 template<>
-struct Translator<unsigned long,string>
-    { string operator()(unsigned long);          };
+struct Translator<unsigned long,std::string>
+    { std::string operator()(unsigned long);          };
 
 template<>
-struct Translator<string,unsigned long>
-    { unsigned long   operator()(const string&); };
+struct Translator<std::string,unsigned long>
+    { unsigned long   operator()(const std::string&); };
 
 template<>
-struct Translator<string,unsigned long long>
-    { unsigned long long   operator()(const string&); };
+struct Translator<std::string,unsigned long long>
+    { unsigned long long   operator()(const std::string&); };
 
 template<>
-struct Translator<string,long long>
-    { long long   operator()(const string&); };
+struct Translator<std::string,long long>
+    { long long   operator()(const std::string&); };
 
 template<>
-struct Translator<unsigned long long,string>
-    { string  operator()(unsigned long long); };
+struct Translator<unsigned long long,std::string>
+    { std::string  operator()(unsigned long long); };
 
 template<>
-struct Translator<long long,string>
-    { string operator()(long long); };
+struct Translator<long long,std::string>
+    { std::string operator()(long long); };
 
 template<>
-struct Translator<string,char>
-    { char operator()(const string&); };
+struct Translator<std::string,char>
+    { char operator()(const std::string&); };
 
 template<>
-struct Translator<char,string>
-    { string operator()(char); };
+struct Translator<char,std::string>
+    { std::string operator()(char); };
 
 template<>
-struct Translator<string, vector<string> >
-    { vector<string> operator()(const string&); };
+struct Translator<std::string, std::vector<std::string> >
+    { std::vector<std::string> operator()(const std::string&); };
 
 template<>
-struct Translator<string, vector<long> >
-    { vector<long> operator()(const string&); };
+struct Translator<std::string, std::vector<long> >
+    { std::vector<long> operator()(const std::string&); };
 
 template<>
-struct Translator<vector<string>, string>
-    { string  operator()(const vector<string>&); };
+struct Translator<std::vector<std::string>, std::string>
+    { std::string  operator()(const std::vector<std::string>&); };
 
 template<>
-struct Translator<string, set<string> >
-    { set<string> operator()(const string&); };
+struct Translator<std::string, std::set<std::string> >
+    { std::set<std::string> operator()(const std::string&); };
 
 template<>
-struct Translator<set<string>, string>
-    { string  operator()(const set<string>&); };
+struct Translator<std::set<std::string>, std::string>
+    { std::string  operator()(const std::set<std::string>&); };
 
 
 //-----------------------------------------------------------------------------

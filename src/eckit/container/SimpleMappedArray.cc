@@ -25,7 +25,7 @@ SimpleMappedArray<T>::SimpleMappedArray(const PathName& path,unsigned long size)
     fd_ = ::open64(path.localPath(),O_RDWR | O_CREAT, 0777);
     if(fd_ < 0)
     {
-        Log::error() << "open(" << path << ')' << Log::syserr << endl;
+        Log::error() << "open(" << path << ')' << Log::syserr << std::endl;
         throw FailedSystemCall("open");
     }
 
@@ -57,7 +57,7 @@ SimpleMappedArray<T>::SimpleMappedArray(const PathName& path,unsigned long size)
     map_ = ::mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0);
     if(map_ == MAP_FAILED) {
         Log::error() << "open(" << path << ',' << length << ')'
-            << Log::syserr << endl;
+            << Log::syserr << std::endl;
         throw FailedSystemCall("mmap");
     }
 

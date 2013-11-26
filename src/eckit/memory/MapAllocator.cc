@@ -45,12 +45,12 @@ MapAllocator::MapAllocator(size_t length):
 
         next_ = (char*)addr_;
         left_ = length_;
-//	Log::warning() << "MapAllocator created " << length_ << endl;
+//	Log::warning() << "MapAllocator created " << length_ << std::endl;
 }
 
 MapAllocator::~MapAllocator()
 {
-//	Log::warning() << "MapAllocator deleted " << length_ << endl;
+//	Log::warning() << "MapAllocator deleted " << length_ << std::endl;
         munmap(addr_,length_);
         if(fd_>=0) close(fd_);
         delete more_;
@@ -76,8 +76,8 @@ void *MapAllocator::allocate(size_t size)
         {
                 if(!more_)
                 {
-//			Log::warning() << "MapAllocator too small: length=" << length_ << " left=" << left_ << " request=" << size << endl;
-                        more_ = new MapAllocator(::max(length_,size));
+//			Log::warning() << "MapAllocator too small: length=" << length_ << " left=" << left_ << " request=" << size << std::endl;
+                        more_ = new MapAllocator(std::max(length_,size));
                         ASSERT(more_);
                 }
                 return more_->allocate(size);
@@ -103,7 +103,7 @@ void MapAllocator::deallocate(void* addr)
                 count_--;
                 if(count_ == 0)
                 {
-//			Log::warning() << "MapAllocator empty" << endl;
+//			Log::warning() << "MapAllocator empty" << std::endl;
                         next_ = (char*)addr_;
                         left_ = length_;
                 }

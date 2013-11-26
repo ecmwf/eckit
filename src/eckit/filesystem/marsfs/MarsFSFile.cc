@@ -32,14 +32,14 @@ MarsFSFile::~MarsFSFile()
 }
 
 
-void MarsFSFile::print(ostream& s) const
+void MarsFSFile::print(std::ostream& s) const
 {
 	s << path_;
 }
 
 Length MarsFSFile::open(const char* mode, bool overwrite)
 {
-//    Log::info() << "MarsFSFile::open " << path_ << " " << mode << endl;
+//    Log::info() << "MarsFSFile::open " << path_ << " " << mode << std::endl;
     Stream& s = connector_;
     int port;
     unsigned long long length;
@@ -60,7 +60,7 @@ long MarsFSFile::read(void* buffer, long len) {
     Stream& s = connector_;
     long size;
 
-    //Log::info() << "MarsFSFile::read " << len << endl;
+    //Log::info() << "MarsFSFile::read " << len << std::endl;
     s << "read";
     s << len;
 
@@ -87,7 +87,7 @@ long MarsFSFile::write(const void* buffer, long len) {
 
 Offset MarsFSFile::seek(const Offset& pos) {
     Stream& s = connector_;
-    //Log::info() << "MarsFSFile::seek " << pos << endl;
+    //Log::info() << "MarsFSFile::seek " << pos << std::endl;
 
     unsigned long long llpos = pos;
 
@@ -102,7 +102,7 @@ Offset MarsFSFile::seek(const Offset& pos) {
 void MarsFSFile::skip(size_t n) 
 {
     Stream& s = connector_;
-    //Log::info() << "MarsFSFile::skip " << n << endl;
+    //Log::info() << "MarsFSFile::skip " << n << std::endl;
 
     unsigned long long p = n;
     bool ok;

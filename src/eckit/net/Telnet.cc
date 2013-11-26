@@ -48,20 +48,20 @@ TelnetUser::~TelnetUser()
 {
 }
 
-void TelnetUser::serve(Stream&, istream& in,ostream& out)
+void TelnetUser::serve(Stream&, std::istream& in,std::ostream& out)
 {
 
-	Log::debug() << "Starting a telnet connection " << endl;
+	Log::debug() << "Starting a telnet connection " << std::endl;
 
 	Monitor::instance().kind("telnet");
 	Monitor::instance().name(from_);
 
 	while(!stopped())
 	{
-		out << "Telnet not supported any more (for now anyway)" << endl;
+		out << "Telnet not supported any more (for now anyway)" << std::endl;
 		break;
 	}
-	Log::info() << "Exiting telnet user loop..." << endl;
+	Log::info() << "Exiting telnet user loop..." << std::endl;
 }
 
 //-----------------------------------------------------------------------------

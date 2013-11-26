@@ -27,7 +27,7 @@ ETA::ETA(const timeval& time):
 {
 }
 
-ostream& operator<<(ostream& s,const ETA&  sec)
+std::ostream& operator<<(std::ostream& s,const ETA&  sec)
 {
 	double t = sec.ETA_;
     long n  = t;
@@ -35,7 +35,7 @@ ostream& operator<<(ostream& s,const ETA&  sec)
     long hour = n / (60 * 60); n %= (60 * 60);
     long minutes = n / 60 ; n %= 60 ;
 
-    s << hour << ':' << setfill('0') << setw(2) << minutes << ':'  << setfill('0') << setw(2) << n;
+    s << hour << ':' << std::setfill('0') << std::setw(2) << minutes << ':'  << std::setfill('0') << std::setw(2) << n;
 
 	return s;
 }

@@ -56,7 +56,7 @@ ExpPtr Map::evaluate( Scope &ctx )
 }
 
 
-void Map::asCode(ostream &o) const
+void Map::asCode(std::ostream&o) const
 {
     o << "maths::map("; printArgs(o); o << ")";
 }

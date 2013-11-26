@@ -29,7 +29,7 @@ ExpPtr Scalar::clone()
     return maths::scalar( value() );
 }
 
-void Scalar::print(ostream &o) const
+void Scalar::print(std::ostream&o) const
 {
     o << className() << "(" << v_ << ")";
 }
@@ -48,7 +48,7 @@ ExpPtr scalar(const scalar_t &s)
     return ExpPtr( new Scalar(s) );
 }
 
-void Scalar::asCode(ostream &o) const
+void Scalar::asCode(std::ostream&o) const
 {
     o << "Math(" << v_ << ")";
 }

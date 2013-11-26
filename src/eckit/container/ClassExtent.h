@@ -67,7 +67,7 @@ public: // methods
 private: // members
     
 	struct Extent {
-		typedef map<ClassExtent<T>*,T*,less<ClassExtent<T>*> > Map;
+        typedef map<ClassExtent<T>*,T*,std::less<ClassExtent<T>*> > Map;
 		Mutex   mutex_;
 		Map     map_;
 		bool    inited_;

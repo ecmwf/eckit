@@ -44,7 +44,7 @@ DoubleContent::~DoubleContent()
 {
 }
 
-void DoubleContent::print(ostream& s) const
+void DoubleContent::print(std::ostream& s) const
 {
     s << value_;
 }

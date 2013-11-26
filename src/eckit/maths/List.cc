@@ -35,7 +35,7 @@ List::List( const value_t& v ) : Value(v)
 {
 }
 
-void List::asCode(ostream &o) const
+void List::asCode(std::ostream&o) const
 {
     o << "maths::list("; printArgs(o); o <<")";
 }
@@ -79,7 +79,7 @@ ListPtr List::append(const List& l)
 
 //--------------------------------------------------------------------------------------------
 
-void List::print(ostream &o) const
+void List::print(std::ostream&o) const
 {
     o << className() << "(";
     for( size_t i = 0; i < args_.size(); ++i )

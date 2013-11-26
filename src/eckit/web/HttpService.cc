@@ -46,7 +46,7 @@ HttpUser::~HttpUser()
 {
 }
 
-void HttpUser::serve(eckit::Stream& s, istream& in,ostream& out)
+void HttpUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out)
 {
 	static const char *here = __FUNCTION__;
 
@@ -57,12 +57,12 @@ void HttpUser::serve(eckit::Stream& s, istream& in,ostream& out)
 	try {
 		HtmlResource::dispatch(s,in,http,url);
 	}
-	catch(exception& e)
+	catch(std::exception& e)
 	{
 		Log::error() << "** " << e.what() << " Caught in " 
-			<< here <<  endl;
-		Log::error() << "** Exception is ignored" << endl;
-		http << "Exception caught: " << e.what() << endl;
+			<< here << std::endl;
+		Log::error() << "** Exception is ignored" << std::endl;
+		http << "Exception caught: " << e.what() << std::endl;
 	}
 	http.write(out,url);
 }

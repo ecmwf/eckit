@@ -42,7 +42,7 @@ public:
 // -- Methods
 
 	void handle(const vector<Request*>&);
-	void pick(list<Request*>&,vector<Request*>&);
+	void pick(std::list<Request*>&,vector<Request*>&);
 	void idle();
 
 	bool busy() const { return busy_; }

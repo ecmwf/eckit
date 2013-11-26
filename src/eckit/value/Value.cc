@@ -237,7 +237,7 @@ Value Value::head() const
 	ValueList v;
 	content_->value(v);
 
-//	cout << __FUNCTION__ << " " << *this << " " << v.size() << endl;
+//	cout << __FUNCTION__ << " " << *this << " " << v.size() << std::endl;
 
 	return v.size() > 0 ? v[0] : Value();
 }
@@ -247,7 +247,7 @@ Value Value::tail() const
 	ValueList v;
 	content_->value(v);
 
-//	cout << __FUNCTION__ << " " << *this << " " << v.size() << endl;
+//	cout << __FUNCTION__ << " " << *this << " " << v.size() << std::endl;
 
 	if (v.size() > 1)
 	{

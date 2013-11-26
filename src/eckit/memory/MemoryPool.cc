@@ -25,13 +25,13 @@ static pthread_mutex_t the_lock;
 
 static void get_lock()
 {
-    //cout << pthread_self() << " get_lock" << endl;
+    //cout << pthread_self() << " get_lock" << std::endl;
 	pthread_mutex_lock(&the_lock);
 }
 
 static void release_lock()
 {
-    //cout << pthread_self() << " release_lock" << endl;
+    //cout << pthread_self() << " release_lock" << std::endl;
 	pthread_mutex_unlock(&the_lock);
 }
 
@@ -42,7 +42,7 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 static void _init(void)
 {
 
-    //cout << pthread_self() << " init" << endl;
+    //cout << pthread_self() << " init" << std::endl;
 
 #if defined(__GNUC__) && __GNUC__ < 3
 #ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
@@ -108,7 +108,7 @@ struct MemBlk {
 	void inUse(bool on) { check_ = on?size_:0;     }
 	void reuse()        { reuse_++;                }
 
-	void dump(ostream&,int depth = 0);
+	void dump(std::ostream&,int depth = 0);
 	void size(unsigned long long&,unsigned long long&);
 };
 
@@ -133,7 +133,7 @@ MemBlk* MemBlk::find(size_t size)
 			reuseCount_++;
 			m->inUse(true);
 			m->reuse();
-//			cout << "Reusing a " << size << " block" << endl;
+//			std::cout << "Reusing a " << size << " block" << std::endl;
 			return m;
 		}
 		p = m;
@@ -149,7 +149,7 @@ MemBlk* MemBlk::find(size_t size)
 		}
 	}
 
-//	cout << "Allocating a " << size << " block" << endl;
+//	cout << "Allocating a " << size << " block" << std::endl;
 
 	newCount_++;
 
@@ -169,11 +169,11 @@ MemBlk* MemBlk::find(size_t size)
 }
 
 
-void MemBlk::dump(ostream& s,int depth)
+void MemBlk::dump(std::ostream& s,int depth)
 {
 	if(left_)  left_->dump(s,depth+1);
 	s << "size= " << size_ << " active= " << (check_?1:0) << 
-	" reuse= " << reuse_ << " "<< Bytes(size_) << endl;
+	" reuse= " << reuse_ << " "<< Bytes(size_) << std::endl;
 	if(right_) right_->dump(s,depth+1);
 }
 
@@ -211,11 +211,11 @@ void MemoryPool::largeDeallocate(void* addr)
 	MemBlk *m = (MemBlk*)((char*)addr - sizeof(MemBlk));
 
 	if(!(m->check() && m->inUse())) {
-		cerr << "deallocating a bad block" << endl;
+        std::cerr << "deallocating a bad block" << std::endl;
 		abort();
 	}
 
-//	cout << "Releasing " << m->size_ << endl;
+//	cout << "Releasing " << m->size_ << std::endl;
 	m->inUse(false);
 
 	release_lock();
@@ -275,8 +275,8 @@ void *MemoryPool::fastAllocate(size_t s,MemPool& pool)
 
 		if(s > size - HEADER_SIZE)
 		{
-//			cerr << "Object of " << s << " bytes is too big for " << __FUNCTION__ << endl;
-//			cerr << "Block size is " << size - HEADER_SIZE << endl;
+//			std::cerr << "Object of " << s << " bytes is too big for " << __FUNCTION__ << std::endl;
+//			std::cerr << "Block size is " << size - HEADER_SIZE << std::endl;
 			size = ((s + HEADER_SIZE + (page_size-1)) / page_size) * page_size;
 		}
 
@@ -333,7 +333,7 @@ void MemoryPool::fastDeallocate(void *p,MemPool& pool)
 		m = m->next_;
 	}
 
-	cerr << __FUNCTION__ << endl;
+    std::cerr << __FUNCTION__ << std::endl;
 	abort();
 }
 
@@ -345,7 +345,7 @@ inline size_t round(size_t n)
 	return ((n + (rounding-1))/rounding)*rounding;
 }
 
-void MemoryPool::info(ostream& out)
+void MemoryPool::info(std::ostream& out)
 {
     {
         init();
@@ -357,56 +357,56 @@ void MemoryPool::info(ostream& out)
         static struct mallinfo l = { 0,};
         struct mallinfo m = mallinfo();
         out << "total " << m.arena 
-            <<  "  "  << m.arena - l.arena << endl;
+            <<  "  "  << m.arena - l.arena << std::endl;
         out << "used  " << m.uordblks << " (" << int(double(m.uordblks)/double(m.arena)*100 + 0.5) << "%)" 
-            <<  "  "  << m.uordblks - l.uordblks << endl;
+            <<  "  "  << m.uordblks - l.uordblks << std::endl;
         out << "free  " << m.fordblks << " (" << int(double(m.fordblks)/double(m.arena)*100 + 0.5) << "%)" 
-            <<  "  "  << m.fordblks - l.fordblks << endl;
+            <<  "  "  << m.fordblks - l.fordblks << std::endl;
         l = m;
-        out << m.arena << " (total space in arena)" << endl;
-        out << m.ordblks << " (number of ordinary blocks)" << endl;
-        out << m.smblks << " (number of small blocks)" << endl;
-        out << m.hblks << " (number of holding blocks)" << endl;
-        out << m.hblkhd << " (space in holding block headers)" << endl;
-        out << m.usmblks << " (space in small blocks in use)" << endl;
-        out << m.fsmblks << " (space in free small blocks)" << endl;
-        out << m.uordblks << " (space in ordinary blocks in use)" << endl;
-        out << m.fordblks << " (space in free ordinary blocks)" << endl;
-        out << m.keepcost << " (cost of enabling keep option)" << endl;
+        out << m.arena << " (total space in arena)" << std::endl;
+        out << m.ordblks << " (number of ordinary blocks)" << std::endl;
+        out << m.smblks << " (number of small blocks)" << std::endl;
+        out << m.hblks << " (number of holding blocks)" << std::endl;
+        out << m.hblkhd << " (space in holding block headers)" << std::endl;
+        out << m.usmblks << " (space in small blocks in use)" << std::endl;
+        out << m.fsmblks << " (space in free small blocks)" << std::endl;
+        out << m.uordblks << " (space in ordinary blocks in use)" << std::endl;
+        out << m.fordblks << " (space in free ordinary blocks)" << std::endl;
+        out << m.keepcost << " (cost of enabling keep option)" << std::endl;
 #ifdef SUNINFO
-        out << m.mxfast << " (max size of small block)" << endl;
-        out << m.nblks << " (number of small blocks in holding block)" << endl;
-        out << m.grain << " (small block rounding factor)" << endl;
-        out << m.uordbytes << " (space allocated in ordinary blocks)" << endl;
-        out << m.allocated << " (number of ordinary blocks allocated)" << endl;
-        out << m.treeoverhead << " (bytes used in maintaining in free tree)" << endl;
+        out << m.mxfast << " (max size of small block)" << std::endl;
+        out << m.nblks << " (number of small blocks in holding block)" << std::endl;
+        out << m.grain << " (small block rounding factor)" << std::endl;
+        out << m.uordbytes << " (space allocated in ordinary blocks)" << std::endl;
+        out << m.allocated << " (number of ordinary blocks allocated)" << std::endl;
+        out << m.treeoverhead << " (bytes used in maintaining in free tree)" << std::endl;
 #endif
 #endif
     }
 
-	out << "---" << endl;
-	out << "allocate " << MemBlk::allocateCount_ << endl;
-	out << "release  " << MemBlk::releaseCount_  << endl;
-	out << "reuse    " << MemBlk::reuseCount_ << endl;
-	out << "new      " << MemBlk::newCount_ << endl;
+	out << "---" << std::endl;
+	out << "allocate " << MemBlk::allocateCount_ << std::endl;
+	out << "release  " << MemBlk::releaseCount_  << std::endl;
+	out << "reuse    " << MemBlk::reuseCount_ << std::endl;
+	out << "new      " << MemBlk::newCount_ << std::endl;
 
 	unsigned long long total = 0;
 	unsigned long long left = 0;
 
 	MemBlk::memList_->size(total,left);
 
-	out << "total    " << total << endl;
-	out << "left     " << left  << endl;
+	out << "total    " << total << std::endl;
+	out << "left     " << left  << std::endl;
 
 	MemBlk::memList_->dump(out,0);
 
-	out << "Transient pool: " << endl;
+	out << "Transient pool: " << std::endl;
 	memblk *m = MemPool::transientPool.first_;
 
 	while(m)
 	{
 		out << "Size = " << m->size_ << " left = " << m->left_ 
-			 << " count = " << m->count_ << endl;
+			 << " count = " << m->count_ << std::endl;
 		m = m->next_;
 	}
 

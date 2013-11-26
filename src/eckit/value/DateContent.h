@@ -72,7 +72,7 @@ protected:
 	virtual Content* addDate(const DateContent&) const;
 	virtual Content* subDate(const DateContent&) const;
 
-	virtual void    print(ostream&) const;
+	virtual void    print(std::ostream&) const;
     virtual void   json(JSON&)     const;
 	virtual string  typeName() const       { return "Date"; }
 	virtual bool    isDate() const         { return true; }

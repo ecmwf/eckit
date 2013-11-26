@@ -47,7 +47,7 @@ void NilContent::value(vector<Value>& v) const
     v = vector<Value>();
 }
 
-void NilContent::print(ostream& out) const
+void NilContent::print(std::ostream& out) const
 {
     out << "(nil)";
 }

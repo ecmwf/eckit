@@ -20,7 +20,7 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 template < class Container >
-void tokenizeInsert(const set<char,less<char> >& separator, const string& raw, insert_iterator<Container> ins )
+void tokenizeInsert(const std::set<char, std::less<char> >& separator, const string& raw, std::insert_iterator<Container> ins )
 {
     int    index  = 0;
 	int    length = raw.length();
@@ -63,7 +63,7 @@ void Tokenizer::operator()(const string& raw, vector<string>& v)
     tokenizeInsert( separator_, raw, std::inserter(v, v.end()));
 }
 
-void Tokenizer::operator()(istream& in, vector<string>& v)
+void Tokenizer::operator()(std::istream& in, vector<string>& v)
 {
 	string raw;
 	char c;
@@ -74,12 +74,12 @@ void Tokenizer::operator()(istream& in, vector<string>& v)
     tokenizeInsert( separator_, raw, std::inserter(v, v.end()));
 }
 
-void Tokenizer::operator()(const string& raw, set<string>& s)
+void Tokenizer::operator()(const string& raw, std::set<string>& s)
 {
     tokenizeInsert( separator_, raw, std::inserter(s, s.end()));
 }
 
-void Tokenizer::operator()(istream& in, set<string>& s)
+void Tokenizer::operator()(std::istream& in, std::set<string>& s)
 {
 	string raw;
 	char c;

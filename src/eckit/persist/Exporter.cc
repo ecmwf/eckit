@@ -204,7 +204,7 @@ string Exporter::_readString()
     }
     catch(...)
     {
-        cout << "Error reading string " << *this << endl;
+        std::cout << "Error reading string " << *this << std::endl;
         throw;
     }
 }
@@ -366,7 +366,7 @@ void Exporter::endObject() {
     ASSERT(subCount_);
     for(map<string,Datatype>::iterator j = members_.begin(); j != members_.end(); ++j)
         if(!(*j).second.used())
-            cout << "WARNING NOT USED [" << (*j).first << "]" << endl;
+            std::cout << "WARNING NOT USED [" << (*j).first << "]" << std::endl;
 
     members_.clear();
     stack_.clear();
@@ -380,8 +380,8 @@ bool Exporter::nextDatabase(string& name,unsigned long long& id, unsigned long l
     }
 
     if(tag != TAG_START_DATABASE) {
-        cout << "tag " << int(tag) << endl;
-        cout << "tag " << tag << endl;
+        std::cout << "tag " << int(tag) << std::endl;
+        std::cout << "tag " << tag << std::endl;
     }
 
     ASSERT(tag == TAG_START_DATABASE);
@@ -399,13 +399,13 @@ size_t Exporter::nextObject() {
 
     if(tag == TAG_END_DATABASE) {
         unsigned long long objectCount = readUnsigned();
-        cout << "objectCount " << objectCount << " " << objectCount_ << endl;
+        std::cout << "objectCount " << objectCount << " " << objectCount_ << std::endl;
         ASSERT(objectCount == objectCount_);
         return 0;
     }
 
 	if(tag != TAG_START_OBJECT) {
-		cout << tag << endl;
+        std::cout << tag << std::endl;
 
 	}
 
@@ -423,7 +423,7 @@ size_t Exporter::nextObject() {
 
     }
     catch(...) {
-        cout << "ERROR reading start object " <<  *this << endl; 
+        std::cout << "ERROR reading start object " <<  *this << std::endl; 
         throw;
     }   
 
@@ -449,7 +449,7 @@ void Exporter::nextSubObject() {
 
     for(map<string,Datatype>::iterator j = members_.begin(); j != members_.end(); ++j)
         if(!(*j).second.used())
-            cout << "WARNING NOT USED [" << (*j).first << "]" << endl;
+            std::cout << "WARNING NOT USED [" << (*j).first << "]" << std::endl;
 
     members_.clear();
 
@@ -460,7 +460,7 @@ void Exporter::nextSubObject() {
 
             case TAG_START_CLASS:
                 s = readString();
-                //cout << s << endl;
+                //cout << s << std::endl;
                 //stack_.push_back(s.substr(0,s.find('<')));
 				stack_.push_back(s);
                 //stack_.push_back(s);
@@ -484,7 +484,7 @@ void Exporter::nextSubObject() {
                     Datatype& x = members_[p];
                     ASSERT(x.empty());
                     x = Datatype(_readUnsigned());
-                    //cout << "read [" << p << "] = " << x << endl;
+                    //cout << "read [" << p << "] = " << x << std::endl;
                 }
                 break;
 
@@ -494,7 +494,7 @@ void Exporter::nextSubObject() {
                     Datatype& x = members_[p];
                     ASSERT(x.empty());
                     x = Datatype(_readSigned());
-                    //cout << "read [" << p << "] = " << x << endl;
+                    //cout << "read [" << p << "] = " << x << std::endl;
                 }
                 break;
 
@@ -504,7 +504,7 @@ void Exporter::nextSubObject() {
                     Datatype& x = members_[p];
                     ASSERT(x.empty());
                     x = Datatype(_readDouble());
-                    //cout << "read [" << p << "] = " << x << endl;
+                    //cout << "read [" << p << "] = " << x << std::endl;
                 }
                 break;
 
@@ -512,7 +512,7 @@ void Exporter::nextSubObject() {
                 return;
 
             default:
-                cout << tag << endl;
+                std::cout << tag << std::endl;
                 ASSERT(1 == 0);
                 break;
         }
@@ -524,10 +524,10 @@ double Exporter::getDoubleMember(const string& name)
     map<string,Datatype>::iterator j = members_.find(name);
     if(j != members_.end())
     {
-        //cout << "consume [" << name << "] = " << (*j).second << endl;
+        //cout << "consume [" << name << "] = " << (*j).second << std::endl;
         return (*j).second;
     }
-    cout << name << " not found" << endl;
+    std::cout << name << " not found" << std::endl;
     return 0;
 }
 
@@ -536,10 +536,10 @@ long long Exporter::getSignedMember(const string& name)
     map<string,Datatype>::iterator j = members_.find(name);
     if(j != members_.end())
     {
-        //cout << "consume [" << name << "] = " << (*j).second << endl;
+        //cout << "consume [" << name << "] = " << (*j).second << std::endl;
         return (*j).second;
     }
-    cout << name << " not found" << endl;
+    std::cout << name << " not found" << std::endl;
     return 0;
 }
 
@@ -548,10 +548,10 @@ unsigned long long Exporter::getUnsignedMember(const string& name)
     map<string,Datatype>::iterator j = members_.find(name);
     if(j != members_.end())
     {
-        //cout << "consume [" << name << "] = " << (*j).second << endl;
+        //cout << "consume [" << name << "] = " << (*j).second << std::endl;
         return (*j).second;
     }
-    cout << name << " not found" << endl;
+    std::cout << name << " not found" << std::endl;
     return 0;
 }
 
@@ -678,7 +678,7 @@ Exporter::Datatype::operator double() {
 }
 
 
-void Exporter::Datatype::print(ostream& out) const
+void Exporter::Datatype::print(std::ostream& out) const
 {
     switch(type_) {
         case TAG_SIGNED:   out << "S(" << signed_; break; 
@@ -692,7 +692,7 @@ void Exporter::Datatype::print(ostream& out) const
 
 #define X(a) out << " " << #a << "=" << a;
 
-void Exporter::print(ostream& out) const
+void Exporter::print(std::ostream& out) const
 { 
     out << "Exporter[";
 

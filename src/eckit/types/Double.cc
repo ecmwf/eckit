@@ -50,7 +50,7 @@ double Double::round() const
 	return x;
 }
 
-void Double::print(ostream& s) const
+void Double::print(std::ostream& s) const
 {
 	s << round();
 }

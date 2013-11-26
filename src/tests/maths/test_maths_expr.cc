@@ -25,6 +25,7 @@
 #include "eckit/maths/ZipWith.h"
 #include "eckit/maths/Bind.h"
 
+using namespace std;
 using namespace eckit;
 using namespace eckit::maths;
 

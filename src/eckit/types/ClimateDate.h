@@ -74,7 +74,7 @@ public:
 
 // -- Friends
 
-	friend ostream& operator<< (ostream& s, const ClimateDate& date)
+	friend std::ostream& operator<< (std::ostream& s, const ClimateDate& date)
 		{ date.print(s); return s; }
 
 protected:
@@ -102,7 +102,7 @@ private:
 
 // -- Methods
 
-	void print(ostream&) const;
+	void print(std::ostream&) const;
 
 // -- Class methods
 

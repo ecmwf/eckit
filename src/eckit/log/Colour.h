@@ -22,34 +22,34 @@ namespace eckit {
 class Colour {
 public:
 
-    static ostream& on(ostream&);
-    static ostream& off(ostream&);
+    static std::ostream& on(std::ostream&);
+    static std::ostream& off(std::ostream&);
 
-    static ostream& reset(ostream&);
+    static std::ostream& reset(std::ostream&);
 
-    static ostream& bold(ostream&);
-    static ostream& underline(ostream&);
-    static ostream& blink(ostream&);
-    static ostream& reverse(ostream&);
-    static ostream& hidden(ostream&);
+    static std::ostream& bold(std::ostream&);
+    static std::ostream& underline(std::ostream&);
+    static std::ostream& blink(std::ostream&);
+    static std::ostream& reverse(std::ostream&);
+    static std::ostream& hidden(std::ostream&);
 
-    static ostream& black(ostream&);
-    static ostream& red(ostream&);
-    static ostream& green(ostream&);
-    static ostream& yellow(ostream&);
-    static ostream& magenta(ostream&);
-    static ostream& blue(ostream&);
-    static ostream& cyan(ostream&);
-    static ostream& white(ostream&);
+    static std::ostream& black(std::ostream&);
+    static std::ostream& red(std::ostream&);
+    static std::ostream& green(std::ostream&);
+    static std::ostream& yellow(std::ostream&);
+    static std::ostream& magenta(std::ostream&);
+    static std::ostream& blue(std::ostream&);
+    static std::ostream& cyan(std::ostream&);
+    static std::ostream& white(std::ostream&);
 
-    static ostream& blackBackground(ostream&);
-    static ostream& redBackground(ostream&);
-    static ostream& greenBackground(ostream&);
-    static ostream& yellowBackground(ostream&);
-    static ostream& magentaBackground(ostream&);
-    static ostream& blueBackground(ostream&);
-    static ostream& cyanBackground(ostream&);
-    static ostream& whiteBackground(ostream&);
+    static std::ostream& blackBackground(std::ostream&);
+    static std::ostream& redBackground(std::ostream&);
+    static std::ostream& greenBackground(std::ostream&);
+    static std::ostream& yellowBackground(std::ostream&);
+    static std::ostream& magentaBackground(std::ostream&);
+    static std::ostream& blueBackground(std::ostream&);
+    static std::ostream& cyanBackground(std::ostream&);
+    static std::ostream& whiteBackground(std::ostream&);
 
 };
 

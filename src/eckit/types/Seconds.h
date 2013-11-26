@@ -40,7 +40,7 @@ public:
 	operator string() const;
 	operator double() const { return seconds_; }
 
-	friend ostream& operator<<(ostream&,const Seconds&);
+	friend std::ostream& operator<<(std::ostream&,const Seconds&);
 
 private:
 

@@ -44,11 +44,11 @@ public:
 
 template <class T>
 class Expression : private eckit::NonCopyable {
-	virtual void print(ostream&) const = 0;
+	virtual void print(std::ostream&) const = 0;
 public:
 	virtual eckit::Value eval(T&) const = 0;
 	virtual ~Expression()  { }
-	friend ostream& operator<<(ostream& s,const Expression<T>& c)
+	friend std::ostream& operator<<(std::ostream& s,const Expression<T>& c)
 		{ c.print(s); return s; }
 };
 
@@ -57,7 +57,7 @@ class CondUnary : public Expression<U> {
 
 	auto_ptr<Expression<U> > cond_;
 
-	virtual void print(ostream& s) const 
+	virtual void print(std::ostream& s) const 
 		{ s << opname(T()) << '(' << *cond_ << ')'; }
 
 public:
@@ -72,7 +72,7 @@ class CondBinary : public Expression<U> {
 	auto_ptr<Expression<U> > left_;
 	auto_ptr<Expression<U> > right_;
 
-	virtual void print(ostream& s) const
+	virtual void print(std::ostream& s) const
 		{ s << '(' << *left_ << ' ' << opname(T()) << ' ' << *right_ << ')'; }
 public:
 
@@ -91,7 +91,7 @@ inline eckit::Value CondBinary<T,U>::eval(U& task) const
 template <class T>
 class StringExpression : public Expression<T> {
 	string str_;
-	virtual void print(ostream& s) const { s << str_; } 
+	virtual void print(std::ostream& s) const { s << str_; } 
 public:
 	StringExpression(const string& s) : str_(s) {}
 	virtual eckit::Value eval(T&) const { return eckit::Value(str_); }
@@ -100,7 +100,7 @@ public:
 template <class T>
 class NumberExpression : public Expression<T> {
 	long long value_;
-	virtual void print(ostream& s) const { s << value_; } 
+	virtual void print(std::ostream& s) const { s << value_; } 
 protected:
 	long long value() const              { return value_; }
 public:
@@ -111,7 +111,7 @@ public:
 template <class T>
 class ListExpression : public Expression<T> {
 	vector<Expression<T>*> v_;
-	virtual void print(ostream& s) const;
+	virtual void print(std::ostream& s) const;
 public:
 	ListExpression();
 	ListExpression(const vector<Expression<T>*>& v) : v_(v) {}
@@ -127,7 +127,7 @@ ListExpression<T>::~ListExpression()
 }
 
 template <class T>
-void ListExpression<T>::print(ostream& s) const
+void ListExpression<T>::print(std::ostream& s) const
 {
 	s << '[';
 	for( size_t i = 0; i < v_.size(); i++)

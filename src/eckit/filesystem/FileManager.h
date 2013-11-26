@@ -45,13 +45,13 @@ protected:
 	FileManager(const string&);
 	virtual ~FileManager();
 
-	virtual void print(ostream&) const;
+	virtual void print(std::ostream&) const;
 
 private:
 
 	string name_;
 
-	friend ostream& operator<<(ostream& s,const FileManager& p)
+	friend std::ostream& operator<<(std::ostream& s,const FileManager& p)
 			{ p.print(s); return s; }
 
 };

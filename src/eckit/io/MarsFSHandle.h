@@ -54,7 +54,7 @@ public:
 	virtual void   close();
 	virtual void   rewind();
 	virtual void   skip(size_t);
-	virtual void   print(ostream&) const;
+	virtual void   print(std::ostream&) const;
 	virtual Length estimate();
 	virtual Offset position();
 	virtual bool isEmpty() const;
@@ -87,7 +87,7 @@ private:
     Offset        position_;
     bool          overwrite_;
     
-    auto_ptr<MarsFSFile>  file_;
+    std::auto_ptr<MarsFSFile>  file_;
 
 // -- Methods
 

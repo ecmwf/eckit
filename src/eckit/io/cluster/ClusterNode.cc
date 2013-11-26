@@ -51,9 +51,9 @@ void ClusterHeartBeat::run()
         TCPClient client;
 
         try {
-            Log::status() <<"Connecting to " << host << ":" << port << endl;
+            Log::status() <<"Connecting to " << host << ":" << port << std::endl;
             TCPStream s(client.connect(host, port));
-            Log::status() <<"Connected to " << host << ":" << port << endl;
+            Log::status() <<"Connected to " << host << ":" << port << std::endl;
 
             NodeInfo::thisNode().port(owner_.port());
 
@@ -85,10 +85,10 @@ void ClusterHeartBeat::run()
                 owner_.refresh(s);
             }
         }
-        catch(exception& e)
+        catch(std::exception& e)
         {
-            Log::error() << "** " << e.what() << " Caught in " << here <<  endl;
-            Log::error() << "** Exception is handled" << endl;
+            Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+            Log::error() << "** Exception is handled" << std::endl;
         }
     }
 }

@@ -86,7 +86,7 @@ ExpPtr Bind::evaluate( Scope &ctx )
 }
 
 
-void Bind::asCode(ostream &o) const
+void Bind::asCode(std::ostream&o) const
 {
     o << "maths::bind("; printArgs(o); o << ")";
 }

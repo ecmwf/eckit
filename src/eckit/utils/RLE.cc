@@ -149,7 +149,7 @@ void RLEdecode2 (T first, T last, U output)
 }
 
 template < class T >
-void RLEprint(ostream& out,T first, T last)
+void RLEprint(std::ostream& out,T first, T last)
 {
 	while(first != last)
 	{
@@ -246,7 +246,7 @@ Stream& RLEwrite(Stream& s,InputIterator first,InputIterator last,
 	vector<T> tmp; tmp.reserve(last-first);
 	RLEencode2(first,last,back_inserter(tmp),maxLoop);
 	s << tmp;
-	cout << "RLEwrite : " << last-first << " -> " << tmp.size() << endl;
+	cout << "RLEwrite : " << last-first << " -> " << tmp.size() << std::endl;
 	return s;
 }
 
@@ -289,7 +289,7 @@ Stream& RLEDIFFwrite(Stream& s,InputIterator first,InputIterator last,
 	{
 		// Warning, does not work with ostream iterator,
 		// as we reuse first, last
-		Log::warning() << "DIFF encoding failed." << endl;
+		Log::warning() << "DIFF encoding failed." << std::endl;
 		tmp.clear();
 		std::copy(first,last,back_inserter(tmp));
 		s << tmp;

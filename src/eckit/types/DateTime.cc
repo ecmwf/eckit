@@ -24,8 +24,9 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-DateTime::DateTime(const Date& d, const Time& t):
-	date_(d), time_(t)
+DateTime::DateTime(const Date& d, const Time& t) :
+    date_(d),
+    time_(t)
 {
 }
 
@@ -50,7 +51,7 @@ static std::locale& getLocale()
     catch (...)
     {
         Log::error() << "Problem to setup the locale\n"
-                     << "Check your LANG variable - current value: " <<  getenv("LANG") << endl;
+                     << "Check your LANG variable - current value: " <<  getenv("LANG") << std::endl;
         loc = locale::classic();
     }
     return loc;
@@ -89,6 +90,9 @@ string DateTime::format( const string& fmt )
   
 DateTime::DateTime(time_t thetime)
 {
+
+    // prefer reentrant version ( gmtime_r )
+
 #ifdef EC_HAVE_GMTIME_R
 	struct tm t;
 	gmtime_r(&thetime,&t);
@@ -109,7 +113,7 @@ DateTime::DateTime(time_t thetime)
 	time_ = Time(hour,min,sec);
 }
 
-void DateTime::print(ostream& s) const
+void DateTime::print(std::ostream& s) const
 {
 	s << date_ << ' ' << time_;
 }

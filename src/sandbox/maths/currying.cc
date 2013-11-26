@@ -18,10 +18,10 @@
 
 #include "eckit/maths/Math.h"
 
-using namespace eckit;
-using namespace eckit::maths;
+using namespace std;
 
 using namespace eckit;
+using namespace eckit::maths;
 
 //-----------------------------------------------------------------------------
 
@@ -50,10 +50,10 @@ void Currying::run()
         Math X = maths::lambda("i", "j", Math("i") + Math("j"));
         Math Y = maths::call(X);
 
-        cout << "-----------------------" << endl;
-        cout << Y << endl;
-        cout << "-----------------------" << endl;
-        cout << Y(1.0, 2.3) << endl;
+        std::cout << "-----------------------" << std::endl;
+        std::cout << Y << std::endl;
+        std::cout << "-----------------------" << std::endl;
+        std::cout << Y(1.0, 2.3) << std::endl;
     }
 
 
@@ -61,15 +61,15 @@ void Currying::run()
         Math X = maths::lambda("i", maths::call(maths::lambda("j", Math("i") + Math("j"))));
         Math Y = maths::call(X, Math(1.0));
 
-        cout << "-----------------------" << endl;
-        cout << Y << endl;
-        cout << "-----------------------" << endl;
-        cout << Y(2.3) << endl;
+        std::cout << "-----------------------" << std::endl;
+        std::cout << Y << std::endl;
+        std::cout << "-----------------------" << std::endl;
+        std::cout << Y(2.3) << std::endl;
     }
 
     Math m = maths::call(maths::lambda("i", maths::call(maths::lambda("j", (Math("i") + Math("j"))))), Math(1.0));
-    cout << m << endl;
-    cout << m(9.0) << endl;
+    std::cout << m << std::endl;
+    std::cout << m(9.0) << std::endl;
 }
 
 //-----------------------------------------------------------------------------

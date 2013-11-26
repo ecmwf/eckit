@@ -68,7 +68,7 @@ string FixedString<size>::asString() const
 }
 
 template<int size>
-void FixedString<size>::print(ostream& s) const
+void FixedString<size>::print(std::ostream& s) const
 {
     s.write(data_,length());
 }

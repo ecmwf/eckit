@@ -15,6 +15,7 @@
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/log/Log.h"
 
+using namespace std;
 using namespace eckit;
 
 class TestApp : public Tool {

@@ -27,7 +27,7 @@ static bool isUnderscore( char c ) { return c == '_'; }
 static bool isDot( char c )        { return c == '.'; }
 static bool isSpace( char c )      { return c == ' '; }
 
-Compiler::Compiler( istream& in ) : StreamParser(in) {}
+Compiler::Compiler( std::istream& in ) : StreamParser(in) {}
 
 Compiler::~Compiler() {}
 

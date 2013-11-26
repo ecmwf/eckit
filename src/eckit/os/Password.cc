@@ -28,16 +28,16 @@ bool Password::check(const string& user,const string& password)
 
 	if(n != 0)
 	{
-		Log::error() << "User " << user << " is unknown" << endl;
+		Log::error() << "User " << user << " is unknown" << std::endl;
 		return false;
 	}
 
 	bool match =  password == p.pw_passwd;
 
 	if(match)
-		Log::error() << "User " << user << " gave an valid password" << endl;
+		Log::error() << "User " << user << " gave an valid password" << std::endl;
 	else
-		Log::error() << "User " << user << " gave an invalid password" << endl;
+		Log::error() << "User " << user << " gave an invalid password" << std::endl;
 
 	return match;
 
@@ -51,7 +51,7 @@ string Password::salt(const string& user)
 
 	if(n != 0)
 	{
-		Log::error() << "User " << user << " is unknown" << endl;
+		Log::error() << "User " << user << " is unknown" << std::endl;
 		return "";
 	}
 

@@ -57,7 +57,7 @@ protected:
 
 // -- Methods
 	
-	virtual void print(ostream&) const;
+	virtual void print(std::ostream&) const;
 
 private:
 
@@ -77,7 +77,7 @@ private:
 
 // -- Friends
 
-	friend ostream& operator<<(ostream& s,const TxnEvent& p)
+	friend std::ostream& operator<<(std::ostream& s,const TxnEvent& p)
 		{ p.print(s); return s; }
 
 };

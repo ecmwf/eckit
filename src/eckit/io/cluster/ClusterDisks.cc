@@ -94,7 +94,7 @@ public:
 		return path_;
 	}
 
-	friend ostream& operator<<(ostream&, const ClusterDisk&);
+	friend std::ostream& operator<<(std::ostream&, const ClusterDisk&);
 
 	void json(JSON& s) const
 	{
@@ -108,7 +108,7 @@ public:
 	}
 
 };
-ostream& operator<<(ostream& s, const ClusterDisk& d)
+std::ostream& operator<<(std::ostream& s, const ClusterDisk& d)
 {
 	s << "ClusterDisk[" << d.node_ << "," << d.type_ << "," << d.path_ << "," << (::time(0) - d.lastSeen_) << 
         "," << (d.offLine_ ? "off" : "on") << "-line" <<
@@ -154,7 +154,7 @@ void ClusterDisks::cleanup()
 	for(DiskArray::iterator k = clusterDisks->begin(); k != clusterDisks->end(); ++k)
         if((*k).active() && (*k).offline())
         {
-            Log::info() << "Forget " << (*k) << endl;
+            Log::info() << "Forget " << (*k) << std::endl;
             (*k).active(false);
         }
     */
@@ -189,7 +189,7 @@ void ClusterDisks::offLine(const NodeInfo& info)
 		pthread_once(&once, init);
 		AutoLock<DiskArray> lock(*clusterDisks);
 
-		//cout << "=========== ClusterDisks::forget "  << info << endl;
+		//cout << "=========== ClusterDisks::forget "  << info << std::endl;
 
 		for(DiskArray::iterator k = clusterDisks->begin(); k != clusterDisks->end(); ++k)
 		{
@@ -220,10 +220,10 @@ void ClusterDisks::update(const string& node, const string& type, const vector<s
 	for(vector<string>::const_iterator j = disks.begin(); j != disks.end(); ++j)
 	{
 		ClusterDisk c(node, type, *j);
-		DiskArray::iterator k = lower_bound(clusterDisks->begin(), clusterDisks->end(), c);
+        DiskArray::iterator k = std::lower_bound(clusterDisks->begin(), clusterDisks->end(), c);
 		if(k != clusterDisks->end() && !(c < *k))
 		{
-			// Log::info() << "=========== Update " << node << "-" << type << " " << *j << endl;
+			// Log::info() << "=========== Update " << node << "-" << type << " " << *j << std::endl;
 			// TODO check for change of node or type
 			*k = c;
 
@@ -231,7 +231,7 @@ void ClusterDisks::update(const string& node, const string& type, const vector<s
 		else
 		{
 			ASSERT(!(*clusterDisks)[0].active());
-			//	Log::info() << "================ New " << node << "-" << type << " " << * j << endl;
+			//	Log::info() << "================ New " << node << "-" << type << " " << * j << std::endl;
 			(*clusterDisks)[0] = c;
 			std::sort(clusterDisks->begin(), clusterDisks->end());
 		}
@@ -239,7 +239,7 @@ void ClusterDisks::update(const string& node, const string& type, const vector<s
 
 }
 
-void ClusterDisks::list(ostream& out)
+void ClusterDisks::list(std::ostream& out)
 {
 	pthread_once(&once, init);
 
@@ -247,7 +247,7 @@ void ClusterDisks::list(ostream& out)
 	for(DiskArray::const_iterator k = clusterDisks->begin(); k != clusterDisks->end(); ++k)
 	{
 		if((*k).active())
-			out << *k << endl;
+			out << *k << std::endl;
 	}
 }
 
@@ -282,7 +282,7 @@ time_t ClusterDisks::lastModified(const string& type)
 	for(DiskArray::const_iterator k = clusterDisks->begin(); k != clusterDisks->end(); ++k)
 	{
 		if((*k).active() && ((*k).type() == type))
-			last = ::max(last, (*k).lastSeen());
+            last = std::max(last, (*k).lastSeen());
 	}
 
 	return last;
@@ -346,7 +346,7 @@ string ClusterDisks::node(const string& path)
 
         
         LocalPathName df("~/etc/disks/df");
-        ifstream in(df.localPath());
+        std::ifstream in(df.localPath());
         char line[1024];
         while(in.getline(line,sizeof(line)))
         {
@@ -363,7 +363,7 @@ string ClusterDisks::node(const string& path)
                     {
                         if(path.find(v[j].asString()) == 0)
                         {
-                            Log::info() << "ClusterDisks::node [" << path << "] is on " << v[j] << endl;
+                            Log::info() << "ClusterDisks::node [" << path << "] is on " << v[j] << std::endl;
                             return "local";
                         }
                     }

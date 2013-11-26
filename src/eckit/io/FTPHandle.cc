@@ -28,7 +28,7 @@ const char* FTPHandle::FTPError::what() const throw()
 	return "FTP Error";
 }
 
-void FTPHandle::print(ostream &s) const
+void FTPHandle::print(std::ostream&s) const
 {
 	s << "FTPHandle[file=" << remote_ << ",host=" << host_ << ",port=" << port_ << ']';
 }
@@ -55,13 +55,13 @@ string FTPHandle::readLine()
 	char c;
 	while(cmds_.read(&c,1)==1 && c!='\n')
 		s += c;
-	Log::info() << "receive " << s << endl;
+	Log::info() << "receive " << s << std::endl;
 	return s;
 }
 
 void FTPHandle::ftpCommand(const string& s)
 {
-	Log::info() << "send " << s << endl;
+	Log::info() << "send " << s << std::endl;
 	cmds_.write(s.c_str(),s.length());
 	cmds_.write("\r\n",2);
 	string out = readLine();	

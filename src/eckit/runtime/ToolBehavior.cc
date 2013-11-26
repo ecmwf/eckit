@@ -8,11 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <stdlib.h>
-
 #include "eckit/runtime/ToolBehavior.h"
-
-using namespace std;
 
 //-----------------------------------------------------------------------------
 

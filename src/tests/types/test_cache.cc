@@ -18,6 +18,7 @@
 
 #include "eckit/container/Cache.h"
 
+using namespace std;
 using namespace eckit;
 
 namespace eckit_test {
@@ -48,7 +49,7 @@ struct Obj
     Obj(const string& s, const unsigned long long& d) : s_(s),d_(d) {}
     string s_;
     unsigned long long d_;
-    friend ostream& operator<<(ostream& s,const Obj& x) { s << x.s_ << ":" << x.d_; return s; }    
+    friend std::ostream& operator<<(std::ostream& s,const Obj& x) { s << x.s_ << ":" << x.d_; return s; }    
 };
 
 //-----------------------------------------------------------------------------

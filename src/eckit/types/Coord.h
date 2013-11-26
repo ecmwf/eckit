@@ -27,7 +27,7 @@ class DumpLoad;
 class Coord {
 public:
 	
-	friend ostream& operator<<(ostream& s,const Coord& x)
+	friend std::ostream& operator<<(std::ostream& s,const Coord& x)
 		{ x.print(s); return s; }
 
 	friend Stream& operator>>(Stream& s,Coord& x)
@@ -73,7 +73,7 @@ public:
 
 // -- Methods
 
-	void print(ostream& s) const { s << value_; }
+	void print(std::ostream& s) const { s << value_; }
 
 	void dump(DumpLoad&) const;
 	void load(DumpLoad&);

@@ -40,7 +40,7 @@ TxnEvent::~TxnEvent()
 {
 }
 
-void TxnEvent::print(ostream& s) const
+void TxnEvent::print(std::ostream& s) const
 {
 	s << "TxnEvent " << txnID_;
 }

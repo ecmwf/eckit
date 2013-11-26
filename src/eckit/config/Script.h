@@ -52,7 +52,7 @@ public: // methods
     bool readFile( const PathName& path );
     
     /// reads the contents of the stream into the script
-    void readStream( istream& in );
+    void readStream( std::istream& in );
     
     /// clears the contents of the script, effectively making it an empty script
     void clear();

@@ -50,7 +50,7 @@ public:
 
 protected: // methods
 
-	void print(ostream&) const;
+	void print(std::ostream&) const;
 
 private: // members
 
@@ -59,7 +59,7 @@ private: // members
 
 // -- Friends
 
-	friend ostream& operator<<(ostream& s,const FileName& p)
+	friend std::ostream& operator<<(std::ostream& s,const FileName& p)
 		{ p.print(s); return s; }
 
 };

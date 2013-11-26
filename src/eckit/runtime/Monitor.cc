@@ -98,8 +98,8 @@ void Monitor::init()
 
     if(!found) 
     {
-        cout << "No free monitor slots" << endl;
-        cerr << "No free monitor slots" << endl;
+        std::cout << "No free monitor slots" << std::endl;
+        std::cerr << "No free monitor slots" << std::endl;
     }
 
 	// No free monitor slots
@@ -301,8 +301,8 @@ void Monitor::start(const string& app)
 			p[j].depth() == 0)
 		{
 			Log::warning() << app << " is already running with a pid of " 
-				<< p[j].pid() << endl;
-			Log::warning() << "Please stop it first" << endl;
+				<< p[j].pid() << std::endl;
+			Log::warning() << "Please stop it first" << std::endl;
 			return;
 		}
 
@@ -310,7 +310,7 @@ void Monitor::start(const string& app)
 
 	string s = string(cmd) + " " + app;
 
-	Log::info() << "Executing shell command: " << s << endl;
+	Log::info() << "Executing shell command: " << s << std::endl;
 
 	SYSCALL(::system(s.c_str()));
 
@@ -366,14 +366,14 @@ int Monitor::kill(const string& name, int sig)
 		{
 			pid_t pid = info[i].pid();
 			if(pid == me)
-				Log::info() << pid << ": Suicide avoided ;-)" << endl;
+				Log::info() << pid << ": Suicide avoided ;-)" << std::endl;
 			else
 			{
 				if(::kill(pid,sig))
-					Log::info() << Log::syserr << endl; 
+					Log::info() << Log::syserr << std::endl; 
 				else
 				{
-					Log::info() << pid << ": Killed" << endl;
+					Log::info() << pid << ": Killed" << std::endl;
 					n++;
 				}
 			}

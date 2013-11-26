@@ -48,9 +48,9 @@ class Exporter : private NonCopyable {
         bool empty() const { return type_ == 0; }
         bool used() const { return used_; }
 
-        void print(ostream& s) const;
+        void print(std::ostream& s) const;
 
-        friend ostream& operator<<(ostream& s,const Datatype& p) { p.print(s); return s; }
+        friend std::ostream& operator<<(std::ostream& s,const Datatype& p) { p.print(s); return s; }
     };
 
 public:
@@ -145,7 +145,7 @@ protected:
 
 // -- Methods
 	
-	void print(ostream&) const; 	
+	void print(std::ostream&) const; 	
 
 // -- Overridden methods
 	// None
@@ -191,7 +191,7 @@ private: // members
 
 // -- Friends
 
-	friend ostream& operator<<(ostream& s,const Exporter& p)
+	friend std::ostream& operator<<(std::ostream& s,const Exporter& p)
 		{ p.print(s); return s; }
 
 };

@@ -89,7 +89,7 @@ Math Math::operator()(const Math& a, const Math& b) const
     return Math(e);
 }
 
-void Math::print(ostream & os) const
+void Math::print(std::ostream& os) const
 {
     os << *expr_;
 }

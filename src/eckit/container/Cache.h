@@ -124,9 +124,9 @@ public: // methods
     /// @returns the number of entries in the cache, expired or not
     size_t size() const;
 
-    void print(ostream&) const;
+    void print(std::ostream&) const;
 
-    friend ostream& operator<<(ostream& s,const Cache& p)
+    friend std::ostream& operator<<(std::ostream& s,const Cache& p)
     {
         p.print(s);
         return s;
@@ -264,7 +264,7 @@ size_t Cache<K,V>::size() const
 }
 
 template< typename K, typename V>
-void Cache<K,V>::print(ostream& out) const
+void Cache<K,V>::print(std::ostream& out) const
 {
     typedef typename store_type::const_iterator siterator;
     for( siterator i = storage_.begin(); i != storage_.end(); ++i )

@@ -19,7 +19,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-//#define X(a) Log::userInfo() << #a << endl; Log::info() << #a << endl; 
+//#define X(a) Log::userInfo() << #a << std::endl; Log::info() << #a << std::endl; 
 #define X(a) /**/
 
 // TODO: Return errno
@@ -93,8 +93,8 @@ Length MarsFSClient::size(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -122,8 +122,8 @@ bool MarsFSClient::exists(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -149,8 +149,8 @@ string MarsFSClient::mountPoint(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -177,8 +177,8 @@ string MarsFSClient::baseName(const string& path, bool ext)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -204,8 +204,8 @@ string MarsFSClient::dirName(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -231,8 +231,8 @@ string MarsFSClient::fullName(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -256,8 +256,8 @@ string MarsFSClient::unique(const string& path)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -284,8 +284,8 @@ bool MarsFSClient::sameAs(const string& path1, const string& path2)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -310,8 +310,8 @@ void MarsFSClient::mkdir(const string& path, short mode)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -349,8 +349,8 @@ void MarsFSClient::match(const string& path, vector<string>& result, bool recurs
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -398,8 +398,8 @@ void MarsFSClient::children(const string& path, vector<string>& dirs, vector<str
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -436,8 +436,8 @@ vector<string> MarsFSClient::getFileSpaces()
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -475,8 +475,8 @@ vector<string> MarsFSClient::getFileSystems(const string& name)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 
@@ -501,8 +501,8 @@ void MarsFSClient::rename(const string& from, const string& to)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -527,8 +527,8 @@ void MarsFSClient::link(const string& from, const string& to)
 		{
 			if(!retry())
 				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -552,8 +552,8 @@ void MarsFSClient::unlink(const string& path)
 		{
 			if(!retry())
 				throw;
-            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -578,8 +578,8 @@ void MarsFSClient::rmdir(const string& path)
 		{
 			if(!retry())
 				throw;
-            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -604,8 +604,8 @@ void MarsFSClient::touch(const string& path)
 		{
 			if(!retry())
 				throw;
-            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -631,8 +631,8 @@ void MarsFSClient::fileSystemSize(const string& path, FileSystemSize& fs)
 		{
 			if(!retry())
 				throw;
-            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -659,8 +659,8 @@ time_t MarsFSClient::created(const string& path)
 		{
 			if(!retry())
 				throw;
-            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -687,8 +687,8 @@ time_t MarsFSClient::lastAccess(const string& path)
 		{
 			if(!retry())
 				throw;
-            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }
@@ -715,8 +715,8 @@ time_t MarsFSClient::lastModified(const string& path)
 		{
 			if(!retry())
 				throw;
-            Log::error() << "** " << e.what() << " Caught in " << Here() << endl;
-			Log::error() << "** Exception is ignored" << endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
 }

@@ -60,7 +60,7 @@ long MemStream::write(const void* buf,long len)
 
 long MemStream::read(void* buf,long len)
 {
-	long size = ::min(long(len),long(in_.size() - pos_));
+    long size = std::min(long(len),long(in_.size() - pos_));
 
 	if(size <= 0)
 		return -1;
@@ -80,16 +80,16 @@ AgentResource::~AgentResource()
 {
 }
 
-void AgentResource::html(ostream&,Url& url)
+void AgentResource::html(std::ostream&,Url& url)
 {
-	static ifstream in("/dev/null");	
-	static ofstream out("/dev/null");	
+	static std::ifstream in("/dev/null");	
+    static std::ofstream out("/dev/null");
 
 	MemStream s(url.headerIn().content(), url.headerIn().contentLength());
 
 	string token = url.headerIn().getHeader("mars-token");
 
-	cout << "Token is " << token << endl;
+    std::cout << "Token is " << token << std::endl;
 	
 	JavaAgent::serve(s,in,out);
 	url.headerOut().content(s.data(),s.length());

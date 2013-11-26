@@ -32,7 +32,7 @@ GribFile* GribFile::newGribFile(const PathName& path) {
     return new GribFile(path);
 }
 
-void GribFile::print(ostream& os) const
+void GribFile::print(std::ostream& os) const
 {
     os << "GribFile[" << path_ << "]";
 }

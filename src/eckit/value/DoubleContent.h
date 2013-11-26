@@ -82,7 +82,7 @@ protected:
 //        virtual Content* mulNumber(const NumberContent&) const;
 //        virtual Content* divNumber(const NumberContent&) const;
 
-        virtual void    print(ostream&) const;
+        virtual void    print(std::ostream&) const;
         virtual void   json(JSON&)      const;
         virtual string  typeName()      const { return "Double"; }
         virtual bool    isDouble()      const { return true; }

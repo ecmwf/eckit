@@ -90,7 +90,7 @@ MarsFSPath::~MarsFSPath()
 }
 
 
-void MarsFSPath::print(ostream& s) const
+void MarsFSPath::print(std::ostream& s) const
 {
     s << "marsfs://" << node_ << path_;
 }
@@ -302,14 +302,14 @@ BasePathName* MarsFSPath::checkClusterNode() const
         string n = ClusterDisks::node(path_);
         ASSERT(n != NodeInfo::thisNode().node()); // TODO: code mo, if a remote file becomes local
         if(n != node_) {
-//            Log::warning() << *this << " is now on node [" << n << "]" << endl;
+//            Log::warning() << *this << " is now on node [" << n << "]" << std::endl;
         }
         return new BasePathNameT<MarsFSPath>(MarsFSPath(n, path_));
     }
-    catch(Exception& e)
+    catch(std::exception& e)
     {
-        Log::error() << "** " << e.what() << " Caught in " << Here() <<  endl;
-        Log::error() << "** Exception is handled" << endl;
+        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+        Log::error() << "** Exception is handled" << std::endl;
         return new BasePathNameT<MarsFSPath>(MarsFSPath(node_, path_));
     }
 }

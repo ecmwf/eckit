@@ -40,7 +40,7 @@ ExpPtr parameter(const string& name)
     return ExpPtr( new Param(name) );
 }
 
-ValPtr Param::evaluate( Scope &ctx )
+ExpPtr Param::evaluate( Scope &ctx )
 {
     ExpPtr e = ctx.param(name_);
     return e->eval();

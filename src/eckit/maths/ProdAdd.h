@@ -53,13 +53,13 @@ public: // methods
 protected: // methods
 
     /// Specific computation for s * ( v + v )
-    static ValPtr compute_svv( const args_t& p );
+    static ExpPtr compute_svv( const args_t& p );
 
     /// Specific computation for v * ( v + v )
-    static ValPtr compute_vvv( const args_t& p );
+    static ExpPtr compute_vvv( const args_t& p );
 
     /// Generic prod_add implementation based on calling first add() then prod()
-    static ValPtr compute_ggg( const args_t& p );
+    static ExpPtr compute_ggg( const args_t& p );
 
 private:
 

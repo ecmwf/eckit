@@ -52,7 +52,7 @@ string Bind::returnSignature() const
     return args_[0]->returnSignature();
 }
 
-ValPtr Bind::evaluate( Scope &ctx )
+ExpPtr Bind::evaluate( Scope &ctx )
 {    
     DBGX(*this);
 

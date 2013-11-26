@@ -38,7 +38,7 @@ private:
 
     virtual std::string returnSignature() const;
 
-    virtual ValPtr evaluate( Scope& ctx );
+    virtual ExpPtr evaluate( Scope& ctx );
 
     virtual void asCode( std::ostream& ) const;
 

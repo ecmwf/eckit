@@ -37,19 +37,19 @@ Expression::~Expression()
 }
 
 
-ValPtr Expression::eval()
+ExpPtr Expression::eval()
 {
     Scope ctx("Expression::eval()");
     return optimise()->evaluate(ctx);
 }
 
-ValPtr Expression::eval( Scope& ctx, bool)
+ExpPtr Expression::eval( Scope& ctx, bool)
 {
     return optimise()->evaluate(ctx);
 }
 
 
-ValPtr Expression::eval(Scope& scope, const args_t& args)
+ExpPtr Expression::eval(Scope& scope, const args_t& args)
 {
     Scope ctx("Expression::eval(Scope& scope, const args_t& args)", &scope);
     for(args_t::const_iterator j = args.begin(); j != args.end(); ++j) {
@@ -63,17 +63,17 @@ ExpPtr Expression::resolve(Scope & ctx)
     return self();
 }
 
-ValPtr Expression::eval( ExpPtr e )
+ExpPtr Expression::eval( ExpPtr e )
 {
     Scope ctx("Expression::eval( ExpPtr e )", e);
-    ValPtr res = optimise()->evaluate(ctx);
+    ExpPtr res = optimise()->evaluate(ctx);
     return res;
 }
 
-ValPtr Expression::eval(  ExpPtr a, ExpPtr b )
+ExpPtr Expression::eval(  ExpPtr a, ExpPtr b )
 {
     Scope ctx("Expression::eval(  ExpPtr a, ExpPtr b )", a, b);
-    ValPtr res = optimise()->evaluate(ctx);
+    ExpPtr res = optimise()->evaluate(ctx);
     return res;
 }
 

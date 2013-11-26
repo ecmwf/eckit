@@ -239,7 +239,7 @@ std::string BinaryPredicate<T>::Computer<U,V,I>::sig()
 
 template < class T >
 template < class U, class V, class I >
-ValPtr BinaryPredicate<T>::Computer<U,V,I>::compute(const args_t &p)
+ExpPtr BinaryPredicate<T>::Computer<U,V,I>::compute(const args_t &p)
 {
     T op;
     typename U::value_t a = U::extract(p[0]);

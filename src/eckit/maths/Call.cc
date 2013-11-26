@@ -48,7 +48,7 @@ string Call::returnSignature() const
     return ";";
 }
 
-ValPtr Call::evaluate( Scope &ctx )
+ExpPtr Call::evaluate( Scope &ctx )
 {
     ExpPtr f = param(0, ctx);
 

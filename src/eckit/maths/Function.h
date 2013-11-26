@@ -30,7 +30,7 @@ public: // types
 
     typedef std::string key_t;
 
-    typedef boost::function< ValPtr ( const args_t& ) > func_t;
+    typedef boost::function< ExpPtr ( const args_t& ) > func_t;
     typedef std::map< key_t, func_t > dispatcher_t;
 
     typedef boost::function< ExpPtr ( const args_t& ) > builder_t;
@@ -56,7 +56,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual ValPtr evaluate( Scope& ctx );
+    virtual ExpPtr evaluate( Scope& ctx );
 
     virtual ExpPtr optimise();
 

@@ -47,7 +47,7 @@ private:
 
 protected: // methods
 
-    static ValPtr compute( const args_t& p );
+    static ExpPtr compute( const args_t& p );
 
 };
 

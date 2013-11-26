@@ -34,7 +34,7 @@ string Reduce::returnSignature() const
     return Undef::sig(); /// @todo review this -- it could be the signature iterated over the list
 }
 
-ValPtr Reduce::evaluate( Scope &ctx )
+ExpPtr Reduce::evaluate( Scope &ctx )
 {
     ExpPtr f = param(0, ctx);
 
@@ -43,7 +43,7 @@ ValPtr Reduce::evaluate( Scope &ctx )
     const size_t nlist = list.size();
 
     if(!nlist) // empty list
-        return ValPtr( new List() );
+        return ExpPtr( new List() );
 
     ExpPtr e = list[0]->evaluate(ctx);
 

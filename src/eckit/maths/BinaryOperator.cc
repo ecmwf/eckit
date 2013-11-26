@@ -46,30 +46,30 @@ ExpPtr mod( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryOperator< Mod >::make(l,
 struct Generic
 {
     template <class T>
-    static ValPtr apply( T op, const Scalar::value_t& a, const Scalar::value_t& b )
+    static ExpPtr apply( T op, const Scalar::value_t& a, const Scalar::value_t& b )
     {
-        return ValPtr( new Scalar( op( a , b ) ) );
+        return ExpPtr( new Scalar( op( a , b ) ) );
     }
 
     template <class T>
-    static ValPtr apply( T op, const Scalar::value_t& a, const Vector::value_t& v )
+    static ExpPtr apply( T op, const Scalar::value_t& a, const Vector::value_t& v )
     {
         Vector::value_t rv( v.size() );
 
         for( size_t i = 0; i < rv.size(); ++i )
             rv[i] = op( a , v[i] );
 
-        return ValPtr( new Vector(rv,Vector::Swap()) );
+        return ExpPtr( new Vector(rv,Vector::Swap()) );
     }
 
     template <class T>
-    static ValPtr apply( T op, const Vector::value_t& v, const Scalar::value_t& a )
+    static ExpPtr apply( T op, const Vector::value_t& v, const Scalar::value_t& a )
     {
         return apply(op,a,v);
     }
 
     template <class T>
-    static ValPtr apply( T op, const Vector::value_t& v1, const Vector::value_t& v2 )
+    static ExpPtr apply( T op, const Vector::value_t& v1, const Vector::value_t& v2 )
     {
         ASSERT( v1.size() == v2.size() );
 
@@ -78,7 +78,7 @@ struct Generic
         for( size_t i = 0; i < rv.size(); ++i )
             rv[i] = op( v1[i] , v2[i] );
 
-        return ValPtr( new Vector( rv, Vector::Swap() ));
+        return ExpPtr( new Vector( rv, Vector::Swap() ));
     }
 };
 
@@ -155,7 +155,7 @@ std::string BinaryOperator<T>::Computer<U,V,I>::sig()
 
 template < class T >
 template < class U, class V, class I >
-ValPtr BinaryOperator<T>::Computer<U,V,I>::compute(const args_t &p)
+ExpPtr BinaryOperator<T>::Computer<U,V,I>::compute(const args_t &p)
 {
     T op;
     typename U::value_t a = U::extract(p[0]);

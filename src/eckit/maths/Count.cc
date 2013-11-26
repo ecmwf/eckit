@@ -33,7 +33,7 @@ string Count::returnSignature() const
     return Scalar::sig();
 }
 
-ValPtr Count::evaluate( Scope &ctx )
+ExpPtr Count::evaluate( Scope &ctx )
 {
     return maths::scalar( param(0, ctx)->arity() )->as<Value>();
 }

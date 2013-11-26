@@ -45,7 +45,7 @@ ExpPtr paramdef(const string& name)
     return ExpPtr( new ParamDef(name) );
 }
 
-ValPtr ParamDef::evaluate( Scope &ctx )
+ExpPtr ParamDef::evaluate( Scope &ctx )
 {
     NOTIMP;
     //return boost::static_pointer_cast<Value>( shared_from_this() );

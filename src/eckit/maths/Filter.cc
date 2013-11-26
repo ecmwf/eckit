@@ -35,7 +35,7 @@ string Filter::returnSignature() const
     return List::sig();
 }
 
-ValPtr Filter::evaluate( Scope &ctx )
+ExpPtr Filter::evaluate( Scope &ctx )
 {
     ListPtr res ( new List() );
 

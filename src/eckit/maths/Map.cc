@@ -33,7 +33,7 @@ string Map::returnSignature() const
     return List::sig();
 }
 
-ValPtr Map::evaluate( Scope &ctx )
+ExpPtr Map::evaluate( Scope &ctx )
 {
     ExpPtr f = param(0, ctx);
 

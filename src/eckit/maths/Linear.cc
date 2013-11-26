@@ -67,7 +67,7 @@ Linear::Linear(ExpPtr e) : Function()
     }
 }
 
-ValPtr Linear::compute( const args_t& p )
+ExpPtr Linear::compute( const args_t& p )
 {
     scalar_t a = Scalar::extract( p[0] );
 
@@ -84,7 +84,7 @@ ValPtr Linear::compute( const args_t& p )
     for( size_t i = 0; i < rv.size(); ++i )
         rv[i] = a * v1[i] + b * v2[i];
 
-    return ValPtr( new Vector( rv, Vector::Swap() ));
+    return ExpPtr( new Vector( rv, Vector::Swap() ));
 }
 
 

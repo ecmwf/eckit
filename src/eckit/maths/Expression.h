@@ -83,7 +83,6 @@ class Scope;
 
 typedef double scalar_t;
 
-typedef boost::shared_ptr<Value>      ValPtr;
 typedef boost::shared_ptr<List>       ListPtr;
 typedef boost::shared_ptr<Expression> ExpPtr;
 
@@ -129,12 +128,12 @@ public: // methods
 
     friend std::ostream& operator<<( std::ostream& os, const Expression& v);
 
-    ValPtr eval();
-    ValPtr eval( ExpPtr );
-    ValPtr eval( ExpPtr, ExpPtr );
-    ValPtr eval( const args_t& );
-    ValPtr eval( Scope&, bool );
-    ValPtr eval( Scope&, const args_t& );
+    ExpPtr eval();
+    ExpPtr eval( ExpPtr );
+    ExpPtr eval( ExpPtr, ExpPtr );
+    ExpPtr eval( const args_t& );
+    ExpPtr eval( Scope&, bool );
+    ExpPtr eval( Scope&, const args_t& );
 
     size_t arity() const { return args_.size(); }
 
@@ -156,7 +155,7 @@ public: // virtual methods
     virtual std::string returnSignature() const = 0;
 
     virtual ExpPtr optimise() = 0;
-    virtual ValPtr evaluate( Scope& ) = 0;
+    virtual ExpPtr evaluate( Scope& ) = 0;
 
 protected: // members
 

@@ -61,7 +61,7 @@ void ProdAdd::asCode(ostream &o) const
     o << "(" << *param(0) << " * (" << *param(1) << " + " << *param(2) << "))";
 }
 
-ValPtr ProdAdd::compute_svv(const args_t &p)
+ExpPtr ProdAdd::compute_svv(const args_t &p)
 {
     ASSERT( p.size() == 3 );
 
@@ -76,10 +76,10 @@ ValPtr ProdAdd::compute_svv(const args_t &p)
     for( size_t i = 0; i < rv.size(); ++i )
         rv[i] = a * ( v1[i] + v2[i] );
 
-    return ValPtr( new Vector( rv, Vector::Swap() ));
+    return ExpPtr( new Vector( rv, Vector::Swap() ));
 }
 
-ValPtr ProdAdd::compute_vvv(const args_t &p)
+ExpPtr ProdAdd::compute_vvv(const args_t &p)
 {
     ASSERT( p.size() == 3 );
 
@@ -95,10 +95,10 @@ ValPtr ProdAdd::compute_vvv(const args_t &p)
     for( size_t i = 0; i < rv.size(); ++i )
         rv[i] = v0[i] * ( v1[i] + v2[i] );
 
-    return ValPtr( new Vector( rv, Vector::Swap() ) );
+    return ExpPtr( new Vector( rv, Vector::Swap() ) );
 }
 
-ValPtr ProdAdd::compute_ggg(const args_t &p)
+ExpPtr ProdAdd::compute_ggg(const args_t &p)
 {
     return prod(p[0],add(p[1],p[2]))->eval();
 }

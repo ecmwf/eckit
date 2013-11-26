@@ -41,7 +41,7 @@ void Undef::asCode(ostream &o) const
     o << "maths::undef()";
 }
 
-ValPtr Undef::evaluate( Scope &ctx )
+ExpPtr Undef::evaluate( Scope &ctx )
 {
     NOTIMP;
     //return boost::static_pointer_cast<Value>( shared_from_this() );

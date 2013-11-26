@@ -50,12 +50,12 @@ string Lambda::returnSignature() const
     return "()";
 }
 
-ValPtr Lambda::evaluate( Scope &ctx )
+ExpPtr Lambda::evaluate( Scope &ctx )
 {
     return boost::static_pointer_cast<Value>( shared_from_this() );
 }
 
-ValPtr Lambda::call( Scope &ctx )
+ExpPtr Lambda::call( Scope &ctx )
 {
 
     //std::cout << endl << "EVALUATE LAMBDA " << *this << endl << " WITH " << ctx << endl;

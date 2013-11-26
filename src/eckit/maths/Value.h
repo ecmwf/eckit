@@ -44,7 +44,7 @@ private:
 
     virtual ExpPtr optimise();
 
-    virtual ValPtr evaluate( Scope& );
+    virtual ExpPtr evaluate( Scope& );
 
 };
 

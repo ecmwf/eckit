@@ -47,7 +47,7 @@ private:
 
     virtual ExpPtr optimise() { return shared_from_this(); }
 
-    virtual ValPtr evaluate( Scope& ctx );
+    virtual ExpPtr evaluate( Scope& ctx );
 
     virtual ExpPtr clone();
 

@@ -89,7 +89,7 @@ string Expression::str() const
 }
 
 
-void Expression::printArgs(ostream &out) const
+void Expression::printArgs(std::ostream& out) const
 {
     size_t count = arity();
     for(size_t i = 0; i < count; ++i) {

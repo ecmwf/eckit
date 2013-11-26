@@ -38,6 +38,7 @@ public:
 
     ExpPtr nextArg();
     void pushArg(ExpPtr);
+    void insertArg(size_t i, ExpPtr e);
 
     ExpPtr param(const string&) const;
     void param(const string&, ExpPtr);

@@ -58,7 +58,7 @@ ExpPtr Function::evaluate( Scope &ctx )
     const size_t nargs = args.size();
     for( size_t i = 0; i < nargs; ++i )
     {
-        args[i] = param(i, ctx)->evaluate(ctx)->self();
+        args[i] = param(i, ctx)->eval(ctx)->self();
     }
 
     std::string sig = signatureArguments( args );

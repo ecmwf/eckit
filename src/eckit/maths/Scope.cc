@@ -73,6 +73,13 @@ void Scope::pushArg(ExpPtr e)
     args_.push_back(e);
 }
 
+
+void Scope::insertArg(size_t i, ExpPtr e)
+{
+    ASSERT(i <= args_.size());
+    args_.insert(args_.begin() + i, e);
+}
+
 ExpPtr Scope::param(const string& name) const
 {
     //cout << std::endl << "LOOKING FOR '" << name << "' in " << *this << std::endl;

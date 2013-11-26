@@ -36,26 +36,16 @@ Expression::~Expression()
 {
 }
 
-
 ExpPtr Expression::eval()
 {
     Scope ctx("Expression::eval()");
     return optimise()->evaluate(ctx);
 }
 
-ExpPtr Expression::eval( Scope& ctx, bool)
+ExpPtr Expression::eval(Scope& ctx)
 {
-    return optimise()->evaluate(ctx);
-}
-
-
-ExpPtr Expression::eval(Scope& scope, const args_t& args)
-{
-    Scope ctx("Expression::eval(Scope& scope, const args_t& args)", &scope);
-    for(args_t::const_iterator j = args.begin(); j != args.end(); ++j) {
-        ctx.pushArg(*j);
-    }
-    return optimise()->evaluate(ctx);
+    // FIXME: We assume that the code is already optimised. Needs reviewing
+    return /*optimise()->*/evaluate(ctx);
 }
 
 ExpPtr Expression::resolve(Scope & ctx)
@@ -81,29 +71,14 @@ ExpPtr Expression::param( size_t i) const
 {
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );
-    return args_[i];
+    return  args_[i];
 }
-
 
 ExpPtr Expression::param( size_t i, Scope& ctx ) const
 {
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );
-
-    //cout << "   PARAM " << i << " -> " << (*args_[i]) << std::endl;
-    //cout << "         " << ctx << std::endl;
-    ExpPtr r = args_[i]->resolve(ctx);
-    //cout << "          " << *r << std::endl;
-
-    return r;
-}
-
-void Expression::param(size_t i, ExpPtr p)
-{
-    ASSERT( i < args_.size() );
-    ASSERT( p );
-    if( p != args_[i] )
-        args_[i] = p;
+    return  args_[i]->resolve(ctx);
 }
 
 string Expression::str() const
@@ -114,7 +89,7 @@ string Expression::str() const
 }
 
 
-void Expression::printArgs(std::ostream&out) const
+void Expression::printArgs(ostream &out) const
 {
     size_t count = arity();
     for(size_t i = 0; i < count; ++i) {

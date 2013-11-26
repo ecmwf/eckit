@@ -84,7 +84,7 @@ ExpPtr Lambda::call( Scope &ctx )
 
     //std::cout << std::endl << "SCOPE OF LAMBDA IS " << scope << std::endl;
 
-    return body->eval(scope, true);
+    return body->eval(scope);
 }
 
 

@@ -54,12 +54,12 @@ ExpPtr Call::evaluate( Scope &ctx )
 
     Scope scope("Call::evaluate", &ctx);
     for(size_t i = 1; i < arity(); ++i) {
-        scope.pushArg(param(i, ctx)->eval(ctx, true));
+        scope.pushArg(param(i, ctx)->eval(ctx));
     }
 
     //cout << std::endl << "SCOPE OF CALL is " << scope << std::endl;
 
-    return f->eval(scope, true)->as<Lambda>()->call(scope);
+    return f->eval(scope)->as<Lambda>()->call(scope);
 }
 
 //--------------------------------------------------------------------------------------------

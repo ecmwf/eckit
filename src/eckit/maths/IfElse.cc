@@ -55,15 +55,15 @@ ExpPtr IfElse::evaluate( Scope &ctx )
     ExpPtr i = param(1, ctx);
     ExpPtr e = param(2, ctx);
 
-    ExpPtr v = f->evaluate(ctx);
+    ExpPtr v = f->eval(ctx);
 
     bool b = Boolean::extract( v );
 
     if(b) {
-        return i->eval(ctx, true);
+        return i->eval(ctx);
     }
     else {
-        return e->eval(ctx, true);
+        return e->eval(ctx);
     }
 
 

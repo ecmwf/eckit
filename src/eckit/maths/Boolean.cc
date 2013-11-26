@@ -9,7 +9,6 @@
  */
 
 #include "eckit/maths/Boolean.h"
-#include "eckit/maths/Scope.h"
 
 namespace eckit {
 namespace maths {
@@ -41,9 +40,8 @@ void Boolean::asCode(std::ostream&o) const
 
 Boolean::Boolean(const ExpPtr& e) : v_(0)
 {
-   ASSERT( e->returnSignature() == Boolean::sig() );
-   Scope dummy("Boolean::Boolean");
-   v_ = Boolean::extract( e->evaluate(dummy) );
+   //ASSERT( e->returnSignature() == Boolean::sig() );
+   v_ = Boolean::extract( e->eval() );
 }
 
 //--------------------------------------------------------------------------------------------

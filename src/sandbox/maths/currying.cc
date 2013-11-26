@@ -15,6 +15,7 @@
 #include "eckit/maths/Lambda.h"
 #include "eckit/maths/ParamDef.h"
 #include "eckit/maths/Call.h"
+#include "eckit/maths/Bind.h"
 
 #include "eckit/maths/Math.h"
 
@@ -65,6 +66,13 @@ void Currying::run()
         std::cout << Y << std::endl;
         std::cout << "-----------------------" << std::endl;
         std::cout << Y(2.3) << std::endl;
+    }
+
+    {
+        Math X = maths::lambda("i", "j", Math("i") + Math("j"));
+        Math B = maths::bind<2>(call(X), Math(3.9));
+        cout << B << endl;
+        cout << B(2.9) << endl;
     }
 
     Math m = maths::call(maths::lambda("i", maths::call(maths::lambda("j", (Math("i") + Math("j"))))), Math(1.0));

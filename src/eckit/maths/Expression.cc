@@ -48,17 +48,6 @@ ExpPtr Expression::eval(Scope& ctx)
     return /*optimise()->*/evaluate(ctx);
 }
 
-/*
-ExpPtr Expression::eval(Scope& scope, const args_t& args)
-{
-    Scope ctx("Expression::eval(Scope& scope, const args_t& args)", &scope);
-    for(args_t::const_iterator j = args.begin(); j != args.end(); ++j) {
-        ctx.pushArg(*j);
-    }
-    return optimise()->evaluate(ctx);
-}
-*/
-
 ExpPtr Expression::resolve(Scope & ctx)
 {
     return self();
@@ -82,18 +71,14 @@ ExpPtr Expression::param( size_t i) const
 {
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );
-    return args_[i];
+    return  args_[i];
 }
-
 
 ExpPtr Expression::param( size_t i, Scope& ctx ) const
 {
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );
-
-    ExpPtr r = args_[i]->resolve(ctx);
-
-    return r;
+    return  args_[i]->resolve(ctx);
 }
 
 string Expression::str() const

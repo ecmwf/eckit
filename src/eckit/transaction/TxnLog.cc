@@ -245,7 +245,7 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 		PathName::match(path,dates);
 
 		// Sort by date in reverse order
-		std::sort(dates.begin(),dates.end(),greater<PathName>());
+        std::sort(dates.begin(),dates.end(),std::greater<PathName>());
 
 
 		for(Ordinal k = 0 ; k < dates.size() ; k++)
@@ -256,7 +256,7 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 				T *task = 0;
                 while( (task = Reanimator<T>::reanimate(log)) )
 				{
-					if(!r.found(*(auto_ptr<T>(task))))
+                    if(!r.found(*(std::auto_ptr<T>(task))))
 						return;
 				}
 			}

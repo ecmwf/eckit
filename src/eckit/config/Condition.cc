@@ -92,7 +92,7 @@ void Condition::parseSentence(Compiler& c)
     
     string variable = c.parseIdentifier();
     c.consume('=');
-    sentences_.push_back( make_pair( variable, c.parseCondition() ));
+    sentences_.push_back( std::make_pair( variable, c.parseCondition() ));
 }
 
 //-----------------------------------------------------------------------------

@@ -94,7 +94,7 @@ protected:
 
 // -- Members
 
-	list<Request*>    queue_;
+    std::list<Request*>    queue_;
 	Resource<long>    maxTasks_;
 	long              count_;
 	long              next_;

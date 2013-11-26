@@ -20,9 +20,7 @@ namespace eckit {
 // Version 2: warning all numbers must be signed but positive...
 
 template<class T>
-class dummy_iterator:
-	public iterator<output_iterator_tag,T>
-	
+class dummy_iterator: public std::iterator<std::output_iterator_tag,T>
 {
 public:
 	dummy_iterator() { }
@@ -52,7 +50,7 @@ long long RLEencode2(T first,T last,U output,long long maxLoop)
 
 	long long size2 = (size + 2) / 2;
 
-	long long enough = min(size2,maxLoop);
+    long long enough = std::min(size2,maxLoop);
 
 	for (long long n = 1; n < size2; n++)
 	{
@@ -246,7 +244,7 @@ Stream& RLEwrite(Stream& s,InputIterator first,InputIterator last,
 	vector<T> tmp; tmp.reserve(last-first);
 	RLEencode2(first,last,back_inserter(tmp),maxLoop);
 	s << tmp;
-	cout << "RLEwrite : " << last-first << " -> " << tmp.size() << std::endl;
+    std::cout << "RLEwrite : " << last-first << " -> " << tmp.size() << std::endl;
 	return s;
 }
 

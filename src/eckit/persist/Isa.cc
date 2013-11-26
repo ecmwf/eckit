@@ -21,7 +21,7 @@ static map<string,Isa*> *map_ = 0;
 void Isa::add(TypeInfo* t,const string& s)
 {
 	Isa* i = new Isa(t,get(s));
-//	cout << "add isa " << s << " for " << t << std::endl;
+//	std::cout << "add isa " << s << " for " << t << std::endl;
 	(*map_)[s] = i;
 }
 

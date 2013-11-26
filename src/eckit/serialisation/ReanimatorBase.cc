@@ -34,7 +34,7 @@ ReanimatorBase::ReanimatorBase(const ClassSpec& spec):
 	spec_(spec)
 {
 	theMap()[string(spec_.name_)] = this;
-//	cout << "ReanimatorBase::ReanimatorBase " << spec_.name_ << std::endl;
+//	std::cout << "ReanimatorBase::ReanimatorBase " << spec_.name_ << std::endl;
 }
 
 ReanimatorBase::~ReanimatorBase()

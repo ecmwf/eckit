@@ -171,7 +171,7 @@ bool Cache<K,V>::insert(const K& k, const V& v)
         e.reset(v);
     }
     else
-        storage_.insert( make_pair(k,Entry(v)) );
+        storage_.insert( std::make_pair(k,Entry(v)) );
     
     return true;
 }
@@ -188,7 +188,7 @@ bool Cache<K,V>::update(const K& k, const V& v)
     }
     else
     {
-        storage_.insert( make_pair(k,Entry(v)) );
+        storage_.insert( std::make_pair(k,Entry(v)) );
         return false;
     }
 }

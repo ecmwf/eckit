@@ -149,7 +149,7 @@ MemBlk* MemBlk::find(size_t size)
 		}
 	}
 
-//	cout << "Allocating a " << size << " block" << std::endl;
+//	std::cout << "Allocating a " << size << " block" << std::endl;
 
 	newCount_++;
 
@@ -215,7 +215,7 @@ void MemoryPool::largeDeallocate(void* addr)
 		abort();
 	}
 
-//	cout << "Releasing " << m->size_ << std::endl;
+//	std::cout << "Releasing " << m->size_ << std::endl;
 	m->inUse(false);
 
 	release_lock();

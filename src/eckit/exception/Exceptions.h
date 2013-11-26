@@ -14,6 +14,7 @@
 #include <errno.h>
 
 #include "eckit/eckit.h"
+#include "eckit/eckit_version.h"
 
 #include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"

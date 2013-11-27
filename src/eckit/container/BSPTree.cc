@@ -38,7 +38,7 @@ BSPNode<Point,Alloc>::BSPNode(const vector<Point>& p):
 template<class Point, class Alloc>
 BSPNodeInfo<Point,Alloc> BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p)
 {
-    double max = numeric_limits<double>::max();
+    double max = std::numeric_limits<double>::max();
     BSPNode* best = 0;
     nearestNeighbour(a, p, best, max, 0);
     return NodeInfo(best, max);
@@ -79,7 +79,7 @@ void BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& b
 template<class Point, class Alloc>
 BSPNodeInfo<Point,Alloc> BSPNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p)
 {
-    double max = numeric_limits<double>::max();
+    double max = std::numeric_limits<double>::max();
     BSPNode* best = 0;
     nearestNeighbourBruteForce(a, p, best, max, 0);
     return NodeInfo(best, max);

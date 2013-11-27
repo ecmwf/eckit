@@ -96,7 +96,7 @@ public:
     }
 
     double largest() const {
-        return queue_.size() ? queue_.top().distance_ : numeric_limits<double>::max();
+        return queue_.size() ? queue_.top().distance_ : std::numeric_limits<double>::max();
     }
 
     void fill(NodeList& v) {

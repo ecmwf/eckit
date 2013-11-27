@@ -31,6 +31,9 @@ public: // methods
 
     Merge( ExpPtr l0, ExpPtr l1 );
 
+    struct Register { Register(); };
+
+
 private:
     virtual std::string typeName() const { return Merge::className(); }
 
@@ -45,6 +48,9 @@ private:
     // Support for count()
     virtual bool countable() const;
     virtual size_t count() const;
+
+protected:
+    static ExpPtr compute( const args_t& p );
 
 
 };

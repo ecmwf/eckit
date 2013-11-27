@@ -38,11 +38,12 @@ Function::dispatcher_t& Function::dispatcher()
     return d;
 }
 
+/*
 Function::factory_t& Function::factory()
 {
     static factory_t f;
     return f;
-}
+}*/
 
 string Function::signature() const
 {

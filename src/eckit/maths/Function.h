@@ -34,7 +34,7 @@ public: // types
     typedef std::map< key_t, func_t > dispatcher_t;
 
     typedef boost::function< ExpPtr ( const args_t& ) > builder_t;
-    typedef std::map< key_t, builder_t > factory_t;
+    //typedef std::map< key_t, builder_t > factory_t;
 
 protected: // methods
 
@@ -50,7 +50,7 @@ public: // methods
     virtual ~Function();
 
     static dispatcher_t& dispatcher();
-    static factory_t& factory();
+    //static factory_t& factory();
 
     static std::string className() { return "Function"; }
 

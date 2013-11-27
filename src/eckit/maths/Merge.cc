@@ -81,6 +81,19 @@ ExpPtr merge(ExpPtr l0, ExpPtr l1 )
     return ExpPtr( new Merge(l0,l1) );
 }
 
+ExpPtr Merge::compute( const args_t& p )
+{
+    return ExpPtr( new Merge( p[0], p[1]));
+}
+
+Merge::Register::Register()
+{
+    Function::dispatcher()[ "Add(l,l)" ] = &compute;
+}
+
+
+static Merge::Register mMerge_register;
+
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths

@@ -65,7 +65,7 @@ void Quicksort::run()
     Math twice  = call(lambda("a", Math(2.0) * Math("a")));
     Math neg    = call(lambda("a", Math(0.0) - Math("a")));
 
-    Math X = maths::merge(l, l);
+    Math X = l + l;
 
     X = X();
 

@@ -23,6 +23,7 @@
 #include "eckit/maths/List.h"
 #include "eckit/maths/BinaryOperator.h"
 #include "eckit/maths/Count.h"
+#include "eckit/maths/Merge.h"
 
 using namespace std;
 
@@ -34,13 +35,13 @@ using namespace eckit::maths;
 
 //-----------------------------------------------------------------------------
 
-class Optimise : public Tool {
+class Quicksort : public Tool {
 public:
 
-    Optimise(int argc,char **argv): Tool(argc,argv) {
+    Quicksort(int argc,char **argv): Tool(argc,argv) {
     }
 
-    ~Optimise() {
+    ~Quicksort() {
     }
 
     virtual void run();
@@ -48,17 +49,17 @@ public:
 
 //-----------------------------------------------------------------------------
 
-void Optimise::run()
+void Quicksort::run()
 {
 
     setformat(cout,maths::CodeFormat);
 
     Math a = maths::scalar( 2. );
     Math b = maths::scalar( 4. );
-    Math x = maths::vector( 10, 5. );
-    Math y = maths::vector( 10, 7. );
+    Math x = maths::vector( 3, 5. );
+    Math y = maths::vector( 3, 7. );
 
-    if(true)
+    if(false)
     {
         std::cout << std::endl << "************************" << std::endl;
         Math X = maths::list( maths::add(a,b), maths::add(x,y));
@@ -68,7 +69,7 @@ void Optimise::run()
         std::cout << "-----------------------" << std::endl;
     }
 
-    if(true)
+    if(false)
     {
         std::cout << std::endl << "************************" << std::endl;
         Math e = a+b;
@@ -83,7 +84,11 @@ void Optimise::run()
     if(true)
     {
         std::cout << std::endl << "************************" << std::endl;
-        Math e = maths::count(maths::list(a,a,a,a,a,a,a));
+        Math e = maths::count(
+                    maths::merge(
+                        maths::list(a,a,a,a,a,a,a),
+                               maths::list(b,b,b))
+                                 );
         Math X = maths::add( maths::prod(e,x), maths::prod(b,y));
 
         std::cout << "-----------------------" << std::endl;
@@ -97,7 +102,7 @@ void Optimise::run()
 
 int main(int argc,char **argv)
 {
-    Optimise app(argc,argv);
+    Quicksort app(argc,argv);
     app.start();
     return 0;
 }

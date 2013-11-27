@@ -8,34 +8,31 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Count.h
+/// @file Merge.h
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Count_h
-#define eckit_maths_Count_h
+#ifndef eckit_maths_Merge_h
+#define eckit_maths_Merge_h
 
 #include "eckit/maths/Function.h"
-#include "eckit/maths/Undef.h"
-
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-/// Generates a Count combination of vectors
-class Count : public Function {
+/// Generates a Merge combination of vectors
+class Merge : public Function {
 
 public: // methods
 
-    static std::string className() { return "Count"; }
+    static std::string className() { return "Merge"; }
 
-    Count( ExpPtr e = undef() );
+    Merge( ExpPtr l0, ExpPtr l1 );
 
 private:
-
-    virtual std::string typeName() const { return Count::className(); }
+    virtual std::string typeName() const { return Merge::className(); }
 
     virtual std::string returnSignature() const;
 
@@ -45,13 +42,16 @@ private:
 
     virtual ExpPtr cloneWith(args_t &a) const;
 
-    virtual ExpPtr optimise(size_t depth) const;
+    // Support for count()
+    virtual bool countable() const;
+    virtual size_t count() const;
+
 
 };
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr count( ExpPtr e );
+ExpPtr merge( ExpPtr l0, ExpPtr l1 );
 
 //--------------------------------------------------------------------------------------------
 

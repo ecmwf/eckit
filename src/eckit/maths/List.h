@@ -62,6 +62,11 @@ private: // virtual methods
 
     virtual ExpPtr cloneWith(args_t &a) const;
 
+    // Support for count()
+    virtual bool countable() const { return true; }
+    virtual size_t count() const { return args_.size(); }
+
+
 };
 
 //--------------------------------------------------------------------------------------------

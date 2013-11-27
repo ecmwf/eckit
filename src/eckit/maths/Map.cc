@@ -57,6 +57,18 @@ void Map::asCode(std::ostream&o) const
 ExpPtr Map::cloneWith(args_t &a) const {
     NOTIMP; // Should not be called
 }
+
+// Support for count()
+bool Map::countable() const
+{
+    return args_[1]->countable();
+}
+
+size_t Map::count() const
+{
+    return args_[1]->count();
+}
+
 //--------------------------------------------------------------------------------------------
 
 ExpPtr map( ExpPtr f,  ExpPtr list )

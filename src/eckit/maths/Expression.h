@@ -155,6 +155,11 @@ public: // virtual methods
 
     ExpPtr optimise(bool doit, size_t depth = 0) const;
 
+    // Support for count()
+    virtual bool countable() const { return false; }
+    virtual size_t count() const { return 0; }
+    virtual ExpPtr optimise(size_t) const;
+
 protected: // members
 
 
@@ -168,7 +173,6 @@ private:
 
     virtual ExpPtr evaluate( Scope& ) const = 0;
     virtual void print( std::ostream& ) const = 0;
-    virtual ExpPtr optimise(size_t) const;
 
 
     virtual ExpPtr cloneWith(args_t&) const = 0;

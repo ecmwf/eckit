@@ -21,6 +21,8 @@ Count.cc
 Count.h
 Map.cc
 Map.h
+Merge.cc
+Merge.h
 IfElse.cc
 IfElse.h
 Lambda.cc

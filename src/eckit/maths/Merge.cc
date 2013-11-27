@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/ZipWith.h"
+#include "eckit/maths/Merge.h"
 #include "eckit/maths/List.h"
 
 //#include <algorithm>
@@ -18,69 +18,67 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-ZipWith::ZipWith( ExpPtr f, ExpPtr list0, ExpPtr list1 ) : Function()
+Merge::Merge( ExpPtr list0, ExpPtr list1 ) : Function()
 {
-    args_.push_back(f);
     args_.push_back(list0);
     args_.push_back(list1);
 }
 
-string ZipWith::returnSignature() const
+string Merge::returnSignature() const
 {
     return List::sig();
 }
 
-ExpPtr ZipWith::evaluate( Scope &ctx ) const
+ExpPtr Merge::evaluate( Scope &ctx ) const
 {
     ExpPtr f = param(0, ctx);
 
-    const List::value_t& l0 = List::extract( param(1, ctx) );
-    const List::value_t& l1 = List::extract( param(2, ctx) );
-
-    const size_t nlist = std::min(l0.size(), l1.size());
+    const List::value_t& l0 = List::extract( param(0, ctx) );
+    const List::value_t& l1 = List::extract( param(1, ctx) );
 
     List::value_t res;
-    res.reserve(nlist);
+    res.reserve(l0.size() + l1.size());
 
-
-    for( size_t i = 0; i < nlist; ++i )
+    for( size_t i = 0; i < l0.size(); ++i )
     {
-        ExpPtr e0 = l0[i]->eval(ctx);
-        ExpPtr e1 = l1[i]->eval(ctx);
-
-        ExpPtr v = f->eval( e0, e1 );
-
-        res.push_back( v );
+        ExpPtr e = l0[i];
+        res.push_back( e );
     }
 
-     return ExpPtr(new List( res, List::Swap()));
+    for( size_t i = 0; i < l1.size(); ++i )
+    {
+        ExpPtr e = l1[i];
+        res.push_back( e );
+    }
+
+    return ExpPtr(new List( res, List::Swap()));
 }
 
-void ZipWith::asCode(std::ostream&o) const
+void Merge::asCode(std::ostream&o) const
 {
-    o << "maths::zipWith("; printArgs(o); o <<")";
+    o << "maths::merge("; printArgs(o); o <<")";
 }
 
-ExpPtr ZipWith::cloneWith(args_t &a) const {
+ExpPtr Merge::cloneWith(args_t &a) const {
     NOTIMP; // Should not be called
 }
 
 // Support for count()
-bool ZipWith::countable() const
+bool Merge::countable() const
 {
-    return args_[1]->countable() && args_[2]->countable();
+    return args_[0]->countable() && args_[1]->countable();
 }
 
-size_t ZipWith::count() const
+size_t Merge::count() const
 {
-    return std::min( args_[1]->count(),  args_[2]->count());
+    return args_[0]->count() + args_[1]->count();
 }
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr zipWith( ExpPtr f, ExpPtr l0, ExpPtr l1 )
+ExpPtr merge(ExpPtr l0, ExpPtr l1 )
 {
-    return ExpPtr( new ZipWith(f,l0,l1) );
+    return ExpPtr( new Merge(l0,l1) );
 }
 
 //--------------------------------------------------------------------------------------------

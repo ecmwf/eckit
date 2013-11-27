@@ -21,6 +21,18 @@ Count::Count(ExpPtr e) : Function()
     args_.push_back(e);
 }
 
+ExpPtr Count::optimise(size_t depth) const
+{
+    ExpPtr o = Function::optimise(depth);
+    if(o.get() != this) {
+        return o->optimise(depth+1);
+    }
+    if(args_[0]->countable()) {
+        return ExpPtr(new Scalar(args_[0]->count()));
+    }
+    return self();
+}
+
 string Count::returnSignature() const
 {
     return Scalar::sig();

@@ -82,14 +82,14 @@ ExpPtr Expression::optimise(bool doit, size_t depth) const
             return o->optimise(true, depth + 1);
         }
 
-        const Expression* p = this;
+        ExpPtr p = self();
         for(size_t k = 0; k < depth; ++k) std::cout << "   ";
         std::cout << "Optimise : " << *this << std::endl;
         for(;;)
         {
-            ExpPtr o = optimise(depth + 1);
+            ExpPtr o = p->optimise(depth + 1);
             for(size_t k = 0; k < depth; ++k) std::cout << "   ";
-            if( o.get() == p ) {
+            if( o == p ) {
                 for(size_t k = 0; k < depth; ++k) std::cout << "   ";
                 std::cout << "-" << std::endl;
                 return o;
@@ -97,10 +97,9 @@ ExpPtr Expression::optimise(bool doit, size_t depth) const
             else {
                 for(size_t k = 0; k < depth; ++k) std::cout << "   ";
                 std::cout << " ==> " << *o << std::endl;
-                p = o.get();
+                p = o;
             }
         }
-
     }
     return self();
 }

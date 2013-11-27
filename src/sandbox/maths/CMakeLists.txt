@@ -21,3 +21,11 @@ ecbuild_add_executable(
 	INCLUDES    ${Boost_INCLUDE_DIRS}
 	LIBS        eckit_maths eckit
 	)
+
+ecbuild_add_executable(   
+	TARGET      quicksort
+	SOURCES     quicksort.cc 
+	CONDITION ECKIT_MATHS AND Boost_FOUND
+	INCLUDES    ${Boost_INCLUDE_DIRS}
+	LIBS        eckit_maths eckit
+	)

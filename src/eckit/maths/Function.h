@@ -58,7 +58,7 @@ public: // virtual methods
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual ExpPtr optimise();
+    virtual ExpPtr optimise() const;
 
     virtual ExpPtr clone() const;
 

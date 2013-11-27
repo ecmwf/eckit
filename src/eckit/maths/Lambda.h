@@ -35,7 +35,7 @@ public: // methods
     Lambda( const string& a, ExpPtr body);
     Lambda( const string& a, const string& b, ExpPtr body);
 
-    ExpPtr call( Scope& ctx );
+    ExpPtr call( Scope& ctx ) const;
 
 private:
 
@@ -43,7 +43,7 @@ private:
 
     virtual std::string returnSignature() const;
 
-    virtual ExpPtr evaluate( Scope& ctx );
+    virtual ExpPtr evaluate( Scope& ctx ) const;
 
 
     virtual void asCode( std::ostream& ) const;

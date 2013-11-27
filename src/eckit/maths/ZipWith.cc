@@ -33,7 +33,7 @@ string ZipWith::returnSignature() const
     return List::sig();
 }
 
-ExpPtr ZipWith::evaluate( Scope &ctx )
+ExpPtr ZipWith::evaluate( Scope &ctx ) const
 {
     ExpPtr f = param(0, ctx);
 

@@ -35,7 +35,7 @@ string Filter::returnSignature() const
     return List::sig();
 }
 
-ExpPtr Filter::evaluate( Scope &ctx )
+ExpPtr Filter::evaluate( Scope &ctx ) const
 {
     ExpPtr f = param(0, ctx);
 

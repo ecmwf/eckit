@@ -77,20 +77,22 @@ ExpPtr Function::evaluate( Scope &ctx ) const
     return ((*itr).second)( args );
 }
 
-ExpPtr Function::optimise()
+ExpPtr Function::optimise() const
 {
     DBGX( *this );
     DBGX( signature() );
 
     // optimise first children
 
+    // FIXME: this mus be const....
+    // FIXME: this should go to Expression, as the List elements are not optimized
     for( size_t i = 0; i < args_.size(); ++i )
     {
-        args_[i] = args_[i]->optimise()->self();
+        const_cast<Function*>(this)->args_[i] = args_[i]->optimise()->self();
     }
 
     // now try to optimise self
-    return Optimiser::apply( shared_from_this() );
+    return Optimiser::apply( self() );
 }
 
 ExpPtr Function::clone() const

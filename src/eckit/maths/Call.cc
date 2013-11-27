@@ -48,7 +48,7 @@ string Call::returnSignature() const
     return ";";
 }
 
-ExpPtr Call::evaluate( Scope &ctx )
+ExpPtr Call::evaluate( Scope &ctx ) const
 {
     ExpPtr f = param(0, ctx);
 
@@ -57,7 +57,7 @@ ExpPtr Call::evaluate( Scope &ctx )
         scope.pushArg(param(i, ctx)->eval(ctx));
     }
 
-    //cout << std::endl << "SCOPE OF CALL is " << scope << std::endl;
+    //std::cout << std::endl << "SCOPE OF CALL is " << scope << std::endl;
 
     return f->eval(scope)->as<Lambda>()->call(scope);
 }

@@ -38,7 +38,6 @@ public: //  methods
     virtual ~Undef();
 
 private:
-    virtual ExpPtr optimise() { return shared_from_this(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 

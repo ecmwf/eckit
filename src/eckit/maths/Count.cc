@@ -33,14 +33,14 @@ string Count::returnSignature() const
     return Scalar::sig();
 }
 
-ExpPtr Count::evaluate( Scope &ctx )
+ExpPtr Count::evaluate( Scope &ctx ) const
 {
     return maths::scalar( param(0, ctx)->arity() )->as<Value>();
 }
 
-ExpPtr Count::optimise()
+ExpPtr Count::optimise() const
 {
-    return shared_from_this();
+    return self();
 
     /// @todo write a correct optimiser for Count ...
 

@@ -47,7 +47,7 @@ string IfElse::returnSignature() const
     }
 }
 
-ExpPtr IfElse::evaluate( Scope &ctx )
+ExpPtr IfElse::evaluate( Scope &ctx ) const
 {
     //std::cout << "evalute " << *this << " with " << ctx << std::endl;
 

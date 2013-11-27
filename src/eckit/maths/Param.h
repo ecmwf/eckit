@@ -28,8 +28,6 @@ class Param : public Expression {
 
     string name_;
 
-    //virtual ExpPtr resolve(Scope & ctx);
-
 
 public: //  methods
 

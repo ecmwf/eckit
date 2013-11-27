@@ -52,7 +52,7 @@ string Bind::returnSignature() const
     return args_[0]->returnSignature();
 }
 
-ExpPtr Bind::evaluate( Scope &ctx )
+ExpPtr Bind::evaluate( Scope &ctx ) const
 {    
     ExpPtr ix = param(0, ctx);
 

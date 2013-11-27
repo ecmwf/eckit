@@ -34,7 +34,7 @@ std::string Take::returnSignature() const
     return Undef::sig();
 }
 
-ExpPtr Take::evaluate( Scope &ctx )
+ExpPtr Take::evaluate( Scope &ctx ) const
 {
     ExpPtr idx  = param(0, ctx)->eval(ctx);
     ExpPtr list = param(1, ctx)->eval(ctx);
@@ -45,11 +45,6 @@ ExpPtr Take::evaluate( Scope &ctx )
         throw UserError("Take supplied index larger than size of list" );
 
     return list->param(i);
-}
-
-ExpPtr Take::optimise()
-{
-    return shared_from_this();
 }
 
 

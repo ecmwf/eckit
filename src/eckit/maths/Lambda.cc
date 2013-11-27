@@ -44,18 +44,17 @@ Lambda::Lambda( const string &a, ExpPtr body ) : Function()
 }
 
 
-
 string Lambda::returnSignature() const
 {
     return "()";
 }
 
-ExpPtr Lambda::evaluate( Scope &ctx )
+ExpPtr Lambda::evaluate( Scope &ctx ) const
 {
-    return boost::static_pointer_cast<Value>( shared_from_this() );
+    return self();
 }
 
-ExpPtr Lambda::call( Scope &ctx )
+ExpPtr Lambda::call( Scope &ctx ) const
 {
 
     //std::cout << std::endl << "EVALUATE LAMBDA " << *this << std::endl << " WITH " << ctx << std::endl;
@@ -72,13 +71,13 @@ ExpPtr Lambda::call( Scope &ctx )
     for(size_t i = 0; i < last; ++i) {
 
         ExpPtr a = param(i);
-        //cout << "LAMBDA ARG " << i << " IS " << *a << std::endl;
+        //std::cout << "LAMBDA ARG " << i << " IS " << *a << std::endl;
         ASSERT(ParamDef::is(a));
         const string& name = a->as<ParamDef>()->name();
-        //cout << "LAMBDA NAME " << i << " IS " << name << std::endl;
+        //std::cout << "LAMBDA NAME " << i << " IS " << name << std::endl;
 
         ExpPtr b = param(i, ctx);
-        //cout << "LAMBDA " << name << " IS " << *b << std::endl;
+        //std::cout << "LAMBDA " << name << " IS " << *b << std::endl;
         scope.param(name, b);
     }
 

@@ -26,14 +26,14 @@ namespace maths {
 
 class ParamDef : public Expression {
 
-    virtual ExpPtr resolve(Scope & ctx);
+    virtual ExpPtr resolve(Scope & ctx) const;
 
     string name_;
 
 public: //  methods
 
     static std::string className() { return "ParamDef"; }
-    static std::string sig() { return ":"; }
+    static std::string sig()       { return "?"; }
 
     static bool is ( const ExpPtr& e );
 
@@ -45,11 +45,10 @@ public: //  methods
 
 private:
 
-    virtual ExpPtr optimise() { return shared_from_this(); }
 
-    virtual ExpPtr evaluate( Scope& ctx );
+    virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual ExpPtr clone();
+    virtual ExpPtr clone() const;
 
     virtual std::string typeName() const { return ParamDef::className(); }
     virtual std::string signature() const { return ParamDef::sig(); }

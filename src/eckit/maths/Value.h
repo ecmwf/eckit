@@ -42,9 +42,7 @@ public: // methods
 
 private:
 
-    virtual ExpPtr optimise();
-
-    virtual ExpPtr evaluate( Scope& );
+    virtual ExpPtr evaluate( Scope& ) const;
 
 };
 

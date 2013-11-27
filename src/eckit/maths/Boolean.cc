@@ -19,7 +19,7 @@ Boolean::Boolean( const Boolean::value_t& v ) : v_(v)
 {
 }
 
-ExpPtr Boolean::clone()
+ExpPtr Boolean::clone() const
 {
     return maths::boolean( value() );
 }

@@ -38,7 +38,7 @@ ExpPtr Reduce::evaluate( Scope &ctx )
 {
     ExpPtr f = param(0, ctx);
 
-    List::value_t& list = List::extract( param(1, ctx) );
+    const List::value_t& list = List::extract( param(1, ctx) );
 
     const size_t nlist = list.size();
 

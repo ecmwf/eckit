@@ -34,7 +34,7 @@ bool Vector::is(const ExpPtr &e) {
     return dynamic_cast<Vector*>(e.get()) != 0;
 }
 
-ExpPtr Vector::clone()
+ExpPtr Vector::clone() const
 {
     return maths::vector( value() );
 }

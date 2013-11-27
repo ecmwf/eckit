@@ -25,12 +25,12 @@ ParamDef::~ParamDef()
 {
 }
 
-ExpPtr ParamDef::resolve(Scope & ctx)
+ExpPtr ParamDef::resolve(Scope & ctx) const
 {
     return ctx.nextArg();
 }
 
-ExpPtr ParamDef::clone()
+ExpPtr ParamDef::clone() const
 {
     return paramdef(name_);
 }
@@ -45,10 +45,9 @@ ExpPtr paramdef(const string& name)
     return ExpPtr( new ParamDef(name) );
 }
 
-ExpPtr ParamDef::evaluate( Scope &ctx )
+ExpPtr ParamDef::evaluate( Scope &ctx ) const
 {
     NOTIMP;
-    //return boost::static_pointer_cast<Value>( shared_from_this() );
 }
 
 void ParamDef::asCode(ostream &o) const

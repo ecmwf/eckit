@@ -25,7 +25,7 @@ Param::~Param()
 {
 }
 
-ExpPtr Param::clone()
+ExpPtr Param::clone() const
 {
     return parameter(name_);
 }
@@ -40,7 +40,7 @@ ExpPtr parameter(const string& name)
     return ExpPtr( new Param(name) );
 }
 
-ExpPtr Param::evaluate( Scope &ctx )
+ExpPtr Param::evaluate( Scope &ctx ) const
 {
     ExpPtr e = ctx.param(name_);
     return e->eval();

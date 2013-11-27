@@ -33,20 +33,18 @@ class Param : public Expression {
 
 public: //  methods
 
-    static std::string className() { return "Param"; }
-    static std::string sig() { return "_"; }
-    static bool is ( const ExpPtr& e ) { return e->signature() == Param::sig(); }
+    static std::string className()     { return "Param"; }
+    static std::string sig()           { return "?";     }
 
     Param(const string& name);
 
     virtual ~Param();
 
 private:
-    virtual ExpPtr optimise() { return shared_from_this(); }
 
-    virtual ExpPtr evaluate( Scope& ctx );
+    virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual ExpPtr clone();
+    virtual ExpPtr clone() const;
 
     virtual std::string typeName() const { return Param::className(); }
     virtual std::string signature() const { return Param::sig(); }

@@ -28,6 +28,8 @@ public: // types
 
     typedef args_t value_t;
 
+    struct Swap {};
+
 public: // methods
 
     static std::string className() { return "List"; }
@@ -36,36 +38,19 @@ public: // methods
 
     static bool is ( const ExpPtr& e );
 
-    static value_t& extract ( const ExpPtr& e )
+    static const value_t& extract ( const ExpPtr& e )
     {
-        assert( List::is(e) );
-        return e->as<List>()->ref_value();
+        return e->as<List>()->value();
     }
 
     List();
     List( ExpPtr e );
-    List( const ListPtr& l );
     List( const value_t& v );
+    List( value_t& v, Swap );
 
     /// @returns the size of the internal vector
-    value_t value() const { return args_; }
-    /// @returns a reference to the internal vector
-    value_t& ref_value() { return args_; }
+    const value_t& value() const { return args_; }
 
-    /// Append a list to
-    ListPtr append( const List& l );
-
-    /// Append an element to the list
-    ListPtr append( ExpPtr e );
-
-    /// Append multiple elements to the list
-    template <class Arg1, class ...ArgN>
-    ListPtr append(const Arg1& a1, const ArgN& ...an)
-    {
-        append(a1);
-        append(an...);
-        return as<List>();
-    }
 
 private: // virtual methods
 
@@ -73,27 +58,39 @@ private: // virtual methods
     virtual std::string signature() const { return List::sig(); }
     virtual std::string returnSignature() const { return List::sig(); }
 
-    virtual ExpPtr clone();
+    virtual ExpPtr clone() const;
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;
 
 };
 
-typedef boost::shared_ptr< List > ListPtr;
-
 //--------------------------------------------------------------------------------------------
 
-ListPtr list();
-ListPtr list( const List::value_t& v  );
-ListPtr list( ExpPtr e );
-ListPtr list( ExpPtr v0, ExpPtr v1 );
+ExpPtr list();
+ExpPtr list( const List::value_t& v  );
 
-template <class Arg1, class ...ArgN>
-ListPtr list(const Arg1& a1, const ArgN& ...an)
+
+static void build_list(List::value_t& l)
 {
-    return maths::list()->append(a1,an...);
+    // End of recursion
 }
+
+template <typename T, typename ...A>
+static void build_list(List::value_t& l, T head, A... tail) {
+    l.push_back(head);
+    build_list(l, tail...);
+}
+
+template <class ...A>
+ExpPtr list(A... args)
+{
+    List::value_t l;
+    l.reserve(sizeof...(args));
+    build_list(l, args...);
+    return ExpPtr(new List(l, List::Swap()));
+}
+
 
 //--------------------------------------------------------------------------------------------
 

@@ -23,7 +23,7 @@ bool Scalar::is(const ExpPtr &e) {
     return dynamic_cast<Scalar*>(e.get()) != 0;
 }
 
-ExpPtr Scalar::clone()
+ExpPtr Scalar::clone() const
 {
     return maths::scalar( value() );
 }

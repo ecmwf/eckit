@@ -202,7 +202,7 @@ void TestExp::test_list()
     ASSERT( l0->eval()->str() == "List(Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5))" );
     ASSERT( l0->arity() == 2 );
 
-    ExpPtr l1 = maths::list()->append(a_, b_, x_, y_, x_, y_);
+    ExpPtr l1 = maths::list(a_, b_, x_, y_, x_, y_);
 
     ASSERT( l1->eval()->str() == "List(Scalar(2), Scalar(4), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5), Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7))" );
     ASSERT( l1->arity() == 6 );

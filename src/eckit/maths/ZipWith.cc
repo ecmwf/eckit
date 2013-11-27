@@ -37,14 +37,16 @@ ExpPtr ZipWith::evaluate( Scope &ctx )
 {
     ExpPtr f = param(0, ctx);
 
-    List::value_t& l0 = List::extract( param(1, ctx) );
-    List::value_t& l1 = List::extract( param(2, ctx) );
+    const List::value_t& l0 = List::extract( param(1, ctx) );
+    const List::value_t& l1 = List::extract( param(2, ctx) );
 
     ASSERT( l0.size() == l1.size() );
 
     const size_t nlist = l0.size();
 
-    ListPtr res ( new List() );
+    List::value_t res;
+    res.reserve(nlist);
+
 
     for( size_t i = 0; i < nlist; ++i )
     {
@@ -53,10 +55,10 @@ ExpPtr ZipWith::evaluate( Scope &ctx )
 
         ExpPtr v = f->eval( e0, e1 );
 
-        res->append( v );
+        res.push_back( v );
     }
 
-    return res;
+     return ExpPtr(new List( res, List::Swap()));
 }
 
 void ZipWith::asCode(ostream &o) const

@@ -56,11 +56,11 @@ public: // methods
 
 public: // virtual methods
 
-    virtual ExpPtr evaluate( Scope& ctx );
+    virtual ExpPtr evaluate( Scope& ctx ) const;
 
     virtual ExpPtr optimise();
 
-    virtual ExpPtr clone();
+    virtual ExpPtr clone() const;
 
     virtual std::string signature() const;
 

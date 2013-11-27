@@ -27,14 +27,9 @@ Value::~Value()
 {
 }
 
-ExpPtr Value::optimise()
+ExpPtr Value::evaluate( Scope &ctx ) const
 {
-    return shared_from_this();
-}
-
-ExpPtr Value::evaluate( Scope &ctx )
-{
-    return boost::static_pointer_cast<Value>( shared_from_this() );
+    return self();
 }
 
 

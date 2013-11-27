@@ -49,7 +49,7 @@ string Function::signature() const
     return signatureArguments( args_ );
 }
 
-ExpPtr Function::evaluate( Scope &ctx )
+ExpPtr Function::evaluate( Scope &ctx ) const
 {
     DBG;
 
@@ -93,7 +93,7 @@ ExpPtr Function::optimise()
     return Optimiser::apply( shared_from_this() );
 }
 
-ExpPtr Function::clone()
+ExpPtr Function::clone() const
 {
     key_t k = typeName();
     factory_t& f = factory();

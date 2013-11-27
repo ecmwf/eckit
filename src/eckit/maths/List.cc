@@ -27,12 +27,14 @@ List::List( ExpPtr e ) : Value()
     args_.push_back(e);
 }
 
-List::List( const ListPtr& l ) : Value( l->args_ )
+List::List( const value_t& v ) : Value(v)
 {
 }
 
-List::List( const value_t& v ) : Value(v)
+
+List::List(List::value_t &v, Swap ignored )
 {
+    std::swap(args_, v);
 }
 
 void List::asCode(ostream &o) const
@@ -45,37 +47,22 @@ bool List::is(const ExpPtr &e) {
 }
 
 
-ExpPtr List::clone()
+ExpPtr List::clone() const
 {
-    ListPtr l = maths::list();
+
+    const size_t nlist = args_.size();
+
+    List::value_t res;
+    res.reserve(nlist);
+
     for( size_t i = 0; i < args_.size(); ++i )
     {
-        l->append( args_[i]->clone() );
+        res.push_back(args_[i]->clone() );
     }
+
+    return ExpPtr(new List( res, List::Swap()));
 }
 
-ListPtr List::append(ExpPtr e)
-{
-    //FIXME: Not functional()
-
-    args_.push_back(e);
-    return this->as<List>();
-}
-
-ListPtr List::append(const List& l)
-{
-    //FIXME: Not functional()
-    const value_t& t = l.args_;
-    args_.reserve(args_.size() + t.size());
-    std::copy(t.begin(), t.end(), std::back_inserter(args_) );
-    return this->as<List>();
-}
-
-//ListPtr List::operator, ( ExpPtr e)
-//{
-//    DBGX(*e);
-//    return append(e);
-//}
 
 //--------------------------------------------------------------------------------------------
 
@@ -92,25 +79,21 @@ void List::print(ostream &o) const
 
 //--------------------------------------------------------------------------------------------
 
-ListPtr list()
+ExpPtr list()
 {
-    return ListPtr( new List() );
+    return ExpPtr( new List() );
 }
 
-ListPtr list( const List::value_t& v  )
+ExpPtr list( const List::value_t& v  )
 {
-    return ListPtr( new List(v) );
+    return ExpPtr( new List(v) );
 }
 
-ListPtr list(ExpPtr e)
+ExpPtr list(ExpPtr e)
 {
-    return ListPtr( new List(e) );
+    return ExpPtr( new List(e) );
 }
 
-ListPtr list(ExpPtr v0, ExpPtr v1)
-{
-    return list(v0)->append(v1);
-}
 
 //--------------------------------------------------------------------------------------------
 

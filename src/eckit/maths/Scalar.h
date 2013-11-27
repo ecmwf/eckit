@@ -47,7 +47,7 @@ public: // methods
     /// @returns the value of the scalar
     value_t value() const { return v_; }
     /// @returns a reference to the scalar
-    value_t& ref_value() { return v_; }
+    //value_t& ref_value() { return v_; }
 
 public: // virtual methods
 
@@ -55,7 +55,7 @@ public: // virtual methods
     virtual std::string signature() const { return Scalar::sig(); }
     virtual std::string returnSignature() const { return Scalar::sig(); }
 
-    virtual ExpPtr clone();
+    virtual ExpPtr clone() const;
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& o ) const;

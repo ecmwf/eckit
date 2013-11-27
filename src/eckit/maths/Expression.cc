@@ -36,31 +36,36 @@ Expression::~Expression()
 {
 }
 
-ExpPtr Expression::eval()
+ExpPtr Expression::eval() const
 {
     Scope ctx("Expression::eval()");
     return optimise()->evaluate(ctx);
 }
 
-ExpPtr Expression::eval(Scope& ctx)
+ExpPtr Expression::eval(Scope& ctx) const
 {
     // FIXME: We assume that the code is already optimised. Needs reviewing
     return /*optimise()->*/evaluate(ctx);
 }
 
-ExpPtr Expression::resolve(Scope & ctx)
+ExpPtr Expression::resolve(Scope & ctx) const
 {
     return self();
 }
 
-ExpPtr Expression::eval( ExpPtr e )
+ExpPtr Expression::optimise() const
+{
+    return self();
+}
+
+ExpPtr Expression::eval( ExpPtr e ) const
 {
     Scope ctx("Expression::eval( ExpPtr e )", e);
     ExpPtr res = optimise()->evaluate(ctx);
     return res;
 }
 
-ExpPtr Expression::eval(  ExpPtr a, ExpPtr b )
+ExpPtr Expression::eval(  ExpPtr a, ExpPtr b ) const
 {
     Scope ctx("Expression::eval(  ExpPtr a, ExpPtr b )", a, b);
     ExpPtr res = optimise()->evaluate(ctx);

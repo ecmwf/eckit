@@ -62,7 +62,7 @@ public: // virtual methods
     virtual std::string signature() const { return Vector::sig(); }
     virtual std::string returnSignature() const { return Vector::sig(); }
 
-    virtual ExpPtr clone();
+    virtual ExpPtr clone() const;
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& o ) const;

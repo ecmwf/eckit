@@ -37,27 +37,25 @@ string Filter::returnSignature() const
 
 ExpPtr Filter::evaluate( Scope &ctx )
 {
-    ListPtr res ( new List() );
-
     ExpPtr f = param(0, ctx);
-    DBGX(*f);
 
-    List::value_t& list = List::extract( param(1, ctx) );
+    const List::value_t& list = List::extract( param(1, ctx) );
 
     const size_t nlist = list.size();
+
+    List::value_t res;
+    res.reserve(nlist);
+
     for( size_t i = 0; i < nlist; ++i )
     {
         ExpPtr e = list[i]->eval(ctx);
-        DBGX(*e);
-
         ExpPtr b = f->eval(e);
-        DBGX(*b);
 
         if( Boolean::extract(b) )
-            res->append( e );
+            res.push_back( e );
     }
 
-    return res;
+    return ExpPtr(new List( res, List::Swap()));
 }
 
 

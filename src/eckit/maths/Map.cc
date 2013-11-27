@@ -33,24 +33,25 @@ string Map::returnSignature() const
     return List::sig();
 }
 
-ExpPtr Map::evaluate( Scope &ctx )
+ExpPtr Map::evaluate( Scope &ctx ) const
 {
     ExpPtr f = param(0, ctx);
 
-    List::value_t& list = List::extract( param(1, ctx) );
+    const List::value_t& list = List::extract( param(1, ctx) );
 
     const size_t nlist = list.size();
 
-    ListPtr res ( new List() );
+    List::value_t res;
+    res.reserve(nlist);
 
     for( size_t i = 0; i < nlist; ++i )
     {
         ExpPtr e = list[i]->eval(ctx);
         ExpPtr v = f->eval(e);
-        res->append( v );
+        res.push_back( v );
     }
 
-    return res;
+    return ExpPtr(new List( res, List::Swap()));
 }
 
 

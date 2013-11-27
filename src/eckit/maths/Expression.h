@@ -118,23 +118,23 @@ public: // methods
 
     virtual ~Expression();
 
-    ExpPtr self() { return shared_from_this(); }
+    ExpPtr self()       { return shared_from_this(); }
+    ExpPtr self() const { return boost::const_pointer_cast<Expression>( shared_from_this() ); }
 
     template< typename T >
     boost::shared_ptr<T> as()
     {
-        return boost::dynamic_pointer_cast<T,Expression>( shared_from_this() );
+        return boost::dynamic_pointer_cast<T, Expression>( shared_from_this() );
     }
 
     friend std::ostream& operator<<( std::ostream& os, const Expression& v);
 
-    ExpPtr eval();
-    ExpPtr eval( ExpPtr );
-    ExpPtr eval( ExpPtr, ExpPtr );
-    ExpPtr eval( const args_t& );
+    ExpPtr eval() const;
+    ExpPtr eval( ExpPtr ) const;
+    ExpPtr eval( ExpPtr, ExpPtr ) const;
+    ExpPtr eval( const args_t& ) const;
 
-    ExpPtr eval( Scope& );
-    //ExpPtr eval( Scope&, const args_t& );
+    ExpPtr eval( Scope& ) const;
 
     size_t arity() const { return args_.size(); }
 
@@ -144,16 +144,16 @@ public: // methods
     std::string str() const;
 
     // Used to bind undef() and lambda parameters
-    virtual ExpPtr resolve(Scope &);
+    virtual ExpPtr resolve(Scope &) const;
 
 public: // virtual methods
 
     virtual std::string typeName() const = 0;
-    virtual ExpPtr clone() = 0;
+    virtual ExpPtr clone() const = 0;
     virtual std::string signature() const = 0;
     virtual std::string returnSignature() const = 0;
 
-    virtual ExpPtr optimise() = 0;
+    virtual ExpPtr optimise() const;
 
 protected: // members
 
@@ -165,7 +165,7 @@ protected: // members
 
 private:
 
-    virtual ExpPtr evaluate( Scope& ) = 0;
+    virtual ExpPtr evaluate( Scope& ) const = 0;
     virtual void print( std::ostream& ) const = 0;
 
     // For unit tests....

@@ -129,12 +129,12 @@ std::string BinaryOperator<T>::className()
 {
     return opname( T() );
 }
-
+/*
 template < class T >
 ExpPtr BinaryOperator<T>::optimise() const
 {
     return Optimiser::apply(self());
-}
+}*/
 
 template < class T >
 void BinaryOperator<T>::asCode( std::ostream& o ) const {

@@ -84,11 +84,12 @@ void UnaryOperator<T>::asCode( std::ostream& o ) const {
     o << opsymbol(T()) << '(' << *args_[0] << ')';
 }
 
+/*
 template < class T >
 ExpPtr UnaryOperator<T>::optimise() const
 {
     return Optimiser::apply(self());
-}
+}*/
 
 template < class T >
 template < class U, class I >

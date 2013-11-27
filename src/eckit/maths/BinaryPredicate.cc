@@ -216,12 +216,12 @@ template < class T >
 void BinaryPredicate<T>::asCode( std::ostream& o ) const {
     o << '(' << *args_[0] << ' ' << opsymbol(T()) << ' ' << *args_[1] << ')';
 }
-
+/*
 template < class T >
 ExpPtr BinaryPredicate<T>::optimise() const
 {
     return Optimiser::apply(self());
-}
+}*/
 
 template < class T >
 template < class U, class V, class I >

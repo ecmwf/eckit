@@ -71,9 +71,7 @@ ExpPtr list( const List::value_t& v  );
 
 //--------------------------------------------------------------------------------------------
 
-template <class Arg1, class ...ArgN>
-ExpPtr list(const Arg1& a1, const ArgN& ...an)
-{
+static void build_list(List::value_t &l) {
     // End of recursion
 }
 

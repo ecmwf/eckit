@@ -74,7 +74,7 @@ protected:
 
 // -- Methods
 	
-    void print(ostream&) const; // Change to virtual if base class
+    void print(std::ostream&) const; // Change to virtual if base class
 
 // -- Overridden methods
 	// None
@@ -130,7 +130,7 @@ private:
 
     friend class GribFieldMemoryStrategy;
 
-    friend ostream& operator<<(ostream& s,const GribField& p)
+    friend std::ostream& operator<<(std::ostream& s,const GribField& p)
         { p.print(s); return s; }
 
 };

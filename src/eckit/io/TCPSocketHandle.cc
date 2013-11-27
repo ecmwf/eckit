@@ -16,7 +16,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-void TCPSocketHandle::print(ostream& s) const
+void TCPSocketHandle::print(std::ostream& s) const
 {
 	s << "TCPSocketHandle[]";
 }

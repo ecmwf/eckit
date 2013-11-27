@@ -17,6 +17,7 @@
 #include "eckit/config/Script.h"
 #include "eckit/config/Compiler.h"
 
+using namespace std;
 using namespace eckit;
 
 //-----------------------------------------------------------------------------

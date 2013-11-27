@@ -18,7 +18,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-void FileDescHandle::print(ostream& s) const
+void FileDescHandle::print(std::ostream& s) const
 {
 	s << "FileDescHandle[fd=" << fd_ << ']';
 }

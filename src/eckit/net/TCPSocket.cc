@@ -121,7 +121,7 @@ long TCPSocket::write(const void *buf,long length)
         long len = ::write(socket_,p,length);
 
         if(len <  0) {
-            Log::error() << "Socket write" << Log::syserr << endl;
+            Log::error() << "Socket write" << Log::syserr << std::endl;
             return len;
         }
 
@@ -162,10 +162,10 @@ long TCPSocket::read(void *buf,long length)
                 SavedStatus save;
 				
 				Log::warning() << "No news from " << remoteHost()
-                              << " from " << Seconds(socketSelectTimeout) << endl;
+                              << " from " << Seconds(socketSelectTimeout) << std::endl;
 
                 Log::status() << "No news from " << remoteHost()
-                              << " from " << Seconds(socketSelectTimeout) << endl;
+                              << " from " << Seconds(socketSelectTimeout) << std::endl;
 
 // For now ...
         //		nonews = true;
@@ -174,7 +174,7 @@ long TCPSocket::read(void *buf,long length)
                 if(::write(socket_,0,0) != 0)
                 {
                     Log::error() << "TCPSocket::read write" <<
-                        Log::syserr <<endl;
+                        Log::syserr << std::endl;
                     return -1;
                 }
                 more = true;
@@ -187,7 +187,7 @@ long TCPSocket::read(void *buf,long length)
         if(nonews)
         {
             AutoAlarm alarm(60,true);
-            Log::status() << "Resuming transfer" << endl;
+            Log::status() << "Resuming transfer" << std::endl;
             len = ::read(socket_,p,length);
         }
         else
@@ -195,7 +195,7 @@ long TCPSocket::read(void *buf,long length)
             len = ::read(socket_,p,length);
 
         if(len <  0) {
-            Log::error() << "Socket read" << Log::syserr << endl;
+            Log::error() << "Socket read" << Log::syserr << std::endl;
             return len;
         }
 
@@ -273,7 +273,7 @@ TCPSocket& TCPClient::connect(const string& remote,int port,int retries, int tim
 #endif
             if (him == 0)
             {
-//				Log::error() << "Unknown host [" << remote << "]" << endl;
+//				Log::error() << "Unknown host [" << remote << "]" << std::endl;
                 throw UnknownHost(remote);
             }
 
@@ -316,10 +316,10 @@ TCPSocket& TCPClient::connect(const string& remote,int port,int retries, int tim
         if (status < 0)
         {
             Log::error() << "connect to "
-                << host << " " << port << Log::syserr << endl;
+                << host << " " << port << Log::syserr << std::endl;
 
             Log::status() << "Connect: " << host << ":" << port << Log::syserr <<
-                " " << tries << '/' << retries << endl;
+                " " << tries << '/' << retries << std::endl;
 
             int save_errno = errno;
             ::close(socket_);
@@ -346,10 +346,10 @@ TCPSocket& TCPClient::connect(const string& remote,int port,int retries, int tim
                 case ETIMEDOUT:
                     Log::info() << "Waiting for network "
                         << host << ":" << port
-                        << Log::syserr << endl;
+                        << Log::syserr << std::endl;
                     Log::status() << "Waiting for network "
                         << host << ":" << port
-                        << Log::syserr << endl;
+                        << Log::syserr << std::endl;
                     break;
 #endif
 #if 0
@@ -362,7 +362,7 @@ TCPSocket& TCPClient::connect(const string& remote,int port,int retries, int tim
                 default:
                     Log::status() << "Waiting for network "
                         << host << ":" << port
-                        << Log::syserr << endl;
+                        << Log::syserr << std::endl;
 #if 0
                     if(++tries >= retries)
                         if(retries != 0)
@@ -404,17 +404,17 @@ int TCPSocket::newSocket(int port)
 
     int flg = 1 ;
     if(::setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &flg, sizeof(flg))<0)
-        Log::warning() << "setsockopt SO_REUSEADDR" << Log::syserr << endl;
+        Log::warning() << "setsockopt SO_REUSEADDR" << Log::syserr << std::endl;
 
     flg = 1 ;
     if(::setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &flg, sizeof(flg))<0)
-        Log::warning() << "setsockopt SO_KEEPALIVE" << Log::syserr << endl;
+        Log::warning() << "setsockopt SO_KEEPALIVE" << Log::syserr << std::endl;
 
 
 #ifdef SO_REUSEPORT
     flg = 1 ;
     if(::setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &flg, sizeof(flg))<0)
-        Log::warning() << "setsockopt SO_REUSEPORT" << Log::syserr << endl;
+        Log::warning() << "setsockopt SO_REUSEPORT" << Log::syserr << std::endl;
 #endif
 
 #ifdef SO_LINGER
@@ -422,12 +422,12 @@ int TCPSocket::newSocket(int port)
     ling.l_onoff  = 0;
     ling.l_linger = 0;
     if(::setsockopt(s, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling))<0)
-        Log::warning() << "setsockopt SO_LINGER" << Log::syserr << endl;
+        Log::warning() << "setsockopt SO_LINGER" << Log::syserr << std::endl;
 #endif
 
 #ifdef SO_DONTLINGER
     if(::setsockopt(s, SOL_SOCKET, SO_DONTLINGER, NULL, 0)<0)
-        Log::warning() << "setsockopt SO_DONTLINGER" << Log::syserr << endl;
+        Log::warning() << "setsockopt SO_DONTLINGER" << Log::syserr << std::endl;
 #endif
 
 /* #ifdef IPPROTO_IP */
@@ -438,7 +438,7 @@ int TCPSocket::newSocket(int port)
     int tos = IPTOS_LOWDELAY;
 
     if(::setsockopt(s, IPPROTO_IP, IP_TOS, &tos, sizeof(tos))<0)
-          Log::warning() << "setsockopt IP_TOS" << Log::syserr << endl;
+          Log::warning() << "setsockopt IP_TOS" << Log::syserr << std::endl;
 
 /* #endif */
 /* #endif */
@@ -448,33 +448,33 @@ int TCPSocket::newSocket(int port)
 #if 1
     int flag = 1;
     if(::setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (char *) &flag, sizeof(flag))<0)
-        Log::warning() << "setsockopt TCP_NODELAY" << Log::syserr << endl;
+        Log::warning() << "setsockopt TCP_NODELAY" << Log::syserr << std::endl;
 #endif
 
     if(bufSize_)
     {
 
-        Log::info() << "SOCKET SIZE " << bufSize_ << endl;
+        Log::info() << "SOCKET SIZE " << bufSize_ << std::endl;
 
         int flg = 0;
         socklen_t flgsize = sizeof(flg);
 
         if(getsockopt(s, SOL_SOCKET, SO_SNDBUF,&flg, &flgsize)<0)
-            Log::warning() << "getsockopt SO_SNDBUF " << Log::syserr << endl;
+            Log::warning() << "getsockopt SO_SNDBUF " << Log::syserr << std::endl;
 
         if(flg != bufSize_)
         {
             if(setsockopt(s, SOL_SOCKET, SO_SNDBUF,&bufSize_, sizeof(bufSize_)) < 0)
-                Log::warning() << "setsockopt SO_SNDBUF " << Log::syserr << endl;
+                Log::warning() << "setsockopt SO_SNDBUF " << Log::syserr << std::endl;
         }
 
         if(getsockopt(s, SOL_SOCKET, SO_RCVBUF,&flg, &flgsize)<0)
-            Log::warning() << "getsockopt SO_RCVBUF " << Log::syserr << endl;
+            Log::warning() << "getsockopt SO_RCVBUF " << Log::syserr << std::endl;
 
         if(flg != bufSize_)
         {
             if(setsockopt(s, SOL_SOCKET, SO_RCVBUF,&bufSize_, sizeof(bufSize_)) < 0)
-                Log::warning() << "setsockopt SO_RCVBUF " << Log::syserr << endl;
+                Log::warning() << "setsockopt SO_RCVBUF " << Log::syserr << std::endl;
         }
     }
 
@@ -493,7 +493,7 @@ int TCPSocket::newSocket(int port)
 
     while(::bind(s,reinterpret_cast<sockaddr*>(&sin),sizeof(sin)) == -1)
     {
-        Log::warning() << "bind port " << localPort_ << " " << addr << Log::syserr << endl;
+        Log::warning() << "bind port " << localPort_ << " " << addr << Log::syserr << std::endl;
         ::sleep(5);
     }
 
@@ -676,12 +676,12 @@ bool TCPSocket::stillConnected() const
         int n = 0;
         if(::ioctl(socket_, FIONREAD, &n) < 0)
         {
-            Log::info() << "TCPSocket::stillConnected(FIONREAD) failed " << Log::syserr << endl;
+            Log::info() << "TCPSocket::stillConnected(FIONREAD) failed " << Log::syserr << std::endl;
             return false;
         }
 
         if(n == 0) {
-            Log::warning() << "TCPSocket::stillConnected => connection lost" << endl;
+            Log::warning() << "TCPSocket::stillConnected => connection lost" << std::endl;
             return false;
         }
 
@@ -689,7 +689,7 @@ bool TCPSocket::stillConnected() const
     }
     else
     {
-        Log::info() << "TCPSocket::stillConnected(select) failed " << Log::syserr << endl;
+        Log::info() << "TCPSocket::stillConnected(select) failed " << Log::syserr << std::endl;
         return false;
 
     }

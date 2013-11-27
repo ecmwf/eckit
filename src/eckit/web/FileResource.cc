@@ -29,7 +29,7 @@ FileResource::~FileResource()
 {
 }
 
-void FileResource::html(ostream& s,Url& url)
+void FileResource::html(std::ostream& s,Url& url)
 {
 	eckit::PathName path("~/http/" + url.name());
 

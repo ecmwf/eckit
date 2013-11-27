@@ -40,7 +40,7 @@ void config::Function::execute(const StringDict &in, StringDict &out)
     body_->execute(in,out);
 }
 
-void config::Function::print(ostream &out)
+void config::Function::print(std::ostream&out)
 {
     out << "[ function " <<  name_  << "]" << std::endl;
     body_->print(out);
@@ -70,7 +70,7 @@ void FunctionCall::execute(const StringDict &in, StringDict &out)
     scope().function(name_).execute(in,out);
 }
 
-void FunctionCall::print(ostream &out)
+void FunctionCall::print(std::ostream&out)
 {
     out << "[ call " <<  name_  << "]" << std::endl;    
 }

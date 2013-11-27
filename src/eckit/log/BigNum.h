@@ -37,11 +37,11 @@ private:
 
 // -- Methods
 
-	void print(ostream&) const; 
+	void print(std::ostream&) const; 
 
 // -- Class methods
 
-	static void print(ostream&,long long);
+	static void print(std::ostream&,long long);
 
 // -- Members
 
@@ -49,7 +49,7 @@ private:
 
 // -- Friends
 
-	friend ostream& operator<<(ostream& s,const BigNum& p)
+	friend std::ostream& operator<<(std::ostream& s,const BigNum& p)
 		{ p.print(s); return s; }
 
 };

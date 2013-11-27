@@ -34,12 +34,12 @@ void Configurable::reconfigureAll()
 	callAll(&Configurable::reconfigure);    // notify clients
 }
 
-void Configurable::dumpAllResources(ostream& s) 
+void Configurable::dumpAllResources(std::ostream& s) 
 { 
 	callAll(&Configurable::dumpResources,s);
 }
 
-void Configurable::dumpResources(ostream& s) const
+void Configurable::dumpResources(std::ostream& s) const
 {
     AutoLock<Mutex> lock(const_cast<Configurable&>(*this).mutex_);
 	for(Set::const_iterator i=resources_.begin(); i != resources_.end();++i)

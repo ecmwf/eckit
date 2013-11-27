@@ -50,7 +50,7 @@ public: // methods
 
 private: // members
 
-    auto_ptr<eckit::DataHandle> handle_;
+    std::auto_ptr<eckit::DataHandle> handle_;
 
 };
 

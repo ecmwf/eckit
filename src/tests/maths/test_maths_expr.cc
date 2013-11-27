@@ -25,6 +25,7 @@
 #include "eckit/maths/ZipWith.h"
 #include "eckit/maths/Bind.h"
 
+using namespace std;
 using namespace eckit;
 using namespace eckit::maths;
 
@@ -79,9 +80,9 @@ void TestExp::run()
 {
     setup();
 
-    test_optimise_scalars();
-    test_optimise_recursive_scalars();
-    test_optimise_prodadd();
+//    test_optimise_scalars();
+//    test_optimise_recursive_scalars();
+//    test_optimise_prodadd();
     //test_operators();
     test_list();
     test_map();
@@ -311,8 +312,8 @@ void TestExp::test_bind()
 
     ExpPtr f0 = maths::filter( pred, maths::list( a_ , b_, a_, b_ ) );
 
-        std::cout << f0->str() << std::endl;
-        std::cout << f0->eval()->str() << std::endl;
+//        std::cout << f0->str() << std::endl;
+//        std::cout << f0->eval()->str() << std::endl;
 
     ASSERT( f0->str() == "Filter(Bind(Scalar(2), Greater(?, ?), Scalar(2)), List(Scalar(2), Scalar(4), Scalar(2), Scalar(4)))" );
     ASSERT( f0->eval()->str() == "List(Scalar(4), Scalar(4))" );
@@ -324,8 +325,8 @@ void TestExp::test_zipwith()
 
     ExpPtr f0 =  zipWith( maths::add(), maths::list( a_ , b_, a_, b_ ), maths::list( a_ , b_, a_, b_ ) );
 
-    std::cout << f0->str() << std::endl;
-    std::cout << f0->eval()->str() << std::endl;
+//    std::cout << f0->str() << std::endl;
+//    std::cout << f0->eval()->str() << std::endl;
 
     ASSERT( f0->eval()->str() == maths::map( maths::prod(scalar(2.)), maths::list( a_ , b_, a_, b_ ) )->eval()->str() );
 

@@ -27,7 +27,7 @@ namespace eckit {
 #define SIGNED(type,var)   ((type)(var))
  
 #if 0
-#define T(a,x) do { cout << "Stream: " << a << " ->  "  << x << endl;} while(0)
+#define T(a,x) do { std::cout << "Stream: " << a << " ->  "  << x << std::endl;} while(0)
 #else
 #define T(a,x) /**/
 #endif
@@ -149,7 +149,7 @@ unsigned long Stream::getLong()
     }
 }
 
-ostream& operator<<(ostream& s,Stream::tag t)
+std::ostream& operator<<(std::ostream& s,Stream::tag t)
 {
     if(t >= 0 && t < tag_count)
         return s << '\'' << tag_names[t] << '\'';
@@ -165,7 +165,7 @@ void Stream::badTag(Stream::tag need,Stream::tag got)
     os << name();
     os << ". Expecting a " << need << ", got a " << got << StrStream::ends;
 
-    Log::error() << string(os) << endl;
+    Log::error() << string(os) << std::endl;
 
     if(got == tag_string)
     {
@@ -173,7 +173,7 @@ void Stream::badTag(Stream::tag need,Stream::tag got)
         string s;
         s.resize(length);
         for(long i=0;i<length;i++) s[i] = getChar();
-        Log::error() << "String is " << s << endl;
+        Log::error() << "String is " << s << std::endl;
     }
 
     throw BadTag(string(os));
@@ -185,7 +185,7 @@ Stream::tag Stream::nextTag()
     {
         tag t    = lastTag_;
         lastTag_ = tag_zero;
-        //		Log::debug() << "Found tag " << t << endl;
+        //		Log::debug() << "Found tag " << t << std::endl;
         return t;
     }
 
@@ -194,7 +194,7 @@ Stream::tag Stream::nextTag()
 
     if( (len = read(&c,1)) == 0)
     {
-        //      Log::debug() << "End of stream" << tag_zero << endl;
+        //      Log::debug() << "End of stream" << tag_zero << std::endl;
         return tag_eof;
     }
 
@@ -202,7 +202,7 @@ Stream::tag Stream::nextTag()
         throw ShortFile(name());
 
     tag t = static_cast<tag>(c);
-    //  Log::debug() << "Next tag " << t << endl;
+    //  Log::debug() << "Next tag " << t << std::endl;
     return t;
 
 }
@@ -232,7 +232,7 @@ Stream::tag Stream::readTag(Stream::tag need)
 
 void Stream::writeTag(Stream::tag t)
 {
-    // Log::info() << "Stream::writeTag(" << t << ")" << endl;
+    // Log::info() << "Stream::writeTag(" << t << ")" << std::endl;
     unsigned char c = static_cast<unsigned char>(t);
     putBytes(&c,1);
 }
@@ -394,7 +394,7 @@ Stream& Stream::operator<<(const Buffer& x)
     return *this;
 }
 
-Stream& Stream::operator<<(const exception& e)
+Stream& Stream::operator<<(const std::exception& e)
 {
     T("w exception",e.what());
     writeTag(tag_exception);
@@ -630,8 +630,8 @@ bool Stream::nextRecord(unsigned long& type,bool sync)
             if(!sync) badTag(tag_start_rec,t);
             if(first)
             {
-                Log::error() << "Bad tag found in stream " << t << endl;
-                Log::error() << "Trying to synchronise" << endl;
+                Log::error() << "Bad tag found in stream " << t << std::endl;
+                Log::error() << "Trying to synchronise" << std::endl;
                 first = 0;
             }
         }
@@ -679,7 +679,7 @@ public:
 
 };
 
-void Stream::dump(ostream& out,const char* p, size_t len)
+void Stream::dump(std::ostream& out,const char* p, size_t len)
 {
     size_t i = 0;
     while(i < len)

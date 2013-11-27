@@ -117,9 +117,9 @@ void MultiHandle::openForWrite(const Length& length)
 
     read_ = false;
 
-    Log::info() << "MultiHandle::openForWrite " << length << endl;
-    Log::info() << "MultiHandle::openForWrite " << datahandles_.size() << endl;
-    Log::info() << "MultiHandle::openForWrite " << length_.size() << endl;
+    Log::info() << "MultiHandle::openForWrite " << length << std::endl;
+    Log::info() << "MultiHandle::openForWrite " << datahandles_.size() << std::endl;
+    Log::info() << "MultiHandle::openForWrite " << length_.size() << std::endl;
     current_ = datahandles_.begin();
     curlen_  = length_.begin();
     openCurrent();
@@ -127,13 +127,13 @@ void MultiHandle::openForWrite(const Length& length)
 
     written_ = 0;
 
-    Log::info() << "MultiHandle::openForWrite " << length_.size() << endl;
+    Log::info() << "MultiHandle::openForWrite " << length_.size() << std::endl;
 
 
     if(current_ != datahandles_.end())
-        Log::info() << "MultiHandle::openForWrite " << (*curlen_) << endl;
+        Log::info() << "MultiHandle::openForWrite " << (*curlen_) << std::endl;
     else
-        Log::warning() << "MultiHandle::openForWrite is empty" << endl;
+        Log::warning() << "MultiHandle::openForWrite is empty" << std::endl;
 }
 
 void MultiHandle::openForAppend(const Length& )
@@ -147,8 +147,8 @@ void MultiHandle::openCurrent()
     {
         if(read_)
         {
-            Log::debug() << *(*current_) << endl;
-            Log::debug() << "Multi handle: open " << (*current_)->openForRead() << endl;
+            Log::debug() << *(*current_) << std::endl;
+            Log::debug() << "Multi handle: open " << (*current_)->openForRead() << std::endl;
         }
         else {
             (*current_)->openForWrite(*curlen_);
@@ -184,14 +184,14 @@ long MultiHandle::read(void* buffer,long length)
         p      += n;
     }
 
-    Log::debug() << "MultiHandle::read " << (total>0?total:n) << endl;
+    Log::debug() << "MultiHandle::read " << (total>0?total:n) << std::endl;
 
     return total>0?total:n;
 }
 
 long MultiHandle::write(const void* buffer,long length)
 {
-    Length len = min( Length(*curlen_ - written_),Length(length));
+    Length len = std::min( Length(*curlen_ - written_),Length(length));
     long   l   = (long)len;
 
     ASSERT(len == Length(l));
@@ -200,7 +200,7 @@ long MultiHandle::write(const void* buffer,long length)
     long n = (*current_)->write(buffer,l);
 
     Log::debug() << "MultiHandle::write " << *(*current_) << " " <<
-        length << ' ' << *curlen_ << ' ' << len << ' ' << written_ << endl;
+        length << ' ' << *curlen_ << ' ' << len << ' ' << written_ << std::endl;
 
     if(n<=0) return n;
 
@@ -221,7 +221,7 @@ long MultiHandle::write(const void* buffer,long length)
 
             if(current_ == datahandles_.end())
             {
-                Log::debug() << length  << " " << l << endl;
+                Log::debug() << length  << " " << l << std::endl;
             }
 
             ASSERT(current_ != datahandles_.end());
@@ -259,7 +259,7 @@ void MultiHandle::rewind()
     openCurrent();
 }
 
-void MultiHandle::print(ostream& s) const
+void MultiHandle::print(std::ostream& s) const
 {
 
     if(format(s) == Log::compactFormat)
@@ -320,7 +320,7 @@ Length MultiHandle::estimate()
 
 void MultiHandle::restartReadFrom(const Offset& from)
 {
-    Log::warning() << *this << " restart read from " << from << endl;
+    Log::warning() << *this << " restart read from " << from << std::endl;
 
     ASSERT(read_);
     if(current_ != datahandles_.end()) (*current_)->close();
@@ -332,7 +332,7 @@ void MultiHandle::restartReadFrom(const Offset& from)
         long long e = (*current_)->estimate();
         if(len >= pos && len < pos + e)
         {
-            Log::warning() << *this << " restart read from " << from << ", current=" << (current_ - datahandles_.begin() ) << endl;
+            Log::warning() << *this << " restart read from " << from << ", current=" << (current_ - datahandles_.begin() ) << std::endl;
 
             openCurrent();
             (*current_)->restartReadFrom(len - pos);

@@ -55,7 +55,7 @@ public:
     virtual void close();
     virtual void flush();
     virtual void rewind();
-    virtual void print(ostream&) const;
+    virtual void print(std::ostream&) const;
 
 
     virtual void toRemote(Stream&) const;

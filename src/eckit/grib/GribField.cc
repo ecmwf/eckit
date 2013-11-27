@@ -66,7 +66,7 @@ GribField::~GribField()
     delete handle_;
 }
 
-void GribField::print(ostream& os) const
+void GribField::print(std::ostream& os) const
 {
     os << "GribField[]";
 }
@@ -169,7 +169,7 @@ void GribField::release() const {
 void GribField::purge(bool temp)
 {
     purges_++;
-    cout << "Purge " << purges_ << endl;
+    std::cout << "Purge " << purges_ << std::endl;
     pack();
 
     if(file_ && handle_) {

@@ -40,7 +40,7 @@ public:
     const Point& point() const { return node_->point(); }
     double distance() const    { return distance_; }
 
-    friend ostream& operator<<(ostream& s,const KDNodeInfo& p)
+    friend std::ostream& operator<<(std::ostream& s,const KDNodeInfo& p)
     {
         s << "[point=" << p.point() << ",distance=" << p.distance() << "]";
         return s;

@@ -49,7 +49,7 @@ StringContent::~StringContent()
 {
 }
 
-void StringContent::print(ostream& s) const
+void StringContent::print(std::ostream& s) const
 {
 	s << value_;
 }

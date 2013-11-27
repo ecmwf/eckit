@@ -40,15 +40,15 @@ class JSON;
 
 template<class Request>
 struct DefaultHandler {
-	void pick(list<Request*>&,vector<Request*>&);
+	void pick(std::list<Request*>&,vector<Request*>&);
 	void idle() {}
-static void print(ostream&,const Request&);
+static void print(std::ostream&,const Request&);
 static void json(JSON&,const Request&);
 };
 
 template<class Request>
 struct DequeuePicker {
-	virtual void pick(list<Request*>&) = 0;
+	virtual void pick(std::list<Request*>&) = 0;
 };
 
 //=======================================
@@ -94,7 +94,7 @@ protected:
 
 // -- Members
 
-	list<Request*>    queue_;
+    std::list<Request*>    queue_;
 	Resource<long>    maxTasks_;
 	long              count_;
 	long              next_;
@@ -115,7 +115,7 @@ private:
 
 	// -- Methods
 
-	void print(ostream&) const;
+	void print(std::ostream&) const;
 	void changeThreadCount(int delta);
 	void _push(Request*);
 
@@ -124,7 +124,7 @@ private:
 	virtual string kind() const  { return "Dispatcher"; }
 	virtual void reconfigure();
 
-    friend ostream& operator<<(ostream& s,const Dispatcher<Traits>& p)
+    friend std::ostream& operator<<(std::ostream& s,const Dispatcher<Traits>& p)
 		{ p.print(s); return s; }
 
 };
@@ -157,7 +157,7 @@ private:
 
 	// From Monitorable
 
-	virtual void status(ostream&) const;
+	virtual void status(std::ostream&) const;
 	virtual void json(JSON&) const;
 
 
@@ -178,10 +178,10 @@ public:
 };
 
 template<class Traits> 
-void DispatchTask<Traits>::status(ostream& s) const
+void DispatchTask<Traits>::status(std::ostream& s) const
 {
 	AutoLock<Mutex> lock(((DispatchTask<Traits>*)this)->mutex_);
-	s << "Picks for " <<  owner_.name() << " thread " << id_ << endl;
+	s << "Picks for " <<  owner_.name() << " thread " << id_ << std::endl;
 	for(int i = 0; i < pick_.size(); i++)
 		if(pick_[i]) Handler::print(s,*pick_[i]);
 }
@@ -213,7 +213,7 @@ void DispatchTask<Traits>::run()
 
 	static const char *here = __FUNCTION__;
 
-	Log::info() << "Start of " << owner_.name() << " thread " << id_ << endl;
+	Log::info() << "Start of " << owner_.name() << " thread " << id_ << std::endl;
 
 	Monitor::instance().name(owner_.name());
 
@@ -229,7 +229,7 @@ void DispatchTask<Traits>::run()
 
 		if(stop) // The T must stop
 		{
-			Log::info() << "Stopping thread " << id_ << endl;
+			Log::info() << "Stopping thread " << id_ << std::endl;
 			break;
 		}
 
@@ -245,11 +245,11 @@ void DispatchTask<Traits>::run()
 				owner_.sleep(); // Wait for something else to come...
 			}
 		}
-		catch(exception& e)
+		catch(std::exception& e)
 		{
 			Log::error() << "** " << e.what() << " Caught in " <<
-				here <<  endl;
-			Log::error() << "** Exception is ignored" << endl;
+				here << std::endl;
+			Log::error() << "** Exception is ignored" << std::endl;
 			owner_.awake();
 		}
 		owner_.running(-1);
@@ -264,7 +264,7 @@ void DispatchTask<Traits>::run()
 	}
 
 	owner_.awake();
-	Log::info() << "End of thread " << id_ << endl;
+	Log::info() << "End of thread " << id_ << std::endl;
 
 
 }
@@ -278,7 +278,7 @@ void DispatchInfo<Traits>::run()
 	{
 		int n = owner_.size();
 		Monitor::instance().show(n>0);
-		Log::status() << Plural(n,"request") << " queued" << endl;
+		Log::status() << Plural(n,"request") << " queued" << std::endl;
 		::sleep(1);
 		/* owner_.sleep(3); */
 		/* owner_.awake(); // Awake others */
@@ -359,10 +359,10 @@ void Dispatcher<Traits>::_push(Request* r)
 template<class Traits>
 void Dispatcher<Traits>::sleep()
 {
-	//Log::debug() << "Sleeping..." << endl;
+	//Log::debug() << "Sleeping..." << std::endl;
 	AutoLock<MutexCond> lock(wait_);
 	wait_.wait();
-	//Log::debug() << "Awaken..." << endl;
+	//Log::debug() << "Awaken..." << std::endl;
 }
 
 template<class Traits>
@@ -375,7 +375,7 @@ void Dispatcher<Traits>::sleep(int n)
 template<class Traits>
 void Dispatcher<Traits>::awake()
 {
-	Log::debug() << "Awake ..." << endl;
+	Log::debug() << "Awake ..." << std::endl;
 	AutoLock<MutexCond> lock(wait_);
 	wait_.broadcast();
 }
@@ -388,10 +388,10 @@ int Dispatcher<Traits>::size()
 }
 
 template<class Traits>
-void Dispatcher<Traits>::print(ostream& s) const
+void Dispatcher<Traits>::print(std::ostream& s) const
 {
 	AutoLock<MutexCond> lock(const_cast<Dispatcher<Traits>*>(this)->ready_);
-    for(typename list<Request*>::const_iterator i = queue_.begin() ; 
+    for(typename std::list<Request*>::const_iterator i = queue_.begin() ; 
 		i != queue_.end(); ++i) 
 			if(*i)
 			Handler::print(s,*(*i));
@@ -402,7 +402,7 @@ void Dispatcher<Traits>::json(JSON& s) const
 {
 	AutoLock<MutexCond> lock(const_cast<Dispatcher<Traits>*>(this)->ready_);
     s.startList();
-    for(typename list<Request*>::const_iterator i = queue_.begin() ; 
+    for(typename std::list<Request*>::const_iterator i = queue_.begin() ; 
 		i != queue_.end(); ++i) 
 			if(*i)
 			Handler::json(s,*(*i));
@@ -414,7 +414,7 @@ bool Dispatcher<Traits>::next(Handler& handler,
 	vector<Request*>& result,Mutex& mutex)
 {
 
-	Log::status() << "-" << endl;
+	Log::status() << "-" << std::endl;
 
 	AutoLock<MutexCond> lock(ready_);
 
@@ -429,7 +429,7 @@ bool Dispatcher<Traits>::next(Handler& handler,
 
 	// Check for null requests
 
-	typename list<Request*>::iterator i = std::find(queue_.begin(),queue_.end(),
+	typename std::list<Request*>::iterator i = std::find(queue_.begin(),queue_.end(),
 		(Request*)0);
 
 	if(i == queue_.end())
@@ -441,15 +441,15 @@ bool Dispatcher<Traits>::next(Handler& handler,
 	}
 
 	Log::debug() << "Got " << result.size() << " requests from the queue" 
-		<< endl;
+		<< std::endl;
 
 	Log::debug() << "Left " << queue_.size() << " requests in the queue" 
-		<< endl;
+		<< std::endl;
 
 	ready_.signal(); // Let other get some more
 
 	if(result.size())
-		Log::status() << "Processing request" << endl;
+		Log::status() << "Processing request" << std::endl;
 
 	return stop;
 }
@@ -495,13 +495,13 @@ void Dispatcher<Traits>::changeThreadCount(int delta)
 template<class Traits>
 void Dispatcher<Traits>::reconfigure()
 {
-	Log::info() << "Max is now : " << maxTasks_ << endl;
+	Log::info() << "Max is now : " << maxTasks_ << std::endl;
 	changeThreadCount(maxTasks_ - count_);
 	awake();
 }
 
 template<class Request> 
-void DefaultHandler<Request>::pick(list<Request*>& queue,
+void DefaultHandler<Request>::pick(std::list<Request*>& queue,
 	vector<Request*>& result)
 {
 	Request *r = queue.front();
@@ -510,9 +510,9 @@ void DefaultHandler<Request>::pick(list<Request*>& queue,
 }
 
 template<class Request> 
-void DefaultHandler<Request>::print(ostream& s,const Request& r)
+void DefaultHandler<Request>::print(std::ostream& s,const Request& r)
 {
-	s << r << endl;
+	s << r << std::endl;
 }
 
 template<class Request> 

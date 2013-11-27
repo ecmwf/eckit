@@ -57,7 +57,7 @@ ExpPtr Call::evaluate( Scope &ctx )
         scope.pushArg(param(i, ctx)->eval(ctx));
     }
 
-    //cout << endl << "SCOPE OF CALL is " << scope << endl;
+    //cout << std::endl << "SCOPE OF CALL is " << scope << std::endl;
 
     return f->eval(scope)->as<Lambda>()->call(scope);
 }
@@ -80,7 +80,7 @@ ExpPtr call( ExpPtr f, ExpPtr a, ExpPtr b)
 }
 
 
-void Call::asCode(ostream &o) const
+void Call::asCode(std::ostream&o) const
 {
     o << "maths::call("; printArgs(o); o << ")";
 }

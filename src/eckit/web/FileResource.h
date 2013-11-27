@@ -33,7 +33,7 @@ protected:
 
 	string name_;
 
-	virtual void html(ostream&,Url&);
+	virtual void html(std::ostream&,Url&);
 
 };
 

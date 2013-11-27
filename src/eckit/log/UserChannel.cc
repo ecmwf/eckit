@@ -50,7 +50,7 @@ private:
   
   bool dumpBuffer()
   {
-      ::replace(pbase(),epptr(),'\n','\0');
+      std::replace(pbase(),epptr(),'\n','\0');
   
       switch( msgType_)
       {

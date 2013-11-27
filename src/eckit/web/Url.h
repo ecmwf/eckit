@@ -53,7 +53,7 @@ public:
 
 // -- Contructors
 
-	Url(istream&);
+	Url(std::istream&);
 	Url(const string&);
 
 // -- Destructor
@@ -103,7 +103,7 @@ public:
 	void dontCache()
 		{ headerOut().dontCache(); }
 
-	void cgiParam(ostream&,char sep = ' ') const;
+	void cgiParam(std::ostream&,char sep = ' ') const;
 
     const eckit::Value& json() const
         { return json_; }
@@ -112,16 +112,16 @@ protected:
 
 // -- Methods
 	
-    void print(ostream&) const;
+    void print(std::ostream&) const;
 
 private:
 
 // -- Members
 
-	typedef map<string,string,less<string> > Map;
+    typedef map<string,string,std::less<string> > Map;
 
 	Map            map_;
-	vector<string> url_;
+    std::vector<string> url_;
 	HttpHeader     in_;
 	HttpHeader     out_;
 
@@ -132,11 +132,11 @@ private:
 // -- Methods
 
 	void parse(const string&,bool);
-	void parse(istream&);
+	void parse(std::istream&);
 
 // -- Friends
 
-	friend ostream& operator<<(ostream& s,const Url& p)
+	friend std::ostream& operator<<(std::ostream& s,const Url& p)
 		{ p.print(s); return s; }
 
 };

@@ -28,7 +28,7 @@ JSONResource::~JSONResource()
 	// Should do something here...
 }
 
-void JSONResource::html(ostream& out,Url& url)
+void JSONResource::html(std::ostream& out,Url& url)
 {
     url.headerOut().type("application/json");
     JSON j(out);

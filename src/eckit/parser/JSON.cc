@@ -19,7 +19,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-JSON::JSON(ostream& out):
+JSON::JSON(std::ostream& out):
     out_(out) ,
     null_(true)
 {
@@ -42,7 +42,7 @@ void JSON::sep()
         sep_.back() = ",";
 }
 
-static ostream& encode(ostream& s,const char *p) {
+static std::ostream& encode(std::ostream& s,const char *p) {
     s << '"';
     while(*p)
     {

@@ -36,6 +36,7 @@
 
 // #define TOTAL_SIZE  2*SIZE_2G // 4Gb file
 
+using namespace std;
 using namespace eckit;
 
 int main(int argc, char *argv[])

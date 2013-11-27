@@ -72,7 +72,7 @@ public:
     Stream& operator<<(const char*);
 
 
-    Stream& operator<<(const exception&);
+    Stream& operator<<(const std::exception&);
 
     // Blobs
     Stream& operator<<(const Buffer&);
@@ -129,7 +129,7 @@ public:
     void unlock() { mutex_.unlock(); }
 
 
-    static void dump(ostream&,const char*, size_t);
+    static void dump(std::ostream&,const char*, size_t);
     
 
 protected:
@@ -141,7 +141,7 @@ protected:
 // -- Methods
 
     virtual string name() const 			= 0;
-    virtual void print(ostream& s) const  	{ s << name();  }
+    virtual void print(std::ostream& s) const  	{ s << name();  }
 
 private:
 
@@ -197,7 +197,7 @@ private:
     void getBytes(void*,long);
     void putBytes(const void*,long);
 
-    friend ostream& operator<<(ostream&,tag);
+    friend std::ostream& operator<<(std::ostream&,tag);
 
     friend class BufferedWriter<Stream>;
     friend class BufferedReader<Stream>;

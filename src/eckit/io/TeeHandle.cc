@@ -120,7 +120,7 @@ void TeeHandle::rewind()
     NOTIMP;
 }
 
-void TeeHandle::print(ostream& s) const
+void TeeHandle::print(std::ostream& s) const
 {
 	if(format(s) == Log::compactFormat)
 		s << "TeeHandle";

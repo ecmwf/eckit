@@ -81,7 +81,7 @@ string NetAddress::asString() const
 }
 #endif
 
-void NetAddress::print(ostream& s) const
+void NetAddress::print(std::ostream& s) const
 {
     s << host_ << ":" << port_;
 }

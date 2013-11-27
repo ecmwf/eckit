@@ -28,7 +28,7 @@ ListContent::ListContent()
 
 ListContent::ListContent(const vector<Value>& v)
 {
-    ::copy(v.begin(),v.end(),back_inserter(value_));
+    std::copy(v.begin(),v.end(),back_inserter(value_));
 }
 
 ListContent::ListContent(const Value& v)
@@ -93,7 +93,7 @@ void ListContent::json(JSON& s) const
 }
 
 
-void ListContent::print(ostream& s) const
+void ListContent::print(std::ostream& s) const
 {
     s << '(';
 
@@ -114,9 +114,9 @@ Content* ListContent::add(const Content& other) const
 
 Content* ListContent::addList(const ListContent& other) const
 {
-	vector<Value> tmp;
-    ::copy(other.value_.begin(),other.value_.end(),back_inserter(tmp));
-    ::copy(value_.begin(),value_.end(),back_inserter(tmp));
+    std::vector<Value> tmp;
+    std::copy(other.value_.begin(),other.value_.end(),back_inserter(tmp));
+    std::copy(value_.begin(),value_.end(),back_inserter(tmp));
 	return new ListContent(tmp);
 }
 

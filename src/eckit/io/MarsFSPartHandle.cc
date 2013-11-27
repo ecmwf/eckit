@@ -25,7 +25,7 @@ namespace eckit {
 ClassSpec MarsFSPartHandle::classSpec_ = {&DataHandle::classSpec(),"MarsFSPartHandle",};
 Reanimator<MarsFSPartHandle> MarsFSPartHandle::reanimator_;
 
-void MarsFSPartHandle::print(ostream& s) const
+void MarsFSPartHandle::print(std::ostream& s) const
 {
     if(format(s) == Log::compactFormat)
         s << "MarsFSPartHandle";
@@ -86,7 +86,7 @@ MarsFSPartHandle::~MarsFSPartHandle()
 Length MarsFSPartHandle::openForRead()
 {
     ASSERT(!file_.get());
-    file_ = auto_ptr<MarsFSFile>(new MarsFSFile(path_));
+    file_ = std::auto_ptr<MarsFSFile>(new MarsFSFile(path_));
     file_->open("r");
     rewind();
     return estimate();
@@ -116,7 +116,7 @@ long MarsFSPartHandle::read1(char *buffer,long length)
     ASSERT(file_->seek(pos) == pos);
 
     Length ll    = length_[index_] - Length(pos_);
-    Length lsize = ::min(Length(length),ll);
+    Length lsize = std::min(Length(length),ll);
     long size  = lsize;
 
     ASSERT(Length(size) == lsize);
@@ -148,7 +148,7 @@ long MarsFSPartHandle::read(void* buffer,long length)
     long n = 0;
     long total = 0;
 
-    //Log::info() << "MarsFSPartHandle::read " << length << endl;
+    //Log::info() << "MarsFSPartHandle::read " << length << std::endl;
 
     while( length > 0 && (n = read1(p,length)) >0)
     {
@@ -170,7 +170,7 @@ void MarsFSPartHandle::close()
 {
     if(file_.get()) {
         file_->close();
-        file_ = auto_ptr<MarsFSFile>(0);
+        file_ = std::auto_ptr<MarsFSFile>(0);
     }
 }
 
@@ -182,7 +182,7 @@ void MarsFSPartHandle::rewind()
 
 void MarsFSPartHandle::restartReadFrom(const Offset& from)
 {
-    Log::warning() << *this << " restart read from " << from << endl;
+    Log::warning() << *this << " restart read from " << from << std::endl;
     rewind();
     long long len = from;
     long long pos = 0;
@@ -192,7 +192,7 @@ void MarsFSPartHandle::restartReadFrom(const Offset& from)
         long long e = length_[index_];
         if(len >= pos && len < pos + e)
         {
-            Log::warning() << *this << " restart read from " << from << ", index=" << index_ << ", pos=" << pos_ << endl;
+            Log::warning() << *this << " restart read from " << from << ", index=" << index_ << ", pos=" << pos_ << std::endl;
             pos_ = len - pos;
             return;
         }

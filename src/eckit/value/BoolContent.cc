@@ -42,7 +42,7 @@ BoolContent::~BoolContent()
 {
 }
 
-void BoolContent::print(ostream& s) const
+void BoolContent::print(std::ostream& s) const
 {
     s << ( value_ ? "true" : "false" );
 }

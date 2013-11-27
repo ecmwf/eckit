@@ -14,6 +14,7 @@
 #include <errno.h>
 
 #include "eckit/eckit.h"
+#include "eckit/eckit_version.h"
 
 #include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
@@ -48,7 +49,7 @@ public: // methods
     virtual bool terminateApplication() const { return false; }
 
     static bool throwing();
-    static void exceptionStack(ostream&,bool callStack = false);
+    static void exceptionStack(std::ostream&,bool callStack = false);
 
     const std::string& callStack() const { return callStack_; }
 
@@ -57,7 +58,7 @@ protected: // methods
     void reason(const string&);
     Exception();
 
-    virtual void print(ostream&) const;
+    virtual void print(std::ostream&) const;
     
 private: // members
     
@@ -68,7 +69,7 @@ private: // members
     CodeLocation      location_;  ///< where exception was first thrown
     
 
-    friend ostream& operator<<(ostream& s,const Exception& p)
+    friend std::ostream& operator<<(std::ostream& s,const Exception& p)
     {
         p.print(s);
         return s;

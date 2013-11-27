@@ -69,7 +69,7 @@ ExpPtr Function::evaluate( Scope &ctx ) const
     dispatcher_t::iterator itr = d.find( sig );
     if( itr == d.end() )
     {
-        ostringstream msg;
+        std::ostringstream msg;
         msg << "could not dispatch to function with signature: " << sig;
         throw Error( Here(), msg.str() );
     }
@@ -100,7 +100,7 @@ ExpPtr Function::clone() const
     factory_t::iterator itr = f.find( k );
     if( itr == f.end() )
     {
-        ostringstream msg;
+        std::ostringstream msg;
         msg << "could not find factory function for type: " << k;
         throw Error( Here(), msg.str() );
     }
@@ -113,7 +113,7 @@ ExpPtr Function::clone() const
     return ((*itr).second)( args );
 }
 
-void Function::print(ostream &o) const
+void Function::print(std::ostream&o) const
 {
     o << typeName() << "("; printArgs(o); o << ")";
 }

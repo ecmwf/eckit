@@ -50,13 +50,13 @@ DayOfYear::operator string() const
 	return string(os);
 }
 
-void DayOfYear::print(ostream& s) const
+void DayOfYear::print(std::ostream& s) const
 {
 	Date d(2004,value_+1);         // Take a leap year so it can accept 29th feb
 
 	char oldfill = s.fill();
-	s << setw(2) << setfill('0') << d.month() << '-' << setw(2) << setfill('0') << d.day() 
-	  << setfill(oldfill);
+	s << std::setw(2) << std::setfill('0') << d.month() << '-' << std::setw(2) << std::setfill('0') << d.day() 
+	  << std::setfill(oldfill);
 }
 
 void DayOfYear::dump(DumpLoad& a) const

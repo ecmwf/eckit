@@ -25,19 +25,19 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-void Configurable::htmlAllResources(ostream& s,Url& url) 
+void Configurable::htmlAllResources(std::ostream& s,Url& url) 
 { 
 	callAll(&Configurable::htmlResources,s,url);
 }
 
-void Configurable::htmlResources(ostream& s,Url& url)
+void Configurable::htmlResources(std::ostream& s,Url& url)
 {
 	for(Set::const_iterator i=resources_.begin();
 		i != resources_.end();++i)
 		(*i)->html(s,url);
 }
 
-void ResourceBase::html(ostream& s,Url& url)
+void ResourceBase::html(std::ostream& s,Url& url)
 {
 
 	string n = name();
@@ -48,7 +48,7 @@ void ResourceBase::html(ostream& s,Url& url)
 	if( n == u)
 	{
 		string v = url[n];
-		Log::info() << "New value for " << n << ": " << v << endl;
+		Log::info() << "New value for " << n << ": " << v << std::endl;
 		ResourceMgr::instance().set(n,v);
 		Configurable::reconfigureAll();
 	}
@@ -69,12 +69,12 @@ void ResourceBase::html(ostream& s,Url& url)
 
 class ConfigResource : public HtmlResource {
 	virtual bool restricted() { return true; }
-	virtual void html(ostream&,Url&);	
+	virtual void html(std::ostream&,Url&);	
 public:
 	ConfigResource() : HtmlResource("/config") {}	
 };
 
-void ConfigResource::html(ostream& s,Url& url)
+void ConfigResource::html(std::ostream& s,Url& url)
 {
 	Configurable::htmlAllResources(s,url);
 }

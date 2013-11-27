@@ -35,7 +35,7 @@ public:
 
 	operator string() const;
 
-	friend ostream& operator<<(ostream&,const TimeStamp&);
+	friend std::ostream& operator<<(std::ostream&,const TimeStamp&);
 
 private:
 

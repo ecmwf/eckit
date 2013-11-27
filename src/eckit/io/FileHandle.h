@@ -53,7 +53,7 @@ public:
     virtual void   close();
     virtual void   flush();
 	virtual void   rewind();
-	virtual void   print(ostream&) const;
+	virtual void   print(std::ostream&) const;
 	virtual Length estimate();
 	virtual Length saveInto(DataHandle&,TransferWatcher& = TransferWatcher::dummy());
 	virtual Offset position();
@@ -85,7 +85,7 @@ private:
 	bool                overwrite_;
 	FILE*               file_;
 	bool                read_;
-	auto_ptr<Buffer>    buffer_;
+    std::auto_ptr<Buffer>    buffer_;
 
 // -- Methods
 

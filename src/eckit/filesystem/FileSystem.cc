@@ -38,7 +38,7 @@ void FileSystem::update()
 		name_.fileSystemSize(fs_);
 		offLine_ = false;
 	}
-	catch(Exception&)
+	catch(std::exception&)
 	{
 		offLine_ = true;
 	}
@@ -61,7 +61,7 @@ long FileSystem::usage() const
 	return long(((double)(fs_.total-fs_.available)/fs_.total * 100) + 0.5);
 }
 
-void FileSystem::print(ostream& s) const
+void FileSystem::print(std::ostream& s) const
 {
 	s << name_;
 }

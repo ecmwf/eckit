@@ -35,7 +35,7 @@ protected: // members
 
 protected: // overridden methods
 
-	virtual void html(ostream&,Url&);
+	virtual void html(std::ostream&,Url&);
 
 };
 

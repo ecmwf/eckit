@@ -35,7 +35,7 @@ HtmlResource::~HtmlResource()
 	// Should do something here...
 }
 
-void HtmlResource::dispatch(eckit::Stream& s,istream& in,ostream& out,Url& url)
+void HtmlResource::dispatch(eckit::Stream& s,std::istream& in,std::ostream& out,Url& url)
 {
 	Map* m = resources_;
 
@@ -63,21 +63,21 @@ void HtmlResource::dispatch(eckit::Stream& s,istream& in,ostream& out,Url& url)
 	}
 
 	url.status(Url::notFound);
-	out << "Url not found: " << url << endl;
+	out << "Url not found: " << url << std::endl;
 
 
 	string home = eckit::Resource<string>("homePage","http://hades.ecmwf.int/mars/");
 
 	out << "Please, try the " << Html::Link(home) << "MARS home page" << Html::Link() << 
-		'.' << endl;
+		'.' << std::endl;
 
 }
 
-void HtmlResource::index(ostream& s,Url& url)
+void HtmlResource::index(std::ostream& s,Url& url)
 {
 	for(Map::iterator j = resources_->begin(); j != resources_->end(); ++j)
 	{
-		s   << Html::Link((*j).first) << (*j).first << Html::Link() << endl;		
+		s   << Html::Link((*j).first) << (*j).first << Html::Link() << std::endl;		
 	}
 }
 

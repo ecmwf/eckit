@@ -41,7 +41,7 @@ class MemoryPool : private NonCopyable {
 public: // class methods
 
 
-	static void dump(ostream&);
+	static void dump(std::ostream&);
 	static void handler();
 
 	static void* largeAllocate(size_t);
@@ -50,7 +50,7 @@ public: // class methods
 	static void* fastAllocate(size_t,MemPool& = MemPool::transientPool);
 	static void  fastDeallocate(void*,MemPool& = MemPool::transientPool);
 
-	static void info(ostream&);
+	static void info(std::ostream&);
 
 private: // methods
 

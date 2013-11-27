@@ -43,7 +43,7 @@ Tool::~Tool()
 
 void Tool::reconfigure()
 {
-    Log::info() << "Tool::reconfigure" << endl;
+    Log::info() << "Tool::reconfigure" << std::endl;
     
     int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
     
@@ -69,16 +69,16 @@ void Tool::start()
     {
         run();
 	}
-    catch(Exception& e){
+    catch( Exception& e ){
         status = 1;
-        Log::error() << "** " << e.what() << " Caught in "  << Here() <<  endl;
-        Log::error() << "** Exception is terminates " << name() << endl;
+        Log::error() << "** " << e.what() << " Caught in "  << Here() << std::endl;
+        Log::error() << "** Exception is terminates " << name() << std::endl;
         Exception::exceptionStack( Log::error(), true );
     }
-    catch(exception& e){
+    catch( std::exception& e ){
 		status = 1;
-		Log::error() << "** " << e.what() << " Caught in "  << Here() <<  endl;
-		Log::error() << "** Exception is terminates " << name() << endl;
+		Log::error() << "** " << e.what() << " Caught in "  << Here() << std::endl;
+		Log::error() << "** Exception is terminates " << name() << std::endl;
 	}
 
 	::exit(status);

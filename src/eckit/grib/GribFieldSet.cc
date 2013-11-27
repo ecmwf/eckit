@@ -89,7 +89,7 @@ GribFieldSet::~GribFieldSet()
     }
 }
 
-void GribFieldSet::print(ostream& os) const
+void GribFieldSet::print(std::ostream& os) const
 {
     os << "GribFieldSet[" << fields_.size() << "]";
 }

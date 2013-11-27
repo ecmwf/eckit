@@ -54,7 +54,7 @@ public:
 	virtual long write(const void*,long);
 	virtual void close();
 	virtual void rewind();
-	virtual void print(ostream&) const;
+	virtual void print(std::ostream&) const;
 	virtual bool merge(DataHandle*);
 	virtual bool compress(bool = false);
 	virtual Length estimate();
@@ -86,7 +86,7 @@ private:
 	Ordinal            index_;
 	OffsetList         offset_;
 	LengthList         length_;
-	auto_ptr<Buffer>   buffer_;
+    std::auto_ptr<Buffer>   buffer_;
 
 // -- Methods
 

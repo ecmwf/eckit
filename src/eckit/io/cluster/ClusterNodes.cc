@@ -173,10 +173,10 @@ public:
 		return port_;
 	}
 
-	friend ostream& operator<<(ostream&, const ClusterNodeEntry&);
+	friend std::ostream& operator<<(std::ostream&, const ClusterNodeEntry&);
 
 };
-ostream& operator<<(ostream& s, const ClusterNodeEntry& d)
+std::ostream& operator<<(std::ostream& s, const ClusterNodeEntry& d)
 {
 	s << "ClusterNodeEntry[" << d.node_ << "," << d.type_ << "," << d.host_ << ":" << d.port_ << "," << (::time(0) - d.lastSeen_)
         << "," << (d.available() ? "available" : "not-available")
@@ -217,7 +217,7 @@ void ClusterNodes::cleanup()
 	for (NodeArray::iterator k = nodeArray->begin(); k != nodeArray->end(); ++k)
         if((*k).active() && !(*k).available())
         {
-            Log::info() << "Forget " << (*k) << endl;
+            Log::info() << "Forget " << (*k) << std::endl;
             (*k).active(false);
         }
 }
@@ -363,7 +363,7 @@ void ClusterNodes::onLine(const string& host,int port)
 	}
 }
 
-void ClusterNodes::list(ostream& out)
+void ClusterNodes::list(std::ostream& out)
 {
 	pthread_once(&once, init);
 
@@ -371,7 +371,7 @@ void ClusterNodes::list(ostream& out)
 	for (NodeArray::const_iterator k = nodeArray->begin(); k != nodeArray->end(); ++k)
 	{
 		if ((*k).active())
-			out << *k << endl;
+			out << *k << std::endl;
 	}
 }
 

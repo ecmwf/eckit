@@ -21,12 +21,12 @@ namespace eckit {
 
 #ifdef CHECK_DEAD_LOCKS
 
-typedef map<void*,pthread_t,less<void*> > GotMap;
-typedef map<pthread_t,void*,less<pthread_t> > WantMap;
+typedef map<void*,pthread_t,std::less<void*> > GotMap;
+typedef map<pthread_t,void*,std::less<pthread_t> > WantMap;
 static WantMap*   wantMap = 0;
 static GotMap*   gotMap = 0;
 static Mutex* local_mutex = 0;
-typedef set<pthread_t,less<pthread_t> > Set;
+typedef std::set<pthread_t,std::less<pthread_t> > Set;
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 
@@ -53,7 +53,7 @@ void AutoLocker::want(void* resource)
 	pthread_once(&once,init);
 	local_mutex->lock();
 
-	cerr << "AutoLocker " << pthread_self() << " want " << resource << endl;
+	cerr << "AutoLocker " << pthread_self() << " want " << resource << std::endl;
 
 	GotMap::iterator i = gotMap->find(resource);
 
@@ -72,7 +72,7 @@ void AutoLocker::want(void* resource)
 void AutoLocker::got(void* resource)
 {
 	local_mutex->lock();
-	cerr << "AutoLocker " << pthread_self() << " got " << resource << endl;
+	cerr << "AutoLocker " << pthread_self() << " got " << resource << std::endl;
 	(*gotMap)[resource] = pthread_self();
 	wantMap->erase(pthread_self());
 	local_mutex->unlock();
@@ -81,7 +81,7 @@ void AutoLocker::got(void* resource)
 void AutoLocker::release(void* resource)
 {
 	local_mutex->lock();
-	cerr << "AutoLocker " << pthread_self() << " release " << resource << endl;
+	cerr << "AutoLocker " << pthread_self() << " release " << resource << std::endl;
 	gotMap->erase(resource);
 	local_mutex->unlock();
 }
@@ -90,7 +90,7 @@ static void visit(pthread_t p, Set& s,void *resource)
 {
 	if(s.find(p) != s.end())
 	{
-		cerr << "Deadlock detected"  << endl;
+		std::cerr << "Deadlock detected"  << std::endl;
 		::pause();
 
 	}

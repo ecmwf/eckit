@@ -15,6 +15,7 @@
 #include "eckit/grid/LatLon.h"
 #include "eckit/grid/Field.h"
 
+using namespace std;
 using namespace eckit;
 
 //-----------------------------------------------------------------------------

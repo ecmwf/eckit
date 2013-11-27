@@ -32,7 +32,7 @@ void RLEdecode2(InputIterator first, InputIterator last,
 	OutputIterator result);
 
 template <class InputIterator>
-void RLEprint(ostream&,InputIterator first, InputIterator last);
+void RLEprint(std::ostream&,InputIterator first, InputIterator last);
 
 
 template<class InputIterator,class OutputIterator>

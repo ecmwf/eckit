@@ -41,7 +41,7 @@ protected:
 
 // -- Methods
 	
-	void print(ostream&) const; 
+	void print(std::ostream&) const; 
 
 private:
 
@@ -95,7 +95,7 @@ private:
 
 // -- Friends
 
-	friend ostream& operator<<(ostream& s,const BasePathNameT& p)
+	friend std::ostream& operator<<(std::ostream& s,const BasePathNameT& p)
 		{ p.print(s); return s; }
 
 };

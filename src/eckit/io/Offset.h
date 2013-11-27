@@ -38,7 +38,7 @@ class Bless;
 class Offset {
 public:
 
-	friend ostream& operator<<(ostream& s,const Offset& x)
+	friend std::ostream& operator<<(std::ostream& s,const Offset& x)
 		{ return s << x.value_; }
 
 	friend Stream& operator<<(Stream& s,const Offset& x)
@@ -101,7 +101,7 @@ private:
 	friend class Length;
 };
 
-typedef vector<Offset> OffsetList;
+typedef std::vector<Offset> OffsetList;
 
 //-----------------------------------------------------------------------------
 

@@ -139,7 +139,7 @@ void Content::value(vector<Value>& v) const
 
 bool Content::operator==(const Content& other) const
 {
-	Log::debug() << *this << " == " << other << endl;
+	Log::debug() << *this << " == " << other << std::endl;
 	return (this->compare(other) == 0);
 }
 

@@ -30,7 +30,7 @@ class StreamParser : private NonCopyable  {
 
 public: // types
     
-    class Error : public exception {
+    class Error : public std::exception {
         string what_;
         virtual const char* what() const  throw() { return what_.c_str(); }
     public:

@@ -18,7 +18,7 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 
-void StdFileHandle::print(ostream& s) const
+void StdFileHandle::print(std::ostream& s) const
 {
 	s << "StdFileHandle[" << "TODO" << ']';
 	//s << "StdFileHandle[fd=" << fd_ << ']';

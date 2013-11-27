@@ -25,6 +25,7 @@
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 
+using namespace std;
 using namespace eckit;
 
 //-----------------------------------------------------------------------------

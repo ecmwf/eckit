@@ -81,10 +81,10 @@ private:
 
 // -- Members
 
-    auto_ptr<DataHandle> handle_;
+    std::auto_ptr<DataHandle> handle_;
     TCPSocket data_;
     bool fail_;
-    string error_;
+    std::string error_;
     Mutex mutex_;
 
 // -- Methods
@@ -101,7 +101,7 @@ private:
     virtual void close();
     virtual string title() const;
 
-	void print(ostream&) const; 	
+	void print(std::ostream&) const; 	
 
 // -- Class members
 	// None
@@ -111,7 +111,7 @@ private:
 
 // -- Friends
 
-	//friend ostream& operator<<(ostream& s,const MoverHandle& p)
+	//friend std::ostream& operator<<(std::ostream& s,const MoverHandle& p)
 	//	{ p.print(s); return s; }
 
 };

@@ -66,11 +66,11 @@ protected:
 
 // -- Methods
 	
-    // void print(ostream&) const;
+    // void print(std::ostream&) const;
 
 // -- Overridden methods
 
-	virtual void html(ostream&,Url&);
+	virtual void html(std::ostream&,Url&);
 
 // -- Class members
 	// None
@@ -102,7 +102,7 @@ private:
 
 // -- Friends
 
-	//friend ostream& operator<<(ostream& s,const JavaResource& p)
+	//friend std::ostream& operator<<(std::ostream& s,const JavaResource& p)
 	//	{ p.print(s); return s; }
 
 };

@@ -21,7 +21,7 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 template<class T>
-void BasePathNameT<T>::print(ostream& s) const
+void BasePathNameT<T>::print(std::ostream& s) const
 {
     s << path_;
 }

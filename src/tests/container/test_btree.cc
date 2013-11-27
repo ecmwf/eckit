@@ -14,6 +14,7 @@
 #include "eckit/os/Semaphore.h"
 #include "eckit/types/FixedString.h"
 
+using namespace std;
 using namespace eckit;
 
 class Test : public Tool {
@@ -100,7 +101,7 @@ void Test::run()
         string g;
         FixedString<256> z;
         b.get(f, z);
-        cout << string(z) << endl;
+        std::cout << string(z) << std::endl;
 
         b.dump();
 

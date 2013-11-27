@@ -23,7 +23,7 @@ namespace eckit {
 Regex::Regex(const string& s,bool shell):
 	str_(s)
 {
-	//Log::debug() << "Regex " << str_ << endl;
+	//Log::debug() << "Regex " << str_ << std::endl;
 	if(shell) {
 		long len = s.length()*3 + 1;
 		Buffer buffer(len);
@@ -70,7 +70,7 @@ Regex::Regex(const string& s,bool shell):
 		re[j] = 0;
 		str_ = re;
 	}
-	//Log::debug() << "Regex " << str_ << endl;
+	//Log::debug() << "Regex " << str_ << std::endl;
 	compile(str_.c_str());
 }
 
@@ -79,7 +79,7 @@ Regex::~Regex()
 	regfree(&re_);
 }
 
-void Regex::print(ostream& s) const
+void Regex::print(std::ostream& s) const
 {
     s << "/" << str_ << "/";
 }
@@ -87,7 +87,7 @@ void Regex::print(ostream& s) const
 bool Regex::match(const string& s) const
 { 
 	regmatch_t pm;
-	//Log::debug() << "Match " << s << " with " << str_ << " -> " << (regexec(&re_,s.c_str(),1,&pm,0) == 0) << endl;
+	//Log::debug() << "Match " << s << " with " << str_ << " -> " << (regexec(&re_,s.c_str(),1,&pm,0) == 0) << std::endl;
 	return regexec(&re_,s.c_str(),1,&pm,0) == 0;
 }
 

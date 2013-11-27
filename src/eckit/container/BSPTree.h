@@ -66,7 +66,7 @@ public:
     const Point& point() const { return node_->point(); }
     double distance() const    { return distance_; }
 
-    friend ostream& operator<<(ostream& s,const BSPNodeInfo& p)
+    friend std::ostream& operator<<(std::ostream& s,const BSPNodeInfo& p)
     {
         s << "[point=" << p.point() << ",distance=" << p.distance() << "]";
         return s;

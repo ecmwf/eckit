@@ -79,7 +79,7 @@ protected:
 
 // -- Methods
 	
-    void print(ostream&) const; // Change to virtual if base class
+    void print(std::ostream&) const; // Change to virtual if base class
 
 // -- Overridden methods
 	// None
@@ -106,7 +106,7 @@ private:
 // -- Class members
 	// None
 
-    set<GribField*> released_;
+    std::set<GribField*> released_;
     size_t max_;
     size_t count_;
 
@@ -115,7 +115,7 @@ private:
 
 // -- Friends
 
-    friend ostream& operator<<(ostream& s,const GribFieldMemoryStrategy& p)
+    friend std::ostream& operator<<(std::ostream& s,const GribFieldMemoryStrategy& p)
         { p.print(s); return s; }
 
 };

@@ -23,7 +23,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class SockBuf : public streambuf  {
+class SockBuf : public std::streambuf  {
 public:
 
 // -- Contructors

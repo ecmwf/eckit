@@ -78,7 +78,7 @@ private:
 
 // -- Friends
 
-	//friend ostream& operator<<(ostream& s,const MarsFSClient& p)
+	//friend std::ostream& operator<<(std::ostream& s,const MarsFSClient& p)
 	//	{ p.print(s); return s; }
     friend class MarsFSClientCache;
 };

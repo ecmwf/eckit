@@ -44,9 +44,9 @@ HttpHeader::HttpHeader():
 	header_[Content_Type] = " text/html";
 }
 
-HttpHeader& HttpHeader::operator=(map<string,string,less<string> >& parsed)
+HttpHeader& HttpHeader::operator=(map<string,string,std::less<string> >& parsed)
 {
-	for(map<string,string,less<string> >::const_iterator i = parsed.begin(); 
+    for(map<string,string,std::less<string> >::const_iterator i = parsed.begin();
 		i != parsed.end(); ++i) 
 			header_[(*i).first] = (*i).second;
 
@@ -64,7 +64,7 @@ HttpHeader::~HttpHeader()
 {
 }
 
-void HttpHeader::print(ostream& s) const
+void HttpHeader::print(std::ostream& s) const
 {
 
 	// Status line + CRLF
@@ -72,26 +72,26 @@ void HttpHeader::print(ostream& s) const
 
 	// General-Header : Date, Pragma
 
-	s << "Cache-Control: no-cache" << endl;
+	s << "Cache-Control: no-cache" << std::endl;
 
 	// Response-Header: Location, Server, WWW-Authenticate
-	s << "MIME-Version: 1.0" << endl;
+	s << "MIME-Version: 1.0" << std::endl;
 
 	Map::const_iterator i = header_.find(Location);
 	if( i != header_.end() )
-		s << (*i).first <<  ": " << (*i).second << endl;
+		s << (*i).first <<  ": " << (*i).second << std::endl;
 
 	i = header_.find(WWW_Authenticate);
 	if( i != header_.end() )
 	{
-		s << "This is the debug output... " << endl;
-		s << (*i).first <<  ": " << (*i).second << endl;
+		s << "This is the debug output... " << std::endl;
+		s << (*i).first <<  ": " << (*i).second << std::endl;
 	}
 
 	// Entity-Header  : Allow, Content-Encoding, 
 	// Content-Length, Content-Type, Expires, Last-Modified
 
-	s << Content_Length << ": " << contentLength_ + content_.size() << endl;
+	s << Content_Length << ": " << contentLength_ + content_.size() << std::endl;
 
 	i = header_.find(Content_Type);
 
@@ -99,7 +99,7 @@ void HttpHeader::print(ostream& s) const
 		s << (*i).first <<  ": " << (*i).second;
 
 	// CRLF
-	s << '\r' << '\n' << endl;
+	s << '\r' << '\n' << std::endl;
 
 
 	long len = content_.size();
@@ -191,7 +191,7 @@ bool HttpHeader::authenticated() const
 			p++;
 		}
 
-		cout << q << endl;
+		std::cout << q << std::endl;
 
 
 		Tokenizer parse(":");
@@ -199,11 +199,11 @@ bool HttpHeader::authenticated() const
 		parse(q,v);
 		if(v.size()==2 && v[0] == "mars" && v[1]=="clave")
 		{
-			Log::info() << "client authenticated " << q << " -> " << (*i).second << endl ;
+            Log::info() << "client authenticated " << q << " -> " << (*i).second << std::endl;
 			return true;
 		}
 
-		Log::info() << "client denied " << q << " -> " << (*i).second << endl ;
+        Log::info() << "client denied " << q << " -> " << (*i).second << std::endl;
 	}
 
 	return false;

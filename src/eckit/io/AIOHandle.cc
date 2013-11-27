@@ -244,7 +244,7 @@ void AIOHandle::rewind()
     NOTIMP;
 }
 
-void AIOHandle::print(ostream& s) const
+void AIOHandle::print(std::ostream& s) const
 {
     s << "AIOHandle[";
     s << path_;

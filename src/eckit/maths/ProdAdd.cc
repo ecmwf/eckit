@@ -56,7 +56,7 @@ string ProdAdd::returnSignature() const
     return Scalar::sig();
 }
 
-void ProdAdd::asCode(ostream &o) const
+void ProdAdd::asCode(std::ostream&o) const
 {
     o << "(" << *param(0) << " * (" << *param(1) << " + " << *param(2) << "))";
 }

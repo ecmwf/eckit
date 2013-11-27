@@ -8,50 +8,53 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/Boolean.h"
+/// @file Take.h
+/// @author Tiago Quintino
+/// @date November 2013
+
+#ifndef eckit_maths_Take_h
+#define eckit_maths_Take_h
+
+#include "eckit/maths/Function.h"
+#include "eckit/maths/Undef.h"
 
 namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Boolean::Boolean( const Boolean::value_t& v ) : v_(v)
-{
-}
+/// Takes an element from the list
+class Take : public Function {
 
-ExpPtr Boolean::clone() const
-{
-    return maths::boolean( value() );
-}
+public: // methods
 
-bool Boolean::is(const ExpPtr &e) {
-    return dynamic_cast<Boolean*>(e.get()) != 0;
-}
+    static std::string className() { return "Take"; }
 
-void Boolean::print(std::ostream&o) const
-{
-    o << className() << "(" << v_ << ")";
-}
+    Take( const args_t& args );
 
-void Boolean::asCode(std::ostream&o) const
-{
-    o << "Math(" << (v_? "true" : "false") << ")";
-}
+    Take( ExpPtr e = undef(), ExpPtr l = undef()  );
 
-Boolean::Boolean(const ExpPtr& e) : v_(0)
-{
-   //ASSERT( e->returnSignature() == Boolean::sig() );
-   v_ = Boolean::extract( e->eval() );
-}
+private:
+
+    virtual std::string typeName() const { return Take::className(); }
+
+    virtual std::string returnSignature() const;
+
+    virtual ExpPtr evaluate( Scope& ctx );
+
+    virtual ExpPtr optimise();
+
+    virtual void asCode( std::ostream& ) const;
+
+};
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr boolean(const Boolean::value_t &s)
-{
-    return ExpPtr( new Boolean(s) );
-}
+ExpPtr take( ExpPtr e, ExpPtr l );
 
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths
 } // namespace eckit
+
+#endif

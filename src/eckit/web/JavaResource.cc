@@ -30,18 +30,18 @@ JavaResource::~JavaResource()
 {
 }
 
-void JavaResource::html(ostream& s,Url& url)
+void JavaResource::html(std::ostream& s,Url& url)
 {
 	url.dontCache();
 
 	eckit::PathName path("~/http/" + url.name());
 	char c;
 
-	ifstream in(path.localPath());
+	std::ifstream in(path.localPath());
 	if(!in)	
 	{
 		(url.headerOut()).status(404);  // Not Found
-		s << path << ": " << Log::syserr << endl;
+		s << path << ": " << Log::syserr << std::endl;
 	}
 	else
 	{

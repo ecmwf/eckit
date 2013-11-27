@@ -34,7 +34,7 @@ protected:
 
 // -- Methods
 	
-	void print(ostream& s) const 
+	void print(std::ostream& s) const 
 	{
 		s << BigNum(count_) << ' ' << s_;
 		if(count_>1) s << 's';
@@ -49,7 +49,7 @@ private:
 
 // -- Friends
 
-	friend ostream& operator<<(ostream& s,const Plural& p)
+	friend std::ostream& operator<<(std::ostream& s,const Plural& p)
 		{ p.print(s); return s; }
 
 };

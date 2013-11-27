@@ -25,14 +25,14 @@ TimeInterval::TimeInterval(const DateTime& t1, const DateTime& t2):
 {
 }
 
-void TimeInterval::print(ostream& s) const
+void TimeInterval::print(std::ostream& s) const
 {
 	s << "[" << begin_ << "," << end_ << "]";
 }
 
 TimeInterval TimeInterval::intersect(const TimeInterval& other) const
 {
-	return TimeInterval(::max(begin_,other.begin_),::min(end_,other.end_));
+    return TimeInterval(std::max(begin_,other.begin_),std::min(end_,other.end_));
 }
 
 //-----------------------------------------------------------------------------

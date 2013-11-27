@@ -52,7 +52,7 @@ FileStream::~FileStream()
         while(ret < 0 && errno == EINTR)
             ret = fsync(fileno(file_));
         if(ret < 0) {
-            Log::error() << "Cannot fsync(" << name_ << ") " <<fileno(file_) <<  Log::syserr << endl;
+            Log::error() << "Cannot fsync(" << name_ << ") " <<fileno(file_) <<  Log::syserr << std::endl;
         }
         //if(ret<0)
         //throw FailedSystemCall(string("fsync(") + name_ + ")");
@@ -72,7 +72,7 @@ FileStream::~FileStream()
             ret = fsync(dir);
 
         if(ret < 0) {
-            Log::error() << "Cannot fsync(" << directory << ")" << Log::syserr << endl;
+            Log::error() << "Cannot fsync(" << directory << ")" << Log::syserr << std::endl;
         }
         ::closedir(d);
 #endif

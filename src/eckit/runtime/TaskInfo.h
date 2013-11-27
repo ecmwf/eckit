@@ -184,11 +184,11 @@ private:
 
 // -- Methods
 
-	void print(ostream&) const; 
+	void print(std::ostream&) const; 
 
 // -- Friends
 
-	friend ostream& operator<<(ostream& s,const TaskInfo& p)
+	friend std::ostream& operator<<(std::ostream& s,const TaskInfo& p)
 		{ p.print(s); return s; }
 
 };

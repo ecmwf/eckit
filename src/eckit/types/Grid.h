@@ -109,7 +109,7 @@ protected:
 
 // -- Methods
 	
-	void print(ostream& s) const;
+	void print(std::ostream& s) const;
 
 // -- Overridden methods
 	// None
@@ -132,7 +132,7 @@ private:
 
 // -- Friends
 
-	friend ostream& operator<<(ostream& s,const Grid& p)
+	friend std::ostream& operator<<(std::ostream& s,const Grid& p)
 		{ p.print(s); return s; }
 
 };

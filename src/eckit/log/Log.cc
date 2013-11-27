@@ -95,7 +95,7 @@ std::ostream& Log::panic()
     {
         return Log::error();
     }
-    catch(exception&)
+    catch(std::exception&)
     {
         return  std::cerr;
     }
@@ -107,7 +107,7 @@ std::ostream& Log::panic(const CodeLocation& where)
     {
         return Log::error(where);
     }
-    catch(exception&)
+    catch(std::exception&)
     {
         std::cerr << "[" << where << "]";
         return  std::cerr;
@@ -186,7 +186,7 @@ void Log::notifyClient(const string& msg)
 
 #ifndef _GNU_SOURCE
 
-static void handle_strerror_r(ostream& s, int e, char es[], int hs )
+static void handle_strerror_r(std::ostream& s, int e, char es[], int hs )
 {
     if( hs == 0 )
         s << " (" << es << ") " ;
@@ -196,7 +196,7 @@ static void handle_strerror_r(ostream& s, int e, char es[], int hs )
 
 #else // GNU implementation is not XSI compliant and returns char* instead of int
 
-static void handle_strerror_r(ostream& s, int e, char[], char* p )
+static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 {
     if( p != 0 )
         s << " (" << p << ") " ;
@@ -208,7 +208,7 @@ static void handle_strerror_r(ostream& s, int e, char[], char* p )
 
 //-----------------------------------------------------------------------------
 
-ostream& Log::syserr(ostream& s)
+std::ostream& Log::syserr(std::ostream& s)
 {
         int e = errno;
         char estr [256];
@@ -218,14 +218,14 @@ ostream& Log::syserr(ostream& s)
 
 //-----------------------------------------------------------------------------
 
-static int xindex = ios::xalloc();
+static int xindex = std::ios::xalloc();
 
-int format(ostream& s)
+int format(std::ostream& s)
 {
         return s.iword(xindex);
 }
 
-ostream& setformat(ostream& s,int n)
+std::ostream& setformat(std::ostream& s,int n)
 {
         s.iword(xindex) = n;
         return s;

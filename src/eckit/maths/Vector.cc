@@ -39,7 +39,7 @@ ExpPtr Vector::clone() const
     return maths::vector( value() );
 }
 
-void Vector::print(ostream &o) const
+void Vector::print(std::ostream&o) const
 {
     o << className() << "(";
     for( size_t i = 0; i < v_.size(); ++i )
@@ -50,7 +50,7 @@ void Vector::print(ostream &o) const
     o << ")";
 }
 
-void Vector::asCode(ostream &o) const
+void Vector::asCode(std::ostream&o) const
 {
     o << "maths::vector(";
     for( size_t i = 0; i < v_.size(); ++i )

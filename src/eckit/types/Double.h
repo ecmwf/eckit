@@ -59,13 +59,13 @@ public: // methods
 
 protected: // methods
 
-	void print(ostream& s) const;
+	void print(std::ostream& s) const;
 
 private: // members
 
 	double value_;
 
-	friend ostream& operator<<(ostream& s,const Double& p)
+	friend std::ostream& operator<<(std::ostream& s,const Double& p)
 		{ p.print(s); return s; }
 
 };

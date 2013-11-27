@@ -22,12 +22,12 @@ HandleBuf::HandleBuf(DataHandle& handle):
 { 
 #ifndef OLD_STREAMBUF
 	/* setg(in_,  in_,  in_  + sizeof(in_) );  */
-	setg(in_, in_, in_); 
-	setp(out_, out_ + sizeof(out_)); 
+    setg(in_, in_, in_);
+    setp(out_, out_ + sizeof(out_));
 #else
-	setb(in_, in_ + sizeof(in_), 0); 
-	setg(in_, in_, in_); 
-	setp(out_, out_ + sizeof(out_)); 
+    setb(in_, in_ + sizeof(in_), 0);
+    setg(in_, in_, in_);
+    setp(out_, out_ + sizeof(out_));
 #endif
 }
 

@@ -42,7 +42,7 @@ public:
 	void endObject();
 	eckit::Stream& stream()  { return stream_; }
 
-	virtual void execute(eckit::Stream&,istream&,ostream&) = 0;
+	virtual void execute(eckit::Stream&,std::istream&,std::ostream&) = 0;
 	virtual int  clearance() = 0;
 
 // -- Overridden methods
@@ -53,7 +53,7 @@ public:
 // -- Class methods
     
     static  const eckit::ClassSpec&  classSpec()        { return classSpec_;}
-	static void serve(eckit::Stream&,istream&,ostream&);
+	static void serve(eckit::Stream&,std::istream&,std::ostream&);
 
 protected: // members
 
@@ -62,7 +62,7 @@ protected: // members
 
 protected: // methods
 	
-	virtual void print(ostream&) const = 0; 	
+	virtual void print(std::ostream&) const = 0; 	
 
 private: // members
 	
@@ -71,7 +71,7 @@ private: // members
 
 private: // methods
 
-	friend ostream& operator<<(ostream& s,const JavaAgent& p)
+	friend std::ostream& operator<<(std::ostream& s,const JavaAgent& p)
 		{ p.print(s); return s; }
 
 	friend class JavaUser;

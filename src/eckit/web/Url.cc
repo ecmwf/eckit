@@ -27,9 +27,9 @@ inline void header(char c)
 {
 #if 0
 	if(isprint(c))
-		cout << "header: " << c << endl;
+		std::cout << "header: " << c << std::endl;
 	else
-		cout << "header: " << hex << int(c) << dec << endl;
+		std::cout << "header: " << hex << int(c) << dec << std::endl;
 #endif
 }
 
@@ -95,7 +95,7 @@ void Url::parse(const string& url, bool param)
 
 }
 
-Url::Url(istream& in)
+Url::Url(std::istream& in)
 {
 	string url;
 
@@ -108,15 +108,15 @@ Url::Url(istream& in)
 		header(c);
 
 	parse(in);
-	Log::debug() << "Incomming url-> " << *this << endl;
+	Log::debug() << "Incomming url-> " << *this << std::endl;
 }
 
-void Url::parse(istream& in)
+void Url::parse(std::istream& in)
 {
 
 	char c = 0;
 
-	map<string,string,less<string> > m;
+    map<string,string,std::less<string> > m;
 
 	for(;;)
 	{
@@ -191,7 +191,7 @@ void Url::parse(istream& in)
         if(type == JSONType)
         {
             const char* p = in_.content();
-            istringstream in(p ? p : "null");
+            std::istringstream in(p ? p : "null");
 
             JSONParser q(in);
             json_ = q.parse();
@@ -199,14 +199,14 @@ void Url::parse(istream& in)
 
 	}
 
-	Log::debug() << *this << endl;
+	Log::debug() << *this << std::endl;
 }
 
 Url::Url(const string& url):
 	method_("GET")
 {
 	parse(url,false);
-	Log::debug() << "Incomming url-> " << *this << endl;
+	Log::debug() << "Incomming url-> " << *this << std::endl;
 }
 
 Url::~Url()
@@ -224,7 +224,7 @@ string Url::name() const
 	return s;
 }
 
-void Url::print(ostream& s) const
+void Url::print(std::ostream& s) const
 {
 	for(vector<string>::const_iterator j = url_.begin();
 		j != url_.end(); ++j)
@@ -240,7 +240,7 @@ void Url::print(ostream& s) const
 
 }
 
-void Url::cgiParam(ostream& s,char sep) const
+void Url::cgiParam(std::ostream& s,char sep) const
 {
 	char c = ' ';
 	Map::const_iterator i;

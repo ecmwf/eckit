@@ -29,7 +29,7 @@ namespace eckit {
 ClassSpec PartFileHandle::classSpec_ = {&DataHandle::classSpec(),"PartFileHandle",};
 Reanimator<PartFileHandle> PartFileHandle::reanimator_;
 
-void PartFileHandle::print(ostream& s) const
+void PartFileHandle::print(std::ostream& s) const
 {
     if(format(s) == Log::compactFormat)
         s << "PartFileHandle";
@@ -85,7 +85,7 @@ PartFileHandle::PartFileHandle(const PathName& name,
     offset_(offset),
     length_(length)
 {
-//    Log::info() << "PartFileHandle::PartFileHandle " << name << endl;
+//    Log::info() << "PartFileHandle::PartFileHandle " << name << std::endl;
     ASSERT(offset_.size() == length_.size());
     compress(false);
 }
@@ -113,7 +113,7 @@ PartFileHandle::~PartFileHandle()
 {
     if(file_)
     {
-        Log::warning() << "Closing PartFileHandle " << name_ << endl;
+        Log::warning() << "Closing PartFileHandle " << name_ << std::endl;
         ::fclose(file_);
         file_ = 0;
     }
@@ -127,7 +127,7 @@ Length PartFileHandle::openForRead()
     static long bufSize  = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize",0);
     static bool best     = Resource<bool>("bestPartFileHandleBufferSize",false);
 
-//    Log::info() << "PartFileHandle::openForRead " << name_ << endl;
+//    Log::info() << "PartFileHandle::openForRead " << name_ << std::endl;
 
 #ifdef USE_LINKS
     file_ = ::fopen(link_.localPath(),"r");
@@ -161,7 +161,7 @@ Length PartFileHandle::openForRead()
 
     if(size)
     {
-        Log::debug() << "PartFileHandle using " << Bytes(size) << endl;
+        Log::debug() << "PartFileHandle using " << Bytes(size) << std::endl;
         buffer_.reset(new Buffer(size));
         Buffer& b = *(buffer_.get());
         ::setvbuf(file_,b,_IOFBF,size);
@@ -207,7 +207,7 @@ long PartFileHandle::read1(char *buffer,long length)
     ASSERT(::ftello(file_) == pos);
 
     ll        = length_[index_] - Length(pos_);
-    Length lsize = ::min(Length(length),ll);
+    Length lsize = std::min(Length(length),ll);
     long size  = lsize;
 
     ASSERT(Length(size) == lsize);
@@ -264,7 +264,7 @@ void PartFileHandle::close()
     }
     else
     {
-        Log::warning() << "Closing PartFileHandle " << name_ << ", file is not opened" << endl;
+        Log::warning() << "Closing PartFileHandle " << name_ << ", file is not opened" << std::endl;
     }
     buffer_.reset(0);
 }
@@ -277,7 +277,7 @@ void PartFileHandle::rewind()
 
 void PartFileHandle::restartReadFrom(const Offset& from)
 {
-    Log::warning() << *this << " restart read from " << from << endl;
+    Log::warning() << *this << " restart read from " << from << std::endl;
     rewind();
     long long len = from;
     long long pos = 0;
@@ -287,7 +287,7 @@ void PartFileHandle::restartReadFrom(const Offset& from)
         long long e = length_[index_];
         if(len >= pos && len < pos + e)
         {
-            Log::warning() << *this << " restart read from " << from << ", index=" << index_ << ", pos=" << pos_ << endl;
+            Log::warning() << *this << " restart read from " << from << ", index=" << index_ << ", pos=" << pos_ << std::endl;
             pos_ = len - pos;
             return;
         }

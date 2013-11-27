@@ -53,7 +53,7 @@ public: // methods
 	~ThreadPool();
     
     void push(ThreadPoolTask*);
-    void push(list<ThreadPoolTask*>&);
+    void push(std::list<ThreadPoolTask*>&);
     ThreadPoolTask* next();
     void notifyStart();
     void notifyEnd();
@@ -70,7 +70,7 @@ private: // members
     bool error_;
     string errorMessage_;
     string name_;
-    list<ThreadPoolTask*> queue_;
+    std::list<ThreadPoolTask*> queue_;
 
 };
 

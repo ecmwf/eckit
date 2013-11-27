@@ -61,7 +61,7 @@ class MoverHandleThread : public Thread {
 		{
 			DataHandle& remote = owner_.handle();
 			Monitor::instance().name("mover");
-			Log::status() << "Using mover" << endl;
+			Log::status() << "Using mover" << std::endl;
 			MoverTransfer mover;
 			if(read_) {
 				mover.transfer(remote, local_);
@@ -73,14 +73,14 @@ class MoverHandleThread : public Thread {
 		}
 		catch(TimeOut& e)
 		{
-			Log::error() << "** " << e.what() << " Caught in " << here <<  endl;
-			Log::error() << "** Exception is handled" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+			Log::error() << "** Exception is handled" << std::endl;
 			owner_.fail(Retry(e.what()).what());
 		}
-		catch(exception& e)
+		catch(std::exception& e)
 		{
-			Log::error() << "** " << e.what() << " Caught in " << here <<  endl;
-			Log::error() << "** Exception is handled" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+			Log::error() << "** Exception is handled" << std::endl;
 			owner_.fail(e.what());
 		}
 
@@ -97,8 +97,8 @@ class MoverHandleThread : public Thread {
 		{
 			AutoLock<Mutex> lock(mutex_);
 			fail_ = true;
-			Log::error() << "** " << e.what() << " Caught in " << here <<  endl;
-			Log::error() << "** Exception is handled" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+			Log::error() << "** Exception is handled" << std::endl;
 			throw Retry(e.what());
 		}
 		catch(...)
@@ -136,7 +136,7 @@ Length MoverHandle::openForRead()
 	ThreadControler tc(t);
 	tc.start();
 	data_ = t->accept();
-	Log::info() << "Connected" << endl;
+	Log::info() << "Connected" << std::endl;
 
 	return handle_->estimate();
 }
@@ -155,12 +155,12 @@ void MoverHandle::openForWrite(const Length&)
 	catch(TimeOut& e)
 	{
 		// TODO: Check if the thread disapear
-		Log::error() << "** " << e.what() << " Caught in " << here <<  endl;
-		Log::error() << "** Exception is handled" << endl;
+		Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+		Log::error() << "** Exception is handled" << std::endl;
 		throw Retry(e.what());
 	}
 
-	Log::info() << "Connected" << endl;
+	Log::info() << "Connected" << std::endl;
 }
 
 
@@ -190,7 +190,7 @@ long MoverHandle::write(const void* buf, long len)
 	return data_.write(buf, len);
 }
 
-void MoverHandle::print(ostream& s) const
+void MoverHandle::print(std::ostream& s) const
 {
 	s << "MoverHandle[";
 	handle_->print(s);

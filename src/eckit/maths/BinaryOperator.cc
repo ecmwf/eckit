@@ -112,7 +112,7 @@ BinaryOperator<T>::BinaryOperator(const args_t &args) : Function( args )
 }
 
 template < class T >
-string BinaryOperator<T>::returnSignature() const
+std::string BinaryOperator<T>::returnSignature() const
 {
     for( args_t::const_iterator i = args_.begin(); i != args_.end(); ++i )
     {
@@ -129,7 +129,7 @@ std::string BinaryOperator<T>::typeName() const
 }
 
 template < class T >
-string BinaryOperator<T>::className()
+std::string BinaryOperator<T>::className()
 {
     return opname( T() );
 }

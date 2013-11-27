@@ -53,7 +53,7 @@ public:
 	virtual long write(const void*,long);
 	virtual void close();
 	virtual void rewind();
-	virtual void print(ostream&) const;
+	virtual void print(std::ostream&) const;
 	virtual bool merge(DataHandle*);
 	virtual bool compress(bool = false);
 	virtual Length estimate();
@@ -84,7 +84,7 @@ private:
 	OffsetList         offset_;
 	LengthList         length_;
 
-    auto_ptr<MarsFSFile>  file_;
+    std::auto_ptr<MarsFSFile>  file_;
 
 // -- Methods
 

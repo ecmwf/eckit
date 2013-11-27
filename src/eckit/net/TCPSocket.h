@@ -121,7 +121,7 @@ private:
 
 };
 
-ostream& operator<<(ostream&,in_addr);
+std::ostream& operator<<(std::ostream&,in_addr);
 
 
 //-----------------------------------------------------------------------------

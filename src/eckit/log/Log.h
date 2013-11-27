@@ -95,13 +95,14 @@ public: // methods
     static void notifyClient(const string&);
 
     /// manipulator that will print the last error message as in perror(2)
-	static	ostream& syserr(ostream&);
+    static std::ostream& syserr(std::ostream&);
 
 
-    // For Magics
+    /// @todo find a way to refactor this ...
+    // This is for Magics
     static void registerObserver(LogObserver*);
     static void unregisterObserver(LogObserver*);
-    static ostream& dev() { return cout; }
+    static std::ostream& dev() { return std::cout; }
     static void broadcast();
 
 private:
@@ -111,19 +112,15 @@ private:
 
 };
 
+//-----------------------------------------------------------------------------
 
-
-
+std::ostream& setformat(std::ostream&,int);
+int format(std::ostream&);
 
 //-----------------------------------------------------------------------------
 
-ostream& setformat(ostream&,int);
-int format(ostream&);
-
-//-----------------------------------------------------------------------------
-
-#define DEBUG_HERE     std::cerr << " DEBUG @ " << Here() << std::endl;
-#define DEBUG_VAR(x)   std::cerr << #x << " : [" << x << "] @ " << Here() << std::endl;
+#define DEBUG_HERE     std::cerr << " DEBUG () @ " << Here() << std::endl;
+#define DEBUG_VAR(x)   std::cerr << " DEBUG (" << #x << ":" << x << ") @ " << Here() << std::endl;
 
 //-----------------------------------------------------------------------------
 

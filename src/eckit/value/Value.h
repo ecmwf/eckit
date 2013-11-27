@@ -177,11 +177,11 @@ private:
 // -- Methods
 
     void json(JSON& s) const        { s << *content_; }
-    void print(ostream& s) const    { s << *content_; }
+    void print(std::ostream& s) const    { s << *content_; }
     void encode(Stream& s) const    { s << *content_; }
 
     friend JSON& operator<<(JSON& s, const Value& v) { v.json(s);  return s; }
-	friend ostream& operator<<(ostream& s, const Value& v) { v.print(s);  return s; }
+	friend std::ostream& operator<<(std::ostream& s, const Value& v) { v.print(s);  return s; }
 	friend Stream&  operator<<(Stream&  s, const Value& v) { v.encode(s); return s; }
 
 	friend class Content;

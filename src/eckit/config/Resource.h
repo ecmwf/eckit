@@ -44,8 +44,8 @@ public: // methods
 	virtual ~ResourceBase();
 
 	void reset() { inited_ = false; converted_ = false;  }
-	void dump(ostream&) const;
-	void html(ostream&,Url&);
+	void dump(std::ostream&) const;
+    void html(std::ostream&,Url&);
 
 	std::string name() const;
 

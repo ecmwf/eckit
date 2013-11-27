@@ -33,7 +33,7 @@ public: // methods
 
     ~HttpHeader();
 
-	HttpHeader& operator=(map<string,string,less<string> >&);
+    HttpHeader& operator=(map<string,string,std::less<string> >&);
 
 	void length(const long);
 	long contentLength() const;
@@ -54,7 +54,7 @@ public: // methods
 
 protected: // methods
 	
-    void print(ostream&) const;
+    void print(std::ostream&) const;
 
 private: // members
 
@@ -73,7 +73,7 @@ private: // members
 
 private: // methods
 
-	friend ostream& operator<<(ostream& s,const HttpHeader& p)
+	friend std::ostream& operator<<(std::ostream& s,const HttpHeader& p)
 		{ p.print(s); return s; }
 
 };

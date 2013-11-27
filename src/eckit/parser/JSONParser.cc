@@ -20,7 +20,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class JSONTokenizerError : public exception {
+class JSONTokenizerError : public std::exception {
     string what_;
     virtual const char* what() const  throw()
     {
@@ -236,7 +236,7 @@ Value JSONParser::parseArray()
     if(c == ']')
     {
         consume(c);
-        //cout << "JSONTokenizer::parseArray <== " << endl;;
+        //cout << "JSONTokenizer::parseArray <== " << std::endl;;
         return Value::makeList();
     }
 
@@ -249,7 +249,7 @@ Value JSONParser::parseArray()
         if(c == ']')
         {
             consume(c);
-            //cout << "JSONTokenizer::parseArray <== " << endl;;
+            //cout << "JSONTokenizer::parseArray <== " << std::endl;;
             return Value::makeList(l);
         }
 
@@ -290,7 +290,7 @@ Value JSONParser::parseValue()
     }
 }
 
-JSONParser::JSONParser(istream &in) : StreamParser(in)
+JSONParser::JSONParser(std::istream &in) : StreamParser(in)
 {
 }
 

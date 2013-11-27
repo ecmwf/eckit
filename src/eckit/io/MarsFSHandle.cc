@@ -22,7 +22,7 @@ namespace eckit {
 ClassSpec MarsFSHandle::classSpec_ = {&DataHandle::classSpec(),"MarsFSHandle",};
 Reanimator<MarsFSHandle> MarsFSHandle::reanimator_;
 
-void MarsFSHandle::print(ostream& s) const
+void MarsFSHandle::print(std::ostream& s) const
 {
 	s << "MarsFSHandle[file=" << path_ << ']';
 }
@@ -48,12 +48,12 @@ MarsFSHandle::MarsFSHandle(const MarsFSPath& path, bool overwrite):
     position_(0),
     overwrite_(overwrite)    
 {
-	//Log::info() << "CREATE " << *this << endl;
+	//Log::info() << "CREATE " << *this << std::endl;
 }
 
 MarsFSHandle::~MarsFSHandle()
 {
-	//Log::info() << "DESTROY " << *this << endl;
+	//Log::info() << "DESTROY " << *this << std::endl;
 }
 
 
@@ -62,7 +62,7 @@ Length MarsFSHandle::openForRead()
 	read_   = true;
     position_ = 0;
     if(!file_.get())
-    	file_ = auto_ptr<MarsFSFile>(new MarsFSFile(path_));
+        file_ = std::auto_ptr<MarsFSFile>(new MarsFSFile(path_));
     length_ = file_->open("r");
     return length_;
 }
@@ -73,7 +73,7 @@ void MarsFSHandle::openForWrite(const Length& length)
     length_ = length;
     position_ = 0;
     if(!file_.get())
-    	file_ = auto_ptr<MarsFSFile>(new MarsFSFile(path_));
+        file_ = std::auto_ptr<MarsFSFile>(new MarsFSFile(path_));
     file_->open("w", overwrite_);
 }
 
@@ -107,7 +107,7 @@ void MarsFSHandle::close()
 {
 	if(file_.get()) {
 		file_->close();
-		file_ = auto_ptr<MarsFSFile>(0);
+        file_ = std::auto_ptr<MarsFSFile>(0);
 	}
 }
 
@@ -140,7 +140,7 @@ void MarsFSHandle::restartReadFrom(const Offset& from)
 {
     ASSERT(read_);
     ASSERT(file_.get());
-    Log::warning() << *this << " restart read from " << from << endl;
+    Log::warning() << *this << " restart read from " << from << std::endl;
     ASSERT(file_->seek(from) == from);
 }
 
@@ -148,7 +148,7 @@ void MarsFSHandle::restartWriteFrom(const Offset& from)
 {
     ASSERT(!read_);
     ASSERT(file_.get());
-    Log::warning() << *this << " restart write from " << from << endl;
+    Log::warning() << *this << " restart write from " << from << std::endl;
     ASSERT(file_->seek(from) == from);
 }
 

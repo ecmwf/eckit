@@ -38,7 +38,7 @@ public:
 
 private:
 
-    virtual void html(ostream&,Url&);
+    virtual void html(std::ostream&,Url&);
     virtual void json(eckit::JSON&,const eckit::Value&) = 0;
 
 };

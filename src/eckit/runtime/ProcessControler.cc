@@ -60,7 +60,7 @@ ProcessControler::ProcessControler(bool forget):
 ProcessControler::~ProcessControler()
 {
 	if(!forget_ && active()) 
-		Log::warning() << "~ProcessControler called while process still active" << endl;
+		Log::warning() << "~ProcessControler called while process still active" << std::endl;
 }
 
 void ProcessControler::printStatus(pid_t pid,int status)
@@ -76,7 +76,7 @@ void ProcessControler::printStatus(pid_t pid,int status)
 	if(WIFSIGNALED(status))
 		Log::info() << " with signal " << WTERMSIG(status); 
 
-	Log::info() << endl;
+	Log::info() << std::endl;
 }
 
 void ProcessControler::end(result& r)
@@ -109,7 +109,7 @@ void ChildReaper::run()
 	{
 		ProcessControler::result r;
 		r.found_ = false;
-		Log::status() << "Waiting" << endl;
+		Log::status() << "Waiting" << std::endl;
 
         Monitor::instance().show(false);
 		r.pid_ = ::waitpid(-1, &r.status_, 0);
@@ -118,12 +118,12 @@ void ChildReaper::run()
 		if(r.pid_ == -1) {
 			// Todo: use mutex cond....
             if(errno != ECHILD) 
-                Log::error() << "Wait pid " << Log::syserr << endl;
+                Log::error() << "Wait pid " << Log::syserr << std::endl;
 			::sleep(5);
 		}
 		else
 		{
-			Log::status() << "End of " << r.pid_ << endl;
+			Log::status() << "End of " << r.pid_ << std::endl;
 			ProcessControler::printStatus(r.pid_,r.status_);
 			ProcessControler::callAll(&ProcessControler::end,r);
 		}
@@ -161,16 +161,16 @@ void ProcessControler::start()
 			pid_ = ::getpid();
 			child_ = true;
 
-			//Log::info() << "Starting new process with a pid of " << pid_ << endl;
+			//Log::info() << "Starting new process with a pid of " << pid_ << std::endl;
 
 			try {
 				run();
 			}
-			catch(exception& e){
+			catch(std::exception& e){
 				Log::error() << "** " << e.what() << " Caught in " 
-					<< here <<  endl;
+					<< here << std::endl;
 				Log::error() << "** Exception is terminate process " 
-							 << pid_ << endl;
+							 << pid_ << std::endl;
 			}
 
 
@@ -178,7 +178,7 @@ void ProcessControler::start()
 			break;
 
 		case -1:
-			Log::error() << "Cannot fork " << Log::syserr << endl;
+			Log::error() << "Cannot fork " << Log::syserr << std::endl;
 			throw FailedSystemCall("fork");
 			break;
 
@@ -197,7 +197,7 @@ void ProcessControler::stop()
 {
 	if(!active()) return;
 
-	Log::info() << "ProcessControler::stop " << child_ << '-' << pid_ << endl;
+	Log::info() << "ProcessControler::stop " << child_ << '-' << pid_ << std::endl;
 	if(child_)
 		::exit(0);
 	else
@@ -218,15 +218,15 @@ void ProcessControler::wait()
 	if(!active())
 		return;
 
-	Log::info() << "ProcessControler::wait " << pid_ << " " << child_ << endl;
+	Log::info() << "ProcessControler::wait " << pid_ << " " << child_ << std::endl;
 	if(pid_ != -1 && !child_)
 	{
 		pid_t pid = ::waitpid(pid_,&status,0);
 
 		if(pid != pid_)
 		{
-			Log::error() << "Wait pid returns " << errno << ' ' <<pid << endl;
-			Log::error() << Log::syserr << endl;
+			Log::error() << "Wait pid returns " << errno << ' ' <<pid << std::endl;
+			Log::error() << Log::syserr << std::endl;
 		}
 		else
 		{

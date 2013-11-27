@@ -23,10 +23,10 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 
-class StrStream : public ostringstream {
+class StrStream : public std::ostringstream {
 public:
     operator string() { return str(); }
-    static ostream&  ends(ostream& os)  { return os; }
+    static std::ostream&  ends(std::ostream& os)  { return os; }
 };
 
 

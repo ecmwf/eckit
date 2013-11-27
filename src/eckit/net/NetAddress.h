@@ -30,7 +30,7 @@ public:
     friend Stream& operator<<(Stream&,const NetAddress&);
     friend Stream& operator>>(Stream&,NetAddress&);
 	
-    friend ostream& operator<<(ostream& s,const NetAddress& p)
+    friend std::ostream& operator<<(std::ostream& s,const NetAddress& p)
         { p.print(s); return s; }
 
 // Contructors
@@ -72,7 +72,7 @@ private:
 
 // Methods
 
-    void print(ostream&) const;
+    void print(std::ostream&) const;
 };
 
 

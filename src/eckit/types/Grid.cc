@@ -31,8 +31,8 @@ public:
 	static const Grid& lookUp(char c);
 
 private:
-	typedef map<char,Grid,less<char> > CharGridTable;
-	typedef map<Grid,char,less<Grid> > GridCharTable;
+    typedef map<char,Grid,std::less<char> > CharGridTable;
+    typedef map<Grid,char,std::less<Grid> > GridCharTable;
 
 	static CharGridTable charGridTable_;
 	static GridCharTable gridCharTable_;
@@ -115,7 +115,7 @@ Grid::Grid(const string& s)
 			break;
 	}
 
-	Log::userInfo() << "GRID: " << s << " ---- " << *this << endl;
+	Log::userInfo() << "GRID: " << s << " ---- " << *this << std::endl;
 
 }
 
@@ -149,7 +149,7 @@ Grid::operator string() const
 	return string(os);
 }
 
-void Grid::print(ostream& s) const
+void Grid::print(std::ostream& s) const
 {
 	if(undefined())
 		s << "(undefined)";
@@ -186,21 +186,20 @@ bool Grid::operator<(const Grid& other) const
 const Grid& Grid::bestMatch(const vector<Grid>& v) const
 {
 
-    Log::userInfo() << "Grid::bestMatch " << v.size() << endl;
-    Log::info() << "Grid::bestMatch " << v.size() << endl;
+    Log::userInfo() << "Grid::bestMatch " << v.size() << std::endl;
+    Log::info() << "Grid::bestMatch " << v.size() << std::endl;
     for(vector<Grid>::const_iterator j = v.begin(); j != v.end(); ++j)
 	{
-		Log::userInfo() << "Grid::bestMatch " << (*j) << endl;
-		Log::info() << "Grid::bestMatch " << (*j) << endl;
+		Log::userInfo() << "Grid::bestMatch " << (*j) << std::endl;
+		Log::info() << "Grid::bestMatch " << (*j) << std::endl;
 	}
 
 	ASSERT( v.size() > 0 );
 
 	// Perfect match
-	if(::find(v.begin(),v.end(),*this) != v.end())
+    if( std::find(v.begin(),v.end(),*this) != v.end() )
 		return *this;
 		
-
 	long   smax = score(v[0]);
 	int    choice = 0;
 

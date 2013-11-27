@@ -49,7 +49,7 @@ public:
 
     static size_t size(const KDPoint&) { return SIZE; }
 
-    friend ostream& operator<<(ostream& s,const KDPoint& p)
+    friend std::ostream& operator<<(std::ostream& s,const KDPoint& p)
     {
         s << '(' << p.x_[0] << "," << p.x_[1] << ' ' << p.payload_ << ')';
         //s << '(' << p.x_[0] << "," << p.x_[1] << ')';

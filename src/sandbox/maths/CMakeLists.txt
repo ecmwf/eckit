@@ -1,13 +1,15 @@
 ecbuild_add_executable(   
 	TARGET      y-combinator
 	SOURCES     y-combinator.cc 
-	CONDITION   ECKIT_MATHS
-	LIBS        eckit_maths eckit 
+	CONDITION ECKIT_MATHS AND Boost_FOUND
+	INCLUDES    ${Boost_INCLUDE_DIRS}
+	LIBS        eckit_maths eckit
 	)
 
 ecbuild_add_executable(   
 	TARGET      currying
 	SOURCES     currying.cc 
-	CONDITION   ECKIT_MATHS
-	LIBS        eckit_maths eckit 
+	CONDITION ECKIT_MATHS AND Boost_FOUND
+	INCLUDES    ${Boost_INCLUDE_DIRS}
+	LIBS        eckit_maths eckit
 	)

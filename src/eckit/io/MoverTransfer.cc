@@ -54,15 +54,15 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to)
 //        throw SeriousBug(string("No cost for ") + from.title() + " => " + to.title());
     }
 
-    Log::info() << "MoverTransfer::transfer(" << from << "," << to << ")" << endl;;
+    Log::info() << "MoverTransfer::transfer(" << from << "," << to << ")" << std::endl;;
 
-    Log::info() << "MoverTransfer::transfer cost:" << endl;
+    Log::info() << "MoverTransfer::transfer cost:" << std::endl;
     for (map<string,Length> ::iterator j = cost.begin() ; j != cost.end() ; ++j)
-        Log::info() << "   " << (*j).first << " => " << Bytes((*j).second) << endl;
+        Log::info() << "   " << (*j).first << " => " << Bytes((*j).second) << std::endl;
 
     Connector& c(Connector::service("mover", cost));
 
-    Log::message() << c.host() << endl;
+    Log::message() << c.host() << std::endl;
     Stream& s = c;
 
 	s << bool(false); // New batch
@@ -70,10 +70,10 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to)
     //NodeInfo::sendLogin(s);
     //NodeInfo remote = NodeInfo::acceptLogin(s);
 
-    Log::status() << "Sending input handle " << from.title() << endl;
+    Log::status() << "Sending input handle " << from.title() << std::endl;
     from.toRemote(s);
 
-    Log::status() << "Sending output handle " << to.title() << endl;
+    Log::status() << "Sending output handle " << to.title() << std::endl;
     to.toRemote(s);
 
     Length estimate = from.estimate();
@@ -81,7 +81,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to)
     AutoState state('M');
     if(estimate)
         Log::status() << Bytes(estimate) << " " ;
-    Log::status() << from.title() << " => " << to.title() << endl;
+    Log::status() << from.title() << " => " << to.title() << std::endl;
 
     Progress progress("mover", 0, estimate);
     unsigned long long total = 0;
@@ -103,7 +103,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to)
 
 //    ASSERT(len == total);
 
-    Log::message() << " " << endl;
+    Log::message() << " " << std::endl;
 
 
     return len;

@@ -35,17 +35,17 @@ public:
 
 	virtual ~HtmlObject();
 
-	virtual void html(ostream&,Url&);
+	virtual void html(std::ostream&,Url&);
 	virtual void java(JavaAgent&);
-	virtual void substitute(ostream&,const string&);
+	virtual void substitute(std::ostream&,const string&);
 
 protected:
 	
-	 virtual void print(ostream&) const; 
+	 virtual void print(std::ostream&) const; 
 
 private:
 
-	friend ostream& operator<<(ostream& s,const HtmlObject& p)
+	friend std::ostream& operator<<(std::ostream& s,const HtmlObject& p)
 		{ p.print(s); return s; }
 
 };

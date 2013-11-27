@@ -29,7 +29,7 @@ class JSON : private NonCopyable {
 public: // methods
 
     /// Contructor
-	JSON(ostream&);
+	JSON(std::ostream&);
 
     /// Destructor
 	~JSON();
@@ -59,7 +59,7 @@ public: // methods
 
 private: // members
 
-    ostream& out_;
+    std::ostream& out_;
     vector<string> sep_;
     vector<bool> state_;
     bool null_;

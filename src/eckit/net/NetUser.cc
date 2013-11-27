@@ -22,19 +22,19 @@ namespace eckit {
 NetUser::NetUser(TCPSocket& protocol):
 	protocol_(protocol)
 {
-	//Log::info() << "New service connection from " << protocol_.remoteHost() << endl;
+	//Log::info() << "New service connection from " << protocol_.remoteHost() << std::endl;
 }
 
 NetUser::~NetUser()
 {
-	//Log::info() << "End of service connection from " << protocol_.remoteHost() << endl;
+	//Log::info() << "End of service connection from " << protocol_.remoteHost() << std::endl;
 }			
 
 void NetUser::run()
 {
 	SockBuf         buf(protocol_);
-	ostream         out(&buf);
-	istream         in(&buf);
+    std::ostream         out(&buf);
+    std::istream         in(&buf);
 	InstantTCPStream  stream(protocol_);
 
 	serve(stream,in,out);

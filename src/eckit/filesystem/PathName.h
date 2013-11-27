@@ -39,7 +39,7 @@ public:
 	friend void operator<<(Stream&,const PathName&);
 	friend void operator>>(Stream&,PathName&);
 	
-	friend ostream& operator<<(ostream& s,const PathName& p)
+	friend std::ostream& operator<<(std::ostream& s,const PathName& p)
         { p.print(s); return s; }
 
 // Contructors
@@ -126,10 +126,10 @@ public:
 	PathName orphanName() const;
 	PathName checkClusterNode() const;
 
-    const string& node() const;
-    const string& path() const;
+    const std::string& node() const;
+    const std::string& path() const;
 
-	void children(vector<PathName>&,vector<PathName>&) const;
+    void children(std::vector<PathName>&,std::vector<PathName>&) const;
 
 	void fileSystemSize(FileSystemSize&) const;
 
@@ -140,7 +140,7 @@ public:
 // Class methods
 
 	static PathName unique(const PathName&);
-	static void match(const PathName&,vector<PathName>&,bool=false);
+    static void match(const PathName&,std::vector<PathName>&,bool=false);
 	static void link(const PathName& from,const PathName& to);
 	static void rename(const PathName& from,const PathName& to);
 	static void rename(const PathName& from,const string& newBase);
@@ -159,7 +159,7 @@ private:
 // Methods
 
 	PathName& tidy();
-    void print(ostream&) const;
+    void print(std::ostream&) const;
 
 // friend
 

@@ -37,7 +37,7 @@ List::List(List::value_t &v, Swap ignored )
     std::swap(args_, v);
 }
 
-void List::asCode(ostream &o) const
+void List::asCode(std::ostream&o) const
 {
     o << "maths::list("; printArgs(o); o <<")";
 }
@@ -59,14 +59,12 @@ ExpPtr List::clone() const
     {
         res.push_back(args_[i]->clone() );
     }
-
     return ExpPtr(new List( res, List::Swap()));
 }
 
-
 //--------------------------------------------------------------------------------------------
 
-void List::print(ostream &o) const
+void List::print(std::ostream&o) const
 {
     o << className() << "(";
     for( size_t i = 0; i < args_.size(); ++i )
@@ -88,12 +86,6 @@ ExpPtr list( const List::value_t& v  )
 {
     return ExpPtr( new List(v) );
 }
-
-ExpPtr list(ExpPtr e)
-{
-    return ExpPtr( new List(e) );
-}
-
 
 //--------------------------------------------------------------------------------------------
 

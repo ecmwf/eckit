@@ -26,17 +26,17 @@ HtmlObject::~HtmlObject()
 {
 }
 
-void HtmlObject::html(ostream& s,Url& url)
+void HtmlObject::html(std::ostream& s,Url& url)
 {
 	print(s);
 }
 
-void HtmlObject::substitute(ostream& s,const string& p)
+void HtmlObject::substitute(std::ostream& s,const string& p)
 {
 	s << '%' << p << '%';
 }
 
-void HtmlObject::print(ostream& s) const
+void HtmlObject::print(std::ostream& s) const
 {
 	s << "No print method defined for this object";
 }

@@ -44,8 +44,8 @@ public:
 // -- Class methods
 	
 	static void reconfigureAll();  // Config file as changed, update
-	static void dumpAllResources(ostream&); // Dump the configuration to a file
-	static void htmlAllResources(ostream&,Url&);
+	static void dumpAllResources(std::ostream&); // Dump the configuration to a file
+    static void htmlAllResources(std::ostream&,Url&);
 
     /// @returns the name of the class
     virtual string kind() const  { return "Configurable"; }
@@ -58,7 +58,7 @@ private:
 
 // -- Members
 
-	typedef set<ResourceBase*> Set;
+    typedef std::set<ResourceBase*> Set;
     Mutex mutex_;
 	Set resources_;
 
@@ -68,8 +68,8 @@ private:
 	void remove(ResourceBase*); // Remove a resource
 
 	void resetResources();
-	void dumpResources(ostream&) const;       // Dump all resources to a stream
-	void htmlResources(ostream&,Url&);  
+	void dumpResources(std::ostream&) const;       // Dump all resources to a stream
+    void htmlResources(std::ostream&,Url&);
 
 };
 

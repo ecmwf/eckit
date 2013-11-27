@@ -21,7 +21,7 @@ static map<string,Isa*> *map_ = 0;
 void Isa::add(TypeInfo* t,const string& s)
 {
 	Isa* i = new Isa(t,get(s));
-//	cout << "add isa " << s << " for " << t << endl;
+//	std::cout << "add isa " << s << " for " << t << std::endl;
 	(*map_)[s] = i;
 }
 
@@ -32,41 +32,41 @@ Isa* Isa::get(const string& s)
 	return (j == map_->end()) ? (Isa*)0 : (Isa*)(*j).second;
 }
 
-void _describe(ostream& s,int depth,int what)                { s << what << endl; }
-void _describe(ostream& s,int depth,unsigned int what)       { s << what << endl; }
-void _describe(ostream& s,int depth,short what)              { s << what << endl; }
-void _describe(ostream& s,int depth,bool what)               { s << what << endl; }
-void _describe(ostream& s,int depth,unsigned short what)     { s << what << endl; }
-void _describe(ostream& s,int depth,long what)               { s << what << endl; }
-void _describe(ostream& s,int depth,long long what)          { s << what << endl; }
-void _describe(ostream& s,int depth,unsigned long long what) { s << what << endl; }
-void _describe(ostream& s,int depth,unsigned long what)      { s << what << endl; }
-void _describe(ostream& s,int depth,char what)               { s << what << endl; }
-void _describe(ostream& s,int depth,unsigned char what)      { s << what << endl; }
-void _describe(ostream& s,int depth,double what)             { s << what << endl; }
+void _describe(std::ostream& s,int depth,int what)                { s << what << std::endl; }
+void _describe(std::ostream& s,int depth,unsigned int what)       { s << what << std::endl; }
+void _describe(std::ostream& s,int depth,short what)              { s << what << std::endl; }
+void _describe(std::ostream& s,int depth,bool what)               { s << what << std::endl; }
+void _describe(std::ostream& s,int depth,unsigned short what)     { s << what << std::endl; }
+void _describe(std::ostream& s,int depth,long what)               { s << what << std::endl; }
+void _describe(std::ostream& s,int depth,long long what)          { s << what << std::endl; }
+void _describe(std::ostream& s,int depth,unsigned long long what) { s << what << std::endl; }
+void _describe(std::ostream& s,int depth,unsigned long what)      { s << what << std::endl; }
+void _describe(std::ostream& s,int depth,char what)               { s << what << std::endl; }
+void _describe(std::ostream& s,int depth,unsigned char what)      { s << what << std::endl; }
+void _describe(std::ostream& s,int depth,double what)             { s << what << std::endl; }
 
-void _startClass(ostream& s,int depth,const string& name)
+void _startClass(std::ostream& s,int depth,const string& name)
 {
 	for(int i = 0; i < depth; i++) s << " ";
 	s << name;
-	s << "{" << endl;
+	s << "{" << std::endl;
 }
 
-void _endClass(ostream& s,int depth,const string& name)
+void _endClass(std::ostream& s,int depth,const string& name)
 {
 	for(int i = 0; i < depth; i++) s << " ";
-	s << "}" << endl;
+	s << "}" << std::endl;
 }
 
-void _startMember(ostream& s,int depth,const string& name)
+void _startMember(std::ostream& s,int depth,const string& name)
 {
 	for(int i = 0; i < depth; i++) s << " ";
 	s << name << ": ";
 }
 
-void _endMember(ostream& s,int depth,const string& name)
+void _endMember(std::ostream& s,int depth,const string& name)
 {
-	//s << endl;
+	//s << std::endl;
 }
 
 //-----------------------------------------------------------------------------

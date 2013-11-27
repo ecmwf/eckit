@@ -30,13 +30,13 @@ public:
 		Top = 8, Bottom = 16 };
 
     class Tag {
-        virtual void print(ostream& s) const = 0;
-        friend ostream& operator<<(ostream& s, const Tag&);
+        virtual void print(std::ostream& s) const = 0;
+        friend std::ostream& operator<<(std::ostream& s, const Tag&);
     };
 
     class RawTag : public Tag {
         string tag_;
-        virtual void print(ostream& s) const { s << tag_; }
+        virtual void print(std::ostream& s) const { s << tag_; }
     protected:
         RawTag(const string& s) : tag_(s) {}
     };
@@ -49,8 +49,8 @@ public:
     // To be used with 'include'
 
     class Substitute : public HtmlObject {
-        map<string,string,less<string> > map_;
-        virtual void substitute(ostream&,const string&);
+        map<string,string,std::less<string> > map_;
+        virtual void substitute(std::ostream&,const string&);
     public:
         Substitute();
         ~Substitute();
@@ -71,9 +71,9 @@ public:
         HtmlObject*          sub_;
         string               name_;
 
-        void print(ostream& s) const;
+        void print(std::ostream& s) const;
 
-        friend ostream& operator<<(ostream& s, const Include& n)
+        friend std::ostream& operator<<(std::ostream& s, const Include& n)
         { n.print(s); return s; }
     };
 
@@ -88,7 +88,7 @@ public:
         Image& operator=(const Image&);
 
         string  name_;
-        virtual void print(ostream& s) const;
+        virtual void print(std::ostream& s) const;
     };
 
     class Link : public Tag {
@@ -97,7 +97,7 @@ public:
         Link() {}
         Link(const string& url) : url_(addHex(url)) {}
     private:
-        virtual void print(ostream& s) const;
+        virtual void print(std::ostream& s) const;
         string url_;
     };
 
@@ -106,8 +106,8 @@ public:
         Class(const string& str) : str_(str) {}
     private:
         string str_;
-        void print(ostream& s) const;
-        friend ostream& operator<<(ostream& s, const Class& n)
+        void print(std::ostream& s) const;
+        friend std::ostream& operator<<(std::ostream& s, const Class& n)
         { n.print(s); return s; }
     };
 
@@ -149,11 +149,11 @@ public:
         BeginForm(const string& str = "") : str_(str) {}
     private:
         string str_;
-        virtual void print(ostream& s) const;
+        virtual void print(std::ostream& s) const;
     };
 
     class EndForm : public Tag {
-        virtual void print(ostream& s) const;
+        virtual void print(std::ostream& s) const;
     };
 
     class BeginTextArea {
@@ -164,14 +164,14 @@ public:
         string name_;
         int row_;
         int col_;
-        void print(ostream& s) const;
-        friend ostream& operator<<(ostream& s, const BeginTextArea& n)
+        void print(std::ostream& s) const;
+        friend std::ostream& operator<<(std::ostream& s, const BeginTextArea& n)
         { n.print(s); return s; }
     };
 
     class EndTextArea {
-        void print(ostream& s) const;
-        friend ostream& operator<<(ostream& s, const EndTextArea& n)
+        void print(std::ostream& s) const;
+        friend std::ostream& operator<<(std::ostream& s, const EndTextArea& n)
         { n.print(s); return s; }
     };
 
@@ -179,18 +179,18 @@ public:
         string name_;
         string value_;
         string title_;
-        void print(ostream& s) const;
+        void print(std::ostream& s) const;
     public:
         TextField(const string& name,const string& value = "",const string& title = ""):
             name_(name),value_(value),title_(title) {}
-        friend ostream& operator<<(ostream& s, const TextField& n)
+        friend std::ostream& operator<<(std::ostream& s, const TextField& n)
         { n.print(s); return s; }
     };
 
     class HiddenField : public Tag {
         string name_;
         string value_;
-        virtual void print(ostream& s) const;
+        virtual void print(std::ostream& s) const;
     public:
         HiddenField(const string& name,const string& value):
             name_(name),value_(value) {}
@@ -200,7 +200,7 @@ public:
     class Button : public Tag {
         string type_;
         string title_;
-        virtual void print(ostream& s) const;
+        virtual void print(std::ostream& s) const;
     public:
         Button(const string& type,const string& title):
             type_(type),title_(title) {}
@@ -210,7 +210,7 @@ public:
         string name_;
         string value_;
         bool   on_;
-        virtual void print(ostream& s) const;
+        virtual void print(std::ostream& s) const;
     public:
         CheckBox(const string& name,const string& value,bool on):
             name_(name), value_(value), on_(on) {}
@@ -243,7 +243,7 @@ public:
         int  padding_;
         int  spacing_;
         int width_;
-        virtual void print(ostream& s) const;
+        virtual void print(std::ostream& s) const;
     public:
         BeginTable(bool border = true,int width = 0,
                    int padding = 0, int spacing = 0):
@@ -261,7 +261,7 @@ public:
         int align_;
         int colspan_;
         int rowspan_;
-        virtual void print(ostream& s) const;
+        virtual void print(std::ostream& s) const;
     protected:
         TableTag(const string& tag,int align,int colspan, int rowspan):
             tag_(tag),align_(align),colspan_(colspan),rowspan_(rowspan) {}

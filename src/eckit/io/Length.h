@@ -41,7 +41,7 @@ public: // types
 
 public: // methods
 	
-	friend ostream& operator<<(ostream& s,const Length& x)
+	friend std::ostream& operator<<(std::ostream& s,const Length& x)
 		{ return s << x.value_; }
 
 	friend Stream& operator<<(Stream& s,const Length& x)
@@ -89,7 +89,7 @@ private: // members
 	friend class Offset;
 };
 
-typedef vector<Length> LengthList;
+typedef std::vector<Length> LengthList;
 
 
 #ifdef AIX

@@ -81,7 +81,7 @@ void Block::execute(const StringDict &in, StringDict &out)
         (*s)->execute(in,out);
 }
 
-void Block::print(ostream &out)
+void Block::print(std::ostream&out)
 {
     out << "{" << std::endl;
     for( std::deque<Statement*>::iterator s = statements_.begin(); s != statements_.end(); ++s )

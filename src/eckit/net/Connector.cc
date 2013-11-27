@@ -37,7 +37,7 @@ static void offLine( const string& host, int port)
 Connector::Connector(const string& host, int port) :
 	host_(host), port_(port), locked_(false), memoize_(false), sent_(false), life_(0)
 {
-	Log::info() << "Connector::Connector(" << host << "," << port << ")" << endl;
+	Log::info() << "Connector::Connector(" << host << "," << port << ")" << std::endl;
 }
 
 Connector::~Connector()
@@ -50,10 +50,10 @@ Connector::~Connector()
 		{
 			(*this) << "bye";
 		}
-	} catch (exception& e)
+    } catch (std::exception& e)
 	{
-		Log::error() << "** " << e.what() << " Caught in " << here << endl;
-		Log::error() << "** Exception is ignored" << endl;
+		Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+		Log::error() << "** Exception is ignored" << std::endl;
 	}
 
 }
@@ -69,7 +69,7 @@ TCPSocket& Connector::socket()
 		{
 			NodeInfo remote;
 			TCPClient client;
-			Log::info() << "Connector::stream connecting to " << host_ << ":" << port_ << endl;
+			Log::info() << "Connector::stream connecting to " << host_ << ":" << port_ << std::endl;
 			socket_ = client.connect(host_, port_);
 			InstantTCPStream s(socket_);
 
@@ -77,10 +77,10 @@ TCPSocket& Connector::socket()
 			remote = NodeInfo::sendLogin(s);
 
             ClusterNodes::onLine(host_, port_);
-		} catch (exception& e)
+        } catch (std::exception& e)
 		{
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
-			Log::error() << "** Exception is handled" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+			Log::error() << "** Exception is handled" << std::endl;
 
             offLine(host_, port_);
 
@@ -106,32 +106,32 @@ void Connector::check()
 				socket_.close();
                 offLine(host_, port_); /// @todo maybe remove this from here, substitute with a descriptive exception
 			}
-		} catch (exception& e)
+        } catch (std::exception& e)
 		{
-			Log::error() << "** " << e.what() << " Caught in " << here << endl;
-			Log::error() << "** Exception is handled" << endl;
+			Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+			Log::error() << "** Exception is handled" << std::endl;
 			socket_.close();
             offLine(host_, port_); /// @todo maybe remove this from here
 		}
 	}
 }
 
-void Connector::print(ostream&) const
+void Connector::print(std::ostream&) const
 {
 }
 
 class ConnectorCache {
 
-	typedef multimap<pair<string, int> , Connector*> Cache;
+    typedef std::multimap< std::pair<string, int> , Connector*> Cache;
 	Cache cache_;
 
 public:
 
 	Connector& find(const string& host, int port)
 	{
-		pair<string, int> p(host, port);
+        std::pair<string, int> p(host, port);
 
-		pair<Cache::iterator, Cache::iterator> r = cache_.equal_range(p);
+        std::pair<Cache::iterator, Cache::iterator> r = cache_.equal_range(p);
 		for (Cache::iterator j = r.first; j != r.second; ++j)
 		{
 			if (!((*j).second)->locked())
@@ -168,20 +168,20 @@ public:
 
 class NodeInfoCache {
 
-	typedef map<pair<string, string> , NodeInfo> Cache;
+    typedef map<std::pair<string, string> , NodeInfo> Cache;
 	Cache cache_;
 
 public:
 
 	NodeInfo& find(Stream& s, const string& name, const string& node)
 	{
-		pair<string, string> p(name, node);
+        std::pair<string, string> p(name, node);
 
 		Cache::iterator j = cache_.find(p);
 		if (j != cache_.end())
 			return (*j).second;
 
-		//Log::info() << "Connector::nodeInfo(" << name << "," << node << ")" << endl;
+		//Log::info() << "Connector::nodeInfo(" << name << "," << node << ")" << std::endl;
 
 		s << "info";
 		s << name;
@@ -220,13 +220,13 @@ static ThreadSingleton<NodeInfoCache> infos;
 
 Connector& Connector::get(const string& host, int port)
 {
-	//Log::info() << "Connector::get(" << host << "," << port << ")" << endl;
+	//Log::info() << "Connector::get(" << host << "," << port << ")" << std::endl;
 	return cache.instance().find(host, port);
 }
 
 Connector& Connector::service(const string& name, const string& node)
 {
-	//Log::info() << "Connector::service(" << name << "," << node << ")" << endl;
+	//Log::info() << "Connector::service(" << name << "," << node << ")" << std::endl;
 	NodeInfo info = ClusterNodes::lookUp(name, node);
 	return get(info.host(), info.port());
 }
@@ -249,7 +249,7 @@ Connector& Connector::service(const string& name, const map<string, Length>& cos
 				port = info.port();
 			}
             else {
-                Log::warning() << "Service not available: " << name << "@"  << (*j).first <<endl;
+                Log::warning() << "Service not available: " << name << "@"  << (*j).first << std::endl;
             }
 		}
 	}
@@ -259,7 +259,7 @@ Connector& Connector::service(const string& name, const map<string, Length>& cos
 		NodeInfo info = ClusterNodes::any(name);
 		host = info.host();
 		port = info.port();
-        Log::warning() << "Using node: " << info << endl;
+        Log::warning() << "Using node: " << info << std::endl;
 	}
 
 	ASSERT(port);
@@ -291,10 +291,10 @@ void Connector::reset()
 	try
 	{
 		socket_.close();
-	} catch (exception& e)
+    } catch (std::exception& e)
 	{
-		Log::error() << "** " << e.what() << " Caught in " << here << endl;
-		Log::error() << "** Exception is ignored" << endl;
+		Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+		Log::error() << "** Exception is ignored" << std::endl;
 	}
 }
 
@@ -353,10 +353,10 @@ long Connector::read(void *buf, long len)
 			bool useCache = false;
 			if (j != cache_.end())
 			{
-				//cout << "MEMOIZE IN CACHE " << (*j).first << endl;
+				//cout << "MEMOIZE IN CACHE " << (*j).first << std::endl;
 				if ((::time(0) - (*j).second.updated()) > life_)
 				{
-					//cout << "  CACHE IS STALE" << (*j).first << endl;
+					//cout << "  CACHE IS STALE" << (*j).first << std::endl;
 				} else
 				{
 					useCache = true;
@@ -440,20 +440,20 @@ void Connector::memoize(bool on, unsigned long life)
 
 		if (cache_.size() > 10000)
 		{
-			//Log::info() << "Clear memoize cache" << endl;
+			//Log::info() << "Clear memoize cache" << std::endl;
 			cache_.clear();
 		}
 	} else
 	{
-		//cout << "Connector::memoize " << in_.count() << " " << out_.count() << endl;
-		//cout << "-> " << out_ << endl;
+		//cout << "Connector::memoize " << in_.count() << " " << out_.count() << std::endl;
+		//cout << "-> " << out_ << std::endl;
 		if (cached_.buffer_)
 		{
-			//cout << "   CACHED" << endl;
-			//cout << " .... " << cache_[out_] << endl;
+			//cout << "   CACHED" << std::endl;
+			//cout << " .... " << cache_[out_] << std::endl;
 		} else
 		{
-			//cout << "<- " << in_ << endl;
+			//cout << "<- " << in_ << std::endl;
 
 			cache_[out_] = in_;
 		}

@@ -35,15 +35,15 @@ typedef std::map<std::string,std::string>   StringDict;
 template<class T>
 class output_list {
 
-	vector<T> v_;
+    std::vector<T> v_;
 	bool      first_;
-	ostream&  s_;
+    std::ostream&  s_;
 
 	void flush();
 
 public:
 	void push_back(const T&);
-	output_list(ostream&);
+	output_list(std::ostream&);
 	~output_list();
 };
 
@@ -65,7 +65,7 @@ public:
 //-----------------------------------------------------------------------------
 
 template<class T>
-inline ostream& __print_list(ostream& s,const T& t)
+inline std::ostream& __print_list(std::ostream& s,const T& t)
 {
 	output_list<typename T::value_type> l(s);
 	output_list_iterator<typename T::value_type> os(&l);
@@ -73,7 +73,7 @@ inline ostream& __print_list(ostream& s,const T& t)
     return s;
 }
 
-inline ostream& __print_list(ostream& s,const vector<string>& t)
+inline std::ostream& __print_list(std::ostream& s,const vector<string>& t)
 {
 	s << '[';
 	for(Ordinal i = 0; i < t.size(); i++)
@@ -83,7 +83,7 @@ inline ostream& __print_list(ostream& s,const vector<string>& t)
 }
 
 template<class T>
-inline ostream& operator<<(ostream& s,const vector<T>& v)
+inline std::ostream& operator<<(std::ostream& s,const vector<T>& v)
 {
 	return __print_list(s,v);
 }
@@ -91,7 +91,7 @@ inline ostream& operator<<(ostream& s,const vector<T>& v)
 //-----------------------------------------------------------------------------
 
 template<typename K, typename V>
-inline ostream& __print_container(ostream& s, const map<K,V>& m)
+inline std::ostream& __print_container(std::ostream& s, const map<K,V>& m)
 {
     s << "{";
 	for (typename map<K,V>::const_iterator it = m.begin(); it != m.end(); ++it)
@@ -103,13 +103,13 @@ inline ostream& __print_container(ostream& s, const map<K,V>& m)
 }
 
 template<typename K, typename V>
-inline ostream& operator<<(ostream& s, const map<K,V>& m)
+inline std::ostream& operator<<(std::ostream& s, const map<K,V>& m)
 {
     return __print_container(s,m);
 }
 
 template<typename T>
-inline ostream& __print_container(ostream& s, const std::set<T>& m)
+inline std::ostream& __print_container(std::ostream& s, const std::set<T>& m)
 {
     s << "{";
     for (typename std::set<T>::const_iterator it = m.begin(); it != m.end(); ++it )
@@ -121,7 +121,7 @@ inline ostream& __print_container(ostream& s, const std::set<T>& m)
 }
 
 template< typename T >
-inline ostream& operator<<(ostream& s, const std::set<T>& m)
+inline std::ostream& operator<<(std::ostream& s, const std::set<T>& m)
 {
     return __print_container(s,m);
 }
@@ -131,8 +131,8 @@ inline ostream& operator<<(ostream& s, const std::set<T>& m)
 class Stream; // forward
 
 /// Operators to send vectors in streams
-template<class T> void operator<<(Stream&,const vector<T>&);
-template<class T> void operator>>(Stream&,vector<T>&);
+template<class T> void operator<<(Stream&,const std::vector<T>&);
+template<class T> void operator>>(Stream&,std::vector<T>&);
 
 //-----------------------------------------------------------------------------
 

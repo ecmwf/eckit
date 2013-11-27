@@ -36,7 +36,7 @@ std::string CodeLocation::asString() const
     return oss.str();
 }
 
-void CodeLocation::print(ostream& os) const
+void CodeLocation::print(std::ostream& os) const
 {
     if( file_ )
     {

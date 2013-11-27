@@ -45,12 +45,12 @@ public:
 
 // -- Class methods
 
-	static void dispatch(eckit::Stream&,istream&,ostream&,Url&);
-	static void index(ostream&,Url&);
+    static void dispatch(eckit::Stream&,std::istream&,std::ostream&,Url&);
+	static void index(std::ostream&,Url&);
 
 private:
 
-	typedef map<string,HtmlResource*,less<string> > Map;
+    typedef map<string,HtmlResource*,std::less<string> > Map;
 
 // -- Class members
 

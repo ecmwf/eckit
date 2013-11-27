@@ -19,14 +19,14 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-FormatChannel::FormatChannel(ostream *os, FormatBuffer *buff) :
+FormatChannel::FormatChannel(std::ostream *os, FormatBuffer *buff) :
       Channel( buff )
 {
     assert(os);
     buff->target(os);
 }
 
-FormatChannel::FormatChannel(ostream &os, FormatBuffer *buff) :
+FormatChannel::FormatChannel(std::ostream&os, FormatBuffer *buff) :
     Channel( buff )
 {
     buff->target(os);

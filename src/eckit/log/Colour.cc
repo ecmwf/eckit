@@ -17,7 +17,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static int xindex = ios::xalloc();
+static int xindex = std::ios::xalloc();
 
 enum { RESET = 0, BOLD  =  1,  UNDERLINE  =  4, BLINK =  5, REVERSE = 7, HIDDEN =8 } ;
 enum { BLACK = 0, RED     =  1, GREEN = 2,  YELLOW    = 3, BLUE = 4, MAGENTA = 5, CYAN  = 6, WHITE = 7};
@@ -26,7 +26,7 @@ enum { BLACK = 0, RED     =  1, GREEN = 2,  YELLOW    = 3, BLUE = 4, MAGENTA = 5
 //#define X(a) out << (a)
 #define X(a) out << char(a)
 
-static ostream& put(ostream& out, int fg, int bg, int attr)
+static std::ostream& put(std::ostream& out, int fg, int bg, int attr)
 {
     static bool colourOutput = Resource<bool>("$ECKIT_COLOUR_OUTUT;-colour;colourOutput", false);
     
@@ -68,101 +68,101 @@ static ostream& put(ostream& out, int fg, int bg, int attr)
 
 
 
-ostream& Colour::on(ostream& s) {
+std::ostream& Colour::on(std::ostream& s) {
     s.iword(xindex) = 0;
     return s;
 }
 
-ostream& Colour::off(ostream& s) {
+std::ostream& Colour::off(std::ostream& s) {
     s.iword(xindex) = 1;
     return s;
 }
 
-ostream& Colour::reset(ostream& s) {
+std::ostream& Colour::reset(std::ostream& s) {
     return put(s,-1,-1,RESET);
 }
 
-ostream& Colour::bold(ostream& s) {
+std::ostream& Colour::bold(std::ostream& s) {
     return put(s,-1,-1,BOLD);
 }
 
-ostream& Colour::underline(ostream& s) {
+std::ostream& Colour::underline(std::ostream& s) {
     return put(s,-1,-1,UNDERLINE);
 }
 
-ostream& Colour::blink(ostream& s) {
+std::ostream& Colour::blink(std::ostream& s) {
     return put(s,-1,-1,BLINK);
 }
 
-ostream& Colour::reverse(ostream& s) {
+std::ostream& Colour::reverse(std::ostream& s) {
     return put(s,-1,-1,REVERSE);
 }
 
-ostream& Colour::hidden(ostream& s) {
+std::ostream& Colour::hidden(std::ostream& s) {
     return put(s,-1,-1,HIDDEN);
 }
 
-ostream& Colour::black(ostream& s) {
+std::ostream& Colour::black(std::ostream& s) {
     return put(s,BLACK,-1,-1);
 }
 
-ostream& Colour::red(ostream& s) {
+std::ostream& Colour::red(std::ostream& s) {
     return put(s,RED,-1,-1);
 }
 
-ostream& Colour::green(ostream& s) {
+std::ostream& Colour::green(std::ostream& s) {
     return put(s,GREEN,-1,-1);
 }
 
-ostream& Colour::yellow(ostream& s) {
+std::ostream& Colour::yellow(std::ostream& s) {
     return put(s,YELLOW,-1,-1);
 }
 
-ostream& Colour::magenta(ostream& s) {
+std::ostream& Colour::magenta(std::ostream& s) {
     return put(s,MAGENTA,-1,-1);
 }
 
-ostream& Colour::blue(ostream& s) {
+std::ostream& Colour::blue(std::ostream& s) {
     return put(s,BLUE,-1,-1);
 }
 
-ostream& Colour::cyan(ostream& s) {
+std::ostream& Colour::cyan(std::ostream& s) {
     return put(s,CYAN,-1,-1);
 }
 
-ostream& Colour::white(ostream& s) {
+std::ostream& Colour::white(std::ostream& s) {
     return put(s,WHITE,-1,-1);
 }
 
-ostream& Colour::blackBackground(ostream& s) {
+std::ostream& Colour::blackBackground(std::ostream& s) {
     return put(s,-1,BLACK,-1);
 }
-ostream& Colour::redBackground(ostream& s) {
+std::ostream& Colour::redBackground(std::ostream& s) {
     return put(s,-1,RED,-1);
 }
-ostream& Colour::greenBackground(ostream& s) {
+std::ostream& Colour::greenBackground(std::ostream& s) {
     return put(s,-1,GREEN,-1);
 }
 
-ostream& Colour::yellowBackground(ostream& s) {
+std::ostream& Colour::yellowBackground(std::ostream& s) {
     return put(s,-1,YELLOW,-1);
 }
 
 
-ostream& Colour::magentaBackground(ostream& s) {
+std::ostream& Colour::magentaBackground(std::ostream& s) {
     return put(s,-1,MAGENTA,-1);
 }
 
 
-ostream& Colour::blueBackground(ostream& s) {
+std::ostream& Colour::blueBackground(std::ostream& s) {
     return put(s,-1,BLUE,-1);
 }
 
-ostream& Colour::cyanBackground(ostream& s) {
+std::ostream& Colour::cyanBackground(std::ostream& s) {
     return put(s,-1,CYAN,-1);
 }
 
-ostream& Colour::whiteBackground(ostream& s) {
+std::ostream& Colour::whiteBackground(std::ostream& s) {
     return put(s,-1,WHITE,-1);
 }
 

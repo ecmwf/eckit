@@ -129,9 +129,9 @@ void operator>>(Stream& s, NodeInfo& info)
 	info.task(task);
 }
 
-void NodeInfo::print(ostream& s) const
+void NodeInfo::print(std::ostream& s) const
 {
-	s << "[" << name_ << ":" << setfill('0') << setw(3) << task_ << setfill(' ') << "," << node_ << "@" << host_ << ":" << port_ << "," << user_ << "]";
+    s << "[" << name_ << ":" << std::setfill('0') << std::setw(3) << task_ << std::setfill(' ') << "," << node_ << "@" << host_ << ":" << port_ << "," << user_ << "]";
 }
 
 NodeInfo NodeInfo::acceptLogin(Stream& s)
@@ -151,7 +151,7 @@ NodeInfo NodeInfo::acceptLogin(Stream& s)
 		s << Exception(string(os));
 	}
 
-	Log::info() << "Connection established " << here << " <=> " << remote << endl;
+	Log::info() << "Connection established " << here << " <=> " << remote << std::endl;
 
 	return remote;
 }
@@ -170,7 +170,7 @@ NodeInfo NodeInfo::sendLogin(Stream& s)
 		s << Exception(string(os));
 	}
 
-	Log::info() << "Connection established " << here << " <=> " << remote << endl;
+	Log::info() << "Connection established " << here << " <=> " << remote << std::endl;
 
 	return remote;
 }

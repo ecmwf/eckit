@@ -31,7 +31,7 @@ namespace config {
 class Compiler : public StreamParser {
 public: // methods
 
-    Compiler( istream& in );
+    Compiler( std::istream& in );
     
     virtual ~Compiler();
 

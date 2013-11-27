@@ -67,15 +67,15 @@ void ResourceMgr::set(const string& name,const string& value)
 {
 	AutoLock<Mutex> lock(local_mutex);
 
-    ostringstream code;
+    std::ostringstream code;
     code << name << " = " << value << std::endl;
     
-    istringstream in( code.str() );
+    std::istringstream in( code.str() );
     
     script_->readStream(in);
 }
 
-void ResourceMgr::appendConfig(istream &in)
+void ResourceMgr::appendConfig(std::istream &in)
 {
     AutoLock<Mutex> lock(local_mutex);
 

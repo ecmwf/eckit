@@ -16,6 +16,8 @@
 
 #include <math.h>
 #define NINT(a) ((a) >= 0.0 ? (int)((a)+0.5) : (int)((a)-0.5))
+
+using namespace std;
 using namespace eckit;
 
 //-----------------------------------------------------------------------------

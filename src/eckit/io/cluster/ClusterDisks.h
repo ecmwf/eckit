@@ -37,7 +37,7 @@ public:
 	static void forget(const NodeInfo&);
 	static void update(const string&,const string&, const vector<string>&);
 
-	static void list(ostream& out);
+    static void list(std::ostream& out);
     static void json(JSON& out);
 
 

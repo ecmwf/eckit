@@ -16,6 +16,7 @@
 #include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"
 
+using namespace std;
 using namespace eckit;
 
 //-----------------------------------------------------------------------------

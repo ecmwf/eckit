@@ -32,12 +32,12 @@ ThreadControler::ThreadControler(Thread* proc,bool detached,size_t stack):
     stack_(stack),
     detached_(detached)
 {
-    //cout << "ThreadControler::ThreadControler(" << this << ")" << " " << hex << pthread_self() <<endl;
+    //cout << "ThreadControler::ThreadControler(" << this << ")" << " " << hex << pthread_self() << std::endl;
 }
 
 ThreadControler::~ThreadControler()
 {
-    //cout << "ThreadControler::~ThreadControler(" << this << ")" << " " <<hex <<  pthread_self() <<endl;
+    //cout << "ThreadControler::~ThreadControler(" << this << ")" << " " <<hex <<  pthread_self() << std::endl;
     AutoLock<MutexCond> lock(cond_);
 
     if(running_)
@@ -48,7 +48,7 @@ ThreadControler::~ThreadControler()
     }
     else
     {
-        //Log::warning() << "Deleting Thread in ThreadControler::~ThreadControler()" << " " << hex << pthread_self() <<endl;
+        //Log::warning() << "Deleting Thread in ThreadControler::~ThreadControler()" << " " << hex << pthread_self() << std::endl;
         delete proc_;
         proc_ = 0;
     }
@@ -62,7 +62,7 @@ void ThreadControler::execute()
     Thread* proc = proc_;
     proc_ = 0;
 
-    //cout << "ThreadControler::execute(" << this << ")" <<  " " << hex << pthread_self() << endl;
+    //cout << "ThreadControler::execute(" << this << ")" <<  " " << hex << pthread_self() << std::endl;
     //=================
     // Make sure the logs are created...
 
@@ -103,11 +103,11 @@ void ThreadControler::execute()
     try {
         proc->run();
     }
-    catch(exception& e){
+    catch(std::exception& e){
         Log::error() << "** " << e.what() << " Caught in "
-                     << Here() <<  endl;
+                     << Here() << std::endl;
         Log::error() << "** Exception is terminates thread "
-                     << pthread_self() << endl;
+                     << pthread_self() << std::endl;
     }
 
     if(proc->autodel_)
@@ -118,14 +118,14 @@ void ThreadControler::execute()
 
 void* ThreadControler::startThread (void* data)
 {
-    //cout << "ThreadControler::startThread(" << data << ")" << " " << hex << pthread_self() <<endl;
+    //cout << "ThreadControler::startThread(" << data << ")" << " " << hex << pthread_self() << std::endl;
     reinterpret_cast<ThreadControler*>(data)->execute(); // static_cast or dynamic_cast ??
     return 0;
 }
 
 void ThreadControler::start()
 {
-    //cout << "ThreadControler::start(" << this << ")" << " " << hex << pthread_self() <<endl;
+    //cout << "ThreadControler::start(" << this << ")" << " " << hex << pthread_self() << std::endl;
     ASSERT(thread_ == 0);
 
     pthread_attr_t attr;

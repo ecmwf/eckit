@@ -35,7 +35,7 @@ ExpPtr ParamDef::clone() const
     return paramdef(name_);
 }
 
-void ParamDef::print(ostream &o) const
+void ParamDef::print(std::ostream&o) const
 {
     o << "=(" << name_ << ")";
 }
@@ -50,7 +50,7 @@ ExpPtr ParamDef::evaluate( Scope &ctx ) const
     NOTIMP;
 }
 
-void ParamDef::asCode(ostream &o) const
+void ParamDef::asCode(std::ostream&o) const
 {
     o << '"' << name_ << '"';
 }

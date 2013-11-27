@@ -109,7 +109,7 @@ BasePathName* LocalPathName::checkClusterNode() const
 {
     string n = ClusterDisks::node(path_);
     if(n != "local") {
-//        Log::warning() << *this << " is now on node [" << n << "]" << endl; 
+//        Log::warning() << *this << " is now on node [" << n << "]" << std::endl; 
         return new BasePathNameT<MarsFSPath>(MarsFSPath(n,path_));
     }
     return new BasePathNameT<LocalPathName>(LocalPathName(path_));
@@ -217,25 +217,25 @@ void LocalPathName::rename(const LocalPathName& from,const LocalPathName& to)
 
 void LocalPathName::unlink() const
 {
-	Log::info() << "Unlink " << path_ << endl;
+	Log::info() << "Unlink " << path_ << std::endl;
 	if(::unlink(path_.c_str()) != 0)
     {
         if(errno != ENOENT)
             throw FailedSystemCall(string("unlink ") + path_);
         else
-            Log::info() << "Unlink failed " << path_ << Log::syserr << endl;
+            Log::info() << "Unlink failed " << path_ << Log::syserr << std::endl;
     }
 }
 
 void LocalPathName::rmdir() const
 {
-	Log::info() << "Rmdir " << path_ << endl;
+	Log::info() << "Rmdir " << path_ << std::endl;
 	if(::rmdir(path_.c_str()) != 0)
     {
         if(errno != ENOENT)
             throw FailedSystemCall(string("rmdir ") + path_);
         else
-            Log::info() << "Rmdir failed " << path_ << Log::syserr << endl;
+            Log::info() << "Rmdir failed " << path_ << Log::syserr << std::endl;
     }
 }
 
@@ -364,7 +364,7 @@ void LocalPathName::match(const LocalPathName& root,vector<LocalPathName>& resul
 
 	if(d == 0)
 	{
-		Log::error() << "opendir(" << dir << ")" << Log::syserr << endl;
+		Log::error() << "opendir(" << dir << ")" << Log::syserr << std::endl;
 		throw FailedSystemCall(string("opendir(") + string(dir) + ")");
 	}
 
@@ -415,7 +415,7 @@ void LocalPathName::children(vector<LocalPathName>& files,vector<LocalPathName>&
 
 	if(d == 0)
 	{
-		Log::error() << "opendir(" << *this << ")" << Log::syserr << endl;
+		Log::error() << "opendir(" << *this << ")" << Log::syserr << std::endl;
 		throw FailedSystemCall("opendir");
 	}
 
@@ -454,7 +454,7 @@ void LocalPathName::children(vector<LocalPathName>& files,vector<LocalPathName>&
 			else
 				files.push_back(full);
 		}
-		else Log::error() << "Cannot stat " << full << Log::syserr << endl;
+		else Log::error() << "Cannot stat " << full << Log::syserr << std::endl;
 
 	}
 }
@@ -584,7 +584,7 @@ void LocalPathName::reserve(const Length& len) const
 	PartFileHandle part("/dev/zero",0,len);
 	FileHandle     file(*this);
 
-	Log::status() << "Reserving " << Bytes(len) <<  endl;
+	Log::status() << "Reserving " << Bytes(len) << std::endl;
 	part.saveInto(file);
 }
 

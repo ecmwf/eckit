@@ -247,7 +247,7 @@ long Date::dateToJulian(long ddate)
 	if(year < 100)
 	{
 //		throw SeriousBug("Please, use 4 digits dates... 2000 is near");
-//      Log::warning() << "Please, use 4 digits dates... 2000 is near" << endl;
+//      Log::warning() << "Please, use 4 digits dates... 2000 is near" << std::endl;
 		year = year + 1900;
 	}
 
@@ -271,7 +271,7 @@ long Date::dateToJulian(long ddate)
 }
 
 
-void Date::print(ostream& s) const
+void Date::print(std::ostream& s) const
 {
 	long ddate = julianToDate(julian_);
 	long month,day,year;
@@ -283,8 +283,8 @@ void Date::print(ostream& s) const
 	day = ddate;
 
 	char oldfill = s.fill();
-	s << year << '-' << setw(2) << setfill('0') << month 
-		<< '-' << setw(2) << setfill('0') << day << setfill(oldfill);
+	s << year << '-' << std::setw(2) << std::setfill('0') << month 
+		<< '-' << std::setw(2) << std::setfill('0') << day << std::setfill(oldfill);
 }
 
 long Date::year() const

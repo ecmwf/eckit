@@ -12,6 +12,7 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
 
+using namespace std;
 using namespace eckit;
 
 //-----------------------------------------------------------------------------

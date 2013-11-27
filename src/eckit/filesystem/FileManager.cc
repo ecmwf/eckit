@@ -70,14 +70,14 @@ FileManager& FileManager::lookUp(const string& name)
     AutoLock<Mutex> lock(local_mutex);
     map<string, FileManager*>::const_iterator j = m.find(name);
     
-    Log::info() << "Looking for FileManager [" << name << "]" << endl;
+    Log::info() << "Looking for FileManager [" << name << "]" << std::endl;
 
     if (j == m.end())
     {
-	Log::error() << "No FileManager for [" << name << "]" << endl;
-	Log::error() << "Managers are:" << endl;
+	Log::error() << "No FileManager for [" << name << "]" << std::endl;
+	Log::error() << "Managers are:" << std::endl;
 	for(j = m.begin() ; j != m.end() ; ++j)
-	  Log::error() << "   " << *((*j).second) << endl;
+	  Log::error() << "   " << *((*j).second) << std::endl;
         throw SeriousBug(string("No FileManager called ") + name);
     }
 
@@ -95,7 +95,7 @@ ManagerFactory::ManagerFactory(const string& name):
     AutoLock<Mutex> lock(local_mutex);
 
     ASSERT(f->find(name) == f->end());
-//cout << "Creating FileManager " << name_ << endl;
+//cout << "Creating FileManager " << name_ << std::endl;
     (*f)[name] = this;
 }
 
@@ -103,7 +103,7 @@ ManagerFactory::~ManagerFactory()
 {
     AutoLock<Mutex> lock(local_mutex);
     ASSERT(f->find(name_) != f->end());
-//cout << "Destroying FileManager " << name_ << endl;
+//cout << "Destroying FileManager " << name_ << std::endl;
     f->erase(name_);
 }
 
@@ -113,7 +113,7 @@ FileManager* ManagerFactory::build(const string& name)
     AutoLock<Mutex> lock(local_mutex);
 
     PathName config("~/etc/servers");
-    ifstream in(config.localPath());
+    std::ifstream in(config.localPath());
 
     if (!in) throw CantOpenFile(config);
 
@@ -143,7 +143,7 @@ FileManager* ManagerFactory::build(const string& name)
 
 #endif
 
-void FileManager::print(ostream& s) const
+void FileManager::print(std::ostream& s) const
 {
     s << "FileManager[" << name_ << "]";
 }

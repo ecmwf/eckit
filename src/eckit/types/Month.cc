@@ -99,11 +99,11 @@ Month::operator string() const
 	return string(os);
 }
 
-void Month::print(ostream& s) const
+void Month::print(std::ostream& s) const
 {
 	char oldfill = s.fill();
-	s << year() << '-' << setw(2) << setfill('0') << month() 
-	  << setfill(oldfill);
+	s << year() << '-' << std::setw(2) << std::setfill('0') << month() 
+	  << std::setfill(oldfill);
 }
 
 void Month::dump(DumpLoad& a) const

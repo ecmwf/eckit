@@ -46,7 +46,7 @@ VerifyingDate::operator string() const
 	return string(date_);
 }
 
-void VerifyingDate::print(ostream& s) const
+void VerifyingDate::print(std::ostream& s) const
 {
 	s << date_;	
 }

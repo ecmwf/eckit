@@ -46,7 +46,7 @@ DateContent::~DateContent()
 {
 }
 
-void DateContent::print(ostream& s) const
+void DateContent::print(std::ostream& s) const
 {
     s << value_;
 }

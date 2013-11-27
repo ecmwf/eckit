@@ -31,12 +31,12 @@ bool Undef::is(const ExpPtr &e) {
     return dynamic_cast<Undef*>(e.get()) != 0;
 }
 
-void Undef::print(ostream &o) const
+void Undef::print(std::ostream&o) const
 {
     o << "?";
 }
 
-void Undef::asCode(ostream &o) const
+void Undef::asCode(std::ostream&o) const
 {
     o << "maths::undef()";
 }

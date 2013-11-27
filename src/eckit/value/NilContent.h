@@ -74,7 +74,7 @@ protected:
 
 	virtual bool     isNil()     const  { return true; }
 	virtual string   typeName()  const  { return "Nil"; }
-	virtual void     print(ostream&) const;
+	virtual void     print(std::ostream&) const;
     virtual void   json(JSON&)     const;
 
 	// From Streamable

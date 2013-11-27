@@ -20,7 +20,7 @@ namespace eckit {
 
 // Should protected with a mutex...
 
-typedef map<string,ReanimatorBase*,less<string> > Map;
+typedef map<string,ReanimatorBase*,std::less<string> > Map;
 
 // This trick garanty than a map is created 
 
@@ -34,7 +34,7 @@ ReanimatorBase::ReanimatorBase(const ClassSpec& spec):
 	spec_(spec)
 {
 	theMap()[string(spec_.name_)] = this;
-//	cout << "ReanimatorBase::ReanimatorBase " << spec_.name_ << endl;
+//	std::cout << "ReanimatorBase::ReanimatorBase " << spec_.name_ << std::endl;
 }
 
 ReanimatorBase::~ReanimatorBase()

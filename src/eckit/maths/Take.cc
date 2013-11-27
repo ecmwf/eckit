@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/Count.h"
+#include "eckit/maths/Take.h"
 #include "eckit/maths/Scalar.h"
 
 namespace eckit {
@@ -16,55 +16,53 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-static Function::RegisterFactory< Count > count_register;
+static Function::RegisterFactory< Take > take_register;
 
-Count::Count(const args_t& args) : Function(args)
+Take::Take(const args_t& args) : Function(args)
 {
-    ASSERT(arity() == 1);
+    ASSERT(arity() == 2);
 }
 
-Count::Count(ExpPtr e) : Function()
+Take::Take(ExpPtr e, ExpPtr l) : Function()
 {
     args_.push_back(e);
+    args_.push_back(l);
 }
 
-string Count::returnSignature() const
+std::string Take::returnSignature() const
 {
-    return Scalar::sig();
+    return Undef::sig();
 }
 
-ExpPtr Count::evaluate( Scope &ctx )
+ExpPtr Take::evaluate( Scope &ctx )
 {
-    return maths::scalar( param(0, ctx)->arity() )->as<Value>();
+    ExpPtr idx  = param(0, ctx)->eval(ctx);
+    ExpPtr list = param(1, ctx)->eval(ctx);
+
+    size_t i = (size_t) Scalar::extract( idx );
+
+    if( i >= list->arity() )
+        throw UserError("Take supplied index larger than size of list" );
+
+    return list->param(i);
 }
 
-ExpPtr Count::optimise()
+ExpPtr Take::optimise()
 {
     return shared_from_this();
-
-    /// @todo write a correct optimiser for Count ...
-
-    // if( Undef::is( args_[0] ) )
-    //     return shared_from_this();
-    // else
-    // {
-    //     if( args_[0]->isArityComputable() )
-    //         return maths::scalar( args_[0]->computedArity() );
-    // }
-
 }
 
 
-void Count::asCode(std::ostream&o) const
+void Take::asCode(std::ostream&o) const
 {
-    o << "maths::count("; printArgs(o); o << ")";
+    o << "maths::take("; printArgs(o); o << ")";
 }
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr count( ExpPtr e )
+ExpPtr take( ExpPtr e, ExpPtr l )
 {
-    return ExpPtr( new Count(e) );
+    return ExpPtr( new Take(e,l) );
 }
 
 //--------------------------------------------------------------------------------------------

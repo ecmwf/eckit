@@ -66,7 +66,7 @@ protected:
 
 // -- Methods
 	
-	// void print(ostream&) const; 	
+	// void print(std::ostream&) const; 	
 
 // -- Overridden methods
 	// None
@@ -102,7 +102,7 @@ private:
 
 // -- Friends
 
-	//friend ostream& operator<<(ostream& s,const MoverTransfer& p)
+	//friend std::ostream& operator<<(std::ostream& s,const MoverTransfer& p)
 	//	{ p.print(s); return s; }
 
 };

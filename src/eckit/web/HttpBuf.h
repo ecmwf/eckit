@@ -24,7 +24,7 @@ namespace eckit {
 
 class HttpStream;
 
-class HttpBuf : public streambuf {
+class HttpBuf : public std::streambuf {
 
 
 	char    out_[4096];
@@ -38,10 +38,10 @@ public:
 	HttpBuf(HttpStream&);
 	~HttpBuf();
 
-	void write(ostream&, Url&);
+	void write(std::ostream&, Url&);
 
-	static ostream& dontEncode(ostream&);
-	static ostream& doEncode(ostream&);
+	static std::ostream& dontEncode(std::ostream&);
+	static std::ostream& doEncode(std::ostream&);
 
 private:
 	
@@ -50,12 +50,12 @@ private:
 
 //-----------------------------------------------------------------------------
 
-class HttpStream : public ostream {
+class HttpStream : public std::ostream {
 	HttpBuf* buf_;
 public:
 	HttpStream();
 	~HttpStream();
-	void write(ostream&,Url&);
+	void write(std::ostream&,Url&);
 };
 
 

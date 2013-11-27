@@ -84,11 +84,11 @@ public:
 
 protected:
 
-    virtual void print(ostream&) const = 0; 	
+    virtual void print(std::ostream&) const = 0; 	
 
 private:
 
-	friend ostream& operator<<(ostream& s,const BasePathName& p)
+	friend std::ostream& operator<<(std::ostream& s,const BasePathName& p)
 		{ p.print(s); return s; }
 
 };

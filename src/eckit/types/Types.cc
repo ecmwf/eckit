@@ -49,7 +49,7 @@ void operator>>(Stream& s,vector<T>& t)
 //====================================================================
 
 template<class T>
-output_list<T>::output_list(ostream& s):
+output_list<T>::output_list(std::ostream& s):
     first_(true), s_(s)
 {
 	s_ << '[';

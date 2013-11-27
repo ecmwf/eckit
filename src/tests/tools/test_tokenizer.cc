@@ -13,6 +13,7 @@
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/types/Types.h"
 
+using namespace std;
 using namespace eckit;
 
 namespace eckit_test {

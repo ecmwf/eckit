@@ -21,7 +21,7 @@ ClassSpec TCPHandle::classSpec_ = {&DataHandle::classSpec(),"TCPHandle",};
 Reanimator<TCPHandle> TCPHandle::reanimator_;
 
 
-void TCPHandle::print(ostream& s) const
+void TCPHandle::print(std::ostream& s) const
 {
 	s << "TCPHandle[host=" << host_ << ",port=" << port_ << ']';
 }

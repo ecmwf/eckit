@@ -179,11 +179,11 @@ void ProducerConsumer<PAYLOAD>::execute(Producer<PAYLOAD>& producer,Consumer<PAY
         try {
             producer.produce(payloads[i].payload_);
         }
-        catch(exception& e)
+        catch(std::exception& e)
         {
             Log::error() << "** " << e.what() << " Caught in " <<
-                            here <<  endl;
-            Log::error() << "** Exception is handled" << endl;
+                            here << std::endl;
+            Log::error() << "** Exception is handled" << std::endl;
             error(e.what());
         }
 
@@ -248,11 +248,11 @@ void ProducerConsumerTask<PAYLOAD>::run()
         try {
             consumer_.consume(payloads_[i].payload_);
         }
-        catch(exception& e)
+        catch(std::exception& e)
         {
             Log::error() << "** " << e.what() << " Caught in " <<
-                            here <<  endl;
-            Log::error() << "** Exception is handled" << endl;
+                            here << std::endl;
+            Log::error() << "** Exception is handled" << std::endl;
             owner_.error(e.what());
             error = true;
         }

@@ -37,21 +37,21 @@ public: // methods
 
 	~Tokenizer(); 
     
-    void operator()(const string&, vector<string>&);
-	void operator()(istream&,vector<string>&);
+    void operator()(const string&, std::vector<string>&);
+    void operator()(std::istream&, std::vector<string>&);
 
-    void operator()(const string&, set<string>&);
-	void operator()(istream&, set<string>&);
+    void operator()(const string&, std::set<string>&);
+    void operator()(std::istream&, std::set<string>&);
 
 private: // members
 
-	set<char,less<char> > separator_;     // To make searching faster
+    std::set<char,std::less<char> > separator_;     // To make searching faster
 
 private: // methods
     
-	void print(ostream&) const;
+	void print(std::ostream&) const;
 
-	friend ostream& operator<<(ostream& s,const Tokenizer& p) { p.print(s); return s; }
+	friend std::ostream& operator<<(std::ostream& s,const Tokenizer& p) { p.print(s); return s; }
 
 };
 

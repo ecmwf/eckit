@@ -39,7 +39,7 @@ Expression::~Expression()
 ExpPtr Expression::eval() const
 {
     Scope ctx("Expression::eval()");
-    return optimise()->evaluate(ctx);
+    return /*optimise()->*/evaluate(ctx);
 }
 
 ExpPtr Expression::eval(Scope& ctx) const
@@ -61,14 +61,14 @@ ExpPtr Expression::optimise() const
 ExpPtr Expression::eval( ExpPtr e ) const
 {
     Scope ctx("Expression::eval( ExpPtr e )", e);
-    ExpPtr res = optimise()->evaluate(ctx);
+    ExpPtr res = /*optimise()->*/evaluate(ctx);
     return res;
 }
 
 ExpPtr Expression::eval(  ExpPtr a, ExpPtr b ) const
 {
     Scope ctx("Expression::eval(  ExpPtr a, ExpPtr b )", a, b);
-    ExpPtr res = optimise()->evaluate(ctx);
+    ExpPtr res = /*optimise()->*/evaluate(ctx);
     return res;
 }
 
@@ -94,7 +94,7 @@ string Expression::str() const
 }
 
 
-void Expression::printArgs(ostream &out) const
+void Expression::printArgs(std::ostream& out) const
 {
     size_t count = arity();
     for(size_t i = 0; i < count; ++i) {

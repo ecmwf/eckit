@@ -38,7 +38,7 @@ Bytes::Bytes(double bytes,double elapsed):
 
 static const char *names[] = {"","K","M","G","T","P","E","Z","Y"};
 
-ostream& operator<<(ostream& s, const Bytes& b)
+std::ostream& operator<<(std::ostream& s, const Bytes& b)
 {
 	double x = b.bytes_;
 	int    n = 0;

@@ -30,7 +30,7 @@ ExpPtr Param::clone() const
     return parameter(name_);
 }
 
-void Param::print(ostream &o) const
+void Param::print(std::ostream&o) const
 {
     o << "_(" << name_ << ")";
 }
@@ -46,7 +46,7 @@ ExpPtr Param::evaluate( Scope &ctx ) const
     return e->eval();
 }
 
-void Param::asCode(ostream &o) const
+void Param::asCode(std::ostream&o) const
 {
     o << "Math(\"" << name_ << "\")";
 }

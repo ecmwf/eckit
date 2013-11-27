@@ -21,7 +21,7 @@ namespace eckit {
 CommandStream::CommandStream(const string& name,const char *mode):
 	file_(popen(name.c_str(),mode))
 {
-	Log::info() << "CommandStream (" << name << ")" << endl;
+    Log::info() << "CommandStream (" << name << ")" << std::endl;
 	if(file_ == 0)
 		throw CantOpenFile(name);
 }

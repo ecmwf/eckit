@@ -46,7 +46,7 @@ void Script::execute(const StringDict &in, StringDict &out)
         (*i)->execute(in,out);
 }
 
-void Script::print(ostream &out)
+void Script::print(std::ostream&out)
 {
     for( BlockStore::iterator i = blocks_.begin(); i != blocks_.end(); ++i )
         (*i)->print(out);
@@ -56,7 +56,7 @@ bool Script::readFile(const PathName& path)
 {       
     if( path.exists() )
     {
-        ifstream in;
+        std::ifstream in;
         in.open ( path.asString().c_str() );
         if (!in)
             throw CantOpenFile( path.asString() );
@@ -76,7 +76,7 @@ bool Script::readFile(const PathName& path)
     return false;
 }
 
-void Script::readStream(istream &in)
+void Script::readStream(std::istream &in)
 {
     Compiler c(in);
     

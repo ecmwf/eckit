@@ -55,10 +55,10 @@ private:
 	DateTime end_;
 
 // -- Methods
-	void print(ostream&) const; 	
+	void print(std::ostream&) const; 	
 
 // -- Friends
-	friend ostream& operator<<(ostream& s,const TimeInterval& p)
+	friend std::ostream& operator<<(std::ostream& s,const TimeInterval& p)
 		{ p.print(s); return s; }
 
 	friend bool operator==(const TimeInterval& p1, const TimeInterval& p2)

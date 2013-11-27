@@ -51,7 +51,7 @@ ExpPtr Bind::evaluate( Scope &ctx ) const
 {    
     ExpPtr ix = param(0, ctx);
 
-    const size_t i = static_cast<size_t>( Scalar::extract(ix) );
+    const size_t i = static_cast<size_t>( Scalar::extract(ctx, ix) );
 
     ExpPtr f = param(1, ctx);
     ExpPtr e = param(2, ctx);

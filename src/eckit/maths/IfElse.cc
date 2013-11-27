@@ -48,7 +48,7 @@ ExpPtr IfElse::evaluate( Scope &ctx ) const
 
     ExpPtr v = f->eval(ctx);
 
-    bool b = Boolean::extract( v );
+    bool b = Boolean::extract( ctx, v );
 
     if(b) {
         return i->eval(ctx);

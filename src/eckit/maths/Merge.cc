@@ -33,8 +33,8 @@ ExpPtr Merge::evaluate( Scope &ctx ) const
 {
     ExpPtr f = param(0, ctx);
 
-    const List::value_t& l0 = List::extract( param(0, ctx) );
-    const List::value_t& l1 = List::extract( param(1, ctx) );
+    const List::value_t& l0 = List::extract( ctx, param(0, ctx) );
+    const List::value_t& l1 = List::extract( ctx, param(1, ctx) );
 
     List::value_t res;
     res.reserve(l0.size() + l1.size());
@@ -81,9 +81,9 @@ ExpPtr merge(ExpPtr l0, ExpPtr l1 )
     return ExpPtr( new Merge(l0,l1) );
 }
 
-ExpPtr Merge::compute( const args_t& p )
+ExpPtr Merge::compute(Scope &ctx, const args_t& p )
 {
-    return ExpPtr( new Merge( p[0], p[1]));
+    return ExpPtr( new Merge( p[0], p[1]))->eval(ctx);
 }
 
 Merge::Register::Register()
@@ -92,7 +92,7 @@ Merge::Register::Register()
 }
 
 
-static Merge::Register mMerge_register;
+static Merge::Register merge_register;
 
 //--------------------------------------------------------------------------------------------
 

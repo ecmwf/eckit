@@ -50,7 +50,7 @@ private:
     virtual size_t count() const;
 
 protected:
-    static ExpPtr compute( const args_t& p );
+    static ExpPtr compute( Scope& ctx, const args_t& p );
 
 
 };

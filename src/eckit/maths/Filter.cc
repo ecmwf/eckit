@@ -32,7 +32,7 @@ ExpPtr Filter::evaluate( Scope &ctx ) const
 {
     ExpPtr f = param(0, ctx);
 
-    const List::value_t& list = List::extract( param(1, ctx) );
+    const List::value_t& list = List::extract( ctx, param(1, ctx) );
 
     const size_t nlist = list.size();
 
@@ -44,7 +44,7 @@ ExpPtr Filter::evaluate( Scope &ctx ) const
         ExpPtr e = list[i]->eval(ctx);
         ExpPtr b = f->eval(e);
 
-        if( Boolean::extract(b) )
+        if( Boolean::extract(ctx, b) )
             res.push_back( e );
     }
 

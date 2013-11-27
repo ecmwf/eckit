@@ -31,7 +31,7 @@ ExpPtr Take::evaluate( Scope &ctx ) const
     ExpPtr idx  = param(0, ctx)->eval(ctx);
     ExpPtr list = param(1, ctx)->eval(ctx);
 
-    size_t i = (size_t) Scalar::extract( idx );
+    size_t i = (size_t) Scalar::extract( ctx, idx );
 
     if( i >= list->arity() )
         throw UserError("Take supplied index larger than size of list" );

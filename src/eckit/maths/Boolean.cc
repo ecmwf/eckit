@@ -9,6 +9,7 @@
  */
 
 #include "eckit/maths/Boolean.h"
+#include "eckit/maths/Scope.h"
 
 namespace eckit {
 namespace maths {
@@ -31,7 +32,8 @@ void Boolean::asCode(std::ostream&o) const
 
 Boolean::Boolean(const ExpPtr& e) : v_(0)
 {
-   v_ = Boolean::extract( e->eval(false) );
+   Scope dummy("Boolean::Boolean");
+   v_ = Boolean::extract( dummy, e->eval(dummy) );
 }
 
 ExpPtr Boolean::cloneWith(args_t &a) const {

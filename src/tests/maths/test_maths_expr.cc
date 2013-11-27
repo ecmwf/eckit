@@ -216,7 +216,7 @@ void TestExp::test_list()
     ExpPtr c3 = maths::count( maths::list( a_, b_, a_, b_, a_ ) );
 
     ASSERT( c3->eval()->str() == "Scalar(5)" );
-    ASSERT( Scalar::extract(c3->eval()) == 5 );
+    //ASSERT( Scalar::extract(c3->eval()) == 5 );
 }
 
 void TestExp::test_map()

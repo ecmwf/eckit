@@ -34,7 +34,7 @@ public: // methods
 
     static bool is ( const ExpPtr& e ) ;
 
-    static scalar_t extract ( const ExpPtr& e )
+    static scalar_t extract ( Scope& ctx , const ExpPtr& e )
     {
         ASSERT( Scalar::is(e) );
         return e->as<Scalar>()->value();

@@ -34,8 +34,8 @@ ExpPtr ZipWith::evaluate( Scope &ctx ) const
 {
     ExpPtr f = param(0, ctx);
 
-    const List::value_t& l0 = List::extract( param(1, ctx) );
-    const List::value_t& l1 = List::extract( param(2, ctx) );
+    const List::value_t& l0 = List::extract( ctx, param(1, ctx) );
+    const List::value_t& l1 = List::extract( ctx, param(2, ctx) );
 
     const size_t nlist = std::min(l0.size(), l1.size());
 

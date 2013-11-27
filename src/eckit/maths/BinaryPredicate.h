@@ -65,7 +65,7 @@ public:
         Computer();
 
         /// Computes the expression with the passed arguments
-        static ExpPtr compute( const args_t& p );
+        static ExpPtr compute( Scope& ct , const args_t& p );
     };
 
     virtual void asCode( std::ostream& o ) const;

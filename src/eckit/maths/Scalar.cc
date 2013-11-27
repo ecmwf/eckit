@@ -9,6 +9,7 @@
  */
 
 #include "eckit/maths/Scalar.h"
+#include "eckit/maths/Scope.h"
 
 namespace eckit {
 namespace maths {
@@ -30,7 +31,8 @@ void Scalar::print(std::ostream&o) const
 
 Scalar::Scalar(ExpPtr e) : v_(0)
 {
-   v_ = Scalar::extract( e->eval(false) );
+   Scope dummy("Scalar::Scalar");
+   v_ = Scalar::extract(dummy, e->eval(dummy) );
 }
 
 ExpPtr Scalar::cloneWith(args_t &a) const {

@@ -75,7 +75,7 @@ ExpPtr Function::evaluate( Scope &ctx ) const
         throw Error( Here(), msg.str() );
     }
 
-    return ((*itr).second)( args );
+    return ((*itr).second)( ctx, args );
 }
 
 void Function::print(std::ostream&o) const

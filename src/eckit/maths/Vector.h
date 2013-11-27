@@ -40,7 +40,7 @@ public: // methods
 
     static bool is ( const ExpPtr& e );
 
-    static const value_t& extract ( const ExpPtr& e )
+    static const value_t& extract ( Scope& ctx, const ExpPtr& e )
     {
         ASSERT( Vector::is(e) );
         return e->as<Vector>()->value();

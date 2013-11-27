@@ -53,15 +53,15 @@ ExpPtr Expression::resolve(Scope & ctx) const
     return self();
 }
 
-ExpPtr Expression::optimise() const
+ExpPtr Expression::optimise(size_t) const
 {
     return self();
 }
 
-ExpPtr Expression::optimise(bool doit) const
+ExpPtr Expression::optimise(bool doit, size_t depth) const
 {
     if(doit) {
-         std::cout << "==============================" << std::endl;
+        for(size_t k = 0; k < depth; ++k) std::cout << "   ";
         std::cout << "Optimise : " << *this << std::endl;
 
         // First check is the arguments can be option
@@ -70,29 +70,33 @@ ExpPtr Expression::optimise(bool doit) const
         args_t result;
         result.reserve(args_.size());
         for(size_t i = 0; i < args_.size(); ++i) {
-            ExpPtr o = args_[i]->optimise(true);
+            ExpPtr o = args_[i]->optimise(true, depth + 1);
             result.push_back(o);
             changed = changed || (o.get() != args_[i].get());
         }
 
         if(changed) {
+            for(size_t k = 0; k < depth; ++k) std::cout << "   ";
             std::cout << "Arguments have changed" << std::endl;
             ExpPtr o = cloneWith(result);
-            return o->optimise(true);
+            return o->optimise(true, depth + 1);
         }
 
         const Expression* p = this;
+        for(size_t k = 0; k < depth; ++k) std::cout << "   ";
         std::cout << "Optimise : " << *this << std::endl;
         for(;;)
         {
-            ExpPtr o = optimise();
-            std::cout << "  - Optimise : " << *p << std::endl;
+            ExpPtr o = optimise(depth + 1);
+            for(size_t k = 0; k < depth; ++k) std::cout << "   ";
             if( o.get() == p ) {
-                std::cout << "  -          : - " << std::endl;
+                for(size_t k = 0; k < depth; ++k) std::cout << "   ";
+                std::cout << "-" << std::endl;
                 return o;
             }
             else {
-                std::cout << "  -          : " << *o << std::endl;
+                for(size_t k = 0; k < depth; ++k) std::cout << "   ";
+                std::cout << " ==> " << *o << std::endl;
                 p = o.get();
             }
         }

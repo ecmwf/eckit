@@ -151,7 +151,7 @@ void TestExp::test_optimise_recursive_scalars()
     ASSERT( e->signature() == "Add(Add(Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s))),Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s)))),Add(Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s))),Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s)))))" );
 
     // got fully optimised to a scalar
-    ASSERT( e->optimise()->signature() == Scalar::sig() );
+    ASSERT( e->optimise(true)->signature() == Scalar::sig() );
 
     // correct reduction
     ASSERT( e->eval()->str() == "Scalar(96)" );
@@ -163,16 +163,16 @@ void TestExp::test_optimise_prodadd()
     DBG;
 
     ExpPtr e0 = maths::prod( a_, maths::add(y_, x_ ) );
-    ASSERT( e0->optimise()->signature() == "ProdAdd(s,v,v)" );
+    ASSERT( e0->optimise(true)->signature() == "ProdAdd(s,v,v)" );
     ASSERT( e0->eval()->str() == "Vector(24, 24, 24, 24, 24, 24, 24, 24, 24, 24)" );
 
     ExpPtr e1 = maths::prod( x_, maths::add(y_, x_ ) );
-    ASSERT( e1->optimise()->signature() == "ProdAdd(v,v,v)" );
+    ASSERT( e1->optimise(true)->signature() == "ProdAdd(v,v,v)" );
     ASSERT( e1->eval()->str() == "Vector(60, 60, 60, 60, 60, 60, 60, 60, 60, 60)" );
 
     // involves also reducing the scalar-scalar
     ExpPtr e2 = maths::prod( maths::prod(a_,b_), maths::add(y_, x_ ) );
-    ASSERT( e2->optimise()->signature() == "ProdAdd(s,v,v)" );
+    ASSERT( e2->optimise(true)->signature() == "ProdAdd(s,v,v)" );
     ASSERT( e2->eval()->str() == "Vector(96, 96, 96, 96, 96, 96, 96, 96, 96, 96)" );
 }
 

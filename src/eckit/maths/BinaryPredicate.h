@@ -69,7 +69,6 @@ public:
     };
 
     virtual void asCode( std::ostream& o ) const;
-    //virtual ExpPtr optimise() const;
 };
 
 //--------------------------------------------------------------------------------------------

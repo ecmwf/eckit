@@ -153,7 +153,7 @@ public: // virtual methods
     virtual std::string returnSignature() const = 0;
 
 
-    ExpPtr optimise(bool doit) const;
+    ExpPtr optimise(bool doit, size_t depth = 0) const;
 
 protected: // members
 
@@ -168,7 +168,7 @@ private:
 
     virtual ExpPtr evaluate( Scope& ) const = 0;
     virtual void print( std::ostream& ) const = 0;
-    virtual ExpPtr optimise() const;
+    virtual ExpPtr optimise(size_t) const;
 
 
     virtual ExpPtr cloneWith(args_t&) const = 0;

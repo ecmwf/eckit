@@ -58,7 +58,7 @@ public: // virtual methods
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual ExpPtr optimise() const;
+    virtual ExpPtr optimise(size_t depth) const;
 
     virtual std::string signature() const;
 

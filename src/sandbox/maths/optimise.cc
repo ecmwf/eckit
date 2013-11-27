@@ -22,6 +22,7 @@
 #include "eckit/maths/Vector.h"
 #include "eckit/maths/List.h"
 #include "eckit/maths/BinaryOperator.h"
+#include "eckit/maths/Count.h"
 
 using namespace std;
 
@@ -57,8 +58,9 @@ void Optimise::run()
     Math x = maths::vector( 10, 5. );
     Math y = maths::vector( 10, 7. );
 
-    if(false)
+    if(true)
     {
+        std::cout << std::endl << "************************" << std::endl;
         Math X = maths::list( maths::add(a,b), maths::add(x,y));
 
         std::cout << "-----------------------" << std::endl;
@@ -68,9 +70,21 @@ void Optimise::run()
 
     if(true)
     {
+        std::cout << std::endl << "************************" << std::endl;
         Math e = a+b;
         Math z = (a-b) * e;
         Math X = maths::add( maths::prod(e,x), maths::prod(z,y));
+
+        std::cout << "-----------------------" << std::endl;
+        std::cout << X.optimise()              << std::endl;
+        std::cout << "-----------------------" << std::endl;
+    }
+
+    if(true)
+    {
+        std::cout << std::endl << "************************" << std::endl;
+        Math e = maths::count(maths::list(a,a,a,a,a,a,a));
+        Math X = maths::add( maths::prod(e,x), maths::prod(b,y));
 
         std::cout << "-----------------------" << std::endl;
         std::cout << X.optimise()              << std::endl;

@@ -31,23 +31,6 @@ ExpPtr Count::evaluate( Scope &ctx ) const
     return maths::scalar( param(0, ctx)->arity() )->as<Value>();
 }
 
-ExpPtr Count::optimise() const
-{
-    return self();
-
-    /// @todo write a correct optimiser for Count ...
-
-    // if( Undef::is( args_[0] ) )
-    //     return shared_from_this();
-    // else
-    // {
-    //     if( args_[0]->isArityComputable() )
-    //         return maths::scalar( args_[0]->computedArity() );
-    // }
-
-}
-
-
 ExpPtr Count::cloneWith(args_t &a) const {
     NOTIMP;
 }

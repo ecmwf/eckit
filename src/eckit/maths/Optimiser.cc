@@ -15,7 +15,7 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr Optimiser::apply(ExpPtr e)
+ExpPtr Optimiser::apply(ExpPtr e, size_t depth)
 {
     DBGX(*e);
 
@@ -29,9 +29,11 @@ ExpPtr Optimiser::apply(ExpPtr e)
     }
     else
     {        
-        ExpPtr re = (*itr).second->optimise(e);
-        DBGX("... optimising ...");
-        DBGX(*re);
+        ExpPtr re = (*itr).second->optimise(e, depth);
+        for(size_t k = 0; k < depth; ++k) std::cout << "   ";
+        std::cout << "Optimiser::apply on " << *e << std::endl;
+        for(size_t k = 0; k < depth; ++k) std::cout << "   ";
+        std::cout << "                ==> " << *re << std::endl;
         return re;
     }
 }

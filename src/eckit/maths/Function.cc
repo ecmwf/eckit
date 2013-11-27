@@ -82,9 +82,9 @@ void Function::print(std::ostream&o) const
     o << typeName() << "("; printArgs(o); o << ")";
 }
 
-ExpPtr Function::optimise() const
+ExpPtr Function::optimise(size_t depth) const
 {
-    return Optimiser::apply(self());
+    return Optimiser::apply(self(), depth);
 }
 
 string Function::signatureArguments(const args_t &args) const

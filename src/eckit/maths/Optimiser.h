@@ -28,7 +28,7 @@ public:
 
     typedef std::map<std::string,Optimiser*> optimisers_t;
 
-    static ExpPtr apply( ExpPtr e );
+    static ExpPtr apply( ExpPtr e, size_t );
 
 protected:
 
@@ -36,7 +36,7 @@ protected:
 
     Optimiser( const std::string& signature );
 
-    virtual ExpPtr optimise( ExpPtr ) const = 0;
+    virtual ExpPtr optimise( ExpPtr, size_t ) const = 0;
 
 };
 
@@ -53,7 +53,7 @@ public:
 private:
 
     /// Relies on proper contructor in the optimised expression
-    ExpPtr optimise( ExpPtr e ) const
+    ExpPtr optimise( ExpPtr e, size_t ) const
     {
         return ExpPtr( new T(e) );
     }

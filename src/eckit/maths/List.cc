@@ -42,11 +42,6 @@ void List::asCode(std::ostream&o) const
     o << "maths::list("; printArgs(o); o <<")";
 }
 
-bool List::is(const ExpPtr &e) {
-    return dynamic_cast<List*>(e.get()) != 0;
-}
-
-
 //--------------------------------------------------------------------------------------------
 
 void List::print(std::ostream&o) const

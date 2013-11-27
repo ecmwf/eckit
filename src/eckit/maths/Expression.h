@@ -129,10 +129,9 @@ public: // methods
 
     friend std::ostream& operator<<( std::ostream& os, const Expression& v);
 
-    ExpPtr eval() const;
-    ExpPtr eval( ExpPtr ) const;
-    ExpPtr eval( ExpPtr, ExpPtr ) const;
-    ExpPtr eval( const args_t& ) const;
+    ExpPtr eval(bool optimize = true) const;
+    ExpPtr eval(ExpPtr, bool optimize = true ) const;
+    ExpPtr eval(ExpPtr, ExpPtr, bool optimize = true) const;
 
     ExpPtr eval( Scope& ) const;
 

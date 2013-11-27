@@ -34,8 +34,6 @@
 #include "eckit/maths/Param.h"
 #include "eckit/maths/Call.h"
 
-#include "eckit/maths/Math.h"
-
 namespace eckit {
 namespace maths {
 

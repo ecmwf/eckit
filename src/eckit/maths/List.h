@@ -37,8 +37,6 @@ public: // methods
 
     static std::string sig() { return "l"; }
 
-    static bool is ( const ExpPtr& e );
-
     static const value_t& extract ( const ExpPtr& e )
     {
         return e->as<List>()->value();

@@ -86,7 +86,7 @@ long BufferedHandle::read(void* buffer,long length)
     ASSERT(read_);
         
     if(eof_)
-        return 0;
+        return -1;
 
     while(len < length && !eof_) {
         long left = used_ - pos_;

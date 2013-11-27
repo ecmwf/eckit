@@ -30,8 +30,7 @@ void Scalar::print(std::ostream&o) const
 
 Scalar::Scalar(ExpPtr e) : v_(0)
 {
-   //ASSERT( e->returnSignature() == Scalar::sig() );
-   v_ = Scalar::extract( e->eval() );
+   v_ = Scalar::extract( e->eval(false) );
 }
 
 //--------------------------------------------------------------------------------------------

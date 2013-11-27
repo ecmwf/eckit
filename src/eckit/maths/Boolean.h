@@ -31,11 +31,8 @@ public: // static methods
     static std::string sig() { return "b"; }
     static std::string className() { return "Boolean"; }
 
-    static bool is ( const ExpPtr& e );
-
     static scalar_t extract ( const ExpPtr& e )
     {
-        ASSERT( Boolean::is(e) );
         return e->as<Boolean>()->value();
     }
 

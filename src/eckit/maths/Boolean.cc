@@ -19,10 +19,6 @@ Boolean::Boolean( const Boolean::value_t& v ) : v_(v)
 {
 }
 
-bool Boolean::is(const ExpPtr &e) {
-    return dynamic_cast<Boolean*>(e.get()) != 0;
-}
-
 void Boolean::print(std::ostream&o) const
 {
     o << className() << "(" << v_ << ")";
@@ -35,8 +31,7 @@ void Boolean::asCode(std::ostream&o) const
 
 Boolean::Boolean(const ExpPtr& e) : v_(0)
 {
-   //ASSERT( e->returnSignature() == Boolean::sig() );
-   v_ = Boolean::extract( e->eval() );
+   v_ = Boolean::extract( e->eval(false) );
 }
 
 //--------------------------------------------------------------------------------------------

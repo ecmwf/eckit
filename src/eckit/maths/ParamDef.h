@@ -45,10 +45,7 @@ public: //  methods
 
 private:
 
-
     virtual ExpPtr evaluate( Scope& ctx ) const;
-
-    virtual ExpPtr clone() const;
 
     virtual std::string typeName() const { return ParamDef::className(); }
     virtual std::string signature() const { return ParamDef::sig(); }

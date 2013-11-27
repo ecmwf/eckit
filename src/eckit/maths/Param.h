@@ -42,8 +42,6 @@ private:
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual ExpPtr clone() const;
-
     virtual std::string typeName() const { return Param::className(); }
     virtual std::string signature() const { return Param::sig(); }
     virtual std::string returnSignature() const { return Param::sig(); }

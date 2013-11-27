@@ -34,11 +34,6 @@ bool Vector::is(const ExpPtr &e) {
     return dynamic_cast<Vector*>(e.get()) != 0;
 }
 
-ExpPtr Vector::clone() const
-{
-    return maths::vector( value() );
-}
-
 void Vector::print(std::ostream&o) const
 {
     o << className() << "(";

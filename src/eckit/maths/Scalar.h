@@ -40,7 +40,7 @@ public: // methods
         return e->as<Scalar>()->value();
     }
 
-    Scalar( const ExpPtr& e);
+    Scalar(ExpPtr e);
 
     Scalar( const scalar_t& v );
 
@@ -54,8 +54,6 @@ public: // virtual methods
     virtual std::string typeName() const { return Scalar::className(); }
     virtual std::string signature() const { return Scalar::sig(); }
     virtual std::string returnSignature() const { return Scalar::sig(); }
-
-    virtual ExpPtr clone() const;
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& o ) const;

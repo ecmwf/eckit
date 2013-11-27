@@ -16,13 +16,6 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-static Function::RegisterFactory< Reduce > filter_register;
-
-Reduce::Reduce(const args_t &args) : Function(args)
-{
-    ASSERT(arity() == 2);
-}
-
 Reduce::Reduce( ExpPtr f,  ExpPtr list ) : Function()
 {
     args_.push_back(f);

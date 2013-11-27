@@ -30,8 +30,6 @@ public: // methods
 
     static std::string className() { return "Filter"; }
 
-    Filter( const args_t& args );
-
     Filter( ExpPtr pred = undef(), ExpPtr list = undef() );
 
 private:

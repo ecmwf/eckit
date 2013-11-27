@@ -29,17 +29,11 @@ static const char *opsymbol(const Add&)   { return "+";  }
 static const char *opsymbol(const Sub&)   { return "-";  }
 static const char *opsymbol(const Mod&)   { return "%";  }
 
-static Function::RegisterFactory< BinaryOperator< Prod > > f_prod_register;
-static Function::RegisterFactory< BinaryOperator< Div > > f_div_register;
-static Function::RegisterFactory< BinaryOperator< Add > > f_add_register;
-static Function::RegisterFactory< BinaryOperator< Sub > > f_sub_register;
-static Function::RegisterFactory< BinaryOperator< Mod > > f_mod_register;
-
-ExpPtr prod( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryOperator< Prod >::make(l,r) ); }
-ExpPtr div( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryOperator< Div >::make(l,r) ); }
-ExpPtr add( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryOperator< Add >::make(l,r) ); }
-ExpPtr sub( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryOperator< Sub >::make(l,r) ); }
-ExpPtr mod( ExpPtr l, ExpPtr r ) { return ExpPtr( BinaryOperator< Mod >::make(l,r) ); }
+ExpPtr prod( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Prod >(l,r) ); }
+ExpPtr div( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Div >(l,r) );  }
+ExpPtr add( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Add >(l,r) );  }
+ExpPtr sub( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Sub >(l,r) );  }
+ExpPtr mod( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Mod >(l,r) );  }
 
 //--------------------------------------------------------------------------------------------
 
@@ -107,8 +101,10 @@ static BinaryOperator<Sub>::Computer<Vector,Vector,Generic> sub_vvg;
 //--------------------------------------------------------------------------------------------
 
 template < class T >
-BinaryOperator<T>::BinaryOperator(const args_t &args) : Function( args )
+BinaryOperator<T>::BinaryOperator(ExpPtr a, ExpPtr b)
 {
+    args_.push_back(a);
+    args_.push_back(b);
 }
 
 template < class T >

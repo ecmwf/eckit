@@ -30,10 +30,6 @@ ExpPtr ParamDef::resolve(Scope & ctx) const
     return ctx.nextArg();
 }
 
-ExpPtr ParamDef::clone() const
-{
-    return paramdef(name_);
-}
 
 void ParamDef::print(std::ostream&o) const
 {

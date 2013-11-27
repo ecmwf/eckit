@@ -17,13 +17,6 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-static Function::RegisterFactory< Filter > filter_register;
-
-Filter::Filter(const args_t& args) : Function(args)
-{
-    ASSERT(arity() == 2);
-}
-
 Filter::Filter( ExpPtr pred,  ExpPtr list ) : Function()
 {
     args_.push_back(pred);

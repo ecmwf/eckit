@@ -29,8 +29,6 @@ public: // methods
 
     static std::string className() { return "Map"; }
 
-    Map( const args_t& args );
-
     Map( ExpPtr f, ExpPtr l );
 
 private:

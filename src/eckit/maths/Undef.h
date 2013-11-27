@@ -24,9 +24,6 @@ namespace maths {
 
 
 class Undef : public Expression {
-
-    virtual ExpPtr resolve(Scope & ctx) const;
-
 public: //  methods
 
     static std::string className() { return "Undef"; }
@@ -41,15 +38,13 @@ private:
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual ExpPtr clone() const;
-
     virtual std::string typeName() const { return Undef::className(); }
     virtual std::string signature() const { return Undef::sig(); }
     virtual std::string returnSignature() const { return Undef::sig(); }
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;
-
+    virtual ExpPtr resolve(Scope & ctx) const;
 
 };
 

@@ -25,11 +25,6 @@ Param::~Param()
 {
 }
 
-ExpPtr Param::clone() const
-{
-    return parameter(name_);
-}
-
 void Param::print(std::ostream&o) const
 {
     o << "_(" << name_ << ")";

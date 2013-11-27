@@ -29,8 +29,6 @@ public: // methods
 
     static std::string className() { return "Lambda"; }
 
-    Lambda( const args_t& args );
-
     Lambda( ExpPtr body);
     Lambda( const string& a, ExpPtr body);
     Lambda( const string& a, const string& b, ExpPtr body);

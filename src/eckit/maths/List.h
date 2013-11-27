@@ -59,8 +59,6 @@ private: // virtual methods
     virtual std::string signature() const { return List::sig(); }
     virtual std::string returnSignature() const { return List::sig(); }
 
-    virtual ExpPtr clone() const;
-
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;
 

@@ -18,7 +18,6 @@ namespace eckit {
 namespace maths {
 
 
-
 Undef::Undef() : Expression()
 {
 }
@@ -49,11 +48,6 @@ ExpPtr Undef::evaluate( Scope &ctx ) const
 ExpPtr Undef::resolve( Scope &ctx ) const
 {
    return ctx.nextArg();
-}
-
-ExpPtr Undef::clone() const
-{
-    return undef();
 }
 
 ExpPtr undef()

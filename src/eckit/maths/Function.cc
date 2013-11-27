@@ -95,26 +95,6 @@ ExpPtr Function::optimise() const
     return Optimiser::apply( self() );
 }
 
-ExpPtr Function::clone() const
-{
-    key_t k = typeName();
-    factory_t& f = factory();
-    factory_t::iterator itr = f.find( k );
-    if( itr == f.end() )
-    {
-        std::ostringstream msg;
-        msg << "could not find factory function for type: " << k;
-        throw Error( Here(), msg.str() );
-    }
-
-    // clone the arguments
-    args_t args;
-    for( size_t i = 0; i < args_.size(); ++i )
-        args.push_back( args_[i]->clone() );
-
-    return ((*itr).second)( args );
-}
-
 void Function::print(std::ostream&o) const
 {
     o << typeName() << "("; printArgs(o); o << ")";

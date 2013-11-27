@@ -15,14 +15,6 @@ namespace eckit {
 namespace maths {
 
 //--------------------------------------------------------------------------------------------
-
-static Function::RegisterFactory< Take > take_register;
-
-Take::Take(const args_t& args) : Function(args)
-{
-    ASSERT(arity() == 2);
-}
-
 Take::Take(ExpPtr e, ExpPtr l) : Function()
 {
     args_.push_back(e);

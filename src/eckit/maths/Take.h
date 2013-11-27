@@ -30,8 +30,6 @@ public: // methods
 
     static std::string className() { return "Take"; }
 
-    Take( const args_t& args );
-
     Take( ExpPtr e = undef(), ExpPtr l = undef()  );
 
 private:

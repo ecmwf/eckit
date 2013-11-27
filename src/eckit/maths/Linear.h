@@ -30,8 +30,6 @@ public: // methods
 
     static std::string className() { return "Linear"; }
 
-    Linear( const args_t& args );
-
     Linear( ExpPtr e );
 
     struct Register { Register(); };

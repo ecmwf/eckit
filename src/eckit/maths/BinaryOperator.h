@@ -32,18 +32,10 @@ template <class T>
 class BinaryOperator : public Function  {
 public:
 
-    /// generator of of this expression type
-    static ExpPtr make( ExpPtr p0, ExpPtr p1 )
-    {
-        args_t args;
-        args.push_back( p0 );
-        args.push_back( p1 );
-        return ExpPtr( new BinaryOperator<T>(args) );
-    }
 
     static std::string className();
 
-    BinaryOperator( const args_t& args );
+    BinaryOperator(ExpPtr a, ExpPtr b);
 
     virtual std::string typeName() const;
 

@@ -43,7 +43,7 @@ public:
 
     static std::string className();
 
-    UnaryOperator( const args_t& args );
+    UnaryOperator( ExpPtr e);
 
     virtual std::string typeName() const;
 

@@ -31,8 +31,6 @@ public: // methods
 
     static std::string className() { return "Count"; }
 
-    Count( const args_t& args );
-
     Count( ExpPtr e = undef() );
 
 private:

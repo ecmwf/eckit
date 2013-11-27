@@ -18,14 +18,8 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-#define GEN_UNFUNC_IMPL( f, c, op )                                                         \
-static Function::RegisterFactory< c > f ## _register;                                           \
-ExpPtr f( ExpPtr e )           { return ExpPtr( c::make(e) ); }                                  \
-ExpPtr f( Expression& e )            { return ExpPtr( c::make(e.self()) ); }
-
-GEN_UNFUNC_IMPL(neg,UnaryOperator<Neg>,-)
-
-#undef GEN_UNFUNC_IMPL
+                            \
+ExpPtr neg( ExpPtr e )           { return ExpPtr( new UnaryOperator<Neg>(e) ); }
 
 //--------------------------------------------------------------------------------------------
 
@@ -62,8 +56,9 @@ static UnaryOperator<Neg>::Computer<Vector,Generic> neg_vg;
 //--------------------------------------------------------------------------------------------
 
 template < class T >
-UnaryOperator<T>::UnaryOperator(const args_t &args) : Function( args )
+UnaryOperator<T>::UnaryOperator(ExpPtr e)
 {
+    args_.push_back(e);
 }
 
 template < class T >

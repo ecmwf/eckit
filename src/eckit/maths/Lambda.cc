@@ -19,12 +19,6 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-//static Function::RegisterFactory< Lambda > fmap_register;
-
-Lambda::Lambda(const args_t& args) : Function(args)
-{
-}
-
 Lambda::Lambda( ExpPtr body ) : Function()
 {
     args_.push_back(body);

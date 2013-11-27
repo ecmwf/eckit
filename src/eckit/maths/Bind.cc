@@ -22,11 +22,6 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-Bind::Bind(const args_t& args) : Function(args)
-{
-    ASSERT(arity() == 2);
-}
-
 Bind::Bind( size_t i, ExpPtr f, ExpPtr e ) : Function()
 {
     ASSERT( i > 1 );
@@ -71,11 +66,6 @@ void Bind::asCode(std::ostream& o) const
 {
     o << "maths::bind("; printArgs(o); o << ")";
 }
-
-
-//--------------------------------------------------------------------------------------------
-
-static Function::RegisterFactory< Bind > bind_register;                                                  \
 
 //--------------------------------------------------------------------------------------------
 

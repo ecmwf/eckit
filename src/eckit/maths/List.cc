@@ -47,21 +47,6 @@ bool List::is(const ExpPtr &e) {
 }
 
 
-ExpPtr List::clone() const
-{
-
-    const size_t nlist = args_.size();
-
-    List::value_t res;
-    res.reserve(nlist);
-
-    for( size_t i = 0; i < args_.size(); ++i )
-    {
-        res.push_back(args_[i]->clone() );
-    }
-    return ExpPtr(new List( res, List::Swap()));
-}
-
 //--------------------------------------------------------------------------------------------
 
 void List::print(std::ostream&o) const

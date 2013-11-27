@@ -18,20 +18,11 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-//static Function::RegisterFactory< IfElse > fmap_register;
-
-IfElse::IfElse(const args_t& args) : Function(args)
-{
-    ASSERT(arity() == 3);
-}
-
 IfElse::IfElse( ExpPtr f,  ExpPtr i, ExpPtr e ) : Function()
 {
     args_.push_back(f);
     args_.push_back(i);
     args_.push_back(e);
-
-    ASSERT(arity() == 3);
 }
 
 string IfElse::returnSignature() const

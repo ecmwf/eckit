@@ -105,7 +105,6 @@ ExpPtr ProdAdd::compute_ggg(const args_t &p)
 
 ProdAdd::Register::Register()
 {
-    Function::RegisterFactory< ProdAdd > factory_register;
 
     Function::dispatcher()[ className() + "(s,s,s)" ] = &compute_ggg;
     Function::dispatcher()[ className() + "(s,v,s)" ] = &compute_ggg;

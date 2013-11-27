@@ -31,8 +31,6 @@ public: // methods
 
     static std::string className() { return "Reduce"; }
 
-    Reduce( const args_t& args );
-
     Reduce( ExpPtr f = undef(), ExpPtr l = undef() );
 
 private:

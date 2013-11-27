@@ -29,10 +29,7 @@ public: // methods
 
     static std::string className() { return "Bind"; }
 
-    Bind( const args_t& args );
-
     Bind( size_t i, ExpPtr f, ExpPtr e );
-
     Bind( ExpPtr i, ExpPtr f, ExpPtr e );
 
 private:

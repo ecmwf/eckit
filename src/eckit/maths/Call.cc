@@ -19,12 +19,6 @@ namespace maths {
 
 //--------------------------------------------------------------------------------------------
 
-
-Call::Call(const args_t& args) : Function(args)
-{
-    ASSERT(arity() > 0);
-}
-
 Call::Call( ExpPtr f) : Function()
 {
     args_.push_back(f);

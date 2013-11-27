@@ -106,7 +106,7 @@ class Expression :
 
 public: // methods
 
-    static std::string className() { return "Exp"; }
+    static std::string className() { return "Expression"; }
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves
@@ -149,7 +149,6 @@ public: // methods
 public: // virtual methods
 
     virtual std::string typeName() const = 0;
-    virtual ExpPtr clone() const = 0;
     virtual std::string signature() const = 0;
     virtual std::string returnSignature() const = 0;
 

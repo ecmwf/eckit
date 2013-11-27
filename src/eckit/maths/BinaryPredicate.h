@@ -34,18 +34,9 @@ template <class T>
 class BinaryPredicate : public Function  {
 public:
 
-    /// generator for this expression type
-    static ExpPtr make( ExpPtr p0, ExpPtr p1 )
-    {
-        args_t args;
-        args.push_back( p0 );
-        args.push_back( p1 );
-        return ExpPtr( new BinaryPredicate<T>(args) );
-    }
-
     static std::string className();
 
-    BinaryPredicate( const args_t& args );
+    BinaryPredicate( ExpPtr a, ExpPtr b);
 
     virtual std::string typeName() const;
 

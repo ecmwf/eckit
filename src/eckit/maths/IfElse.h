@@ -29,8 +29,6 @@ public: // methods
 
     static std::string className() { return "IfElse"; }
 
-    IfElse( const args_t& args );
-
     IfElse( ExpPtr f, ExpPtr i, ExpPtr e );
 
 private:

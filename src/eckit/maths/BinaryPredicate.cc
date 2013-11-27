@@ -58,7 +58,6 @@ struct Generic
 namespace _Greater {
 typedef Greater T;
 
-static Function::RegisterFactory<  BinaryPredicate< T > >       factory;
 static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
 static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
 static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
@@ -74,7 +73,6 @@ static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
 namespace _GreaterEqual {
 typedef GreaterEqual T;
 
-static Function::RegisterFactory<  BinaryPredicate< T > >       factory;
 static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
 static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
 static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
@@ -90,7 +88,6 @@ static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
 namespace _Less {
 typedef Less T;
 
-static Function::RegisterFactory<  BinaryPredicate< T > >       factory;
 static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
 static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
 static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
@@ -106,7 +103,6 @@ static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
 namespace _LessEqual {
 typedef LessEqual T;
 
-static Function::RegisterFactory<  BinaryPredicate< T > >       factory;
 static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
 static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
 static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
@@ -122,7 +118,6 @@ static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
 namespace _Equal {
 typedef Equal T;
 
-static Function::RegisterFactory<  BinaryPredicate< T > >       factory;
 static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
 static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
 static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
@@ -138,7 +133,6 @@ static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
 namespace _NotEqual {
 typedef NotEqual T;
 
-static Function::RegisterFactory<  BinaryPredicate< T > >       factory;
 static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
 static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
 static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
@@ -154,7 +148,6 @@ static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
 namespace _And {
 typedef And T;
 
-static Function::RegisterFactory<  BinaryPredicate< T > >       factory;
 static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
 static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
 static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
@@ -170,7 +163,6 @@ static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
 namespace _Or {
 typedef Or T;
 
-static Function::RegisterFactory<  BinaryPredicate< T > >       factory;
 static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
 static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
 static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
@@ -184,20 +176,22 @@ static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
 }
 
 
-ExpPtr greater( ExpPtr l, ExpPtr r )        { return ExpPtr( BinaryPredicate< Greater >::make(l,r) );      }
-ExpPtr greater_equal( ExpPtr l, ExpPtr r )  { return ExpPtr( BinaryPredicate< GreaterEqual >::make(l,r) ); }
-ExpPtr less( ExpPtr l, ExpPtr r )           { return ExpPtr( BinaryPredicate< Less >::make(l,r) );         }
-ExpPtr less_equal( ExpPtr l, ExpPtr r )     { return ExpPtr( BinaryPredicate< LessEqual >::make(l,r) );    }
-ExpPtr equal( ExpPtr l, ExpPtr r )          { return ExpPtr( BinaryPredicate< Equal >::make(l,r) );        }
-ExpPtr not_equal( ExpPtr l, ExpPtr r )      { return ExpPtr( BinaryPredicate< NotEqual >::make(l,r) );     }
-ExpPtr logical_and( ExpPtr l, ExpPtr r )    { return ExpPtr( BinaryPredicate< And >::make(l,r) );          }
-ExpPtr logical_or( ExpPtr l, ExpPtr r )     { return ExpPtr( BinaryPredicate< Or >::make(l,r) );           }
+ExpPtr greater( ExpPtr l, ExpPtr r )        { return ExpPtr( new BinaryPredicate< Greater >(l,r) );      }
+ExpPtr greater_equal( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryPredicate< GreaterEqual >(l,r) ); }
+ExpPtr less( ExpPtr l, ExpPtr r )           { return ExpPtr( new BinaryPredicate< Less >(l,r) );         }
+ExpPtr less_equal( ExpPtr l, ExpPtr r )     { return ExpPtr( new BinaryPredicate< LessEqual >(l,r) );    }
+ExpPtr equal( ExpPtr l, ExpPtr r )          { return ExpPtr( new BinaryPredicate< Equal >(l,r) );        }
+ExpPtr not_equal( ExpPtr l, ExpPtr r )      { return ExpPtr( new BinaryPredicate< NotEqual >(l,r) );     }
+ExpPtr logical_and( ExpPtr l, ExpPtr r )    { return ExpPtr( new BinaryPredicate< And >(l,r) );          }
+ExpPtr logical_or( ExpPtr l, ExpPtr r )     { return ExpPtr( new BinaryPredicate< Or >(l,r) );           }
 
 //--------------------------------------------------------------------------------------------
 
 template < class T >
-BinaryPredicate<T>::BinaryPredicate(const args_t &args) : Function( args )
+BinaryPredicate<T>::BinaryPredicate(ExpPtr a, ExpPtr b)
 {
+    args_.push_back(a);
+    args_.push_back(b);
 }
 
 template < class T >

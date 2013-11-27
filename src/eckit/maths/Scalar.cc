@@ -23,17 +23,12 @@ bool Scalar::is(const ExpPtr &e) {
     return dynamic_cast<Scalar*>(e.get()) != 0;
 }
 
-ExpPtr Scalar::clone() const
-{
-    return maths::scalar( value() );
-}
-
 void Scalar::print(std::ostream&o) const
 {
     o << className() << "(" << v_ << ")";
 }
 
-Scalar::Scalar(const ExpPtr& e) : v_(0)
+Scalar::Scalar(ExpPtr e) : v_(0)
 {
    //ASSERT( e->returnSignature() == Scalar::sig() );
    v_ = Scalar::extract( e->eval() );

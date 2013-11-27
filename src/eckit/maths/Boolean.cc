@@ -19,11 +19,6 @@ Boolean::Boolean( const Boolean::value_t& v ) : v_(v)
 {
 }
 
-ExpPtr Boolean::clone() const
-{
-    return maths::boolean( value() );
-}
-
 bool Boolean::is(const ExpPtr &e) {
     return dynamic_cast<Boolean*>(e.get()) != 0;
 }

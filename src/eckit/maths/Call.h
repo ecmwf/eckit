@@ -29,8 +29,6 @@ public: // methods
 
     static std::string className() { return "Call"; }
 
-    Call( const args_t& args );
-
     Call( ExpPtr f );
     Call( ExpPtr f, ExpPtr a);
     Call( ExpPtr f, ExpPtr a, ExpPtr b);

@@ -60,21 +60,10 @@ public: // virtual methods
 
     virtual ExpPtr optimise() const;
 
-    virtual ExpPtr clone() const;
-
     virtual std::string signature() const;
 
     virtual void print( std::ostream& o ) const;
 
-    template< typename T >
-    struct RegisterFactory
-    {
-        RegisterFactory() { factory()[ T::className() ] = &(RegisterFactory<T>::build); }
-        static ExpPtr build( const args_t& args )
-        {
-            return ExpPtr( new T( args ) );
-        }
-    };
 
 protected: // methods
 

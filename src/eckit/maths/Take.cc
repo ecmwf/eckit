@@ -45,6 +45,10 @@ void Take::asCode(std::ostream&o) const
     o << "maths::take("; printArgs(o); o << ")";
 }
 
+ExpPtr Take::cloneWith(args_t &a) const {
+    NOTIMP; // Should not be called
+}
+
 //--------------------------------------------------------------------------------------------
 
 ExpPtr take( ExpPtr e, ExpPtr l )

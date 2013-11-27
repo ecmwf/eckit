@@ -58,6 +58,11 @@ void Filter::asCode(std::ostream&o) const
 }
 
 
+ExpPtr Filter::cloneWith(args_t &a) const {
+    NOTIMP;
+}
+
+
 //--------------------------------------------------------------------------------------------
 
 ExpPtr filter( ExpPtr f,  ExpPtr list )

@@ -39,6 +39,7 @@ public: // methods
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
     virtual void asCode( std::ostream& o ) const;
+    virtual ExpPtr cloneWith(args_t &a) const;
 
 };
 

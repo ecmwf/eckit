@@ -56,6 +56,10 @@ ExpPtr Call::evaluate( Scope &ctx ) const
     return f->eval(scope)->as<Lambda>()->call(scope);
 }
 
+ExpPtr Call::cloneWith(args_t &a) const {
+    NOTIMP;
+}
+
 //--------------------------------------------------------------------------------------------
 
 ExpPtr call( ExpPtr f)

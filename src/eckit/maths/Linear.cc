@@ -83,7 +83,7 @@ ExpPtr Linear::compute( const args_t& p )
 
 void Linear::asCode(std::ostream&o) const
 {
-    o << "((" << *param(0) << " + " << *param(1) << ") * (" << *param(2) << " + " << *param(3) << "))";
+    o << "math::linear(" << *param(0) << ", " << *param(1) << ", " << *param(2) << ", " << *param(3) << "))";
 }
 
 string Linear::returnSignature() const
@@ -95,6 +95,12 @@ Linear::Register::Register()
 {
     Function::dispatcher()[ className() + "(s,v,s,v)" ] = &compute;
 }
+
+
+ExpPtr Linear::cloneWith(args_t &a) const {
+    NOTIMP;
+}
+
 
 //--------------------------------------------------------------------------------------------
 

@@ -34,6 +34,10 @@ bool Vector::is(const ExpPtr &e) {
     return dynamic_cast<Vector*>(e.get()) != 0;
 }
 
+ExpPtr Vector::cloneWith(args_t &a) const {
+    NOTIMP; // Should not be called
+}
+
 void Vector::print(std::ostream&o) const
 {
     o << className() << "(";

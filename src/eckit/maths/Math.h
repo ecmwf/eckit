@@ -59,6 +59,9 @@ public:
     Math operator >=(const Math&) const;
     Math operator <=(const Math&) const;
 
+    // Just for testing
+    Math optimise() const;
+
 private:
 
     ExpPtr expr_;

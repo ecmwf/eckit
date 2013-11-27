@@ -54,7 +54,9 @@ void Map::asCode(std::ostream&o) const
     o << "maths::map("; printArgs(o); o << ")";
 }
 
-
+ExpPtr Map::cloneWith(args_t &a) const {
+    NOTIMP; // Should not be called
+}
 //--------------------------------------------------------------------------------------------
 
 ExpPtr map( ExpPtr f,  ExpPtr list )

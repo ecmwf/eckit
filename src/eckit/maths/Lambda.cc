@@ -86,6 +86,9 @@ void Lambda::asCode(std::ostream&o) const
     o << "maths::lambda("; printArgs(o); o <<")";
 }
 
+ExpPtr Lambda::cloneWith(args_t &a) const {
+    NOTIMP;
+}
 
 //--------------------------------------------------------------------------------------------
 

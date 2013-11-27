@@ -45,6 +45,7 @@ private:
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;
     virtual ExpPtr resolve(Scope & ctx) const;
+    virtual ExpPtr cloneWith(args_t &a) const;
 
 };
 

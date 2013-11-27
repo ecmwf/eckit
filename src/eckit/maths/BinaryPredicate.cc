@@ -218,6 +218,12 @@ void BinaryPredicate<T>::asCode( std::ostream& o ) const {
 }
 
 template < class T >
+ExpPtr BinaryPredicate<T>::optimise() const
+{
+    return Optimiser::apply(self());
+}
+
+template < class T >
 template < class U, class V, class I >
 BinaryPredicate<T>::Computer<U,V,I>::Computer()
 {

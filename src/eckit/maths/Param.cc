@@ -46,6 +46,10 @@ void Param::asCode(std::ostream&o) const
     o << "Math(\"" << name_ << "\")";
 }
 
+ExpPtr Param::cloneWith(args_t &a) const {
+    NOTIMP; // Should not be called
+}
+
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths

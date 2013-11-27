@@ -21,7 +21,7 @@ Boolean::Boolean( const Boolean::value_t& v ) : v_(v)
 
 void Boolean::print(std::ostream&o) const
 {
-    o << className() << "(" << v_ << ")";
+    o << className() << "(" << (v_? "true" : "false") << ")";
 }
 
 void Boolean::asCode(std::ostream&o) const
@@ -32,6 +32,10 @@ void Boolean::asCode(std::ostream&o) const
 Boolean::Boolean(const ExpPtr& e) : v_(0)
 {
    v_ = Boolean::extract( e->eval(false) );
+}
+
+ExpPtr Boolean::cloneWith(args_t &a) const {
+    NOTIMP; // Should not be called
 }
 
 //--------------------------------------------------------------------------------------------

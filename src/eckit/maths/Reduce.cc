@@ -55,6 +55,10 @@ void Reduce::asCode(std::ostream&o) const
     o << "maths::reduce("; printArgs(o); o <<")";
 }
 
+
+ExpPtr Reduce::cloneWith(args_t &a) const {
+    NOTIMP; // Should not be called
+}
 //--------------------------------------------------------------------------------------------
 
 ExpPtr reduce( ExpPtr f,  ExpPtr list )

@@ -85,6 +85,12 @@ void UnaryOperator<T>::asCode( std::ostream& o ) const {
 }
 
 template < class T >
+ExpPtr UnaryOperator<T>::optimise() const
+{
+    return Optimiser::apply(self());
+}
+
+template < class T >
 template < class U, class I >
 UnaryOperator<T>::Computer<U,I>::Computer()
 {

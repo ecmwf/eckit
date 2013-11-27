@@ -12,6 +12,7 @@
 #include <algorithm>    // std::copy
 
 #include "eckit/maths/List.h"
+#include "eckit/maths/Optimiser.h"
 
 namespace eckit {
 namespace maths {
@@ -53,6 +54,12 @@ void List::print(std::ostream&o) const
         o << *args_[i];
     }
     o << ")";
+}
+
+
+ExpPtr List::cloneWith(args_t &a) const
+{
+    return ExpPtr(new List(a, List::Swap()));
 }
 
 //--------------------------------------------------------------------------------------------

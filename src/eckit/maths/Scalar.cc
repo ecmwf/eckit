@@ -33,6 +33,10 @@ Scalar::Scalar(ExpPtr e) : v_(0)
    v_ = Scalar::extract( e->eval(false) );
 }
 
+ExpPtr Scalar::cloneWith(args_t &a) const {
+    NOTIMP; // Should not be called
+}
+
 //--------------------------------------------------------------------------------------------
 
 ExpPtr scalar(const scalar_t &s)

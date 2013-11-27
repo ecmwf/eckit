@@ -77,27 +77,14 @@ ExpPtr Function::evaluate( Scope &ctx ) const
     return ((*itr).second)( args );
 }
 
-ExpPtr Function::optimise() const
-{
-    DBGX( *this );
-    DBGX( signature() );
-
-    // optimise first children
-
-    // FIXME: this mus be const....
-    // FIXME: this should go to Expression, as the List elements are not optimized
-    for( size_t i = 0; i < args_.size(); ++i )
-    {
-        const_cast<Function*>(this)->args_[i] = args_[i]->optimise()->self();
-    }
-
-    // now try to optimise self
-    return Optimiser::apply( self() );
-}
-
 void Function::print(std::ostream&o) const
 {
     o << typeName() << "("; printArgs(o); o << ")";
+}
+
+ExpPtr Function::optimise() const
+{
+    return Optimiser::apply(self());
 }
 
 string Function::signatureArguments(const args_t &args) const

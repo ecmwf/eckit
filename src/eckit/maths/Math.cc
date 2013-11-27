@@ -121,6 +121,11 @@ Math Math::operator +(const Math& other) const
 {
     return maths::add(*this, other);
 }
+
+Math Math::optimise() const
+{
+    return Math(expr_->optimise(true));
+}
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths

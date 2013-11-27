@@ -43,6 +43,8 @@ private:
 
     virtual void asCode( std::ostream& ) const;
 
+    virtual ExpPtr cloneWith(args_t &a) const;
+
 protected: // methods
 
     static ExpPtr compute( const args_t& p );

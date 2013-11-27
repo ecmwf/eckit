@@ -42,7 +42,7 @@ private:
 
     virtual void asCode( std::ostream& ) const;
 
-
+    virtual ExpPtr cloneWith(args_t &a) const;
 };
 
 //--------------------------------------------------------------------------------------------

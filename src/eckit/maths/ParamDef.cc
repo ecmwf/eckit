@@ -51,6 +51,11 @@ void ParamDef::asCode(std::ostream&o) const
     o << '"' << name_ << '"';
 }
 
+ExpPtr ParamDef::cloneWith(args_t &a) const {
+    NOTIMP;
+}
+
+
 
 bool ParamDef::is(const ExpPtr &e) {
     return dynamic_cast<ParamDef*>(e.get()) != 0;

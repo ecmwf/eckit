@@ -53,7 +53,7 @@ private: // virtual methods
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& o ) const;
-
+    virtual ExpPtr cloneWith(args_t &a) const;
 
 protected: // members
 

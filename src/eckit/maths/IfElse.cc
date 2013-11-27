@@ -66,7 +66,10 @@ void IfElse::asCode(std::ostream&o) const
     o << "maths::ifelse("; printArgs(o); o <<")";
 }
 
-
+ExpPtr IfElse::cloneWith(args_t &a) const {
+    ASSERT(a.size() == 3);
+    return ExpPtr(new IfElse(a[0], a[1], a[2]));
+}
 //--------------------------------------------------------------------------------------------
 
 ExpPtr ifelse( ExpPtr f,  ExpPtr i, ExpPtr e )

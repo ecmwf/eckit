@@ -61,6 +61,9 @@ void ZipWith::asCode(std::ostream&o) const
     o << "maths::zipWith("; printArgs(o); o <<")";
 }
 
+ExpPtr ZipWith::cloneWith(args_t &a) const {
+    NOTIMP; // Should not be called
+}
 
 //--------------------------------------------------------------------------------------------
 

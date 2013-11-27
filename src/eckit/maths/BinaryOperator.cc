@@ -131,6 +131,12 @@ std::string BinaryOperator<T>::className()
 }
 
 template < class T >
+ExpPtr BinaryOperator<T>::optimise() const
+{
+    return Optimiser::apply(self());
+}
+
+template < class T >
 void BinaryOperator<T>::asCode( std::ostream& o ) const {
     o << '(' << *args_[0] << ' ' << opsymbol(T()) << ' ' << *args_[1] << ')';
 }

@@ -39,8 +39,7 @@ Expression::~Expression()
 ExpPtr Expression::eval(bool optimize) const
 {
     Scope ctx("Expression::eval()");
-    ExpPtr res = optimize ? optimise()->evaluate(ctx) : evaluate(ctx);
-    return res;
+    return ExpPtr( optimise(optimize)->evaluate(ctx));
 }
 
 ExpPtr Expression::eval(Scope& ctx) const
@@ -59,18 +58,71 @@ ExpPtr Expression::optimise() const
     return self();
 }
 
+ExpPtr Expression::optimise(bool doit) const
+{
+    if(doit) {
+         std::cout << "==============================" << std::endl;
+        std::cout << "Optimise : " << *this << std::endl;
+
+        // First check is the arguments can be option
+
+        bool changed = false;
+        args_t result;
+        result.reserve(args_.size());
+        for(size_t i = 0; i < args_.size(); ++i) {
+            ExpPtr o = args_[i]->optimise(true);
+            result.push_back(o);
+            changed = changed || (o.get() != args_[i].get());
+        }
+
+        if(changed) {
+            std::cout << "Arguments have changed" << std::endl;
+            ExpPtr o = cloneWith(result);
+            return o->optimise(true);
+        }
+
+        const Expression* p = this;
+        std::cout << "Optimise : " << *this << std::endl;
+        for(;;)
+        {
+            ExpPtr o = optimise();
+            std::cout << "  - Optimise : " << *p << std::endl;
+            if( o.get() == p ) {
+                std::cout << "  -          : - " << std::endl;
+                return o;
+            }
+            else {
+                std::cout << "  -          : " << *o << std::endl;
+                p = o.get();
+            }
+        }
+
+    }
+    return self();
+}
+
+bool Expression::optimiseArgs(args_t & result) const
+{
+    result.reserve(args_.size());
+    bool changed = false;
+    for(size_t i = 0; i < args_.size(); ++i) {
+        ExpPtr o = args_[i]->optimise(true);
+        result.push_back(o);
+        changed = changed || (o.get() != args_[i].get());
+    }
+    return changed;
+}
+
 ExpPtr Expression::eval(ExpPtr e , bool optimize) const
 {
     Scope ctx("Expression::eval( ExpPtr e )", e);
-    ExpPtr res = optimize ? optimise()->evaluate(ctx) : evaluate(ctx);
-    return res;
+    return ExpPtr( optimise(optimize)->evaluate(ctx));
 }
 
 ExpPtr Expression::eval(ExpPtr a, ExpPtr b , bool optimize) const
 {
     Scope ctx("Expression::eval(  ExpPtr a, ExpPtr b )", a, b);
-    ExpPtr res = optimize ? optimise()->evaluate(ctx) : evaluate(ctx);
-    return res;
+    return ExpPtr( optimise(optimize)->evaluate(ctx));
 }
 
 ExpPtr Expression::param( size_t i) const

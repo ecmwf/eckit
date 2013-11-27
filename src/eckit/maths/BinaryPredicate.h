@@ -42,6 +42,11 @@ public:
 
     virtual std::string returnSignature() const;
 
+    virtual ExpPtr cloneWith(args_t &a) const {
+        ASSERT(a.size() == 2);
+        return ExpPtr(new BinaryPredicate<T>(a[0], a[1]));
+    }
+
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
     /// U is the left operand type ( Scalar, Vector, ... )
@@ -64,6 +69,7 @@ public:
     };
 
     virtual void asCode( std::ostream& o ) const;
+    virtual ExpPtr optimise() const;
 };
 
 //--------------------------------------------------------------------------------------------

@@ -67,6 +67,10 @@ void Bind::asCode(std::ostream& o) const
     o << "maths::bind("; printArgs(o); o << ")";
 }
 
+ExpPtr Bind::cloneWith(args_t &a) const {
+    ASSERT(a.size() == 3);
+    return ExpPtr(new Bind(a[0], a[1], a[2]));
+}
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths

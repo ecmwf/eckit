@@ -13,3 +13,11 @@ ecbuild_add_executable(
 	INCLUDES    ${Boost_INCLUDE_DIRS}
 	LIBS        eckit_maths eckit
 	)
+
+ecbuild_add_executable(   
+	TARGET      optimise
+	SOURCES     optimise.cc 
+	CONDITION ECKIT_MATHS AND Boost_FOUND
+	INCLUDES    ${Boost_INCLUDE_DIRS}
+	LIBS        eckit_maths eckit
+	)

@@ -281,21 +281,21 @@ void TestExp::test_predicates()
     ExpPtr f0 =  maths::not_equal( a_ , b_ );
 
     ASSERT( f0->str() == "NotEqual(Scalar(2), Scalar(4))" );
-    ASSERT( f0->eval()->str() == "Boolean(1)" );
+    ASSERT( f0->eval()->str() == "Boolean(true)" );
 
     // Greater
 
     ExpPtr f1 =  maths::greater( a_ , b_ );
 
     ASSERT( f1->str() == "Greater(Scalar(2), Scalar(4))" );
-    ASSERT( f1->eval()->str() == "Boolean(0)" );
+    ASSERT( f1->eval()->str() == "Boolean(false)" );
 
     // Less
 
     ExpPtr f2 =  maths::less( a_ , b_ );
 
     ASSERT( f2->str() == "Less(Scalar(2), Scalar(4))" );
-    ASSERT( f2->eval()->str() == "Boolean(1)" );
+    ASSERT( f2->eval()->str() == "Boolean(true)" );
 }
 
 void TestExp::test_filter()

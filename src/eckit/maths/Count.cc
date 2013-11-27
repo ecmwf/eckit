@@ -48,6 +48,10 @@ ExpPtr Count::optimise() const
 }
 
 
+ExpPtr Count::cloneWith(args_t &a) const {
+    NOTIMP;
+}
+
 void Count::asCode(std::ostream&o) const
 {
     o << "maths::count("; printArgs(o); o << ")";

@@ -103,6 +103,10 @@ ExpPtr ProdAdd::compute_ggg(const args_t &p)
     return prod(p[0],add(p[1],p[2]))->eval();
 }
 
+ExpPtr ProdAdd::cloneWith(args_t &a) const {
+    NOTIMP; // Should not be called
+}
+
 ProdAdd::Register::Register()
 {
 

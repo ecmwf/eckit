@@ -49,6 +49,11 @@ public:
 
     virtual std::string returnSignature() const;
 
+    virtual ExpPtr cloneWith(args_t &a) const {
+        ASSERT(a.size() == 1);
+        return ExpPtr(new UnaryOperator<T>(a[0]));
+    }
+
     /// Applies an implementation of the unary operator
     /// U is the left operand type ( Scalar, Vector, ... )
     /// I is the implementation type
@@ -69,6 +74,7 @@ public:
     };
 
     virtual void asCode( std::ostream& o ) const;
+    virtual ExpPtr optimise() const;
 };
 
 //--------------------------------------------------------------------------------------------

@@ -99,6 +99,7 @@ public:
 
 //--------------------------------------------------------------------------------------------
 
+class Optimiser;
 
 class Expression :
     public boost::enable_shared_from_this<Expression>,
@@ -151,9 +152,11 @@ public: // virtual methods
     virtual std::string signature() const = 0;
     virtual std::string returnSignature() const = 0;
 
-    virtual ExpPtr optimise() const;
+
+    ExpPtr optimise(bool doit) const;
 
 protected: // members
+
 
     void printArgs(std::ostream& ) const;
     virtual void asCode( std::ostream& ) const = 0;
@@ -165,6 +168,13 @@ private:
 
     virtual ExpPtr evaluate( Scope& ) const = 0;
     virtual void print( std::ostream& ) const = 0;
+    virtual ExpPtr optimise() const;
+
+
+    virtual ExpPtr cloneWith(args_t&) const = 0;
+
+    bool optimiseArgs(args_t&) const;
+
 
     // For unit tests....
     friend class eckit_test::TestExp;

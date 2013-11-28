@@ -140,11 +140,15 @@ ExpPtr Expression::args( size_t i) const
     return  args_[i];
 }
 
-ExpPtr Expression::args(size_t i, Scope& ctx , bool) const
+ExpPtr Expression::args(size_t i, Scope& ctx , bool eval) const
 {
-    ASSERT( i < args_.size() );
-    ASSERT( args_[i] );
-    return  args_[i]->resolve(ctx)->eval(ctx);
+    ExpPtr e = args(i)->resolve(ctx);
+    if(eval) {
+        return e->eval(ctx);
+    }
+    else {
+        return e;
+    }
 }
 
 string Expression::str() const

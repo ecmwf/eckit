@@ -178,7 +178,7 @@ protected: // members
 
     const args_t& args() const { return args_; }
 
-    ExpPtr args( size_t i, Scope& ctx , bool) const;
+    ExpPtr args(size_t i, Scope& ctx , bool eval) const;
 
 public:
     ExpPtr args( size_t i) const;

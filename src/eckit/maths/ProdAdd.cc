@@ -37,18 +37,18 @@ ProdAdd::ProdAdd(const ExpPtr& e)
     ExpPtr a2 = e->param(1)->param(1);
 
     ASSERT( Scalar::is( a0 ) || Vector::is( a0 ) );
-    args_.push_back(a0);
+    push_back(a0);
 
     ASSERT( Vector::is( a1 ) );
-    args_.push_back(a1);
+    push_back(a1);
 
     ASSERT( Vector::is( a2 ) );
-    args_.push_back(a2);
+    push_back(a2);
 }
 
 string ProdAdd::returnSignature() const
 {
-    for( args_t::const_iterator i = args_.begin(); i != args_.end(); ++i )
+    for( args_t::const_iterator i = begin(); i != end(); ++i )
     {
         if ( (*i)->returnSignature() == Vector::sig() )
             return Vector::sig();

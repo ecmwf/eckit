@@ -107,6 +107,8 @@ class Expression :
 
 public: // methods
 
+    struct Swap {};
+
     static std::string className() { return "Expression"; }
 
     /// Empty contructor is usually used by derived classes that
@@ -116,6 +118,7 @@ public: // methods
     /// Contructor taking a list of parameters
     /// handle the setup of the parameters themselves
     Expression( const args_t& args );
+    Expression(args_t& args, Swap);
 
     virtual ~Expression();
 
@@ -138,8 +141,7 @@ public: // methods
 
     size_t arity() const { return args_.size(); }
 
-    ExpPtr param( size_t i) const;
-    ExpPtr param( size_t i, Scope& ctx ) const;
+
 
     std::string str() const;
 
@@ -166,10 +168,25 @@ protected: // members
     void printArgs(std::ostream& ) const;
     virtual void asCode( std::ostream& ) const = 0;
 
+    // args_ are read-only, use these methods instead
+
+    void push_back(const ExpPtr& e)      { args_.push_back(e);    }
+    args_t::const_iterator begin() const { return args_.begin(); }
+    args_t::const_iterator end() const   { return args_.end();   }
+
+    size_t size() const { return args_.size(); }
+
+    const args_t& args() const { return args_; }
+
+    ExpPtr param( size_t i, Scope& ctx ) const;
+
+public:
+    ExpPtr param( size_t i) const;
+
+private:
 
     args_t args_;     ///< parameters of this expression
 
-private:
 
     virtual ExpPtr evaluate( Scope& ) const = 0;
     virtual void print( std::ostream& ) const = 0;

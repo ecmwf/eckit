@@ -18,8 +18,8 @@ namespace maths {
 
 Map::Map( ExpPtr f,  ExpPtr list ) : Function()
 {
-    args_.push_back(f);
-    args_.push_back(list);
+    push_back(f);
+    push_back(list);
 }
 
 string Map::returnSignature() const
@@ -61,12 +61,12 @@ ExpPtr Map::cloneWith(args_t &a) const {
 // Support for count()
 bool Map::countable() const
 {
-    return args_[1]->countable();
+    return param(1)->countable();
 }
 
 size_t Map::count() const
 {
-    return args_[1]->count();
+    return param(1)->count();
 }
 
 //--------------------------------------------------------------------------------------------

@@ -58,13 +58,13 @@ static UnaryOperator<Neg>::Computer<Vector,Generic> neg_vg;
 template < class T >
 UnaryOperator<T>::UnaryOperator(ExpPtr e)
 {
-    args_.push_back(e);
+    push_back(e);
 }
 
 template < class T >
 string UnaryOperator<T>::returnSignature() const
 {
-    return args_[0]->returnSignature();
+    return param(0)->returnSignature();
 }
 
 template < class T >
@@ -81,7 +81,7 @@ string UnaryOperator<T>::className()
 
 template < class T >
 void UnaryOperator<T>::asCode( std::ostream& o ) const {
-    o << opsymbol(T()) << '(' << *args_[0] << ')';
+    o << opsymbol(T()) << '(' << *param(0) << ')';
 }
 
 /*

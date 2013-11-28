@@ -37,6 +37,7 @@ public: // methods
 
     /// Contructor taking a list of parameters
     Value( const args_t& args );
+    Value( args_t& args, Swap ignored );
 
     virtual ~Value();
 

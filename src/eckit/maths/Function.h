@@ -44,6 +44,7 @@ protected: // methods
 
     /// Contructor taking a list of parameters
     Function( const args_t& args );
+    Function( args_t& args, Swap ignored );
 
 public: // methods
 

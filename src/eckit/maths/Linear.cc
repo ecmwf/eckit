@@ -34,13 +34,13 @@ Linear::Linear(ExpPtr e) : Function()
 
     if( Scalar::is( left->param(0) ) )
     {
-        args_.push_back( left->param(0) );
-        args_.push_back( left->param(1) );
+        push_back( left->param(0) );
+        push_back( left->param(1) );
     }
     else
     {
-        args_.push_back( left->param(1) );
-        args_.push_back( left->param(0) );
+        push_back( left->param(1) );
+        push_back( left->param(0) );
     }
 
     ASSERT( right->arity() == 2 );
@@ -50,13 +50,13 @@ Linear::Linear(ExpPtr e) : Function()
 
     if( Scalar::is( right->param(0) ) )
     {
-        args_.push_back( right->param(0) );
-        args_.push_back( right->param(1) );
+        push_back( right->param(0) );
+        push_back( right->param(1) );
     }
     else
     {
-        args_.push_back( right->param(1) );
-        args_.push_back( right->param(0) );
+        push_back( right->param(1) );
+        push_back( right->param(0) );
     }
 }
 

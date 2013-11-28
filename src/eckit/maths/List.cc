@@ -25,17 +25,16 @@ List::List() : Value()
 
 List::List( ExpPtr e ) : Value()
 {
-    args_.push_back(e);
+    push_back(e);
 }
 
-List::List( const value_t& v ) : Value(v)
+List::List(const args_t& args ) : Value(args)
 {
 }
 
 
-List::List(List::value_t &v, Swap ignored )
+List::List(args_t &args, Swap ignored) : Value(args, ignored)
 {
-    std::swap(args_, v);
 }
 
 void List::asCode(std::ostream&o) const
@@ -48,10 +47,10 @@ void List::asCode(std::ostream&o) const
 void List::print(std::ostream&o) const
 {
     o << className() << "(";
-    for( size_t i = 0; i < args_.size(); ++i )
+    for( size_t i = 0; i < size(); ++i )
     {
         if(i) o << ", ";
-        o << *args_[i];
+        o << *param(i);
     }
     o << ")";
 }

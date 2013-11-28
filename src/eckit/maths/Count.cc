@@ -18,7 +18,7 @@ namespace maths {
 
 Count::Count(ExpPtr e) : Function()
 {
-    args_.push_back(e);
+    push_back(e);
 }
 
 ExpPtr Count::optimise(size_t depth) const
@@ -27,8 +27,8 @@ ExpPtr Count::optimise(size_t depth) const
     if(o.get() != this) {
         return o->optimise(depth+1);
     }
-    if(args_[0]->countable()) {
-        return ExpPtr(new Scalar(args_[0]->count()));
+    if(param(0)->countable()) {
+        return ExpPtr(new Scalar(param(0)->count()));
     }
     return self();
 }

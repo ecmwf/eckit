@@ -20,9 +20,9 @@ namespace maths {
 
 ZipWith::ZipWith( ExpPtr f, ExpPtr list0, ExpPtr list1 ) : Function()
 {
-    args_.push_back(f);
-    args_.push_back(list0);
-    args_.push_back(list1);
+    push_back(f);
+    push_back(list0);
+    push_back(list1);
 }
 
 string ZipWith::returnSignature() const
@@ -68,12 +68,12 @@ ExpPtr ZipWith::cloneWith(args_t &a) const {
 // Support for count()
 bool ZipWith::countable() const
 {
-    return args_[1]->countable() && args_[2]->countable();
+    return param(1)->countable() && param(2)->countable();
 }
 
 size_t ZipWith::count() const
 {
-    return std::min( args_[1]->count(),  args_[2]->count());
+    return std::min( param(1)->count(),  param(2)->count());
 }
 
 //--------------------------------------------------------------------------------------------

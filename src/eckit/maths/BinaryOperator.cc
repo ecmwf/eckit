@@ -53,7 +53,7 @@ struct Generic
         for( size_t i = 0; i < rv.size(); ++i )
             rv[i] = op( a , v[i] );
 
-        return ExpPtr( new Vector(rv,Vector::Swap()) );
+        return ExpPtr( new Vector(rv, Expression::Swap()) );
     }
 
     template <class T>
@@ -72,7 +72,7 @@ struct Generic
         for( size_t i = 0; i < rv.size(); ++i )
             rv[i] = op( v1[i] , v2[i] );
 
-        return ExpPtr( new Vector( rv, Vector::Swap() ));
+        return ExpPtr( new Vector( rv, Expression::Swap() ));
     }
 };
 
@@ -103,14 +103,14 @@ static BinaryOperator<Sub>::Computer<Vector,Vector,Generic> sub_vvg;
 template < class T >
 BinaryOperator<T>::BinaryOperator(ExpPtr a, ExpPtr b)
 {
-    args_.push_back(a);
-    args_.push_back(b);
+    push_back(a);
+    push_back(b);
 }
 
 template < class T >
 std::string BinaryOperator<T>::returnSignature() const
 {
-    for( args_t::const_iterator i = args_.begin(); i != args_.end(); ++i )
+    for( args_t::const_iterator i = begin(); i != end(); ++i )
     {
         if ( (*i)->returnSignature() == Vector::sig() )
             return Vector::sig();
@@ -138,7 +138,7 @@ ExpPtr BinaryOperator<T>::optimise() const
 
 template < class T >
 void BinaryOperator<T>::asCode( std::ostream& o ) const {
-    o << '(' << *args_[0] << ' ' << opsymbol(T()) << ' ' << *args_[1] << ')';
+    o << '(' << *param(0) << ' ' << opsymbol(T()) << ' ' << *param(1) << ')';
 }
 
 template < class T >

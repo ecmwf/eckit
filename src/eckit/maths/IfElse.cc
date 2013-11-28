@@ -20,9 +20,9 @@ namespace maths {
 
 IfElse::IfElse( ExpPtr f,  ExpPtr i, ExpPtr e ) : Function()
 {
-    args_.push_back(f);
-    args_.push_back(i);
-    args_.push_back(e);
+    push_back(f);
+    push_back(i);
+    push_back(e);
 }
 
 string IfElse::returnSignature() const

@@ -29,8 +29,6 @@ public: // types
 
     typedef args_t value_t;
 
-    struct Swap {};
-
 public: // methods
 
     static std::string className() { return "List"; }
@@ -44,11 +42,11 @@ public: // methods
 
     List();
     List( ExpPtr e );
-    List( const value_t& v );
-    List( value_t& v, Swap );
+    List(const args_t &args );
+    List(args_t &args, Swap );
 
     /// @returns the size of the internal vector
-    const value_t& value() const { return args_; }
+    const value_t& value() const { return args(); }
 
 
 private: // virtual methods
@@ -64,7 +62,7 @@ private: // virtual methods
 
     // Support for count()
     virtual bool countable() const { return true; }
-    virtual size_t count() const { return args_.size(); }
+    virtual size_t count() const { return size(); }
 
 
 };

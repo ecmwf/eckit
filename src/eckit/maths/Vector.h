@@ -30,8 +30,6 @@ public: // types
     typedef scalar_t elemt_t;
     typedef std::vector<elemt_t> value_t;
 
-    struct Swap {};
-
 public: // methods
 
     static std::string className() { return "Vector"; }

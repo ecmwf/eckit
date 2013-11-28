@@ -32,6 +32,11 @@ Expression::Expression(const args_t &args) :
 {
 }
 
+Expression::Expression(args_t &args, Swap )
+{
+    std::swap(args_, args);
+}
+
 Expression::~Expression()
 {
 }

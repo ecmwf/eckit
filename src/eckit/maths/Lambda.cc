@@ -21,20 +21,20 @@ namespace maths {
 
 Lambda::Lambda( ExpPtr body ) : Function()
 {
-    args_.push_back(body);
+    push_back(body);
 }
 
 Lambda::Lambda( const string& a, const string& b, ExpPtr body ) : Function()
 {
-    args_.push_back(maths::paramdef(a));
-    args_.push_back(maths::paramdef(b));
-    args_.push_back(body);
+    push_back(maths::paramdef(a));
+    push_back(maths::paramdef(b));
+    push_back(body);
 }
 
 Lambda::Lambda( const string &a, ExpPtr body ) : Function()
 {
-    args_.push_back(maths::paramdef(a));
-    args_.push_back(body);
+    push_back(maths::paramdef(a));
+    push_back(body);
 }
 
 

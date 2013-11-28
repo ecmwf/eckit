@@ -19,8 +19,8 @@ namespace maths {
 
 Filter::Filter( ExpPtr pred,  ExpPtr list ) : Function()
 {
-    args_.push_back(pred);
-    args_.push_back(list);
+    push_back(pred);
+    push_back(list);
 }
 
 string Filter::returnSignature() const

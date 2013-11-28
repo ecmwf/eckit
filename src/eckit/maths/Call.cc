@@ -21,20 +21,20 @@ namespace maths {
 
 Call::Call( ExpPtr f) : Function()
 {
-    args_.push_back(f);
+    push_back(f);
 }
 
 Call::Call( ExpPtr f, ExpPtr a) : Function()
 {
-    args_.push_back(f);
-    args_.push_back(a);
+    push_back(f);
+    push_back(a);
 }
 
 Call::Call( ExpPtr f, ExpPtr a, ExpPtr b) : Function()
 {
-    args_.push_back(f);
-    args_.push_back(a);
-    args_.push_back(b);
+    push_back(f);
+    push_back(a);
+    push_back(b);
 }
 
 string Call::returnSignature() const

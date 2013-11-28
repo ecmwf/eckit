@@ -18,8 +18,8 @@ namespace maths {
 
 Reduce::Reduce( ExpPtr f,  ExpPtr list ) : Function()
 {
-    args_.push_back(f);
-    args_.push_back(list);
+    push_back(f);
+    push_back(list);
 }
 
 string Reduce::returnSignature() const

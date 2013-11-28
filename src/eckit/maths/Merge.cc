@@ -20,8 +20,8 @@ namespace maths {
 
 Merge::Merge( ExpPtr list0, ExpPtr list1 ) : Function()
 {
-    args_.push_back(list0);
-    args_.push_back(list1);
+    push_back(list0);
+    push_back(list1);
 }
 
 string Merge::returnSignature() const
@@ -66,12 +66,12 @@ ExpPtr Merge::cloneWith(args_t &a) const {
 // Support for count()
 bool Merge::countable() const
 {
-    return args_[0]->countable() && args_[1]->countable();
+    return param(0)->countable() && param(1)->countable();
 }
 
 size_t Merge::count() const
 {
-    return args_[0]->count() + args_[1]->count();
+    return param(0)->count() + param(1)->count();
 }
 
 //--------------------------------------------------------------------------------------------

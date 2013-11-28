@@ -47,14 +47,14 @@ Function::factory_t& Function::factory()
 
 string Function::signature() const
 {
-    return signatureArguments( args_ );
+    return signatureArguments( args() );
 }
 
 ExpPtr Function::evaluate( Scope &ctx ) const
 {
     DBG;
 
-    args_t args = args_; // create temporary args
+    args_t args = this->args(); // create temporary args
 
     const size_t nargs = args.size();
     for( size_t i = 0; i < nargs; ++i )

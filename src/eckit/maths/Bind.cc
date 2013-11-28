@@ -25,16 +25,16 @@ namespace maths {
 Bind::Bind( size_t i, ExpPtr f, ExpPtr e ) : Function()
 {
     ASSERT( i > 1 );
-    args_.push_back( maths::scalar( (scalar_t)i ) ); // casted to scalar_t (real)
-    args_.push_back(f);
-    args_.push_back(e);
+    push_back( maths::scalar( (scalar_t)i ) ); // casted to scalar_t (real)
+    push_back(f);
+    push_back(e);
 }
 
 Bind::Bind( ExpPtr i, ExpPtr f, ExpPtr e ) : Function()
 {
-    args_.push_back(i);
-    args_.push_back(f);
-    args_.push_back(e);
+    push_back(i);
+    push_back(f);
+    push_back(e);
 }
 
 string Bind::typeName() const
@@ -44,7 +44,7 @@ string Bind::typeName() const
 
 string Bind::returnSignature() const
 {
-    return args_[0]->returnSignature();
+    return param(0)->returnSignature();
 }
 
 ExpPtr Bind::evaluate( Scope &ctx ) const

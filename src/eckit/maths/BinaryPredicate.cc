@@ -190,8 +190,8 @@ ExpPtr logical_or( ExpPtr l, ExpPtr r )     { return ExpPtr( new BinaryPredicate
 template < class T >
 BinaryPredicate<T>::BinaryPredicate(ExpPtr a, ExpPtr b)
 {
-    args_.push_back(a);
-    args_.push_back(b);
+    push_back(a);
+    push_back(b);
 }
 
 template < class T >
@@ -214,7 +214,7 @@ string BinaryPredicate<T>::className()
 
 template < class T >
 void BinaryPredicate<T>::asCode( std::ostream& o ) const {
-    o << '(' << *args_[0] << ' ' << opsymbol(T()) << ' ' << *args_[1] << ')';
+    o << '(' << *param(0) << ' ' << opsymbol(T()) << ' ' << *param(1) << ')';
 }
 /*
 template < class T >

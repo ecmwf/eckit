@@ -23,6 +23,11 @@ Value::Value(const args_t &args) : Expression(args)
 {
 }
 
+Value::Value(args_t &args, Swap ignored) : Expression(args, ignored)
+{
+}
+
+
 Value::~Value()
 {
 }

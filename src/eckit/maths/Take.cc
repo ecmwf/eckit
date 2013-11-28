@@ -17,8 +17,8 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 Take::Take(ExpPtr e, ExpPtr l) : Function()
 {
-    args_.push_back(e);
-    args_.push_back(l);
+    push_back(e);
+    push_back(l);
 }
 
 std::string Take::returnSignature() const

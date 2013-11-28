@@ -32,10 +32,10 @@ string ZipWith::returnSignature() const
 
 ExpPtr ZipWith::evaluate( Scope &ctx ) const
 {
-    ExpPtr f = param(0, ctx);
+    ExpPtr f = args(0, ctx);
 
-    const List::value_t& l0 = List::extract( ctx, param(1, ctx) );
-    const List::value_t& l1 = List::extract( ctx, param(2, ctx) );
+    const List::value_t& l0 = List::extract( ctx, args(1, ctx) );
+    const List::value_t& l1 = List::extract( ctx, args(2, ctx) );
 
     const size_t nlist = std::min(l0.size(), l1.size());
 
@@ -68,12 +68,12 @@ ExpPtr ZipWith::cloneWith(args_t &a) const {
 // Support for count()
 bool ZipWith::countable() const
 {
-    return param(1)->countable() && param(2)->countable();
+    return args(1)->countable() && args(2)->countable();
 }
 
 size_t ZipWith::count() const
 {
-    return std::min( param(1)->count(),  param(2)->count());
+    return std::min( args(1)->count(),  args(2)->count());
 }
 
 //--------------------------------------------------------------------------------------------

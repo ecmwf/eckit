@@ -22,41 +22,41 @@ Linear::Linear(ExpPtr e) : Function()
 {
     ASSERT( e->arity() == 2 );
 
-    ExpPtr left  = e->param(0);
-    ExpPtr right = e->param(1);
+    ExpPtr left  = e->args(0);
+    ExpPtr right = e->args(1);
 
     // cater for swap in s,v pairs -> insures final signature is linear(s,v,s,v)
 
     ASSERT( left->arity() == 2 );
 
-    ASSERT( Scalar::is( left->param(0) ) || Scalar::is( left->param(1) ) );
-    ASSERT( Vector::is( left->param(0) ) || Vector::is( left->param(1) ) );
+    ASSERT( Scalar::is( left->args(0) ) || Scalar::is( left->args(1) ) );
+    ASSERT( Vector::is( left->args(0) ) || Vector::is( left->args(1) ) );
 
-    if( Scalar::is( left->param(0) ) )
+    if( Scalar::is( left->args(0) ) )
     {
-        push_back( left->param(0) );
-        push_back( left->param(1) );
+        push_back( left->args(0) );
+        push_back( left->args(1) );
     }
     else
     {
-        push_back( left->param(1) );
-        push_back( left->param(0) );
+        push_back( left->args(1) );
+        push_back( left->args(0) );
     }
 
     ASSERT( right->arity() == 2 );
 
-    ASSERT( Scalar::is( right->param(0) ) || Scalar::is( right->param(1) ) );
-    ASSERT( Vector::is( right->param(0) ) || Vector::is( right->param(1) ) );
+    ASSERT( Scalar::is( right->args(0) ) || Scalar::is( right->args(1) ) );
+    ASSERT( Vector::is( right->args(0) ) || Vector::is( right->args(1) ) );
 
-    if( Scalar::is( right->param(0) ) )
+    if( Scalar::is( right->args(0) ) )
     {
-        push_back( right->param(0) );
-        push_back( right->param(1) );
+        push_back( right->args(0) );
+        push_back( right->args(1) );
     }
     else
     {
-        push_back( right->param(1) );
-        push_back( right->param(0) );
+        push_back( right->args(1) );
+        push_back( right->args(0) );
     }
 }
 
@@ -83,7 +83,7 @@ ExpPtr Linear::compute(Scope &ctx, const args_t& p )
 
 void Linear::asCode(std::ostream&o) const
 {
-    o << "math::linear(" << *param(0) << ", " << *param(1) << ", " << *param(2) << ", " << *param(3) << "))";
+    o << "math::linear(" << *args(0) << ", " << *args(1) << ", " << *args(2) << ", " << *args(3) << "))";
 }
 
 string Linear::returnSignature() const

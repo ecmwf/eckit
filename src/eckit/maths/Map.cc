@@ -29,9 +29,9 @@ string Map::returnSignature() const
 
 ExpPtr Map::evaluate( Scope &ctx ) const
 {
-    ExpPtr f = param(0, ctx);
+    ExpPtr f = args(0, ctx);
 
-    const List::value_t& list = List::extract( ctx, param(1, ctx) );
+    const List::value_t& list = List::extract( ctx, args(1, ctx) );
 
     const size_t nlist = list.size();
 
@@ -61,12 +61,12 @@ ExpPtr Map::cloneWith(args_t &a) const {
 // Support for count()
 bool Map::countable() const
 {
-    return param(1)->countable();
+    return args(1)->countable();
 }
 
 size_t Map::count() const
 {
-    return param(1)->count();
+    return args(1)->count();
 }
 
 //--------------------------------------------------------------------------------------------

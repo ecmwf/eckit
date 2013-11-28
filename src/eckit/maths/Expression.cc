@@ -133,14 +133,14 @@ ExpPtr Expression::eval(ExpPtr a, ExpPtr b , bool optimize) const
     return ExpPtr( optimise(optimize)->evaluate(ctx));
 }
 
-ExpPtr Expression::param( size_t i) const
+ExpPtr Expression::args( size_t i) const
 {
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );
     return  args_[i];
 }
 
-ExpPtr Expression::param( size_t i, Scope& ctx ) const
+ExpPtr Expression::args( size_t i, Scope& ctx ) const
 {
     ASSERT( i < args_.size() );
     ASSERT( args_[i] );

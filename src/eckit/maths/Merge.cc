@@ -31,10 +31,10 @@ string Merge::returnSignature() const
 
 ExpPtr Merge::evaluate( Scope &ctx ) const
 {
-    ExpPtr f = param(0, ctx);
+    ExpPtr f = args(0, ctx);
 
-    const List::value_t& l0 = List::extract( ctx, param(0, ctx) );
-    const List::value_t& l1 = List::extract( ctx, param(1, ctx) );
+    const List::value_t& l0 = List::extract( ctx, args(0, ctx) );
+    const List::value_t& l1 = List::extract( ctx, args(1, ctx) );
 
     List::value_t res;
     res.reserve(l0.size() + l1.size());
@@ -66,12 +66,12 @@ ExpPtr Merge::cloneWith(args_t &a) const {
 // Support for count()
 bool Merge::countable() const
 {
-    return param(0)->countable() && param(1)->countable();
+    return args(0)->countable() && args(1)->countable();
 }
 
 size_t Merge::count() const
 {
-    return param(0)->count() + param(1)->count();
+    return args(0)->count() + args(1)->count();
 }
 
 //--------------------------------------------------------------------------------------------

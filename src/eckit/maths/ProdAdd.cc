@@ -32,9 +32,9 @@ ProdAdd::ProdAdd(const ExpPtr& e)
     //ASSERT( e->typeName() == opname(Prod()) );
     //ASSERT( e->param(1)->typeName() == opname(Add()) );
 
-    ExpPtr a0 = e->param(0);
-    ExpPtr a1 = e->param(1)->param(0);
-    ExpPtr a2 = e->param(1)->param(1);
+    ExpPtr a0 = e->args(0);
+    ExpPtr a1 = e->args(1)->args(0);
+    ExpPtr a2 = e->args(1)->args(1);
 
     ASSERT( Scalar::is( a0 ) || Vector::is( a0 ) );
     push_back(a0);
@@ -58,7 +58,7 @@ string ProdAdd::returnSignature() const
 
 void ProdAdd::asCode(std::ostream&o) const
 {
-    o << "(" << *param(0) << " * (" << *param(1) << " + " << *param(2) << "))";
+    o << "(" << *args(0) << " * (" << *args(1) << " + " << *args(2) << "))";
 }
 
 ExpPtr ProdAdd::compute_svv(Scope& ctx, const args_t &p)

@@ -56,7 +56,7 @@ ExpPtr Lambda::call( Scope &ctx ) const
 
     ASSERT(arity());
     size_t last = arity()-1;
-    ExpPtr body = param(last, ctx);
+    ExpPtr body = args(last, ctx);
 
    // std::cout << "LAMBDA BODY IS " << *body << std::endl;
 
@@ -64,13 +64,13 @@ ExpPtr Lambda::call( Scope &ctx ) const
 
     for(size_t i = 0; i < last; ++i) {
 
-        ExpPtr a = param(i);
+        ExpPtr a = args(i);
         //std::cout << "LAMBDA ARG " << i << " IS " << *a << std::endl;
         ASSERT(ParamDef::is(a));
         const string& name = a->as<ParamDef>()->name();
         //std::cout << "LAMBDA NAME " << i << " IS " << name << std::endl;
 
-        ExpPtr b = param(i, ctx);
+        ExpPtr b = args(i, ctx);
         //std::cout << "LAMBDA " << name << " IS " << *b << std::endl;
         scope.param(name, b);
     }

@@ -214,7 +214,7 @@ string BinaryPredicate<T>::className()
 
 template < class T >
 void BinaryPredicate<T>::asCode( std::ostream& o ) const {
-    o << '(' << *param(0) << ' ' << opsymbol(T()) << ' ' << *param(1) << ')';
+    o << '(' << *args(0) << ' ' << opsymbol(T()) << ' ' << *args(1) << ')';
 }
 /*
 template < class T >

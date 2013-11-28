@@ -29,9 +29,9 @@ string Reduce::returnSignature() const
 
 ExpPtr Reduce::evaluate( Scope &ctx ) const
 {
-    ExpPtr f = param(0, ctx);
+    ExpPtr f = args(0, ctx);
 
-    const List::value_t& list = List::extract( ctx, param(1, ctx) );
+    const List::value_t& list = List::extract( ctx, args(1, ctx) );
 
     const size_t nlist = list.size();
 

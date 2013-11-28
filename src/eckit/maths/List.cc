@@ -50,7 +50,7 @@ void List::print(std::ostream&o) const
     for( size_t i = 0; i < size(); ++i )
     {
         if(i) o << ", ";
-        o << *param(i);
+        o << *args(i);
     }
     o << ")";
 }

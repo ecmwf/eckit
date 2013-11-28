@@ -178,10 +178,10 @@ protected: // members
 
     const args_t& args() const { return args_; }
 
-    ExpPtr param( size_t i, Scope& ctx ) const;
+    ExpPtr args( size_t i, Scope& ctx ) const;
 
 public:
-    ExpPtr param( size_t i) const;
+    ExpPtr args( size_t i) const;
 
 private:
 

@@ -44,17 +44,17 @@ string Bind::typeName() const
 
 string Bind::returnSignature() const
 {
-    return param(0)->returnSignature();
+    return args(0)->returnSignature();
 }
 
 ExpPtr Bind::evaluate( Scope &ctx ) const
 {    
-    ExpPtr ix = param(0, ctx);
+    ExpPtr ix = args(0, ctx);
 
     const size_t i = static_cast<size_t>( Scalar::extract(ctx, ix) );
 
-    ExpPtr f = param(1, ctx);
-    ExpPtr e = param(2, ctx);
+    ExpPtr f = args(1, ctx);
+    ExpPtr e = args(2, ctx);
 
     ASSERT(i>=1);
     ctx.insertArg(i-1, e);

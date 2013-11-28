@@ -64,7 +64,7 @@ UnaryOperator<T>::UnaryOperator(ExpPtr e)
 template < class T >
 string UnaryOperator<T>::returnSignature() const
 {
-    return param(0)->returnSignature();
+    return args(0)->returnSignature();
 }
 
 template < class T >
@@ -81,7 +81,7 @@ string UnaryOperator<T>::className()
 
 template < class T >
 void UnaryOperator<T>::asCode( std::ostream& o ) const {
-    o << opsymbol(T()) << '(' << *param(0) << ')';
+    o << opsymbol(T()) << '(' << *args(0) << ')';
 }
 
 /*

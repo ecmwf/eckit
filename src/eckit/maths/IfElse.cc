@@ -27,8 +27,8 @@ IfElse::IfElse( ExpPtr f,  ExpPtr i, ExpPtr e ) : Function()
 
 string IfElse::returnSignature() const
 {
-    string i = param(1)->returnSignature();
-    string e = param(2)->returnSignature();
+    string i = args(1)->returnSignature();
+    string e = args(2)->returnSignature();
 
     if(i == e) {
         return i;
@@ -42,9 +42,9 @@ ExpPtr IfElse::evaluate( Scope &ctx ) const
 {
     //std::cout << "evalute " << *this << " with " << ctx << std::endl;
 
-    ExpPtr f = param(0, ctx);
-    ExpPtr i = param(1, ctx);
-    ExpPtr e = param(2, ctx);
+    ExpPtr f = args(0, ctx);
+    ExpPtr i = args(1, ctx);
+    ExpPtr e = args(2, ctx);
 
     ExpPtr v = f->eval(ctx);
 

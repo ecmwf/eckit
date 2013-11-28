@@ -44,11 +44,11 @@ string Call::returnSignature() const
 
 ExpPtr Call::evaluate( Scope &ctx ) const
 {
-    ExpPtr f = param(0, ctx);
+    ExpPtr f = args(0, ctx);
 
     Scope scope("Call::evaluate", &ctx);
     for(size_t i = 1; i < arity(); ++i) {
-        scope.pushArg(param(i, ctx)->eval(ctx));
+        scope.pushArg(args(i, ctx)->eval(ctx));
     }
 
     //std::cout << std::endl << "SCOPE OF CALL is " << scope << std::endl;

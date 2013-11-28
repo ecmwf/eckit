@@ -27,8 +27,8 @@ ExpPtr Count::optimise(size_t depth) const
     if(o.get() != this) {
         return o->optimise(depth+1);
     }
-    if(param(0)->countable()) {
-        return ExpPtr(new Scalar(param(0)->count()));
+    if(args(0)->countable()) {
+        return ExpPtr(new Scalar(args(0)->count()));
     }
     return self();
 }
@@ -40,7 +40,7 @@ string Count::returnSignature() const
 
 ExpPtr Count::evaluate( Scope &ctx ) const
 {
-    return maths::scalar( param(0, ctx)->arity() )->as<Value>();
+    return maths::scalar( args(0, ctx)->arity() )->as<Value>();
 }
 
 ExpPtr Count::cloneWith(args_t &a) const {

@@ -54,15 +54,15 @@ ExpPtr Function::evaluate( Scope &ctx ) const
 {
     DBG;
 
-    args_t args = this->args(); // create temporary args
+    args_t tmp = args(); // create temporary args
 
-    const size_t nargs = args.size();
+    const size_t nargs = tmp.size();
     for( size_t i = 0; i < nargs; ++i )
     {
-        args[i] = param(i, ctx)->eval(ctx)->self();
+        tmp[i] = args(i, ctx)->eval(ctx)->self();
     }
 
-    std::string sig = signatureArguments( args );
+    std::string sig = signatureArguments( tmp );
 
     DBGX(sig);
 
@@ -75,7 +75,7 @@ ExpPtr Function::evaluate( Scope &ctx ) const
         throw Error( Here(), msg.str() );
     }
 
-    return ((*itr).second)( ctx, args );
+    return ((*itr).second)( ctx, tmp );
 }
 
 void Function::print(std::ostream&o) const

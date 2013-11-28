@@ -30,9 +30,9 @@ string Filter::returnSignature() const
 
 ExpPtr Filter::evaluate( Scope &ctx ) const
 {
-    ExpPtr f = args(0, ctx);
+    ExpPtr f = args(0, ctx, false);
 
-    const List::value_t& list = List::extract( ctx, args(1, ctx) );
+    const List::value_t& list = List::extract( ctx, args(1, ctx, true) );
 
     const size_t nlist = list.size();
 

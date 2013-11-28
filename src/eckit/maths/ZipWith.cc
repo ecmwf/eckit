@@ -32,10 +32,10 @@ string ZipWith::returnSignature() const
 
 ExpPtr ZipWith::evaluate( Scope &ctx ) const
 {
-    ExpPtr f = args(0, ctx);
+    ExpPtr f = args(0, ctx, false);
 
-    const List::value_t& l0 = List::extract( ctx, args(1, ctx) );
-    const List::value_t& l1 = List::extract( ctx, args(2, ctx) );
+    const List::value_t& l0 = List::extract( ctx, args(1, ctx, true) );
+    const List::value_t& l1 = List::extract( ctx, args(2, ctx, true) );
 
     const size_t nlist = std::min(l0.size(), l1.size());
 

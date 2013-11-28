@@ -59,7 +59,7 @@ ExpPtr Function::evaluate( Scope &ctx ) const
     const size_t nargs = tmp.size();
     for( size_t i = 0; i < nargs; ++i )
     {
-        tmp[i] = args(i, ctx)->eval(ctx)->self();
+        tmp[i] = args(i, ctx, true)->self();
     }
 
     std::string sig = signatureArguments( tmp );

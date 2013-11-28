@@ -29,9 +29,9 @@ string Map::returnSignature() const
 
 ExpPtr Map::evaluate( Scope &ctx ) const
 {
-    ExpPtr f = args(0, ctx);
+    ExpPtr f = args(0, ctx, false);
 
-    const List::value_t& list = List::extract( ctx, args(1, ctx) );
+    const List::value_t& list = List::extract( ctx, args(1, ctx, true) );
 
     const size_t nlist = list.size();
 
@@ -40,7 +40,7 @@ ExpPtr Map::evaluate( Scope &ctx ) const
 
     for( size_t i = 0; i < nlist; ++i )
     {
-        ExpPtr e = list[i]->eval(ctx);
+        ExpPtr e = list[i]->resolve(ctx)->eval(ctx);
         ExpPtr v = f->eval(e);
         res.push_back( v );
     }

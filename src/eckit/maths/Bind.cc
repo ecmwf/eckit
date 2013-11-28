@@ -49,12 +49,12 @@ string Bind::returnSignature() const
 
 ExpPtr Bind::evaluate( Scope &ctx ) const
 {    
-    ExpPtr ix = args(0, ctx);
+    ExpPtr ix = args(0, ctx, true);
 
     const size_t i = static_cast<size_t>( Scalar::extract(ctx, ix) );
 
-    ExpPtr f = args(1, ctx);
-    ExpPtr e = args(2, ctx);
+    ExpPtr f = args(1, ctx, false);
+    ExpPtr e = args(2, ctx, true);
 
     ASSERT(i>=1);
     ctx.insertArg(i-1, e);

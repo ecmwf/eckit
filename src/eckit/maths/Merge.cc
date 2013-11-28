@@ -31,10 +31,10 @@ string Merge::returnSignature() const
 
 ExpPtr Merge::evaluate( Scope &ctx ) const
 {
-    ExpPtr f = args(0, ctx);
+    ExpPtr f = args(0, ctx, false);
 
-    const List::value_t& l0 = List::extract( ctx, args(0, ctx) );
-    const List::value_t& l1 = List::extract( ctx, args(1, ctx) );
+    const List::value_t& l0 = List::extract( ctx, args(0, ctx, true) );
+    const List::value_t& l1 = List::extract( ctx, args(1, ctx, true) );
 
     List::value_t res;
     res.reserve(l0.size() + l1.size());
@@ -51,7 +51,7 @@ ExpPtr Merge::evaluate( Scope &ctx ) const
         res.push_back( e );
     }
 
-    return ExpPtr(new List( res, List::Swap()));
+    return ExpPtr(new List( res, Expression::Swap()));
 }
 
 void Merge::asCode(std::ostream&o) const

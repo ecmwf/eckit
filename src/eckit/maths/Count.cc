@@ -40,7 +40,7 @@ string Count::returnSignature() const
 
 ExpPtr Count::evaluate( Scope &ctx ) const
 {
-    return maths::scalar( args(0, ctx)->arity() )->as<Value>();
+    return ExpPtr(new Scalar(args(0, ctx, true)->count() ));
 }
 
 ExpPtr Count::cloneWith(args_t &a) const {

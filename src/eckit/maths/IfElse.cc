@@ -42,19 +42,15 @@ ExpPtr IfElse::evaluate( Scope &ctx ) const
 {
     //std::cout << "evalute " << *this << " with " << ctx << std::endl;
 
-    ExpPtr f = args(0, ctx);
-    ExpPtr i = args(1, ctx);
-    ExpPtr e = args(2, ctx);
-
-    ExpPtr v = f->eval(ctx);
+    ExpPtr v = args(0, ctx, true);
 
     bool b = Boolean::extract( ctx, v );
 
     if(b) {
-        return i->eval(ctx);
+        return args(1, ctx, true);
     }
     else {
-        return e->eval(ctx);
+        return args(2, ctx, true);
     }
 
 

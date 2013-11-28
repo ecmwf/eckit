@@ -28,8 +28,8 @@ std::string Take::returnSignature() const
 
 ExpPtr Take::evaluate( Scope &ctx ) const
 {
-    ExpPtr idx  = args(0, ctx)->eval(ctx);
-    ExpPtr list = args(1, ctx)->eval(ctx);
+    ExpPtr idx  = args(0, ctx, true);
+    ExpPtr list = args(1, ctx, true);
 
     size_t i = (size_t) Scalar::extract( ctx, idx );
 

@@ -10,6 +10,7 @@
 
 
 #include "eckit/filesystem/TmpFile.h"
+#include <unistd.h>
 
 
 //-----------------------------------------------------------------------------
@@ -18,10 +19,29 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+static PathName tmp() {
+    const char *tmpdir = ::getenv("TMPDIR");
+    if(!tmpdir) {
+        tmpdir = "/tmp";
+    }
+    char path[PATH_MAX];
+    sprintf(path, "%s/eckitXXXXXXXXXXX", tmpdir);
+    int fd;
+    SYSCALL(fd = ::mkstemp(path));
+
+    PathName result(path);
+    result.touch();
+
+    SYSCALL(::close(fd));
+
+    return result;
+
+}
+
+
 TmpFile::TmpFile():
-	PathName(::tmpnam(0))
+    PathName(tmp())
 {
-	touch();
 }
 
 TmpFile::~TmpFile()

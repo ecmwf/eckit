@@ -20,6 +20,9 @@
 
 #include "eckit/log/Log.h"
 
+namespace eckit {
+
+
 static long readcb(void *data, void *buffer, long len)
 {
     DataHandle *handle = reinterpret_cast<eckit::DataHandle*>(data);
@@ -84,5 +87,5 @@ long EmosFile::readSome(Buffer& buffer)
 	throw ReadError("in EmosFile::readSome");
 }
 
-
+} // namespace
 

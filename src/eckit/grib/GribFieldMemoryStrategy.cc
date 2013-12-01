@@ -64,10 +64,10 @@ void GribFieldMemoryStrategy::newValues(GribField& f)
         ASSERT(released_.size());
 
         std::set<GribField*>::iterator k = released_.begin();
-        pair<time_t, size_t> min = std::make_pair((*k)->last_, (*k)->accesses_);
+        std::pair<time_t, size_t> min = std::make_pair((*k)->last_, (*k)->accesses_);
 
         for(std::set<GribField*>::iterator j = released_.begin(); j != released_.end(); ++j) {
-            pair<time_t, size_t> m = std::make_pair((*k)->last_, (*k)->accesses_);
+            std::pair<time_t, size_t> m = std::make_pair((*k)->last_, (*k)->accesses_);
             if(m < min) {
                 min = m;
                 j = k;

@@ -31,6 +31,7 @@ public:
 	DateTime(time_t = ::time(0));
 	DateTime(const Date&, const Time&);
 	DateTime(const std::string&);
+    DateTime(double);
 
 #include "eckit/types/DateTime.b"
 

@@ -31,9 +31,14 @@ public:
 
     Payload payload_;
 
-    double x(int axis) const { return x_[axis]; }
+    double x(size_t axis) const { return x_[axis]; }
 
     KDPoint(): payload_()
+    {
+        std::fill(x_, x_+size(*this), 0);
+    }
+
+    KDPoint(const Payload& payload): payload_(payload)
     {
         std::fill(x_, x_+size(*this), 0);
     }

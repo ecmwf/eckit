@@ -155,13 +155,6 @@ typename BSPNode<Point,Alloc>::NodeList BSPNode<Point,Alloc>::kNearestNeighbours
 }
 //===
 
-template<class Point>
-struct sorter {
-    int axis_;
-    bool operator() (const Point& a,const Point& b) { return (a.x(axis_)<b.x(axis_));}
-    sorter(size_t axis) : axis_(axis) {}
-};
-
 template<class Point, class Alloc>
 void BSPNode<Point,Alloc>::kmean(const std::vector<Point>& in, std::vector<Point>& ml, std::vector<Point>& mr, int depth)
 {

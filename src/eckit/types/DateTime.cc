@@ -28,6 +28,12 @@ DateTime::DateTime(const Date& d, const Time& t) :
 {
 }
 
+DateTime::DateTime(double julian) :
+    date_(long(julian), true),
+    time_((julian - long(julian))*24*60*60)
+{
+}
+
 DateTime::DateTime(const std::string& s)
 {
 	Tokenizer parse(" ");

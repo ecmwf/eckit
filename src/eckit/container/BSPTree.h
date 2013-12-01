@@ -17,6 +17,7 @@
 #include <limits>
 #include <cmath>
 
+// Implements a tree
 
 namespace eckit {
 

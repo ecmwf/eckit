@@ -29,7 +29,7 @@ public:
 
 	Month(const Date& = Date(0));
 	Month(long,long);
-	Month(const string&);
+	Month(const std::string&);
 
 #include "eckit/types/Month.b"
 
@@ -39,7 +39,7 @@ public:
 
 // -- Convertors
 	
-	operator string() const;
+	operator std::string() const;
 
 // -- Operators
 

@@ -151,7 +151,7 @@ ExpPtr Expression::args(size_t i, Scope& ctx , bool eval) const
     }
 }
 
-string Expression::str() const
+std::string Expression::str() const
 {
     std::ostringstream os;
     print(os);

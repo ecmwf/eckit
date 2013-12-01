@@ -43,14 +43,14 @@ static unsigned long long multiplier(const char* p) {
     return 1;
 }
 
-string Translator<bool,string>::operator()(bool value)
+std::string Translator<bool,std::string>::operator()(bool value)
 {
     StrStream s;
     s << value << StrStream::ends;
-    return string(s);
+    return std::string(s);
 }
 
-bool Translator<string,bool>::operator()(const string& s)
+bool Translator<std::string,bool>::operator()(const std::string& s)
 {
 
     if(s == "no" || s == "off" || s == "false") return false;
@@ -60,21 +60,21 @@ bool Translator<string,bool>::operator()(const string& s)
     return atoi(s.c_str());
 }
 
-string Translator<int,string>::operator()(int value)
+std::string Translator<int,std::string>::operator()(int value)
 {
     StrStream s;
     s << value << StrStream::ends;
-    return string(s);
+    return std::string(s);
 }
 
-string Translator<unsigned int,string>::operator()(unsigned int value)
+std::string Translator<unsigned int,std::string>::operator()(unsigned int value)
 {
     StrStream s;
     s << value << StrStream::ends;
-    return string(s);
+    return std::string(s);
 }
 
-int Translator<string,int>::operator()(const string& s)
+int Translator<std::string,int>::operator()(const std::string& s)
 {
 
     if(s == "no" || s == "off" || s == "false") return false;
@@ -86,7 +86,7 @@ int Translator<string,int>::operator()(const string& s)
     return result * multiplier(more);
 }
 
-unsigned int Translator<string,unsigned int>::operator()(const string& s)
+unsigned int Translator<std::string,unsigned int>::operator()(const std::string& s)
 {
 
     if(s == "no" || s == "off" || s == "false") return false;
@@ -98,100 +98,100 @@ unsigned int Translator<string,unsigned int>::operator()(const string& s)
     return result * multiplier(more);
 }
 
-string Translator<long,string>::operator()(long value)
+std::string Translator<long,std::string>::operator()(long value)
 {
     StrStream s;
     s << value << StrStream::ends;
-    return string(s);
+    return std::string(s);
 }
 
-long Translator<string,long>::operator()(const string& s)
+long Translator<std::string,long>::operator()(const std::string& s)
 {
     char *more;
     long result =  strtol(s.c_str(),&more,10);
     return result * multiplier(more);
 }
 
-string Translator<double,string>::operator()(double value)
+std::string Translator<double,std::string>::operator()(double value)
 {
     StrStream s;
     s << value << StrStream::ends;
-    return string(s);
+    return std::string(s);
 }
 
-double Translator<string,double>::operator()(const string& s)
+double Translator<std::string,double>::operator()(const std::string& s)
 {
     return atof(s.c_str());
 }
 
-unsigned long Translator<string,unsigned long>::operator()(const string& s)
+unsigned long Translator<std::string,unsigned long>::operator()(const std::string& s)
 {
     char *more;
     unsigned long result =  strtoul(s.c_str(),&more,10);
     return result * multiplier(more);
 }
 
-string Translator<unsigned long,string>::operator()(unsigned long value)
+std::string Translator<unsigned long,std::string>::operator()(unsigned long value)
 {
     StrStream s;
     s << value << StrStream::ends;
-    return string(s);
+    return std::string(s);
 }
 
-    unsigned long long Translator<string,unsigned long long>::operator()
-(const string& s)
+    unsigned long long Translator<std::string,unsigned long long>::operator()
+(const std::string& s)
 {
     char *more;
     unsigned long long result =  strtoull(s.c_str(),&more,10);
     return result * multiplier(more);
 }
 
-string Translator<unsigned long long,string>::operator()(unsigned long long value)
+std::string Translator<unsigned long long,std::string>::operator()(unsigned long long value)
 {
     StrStream s;
     s << value << StrStream::ends;
-    return string(s);
+    return std::string(s);
 }
 
-long long Translator<string,long long>::operator()(const string& s)
+long long Translator<std::string,long long>::operator()(const std::string& s)
 {
     char *more;
     long long result =  strtoll(s.c_str(),&more,10);
     return result * multiplier(more);
 }
 
-string Translator<long long,string>::operator()(long long value)
+std::string Translator<long long,std::string>::operator()(long long value)
 {
     StrStream s;
     s << value << StrStream::ends;
-    return string(s);
+    return std::string(s);
 }
 
-vector<string> Translator<string, vector<string> >::operator()(const string& s)
+std::vector<std::string> Translator<std::string, std::vector<std::string> >::operator()(const std::string& s)
 {
-    vector<string> result;
+    std::vector<std::string> result;
     Tokenizer parse(", \t");
 
     parse(s,result);
     return result;
 }
 
-vector<long> Translator<string, vector<long> >::operator()(const string& s)
+std::vector<long> Translator<std::string, std::vector<long> >::operator()(const std::string& s)
 {
-    vector<string> r;
+    std::vector<std::string> r;
     Tokenizer parse(", \t");
 
     parse(s,r);
 
-    vector<long> result;
+    std::vector<long> result;
     for(size_t i = 0; i < r.size(); i++)
-        result.push_back(Translator<string,long>()(r[i]));
+        result.push_back(Translator<std::string,long>()(r[i]));
     return result;
 }
 
-string Translator<vector<string>, string>::operator()(const vector<string>& v)
+std::string Translator<std::vector<std::string>, std::string>::operator()(const std::vector<std::string>& v)
 {
-    string result;
+    std::string result;
     for(int i=0; i < v.size(); ++i)
     {
         if(i) result += ",";
@@ -201,21 +201,21 @@ string Translator<vector<string>, string>::operator()(const vector<string>& v)
     return result;
 }
 
-std::set<string> Translator<string, std::set<string> >::operator()(const string& s)
+std::set<std::string> Translator<std::string, std::set<std::string> >::operator()(const std::string& s)
 {
-    std::vector<string> v;
+    std::vector<std::string> v;
     Tokenizer parse(", \t");
 
     parse(s,v);
 
-    std::set<string> result(v.begin(),v.end());
+    std::set<std::string> result(v.begin(),v.end());
     return result;
 }
 
-string Translator<std::set<string>, string>::operator()(const std::set<string>& v)
+std::string Translator<std::set<std::string>, std::string>::operator()(const std::set<std::string>& v)
 {
-    string result;
-    for(std::set<string>::const_iterator i= v.begin(); i != v.end(); ++i)
+    std::string result;
+    for(std::set<std::string>::const_iterator i= v.begin(); i != v.end(); ++i)
     {
         if(result.length()) result += ",";
         result += *i;
@@ -224,15 +224,15 @@ string Translator<std::set<string>, string>::operator()(const std::set<string>& 
 }
 
 
-char Translator<string,char>::operator()(const string& s)
+char Translator<std::string,char>::operator()(const std::string& s)
 {
     ASSERT(s.length() == 1);
     return s[0];
 }
 
-string Translator<char,string>::operator()(char c)
+std::string Translator<char,std::string>::operator()(char c)
 {
-    string s;
+    std::string s;
     s = c;
     return s;
 }

@@ -29,7 +29,7 @@ public:
 // -- Contructors
 
 	TempFile();
-	TempFile(const string&); /* the string is the name of a filespace */
+	TempFile(const std::string&); /* the std::string is the name of a filespace */
 
 // -- Destructor
 
@@ -39,7 +39,7 @@ private:
 
 // -- Class member
 
-	static PathName dir(const string&);
+	static PathName dir(const std::string&);
 };
 
 

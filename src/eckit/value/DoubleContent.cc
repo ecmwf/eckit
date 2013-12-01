@@ -85,9 +85,9 @@ void DoubleContent::value(double& l) const
     l = value_;
 }
 
-void DoubleContent::value(string& s) const
+void DoubleContent::value(std::string& s) const
 { 
-    s = Translator<double,string>()(value_);
+    s = Translator<double,std::string>()(value_);
 }
 
 Content* DoubleContent::add(const Content& other) const

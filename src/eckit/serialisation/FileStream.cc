@@ -24,7 +24,7 @@ namespace eckit {
 
 FileStream::FileStream(const PathName& name,const char *mode):
     file_(::fopen(name.localPath(),mode)),
-    read_(string(mode) == "r"),
+    read_(std::string(mode) == "r"),
     name_(name)
 {
     if(file_ == 0)
@@ -39,7 +39,7 @@ FileStream::~FileStream()
     if(!read_)
     {
         if (::fflush(file_))
-            throw WriteError(string("FileStream::~FileStream(fflush(") + name_ + "))");
+            throw WriteError(std::string("FileStream::~FileStream(fflush(") + name_ + "))");
 
         // Because AIX has large system buffers,
         // the close may be successful without the
@@ -55,7 +55,7 @@ FileStream::~FileStream()
             Log::error() << "Cannot fsync(" << name_ << ") " <<fileno(file_) <<  Log::syserr << std::endl;
         }
         //if(ret<0)
-        //throw FailedSystemCall(string("fsync(") + name_ + ")");
+        //throw FailedSystemCall(std::string("fsync(") + name_ + ")");
 
         // On Linux, you must also flush the directory
 
@@ -80,7 +80,7 @@ FileStream::~FileStream()
     }
 
     if (::fclose(file_))
-        throw WriteError(string("FileStream::~FileStream(fclose(") + name_ + "))");
+        throw WriteError(std::string("FileStream::~FileStream(fclose(") + name_ + "))");
     file_ = 0;
 }
 
@@ -97,7 +97,7 @@ long FileStream::write(const void* buf,long length)
     return fwrite(buf,1,length,file_);
 }
 
-string FileStream::name() const
+std::string FileStream::name() const
 {
     return "FileStream";
 }

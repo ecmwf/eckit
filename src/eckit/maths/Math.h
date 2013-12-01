@@ -32,7 +32,7 @@ public:
     Math(bool);
 
     // A parameter
-    Math(const string&);
+    Math(const std::string&);
     Math(const char*);
 
     // Default copy OK

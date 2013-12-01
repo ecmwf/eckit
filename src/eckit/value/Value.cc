@@ -83,7 +83,7 @@ Value::Value(double l):
     content_->attach();
 }
 
-Value::Value(const string& s):
+Value::Value(const std::string& s):
 	content_(new StringContent(s))
 {
 	content_->attach();
@@ -205,7 +205,7 @@ Value Value::makeMap()
     return Value(new MapContent());
 }
 
-Value Value::makeMap(const map<Value, Value> & m)
+Value Value::makeMap(const std::map<Value, Value> & m)
 {
     return Value(new MapContent(m));
 }
@@ -215,7 +215,7 @@ Value Value::makeList(const Value& v)
 	return Value(new ListContent(v));
 }
 
-Value Value::makeList(const vector<Value>& v)
+Value Value::makeList(const std::vector<Value>& v)
 {
     return Value(new ListContent(v));
 }
@@ -279,7 +279,7 @@ Value Value::operator[](const Value& key) const
 
 Value Value::operator[](const char* key) const
 {
-    return content_->element(Value(string(key)));
+    return content_->element(Value(std::string(key)));
 }
 
 

@@ -44,7 +44,7 @@ public:
 
 // -- Contructors
 
-	TxnLog(const string& = Context::instance().runName());
+	TxnLog(const std::string& = Context::instance().runName());
 
 // -- Destructor
 

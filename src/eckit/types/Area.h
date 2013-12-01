@@ -97,7 +97,7 @@ private:
 
 };
 
-typedef vector<Area> AreaList;
+typedef std::vector<Area> AreaList;
 
 //-----------------------------------------------------------------------------
 

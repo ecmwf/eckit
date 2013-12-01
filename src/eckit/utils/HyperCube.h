@@ -29,9 +29,9 @@ class HyperCube {
 public:
 
 
-	typedef vector<Ordinal> Dimensions;
-	typedef vector<Ordinal> Coordinates;
-	typedef vector<Ordinal> Remapping;
+	typedef std::vector<Ordinal> Dimensions;
+	typedef std::vector<Ordinal> Coordinates;
+	typedef std::vector<Ordinal> Remapping;
 
 // -- Contructors
 
@@ -58,7 +58,7 @@ public:
 	Ordinal     dimensions(Ordinal n) const { return dimensions_[n];     }
 	Ordinal     size() const                { return dimensions_.size(); }
 
-	// Return the 'remapping' vector needing to add 'count' labels
+	// Return the 'remapping' std::vector needing to add 'count' labels
 	// for the dimension 'which' at position 'where'
 
 	HyperCube addToDimension(Ordinal which,Ordinal where,Ordinal count,Remapping&) const;

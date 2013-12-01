@@ -45,7 +45,7 @@ public: // methods
     List(const args_t &args );
     List(args_t &args, Swap );
 
-    /// @returns the size of the internal vector
+    /// @returns the size of the internal std::vector
     const value_t& value() const { return args(); }
 
 

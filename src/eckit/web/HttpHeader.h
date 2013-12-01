@@ -33,21 +33,21 @@ public: // methods
 
     ~HttpHeader();
 
-    HttpHeader& operator=(map<string,string,std::less<string> >&);
+    HttpHeader& operator=(std::map<std::string,std::string,std::less<std::string> >&);
 
 	void length(const long);
 	long contentLength() const;
-	void type(const string& );
+	void type(const std::string& );
 	void status(const long);
-	void authenticate(const string& );
+	void authenticate(const std::string& );
 	bool authenticated() const;
-	void forward(const string& );
+	void forward(const std::string& );
 	void dontCache();
 
-    const string& type() const;
+    const std::string& type() const;
 
-	const string& getHeader(const string&) const;
-	void setHeader(const string&,const string&);
+	const std::string& getHeader(const std::string&) const;
+	void setHeader(const std::string&,const std::string&);
 
 	void  content(const char*,long);
     const char* content() const { return content_; }
@@ -58,15 +58,15 @@ protected: // methods
 
 private: // members
 
-	string version_;
+	std::string version_;
 	long   statusCode_;
 	long   contentLength_;
 
 	struct compare {
-		bool operator()(const string&,const string&) const;
+		bool operator()(const std::string&,const std::string&) const;
 	};
 
-	typedef map<string,string,HttpHeader::compare> Map;
+	typedef std::map<std::string,std::string,HttpHeader::compare> Map;
 
 	Map header_;
     eckit::ResizableBuffer content_;

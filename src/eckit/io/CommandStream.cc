@@ -18,7 +18,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-CommandStream::CommandStream(const string& name,const char *mode):
+CommandStream::CommandStream(const std::string& name,const char *mode):
 	file_(popen(name.c_str(),mode))
 {
     Log::info() << "CommandStream (" << name << ")" << std::endl;
@@ -44,7 +44,7 @@ long CommandStream::write(const void* buf,long length)
 	return fwrite(buf,1,length,file_);
 }
 
-string CommandStream::name() const
+std::string CommandStream::name() const
 {
 	return "CommandStream";
 }

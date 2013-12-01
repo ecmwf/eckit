@@ -32,7 +32,7 @@ public:
 // -- Contructors
 
 	Buffer(size_t size);
-	Buffer(const string& s);
+    Buffer(const std::string& s);
 	Buffer(const char*,size_t size);
 
 // -- Destructor

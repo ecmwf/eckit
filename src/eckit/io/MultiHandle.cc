@@ -26,7 +26,7 @@ MultiHandle::MultiHandle():
 {
 }
 
-MultiHandle::MultiHandle(const vector<DataHandle*>& v):
+MultiHandle::MultiHandle(const std::vector<DataHandle*>& v):
     datahandles_(v),
     current_(datahandles_.end())
 {
@@ -381,7 +381,7 @@ DataHandle* MultiHandle::toLocal()
     return this;
 }
 
-void MultiHandle::cost(map<string,Length>& c, bool read) const
+void MultiHandle::cost(std::map<std::string,Length>& c, bool read) const
 {
     for(size_t i=0; i < datahandles_.size(); i++)
         datahandles_[i]->cost(c, read);
@@ -395,14 +395,14 @@ bool MultiHandle::moveable() const
     return datahandles_.size() > 0;
 }
 
-string MultiHandle::title() const
+std::string MultiHandle::title() const
 {
     StrStream os;
     os << "[";
     if(datahandles_.size()>0) os << datahandles_[0]->title();
     if(datahandles_.size()>1) os << ",...{" << datahandles_.size() << "}";
     os << "]" << StrStream::ends;
-    return string(os);
+    return std::string(os);
 }
 
 //-----------------------------------------------------------------------------

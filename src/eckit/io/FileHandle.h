@@ -28,7 +28,7 @@ public:
 
 // -- Contructors
 
-	FileHandle(const string&,bool = false);
+	FileHandle(const std::string&,bool = false);
 	FileHandle(Stream&);
 
 // -- Destructor
@@ -38,7 +38,7 @@ public:
 // --  Methods
 
 	void advance(const Length&); 
-	const string& path() const { return name_; }
+	const std::string& path() const { return name_; }
 
 // -- Overridden methods
 
@@ -61,8 +61,8 @@ public:
 	virtual void restartReadFrom(const Offset& from);
 	virtual void restartWriteFrom(const Offset& from);
     virtual void toRemote(Stream&) const;
-    virtual void cost(map<string,Length>&, bool) const;
-    virtual string title() const;
+    virtual void cost(std::map<std::string,Length>&, bool) const;
+    virtual std::string title() const;
     virtual bool moveable() const { return true; }
 
     virtual Offset seek(const Offset&);
@@ -81,7 +81,7 @@ private:
 
 // -- Members
 
-	string              name_;
+	std::string              name_;
 	bool                overwrite_;
 	FILE*               file_;
 	bool                read_;

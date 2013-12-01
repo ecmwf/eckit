@@ -31,8 +31,8 @@ public:
 	static const Grid& lookUp(char c);
 
 private:
-    typedef map<char,Grid,std::less<char> > CharGridTable;
-    typedef map<Grid,char,std::less<Grid> > GridCharTable;
+    typedef std::map<char,Grid,std::less<char> > CharGridTable;
+    typedef std::map<Grid,char,std::less<Grid> > GridCharTable;
 
 	static CharGridTable charGridTable_;
 	static GridCharTable gridCharTable_;
@@ -67,7 +67,7 @@ const Grid& Grids::lookUp(char c)
 
 //-----------------------------------------------------------------------------
 
-Grid::Grid(const vector<double>& n)
+Grid::Grid(const std::vector<double>& n)
 {
 	switch(n.size())
 	{
@@ -91,10 +91,10 @@ Grid::Grid(const vector<double>& n)
 	}
 }
 
-Grid::Grid(const string& s)
+Grid::Grid(const std::string& s)
 {
 	Tokenizer parse("/");
-	vector<string> result;
+	std::vector<std::string> result;
 
 	parse(s,result);
 
@@ -142,11 +142,11 @@ double Grid::distance(const Grid& p) const
 }
 
 
-Grid::operator string() const
+Grid::operator std::string() const
 {
 	StrStream os;
 	os << *this << StrStream::ends;
-	return string(os);
+	return std::string(os);
 }
 
 void Grid::print(std::ostream& s) const
@@ -183,12 +183,12 @@ bool Grid::operator<(const Grid& other) const
 	return (x !=y ) ? (x < y):(northSouth_ < other.northSouth_);
 }
 
-const Grid& Grid::bestMatch(const vector<Grid>& v) const
+const Grid& Grid::bestMatch(const std::vector<Grid>& v) const
 {
 
     Log::userInfo() << "Grid::bestMatch " << v.size() << std::endl;
     Log::info() << "Grid::bestMatch " << v.size() << std::endl;
-    for(vector<Grid>::const_iterator j = v.begin(); j != v.end(); ++j)
+    for(std::vector<Grid>::const_iterator j = v.begin(); j != v.end(); ++j)
 	{
 		Log::userInfo() << "Grid::bestMatch " << (*j) << std::endl;
 		Log::info() << "Grid::bestMatch " << (*j) << std::endl;

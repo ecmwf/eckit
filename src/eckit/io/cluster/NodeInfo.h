@@ -41,19 +41,19 @@ public:
 	int   port() const   { return port_; }
 
 	void  active(bool a)  { active_ = a; }
-	bool active() const   { return active_; }
+    bool  active() const   { return active_; }
 
-	void     host(const string& h)    { host_ = h; }
-	const string&   host() const             { return host_; }
+    void  host(const std::string& h)    { host_ = h; }
+    const std::string&   host() const   { return host_; }
 
-	void     name(const string& h)    { name_ = h; }
-	const string&    name() const             { return name_; }
+    void  name(const std::string& h)    { name_ = h; }
+    const std::string&    name() const  { return name_; }
 
-	void     user(const string& h)    { user_ = h;}
-	const string&    user() const             { return user_; }
+    void  user(const std::string& h)    { user_ = h;}
+    const std::string&    user() const  { return user_; }
 
-	void     node(const string& h)    { node_ = h; }
-	const string&    node() const             { return node_; }
+    void  node(const std::string& h)    { node_ = h; }
+    const std::string&    node() const  { return node_; }
 
 
 	void  id(TaskID p)    { id_ = p; }
@@ -78,10 +78,10 @@ private:
 	//NodeInfo(const NodeInfo&);
 	//NodeInfo& operator=(const NodeInfo&);
 
-	string name_;
-	string node_;
-	string user_;
-	string host_;
+    std::string name_;
+    std::string node_;
+    std::string user_;
+    std::string host_;
 	int    port_;
     bool   active_;
 	TaskID id_;

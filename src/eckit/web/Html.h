@@ -35,10 +35,10 @@ public:
     };
 
     class RawTag : public Tag {
-        string tag_;
+        std::string tag_;
         virtual void print(std::ostream& s) const { s << tag_; }
     protected:
-        RawTag(const string& s) : tag_(s) {}
+        RawTag(const std::string& s) : tag_(s) {}
     };
 
     class Line : public RawTag {
@@ -49,19 +49,19 @@ public:
     // To be used with 'include'
 
     class Substitute : public HtmlObject {
-        map<string,string,std::less<string> > map_;
-        virtual void substitute(std::ostream&,const string&);
+        std::map<std::string,std::string,std::less<std::string> > map_;
+        virtual void substitute(std::ostream&,const std::string&);
     public:
         Substitute();
         ~Substitute();
-        string& operator[](const string&);
+        std::string& operator[](const std::string&);
     };
 
     class Include {
     public:
 
-        Include(const string&,HtmlObject* = 0);
-        Include(const string&,HtmlObject&);
+        Include(const std::string&,HtmlObject* = 0);
+        Include(const std::string&,HtmlObject&);
 
     private:
 
@@ -69,7 +69,7 @@ public:
         Include& operator=(const Include&);
 
         HtmlObject*          sub_;
-        string               name_;
+        std::string               name_;
 
         void print(std::ostream& s) const;
 
@@ -79,15 +79,15 @@ public:
 
     class Image : public Tag {
     public:
-        Image(const string&);
+        Image(const std::string&);
 
-        static string resource();
+        static std::string resource();
 
     private:
         Image(const Image&);
         Image& operator=(const Image&);
 
-        string  name_;
+        std::string  name_;
         virtual void print(std::ostream& s) const;
     };
 
@@ -95,17 +95,17 @@ public:
     public:
         Link(Url&);
         Link() {}
-        Link(const string& url) : url_(addHex(url)) {}
+        Link(const std::string& url) : url_(addHex(url)) {}
     private:
         virtual void print(std::ostream& s) const;
-        string url_;
+        std::string url_;
     };
 
     class Class {
     public:
-        Class(const string& str) : str_(str) {}
+        Class(const std::string& str) : str_(str) {}
     private:
-        string str_;
+        std::string str_;
         void print(std::ostream& s) const;
         friend std::ostream& operator<<(std::ostream& s, const Class& n)
         { n.print(s); return s; }
@@ -146,9 +146,9 @@ public:
 
     class BeginForm : public Tag {
     public:
-        BeginForm(const string& str = "") : str_(str) {}
+        BeginForm(const std::string& str = "") : str_(str) {}
     private:
-        string str_;
+        std::string str_;
         virtual void print(std::ostream& s) const;
     };
 
@@ -158,10 +158,10 @@ public:
 
     class BeginTextArea {
     public:
-        BeginTextArea(const string& name,int row,int col):
+        BeginTextArea(const std::string& name,int row,int col):
             name_(name), row_(row),col_(col) {}
     private:
-        string name_;
+        std::string name_;
         int row_;
         int col_;
         void print(std::ostream& s) const;
@@ -176,63 +176,63 @@ public:
     };
 
     class TextField {
-        string name_;
-        string value_;
-        string title_;
+        std::string name_;
+        std::string value_;
+        std::string title_;
         void print(std::ostream& s) const;
     public:
-        TextField(const string& name,const string& value = "",const string& title = ""):
+        TextField(const std::string& name,const std::string& value = "",const std::string& title = ""):
             name_(name),value_(value),title_(title) {}
         friend std::ostream& operator<<(std::ostream& s, const TextField& n)
         { n.print(s); return s; }
     };
 
     class HiddenField : public Tag {
-        string name_;
-        string value_;
+        std::string name_;
+        std::string value_;
         virtual void print(std::ostream& s) const;
     public:
-        HiddenField(const string& name,const string& value):
+        HiddenField(const std::string& name,const std::string& value):
             name_(name),value_(value) {}
     };
 
 
     class Button : public Tag {
-        string type_;
-        string title_;
+        std::string type_;
+        std::string title_;
         virtual void print(std::ostream& s) const;
     public:
-        Button(const string& type,const string& title):
+        Button(const std::string& type,const std::string& title):
             type_(type),title_(title) {}
     };
 
     class CheckBox : public Tag {
-        string name_;
-        string value_;
+        std::string name_;
+        std::string value_;
         bool   on_;
         virtual void print(std::ostream& s) const;
     public:
-        CheckBox(const string& name,const string& value,bool on):
+        CheckBox(const std::string& name,const std::string& value,bool on):
             name_(name), value_(value), on_(on) {}
     };
 
     class ResetButton : public Button {
     public:
-        ResetButton(const string& title = "Reset"):
+        ResetButton(const std::string& title = "Reset"):
             Button("reset",title) {}
     };
 
     class SubmitButton : public Button {
     public:
-        SubmitButton(const string& title = "Submit"):
+        SubmitButton(const std::string& title = "Submit"):
             Button("submit",title) {}
     };
 
     class Hidden : public Tag {
     };
 
-    static string addHex(const string&);
-    static string removeHex(const string&);
+    static std::string addHex(const std::string&);
+    static std::string removeHex(const std::string&);
 
     //-----------------------------------------------------------------------------
 
@@ -257,13 +257,13 @@ public:
 
 
     class TableTag : public Tag {
-        string tag_;
+        std::string tag_;
         int align_;
         int colspan_;
         int rowspan_;
         virtual void print(std::ostream& s) const;
     protected:
-        TableTag(const string& tag,int align,int colspan, int rowspan):
+        TableTag(const std::string& tag,int align,int colspan, int rowspan):
             tag_(tag),align_(align),colspan_(colspan),rowspan_(rowspan) {}
     };
 

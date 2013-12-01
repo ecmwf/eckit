@@ -21,7 +21,7 @@ namespace eckit {
 
 class BadValue: public Exception {
 public:
-	BadValue(const string& s) : Exception(string("BadValue:") + s) {}
+	BadValue(const std::string& s) : Exception(std::string("BadValue:") + s) {}
 };
 
 //-----------------------------------------------------------------------------

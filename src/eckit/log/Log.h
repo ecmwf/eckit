@@ -92,7 +92,7 @@ public: // methods
     /// Channel for error messages to remote user
     static  Channel& userError();   
     /// Send messages to remote user directly -- not using a channel
-    static void notifyClient(const string&);
+    static void notifyClient(const std::string&);
 
     /// manipulator that will print the last error message as in perror(2)
     static std::ostream& syserr(std::ostream&);

@@ -31,7 +31,7 @@ public:
 
 protected:
 
-	string name_;
+	std::string name_;
 
 	virtual void html(std::ostream&,Url&);
 

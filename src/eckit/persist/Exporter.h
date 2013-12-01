@@ -85,27 +85,27 @@ public:
     void startDatabases();
     void endDatabases();
 
-    void startDatabase(const string&, unsigned long, unsigned long long);
-    void endDatabase(const string&, unsigned long);
+    void startDatabase(const std::string&, unsigned long, unsigned long long);
+    void endDatabase(const std::string&, unsigned long);
     
     void writeTag(char);
     char readTag();
 
     void writeSigned(long long);
     void writeUnsigned(unsigned long long);
-    void writeString(const string&);
+    void writeString(const std::string&);
     void writeString(const char*);
     void writeDouble(double);
 
-    void dataBase(unsigned long long, const string&);
-    void typeInfo(unsigned long long, const string&);
+    void dataBase(unsigned long long, const std::string&);
+    void typeInfo(unsigned long long, const std::string&);
 
     long long readSigned();
     unsigned long long readUnsigned();
-    string readString();
+    std::string readString();
     double readDouble();
 
-    bool nextDatabase(string& name,unsigned long long& id, unsigned long long& count);
+    bool nextDatabase(std::string& name,unsigned long long& id, unsigned long long& count);
 
     size_t nextObject();
     void endObject();
@@ -125,9 +125,9 @@ public:
     void startSubObject();
     void endSubObject();
 
-    unsigned long long getUnsignedMember(const string&);
-    long long          getSignedMember(const string&);
-    double             getDoubleMember(const string&);
+    unsigned long long getUnsignedMember(const std::string&);
+    long long          getSignedMember(const std::string&);
+    double             getDoubleMember(const std::string&);
 
 // -- Overridden methods
 	// None
@@ -166,18 +166,18 @@ private: // members
     unsigned long long objectCount_;
     unsigned long long subCount_;
 
-    vector<string> stack_;
-    map<string,Datatype> members_;
+    std::vector<std::string> stack_;
+    std::map<std::string,Datatype> members_;
 
     bool inObject_;
 
 // -- Methods
     long long _readSigned();
     unsigned long long _readUnsigned();
-    string _readString();
+    std::string _readString();
     double _readDouble();
 
-    string path() const;
+    std::string path() const;
 	
 
 // -- Overridden methods

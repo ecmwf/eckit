@@ -24,10 +24,10 @@ namespace eckit {
 
 class UserMsg {
 public:
-	virtual void infoMsg(const string&)      = 0;
-	virtual void warningMsg(const string&)   = 0;
-	virtual void errorMsg(const string&)     = 0;
-	virtual void notifyClient(const string&) = 0;
+    virtual void infoMsg(const std::string&)      = 0;
+    virtual void warningMsg(const std::string&)   = 0;
+    virtual void errorMsg(const std::string&)     = 0;
+    virtual void notifyClient(const std::string&) = 0;
 };
 
 //-----------------------------------------------------------------------------

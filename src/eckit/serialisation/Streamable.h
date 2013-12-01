@@ -42,7 +42,7 @@ public:
 
 // -- Methods
 	
-	virtual string className() const;
+    virtual std::string className() const;
 	virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
 // -- Class methods

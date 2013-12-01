@@ -34,7 +34,7 @@ public:
 
 // -- Contructors
 
-	StdFile(const PathName& name,const string& mode = "r");
+	StdFile(const PathName& name,const std::string& mode = "r");
 
 // -- Destructor
 

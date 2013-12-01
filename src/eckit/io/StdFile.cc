@@ -20,7 +20,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-StdFile::StdFile(const PathName& name,const string& mode)
+StdFile::StdFile(const PathName& name,const std::string& mode)
 {
 	file_ = ::fopen(name.localPath(),mode.c_str());
 

@@ -59,17 +59,17 @@ PartFileHandle::PartFileHandle(Stream& s):
 }
 
 #ifdef USE_LINKS
-static string linkName(const string& name)
+static std::string linkName(const std::string& name)
 {
     static int n = 1;
-    string path = name + ".part.0";
+    std::string path = name + ".part.0";
     while(::link(name.c_str(),path.c_str()) < 0)
     {
         if(errno != EEXIST)
-            throw FailedSystemCall(string("link ") + name + " " + path);
+            throw FailedSystemCall(std::string("link ") + name + " " + path);
         StrStream os;
         os << name + ".part." << n++ << StrStream::ends;
-        path = string(os);
+        path = std::string(os);
     }
     return path;
 }
@@ -201,7 +201,7 @@ long PartFileHandle::read1(char *buffer,long length)
     {
         StrStream s;
         s << name_ << ": cannot seek to " << pos << " (file=" << fileno(file_) << ")" << StrStream::ends;
-        throw ReadError(string(s));
+        throw ReadError(std::string(s));
     }
 
     ASSERT(::ftello(file_) == pos);
@@ -218,7 +218,7 @@ long PartFileHandle::read1(char *buffer,long length)
     {
         StrStream s;
         s << name_ << ": cannot read " << size << ", got only " << n << StrStream::ends;
-        throw ReadError(string(s));
+        throw ReadError(std::string(s));
     }
 
     pos_ += n;
@@ -342,7 +342,7 @@ void PartFileHandle::toRemote(Stream& s) const
     s << remote;
 }
 
-void PartFileHandle::cost(map<string,Length>& c, bool read) const
+void PartFileHandle::cost(std::map<std::string,Length>& c, bool read) const
 {
     if(read) {
         c[NodeInfo::thisNode().node()] += const_cast<PartFileHandle*>(this)->estimate();
@@ -350,11 +350,11 @@ void PartFileHandle::cost(map<string,Length>& c, bool read) const
 }
 
 
-string PartFileHandle::title() const
+std::string PartFileHandle::title() const
 {
     StrStream os;
     os << PathName::shorten(name_) << " (" << length_.size() << ")" << StrStream::ends;
-    return string(os);
+    return std::string(os);
 }
 
 //-----------------------------------------------------------------------------

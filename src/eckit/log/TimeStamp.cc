@@ -21,13 +21,13 @@ namespace eckit {
 
 const char* TimeStamp::defaultFormat_ = "%Y-%m-%d %H:%M:%S";
 
-TimeStamp::TimeStamp(const string& format):
+TimeStamp::TimeStamp(const std::string& format):
 	time_(time(0)),
 	format_(format)
 {
 }
 
-TimeStamp::TimeStamp(time_t t,const string& format):
+TimeStamp::TimeStamp(time_t t,const std::string& format):
 	time_(t),
 	format_(format)
 {
@@ -48,11 +48,11 @@ std::ostream& operator<<(std::ostream& s,const TimeStamp&  x)
 	return s;
 }
 
-TimeStamp::operator string() const
+TimeStamp::operator std::string() const
 {
 	StrStream s;
 	s << *this << StrStream::ends;
-	return string(s);
+	return std::string(s);
 }
 
 //-----------------------------------------------------------------------------

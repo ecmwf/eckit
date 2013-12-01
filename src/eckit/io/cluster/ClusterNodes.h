@@ -45,15 +45,15 @@ public:
     static void send(Stream& s);
     static void receive(Stream& s);
 
-    static NodeInfo lookUp(const string&, const string&);
-    static NodeInfo any(const string&);
+    static NodeInfo lookUp(const std::string&, const std::string&);
+    static NodeInfo any(const std::string&);
 
-    static bool available(const string&, const string&);
+    static bool available(const std::string&, const std::string&);
 
-	static void offLine(const string&, int);
-	static void onLine(const string&, int);
+	static void offLine(const std::string&, int);
+	static void onLine(const std::string&, int);
 
-    static vector<NodeInfo> all();
+    static std::vector<NodeInfo> all();
 
 };
 

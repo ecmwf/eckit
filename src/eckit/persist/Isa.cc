@@ -16,19 +16,19 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static map<string,Isa*> *map_ = 0;
+static std::map<std::string,Isa*> *map_ = 0;
 
-void Isa::add(TypeInfo* t,const string& s)
+void Isa::add(TypeInfo* t,const std::string& s)
 {
 	Isa* i = new Isa(t,get(s));
 //	std::cout << "add isa " << s << " for " << t << std::endl;
 	(*map_)[s] = i;
 }
 
-Isa* Isa::get(const string& s)
+Isa* Isa::get(const std::string& s)
 {
-	if(map_ == 0) map_ = new map<string,Isa*>;
-	map<string,Isa*>::iterator j = map_->find(s);
+	if(map_ == 0) map_ = new std::map<std::string,Isa*>;
+	std::map<std::string,Isa*>::iterator j = map_->find(s);
 	return (j == map_->end()) ? (Isa*)0 : (Isa*)(*j).second;
 }
 
@@ -45,26 +45,26 @@ void _describe(std::ostream& s,int depth,char what)               { s << what <<
 void _describe(std::ostream& s,int depth,unsigned char what)      { s << what << std::endl; }
 void _describe(std::ostream& s,int depth,double what)             { s << what << std::endl; }
 
-void _startClass(std::ostream& s,int depth,const string& name)
+void _startClass(std::ostream& s,int depth,const std::string& name)
 {
 	for(int i = 0; i < depth; i++) s << " ";
 	s << name;
 	s << "{" << std::endl;
 }
 
-void _endClass(std::ostream& s,int depth,const string& name)
+void _endClass(std::ostream& s,int depth,const std::string& name)
 {
 	for(int i = 0; i < depth; i++) s << " ";
 	s << "}" << std::endl;
 }
 
-void _startMember(std::ostream& s,int depth,const string& name)
+void _startMember(std::ostream& s,int depth,const std::string& name)
 {
 	for(int i = 0; i < depth; i++) s << " ";
 	s << name << ": ";
 }
 
-void _endMember(std::ostream& s,int depth,const string& name)
+void _endMember(std::ostream& s,int depth,const std::string& name)
 {
 	//s << std::endl;
 }

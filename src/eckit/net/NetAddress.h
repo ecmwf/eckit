@@ -35,8 +35,8 @@ public:
 
 // Contructors
 
-    NetAddress(const string&); // parses the string formated as hostname:port
-    NetAddress(const string&, const int);
+    NetAddress(const std::string&); // parses the std::string formated as hostname:port
+    NetAddress(const std::string&, const int);
     NetAddress(const Stream&);
 
     NetAddress(const NetAddress&);
@@ -51,23 +51,23 @@ public:
 
 // Convertors
 
-    /// @returns string formated as hostname:port
-//    string asString() const;
-    /// @returns string formated as hostname:port
-//    operator string() const { return asString(); }
+    /// @returns std::string formated as hostname:port
+//    std::string asString() const;
+    /// @returns std::string formated as hostname:port
+//    operator std::string() const { return asString(); }
 
 // Operators
 
 // Methods
 
-    string host() const { return host_; }
+    std::string host() const { return host_; }
     int    port() const { return port_; }
 
 private:
 
 // Members
 
-    string               host_;
+    std::string               host_;
     int                  port_;
 
 // Methods

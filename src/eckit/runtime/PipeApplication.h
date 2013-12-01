@@ -47,7 +47,7 @@ public: // methods
     virtual void init(Stream&);
 	virtual void waiting();	
 	
-	static void launch(const string& name, int in, int out);
+	static void launch(const std::string& name, int in, int out);
 
 private: // members
 
@@ -243,14 +243,14 @@ void PipeApplication<APP>::init(Stream&)
 }
 
 template< class APP >
-void PipeApplication<APP>::launch(const string& name, int input, int output)
+void PipeApplication<APP>::launch(const std::string& name, int input, int output)
 {
     
     char in [20]; snprintf(in,20,"%d", input);
     char out[20]; snprintf(out,20,"%d",output);
     char par[20]; snprintf(par,20,"%ld",Monitor::instance().self());
 
-    PathName cmd = string("~/bin/") + name;
+    PathName cmd = std::string("~/bin/") + name;
 
     Log::debug() << "execlp(" << cmd.localPath() << ','
                  << cmd.baseName().localPath() << ','
@@ -273,7 +273,7 @@ void PipeApplication<APP>::launch(const string& name, int input, int output)
     char command[1024];
     char basename[1024];
 
-    ASSERT(sizeof(command)-1 > string(cmd).length());
+    ASSERT(sizeof(command)-1 > std::string(cmd).length());
 
     snprintf(command,1024,"%s", cmd.localPath());
     snprintf(basename,1024,"%s", cmd.baseName().localPath());

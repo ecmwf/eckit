@@ -62,7 +62,7 @@ void Exception::exceptionStack(std::ostream& out, bool callStack)
     out << "End stack" << std::endl;
 }
 
-Exception::Exception(const string& w, const CodeLocation& location):
+Exception::Exception(const std::string& w, const CodeLocation& location):
     what_(w),
     next_(first()),
     location_(location)
@@ -85,7 +85,7 @@ Exception::Exception(const string& w, const CodeLocation& location):
     Log::status() << "** " << w << " @ " << location_ << std::endl;
 }
 
-void Exception::reason(const string& w)
+void Exception::reason(const std::string& w)
 {
     Log::error() << "Exception: " << w << std::endl;
     what_ = w;
@@ -100,31 +100,31 @@ TooManyRetries::TooManyRetries(const int retries)
 {   
     StrStream s;
     s << "Too many retries: " << retries << StrStream::ends;
-    reason(string(s)); 
+    reason(std::string(s)); 
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
-TimeOut::TimeOut(const string& msg, const unsigned long timeout)
+TimeOut::TimeOut(const std::string& msg, const unsigned long timeout)
 {   
     StrStream s;
     s  << "Timeout expired: " << timeout << " (" << msg << ")" << StrStream::ends ;
-    reason(string(s));
+    reason(std::string(s));
 }
 
 
-FailedSystemCall::FailedSystemCall(const string& w)
+FailedSystemCall::FailedSystemCall(const std::string& w)
 {   
     StrStream s;
     s << "Failed system call: " << w << " " << Log::syserr << StrStream::ends;
-    reason(string(s));
+    reason(std::string(s));
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
-FailedSystemCall::FailedSystemCall(const string& msg, const CodeLocation& loc)
+FailedSystemCall::FailedSystemCall(const std::string& msg, const CodeLocation& loc)
 {
     StrStream s;
     s << "Failed system call: " << msg << " " << " in " << loc << " " << Log::syserr << StrStream::ends;
-    reason(string(s));
+    reason(std::string(s));
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
@@ -135,23 +135,23 @@ FailedSystemCall::FailedSystemCall(const char* msg,const CodeLocation& loc,int e
     errno = err;
     s << "Failed system call: " << msg << " in " << loc << " " << Log::syserr << StrStream::ends;
 
-    reason(string(s));
+    reason(std::string(s));
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
-FailedSystemCall::FailedSystemCall(const string& ctx, const char* msg, const CodeLocation& loc,int err)
+FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, const CodeLocation& loc,int err)
 {
     StrStream s;
 
     errno = err;
     s << "Failed system call: " << msg << " in " << loc << " " << Log::syserr << " [" << ctx << "]" << StrStream::ends;
 
-    reason(string(s));
+    reason(std::string(s));
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
-AssertionFailed::AssertionFailed(const string& w): 
-    Exception(string("Assertion failed: ") + w)
+AssertionFailed::AssertionFailed(const std::string& w): 
+    Exception(std::string("Assertion failed: ") + w)
 {   
     Log::monitor(Log::App,1) << what() << std::endl;
 } 
@@ -163,12 +163,12 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
     s << "Assertion failed: " << msg << " in " << loc.func()
         << ", line " << loc.line() << " of " << loc.file() << StrStream::ends;
 
-    reason(string(s));
+    reason(std::string(s));
     Log::monitor(Log::App,2) << what() << std::endl;
 }
 
-BadParameter::BadParameter(const string& w):
-    Exception(string("Bad parameter: ") + w)
+BadParameter::BadParameter(const std::string& w):
+    Exception(std::string("Bad parameter: ") + w)
 {   
 }
 
@@ -179,40 +179,40 @@ NotImplemented::NotImplemented( const CodeLocation& loc )
     s << "Not implemented: " << loc.func()
         << ", line " << loc.line() << " of " << loc.file() << StrStream::ends;
 
-    reason(string(s));
+    reason(std::string(s));
     Log::monitor(Log::App,2) << what() << std::endl;
-    string t = string(s);
+    std::string t = std::string(s);
     //	Panic(t.c_str());
 
 }
 
-UserError::UserError(const string& r):
-    Exception(string("UserError: ") + r)
+UserError::UserError(const std::string& r):
+    Exception(std::string("UserError: ") + r)
 {   
 }
 
-UserError::UserError(const string& r,const string& x):
-    Exception(string("UserError: ") + r + " : " + x)
+UserError::UserError(const std::string& r,const std::string& x):
+    Exception(std::string("UserError: ") + r + " : " + x)
 {   
 }
 
-Stop::Stop(const string& r):
-    Exception(string("Stop: ") + r)
+Stop::Stop(const std::string& r):
+    Exception(std::string("Stop: ") + r)
 {   
 }
 
-Abort::Abort(const string& r):
-    Exception(string("Abort: ") + r)
+Abort::Abort(const std::string& r):
+    Exception(std::string("Abort: ") + r)
 {   
 }
 
-Retry::Retry(const string& r):
-    Exception(string("Retry: ") + r)
+Retry::Retry(const std::string& r):
+    Exception(std::string("Retry: ") + r)
 {
 }
 
-Cancel::Cancel(const string& r):
-    Exception(string("Cancel: ") + r)
+Cancel::Cancel(const std::string& r):
+    Exception(std::string("Cancel: ") + r)
 {   
 }
 
@@ -221,19 +221,19 @@ OutOfRange::OutOfRange(unsigned long long index, unsigned long long max)
     StrStream s;
     s << "Out of range accessing element " << index 
         << ", but maximum is " << max - 1 << StrStream::ends;
-    reason(string(s));
+    reason(std::string(s));
 }
 
-FileError::FileError(const string& msg)
+FileError::FileError(const std::string& msg)
 {   
     StrStream s;
     s << msg <<  Log::syserr;
     s << StrStream::ends;
-    reason(string(s));
+    reason(std::string(s));
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
-CantOpenFile::CantOpenFile(const string& file, bool retry):
+CantOpenFile::CantOpenFile(const std::string& file, bool retry):
     retry_(retry)
 {   
     /* std::cout << "cannot open file [" << file << "]" << std::endl; */
@@ -241,31 +241,31 @@ CantOpenFile::CantOpenFile(const string& file, bool retry):
     s << "Cannot open " << file << " " << Log::syserr;
     if(retry) s << " (retry ok)";
     s << StrStream::ends;
-    reason(string(s));
+    reason(std::string(s));
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
-MethodNotYetImplemented::MethodNotYetImplemented(const string &msg):
-    Exception(string("Method not yet implemented: " + msg))
+MethodNotYetImplemented::MethodNotYetImplemented(const std::string &msg):
+    Exception(std::string("Method not yet implemented: " + msg))
 {
 }
 
-WriteError::WriteError(const string& file): 
-    FileError(string("Write error on ") + file)
+WriteError::WriteError(const std::string& file): 
+    FileError(std::string("Write error on ") + file)
 {   
 }
 
-ReadError::ReadError(const string& file): 
-    FileError(string("Read error on ") + file)
+ReadError::ReadError(const std::string& file): 
+    FileError(std::string("Read error on ") + file)
 {   
 }
 
-ShortFile::ShortFile(const string& file): 
-    ReadError(string("Short file while reading ") + file)
+ShortFile::ShortFile(const std::string& file): 
+    ReadError(std::string("Short file while reading ") + file)
 {   
 }
 
-RemoteException::RemoteException(const string& msg, const string& from):
+RemoteException::RemoteException(const std::string& msg, const std::string& from):
     Exception(msg + "(RemoteException from " + from + ")")
 {
 }
@@ -304,7 +304,7 @@ void handle_panic(const char* msg, const CodeLocation& location )
 {
     StrStream s;
     s << msg << " in " << location << StrStream::ends;
-    string t(s);
+    std::string t(s);
     handle_panic(t.c_str());
 }
 

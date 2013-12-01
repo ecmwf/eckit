@@ -20,9 +20,9 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static const vector<string> empty;
+static const std::vector<std::string> empty;
 
-EtcTable::EtcTable(const string& name, int size, const string& dir):
+EtcTable::EtcTable(const std::string& name, int size, const std::string& dir):
     last_(0),
     dir_(dir),
     name_(name),
@@ -35,15 +35,15 @@ EtcTable::~EtcTable()
 }
 
 
-const vector<string>& EtcTable::lookUp(const string& name)
+const std::vector<std::string>& EtcTable::lookUp(const std::string& name)
 {
     AutoLock<Mutex> lock(mutex_);
     if(last_ == 0) 
         load();
     
-    for(vector<vector<string> >::const_iterator j = lines_.begin(); j != lines_.end() ; ++j)
+    for(std::vector<std::vector<std::string> >::const_iterator j = lines_.begin(); j != lines_.end() ; ++j)
     {
-        const vector<string>& line = *j;
+        const std::vector<std::string>& line = *j;
         if(match(name, line)) 
             return line;
     }
@@ -52,17 +52,17 @@ const vector<string>& EtcTable::lookUp(const string& name)
 
 }
 
-vector<string> EtcTable::keys()
+std::vector<std::string> EtcTable::keys()
 {
     AutoLock<Mutex> lock(mutex_);
     if(last_ == 0) 
         load();
 
-    vector<string> v;
+    std::vector<std::string> v;
     
-    for(vector<vector<string> >::const_iterator j = lines_.begin(); j != lines_.end() ; ++j)
+    for(std::vector<std::vector<std::string> >::const_iterator j = lines_.begin(); j != lines_.end() ; ++j)
     {
-        const vector<string>& line = *j;
+        const std::vector<std::string>& line = *j;
         v.push_back(line[0]);
     }
 
@@ -74,7 +74,7 @@ void EtcTable::load()
 
     last_ = 1; // TODP: Check timestamp
 
-	LocalPathName path(string("~/") + dir_ + "/" + name_);
+	LocalPathName path(std::string("~/") + dir_ + "/" + name_);
     std::ifstream in(path.localPath());
 
     Log::info() << "EtcTable::load " << path << std::endl;
@@ -93,7 +93,7 @@ void EtcTable::load()
 	while(in.getline(line,sizeof(line)))
 	{
 		Tokenizer parse(" ");
-		vector<string> s;
+		std::vector<std::string> s;
 		parse(line,s);
 
 		size_t i = 0;

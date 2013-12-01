@@ -37,9 +37,9 @@ NodeInfo& NodeInfo::init()
     AutoLock<Mutex> lock(local_mutex);
 	if(!name_.length())
 	{
-        static string myNode = Resource<string> ("node", "<missing-node-name>");
-        static string myHost = Resource<string> ("host", "");
-        static string myUser;
+        static std::string myNode = Resource<std::string> ("node", "<missing-node-name>");
+        static std::string myHost = Resource<std::string> ("host", "");
+        static std::string myUser;
 
 		name_ = Context::instance().runName();
 
@@ -107,7 +107,7 @@ void operator<<(Stream& s, const NodeInfo& info)
 
 void operator>>(Stream& s, NodeInfo& info)
 {
-	string p;
+	std::string p;
 	int l;
 	s >> p;
 	info.user(p);
@@ -148,7 +148,7 @@ NodeInfo NodeInfo::acceptLogin(Stream& s)
 	{
 		StrStream os;
 		os << "User mismatch: " << here << " " << remote << StrStream::ends;
-		s << Exception(string(os));
+		s << Exception(std::string(os));
 	}
 
 	Log::info() << "Connection established " << here << " <=> " << remote << std::endl;
@@ -167,7 +167,7 @@ NodeInfo NodeInfo::sendLogin(Stream& s)
 	{
 		StrStream os;
 		os << "User mismatch: " << here << " " << remote << StrStream::ends;
-		s << Exception(string(os));
+		s << Exception(std::string(os));
 	}
 
 	Log::info() << "Connection established " << here << " <=> " << remote << std::endl;

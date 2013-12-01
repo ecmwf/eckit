@@ -26,7 +26,7 @@ static void parse_name( const std::string& str, std::string& name, std::string& 
 
 	while(*p)
 	{
-		string *s = &name;
+		std::string *s = &name;
 		char   x  = *p;
 		int len   = 0;
 
@@ -50,7 +50,7 @@ static void parse_name( const std::string& str, std::string& name, std::string& 
 	}
 }
 
-ResourceBase::ResourceBase(Configurable* owner,const string& str) :
+ResourceBase::ResourceBase(Configurable* owner,const std::string& str) :
     owner_( owner ? owner : &Context::instance() ),
 	inited_(false),
     converted_(true) // initial value is already set
@@ -59,7 +59,7 @@ ResourceBase::ResourceBase(Configurable* owner,const string& str) :
     parse_name(str,name_,environment_,options_);
 }
 
-ResourceBase::ResourceBase(const string& str, const StringDict& args):
+ResourceBase::ResourceBase(const std::string& str, const StringDict& args):
 			owner_( &Context::instance() ),
 			inited_(false),
             converted_(true) // initial value is already set
@@ -134,7 +134,7 @@ void ResourceBase::convert()
     }
 }
 
-string ResourceBase::name() const
+std::string ResourceBase::name() const
 {
 	if(owner_)
 		return owner_->kind() + '.' + owner_->name() + '.' + name_;
@@ -169,7 +169,7 @@ void ResourceBase::dump(std::ostream& s) const
 // force template instantiation
 #pragma define(Resource<bool>)
 #pragma define(Resource<long>)
-#pragma define(Resource<string>)
+#pragma define(Resource<std::string>)
 #endif
 
 //-----------------------------------------------------------------------------

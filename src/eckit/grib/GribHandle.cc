@@ -23,7 +23,7 @@ static int grib_call(int code, const char* msg) {
     if(code) {
         StrStream os;
         os << msg << ": " << grib_get_error_message(code) << StrStream::ends;
-        throw Exception(string(os));
+        throw Exception(std::string(os));
     }
     return code;
 }

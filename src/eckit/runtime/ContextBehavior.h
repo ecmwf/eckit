@@ -50,13 +50,13 @@ public: // interface methods
     // From Configurable
 
 	virtual void   reconfigure();
-    virtual string name() const   { return "ContextBehavior"; }
+    virtual std::string name() const   { return "ContextBehavior"; }
     
 private: // methods
     
     // From Configurable
 
-	virtual string kind() const  { return "ContextBehavior"; }
+	virtual std::string kind() const  { return "ContextBehavior"; }
     
 protected: // members
    

@@ -35,8 +35,8 @@ class Length;
 class PathName;
 class JSON;
 
-typedef vector<Value>     ValueList;
-typedef map<Value,Value>  ValueMap;
+typedef std::vector<Value>     ValueList;
+typedef std::map<Value,Value>  ValueMap;
 
 class Value {
 public:
@@ -54,7 +54,7 @@ public:
     Value(unsigned long long);
     Value(double);
 
-    Value(const string&);
+    Value(const std::string&);
     Value(const char*);
 
     Value(const Length&);
@@ -94,7 +94,7 @@ public:
     operator double() const             { double d;     content_->value(d); return d; }
     operator bool() const               { bool d;       content_->value(d); return d; }
 
-    operator string() const    { string s; content_->value(s); return s; }
+    operator std::string() const    { std::string s; content_->value(s); return s; }
     operator Date() const      { Date d; content_->value(d); return d; }
     operator Time() const      { Time t; content_->value(t); return t; }
     operator DateTime() const  { DateTime d; content_->value(d); return d; }
@@ -132,7 +132,7 @@ public:
     Value& operator%=(const Value&);
 
     Value operator[](const char*) const;
-    Value operator[](const string&) const;
+    Value operator[](const std::string&) const;
     Value operator[](const Value&) const;
     Value operator[](int) const;
 
@@ -158,10 +158,10 @@ public:
 
     static Value makeList();
     static Value makeList(const Value&);
-    static Value makeList(const vector<Value>&);
+    static Value makeList(const std::vector<Value>&);
 
     static Value makeMap();
-    static Value makeMap(const map<Value,Value>&);
+    static Value makeMap(const std::map<Value,Value>&);
 
 protected:
 

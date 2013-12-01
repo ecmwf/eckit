@@ -70,10 +70,10 @@ public: // methods
 private: // members
 
 	PathName                path_;
-	vector<Buffer*>         buffers_;
-    vector<const aiocb*>   aiop_;
-    vector<aiocb>           aio_;
-	vector<long>			len_;
+	std::vector<Buffer*>         buffers_;
+    std::vector<const aiocb*>   aiop_;
+    std::vector<aiocb>           aio_;
+	std::vector<long>			len_;
 	
 	size_t                  used_;
 	size_t                  count_;
@@ -83,7 +83,7 @@ private: // members
 	bool                    fsync_;
 	
 
-    virtual string title() const;
+    virtual std::string title() const;
 
 // -- Class members
 

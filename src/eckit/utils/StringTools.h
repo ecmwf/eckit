@@ -29,8 +29,8 @@ namespace eckit {
 class StringTools : private NonCopyable {
 public:
 
-    static string substitute(const string&, const map<string, string>&);
-    static vector<std::string>  substituteVariables( const string& );
+    static std::string substitute(const std::string&, const std::map<std::string, std::string>&);
+    static std::vector<std::string>  substituteVariables( const std::string& );
 
 	static std::string upper(const std::string &);
 	static std::string lower(const std::string &);
@@ -44,10 +44,10 @@ public:
     static std::string back_trim(const std::string &);
     static std::string back_trim(const std::string &, const std::string &);
 
-    static vector<std::string> split(const string& delim, const string& text);
-	static std::string join(const string &, const vector<std::string>&);
+    static std::vector<std::string> split(const std::string& delim, const std::string& text);
+	static std::string join(const std::string &, const std::vector<std::string>&);
 
-    static bool startsWith( const string& str, const string& substr );
+    static bool startsWith( const std::string& str, const std::string& substr );
     
 private:
     

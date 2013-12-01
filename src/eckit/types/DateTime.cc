@@ -30,10 +30,10 @@ DateTime::DateTime(const Date& d, const Time& t) :
 {
 }
 
-DateTime::DateTime(const string& s)
+DateTime::DateTime(const std::string& s)
 {
 	Tokenizer parse(" ");
-	vector<string> result;
+	std::vector<std::string> result;
 
 	parse(s,result);
 	
@@ -57,7 +57,7 @@ static std::locale& getLocale()
     return loc;
 }
 
-string DateTime::format( const string& fmt )
+std::string DateTime::format( const std::string& fmt )
 {
       ostringstream out;
 
@@ -118,11 +118,11 @@ void DateTime::print(std::ostream& s) const
 	s << date_ << ' ' << time_;
 }
 
-DateTime::operator string() const
+DateTime::operator std::string() const
 {
 	StrStream os;
 	os << *this << StrStream::ends;
-	return string(os);
+	return std::string(os);
 }
 
 DateTime& DateTime::operator=(const DateTime& other)

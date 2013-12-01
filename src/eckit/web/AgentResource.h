@@ -32,7 +32,7 @@ public:
 
 protected: // members
 
-	string name_;
+	std::string name_;
 
 
 protected: // overridden methods

@@ -22,7 +22,7 @@ VerifyingDate::VerifyingDate(const Date& d, const Time& t):
 	ASSERT( Second(time_) == 0 );
 }
 
-VerifyingDate::VerifyingDate(const string& s):
+VerifyingDate::VerifyingDate(const std::string& s):
 	DateTime(s)
 {
 	ASSERT( Second(time_) == 0 );
@@ -41,9 +41,9 @@ VerifyingDate::VerifyingDate(const DateTime& thetime):
 	ASSERT( Second(time_) == 0 );
 }
 
-VerifyingDate::operator string() const
+VerifyingDate::operator std::string() const
 {
-	return string(date_);
+	return std::string(date_);
 }
 
 void VerifyingDate::print(std::ostream& s) const

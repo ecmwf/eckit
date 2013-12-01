@@ -25,10 +25,10 @@ IfElse::IfElse( ExpPtr f,  ExpPtr i, ExpPtr e ) : Function()
     push_back(e);
 }
 
-string IfElse::returnSignature() const
+std::string IfElse::returnSignature() const
 {
-    string i = args(1)->returnSignature();
-    string e = args(2)->returnSignature();
+    std::string i = args(1)->returnSignature();
+    std::string e = args(2)->returnSignature();
 
     if(i == e) {
         return i;

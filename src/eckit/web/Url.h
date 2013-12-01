@@ -29,16 +29,16 @@ class Url;
 
 class UrlAccess {
 	Url&   url_;
-	string s_;
+	std::string s_;
 	
 
 public:
-	UrlAccess(Url& url,const string& s) : url_(url), s_(s) {}
+	UrlAccess(Url& url,const std::string& s) : url_(url), s_(s) {}
 
-	operator string();
+	operator std::string();
 	operator long();
 
-	UrlAccess& operator=(const string&);
+	UrlAccess& operator=(const std::string&);
 	UrlAccess& operator=(long);
 };
 
@@ -54,7 +54,7 @@ public:
 // -- Contructors
 
 	Url(std::istream&);
-	Url(const string&);
+	Url(const std::string&);
 
 // -- Destructor
 
@@ -62,17 +62,17 @@ public:
 
 // -- Operators
 	
-	UrlAccess operator[](const string&);
+	UrlAccess operator[](const std::string&);
 
 // -- Methods
 
-	void erase(const string&);
+	void erase(const std::string&);
 
 
-	void set(const string&,const string&);
-	const string& get(const string&);
+	void set(const std::string&,const std::string&);
+	const std::string& get(const std::string&);
 
-	const string& method() { return method_;}
+	const std::string& method() { return method_;}
 
 
 	HttpHeader&   headerIn();
@@ -81,23 +81,23 @@ public:
 	const HttpHeader&   headerIn() const;
 	const HttpHeader&   headerOut() const;
 
-	string str() const;
-	string name() const;
+	std::string str() const;
+	std::string name() const;
 
 
 	int size() const;
-	const string& operator[](int) const;
+	const std::string& operator[](int) const;
 
 	bool authenticated()
 		{ return headerIn().authenticated(); }
 
-	void authenticate(const string& realm = "MARS") 
+	void authenticate(const std::string& realm = "MARS") 
 		{ headerOut().authenticate(realm); }
 
 	void status(int s)
 		{ headerOut().status(s); }
 
-	void forward(const string& s)
+	void forward(const std::string& s)
 		{ headerOut().forward(s); }
 
 	void dontCache()
@@ -118,20 +118,20 @@ private:
 
 // -- Members
 
-    typedef map<string,string,std::less<string> > Map;
+    typedef std::map<std::string,std::string,std::less<std::string> > Map;
 
 	Map            map_;
-    std::vector<string> url_;
+    std::vector<std::string> url_;
 	HttpHeader     in_;
 	HttpHeader     out_;
 
-	string		   method_;
+	std::string		   method_;
 
     eckit::Value          json_;
 
 // -- Methods
 
-	void parse(const string&,bool);
+	void parse(const std::string&,bool);
 	void parse(std::istream&);
 
 // -- Friends

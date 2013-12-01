@@ -24,7 +24,7 @@ namespace eckit {
 
 HtmlResource::Map* HtmlResource::resources_ = 0;
 
-HtmlResource::HtmlResource(const string& s)
+HtmlResource::HtmlResource(const std::string& s)
 {
 	if(!resources_) resources_ = new Map();
 	(*resources_)[s] = this;
@@ -39,7 +39,7 @@ void HtmlResource::dispatch(eckit::Stream& s,std::istream& in,std::ostream& out,
 {
 	Map* m = resources_;
 
-	string str;
+	std::string str;
 
 	for(int i = 0; i < url.size() ; i++)
 	{
@@ -66,7 +66,7 @@ void HtmlResource::dispatch(eckit::Stream& s,std::istream& in,std::ostream& out,
 	out << "Url not found: " << url << std::endl;
 
 
-	string home = eckit::Resource<string>("homePage","http://hades.ecmwf.int/mars/");
+	std::string home = eckit::Resource<std::string>("homePage","http://hades.ecmwf.int/mars/");
 
 	out << "Please, try the " << Html::Link(home) << "MARS home page" << Html::Link() << 
 		'.' << std::endl;

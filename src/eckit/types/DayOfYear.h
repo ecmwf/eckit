@@ -29,7 +29,7 @@ public:
 
 	DayOfYear(const Date& = Date(0));
 	DayOfYear(long,long);
-	DayOfYear(const string&);
+	DayOfYear(const std::string&);
     
 #include "eckit/types/DayOfYear.b"
 
@@ -39,7 +39,7 @@ public:
 
 // -- Convertors
 	
-	operator string() const;
+	operator std::string() const;
 
 // -- Operators
 

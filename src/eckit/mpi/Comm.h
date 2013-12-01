@@ -29,8 +29,8 @@ namespace mpi {
 /// MPI Exception
 class Error: public eckit::Exception {
 public:
-    Error(const eckit::CodeLocation& loc, const string& s);
-    Error(const eckit::CodeLocation& loc, const string& s, int errorcode);
+    Error(const eckit::CodeLocation& loc, const std::string& s);
+    Error(const eckit::CodeLocation& loc, const std::string& s, int errorcode);
 };
 
 //-----------------------------------------------------------------------------
@@ -66,7 +66,7 @@ public:
     /// @returns the MPI version as a pair of numbers
     std::pair<int,int> version() const;
 
-    /// @returns the MPI version as a string
+    /// @returns the MPI version as a std::string
     std::string versionStr() const;
 
     /// Checks if the PE is initialized

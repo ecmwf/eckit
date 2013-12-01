@@ -52,32 +52,32 @@ TaskInfo::~TaskInfo()
 	busy_ = false;
 }
 
-void TaskInfo::kind(const string& s)
+void TaskInfo::kind(const std::string& s)
 {
 	touch();
 	strncpy(kind_,s.c_str(),sizeof(kind_)-1);
 }
 
-void TaskInfo::name(const string& s)
+void TaskInfo::name(const std::string& s)
 {
 	touch();
 	strncpy(name_,s.c_str(),sizeof(name_)-1);
 }
 
-void TaskInfo::status(const string& s)
+void TaskInfo::status(const std::string& s)
 {
 	touch();
 	strncpy(status_,s.c_str(),sizeof(status_)-1);
 }
 
-void TaskInfo::message(const string& s)
+void TaskInfo::message(const std::string& s)
 {
 	touch();
 	zero(message_);
 	strncpy(message_,s.c_str(),sizeof(message_)-1);
 }
 
-void TaskInfo::progressName(const string& s)
+void TaskInfo::progressName(const std::string& s)
 {
 	touch();
 	strncpy(progress_.name_,s.c_str(),sizeof(progress_.name_)-1);

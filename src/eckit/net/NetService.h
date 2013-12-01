@@ -55,7 +55,7 @@ private:
 // -- Methods
 
 	virtual NetUser* newUser(TCPSocket&) = 0;	
-	virtual string   name() = 0;
+	virtual std::string   name() = 0;
 
 };
 

@@ -31,7 +31,7 @@ public:
 
 // -- Execptions
 
-	class UnknownHost : public Exception { public: UnknownHost(const string&); };
+    class UnknownHost : public Exception { public: UnknownHost(const std::string&); };
 
 // -- Contructors
 
@@ -71,11 +71,11 @@ public:
 	// peer name
 
 	in_addr       remoteAddr() const;
-	const string& remoteHost() const;
+    const std::string& remoteHost() const;
 	int           remotePort() const;
 
 	in_addr       localAddr() const;
-	const string& localHost() const;
+    const std::string& localHost() const;
 	int           localPort() const;
 
 	void          bufferSize(int n) { bufSize_ = n; }
@@ -86,9 +86,9 @@ public:
 
 // -- Class methods 
 
-	static string  addrToHost(in_addr);
-	static in_addr hostToAddr(const string&);
-	static string hostName(const string& h, bool full = false);
+    static std::string  addrToHost(in_addr);
+    static in_addr hostToAddr(const std::string&);
+    static std::string hostName(const std::string& h, bool full = false);
 
 protected:
 
@@ -97,9 +97,9 @@ protected:
 	int      socket_;      // i/o socket
 	int      localPort_;   // effective port
 	int      remotePort_;  // remote port
-	string   remoteHost_;  // remote host
+    std::string   remoteHost_;  // remote host
 	in_addr  remoteAddr_;  // remote ip adress
-	string   localHost_;   // local host
+    std::string   localHost_;   // local host
 	in_addr  localAddr_;   // local ip adress
 	int      bufSize_;
 
@@ -114,7 +114,7 @@ private:
 // -- Methods
 
 	virtual void bind();  // The socket must be made
-	virtual string bindingAddress() const;
+    virtual std::string bindingAddress() const;
 
 // -- Friends
 

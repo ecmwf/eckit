@@ -46,7 +46,7 @@ ProdAdd::ProdAdd(const ExpPtr& e)
     push_back(a2);
 }
 
-string ProdAdd::returnSignature() const
+std::string ProdAdd::returnSignature() const
 {
     for( args_t::const_iterator i = begin(); i != end(); ++i )
     {

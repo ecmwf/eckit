@@ -29,8 +29,8 @@ public:
 
 // -- Contructors
 
-	FileName(const string&);
-//	FileName(const string&,const string&);
+	FileName(const std::string&);
+//	FileName(const std::string&,const std::string&);
 	
 
 // -- Destructor
@@ -45,8 +45,8 @@ public:
 	DataHandle*  newReadHandle(const OffsetList&, const LengthList&) const;
 	DataHandle*  newReadHandle() const;
 	
-	const string& name() const { return name_; }
-	const string& scheme() const { return scheme_; }
+	const std::string& name() const { return name_; }
+	const std::string& scheme() const { return scheme_; }
 
 protected: // methods
 
@@ -54,8 +54,8 @@ protected: // methods
 
 private: // members
 
-	string name_;
-	string scheme_;
+	std::string name_;
+	std::string scheme_;
 
 // -- Friends
 

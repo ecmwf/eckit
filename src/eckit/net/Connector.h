@@ -30,7 +30,7 @@ class ConnectorException : public Exception {
 	virtual bool retryOnServer() const        { return true; }
 	virtual bool retryOnClient() const        { return true; }
 public:
-	ConnectorException(const string& what) : Exception(what) {}
+	ConnectorException(const std::string& what) : Exception(what) {}
 };
 
 //-----------------------------------------------------------------------------
@@ -43,7 +43,7 @@ public:
 
 // -- Contructors
 
-	Connector(const string& name, const string& node);
+	Connector(const std::string& name, const std::string& node);
 
 // -- Destructor
 
@@ -58,24 +58,24 @@ public:
 
 	bool locked() const { return locked_; }
 
-	const string& host() const { return host_; }
+	const std::string& host() const { return host_; }
 
 	void memoize(bool on, unsigned long time);
 
 // -- Class methods
 	// None
 
-    static Connector& service(const string& name, const string& node);
-    static Connector& service(const string& name, const map<string,Length>& cost);
+    static Connector& service(const std::string& name, const std::string& node);
+    static Connector& service(const std::string& name, const std::map<std::string,Length>& cost);
     /* static Connector& clusterNode(); */
 
-    static NodeInfo nodeInfo(const string& name, const string& node);
+    static NodeInfo nodeInfo(const std::string& name, const std::string& node);
 
 protected:
 
 // -- Members
 	// None
-	Connector(const string&, int);
+	Connector(const std::string&, int);
 
 // -- Methods
 	
@@ -83,7 +83,7 @@ protected:
 
 // -- Class members
 	// None
-    static Connector& get(const string& host, int port);
+    static Connector& get(const std::string& host, int port);
 
 
 // -- Class methods
@@ -93,7 +93,7 @@ private:
 
 // -- Members
 
-    string host_;
+    std::string host_;
     int port_;
     TCPSocket socket_;
     bool locked_;
@@ -107,7 +107,7 @@ private:
 	BufferCache out_;
 	BufferCache in_;
 
-	map<BufferCache, BufferCache> cache_;
+    std::map<BufferCache, BufferCache> cache_;
 
 	struct {
 		const char *buffer_;
@@ -127,7 +127,7 @@ private:
     // From Stream
 	virtual long write(const void* buf,long len) ;
 	virtual long read(void* buf,long len);
-    virtual string name() const;
+    virtual std::string name() const;
 
 // -- Friends
 

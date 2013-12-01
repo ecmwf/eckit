@@ -40,7 +40,7 @@ public:
 
 	Time(long, long, long);
 	Time(long seconds = 0);
-	Time(const string&);
+	Time(const std::string&);
 
 #include "eckit/types/Time.b"
 
@@ -55,7 +55,7 @@ public:
 
 // -- Convertors
 
-	operator string() const;
+	operator std::string() const;
 	operator Second() const { return seconds_; }
 
 // -- Operators
@@ -124,7 +124,7 @@ private:
 
 class BadTime: public BadValue {
 public:
-	BadTime(const string& t);
+	BadTime(const std::string& t);
 
 };
 

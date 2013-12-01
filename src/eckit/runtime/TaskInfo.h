@@ -147,11 +147,11 @@ public:
 
 	// ---------------------------------------------------------
 
-	void kind(const string&);
-	void name(const string&);
-	void status(const string&);
-	void message(const string&);
-	void progressName(const string&);
+	void kind(const std::string&);
+	void name(const std::string&);
+	void status(const std::string&);
+	void message(const std::string&);
+	void progressName(const std::string&);
 
 	void show(bool s) { touch(); show_ = s; }
 	bool show() const { return show_; }
@@ -161,7 +161,7 @@ public:
 
 	void touch();
 
-	void resource(const string&);
+	void resource(const std::string&);
 
 	unsigned long text(char*,unsigned long, unsigned long&) const;
 
@@ -176,9 +176,9 @@ public:
 	void  port(int p)    { touch(); port_ = p; }
 	int   port() const   { return port_; }
 
-	void     host(const string& h)    { touch();
+	void     host(const std::string& h)    { touch();
 			 strncpy(host_,h.c_str(),sizeof(host_)); }
-	string   host() const             { return host_; }
+	std::string   host() const             { return host_; }
 
 private:
 

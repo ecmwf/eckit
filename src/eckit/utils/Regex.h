@@ -30,7 +30,7 @@ public:
 
 // -- Contructors
 
-	Regex(const string& = ".*",bool shell = false);
+	Regex(const std::string& = ".*",bool shell = false);
 	Regex(const Regex&);
 
 	~Regex();
@@ -39,9 +39,9 @@ public:
 
 	Regex& operator=(const Regex&);
 
-	bool match(const string& s) const;
+	bool match(const std::string& s) const;
 
-	operator const string&() const  { return str_; }
+	operator const std::string&() const  { return str_; }
     
 	bool operator==(const Regex& other) const { return str_ == other.str_; }
 
@@ -51,7 +51,7 @@ protected: // methods
 
 private: // members
 
-	string str_;
+	std::string str_;
 	regex_t re_;
 
 private: // methods

@@ -140,7 +140,7 @@ JSON& JSON::operator<<(const char* s)
     return *this;
 }
 
-JSON& JSON::operator<<(const string& s)
+JSON& JSON::operator<<(const std::string& s)
 {
     null_ = false;
     sep();

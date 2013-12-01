@@ -31,7 +31,7 @@ public:
 // -- Contructors
 
 	ResizableBuffer(size_t size);
-	ResizableBuffer(const string& s);
+	ResizableBuffer(const std::string& s);
 	ResizableBuffer(const char*,size_t size);
 
 // -- Destructor

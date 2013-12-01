@@ -30,7 +30,7 @@ DateContent::DateContent(const Date& d):
 DateContent::DateContent(Stream& s):
 	Content(s)
 {
-	string dd;
+	std::string dd;
 	s >> dd;
     value_ = Date(dd);
 }
@@ -38,7 +38,7 @@ DateContent::DateContent(Stream& s):
 void DateContent::encode(Stream& s) const
 {
 	Content::encode(s);
-    string dd = value_;
+    std::string dd = value_;
 	s << dd;
 }
 
@@ -53,7 +53,7 @@ void DateContent::print(std::ostream& s) const
 
 void DateContent::json(JSON& s) const
 {
-    s << string(value_);
+    s << std::string(value_);
 }
 
 int DateContent::compare(const Content& other) const

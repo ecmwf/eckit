@@ -29,23 +29,23 @@ public:
 // -- Methods
 
 	const PathName& sameFileSystem(const PathName&) const;
-	const vector<PathName>& fileSystems() const { return fileSystems_; }
+	const std::vector<PathName>& fileSystems() const { return fileSystems_; }
 
 	bool owns(const PathName&) const;
 	
-	const PathName& selectFileSystem(const string&) const;
+	const PathName& selectFileSystem(const std::string&) const;
 	const PathName& selectFileSystem()              const;
 
-    const string& name() const { return name_; }
+    const std::string& name() const { return name_; }
 
 // -- Class methods
 
-	static bool exists(const string&);
-	static const FileSpace& lookUp(const string&);
+	static bool exists(const std::string&);
+	static const FileSpace& lookUp(const std::string&);
 
 private:
 
-	FileSpace(const string&);
+	FileSpace(const std::string&);
 	~FileSpace(); 
 
 // -- Methods
@@ -56,9 +56,9 @@ private:
 
 // -- Members
 	
-	string           name_;
+	std::string           name_;
 	time_t			 last_;
-	vector<PathName> fileSystems_;
+	std::vector<PathName> fileSystems_;
 
 };
 

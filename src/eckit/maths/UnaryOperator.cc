@@ -62,7 +62,7 @@ UnaryOperator<T>::UnaryOperator(ExpPtr e)
 }
 
 template < class T >
-string UnaryOperator<T>::returnSignature() const
+std::string UnaryOperator<T>::returnSignature() const
 {
     return args(0)->returnSignature();
 }
@@ -74,7 +74,7 @@ std::string UnaryOperator<T>::typeName() const
 }
 
 template < class T >
-string UnaryOperator<T>::className()
+std::string UnaryOperator<T>::className()
 {
     return opname( T() );
 }
@@ -102,7 +102,7 @@ template < class T >
 template < class U, class I >
 std::string UnaryOperator<T>::Computer<U,I>::sig()
 {
-    return opname( T() ) + string("(") + U::sig() + string(")");
+    return opname( T() ) + std::string("(") + U::sig() + std::string(")");
 }
 
 template < class T >

@@ -73,7 +73,7 @@ inline std::ostream& __print_list(std::ostream& s,const T& t)
     return s;
 }
 
-inline std::ostream& __print_list(std::ostream& s,const vector<string>& t)
+inline std::ostream& __print_list(std::ostream& s,const std::vector<std::string>& t)
 {
 	s << '[';
 	for(Ordinal i = 0; i < t.size(); i++)
@@ -83,7 +83,7 @@ inline std::ostream& __print_list(std::ostream& s,const vector<string>& t)
 }
 
 template<class T>
-inline std::ostream& operator<<(std::ostream& s,const vector<T>& v)
+inline std::ostream& operator<<(std::ostream& s,const std::vector<T>& v)
 {
 	return __print_list(s,v);
 }
@@ -91,10 +91,10 @@ inline std::ostream& operator<<(std::ostream& s,const vector<T>& v)
 //-----------------------------------------------------------------------------
 
 template<typename K, typename V>
-inline std::ostream& __print_container(std::ostream& s, const map<K,V>& m)
+inline std::ostream& __print_container(std::ostream& s, const std::map<K,V>& m)
 {
     s << "{";
-	for (typename map<K,V>::const_iterator it = m.begin(); it != m.end(); ++it)
+    for (typename std::map<K,V>::const_iterator it = m.begin(); it != m.end(); ++it)
 	{
 		s << it->first << " : " << it->second << ", ";
 	}
@@ -103,7 +103,7 @@ inline std::ostream& __print_container(std::ostream& s, const map<K,V>& m)
 }
 
 template<typename K, typename V>
-inline std::ostream& operator<<(std::ostream& s, const map<K,V>& m)
+inline std::ostream& operator<<(std::ostream& s, const std::map<K,V>& m)
 {
     return __print_container(s,m);
 }

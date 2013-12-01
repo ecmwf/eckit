@@ -40,14 +40,14 @@ void Configurable::htmlResources(std::ostream& s,Url& url)
 void ResourceBase::html(std::ostream& s,Url& url)
 {
 
-	string n = name();
-	string u = url["name"];
+	std::string n = name();
+	std::string u = url["name"];
 
 	init();
 
 	if( n == u)
 	{
-		string v = url[n];
+		std::string v = url[n];
 		Log::info() << "New value for " << n << ": " << v << std::endl;
 		ResourceMgr::instance().set(n,v);
 		Configurable::reconfigureAll();

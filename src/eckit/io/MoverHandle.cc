@@ -122,7 +122,7 @@ MoverHandle::~MoverHandle()
 {
 }
 
-void MoverHandle::fail(const string& error)
+void MoverHandle::fail(const std::string& error)
 {
 	AutoLock<Mutex> lock(mutex_);
 	error_ = error;
@@ -173,20 +173,20 @@ void MoverHandle::close()
 {
 	AutoLock<Mutex> lock(mutex_);
 	data_.close();
-	if(fail_) throw Exception(string("MoverHandle::close: ") + error_);
+	if(fail_) throw Exception(std::string("MoverHandle::close: ") + error_);
 }
 
 long MoverHandle::read(void* buf, long len)
 {
 	AutoLock<Mutex> lock(mutex_);
-	if(fail_) throw Exception(string("MoverHandle::read: ") + error_);
+	if(fail_) throw Exception(std::string("MoverHandle::read: ") + error_);
 	return data_.read(buf, len);
 }
 
 long MoverHandle::write(const void* buf, long len)
 {
 	AutoLock<Mutex> lock(mutex_);
-	if(fail_) throw Exception(string("MoverHandle::write: ") + error_);
+	if(fail_) throw Exception(std::string("MoverHandle::write: ") + error_);
 	return data_.write(buf, len);
 }
 
@@ -198,9 +198,9 @@ void MoverHandle::print(std::ostream& s) const
 }
 
 
-string MoverHandle::title() const
+std::string MoverHandle::title() const
 {
-	return string("->") + handle_->title();
+	return std::string("->") + handle_->title();
 }
 
 //-----------------------------------------------------------------------------

@@ -62,7 +62,7 @@ private:
 
 	virtual long write(const void*,long);
 	virtual long read(void*,long);
-	virtual string name() const { return "pipe"; }
+	virtual std::string name() const { return "pipe"; }
 
 };
 

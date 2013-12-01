@@ -28,12 +28,12 @@ public:
 
 // -- Contructors
 
-	TimeStamp(const string& = defaultFormat_);
-	TimeStamp(time_t,const string& = defaultFormat_);
+	TimeStamp(const std::string& = defaultFormat_);
+	TimeStamp(time_t,const std::string& = defaultFormat_);
 
 // -- Operators
 
-	operator string() const;
+	operator std::string() const;
 
 	friend std::ostream& operator<<(std::ostream&,const TimeStamp&);
 
@@ -44,7 +44,7 @@ private:
 // -- Members
 
 	time_t        time_;
-	const string& format_;
+	const std::string& format_;
 
 // -- Class members
 

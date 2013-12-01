@@ -51,7 +51,7 @@ protected: // methods
 
     // Overriden from Stream
     
-	virtual string name() const;
+	virtual std::string name() const;
 };
 
 

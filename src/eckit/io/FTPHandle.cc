@@ -49,9 +49,9 @@ FTPHandle::FTPHandle(Stream& s):
 	s >> port_;
 }
 
-string FTPHandle::readLine()
+std::string FTPHandle::readLine()
 {
-	string s;
+	std::string s;
 	char c;
 	while(cmds_.read(&c,1)==1 && c!='\n')
 		s += c;
@@ -59,25 +59,25 @@ string FTPHandle::readLine()
 	return s;
 }
 
-void FTPHandle::ftpCommand(const string& s)
+void FTPHandle::ftpCommand(const std::string& s)
 {
 	Log::info() << "send " << s << std::endl;
 	cmds_.write(s.c_str(),s.length());
 	cmds_.write("\r\n",2);
-	string out = readLine();	
+	std::string out = readLine();	
 
 	if(atoi(out.c_str()) / 100 == 5)
 		throw FTPError();
 }
 
-FTPHandle::FTPHandle(const string& host,const string& remote,int port):
+FTPHandle::FTPHandle(const std::string& host,const std::string& remote,int port):
     remote_(remote),
 	host_(host),
 	port_(port)
 {
 }
 
-void FTPHandle::open(const string& cmd)
+void FTPHandle::open(const std::string& cmd)
 {
 	
 	cmds_.connect(host_,port_);
@@ -90,7 +90,7 @@ void FTPHandle::open(const string& cmd)
 	TCPServer server(0); // Any port
 
 	int port    = htons(server.localPort());
-	string addr = ::inet_ntoa(server.localAddr());
+	std::string addr = ::inet_ntoa(server.localAddr());
 
 	char p[1024];
 	snprintf(p,1024,"PORT %s,%d,%d",addr.c_str(),port/256,port%256);

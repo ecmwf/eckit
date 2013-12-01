@@ -31,7 +31,7 @@ struct BSPMemory {
     Node* convert(Ptr p,  const Node*) { return static_cast<Node*>(p); }
 
     template<class Node,class Point>
-    Node* newNode(const vector<Point>& p, const Node*) { return new Node(p); }
+    Node* newNode(const std::vector<Point>& p, const Node*) { return new Node(p); }
 
     template<class Node>
     void deleteNode(Ptr p, const Node*) {
@@ -61,7 +61,7 @@ public:
     bool operator<(const BSPNodeInfo& other) const
     { return distance_ < other.distance_; }
 
-    typedef vector<BSPNodeInfo> NodeList;
+    typedef std::vector<BSPNodeInfo> NodeList;
 
     const Point& point() const { return node_->point(); }
     double distance() const    { return distance_; }
@@ -128,7 +128,7 @@ public:
     typedef typename NodeQueue::NodeList  NodeList;
 
 public:
-    BSPNode(const vector<Point>& p);
+    BSPNode(const std::vector<Point>& p);
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);
     NodeList findInSphere(Alloc& a,const Point& p, double radius);
@@ -136,8 +136,8 @@ public:
 
     const Point& point() const { return point_; }
 
-    static BSPNode* build(Alloc& a, const vector<Point>& nodes, int depth= 0);
-    static void kmean(const vector<Point>& in, vector<Point>& ml, vector<Point>& mr, int depth) ;
+    static BSPNode* build(Alloc& a, const std::vector<Point>& nodes, int depth= 0);
+    static void kmean(const std::vector<Point>& in, std::vector<Point>& ml, std::vector<Point>& mr, int depth) ;
 
     // For testing only
 
@@ -193,7 +193,7 @@ public:
         alloc_.deleteNode(root_,(Node*)0);
     }
 
-    void build(const vector<Point>& nodes)
+    void build(const std::vector<Point>& nodes)
     {
         root_ = alloc_.convert(Node::build(alloc_, nodes));
     }

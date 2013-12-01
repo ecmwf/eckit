@@ -40,14 +40,14 @@ public:
 
 // -- Methods
 
-	virtual string next() = 0;
+	virtual std::string next() = 0;
 
 	virtual bool here() = 0;
 	virtual void cdDown() = 0;
 	virtual void cdUp() = 0;
 
-	virtual void directory(const string&) = 0;
-	virtual void file(const string&,const eckit::Length&,Retrieve*) = 0;
+	virtual void directory(const std::string&) = 0;
+	virtual void file(const std::string&,const eckit::Length&,Retrieve*) = 0;
 
 };
 

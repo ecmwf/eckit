@@ -26,7 +26,7 @@ MapContent::MapContent()
 {
 }
 
-MapContent::MapContent(const map<Value,Value>& v)
+MapContent::MapContent(const std::map<Value,Value>& v)
 {
     value_ = v;
 }
@@ -50,7 +50,7 @@ MapContent::MapContent(Stream& s):
 void MapContent::encode(Stream& s) const
 {
     Content::encode(s);
-    for(map<Value,Value>::const_iterator j = value_.begin(); j != value_.end(); ++j)
+    for(std::map<Value,Value>::const_iterator j = value_.begin(); j != value_.end(); ++j)
     {
         s << true;
         s << (*j).first;
@@ -68,7 +68,7 @@ Value& MapContent::element(const Value& key)
     return value_[key];
 }
 
-void MapContent::value(map<Value,Value>& v) const
+void MapContent::value(std::map<Value,Value>& v) const
 {
     v = value_;
 }
@@ -91,7 +91,7 @@ int MapContent::compareMap(const MapContent& other) const
 void MapContent::print(std::ostream& s) const
 {
     s << '{';
-    for(map<Value,Value>::const_iterator j = value_.begin(); j != value_.end(); ++j)
+    for(std::map<Value,Value>::const_iterator j = value_.begin(); j != value_.end(); ++j)
     {
         if(j != value_.begin()) s << " , ";
         s << (*j).first;
@@ -104,7 +104,7 @@ void MapContent::print(std::ostream& s) const
 void MapContent::json(JSON& s) const
 {
     s.startObject();
-    for(map<Value,Value>::const_iterator j = value_.begin(); j != value_.end(); ++j)
+    for(std::map<Value,Value>::const_iterator j = value_.begin(); j != value_.end(); ++j)
     {
         s << (*j).first;
         s << (*j).second;

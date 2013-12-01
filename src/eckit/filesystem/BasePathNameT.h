@@ -34,7 +34,7 @@ public:
 	BasePathNameT(const char* path):
 		path_(path) {}
 
-	BasePathNameT(const string& path):
+	BasePathNameT(const std::string& path):
 		path_(path) {}
 
 protected:
@@ -70,8 +70,8 @@ private:
     virtual void unlink() const;
     virtual void rmdir() const;
     virtual void touch() const;
-    virtual void children(vector<BasePathName*>&,vector<BasePathName*>&) const;
-    virtual void match(vector<BasePathName*>&,bool) const;
+    virtual void children(std::vector<BasePathName*>&,std::vector<BasePathName*>&) const;
+    virtual void match(std::vector<BasePathName*>&,bool) const;
     virtual void reserve(const Length&) const;
 
     virtual BasePathName* unique() const;
@@ -81,17 +81,17 @@ private:
     virtual BasePathName* checkClusterNode() const;
     virtual BasePathName* baseName(bool) const;
 
-    virtual string clusterName() const;
+    virtual std::string clusterName() const;
 
-    virtual string asString() const;
+    virtual std::string asString() const;
     virtual void fileSystemSize(FileSystemSize&) const;
 
     virtual DataHandle* fileHandle(bool overwrite) const;
     virtual DataHandle* partHandle(const OffsetList&, const LengthList&) const;
     virtual DataHandle* partHandle(const Offset&, const Length&) const;
 
-    virtual const string& node() const;
-    virtual const string& path() const;
+    virtual const std::string& node() const;
+    virtual const std::string& path() const;
 
 // -- Friends
 

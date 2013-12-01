@@ -58,8 +58,8 @@ Block::Block( Compiler& c, Scope* scope ) :
                         statements_.push_back( new FunctionCall(c,*scope_) );
                         break;
                     default:
-                        string id = c.parseIdentifier();
-                        throw StreamParser::Error( string( "Unrecognized keyword " + id ) );
+                        std::string id = c.parseIdentifier();
+                        throw StreamParser::Error( std::string( "Unrecognized keyword " + id ) );
                 }
                 break;
             default:

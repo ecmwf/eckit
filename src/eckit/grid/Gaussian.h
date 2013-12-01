@@ -16,7 +16,7 @@
 #define eckit_grid_Gaussian_H
 
 #include <cstddef>
-#include <vector>
+#include <std::vector>
 
 #include "eckit/types/Coord.h"
 #include "eckit/grid/Grid.h"
@@ -37,24 +37,24 @@ public: // methods
     virtual ~Gaussian();
 
     virtual size_t dataSize() const;
-    virtual const std::vector<Point2D>& gridData() const { return points_; }
+    virtual const std::std::vector<Point2D>& gridData() const { return points_; }
     virtual BoundBox2D boundingBox() const;
 
 protected:
 
     // Generates latitudes in N hemisphere 
-    void generateLatitudes(std::vector<double>& lats);
+    void generateLatitudes(std::std::vector<double>& lats);
 
     size_t resolution_;                 ///< number of longitude increments - can be any size as no requirement for 
 
-    std::vector< Point2D > points_;     ///< storage of coordinate points
+    std::std::vector< Point2D > points_;     ///< storage of coordinate points
 
     BoundBox2D bound_box_;              ///< bounding box for the domain
 
 private:
 
     // Generates latitudes in N hemisphere 
-    void initialGaussianLatitudes(std::vector<double>& lats);
+    void initialGaussianLatitudes(std::std::vector<double>& lats);
     
     // Only tested on in N hemisphere 
     void refineLatitude(double& value);

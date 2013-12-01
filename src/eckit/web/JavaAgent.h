@@ -38,7 +38,7 @@ public:
 
 // -- Methods
 	
-	void startObject(const string&);
+	void startObject(const std::string&);
 	void endObject();
 	eckit::Stream& stream()  { return stream_; }
 
@@ -58,7 +58,7 @@ public:
 protected: // members
 
 	eckit::Stream& stream_;
-	string  user_;
+	std::string  user_;
 
 protected: // methods
 	

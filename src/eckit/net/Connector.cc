@@ -26,7 +26,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static void offLine( const string& host, int port)
+static void offLine( const std::string& host, int port)
 {
     static bool setNodeOfflineOnError = Resource<bool>("setNodeOfflineOnError", false);
 
@@ -34,7 +34,7 @@ static void offLine( const string& host, int port)
         ClusterNodes::offLine(host, port);
 }
 
-Connector::Connector(const string& host, int port) :
+Connector::Connector(const std::string& host, int port) :
 	host_(host), port_(port), locked_(false), memoize_(false), sent_(false), life_(0)
 {
 	Log::info() << "Connector::Connector(" << host << "," << port << ")" << std::endl;
@@ -86,7 +86,7 @@ TCPSocket& Connector::socket()
 
             StrStream os;
 			os << name() << ": " << e.what() << StrStream::ends;
-			throw ConnectorException(string(os));
+			throw ConnectorException(std::string(os));
 		}
 	}
 	return socket_;
@@ -122,14 +122,14 @@ void Connector::print(std::ostream&) const
 
 class ConnectorCache {
 
-    typedef std::multimap< std::pair<string, int> , Connector*> Cache;
+    typedef std::multimap< std::pair<std::string, int> , Connector*> Cache;
 	Cache cache_;
 
 public:
 
-	Connector& find(const string& host, int port)
+	Connector& find(const std::string& host, int port)
 	{
-        std::pair<string, int> p(host, port);
+        std::pair<std::string, int> p(host, port);
 
         std::pair<Cache::iterator, Cache::iterator> r = cache_.equal_range(p);
 		for (Cache::iterator j = r.first; j != r.second; ++j)
@@ -168,14 +168,14 @@ public:
 
 class NodeInfoCache {
 
-    typedef map<std::pair<string, string> , NodeInfo> Cache;
+    typedef std::map<std::pair<std::string, std::string> , NodeInfo> Cache;
 	Cache cache_;
 
 public:
 
-	NodeInfo& find(Stream& s, const string& name, const string& node)
+	NodeInfo& find(Stream& s, const std::string& name, const std::string& node)
 	{
-        std::pair<string, string> p(name, node);
+        std::pair<std::string, std::string> p(name, node);
 
 		Cache::iterator j = cache_.find(p);
 		if (j != cache_.end())
@@ -196,7 +196,7 @@ public:
 		{
 			StrStream os;
 			os << "Cannot get node info for " << name << "@" << node << StrStream::ends;
-			throw ConnectorException(string(os));
+			throw ConnectorException(std::string(os));
 		}
 
 		s >> cache_[p];
@@ -218,26 +218,26 @@ public:
 static ThreadSingleton<ConnectorCache> cache;
 static ThreadSingleton<NodeInfoCache> infos;
 
-Connector& Connector::get(const string& host, int port)
+Connector& Connector::get(const std::string& host, int port)
 {
 	//Log::info() << "Connector::get(" << host << "," << port << ")" << std::endl;
 	return cache.instance().find(host, port);
 }
 
-Connector& Connector::service(const string& name, const string& node)
+Connector& Connector::service(const std::string& name, const std::string& node)
 {
 	//Log::info() << "Connector::service(" << name << "," << node << ")" << std::endl;
 	NodeInfo info = ClusterNodes::lookUp(name, node);
 	return get(info.host(), info.port());
 }
 
-Connector& Connector::service(const string& name, const map<string, Length>& cost)
+Connector& Connector::service(const std::string& name, const std::map<std::string, Length>& cost)
 {
-	string host;
+	std::string host;
 	int port = 0;
 	Length best = 0;
 
-	for (map<string, Length>::const_iterator j = cost.begin(); j != cost.end(); ++j)
+	for (std::map<std::string, Length>::const_iterator j = cost.begin(); j != cost.end(); ++j)
 	{
 		if ((*j).second > best || port == 0)
 		{
@@ -298,11 +298,11 @@ void Connector::reset()
 	}
 }
 
-string Connector::name() const
+std::string Connector::name() const
 {
 	StrStream os;
 	os << "Connector[" << host_ << ":" << port_ << "]" << StrStream::ends;
-	return string(os);
+	return std::string(os);
 }
 
 template<class T, class F>
@@ -317,8 +317,8 @@ long Connector::socketIo(F proc, T buf, long len, const char* msg)
 		infos.instance().reset();
 		StrStream os;
 		os << "Connector::socketIo(" << name() << ") only " << l << " byte(s) " << msg << " intead of " << len << Log::syserr << StrStream::ends;
-		//throw ConnectorException(string(os));
-		throw Retry(string(os));
+		//throw ConnectorException(std::string(os));
+		throw Retry(std::string(os));
 	}
 	return l;
 }
@@ -349,7 +349,7 @@ long Connector::read(void *buf, long len)
 	{
 		if (!sent_)
 		{
-			map<BufferCache, BufferCache>::iterator j = cache_.find(out_);
+			std::map<BufferCache, BufferCache>::iterator j = cache_.find(out_);
 			bool useCache = false;
 			if (j != cache_.end())
 			{
@@ -394,7 +394,7 @@ long Connector::read(void *buf, long len)
 				StrStream os;
 				os << "Connector::socketIo(" << name() << ") only " << l << " byte(s) memoized intead of " << len << Log::syserr << StrStream::ends;
 				reset();
-				throw ConnectorException(string(os));
+				throw ConnectorException(std::string(os));
 			}
 
 			::memcpy(buf, cached_.buffer_ + cached_.pos_, len);

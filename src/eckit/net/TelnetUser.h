@@ -31,7 +31,7 @@ static void terminate(TelnetUser& other)	{ other.stop(); }
 
 private:
     virtual void serve(Stream&, std::istream&, std::ostream&);
-	string from_;
+	std::string from_;
 };
 
 

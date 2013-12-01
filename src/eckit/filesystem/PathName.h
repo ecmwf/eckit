@@ -45,7 +45,7 @@ public:
 // Contructors
 
 	PathName(const char* p = "/");
-	PathName(const string& p);
+    PathName(const std::string& p);
 	PathName(const PathName& p);
     PathName(const LocalPathName&);
     PathName(const MarsFSPath&);
@@ -56,24 +56,24 @@ public:
 // Assignment
 
 	PathName& operator=(const PathName& p);
-	PathName& operator=(const string& p);
+    PathName& operator=(const std::string& p);
 	PathName& operator=(const char* p);
 
 // Convertors
 
-	string asString() const;
-	operator string() const { return asString(); }
+    std::string asString() const;
+    operator std::string() const { return asString(); }
 	/* const char* c_str() const      { return path_.c_str(); } */
 
     const char* localPath() const;
 
 // Operators
 
-    PathName& operator+=(const string& s);
+    PathName& operator+=(const std::string& s);
 	PathName& operator+=(const char* s);
 	PathName& operator+=(char s);
 
-    PathName& operator/=(const string& s);
+    PathName& operator/=(const std::string& s);
 	PathName& operator/=(const char* s);
 	PathName& operator/=(char s);
 
@@ -129,7 +129,7 @@ public:
     const std::string& node() const;
     const std::string& path() const;
 
-    void children(std::vector<PathName>&,std::vector<PathName>&) const;
+    void children(std::vector<PathName>&, std::vector<PathName>&) const;
 
 	void fileSystemSize(FileSystemSize&) const;
 
@@ -140,12 +140,12 @@ public:
 // Class methods
 
 	static PathName unique(const PathName&);
-    static void match(const PathName&,std::vector<PathName>&,bool=false);
-	static void link(const PathName& from,const PathName& to);
-	static void rename(const PathName& from,const PathName& to);
-	static void rename(const PathName& from,const string& newBase);
+    static void match(const PathName&, std::vector<PathName>&,bool=false);
+    static void link(const PathName& from, const PathName& to);
+    static void rename(const PathName& from, const PathName& to);
+    static void rename(const PathName& from, const std::string& newBase);
 
-    static string shorten(const string&);
+    static std::string shorten(const std::string&);
 
 private:
 
@@ -163,11 +163,11 @@ private:
 
 // friend
 
-	friend PathName operator+(const PathName& p,const string& s);
+    friend PathName operator+(const PathName& p,const std::string& s);
 	friend PathName operator+(const PathName& p,const char* s);
 	friend PathName operator+(const PathName& p,char s);
 
-    friend PathName operator/(const PathName& p,const string& s);
+    friend PathName operator/(const PathName& p,const std::string& s);
     friend PathName operator/(const PathName& p,const char* s);
 	friend PathName operator/(const PathName& p,char s);
 

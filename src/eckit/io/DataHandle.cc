@@ -188,7 +188,7 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
         {
             StrStream os;
             os << "DataHandle::saveInto got " << total << " bytes out of " << estimate << StrStream::ends;
-            throw ReadError(name() + " into " + other.name() + " " + string(os));
+            throw ReadError(name() + " into " + other.name() + " " + std::string(os));
         }
 
         return total;
@@ -201,14 +201,14 @@ Length DataHandle::saveInto(const PathName& path,TransferWatcher& w)
     return saveInto(*file,w);
 }
 
-string DataHandle::name() const
+std::string DataHandle::name() const
 { 
     StrStream s;
     s << *this << StrStream::ends;
-    return string(s);
+    return std::string(s);
 }
 
-string DataHandle::title() const
+std::string DataHandle::title() const
 {
 	return className();
 }
@@ -284,7 +284,7 @@ void DataHandle::rewind() {
     Log::error() << *this << std::endl;
 	StrStream os;
 	os << "NOT IMPLEMENTED DataHandle::rewind(" << *this << ")" << StrStream::ends;
-	throw SeriousBug(string(os));
+    throw SeriousBug(std::string(os));
     //NOTIMP;
 }
 
@@ -328,7 +328,7 @@ void DataHandle::toRemote(Stream& s) const
     s << *this;
 }
 
-void DataHandle::cost(map<string,Length>& c, bool read) const
+void DataHandle::cost(std::map<std::string,Length>& c, bool read) const
 {
 }
 

@@ -61,7 +61,7 @@ void Tool::start()
     
     Context::instance().debug( debug );
 
-    string displayName = Resource<string>("-name",name_);
+    std::string displayName = Resource<std::string>("-name",name_);
     
     Context::instance().displayName( displayName );
     

@@ -34,18 +34,18 @@ public:
 
 	class InvalidGrid : public Exception {
 	public:
-		InvalidGrid(const string& s): 
+		InvalidGrid(const std::string& s): 
 			Exception("Invalid Mars Grid '" + s + "'") {}
 	};
 
 // -- Contructors
 
-	Grid(const string&);
+	Grid(const std::string&);
 
 	Grid(double ns = undef,double ew = undef):
 		northSouth_(ns), eastWest_(ew) {}
 
-	Grid(const vector<double>&);
+	Grid(const std::vector<double>&);
 
 #include "eckit/types/Grid.b"
 
@@ -59,7 +59,7 @@ public:
 // -- Operators
 	// None
 
-	operator string() const;
+	operator std::string() const;
 
 	bool operator==(const Grid& other) const
 		{ return northSouth_ == other.northSouth_ && eastWest_ == other.eastWest_; }
@@ -83,7 +83,7 @@ public:
 
 	long score(const Grid&) const;
 	double distance(const Grid&) const;
-	const Grid& bestMatch(const vector<Grid>&) const;
+	const Grid& bestMatch(const std::vector<Grid>&) const;
 
 	bool undefined() const
 		{ return northSouth_ == undef && eastWest_ == undef; }

@@ -23,7 +23,7 @@ void sort(OffsetList& offset,LengthList& length)
 	ASSERT(offset.size() == length.size());
 	size_t i = 0;
 
-    typedef map<Offset,Length,std::less<Offset> > OffsetLengthMap;
+    typedef std::map<Offset,Length> OffsetLengthMap;
 
 	OffsetLengthMap ol;
 	for(i = 0; i < offset.size() ; i++)

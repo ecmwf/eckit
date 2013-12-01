@@ -53,7 +53,7 @@ private:
 	virtual long read(void* buf,long len)
 		{ return handle_.read(buf,len); }
 
-	virtual string name() const
+	virtual std::string name() const
 		{ return "HandleStream"; }
 
 };

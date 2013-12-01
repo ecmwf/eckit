@@ -46,7 +46,7 @@ public: // methods
 	JSON& operator<<(float);
 	JSON& operator<<(double);
 	
-	JSON& operator<<(const string&);
+	JSON& operator<<(const std::string&);
 	JSON& operator<<(const char*);
 
     JSON& null();
@@ -60,8 +60,8 @@ public: // methods
 private: // members
 
     std::ostream& out_;
-    vector<string> sep_;
-    vector<bool> state_;
+    std::vector<std::string> sep_;
+    std::vector<bool> state_;
     bool null_;
 
 private: // methods

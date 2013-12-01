@@ -283,12 +283,12 @@ private:
             dirty_(false) {}
     };
 
-    typedef map<unsigned long,_PageInfo> Cache;
+    typedef std::map<unsigned long,_PageInfo> Cache;
     Cache cache_;
 
     void lockRange(off_t start,off_t len,int cmd,int type);
     bool search(unsigned long page, const K&, V&) const;
-    void search(unsigned long page, const K& key1, const K& key2, vector< result_type >& result);
+    void search(unsigned long page, const K& key1, const K& key2, std::vector< result_type >& result);
 
 
     void splitRoot();
@@ -302,8 +302,8 @@ private:
     void _loadPage(unsigned long,Page&) const;
     void _newPage(Page&);
 
-    bool insert(unsigned long page, const K& key, const V& value, vector<unsigned long>& path);
-    bool store(unsigned long page, const K& key, const V& value, vector<unsigned long>& path);
+    bool insert(unsigned long page, const K& key, const V& value, std::vector<unsigned long>& path);
+    bool store(unsigned long page, const K& key, const V& value, std::vector<unsigned long>& path);
 
     unsigned long next(const K&, const Page&) const;
 

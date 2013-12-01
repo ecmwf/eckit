@@ -86,7 +86,7 @@ void Linear::asCode(std::ostream&o) const
     o << "math::linear(" << *args(0) << ", " << *args(1) << ", " << *args(2) << ", " << *args(3) << "))";
 }
 
-string Linear::returnSignature() const
+std::string Linear::returnSignature() const
 {
     return Vector::sig();
 }

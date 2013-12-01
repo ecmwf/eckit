@@ -99,13 +99,13 @@ void PipeHandler<Request>::receive(Request* r)
 //=========================================================================
 
 template<class Request>
-void PipeHandler<Request>::handle(const vector<Request*>& v)
+void PipeHandler<Request>::handle(const std::vector<Request*>& v)
 {
     static const char *here = __FUNCTION__;
 
     busy_ = true;
 
-    for(typename vector<Request*>::const_iterator i = v.begin();
+    for(typename std::vector<Request*>::const_iterator i = v.begin();
         i != v.end() ; ++i)
     {
         try {
@@ -219,7 +219,7 @@ void PipeHandler<Request>::run()
     char out[20]; snprintf(out,20,"%d",pipe_->out());
     char par[20]; snprintf(par,20,"%ld",Monitor::instance().self());
 
-    PathName cmd = string("~/bin/") + Request::commandName();
+    PathName cmd = std::string("~/bin/") + Request::commandName();
 
     Log::debug() << "execlp(" << cmd.localPath() << ','
                  << cmd.baseName().localPath() << ','
@@ -242,7 +242,7 @@ void PipeHandler<Request>::run()
     char command[1024];
     char basename[1024];
 
-    ASSERT(sizeof(command)-1 > string(cmd).length());
+    ASSERT(sizeof(command)-1 > std::string(cmd).length());
 
     snprintf(command,1024,"%s", cmd.localPath());
     snprintf(basename,1024,"%s", cmd.baseName().localPath());
@@ -316,7 +316,7 @@ bool PipeHandler<Request>::canPick()
 
 template<class Request>
 void PipeHandler<Request>::pick(std::list<Request*>& queue,
-    vector<Request*>& result)
+    std::vector<Request*>& result)
 {
 
     if(canPick())

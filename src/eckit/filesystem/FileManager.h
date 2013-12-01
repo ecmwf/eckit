@@ -38,18 +38,18 @@ public:
 	virtual DataHandle*  newReadHandle(const FileName&) = 0;
 	virtual DataHandle*  newReadHandle(const FileName&,const OffsetList&, const LengthList&) = 0;
 
-	static FileManager& lookUp(const string&);
+	static FileManager& lookUp(const std::string&);
 
 protected:
 
-	FileManager(const string&);
+	FileManager(const std::string&);
 	virtual ~FileManager();
 
 	virtual void print(std::ostream&) const;
 
 private:
 
-	string name_;
+	std::string name_;
 
 	friend std::ostream& operator<<(std::ostream& s,const FileManager& p)
 			{ p.print(s); return s; }
@@ -59,19 +59,19 @@ private:
 //-----------------------------------------------------------------------------
 
 class FileManagerFactory {
-	string name_;
-	virtual FileManager* make(const string&) = 0 ;
+	std::string name_;
+	virtual FileManager* make(const std::string&) = 0 ;
 public:
-	static FileManager* build(const string&);
-	FileManagerFactory(const string&);
+	static FileManager* build(const std::string&);
+	FileManagerFactory(const std::string&);
 	virtual ~FileManagerFactory();
 };
 
 template<class T>
 class FileManagerBuilder : public FileManagerFactory {
-	virtual FileManager* make(const string& name) { return new T(name); }
+	virtual FileManager* make(const std::string& name) { return new T(name); }
 public:
-	FileManagerBuilder(const string& name) : FileManagerFactory(name) {}
+	FileManagerBuilder(const std::string& name) : FileManagerFactory(name) {}
 };
 
 

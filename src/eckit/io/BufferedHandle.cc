@@ -200,8 +200,8 @@ void BufferedHandle::bufferFlush()
 	}
 }
 
-string BufferedHandle::title() const {
-    return string("{") + handle_->title() + "}";
+std::string BufferedHandle::title() const {
+    return std::string("{") + handle_->title() + "}";
 }
 
 //-----------------------------------------------------------------------------

@@ -22,7 +22,7 @@ Reduce::Reduce( ExpPtr f,  ExpPtr list ) : Function()
     push_back(list);
 }
 
-string Reduce::returnSignature() const
+std::string Reduce::returnSignature() const
 {
     return Undef::sig(); /// @todo review this -- it could be the signature iterated over the list
 }

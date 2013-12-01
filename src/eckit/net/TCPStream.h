@@ -51,14 +51,14 @@ protected:
 
 	// From Stream
 
-	virtual string name() const;
+	virtual std::string name() const;
 	
 
 private:
 
 // -- Methods
 
-	string nonConstName();
+	std::string nonConstName();
 	virtual TCPSocket& socket() = 0;
 
 };

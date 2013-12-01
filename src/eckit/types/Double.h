@@ -28,7 +28,7 @@ class Double {
 public:
 
 	Double(double = 0);
-	Double(const string&);
+	Double(const std::string&);
 
 #include "eckit/types/Double.b"
 
@@ -36,7 +36,7 @@ public:
 
 public: // operators
 
-	operator string() const;
+	operator std::string() const;
 
 	bool operator==(const Double& other) const
 		{ return round() == other.round(); }

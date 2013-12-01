@@ -43,8 +43,8 @@ public: // methods
     static ResourceMgr& instance();
     
 	void reset();
-    bool lookUp( Configurable*, const string&, const StringDict* args, string&);
-	void set(const string&,const string&);
+    bool lookUp( Configurable*, const std::string&, const StringDict* args, std::string&);
+	void set(const std::string&,const std::string&);
 
     void appendConfig( std::istream& in );
     void appendConfig( const PathName& );

@@ -26,7 +26,7 @@ namespace maths {
 
 class Param : public Expression {
 
-    string name_;
+    std::string name_;
 
 
 public: //  methods
@@ -34,7 +34,7 @@ public: //  methods
     static std::string className()     { return "Param"; }
     static std::string sig()           { return "?";     }
 
-    Param(const string& name);
+    Param(const std::string& name);
 
     virtual ~Param();
 
@@ -52,7 +52,7 @@ private:
 
 };
 
-ExpPtr parameter(const string& name);
+ExpPtr parameter(const std::string& name);
 
 //--------------------------------------------------------------------------------------------
 

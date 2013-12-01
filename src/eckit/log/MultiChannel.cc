@@ -87,7 +87,7 @@ MultiChannel::~MultiChannel()
 {
 }
 
-bool MultiChannel::remove(const string &k)
+bool MultiChannel::remove(const std::string &k)
 { 
     MultiplexBuffer::streams_t& streams = buff_->streams_;
     MultiplexBuffer::streams_t::iterator i = streams.find(k);
@@ -100,14 +100,14 @@ bool MultiChannel::remove(const string &k)
     return false;
 }
 
-void MultiChannel::add(const string &k, std::ostream *s)
+void MultiChannel::add(const std::string &k, std::ostream *s)
 {
     if(!s) return;
     remove(k);
     buff_->streams_[k].reset(s);
 }
 
-void MultiChannel::add(const string &k, std::ostream &s)
+void MultiChannel::add(const std::string &k, std::ostream &s)
 {
     remove(k);
     buff_->streams_[k].reset(s);

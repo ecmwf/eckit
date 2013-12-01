@@ -40,7 +40,7 @@ class JSON;
 
 template<class Request>
 struct DefaultHandler {
-	void pick(std::list<Request*>&,vector<Request*>&);
+	void pick(std::list<Request*>&,std::vector<Request*>&);
 	void idle() {}
 static void print(std::ostream&,const Request&);
 static void json(JSON&,const Request&);
@@ -64,7 +64,7 @@ public:
 
 // -- Contructors
 
-	Dispatcher(const string& name = Traits::name() );
+	Dispatcher(const std::string& name = Traits::name() );
 
 // -- Destructor
 
@@ -75,8 +75,8 @@ public:
 	// Dispatcher takes ownership of Request
 
 	void push(Request*);
-	void push(const vector<Request*>&);
-	bool next(Handler&,vector<Request*>&,Mutex&);
+	void push(const std::vector<Request*>&);
+	bool next(Handler&,std::vector<Request*>&,Mutex&);
 	void dequeue(DequeuePicker<Request>&);
 	void sleep();
 	void sleep(int);
@@ -88,7 +88,7 @@ public:
 
 	// From Configurable
 
-	virtual string name() const  { return name_; }
+	virtual std::string name() const  { return name_; }
 
 protected:
 
@@ -100,7 +100,7 @@ protected:
 	long              next_;
 	MutexCond         ready_;
 	MutexCond         wait_;
-	string            name_;
+	std::string            name_;
 	bool           	  grow_;
 	long              running_;
 
@@ -121,7 +121,7 @@ private:
 
 	// From Configurable
 
-	virtual string kind() const  { return "Dispatcher"; }
+	virtual std::string kind() const  { return "Dispatcher"; }
 	virtual void reconfigure();
 
     friend std::ostream& operator<<(std::ostream& s,const Dispatcher<Traits>& p)
@@ -146,7 +146,7 @@ private:
 
 	Dispatcher<Traits>& owner_;
 	int                 id_;
-	vector<Request*>    pick_;
+	std::vector<Request*>    pick_;
 	Mutex               mutex_;
 
 // -- Overridden methods
@@ -256,7 +256,7 @@ void DispatchTask<Traits>::run()
 
 		AutoLock<Mutex> lock(mutex_);
 
-		for(typename vector<Request*>::iterator i = pick_.begin(); i != pick_.end(); ++i)
+		for(typename std::vector<Request*>::iterator i = pick_.begin(); i != pick_.end(); ++i)
 		{
 			delete (*i);
 			*i = 0;
@@ -287,7 +287,7 @@ void DispatchInfo<Traits>::run()
 //=====================================================================
 
 template<class Traits>
-Dispatcher<Traits>::Dispatcher(const string& name):
+Dispatcher<Traits>::Dispatcher(const std::string& name):
 	name_(name),
 	maxTasks_(this,"numberOfThreads",1),
 	count_(0),
@@ -411,7 +411,7 @@ void Dispatcher<Traits>::json(JSON& s) const
 
 template<class Traits>
 bool Dispatcher<Traits>::next(Handler& handler,
-	vector<Request*>& result,Mutex& mutex)
+	std::vector<Request*>& result,Mutex& mutex)
 {
 
 	Log::status() << "-" << std::endl;
@@ -423,7 +423,7 @@ bool Dispatcher<Traits>::next(Handler& handler,
 	while(queue_.empty())
 		ready_.wait();
 
-	AutoLock<Mutex> lock2(mutex); // Lock vector
+	AutoLock<Mutex> lock2(mutex); // Lock std::vector
 
 	result.clear();
 
@@ -502,7 +502,7 @@ void Dispatcher<Traits>::reconfigure()
 
 template<class Request> 
 void DefaultHandler<Request>::pick(std::list<Request*>& queue,
-	vector<Request*>& result)
+	std::vector<Request*>& result)
 {
 	Request *r = queue.front();
 	queue.pop_front();

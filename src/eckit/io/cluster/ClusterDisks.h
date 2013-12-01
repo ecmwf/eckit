@@ -35,15 +35,15 @@ public:
 
 	static void offLine(const NodeInfo&);
 	static void forget(const NodeInfo&);
-	static void update(const string&,const string&, const vector<string>&);
+	static void update(const std::string&,const std::string&, const std::vector<std::string>&);
 
     static void list(std::ostream& out);
     static void json(JSON& out);
 
 
-    static time_t lastModified(const string&);
-    static void   load(const string&, vector<string>&);
-    static string node(const string& path);
+    static time_t lastModified(const std::string&);
+    static void   load(const std::string&, std::vector<std::string>&);
+    static std::string node(const std::string& path);
 
 
 };

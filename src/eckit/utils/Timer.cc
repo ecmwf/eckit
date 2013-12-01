@@ -26,7 +26,7 @@ Timer::Timer( bool output ):
     this->start();
 }
 
-Timer::Timer(const string& name, std::ostream& o ):
+Timer::Timer(const std::string& name, std::ostream& o ):
     name_(name),
     stopped_(true),
     outputAtExit_(true),

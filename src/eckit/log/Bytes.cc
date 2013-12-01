@@ -63,11 +63,11 @@ std::ostream& operator<<(std::ostream& s, const Bytes& b)
 	return s;
 }
 
-Bytes::operator string() const
+Bytes::operator std::string() const
 {
 	StrStream s;
 	s << *this << StrStream::ends;
-	return string(s);
+	return std::string(s);
 }
 
 //-----------------------------------------------------------------------------

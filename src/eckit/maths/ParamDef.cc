@@ -17,7 +17,7 @@ namespace eckit {
 namespace maths {
 
 
-ParamDef::ParamDef(const string& name) : Expression(), name_(name)
+ParamDef::ParamDef(const std::string& name) : Expression(), name_(name)
 {
 }
 
@@ -36,7 +36,7 @@ void ParamDef::print(std::ostream&o) const
     o << "=(" << name_ << ")";
 }
 
-ExpPtr paramdef(const string& name)
+ExpPtr paramdef(const std::string& name)
 {
     return ExpPtr( new ParamDef(name) );
 }

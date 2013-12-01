@@ -45,8 +45,8 @@ static in_addr none = { INADDR_NONE };
 
 static Mutex local_mutex;
 
-TCPSocket::UnknownHost::UnknownHost(const string& host):
-    Exception(string("Unknown host ") + host)
+TCPSocket::UnknownHost::UnknownHost(const std::string& host):
+    Exception(std::string("Unknown host ") + host)
 {
 }
 
@@ -230,9 +230,9 @@ static void catch_alarm(int sig)
 // This should be in the TCPClient.cc, but I want to reuse the Mutex
 // to lock any call to NIS with the same one
 
-TCPSocket& TCPClient::connect(const string& remote,int port,int retries, int timeout)
+TCPSocket& TCPClient::connect(const std::string& remote,int port,int retries, int timeout)
 {
-    string host = hostName(remote);
+    std::string host = hostName(remote);
 
     in_addr_t addr;
     in_addr_t none = (in_addr_t)-1;
@@ -484,7 +484,7 @@ int TCPSocket::newSocket(int port)
     sin.sin_port        = htons(localPort_);
     sin.sin_family      = AF_INET;
 
-    string addr = bindingAddress();
+    std::string addr = bindingAddress();
 
     if(addr.length() == 0)
         sin.sin_addr.s_addr = INADDR_ANY;
@@ -513,7 +513,7 @@ int TCPSocket::newSocket(int port)
         if(addr.length() == 0)
         {
             AutoLock<Mutex> lock(local_mutex);
-            localHost_= Resource<string> ("host", "");
+            localHost_= Resource<std::string> ("host", "");
             if(localHost_.length() == 0)
             {
                 char host[1024];
@@ -538,9 +538,9 @@ void TCPSocket::bind()
 }
 
 
-static map<uint32_t,string> cache;
+static std::map<uint32_t,std::string> cache;
 
-string TCPSocket::addrToHost(in_addr addr)
+std::string TCPSocket::addrToHost(in_addr addr)
 {
     AutoLock<Mutex> lock(local_mutex);
 
@@ -548,7 +548,7 @@ string TCPSocket::addrToHost(in_addr addr)
     // from time to time, so let's cache the result
     // to minimise the cores
 
-    map<uint32_t,string>::iterator j = cache.find(addr.s_addr);
+    std::map<uint32_t,std::string>::iterator j = cache.find(addr.s_addr);
 
     if(j != cache.end())
         return (*j).second;
@@ -577,13 +577,13 @@ string TCPSocket::addrToHost(in_addr addr)
         sizeof(addr),AF_INET);
 #endif
 
-    string s = h ? h->h_name : ::inet_ntoa(addr);
+    std::string s = h ? h->h_name : ::inet_ntoa(addr);
     cache[addr.s_addr] = s;
     return s;
 }
 
 
-string TCPSocket::hostName(const string& h, bool full)
+std::string TCPSocket::hostName(const std::string& h, bool full)
 {
     in_addr_t addr = ::inet_addr(h.c_str());
     if(addr == (in_addr_t)-1)
@@ -596,7 +596,7 @@ string TCPSocket::hostName(const string& h, bool full)
 
     struct in_addr a;
     a.s_addr = addr;
-    string s =  addrToHost(a);
+    std::string s =  addrToHost(a);
 
     if(!full && !isdigit(s[0])) {
         return s.substr(0,s.find('.'));
@@ -615,7 +615,7 @@ in_addr TCPSocket::remoteAddr() const
     return remoteAddr_;
 }
 
-const string& TCPSocket::remoteHost() const
+const std::string& TCPSocket::remoteHost() const
 {
     return remoteHost_;
 }
@@ -631,7 +631,7 @@ in_addr TCPSocket::localAddr() const
     return localAddr_;
 }
 
-const string& TCPSocket::localHost() const
+const std::string& TCPSocket::localHost() const
 {
     ((TCPSocket*)this)->bind();
     return localHost_;
@@ -643,7 +643,7 @@ int TCPSocket::localPort() const
     return localPort_;
 }
 
-string TCPSocket::bindingAddress() const
+std::string TCPSocket::bindingAddress() const
 {
     return "";
 }

@@ -37,7 +37,7 @@ public:
 
     class BadTag : public Exception {
     public:
-        BadTag(const string& what): Exception(what) {}
+        BadTag(const std::string& what): Exception(what) {}
     };
 
 // -- Destructor
@@ -68,7 +68,7 @@ public:
     Stream& operator<<(float);
     Stream& operator<<(double);
 
-    Stream& operator<<(const string&);
+    Stream& operator<<(const std::string&);
     Stream& operator<<(const char*);
 
 
@@ -99,14 +99,14 @@ public:
     Stream& operator>>(float&);
     Stream& operator>>(double&);
 
-    Stream& operator>>(string&);
+    Stream& operator>>(std::string&);
 
     // Blobs
     Stream& operator>>(Buffer&);
 
 // -- Methods
 
-    bool next(string&);
+    bool next(std::string&);
 
     bool endObjectFound();
     bool next();
@@ -140,7 +140,7 @@ protected:
 
 // -- Methods
 
-    virtual string name() const 			= 0;
+    virtual std::string name() const 			= 0;
     virtual void print(std::ostream& s) const  	{ s << name();  }
 
 private:

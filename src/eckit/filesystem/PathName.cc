@@ -26,15 +26,15 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static BasePathName* make(const string& p) {
+static BasePathName* make(const std::string& p) {
 
     if(p.find("marsfs:") == 0) 
         return new BasePathNameT<MarsFSPath>(p);
 
     /*
-    const string& node = ClusterDisks::node(p);
+    const std::string& node = ClusterDisks::node(p);
     if(node.length())
-        return new BasePathNameT<MarsFSPath>(string("marsfs://") + node +  p , ext);
+        return new BasePathNameT<MarsFSPath>(std::string("marsfs://") + node +  p , ext);
     */
 
     return new BasePathNameT<LocalPathName>(p);
@@ -45,7 +45,7 @@ PathName::PathName(const char* p)
 	path_ = make(p);
 }
 
-PathName::PathName(const string& p)
+PathName::PathName(const std::string& p)
 {
 	path_ = make(p);
 }
@@ -76,7 +76,7 @@ PathName& PathName::operator=(const PathName& other)
 	return *this;
 }
 
-PathName& PathName::operator=(const string& s)
+PathName& PathName::operator=(const std::string& s)
 {
 	// TODO: Review me
 	*this = PathName(s);
@@ -176,25 +176,25 @@ void PathName::link(const PathName& from, const PathName& to)
 	from.path_->link(*to.path_);
 }
 
-void PathName::children(vector<PathName>& dirs,vector<PathName>& files) const
+void PathName::children(std::vector<PathName>& dirs,std::vector<PathName>& files) const
 {
-	vector<BasePathName*> d;
-	vector<BasePathName*> f;
+	std::vector<BasePathName*> d;
+	std::vector<BasePathName*> f;
 
 	path_->children(d,f);
 
-	for(vector<BasePathName*>::iterator j = d.begin(); j != d.end(); ++j)
+	for(std::vector<BasePathName*>::iterator j = d.begin(); j != d.end(); ++j)
 		dirs.push_back(PathName(*j));
 
-	for(vector<BasePathName*>::iterator j = f.begin(); j != f.end(); ++j)
+	for(std::vector<BasePathName*>::iterator j = f.begin(); j != f.end(); ++j)
 		files.push_back(PathName(*j));
 }
 
-void PathName::match(const PathName& path, vector<PathName>& result, bool rec)
+void PathName::match(const PathName& path, std::vector<PathName>& result, bool rec)
 {
-	vector<BasePathName*> v;
+	std::vector<BasePathName*> v;
 	path.path_->match(v, rec);
-	for(vector<BasePathName*>::iterator j = v.begin(); j != v.end(); ++j)
+	for(std::vector<BasePathName*>::iterator j = v.begin(); j != v.end(); ++j)
 		result.push_back(PathName(*j));
 }
 
@@ -293,12 +293,12 @@ DataHandle* PathName::partHandle(const Offset& o, const Length& l) const
     return path_->partHandle(o,l);
 }
 
-string PathName::asString() const
+std::string PathName::asString() const
 {
 	return path_->asString();
 }
 
-PathName operator+(const PathName& p,const string& s)
+PathName operator+(const PathName& p,const std::string& s)
 {
 	// TODO: delegate that to "path_"
 	return PathName(p.asString() + s);
@@ -316,7 +316,7 @@ PathName operator+(const PathName& p,char s)
 	return PathName(p.asString() + s);
 }
 
-PathName operator/(const PathName& p,const string& s)
+PathName operator/(const PathName& p,const std::string& s)
 {
 	// TODO: delegate that to "path_"
     return PathName(p.asString() + "/" + s);
@@ -343,38 +343,38 @@ void operator<<(Stream& s,const PathName& path)
 void operator>>(Stream& s,PathName& path)
 {
 	// TODO: delegate that to "path_"
-	string p;
+	std::string p;
 	s >> p;
 	path = PathName(p);
 }
 
 
-string PathName::shorten(const string& s) {
+std::string PathName::shorten(const std::string& s) {
 	// TODO: Read from ~etc/disk/...
 
 
-	if(s.find("/locked/") != string::npos) return ".../locked/...";
-	if(s.find("/transfer/") != string::npos) return ".../transfer/...";
-	if(s.find("/defrag/") != string::npos) return ".../defrag/...";
-	if(s.find("/temp/") != string::npos) return ".../temp/...";
-	if(s.find("/obstmp/") != string::npos) return ".../obstmp/...";
-	if(s.find("/infrequent/") != string::npos) return ".../infrequent/...";
-	if(s.find("/prearc/") != string::npos) return ".../prearc/...";
-	if(s.find("/cache/") != string::npos) return ".../cache/...";
+	if(s.find("/locked/") != std::string::npos) return ".../locked/...";
+	if(s.find("/transfer/") != std::string::npos) return ".../transfer/...";
+	if(s.find("/defrag/") != std::string::npos) return ".../defrag/...";
+	if(s.find("/temp/") != std::string::npos) return ".../temp/...";
+	if(s.find("/obstmp/") != std::string::npos) return ".../obstmp/...";
+	if(s.find("/infrequent/") != std::string::npos) return ".../infrequent/...";
+	if(s.find("/prearc/") != std::string::npos) return ".../prearc/...";
+	if(s.find("/cache/") != std::string::npos) return ".../cache/...";
 	return s.substr(0,10) + "...";
 }
 
-const string& PathName::node() const
+const std::string& PathName::node() const
 {
 	return path_->node();
 }
 
-const string& PathName::path() const
+const std::string& PathName::path() const
 {
 	return path_->path();
 }
 
-PathName &PathName::operator /=(const string &s)
+PathName &PathName::operator /=(const std::string &s)
 {
     // TODO: Review me
     *this = PathName(this->asString() + "/" + s);
@@ -394,7 +394,7 @@ PathName &PathName::operator /=(char s)
     *this = PathName(this->asString() + "/" + s);
 	return *this;
 }
-PathName &PathName::operator +=(const string &s)
+PathName &PathName::operator +=(const std::string &s)
 {
     // TODO: Review me
     *this = PathName(this->asString() + s);

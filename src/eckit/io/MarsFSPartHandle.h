@@ -61,8 +61,8 @@ public:
 
     virtual DataHandle* toLocal();
     virtual void toLocal(Stream&) const;
-    virtual void cost(map<string,Length>&, bool) const;
-    virtual string title() const;
+    virtual void cost(std::map<std::string,Length>&, bool) const;
+    virtual std::string title() const;
     virtual bool moveable() const { return true; }
 
 	// From Streamable

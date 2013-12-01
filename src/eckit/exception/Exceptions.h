@@ -37,7 +37,7 @@ class Exception : public std::exception {
 public: // methods
 
     /// Constructor with message
-    Exception(const string& what, const CodeLocation& location = CodeLocation() );
+    Exception(const std::string& what, const CodeLocation& location = CodeLocation() );
 
     /// Destructor
     /// @throws nothing
@@ -55,15 +55,15 @@ public: // methods
 
 protected: // methods
     
-    void reason(const string&);
+    void reason(const std::string&);
     Exception();
 
     virtual void print(std::ostream&) const;
     
 private: // members
     
-    string            what_;      ///< description
-    string            callStack_; ///< call stack
+    std::string       what_;      ///< description
+    std::string       callStack_; ///< call stack
     SavedStatus       save_;      ///< saved monitor status to recover after destruction
     Exception*        next_;
     CodeLocation      location_;  ///< where exception was first thrown
@@ -81,9 +81,9 @@ private: // members
 
 class SeriousBug : public Exception {
 public:
-    SeriousBug(const string& w) : Exception(string("Serious Bug:") + w) {}
-    SeriousBug(const string&,const string&);
-    SeriousBug(const string&,int);
+    SeriousBug(const std::string& w) : Exception(std::string("Serious Bug:") + w) {}
+    SeriousBug(const std::string&,const std::string&);
+    SeriousBug(const std::string&,int);
 };
 
 class TooManyRetries : public Exception {
@@ -93,26 +93,26 @@ public:
 
 class TimeOut : public Exception {
 public:
-    TimeOut(const string&, const unsigned long);
+    TimeOut(const std::string&, const unsigned long);
 };
 
 class FailedSystemCall : public Exception {
 public:
-    FailedSystemCall(const string&);
-    FailedSystemCall(const string&,const CodeLocation&);
+    FailedSystemCall(const std::string&);
+    FailedSystemCall(const std::string&,const CodeLocation&);
     FailedSystemCall(const char*,const CodeLocation&,int);
-    FailedSystemCall(const string&,const char*,const CodeLocation&,int);
+    FailedSystemCall(const std::string&,const char*,const CodeLocation&,int);
 };
 
 class AssertionFailed : public Exception {
 public:
-    AssertionFailed(const string&);
+    AssertionFailed(const std::string&);
     AssertionFailed(const char*, const CodeLocation& );
 };
 
 class BadParameter : public Exception {
 public:
-    BadParameter(const string& s);
+    BadParameter(const std::string& s);
 };
 
 class NotImplemented : public Exception {
@@ -122,29 +122,29 @@ public:
 
 class Stop : public Exception {
 public:
-    Stop(const string&);
+    Stop(const std::string&);
 };
 
 class Abort : public Exception {
 public:
-    Abort(const string&);
+    Abort(const std::string&);
 };
 
 class Cancel : public Exception {
 public:
-    Cancel(const string&);
+    Cancel(const std::string&);
 };
 
 class Retry : public Exception {
 public:
-    Retry(const string&);
+    Retry(const std::string&);
 };
 
 class UserError : public Exception {
 public:
-    UserError(const string&);
-    UserError(const string&,const string&);
-    UserError(const string&,int);
+    UserError(const std::string&);
+    UserError(const std::string&,const std::string&);
+    UserError(const std::string&,int);
 };
 
 class OutOfRange : public Exception {
@@ -154,14 +154,14 @@ public:
 
 class MethodNotYetImplemented : public Exception {
 public:
-    MethodNotYetImplemented(const string& msg);
+    MethodNotYetImplemented(const std::string& msg);
 };
 
 // File errors
 
 class FileError : public Exception {
 protected:
-    FileError(const string&);
+    FileError(const std::string&);
     FileError()					{  }
 };
 
@@ -169,32 +169,32 @@ class CantOpenFile : public FileError {
     bool retry_;
     virtual bool retryOnServer() const { return retry_; }
 public:
-    CantOpenFile(const string&,bool retry = false);
+    CantOpenFile(const std::string&,bool retry = false);
 };
 
 class WriteError : public FileError {
 public:
-    WriteError(const string&);
+    WriteError(const std::string&);
 };
 
 class ReadError : public FileError {
 public:
-    ReadError(const string&);
+    ReadError(const std::string&);
 };
 
 class ShortFile : public ReadError {
 public:
-    ShortFile(const string&);
+    ShortFile(const std::string&);
 };
 
 class RemoteException : public Exception {
 public:
-    RemoteException(const string& msg, const string& from);
+    RemoteException(const std::string& msg, const std::string& from);
 };
 
 class UnexpectedState : public Exception {
 public:
-    UnexpectedState(const string& msg) : Exception(msg) {}
+    UnexpectedState(const std::string& msg) : Exception(msg) {}
 };
 
 //-----------------------------------------------------------------------------
@@ -214,7 +214,7 @@ inline void SysCall(long long code,const char *msg,const T& ctx,const CodeLocati
     {
         StrStream os;
         os << ctx << StrStream::ends;
-        throw FailedSystemCall(string(os),msg,loc,errno);
+        throw FailedSystemCall(std::string(os),msg,loc,errno);
     }
 }
 

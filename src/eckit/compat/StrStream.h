@@ -25,7 +25,7 @@ namespace eckit {
 
 class StrStream : public std::ostringstream {
 public:
-    operator string() { return str(); }
+    operator std::string() { return str(); }
     static std::ostream&  ends(std::ostream& os)  { return os; }
 };
 

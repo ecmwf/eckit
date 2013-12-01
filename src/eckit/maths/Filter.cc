@@ -23,7 +23,7 @@ Filter::Filter( ExpPtr pred,  ExpPtr list ) : Function()
     push_back(list);
 }
 
-string Filter::returnSignature() const
+std::string Filter::returnSignature() const
 {
     return List::sig();
 }

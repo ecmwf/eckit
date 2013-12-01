@@ -35,20 +35,20 @@ Stream& operator>>(Stream& s,NetAddress& addr)
 }
 
 
-NetAddress::NetAddress(const string& host, const int port) :
+NetAddress::NetAddress(const std::string& host, const int port) :
     host_(host),
     port_(port)
 {
 }
 
-NetAddress::NetAddress(const string& s)
+NetAddress::NetAddress(const std::string& s)
 {
     Tokenizer tokenize(":");
-    vector<string> tokens;
+    std::vector<std::string> tokens;
     tokenize(s,tokens);
     ASSERT(tokens.size() == 2);
     host_ = tokens[0];
-    port_ = Translator<string,int>()( tokens[1] );
+    port_ = Translator<std::string,int>()( tokens[1] );
 
     // check that port_ > 0
 }
@@ -73,11 +73,11 @@ NetAddress& NetAddress::operator=(const NetAddress& other)
 }
 
 #if 0
-string NetAddress::asString() const
+std::string NetAddress::asString() const
 {
     stringstream os;
     os << *this;
-    return os.string();
+    return os.std::string();
 }
 #endif
 

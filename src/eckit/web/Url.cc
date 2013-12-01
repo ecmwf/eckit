@@ -33,12 +33,12 @@ inline void header(char c)
 #endif
 }
 
-void Url::parse(const string& url, bool param)
+void Url::parse(const std::string& url, bool param)
 {
 
 	int size    = url.length();
 	int index   = 0;
-	string s,p;
+	std::string s,p;
 
 	while(index < size)
     {
@@ -97,7 +97,7 @@ void Url::parse(const string& url, bool param)
 
 Url::Url(std::istream& in)
 {
-	string url;
+	std::string url;
 
 	in >> method_;
 	in >> url;
@@ -116,11 +116,11 @@ void Url::parse(std::istream& in)
 
 	char c = 0;
 
-    map<string,string,std::less<string> > m;
+    std::map<std::string,std::string,std::less<std::string> > m;
 
 	for(;;)
 	{
-		string s;
+		std::string s;
 		while(in.get(c) && c != ':' && c != '\r')
 		{
 			header(c);
@@ -143,7 +143,7 @@ void Url::parse(std::istream& in)
 		{
 			header(c);
 
-			string r;
+			std::string r;
 			r += c;
 			while(in.get(c) && c != '\r')
 			{
@@ -163,12 +163,12 @@ void Url::parse(std::istream& in)
 
 	if(len)
 	{
-        static const string FormType      = "application/x-www-form-urlencoded";
-        static const string JSONType      = "application/json";
+        static const std::string FormType      = "application/x-www-form-urlencoded";
+        static const std::string JSONType      = "application/json";
 
         //bool ascii = true;
 		Buffer content(len);
-        const string& type = in_.type();
+        const std::string& type = in_.type();
 
 
 		char *p = content;
@@ -182,7 +182,7 @@ void Url::parse(std::istream& in)
 
         if(type == FormType)
 		{
-			string s(static_cast<char*>(content),p - static_cast<char*>(content));
+			std::string s(static_cast<char*>(content),p - static_cast<char*>(content));
 			parse(s,true);
 		}
 
@@ -202,7 +202,7 @@ void Url::parse(std::istream& in)
 	Log::debug() << *this << std::endl;
 }
 
-Url::Url(const string& url):
+Url::Url(const std::string& url):
 	method_("GET")
 {
 	parse(url,false);
@@ -213,10 +213,10 @@ Url::~Url()
 {
 }
 
-string Url::name() const
+std::string Url::name() const
 {
-	string s = "";
-	for(vector<string>::const_iterator j = url_.begin(); j != url_.end(); ++j)
+	std::string s = "";
+	for(std::vector<std::string>::const_iterator j = url_.begin(); j != url_.end(); ++j)
 	{
 		s += "/" ;
 		s += *j ;
@@ -226,7 +226,7 @@ string Url::name() const
 
 void Url::print(std::ostream& s) const
 {
-	for(vector<string>::const_iterator j = url_.begin();
+	for(std::vector<std::string>::const_iterator j = url_.begin();
 		j != url_.end(); ++j)
 		s << "/" << *j ;
 
@@ -252,37 +252,37 @@ void Url::cgiParam(std::ostream& s,char sep) const
 
 }
 
-UrlAccess Url::operator[](const string& s) 
+UrlAccess Url::operator[](const std::string& s) 
 {
 	return UrlAccess(*this,s);
 }
 
-void Url::set(const string& p,const string& s)
+void Url::set(const std::string& p,const std::string& s)
 {
 	map_[p] = s;
 }
 
-const string& Url::get(const string& s)
+const std::string& Url::get(const std::string& s)
 {
 	return map_[s];
 }
 
-void Url::erase(const string& s)
+void Url::erase(const std::string& s)
 {
 	map_.erase(s);
 }
 
-const string& Url::operator[](int n) const
+const std::string& Url::operator[](int n) const
 {
 	return url_[n];
 }
 
 
-string Url::str() const
+std::string Url::str() const
 {
 	StrStream s;
 	s << *this << StrStream::ends;
-	return string(s);
+	return std::string(s);
 }
 
 int Url::size() const
@@ -302,21 +302,21 @@ HttpHeader& Url::headerOut()
 
 UrlAccess::operator long()
 {
-	return Translator<string,long>()(url_.get(s_));
+	return Translator<std::string,long>()(url_.get(s_));
 }
 
-UrlAccess::operator string()
+UrlAccess::operator std::string()
 {
 	return url_.get(s_);
 }
 
 UrlAccess& UrlAccess::operator=(long n)
 {
-	url_.set(s_,Translator<long,string>()(n));
+	url_.set(s_,Translator<long,std::string>()(n));
 	return *this;
 }
 
-UrlAccess& UrlAccess::operator=(const string& s)
+UrlAccess& UrlAccess::operator=(const std::string& s)
 {
 	url_.set(s_,s);
 	return *this;

@@ -18,7 +18,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-Port::Port(const string& name, int port):
+Port::Port(const std::string& name, int port):
     port_(port)
 {
     int offset = Resource<int>("portOffset",0);

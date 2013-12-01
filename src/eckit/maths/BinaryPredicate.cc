@@ -195,7 +195,7 @@ BinaryPredicate<T>::BinaryPredicate(ExpPtr a, ExpPtr b)
 }
 
 template < class T >
-string BinaryPredicate<T>::returnSignature() const
+std::string BinaryPredicate<T>::returnSignature() const
 {
     return Boolean::sig();
 }
@@ -207,7 +207,7 @@ std::string BinaryPredicate<T>::typeName() const
 }
 
 template < class T >
-string BinaryPredicate<T>::className()
+std::string BinaryPredicate<T>::className()
 {
     return opname( T() );
 }
@@ -234,7 +234,7 @@ template < class T >
 template < class U, class V, class I >
 std::string BinaryPredicate<T>::Computer<U,V,I>::sig()
 {
-    return opname( T() ) + string("(") + U::sig() + string(",") + V::sig() + string(")");
+    return opname( T() ) + std::string("(") + U::sig() + std::string(",") + V::sig() + std::string(")");
 }
 
 template < class T >

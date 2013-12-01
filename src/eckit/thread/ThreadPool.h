@@ -48,7 +48,7 @@ class ThreadPool : private NonCopyable {
 
 public: // methods
 
-    ThreadPool(const string& name, int count, size_t stack = 0);
+    ThreadPool(const std::string& name, int count, size_t stack = 0);
 
 	~ThreadPool();
     
@@ -58,8 +58,8 @@ public: // methods
     void notifyStart();
     void notifyEnd();
     void waitForThreads();
-    const string& name() const { return name_; }
-    void error(const string&);
+    const std::string& name() const { return name_; }
+    void error(const std::string&);
 
 private: // members
 
@@ -68,8 +68,8 @@ private: // members
     int  count_;
     int  running_;
     bool error_;
-    string errorMessage_;
-    string name_;
+    std::string errorMessage_;
+    std::string name_;
     std::list<ThreadPoolTask*> queue_;
 
 };

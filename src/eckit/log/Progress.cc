@@ -19,7 +19,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-Progress::Progress(const string& name, unsigned long long min, unsigned long long  max )
+Progress::Progress(const std::string& name, unsigned long long min, unsigned long long  max )
 {
 	Monitor::instance().progress(name,min,max);
 }

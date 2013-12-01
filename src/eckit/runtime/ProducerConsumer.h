@@ -59,7 +59,7 @@ public:
 
 
     bool   error();
-    void   error(const string&);
+    void   error(const std::string&);
 
 private:
 
@@ -78,7 +78,7 @@ private:
 
 
     bool   error_;
-    string why_;
+    std::string why_;
 
 
     // -- Friends
@@ -125,7 +125,7 @@ ProducerConsumer<PAYLOAD>::~ProducerConsumer()
 }
 
 template<class PAYLOAD>
-inline void ProducerConsumer<PAYLOAD>::error(const string& why)
+inline void ProducerConsumer<PAYLOAD>::error(const std::string& why)
 {
     AutoLock<Mutex> lock(mutex_);
     error_ = true;

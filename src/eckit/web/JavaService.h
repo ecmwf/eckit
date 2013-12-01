@@ -89,7 +89,7 @@ private:
 // -- Overridden methods
 
 	virtual eckit::NetUser* newUser(eckit::TCPSocket& socket);
-	virtual string name() { return "java"; }
+	virtual std::string name() { return "java"; }
 
 // -- Class members
 	// None

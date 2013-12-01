@@ -31,17 +31,17 @@ public: // methods
 
     /// Contructor
 
-    Tokenizer(const string&);
+    Tokenizer(const std::string&);
 
     /// Destructor
 
 	~Tokenizer(); 
     
-    void operator()(const string&, std::vector<string>&);
-    void operator()(std::istream&, std::vector<string>&);
+    void operator()(const std::string&, std::vector<std::string>&);
+    void operator()(std::istream&, std::vector<std::string>&);
 
-    void operator()(const string&, std::set<string>&);
-    void operator()(std::istream&, std::set<string>&);
+    void operator()(const std::string&, std::set<std::string>&);
+    void operator()(std::istream&, std::set<std::string>&);
 
 private: // members
 

@@ -50,7 +50,7 @@ public:
 	double elapsed();
     double elapsed_cpu();
 
-    string name() const { return name_; }
+    const std::string& name() const { return name_; }
 
     bool running() const { return !stopped_; }
 
@@ -60,7 +60,7 @@ protected: // methods
 
 private: // members
 
-	string         name_;
+    std::string    name_;
 
     bool           stopped_;
     bool           outputAtExit_;

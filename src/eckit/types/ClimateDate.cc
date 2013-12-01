@@ -36,7 +36,7 @@ ClimateDate::ClimateDate(long year,long month,long day):
 {
 }
 
-static Date makeDate(const string& s)
+static Date makeDate(const std::string& s)
 {
 	Date date(s);
 	long year = date.year();
@@ -48,16 +48,16 @@ static Date makeDate(const string& s)
 	return Date(year,day);
 }
 
-ClimateDate::ClimateDate(const string& s):
+ClimateDate::ClimateDate(const std::string& s):
 	date_(makeDate(s))
 {
 }
 
-ClimateDate::operator string() const
+ClimateDate::operator std::string() const
 {
 	StrStream os;
 	os << *this << StrStream::ends;
-	return string(os);
+	return std::string(os);
 }
 
 void ClimateDate::print(std::ostream& s) const

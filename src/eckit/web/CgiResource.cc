@@ -35,7 +35,7 @@ void CgiResource::html(std::ostream& s,Url& url)
 	eckit::PathName path("~/http/" + url.name());
 	StrStream cmd;
 
-	string mode = url["parameter"];
+	std::string mode = url["parameter"];
 
 	if(mode == "")
 	{
@@ -50,7 +50,7 @@ void CgiResource::html(std::ostream& s,Url& url)
 		cmd << StrStream::ends;
 	}
 
-	string c = string(cmd);
+	std::string c = std::string(cmd);
 	StdPipe pipe(c,"r");
 	char line[1024];
 

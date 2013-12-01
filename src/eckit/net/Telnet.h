@@ -46,7 +46,7 @@ private:
 	// From NetService
 
 	virtual NetUser* newUser(TCPSocket&);
-	virtual string   name() { return "telnet"; }
+	virtual std::string   name() { return "telnet"; }
 
 };
 

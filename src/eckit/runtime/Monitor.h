@@ -45,21 +45,21 @@ public: // methods
 	void shutdown();
 	void out(char*,char*); // called from Log
 
-    void name(const string&);
-	void kind(const string&);
+    void name(const std::string&);
+	void kind(const std::string&);
 
-	void progress(const string&,unsigned long long,unsigned long long);
+	void progress(const std::string&,unsigned long long,unsigned long long);
 	void progress(unsigned long long);
 	void progress();
 
 	char state(char);
 
-	void message(const string&);
-	string message();
+	void message(const std::string&);
+	std::string message();
 
-	void status(const string&);
-	string status();
-	string statusTree();
+	void status(const std::string&);
+	std::string status();
+	std::string statusTree();
 	void stoppable(bool);
 	bool stopped();
 
@@ -67,22 +67,22 @@ public: // methods
 	long       self();
 	void parent(long);
 
-	void start(const string&);
-	int  kill(const string& , int = 15);
+	void start(const std::string&);
+	int  kill(const std::string& , int = 15);
 
 	void port(int );
 	int  port();
 
-	void    host(const string& );
-	string  host();
+	void    host(const std::string& );
+	std::string  host();
 
 	TaskID taskID();
 	void taskID(const TaskID&);
 
 	void show(bool);
 
-	void cancel(const string&);
-	string cancelMessage();
+	void cancel(const std::string&);
+	std::string cancelMessage();
 	bool  canceled();
 
 	void abort();

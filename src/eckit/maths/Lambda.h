@@ -30,8 +30,8 @@ public: // methods
     static std::string className() { return "Lambda"; }
 
     Lambda( ExpPtr body);
-    Lambda( const string& a, ExpPtr body);
-    Lambda( const string& a, const string& b, ExpPtr body);
+    Lambda( const std::string& a, ExpPtr body);
+    Lambda( const std::string& a, const std::string& b, ExpPtr body);
 
     ExpPtr call( Scope& ctx ) const;
 
@@ -52,8 +52,8 @@ private:
 //--------------------------------------------------------------------------------------------
 
 ExpPtr lambda( ExpPtr body);
-ExpPtr lambda( const string& a, ExpPtr body);
-ExpPtr lambda( const string& a, const string &b, ExpPtr body);
+ExpPtr lambda( const std::string& a, ExpPtr body);
+ExpPtr lambda( const std::string& a, const std::string &b, ExpPtr body);
 
 
 //--------------------------------------------------------------------------------------------

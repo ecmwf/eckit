@@ -29,7 +29,7 @@ protected:
 // -- Constructor 
 
     MapContent();
-    MapContent(const map<Value,Value>&);
+    MapContent(const std::map<Value,Value>&);
     //MapContent(const Value&);
 
     MapContent(Stream&);
@@ -47,12 +47,12 @@ protected:
     virtual void value(bool& n)                 const { Content::value(n); }
     virtual void value(long long& n)            const { Content::value(n); }
     virtual void value(double& n)               const { Content::value(n); }
-    virtual void value(string& n)               const { Content::value(n); }
+    virtual void value(std::string& n)               const { Content::value(n); }
     virtual void value(Date& n)                 const { Content::value(n); }
     virtual void value(Time& n)                 const { Content::value(n); }
     virtual void value(DateTime& n)             const { Content::value(n); }
-    virtual void value(vector<Value>& n)        const { Content::value(n); }
-    virtual void value(map<Value,Value>& n)     const;
+    virtual void value(std::vector<Value>& n)        const { Content::value(n); }
+    virtual void value(std::map<Value,Value>& n)     const;
 
     virtual int  compareBool(const BoolContent&)            const {return -1; }
     virtual int  compareNumber(const NumberContent&)        const {return -1; }
@@ -77,7 +77,7 @@ protected:
 
 	virtual void   print(std::ostream&) const;
     virtual void   json(JSON&)     const;
-    virtual string typeName() const       { return "Map"; }
+    virtual std::string typeName() const       { return "Map"; }
 
     virtual bool   isMap() const         { return true; }
 
@@ -97,7 +97,7 @@ private:
 
 // -- Members
 
-    map<Value,Value> value_;
+    std::map<Value,Value> value_;
 
 // -- Class Members
 

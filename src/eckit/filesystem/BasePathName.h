@@ -60,8 +60,8 @@ public:
     virtual void unlink() const = 0;
     virtual void rmdir() const = 0;
     virtual void touch() const = 0;
-    virtual void children(vector<BasePathName*>&,vector<BasePathName*>&) const = 0;
-    virtual void match(vector<BasePathName*>&,bool) const = 0;
+    virtual void children(std::vector<BasePathName*>&,std::vector<BasePathName*>&) const = 0;
+    virtual void match(std::vector<BasePathName*>&,bool) const = 0;
     virtual void reserve(const Length&) const = 0;
 
     virtual BasePathName* unique() const = 0;
@@ -71,16 +71,16 @@ public:
     virtual BasePathName* checkClusterNode() const = 0;
     virtual BasePathName* baseName(bool) const = 0;
 
-    virtual string clusterName() const = 0;
+    virtual std::string clusterName() const = 0;
 
-    virtual string asString() const = 0;
+    virtual std::string asString() const = 0;
     virtual void fileSystemSize(FileSystemSize&) const = 0;
     virtual DataHandle* fileHandle(bool overwrite) const = 0;
     virtual DataHandle* partHandle(const OffsetList&, const LengthList&) const = 0;
     virtual DataHandle* partHandle(const Offset&, const Length&) const = 0;
 
-    virtual const string& node() const = 0;
-    virtual const string& path() const = 0;
+    virtual const std::string& node() const = 0;
+    virtual const std::string& path() const = 0;
 
 protected:
 

@@ -50,7 +50,7 @@ FileHandle::FileHandle(Stream& s):
     s >> overwrite_;
 }
 
-FileHandle::FileHandle(const string& name,bool overwrite):
+FileHandle::FileHandle(const std::string& name,bool overwrite):
     name_(name),
     overwrite_(overwrite),
     file_(0),
@@ -160,7 +160,7 @@ void FileHandle::flush()
         if (!read_)
         {
             if (::fflush(file_))
-                throw WriteError(string("FileHandle::~FileHandle(fflush(") + name_ + "))");
+                throw WriteError(std::string("FileHandle::~FileHandle(fflush(") + name_ + "))");
 
             int ret = fsync(fileno(file_));
 
@@ -171,7 +171,7 @@ void FileHandle::flush()
             }
             
             //if(ret<0)
-            //throw FailedSystemCall(string("fsync(") + name_ + ")");
+            //throw FailedSystemCall(std::string("fsync(") + name_ + ")");
 
             // On Linux, you must also flush the directory
             
@@ -220,7 +220,7 @@ void FileHandle::close()
         
         if (::fclose(file_) != 0)
         {
-            throw WriteError(string("fclose ") + name());
+            throw WriteError(std::string("fclose ") + name());
         }
     }
     else
@@ -334,7 +334,7 @@ void FileHandle::toRemote(Stream& s) const
     s << remote;
 }
 
-void FileHandle::cost(map<string,Length>& c, bool read) const
+void FileHandle::cost(std::map<std::string,Length>& c, bool read) const
 {
     if (read)
     {
@@ -347,7 +347,7 @@ void FileHandle::cost(map<string,Length>& c, bool read) const
     }
 }
 
-string FileHandle::title() const
+std::string FileHandle::title() const
 {
     //StrStream os;
     //os << "Client[" << host_ << ":" << port_ << "]" << StrStream::ends;

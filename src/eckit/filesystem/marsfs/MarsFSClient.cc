@@ -71,7 +71,7 @@ MarsFSClient::~MarsFSClient()
 {
 }
 
-Length MarsFSClient::size(const string& path)
+Length MarsFSClient::size(const std::string& path)
 {
 	X(MarsFSClient::size);
 
@@ -99,7 +99,7 @@ Length MarsFSClient::size(const string& path)
 	}
 }
 
-bool MarsFSClient::exists(const string& path)
+bool MarsFSClient::exists(const std::string& path)
 {
 	X(MarsFSClient::exit);
 
@@ -128,7 +128,7 @@ bool MarsFSClient::exists(const string& path)
 	}
 }
 
-string MarsFSClient::mountPoint(const string& path)
+std::string MarsFSClient::mountPoint(const std::string& path)
 {
 	X(MarsFSClient::mountPoint);
 
@@ -138,7 +138,7 @@ string MarsFSClient::mountPoint(const string& path)
 		{
 			AutoMemoize m(connector_, 60);
 
-			string p;
+			std::string p;
 			Stream& s = connector_;
 			s << "mountp";
 			s << path;
@@ -155,7 +155,7 @@ string MarsFSClient::mountPoint(const string& path)
 	}
 }
 
-string MarsFSClient::baseName(const string& path, bool ext)
+std::string MarsFSClient::baseName(const std::string& path, bool ext)
 {
 	X(MarsFSClient::baseName);
 
@@ -165,7 +165,7 @@ string MarsFSClient::baseName(const string& path, bool ext)
 		{
 			AutoMemoize m(connector_, 60);
 
-			string b;
+			std::string b;
 			Stream& s = connector_;
 			s << "baseName";
 			s << path;
@@ -183,7 +183,7 @@ string MarsFSClient::baseName(const string& path, bool ext)
 	}
 }
 
-string MarsFSClient::dirName(const string& path)
+std::string MarsFSClient::dirName(const std::string& path)
 {
 	X(MarsFSClient::dirName);
 
@@ -193,7 +193,7 @@ string MarsFSClient::dirName(const string& path)
 		{
 			AutoMemoize m(connector_, 60);
 
-			string d;
+			std::string d;
 			Stream& s = connector_;
 			s << "dirName";
 			s << path;
@@ -210,7 +210,7 @@ string MarsFSClient::dirName(const string& path)
 	}
 }
 
-string MarsFSClient::fullName(const string& path)
+std::string MarsFSClient::fullName(const std::string& path)
 {
 	X(MarsFSClient::fullName);
 
@@ -220,7 +220,7 @@ string MarsFSClient::fullName(const string& path)
 		{
 			AutoMemoize m(connector_, 60);
 
-			string f;
+			std::string f;
 			Stream& s = connector_;
 			s << "fullName";
 			s << path;
@@ -237,7 +237,7 @@ string MarsFSClient::fullName(const string& path)
 	}
 }
 
-string MarsFSClient::unique(const string& path)
+std::string MarsFSClient::unique(const std::string& path)
 {
 	X(MarsFSClient::unique);
 
@@ -245,7 +245,7 @@ string MarsFSClient::unique(const string& path)
 	{
 		try
 		{
-			string u;
+			std::string u;
 			Stream& s = connector_;
 			s << "unique";
 			s << path;
@@ -262,7 +262,7 @@ string MarsFSClient::unique(const string& path)
 	}
 }
 
-bool MarsFSClient::sameAs(const string& path1, const string& path2)
+bool MarsFSClient::sameAs(const std::string& path1, const std::string& path2)
 {
 	X(MarsFSClient::sameAs);
 
@@ -290,7 +290,7 @@ bool MarsFSClient::sameAs(const string& path1, const string& path2)
 	}
 }
 
-void MarsFSClient::mkdir(const string& path, short mode)
+void MarsFSClient::mkdir(const std::string& path, short mode)
 {
 	X(MarsFSClient::mkdir);
 
@@ -316,7 +316,7 @@ void MarsFSClient::mkdir(const string& path, short mode)
 	}
 }
 
-void MarsFSClient::match(const string& path, vector<string>& result, bool recurse)
+void MarsFSClient::match(const std::string& path, std::vector<std::string>& result, bool recurse)
 {
 	X(MarsFSClient::match);
 
@@ -336,7 +336,7 @@ void MarsFSClient::match(const string& path, vector<string>& result, bool recurs
 			long n;
 			s >> n;
 
-			string r;
+			std::string r;
 
 			for(long i = 0; i < n; i++)
 			{
@@ -355,7 +355,7 @@ void MarsFSClient::match(const string& path, vector<string>& result, bool recurs
 	}
 }
 
-void MarsFSClient::children(const string& path, vector<string>& dirs, vector<string>& files)
+void MarsFSClient::children(const std::string& path, std::vector<std::string>& dirs, std::vector<std::string>& files)
 {
 	X(MarsFSClient::children);
 
@@ -374,7 +374,7 @@ void MarsFSClient::children(const string& path, vector<string>& dirs, vector<str
 			long n;
 			s >> n;
 
-			string r;
+			std::string r;
 
 			for(long i = 0; i < n; i++)
 			{
@@ -404,7 +404,7 @@ void MarsFSClient::children(const string& path, vector<string>& dirs, vector<str
 	}
 }
 
-vector<string> MarsFSClient::getFileSpaces()
+std::vector<std::string> MarsFSClient::getFileSpaces()
 {
 	X(MarsFSClient::getFileSpaces);
 	for(;;)
@@ -417,12 +417,12 @@ vector<string> MarsFSClient::getFileSpaces()
 			Stream& s = connector_;
 			s << "getFileSpaces";
 
-			vector<string> result;
+			std::vector<std::string> result;
 
 			long n;
 			s >> n;
 
-			string r;
+			std::string r;
 
 			for(long i = 0; i < n; i++)
 			{
@@ -442,7 +442,7 @@ vector<string> MarsFSClient::getFileSpaces()
 	}
 }
 
-vector<string> MarsFSClient::getFileSystems(const string& name)
+std::vector<std::string> MarsFSClient::getFileSystems(const std::string& name)
 {
 	X(MarsFSClient::getFileSystems);
 
@@ -456,12 +456,12 @@ vector<string> MarsFSClient::getFileSystems(const string& name)
 			s << "getFileSystems";
 			s << name;
 
-			vector<string> result;
+			std::vector<std::string> result;
 
 			long n;
 			s >> n;
 
-			string r;
+			std::string r;
 
 			for(long i = 0; i < n; i++)
 			{
@@ -482,7 +482,7 @@ vector<string> MarsFSClient::getFileSystems(const string& name)
 
 }
 
-void MarsFSClient::rename(const string& from, const string& to)
+void MarsFSClient::rename(const std::string& from, const std::string& to)
 {
 	X(MarsFSClient::rename);
 	for(;;)
@@ -507,7 +507,7 @@ void MarsFSClient::rename(const string& from, const string& to)
 	}
 }
 
-void MarsFSClient::link(const string& from, const string& to)
+void MarsFSClient::link(const std::string& from, const std::string& to)
 {
 	X(MarsFSClient::link);
 	for(;;)
@@ -533,7 +533,7 @@ void MarsFSClient::link(const string& from, const string& to)
 	}
 }
 
-void MarsFSClient::unlink(const string& path)
+void MarsFSClient::unlink(const std::string& path)
 {
 	X(MarsFSClient::unlink);
 	for(;;)
@@ -558,7 +558,7 @@ void MarsFSClient::unlink(const string& path)
 	}
 }
 
-void MarsFSClient::rmdir(const string& path)
+void MarsFSClient::rmdir(const std::string& path)
 {
 	X(MarsFSClient::rmdir);
 	for(;;)
@@ -584,7 +584,7 @@ void MarsFSClient::rmdir(const string& path)
 	}
 }
 
-void MarsFSClient::touch(const string& path)
+void MarsFSClient::touch(const std::string& path)
 {
 	X(MarsFSClient::touch);
 	for(;;)
@@ -610,7 +610,7 @@ void MarsFSClient::touch(const string& path)
 	}
 }
 
-void MarsFSClient::fileSystemSize(const string& path, FileSystemSize& fs)
+void MarsFSClient::fileSystemSize(const std::string& path, FileSystemSize& fs)
 {
 	X(MarsFSClient::fileSystemSize);
 	for(;;)
@@ -637,7 +637,7 @@ void MarsFSClient::fileSystemSize(const string& path, FileSystemSize& fs)
 	}
 }
 
-time_t MarsFSClient::created(const string& path)
+time_t MarsFSClient::created(const std::string& path)
 {
 	X(MarsFSClient::created);
 	for(;;)
@@ -665,7 +665,7 @@ time_t MarsFSClient::created(const string& path)
 	}
 }
 
-time_t MarsFSClient::lastAccess(const string& path)
+time_t MarsFSClient::lastAccess(const std::string& path)
 {
 	X(MarsFSClient::lastAccess);
 	for(;;)
@@ -693,7 +693,7 @@ time_t MarsFSClient::lastAccess(const string& path)
 	}
 }
 
-time_t MarsFSClient::lastModified(const string& path)
+time_t MarsFSClient::lastModified(const std::string& path)
 {
 	X(MarsFSClient::lastModified);
 	for(;;)

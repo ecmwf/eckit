@@ -19,7 +19,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-bool Password::check(const string& user,const string& password)
+bool Password::check(const std::string& user,const std::string& password)
 {
 	struct passwd p;	
 	char line[1024];
@@ -43,7 +43,7 @@ bool Password::check(const string& user,const string& password)
 
 }
 
-string Password::salt(const string& user)
+std::string Password::salt(const std::string& user)
 {
 	struct passwd p;	
 	char line[1024];

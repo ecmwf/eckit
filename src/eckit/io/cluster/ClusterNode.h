@@ -49,7 +49,7 @@ public:
 
 // -- Class methods
 
-	//static Stream& connector(const string& name, const string& node);
+	//static Stream& connector(const std::string& name, const std::string& node);
 
 
 //	static bool         exited()    { return instance_ != 0; }

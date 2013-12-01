@@ -30,14 +30,14 @@ public:
 
 // -- Contructors
 
-    EtcTable(const string&, int = 0, const string& = "etc");
+    EtcTable(const std::string&, int = 0, const std::string& = "etc");
 
 // -- Destructor
 
     virtual ~EtcTable();
 
-	const vector<string>& lookUp(const string&);
-    vector<string> keys();
+	const std::vector<std::string>& lookUp(const std::string&);
+    std::vector<std::string> keys();
 
 private: // methods
 
@@ -46,35 +46,35 @@ private: // methods
 private: // members
 
     time_t last_;
-    string dir_;
-    string name_;
+    std::string dir_;
+    std::string name_;
     size_t size_;
 
     Mutex mutex_;
 
-    vector<vector<string> > lines_;
+    std::vector<std::vector<std::string> > lines_;
 
 private: // methods
 
-    virtual bool match(const string&, const vector<string>&) const  = 0;
+    virtual bool match(const std::string&, const std::vector<std::string>&) const  = 0;
 
 };
 
 //-----------------------------------------------------------------------------
 
 class EtcKeyTable : public EtcTable {
-    bool match(const string& query, const vector<string>& line) const { return query == line[0]; }
+    bool match(const std::string& query, const std::vector<std::string>& line) const { return query == line[0]; }
 public:
-    EtcKeyTable(const string& name, int size = 0, const string& dir= "etc"):
+    EtcKeyTable(const std::string& name, int size = 0, const std::string& dir= "etc"):
         EtcTable(name, size, dir) {}
 };
 
 //-----------------------------------------------------------------------------
 
 class EtcStartWithTable : public EtcTable {
-    bool match(const string& query, const vector<string>& line) const { return query.find(line[0]) == 0; }
+    bool match(const std::string& query, const std::vector<std::string>& line) const { return query.find(line[0]) == 0; }
 public:
-    EtcStartWithTable(const string& name, int size = 0, const string& dir= "etc"):
+    EtcStartWithTable(const std::string& name, int size = 0, const std::string& dir= "etc"):
         EtcTable(name, size, dir) {}
 };
 

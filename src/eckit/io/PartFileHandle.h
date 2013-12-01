@@ -60,8 +60,8 @@ public:
 	virtual Length estimate();
 	virtual void restartReadFrom(const Offset& from);
     virtual void toRemote(Stream&) const;
-    virtual void cost(map<string,Length>&, bool) const;
-    virtual string title() const;
+    virtual void cost(std::map<std::string,Length>&, bool) const;
+    virtual std::string title() const;
     virtual bool moveable() const { return true; }
 
 	// From Streamable

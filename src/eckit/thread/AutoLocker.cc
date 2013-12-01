@@ -21,8 +21,8 @@ namespace eckit {
 
 #ifdef CHECK_DEAD_LOCKS
 
-typedef map<void*,pthread_t,std::less<void*> > GotMap;
-typedef map<pthread_t,void*,std::less<pthread_t> > WantMap;
+typedef std::map<void*,pthread_t,std::less<void*> > GotMap;
+typedef std::map<pthread_t,void*,std::less<pthread_t> > WantMap;
 static WantMap*   wantMap = 0;
 static GotMap*   gotMap = 0;
 static Mutex* local_mutex = 0;

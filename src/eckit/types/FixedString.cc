@@ -27,7 +27,7 @@ FixedString<size>::FixedString()
 }
 
 template<int size>
-FixedString<size>:: FixedString(const string& s) {
+FixedString<size>:: FixedString(const std::string& s) {
     ASSERT(s.length() <= size && sizeof(s[0]) == 1);
     zero(data_);
     std::copy(s.begin(), s.end(), data_);
@@ -62,9 +62,9 @@ size_t FixedString<size>::length() const
 }
 
 template<int size>
-string FixedString<size>::asString() const
+std::string FixedString<size>::asString() const
 {
-    return string(data_, data_ + length());
+    return std::string(data_, data_ + length());
 }
 
 template<int size>
@@ -74,9 +74,9 @@ void FixedString<size>::print(std::ostream& s) const
 }
 
 template<int size>
-FixedString<size>::operator string() const
+FixedString<size>::operator std::string() const
 {
-    return string(data_, data_ + length());
+    return std::string(data_, data_ + length());
 }
 
 //-----------------------------------------------------------------------------

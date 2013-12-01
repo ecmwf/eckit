@@ -28,11 +28,11 @@ Month::Month(const Date& date):
 {
 }
 
-Month::Month(const string& s):
+Month::Month(const std::string& s):
 	date_(1997,10,10)
 {
 	Tokenizer parse("-");
-	vector<string> result;
+	std::vector<std::string> result;
 
 	parse(s,result);
 
@@ -89,14 +89,14 @@ Month::Month(const string& s):
 			break;
 	}
 
-	if(err) throw SeriousBug(string("Invalid month ") + s);
+	if(err) throw SeriousBug(std::string("Invalid month ") + s);
 }
 
-Month::operator string() const
+Month::operator std::string() const
 {
 	StrStream os;
 	os << *this << StrStream::ends;
-	return string(os);
+	return std::string(os);
 }
 
 void Month::print(std::ostream& s) const

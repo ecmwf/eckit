@@ -38,16 +38,16 @@ DayOfYear::DayOfYear(const Date& date):
 {
 }
 
-DayOfYear::DayOfYear(const string& s):
+DayOfYear::DayOfYear(const std::string& s):
 	value_(date2Value(Date(s)))
 {
 }
 
-DayOfYear::operator string() const
+DayOfYear::operator std::string() const
 {
 	StrStream os;
 	os << *this << StrStream::ends;
-	return string(os);
+	return std::string(os);
 }
 
 void DayOfYear::print(std::ostream& s) const

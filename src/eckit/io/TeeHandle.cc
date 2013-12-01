@@ -23,7 +23,7 @@ TeeHandle::TeeHandle()
 {
 }
 
-TeeHandle::TeeHandle(const vector<DataHandle*>& v):
+TeeHandle::TeeHandle(const std::vector<DataHandle*>& v):
 	datahandles_(v)
 {
 }
@@ -174,7 +174,7 @@ DataHandle* TeeHandle::toLocal()
     return this;
 }
 
-void TeeHandle::cost(map<string,Length>& c, bool read) const
+void TeeHandle::cost(std::map<std::string,Length>& c, bool read) const
 {
     for(size_t i=0; i < datahandles_.size(); i++)
         datahandles_[i]->cost(c, read);

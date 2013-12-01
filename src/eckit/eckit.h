@@ -41,10 +41,6 @@
 #include <new>
 #include <sstream>
 
-//using std::string;
-//using std::vector;
-//using std::map;
-
 //-----------------------------------------------------------------------------
 
 #if (!defined EC_HAVE_MAP_ANONYMOUS) && (defined EC_HAVE_MAP_ANON)

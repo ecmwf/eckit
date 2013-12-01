@@ -16,9 +16,6 @@
 #include "eckit/io/DataHandle.h"
 #include "GribHandle.h"
 
-using namespace std;
-using namespace eckit;
-
 static int grib_call(int code, const char* msg) {
     if(code) {
         StrStream os;

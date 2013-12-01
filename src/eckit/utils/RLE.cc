@@ -242,7 +242,7 @@ Stream& RLEwrite(Stream& s,InputIterator first,InputIterator last,
 	long long maxLoop,T*)
 {
 	std::vector<T> tmp; tmp.reserve(last-first);
-	RLEencode2(first,last,back_inserter(tmp),maxLoop);
+	RLEencode2(first,last, std::back_inserter(tmp),maxLoop);
 	s << tmp;
     std::cout << "RLEwrite : " << last-first << " -> " << tmp.size() << std::endl;
 	return s;
@@ -279,7 +279,7 @@ Stream& RLEDIFFwrite(Stream& s,InputIterator first,InputIterator last,
 	long long maxLoop,T*)
 {
 	std::vector<T> tmp; tmp.reserve(last-first);
-	bool diff = DIFFencode(first,last,back_inserter(tmp));
+	bool diff = DIFFencode(first,last, std::back_inserter(tmp));
 
 	s << diff;
 
@@ -289,7 +289,7 @@ Stream& RLEDIFFwrite(Stream& s,InputIterator first,InputIterator last,
 		// as we reuse first, last
 		Log::warning() << "DIFF encoding failed." << std::endl;
 		tmp.clear();
-		std::copy(first,last,back_inserter(tmp));
+		std::copy(first,last, std::back_inserter(tmp));
 		s << tmp;
 	}
 	else {
@@ -324,7 +324,7 @@ Stream& RLEDIFFread(Stream& s,OutputIterator result,T* dummy)
 
 	if(diff) {
 		std::vector<T> tmp; 
-		RLEread(s,back_inserter(tmp),dummy);
+		RLEread(s, std::back_inserter(tmp),dummy);
 		DIFFdecode(tmp.begin(),tmp.end(),result);
 	}
 	else {

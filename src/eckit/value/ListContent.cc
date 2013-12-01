@@ -28,7 +28,7 @@ ListContent::ListContent()
 
 ListContent::ListContent(const std::vector<Value>& v)
 {
-    std::copy(v.begin(),v.end(),back_inserter(value_));
+    std::copy(v.begin(),v.end(), std::back_inserter(value_));
 }
 
 ListContent::ListContent(const Value& v)

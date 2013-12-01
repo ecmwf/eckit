@@ -20,9 +20,6 @@
 
 #include "eckit/log/Log.h"
 
-using namespace std;
-using namespace eckit;
-
 static long readcb(void *data, void *buffer, long len)
 {
     DataHandle *handle = reinterpret_cast<eckit::DataHandle*>(data);

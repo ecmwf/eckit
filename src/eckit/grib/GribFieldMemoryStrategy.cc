@@ -11,8 +11,6 @@
 #include "eckit/grib/GribFieldMemoryStrategy.h"
 #include "eckit/grib/GribField.h"
 
-using namespace std;
-
 namespace eckit {
 
 //--------------------------------------------------------------------------------------------

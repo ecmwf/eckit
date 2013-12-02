@@ -45,7 +45,7 @@ Semaphore::Semaphore(const PathName& name,int count):
 	}
 
 	if(key == key_t(-1))
-		throw FailedSystemCall(string("ftok(") + name + string(")"));
+		throw FailedSystemCall(std::string("ftok(") + name + std::string(")"));
 
     /// @note cannot use Log::debug() of SYSCALL here, because Log is not yet initialized
 	// std::cout << "Creating semaphore path=" << name << ", count=" << count << ", key=" << hex << key << dec << std::endl; 

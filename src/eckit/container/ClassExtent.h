@@ -67,7 +67,7 @@ public: // methods
 private: // members
     
 	struct Extent {
-        typedef map<ClassExtent<T>*,T*,std::less<ClassExtent<T>*> > Map;
+        typedef std::map<ClassExtent<T>*,T*,std::less<ClassExtent<T>*> > Map;
 		Mutex   mutex_;
 		Map     map_;
 		bool    inited_;
@@ -129,7 +129,7 @@ void ClassExtent<T>::callAll(void (T::*proc)())
 	// for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
 	typedef  typename ClassExtent<T>::Extent::Map map_type;
 	typename map_type::iterator i;
-	for(i = map.begin(); i != map.end() ; ++i) 
+    for(i = map.begin(); i != map.end() ; ++i)
         ((*i).second->*proc)();
 
 }
@@ -159,7 +159,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P),P arg)
 	// for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
 	typedef  typename ClassExtent<T>::Extent::Map map_type;
 	typename map_type::iterator i;
-	for(i = map.begin(); i != map.end() ; ++i)
+    for(i = map.begin(); i != map.end() ; ++i)
 		((*i).second->*proc)(arg);
 }
 
@@ -188,7 +188,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P1,P2),P1 arg1,P2  arg2)
 	// for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
 	typedef  typename ClassExtent<T>::Extent::Map map_type;
 	typename map_type::iterator i;
-	for(i = map.begin(); i != map.end() ; ++i)
+    for(i = map.begin(); i != map.end() ; ++i)
 		((*i).second->*proc)(arg1,arg2);
 }
 
@@ -231,7 +231,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P1&,P2&),P1& arg1,P2&  arg2)
 	// for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
 	typedef  typename ClassExtent<T>::Extent::Map map_type;
 	typename map_type::iterator i;
-	for(i = map.begin(); i != map.end() ; ++i)
+    for(i = map.begin(); i != map.end() ; ++i)
 		((*i).second->*proc)(arg1,arg2);
 }
 

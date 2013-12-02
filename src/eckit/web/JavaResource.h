@@ -62,7 +62,7 @@ protected:
 // -- Members
 	// None
 
-	string name_;
+	std::string name_;
 
 // -- Methods
 	

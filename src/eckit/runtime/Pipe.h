@@ -62,7 +62,7 @@ public:
 private:
 
     bool   error();
-    void   error(const string&);
+    void   error(const std::string&);
 
     // -- Methods
 
@@ -79,7 +79,7 @@ private:
 
     bool   done_;
     bool   error_;
-    string why_;
+    std::string why_;
 
     OnePayload<PAYLOAD>* payloads_;
     ThreadControler* controler_;
@@ -159,7 +159,7 @@ void Pipe<PAYLOAD>::close()
 
 
 template<class PAYLOAD>
-inline void Pipe<PAYLOAD>::error(const string& why)
+inline void Pipe<PAYLOAD>::error(const std::string& why)
 {
     AutoLock<Mutex> lock(mutex_);
     error_ = true;

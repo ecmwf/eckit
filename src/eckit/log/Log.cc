@@ -175,7 +175,7 @@ Channel& Log::userWarning()
     return u;
 }
 
-void Log::notifyClient(const string& msg)
+void Log::notifyClient(const std::string& msg)
 {
     UserChannel& u = user();
     UserMsg* um = u.userMsg();

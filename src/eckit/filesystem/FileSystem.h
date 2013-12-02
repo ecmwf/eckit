@@ -46,8 +46,8 @@ public:
 
 	void update();
 
-	string  name()       const { return name_; }
-	string  mountPoint() const;
+	std::string  name()       const { return name_; }
+	std::string  mountPoint() const;
 
 	unsigned long long  total() const;
 	unsigned long long  avail() const;

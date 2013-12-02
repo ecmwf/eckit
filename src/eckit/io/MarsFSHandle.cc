@@ -172,7 +172,7 @@ DataHandle* MarsFSHandle::toLocal()
     return this;
 }
 
-void MarsFSHandle::cost(map<string,Length>& c, bool read) const
+void MarsFSHandle::cost(std::map<std::string,Length>& c, bool read) const
 {
     if(read) {
         c[path_.node()] += const_cast<MarsFSHandle*>(this)->estimate();
@@ -184,11 +184,11 @@ void MarsFSHandle::cost(map<string,Length>& c, bool read) const
     }
 }
 
-string MarsFSHandle::title() const
+std::string MarsFSHandle::title() const
 {
 	StrStream os;
 	os << "marsfs:/" << path_.node() << "/" << PathName::shorten(path_.path()) << StrStream::ends;
-	return string(os);
+	return std::string(os);
 }
 
 //-----------------------------------------------------------------------------

@@ -31,7 +31,7 @@ void HtmlObject::html(std::ostream& s,Url& url)
 	print(s);
 }
 
-void HtmlObject::substitute(std::ostream& s,const string& p)
+void HtmlObject::substitute(std::ostream& s,const std::string& p)
 {
 	s << '%' << p << '%';
 }

@@ -45,12 +45,12 @@ protected:
     virtual void value(bool& n)                 const;
     virtual void value(long long& n)            const;
     virtual void value(double& n)               const;
-    virtual void value(string& n)               const;
+    virtual void value(std::string& n)               const;
     virtual void value(Date& n)                 const { Content::value(n); }
     virtual void value(Time& n)                 const { Content::value(n); }
     virtual void value(DateTime& n)             const { Content::value(n); }
-    virtual void value(vector<Value>& n)        const { Content::value(n); }
-    virtual void value(map<Value,Value>& n)     const { Content::value(n); }
+    virtual void value(std::vector<Value>& n)        const { Content::value(n); }
+    virtual void value(std::map<Value,Value>& n)     const { Content::value(n); }
 
     virtual int  compareBool(const BoolContent&)            const {return -1; }
     virtual int  compareNumber(const NumberContent&)        const;
@@ -83,7 +83,7 @@ protected:
 
     virtual void    print(std::ostream&) const;
     virtual void   json(JSON&)     const;
-	virtual string  typeName()      const { return "Number"; }
+	virtual std::string  typeName()      const { return "Number"; }
 	virtual bool    isNumber()      const { return true; }
 
     // -- From Streamable

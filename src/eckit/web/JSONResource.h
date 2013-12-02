@@ -30,7 +30,7 @@ public:
 
 // -- Contructors
 
-    JSONResource(const string&);
+    JSONResource(const std::string&);
 
 // -- Destructor
 

@@ -33,7 +33,7 @@ ExpPtr Count::optimise(size_t depth) const
     return self();
 }
 
-string Count::returnSignature() const
+std::string Count::returnSignature() const
 {
     return Scalar::sig();
 }

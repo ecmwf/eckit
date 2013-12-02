@@ -45,7 +45,7 @@ public:
 
 private:
 	
-	vector<char>  buffer_;
+	std::vector<char>  buffer_;
 };
 
 //-----------------------------------------------------------------------------

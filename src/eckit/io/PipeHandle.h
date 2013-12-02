@@ -27,7 +27,7 @@ public:
 
 // -- Contructors
 
-	PipeHandle(const string&);
+	PipeHandle(const std::string&);
 	PipeHandle(Stream&);
 
 // -- Destructor
@@ -56,8 +56,8 @@ public:
 	virtual void restartWriteFrom(const Offset& from);
     */
     /* virtual void toRemote(Stream&) const; */
-    /* virtual void cost(map<string,Length>&, bool) const; */
-    /* virtual string title() const; */
+    /* virtual void cost(std::map<std::string,Length>&, bool) const; */
+    /* virtual std::string title() const; */
     virtual bool moveable() const { return false; }
 
     virtual Offset seek(const Offset&);
@@ -75,7 +75,7 @@ private:
 
 // -- Members
 
-	string        name_;
+	std::string        name_;
 	FILE*         file_;
 	bool          read_;
 

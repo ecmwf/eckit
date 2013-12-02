@@ -41,8 +41,8 @@ public:
 
 // -- Methods
 
-	void handle(const vector<Request*>&);
-	void pick(std::list<Request*>&,vector<Request*>&);
+	void handle(const std::vector<Request*>&);
+	void pick(std::list<Request*>&,std::vector<Request*>&);
 	void idle();
 
 	bool busy() const { return busy_; }

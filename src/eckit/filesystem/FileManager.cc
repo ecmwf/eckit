@@ -22,8 +22,8 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 #if 0
-typedef map<string,FileManager*>    FileManagerMap;
-typedef map<string,FileManagerFactory*> FactoryManagerMap;
+typedef std::map<std::string,FileManager*>    FileManagerMap;
+typedef std::map<std::string,FileManagerFactory*> FactoryManagerMap;
 
 static Mutex* local_mutex         = 0;
 static FileManagerMap*    m = 0;
@@ -43,11 +43,11 @@ static void init(void)
 #endif
 
 static Mutex local_mutex;
-static map<string,FileManager*> m;
+static std::map<std::string,FileManager*> m;
 
 //-----------------------------------------------------------------------------
 
-FileManager::FileManager(const string& name):
+FileManager::FileManager(const std::string& name):
         name_(name)
 {
     
@@ -64,11 +64,11 @@ FileManager::~FileManager()
    
 }
 
-FileManager& FileManager::lookUp(const string& name)
+FileManager& FileManager::lookUp(const std::string& name)
 {
  
     AutoLock<Mutex> lock(local_mutex);
-    map<string, FileManager*>::const_iterator j = m.find(name);
+    std::map<std::string, FileManager*>::const_iterator j = m.find(name);
     
     Log::info() << "Looking for FileManager [" << name << "]" << std::endl;
 
@@ -78,7 +78,7 @@ FileManager& FileManager::lookUp(const string& name)
 	Log::error() << "Managers are:" << std::endl;
 	for(j = m.begin() ; j != m.end() ; ++j)
 	  Log::error() << "   " << *((*j).second) << std::endl;
-        throw SeriousBug(string("No FileManager called ") + name);
+        throw SeriousBug(std::string("No FileManager called ") + name);
     }
 
     return *((*j).second);
@@ -88,7 +88,7 @@ FileManager& FileManager::lookUp(const string& name)
 
 #if 0
 
-ManagerFactory::ManagerFactory(const string& name):
+ManagerFactory::ManagerFactory(const std::string& name):
         name_(name)
 {
     pthread_once(&once,init);
@@ -107,7 +107,7 @@ ManagerFactory::~ManagerFactory()
     f->erase(name_);
 }
 
-FileManager* ManagerFactory::build(const string& name)
+FileManager* ManagerFactory::build(const std::string& name)
 {
     pthread_once(&once,init);
     AutoLock<Mutex> lock(local_mutex);
@@ -117,7 +117,7 @@ FileManager* ManagerFactory::build(const string& name)
 
     if (!in) throw CantOpenFile(config);
 
-    string s,n;
+    std::string s,n;
 
     while (in >> s >> n)
         if ( s[0] != '#' && s != "" && n != "")
@@ -138,7 +138,7 @@ FileManager* ManagerFactory::build(const string& name)
     if (f->find(name) != f->end())
         return (*f)[name]->make(name);
 
-    throw SeriousBug(string("Cannot find a tape manager for server ") + name);
+    throw SeriousBug(std::string("Cannot find a tape manager for server ") + name);
 }
 
 #endif
@@ -169,7 +169,7 @@ class LocalFileManager : public FileManager {
     }
 
 public:
-    LocalFileManager(const string& name) : FileManager(name) {}
+    LocalFileManager(const std::string& name) : FileManager(name) {}
 };
 
 //-----------------------------------------------------------------------------
@@ -193,7 +193,7 @@ class MarsFSFileManager : public FileManager {
     }
 
 public:
-    MarsFSFileManager(const string& name) : FileManager(name) {}
+    MarsFSFileManager(const std::string& name) : FileManager(name) {}
 };
 
 //-----------------------------------------------------------------------------

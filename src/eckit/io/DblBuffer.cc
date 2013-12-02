@@ -28,9 +28,9 @@ namespace eckit {
 
 class DblBufferError : public Exception {
     public:
-        DblBufferError(const string& what)
+        DblBufferError(const std::string& what)
         {
-            reason(string("Double buffer error: ") + what);
+            reason(std::string("Double buffer error: ") + what);
         }
 };
 
@@ -71,7 +71,7 @@ DblBuffer::~DblBuffer()
 {
 }
 
-inline void DblBuffer::error(const string& why)
+inline void DblBuffer::error(const std::string& why)
 {
     AutoLock<Mutex> lock(mutex_);
     error_ = true;

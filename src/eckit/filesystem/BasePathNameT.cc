@@ -109,7 +109,7 @@ bool BasePathNameT<T>::available() const
 }
 
 template<class T>
-string BasePathNameT<T>::clusterName() const
+std::string BasePathNameT<T>::clusterName() const
 {
     return path_.clusterName();
 }
@@ -139,26 +139,26 @@ void BasePathNameT<T>::touch() const
 }
 
 template<class T>
-void BasePathNameT<T>::children(vector<BasePathName*>& dirs,vector<BasePathName*>& files) const
+void BasePathNameT<T>::children(std::vector<BasePathName*>& dirs,std::vector<BasePathName*>& files) const
 {
-	vector<T> d;
-	vector<T> f;
+	std::vector<T> d;
+	std::vector<T> f;
 	path_.children(d, f);
 
-	for(typename vector<T>::iterator j = d.begin(); j != d.end() ; ++j)
+	for(typename std::vector<T>::iterator j = d.begin(); j != d.end() ; ++j)
 	    	dirs.push_back(new BasePathNameT<T>(*j));
 
-	for(typename vector<T>::iterator j = f.begin(); j != f.end() ; ++j)
+	for(typename std::vector<T>::iterator j = f.begin(); j != f.end() ; ++j)
 	    	files.push_back(new BasePathNameT<T>(*j));
 }
 
 template<class T>
-void BasePathNameT<T>::match(vector<BasePathName*>& result,bool rec) const
+void BasePathNameT<T>::match(std::vector<BasePathName*>& result,bool rec) const
 {
-    vector<T> r;
+    std::vector<T> r;
     T::match(path_, r, rec);
 
-    for(typename vector<T>::iterator j = r.begin(); j != r.end() ; ++j)
+    for(typename std::vector<T>::iterator j = r.begin(); j != r.end() ; ++j)
     	result.push_back(new BasePathNameT<T>(*j));
 }
 
@@ -205,9 +205,9 @@ BasePathName* BasePathNameT<T>::baseName(bool ext) const
 }
 
 template<class T>
-string BasePathNameT<T>::asString() const
+std::string BasePathNameT<T>::asString() const
 {
-    return string(path_);
+    return std::string(path_);
 }
 
 template<class T>
@@ -236,13 +236,13 @@ DataHandle* BasePathNameT<T>::partHandle(const Offset& o, const Length& l) const
 
 
 template<class T>
-const string& BasePathNameT<T>::node() const
+const std::string& BasePathNameT<T>::node() const
 {
     return path_.node();
 }
 
 template<class T>
-const string& BasePathNameT<T>::path() const
+const std::string& BasePathNameT<T>::path() const
 {
     return path_.path();
 }

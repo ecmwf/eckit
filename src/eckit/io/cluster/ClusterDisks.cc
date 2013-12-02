@@ -37,7 +37,7 @@ class ClusterDisk {
 	char path_[2048];
 
 public:
-	ClusterDisk(const string& node, const string& type, const string& path) :
+	ClusterDisk(const std::string& node, const std::string& type, const std::string& path) :
 		active_(true), offLine_(false), lastSeen_(::time(0))
 	{
 		zero(node_);
@@ -126,7 +126,7 @@ static DiskArray* clusterDisks = 0;
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 
-static vector<string> localPaths;
+static std::vector<std::string> localPaths;
 
 static void init()
 {
@@ -202,7 +202,7 @@ void ClusterDisks::offLine(const NodeInfo& info)
 	}
 }
 
-void ClusterDisks::update(const string& node, const string& type, const vector<string>& disks)
+void ClusterDisks::update(const std::string& node, const std::string& type, const std::vector<std::string>& disks)
 {
 
 	pthread_once(&once, init);
@@ -217,7 +217,7 @@ void ClusterDisks::update(const string& node, const string& type, const vector<s
 		}
 	}
 
-	for(vector<string>::const_iterator j = disks.begin(); j != disks.end(); ++j)
+	for(std::vector<std::string>::const_iterator j = disks.begin(); j != disks.end(); ++j)
 	{
 		ClusterDisk c(node, type, *j);
         DiskArray::iterator k = std::lower_bound(clusterDisks->begin(), clusterDisks->end(), c);
@@ -270,7 +270,7 @@ void ClusterDisks::json(JSON& j)
 
 }
 
-time_t ClusterDisks::lastModified(const string& type)
+time_t ClusterDisks::lastModified(const std::string& type)
 {
 
 	pthread_once(&once, init);
@@ -288,7 +288,7 @@ time_t ClusterDisks::lastModified(const string& type)
 	return last;
 }
 
-void ClusterDisks::load(const string& type, vector<string>& disks)
+void ClusterDisks::load(const std::string& type, std::vector<std::string>& disks)
 {
 
 	pthread_once(&once, init);
@@ -298,17 +298,17 @@ void ClusterDisks::load(const string& type, vector<string>& disks)
 	{
 		if((*k).active() && ((*k).type() == type))
 		{
-			disks.push_back(string("marsfs://") + (*k).node() + (*k).path());
+			disks.push_back(std::string("marsfs://") + (*k).node() + (*k).path());
 		}
 	}
 
 }
 
-string ClusterDisks::node(const string& path)
+std::string ClusterDisks::node(const std::string& path)
 {
 
 	pthread_once(&once, init);
-	vector<string> nodes;
+	std::vector<std::string> nodes;
 
 	DiskArray::const_iterator j = clusterDisks->end();
 
@@ -325,7 +325,7 @@ string ClusterDisks::node(const string& path)
 				<< "marsfs://" << (*k).node() << "/" << (*k).path()
 				<< StrStream::ends;
 
-				throw SeriousBug(string(os));
+				throw SeriousBug(std::string(os));
 			}
 			j = k;
 		}
@@ -353,12 +353,12 @@ string ClusterDisks::node(const string& path)
             if(line[0] != 0  || line[0] != '#')
             {
                 Tokenizer tokenize(", \t");
-                vector<string> tokens;
+                std::vector<std::string> tokens;
                 tokenize(line, tokens);
                 if(tokens.size() == 2)
                 {
                     const FileSpace &fs = FileSpace::lookUp(tokens[0]);
-                    const vector<PathName>& v = fs.fileSystems();
+                    const std::vector<PathName>& v = fs.fileSystems();
                     for(size_t j = 0; j<v.size(); ++j)
                     {
                         if(path.find(v[j].asString()) == 0)
@@ -374,7 +374,7 @@ string ClusterDisks::node(const string& path)
     
 		StrStream os;
 		os << "No node found for [" << path << "]" << StrStream::ends;
-		throw SeriousBug(string(os));
+		throw SeriousBug(std::string(os));
 	}
 
 	return (*j).node();

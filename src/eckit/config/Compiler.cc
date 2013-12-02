@@ -33,9 +33,9 @@ Compiler::~Compiler() {}
 
 static const bool with_spaces = true;
 
-string Compiler::consumeToEOL()
+std::string Compiler::consumeToEOL()
 {
-    string s;
+    std::string s;
     char n = peek(with_spaces);
     while( n && n != '\n' )
     {
@@ -51,13 +51,13 @@ void Compiler::consumeComment()
     consumeToEOL();
 }
 
-string Compiler::parseIdentifier()
+std::string Compiler::parseIdentifier()
 {
-    string s;
+    std::string s;
     char c = peek();
     
     if( isdigit(c) )
-        throw StreamParser::Error(string("Compiler::parseIdentifier -- 1st char in identifier cannot be digit"));        
+        throw StreamParser::Error(std::string("Compiler::parseIdentifier -- 1st char in identifier cannot be digit"));        
     
     while( isIdentifier(c) )
     {
@@ -66,16 +66,16 @@ string Compiler::parseIdentifier()
     }
     
     if( s.empty() )
-        throw StreamParser::Error(string("Compiler::parseIdentifier -- empty identifier"));
+        throw StreamParser::Error(std::string("Compiler::parseIdentifier -- empty identifier"));
     
 //    std::cout << "identifier [" << s << "]" << std::endl;    
     
     return s;
 }
 
-string Compiler::parseValue( bool dontBreakOnSpace )
+std::string Compiler::parseValue( bool dontBreakOnSpace )
 {    
-    string s;
+    std::string s;
     char c = peek();
     
     if( c == '\'' || c == '"')

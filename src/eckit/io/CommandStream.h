@@ -28,7 +28,7 @@ public:
 
 // -- Contructors
 	
-	CommandStream(const string& name,const char *mode);
+    CommandStream(const std::string& name,const char *mode);
 
 // -- Destructor
 
@@ -50,7 +50,7 @@ private:
 // -- Overridden methods
 
 	// From Stream
-	virtual string name() const;
+    virtual std::string name() const;
 };
 
 

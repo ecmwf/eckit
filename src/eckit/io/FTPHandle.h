@@ -33,7 +33,7 @@ public:
 
 // -- Contructors
 
-	FTPHandle(const string&,const string&,int port = 21);
+	FTPHandle(const std::string&,const std::string&,int port = 21);
 	FTPHandle(Stream&);
 
 // -- Destructor
@@ -67,17 +67,17 @@ private:
 
 // -- Members
 
-	string        remote_;
-	string        host_;
+	std::string        remote_;
+	std::string        host_;
 	int           port_;
 	TCPClient     cmds_;
 	TCPSocket     data_;
 
 // -- Methods
 	
-	void   ftpCommand(const string&);
-	string readLine();
-	void   open(const string&);
+	void   ftpCommand(const std::string&);
+	std::string readLine();
+	void   open(const std::string&);
 
 // -- Class members
 

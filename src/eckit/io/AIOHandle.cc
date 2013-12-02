@@ -113,7 +113,7 @@ long AIOHandle::write(const void* buffer,long length)
                     // TODO: retry when filesystems are full
                     StrStream os;
                     os << "AIOHandle: only " << len << " bytes written instead of " << len_[n] << StrStream::ends;
-                    throw WriteError(string(os));
+                    throw WriteError(std::string(os));
                 }
                 ok = true;
                 break;
@@ -203,7 +203,7 @@ void AIOHandle::flush()
                     // TODO: retry when filesystems are full
                     StrStream os;
                     os << "AIOHandle: only " << len << " bytes written instead of " << len_[n] << StrStream::ends;
-                    throw WriteError(string(os));
+                    throw WriteError(std::string(os));
                 }
                 break;
             }
@@ -262,8 +262,8 @@ Offset AIOHandle::position()
 }
 
 
-string AIOHandle::title() const {
-    return string("AIO[") + PathName::shorten(path_) + "]";
+std::string AIOHandle::title() const {
+    return std::string("AIO[") + PathName::shorten(path_) + "]";
 }
 
 //-----------------------------------------------------------------------------

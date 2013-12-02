@@ -26,24 +26,24 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static PathName pathName(const string& name)
+static PathName pathName(const std::string& name)
 {
-	PathName path = string("~/txn/") + name;
+	PathName path = std::string("~/txn/") + name;
 	path.mkdir();
 	return path;
 }
 
 #if 0 // unused
-static PathName lockName(const string& name)
+static PathName lockName(const std::string& name)
 {
-	PathName path = string("~/txn/") + name + "/lock";
+	PathName path = std::string("~/txn/") + name + "/lock";
 	path.touch();
 	return path;
 }
 #endif
 
 template<class T>
-TxnLog<T>::TxnLog(const string& name):
+TxnLog<T>::TxnLog(const std::string& name):
 	path_(pathName(name)),
 	next_(path_ +  "/next"),
 	nextID_(next_,1)
@@ -65,7 +65,7 @@ PathName TxnLog<T>::name(T& event)
 {
 	StrStream s;
 	s << std::setfill('0') << std::setw(10) << event.transactionID() << StrStream::ends;
-	return path_ + "/" + string(s);
+	return path_ + "/" + std::string(s);
 }
 
 
@@ -98,7 +98,7 @@ void TxnLog<T>::end(T& event,bool backup)
 
 		// Append to current day's backup
 
-		string t(s);
+		std::string t(s);
 		FileStream log(t,"a");
 		log << event;
 	}
@@ -112,7 +112,7 @@ template<class T>
 class RecoverThread : public Thread {
 	MappedArray<TxnID>& nextID_;
 	TxnRecoverer<T>&    client_;
-	vector<PathName>    result_;
+	std::vector<PathName>    result_;
 	long                age_;
 	time_t              now_;
 	virtual void run();
@@ -142,8 +142,8 @@ RecoverThread<T>::RecoverThread(const PathName& path,
 	if(result_.size())
 	{
 		PathName last = result_[result_.size()-1];
-		string name = last.baseName();
-		TxnID id = Translator<string,unsigned long long>()(name);
+		std::string name = last.baseName();
+		TxnID id = Translator<std::string,unsigned long long>()(name);
 		if(id >= nextID_[0])
 			nextID_[0] = id + 1;
 	}
@@ -205,7 +205,7 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 	static const char *here = __FUNCTION__;
 
 	PathName path = path_ + "/[0-9]*";
-	vector<PathName>  active;
+	std::vector<PathName>  active;
 
 	PathName::match(path,active);
 
@@ -240,7 +240,7 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 		// Look for non active transactions
 
 		path = path_ + "/done/[0-9]*";
-		vector<PathName> dates;
+		std::vector<PathName> dates;
 
 		PathName::match(path,dates);
 

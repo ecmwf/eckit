@@ -37,7 +37,7 @@ Call::Call( ExpPtr f, ExpPtr a, ExpPtr b) : Function()
     push_back(b);
 }
 
-string Call::returnSignature() const
+std::string Call::returnSignature() const
 {
     return ";";
 }

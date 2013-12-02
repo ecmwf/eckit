@@ -23,7 +23,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-TCPServer::TCPServer(int port,const string& addr):
+TCPServer::TCPServer(int port,const std::string& addr):
     TCPSocket(),
     listen_(-1),
     port_(port),
@@ -40,7 +40,7 @@ TCPServer::~TCPServer()
 
 // Accept a client
 
-TCPSocket& TCPServer::accept(const string& message, int timeout, bool* connected)
+TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* connected)
 {
     bind();
 
@@ -125,7 +125,7 @@ int TCPServer::socket()
     return listen_;
 }
 
-string TCPServer::bindingAddress() const
+std::string TCPServer::bindingAddress() const
 {
     return addr_;
 }

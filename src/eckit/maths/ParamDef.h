@@ -28,7 +28,7 @@ class ParamDef : public Expression {
 
     virtual ExpPtr resolve(Scope & ctx) const;
 
-    string name_;
+    std::string name_;
 
 public: //  methods
 
@@ -37,11 +37,11 @@ public: //  methods
 
     static bool is ( const ExpPtr& e );
 
-    ParamDef(const string& name);
+    ParamDef(const std::string& name);
 
     virtual ~ParamDef();
 
-    const string& name() const { return name_; }
+    const std::string& name() const { return name_; }
 
 private:
 
@@ -56,7 +56,7 @@ private:
     virtual ExpPtr cloneWith(args_t &a) const;
 };
 
-ExpPtr paramdef(const string& name);
+ExpPtr paramdef(const std::string& name);
 
 //--------------------------------------------------------------------------------------------
 

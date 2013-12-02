@@ -39,7 +39,7 @@ void ReadConfig::run()
 {
     // get values
     
-    string valueStr  = Resource<string>("-values","");
+    std::string valueStr  = Resource<std::string>("-values","");
     StringList values;
     
     Tokenizer parse(":,");
@@ -59,7 +59,7 @@ void ReadConfig::run()
             
     // get file
     
-    string filename = Resource<string>("-file","");    
+    std::string filename = Resource<std::string>("-file","");
     
     if( filename.empty() )
     {

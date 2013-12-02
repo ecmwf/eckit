@@ -16,7 +16,7 @@
 
 #include "eckit/filesystem/PathName.h"
 
-// Used to map an array to a file 
+// Used to std::map an array to a file 
 
 namespace eckit {
 

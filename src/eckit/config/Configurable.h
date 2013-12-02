@@ -48,9 +48,9 @@ public:
     static void htmlAllResources(std::ostream&,Url&);
 
     /// @returns the name of the class
-    virtual string kind() const  { return "Configurable"; }
+    virtual std::string kind() const  { return "Configurable"; }
     /// @returns the name of the instance
-    virtual string name() const  { return "Unknown"; }
+    virtual std::string name() const  { return "Unknown"; }
 
 private:
 

@@ -35,7 +35,7 @@ class ClusterNodeEntry {
 	int port_;
 
 public:
-	ClusterNodeEntry(const string& node, const string& type, const string& host, int port) :
+	ClusterNodeEntry(const std::string& node, const std::string& type, const std::string& host, int port) :
 		active_(true), lastSeen_(::time(0)), offLine_(false), port_(port)
 	{
 		zero(node_);
@@ -82,7 +82,7 @@ public:
 	void receive(Stream& s)
 	{
 		unsigned long long t;
-		string x;
+		std::string x;
 
 		s >> t;
 		lastSeen_ = t;
@@ -157,7 +157,7 @@ public:
 		return host_;
 	}
 
-	void host(const string& h)
+	void host(const std::string& h)
 	{
 		zero(host_);
 		strncpy(host_, h.c_str(), sizeof(host_) - 1);
@@ -266,7 +266,7 @@ void ClusterNodes::refresh(const NodeInfo& info)
 	std::sort(nodeArray->begin(), nodeArray->end());
 }
 
-NodeInfo ClusterNodes::lookUp(const string& type, const string& node)
+NodeInfo ClusterNodes::lookUp(const std::string& type, const std::string& node)
 {
 	pthread_once(&once, init);
 	AutoLock<NodeArray> lock(*nodeArray);
@@ -285,10 +285,10 @@ NodeInfo ClusterNodes::lookUp(const string& type, const string& node)
 		}
 	}
 
-	throw SeriousBug(string("Cannot find info for ") + type + "@" + node);
+	throw SeriousBug(std::string("Cannot find info for ") + type + "@" + node);
 }
 
-NodeInfo ClusterNodes::any(const string& type)
+NodeInfo ClusterNodes::any(const std::string& type)
 {
 	pthread_once(&once, init);
 	AutoLock<NodeArray> lock(*nodeArray);
@@ -307,10 +307,10 @@ NodeInfo ClusterNodes::any(const string& type)
 		}
 	}
 
-	throw Retry(string("Cannot find any node for ") + type);
+	throw Retry(std::string("Cannot find any node for ") + type);
 }
 
-bool ClusterNodes::available(const string& type, const string& node)
+bool ClusterNodes::available(const std::string& type, const std::string& node)
 {
 	pthread_once(&once, init);
 	AutoLock<NodeArray> lock(*nodeArray);
@@ -329,8 +329,8 @@ void ClusterNodes::offLine(const NodeInfo& info)
 	pthread_once(&once, init);
 	AutoLock<NodeArray> lock(*nodeArray);
 
-	const string& node = info.node();
-	const string& type = info.name();
+	const std::string& node = info.node();
+	const std::string& type = info.name();
 
 	for (NodeArray::iterator k = nodeArray->begin(); k != nodeArray->end(); ++k)
 	{
@@ -339,7 +339,7 @@ void ClusterNodes::offLine(const NodeInfo& info)
 	}
 }
 
-void ClusterNodes::offLine(const string& host,int port)
+void ClusterNodes::offLine(const std::string& host,int port)
 {
 	pthread_once(&once, init);
 	AutoLock<NodeArray> lock(*nodeArray);
@@ -351,7 +351,7 @@ void ClusterNodes::offLine(const string& host,int port)
 	}
 }
 
-void ClusterNodes::onLine(const string& host,int port)
+void ClusterNodes::onLine(const std::string& host,int port)
 {
 	pthread_once(&once, init);
 	AutoLock<NodeArray> lock(*nodeArray);
@@ -375,10 +375,10 @@ void ClusterNodes::list(std::ostream& out)
 	}
 }
 
-vector<NodeInfo> ClusterNodes::all()
+std::vector<NodeInfo> ClusterNodes::all()
 {
 	pthread_once(&once, init);
-    vector<NodeInfo> result;
+    std::vector<NodeInfo> result;
 
 	AutoLock<NodeArray> lock(*nodeArray);
 	for (NodeArray::const_iterator k = nodeArray->begin(); k != nodeArray->end(); ++k)

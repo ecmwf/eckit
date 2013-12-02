@@ -24,12 +24,12 @@ static Mutex local_mutex_;
 
 //-----------------------------------------------------------------------------
 
-Error::Error(const eckit::CodeLocation& loc, const string& s)
+Error::Error(const eckit::CodeLocation& loc, const std::string& s)
     : Exception( s, loc )
 {
 }
 
-Error::Error(const eckit::CodeLocation& loc, const string& s, int errorcode)
+Error::Error(const eckit::CodeLocation& loc, const std::string& s, int errorcode)
     : Exception( "", loc )
 {
     std::ostringstream r;

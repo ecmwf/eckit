@@ -34,10 +34,10 @@ void TCPClient::bind()
 		socket_ = newSocket(port_);
 }
 
-string TCPClient::bindingAddress() const
+std::string TCPClient::bindingAddress() const
 {
-	//return  Resource<string>("localBindingAddr","127.0.0.1");
-	return  Resource<string>("localBindingAddr","");
+	//return  Resource<std::string>("localBindingAddr","127.0.0.1");
+	return  Resource<std::string>("localBindingAddr","");
 }
 
 //-----------------------------------------------------------------------------

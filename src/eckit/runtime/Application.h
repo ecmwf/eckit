@@ -163,7 +163,7 @@ public:
 	virtual void wait()   {}
 	virtual bool active() { return true; }
 
-	string        appName()   { return name_;    }
+	std::string        appName()   { return name_;    }
 	bool          running()   { return running_;    }
 
     time_t        uptime();
@@ -175,7 +175,7 @@ protected: // methods
 	// From Configurable
 
 	virtual void   reconfigure();
-	virtual string name() const   { return name_; }
+	virtual std::string name() const   { return name_; }
 
 private: // members
     
@@ -184,13 +184,13 @@ private: // members
     LC location_policy;
     SH signal_policy;
     
-    string name_;
+    std::string name_;
 	bool   running_;
     
     static Application<LG,MN,LC,SH>* instance_;
 
 	/// overriden from Configurable
-	virtual string kind() const  { return "Application"; }
+	virtual std::string kind() const  { return "Application"; }
 
 	friend class AppCommand;    ///< in order to call reconfigure
 	friend class ResourceBase;
@@ -264,7 +264,7 @@ void Application<LG,MN,LC,SH>::start()
 {
 	int status = 0;
 
-    string displayName = Resource<string>("-name",name_);
+    std::string displayName = Resource<std::string>("-name",name_);
     
     Context::instance().displayName( displayName );
     
@@ -321,7 +321,7 @@ void Application<LG,MN,LC,SH>::unique()
 	if(sem->test())
 	{
 		std::ifstream os(lockFile.localPath());
-		string s;
+		std::string s;
 		os >> s;
 		throw SeriousBug("Application " + name() + " is already running as pid " + s);
 	}

@@ -24,12 +24,12 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-typedef map<string, FileSpace*> Map;
+typedef std::map<std::string, FileSpace*> Map;
 
 static Mutex local_mutex;
 static Map space;
 
-FileSpace::FileSpace(const string& name) :
+FileSpace::FileSpace(const std::string& name) :
 	name_(name), last_(0)
 {
 	AutoLock<Mutex> lock(local_mutex);
@@ -44,7 +44,7 @@ FileSpace::~FileSpace()
 	space.erase(name_);
 }
 
-static const PathName& leastUsed(const vector<PathName>& fileSystems)
+static const PathName& leastUsed(const std::vector<PathName>& fileSystems)
 {
 	static const char *here = __FUNCTION__;
 	unsigned long long free = 0;
@@ -83,14 +83,14 @@ static const PathName& leastUsed(const vector<PathName>& fileSystems)
 	}
 
 	if(!checked)
-        throw Retry(string("No available filesystem (") + fileSystems[0] + ")");
+        throw Retry(std::string("No available filesystem (") + fileSystems[0] + ")");
 
 	Log::info() << "Least used file system: " << fileSystems[best] << " " << Bytes(free) << " available" << std::endl;
 
 	return fileSystems[best];
 }
 
-static const PathName& roundRobin(const vector<PathName>& fileSystems)
+static const PathName& roundRobin(const std::vector<PathName>& fileSystems)
 {
 	static const char *here = __FUNCTION__;
 	static long value = -1;
@@ -157,7 +157,7 @@ static const PathName& roundRobin(const vector<PathName>& fileSystems)
 
 }
 
-static const PathName& pureRandom(const vector<PathName>& fileSystems)
+static const PathName& pureRandom(const std::vector<PathName>& fileSystems)
 {
 	static const char *here = __FUNCTION__;
 	static Resource<long> candidate("candidateFileSystem", 99);
@@ -205,14 +205,14 @@ static const PathName& pureRandom(const vector<PathName>& fileSystems)
 
 }
 
-static const PathName& weightedRandom(const vector<PathName>& fileSystems)
+static const PathName& weightedRandom(const std::vector<PathName>& fileSystems)
 {
 	static const char *here = __FUNCTION__;
 	static Resource<long> candidate("candidateFileSystem", 99);
 
 	ASSERT(fileSystems.size() != 0);
 
-	map<long, long long> scores;
+	std::map<long, long long> scores;
 	long long free_space = 0;
 	long long scale = 1;
 
@@ -260,7 +260,7 @@ static const PathName& weightedRandom(const vector<PathName>& fileSystems)
 	long value = (*scores.begin()).first;
 	long last = 0;
 
-	for(map<long, long long>::iterator j = scores.begin(); j != scores.end(); ++j)
+	for(std::map<long, long long>::iterator j = scores.begin(); j != scores.end(); ++j)
 	{
 		long s = (*j).second / scale;
 #if 0
@@ -276,14 +276,14 @@ static const PathName& weightedRandom(const vector<PathName>& fileSystems)
 	return fileSystems[value];
 }
 
-const PathName& FileSpace::selectFileSystem(const string& s) const
+const PathName& FileSpace::selectFileSystem(const std::string& s) const
 {
 
 	load();
 
 	if(fileSystems_.size() == 0)
 	{
-		throw Retry(string("FileSpace [") + name_ + "] is undefined");
+		throw Retry(std::string("FileSpace [") + name_ + "] is undefined");
 	}
 
 	Log::info() << "FileSpace::selectFileSystem is " << s << std::endl;
@@ -300,8 +300,8 @@ const PathName& FileSpace::selectFileSystem(const string& s) const
 
 const PathName& FileSpace::selectFileSystem() const
 {
-	static Resource<string> s("fileSystemSelection", "leastUsed");
-	return selectFileSystem(string(s));
+	static Resource<std::string> s("fileSystemSelection", "leastUsed");
+	return selectFileSystem(std::string(s));
 }
 
 bool FileSpace::owns(const PathName& path) const
@@ -349,22 +349,22 @@ const PathName& FileSpace::find(const PathName& path, bool& found) const
 	return path;
 }
 
-const FileSpace& FileSpace::lookUp(const string& name)
+const FileSpace& FileSpace::lookUp(const std::string& name)
 {
 	AutoLock<Mutex> lock(local_mutex);
 
 	Map::iterator j = space.find(name);
 	if(j == space.end())
 	{
-        std::pair<string, FileSpace*> p(name, new FileSpace(name));
+        std::pair<std::string, FileSpace*> p(name, new FileSpace(name));
 		j = space.insert(p).first;
 	}
 	return *(*j).second;
 }
 
-bool FileSpace::exists(const string& name)
+bool FileSpace::exists(const std::string& name)
 {
-	PathName config(string("~/etc/disks/") + name);
+	PathName config(std::string("~/etc/disks/") + name);
 	return config.exists();
 }
 
@@ -373,7 +373,7 @@ void FileSpace::load() const
 {
 	FileSpace* self = const_cast<FileSpace*> (this);
 
-	PathName config(string("~/etc/disks/") + name_);
+	PathName config(std::string("~/etc/disks/") + name_);
 	time_t mod1 = config.lastModified();
 	time_t mod2 = ClusterDisks::lastModified(name_);
     time_t modified = std::max(mod1, mod2);
@@ -392,7 +392,7 @@ void FileSpace::load() const
 	if(!in)
 		throw CantOpenFile(config);
 
-	vector<string> disks;
+	std::vector<std::string> disks;
 
 	char line[1024];
 	while(in >> line)

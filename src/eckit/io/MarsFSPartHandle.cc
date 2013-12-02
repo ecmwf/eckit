@@ -127,7 +127,7 @@ long MarsFSPartHandle::read1(char *buffer,long length)
     {
         StrStream s;
         s << path_ << ": cannot read " << size << ", got only " << n << StrStream::ends;
-        throw ReadError(string(s));
+        throw ReadError(std::string(s));
     }
 
     pos_ += n;
@@ -262,19 +262,19 @@ DataHandle* MarsFSPartHandle::toLocal()
     return this;
 }
 
-void MarsFSPartHandle::cost(map<string,Length>& c, bool read) const
+void MarsFSPartHandle::cost(std::map<std::string,Length>& c, bool read) const
 {
     if(read) {
         c[path_.node()] += const_cast<MarsFSPartHandle*>(this)->estimate();
     }
 }
 
-string MarsFSPartHandle::title() const
+std::string MarsFSPartHandle::title() const
 {
     StrStream os;
     os << "marsfs:/" << path_.node() << "/" << PathName::shorten(path_.path())
         << " (" << length_.size() << ")" << StrStream::ends;
-    return string(os);
+    return std::string(os);
 }
 
 //-----------------------------------------------------------------------------

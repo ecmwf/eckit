@@ -23,7 +23,7 @@ ClassSpec StringContent::classSpec_ = {&Content::classSpec(),"StringContent",};
 Reanimator<StringContent> StringContent::reanimator_;
 
 
-StringContent::StringContent(const string& s): 
+StringContent::StringContent(const std::string& s): 
 	value_(s) 
 { 
 }
@@ -69,7 +69,7 @@ int StringContent::compareString(const StringContent& other) const
 	return ::strcmp(value_.c_str(),other.value_.c_str());
 }
 
-void StringContent::value(string& s) const 
+void StringContent::value(std::string& s) const 
 { 
 	s = value_; 
 }

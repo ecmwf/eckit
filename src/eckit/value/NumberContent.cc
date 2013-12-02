@@ -24,8 +24,8 @@ namespace eckit {
 
 class BadBoolConversion:  public Exception { 
 	public: 
-		BadBoolConversion(const string& w):
-			Exception(string("Bad Bool Conversion: ") + w)   {  }
+		BadBoolConversion(const std::string& w):
+			Exception(std::string("Bad Bool Conversion: ") + w)   {  }
 };
 
 //=============================================================================
@@ -108,9 +108,9 @@ void NumberContent::value(double& l) const
     l = value_;
 }
 
-void NumberContent::value(string& s) const 
+void NumberContent::value(std::string& s) const 
 { 
-    s = Translator<long long,string>()(value_);
+    s = Translator<long long,std::string>()(value_);
 }
 
 Content* NumberContent::add(const Content& other) const

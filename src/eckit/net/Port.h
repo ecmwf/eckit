@@ -30,7 +30,7 @@ public:
 
 // -- Contructors
 
-	Port(const string&, int );
+	Port(const std::string&, int );
 
 // -- Operators
 

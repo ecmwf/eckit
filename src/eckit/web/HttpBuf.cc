@@ -23,7 +23,7 @@ static int xindex = std::ios::xalloc();
 
 //-----------------------------------------------------------------------------
 
-typedef vector<char> VC;
+typedef std::vector<char> VC;
 
 class back_encoder_iterator : public std::iterator<std::output_iterator_tag,char>
 {
@@ -77,7 +77,7 @@ int HttpBuf::sync()
 	if(owner_.iword(xindex))
         std::copy(pbase(),pptr(),back_encoder(buffer_));
 	else 
-        std::copy(pbase(),pptr(),back_inserter(buffer_));
+        std::copy(pbase(),pptr(), std::back_inserter(buffer_));
 
 	setp(pbase(), epptr());
 	return 0;
@@ -116,7 +116,7 @@ void HttpBuf::write(std::ostream& out, Url& url)
 #if 0
 	Log::debug() << "Data: " << std::endl;
 
-	for(vector<char>::iterator i = buffer_.begin(); i != buffer_.end(); ++i)
+	for(std::vector<char>::iterator i = buffer_.begin(); i != buffer_.end(); ++i)
 		if(isprint(*i) || isspace(*i)) 
 			Log::debug() << *i;
 		else

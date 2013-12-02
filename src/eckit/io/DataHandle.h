@@ -84,7 +84,7 @@ public:
     /// Save into a file
     Length appendTo(const PathName&); 
 
-	virtual string name() const;
+    virtual std::string name() const;
 
 
     /// Compare bytes
@@ -105,8 +105,8 @@ public:
     virtual DataHandle* toLocal();
 
     virtual void toRemote(Stream& s) const;
-    virtual void cost(map<string,Length>&, bool) const;
-    virtual string title() const;
+    virtual void cost(std::map<std::string,Length>&, bool) const;
+    virtual std::string title() const;
 
 // -- Overridden methods
 

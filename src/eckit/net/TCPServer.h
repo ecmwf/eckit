@@ -32,7 +32,7 @@ public:
 
 // -- Contructors
 
-    TCPServer(int port = 0, const string& addr = "");
+    TCPServer(int port = 0, const std::string& addr = "");
 	
 
 // -- Destructor
@@ -46,7 +46,7 @@ public:
 
     // accept a client, more can be accepted
 
-    TCPSocket& accept(const string& message = "Waiting for connection", int timeout = 0, bool* connected= 0);
+    TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0, bool* connected= 0);
 	 void closeExec(bool on) { closeExec_ = on; }
 
 // -- Overridden methods
@@ -64,7 +64,7 @@ protected:
 
     int port_;
     int listen_;
-    string addr_;
+    std::string addr_;
 
 // -- Overridden methods
 
@@ -81,7 +81,7 @@ private:
 
     // To be used by Select
    
-    virtual string bindingAddress() const;
+    virtual std::string bindingAddress() const;
 	
     bool closeExec_;
 

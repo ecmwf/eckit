@@ -21,13 +21,13 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 class JSONTokenizerError : public std::exception {
-    string what_;
+    std::string what_;
     virtual const char* what() const  throw()
     {
         return what_.c_str();
     }
 public:
-    JSONTokenizerError(const string& what) : what_(what) {}
+    JSONTokenizerError(const std::string& what) : what_(what) {}
     virtual ~JSONTokenizerError() throw() {}
 };
 
@@ -54,7 +54,7 @@ Value JSONParser::parseNull()
 Value JSONParser::parseNumber()
 {
     bool real = false;
-    string s;
+    std::string s;
     char c = next();
     if(c == '-') {
         s += c;
@@ -78,7 +78,7 @@ Value JSONParser::parseNumber()
         }
         break;
     default:
-        throw JSONTokenizerError(string("JSONTokenizer::parseNumber invalid char '") + c + "'");
+        throw JSONTokenizerError(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
         break;
     }
 
@@ -87,7 +87,7 @@ Value JSONParser::parseNumber()
         s += next();
         c = next();
         if(!isdigit(c))
-            throw JSONTokenizerError(string("JSONTokenizer::parseNumber invalid char '") + c + "'");
+            throw JSONTokenizerError(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
         s += c;
         while(isdigit(peek())) {
             s += next();
@@ -108,7 +108,7 @@ Value JSONParser::parseNumber()
         }
 
         if(!isdigit(c))
-            throw JSONTokenizerError(string("JSONTokenizer::parseNumber invalid char '") + c + "'");
+            throw JSONTokenizerError(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
         s += c;
         while(isdigit(peek())) {
             s += next();
@@ -117,12 +117,12 @@ Value JSONParser::parseNumber()
     }
 
     if(real) {
-        double d = Translator<string,double>()(s);
+        double d = Translator<std::string,double>()(s);
         return Value(d);
     }
     else
     {
-        long long d = Translator<string,long long>()(s);
+        long long d = Translator<std::string,long long>()(s);
         return Value(d);
     }
 }
@@ -130,7 +130,7 @@ Value JSONParser::parseNumber()
 Value JSONParser::parseString()
 {
     consume('"');
-    string s;
+    std::string s;
     for(;;)
     {
         char c = next(true);
@@ -172,10 +172,10 @@ Value JSONParser::parseString()
                 break;
 
             case 'u':
-                throw JSONTokenizerError(string("JSONTokenizer::parseString \\uXXXX format not supported"));
+                throw JSONTokenizerError(std::string("JSONTokenizer::parseString \\uXXXX format not supported"));
                 break;
             default:
-                throw JSONTokenizerError(string("JSONTokenizer::parseString invalid \\ char '") + c + "'");
+                throw JSONTokenizerError(std::string("JSONTokenizer::parseString invalid \\ char '") + c + "'");
                 break;
             }
         }
@@ -192,7 +192,7 @@ Value JSONParser::parseString()
 
 }
 
-void JSONParser::parseKeyValue(map<Value,Value>& m)
+void JSONParser::parseKeyValue(std::map<Value,Value>& m)
 {
     Value k = parseString();
     consume(':');
@@ -211,7 +211,7 @@ Value JSONParser::parseObject()
         return Value::makeMap();
     }
 
-    map<Value,Value> m;
+    std::map<Value,Value> m;
 
     for(;;) {
 
@@ -240,7 +240,7 @@ Value JSONParser::parseArray()
         return Value::makeList();
     }
 
-    vector<Value> l;
+    std::vector<Value> l;
     for(;;) {
 
         l.push_back(parseValue());
@@ -285,7 +285,7 @@ Value JSONParser::parseValue()
     case '9': return parseNumber(); break;
 
     default:
-        throw JSONTokenizerError(string("JSONTokenizer::parseValue unexpected char '") + c + "'");
+        throw JSONTokenizerError(std::string("JSONTokenizer::parseValue unexpected char '") + c + "'");
         break;
     }
 }
@@ -299,7 +299,7 @@ Value JSONParser::parse()
     Value v = parseValue();
     char c = peek();
     if(c != 0)
-        throw JSONTokenizerError(string("JSONTokenizer::parse extra char '") + c + "'");
+        throw JSONTokenizerError(std::string("JSONTokenizer::parse extra char '") + c + "'");
     return v;
     
 }
@@ -311,7 +311,7 @@ void JSONParser::toStrDict( Value& json, StringDict& dict )
         ValueMap m ( json );
         
         for( ValueMap::iterator i = m.begin(); i != m.end(); ++i )
-            dict[ i->first ] = string(i->second);
+            dict[ i->first ] = std::string(i->second);
     }
 }
 

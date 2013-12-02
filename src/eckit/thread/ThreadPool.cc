@@ -78,7 +78,7 @@ void ThreadPoolThread::run()
     owner_.notifyEnd();
 }
 
-ThreadPool::ThreadPool(const string& name,int count, size_t stack):
+ThreadPool::ThreadPool(const std::string& name,int count, size_t stack):
     name_(name),
     count_(count),
     running_(0),
@@ -128,7 +128,7 @@ void ThreadPool::waitForThreads()
     if(error_)
     {
         error_ = false;
-        throw SeriousBug(string("ThreadPool::waitForThreads: ") + errorMessage_);
+        throw SeriousBug(std::string("ThreadPool::waitForThreads: ") + errorMessage_);
     }
 }
 
@@ -148,7 +148,7 @@ void ThreadPool::notifyEnd()
 //Log::info() << "ThreadPool::notifyEnd " << name_ << " running: " << running_ << std::endl;
 }
 
-void ThreadPool::error(const string& msg)
+void ThreadPool::error(const std::string& msg)
 {
     AutoLock<MutexCond> lock(done_);
     if(error_) errorMessage_ += " | ";

@@ -80,10 +80,10 @@ class ReanimatorBase {
 	virtual Streamable*  ressucitate(Stream&) const = 0;
 
 	class NotSubClass: public Exception
-	{ public: NotSubClass(const string&, const string&); };
+    { public: NotSubClass(const std::string&, const std::string&); };
 
 	class UnknowClass: public Exception
-	{ public: UnknowClass(const string&); };
+    { public: UnknowClass(const std::string&); };
 
 public:
 

@@ -31,8 +31,8 @@ public:
 
 // -- Contructors
 
-	MarsFSPath(const string&);
-	MarsFSPath(const string&, const string&);
+	MarsFSPath(const std::string&);
+	MarsFSPath(const std::string&, const std::string&);
 	/* MarsFSPath(const PathName&); */
 	MarsFSPath(const MarsFSPath&);
 	MarsFSPath(Stream&);
@@ -53,16 +53,16 @@ public:
 
 // -- Methods
 
-    const string& node() const { return node_; }
-    const string& path() const { return path_; }
-    //const string& name() const { return path_; }
+    const std::string& node() const { return node_; }
+    const std::string& path() const { return path_; }
+    //const std::string& name() const { return path_; }
 
     bool isLocal() const;
     bool isRemote() const { return !isLocal(); }
 
     // For PathName compatibility
 
-    operator  string() const;
+    operator  std::string() const;
     const char* localPath() const;
     
     MarsFSPath baseName(bool = true) const;
@@ -71,7 +71,7 @@ public:
     MarsFSPath orphanName() const;
     BasePathName* checkClusterNode() const;
 
-    string clusterName() const;
+    std::string clusterName() const;
 
     bool exists() const;
     bool available() const;
@@ -92,10 +92,10 @@ public:
     bool sameAs(const MarsFSPath&) const;
     MarsFSPath mountPoint() const;
 
-    void children(vector<MarsFSPath>&,vector<MarsFSPath>&) const;
+    void children(std::vector<MarsFSPath>&,std::vector<MarsFSPath>&) const;
 
     static MarsFSPath unique(const MarsFSPath&);
-    static void match(const MarsFSPath&,vector<MarsFSPath>&,bool=false);
+    static void match(const MarsFSPath&,std::vector<MarsFSPath>&,bool=false);
     static void link(const MarsFSPath& from,const MarsFSPath& to);
     static void rename(const MarsFSPath& from,const MarsFSPath& to);
 
@@ -116,8 +116,8 @@ private:
 
 // -- Members
 
-    string  node_;
-    string  path_;
+    std::string  node_;
+    std::string  path_;
 
 // -- Friends
 

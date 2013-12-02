@@ -24,7 +24,7 @@ TempFile::TempFile():
 {
 }
 
-TempFile::TempFile(const string& name):
+TempFile::TempFile(const std::string& name):
 	PathName(dir(name))
 {
 }
@@ -34,7 +34,7 @@ TempFile::~TempFile()
 	unlink();
 }
 
-PathName TempFile::dir(const string& s)
+PathName TempFile::dir(const std::string& s)
 {
 	return PathName::unique(FileSpace::lookUp(s).selectFileSystem()+ "/tmp");
 }

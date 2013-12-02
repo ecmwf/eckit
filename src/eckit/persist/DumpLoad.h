@@ -45,19 +45,19 @@ public:
 
 // -- Methods
 
-	virtual void beginObject(const string&) = 0;
+    virtual void beginObject(const std::string&) = 0;
 	virtual void endObject() = 0;
 
 	virtual void nullObject() = 0;
 
-	virtual string nextObject() = 0;
+    virtual std::string nextObject() = 0;
 	virtual void doneObject() = 0;
 
 	virtual void reset() = 0;
 
 
 	// --------------------
-	virtual void load(string&) = 0;
+    virtual void load(std::string&) = 0;
 
 	virtual void load(float&) = 0;
 	virtual void load(double&) = 0;
@@ -78,7 +78,7 @@ public:
 	// -- Dump
 
 
-	virtual void dump(const string&) = 0;
+    virtual void dump(const std::string&) = 0;
 
 	virtual void dump(float) = 0;
 	virtual void dump(double) = 0;
@@ -98,9 +98,9 @@ public:
 
 	// --
 
-	virtual void push(const string&,const string&) = 0;
-	virtual string get(const string&) = 0;
-	virtual void pop(const string&) = 0;
+    virtual void push(const std::string&,const std::string&) = 0;
+    virtual std::string get(const std::string&) = 0;
+    virtual void pop(const std::string&) = 0;
 
 	// -- Overridden methods
 		// None
@@ -165,7 +165,7 @@ private:
 template<class T>
 inline void load(DumpLoad& a,T& b)                  { b.load(a); }
 
-inline void load(DumpLoad& a,string& b)             { a.load(b); }
+inline void load(DumpLoad& a,std::string& b)        { a.load(b); }
 
 inline void load(DumpLoad& a,float& b)              { a.load(b); }
 inline void load(DumpLoad& a,double& b)             { a.load(b); }
@@ -188,7 +188,7 @@ inline void load(DumpLoad& a,unsigned char& b)      { a.load(b); }
 template<class T>
 inline void dump(DumpLoad& a,const T& b)           { b.dump(a); }
 
-inline void dump(DumpLoad& a,const string& b)      { a.dump(b); }
+inline void dump(DumpLoad& a,const std::string& b)      { a.dump(b); }
 
 inline void dump(DumpLoad& a,float b)              { a.dump(b); }
 inline void dump(DumpLoad& a,double b)             { a.dump(b); }

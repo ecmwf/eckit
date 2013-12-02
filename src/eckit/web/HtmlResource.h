@@ -31,7 +31,7 @@ public:
 
 // -- Contructors
 
-	HtmlResource(const string&);
+	HtmlResource(const std::string&);
 
 // -- Destructor
 
@@ -50,7 +50,7 @@ public:
 
 private:
 
-    typedef map<string,HtmlResource*,std::less<string> > Map;
+    typedef std::map<std::string,HtmlResource*,std::less<std::string> > Map;
 
 // -- Class members
 

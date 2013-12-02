@@ -48,7 +48,7 @@ static const char *tag_names[] = {
     "unsigned long long",
     "float",
     "double",
-    "string",
+    "std::string",
     "blob",
     "exception",
     "start of record",
@@ -165,18 +165,18 @@ void Stream::badTag(Stream::tag need,Stream::tag got)
     os << name();
     os << ". Expecting a " << need << ", got a " << got << StrStream::ends;
 
-    Log::error() << string(os) << std::endl;
+    Log::error() << std::string(os) << std::endl;
 
     if(got == tag_string)
     {
         long length = getLong();
-        string s;
+        std::string s;
         s.resize(length);
         for(long i=0;i<length;i++) s[i] = getChar();
         Log::error() << "String is " << s << std::endl;
     }
 
-    throw BadTag(string(os));
+    throw BadTag(std::string(os));
 }
 
 Stream::tag Stream::nextTag()
@@ -218,7 +218,7 @@ Stream::tag Stream::readTag(Stream::tag need)
 
     if(t == tag_exception)
     {
-        string s;
+        std::string s;
         (*this) >> s;
         throw RemoteException(s, name());
     }
@@ -358,7 +358,7 @@ Stream& Stream::operator<<(double x)
 
 Stream& Stream::operator<<(const char* x)
 {
-    T("w string",x);
+    T("w std::string",x);
     writeTag(tag_string);
     ASSERT(x);
     long len = strlen(x);
@@ -368,9 +368,9 @@ Stream& Stream::operator<<(const char* x)
     return *this;
 }
 
-Stream& Stream::operator<<(const string& x)
+Stream& Stream::operator<<(const std::string& x)
 {
-    T("w string",x);
+    T("w std::string",x);
     writeTag(tag_string);
     long len = x.length();
     putLong(len);
@@ -398,7 +398,7 @@ Stream& Stream::operator<<(const std::exception& e)
 {
     T("w exception",e.what());
     writeTag(tag_exception);
-    return *this << string(e.what());
+    return *this << std::string(e.what());
 }
 
 Stream& Stream::operator>>(char& x)
@@ -527,7 +527,7 @@ Stream& Stream::operator>>(double& x)
     return *this;
 }
 
-Stream& Stream::operator>>(string& s)
+Stream& Stream::operator>>(std::string& s)
 {
     readTag(tag_string);
     long length = getLong();
@@ -539,11 +539,11 @@ Stream& Stream::operator>>(string& s)
     for(long i=0;i<length;i++)
         s[i] = buf[i];
 
-    T("r string",s);
+    T("r std::string",s);
     return *this;
 }
 
-bool Stream::next(string& s)
+bool Stream::next(std::string& s)
 {
     tag t = nextTag();
     if(t == tag_eof)
@@ -561,7 +561,7 @@ bool Stream::next(string& s)
     for(long i=0;i<length;i++)
         s[i] = buf[i];
 
-    T("r string",s);
+    T("r std::string",s);
 
     return true;
 }
@@ -671,7 +671,7 @@ class StreamDecoder : public Stream {
         return len;
     }
 
-    virtual string name() const { return "StreamDecoder"; }
+    virtual std::string name() const { return "StreamDecoder"; }
 
 public:
     StreamDecoder(const char* buffer): buffer_(buffer), pos_(0), len_(0) {}
@@ -720,7 +720,7 @@ void Stream::dump(std::ostream& out,const char* p, size_t len)
 
                 case tag_string:
                                  {
-                                     string s;
+                                     std::string s;
                                      d >> s;
                                      out << s;
                                  };

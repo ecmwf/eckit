@@ -37,7 +37,7 @@ public:
 
 	virtual void html(std::ostream&,Url&);
 	virtual void java(JavaAgent&);
-	virtual void substitute(std::ostream&,const string&);
+	virtual void substitute(std::ostream&,const std::string&);
 
 protected:
 	

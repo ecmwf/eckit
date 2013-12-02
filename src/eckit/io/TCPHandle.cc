@@ -41,7 +41,7 @@ TCPHandle::TCPHandle(Stream& s):
 }
 
 
-TCPHandle::TCPHandle(const string& host,int port):
+TCPHandle::TCPHandle(const std::string& host,int port):
 	host_(host),
 	port_(port)
 {
@@ -87,11 +87,11 @@ void TCPHandle::rewind()
 	NOTIMP;
 }
 
-string TCPHandle::title() const
+std::string TCPHandle::title() const
 {
 	StrStream os;
 	os << "TCP[" << host_ << ":" << port_ << "]" << StrStream::ends;
-	return string(os);
+	return std::string(os);
 }
 
 //-----------------------------------------------------------------------------

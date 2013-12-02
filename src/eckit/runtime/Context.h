@@ -30,11 +30,11 @@ public: // types
 
     class InitError : public std::exception {
     public:
-        InitError(const string& what) : what_(what) {}
+        InitError(const std::string& what) : what_(what) {}
         virtual ~InitError()  throw() {}
         const char* what() const throw() {  return what_.c_str(); }
     private:
-        string what_;
+        std::string what_;
     };
 
 public: // methods
@@ -58,7 +58,7 @@ public: // methods
     ContextBehavior& behavior() const;
 
     int argc() const;
-    string argv(int n) const;
+    std::string argv(int n) const;
     char** argvs() const;
 
     int  debug() const;
@@ -69,13 +69,13 @@ public: // methods
     long self() const;
     void self( long );
     
-    string runName() const;
-    void runName( const string& name ); 
+    std::string runName() const;
+    void runName( const std::string& name ); 
     
-    string displayName() const;
-    void displayName( const string& name ); 
+    std::string displayName() const;
+    void displayName( const std::string& name ); 
     
-    string home() const;
+    std::string home() const;
     void home( const std::string& h );
 
     Channel& infoChannel();
@@ -86,13 +86,13 @@ public: // methods
     // From Configurable
 
 	virtual void   reconfigure();
-    virtual string name() const   { return "Context"; }
+    virtual std::string name() const   { return "Context"; }
     
 private: // methods
     
     // From Configurable
 
-	virtual string kind() const  { return "Context"; }
+	virtual std::string kind() const  { return "Context"; }
     
 protected:
     

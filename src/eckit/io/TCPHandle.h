@@ -29,7 +29,7 @@ public:
 // -- Contructors
 	
 	TCPHandle(Stream&);
-	TCPHandle(const string& host,int port);
+	TCPHandle(const std::string& host,int port);
 
 // -- Destructor
 
@@ -48,7 +48,7 @@ public:
 	virtual void close();
 	virtual void rewind();
 	virtual void print(std::ostream&) const;
-	virtual string title() const;
+	virtual std::string title() const;
     virtual bool moveable() const { return true; }
 
 	// From Streamable
@@ -64,7 +64,7 @@ protected:
 
 // -- Members
 
-	string      host_;
+	std::string      host_;
 	int         port_;
 	TCPClient   connection_;
 

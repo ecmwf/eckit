@@ -20,9 +20,9 @@ namespace eckit {
 
 // Should protected with a mutex...
 
-typedef map<string,ReanimatorBase*,std::less<string> > Map;
+typedef std::map<std::string,ReanimatorBase*,std::less<std::string> > Map;
 
-// This trick garanty than a map is created 
+// This trick garanty than a std::map is created 
 
 static Map& theMap()
 {
@@ -33,7 +33,7 @@ static Map& theMap()
 ReanimatorBase::ReanimatorBase(const ClassSpec& spec):
 	spec_(spec)
 {
-	theMap()[string(spec_.name_)] = this;
+	theMap()[std::string(spec_.name_)] = this;
 //	std::cout << "ReanimatorBase::ReanimatorBase " << spec_.name_ << std::endl;
 }
 
@@ -44,15 +44,15 @@ ReanimatorBase::~ReanimatorBase()
 }
 
 
-ReanimatorBase::UnknowClass::UnknowClass(const string& w):
-	Exception(string("Unknow class: ") + w)
+ReanimatorBase::UnknowClass::UnknowClass(const std::string& w):
+	Exception(std::string("Unknow class: ") + w)
 {
 }
 
-ReanimatorBase::NotSubClass::NotSubClass(const string& found, 
-	const string& clss):
-	Exception(string("Not a sub class: object ") + found + 
-		string(" found, but it is not subclass of ") + clss)
+ReanimatorBase::NotSubClass::NotSubClass(const std::string& found, 
+	const std::string& clss):
+	Exception(std::string("Not a sub class: object ") + found + 
+		std::string(" found, but it is not subclass of ") + clss)
 {
 }
 
@@ -62,7 +62,7 @@ Streamable* ReanimatorBase::reanimate(Stream& s,const ClassSpec *c)
 
 	if(!s.next()) return 0;	
 	
-	string name;
+	std::string name;
 
 	s >> name;
 

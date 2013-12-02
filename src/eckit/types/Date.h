@@ -33,7 +33,7 @@ public:
 	Date() : julian_(0) { }
 	Date(long);
 	Date(long,long,long);
-	Date(const string&);
+	Date(const std::string&);
 	Date(long,long);
 
 #include "eckit/types/Date.b"
@@ -52,7 +52,7 @@ public:
 
 // -- Convertors
 	
-	operator string() const;
+	operator std::string() const;
 
 // -- Operators
 
@@ -90,14 +90,14 @@ public:
 
 	long julian() const { return julian_;                  }
 	Date round(int n)   { return Date((julian_/n)*n,true); }
-	string monthName() const;
+	std::string monthName() const;
 
 	void dump(DumpLoad&) const;
 	void load(DumpLoad&);
 
 // -- Class methods
 
-	static long         parse(const string&);
+	static long         parse(const std::string&);
 
 // -- Friends
 
@@ -162,7 +162,7 @@ private:
 
 class BadDate: public BadValue {
 public:
-	BadDate(const string& t);
+	BadDate(const std::string& t);
 
 };
 

@@ -37,7 +37,7 @@ public:
 
 // -- Operators
 
-	operator string() const;
+	operator std::string() const;
 	operator double() const { return seconds_; }
 
 	friend std::ostream& operator<<(std::ostream&,const Seconds&);

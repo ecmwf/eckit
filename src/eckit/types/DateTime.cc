@@ -16,8 +16,6 @@
 #include "eckit/compat/StrStream.h"
 #include "eckit/utils/Tokenizer.h"
 
-using namespace std;
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -30,10 +28,16 @@ DateTime::DateTime(const Date& d, const Time& t) :
 {
 }
 
-DateTime::DateTime(const string& s)
+DateTime::DateTime(double julian) :
+    date_(long(julian), true),
+    time_((julian - long(julian))*24*60*60)
+{
+}
+
+DateTime::DateTime(const std::string& s)
 {
 	Tokenizer parse(" ");
-	vector<string> result;
+	std::vector<std::string> result;
 
 	parse(s,result);
 	
@@ -44,22 +48,22 @@ DateTime::DateTime(const string& s)
 
 static std::locale& getLocale()
 {
-    static locale loc = locale::classic();
+    static std::locale loc = std::locale::classic();
     try {
-        loc = locale("");
+        loc = std::locale("");
     }
     catch (...)
     {
         Log::error() << "Problem to setup the locale\n"
                      << "Check your LANG variable - current value: " <<  getenv("LANG") << std::endl;
-        loc = locale::classic();
+        loc = std::locale::classic();
     }
     return loc;
 }
 
-string DateTime::format( const string& fmt )
+std::string DateTime::format( const std::string& fmt )
 {
-      ostringstream out;
+      std::ostringstream out;
 
       struct tm convert = { 0, 0, 0, 0, 0, 0, 0, 0 };
       convert.tm_mday = date().day();
@@ -81,7 +85,7 @@ string DateTime::format( const string& fmt )
 
       out.imbue( getLocale() );
 
-      const std::time_put<char>& tfac = use_facet<time_put<char> >(getLocale());
+      const std::time_put<char>& tfac = std::use_facet<std::time_put<char> >(getLocale());
 
       tfac.put(out, out, ' ', &convert, fmt.c_str(), fmt.c_str() + fmt.length());
 
@@ -118,11 +122,11 @@ void DateTime::print(std::ostream& s) const
 	s << date_ << ' ' << time_;
 }
 
-DateTime::operator string() const
+DateTime::operator std::string() const
 {
 	StrStream os;
 	os << *this << StrStream::ends;
-	return string(os);
+	return std::string(os);
 }
 
 DateTime& DateTime::operator=(const DateTime& other)

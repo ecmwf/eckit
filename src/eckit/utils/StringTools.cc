@@ -22,13 +22,13 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 
-string StringTools::substitute(const string& s,const map<string,string>& m) 
+std::string StringTools::substitute(const std::string& s,const std::map<std::string,std::string>& m) 
 {
-    string result;
+    std::string result;
     size_t len = s.length();
     bool var = false;
-    string word;
-    map<string,string>::const_iterator j;
+    std::string word;
+    std::map<std::string,std::string>::const_iterator j;
 
     for(size_t i = 0; i < len; i++)
     {
@@ -38,7 +38,7 @@ string StringTools::substitute(const string& s,const map<string,string>& m)
                 if(var) {
                     StrStream os;
                     os << "StringTools::substitute: unexpected { found in " <<s << " at position " << i << StrStream::ends;
-                    throw UserError(string(os));
+                    throw UserError(std::string(os));
                 }
                 var = true;
                 word = "";
@@ -48,7 +48,7 @@ string StringTools::substitute(const string& s,const map<string,string>& m)
                 if(!var) {
                     StrStream os;
                     os << "StringTools::substitute: unexpected } found in " <<s << " at position " << i << StrStream::ends;
-                    throw UserError(string(os));
+                    throw UserError(std::string(os));
                 }
                 var = false;
 
@@ -56,7 +56,7 @@ string StringTools::substitute(const string& s,const map<string,string>& m)
                 if(j == m.end()) {
                     StrStream os;
                     os << "StringTools::substitute: cannot find a value for '" << word << "' in " <<s << " at position " << i << StrStream::ends;
-                    throw UserError(string(os));
+                    throw UserError(std::string(os));
                 }
                 result += (*j).second;
                 break;
@@ -73,17 +73,17 @@ string StringTools::substitute(const string& s,const map<string,string>& m)
     if(var) {
         StrStream os;
         os << "StringTools::substitute: missing } in " <<s << StrStream::ends;
-        throw UserError(string(os));
+        throw UserError(std::string(os));
     }
     return result;
 }
 
-vector<string> StringTools::substituteVariables(const string & s)
+std::vector<std::string> StringTools::substituteVariables(const std::string & s)
 {
-    vector<string> result;
+    std::vector<std::string> result;
     size_t len = s.length();
     bool var = false;
-    string word;
+    std::string word;
 
     for(size_t i = 0; i < len; i++)
     {
@@ -93,7 +93,7 @@ vector<string> StringTools::substituteVariables(const string & s)
                 if(var) {
                     StrStream os;
                     os << "StringTools::substituteVariables: unexpected { found in " <<s << " at position " << i << StrStream::ends;
-                    throw UserError(string(os));
+                    throw UserError(std::string(os));
                 }
                 var = true;
                 word = "";
@@ -103,7 +103,7 @@ vector<string> StringTools::substituteVariables(const string & s)
                 if(!var) {
                     StrStream os;
                     os << "StringTools::substituteVariables: unexpected } found in " <<s << " at position " << i << StrStream::ends;
-                    throw UserError(string(os));
+                    throw UserError(std::string(os));
                 }
                 var = false;
                 result.push_back(word);
@@ -119,21 +119,21 @@ vector<string> StringTools::substituteVariables(const string & s)
     if(var) {
         StrStream os;
         os << "StringTools::substituteVariables: missing } in " << s << StrStream::ends;
-        throw UserError(string(os));
+        throw UserError(std::string(os));
     }
     return result;
 }
 
-std::string StringTools::upper(const string& v)
+std::string StringTools::upper(const std::string& v)
 {
-	string r = v;
+	std::string r = v;
 	transform(r.begin(), r.end(), r.begin(), static_cast < int(*)(int) > (toupper));
 	return r;
 }
 
-std::string StringTools::lower(const string& v)
+std::string StringTools::lower(const std::string& v)
 {
-	string r = v;
+	std::string r = v;
 	transform(r.begin(), r.end(), r.begin(), static_cast < int(*)(int) > (tolower));
 	return r;
 }
@@ -148,53 +148,53 @@ std::string StringTools::trim(const std::string& str, const std::string& chars)
     size_t startpos = str.find_first_not_of(chars);
     size_t endpos = str.find_last_not_of(chars);
 
-    if((string::npos == startpos) || (string::npos == endpos))
+    if((std::string::npos == startpos) || (std::string::npos == endpos))
         return "";
     else
         return str.substr(startpos, endpos - startpos + 1);
 }
 
-string StringTools::front_trim(const string& str)
+std::string StringTools::front_trim(const std::string& str)
 {
     return front_trim(str," \t");
 }
 
-string StringTools::front_trim(const string& str, const string& chars)
+std::string StringTools::front_trim(const std::string& str, const std::string& chars)
 {
     size_t startpos = str.find_first_not_of(chars);
 
-    if(string::npos == startpos)
+    if(std::string::npos == startpos)
         return "";
     else
         return str.substr( startpos );
 }
 
-string StringTools::back_trim(const string& str)
+std::string StringTools::back_trim(const std::string& str)
 {
     return back_trim(str," \t");
 }
 
-string StringTools::back_trim(const string& str, const string& chars)
+std::string StringTools::back_trim(const std::string& str, const std::string& chars)
 {
     size_t endpos = str.find_last_not_of(chars);
 
-    if( string::npos == endpos )
+    if( std::string::npos == endpos )
         return "";
     else
         return str.substr( 0, endpos + 1 );
 }
 
-vector<std::string> StringTools::split(const string &delim, const string &text)
+std::vector<std::string> StringTools::split(const std::string &delim, const std::string &text)
 {
-	vector<std::string> ss;
+	std::vector<std::string> ss;
 	Tokenizer tokenizer(delim);
 	tokenizer(text, ss);
 	return ss;
 }
 
-std::string StringTools::join(const string &delimiter, const vector<std::string>& words)
+std::string StringTools::join(const std::string &delimiter, const std::vector<std::string>& words)
 {
-	string r;
+	std::string r;
 	for (size_t i = 0; i < words.size(); ++i)
 	{
 		if (i > 0)
@@ -204,12 +204,12 @@ std::string StringTools::join(const string &delimiter, const vector<std::string>
     return r;
 }
 
-bool StringTools::startsWith(const string& str, const string& substr)
+bool StringTools::startsWith(const std::string& str, const std::string& substr)
 {
     if( ! substr.size() || str.size() < substr.size() )
         return false;
     
-    for( string::size_type i = 0; i < substr.size();  ++i )
+    for( std::string::size_type i = 0; i < substr.size();  ++i )
         if( substr[i] != str[i] )
             return false;
     

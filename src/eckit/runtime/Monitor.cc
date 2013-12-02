@@ -35,7 +35,7 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 
 static void taskarray_init(void)
 {
-    string  monitor = Resource<string>("monitorPath","~/etc/monitor");
+    std::string  monitor = Resource<std::string>("monitorPath","~/etc/monitor");
 	long    size    = Resource<long>("monitorSize",1000);
     mapArray = new Monitor::TaskArray(monitor,size);
 }
@@ -183,19 +183,19 @@ void Monitor::out(char* from,char *to)
     task()->out(from,to);
 }
 
-void Monitor::name(const string& s) 
+void Monitor::name(const std::string& s) 
 {
     if(!ready_) return;    
 	task()->name(s);
 }
 
-void Monitor::kind(const string& s) 
+void Monitor::kind(const std::string& s) 
 {
     if(!ready_) return;    
 	task()->kind(s);
 }
 
-void Monitor::progress(const string& name, unsigned long long min,unsigned long long max)
+void Monitor::progress(const std::string& name, unsigned long long min,unsigned long long max)
 {
     if(!ready_) return;    
 	task()->progressName(name);
@@ -221,27 +221,27 @@ char Monitor::state(char c)
 	return x;
 }
 
-void Monitor::status(const string& msg)
+void Monitor::status(const std::string& msg)
 {
 	if(!ready_) return;
 	task()->status(msg);
 }
 
-string Monitor::status()
+std::string Monitor::status()
 {
-	if(!ready_) return string();
+	if(!ready_) return std::string();
 	return task()->status();
 }
 
-void Monitor::message(const string& msg)
+void Monitor::message(const std::string& msg)
 {
 	if(!ready_) return;
 	task()->message(msg);
 }
 
-string Monitor::message()
+std::string Monitor::message()
 {
-	if(!ready_) return string();
+	if(!ready_) return std::string();
 	return task()->message();
 }
 
@@ -271,7 +271,7 @@ void Monitor::parent(long p)
 }
 
 
-string Monitor::statusTree()
+std::string Monitor::statusTree()
 {
     StrStream os;
     os << status();
@@ -287,10 +287,10 @@ string Monitor::statusTree()
 
     os << StrStream::ends;
 
-    return string(os);
+    return std::string(os);
 }
 
-void Monitor::start(const string& app)
+void Monitor::start(const std::string& app)
 {
 	if(!active_) return;
 
@@ -308,7 +308,7 @@ void Monitor::start(const string& app)
 
 	PathName cmd = Resource<PathName>("startCmd","~/admin/starter");
 
-	string s = string(cmd) + " " + app;
+	std::string s = std::string(cmd) + " " + app;
 
 	Log::info() << "Executing shell command: " << s << std::endl;
 
@@ -326,12 +326,12 @@ int Monitor::port()
 	return task()->port();
 }
 
-void Monitor::host(const string& h)
+void Monitor::host(const std::string& h)
 {
 	task()->host(h);
 }
 
-string Monitor::host() 
+std::string Monitor::host() 
 {
 	return task()->host();
 }
@@ -351,7 +351,7 @@ void Monitor::show(bool on)
 	task()->show(on);
 }
 
-int Monitor::kill(const string& name, int sig)
+int Monitor::kill(const std::string& name, int sig)
 {
 
 	if(!active_) return 0;

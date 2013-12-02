@@ -26,9 +26,9 @@ ListContent::ListContent()
 {
 }
 
-ListContent::ListContent(const vector<Value>& v)
+ListContent::ListContent(const std::vector<Value>& v)
 {
-    std::copy(v.begin(),v.end(),back_inserter(value_));
+    std::copy(v.begin(),v.end(), std::back_inserter(value_));
 }
 
 ListContent::ListContent(const Value& v)
@@ -60,7 +60,7 @@ ListContent::~ListContent()
 {
 }
 
-void ListContent::value(vector<Value>& v) const
+void ListContent::value(std::vector<Value>& v) const
 {
     v = value_;
 }
@@ -115,8 +115,8 @@ Content* ListContent::add(const Content& other) const
 Content* ListContent::addList(const ListContent& other) const
 {
     std::vector<Value> tmp;
-    std::copy(other.value_.begin(),other.value_.end(),back_inserter(tmp));
-    std::copy(value_.begin(),value_.end(),back_inserter(tmp));
+    std::copy(other.value_.begin(), other.value_.end(), std::back_inserter(tmp));
+    std::copy(value_.begin(), value_.end(), std::back_inserter(tmp));
 	return new ListContent(tmp);
 }
 
@@ -159,9 +159,9 @@ void ListContent::value(double& n) const
     else Content::value(n);
 }
 
-void ListContent::value(string& n) const 
+void ListContent::value(std::string& n) const 
 {
-    if(value_.size() == 1) n = string(value_[0]);
+    if(value_.size() == 1) n = std::string(value_[0]);
 	else Content::value(n); 
 }
 

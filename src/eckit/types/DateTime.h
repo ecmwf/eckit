@@ -30,7 +30,8 @@ public:
 
 	DateTime(time_t = ::time(0));
 	DateTime(const Date&, const Time&);
-	DateTime(const string&);
+	DateTime(const std::string&);
+    DateTime(double);
 
 #include "eckit/types/DateTime.b"
 
@@ -63,7 +64,7 @@ public:
 	Second operator-(const DateTime&) const;
 	DateTime operator+(const Second&) const;
 
-	operator string() const;
+	operator std::string() const;
 
 	const Date& date() const { return date_; }
 	const Time& time() const { return time_; }
@@ -73,7 +74,7 @@ public:
 	void dump(DumpLoad&) const;
 	void load(DumpLoad&);
     
-    string format( const string& fmt );
+    std::string format( const std::string& fmt );
     
 protected: // members
 

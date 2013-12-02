@@ -39,7 +39,7 @@ inline const char *opname(const logical_or<eckit::Value>&)     { return "||";}
 
 class EvalError : public eckit::Exception {
 public:
-	EvalError(const string& s) : Exception(string("EvalError: ") + s) {}
+	EvalError(const std::string& s) : Exception(std::string("EvalError: ") + s) {}
 };
 
 template <class T>
@@ -90,10 +90,10 @@ inline eckit::Value CondBinary<T,U>::eval(U& task) const
 
 template <class T>
 class StringExpression : public Expression<T> {
-	string str_;
+	std::string str_;
 	virtual void print(std::ostream& s) const { s << str_; } 
 public:
-	StringExpression(const string& s) : str_(s) {}
+	StringExpression(const std::string& s) : str_(s) {}
 	virtual eckit::Value eval(T&) const { return eckit::Value(str_); }
 };
 
@@ -110,11 +110,11 @@ public:
 
 template <class T>
 class ListExpression : public Expression<T> {
-	vector<Expression<T>*> v_;
+	std::vector<Expression<T>*> v_;
 	virtual void print(std::ostream& s) const;
 public:
 	ListExpression();
-	ListExpression(const vector<Expression<T>*>& v) : v_(v) {}
+	ListExpression(const std::vector<Expression<T>*>& v) : v_(v) {}
 	~ListExpression();
 	virtual eckit::Value eval(T&) const;
 };
@@ -144,7 +144,7 @@ void ListExpression<T>::print(std::ostream& s) const
 template <class T>
 eckit::Value ListExpression<T>::eval(T& t) const
 {
-	vector<eckit::Value> v;
+	std::vector<eckit::Value> v;
 	for(size_t i = 0; i < v_.size(); i++)
 		if(v_[i]) v.push_back(v_[i]->eval(t));
 			

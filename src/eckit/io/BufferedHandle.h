@@ -92,7 +92,7 @@ private: // members
 
     bool                 owned_;
     
-    virtual string title() const;
+    virtual std::string title() const;
 
 // -- Class members
 

@@ -25,7 +25,7 @@ namespace eckit {
 class TeeHandle : public DataHandle {
 public:
 
-	typedef vector<DataHandle*> HandleList;
+	typedef std::vector<DataHandle*> HandleList;
 
 // -- Contructors
 
@@ -61,7 +61,7 @@ public:
     virtual void toRemote(Stream&) const;
     virtual void toLocal(Stream&) const;
     virtual DataHandle* toLocal();
-    virtual void cost(map<string,Length>&, bool) const;
+    virtual void cost(std::map<std::string,Length>&, bool) const;
 
     // From Streamable
 

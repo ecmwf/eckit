@@ -24,21 +24,21 @@ Lambda::Lambda( ExpPtr body ) : Function()
     push_back(body);
 }
 
-Lambda::Lambda( const string& a, const string& b, ExpPtr body ) : Function()
+Lambda::Lambda( const std::string& a, const std::string& b, ExpPtr body ) : Function()
 {
     push_back(maths::paramdef(a));
     push_back(maths::paramdef(b));
     push_back(body);
 }
 
-Lambda::Lambda( const string &a, ExpPtr body ) : Function()
+Lambda::Lambda( const std::string &a, ExpPtr body ) : Function()
 {
     push_back(maths::paramdef(a));
     push_back(body);
 }
 
 
-string Lambda::returnSignature() const
+std::string Lambda::returnSignature() const
 {
     return "()";
 }
@@ -67,7 +67,7 @@ ExpPtr Lambda::call( Scope &ctx ) const
         ExpPtr a = args(i);
         //std::cout << "LAMBDA ARG " << i << " IS " << *a << std::endl;
         ASSERT(ParamDef::is(a));
-        const string& name = a->as<ParamDef>()->name();
+        const std::string& name = a->as<ParamDef>()->name();
         //std::cout << "LAMBDA NAME " << i << " IS " << name << std::endl;
 
         ExpPtr b = args(i, ctx, true);
@@ -92,12 +92,12 @@ ExpPtr Lambda::cloneWith(args_t &a) const {
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr lambda( const string &a, const string& b, ExpPtr body )
+ExpPtr lambda( const std::string &a, const std::string& b, ExpPtr body )
 {
     return ExpPtr( new Lambda(a, b, body) );
 }
 
-ExpPtr lambda( const string &a, ExpPtr body )
+ExpPtr lambda( const std::string &a, ExpPtr body )
 {
     return ExpPtr( new Lambda(a, body) );
 }

@@ -30,7 +30,7 @@ public:
 
 	ClimateDate()                               {}
 	ClimateDate(const Date& date) : date_(date) {}
-	ClimateDate(const string& s);
+	ClimateDate(const std::string& s);
 	ClimateDate(long,long,long);
 
 #include "eckit/types/ClimateDate.b"
@@ -41,7 +41,7 @@ public:
 
 // -- Convertors
 	
-	operator string() const;
+	operator std::string() const;
 
 // -- Operators
 

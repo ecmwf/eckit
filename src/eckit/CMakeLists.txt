@@ -23,6 +23,7 @@ container/Recycler.h
 container/ClassExtent.h
 container/KDMemory.h
 container/KDPoint.h
+container/BSPPoint.h
 container/KDMapped.cc
 container/KDMapped.h
 container/KDTree.h

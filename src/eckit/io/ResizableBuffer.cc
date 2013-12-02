@@ -37,7 +37,7 @@ ResizableBuffer::ResizableBuffer(const char* p,size_t size):
         ::memcpy(buffer_,p,size);
 }
 
-ResizableBuffer::ResizableBuffer(const string& s):
+ResizableBuffer::ResizableBuffer(const std::string& s):
         size_(s.length()+1),
         buffer_(0)
 {

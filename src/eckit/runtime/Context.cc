@@ -91,7 +91,7 @@ int  Context::argc() const
     return argc_;
 }
 
-string Context::argv(int n) const
+std::string Context::argv(int n) const
 { 
     AutoLock<Mutex> lock(local_mutex);
     ASSERT( argc_ != 0 && argv_ != 0 ); // check initialized
@@ -110,12 +110,12 @@ void Context::reconfigure()
     behavior_->reconfigure();
 }
 
-string Context::home() const
+std::string Context::home() const
 {
     return home_;
 }
 
-void Context::home(const string &h)
+void Context::home(const std::string &h)
 {
     AutoLock<Mutex> lock(local_mutex);
     home_ = h;
@@ -131,17 +131,17 @@ void Context::self(long id)
     taskID_ = id;
 }
 
-string Context::runName() const
+std::string Context::runName() const
 {
     return runName_;
 }
 
-void Context::runName(const string &name)
+void Context::runName(const std::string &name)
 {
     runName_ = name;
 }
 
-string Context::displayName() const
+std::string Context::displayName() const
 {
     if(displayName_.empty())
         return runName();
@@ -149,7 +149,7 @@ string Context::displayName() const
         return displayName_;
 }
 
-void Context::displayName(const string &name)
+void Context::displayName(const std::string &name)
 {
     displayName_ = name;
 }

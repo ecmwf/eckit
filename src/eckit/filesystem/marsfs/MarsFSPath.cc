@@ -26,9 +26,9 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-MarsFSPath::MarsFSPath(const string& path)
+MarsFSPath::MarsFSPath(const std::string& path)
 {
-    string p = path;
+    std::string p = path;
     //node_ = NodeInfo::thisNode().node();
 
     ASSERT(p.find("marsfs:") == 0);
@@ -40,7 +40,7 @@ MarsFSPath::MarsFSPath(const string& path)
     {
         p        = p.substr(2);
         size_t n = p.find("/");
-        ASSERT(n != string::npos);
+        ASSERT(n != std::string::npos);
 
         node_ = p.substr(0,n);
         p     = p.substr(n);
@@ -49,33 +49,33 @@ MarsFSPath::MarsFSPath(const string& path)
     }
     path_ = p;
 
-    PANIC(path_.find("marsfs:") != string::npos);
-    PANIC(node_.find("marsfs:") != string::npos);
+    PANIC(path_.find("marsfs:") != std::string::npos);
+    PANIC(node_.find("marsfs:") != std::string::npos);
 
 }
 
-MarsFSPath::MarsFSPath(const string& node, const string& path):
+MarsFSPath::MarsFSPath(const std::string& node, const std::string& path):
     node_(node),
     path_(path)
 {
-    PANIC(node_.find("marsfs:") != string::npos);
-    PANIC(path_.find("marsfs:") != string::npos);
+    PANIC(node_.find("marsfs:") != std::string::npos);
+    PANIC(path_.find("marsfs:") != std::string::npos);
 }
 
 MarsFSPath::MarsFSPath(const MarsFSPath& other):
     node_(other.node_),
     path_(other.path_)
 {
-    PANIC(node_.find("marsfs:") != string::npos);
-    PANIC(path_.find("marsfs:") != string::npos);
+    PANIC(node_.find("marsfs:") != std::string::npos);
+    PANIC(path_.find("marsfs:") != std::string::npos);
 }
 
 MarsFSPath& MarsFSPath::operator=(const MarsFSPath& other)
 {
     node_ = other.node_;
     path_ = other.path_;
-    PANIC(node_.find("marsfs:") != string::npos);
-    PANIC(path_.find("marsfs:") != string::npos);
+    PANIC(node_.find("marsfs:") != std::string::npos);
+    PANIC(path_.find("marsfs:") != std::string::npos);
     return *this;
 }
 
@@ -106,9 +106,9 @@ bool MarsFSPath::isLocal() const
     return node_ == NodeInfo::thisNode().node();
 }
 
-MarsFSPath::operator string() const
+MarsFSPath::operator std::string() const
 {
-    return string("marsfs://") + node_ + path_;
+    return std::string("marsfs://") + node_ + path_;
     //§return path_;
 }
 
@@ -208,32 +208,32 @@ void MarsFSPath::rmdir() const
 
 const char* MarsFSPath::localPath() const
 {
-    throw SeriousBug(string("Attempting to access ") + string(*this) + " locally");
+    throw SeriousBug(std::string("Attempting to access ") + std::string(*this) + " locally");
 }
 
 
-void MarsFSPath::children(vector<MarsFSPath>& dirs,vector<MarsFSPath>& files) const
+void MarsFSPath::children(std::vector<MarsFSPath>& dirs,std::vector<MarsFSPath>& files) const
 {
-    vector<string> d;
-    vector<string> f;
+    std::vector<std::string> d;
+    std::vector<std::string> f;
 
     MarsFSClient(*this).children(path_, d, f);
 
     dirs.clear();
-    for(vector<string>::iterator j = d.begin(); j != d.end(); ++j)
+    for(std::vector<std::string>::iterator j = d.begin(); j != d.end(); ++j)
         dirs.push_back(MarsFSPath(node(), *j));
 
     files.clear();
-    for(vector<string>::iterator j = f.begin(); j != f.end(); ++j)
+    for(std::vector<std::string>::iterator j = f.begin(); j != f.end(); ++j)
         files.push_back(MarsFSPath(node(), *j));
 }
 
-void MarsFSPath::match(const MarsFSPath& path,vector<MarsFSPath>& result,bool recurse)
+void MarsFSPath::match(const MarsFSPath& path,std::vector<MarsFSPath>& result,bool recurse)
 {
-    vector<string> r;
+    std::vector<std::string> r;
     MarsFSClient(path).match(path.path_, r, recurse);
     result.clear();
-    for(vector<string>::iterator j = r.begin(); j != r.end(); ++j)
+    for(std::vector<std::string>::iterator j = r.begin(); j != r.end(); ++j)
         result.push_back(MarsFSPath(path.node(), *j));
 }
 
@@ -285,21 +285,21 @@ MarsFSPath MarsFSPath::orphanName() const
 
     os << StrStream::ends;
 
-    string s(os);
+    std::string s(os);
     return s;
 
 }
 
-string MarsFSPath::clusterName() const
+std::string MarsFSPath::clusterName() const
 {
-    return string(*this);
+    return std::string(*this);
 }
 
 BasePathName* MarsFSPath::checkClusterNode() const
 {
     try 
     {
-        string n = ClusterDisks::node(path_);
+        std::string n = ClusterDisks::node(path_);
         ASSERT(n != NodeInfo::thisNode().node()); // TODO: code mo, if a remote file becomes local
         if(n != node_) {
 //            Log::warning() << *this << " is now on node [" << n << "]" << std::endl;

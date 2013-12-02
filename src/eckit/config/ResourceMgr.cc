@@ -63,7 +63,7 @@ void ResourceMgr::reset()
     script_->clear();
 }
 
-void ResourceMgr::set(const string& name,const string& value)
+void ResourceMgr::set(const std::string& name,const std::string& value)
 {
 	AutoLock<Mutex> lock(local_mutex);
 
@@ -105,8 +105,8 @@ void ResourceMgr::readConfigFiles()
         
         PathName general ("~/etc/config/general");
         PathName local ("~/etc/config/local");
-        PathName app ( string("~/etc/config/" ) + appName );
-        PathName applocal ( string("~/etc/config/" ) + appName + ".local" );
+        PathName app ( std::string("~/etc/config/" ) + appName );
+        PathName applocal ( std::string("~/etc/config/" ) + appName + ".local" );
         
         if( script_->readFile( general  ) ) parsed_.insert(general);
         if( script_->readFile( local    ) ) parsed_.insert(local);
@@ -116,9 +116,9 @@ void ResourceMgr::readConfigFiles()
 }
 
 bool ResourceMgr::lookUp( Configurable* owner,
-                          const string& name, 
+                          const std::string& name, 
                           const StringDict* args, 
-                          string& result)
+                          std::string& result)
 {
     AutoLock<Mutex> lock(local_mutex);
     
@@ -144,10 +144,10 @@ bool ResourceMgr::lookUp( Configurable* owner,
     
     if( owner )
     {
-        string kind  = owner->kind();
-        string owner_name = owner->name();
+        std::string kind  = owner->kind();
+        std::string owner_name = owner->name();
 
-        i = resmap.find( string( kind + "." + owner_name + "." + name ) );
+        i = resmap.find( std::string( kind + "." + owner_name + "." + name ) );
 
         if(i != resmap.end())
         {
@@ -155,7 +155,7 @@ bool ResourceMgr::lookUp( Configurable* owner,
             return true;
         }
 
-        i = resmap.find( string( owner_name + "." + name ) );
+        i = resmap.find( std::string( owner_name + "." + name ) );
 
         if(i != resmap.end())
         {

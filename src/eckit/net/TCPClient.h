@@ -36,7 +36,7 @@ public:
 
 // -- Methods
 
-	TCPSocket& connect(const string& host,int port, int retries = 5, int timeout = 0);
+	TCPSocket& connect(const std::string& host,int port, int retries = 5, int timeout = 0);
 
 private:
 
@@ -54,7 +54,7 @@ private:
 	// From TCPSocket
 
 	virtual void bind();
-	virtual string bindingAddress() const;
+	virtual std::string bindingAddress() const;
 
 };
 

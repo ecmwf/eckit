@@ -24,7 +24,7 @@
 
 /// @todo look into currying / binding -- add2 = curry ( add , 2 )
 /// @todo list --  list 1 2
-/// @todo map
+/// @todo std::map
 /// @todo fold
 /// @todo comparison operator Equal()(v,2) -- returns what?
 /// @todo unary operator
@@ -94,7 +94,7 @@ typedef std::vector< ExpPtr > args_t;
 /// Expression Error
 class Error: public eckit::Exception {
 public:
-    Error(const eckit::CodeLocation& loc, const string& s) : Exception( s, loc ) {}
+    Error(const eckit::CodeLocation& loc, const std::string& s) : Exception( s, loc ) {}
 };
 
 //--------------------------------------------------------------------------------------------

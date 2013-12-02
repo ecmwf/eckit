@@ -20,7 +20,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-Regex::Regex(const string& s,bool shell):
+Regex::Regex(const std::string& s,bool shell):
 	str_(s)
 {
 	//Log::debug() << "Regex " << str_ << std::endl;
@@ -84,7 +84,7 @@ void Regex::print(std::ostream& s) const
     s << "/" << str_ << "/";
 }
 
-bool Regex::match(const string& s) const
+bool Regex::match(const std::string& s) const
 { 
 	regmatch_t pm;
 	//Log::debug() << "Match " << s << " with " << str_ << " -> " << (regexec(&re_,s.c_str(),1,&pm,0) == 0) << std::endl;

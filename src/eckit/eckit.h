@@ -41,10 +41,6 @@
 #include <new>
 #include <sstream>
 
-using std::string;
-using std::vector;
-using std::map;
-
 //-----------------------------------------------------------------------------
 
 #if (!defined EC_HAVE_MAP_ANONYMOUS) && (defined EC_HAVE_MAP_ANON)
@@ -162,12 +158,12 @@ public:
     operator unsigned long();
     operator unsigned long long();
 
-    const string& path() const { return path_; }
+    const std::string& path() const { return path_; }
 
 private:
 
     Exporter&      e_;
-    string         path_;
+    std::string    path_;
     Evolve*        parent_;
 
 };
@@ -177,16 +173,16 @@ public:
     Isa* next_;
     TypeInfo* type_;
     Isa(TypeInfo* t,Isa* n) : next_(n), type_(t) {}
-    static void add(TypeInfo* t,const string&);
-    static Isa* get(const string&);
+    static void add(TypeInfo* t,const std::string&);
+    static Isa* get(const std::string&);
 
 };
 
 class Schema {
 public:
-    virtual void start(const string&, size_t size) = 0;
-    virtual void member(const string&, size_t size, size_t offset, const string& type) = 0;
-    virtual void end(const string&) = 0;
+    virtual void start(const std::string&, size_t size) = 0;
+    virtual void member(const std::string&, size_t size, size_t offset, const std::string& type) = 0;
+    virtual void end(const std::string&) = 0;
 };
 
 template<class T>
@@ -208,13 +204,13 @@ void _describe(std::ostream& s,int depth,char what);
 void _describe(std::ostream& s,int depth,unsigned char what);
 void _describe(std::ostream& s,int depth,double what);
 
-void _startClass(std::ostream& s,int depth,const string& name);
-void _endClass(std::ostream& s,int depth,const string& name);
-void _startMember(std::ostream& s,int depth,const string& name);
-void _endMember(std::ostream& s,int depth,const string& name);
+void _startClass(std::ostream& s,int depth,const std::string& name);
+void _endClass(std::ostream& s,int depth,const std::string& name);
+void _startMember(std::ostream& s,int depth,const std::string& name);
+void _endMember(std::ostream& s,int depth,const std::string& name);
 
 template<class T>
-void _describe(std::ostream& s,int depth,const string& name,const T& what)
+void _describe(std::ostream& s,int depth,const std::string& name,const T& what)
 {
     _startMember(s,depth,name);
     _describe(s,depth,what);
@@ -228,8 +224,8 @@ void _endObject(eckit::Exporter&,unsigned long long type, unsigned long long loc
 void _startSubObject(eckit::Exporter&);
 void _endSubObject(eckit::Exporter&);
 void _nextSubObject(eckit::Exporter&);
-void _startClass(eckit::Exporter&,const string& name);
-void _endClass(eckit::Exporter&,const string& name);
+void _startClass(eckit::Exporter&,const std::string& name);
+void _endClass(eckit::Exporter&,const std::string& name);
 void _startClass(eckit::Exporter&,const char* name);
 void _endClass(eckit::Exporter&,const char* name);
 void _startMember(eckit::Exporter&,const char* name);

@@ -25,7 +25,7 @@ namespace eckit {
 class MultiHandle : public DataHandle {
 public:
 
-	typedef vector<DataHandle*> HandleList;
+	typedef std::vector<DataHandle*> HandleList;
 
 // -- Contructors
 
@@ -68,8 +68,8 @@ public:
     virtual void toRemote(Stream&) const;
     virtual void toLocal(Stream&) const;
     virtual DataHandle* toLocal();
-    virtual void cost(map<string,Length>&, bool) const;
-    virtual string title() const;
+    virtual void cost(std::map<std::string,Length>&, bool) const;
+    virtual std::string title() const;
     virtual bool moveable() const;
 
     // From Streamable

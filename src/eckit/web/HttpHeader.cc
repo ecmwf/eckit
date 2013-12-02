@@ -23,14 +23,14 @@ namespace eckit {
 // Check the <A HREF=http://www.ics.uci.edu/pub/ietf/http/rfc1945.html">HTTP/1.0</A> syntax
 // Check the <A HREF=http://src.doc.ic.ac.uk/computing/internet/rfc/rfc2068.txt">HTTP/1.1</A> syntax
 
-const string WWW_Authenticate = "WWW-Authenticate";
-const string Authorization    = "Authorization";
-const string Content_Type     = "Content-Type";
-const string Content_Length   = "Content-Length";
-const string Location         = "Location";
-const string DefaultType      = "application/x-www-form-urlencoded";
+const std::string WWW_Authenticate = "WWW-Authenticate";
+const std::string Authorization    = "Authorization";
+const std::string Content_Type     = "Content-Type";
+const std::string Content_Length   = "Content-Length";
+const std::string Location         = "Location";
+const std::string DefaultType      = "application/x-www-form-urlencoded";
 
-bool HttpHeader::compare::operator()(const string& a,const string& b) const
+bool HttpHeader::compare::operator()(const std::string& a,const std::string& b) const
 {
 	return strcasecmp(a.c_str(),b.c_str()) < 0;
 }
@@ -44,9 +44,9 @@ HttpHeader::HttpHeader():
 	header_[Content_Type] = " text/html";
 }
 
-HttpHeader& HttpHeader::operator=(map<string,string,std::less<string> >& parsed)
+HttpHeader& HttpHeader::operator=(std::map<std::string,std::string,std::less<std::string> >& parsed)
 {
-    for(map<string,string,std::less<string> >::const_iterator i = parsed.begin();
+    for(std::map<std::string,std::string,std::less<std::string> >::const_iterator i = parsed.begin();
 		i != parsed.end(); ++i) 
 			header_[(*i).first] = (*i).second;
 
@@ -108,7 +108,7 @@ void HttpHeader::print(std::ostream& s) const
 		s.put(*p++);
 }
 
-void HttpHeader::forward(const string& s)
+void HttpHeader::forward(const std::string& s)
 {
 	header_[Location] = s;
 }
@@ -123,12 +123,12 @@ long HttpHeader::contentLength() const
 	return contentLength_;
 }
 
-void HttpHeader::type(const string& s)
+void HttpHeader::type(const std::string& s)
 {
 	header_[Content_Type] = s;
 }
 
-const string& HttpHeader::type() const
+const std::string& HttpHeader::type() const
 {
     Map::const_iterator i = header_.find(Content_Type);
 
@@ -143,7 +143,7 @@ void HttpHeader::status(const long code)
 	statusCode_ = code;
 }
 
-void HttpHeader::authenticate(const string& login)
+void HttpHeader::authenticate(const std::string& login)
 {
 	header_[WWW_Authenticate] = ("Basic realm=\"" + login + "\""); 
 	status(401);
@@ -176,7 +176,7 @@ bool HttpHeader::authenticated() const
 
 		const unsigned char *p = (const unsigned char*)s;
 
-		string q;
+		std::string q;
 
 		int n = 2;
 
@@ -195,7 +195,7 @@ bool HttpHeader::authenticated() const
 
 
 		Tokenizer parse(":");
-		vector<string> v;
+		std::vector<std::string> v;
 		parse(q,v);
 		if(v.size()==2 && v[0] == "mars" && v[1]=="clave")
 		{
@@ -215,12 +215,12 @@ void HttpHeader::content(const char* p,long len)
 	::memcpy((char*)content_,p,len);
 }
 
-void HttpHeader::setHeader(const string& k,const string& v)
+void HttpHeader::setHeader(const std::string& k,const std::string& v)
 {
 	header_[k] = v;
 }
 
-const string& HttpHeader::getHeader(const string& k) const
+const std::string& HttpHeader::getHeader(const std::string& k) const
 {
 	return ((HttpHeader*)this)->header_[k];
 }

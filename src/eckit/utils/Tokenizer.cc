@@ -20,11 +20,11 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 template < class Container >
-void tokenizeInsert(const std::set<char, std::less<char> >& separator, const string& raw, std::insert_iterator<Container> ins )
+void tokenizeInsert(const std::set<char, std::less<char> >& separator, const std::string& raw, std::insert_iterator<Container> ins )
 {
     int    index  = 0;
 	int    length = raw.length();
-	string token  = "";
+	std::string token  = "";
 
 	while(index < length)
 	{
@@ -48,7 +48,7 @@ void tokenizeInsert(const std::set<char, std::less<char> >& separator, const str
 
 //-----------------------------------------------------------------------------
 
-Tokenizer::Tokenizer(const string& separators)
+Tokenizer::Tokenizer(const std::string& separators)
 {
 	for(int i=0; i<separators.length(); i++)
 		separator_.insert(separators[i]);
@@ -58,14 +58,14 @@ Tokenizer::~Tokenizer()
 {
 }
 
-void Tokenizer::operator()(const string& raw, vector<string>& v)
+void Tokenizer::operator()(const std::string& raw, std::vector<std::string>& v)
 {
     tokenizeInsert( separator_, raw, std::inserter(v, v.end()));
 }
 
-void Tokenizer::operator()(std::istream& in, vector<string>& v)
+void Tokenizer::operator()(std::istream& in, std::vector<std::string>& v)
 {
-	string raw;
+	std::string raw;
 	char c;
 
 	while(in.get(c) && c != EOF && c != '\n')
@@ -74,14 +74,14 @@ void Tokenizer::operator()(std::istream& in, vector<string>& v)
     tokenizeInsert( separator_, raw, std::inserter(v, v.end()));
 }
 
-void Tokenizer::operator()(const string& raw, std::set<string>& s)
+void Tokenizer::operator()(const std::string& raw, std::set<std::string>& s)
 {
     tokenizeInsert( separator_, raw, std::inserter(s, s.end()));
 }
 
-void Tokenizer::operator()(std::istream& in, std::set<string>& s)
+void Tokenizer::operator()(std::istream& in, std::set<std::string>& s)
 {
-	string raw;
+	std::string raw;
 	char c;
 
 	while(in.get(c) && c != EOF && c != '\n')

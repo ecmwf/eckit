@@ -24,7 +24,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-// Used to map an array to a file 
+// Used to std::map an array to a file 
 
 template<class T>
 class MappedArray : private NonCopyable {

@@ -64,12 +64,12 @@ private: // members
     std::string         name_;        // In the config file
 	std::string         environment_; // In the environment variables
 	std::string         options_;     // For the command line options
-    std::string         valueStr_;    // keeps the value in string form
+    std::string         valueStr_;    // keeps the value in std::string form
 
 private: // methods
     
-    virtual void setValue(const string&) = 0;
-	virtual string getValue() const      = 0;
+    virtual void setValue(const std::string&) = 0;
+    virtual std::string getValue() const      = 0;
 
 };
 
@@ -79,15 +79,15 @@ class Resource : public ResourceBase {
 
 public: // methods
 
-    Resource(const string& str,const T& value):
+    Resource(const std::string& str,const T& value):
 		ResourceBase(0,str),     value_(value) {}
 
-    Resource(const string& str,const T& value, const StringDict& args ):
+    Resource(const std::string& str,const T& value, const StringDict& args ):
 		ResourceBase(str,args),     value_(value) {}
 
 	// Part of a configurable
 
-    Resource(Configurable* owner,const string& str,const T& value):
+    Resource(Configurable* owner,const std::string& str,const T& value):
 		ResourceBase(owner,str), value_(value) {}
 
     /// @returns a copy of the resource value
@@ -101,23 +101,23 @@ private: // members
 
 private: // overridden methods
 
-	virtual void setValue(const string&);
-	virtual string getValue() const;
+    virtual void setValue(const std::string&);
+    virtual std::string getValue() const;
 
 };
 
 //-----------------------------------------------------------------------------
 
 template<class T> 
-void Resource<T>::setValue(const string& s)
+void Resource<T>::setValue(const std::string& s)
 {
-    value_ = Translator<string,T>()(s);
+    value_ = Translator<std::string, T>()(s);
 }
 
 template<class T> 
-string Resource<T>::getValue() const
+std::string Resource<T>::getValue() const
 {
-    return Translator<T,string>()(value_);
+    return Translator<T, std::string>()(value_);
 }
 
 //-----------------------------------------------------------------------------

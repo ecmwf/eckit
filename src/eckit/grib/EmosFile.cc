@@ -20,8 +20,8 @@
 
 #include "eckit/log/Log.h"
 
-using namespace std;
-using namespace eckit;
+namespace eckit {
+
 
 static long readcb(void *data, void *buffer, long len)
 {
@@ -87,5 +87,5 @@ long EmosFile::readSome(Buffer& buffer)
 	throw ReadError("in EmosFile::readSome");
 }
 
-
+} // namespace
 

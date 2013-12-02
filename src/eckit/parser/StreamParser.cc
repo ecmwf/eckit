@@ -56,7 +56,7 @@ char StreamParser::next(bool spaces)
     for(;;)
     {
         if(in_.eof())
-            throw StreamParser::Error(string("StreamParser::next reached eof"));
+            throw StreamParser::Error(std::string("StreamParser::next reached eof"));
         in_.get(c);
         if(spaces || !isspace(c))
         {
@@ -71,7 +71,7 @@ void StreamParser::consume(char c)
 {
     char n = next();
     if(c != n)
-        throw StreamParser::Error(string("StreamParser::consume expecting '") + c + "', got '" + n + "'");
+        throw StreamParser::Error(std::string("StreamParser::consume expecting '") + c + "', got '" + n + "'");
 }
 
 void StreamParser::consume(const char* p)
@@ -80,7 +80,7 @@ void StreamParser::consume(const char* p)
 }
 
 
-StreamParser::Error::Error(const string &what) : what_(what) 
+StreamParser::Error::Error(const std::string &what) : what_(what) 
 {
     Log::info() << "=== StreamParser::Error -- Backtrace ===" << std::endl;    
     Log::info() << BackTrace::dump() << std::endl;    

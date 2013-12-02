@@ -25,7 +25,7 @@ ZipWith::ZipWith( ExpPtr f, ExpPtr list0, ExpPtr list1 ) : Function()
     push_back(list1);
 }
 
-string ZipWith::returnSignature() const
+std::string ZipWith::returnSignature() const
 {
     return List::sig();
 }

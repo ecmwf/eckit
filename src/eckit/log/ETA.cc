@@ -40,11 +40,11 @@ std::ostream& operator<<(std::ostream& s,const ETA&  sec)
 	return s;
 }
 
-ETA::operator string() const
+ETA::operator std::string() const
 {
 	StrStream s;
 	s << *this << StrStream::ends;
-	return string(s);
+	return std::string(s);
 }
 
 //-----------------------------------------------------------------------------

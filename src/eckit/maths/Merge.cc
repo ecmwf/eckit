@@ -24,7 +24,7 @@ Merge::Merge( ExpPtr list0, ExpPtr list1 ) : Function()
     push_back(list1);
 }
 
-string Merge::returnSignature() const
+std::string Merge::returnSignature() const
 {
     return List::sig();
 }

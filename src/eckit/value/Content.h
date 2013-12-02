@@ -148,12 +148,12 @@ protected:
     virtual void value(bool&) const;
 	virtual void value(long long&) const;
     virtual void value(double&) const;
-	virtual void value(string&)    const;
+	virtual void value(std::string&)    const;
 	virtual void value(Date&)      const;
 	virtual void value(Time&)      const;
 	virtual void value(DateTime&)  const;
-	virtual void value(vector<Value>&) const;
-    virtual void value(map<Value,Value>&) const;
+	virtual void value(std::vector<Value>&) const;
+    virtual void value(std::map<Value,Value>&) const;
 
 	Content* operator+(const Content&) const;
 	Content* operator-(const Content&) const;
@@ -164,7 +164,7 @@ protected:
 // -- Methods
 
 	virtual void   print(std::ostream&) const  = 0;
-	virtual string typeName()      const = 0;
+	virtual std::string typeName()      const = 0;
     virtual void   json(JSON&)     const  = 0;
 
     virtual bool   isNil()      const  { return false; }
@@ -210,9 +210,9 @@ private:
 	virtual Content* div(const Content&)        const = 0;
     virtual Content* mod(const Content&)        const = 0;
 
-	void    badConvertion(const string&) const;
-	void    badComparison(const string&) const;
-	void    badOperator(const string&, const string&) const;
+	void    badConvertion(const std::string&) const;
+	void    badComparison(const std::string&) const;
+	void    badOperator(const std::string&, const std::string&) const;
 
 // -- Friends
 

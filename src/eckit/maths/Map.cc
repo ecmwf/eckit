@@ -22,7 +22,7 @@ Map::Map( ExpPtr f,  ExpPtr list ) : Function()
     push_back(list);
 }
 
-string Map::returnSignature() const
+std::string Map::returnSignature() const
 {
     return List::sig();
 }
@@ -51,7 +51,7 @@ ExpPtr Map::evaluate( Scope &ctx ) const
 
 void Map::asCode(std::ostream&o) const
 {
-    o << "maths::map("; printArgs(o); o << ")";
+    o << "maths::std::map("; printArgs(o); o << ")";
 }
 
 ExpPtr Map::cloneWith(args_t &a) const {

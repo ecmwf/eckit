@@ -48,7 +48,7 @@ public:
 // -- Methods
 
 	DataHandle& handle() { return *handle_; }
-	void fail(const string&);
+	void fail(const std::string&);
 
 // -- Overridden methods
 	// None
@@ -99,7 +99,7 @@ private:
     virtual long read(void*,long); 
     virtual long write(const void*,long);
     virtual void close();
-    virtual string title() const;
+    virtual std::string title() const;
 
 	void print(std::ostream&) const; 	
 

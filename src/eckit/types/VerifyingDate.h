@@ -28,7 +28,7 @@ public:
 
 	VerifyingDate(time_t = ::time(0));
 	VerifyingDate(const Date&, const Time&);
-	VerifyingDate(const string&);
+	VerifyingDate(const std::string&);
 	VerifyingDate(const DateTime&);
 
 #include "eckit/types/VerifyingDate.b"
@@ -39,7 +39,7 @@ public:
 
 // -- Operators
 
-	operator string() const;
+	operator std::string() const;
 
 // -- Methods
 

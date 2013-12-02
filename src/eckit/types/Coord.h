@@ -93,7 +93,7 @@ protected:
 	friend class Area;
 };
 
-typedef vector<Coord> CoordList;
+typedef std::vector<Coord> CoordList;
 
 #endif
 

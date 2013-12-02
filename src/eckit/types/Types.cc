@@ -20,15 +20,15 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 template<class T>
-void operator<<(Stream& s,const vector<T>& t)
+void operator<<(Stream& s,const std::vector<T>& t)
 {
 	s << Ordinal(t.size());
-	for(typename vector<T>::const_iterator i = t.begin(); i != t.end() ; ++i)
+    for(typename std::vector<T>::const_iterator i = t.begin(); i != t.end() ; ++i)
 		s << (*i);
 }
 
 template<class T>
-void operator>>(Stream& s,vector<T>& t)
+void operator>>(Stream& s, std::vector<T>& t)
 {
 
 	Ordinal size;

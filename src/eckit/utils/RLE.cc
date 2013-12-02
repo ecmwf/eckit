@@ -241,8 +241,8 @@ template<class InputIterator,class T>
 Stream& RLEwrite(Stream& s,InputIterator first,InputIterator last,
 	long long maxLoop,T*)
 {
-	vector<T> tmp; tmp.reserve(last-first);
-	RLEencode2(first,last,back_inserter(tmp),maxLoop);
+	std::vector<T> tmp; tmp.reserve(last-first);
+	RLEencode2(first,last, std::back_inserter(tmp),maxLoop);
 	s << tmp;
     std::cout << "RLEwrite : " << last-first << " -> " << tmp.size() << std::endl;
 	return s;
@@ -268,7 +268,7 @@ Stream& RLEwrite(Stream& s,InputIterator first,InputIterator last,
 template<class OutputIterator,class T>
 Stream& RLEread(Stream& s,OutputIterator result,T*)
 {
-	vector<T> tmp;
+	std::vector<T> tmp;
 	s >> tmp;
 	RLEdecode2(tmp.begin(),tmp.end(),result);
 	return s;
@@ -278,8 +278,8 @@ template<class InputIterator,class T>
 Stream& RLEDIFFwrite(Stream& s,InputIterator first,InputIterator last,
 	long long maxLoop,T*)
 {
-	vector<T> tmp; tmp.reserve(last-first);
-	bool diff = DIFFencode(first,last,back_inserter(tmp));
+	std::vector<T> tmp; tmp.reserve(last-first);
+	bool diff = DIFFencode(first,last, std::back_inserter(tmp));
 
 	s << diff;
 
@@ -289,7 +289,7 @@ Stream& RLEDIFFwrite(Stream& s,InputIterator first,InputIterator last,
 		// as we reuse first, last
 		Log::warning() << "DIFF encoding failed." << std::endl;
 		tmp.clear();
-		std::copy(first,last,back_inserter(tmp));
+		std::copy(first,last, std::back_inserter(tmp));
 		s << tmp;
 	}
 	else {
@@ -323,12 +323,12 @@ Stream& RLEDIFFread(Stream& s,OutputIterator result,T* dummy)
 	s >> diff;
 
 	if(diff) {
-		vector<T> tmp; 
-		RLEread(s,back_inserter(tmp),dummy);
+		std::vector<T> tmp; 
+		RLEread(s, std::back_inserter(tmp),dummy);
 		DIFFdecode(tmp.begin(),tmp.end(),result);
 	}
 	else {
-		vector<T> tmp; 
+		std::vector<T> tmp; 
 		s >> tmp;
 		std::copy(tmp.begin(),tmp.end(),result);
 	}

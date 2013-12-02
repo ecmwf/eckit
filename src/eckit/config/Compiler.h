@@ -36,9 +36,9 @@ public: // methods
     virtual ~Compiler();
 
     void consumeComment();
-    string consumeToEOL();    
-    string parseIdentifier();
-    string parseValue( bool dontBreakOnSpace = false );
+    std::string consumeToEOL();    
+    std::string parseIdentifier();
+    std::string parseValue( bool dontBreakOnSpace = false );
     StringList parseCondition();
 
 protected:

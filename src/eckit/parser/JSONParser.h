@@ -45,7 +45,7 @@ private: // methods
     Value parseString();
     Value parseNumber();
     
-    void parseKeyValue(map<Value, Value> &);
+    void parseKeyValue(std::map<Value, Value> &);
 
 };
 

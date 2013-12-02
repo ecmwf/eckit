@@ -26,8 +26,8 @@ Double::Double(double d):
 {
 }
 
-Double::Double(const string& s):
-	value_(Translator<string,double>()(s))
+Double::Double(const std::string& s):
+	value_(Translator<std::string,double>()(s))
 {
 	
 }
@@ -55,11 +55,11 @@ void Double::print(std::ostream& s) const
 	s << round();
 }
 
-Double::operator string() const
+Double::operator std::string() const
 {
 	StrStream os;
 	os << *this << StrStream::ends;
-	return string(os);
+	return std::string(os);
 }
 
 //-----------------------------------------------------------------------------

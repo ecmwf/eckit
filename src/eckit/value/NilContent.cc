@@ -42,9 +42,9 @@ NilContent::~NilContent()
 {
 }
 
-void NilContent::value(vector<Value>& v) const
+void NilContent::value(std::vector<Value>& v) const
 {
-    v = vector<Value>();
+    v = std::vector<Value>();
 }
 
 void NilContent::print(std::ostream& out) const

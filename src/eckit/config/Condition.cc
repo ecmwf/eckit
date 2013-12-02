@@ -51,7 +51,7 @@ bool Condition::eval( const StringDict& in, StringDict& out )
             return false;
 //            throw BadValue( "key not found in input dictionary : " + sentences_[i].first );
         
-        const string& left = key->second;
+        const std::string& left = key->second;
 
         StringList& rightValues = sentences_[i].second;
         bool match(false);
@@ -90,7 +90,7 @@ void Condition::parseSentence(Compiler& c)
     if( c.peek() == ']' ) // for empty conditions
         return;
     
-    string variable = c.parseIdentifier();
+    std::string variable = c.parseIdentifier();
     c.consume('=');
     sentences_.push_back( std::make_pair( variable, c.parseCondition() ));
 }

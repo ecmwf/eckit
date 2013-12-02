@@ -16,14 +16,13 @@
 #include "eckit/io/DataHandle.h"
 #include "GribHandle.h"
 
-using namespace std;
-using namespace eckit;
+namespace eckit {
 
 static int grib_call(int code, const char* msg) {
     if(code) {
         StrStream os;
         os << msg << ": " << grib_get_error_message(code) << StrStream::ends;
-        throw Exception(string(os));
+        throw Exception(std::string(os));
     }
     return code;
 }
@@ -91,3 +90,5 @@ GribHandle* GribHandle::clone() const
 {
     return new GribHandle(grib_handle_clone(handle_));
 }
+
+} // namespace

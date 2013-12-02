@@ -27,7 +27,7 @@ Scope::~Scope()
 {
 }
 
-bool Scope::existsFunction(const string &name) const
+bool Scope::existsFunction(const std::string &name) const
 {
     FunctionStore::const_iterator f = functions_.find(name);
     if( f == functions_.end() )
@@ -36,13 +36,13 @@ bool Scope::existsFunction(const string &name) const
         if( upper_ )
             return upper_->existsFunction(name);
         else
-            throw StreamParser::Error( string("Could not find function \'" + name + "\' in scope" ) );
+            throw StreamParser::Error( std::string("Could not find function \'" + name + "\' in scope" ) );
     }
     ASSERT( f->second );
     return true;
 }
 
-Function& Scope::function(const string& name) const
+Function& Scope::function(const std::string& name) const
 {
     FunctionStore::const_iterator f = functions_.find(name);
     if( f == functions_.end() )
@@ -51,14 +51,14 @@ Function& Scope::function(const string& name) const
         if( upper_ )
             return upper_->function(name);
         else
-            throw StreamParser::Error( string("Could not find function " + name + "in scope" ) );
+            throw StreamParser::Error( std::string("Could not find function " + name + "in scope" ) );
     }
 
     ASSERT( f->second );
     return *(f->second);
 }
 
-void Scope::function( const string& name, Function* f )
+void Scope::function( const std::string& name, Function* f )
 {
     ASSERT( f );
     FunctionStore::iterator fi = functions_.find(name);

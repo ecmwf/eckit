@@ -40,15 +40,15 @@ public:
     void pushArg(ExpPtr);
     void insertArg(size_t i, ExpPtr e);
 
-    ExpPtr param(const string&) const;
-    void param(const string&, ExpPtr);
+    ExpPtr param(const std::string&) const;
+    void param(const std::string&, ExpPtr);
 
 private:
 
     Scope* parent_;
-    string name_;
+    std::string name_;
 
-    std::map< string, ExpPtr > params_;  ///< named variables
+    std::map< std::string, ExpPtr > params_;  ///< named variables
     std::deque< ExpPtr > args_;          ///< to resolve anonymous undef()
 
     void print( std::ostream& ) const;

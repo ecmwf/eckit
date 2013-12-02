@@ -42,7 +42,7 @@ public:
 	Length copy(DataHandle&,DataHandle&);
 
 	bool   error();
-	void   error(const string&);
+    void   error(const std::string&);
 	void   restart(RestartTransfer&);
 
 private: // methods
@@ -60,7 +60,7 @@ private: // members
 	Length outBytes_;
 
 	bool error_;
-    string why_;
+    std::string why_;
 
     bool restart_;
 

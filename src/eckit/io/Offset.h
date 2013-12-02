@@ -107,10 +107,10 @@ typedef std::vector<Offset> OffsetList;
 
 // Global routines
 
-// Sort both vector according to offset
-void sort(OffsetList&,LengthList&);
-bool compress(OffsetList&,LengthList&);
-void accumulate(const LengthList&,OffsetList&,const Offset& = 0);
+// Sort both std::vector according to offset
+void sort(OffsetList&, LengthList&);
+bool compress(OffsetList&, LengthList&);
+void accumulate(const LengthList&, OffsetList&, const Offset& = 0);
 
 #ifdef AIX
 #pragma options align=reset

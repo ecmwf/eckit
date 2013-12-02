@@ -80,21 +80,21 @@ void Scope::insertArg(size_t i, ExpPtr e)
     args_.insert(args_.begin() + i, e);
 }
 
-ExpPtr Scope::param(const string& name) const
+ExpPtr Scope::param(const std::string& name) const
 {
     //cout << std::endl << "LOOKING FOR '" << name << "' in " << *this << std::endl;
-    map<string, ExpPtr>::const_iterator j = params_.find(name);
+    std::map<std::string, ExpPtr>::const_iterator j = params_.find(name);
     if(j == params_.end()) {
         if(parent_) {
             return parent_->param(name);
         }
         std::cout << *this << std::endl;
-        throw UserError(string("param not found: " + name));
+        throw UserError(std::string("param not found: " + name));
     }
     return (*j).second;
 }
 
-void Scope::param(const string& name, ExpPtr e)
+void Scope::param(const std::string& name, ExpPtr e)
 {
     ASSERT(params_.find(name) == params_.end());
     params_[name] = e;
@@ -114,7 +114,7 @@ void Scope::print( std::ostream& out) const
     out << "), params={";
 
     size_t i = 0;
-    for(map<string, ExpPtr>::const_iterator j = params_.begin(); j != params_.end(); ++j, ++i) {
+    for(std::map<std::string, ExpPtr>::const_iterator j = params_.begin(); j != params_.end(); ++j, ++i) {
         if(i) out << ",";
         out << (*j).first << ":" << *((*j).second);
     }

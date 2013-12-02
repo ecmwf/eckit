@@ -36,7 +36,7 @@ public: // methods
     virtual ~LatLon();
 
      virtual size_t dataSize() const;
-     virtual const std::vector< Point2D >& gridData() const { return points_; }
+     virtual const std::std::vector< Point2D >& gridData() const { return points_; }
      virtual BoundBox2D boundingBox() const;
 
 protected:
@@ -44,7 +44,7 @@ protected:
     size_t nlat_;                       ///< number of latitude  increments - ODD number for coindidence with 0,0 on Earth 
     size_t nlon_;                       ///< number of longitude increments - can be any size as no requirement for 
 
-    std::vector< Point2D > points_;     ///< storage of coordinate points
+    std::std::vector< Point2D > points_;     ///< storage of coordinate points
 
     BoundBox2D bound_box_;              ///< bounding box for the domain
 

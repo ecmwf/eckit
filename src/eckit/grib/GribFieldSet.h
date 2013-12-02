@@ -44,7 +44,7 @@ public:
     explicit GribFieldSet(const PathName& path);
 
     GribFieldSet(const GribFieldSet&);
-    GribFieldSet(const vector<GribFieldSet>&);
+    GribFieldSet(const std::vector<GribFieldSet>&);
 
 
 
@@ -61,7 +61,7 @@ public:
 
     GribFieldSet operator[](int i)  const;
     GribFieldSet slice(size_t from, size_t to, size_t step = 1) const;
-    GribFieldSet slice(const vector<size_t>&) const;
+    GribFieldSet slice(const std::vector<size_t>&) const;
 
     //====================================================================================
 

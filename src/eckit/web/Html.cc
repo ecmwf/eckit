@@ -31,9 +31,9 @@ std::ostream& operator<<(std::ostream& s,const Html::Tag& tag)
 	return s;
 }
 
-string Html::addHex(const string& s)
+std::string Html::addHex(const std::string& s)
 {
-	string t;
+	std::string t;
 	int index  = 0;
 	int length = s.length();
 
@@ -77,9 +77,9 @@ string Html::addHex(const string& s)
 	return t;
 }
 
-string Html::removeHex(const string& s)
+std::string Html::removeHex(const std::string& s)
 {
-	string t;
+	std::string t;
 	int index  = 0;
 	int length = s.length();
 
@@ -108,13 +108,13 @@ string Html::removeHex(const string& s)
 
 //=======================================================
 
-Html::Include::Include(const string& name,HtmlObject* sub):
+Html::Include::Include(const std::string& name,HtmlObject* sub):
 	sub_(sub),
 	name_(name)
 {
 }
 
-Html::Include::Include(const string& name,HtmlObject& sub):
+Html::Include::Include(const std::string& name,HtmlObject& sub):
 	sub_(&sub),
 	name_(name)
 {
@@ -138,7 +138,7 @@ void Html::Include::print(std::ostream& s) const
 
 
 	char   c;
-	string p;
+	std::string p;
 	bool word = false;
 
 
@@ -173,7 +173,7 @@ void Html::Include::print(std::ostream& s) const
 
 //=======================================================
 
-Html::Image::Image(const string& name):
+Html::Image::Image(const std::string& name):
 	name_(name)
 {
 }
@@ -183,7 +183,7 @@ void Html::Image::print(std::ostream& s) const
 	s << "<IMG SRC=\"" << resource() + '/' + name_ << "\">";
 }
 
-string Html::Image::resource()
+std::string Html::Image::resource()
 {
 	return "/image";
 }
@@ -206,9 +206,9 @@ void Html::Link::print(std::ostream& s) const
 
 //=======================================================
 
-void Html::Substitute::substitute(std::ostream& s,const string& p)
+void Html::Substitute::substitute(std::ostream& s,const std::string& p)
 {
-    map<string,string,std::less<string> >::iterator i = map_.find(p);
+    std::map<std::string,std::string,std::less<std::string> >::iterator i = map_.find(p);
 	if(i ==  map_.end())
 		s << '%' << p << '%';
 	else
@@ -224,7 +224,7 @@ Html::Substitute::~Substitute()
 }
 
 
-string& Html::Substitute::operator[](const string& p) 
+std::string& Html::Substitute::operator[](const std::string& p) 
 {
 	return map_[p];
 }
@@ -232,9 +232,9 @@ string& Html::Substitute::operator[](const string& p)
 
 void Html::Class::print(std::ostream& s) const
 {
-	string p;
+	std::string p;
 	long len = str_.length();
-	string base = "http://wwwec.ecmwf.int/dhs/classfinder?file=";
+	std::string base = "http://wwwec.ecmwf.int/dhs/classfinder?file=";
 
 	for(int i = 0; i < len; i++)
 	{
@@ -350,7 +350,7 @@ static HtmlProvider htmlProvider;
 
 void HtmlProvider::html(std::ostream& s, Url& url)
 {
-	string path; 
+	std::string path; 
 
 	for(int i = 1; i < url.size() ; i++)
 		path += "/" + url[i] ;

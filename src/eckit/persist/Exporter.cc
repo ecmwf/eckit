@@ -160,7 +160,7 @@ char Exporter::readTag()
 }
 
 
-void Exporter::writeString(const string &s)
+void Exporter::writeString(const std::string &s)
 {
     size_t len = s.length();
     char buffer[MAX_STRING_LEN];
@@ -189,10 +189,10 @@ void Exporter::writeString(const char* s)
     ASSERT( (size_t) handle_.write(s,len) == len);
 }
 
-string Exporter::_readString()
+std::string Exporter::_readString()
 {
     try {
-        string s;
+        std::string s;
 
         size_t len = readUnsigned();
         for( size_t i = 0;  i < len; i++) {
@@ -204,12 +204,12 @@ string Exporter::_readString()
     }
     catch(...)
     {
-        std::cout << "Error reading string " << *this << std::endl;
+        std::cout << "Error reading std::string " << *this << std::endl;
         throw;
     }
 }
 
-string Exporter::readString()
+std::string Exporter::readString()
 {
     ASSERT(readTag() == TAG_STRING);
     return _readString();
@@ -272,12 +272,12 @@ unsigned long long Exporter::readUnsigned() {
     return _readUnsigned();
 }
 
-void _startClass(eckit::Exporter& out, const string& name) {
+void _startClass(eckit::Exporter& out, const std::string& name) {
     out.writeTag(TAG_START_CLASS);
     out.writeString(name);
 }
 
-void _endClass(eckit::Exporter& out, const string& name) {
+void _endClass(eckit::Exporter& out, const std::string& name) {
     out.writeTag(TAG_END_CLASS);
     //out.writeString(name);
 }
@@ -364,7 +364,7 @@ void _endObject(eckit::Exporter& e, unsigned long long type, unsigned long long 
 void Exporter::endObject() {
     ASSERT(readTag() == TAG_END_OBJECT);
     ASSERT(subCount_);
-    for(map<string,Datatype>::iterator j = members_.begin(); j != members_.end(); ++j)
+    for(std::map<std::string,Datatype>::iterator j = members_.begin(); j != members_.end(); ++j)
         if(!(*j).second.used())
             std::cout << "WARNING NOT USED [" << (*j).first << "]" << std::endl;
 
@@ -372,7 +372,7 @@ void Exporter::endObject() {
     stack_.clear();
 }
 
-bool Exporter::nextDatabase(string& name,unsigned long long& id, unsigned long long& count)
+bool Exporter::nextDatabase(std::string& name,unsigned long long& id, unsigned long long& count)
 {
     char tag = readTag();
     if(tag == TAG_EOF) {
@@ -434,9 +434,9 @@ void _nextSubObject(eckit::Exporter& e)
     e.nextSubObject();
 }
 
-string Exporter::path() const {
-    string s;
-    for(vector<string>::const_iterator j = stack_.begin(); j != stack_.end(); ++j) {
+std::string Exporter::path() const {
+    std::string s;
+    for(std::vector<std::string>::const_iterator j = stack_.begin(); j != stack_.end(); ++j) {
         if(s.length()) s += ".";
         s += (*j);
     }
@@ -447,13 +447,13 @@ void Exporter::nextSubObject() {
     ASSERT(readTag() == TAG_START_SUBOBJECT);
     subCount_ ++;
 
-    for(map<string,Datatype>::iterator j = members_.begin(); j != members_.end(); ++j)
+    for(std::map<std::string,Datatype>::iterator j = members_.begin(); j != members_.end(); ++j)
         if(!(*j).second.used())
             std::cout << "WARNING NOT USED [" << (*j).first << "]" << std::endl;
 
     members_.clear();
 
-    string s;
+    std::string s;
     for(;;) {
         char tag = readTag();
         switch(tag) {
@@ -480,7 +480,7 @@ void Exporter::nextSubObject() {
 
             case TAG_UNSIGNED:
                 {
-                    string p = path();
+                    std::string p = path();
                     Datatype& x = members_[p];
                     ASSERT(x.empty());
                     x = Datatype(_readUnsigned());
@@ -490,7 +490,7 @@ void Exporter::nextSubObject() {
 
             case TAG_SIGNED:
                 {
-                    string p = path();
+                    std::string p = path();
                     Datatype& x = members_[p];
                     ASSERT(x.empty());
                     x = Datatype(_readSigned());
@@ -500,7 +500,7 @@ void Exporter::nextSubObject() {
 
             case TAG_DOUBLE:
                 {
-                    string p = path();
+                    std::string p = path();
                     Datatype& x = members_[p];
                     ASSERT(x.empty());
                     x = Datatype(_readDouble());
@@ -519,9 +519,9 @@ void Exporter::nextSubObject() {
     }
 }
 
-double Exporter::getDoubleMember(const string& name)
+double Exporter::getDoubleMember(const std::string& name)
 {
-    map<string,Datatype>::iterator j = members_.find(name);
+    std::map<std::string,Datatype>::iterator j = members_.find(name);
     if(j != members_.end())
     {
         //cout << "consume [" << name << "] = " << (*j).second << std::endl;
@@ -531,9 +531,9 @@ double Exporter::getDoubleMember(const string& name)
     return 0;
 }
 
-long long Exporter::getSignedMember(const string& name)
+long long Exporter::getSignedMember(const std::string& name)
 {
-    map<string,Datatype>::iterator j = members_.find(name);
+    std::map<std::string,Datatype>::iterator j = members_.find(name);
     if(j != members_.end())
     {
         //cout << "consume [" << name << "] = " << (*j).second << std::endl;
@@ -543,9 +543,9 @@ long long Exporter::getSignedMember(const string& name)
     return 0;
 }
 
-unsigned long long Exporter::getUnsignedMember(const string& name)
+unsigned long long Exporter::getUnsignedMember(const std::string& name)
 {
-    map<string,Datatype>::iterator j = members_.find(name);
+    std::map<std::string,Datatype>::iterator j = members_.find(name);
     if(j != members_.end())
     {
         //cout << "consume [" << name << "] = " << (*j).second << std::endl;
@@ -728,13 +728,13 @@ void Exporter::endSchemas()
     writeTag(TAG_END_SCHEMAS);
 }
 
-void Exporter::startDatabase(const string& path, unsigned long id, unsigned long  long count)
+void Exporter::startDatabase(const std::string& path, unsigned long id, unsigned long  long count)
 {
     PathName home("~");
-    string p = path;
+    std::string p = path;
 
     if(p.find(home) == 0) {
-         p = string("~/") + p.substr(string(home).length());
+         p = std::string("~/") + p.substr(std::string(home).length());
     }
 
     writeTag(TAG_START_DATABASE);
@@ -744,7 +744,7 @@ void Exporter::startDatabase(const string& path, unsigned long id, unsigned long
 
 }
 
-void Exporter::endDatabase(const string&, unsigned long id)
+void Exporter::endDatabase(const std::string&, unsigned long id)
 {
     writeTag(TAG_END_DATABASE);
     writeUnsigned(objectCount_);

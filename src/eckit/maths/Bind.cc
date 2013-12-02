@@ -37,12 +37,12 @@ Bind::Bind( ExpPtr i, ExpPtr f, ExpPtr e ) : Function()
     push_back(e);
 }
 
-string Bind::typeName() const
+std::string Bind::typeName() const
 {
     return Bind::className();
 }
 
-string Bind::returnSignature() const
+std::string Bind::returnSignature() const
 {
     return args(0)->returnSignature();
 }

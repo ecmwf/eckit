@@ -152,7 +152,7 @@ template < class T >
 template < class U, class V, class I >
 std::string BinaryOperator<T>::Computer<U,V,I>::sig()
 {
-    return opname( T() ) + string("(") + U::sig() + string(",") + V::sig() + string(")");
+    return opname( T() ) + std::string("(") + U::sig() + std::string(",") + V::sig() + std::string(")");
 }
 
 template < class T >

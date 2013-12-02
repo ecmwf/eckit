@@ -35,7 +35,7 @@ public:
     bool operator<(const KDNodeInfo& other) const
     { return distance_ < other.distance_; }
 
-    typedef vector<KDNodeInfo> NodeList;
+    typedef std::vector<KDNodeInfo> NodeList;
 
     const Point& point() const { return node_->point(); }
     double distance() const    { return distance_; }

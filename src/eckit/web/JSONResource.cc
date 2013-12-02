@@ -18,7 +18,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-JSONResource::JSONResource(const string& name):
+JSONResource::JSONResource(const std::string& name):
     HtmlResource(name)
 {
     // Should do something here...

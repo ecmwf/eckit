@@ -28,7 +28,7 @@
 namespace eckit {
 
 template<class Point, class Alloc>
-BSPNode<Point,Alloc>::BSPNode(const vector<Point>& p):
+BSPNode<Point,Alloc>::BSPNode(const std::vector<Point>& p):
     point_(Point::mean(p)),
     left_(0),
     right_(0)
@@ -155,15 +155,8 @@ typename BSPNode<Point,Alloc>::NodeList BSPNode<Point,Alloc>::kNearestNeighbours
 }
 //===
 
-template<class Point>
-struct sorter {
-    int axis_;
-    bool operator() (const Point& a,const Point& b) { return (a.x(axis_)<b.x(axis_));}
-    sorter(size_t axis) : axis_(axis) {}
-};
-
 template<class Point, class Alloc>
-void BSPNode<Point,Alloc>::kmean(const vector<Point>& in, vector<Point>& ml, vector<Point>& mr, int depth)
+void BSPNode<Point,Alloc>::kmean(const std::vector<Point>& in, std::vector<Point>& ml, std::vector<Point>& mr, int depth)
 {
 
     // Bisecting k-mean
@@ -178,8 +171,8 @@ void BSPNode<Point,Alloc>::kmean(const vector<Point>& in, vector<Point>& ml, vec
     ml.reserve(in.size());
     mr.reserve(in.size());
 
-    vector<size_t> prev;
-    vector<size_t> curr;
+    std::vector<size_t> prev;
+    std::vector<size_t> curr;
 
     for(;;) {
         ml.clear();
@@ -188,7 +181,7 @@ void BSPNode<Point,Alloc>::kmean(const vector<Point>& in, vector<Point>& ml, vec
 
         size_t i = 0;
 
-        for(typename vector<Point>::const_iterator j = in.begin(); j != in.end(); ++j, ++i) {
+        for(typename std::vector<Point>::const_iterator j = in.begin(); j != in.end(); ++j, ++i) {
             double dl = Point::distance(cl, *j);
             double dr = Point::distance(cr, *j);
             if(dl <= dr) {
@@ -226,7 +219,7 @@ void BSPNode<Point,Alloc>::kmean(const vector<Point>& in, vector<Point>& ml, vec
 }
 
 template<class Point, class Alloc>
-BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const vector<Point>& nodes, int depth)
+BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const std::vector<Point>& nodes, int depth)
 {
     if(nodes.size() == 0)
         return 0;
@@ -238,8 +231,8 @@ BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const vector<Point>&
     //if(depth == 3)
     //    return a.newNode(nodes,(BSPNode*)0);
 
-    vector<Point>  left;
-    vector<Point>  right;
+    std::vector<Point>  left;
+    std::vector<Point>  right;
 
     kmean(nodes, left, right, depth);
 

@@ -29,7 +29,7 @@ void Streamable::encode(Stream&) const
 {
 }
 
-string Streamable::className() const
+std::string Streamable::className() const
 {
 	return reanimator().spec().name_;
 }

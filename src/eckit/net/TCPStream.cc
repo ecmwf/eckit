@@ -33,7 +33,7 @@ void TCPStream::closeOutput()
 //======================
 // Tricky solution to be removed when 'mutable' is available
 //
-string TCPStreamBase::nonConstName()
+std::string TCPStreamBase::nonConstName()
 {
 	StrStream r;
 
@@ -41,10 +41,10 @@ string TCPStreamBase::nonConstName()
 		" at " << socket().localPort();
 	r << " to " << socket().remoteHost() << 
 		" at " << socket().remotePort() << StrStream::ends;
-	return string(r);
+	return std::string(r);
 }
 
-string TCPStreamBase::name() const
+std::string TCPStreamBase::name() const
 {
 	return ((TCPStreamBase*)this)->nonConstName();
 }

@@ -19,10 +19,10 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-FileName::FileName(const string& path)
+FileName::FileName(const std::string& path)
 {
     Tokenizer parse(":");
-    vector<string> s;
+    std::vector<std::string> s;
 
     parse(path,s);
 

@@ -34,17 +34,17 @@ Time::Time(long seconds):
 {
 	if(seconds >= 86400 || seconds < 0)
 	{
-		string msg = "Time in seconds cannot exceed 86400 ";
-		Translator<long,string> t;
+		std::string msg = "Time in seconds cannot exceed 86400 ";
+		Translator<long,std::string> t;
 		msg += t(seconds);
 		throw BadTime(msg);
 	}
 }
 
-Time::Time(const string& s)
+Time::Time(const std::string& s)
 {
 	Tokenizer parse(":");
-	vector<string> result;
+	std::vector<std::string> result;
 
 	parse(s,result);
 
@@ -93,13 +93,13 @@ Time::Time(const string& s)
 			break;
 	}
 
-	if(err) throw BadTime(string("Invalid time ") + s);
+	if(err) throw BadTime(std::string("Invalid time ") + s);
 
 	if(hh >= 24 || mm >= 60 || ss >= 60
 	   || hh < 0 || mm < 0 || ss < 0)
 	{
-        string msg = "Wrong input for time: ";
-        Translator<long,string> t;
+        std::string msg = "Wrong input for time: ";
+        Translator<long,std::string> t;
         msg += t(hh); msg += " hours ";
         msg += t(mm); msg += " minutes ";
         msg += t(ss); msg += " seconds";
@@ -109,11 +109,11 @@ Time::Time(const string& s)
 	seconds_ = hh*3600+mm*60+ss;
 }
 
-Time::operator string() const
+Time::operator std::string() const
 {
 	StrStream os;
 	os << *this << StrStream::ends;
-	return string(os);
+	return std::string(os);
 }
 
 Time::Time(const Time& other):
@@ -133,8 +133,8 @@ Time::Time(long hh, long mm, long ss):
 	if(hh >= 24 || mm >= 60 || ss >= 60
 	   || hh < 0 || mm < 0 || ss < 0)
 	{
-        string msg = "Wrong input for time: ";
-        Translator<long,string> t;
+        std::string msg = "Wrong input for time: ";
+        Translator<long,std::string> t;
         msg += t(hh); msg += " hours ";
         msg += t(mm); msg += " minutes ";
         msg += t(ss); msg += " seconds";
@@ -197,7 +197,7 @@ Time Time::now()
 	return Time(pt->tm_hour,pt->tm_min,pt->tm_sec);
 }
 
-BadTime::BadTime(const string& s):
+BadTime::BadTime(const std::string& s):
 	BadValue(s)
 {
 }

@@ -40,32 +40,32 @@ public:
 
 // -- Methods
     
-    void mkdir(const string&,short);
-    bool exists(const string&);
-    string mountPoint(const string&);
-    void fileSystemSize(const string& path, FileSystemSize& fs);
-    void rename(const string&,const string&);
-    void link(const string&,const string&);
-    void unlink(const string&);
-    void rmdir(const string&);
-    void touch(const string&);
-    string unique(const string&);
-    Length size(const string&);
-    bool sameAs(const string& path1, const string& path2);
-    void match(const string& path,vector<string>& result,bool recurse);
-    void children(const string& path,vector<string>& dirs, vector<string>& files);
-    string baseName(const string& path, bool ext);
-    string dirName(const string& path);
-    string fullName(const string& path);
+    void mkdir(const std::string&,short);
+    bool exists(const std::string&);
+    std::string mountPoint(const std::string&);
+    void fileSystemSize(const std::string& path, FileSystemSize& fs);
+    void rename(const std::string&,const std::string&);
+    void link(const std::string&,const std::string&);
+    void unlink(const std::string&);
+    void rmdir(const std::string&);
+    void touch(const std::string&);
+    std::string unique(const std::string&);
+    Length size(const std::string&);
+    bool sameAs(const std::string& path1, const std::string& path2);
+    void match(const std::string& path,std::vector<std::string>& result,bool recurse);
+    void children(const std::string& path,std::vector<std::string>& dirs, std::vector<std::string>& files);
+    std::string baseName(const std::string& path, bool ext);
+    std::string dirName(const std::string& path);
+    std::string fullName(const std::string& path);
 
 
-    time_t created(const string&);
-    time_t lastAccess(const string&);
-    time_t lastModified(const string&);
+    time_t created(const std::string&);
+    time_t lastAccess(const std::string&);
+    time_t lastModified(const std::string&);
 
 
-    vector<string> getFileSpaces();
-    vector<string> getFileSystems(const string&);
+    std::vector<std::string> getFileSpaces();
+    std::vector<std::string> getFileSystems(const std::string&);
 
 protected:
 

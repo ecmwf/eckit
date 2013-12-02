@@ -33,7 +33,7 @@ static void check(const Date& date,long value)
 	{
 		StrStream os;
 		os << "Invalid date " << value << " becomes " << date << StrStream::ends;
-		throw BadDate(string(os));
+		throw BadDate(std::string(os));
 	}
 }
 
@@ -58,11 +58,11 @@ Date::Date(long year,long dayOfYear)
 	ASSERT(this->year() == year);
 }
 
-long Date::parse(const string& s)
+long Date::parse(const std::string& s)
 {
 	
 	Tokenizer parse("-");
-	vector<string> result;
+	std::vector<std::string> result;
 
 	parse(s,result);
 
@@ -152,7 +152,7 @@ long Date::parse(const string& s)
 			break;
 	}
 
-	if(err) throw BadDate(string("Invalid date ") + s);
+	if(err) throw BadDate(std::string("Invalid date ") + s);
 
 	// Come back here....
 	// temp patch for monthly means
@@ -161,18 +161,18 @@ long Date::parse(const string& s)
 	return value;
 }
 
-Date::Date(const string& s)
+Date::Date(const std::string& s)
 {
 	long value = parse(s);
 	julian_    = dateToJulian(value);
 	check(*this,value);
 }
 
-Date::operator string() const
+Date::operator std::string() const
 {
 	StrStream os;
 	os << *this << StrStream::ends;
-	return string(os);
+	return std::string(os);
 }
 
 // Returns a date in the format yyyymmdd from a julian number
@@ -311,7 +311,7 @@ long Date::yyyymmdd() const
 	return julianToDate(julian_);
 }
 
-string Date::monthName() const
+std::string Date::monthName() const
 {
 	long ddate = julianToDate(julian_);
 	ddate %= 10000;
@@ -320,7 +320,7 @@ string Date::monthName() const
 	return months[n-1];
 }
 
-BadDate::BadDate(const string& s):
+BadDate::BadDate(const std::string& s):
 	BadValue(s)
 {
 }

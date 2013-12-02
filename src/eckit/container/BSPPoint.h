@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef KDPoint_H
-#define KDPoint_H
+#ifndef BSPPoint_H
+#define BSPPoint_H
 
 #include <eckit/eckit.h>
 
@@ -21,7 +21,7 @@ namespace eckit {
 
 
 template<class T, int SIZE = 2>
-class KDPoint {
+class BSPPoint {
 protected:
     double x_[SIZE];
 
@@ -31,40 +31,35 @@ public:
 
     Payload payload_;
 
-    double x(size_t axis) const { return x_[axis]; }
+    double x(int axis) const { return x_[axis]; }
 
-    KDPoint(): payload_()
+    BSPPoint(): payload_()
     {
         std::fill(x_, x_+size(*this), 0);
     }
 
-    KDPoint(const Payload& payload): payload_(payload)
-    {
-        std::fill(x_, x_+size(*this), 0);
-    }
-
-    KDPoint(double x, double y, const Payload& payload): payload_(payload)
+    BSPPoint(double x, double y, const Payload& payload): payload_(payload)
     {
         x_[0] = x;
         x_[1] = y;
     }
     
-    bool operator<(const KDPoint& other) const
+    bool operator<(const BSPPoint& other) const
     { return lexicographical_compare(x_,x_ + SIZE, other.x_, other.x_ + SIZE); }
 
-    static size_t size() { return SIZE; }
+    static size_t size(const BSPPoint&) { return SIZE; }
 
-    friend std::ostream& operator<<(std::ostream& s,const KDPoint& p)
+    friend std::ostream& operator<<(std::ostream& s,const BSPPoint& p)
     {
         s << '(' << p.x_[0] << "," << p.x_[1] << ' ' << p.payload_ << ')';
         //s << '(' << p.x_[0] << "," << p.x_[1] << ')';
         return s;
     }
 
-    static  double distance(const KDPoint& p1, const KDPoint& p2)
+    static  double distance(const BSPPoint& p1, const BSPPoint& p2)
     {
         double m = 0;
-        for(size_t i = 0; i < size(); i++)
+        for(size_t i = 0; i < size(p1); i++)
         {
             double dx =  p1.x_[i]  - p2.x_[i];
             m += dx*dx;
@@ -73,13 +68,13 @@ public:
     }
 
     // Distance along one axis
-    static  double distance(const KDPoint& p1, const KDPoint& p2, int axis)
+    static  double distance(const BSPPoint& p1, const BSPPoint& p2, int axis)
     {
         return fabs(p1.x_[axis] - p2.x_[axis]);
     }
 
     // For projecting a point on a line
-    static double dot(const KDPoint& p1, const KDPoint& p2)
+    static double dot(const BSPPoint& p1, const BSPPoint& p2)
     {
         double m = 0;
         for(size_t i = 0; i < size(); i++)
@@ -89,9 +84,9 @@ public:
         return m;
     }
 
-    static KDPoint add(const KDPoint& p1, const KDPoint& p2)
+    static BSPPoint add(const BSPPoint& p1, const BSPPoint& p2)
     {
-        KDPoint q(p1);
+        BSPPoint q(p1);
         for(size_t i = 0; i < size(); i++)
         {
             q.x_[i] += p2.x_[i];
@@ -99,9 +94,9 @@ public:
         return q;
     }
 
-    static KDPoint sub(const KDPoint& p1, const KDPoint& p2)
+    static BSPPoint sub(const BSPPoint& p1, const BSPPoint& p2)
     {
-        KDPoint q(p1);
+        BSPPoint q(p1);
         for(size_t i = 0; i < size(); i++)
         {
             q.x_[i] -= p2.x_[i];
@@ -109,9 +104,9 @@ public:
         return q;
     }
 
-    static KDPoint mul(const KDPoint& p, double m)
+    static BSPPoint mul(const BSPPoint& p, double m)
     {
-        KDPoint q(p);
+        BSPPoint q(p);
         for(size_t i = 0; i < size(); i++)
         {
             q.x_[i] *= m;
@@ -119,9 +114,9 @@ public:
         return q;
     }
 
-    static KDPoint div(const KDPoint& p, double m)
+    static BSPPoint div(const BSPPoint& p, double m)
     {
-        KDPoint q(p);
+        BSPPoint q(p);
         for(size_t i = 0; i < size(); i++)
         {
             q.x_[i] /= m;
@@ -129,9 +124,9 @@ public:
         return q;
     }
 
-    static KDPoint normalize(const KDPoint& p)
+    static BSPPoint normalize(const BSPPoint& p)
     {
-        KDPoint zero;
+        BSPPoint zero;
         return mul(p,distance(p, zero));
     }
 

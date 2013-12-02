@@ -15,8 +15,6 @@
 #include "eckit/log/ChannelBuffer.h"
 #include "eckit/thread/ThreadSingleton.h"
 
-using namespace std;
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {

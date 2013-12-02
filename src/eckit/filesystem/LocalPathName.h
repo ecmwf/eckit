@@ -44,7 +44,7 @@ public:
 // Contructors
 
     LocalPathName(const char* p = "/")    : path_(p) { tidy(); }
-    LocalPathName(const string& p)        : path_(p) { tidy(); }
+    LocalPathName(const std::string& p)        : path_(p) { tidy(); }
     LocalPathName(const LocalPathName& p) : path_(p.path_) {}
 
 // Assignment
@@ -55,7 +55,7 @@ public:
         return *this;
     }
 
-    LocalPathName& operator=(const string& p)
+    LocalPathName& operator=(const std::string& p)
     {
         path_ = p      ;
         return tidy();
@@ -69,7 +69,7 @@ public:
 
 // Convertors
 
-    operator const string&() const { return path_; }
+    operator const std::string&() const { return path_; }
 
     const char* localPath() const  { return path_.c_str(); }
 
@@ -77,7 +77,7 @@ public:
 
 // Operators
 
-    LocalPathName& operator+=(const string& s)  {
+    LocalPathName& operator+=(const std::string& s)  {
         path_ += s;
         return tidy();
     }
@@ -129,7 +129,7 @@ public:
     LocalPathName orphanName() const;
     BasePathName* checkClusterNode() const;
 
-    string clusterName() const;
+    std::string clusterName() const;
 
     // baseName() returns the name part of the path. If ext if false
     // the extension is stipped
@@ -163,9 +163,9 @@ public:
     LocalPathName mountPoint() const;
     LocalPathName realName() const;
 
-    void children(vector<LocalPathName>&,vector<LocalPathName>&) const;
-    const string& node() const;
-    const string& path() const;
+    void children(std::vector<LocalPathName>&,std::vector<LocalPathName>&) const;
+    const std::string& node() const;
+    const std::string& path() const;
 
     void fileSystemSize(FileSystemSize&) const;
     DataHandle* fileHandle(bool overwrite) const;
@@ -175,10 +175,10 @@ public:
 // Class methods
 
     static LocalPathName unique(const LocalPathName&);
-    static void match(const LocalPathName&,vector<LocalPathName>&,bool=false);
+    static void match(const LocalPathName&,std::vector<LocalPathName>&,bool=false);
     static void link(const LocalPathName& from,const LocalPathName& to);
     static void rename(const LocalPathName& from,const LocalPathName& to);
-    static void rename(const LocalPathName& from,const string& newBase);
+    static void rename(const LocalPathName& from,const std::string& newBase);
     
     static LocalPathName cwd();
 
@@ -186,7 +186,7 @@ private:
 
 // Members
 
-    string path_;
+    std::string path_;
 
 // Methods
 
@@ -194,7 +194,7 @@ private:
 
 // friend
 
-    friend LocalPathName operator+(const LocalPathName& p,const string& s)
+    friend LocalPathName operator+(const LocalPathName& p,const std::string& s)
     {
         return LocalPathName(p.path_ + s);
     }

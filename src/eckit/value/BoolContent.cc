@@ -72,7 +72,7 @@ void BoolContent::value(bool& l) const
     l = value_;
 }
 
-void BoolContent::value(string& s) const
+void BoolContent::value(std::string& s) const
 { 
     s = value_ ? "true" : "false";
 }

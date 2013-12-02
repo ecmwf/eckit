@@ -28,7 +28,7 @@ class FixedString {
 public:
 
     FixedString();
-    FixedString(const string&);
+    FixedString(const std::string&);
     FixedString(const FixedString&);
     FixedString(const char*);
 
@@ -62,7 +62,7 @@ public:
 
     std::string asString() const;
     
-    operator string() const;
+    operator std::string() const;
 
 private:
 

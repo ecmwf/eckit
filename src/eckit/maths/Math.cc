@@ -49,7 +49,7 @@ Math::Math(double v):
 {
 }
 
-Math::Math(const string& v):
+Math::Math(const std::string& v):
     expr_(maths::parameter(v))
 {
 }

@@ -21,20 +21,20 @@ namespace eckit {
 
 class BadConversion:  public Exception { 
 	public: 
-		BadConversion(const string& w):
-			Exception(string("Bad Conversion: ") + w)   {  }
+		BadConversion(const std::string& w):
+			Exception(std::string("Bad Conversion: ") + w)   {  }
 };
 
 class BadComparison:  public Exception { 
 	public: 	
-		BadComparison(const string& w):
-			Exception(string("Bad Comparison: ") + w)   {  }
+		BadComparison(const std::string& w):
+			Exception(std::string("Bad Comparison: ") + w)   {  }
 };
 
 class BadOperator:  public Exception { 
 	public: 	
-		BadOperator(const string& w):
-			Exception(string("Bad operator: ") + w)   {  }
+		BadOperator(const std::string& w):
+			Exception(std::string("Bad operator: ") + w)   {  }
 };
 
 //-----------------------------------------------------------------------------
@@ -56,27 +56,27 @@ Content::~Content()
 {
 }
 
-void Content::badConvertion(const string& to) const
+void Content::badConvertion(const std::string& to) const
 {
 	StrStream s;
 	s << "Cannot convert " << *this << " (" << typeName() << ") to " << to << StrStream::ends;
-	string str(s);
+	std::string str(s);
 	throw BadConversion(str);
 }
 
-void Content::badComparison(const string& to) const
+void Content::badComparison(const std::string& to) const
 {
 	StrStream s;
 	s << "Cannot compare " << *this << " (" << typeName() << ") with " << to << StrStream::ends;
-	string str(s);
+	std::string str(s);
 	throw BadComparison(str);
 }
 
-void Content::badOperator(const string& op, const string& to) const
+void Content::badOperator(const std::string& op, const std::string& to) const
 {
 	StrStream s;
 	s << *this << " (" << typeName() << ") " << op << " " << to << StrStream::ends;
-	string str(s);
+	std::string str(s);
 	throw BadOperator(str);
 }
 
@@ -105,9 +105,9 @@ void Content::value(double&) const
     badConvertion("double");
 }
 
-void Content::value(string&) const
+void Content::value(std::string&) const
 {
-	badConvertion("string");
+	badConvertion("std::string");
 }
 
 void Content::value(Date&) const
@@ -125,13 +125,13 @@ void Content::value(DateTime&) const
 	badConvertion("DateTime");
 }
 
-void Content::value(map<Value,Value>& v) const
+void Content::value(std::map<Value,Value>& v) const
 {
     badConvertion("Map");
 }
 
 
-void Content::value(vector<Value>& v) const
+void Content::value(std::vector<Value>& v) const
 {
 	// Cast away constness, so the Contnt can be attached by the value
 	v.push_back(Value((Content*)this));

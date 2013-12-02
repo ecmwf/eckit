@@ -24,7 +24,7 @@ public:
 
 // -- Contructors
 
-	Plural(int count,const string& s) : s_(s),count_(count) {}
+	Plural(int count,const std::string& s) : s_(s),count_(count) {}
 
 // -- Destructor
 
@@ -44,7 +44,7 @@ private:
 
 // There is no private copy constructor as this will confuse g++ 4.x.x
 
-	string s_;
+	std::string s_;
 	int count_;
 
 // -- Friends

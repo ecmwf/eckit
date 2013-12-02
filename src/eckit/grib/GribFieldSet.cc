@@ -38,7 +38,7 @@ GribFieldSet::GribFieldSet(const GribFieldSet& other)
     }
 }
 
-GribFieldSet::GribFieldSet(const vector<GribFieldSet>& v)
+GribFieldSet::GribFieldSet(const std::vector<GribFieldSet>& v)
 {
     size_t n = 0;
 
@@ -131,12 +131,12 @@ GribFieldSet GribFieldSet::slice(size_t from, size_t to, size_t step) const
 }
 
 
-GribFieldSet GribFieldSet::slice(const vector<size_t>& v) const
+GribFieldSet GribFieldSet::slice(const std::vector<size_t>& v) const
 {
     size_t n = size();
     GribFieldSet out(v.size());
 
-    for(vector<size_t>::const_iterator j = v.begin(); j != v.end(); ++j) {
+    for(std::vector<size_t>::const_iterator j = v.begin(); j != v.end(); ++j) {
         size_t i = *j;
         ASSERT(i < n);
 

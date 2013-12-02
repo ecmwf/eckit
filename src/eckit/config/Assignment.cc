@@ -55,7 +55,7 @@ Assignment::Assignment(Compiler &c, Scope& scope) :
                 c.next(include_spaces);
                 break;
             default:
-                throw StreamParser::Error( string("unexpected character after assignment : ") + n );
+                throw StreamParser::Error( std::string("unexpected character after assignment : ") + n );
         }
     }
 }

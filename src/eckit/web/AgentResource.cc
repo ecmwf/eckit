@@ -29,7 +29,7 @@ class MemStream : public eckit::Stream {
 
 	virtual long write(const void* buf,long len);
 	virtual long read(void* buf,long len);
-	virtual string name() const { return "MemStream"; }
+	virtual std::string name() const { return "MemStream"; }
 
 public:
 	MemStream(const char* p,long len);
@@ -87,7 +87,7 @@ void AgentResource::html(std::ostream&,Url& url)
 
 	MemStream s(url.headerIn().content(), url.headerIn().contentLength());
 
-	string token = url.headerIn().getHeader("mars-token");
+	std::string token = url.headerIn().getHeader("mars-token");
 
     std::cout << "Token is " << token << std::endl;
 	

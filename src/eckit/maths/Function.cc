@@ -45,7 +45,7 @@ Function::factory_t& Function::factory()
     return f;
 }*/
 
-string Function::signature() const
+std::string Function::signature() const
 {
     return signatureArguments( args() );
 }
@@ -88,7 +88,7 @@ ExpPtr Function::optimise(size_t depth) const
     return Optimiser::apply(self(), depth);
 }
 
-string Function::signatureArguments(const args_t &args) const
+std::string Function::signatureArguments(const args_t &args) const
 {
     std::ostringstream o;
     o << typeName() << "(";

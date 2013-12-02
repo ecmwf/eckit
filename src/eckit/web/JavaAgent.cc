@@ -37,7 +37,7 @@ JavaAgent::~JavaAgent()
 {
 }
 
-void JavaAgent::startObject(const string& clss)
+void JavaAgent::startObject(const std::string& clss)
 {
 	stream_.startObject();
 	stream_ << clss;
@@ -63,8 +63,8 @@ void JavaAgent::serve(eckit::Stream& s,std::istream& in,std::ostream& out)
 	{
 		s << int(1); // Ask for password;
 
-		string user;
-		string password;
+		std::string user;
+		std::string password;
 
 		s >> user;
 		s << Password::salt(user);

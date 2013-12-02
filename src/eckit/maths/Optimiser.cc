@@ -38,7 +38,7 @@ ExpPtr Optimiser::apply(ExpPtr e, size_t depth)
     }
 }
 
-Optimiser::Optimiser(const string &signature)
+Optimiser::Optimiser(const std::string &signature)
 {
     optimisers()[signature] = this;
 }

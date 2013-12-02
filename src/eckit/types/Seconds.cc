@@ -62,11 +62,11 @@ std::ostream& operator<<(std::ostream& s,const Seconds&  sec)
 	return s;
 }
 
-Seconds::operator string() const
+Seconds::operator std::string() const
 {
 	StrStream s;
 	s << *this << StrStream::ends;
-	return string(s);
+	return std::string(s);
 }
 
 //-----------------------------------------------------------------------------

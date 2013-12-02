@@ -151,7 +151,7 @@ bool BTree<K,V,S>::set(const K& key, const V& value)
 {
     AutoLock<BTree<K,V,S> > lock(this);
     //cout << "Set " << key << " -> " << value << std::endl;
-    vector<unsigned long> path;
+    std::vector<unsigned long> path;
     return insert(1,key,value,path);
 }
 
@@ -186,7 +186,7 @@ unsigned long BTree<K,V,S>::next(const K& key, const Page& p) const
 
 
 template<class K, class V, int S>
-bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, vector<unsigned long>& path)
+bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, std::vector<unsigned long>& path)
 {
 
     Page p;
@@ -449,7 +449,7 @@ bool BTree<K,V,S>::search(unsigned long page, const K& key, V& result) const
 }
 
 template<class K, class V, int S>
-void BTree<K,V,S>::range(const K& key1, const K& key2, vector< result_type >& result)
+void BTree<K,V,S>::range(const K& key1, const K& key2, std::vector< result_type >& result)
 {
     AutoSharedLock<BTree<K,V,S> > lock(this);
     result.clear();
@@ -463,7 +463,7 @@ bool BTree<K,V,S>::remove(const K &)
 }
 
 template<class K, class V, int S>
-void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, vector< result_type >& result)
+void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, std::vector< result_type >& result)
 {
     Page p;
     loadPage(page, p);

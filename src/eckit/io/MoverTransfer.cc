@@ -44,20 +44,20 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to)
     if (!from.moveable()) throw SeriousBug(from.title() + " is not moveable");
     if (!to.moveable()) throw SeriousBug(to.title() + " is not moveable");
 
-    map<string,Length> cost;
+    std::map<std::string,Length> cost;
     from.cost(cost, true);
     to.cost(cost, false);
 
     if (cost.size() == 0) {
         NodeInfo info = ClusterNodes::any("mover");
         cost[info.node()] = 0;
-//        throw SeriousBug(string("No cost for ") + from.title() + " => " + to.title());
+//        throw SeriousBug(std::string("No cost for ") + from.title() + " => " + to.title());
     }
 
     Log::info() << "MoverTransfer::transfer(" << from << "," << to << ")" << std::endl;;
 
     Log::info() << "MoverTransfer::transfer cost:" << std::endl;
-    for (map<string,Length> ::iterator j = cost.begin() ; j != cost.end() ; ++j)
+    for (std::map<std::string,Length> ::iterator j = cost.begin() ; j != cost.end() ; ++j)
         Log::info() << "   " << (*j).first << " => " << Bytes((*j).second) << std::endl;
 
     Connector& c(Connector::service("mover", cost));
@@ -90,7 +90,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to)
     while(more) 
     {
         long pos;
-        string msg;
+        std::string msg;
         s >> pos;
         s >> msg;
         total += pos;

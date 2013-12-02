@@ -43,12 +43,12 @@ protected:
     virtual void value(bool& n)                 const { Content::value(n); }
     virtual void value(long long& n)            const { Content::value(n); }
     virtual void value(double& n)               const { Content::value(n); }
-    virtual void value(string& n)               const { Content::value(n); }
+    virtual void value(std::string& n)               const { Content::value(n); }
     virtual void value(Date& n)                 const { Content::value(n); }
     virtual void value(Time& n)                 const { Content::value(n); }
     virtual void value(DateTime& n)             const { Content::value(n); }
-    virtual void value(vector<Value>& n)        const;
-    virtual void value(map<Value,Value>& n)     const { Content::value(n); }
+    virtual void value(std::vector<Value>& n)        const;
+    virtual void value(std::map<Value,Value>& n)     const { Content::value(n); }
 
     virtual int  compareBool(const BoolContent&)            const {return -1; }
     virtual int  compareNumber(const NumberContent&)        const {return -1; }
@@ -73,7 +73,7 @@ protected:
 	virtual Content* divNil(const NilContent&)  const;
 
 	virtual bool     isNil()     const  { return true; }
-	virtual string   typeName()  const  { return "Nil"; }
+	virtual std::string   typeName()  const  { return "Nil"; }
 	virtual void     print(std::ostream&) const;
     virtual void   json(JSON&)     const;
 

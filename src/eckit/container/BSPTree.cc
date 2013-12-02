@@ -28,7 +28,8 @@
 namespace eckit {
 
 template<class Point, class Alloc>
-BSPNode<Point,Alloc>::BSPNode(const std::vector<Point>& p):
+template<typename Container>
+BSPNode<Point,Alloc>::BSPNode(const Container& p):
     point_(Point::mean(p)),
     left_(0),
     right_(0)
@@ -155,8 +156,10 @@ typename BSPNode<Point,Alloc>::NodeList BSPNode<Point,Alloc>::kNearestNeighbours
 }
 //===
 
+
 template<class Point, class Alloc>
-void BSPNode<Point,Alloc>::kmean(const std::vector<Point>& in, std::vector<Point>& ml, std::vector<Point>& mr, int depth)
+template<typename Container>
+void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& mr, int depth)
 {
 
     // Bisecting k-mean
@@ -168,8 +171,8 @@ void BSPNode<Point,Alloc>::kmean(const std::vector<Point>& in, std::vector<Point
     Point cl = in[distribution(generator)];
     Point cr = Point::symetrical(w, cl); // cr = w - (cl - w)
 
-    ml.reserve(in.size());
-    mr.reserve(in.size());
+    ///ml.reserve(in.size());
+    ///mr.reserve(in.size());
 
     std::vector<size_t> prev;
     std::vector<size_t> curr;
@@ -181,7 +184,7 @@ void BSPNode<Point,Alloc>::kmean(const std::vector<Point>& in, std::vector<Point
 
         size_t i = 0;
 
-        for(typename std::vector<Point>::const_iterator j = in.begin(); j != in.end(); ++j, ++i) {
+        for(typename Container::const_iterator j = in.begin(); j != in.end(); ++j, ++i) {
             double dl = Point::distance(cl, *j);
             double dr = Point::distance(cr, *j);
             if(dl <= dr) {
@@ -219,7 +222,8 @@ void BSPNode<Point,Alloc>::kmean(const std::vector<Point>& in, std::vector<Point
 }
 
 template<class Point, class Alloc>
-BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const std::vector<Point>& nodes, int depth)
+template<typename Container>
+BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const Container& nodes, int depth)
 {
     if(nodes.size() == 0)
         return 0;
@@ -231,13 +235,13 @@ BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const std::vector<Po
     //if(depth == 3)
     //    return a.newNode(nodes,(BSPNode*)0);
 
-    std::vector<Point>  left;
-    std::vector<Point>  right;
+    Container  left;
+    Container  right;
 
     kmean(nodes, left, right, depth);
 
 
-    BSPNode* n = a.newNode(nodes,(BSPNode*)0);
+    BSPNode* n = a.newNode(nodes, (BSPNode*)0);
 
     n->left(a,build(a, left, depth + 1));
     n->right(a,build(a, right, depth + 1));

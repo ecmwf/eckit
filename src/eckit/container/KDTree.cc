@@ -26,9 +26,9 @@ namespace eckit {
 
 
 template<class Point, class Alloc>
-KDNode<Point,Alloc>::KDNode(const Point& p, int axis):
-    point_(p),
-    axis_(axis),
+KDNode<Point,Alloc>::KDNode(const std::pair<const Point&,size_t>& p):
+    point_(p.first),
+    axis_(p.second),
     left_(0),
     right_(0)
 {
@@ -37,7 +37,7 @@ KDNode<Point,Alloc>::KDNode(const Point& p, int axis):
 template<class Point, class Alloc>
 KDNodeInfo<Point,Alloc> KDNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p)
 {
-    double max = numeric_limits<double>::max();
+    double max = std::numeric_limits<double>::max();
     KDNode* best = 0;
     nearestNeighbour(a, p, best, max, 0);
     return NodeInfo(best,max);
@@ -85,7 +85,7 @@ void KDNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, KDNode*& bes
 template<class Point, class Alloc>
 KDNodeInfo<Point,Alloc> KDNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p)
 {
-    double max = numeric_limits<double>::max();
+    double max = std::numeric_limits<double>::max();
     KDNode* best = 0;
     nearestNeighbourBruteForce(a, p, best, max, 0);
     return NodeInfo(best,max);
@@ -211,7 +211,7 @@ KDNode<Point,Alloc>* KDNode<Point,Alloc>::build(Alloc& a,
     ITER e2 = begin + median;
     ITER b2 = begin + median+1;
 
-    KDNode* n = a.newNode(*e2,axis,(KDNode*)0);
+    KDNode* n = a.newNode(std::make_pair(*e2,axis),(KDNode*)0);
 
     n->left(a,build(a, begin, e2, depth + 1));
     n->right(a,build(a, b2,   end, depth + 1));

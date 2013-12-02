@@ -50,7 +50,7 @@ public:
     }
     
     bool operator<(const KDPoint& other) const
-    { return lexicographical_compare(x_,x_ + SIZE, other.x_, other.x_ + SIZE); }
+    { return std::lexicographical_compare(x_,x_ + SIZE, other.x_, other.x_ + SIZE); }
 
     static size_t size(const KDPoint&) { return SIZE; }
 
@@ -135,23 +135,29 @@ public:
         return mul(p,distance(p, zero));
     }
 
-    /*
+    template<class Container>
+    static typename Container::value_type mean(const Container& points) {
 
-    u = diff(a,b);
-    v = diff(a,p);
+        typename Container::const_iterator j = points.begin();
+        typename Container::value_type result(*j);
 
-    U = normalize(u);
-    x = mul(U,dot(U,v));
+        ++j;
+        size_t count = points.size();
 
-    // P = project(p) on line(a,b)
-    P = add(a,x)
+        for(; j != points.end(); ++j) {
+            for(size_t i = 0; i < size(result); i++) {
+                result.x_[i] += (*j).x_[i];
+            }
+        }
+        for(size_t i = 0; i < size(result); i++) {
+            result.x_[i] /= points.size();
+        }
+        return result;
+    }
 
-    // Distance to line
-    ditance(p,P)
-
-
-
-    */
+    static KDPoint symetrical(const KDPoint& center, const KDPoint& w) {
+        return w;
+    }
 
 };
 

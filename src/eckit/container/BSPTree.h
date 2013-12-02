@@ -129,7 +129,9 @@ public:
     typedef typename NodeQueue::NodeList  NodeList;
 
 public:
-    BSPNode(const std::vector<Point>& p);
+
+    template<typename Container>
+    BSPNode(const Container& p);
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);
     NodeList findInSphere(Alloc& a,const Point& p, double radius);
@@ -137,8 +139,11 @@ public:
 
     const Point& point() const { return point_; }
 
-    static BSPNode* build(Alloc& a, const std::vector<Point>& nodes, int depth= 0);
-    static void kmean(const std::vector<Point>& in, std::vector<Point>& ml, std::vector<Point>& mr, int depth) ;
+    template<typename Container>
+    static BSPNode* build(Alloc& a, const Container& nodes, int depth= 0);
+
+    template<typename Container>
+    static void kmean(const Container& in, Container& ml, Container& mr, int depth) ;
 
     // For testing only
 
@@ -194,7 +199,8 @@ public:
         alloc_.deleteNode(root_,(Node*)0);
     }
 
-    void build(const std::vector<Point>& nodes)
+    template<typename Container>
+    void build(const Container& nodes)
     {
         root_ = alloc_.convert(Node::build(alloc_, nodes));
     }

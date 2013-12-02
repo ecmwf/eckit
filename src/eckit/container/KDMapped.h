@@ -42,10 +42,10 @@ public:
         return &base[p];
     }
 
-    template<class Node,class Point>
-    Node* newNode(const Point& p, size_t a, const Node*) {
+    template<class Node, class Init>
+    Node* newNode(const Init& init, const Node*) {
         Node* base = static_cast<Node*>(addr_);
-        return new(&base[count_++]) Node(p,a);
+        return new(&base[count_++]) Node(init);
     }
 
     template<class Node>

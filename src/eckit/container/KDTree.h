@@ -104,7 +104,6 @@ public:
 
 public:
     KDNode(const std::pair<const Point&,size_t>&);
-    //KDNode(const Point& p);
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);
     NodeList findInSphere(Alloc& a,const Point& p, double radius);

@@ -212,7 +212,9 @@ KDNode<Point,Alloc>* KDNode<Point,Alloc>::build(Alloc& a,
     ITER e2 = begin + median;
     ITER b2 = begin + median+1;
 
-    KDNode* n = a.newNode(std::make_pair(*e2,axis),(KDNode*)0);
+
+    std::pair<const Point&, size_t> p(*e2,axis);
+    KDNode* n = a.newNode(p,(KDNode*)0);
 
     n->left(a,build(a, begin, e2, depth + 1));
     n->right(a,build(a, b2,   end, depth + 1));

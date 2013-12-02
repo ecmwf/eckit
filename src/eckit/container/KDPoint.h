@@ -52,7 +52,8 @@ public:
     bool operator<(const KDPoint& other) const
     { return std::lexicographical_compare(x_,x_ + SIZE, other.x_, other.x_ + SIZE); }
 
-    static size_t size() { return SIZE; }
+    static size_t size(const KDPoint&) { return SIZE; }
+    static size_t size()               { return SIZE; }
 
     friend std::ostream& operator<<(std::ostream& s,const KDPoint& p)
     {

@@ -47,7 +47,7 @@ public:
     bool operator<(const KDPoint& other) const
     { return lexicographical_compare(x_,x_ + SIZE, other.x_, other.x_ + SIZE); }
 
-    static size_t size(const KDPoint&) { return SIZE; }
+    static size_t size() { return SIZE; }
 
     friend std::ostream& operator<<(std::ostream& s,const KDPoint& p)
     {
@@ -59,7 +59,7 @@ public:
     static  double distance(const KDPoint& p1, const KDPoint& p2)
     {
         double m = 0;
-        for(size_t i = 0; i < size(p1); i++)
+        for(size_t i = 0; i < size(); i++)
         {
             double dx =  p1.x_[i]  - p2.x_[i];
             m += dx*dx;

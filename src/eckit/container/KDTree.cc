@@ -37,7 +37,7 @@ KDNode<Point,Alloc>::KDNode(const Point& p, int axis):
 template<class Point, class Alloc>
 KDNodeInfo<Point,Alloc> KDNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p)
 {
-    double max = numeric_limits<double>::max();
+    double max = std::numeric_limits<double>::max();
     KDNode* best = 0;
     nearestNeighbour(a, p, best, max, 0);
     return NodeInfo(best,max);
@@ -85,7 +85,7 @@ void KDNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, KDNode*& bes
 template<class Point, class Alloc>
 KDNodeInfo<Point,Alloc> KDNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p)
 {
-    double max = numeric_limits<double>::max();
+    double max = std::numeric_limits<double>::max();
     KDNode* best = 0;
     nearestNeighbourBruteForce(a, p, best, max, 0);
     return NodeInfo(best,max);
@@ -199,7 +199,8 @@ KDNode<Point,Alloc>* KDNode<Point,Alloc>::build(Alloc& a,
     if(end == begin)
         return 0;
 
-    size_t k    = Point::size(*begin);
+    //size_t k    = Point::size(*begin);
+    size_t k    = Point::size();
     size_t axis = depth % k;
 
     //std::sort(begin, end, sorter<Point>(axis));

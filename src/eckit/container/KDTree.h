@@ -169,6 +169,7 @@ public:
         alloc_.deleteNode(root_,(Node*)0);
     }
 
+    /// ITER must be a random access iterator
     template<typename ITER>
     void build(const ITER& begin, const ITER& end)
     {

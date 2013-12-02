@@ -200,7 +200,7 @@ KDNode<Point,Alloc>* KDNode<Point,Alloc>::build(Alloc& a,
         return 0;
 
     //size_t k    = Point::size(*begin);
-    size_t k    = Point::size();
+    size_t k    = Point::dimensions();
     size_t axis = depth % k;
 
     //std::sort(begin, end, sorter<Point>(axis));

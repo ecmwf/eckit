@@ -35,12 +35,12 @@ public:
 
     KDPoint(): payload_()
     {
-        std::fill(x_, x_+dimensions(*this), 0);
+        std::fill(x_, x_+dimensions(), 0);
     }
 
     KDPoint(const Payload& payload): payload_(payload)
     {
-        std::fill(x_, x_+dimensions(*this), 0);
+        std::fill(x_, x_+dimensions(), 0);
     }
 
     KDPoint(double x, double y, const Payload& payload): payload_(payload)

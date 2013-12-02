@@ -35,12 +35,12 @@ public:
 
     KDPoint(): payload_()
     {
-        std::fill(x_, x_+size(*this), 0);
+        std::fill(x_, x_+dimensions(*this), 0);
     }
 
     KDPoint(const Payload& payload): payload_(payload)
     {
-        std::fill(x_, x_+size(*this), 0);
+        std::fill(x_, x_+dimensions(*this), 0);
     }
 
     KDPoint(double x, double y, const Payload& payload): payload_(payload)
@@ -52,8 +52,8 @@ public:
     bool operator<(const KDPoint& other) const
     { return std::lexicographical_compare(x_,x_ + SIZE, other.x_, other.x_ + SIZE); }
 
-    static size_t size(const KDPoint&) { return SIZE; }
-    static size_t size()               { return SIZE; }
+    //static size_t dimensions(const KDPoint&) { return SIZE; }
+    static size_t dimensions()               { return SIZE; }
 
     friend std::ostream& operator<<(std::ostream& s,const KDPoint& p)
     {
@@ -65,7 +65,7 @@ public:
     static  double distance(const KDPoint& p1, const KDPoint& p2)
     {
         double m = 0;
-        for(size_t i = 0; i < size(); i++)
+        for(size_t i = 0; i < dimensions(); i++)
         {
             double dx =  p1.x_[i]  - p2.x_[i];
             m += dx*dx;
@@ -83,7 +83,7 @@ public:
     static double dot(const KDPoint& p1, const KDPoint& p2)
     {
         double m = 0;
-        for(size_t i = 0; i < size(); i++)
+        for(size_t i = 0; i < dimensions(); i++)
         {
             m += p1.x_[i] * p2.x_[i];
         }
@@ -93,7 +93,7 @@ public:
     static KDPoint add(const KDPoint& p1, const KDPoint& p2)
     {
         KDPoint q(p1);
-        for(size_t i = 0; i < size(); i++)
+        for(size_t i = 0; i < dimensions(); i++)
         {
             q.x_[i] += p2.x_[i];
         }
@@ -103,7 +103,7 @@ public:
     static KDPoint sub(const KDPoint& p1, const KDPoint& p2)
     {
         KDPoint q(p1);
-        for(size_t i = 0; i < size(); i++)
+        for(size_t i = 0; i < dimensions(); i++)
         {
             q.x_[i] -= p2.x_[i];
         }
@@ -113,7 +113,7 @@ public:
     static KDPoint mul(const KDPoint& p, double m)
     {
         KDPoint q(p);
-        for(size_t i = 0; i < size(); i++)
+        for(size_t i = 0; i < dimensions(); i++)
         {
             q.x_[i] *= m;
         }
@@ -123,7 +123,7 @@ public:
     static KDPoint div(const KDPoint& p, double m)
     {
         KDPoint q(p);
-        for(size_t i = 0; i < size(); i++)
+        for(size_t i = 0; i < dimensions(); i++)
         {
             q.x_[i] /= m;
         }
@@ -146,18 +146,22 @@ public:
         size_t count = points.size();
 
         for(; j != points.end(); ++j) {
-            for(size_t i = 0; i < size(result); i++) {
+            for(size_t i = 0; i < dimensions(); i++) {
                 result.x_[i] += (*j).x_[i];
             }
         }
-        for(size_t i = 0; i < size(result); i++) {
+        for(size_t i = 0; i < dimensions(); i++) {
             result.x_[i] /= points.size();
         }
         return result;
     }
 
-    static KDPoint symetrical(const KDPoint& center, const KDPoint& w) {
-        return w;
+    static KDPoint symetrical(const KDPoint& c, const KDPoint& w) {
+        KDPoint result(w);
+        for(size_t i = 0; i < dimensions(); i++) {
+            result.x_[i] -= (c.x_[i] - w.x_[i]);
+        }
+        return result;
     }
 
 };

@@ -197,6 +197,8 @@ void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& 
             }
         }
 
+        ASSERT(ml.size());
+        ASSERT(mr.size());
 
         Point wl = Point::mean(ml);
         Point wr = Point::mean(mr);

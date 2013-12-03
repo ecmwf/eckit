@@ -164,12 +164,28 @@ void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& 
 
     // Bisecting k-mean
 
+    std::cout << "BSPNode::kmean " << in.size() << std::endl;
+
     Point w = Point::mean(in);
 
-    std::default_random_engine generator;
-    std::uniform_int_distribution<size_t> distribution(0, in.size()-1);
-    Point cl = in[distribution(generator)];
-    Point cr = Point::symetrical(w, cl); // cr = w - (cl - w)
+    //std::default_random_engine generator;
+    //std::uniform_int_distribution<size_t> distribution(0, in.size()-1);
+    //Point cl = in[distribution(generator)];
+    //Point cr = Point::symetrical(w, cl); // cr = w - (cl - w)
+
+    Point cl(in[0]);
+    Point cr(in[in.size()-1]);
+
+    if(Point::equal(cl,cr)) {
+        size_t n = in.size()-1;
+        while(n > 0) {
+            cr = in[n];
+            if(cr != cl) break;
+        }
+
+        ASSERT(n != 0);
+
+    }
 
     ///ml.reserve(in.size());
     ///mr.reserve(in.size());

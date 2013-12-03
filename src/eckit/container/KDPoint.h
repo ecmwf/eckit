@@ -73,6 +73,21 @@ public:
         return std::sqrt(m);
     }
 
+    static  bool equal(const KDPoint& p1, const KDPoint& p2)
+    {
+        double m = 0;
+        for(size_t i = 0; i < dimensions(); i++)
+        {
+           if(p1.x_[i]  != p2.x_[i])
+               return false;
+        }
+        return true;
+    }
+
+    bool operator==(const KDPoint& other) const {
+        return equal(*this, other);
+    }
+
     // Distance along one axis
     static  double distance(const KDPoint& p1, const KDPoint& p2, int axis)
     {
@@ -156,7 +171,7 @@ public:
         return result;
     }
 
-    static KDPoint symetrical(const KDPoint& c, const KDPoint& w) {
+    static KDPoint symetrical(const KDPoint& w, const KDPoint& c) {
         KDPoint result(w);
         for(size_t i = 0; i < dimensions(); i++) {
             result.x_[i] -= (c.x_[i] - w.x_[i]);

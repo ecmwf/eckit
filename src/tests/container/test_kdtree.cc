@@ -54,14 +54,14 @@ void Test::run()
     ValuePoint nr = kd.nearestNeighbour(testPoint).point();
     
     // we should find the same point
-    for (unsigned int i = 0; i < ValuePoint::size(); i++)
+    for (unsigned int i = 0; i < ValuePoint::dimensions(); i++)
         ASSERT(nr.x(i) == refPoint.x(i));
 
 
     // test exact match to a point
 
     nr = kd.nearestNeighbour(refPoint).point();
-    for (unsigned int i = 0; i < ValuePoint::size(); i++)
+    for (unsigned int i = 0; i < ValuePoint::dimensions(); i++)
         ASSERT(nr.x(i) == refPoint.x(i));
 
 
@@ -71,7 +71,7 @@ void Test::run()
     testPoint = ValuePoint::add(points.back(), delta);
     nr = kd.nearestNeighbour(testPoint).point();
 
-    for (unsigned int i = 0; i < ValuePoint::size(); i++)
+    for (unsigned int i = 0; i < ValuePoint::dimensions(); i++)
         ASSERT(nr.x(i) == points.back().x(i));
 
     // and negatively
@@ -81,7 +81,7 @@ void Test::run()
     testPoint = ValuePoint::add(points.front(), delta);
     nr = kd.nearestNeighbour(testPoint).point();
 
-    for (unsigned int i = 0; i < ValuePoint::size(); i++)
+    for (unsigned int i = 0; i < ValuePoint::dimensions(); i++)
         ASSERT(nr.x(i) == points.front().x(i));
 
 
@@ -96,7 +96,7 @@ void Test::run()
     {
         ValuePoint diff = ValuePoint::sub(it->point(), testPoint);
         // make sure we differ by 0.5 along each axis
-        for (unsigned int i = 0; i < ValuePoint::size(); ++i)
+        for (unsigned int i = 0; i < ValuePoint::dimensions(); ++i)
         {
             std::cout << "distance along point " << ValuePoint::distance(ValuePoint(0.0, 0.0, 0.0), diff, i)  << std::endl;
             ASSERT(ValuePoint::distance(ValuePoint(0.0, 0.0, 0.0), diff, i) == 0.5);

@@ -26,9 +26,9 @@ namespace eckit {
 
 
 template<class Point, class Alloc>
-KDNode<Point,Alloc>::KDNode(const Point& p, int axis):
-    point_(p),
-    axis_(axis),
+KDNode<Point,Alloc>::KDNode(const std::pair<const Point&,size_t>& p):
+    point_(p.first),
+    axis_(p.second),
     left_(0),
     right_(0)
 {
@@ -200,7 +200,7 @@ KDNode<Point,Alloc>* KDNode<Point,Alloc>::build(Alloc& a,
         return 0;
 
     //size_t k    = Point::size(*begin);
-    size_t k    = Point::size();
+    size_t k    = Point::dimensions();
     size_t axis = depth % k;
 
     //std::sort(begin, end, sorter<Point>(axis));
@@ -212,7 +212,9 @@ KDNode<Point,Alloc>* KDNode<Point,Alloc>::build(Alloc& a,
     ITER e2 = begin + median;
     ITER b2 = begin + median+1;
 
-    KDNode* n = a.newNode(*e2,axis,(KDNode*)0);
+
+    std::pair<const Point&, size_t> p(*e2,axis);
+    KDNode* n = a.newNode(p,(KDNode*)0);
 
     n->left(a,build(a, begin, e2, depth + 1));
     n->right(a,build(a, b2,   end, depth + 1));

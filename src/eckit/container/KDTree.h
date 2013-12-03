@@ -89,7 +89,7 @@ class KDNode {
 private:
 
     Point  point_;
-    int    axis_;
+    size_t    axis_;
 
     typedef typename Alloc::Ptr Ptr;
     Ptr left_;
@@ -103,7 +103,7 @@ public:
     typedef typename NodeQueue::NodeList  NodeList;
 
 public:
-    KDNode(const Point& p,int axis);
+    KDNode(const std::pair<const Point&,size_t>&);
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);
     NodeList findInSphere(Alloc& a,const Point& p, double radius);

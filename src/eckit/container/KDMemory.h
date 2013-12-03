@@ -29,8 +29,8 @@ struct KDMemory {
     template<class Node>
     Node* convert(Ptr p,  const Node*) { return static_cast<Node*>(p); }
 
-    template<class Node,class Point>
-    Node* newNode(const Point& p, size_t a, const Node*) { return new Node(p,a); }
+    template<class Node,class Init>
+    Node* newNode(const Init& init, const Node*) { return new Node(init); }
 
     template<class Node>
     void deleteNode(Ptr p, const Node*) {

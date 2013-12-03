@@ -15,7 +15,7 @@
 #ifndef eckit_grid_Field_H
 #define eckit_grid_Field_H
 
-#include <std::vector>
+#include <vector>
 
 #include "eckit/types/Types.h"
 #include "eckit/memory/NonCopyable.h"
@@ -40,12 +40,12 @@ public: // types
 
     };
 
-    typedef std::std::vector< Field* >  Vector;
-    typedef std::std::vector< double >  Data;
+    typedef std::vector< Field* >  Vector;
+    typedef std::vector< double >  Data;
 
 public: // methods
 
-    Field( MetaData* metadata, std::std::vector<double>* data );
+    Field( MetaData* metadata, std::vector<double>* data );
 
     ~Field();
 

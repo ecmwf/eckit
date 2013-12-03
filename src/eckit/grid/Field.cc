@@ -25,7 +25,7 @@ Field::MetaData::MetaData()
 
 //-----------------------------------------------------------------------------
 
-Field::Field(MetaData* metadata, std::std::vector<double>* data) :
+Field::Field(MetaData* metadata, std::vector<double>* data) :
     metadata_(metadata),
     data_(data)
 {

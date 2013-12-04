@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -35,8 +35,8 @@ void PartHandle::print(std::ostream& s) const
         s << "PartHandle";
     else
         s << "PartHandle[handle=" << *handle_
-           << ",offset=" << offset_
-           << ",length=" << length_ << ']';
+          << ",offset=" << offset_
+          << ",length=" << length_ << ']';
 }
 
 void PartHandle::encode(Stream& s) const
@@ -61,31 +61,31 @@ PartHandle::PartHandle(Stream& s):
 
 
 PartHandle::PartHandle(DataHandle& handle,
-    const OffsetList& offset,const LengthList& length):
+                       const OffsetList& offset,const LengthList& length):
     handle_(&handle),
     ownHandle_(false),
     offset_(offset),
     length_(length)
 {
-//    Log::info() << "PartHandle::PartHandle " << name << std::endl;
+    //    Log::info() << "PartHandle::PartHandle " << name << std::endl;
     ASSERT(offset_.size() == length_.size());
     compress(false);
 }
 
 PartHandle::PartHandle(DataHandle* handle,
-    const OffsetList& offset,const LengthList& length):
+                       const OffsetList& offset,const LengthList& length):
     handle_(handle),
     ownHandle_(true),
     offset_(offset),
     length_(length)
 {
-//    Log::info() << "PartHandle::PartHandle " << name << std::endl;
+    //    Log::info() << "PartHandle::PartHandle " << name << std::endl;
     ASSERT(offset_.size() == length_.size());
     compress(false);
 }
 
 PartHandle::PartHandle(DataHandle& handle,
-    const Offset& offset,const Length& length):
+                       const Offset& offset,const Length& length):
     handle_(&handle),
     ownHandle_(false),
     offset_(1,offset),
@@ -94,7 +94,7 @@ PartHandle::PartHandle(DataHandle& handle,
 }
 
 PartHandle::PartHandle(DataHandle* handle,
-    const Offset& offset,const Length& length):
+                       const Offset& offset,const Length& length):
     handle_(handle),
     ownHandle_(true),
     offset_(1,offset),
@@ -113,7 +113,7 @@ PartHandle::~PartHandle()
 {
     if(ownHandle_)
     {
-       delete handle_;
+        delete handle_;
     }
 }
 

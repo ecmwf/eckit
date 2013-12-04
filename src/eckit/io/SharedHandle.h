@@ -11,8 +11,8 @@
 // File Partio/FileHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_filesystem_PartHandle_h
-#define eckit_filesystem_PartHandle_h
+#ifndef eckit_filesystem_SharedHandle_h
+#define eckit_filesystem_SharedHandle_h
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
@@ -25,28 +25,25 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class PartHandle : public DataHandle {
+class SharedHandle : public DataHandle {
 public:
 
     // -- Contructors
 
-    PartHandle(DataHandle& handle,const OffsetList&,const LengthList&);
-    PartHandle(DataHandle& handle,const Offset&,const Length&);
-
-    PartHandle(DataHandle* handle,const OffsetList&,const LengthList&);
-    PartHandle(DataHandle* handle,const Offset&,const Length&);
-
-    PartHandle(Stream&);
+    SharedHandle(DataHandle& handle);
 
     // -- Destructor
 
-    ~PartHandle();
+    ~SharedHandle();
 
     // -- Methods
 
     // -- Overridden methods
 
     // From DataHandle
+
+
+    virtual void print(std::ostream& s) const;
 
     virtual Length openForRead();
     virtual void openForWrite(const Length&);
@@ -55,41 +52,49 @@ public:
     virtual long read(void*,long);
     virtual long write(const void*,long);
     virtual void close();
-    virtual void rewind();
-    virtual void print(std::ostream&) const;
-    virtual bool merge(DataHandle*);
-    virtual bool compress(bool = false);
+    virtual void flush();
+
     virtual Length estimate();
-    virtual void restartReadFrom(const Offset& from);
+    virtual Offset position();
+    virtual Offset seek(const Offset&);
+    virtual void skip(const Length &);
 
-    // From Streamable
+    virtual void rewind();
+    virtual void restartReadFrom(const Offset&);
+    virtual void restartWriteFrom(const Offset&);
 
-    virtual void encode(Stream&) const;
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual DataHandle* clone() const;
 
-    // -- Class methods
+    virtual Length saveInto(DataHandle&, TransferWatcher&);
 
-    static  const ClassSpec&  classSpec()        { return classSpec_;}
+    virtual std::string name() const;
+
+
+    virtual bool compress(bool);
+    virtual bool merge(DataHandle*);
+    virtual bool isEmpty() const;
+
+
+    virtual bool moveable() const;
+    virtual void toLocal(Stream& s) const;
+
+    virtual DataHandle* toLocal();
+
+    virtual void toRemote(Stream& s) const;
+    virtual void cost(std::map<std::string,Length>&, bool) const;
+    virtual std::string title() const;
+
+
 
 private:
 
     // -- Members
 
-    DataHandle*        handle_;
-    bool               ownHandle_;
-    long long          pos_;
-    Ordinal            index_;
-    OffsetList         offset_;
-    LengthList         length_;
+    DataHandle&        handle_;
 
     // -- Methods
 
-    long read1(char*,long);
 
-    // -- Class members
-
-    static  ClassSpec               classSpec_;
-    static  Reanimator<PartHandle>  reanimator_;
 
 };
 

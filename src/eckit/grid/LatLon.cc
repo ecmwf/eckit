@@ -45,7 +45,7 @@ LatLon::LatLon( size_t nlat, size_t nlon, const BoundBox2D& bb) :
         }
         plat += dlat;
     }
-    for (std::std::vector< Point2D >::const_iterator it = points_.begin(); it != points_.end(); it++)
+    for (std::vector< Point2D >::const_iterator it = points_.begin(); it != points_.end(); it++)
         Log::info() << "Point at " << it->lat_ << ", " << it->lon_ << std::endl;
 }
 

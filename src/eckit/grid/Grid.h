@@ -16,7 +16,7 @@
 #define eckit_grid_Grid_H
 
 #include <cstddef>
-
+#include <vector>
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"
 
@@ -61,7 +61,7 @@ public: // methods
     virtual ~Grid();
 
     virtual size_t dataSize() const = 0;
-    virtual const std::std::vector<Point2D>& gridData() const = 0;
+    virtual const std::vector<Point2D>& gridData() const = 0;
     virtual BoundBox2D boundingBox() const = 0;
 
 protected:

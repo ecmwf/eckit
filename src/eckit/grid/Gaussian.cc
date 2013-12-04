@@ -43,7 +43,7 @@ Gaussian::Gaussian( size_t resolution, const BoundBox2D& bb) :
     // NB we don't go all the way to 90 degrees in either case
     // e.g. http://www.ecmwf.int/publications/manuals/libraries/interpolation/n80FIS.html
 
-    std::std::vector<double> lats;
+    std::vector<double> lats;
     generateLatitudes(lats);
     ASSERT(lats.size() == resolution_);
 
@@ -53,7 +53,7 @@ Gaussian::Gaussian( size_t resolution, const BoundBox2D& bb) :
     double dlon = ( bb.top_right_.lon_ - bb.bottom_left_.lon_ ) / nlon ;
 
     // fill out a std::vector
-    std::std::vector<double> lons;
+    std::vector<double> lons;
     double plon = bb.bottom_left_.lon_;
     for (size_t j = 0; j <= nlon; ++j)
     {
@@ -132,7 +132,7 @@ void Gaussian::refineLatitude(double& value)
     value = asin(root) * rad2deg;
 }
     
-void Gaussian::generateLatitudes(std::std::vector<double>& lats)
+void Gaussian::generateLatitudes(std::vector<double>& lats)
 {
     lats.resize(resolution_);
 

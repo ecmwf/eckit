@@ -89,6 +89,8 @@ io/MarsFSHandle.h
 io/MarsFSHandle.cc
 io/MarsFSPartHandle.h
 io/MarsFSPartHandle.cc
+io/PartHandle.h
+io/PartHandle.cc
 io/MoverHandle.h
 io/MoverHandle.cc
 io/MultiHandle.h

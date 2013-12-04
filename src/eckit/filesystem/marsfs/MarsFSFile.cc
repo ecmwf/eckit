@@ -99,7 +99,7 @@ Offset MarsFSFile::seek(const Offset& pos) {
     return llpos;
 }
 
-void MarsFSFile::skip(size_t n) 
+void MarsFSFile::skip(const Length& n)
 {
     Stream& s = connector_;
     //Log::info() << "MarsFSFile::skip " << n << std::endl;

@@ -77,6 +77,21 @@ void BufferedHandle::openForAppend(const Length& )
 	NOTIMP;
 }
 
+void BufferedHandle::skip(const Length& len)
+{
+    ASSERT(read_);
+    unsigned long long left = used_ - pos_;
+    unsigned long long n    = len;
+
+    if(n < left) {
+        position_ += n;
+        pos_ += n;
+        return;
+    }
+
+    seek(position() + len);
+}
+
 long BufferedHandle::read(void* buffer,long length)
 {
     long len  = 0;
@@ -168,7 +183,8 @@ Offset BufferedHandle::seek(const Offset& off)
 {
     used_ = pos_ = 0;
     eof_  = false;
-    return handle_->seek(off);
+    position_ = handle_->seek(off);
+    return position_;
 }
 
 
@@ -204,6 +220,10 @@ std::string BufferedHandle::title() const {
     return std::string("{") + handle_->title() + "}";
 }
 
+DataHandle* BufferedHandle::clone() const
+{
+    return new BufferedHandle(handle_->clone(), buffer_.size());
+}
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

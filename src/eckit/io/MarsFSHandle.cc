@@ -117,7 +117,7 @@ void MarsFSHandle::rewind()
 	file_->seek(0);
 }
 
-void MarsFSHandle::skip(size_t n)
+void MarsFSHandle::skip(const Length &n)
 {
 	ASSERT(file_.get());
 	file_->skip(n);

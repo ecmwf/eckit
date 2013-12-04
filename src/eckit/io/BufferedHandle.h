@@ -56,11 +56,14 @@ public:
     virtual void flush();
     virtual void rewind();
     virtual void print(std::ostream&) const;
+    virtual void skip(const Length&);
 
     virtual Offset seek(const Offset&);
 
 	virtual Length estimate();
 	virtual Offset position();
+
+    virtual DataHandle* clone() const;
 
     // From Streamable
 

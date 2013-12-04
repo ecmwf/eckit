@@ -294,10 +294,9 @@ Offset DataHandle::seek(const Offset& from)
     NOTIMP;
 }
 
-void DataHandle::skip(size_t len)
+void DataHandle::skip(const Length& len)
 {
-    Log::error() << *this << std::endl;
-    NOTIMP;
+    seek(position() + len);
 }
 
 
@@ -332,6 +331,11 @@ void DataHandle::cost(std::map<std::string,Length>& c, bool read) const
 {
 }
 
+DataHandle* DataHandle::clone() const
+{
+    Log::error() << *this << std::endl;
+    NOTIMP;
+}
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

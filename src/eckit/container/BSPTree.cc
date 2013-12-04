@@ -31,6 +31,7 @@ template<class Point, class Alloc>
 template<typename Container>
 BSPNode<Point,Alloc>::BSPNode(const Container& p):
     point_(Point::mean(p)),
+    //center_(Point::enclosingSphere(p, radius_)),
     left_(0),
     right_(0)
 {
@@ -164,8 +165,6 @@ void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& 
 
     // Bisecting k-mean
 
-    std::cout << "BSPNode::kmean " << in.size() << std::endl;
-
     Point w = Point::mean(in);
 
     //std::default_random_engine generator;
@@ -176,14 +175,21 @@ void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& 
     Point cl(in[0]);
     Point cr(in[in.size()-1]);
 
-    if(Point::equal(cl,cr)) {
+    if(cl == cr) {
         size_t n = in.size()-1;
         while(n > 0) {
             cr = in[n];
             if(cr != cl) break;
+            n--;
         }
 
-        ASSERT(n != 0);
+        if(n == 0) {
+            // All points are equal
+            mr.clear();
+            ml.clear();
+            mr.push_back(cr);
+            return;
+        }
 
     }
 
@@ -224,10 +230,12 @@ void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& 
         //if(cl == wl && cr == wr)
         if(curr == prev)
         {
+#if 0
             for(int i = 0; i < depth; i++)
                 std::cout << "  ";
             std::cout << Point::distance(cl, wl) << " - " << Point::distance(cr, wr) << std::endl;
             //cout << "======================" << std::endl;
+#endif
             break;
         }
 

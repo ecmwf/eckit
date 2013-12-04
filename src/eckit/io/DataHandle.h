@@ -66,11 +66,13 @@ public:
 	virtual Length estimate()            { return 0; }
 	virtual Offset position();
 	virtual Offset seek(const Offset&);
-	virtual void skip(size_t);
+    virtual void skip(const Length &);
 
 	virtual void rewind();
 	virtual void restartReadFrom(const Offset&);
 	virtual void restartWriteFrom(const Offset&);
+
+    virtual DataHandle* clone() const;
 
 	// Save into an other datahandle
 

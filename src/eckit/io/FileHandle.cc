@@ -321,9 +321,10 @@ Offset FileHandle::seek(const Offset& from)
     return w;
 }
 
-void FileHandle::skip(size_t n)
+void FileHandle::skip(const Length &n)
 {
-    if (::fseeko(file_,n,SEEK_CUR) < 0)
+    off_t l = n;
+    if (::fseeko(file_,l,SEEK_CUR) < 0)
         throw ReadError(name_);
 }
 
@@ -352,6 +353,12 @@ std::string FileHandle::title() const
     //StrStream os;
     //os << "Client[" << host_ << ":" << port_ << "]" << StrStream::ends;
     return PathName::shorten(name_);
+}
+
+
+DataHandle* FileHandle::clone() const
+{
+    return new FileHandle(name_, overwrite_);
 }
 
 //-----------------------------------------------------------------------------

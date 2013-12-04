@@ -116,6 +116,8 @@ class BSPNode {
 private:
 
     Point  point_;
+    //Point  center_;
+    //double radius_;
 
     typedef typename Alloc::Ptr Ptr;
     Ptr left_;

@@ -88,6 +88,10 @@ public:
         return equal(*this, other);
     }
 
+    bool operator!=(const KDPoint& other) const {
+        return !equal(*this, other);
+    }
+
     // Distance along one axis
     static  double distance(const KDPoint& p1, const KDPoint& p2, int axis)
     {
@@ -178,6 +182,9 @@ public:
         }
         return result;
     }
+
+    const double* begin() const { return x_; }
+    const double* end() const { return x_ + dimensions(); }
 
 };
 

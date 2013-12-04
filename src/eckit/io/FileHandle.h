@@ -66,7 +66,9 @@ public:
     virtual bool moveable() const { return true; }
 
     virtual Offset seek(const Offset&);
-    virtual void skip(size_t);
+    virtual void skip(const Length&);
+
+    virtual DataHandle* clone() const;
 
 	// From Streamable
 

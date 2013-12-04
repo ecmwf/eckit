@@ -53,7 +53,7 @@ public:
 	virtual long   write(const void*,long);
 	virtual void   close();
 	virtual void   rewind();
-	virtual void   skip(size_t);
+    virtual void   skip(const Length& len);
 	virtual void   print(std::ostream&) const;
 	virtual Length estimate();
 	virtual Offset position();

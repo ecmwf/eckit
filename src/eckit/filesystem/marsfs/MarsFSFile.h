@@ -51,7 +51,7 @@ public:
     long read(void*,long);
     long write(const void*,long);
     void close();
-    void skip(size_t);
+    void skip(const Length&);
     Offset seek(const Offset&);
     Length length();
 	

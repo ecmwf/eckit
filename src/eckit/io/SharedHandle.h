@@ -65,7 +65,7 @@ public:
 
     virtual DataHandle* clone() const;
 
-    virtual Length saveInto(DataHandle&, TransferWatcher&);
+    virtual Length saveInto(DataHandle& other, TransferWatcher& watcher);
 
     virtual std::string name() const;
 

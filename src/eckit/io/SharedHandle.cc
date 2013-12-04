@@ -25,6 +25,16 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+SharedHandle::SharedHandle(DataHandle &handle):
+    handle_(handle)
+{
+
+}
+
+SharedHandle::~SharedHandle()
+{
+
+}
 
 void SharedHandle::print(std::ostream& s) const
 {
@@ -160,6 +170,11 @@ void SharedHandle::cost(std::map<std::string,Length>&, bool) const
 std::string SharedHandle::title() const
 {
     return handle_.title();
+}
+
+Length SharedHandle::saveInto(DataHandle& other, TransferWatcher& watcher)
+{
+    return handle_.saveInto(other, watcher);
 }
 
 //-----------------------------------------------------------------------------

@@ -28,7 +28,7 @@
 #include "eckit/io/Select.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPSocket.h"
-#include "eckit/types/Seconds.h"
+#include "eckit/log/Seconds.h"
 
 #ifdef AIX
 //TODO: Add check to cmake

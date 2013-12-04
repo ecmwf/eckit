@@ -46,6 +46,10 @@ public:
 	virtual void   close();
 	virtual void   print(std::ostream&) const;
 
+    virtual Offset position();
+    virtual Offset seek(const Offset&);
+    virtual void skip(const Length &);
+
 	// From Streamable
 
 	virtual void encode(Stream&) const;

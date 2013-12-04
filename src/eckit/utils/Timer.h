@@ -29,9 +29,7 @@ namespace eckit {
 class Timer : private NonCopyable {
 public:
 
-    /// @param name of the timer, used for output
-    /// @param output flag, to dump time on destruction or not
-    explicit Timer( bool output = false );
+    explicit Timer();
 
     /// @param name of the timer, used for output
     /// @param o output stream to use  for output

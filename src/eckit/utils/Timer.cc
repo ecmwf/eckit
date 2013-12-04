@@ -1,14 +1,14 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/types/Seconds.h"
+#include "eckit/log/Seconds.h"
 #include "eckit/utils/Timer.h"
 
 //-----------------------------------------------------------------------------
@@ -17,10 +17,10 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-Timer::Timer( bool output ):
+Timer::Timer():
     name_("unnamed timer"),
     stopped_(true),
-    outputAtExit_(output),
+    outputAtExit_(false),
     out_( Log::info() )
 {
     this->start();
@@ -49,13 +49,16 @@ Timer::~Timer()
 {
     stop();
 
-    double  s   = elapsed();
-    double  cpu = elapsed_cpu();
+    if(outputAtExit_) {
 
-    out_ << name_ << ": "
-         << Seconds(s) << " elapsed, "
-         << Seconds(cpu) << " cpu"
-         << std::endl;
+        double  s   = elapsed();
+        double  cpu = elapsed_cpu();
+
+        out_ << name_ << ": "
+             << Seconds(s) << " elapsed, "
+             << Seconds(cpu) << " cpu"
+             << std::endl;
+    }
 
 }
 
@@ -115,8 +118,8 @@ timeval operator-(const timeval& a,const timeval& b)
 
     if (diff.tv_usec < 0)
     {
-          diff.tv_sec--;
-          diff.tv_usec += 1000000;
+        diff.tv_sec--;
+        diff.tv_usec += 1000000;
     }
 
     return diff;

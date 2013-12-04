@@ -93,6 +93,8 @@ io/PartHandle.h
 io/PartHandle.cc
 io/SharedHandle.h
 io/SharedHandle.cc
+io/StatsHandle.h
+io/StatsHandle.cc
 io/MoverHandle.h
 io/MoverHandle.cc
 io/MultiHandle.h
@@ -103,6 +105,8 @@ io/PipeHandle.h
 io/PipeHandle.cc
 io/StdFileHandle.h
 io/StdFileHandle.cc
+io/RawFileHandle.cc
+io/RawFileHandle.h
 io/TCPHandle.h
 io/TCPHandle.cc
 io/TCPSocketHandle.h
@@ -255,6 +259,8 @@ log/Colour.h
 log/Colour.cc
 log/ETA.h
 log/ETA.cc
+log/Seconds.h
+log/Seconds.cc 
 log/Plural.h
 log/Progress.h
 log/Progress.cc
@@ -298,8 +304,7 @@ types/Time.h
 types/Time.cc
 types/VerifyingDate.h
 types/VerifyingDate.cc
-types/Seconds.h
-types/Seconds.cc )
+)
 
 list( APPEND eckit_parser_srcs
 parser/Translator.h
@@ -468,7 +473,7 @@ list( APPEND eckit_persistent
 					types/Month.h
 					types/Time.h
 					types/VerifyingDate.h
-					types/Seconds.h
+					#log/Seconds.h
 					io/Length.h
 					io/Offset.h
 )

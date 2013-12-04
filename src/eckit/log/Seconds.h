@@ -23,7 +23,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class Bless;
+//class Bless;
 
 class Seconds {
 public:
@@ -33,7 +33,7 @@ public:
 	Seconds(double);
 	Seconds(const struct timeval&);
 
-#include "eckit/types/Seconds.b"
+//#include "eckit/types/Seconds.b"
 
 // -- Operators
 

@@ -199,10 +199,12 @@ public:
 
 //-----------------------------------------------------------------------------
 
-inline void SysCall(long long code,const char *msg,const CodeLocation& loc)
+template<class T>
+inline T SysCall(T code,const char *msg,const CodeLocation& loc)
 {
     if(code<0)
         throw FailedSystemCall(msg,loc,errno);
+    return code;
 }
 
 //-----------------------------------------------------------------------------

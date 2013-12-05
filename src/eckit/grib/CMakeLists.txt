@@ -18,7 +18,7 @@ GribFieldMemoryStrategy.cc
 
 ecbuild_add_library(TARGET eckit_grib
 					INSTALL_HEADERS ALL
-					CONDITION	ECKIT_GRIB
+					CONDITION	ENABLE_GRIB
 					SOURCES ${eckit_grib_srcs}
 					HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/grib
 					INCLUDES ${GRIB_API_INCLUDE_DIRS}

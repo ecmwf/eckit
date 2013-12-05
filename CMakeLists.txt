@@ -37,21 +37,21 @@ ecbuild_declare_project()
 # some variables/options of this project
 
 option( ECKIT_BOOST  "Boost support  [NOT IMPLEMENTED]"		        OFF )
-option( ECKIT_MATHS  "eckit::maths extension [EXPERIMENTAL]"        OFF )
-option( ECKIT_GRID   "eckit::grid extension [EXPERIMENTAL]"	        OFF )
-option( ECKIT_GRIB   "eckit::grib extension [EXPERIMENTAL]"	        OFF )
-option( ECKIT_MPI    "eckit::mpi  extension [EXPERIMENTAL]"	        OFF )
-option( ECKIT_EIGEN  "Eigen support  [NOT IMPLEMENTED]"		        OFF )
+option( ENABLE_MATHS  "eckit::maths extension [EXPERIMENTAL]"        OFF )
+option( ENABLE_GRID   "eckit::grid extension [EXPERIMENTAL]"	        OFF )
+option( ENABLE_GRIB   "eckit::grib extension [EXPERIMENTAL]"	        OFF )
+option( ENABLE_MPI    "eckit::mpi  extension [EXPERIMENTAL]"	        OFF )
+option( ENABLE_EIGEN  "Eigen support  [NOT IMPLEMENTED]"		        OFF )
 
-if( ECKIT_GRIB )
+if( ENABLE_GRIB )
 	ecbuild_use_package( PROJECT grib_api VERSION 1.9.9 )
 endif()
 
-if( ECKIT_EIGEN)
+if( ENABLE_EIGEN)
 	find_package(Eigen3)
 endif()
 
-if( ECKIT_MATHS AND CMAKE_COMPILER_IS_GNUCXX )
+if( ENABLE_MATHS AND CMAKE_COMPILER_IS_GNUCXX )
 	set( ECKIT_BOOST ON )
 	if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7 )
 		cmake_add_cxx_flags("-std=c++0x")
@@ -89,7 +89,7 @@ mark_as_advanced(CPPFILT_COMMAND)
 find_package( MPI )
 
 if( NOT MPI_CXX_FOUND )
-	set( ECKIT_MPI OFF )
+        set( ENABLE_MPI OFF )
 endif()
 
 ###############################################################################
@@ -115,11 +115,11 @@ set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
 set( ECKIT_LIBRARIES      eckit eckit_web )
 
-if( ECKIT_GRID )
+if( ENABLE_GRID )
 	list( APPEND ECKIT_LIBRARIES eckit_grid )
 endif()
 
-if( ECKIT_GRIB AND GRIB_API_FOUND )
+if( ENABLE_GRIB AND GRIB_API_FOUND )
 	list( APPEND ECKIT_LIBRARIES eckit_grib )
 	list( APPEND ECKIT_TPLS grib_api )
 endif()

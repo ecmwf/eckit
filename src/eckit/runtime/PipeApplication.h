@@ -25,7 +25,7 @@
 #include "eckit/runtime/PipeApplication.h"
 #include "eckit/serialisation/PipeStream.h"
 #include "eckit/serialisation/Stream.h"
-#include "eckit/types/Seconds.h"
+#include "eckit/log/Seconds.h"
 
 //-----------------------------------------------------------------------------
 

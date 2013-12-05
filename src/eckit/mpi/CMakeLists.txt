@@ -8,7 +8,7 @@ ecbuild_add_library( TARGET eckit_mpi
 					 HEADER_DESTINATION
 						${INSTALL_INCLUDE_DIR}/eckit/mpi
 					 CONDITION
-						ECKIT_MPI
+						ENABLE_MPI
 					 SOURCES
 						${eckit_mpi_srcs}
 					 INCLUDES

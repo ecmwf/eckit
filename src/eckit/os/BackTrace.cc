@@ -53,7 +53,9 @@ std::string BackTrace::dump()
     if (strings == NULL)
         oss << " --- no backtrace_symbols found ---\n";
     
-#if 0 // EC_HAVE_CXXABI_H
+#ifndef EC_HAVE_CXXABI_H
+    for (int s = 0; s < addsize; ++s)
+      oss << strings[s] << std::endl;
 #else
     for (int s = 0; s < addsize; ++s) {
         int status;

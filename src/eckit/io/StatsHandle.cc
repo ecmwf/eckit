@@ -75,10 +75,11 @@ StatsHandle::~StatsHandle()
 
 void StatsHandle::print(std::ostream& s) const
 {
+    /*
     if(format(s) == Log::compactFormat)
         s << "StatsHandle";
-    else
-        s << "StatsHandle[handle=" << handle_ << ']';
+    else*/
+    s << "StatsHandle[handle=" << handle_ << ']';
 }
 
 Length StatsHandle::openForRead()

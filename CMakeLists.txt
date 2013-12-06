@@ -36,24 +36,26 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-option( ECKIT_BOOST  "Boost support  [NOT IMPLEMENTED]"		        OFF )
-option( ENABLE_MATHS  "eckit::maths extension [EXPERIMENTAL]"        OFF )
+option( ENABLE_BOOST  "Boost support  [EXPERIMENTAL]"		        OFF )
+option( ENABLE_EIGEN  "Eigen support  [EXPERIMENTAL]"		        OFF )
+
+option( ENABLE_MATHS  "eckit::maths extension [EXPERIMENTAL]"           OFF )
 option( ENABLE_GRID   "eckit::grid extension [EXPERIMENTAL]"	        OFF )
 option( ENABLE_GRIB   "eckit::grib extension [EXPERIMENTAL]"	        OFF )
 option( ENABLE_MPI    "eckit::mpi  extension [EXPERIMENTAL]"	        OFF )
-option( ENABLE_EIGEN  "Eigen support  [NOT IMPLEMENTED]"		        OFF )
 
 if( ENABLE_GRIB )
 	ecbuild_use_package( PROJECT grib_api VERSION 1.9.9 )
 endif()
 
 if( ENABLE_EIGEN)
-	find_package(Eigen3)
+	ecbuild_add_extra_search_paths( eigen3 )
+	find_package( Eigen3 3.0 )
 endif()
 
-if( ENABLE_MATHS AND CMAKE_COMPILER_IS_GNUCXX )
-	set( ECKIT_BOOST ON )
-	if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7 )
+if( ENABLE_MATHS )
+	set( ENABLE_BOOST ON )
+	if( CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7 )
 		cmake_add_cxx_flags("-std=c++0x")
 	else()
 		cmake_add_cxx_flags("-std=c++11")
@@ -62,7 +64,8 @@ endif()
 
 # boost support
 
-if( ECKIT_BOOST )
+if( ENABLE_BOOST )
+
 	ecbuild_add_extra_search_paths( boost )
 
 	set(Boost_USE_MULTITHREADED      ON )
@@ -74,15 +77,8 @@ if( ECKIT_BOOST )
 	find_package( Boost 1.45.0 )
 
 	#list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
+
 endif()
-
-# stack inspection
-
-find_program( PSTACK_COMMAND "pstack" DOC "path to the pstack executable" )
-mark_as_advanced(PSTACK_COMMAND)
-
-find_program( CPPFILT_COMMAND "c++filt" DOC "path to the c++filt executable" )
-mark_as_advanced(CPPFILT_COMMAND)
 
 # MPI support
 

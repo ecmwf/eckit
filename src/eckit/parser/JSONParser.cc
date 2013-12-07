@@ -12,7 +12,7 @@
 // Baudouin Raoult - (c) ECMWF Jun 12
 
 #include "eckit/parser/JSONParser.h"
-#include "eckit/parser/Translator.h"
+#include "eckit/utils/Translator.h"
 
 //-----------------------------------------------------------------------------
 

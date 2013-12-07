@@ -15,7 +15,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/Resource.h"
-#include "eckit/utils/Tokenizer.h"
+#include "eckit/parser/Tokenizer.h"
 #include "eckit/types/Types.h"
 
 #include "eckit/config/Script.h"

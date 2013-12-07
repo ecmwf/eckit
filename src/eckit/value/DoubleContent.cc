@@ -10,7 +10,7 @@
 
 
 #include "eckit/value/DoubleContent.h"
-#include "eckit/parser/Translator.h"
+#include "eckit/utils/Translator.h"
 #include "eckit/value/NumberContent.h"
 #include "eckit/parser/JSON.h"
 

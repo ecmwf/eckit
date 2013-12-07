@@ -11,7 +11,7 @@
 #ifndef KDMemory_H
 #define KDMemory_H
 
-#include <eckit/eckit.h>
+#include "eckit/eckit.h"
 
 //#include <cmath>
 #include <limits>

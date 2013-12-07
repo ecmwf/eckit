@@ -10,7 +10,7 @@
 
 #ifndef KDtree_CC
 #define KDTree_CC
-#include <eckit/eckit.h>
+#include "eckit/eckit.h"
 
 #include <stdio.h>
 #include <limits>

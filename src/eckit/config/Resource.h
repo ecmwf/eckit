@@ -17,7 +17,7 @@
 #include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/parser/Translator.h"
+#include "eckit/utils/Translator.h"
 #include "eckit/types/Types.h"
 
 class Url;

@@ -11,7 +11,7 @@
 #ifndef BSPPoint_H
 #define BSPPoint_H
 
-#include <eckit/eckit.h>
+#include "eckit/eckit.h"
 
 #include <limits>
 #include <cmath>

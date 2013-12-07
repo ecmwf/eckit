@@ -14,7 +14,7 @@
 
 #include "eckit/os/BackTrace.h"
 #include "eckit/parser/StreamParser.h"
-#include "eckit/parser/Translator.h"
+#include "eckit/utils/Translator.h"
 
 #include "eckit/log/Log.h"
 

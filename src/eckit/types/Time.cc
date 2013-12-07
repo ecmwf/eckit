@@ -13,8 +13,8 @@
 #include "eckit/persist/DumpLoad.h"
 #include "eckit/compat/StrStream.h"
 #include "eckit/types/Time.h"
-#include "eckit/utils/Tokenizer.h"
-#include "eckit/parser/Translator.h"
+#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Translator.h"
 
 
 //-----------------------------------------------------------------------------

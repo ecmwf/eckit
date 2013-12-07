@@ -18,7 +18,7 @@
 #include "eckit/log/Progress.h"
 #include "eckit/config/Resource.h"
 #include "eckit/compat/StrStream.h"
-#include "eckit/utils/Timer.h"
+#include "eckit/log/Timer.h"
 
 //-----------------------------------------------------------------------------
 

@@ -8,7 +8,7 @@
 #include "GribHandle.h"
 
 #include "eckit/io/Buffer.h"
-#include "eckit/utils/Timer.h"
+#include "eckit/log/Timer.h"
 
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/AutoLock.h"

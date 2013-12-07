@@ -12,7 +12,7 @@
 
 #include "eckit/runtime/Tool.h"
 #include "eckit/runtime/ProducerConsumer.h"
-#include "eckit/parser/Translator.h"
+#include "eckit/utils/Translator.h"
 
 using namespace std;
 using namespace eckit;

@@ -11,7 +11,7 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
 #include "eckit/compat/StrStream.h"
-#include "eckit/parser/Translator.h"
+#include "eckit/utils/Translator.h"
 #include "eckit/parser/JSONParser.h"
 #include "eckit/web/Html.h"
 #include "eckit/web/Url.h"

@@ -18,7 +18,7 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/types/Types.h"
-#include "eckit/utils/Timer.h"
+#include "eckit/log/Timer.h"
 
 //-----------------------------------------------------------------------------
 

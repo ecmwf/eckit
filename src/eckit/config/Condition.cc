@@ -9,7 +9,7 @@
  */
 
 #include "eckit/exception/BadValue.h"
-#include "eckit/utils/Tokenizer.h"
+#include "eckit/parser/Tokenizer.h"
 
 #include "eckit/config/Condition.h"
 

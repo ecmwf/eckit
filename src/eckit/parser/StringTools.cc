@@ -12,8 +12,8 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/compat/StrStream.h"
-#include "eckit/utils/StringTools.h"
-#include "eckit/utils/Tokenizer.h"
+#include "eckit/parser/StringTools.h"
+#include "eckit/parser/Tokenizer.h"
 
 //-----------------------------------------------------------------------------
 

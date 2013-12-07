@@ -266,6 +266,8 @@ log/Progress.h
 log/Progress.cc
 log/SavedStatus.h
 log/SavedStatus.cc
+log/Timer.h
+log/Timer.cc
 log/TimeStamp.h
 log/TimeStamp.cc
 log/CodeLocation.h
@@ -307,10 +309,12 @@ types/VerifyingDate.cc
 )
 
 list( APPEND eckit_parser_srcs
-parser/Translator.h
-parser/Translator.cc
 parser/StreamParser.h
 parser/StreamParser.cc
+parser/StringTools.h
+parser/StringTools.cc
+parser/Tokenizer.h
+parser/Tokenizer.cc
 parser/JSON.h
 parser/JSON.cc
 parser/JSONParser.h
@@ -401,14 +405,10 @@ persist/DumpLoad.cc
 persist/Isa.cc )
 
 list( APPEND eckit_utils_srcs
-utils/Timer.h
-utils/Timer.cc
-utils/StringTools.h
-utils/StringTools.cc
+utils/Translator.h
+utils/Translator.cc
 utils/Regex.h
 utils/Regex.cc
-utils/Tokenizer.h
-utils/Tokenizer.cc
 utils/HyperCube.h
 utils/HyperCube.cc
 utils/RLE.h

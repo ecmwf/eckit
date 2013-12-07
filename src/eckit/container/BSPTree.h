@@ -11,7 +11,7 @@
 #ifndef BSPTree_H
 #define BSPTree_H
 
-#include <eckit/eckit.h>
+#include "eckit/eckit.h"
 
 //#include <cmath>
 #include <limits>

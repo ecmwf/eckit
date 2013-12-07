@@ -12,7 +12,7 @@
 #include <grib_api.h>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/utils/StringTools.h"
+#include "eckit/parser/StringTools.h"
 #include "eckit/io/DataHandle.h"
 #include "GribHandle.h"
 

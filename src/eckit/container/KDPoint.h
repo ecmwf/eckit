@@ -11,7 +11,7 @@
 #ifndef KDPoint_H
 #define KDPoint_H
 
-#include <eckit/eckit.h>
+#include "eckit/eckit.h"
 
 #include <limits>
 #include <cmath>

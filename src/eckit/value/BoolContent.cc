@@ -9,7 +9,7 @@
  */
 
 #include "eckit/value/BoolContent.h"
-#include "eckit/parser/Translator.h"
+#include "eckit/utils/Translator.h"
 #include "eckit/parser/JSON.h"
 
 //-----------------------------------------------------------------------------

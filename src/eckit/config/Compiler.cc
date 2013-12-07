@@ -11,8 +11,8 @@
 #include <ctype.h>
 
 #include "eckit/log/Log.h"
-#include "eckit/utils/Tokenizer.h"
-#include "eckit/utils/StringTools.h"
+#include "eckit/parser/Tokenizer.h"
+#include "eckit/parser/StringTools.h"
 
 #include "eckit/config/Compiler.h"
 

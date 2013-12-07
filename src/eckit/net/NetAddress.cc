@@ -13,8 +13,8 @@
 
 #include "NetAddress.h"
 
-#include "eckit/utils/Tokenizer.h"
-#include "eckit/parser/Translator.h"
+#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Translator.h"
 
 //-----------------------------------------------------------------------------
 

@@ -20,7 +20,7 @@
 #include "eckit/container/MappedArray.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/compat/StrStream.h"
-#include "eckit/utils/Tokenizer.h"
+#include "eckit/parser/Tokenizer.h"
 
 //-----------------------------------------------------------------------------
 

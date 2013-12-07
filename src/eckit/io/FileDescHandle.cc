@@ -67,17 +67,17 @@ void FileDescHandle::close()
 
 Offset FileDescHandle::position()
 {
-    return ::lseek64(fd_, 0, SEEK_CUR);
+    return ::lseek(fd_, 0, SEEK_CUR);
 }
 
 Offset FileDescHandle::seek(const Offset& o)
 {
-    return ::lseek64(fd_, o, SEEK_SET);
+    return ::lseek(fd_, o, SEEK_SET);
 }
 
 void FileDescHandle::skip(const Length& l)
 {
-    ::lseek64(fd_, l, SEEK_CUR);
+    ::lseek(fd_, l, SEEK_CUR);
 }
 
 //-----------------------------------------------------------------------------

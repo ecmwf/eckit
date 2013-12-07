@@ -95,17 +95,17 @@ void RawFileHandle::close()
 
 Offset RawFileHandle::position()
 {
-    return ::lseek64(fd_, 0, SEEK_CUR);
+    return ::lseek(fd_, 0, SEEK_CUR);
 }
 
 Offset RawFileHandle::seek(const Offset& o)
 {
-    return ::lseek64(fd_, o, SEEK_SET);
+    return ::lseek(fd_, o, SEEK_SET);
 }
 
 void RawFileHandle::skip(const Length& l)
 {
-    ::lseek64(fd_, l, SEEK_CUR);
+    ::lseek(fd_, l, SEEK_CUR);
 }
 
 //-----------------------------------------------------------------------------

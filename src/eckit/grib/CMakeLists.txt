@@ -17,6 +17,8 @@ GribFieldMemoryStrategy.h
 GribFieldMemoryStrategy.cc
 PointIndex.cc
 PointIndex.h
+GribReader.cc
+GribReader.h
 )
 
 

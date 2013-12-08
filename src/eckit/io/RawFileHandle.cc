@@ -53,8 +53,8 @@ RawFileHandle::~RawFileHandle()
 Length RawFileHandle::openForRead()
 {
     SYSCALL(fd_ = ::open(std::string(path_).c_str(), O_RDONLY|O_CLOEXEC));
-    struct stat64 st;
-    SYSCALL(::fstat64(fd_, &st));
+    struct stat st;
+    SYSCALL(::fstat(fd_, &st)); ASSERT(sizeof(st.st_size) == sizeof(long long));
     return st.st_size;
 }
 

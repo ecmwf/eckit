@@ -528,7 +528,7 @@ void BTree<K,V,S>::_loadPage(unsigned long page, Page& p) const
     SYSCALL(here = ::lseek(fd_,o,SEEK_SET));
     ASSERT(here == o);
 
-    size_t len;
+    int len;
     SYSCALL(len = ::read(fd_,&p,sizeof(p)));
     ASSERT(len == sizeof(p));
     ASSERT(page == p.id_);
@@ -569,7 +569,7 @@ void BTree<K,V,S>::_savePage(const Page& p)
     SYSCALL(here = ::lseek(fd_,o,SEEK_SET));
     ASSERT(here == o);
 
-    size_t len;
+    int len;
     SYSCALL(len = ::write(fd_,&p,sizeof(p)));
     ASSERT(len == sizeof(p));
 }
@@ -617,7 +617,7 @@ void BTree<K,V,S>::_newPage(Page& p)
     ASSERT(page == p.id_);
     ASSERT(pageOffset(page) == here);
 
-    size_t len;
+    int len;
     SYSCALL(len = ::write(fd_,&p,sizeof(p))); // TODO: a sparse file....
     ASSERT(len == sizeof(p));
 

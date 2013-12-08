@@ -54,15 +54,15 @@ SimpleTestRunner::SimpleTestRunner(int argc, char** argv,
 }
 
 
-static OneTest* one_tests = 0;
+static OneTest* tests = 0;
 
 
 OneTest::OneTest(const char* n, test_proc_t t):
     n_(n),
     t_(t),
-    next_(one_tests)
+    next_(tests)
 {
-    one_tests =  this;
+    tests =  this;
 }
 
 void OneTest::test() {
@@ -71,12 +71,12 @@ void OneTest::test() {
     t_();
 }
 
-void TestsRunner::test()
+void AllTestsRunner::test()
 {
-    one_tests->test();
+    tests->test();
 }
 
-TestsRunner::TestsRunner(int argc, char** argv):
+AllTestsRunner::AllTestsRunner(int argc, char** argv):
     UnitTestRunner(argc, argv)
 {
 

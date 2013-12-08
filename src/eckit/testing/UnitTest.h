@@ -30,10 +30,10 @@ public:
     void test();
 };
 
-class TestsRunner : public UnitTestRunner {
+class AllTestsRunner : public UnitTestRunner {
     virtual void test();
 public:
-    TestsRunner(int argc, char** argv);
+    AllTestsRunner(int argc, char** argv);
 };
 
 //=========================================
@@ -70,11 +70,11 @@ public:
 
 //=========================================
 
-#define TEST_MAIN \
+#define RUN_SIMPLE_TEST \
     int main(int c,char** v) { SimpleTestRunner x(c, v, &test, &setUp, &tearDown); x.start(); return 0; }
 
-#define MANY_TESTS_MAIN \
-    int main(int c,char** v) { TestsRunner x(c, v); x.start(); return 0; }
+#define RUN_ALL_TESTS \
+    int main(int c,char** v) { AllTestsRunner x(c, v); x.start(); return 0; }
 
 //=========================================
 

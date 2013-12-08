@@ -442,7 +442,13 @@ transaction/TxnLog.cc
 transaction/TxnEvent.h
 transaction/TxnEvent.cc )
 
-list( APPEND eckit_dirs container io filesystem thread config runtime log exception types parser value os net serialisation persist utils memory compat bases transaction )
+list( APPEND eckit_testing_srcs
+testing/UnitTest.h
+testing/UnitTest.cc)
+
+list( APPEND eckit_dirs container io filesystem thread  config runtime log exception types parser
+            value os net serialisation persist utils memory compat bases transaction testing)
+
 foreach( dir ${eckit_dirs} )
   list( APPEND eckit_srcs ${eckit_${dir}_srcs} )
 endforeach()

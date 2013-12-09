@@ -9,13 +9,13 @@
  */
 
 // File Partio/FileHandle.h
-// Baudouin Raoult - ECMWF May 96
+// Baudouin Raoult - ECMWF Decembre 2013
 
 #ifndef eckit_filesystem_StatsHandle_h
 #define eckit_filesystem_StatsHandle_h
 
 #include "eckit/io/Buffer.h"
-#include "eckit/io/DataHandle.h"
+#include "eckit/io/HandleHolder.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/types/Types.h"
 #include "eckit/log/Timer.h"
@@ -26,12 +26,13 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class StatsHandle : public DataHandle {
+class StatsHandle : public DataHandle, public HandleHolder {
 public:
 
     // -- Contructors
 
     StatsHandle(DataHandle& handle);
+    StatsHandle(DataHandle* handle);
 
     // -- Destructor
 
@@ -91,7 +92,6 @@ private:
 
     // -- Members
 
-    DataHandle&        handle_;
     size_t reads_;
     size_t seeks_;
     size_t positions_;

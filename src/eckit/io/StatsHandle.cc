@@ -31,7 +31,22 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 StatsHandle::StatsHandle(DataHandle &handle):
-    handle_(handle),
+    HandleHolder(handle),
+    reads_(0),
+    seeks_(0),
+    bytesRead_(0),
+    writes_(0),
+    bytesWritten_(0),
+    timer_(),
+    readTime_(0),
+    writeTime_(0),
+    seekTime_(0)
+{
+
+}
+
+StatsHandle::StatsHandle(DataHandle *handle):
+    HandleHolder(handle),
     reads_(0),
     seeks_(0),
     bytesRead_(0),
@@ -47,7 +62,7 @@ StatsHandle::StatsHandle(DataHandle &handle):
 
 StatsHandle::~StatsHandle()
 {
-    std::cout << "StatsHandle for " << handle_ << std::endl;
+    std::cout << "StatsHandle for " << handle() << std::endl;
     std::cout << "       Elapsed: " << eckit::Seconds(timer_.elapsed()) << std::endl;
 
     if(reads_) {
@@ -79,22 +94,22 @@ void StatsHandle::print(std::ostream& s) const
     if(format(s) == Log::compactFormat)
         s << "StatsHandle";
     else*/
-    s << "StatsHandle[handle=" << handle_ << ']';
+    s << "StatsHandle[handle=" << handle() << ']';
 }
 
 Length StatsHandle::openForRead()
 {
-    return handle_.openForRead();
+    return handle().openForRead();
 }
 
 void StatsHandle::openForWrite(const Length& l)
 {
-    handle_.openForWrite(l);
+    handle().openForWrite(l);
 }
 
 void StatsHandle::openForAppend(const Length& l)
 {
-    handle_.openForAppend(l);
+    handle().openForAppend(l);
 }
 
 long StatsHandle::read(void* data,long len)
@@ -102,7 +117,7 @@ long StatsHandle::read(void* data,long len)
     double x = timer_.elapsed();
     reads_++;
     bytesRead_ += len;
-    long ret = handle_.read(data, len);
+    long ret = handle().read(data, len);
     readTime_ += timer_.elapsed() - x;
     return ret;
 }
@@ -112,36 +127,36 @@ long StatsHandle::write(const void* data,long len)
     double x = timer_.elapsed();
     writes_++;
     bytesWritten_ += len;
-    long ret = handle_.write(data, len);
+    long ret = handle().write(data, len);
     writeTime_ += timer_.elapsed() - x;
     return ret;
 }
 
 void StatsHandle::close()
 {
-    handle_.close();
+    handle().close();
 }
 
 void StatsHandle::flush()
 {
-    return handle_.flush();
+    return handle().flush();
 }
 
 Length StatsHandle::estimate()
 {
-    return handle_.estimate();
+    return handle().estimate();
 }
 
 Offset StatsHandle::position()
 {
-    return handle_.position();
+    return handle().position();
 }
 
 Offset StatsHandle::seek(const Offset& o)
 {
     double x = timer_.elapsed();
     seeks_++;
-    Offset ret = handle_.seek(o);
+    Offset ret = handle().seek(o);
     seekTime_ += timer_.elapsed() - x;
     return ret;
 }
@@ -150,7 +165,7 @@ void StatsHandle::skip(const Length &n)
 {
     double x = timer_.elapsed();
     seeks_++;
-    handle_.skip(n);
+    handle().skip(n);
     seekTime_ += timer_.elapsed() - x;
 }
 
@@ -158,18 +173,18 @@ void StatsHandle::rewind()
 {
     double x = timer_.elapsed();
     seeks_++;
-    handle_.rewind();
+    handle().rewind();
     seekTime_ += timer_.elapsed() - x;
 }
 
 void StatsHandle::restartReadFrom(const Offset& o)
 {
-    return handle_.restartReadFrom(o);
+    return handle().restartReadFrom(o);
 }
 
 void StatsHandle::restartWriteFrom(const Offset& o)
 {
-    return handle_.restartWriteFrom(o);
+    return handle().restartWriteFrom(o);
 }
 
 DataHandle* StatsHandle::clone() const
@@ -179,13 +194,13 @@ DataHandle* StatsHandle::clone() const
 
 std::string StatsHandle::name() const
 {
-    return handle_.name();
+    return handle().name();
 }
 
 
 bool StatsHandle::compress(bool b)
 {
-    return handle_.compress(b);
+    return handle().compress(b);
 }
 
 bool StatsHandle::merge(DataHandle*)
@@ -195,7 +210,7 @@ bool StatsHandle::merge(DataHandle*)
 
 bool StatsHandle::isEmpty() const
 {
-    return handle_.isEmpty();
+    return handle().isEmpty();
 }
 
 
@@ -226,12 +241,12 @@ void StatsHandle::cost(std::map<std::string,Length>&, bool) const
 
 std::string StatsHandle::title() const
 {
-    return handle_.title();
+    return handle().title();
 }
 
 Length StatsHandle::saveInto(DataHandle& other, TransferWatcher& watcher)
 {
-    return handle_.saveInto(other, watcher);
+    return handle().saveInto(other, watcher);
 }
 
 //-----------------------------------------------------------------------------

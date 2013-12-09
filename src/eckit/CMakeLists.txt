@@ -113,6 +113,8 @@ io/TCPSocketHandle.h
 io/TCPSocketHandle.cc
 io/TeeHandle.h
 io/TeeHandle.cc
+io/HandleHolder.h
+io/HandleHolder.cc
 io/cluster/ClusterDisks.h
 io/cluster/ClusterDisks.cc
 io/cluster/ClusterNode.h

@@ -15,7 +15,7 @@
 #define eckit_filesystem_BufferedHandle_h
 
 #include "eckit/io/Buffer.h"
-#include "eckit/io/DataHandle.h"
+#include "eckit/io/HandleHolder.h"
 
 //-----------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class BufferedHandle : public DataHandle {
+class BufferedHandle : public DataHandle, public HandleHolder {
 public:
 
 
@@ -84,7 +84,6 @@ private: // methods
 
 private: // members
     
-    DataHandle*          handle_;
 	Buffer               buffer_;
 	size_t               pos_;
 	size_t               size_;
@@ -92,8 +91,6 @@ private: // members
     bool                 eof_;
     bool                 read_;
     Offset               position_;
-
-    bool                 owned_;
     
     virtual std::string title() const;
 

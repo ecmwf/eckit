@@ -24,35 +24,31 @@ Reanimator<BufferedHandle> BufferedHandle::reanimator_;
 
 
 BufferedHandle::BufferedHandle(DataHandle* h, size_t size):
-	handle_(h),
+    HandleHolder(h),
 	buffer_(size),
 	pos_(0),
     size_(size),
     used_(0),
     eof_(false),
     read_(false),
-    position_(0),
-    owned_(true)
+    position_(0)
 {
 }
 
 BufferedHandle::BufferedHandle(DataHandle& h, size_t size):
-	handle_(&h),
+    HandleHolder(h),
 	buffer_(size),
 	pos_(0),
     size_(size),
     used_(0),
     eof_(false),
     read_(false),
-    position_(0),
-    owned_(false)
+    position_(0)
 {
 }
 
 BufferedHandle::~BufferedHandle() 
 {
-    if( owned_ )
-        delete handle_;
 }
 
 Length BufferedHandle::openForRead()
@@ -61,7 +57,7 @@ Length BufferedHandle::openForRead()
 	used_ = pos_ = 0;
     eof_ = false;
     position_ = 0;
-	return handle_->openForRead();
+    return handle().openForRead();
 }
 
 void BufferedHandle::openForWrite(const Length& length)
@@ -69,7 +65,7 @@ void BufferedHandle::openForWrite(const Length& length)
     read_ = false;
 	pos_ = 0;
     position_ = 0;
-	handle_->openForWrite(length);
+    handle().openForWrite(length);
 }
 
 void BufferedHandle::openForAppend(const Length& )
@@ -109,7 +105,7 @@ long BufferedHandle::read(void* buffer,long length)
 
         if(left == 0 && !eof_ )
         {
-            used_   = handle_->read(buffer_,size_);
+            used_   = handle().read(buffer_,size_);
             pos_    = 0;
             if(used_ <= 0) 
             {
@@ -156,34 +152,34 @@ long BufferedHandle::write(const void* buffer,long length)
 	}
 
     ASSERT(pos_ == 0);
-	return handle_->write(buffer,length);
+    return handle().write(buffer,length);
 }
 
 void BufferedHandle::close()
 {
 	if(!read_) 
         bufferFlush();
-    handle_->close();
+    handle().close();
 }
 
 void BufferedHandle::flush()
 {
     bufferFlush();
-    handle_->flush();
+    handle().flush();
 }
 
 void BufferedHandle::rewind()
 {
 	used_ = pos_ = 0;
     eof_  = false;
-	handle_->rewind();
+    handle().rewind();
 }
 
 Offset BufferedHandle::seek(const Offset& off)
 {
     used_ = pos_ = 0;
     eof_  = false;
-    position_ = handle_->seek(off);
+    position_ = handle().seek(off);
     return position_;
 }
 
@@ -191,13 +187,13 @@ Offset BufferedHandle::seek(const Offset& off)
 void BufferedHandle::print(std::ostream& s) const
 {
 	s << "BufferedHandle[";
-	handle_->print(s);
+    handle().print(s);
 	s << ']';
 }
 
 Length BufferedHandle::estimate()
 {
-	return handle_->estimate();
+    return handle().estimate();
 }
 
 Offset BufferedHandle::position()
@@ -210,19 +206,19 @@ void BufferedHandle::bufferFlush()
 {
 	if(pos_)
 	{
-		long len = handle_->write(buffer_,pos_);
+        long len = handle().write(buffer_,pos_);
 		ASSERT( (size_t) len == pos_ );
 		pos_ = 0;
 	}
 }
 
 std::string BufferedHandle::title() const {
-    return std::string("{") + handle_->title() + "}";
+    return std::string("{") + handle().title() + "}";
 }
 
 DataHandle* BufferedHandle::clone() const
 {
-    return new BufferedHandle(handle_->clone(), buffer_.size());
+    return new BufferedHandle(handle().clone(), buffer_.size());
 }
 //-----------------------------------------------------------------------------
 

@@ -5,7 +5,6 @@
 ### TODO
 #
 #   * remove architecture dependent headers
-#   * remove using std::
 #
 #   * add control of behavior on Exception
 #       - output on constructor
@@ -14,7 +13,7 @@
 #       - abort on double exception
 #
 #   * new Logging
-#       - allows control on format ( eg [%time][%pid] message )
+#       - allow finer control on format ( eg [%time][%pid] message )
 
 cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )
 
@@ -36,8 +35,8 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-option( ENABLE_BOOST  "Boost support  [EXPERIMENTAL]"		        OFF )
-option( ENABLE_EIGEN  "Eigen support  [EXPERIMENTAL]"		        OFF )
+option( ENABLE_BOOST  "Boost support  [EXPERIMENTAL]"		        ON )
+option( ENABLE_EIGEN  "Eigen support  [EXPERIMENTAL]"		        ON )
 
 option( ENABLE_MATHS  "eckit::maths extension [EXPERIMENTAL]"           ON )
 option( ENABLE_GRID   "eckit::grid extension [EXPERIMENTAL]"	        ON )

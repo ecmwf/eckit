@@ -16,6 +16,8 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/HandleHolder.h"
+
 #include "eckit/filesystem/PathName.h"
 #include "eckit/types/Types.h"
 
@@ -25,7 +27,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class PartHandle : public DataHandle {
+class PartHandle : public DataHandle, public HandleHolder {
 public:
 
     // -- Contructors
@@ -57,8 +59,8 @@ public:
     virtual void close();
     virtual void rewind();
     virtual void print(std::ostream&) const;
-    virtual bool merge(DataHandle*);
-    virtual bool compress(bool = false);
+
+
     virtual Length estimate();
     virtual void restartReadFrom(const Offset& from);
 
@@ -75,8 +77,6 @@ private:
 
     // -- Members
 
-    DataHandle*        handle_;
-    bool               ownHandle_;
     long long          pos_;
     Ordinal            index_;
     OffsetList         offset_;

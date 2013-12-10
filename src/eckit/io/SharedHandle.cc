@@ -47,17 +47,20 @@ void SharedHandle::print(std::ostream& s) const
 Length SharedHandle::openForRead()
 {
     // Just ignore, assumes handle already opened
+    rewind();
     return estimate();
 }
 
 void SharedHandle::openForWrite(const Length&)
 {
     // Just ignore, assumes handle already opened
+    rewind();
 
 }
 void SharedHandle::openForAppend(const Length&)
 {
     // Just ignore, assumes handle already opened
+    rewind();
 }
 
 long SharedHandle::read(void* data,long len)

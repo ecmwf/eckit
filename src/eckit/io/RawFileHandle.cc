@@ -91,6 +91,8 @@ void RawFileHandle::close()
 {
     //TODO: fsync
     SYSCALL(::close(fd_));
+    fd_ = -1;
+
 }
 
 Offset RawFileHandle::position()

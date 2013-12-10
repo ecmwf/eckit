@@ -201,7 +201,6 @@ void PartHandle::close()
 
 void PartHandle::rewind()
 {
-    std::cout << "Rewind " << *this << std::endl;
     pos_   = 0;
     index_ = 0;
 }

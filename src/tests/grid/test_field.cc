@@ -52,11 +52,38 @@ void TestField::test_constructor()
     Field::Data*     data = new Field::Data();
     ASSERT( data );
 
+    // create some reference data for testing
+    Field::Data ref_data;
+    for (unsigned int i = 0; i < 1000; i++)
+        ref_data.push_back((double)i);
+
+    // copy the ref_data to the data that will be put into the
+    // Field object
+    for (unsigned int i = 0; i < ref_data.size(); i++)
+        data->push_back(ref_data[i]);
+
     Field* f = new Field(meta,data);
     ASSERT( f );
 
     ASSERT( f->data() == data );
     ASSERT( f->metadata() == meta );
+
+    Field::Vector fields;
+    fields.push_back(f);
+
+    FieldSet fs(g, fields);
+    //ASSERT(fs.grid().get() == g); 
+    
+    // iterate over the fields
+    for (Field::Vector::iterator it = fs.fields().begin(); it != fs.fields().end(); ++it)
+    {
+        // extract and test the data
+        Field::Data* pData = (*it)->data();
+        for (unsigned int i = 0; i < ref_data.size(); i++)
+        {
+            ASSERT(ref_data[i] == (*pData)[i]);
+        }   
+    }
 
 
 }

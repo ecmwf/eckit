@@ -19,13 +19,13 @@
 
 #include "eckit/types/Types.h"
 #include "eckit/memory/NonCopyable.h"
+#include "Grid.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 namespace grid {
 
-class Grid;
 
 //-----------------------------------------------------------------------------
 
@@ -41,6 +41,7 @@ public: // types
     };
 
     typedef std::vector< Field* >  Vector;
+    typedef std::vector< Field* >::const_iterator Iterator;
     typedef std::vector< double >  Data;
 
 public: // methods
@@ -76,8 +77,16 @@ public: // methods
     FieldSet* operator() (size_t i, size_t j, size_t k = 1); ///@todo implement
 
     // helps iterate over the fields of this FieldSet
-    Field* next(); /// @todo implement
+    //Field* next(); /// @todo implement
+    
+    /// @todo revise
+    const Field::Vector& fields() const { return fields_; }
+    Field::Vector& fields() { return fields_; }
 
+
+    //GridPtr grid() const { return GridPtr(grid_); }
+    Grid* grid() const { return grid_; }
+    
 protected:
 
     /// @todo: make this a shared pointer

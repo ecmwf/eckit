@@ -17,6 +17,7 @@
 
 #include <cstddef>
 #include <vector>
+#include <boost/shared_ptr.hpp>
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"
 
@@ -24,12 +25,14 @@
 
 namespace eckit {
 namespace grid {
+#include <boost/shared_ptr.hpp>
 
 //-----------------------------------------------------------------------------
 
 struct Point2D
 {
     Point2D( double lat, double lon ) : lat_(lat),lon_(lon) {}
+    Point2D( ) : lat_(0.0), lon_(0.0) {}
     double lat_;
     double lon_;
 };
@@ -67,6 +70,8 @@ public: // methods
 protected:
 
 };
+
+typedef boost::shared_ptr<Grid> GridPtr;
 
 //-----------------------------------------------------------------------------
 

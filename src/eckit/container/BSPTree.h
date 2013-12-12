@@ -115,9 +115,11 @@ template<class Point, class Alloc>
 class BSPNode {
 private:
 
-    Point  point_;
-    //Point  center_;
-    //double radius_;
+    Point point_;
+
+    // The hyperplane is define by the vector between 2 centres passing through the middle point
+    Point mid_;
+    Point vec_;
 
     typedef typename Alloc::Ptr Ptr;
     Ptr left_;
@@ -145,7 +147,7 @@ public:
     static BSPNode* build(Alloc& a, const Container& nodes, int depth= 0);
 
     template<typename Container>
-    static void kmean(const Container& in, Container& ml, Container& mr, int depth) ;
+    static void kmean(const Container& in, Container& ml, Container& mr, Point& l, Point& r, int depth) ;
 
     // For testing only
 

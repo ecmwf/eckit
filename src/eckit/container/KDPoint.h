@@ -119,6 +119,17 @@ public:
         return q;
     }
 
+    static KDPoint middle(const KDPoint& p1, const KDPoint& p2)
+    {
+        KDPoint q(p1);
+        for(size_t i = 0; i < dimensions(); i++)
+        {
+            q.x_[i] += p2.x_[i];
+            q.x_[i] /= 2.0;
+        }
+        return q;
+    }
+
     static KDPoint sub(const KDPoint& p1, const KDPoint& p2)
     {
         KDPoint q(p1);

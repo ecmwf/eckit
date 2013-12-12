@@ -68,11 +68,11 @@ void BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& b
 
         ASSERT(!left_ || !right_);
 
-    double d   = Point::distance(p, point_);
-    if(d < max) {
-        max = d;
-        best = this;
-    }
+        double d   = Point::distance(p, point_);
+        if(d < max) {
+            max = d;
+            best = this;
+        }
     }
 
 }
@@ -160,7 +160,7 @@ typename BSPNode<Point,Alloc>::NodeList BSPNode<Point,Alloc>::kNearestNeighbours
 
 template<class Point, class Alloc>
 template<typename Container>
-void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& mr, int depth)
+void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& mr, Point& l, Point& r, int depth)
 {
 
     // Bisecting k-mean
@@ -236,6 +236,10 @@ void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& 
             std::cout << Point::distance(cl, wl) << " - " << Point::distance(cr, wr) << std::endl;
             //cout << "======================" << std::endl;
 #endif
+
+            r = wr;
+            l = wl;
+
             break;
         }
 
@@ -264,14 +268,21 @@ BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const Container& nod
     Container  left;
     Container  right;
 
-    kmean(nodes, left, right, depth);
+    Point r;
+    Point l;
+
+    kmean(nodes, left, right, l, r, depth);
 
 
     BSPNode* n = a.newNode(nodes, (BSPNode*)0);
 
-    n->left(a,build(a, left, depth + 1));
-    n->right(a,build(a, right, depth + 1));
+    // The hyperplane is define by the vector (l, r) passing through the middle point
 
+    n->mid_ = Point::middle(l, r);
+    n->vec_ = Point::sub(r, l);
+
+    n->left(a, build(a, left, depth + 1));
+    n->right(a, build(a, right, depth + 1));
 
     return n;
 

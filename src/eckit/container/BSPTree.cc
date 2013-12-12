@@ -35,6 +35,7 @@ BSPNode<Point,Alloc>::BSPNode(const Init& init):
     vec_(Point::sub(init.r_, init.l_)),
     d_(-Point::dot(Point::middle(init.l_, init.r_), vec_)),
     n_(Point::norm(vec_)),
+    dist_(init.d_),
     left_(0),
     right_(0)
 {
@@ -64,13 +65,16 @@ void BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& b
 
         if(d <= 0) {
             left(a)->nearestNeighbour(a, p, best, max, depth+1);
-            if(distanceToPlane <= max) {
+            double dd = right(a)->dist_;
+            if(distanceToPlane + dd <= max) {
                 right(a)->nearestNeighbour(a, p, best, max, depth+1);
             }
         }
         else {
+
             right(a)->nearestNeighbour(a, p, best, max, depth+1);
-            if(distanceToPlane <= max) {
+            double dd = left(a)->dist_;
+            if(distanceToPlane + dd <= max) {
                 left(a)->nearestNeighbour(a, p, best, max, depth+1);
             }
         }
@@ -264,7 +268,30 @@ void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& 
 
 template<class Point, class Alloc>
 template<typename Container>
-BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const Container& nodes, int depth)
+double BSPNode<Point,Alloc>::distanceToPlane(const Container& in,
+                                             const Point& v, double d, double n)
+{
+    double min = std::numeric_limits<double>::max();
+    for(typename Container::const_iterator j = in.begin(); j != in.end(); ++j)
+    {
+        const Point& p = (*j);
+        // Find the closest value to the partitionning plan
+        double dist = (Point::dot(p, v) + d)/n;
+
+        if(dist < min) {
+            min = dist;
+        }
+    }
+
+    return min;
+
+}
+
+
+template<class Point, class Alloc>
+template<typename Container>
+BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const Container& nodes,
+                                                  double dist, int depth)
 {
     Point r;
     Point l;
@@ -274,7 +301,7 @@ BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const Container& nod
 
 
     if(nodes.size() == 1) {
-        Init init(nodes[0], r, l);
+        Init init(nodes[0], r, l, dist);
         return a.newNode(init,(BSPNode*)0);
     }
 
@@ -288,12 +315,12 @@ BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const Container& nod
     if(left.size() == 0 || right.size() == 0) {
         ASSERT(left.size() == 1 || right.size() == 1 );
         if(left.size() == 1) {
-            Init init(left[0], r, l);
+            Init init(left[0], r, l, dist);
             return a.newNode(init,(BSPNode*)0);
         }
         else
         {
-            Init init(right[0], r, l);
+            Init init(right[0], r, l, dist);
             return a.newNode(init,(BSPNode*)0);
         }
     }
@@ -301,11 +328,18 @@ BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const Container& nod
     ASSERT(right.size() < nodes.size());
     ASSERT(right.size() + left.size() == nodes.size());
 
-    Init init(nodes[0], l, r);
+
+
+
+    Init init(nodes[0], l, r, dist);
     BSPNode* n = a.newNode(init, (BSPNode*)0);
 
-    n->left(a, build(a, left, depth + 1));
-    n->right(a, build(a, right, depth + 1));
+
+    double dl = distanceToPlane(left, n->vec_, n->d_, n->n_);
+    double dr = distanceToPlane(left, n->vec_, n->d_, n->n_);
+
+    n->left(a, build(a, left, dl, depth + 1));
+    n->right(a, build(a, right, dr, depth + 1));
 
     return n;
 

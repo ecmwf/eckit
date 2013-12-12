@@ -99,8 +99,9 @@ public:
         const Point& p_;
         const Point& l_;
         const Point& r_;
-        Init(const Point& p, const Point& l, const Point& r):
-            p_(p), l_(l), r_(r) {}
+        double d_;
+        Init(const Point& p, const Point& l, const Point& r, double d):
+            p_(p), l_(l), r_(r), d_(d) {}
     };
 
 private:
@@ -111,6 +112,7 @@ private:
     Point vec_; // Must be first
     double d_;
     double n_;
+    double dist_;
 
 
     typedef typename Alloc::Ptr Ptr;
@@ -135,10 +137,14 @@ public:
     const Point& point() const { return point_; }
 
     template<typename Container>
-    static BSPNode* build(Alloc& a, const Container& nodes, int depth= 0);
+    static BSPNode* build(Alloc& a, const Container& nodes, double, int depth= 0);
 
     template<typename Container>
     static void kmean(const Container& in, Container& ml, Container& mr, Point& l, Point& r, int depth) ;
+
+    template<typename Container>
+    static double distanceToPlane(const Container& in, const Point& v,
+                                  double d, double n) ;
 
     // For testing only
 
@@ -203,7 +209,7 @@ public:
     template<typename Container>
     void build(const Container& nodes)
     {
-        root_ = alloc_.convert(Node::build(alloc_, nodes));
+        root_ = alloc_.convert(Node::build(alloc_, nodes, 0.0));
     }
 
     NodeInfo nearestNeighbour(const Point& p)

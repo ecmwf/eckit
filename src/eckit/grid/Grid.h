@@ -17,7 +17,10 @@
 
 #include <cstddef>
 #include <vector>
+#include <cmath>
+
 #include <boost/shared_ptr.hpp>
+
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"
 
@@ -45,8 +48,8 @@ struct Point2D
     bool equal(const Point2D& other)
     {
         double EPSILON = 1.0e-8;
-        return ((fabs(lat_ - other.lat_) < EPSILON) &&
-                (fabs(lon_ - other.lon_) < EPSILON));
+        return ((std::fabs(lat_ - other.lat_) < EPSILON) &&
+                (std::fabs(lon_ - other.lon_) < EPSILON));
                 
     }
 };
@@ -77,9 +80,11 @@ public: // methods
 
     virtual ~Grid();
 
-    virtual size_t dataSize() const = 0;
-    virtual const std::vector<Point2D>& gridData() const = 0;
+    virtual const std::vector<Point2D>& coordinates() const = 0;
+
     virtual BoundBox2D boundingBox() const = 0;
+
+    virtual std::string hash() const;
 
 protected:
 

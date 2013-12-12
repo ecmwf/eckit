@@ -53,11 +53,6 @@ LatLon::~LatLon()
 {
 }
 
-size_t LatLon::dataSize() const
-{
-    return points_.size();
-}
-
 BoundBox2D LatLon::boundingBox() const
 {
     return bound_box_;

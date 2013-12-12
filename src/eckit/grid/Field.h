@@ -46,16 +46,27 @@ public: // types
 
 public: // methods
 
-    Field( MetaData* metadata, std::vector<double>* data );
+    Field( Grid* grid, MetaData* metadata, std::vector<double>* data );
 
     ~Field();
 
-    MetaData* metadata() const { return metadata_; }
-    Data*     data() const { return data_; }
+    const MetaData& metadata() const { return *metadata_; }
+
+    Data& data() { return *data_; }
+    const Data& data() const { return *data_; }
+
+    /// @returns the grid reference
+    const Grid& grid() const { return *grid_; }
+
 
 protected:
 
+    /// @todo make the grid a shared pointer
+
+    Grid*       grid_;      ///< describes the grid
+
     MetaData*   metadata_;  ///< describes the field
+
     Data*       data_;      ///< stores the field data
 
 };
@@ -63,36 +74,22 @@ protected:
 //-----------------------------------------------------------------------------
 
 /// Represents a set of fields
-/// @todo add an iterator class to this collection
+/// The order of the fields is kept
 class FieldSet : private eckit::NonCopyable {
 
 public: // methods
 
     /// Takes ownership of the fields
-    FieldSet( Grid* grid, const Field::Vector& fields = Field::Vector() );
+    FieldSet( const Field::Vector& fields = Field::Vector() );
 
     ~FieldSet();
-
-    // passes ownership to the caller
-    FieldSet* operator() (size_t i, size_t j, size_t k = 1); ///@todo implement
-
-    // helps iterate over the fields of this FieldSet
-    //Field* next(); /// @todo implement
     
-    /// @todo revise
     const Field::Vector& fields() const { return fields_; }
+
     Field::Vector& fields() { return fields_; }
 
-
-    //GridPtr grid() const { return GridPtr(grid_); }
-    Grid* grid() const { return grid_; }
-    
 protected:
 
-    /// @todo: make this a shared pointer
-    Grid* grid_;
-
-    // It is important that the order of the fields is respected
     Field::Vector fields_;
 };
 

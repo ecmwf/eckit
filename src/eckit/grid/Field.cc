@@ -25,10 +25,12 @@ Field::MetaData::MetaData()
 
 //-----------------------------------------------------------------------------
 
-Field::Field(MetaData* metadata, std::vector<double>* data) :
+Field::Field( Grid* grid, MetaData* metadata, std::vector<double>* data ) :
+    grid_(grid),
     metadata_(metadata),
     data_(data)
 {
+    ASSERT(grid_);
     ASSERT(metadata_);
     ASSERT(data_);
 
@@ -37,17 +39,16 @@ Field::Field(MetaData* metadata, std::vector<double>* data) :
 
 Field::~Field()
 {
+    if(grid_) delete metadata_;
     if(metadata_) delete metadata_;
     if(data_) delete data_;
 }
 
 //-----------------------------------------------------------------------------
 
-FieldSet::FieldSet(Grid *grid, const Field::Vector& fields) :
-    grid_(grid),
+FieldSet::FieldSet(const Field::Vector& fields) :
     fields_(fields)
 {
-    ASSERT(grid_);
 }
 
 FieldSet::~FieldSet()

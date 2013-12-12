@@ -80,11 +80,6 @@ Gaussian::~Gaussian()
 {
 }
 
-size_t Gaussian::dataSize() const
-{
-    return points_.size();
-}
-
 BoundBox2D Gaussian::boundingBox() const
 {
     return bound_box_;

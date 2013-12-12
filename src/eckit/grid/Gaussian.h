@@ -36,8 +36,7 @@ public: // methods
 
     virtual ~Gaussian();
 
-    virtual size_t dataSize() const;
-    virtual const std::vector<Point2D>& gridData() const { return points_; }
+    virtual const std::vector<Point2D>& coordinates() const { return points_; }
     virtual BoundBox2D boundingBox() const;
 
 protected:

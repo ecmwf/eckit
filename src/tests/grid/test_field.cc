@@ -62,26 +62,23 @@ void TestField::test_constructor()
     for (unsigned int i = 0; i < ref_data.size(); i++)
         data->push_back(ref_data[i]);
 
-    Field* f = new Field(meta,data);
+    Field* f = new Field(g,meta,data);
     ASSERT( f );
-
-    ASSERT( f->data() == data );
-    ASSERT( f->metadata() == meta );
 
     Field::Vector fields;
     fields.push_back(f);
 
-    FieldSet fs(g, fields);
+    FieldSet fs(fields);
     //ASSERT(fs.grid().get() == g); 
     
     // iterate over the fields
     for (Field::Vector::iterator it = fs.fields().begin(); it != fs.fields().end(); ++it)
     {
         // extract and test the data
-        Field::Data* pData = (*it)->data();
+        Field::Data& d = (*it)->data();
         for (unsigned int i = 0; i < ref_data.size(); i++)
         {
-            ASSERT(ref_data[i] == (*pData)[i]);
+            ASSERT(ref_data[i] == d[i]);
         }   
     }
 

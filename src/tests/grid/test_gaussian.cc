@@ -54,7 +54,7 @@ void TestGaussian::test_constructor()
 
     ASSERT( g );
     /// @todo review this: we wrap from 0 to 360 inclusive as we do for latlon
-    ASSERT( g->dataSize() == (48 * 2 * ( 48 * 4 + 1) ) );
+    ASSERT( g->coordinates().size() == (48 * 2 * ( 48 * 4 + 1) ) );
 
     /// @todo substitute these comparisons with proper floating point comparisons
     ASSERT( g->boundingBox().bottom_left_.lat_ == -90. );
@@ -82,11 +82,11 @@ void TestGaussian::test_latitudes(const std::vector<double>& ref_data, int gauss
     // number of decimal places to compare numbers (see reference data above)
     int NDP = 6;
 
-    ASSERT( g->dataSize() == (gaussian_number * 2 * ( gaussian_number * 4 + 1) ) );
+    ASSERT( g->coordinates().size() == (gaussian_number * 2 * ( gaussian_number * 4 + 1) ) );
 
-    for (unsigned int i = 0; i < g->dataSize(); i++)
+    for (unsigned int i = 0; i < g->coordinates().size(); i++)
     {
-        double generated_latitude = g->gridData()[i].lat_;
+        double generated_latitude = g->coordinates()[i].lat_;
         int gen = NINT(pow(10.0, NDP) * generated_latitude) ;
 
         // we can't be sure of the data order and don't want to enforce

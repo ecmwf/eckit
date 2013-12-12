@@ -35,6 +35,20 @@ struct Point2D
     Point2D( ) : lat_(0.0), lon_(0.0) {}
     double lat_;
     double lon_;
+    double distance_from(const Point2D& other)
+    {
+        double dlat = lat_ - other.lat_;
+        double dlon = lon_ - other.lon_;
+        return std::sqrt(dlat*dlat + dlon*dlon);
+    }
+
+    bool equal(const Point2D& other)
+    {
+        double EPSILON = 1.0e-8;
+        return ((fabs(lat_ - other.lat_) < EPSILON) &&
+                (fabs(lon_ - other.lon_) < EPSILON));
+                
+    }
 };
 
 //-----------------------------------------------------------------------------

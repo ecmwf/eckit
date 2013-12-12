@@ -67,6 +67,8 @@ public:
         return std::sqrt(m);
     }
 
+
+
     // Distance along one axis
     static  double distance(const BSPPoint& p1, const BSPPoint& p2, int axis)
     {

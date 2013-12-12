@@ -25,8 +25,10 @@
 
 #include "eckit/eckit.h"
 
+long D = 0;
+
 namespace eckit {
- // The hyperplane is define by the vector (l, r) passing through the middle point
+// The hyperplane is define by the vector (l, r) passing through the middle point
 template<class Point, class Alloc>
 BSPNode<Point,Alloc>::BSPNode(const Init& init):
     point_(init.p_),
@@ -59,18 +61,20 @@ void BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& b
 
         double distanceToPlane = d / n_;
 
-        if(distanceToPlane <= max) {
+
+        if(d <= 0) {
             left(a)->nearestNeighbour(a, p, best, max, depth+1);
-            right(a)->nearestNeighbour(a, p, best, max, depth+1);
-        }
-        else {
-            if(d <= 0) {
-                left(a)->nearestNeighbour(a, p, best, max, depth+1);
-            }
-            else {
+            if(distanceToPlane <= max) {
                 right(a)->nearestNeighbour(a, p, best, max, depth+1);
             }
         }
+        else {
+            right(a)->nearestNeighbour(a, p, best, max, depth+1);
+            if(distanceToPlane <= max) {
+                left(a)->nearestNeighbour(a, p, best, max, depth+1);
+            }
+        }
+
     }
     else
     {
@@ -87,6 +91,7 @@ void BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& b
         ASSERT(!left_ || !right_);
 
         double d   = Point::distance(p, point_);
+        D++;
         if(d < max) {
             max = d;
             best = this;
@@ -111,18 +116,18 @@ void BSPNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p, B
 {
     if(left_ || right_) {
         if(right_)
-        right(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
+            right(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
 
         if(left_)
-        left(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
+            left(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
     }
 
 
-        double d   = Point::distance(p, point_);
-        if(d < max) {
-            max = d;
-            best = this;
-        }
+    double d   = Point::distance(p, point_);
+    if(d < max) {
+        max = d;
+        best = this;
+    }
 
 }
 

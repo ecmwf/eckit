@@ -12,38 +12,18 @@
 #define BSPTree_H
 
 #include "eckit/eckit.h"
+#include "eckit/container/KDMemory.h"
 
 //#include <cmath>
 #include <limits>
 #include <cmath>
 
+
+
 // Implements a tree
 
 namespace eckit {
 
-
-struct BSPMemory {
-    typedef void* Ptr;
-
-    template<class Node>
-    Ptr convert(Node* p) { return p; }
-
-    template<class Node>
-    Node* convert(Ptr p,  const Node*) { return static_cast<Node*>(p); }
-
-    template<class Node,class Point>
-    Node* newNode(const std::vector<Point>& p, const Node*) { return new Node(p); }
-
-    template<class Node>
-    void deleteNode(Ptr p, const Node*) {
-        Node* n = static_cast<Node*>(p);
-        if(n) {
-            deleteNode(n->left_,n);
-            deleteNode(n->right_,n);
-            delete n;
-        }
-    }
-};
 
 template<class Point, class Alloc>
 class BSPNode;
@@ -137,7 +117,7 @@ private:
     Ptr left_;
     Ptr right_;
 
-    friend struct BSPMemory;
+    friend struct KDMemory;
 
 public:
     typedef BSPNodeQueue<Point,Alloc>      NodeQueue;
@@ -192,7 +172,7 @@ private:
 
 
 
-template<class Point, class Alloc = BSPMemory>
+template<class Point, class Alloc = KDMemory>
 class BSPTree {
 
 public:
@@ -209,11 +189,16 @@ public:
 
 public:
 
-    BSPTree(const Alloc& alloc = Alloc()): alloc_(alloc), root_(0) {}
+    BSPTree(const Alloc& alloc = Alloc()): alloc_(alloc), root_(0)  {}
 
     ~BSPTree() {
         alloc_.deleteNode(root_,(Node*)0);
     }
+
+    void verbose() {
+
+    }
+
 
     template<typename Container>
     void build(const Container& nodes)

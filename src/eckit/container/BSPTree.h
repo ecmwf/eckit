@@ -113,14 +113,25 @@ public:
 
 template<class Point, class Alloc>
 class BSPNode {
+public:
+
+    struct Init {
+        const Point& p_;
+        const Point& l_;
+        const Point& r_;
+        Init(const Point& p, const Point& l, const Point& r):
+            p_(p), l_(l), r_(r) {}
+    };
+
 private:
 
     Point point_;
 
     // The hyperplane is define by the vector between 2 centres passing through the middle point
+    Point vec_; // Must be first
     double d_;
     double n_;
-    Point vec_;
+
 
     typedef typename Alloc::Ptr Ptr;
     Ptr left_;
@@ -135,8 +146,7 @@ public:
 
 public:
 
-    template<typename Container>
-    BSPNode(const Container& p);
+    BSPNode(const Init&);
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);
     NodeList findInSphere(Alloc& a,const Point& p, double radius);
@@ -200,6 +210,7 @@ public:
 public:
 
     BSPTree(const Alloc& alloc = Alloc()): alloc_(alloc), root_(0) {}
+
     ~BSPTree() {
         alloc_.deleteNode(root_,(Node*)0);
     }

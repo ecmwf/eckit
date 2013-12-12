@@ -118,7 +118,8 @@ private:
     Point point_;
 
     // The hyperplane is define by the vector between 2 centres passing through the middle point
-    Point mid_;
+    double d_;
+    double n_;
     Point vec_;
 
     typedef typename Alloc::Ptr Ptr;

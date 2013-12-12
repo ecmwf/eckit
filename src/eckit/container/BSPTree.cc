@@ -50,21 +50,38 @@ template<class Point, class Alloc>
 void BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& best, double& max, int depth)
 {
     if(left_ && right_) {
-        const Point& l =   left(a)->point();
-        const Point& r =   right(a)->point();
+        // Check in which half the point lies
 
-        double dl = Point::distance(p, l);
-        double dr = Point::distance(p, r);
+        double d = Point::dot(p, vec_) + d_;
 
-        if(dl <= dr) {
+        // See if we need to visit both
+
+        double distanceToPlane = d / n_;
+
+        if(distanceToPlane <= max) {
             left(a)->nearestNeighbour(a, p, best, max, depth+1);
+            right(a)->nearestNeighbour(a, p, best, max, depth+1);
         }
         else {
-            right(a)->nearestNeighbour(a, p, best, max, depth+1);
+            if(d <= 0) {
+                left(a)->nearestNeighbour(a, p, best, max, depth+1);
+            }
+            else {
+                right(a)->nearestNeighbour(a, p, best, max, depth+1);
+            }
         }
     }
     else
     {
+        if(left_) {
+            left(a)->nearestNeighbour(a, p, best, max, depth+1);
+            return;
+        }
+
+        if(right_) {
+            right(a)->nearestNeighbour(a, p, best, max, depth+1);
+            return;
+        }
 
         ASSERT(!left_ || !right_);
 
@@ -91,20 +108,21 @@ BSPNodeInfo<Point,Alloc> BSPNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc&
 template<class Point, class Alloc>
 void BSPNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p, BSPNode<Point,Alloc>*& best, double& max, int depth)
 {
-    if(left_ && right_) {
+    if(left_ || right_) {
+        if(right_)
         right(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
+
+        if(left_)
         left(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
     }
-    else
-    {
-        ASSERT(!left_ && !right_);
+
 
         double d   = Point::distance(p, point_);
         if(d < max) {
             max = d;
             best = this;
         }
-    }
+
 }
 
 //===
@@ -278,8 +296,9 @@ BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const Container& nod
 
     // The hyperplane is define by the vector (l, r) passing through the middle point
 
-    n->mid_ = Point::middle(l, r);
     n->vec_ = Point::sub(r, l);
+    n->d_   = -Point::dot(Point::middle(l, r), n->vec_);
+    n->n_   = Point::norm(n->vec_);
 
     n->left(a, build(a, left, depth + 1));
     n->right(a, build(a, right, depth + 1));
@@ -291,6 +310,7 @@ BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const Container& nod
 template<class Point, class Alloc>
 void BSPNode<Point,Alloc>::findInSphere(Alloc& a,const Point& p ,double radius, NodeList& result, int depth)
 {
+    NOTIMP;
     /*
     if(p.x(axis_) < point_.x(axis_))
     {
@@ -338,6 +358,7 @@ typename BSPNode<Point,Alloc>::NodeList BSPNode<Point,Alloc>::findInSphere(Alloc
 template<class Point, class Alloc>
 void BSPNode<Point,Alloc>::findInSphereBruteForce(Alloc& a,const Point& p, double radius, NodeList& result, int depth)
 {
+    NOTIMP;
     /*
     double d = Point::distance(p,point_);
     if(d <= radius) {

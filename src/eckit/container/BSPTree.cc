@@ -140,6 +140,55 @@ void BSPNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p, B
 template<class Point, class Alloc>
 void BSPNode<Point,Alloc>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth)
 {
+    if(left_ && right_) {
+        // Check in which half the point lies
+
+        double d = Point::dot(p, vec_) + d_;
+
+        // See if we need to visit both
+
+        double distanceToPlane = fabs(d / n_);
+
+        double max = result.largest();
+
+
+        if(d <= 0) {
+            left(a)->kNearestNeighbours(a, p, k, result, depth+1);
+            double dd = right(a)->dist_;
+            if(result.incomplete() || distanceToPlane + dd <= max) {
+                right(a)->kNearestNeighbours(a, p, k, result, depth+1);
+            }
+        }
+        else {
+
+            right(a)->kNearestNeighbours(a, p, k, result, depth+1);
+            double dd = left(a)->dist_;
+            if(result.incomplete() || distanceToPlane + dd <= max) {
+                left(a)->kNearestNeighbours(a, p, k, result, depth+1);
+            }
+        }
+
+        return;
+
+    }
+
+
+    if(left_) {
+        left(a)->kNearestNeighbours(a, p, k, result, depth+1);
+        return;
+
+    }
+
+    if(right_) {
+        right(a)->kNearestNeighbours(a, p, k, result, depth+1);
+        return;
+
+    }
+
+    // This is a leaf
+    double d   = Point::distance(p, point_);
+    result.push(this, d);
+    D++;
 
 }
 

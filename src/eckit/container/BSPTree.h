@@ -52,6 +52,18 @@ public:
         s << "[point=" << p.point() << ",distance=" << p.distance() << "]";
         return s;
     }
+
+    friend std::ostream& operator<<(std::ostream& s,const NodeList& p)
+    {
+        s << "[";
+        std::string sep = "";
+        for(typename NodeList::const_iterator j = p.begin() ; j != p.end(); ++j) {
+            s << sep << *j;
+            sep = ",";
+        }
+        s << "]";
+        return s;
+    }
 };
 
 template<class Point, class Alloc>
@@ -74,6 +86,10 @@ public:
     {
         queue_.push(NodeInfo(n,d));
         while(queue_.size() > k_) { queue_.pop();}
+    }
+
+    bool incomplete() const {
+        return queue_.size() < k_;
     }
 
     double largest() const {

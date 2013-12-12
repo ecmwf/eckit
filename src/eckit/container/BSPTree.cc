@@ -60,13 +60,13 @@ void BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& b
 
         // See if we need to visit both
 
-        //double distanceToPlane = fabs(d) / n_;
+        double distanceToPlane = fabs(d / n_);
 
 
         if(d <= 0) {
             left(a)->nearestNeighbour(a, p, best, max, depth+1);
             double dd = right(a)->dist_;
-            if(/*distanceToPlane +*/ dd <= max) {
+            if(distanceToPlane + dd <= max) {
                 right(a)->nearestNeighbour(a, p, best, max, depth+1);
             }
         }
@@ -74,7 +74,7 @@ void BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& b
 
             right(a)->nearestNeighbour(a, p, best, max, depth+1);
             double dd = left(a)->dist_;
-            if(/*distanceToPlane +*/ dd <= max) {
+            if(distanceToPlane + dd <= max) {
                 left(a)->nearestNeighbour(a, p, best, max, depth+1);
             }
         }

@@ -21,7 +21,7 @@ class KDMapped {
 public:
 
 
-    KDMapped(const PathName&, size_t);
+    KDMapped(const PathName&, size_t = 0);
     ~KDMapped();
 
     KDMapped(const KDMapped& other);
@@ -45,6 +45,7 @@ public:
     template<class Node, class Init>
     Node* newNode(const Init& init, const Node*) {
         Node* base = static_cast<Node*>(addr_);
+        ASSERT(count_ * sizeof(Node) < size_);
         return new(&base[count_++]) Node(init);
     }
 

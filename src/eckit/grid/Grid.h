@@ -32,26 +32,28 @@ namespace grid {
 
 //-----------------------------------------------------------------------------
 
-struct Point2D
+class Point2D
 {
+public:
     Point2D( double lat, double lon ) : lat_(lat),lon_(lon) {}
     Point2D( ) : lat_(0.0), lon_(0.0) {}
     double lat_;
     double lon_;
-    double distance_from(const Point2D& other)
+    static double distance(const Point2D& a, const Point2D& b)
     {
-        double dlat = lat_ - other.lat_;
-        double dlon = lon_ - other.lon_;
+        double dlat = a.lat_ - b.lat_;
+        double dlon = a.lon_ - b.lon_;
         return std::sqrt(dlat*dlat + dlon*dlon);
     }
 
-    bool equal(const Point2D& other)
+    static bool equal(const Point2D& a, const Point2D& b)
     {
-        double EPSILON = 1.0e-8;
-        return ((std::fabs(lat_ - other.lat_) < EPSILON) &&
-                (std::fabs(lon_ - other.lon_) < EPSILON));
+        return ((std::fabs(a.lat_ - b.lat_) < Point2D::EPSILON) &&
+                (std::fabs(a.lon_ - b.lon_) < Point2D::EPSILON));
                 
     }
+    /// @todo take epsilon from some general config
+    static double EPSILON;
 };
 
 //-----------------------------------------------------------------------------

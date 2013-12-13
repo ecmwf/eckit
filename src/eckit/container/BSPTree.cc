@@ -25,13 +25,17 @@
 
 #include "eckit/eckit.h"
 
-namespace eckit {
+long D = 0;
 
+namespace eckit {
+// The hyperplane is define by the vector (l, r) passing through the middle point
 template<class Point, class Alloc>
-template<typename Container>
-BSPNode<Point,Alloc>::BSPNode(const Container& p):
-    point_(Point::mean(p)),
-    //center_(Point::enclosingSphere(p, radius_)),
+BSPNode<Point,Alloc>::BSPNode(const Init& init):
+    point_(init.p_),
+    vec_(Point::sub(init.r_, init.l_)),
+    d_(-Point::dot(Point::middle(init.l_, init.r_), vec_)),
+    n_(Point::norm(vec_)),
+    dist_(init.d_),
     left_(0),
     right_(0)
 {
@@ -56,20 +60,25 @@ void BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& b
 
         // See if we need to visit both
 
-        double distanceToPlane = d / n_;
+        double distanceToPlane = fabs(d / n_);
 
-        if(distanceToPlane <= max) {
+
+        if(d <= 0) {
             left(a)->nearestNeighbour(a, p, best, max, depth+1);
-            right(a)->nearestNeighbour(a, p, best, max, depth+1);
-        }
-        else {
-            if(d <= 0) {
-                left(a)->nearestNeighbour(a, p, best, max, depth+1);
-            }
-            else {
+            double dd = right(a)->dist_;
+            if(distanceToPlane + dd <= max) {
                 right(a)->nearestNeighbour(a, p, best, max, depth+1);
             }
         }
+        else {
+
+            right(a)->nearestNeighbour(a, p, best, max, depth+1);
+            double dd = left(a)->dist_;
+            if(distanceToPlane + dd <= max) {
+                left(a)->nearestNeighbour(a, p, best, max, depth+1);
+            }
+        }
+
     }
     else
     {
@@ -86,6 +95,7 @@ void BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& b
         ASSERT(!left_ || !right_);
 
         double d   = Point::distance(p, point_);
+        D++;
         if(d < max) {
             max = d;
             best = this;
@@ -110,18 +120,18 @@ void BSPNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p, B
 {
     if(left_ || right_) {
         if(right_)
-        right(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
+            right(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
 
         if(left_)
-        left(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
+            left(a)->nearestNeighbourBruteForce(a, p, best, max, depth+1);
     }
 
 
-        double d   = Point::distance(p, point_);
-        if(d < max) {
-            max = d;
-            best = this;
-        }
+    double d   = Point::distance(p, point_);
+    if(d < max) {
+        max = d;
+        best = this;
+    }
 
 }
 
@@ -130,6 +140,55 @@ void BSPNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p, B
 template<class Point, class Alloc>
 void BSPNode<Point,Alloc>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth)
 {
+    if(left_ && right_) {
+        // Check in which half the point lies
+
+        double d = Point::dot(p, vec_) + d_;
+
+        // See if we need to visit both
+
+        double distanceToPlane = fabs(d / n_);
+
+        double max = result.largest();
+
+
+        if(d <= 0) {
+            left(a)->kNearestNeighbours(a, p, k, result, depth+1);
+            double dd = right(a)->dist_;
+            if(result.incomplete() || distanceToPlane + dd <= max) {
+                right(a)->kNearestNeighbours(a, p, k, result, depth+1);
+            }
+        }
+        else {
+
+            right(a)->kNearestNeighbours(a, p, k, result, depth+1);
+            double dd = left(a)->dist_;
+            if(result.incomplete() || distanceToPlane + dd <= max) {
+                left(a)->kNearestNeighbours(a, p, k, result, depth+1);
+            }
+        }
+
+        return;
+
+    }
+
+
+    if(left_) {
+        left(a)->kNearestNeighbours(a, p, k, result, depth+1);
+        return;
+
+    }
+
+    if(right_) {
+        right(a)->kNearestNeighbours(a, p, k, result, depth+1);
+        return;
+
+    }
+
+    // This is a leaf
+    double d   = Point::distance(p, point_);
+    result.push(this, d);
+    D++;
 
 }
 
@@ -185,11 +244,6 @@ void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& 
 
     Point w = Point::mean(in);
 
-    //std::default_random_engine generator;
-    //std::uniform_int_distribution<size_t> distribution(0, in.size()-1);
-    //Point cl = in[distribution(generator)];
-    //Point cr = Point::symetrical(w, cl); // cr = w - (cl - w)
-
     Point cl(in[0]);
     Point cr(in[in.size()-1]);
 
@@ -203,9 +257,10 @@ void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& 
 
         if(n == 0) {
             // All points are equal
+
             mr.clear();
             ml.clear();
-            mr.push_back(cr);
+            ml.push_back(cr);
             return;
         }
 
@@ -243,18 +298,9 @@ void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& 
         Point wl = Point::mean(ml);
         Point wr = Point::mean(mr);
 
-        //cout << Point::distance(cl, wl) << " - " << Point::distance(cr, wr) << std::endl;
 
-        //if(cl == wl && cr == wr)
         if(curr == prev)
         {
-#if 0
-            for(int i = 0; i < depth; i++)
-                std::cout << "  ";
-            std::cout << Point::distance(cl, wl) << " - " << Point::distance(cr, wr) << std::endl;
-            //cout << "======================" << std::endl;
-#endif
-
             r = wr;
             l = wl;
 
@@ -271,37 +317,78 @@ void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& 
 
 template<class Point, class Alloc>
 template<typename Container>
-BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const Container& nodes, int depth)
+double BSPNode<Point,Alloc>::distanceToPlane(const Container& in,
+                                             const Point& v, double d, double n)
 {
+    double min = std::numeric_limits<double>::max();
+    for(typename Container::const_iterator j = in.begin(); j != in.end(); ++j)
+    {
+        const Point& p = (*j);
+        // Find the closest value to the partitionning plan
+        double dist = fabs((Point::dot(p, v) + d)/n);
+
+        if(dist < min) {
+            min = dist;
+        }
+    }
+
+    return min;
+
+}
+
+
+template<class Point, class Alloc>
+template<typename Container>
+BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const Container& nodes,
+                                                  double dist, int depth)
+{
+    Point r;
+    Point l;
+
     if(nodes.size() == 0)
         return 0;
 
 
-    if(nodes.size() == 1)
-        return a.newNode(nodes,(BSPNode*)0);
+    if(nodes.size() == 1) {
+        Init init(nodes[0], r, l, dist);
+        return a.newNode(init,(BSPNode*)0);
+    }
 
-    //if(depth == 3)
-    //    return a.newNode(nodes,(BSPNode*)0);
 
     Container  left;
     Container  right;
 
-    Point r;
-    Point l;
 
     kmean(nodes, left, right, l, r, depth);
 
+    if(left.size() == 0 || right.size() == 0) {
+        ASSERT(left.size() == 1 || right.size() == 1 );
+        if(left.size() == 1) {
+            Init init(left[0], r, l, dist);
+            return a.newNode(init,(BSPNode*)0);
+        }
+        else
+        {
+            Init init(right[0], r, l, dist);
+            return a.newNode(init,(BSPNode*)0);
+        }
+    }
+    ASSERT(left.size() < nodes.size());
+    ASSERT(right.size() < nodes.size());
+    ASSERT(right.size() + left.size() == nodes.size());
 
-    BSPNode* n = a.newNode(nodes, (BSPNode*)0);
 
-    // The hyperplane is define by the vector (l, r) passing through the middle point
 
-    n->vec_ = Point::sub(r, l);
-    n->d_   = -Point::dot(Point::middle(l, r), n->vec_);
-    n->n_   = Point::norm(n->vec_);
 
-    n->left(a, build(a, left, depth + 1));
-    n->right(a, build(a, right, depth + 1));
+    Init init(nodes[0], l, r, dist);
+    BSPNode* n = a.newNode(init, (BSPNode*)0);
+
+
+    double dl = distanceToPlane(left, n->vec_, n->d_, n->n_);
+    double dr = distanceToPlane(left, n->vec_, n->d_, n->n_);
+
+    n->left(a, build(a, left, dl, depth + 1));
+    n->right(a, build(a, right, dr, depth + 1));
 
     return n;
 

@@ -30,16 +30,17 @@ Field::Field( Grid* grid, MetaData* metadata, std::vector<double>* data ) :
     metadata_(metadata),
     data_(data)
 {
+    Log::info() << "Build a Field" << std::endl;
     ASSERT(grid_);
     ASSERT(metadata_);
     ASSERT(data_);
 
-    Log::info() << "Build a Field" << std::endl;
 }
 
 Field::~Field()
 {
-    if(grid_) delete metadata_;
+    Log::info() << "Destroy a Field" << std::endl;
+    if(grid_) delete grid_; 
     if(metadata_) delete metadata_;
     if(data_) delete data_;
 }

@@ -43,6 +43,12 @@ public:
         std::fill(x_, x_+dimensions(), 0);
     }
 
+    template<class Container>
+    KDPoint(Container c, const Payload& payload): payload_(payload)
+    {
+        std::copy(c.begin(), c.end(), x_);
+    }
+
     KDPoint(double x, double y, const Payload& payload): payload_(payload)
     {
         x_[0] = x;
@@ -84,15 +90,15 @@ public:
         return true;
     }
 
-    static  double norm(const KDPoint& p1)
+    static double norm(const KDPoint& p1)
     {
-        double m = 0;
+        double m = 0.0;
         for(size_t i = 0; i < dimensions(); i++)
         {
             double dx =  p1.x_[i];
             m += dx*dx;
         }
-        return m;
+        return std::sqrt(m);
     }
 
     bool operator==(const KDPoint& other) const {
@@ -112,7 +118,7 @@ public:
     // For projecting a point on a line
     static double dot(const KDPoint& p1, const KDPoint& p2)
     {
-        double m = 0;
+        double m = 0.0;
         for(size_t i = 0; i < dimensions(); i++)
         {
             m += p1.x_[i] * p2.x_[i];
@@ -174,7 +180,7 @@ public:
     static KDPoint normalize(const KDPoint& p)
     {
         KDPoint zero;
-        return mul(p,distance(p, zero));
+        return div(p,distance(p, zero));
     }
 
     template<class Container>

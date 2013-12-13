@@ -29,8 +29,15 @@ KDMapped::KDMapped(const PathName& path, size_t size):
     addr_(0),
     fd_(-1)
 {
+    int oflags = O_RDWR|O_CREAT;
+    int mflags = PROT_READ|PROT_WRITE;
+    
+    if(size_ == 0) {
+        oflags = O_RDONLY;
+        mflags = PROT_READ;
+    }
 
-    SYSCALL(fd_ = ::open(path.localPath(), O_RDWR|O_CREAT,  0777));
+    SYSCALL(fd_ = ::open(path.localPath(),oflags,  0777));
     if(size_ == 0)
     {
 
@@ -44,8 +51,9 @@ KDMapped::KDMapped(const PathName& path, size_t size):
         lseek(fd_, size_ - 1, SEEK_SET);
         SYSCALL(write(fd_,&c,1));
     }
+    
     Log::info() << "Mapping " << path << " " << size << std::endl;
-    addr_ = ::mmap(0,size_,PROT_READ|PROT_WRITE, MAP_SHARED, fd_, 0 );
+    addr_ = ::mmap(0,size_, mflags, MAP_SHARED, fd_, 0 );
     if(addr_ == MAP_FAILED) {
         Log::error() << "open(" << path << ',' << size << ')'
                      << Log::syserr << std::endl;

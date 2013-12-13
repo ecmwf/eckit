@@ -12,38 +12,18 @@
 #define BSPTree_H
 
 #include "eckit/eckit.h"
+#include "eckit/container/KDMemory.h"
 
 //#include <cmath>
 #include <limits>
 #include <cmath>
 
+
+
 // Implements a tree
 
 namespace eckit {
 
-
-struct BSPMemory {
-    typedef void* Ptr;
-
-    template<class Node>
-    Ptr convert(Node* p) { return p; }
-
-    template<class Node>
-    Node* convert(Ptr p,  const Node*) { return static_cast<Node*>(p); }
-
-    template<class Node,class Point>
-    Node* newNode(const std::vector<Point>& p, const Node*) { return new Node(p); }
-
-    template<class Node>
-    void deleteNode(Ptr p, const Node*) {
-        Node* n = static_cast<Node*>(p);
-        if(n) {
-            deleteNode(n->left_,n);
-            deleteNode(n->right_,n);
-            delete n;
-        }
-    }
-};
 
 template<class Point, class Alloc>
 class BSPNode;
@@ -72,6 +52,18 @@ public:
         s << "[point=" << p.point() << ",distance=" << p.distance() << "]";
         return s;
     }
+
+    friend std::ostream& operator<<(std::ostream& s,const NodeList& p)
+    {
+        s << "[";
+        std::string sep = "";
+        for(typename NodeList::const_iterator j = p.begin() ; j != p.end(); ++j) {
+            s << sep << *j;
+            sep = ",";
+        }
+        s << "]";
+        return s;
+    }
 };
 
 template<class Point, class Alloc>
@@ -96,6 +88,10 @@ public:
         while(queue_.size() > k_) { queue_.pop();}
     }
 
+    bool incomplete() const {
+        return queue_.size() < k_;
+    }
+
     double largest() const {
         return queue_.size() ? queue_.top().distance_ : std::numeric_limits<double>::max();
     }
@@ -113,20 +109,33 @@ public:
 
 template<class Point, class Alloc>
 class BSPNode {
+public:
+
+    struct Init {
+        const Point& p_;
+        const Point& l_;
+        const Point& r_;
+        double d_;
+        Init(const Point& p, const Point& l, const Point& r, double d):
+            p_(p), l_(l), r_(r), d_(d) {}
+    };
+
 private:
 
     Point point_;
 
     // The hyperplane is define by the vector between 2 centres passing through the middle point
+    Point vec_; // Must be first
     double d_;
     double n_;
-    Point vec_;
+    double dist_;
+
 
     typedef typename Alloc::Ptr Ptr;
     Ptr left_;
     Ptr right_;
 
-    friend struct BSPMemory;
+    friend struct KDMemory;
 
 public:
     typedef BSPNodeQueue<Point,Alloc>      NodeQueue;
@@ -135,8 +144,7 @@ public:
 
 public:
 
-    template<typename Container>
-    BSPNode(const Container& p);
+    BSPNode(const Init&);
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);
     NodeList findInSphere(Alloc& a,const Point& p, double radius);
@@ -145,10 +153,14 @@ public:
     const Point& point() const { return point_; }
 
     template<typename Container>
-    static BSPNode* build(Alloc& a, const Container& nodes, int depth= 0);
+    static BSPNode* build(Alloc& a, const Container& nodes, double, int depth= 0);
 
     template<typename Container>
     static void kmean(const Container& in, Container& ml, Container& mr, Point& l, Point& r, int depth) ;
+
+    template<typename Container>
+    static double distanceToPlane(const Container& in, const Point& v,
+                                  double d, double n) ;
 
     // For testing only
 
@@ -182,7 +194,7 @@ private:
 
 
 
-template<class Point, class Alloc = BSPMemory>
+template<class Point, class Alloc = KDMemory>
 class BSPTree {
 
 public:
@@ -199,15 +211,21 @@ public:
 
 public:
 
-    BSPTree(const Alloc& alloc = Alloc()): alloc_(alloc), root_(0) {}
+    BSPTree(const Alloc& alloc = Alloc()): alloc_(alloc), root_(0)  {}
+
     ~BSPTree() {
         alloc_.deleteNode(root_,(Node*)0);
     }
 
+    void verbose() {
+
+    }
+
+
     template<typename Container>
     void build(const Container& nodes)
     {
-        root_ = alloc_.convert(Node::build(alloc_, nodes));
+        root_ = alloc_.convert(Node::build(alloc_, nodes, 0.0));
     }
 
     NodeInfo nearestNeighbour(const Point& p)

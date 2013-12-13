@@ -18,6 +18,7 @@ namespace eckit {
 namespace grid {
 
 //-----------------------------------------------------------------------------
+/*static*/ double Point2D::EPSILON = 1.0e-8;
 
 Grid::Grid()
 {
@@ -26,6 +27,7 @@ Grid::Grid()
 
 Grid::~Grid()
 {
+    Log::info() << "Destroy a Grid" << std::endl;
 }
 
 std::string Grid::hash() const

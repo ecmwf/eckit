@@ -419,8 +419,8 @@ utils/RLE.cc )
 list( APPEND eckit_memory_srcs
 memory/MemoryPool.h
 memory/MemoryPool.cc
+memory/SharedPtr.h
 memory/Counted.h
-memory/Counted.cc
 memory/Padded.h
 memory/MapAllocator.h
 memory/MapAllocator.cc

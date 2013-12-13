@@ -15,6 +15,7 @@
 #ifndef eckit_Counted_h
 #define eckit_Counted_h
 
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 //-----------------------------------------------------------------------------
@@ -23,57 +24,74 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+namespace detail {
+
+class WithThreadLock
+{
+    Mutex mutex_;
+public:
+    void lock()   { mutex_.lock(); }
+    void unlock() { mutex_.unlock(); }
+};
+
+class NoThreadLock
+{
+    void lock()   {}
+    void unlock() {}
+};
+
+} // detail
+
+//-----------------------------------------------------------------------------
+
 /// Reference counting objects
 /// Subclass from this class if you want reference counting object.
 /// @note Remember to use 'virtual' inheritance in case of multiple inheritance
-class Counted {
-public:
+template < typename LOCK = detail::WithThreadLock >
+class CountedT : private NonCopyable, public LOCK {
 
-// -- Contructors
+public: // methods
 
-	Counted() : count_(0) {}
+    CountedT() : count_(0) {}
 
-// -- Methods
+    void attach()
+    {
+        LOCK::lock();
+        count_++;
+        LOCK::unlock();
+    }
 
-	void attach();
-	void detach();
-	unsigned long count() const { return count_; }
+    void detach()
+    {
+        LOCK::lock();
+        if(--count_ == 0)
+        {
+            LOCK::unlock();
+            delete this;
+        }
+        else
+            LOCK::unlock();
+    }
 
-	void lock()   { mutex_.lock(); }
-	void unlock() { mutex_.unlock(); }
-
-// -- Operators
+    unsigned long count() const { return count_; }
 
 //	void *operator new(size_t s)  { return MemoryPool::fastAllocate(s);}
 //	void operator delete(void* p) { MemoryPool::fastDeallocate(p);     } 
 
-protected:
+protected: // methods
 
-	virtual ~Counted();
+    virtual ~CountedT() {}
 
-private:
-
-// No copy allowed
-
-	Counted(const Counted&);
-	Counted& operator=(const Counted&);
-
-// -- Members
+private: // members
 
 	unsigned long count_;
-	Mutex mutex_;
+
 };
 
 //-----------------------------------------------------------------------------
 
-class AutoAttach {
-    Counted& counted_;
-public:
-
-    AutoAttach(Counted& counted) : counted_(counted) { counted_.attach(); }
-    ~AutoAttach()  { counted_.detach(); }
-
-};
+typedef CountedT< detail::WithThreadLock >  Counted;
+typedef CountedT< detail::NoThreadLock >    CountedNotThreadSafe;
 
 //-----------------------------------------------------------------------------
 

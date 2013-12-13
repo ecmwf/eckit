@@ -127,7 +127,7 @@ private:
     // The hyperplane is define by the vector between 2 centres passing through the middle point
     Point vec_; // Must be first
     double d_;
-    double n_;
+
     double dist_;
 
 
@@ -159,8 +159,7 @@ public:
     static void kmean(const Container& in, Container& ml, Container& mr, Point& l, Point& r, int depth) ;
 
     template<typename Container>
-    static double distanceToPlane(const Container& in, const Point& v,
-                                  double d, double n) ;
+    static double distanceToPlane(const Container& in, const Point& v, double d) ;
 
     // For testing only
 

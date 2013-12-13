@@ -32,9 +32,8 @@ namespace eckit {
 template<class Point, class Alloc>
 BSPNode<Point,Alloc>::BSPNode(const Init& init):
     point_(init.p_),
-    vec_(Point::sub(init.r_, init.l_)),
+    vec_(Point::normalize(Point::sub(init.r_, init.l_))),
     d_(-Point::dot(Point::middle(init.l_, init.r_), vec_)),
-    n_(Point::norm(vec_)),
     dist_(init.d_),
     left_(0),
     right_(0)
@@ -60,10 +59,13 @@ void BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& b
 
         // See if we need to visit both
 
-        double distanceToPlane = fabs(d / n_);
+        double distanceToPlane = fabs(d);
 
 
-        if(d <= 0) {
+       // distanceToPlane = 0;
+
+
+        if(d < 0) {
             left(a)->nearestNeighbour(a, p, best, max, depth+1);
             double dd = right(a)->dist_;
             if(distanceToPlane + dd <= max) {
@@ -147,8 +149,8 @@ void BSPNode<Point,Alloc>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k,
 
         // See if we need to visit both
 
-        double distanceToPlane = fabs(d / n_);
-
+        double distanceToPlane = fabs(d);
+distanceToPlane = 0;
         double max = result.largest();
 
 
@@ -317,15 +319,14 @@ void BSPNode<Point,Alloc>::kmean(const Container& in, Container& ml, Container& 
 
 template<class Point, class Alloc>
 template<typename Container>
-double BSPNode<Point,Alloc>::distanceToPlane(const Container& in,
-                                             const Point& v, double d, double n)
+double BSPNode<Point,Alloc>::distanceToPlane(const Container& in, const Point& v, double d)
 {
     double min = std::numeric_limits<double>::max();
     for(typename Container::const_iterator j = in.begin(); j != in.end(); ++j)
     {
         const Point& p = (*j);
         // Find the closest value to the partitionning plan
-        double dist = fabs((Point::dot(p, v) + d)/n);
+        double dist = fabs(Point::dot(p, v) + d);
 
         if(dist < min) {
             min = dist;
@@ -384,8 +385,8 @@ BSPNode<Point,Alloc>* BSPNode<Point,Alloc>::build(Alloc& a, const Container& nod
     BSPNode* n = a.newNode(init, (BSPNode*)0);
 
 
-    double dl = distanceToPlane(left, n->vec_, n->d_, n->n_);
-    double dr = distanceToPlane(left, n->vec_, n->d_, n->n_);
+    double dl = distanceToPlane(left, n->vec_, n->d_);
+    double dr = distanceToPlane(right, n->vec_, n->d_);
 
     n->left(a, build(a, left, dl, depth + 1));
     n->right(a, build(a, right, dr, depth + 1));

@@ -54,20 +54,20 @@ void delete_ptr_array(T*& p)
 }
 
 template <class T>
-struct NewDeAlloc
+struct NewDealloc
 {
-    static void deallocate( T* p ) { delete_ptr(p); }
+    static void deallocate( T*& p ) { delete_ptr(p); }
 };
 
 template <class T>
-struct NewArrayDeAlloc
+struct NewArrayDealloc
 {
-    static void deallocate( T* p ) { delete_ptr_array(p); }
+    static void deallocate( T*& p ) { delete_ptr_array(p); }
 };
 
 /// A smart pointer that allows to share resources that have derived from Counted
 /// @see CountedT
-template< class T, class ALLOC = NewDeAlloc<T> >
+template< class T, class ALLOC = NewDealloc<T> >
 class SharedPtr {
 public: // types
 
@@ -108,7 +108,7 @@ public: // methods
         {
             ptr_->detach();
 
-            if( ptr_->count() != 0 )
+            if( ptr_->count() == 0 )
                 ALLOC::deallocate( ptr_ );
 
             ptr_ = 0;
@@ -168,6 +168,13 @@ public: // methods
         return ( ptr_ == other.ptr_ );
     }
 
+    /// Overloading of "!="
+    /// @return true if pointees have the different address
+    bool operator!= (const SharedPtr& other) const
+    {
+        return ! operator==( other );
+    }
+
     /// @returns the naked pointer to the object
     T* get() const { return ptr_; }
 
@@ -197,7 +204,12 @@ public: // methods
     /// @returns true if ptr_ == 0
     bool null() const { return ( ptr_ == 0 ); }
 
-    size_t owners() const { ASSERT( !null() ); return ptr_->count(); }
+    size_t owners() const
+    {
+        if( !null() )
+            return ptr_->count();
+        return 0;
+    }
 
 private:
 

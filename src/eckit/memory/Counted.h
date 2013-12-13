@@ -18,6 +18,8 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
+#include "eckit/log/Log.h"
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -25,6 +27,18 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 namespace detail {
+
+struct DoDelete
+{
+    template < typename T >
+    static void deallocate( T* p ) { delete p; }
+};
+
+struct DontDelete
+{
+    template < typename T >
+    static void deallocate( T* p ) {}
+};
 
 class WithThreadLock
 {
@@ -36,6 +50,7 @@ public:
 
 class NoThreadLock
 {
+public:
     void lock()   {}
     void unlock() {}
 };
@@ -47,12 +62,17 @@ class NoThreadLock
 /// Reference counting objects
 /// Subclass from this class if you want reference counting object.
 /// @note Remember to use 'virtual' inheritance in case of multiple inheritance
-template < typename LOCK = detail::WithThreadLock >
-class CountedT : private NonCopyable, public LOCK {
+template < typename LOCK = detail::WithThreadLock,
+           typename DEL  = detail::DoDelete >
+class CountedT :
+        private NonCopyable,
+        public LOCK {
 
 public: // methods
 
     CountedT() : count_(0) {}
+
+    virtual ~CountedT() {}
 
     void attach()
     {
@@ -64,10 +84,10 @@ public: // methods
     void detach()
     {
         LOCK::lock();
-        if(--count_ == 0)
+        if( --count_ == 0 )
         {
             LOCK::unlock();
-            delete this;
+            DEL::deallocate( this );
         }
         else
             LOCK::unlock();
@@ -78,10 +98,6 @@ public: // methods
 //	void *operator new(size_t s)  { return MemoryPool::fastAllocate(s);}
 //	void operator delete(void* p) { MemoryPool::fastDeallocate(p);     } 
 
-protected: // methods
-
-    virtual ~CountedT() {}
-
 private: // members
 
 	unsigned long count_;
@@ -90,8 +106,13 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-typedef CountedT< detail::WithThreadLock >  Counted;
-typedef CountedT< detail::NoThreadLock >    CountedNotThreadSafe;
+typedef CountedT<>  Counted;
+
+typedef CountedT< detail::WithThreadLock, detail::DoDelete >  CountedLock;
+typedef CountedT< detail::NoThreadLock,   detail::DoDelete >  CountedNoLock;
+
+typedef CountedT< detail::WithThreadLock, detail::DontDelete >  SharedPtrCountedLock;
+typedef CountedT< detail::NoThreadLock,   detail::DontDelete >  SharedPtrCountedNoLock;
 
 //-----------------------------------------------------------------------------
 

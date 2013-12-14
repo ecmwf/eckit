@@ -12,12 +12,13 @@
 #define KDMapped_H
 
 #include "eckit/filesystem/PathName.h"
+#include "eckit/container/StatCollector.h"
 
 
 namespace eckit {
 
 
-class KDMapped {
+class KDMapped : public StatCollector {
 public:
 
 

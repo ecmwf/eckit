@@ -25,7 +25,6 @@
 
 #include "eckit/eckit.h"
 
-long D = 0;
 
 namespace eckit {
 // The hyperplane is define by the vector (l, r) passing through the middle point
@@ -97,11 +96,16 @@ void BSPNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& b
         ASSERT(!left_ || !right_);
 
         double d   = Point::distance(p, point_);
-        D++;
+
         if(d < max) {
             max = d;
             best = this;
+            a.statsNewCandidateOK();
         }
+        else {
+            a.statsNewCandidateMiss();
+        }
+
     }
 
 }
@@ -150,7 +154,6 @@ void BSPNode<Point,Alloc>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k,
         // See if we need to visit both
 
         double distanceToPlane = fabs(d);
-distanceToPlane = 0;
         double max = result.largest();
 
 
@@ -190,7 +193,6 @@ distanceToPlane = 0;
     // This is a leaf
     double d   = Point::distance(p, point_);
     result.push(this, d);
-    D++;
 
 }
 

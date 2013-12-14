@@ -17,10 +17,11 @@
 #include <limits>
 #include <cmath>
 
+#include "eckit/container/StatCollector.h"
 
 namespace eckit {
 
-struct KDMemory {
+struct KDMemory : public StatCollector {
     typedef void* Ptr;
 
     template<class Node>

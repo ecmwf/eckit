@@ -57,10 +57,15 @@ void KDNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, KDNode*& bes
     }
 
     double d   = Point::distance(p, point_);
-    Kcompares++;
+
     if(d < max) {
         max = d;
         best = this;
+        a.statsNewCandidateOK();
+    }
+    else
+    {
+        a.statsNewCandidateMiss();
     }
 
 

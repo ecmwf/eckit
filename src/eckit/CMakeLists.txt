@@ -19,6 +19,7 @@ list( APPEND eckit_container_srcs
 container/BTree.h
 container/BTree.cc
 container/Cache.h
+container/StatCollector.h
 container/Recycler.h
 container/ClassExtent.h
 container/KDMemory.h

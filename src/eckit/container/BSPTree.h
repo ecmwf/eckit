@@ -229,33 +229,39 @@ public:
 
     NodeInfo nearestNeighbour(const Point& p)
     {
+        alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->nearestNeighbour(alloc_, p);
     }
 
     NodeList findInSphere(const Point& p,double radius)
     {
+        alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->findInSphere(alloc_, p, radius);
     }
 
     NodeList kNearestNeighbours(const Point& p, size_t k)
     {
+        alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->kNearestNeighbours(alloc_, p, k);
     }
 
     // For testing only...
     NodeInfo nearestNeighbourBruteForce(const Point& p)
     {
+        alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->nearestNeighbourBruteForce(alloc_, p);
     }
 
 
     NodeList findInSphereBruteForce(const Point& p,double radius)
     {
+        alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->findInSphereBruteForce(alloc_, p, radius);
     }
 
     NodeList kNearestNeighboursBruteForce(const Point& p,size_t k)
     {
+        alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->kNearestNeighboursBruteForce(alloc_, p, k);
     }
 
@@ -266,7 +272,14 @@ public:
         return alloc_.convert(root_,(Node*)0)->visit(alloc_, v);
     }
 
+    void statsReset() {
+        alloc_.statsReset();
+    }
 
+    void statsPrint(std::ostream& o) {
+        o << "BSPTree ";
+        alloc_.statsPrint(o);
+    }
 };
 
 } // Name space

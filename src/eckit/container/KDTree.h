@@ -15,6 +15,8 @@
 #include "KDPoint.h"
 #include "KDMemory.h"
 
+long Kcompares = 0;
+
 namespace eckit {
 
 

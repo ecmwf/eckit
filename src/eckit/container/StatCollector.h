@@ -27,34 +27,42 @@ namespace eckit {
 
 struct StatCollector {
 
-    StatCollector() { statsReset(); }
+    StatCollector() { statsReset(); depth_ = 0; }
 
 
-// -- Methods
+    // -- Methods
 
     void statsCall() { calls_++; }
+    void statsVisitNode() { nodes_++; }
+    void statsDepth(size_t d) { if(d>depth_) depth_ = d; }
 
     void statsNewCandidateOK()   { newCandidateOK_++; }
     void statsNewCandidateMiss() { newCandidateMiss_++; }
-    void statsReset() { calls_ = newCandidateOK_ = newCandidateMiss_ = 0; }
+    void statsReset() { calls_ = newCandidateOK_ = newCandidateMiss_ = nodes_ = 0; }
 
     void print(std::ostream& s) const {
-        s << "Stats calls: " << BigNum(calls_) << " avg miss: " << BigNum(double(newCandidateMiss_)/double(calls_) + 0.5)
-          << ", avg ok: " << BigNum(double(newCandidateOK_)/double(calls_) + 0.5) ;
+        s << "Stats calls: " << BigNum(calls_)
+          << " avg candidates: " << BigNum(double(newCandidateMiss_ + newCandidateOK_)/double(calls_) + 0.5)
+          << ", avg nodes: " << BigNum(double(nodes_)/double(calls_) + 0.5)
+          <<", depth: " << depth_
+             ;
     }
 
     void statsPrint(std::ostream& s) const {
         s << *this << std::endl;
     }
 
-// -- Members
+    // -- Members
 
-     size_t calls_;
+    size_t calls_;
+    size_t nodes_;
+    size_t depth_;
+
     size_t newCandidateMiss_;
     size_t newCandidateOK_;
 
 
-// -- Friends
+    // -- Friends
 
     friend std::ostream& operator<<(std::ostream& s,const StatCollector& p)
     {

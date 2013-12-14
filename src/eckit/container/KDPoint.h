@@ -27,6 +27,8 @@ protected:
 
 public:
 
+    //const size_t DIMS = SIZE;
+
     typedef T Payload;
 
     Payload payload_;

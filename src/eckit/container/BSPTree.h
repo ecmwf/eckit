@@ -25,12 +25,12 @@
 namespace eckit {
 
 
-template<class Point, class Alloc>
+template<class Point, class Partition, class Alloc>
 class BSPNode;
 
-template<class Point, class Alloc>
+template<class Point, class Partition,class Alloc>
 struct BSPNodeInfo {
-    typedef BSPNode<Point,Alloc>     Node;
+    typedef BSPNode<Point,Partition,Alloc>     Node;
 
     const Node* node_;
     double distance_;
@@ -66,11 +66,11 @@ public:
     }
 };
 
-template<class Point, class Alloc>
+template<class Point, class Partition, class Alloc>
 class BSPNodeQueue {
 public:
-    typedef BSPNode<Point,Alloc>              Node;
-    typedef BSPNodeInfo<Point,Alloc>          NodeInfo;
+    typedef BSPNode<Point,Partition,Alloc>              Node;
+    typedef BSPNodeInfo<Point,Partition,Alloc>          NodeInfo;
     typedef typename NodeInfo::NodeList      NodeList;
 
 private:
@@ -107,7 +107,7 @@ public:
 
 };
 
-template<class Point, class Alloc>
+template<class Point, class Partition, class Alloc>
 class BSPNode {
 public:
 
@@ -138,8 +138,8 @@ private:
     friend struct KDMemory;
 
 public:
-    typedef BSPNodeQueue<Point,Alloc>      NodeQueue;
-    typedef BSPNodeInfo<Point,Alloc>       NodeInfo;
+    typedef BSPNodeQueue<Point,Partition,Alloc>      NodeQueue;
+    typedef BSPNodeInfo<Point,Partition,Alloc>       NodeInfo;
     typedef typename NodeQueue::NodeList  NodeList;
 
 public:
@@ -154,9 +154,6 @@ public:
 
     template<typename Container>
     static BSPNode* build(Alloc& a, const Container& nodes, double, int depth= 0);
-
-    template<typename Container>
-    static void kmean(const Container& in, Container& ml, Container& mr, Point& l, Point& r, int depth) ;
 
     template<typename Container>
     static double distanceToPlane(const Container& in, const Point& v, double d) ;
@@ -193,17 +190,17 @@ private:
 
 
 
-template<class Point, class Alloc = KDMemory>
+template<class Point, class Partition, class Alloc = KDMemory>
 class BSPTree {
 
 public:
 
 
     typedef typename Alloc::Ptr Ptr;
-    typedef BSPNode<Point,Alloc> Node;
+    typedef BSPNode<Point,Partition,Alloc> Node;
 
-    typedef typename BSPNode<Point,Alloc>::NodeList NodeList;
-    typedef          BSPNodeInfo<Point,Alloc>       NodeInfo;
+    typedef typename BSPNode<Point,Partition,Alloc>::NodeList NodeList;
+    typedef          BSPNodeInfo<Point,Partition,Alloc>       NodeInfo;
 
     Alloc alloc_;
     Ptr   root_;
@@ -281,6 +278,16 @@ public:
         alloc_.statsPrint(o);
     }
 };
+
+
+//=============
+
+template<class Point>
+struct BisectingKMeansPartition {
+    template<typename Container>
+    void operator()(const Container& in, Container& ml, Container& mr, Point& l, Point& r, int depth) ;
+};
+
 
 } // Name space
 

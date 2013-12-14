@@ -46,6 +46,7 @@ KDNodeInfo<Point,Alloc> KDNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Poi
 template<class Point, class Alloc>
 void KDNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, KDNode*& best, double& max, int depth)
 {
+    a.statsVisitNode();
 
     if(p.x(axis_) < point_.x(axis_))
     {
@@ -204,6 +205,8 @@ KDNode<Point,Alloc>* KDNode<Point,Alloc>::build(Alloc& a,
 {
     if(end == begin)
         return 0;
+
+    a.statsDepth(depth);
 
     //size_t k    = Point::size(*begin);
     size_t k    = Point::dimensions();

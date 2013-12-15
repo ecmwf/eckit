@@ -112,15 +112,19 @@ class BSPHyperPlane {
     Point normal_;
     double d_;
 public:
+
+    BSPHyperPlane():
+        normal_(), d_() {}
+
     BSPHyperPlane(const Point& normal, const Point& point):
         normal_(Point::normalize(normal)), d_(-Point::dot(normal_, point)) {}
-
-    BSPHyperPlane(const Point& normal, double d):
-        normal_(Point::normalize(normal)), d_(d) {}
 
     double position(const Point& p) const {
         return Point::dot(p, normal_) + d_;
     }
+
+    const Point& normal() const { return normal_; }
+    double d() const { return d_; }
 };
 
 template<class Point, class Partition, class Alloc>

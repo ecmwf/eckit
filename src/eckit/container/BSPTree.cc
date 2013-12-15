@@ -62,7 +62,7 @@ void BSPNode<Point,Partition,Alloc>::nearestNeighbour(Alloc& a,const Point& p, B
         double distanceToPlane = fabs(d);
 
 
-       // distanceToPlane = 0;
+        // distanceToPlane = 0;
 
 
         if(d < 0) {
@@ -263,10 +263,9 @@ double BSPNode<Point,Partition,Alloc>::distanceToPlane(const Container& in, cons
 template<class Point, class Partition, class Alloc>
 template<typename Container>
 BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, const Container& nodes,
-                                                  double dist, int depth)
+                                                                      double dist, int depth)
 {
-    Point V;
-    HyperPlane plane(V, 0.0);
+    HyperPlane plane;
 
     if(nodes.size() == 0)
         return 0;
@@ -455,6 +454,31 @@ void BisectingKMeansPartition<Point>::operator()(const Container& in, Container&
         if(curr == prev)
         {
             plane = HyperPlane(Point::sub(wr, wl), Point::middle(wl, wr));
+#if 0
+            static bool first = true;
+
+            if(first) {
+
+                Point middle(Point::middle(wl, wr));
+
+                std::ofstream m("/tmp/m.dat");
+                m << middle.x(0) << ' ' << middle.x(1) << std::endl;
+
+                m << wr.x(0) << ' ' << wr.x(1) << std::endl;
+                m << wl.x(0) << ' ' << wl.x(1) << std::endl;
+
+                first = false;
+                std::ofstream o("/tmp/p.dat");
+                const Point& x = plane.normal();
+                // line eq as ax+by+c = 0
+                double a = x.x(0);
+                double b = x.x(1);
+                double c = plane.d();
+                // y = (-a/b) x + (-c/b)
+                o << (-a/b) << ' ' << (-c/b) << std::endl;
+
+            }
+#endif
 
             break;
         }

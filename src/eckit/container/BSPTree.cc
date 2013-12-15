@@ -390,7 +390,7 @@ typename BSPNode<Point,Partition,Alloc>::NodeList BSPNode<Point,Partition,Alloc>
 template<class Point>
 template<typename Container>
 void BisectingKMeansPartition<Point>::operator()(const Container& in, Container& ml, Container& mr,
-                                                 Point& vec, double& d)
+                                                 HyperPlane& plane)
 {
 
     // Bisecting k-mean
@@ -454,9 +454,7 @@ void BisectingKMeansPartition<Point>::operator()(const Container& in, Container&
 
         if(curr == prev)
         {
-
-            vec = Point::normalize(Point::sub(wr, wl));
-            d   = -Point::dot(Point::middle(wl, wr), vec);
+            plane = HyperPlane(Point::sub(wr, wl), Point::middle(wl, wr));
 
             break;
         }

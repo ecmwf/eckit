@@ -27,7 +27,9 @@ protected:
 
 public:
 
-    //const size_t DIMS = SIZE;
+    enum {
+        DIMS = SIZE
+    };
 
     typedef T Payload;
 
@@ -35,14 +37,14 @@ public:
 
     double x(size_t axis) const { return x_[axis]; }
 
-    KDPoint(): payload_()
+    KDPoint()//: payload_()
     {
-        std::fill(x_, x_+dimensions(), 0);
+        //std::fill(x_, x_+dimensions(), 0);
     }
 
     KDPoint(const Payload& payload): payload_(payload)
     {
-        std::fill(x_, x_+dimensions(), 0);
+        //std::fill(x_, x_+dimensions(), 0);
     }
 
     template<class Container>

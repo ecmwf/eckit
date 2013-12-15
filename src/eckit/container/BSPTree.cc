@@ -31,9 +31,9 @@ namespace eckit {
 template<class Point, class Partition, class Alloc>
 BSPNode<Point,Partition,Alloc>::BSPNode(const Init& init):
     point_(init.p_),
-    vec_(Point::normalize(Point::sub(init.r_, init.l_))),
-    d_(-Point::dot(Point::middle(init.l_, init.r_), vec_)),
-    dist_(init.d_),
+    vec_(init.vec_),
+    d_(init.d_),
+    dist_(init.dist_),
     left_(0),
     right_(0)
 {
@@ -266,8 +266,8 @@ template<typename Container>
 BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, const Container& nodes,
                                                   double dist, int depth)
 {
-    Point r;
-    Point l;
+    Point vec;
+    double d;
 
     if(nodes.size() == 0)
         return 0;
@@ -275,7 +275,7 @@ BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, 
     a.statsDepth(depth);
 
     if(nodes.size() == 1) {
-        Init init(nodes[0], r, l, dist);
+        Init init(nodes[0], vec, d, dist);
         return a.newNode(init,(BSPNode*)0);
     }
 
@@ -284,17 +284,18 @@ BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, 
     Container  right;
 
 
-    Partition()(nodes, left, right, l, r, depth);
+    Partition p;
+    p(nodes, left, right, vec, d);
 
     if(left.size() == 0 || right.size() == 0) {
         //ASSERT(left.size() == 1 || right.size() == 1 );
         if(left.size() == 1) {
-            Init init(left[0], r, l, dist);
+            Init init(left[0], vec, d, dist);
             return a.newNode(init,(BSPNode*)0);
         }
         else
         {
-            Init init(right[0], r, l, dist);
+            Init init(right[0], vec, d, dist);
             return a.newNode(init,(BSPNode*)0);
         }
     }
@@ -303,7 +304,7 @@ BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, 
     //ASSERT(right.size() + left.size() == nodes.size());
 
 
-    Init init(nodes[0], l, r, dist);
+    Init init(nodes[0], vec, d, dist);
     BSPNode* n = a.newNode(init, (BSPNode*)0);
 
 
@@ -393,7 +394,8 @@ typename BSPNode<Point,Partition,Alloc>::NodeList BSPNode<Point,Partition,Alloc>
 
 template<class Point>
 template<typename Container>
-void BisectingKMeansPartition<Point>::operator()(const Container& in, Container& ml, Container& mr, Point& l, Point& r, int depth)
+void BisectingKMeansPartition<Point>::operator()(const Container& in, Container& ml, Container& mr,
+                                                 Point& vec, double& d)
 {
 
     // Bisecting k-mean
@@ -457,8 +459,9 @@ void BisectingKMeansPartition<Point>::operator()(const Container& in, Container&
 
         if(curr == prev)
         {
-            r = wr;
-            l = wl;
+
+            vec = Point::normalize(Point::sub(wr, wl));
+            d   = -Point::dot(Point::middle(wl, wr), vec);
 
             break;
         }

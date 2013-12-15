@@ -113,11 +113,11 @@ public:
 
     struct Init {
         const Point& p_;
-        const Point& l_;
-        const Point& r_;
+        const Point& vec_;
         double d_;
-        Init(const Point& p, const Point& l, const Point& r, double d):
-            p_(p), l_(l), r_(r), d_(d) {}
+        double dist_;
+        Init(const Point& p, const Point& vec, double d, double dist):
+            p_(p), vec_(vec), d_(d), dist_(dist) {}
     };
 
 private:
@@ -285,7 +285,7 @@ public:
 template<class Point>
 struct BisectingKMeansPartition {
     template<typename Container>
-    void operator()(const Container& in, Container& ml, Container& mr, Point& l, Point& r, int depth) ;
+    void operator()(const Container& in, Container& ml, Container& mr, Point& vec, double& d) ;
 };
 
 

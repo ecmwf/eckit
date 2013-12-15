@@ -30,8 +30,14 @@ struct KDMemory : public StatCollector {
     template<class Node>
     Node* convert(Ptr p,  const Node*) { return static_cast<Node*>(p); }
 
-    template<class Node,class Init>
-    Node* newNode(const Init& init, const Node*) { return new Node(init); }
+    template<class Node,typename A>
+    Node* newNode1(const A& a, const Node*) { return new Node(a); }
+
+    template<class Node,typename A, typename B>
+    Node* newNode2( const A& a,  const B& b, const Node*) { return new Node(a, b); }
+
+    template<class Node,typename A, typename B, typename C>
+    Node* newNode3( const A& a,  const B& b,  const C& c, const Node*) { return new Node(a, b, c); }
 
     template<class Node>
     void deleteNode(Ptr p, const Node*) {

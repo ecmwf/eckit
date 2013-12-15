@@ -223,7 +223,7 @@ KDNode<Point,Alloc>* KDNode<Point,Alloc>::build(Alloc& a,
 
 
     std::pair<const Point&, size_t> p(*e2,axis);
-    KDNode* n = a.newNode(p,(KDNode*)0);
+    KDNode* n = a.newNode1(p,(KDNode*)0);
 
     n->left(a,build(a, begin, e2, depth + 1));
     n->right(a,build(a, b2,   end, depth + 1));

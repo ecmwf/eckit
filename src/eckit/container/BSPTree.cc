@@ -29,11 +29,10 @@
 namespace eckit {
 // The hyperplane is define by the vector (l, r) passing through the middle point
 template<class Point, class Partition, class Alloc>
-BSPNode<Point,Partition,Alloc>::BSPNode(const Init& init):
-    point_(init.p_),
-    vec_(init.vec_),
-    d_(init.d_),
-    dist_(init.dist_),
+BSPNode<Point,Partition,Alloc>::BSPNode(const Point& point, const HyperPlane& plane, double dist):
+    point_(point),
+    plane_(plane),
+    dist_(dist),
     left_(0),
     right_(0)
 {
@@ -56,7 +55,7 @@ void BSPNode<Point,Partition,Alloc>::nearestNeighbour(Alloc& a,const Point& p, B
     if(left_ && right_) {
         // Check in which half the point lies
 
-        double d = Point::dot(p, vec_) + d_;
+        double d = plane_.position(p);
 
         // See if we need to visit both
 
@@ -151,7 +150,7 @@ void BSPNode<Point,Partition,Alloc>::kNearestNeighbours(Alloc& a,const Point& p 
     if(left_ && right_) {
         // Check in which half the point lies
 
-        double d = Point::dot(p, vec_) + d_;
+        double d =  plane_.position(p);
 
         // See if we need to visit both
 
@@ -242,14 +241,14 @@ typename BSPNode<Point,Partition,Alloc>::NodeList BSPNode<Point,Partition,Alloc>
 
 template<class Point, class Partition, class Alloc>
 template<typename Container>
-double BSPNode<Point,Partition,Alloc>::distanceToPlane(const Container& in, const Point& v, double d)
+double BSPNode<Point,Partition,Alloc>::distanceToPlane(const Container& in, const HyperPlane& plane)
 {
     double min = std::numeric_limits<double>::max();
     for(typename Container::const_iterator j = in.begin(); j != in.end(); ++j)
     {
         const Point& p = (*j);
         // Find the closest value to the partitionning plan
-        double dist = fabs(Point::dot(p, v) + d);
+        double dist = fabs(plane.position(p));
 
         if(dist < min) {
             min = dist;
@@ -266,8 +265,8 @@ template<typename Container>
 BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, const Container& nodes,
                                                   double dist, int depth)
 {
-    Point vec;
-    double d;
+    Point V;
+    HyperPlane plane(V, 0.0);
 
     if(nodes.size() == 0)
         return 0;
@@ -275,8 +274,7 @@ BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, 
     a.statsDepth(depth);
 
     if(nodes.size() == 1) {
-        Init init(nodes[0], vec, d, dist);
-        return a.newNode(init,(BSPNode*)0);
+        return a.newNode3(nodes[0], plane, dist,(BSPNode*)0);
     }
 
 
@@ -285,18 +283,16 @@ BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, 
 
 
     Partition p;
-    p(nodes, left, right, vec, d);
+    p(nodes, left, right, plane);
 
     if(left.size() == 0 || right.size() == 0) {
         //ASSERT(left.size() == 1 || right.size() == 1 );
         if(left.size() == 1) {
-            Init init(left[0], vec, d, dist);
-            return a.newNode(init,(BSPNode*)0);
+            return a.newNode3(left[0], plane, dist, (BSPNode*)0);
         }
         else
         {
-            Init init(right[0], vec, d, dist);
-            return a.newNode(init,(BSPNode*)0);
+            return a.newNode3(right[0], plane, dist, (BSPNode*)0);
         }
     }
     //ASSERT(left.size() < nodes.size());
@@ -304,12 +300,11 @@ BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, 
     //ASSERT(right.size() + left.size() == nodes.size());
 
 
-    Init init(nodes[0], vec, d, dist);
-    BSPNode* n = a.newNode(init, (BSPNode*)0);
+    BSPNode* n = a.newNode3(nodes[0], plane, dist, (BSPNode*)0);
 
 
-    double dl = distanceToPlane(left, n->vec_, n->d_);
-    double dr = distanceToPlane(right, n->vec_, n->d_);
+    double dl = distanceToPlane(left, n->plane_);
+    double dr = distanceToPlane(right, n->plane_);
 
     n->left(a, build(a, left, dl, depth + 1));
     n->right(a, build(a, right, dr, depth + 1));

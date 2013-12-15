@@ -43,12 +43,27 @@ public:
         return &base[p];
     }
 
-    template<class Node, class Init>
-    Node* newNode(const Init& init, const Node*) {
+    template<class Node, class A>
+    Node* newNode1(const A& a, const Node*) {
         Node* base = static_cast<Node*>(addr_);
         ASSERT(count_ * sizeof(Node) < size_);
-        return new(&base[count_++]) Node(init);
+        return new(&base[count_++]) Node(a);
     }
+
+    template<class Node, class A, class B>
+    Node* newNode2(const A& a, const B& b, const Node*) {
+        Node* base = static_cast<Node*>(addr_);
+        ASSERT(count_ * sizeof(Node) < size_);
+        return new(&base[count_++]) Node(a, b);
+    }
+
+    template<class Node, class A, class B, class C>
+    Node* newNode3(const A& a, const B& b, const C& c, const Node*) {
+        Node* base = static_cast<Node*>(addr_);
+        ASSERT(count_ * sizeof(Node) < size_);
+        return new(&base[count_++]) Node(a, b, c);
+    }
+
 
     template<class Node>
     void deleteNode(Ptr p, Node* n) {

@@ -65,7 +65,11 @@ public:
 
     friend std::ostream& operator<<(std::ostream& s,const KDPoint& p)
     {
-        s << '(' << p.x_[0] << "," << p.x_[1] << ' ' << p.payload_ << ')';
+        char z = '(';
+        for(size_t i = 0; i < dimensions(); ++i) {
+            s << z << p.x_[i]; z = ',';
+        }
+        s << " [" << p.payload_ << "])";
         //s << '(' << p.x_[0] << "," << p.x_[1] << ')';
         return s;
     }

@@ -107,28 +107,31 @@ public:
 
 };
 
+template<class Point>
+class BSPHyperPlane {
+    Point normal_;
+    double d_;
+public:
+    BSPHyperPlane(const Point& normal, const Point& point):
+        normal_(Point::normalize(normal)), d_(-Point::dot(normal_, point)) {}
+
+    BSPHyperPlane(const Point& normal, double d):
+        normal_(Point::normalize(normal)), d_(d) {}
+
+    double position(const Point& p) const {
+        return Point::dot(p, normal_) + d_;
+    }
+};
+
 template<class Point, class Partition, class Alloc>
 class BSPNode {
 public:
-
-    struct Init {
-        const Point& p_;
-        const Point& vec_;
-        double d_;
-        double dist_;
-        Init(const Point& p, const Point& vec, double d, double dist):
-            p_(p), vec_(vec), d_(d), dist_(dist) {}
-    };
-
+    typedef BSPHyperPlane<Point> HyperPlane;
 private:
 
     Point point_;
-
-    // The hyperplane is define by the vector between 2 centres passing through the middle point
-    Point vec_; // Must be first
-    double d_;
-
-    double dist_;
+    HyperPlane plane_;
+    double dist_; // Distance to parent's hyperplane
 
 
     typedef typename Alloc::Ptr Ptr;
@@ -144,7 +147,7 @@ public:
 
 public:
 
-    BSPNode(const Init&);
+    BSPNode(const Point&, const HyperPlane&, double dist);
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);
     NodeList findInSphere(Alloc& a,const Point& p, double radius);
@@ -156,7 +159,7 @@ public:
     static BSPNode* build(Alloc& a, const Container& nodes, double, int depth= 0);
 
     template<typename Container>
-    static double distanceToPlane(const Container& in, const Point& v, double d) ;
+    static double distanceToPlane(const Container& in, const HyperPlane& p) ;
 
     // For testing only
 

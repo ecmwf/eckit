@@ -280,9 +280,18 @@ public:
         alloc_.statsReset();
     }
 
-    void statsPrint(std::ostream& o) {
-        o << "BSPTree ";
+    void statsPrint(std::ostream& o) const {
+        o << *this << ": ";
         alloc_.statsPrint(o);
+    }
+
+    void print(std::ostream& o) const {
+        o << "BSPTree<" << Partition::name() << ">";
+    }
+
+    friend std::ostream& operator<<(std::ostream& o, const BSPTree& t) {
+        t.print(o);
+        return o;
     }
 };
 

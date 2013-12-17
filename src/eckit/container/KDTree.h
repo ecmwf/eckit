@@ -170,10 +170,21 @@ public:
     }
 
     /// ITER must be a random access iterator
+    /// WARNING: container is changed (sorted)
     template<typename ITER>
-    void build(const ITER& begin, const ITER& end)
+    void build(ITER begin, ITER end)
     {
         root_ = alloc_.convert(Node::build(alloc_,begin,end));
+    }
+
+    /// Container must be a random access
+    /// WARNING: container is changed (sorted)
+    template<typename Container>
+    void build(Container& c)
+    {
+        typename Container::iterator b = c.begin();
+        typename Container::iterator e = c.end();
+        build(b, e);
     }
 
     NodeInfo nearestNeighbour(const Point& p)
@@ -223,9 +234,18 @@ public:
         alloc_.statsReset();
     }
 
-    void statsPrint(std::ostream& o) {
-        o << "KDTree ";
+    void statsPrint(std::ostream& o) const {
+        o << *this << ": ";
         alloc_.statsPrint(o);
+    }
+
+    void print(std::ostream& o) const {
+        o << "KDTree";
+    }
+
+    friend std::ostream& operator<<(std::ostream& o, const KDTree& t) {
+        t.print(o);
+        return o;
     }
 
 };

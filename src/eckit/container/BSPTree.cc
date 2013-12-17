@@ -24,6 +24,7 @@
 #include <fcntl.h>
 
 #include "eckit/eckit.h"
+#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit {
@@ -383,113 +384,6 @@ typename BSPNode<Point,Partition,Alloc>::NodeList BSPNode<Point,Partition,Alloc>
     return result;
 }
 
-
-//===================================================================================================
-
-template<class Point>
-template<typename Container>
-void BisectingKMeansPartition<Point>::operator()(const Container& in, Container& ml, Container& mr,
-                                                 HyperPlane& plane)
-{
-
-    // Bisecting k-mean
-
-    Point w = Point::mean(in);
-
-    Point cl(in[0]);
-    Point cr(in[in.size()-1]);
-
-    if(cl == cr) {
-        size_t n = in.size()-1;
-        while(n > 0) {
-            cr = in[n];
-            if(cr != cl) break;
-            n--;
-        }
-
-        if(n == 0) {
-            // All points are equal
-
-            mr.clear();
-            ml.clear();
-            ml.push_back(cr);
-            return;
-        }
-
-    }
-
-    ///ml.reserve(in.size());
-    ///mr.reserve(in.size());
-
-    std::vector<size_t> prev;
-    std::vector<size_t> curr;
-
-    for(;;) {
-        ml.clear();
-        mr.clear();
-        curr.clear();
-
-        size_t i = 0;
-
-        for(typename Container::const_iterator j = in.begin(); j != in.end(); ++j, ++i) {
-            double dl = Point::distance(cl, *j);
-            double dr = Point::distance(cr, *j);
-            if(dl <= dr) {
-                ml.push_back(*j);
-                curr.push_back(i);
-            }
-            else
-            {
-                mr.push_back(*j);
-            }
-        }
-
-        //ASSERT(ml.size());
-        //ASSERT(mr.size());
-
-        Point wl = Point::mean(ml);
-        Point wr = Point::mean(mr);
-
-
-        if(curr == prev)
-        {
-            plane = HyperPlane(Point::sub(wr, wl), Point::middle(wl, wr));
-#if 0
-            static bool first = true;
-
-            if(first) {
-
-                Point middle(Point::middle(wl, wr));
-
-                std::ofstream m("/tmp/m.dat");
-                m << middle.x(0) << ' ' << middle.x(1) << std::endl;
-
-                m << wr.x(0) << ' ' << wr.x(1) << std::endl;
-                m << wl.x(0) << ' ' << wl.x(1) << std::endl;
-
-                first = false;
-                std::ofstream o("/tmp/p.dat");
-                const Point& x = plane.normal();
-                // line eq as ax+by+c = 0
-                double a = x.x(0);
-                double b = x.x(1);
-                double c = plane.d();
-                // y = (-a/b) x + (-c/b)
-                o << (-a/b) << ' ' << (-c/b) << std::endl;
-
-            }
-#endif
-
-            break;
-        }
-
-        cl = wl;
-        cr = wr;
-        prev = curr;
-    }
-
-
-}
 
 } //namespace
 

@@ -287,14 +287,6 @@ public:
 };
 
 
-//=============
-
-template<class Point>
-struct BisectingKMeansPartition {
-    typedef BSPHyperPlane<Point> HyperPlane;
-    template<typename Container>
-    void operator()(const Container& in, Container& ml, Container& mr, HyperPlane& plane) ;
-};
 
 
 } // Name space

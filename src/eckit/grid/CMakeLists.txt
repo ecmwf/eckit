@@ -7,6 +7,8 @@ LatLon.cc
 LatLon.h
 Gaussian.cc
 Gaussian.h
+Latitudes.cc
+Latitudes.h
  )
 
 

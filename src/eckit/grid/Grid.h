@@ -39,13 +39,23 @@ public:
     Point2D( ) : lat_(0.0), lon_(0.0) {}
     double lat_;
     double lon_;
+
+    /// Calculates distance between two points
     static double distance(const Point2D& a, const Point2D& b)
+    {
+        return std::sqrt(distance2(a, b));
+    }
+    
+    /// Calculates distance squared between two points
+    static double distance2(const Point2D& a, const Point2D& b)
     {
         double dlat = a.lat_ - b.lat_;
         double dlon = a.lon_ - b.lon_;
-        return std::sqrt(dlat*dlat + dlon*dlon);
+        return dlat*dlat + dlon*dlon;
     }
 
+    /// Tests whether two points can be considered equal
+    /// @todo the epsilon could be imported from config file
     static bool equal(const Point2D& a, const Point2D& b)
     {
         return ((std::fabs(a.lat_ - b.lat_) < Point2D::EPSILON) &&

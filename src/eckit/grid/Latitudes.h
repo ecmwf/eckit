@@ -10,16 +10,12 @@
 
 /// @author Peter Bispham
 /// @author Tiago Quintino
-/// @date Oct 2013
+/// @date 2013
 
-#ifndef eckit_grid_Gaussian_H
-#define eckit_grid_Gaussian_H
+#ifndef eckit_grid_Coordinates_H
+#define eckit_grid_Coordinates_H
 
-#include <cstddef>
 #include <vector>
-
-#include "eckit/types/Coord.h"
-#include "eckit/grid/Grid.h"
 
 //-----------------------------------------------------------------------------
 
@@ -28,27 +24,25 @@ namespace grid {
 
 //-----------------------------------------------------------------------------
 
-class Gaussian : public Grid {
+class Latitudes {
 
 public: // methods
 
-    Gaussian( size_t resolution, const BoundBox2D& bb );
 
-    virtual ~Gaussian();
+    /// generates positive gaussian latitudes N hemi only
+    static void gaussian(size_t resolution, std::vector<double>& lats);
 
-    virtual const std::vector<Point2D>& coordinates() const { return coordinates_; }
-    virtual BoundBox2D boundingBox() const;
-
-protected:
-
-    size_t resolution_;                 ///< number of longitude increments - can be any size as no requirement for 
-
-    std::vector< Point2D > coordinates_;     ///< storage of coordinate points
-
-    BoundBox2D bound_box_;              ///< bounding box for the domain
+    /// generates positive latitudes equally spaced in N hemi only
+    static void uniform(size_t resolution, std::vector<double>& lats);
 
 private:
 
+    // Generates latitudes in N hemisphere 
+    static void initialGaussianLatitudes(size_t resolution, std::vector<double>& lats);
+    
+    // Only tested on in N hemisphere (positive) values and we mirror
+    // result to southern hemisphere
+    static void refineGaussianLatitude(size_t resolution, double& value);
 };
 
 //-----------------------------------------------------------------------------

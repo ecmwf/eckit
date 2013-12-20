@@ -32,11 +32,12 @@ namespace grid {
 
 //-----------------------------------------------------------------------------
 
-class Point2D
-{
+class Point2D {
 public:
+
     Point2D( double lat, double lon ) : lat_(lat),lon_(lon) {}
     Point2D( ) : lat_(0.0), lon_(0.0) {}
+
     double lat_;
     double lon_;
 
@@ -56,14 +57,14 @@ public:
 
     /// Tests whether two points can be considered equal
     /// @todo the epsilon could be imported from config file
-    static bool equal(const Point2D& a, const Point2D& b)
+    static bool equal(const Point2D& a, const Point2D& b, const double epsilon = 1.0e-8 )
     {
-        return ((std::fabs(a.lat_ - b.lat_) < Point2D::EPSILON) &&
-                (std::fabs(a.lon_ - b.lon_) < Point2D::EPSILON));
+		/// @todo take epsilon from some general config
+		
+        return ((std::fabs(a.lat_ - b.lat_) < epsilon ) &&
+                (std::fabs(a.lon_ - b.lon_) < epsilon ) );
                 
     }
-    /// @todo take epsilon from some general config
-    static double EPSILON;
 };
 
 //-----------------------------------------------------------------------------

@@ -18,7 +18,6 @@ namespace eckit {
 namespace grid {
 
 //-----------------------------------------------------------------------------
-/*static*/ double Point2D::EPSILON = 1.0e-8;
 
 Grid::Grid()
 {

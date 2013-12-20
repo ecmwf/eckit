@@ -50,8 +50,8 @@ public:
     /// Calculates distance squared between two points
     static double distance2(const Point2D& a, const Point2D& b)
     {
-        double dlat = a.lat_ - b.lat_;
-        double dlon = a.lon_ - b.lon_;
+        const double dlat = a.lat_ - b.lat_;
+        const double dlon = a.lon_ - b.lon_;
         return dlat*dlat + dlon*dlon;
     }
 

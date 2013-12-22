@@ -280,9 +280,9 @@ public:
         alloc_.statsReset();
     }
 
-    void statsPrint(std::ostream& o) const {
-        o << *this << ": ";
-        alloc_.statsPrint(o);
+    void statsPrint(std::ostream& o, bool fancy) const {
+        if(fancy) o << *this << ": ";
+        alloc_.statsPrint(o, fancy);
     }
 
     void print(std::ostream& o) const {

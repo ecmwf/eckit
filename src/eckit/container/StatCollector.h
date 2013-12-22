@@ -45,11 +45,20 @@ struct StatCollector {
           << " avg candidates: " << BigNum(double(newCandidateMiss_ + newCandidateOK_)/double(calls_) + 0.5)
           << ", avg nodes: " << BigNum(double(nodes_)/double(calls_) + 0.5)
           <<", depth: " << depth_
-             ;
+            ;
     }
 
-    void statsPrint(std::ostream& s) const {
-        s << *this << std::endl;
+    void statsPrint(std::ostream& s, bool fancy) const {
+        if(fancy) {
+            s << *this << std::endl;
+        }
+        else {
+            s << "   calls: " << calls_ << std::endl;
+            s << "   miss: "  << newCandidateMiss_ << std::endl;
+            s << "   hit: "   << newCandidateOK_ << std::endl;
+            s << "   nodes: " << nodes_ << std::endl;
+            s << "   depth: " << depth_  << std::endl;
+        }
     }
 
     // -- Members

@@ -155,7 +155,7 @@ public:
 
     typedef typename Alloc::Ptr Ptr;
     typedef KDNode<Point,Alloc> Node;
-    typedef typename Point Point;
+    typedef          Point PointType;
     typedef typename KDNode<Point,Alloc>::NodeList NodeList;
     typedef          KDNodeInfo<Point,Alloc>       NodeInfo;
 

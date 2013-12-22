@@ -205,7 +205,7 @@ public:
 
     typedef typename Alloc::Ptr Ptr;
     typedef BSPNode<Point,Partition,Alloc> Node;
-    typedef typename Point Point;
+    typedef          Point PointType;
     typedef typename BSPNode<Point,Partition,Alloc>::NodeList NodeList;
     typedef          BSPNodeInfo<Point,Partition,Alloc>       NodeInfo;
 

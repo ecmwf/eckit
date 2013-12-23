@@ -500,8 +500,10 @@ ecbuild_add_library(TARGET eckit
 						${eckit_templates}
 					PERSISTENT
 						${eckit_persistent}
+					INCLUDES
+						${AIO_INCLUDE_DIRS}
 					LIBS
-						${CMAKE_THREAD_LIBS_INIT} ${RT_LIB} )
+						${CMAKE_THREAD_LIBS_INIT} ${AIO_LIBRARIES} )
 
 ### sub-driectories
 

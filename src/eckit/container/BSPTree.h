@@ -160,7 +160,7 @@ public:
     const Point& point() const { return point_; }
 
     template<typename Container>
-    static BSPNode* build(Alloc& a, const Container& nodes, double, int depth= 0);
+    static BSPNode* build(Alloc& a, Partition& p, const Container& nodes, double, int depth= 0);
 
     template<typename Container>
     static double distanceToPlane(const Container& in, const HyperPlane& p) ;
@@ -211,6 +211,7 @@ public:
 
     Alloc alloc_;
     Ptr   root_;
+    Partition partition_;
 
 public:
 
@@ -228,7 +229,7 @@ public:
     template<typename Container>
     void build(const Container& nodes)
     {
-        root_ = alloc_.convert(Node::build(alloc_, nodes, 0.0));
+        root_ = alloc_.convert(Node::build(alloc_, partition_, nodes, 0.0));
     }
 
     NodeInfo nearestNeighbour(const Point& p)

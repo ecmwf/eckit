@@ -27,9 +27,8 @@ protected:
 
 public:
 
-    enum {
-        DIMS = SIZE
-    };
+    static const size_t DIMS = SIZE;
+
 
     typedef T Payload;
 
@@ -224,7 +223,8 @@ public:
 
 };
 
-
+template<class T, int SIZE>
+const size_t KDPoint<T,SIZE>::DIMS;
 
 } // Name space
 

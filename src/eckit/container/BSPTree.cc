@@ -263,7 +263,7 @@ double BSPNode<Point,Partition,Alloc>::distanceToPlane(const Container& in, cons
 
 template<class Point, class Partition, class Alloc>
 template<typename Container>
-BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, const Container& nodes,
+BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, Partition& p, const Container& nodes,
                                                                       double dist, int depth)
 {
     HyperPlane plane;
@@ -282,7 +282,6 @@ BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, 
     Container  right;
 
 
-    Partition p;
     p(nodes, left, right, plane);
 
     if(left.size() == 0 || right.size() == 0) {
@@ -306,8 +305,8 @@ BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, 
     double dl = distanceToPlane(left, n->plane_);
     double dr = distanceToPlane(right, n->plane_);
 
-    n->left(a, build(a, left, dl, depth + 1));
-    n->right(a, build(a, right, dr, depth + 1));
+    n->left(a, build(a, p, left, dl, depth + 1));
+    n->right(a, build(a, p, right, dr, depth + 1));
 
     return n;
 

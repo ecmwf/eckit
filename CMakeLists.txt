@@ -87,8 +87,23 @@ if( NOT MPI_CXX_FOUND )
         set( ENABLE_MPI OFF )
 endif()
 
+# async io support
+
+find_package( AIO )
+
+# find thread library ( preferably pthreads )
+
+set( CMAKE_THREAD_PREFER_PTHREAD 1 )
+find_package(Threads REQUIRED)
+
 ###############################################################################
 # checks
+
+# check thread library is pthreads
+
+if( NOT ${CMAKE_USE_PTHREADS_INIT} )
+	message( FATAL_ERROR "Only pthreads supported - thread library found is [${CMAKE_THREAD_LIBS_INIT}]" )
+endif()
 
 # fail if we dont have bool
 if( NOT EC_HAVE_CXX_BOOL )

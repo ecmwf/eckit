@@ -282,7 +282,7 @@ BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, 
     Container  right;
 
 
-    p(nodes, left, right, plane);
+    p(nodes, left, right, plane, depth);
 
     if(left.size() == 0 || right.size() == 0) {
         //ASSERT(left.size() == 1 || right.size() == 1 );

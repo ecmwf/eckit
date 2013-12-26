@@ -152,7 +152,6 @@ class KDTree {
 
 public:
 
-
     typedef typename Alloc::Ptr Ptr;
     typedef KDNode<Point,Alloc> Node;
     typedef          Point PointType;

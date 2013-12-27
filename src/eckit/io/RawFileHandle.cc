@@ -52,7 +52,8 @@ RawFileHandle::~RawFileHandle()
 
 Length RawFileHandle::openForRead()
 {
-    SYSCALL(fd_ = ::open(std::string(path_).c_str(), O_RDONLY|O_CLOEXEC));
+    SYSCALL( fd_ = ::open(std::string(path_).c_str(), O_RDONLY) );
+    SYSCALL( ::fcntl( fd_,F_SETFD,FD_CLOEXEC ) );
     struct stat st;
     SYSCALL(::fstat(fd_, &st)); ASSERT(sizeof(st.st_size) == sizeof(long long));
     return st.st_size;
@@ -61,11 +62,12 @@ Length RawFileHandle::openForRead()
 void RawFileHandle::openForWrite(const Length&)
 {
     if(overwrite_) {
-        fd_ = SYSCALL(::open(std::string(path_).c_str(), O_WRONLY|O_CLOEXEC,0777));
+        fd_ = SYSCALL( ::open(std::string(path_).c_str(), O_WRONLY,0777) );
     }
     else {
-        fd_ = SYSCALL(::open(std::string(path_).c_str(), O_WRONLY|O_CREAT|O_CLOEXEC,0777));
+        fd_ = SYSCALL( ::open(std::string(path_).c_str(), O_WRONLY|O_CREAT,0777) );
     }
+    SYSCALL( ::fcntl( fd_,F_SETFD,FD_CLOEXEC ) );
 }
 
 void RawFileHandle::openForAppend(const Length&)

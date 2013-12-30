@@ -86,6 +86,12 @@ public:
 };
 
 template<class Point, class Alloc>
+struct KDMetadata {
+    Point  offset_;
+    Point  scale_;
+};
+
+template<class Point, class Alloc>
 class KDNode {
 private:
 
@@ -154,12 +160,15 @@ public:
 
     typedef typename Alloc::Ptr Ptr;
     typedef KDNode<Point,Alloc> Node;
+    typedef KDMetadata<Point,Alloc> Metadata;
+
     typedef          Point PointType;
     typedef typename KDNode<Point,Alloc>::NodeList NodeList;
     typedef          KDNodeInfo<Point,Alloc>       NodeInfo;
 
     Alloc alloc_;
     Ptr   root_;
+    Metadata meta_;
 
 public:
 
@@ -174,6 +183,18 @@ public:
     void build(ITER begin, ITER end)
     {
         root_ = alloc_.convert(Node::build(alloc_,begin,end));
+    }
+
+    void setMetadata(const Point& offset, const Point& scale) {
+        meta_.offset_ = offset;
+        meta_.scale_  = scale;
+        alloc_.setMetadata(meta_);
+    }
+
+    void getMetadata(Point& offset, Point& scale) {
+        alloc_.getMetadata(meta_);
+        offset = meta_.offset_;
+        scale  = meta_.scale_;
     }
 
     /// Container must be a random access

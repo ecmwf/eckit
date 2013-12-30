@@ -66,16 +66,15 @@ public:
 
     friend std::ostream& operator<<(std::ostream& s,const KDPoint& p)
     {
-        char z = '(';
+        char z = '{';
         for(size_t i = 0; i < dimensions(); ++i) {
             s << z << p.x_[i]; z = ',';
         }
-        s << " [" << p.payload_ << "])";
-        //s << '(' << p.x_[0] << "," << p.x_[1] << ')';
+        s << " [" << p.payload_ << "]}";
         return s;
     }
 
-    static  double distance(const KDPoint& p1, const KDPoint& p2)
+    static double distance(const KDPoint& p1, const KDPoint& p2)
     {
         double m = 0;
         for(size_t i = 0; i < dimensions(); i++)
@@ -86,7 +85,7 @@ public:
         return std::sqrt(m);
     }
 
-    static  bool equal(const KDPoint& p1, const KDPoint& p2)
+    static bool equal(const KDPoint& p1, const KDPoint& p2)
     {
         double m = 0;
         for(size_t i = 0; i < dimensions(); i++)
@@ -117,7 +116,7 @@ public:
     }
 
     // Distance along one axis
-    static  double distance(const KDPoint& p1, const KDPoint& p2, int axis)
+    static double distance(const KDPoint& p1, const KDPoint& p2, int axis)
     {
         return fabs(p1.x_[axis] - p2.x_[axis]);
     }
@@ -222,8 +221,41 @@ public:
     const double* end() const { return x_ + dimensions(); }
 
 
-    void normalize(size_t i, double min, double max) {
-        x_[i] = (x_[i] - min) / (max - min);
+    void normalize(const KDPoint& offset, const KDPoint& scale)
+    {
+        for(size_t i = 0; i < DIMS; ++i) {
+            x_[i] = (x_[i] - offset.x_[i]) / scale.x_[i];
+        }
+    }
+
+    template<class Container>
+    static void normalizeAll(Container& c, KDPoint& offset, KDPoint& scale) {
+        std::vector<T> mins(DIMS,  std::numeric_limits<T>::max());
+        std::vector<T> maxs(DIMS, -std::numeric_limits<T>::max());
+
+        for(typename Container::const_iterator j = c.begin(); j != c.end(); ++j) {
+            const KDPoint& p = (*j);
+            for(size_t i = 0; i < DIMS; ++i) {
+                mins[i] = std::min(mins[i], p.x_[i]);
+                maxs[i] = std::max(maxs[i], p.x_[i]);
+            }
+        }
+
+        for(size_t i = 0; i < DIMS; ++i) {
+            maxs[i] -= mins[i];
+        }
+
+
+        for(typename Container::iterator j = c.begin(); j != c.end(); ++j) {
+            KDPoint& p = (*j);
+            for(size_t i = 0; i < DIMS; ++i) {
+               p.x_[i] = (p.x_[i] - mins[i]) / maxs[i];
+            }
+        }
+
+        offset = KDPoint(mins, Payload());
+        scale  = KDPoint(maxs, Payload());
+
     }
 
 };

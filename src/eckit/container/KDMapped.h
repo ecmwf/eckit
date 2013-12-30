@@ -22,7 +22,7 @@ class KDMapped : public StatCollector {
 public:
 
 
-    KDMapped(const PathName&, size_t = 0);
+    KDMapped(const PathName&,  size_t = 0, size_t metadata = 0);
     ~KDMapped();
 
     KDMapped(const KDMapped& other);
@@ -31,37 +31,41 @@ public:
     typedef size_t Ptr;
 
     template<class Node>
-    Ptr convert(Node* p) {
-        Node* base = static_cast<Node*>(addr_);
-        return p ? p - base : 0; // FIXME: null and root are 0
+    Node* base(const Node*) {
+        return reinterpret_cast<Node*>(reinterpret_cast<char*>(addr_) + header_ + metadata_);
     }
 
     template<class Node>
-    Node* convert(Ptr p, const Node*) {
-        Node* base = static_cast<Node*>(addr_);
+    Ptr convert(Node* p) {
+        return p ? p - base(p) : 0; // FIXME: null and root are 0
+    }
+
+    template<class Node>
+    Node* convert(Ptr p, const Node* dummy) {
+        Node* r = base(dummy);
         /* ASSERT(p < count_); */
-        return &base[p];
+        return &r[p];
     }
 
     template<class Node, class A>
-    Node* newNode1(const A& a, const Node*) {
-        Node* base = static_cast<Node*>(addr_);
+    Node* newNode1(const A& a, const Node* dummy) {
+        Node* r = base(dummy);
         ASSERT(count_ * sizeof(Node) < size_);
-        return new(&base[count_++]) Node(a);
+        return new(&r[count_++]) Node(a);
     }
 
     template<class Node, class A, class B>
-    Node* newNode2(const A& a, const B& b, const Node*) {
-        Node* base = static_cast<Node*>(addr_);
+    Node* newNode2(const A& a, const B& b, const Node* dummy) {
+        Node* r = base(dummy);
         ASSERT(count_ * sizeof(Node) < size_);
-        return new(&base[count_++]) Node(a, b);
+        return new(&r[count_++]) Node(a, b);
     }
 
     template<class Node, class A, class B, class C>
-    Node* newNode3(const A& a, const B& b, const C& c, const Node*) {
-        Node* base = static_cast<Node*>(addr_);
+    Node* newNode3(const A& a, const B& b, const C& c, const Node* dummy) {
+        Node* r = base(dummy);
         ASSERT(count_ * sizeof(Node) < size_);
-        return new(&base[count_++]) Node(a, b, c);
+        return new(&r[count_++]) Node(a, b, c);
     }
 
 
@@ -71,10 +75,25 @@ public:
         // TODO: recycle space if needed
     }
 
+    void setMetadata(const void*, size_t);
+    void getMetadata(void*, size_t);
+
+    template<class Metadata>
+    void setMetadata(const Metadata& meta) {
+        setMetadata(&meta, sizeof(meta));
+    }
+
+    template<class Metadata>
+    void getMetadata(Metadata& meta) {
+        getMetadata(&meta, sizeof(meta));
+    }
+
 private:
     PathName path_;
     size_t count_;
     size_t size_;
+    size_t metadata_;
+    size_t header_;
 
     void* addr_;
     int fd_;

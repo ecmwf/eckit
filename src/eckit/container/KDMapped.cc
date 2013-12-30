@@ -22,10 +22,12 @@
 
 namespace eckit {
 
-KDMapped::KDMapped(const PathName& path, size_t size):
+KDMapped::KDMapped(const PathName& path, size_t size, size_t metadata):
     path_(path),
     count_(0),
     size_(size),
+    metadata_(metadata),
+    header_(sizeof(size_t)),
     addr_(0),
     fd_(-1)
 {
@@ -44,12 +46,27 @@ KDMapped::KDMapped(const PathName& path, size_t size):
         Stat::Struct s;
         SYSCALL(Stat::stat(path.localPath(),&s));
         size_ = s.st_size;
+
+        int n;
+        SYSCALL(n = ::read(fd_,&metadata_, header_));
+        ASSERT(n == header_);
+        lseek(fd_, 0, SEEK_SET);
+
     }
     else
     {
         char c = 0;
+
+        size_ += header_ + metadata_;
+
+        lseek(fd_, 0, SEEK_SET);
+        SYSCALL(::write(fd_,&metadata_,header_));
+
         lseek(fd_, size_ - 1, SEEK_SET);
-        SYSCALL(write(fd_,&c,1));
+        SYSCALL(::write(fd_,&c,1));
+
+
+
     }
     
     Log::info() << "Mapping " << path << " " << size << std::endl;
@@ -75,7 +92,9 @@ KDMapped::KDMapped(const KDMapped& other):
     count_(other.count_),
     size_(other.size_),
     addr_(other.addr_),
-    fd_(other.fd_)
+    fd_(other.fd_),
+    metadata_ (other.metadata_),
+    header_(other.header_)
 {
     const_cast<KDMapped&>(other).addr_ = 0;
     const_cast<KDMapped&>(other).fd_ = -1;
@@ -90,10 +109,25 @@ KDMapped& KDMapped::operator=(const KDMapped& other)
     addr_= other.addr_;
     fd_ = other.fd_;
 
+    metadata_ = other.metadata_;
+    header_ = other.header_;
+
     const_cast<KDMapped&>(other).addr_ = 0;
     const_cast<KDMapped&>(other).fd_ = -1;
 
     return *this;
+}
+
+void KDMapped::setMetadata(const void *addr, size_t size) {
+    ASSERT(size == metadata_);
+    char *start = static_cast<char*>(addr_);
+    ::memcpy(start + sizeof(size_t), addr, size);
+}
+
+void KDMapped::getMetadata(void *addr, size_t size) {
+    ASSERT(size == metadata_);
+    char *start = static_cast<char*>(addr_);
+    ::memcpy(addr, start + sizeof(size_t), size);
 }
 
 

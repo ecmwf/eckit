@@ -221,6 +221,11 @@ public:
     const double* begin() const { return x_; }
     const double* end() const { return x_ + dimensions(); }
 
+
+    void normalize(size_t i, double min, double max) {
+        x_[i] = (x_[i] - min) / (max - min);
+    }
+
 };
 
 template<class T, int SIZE>

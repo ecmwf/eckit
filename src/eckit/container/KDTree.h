@@ -23,6 +23,9 @@ template<class Point, class Alloc>
 class KDNode;
 
 template<class Point, class Alloc>
+class KDTreeIterator;
+
+template<class Point, class Alloc>
 struct KDNodeInfo {
     typedef KDNode<Point,Alloc>     Node;
 
@@ -148,10 +151,39 @@ private:
     void  left(Alloc& a,KDNode* n)  { left_  = a.convert(n); }
     void  right(Alloc& a,KDNode* n) { right_ = a.convert(n); }
 
+    friend class KDTreeIterator<Point,Alloc>;
+
 };
 
 template<class Point, class Alloc = KDMemory>
 class KDTreeIterator {
+    typedef typename Alloc::Ptr Ptr;
+    typedef KDNode<Point,Alloc> Node;
+    Alloc& alloc_;
+    Ptr   ptr_;
+
+    void advance();
+
+public:
+    KDTreeIterator(Alloc& alloc, Ptr ptr):
+        alloc_(alloc), ptr_(ptr) {}
+
+    bool operator !=(const KDTreeIterator& other)
+        { return ptr_ != other.ptr_; }
+
+    operator const Point*() {
+        return &(alloc_.convert(ptr_,(Node*)0)->point());
+    }
+
+    const Point* operator->() {
+        return &(alloc_.convert(ptr_,(Node*)0)->point());
+    }
+
+
+    KDTreeIterator& operator++() {
+        advance();
+        return *this;
+    }
 };
 
 

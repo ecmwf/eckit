@@ -297,6 +297,14 @@ typename KDNode<Point,Alloc>::NodeList KDNode<Point,Alloc>::findInSphereBruteFor
     return result;
 }
 
+template<class Point, class Alloc>
+void KDTreeIterator<Point,Alloc>::advance() {
+    KDNode<Point,Alloc>* node = alloc_.convert(ptr_, (KDNode<Point,Alloc>*)(0));
+    if(node->left_) {
+        ptr_ = node->left_;
+    }
+}
+
 } //namespace
 
 #endif

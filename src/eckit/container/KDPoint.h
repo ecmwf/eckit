@@ -22,19 +22,22 @@ namespace eckit {
 
 template<class T, int SIZE = 2>
 class KDPoint {
+public:
+    typedef T Payload;
+
 protected:
     double x_[SIZE];
+
+    Payload payload_;
 
 public:
 
     static const size_t DIMS = SIZE;
 
 
-    typedef T Payload;
-
-    Payload payload_;
 
     double x(size_t axis) const { return x_[axis]; }
+    double payload() const { return payload_; }
 
     KDPoint()//: payload_()
     {

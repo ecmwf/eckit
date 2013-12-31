@@ -104,6 +104,7 @@ private:
     typedef typename Alloc::Ptr Ptr;
     Ptr left_;
     Ptr right_;
+    Ptr next_; // For fast transversal
 
     friend struct KDMemory;
 
@@ -132,7 +133,10 @@ public:
 
     // -------
     template<class Visitor>
-    void visit(Alloc& a,Visitor& v, int depth = 0);
+    void visit(Alloc& a, Visitor& v, int depth = 0);
+
+    // ---------
+    void linkNodes(Alloc& a, KDNode*& prev = 0);
 
 
 private:
@@ -147,9 +151,11 @@ private:
 
     KDNode* left(Alloc& a)  const { return a.convert(left_, this);   }
     KDNode* right(Alloc& a) const { return a.convert(right_, this);  }
+    KDNode* next(Alloc& a)  const { return a.convert(next_, this);   }
 
     void  left(Alloc& a,KDNode* n)  { left_  = a.convert(n); }
     void  right(Alloc& a,KDNode* n) { right_ = a.convert(n); }
+    void  next(Alloc& a,KDNode* n)  { next_  = a.convert(n); }
 
     friend class KDTreeIterator<Point,Alloc>;
 
@@ -162,11 +168,17 @@ class KDTreeIterator {
     Alloc& alloc_;
     Ptr   ptr_;
 
-    void advance();
-
 public:
     KDTreeIterator(Alloc& alloc, Ptr ptr):
-        alloc_(alloc), ptr_(ptr) {}
+        alloc_(alloc), ptr_(ptr) {
+        Node* node = alloc_.convert(ptr_,(Node*)0);
+        if(node) {
+            if(!node->next(alloc_)) {
+                Node* prev = 0;
+                node->linkNodes(alloc, prev);
+            }
+        }
+    }
 
     bool operator !=(const KDTreeIterator& other)
         { return ptr_ != other.ptr_; }
@@ -181,7 +193,7 @@ public:
 
 
     KDTreeIterator& operator++() {
-        advance();
+        ptr_ = alloc_.convert(ptr_,(Node*)0)->next_;
         return *this;
     }
 };
@@ -218,7 +230,7 @@ public:
     template<typename ITER>
     void build(ITER begin, ITER end)
     {
-        root_ = alloc_.convert(Node::build(alloc_,begin,end));
+        root_ = alloc_.convert(Node::build(alloc_, begin, end));
     }
 
     void setMetadata(const Point& offset, const Point& scale) {

@@ -285,7 +285,7 @@ BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, 
     p(nodes, left, right, plane, depth);
 
     if(left.size() == 0 || right.size() == 0) {
-        //ASSERT(left.size() == 1 || right.size() == 1 );
+        ASSERT(left.size() == 1 || right.size() == 1 );
         if(left.size() == 1) {
             return a.newNode3(left[0], plane, dist, (BSPNode*)0);
         }
@@ -294,9 +294,9 @@ BSPNode<Point,Partition,Alloc>* BSPNode<Point,Partition,Alloc>::build(Alloc& a, 
             return a.newNode3(right[0], plane, dist, (BSPNode*)0);
         }
     }
-    //ASSERT(left.size() < nodes.size());
-    //ASSERT(right.size() < nodes.size());
-    //ASSERT(right.size() + left.size() == nodes.size());
+    ASSERT(left.size() < nodes.size());
+    ASSERT(right.size() < nodes.size());
+    ASSERT(right.size() + left.size() == nodes.size());
 
 
     BSPNode* n = a.newNode3(nodes[0], plane, dist, (BSPNode*)0);

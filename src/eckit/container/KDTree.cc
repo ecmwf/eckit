@@ -30,7 +30,8 @@ KDNode<Point,Alloc>::KDNode(const std::pair<const Point&,size_t>& p):
     point_(p.first),
     axis_(p.second),
     left_(0),
-    right_(0)
+    right_(0),
+    next_(0)
 {
 }
 
@@ -179,6 +180,17 @@ void KDNode<Point,Alloc>::visit(Alloc& a,Visitor& v,int depth)
 
 
 template<class Point, class Alloc>
+void KDNode<Point,Alloc>::linkNodes(Alloc& a, KDNode<Point,Alloc>*& prev)
+{
+    if(prev) {
+        prev->next(a, this);
+    }
+    prev = this;
+    if(left_)  left(a)->linkNodes(a,  prev);
+    if(right_) right(a)->linkNodes(a, prev);
+}
+
+template<class Point, class Alloc>
 typename KDNode<Point,Alloc>::NodeList KDNode<Point,Alloc>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k)
 {
     NodeQueue queue(k);
@@ -297,13 +309,6 @@ typename KDNode<Point,Alloc>::NodeList KDNode<Point,Alloc>::findInSphereBruteFor
     return result;
 }
 
-template<class Point, class Alloc>
-void KDTreeIterator<Point,Alloc>::advance() {
-    KDNode<Point,Alloc>* node = alloc_.convert(ptr_, (KDNode<Point,Alloc>*)(0));
-    if(node->left_) {
-        ptr_ = node->left_;
-    }
-}
 
 } //namespace
 

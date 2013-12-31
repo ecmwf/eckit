@@ -17,12 +17,25 @@
 
 namespace eckit {
 
+struct KDMappedHeader {
+    size_t headerSize_;
+    size_t itemCount_;
+    size_t itemSize_;
+    size_t metadataSize_;
+
+    KDMappedHeader(size_t itemCount, size_t itemSize, size_t metadataSize):
+        headerSize_(sizeof(KDMappedHeader)),
+        itemCount_(itemCount),
+        itemSize_(itemSize),
+        metadataSize_(metadataSize) {}
+};
+
 
 class KDMapped : public StatCollector {
 public:
 
 
-    KDMapped(const PathName&,  size_t = 0, size_t metadata = 0);
+    KDMapped(const PathName&,  size_t itemCount , size_t itemSize, size_t metadataSize);
     ~KDMapped();
 
     KDMapped(const KDMapped& other);
@@ -32,7 +45,11 @@ public:
 
     template<class Node>
     Node* base(const Node*) {
-        return reinterpret_cast<Node*>(reinterpret_cast<char*>(addr_) + header_ + metadata_);
+        return reinterpret_cast<Node*>(base_);
+    }
+
+    Ptr root() const {
+        return root_;
     }
 
     template<class Node>
@@ -50,21 +67,21 @@ public:
     template<class Node, class A>
     Node* newNode1(const A& a, const Node* dummy) {
         Node* r = base(dummy);
-        ASSERT(count_ * sizeof(Node) < size_);
+        //ASSERT(count_ * sizeof(Node) < size_);
         return new(&r[count_++]) Node(a);
     }
 
     template<class Node, class A, class B>
     Node* newNode2(const A& a, const B& b, const Node* dummy) {
         Node* r = base(dummy);
-        ASSERT(count_ * sizeof(Node) < size_);
+        //ASSERT(count_ * sizeof(Node) < size_);
         return new(&r[count_++]) Node(a, b);
     }
 
     template<class Node, class A, class B, class C>
     Node* newNode3(const A& a, const B& b, const C& c, const Node* dummy) {
         Node* r = base(dummy);
-        ASSERT(count_ * sizeof(Node) < size_);
+        //ASSERT(count_ * sizeof(Node) < size_);
         return new(&r[count_++]) Node(a, b, c);
     }
 
@@ -90,10 +107,14 @@ public:
 
 private:
     PathName path_;
+
+    KDMappedHeader header_;
+
     size_t count_;
-    size_t size_;
-    size_t metadata_;
-    size_t header_;
+
+    long long size_;
+    char* base_;
+    Ptr root_;
 
     void* addr_;
     int fd_;

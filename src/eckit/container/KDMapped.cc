@@ -22,60 +22,83 @@
 
 namespace eckit {
 
-KDMapped::KDMapped(const PathName& path, size_t size, size_t metadata):
+
+KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size_t metadataSize):
     path_(path),
     count_(0),
-    size_(size),
-    metadata_(metadata),
-    header_(sizeof(size_t)),
+    header_(itemCount, itemSize, metadataSize),
+    base_(0),
+    root_(0),
     addr_(0),
     fd_(-1)
 {
+
+    std::cout << "KDMapped ===== " << path << std::endl;
+
     int oflags = O_RDWR|O_CREAT;
     int mflags = PROT_READ|PROT_WRITE;
     
-    if(size_ == 0) {
+    if(itemCount == 0) {
         oflags = O_RDONLY;
         mflags = PROT_READ;
     }
 
+    size_t base;
+
+
+    std::cout << "KDMapped " << path << " " << base << std::endl;
+std::cout << "KDMapped itemCount " << itemCount << std::endl;
+
     SYSCALL(fd_ = ::open(path.localPath(),oflags,  0777));
-    if(size_ == 0)
+    if(itemCount == 0)
     {
 
         Stat::Struct s;
         SYSCALL(Stat::stat(path.localPath(),&s));
         size_ = s.st_size;
 
+        std::cout << "KDMapped size " << size_ << std::endl;
+
         int n;
-        SYSCALL(n = ::read(fd_,&metadata_, header_));
-        ASSERT(n == header_);
+        SYSCALL(n = ::read(fd_,&header_, sizeof(header_)));
+        ASSERT(n == sizeof(header_));
         lseek(fd_, 0, SEEK_SET);
+
+        root_ = 1;
+
+        ASSERT(header_.headerSize_  == sizeof(header_));
+
+        base = ((header_.headerSize_
+                + header_.metadataSize_
+                + header_.itemSize_ - 1) / header_.itemSize_) * header_.itemSize_;
 
     }
     else
     {
+        base = ((header_.headerSize_
+                + header_.metadataSize_
+                + header_.itemSize_ - 1) / header_.itemSize_) * header_.itemSize_;
+
         char c = 0;
 
-        size_ += header_ + metadata_;
+        count_ = 1;
+        size_  = base + (itemCount + 1) * itemSize;
 
         lseek(fd_, 0, SEEK_SET);
-        SYSCALL(::write(fd_,&metadata_,header_));
+        SYSCALL(::write(fd_,&header_,sizeof(header_)));
 
         lseek(fd_, size_ - 1, SEEK_SET);
         SYSCALL(::write(fd_,&c,1));
-
-
-
     }
     
-    Log::info() << "Mapping " << path << " " << size << std::endl;
-    addr_ = ::mmap(0,size_, mflags, MAP_SHARED, fd_, 0 );
+    addr_ = ::mmap(0, size_, mflags, MAP_SHARED, fd_, 0 );
     if(addr_ == MAP_FAILED) {
-        Log::error() << "open(" << path << ',' << size << ')'
+        Log::error() << "open(" << path << ')'
                      << Log::syserr << std::endl;
         throw FailedSystemCall("mmap");
     }
+
+    base_ = reinterpret_cast<char*>(addr_) + base;
 }
 
 KDMapped::~KDMapped()
@@ -93,7 +116,8 @@ KDMapped::KDMapped(const KDMapped& other):
     size_(other.size_),
     addr_(other.addr_),
     fd_(other.fd_),
-    metadata_ (other.metadata_),
+    base_(other.base_),
+    root_(other.root_),
     header_(other.header_)
 {
     const_cast<KDMapped&>(other).addr_ = 0;
@@ -108,9 +132,10 @@ KDMapped& KDMapped::operator=(const KDMapped& other)
     size_= other.size_;
     addr_= other.addr_;
     fd_ = other.fd_;
+    root_ = other.root_;
 
-    metadata_ = other.metadata_;
     header_ = other.header_;
+    base_ = other.base_;
 
     const_cast<KDMapped&>(other).addr_ = 0;
     const_cast<KDMapped&>(other).fd_ = -1;
@@ -119,15 +144,15 @@ KDMapped& KDMapped::operator=(const KDMapped& other)
 }
 
 void KDMapped::setMetadata(const void *addr, size_t size) {
-    ASSERT(size == metadata_);
+    ASSERT(size == header_.metadataSize_);
     char *start = static_cast<char*>(addr_);
-    ::memcpy(start + sizeof(size_t), addr, size);
+    ::memcpy(start + sizeof(header_), addr, size);
 }
 
 void KDMapped::getMetadata(void *addr, size_t size) {
-    ASSERT(size == metadata_);
+    ASSERT(size == header_.metadataSize_);
     char *start = static_cast<char*>(addr_);
-    ::memcpy(addr, start + sizeof(size_t), size);
+    ::memcpy(addr, start + sizeof(header_), size);
 }
 
 

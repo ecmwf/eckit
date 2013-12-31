@@ -70,7 +70,7 @@ std::string PointIndex::cache(grib_handle* h)
     //cout << "values: " << v << endl;
 
 
-    std::vector<Tree::ValueType> p;
+    std::vector<Tree::Value> p;
     p.reserve(v);
     grib_iterator *i = grib_iterator_new(h, 0, &ret);
     size_t j = 0;
@@ -81,7 +81,7 @@ std::string PointIndex::cache(grib_handle* h)
         while(lon < 0)    lon += 360;
         while(lon >= 360) lon -= 360;
 
-        p.push_back(Tree::ValueType(Point(lat,lon),j));
+        p.push_back(Tree::Value(Point(lat,lon),j));
         //   p.push_back(Point(lat,lon-360,j));
         //  p.push_back(Point(lat,lon+360,j));
         j++;
@@ -92,7 +92,7 @@ std::string PointIndex::cache(grib_handle* h)
     PathName tmp(std::string("~/etc/pointdb/") + md5 + ".tmp");
     tmp.unlink();
 
-    KDMapped alloc(tmp, v * (sizeof(Tree::Node) + sizeof(Tree::Payload)));
+    KDMapped alloc(tmp, v , sizeof(Tree::Node) + sizeof(Tree::Payload), 0);
     Tree* tree = new Tree(alloc);
     tree->build(p.begin(), p.end());
 
@@ -146,7 +146,7 @@ PointIndex::PointIndex(const PathName& path, PointIndex::Tree* tree):
 {
     if(!tree) {
         ASSERT(path.exists());
-        KDMapped alloc(path, 0);
+        KDMapped alloc(path, 0, 0, 0);
         tree_.reset(new Tree(alloc));
     }
 }

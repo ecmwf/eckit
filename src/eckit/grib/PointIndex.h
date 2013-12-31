@@ -145,16 +145,19 @@ public:
     }
 };
 
-template<class Alloc = KDMemory, class LLPoint = LLPoint2>
-class LLTree : public KDTree<LLPoint, size_t, Alloc> {
+
+
+template<class Traits>
+class LLTree : public KDTree<Traits> {
 public:
-    typedef KDTree<LLPoint, size_t, Alloc> Tree;
-    typedef LLPoint Point;
+    typedef KDTree<Traits> Tree;
+    typedef typename Tree::Point Point;
+    typedef typename Tree::Alloc    Alloc;
 
     typedef typename Tree::NodeList    NodeList;
     typedef typename Tree::NodeInfo    NodeInfo;
     typedef typename Tree::PayloadType Payload;
-    typedef typename Tree::ValueType   ValueType;
+    typedef typename Tree::Value   Value;
 
     NodeInfo nearestNeighbour(const Point& p)
     {
@@ -190,10 +193,16 @@ public:
         Tree(alloc) {}
 };
 
+struct PointIndexTreeTrait {
+    typedef KDMapped Alloc;
+    typedef LLPoint2 Point;
+    typedef size_t   Payload;
+};
+
 class PointIndex {
 public:
 
-    typedef LLTree<KDMapped>  Tree;
+    typedef LLTree<PointIndexTreeTrait>  Tree;
     typedef Tree::Point       Point;
     typedef Tree::Payload     Payload;
     typedef Tree::NodeInfo    NodeInfo;

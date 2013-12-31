@@ -24,6 +24,8 @@ namespace eckit {
 struct KDMemory : public StatCollector {
     typedef void* Ptr;
 
+    Ptr root() const { return 0; }
+
     template<class Node>
     Ptr convert(Node* p) { return p; }
 

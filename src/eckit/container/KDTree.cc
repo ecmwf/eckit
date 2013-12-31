@@ -25,19 +25,18 @@ namespace eckit {
 
 
 
-template<class Point, class Payload, class Alloc>
-KDNode<Point,Payload,Alloc>::KDNode(const std::pair<const ValueType&,size_t>& p):
-    point_(p.first.first),
-    payload_(p.first.second),
-    axis_(p.second),
+template<class Traits>
+KDNode<Traits>::KDNode(const Value& value, size_t axis):
+    value_(value),
+    axis_(axis),
     left_(0),
     right_(0),
     next_(0)
 {
 }
 
-template<class Point, class Payload, class Alloc>
-KDNodeInfo<Point,Payload,Alloc> KDNode<Point,Payload,Alloc>::nearestNeighbour(Alloc& a,const Point& p)
+template<class Traits>
+KDNodeInfo<Traits> KDNode<Traits>::nearestNeighbour(Alloc& a,const Point& p)
 {
     double max = std::numeric_limits<double>::max();
     KDNode* best = 0;
@@ -45,12 +44,12 @@ KDNodeInfo<Point,Payload,Alloc> KDNode<Point,Payload,Alloc>::nearestNeighbour(Al
     return NodeInfo(best,max);
 }
 
-template<class Point, class Payload, class Alloc>
-void KDNode<Point,Payload,Alloc>::nearestNeighbour(Alloc& a,const Point& p, KDNode*& best, double& max, int depth)
+template<class Traits>
+void KDNode<Traits>::nearestNeighbour(Alloc& a,const Point& p, KDNode*& best, double& max, int depth)
 {
     a.statsVisitNode();
 
-    if(p.x(axis_) < point_.x(axis_))
+    if(p.x(axis_) < value_.point().x(axis_))
     {
         if(left_) left(a)->nearestNeighbour(a, p, best, max, depth+1);
     }
@@ -59,7 +58,7 @@ void KDNode<Point,Payload,Alloc>::nearestNeighbour(Alloc& a,const Point& p, KDNo
         if(right_) right(a)->nearestNeighbour(a, p, best, max, depth+1);
     }
 
-    double d   = Point::distance(p, point_);
+    double d   = Point::distance(p, value_.point());
 
     if(d < max) {
         max = d;
@@ -72,12 +71,12 @@ void KDNode<Point,Payload,Alloc>::nearestNeighbour(Alloc& a,const Point& p, KDNo
     }
 
 
-    if(Point::distance(p, point_, axis_) < max)
+    if(Point::distance(p, value_.point(), axis_) < max)
     {
 
         // Visit other subtree...
 
-        if(p.x(axis_) < point_.x(axis_))
+        if(p.x(axis_) < value_.point().x(axis_))
         {
             if(right_) right(a)->nearestNeighbour(a, p, best, max, depth+1);
 
@@ -91,8 +90,8 @@ void KDNode<Point,Payload,Alloc>::nearestNeighbour(Alloc& a,const Point& p, KDNo
 }
 
 
-template<class Point, class Payload, class Alloc>
-KDNodeInfo<Point,Payload,Alloc> KDNode<Point,Payload,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p)
+template<class Traits>
+KDNodeInfo<Traits> KDNode<Traits>::nearestNeighbourBruteForce(Alloc& a,const Point& p)
 {
     double max = std::numeric_limits<double>::max();
     KDNode* best = 0;
@@ -101,10 +100,10 @@ KDNodeInfo<Point,Payload,Alloc> KDNode<Point,Payload,Alloc>::nearestNeighbourBru
 }
 
 
-template<class Point, class Payload, class Alloc>
-void KDNode<Point,Payload,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p, KDNode<Point,Payload,Alloc>*& best, double& max, int depth)
+template<class Traits>
+void KDNode<Traits>::nearestNeighbourBruteForce(Alloc& a,const Point& p, KDNode<Traits>*& best, double& max, int depth)
 {
-    double d = Point::distance(p,point_);
+    double d = Point::distance(p,value_.point());
     if(d < max)
     {
         best = this;
@@ -117,10 +116,10 @@ void KDNode<Point,Payload,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Poin
 
 //===
 
-template<class Point, class Payload, class Alloc>
-void KDNode<Point,Payload,Alloc>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth)
+template<class Traits>
+void KDNode<Traits>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth)
 {
-    if(p.x(axis_) < point_.x(axis_))
+    if(p.x(axis_) < value_.point().x(axis_))
     {
         if(left_) left(a)->kNearestNeighbours(a, p, k, result, depth+1);
     }
@@ -129,15 +128,15 @@ void KDNode<Point,Payload,Alloc>::kNearestNeighbours(Alloc& a,const Point& p ,si
         if(right_) right(a)->kNearestNeighbours(a, p, k, result, depth+1);
     }
 
-    double d   = Point::distance(p, point_);
+    double d   = Point::distance(p, value_.point());
     result.push(this, d);
 
-    if(Point::distance(p, point_, axis_) <= result.largest())
+    if(Point::distance(p, value_.point(), axis_) <= result.largest())
     {
 
         // Visit other subtree...
 
-        if(p.x(axis_) < point_.x(axis_))
+        if(p.x(axis_) < value_.point().x(axis_))
         {
             if(right_) right(a)->kNearestNeighbours(a, p,k, result, depth+1);
 
@@ -150,8 +149,8 @@ void KDNode<Point,Payload,Alloc>::kNearestNeighbours(Alloc& a,const Point& p ,si
 }
 
 
-template<class Point, class Payload, class Alloc>
-typename KDNode<Point,Payload,Alloc>::NodeList KDNode<Point,Payload,Alloc>::kNearestNeighbours(Alloc& a,const Point& p, size_t k)
+template<class Traits>
+typename KDNode<Traits>::NodeList KDNode<Traits>::kNearestNeighbours(Alloc& a,const Point& p, size_t k)
 {
     NodeQueue queue(k);
     NodeList result;
@@ -160,29 +159,30 @@ typename KDNode<Point,Payload,Alloc>::NodeList KDNode<Point,Payload,Alloc>::kNea
     return result;
 }
 
-template<class Point, class Payload, class Alloc>
-void KDNode<Point,Payload,Alloc>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth)
+template<class Traits>
+void KDNode<Traits>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth)
 {
-    double d = Point::distance(p,point_);
+    double d = Point::distance(p,value_.point());
     result.push(this, d);
     if(left_)  left(a)->kNearestNeighboursBruteForce(a, p, k, result, depth+1);
     if(right_) right(a)->kNearestNeighboursBruteForce(a, p, k, result, depth+1);
 }
 
-template<class Point, class Payload, class Alloc>
+template<class Traits>
 template<class Visitor>
-void KDNode<Point,Payload,Alloc>::visit(Alloc& a,Visitor& v,int depth)
+void KDNode<Traits>::visit(Alloc& a,Visitor& v,int depth)
 {
-    v.enter(point_, !left_ && !right_, depth);
+    v.enter(value_.point(), !left_ && !right_, depth);
     if(left_)  left(a)->visit(a, v, depth+1);
     if(right_) right(a)->visit(a, v, depth+1);
-    v.leave(point_,!left_ && !right_, depth);
+    v.leave(value_.point(),!left_ && !right_, depth);
 }
 
 
-template<class Point, class Payload, class Alloc>
-void KDNode<Point,Payload,Alloc>::linkNodes(Alloc& a, KDNode<Point,Payload,Alloc>*& prev)
+template<class Traits>
+void KDNode<Traits>::linkNodes(Alloc& a, KDNode<Traits>*& prev)
 {
+    std::cout << "link " << std::endl;
     if(prev) {
         prev->next(a, this);
     }
@@ -191,8 +191,8 @@ void KDNode<Point,Payload,Alloc>::linkNodes(Alloc& a, KDNode<Point,Payload,Alloc
     if(right_) right(a)->linkNodes(a, prev);
 }
 
-template<class Point, class Payload, class Alloc>
-typename KDNode<Point,Payload,Alloc>::NodeList KDNode<Point,Payload,Alloc>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k)
+template<class Traits>
+typename KDNode<Traits>::NodeList KDNode<Traits>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k)
 {
     NodeQueue queue(k);
     NodeList result;
@@ -202,18 +202,18 @@ typename KDNode<Point,Payload,Alloc>::NodeList KDNode<Point,Payload,Alloc>::kNea
 }
 //===
 
-template<class ValueType>
+template<class Value>
 struct sorter {
     int axis_;
-    bool operator() (const ValueType& a,const ValueType& b)
-        { return (a.first.x(axis_) < b.first.x(axis_)); }
+    bool operator() (const Value& a,const Value& b)
+        { return (a.point().x(axis_) < b.point().x(axis_)); }
     sorter(size_t axis) : axis_(axis) {}
 };
 
 
-template<class Point, class Payload, class Alloc>
+template<class Traits>
 template<typename ITER>
-KDNode<Point,Payload,Alloc>* KDNode<Point,Payload,Alloc>::build(Alloc& a,
+KDNode<Traits>* KDNode<Traits>::build(Alloc& a,
                                                 const ITER& begin,
                                                 const ITER& end, int depth)
 {
@@ -230,14 +230,13 @@ KDNode<Point,Payload,Alloc>* KDNode<Point,Payload,Alloc>::build(Alloc& a,
 
     size_t median = (end - begin)/2;
 
-    std::nth_element(begin, begin + median, end, sorter<ValueType>(axis));
+    std::nth_element(begin, begin + median, end, sorter<Value>(axis));
 
     ITER e2 = begin + median;
     ITER b2 = begin + median+1;
 
 
-    std::pair<const ValueType&, size_t> p(*e2,axis);
-    KDNode* n = a.newNode1(p,(KDNode*)0);
+    KDNode* n = a.newNode2(*e2, axis,(KDNode*)0);
 
     n->left(a,build(a, begin, e2, depth + 1));
     n->right(a,build(a, b2,   end, depth + 1));
@@ -246,10 +245,10 @@ KDNode<Point,Payload,Alloc>* KDNode<Point,Payload,Alloc>::build(Alloc& a,
 
 }
 
-template<class Point, class Payload, class Alloc>
-void KDNode<Point,Payload,Alloc>::findInSphere(Alloc& a,const Point& p ,double radius, NodeList& result, int depth)
+template<class Traits>
+void KDNode<Traits>::findInSphere(Alloc& a,const Point& p ,double radius, NodeList& result, int depth)
 {
-    if(p.x(axis_) < point_.x(axis_))
+    if(p.x(axis_) < value_.point().x(axis_))
     {
         if(left_) left(a)->findInSphere(a, p, radius, result, depth+1);
     }
@@ -258,18 +257,18 @@ void KDNode<Point,Payload,Alloc>::findInSphere(Alloc& a,const Point& p ,double r
         if(right_) right(a)->findInSphere(a, p, radius, result, depth+1);
     }
 
-    double d   = Point::distance(p, point_);
+    double d   = Point::distance(p, value_.point());
     if(d <= radius) {
         result.push_back(NodeInfo(this,d));
     }
 
 
-    if(Point::distance(p, point_, axis_) <= radius)
+    if(Point::distance(p, value_.point(), axis_) <= radius)
     {
 
         // Visit other subtree...
 
-        if(p.x(axis_) < point_.x(axis_))
+        if(p.x(axis_) < value_.point().x(axis_))
         {
             if(right_) right(a)->findInSphere(a, p,radius, result, depth+1);
 
@@ -282,8 +281,8 @@ void KDNode<Point,Payload,Alloc>::findInSphere(Alloc& a,const Point& p ,double r
 }
 
 
-template<class Point, class Payload, class Alloc>
-typename KDNode<Point,Payload,Alloc>::NodeList KDNode<Point,Payload,Alloc>::findInSphere(Alloc& a,const Point& p, double radius)
+template<class Traits>
+typename KDNode<Traits>::NodeList KDNode<Traits>::findInSphere(Alloc& a,const Point& p, double radius)
 {
     NodeList result;
     findInSphere(a,p,radius,result,0);
@@ -291,10 +290,10 @@ typename KDNode<Point,Payload,Alloc>::NodeList KDNode<Point,Payload,Alloc>::find
     return result;
 }
 
-template<class Point, class Payload, class Alloc>
-void KDNode<Point,Payload,Alloc>::findInSphereBruteForce(Alloc& a,const Point& p, double radius, NodeList& result, int depth)
+template<class Traits>
+void KDNode<Traits>::findInSphereBruteForce(Alloc& a,const Point& p, double radius, NodeList& result, int depth)
 {
-    double d = Point::distance(p,point_);
+    double d = Point::distance(p,value_.point());
     if(d <= radius) {
         result.push_back(NodeInfo(this,d));
     }
@@ -302,8 +301,8 @@ void KDNode<Point,Payload,Alloc>::findInSphereBruteForce(Alloc& a,const Point& p
     if(right_) right(a)->findInSphereBruteForce(a, p, radius, result, depth+1);
 }
 
-template<class Point, class Payload, class Alloc>
-typename KDNode<Point,Payload,Alloc>::NodeList KDNode<Point,Payload,Alloc>::findInSphereBruteForce(Alloc& a,const Point& p, double radius)
+template<class Traits>
+typename KDNode<Traits>::NodeList KDNode<Traits>::findInSphereBruteForce(Alloc& a,const Point& p, double radius)
 {
     NodeList result;
     findInSphereBruteForce(a,p,radius,result,0);

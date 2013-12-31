@@ -228,10 +228,10 @@ public:
         std::vector<double> maxs(DIMS, -std::numeric_limits<double>::max());
 
         for(typename Container::const_iterator j = c.begin(); j != c.end(); ++j) {
-            const KDPoint& p = (*j);
+            const typename Container::value_type& v = (*j);
             for(size_t i = 0; i < DIMS; ++i) {
-                mins[i] = std::min(mins[i], p.x_[i]);
-                maxs[i] = std::max(maxs[i], p.x_[i]);
+                mins[i] = std::min(mins[i], v.point().x_[i]);
+                maxs[i] = std::max(maxs[i], v.point().x_[i]);
             }
         }
 
@@ -241,9 +241,9 @@ public:
 
 
         for(typename Container::iterator j = c.begin(); j != c.end(); ++j) {
-            KDPoint& p = (*j);
+            typename Container::value_type& v = (*j);
             for(size_t i = 0; i < DIMS; ++i) {
-               p.x_[i] = (p.x_[i] - mins[i]) / maxs[i];
+               v.point().x_[i] = (v.point().x_[i] - mins[i]) / maxs[i];
             }
         }
 

@@ -28,22 +28,29 @@ class Test : public Tool {
 };
 
 
+struct TestTreeTrait {
+    typedef KDMemory   Alloc;
+    typedef KDPoint<2> Point;
+    typedef double     Payload;
+};
+
+
 void Test::run()
 {
 
-    typedef KDTree<KDPoint<2> , double> Tree;
+    typedef KDTree<TestTreeTrait> Tree;
 
     Tree kd;
     typedef Tree::PointType Point;
 
-    std::vector<Tree::ValueType> points;
+    std::vector<Tree::Value> points;
 
     // test it for single closest point
 
     for (unsigned int i = 0; i < 10; i++) {
         for (unsigned int j = 0; j < 10; j++) {
             Point p = Point(double(i), double(j));
-            Tree::ValueType v(p, 99.9);
+            Tree::Value v(p, 99.9);
             points.push_back(v);
         }
     }
@@ -51,7 +58,7 @@ void Test::run()
     kd.build(points.begin(), points.end());
 
     // pick some point from the vector
-    Point refPoint = points[points.size() / 2].first;
+    Point refPoint = points[points.size() / 2].point();
 
     // perturb it a little
     Point delta(0.1, 0.1);
@@ -75,25 +82,25 @@ void Test::run()
     // test "off the scale" - i.e. not within a group of points
     delta = Point(1000.0, 0.0);
     // add it to the last point
-    testPoint = Point::add(points.back().first, delta);
+    testPoint = Point::add(points.back().point(), delta);
     nr = kd.nearestNeighbour(testPoint).point();
 
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        ASSERT(nr.x(i) == points.back().first.x(i));
+        ASSERT(nr.x(i) == points.back().point().x(i));
 
     // and negatively
     //
     delta = Point(-1000.0, 0.0);
-    // add it to the first point
-    testPoint = Point::add(points.front().first, delta);
+    // add it to the point() point
+    testPoint = Point::add(points.front().point(), delta);
     nr = kd.nearestNeighbour(testPoint).point();
 
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        ASSERT(nr.x(i) == points.front().first.x(i));
+        ASSERT(nr.x(i) == points.front().point().x(i));
 
 
     // test N nearest
-    refPoint = points[points.size() / 2].first;
+    refPoint = points[points.size() / 2].point();
     // move this point so it lies between four equally
     delta = Point(0.5, 0.5);
     testPoint = Point::add(refPoint, delta);

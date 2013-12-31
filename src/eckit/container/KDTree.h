@@ -150,7 +150,9 @@ private:
 
 };
 
-
+template<class Point, class Alloc = KDMemory>
+class KDTreeIterator {
+};
 
 
 template<class Point, class Alloc = KDMemory>
@@ -169,6 +171,8 @@ public:
     Alloc alloc_;
     Ptr   root_;
     Metadata meta_;
+
+    typedef KDTreeIterator<Point,Alloc> iterator;
 
 public:
 
@@ -268,6 +272,13 @@ public:
         return o;
     }
 
+    iterator begin() {
+        return iterator(alloc_, root_);
+    }
+
+    iterator end() {
+        return iterator(alloc_, 0);
+    }
 };
 
 } // Name space

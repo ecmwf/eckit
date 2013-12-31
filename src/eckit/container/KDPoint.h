@@ -11,18 +11,16 @@
 #ifndef KDPoint_H
 #define KDPoint_H
 
-#include "eckit/eckit.h"
-
 #include <limits>
 #include <cmath>
 
+#include "eckit/eckit.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
-
 template<int SIZE = 2>
 class KDPoint {
-
 
 protected:
     double x_[SIZE];
@@ -47,15 +45,22 @@ public:
 
     explicit KDPoint(double x, double y)
     {
+        ASSERT( SIZE >= 2 );
         x_[0] = x;
         x_[1] = y;
     }
 
-    
+    explicit KDPoint(double x, double y, double z)
+    {
+        ASSERT( SIZE >= 3 );
+        x_[0] = x;
+        x_[1] = y;
+        x_[2] = z;
+    }
+
     bool operator<(const KDPoint& other) const
     { return std::lexicographical_compare(x_,x_ + SIZE, other.x_, other.x_ + SIZE); }
 
-    //static size_t dimensions(const KDPoint&) { return SIZE; }
     static size_t dimensions()               { return SIZE; }
 
     friend std::ostream& operator<<(std::ostream& s,const KDPoint& p)

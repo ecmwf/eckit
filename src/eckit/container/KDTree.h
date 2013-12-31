@@ -19,15 +19,15 @@
 namespace eckit {
 
 
-template<class Point, class Alloc>
+template<class Point, class Payload, class Alloc>
 class KDNode;
 
-template<class Point, class Alloc>
+template<class Point, class Payload, class Alloc>
 class KDTreeIterator;
 
-template<class Point, class Alloc>
+template<class Point, class Payload, class Alloc>
 struct KDNodeInfo {
-    typedef KDNode<Point,Alloc>     Node;
+    typedef KDNode<Point,Payload,Alloc>     Node;
 
     const Node* node_;
     double distance_;
@@ -51,11 +51,11 @@ public:
     }
 };
 
-template<class Point, class Alloc>
+template<class Point, class Payload, class Alloc>
 class KDNodeQueue {
 public:
-    typedef KDNode<Point,Alloc>              Node;
-    typedef KDNodeInfo<Point,Alloc>          NodeInfo;
+    typedef KDNode<Point,Payload,Alloc>              Node;
+    typedef KDNodeInfo<Point,Payload,Alloc>          NodeInfo;
     typedef typename NodeInfo::NodeList      NodeList;
 
 private:
@@ -88,17 +88,18 @@ public:
 
 };
 
-template<class Point, class Alloc>
+template<class Point, class Payload, class Alloc>
 struct KDMetadata {
     Point  offset_;
     Point  scale_;
 };
 
-template<class Point, class Alloc>
+template<class Point, class Payload, class Alloc>
 class KDNode {
 private:
 
-    Point  point_;
+    Point     point_;
+    Payload   payload_;
     size_t    axis_;
 
     typedef typename Alloc::Ptr Ptr;
@@ -109,18 +110,21 @@ private:
     friend struct KDMemory;
 
 public:
-    typedef KDNodeQueue<Point,Alloc>      NodeQueue;
-    typedef KDNodeInfo<Point,Alloc>       NodeInfo;
-    typedef typename NodeQueue::NodeList  NodeList;
+    typedef KDNodeQueue<Point,Payload,Alloc>      NodeQueue;
+    typedef KDNodeInfo<Point,Payload,Alloc>       NodeInfo;
+    typedef typename NodeQueue::NodeList          NodeList;
+
+    typedef typename std::pair<Point,Payload>     ValueType;
 
 public:
-    KDNode(const std::pair<const Point&,size_t>&);
+    KDNode(const std::pair<const ValueType&,size_t>&);
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);
     NodeList findInSphere(Alloc& a,const Point& p, double radius);
     NodeList kNearestNeighbours(Alloc& a,const Point& p,size_t k);
 
     const Point& point() const { return point_; }
+    const Payload& payload() const { return payload_; }
 
     template<typename ITER>
     static KDNode* build(Alloc& a,const ITER& begin, const ITER& end, int depth = 0);
@@ -157,14 +161,14 @@ private:
     void  right(Alloc& a,KDNode* n) { right_ = a.convert(n); }
     void  next(Alloc& a,KDNode* n)  { next_  = a.convert(n); }
 
-    friend class KDTreeIterator<Point,Alloc>;
+    friend class KDTreeIterator<Point,Payload,Alloc>;
 
 };
 
-template<class Point, class Alloc = KDMemory>
+template<class Point, class Payload, class Alloc = KDMemory>
 class KDTreeIterator {
     typedef typename Alloc::Ptr Ptr;
-    typedef KDNode<Point,Alloc> Node;
+    typedef KDNode<Point,Payload,Alloc> Node;
     Alloc& alloc_;
     Ptr   ptr_;
 
@@ -199,24 +203,28 @@ public:
 };
 
 
-template<class Point, class Alloc = KDMemory>
+template<class Point, class Payload, class Alloc = KDMemory>
 class KDTree {
 
 public:
 
     typedef typename Alloc::Ptr Ptr;
-    typedef KDNode<Point,Alloc> Node;
-    typedef KDMetadata<Point,Alloc> Metadata;
+    typedef KDNode<Point,Payload,Alloc> Node;
+    typedef KDMetadata<Point,Payload,Alloc> Metadata;
 
-    typedef          Point PointType;
-    typedef typename KDNode<Point,Alloc>::NodeList NodeList;
-    typedef          KDNodeInfo<Point,Alloc>       NodeInfo;
+    typedef          Point   PointType;
+    typedef          Payload PayloadType;
+    typedef typename KDNode<Point,Payload,Alloc>::NodeList NodeList;
+    typedef          KDNodeInfo<Point,Payload,Alloc>       NodeInfo;
+    typedef typename KDNode<Point,Payload,Alloc>::ValueType ValueType;
 
     Alloc alloc_;
     Ptr   root_;
     Metadata meta_;
 
-    typedef KDTreeIterator<Point,Alloc> iterator;
+    typedef KDTreeIterator<Point,Payload,Alloc> iterator;
+
+    typedef std::pair<Point,Payload> value_type;
 
 public:
 

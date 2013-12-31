@@ -25,9 +25,10 @@ namespace eckit {
 
 
 
-template<class Point, class Alloc>
-KDNode<Point,Alloc>::KDNode(const std::pair<const Point&,size_t>& p):
-    point_(p.first),
+template<class Point, class Payload, class Alloc>
+KDNode<Point,Payload,Alloc>::KDNode(const std::pair<const ValueType&,size_t>& p):
+    point_(p.first.first),
+    payload_(p.first.second),
     axis_(p.second),
     left_(0),
     right_(0),
@@ -35,8 +36,8 @@ KDNode<Point,Alloc>::KDNode(const std::pair<const Point&,size_t>& p):
 {
 }
 
-template<class Point, class Alloc>
-KDNodeInfo<Point,Alloc> KDNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p)
+template<class Point, class Payload, class Alloc>
+KDNodeInfo<Point,Payload,Alloc> KDNode<Point,Payload,Alloc>::nearestNeighbour(Alloc& a,const Point& p)
 {
     double max = std::numeric_limits<double>::max();
     KDNode* best = 0;
@@ -44,8 +45,8 @@ KDNodeInfo<Point,Alloc> KDNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Poi
     return NodeInfo(best,max);
 }
 
-template<class Point, class Alloc>
-void KDNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, KDNode*& best, double& max, int depth)
+template<class Point, class Payload, class Alloc>
+void KDNode<Point,Payload,Alloc>::nearestNeighbour(Alloc& a,const Point& p, KDNode*& best, double& max, int depth)
 {
     a.statsVisitNode();
 
@@ -90,8 +91,8 @@ void KDNode<Point,Alloc>::nearestNeighbour(Alloc& a,const Point& p, KDNode*& bes
 }
 
 
-template<class Point, class Alloc>
-KDNodeInfo<Point,Alloc> KDNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p)
+template<class Point, class Payload, class Alloc>
+KDNodeInfo<Point,Payload,Alloc> KDNode<Point,Payload,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p)
 {
     double max = std::numeric_limits<double>::max();
     KDNode* best = 0;
@@ -100,8 +101,8 @@ KDNodeInfo<Point,Alloc> KDNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a
 }
 
 
-template<class Point, class Alloc>
-void KDNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p, KDNode<Point,Alloc>*& best, double& max, int depth)
+template<class Point, class Payload, class Alloc>
+void KDNode<Point,Payload,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p, KDNode<Point,Payload,Alloc>*& best, double& max, int depth)
 {
     double d = Point::distance(p,point_);
     if(d < max)
@@ -116,8 +117,8 @@ void KDNode<Point,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p, KD
 
 //===
 
-template<class Point, class Alloc>
-void KDNode<Point,Alloc>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth)
+template<class Point, class Payload, class Alloc>
+void KDNode<Point,Payload,Alloc>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth)
 {
     if(p.x(axis_) < point_.x(axis_))
     {
@@ -149,8 +150,8 @@ void KDNode<Point,Alloc>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k, 
 }
 
 
-template<class Point, class Alloc>
-typename KDNode<Point,Alloc>::NodeList KDNode<Point,Alloc>::kNearestNeighbours(Alloc& a,const Point& p, size_t k)
+template<class Point, class Payload, class Alloc>
+typename KDNode<Point,Payload,Alloc>::NodeList KDNode<Point,Payload,Alloc>::kNearestNeighbours(Alloc& a,const Point& p, size_t k)
 {
     NodeQueue queue(k);
     NodeList result;
@@ -159,8 +160,8 @@ typename KDNode<Point,Alloc>::NodeList KDNode<Point,Alloc>::kNearestNeighbours(A
     return result;
 }
 
-template<class Point, class Alloc>
-void KDNode<Point,Alloc>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth)
+template<class Point, class Payload, class Alloc>
+void KDNode<Point,Payload,Alloc>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth)
 {
     double d = Point::distance(p,point_);
     result.push(this, d);
@@ -168,9 +169,9 @@ void KDNode<Point,Alloc>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, 
     if(right_) right(a)->kNearestNeighboursBruteForce(a, p, k, result, depth+1);
 }
 
-template<class Point, class Alloc>
+template<class Point, class Payload, class Alloc>
 template<class Visitor>
-void KDNode<Point,Alloc>::visit(Alloc& a,Visitor& v,int depth)
+void KDNode<Point,Payload,Alloc>::visit(Alloc& a,Visitor& v,int depth)
 {
     v.enter(point_, !left_ && !right_, depth);
     if(left_)  left(a)->visit(a, v, depth+1);
@@ -179,8 +180,8 @@ void KDNode<Point,Alloc>::visit(Alloc& a,Visitor& v,int depth)
 }
 
 
-template<class Point, class Alloc>
-void KDNode<Point,Alloc>::linkNodes(Alloc& a, KDNode<Point,Alloc>*& prev)
+template<class Point, class Payload, class Alloc>
+void KDNode<Point,Payload,Alloc>::linkNodes(Alloc& a, KDNode<Point,Payload,Alloc>*& prev)
 {
     if(prev) {
         prev->next(a, this);
@@ -190,8 +191,8 @@ void KDNode<Point,Alloc>::linkNodes(Alloc& a, KDNode<Point,Alloc>*& prev)
     if(right_) right(a)->linkNodes(a, prev);
 }
 
-template<class Point, class Alloc>
-typename KDNode<Point,Alloc>::NodeList KDNode<Point,Alloc>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k)
+template<class Point, class Payload, class Alloc>
+typename KDNode<Point,Payload,Alloc>::NodeList KDNode<Point,Payload,Alloc>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k)
 {
     NodeQueue queue(k);
     NodeList result;
@@ -201,17 +202,18 @@ typename KDNode<Point,Alloc>::NodeList KDNode<Point,Alloc>::kNearestNeighboursBr
 }
 //===
 
-template<class Point>
+template<class ValueType>
 struct sorter {
     int axis_;
-    bool operator() (const Point& a,const Point& b) { return (a.x(axis_)<b.x(axis_));}
+    bool operator() (const ValueType& a,const ValueType& b)
+        { return (a.first.x(axis_) < b.first.x(axis_)); }
     sorter(size_t axis) : axis_(axis) {}
 };
 
 
-template<class Point, class Alloc>
+template<class Point, class Payload, class Alloc>
 template<typename ITER>
-KDNode<Point,Alloc>* KDNode<Point,Alloc>::build(Alloc& a,
+KDNode<Point,Payload,Alloc>* KDNode<Point,Payload,Alloc>::build(Alloc& a,
                                                 const ITER& begin,
                                                 const ITER& end, int depth)
 {
@@ -228,13 +230,13 @@ KDNode<Point,Alloc>* KDNode<Point,Alloc>::build(Alloc& a,
 
     size_t median = (end - begin)/2;
 
-    std::nth_element(begin, begin + median, end, sorter<Point>(axis));
+    std::nth_element(begin, begin + median, end, sorter<ValueType>(axis));
 
     ITER e2 = begin + median;
     ITER b2 = begin + median+1;
 
 
-    std::pair<const Point&, size_t> p(*e2,axis);
+    std::pair<const ValueType&, size_t> p(*e2,axis);
     KDNode* n = a.newNode1(p,(KDNode*)0);
 
     n->left(a,build(a, begin, e2, depth + 1));
@@ -244,8 +246,8 @@ KDNode<Point,Alloc>* KDNode<Point,Alloc>::build(Alloc& a,
 
 }
 
-template<class Point, class Alloc>
-void KDNode<Point,Alloc>::findInSphere(Alloc& a,const Point& p ,double radius, NodeList& result, int depth)
+template<class Point, class Payload, class Alloc>
+void KDNode<Point,Payload,Alloc>::findInSphere(Alloc& a,const Point& p ,double radius, NodeList& result, int depth)
 {
     if(p.x(axis_) < point_.x(axis_))
     {
@@ -280,8 +282,8 @@ void KDNode<Point,Alloc>::findInSphere(Alloc& a,const Point& p ,double radius, N
 }
 
 
-template<class Point, class Alloc>
-typename KDNode<Point,Alloc>::NodeList KDNode<Point,Alloc>::findInSphere(Alloc& a,const Point& p, double radius)
+template<class Point, class Payload, class Alloc>
+typename KDNode<Point,Payload,Alloc>::NodeList KDNode<Point,Payload,Alloc>::findInSphere(Alloc& a,const Point& p, double radius)
 {
     NodeList result;
     findInSphere(a,p,radius,result,0);
@@ -289,8 +291,8 @@ typename KDNode<Point,Alloc>::NodeList KDNode<Point,Alloc>::findInSphere(Alloc& 
     return result;
 }
 
-template<class Point, class Alloc>
-void KDNode<Point,Alloc>::findInSphereBruteForce(Alloc& a,const Point& p, double radius, NodeList& result, int depth)
+template<class Point, class Payload, class Alloc>
+void KDNode<Point,Payload,Alloc>::findInSphereBruteForce(Alloc& a,const Point& p, double radius, NodeList& result, int depth)
 {
     double d = Point::distance(p,point_);
     if(d <= radius) {
@@ -300,8 +302,8 @@ void KDNode<Point,Alloc>::findInSphereBruteForce(Alloc& a,const Point& p, double
     if(right_) right(a)->findInSphereBruteForce(a, p, radius, result, depth+1);
 }
 
-template<class Point, class Alloc>
-typename KDNode<Point,Alloc>::NodeList KDNode<Point,Alloc>::findInSphereBruteForce(Alloc& a,const Point& p, double radius)
+template<class Point, class Payload, class Alloc>
+typename KDNode<Point,Payload,Alloc>::NodeList KDNode<Point,Payload,Alloc>::findInSphereBruteForce(Alloc& a,const Point& p, double radius)
 {
     NodeList result;
     findInSphereBruteForce(a,p,radius,result,0);

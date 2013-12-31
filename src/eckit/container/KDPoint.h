@@ -20,46 +20,37 @@
 namespace eckit {
 
 
-template<class T, int SIZE = 2>
+template<int SIZE = 2>
 class KDPoint {
-public:
-    typedef T Payload;
+
 
 protected:
     double x_[SIZE];
-
-    Payload payload_;
 
 public:
 
     static const size_t DIMS = SIZE;
 
-
-
     double x(size_t axis) const { return x_[axis]; }
-    double payload() const { return payload_; }
 
-    KDPoint()//: payload_()
+    KDPoint()
     {
         std::fill(x_, x_+dimensions(), 0);
     }
 
-    KDPoint(const Payload& payload): payload_(payload)
-    {
-        std::fill(x_, x_+dimensions(), 0);
-    }
 
     template<class Container>
-    KDPoint(Container c, const Payload& payload): payload_(payload)
+    explicit KDPoint(Container c)
     {
         std::copy(c.begin(), c.end(), x_);
     }
 
-    KDPoint(double x, double y, const Payload& payload): payload_(payload)
+    explicit KDPoint(double x, double y)
     {
         x_[0] = x;
         x_[1] = y;
     }
+
     
     bool operator<(const KDPoint& other) const
     { return std::lexicographical_compare(x_,x_ + SIZE, other.x_, other.x_ + SIZE); }
@@ -73,7 +64,7 @@ public:
         for(size_t i = 0; i < dimensions(); ++i) {
             s << z << p.x_[i]; z = ',';
         }
-        s << " [" << p.payload_ << "]}";
+        s << "}";
         return s;
     }
 
@@ -203,11 +194,11 @@ public:
 
         for(; j != points.end(); ++j) {
             for(size_t i = 0; i < dimensions(); i++) {
-                result.x_[i] += (*j).x_[i];
+                result.first.x_[i] += (*j).first.x_[i];
             }
         }
         for(size_t i = 0; i < dimensions(); i++) {
-            result.x_[i] /= points.size();
+            result.first.x_[i] /= points.size();
         }
         return result;
     }
@@ -233,8 +224,8 @@ public:
 
     template<class Container>
     static void normalizeAll(Container& c, KDPoint& offset, KDPoint& scale) {
-        std::vector<T> mins(DIMS,  std::numeric_limits<T>::max());
-        std::vector<T> maxs(DIMS, -std::numeric_limits<T>::max());
+        std::vector<double> mins(DIMS,  std::numeric_limits<double>::max());
+        std::vector<double> maxs(DIMS, -std::numeric_limits<double>::max());
 
         for(typename Container::const_iterator j = c.begin(); j != c.end(); ++j) {
             const KDPoint& p = (*j);
@@ -256,15 +247,15 @@ public:
             }
         }
 
-        offset = KDPoint(mins, Payload());
-        scale  = KDPoint(maxs, Payload());
+        offset = KDPoint(mins);
+        scale  = KDPoint(maxs);
 
     }
 
 };
 
-template<class T, int SIZE>
-const size_t KDPoint<T,SIZE>::DIMS;
+template<int SIZE>
+const size_t KDPoint<SIZE>::DIMS;
 
 } // Name space
 

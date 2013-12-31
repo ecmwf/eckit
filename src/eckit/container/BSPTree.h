@@ -25,12 +25,12 @@
 namespace eckit {
 
 
-template<class Point, class Partition, class Alloc>
+template<class Point, class Payload, class Partition, class Alloc>
 class BSPNode;
 
-template<class Point, class Partition,class Alloc>
+template<class Point, class Payload, class Partition, class Alloc>
 struct BSPNodeInfo {
-    typedef BSPNode<Point,Partition,Alloc>     Node;
+    typedef BSPNode<Point,Payload,Partition,Alloc>     Node;
 
     const Node* node_;
     double distance_;
@@ -66,11 +66,11 @@ public:
     }
 };
 
-template<class Point, class Partition, class Alloc>
+template<class Point, class Payload, class Partition, class Alloc>
 class BSPNodeQueue {
 public:
-    typedef BSPNode<Point,Partition,Alloc>              Node;
-    typedef BSPNodeInfo<Point,Partition,Alloc>          NodeInfo;
+    typedef BSPNode<Point,Payload,Partition,Alloc>              Node;
+    typedef BSPNodeInfo<Point,Payload,Partition,Alloc>          NodeInfo;
     typedef typename NodeInfo::NodeList      NodeList;
 
 private:
@@ -127,13 +127,14 @@ public:
     double d() const { return d_; }
 };
 
-template<class Point, class Partition, class Alloc>
+template<class Point, class Payload, class Partition, class Alloc>
 class BSPNode {
 public:
     typedef BSPHyperPlane<Point> HyperPlane;
 private:
 
     Point point_;
+    Payload payload_;
     HyperPlane plane_;
     double dist_; // Distance to parent's hyperplane
 
@@ -145,13 +146,15 @@ private:
     friend struct KDMemory;
 
 public:
-    typedef BSPNodeQueue<Point,Partition,Alloc>      NodeQueue;
-    typedef BSPNodeInfo<Point,Partition,Alloc>       NodeInfo;
+    typedef BSPNodeQueue<Point,Payload,Partition,Alloc>      NodeQueue;
+    typedef BSPNodeInfo<Point,Payload,Partition,Alloc>       NodeInfo;
     typedef typename NodeQueue::NodeList  NodeList;
+
+    typedef typename std::pair<Point,Payload>     ValueType;
 
 public:
 
-    BSPNode(const Point&, const HyperPlane&, double dist);
+    BSPNode(const ValueType&, const HyperPlane&, double dist);
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);
     NodeList findInSphere(Alloc& a,const Point& p, double radius);
@@ -197,17 +200,18 @@ private:
 
 
 
-template<class Point, class Partition, class Alloc = KDMemory>
+template<class Point, class Payload, class Partition, class Alloc = KDMemory>
 class BSPTree {
 
 public:
 
 
     typedef typename Alloc::Ptr Ptr;
-    typedef BSPNode<Point,Partition,Alloc> Node;
+    typedef BSPNode<Point,Payload,Partition,Alloc> Node;
     typedef          Point PointType;
-    typedef typename BSPNode<Point,Partition,Alloc>::NodeList NodeList;
-    typedef          BSPNodeInfo<Point,Partition,Alloc>       NodeInfo;
+    typedef typename BSPNode<Point,Payload,Partition,Alloc>::NodeList NodeList;
+    typedef          BSPNodeInfo<Point,Payload,Partition,Alloc>       NodeInfo;
+    typedef typename Node::ValueType ValueType;
 
     Alloc alloc_;
     Ptr   root_;

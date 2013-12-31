@@ -31,7 +31,7 @@ using eckit::KDMemory;
 
 const double earthRadius = 6367.47; // In ECMWF model...
 
-class LLPoint0 : public KDPoint<size_t,2> {
+class LLPoint0 : public KDPoint<2> {
 
 
 public:
@@ -40,10 +40,10 @@ public:
     double lon() const { return x(1); }
 
     LLPoint0():
-        KDPoint<size_t,2>(0,0,0) {}
+        KDPoint<2>(0,0) {}
 
-    LLPoint0(double lat, double lon, size_t index):
-        KDPoint<size_t,2>(lat,lon,index) {}
+    LLPoint0(double lat, double lon):
+        KDPoint<2>(lat,lon) {}
 
     static double km(const LLPoint0& a, const LLPoint0& b)
     {
@@ -52,7 +52,7 @@ public:
 
 };
 
-class LLPoint1 : public KDPoint<size_t,2> {
+class LLPoint1 : public KDPoint<2> {
 
 
 public:
@@ -61,10 +61,10 @@ public:
     double lon() const { return x(1); }
 
     LLPoint1():
-        KDPoint<size_t,2>(0,0,0) {}
+        KDPoint<2>(0,0) {}
 
-    LLPoint1(double lat, double lon, size_t index):
-        KDPoint<size_t,2>(lat,lon,index) {}
+    LLPoint1(double lat, double lon):
+        KDPoint<2>(lat,lon) {}
 
     static double km(const LLPoint1& a, const LLPoint1& b)
     {
@@ -91,25 +91,24 @@ public:
     }
 };
 
-class LLPoint2 : public KDPoint<size_t,3> {
+class LLPoint2 : public KDPoint<3> {
 
 
-double lat_;
+    double lat_;
     double lon_;
 
 public:
 
-    LLPoint2(): KDPoint<size_t,3>() {}
+    LLPoint2(): KDPoint<3>() {}
 
     double lat() const { return lat_; }
     double lon() const { return lon_; }
 
-    LLPoint2(double lat, double lon, size_t index):
-        KDPoint<size_t,3>(),
+    LLPoint2(double lat, double lon):
+        KDPoint<3>(),
         lat_(lat), lon_(lon)
     {
         // See http://en.wikipedia.org/wiki/Geodetic_system#From_geodetic_to_ECEF
-        payload_ = index;
         double& X = x_[0];
         double& Y = x_[1];
         double& Z = x_[2];
@@ -136,7 +135,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream& s,const LLPoint2& p)
     {
-        s << '(' << p.lat_ << "," << p.lon_ << ' ' << p.payload_ << ')';
+        s << '(' << p.lat_ << "," << p.lon_ << ')';
         return s;
     }
 
@@ -147,44 +146,48 @@ public:
 };
 
 template<class Alloc = KDMemory, class LLPoint = LLPoint2>
-class LLTree : public KDTree<LLPoint, Alloc> {
+class LLTree : public KDTree<LLPoint, size_t, Alloc> {
 public:
+    typedef KDTree<LLPoint, size_t, Alloc> Tree;
     typedef LLPoint Point;
-    typedef typename KDTree<LLPoint, Alloc>::NodeList NodeList;
-    typedef typename KDTree<LLPoint, Alloc>::NodeInfo NodeInfo;
+
+    typedef typename Tree::NodeList    NodeList;
+    typedef typename Tree::NodeInfo    NodeInfo;
+    typedef typename Tree::PayloadType Payload;
+    typedef typename Tree::ValueType   ValueType;
 
     NodeInfo nearestNeighbour(const Point& p)
     {
-        return KDTree<LLPoint, Alloc>::nearestNeighbour(p);
+        return Tree::nearestNeighbour(p);
     }
 
     NodeInfo nearestNeighbourBruteForce(const Point& p)
     {
-        return KDTree<LLPoint, Alloc>::nearestNeighbourBruteForce(p);
+        return Tree::nearestNeighbourBruteForce(p);
     }
 
     NodeList findInSphere(const Point& p,double radius)
     {
-        return KDTree<LLPoint, Alloc>::findInSphere(p, radius);
+        return Tree::findInSphere(p, radius);
     }
 
     NodeList findInSphereBruteForce(const Point& p,double radius)
     {
-        return KDTree<LLPoint, Alloc>::findInSphereBruteForce(p,radius);
+        return Tree::findInSphereBruteForce(p,radius);
     }
 
     NodeList kNearestNeighbours(const Point& p,size_t k)
     {
-        return KDTree<LLPoint, Alloc>::kNearestNeighbours(p, k);
+        return Tree::kNearestNeighbours(p, k);
     }
 
     NodeList kNearestNeighboursBruteForce(const Point& p,size_t k)
     {
-        return KDTree<LLPoint, Alloc>::kNearestNeighboursBruteForce(p,k);
+        return Tree::kNearestNeighboursBruteForce(p,k);
     }
 
     LLTree(Alloc& alloc):
-        KDTree<LLPoint, Alloc>(alloc) {}
+        Tree(alloc) {}
 };
 
 class PointIndex {
@@ -192,6 +195,7 @@ public:
 
     typedef LLTree<KDMapped>  Tree;
     typedef Tree::Point       Point;
+    typedef Tree::Payload     Payload;
     typedef Tree::NodeInfo    NodeInfo;
 
     NodeInfo nearestNeighbour(double lat, double lon);

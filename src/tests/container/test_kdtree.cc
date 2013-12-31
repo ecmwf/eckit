@@ -30,76 +30,83 @@ class Test : public Tool {
 
 void Test::run()
 {
-    typedef KDPoint<double> ValuePoint;
 
-    KDTree<KDPoint<double> > kd;
-    std::vector<ValuePoint> points;
+    typedef KDTree<KDPoint<2> , double> Tree;
+
+    Tree kd;
+    typedef Tree::PointType Point;
+
+    std::vector<Tree::ValueType> points;
 
     // test it for single closest point
 
-    for (unsigned int i = 0; i < 10; i++)
-        for (unsigned int j = 0; j < 10; j++)
-            points.push_back(ValuePoint((double)i, (double)j, 99.9));
+    for (unsigned int i = 0; i < 10; i++) {
+        for (unsigned int j = 0; j < 10; j++) {
+            Point p = Point(double(i), double(j));
+            Tree::ValueType v(p, 99.9);
+            points.push_back(v);
+        }
+    }
 
     kd.build(points.begin(), points.end());
 
     // pick some point from the vector
-    ValuePoint refPoint = points[points.size() / 2];
+    Point refPoint = points[points.size() / 2].first;
 
     // perturb it a little
-    ValuePoint delta(0.1, 0.1, 0.0);
-    ValuePoint testPoint = ValuePoint::add(refPoint, delta);
+    Point delta(0.1, 0.1);
+    Point testPoint = Point::add(refPoint, delta);
     std::cout << "testPoint perturb " << testPoint.x(0) << ", " << testPoint.x(1) << std::endl;
 
-    ValuePoint nr = kd.nearestNeighbour(testPoint).point();
+    Point nr = kd.nearestNeighbour(testPoint).point();
     
     // we should find the same point
-    for (unsigned int i = 0; i < ValuePoint::dimensions(); i++)
+    for (unsigned int i = 0; i < Point::dimensions(); i++)
         ASSERT(nr.x(i) == refPoint.x(i));
 
 
     // test exact match to a point
 
     nr = kd.nearestNeighbour(refPoint).point();
-    for (unsigned int i = 0; i < ValuePoint::dimensions(); i++)
+    for (unsigned int i = 0; i < Point::dimensions(); i++)
         ASSERT(nr.x(i) == refPoint.x(i));
 
 
     // test "off the scale" - i.e. not within a group of points
-    delta = ValuePoint(1000.0, 0.0, 0.0);
+    delta = Point(1000.0, 0.0);
     // add it to the last point
-    testPoint = ValuePoint::add(points.back(), delta);
+    testPoint = Point::add(points.back().first, delta);
     nr = kd.nearestNeighbour(testPoint).point();
 
-    for (unsigned int i = 0; i < ValuePoint::dimensions(); i++)
-        ASSERT(nr.x(i) == points.back().x(i));
+    for (unsigned int i = 0; i < Point::dimensions(); i++)
+        ASSERT(nr.x(i) == points.back().first.x(i));
 
     // and negatively
     //
-    delta = ValuePoint(-1000.0, 0.0, 0.0);
+    delta = Point(-1000.0, 0.0);
     // add it to the first point
-    testPoint = ValuePoint::add(points.front(), delta);
+    testPoint = Point::add(points.front().first, delta);
     nr = kd.nearestNeighbour(testPoint).point();
 
-    for (unsigned int i = 0; i < ValuePoint::dimensions(); i++)
-        ASSERT(nr.x(i) == points.front().x(i));
+    for (unsigned int i = 0; i < Point::dimensions(); i++)
+        ASSERT(nr.x(i) == points.front().first.x(i));
 
 
     // test N nearest
-    refPoint = points[points.size() / 2];
+    refPoint = points[points.size() / 2].first;
     // move this point so it lies between four equally
-    delta = ValuePoint(0.5, 0.5, 0.0);
-    testPoint = ValuePoint::add(refPoint, delta);
+    delta = Point(0.5, 0.5);
+    testPoint = Point::add(refPoint, delta);
 
-    KDTree<ValuePoint>::NodeList nn = kd.kNearestNeighbours(testPoint, 4);
-    for (KDTree<ValuePoint>::NodeList::iterator it = nn.begin(); it != nn.end(); ++it)
+    Tree::NodeList nn = kd.kNearestNeighbours(testPoint, 4);
+    for (Tree::NodeList::iterator it = nn.begin(); it != nn.end(); ++it)
     {
-        ValuePoint diff = ValuePoint::sub(it->point(), testPoint);
+        Point diff = Point::sub(it->point(), testPoint);
         // make sure we differ by 0.5 along each axis
-        for (unsigned int i = 0; i < ValuePoint::dimensions(); ++i)
+        for (unsigned int i = 0; i < Point::dimensions(); ++i)
         {
-            std::cout << "distance along point " << ValuePoint::distance(ValuePoint(0.0, 0.0, 0.0), diff, i)  << std::endl;
-            ASSERT(ValuePoint::distance(ValuePoint(0.0, 0.0, 0.0), diff, i) == 0.5);
+            std::cout << "distance along point " << Point::distance(Point(0.0, 0.0), diff, i)  << std::endl;
+            ASSERT(Point::distance(Point(0.0, 0.0), diff, i) == 0.5);
         }
 
     }

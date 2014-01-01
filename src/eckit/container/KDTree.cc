@@ -41,7 +41,7 @@ KDNodeInfo<Traits> KDNode<Traits>::nearestNeighbour(Alloc& a,const Point& p)
     double max = std::numeric_limits<double>::max();
     KDNode* best = 0;
     nearestNeighbour(a, p, best, max, 0);
-    return NodeInfo(best,max);
+    return NodeInfo(best,a.convert(best), max);
 }
 
 template<class Traits>
@@ -129,7 +129,7 @@ void KDNode<Traits>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k, NodeQ
     }
 
     double d   = Point::distance(p, value_.point());
-    result.push(this, d);
+    result.push(this, a.convert(this), d);
 
     if(Point::distance(p, value_.point(), axis_) <= result.largest())
     {

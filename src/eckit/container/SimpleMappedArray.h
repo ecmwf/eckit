@@ -28,6 +28,7 @@ public:
 
 	typedef T*       iterator;
 	typedef const T* const_iterator;
+    typedef T        value_type;
 
 // -- Contructors
 

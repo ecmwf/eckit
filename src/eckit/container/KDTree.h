@@ -26,32 +26,45 @@ template<class Traits>
 class KDTreeIterator;
 
 template<class Traits>
+class KDValue;
+
+template<class Traits>
 struct KDNodeInfo {
 
     typedef typename Traits::Point   Point;
     typedef typename Traits::Payload Payload;
     typedef typename Traits::Alloc   Alloc;
+    typedef KDValue<Traits>             Value;
+    typedef typename Alloc::Ptr   ID;
 
     typedef KDNode<Traits> Node;
 
     const Node* node_;
     double distance_;
+    ID id_;
 
 public:
-    explicit KDNodeInfo(const Node* node = 0, double distance = 0):
-        node_(node), distance_(distance) {}
+    explicit KDNodeInfo(const Node* node = 0, ID id = 0, double distance = 0):
+        node_(node), id_(id), distance_(distance) {}
+
+    ID id() const {
+        return id_;
+    }
 
     bool operator<(const KDNodeInfo& other) const
-        { return distance_ < other.distance_; }
+    { return distance_ < other.distance_; }
 
     typedef std::vector<KDNodeInfo> NodeList;
 
     const Point& point() const { return node_->point(); }
+    const Payload& payload() const { return node_->payload(); }
+    const Value& value() const { return node_->value(); }
+
     double distance() const    { return distance_; }
 
     friend std::ostream& operator<<(std::ostream& s,const KDNodeInfo& p)
     {
-        s << "[point=" << p.point() << ",distance=" << p.distance() << "]";
+        s << "[value=" << p.value() << ",distance=" << p.distance() << "]";
         return s;
     }
 };
@@ -63,6 +76,8 @@ public:
     typedef typename Traits::Point   Point;
     typedef typename Traits::Payload Payload;
     typedef typename Traits::Alloc   Alloc;
+
+    typedef typename Alloc::Ptr   ID;
 
     typedef KDNode<Traits>              Node;
     typedef KDNodeInfo<Traits>          NodeInfo;
@@ -76,9 +91,9 @@ public:
 
     KDNodeQueue(size_t k) : k_(k) {}
 
-    void push(Node* n, double d)
+    void push(Node* n, ID id, double d)
     {
-        queue_.push(NodeInfo(n,d));
+        queue_.push(NodeInfo(n,id, d));
         while(queue_.size() > k_) { queue_.pop();}
     }
 
@@ -123,12 +138,22 @@ public:
     const Point& point() const   { return point_; }
     const Payload& payload() const { return payload_; }
 
-     Point& point()    { return point_; }
-     Payload& payload()  { return payload_; }
+
+    Point& point()    { return point_; } // FIXME: remove this one
+    Payload& payload()  { return payload_; }
 
 
     void point(const Point& p) const   {  point_ = p; }
     void payload(const Payload& p) const {  payload_ = p; }
+
+    void print(std::ostream& o) const {
+        o << "(point=" << point_ << ",payload=" << payload_ << ")";
+    }
+
+    friend std::ostream& operator<<(std::ostream& o, const KDValue& t) {
+        t.print(o);
+        return o;
+    }
 };
 
 template<class Traits>
@@ -165,6 +190,8 @@ public:
 
     const Point& point() const     { return value_.point();   }
     const Payload& payload() const { return value_.payload(); }
+    Value& value()     { return value_;   }
+    const Value& value() const    { return value_;   }
 
     template<typename ITER>
     static KDNode* build(Alloc& a,const ITER& begin, const ITER& end, int depth = 0);
@@ -212,10 +239,14 @@ class KDTreeIterator {
     typedef typename Traits::Payload Payload;
     typedef typename Traits::Alloc   Alloc;
 
+    typedef KDValue<Traits>             Value;
+
     typedef typename Alloc::Ptr Ptr;
+    typedef typename Alloc::Ptr ID;
     typedef KDNode<Traits> Node;
     Alloc& alloc_;
     Ptr   ptr_;
+
 
 public:
     KDTreeIterator(Alloc& alloc, Ptr ptr):
@@ -230,20 +261,25 @@ public:
     }
 
     bool operator !=(const KDTreeIterator& other)
-        { return ptr_ != other.ptr_; }
+    { return ptr_ != other.ptr_; }
 
-    operator const Point*() {
-        return &(alloc_.convert(ptr_,(Node*)0)->point());
+    operator Value*() {
+        Node* n = alloc_.convert(ptr_,(Node*)0);
+        return &(n->value());
     }
 
-    const Point* operator->() {
-        return &(alloc_.convert(ptr_,(Node*)0)->point());
+    Value* operator->() {
+        Node* n = alloc_.convert(ptr_,(Node*)0);
+        return &(n->value());
     }
-
 
     KDTreeIterator& operator++() {
         ptr_ = alloc_.convert(ptr_,(Node*)0)->next_;
         return *this;
+    }
+
+    ID nodeID() const {
+        return ptr_;
     }
 };
 
@@ -257,6 +293,8 @@ public:
     typedef typename Traits::Alloc   Alloc;
 
     typedef typename Alloc::Ptr Ptr;
+    typedef typename Alloc::Ptr ID;
+
     typedef KDNode<Traits> Node;
     typedef KDMetadata<Traits> Metadata;
 
@@ -295,6 +333,10 @@ public:
         meta_.offset_ = offset;
         meta_.scale_  = scale;
         alloc_.setMetadata(meta_);
+    }
+
+    NodeInfo nodeByID(ID id) {
+        return KDNodeInfo<Traits>(alloc_.convert(id,(Node*)0), id, 0.0);
     }
 
     void getMetadata(Point& offset, Point& scale) {

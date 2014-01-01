@@ -22,7 +22,7 @@ SimpleMappedArray<T>::SimpleMappedArray(const PathName& path,unsigned long size)
     size_(size)
 {
 
-    fd_ = ::open64(path.localPath(),O_RDWR | O_CREAT, 0777);
+    fd_ = ::open(path.localPath(),O_RDWR | O_CREAT, 0777);
     if(fd_ < 0)
     {
         Log::error() << "open(" << path << ')' << Log::syserr << std::endl;

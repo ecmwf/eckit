@@ -91,6 +91,7 @@ private:
     void  next(Alloc& a,SPNode* n)  { next_  = a.convert(n); }
 
     friend class SPIterator<Traits>;
+    friend class KDMemory;
 
 };
 

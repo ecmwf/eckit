@@ -96,7 +96,7 @@ SPNodeInfo<Traits> SPNode<Traits>::nearestNeighbourBruteForce(Alloc& a,const Poi
     double max = std::numeric_limits<double>::max();
     SPNode* best = 0;
     nearestNeighbourBruteForce(a, p, best, max, 0);
-    return NodeInfo(best,max);
+    return NodeInfo(best,0,max);
 }
 
 
@@ -163,7 +163,7 @@ template<class Traits>
 void SPNode<Traits>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth)
 {
     double d = Point::distance(p,value_.point());
-    result.push(this, d);
+    result.push(this, 0, d);
     if(left_)  left(a)->kNearestNeighboursBruteForce(a, p, k, result, depth+1);
     if(right_) right(a)->kNearestNeighboursBruteForce(a, p, k, result, depth+1);
 }
@@ -258,7 +258,7 @@ void SPNode<Traits>::findInSphere(Alloc& a,const Point& p ,double radius, NodeLi
 
     double d   = Point::distance(p, value_.point());
     if(d <= radius) {
-        result.push_back(NodeInfo(this,d));
+        result.push_back(NodeInfo(this,0,d));
     }
 
 
@@ -294,7 +294,7 @@ void SPNode<Traits>::findInSphereBruteForce(Alloc& a,const Point& p, double radi
 {
     double d = Point::distance(p,value_.point());
     if(d <= radius) {
-        result.push_back(NodeInfo(this,d));
+        result.push_back(NodeInfo(this,0,d));
     }
     if(left_)  left(a)->findInSphereBruteForce(a, p, radius, result, depth+1);
     if(right_) right(a)->findInSphereBruteForce(a, p, radius, result, depth+1);

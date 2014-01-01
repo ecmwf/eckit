@@ -21,17 +21,17 @@
 #include "eckit/container/KDTree.h"
 #include "eckit/container/KDMapped.h"
 #include "eckit/container/KDMemory.h"
-#include "eckit/container/KDPoint.h"
+#include "eckit/container/sptree/SPPoint.h"
 
 using eckit::KDTree;
 using eckit::KDMapped;
-using eckit::KDPoint;
+using eckit::SPPoint;
 using eckit::KDMemory;
 
 
 const double earthRadius = 6367.47; // In ECMWF model...
 
-class LLPoint0 : public KDPoint<2> {
+class LLPoint0 : public SPPoint<2> {
 
 
 public:
@@ -40,10 +40,10 @@ public:
     double lon() const { return x(1); }
 
     LLPoint0():
-        KDPoint<2>(0,0) {}
+        SPPoint<2>(0,0) {}
 
     LLPoint0(double lat, double lon):
-        KDPoint<2>(lat,lon) {}
+        SPPoint<2>(lat,lon) {}
 
     static double km(const LLPoint0& a, const LLPoint0& b)
     {
@@ -52,7 +52,7 @@ public:
 
 };
 
-class LLPoint1 : public KDPoint<2> {
+class LLPoint1 : public SPPoint<2> {
 
 
 public:
@@ -61,10 +61,10 @@ public:
     double lon() const { return x(1); }
 
     LLPoint1():
-        KDPoint<2>(0,0) {}
+        SPPoint<2>(0,0) {}
 
     LLPoint1(double lat, double lon):
-        KDPoint<2>(lat,lon) {}
+        SPPoint<2>(lat,lon) {}
 
     static double km(const LLPoint1& a, const LLPoint1& b)
     {
@@ -91,7 +91,7 @@ public:
     }
 };
 
-class LLPoint2 : public KDPoint<3> {
+class LLPoint2 : public SPPoint<3> {
 
 
     double lat_;
@@ -99,13 +99,13 @@ class LLPoint2 : public KDPoint<3> {
 
 public:
 
-    LLPoint2(): KDPoint<3>() {}
+    LLPoint2(): SPPoint<3>() {}
 
     double lat() const { return lat_; }
     double lon() const { return lon_; }
 
     LLPoint2(double lat, double lon):
-        KDPoint<3>(),
+        SPPoint<3>(),
         lat_(lat), lon_(lon)
     {
         // See http://en.wikipedia.org/wiki/Geodetic_system#From_geodetic_to_ECEF

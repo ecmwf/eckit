@@ -23,7 +23,6 @@ container/StatCollector.h
 container/Recycler.h
 container/ClassExtent.h
 container/KDMemory.h
-container/KDPoint.h
 container/KDMapped.cc
 container/KDMapped.h
 container/KDTree.h
@@ -34,6 +33,21 @@ container/MappedArray.h
 container/MappedArray.cc 
 container/SimpleMappedArray.cc
 container/SimpleMappedArray.h
+
+
+container/sptree/SPIterator.h
+container/sptree/SPNode.h
+container/sptree/SPNode.cc
+
+container/sptree/SPNodeQueue.h
+container/sptree/SPPoint.h
+container/sptree/SPTree.cc
+container/sptree/SPTree.h
+container/sptree/SPValue.h
+container/sptree/SPNodeInfo.h
+container/sptree/SPMetadata.h
+
+
 )
 
 list( APPEND eckit_io_srcs

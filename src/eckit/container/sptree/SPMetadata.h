@@ -8,24 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef KDTree_H
-#define KDTree_H
-
-#include "eckit/container/sptree/SPTree.h"
-
-#include "KDMemory.h"
+#ifndef SPMetadata_H
+#define SPMetadata_H
 
 
 namespace eckit {
 
 template<class Traits>
-class KDTree : public SPTree<Traits> {
-public:
-    typedef typename Traits::Alloc   Alloc;
-    typedef typename SPTree<Traits>::Value   Value;
-public:
-    KDTree(const Alloc& alloc = Alloc()): SPTree<Traits>(alloc) {}
+struct SPMetadata {
+
+    typedef typename Traits::Point   Point;
+
+    Point  offset_;
+    Point  scale_;
 };
+
 
 } // Name space
 

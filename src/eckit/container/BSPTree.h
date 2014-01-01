@@ -118,6 +118,41 @@ public:
 
 };
 
+template<class Traits>
+class BSPValue {
+public:
+    typedef typename Traits::Point   Point;
+    typedef typename Traits::Payload Payload;
+
+    Point point_;
+    Payload payload_;
+
+public:
+
+    BSPValue(const Point& point, const Payload& payload):
+        point_(point), payload_(payload) {}
+
+    const Point& point() const   { return point_; }
+    const Payload& payload() const { return payload_; }
+
+
+    Point& point()    { return point_; } // FIXME: remove this one
+    Payload& payload()  { return payload_; }
+
+
+    void point(const Point& p) const   {  point_ = p; }
+    void payload(const Payload& p) const {  payload_ = p; }
+
+    void print(std::ostream& o) const {
+        o << "(point=" << point_ << ",payload=" << payload_ << ")";
+    }
+
+    friend std::ostream& operator<<(std::ostream& o, const BSPValue& t) {
+        t.print(o);
+        return o;
+    }
+};
+
 template<class Point>
 class BSPHyperPlane {
     Point normal_;
@@ -146,10 +181,12 @@ public:
     typedef typename Traits::Alloc   Alloc;
     typedef typename Traits::Partition   Partition;
     typedef BSPHyperPlane<Point> HyperPlane;
+    typedef  BSPValue<Traits>     Value;
+
 private:
 
-    Point point_;
-    Payload payload_;
+    Value value_;
+
     HyperPlane plane_;
     double dist_; // Distance to parent's hyperplane
 
@@ -165,17 +202,16 @@ public:
     typedef BSPNodeInfo<Traits>       NodeInfo;
     typedef typename NodeQueue::NodeList  NodeList;
 
-    typedef typename std::pair<Point,Payload>     ValueType;
 
 public:
 
-    BSPNode(const ValueType&, const HyperPlane&, double dist);
+    BSPNode(const Value&, const HyperPlane&, double dist);
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);
     NodeList findInSphere(Alloc& a,const Point& p, double radius);
     NodeList kNearestNeighbours(Alloc& a,const Point& p,size_t k);
 
-    const Point& point() const { return point_; }
+    const Point& point() const { return value_.point(); }
 
     template<typename Container>
     static BSPNode* build(Alloc& a, Partition& p, const Container& nodes, double, int depth= 0);
@@ -230,7 +266,7 @@ public:
     typedef          Point PointType;
     typedef typename BSPNode<Traits>::NodeList NodeList;
     typedef          BSPNodeInfo<Traits>       NodeInfo;
-    typedef typename Node::ValueType ValueType;
+    typedef typename Node::Value Value;
 
     Alloc alloc_;
     Ptr   root_;
@@ -238,7 +274,7 @@ public:
 
 public:
 
-    BSPTree(const Alloc& alloc = Alloc()): alloc_(alloc), root_(0)  {}
+    BSPTree(const Alloc& alloc = Alloc()): alloc_(alloc), root_(alloc.root())  {}
 
     ~BSPTree() {
         alloc_.deleteNode(root_,(Node*)0);

@@ -30,9 +30,8 @@
 namespace eckit {
 // The hyperplane is define by the vector (l, r) passing through the middle point
 template<class Traits>
-BSPNode<Traits>::BSPNode(const ValueType& v, const HyperPlane& plane, double dist):
-    point_(v.first),
-    payload_(v.second),
+BSPNode<Traits>::BSPNode(const Value& v, const HyperPlane& plane, double dist):
+    value_(v),
     plane_(plane),
     dist_(dist),
     left_(0),
@@ -98,7 +97,7 @@ void BSPNode<Traits>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& best, 
 
         ASSERT(!left_ || !right_);
 
-        double d   = Point::distance(p, point_);
+        double d   = Point::distance(p, value_.point());
 
         if(d < max) {
             max = d;
@@ -136,7 +135,7 @@ void BSPNode<Traits>::nearestNeighbourBruteForce(Alloc& a,const Point& p, BSPNod
     }
 
 
-    double d   = Point::distance(p, point_);
+    double d   = Point::distance(p, value_.point());
     if(d < max) {
         max = d;
         best = this;
@@ -194,7 +193,7 @@ void BSPNode<Traits>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k, Node
     }
 
     // This is a leaf
-    double d   = Point::distance(p, point_);
+    double d   = Point::distance(p, value_.point());
     result.push(this, d);
 
 }
@@ -213,7 +212,7 @@ typename BSPNode<Traits>::NodeList BSPNode<Traits>::kNearestNeighbours(Alloc& a,
 template<class Traits>
 void BSPNode<Traits>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth)
 {
-    double d = Point::distance(p,point_);
+    double d = Point::distance(p,value_.point());
     result.push(this, d);
     if(left_)  left(a)->kNearestNeighboursBruteForce(a, p, k, result, depth+1);
     if(right_) right(a)->kNearestNeighboursBruteForce(a, p, k, result, depth+1);
@@ -223,10 +222,10 @@ template<class Traits>
 template<class Visitor>
 void BSPNode<Traits>::visit(Alloc& a,Visitor& v,int depth)
 {
-    v.enter(point_, !left_ && !right_, depth);
+    v.enter(value_.point(), !left_ && !right_, depth);
     if(left_)  left(a)->visit(a, v, depth+1);
     if(right_) right(a)->visit(a, v, depth+1);
-    v.leave(point_,!left_ && !right_, depth);
+    v.leave(value_.point(),!left_ && !right_, depth);
 }
 
 
@@ -318,7 +317,7 @@ void BSPNode<Traits>::findInSphere(Alloc& a,const Point& p ,double radius, NodeL
 {
     NOTIMP;
     /*
-    if(p.x(axis_) < point_.x(axis_))
+    if(p.x(axis_) < value_.point().x(axis_))
     {
         if(left_) left(a)->findInSphere(a, p, radius, result, depth+1);
     }
@@ -327,18 +326,18 @@ void BSPNode<Traits>::findInSphere(Alloc& a,const Point& p ,double radius, NodeL
         if(right_) right(a)->findInSphere(a, p, radius, result, depth+1);
     }
 
-    double d   = Point::distance(p, point_);
+    double d   = Point::distance(p, value_.point());
     if(d <= radius) {
         result.push_back(NodeInfo(this,d));
     }
 
 
-    if(Point::distance(p, point_, axis_) <= radius)
+    if(Point::distance(p, value_.point(), axis_) <= radius)
     {
 
         // Visit other subtree...
 
-        if(p.x(axis_) < point_.x(axis_))
+        if(p.x(axis_) < value_.point().x(axis_))
         {
             if(right_) right(a)->findInSphere(a, p,radius, result, depth+1);
 
@@ -366,7 +365,7 @@ void BSPNode<Traits>::findInSphereBruteForce(Alloc& a,const Point& p, double rad
 {
     NOTIMP;
     /*
-    double d = Point::distance(p,point_);
+    double d = Point::distance(p,value_.point());
     if(d <= radius) {
         result.push_back(NodeInfo(this,d));
     }

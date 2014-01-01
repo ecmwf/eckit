@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef KDPoint_H
-#define KDPoint_H
+#ifndef SPPoint_H
+#define SPPoint_H
 
 #include <limits>
 #include <cmath>
@@ -20,7 +20,7 @@
 namespace eckit {
 
 template<int SIZE = 2>
-class KDPoint {
+class SPPoint {
 
 protected:
     double x_[SIZE];
@@ -31,26 +31,26 @@ public:
 
     double x(size_t axis) const { return x_[axis]; }
 
-    KDPoint()
+    SPPoint()
     {
         std::fill(x_, x_+dimensions(), 0);
     }
 
 
     template<class Container>
-    explicit KDPoint(Container c)
+    explicit SPPoint(Container c)
     {
         std::copy(c.begin(), c.end(), x_);
     }
 
-    explicit KDPoint(double x, double y)
+    explicit SPPoint(double x, double y)
     {
         ASSERT( SIZE >= 2 );
         x_[0] = x;
         x_[1] = y;
     }
 
-    explicit KDPoint(double x, double y, double z)
+    explicit SPPoint(double x, double y, double z)
     {
         ASSERT( SIZE >= 3 );
         x_[0] = x;
@@ -58,12 +58,12 @@ public:
         x_[2] = z;
     }
 
-    bool operator<(const KDPoint& other) const
+    bool operator<(const SPPoint& other) const
     { return std::lexicographical_compare(x_,x_ + SIZE, other.x_, other.x_ + SIZE); }
 
     static size_t dimensions()               { return SIZE; }
 
-    friend std::ostream& operator<<(std::ostream& s,const KDPoint& p)
+    friend std::ostream& operator<<(std::ostream& s,const SPPoint& p)
     {
         char z = '{';
         for(size_t i = 0; i < dimensions(); ++i) {
@@ -73,7 +73,7 @@ public:
         return s;
     }
 
-    static double distance(const KDPoint& p1, const KDPoint& p2)
+    static double distance(const SPPoint& p1, const SPPoint& p2)
     {
         double m = 0;
         for(size_t i = 0; i < dimensions(); i++)
@@ -84,7 +84,7 @@ public:
         return std::sqrt(m);
     }
 
-    static bool equal(const KDPoint& p1, const KDPoint& p2)
+    static bool equal(const SPPoint& p1, const SPPoint& p2)
     {
         double m = 0;
         for(size_t i = 0; i < dimensions(); i++)
@@ -95,7 +95,7 @@ public:
         return true;
     }
 
-    static double norm(const KDPoint& p1)
+    static double norm(const SPPoint& p1)
     {
         double m = 0.0;
         for(size_t i = 0; i < dimensions(); i++)
@@ -106,22 +106,22 @@ public:
         return std::sqrt(m);
     }
 
-    bool operator==(const KDPoint& other) const {
+    bool operator==(const SPPoint& other) const {
         return equal(*this, other);
     }
 
-    bool operator!=(const KDPoint& other) const {
+    bool operator!=(const SPPoint& other) const {
         return !equal(*this, other);
     }
 
     // Distance along one axis
-    static double distance(const KDPoint& p1, const KDPoint& p2, int axis)
+    static double distance(const SPPoint& p1, const SPPoint& p2, int axis)
     {
         return fabs(p1.x_[axis] - p2.x_[axis]);
     }
 
     // For projecting a point on a line
-    static double dot(const KDPoint& p1, const KDPoint& p2)
+    static double dot(const SPPoint& p1, const SPPoint& p2)
     {
         double m = 0.0;
         for(size_t i = 0; i < dimensions(); i++)
@@ -131,9 +131,9 @@ public:
         return m;
     }
 
-    static KDPoint add(const KDPoint& p1, const KDPoint& p2)
+    static SPPoint add(const SPPoint& p1, const SPPoint& p2)
     {
-        KDPoint q(p1);
+        SPPoint q(p1);
         for(size_t i = 0; i < dimensions(); i++)
         {
             q.x_[i] += p2.x_[i];
@@ -141,9 +141,9 @@ public:
         return q;
     }
 
-    static KDPoint middle(const KDPoint& p1, const KDPoint& p2)
+    static SPPoint middle(const SPPoint& p1, const SPPoint& p2)
     {
-        KDPoint q(p1);
+        SPPoint q(p1);
         for(size_t i = 0; i < dimensions(); i++)
         {
             q.x_[i] += p2.x_[i];
@@ -152,9 +152,9 @@ public:
         return q;
     }
 
-    static KDPoint sub(const KDPoint& p1, const KDPoint& p2)
+    static SPPoint sub(const SPPoint& p1, const SPPoint& p2)
     {
-        KDPoint q(p1);
+        SPPoint q(p1);
         for(size_t i = 0; i < dimensions(); i++)
         {
             q.x_[i] -= p2.x_[i];
@@ -162,9 +162,9 @@ public:
         return q;
     }
 
-    static KDPoint mul(const KDPoint& p, double m)
+    static SPPoint mul(const SPPoint& p, double m)
     {
-        KDPoint q(p);
+        SPPoint q(p);
         for(size_t i = 0; i < dimensions(); i++)
         {
             q.x_[i] *= m;
@@ -172,9 +172,9 @@ public:
         return q;
     }
 
-    static KDPoint div(const KDPoint& p, double m)
+    static SPPoint div(const SPPoint& p, double m)
     {
-        KDPoint q(p);
+        SPPoint q(p);
         for(size_t i = 0; i < dimensions(); i++)
         {
             q.x_[i] /= m;
@@ -182,9 +182,9 @@ public:
         return q;
     }
 
-    static KDPoint normalize(const KDPoint& p)
+    static SPPoint normalize(const SPPoint& p)
     {
-        KDPoint zero;
+        SPPoint zero;
         return div(p,distance(p, zero));
     }
 
@@ -208,8 +208,8 @@ public:
         return result;
     }
 
-    static KDPoint symetrical(const KDPoint& w, const KDPoint& c) {
-        KDPoint result(w);
+    static SPPoint symetrical(const SPPoint& w, const SPPoint& c) {
+        SPPoint result(w);
         for(size_t i = 0; i < dimensions(); i++) {
             result.x_[i] -= (c.x_[i] - w.x_[i]);
         }
@@ -220,7 +220,7 @@ public:
     const double* end() const { return x_ + dimensions(); }
 
 
-    void normalize(const KDPoint& offset, const KDPoint& scale)
+    void normalize(const SPPoint& offset, const SPPoint& scale)
     {
         for(size_t i = 0; i < DIMS; ++i) {
             x_[i] = (x_[i] - offset.x_[i]) / scale.x_[i];
@@ -228,7 +228,7 @@ public:
     }
 
     template<class Container>
-    static void normalizeAll(Container& c, KDPoint& offset, KDPoint& scale) {
+    static void normalizeAll(Container& c, SPPoint& offset, SPPoint& scale) {
         std::vector<double> mins(DIMS,  std::numeric_limits<double>::max());
         std::vector<double> maxs(DIMS, -std::numeric_limits<double>::max());
 
@@ -252,15 +252,15 @@ public:
             }
         }
 
-        offset = KDPoint(mins);
-        scale  = KDPoint(maxs);
+        offset = SPPoint(mins);
+        scale  = SPPoint(maxs);
 
     }
 
 };
 
 template<int SIZE>
-const size_t KDPoint<SIZE>::DIMS;
+const size_t SPPoint<SIZE>::DIMS;
 
 } // Name space
 

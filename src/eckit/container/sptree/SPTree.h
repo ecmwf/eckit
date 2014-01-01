@@ -42,7 +42,7 @@ public:
     Ptr   root_;
     Metadata meta_;
 
-    typedef SPTreeIterator<Traits> iterator;
+    typedef SPIterator<Traits> iterator;
 
     typedef std::pair<Point,Payload> value_type;
 

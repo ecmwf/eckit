@@ -90,7 +90,7 @@ private:
     void  right(Alloc& a,SPNode* n) { right_ = a.convert(n); }
     void  next(Alloc& a,SPNode* n)  { next_  = a.convert(n); }
 
-    friend class SPTreeIterator<Traits>;
+    friend class SPIterator<Traits>;
 
 };
 

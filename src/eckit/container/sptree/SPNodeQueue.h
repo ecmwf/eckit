@@ -20,7 +20,7 @@ template<class Traits>
 class SPNode;
 
 template<class Traits>
-class SPTreeIterator;
+class SPIterator;
 
 template<class Traits>
 class SPValue;

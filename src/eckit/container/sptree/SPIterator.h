@@ -16,7 +16,7 @@
 namespace eckit {
 
 template<class Traits>
-class SPTreeIterator {
+class SPIterator {
 
     typedef typename Traits::Point   Point;
     typedef typename Traits::Payload Payload;
@@ -32,7 +32,7 @@ class SPTreeIterator {
 
 
 public:
-    SPTreeIterator(Alloc& alloc, Ptr ptr):
+    SPIterator(Alloc& alloc, Ptr ptr):
         alloc_(alloc), ptr_(ptr) {
         Node* node = alloc_.convert(ptr_,(Node*)0);
         if(node) {
@@ -43,7 +43,7 @@ public:
         }
     }
 
-    bool operator !=(const SPTreeIterator& other)
+    bool operator !=(const SPIterator& other)
     { return ptr_ != other.ptr_; }
 
     operator Value*() {
@@ -56,7 +56,7 @@ public:
         return &(n->value());
     }
 
-    SPTreeIterator& operator++() {
+    SPIterator& operator++() {
         ptr_ = alloc_.convert(ptr_,(Node*)0)->next_;
         return *this;
     }

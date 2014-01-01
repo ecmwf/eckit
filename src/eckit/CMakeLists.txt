@@ -41,7 +41,6 @@ container/sptree/SPNode.cc
 
 container/sptree/SPNodeQueue.h
 container/sptree/SPPoint.h
-container/sptree/SPTree.cc
 container/sptree/SPTree.h
 container/sptree/SPValue.h
 container/sptree/SPNodeInfo.h

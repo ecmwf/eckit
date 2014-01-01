@@ -182,7 +182,6 @@ void KDNode<Traits>::visit(Alloc& a,Visitor& v,int depth)
 template<class Traits>
 void KDNode<Traits>::linkNodes(Alloc& a, KDNode<Traits>*& prev)
 {
-    std::cout << "link " << std::endl;
     if(prev) {
         prev->next(a, this);
     }

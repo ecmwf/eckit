@@ -220,9 +220,7 @@ class KDTreeIterator {
 public:
     KDTreeIterator(Alloc& alloc, Ptr ptr):
         alloc_(alloc), ptr_(ptr) {
-        std::cout << "KDTreeIterator " << ptr << std::endl;
         Node* node = alloc_.convert(ptr_,(Node*)0);
-        std::cout << "KDTreeIterator " << ptr << " " << node << std::endl;
         if(node) {
             if(!node->next(alloc_)) {
                 Node* prev = 0;
@@ -290,6 +288,7 @@ public:
     void build(ITER begin, ITER end)
     {
         root_ = alloc_.convert(Node::build(alloc_, begin, end));
+        alloc_.root(root_);
     }
 
     void setMetadata(const Point& offset, const Point& scale) {

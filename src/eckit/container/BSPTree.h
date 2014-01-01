@@ -25,12 +25,17 @@
 namespace eckit {
 
 
-template<class Point, class Payload, class Partition, class Alloc>
+template<class Traits>
 class BSPNode;
 
-template<class Point, class Payload, class Partition, class Alloc>
+template<class Traits>
 struct BSPNodeInfo {
-    typedef BSPNode<Point,Payload,Partition,Alloc>     Node;
+    typedef typename Traits::Point   Point;
+    typedef typename Traits::Payload Payload;
+    typedef typename Traits::Alloc   Alloc;
+    typedef typename Traits::Partition   Partition;
+
+    typedef BSPNode<Traits>     Node;
 
     const Node* node_;
     double distance_;
@@ -66,11 +71,17 @@ public:
     }
 };
 
-template<class Point, class Payload, class Partition, class Alloc>
+template<class Traits>
 class BSPNodeQueue {
 public:
-    typedef BSPNode<Point,Payload,Partition,Alloc>              Node;
-    typedef BSPNodeInfo<Point,Payload,Partition,Alloc>          NodeInfo;
+    typedef typename Traits::Point   Point;
+    typedef typename Traits::Payload Payload;
+    typedef typename Traits::Alloc   Alloc;
+    typedef typename Traits::Partition   Partition;
+
+
+    typedef BSPNode<Traits>              Node;
+    typedef BSPNodeInfo<Traits>          NodeInfo;
     typedef typename NodeInfo::NodeList      NodeList;
 
 private:
@@ -127,9 +138,13 @@ public:
     double d() const { return d_; }
 };
 
-template<class Point, class Payload, class Partition, class Alloc>
+template<class Traits>
 class BSPNode {
 public:
+    typedef typename Traits::Point   Point;
+    typedef typename Traits::Payload Payload;
+    typedef typename Traits::Alloc   Alloc;
+    typedef typename Traits::Partition   Partition;
     typedef BSPHyperPlane<Point> HyperPlane;
 private:
 
@@ -146,8 +161,8 @@ private:
     friend struct KDMemory;
 
 public:
-    typedef BSPNodeQueue<Point,Payload,Partition,Alloc>      NodeQueue;
-    typedef BSPNodeInfo<Point,Payload,Partition,Alloc>       NodeInfo;
+    typedef BSPNodeQueue<Traits>      NodeQueue;
+    typedef BSPNodeInfo<Traits>       NodeInfo;
     typedef typename NodeQueue::NodeList  NodeList;
 
     typedef typename std::pair<Point,Payload>     ValueType;
@@ -200,17 +215,21 @@ private:
 
 
 
-template<class Point, class Payload, class Partition, class Alloc = KDMemory>
+template<class Traits = KDMemory>
 class BSPTree {
 
 public:
+    typedef typename Traits::Point   Point;
+    typedef typename Traits::Payload Payload;
+    typedef typename Traits::Alloc   Alloc;
+    typedef typename Traits::Partition   Partition;
 
 
     typedef typename Alloc::Ptr Ptr;
-    typedef BSPNode<Point,Payload,Partition,Alloc> Node;
+    typedef BSPNode<Traits> Node;
     typedef          Point PointType;
-    typedef typename BSPNode<Point,Payload,Partition,Alloc>::NodeList NodeList;
-    typedef          BSPNodeInfo<Point,Payload,Partition,Alloc>       NodeInfo;
+    typedef typename BSPNode<Traits>::NodeList NodeList;
+    typedef          BSPNodeInfo<Traits>       NodeInfo;
     typedef typename Node::ValueType ValueType;
 
     Alloc alloc_;

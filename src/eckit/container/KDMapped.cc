@@ -33,21 +33,15 @@ KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size
     fd_(-1)
 {
 
-    std::cout << "KDMapped ===== " << path << std::endl;
-
     int oflags = O_RDWR|O_CREAT;
     int mflags = PROT_READ|PROT_WRITE;
     
     if(itemCount == 0) {
-        oflags = O_RDONLY;
-        mflags = PROT_READ;
+        oflags = O_RDWR;
+        //mflags = PROT_READ;
     }
 
     size_t base;
-
-
-    std::cout << "KDMapped " << path << " " << base << std::endl;
-std::cout << "KDMapped itemCount " << itemCount << std::endl;
 
     SYSCALL(fd_ = ::open(path.localPath(),oflags,  0777));
     if(itemCount == 0)
@@ -57,7 +51,6 @@ std::cout << "KDMapped itemCount " << itemCount << std::endl;
         SYSCALL(Stat::stat(path.localPath(),&s));
         size_ = s.st_size;
 
-        std::cout << "KDMapped size " << size_ << std::endl;
 
         int n;
         SYSCALL(n = ::read(fd_,&header_, sizeof(header_)));

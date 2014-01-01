@@ -52,21 +52,26 @@ public:
         return root_;
     }
 
+     void root(Ptr r) {
+         ASSERT(r == 1);
+     }
+
     template<class Node>
     Ptr convert(Node* p) {
-        return p ? p - base(p) : 0; // FIXME: null and root are 0
+        return p ? p - base(p) : 0;
     }
 
     template<class Node>
     Node* convert(Ptr p, const Node* dummy) {
         Node* r = base(dummy);
         /* ASSERT(p < count_); */
-        return &r[p];
+        return p ? &r[p] : nullptr;
     }
 
     template<class Node, class A>
     Node* newNode1(const A& a, const Node* dummy) {
         Node* r = base(dummy);
+        ASSERT(count_ > 0);
         //ASSERT(count_ * sizeof(Node) < size_);
         return new(&r[count_++]) Node(a);
     }
@@ -74,6 +79,7 @@ public:
     template<class Node, class A, class B>
     Node* newNode2(const A& a, const B& b, const Node* dummy) {
         Node* r = base(dummy);
+        ASSERT(count_ > 0);
         //ASSERT(count_ * sizeof(Node) < size_);
         return new(&r[count_++]) Node(a, b);
     }
@@ -81,6 +87,7 @@ public:
     template<class Node, class A, class B, class C>
     Node* newNode3(const A& a, const B& b, const C& c, const Node* dummy) {
         Node* r = base(dummy);
+        ASSERT(count_ > 0);
         //ASSERT(count_ * sizeof(Node) < size_);
         return new(&r[count_++]) Node(a, b, c);
     }

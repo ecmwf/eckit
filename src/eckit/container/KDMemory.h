@@ -25,6 +25,7 @@ struct KDMemory : public StatCollector {
     typedef void* Ptr;
 
     Ptr root() const { return 0; }
+    void root(Ptr r) {}
 
     template<class Node>
     Ptr convert(Node* p) { return p; }

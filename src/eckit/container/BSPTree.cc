@@ -29,8 +29,8 @@
 
 namespace eckit {
 // The hyperplane is define by the vector (l, r) passing through the middle point
-template<class Point, class Payload, class Partition, class Alloc>
-BSPNode<Point,Payload,Partition,Alloc>::BSPNode(const ValueType& v, const HyperPlane& plane, double dist):
+template<class Traits>
+BSPNode<Traits>::BSPNode(const ValueType& v, const HyperPlane& plane, double dist):
     point_(v.first),
     payload_(v.second),
     plane_(plane),
@@ -40,8 +40,8 @@ BSPNode<Point,Payload,Partition,Alloc>::BSPNode(const ValueType& v, const HyperP
 {
 }
 
-template<class Point, class Payload, class Partition, class Alloc>
-BSPNodeInfo<Point,Payload,Partition,Alloc> BSPNode<Point,Payload,Partition,Alloc>::nearestNeighbour(Alloc& a,const Point& p)
+template<class Traits>
+BSPNodeInfo<Traits> BSPNode<Traits>::nearestNeighbour(Alloc& a,const Point& p)
 {
     double max = std::numeric_limits<double>::max();
     BSPNode* best = 0;
@@ -49,8 +49,8 @@ BSPNodeInfo<Point,Payload,Partition,Alloc> BSPNode<Point,Payload,Partition,Alloc
     return NodeInfo(best, max);
 }
 
-template<class Point, class Payload, class Partition, class Alloc>
-void BSPNode<Point,Payload,Partition,Alloc>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& best, double& max, int depth)
+template<class Traits>
+void BSPNode<Traits>::nearestNeighbour(Alloc& a,const Point& p, BSPNode*& best, double& max, int depth)
 {
     a.statsVisitNode();
 
@@ -114,8 +114,8 @@ void BSPNode<Point,Payload,Partition,Alloc>::nearestNeighbour(Alloc& a,const Poi
 }
 
 
-template<class Point, class Payload, class Partition, class Alloc>
-BSPNodeInfo<Point,Payload,Partition,Alloc> BSPNode<Point,Payload,Partition,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p)
+template<class Traits>
+BSPNodeInfo<Traits> BSPNode<Traits>::nearestNeighbourBruteForce(Alloc& a,const Point& p)
 {
     double max = std::numeric_limits<double>::max();
     BSPNode* best = 0;
@@ -124,8 +124,8 @@ BSPNodeInfo<Point,Payload,Partition,Alloc> BSPNode<Point,Payload,Partition,Alloc
 }
 
 
-template<class Point, class Payload, class Partition, class Alloc>
-void BSPNode<Point,Payload,Partition,Alloc>::nearestNeighbourBruteForce(Alloc& a,const Point& p, BSPNode<Point,Payload,Partition,Alloc>*& best, double& max, int depth)
+template<class Traits>
+void BSPNode<Traits>::nearestNeighbourBruteForce(Alloc& a,const Point& p, BSPNode<Traits>*& best, double& max, int depth)
 {
     if(left_ || right_) {
         if(right_)
@@ -146,8 +146,8 @@ void BSPNode<Point,Payload,Partition,Alloc>::nearestNeighbourBruteForce(Alloc& a
 
 //===
 
-template<class Point, class Payload, class Partition, class Alloc>
-void BSPNode<Point,Payload,Partition,Alloc>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth)
+template<class Traits>
+void BSPNode<Traits>::kNearestNeighbours(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth)
 {
     if(left_ && right_) {
         // Check in which half the point lies
@@ -200,8 +200,8 @@ void BSPNode<Point,Payload,Partition,Alloc>::kNearestNeighbours(Alloc& a,const P
 }
 
 
-template<class Point, class Payload, class Partition, class Alloc>
-typename BSPNode<Point,Payload,Partition,Alloc>::NodeList BSPNode<Point,Payload,Partition,Alloc>::kNearestNeighbours(Alloc& a,const Point& p, size_t k)
+template<class Traits>
+typename BSPNode<Traits>::NodeList BSPNode<Traits>::kNearestNeighbours(Alloc& a,const Point& p, size_t k)
 {
     NodeQueue queue(k);
     NodeList result;
@@ -210,8 +210,8 @@ typename BSPNode<Point,Payload,Partition,Alloc>::NodeList BSPNode<Point,Payload,
     return result;
 }
 
-template<class Point, class Payload, class Partition, class Alloc>
-void BSPNode<Point,Payload,Partition,Alloc>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth)
+template<class Traits>
+void BSPNode<Traits>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth)
 {
     double d = Point::distance(p,point_);
     result.push(this, d);
@@ -219,9 +219,9 @@ void BSPNode<Point,Payload,Partition,Alloc>::kNearestNeighboursBruteForce(Alloc&
     if(right_) right(a)->kNearestNeighboursBruteForce(a, p, k, result, depth+1);
 }
 
-template<class Point, class Payload, class Partition, class Alloc>
+template<class Traits>
 template<class Visitor>
-void BSPNode<Point,Payload,Partition,Alloc>::visit(Alloc& a,Visitor& v,int depth)
+void BSPNode<Traits>::visit(Alloc& a,Visitor& v,int depth)
 {
     v.enter(point_, !left_ && !right_, depth);
     if(left_)  left(a)->visit(a, v, depth+1);
@@ -230,8 +230,8 @@ void BSPNode<Point,Payload,Partition,Alloc>::visit(Alloc& a,Visitor& v,int depth
 }
 
 
-template<class Point, class Payload, class Partition, class Alloc>
-typename BSPNode<Point,Payload,Partition,Alloc>::NodeList BSPNode<Point,Payload,Partition,Alloc>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k)
+template<class Traits>
+typename BSPNode<Traits>::NodeList BSPNode<Traits>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k)
 {
     NodeQueue queue(k);
     NodeList result;
@@ -241,9 +241,9 @@ typename BSPNode<Point,Payload,Partition,Alloc>::NodeList BSPNode<Point,Payload,
 }
 
 
-template<class Point, class Payload, class Partition, class Alloc>
+template<class Traits>
 template<typename Container>
-double BSPNode<Point,Payload,Partition,Alloc>::distanceToPlane(const Container& in, const HyperPlane& plane)
+double BSPNode<Traits>::distanceToPlane(const Container& in, const HyperPlane& plane)
 {
     double min = std::numeric_limits<double>::max();
     for(typename Container::const_iterator j = in.begin(); j != in.end(); ++j)
@@ -262,9 +262,9 @@ double BSPNode<Point,Payload,Partition,Alloc>::distanceToPlane(const Container& 
 }
 
 
-template<class Point, class Payload, class Partition, class Alloc>
+template<class Traits>
 template<typename Container>
-BSPNode<Point,Payload,Partition,Alloc>* BSPNode<Point,Payload,Partition,Alloc>::build(Alloc& a, Partition& p, const Container& nodes,
+BSPNode<Traits>* BSPNode<Traits>::build(Alloc& a, Partition& p, const Container& nodes,
                                                                       double dist, int depth)
 {
     HyperPlane plane;
@@ -313,8 +313,8 @@ BSPNode<Point,Payload,Partition,Alloc>* BSPNode<Point,Payload,Partition,Alloc>::
 
 }
 
-template<class Point, class Payload, class Partition, class Alloc>
-void BSPNode<Point,Payload,Partition,Alloc>::findInSphere(Alloc& a,const Point& p ,double radius, NodeList& result, int depth)
+template<class Traits>
+void BSPNode<Traits>::findInSphere(Alloc& a,const Point& p ,double radius, NodeList& result, int depth)
 {
     NOTIMP;
     /*
@@ -352,8 +352,8 @@ void BSPNode<Point,Payload,Partition,Alloc>::findInSphere(Alloc& a,const Point& 
 }
 
 
-template<class Point, class Payload, class Partition, class Alloc>
-typename BSPNode<Point,Payload,Partition,Alloc>::NodeList BSPNode<Point,Payload,Partition,Alloc>::findInSphere(Alloc& a,const Point& p, double radius)
+template<class Traits>
+typename BSPNode<Traits>::NodeList BSPNode<Traits>::findInSphere(Alloc& a,const Point& p, double radius)
 {
     NodeList result;
     findInSphere(a,p,radius,result,0);
@@ -361,8 +361,8 @@ typename BSPNode<Point,Payload,Partition,Alloc>::NodeList BSPNode<Point,Payload,
     return result;
 }
 
-template<class Point, class Payload, class Partition, class Alloc>
-void BSPNode<Point,Payload,Partition,Alloc>::findInSphereBruteForce(Alloc& a,const Point& p, double radius, NodeList& result, int depth)
+template<class Traits>
+void BSPNode<Traits>::findInSphereBruteForce(Alloc& a,const Point& p, double radius, NodeList& result, int depth)
 {
     NOTIMP;
     /*
@@ -375,8 +375,8 @@ void BSPNode<Point,Payload,Partition,Alloc>::findInSphereBruteForce(Alloc& a,con
     */
 }
 
-template<class Point, class Payload, class Partition, class Alloc>
-typename BSPNode<Point,Payload,Partition,Alloc>::NodeList BSPNode<Point,Payload,Partition,Alloc>::findInSphereBruteForce(Alloc& a,const Point& p, double radius)
+template<class Traits>
+typename BSPNode<Traits>::NodeList BSPNode<Traits>::findInSphereBruteForce(Alloc& a,const Point& p, double radius)
 {
     NodeList result;
     findInSphereBruteForce(a,p,radius,result,0);

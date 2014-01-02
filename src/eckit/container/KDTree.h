@@ -12,6 +12,7 @@
 #define KDTree_H
 
 #include "eckit/container/sptree/SPTree.h"
+#include "eckit/container/kdtree/KDNode.h"
 
 #include "KDMemory.h"
 
@@ -19,12 +20,32 @@
 namespace eckit {
 
 template<class Traits>
-class KDTree : public SPTree<Traits> {
+class KDTree : public SPTree<Traits, KDNode<Traits> > {
 public:
     typedef typename Traits::Alloc   Alloc;
-    typedef typename SPTree<Traits>::Value   Value;
+
 public:
-    KDTree(const Alloc& alloc = Alloc()): SPTree<Traits>(alloc) {}
+    KDTree(const Alloc& alloc = Alloc()): SPTree<Traits, KDNode<Traits> >(alloc) {}
+
+    /// ITER must be a random access iterator
+    /// WARNING: container is changed (sorted)
+    template<typename ITER>
+    void build(ITER begin, ITER end)
+    {
+        this->root_ = this->alloc_.convert(KDNode<Traits>::build(this->alloc_, begin, end));
+        this->alloc_.root(this->root_);
+    }
+
+    /// Container must be a random access
+    /// WARNING: container is changed (sorted)
+    template<typename Container>
+    void build(Container& c)
+    {
+        typename Container::iterator b = c.begin();
+        typename Container::iterator e = c.end();
+        build(b, e);
+    }
+
 };
 
 } // Name space

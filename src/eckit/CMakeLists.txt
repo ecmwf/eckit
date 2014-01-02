@@ -26,7 +26,6 @@ container/KDMemory.h
 container/KDMapped.cc
 container/KDMapped.h
 container/KDTree.h
-container/KDTree.cc
 container/BSPTree.h
 container/BSPTree.cc
 container/MappedArray.h
@@ -44,6 +43,13 @@ container/sptree/SPTree.h
 container/sptree/SPValue.h
 container/sptree/SPNodeInfo.h
 container/sptree/SPMetadata.h
+
+container/kdtree/KDNode.h
+container/kdtree/KDNode.cc
+
+container/bsptree/BSPNode.h
+container/bsptree/BSPNode.cc
+container/bsptree/BSPHyperPlane.h
 
 
 )
@@ -470,8 +476,13 @@ endforeach()
 list( APPEND eckit_templates
 					container/BTree.cc
 					container/MappedArray.cc
-					container/KDTree.cc
+
+                                        container/sptree/SPNode.cc
+                                        container/kdtree/KDNode.cc
+					container/bsptree/BSPNode.cc
 					container/BSPTree.cc
+
+
 					filesystem/BasePathNameT.cc
 					io/FileBase.cc
 					runtime/PipeHandler.cc

@@ -31,10 +31,9 @@ public:
     typedef SPValue<Traits>             Value;
     typedef SPNodeQueue<Traits>         NodeQueue;
 
-private:
+protected:
 
     Value     value_;
-    size_t    axis_;
 
     typedef typename Alloc::Ptr Ptr;
     Ptr left_;
@@ -45,7 +44,7 @@ private:
 
 
 public:
-    SPNode(const Value& value, size_t axis);
+    SPNode(const Value& value);
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);
     NodeList findInSphere(Alloc& a,const Point& p, double radius);
@@ -73,16 +72,16 @@ public:
     void linkNodes(Alloc& a, SPNode*& prev = 0);
 
 
-private:
-    void nearestNeighbour(Alloc& a,const Point& p, SPNode*& best, double& max, int depth);
-    void nearestNeighbourBruteForce(Alloc& a,const Point& p,SPNode*& best,double& max, int depth);
-    void findInSphere(Alloc& a,const Point& p ,double radius, NodeList& result, int depth) ;
-    void findInSphereBruteForce(Alloc& a,const Point& p, double radius, NodeList& result, int depth) ;
-    void kNearestNeighbours(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth) ;
-    void kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth) ;
+public: // because of a clang bug. Should be protected
+    virtual void nearestNeighbourX(Alloc& a,const Point& p, SPNode*& best, double& max, int depth) = 0;
+    virtual void nearestNeighbourBruteForceX(Alloc& a,const Point& p,SPNode*& best,double& max, int depth);
+    virtual void findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth) = 0;
+    virtual void findInSphereBruteForceX(Alloc& a,const Point& p, double radius, NodeList& result, int depth) ;
+    virtual void kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth) = 0;
+    virtual void kNearestNeighboursBruteForceX(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth) ;
 
     //==========================
-
+protected:
     SPNode* left(Alloc& a)  const { return a.convert(left_, this);   }
     SPNode* right(Alloc& a) const { return a.convert(right_, this);  }
     SPNode* next(Alloc& a)  const { return a.convert(next_, this);   }

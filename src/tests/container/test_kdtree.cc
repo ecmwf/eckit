@@ -11,7 +11,7 @@
 
 #include "eckit/runtime/Tool.h"
 #include "eckit/container/KDTree.h"
-#include "eckit/container/KDPoint.h"
+#include "eckit/container/sptree/SPPoint.h"
 #include "eckit/os/Semaphore.h"
 #include <list>
 
@@ -30,7 +30,7 @@ class Test : public Tool {
 
 struct TestTreeTrait {
     typedef KDMemory   Alloc;
-    typedef KDPoint<2> Point;
+    typedef SPPoint<2> Point;
     typedef double     Payload;
 };
 

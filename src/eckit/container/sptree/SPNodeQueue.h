@@ -11,7 +11,7 @@
 #ifndef SPNodeQueue_H
 #define SPNodeQueue_H
 
-
+#include <eckit/eckit.h>
 
 namespace eckit {
 
@@ -67,6 +67,10 @@ public:
             queue_.pop();
         }
         std::sort(v.begin(),v.end());
+    }
+
+    bool incomplete() const {
+        return queue_.size() < k_;
     }
 
 };

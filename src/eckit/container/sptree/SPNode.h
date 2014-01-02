@@ -20,17 +20,19 @@
 namespace eckit {
 
 
-template<class Traits>
+template<class Traits, class NodeType>
 class SPNode {
 public:
     typedef typename Traits::Point   Point;
     typedef typename Traits::Payload Payload;
     typedef typename Traits::Alloc   Alloc;
 
-    typedef SPNodeInfo<Traits>          NodeInfo;
+    typedef SPNodeInfo<Traits, NodeType>          NodeInfo;
     typedef typename NodeInfo::NodeList NodeList;
     typedef SPValue<Traits>             Value;
-    typedef SPNodeQueue<Traits>         NodeQueue;
+    typedef SPNodeQueue<Traits, NodeType>         NodeQueue;
+
+    typedef NodeType Node;
 
 protected:
 
@@ -70,12 +72,14 @@ public:
     void visit(Alloc& a, Visitor& v, int depth = 0);
 
     // ---------
-    void linkNodes(Alloc& a, SPNode*& prev = 0);
+    void linkNodes(Alloc& a, Node*& prev = 0);
 
+    const Node* asNode() const { return dynamic_cast<const Node*>(this); }
+    Node* asNode() { return dynamic_cast<Node*>(this); }
 
 public: // because of a clang bug. Should be protected
-    virtual void nearestNeighbourX(Alloc& a,const Point& p, SPNode*& best, double& max, int depth) = 0;
-    virtual void nearestNeighbourBruteForceX(Alloc& a,const Point& p,SPNode*& best,double& max, int depth);
+    virtual void nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth) = 0;
+    virtual void nearestNeighbourBruteForceX(Alloc& a,const Point& p, Node*& best,double& max, int depth);
     virtual void findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth) = 0;
     virtual void findInSphereBruteForceX(Alloc& a,const Point& p, double radius, NodeList& result, int depth) ;
     virtual void kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth) = 0;
@@ -83,15 +87,15 @@ public: // because of a clang bug. Should be protected
 
     //==========================
 protected:
-    SPNode* left(Alloc& a)  const { return a.convert(left_, this);   }
-    SPNode* right(Alloc& a) const { return a.convert(right_, this);  }
-    SPNode* next(Alloc& a)  const { return a.convert(next_, this);   }
+    Node* left(Alloc& a)  const { return a.convert(left_,  (Node*)0);   }
+    Node* right(Alloc& a) const { return a.convert(right_, (Node*)0);  }
+    Node* next(Alloc& a)  const { return a.convert(next_,  (Node*)0);   }
 
-    void  left(Alloc& a,SPNode* n)  { left_  = a.convert(n); }
-    void  right(Alloc& a,SPNode* n) { right_ = a.convert(n); }
-    void  next(Alloc& a,SPNode* n)  { next_  = a.convert(n); }
+    void  left(Alloc& a,  Node* n) { left_  = a.convert(n); }
+    void  right(Alloc& a, Node* n) { right_ = a.convert(n); }
+    void  next(Alloc& a,  Node* n) { next_  = a.convert(n); }
 
-    friend class SPIterator<Traits>;
+    friend class SPIterator<Traits, NodeType>;
 
 };
 

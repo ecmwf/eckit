@@ -16,10 +16,10 @@
 namespace eckit {
 
 template<class Traits>
-class BSPNode : public SPNode<Traits> {
+class BSPNode : public SPNode<Traits, BSPNode<Traits> > {
 public:
 
-    typedef SPNode<Traits>      SPNode;
+    typedef SPNode<Traits, BSPNode<Traits>>      SPNode;
     typedef typename SPNode::Value     Value;
     typedef typename SPNode::Alloc     Alloc;
     typedef typename SPNode::Point     Point;

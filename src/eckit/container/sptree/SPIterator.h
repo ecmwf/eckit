@@ -15,7 +15,7 @@
 
 namespace eckit {
 
-template<class Traits>
+template<class Traits,class NodeType>
 class SPIterator {
 
     typedef typename Traits::Point   Point;
@@ -26,7 +26,8 @@ class SPIterator {
 
     typedef typename Alloc::Ptr Ptr;
     typedef typename Alloc::Ptr ID;
-    typedef SPNode<Traits> Node;
+    typedef NodeType Node;
+
     Alloc& alloc_;
     Ptr   ptr_;
 

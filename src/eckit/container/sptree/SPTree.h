@@ -35,14 +35,14 @@ public:
     typedef          Point   PointType;
     typedef          Payload PayloadType;
     typedef typename Node::NodeList NodeList;
-    typedef          SPNodeInfo<Traits>       NodeInfo;
+    typedef          SPNodeInfo<Traits,NodeType>       NodeInfo;
     typedef typename Node::Value Value;
 
     Alloc& alloc_;
     Ptr   root_;
     Metadata meta_;
 
-    typedef SPIterator<Traits> iterator;
+    typedef SPIterator<Traits,NodeType> iterator;
 
     typedef std::pair<Point,Payload> value_type;
 
@@ -61,7 +61,7 @@ public:
     }
 
     NodeInfo nodeByID(ID id) {
-        return SPNodeInfo<Traits>(alloc_.convert(id,(Node*)0), id, 0.0);
+        return SPNodeInfo<Traits, NodeType>(alloc_.convert(id,(Node*)0), id, 0.0);
     }
 
     void getMetadata(Point& offset, Point& scale) {
@@ -69,8 +69,6 @@ public:
         offset = meta_.offset_;
         scale  = meta_.scale_;
     }
-
-
 
     NodeInfo nearestNeighbour(const Point& p)
     {

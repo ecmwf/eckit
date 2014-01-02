@@ -153,7 +153,7 @@ void BSPNode<Traits>::kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, Nod
 
     // This is a leaf
     double d   = Point::distance(p, this->value_.point());
-    result.push(this, 0, d);
+    result.push(this, a.convert(this), d);
 
 }
 

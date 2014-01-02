@@ -36,7 +36,7 @@ KDNode<Traits>::KDNode(const Value& value, size_t axis):
 
 
 template<class Traits>
-void KDNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, SPNode*& best, double& max, int depth)
+void KDNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth)
 {
     a.statsVisitNode();
 
@@ -97,7 +97,8 @@ void KDNode<Traits>::kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, Node
     }
 
     double d   = Point::distance(p, this->value_.point());
-    result.push(this, a.convert(this), d);
+    Node* self = this;
+    result.push(self, a.convert(self), d);
 
     if(Point::distance(p, this->value_.point(), axis_) <= result.largest())
     {
@@ -175,7 +176,7 @@ void KDNode<Traits>::findInSphereX(Alloc& a,const Point& p ,double radius, NodeL
 
     double d   = Point::distance(p, this->value_.point());
     if(d <= radius) {
-        result.push_back(NodeInfo(this,0,d));
+        result.push_back(NodeInfo(this, a.convert(this) ,d));
     }
 
 

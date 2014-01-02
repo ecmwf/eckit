@@ -168,7 +168,7 @@ PointIndex::NodeInfo PointIndex::nearestNeighbour(double lat, double lon)
             return  (*k).second;
     }
 
-    NodeInfo n(0,0);
+    NodeInfo n(0,0,0);
 
     {
         Timer timer("Find nearest");

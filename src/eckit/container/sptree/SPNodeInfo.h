@@ -16,7 +16,7 @@
 namespace eckit {
 
 
-template<class Traits>
+template<class Traits, class NodeType>
 class SPNode;
 
 template<class Traits>
@@ -25,7 +25,7 @@ class SPTreeIterator;
 template<class Traits>
 class SPValue;
 
-template<class Traits>
+template<class Traits, class NodeType>
 struct SPNodeInfo {
 
     typedef typename Traits::Point   Point;
@@ -34,14 +34,18 @@ struct SPNodeInfo {
     typedef SPValue<Traits>             Value;
     typedef typename Alloc::Ptr   ID;
 
-    typedef SPNode<Traits> Node;
+    typedef NodeType Node;
 
     const Node* node_;
     double distance_;
     ID id_;
 
 public:
-    explicit SPNodeInfo(const Node* node = 0, ID id = 0, double distance = 0):
+
+    SPNodeInfo():
+        node_(0), id_(0), distance_(0) {}
+
+    SPNodeInfo(const Node* node, ID id, double distance):
         node_(node), id_(id), distance_(distance) {}
 
     ID id() const {

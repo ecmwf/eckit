@@ -16,19 +16,19 @@
 namespace eckit {
 
 
-template<class Traits>
+template<class Traits, class NodeType>
 class SPNode;
 
-template<class Traits>
+template<class Traits, class NodeType>
 class SPIterator;
 
 template<class Traits>
 class SPValue;
 
-template<class Traits>
+template<class Traits, class NodeType>
 struct SPNodeInfo ;
 
-template<class Traits>
+template<class Traits, class NodeType>
 class SPNodeQueue {
 public:
 
@@ -38,8 +38,8 @@ public:
 
     typedef typename Alloc::Ptr   ID;
 
-    typedef SPNode<Traits>              Node;
-    typedef SPNodeInfo<Traits>          NodeInfo;
+    typedef NodeType              Node;
+    typedef SPNodeInfo<Traits,NodeType>          NodeInfo;
     typedef typename NodeInfo::NodeList NodeList;
 
 private:
@@ -52,7 +52,8 @@ public:
 
     void push(Node* n, ID id, double d)
     {
-        queue_.push(NodeInfo(n,id, d));
+        NodeInfo info(n, id, d);
+        queue_.push(info);
         while(queue_.size() > k_) { queue_.pop();}
     }
 

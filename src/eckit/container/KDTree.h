@@ -53,7 +53,6 @@ public:
 
 };
 
-<<<<<<< HEAD
 
 
 template<class Traits>
@@ -76,9 +75,6 @@ public:
 };
 
 } // Name space
-=======
-} // end namespace
->>>>>>> 094354b77321a3462f44d65a43edc96523b7c97a
 
 
 #endif

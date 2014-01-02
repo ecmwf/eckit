@@ -18,7 +18,7 @@
 namespace eckit {
 
 
-template<class Traits>
+template<class Traits, class NodeType>
 class SPTree {
 
 public:
@@ -29,14 +29,14 @@ public:
     typedef typename Alloc::Ptr Ptr;
     typedef typename Alloc::Ptr ID;
 
-    typedef SPNode<Traits> Node;
+    typedef NodeType Node;
     typedef SPMetadata<Traits> Metadata;
 
     typedef          Point   PointType;
     typedef          Payload PayloadType;
-    typedef typename SPNode<Traits>::NodeList NodeList;
+    typedef typename Node::NodeList NodeList;
     typedef          SPNodeInfo<Traits>       NodeInfo;
-    typedef typename SPNode<Traits>::Value Value;
+    typedef typename Node::Value Value;
 
     Alloc alloc_;
     Ptr   root_;
@@ -52,15 +52,6 @@ public:
 
     ~SPTree() {
         alloc_.deleteNode(root_,(Node*)0);
-    }
-
-    /// ITER must be a random access iterator
-    /// WARNING: container is changed (sorted)
-    template<typename ITER>
-    void build(ITER begin, ITER end)
-    {
-        root_ = alloc_.convert(Node::build(alloc_, begin, end));
-        alloc_.root(root_);
     }
 
     void setMetadata(const Point& offset, const Point& scale) {
@@ -79,15 +70,7 @@ public:
         scale  = meta_.scale_;
     }
 
-    /// Container must be a random access
-    /// WARNING: container is changed (sorted)
-    template<typename Container>
-    void build(Container& c)
-    {
-        typename Container::iterator b = c.begin();
-        typename Container::iterator e = c.end();
-        build(b, e);
-    }
+
 
     NodeInfo nearestNeighbour(const Point& p)
     {

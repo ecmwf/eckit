@@ -19,13 +19,13 @@ template<class Traits>
 class BSPNode : public SPNode<Traits> {
 public:
 
-    typedef SPNode<Traits>      SPNode;
-    typedef typename SPNode::Value     Value;
-    typedef typename SPNode::Alloc     Alloc;
-    typedef typename SPNode::Point     Point;
-    typedef typename SPNode::NodeList  NodeList;
-    typedef typename SPNode::NodeQueue NodeQueue;
-    typedef typename SPNode::NodeInfo  NodeInfo;
+    typedef SPNode<Traits>      Node;
+    typedef typename Node::Value     Value;
+    typedef typename Node::Alloc     Alloc;
+    typedef typename Node::Point     Point;
+    typedef typename Node::NodeList  NodeList;
+    typedef typename Node::NodeQueue NodeQueue;
+    typedef typename Node::NodeInfo  NodeInfo;
 
     typedef typename Traits::Partition  Partition;
     typedef BSPHyperPlane<Point>        HyperPlane;
@@ -45,7 +45,7 @@ public:
 
 
 private:
-    virtual void nearestNeighbourX(Alloc& a,const Point& p, SPNode*& best, double& max, int depth);
+    virtual void nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth);
     virtual void findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth) ;
     virtual void kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth) ;
 

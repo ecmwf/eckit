@@ -128,7 +128,7 @@ private:
 
 };
 
-} // Name space
+} // end namespace
 
 
 #endif

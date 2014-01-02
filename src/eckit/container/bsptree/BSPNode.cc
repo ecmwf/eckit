@@ -31,7 +31,7 @@ namespace eckit {
 // The hyperplane is define by the vector (l, r) passing through the middle point
 template<class Traits>
 BSPNode<Traits>::BSPNode(const Value& v, const HyperPlane& plane, double dist):
-    SPNode(v),
+    Node(v),
     plane_(plane),
     dist_(dist)
 {
@@ -39,7 +39,7 @@ BSPNode<Traits>::BSPNode(const Value& v, const HyperPlane& plane, double dist):
 
 
 template<class Traits>
-void BSPNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, SPNode*& best, double& max, int depth)
+void BSPNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth)
 {
     a.statsVisitNode();
 

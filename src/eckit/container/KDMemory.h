@@ -54,7 +54,7 @@ struct KDMemory : public StatCollector {
 };
 
 
-} // Name space
+} // end namespace
 
 
 #endif

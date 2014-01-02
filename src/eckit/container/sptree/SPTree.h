@@ -142,7 +142,7 @@ public:
     }
 };
 
-} // Name space
+} // end namespace
 
 //#include "SPTree.cc"
 

@@ -29,14 +29,14 @@ namespace eckit {
 
 template<class Traits>
 KDNode<Traits>::KDNode(const Value& value, size_t axis):
-    SPNode(value),
+    Node(value),
     axis_(axis)
 {
 }
 
 
 template<class Traits>
-void KDNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, SPNode*& best, double& max, int depth)
+void KDNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth)
 {
     a.statsVisitNode();
 

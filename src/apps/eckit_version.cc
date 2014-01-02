@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit_version.h"
+#include "eckit/eckit.h"
 
 #include "eckit/runtime/Tool.h"
 #include "eckit/config/Resource.h"
@@ -40,14 +40,14 @@ namespace eckit {
 
             if( Resource<bool>("-build",false) )
             {
-                Log::info() << "    build type  : " << EC_BUILD_TYPE << std::endl
-                            << "    timestamp   : " << EC_BUILD_TIMESTAMP << std::endl
-                            << "    op. system  : " << EC_OS_NAME << " (" << EC_OS_STR << ")"  << std::endl
-                            << "    processor   : " << EC_SYS_PROCESSOR  << std::endl
-                            << "    c compiler  : " << EC_C_COMPILER_ID << " " << EC_C_COMPILER_VERSION << std::endl
-                            << "      flags     : " << EC_C_FLAGS << std::endl
-                            << "    c++ compiler: " << EC_CXX_COMPILER_ID << " " << EC_CXX_COMPILER_VERSION << std::endl
-                            << "      flags     : " << EC_CXX_FLAGS << std::endl;
+                Log::info() << "    build type  : " << ECKIT_BUILD_TYPE << std::endl
+                            << "    timestamp   : " << ECKIT_BUILD_TIMESTAMP << std::endl
+                            << "    op. system  : " << ECKIT_OS_NAME << " (" << ECKIT_OS_STR << ")"  << std::endl
+                            << "    processor   : " << ECKIT_SYS_PROCESSOR  << std::endl
+                            << "    c compiler  : " << ECKIT_C_COMPILER_ID << " " << ECKIT_C_COMPILER_VERSION << std::endl
+                            << "      flags     : " << ECKIT_C_FLAGS << std::endl
+                            << "    c++ compiler: " << ECKIT_CXX_COMPILER_ID << " " << ECKIT_CXX_COMPILER_VERSION << std::endl
+                            << "      flags     : " << ECKIT_CXX_FLAGS << std::endl;
             }
         }
         else

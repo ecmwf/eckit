@@ -58,7 +58,7 @@ struct TT : public T {
     typedef A Alloc;
 };
 
-} // Name space
+} // end namespace
 
 
 #endif

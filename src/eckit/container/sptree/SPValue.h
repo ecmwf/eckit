@@ -54,7 +54,7 @@ public:
         { return point() < other.point(); }
 };
 
-} // Name space
+} // end namespace
 
 
 #endif

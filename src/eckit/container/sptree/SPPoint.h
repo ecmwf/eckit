@@ -262,7 +262,7 @@ public:
 template<int SIZE>
 const size_t SPPoint<SIZE>::DIMS;
 
-} // Name space
+} // end namespace
 
 
 #endif

@@ -68,7 +68,7 @@ public:
     }
 };
 
-} // Name space
+} // end namespace
 
 
 #endif

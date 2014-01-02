@@ -29,17 +29,28 @@
 
 namespace eckit {
 // The hyperplane is define by the vector (l, r) passing through the middle point
+<<<<<<< HEAD
 template<class Traits,class Partition>
 BSPNode<Traits,Partition>::BSPNode(const Value& v, const HyperPlane& plane, double dist):
     SPNode(v),
+=======
+template<class Traits>
+BSPNode<Traits>::BSPNode(const Value& v, const HyperPlane& plane, double dist):
+    Node(v),
+>>>>>>> 094354b77321a3462f44d65a43edc96523b7c97a
     plane_(plane),
     dist_(dist)
 {
 }
 
 
+<<<<<<< HEAD
 template<class Traits,class Partition>
 void BSPNode<Traits,Partition>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth)
+=======
+template<class Traits>
+void BSPNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth)
+>>>>>>> 094354b77321a3462f44d65a43edc96523b7c97a
 {
     a.statsVisitNode();
 

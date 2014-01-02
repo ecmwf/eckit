@@ -100,7 +100,7 @@ protected:
 };
 
 
-} // Name space
+} // end namespace
 
 #include "SPNode.cc"
 

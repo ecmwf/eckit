@@ -24,7 +24,7 @@ struct SPMetadata {
 };
 
 
-} // Name space
+} // end namespace
 
 
 #endif

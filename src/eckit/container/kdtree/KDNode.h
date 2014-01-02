@@ -20,6 +20,7 @@ template<class Traits>
 class KDNode : public SPNode<Traits, KDNode<Traits> > {
 public:
 
+<<<<<<< HEAD
     typedef SPNode<Traits, KDNode<Traits> >      SPNode;
     typedef typename SPNode::Value     Value;
     typedef typename SPNode::Alloc     Alloc;
@@ -27,6 +28,16 @@ public:
     typedef typename SPNode::NodeList  NodeList;
     typedef typename SPNode::NodeQueue NodeQueue;
     typedef typename SPNode::NodeInfo  NodeInfo;
+=======
+    typedef SPNode< Traits > Node;
+
+    typedef typename Node::Value     Value;
+    typedef typename Node::Alloc     Alloc;
+    typedef typename Node::Point     Point;
+    typedef typename Node::NodeList  NodeList;
+    typedef typename Node::NodeQueue NodeQueue;
+    typedef typename Node::NodeInfo  NodeInfo;
+>>>>>>> 094354b77321a3462f44d65a43edc96523b7c97a
 
     typedef KDNode<Traits> Node;
 

@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
+#include <list>
 
 #include "eckit/runtime/Tool.h"
 #include "eckit/container/KDTree.h"
 #include "eckit/container/sptree/SPPoint.h"
 #include "eckit/os/Semaphore.h"
-#include <list>
 
 using namespace std;
 using namespace eckit;

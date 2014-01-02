@@ -53,14 +53,12 @@ if( ENABLE_EIGEN)
 endif()
 
 if( ENABLE_MATHS )
+
 	set( ENABLE_BOOST ON )
-	if( CMAKE_COMPILER_IS_GNUCXX )
-		if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7 )
-			cmake_add_cxx_flags("-std=c++0x")
-		else()
-			cmake_add_cxx_flags("-std=c++11")
-		endif()
-	endif()
+
+	ecbuild_add_cxx11_flags()
+	ecbuild_check_cxx11( PRINT )
+
 endif()
 
 # boost support

@@ -29,7 +29,7 @@ namespace eckit {
 
 template<class Traits>
 KDNode<Traits>::KDNode(const Value& value, size_t axis):
-    SPNode(value),
+    Node(value),
     axis_(axis)
 {
 }

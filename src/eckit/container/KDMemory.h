@@ -53,6 +53,10 @@ struct KDMemory : public StatCollector {
     }
 };
 
+template<class T, class A>
+struct TT : public T {
+    typedef A Alloc;
+};
 
 } // Name space
 

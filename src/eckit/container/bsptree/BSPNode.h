@@ -30,6 +30,8 @@ public:
     typedef typename Traits::Partition  Partition;
     typedef BSPHyperPlane<Point>        HyperPlane;
 
+    typedef BSPNode<Traits> Node;
+
 private:
 
     HyperPlane plane_;
@@ -45,7 +47,7 @@ public:
 
 
 private:
-    virtual void nearestNeighbourX(Alloc& a,const Point& p, SPNode*& best, double& max, int depth);
+    virtual void nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth);
     virtual void findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth) ;
     virtual void kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth) ;
 

@@ -51,10 +51,7 @@ public:
 
 };
 
-template<class T, class A>
-struct TT : public T {
-    typedef A Alloc;
-};
+
 
 template<class Traits>
 class KDTreeMemory : public KDTreeX< TT<Traits,KDMemory>  > {

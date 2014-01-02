@@ -39,7 +39,7 @@ BSPNode<Traits>::BSPNode(const Value& v, const HyperPlane& plane, double dist):
 
 
 template<class Traits>
-void BSPNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, SPNode*& best, double& max, int depth)
+void BSPNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth)
 {
     a.statsVisitNode();
 

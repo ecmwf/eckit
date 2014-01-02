@@ -28,7 +28,7 @@ private:
     Partition partition_;
 
 public:
-    BSPTree(const Alloc& alloc = Alloc()): SPTree<Traits, BSPNode<Traits> >(alloc) {}
+    BSPTree(Alloc& alloc): SPTree<Traits, BSPNode<Traits> >(alloc) {}
 
 
     /// Container must be a random access

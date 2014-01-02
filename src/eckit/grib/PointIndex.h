@@ -23,11 +23,7 @@
 #include "eckit/container/KDMemory.h"
 #include "eckit/container/sptree/SPPoint.h"
 
-using eckit::KDTree;
-using eckit::KDMapped;
 using eckit::SPPoint;
-using eckit::KDMemory;
-
 
 const double earthRadius = 6367.47; // In ECMWF model...
 
@@ -148,9 +144,9 @@ public:
 
 
 template<class Traits>
-class LLTree : public KDTree<Traits> {
+class LLTree : public eckit::KDTreeMapped<Traits> {
 public:
-    typedef KDTree<Traits> Tree;
+    typedef eckit::KDTreeMapped<Traits> Tree;
     typedef typename Tree::Point Point;
     typedef typename Tree::Alloc    Alloc;
 
@@ -158,6 +154,9 @@ public:
     typedef typename Tree::NodeInfo    NodeInfo;
     typedef typename Tree::PayloadType Payload;
     typedef typename Tree::Value   Value;
+
+    LLTree(const eckit::PathName& path,  size_t itemCount, size_t metadataSize):
+        eckit::KDTreeMapped<Traits>(path, itemCount, metadataSize) {}
 
     NodeInfo nearestNeighbour(const Point& p)
     {
@@ -194,9 +193,8 @@ public:
 };
 
 struct PointIndexTreeTrait {
-    typedef KDMapped Alloc;
-    typedef LLPoint2 Point;
-    typedef size_t   Payload;
+    typedef LLPoint2   Point;
+    typedef size_t     Payload;
 };
 
 class PointIndex {

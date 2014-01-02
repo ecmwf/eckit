@@ -38,7 +38,7 @@ public:
     typedef          SPNodeInfo<Traits>       NodeInfo;
     typedef typename Node::Value Value;
 
-    Alloc alloc_;
+    Alloc& alloc_;
     Ptr   root_;
     Metadata meta_;
 
@@ -48,10 +48,10 @@ public:
 
 public:
 
-    SPTree(const Alloc& alloc = Alloc()): alloc_(alloc), root_(alloc.root()) {}
+    SPTree(Alloc& alloc): alloc_(alloc), root_(alloc.root()) {}
 
     ~SPTree() {
-        alloc_.deleteNode(root_,(Node*)0);
+        // TODO: alloc_.deleteNode(root_,(Node*)0);
     }
 
     void setMetadata(const Point& offset, const Point& scale) {

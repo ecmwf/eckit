@@ -15,24 +15,27 @@
 #include "eckit/container/kdtree/KDNode.h"
 
 #include "KDMemory.h"
+#include "KDMapped.h"
 
 
 namespace eckit {
 
 template<class Traits>
-class KDTree : public SPTree<Traits, KDNode<Traits> > {
+class KDTreeX : public SPTree<Traits, KDNode<Traits> > {
 public:
-    typedef typename Traits::Alloc   Alloc;
+    typedef KDNode<Traits>         Node;
+    typedef SPTree<Traits,Node>    SPTree;
+    typedef typename Traits::Alloc Alloc;
 
 public:
-    KDTree(const Alloc& alloc = Alloc()): SPTree<Traits, KDNode<Traits> >(alloc) {}
+    KDTreeX(Alloc& alloc): SPTree(alloc) {}
 
     /// ITER must be a random access iterator
     /// WARNING: container is changed (sorted)
     template<typename ITER>
     void build(ITER begin, ITER end)
     {
-        this->root_ = this->alloc_.convert(KDNode<Traits>::build(this->alloc_, begin, end));
+        this->root_ = this->alloc_.convert(Node::build(this->alloc_, begin, end));
         this->alloc_.root(this->root_);
     }
 
@@ -44,6 +47,30 @@ public:
         typename Container::iterator b = c.begin();
         typename Container::iterator e = c.end();
         build(b, e);
+    }
+
+};
+
+template<class T, class A>
+struct TT : public T {
+    typedef A Alloc;
+};
+
+template<class Traits>
+class KDTreeMemory : public KDTreeX< TT<Traits,KDMemory>  > {
+    KDMemory alloc_;
+public:
+    KDTreeMemory() : KDTreeX< TT<Traits,KDMemory> >(alloc_) {}
+};
+
+template<class Traits>
+class KDTreeMapped : public KDTreeX< TT<Traits,KDMapped> > {
+    KDMapped alloc_;
+public:
+    KDTreeMapped(const eckit::PathName& path,  size_t itemCount, size_t metadataSize):
+        KDTreeX< TT<Traits,KDMapped> >(alloc_),
+        alloc_(path, itemCount, sizeof(KDNode<TT< Traits,KDMapped> >), metadataSize)
+    {
     }
 
 };

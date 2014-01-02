@@ -19,6 +19,7 @@
 
 namespace eckit {
 
+
 template<class Traits>
 class SPNode {
 public:
@@ -52,8 +53,8 @@ public:
 
     const Point& point() const     { return value_.point();   }
     const Payload& payload() const { return value_.payload(); }
-    Value& value()     { return value_;   }
-    const Value& value() const    { return value_;   }
+    Value& value()                 { return value_;           }
+    const Value& value() const     { return value_;           }
 
     template<typename ITER>
     static SPNode* build(Alloc& a,const ITER& begin, const ITER& end, int depth = 0);
@@ -91,7 +92,6 @@ protected:
     void  next(Alloc& a,SPNode* n)  { next_  = a.convert(n); }
 
     friend class SPIterator<Traits>;
-    friend class KDMemory;
 
 };
 

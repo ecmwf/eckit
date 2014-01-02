@@ -35,6 +35,7 @@ class SPIterator {
 public:
     SPIterator(Alloc& alloc, Ptr ptr):
         alloc_(alloc), ptr_(ptr) {
+        //std::cout << "SPIterator " << ptr << std::endl;
         Node* node = alloc_.convert(ptr_,(Node*)0);
         if(node) {
             if(!node->next(alloc_)) {

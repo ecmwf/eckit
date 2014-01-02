@@ -28,7 +28,9 @@ public:
     typedef typename Traits::Alloc Alloc;
 
 public:
-    KDTreeX(Alloc& alloc): SPTree(alloc) {}
+    KDTreeX(Alloc& alloc): SPTree(alloc) {
+
+    }
 
     /// ITER must be a random access iterator
     /// WARNING: container is changed (sorted)

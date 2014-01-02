@@ -48,7 +48,7 @@ public:
 
 public:
 
-    SPTree(Alloc& alloc): alloc_(alloc), root_(alloc.root()) {}
+    SPTree(Alloc& alloc): alloc_(alloc), root_(0) {}
 
     ~SPTree() {
         // TODO: alloc_.deleteNode(root_,(Node*)0);
@@ -72,18 +72,21 @@ public:
 
     NodeInfo nearestNeighbour(const Point& p)
     {
+        if(!root_) { root_ = alloc_.root(); }
         alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->nearestNeighbour(alloc_, p);
     }
 
     NodeList findInSphere(const Point& p,double radius)
     {
+        if(!root_) { root_ = alloc_.root(); }
         alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->findInSphere(alloc_, p, radius);
     }
 
     NodeList kNearestNeighbours(const Point& p, size_t k)
     {
+        if(!root_) { root_ = alloc_.root(); }
         alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->kNearestNeighbours(alloc_, p, k);
     }
@@ -91,6 +94,7 @@ public:
     // For testing only...
     NodeInfo nearestNeighbourBruteForce(const Point& p)
     {
+        if(!root_) { root_ = alloc_.root(); }
         alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->nearestNeighbourBruteForce(alloc_, p);
     }
@@ -98,11 +102,13 @@ public:
 
     NodeList findInSphereBruteForce(const Point& p,double radius)
     {
+        if(!root_) { root_ = alloc_.root(); }
         return alloc_.convert(root_,(Node*)0)->findInSphereBruteForce(alloc_, p, radius);
     }
 
     NodeList kNearestNeighboursBruteForce(const Point& p,size_t k)
     {
+        if(!root_) { root_ = alloc_.root(); }
         return alloc_.convert(root_,(Node*)0)->kNearestNeighboursBruteForce(alloc_, p, k);
     }
 
@@ -110,6 +116,7 @@ public:
     template<class Visitor>
     void visit(Visitor& v)
     {
+        if(!root_) { root_ = alloc_.root(); }
         return alloc_.convert(root_,(Node*)0)->visit(alloc_, v);
     }
 
@@ -132,6 +139,7 @@ public:
     }
 
     iterator begin() {
+        if(!root_) { root_ = alloc_.root(); }
         return iterator(alloc_, root_);
     }
 

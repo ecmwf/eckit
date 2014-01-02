@@ -199,11 +199,11 @@ public:
 
         for(; j != points.end(); ++j) {
             for(size_t i = 0; i < dimensions(); i++) {
-                result.first.x_[i] += (*j).first.x_[i];
+                result.point().x_[i] += (*j).point().x_[i];
             }
         }
         for(size_t i = 0; i < dimensions(); i++) {
-            result.first.x_[i] /= points.size();
+            result.point().x_[i] /= points.size();
         }
         return result;
     }

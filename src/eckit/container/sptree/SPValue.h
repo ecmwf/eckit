@@ -49,6 +49,9 @@ public:
         t.print(o);
         return o;
     }
+
+    bool operator<(const SPValue& other) const
+        { return point() < other.point(); }
 };
 
 } // Name space

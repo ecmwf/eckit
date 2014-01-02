@@ -10,7 +10,6 @@
 
 #ifndef SPNode_CC
 #define SPNode_CC
-#include "eckit/eckit.h"
 
 #include <stdio.h>
 #include <limits>
@@ -20,10 +19,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-
 namespace eckit {
-
-
 
 template<class Traits>
 SPNode<Traits>::SPNode(const Value& value, size_t axis):

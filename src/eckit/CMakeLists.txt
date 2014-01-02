@@ -37,7 +37,6 @@ container/SimpleMappedArray.h
 
 container/sptree/SPIterator.h
 container/sptree/SPNode.h
-container/sptree/SPNode.cc
 
 container/sptree/SPNodeQueue.h
 container/sptree/SPPoint.h

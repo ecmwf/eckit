@@ -83,7 +83,7 @@ endif()
 
 # MPI support
 
-find_package( MPI )
+ecbuild_find_mpi()
 
 if( NOT MPI_CXX_FOUND )
         set( ENABLE_MPI OFF )

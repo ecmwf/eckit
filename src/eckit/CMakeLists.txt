@@ -30,11 +30,7 @@ container/KDMapped.h
 
 container/KDTree.h
 container/BSPTree.h
-<<<<<<< HEAD
 
-=======
-# container/BSPTree.cc
->>>>>>> 094354b77321a3462f44d65a43edc96523b7c97a
 container/MappedArray.h
 container/MappedArray.cc 
 container/SimpleMappedArray.cc
@@ -487,10 +483,6 @@ list( APPEND eckit_templates
 					container/sptree/SPNode.cc
 					container/kdtree/KDNode.cc
 					container/bsptree/BSPNode.cc
-<<<<<<< HEAD
-=======
-#					container/BSPTree.cc
->>>>>>> 094354b77321a3462f44d65a43edc96523b7c97a
 
 
 					filesystem/BasePathNameT.cc

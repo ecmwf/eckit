@@ -21,8 +21,8 @@
 
 namespace eckit {
 
-template<class Traits>
-SPNode<Traits>::SPNode(const Value& value):
+template<class Traits, class NodeType>
+SPNode<Traits,NodeType>::SPNode(const Value& value):
     value_(value),
     left_(0),
     right_(0),
@@ -30,35 +30,35 @@ SPNode<Traits>::SPNode(const Value& value):
 {
 }
 
-template<class Traits>
-SPNodeInfo<Traits> SPNode<Traits>::nearestNeighbour(Alloc& a,const Point& p)
+template<class Traits, class NodeType>
+SPNodeInfo<Traits,NodeType> SPNode<Traits,NodeType>::nearestNeighbour(Alloc& a,const Point& p)
 {
     double max = std::numeric_limits<double>::max();
-    SPNode* best = 0;
+    Node* best = 0;
     nearestNeighbourX(a, p, best, max, 0);
-    return NodeInfo(best,a.convert(best), max);
+    return NodeInfo(best, a.convert(best), max);
 }
 
 
 
 
-template<class Traits>
-SPNodeInfo<Traits> SPNode<Traits>::nearestNeighbourBruteForce(Alloc& a,const Point& p)
+template<class Traits, class NodeType>
+SPNodeInfo<Traits,NodeType> SPNode<Traits,NodeType>::nearestNeighbourBruteForce(Alloc& a,const Point& p)
 {
     double max = std::numeric_limits<double>::max();
-    SPNode* best = 0;
+    Node* best = 0;
     nearestNeighbourBruteForceX(a, p, best, max, 0);
-    return NodeInfo(best,0,max);
+    return NodeInfo(best, a.convert(best), max);
 }
 
 
-template<class Traits>
-void SPNode<Traits>::nearestNeighbourBruteForceX(Alloc& a,const Point& p, SPNode<Traits>*& best, double& max, int depth)
+template<class Traits, class NodeType>
+void SPNode<Traits,NodeType>::nearestNeighbourBruteForceX(Alloc& a,const Point& p, Node*& best, double& max, int depth)
 {
     double d = Point::distance(p,value_.point());
     if(d < max)
     {
-        best = this;
+        best = this->asNode();
         max  = d;
     }
 
@@ -70,8 +70,8 @@ void SPNode<Traits>::nearestNeighbourBruteForceX(Alloc& a,const Point& p, SPNode
 
 
 
-template<class Traits>
-typename SPNode<Traits>::NodeList SPNode<Traits>::kNearestNeighbours(Alloc& a,const Point& p, size_t k)
+template<class Traits, class NodeType>
+typename SPNode<Traits,NodeType>::NodeList SPNode<Traits,NodeType>::kNearestNeighbours(Alloc& a,const Point& p, size_t k)
 {
     NodeQueue queue(k);
     NodeList result;
@@ -80,18 +80,18 @@ typename SPNode<Traits>::NodeList SPNode<Traits>::kNearestNeighbours(Alloc& a,co
     return result;
 }
 
-template<class Traits>
-void SPNode<Traits>::kNearestNeighboursBruteForceX(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth)
+template<class Traits, class NodeType>
+void SPNode<Traits,NodeType>::kNearestNeighboursBruteForceX(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth)
 {
     double d = Point::distance(p,value_.point());
-    result.push(this, 0, d);
+    result.push(this->asNode(), a.convert(this->asNode()), d);
     if(left_)  left(a)->kNearestNeighboursBruteForceX(a, p, k, result, depth+1);
     if(right_) right(a)->kNearestNeighboursBruteForceX(a, p, k, result, depth+1);
 }
 
-template<class Traits>
+template<class Traits,class NodeType>
 template<class Visitor>
-void SPNode<Traits>::visit(Alloc& a,Visitor& v,int depth)
+void SPNode<Traits,NodeType>::visit(Alloc& a,Visitor& v,int depth)
 {
     v.enter(value_.point(), !left_ && !right_, depth);
     if(left_)  left(a)->visit(a, v, depth+1);
@@ -100,19 +100,19 @@ void SPNode<Traits>::visit(Alloc& a,Visitor& v,int depth)
 }
 
 
-template<class Traits>
-void SPNode<Traits>::linkNodes(Alloc& a, SPNode<Traits>*& prev)
+template<class Traits,class NodeType>
+void SPNode<Traits,NodeType>::linkNodes(Alloc& a, Node*& prev)
 {
     if(prev) {
-        prev->next(a, this);
+        prev->next(a, this->asNode());
     }
-    prev = this;
+    prev = this->asNode();
     if(left_)  left(a)->linkNodes(a,  prev);
     if(right_) right(a)->linkNodes(a, prev);
 }
 
-template<class Traits>
-typename SPNode<Traits>::NodeList SPNode<Traits>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k)
+template<class Traits,class NodeType>
+typename SPNode<Traits,NodeType>::NodeList SPNode<Traits,NodeType>::kNearestNeighboursBruteForce(Alloc& a,const Point& p, size_t k)
 {
     NodeQueue queue(k);
     NodeList result;
@@ -122,47 +122,8 @@ typename SPNode<Traits>::NodeList SPNode<Traits>::kNearestNeighboursBruteForce(A
 }
 //===
 
-#if 0
-
-template<class Traits>
-template<typename ITER>
-SPNode<Traits>* SPNode<Traits>::build(Alloc& a,
-                                                const ITER& begin,
-                                                const ITER& end, int depth)
-{
-    if(end == begin)
-        return 0;
-
-    a.statsDepth(depth);
-
-    //size_t k    = Point::size(*begin);
-    size_t k    = Point::DIMS;
-    size_t axis = depth % k;
-
-    //std::sort(begin, end, sorter<Point>(axis));
-
-    size_t median = (end - begin)/2;
-
-    std::nth_element(begin, begin + median, end, sorter<Value>(axis));
-
-    ITER e2 = begin + median;
-    ITER b2 = begin + median+1;
-
-
-    SPNode* n = a.newNode2(*e2, axis,(SPNode*)0);
-
-    n->left(a,build(a, begin, e2, depth + 1));
-    n->right(a,build(a, b2,   end, depth + 1));
-
-    return n;
-
-}
-
-#endif
-
-
-template<class Traits>
-typename SPNode<Traits>::NodeList SPNode<Traits>::findInSphere(Alloc& a,const Point& p, double radius)
+template<class Traits,class NodeType>
+typename SPNode<Traits,NodeType>::NodeList SPNode<Traits,NodeType>::findInSphere(Alloc& a,const Point& p, double radius)
 {
     NodeList result;
     findInSphereX(a,p,radius,result,0);
@@ -170,22 +131,22 @@ typename SPNode<Traits>::NodeList SPNode<Traits>::findInSphere(Alloc& a,const Po
     return result;
 }
 
-template<class Traits>
-void SPNode<Traits>::findInSphereBruteForceX(Alloc& a,const Point& p, double radius, NodeList& result, int depth)
+template<class Traits,class NodeType>
+void SPNode<Traits,NodeType>::findInSphereBruteForceX(Alloc& a,const Point& p, double radius, NodeList& result, int depth)
 {
     double d = Point::distance(p,value_.point());
     if(d <= radius) {
-        result.push_back(NodeInfo(this,0,d));
+        result.push_back(NodeInfo(this->asNode(), a.convert(this->asNode()), d));
     }
     if(left_)  left(a)->findInSphereBruteForceX(a, p, radius, result, depth+1);
     if(right_) right(a)->findInSphereBruteForceX(a, p, radius, result, depth+1);
 }
 
-template<class Traits>
-typename SPNode<Traits>::NodeList SPNode<Traits>::findInSphereBruteForce(Alloc& a,const Point& p, double radius)
+template<class Traits,class NodeType>
+typename SPNode<Traits,NodeType>::NodeList SPNode<Traits,NodeType>::findInSphereBruteForce(Alloc& a,const Point& p, double radius)
 {
     NodeList result;
-    findInSphereBruteForceX(a,p,radius,result,0);
+    findInSphereBruteForceX(a, p, radius, result, 0);
     std::sort(result.begin(), result.end());
     return result;
 }

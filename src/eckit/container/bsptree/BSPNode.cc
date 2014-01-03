@@ -29,17 +29,17 @@
 
 namespace eckit {
 // The hyperplane is define by the vector (l, r) passing through the middle point
-template<class Traits>
-BSPNode<Traits>::BSPNode(const Value& v, const HyperPlane& plane, double dist):
-    Node(v),
+
+template<class Traits,class Partition>
+BSPNode<Traits,Partition>::BSPNode(const Value& v, const HyperPlane& plane, double dist):
+    SPNode(v),
     plane_(plane),
     dist_(dist)
 {
 }
 
-
-template<class Traits>
-void BSPNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth)
+template<class Traits,class Partition>
+void BSPNode<Traits,Partition>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth)
 {
     a.statsVisitNode();
 
@@ -58,7 +58,7 @@ void BSPNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, do
 
         if(d < 0) {
             this->left(a)->nearestNeighbourX(a, p, best, max, depth+1);
-            double dd = dynamic_cast<BSPNode<Traits>*>(this->right(a))->dist_;
+            double dd = dynamic_cast<BSPNode<Traits,Partition>*>(this->right(a))->dist_;
             if(distanceToPlane + dd <= max) {
                 this->right(a)->nearestNeighbourX(a, p, best, max, depth+1);
             }
@@ -66,7 +66,7 @@ void BSPNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, do
         else {
 
             this->right(a)->nearestNeighbourX(a, p, best, max, depth+1);
-            double dd = dynamic_cast<BSPNode<Traits>*>(this->left(a))->dist_;
+            double dd = dynamic_cast<BSPNode<Traits,Partition>*>(this->left(a))->dist_;
             if(distanceToPlane + dd <= max) {
                 this->left(a)->nearestNeighbourX(a, p, best, max, depth+1);
             }
@@ -104,8 +104,8 @@ void BSPNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, do
 
 //===
 
-template<class Traits>
-void BSPNode<Traits>::kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth)
+template<class Traits,class Partition>
+void BSPNode<Traits,Partition>::kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth)
 {
     if(this->left_ && this->right_) {
         // Check in which half the point lies
@@ -120,7 +120,7 @@ void BSPNode<Traits>::kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, Nod
 
         if(d <= 0) {
             this->left(a)->kNearestNeighboursX(a, p, k, result, depth+1);
-            double dd = dynamic_cast<BSPNode<Traits>*>(this->right(a))->dist_;
+            double dd = dynamic_cast<BSPNode<Traits,Partition>*>(this->right(a))->dist_;
             if(result.incomplete() || distanceToPlane + dd <= max) {
                 this->right(a)->kNearestNeighboursX(a, p, k, result, depth+1);
             }
@@ -128,7 +128,7 @@ void BSPNode<Traits>::kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, Nod
         else {
 
             this->right(a)->kNearestNeighboursX(a, p, k, result, depth+1);
-            double dd = dynamic_cast<BSPNode<Traits>*>(this->left(a))->dist_;
+            double dd = dynamic_cast<BSPNode<Traits,Partition>*>(this->left(a))->dist_;
             if(result.incomplete() || distanceToPlane + dd <= max) {
                 this->left(a)->kNearestNeighboursX(a, p, k, result, depth+1);
             }
@@ -153,15 +153,15 @@ void BSPNode<Traits>::kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, Nod
 
     // This is a leaf
     double d   = Point::distance(p, this->value_.point());
-    result.push(this, 0, d);
+    result.push(this, a.convert(this), d);
 
 }
 
 
 
-template<class Traits>
+template<class Traits,class Partition>
 template<typename Container>
-double BSPNode<Traits>::distanceToPlane(const Container& in, const HyperPlane& plane)
+double BSPNode<Traits,Partition>::distanceToPlane(const Container& in, const HyperPlane& plane)
 {
     double min = std::numeric_limits<double>::max();
     for(typename Container::const_iterator j = in.begin(); j != in.end(); ++j)
@@ -180,9 +180,9 @@ double BSPNode<Traits>::distanceToPlane(const Container& in, const HyperPlane& p
 }
 
 
-template<class Traits>
+template<class Traits,class Partition>
 template<typename Container>
-BSPNode<Traits>* BSPNode<Traits>::build(Alloc& a, Partition& p, const Container& nodes,
+BSPNode<Traits,Partition>* BSPNode<Traits,Partition>::build(Alloc& a, Partition& p, const Container& nodes,
                                                                       double dist, int depth)
 {
     HyperPlane plane;
@@ -231,8 +231,8 @@ BSPNode<Traits>* BSPNode<Traits>::build(Alloc& a, Partition& p, const Container&
 
 }
 
-template<class Traits>
-void BSPNode<Traits>::findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth)
+template<class Traits,class Partition>
+void BSPNode<Traits,Partition>::findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth)
 {
     NOTIMP;
 }

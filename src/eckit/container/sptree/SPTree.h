@@ -35,23 +35,23 @@ public:
     typedef          Point   PointType;
     typedef          Payload PayloadType;
     typedef typename Node::NodeList NodeList;
-    typedef          SPNodeInfo<Traits>       NodeInfo;
+    typedef          SPNodeInfo<Traits,NodeType>       NodeInfo;
     typedef typename Node::Value Value;
 
-    Alloc alloc_;
+    Alloc& alloc_;
     Ptr   root_;
     Metadata meta_;
 
-    typedef SPIterator<Traits> iterator;
+    typedef SPIterator<Traits,NodeType> iterator;
 
     typedef std::pair<Point,Payload> value_type;
 
 public:
 
-    SPTree(const Alloc& alloc = Alloc()): alloc_(alloc), root_(alloc.root()) {}
+    SPTree(Alloc& alloc): alloc_(alloc), root_(0) {}
 
     ~SPTree() {
-        alloc_.deleteNode(root_,(Node*)0);
+        // TODO: alloc_.deleteNode(root_,(Node*)0);
     }
 
     void setMetadata(const Point& offset, const Point& scale) {
@@ -61,7 +61,7 @@ public:
     }
 
     NodeInfo nodeByID(ID id) {
-        return SPNodeInfo<Traits>(alloc_.convert(id,(Node*)0), id, 0.0);
+        return SPNodeInfo<Traits, NodeType>(alloc_.convert(id,(Node*)0), id, 0.0);
     }
 
     void getMetadata(Point& offset, Point& scale) {
@@ -70,22 +70,23 @@ public:
         scale  = meta_.scale_;
     }
 
-
-
     NodeInfo nearestNeighbour(const Point& p)
     {
+        if(!root_) { root_ = alloc_.root(); }
         alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->nearestNeighbour(alloc_, p);
     }
 
     NodeList findInSphere(const Point& p,double radius)
     {
+        if(!root_) { root_ = alloc_.root(); }
         alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->findInSphere(alloc_, p, radius);
     }
 
     NodeList kNearestNeighbours(const Point& p, size_t k)
     {
+        if(!root_) { root_ = alloc_.root(); }
         alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->kNearestNeighbours(alloc_, p, k);
     }
@@ -93,6 +94,7 @@ public:
     // For testing only...
     NodeInfo nearestNeighbourBruteForce(const Point& p)
     {
+        if(!root_) { root_ = alloc_.root(); }
         alloc_.statsCall();
         return alloc_.convert(root_,(Node*)0)->nearestNeighbourBruteForce(alloc_, p);
     }
@@ -100,11 +102,13 @@ public:
 
     NodeList findInSphereBruteForce(const Point& p,double radius)
     {
+        if(!root_) { root_ = alloc_.root(); }
         return alloc_.convert(root_,(Node*)0)->findInSphereBruteForce(alloc_, p, radius);
     }
 
     NodeList kNearestNeighboursBruteForce(const Point& p,size_t k)
     {
+        if(!root_) { root_ = alloc_.root(); }
         return alloc_.convert(root_,(Node*)0)->kNearestNeighboursBruteForce(alloc_, p, k);
     }
 
@@ -112,6 +116,7 @@ public:
     template<class Visitor>
     void visit(Visitor& v)
     {
+        if(!root_) { root_ = alloc_.root(); }
         return alloc_.convert(root_,(Node*)0)->visit(alloc_, v);
     }
 
@@ -134,6 +139,7 @@ public:
     }
 
     iterator begin() {
+        if(!root_) { root_ = alloc_.root(); }
         return iterator(alloc_, root_);
     }
 

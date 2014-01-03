@@ -27,9 +27,10 @@ container/ClassExtent.h
 container/KDMemory.h
 container/KDMapped.cc
 container/KDMapped.h
+
 container/KDTree.h
 container/BSPTree.h
-# container/BSPTree.cc
+
 container/MappedArray.h
 container/MappedArray.cc 
 container/SimpleMappedArray.cc
@@ -482,7 +483,6 @@ list( APPEND eckit_templates
 					container/sptree/SPNode.cc
 					container/kdtree/KDNode.cc
 					container/bsptree/BSPNode.cc
-#					container/BSPTree.cc
 
 
 					filesystem/BasePathNameT.cc

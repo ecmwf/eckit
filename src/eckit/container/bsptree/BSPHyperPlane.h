@@ -17,6 +17,7 @@ namespace eckit {
 
 template<class Point>
 class BSPHyperPlane {
+
     Point normal_;
     double d_;
 public:

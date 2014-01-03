@@ -14,21 +14,22 @@
 #include "eckit/container/sptree/SPTree.h"
 #include "eckit/container/bsptree/BSPNode.h"
 
+#include "KDMemory.h"
+#include "KDMapped.h"
 
 namespace eckit {
 
-template<class Traits>
-class BSPTree : public SPTree<Traits, BSPNode<Traits> > {
+template<class Traits, class Partition>
+class BSPTreeX : public SPTree<Traits, BSPNode<Traits, Partition> > {
 public:
     typedef typename Traits::Alloc     Alloc;
-    typedef typename Traits::Partition Partition;
 
 private:
 
     Partition partition_;
 
 public:
-    BSPTree(const Alloc& alloc = Alloc()): SPTree<Traits, BSPNode<Traits> >(alloc) {}
+    BSPTreeX(Alloc& alloc): SPTree<Traits, BSPNode<Traits, Partition> >(alloc) {}
 
 
     /// Container must be a random access
@@ -36,11 +37,32 @@ public:
     template<typename Container>
     void build(Container& nodes)
     {
-        this->root_ = this->alloc_.convert(BSPNode<Traits>::build(this->alloc_, partition_, nodes, 0.0));
+        this->root_ = this->alloc_.convert(BSPNode<Traits, Partition>::build(this->alloc_, partition_, nodes, 0.0));
         this->alloc_.root(this->root_);
     }
 
 };
+
+template<class Traits, class Partition>
+class BSPTreeMemory : public BSPTreeX< TT<Traits,KDMemory>,Partition> {
+    KDMemory alloc_;
+public:
+    BSPTreeMemory():
+        BSPTreeX< TT<Traits,KDMemory>,Partition>(alloc_) {}
+};
+
+template<class Traits, class Partition>
+class BSPTreeMapped : public BSPTreeX< TT<Traits,KDMapped>,Partition> {
+    KDMapped alloc_;
+public:
+    BSPTreeMapped(const eckit::PathName& path,  size_t itemCount, size_t metadataSize):
+        BSPTreeX< TT<Traits,KDMapped>,Partition>(alloc_),
+        alloc_(path, itemCount, sizeof(BSPNode<TT< Traits,KDMapped>,Partition>), metadataSize)
+    {
+    }
+
+};
+
 
 } // end namespace
 

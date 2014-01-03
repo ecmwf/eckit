@@ -15,20 +15,24 @@
 
 namespace eckit {
 
-template<class Traits>
-class BSPNode : public SPNode<Traits> {
+template<class Traits, class Partition>
+class BSPNode : public SPNode<Traits, BSPNode<Traits, Partition> > {
 public:
 
-    typedef SPNode<Traits>      Node;
-    typedef typename Node::Value     Value;
-    typedef typename Node::Alloc     Alloc;
-    typedef typename Node::Point     Point;
-    typedef typename Node::NodeList  NodeList;
-    typedef typename Node::NodeQueue NodeQueue;
-    typedef typename Node::NodeInfo  NodeInfo;
 
-    typedef typename Traits::Partition  Partition;
+    typedef SPNode<Traits, BSPNode<Traits, Partition> >      SPNode;
+    typedef typename SPNode::Value     Value;
+    typedef typename SPNode::Alloc     Alloc;
+    typedef typename SPNode::Point     Point;
+    typedef typename SPNode::NodeList  NodeList;
+    typedef typename SPNode::NodeQueue NodeQueue;
+    typedef typename SPNode::NodeInfo  NodeInfo;
+
+
+
     typedef BSPHyperPlane<Point>        HyperPlane;
+
+    typedef BSPNode<Traits, Partition> Node;
 
 private:
 

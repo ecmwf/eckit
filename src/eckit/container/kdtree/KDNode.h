@@ -17,17 +17,20 @@ namespace eckit {
 
 
 template<class Traits>
-class KDNode : public SPNode<Traits> {
+class KDNode : public SPNode<Traits, KDNode<Traits> > {
 public:
 
-    typedef SPNode< Traits > Node;
 
-    typedef typename Node::Value     Value;
-    typedef typename Node::Alloc     Alloc;
-    typedef typename Node::Point     Point;
-    typedef typename Node::NodeList  NodeList;
-    typedef typename Node::NodeQueue NodeQueue;
-    typedef typename Node::NodeInfo  NodeInfo;
+    typedef SPNode<Traits, KDNode<Traits> >      SPNode;
+    typedef typename SPNode::Value     Value;
+    typedef typename SPNode::Alloc     Alloc;
+    typedef typename SPNode::Point     Point;
+    typedef typename SPNode::NodeList  NodeList;
+    typedef typename SPNode::NodeQueue NodeQueue;
+    typedef typename SPNode::NodeInfo  NodeInfo;
+
+
+    typedef KDNode<Traits> Node;
 
 private:
 

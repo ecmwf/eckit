@@ -45,6 +45,7 @@ public:
 
     template<class Node>
     Node* base(const Node*) {
+        ASSERT(sizeof(Node) == header_.itemSize_);
         return reinterpret_cast<Node*>(base_);
     }
 

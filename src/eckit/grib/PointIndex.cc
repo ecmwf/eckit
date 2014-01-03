@@ -92,8 +92,7 @@ std::string PointIndex::cache(grib_handle* h)
     PathName tmp(std::string("~/etc/pointdb/") + md5 + ".tmp");
     tmp.unlink();
 
-    KDMapped alloc(tmp, v , sizeof(Tree::Node) + sizeof(Tree::Payload), 0);
-    Tree* tree = new Tree(alloc);
+    Tree* tree = new Tree(tmp, v, 0);
     tree->build(p.begin(), p.end());
 
     PathName dump(std::string("~/etc/pointdb/") + md5 + ".dump");
@@ -146,8 +145,7 @@ PointIndex::PointIndex(const PathName& path, PointIndex::Tree* tree):
 {
     if(!tree) {
         ASSERT(path.exists());
-        KDMapped alloc(path, 0, 0, 0);
-        tree_.reset(new Tree(alloc));
+        tree_.reset(new Tree(path,0,0));
     }
 }
 
@@ -170,7 +168,7 @@ PointIndex::NodeInfo PointIndex::nearestNeighbour(double lat, double lon)
             return  (*k).second;
     }
 
-    NodeInfo n(0,0);
+    NodeInfo n(0,0,0);
 
     {
         Timer timer("Find nearest");

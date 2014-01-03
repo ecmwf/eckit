@@ -29,7 +29,6 @@ class Test : public Tool {
 
 
 struct TestTreeTrait {
-    typedef KDMemory   Alloc;
     typedef SPPoint<2> Point;
     typedef double     Payload;
 };
@@ -38,7 +37,7 @@ struct TestTreeTrait {
 void Test::run()
 {
 
-    typedef KDTree<TestTreeTrait> Tree;
+    typedef KDTreeMemory<TestTreeTrait> Tree;
 
     Tree kd;
     typedef Tree::PointType Point;

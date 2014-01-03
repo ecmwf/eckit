@@ -19,8 +19,6 @@
 #include <vector>
 #include <cmath>
 
-#include <boost/shared_ptr.hpp>
-
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"
 
@@ -28,7 +26,6 @@
 
 namespace eckit {
 namespace grid {
-#include <boost/shared_ptr.hpp>
 
 //-----------------------------------------------------------------------------
 
@@ -102,8 +99,6 @@ public: // methods
 protected:
 
 };
-
-typedef boost::shared_ptr<Grid> GridPtr;
 
 //-----------------------------------------------------------------------------
 

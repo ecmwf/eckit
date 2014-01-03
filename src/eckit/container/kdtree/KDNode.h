@@ -20,14 +20,14 @@ template<class Traits>
 class KDNode : public SPNode<Traits, KDNode<Traits> > {
 public:
 
+    typedef SPNode<Traits, KDNode<Traits> >  SPNodeType; // cannot redefine as SPNode since some compilers in-class redefinitions
 
-    typedef SPNode<Traits, KDNode<Traits> >      SPNode;
-    typedef typename SPNode::Value     Value;
-    typedef typename SPNode::Alloc     Alloc;
-    typedef typename SPNode::Point     Point;
-    typedef typename SPNode::NodeList  NodeList;
-    typedef typename SPNode::NodeQueue NodeQueue;
-    typedef typename SPNode::NodeInfo  NodeInfo;
+    typedef typename SPNodeType::Value     Value;
+    typedef typename SPNodeType::Alloc     Alloc;
+    typedef typename SPNodeType::Point     Point;
+    typedef typename SPNodeType::NodeList  NodeList;
+    typedef typename SPNodeType::NodeQueue NodeQueue;
+    typedef typename SPNodeType::NodeInfo  NodeInfo;
 
 
     typedef KDNode<Traits> Node;

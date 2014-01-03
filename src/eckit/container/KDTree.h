@@ -24,11 +24,11 @@ template<class Traits>
 class KDTreeX : public SPTree<Traits, KDNode<Traits> > {
 public:
     typedef KDNode<Traits>         Node;
-    typedef SPTree<Traits,Node>    SPTree;
+    typedef SPTree<Traits,Node>    SPTreeType; // cannot redefine as SPTree since some compilers in-class redefinitions
     typedef typename Traits::Alloc Alloc;
 
 public:
-    KDTreeX(Alloc& alloc): SPTree(alloc) {
+    KDTreeX(Alloc& alloc): SPTreeType(alloc) {
 
     }
 

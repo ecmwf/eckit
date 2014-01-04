@@ -182,6 +182,14 @@ void DateTime::load(DumpLoad& a)
 	time_.load(a);
 }
 
+std::string DateTime::iso(bool UTC) const
+{
+    std::stringstream s;
+    s << date_ << "T" << time_;
+    if(UTC) s << "Z";
+    return s.str();
+}
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

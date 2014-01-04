@@ -75,6 +75,8 @@ public:
 	void load(DumpLoad&);
     
     std::string format( const std::string& fmt );
+
+    std::string iso(bool UTC = true) const;
     
 protected: // members
 

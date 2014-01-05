@@ -27,6 +27,10 @@ public:
     typedef SPTree<Traits,Node>    SPTreeType; // cannot redefine as SPTree since some compilers in-class redefinitions
     typedef typename Traits::Alloc Alloc;
 
+    typedef typename SPTreeType::Value   Value;
+    typedef typename SPTreeType::Point   Point;
+    typedef typename SPTreeType::Payload Payload;
+
 public:
     KDTreeX(Alloc& alloc): SPTreeType(alloc) {
 
@@ -59,16 +63,31 @@ template<class Traits>
 class KDTreeMemory : public KDTreeX< TT<Traits,KDMemory>  > {
     KDMemory alloc_;
 public:
-    KDTreeMemory() : KDTreeX< TT<Traits,KDMemory> >(alloc_) {}
+
+    typedef KDTreeX< TT<Traits,KDMemory>  > KDTree;
+    typedef typename KDTree::Value   Value;
+    typedef typename KDTree::Point   Point;
+    typedef typename KDTree::Payload Payload;
+
+public:
+    KDTreeMemory() : KDTree(alloc_) {}
 };
 
 template<class Traits>
 class KDTreeMapped : public KDTreeX< TT<Traits,KDMapped> > {
     KDMapped alloc_;
 public:
+
+    typedef KDTreeX< TT<Traits,KDMapped>  > KDTree;
+    typedef typename KDTree::Value   Value;
+    typedef typename KDTree::Point   Point;
+    typedef typename KDTree::Payload Payload;
+    typedef typename KDTree::Node    Node;
+
+public:
     KDTreeMapped(const eckit::PathName& path,  size_t itemCount, size_t metadataSize):
-        KDTreeX< TT<Traits,KDMapped> >(alloc_),
-        alloc_(path, itemCount, sizeof(KDNode<TT< Traits,KDMapped> >), metadataSize)
+        KDTree(alloc_),
+        alloc_(path, itemCount, sizeof(Node), metadataSize)
     {
     }
 

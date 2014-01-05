@@ -56,18 +56,20 @@ void BSPNode<Traits,Partition>::nearestNeighbourX(Alloc& a,const Point& p, Node*
         // distanceToPlane = 0;
 
 
-        if(d < 0) {
+        if(d <= 0) {
             this->left(a)->nearestNeighbourX(a, p, best, max, depth+1);
-            double dd = dynamic_cast<BSPNode<Traits,Partition>*>(this->right(a))->dist_;
+            double dd = this->right(a)->dist_;
             if(distanceToPlane + dd <= max) {
+                a.statsCrossOver();
                 this->right(a)->nearestNeighbourX(a, p, best, max, depth+1);
             }
         }
         else {
 
             this->right(a)->nearestNeighbourX(a, p, best, max, depth+1);
-            double dd = dynamic_cast<BSPNode<Traits,Partition>*>(this->left(a))->dist_;
+            double dd = this->left(a)->dist_;
             if(distanceToPlane + dd <= max) {
+                a.statsCrossOver();
                 this->left(a)->nearestNeighbourX(a, p, best, max, depth+1);
             }
         }
@@ -120,16 +122,18 @@ void BSPNode<Traits,Partition>::kNearestNeighboursX(Alloc& a,const Point& p ,siz
 
         if(d <= 0) {
             this->left(a)->kNearestNeighboursX(a, p, k, result, depth+1);
-            double dd = dynamic_cast<BSPNode<Traits,Partition>*>(this->right(a))->dist_;
+            double dd = this->right(a)->dist_;
             if(result.incomplete() || distanceToPlane + dd <= max) {
+                a.statsCrossOver();
                 this->right(a)->kNearestNeighboursX(a, p, k, result, depth+1);
             }
         }
         else {
 
             this->right(a)->kNearestNeighboursX(a, p, k, result, depth+1);
-            double dd = dynamic_cast<BSPNode<Traits,Partition>*>(this->left(a))->dist_;
+            double dd = this->left(a)->dist_;
             if(result.incomplete() || distanceToPlane + dd <= max) {
+                a.statsCrossOver();
                 this->left(a)->kNearestNeighboursX(a, p, k, result, depth+1);
             }
         }
@@ -221,8 +225,12 @@ BSPNode<Traits,Partition>* BSPNode<Traits,Partition>::build(Alloc& a, Partition&
     BSPNode* n = a.newNode3(nodes[0], plane, dist, (BSPNode*)0);
 
 
-    double dl = distanceToPlane(left, n->plane_);
-    double dr = distanceToPlane(right, n->plane_);
+    double dl = distanceToPlane(left, plane);
+    double dr = distanceToPlane(right, plane);
+
+    //if(depth == 1) {
+        //std::cerr << Partition::name() << " distanceToPlane " << dl << " " << dr << std::endl;
+    //}
 
     n->left(a, build(a, p, left, dl, depth + 1));
     n->right(a, build(a, p, right, dr, depth + 1));

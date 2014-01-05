@@ -66,6 +66,7 @@ void KDNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, dou
     {
 
         // Visit other subtree...
+        a.statsCrossOver();
 
         if(p.x(axis_) < this->value_.point().x(axis_))
         {
@@ -104,6 +105,7 @@ void KDNode<Traits>::kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, Node
     {
 
         // Visit other subtree...
+        a.statsCrossOver();
 
         if(p.x(axis_) < this->value_.point().x(axis_))
         {
@@ -123,7 +125,7 @@ template<class Value>
 struct sorter {
     int axis_;
     bool operator() (const Value& a,const Value& b)
-        { return (a.point().x(axis_) < b.point().x(axis_)); }
+    { return (a.point().x(axis_) < b.point().x(axis_)); }
     sorter(size_t axis) : axis_(axis) {}
 };
 
@@ -131,8 +133,8 @@ struct sorter {
 template<class Traits>
 template<typename ITER>
 KDNode<Traits>* KDNode<Traits>::build(Alloc& a,
-                                                const ITER& begin,
-                                                const ITER& end, int depth)
+                                      const ITER& begin,
+                                      const ITER& end, int depth)
 {
     if(end == begin)
         return 0;

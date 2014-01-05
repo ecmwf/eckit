@@ -38,7 +38,8 @@ struct StatCollector {
 
     void statsNewCandidateOK()   { newCandidateOK_++; }
     void statsNewCandidateMiss() { newCandidateMiss_++; }
-    void statsReset() { calls_ = newCandidateOK_ = newCandidateMiss_ = nodes_ = 0; }
+    void statsCrossOver()        { crossOvers_++; }
+    void statsReset() { crossOvers_ = calls_ = newCandidateOK_ = newCandidateMiss_ = nodes_ = 0; }
 
     void print(std::ostream& s) const {
         s << "Stats calls: " << BigNum(calls_)
@@ -58,6 +59,7 @@ struct StatCollector {
             s << "   hit: "   << newCandidateOK_ << std::endl;
             s << "   nodes: " << nodes_ << std::endl;
             s << "   depth: " << depth_  << std::endl;
+            s << "   crossovers: " << crossOvers_  << std::endl;
         }
     }
 
@@ -69,6 +71,7 @@ struct StatCollector {
 
     size_t newCandidateMiss_;
     size_t newCandidateOK_;
+    size_t crossOvers_;
 
 
     // -- Friends

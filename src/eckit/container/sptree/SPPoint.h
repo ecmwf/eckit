@@ -49,14 +49,14 @@ public:
         x_[0] = x;
         x_[1] = y;
     }
-
+/*
     explicit SPPoint(double x, double y, double z)
     {
         ASSERT( SIZE >= 3 );
         x_[0] = x;
         x_[1] = y;
         x_[2] = z;
-    }
+    }*/
 
     bool operator<(const SPPoint& other) const
     { return std::lexicographical_compare(x_,x_ + SIZE, other.x_, other.x_ + SIZE); }

@@ -20,15 +20,13 @@ class BSPNode : public SPNode<Traits, BSPNode<Traits, Partition> > {
 public:
 
 
-    typedef SPNode<Traits, BSPNode<Traits, Partition> >      SPNode;
-    typedef typename SPNode::Value     Value;
-    typedef typename SPNode::Alloc     Alloc;
-    typedef typename SPNode::Point     Point;
-    typedef typename SPNode::NodeList  NodeList;
-    typedef typename SPNode::NodeQueue NodeQueue;
-    typedef typename SPNode::NodeInfo  NodeInfo;
-
-
+    typedef SPNode<Traits, BSPNode<Traits, Partition> > SPNodeType;
+    typedef typename SPNodeType::Value     Value;
+    typedef typename SPNodeType::Alloc     Alloc;
+    typedef typename SPNodeType::Point     Point;
+    typedef typename SPNodeType::NodeList  NodeList;
+    typedef typename SPNodeType::NodeQueue NodeQueue;
+    typedef typename SPNodeType::NodeInfo  NodeInfo;
 
     typedef BSPHyperPlane<Point>        HyperPlane;
 
@@ -37,12 +35,12 @@ public:
 private:
 
     HyperPlane plane_;
+
     double dist_; // Distance to parent's hyperplane
 
-
 public:
-    BSPNode(const Value& v, const HyperPlane& plane, double dist);
 
+    BSPNode(const Value& v, const HyperPlane& plane, double dist);
 
     template<typename Container>
     static BSPNode* build(Alloc& a, Partition& p, const Container& nodes, double dist, int depth = 0);
@@ -60,11 +58,7 @@ private:
 
 };
 
-
-
-
-
-} // Name space
+} // end namespace
 
 #include "BSPNode.cc"
 

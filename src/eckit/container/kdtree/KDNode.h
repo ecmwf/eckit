@@ -55,7 +55,7 @@ private:
 };
 
 
-} // Name space
+} // end namespace
 
 #include "KDNode.cc"
 

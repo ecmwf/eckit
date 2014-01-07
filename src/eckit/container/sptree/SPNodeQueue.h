@@ -11,6 +11,8 @@
 #ifndef SPNodeQueue_H
 #define SPNodeQueue_H
 
+#include <limits>
+
 #include <eckit/eckit.h>
 
 namespace eckit {

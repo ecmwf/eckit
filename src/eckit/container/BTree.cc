@@ -59,13 +59,22 @@ void BTree<K, V, S>::_NodePage::print(std::ostream& s) const
 
 
 template<class K,class V, int S>
-BTree<K,V,S>::BTree(const PathName& path):
+BTree<K,V,S>::BTree(const PathName& path, bool writeMode):
     path_(path),
+    writeMode_(writeMode),
     fd_(-1),
     cacheReads_(true),
     cacheWrites_(true)
 {
-    SYSCALL(fd_ = ::open(path.localPath(),O_RDWR|O_CREAT,0777));
+    if( writeMode_ )
+    {
+        SYSCALL(fd_ = ::open(path.localPath(),O_RDWR|O_CREAT,0777));
+    }
+    else
+    {
+        SYSCALL(fd_ = ::open(path.localPath(),O_RDONLY));
+    }
+
 
     AutoLock<BTree<K,V,S> > lock(this);
     Stat::Struct s;
@@ -562,6 +571,8 @@ void BTree<K,V,S>::loadPage(unsigned long page, Page& p) const
 template<class K, class V, int S>
 void BTree<K,V,S>::_savePage(const Page& p)
 {
+    ASSERT( writeMode_ );
+
     //cout << "Save " << p << std::endl;
 
     off_t o = pageOffset(p.id_);
@@ -605,6 +616,8 @@ void BTree<K,V,S>::savePage(const Page& p)
 template<class K, class V,int S>
 void BTree<K,V,S>::_newPage(Page& p)
 {
+    ASSERT( writeMode_ );
+
     off_t here;
     SYSCALL(here = ::lseek(fd_,0,SEEK_END));
 

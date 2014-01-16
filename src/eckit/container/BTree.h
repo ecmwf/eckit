@@ -52,7 +52,7 @@ public:
 
     // -- Contructors
 
-    BTree(const PathName&);
+    BTree(const PathName&, bool readOnly = false);
 
     // -- Destructor
 
@@ -269,6 +269,7 @@ private:
     
     bool cacheReads_;
     bool cacheWrites_;
+    bool readOnly_;
     
     struct _PageInfo {
         Page* page_;

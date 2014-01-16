@@ -32,7 +32,7 @@ namespace eckit {
 
 template<class Traits,class Partition>
 BSPNode<Traits,Partition>::BSPNode(const Value& v, const HyperPlane& plane, double dist):
-    SPNode(v),
+    SPNodeType(v),
     plane_(plane),
     dist_(dist)
 {

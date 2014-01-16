@@ -258,13 +258,13 @@ private:
     };
 
 
-
     // The -1 is here so we have one extra value for overflows
     static const size_t maxNodeEntries_ = (sizeof(NodePage) - sizeof(_Page)) / sizeof(NodeEntry) -1;
     static const size_t maxLeafEntries_ = (sizeof(LeafPage) - sizeof(_Page)) / sizeof(LeafEntry) -1;
 
 
     PathName path_;
+
     int fd_;
     
     bool cacheReads_;

@@ -59,14 +59,14 @@ void BTree<K, V, S>::_NodePage::print(std::ostream& s) const
 
 
 template<class K,class V, int S>
-BTree<K,V,S>::BTree(const PathName& path, bool readOnly):
+BTree<K,V,S>::BTree( const PathName& path, bool readOnly ):
     path_(path),
     fd_(-1),
     cacheReads_(true),
     cacheWrites_(true),
     readOnly_(readOnly)
 {
-    SYSCALL(fd_ = ::open(path.localPath(),readOnly_ ? (O_RDWR|O_CREAT) : O_RDONLY,0777));
+    SYSCALL( fd_ = ::open(path.localPath(), readOnly_ ? O_RDONLY : (O_RDWR|O_CREAT),0777) );
 
     AutoLock<BTree<K,V,S> > lock(this);
     Stat::Struct s;

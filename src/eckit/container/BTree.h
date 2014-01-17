@@ -47,12 +47,9 @@ public:
     typedef V value_type;
     typedef std::pair<K,V> result_type;
 
-    // -- Exceptions
-
-
     // -- Contructors
 
-    BTree(const PathName&, bool readOnly = false);
+    BTree( const PathName&, bool readOnly = false );
 
     // -- Destructor
 

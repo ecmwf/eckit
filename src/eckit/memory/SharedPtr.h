@@ -163,6 +163,13 @@ public: // methods
 
     /// Overloading of "=="
     /// @return true if pointees have the same address
+    operator bool () const
+    {
+        return ! null();
+    }
+
+    /// Overloading of "=="
+    /// @return true if pointees have the same address
     bool operator== (const SharedPtr& other) const
     {
         return ( ptr_ == other.ptr_ );

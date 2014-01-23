@@ -108,11 +108,11 @@ private: // members
 
 typedef CountedT<>  Counted;
 
-typedef CountedT< detail::WithThreadLock, detail::DoDelete >  CountedLock;
+typedef CountedT< detail::WithThreadLock, detail::DoDelete >  CountedLock; //< same as Counted
 typedef CountedT< detail::NoThreadLock,   detail::DoDelete >  CountedNoLock;
 
-typedef CountedT< detail::WithThreadLock, detail::DontDelete >  SharedPtrCountedLock;
-typedef CountedT< detail::NoThreadLock,   detail::DontDelete >  SharedPtrCountedNoLock;
+typedef CountedT< detail::WithThreadLock, detail::DontDelete >  CountedSharedLock;
+typedef CountedT< detail::NoThreadLock,   detail::DontDelete >  CountedSharedNoLock;
 
 //-----------------------------------------------------------------------------
 

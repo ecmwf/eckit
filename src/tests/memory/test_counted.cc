@@ -22,7 +22,7 @@ using namespace eckit;
 
 namespace eckit_test {
 
-struct FooLock : public SharedPtrCountedLock
+struct FooLock : public CountedSharedLock
 {
     typedef SharedPtr<FooLock> ptype;
 
@@ -30,7 +30,7 @@ struct FooLock : public SharedPtrCountedLock
     int i;
 };
 
-struct FooNoLock : public SharedPtrCountedNoLock
+struct FooNoLock : public CountedSharedNoLock
 {
     typedef SharedPtr<FooNoLock> ptype;
 

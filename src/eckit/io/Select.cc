@@ -95,7 +95,6 @@ bool Select::ready(long sec)
 
 		// First check with ioctl, as select is not always trustworthy
 
-//#ifndef linux
 		bool some = false;
 		FD_ZERO(&set_);
 
@@ -122,7 +121,6 @@ bool Select::ready(long sec)
 
 		if(some)
 			return true;
-//#endif
 
 		for(;;)
 		{

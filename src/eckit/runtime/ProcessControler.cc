@@ -11,28 +11,6 @@
 #include <signal.h>
 #include <sys/wait.h>
 
-
-// WARNING: on linux, threads are different processes,
-// so a thread cannot call waitpid on a process forked by an other
-// thread....
-
-#if 0
-
-#ifndef linux
-#include <sys/proc.h>
-#endif
-
-
-#ifdef IBM
-#pragma priority(-100)
-#include <procinfo.h>
-//extern "C" int getprocs(struct procsinfo*,int,struct fdsinfo*,int,pid_t*,int);
-
-#else
-#include <sys/procfs.h>
-#endif
-#endif
-
 #include "eckit/eckit.h"
 
 #include "eckit/log/Log.h"

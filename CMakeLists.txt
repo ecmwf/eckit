@@ -35,26 +35,40 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-option( ENABLE_BOOST  "Boost support  [EXPERIMENTAL]"		        ON )
-option( ENABLE_EIGEN  "Eigen support  [EXPERIMENTAL]"		        ON )
+# eckit::grid
 
-option( ENABLE_MATHS  "eckit::maths extension [EXPERIMENTAL]"           ON )
-option( ENABLE_GRID   "eckit::grid extension [EXPERIMENTAL]"	        ON )
-option( ENABLE_GRIB   "eckit::grib extension [EXPERIMENTAL]"	        ON )
-option( ENABLE_MPI    "eckit::mpi  extension [EXPERIMENTAL]"	        ON )
+ecbuild_add_option( FEATURE GRID
+					DESCRIPTION "eckit::grid extension [EXPERIMENTAL]" )
+
+# Eigen
+
+ecbuild_add_option( FEATURE EIGEN
+					DEFAULT AUTO
+					DESCRIPTION "Eigen support  [EXPERIMENTAL]"
+					REQUIRED_PACKAGES Eigen3 )
+
+set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Accelerated dense matrix operations" )
+
+# GRIB
+
+ecbuild_add_option( FEATURE GRIB
+					DESCRIPTION "support for GRIB format [EXPERIMENTAL]" )
 
 if( ENABLE_GRIB )
 	ecbuild_use_package( PROJECT grib_api VERSION 1.9.9 )
+	if( NOT GRIB_API_FOUND )
+		set( HAVE_GRIB 0 )
+	endif()
 endif()
 
-if( ENABLE_EIGEN)
-	ecbuild_add_extra_search_paths( eigen3 )
-	find_package( Eigen3 3.0 )
-endif()
+set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
 
-if( ENABLE_MATHS )
+# eckit::maths
 
-	set( ENABLE_BOOST ON )
+ecbuild_add_option( FEATURE MATHS
+					DESCRIPTION "eckit::maths expressions [EXPERIMENTAL]" )
+
+if( HAVE_MATHS )
 
 	ecbuild_add_cxx11_flags()
 	ecbuild_check_cxx11( PRINT )
@@ -63,33 +77,36 @@ endif()
 
 # boost support
 
-if( ENABLE_BOOST )
+set(Boost_USE_MULTITHREADED      ON )
+# set(Boost_DEBUG                  ON )
+# set(Boost_USE_STATIC_LIBS        ON )
+# set(Boost_NO_SYSTEM_PATHS        ON )
 
-	ecbuild_add_extra_search_paths( boost )
+ecbuild_add_option( FEATURE BOOST
+					DEFAULT ${ENABLE_MATHS}
+					DESCRIPTION "Boost support [EXPERIMENTAL]"
+					REQUIRED_PACKAGES "Boost 1.45.0" )
 
-	set(Boost_USE_MULTITHREADED      ON )
-	# set(Boost_DEBUG                  ON )
-	# set(Boost_USE_STATIC_LIBS        ON )
-	# set(Boost_NO_SYSTEM_PATHS        ON )
+set_package_properties( Boost PROPERTIES TYPE RECOMMENDED PURPOSE "" )
 
-	#find_package( Boost 1.45.0 COMPONENTS filesystem program_options date_time thread system unit_test_framework test_exec_monitor )
-	find_package( Boost 1.45.0 )
-
-	#list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
-
-endif()
+#list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
 
 # MPI support
 
-ecbuild_find_mpi()
+ecbuild_add_option( FEATURE MPI
+					DESCRIPTION "eckit::mpi extensions [EXPERIMENTAL]" )
 
-if( NOT MPI_CXX_FOUND )
-        set( ENABLE_MPI OFF )
+if( ENABLE_MPI )
+	ecbuild_find_mpi()
+	if( NOT MPI_CXX_FOUND )
+			set( HAVE_MPI 0 )
+	endif()
 endif()
 
 # async io support
 
 find_package( AIO )
+set_package_properties( AIO PROPERTIES TYPE RECOMMENDED PURPOSE "support for asynchronous IO" )
 
 # find thread library ( preferably pthreads )
 

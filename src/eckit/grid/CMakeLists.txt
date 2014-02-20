@@ -14,7 +14,7 @@ Latitudes.h
 
 ecbuild_add_library(TARGET eckit_grid
 					INSTALL_HEADERS ALL
-					CONDITION	ENABLE_GRID
+					CONDITION	HAVE_GRID
 					SOURCES
 						${eckit_grid_srcs}
 					HEADER_DESTINATION

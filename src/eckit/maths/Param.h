@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Exp.h
+/// @file Param.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date November 2013
@@ -23,11 +23,12 @@
 namespace eckit {
 namespace maths {
 
+/// Represents a parameter to use in an expression that needs to be resolved before evaluating
+/// for example when evaluating a Lambda
 
 class Param : public Expression {
 
     std::string name_;
-
 
 public: //  methods
 
@@ -38,7 +39,7 @@ public: //  methods
 
     virtual ~Param();
 
-private:
+private: //  methods
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
@@ -48,9 +49,11 @@ private:
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 
 };
+
+//--------------------------------------------------------------------------------------------
 
 ExpPtr parameter(const std::string& name);
 

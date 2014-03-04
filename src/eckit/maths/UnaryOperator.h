@@ -43,16 +43,7 @@ public:
 
     static std::string className();
 
-    UnaryOperator( ExpPtr e);
-
-    virtual std::string typeName() const;
-
-    virtual std::string returnSignature() const;
-
-    virtual ExpPtr cloneWith(args_t &a) const {
-        ASSERT(a.size() == 1);
-        return ExpPtr(new UnaryOperator<T>(a[0]));
-    }
+    UnaryOperator( ExpPtr e );
 
     /// Applies an implementation of the unary operator
     /// U is the left operand type ( Scalar, Vector, ... )
@@ -73,7 +64,21 @@ public:
         static ExpPtr compute( Scope& ctx , const args_t& p );
     };
 
+private: // methods
+
+    UnaryOperator( args_t& a );
+
+    virtual std::string typeName() const;
+
+    virtual std::string returnSignature() const;
+
+    virtual ExpPtr cloneWith(args_t& a) const
+    {
+        return ExpPtr( new UnaryOperator<T>(a) );
+    }
+
     virtual void asCode( std::ostream& o ) const;
+
 };
 
 //--------------------------------------------------------------------------------------------

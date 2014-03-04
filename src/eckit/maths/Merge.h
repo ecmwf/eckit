@@ -33,8 +33,10 @@ public: // methods
 
     struct Register { Register(); };
 
+private: // methods
 
-private:
+    Merge( args_t& a );
+
     virtual std::string typeName() const { return Merge::className(); }
 
     virtual std::string returnSignature() const;
@@ -43,15 +45,15 @@ private:
 
     virtual void asCode( std::ostream& ) const;
 
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 
-    // Support for count()
+    /// Adds support for count()
     virtual bool countable() const;
     virtual size_t count() const;
 
 protected:
-    static ExpPtr compute( Scope& ctx, const args_t& p );
 
+    static ExpPtr compute( Scope& ctx, const args_t& p );
 
 };
 

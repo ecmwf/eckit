@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Exp.h
+/// @file ParamDef.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date November 2013
@@ -23,6 +23,8 @@
 namespace eckit {
 namespace maths {
 
+/// Represents a parameter to use in an expression that needs to be resolved before evaluating
+/// for example when evaluating a Lambda
 
 class ParamDef : public Expression {
 
@@ -53,8 +55,10 @@ private:
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 };
+
+//--------------------------------------------------------------------------------------------
 
 ExpPtr paramdef(const std::string& name);
 

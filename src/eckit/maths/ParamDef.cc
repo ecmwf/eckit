@@ -51,7 +51,7 @@ void ParamDef::asCode(std::ostream&o) const
     o << '"' << name_ << '"';
 }
 
-ExpPtr ParamDef::cloneWith(args_t &a) const {
+ExpPtr ParamDef::cloneWith(args_t& a) const {
     NOTIMP;
 }
 

@@ -25,6 +25,11 @@ ZipWith::ZipWith( ExpPtr f, ExpPtr list0, ExpPtr list1 ) : Function()
     push_back(list1);
 }
 
+ZipWith::ZipWith( args_t& a ) : Function(a)
+{
+    ASSERT( a.size() == 3 );
+}
+
 std::string ZipWith::returnSignature() const
 {
     return List::sig();
@@ -61,11 +66,11 @@ void ZipWith::asCode(std::ostream&o) const
     o << "maths::zipWith("; printArgs(o); o <<")";
 }
 
-ExpPtr ZipWith::cloneWith(args_t &a) const {
-    NOTIMP; // Should not be called
+ExpPtr ZipWith::cloneWith(args_t& a) const
+{
+    return ExpPtr( new ZipWith(a) );
 }
 
-// Support for count()
 bool ZipWith::countable() const
 {
     return args(1)->countable() && args(2)->countable();

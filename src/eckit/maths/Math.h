@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Exp.h
+/// @file Math.h
 /// @author Baudouin Raoult
 /// @date November 2013
 

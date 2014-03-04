@@ -24,6 +24,11 @@ Merge::Merge( ExpPtr list0, ExpPtr list1 ) : Function()
     push_back(list1);
 }
 
+Merge::Merge( args_t& a ) : Function(a)
+{
+    ASSERT( a.size() == 2 );
+}
+
 std::string Merge::returnSignature() const
 {
     return List::sig();
@@ -59,11 +64,11 @@ void Merge::asCode(std::ostream&o) const
     o << "maths::merge("; printArgs(o); o <<")";
 }
 
-ExpPtr Merge::cloneWith(args_t &a) const {
-    NOTIMP; // Should not be called
+ExpPtr Merge::cloneWith(args_t& a) const
+{
+    return ExpPtr( new Merge(a) );
 }
 
-// Support for count()
 bool Merge::countable() const
 {
     return args(0)->countable() && args(1)->countable();

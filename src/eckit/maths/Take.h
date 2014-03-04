@@ -24,6 +24,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 /// Takes an element from the list
+
 class Take : public Function {
 
 public: // methods
@@ -32,7 +33,9 @@ public: // methods
 
     Take( ExpPtr e = undef(), ExpPtr l = undef()  );
 
-private:
+private: // methods
+
+    Take( args_t& a );
 
     virtual std::string typeName() const { return Take::className(); }
 
@@ -42,7 +45,7 @@ private:
 
     virtual void asCode( std::ostream& ) const;
 
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 
 };
 

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Exp.h
+/// @file Undef.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date November 2013
@@ -18,10 +18,8 @@
 
 #include "eckit/maths/Expression.h"
 
-
 namespace eckit {
 namespace maths {
-
 
 class Undef : public Expression {
 public: //  methods
@@ -45,9 +43,11 @@ private:
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;
     virtual ExpPtr resolve(Scope & ctx) const;
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 
 };
+
+//--------------------------------------------------------------------------------------------
 
 ExpPtr undef();
 

@@ -35,7 +35,7 @@ Scalar::Scalar(ExpPtr e) : v_(0)
    v_ = Scalar::extract(dummy, e->eval(dummy) );
 }
 
-ExpPtr Scalar::cloneWith(args_t &a) const {
+ExpPtr Scalar::cloneWith(args_t& a) const {
     NOTIMP; // Should not be called
 }
 

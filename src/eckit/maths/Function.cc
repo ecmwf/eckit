@@ -52,8 +52,6 @@ std::string Function::signature() const
 
 ExpPtr Function::evaluate( Scope &ctx ) const
 {
-    DBG;
-
     args_t tmp = args(); // create temporary args
 
     const size_t nargs = tmp.size();
@@ -63,8 +61,6 @@ ExpPtr Function::evaluate( Scope &ctx ) const
     }
 
     std::string sig = signatureArguments( tmp );
-
-    DBGX(sig);
 
     dispatcher_t& d = dispatcher();
     dispatcher_t::iterator itr = d.find( sig );

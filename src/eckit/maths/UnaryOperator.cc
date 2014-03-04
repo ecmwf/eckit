@@ -62,6 +62,12 @@ UnaryOperator<T>::UnaryOperator(ExpPtr e)
 }
 
 template < class T >
+UnaryOperator<T>::UnaryOperator(args_t& a) : Function(a)
+{
+    ASSERT( a.size() == 1 );
+}
+
+template < class T >
 std::string UnaryOperator<T>::returnSignature() const
 {
     return args(0)->returnSignature();

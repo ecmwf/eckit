@@ -65,10 +65,12 @@ ExpPtr Expression::optimise(size_t) const
 
 ExpPtr Expression::optimise(bool doit, size_t depth) const
 {
-    if(doit) {
+    if(doit)
+    {
+#ifdef _DEBUG
         for(size_t k = 0; k < depth; ++k) std::cout << "   ";
         std::cout << "Optimise : " << *this << std::endl;
-
+#endif
         // First check is the arguments can be option
 
         bool changed = false;
@@ -81,27 +83,37 @@ ExpPtr Expression::optimise(bool doit, size_t depth) const
         }
 
         if(changed) {
+#ifdef _DEBUG
             for(size_t k = 0; k < depth; ++k) std::cout << "   ";
             std::cout << "Arguments have changed" << std::endl;
+#endif
             ExpPtr o = cloneWith(result);
             return o->optimise(true, depth + 1);
         }
 
         ExpPtr p = self();
+#ifdef _DEBUG
         for(size_t k = 0; k < depth; ++k) std::cout << "   ";
         std::cout << "Optimise : " << *this << std::endl;
+#endif
         for(;;)
         {
             ExpPtr o = p->optimise(depth + 1);
+#ifdef _DEBUG
             for(size_t k = 0; k < depth; ++k) std::cout << "   ";
+#endif
             if( o == p ) {
+#ifdef _DEBUG
                 for(size_t k = 0; k < depth; ++k) std::cout << "   ";
                 std::cout << "-" << std::endl;
+#endif
                 return o;
             }
             else {
+#ifdef _DEBUG
                 for(size_t k = 0; k < depth; ++k) std::cout << "   ";
                 std::cout << " ==> " << *o << std::endl;
+#endif
                 p = o;
             }
         }

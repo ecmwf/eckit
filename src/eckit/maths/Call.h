@@ -33,21 +33,25 @@ public: // methods
     Call( ExpPtr f, ExpPtr a);
     Call( ExpPtr f, ExpPtr a, ExpPtr b);
 
+private : // methods
+
+    Call( args_t &a );
+
     virtual std::string typeName() const { return Call::className(); }
 
     virtual std::string returnSignature() const;
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
     virtual void asCode( std::ostream& o ) const;
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 
 };
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr call( ExpPtr f);
-ExpPtr call( ExpPtr f, ExpPtr a);
-ExpPtr call( ExpPtr f, ExpPtr a, ExpPtr b);
+ExpPtr call( ExpPtr f );
+ExpPtr call( ExpPtr f, ExpPtr a );
+ExpPtr call( ExpPtr f, ExpPtr a, ExpPtr b );
 
 //--------------------------------------------------------------------------------------------
 

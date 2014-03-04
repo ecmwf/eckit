@@ -60,6 +60,11 @@ Linear::Linear(ExpPtr e) : Function()
     }
 }
 
+Linear::Linear(args_t& a) : Function(a)
+{
+    ASSERT( a.size() == 2 );
+}
+
 ExpPtr Linear::compute(Scope &ctx, const args_t& p )
 {
     scalar_t a = Scalar::extract( ctx, p[0] );
@@ -97,10 +102,10 @@ Linear::Register::Register()
 }
 
 
-ExpPtr Linear::cloneWith(args_t &a) const {
-    NOTIMP;
+ExpPtr Linear::cloneWith(args_t& a) const
+{
+    return ExpPtr(new Linear(a));
 }
-
 
 //--------------------------------------------------------------------------------------------
 

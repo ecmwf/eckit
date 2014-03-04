@@ -103,13 +103,13 @@ ExpPtr ProdAdd::compute_ggg(Scope& ctx, const args_t &p)
     return prod(p[0],add(p[1],p[2]))->eval(ctx);
 }
 
-ExpPtr ProdAdd::cloneWith(args_t &a) const {
-    NOTIMP; // Should not be called
+ExpPtr ProdAdd::cloneWith(args_t& a) const
+{
+    return ExpPtr( new ProdAdd(a) );
 }
 
 ProdAdd::Register::Register()
 {
-
     Function::dispatcher()[ className() + "(s,s,s)" ] = &compute_ggg;
     Function::dispatcher()[ className() + "(s,v,s)" ] = &compute_ggg;
     Function::dispatcher()[ className() + "(s,s,v)" ] = &compute_ggg;

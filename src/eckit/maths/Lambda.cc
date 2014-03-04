@@ -37,6 +37,10 @@ Lambda::Lambda( const std::string &a, ExpPtr body ) : Function()
     push_back(body);
 }
 
+Lambda::Lambda(args_t& a) : Function(a)
+{
+    ASSERT( a.size() <= 3 );
+}
 
 std::string Lambda::returnSignature() const
 {
@@ -86,8 +90,9 @@ void Lambda::asCode(std::ostream&o) const
     o << "maths::lambda("; printArgs(o); o <<")";
 }
 
-ExpPtr Lambda::cloneWith(args_t &a) const {
-    NOTIMP;
+ExpPtr Lambda::cloneWith(args_t& a) const
+{
+    return ExpPtr(new Lambda(a));
 }
 
 //--------------------------------------------------------------------------------------------
@@ -102,12 +107,10 @@ ExpPtr lambda( const std::string &a, ExpPtr body )
     return ExpPtr( new Lambda(a, body) );
 }
 
-
 ExpPtr lambda( ExpPtr body )
 {
     return ExpPtr( new Lambda(body) );
 }
-
 
 //--------------------------------------------------------------------------------------------
 

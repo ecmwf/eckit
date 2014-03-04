@@ -43,8 +43,14 @@ ExpPtr Count::evaluate( Scope &ctx ) const
     return ExpPtr(new Scalar(args(0, ctx, true)->count() ));
 }
 
-ExpPtr Count::cloneWith(args_t &a) const {
-    NOTIMP;
+ExpPtr Count::cloneWith( args_t& a ) const
+{
+    return ExpPtr( new Count(a) );
+}
+
+Count::Count(args_t& a) : Function(a)
+{
+    ASSERT( a.size() == 1);
 }
 
 void Count::asCode(std::ostream&o) const

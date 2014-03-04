@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Exp.h
+/// @file Expression.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date November 2013
@@ -66,7 +66,7 @@ const int CodeFormat = 42; // To use with format() in Log..
 
 //--------------------------------------------------------------------------------------------
 
-#if 0
+#if 1
 #define DBG     std::cout << Here() << std::endl;
 #define DBGX(x) std::cout << Here() << " " << #x << " -> " << x << std::endl;
 #else
@@ -154,10 +154,9 @@ public: // virtual methods
     virtual std::string signature() const = 0;
     virtual std::string returnSignature() const = 0;
 
-
     ExpPtr optimise(bool doit, size_t depth = 0) const;
 
-    // Support for count()
+    /// Adds support for count()
     virtual bool countable() const { return false; }
     virtual size_t count() const { return 0; }
     virtual ExpPtr optimise(size_t) const;

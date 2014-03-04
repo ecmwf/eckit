@@ -35,6 +35,8 @@ public: // methods
 
 private:
 
+    Reduce( args_t& a );
+
     virtual std::string typeName() const { return Reduce::className(); }
 
     virtual std::string returnSignature() const;
@@ -43,7 +45,7 @@ private:
 
      virtual void asCode( std::ostream& ) const;
 
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 };
 
 //--------------------------------------------------------------------------------------------

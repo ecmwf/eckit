@@ -22,6 +22,11 @@ Map::Map( ExpPtr f,  ExpPtr list ) : Function()
     push_back(list);
 }
 
+Map::Map( args_t& a ) : Function(a)
+{
+    ASSERT( a.size() == 2 );
+}
+
 std::string Map::returnSignature() const
 {
     return List::sig();
@@ -54,11 +59,11 @@ void Map::asCode(std::ostream&o) const
     o << "maths::std::map("; printArgs(o); o << ")";
 }
 
-ExpPtr Map::cloneWith(args_t &a) const {
-    NOTIMP; // Should not be called
+ExpPtr Map::cloneWith(args_t& a) const
+{
+    return ExpPtr( new Map(a) );
 }
 
-// Support for count()
 bool Map::countable() const
 {
     return args(1)->countable();

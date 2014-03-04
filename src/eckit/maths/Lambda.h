@@ -37,24 +37,24 @@ public: // methods
 
 private:
 
+    Lambda(args_t& a);
+
     virtual std::string typeName() const { return Lambda::className(); }
 
     virtual std::string returnSignature() const;
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-
     virtual void asCode( std::ostream& ) const;
 
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 };
 
 //--------------------------------------------------------------------------------------------
 
 ExpPtr lambda( ExpPtr body);
 ExpPtr lambda( const std::string& a, ExpPtr body);
-ExpPtr lambda( const std::string& a, const std::string &b, ExpPtr body);
-
+ExpPtr lambda( const std::string& a, const std::string& b, ExpPtr body);
 
 //--------------------------------------------------------------------------------------------
 

@@ -34,6 +34,8 @@ public: // methods
 
 private:
 
+    Filter(args_t& a);
+
     virtual std::string typeName() const { return Filter::className(); }
 
     virtual std::string returnSignature() const;
@@ -42,7 +44,7 @@ private:
 
     virtual void asCode( std::ostream& ) const;
 
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 };
 
 //--------------------------------------------------------------------------------------------

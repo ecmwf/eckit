@@ -55,8 +55,7 @@ void List::print(std::ostream&o) const
     o << ")";
 }
 
-
-ExpPtr List::cloneWith(args_t &a) const
+ExpPtr List::cloneWith(args_t& a) const
 {
     return ExpPtr(new List(a, List::Swap()));
 }

@@ -55,7 +55,7 @@ ExpPtr undef()
     return ExpPtr( new Undef() );
 }
 
-ExpPtr Undef::cloneWith(args_t &a) const {
+ExpPtr Undef::cloneWith(args_t& a) const {
     NOTIMP; // Should not be called
 }
 

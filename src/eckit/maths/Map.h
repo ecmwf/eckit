@@ -31,7 +31,9 @@ public: // methods
 
     Map( ExpPtr f, ExpPtr l );
 
-private:
+private: // methods
+
+    Map( args_t& a );
 
     virtual std::string typeName() const { return Map::className(); }
 
@@ -41,9 +43,9 @@ private:
 
     virtual void asCode( std::ostream& ) const;
 
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 
-    // Support for count()
+    /// Adds support for count()
     virtual bool countable() const;
     virtual size_t count() const;
 

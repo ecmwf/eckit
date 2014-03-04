@@ -43,9 +43,9 @@ struct Generic
     template <class T, class U, class V >
     static BoolPtr apply( T op, const U& a, const V& b )
     {
-        DBGX(a);
-        DBGX(b);
-        DBGX( op( a , b ) );
+//        DBGX(a);
+//        DBGX(b);
+//        DBGX( op( a , b ) );
         return BoolPtr( new Boolean( op( a , b ) ) );
     }
 };
@@ -192,6 +192,12 @@ BinaryPredicate<T>::BinaryPredicate(ExpPtr a, ExpPtr b)
 {
     push_back(a);
     push_back(b);
+}
+
+template < class T >
+BinaryPredicate<T>::BinaryPredicate(args_t& a) : Function(a)
+{
+    ASSERT( a.size() == 2 );
 }
 
 template < class T >

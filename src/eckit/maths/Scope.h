@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Exp.h
+/// @file Scope.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date November 2013

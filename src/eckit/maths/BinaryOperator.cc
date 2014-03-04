@@ -108,6 +108,12 @@ BinaryOperator<T>::BinaryOperator(ExpPtr a, ExpPtr b)
 }
 
 template < class T >
+BinaryOperator<T>::BinaryOperator(args_t& a) : Function(a)
+{
+    ASSERT( a.size() == 2 );
+}
+
+template < class T >
 std::string BinaryOperator<T>::returnSignature() const
 {
     for( args_t::const_iterator i = begin(); i != end(); ++i )

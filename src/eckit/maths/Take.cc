@@ -21,6 +21,11 @@ Take::Take(ExpPtr e, ExpPtr l) : Function()
     push_back(l);
 }
 
+Take::Take( args_t& a ) : Function(a)
+{
+    ASSERT( a.size() == 2 );
+}
+
 std::string Take::returnSignature() const
 {
     return Undef::sig();
@@ -45,8 +50,9 @@ void Take::asCode(std::ostream&o) const
     o << "maths::take("; printArgs(o); o << ")";
 }
 
-ExpPtr Take::cloneWith(args_t &a) const {
-    NOTIMP; // Should not be called
+ExpPtr Take::cloneWith(args_t& a) const
+{
+    return ExpPtr( new Take(a) );
 }
 
 //--------------------------------------------------------------------------------------------

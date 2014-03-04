@@ -38,15 +38,6 @@ public:
 
     BinaryPredicate( ExpPtr a, ExpPtr b);
 
-    virtual std::string typeName() const;
-
-    virtual std::string returnSignature() const;
-
-    virtual ExpPtr cloneWith(args_t &a) const {
-        ASSERT(a.size() == 2);
-        return ExpPtr(new BinaryPredicate<T>(a[0], a[1]));
-    }
-
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
     /// U is the left operand type ( Scalar, Vector, ... )
@@ -67,6 +58,19 @@ public:
         /// Computes the expression with the passed arguments
         static ExpPtr compute( Scope& ct , const args_t& p );
     };
+
+private: // methods
+
+    BinaryPredicate( args_t& a );
+
+    virtual std::string typeName() const;
+
+    virtual std::string returnSignature() const;
+
+    virtual ExpPtr cloneWith(args_t& a) const
+    {
+        return ExpPtr( new BinaryPredicate<T>(a) );
+    }
 
     virtual void asCode( std::ostream& o ) const;
 };

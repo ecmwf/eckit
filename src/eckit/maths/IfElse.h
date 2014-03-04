@@ -31,7 +31,9 @@ public: // methods
 
     IfElse( ExpPtr f, ExpPtr i, ExpPtr e );
 
-private:
+private: // methods
+
+    IfElse(args_t& a);
 
     virtual std::string typeName() const { return IfElse::className(); }
 
@@ -41,7 +43,7 @@ private:
 
     virtual void asCode( std::ostream& ) const;
 
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 };
 
 //--------------------------------------------------------------------------------------------

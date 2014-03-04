@@ -34,16 +34,17 @@ public: // methods
 
     struct Register { Register(); };
 
-private:
-    virtual std::string typeName() const { return Linear::className(); }
+private: // methods
 
+    Linear(args_t& a);
+
+    virtual std::string typeName() const { return Linear::className(); }
 
     virtual std::string returnSignature() const;
 
-
     virtual void asCode( std::ostream& ) const;
 
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 
 protected: // methods
 

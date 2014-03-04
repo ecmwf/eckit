@@ -40,10 +40,7 @@ public: // methods
 
     static std::string className() { return "ProdAdd"; }
 
-    ProdAdd( const args_t& args );
-
     ProdAdd( const ExpPtr& e );
-
 
     struct Register
     {
@@ -63,13 +60,15 @@ protected: // methods
 
 private:
 
+    ProdAdd( const args_t& args );
+
     virtual std::string typeName() const { return ProdAdd::className(); }
 
     virtual std::string returnSignature() const;
 
     virtual void asCode( std::ostream& ) const;
 
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 };
 
 //--------------------------------------------------------------------------------------------

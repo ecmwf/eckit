@@ -36,7 +36,8 @@ Boolean::Boolean(const ExpPtr& e) : v_(0)
    v_ = Boolean::extract( dummy, e->eval(dummy) );
 }
 
-ExpPtr Boolean::cloneWith(args_t &a) const {
+ExpPtr Boolean::cloneWith(args_t& a) const
+{
     NOTIMP; // Should not be called
 }
 

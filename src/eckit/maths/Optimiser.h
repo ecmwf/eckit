@@ -43,7 +43,7 @@ protected:
 //--------------------------------------------------------------------------------------------
 
 /// Helper class that regists the reduction between 2 expressions
-/// to be used when the optimised expression has a constructor fromt he target expression
+/// to be used when the optimised expression has a constructor from the target expression
 template< typename T>
 class OptimiseTo : public Optimiser {
 public:

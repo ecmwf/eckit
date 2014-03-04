@@ -37,6 +37,11 @@ Call::Call( ExpPtr f, ExpPtr a, ExpPtr b) : Function()
     push_back(b);
 }
 
+Call::Call(args_t& a) : Function(a)
+{
+    ASSERT( a.size() >= 1 && a.size() <= 3);
+}
+
 std::string Call::returnSignature() const
 {
     return ";";
@@ -56,8 +61,9 @@ ExpPtr Call::evaluate( Scope &ctx ) const
     return f->as<Lambda>()->call(scope);
 }
 
-ExpPtr Call::cloneWith(args_t &a) const {
-    NOTIMP;
+ExpPtr Call::cloneWith( args_t& a ) const
+{
+    return ExpPtr( new Call(a) );
 }
 
 //--------------------------------------------------------------------------------------------

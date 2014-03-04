@@ -33,7 +33,9 @@ public: // methods
 
     Count( ExpPtr e = undef() );
 
-private:
+private: // methods
+
+    Count( args_t& a );
 
     virtual std::string typeName() const { return Count::className(); }
 
@@ -43,7 +45,7 @@ private:
 
     virtual void asCode( std::ostream& ) const;
 
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 
     virtual ExpPtr optimise(size_t depth) const;
 

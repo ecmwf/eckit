@@ -49,7 +49,7 @@ public: // methods
     const value_t& value() const { return args(); }
 
 
-private: // virtual methods
+private: // methods
 
     virtual std::string typeName() const { return List::className(); }
     virtual std::string signature() const { return List::sig(); }
@@ -58,12 +58,11 @@ private: // virtual methods
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;
 
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 
-    // Support for count()
+    /// Adds support for count()
     virtual bool countable() const { return true; }
     virtual size_t count() const { return size(); }
-
 
 };
 

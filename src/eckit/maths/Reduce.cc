@@ -22,6 +22,11 @@ Reduce::Reduce( ExpPtr f,  ExpPtr list ) : Function()
     push_back(list);
 }
 
+Reduce::Reduce( args_t& a ) : Function(a)
+{
+    ASSERT( a.size() == 2 );
+}
+
 std::string Reduce::returnSignature() const
 {
     return Undef::sig(); /// @todo review this -- it could be the signature iterated over the list
@@ -42,22 +47,21 @@ ExpPtr Reduce::evaluate( Scope &ctx ) const
 
     for( size_t i = 1; i < nlist; ++i )
     {
-        DBGX(*e);
+//        DBGX(*e);
         e = f->eval( e, list[i]->eval(ctx) );
     }
 
     return e->eval(ctx);
 }
 
-
 void Reduce::asCode(std::ostream&o) const
 {
     o << "maths::reduce("; printArgs(o); o <<")";
 }
 
-
-ExpPtr Reduce::cloneWith(args_t &a) const {
-    NOTIMP; // Should not be called
+ExpPtr Reduce::cloneWith(args_t& a) const
+{
+    return ExpPtr( new Reduce(a) );
 }
 //--------------------------------------------------------------------------------------------
 

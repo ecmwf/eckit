@@ -42,7 +42,7 @@ protected: // methods
     /// handle the setup of the parameters themselves
     Function();
 
-    /// Contructor taking a list of parameters
+    /// Constructor taking a list of parameters
     Function( const args_t& args );
     Function( args_t& args, Swap ignored );
 

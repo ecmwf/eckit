@@ -23,6 +23,11 @@ Filter::Filter( ExpPtr pred,  ExpPtr list ) : Function()
     push_back(list);
 }
 
+Filter::Filter(args_t& a) : Function(a)
+{
+    ASSERT( a.size() == 2);
+}
+
 std::string Filter::returnSignature() const
 {
     return List::sig();
@@ -58,10 +63,10 @@ void Filter::asCode(std::ostream&o) const
 }
 
 
-ExpPtr Filter::cloneWith(args_t &a) const {
-    NOTIMP;
+ExpPtr Filter::cloneWith(args_t& a) const
+{
+    return ExpPtr(new Filter(a));
 }
-
 
 //--------------------------------------------------------------------------------------------
 

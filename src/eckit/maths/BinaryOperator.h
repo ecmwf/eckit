@@ -32,19 +32,9 @@ template <class T>
 class BinaryOperator : public Function  {
 public:
 
-
     static std::string className();
 
     BinaryOperator(ExpPtr a, ExpPtr b);
-
-    virtual std::string typeName() const;
-
-    virtual std::string returnSignature() const;
-
-    virtual ExpPtr cloneWith(args_t &a) const {
-        ASSERT(a.size() == 2);
-        return ExpPtr(new BinaryOperator<T>(a[0], a[1]));
-    }
 
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
@@ -67,7 +57,21 @@ public:
         static ExpPtr compute( Scope& ctx , const args_t& p );
     };
 
+private: // methods
+
+    BinaryOperator( args_t& a );
+
+    virtual std::string typeName() const;
+
+    virtual std::string returnSignature() const;
+
+    virtual ExpPtr cloneWith(args_t& a) const
+    {
+        return ExpPtr( new BinaryOperator<T>(a) );
+    }
+
     virtual void asCode( std::ostream& o ) const;
+
 };
 
 //--------------------------------------------------------------------------------------------
@@ -83,12 +87,10 @@ typedef std::modulus<scalar_t>     Mod;
 // version with stand alone functions
 
 ExpPtr prod( ExpPtr l = undef(), ExpPtr r = undef() );
-ExpPtr div( ExpPtr l = undef(), ExpPtr r = undef() );
-ExpPtr add( ExpPtr l = undef(), ExpPtr r = undef() );
-ExpPtr sub( ExpPtr l = undef(), ExpPtr r = undef() );
-ExpPtr mod( ExpPtr l = undef(), ExpPtr r = undef() );
-//ExpPtr mod( Expression& l, Expression& r );
-
+ExpPtr div ( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr add ( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr sub ( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr mod ( ExpPtr l = undef(), ExpPtr r = undef() );
 
 //--------------------------------------------------------------------------------------------
 

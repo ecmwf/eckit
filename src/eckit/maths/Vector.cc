@@ -30,11 +30,13 @@ Vector::Vector(Vector::value_t &v, Swap ignored )
     std::swap(v_,v);
 }
 
-bool Vector::is(const ExpPtr &e) {
+bool Vector::is(const ExpPtr &e)
+{
     return dynamic_cast<Vector*>(e.get()) != 0;
 }
 
-ExpPtr Vector::cloneWith(args_t &a) const {
+ExpPtr Vector::cloneWith(args_t& a) const
+{
     NOTIMP; // Should not be called
 }
 

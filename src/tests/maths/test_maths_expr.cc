@@ -80,10 +80,10 @@ void TestExp::run()
 {
     setup();
 
-//    test_optimise_scalars();
-//    test_optimise_recursive_scalars();
-//    test_optimise_prodadd();
-    //test_operators();
+    test_optimise_scalars();
+    test_optimise_recursive_scalars();
+    test_optimise_prodadd();
+//    test_operators();
     test_list();
     test_map();
     test_reduce();
@@ -97,8 +97,6 @@ void TestExp::run()
 
 void TestExp::setup()
 {
-    DBG;
-
     a_ = maths::scalar( 2. );
     b_ = maths::scalar( 4. );
     x_ = maths::vector( 10, 5. );
@@ -107,38 +105,30 @@ void TestExp::setup()
 
 void TestExp::teardown()
 {
-    DBG;
 }
 
 void TestExp::test_optimise_scalars()
 {
-    DBG;
-
     ExpPtr c = maths::add(a_,b_); // scalar-scalar
 
     ExpPtr e = maths::add( prod( c , x_ ) , prod( b_, y_ ));
 
-    DBG;
-
     ASSERT( e->returnSignature() == Vector::sig() );
 
-    DBG;
-    // signature before reducing
+    // signature before optimising
     ASSERT( e->signature() == "Add(Prod(Add(s,s),v),Prod(s,v))" );
 
-    DBG;
     // eval() first calls optimise internally
     ASSERT( e->eval()->str() == "Vector(58, 58, 58, 58, 58, 58, 58, 58, 58, 58)" );
 
-    DBG;
+    ExpPtr opt = e->optimise(true);
+
     // signature after reducing
-    ASSERT( e->signature() == "Add(Prod(s,v),Prod(s,v))" );
+    ASSERT( opt->signature() == "Linear(s,v,s,v)" );
 }
 
 void TestExp::test_optimise_recursive_scalars()
 {
-    DBG;
-
     ExpPtr c1 = maths::add(a_,b_);
     ExpPtr c2 = maths::add(c1,c1);
     ExpPtr c3 = maths::add(c2,c2);
@@ -160,8 +150,6 @@ void TestExp::test_optimise_recursive_scalars()
 
 void TestExp::test_optimise_prodadd()
 {
-    DBG;
-
     ExpPtr e0 = maths::prod( a_, maths::add(y_, x_ ) );
     ASSERT( e0->optimise(true)->signature() == "ProdAdd(s,v,v)" );
     ASSERT( e0->eval()->str() == "Vector(24, 24, 24, 24, 24, 24, 24, 24, 24, 24)" );
@@ -176,28 +164,23 @@ void TestExp::test_optimise_prodadd()
     ASSERT( e2->eval()->str() == "Vector(96, 96, 96, 96, 96, 96, 96, 96, 96, 96)" );
 }
 
-/*
-void TestExp::test_operators()
-{
-    DBG;
 
-    ExpPtr e0 =  a_ * ( y_ +  x_ );
+//void TestExp::test_operators()
+//{
+//    DBG;
+//    ExpPtr e0 =  a_ * ( y_ +  x_ );
+//    ASSERT( e0->optimise()->signature() == "ProdAdd(s,v,v)" );
+//    ASSERT( e0->eval()->str() == "Vector(24, 24, 24, 24, 24, 24, 24, 24, 24, 24)" );
+//    ExpPtr e1 =  maths::vector( 10, 10. ) / maths::vector( 10, 5. );
+//    ASSERT( e1->eval()->str() == "Vector(2, 2, 2, 2, 2, 2, 2, 2, 2, 2)" );
+//
+//    ExpPtr e2 =  maths::vector( 10, 13. ) - maths::vector( 10, 5. );
+//    ASSERT( e2->eval()->str() == "Vector(8, 8, 8, 8, 8, 8, 8, 8, 8, 8)" );
+//}
 
-    ASSERT( e0->optimise()->signature() == "ProdAdd(s,v,v)" );
-    ASSERT( e0->eval()->str() == "Vector(24, 24, 24, 24, 24, 24, 24, 24, 24, 24)" );
-
-    ExpPtr e1 =  maths::vector( 10, 10. ) / maths::vector( 10, 5. );
-    ASSERT( e1->eval()->str() == "Vector(2, 2, 2, 2, 2, 2, 2, 2, 2, 2)" );
-
-    ExpPtr e2 =  maths::vector( 10, 13. ) - maths::vector( 10, 5. );
-    ASSERT( e2->eval()->str() == "Vector(8, 8, 8, 8, 8, 8, 8, 8, 8, 8)" );
-}
-*/
 
 void TestExp::test_list()
 {
-    DBG;
-
     ExpPtr l0 =  maths::list( y_ , x_ );
 
     ASSERT( l0->eval()->str() == "List(Vector(7, 7, 7, 7, 7, 7, 7, 7, 7, 7), Vector(5, 5, 5, 5, 5, 5, 5, 5, 5, 5))" );
@@ -216,7 +199,7 @@ void TestExp::test_list()
     ExpPtr c3 = maths::count( maths::list( a_, b_, a_, b_, a_ ) );
 
     ASSERT( c3->eval()->str() == "Scalar(5)" );
-    //ASSERT( Scalar::extract(c3->eval()) == 5 );
+    ASSERT( c3->eval()->as<Scalar>()->value() == 5 );
 }
 
 void TestExp::test_map()

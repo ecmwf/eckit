@@ -32,14 +32,17 @@ public: // methods
     Bind( size_t i, ExpPtr f, ExpPtr e );
     Bind( ExpPtr i, ExpPtr f, ExpPtr e );
 
-private:
+private: // methods
+
+    Bind(args_t& a);
+
     virtual std::string typeName() const;
 
     virtual std::string returnSignature() const;
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
     virtual void asCode( std::ostream& o ) const;
-    virtual ExpPtr cloneWith(args_t &a) const;
+    virtual ExpPtr cloneWith(args_t& a) const;
 };
 
 //--------------------------------------------------------------------------------------------

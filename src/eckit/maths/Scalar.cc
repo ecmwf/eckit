@@ -20,7 +20,8 @@ Scalar::Scalar( const scalar_t& v ) : v_(v)
 {
 }
 
-bool Scalar::is(const ExpPtr &e) {
+bool Scalar::is(const ExpPtr &e)
+{
     return dynamic_cast<Scalar*>(e.get()) != 0;
 }
 

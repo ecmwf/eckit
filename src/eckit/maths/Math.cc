@@ -126,6 +126,12 @@ Math Math::optimise() const
 {
     return Math(expr_->optimise(true));
 }
+
+ExpPtr Math::expr() const
+{
+    return expr_;
+}
+
 //--------------------------------------------------------------------------------------------
 
 } // namespace maths

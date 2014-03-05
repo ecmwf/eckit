@@ -24,33 +24,55 @@
 #include "eckit/maths/BinaryOperator.h"
 #include "eckit/maths/Count.h"
 #include "eckit/maths/Merge.h"
-#include "eckit/maths/Map.h"
 
+using namespace std;
 using namespace eckit;
 using namespace eckit::maths;
 
 //-----------------------------------------------------------------------------
 
+namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-class Quicksort : public Tool {
+/// test lambda expressions
+
+class TestLambda : public Tool {
+
 public:
 
-    Quicksort(int argc,char **argv): Tool(argc,argv) {
-    }
-
-    ~Quicksort() {
+    TestLambda(int argc,char **argv): Tool(argc,argv)
+    {
     }
 
     virtual void run();
+
+    void setup();
+
+    void test_lambda();
+
+    void teardown();
 };
 
-//-----------------------------------------------------------------------------
-
-void Quicksort::run()
+void TestLambda::run()
 {
+    setup();
 
+    test_lambda();
+
+    teardown();
+}
+
+void TestLambda::setup()
+{
+}
+
+void TestLambda::teardown()
+{
+}
+
+void TestLambda::test_lambda()
+{ 
     setformat(std::cout,maths::CodeFormat);
 
     Math a = maths::scalar( 2. );
@@ -61,35 +83,44 @@ void Quicksort::run()
 
     Math twice  = call(lambda("a", Math(2.0) * Math("a")));
 
-    std::cout << "-----------------------" << std::endl;
-    std::cout << twice << std::endl;
-//    twice = twice( list(a, b, c) ); /* fails: Prod(s,l) is not implemented -- use map instead */
-//    std::cout << twice << std::endl;
-    std::cout << "-----------------------" << std::endl;
+//    std::cout << twice(c) << std::endl;
+
+    ASSERT( Scalar::extract(twice(c)) == 2. );
 
     Math neg    = call(lambda("a", Math(0.0) - Math("a")));
+
+//    std::cout << neg(a) << std::endl;
+
+    ASSERT( Scalar::extract(neg(a)) == -2. );
+
+    if( false ) // why does this work?
+    {
 
     Math X = l + l;
 
     std::cout << X << std::endl;
+    std::cout << X.expr()->str() << std::endl;
 
-    X = X();
 
+    X = X(); // evaluation to self
 
-    std::cout << std::endl << "************************" << std::endl;
+    std::cout << X << std::endl;
+    std::cout << X.expr()->str() << std::endl;
 
-    std::cout << "-----------------------" << std::endl;
-    std::cout << X             << std::endl;
-    std::cout << "-----------------------" << std::endl;
+    }
 
 }
 
 //-----------------------------------------------------------------------------
 
+} // namespace eckit_test
+
+//-----------------------------------------------------------------------------
+
 int main(int argc,char **argv)
 {
-    Quicksort app(argc,argv);
-    app.start();
+    eckit_test::TestLambda mytest(argc,argv);
+    mytest.start();
     return 0;
 }
 

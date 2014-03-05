@@ -17,6 +17,7 @@
 #define eckit_maths_Scalar_h
 
 #include "eckit/maths/Value.h"
+#include "eckit/maths/Math.h"
 
 namespace eckit {
 namespace maths {
@@ -36,6 +37,13 @@ public: // methods
 
     static scalar_t extract ( Scope& ctx , const ExpPtr& e )
     {
+        ASSERT( Scalar::is(e) );
+        return e->as<Scalar>()->value();
+    }
+
+    static scalar_t extract ( const Math& m )
+    {
+        ExpPtr e = m;
         ASSERT( Scalar::is(e) );
         return e->as<Scalar>()->value();
     }

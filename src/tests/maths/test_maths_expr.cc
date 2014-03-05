@@ -35,6 +35,8 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
+/// generic tests for expression engine
+
 class TestExp : public Tool {
 public:
 
@@ -83,7 +85,6 @@ void TestExp::run()
     test_optimise_scalars();
     test_optimise_recursive_scalars();
     test_optimise_prodadd();
-//    test_operators();
     test_list();
     test_map();
     test_reduce();
@@ -163,21 +164,6 @@ void TestExp::test_optimise_prodadd()
     ASSERT( e2->optimise(true)->signature() == "ProdAdd(s,v,v)" );
     ASSERT( e2->eval()->str() == "Vector(96, 96, 96, 96, 96, 96, 96, 96, 96, 96)" );
 }
-
-
-//void TestExp::test_operators()
-//{
-//    DBG;
-//    ExpPtr e0 =  a_ * ( y_ +  x_ );
-//    ASSERT( e0->optimise()->signature() == "ProdAdd(s,v,v)" );
-//    ASSERT( e0->eval()->str() == "Vector(24, 24, 24, 24, 24, 24, 24, 24, 24, 24)" );
-//    ExpPtr e1 =  maths::vector( 10, 10. ) / maths::vector( 10, 5. );
-//    ASSERT( e1->eval()->str() == "Vector(2, 2, 2, 2, 2, 2, 2, 2, 2, 2)" );
-//
-//    ExpPtr e2 =  maths::vector( 10, 13. ) - maths::vector( 10, 5. );
-//    ASSERT( e2->eval()->str() == "Vector(8, 8, 8, 8, 8, 8, 8, 8, 8, 8)" );
-//}
-
 
 void TestExp::test_list()
 {

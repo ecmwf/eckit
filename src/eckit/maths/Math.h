@@ -60,7 +60,9 @@ public:
     Math operator <=(const Math&) const;
 
     // Just for testing
+
     Math optimise() const;
+    ExpPtr expr() const;
 
 private:
 
@@ -74,9 +76,7 @@ private:
         return os;
     }
 
-
 };
-
 
 //--------------------------------------------------------------------------------------------
 

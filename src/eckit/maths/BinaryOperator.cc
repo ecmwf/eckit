@@ -10,6 +10,8 @@
 
 #include "eckit/maths/Scalar.h"
 #include "eckit/maths/Vector.h"
+#include "eckit/maths/List.h"
+#include "eckit/maths/Math.h"
 #include "eckit/maths/BinaryOperator.h"
 #include "eckit/maths/Optimiser.h"
 
@@ -39,6 +41,7 @@ ExpPtr mod( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Mod >(l,r
 
 struct Generic
 {
+
     template <class T>
     static ExpPtr apply( T op, const Scalar::value_t& a, const Scalar::value_t& b )
     {
@@ -135,12 +138,6 @@ std::string BinaryOperator<T>::className()
 {
     return opname( T() );
 }
-/*
-template < class T >
-ExpPtr BinaryOperator<T>::optimise() const
-{
-    return Optimiser::apply(self());
-}*/
 
 template < class T >
 void BinaryOperator<T>::asCode( std::ostream& o ) const {
@@ -171,8 +168,6 @@ ExpPtr BinaryOperator<T>::Computer<U,V,I>::compute(Scope& ctx, const args_t &p)
 
     return I::apply(op,a,b);
 }
-
-
 
 //--------------------------------------------------------------------------------------------
 

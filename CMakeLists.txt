@@ -142,16 +142,16 @@ set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
 set( ECKIT_LIBRARIES      eckit eckit_web )
 
-if( ENABLE_GRID )
+if( HAVE_GRID )
 	list( APPEND ECKIT_LIBRARIES eckit_grid )
 endif()
 
-if( ENABLE_GRIB AND GRIB_API_FOUND )
+if( HAVE_GRIB )
 	list( APPEND ECKIT_LIBRARIES eckit_grib )
 	list( APPEND ECKIT_TPLS grib_api )
 endif()
 
-if( ECKIT_EIGEN3 AND EIGEN3_FOUND )
+if( HAVE_EIGEN )
 	list( APPEND ECKIT_TPLS Eigen3 )
 endif()
 

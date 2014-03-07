@@ -1,4 +1,4 @@
-ecbuild_add_executable(   
+ecbuild_add_test(
 	TARGET      mpi_comm
 	SOURCES     mpi_comm.cc 
 	CONDITION   HAVE_GRIB AND HAVE_MPI

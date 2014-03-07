@@ -39,6 +39,14 @@ ecbuild_declare_project()
 
 ecbuild_add_option( FEATURE GRID
 					DESCRIPTION "eckit::grid extension [EXPERIMENTAL]" )
+debug_var( ENABLE_GRID )
+if( ENABLE_GRID )
+	ecbuild_use_package( PROJECT atlas )
+	add_feature_info( atlas ATLAS_FOUND "support for unstructured meshes")
+	if( NOT ATLAS_FOUND )
+		set( HAVE_GRID 0 )
+	endif()
+endif()
 
 # Eigen
 

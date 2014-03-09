@@ -38,8 +38,9 @@ ecbuild_declare_project()
 # eckit::grid
 
 ecbuild_add_option( FEATURE GRID
+					DEFAULT ON
 					DESCRIPTION "eckit::grid extension [EXPERIMENTAL]" )
-debug_var( ENABLE_GRID )
+
 if( ENABLE_GRID )
 	ecbuild_use_package( PROJECT atlas )
 	add_feature_info( atlas ATLAS_FOUND "support for unstructured meshes")
@@ -74,6 +75,7 @@ set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encod
 # eckit::maths
 
 ecbuild_add_option( FEATURE MATHS
+					DEFAULT ON
 					DESCRIPTION "eckit::maths expressions [EXPERIMENTAL]" )
 
 if( HAVE_MATHS )

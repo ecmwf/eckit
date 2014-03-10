@@ -35,7 +35,7 @@ std::string BackTrace::dump()
     
     std::ostringstream oss;
     
-#if defined( EC_HAVE_EXECINFO_BACKTRACE ) && !defined( AIX )
+#if defined( EC_HAVE_EXECINFO_BACKTRACE ) && !defined( _AIX )
 
     static Ordinal count = 0;
     ++count;

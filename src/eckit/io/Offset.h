@@ -31,7 +31,7 @@ class Bless;
 // on 64bits boundaries and longs on 32 bits boundaries,
 // we need the help of a little pragma here, to make ObjectStore happy
 
-#ifdef AIX
+#ifdef _AIX
 #pragma options align=twobyte
 #endif
 
@@ -112,7 +112,7 @@ void sort(OffsetList&, LengthList&);
 bool compress(OffsetList&, LengthList&);
 void accumulate(const LengthList&, OffsetList&, const Offset& = 0);
 
-#ifdef AIX
+#ifdef _AIX
 #pragma options align=reset
 #endif
 

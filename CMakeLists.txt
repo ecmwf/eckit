@@ -141,12 +141,8 @@ if( NOT EC_HAVE_CXX_SSTREAM )
 	message( FATAL_ERROR "eckit cannot build -- c++ compiler does not support stringstream" )
 endif()
 
-###############################################################################
-# contents
-
-ecbuild_find_project_files()
-
-add_definitions( -D${EC_OS_NAME} )
+############################################################################################
+# export package info
 
 set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
@@ -167,9 +163,12 @@ endif()
 
 get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
 
-include_directories( ${ECKIT_INCLUDE_DIRS} )
+############################################################################################
+# sources
 
-# source files
+ecbuild_find_project_files()
+
+include_directories( ${ECKIT_INCLUDE_DIRS} )
 
 add_subdirectory( src )
 

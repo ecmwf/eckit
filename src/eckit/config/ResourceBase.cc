@@ -165,7 +165,7 @@ void ResourceBase::dump(std::ostream& s) const
 	s << std::endl;
 }
 
-#ifdef AIX
+#ifdef _AIX
 // force template instantiation
 #pragma define(Resource<bool>)
 #pragma define(Resource<long>)

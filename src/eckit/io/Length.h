@@ -29,7 +29,7 @@ class DumpLoad;
 // on 64bits boundaries and longs on 32 bits boundaries,
 // we need the help of a little pragma here, to make ObjectStore happy
 
-#ifdef AIX
+#ifdef _AIX
 #pragma options align=twobyte
 #endif
 
@@ -92,7 +92,7 @@ private: // members
 typedef std::vector<Length> LengthList;
 
 
-#ifdef AIX
+#ifdef _AIX
 #pragma options align=reset
 #endif
 

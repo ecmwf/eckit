@@ -30,7 +30,7 @@
 #include "eckit/net/TCPSocket.h"
 #include "eckit/log/Seconds.h"
 
-#ifdef AIX
+#ifdef _AIX
 //TODO: Add check to cmake
 typedef void (*sighandler_t) (int);
 #endif
@@ -556,7 +556,7 @@ std::string TCPSocket::addrToHost(in_addr addr)
     hostent *h;
 
 // For some reason, sgi verion of gethostbyname_r is broken
-#ifdef AIX
+#ifdef _AIX
 
 
 

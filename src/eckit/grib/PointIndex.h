@@ -135,13 +135,12 @@ public:
         return s;
     }
 
-    static double km(const LLPoint2& a, const LLPoint2& b)
-    {
-        return ::grib_nearest_distance(earthRadius, a.lon() , a.lat() , b.lon(), b.lat());
-    }
+//    static double km(const LLPoint2& a, const LLPoint2& b)
+//    {
+//        return ::grib_nearest_distance(earthRadius, a.lon() , a.lat() , b.lon(), b.lat());
+//    }
+
 };
-
-
 
 template<class Traits>
 class LLTree : public eckit::KDTreeMapped<Traits> {

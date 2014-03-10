@@ -23,6 +23,7 @@ template<int SIZE = 2>
 class SPPoint {
 
 protected:
+
     double x_[SIZE];
 
 public:
@@ -36,6 +37,10 @@ public:
         std::fill(x_, x_+dimensions(), 0);
     }
 
+//    SPPoint( double* x )
+//    {
+//        std::copy(x, x+dimensions(), x_);
+//    }
 
     template<class Container>
     explicit SPPoint(Container c)
@@ -49,14 +54,14 @@ public:
         x_[0] = x;
         x_[1] = y;
     }
-/*
-    explicit SPPoint(double x, double y, double z)
-    {
-        ASSERT( SIZE >= 3 );
-        x_[0] = x;
-        x_[1] = y;
-        x_[2] = z;
-    }*/
+
+//    explicit SPPoint(double x, double y, double z)
+//    {
+//        ASSERT( SIZE >= 3 );
+//        x_[0] = x;
+//        x_[1] = y;
+//        x_[2] = z;
+//    }
 
     bool operator<(const SPPoint& other) const
     { return std::lexicographical_compare(x_,x_ + SIZE, other.x_, other.x_ + SIZE); }

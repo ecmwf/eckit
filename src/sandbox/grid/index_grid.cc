@@ -54,6 +54,11 @@ public:
 
     double* data() { return x_; }
 
+    KPoint3( const Point3& p ): SPPoint<3>()
+    {
+        std::copy(p.x, p.x+3, x_);
+    }
+
     KPoint3( const double lat, const double lon ): SPPoint<3>()
     {
         atlas::latlon_to_3d( lat, lon, x_ );
@@ -185,6 +190,54 @@ std::vector< Point3 >* read_ll_points_from_grib( const std::string& filename )
 #endif
 
     return pts;
+}
+
+//------------------------------------------------------------------------------------------------------
+
+FieldT<double>& read_field_from_grib( const std::string& filename, atlas::Mesh* mesh )
+{
+    FunctionSpace& nodes     = mesh->function_space( "nodes" );
+
+    const size_t nb_nodes = nodes.bounds()[1];
+
+    FieldT<double>& field = nodes.create_field<double>("field",1);
+
+    int err = 0;
+
+    // load grib file
+
+    FILE* f = ::fopen( filename.c_str(), "r" );
+    if( f == 0 )
+        throw std::string("error opening file");
+
+    grib_handle* h = grib_handle_new_from_file(0,f,&err);
+
+    if( h == 0 || err != 0 )
+        throw std::string("error reading grib");
+
+    grib_iterator *i = grib_iterator_new(h, 0, &err);
+
+    double lat   = 0.;
+    double lon   = 0.;
+    double value = 0.;
+
+    size_t in = 0;
+    while(grib_iterator_next(i,&lat,&lon,&value))
+    {
+        if( in >= nb_nodes )
+            throw SeriousBug( "field is of incorrect size" );
+        field[in] = value;
+        ++in;
+    }
+    grib_iterator_delete(i);
+
+    if( in != nb_nodes )
+        throw SeriousBug( "field is of incorrect size" );
+
+    if( ::fclose(f) == -1 )
+        throw std::string("error closing file");
+
+    return field;
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -364,59 +417,72 @@ bool triag_intersection( const Triag& tg, const Ray& r, Isect& isect )
     isect.v = r.dir.dot(qvec) * invDet;
     if (isect.v < 0 || isect.u + isect.v > 1) return false;
     isect.t = edge2.dot(qvec) * invDet;
+    return true;
 }
 
 //------------------------------------------------------------------------------------------------------
 
+#define NLATS 256
+#define NLONG 256
+
 int main()
-{
+{    
     typedef std::numeric_limits< double > dbl;
-    //    std::cout.precision(dbl::digits10);
-    std::cout.precision( 32 );
+    std::cout.precision(dbl::digits10);
     std::cout << std::fixed << std::endl;
 
-    std::vector< Point3 >* pts;
+    // output grid
 
-//    std::cout << "> loading data.grib ..." << std::endl;
+    std::vector< Point3 >* opts = atlas::MeshGen::generate_latlon_points(NLATS, NLONG);
 
-    pts = read_ll_points_from_grib( "data.grib" );
+    // input grid
 
-//    std::cout << "> generating mesh ..." << std::endl;
+    std::cout << "> reading input points ..." << std::endl;
 
-    Mesh* mesh = atlas::MeshGen::generate_from_points( *pts );
+    std::vector< Point3 >* ipts = read_ll_points_from_grib( "data.grib" );
 
-    delete pts;
+    // sparse interpolation matrix
 
-    // generate baricenters of each triangle
+    const size_t out_npts = opts->size();
+    const size_t inp_npts = ipts->size();
 
-//    std::cout << "> generating cell centres ..." << std::endl;
+    Eigen::SparseMatrix<double> W( out_npts, inp_npts );
+
+    std::vector< Eigen::Triplet<double> > weights_entries; /* structure to fill-in sparse matrix */
+
+    weights_entries.reserve( out_npts * 3 ); /* each row has 3 entries: one per vertice of triangle */
+
+    // generate mesh ...
+
+    std::cout << "> computing tesselation ..." << std::endl;
+
+    Mesh* mesh = atlas::MeshGen::generate_from_points( *ipts );
+
+    delete ipts;
+
+    // read the field data
+
+    std::cout << "> reading input field ..." << std::endl;
+
+    FieldT<double>& inField = read_field_from_grib( "data.grib", mesh );
+
+    // generate baricenters of each triangle & insert the baricenters on a kd-tree
+
+    std::cout << "> creating triangle index ..." << std::endl;
 
     create_cell_centres( *mesh );
 
-    // insert the baricenters on a kd-tree
-
-//    std::cout << "> creating point index ..." << std::endl;
-
     CellCentreIndex* tree = create_point_index<CellCentreIndex>( *mesh );
 
-    // output points
+    // compute weights for each point in output grid
 
-    std::vector<KPoint3> opts;
-
-    opts.push_back( KPoint3(0.,0.) );
-    opts.push_back( KPoint3(0.01,0.01) );
-
-    /// compute weights for each point in output grid
+    std::cout << "> computing weights ..." << std::endl;
 
     const size_t k = 4; /* search nearest k cell centres */
 
-    std::vector< Eigen::Triplet<double> > weights_entries;
-    weights_entries.reserve( opts.size() * 3 ); /* 3 entries per output point, one per vertice of triangle */
-
-    for( size_t ip = 0; ip < opts.size(); ++ip )
+    for( size_t ip = 0; ip < opts->size(); ++ip )
     {
-        // lookup points
-        KPoint3& p = opts[ip];
+        KPoint3 p( (*opts)[ip] ); // lookup point
 #if 0
         std::cout << p << std::endl;
 #endif
@@ -473,11 +539,10 @@ int main()
             if( triag_intersection( triag, ray, uvt ) )
             {
                 found = true;
-#if 1
+#if 0
                 std::cout << " YES -- baricentric coords " << uvt <<  std::endl;
                 std::cout << idx[0] << " " << idx[1] << " " << idx[2] << std::endl;
 #endif
-
                 // weights are the baricentric cooridnates u,v
 
                 phi[0] = uvt.w();
@@ -498,11 +563,44 @@ int main()
 
     }
 
-//    W = Eigen::SparseMatrix<double>(out_npts, inp_npts);
+    atlas::Gmsh::write3dsurf(*mesh, std::string("in.msh") );
 
+    // fill-in sparse matrix
 
-    atlas::Gmsh::write3dsurf(*mesh, std::string("earth.msh") );
+    std::cout << "> filling matrix ..." << std::endl;
 
+    W.setFromTriplets(weights_entries.begin(), weights_entries.end());
+
+    // interpolation -- multiply interpolant matrix with field vector
+
+    std::cout << "> interpolating ..." << std::endl;
+
+    std::vector<double> result (out_npts); /* result vector */
+
+    VectorXd f = VectorXd::Map( &(inField.data())[0], inField.data().size() );
+    VectorXd r = VectorXd::Map( &result[0], result.size() );
+
+    r = W * f;
+
+    {
+        atlas::Mesh* outMesh = MeshGen::generate_from_points(*opts);
+
+        FunctionSpace& nodes     = outMesh->function_space( "nodes" );
+        FieldT<double>& coords   = nodes.field<double>( "coordinates" );
+
+        const size_t nb_nodes = nodes.bounds()[1];
+
+        FieldT<double>& field = nodes.create_field<double>("field",1);
+
+        for( size_t i = 0; i < out_npts; ++i )
+            field[i] = r[i];
+
+        atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
+
+        delete outMesh;
+    }
+
+    delete opts;
     delete mesh;
 
     return 0;

@@ -1,9 +1,19 @@
+#include <limits>
 #include <cassert>
 #include <iostream>
 #include <fstream>
 #include <cmath>
 #include <vector>
 #include <memory>
+
+#define EIGEN_NO_AUTOMATIC_RESIZING
+#define EIGEN_DONT_ALIGN
+#define EIGEN_DONT_VECTORIZE
+
+#include <Eigen/Core>
+#include <Eigen/Dense>
+#include <Eigen/Geometry>
+#include <Eigen/Sparse>
 
 #include "grib_api.h"
 
@@ -21,6 +31,17 @@
 
 //------------------------------------------------------------------------------------------------------
 
+#if 1
+#define DBG     std::cout << Here() << std::endl;
+#define DBGX(x) std::cout << #x << " -> " << x << std::endl;
+#else
+#define DBG
+#define DBGX(x)
+#endif
+
+//------------------------------------------------------------------------------------------------------
+
+using namespace Eigen;
 using namespace atlas;
 using namespace eckit;
 
@@ -30,6 +51,8 @@ class KPoint3 : public SPPoint<3> {
 public:
 
     KPoint3(): SPPoint<3>() {}
+
+    double* data() { return x_; }
 
     KPoint3( const double lat, const double lon ): SPPoint<3>()
     {
@@ -41,6 +64,11 @@ public:
         x_[ZZ] = z;
     }
 
+    friend std::ostream& operator<<(std::ostream& s,const KPoint3& p)
+    {
+        s << '(' << p.x_[XX] << "," << p.x_[YY] << ","  << p.x_[YY] << ')';
+        return s;
+    }
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -146,6 +174,16 @@ std::vector< Point3 >* read_ll_points_from_grib( const std::string& filename )
     if( ::fclose(f) == -1 )
         throw std::string("error closing file");
 
+#if 0
+    for( int e = 0; e < pts->size(); ++e )
+    {
+        const Point3& p = (*pts)[e];
+        std::cout <<  p(XX) << " "
+                  <<  p(YY) << " "
+                  <<  p(ZZ) << std::endl;
+    }
+#endif
+
     return pts;
 }
 
@@ -174,16 +212,43 @@ void create_cell_centres( atlas::Mesh& mesh )
 
         assert( i0 < nb_nodes && i1 < nb_nodes && i2 < nb_nodes );
 
-//        std::cout << i0 << " " << i1 << " " << i2 << std::endl;
-//        for( int i = 0; i < 3; ++i )
-//           std::cout <<  coords(XX,C_IDX( triag_nodes(i,e) )) << " "
-//                     <<  coords(YY,C_IDX( triag_nodes(i,e) )) << " "
-//                     <<  coords(ZZ,C_IDX( triag_nodes(i,e) )) << std::endl;
-
+#if 0 /* print triangle connectivity */
+        std::cout << i0 << " " << i1 << " " << i2 << std::endl;
+#endif
+#if 0 /* print triangle idx and coordinates */
+           std::cout << e << " "
+                     << i0 << " " << i1 << " " << i2 << " ";
+           for( int i = 0; i < 3; ++i )
+               std::cout << "("
+                     <<  coords(XX,C_IDX( triag_nodes(i,e) )) << "; "
+                     <<  coords(YY,C_IDX( triag_nodes(i,e) )) << "; "
+                     <<  coords(ZZ,C_IDX( triag_nodes(i,e) )) << ")";
+          std::cout << std::endl;
+#endif
         triags_centres(XX,e) = third * ( coords(XX,i0) + coords(XX,i1) + coords(XX,i2) );
         triags_centres(YY,e) = third * ( coords(YY,i0) + coords(YY,i1) + coords(YY,i2) );
         triags_centres(ZZ,e) = third * ( coords(ZZ,i0) + coords(ZZ,i1) + coords(ZZ,i2) );
+
+#if 0 /* print sorted triangle connectivity */
+        std::vector<int> s;
+        s.push_back(i0);
+        s.push_back(i1);
+        s.push_back(i2);
+        std::sort(s.begin(),s.end());
+        std::cout << s[0] << " " << s[1] << " " << s[2] << std::endl;
+#endif
     }
+
+#if 0 /* print triangle baricentres */
+    for( int e = 0; e < nb_triags; ++e )
+    {
+        std::cout << triags_centres(XX,e) << " "
+                  << triags_centres(YY,e) << " "
+                  << triags_centres(ZZ,e) << " "
+                  << e << " "
+                  << std::endl;
+    }
+#endif
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -222,15 +287,101 @@ Tree* create_point_index( atlas::Mesh& mesh )
 
 //------------------------------------------------------------------------------------------------------
 
+/// Intersection data structure
+
+struct Isect
+{
+    double u;
+    double v;
+    double t;
+
+    double w() const { return 1.0 - u - v; }
+
+    friend std::ostream& operator<<(std::ostream& s,const Isect& p)
+    {
+        s << '(' << p.u << "," << p.v << ","  << p.w() << ","  << p.t << ')';
+        return s;
+    }
+
+};
+
+/// Ray trace data structure
+
+struct Ray
+{
+    Vector3d orig;
+    Vector3d dir;
+
+    /// initializes ray with origin in point and direction to (0,0,0)
+    Ray( double* p )
+    {
+        orig = Vector3d::Map(p);
+        dir  = - orig;
+    }
+
+    Ray( double* o, double* d )
+    {
+        orig = Vector3d::Map(o);
+        dir  = Vector3d::Map(d);
+    }
+
+    Vector3d operator()( double t ) const { return orig + t*dir; }
+};
+
+/// triangle structure
+
+struct Triag
+{
+    Triag( double* x0, double* x1, double* x2 )
+    {
+        v0 = Vector3d::Map(x0);
+        v1 = Vector3d::Map(x1);
+        v2 = Vector3d::Map(x2);
+    }
+
+    Vector3d v0;
+    Vector3d v1;
+    Vector3d v2;
+};
+
+//------------------------------------------------------------------------------------------------------
+
+const bool isSingledSided = false;
+const double epsilon = std::numeric_limits<double>::epsilon();
+
+bool triag_intersection( const Triag& tg, const Ray& r, Isect& isect )
+{
+    Vector3d edge1 = tg.v1 - tg.v0;
+    Vector3d edge2 = tg.v2 - tg.v0;
+    Vector3d pvec  = r.dir.cross(edge2);
+    double det = edge1.dot(pvec);
+    if( std::abs(det) < epsilon ) return false;
+    double invDet = 1. / det;
+    Vector3d tvec = r.orig - tg.v0;
+    isect.u = tvec.dot(pvec) * invDet;
+    if (isect.u < 0 || isect.u > 1) return false;
+    Vector3d qvec = tvec.cross(edge1);
+    isect.v = r.dir.dot(qvec) * invDet;
+    if (isect.v < 0 || isect.u + isect.v > 1) return false;
+    isect.t = edge2.dot(qvec) * invDet;
+}
+
+//------------------------------------------------------------------------------------------------------
+
 int main()
 {
+    typedef std::numeric_limits< double > dbl;
+    //    std::cout.precision(dbl::digits10);
+    std::cout.precision( 32 );
+    std::cout << std::fixed << std::endl;
+
     std::vector< Point3 >* pts;
 
-    std::cout << "> loading data.grib ..." << std::endl;
+//    std::cout << "> loading data.grib ..." << std::endl;
 
     pts = read_ll_points_from_grib( "data.grib" );
 
-    std::cout << "> generating mesh ..." << std::endl;
+//    std::cout << "> generating mesh ..." << std::endl;
 
     Mesh* mesh = atlas::MeshGen::generate_from_points( *pts );
 
@@ -238,29 +389,119 @@ int main()
 
     // generate baricenters of each triangle
 
-    std::cout << "> generating cell centres ..." << std::endl;
+//    std::cout << "> generating cell centres ..." << std::endl;
 
     create_cell_centres( *mesh );
 
     // insert the baricenters on a kd-tree
 
-    std::cout << "> creating point index ..." << std::endl;
+//    std::cout << "> creating point index ..." << std::endl;
 
     CellCentreIndex* tree = create_point_index<CellCentreIndex>( *mesh );
 
-    // for each point in output grid
+    // output points
+
+    std::vector<KPoint3> opts;
+
+    opts.push_back( KPoint3(0.,0.) );
+    opts.push_back( KPoint3(0.01,0.01) );
+
+    /// compute weights for each point in output grid
+
+    const size_t k = 4; /* search nearest k cell centres */
+
+    std::vector< Eigen::Triplet<double> > weights_entries;
+    weights_entries.reserve( opts.size() * 3 ); /* 3 entries per output point, one per vertice of triangle */
+
+    for( size_t ip = 0; ip < opts.size(); ++ip )
+    {
+        // lookup points
+        KPoint3& p = opts[ip];
+#if 0
+        std::cout << p << std::endl;
+#endif
 
         // search the nearest 4 triangles
 
+        CellCentreIndex::NodeList cs = tree->kNearestNeighbours(p,k);
+
+#if 0
+        for( size_t i = 0; i < cs.size(); ++i )
+        {
+            std::cout << cs[i] << std::endl;
+        }
+#endif
 
         // find in which triangle the point is contained
-        // by computing the intercetion of each point with triang;e
+        // by computing the intercetion of the point with each nearest triangle
+
+        FunctionSpace& nodes     = mesh->function_space( "nodes" );
+        FieldT<double>& coords   = nodes.field<double>( "coordinates" );
+
+        const size_t nb_nodes = nodes.bounds()[1];
+
+        FunctionSpace& triags      = mesh->function_space( "triags" );
+        FieldT<int>& triag_nodes   = triags.field<int>( "nodes" );
+
+        const size_t nb_triags = triags.bounds()[1];
+
+        int idx[3]; /* indexes of the triangle that will contain the point*/
+
+        Vector3d phi;
+        Isect uvt;
+        Ray ray( p.data() );
+
+        size_t tid = std::numeric_limits<size_t>::max();
+
+        bool found = false;
+        for( size_t i = 0; i < cs.size(); ++i )
+        {
+            tid = cs[i].value().payload();
+
+//            std::cout << "considering triag " << tid <<  std::endl;
+
+            assert( tid < nb_triags );
+
+            idx[0] = triag_nodes(0,tid);
+            idx[1] = triag_nodes(1,tid);
+            idx[2] = triag_nodes(2,tid);
+
+            assert( idx[0] < nb_nodes && idx[1] < nb_nodes && idx[2] < nb_nodes );
+
+            Triag triag( coords.slice(idx[0]), coords.slice(idx[1]), coords.slice(idx[2]) );
+
+            if( triag_intersection( triag, ray, uvt ) )
+            {
+                found = true;
+#if 1
+                std::cout << " YES -- baricentric coords " << uvt <<  std::endl;
+                std::cout << idx[0] << " " << idx[1] << " " << idx[2] << std::endl;
+#endif
+
+                // weights are the baricentric cooridnates u,v
+
+                phi[0] = uvt.w();
+                phi[1] = uvt.u;
+                phi[2] = uvt.v;
+
+                break;
+            }
+        }
+
+        if( !found )
+            throw SeriousBug("Could not project point into nearest triangles");
+
+        // insert the interpolant weights into the global (sparse) interpolant matrix
+
+        for(int i = 0; i < 3; ++i)
+            weights_entries.push_back( Eigen::Triplet<double>( ip, idx[i], phi[i] ) );
+
+    }
+
+//    W = Eigen::SparseMatrix<double>(out_npts, inp_npts);
 
 
-        // compute the weights
-
-        // assemble the global (sparse) interpolant matrix
-
+    atlas::Gmsh::write3dsurf(*mesh, std::string("earth.msh") );
 
     delete mesh;
 

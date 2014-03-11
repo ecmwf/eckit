@@ -52,7 +52,7 @@ endif()
 # Eigen
 
 ecbuild_add_option( FEATURE EIGEN
-					DEFAULT AUTO
+					DEFAULT ON
 					DESCRIPTION "Eigen support  [EXPERIMENTAL]"
 					REQUIRED_PACKAGES Eigen3 )
 

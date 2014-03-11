@@ -41,10 +41,10 @@ public:
     LLPoint0(double lat, double lon):
         SPPoint<2>(lat,lon) {}
 
-    static double km(const LLPoint0& a, const LLPoint0& b)
-    {
-        return ::grib_nearest_distance(earthRadius, a.lon() , a.lat() , b.lon(), b.lat());
-    }
+//    static double km(const LLPoint0& a, const LLPoint0& b)
+//    {
+//        return ::grib_nearest_distance(earthRadius, a.lon() , a.lat() , b.lon(), b.lat());
+//    }
 
 };
 
@@ -62,10 +62,10 @@ public:
     LLPoint1(double lat, double lon):
         SPPoint<2>(lat,lon) {}
 
-    static double km(const LLPoint1& a, const LLPoint1& b)
-    {
-        return ::grib_nearest_distance(earthRadius, a.lon() , a.lat() , b.lon(), b.lat());
-    }
+//    static double km(const LLPoint1& a, const LLPoint1& b)
+//    {
+//        return ::grib_nearest_distance(earthRadius, a.lon() , a.lat() , b.lon(), b.lat());
+//    }
 
     /* This distance does not quite work with kd-tree. kd-tree needs an euclidand distance */
     static double distance(const LLPoint1& a, const LLPoint1& b)

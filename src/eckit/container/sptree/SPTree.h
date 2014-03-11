@@ -50,7 +50,8 @@ public:
 
     SPTree(Alloc& alloc): alloc_(alloc), root_(0) {}
 
-    ~SPTree() {
+    ~SPTree()
+    {
         // TODO: alloc_.deleteNode(root_,(Node*)0);
     }
 
@@ -120,36 +121,40 @@ public:
         return alloc_.convert(root_,(Node*)0)->visit(alloc_, v);
     }
 
-    void statsReset() {
+    void statsReset()
+    {
         alloc_.statsReset();
     }
 
-    void statsPrint(std::ostream& o, bool fancy) const {
+    void statsPrint(std::ostream& o, bool fancy) const
+    {
         if(fancy) o << *this << ": ";
         alloc_.statsPrint(o, fancy);
     }
 
-    void print(std::ostream& o) const {
+    void print(std::ostream& o) const
+    {
         o << "SPTree";
     }
 
-    friend std::ostream& operator<<(std::ostream& o, const SPTree& t) {
+    friend std::ostream& operator<<(std::ostream& o, const SPTree& t)
+    {
         t.print(o);
         return o;
     }
 
-    iterator begin() {
+    iterator begin()
+    {
         if(!root_) { root_ = alloc_.root(); }
         return iterator(alloc_, root_);
     }
 
-    iterator end() {
+    iterator end()
+    {
         return iterator(alloc_, 0);
     }
 };
 
 } // end namespace
-
-//#include "SPTree.cc"
 
 #endif

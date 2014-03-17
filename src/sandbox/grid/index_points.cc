@@ -168,8 +168,10 @@ double distance2( const VT1& v1, const VT2& v2 )
 
 //------------------------------------------------------------------------------------------------------
 
-// See http://randomascii.wordpress.com/2012/01/11/tricks-with-the-floating-point-format/
-//  for the potential portability problems with the union and bit-fields below.
+// See:
+// * http://randomascii.wordpress.com/2012/01/11/tricks-with-the-floating-point-format
+// * http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition
+//   for the potential portability problems with the union and bit-fields below.
 
 union Float_t
 {

@@ -53,7 +53,7 @@ public:
 
     KPoint3( const double x, const double y, const double z ): SPPoint<3>(x,y)
     {
-        x_[3] = z;
+        x_[atlas::ZZ] = z;
     }
 
     friend std::ostream& operator<<(std::ostream& s,const KPoint3& p)
@@ -165,17 +165,17 @@ Tree* create_point_index( atlas::Mesh& mesh )
 
 bool points_equal ( const atlas::Point3& a, const atlas::Point3& b )
 {
-    FloatCompare::is_equal( KPoint3::distance2( KPoint3(a),KPoint3(b)), 0.0 );
+    return FloatCompare::is_equal( KPoint3::distance2( KPoint3(a),KPoint3(b)), 0.0 );
 }
 
 bool points_equal ( const atlas::Point3& a, const KPoint3& b )
 {
-    FloatCompare::is_equal( KPoint3::distance2( KPoint3(a),b), 0.0 );
+    return FloatCompare::is_equal( KPoint3::distance2( KPoint3(a),b), 0.0 );
 }
 
 bool points_equal ( const KPoint3& a, const KPoint3& b )
 {
-    FloatCompare::is_equal( eckit::KPoint3::distance2(a,b), 0.0 );
+    return FloatCompare::is_equal( eckit::KPoint3::distance2(a,b), 0.0 );
 }
 
 //---------------------------------------------------------------------------------------------------------

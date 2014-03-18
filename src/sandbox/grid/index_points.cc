@@ -47,59 +47,78 @@ using namespace eckit;
 
 //------------------------------------------------------------------------------------------------------
 
-#define NLATS 4
-#define NLONG 4
+#define NLATS 19
+#define NLONG 19
 
 //------------------------------------------------------------------------------------------------------
 
 class UniquePoint {
 
+    typedef std::map< size_t, size_t > DupStore_t;
+
 public:
 
     UniquePoint( PointIndex3& tree ) : tree_(tree) { reset(); }
 
-    bool check( eckit::KPoint3& p, size_t idx )
+    size_t unique( eckit::KPoint3& p, size_t idx )
     {
-        if( !n_ && seen(idx) ) return false; /* only for top-level call ( n_ == 0 ) */
+        if( !n_ ) /* only for top-level call ( n_ == 0 ) */
+        {
+            DupStore_t::iterator dit = duplicates_.find(idx);
+            if( dit != duplicates_.end() )
+            {
+//                std::cout << "      !! DUPLICATE !!" << std::endl;
+                return dit->second;
+            }
+        }
 
-        DBGX(Kn());
+//        DBGX(Kn());
 
         PointIndex3::NodeList nearest = tree_.kNearestNeighbours(p,Kn());
 
-        size_t nequals = 0;
+        std::vector<size_t> equals;
+        equals.reserve( nearest.size() );
+
         for( size_t i = 0; i < nearest.size(); ++i )
         {
             KPoint3 np  = nearest[i].value().point();
             size_t nidx = nearest[i].value().payload();
 
-            std::cout << "      - " << nidx << " " << p << std::endl;
-
-            if( seen(nidx) ) { nequals++; continue; }
+//            std::cout << "      - " << nidx << " " << np << std::endl;
 
             if( points_equal(p,np) )
             {
-                nequals++;
-                seenIdx_.insert(idx);
-            }
+//                std::cout << "      EQUAL !!" << std::endl;
+                equals.push_back(nidx);
+          }
             else
                 break;
         }
 
-        DBGX( nequals );
+//        DBGX( equals.size() );
 
-        if( nequals == nearest.size() )
+        if( equals.size() == nearest.size() ) /* need to increase the search to find all duplicates of this point */
         {
             ++n_;
-            return this->check(p,idx);
+            return this->unique(p,idx);
         }
         else /* stop recursion */
         {
-            reset();
-            return (nequals == 0);
+            size_t ret = idx; /* if nothing found return same idx */
+
+            if( equals.size() >= 1 ) /* if an equal point was found return the first one */
+                ret = equals[0];
+
+            for( size_t n = 1; n < equals.size(); ++n )
+                duplicates_[ equals[n] ] = ret;
+
+            reset(); /* for next usage */
+
+            return ret;
         }
     }
 
-    size_t seenSize() { return seenIdx_.size(); }
+    DupStore_t& duplicates() { return duplicates_; }
 
 protected:
 
@@ -112,12 +131,12 @@ protected:
     }
 
     void reset() { n_ = 0; }
-    bool seen( size_t idx ) { return seenIdx_.find(idx) != seenIdx_.end(); }
+    bool duplicate( size_t idx ) { return duplicates_.find(idx) != duplicates_.end(); }
 
 private:
     size_t n_;
     PointIndex3& tree_;
-    std::set< size_t > seenIdx_;
+    DupStore_t duplicates_; ///< map from duplicate idx to idx representing group of points
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -128,7 +147,8 @@ int main()
     std::cout.precision(dbl::digits10);
     std::cout << std::scientific;
 
-    std::vector< Point3 >* ipts = atlas::MeshGen::generate_latlon_points(NLATS, NLONG);
+//    std::vector< Point3 >* ipts = atlas::MeshGen::generate_latlon_points(NLATS, NLONG);
+    std::vector< Point3 >* ipts = atlas::MeshGen::generate_latlon_grid(NLATS, NLONG);
     const size_t npts = ipts->size();
 
     std::cout << "initial points " << npts << std::endl;
@@ -168,17 +188,21 @@ int main()
 
     for( size_t ip = 0; ip < ipts->size(); ++ip )
     {
-        KPoint3 p (  (*ipts)[ip] );   std::cout << "point " << ip << " " << p << std::endl;
+        KPoint3 p (  (*ipts)[ip] );  /* std::cout << "point " << ip << " " << p << std::endl; */
 
-        if( uniq.check(p,ip) )
+        size_t uidx = uniq.unique(p,ip);
+        if( ip == uidx )
         {
-            std::cout << "----> UNIQ" << std::endl;
-
+//            std::cout << "----> UNIQ " << ip << std::endl;
             opts.push_back(p);
+        }
+        else
+        {
+//            std::cout << "----> DUP " << ip << " -> " << uidx << std::endl;
         }
     }
 
-    std::cout << "duplicates  points " << uniq.seenSize() << std::endl;
+    std::cout << "duplicates  points " << uniq.duplicates().size() << std::endl;
     std::cout << "unique  points " << opts.size() << std::endl;
 
     delete ipts;

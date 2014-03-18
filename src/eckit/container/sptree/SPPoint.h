@@ -11,6 +11,7 @@
 #ifndef SPPoint_H
 #define SPPoint_H
 
+#include <cassert>
 #include <limits>
 #include <cmath>
 
@@ -63,10 +64,14 @@ public:
 //        x_[2] = z;
 //    }
 
+    double* data() { return x_; }
+
+    double operator()( const size_t& i ) const { assert( i < SIZE ); return x_[i]; }
+
     bool operator<(const SPPoint& other) const
     { return std::lexicographical_compare(x_,x_ + SIZE, other.x_, other.x_ + SIZE); }
 
-    static size_t dimensions()               { return SIZE; }
+    static size_t dimensions() { return SIZE; }
 
     friend std::ostream& operator<<(std::ostream& s,const SPPoint& p)
     {
@@ -80,13 +85,24 @@ public:
 
     static double distance(const SPPoint& p1, const SPPoint& p2)
     {
-        double m = 0;
+        double d = 0;
         for(size_t i = 0; i < dimensions(); i++)
         {
             double dx =  p1.x_[i]  - p2.x_[i];
-            m += dx*dx;
+            d += dx*dx;
         }
-        return std::sqrt(m);
+        return std::sqrt(d);
+    }
+
+    static double distance2(const SPPoint& p1, const SPPoint& p2)
+    {
+        double d = 0;
+        for(size_t i = 0; i < dimensions(); i++)
+        {
+            double dx =  p1.x_[i]  - p2.x_[i];
+            d += dx*dx;
+        }
+        return d;
     }
 
     static bool equal(const SPPoint& p1, const SPPoint& p2)
@@ -102,13 +118,13 @@ public:
 
     static double norm(const SPPoint& p1)
     {
-        double m = 0.0;
+        double n = 0.0;
         for(size_t i = 0; i < dimensions(); i++)
         {
             double dx =  p1.x_[i];
-            m += dx*dx;
+            n += dx*dx;
         }
-        return std::sqrt(m);
+        return std::sqrt(n);
     }
 
     bool operator==(const SPPoint& other) const {
@@ -122,7 +138,7 @@ public:
     // Distance along one axis
     static double distance(const SPPoint& p1, const SPPoint& p2, int axis)
     {
-        return fabs(p1.x_[axis] - p2.x_[axis]);
+        return std::abs(p1.x_[axis] - p2.x_[axis]);
     }
 
     // For projecting a point on a line

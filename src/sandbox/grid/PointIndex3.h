@@ -13,6 +13,8 @@
 #include "eckit/container/KDMapped.h"
 #include "eckit/container/KDMemory.h"
 
+#include "FloatCompare.h"
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -23,8 +25,6 @@ class KPoint3 : public SPPoint<3> {
 public:
 
     KPoint3(): SPPoint<3>() {}
-
-    double* data() { return x_; }
 
     double  operator[] (const size_t& i) const { assert(i<3); return x_[i]; }
     double& operator[] (const size_t& i)       { assert(i<3); return x_[i]; }
@@ -40,9 +40,9 @@ public:
     KPoint3( const atlas::Point3& p ): SPPoint<3>()
     {
         using namespace atlas;
-        x_[XX] = p.x[XX];
-        x_[YY] = p.x[YY];
-        x_[ZZ] = p.x[ZZ];
+        x_[XX] = p(XX);
+        x_[YY] = p(YY);
+        x_[ZZ] = p(ZZ);
         //        std::copy(p.x, p.x+3, x_);
     }
 
@@ -159,6 +159,23 @@ Tree* create_point_index( atlas::Mesh& mesh )
     PathName::rename(tmp, path);
 
     return tree;
+}
+
+//---------------------------------------------------------------------------------------------------------
+
+bool points_equal ( const atlas::Point3& a, const atlas::Point3& b )
+{
+    FloatCompare::is_equal( KPoint3::distance2( KPoint3(a),KPoint3(b)), 0.0 );
+}
+
+bool points_equal ( const atlas::Point3& a, const KPoint3& b )
+{
+    FloatCompare::is_equal( KPoint3::distance2( KPoint3(a),b), 0.0 );
+}
+
+bool points_equal ( const KPoint3& a, const KPoint3& b )
+{
+    FloatCompare::is_equal( eckit::KPoint3::distance2(a,b), 0.0 );
 }
 
 //---------------------------------------------------------------------------------------------------------

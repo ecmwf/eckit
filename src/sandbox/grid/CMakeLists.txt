@@ -1,4 +1,9 @@
-list( APPEND local_grid_headers PointIndex3.h TriangleIntersection.h)
+list( APPEND local_grid_headers
+PointIndex3.h
+GribLoad.h
+TriangleIntersection.h
+FloatCompare.h
+FloatCompare.cc )
 
 ecbuild_add_test(
         TARGET      index_grid

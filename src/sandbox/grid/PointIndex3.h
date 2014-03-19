@@ -68,9 +68,9 @@ public:
 //------------------------------------------------------------------------------------------------------
 
 template<class Traits>
-class PointKdTree : public eckit::KDTreeMapped<Traits> {
+class PointKdTree : public eckit::KDTreeMemory<Traits> {
 public:
-    typedef eckit::KDTreeMapped<Traits> Tree;
+    typedef eckit::KDTreeMemory<Traits> Tree;
     typedef typename Tree::Point Point;
     typedef typename Tree::Alloc    Alloc;
 
@@ -79,8 +79,7 @@ public:
     typedef typename Tree::PayloadType Payload;
     typedef typename Tree::Value   Value;
 
-    PointKdTree(const eckit::PathName& path,  size_t itemCount, size_t metadataSize):
-        eckit::KDTreeMapped<Traits>(path, itemCount, metadataSize) {}
+    PointKdTree(): eckit::KDTreeMemory<Traits>() {}
 
     NodeInfo nearestNeighbour(const Point& p)
     {
@@ -137,8 +136,6 @@ Tree* create_point_index( atlas::Mesh& mesh )
 
     const size_t npts = triags.bounds()[1];
 
-    PathName path(std::string("~/tmp/cache/grid/") + "MD5" + ".kdtree");
-
     std::vector<typename Tree::Value> p;
     p.reserve(npts);
 
@@ -149,14 +146,9 @@ Tree* create_point_index( atlas::Mesh& mesh )
                                                                  triags_centres(atlas::ZZ,ip) ), ip ) );
     }
 
-    PathName tmp(std::string("~/tmp/cache/grid/") + "MD5" + ".tmp");
-    tmp.unlink();
-
-    Tree* tree = new Tree(tmp, npts, 0);
+    Tree* tree = new Tree();
 
     tree->build(p.begin(), p.end());
-
-    PathName::rename(tmp, path);
 
     return tree;
 }

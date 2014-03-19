@@ -93,15 +93,9 @@ protected: // methods
         for( size_t ip = 0; ip < npts_; ++ip )
             pidx.push_back( PointIndex3::Value( PointIndex3::Point( ipts[ip] ), ip ) );
 
-        PathName path (std::string("~/tmp/cache/grid/") + "test" + ".kdtree");
-        PathName tmp  (std::string("~/tmp/cache/grid/") + "test" + ".tmp");
-        tmp.unlink();
-
-        tree_ = new PointIndex3(tmp, npts_, 0);
+        tree_ = new PointIndex3();
 
         tree_->build(pidx.begin(), pidx.end());
-
-        PathName::rename(tmp, path);
     }
 
     size_t search_unique( const eckit::KPoint3& p, size_t idx, u_int32_t n  )

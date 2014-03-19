@@ -108,7 +108,7 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
         coords(YY,ip) = p(YY);
         coords(ZZ,ip) = p(ZZ);
 
-        std::cout << p << std::endl;
+//        std::cout << p << std::endl;
 
         ++inode;
     }

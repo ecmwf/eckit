@@ -10,6 +10,8 @@
 #include "atlas/Gmsh.hpp"
 #include "atlas/Mesh.hpp"
 
+#include "eckit/log/Timer.h"
+
 #include "GribLoad.h"
 #include "PointIndex3.h"
 #include "PointSet.h"
@@ -59,8 +61,8 @@ void mesh_renumber_triags( Mesh& mesh )
 
 //------------------------------------------------------------------------------------------------------
 
-#define NLATS 100
-#define NLONG 100
+#define NLATS 1440
+#define NLONG 2880
 
 #define COMPUTE_WEIGHTS
 #define FILL_MATRIX
@@ -100,11 +102,9 @@ int main()
 
     std::unique_ptr< std::vector< KPoint3 > > opts( Tesselation::generate_latlon_points(NLATS, NLONG) );
 
-    atlas::Mesh* outMesh = Tesselation::generate_from_points(*opts);
-    atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
-    delete outMesh;
-
-#ifdef COMPUTE_WEIGHTS
+//    atlas::Mesh* outMesh = Tesselation::generate_from_points(*opts);
+//    atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
+//    delete outMesh;
 
     // generate baricenters of each triangle & insert the baricenters on a kd-tree
 
@@ -138,7 +138,7 @@ int main()
 
     weights_triplets.reserve( opts->size() * 3 ); /* each row has 3 entries: one per vertice of triangle */
 
-    const size_t k = 256; /* search nearest k cell centres */
+    const size_t k = inp_npts / 10; /* search nearest k cell centres */
 
     for( size_t ip = 0; ip < opts->size(); ++ip )
     {
@@ -146,7 +146,7 @@ int main()
 
         KPoint3 p( (*opts)[ip] ); // lookup point
 
-#if 1
+#if 0
         std::cout << p << std::endl;
 #endif
 
@@ -243,46 +243,43 @@ int main()
             weights_triplets.push_back( Eigen::Triplet<double>( ip, idx[i], phi[i] ) );
 
     }
-#endif // COMPUTE_WEIGHTS
-
-
-
-#ifdef FILL_MATRIX
-    // fill-in sparse matrix
-
-    std::cout << "> filling matrix ..." << std::endl;
-
-    W.setFromTriplets(weights_triplets.begin(), weights_triplets.end());
-
-    // interpolation -- multiply interpolant matrix with field vector
-
-    std::cout << "> interpolating ..." << std::endl;
-
-    std::vector<double> result ( opts->size() ); /* result vector */
-
-    VectorXd f = VectorXd::Map( &(infield.data())[0], infield.data().size() );
-    VectorXd r = VectorXd::Map( &result[0], result.size() );
-
-    r = W * f;
 
     {
-        atlas::Mesh* outMesh = Tesselation::generate_from_points(*opts);
 
-        FunctionSpace& nodes     = outMesh->function_space( "nodes" );
-        FieldT<double>& coords   = nodes.field<double>( "coordinates" );
+        Timer timer("interpolation");
 
-        const size_t nb_nodes = nodes.bounds()[1];
+        // fill-in sparse matrix
 
-        FieldT<double>& field = nodes.create_field<double>("field",1);
+        std::cout << "> filling matrix ..." << std::endl;
 
-        for( size_t i = 0; i < opts->size(); ++i )
-            field[i] = r[i];
+        W.setFromTriplets(weights_triplets.begin(), weights_triplets.end());
 
-        atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
+        // interpolation -- multiply interpolant matrix with field vector
 
-        delete outMesh;
+        std::cout << "> interpolating ..." << std::endl;
+
+        std::vector<double> result ( opts->size() ); /* result vector */
+
+        VectorXd f = VectorXd::Map( &(infield.data())[0], infield.data().size() );
+        VectorXd r = VectorXd::Map( &result[0], result.size() );
+
+        r = W * f;
+
+//        {
+//            atlas::Mesh* outMesh = Tesselation::generate_from_points(*opts);
+
+//            FunctionSpace& nodes     = outMesh->function_space( "nodes" );
+
+//            FieldT<double>& field = nodes.create_field<double>("field",1);
+
+//            for( size_t i = 0; i < opts->size(); ++i )
+//                field[i] = r[i];
+
+//            atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
+
+//            delete outMesh;
+//        }
+
     }
-#endif // FILL_MATRIX
-
     return 0;
 }

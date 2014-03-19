@@ -2,6 +2,7 @@ list( APPEND local_grid_headers
 PointIndex3.h
 GribLoad.h
 TriangleIntersection.h
+PointSet.h
 FloatCompare.h
 FloatCompare.cc )
 

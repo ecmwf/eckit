@@ -37,15 +37,6 @@ public:
         x_[ZZ] = p[ZZ];
     }
 
-    KPoint3( const atlas::Point3& p ): SPPoint<3>()
-    {
-        using namespace atlas;
-        x_[XX] = p(XX);
-        x_[YY] = p(YY);
-        x_[ZZ] = p(ZZ);
-        //        std::copy(p.x, p.x+3, x_);
-    }
-
     KPoint3( const double lat, const double lon ): SPPoint<3>()
     {
         atlas::latlon_to_3d( lat, lon, x_ );
@@ -54,6 +45,15 @@ public:
     KPoint3( const double x, const double y, const double z ): SPPoint<3>(x,y)
     {
         x_[atlas::ZZ] = z;
+    }
+
+    template < typename T >
+    void assign( const T& p )
+    {
+        using namespace atlas;
+        x_[XX] = p[XX];
+        x_[YY] = p[YY];
+        x_[ZZ] = p[ZZ];
     }
 
     friend std::ostream& operator<<(std::ostream& s,const KPoint3& p)
@@ -162,16 +162,6 @@ Tree* create_point_index( atlas::Mesh& mesh )
 }
 
 //---------------------------------------------------------------------------------------------------------
-
-bool points_equal ( const atlas::Point3& a, const atlas::Point3& b )
-{
-    return FloatCompare::is_equal( KPoint3::distance2( KPoint3(a),KPoint3(b)), 0.0 );
-}
-
-bool points_equal ( const atlas::Point3& a, const KPoint3& b )
-{
-    return FloatCompare::is_equal( KPoint3::distance2( KPoint3(a),b), 0.0 );
-}
 
 bool points_equal ( const KPoint3& a, const KPoint3& b )
 {

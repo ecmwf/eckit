@@ -11,6 +11,7 @@
 #include "atlas/Parameters.hpp"
 
 #include "PointSet.h"
+#include "Tesselation.h"
 
 //------------------------------------------------------------------------------------------------------
 
@@ -40,29 +41,27 @@ int main()
     std::cout.precision(dbl::digits10);
     std::cout << std::scientific;
 
-//    std::vector< Point3 >* ipts = atlas::MeshGen::generate_latlon_points(NLATS, NLONG);
-    std::vector< Point3 >* ipts = atlas::MeshGen::generate_latlon_grid(NLATS, NLONG);
+//    std::vector< KPoint3 >* ipts = Tesselation::generate_latlon_points(NLATS, NLONG);
+    std::unique_ptr< std::vector< KPoint3 > > ipts( Tesselation::generate_latlon_grid(NLATS, NLONG) );
 
     std::cout << "initial points " << ipts->size() << std::endl;
 
-    PointSet points( ipts );
+    PointSet points( *ipts );
 
-    std::vector< KPoint3 >* opts = points.list_unique_points();
+    std::vector< KPoint3 > opts;
+    std::vector< size_t >  idxs;
+
+    points.list_unique_points(opts,idxs);
 
     std::cout << "duplicates  points " << points.duplicates().size() << std::endl;
-    std::cout << "unique  points " << opts->size() << std::endl;
+    std::cout << "unique  points " << opts.size() << std::endl;
 
     // print indexes of unique points
 
-    for( size_t i = 0; i < opts->size(); ++i )
+    for( size_t i = 0; i < opts.size(); ++i )
     {
-        std::cout << points.unique( (*opts)[i], std::numeric_limits<size_t>::max() ) << std::endl;
+        std::cout << points.unique( opts[i], std::numeric_limits<size_t>::max() ) << std::endl;
     }
-
-    // free memory
-
-    delete ipts;
-    delete opts;
 
     return 0;
 }

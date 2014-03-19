@@ -85,6 +85,13 @@ if( HAVE_MATHS )
 
 endif()
 
+# tesselation support
+
+ecbuild_add_option( FEATURE TESSELATION
+					DEFAULT ON
+					DESCRIPTION "support for unstructured grid tesselation"
+					REQUIRED_PACKAGES CGAL )
+
 # boost support
 
 set(Boost_USE_MULTITHREADED      ON )

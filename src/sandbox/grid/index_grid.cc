@@ -12,7 +12,9 @@
 
 #include "GribLoad.h"
 #include "PointIndex3.h"
+#include "PointSet.h"
 #include "TriangleIntersection.h"
+#include "Tesselation.h"
 
 //------------------------------------------------------------------------------------------------------
 
@@ -32,8 +34,36 @@ using namespace eckit;
 
 //------------------------------------------------------------------------------------------------------
 
+void mesh_renumber_triags( Mesh& mesh )
+{
+    FunctionSpace& nodes     = mesh.function_space( "nodes" );
+    FieldT<double>& coords   = nodes.field<double>( "coordinates" );
+
+    const size_t nb_nodes = nodes.bounds()[1];
+
+    FunctionSpace& triags      = mesh.function_space( "triags" );
+    FieldT<int>& triag_nodes   = triags.field<int>( "nodes" );
+
+    const size_t nb_triags = triags.bounds()[1];
+
+    for( int e = 0; e < nb_triags; ++e )
+    {
+        for( int n=0; n<3; ++n )
+        {
+            size_t pidx = triag_nodes(n,e);
+//            triag_nodes(n,e)
+        }
+    }
+
+}
+
+//------------------------------------------------------------------------------------------------------
+
 #define NLATS 256
 #define NLONG 256
+
+#define COMPUTE_WEIGHTS
+#define FILL_MATRIX
 
 int main()
 {    
@@ -43,7 +73,8 @@ int main()
 
     // output grid
 
-    std::vector< Point3 >* opts = atlas::MeshGen::generate_latlon_points(NLATS, NLONG);
+    std::unique_ptr< std::vector< KPoint3 > > opts( Tesselation::generate_latlon_points(NLATS, NLONG) );
+
 //    atlas::Mesh* outMesh = MeshGen::generate_from_points(*opts);
 //    atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
 //    delete outMesh;
@@ -52,19 +83,29 @@ int main()
 
     std::cout << "> reading input points ..." << std::endl;
 
-    std::vector< Point3 >* ipts = read_ll_points_from_grib( "data.grib" );
+    std::unique_ptr< std::vector< KPoint3 > > readpts( read_ll_points_from_grib( "data.grib" ) );
 
-//    for( size_t i = 0; i < ipts->size(); ++i )
-//        std::cout << (*ipts)[i] << std::endl;
+//    for( size_t i = 0; i < readpts->size(); ++i )
+//        std::cout << (*readpts)[i] << std::endl;
 
     // remove duplicate points
 
     std::cout << "> removing duplicate points from input ..." << std::endl;
 
+    PointSet points( *readpts ); /* will remember each point index in readpts */
+
+    std::vector< KPoint3 > ipts;
+    std::vector< size_t > idxs;
+
+    points.list_unique_points( ipts, idxs );
+
+    std::cout << "    unique pts " << ipts.size() << std::endl;
+    std::cout << "    duplicates " << points.duplicates().size() << std::endl;
+
     // sparse interpolation matrix
 
     const size_t out_npts = opts->size();
-    const size_t inp_npts = ipts->size();
+    const size_t inp_npts = ipts.size();
 
     Eigen::SparseMatrix<double> W( out_npts, inp_npts );
 
@@ -74,15 +115,16 @@ int main()
 
     std::cout << "> computing tesselation ..." << std::endl;
 
-    Mesh* mesh = atlas::MeshGen::generate_from_points( *ipts );
+    std::unique_ptr<Mesh> mesh( Tesselation::generate_from_points( ipts ) );
 
-    delete ipts;
+    // renumbering
+
 
     // read the field data
 
     std::cout << "> reading input field ..." << std::endl;
 
-    FieldT<double>& inField = read_field_from_grib( "data.grib", mesh );
+    FieldT<double>& inField = read_field_into_mesh_from_grib( "data.grib", *mesh );
 
     // output input mesh
 
@@ -90,13 +132,15 @@ int main()
 
     atlas::Gmsh::write3dsurf(*mesh, std::string("in.msh") );
 
+#ifdef COMPUTE_WEIGHTS
+
     // generate baricenters of each triangle & insert the baricenters on a kd-tree
 
     std::cout << "> creating triangle index ..." << std::endl;
 
     atlas::MeshGen::create_cell_centres( *mesh );
 
-    PointIndex3* tree = create_point_index<PointIndex3>( *mesh );
+    std::unique_ptr<PointIndex3> tree( create_point_index<PointIndex3>( *mesh ) );
 
     // compute weights for each point in output grid
 
@@ -205,8 +249,8 @@ int main()
             weights_triplets.push_back( Eigen::Triplet<double>( ip, idx[i], phi[i] ) );
 
     }
-
-#if SKIP
+#endif // COMPUTE_WEIGHTS
+#ifdef FILL_MATRIX
     // fill-in sparse matrix
 
     std::cout << "> filling matrix ..." << std::endl;
@@ -225,7 +269,7 @@ int main()
     r = W * f;
 
     {
-        atlas::Mesh* outMesh = MeshGen::generate_from_points(*opts);
+        atlas::Mesh* outMesh = Tesselation::generate_from_points(*opts);
 
         FunctionSpace& nodes     = outMesh->function_space( "nodes" );
         FieldT<double>& coords   = nodes.field<double>( "coordinates" );
@@ -241,11 +285,7 @@ int main()
 
         delete outMesh;
     }
-#endif
-
-    delete opts;
-    delete mesh;
-    delete tree;
+#endif // FILL_MATRIX
 
     return 0;
 }

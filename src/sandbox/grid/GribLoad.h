@@ -17,13 +17,13 @@ namespace eckit {
 
 //------------------------------------------------------------------------------------------------------
 
-std::vector< atlas::Point3 >* read_ll_points_from_grib( const std::string& filename )
+std::vector< KPoint3 >* read_ll_points_from_grib( const std::string& filename )
 {
     int err = 0;
 
     // points to read
 
-    std::vector< atlas::Point3 >* pts = new std::vector< atlas::Point3 >();
+    std::vector< KPoint3 >* pts = new std::vector< KPoint3 >();
 
     // load grib file
 
@@ -36,7 +36,7 @@ std::vector< atlas::Point3 >* read_ll_points_from_grib( const std::string& filen
     long nbDataPts = 0;
     grib_get_long(h,"numberOfDataPoints",&nbDataPts);
 
-    pts->reserve(nbDataPts);
+    pts->resize(nbDataPts);
 
     if( h == 0 || err != 0 )
         throw std::string("error reading grib");
@@ -48,26 +48,18 @@ std::vector< atlas::Point3 >* read_ll_points_from_grib( const std::string& filen
     double value = 0.;
 
     /// we assume a row first scanning order on the grib
-
-    atlas::Point3 prev;
+    size_t npoint = 0;
     while(grib_iterator_next(i,&lat,&lon,&value))
     {
         while(lon < 0)    lon += 360;
         while(lon >= 360) lon -= 360;
 
-        pts->push_back( atlas::Point3() );
-
-        atlas::latlon_to_3d( lat, lon, pts->back().data() );
-
-        if( points_equal( prev, pts->back() ) )
-        {
-            pts->pop_back();
-            continue;
-        }
-
-        prev = pts->back();
+        atlas::latlon_to_3d( lat, lon, (*pts)[npoint].data() );
+        ++npoint;
     }
     grib_iterator_delete(i);
+
+    ASSERT( npoint == nbDataPts );
 
     if( ::fclose(f) == -1 )
         throw std::string("error closing file");
@@ -75,7 +67,7 @@ std::vector< atlas::Point3 >* read_ll_points_from_grib( const std::string& filen
     #if 0
     for( int e = 0; e < pts->size(); ++e )
     {
-        const Point3& p = (*pts)[e];
+        const KPoint3& p = (*pts)[e];
         std::cout <<  p(XX) << " "
                   <<  p(YY) << " "
                   <<  p(ZZ) << std::endl;
@@ -87,14 +79,9 @@ std::vector< atlas::Point3 >* read_ll_points_from_grib( const std::string& filen
 
 //------------------------------------------------------------------------------------------------------
 
-atlas::FieldT<double>& read_field_from_grib( const std::string& filename, atlas::Mesh* mesh )
+template < typename FT >
+void read_field_from_grib( const std::string& filename, FT& field )
 {
-    atlas::FunctionSpace& nodes  = mesh->function_space( "nodes" );
-
-    const size_t nb_nodes = nodes.bounds()[1];
-
-    atlas::FieldT<double>& field = nodes.create_field<double>("field",1);
-
     int err = 0;
 
     // load grib file
@@ -108,6 +95,18 @@ atlas::FieldT<double>& read_field_from_grib( const std::string& filename, atlas:
     if( h == 0 || err != 0 )
         throw std::string("error reading grib");
 
+    long nbDataPts = 0;
+    grib_get_long(h,"numberOfDataPoints",&nbDataPts);
+
+    if( nbDataPts != field.size() )
+    {
+        std::ostringstream msg;
+        msg << "number of data points in grib " << nbDataPts
+            << " differs from field " << field.size()
+            << std::endl;
+        throw SeriousBug( msg.str() );
+    }
+
     grib_iterator *i = grib_iterator_new(h, 0, &err);
 
     double lat   = 0.;
@@ -117,18 +116,30 @@ atlas::FieldT<double>& read_field_from_grib( const std::string& filename, atlas:
     size_t in = 0;
     while(grib_iterator_next(i,&lat,&lon,&value))
     {
-        if( in >= nb_nodes )
-            throw SeriousBug( "field is of incorrect size" );
+        if( in >= field.size() )
+            throw SeriousBug( "field is of incorrect size -- too many points" );
         field[in] = value;
         ++in;
     }
     grib_iterator_delete(i);
 
-    if( in != nb_nodes )
-        throw SeriousBug( "field is of incorrect size" );
+    if( in != field.size() )
+        throw SeriousBug( "field is of incorrect size -- too little points" );
 
     if( ::fclose(f) == -1 )
         throw std::string("error closing file");
+
+}
+
+//------------------------------------------------------------------------------------------------------
+
+atlas::FieldT<double>& read_field_into_mesh_from_grib( const std::string& filename, atlas::Mesh& mesh )
+{
+    atlas::FunctionSpace& nodes  = mesh.function_space( "nodes" );
+
+    atlas::FieldT<double>& field = nodes.create_field<double>("field",1);
+
+    read_field_from_grib( filename, field );
 
     return field;
 }

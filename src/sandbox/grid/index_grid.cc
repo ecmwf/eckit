@@ -7,6 +7,8 @@
 #include <vector>
 #include <memory>
 
+#include <boost/progress.hpp>
+
 #include "atlas/Gmsh.hpp"
 #include "atlas/Mesh.hpp"
 
@@ -36,115 +38,37 @@ using namespace eckit;
 
 //------------------------------------------------------------------------------------------------------
 
-void mesh_renumber_triags( Mesh& mesh )
+void compute_weights( atlas::Mesh& mesh,
+                      const std::vector< KPoint3 >& opts,
+                      PointIndex3& tree,
+                      Eigen::SparseMatrix<double>& W )
 {
     FunctionSpace& nodes     = mesh.function_space( "nodes" );
     FieldT<double>& coords   = nodes.field<double>( "coordinates" );
 
-    const size_t nb_nodes = nodes.bounds()[1];
+    const size_t inp_npts = nodes.bounds()[1];
 
     FunctionSpace& triags      = mesh.function_space( "triags" );
     FieldT<int>& triag_nodes   = triags.field<int>( "nodes" );
 
     const size_t nb_triags = triags.bounds()[1];
 
-    for( int e = 0; e < nb_triags; ++e )
-    {
-        for( int n=0; n<3; ++n )
-        {
-            size_t pidx = triag_nodes(n,e);
-//            triag_nodes(n,e)
-        }
-    }
-
-}
-
-//------------------------------------------------------------------------------------------------------
-
-#define NLATS 1440
-#define NLONG 2880
-
-#define COMPUTE_WEIGHTS
-#define FILL_MATRIX
-
-int main()
-{    
-    typedef std::numeric_limits< double > dbl;
-    std::cout.precision(dbl::digits10);
-    std::cout << std::fixed;
-
-    // input grid
-
-    std::cout << "> reading input points ..." << std::endl;
-
-    std::unique_ptr< std::vector< KPoint3 > > readpts( read_ll_points_from_grib( "data.grib" ) );
-
-    // generate mesh ...
-
-    std::cout << "> generating tesselation ..." << std::endl;
-
-    std::unique_ptr<Mesh> mesh( Tesselation::generate_from_points( *readpts ) );
-
-    // read input field
-
-    std::cout << "> reading input field ..." << std::endl;
-
-    atlas::FieldT<double>& infield = read_field_into_mesh_from_grib( "data.grib", *mesh );
-
-    // output input mesh
-
-    std::cout << "> output input mesh ..." << std::endl;
-
-    atlas::Gmsh::write3dsurf(*mesh, std::string("in.msh") );
-
-
-    // output grid
-
-    std::unique_ptr< std::vector< KPoint3 > > opts( Tesselation::generate_latlon_points(NLATS, NLONG) );
-
-//    atlas::Mesh* outMesh = Tesselation::generate_from_points(*opts);
-//    atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
-//    delete outMesh;
-
-    // generate baricenters of each triangle & insert the baricenters on a kd-tree
-
-    std::cout << "> creating triangle index ..." << std::endl;
-
-    atlas::MeshGen::create_cell_centres( *mesh );
-
-    std::unique_ptr<PointIndex3> tree( create_point_index<PointIndex3>( *mesh ) );
-
-    // compute weights for each point in output grid
-
-    std::cout << "> computing weights ..." << std::endl;
-
-    FunctionSpace& nodes     = mesh->function_space( "nodes" );
-    FieldT<double>& coords   = nodes.field<double>( "coordinates" );
-
-    const size_t inp_npts = nodes.bounds()[1];
-
-    FunctionSpace& triags      = mesh->function_space( "triags" );
-    FieldT<int>& triag_nodes   = triags.field<int>( "nodes" );
-
-    const size_t nb_triags = triags.bounds()[1];
-
-    //=======================================================================
-    //==== POINT LOOP =======================================================
-    //=======================================================================
-
-    Eigen::SparseMatrix<double> W( opts->size(), inp_npts );
-
     std::vector< Eigen::Triplet<double> > weights_triplets; /* structure to fill-in sparse matrix */
 
-    weights_triplets.reserve( opts->size() * 3 ); /* each row has 3 entries: one per vertice of triangle */
+    weights_triplets.reserve( opts.size() * 3 ); /* each row has 3 entries: one per vertice of triangle */
 
-    const size_t k = inp_npts / 10; /* search nearest k cell centres */
+    Timer("compute weights");
 
-    for( size_t ip = 0; ip < opts->size(); ++ip )
+    const size_t k = 4 + ( inp_npts / 100 ); /* search nearest k cell centres */
+//    const size_t k = 64; /* search nearest k cell centres */
+
+    boost::progress_display show_progress( opts.size() );
+
+    for( size_t ip = 0; ip < opts.size(); ++ip )
     {
         std::ostringstream os;
 
-        KPoint3 p( (*opts)[ip] ); // lookup point
+        KPoint3 p( opts[ip] ); // lookup point
 
 #if 0
         std::cout << p << std::endl;
@@ -152,7 +76,7 @@ int main()
 
         // search the nearest 4 triangles
 
-        PointIndex3::NodeList cs = tree->kNearestNeighbours(p,k);
+        PointIndex3::NodeList cs = tree.kNearestNeighbours(p,k);
 
 #if 0
         for( size_t i = 0; i < cs.size(); ++i )
@@ -225,6 +149,8 @@ int main()
                             << KPoint3(coords.slice(idx[2])) << std::endl
                    << "   uvwt " << uvt << std::endl;
             }
+
+            ++show_progress;
         }
 
 #if 0
@@ -244,42 +170,90 @@ int main()
 
     }
 
-    {
+    // fill-in sparse matrix
 
+    W.setFromTriplets(weights_triplets.begin(), weights_triplets.end());
+}
+
+//------------------------------------------------------------------------------------------------------
+
+//#define NLATS 1440
+//#define NLONG 2880
+
+#define NLATS 100
+#define NLONG 100
+
+int main()
+{    
+    typedef std::numeric_limits< double > dbl;
+    std::cout.precision(dbl::digits10);
+    std::cout << std::fixed;
+
+    // input grid
+
+    std::unique_ptr< std::vector< KPoint3 > > readpts( read_ll_points_from_grib( "data.grib" ) );
+
+    // generate mesh ...
+
+    std::cout << ">>> input grid" << std::endl;
+
+    std::unique_ptr<Mesh> mesh( Tesselation::generate_from_points( *readpts ) );
+
+    // read input field
+
+    atlas::FieldT<double>& infield = read_field_into_mesh_from_grib( "data.grib", *mesh );
+
+    // output input mesh
+
+    atlas::Gmsh::write3dsurf(*mesh, std::string("in.msh") );
+
+    // output grid
+
+    std::unique_ptr< std::vector< KPoint3 > > opts( Tesselation::generate_latlon_points(NLATS, NLONG) );
+
+//    atlas::Mesh* outMesh = Tesselation::generate_from_points(*opts);
+//    atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
+//    delete outMesh;
+
+    // generate baricenters of each triangle & insert the baricenters on a kd-tree
+
+    atlas::MeshGen::create_cell_centres( *mesh );
+
+    std::unique_ptr<PointIndex3> tree ( create_point_index<PointIndex3>( *mesh ) );
+
+    // compute weights for each point in output grid
+
+    std::cout << ">>> computing weights ..." << std::endl;
+
+    Eigen::SparseMatrix<double> W( opts->size(), readpts->size() );
+
+    compute_weights( *mesh, *opts, *tree, W );
+
+    // interpolation -- multiply interpolant matrix with field vector
+
+    std::cout << ">>> interpolating ..." << std::endl;
+
+    std::vector<double> result ( opts->size() ); /* result vector */
+
+    VectorXd f = VectorXd::Map( &(infield.data())[0], infield.data().size() );
+    VectorXd r = VectorXd::Map( &result[0], result.size() );
+
+    {
         Timer timer("interpolation");
 
-        // fill-in sparse matrix
-
-        std::cout << "> filling matrix ..." << std::endl;
-
-        W.setFromTriplets(weights_triplets.begin(), weights_triplets.end());
-
-        // interpolation -- multiply interpolant matrix with field vector
-
-        std::cout << "> interpolating ..." << std::endl;
-
-        std::vector<double> result ( opts->size() ); /* result vector */
-
-        VectorXd f = VectorXd::Map( &(infield.data())[0], infield.data().size() );
-        VectorXd r = VectorXd::Map( &result[0], result.size() );
-
         r = W * f;
-
-//        {
-//            atlas::Mesh* outMesh = Tesselation::generate_from_points(*opts);
-
-//            FunctionSpace& nodes     = outMesh->function_space( "nodes" );
-
-//            FieldT<double>& field = nodes.create_field<double>("field",1);
-
-//            for( size_t i = 0; i < opts->size(); ++i )
-//                field[i] = r[i];
-
-//            atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
-
-//            delete outMesh;
-//        }
-
     }
+
+    std::cout << ">>> output grid" << std::endl;
+    {
+        atlas::Mesh* outMesh = Tesselation::generate_from_points(*opts);
+        FunctionSpace& nodes     = outMesh->function_space( "nodes" );
+        FieldT<double>& field = nodes.create_field<double>("field",1);
+        for( size_t i = 0; i < opts->size(); ++i )
+            field[i] = r[i];
+        atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
+        delete outMesh;
+    }
+
     return 0;
 }

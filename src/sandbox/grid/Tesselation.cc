@@ -5,6 +5,10 @@
 #include <memory>
 #include <iostream>
 
+#include "eckit/log/Timer.h"
+
+#include <boost/progress.hpp>
+
 #include "eckit/eckit_config.h"
 
 //------------------------------------------------------------------------------------------------------
@@ -53,17 +57,15 @@ namespace eckit {
 
 Polyhedron_3* create_convex_hull_from_points( const std::vector< KPoint3 >& pts )
 {
+    Timer("convex hull");
+
     Polyhedron_3* poly = new Polyhedron_3();
 
     // insertion from a vector :
 
     std::vector<Point_3> vertices( pts.size() );
     for( size_t i = 0; i < vertices.size(); ++i )
-    {
         vertices[i] = Point_3( pts[i](XX), pts[i](YY), pts[i](ZZ) );
-
-//        std::cout << vertices[i] << std::endl;
-    }
 
     // compute convex hull of non-collinear points
 
@@ -74,6 +76,8 @@ Polyhedron_3* create_convex_hull_from_points( const std::vector< KPoint3 >& pts 
 
 atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points )
 {
+    Timer("converting to atlas data structure");
+
     bool ensure_outward_normals = true;
 
     Mesh* mesh = new Mesh();
@@ -81,8 +85,6 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
     /* nodes */
 
     const size_t nb_nodes = points.size();
-
-    std::cout << "nb_nodes = " << nb_nodes << std::endl;
 
     std::vector<int> bounds(2);
     bounds[0] = Field::UNDEF_VARS;
@@ -96,6 +98,9 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
 
     FieldT<int>& glb_idx  = nodes.create_field<int>("glb_idx",1);
 
+    std::cout << "creating nodes " << nb_nodes << std::endl;
+
+    boost::progress_display show_nodes_progress( nb_nodes );
     size_t inode = 0;
     for( PointSet::iterator it = points.begin(); it != points.end(); ++it )
     {
@@ -111,6 +116,7 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
 //        std::cout << p << std::endl;
 
         ++inode;
+        ++show_nodes_progress;
     }
 
     ASSERT( inode == nb_nodes ); /* check we went through all nodes */
@@ -118,8 +124,6 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
     /* triangles */
 
     const size_t nb_triags = poly.size_of_facets();
-
-    std::cout << "nb_triags = " << nb_triags << std::endl;
 
     bounds[1] = nb_triags;
 
@@ -132,6 +136,9 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
     size_t idx[3];
     Polyhedron_3::Vertex_const_handle vts[3];
 
+
+    std::cout << "creating triags " << nb_triags << std::endl;
+    boost::progress_display show_triag_progress( nb_triags );
     size_t tidx = 0;
     for( Polyhedron_3::Facet_const_iterator f = poly.facets_begin(); f != poly.facets_end(); ++f )
     {
@@ -178,6 +185,7 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
         triag_nodes(2,tidx) = idx[2];
 
         ++tidx;
+        ++show_triag_progress;
     }
 
     assert( tidx == nb_triags );
@@ -195,7 +203,7 @@ atlas::Mesh* Tesselation::generate_from_points(const std::vector<KPoint3>& pts)
 
     // remove duplicate points
 
-    std::cout << "> removing duplicate points from input ..." << std::endl;
+    std::cout << "removing duplicate points ..." << std::endl;
 
     PointSet points( pts ); /* will remember each point index in readpts */
 
@@ -204,8 +212,8 @@ atlas::Mesh* Tesselation::generate_from_points(const std::vector<KPoint3>& pts)
 
     points.list_unique_points( ipts, idxs );
 
-    std::cout << "    unique pts " << ipts.size() << std::endl;
-    std::cout << "    duplicates " << points.duplicates().size() << std::endl;
+    std::cout << "unique pts " << ipts.size() << std::endl;
+    std::cout << "duplicates " << points.duplicates().size() << std::endl;
 
 #ifdef CGAL_FOUND
 

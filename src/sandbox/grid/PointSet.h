@@ -8,6 +8,8 @@
 #include <limits>
 #include <memory>
 
+#include <boost/progress.hpp>
+
 #include "atlas/Mesh.hpp"
 
 #include "PointIndex3.h"
@@ -44,6 +46,8 @@ public: // methods
         opts.reserve(npts_);
         idxs.reserve(npts_);
 
+        boost::progress_display show_progress( npts_ );
+
         // std::cout << "computing duplicates ... " << std::endl;
 
         for( PointIndex3::iterator i = tree_->begin(); i != tree_->end(); ++i )
@@ -62,6 +66,8 @@ public: // methods
             {
 //                std::cout << "----> DUP " << ip << " -> " << uidx << std::endl;
             }
+
+            ++show_progress;
         }
     }
 

@@ -24,8 +24,8 @@ ecbuild_add_test(
 		LIBS        eckit_tesselation )
 
 ecbuild_add_test(
-		TARGET      index_grid
-		SOURCES     index_grid.cc
+		TARGET      interpolate
+		SOURCES     interpolate.cc
 		CONDITION   HAVE_GRID AND ATLAS_FOUND AND GRIB_API_FOUND AND HAVE_EIGEN AND Boost_FOUND
 		INCLUDES    ${ATLAS_INCLUDE_DIRS} ${GRIB_API_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}
 		LIBS        eckit_tesselation )

@@ -76,7 +76,7 @@ Polyhedron_3* create_convex_hull_from_points( const std::vector< KPoint3 >& pts 
 
 atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points )
 {
-    Timer t("converting to atlas data structure");
+    Timer t ("creating atlas data structure");
 
     bool ensure_outward_normals = true;
 
@@ -98,9 +98,9 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
 
     FieldT<int>& glb_idx  = nodes.create_field<int>("glb_idx",1);
 
-    std::cout << "creating nodes " << nb_nodes << std::endl;
+    std::cout << "inserting nodes (" << nb_nodes << ")" << std::endl;
 
-    boost::progress_display show_nodes_progress( nb_nodes );
+//    boost::progress_display show_nodes_progress( nb_nodes );
     size_t inode = 0;
     for( PointSet::iterator it = points.begin(); it != points.end(); ++it )
     {
@@ -116,7 +116,7 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
 //        std::cout << p << std::endl;
 
         ++inode;
-        ++show_nodes_progress;
+//        ++show_nodes_progress;
     }
 
     ASSERT( inode == nb_nodes ); /* check we went through all nodes */
@@ -137,8 +137,9 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
     Polyhedron_3::Vertex_const_handle vts[3];
 
 
-    std::cout << "creating triags " << nb_triags << std::endl;
-    boost::progress_display show_triag_progress( nb_triags );
+    std::cout << "inserting triags (" << nb_triags << ")" << std::endl;
+
+//    boost::progress_display show_triag_progress( nb_triags );
     size_t tidx = 0;
     for( Polyhedron_3::Facet_const_iterator f = poly.facets_begin(); f != poly.facets_end(); ++f )
     {
@@ -185,7 +186,7 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
         triag_nodes(2,tidx) = idx[2];
 
         ++tidx;
-        ++show_triag_progress;
+//        ++show_triag_progress;
     }
 
     assert( tidx == nb_triags );
@@ -199,11 +200,11 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
 
 atlas::Mesh* Tesselation::generate_from_points(const std::vector<KPoint3>& pts)
 {
+    Timer t ("grid tesselation");
+
     Mesh* mesh = 0;
 
     // remove duplicate points
-
-    std::cout << "removing duplicate points ..." << std::endl;
 
     PointSet points( pts ); /* will remember each point index in readpts */
 
@@ -212,8 +213,8 @@ atlas::Mesh* Tesselation::generate_from_points(const std::vector<KPoint3>& pts)
 
     points.list_unique_points( ipts, idxs );
 
-    std::cout << "unique pts " << ipts.size() << std::endl;
-    std::cout << "duplicates " << points.duplicates().size() << std::endl;
+//    std::cout << "unique pts " << ipts.size() << std::endl;
+//    std::cout << "duplicates " << points.duplicates().size() << std::endl;
 
 #ifdef CGAL_FOUND
 
@@ -239,55 +240,57 @@ atlas::Mesh* Tesselation::generate_from_points(const std::vector<KPoint3>& pts)
 
 //------------------------------------------------------------------------------------------------------
 
-std::vector<KPoint3>* Tesselation::generate_latlon_points( size_t nlats, size_t nlong )
+std::vector<KPoint3>* Tesselation::generate_latlon_points( const size_t& nlats, const size_t& nlong )
 {
     // generate lat/long points
 
     const size_t npts = nlats * nlong;
 
+    std::cout << "generating nlats (" << nlats << ") x  (" << nlong << ")" << " = " << npts << std::endl;
+
     std::vector< KPoint3 >* pts = new std::vector< KPoint3 >( npts );
 
-    const double lat_inc = 180. / nlats;
+    const double lat_inc = 180. / (double)nlats;
     const double lat_start = -90 + 0.5*lat_inc;
 //    const double lat_end   = 90. - 0.5*lat_inc;
 
-    const double lon_inc = 360. / nlong;
+    const double lon_inc = 360. / (double)nlong;
     const double lon_start = 0.5*lon_inc;
 //    const double lon_end   = 360. - 0.5*lon_inc;
 
-    double lat = lat_start;
-    double lon = lon_start;
-    for( size_t ilat = 0; ilat < nlats; ++ilat )
+    double lat;
+    double lon;
+
+    size_t visits = 0;
+
+    lon = lon_start;
+    for( size_t jlon = 0 ; jlon < nlong; ++jlon, lon += lon_inc )
     {
-        lon = lon_start;
-        for( size_t jlon = 0; jlon < nlong; ++jlon )
+        lat = lat_start;
+        for( size_t ilat = 0; ilat < nlats; ++ilat, lat += lat_inc )
         {
-            const size_t idx = ilat*nlats + jlon;
+            const size_t idx = ilat + ( jlon * nlats );
 
-            assert( idx < npts );
+            ASSERT( idx < npts );
 
-            atlas::latlon_to_3d( lat, lon, (*pts)[ idx ].data() );
+            KPoint3& p = (*pts)[ idx ];
 
-//            std::cout << idx << " "
-//                      << lat << " "
-//                      << lon << " "
-//                      << (*pts)[ ilat*nlats + jlon ].x[XX] << " "
-//                      << (*pts)[ ilat*nlats + jlon ].x[YY] << " "
-//                      << (*pts)[ ilat*nlats + jlon ].x[ZZ] << " "
-//                      << std::endl;
-//            std::cout << (*pts)[idx] << std::endl;
+            atlas::latlon_to_3d( lat, lon, p.data() );
 
-            lon += lon_inc;
+//            std::cout << idx << " [ " << lat << " ; " << lon << " ] " << p << std::endl;
+
+            ++visits;
         }
-        lat += lat_inc;
     }
+
+    ASSERT( visits == npts );
 
     return pts;
 }
 
 //------------------------------------------------------------------------------------------------------
 
-std::vector<KPoint3>* Tesselation::generate_latlon_grid(size_t nlats, size_t nlong)
+std::vector<KPoint3>* Tesselation::generate_latlon_grid(const size_t& nlats, const size_t& nlong)
 {
     // generate lat/long points
 
@@ -303,14 +306,16 @@ std::vector<KPoint3>* Tesselation::generate_latlon_grid(size_t nlats, size_t nlo
     const double lon_start = 0.0;
     const double lon_end   = 360.;
 
-    double lat = lat_start;
-    double lon = lon_start;
-    for( size_t ilat = 0; ilat < nlats+1; ++ilat )
+    double lat;
+    double lon;
+
+    lon = lon_start;
+    for( size_t jlon = 0 ; jlon < nlong+1; ++jlon, lon += lon_inc )
     {
-        lon = lon_start;
-        for( size_t jlon = 0; jlon < nlong+1; ++jlon )
+        lat = lat_start;
+        for( size_t ilat = 0; ilat < nlats+1; ++ilat, lat += lat_inc )
         {
-            const size_t idx = ilat*(nlats+1) + jlon;
+            const size_t idx = ilat + ( jlon * (nlats+1) );
 
             assert( idx < npts );
 
@@ -325,11 +330,10 @@ std::vector<KPoint3>* Tesselation::generate_latlon_grid(size_t nlats, size_t nlo
 //                      << std::endl;
 //            std::cout << (*pts)[idx] << std::endl;
 
-            lon += lon_inc;
-            if( jlon == nlong ) lon = lon_end;
+            if( ilat == nlats ) lat = lat_end;
         }
-        lat += lat_inc;
-        if( ilat == nlats ) lat = lat_end;
+
+        if( jlon == nlong ) lon = lon_end;
     }
 
     return pts;

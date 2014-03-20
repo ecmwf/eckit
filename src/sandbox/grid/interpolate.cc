@@ -43,6 +43,8 @@ void compute_weights( atlas::Mesh& mesh,
                       PointIndex3& tree,
                       Eigen::SparseMatrix<double>& W )
 {
+    Timer t("compute weights");
+
     FunctionSpace& nodes     = mesh.function_space( "nodes" );
     FieldT<double>& coords   = nodes.field<double>( "coordinates" );
 
@@ -57,8 +59,6 @@ void compute_weights( atlas::Mesh& mesh,
 
     weights_triplets.reserve( opts.size() * 3 ); /* each row has 3 entries: one per vertice of triangle */
 
-    Timer t("compute weights");
-
     const size_t k = 4 + ( inp_npts / 100 ); /* search nearest k cell centres */
 //    const size_t k = 64; /* search nearest k cell centres */
 
@@ -68,7 +68,7 @@ void compute_weights( atlas::Mesh& mesh,
     {
         std::ostringstream os;
 
-        KPoint3 p( opts[ip] ); // lookup point
+        KPoint3 p ( opts[ip] ); // lookup point
 
 #if 0
         std::cout << p << std::endl;
@@ -118,6 +118,7 @@ void compute_weights( atlas::Mesh& mesh,
                 found = true;
 #if 0
                 os << "[SUCCESS]" << std::endl
+                   << "   ip   " << ip << std::endl
                    << "   p    " << p << std::endl
                    << "   tc   " << tc << std::endl
                    << "   d    " << KPoint3::distance(tc,p) << std::endl
@@ -139,6 +140,8 @@ void compute_weights( atlas::Mesh& mesh,
             else
             {
                 os << "[FAILED] projection on triangle:" << std::endl
+                   << "   ip   " << ip << std::endl
+                   << "   opts[ip] " << opts[ip] << std::endl
                    << "   p    " << p << std::endl
                    << "   tc   " << tc << std::endl
                    << "   d    " << KPoint3::distance(tc,p) << std::endl
@@ -149,9 +152,9 @@ void compute_weights( atlas::Mesh& mesh,
                             << KPoint3(coords.slice(idx[2])) << std::endl
                    << "   uvwt " << uvt << std::endl;
             }
-
-            ++show_progress;
         }
+
+        ++show_progress;
 
 #if 0
         if( found ) { std::cout << os.str() << std::endl; }
@@ -180,17 +183,21 @@ void compute_weights( atlas::Mesh& mesh,
 //#define NLATS 1440
 //#define NLONG 2880
 
-#define NLATS 100
-#define NLONG 100
-
 //#define NLATS 180
 //#define NLONG 360
+
+#define NLATS 50
+#define NLONG 50
 
 int main()
 {    
     typedef std::numeric_limits< double > dbl;
     std::cout.precision(dbl::digits10);
     std::cout << std::fixed;
+
+    // output grid
+
+    std::unique_ptr< std::vector< KPoint3 > > opts( Tesselation::generate_latlon_points(NLATS, NLONG) );
 
     // input grid
 
@@ -210,19 +217,15 @@ int main()
 
     atlas::Gmsh::write3dsurf(*mesh, std::string("in.msh") );
 
-    // output grid
-
-    std::unique_ptr< std::vector< KPoint3 > > opts( Tesselation::generate_latlon_points(NLATS, NLONG) );
-
-//    atlas::Mesh* outMesh = Tesselation::generate_from_points(*opts);
-//    atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
-//    delete outMesh;
-
     // generate baricenters of each triangle & insert the baricenters on a kd-tree
 
     atlas::MeshGen::create_cell_centres( *mesh );
 
     std::unique_ptr<PointIndex3> tree ( create_point_index<PointIndex3>( *mesh ) );
+
+    //    atlas::Mesh* outMesh = Tesselation::generate_from_points(*opts);
+    //    atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
+    //    delete outMesh;
 
     // compute weights for each point in output grid
 

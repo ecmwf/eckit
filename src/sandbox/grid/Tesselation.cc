@@ -57,7 +57,7 @@ namespace eckit {
 
 Polyhedron_3* create_convex_hull_from_points( const std::vector< KPoint3 >& pts )
 {
-    Timer("convex hull");
+    Timer t("convex hull");
 
     Polyhedron_3* poly = new Polyhedron_3();
 
@@ -76,7 +76,7 @@ Polyhedron_3* create_convex_hull_from_points( const std::vector< KPoint3 >& pts 
 
 atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points )
 {
-    Timer("converting to atlas data structure");
+    Timer t("converting to atlas data structure");
 
     bool ensure_outward_normals = true;
 

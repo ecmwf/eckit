@@ -57,7 +57,7 @@ void compute_weights( atlas::Mesh& mesh,
 
     weights_triplets.reserve( opts.size() * 3 ); /* each row has 3 entries: one per vertice of triangle */
 
-    Timer("compute weights");
+    Timer t("compute weights");
 
     const size_t k = 4 + ( inp_npts / 100 ); /* search nearest k cell centres */
 //    const size_t k = 64; /* search nearest k cell centres */
@@ -183,6 +183,9 @@ void compute_weights( atlas::Mesh& mesh,
 #define NLATS 100
 #define NLONG 100
 
+//#define NLATS 180
+//#define NLONG 360
+
 int main()
 {    
     typedef std::numeric_limits< double > dbl;
@@ -239,7 +242,7 @@ int main()
     VectorXd r = VectorXd::Map( &result[0], result.size() );
 
     {
-        Timer timer("interpolation");
+        Timer t("interpolation");
 
         r = W * f;
     }

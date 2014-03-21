@@ -208,11 +208,11 @@ void compute_weights( atlas::Mesh& i_mesh,
 //#define NLATS 1440
 //#define NLONG 2880
 
-//#define NLATS 30
-//#define NLONG 60
+#define NLATS 30
+#define NLONG 60
 
-#define NLATS 180
-#define NLONG 360
+//#define NLATS 180
+//#define NLONG 360
 
 int main()
 {    

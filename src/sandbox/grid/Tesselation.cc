@@ -246,7 +246,7 @@ std::vector<KPoint3>* Tesselation::generate_latlon_points( const size_t& nlats, 
 
     const size_t npts = nlats * nlong;
 
-    std::cout << "generating nlats (" << nlats << ") x  (" << nlong << ")" << " = " << npts << std::endl;
+//    std::cout << "generating nlats (" << nlats << ") x  (" << nlong << ")" << " = " << npts << std::endl;
 
     std::vector< KPoint3 >* pts = new std::vector< KPoint3 >( npts );
 
@@ -263,13 +263,13 @@ std::vector<KPoint3>* Tesselation::generate_latlon_points( const size_t& nlats, 
 
     size_t visits = 0;
 
-    lon = lon_start;
-    for( size_t jlon = 0 ; jlon < nlong; ++jlon, lon += lon_inc )
+    lat = lat_start;
+    for( size_t ilat = 0; ilat < nlats; ++ilat, lat += lat_inc )
     {
-        lat = lat_start;
-        for( size_t ilat = 0; ilat < nlats; ++ilat, lat += lat_inc )
+        lon = lon_start;
+        for( size_t jlon = 0 ; jlon < nlong; ++jlon, lon += lon_inc )
         {
-            const size_t idx = ilat + ( jlon * nlats );
+            const size_t idx = jlon + ( ilat * nlong );
 
             ASSERT( idx < npts );
 
@@ -277,7 +277,7 @@ std::vector<KPoint3>* Tesselation::generate_latlon_points( const size_t& nlats, 
 
             atlas::latlon_to_3d( lat, lon, p.data() );
 
-//            std::cout << idx << " [ " << lat << " ; " << lon << " ] " << p << std::endl;
+            //            std::cout << idx << " [ " << lat << " ; " << lon << " ] " << p << std::endl;
 
             ++visits;
         }
@@ -309,13 +309,14 @@ std::vector<KPoint3>* Tesselation::generate_latlon_grid(const size_t& nlats, con
     double lat;
     double lon;
 
-    lon = lon_start;
-    for( size_t jlon = 0 ; jlon < nlong+1; ++jlon, lon += lon_inc )
+    lat = lat_start;
+    for( size_t ilat = 0; ilat < nlats+1; ++ilat, lat += lat_inc )
     {
-        lat = lat_start;
-        for( size_t ilat = 0; ilat < nlats+1; ++ilat, lat += lat_inc )
+        lon = lon_start;
+        for( size_t jlon = 0 ; jlon < nlong+1; ++jlon, lon += lon_inc )
         {
-            const size_t idx = ilat + ( jlon * (nlats+1) );
+
+            const size_t idx = jlon + ( ilat * (nlong+1) );
 
             assert( idx < npts );
 
@@ -330,10 +331,10 @@ std::vector<KPoint3>* Tesselation::generate_latlon_grid(const size_t& nlats, con
 //                      << std::endl;
 //            std::cout << (*pts)[idx] << std::endl;
 
-            if( ilat == nlats ) lat = lat_end;
+            if( jlon == nlong ) lon = lon_end;
         }
 
-        if( jlon == nlong ) lon = lon_end;
+        if( ilat == nlats ) lat = lat_end;
     }
 
     return pts;

@@ -1,6 +1,8 @@
 list( APPEND eckit_tesselation_srcs
 PointIndex3.h
 GribLoad.h
+GribWrite.h
+GribWrite.cc
 TriangleIntersection.h
 PointSet.h
 FloatCompare.h

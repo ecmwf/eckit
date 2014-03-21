@@ -15,6 +15,7 @@
 #include "eckit/log/Timer.h"
 
 #include "GribLoad.h"
+#include "GribWrite.h"
 #include "PointIndex3.h"
 #include "PointSet.h"
 #include "TriangleIntersection.h"
@@ -183,11 +184,11 @@ void compute_weights( atlas::Mesh& mesh,
 //#define NLATS 1440
 //#define NLONG 2880
 
-//#define NLATS 180
-//#define NLONG 360
+#define NLATS 30
+#define NLONG 60
 
-#define NLATS 50
-#define NLONG 50
+//#define NLATS 100
+//#define NLONG 100
 
 int main()
 {    
@@ -200,6 +201,18 @@ int main()
     std::unique_ptr< std::vector< KPoint3 > > opts( Tesselation::generate_latlon_points(NLATS, NLONG) );
 
     // input grid
+
+    std::string filename ("data.grib");
+
+    FILE* fh = ::fopen( filename.c_str(), "r" );
+    if( fh == 0 )
+        throw std::string("error opening file");
+
+    int err = 0;
+    grib_handle* input_h = grib_handle_new_from_file(0,fh,&err);
+
+    if( input_h == 0 || err != 0 )
+        throw std::string("error reading grib");
 
     std::unique_ptr< std::vector< KPoint3 > > readpts( read_ll_points_from_grib( "data.grib" ) );
 
@@ -250,16 +263,19 @@ int main()
         r = W * f;
     }
 
-    std::cout << ">>> output grid" << std::endl;
-    {
-        atlas::Mesh* outMesh = Tesselation::generate_from_points(*opts);
-        FunctionSpace& nodes     = outMesh->function_space( "nodes" );
-        FieldT<double>& field = nodes.create_field<double>("field",1);
-        for( size_t i = 0; i < opts->size(); ++i )
-            field[i] = r[i];
-        atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
-        delete outMesh;
-    }
+    std::cout << ">>> output to gmsh" << std::endl;
+    atlas::Mesh* outMesh = Tesselation::generate_from_points(*opts);
+    FunctionSpace& nodes     = outMesh->function_space( "nodes" );
+    FieldT<double>& field = nodes.create_field<double>("field",1);
+    for( size_t i = 0; i < opts->size(); ++i )
+        field[i] = r[i];
+    atlas::Gmsh::write3dsurf(*outMesh, std::string("out.msh") );
+
+    std::cout << ">>> output to grib" << std::endl;
+
+    GribWrite::write(*outMesh,input_h);
+
+    delete outMesh;
 
     return 0;
 }

@@ -13,8 +13,6 @@
 #include "eckit/container/KDMapped.h"
 #include "eckit/container/KDMemory.h"
 
-#include "FloatCompare.h"
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -129,7 +127,7 @@ typedef PointKdTree<PointIndex3TreeTrait>  PointIndex3;
 //------------------------------------------------------------------------------------------------------
 
 template < typename Tree >
-Tree* create_point_index( atlas::Mesh& mesh )
+Tree* create_cell_centre_index( atlas::Mesh& mesh )
 {
     atlas::FunctionSpace& triags = mesh.function_space( "triags" );
     atlas::FieldT<double>& triags_centres = triags.field<double>( "centre" );
@@ -155,10 +153,7 @@ Tree* create_point_index( atlas::Mesh& mesh )
 
 //---------------------------------------------------------------------------------------------------------
 
-bool points_equal ( const KPoint3& a, const KPoint3& b )
-{
-    return FloatCompare::is_equal( eckit::KPoint3::distance2(a,b), 0.0 );
-}
+bool points_equal( const KPoint3& a, const KPoint3& b );
 
 //---------------------------------------------------------------------------------------------------------
 

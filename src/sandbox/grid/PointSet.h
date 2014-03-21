@@ -30,10 +30,9 @@ public: // types
 
 public: // methods
 
-    PointSet( const std::vector< KPoint3 >& ipts ) : npts_(ipts.size())
-    {
-        build(ipts);
-    }
+    PointSet( const std::vector< KPoint3 >& ipts );
+
+    PointSet( atlas::Mesh& mesh );
 
     ~PointSet(){ delete tree_; }
 
@@ -105,46 +104,7 @@ protected: // methods
         tree_->build(pidx.begin(), pidx.end());
     }
 
-    size_t search_unique( const eckit::KPoint3& p, size_t idx, u_int32_t n  )
-    {
-        PointIndex3::NodeList nearest = tree_->kNearestNeighbours( p, Kn(n) );
-
-        std::vector<size_t> equals;
-        equals.reserve( nearest.size() );
-
-        for( size_t i = 0; i < nearest.size(); ++i )
-        {
-            KPoint3 np  = nearest[i].value().point();
-            size_t nidx = nearest[i].value().payload();
-
-//            std::cout << "      - " << nidx << " " << np << std::endl;
-
-            if( points_equal(p,np) )
-            {
-//                std::cout << "      EQUAL !!" << std::endl;
-                equals.push_back(nidx);
-          }
-            else
-                break;
-        }
-
-        if( equals.size() == nearest.size() ) /* need to increase the search to find all duplicates of this point */
-        {
-            return this->search_unique(p,idx,++n);
-        }
-        else /* stop recursion */
-        {
-            size_t ret = idx; /* if nothing found return same idx */
-
-            if( equals.size() >= 1 ) /* if an equal point was found return the first one */
-                ret = equals[0];
-
-            for( size_t n = 1; n < equals.size(); ++n )
-                duplicates_[ equals[n] ] = ret;
-
-            return ret;
-        }
-    }
+    size_t search_unique( const eckit::KPoint3& p, size_t idx, u_int32_t n  );
 
 protected:
 

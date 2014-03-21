@@ -74,60 +74,31 @@ Polyhedron_3* create_convex_hull_from_points( const std::vector< KPoint3 >& pts 
     return poly;
 }
 
-atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points )
+void cgal_polyhedron_to_atlas_mesh(  atlas::Mesh& mesh, Polyhedron_3& poly, PointSet& points )
 {
-    Timer t ("creating atlas data structure");
-
     bool ensure_outward_normals = true;
 
-    Mesh* mesh = new Mesh();
+    Timer t ("creating atlas data structure");
 
-    /* nodes */
+    ASSERT( mesh.has_function_space("nodes") );
+
+    FunctionSpace& nodes = mesh.function_space( "nodes" );
+
+    ASSERT( points.size() == nodes.bounds()[1] );
 
     const size_t nb_nodes = points.size();
 
-    std::vector<int> bounds(2);
-    bounds[0] = Field::UNDEF_VARS;
-    bounds[1] = nb_nodes;
-
-    FunctionSpace& nodes = mesh->add_function_space( new FunctionSpace( "nodes", "Lagrange_P0", bounds ) );
-
-    nodes.metadata().set("type",static_cast<int>(Entity::NODES));
-
-    FieldT<double>& coords  = nodes.create_field<double>("coordinates",3);
-
-    FieldT<int>& glb_idx  = nodes.create_field<int>("glb_idx",1);
-
-    std::cout << "inserting nodes (" << nb_nodes << ")" << std::endl;
-
-//    boost::progress_display show_nodes_progress( nb_nodes );
-    size_t inode = 0;
-    for( PointSet::iterator it = points.begin(); it != points.end(); ++it )
-    {
-        KPoint3& p = it->point();
-        size_t  ip = it->payload();
-
-        glb_idx(ip) = ip;
-
-        coords(XX,ip) = p(XX);
-        coords(YY,ip) = p(YY);
-        coords(ZZ,ip) = p(ZZ);
-
-//        std::cout << p << std::endl;
-
-        ++inode;
-//        ++show_nodes_progress;
-    }
-
-    ASSERT( inode == nb_nodes ); /* check we went through all nodes */
+    ASSERT( ! mesh.has_function_space("triags") );
 
     /* triangles */
 
     const size_t nb_triags = poly.size_of_facets();
 
+    std::vector<int> bounds(2);
+    bounds[0] = Field::UNDEF_VARS;
     bounds[1] = nb_triags;
 
-    FunctionSpace& triags  = mesh->add_function_space( new FunctionSpace( "triags", "Lagrange_P1", bounds ) );
+    FunctionSpace& triags  = mesh.add_function_space( new FunctionSpace( "triags", "Lagrange_P1", bounds ) );
     triags.metadata().set("type",static_cast<int>(Entity::ELEMS));
 
     FieldT<int>& triag_nodes = triags.create_field<int>("nodes",3);
@@ -135,7 +106,6 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
     KPoint3 pt;
     size_t idx[3];
     Polyhedron_3::Vertex_const_handle vts[3];
-
 
     std::cout << "inserting triags (" << nb_triags << ")" << std::endl;
 
@@ -190,23 +160,33 @@ atlas::Mesh* cgal_polyhedron_to_atlas_mesh( Polyhedron_3& poly, PointSet& points
     }
 
     assert( tidx == nb_triags );
+}
 
-    return mesh;
+#else
+
+struct Polyhedron_3 {};
+
+Polyhedron_3* create_convex_hull_from_points( const std::vector< KPoint3 >& pts )
+{
+    throw std::string( "CGAL package not found -- triangulation is disabled" );
+}
+
+cgal_polyhedron_to_atlas_mesh(  atlas::Mesh& mesh, Polyhedron_3& poly, PointSet& points )
+{
+    throw std::string( "CGAL package not found -- triangulation is disabled" );
 }
 
 #endif
 
 //------------------------------------------------------------------------------------------------------
 
-atlas::Mesh* Tesselation::generate_from_points(const std::vector<KPoint3>& pts)
+void Tesselation::tesselate( atlas::Mesh& mesh )
 {
     Timer t ("grid tesselation");
 
-    Mesh* mesh = 0;
-
     // remove duplicate points
 
-    PointSet points( pts ); /* will remember each point index in readpts */
+    PointSet points( mesh ); /* will remember each point index in readpts */
 
     std::vector< KPoint3 > ipts;
     std::vector< size_t > idxs;
@@ -220,35 +200,77 @@ atlas::Mesh* Tesselation::generate_from_points(const std::vector<KPoint3>& pts)
 
     // define polyhedron to hold convex hull
 
-    Polyhedron_3* poly = create_convex_hull_from_points( ipts );
+    std::unique_ptr< Polyhedron_3 > poly( create_convex_hull_from_points( ipts ) );
 
 //    std::cout << "convex hull " << poly->size_of_vertices() << " vertices" << std::endl;
 
     assert( poly->size_of_vertices() == ipts.size() );
 
-    mesh = cgal_polyhedron_to_atlas_mesh( *poly, points );
+    cgal_polyhedron_to_atlas_mesh( mesh, *poly, points );
 
-    delete poly;
 #else
 
     throw std::string( "CGAL package not found -- triangulation is disabled" );
 
 #endif
-
-    return mesh;
 }
 
 //------------------------------------------------------------------------------------------------------
 
-std::vector<KPoint3>* Tesselation::generate_latlon_points( const size_t& nlats, const size_t& nlong )
+void Tesselation::create_mesh_structure( atlas::Mesh& mesh, const size_t nb_nodes )
 {
+    // create / ensure mesh has coordinates
+
+    std::vector<int> bounds (2);
+    if( ! mesh.has_function_space("nodes") )
+    {
+        bounds[0] = Field::UNDEF_VARS;
+        bounds[1] = nb_nodes;
+        FunctionSpace& nodes = mesh.add_function_space( new FunctionSpace( "nodes", "Lagrange_P0", bounds ) );
+        nodes.metadata().set("type",static_cast<int>(Entity::NODES));
+    }
+
+    FunctionSpace& nodes = mesh.function_space( "nodes" );
+
+    ASSERT(  nodes.bounds()[1] == nb_nodes );
+
+    // create / ensure mesh has coordinates
+
+    if( ! nodes.has_field("coordinates") )
+        nodes.create_field<double>("coordinates",3);
+
+    // create / ensure mesh has latlon
+
+    if( ! nodes.has_field("latlon") )
+        nodes.create_field<double>("latlon",2);
+
+    // create / ensure mesh has global indexes
+
+    if( ! nodes.has_field("glb_idx") )
+        nodes.create_field<int>("glb_idx",1);
+}
+
+//------------------------------------------------------------------------------------------------------
+
+void Tesselation::generate_latlon_points( atlas::Mesh& mesh,
+                                          const size_t& nlats,
+                                          const size_t& nlong )
+{
+    const size_t nb_nodes = nlats * nlong;
+
+    Tesselation::create_mesh_structure(mesh,nb_nodes);
+
+    FunctionSpace& nodes = mesh.function_space( "nodes" );
+
+    ASSERT(  nodes.bounds()[1] == nb_nodes );
+
+    FieldT<double>& coords  = nodes.field<double>("coordinates");
+    FieldT<double>& latlon  = nodes.field<double>("latlon");
+    FieldT<int>&    glb_idx = nodes.field<int>("glb_idx");
+
     // generate lat/long points
 
-    const size_t npts = nlats * nlong;
-
-//    std::cout << "generating nlats (" << nlats << ") x  (" << nlong << ")" << " = " << npts << std::endl;
-
-    std::vector< KPoint3 >* pts = new std::vector< KPoint3 >( npts );
+//    std::cout << "generating nlats (" << nlats << ") x  (" << nlong << ")" << " = " << nb_nodes << std::endl;
 
     const double lat_inc = 180. / (double)nlats;
     const double lat_start = -90 + 0.5*lat_inc;
@@ -258,8 +280,8 @@ std::vector<KPoint3>* Tesselation::generate_latlon_points( const size_t& nlats, 
     const double lon_start = 0.5*lon_inc;
 //    const double lon_end   = 360. - 0.5*lon_inc;
 
-    double lat;
-    double lon;
+    double lat = 0;
+    double lon = 0;
 
     size_t visits = 0;
 
@@ -271,11 +293,14 @@ std::vector<KPoint3>* Tesselation::generate_latlon_points( const size_t& nlats, 
         {
             const size_t idx = jlon + ( ilat * nlong );
 
-            ASSERT( idx < npts );
+            ASSERT( idx < nb_nodes );
 
-            KPoint3& p = (*pts)[ idx ];
+            glb_idx(idx) = idx;
 
-            atlas::latlon_to_3d( lat, lon, p.data() );
+            latlon(LAT,idx) = lat;
+            latlon(LON,idx) = lon;
+
+            atlas::latlon_to_3d( lat, lon, coords.slice(idx) );
 
             //            std::cout << idx << " [ " << lat << " ; " << lon << " ] " << p << std::endl;
 
@@ -283,20 +308,24 @@ std::vector<KPoint3>* Tesselation::generate_latlon_points( const size_t& nlats, 
         }
     }
 
-    ASSERT( visits == npts );
-
-    return pts;
+    ASSERT( visits == nb_nodes );
 }
 
 //------------------------------------------------------------------------------------------------------
 
-std::vector<KPoint3>* Tesselation::generate_latlon_grid(const size_t& nlats, const size_t& nlong)
+void Tesselation::generate_latlon_grid( atlas::Mesh& mesh, const size_t& nlats, const size_t& nlong )
 {
-    // generate lat/long points
+    const size_t nb_nodes = (nlats+1) * (nlong+1);
 
-    const size_t npts = (nlats+1) * (nlong+1);
+    Tesselation::create_mesh_structure(mesh,nb_nodes);
 
-    std::vector< KPoint3 >* pts = new std::vector< KPoint3 >( npts );
+    FunctionSpace& nodes = mesh.function_space( "nodes" );
+
+    ASSERT( nodes.bounds()[1] == nb_nodes );
+
+    FieldT<double>& coords  = nodes.field<double>("coordinates");
+    FieldT<double>& latlon  = nodes.field<double>("latlon");
+    FieldT<int>&    glb_idx = nodes.field<int>("glb_idx");
 
     const double lat_inc = 180. / nlats;
     const double lat_start = -90.;
@@ -306,8 +335,10 @@ std::vector<KPoint3>* Tesselation::generate_latlon_grid(const size_t& nlats, con
     const double lon_start = 0.0;
     const double lon_end   = 360.;
 
-    double lat;
-    double lon;
+    double lat = 0;
+    double lon = 0;
+
+    size_t visits = 0;
 
     lat = lat_start;
     for( size_t ilat = 0; ilat < nlats+1; ++ilat, lat += lat_inc )
@@ -318,9 +349,16 @@ std::vector<KPoint3>* Tesselation::generate_latlon_grid(const size_t& nlats, con
 
             const size_t idx = jlon + ( ilat * (nlong+1) );
 
-            assert( idx < npts );
+            assert( idx < nb_nodes );
 
-            atlas::latlon_to_3d( lat, lon, (*pts)[ idx ].data() );
+            glb_idx(idx) = idx;
+
+            latlon(LAT,idx) = lat;
+            latlon(LON,idx) = lon;
+
+            atlas::latlon_to_3d( lat, lon, coords.slice(idx) );
+
+            ++visits;
 
 //            std::cout << idx << " "
 //                      << lat << " "
@@ -337,13 +375,16 @@ std::vector<KPoint3>* Tesselation::generate_latlon_grid(const size_t& nlats, con
         if( ilat == nlats ) lat = lat_end;
     }
 
-    return pts;
+    ASSERT( visits == nb_nodes );
 }
 
 //------------------------------------------------------------------------------------------------------
 
-void Tesselation::create_cell_centres(Mesh &mesh)
+void Tesselation::create_cell_centres( Mesh& mesh )
 {
+    ASSERT( mesh.has_function_space("nodes") );
+    ASSERT( mesh.has_function_space("triags") );
+
     FunctionSpace& nodes     = mesh.function_space( "nodes" );
     FieldT<double>& coords   = nodes.field<double>( "coordinates" );
 

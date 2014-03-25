@@ -39,8 +39,9 @@ public:
 
 	// From an existing TCPSocket (see TCPServer::accept)
 
-	// **** NOTE: copying give ownership of the socket to new object
-	// **** Beware of 'slicing', i.e copying subclasses.
+    /// @warning
+    /// **** NOTE: copying gives ownership of the socket to new object
+    /// **** Beware of 'slicing', i.e copying subclasses.
 
 	TCPSocket(TCPSocket&);
 

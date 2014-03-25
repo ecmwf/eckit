@@ -10,8 +10,6 @@
 #include <Eigen/Geometry>
 #include <Eigen/Sparse>
 
-#include "atlas/MeshGen.hpp"
-
 #include "FloatCompare.h"
 
 //-----------------------------------------------------------------------------

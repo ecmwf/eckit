@@ -35,20 +35,6 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-# eckit::grid
-
-ecbuild_add_option( FEATURE GRID
-					DEFAULT ON
-					DESCRIPTION "eckit::grid extension [EXPERIMENTAL]" )
-
-if( ENABLE_GRID )
-	ecbuild_use_package( PROJECT atlas )
-	add_feature_info( atlas ATLAS_FOUND "support for unstructured meshes")
-	if( NOT ATLAS_FOUND )
-		set( HAVE_GRID 0 )
-	endif()
-endif()
-
 # Eigen
 
 ecbuild_add_option( FEATURE EIGEN
@@ -85,13 +71,6 @@ if( HAVE_MATHS )
 
 endif()
 
-# tesselation support
-
-ecbuild_add_option( FEATURE TESSELATION
-					DEFAULT ON
-					DESCRIPTION "support for unstructured grid tesselation"
-					REQUIRED_PACKAGES CGAL )
-
 # boost support
 
 set(Boost_USE_MULTITHREADED      ON )
@@ -107,18 +86,6 @@ ecbuild_add_option( FEATURE BOOST
 set_package_properties( Boost PROPERTIES TYPE RECOMMENDED PURPOSE "" )
 
 #list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
-
-# MPI support
-
-ecbuild_add_option( FEATURE MPI
-					DESCRIPTION "eckit::mpi extensions [EXPERIMENTAL]" )
-
-if( ENABLE_MPI )
-	ecbuild_find_mpi()
-	if( NOT MPI_CXX_FOUND )
-			set( HAVE_MPI 0 )
-	endif()
-endif()
 
 # async io support
 
@@ -154,10 +121,6 @@ endif()
 set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
 set( ECKIT_LIBRARIES      eckit eckit_web )
-
-if( HAVE_GRID )
-	list( APPEND ECKIT_LIBRARIES eckit_grid )
-endif()
 
 if( HAVE_GRIB )
 	list( APPEND ECKIT_LIBRARIES eckit_grib )

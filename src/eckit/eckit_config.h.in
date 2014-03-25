@@ -35,7 +35,6 @@
 
 // external packages
 
-#cmakedefine CGAL_FOUND
 #cmakedefine EIGEN3_FOUND
 
 #endif // eckit_config_h

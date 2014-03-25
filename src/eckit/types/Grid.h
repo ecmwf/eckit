@@ -11,8 +11,8 @@
 // File Grid.h
 // Baudouin Raoult - ECMWF Dec 97
 
-#ifndef eckit_Grid_h
-#define eckit_Grid_h
+#ifndef atlas_grid_Grid_h
+#define atlas_grid_Grid_h
 
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"

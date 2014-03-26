@@ -36,6 +36,11 @@ std::string CodeLocation::asString() const
     return oss.str();
 }
 
+CodeLocation::operator bool()
+{
+    return file_ != 0;
+}
+
 void CodeLocation::print(std::ostream& os) const
 {
     if( file_ )
@@ -47,7 +52,6 @@ void CodeLocation::print(std::ostream& os) const
     else
         os << "(unknown location)";
 }
-
 
 //-----------------------------------------------------------------------------
 

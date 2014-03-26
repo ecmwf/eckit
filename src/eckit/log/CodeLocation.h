@@ -24,7 +24,7 @@ namespace eckit {
 
 class CodeLocation {
 
-public:
+public: // methods
     
     friend std::ostream& operator<<( std::ostream& s, const CodeLocation& loc ) { loc.print(s); return s; }
 	
@@ -39,20 +39,24 @@ public:
     
     /// conversion operator
     operator std::string() const { return asString(); }
-    
-    const char * file() const { return file_; }
-    const char * func() const { return func_; }
-    int line() const { return line_; }
-    
-private:
-    
-    // Members    
 
+    /// conversion to bool for checking if location was set
+    operator bool();
+
+    /// accessor to line
+    int line() const { return line_; }
+    /// accessor to file
+    const char * file() const { return file_; }
+    /// accessor to function
+    const char * func() const { return func_; }
+    
+private: // members
+    
     int          line_;
     const char * file_; 
     const char * func_;
 
-    // Methods
+protected: // methods
     
      void print(std::ostream&) const;
 };

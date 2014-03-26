@@ -1,8 +1,0 @@
-Implement grids as far as interface
-- e.g. gaussian defns
-- latlon defs etc
-
-flesh out the field class
-- interpolate between two grids using the code
-- 
-

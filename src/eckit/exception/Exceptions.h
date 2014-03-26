@@ -142,6 +142,7 @@ public:
 
 class UserError : public Exception {
 public:
+    UserError(const std::string&,const CodeLocation&);
     UserError(const std::string&);
     UserError(const std::string&,const std::string&);
     UserError(const std::string&,int);

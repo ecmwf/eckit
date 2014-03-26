@@ -186,9 +186,14 @@ NotImplemented::NotImplemented( const CodeLocation& loc )
 
 }
 
+UserError::UserError(const std::string& r, const CodeLocation& loc):
+    Exception(std::string("UserError: ") + r, loc)
+{
+}
+
 UserError::UserError(const std::string& r):
     Exception(std::string("UserError: ") + r)
-{   
+{
 }
 
 UserError::UserError(const std::string& r,const std::string& x):

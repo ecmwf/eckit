@@ -48,7 +48,6 @@ void CodeLocation::print(std::ostream& os) const
         os << "(unknown location)";
 }
 
-
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

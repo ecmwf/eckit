@@ -89,6 +89,7 @@ public:
 class TooManyRetries : public Exception {
 public:
     TooManyRetries(const int);
+    TooManyRetries(const int, const std::string &msg);
 };
 
 class TimeOut : public Exception {

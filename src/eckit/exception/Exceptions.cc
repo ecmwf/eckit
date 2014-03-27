@@ -96,11 +96,19 @@ bool Exception::throwing()
     return first() != 0;
 }
 
-TooManyRetries::TooManyRetries(const int retries) 
-{   
+TooManyRetries::TooManyRetries( const int retries )
+{
     StrStream s;
     s << "Too many retries: " << retries << StrStream::ends;
-    reason(std::string(s)); 
+    reason(std::string(s));
+    Log::monitor(Log::Unix,errno) << what() << std::endl;
+}
+
+TooManyRetries::TooManyRetries( const int retries, const std::string& msg )
+{
+    StrStream s;
+    s << "Too many retries: " << retries << " @ " << msg << StrStream::ends;
+    reason(std::string(s));
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 

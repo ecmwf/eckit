@@ -47,6 +47,7 @@ set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Accelerated 
 # GRIB
 
 ecbuild_add_option( FEATURE GRIB
+					DEFAULT ON
 					DESCRIPTION "support for GRIB format [EXPERIMENTAL]" )
 
 if( ENABLE_GRIB )

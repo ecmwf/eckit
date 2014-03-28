@@ -13,13 +13,16 @@
 
 #include "eckit/eckit.h"
 
-//#include <cmath>
 #include <limits>
 #include <cmath>
 
 #include "eckit/container/StatCollector.h"
 
+//------------------------------------------------------------------------------------------------------
+
 namespace eckit {
+
+//------------------------------------------------------------------------------------------------------
 
 struct KDMemory : public StatCollector {
     typedef void* Ptr;
@@ -58,7 +61,8 @@ struct TT : public T {
     typedef A Alloc;
 };
 
-} // end namespace
+//------------------------------------------------------------------------------------------------------
 
+} // end namespace eckit
 
 #endif

@@ -1,4 +1,5 @@
 list( APPEND eckit_maths_srcs
+Eigen.h
 BinaryOperator.cc
 BinaryOperator.h
 BinaryPredicate.cc

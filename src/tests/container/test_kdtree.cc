@@ -12,11 +12,12 @@
 
 #include "eckit/runtime/Tool.h"
 #include "eckit/container/KDTree.h"
-#include "eckit/container/sptree/SPPoint.h"
+#include "eckit/geometry/KPoint.h"
 #include "eckit/os/Semaphore.h"
 
 using namespace std;
 using namespace eckit;
+using namespace eckit::geometry;
 
 class Test : public Tool {
     virtual void run();
@@ -29,7 +30,7 @@ class Test : public Tool {
 
 
 struct TestTreeTrait {
-    typedef SPPoint<2> Point;
+    typedef KPoint<2>  Point;
     typedef double     Payload;
 };
 

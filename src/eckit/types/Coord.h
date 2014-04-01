@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-// File Coord.h
 // Claude  Gibert - ECMWF Dec 97
 
 #ifndef eckit_Coord_h
@@ -95,13 +94,9 @@ protected:
 
 typedef std::vector<Coord> CoordList;
 
-#endif
-
 //---------------------------------------------------------
 // Longitude
 //---------------------------------------------------------
-#ifndef eckit_Longitude_h
-#define eckit_Longitude_h
 
 class Longitude: public Coord {
 public:
@@ -112,13 +107,9 @@ public:
 
 };
 
-#endif
-
 //---------------------------------------------------------
 // Latitude
 //---------------------------------------------------------
-#ifndef eckit_Latitude_h
-#define eckit_Latitude_h
 
 class Latitude: public Coord {
 public:
@@ -128,33 +119,6 @@ public:
 	Latitude(double l = 0);
 
 };
-
-#endif
-
-//---------------------------------------------------------
-// Point
-//---------------------------------------------------------
-#ifndef eckit_Point_h
-#define eckit_Point_h
-
-class Point {
-
-public:
-	Point(const Latitude& lat, const Longitude& longi):
-			lat_(lat), long_(longi) {}
-
-	const Latitude& latitude() const { return lat_; }
-	const Longitude& longitude() const { return long_; }
-
-private:
-
-	Latitude	lat_;
-	Longitude	long_;
-
-	friend class Area;
-
-};
-
 
 //-----------------------------------------------------------------------------
 

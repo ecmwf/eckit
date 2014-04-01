@@ -121,7 +121,7 @@ endif()
 
 set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
-set( ECKIT_LIBRARIES      eckit eckit_web )
+set( ECKIT_LIBRARIES      eckit eckit_web eckit_geometry )
 
 if( HAVE_GRIB )
 	list( APPEND ECKIT_LIBRARIES eckit_grib )

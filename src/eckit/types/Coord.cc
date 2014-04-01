@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eckit/types/Coord.h"
 #include "eckit/persist/DumpLoad.h"
 
@@ -40,7 +39,6 @@ void Coord::load(DumpLoad& a)
 {
 	a.load(value_);
 }
-
 
 //-----------------------------------------------------------------------------
 

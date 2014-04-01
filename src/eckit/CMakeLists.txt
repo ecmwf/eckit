@@ -36,12 +36,10 @@ container/MappedArray.cc
 container/SimpleMappedArray.cc
 container/SimpleMappedArray.h
 
-
 container/sptree/SPIterator.h
 container/sptree/SPNode.h
 
 container/sptree/SPNodeQueue.h
-container/sptree/SPPoint.h
 container/sptree/SPTree.h
 container/sptree/SPValue.h
 container/sptree/SPNodeInfo.h
@@ -307,9 +305,10 @@ types/Types.h
 types/Types.cc
 types/Double.h
 types/Double.cc
+types/FloatCompare.h
+types/FloatCompare.cc
 types/FixedString.h
 types/FixedString.cc
-types/Area.h
 types/ClimateDate.h
 types/ClimateDate.cc
 types/Coord.h
@@ -535,6 +534,8 @@ ecbuild_add_library(TARGET eckit
 add_subdirectory( web )
 
 add_subdirectory( maths )
+
+add_subdirectory( geometry )
 
 add_subdirectory( grib )
 

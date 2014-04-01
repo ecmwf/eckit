@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eckit/persist/DumpLoad.h"
 #include "eckit/types/Grid.h"
 #include "eckit/log/Log.h"

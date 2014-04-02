@@ -75,12 +75,14 @@ private:
 template < typename POINT >
 struct BoundBox2
 {
+    BoundBox2(){}
+
     BoundBox2( const POINT& bottom_left, const POINT& top_right ) :
         bottom_left_(bottom_left),
         top_right_(top_right)
     {
-        ASSERT( bottom_left_(XX) < top_right_(XX) );
-        ASSERT( bottom_left_(YY) < top_right_(YY) );
+        ASSERT( bottom_left_(XX) <= top_right_(XX) );
+        ASSERT( bottom_left_(YY) <= top_right_(YY) );
     }
 
     POINT bottom_left_;

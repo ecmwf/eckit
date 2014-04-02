@@ -3,6 +3,7 @@ EmosFile.cc
 EmosFile.h
 Grib.h
 GribAccessor.h
+GribAccessor.cc
 GribField.cc
 GribField.h
 GribFieldSet.cc

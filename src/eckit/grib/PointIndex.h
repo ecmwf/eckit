@@ -81,7 +81,7 @@ public:
 
 struct PointIndexTreeTrait
 {
-    typedef geometry::LLPoint  Point;
+    typedef geometry::LLPoint2  Point;
     typedef size_t             Payload;
 };
 

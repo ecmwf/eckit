@@ -36,6 +36,10 @@ protected:
 
     double x_[SIZE];
 
+    class NoInit {};
+
+    KPoint( NoInit ) {}
+
 public:
 
     static const size_t DIMS = SIZE;
@@ -47,7 +51,7 @@ public:
         std::fill(x_, x_+dimensions(), 0);
     }
 
-    KPoint( double* x )
+    KPoint( const double * x )
     {
         std::copy(x, x+dimensions(), x_);
     }
@@ -58,22 +62,7 @@ public:
         std::copy(c.begin(), c.end(), x_);
     }
 
-    explicit KPoint(double x, double y)
-    {
-        ASSERT( SIZE >= 2 );
-        x_[0] = x;
-        x_[1] = y;
-    }
-
-//    explicit KPoint(double x, double y, double z)
-//    {
-//        ASSERT( SIZE >= 3 );
-//        x_[0] = x;
-//        x_[1] = y;
-//        x_[2] = z;
-//    }
-
-    double* data() { return x_; }
+    double *const data() { return x_; }
 
     double operator()( const size_t& i ) const { assert( i < SIZE ); return x_[i]; }
 

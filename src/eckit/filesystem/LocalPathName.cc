@@ -183,10 +183,8 @@ LocalPathName LocalPathName::unique(const LocalPathName& path)
 
 void LocalPathName::mkdir(short mode) const
 {
-
 	std::string s = path_;
 	long   l = path_.length();
-
 
 	for(long i=1; i < l; i++)
 	{

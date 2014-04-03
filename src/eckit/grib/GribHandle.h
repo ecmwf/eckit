@@ -15,10 +15,13 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/serialisation/Stream.h"
 
+struct grib_handle;
+
+namespace eckit {
+
 class DataHandle;
 
-struct grib_handle;
-namespace eckit {
+//------------------------------------------------------------------------------------------------------
 
 class GribHandle : private eckit::NonCopyable {
 public:
@@ -45,6 +48,8 @@ private: // members
     grib_handle* handle_;
 
 };
+
+//------------------------------------------------------------------------------------------------------
 
 }
 

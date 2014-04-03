@@ -12,30 +12,14 @@
 
 namespace eckit {
 
+//------------------------------------------------------------------------------------------------------
+
 class GribFieldSet;
 class EmosFile;
 
 class GribFile : public Counted {
-public:
 
-// -- Exceptions
-	// None
-
-// -- Contructors
-
-
-
-// -- Destructor
-
-
-
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
-// -- Methods
+public: // methods
 
     GribFieldSet* getFieldSet() const;
     void getFieldSet(GribFieldSet&) const;
@@ -43,36 +27,17 @@ public:
 
     const PathName& path() const { return path_; }
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-
     static GribFile* newGribFile(const PathName&);
 
-protected:
+protected: // members
 
-// -- Members
-
-    // Use "newGribFile" intead
+    /// Use newGribFile() intead
     GribFile(const PathName&);
-    ~GribFile(); // Change to virtual if base class
+    ~GribFile();
 
-// -- Methods
-	
+protected: // methods
+
     void print(std::ostream&) const; // Change to virtual if base class
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
 
 private:
 
@@ -86,24 +51,12 @@ private:
 	PathName path_;
     EmosFile* file_;
 
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
-
-    friend std::ostream& operator<<(std::ostream& s,const GribFile& p)
-        { p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s,const GribFile& p) { p.print(s); return s; }
 
 };
-}
+
+//------------------------------------------------------------------------------------------------------
+
+} // end namespace eckit
 
 #endif

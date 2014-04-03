@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include <grib_api.h>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/StringTools.h"
 #include "eckit/io/DataHandle.h"
-#include "GribHandle.h"
+
+#include "eckit/grib/GribHandle.h"
 
 namespace eckit {
 
@@ -91,4 +91,4 @@ GribHandle* GribHandle::clone() const
     return new GribHandle(grib_handle_clone(handle_));
 }
 
-} // namespace
+} // namespace eckit

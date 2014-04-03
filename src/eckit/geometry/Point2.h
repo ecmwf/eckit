@@ -47,16 +47,21 @@ public:
 class LLPoint2 : public Point2 {
 public:
 
-    enum { LAT = XX, LON = YY };
-
     LLPoint2() : Point2() {}
 
     LLPoint2( const Point2& p ) : Point2(p) { reduceTo2Pi(); }
 
-    LLPoint2( const double lat, const double lon ) : Point2(lat,lon) { reduceTo2Pi(); }
+    LLPoint2( double lat, double lon ) : Point2(lat,lon) { reduceTo2Pi(); }
 
     double lat() const { return x_[LAT]; }
     double lon() const { return x_[LON]; }
+
+    void assign( double lat, double lon )
+    {
+        x_[LAT] = lat;
+        x_[LON] = lon;
+        reduceTo2Pi();
+    }
 
 private:
 

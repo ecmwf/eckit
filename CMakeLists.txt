@@ -38,7 +38,7 @@ ecbuild_declare_project()
 # Eigen
 
 ecbuild_add_option( FEATURE EIGEN
-					DEFAULT ON
+					DEFAULT OFF
 					DESCRIPTION "Eigen support  [EXPERIMENTAL]"
 					REQUIRED_PACKAGES Eigen3 )
 
@@ -47,7 +47,7 @@ set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Accelerated 
 # GRIB
 
 ecbuild_add_option( FEATURE GRIB
-					DEFAULT ON
+					DEFAULT OFF
 					DESCRIPTION "support for GRIB format [EXPERIMENTAL]" )
 
 if( ENABLE_GRIB )
@@ -62,7 +62,7 @@ set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encod
 # eckit::maths
 
 ecbuild_add_option( FEATURE MATHS
-					DEFAULT ON
+					DEFAULT OFF
 					DESCRIPTION "eckit::maths expressions [EXPERIMENTAL]" )
 
 if( HAVE_MATHS )

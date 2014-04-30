@@ -1,7 +1,6 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
-#include <cstdint>
 #include <limits>
 
 #include "eckit/types/FloatCompare.h"

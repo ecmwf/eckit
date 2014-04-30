@@ -48,14 +48,8 @@ set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Accelerated 
 
 ecbuild_add_option( FEATURE GRIB
 					DEFAULT OFF
-					DESCRIPTION "support for GRIB format [EXPERIMENTAL]" )
-
-if( ENABLE_GRIB )
-	ecbuild_use_package( PROJECT grib_api VERSION 1.9.9 )
-	if( NOT GRIB_API_FOUND )
-		set( HAVE_GRIB 0 )
-	endif()
-endif()
+					DESCRIPTION "support for GRIB format [EXPERIMENTAL]"
+					REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.9.9" )
 
 set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
 

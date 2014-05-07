@@ -26,7 +26,7 @@ namespace maths {
 //--------------------------------------------------------------------------------------------
 
 
-class Scope : private boost::noncopyable {
+class Scope : private eckit::NonCopyable {
 public:
 
     Scope(const char* name, Scope* = 0);

@@ -60,11 +60,10 @@ ecbuild_add_option( FEATURE MATHS
 					DESCRIPTION "eckit::maths expressions [EXPERIMENTAL]" )
 
 if( HAVE_MATHS )
-
-	ecbuild_add_cxx11_flags()
-	ecbuild_check_cxx11( PRINT )
-
+	ecbuild_add_cxx11_flags() # enforce c++11
 endif()
+
+ecbuild_check_cxx11( PRINT ) # always test for c++11
 
 # boost support
 

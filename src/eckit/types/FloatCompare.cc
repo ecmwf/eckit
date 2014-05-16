@@ -123,18 +123,18 @@ bool AlmostEqualRelativeAndAbs(T A, T B, T maxDiff, T maxRelDiff)
 
 //-----------------------------------------------------------------------------
 
-bool FloatCompare::is_equal(float a, float b)
+bool FloatCompare::is_equal(float a, float b, float epsilon)
 {
 //    return AlmostEqualUlps(a,b,10);
-    return AlmostEqualUlpsAndAbs(a,b,std::numeric_limits<float>::epsilon(),10);
+    return AlmostEqualUlpsAndAbs(a,b,epsilon,10);
 }
 
 //-----------------------------------------------------------------------------
 
-bool FloatCompare::is_equal(double a, double b)
+bool FloatCompare::is_equal(double a, double b, double epsilon)
 {
 //    return AlmostEqualUlps(a,b,10);
-    return AlmostEqualUlpsAndAbs(a,b,std::numeric_limits<double>::epsilon(),10);
+    return AlmostEqualUlpsAndAbs(a,b,epsilon,10);
 }
 
 //-----------------------------------------------------------------------------

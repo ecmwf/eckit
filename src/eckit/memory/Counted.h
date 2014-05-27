@@ -89,7 +89,7 @@ public: // methods
         if( --count_ == 0 )
         {
             LOCK::unlock();
-            DEL::deallocate( this );
+            MEMORY::deallocate( this );
         }
         else
             LOCK::unlock();

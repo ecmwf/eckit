@@ -9,16 +9,15 @@
  */
 
 /// @file Counted.h
-/// @author Baudouin Raoult
 /// @date Jun 1996
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
 
 #ifndef eckit_Counted_h
 #define eckit_Counted_h
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
-
-#include "eckit/log/Log.h"
 
 //-----------------------------------------------------------------------------
 
@@ -117,16 +116,6 @@ typedef CountedT< memory::detail::NoLock, memory::detail::SelfManaged >  Counted
 /// Default Counted type for backward compatibility
 /// Same as CountedLock
 typedef CountedLock  Counted;
-
-/// Counted object, with third party managed memory and not thread lockable resource
-typedef CountedT< memory::detail::ThreadedLock, memory::detail::NotManaged >  OwnedLock;
-
-/// Counted object, with third party managed memory and not thread lockable resource
-typedef CountedT< memory::detail::NoLock, memory::detail::NotManaged >  OwnedNoLock;
-
-/// Default Owned type
-/// Same as OwnedNoLock
-typedef OwnedNoLock Owned;
 
 //-----------------------------------------------------------------------------
 

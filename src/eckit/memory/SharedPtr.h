@@ -53,6 +53,8 @@ void delete_ptr_array(T*& p)
   }
 }
 
+//-----------------------------------------------------------------------------
+
 template <class T>
 struct NewDealloc
 {
@@ -64,6 +66,8 @@ struct NewArrayDealloc
 {
     static void deallocate( T*& p ) { delete_ptr_array(p); }
 };
+
+//-----------------------------------------------------------------------------
 
 /// A smart pointer that allows to share resources that have derived from Counted
 /// @see CountedT
@@ -218,9 +222,11 @@ public: // methods
         return 0;
     }
 
+    size_t use_count() const { return owners(); }
+
 private:
 
-    pointer_type ptr_; //< raw pointer
+    pointer_type ptr_; ///< raw pointer
 
 };
 

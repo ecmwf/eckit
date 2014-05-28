@@ -52,8 +52,14 @@ public: // methods
     /// Calling operator
     T* operator->() const { ASSERT(ptr_); return ptr_; }
     
-    /// @returns the pointee
-    T* get() const { ASSERT(ptr_); return ptr_; }
+    /// @returns the stored pounter
+    /// Should be used with caution, because of issues dealing with raw pointers.
+    /// However, get makes it possible to explicitly test whether the stored point is NULL.
+    /// The function never throws. get is typically used when calling functions
+    /// that require a raw pointer.
+    /// Note: previously this asserted ptr_ was not null, however this is in-consistent
+    ///       with the standard std/boost::scoped_ptr.
+    T* get() const { return ptr_; }
     
     /// @returns true if pointer is not null
     /// @throws nothing

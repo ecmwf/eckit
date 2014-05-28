@@ -15,6 +15,8 @@
 #ifndef eckit_maths_List_h
 #define eckit_maths_List_h
 
+#include "eckit/memory/SharedPtr.h"
+
 #include "eckit/maths/Value.h"
 #include "eckit/maths/Math.h"
 
@@ -27,6 +29,7 @@ class List : public Value {
 
 public: // types
 
+    typedef SharedPtr<List> Ptr;
     typedef args_t value_t;
 
 public: // methods

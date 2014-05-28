@@ -16,12 +16,6 @@
 #ifndef eckit_maths_Expression_h
 #define eckit_maths_Expression_h
 
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/noncopyable.hpp>
-
-#include "eckit/eckit.h"
-
 /// @todo look into currying / binding -- add2 = curry ( add , 2 )
 /// @todo list --  list 1 2
 /// @todo std::map
@@ -44,12 +38,12 @@
 #include <map>
 #include <utility>
 
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/function.hpp>
-#include <boost/noncopyable.hpp>
-#include <boost/shared_ptr.hpp>
 
+#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/memory/Owned.h"
+#include "eckit/memory/SharedPtr.h"
 
 //--------------------------------------------------------------------------------------------
 
@@ -83,11 +77,10 @@ class Scope;
 
 typedef double scalar_t;
 
-typedef boost::shared_ptr<List>       ListPtr;
-typedef boost::shared_ptr<Expression> ExpPtr;
+typedef SharedPtr<List>        ListPtr;
+typedef SharedPtr<Expression>  ExpPtr;
 
 typedef std::vector< ExpPtr > args_t;
-
 
 //--------------------------------------------------------------------------------------------
 
@@ -101,9 +94,7 @@ public:
 
 class Optimiser;
 
-class Expression :
-    public boost::enable_shared_from_this<Expression>,
-    private boost::noncopyable {
+class Expression : public Owned {
 
 public: // methods
 
@@ -122,13 +113,13 @@ public: // methods
 
     virtual ~Expression();
 
-    ExpPtr self()       { return shared_from_this(); }
-    ExpPtr self() const { return boost::const_pointer_cast<Expression>( shared_from_this() ); }
+    ExpPtr self()       { return ExpPtr(this); }
+    ExpPtr self() const { return ExpPtr( const_cast<Expression*>( this ) ); }
 
     template< typename T >
-    boost::shared_ptr<T> as()
+    SharedPtr<T> as()
     {
-        return boost::dynamic_pointer_cast<T, Expression>( shared_from_this() );
+        return SharedPtr<T>( dynamic_cast<T*>( this ) );
     }
 
     friend std::ostream& operator<<( std::ostream& os, const Expression& v);

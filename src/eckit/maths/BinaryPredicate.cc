@@ -41,12 +41,12 @@ static const char *opsymbol(const Or&)            { return "||";  }
 struct Generic
 {
     template <class T, class U, class V >
-    static BoolPtr apply( T op, const U& a, const V& b )
+    static ExpPtr apply( T op, const U& a, const V& b )
     {
 //        DBGX(a);
 //        DBGX(b);
 //        DBGX( op( a , b ) );
-        return BoolPtr( new Boolean( op( a , b ) ) );
+        return ExpPtr( new Boolean( op( a , b ) ) );
     }
 };
 

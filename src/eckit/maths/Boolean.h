@@ -63,7 +63,7 @@ protected: // members
 
 //--------------------------------------------------------------------------------------------
 
-typedef boost::shared_ptr<Boolean> BoolPtr;
+// typedef SharedPtr<Boolean> BoolPtr;
 
 /// Helper function to construct boolean expressions
 ExpPtr boolean( const Boolean::value_t& s  );

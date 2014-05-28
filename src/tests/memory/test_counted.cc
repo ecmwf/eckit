@@ -73,17 +73,17 @@ void TestCounted::test_default()
 
     typename F::ptype p;
 
-    ASSERT( p.null() );
+    ASSERT( !p );
     ASSERT( p.get() == 0 );
 
     p.reset( new F(10) );
 
-    ASSERT( ! p.null() );
+    ASSERT( p );
     ASSERT( p.unique() );
 
     p.release();
 
-    ASSERT( p.null() );
+    ASSERT( !p );
     ASSERT( p.owners() == 0 );
 }
 
@@ -96,7 +96,7 @@ void TestCounted::test_copy()
     typename F::ptype p2;
     typename F::ptype p3;
 
-    ASSERT( p1.null() );
+    ASSERT( !p1 );
     ASSERT( p1.owners() == 0 );
 
     p1.reset( new F(10) );
@@ -109,9 +109,9 @@ void TestCounted::test_copy()
     ASSERT( p1 != p3 );
     ASSERT( p2 == p3 );
 
-    ASSERT( ! p1.null() );
-    ASSERT( p2.null() );
-    ASSERT( p3.null() );
+    ASSERT(  p1 );
+    ASSERT( !p2 );
+    ASSERT( !p3 );
 
     ASSERT( p1.owners() == 1 );
     ASSERT( p2.owners() == 0 );
@@ -131,9 +131,9 @@ void TestCounted::test_copy()
     ASSERT( p1 != p3 );
     ASSERT( p2 != p3 );
 
-    ASSERT( ! p1.null() );
-    ASSERT( ! p2.null() );
-    ASSERT( p3.null() );
+    ASSERT(  p1 );
+    ASSERT(  p2 );
+    ASSERT( !p3 );
 
     ASSERT( p1.owners() == 2 );
     ASSERT( p2.owners() == 2 );
@@ -151,9 +151,9 @@ void TestCounted::test_copy()
     ASSERT( p1 == p3 );
     ASSERT( p2 == p3 );
 
-    ASSERT( ! p1.null() );
-    ASSERT( ! p2.null() );
-    ASSERT( ! p3.null() );
+    ASSERT( p1 );
+    ASSERT( p2 );
+    ASSERT( p3 );
 
     ASSERT( p1.owners() == 3 );
     ASSERT( p2.owners() == 3 );
@@ -161,9 +161,9 @@ void TestCounted::test_copy()
 
     p1.release();
 
-    ASSERT( p1.null() );
-    ASSERT( ! p2.null() );
-    ASSERT( ! p3.null() );
+    ASSERT( !p1 );
+    ASSERT(  p2 );
+    ASSERT(  p3 );
 
     ASSERT( p1.owners() == 0 );
     ASSERT( p2.owners() == 2 );
@@ -171,9 +171,9 @@ void TestCounted::test_copy()
 
     p2.release();
 
-    ASSERT( p1.null() );
-    ASSERT( p2.null() );
-    ASSERT( ! p3.null() );
+    ASSERT( !p1 );
+    ASSERT( !p2 );
+    ASSERT(  p3 );
 
     ASSERT( p1.owners() == 0 );
     ASSERT( p2.owners() == 0 );
@@ -181,9 +181,9 @@ void TestCounted::test_copy()
 
     p3.release();
 
-    ASSERT( p1.null() );
-    ASSERT( p2.null() );
-    ASSERT( p3.null() );
+    ASSERT( !p1 );
+    ASSERT( !p2 );
+    ASSERT( !p3 );
 
     ASSERT( p1.owners() == 0 );
     ASSERT( p2.owners() == 0 );
@@ -197,19 +197,19 @@ void TestCounted::test_release()
 
     typename F::ptype p;
 
-    ASSERT( p.null() );
+    ASSERT( !p );
 
     p.release();
 
-    ASSERT( p.null() );
+    ASSERT( !p );
 
     p.reset( new F(10) );
 
-    ASSERT( ! p.null() );
+    ASSERT( p );
 
     p.release();
 
-    ASSERT( p.null() );
+    ASSERT( !p );
 }
 
 template< typename F >
@@ -220,8 +220,8 @@ void TestCounted::test_swap()
     typename F::ptype p1( new F(10) );
     typename F::ptype p2( new F(5) );
 
-    ASSERT( ! p1.null() );
-    ASSERT( ! p2.null() );
+    ASSERT( p1 );
+    ASSERT( p2 );
 
     ASSERT( p1.unique() );
     ASSERT( p2.unique() );
@@ -238,8 +238,8 @@ void TestCounted::test_swap()
     ASSERT( p1.unique() );
     ASSERT( p2.unique() );
 
-    ASSERT( ! p1.null() );
-    ASSERT( ! p2.null() );
+    ASSERT( p1 );
+    ASSERT( p2 );
 }
 
 //-----------------------------------------------------------------------------

@@ -200,11 +200,11 @@ void TestShared::test_intrusive_shared_ptr()
       ASSERT( !sup2.unique());
       ASSERT( !sup.unique());
 
-      // eckit::SharedPtr does not handle self assignment?
-//      sup2 = sup2;
-//      ASSERT( sup2->value() == 54321 );
-//      ASSERT( sup.use_count() == 2 );
-//      ASSERT( sup2.use_count() == 2 );
+      cout << "eckit::SharedPtr check self assignment\n";
+      sup2 = sup2;
+      ASSERT( sup2->value() == 54321 );
+      ASSERT( sup.use_count() == 2 );
+      ASSERT( sup2.use_count() == 2 );
    }
    ASSERT(UDT_use_count == 0 );
 
@@ -228,6 +228,7 @@ void TestShared::test_intrusive_shared_ptr()
       ASSERT(sup.use_count() == 0 );
       ASSERT(sup.get() == 0);
    }
+   ASSERT(UDT_use_count == 0 );
 
 
    std::cout << "test SharedPtr with a user defined type in std::vector\n";

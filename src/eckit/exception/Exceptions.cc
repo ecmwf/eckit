@@ -158,6 +158,14 @@ FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, cons
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
+SeriousBug::SeriousBug(const std::string& msg,const CodeLocation& loc)
+{
+   StrStream s;
+   s << "SeriousBug: " << msg << " " << " in " << loc << " "  << StrStream::ends;
+   reason(std::string(s));
+}
+
+
 AssertionFailed::AssertionFailed(const std::string& w): 
     Exception(std::string("Assertion failed: ") + w)
 {   

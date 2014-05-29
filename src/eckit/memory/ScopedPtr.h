@@ -14,12 +14,16 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"
 
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
+
+/// A smart pointer that deletes the pointee object when going out of scope.
+/// This should have a very similar interface to boost scoped_ptr or std unique_ptr
+/// so that once C++11 is suported overall compilers we can swithc easily.
+/// However due to lack of C++11 support, it does not support move semantics.
 
 template < typename T >
 class ScopedPtr : private NonCopyable {
@@ -57,8 +61,7 @@ public: // methods
         return r;
     }
 
-    /// Overloading of "=" with ScopedPtr
-    /// @return missing documentation
+    /// Assignement operator transfers ownership to another ScopedPtr
     const ScopedPtr& operator= (const ScopedPtr& other)
     {
         reset( other.release() );
@@ -68,16 +71,16 @@ public: // methods
     /// Dereferences the pointee
     reference_type operator*() const { ASSERT(ptr_); return *ptr_; }
 
-    /// Dereferences objedct member
+    /// Dereferences object member
     pointer_type operator->() const { ASSERT(ptr_); return ptr_; }
     
-    /// @returns the stored pointer
+    /// @returns a pointer to the managed object or null if no object is owned.
     /// Should be used with caution, because of issues dealing with raw pointers.
     /// However, get makes it possible to explicitly test whether the stored point is NULL.
     /// The function never throws. get is typically used when calling functions
     /// that require a raw pointer.
     /// Note: previously this asserted ptr_ was not null, however this is in-consistent
-    ///       with the standard std/boost::scoped_ptr.
+    ///       with the standard boost scoped_ptr or std unique_ptr
     pointer_type get() const { return ptr_; }
     
     /// @returns true if pointer is not null
@@ -109,7 +112,6 @@ void swap( ScopedPtr<T>& a, ScopedPtr<T>& b )
 {
     a.swap(b);
 }
-
 
 //-----------------------------------------------------------------------------
 

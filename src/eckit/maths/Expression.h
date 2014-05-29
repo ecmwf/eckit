@@ -38,8 +38,6 @@
 #include <map>
 #include <utility>
 
-#include <boost/function.hpp>
-
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/Owned.h"

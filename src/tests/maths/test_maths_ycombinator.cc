@@ -147,14 +147,14 @@ void TestYCombinator::test_ycombinator_fibonacci()
     Math f5  = fibonnaci( 5. );
     Math f10 = fibonnaci( 10.);
     Math f20 = fibonnaci( 20.);
-    Math f30 = fibonnaci( 30.);
+//    Math f30 = fibonnaci( 30.); // -- rather slow test
 
     // check results values
 
     ASSERT( Scalar::extract(f5)  == 5 );
     ASSERT( Scalar::extract(f10) == 55 );
     ASSERT( Scalar::extract(f20) == 6765 );
-    ASSERT( Scalar::extract(f30) == 832040 );
+//    ASSERT( Scalar::extract(f30) == 832040 ); // -- rather slow test
 
 //    std::cout << f5  << std::endl;
 //    std::cout << f10 << std::endl;

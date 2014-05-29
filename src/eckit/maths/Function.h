@@ -30,10 +30,12 @@ public: // types
 
     typedef std::string key_t;
 
-    typedef boost::function< ExpPtr ( Scope& ctx, const args_t& ) > func_t;
+    typedef ExpPtr (*func_t) ( Scope& ctx, const args_t& );
+//    typedef boost::function< ExpPtr ( Scope& ctx, const args_t& ) > func_t;
     typedef std::map< key_t, func_t > dispatcher_t;
 
-    typedef boost::function< ExpPtr ( const args_t& ) > builder_t;
+    typedef ExpPtr (*builder_t) ( const args_t& );
+//    typedef boost::function< ExpPtr ( const args_t& ) > builder_t;
     //typedef std::map< key_t, builder_t > factory_t;
 
 protected: // methods

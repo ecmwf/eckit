@@ -65,11 +65,9 @@ ecbuild_add_library(TARGET eckit_maths
 					INSTALL_HEADERS ALL
 					HEADER_DESTINATION
 						${INSTALL_INCLUDE_DIR}/eckit/maths
-					CONDITION HAVE_MATHS AND Boost_FOUND
+					CONDITION HAVE_MATHS
 					SOURCES
 						${eckit_maths_srcs}
-					INCLUDES
-						${Boost_INCLUDE_DIRS}
 					LIBS
 						eckit  )
 

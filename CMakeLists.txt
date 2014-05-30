@@ -65,22 +65,6 @@ endif()
 
 ecbuild_check_cxx11( PRINT ) # always test for c++11
 
-# boost support
-
-set(Boost_USE_MULTITHREADED      ON )
-# set(Boost_DEBUG                  ON )
-# set(Boost_USE_STATIC_LIBS        ON )
-# set(Boost_NO_SYSTEM_PATHS        ON )
-
-ecbuild_add_option( FEATURE BOOST
-					DEFAULT ${ENABLE_MATHS}
-					DESCRIPTION "Boost support [EXPERIMENTAL]"
-					REQUIRED_PACKAGES "Boost 1.45.0" )
-
-set_package_properties( Boost PROPERTIES TYPE RECOMMENDED PURPOSE "" )
-
-#list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
-
 # async io support
 
 find_package( AIO )

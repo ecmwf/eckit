@@ -82,8 +82,7 @@ private: // members
 class SeriousBug : public Exception {
 public:
     SeriousBug(const std::string& w) : Exception(std::string("Serious Bug:") + w) {}
-    SeriousBug(const std::string&,const std::string&);
-    SeriousBug(const std::string&,int);
+    SeriousBug(const std::string&,const CodeLocation&);
 };
 
 class TooManyRetries : public Exception {

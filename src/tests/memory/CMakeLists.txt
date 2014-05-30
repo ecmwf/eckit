@@ -3,12 +3,12 @@ ecbuild_add_test(   TARGET      test_counted
                     LIBS        eckit )
 
 ecbuild_add_test(   TARGET      test_shared_ptr
-					BOOST_HEADER
+					BOOST
                     SOURCES     test_shared_ptr.cc
                     LIBS        eckit )
                     
 ecbuild_add_test(   TARGET      test_scoped_ptr
-					BOOST_HEADER
+					BOOST
                     SOURCES     test_scoped_ptr.cc
                     LIBS        eckit )
                     

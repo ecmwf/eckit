@@ -13,7 +13,11 @@
 
 #define BOOST_TEST_MODULE test_scoped_ptr
 
+#ifdef BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY
 #include <boost/test/included/unit_test.hpp>
+#else
+#include <boost/test/unit_test.hpp>
+#endif
 
 #include "eckit/memory/Owned.h"
 #include "eckit/memory/ScopedPtr.h"

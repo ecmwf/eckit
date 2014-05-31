@@ -11,8 +11,6 @@
 #include <cmath>
 #include <iostream>
 
-#define BOOST_TEST_MODULE test_scoped_ptr
-
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/memory/Owned.h"
@@ -47,7 +45,7 @@ public:
    explicit UDT( long value=0 ) : value_(value) { ++UDT_use_count; }
    ~UDT() {
       --UDT_use_count;
-      std::cout << "   UDT with value " << value_ << " being destroyed\n";
+//      std::cout << "   UDT with value " << value_ << " being destroyed\n";
    }
    long value() const { return value_; }
    void value( long v ) { value_ = v; }
@@ -80,11 +78,11 @@ Incomplete * check_incomplete( eckit::ScopedPtr<Incomplete>& incomplete )
 
 using namespace eckit_test;
 
-BOOST_AUTO_TEST_SUITE( TestScoped )
+BOOST_AUTO_TEST_SUITE( test_eckit_memory_scope_ptr )
 
 BOOST_AUTO_TEST_CASE( test_scoped_ptr )
 {
-   std::cout << "test ScopedPtr with a built-in type\n";
+//   std::cout << "test ScopedPtr with a built-in type\n";
    {
       long * lp = new long;
       eckit::ScopedPtr<long> sp ( lp );
@@ -104,7 +102,7 @@ BOOST_AUTO_TEST_CASE( test_scoped_ptr )
       BOOST_CHECK( sp.get() == 0 );
    }
 
-   std::cout << "test ScopedPtr with a user defined type\n";
+//   std::cout << "test ScopedPtr with a user defined type\n";
    {
       eckit::ScopedPtr<UDT> udt_sp ( new UDT( 999888777 ) );
       BOOST_CHECK( udt_sp->value() == 999888777 );

@@ -9,7 +9,8 @@
  */
 
 #include <cmath>
-#include <iostream>
+
+#include "ecbuild/boost_test_framework.h"
 
 #include "eckit/memory/Owned.h"
 #include "eckit/memory/SharedPtr.h"
@@ -35,7 +36,7 @@ Incomplete * get_ptr(  eckit::SharedPtr<Incomplete>& incomplete )
 }
 
 template<class T>
-void ck( const T* v1, T v2 ) { ASSERT( *v1 == v2 ); }
+void ck( const T* v1, T v2 ) { BOOST_CHECK( *v1 == v2 ); }
 
 namespace {
    int UDT_use_count;  // independent of pointer maintained counts
@@ -51,7 +52,7 @@ public:
     UDT( long in ) : value_(in) {  ++UDT_use_count; }
     ~UDT() {
        --UDT_use_count;
-       std::cout << "   UDT with value " << value_ << " being destroyed\n";
+//       std::cout << "   UDT with value " << value_ << " being destroyed\n";
     }
 
     long value() const { return value_; }
@@ -79,18 +80,9 @@ Incomplete * check_incomplete( eckit::SharedPtr<Incomplete>& incomplete,
 
 //-----------------------------------------------------------------------------
 
-class TestShared : public Tool {
-public:
+} // namespace eckit_test
 
-   TestShared(int argc,char **argv): Tool(argc,argv) { UDT_use_count = 0;}
-
-    ~TestShared() {}
-
-    virtual void run();
-
-private:
-    void test_intrusive_shared_ptr();
-};
+using namespace eckit_test;
 
 //-----------------------------------------------------------------------------
 
@@ -103,115 +95,89 @@ private:
 //
 // eckit::SharedPtr has null() member function, this does not exist on the standard/boost
 
-//-----------------------------------------------------------------------------
+BOOST_AUTO_TEST_SUITE( test_eckit_memory_shared_ptr )
 
-void TestShared::run()
+BOOST_AUTO_TEST_CASE( test_intrusive_shared_ptr )
 {
-   std::cout << "Start TestShared\n";
 
-   ASSERT( UDT_use_count == 0 );  // reality check
-
-   test_intrusive_shared_ptr();
-
-   std::cout << "OK\n";
-}
-
-
-void TestShared::test_intrusive_shared_ptr()
-{
-   std::cout << "test SharedPtr with a user defined type\n";
+//   std::cout << "test SharedPtr with a user defined type\n";
    {
       UDT_use_count = 0;
       UDT * up = new UDT(0);
-      ASSERT( up->value() == 0 );
+      BOOST_CHECK( up->value() == 0 );
 
       eckit::SharedPtr<UDT> sup ( up );
-      ASSERT( up == sup.get() );
-      ASSERT( sup.use_count() == 1 );
-      ASSERT( sup.unique());
+      BOOST_CHECK( up == sup.get() );
+      BOOST_CHECK( sup.use_count() == 1 );
+      BOOST_CHECK( sup.unique());
 
       sup->value( 54321 ) ;
-      ASSERT( sup->value() == 54321 );
-      ASSERT( up->value() == 54321 );
+      BOOST_CHECK( sup->value() == 54321 );
+      BOOST_CHECK( up->value() == 54321 );
 
       eckit::SharedPtr<UDT> sup2;
       sup2 = sup;
-      ASSERT( sup2->value() == 54321 );
-      ASSERT( sup.use_count() == 2 );
-      ASSERT( sup2.use_count() == 2 );
-      ASSERT( !sup2.unique());
-      ASSERT( !sup.unique());
+      BOOST_CHECK( sup2->value() == 54321 );
+      BOOST_CHECK( sup.use_count() == 2 );
+      BOOST_CHECK( sup2.use_count() == 2 );
+      BOOST_CHECK( !sup2.unique());
+      BOOST_CHECK( !sup.unique());
 
-      cout << "eckit::SharedPtr check self assignment\n";
+//      cout << "eckit::SharedPtr check self assignment\n";
       sup2 = sup2;
-      ASSERT( sup2->value() == 54321 );
-      ASSERT( sup.use_count() == 2 );
-      ASSERT( sup2.use_count() == 2 );
+      BOOST_CHECK( sup2->value() == 54321 );
+      BOOST_CHECK( sup.use_count() == 2 );
+      BOOST_CHECK( sup2.use_count() == 2 );
    }
-   ASSERT(UDT_use_count == 0 );
+   BOOST_CHECK(UDT_use_count == 0 );
 
    {
-      std::cout << "test SharedPtr swap\n";
+//      std::cout << "test SharedPtr swap\n";
       eckit::SharedPtr<UDT> sup ( new UDT(0) );
-      ASSERT(sup.get() != 0);
-      ASSERT(sup.use_count() == 1 );
-      ASSERT(sup.unique());
+      BOOST_CHECK(sup.get() != 0);
+      BOOST_CHECK(sup.use_count() == 1 );
+      BOOST_CHECK(sup.unique());
 
       eckit::SharedPtr<UDT> sup2;
-      ASSERT(sup2.use_count() == 0 );
-      ASSERT(sup2.get() == 0);
+      BOOST_CHECK(sup2.use_count() == 0 );
+      BOOST_CHECK(sup2.get() == 0);
 
       sup.swap(sup2);
 
-      ASSERT(sup2.get() != 0);
-      ASSERT(sup2.use_count() == 1 );
-      ASSERT(sup2.unique());
+      BOOST_CHECK(sup2.get() != 0);
+      BOOST_CHECK(sup2.use_count() == 1 );
+      BOOST_CHECK(sup2.unique());
 
-      ASSERT(sup.use_count() == 0 );
-      ASSERT(sup.get() == 0);
+      BOOST_CHECK(sup.use_count() == 0 );
+      BOOST_CHECK(sup.get() == 0);
    }
-   ASSERT(UDT_use_count == 0 );
+   BOOST_CHECK(UDT_use_count == 0 );
 
 
-   std::cout << "test SharedPtr with a user defined type in std::vector\n";
+//   std::cout << "test SharedPtr with a user defined type in std::vector\n";
    {
       std::vector< eckit::SharedPtr<UDT> > vec;
       vec.push_back(eckit::SharedPtr<UDT>(new UDT(0)));
       vec.push_back(eckit::SharedPtr<UDT>(new UDT(1)));
       vec.push_back(eckit::SharedPtr<UDT>(new UDT(2)));
    }
-   ASSERT(UDT_use_count == 0 );
-   std::cout << "test SharedPtr with a user defined type in std::set\n";
+   BOOST_CHECK(UDT_use_count == 0 );
+//   std::cout << "test SharedPtr with a user defined type in std::set\n";
    {
       std::set< eckit::SharedPtr<UDT> > vec;
       vec.insert(eckit::SharedPtr<UDT>(new UDT(0)));
       vec.insert(eckit::SharedPtr<UDT>(new UDT(1)));
       vec.insert(eckit::SharedPtr<UDT>(new UDT(3)));
    }
-   ASSERT(UDT_use_count == 0 );
-   std::cout << "test SharedPtr with a user defined type in std::map\n";
+   BOOST_CHECK(UDT_use_count == 0 );
+//   std::cout << "test SharedPtr with a user defined type in std::map\n";
    {
       std::map<std::string, eckit::SharedPtr<UDT> > map;
       map.insert(std::make_pair(std::string("first"),eckit::SharedPtr<UDT>(new UDT(0))));
       map.insert(std::make_pair(std::string("secon"),eckit::SharedPtr<UDT>(new UDT(1))));
       map.insert(std::make_pair(std::string("third"),eckit::SharedPtr<UDT>(new UDT(2))));
    }
-   ASSERT(UDT_use_count == 0 );
+   BOOST_CHECK(UDT_use_count == 0 );
 }
 
-
-//-----------------------------------------------------------------------------
-
-} // namespace eckit_test
-
-//-----------------------------------------------------------------------------
-
-int main(int argc,char **argv)
-{
-    using namespace eckit_test;
-
-    TestShared mytest(argc,argv);
-    mytest.start();
-
-    return 0;
-}
+BOOST_AUTO_TEST_SUITE_END()

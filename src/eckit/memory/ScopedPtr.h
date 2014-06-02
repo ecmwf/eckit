@@ -62,7 +62,7 @@ public: // methods
     }
 
     /// Assignement operator transfers ownership to another ScopedPtr
-    const ScopedPtr& operator= (const ScopedPtr& other)
+    const ScopedPtr& operator= (ScopedPtr& other)
     {
         reset( other.release() );
         return *this;

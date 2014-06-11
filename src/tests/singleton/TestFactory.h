@@ -12,7 +12,8 @@
 #define TestFactory_h
 
 #include <string>
-#include <memory>
+
+#include "eckit/memory/ScopedPtr.h"
 
 class TestBuilder {
 public:
@@ -32,7 +33,7 @@ public: // methods
 private:
 
     struct PImpl;
-    std::auto_ptr<PImpl> pimpl_;
+    eckit::ScopedPtr<PImpl> pimpl_;
 
 };
 

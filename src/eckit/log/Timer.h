@@ -39,7 +39,6 @@ public:
     /// @param o output stream to use  for output
     explicit Timer( const char* name, std::ostream& o = Log::info() );
 
-
     ~Timer();
 
     void start();

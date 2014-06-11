@@ -77,7 +77,7 @@ class CondBinary : public Expression<U> {
 public:
 
 	CondBinary(Expression<U>* left,Expression<U>* right):
-		left_(left), right_(right) {};
+        left_(left), right_(right) {}
 
 	eckit::Value eval(U& task) const;
 };

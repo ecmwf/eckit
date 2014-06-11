@@ -13,6 +13,7 @@
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/memory/ScopedPtr.h"
 
 // Forward declarations
 
@@ -50,7 +51,7 @@ public: // methods
 
 private: // members
 
-    std::auto_ptr<eckit::DataHandle> handle_;
+    eckit::ScopedPtr<eckit::DataHandle> handle_;
 
 };
 

@@ -9,6 +9,7 @@
  */
 
 #include "eckit/grib/GribAccessor.h"
+#include "eckit/grib/GribHandle.h"
 
 
 //------------------------------------------------------------------------------------------------------
@@ -20,6 +21,13 @@ namespace eckit {
 static GribAccessor<long> edition("edition");
 static GribAccessor<std::string> md5Section2("md5Section2");
 static GribAccessor<std::string> md5Section3("md5Section3");
+
+std::string grib_hash( GribHandle& gh )
+{
+    grib_handle* h = gh.raw();
+    ASSERT( h );
+    return grib_hash(h);
+}
 
 std::string grib_hash(grib_handle *h)
 {

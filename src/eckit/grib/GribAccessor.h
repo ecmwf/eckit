@@ -76,9 +76,13 @@ inline void get_value(grib_handle* h, const std::string& name,  std::string& x, 
 
 template<class T>
 class GribAccessor {
+
+private: // members
+
     std::string name_;
 
-    public:
+public: // methods
+
     GribAccessor(const std::string& name): name_(name) {}
 
     /* get_value(h, name_, value_); */
@@ -136,6 +140,10 @@ class GribAccessor {
 //------------------------------------------------------------------------------------------------------
 
 namespace eckit {
+
+class GribHandle;
+
+std::string grib_hash( GribHandle& h );
 
 std::string grib_hash( grib_handle* h );
 

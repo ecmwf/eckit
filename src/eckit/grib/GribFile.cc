@@ -28,7 +28,8 @@ GribFile::~GribFile()
     delete file_;
 }
 
-GribFile* GribFile::newGribFile(const PathName& path) {
+GribFile* GribFile::newGribFile(const PathName& path)
+{
     return new GribFile(path);
 }
 

@@ -29,7 +29,7 @@ public:
 // -- Contructors
 
     GribHandle(grib_handle*);
-    GribHandle(const eckit::Buffer&,size_t, bool copy = true);
+    GribHandle(const eckit::Buffer&, size_t, bool copy = true);
 
 // -- Destructor
 
@@ -42,6 +42,9 @@ public:
     double* getDataValues(size_t&) const;
     void setDataValues(const double*, size_t);
     void write(DataHandle&);
+
+    /// @returns the raw grib_handle so client code can call grib directly. May return null.
+    grib_handle* raw() { return handle_; }
 
 private: // members
 

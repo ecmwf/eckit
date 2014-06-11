@@ -28,71 +28,28 @@ class GribHandle;
 class GribFieldMemoryStrategy;
 
 class GribField : public Counted {
-public:
 
-// -- Exceptions
-	// None
-
-// -- Contructors
+public: // methods
 
     GribField(GribFile *, const Offset&, const Length&, GribHandle *handle = 0);
     GribField(GribField*, double* values,  size_t count);
 
-// -- Destructor
-
 	~GribField(); // Change to virtual if base class
 
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
-// -- Methods
-
-    const double *getValues(size_t&) const;
-    GribHandle* getHandle(bool copy) const;
+    const double* getValues(size_t&) const;
+    GribHandle* getHandle(bool copy = false) const;
 
     void write(DataHandle&) const;
 
     void release() const;
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-
     static void setStrategy(GribFieldMemoryStrategy&);
 
 protected:
-
-// -- Members
-	// None
-
-// -- Methods
 	
-    void print(std::ostream&) const; // Change to virtual if base class
+    void print(std::ostream&) const;
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-private:
-
-// No copy allowed
-
-	GribField(const GribField&);
-	GribField& operator=(const GribField&);
-
-// -- Members
+private: // members
 
     GribFile* file_;
     Offset    offset_;
@@ -110,21 +67,11 @@ private:
 
     GribFieldMemoryStrategy* strategy_;
 
-
     void pack();
 
 // -- Methods
 
     void purge(bool temp = false) ;
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
 
 // -- Friends
 
@@ -133,7 +80,8 @@ private:
     friend std::ostream& operator<<(std::ostream& s,const GribField& p)
         { p.print(s); return s; }
 
-};
+}; // GribField
+
 }
 
 #endif

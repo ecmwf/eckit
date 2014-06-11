@@ -27,40 +27,46 @@ static int grib_call(int code, const char* msg) {
     return code;
 }
 
-
 #define GRIB_CALL(a) grib_call(a, #a)
 
 GribHandle::GribHandle(grib_handle* handle)
     :handle_(handle)
 {
-
+    ASSERT(handle_);
 }
 
-GribHandle::GribHandle(const Buffer& buffer,size_t size, bool copy)
+GribHandle::GribHandle(const Buffer& buffer, size_t size, bool copy)
     :handle_(0)
 {
     const char *message = buffer;
     ASSERT(strncmp(message,"GRIB", 4) == 0);
+
     grib_handle *h = 0;
-    if(copy) {
+
+    if(copy)
+    {
         h = grib_handle_new_from_message_copy(0,const_cast<char*>(message),size);
     }
-    else {
+    else
+    {
         h = grib_handle_new_from_message(0,const_cast<char*>(message),size);
     }
+
     ASSERT(h);
     handle_ = h;
-
 }
 
 GribHandle::~GribHandle()
 {
+    ASSERT(handle_);
     grib_handle_delete(handle_);
 }
 
 
 double* GribHandle::getDataValues(size_t& count) const
 {
+    ASSERT(handle_);
+
     GRIB_CALL(grib_get_size(handle_, "values", &count));
 
     double* values = new double[count];
@@ -73,22 +79,28 @@ double* GribHandle::getDataValues(size_t& count) const
 
 void GribHandle::setDataValues(const double *values, size_t count)
 {
+    ASSERT(handle_);
     ASSERT(values);
     GRIB_CALL(grib_set_double_array(handle_,"values",values,count));
 }
 
-void GribHandle::write(DataHandle & handle)
+void GribHandle::write( DataHandle& handle )
 {
+    ASSERT(handle_);
     const void* message;
     size_t length;
     GRIB_CALL(grib_get_message(handle_, &message, &length));
     ASSERT(handle.write(message, length) == length);
 }
 
-
 GribHandle* GribHandle::clone() const
 {
-    return new GribHandle(grib_handle_clone(handle_));
+    ASSERT(handle_);
+    grib_handle* h = grib_handle_clone(handle_);
+    if(!h)
+        throw eckit::WriteError( std::string("failed to clone output grib") );
+
+    return new GribHandle(h);
 }
 
 } // namespace eckit

@@ -30,7 +30,8 @@ void GribFieldMemoryStrategy::touch(GribField& f)
     f.last_ = ::time(0);
     f.accesses_++;
 
-    if(f.strategy_) {
+    if( f.strategy_ )
+    {
         ASSERT(f.strategy_ == this);
         released_.erase(&f);
         f.strategy_ = 0;
@@ -39,7 +40,8 @@ void GribFieldMemoryStrategy::touch(GribField& f)
 
 void GribFieldMemoryStrategy::purgeable(GribField& f)
 {
-    if(f.strategy_) {
+    if( f.strategy_ )
+    {
         ASSERT(f.strategy_ == this);
     }
     f.strategy_ = this;
@@ -48,7 +50,8 @@ void GribFieldMemoryStrategy::purgeable(GribField& f)
 
 void GribFieldMemoryStrategy::remove(GribField& f)
 {
-    if(f.strategy_) {
+    if( f.strategy_ )
+    {
         ASSERT(f.strategy_ == this);
         released_.erase(&f);
     }
@@ -56,11 +59,15 @@ void GribFieldMemoryStrategy::remove(GribField& f)
 
 void GribFieldMemoryStrategy::newValues(GribField& f)
 {
-    if(f.strategy_) {
+    if( f.strategy_ )
+    {
         ASSERT(f.strategy_ == this);
     }
+
     count_++;
-    while(count_ > max_) {
+
+    while( count_ > max_ )
+    {
         ASSERT(released_.size());
 
         std::set<GribField*>::iterator k = released_.begin();

@@ -76,12 +76,14 @@ const double* GribField::getValues(size_t& count) const
     GribField* self = const_cast<GribField*>(this);
     strategy->touch(*self);
 
-    if(values_) {
+    if( values_ )
+    {
         count = count_;
         return values_;
     }
 
-    if(handle_) {
+    if( handle_ )
+    {
         strategy->newValues(*self);
         self->values_ = handle_->getDataValues(self->count_);
         count = count_;
@@ -161,7 +163,8 @@ void GribField::write(DataHandle& handle) const {
 
 }
 
-void GribField::release() const {
+void GribField::release() const
+{
     GribField* self = const_cast<GribField*>(this);
     strategy->purgeable(*self);
 }
@@ -169,7 +172,7 @@ void GribField::release() const {
 void GribField::purge(bool temp)
 {
     purges_++;
-    std::cout << "Purge " << purges_ << std::endl;
+
     pack();
 
     if(file_ && handle_) {

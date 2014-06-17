@@ -12,7 +12,7 @@
 #define GribHandle_H
 
 #include "eckit/io/Buffer.h"
-#include "eckit/memory/NonCopyable.h"
+#include "eckit/memory/Owned.h"
 #include "eckit/serialisation/Stream.h"
 
 struct grib_handle;
@@ -23,7 +23,7 @@ class DataHandle;
 
 //------------------------------------------------------------------------------------------------------
 
-class GribHandle : private eckit::NonCopyable {
+class GribHandle : public eckit::Owned {
 public:
 
 // -- Contructors

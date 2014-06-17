@@ -165,6 +165,14 @@ SeriousBug::SeriousBug(const std::string& msg,const CodeLocation& loc)
    reason(std::string(s));
 }
 
+SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
+{
+   StrStream s;
+   s << "SeriousBug: " << msg << " " << " in " << loc << " "  << StrStream::ends;
+   reason(std::string(s));
+}
+
+
 
 AssertionFailed::AssertionFailed(const std::string& w): 
     Exception(std::string("Assertion failed: ") + w)

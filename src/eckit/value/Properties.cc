@@ -29,6 +29,8 @@ Properties::property_t Properties::get(const std::string& k) const
     PropertyMap::const_iterator vit = props_.find(k);
     if( vit != props_.end() )
         return (*vit).second;
+    else
+        return property_t(); // return Nil Value...
 }
 
 void Properties::set(const std::string& k, const property_t& v)

@@ -113,6 +113,7 @@ public:
 class BadParameter : public Exception {
 public:
     BadParameter(const std::string& s);
+    BadParameter(const std::string&, const CodeLocation&);
 };
 
 class NotImplemented : public Exception {

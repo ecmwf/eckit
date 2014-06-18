@@ -188,6 +188,11 @@ BadParameter::BadParameter(const std::string& w):
 {   
 }
 
+BadParameter::BadParameter(const std::string& w, const CodeLocation& loc):
+    Exception(std::string("Bad parameter: ") + w, loc)
+{
+}
+
 NotImplemented::NotImplemented( const CodeLocation& loc )
 {   
     StrStream s;

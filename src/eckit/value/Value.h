@@ -20,8 +20,8 @@
 #include "eckit/value/Content.h"
 #include "eckit/types/Date.h"
 #include "eckit/types/DateTime.h"
-#include "eckit/types/Date.h"
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 
@@ -94,10 +94,13 @@ public:
     operator double() const             { double d;     content_->value(d); return d; }
     operator bool() const               { bool d;       content_->value(d); return d; }
 
-    operator std::string() const    { std::string s; content_->value(s); return s; }
+    operator std::string() const  { std::string s; content_->value(s); return s; }
+    operator PathName() const     { std::string s; content_->value(s); return s; }
+
     operator Date() const      { Date d; content_->value(d); return d; }
     operator Time() const      { Time t; content_->value(t); return t; }
     operator DateTime() const  { DateTime d; content_->value(d); return d; }
+
     operator Length() const    { long long l;  content_->value(l); return l; }
     operator Offset() const    { long long l;  content_->value(l); return l; }
 

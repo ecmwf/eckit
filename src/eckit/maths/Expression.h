@@ -58,16 +58,6 @@ const int CodeFormat = 42; // To use with format() in Log..
 
 //--------------------------------------------------------------------------------------------
 
-#if 1
-#define DBG     std::cout << Here() << std::endl;
-#define DBGX(x) std::cout << Here() << " " << #x << " -> " << x << std::endl;
-#else
-#define DBG
-#define DBGX(x)
-#endif
-
-//--------------------------------------------------------------------------------------------
-
 class Value;
 class List;
 class Expression;

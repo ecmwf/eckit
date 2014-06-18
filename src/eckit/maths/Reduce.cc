@@ -47,7 +47,6 @@ ExpPtr Reduce::evaluate( Scope &ctx ) const
 
     for( size_t i = 1; i < nlist; ++i )
     {
-//        DBGX(*e);
         e = f->eval( e, list[i]->eval(ctx) );
     }
 

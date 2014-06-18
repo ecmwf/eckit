@@ -344,27 +344,29 @@ parser/JSONParser.h
 parser/JSONParser.cc )
 
 list( APPEND eckit_value_srcs
-value/Content.h
-value/Content.cc
-value/NilContent.h
-value/NilContent.cc
 value/BoolContent.h
 value/BoolContent.cc
-value/ListContent.h
-value/ListContent.cc
-value/Expression.h
-value/Value.h
-value/Value.cc
+value/Content.h
+value/Content.cc
 value/DateContent.h
 value/DateContent.cc
 value/DoubleContent.h
 value/DoubleContent.cc
+value/Expression.h
+value/ListContent.h
+value/ListContent.cc
+value/MapContent.h
+value/MapContent.cc 
+value/NilContent.h
+value/NilContent.cc
+value/NumberContent.h
+value/NumberContent.cc 
+value/Properties.h
+value/Properties.cc
 value/StringContent.h
 value/StringContent.cc
-value/NumberContent.h
-value/NumberContent.cc
-value/MapContent.h
-value/MapContent.cc )
+value/Value.h
+value/Value.cc ) 
 
 list( APPEND eckit_os_srcs
 os/Stat.h

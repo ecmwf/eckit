@@ -43,9 +43,6 @@ struct Generic
     template <class T, class U, class V >
     static ExpPtr apply( T op, const U& a, const V& b )
     {
-//        DBGX(a);
-//        DBGX(b);
-//        DBGX( op( a , b ) );
         return ExpPtr( new Boolean( op( a , b ) ) );
     }
 };

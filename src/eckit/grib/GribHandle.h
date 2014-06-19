@@ -1,3 +1,5 @@
+#ifndef GribHandle_H
+#define GribHandle_H
 /*
  * (C) Copyright 1996-2013 ECMWF.
  * 
@@ -8,12 +10,11 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef GribHandle_H
-#define GribHandle_H
 
 #include "eckit/io/Buffer.h"
 #include "eckit/memory/Owned.h"
 #include "eckit/serialisation/Stream.h"
+#include "eckit/memory/SharedPtr.h"
 
 struct grib_handle;
 
@@ -51,6 +52,8 @@ private: // members
     grib_handle* handle_;
 
 };
+
+typedef eckit::SharedPtr<GribHandle> grib_handle_ptr;
 
 //------------------------------------------------------------------------------------------------------
 

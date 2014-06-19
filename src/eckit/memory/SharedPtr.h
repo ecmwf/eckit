@@ -1,3 +1,5 @@
+#ifndef eckit_SharedPtr_h
+#define eckit_SharedPtr_h
 /*
  * (C) Copyright 1996-2012 ECMWF.
  *
@@ -13,9 +15,6 @@
 /// @date Dec 2013
 
 #include "eckit/exception/Exceptions.h"
-
-#ifndef eckit_SharedPtr_h
-#define eckit_SharedPtr_h
 
 //-----------------------------------------------------------------------------
 

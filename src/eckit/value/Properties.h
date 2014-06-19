@@ -28,13 +28,9 @@ namespace eckit {
 
 class Properties {
 
-private: // types
-
-    typedef Value property_t;
-    typedef std::map< std::string, property_t > PropertyMap;
-
 public: // methods
 
+    typedef Value property_t;
     Properties();
 
     bool has( const std::string& k ) const;
@@ -48,6 +44,13 @@ public: // methods
     /// Removes a property
     bool remove( const std::string& k );
 
+protected:
+    void print(std::ostream& s) const;
+
+private: // types
+
+    typedef std::map< std::string, property_t > PropertyMap;
+
 private: // members
 
     PropertyMap  props_; //< storage of values
@@ -55,7 +58,6 @@ private: // members
 private: // methods
 
     void json(JSON& s) const;
-    void print(std::ostream& s) const;
     void encode(Stream& s) const;
 
     friend JSON& operator<<(JSON& s, const Properties& v) { v.json(s);  return s; }
@@ -63,7 +65,6 @@ private: // methods
     friend Stream&  operator<<(Stream&  s, const Properties& v) { v.encode(s); return s; }
 
     friend class Value;
-
 };
 
 

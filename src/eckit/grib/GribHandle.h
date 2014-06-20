@@ -13,6 +13,7 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/memory/Owned.h"
+#include "eckit/memory/SharedPtr.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/memory/SharedPtr.h"
 

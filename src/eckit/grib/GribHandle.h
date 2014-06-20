@@ -15,7 +15,6 @@
 #include "eckit/memory/Owned.h"
 #include "eckit/memory/SharedPtr.h"
 #include "eckit/serialisation/Stream.h"
-#include "eckit/memory/SharedPtr.h"
 
 struct grib_handle;
 

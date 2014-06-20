@@ -13,6 +13,7 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/memory/Owned.h"
+#include "eckit/memory/SharedPtr.h"
 #include "eckit/serialisation/Stream.h"
 
 struct grib_handle;
@@ -51,6 +52,8 @@ private: // members
     grib_handle* handle_;
 
 };
+
+typedef eckit::SharedPtr<GribHandle> grib_handle_ptr;
 
 //------------------------------------------------------------------------------------------------------
 

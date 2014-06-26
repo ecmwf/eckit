@@ -189,6 +189,17 @@ std::vector<long> Translator<std::string, std::vector<long> >::operator()(const 
     return result;
 }
 
+std::string Translator< std::vector<long>,std::string >::operator()(const std::vector<long>& v)
+{
+    std::string result;
+    for(int i=0; i < v.size(); ++i)
+    {
+        if(i) result += " ";
+        result += Translator<long,std::string>()(v[i]);
+    }
+    return result;
+}
+
 std::string Translator<std::vector<std::string>, std::string>::operator()(const std::vector<std::string>& v)
 {
     std::string result;

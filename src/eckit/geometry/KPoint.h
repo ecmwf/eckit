@@ -63,7 +63,7 @@ public:
         std::copy(c.begin(), c.end(), x_);
     }
 
-    double *const data() { return x_; }
+    double * data() { return x_; }
 
     double operator()( const size_t& i ) const { assert( i < SIZE ); return x_[i]; }
 

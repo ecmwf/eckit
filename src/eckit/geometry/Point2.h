@@ -90,6 +90,13 @@ struct BoundBox2
         ASSERT( bottom_left_(YY) <= top_right_(YY) );
     }
 
+    bool operator==(const BoundBox2& rhs) const {
+       return (bottom_left_ == rhs.bottom_left_) && (top_right_ == rhs.top_right_);
+    }
+    bool operator!=(const BoundBox2& rhs) const {
+       return !operator==(rhs);
+    }
+
     POINT bottom_left_;
     POINT top_right_;
 

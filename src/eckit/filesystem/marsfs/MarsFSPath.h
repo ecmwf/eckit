@@ -89,6 +89,8 @@ public:
     void unlink() const;
     void rmdir() const;
 
+    void syncParentDirectory() const;
+
     bool sameAs(const MarsFSPath&) const;
     MarsFSPath mountPoint() const;
 

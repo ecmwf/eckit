@@ -127,6 +127,12 @@ void BasePathNameT<T>::unlink() const
 }
 
 template<class T>
+void BasePathNameT<T>::syncParentDirectory() const
+{
+    path_.syncParentDirectory();
+}
+
+template<class T>
 void BasePathNameT<T>::rmdir() const
 {
     path_.rmdir();

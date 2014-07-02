@@ -206,6 +206,11 @@ void MarsFSPath::rmdir() const
     MarsFSClient(*this).rmdir(path_);
 }
 
+void MarsFSPath::syncParentDirectory() const
+{
+    MarsFSClient(*this).syncParentDirectory(path_);
+}
+
 const char* MarsFSPath::localPath() const
 {
     throw SeriousBug(std::string("Attempting to access ") + std::string(*this) + " locally");

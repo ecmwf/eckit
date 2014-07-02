@@ -73,6 +73,8 @@ public:
 
     virtual std::string clusterName() const = 0;
 
+    virtual void syncParentDirectory() const = 0;
+
     virtual std::string asString() const = 0;
     virtual void fileSystemSize(FileSystemSize&) const = 0;
     virtual DataHandle* fileHandle(bool overwrite) const = 0;

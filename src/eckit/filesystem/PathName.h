@@ -116,6 +116,8 @@ public:
 	void unlink() const;
 	void rmdir() const;
 
+    void syncParentDirectory() const;
+
 	void backup() const;
 	void copy(const PathName&) const;
 

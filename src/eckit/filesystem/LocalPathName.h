@@ -172,6 +172,8 @@ public:
     DataHandle* partHandle(const OffsetList&, const LengthList&) const;
     DataHandle* partHandle(const Offset&, const Length&) const;
 
+     void syncParentDirectory() const;
+
 // Class methods
 
     static LocalPathName unique(const LocalPathName&);

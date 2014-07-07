@@ -27,6 +27,8 @@ class DataHandle;
 class GribHandle : public eckit::Owned {
 public:
 
+    typedef eckit::SharedPtr<GribHandle> Ptr;
+
 // -- Contructors
 
     GribHandle(grib_handle*);
@@ -52,8 +54,6 @@ private: // members
     grib_handle* handle_;
 
 };
-
-typedef eckit::SharedPtr<GribHandle> grib_handle_ptr;
 
 //------------------------------------------------------------------------------------------------------
 

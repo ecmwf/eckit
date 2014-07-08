@@ -27,19 +27,15 @@ namespace eckit {
 // A simple class to implement buffers
 
 class Buffer : private NonCopyable {
-public:
 
-// -- Contructors
+public: // methods
 
 	Buffer(size_t size);
     Buffer(const std::string& s);
-	Buffer(const char*,size_t size);
-
-// -- Destructor
+    Buffer(const char*, size_t size);
+    Buffer(void*, size_t size, bool dummy);
 
 	~Buffer();
-
-// -- Operators
 
 	operator char*()                 { return (char*)buffer_; }
 	operator const char*() const     { return (char*)buffer_; }
@@ -47,19 +43,19 @@ public:
 	operator void*()                 { return buffer_; }
 	operator const void*() const     { return buffer_; }
 
-// -- Methods
-
 	size_t size() const		 { return size_; }
 
-private:
+protected: // methods
 
-// -- Methods
+    void create();
+    void destroy();
 
-	void create();
-	void destroy();
+    void copy(const std::string& s);
+    void copy(const char*,size_t size);
 
-// -- Members
+private: // members
 
+    bool   owned_;
     size_t size_;
 	void*  buffer_;
 

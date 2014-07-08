@@ -28,11 +28,15 @@ namespace eckit {
 
 class Properties {
 
-public: // methods
+public: // types
 
     typedef Value property_t;
+
+public: // methods
+
     Properties();
 
+    /// @returns true is a property exists
     bool has( const std::string& k ) const;
 
     /// @returns a property

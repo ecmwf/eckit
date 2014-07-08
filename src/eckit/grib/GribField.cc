@@ -96,7 +96,7 @@ const double* GribField::getValues(size_t& count) const
     file_->getBuffer(buffer, offset_, length_);
 
     strategy->newValues(*self);
-    self->values_ = GribHandle(buffer, length_, false).getDataValues(self->count_);
+    self->values_ = GribHandle(buffer, false).getDataValues(self->count_);
     count = count_;
     return values_;
 }
@@ -124,11 +124,11 @@ GribHandle* GribField::getHandle(bool copy) const
     file_->getBuffer(buffer, offset_, length_);
 
     if(copy) {
-        return new GribHandle(buffer, length_, false);
+        return new GribHandle(buffer, false);
     }
     else {
         strategy->newHandle(*self);
-        self->handle_ = new GribHandle(buffer, length_, false);
+        self->handle_ = new GribHandle(buffer, false);
     }
 
     return handle_;

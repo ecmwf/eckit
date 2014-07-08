@@ -35,7 +35,7 @@ GribHandle::GribHandle(grib_handle* handle)
     ASSERT(handle_);
 }
 
-GribHandle::GribHandle(const Buffer& buffer, size_t size, bool copy)
+GribHandle::GribHandle(const Buffer& buffer, bool copy)
     :handle_(0)
 {
     const char *message = buffer;
@@ -45,11 +45,11 @@ GribHandle::GribHandle(const Buffer& buffer, size_t size, bool copy)
 
     if(copy)
     {
-        h = grib_handle_new_from_message_copy(0,const_cast<char*>(message),size);
+        h = grib_handle_new_from_message_copy(0,const_cast<char*>(message),buffer.size());
     }
     else
     {
-        h = grib_handle_new_from_message(0,const_cast<char*>(message),size);
+        h = grib_handle_new_from_message(0,const_cast<char*>(message),buffer.size());
     }
 
     ASSERT(h);
@@ -62,18 +62,30 @@ GribHandle::~GribHandle()
     grib_handle_delete(handle_);
 }
 
+size_t GribHandle::getDataValuesSize() const
+{
+    ASSERT(handle_);
+    size_t count = 0;
+    GRIB_CALL(grib_get_size(handle_, "values", &count));
+    return count;
+}
+
+void GribHandle::getDataValues(double* values, const size_t& count) const
+{
+    ASSERT(values);
+    size_t n = count;
+    GRIB_CALL(grib_get_double_array(handle_,"values",values,&n));
+    ASSERT(n == count);
+}
 
 double* GribHandle::getDataValues(size_t& count) const
 {
     ASSERT(handle_);
 
-    GRIB_CALL(grib_get_size(handle_, "values", &count));
+    count = getDataValuesSize();
 
     double* values = new double[count];
-    ASSERT(values);
-    size_t n = count;
-    GRIB_CALL(grib_get_double_array(handle_,"values",values,&n));
-    ASSERT(n == count);
+    getDataValues(values,count);
     return values;
 }
 

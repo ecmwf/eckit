@@ -18,32 +18,43 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 Buffer::Buffer(size_t size):
+    owned_(true),
 	size_(size),
 	buffer_(0)
 {
 	create();
 }
 
-Buffer::Buffer(const char* p,size_t size):
-	size_(size),
-	buffer_(0)
+Buffer::Buffer(const char* p, size_t size):
+    owned_(true),
+    size_(size),
+    buffer_(0)
 {
-	create();
-	::memcpy(buffer_,p,size);
+    create();
+    copy(p,size);
+}
+
+Buffer::Buffer(void* p, size_t size, bool dummy):
+    owned_(false),
+    size_(size),
+    buffer_(p)
+{
 }
 
 Buffer::Buffer(const std::string& s):
-	size_(s.length()+1),
+    owned_(true),
+    size_(s.length()+1),
 	buffer_(0)
 {
 	create();
-	::strcpy((char*)buffer_,s.c_str());
+    copy(s);
 }
 
 
 Buffer::~Buffer()
 { 
-	destroy();
+    if(owned_)
+        destroy();
 }
 
 void Buffer::create()
@@ -53,7 +64,17 @@ void Buffer::create()
 
 void Buffer::destroy()
 {
-	MemoryPool::largeDeallocate(buffer_);
+    MemoryPool::largeDeallocate(buffer_);
+}
+
+void Buffer::copy(const std::string &s)
+{
+    ::strcpy((char*)buffer_,s.c_str());
+}
+
+void Buffer::copy(const char *p, size_t size)
+{
+    ::memcpy(buffer_,p,size);
 }
 
 //-----------------------------------------------------------------------------

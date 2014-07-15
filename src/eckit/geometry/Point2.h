@@ -1,6 +1,7 @@
 #ifndef eckit_Point2_h
 #define eckit_Point2_h
 
+#include "eckit/value/Value.h"
 #include "eckit/geometry/KPoint.h"
 
 //------------------------------------------------------------------------------------------------------
@@ -38,6 +39,8 @@ public:
         x_[YY] = p[YY];
     }
 
+    operator eckit::Value() const;
+
     friend std::ostream& operator<<(std::ostream& s,const Point2& p);
 
 };
@@ -62,6 +65,8 @@ public:
         x_[LON] = lon;
         reduceTo2Pi();
     }
+
+    operator eckit::Value() const;
 
 private:
 
@@ -99,6 +104,14 @@ struct BoundBox2
 
     POINT bottom_left_;
     POINT top_right_;
+
+    operator eckit::Value() const
+    {
+        std::vector<Value> pts;
+        pts.push_back(bottom_left_);
+        pts.push_back(top_right_);
+        return Value::makeList(pts);
+    }
 
 };
 

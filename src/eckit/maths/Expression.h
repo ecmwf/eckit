@@ -120,8 +120,6 @@ public: // methods
 
     size_t arity() const { return args_.size(); }
 
-
-
     std::string str() const;
 
     // Used to bind undef() and lambda parameters
@@ -167,13 +165,12 @@ private:
 
 
     virtual ExpPtr evaluate( Scope& ) const = 0;
-    virtual void print( std::ostream& ) const = 0;
 
+    virtual void print( std::ostream& ) const = 0;
 
     virtual ExpPtr cloneWith(args_t&) const = 0;
 
     bool optimiseArgs(args_t&) const;
-
 
     // For unit tests....
     friend class eckit_test::TestExp;

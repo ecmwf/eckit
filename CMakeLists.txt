@@ -56,8 +56,9 @@ set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encod
 # eckit::maths
 
 ecbuild_add_option( FEATURE MATHS
-					DEFAULT OFF
-					DESCRIPTION "eckit::maths expressions [EXPERIMENTAL]" )
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::maths expressions [EXPERIMENTAL]"
+                    REQUIRED_PACKAGES Eigen3 )
 
 if( HAVE_MATHS )
 	ecbuild_add_cxx11_flags() # enforce c++11
@@ -96,17 +97,21 @@ endif()
 ############################################################################################
 # export package info
 
+set( ECKIT_PACKAGES       "" )
 set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
 set( ECKIT_LIBRARIES      eckit eckit_web eckit_geometry )
 
 if( HAVE_GRIB )
-	list( APPEND ECKIT_LIBRARIES eckit_grib )
-	list( APPEND ECKIT_TPLS grib_api )
+  list( APPEND ECKIT_PACKAGES ECKIT_GRIB )
+  list( APPEND ECKIT_LIBRARIES eckit_grib )
+  list( APPEND ECKIT_TPLS grib_api )
 endif()
 
-if( HAVE_EIGEN )
-	list( APPEND ECKIT_TPLS Eigen3 )
+if( HAVE_MATHS )
+  list( APPEND ECKIT_PACKAGES ECKIT_MATHS )
+  list( APPEND ECKIT_LIBRARIES eckit_maths )
+  list( APPEND ECKIT_TPLS Eigen3 )
 endif()
 
 get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )

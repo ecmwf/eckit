@@ -45,7 +45,7 @@ protected:
 
     virtual void value(bool& n)                 const;
     virtual void value(long long& n)            const { Content::value(n); }
-    virtual void value(double& n)               const { Content::value(n); }
+    virtual void value(double& n)               const;
     virtual void value(std::string& n)               const;
     virtual void value(Date& n)                 const { Content::value(n); }
     virtual void value(Time& n)                 const { Content::value(n); }

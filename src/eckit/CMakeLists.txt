@@ -360,7 +360,9 @@ value/MapContent.cc
 value/NilContent.h
 value/NilContent.cc
 value/NumberContent.h
-value/NumberContent.cc 
+value/NumberContent.cc
+value/Params.cc
+value/Params.h 
 value/Properties.h
 value/Properties.cc
 value/StringContent.h

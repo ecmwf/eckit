@@ -80,38 +80,89 @@ private:
 
 //------------------------------------------------------------------------------------------------------
 
-/// @todo this could be generalized to n-dimensions with n-points
+class LLBoundBox2 {
 
-template < typename POINT >
-struct BoundBox2
-{
-    BoundBox2(){}
+public: // methods
 
-    BoundBox2( const POINT& bottom_left, const POINT& top_right ) :
-        bottom_left_(bottom_left),
-        top_right_(top_right)
+    LLBoundBox2() :
+    bl_( 0., 0. ),
+    tr_( 0., 0. )
+    {}
+
+    LLBoundBox2( double top, double bottom, double right, double left ) :
+        bl_( bottom, left ),
+        tr_( top, right )
     {
-        ASSERT( bottom_left_(XX) <= top_right_(XX) );
-        ASSERT( bottom_left_(YY) <= top_right_(YY) );
+        ASSERT( validate() );
     }
 
-    bool operator==(const BoundBox2& rhs) const {
-       return (bottom_left_ == rhs.bottom_left_) && (top_right_ == rhs.top_right_);
+    LLBoundBox2( const LLPoint2& bottom_left, const LLPoint2& top_right ) :
+        bl_(bottom_left),
+        tr_(top_right)
+    {
+        ASSERT( validate() );
     }
-    bool operator!=(const BoundBox2& rhs) const {
+
+    static LLBoundBox2 make( const eckit::Value& v )
+    {
+        ASSERT( v.isList() );
+
+        ValueList pts = v;
+        ValueList p0 = pts[0];
+        ValueList p1 = pts[1];
+
+        return LLBoundBox2( LLPoint2(p0[0],p0[1]), LLPoint2(p1[0],p1[1]) );
+    }
+
+    bool operator==(const LLBoundBox2& rhs) const
+    {
+       return (bl_ == rhs.bl_) && (tr_ == rhs.tr_);
+    }
+
+    bool operator!=(const LLBoundBox2& rhs) const
+    {
        return !operator==(rhs);
     }
-
-    POINT bottom_left_;
-    POINT top_right_;
 
     operator eckit::Value() const
     {
         std::vector<Value> pts;
-        pts.push_back(bottom_left_);
-        pts.push_back(top_right_);
+        pts.push_back(bl_);
+        pts.push_back(tr_);
         return Value::makeList(pts);
     }
+
+    bool validate() const
+    {
+        return ( bl_(LAT) <= tr_(LAT) ) && ( bl_(LON) <= tr_(LON) ) && ( area() > 0 );
+    }
+
+    LLPoint2 bottom_left() const { return bl_; }
+    LLPoint2 top_right()   const { return tr_;   }
+
+    double area() const { return ( tr_[LON] - bl_[LON] ) * ( tr_[LAT] - bl_[LAT] ); }
+
+    bool empty() const { return ( area() == 0. ); }
+
+    void print( std::ostream& out ) const
+    {
+        out << "BoundBox2( " << bl_ << "," << tr_ << ")";
+    }
+
+    friend std::ostream& operator<<(std::ostream& s,const LLBoundBox2& o)
+    {
+        o.print(s); return s;
+    }
+
+    double east()  const { return tr_.lon(); }
+    double north() const { return tr_.lat(); }
+    double west()  const { return bl_.lon(); }
+    double south() const { return bl_.lat(); }
+
+private: // members
+
+    LLPoint2 bl_;
+    LLPoint2 tr_;
 
 };
 

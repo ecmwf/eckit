@@ -38,10 +38,9 @@ ecbuild_declare_project()
 # Eigen
 
 ecbuild_add_option( FEATURE EIGEN
-					DEFAULT OFF
-					DESCRIPTION "Eigen support  [EXPERIMENTAL]"
-					REQUIRED_PACKAGES Eigen3 )
-
+                    DEFAULT OFF
+                    DESCRIPTION "Eigen support  [EXPERIMENTAL]"
+                    REQUIRED_PACKAGES Eigen3 )
 set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Accelerated dense matrix operations" )
 
 # GRIB
@@ -58,7 +57,8 @@ set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encod
 ecbuild_add_option( FEATURE MATHS
                     DEFAULT OFF
                     DESCRIPTION "eckit::maths expressions [EXPERIMENTAL]"
-                    REQUIRED_PACKAGES Eigen3 )
+                    CONDITION HAVE_EIGEN )
+
 
 if( HAVE_MATHS )
 	ecbuild_add_cxx11_flags() # enforce c++11

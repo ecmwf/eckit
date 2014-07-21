@@ -15,19 +15,11 @@
 #include "eckit/io/DataHandle.h"
 
 #include "eckit/grib/GribHandle.h"
+#include "eckit/grib/GribAccessor.h"
 
 namespace eckit {
 
-static int grib_call(int code, const char* msg) {
-    if(code) {
-        StrStream os;
-        os << msg << ": " << grib_get_error_message(code) << StrStream::ends;
-        throw Exception(std::string(os));
-    }
-    return code;
-}
-
-#define GRIB_CALL(a) grib_call(a, #a)
+static GribAccessor<long> grib_edition("edition");
 
 GribHandle::GribHandle(grib_handle* handle)
     :handle_(handle)
@@ -60,6 +52,12 @@ GribHandle::~GribHandle()
 {
     ASSERT(handle_);
     grib_handle_delete(handle_);
+}
+
+long GribHandle::edition() const
+{
+    ASSERT(handle_);
+    return grib_edition(handle_);
 }
 
 size_t GribHandle::getDataValuesSize() const
@@ -105,6 +103,14 @@ void GribHandle::write( DataHandle& handle )
     ASSERT(handle.write(message, length) == length);
 }
 
+size_t GribHandle::write( Buffer& buff )
+{
+    ASSERT(handle_);
+    size_t len = buff.size();
+    GRIB_CALL( grib_get_message_copy( handle_, buff, &len )); // will issue error if buffer too small
+    return len;
+}
+
 GribHandle* GribHandle::clone() const
 {
     ASSERT(handle_);
@@ -115,4 +121,26 @@ GribHandle* GribHandle::clone() const
     return new GribHandle(h);
 }
 
+size_t GribHandle::getNbDataPoints() const
+{
+    ASSERT(handle_);
+    long npts;
+    GRIB_CALL( grib_get_long( handle_,"numberOfDataPoints",&npts) );
+    return npts;
+}
+
+//------------------------------------------------------------------------------------------------------
+
+int grib_call(int code, const char *msg)
+{
+    if(code)
+    {
+        StrStream os;
+        os << msg << ": " << grib_get_error_message(code) << StrStream::ends;
+        throw Exception(std::string(os));
+    }
+    return code;
+}
+
+//------------------------------------------------------------------------------------------------------
 } // namespace eckit

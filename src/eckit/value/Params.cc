@@ -61,6 +61,12 @@ void CompositeParams::push_back(const Params::Ptr& p)
     plist_.push_back(p);
 }
 
+void CompositeParams::print(std::ostream &s) const
+{
+    for( Params::List::const_iterator citr = plist_.begin(); citr != plist_.end(); ++citr )
+        (*citr)->print(s);
+}
+
 //------------------------------------------------------------------------------------------------------
 
 Params::value_t ValueParams::get( const key_t& key ) const
@@ -71,6 +77,11 @@ Params::value_t ValueParams::get( const key_t& key ) const
 void ValueParams::set(const Params::key_t& k, const Params::value_t& v)
 {
     props_.set(k,v);
+}
+
+void ValueParams::print(std::ostream &s) const
+{
+    s << props_;
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -90,6 +101,16 @@ Params::value_t RuntimeParams::get(const key_t& key ) const
     else
     {
         return value_t();
+    }
+}
+
+void RuntimeParams::print(std::ostream &s) const
+{
+    if( runtime_ )
+    {
+        Params* r = *runtime_;
+        ASSERT( r );
+        r->print(s);
     }
 }
 
@@ -114,6 +135,11 @@ Params::value_t ScopeParams::get(const key_t& key ) const
     }
 }
 
+void ScopeParams::print(std::ostream &s) const
+{
+    p_->print(s);
+}
+
 //------------------------------------------------------------------------------------------------------
 
 UnScopeParams::UnScopeParams(const key_t& scope_key, const Params::Ptr& p ) :
@@ -126,6 +152,11 @@ UnScopeParams::UnScopeParams(const key_t& scope_key, const Params::Ptr& p ) :
 Params::value_t UnScopeParams::get(const key_t& key ) const
 {
     return p_->get( scope_ + key );
+}
+
+void UnScopeParams::print(std::ostream &s) const
+{
+    p_->print(s);
 }
 
 //------------------------------------------------------------------------------------------------------

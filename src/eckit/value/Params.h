@@ -49,6 +49,12 @@ public: // methods
 
     value_t operator[] ( const key_t& key ) const;
 
+    virtual void print(std::ostream& s) const = 0;
+
+private: // methods
+
+    friend std::ostream& operator<<(std::ostream& s, const Params& p) { p.print(s);  return s; }
+
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -64,6 +70,10 @@ public: // methods
 
     void push_front( const Params::Ptr& p );
     void push_back( const Params::Ptr& p );
+
+protected: // methods
+
+    virtual void print(std::ostream& s) const;
 
 private: // members
 
@@ -83,6 +93,10 @@ public: // methods
     virtual value_t get( const key_t& key ) const;
 
     void set( const key_t& k, const value_t& v );
+
+protected: // methods
+
+    virtual void print(std::ostream& s) const;
 
 protected: // members
 
@@ -114,6 +128,10 @@ public: // methods
             return Params::value_t();
     }
 
+protected: // methods
+
+    virtual void print(std::ostream& s) const {}
+
 protected: // members
 
     typedef Params::value_t ( Derived::* parametrizer_t ) ( const key_t& ) const ;
@@ -135,6 +153,10 @@ public: // methods
 
     virtual value_t get( const key_t& key ) const;
 
+protected: // methods
+
+    virtual void print(std::ostream& s) const;
+
 private: // members
 
     key_t scope_;
@@ -154,6 +176,10 @@ public: // methods
 
     virtual value_t get( const key_t& key ) const;
 
+protected: // methods
+
+    virtual void print(std::ostream& s) const;
+
 private: // members
 
     key_t scope_;
@@ -170,6 +196,10 @@ public: // methods
     RuntimeParams( Params** runtime );
 
     virtual value_t get( const key_t& key ) const;
+
+protected: // methods
+
+    virtual void print(std::ostream& s) const;
 
 private: // members
 

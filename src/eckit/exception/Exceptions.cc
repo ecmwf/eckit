@@ -176,9 +176,19 @@ SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
 
 AssertionFailed::AssertionFailed(const std::string& w): 
     Exception(std::string("Assertion failed: ") + w)
-{   
+{
     Log::monitor(Log::App,1) << what() << std::endl;
-} 
+
+#ifndef NDEBUG
+    if( ::getenv("ECKIT_ASSERT_FAILS_AND_ABORTS") )
+    {
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
+        ::abort();
+    }
+#endif
+
+}
 
 AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
 {
@@ -189,6 +199,15 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
 
     reason(std::string(s));
     Log::monitor(Log::App,2) << what() << std::endl;
+
+#ifndef NDEBUG
+    if( ::getenv("ECKIT_ASSERT_FAILS_AND_ABORTS") )
+    {
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
+        ::abort();
+    }
+#endif
 }
 
 BadParameter::BadParameter(const std::string& w):

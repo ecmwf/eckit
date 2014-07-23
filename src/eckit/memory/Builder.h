@@ -116,15 +116,21 @@ public: // types
 
 	typedef BuilderT0<Base> base_t;
 
+	typedef typename base_t::key_t key_t;
 	typedef typename base_t::product_t product_t;
 	typedef typename base_t::product_ptr product_ptr;
 	typedef typename base_t::builder_ptr builder_ptr;
 
 public: // methods
 
-	ConcreteBuilderT0()
+	ConcreteBuilderT0() : k_(name())
 	{
-		Factory<product_t>::instance().regist( builder_ptr(this) );
+		Factory<product_t>::instance().regist(k_, builder_ptr(this) );
+	}
+
+	ConcreteBuilderT0(const key_t& k) : k_(k)
+	{
+		Factory<product_t>::instance().regist(k_, builder_ptr(this) );
 	}
 
 	virtual ~ConcreteBuilderT0()
@@ -136,17 +142,21 @@ public: // methods
 
 	virtual product_ptr create() const { return new T(); }
 
+private:
+
+	key_t k_;
+
 };
 
 //------------------------------------------------------------------------------------------------------
 
 template< class Base, class T >
 class ConcreteBuilderT1 : public BuilderT1<Base> {
-
 public: // types
 
 	typedef BuilderT1<Base> base_t;
 
+	typedef typename base_t::key_t key_t;
 	typedef typename base_t::product_t product_t;
 	typedef typename base_t::product_ptr product_ptr;
 	typedef typename base_t::builder_ptr builder_ptr;
@@ -155,19 +165,28 @@ public: // types
 
 public: // methods
 
-	ConcreteBuilderT1()
+	ConcreteBuilderT1() : k_(name())
 	{
-		Factory<product_t>::instance().regist( builder_ptr(this) );
+		Factory<product_t>::instance().regist(k_, builder_ptr(this) );
+	}
+
+	ConcreteBuilderT1(const key_t& k) : k_(k)
+	{
+		Factory<product_t>::instance().regist(k_, builder_ptr(this) );
 	}
 
 	virtual ~ConcreteBuilderT1()
 	{
-		Factory<product_t>::instance().unregist( name() );
+		Factory<product_t>::instance().unregist( k_ );
 	}
 
 	virtual typename base_t::key_t name() const { return T::className(); }
 
 	virtual product_ptr create( ARG1 p1 ) const { return new T(p1); }
+
+private:
+
+	key_t k_;
 
 };
 
@@ -180,6 +199,7 @@ public: // types
 
 	typedef BuilderT2<Base> base_t;
 
+	typedef typename base_t::key_t key_t;
 	typedef typename base_t::product_t product_t;
 	typedef typename base_t::product_ptr product_ptr;
 	typedef typename base_t::builder_ptr builder_ptr;
@@ -189,9 +209,14 @@ public: // types
 
 public: // methods
 
-	ConcreteBuilderT2()
+	ConcreteBuilderT2() : k_(name())
 	{
-		Factory<product_t>::instance().regist( builder_ptr(this) );
+		Factory<product_t>::instance().regist(k_, builder_ptr(this) );
+	}
+
+	ConcreteBuilderT2(const key_t& k) : k_(k)
+	{
+		Factory<product_t>::instance().regist(k_, builder_ptr(this));
 	}
 
 	virtual ~ConcreteBuilderT2()
@@ -202,6 +227,10 @@ public: // methods
 	virtual typename base_t::key_t name() const { return T::className(); }
 
 	virtual product_ptr create( ARG1 p1, ARG2 p2 ) const { return new T(p1,p2); }
+
+private:
+
+	key_t k_;
 
 };
 

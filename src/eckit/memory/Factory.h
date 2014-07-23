@@ -52,7 +52,7 @@ public: // methods
 	/// Registers a builder
 	/// @param builder pointer
 	/// @throw BadParameter if the builder already registered
-	void regist( builder_ptr );
+	void regist( const key_t&, builder_ptr );
 
 	/// Remove a registered builder
 	/// @throw BadParameter if the builder is not registered
@@ -91,11 +91,10 @@ Factory<T>& Factory<T>::instance()
 }
 
 template <class T>
-void Factory<T>::regist( builder_ptr b )
+void Factory<T>::regist( const key_t& k, builder_ptr b )
 {
 	AutoLock<Mutex> lock(mutex_);
 	ASSERT( b );
-	const key_t k = b->name();
 	if( exists(k) )
 	{
 		throw BadParameter( "Factory of " + build_type() + " has already a builder for " + k, Here() );

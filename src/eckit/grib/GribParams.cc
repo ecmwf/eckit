@@ -74,88 +74,94 @@ GribParams::~GribParams()
 class GribReducedGG : public GribParams {
 public:
 
-GribReducedGG( GribHandle& gh ) : GribParams(gh)
-{
-	set( "GaussN", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh.raw()) );
+	static std::string className() { return "eckit.grib.GribReducedGG"; }
 
-	set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
-}
+	GribReducedGG( GribHandle& gh ) : GribParams(gh)
+	{
+		set( "GaussN", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh.raw()) );
+
+		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
+	}
 
 };
 
-ConcreteBuilderT1<GribParams,GribReducedGG> GribReducedGG_builder;
+ConcreteBuilderT1<GribParams,GribReducedGG> GribReducedGG_builder( "reduced_gg" );
 
 //------------------------------------------------------------------------------------------------------
 
 class GribRegularGG : public GribParams {
 public:
 
-GribRegularGG( GribHandle& gh ) : GribParams(gh)
-{
-	set( "GaussN", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh.raw()) );
+	static std::string className() { return "eckit.grib.GribRegularGG"; }
+	GribRegularGG( GribHandle& gh ) : GribParams(gh)
+	{
+		set( "GaussN", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh.raw()) );
 
-	set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
-}
+		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
+	}
 
 };
 
-ConcreteBuilderT1<GribParams,GribRegularGG> GribRegularGG_builder;
+ConcreteBuilderT1<GribParams,GribRegularGG> GribRegularGG_builder( "regular_gg" );
 
 //------------------------------------------------------------------------------------------------------
 
 class GribRegularLatLon : public GribParams {
 public:
 
-GribRegularLatLon( GribHandle& gh ) : GribParams(gh)
-{
-	set( "jInc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
-	set( "iInc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh.raw()) );
+	static std::string className() { return "eckit.grib.GribRegularLatLon"; }
+	GribRegularLatLon( GribHandle& gh ) : GribParams(gh)
+	{
+		set( "jInc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
+		set( "iInc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh.raw()) );
 
-	set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
-	set( "Ni", GribAccessor<long>("Ni")(gh.raw()) );
-}
+		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
+		set( "Ni", GribAccessor<long>("Ni")(gh.raw()) );
+	}
 
 };
 
-ConcreteBuilderT1<GribParams,GribRegularLatLon> GribRegularLatLon_builder;
+ConcreteBuilderT1<GribParams,GribRegularLatLon> GribRegularLatLon_builder( "regular_ll" );
 
 //------------------------------------------------------------------------------------------------------
 
 class GribReducedLatLon : public GribParams {
 public:
 
-GribReducedLatLon( GribHandle& gh ) : GribParams(gh)
-{
-	set( "jInc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
+	static std::string className() { return "eckit.grib.GribReducedLatLon"; }
+	GribReducedLatLon( GribHandle& gh ) : GribParams(gh)
+	{
+		set( "jInc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
 
-	set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
-}
+		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
+	}
 
 };
 
-ConcreteBuilderT1<GribParams,GribReducedLatLon> GribReducedLatLon_builder;
+ConcreteBuilderT1<GribParams,GribReducedLatLon> GribReducedLatLon_builder( "reduced_ll" );
 
 //------------------------------------------------------------------------------------------------------
 
 class GribRotatedLatLon : public GribParams {
 public:
 
-GribRotatedLatLon( GribHandle& gh ) : GribParams(gh)
-{
-	set( "jInc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
-	set( "iInc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh.raw()) );
+	static std::string className() { return "eckit.grib.GribRotatedLatLon"; }
+	GribRotatedLatLon( GribHandle& gh ) : GribParams(gh)
+	{
+		set( "jInc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
+		set( "iInc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh.raw()) );
 
-	set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
-	set( "Ni", GribAccessor<long>("Ni")(gh.raw()) );
+		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
+		set( "Ni", GribAccessor<long>("Ni")(gh.raw()) );
 
-	set( "SouthPoleLat", GribAccessor<double>("latitudeOfSouthernPoleInDegrees")(gh.raw()) );
-	set( "SouthPoleLon", GribAccessor<double>("longitudeOfSouthernPoleInDegrees")(gh.raw()) );
-	set( "SouthPoleRotAngle", GribAccessor<double>("angleOfRotation")(gh.raw()) );
-}
+		set( "SouthPoleLat", GribAccessor<double>("latitudeOfSouthernPoleInDegrees")(gh.raw()) );
+		set( "SouthPoleLon", GribAccessor<double>("longitudeOfSouthernPoleInDegrees")(gh.raw()) );
+		set( "SouthPoleRotAngle", GribAccessor<double>("angleOfRotation")(gh.raw()) );
+	}
 
 };
 
-ConcreteBuilderT1<GribParams,GribRotatedLatLon> GribRotatedLatLon_builder;
+ConcreteBuilderT1<GribParams,GribRotatedLatLon> GribRotatedLatLon_builder( "rotated_ll" );
 
 //------------------------------------------------------------------------------------------------------
 

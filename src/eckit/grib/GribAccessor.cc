@@ -22,14 +22,7 @@ static GribAccessor<long> edition("edition");
 static GribAccessor<std::string> md5Section2("md5Section2");
 static GribAccessor<std::string> md5Section3("md5Section3");
 
-std::string grib_hash( GribHandle& gh )
-{
-    grib_handle* h = gh.raw();
-    ASSERT( h );
-    return grib_hash(h);
-}
-
-std::string grib_hash(grib_handle *h)
+std::string grib_geography_hash(grib_handle *h)
 {
     ASSERT(h);
 
@@ -55,7 +48,7 @@ std::string grib_hash(grib_handle *h)
 }
 
 
-std::string grib_hash(const std::string &fname)
+std::string grib_geography_hash(const std::string &fname)
 {
     FILE* fh = ::fopen( fname.c_str(), "r" );
     if( fh == 0 )
@@ -67,7 +60,7 @@ std::string grib_hash(const std::string &fname)
     if( h == 0 || err != 0 )
         throw ReadError( std::string("error reading grib file ") + fname );
 
-    std::string md5 = grib_hash(h);
+    std::string md5 = grib_geography_hash(h);
 
     grib_handle_delete(h);
 

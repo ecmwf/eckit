@@ -141,13 +141,9 @@ public: // methods
 
 namespace eckit {
 
-class GribHandle;
+std::string grib_geography_hash( grib_handle* h );
 
-std::string grib_hash( GribHandle& h );
-
-std::string grib_hash( grib_handle* h );
-
-std::string grib_hash( const std::string& fname );
+std::string grib_geography_hash( const std::string& fname );
 
 }
 

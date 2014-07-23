@@ -8,9 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
-
 #include "eckit/maths/Function.h"
 #include "eckit/maths/Value.h"
 #include "eckit/maths/Optimiser.h"

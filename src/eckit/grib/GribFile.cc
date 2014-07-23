@@ -10,9 +10,6 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Timer.h"
 
-#include "eckit/thread/Mutex.h"
-#include "eckit/thread/AutoLock.h"
-
 
 namespace eckit {
 

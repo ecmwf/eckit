@@ -46,11 +46,15 @@ public:
 
 // -- Methods
 
+	std::string gridType() const;
+
+	std::string geographyHash() const;
+
     long edition() const;
 
     GribHandle* clone() const;
 
-    size_t getNbDataPoints() const;
+	size_t nbDataPoints() const;
 
     size_t getDataValuesSize() const;
 
@@ -61,6 +65,11 @@ public:
 
     void write( DataHandle& );
     size_t write( Buffer& );
+
+	double latitudeOfFirstGridPointInDegrees()  const;
+	double longitudeOfFirstGridPointInDegrees() const;
+	double latitudeOfLastGridPointInDegrees()   const;
+	double longitudeOfLastGridPointInDegrees()  const;
 
     /// @returns the raw grib_handle so client code can call grib directly. May return null.
     grib_handle* raw() { return handle_; }

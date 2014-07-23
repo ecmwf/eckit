@@ -1,5 +1,3 @@
-#ifndef eckit_SharedPtr_h
-#define eckit_SharedPtr_h
 /*
  * (C) Copyright 1996-2012 ECMWF.
  *
@@ -10,9 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Counted.h
+#ifndef eckit_memory_SharedPtr_h
+#define eckit_memory_SharedPtr_h
+
+/// @file SharedPtr.h
 /// @author Tiago Quintino
-/// @date Dec 2013
+/// @date Mar 2014
 
 #include "eckit/exception/Exceptions.h"
 
@@ -90,7 +91,7 @@ public: // methods
     {
         if( ! null() )
             ptr_->attach();
-    }
+	}
 
     /// Copy constructor
     SharedPtr ( const SharedPtr& other ) : ptr_(other.ptr_)
@@ -241,4 +242,4 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-#endif // eckit_SharedPtr_h
+#endif // eckit_memory_SharedPtr_h

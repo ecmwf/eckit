@@ -4,6 +4,8 @@ EmosFile.h
 Grib.h
 GribAccessor.h
 GribAccessor.cc
+GribParams.h
+GribParams.cc
 GribField.cc
 GribField.h
 GribFieldSet.cc

@@ -11,6 +11,10 @@ namespace geometry {
 
 //------------------------------------------------------------------------------------------------------
 
+void reduceTo2Pi( double& d );
+
+//------------------------------------------------------------------------------------------------------
+
 class Point2 : public eckit::geometry::KPoint<2> {
 
     typedef KPoint<2> BasePoint;
@@ -52,9 +56,9 @@ public:
 
     LLPoint2() : Point2() {}
 
-    LLPoint2( const Point2& p ) : Point2(p) { reduceTo2Pi(); }
+	LLPoint2( const Point2& p ) : Point2(p) { reduceTo2Pi(x_[LON]); }
 
-    LLPoint2( double lat, double lon ) : Point2(lat,lon) { reduceTo2Pi(); }
+	LLPoint2( double lat, double lon ) : Point2(lat,lon) { reduceTo2Pi(x_[LON]); }
 
     double lat() const { return x_[LAT]; }
     double lon() const { return x_[LON]; }
@@ -63,18 +67,10 @@ public:
     {
         x_[LAT] = lat;
         x_[LON] = lon;
-        reduceTo2Pi();
+		reduceTo2Pi(x_[LON]);
     }
 
     operator eckit::Value() const;
-
-private:
-
-    void reduceTo2Pi()
-    {
-        while(x_[LON] < 0)    x_[LON] += 360;
-        while(x_[LON] >= 360) x_[LON] -= 360;
-    }
 
 };
 

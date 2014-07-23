@@ -19,7 +19,7 @@
 
 namespace eckit {
 
-static GribAccessor<long> grib_edition("edition");
+//------------------------------------------------------------------------------------------------------
 
 GribHandle::GribHandle(grib_handle* handle)
     :handle_(handle)
@@ -51,13 +51,25 @@ GribHandle::GribHandle(const Buffer& buffer, bool copy)
 GribHandle::~GribHandle()
 {
     ASSERT(handle_);
-    grib_handle_delete(handle_);
+	grib_handle_delete(handle_);
+}
+
+std::string GribHandle::gridType() const
+{
+	ASSERT(handle_);
+	return GribAccessor<std::string>("gridType")(handle_);
+}
+
+std::string GribHandle::geographyHash() const
+{
+	ASSERT(handle_);
+	return grib_geography_hash(handle_);
 }
 
 long GribHandle::edition() const
 {
     ASSERT(handle_);
-    return grib_edition(handle_);
+	GribAccessor<long>("edition")(handle_);
 }
 
 size_t GribHandle::getDataValuesSize() const
@@ -108,7 +120,31 @@ size_t GribHandle::write( Buffer& buff )
     ASSERT(handle_);
     size_t len = buff.size();
     GRIB_CALL( grib_get_message_copy( handle_, buff, &len )); // will issue error if buffer too small
-    return len;
+	return len;
+}
+
+double GribHandle::latitudeOfFirstGridPointInDegrees() const
+{
+	ASSERT(handle_);
+	return GribAccessor<double>("latitudeOfFirstGridPointInDegrees")(handle_);
+}
+
+double GribHandle::longitudeOfFirstGridPointInDegrees() const
+{
+	ASSERT(handle_);
+	return GribAccessor<double>("longitudeOfFirstGridPointInDegrees")(handle_);
+}
+
+double GribHandle::latitudeOfLastGridPointInDegrees() const
+{
+	ASSERT(handle_);
+	return GribAccessor<double>("latitudeOfLastGridPointInDegrees")(handle_);
+}
+
+double GribHandle::longitudeOfLastGridPointInDegrees() const
+{
+	ASSERT(handle_);
+	return GribAccessor<double>("longitudeOfLastGridPointInDegrees")(handle_);
 }
 
 GribHandle* GribHandle::clone() const
@@ -121,12 +157,10 @@ GribHandle* GribHandle::clone() const
     return new GribHandle(h);
 }
 
-size_t GribHandle::getNbDataPoints() const
+size_t GribHandle::nbDataPoints() const
 {
     ASSERT(handle_);
-    long npts;
-    GRIB_CALL( grib_get_long( handle_,"numberOfDataPoints",&npts) );
-    return npts;
+	return GribAccessor<long>("numberOfDataPoints")(handle_);
 }
 
 //------------------------------------------------------------------------------------------------------

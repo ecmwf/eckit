@@ -11,9 +11,9 @@
 #ifndef eckit_grib_GribParams_H
 #define eckit_grib_GribParams_H
 
-#include "eckit/value/Params.h"
-
 #include "eckit/grib/GribHandle.h"
+#include "eckit/memory/Builder.h"
+#include "eckit/value/Params.h"
 
 namespace eckit {
 
@@ -22,13 +22,16 @@ namespace eckit {
 class GribParams : public eckit::ValueParams {
 public:
 
+	typedef BuilderT1<GribParams> builder_t;
+	typedef GribHandle::Ptr ARG1;
+
 	static std::string className() { return "eckit.grib.GribParams"; }
 
 	GribParams( GribHandle::Ptr );
 
-	virtual ~GribParams() = 0;
+	virtual ~GribParams();
 
-	GribParams* create( GribHandle::Ptr );
+	static GribParams* create( GribHandle::Ptr );
 
 protected: // members
 

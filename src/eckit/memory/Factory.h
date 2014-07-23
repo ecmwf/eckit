@@ -22,8 +22,6 @@
 
 namespace eckit {
 
-template < class T > class Builder;
-
 //------------------------------------------------------------------------------------------------------
 
 template< class T >
@@ -31,9 +29,10 @@ class Factory {
 
 public: // types
 
-	typedef T product_t;
 	typedef std::string key_t;
-	typedef Builder<product_t> builder_t;
+
+	typedef T product_t;
+	typedef typename product_t::builder_t builder_t;
 	typedef builder_t* builder_ptr;
 
 	typedef std::map<key_t,builder_ptr> storage_t;
@@ -130,7 +129,7 @@ template <class T>
 void Factory<T>::print(std::ostream& os) const
 {
 	AutoLock<Mutex> lock(mutex_);
-	os << T::className() << std::endl;
+	os << "Factory(" << T::className() << ")" << std::endl;
 	for( typename storage_t::const_iterator i = store_.begin(); i != store_.end(); ++i )
 	{
 		os << (*(*i).second) << std::endl;

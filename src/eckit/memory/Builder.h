@@ -25,62 +25,185 @@ namespace eckit {
 
 //------------------------------------------------------------------------------------------------------
 
+class Builder : private NonCopyable {
+public:
+
+	typedef std::string key_t;
+
+	virtual ~Builder() {}
+	virtual key_t name() const = 0;
+	virtual key_t build_type() const = 0;
+
+	friend std::ostream& operator<<( std::ostream& os, const Builder& o) { o.print(os); return os;}
+
+private: // methods
+
+	virtual void print( std::ostream& os ) const { os << "Builder(" << build_type() << "):" << name(); }
+
+};
+
+//------------------------------------------------------------------------------------------------------
+
 template< class Base >
-class Builder {
+class BuilderT0 : public Builder {
 
 public: // types
 
 	typedef Base product_t;
 	typedef product_t* product_ptr;
-	typedef std::string key_t;
+	typedef Builder::key_t key_t;
 	typedef typename Factory<Base>::builder_ptr builder_ptr;
+
+	virtual product_ptr create() const  = 0;
 
 public: // methods
 
-	virtual ~Builder() {}
+	virtual key_t build_type() const { return Base::className(); }
 
-	virtual key_t name() const = 0;
+};
 
-	virtual product_ptr create( const Params& ) const = 0;
+//------------------------------------------------------------------------------------------------------
 
-	friend std::ostream& operator<<( std::ostream& os, const Builder<Base>& o) { o.print(os); return os;}
+template< class Base >
+class BuilderT1 : public Builder {
 
-private: // methods
+public: // types
 
-	virtual void print( std::ostream& os ) const { os << name(); }
+	typedef Base product_t;
+	typedef product_t* product_ptr;
+	typedef Builder::key_t key_t;
+	typedef typename Factory<Base>::builder_ptr builder_ptr;
+
+	typedef typename product_t::ARG1 ARG1;
+
+	virtual product_ptr create( ARG1 p1 ) const = 0;
+
+public: // methods
+
+	virtual key_t build_type() const { return Base::className(); }
+
+};
+
+//------------------------------------------------------------------------------------------------------
+
+template< class Base >
+class BuilderT2 : public Builder {
+
+public: // types
+
+	typedef Base product_t;
+	typedef product_t* product_ptr;
+	typedef Builder::key_t key_t;
+	typedef typename Factory<Base>::builder_ptr builder_ptr;
+
+	typedef typename product_t::ARG1 ARG1;
+	typedef typename product_t::ARG2 ARG2;
+
+	virtual product_ptr create( ARG1 p1, ARG2 p2 ) const = 0;
+
+public: // methods
+
+	virtual key_t build_type() const { return Base::className(); }
 
 };
 
 //------------------------------------------------------------------------------------------------------
 
 template< class Base, class T >
-class ConcreteBuilder : public Builder<Base> {
+class ConcreteBuilderT0 : public BuilderT0<Base> {
 
 public: // types
 
-	typedef Base product_t;
-	typedef product_t* product_ptr;
-	typedef Builder<Base> base_t;
+	typedef BuilderT0<Base> base_t;
+
+	typedef typename base_t::product_t product_t;
+	typedef typename base_t::product_ptr product_ptr;
 	typedef typename base_t::builder_ptr builder_ptr;
 
 public: // methods
 
-	ConcreteBuilder()
+	ConcreteBuilderT0()
 	{
 		Factory<product_t>::instance().regist( builder_ptr(this) );
 	}
 
-	virtual ~ConcreteBuilder()
+	virtual ~ConcreteBuilderT0()
 	{
 		Factory<product_t>::instance().unregist( name() );
 	}
 
 	virtual typename base_t::key_t name() const { return T::className(); }
 
-	virtual product_ptr create( const Params& p ) const { return new T(p); }
+	virtual product_ptr create() const { return new T(); }
 
 };
 
+//------------------------------------------------------------------------------------------------------
+
+template< class Base, class T >
+class ConcreteBuilderT1 : public BuilderT1<Base> {
+
+public: // types
+
+	typedef BuilderT1<Base> base_t;
+
+	typedef typename base_t::product_t product_t;
+	typedef typename base_t::product_ptr product_ptr;
+	typedef typename base_t::builder_ptr builder_ptr;
+
+	typedef typename base_t::ARG1 ARG1;
+
+public: // methods
+
+	ConcreteBuilderT1()
+	{
+		Factory<product_t>::instance().regist( builder_ptr(this) );
+	}
+
+	virtual ~ConcreteBuilderT1()
+	{
+		Factory<product_t>::instance().unregist( name() );
+	}
+
+	virtual typename base_t::key_t name() const { return T::className(); }
+
+	virtual product_ptr create( ARG1 p1 ) const { return new T(p1); }
+
+};
+
+//------------------------------------------------------------------------------------------------------
+
+template< class Base, class T >
+class ConcreteBuilderT2 : public BuilderT2<Base> {
+
+public: // types
+
+	typedef BuilderT2<Base> base_t;
+
+	typedef typename base_t::product_t product_t;
+	typedef typename base_t::product_ptr product_ptr;
+	typedef typename base_t::builder_ptr builder_ptr;
+
+	typedef typename base_t::ARG1 ARG1;
+	typedef typename base_t::ARG2 ARG2;
+
+public: // methods
+
+	ConcreteBuilderT2()
+	{
+		Factory<product_t>::instance().regist( builder_ptr(this) );
+	}
+
+	virtual ~ConcreteBuilderT2()
+	{
+		Factory<product_t>::instance().unregist( name() );
+	}
+
+	virtual typename base_t::key_t name() const { return T::className(); }
+
+	virtual product_ptr create( ARG1 p1, ARG2 p2 ) const { return new T(p1,p2); }
+
+};
 
 //------------------------------------------------------------------------------------------------------
 

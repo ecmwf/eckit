@@ -19,6 +19,11 @@ namespace eckit {
 
 //------------------------------------------------------------------------------------------------------
 
+GribParams* GribParams::create( GribHandle::Ptr gh )
+{
+	return Factory<GribParams>::instance().get( gh->gridType() ).create(gh);
+}
+
 GribParams::GribParams(GribHandle::Ptr gh)
 {
 	set("gridType",gh->gridType());
@@ -58,10 +63,8 @@ GribParams::GribParams(GribHandle::Ptr gh)
 	set("nbDataPoints", gh->nbDataPoints() );
 }
 
-GribParams* GribParams::create( GribHandle::Ptr gh )
+GribParams::~GribParams()
 {
-	ValueParams empty;
-	return Factory<GribParams>::instance().get( gh->gridType() ).create(empty);
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -130,7 +133,7 @@ GribRegularLatLon( GribHandle::Ptr gh ) : GribParams(gh)
 
 };
 
-//ConcreteBuilder<GribParams,GribRegularLatLon> GribRegularLatLon_builder;
+ConcreteBuilderT1<GribParams,GribRegularLatLon> GribRegularLatLon_builder;
 
 //------------------------------------------------------------------------------------------------------
 

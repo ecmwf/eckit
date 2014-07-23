@@ -32,7 +32,7 @@ public:
 
 	virtual ~GribParams();
 
-	static GribParams* create( ARG1 );
+	static GribParams* create( GribHandle& );
 
 protected: // members
 

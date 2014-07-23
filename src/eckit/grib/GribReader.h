@@ -20,7 +20,10 @@
 namespace eckit { class Buffer; }
 namespace eckit { class PathName; }
 
-// 
+namespace eckit {
+namespace grib {
+
+//------------------------------------------------------------------------------------------------------
 
 class GribReader : private eckit::NonCopyable {
 public:
@@ -60,5 +63,10 @@ private:
     unsigned long skip_;
     
 };
+
+//------------------------------------------------------------------------------------------------------
+
+}
+}
 
 #endif

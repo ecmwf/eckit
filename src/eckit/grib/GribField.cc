@@ -1,12 +1,15 @@
 // File GribField.cc
 // Baudouin Raoult - (c) ECMWF Nov 13
 
-#include "GribField.h"
-#include "GribFile.h"
-#include "GribHandle.h"
-#include "GribFieldMemoryStrategy.h"
+#include "eckit/grib/GribField.h"
+#include "eckit/grib/GribFile.h"
+#include "eckit/grib/GribHandle.h"
+#include "eckit/grib/GribFieldMemoryStrategy.h"
 
 namespace eckit {
+namespace grib {
+
+//------------------------------------------------------------------------------------------------------
 
 static GribFieldMemoryStrategy defaultStrategy;
 
@@ -187,4 +190,8 @@ void GribField::purge(bool temp)
         values_ = 0;
     }
 }
-} // namespace
+
+//------------------------------------------------------------------------------------------------------
+
+}
+}

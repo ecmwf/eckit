@@ -17,6 +17,7 @@
 #include "eckit/memory/Builder.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
+#include "eckit/utils/Translator.h"
 
 using namespace std;
 using namespace eckit;
@@ -130,15 +131,70 @@ ConcreteBuilderT1<Base1,B1> builder_B1;
 
 //-----------------------------------------------------------------------------
 
+namespace eckit_test {
+
+class Base2 : public Owned {
+public:
+
+	typedef BuilderT2<Base2> builder_t;
+	typedef std::string   ARG1;
+	typedef int           ARG2;
+
+	typedef SharedPtr<Base2> Ptr;
+
+	static std::string className() { return "eckit_test.Base2"; }
+
+	virtual ~Base2() {}
+	virtual std::string foo() const = 0;
+
+};
+
+class A2 : public Base2 {
+public:
+
+	static std::string className() { return "eckit_test.A2"; }
+
+	A2( std::string s, int i ) : s1_( s + "." + Translator<int,string>()(i) ) {}
+
+	virtual std::string foo() const { return className() + "." + s1_; }
+
+private:
+
+	std::string s1_;
+};
+
+class B2 : public Base2 {
+public:
+
+	static std::string className() { return "eckit_test.B2"; }
+
+	B2( std::string s, int i ) :  s2_( s + "." + Translator<int,string>()(i) ) {}
+
+	virtual std::string foo() const { return className() + "." + s2_; }
+
+private:
+
+	std::string s2_;
+};
+
+ConcreteBuilderT2<Base2,A2> builder_A2;
+ConcreteBuilderT2<Base2,B2> builder_B2;
+
+}
+
+//-----------------------------------------------------------------------------
+
 BOOST_AUTO_TEST_SUITE( test_eckit_memory_factory )
 
 BOOST_AUTO_TEST_CASE( test_eckit_memory_factory_0 )
 {
 	using namespace eckit_test;
 
-	std::cout << Factory<Base0>::instance() << std::endl;
+//	std::cout << Factory<Base0>::instance() << std::endl;
 
-	BOOST_CHECK( Factory<Base0>::instance().size() == 2 );
+	BOOST_CHECK_EQUAL( Factory<Base0>::build_type(), "eckit_test.Base0" );
+
+	BOOST_CHECK_EQUAL( Factory<Base0>::instance().size() , 2 );
 
 	BOOST_CHECK( Factory<Base0>::instance().exists( "eckit_test.A0" ) );
 	BOOST_CHECK( Factory<Base0>::instance().exists( "eckit_test.B0" ) );
@@ -160,9 +216,11 @@ BOOST_AUTO_TEST_CASE( test_eckit_memory_factory_1 )
 {
 	using namespace eckit_test;
 
-	std::cout << Factory<Base1>::instance() << std::endl;
+//	std::cout << Factory<Base1>::instance() << std::endl;
 
-	BOOST_CHECK( Factory<Base1>::instance().size() == 2 );
+	BOOST_CHECK_EQUAL( Factory<Base1>::build_type(), "eckit_test.Base1" );
+
+	BOOST_CHECK_EQUAL( Factory<Base1>::instance().size() , 2 );
 
 	BOOST_CHECK( Factory<Base1>::instance().exists( "eckit_test.A1" ) );
 	BOOST_CHECK( Factory<Base1>::instance().exists( "eckit_test.B1" ) );
@@ -181,6 +239,34 @@ BOOST_AUTO_TEST_CASE( test_eckit_memory_factory_1 )
 
 	BOOST_CHECK_EQUAL( p1->foo(), "eckit_test.A1.lolo.1" );
 	BOOST_CHECK_EQUAL( p2->foo(), "eckit_test.B1.lolo.2" );
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_memory_factory_2 )
+{
+	using namespace eckit_test;
+
+//	std::cout << Factory<Base2>::instance() << std::endl;
+
+	BOOST_CHECK_EQUAL( Factory<Base2>::build_type(), "eckit_test.Base2" );
+
+	BOOST_CHECK_EQUAL( Factory<Base2>::instance().size() , 2 );
+
+	BOOST_CHECK( Factory<Base2>::instance().exists( "eckit_test.A2" ) );
+	BOOST_CHECK( Factory<Base2>::instance().exists( "eckit_test.B2" ) );
+
+	BOOST_CHECK_EQUAL( Factory<Base2>::instance().get( "eckit_test.A2" ).name() , "eckit_test.A2" );
+	BOOST_CHECK_EQUAL( Factory<Base2>::instance().get( "eckit_test.B2" ).name() , "eckit_test.B2" );
+
+	string s("lolo");
+
+	Base2::Ptr p1 ( Factory<Base2>::instance().get( "eckit_test.A2" ).create(s,42) );
+	Base2::Ptr p2 ( Factory<Base2>::instance().get( "eckit_test.B2" ).create(s,42) );
+
+	BOOST_CHECK( p1 );
+	BOOST_CHECK( p2 );
+
+	BOOST_CHECK_EQUAL( p1->foo(), "eckit_test.A2.lolo.42" );
+	BOOST_CHECK_EQUAL( p2->foo(), "eckit_test.B2.lolo.42" );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

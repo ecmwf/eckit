@@ -10,9 +10,10 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Timer.h"
 
-
 namespace eckit {
+namespace grib {
 
+//------------------------------------------------------------------------------------------------------
 
 GribFile::GribFile(const PathName& path):
     path_(path),
@@ -85,5 +86,7 @@ void GribFile::getBuffer(Buffer& buffer, const Offset& offset, const Length& len
         throw eckit::SeriousBug("No 7777 found");
 }
 
+//------------------------------------------------------------------------------------------------------
 
+}
 }

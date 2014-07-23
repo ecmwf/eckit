@@ -16,6 +16,7 @@
 #include "eckit/value/Params.h"
 
 namespace eckit {
+namespace grib {
 
 //------------------------------------------------------------------------------------------------------
 
@@ -23,19 +24,19 @@ class GribParams : public eckit::ValueParams {
 public:
 
 	typedef BuilderT1<GribParams> builder_t;
-	typedef GribHandle::Ptr ARG1;
+	typedef GribHandle&           ARG1;
 
 	static std::string className() { return "eckit.grib.GribParams"; }
 
-	GribParams( GribHandle::Ptr );
+	GribParams( GribHandle& );
 
 	virtual ~GribParams();
 
-	static GribParams* create( GribHandle::Ptr );
+	static GribParams* create( ARG1 );
 
 protected: // members
 
-	GribHandle::Ptr g_;
+	GribHandle& g_;
 
 	long   edition_;                  ///< Grib 1 or Grib 2
 	double north_;                   ///< In degrees
@@ -50,6 +51,7 @@ protected: // members
 
 //------------------------------------------------------------------------------------------------------
 
+}
 }
 
 #endif

@@ -4,29 +4,19 @@
 #ifndef GribFieldSet_H
 #define GribFieldSet_H
 
-// namespace mpi;
-
-// Headers
-// #ifndef   machine_H
-// #include "machine.h"
-// #endif
-
-// Forward declarations
-
-// class ostream;
-
-// 
 #include "eckit/memory/Counted.h"
 #include "eckit/filesystem/PathName.h"
 
 namespace eckit {
 
-class GribField;
 class DataHandle;
 
+namespace grib {
+
+class GribField;
 class GribFieldMemoryStrategy;
 
-
+//------------------------------------------------------------------------------------------------------
 
 class GribFieldSet {
 public:
@@ -201,8 +191,10 @@ private:
 
 };
 
-} // Namespace
+//------------------------------------------------------------------------------------------------------
 
+} // Namespace
+}
 
 
 #endif

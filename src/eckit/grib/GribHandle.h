@@ -22,29 +22,36 @@ namespace eckit {
 
 class DataHandle;
 
+namespace geometry { class LLPoint2; }
+
+namespace grib {
+
 //------------------------------------------------------------------------------------------------------
 
 int grib_call( int code, const char* msg );
 
-#define GRIB_CALL(a) eckit::grib_call(a, #a)
+#define GRIB_CALL(a) eckit::grib::grib_call(a, #a)
 
 //------------------------------------------------------------------------------------------------------
 
 class GribHandle : public eckit::Owned {
-public:
+
+public: // types
 
     typedef eckit::SharedPtr<GribHandle> Ptr;
 
-// -- Contructors
-
+	/// cosntructor taking ownership of a grib_handle pointer
     GribHandle(grib_handle*);
-    GribHandle(const eckit::Buffer&, bool copy = true);
 
-// -- Destructor
+	/// cosntructor not taking ownership of the grib_handle
+	GribHandle(grib_handle&);
 
-	~GribHandle(); 
+	/// cosntructor creating a grib_handle from a passed buffer
+	GribHandle(const eckit::Buffer&, bool copy = true);
 
-// -- Methods
+	~GribHandle();
+
+public: // methods
 
 	std::string gridType() const;
 
@@ -71,17 +78,23 @@ public:
 	double latitudeOfLastGridPointInDegrees()   const;
 	double longitudeOfLastGridPointInDegrees()  const;
 
-    /// @returns the raw grib_handle so client code can call grib directly. May return null.
+	/// @returns the raw grib_handle so client code can call grib directly
     grib_handle* raw() { return handle_; }
 
 private: // members
 
-    grib_handle* handle_;
+	bool owns_handle_;
+	grib_handle* handle_; ///< owned grib_handle
 
 };
 
 //------------------------------------------------------------------------------------------------------
 
-}
+void read_latlon_from_grib(GribHandle& h, std::vector<geometry::LLPoint2>& points);
+
+//------------------------------------------------------------------------------------------------------
+
+} // namespace grib
+} // namespace eckit
 
 #endif

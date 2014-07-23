@@ -15,11 +15,14 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/memory/ScopedPtr.h"
 
-// Forward declarations
-
 namespace eckit {
+
 class Buffer;
 class PathName;
+
+namespace grib {
+
+//------------------------------------------------------------------------------------------------------
 
 class EmosFile : private eckit::NonCopyable {
 
@@ -55,6 +58,9 @@ private: // members
 
 };
 
+//------------------------------------------------------------------------------------------------------
+
+}
 }
 
 #endif

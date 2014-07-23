@@ -12,6 +12,7 @@
 #include "eckit/grib/GribField.h"
 
 namespace eckit {
+namespace grib {
 
 //--------------------------------------------------------------------------------------------
 
@@ -95,4 +96,5 @@ void GribFieldMemoryStrategy::newHandle(GribField& f)
 
 //--------------------------------------------------------------------------------------------
 
+}
 } // namespace eckit

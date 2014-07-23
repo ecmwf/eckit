@@ -22,10 +22,15 @@
 
 namespace eckit {
 
-class GribFile;
 class DataHandle;
+
+namespace grib {
+
+class GribFile;
 class GribHandle;
 class GribFieldMemoryStrategy;
+
+//------------------------------------------------------------------------------------------------------
 
 class GribField : public Counted {
 
@@ -80,8 +85,11 @@ private: // members
     friend std::ostream& operator<<(std::ostream& s,const GribField& p)
         { p.print(s); return s; }
 
-}; // GribField
+};
 
+//------------------------------------------------------------------------------------------------------
+
+}
 }
 
 #endif

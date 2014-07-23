@@ -11,7 +11,9 @@
 #include <grib_api.h>
 
 // Some grib_api privates....
-extern "C" {
+
+extern "C"
+{
     double grib_long_to_ibm(unsigned long);
     double grib_long_to_ieee(unsigned long);
     long grib_decode_signed_long(const unsigned char* p, long offset, int bits);

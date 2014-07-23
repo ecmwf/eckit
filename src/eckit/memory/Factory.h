@@ -42,6 +42,9 @@ public: // methods
 	/// @return the instance of this singleton factory
 	static Factory<T>& instance();
 
+	/// @returns class name of the type built by this factory
+	static std::string build_type() { return T::className(); }
+
 	/// Checks if a builder is registered
 	/// @param name of the builder
 	bool exists( const key_t& k) { return (store_.find(k) != store_.end() ); }
@@ -67,9 +70,9 @@ private: // methods
 
 	void print( std::ostream& ) const;
 
-	Factory()  { Log::debug() << "creating Factory " << T::className() << std::endl; }
+	Factory()  { Log::debug() << "creating Factory " << build_type() << std::endl; }
 
-	~Factory() { Log::debug() << "destroyng Factory " << T::className() << std::endl; }
+	~Factory() { Log::debug() << "destroyng Factory " << build_type() << std::endl; }
 
 private: // members
 
@@ -95,9 +98,9 @@ void Factory<T>::regist( builder_ptr b )
 	const key_t k = b->name();
 	if( exists(k) )
 	{
-		throw BadParameter( "Factory of " + T::className() + " has already a builder for " + k, Here() );
+		throw BadParameter( "Factory of " + build_type() + " has already a builder for " + k, Here() );
 	}
-	Log::debug() << "Factory of " + T::className() + " registering builder for " + k << std::endl;
+	Log::debug() << "Factory of " + build_type() + " registering builder for " + k << std::endl;
 	store_[k] = b;
 }
 
@@ -107,9 +110,9 @@ void Factory<T>::unregist(const key_t& k)
 	AutoLock<Mutex> lock(mutex_);
 	if( !exists(k) )
 	{
-		throw BadParameter( "Factory of " + T::className() + " has no builder for " + k, Here() );
+		throw BadParameter( "Factory of " + build_type() + " has no builder for " + k, Here() );
 	}
-	Log::debug() << "Factory of " + T::className() + " unregistering builder for " + k << std::endl;
+	Log::debug() << "Factory of " + build_type() + " unregistering builder for " + k << std::endl;
 	store_.erase( k );
 }
 
@@ -119,9 +122,9 @@ const typename Factory<T>::builder_t& Factory<T>::get(const key_t& k)
 	AutoLock<Mutex> lock(mutex_);
 	if( !exists(k) )
 	{
-		throw BadParameter( "Factory of " + T::className() + " has no builder for " + k, Here() );
+		throw BadParameter( "Factory of " + build_type() + " has no builder for " + k, Here() );
 	}
-	Log::debug() << "Factory of " + T::className() + " accessing builder for " + k << std::endl;
+	Log::debug() << "Factory of " + build_type() + " accessing builder for " + k << std::endl;
 	return *store_[k];
 }
 
@@ -129,7 +132,7 @@ template <class T>
 void Factory<T>::print(std::ostream& os) const
 {
 	AutoLock<Mutex> lock(mutex_);
-	os << "Factory(" << T::className() << ")" << std::endl;
+	os << "Factory(" << build_type() << ")" << std::endl;
 	for( typename storage_t::const_iterator i = store_.begin(); i != store_.end(); ++i )
 	{
 		os << (*(*i).second) << std::endl;

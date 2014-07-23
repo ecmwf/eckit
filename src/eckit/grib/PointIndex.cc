@@ -15,10 +15,13 @@
 #include "eckit/os/Stat.h"
 #include "eckit/log/Timer.h"
 
+#include "eckit/grib/Grib.h"
 #include "eckit/grib/GribAccessor.h"
 #include "eckit/grib/PointIndex.h"
 
 using namespace eckit;
+
+//------------------------------------------------------------------------------------------------------
 
 static GribAccessor<long> edition("edition");
 static GribAccessor<std::string> md5Section2("md5Section2");
@@ -27,6 +30,8 @@ static GribAccessor<std::string> md5Section3("md5Section3");
 static Mutex  local_mutex;
 static std::set<std::string> done_;
 static std::map<PathName,PointIndex*> cache_;
+
+//------------------------------------------------------------------------------------------------------
 
 std::string PointIndex::cache(grib_handle* h)
 {
@@ -186,4 +191,6 @@ PointIndex::NodeInfo PointIndex::nearestNeighbour(double lat, double lon)
 
     return n;
 }
+
+//------------------------------------------------------------------------------------------------------
 

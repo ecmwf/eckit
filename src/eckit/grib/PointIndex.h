@@ -17,8 +17,6 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/memory/ScopedPtr.h"
 
-#include "eckit/grib/Grib.h"
-
 #include "eckit/container/KDTree.h"
 #include "eckit/container/KDMapped.h"
 #include "eckit/container/KDMemory.h"
@@ -26,6 +24,8 @@
 #include "eckit/geometry/Point2.h"
 
 //------------------------------------------------------------------------------------------------------
+
+struct grib_handle;
 
 namespace eckit {
 

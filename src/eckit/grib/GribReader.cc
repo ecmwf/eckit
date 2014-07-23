@@ -18,13 +18,17 @@
 
 #include "eckit/grib/GribReader.h"
 
-using namespace eckit;
+namespace eckit {
+namespace grib {
 
+//------------------------------------------------------------------------------------------------------
 
 #define GRIB 0x47524942
 #define SIZE (100*1024)
 
-GribReader::GribReader(const PathName& path): 
+//------------------------------------------------------------------------------------------------------
+
+GribReader::GribReader(const PathName& path):
     file_(path.localPath(),"r"),
     read_(0),
     skip_(0)
@@ -261,4 +265,8 @@ long GribReader::readSome(Buffer& buffer)
     return 0;
 }
 
+//------------------------------------------------------------------------------------------------------
+
+}
+}
 

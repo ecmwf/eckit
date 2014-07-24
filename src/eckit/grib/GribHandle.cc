@@ -79,7 +79,7 @@ std::string GribHandle::geographyHash() const
 
 long GribHandle::edition() const
 {
-	GribAccessor<long>("edition")(handle_);
+    return GribAccessor<long>("edition")(handle_);
 }
 
 size_t GribHandle::getDataValuesSize() const

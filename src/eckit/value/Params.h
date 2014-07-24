@@ -45,7 +45,9 @@ public: // methods
     Ptr self() { return Params::Ptr(this); }
     Ptr self() const { return Params::Ptr( const_cast<Params*>(this) ); }
 
-	value_t operator[] ( const key_t& key ) const;
+    bool has( const key_t& key ) const;
+
+    value_t operator[] ( const key_t& key ) const;
 
 	virtual value_t get( const key_t& key ) const = 0;
 

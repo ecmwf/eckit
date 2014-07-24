@@ -22,6 +22,11 @@ Params::~Params()
 {
 }
 
+bool Params::has(const Params::key_t &key) const
+{
+    return !get(key).isNil();
+}
+
 Params::value_t Params::operator[]( const Params::key_t& key ) const
 {
     value_t v = get(key);

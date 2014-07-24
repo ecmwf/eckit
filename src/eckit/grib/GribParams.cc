@@ -62,10 +62,10 @@ GribParams::GribParams(GribHandle& gh) : g_(gh)
 
 	ASSERT(east_ > west_);
 
-	set("area_n", north_ );
-	set("area_s", south_ );
-	set("area_w", west_  );
-	set("area_e", east_  );
+    set("grib_bbox_n", north_ );
+    set("grid_bbox_s", south_ );
+    set("grid_bbox_w", west_  );
+    set("grid_bbox_e", east_  );
 
 	set("nbDataPoints", gh.nbDataPoints() );
 }

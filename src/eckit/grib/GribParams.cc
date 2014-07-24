@@ -28,7 +28,7 @@ GribParams* GribParams::create( GribHandle& gh )
 
 GribParams::GribParams(GribHandle& gh) : g_(gh)
 {
-	set("gridType",gh.gridType());
+	set("grid_type",gh.gridType());
 
 	long edition = gh.edition();
 	set("GRIB.edition", edition);
@@ -128,8 +128,8 @@ public:
 	static std::string className() { return "eckit.grib.GribRegularLatLon"; }
 	GribRegularLatLon( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "jInc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
-		set( "iInc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh.raw()) );
+		set( "grid_ns_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
+		set( "grid_ew_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh.raw()) );
 
 		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
 		set( "Ni", GribAccessor<long>("Ni")(gh.raw()) );
@@ -147,7 +147,7 @@ public:
 	static std::string className() { return "eckit.grib.GribReducedLatLon"; }
 	GribReducedLatLon( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "jInc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
+		set( "grid_ns_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
 
 		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
 	}
@@ -164,8 +164,8 @@ public:
 	static std::string className() { return "eckit.grib.GribRotatedLatLon"; }
 	GribRotatedLatLon( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "jInc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
-		set( "iInc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh.raw()) );
+		set( "grid_ns_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
+		set( "grid_ew_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh.raw()) );
 
 		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
 		set( "Ni", GribAccessor<long>("Ni")(gh.raw()) );

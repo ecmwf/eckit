@@ -33,6 +33,11 @@ GribParams::GribParams(GribHandle& gh) : g_(gh)
 	long edition = gh.edition();
 	set("GRIB.edition", edition);
 
+	if( edition == 1)
+		set("DegreesEpsilon", 1E-3);
+	else
+		set("DegreesEpsilon", 1E-6);
+
 	/// @todo temporary until we use a better unique hash that works also with other formats
 	set("hash", gh.geographyHash());
 
@@ -81,6 +86,17 @@ public:
 		set( "GaussN", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh.raw()) );
 
 		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
+
+		/// @todo this may be optimized, maybe by using Value to fully wrap std::vector<long>
+
+		std::vector<long> pl = GribAccessor< std::vector<long> >("pl")(gh.raw());
+
+		ValueList vpl(pl.size());
+		for( size_t i = 0; i < pl.size(); ++i )
+			vpl[i] = pl[i];
+
+		set( "NLats", vpl );
+
 	}
 
 };

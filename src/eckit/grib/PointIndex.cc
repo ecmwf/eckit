@@ -20,6 +20,7 @@
 #include "eckit/grib/PointIndex.h"
 
 using namespace eckit;
+using namespace eckit::grib;
 
 //------------------------------------------------------------------------------------------------------
 

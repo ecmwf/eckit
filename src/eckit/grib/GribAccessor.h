@@ -15,138 +15,137 @@
 #include "eckit/log/Log.h"
 #include "eckit/exception/Exceptions.h"
 
-#define  GRIB 0x47524942
+//#define  GRIB 0x47524942
+
+namespace eckit {
+namespace grib {
 
 //------------------------------------------------------------------------------------------------------
 
-//extern "C" {
-//    double grib_long_to_ibm(unsigned long);
-//    double grib_long_to_ieee(unsigned long);
-//    long grib_decode_signed_long(const unsigned char* p, long offset, int bits);
-//    unsigned long grib_decode_unsigned_long(const unsigned char* p, long* offset, int bits);
-//    double grib_power(long s, long n);
-//    double grib_nearest_distance(double radius,double lon1, double lat1, double lon2, double lat2);
-//    int grib_read_any_headers_only_from_file(grib_context* ctx,FILE* f,void* buffer,size_t* len);
-//}
-
-
-inline void decode(const unsigned  char* buf, int size, double& x) {
-    long bitp = 0;
-    x = grib_long_to_ibm(grib_decode_unsigned_long(buf, &bitp, 8*size));
+inline void check_error_code( const std::string& name, int err, bool quiet = false )
+{
+	if(err && !quiet) eckit::Log::error() << "GribAccessor(" << name << "): " << grib_get_error_message(err) << std::endl;
 }
 
-inline void decode(const unsigned char* buf, int size, unsigned long& x) {
-    long bitp = 0;
-    x = grib_decode_unsigned_long(buf, &bitp, 8*size);
+inline void decode(const unsigned  char* buf, int size, double& x)
+{
+	long bitp = 0;
+	x = grib_long_to_ibm(grib_decode_unsigned_long(buf, &bitp, 8*size));
+}
+
+inline void decode(const unsigned char* buf, int size, unsigned long& x)
+{
+	long bitp = 0;
+	x = grib_decode_unsigned_long(buf, &bitp, 8*size);
 }
 
 inline void decode(const unsigned char* buf, int size, long& x) {
-    long bitp = 0;
-    x = grib_decode_signed_long(buf, bitp, size);
+	long bitp = 0;
+	x = grib_decode_signed_long(buf, bitp, size);
 }
 
-inline void get_value(grib_handle* h, const std::string& name, double& x, bool quiet = false) {
-    x = 0;
-    int err = grib_get_double(h, name.c_str(), &x);
-    if(err && !quiet) eckit::Log::error() << name << ": " << grib_get_error_message(err) << std::endl;
+inline void get_value(grib_handle* h, const std::string& name, double& x, bool quiet = false)
+{
+	x = 0;
+	int err = grib_get_double(h, name.c_str(), &x);
+	check_error_code(name,err,quiet);
 }
 
 
-inline void get_value(grib_handle* h, const std::string& name,  unsigned long& x, bool quiet = false) {
-    long y = 0;
-    int err = grib_get_long(h, name.c_str(), &y);
-    if(err && !quiet) eckit::Log::error() << name << ": " << grib_get_error_message(err) << std::endl;
-    x = y;
+inline void get_value(grib_handle* h, const std::string& name,  unsigned long& x, bool quiet = false)
+{
+	long y = 0;
+	int err = grib_get_long(h, name.c_str(), &y);
+	check_error_code(name,err,quiet);
+	x = y;
 }
 
-inline void get_value(grib_handle* h, const std::string& name,  long& x, bool quiet = false) {
-    x = 0;
-    int err = grib_get_long(h, name.c_str(), &x);
-    if(err && !quiet) eckit::Log::error() << name << ": " << grib_get_error_message(err) << std::endl;
+inline void get_value(grib_handle* h, const std::string& name,  long& x, bool quiet = false)
+{
+	x = 0;
+	int err = grib_get_long(h, name.c_str(), &x);
+	check_error_code(name,err,quiet);
 }
 
-inline void get_value(grib_handle* h, const std::string& name,  std::string& x, bool quiet = false) {
-    char buf[1024];
-    size_t s = sizeof(buf);
-    buf[0] = 0;
-    int err = grib_get_string(h, name.c_str(), buf, &s);
-    if(err && !quiet) eckit::Log::error() << name << ": " << grib_get_error_message(err) << std::endl;
-    x = buf;
+inline void get_value(grib_handle* h, const std::string& name,  std::string& x, bool quiet = false)
+{
+	char buf[1024];
+	size_t s = sizeof(buf);
+	buf[0] = 0;
+	int err = grib_get_string(h, name.c_str(), buf, &s);
+	check_error_code(name,err,quiet);
+	x = buf;
 }
+
+inline void get_value(grib_handle* h, const std::string& name,  std::vector<long>& x, bool quiet = false)
+{
+	int err = 0;
+	size_t sz = 0;
+	err = grib_get_size(h,name.c_str(),&sz); check_error_code(name,err,quiet);
+	x.resize(sz);
+	err = grib_get_long_array(h,name.c_str(),&x[0],&sz); check_error_code(name,err,quiet);
+	ASSERT( x.size() == sz );
+}
+
+inline void get_value(grib_handle* h, const std::string& name,  std::vector<double>& x, bool quiet = false)
+{
+	int err = 0;
+	size_t sz = 0;
+	err = grib_get_size(h,name.c_str(),&sz); check_error_code(name,err,quiet);
+	x.resize(sz);
+	err = grib_get_double_array(h,name.c_str(),&x[0],&sz); check_error_code(name,err,quiet);
+	ASSERT( x.size() == sz );
+}
+
+//------------------------------------------------------------------------------------------------------
 
 template<class T>
 class GribAccessor {
 
 private: // members
 
-    std::string name_;
+	std::string name_;
 
 public: // methods
 
-    GribAccessor(const std::string& name): name_(name) {}
+	GribAccessor(const std::string& name): name_(name) {}
 
-    /* get_value(h, name_, value_); */
+	T value(grib_handle *h) const
+	{
+		T value;
+		get_value(h, name_, value);
+		return value;
+	}
 
-    /* grib_get_offset(h,name_.c_str(),&offset_); */
-
-    /*
-       unsigned char bytes[4];
-       length_ = sizeof(bytes);
-       grib_get_bytes(h, name_.c_str(), bytes, &length_);
-       */
-    //cout << "GribAccessor " << name_ << ", offset=" << offset_ << ", length=" << length_ << endl;
-
-    /*
-       T value(FILE* f) {
-       unsigned char buf[4];
-
-       fseek(f,offset_,SEEK_SET);
-       fread(buf,length_,1,f);
-
-       T x;
-       decode(buf, length_, x);
-    //cout << "value " << name_ << " => " << x << " " << offset_ << endl;
-    return x;
-    }
-    */
-
-    /* size_t offset(grib_handle *h) const { return offset_; } */
-
-    T value(grib_handle *h) const { 
-        T value;
-        get_value(h, name_, value);
-        return value; 
-    }
-
-    T value(grib_handle *h,T def) const { 
-        T value = def;
-        get_value(h, name_, value, true);
-        return value; 
-    }
+	T value(grib_handle *h,T def) const
+	{
+		T value = def;
+		get_value(h, name_, value, true);
+		return value;
+	}
 
 
-    T operator()(grib_handle *h) const
-    {
-        return value(h);
-    }
+	T operator()(grib_handle *h) const
+	{
+		return value(h);
+	}
 
-    T operator()(grib_handle *h, T def) const
-    {
-        return value(h, def);
-    }
+	T operator()(grib_handle *h, T def) const
+	{
+		return value(h, def);
+	}
 
 };
 
 //------------------------------------------------------------------------------------------------------
 
-namespace eckit {
-
 std::string grib_geography_hash( grib_handle* h );
 
 std::string grib_geography_hash( const std::string& fname );
 
-}
-
 //------------------------------------------------------------------------------------------------------
+
+} // namespace grib
+} // namespace eckit
 
 #endif

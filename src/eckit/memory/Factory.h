@@ -70,9 +70,9 @@ private: // methods
 
 	void print( std::ostream& ) const;
 
-	Factory()  { Log::debug() << "creating Factory " << build_type() << std::endl; }
+	Factory()  {}
 
-	~Factory() { Log::debug() << "destroyng Factory " << build_type() << std::endl; }
+	~Factory() {}
 
 private: // members
 

@@ -38,13 +38,14 @@ protected: // members
 
 	GribHandle& g_;
 
-	long   edition_;                  ///< Grib 1 or Grib 2
+	long   edition_;                 ///< Grib 1 or Grib 2
+	long   numberOfDataPoints_;      ///< Must match the grib iterator data points
+
 	double north_;                   ///< In degrees
 	double south_;                   ///< In degrees
 	double west_;                    ///< In degrees
 	double east_;                    ///< In degrees
-	double epsilon_;                 ///< Grib 1 or Grib 2
-	long   numberOfDataPoints_;      ///< Must match the grib iterator data points
+	double degreesEps_;              ///< epsilon for comparing degrees
 
 	std::string hash_;               ///< may be used to persist grids
 };

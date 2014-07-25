@@ -77,7 +77,7 @@ public:
 
 // -- Operators
 
-    template< typename T > T as() { T r; content_->value(r); return r; }
+	template< typename T > T as() { T r; content_->value(r); return r; }
 
     operator short() const              { long long l;  content_->value(l); return l; }
     operator unsigned short() const     { long long l;  content_->value(l); return l; }

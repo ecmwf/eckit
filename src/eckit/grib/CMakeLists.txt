@@ -2,12 +2,12 @@ list( APPEND eckit_grib_srcs
 EmosFile.cc
 EmosFile.h
 Grib.h
-GribAccessor.h
 GribAccessor.cc
-GribParams.h
-GribParams.cc
+GribAccessor.h
 GribField.cc
 GribField.h
+GribFieldMemoryStrategy.cc
+GribFieldMemoryStrategy.h
 GribFieldSet.cc
 GribFieldSet.cc
 GribFieldSet.h
@@ -16,12 +16,14 @@ GribFile.cc
 GribFile.h
 GribHandle.cc
 GribHandle.h
-GribFieldMemoryStrategy.h
-GribFieldMemoryStrategy.cc
-PointIndex.cc
-PointIndex.h
+GribMutator.cc
+GribMutator.h
+GribParams.cc
+GribParams.h
 GribReader.cc
 GribReader.h
+PointIndex.cc
+PointIndex.h
 )
 
 

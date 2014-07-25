@@ -48,24 +48,24 @@ GribParams::GribParams(GribHandle& gh) : g_(gh)
 	west_  = gh.longitudeOfFirstGridPointInDegrees();
 	east_  = gh.longitudeOfLastGridPointInDegrees();
 
+	set("grib_bbox_n", north_ );
+	set("grid_bbox_s", south_ );
+	set("grid_bbox_w", west_  );
+	set("grid_bbox_e", east_  );
+
 	// check area
-	epsilon_ = (edition_ == 1) ? 1e-3 : 1e-6; // GRIB1 is in mili while GRIB2 is in micro degrees
+	degreesEps_ = (edition_ == 1) ? 1e-3 : 1e-6; // GRIB1 is in mili while GRIB2 is in micro degrees
 
 	ASSERT(north_ > south_);
-	ASSERT(north_ < 90.0  || FloatCompare::is_equal(north_,90.0,epsilon_));
-	ASSERT(south_ < 90.0  || FloatCompare::is_equal(south_,90.0,epsilon_));
-	ASSERT(north_ > -90.0 || FloatCompare::is_equal(north_,-90.0,epsilon_));
-	ASSERT(south_ > -90.0 || FloatCompare::is_equal(south_,-90.0,epsilon_));
+	ASSERT(north_ < 90.0  || FloatCompare::is_equal(north_,90.0,degreesEps_));
+	ASSERT(south_ < 90.0  || FloatCompare::is_equal(south_,90.0,degreesEps_));
+	ASSERT(north_ > -90.0 || FloatCompare::is_equal(north_,-90.0,degreesEps_));
+	ASSERT(south_ > -90.0 || FloatCompare::is_equal(south_,-90.0,degreesEps_));
 
 	eckit::geometry::reduceTo2Pi(west_);
 	eckit::geometry::reduceTo2Pi(east_);
 
 	ASSERT(east_ > west_);
-
-    set("grib_bbox_n", north_ );
-    set("grid_bbox_s", south_ );
-    set("grid_bbox_w", west_  );
-    set("grid_bbox_e", east_  );
 
 	set("nbDataPoints", gh.nbDataPoints() );
 }
@@ -83,13 +83,13 @@ public:
 
 	GribReducedGG( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "GaussN", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh.raw()) );
+		set( "GaussN", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh) );
 
-		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
+		set( "Nj", GribAccessor<long>("Nj")(gh) );
 
 		/// @todo this may be optimized, maybe by using Value to fully wrap std::vector<long>
 
-		std::vector<long> pl = GribAccessor< std::vector<long> >("pl")(gh.raw());
+		std::vector<long> pl = GribAccessor< std::vector<long> >("pl")(gh);
 
 		ValueList vpl(pl.size());
 		for( size_t i = 0; i < pl.size(); ++i )
@@ -111,9 +111,9 @@ public:
 	static std::string className() { return "eckit.grib.GribRegularGG"; }
 	GribRegularGG( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "GaussN", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh.raw()) );
+		set( "GaussN", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh) );
 
-		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
+		set( "Nj", GribAccessor<long>("Nj")(gh) );
 	}
 
 };
@@ -128,11 +128,11 @@ public:
 	static std::string className() { return "eckit.grib.GribRegularLatLon"; }
 	GribRegularLatLon( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "grid_ns_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
-		set( "grid_ew_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh.raw()) );
+		set( "grid_ns_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
+		set( "grid_ew_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh) );
 
-		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
-		set( "Ni", GribAccessor<long>("Ni")(gh.raw()) );
+		set( "Nj", GribAccessor<long>("Nj")(gh) );
+		set( "Ni", GribAccessor<long>("Ni")(gh) );
 	}
 
 };
@@ -147,9 +147,9 @@ public:
 	static std::string className() { return "eckit.grib.GribReducedLatLon"; }
 	GribReducedLatLon( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "grid_ns_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
+		set( "grid_ns_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
 
-		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
+		set( "Nj", GribAccessor<long>("Nj")(gh) );
 	}
 
 };
@@ -164,15 +164,15 @@ public:
 	static std::string className() { return "eckit.grib.GribRotatedLatLon"; }
 	GribRotatedLatLon( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "grid_ns_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh.raw()) );
-		set( "grid_ew_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh.raw()) );
+		set( "grid_ns_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
+		set( "grid_ew_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh) );
 
-		set( "Nj", GribAccessor<long>("Nj")(gh.raw()) );
-		set( "Ni", GribAccessor<long>("Ni")(gh.raw()) );
+		set( "Nj", GribAccessor<long>("Nj")(gh) );
+		set( "Ni", GribAccessor<long>("Ni")(gh) );
 
-		set( "SouthPoleLat", GribAccessor<double>("latitudeOfSouthernPoleInDegrees")(gh.raw()) );
-		set( "SouthPoleLon", GribAccessor<double>("longitudeOfSouthernPoleInDegrees")(gh.raw()) );
-		set( "SouthPoleRotAngle", GribAccessor<double>("angleOfRotation")(gh.raw()) );
+		set( "SouthPoleLat", GribAccessor<double>("latitudeOfSouthernPoleInDegrees")(gh) );
+		set( "SouthPoleLon", GribAccessor<double>("longitudeOfSouthernPoleInDegrees")(gh) );
+		set( "SouthPoleRotAngle", GribAccessor<double>("angleOfRotation")(gh) );
 	}
 
 };

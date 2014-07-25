@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <grib_api.h>
+#include "grib_api.h"
 
 // Some grib_api privates....
 

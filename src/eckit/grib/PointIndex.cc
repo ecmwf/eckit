@@ -16,17 +16,13 @@
 #include "eckit/log/Timer.h"
 
 #include "eckit/grib/Grib.h"
-#include "eckit/grib/GribAccessor.h"
 #include "eckit/grib/PointIndex.h"
+#include "eckit/grib/GribHandle.h"
 
 using namespace eckit;
 using namespace eckit::grib;
 
 //------------------------------------------------------------------------------------------------------
-
-static GribAccessor<long> edition("edition");
-static GribAccessor<std::string> md5Section2("md5Section2");
-static GribAccessor<std::string> md5Section3("md5Section3");
 
 static Mutex  local_mutex;
 static std::set<std::string> done_;
@@ -34,29 +30,16 @@ static std::map<PathName,PointIndex*> cache_;
 
 //------------------------------------------------------------------------------------------------------
 
-std::string PointIndex::cache(grib_handle* h)
+std::string PointIndex::cache(grib_handle* gh)
 {
+	ASSERT(gh);
+	GribHandle h(*gh);
+
     size_t v;
     int ret;
     double lat, lon, value;
 
-    std::string md5;
-
-    // TODO: create a 'geographiyMd5'  accessor
-    switch(edition(h))
-    {
-    case 1:
-        md5 = md5Section2(h);
-        break;
-
-    case 2:
-        md5 = md5Section3(h);
-        break;
-
-    default:
-        ASSERT(md5 !=  "");
-        break;
-    }
+	std::string md5 = h.geographyHash();
 
     AutoLock<Mutex> lock(local_mutex);
     if(done_.find(md5) != done_.end()) {
@@ -71,14 +54,12 @@ std::string PointIndex::cache(grib_handle* h)
     PathName("~/etc/pointdb/").mkdir();
     // radiusInMetres
 
-    ASSERT(grib_get_size(h,"values",&v) == 0);
-
-    //cout << "values: " << v << endl;
-
+	v = h.getDataValuesSize();
+	//cout << "values: " << v << endl;
 
     std::vector<Tree::Value> p;
     p.reserve(v);
-    grib_iterator *i = grib_iterator_new(h, 0, &ret);
+	grib_iterator *i = grib_iterator_new(gh, 0, &ret);
     size_t j = 0;
     while(grib_iterator_next(i,&lat,&lon,&value))
     {
@@ -103,10 +84,10 @@ std::string PointIndex::cache(grib_handle* h)
 
     PathName dump(std::string("~/etc/pointdb/") + md5 + ".dump");
     StdFile f(dump,"w");
-    grib_dump_content(h, f, "debug", 0,0);
+	grib_dump_content(gh, f, "debug", 0,0);
 
     PathName grib(std::string("~/etc/pointdb/") + md5 + ".grib");
-    ASSERT(grib_write_message(h,grib.localPath(),"w") == 0);
+	ASSERT(grib_write_message(gh,grib.localPath(),"w") == 0);
 
     PathName::rename(tmp, path);
 

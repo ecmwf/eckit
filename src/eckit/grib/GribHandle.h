@@ -61,6 +61,8 @@ public: // methods
 
     GribHandle* clone() const;
 
+	std::string shortName() const;
+
 	size_t nbDataPoints() const;
 
     size_t getDataValuesSize() const;
@@ -79,7 +81,7 @@ public: // methods
 	double longitudeOfLastGridPointInDegrees()  const;
 
 	/// @returns the raw grib_handle so client code can call grib directly
-    grib_handle* raw() { return handle_; }
+	grib_handle* raw() const { return handle_; }
 
 private: // members
 

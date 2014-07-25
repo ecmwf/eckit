@@ -119,7 +119,8 @@ public:
 
 class NotImplemented : public Exception {
 public:
-    NotImplemented( const CodeLocation& );
+	NotImplemented( const std::string& s, const CodeLocation& );
+	NotImplemented( const CodeLocation& );
 };
 
 class Stop : public Exception {

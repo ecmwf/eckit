@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <grib_api.h>
+#include "grib_api.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/StringTools.h"
@@ -40,7 +40,7 @@ GribHandle::GribHandle(grib_handle& handle) :
 
 GribHandle::GribHandle(const Buffer& buffer, bool copy)
 	: handle_(0),
-	  owns_handle_(true)
+	  owns_handle_(false)
 {
 	const char *message = buffer;
 	ASSERT(strncmp(message,"GRIB", 4) == 0);
@@ -56,9 +56,11 @@ GribHandle::GribHandle(const Buffer& buffer, bool copy)
 		h = grib_handle_new_from_message(0,const_cast<char*>(message),buffer.size());
 	}
 
-	handle_ = h;
+	ASSERT(h);
 
-	ASSERT(handle_);
+	handle_ = h;
+	owns_handle_ = true;
+
 }
 
 GribHandle::~GribHandle()
@@ -69,23 +71,23 @@ GribHandle::~GribHandle()
 
 std::string GribHandle::gridType() const
 {
-	return GribAccessor<std::string>("gridType")(handle_);
+	return GribAccessor<std::string>("gridType")(*this);
 }
 
 std::string GribHandle::geographyHash() const
 {
-	return grib_geography_hash(handle_);
+	return grib_geography_hash(*this);
 }
 
 long GribHandle::edition() const
 {
-    return GribAccessor<long>("edition")(handle_);
+	return GribAccessor<long>("edition")(*this);
 }
 
 size_t GribHandle::getDataValuesSize() const
 {
     size_t count = 0;
-    GRIB_CALL(grib_get_size(handle_, "values", &count));
+	GRIB_CALL(grib_get_size(raw(), "values", &count));
     return count;
 }
 
@@ -93,7 +95,7 @@ void GribHandle::getDataValues(double* values, const size_t& count) const
 {
     ASSERT(values);
     size_t n = count;
-    GRIB_CALL(grib_get_double_array(handle_,"values",values,&n));
+	GRIB_CALL(grib_get_double_array(raw(),"values",values,&n));
     ASSERT(n == count);
 }
 
@@ -109,56 +111,61 @@ double* GribHandle::getDataValues(size_t& count) const
 void GribHandle::setDataValues(const double *values, size_t count)
 {
     ASSERT(values);
-    GRIB_CALL(grib_set_double_array(handle_,"values",values,count));
+	GRIB_CALL(grib_set_double_array(raw(),"values",values,count));
 }
 
 void GribHandle::write( DataHandle& handle )
 {
     const void* message;
     size_t length;
-    GRIB_CALL(grib_get_message(handle_, &message, &length));
+	GRIB_CALL(grib_get_message(raw(), &message, &length));
     ASSERT(handle.write(message, length) == length);
 }
 
 size_t GribHandle::write( Buffer& buff )
 {
     size_t len = buff.size();
-    GRIB_CALL( grib_get_message_copy( handle_, buff, &len )); // will issue error if buffer too small
+	GRIB_CALL( grib_get_message_copy( raw(), buff, &len )); // will issue error if buffer too small
 	return len;
 }
 
 double GribHandle::latitudeOfFirstGridPointInDegrees() const
 {
-	return GribAccessor<double>("latitudeOfFirstGridPointInDegrees")(handle_);
+	return GribAccessor<double>("latitudeOfFirstGridPointInDegrees")(*this);
 }
 
 double GribHandle::longitudeOfFirstGridPointInDegrees() const
 {
-	return GribAccessor<double>("longitudeOfFirstGridPointInDegrees")(handle_);
+	return GribAccessor<double>("longitudeOfFirstGridPointInDegrees")(*this);
 }
 
 double GribHandle::latitudeOfLastGridPointInDegrees() const
 {
-	return GribAccessor<double>("latitudeOfLastGridPointInDegrees")(handle_);
+	return GribAccessor<double>("latitudeOfLastGridPointInDegrees")(*this);
 }
 
 double GribHandle::longitudeOfLastGridPointInDegrees() const
 {
-	return GribAccessor<double>("longitudeOfLastGridPointInDegrees")(handle_);
+	return GribAccessor<double>("longitudeOfLastGridPointInDegrees")(*this);
 }
 
 GribHandle* GribHandle::clone() const
 {
-    grib_handle* h = grib_handle_clone(handle_);
+	grib_handle* h = grib_handle_clone(raw());
     if(!h)
         throw eckit::WriteError( std::string("failed to clone output grib") );
 
-    return new GribHandle(h);
+	return new GribHandle(h);
+}
+
+string GribHandle::shortName() const
+{
+	return GribAccessor<std::string>("shortName")(*this);
 }
 
 size_t GribHandle::nbDataPoints() const
 {
-	return GribAccessor<long>("numberOfDataPoints")(handle_);
+	return GribAccessor<long>("numberOfDataPoints")(*this);
 }
 
 //------------------------------------------------------------------------------------------------------

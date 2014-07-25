@@ -48,6 +48,9 @@ public: // methods
     /// Removes a property
     bool remove( const std::string& k );
 
+	/// @returns a property
+	property_t operator[]( const std::string& k ) const { return get(k); }
+
 protected:
     void print(std::ostream& s) const;
 

@@ -220,18 +220,33 @@ BadParameter::BadParameter(const std::string& w, const CodeLocation& loc):
 {
 }
 
+NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& loc)
+{
+	StrStream ss;
+
+	ss << "Not implemented: " << s << " @ " << loc.func()
+	   << ", line " << loc.line()
+	   << " of " << loc.file()
+	   << StrStream::ends;
+
+	reason(std::string(ss));
+	Log::monitor(Log::App,2) << what() << std::endl;
+	std::string t = std::string(ss);
+}
+
 NotImplemented::NotImplemented( const CodeLocation& loc )
 {   
-    StrStream s;
+	StrStream ss;
 
-    s << "Not implemented: " << loc.func()
-        << ", line " << loc.line() << " of " << loc.file() << StrStream::ends;
+	ss << "Not implemented: " << loc.func()
+	   << ", line " << loc.line()
+	   << " of " << loc.file()
+	   << StrStream::ends;
 
-    reason(std::string(s));
+	reason(std::string(ss));
     Log::monitor(Log::App,2) << what() << std::endl;
-    std::string t = std::string(s);
+	std::string t = std::string(ss);
     //	Panic(t.c_str());
-
 }
 
 UserError::UserError(const std::string& r, const CodeLocation& loc):

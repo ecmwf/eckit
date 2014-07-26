@@ -89,9 +89,14 @@ void StringContent::value(bool& b) const
     }
 }
 
+void StringContent::value(long long& l) const
+{
+	l = Translator<std::string,long long>()(value_);
+}
+
 void StringContent::value(double& d) const
 {
-    d = Translator<std::string,double>()(value_);
+	d = Translator<std::string,double>()(value_);
 }
 
 Content* StringContent::add(const Content& other) const

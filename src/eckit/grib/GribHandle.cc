@@ -13,6 +13,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/StringTools.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/StdFile.h"
 #include "eckit/geometry/Point2.h"
 
 #include "eckit/grib/GribHandle.h"
@@ -25,11 +26,48 @@ namespace grib {
 
 //------------------------------------------------------------------------------------------------------
 
-GribHandle::GribHandle(grib_handle* handle) :
-	handle_(handle),
-	owns_handle_(true)
+int grib_call(int code, const char *msg)
 {
-	ASSERT(handle_);
+	if(code)
+	{
+		StrStream os;
+		os << msg << ": " << grib_get_error_message(code) << StrStream::ends;
+		throw Exception(std::string(os));
+	}
+	return code;
+}
+
+//------------------------------------------------------------------------------------------------------
+
+GribHandle::GribHandle(const PathName& path) :
+	handle_(NULL),
+	owns_handle_(false)
+{
+	StdFile f(path);
+
+	int err = 0;
+	grib_handle* h = grib_handle_new_from_file(0,f,&err);
+	if(err != 0)
+	{
+		StrStream os;
+		os << "GribHandle() failed to build from path " << path << StrStream::ends;
+		throw Exception(std::string(os), Here());
+	}
+
+	ASSERT(h);
+
+	handle_ = h;
+	owns_handle_ = true;
+}
+
+GribHandle::GribHandle(grib_handle* h) :
+	handle_(NULL),
+	owns_handle_(false)
+{
+	ASSERT(h);
+
+	handle_ = h;
+	owns_handle_ = true;
 }
 
 GribHandle::GribHandle(grib_handle& handle) :
@@ -39,7 +77,7 @@ GribHandle::GribHandle(grib_handle& handle) :
 }
 
 GribHandle::GribHandle(const Buffer& buffer, bool copy)
-	: handle_(0),
+	: handle_(NULL),
 	  owns_handle_(false)
 {
 	const char *message = buffer;
@@ -60,13 +98,15 @@ GribHandle::GribHandle(const Buffer& buffer, bool copy)
 
 	handle_ = h;
 	owns_handle_ = true;
-
 }
 
 GribHandle::~GribHandle()
 {
 	if( owns_handle_ && handle_ )
-		grib_handle_delete(handle_);
+	{
+		GRIB_CALL( grib_handle_delete(handle_) );
+		handle_ = 0;
+	}
 }
 
 std::string GribHandle::gridType() const
@@ -96,7 +136,39 @@ void GribHandle::getDataValues(double* values, const size_t& count) const
     ASSERT(values);
     size_t n = count;
 	GRIB_CALL(grib_get_double_array(raw(),"values",values,&n));
-    ASSERT(n == count);
+	ASSERT(n == count);
+}
+
+void GribHandle::getLatLonPoints(std::vector<geometry::LLPoint2>& points) const
+{
+	size_t nb_nodes = nbDataPoints();
+
+	points.resize(nb_nodes);
+
+	/// It should be noted that grib iterator is *only* available for certain grids
+	/// i.e for Spherical Harmonics it is not implemented.
+	int err = 0;
+	grib_iterator *i = grib_iterator_new( raw(), 0, &err );
+	if ( err != 0 )
+	{
+	   throw SeriousBug(string("Error reading grib. Could not create grib_iterator_new"),Here()) ;
+	}
+
+	double lat   = 0.;
+	double lon   = 0.;
+	double value = 0.;
+
+	size_t idx = 0;
+	while( grib_iterator_next(i,&lat,&lon,&value) )
+	{
+	   points[idx].assign(lat,lon);
+	   ++idx;
+	}
+
+	ASSERT( idx == nb_nodes );
+
+	if ( grib_iterator_delete(i) != 0 )
+	   throw SeriousBug(string("Error reading grib. Could not delete grib iterator"),Here()) ;
 }
 
 double* GribHandle::getDataValues(size_t& count) const
@@ -166,51 +238,6 @@ string GribHandle::shortName() const
 size_t GribHandle::nbDataPoints() const
 {
 	return GribAccessor<long>("numberOfDataPoints")(*this);
-}
-
-//------------------------------------------------------------------------------------------------------
-
-int grib_call(int code, const char *msg)
-{
-    if(code)
-    {
-        StrStream os;
-        os << msg << ": " << grib_get_error_message(code) << StrStream::ends;
-        throw Exception(std::string(os));
-    }
-	return code;
-}
-
-void read_latlon_from_grib(GribHandle& h, std::vector<geometry::LLPoint2>& points)
-{
-   size_t nb_nodes = h.nbDataPoints();
-
-   points.resize(nb_nodes);
-
-   /// It should be noted that grib iterator is *only* available for certain grids
-   /// i.e for Spherical Harmonics it is not implemented.
-   int err = 0;
-   grib_iterator *i = grib_iterator_new( h.raw(), 0, &err );
-   if ( err != 0 )
-   {
-	  throw SeriousBug(string("Error reading grib. Could not create grib_iterator_new"),Here()) ;
-   }
-
-   double lat   = 0.;
-   double lon   = 0.;
-   double value = 0.;
-
-   size_t idx = 0;
-   while( grib_iterator_next(i,&lat,&lon,&value) )
-   {
-	  points[idx].assign(lat,lon);
-	  ++idx;
-   }
-
-   ASSERT( idx == nb_nodes );
-
-   if ( grib_iterator_delete(i) != 0 )
-	  throw SeriousBug(string("Error reading grib. Could not delete grib iterator"),Here()) ;
 }
 
 //------------------------------------------------------------------------------------------------------

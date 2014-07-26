@@ -15,6 +15,7 @@
 #include "eckit/memory/Owned.h"
 #include "eckit/memory/SharedPtr.h"
 #include "eckit/serialisation/Stream.h"
+#include "eckit/filesystem/PathName.h"
 
 struct grib_handle;
 
@@ -40,15 +41,20 @@ public: // types
 
     typedef eckit::SharedPtr<GribHandle> Ptr;
 
-	/// cosntructor taking ownership of a grib_handle pointer
+	/// constructor from file path, creates grib_handle and takes ownership
+	/// @note currently this only handles local paths
+	explicit GribHandle(const eckit::PathName&);
+
+	/// constructor taking ownership of a grib_handle pointer
     GribHandle(grib_handle*);
 
-	/// cosntructor not taking ownership of the grib_handle
+	/// constructor not taking ownership of the grib_handle
 	GribHandle(grib_handle&);
 
-	/// cosntructor creating a grib_handle from a passed buffer
-	GribHandle(const eckit::Buffer&, bool copy = true);
+	/// constructor creating a grib_handle from a passed buffer
+	explicit GribHandle(const eckit::Buffer&, bool copy = true);
 
+	/// destructor will delete the grib_handle if we own it
 	~GribHandle();
 
 public: // methods
@@ -66,9 +72,10 @@ public: // methods
 	size_t nbDataPoints() const;
 
     size_t getDataValuesSize() const;
-
     double* getDataValues(size_t&) const;
     void getDataValues(double*, const size_t &) const;
+
+	void getLatLonPoints( std::vector<geometry::LLPoint2>& ) const;
 
     void setDataValues(const double*, size_t);
 
@@ -89,10 +96,6 @@ private: // members
 	grib_handle* handle_; ///< owned grib_handle
 
 };
-
-//------------------------------------------------------------------------------------------------------
-
-void read_latlon_from_grib(GribHandle& h, std::vector<geometry::LLPoint2>& points);
 
 //------------------------------------------------------------------------------------------------------
 

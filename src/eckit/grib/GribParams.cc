@@ -95,7 +95,7 @@ public:
 		for( size_t i = 0; i < pl.size(); ++i )
 			vpl[i] = pl[i];
 
-		set( "NLats", vpl );
+		set( "NPtsPerLat", vpl );
 
 	}
 
@@ -113,7 +113,7 @@ public:
 	{
 		set( "GaussN", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh) );
 
-		set( "Nj", GribAccessor<long>("Nj")(gh) );
+		set( "Ni", GribAccessor<long>("Ni")(gh) );
 	}
 
 };
@@ -128,8 +128,8 @@ public:
 	static std::string className() { return "eckit.grib.GribRegularLatLon"; }
 	GribRegularLatLon( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "grid_ns_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
-		set( "grid_ew_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh) );
+		set( "grid_lat_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
+		set( "grid_lon_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh) );
 
 		set( "Nj", GribAccessor<long>("Nj")(gh) );
 		set( "Ni", GribAccessor<long>("Ni")(gh) );
@@ -147,7 +147,7 @@ public:
 	static std::string className() { return "eckit.grib.GribReducedLatLon"; }
 	GribReducedLatLon( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "grid_ns_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
+		set( "grid_lat_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
 
 		set( "Nj", GribAccessor<long>("Nj")(gh) );
 	}
@@ -164,8 +164,8 @@ public:
 	static std::string className() { return "eckit.grib.GribRotatedLatLon"; }
 	GribRotatedLatLon( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "grid_ns_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
-		set( "grid_ew_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh) );
+		set( "grid_lat_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
+		set( "grid_lon_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh) );
 
 		set( "Nj", GribAccessor<long>("Nj")(gh) );
 		set( "Ni", GribAccessor<long>("Ni")(gh) );

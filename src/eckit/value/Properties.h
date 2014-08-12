@@ -51,6 +51,9 @@ public: // methods
 	/// @returns a property
 	property_t operator[]( const std::string& k ) const { return get(k); }
 
+	/// @returns a bool, true if empty false otherwise
+	bool empty() const { return props_.empty(); }
+
 protected:
     void print(std::ostream& s) const;
 

@@ -21,7 +21,9 @@ namespace grib {
 
 static void check_error_code( const std::string& name, int err, bool quiet = false )
 {
-	if(err && !quiet) eckit::Log::error() << "GribAccessor(" << name << "): " << grib_get_error_message(err) << std::endl;
+	if(err && !quiet) {
+	   eckit::Log::error() << "GribAccessor(" << name << "): " << grib_get_error_message(err) << std::endl;
+	}
 }
 
 void grib_get_value(const GribHandle& h, const std::string& name, double& x, bool quiet)

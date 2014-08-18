@@ -96,9 +96,7 @@ public:
 			vpl[i] = pl[i];
 
 		set( "NPtsPerLat", vpl );
-
 	}
-
 };
 
 ConcreteBuilderT1<GribParams,GribReducedGG> GribReducedGG_builder( "reduced_gg" );
@@ -150,6 +148,13 @@ public:
 		set( "grid_lat_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
 
 		set( "Nj", GribAccessor<long>("Nj")(gh) );
+
+      std::vector<long> pl = GribAccessor< std::vector<long> >("pl")(gh);
+      ValueList vpl(pl.size());
+      for( size_t i = 0; i < pl.size(); ++i )
+         vpl[i] = pl[i];
+
+      set( "NPtsPerLat", vpl );
 	}
 
 };

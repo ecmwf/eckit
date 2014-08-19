@@ -80,31 +80,10 @@ void grib_get_value(const GribHandle& h, const std::string& name, std::vector<do
 
 //------------------------------------------------------------------------------------------------------
 
-static GribAccessor<long> edition("edition");
-static GribAccessor<std::string> md5Section2("md5Section2");
-static GribAccessor<std::string> md5Section3("md5Section3");
-
 std::string grib_geography_hash(const GribHandle& h)
 {
-    /// @todo create a 'geographyMd5'  accessor
-
-    std::string md5;
-
-    switch( edition(h) )
-    {
-    case 1:
-        md5 = md5Section2(h);
-        break;
-    case 2:
-        md5 = md5Section3(h);
-        break;
-
-    default:
-        ASSERT( !md5.empty() );
-        break;
-    }
-
-    return md5;
+   // The following key is edition independent
+   return GribAccessor<std::string>("md5GridSection")(h);
 }
 
 

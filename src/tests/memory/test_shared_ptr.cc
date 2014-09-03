@@ -80,6 +80,12 @@ Incomplete * check_incomplete( eckit::SharedPtr<Incomplete>& incomplete,
 
 //-----------------------------------------------------------------------------
 
+template <typename T >
+eckit::SharedPtr<T> add_another_shareptr( T* p )
+{
+	return eckit::SharedPtr<T>( p );
+}
+
 } // namespace eckit_test
 
 using namespace eckit_test;
@@ -106,50 +112,60 @@ BOOST_AUTO_TEST_CASE( test_intrusive_shared_ptr )
       UDT * up = new UDT(0);
       BOOST_CHECK( up->value() == 0 );
 
-      eckit::SharedPtr<UDT> sup ( up );
-      BOOST_CHECK( up == sup.get() );
-      BOOST_CHECK( sup.use_count() == 1 );
-      BOOST_CHECK( sup.unique());
+	  eckit::SharedPtr<UDT> sup1 ( up );
+	  BOOST_CHECK( up == sup1.get() );
+	  BOOST_CHECK( sup1.use_count() == 1 );
+	  BOOST_CHECK( sup1.unique());
 
-      sup->value( 54321 ) ;
-      BOOST_CHECK( sup->value() == 54321 );
+	  sup1->value( 54321 ) ;
+	  BOOST_CHECK( sup1->value() == 54321 );
       BOOST_CHECK( up->value() == 54321 );
 
       eckit::SharedPtr<UDT> sup2;
-      sup2 = sup;
+	  sup2 = sup1;
       BOOST_CHECK( sup2->value() == 54321 );
-      BOOST_CHECK( sup.use_count() == 2 );
+	  BOOST_CHECK( sup1.use_count() == 2 );
       BOOST_CHECK( sup2.use_count() == 2 );
       BOOST_CHECK( !sup2.unique());
-      BOOST_CHECK( !sup.unique());
+	  BOOST_CHECK( !sup1.unique());
 
 //      cout << "eckit::SharedPtr check self assignment\n";
       sup2 = sup2;
       BOOST_CHECK( sup2->value() == 54321 );
-      BOOST_CHECK( sup.use_count() == 2 );
+	  BOOST_CHECK( sup1.use_count() == 2 );
       BOOST_CHECK( sup2.use_count() == 2 );
+
+	  // check return creates from function
+
+	  eckit::SharedPtr<UDT> sup3 = add_another_shareptr( up );
+	  BOOST_CHECK( sup3->value() == 54321 );
+	  BOOST_CHECK( sup1.use_count() == 3 );
+	  BOOST_CHECK( sup2.use_count() == 3 );
+	  BOOST_CHECK( sup3.use_count() == 3 );
+
    }
+
    BOOST_CHECK(UDT_use_count == 0 );
 
    {
 //      std::cout << "test SharedPtr swap\n";
-      eckit::SharedPtr<UDT> sup ( new UDT(0) );
-      BOOST_CHECK(sup.get() != 0);
-      BOOST_CHECK(sup.use_count() == 1 );
-      BOOST_CHECK(sup.unique());
+	  eckit::SharedPtr<UDT> sup1 ( new UDT(0) );
+	  BOOST_CHECK(sup1.get() != 0);
+	  BOOST_CHECK(sup1.use_count() == 1 );
+	  BOOST_CHECK(sup1.unique());
 
       eckit::SharedPtr<UDT> sup2;
       BOOST_CHECK(sup2.use_count() == 0 );
       BOOST_CHECK(sup2.get() == 0);
 
-      sup.swap(sup2);
+	  sup1.swap(sup2);
 
       BOOST_CHECK(sup2.get() != 0);
       BOOST_CHECK(sup2.use_count() == 1 );
       BOOST_CHECK(sup2.unique());
 
-      BOOST_CHECK(sup.use_count() == 0 );
-      BOOST_CHECK(sup.get() == 0);
+	  BOOST_CHECK(sup1.use_count() == 0 );
+	  BOOST_CHECK(sup1.get() == 0);
    }
    BOOST_CHECK(UDT_use_count == 0 );
 

@@ -99,7 +99,6 @@ void Factory<T>::regist( const key_t& k, builder_ptr b )
 	{
 		throw BadParameter( "Factory of " + build_type() + " has already a builder for " + k, Here() );
 	}
-	Log::debug() << "Factory of " + build_type() + " registering builder for " + k << std::endl;
 	store_[k] = b;
 }
 
@@ -111,7 +110,6 @@ void Factory<T>::unregist(const key_t& k)
 	{
 		throw BadParameter( "Factory of " + build_type() + " has no builder for " + k, Here() );
 	}
-	Log::debug() << "Factory of " + build_type() + " unregistering builder for " + k << std::endl;
 	store_.erase( k );
 }
 
@@ -123,7 +121,6 @@ const typename Factory<T>::builder_t& Factory<T>::get(const key_t& k)
 	{
 		throw BadParameter( "Factory of " + build_type() + " has no builder for " + k, Here() );
 	}
-	Log::debug() << "Factory of " + build_type() + " accessing builder for " + k << std::endl;
 	return *store_[k];
 }
 

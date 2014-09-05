@@ -48,7 +48,7 @@ static const char *tag_names[] = {
     "unsigned long long",
     "float",
     "double",
-    "std::string",
+    "string",
     "blob",
     "exception",
     "start of record",

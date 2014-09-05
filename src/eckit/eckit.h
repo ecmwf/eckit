@@ -44,21 +44,21 @@
 //-----------------------------------------------------------------------------
 
 // define the nullptr either as macro or as nullptr idiom until C++0x
-#ifndef HAS_CXX11_NULLPTR
-#define ECKIT_DEFINE_NULLPTR
-#ifdef  ECKIT_DEFINE_NULLPTR
-    const class nullptr_t
-    {
-    public:
-      template<class T> operator T*() const { return 0; }
-      template<class C, class T> operator T C::*() const { return 0; }
-    private:
-      void operator&() const;
-    } nullptr = {};
-#else
-  #define nullptr 0
-#endif
-#endif
+//#ifndef HAS_CXX11_NULLPTR
+//#define ECKIT_DEFINE_NULLPTR
+//#ifdef  ECKIT_DEFINE_NULLPTR
+//    const class nullptr_t
+//    {
+//    public:
+//      template<class T> operator T*() const { return 0; }
+//      template<class C, class T> operator T C::*() const { return 0; }
+//    private:
+//      void operator&() const;
+//    } nullptr = {};
+//#else
+//  #define nullptr 0
+//#endif
+//#endif
 
 //-----------------------------------------------------------------------------
 

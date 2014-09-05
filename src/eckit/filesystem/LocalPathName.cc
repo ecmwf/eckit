@@ -633,6 +633,31 @@ LocalPathName LocalPathName::mountPoint() const
 	return p;
 }
 
+void LocalPathName::syncParentDirectory() const
+{
+    PathName directory = dirName();
+#ifdef EC_HAVE_DIRFD
+    Log::info() << "Syncing directory " << directory << std::endl;
+    DIR *d = opendir(directory.localPath());
+    if (!d) SYSCALL(-1);
+
+    int dir;
+    SYSCALL(dir = dirfd(d));
+    int ret = fsync(dir);
+
+    while (ret < 0 && errno == EINTR)
+        ret = fsync(dir);
+
+    if (ret < 0) {
+        Log::error() << "Cannot fsync directory [" << directory << "]" << Log::syserr << std::endl;
+    }
+
+    ::closedir(d);
+#else
+    Log::info() << "Syncing directory " << directory << " (not supported)" << endl;
+#endif
+}
+
 const std::string& LocalPathName::node() const
 {
     return NodeInfo::thisNode().node();

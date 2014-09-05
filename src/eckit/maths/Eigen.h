@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Math.h
+/// @file Eigen.h
 /// @author Tiago Quintino
 /// @date March 2014
 

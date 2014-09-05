@@ -344,27 +344,31 @@ parser/JSONParser.h
 parser/JSONParser.cc )
 
 list( APPEND eckit_value_srcs
-value/Content.h
-value/Content.cc
-value/NilContent.h
-value/NilContent.cc
 value/BoolContent.h
 value/BoolContent.cc
-value/ListContent.h
-value/ListContent.cc
-value/Expression.h
-value/Value.h
-value/Value.cc
+value/Content.h
+value/Content.cc
 value/DateContent.h
 value/DateContent.cc
 value/DoubleContent.h
 value/DoubleContent.cc
-value/StringContent.h
-value/StringContent.cc
+value/Expression.h
+value/ListContent.h
+value/ListContent.cc
+value/MapContent.h
+value/MapContent.cc 
+value/NilContent.h
+value/NilContent.cc
 value/NumberContent.h
 value/NumberContent.cc
-value/MapContent.h
-value/MapContent.cc )
+value/Params.cc
+value/Params.h 
+value/Properties.h
+value/Properties.cc
+value/StringContent.h
+value/StringContent.cc
+value/Value.h
+value/Value.cc ) 
 
 list( APPEND eckit_os_srcs
 os/Stat.h
@@ -438,10 +442,13 @@ utils/RLE.h
 utils/RLE.cc )
 
 list( APPEND eckit_memory_srcs
+memory/Builder.h
+memory/Counted.h
+memory/Factory.h
+memory/Owned.h
 memory/MemoryPool.h
 memory/MemoryPool.cc
 memory/SharedPtr.h
-memory/Counted.h
 memory/Padded.h
 memory/MapAllocator.h
 memory/MapAllocator.cc

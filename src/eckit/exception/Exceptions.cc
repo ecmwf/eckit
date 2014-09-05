@@ -158,11 +158,37 @@ FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, cons
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
+SeriousBug::SeriousBug(const std::string& msg,const CodeLocation& loc)
+{
+   StrStream s;
+   s << "SeriousBug: " << msg << " " << " in " << loc << " "  << StrStream::ends;
+   reason(std::string(s));
+}
+
+SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
+{
+   StrStream s;
+   s << "SeriousBug: " << msg << " " << " in " << loc << " "  << StrStream::ends;
+   reason(std::string(s));
+}
+
+
+
 AssertionFailed::AssertionFailed(const std::string& w): 
     Exception(std::string("Assertion failed: ") + w)
-{   
+{
     Log::monitor(Log::App,1) << what() << std::endl;
-} 
+
+#ifndef NDEBUG
+    if( ::getenv("ECKIT_ASSERT_FAILS_AND_ABORTS") )
+    {
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
+        ::abort();
+    }
+#endif
+
+}
 
 AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
 {
@@ -173,6 +199,15 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
 
     reason(std::string(s));
     Log::monitor(Log::App,2) << what() << std::endl;
+
+#ifndef NDEBUG
+    if( ::getenv("ECKIT_ASSERT_FAILS_AND_ABORTS") )
+    {
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
+        ::abort();
+    }
+#endif
 }
 
 BadParameter::BadParameter(const std::string& w):
@@ -180,18 +215,38 @@ BadParameter::BadParameter(const std::string& w):
 {   
 }
 
+BadParameter::BadParameter(const std::string& w, const CodeLocation& loc):
+    Exception(std::string("Bad parameter: ") + w, loc)
+{
+}
+
+NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& loc)
+{
+	StrStream ss;
+
+	ss << "Not implemented: " << s << " @ " << loc.func()
+	   << ", line " << loc.line()
+	   << " of " << loc.file()
+	   << StrStream::ends;
+
+	reason(std::string(ss));
+	Log::monitor(Log::App,2) << what() << std::endl;
+	std::string t = std::string(ss);
+}
+
 NotImplemented::NotImplemented( const CodeLocation& loc )
 {   
-    StrStream s;
+	StrStream ss;
 
-    s << "Not implemented: " << loc.func()
-        << ", line " << loc.line() << " of " << loc.file() << StrStream::ends;
+	ss << "Not implemented: " << loc.func()
+	   << ", line " << loc.line()
+	   << " of " << loc.file()
+	   << StrStream::ends;
 
-    reason(std::string(s));
+	reason(std::string(ss));
     Log::monitor(Log::App,2) << what() << std::endl;
-    std::string t = std::string(s);
+	std::string t = std::string(ss);
     //	Panic(t.c_str());
-
 }
 
 UserError::UserError(const std::string& r, const CodeLocation& loc):

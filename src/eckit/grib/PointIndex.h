@@ -15,8 +15,7 @@
 
 #include "eckit/eckit.h"
 #include "eckit/filesystem/PathName.h"
-
-#include "eckit/grib/Grib.h"
+#include "eckit/memory/ScopedPtr.h"
 
 #include "eckit/container/KDTree.h"
 #include "eckit/container/KDMapped.h"
@@ -25,6 +24,8 @@
 #include "eckit/geometry/Point2.h"
 
 //------------------------------------------------------------------------------------------------------
+
+struct grib_handle;
 
 namespace eckit {
 
@@ -104,7 +105,7 @@ private:
     ~PointIndex();
 
     eckit::PathName path_;
-    std::auto_ptr<Tree> tree_;
+    eckit::ScopedPtr<Tree> tree_;
 
     std::map<Point,NodeInfo> last_;
     eckit::Mutex mutex_;

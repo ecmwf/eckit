@@ -38,55 +38,33 @@ ecbuild_declare_project()
 # Eigen
 
 ecbuild_add_option( FEATURE EIGEN
-					DEFAULT OFF
-					DESCRIPTION "Eigen support  [EXPERIMENTAL]"
-					REQUIRED_PACKAGES Eigen3 )
-
+                    DEFAULT OFF
+                    DESCRIPTION "Eigen support  [EXPERIMENTAL]"
+                    REQUIRED_PACKAGES Eigen3 )
 set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Accelerated dense matrix operations" )
 
 # GRIB
 
 ecbuild_add_option( FEATURE GRIB
 					DEFAULT OFF
-					DESCRIPTION "support for GRIB format [EXPERIMENTAL]" )
-
-if( ENABLE_GRIB )
-	ecbuild_use_package( PROJECT grib_api VERSION 1.9.9 )
-	if( NOT GRIB_API_FOUND )
-		set( HAVE_GRIB 0 )
-	endif()
-endif()
+					DESCRIPTION "support for GRIB format [EXPERIMENTAL]"
+					REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.9.9" )
 
 set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
 
 # eckit::maths
 
 ecbuild_add_option( FEATURE MATHS
-					DEFAULT OFF
-					DESCRIPTION "eckit::maths expressions [EXPERIMENTAL]" )
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::maths expressions [EXPERIMENTAL]"
+                    CONDITION HAVE_EIGEN )
+
 
 if( HAVE_MATHS )
-
-	ecbuild_add_cxx11_flags()
-	ecbuild_check_cxx11( PRINT )
-
+	ecbuild_add_cxx11_flags() # enforce c++11
 endif()
 
-# boost support
-
-set(Boost_USE_MULTITHREADED      ON )
-# set(Boost_DEBUG                  ON )
-# set(Boost_USE_STATIC_LIBS        ON )
-# set(Boost_NO_SYSTEM_PATHS        ON )
-
-ecbuild_add_option( FEATURE BOOST
-					DEFAULT ${ENABLE_MATHS}
-					DESCRIPTION "Boost support [EXPERIMENTAL]"
-					REQUIRED_PACKAGES "Boost 1.45.0" )
-
-set_package_properties( Boost PROPERTIES TYPE RECOMMENDED PURPOSE "" )
-
-#list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
+ecbuild_check_cxx11( PRINT ) # always test for c++11
 
 # async io support
 
@@ -119,17 +97,21 @@ endif()
 ############################################################################################
 # export package info
 
+set( ECKIT_PACKAGES       "" )
 set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
 set( ECKIT_LIBRARIES      eckit eckit_web eckit_geometry )
 
 if( HAVE_GRIB )
-	list( APPEND ECKIT_LIBRARIES eckit_grib )
-	list( APPEND ECKIT_TPLS grib_api )
+  list( APPEND ECKIT_PACKAGES ECKIT_GRIB )
+  list( APPEND ECKIT_LIBRARIES eckit_grib )
+  list( APPEND ECKIT_TPLS grib_api )
 endif()
 
-if( HAVE_EIGEN )
-	list( APPEND ECKIT_TPLS Eigen3 )
+if( HAVE_MATHS )
+  list( APPEND ECKIT_PACKAGES ECKIT_MATHS )
+  list( APPEND ECKIT_LIBRARIES eckit_maths )
+  list( APPEND ECKIT_TPLS Eigen3 )
 endif()
 
 get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )

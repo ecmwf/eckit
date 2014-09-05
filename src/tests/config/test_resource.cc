@@ -36,6 +36,7 @@ public:
     virtual void run();
 
     void test_default();
+    void test_vector_long();
     void test_command_line();
     void test_environment_var();
     void test_config_file();
@@ -54,6 +55,19 @@ void TestResource::test_default()
 
     DEBUG_VAR(d);
     ASSERT( ( abs(d - 777.7) ) <= 10E-6 );
+}
+
+//-----------------------------------------------------------------------------
+
+void TestResource::test_vector_long()
+{
+    std::vector<long> def(3,77);
+    std::vector<long> v = Resource< std::vector<long> >("listlong;-listlong",def);
+
+    ASSERT( v[0] == 88 );
+    ASSERT( v[1] == 99 );
+    ASSERT( v[2] == 11 );
+    ASSERT( v[3] == 22 );
 }
 
 //-----------------------------------------------------------------------------
@@ -117,6 +131,7 @@ void TestResource::test_config_file()
 void TestResource::run()
 {
     test_default();
+    test_vector_long();
     test_command_line();
     test_environment_var();
     test_config_file();

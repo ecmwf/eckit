@@ -16,12 +16,6 @@
 #ifndef eckit_maths_Expression_h
 #define eckit_maths_Expression_h
 
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/noncopyable.hpp>
-
-#include "eckit/eckit.h"
-
 /// @todo look into currying / binding -- add2 = curry ( add , 2 )
 /// @todo list --  list 1 2
 /// @todo std::map
@@ -44,12 +38,10 @@
 #include <map>
 #include <utility>
 
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/function.hpp>
-#include <boost/noncopyable.hpp>
-#include <boost/shared_ptr.hpp>
-
+#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/memory/Owned.h"
+#include "eckit/memory/SharedPtr.h"
 
 //--------------------------------------------------------------------------------------------
 
@@ -66,16 +58,6 @@ const int CodeFormat = 42; // To use with format() in Log..
 
 //--------------------------------------------------------------------------------------------
 
-#if 1
-#define DBG     std::cout << Here() << std::endl;
-#define DBGX(x) std::cout << Here() << " " << #x << " -> " << x << std::endl;
-#else
-#define DBG
-#define DBGX(x)
-#endif
-
-//--------------------------------------------------------------------------------------------
-
 class Value;
 class List;
 class Expression;
@@ -83,11 +65,10 @@ class Scope;
 
 typedef double scalar_t;
 
-typedef boost::shared_ptr<List>       ListPtr;
-typedef boost::shared_ptr<Expression> ExpPtr;
+typedef SharedPtr<List>        ListPtr;
+typedef SharedPtr<Expression>  ExpPtr;
 
 typedef std::vector< ExpPtr > args_t;
-
 
 //--------------------------------------------------------------------------------------------
 
@@ -101,9 +82,7 @@ public:
 
 class Optimiser;
 
-class Expression :
-    public boost::enable_shared_from_this<Expression>,
-    private boost::noncopyable {
+class Expression : public Owned {
 
 public: // methods
 
@@ -122,13 +101,13 @@ public: // methods
 
     virtual ~Expression();
 
-    ExpPtr self()       { return shared_from_this(); }
-    ExpPtr self() const { return boost::const_pointer_cast<Expression>( shared_from_this() ); }
+    ExpPtr self()       { return ExpPtr(this); }
+    ExpPtr self() const { return ExpPtr( const_cast<Expression*>( this ) ); }
 
     template< typename T >
-    boost::shared_ptr<T> as()
+    SharedPtr<T> as()
     {
-        return boost::dynamic_pointer_cast<T, Expression>( shared_from_this() );
+        return SharedPtr<T>( dynamic_cast<T*>( this ) );
     }
 
     friend std::ostream& operator<<( std::ostream& os, const Expression& v);
@@ -140,8 +119,6 @@ public: // methods
     ExpPtr eval( Scope& ) const;
 
     size_t arity() const { return args_.size(); }
-
-
 
     std::string str() const;
 
@@ -188,13 +165,12 @@ private:
 
 
     virtual ExpPtr evaluate( Scope& ) const = 0;
-    virtual void print( std::ostream& ) const = 0;
 
+    virtual void print( std::ostream& ) const = 0;
 
     virtual ExpPtr cloneWith(args_t&) const = 0;
 
     bool optimiseArgs(args_t&) const;
-
 
     // For unit tests....
     friend class eckit_test::TestExp;

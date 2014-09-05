@@ -66,7 +66,7 @@ public:
     Node* convert(Ptr p, const Node* dummy) {
         Node* r = base(dummy);
         /* ASSERT(p < count_); */
-        return p ? &r[p] : nullptr;
+        return p ? &r[p] : NULL;
     }
 
     template<class Node, class A>

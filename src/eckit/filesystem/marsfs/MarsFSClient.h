@@ -49,6 +49,7 @@ public:
     void unlink(const std::string&);
     void rmdir(const std::string&);
     void touch(const std::string&);
+    void syncParentDirectory(const std::string&);
     std::string unique(const std::string&);
     Length size(const std::string&);
     bool sameAs(const std::string& path1, const std::string& path2);

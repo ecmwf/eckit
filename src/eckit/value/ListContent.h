@@ -71,14 +71,14 @@ protected:
 	virtual Content* div(const Content&) const;
     virtual Content* mod(const Content&) const;
 
-	virtual Content* addList(const ListContent&) const;
+    virtual Content* addList(const ListContent&) const;
 
 	virtual void   print(std::ostream&) const;
     virtual void   json(JSON&)     const;
 	virtual std::string typeName() const       { return "List"; }
 
 	virtual bool   isList() const         { return true; }
-     virtual Value&   element(const Value&);
+    virtual Value& element(const Value&);
 
     // -- From Streamable
 

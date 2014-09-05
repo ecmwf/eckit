@@ -82,8 +82,8 @@ private: // members
 class SeriousBug : public Exception {
 public:
     SeriousBug(const std::string& w) : Exception(std::string("Serious Bug:") + w) {}
-    SeriousBug(const std::string&,const std::string&);
-    SeriousBug(const std::string&,int);
+    SeriousBug(const std::string&,const CodeLocation&);
+    SeriousBug(const char*,const CodeLocation&);
 };
 
 class TooManyRetries : public Exception {
@@ -114,11 +114,13 @@ public:
 class BadParameter : public Exception {
 public:
     BadParameter(const std::string& s);
+    BadParameter(const std::string&, const CodeLocation&);
 };
 
 class NotImplemented : public Exception {
 public:
-    NotImplemented( const CodeLocation& );
+	NotImplemented( const std::string& s, const CodeLocation& );
+	NotImplemented( const CodeLocation& );
 };
 
 class Stop : public Exception {

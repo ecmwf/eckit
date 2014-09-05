@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstdlib>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/compat/StrStream.h"
 #include "eckit/parser/Tokenizer.h"
@@ -121,7 +123,25 @@ std::string Translator<double,std::string>::operator()(double value)
 
 double Translator<std::string,double>::operator()(const std::string& s)
 {
-    return atof(s.c_str());
+    char* pend;
+    errno = 0;
+
+    double d = ::strtod( s.c_str(), &pend );
+
+//    DEBUG_VAR( d );
+//    DEBUG_VAR( s );
+//    DEBUG_VAR( s.size() );
+//    DEBUG_VAR( pend - s.c_str() );
+//    DEBUG_VAR( errno );
+
+    if( s.empty() || s[0] == ' ' || (pend - s.c_str() != s.size()) || (errno != 0) )
+    {
+        throw BadParameter( "Bad conversion from std::string '" + s + "' to double" , Here() );
+    }
+
+    return d;
+
+    //    return atof(s.c_str());
 }
 
 unsigned long Translator<std::string,unsigned long>::operator()(const std::string& s)
@@ -138,8 +158,7 @@ std::string Translator<unsigned long,std::string>::operator()(unsigned long valu
     return std::string(s);
 }
 
-    unsigned long long Translator<std::string,unsigned long long>::operator()
-(const std::string& s)
+unsigned long long Translator<std::string,unsigned long long>::operator()(const std::string& s)
 {
     char *more;
     unsigned long long result =  strtoull(s.c_str(),&more,10);
@@ -186,6 +205,17 @@ std::vector<long> Translator<std::string, std::vector<long> >::operator()(const 
     std::vector<long> result;
     for(size_t i = 0; i < r.size(); i++)
         result.push_back(Translator<std::string,long>()(r[i]));
+    return result;
+}
+
+std::string Translator< std::vector<long>,std::string >::operator()(const std::vector<long>& v)
+{
+    std::string result;
+    for(int i=0; i < v.size(); ++i)
+    {
+        if(i) result += " ";
+        result += Translator<long,std::string>()(v[i]);
+    }
     return result;
 }
 

@@ -82,6 +82,7 @@ private:
     virtual BasePathName* baseName(bool) const;
 
     virtual std::string clusterName() const;
+    virtual void syncParentDirectory() const;
 
     virtual std::string asString() const;
     virtual void fileSystemSize(FileSystemSize&) const;
@@ -95,8 +96,7 @@ private:
 
 // -- Friends
 
-	friend std::ostream& operator<<(std::ostream& s,const BasePathNameT& p)
-		{ p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s,const BasePathNameT& p)	{ p.print(s); return s; }
 
 };
 

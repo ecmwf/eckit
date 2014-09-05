@@ -1,12 +1,15 @@
 // File GribField.cc
 // Baudouin Raoult - (c) ECMWF Nov 13
 
-#include "GribField.h"
-#include "GribFile.h"
-#include "GribHandle.h"
-#include "GribFieldMemoryStrategy.h"
+#include "eckit/grib/GribField.h"
+#include "eckit/grib/GribFile.h"
+#include "eckit/grib/GribHandle.h"
+#include "eckit/grib/GribFieldMemoryStrategy.h"
 
 namespace eckit {
+namespace grib {
+
+//------------------------------------------------------------------------------------------------------
 
 static GribFieldMemoryStrategy defaultStrategy;
 
@@ -76,12 +79,14 @@ const double* GribField::getValues(size_t& count) const
     GribField* self = const_cast<GribField*>(this);
     strategy->touch(*self);
 
-    if(values_) {
+    if( values_ )
+    {
         count = count_;
         return values_;
     }
 
-    if(handle_) {
+    if( handle_ )
+    {
         strategy->newValues(*self);
         self->values_ = handle_->getDataValues(self->count_);
         count = count_;
@@ -94,7 +99,7 @@ const double* GribField::getValues(size_t& count) const
     file_->getBuffer(buffer, offset_, length_);
 
     strategy->newValues(*self);
-    self->values_ = GribHandle(buffer, length_, false).getDataValues(self->count_);
+    self->values_ = GribHandle(buffer, false).getDataValues(self->count_);
     count = count_;
     return values_;
 }
@@ -122,11 +127,11 @@ GribHandle* GribField::getHandle(bool copy) const
     file_->getBuffer(buffer, offset_, length_);
 
     if(copy) {
-        return new GribHandle(buffer, length_, false);
+        return new GribHandle(buffer, false);
     }
     else {
         strategy->newHandle(*self);
-        self->handle_ = new GribHandle(buffer, length_, false);
+        self->handle_ = new GribHandle(buffer, false);
     }
 
     return handle_;
@@ -161,7 +166,8 @@ void GribField::write(DataHandle& handle) const {
 
 }
 
-void GribField::release() const {
+void GribField::release() const
+{
     GribField* self = const_cast<GribField*>(this);
     strategy->purgeable(*self);
 }
@@ -169,7 +175,7 @@ void GribField::release() const {
 void GribField::purge(bool temp)
 {
     purges_++;
-    std::cout << "Purge " << purges_ << std::endl;
+
     pack();
 
     if(file_ && handle_) {
@@ -184,4 +190,8 @@ void GribField::purge(bool temp)
         values_ = 0;
     }
 }
-} // namespace
+
+//------------------------------------------------------------------------------------------------------
+
+}
+}

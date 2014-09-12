@@ -38,7 +38,7 @@ using namespace eckit;
 
 // BOOST_AUTO_TEST_SUITE_END()
 
-int main()
+void test_map_string_int()
 {
     DenseMap<std::string,int> m;
 
@@ -64,9 +64,6 @@ int main()
     ASSERT( !m.sorted() );
 
     m.sort();
-
-    ASSERT( m.find("four")->second == 4 );
-    ASSERT( m.find("nine")->second == 9 );
 
     ASSERT( m.sorted() );
 
@@ -112,4 +109,81 @@ int main()
     //
     // std::cout << m << std::endl;
 
+}
+
+void test_map_int_string()
+{
+    DenseMap<unsigned,std::string> m;
+
+    //
+
+    m.insert( 2, "two" );
+
+    ASSERT( !m.sorted() );
+
+    ASSERT( m.size() == 1 );
+
+    m.sort();
+
+    ASSERT( m.sorted() );
+
+    ASSERT( m.get(2) == "two" );
+
+    //
+
+    m.insert( 4, "four" );
+    m.insert( 9, "nine" );
+
+    ASSERT( !m.sorted() );
+
+    m.sort();
+
+    ASSERT( m.sorted() );
+
+    ASSERT( m.size() == 3 );
+
+    ASSERT( m.get(2) == "two" );
+    ASSERT( m.get(4) == "four" );
+    ASSERT( m.get(9) == "nine" );
+
+    // failed find
+
+    ASSERT( m.find(1) == m.end() );
+
+    // replace an existing value
+
+    m.replace( 4, "FOUR" );  
+    m.replace( 9, "NINE" );
+
+    ASSERT( m.sorted() ); // still sorted
+
+    ASSERT( m.size() == 3 );
+
+    ASSERT( m.get(2) == "two" );
+    ASSERT( m.get(4) == "FOUR" );
+    ASSERT( m.get(9) == "NINE" );
+
+    // replace into non-existing
+
+    ASSERT( m.size() == 3 );
+
+    m.replace( 5, "five" );  
+
+    ASSERT( !m.sorted() );
+    m.sort();
+
+    ASSERT( m.get(2) == "two" );
+    ASSERT( m.get(5) == "five" );
+    ASSERT( m.get(4) == "FOUR" );
+    ASSERT( m.get(9) == "NINE" );
+
+    ASSERT( m.size() == 4 );
+
+    // std::cout << m << std::endl;
+}
+
+int main()
+{
+    test_map_string_int();
+    test_map_int_string();
 }

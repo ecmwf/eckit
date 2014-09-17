@@ -542,6 +542,8 @@ add_subdirectory( web )
 
 add_subdirectory( maths )
 
+add_subdirectory( xpr )
+
 add_subdirectory( geometry )
 
 add_subdirectory( grib )

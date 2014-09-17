@@ -37,4 +37,7 @@
 
 #cmakedefine EIGEN3_FOUND
 
+#cmakedefine HAVE_EIGEN
+#cmakedefine HAVE_LAPACK
+
 #endif // eckit_config_h

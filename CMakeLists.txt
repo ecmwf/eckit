@@ -35,33 +35,38 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-# Eigen
-
-ecbuild_add_option( FEATURE EIGEN
+# GRIB
+ecbuild_add_option( FEATURE GRIB
                     DEFAULT OFF
+                    DESCRIPTION "support for GRIB format [EXPERIMENTAL]"
+                    REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.9.9" )
+
+set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
+
+# eckit::xpr
+ecbuild_add_option( FEATURE XPR
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::xpr [EXPERIMENTAL]"
+                  )
+if( HAVE_XPR )
+  ecbuild_add_cxx11_flags() # enforce c++11
+endif()
+
+# Eigen
+ecbuild_add_option( FEATURE EIGEN
+                    DEFAULT ON
                     DESCRIPTION "Eigen support  [EXPERIMENTAL]"
                     REQUIRED_PACKAGES Eigen3 )
 set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Accelerated dense matrix operations" )
 
-# GRIB
-
-ecbuild_add_option( FEATURE GRIB
-					DEFAULT OFF
-					DESCRIPTION "support for GRIB format [EXPERIMENTAL]"
-					REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.9.9" )
-
-set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
-
-# eckit::maths
-
-ecbuild_add_option( FEATURE MATHS
-                    DEFAULT OFF
-                    DESCRIPTION "eckit::maths expressions [EXPERIMENTAL]"
-                    CONDITION HAVE_EIGEN )
-
-
-if( HAVE_MATHS )
-	ecbuild_add_cxx11_flags() # enforce c++11
+# LAPACK
+if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
+  ecbuild_add_option( FEATURE LAPACK
+                      DESCRIPTION "Linear Algebra PACKage"
+                      REQUIRED_PACKAGES LAPACK )
+else() # Don't search for it on cc[abt] as it is already available as scilib
+  ecbuild_add_option( FEATURE LAPACK
+                      DESCRIPTION "Linear Algebra PACKage")
 endif()
 
 ecbuild_check_cxx11( PRINT ) # always test for c++11
@@ -100,7 +105,7 @@ endif()
 set( ECKIT_PACKAGES       "" )
 set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
-set( ECKIT_LIBRARIES      eckit eckit_web eckit_geometry )
+set( ECKIT_LIBRARIES      eckit eckit_web eckit_maths eckit_geometry )
 
 if( HAVE_GRIB )
   list( APPEND ECKIT_PACKAGES ECKIT_GRIB )
@@ -108,10 +113,13 @@ if( HAVE_GRIB )
   list( APPEND ECKIT_TPLS grib_api )
 endif()
 
-if( HAVE_MATHS )
-  list( APPEND ECKIT_PACKAGES ECKIT_MATHS )
-  list( APPEND ECKIT_LIBRARIES eckit_maths )
+if( HAVE_EIGEN )
   list( APPEND ECKIT_TPLS Eigen3 )
+endif()
+
+if( HAVE_XPR )
+  list( APPEND ECKIT_PACKAGES ECKIT_XPR )
+  list( APPEND ECKIT_LIBRARIES eckit_xpr )
 endif()
 
 get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )

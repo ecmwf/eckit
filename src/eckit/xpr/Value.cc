@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2014 ECMWF.
+ * (C) Copyright 1996-2013 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,32 +8,37 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Eigen.h
-/// @author Tiago Quintino
-/// @date March 2014
+#include "eckit/xpr/Value.h"
 
-#ifndef eckit_maths_Eigen_h
-#define eckit_maths_Eigen_h
-
-#include "eckit/eckit_config.h"
+namespace eckit {
+namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-#ifndef EIGEN3_FOUND
-#error Eigen 3 is not enabled
-#else
+Value::Value()
+{
+}
 
-#define EIGEN_NO_AUTOMATIC_RESIZING
-#define EIGEN_DONT_ALIGN
-#define EIGEN_DONT_VECTORIZE
+Value::Value(const args_t &args) : Expression(args)
+{
+}
 
-#include <Eigen/Core>
-#include <Eigen/Dense>
-#include <Eigen/Geometry>
-#include <Eigen/Sparse>
+Value::Value(args_t &args, Swap ignored) : Expression(args, ignored)
+{
+}
 
-#endif
+
+Value::~Value()
+{
+}
+
+ExpPtr Value::evaluate( Scope &ctx ) const
+{
+    return self();
+}
+
 
 //--------------------------------------------------------------------------------------------
 
-#endif
+} // namespace xpr
+} // namespace eckit

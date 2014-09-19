@@ -3,6 +3,7 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/maths/Lapack.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 namespace maths {

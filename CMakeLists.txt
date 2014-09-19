@@ -37,7 +37,7 @@ ecbuild_declare_project()
 
 # GRIB
 ecbuild_add_option( FEATURE GRIB
-                    DEFAULT OFF
+					DEFAULT ON
                     DESCRIPTION "support for GRIB format [EXPERIMENTAL]"
                     REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.9.9" )
 

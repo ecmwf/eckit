@@ -73,10 +73,10 @@ public: // methods
   bool empty() const { return store_.size() == 0; }
 
   iterator begin() { return store_.begin(); }
-  const_iterator cbegin() const { return store_.cbegin(); }
+  const_iterator cbegin() const { return store_.begin(); }
 
   iterator end() { return store_.end(); }
-  const_iterator cend() const { return store_.cend(); }
+  const_iterator cend() const { return store_.end(); }
 
   bool sorted() const { return sorted_; }
 
@@ -108,7 +108,7 @@ public: // methods
   	if( !empty() )
   	{
 	  	ASSERT(sorted_);
-    	const_iterator it = std::lower_bound(store_.cbegin(), store_.cend(), k, Compare());
+    	const_iterator it = std::lower_bound(store_.begin(), store_.end(), k, Compare());
     	if( it->first == k )
     		return it;
   	}    

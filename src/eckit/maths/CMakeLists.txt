@@ -1,6 +1,7 @@
 list( APPEND eckit_maths_srcs
 Eigen.h
 Lapack.h
+Lapack.cc
 Matrix.h
 MatrixEigen.h
 MatrixLapack.h
@@ -15,5 +16,5 @@ ecbuild_add_library(TARGET eckit_maths
 						${eckit_maths_srcs}
 					INCLUDES ${EIGEN3_INCLUDE_DIR}
 					LIBS
-						eckit  )
+						eckit ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} )
 

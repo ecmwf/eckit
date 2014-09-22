@@ -43,10 +43,16 @@ GribParams::GribParams(GribHandle& gh) : g_(gh)
 
 	set("GRIB.geographyHash", gh.geographyHash());
 
-	north_ = gh.latitudeOfFirstGridPointInDegrees();
-	south_ = gh.latitudeOfLastGridPointInDegrees();
-	west_  = gh.longitudeOfFirstGridPointInDegrees();
-	east_  = gh.longitudeOfLastGridPointInDegrees();
+	double north = gh.latitudeOfFirstGridPointInDegrees();
+	double south = gh.latitudeOfLastGridPointInDegrees();
+	double west = gh.longitudeOfFirstGridPointInDegrees();
+	double east  = gh.longitudeOfLastGridPointInDegrees();
+
+	// ignore scanning mode:
+	north_ = std::max(north,south);
+	south_ = std::min(north,south);
+	east_ = std::max(east,west);
+	west_ = std::min(east,west);
 
 	set("grib_bbox_n", north_ );
 	set("grid_bbox_s", south_ );
@@ -56,7 +62,7 @@ GribParams::GribParams(GribHandle& gh) : g_(gh)
 	// check area
 	degreesEps_ = (edition_ == 1) ? 1e-3 : 1e-6; // GRIB1 is in mili while GRIB2 is in micro degrees
 
-	ASSERT(north_ > south_);
+	ASSERT(north_ > south_); // This assertion only make sense if we ignore scanning mode
 	ASSERT(north_ < 90.0  || FloatCompare::is_equal(north_,90.0,degreesEps_));
 	ASSERT(south_ < 90.0  || FloatCompare::is_equal(south_,90.0,degreesEps_));
 	ASSERT(north_ > -90.0 || FloatCompare::is_equal(north_,-90.0,degreesEps_));
@@ -65,7 +71,7 @@ GribParams::GribParams(GribHandle& gh) : g_(gh)
 	eckit::geometry::reduceTo2Pi(west_);
 	eckit::geometry::reduceTo2Pi(east_);
 
-	ASSERT(east_ > west_);
+	ASSERT(east_ > west_); // This assertion only make sense if we ignore scanning mode
 
 	set("nbDataPoints", gh.nbDataPoints() );
 }

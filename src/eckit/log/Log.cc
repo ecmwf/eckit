@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -103,7 +103,7 @@ std::ostream& Log::panic()
 
 std::ostream& Log::panic(const CodeLocation& where)
 {
-    try 
+    try
     {
         return Log::error(where);
     }
@@ -144,6 +144,20 @@ Channel& Log::debug(const CodeLocation& where, int level)
         return no_output;
     else
         return Context::instance().debugChannel().source(where);
+}
+
+//-----------------------------------------------------------------------------
+
+Channel& Log::channel(int cat, int level)
+{
+	// Note: level usage not yet implemented
+	return Context::instance().channel(cat);
+}
+
+Channel& Log::channel(int cat, const CodeLocation& where, int level)
+{
+	// Note: level usage not yet implemented
+	return Context::instance().channel(cat).source(where);
 }
 
 //-----------------------------------------------------------------------------

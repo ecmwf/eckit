@@ -33,7 +33,7 @@ public:
            double polerotate = 0,
            double lonMin = 0); // for -180 - +180, choose lonMin as -180
 
-   // magics, assume south_pole_rot_angle_ = 0; Used for test comparison
+   // magics, assume south_pole_rot_angle_ = 0; *** Used for test comparison ***
    eckit::geometry::LLPoint2 magics_rotate( const eckit::geometry::LLPoint2&) const;
    eckit::geometry::LLPoint2 magics_unrotate( const eckit::geometry::LLPoint2&) const;
 

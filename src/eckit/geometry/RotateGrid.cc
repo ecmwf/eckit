@@ -18,7 +18,7 @@ RotateGrid::RotateGrid(const eckit::geometry::LLPoint2& south_pole,
 }
 
 // For reference, this what magics uses, it appears as if it originated from fortran code
-// Unfortunately there is no reference. Also tests show unrotate is broken
+// Unfortunately there is no reference. Tests show unrotate is broken
 eckit::geometry::LLPoint2 RotateGrid::magics_rotate( const eckit::geometry::LLPoint2& point ) const
 {
    double lat_y = point.lat();
@@ -78,15 +78,15 @@ eckit::geometry::LLPoint2 RotateGrid::magics_unrotate( const eckit::geometry::LL
 
 eckit::geometry::LLPoint2 RotateGrid::rotate( const eckit::geometry::LLPoint2& point) const
 {
-   // First convert the data point from spherical lat lon to (x',y',z') using:
    // See: http://rbrundritt.wordpress.com/2008/10/14/conversion-between-spherical-and-cartesian-coordinates-systems/
+   // First convert the data point from spherical lat lon to (x',y',z') using:
    double latr = point.lat() * degree_to_radian_ ;
    double lonr = point.lon() * degree_to_radian_ ;
    double xd = cos(lonr)*cos(latr);
    double yd = sin(lonr)*cos(latr);
    double zd = sin(latr);
 
-   // Assume right hand rule.
+   // Assume right hand rule, rotate about z axes and then y
    // P' = Rot(y) * Rot(z) * Pv
    // x   (  cos(ϑ), 0, -sin(ϑ)) ( cos(φ), -sin(φ), 0) (x')
    // y = (  0     , 1,  0     ) ( sin(φ), cos(φ),  0) (y')
@@ -152,7 +152,7 @@ eckit::geometry::LLPoint2 RotateGrid::unrotate( const eckit::geometry::LLPoint2&
    double yd = sin(lonr)*cos(latr);
    double zd = sin(latr);
 
-   // P' = Rot(z) * Rot(y) * Pv
+   // P' = Rot(z) * Rot(y) * Pv,   rotate about y axes then Z
    // Since we're undoing the rotation described in the definition of the coordinate system,
    // we first rotate by ϑ = -(90 + south_pole_lat) around the y' axis (along the rotated Greenwich meridian)
    // and then by φ = -south_pole_lon = +15 degrees around the z axis):
@@ -190,7 +190,7 @@ eckit::geometry::LLPoint2 RotateGrid::unrotate( const eckit::geometry::LLPoint2&
    ret_lat = roundf( ret_lat * 1000000.0 )/1000000.0;
    ret_lon = roundf( ret_lon * 1000000.0 )/1000000.0;
 
-   ret_lon -=south_pole_rot_angle_;
+   ret_lon -= south_pole_rot_angle_;
 
    // Make sure ret_lon is in range
    while (ret_lon < lonmin_) ret_lon += 360.0;
@@ -201,6 +201,7 @@ eckit::geometry::LLPoint2 RotateGrid::unrotate( const eckit::geometry::LLPoint2&
 
 //-----------------------------------------------------------------------------
 
+// *** This is only used for test comparison *****
 RotgridPy::RotgridPy(double south_pole_lat, double south_pole_lon,
                  double  south_pole_rot_angle,
                  double  nPoleGridLon,

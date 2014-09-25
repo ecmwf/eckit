@@ -22,8 +22,10 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::geometry;
 
-static void rotgrid_py(double sp_lat,double sp_lon, double sp_rot, double lat, double lon) {
-
+static void rotgrid_py(double sp_lat,double sp_lon, double sp_rot, double lat, double lon)
+{
+  // RotgridPy is used as reference to test RotateGrid, and magics rotate/unrotate
+  //
   // Location of pole of rotated grid as seen in non-rotated grid: sp_lat,sp_lon ;
   // Additional axial rotation about pole of rotated grid: sp_rot
   // Location of chosen point in non-rotated grid  lat,lon
@@ -54,6 +56,9 @@ BOOST_AUTO_TEST_CASE( test_rotated_lat_lon )
 {
    cout << "\nGrid:: ...test_rotated_lat_lon\n";
 
+   // Compare RotateGrid, with RotgridPy, and magics rotate/unrotate/
+   // Note: magics rotate/unrotate does not support southern pole rotation angle
+
    double sp_lat = 37.5;
    double sp_lon = 177.5;
    double polerot = 10.0 ;
@@ -83,36 +88,8 @@ BOOST_AUTO_TEST_CASE( test_rotated_lat_lon_2 )
 {
    cout << "\nGrid:: ...test_rotated_lat_lon_2\n";
 
-   // This was taken form the web :http://www.mathworks.se/matlabcentral/fileexchange/43435-rotated-grid-transform
-   // Used to compare with our transform
-   //
-   //This functions transforms a set of coordinates in regular lon/lat degrees,
-   // grid_in = [lon, lat], to a set of coordinates in rotated lon/lat degrees, grid_out = [lon', lat'], and vice versa:
-   //
-   //[grid_out] = rotated_grid_transform(grid_in, option, SP_coor)
-   //
-   //where option is the 'direction' of the transform (1: regular -> rotated and 2: rotated -> regular)
-   //and SP_coor are the coordinates of the South Pole in the rotated grid [SP_lon, SP_lat]
-   //
-   //Example:
-   //SP_coor = [18 -39.3];
-   //grid_in = [[12; 12; 12],[55; 54; 53]];
-   //[grid_out] = rotated_grid_transform(grid_in, 1, SP_coor)
-   //
-   //grid_out =
-   //
-   //   -3.4476 4.4397
-   //   -3.5289 3.4430
-   //   -3.6100 2.4463
-   //
-   //grid_in = grid_out;
-   //[grid_out] = rotated_grid_transform(grid_in, 2, SP_coor)
-   //
-   //grid_out =
-   //
-   //   12.0000 55.0000
-   //   12.0000 54.0000
-   //   12.0000 53.0000
+   // Compare RotateGrid, with RotgridPy, and magics rotate/unrotate/
+   // Note: magics rotate/unrotate does not support southern pole rotation angle
 
    double sp_lat = 18;
    double sp_lon = -39;
@@ -206,8 +183,8 @@ BOOST_AUTO_TEST_CASE( test_south_pole_at_south_pole )
 BOOST_AUTO_TEST_CASE( test_south_pole_at_north_pole )
 {
    cout << "\nGrid:: ...test_south_pole_at_north_pole\n";
+
    // Change south pole to north pole ?
-   // Should end up with identity matrix and hence no change, likewise for un-rotate
    double sp_lat = 90.0;
    double sp_lon = 0;
    double polerot = 0.0 ;

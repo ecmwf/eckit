@@ -9,6 +9,7 @@
  */
 
 #include "eckit/runtime/ContextBehavior.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
@@ -30,7 +31,6 @@ void ContextBehavior::reconfigure()
 	Log::info() << "ContextBehavior::reconfigure" << std::endl;
 }
 
-
 Channel& ContextBehavior::channel(int cat)
 {
   switch( cat ) {
@@ -39,6 +39,8 @@ Channel& ContextBehavior::channel(int cat)
     case INFO:  return infoChannel();
     case DEBUG: return debugChannel();
   }
+  throw Exception("Logging category "+Translator<int,std::string>()(cat)+" not known.",Here());
+  return infoChannel();
 }
 
 //-----------------------------------------------------------------------------

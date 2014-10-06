@@ -39,7 +39,6 @@ protected: // members
 	GribHandle& g_;
 
 	long   edition_;                 ///< Grib 1 or Grib 2
-	long   numberOfDataPoints_;      ///< Must match the grib iterator data points
 
 	double north_;                   ///< In degrees
 	double south_;                   ///< In degrees

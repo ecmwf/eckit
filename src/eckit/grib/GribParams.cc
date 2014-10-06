@@ -26,52 +26,64 @@ GribParams* GribParams::create( GribHandle& gh )
 	return Factory<GribParams>::instance().get( gh.gridType() ).create(gh);
 }
 
-GribParams::GribParams(GribHandle& gh) : g_(gh)
+GribParams::GribParams(GribHandle& gh)
+: g_(gh),
+  edition_(0),
+  north_(0),
+  south_(0),
+  west_(0),
+  east_(0),
+  degreesEps_(0)
 {
 	set("grid_type",gh.gridType());
 
-	long edition = gh.edition();
-	set("GRIB.edition", edition);
+	edition_ = gh.edition();
+	set("GRIB.edition", edition_);
 
-	if( edition == 1)
+	if( edition_ == 1)
 		set("DegreesEpsilon", 1E-3);
 	else
 		set("DegreesEpsilon", 1E-6);
 
+   degreesEps_ = (edition_ == 1) ? 1e-3 : 1e-6; // GRIB1 is in mili while GRIB2 is in micro degrees
+
 	/// @todo temporary until we use a better unique hash that works also with other formats
-	set("hash", gh.geographyHash());
+	std::string the_hash = gh.geographyHash();
+	set("hash", the_hash);
 
-	set("GRIB.geographyHash", gh.geographyHash());
+	set("GRIB.geographyHash", the_hash);
 
-	double north = gh.latitudeOfFirstGridPointInDegrees();
-	double south = gh.latitudeOfLastGridPointInDegrees();
-	double west = gh.longitudeOfFirstGridPointInDegrees();
-	double east  = gh.longitudeOfLastGridPointInDegrees();
+	// Not all GRID's have a bounding box, i.e Polar Stereographic
+	if (gh.hasKey("latitudeOfLastGridPointInDegrees")) {
 
-	// ignore scanning mode:
-	north_ = std::max(north,south);
-	south_ = std::min(north,south);
-	east_ = std::max(east,west);
-	west_ = std::min(east,west);
+	   double north = gh.latitudeOfFirstGridPointInDegrees();
+	   double south = gh.latitudeOfLastGridPointInDegrees();
+	   double west = gh.longitudeOfFirstGridPointInDegrees();
+	   double east  = gh.longitudeOfLastGridPointInDegrees();
 
-	set("grib_bbox_n", north_ );
-	set("grid_bbox_s", south_ );
-	set("grid_bbox_w", west_  );
-	set("grid_bbox_e", east_  );
+	   // ignore scanning mode:
+	   north_ = std::max(north,south);
+	   south_ = std::min(north,south);
+	   east_ = std::max(east,west);
+	   west_ = std::min(east,west);
 
-	// check area
-	degreesEps_ = (edition_ == 1) ? 1e-3 : 1e-6; // GRIB1 is in mili while GRIB2 is in micro degrees
+	   set("grib_bbox_n", north_ );
+	   set("grid_bbox_s", south_ );
+	   set("grid_bbox_w", west_  );
+	   set("grid_bbox_e", east_  );
 
-	ASSERT(north_ > south_); // This assertion only make sense if we ignore scanning mode
-	ASSERT(north_ < 90.0  || FloatCompare::is_equal(north_,90.0,degreesEps_));
-	ASSERT(south_ < 90.0  || FloatCompare::is_equal(south_,90.0,degreesEps_));
-	ASSERT(north_ > -90.0 || FloatCompare::is_equal(north_,-90.0,degreesEps_));
-	ASSERT(south_ > -90.0 || FloatCompare::is_equal(south_,-90.0,degreesEps_));
+	   // check area
+	   ASSERT(north_ > south_); // This assertion only make sense if we ignore scanning mode
+	   ASSERT(north_ < 90.0  || FloatCompare::is_equal(north_,90.0,degreesEps_));
+	   ASSERT(south_ < 90.0  || FloatCompare::is_equal(south_,90.0,degreesEps_));
+	   ASSERT(north_ > -90.0 || FloatCompare::is_equal(north_,-90.0,degreesEps_));
+	   ASSERT(south_ > -90.0 || FloatCompare::is_equal(south_,-90.0,degreesEps_));
 
-	eckit::geometry::reduceTo2Pi(west_);
-	eckit::geometry::reduceTo2Pi(east_);
+	   eckit::geometry::reduceTo2Pi(west_);
+	   eckit::geometry::reduceTo2Pi(east_);
 
-	ASSERT(east_ > west_); // This assertion only make sense if we ignore scanning mode
+	   ASSERT(east_ > west_); // This assertion only make sense if we ignore scanning mode
+	}
 
 	set("nbDataPoints", gh.nbDataPoints() );
 }
@@ -179,8 +191,8 @@ public:
       set( "Ny", GribAccessor<long>("Nx")(gh) );
       set( "Dx", GribAccessor<long>("Dx")(gh) );
       set( "Dy", GribAccessor<long>("Dy")(gh) );
-      set( "Lov", GribAccessor<long>("Lov")(gh) );
-      set( "LaD", GribAccessor<long>("LaD")(gh) );
+      if (gh.hasKey("LoV")) set( "LoV", GribAccessor<long>("LoV")(gh) );
+      if (gh.hasKey("LaD")) set( "LaD", GribAccessor<long>("LaD")(gh) );
       set( "La1", GribAccessor<double>("La1")(gh) );
       set( "Lo1", GribAccessor<double>("La1")(gh) );
 
@@ -188,7 +200,6 @@ public:
       long projection_center_flag = GribAccessor<long>("projectionCentreFlag")(gh);
       if (projection_center_flag == 1) north_pole_on_projection_plane =  false;
       set( "north_pole_on_projection_plane", north_pole_on_projection_plane  );
-
    }
 };
 

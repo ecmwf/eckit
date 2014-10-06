@@ -169,6 +169,34 @@ ConcreteBuilderT1<GribParams,GribReducedLatLon> GribReducedLatLon_builder( "redu
 
 //------------------------------------------------------------------------------------------------------
 
+class GribPolarStereoGraphic : public GribParams {
+public:
+
+   static std::string className() { return "eckit.grib.GribPolarStereoGraphic"; }
+   GribPolarStereoGraphic( GribHandle& gh ) : GribParams(gh)
+   {
+      set( "Nx", GribAccessor<long>("Nx")(gh) );
+      set( "Ny", GribAccessor<long>("Nx")(gh) );
+      set( "Dx", GribAccessor<long>("Dx")(gh) );
+      set( "Dy", GribAccessor<long>("Dy")(gh) );
+      set( "Lov", GribAccessor<long>("Lov")(gh) );
+      set( "LaD", GribAccessor<long>("LaD")(gh) );
+      set( "La1", GribAccessor<double>("La1")(gh) );
+      set( "Lo1", GribAccessor<double>("La1")(gh) );
+
+      bool north_pole_on_projection_plane = true;
+      long projection_center_flag = GribAccessor<long>("projectionCentreFlag")(gh);
+      if (projection_center_flag == 1) north_pole_on_projection_plane =  false;
+      set( "north_pole_on_projection_plane", north_pole_on_projection_plane  );
+
+   }
+};
+
+ConcreteBuilderT1<GribParams,GribPolarStereoGraphic> GribPolarStereoGraphic_builder( "polar_stereographic" );
+
+
+//------------------------------------------------------------------------------------------------------
+
 class GribRotatedLatLon : public GribParams {
 public:
 

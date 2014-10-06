@@ -6,6 +6,79 @@ namespace geometry {
 //-----------------------------------------------------------------------------
 // See: http://mathworld.wolfram.com/StereographicProjection.html
 //
+
+PolarStereoGraphicProj::PolarStereoGraphicProj(
+         bool north_pole_on_projection_plane,
+         bool spherical_earth,               /* false means use oblate spheroid */
+         long east_longitude                 /* Lov in grib talk */
+)
+: proj_(NULL)
+{
+   if (spherical_earth) {
+      proj_.reset(new SphericalPolarStereoGraphicProj(north_pole_on_projection_plane,east_longitude));
+   }
+   else {
+      proj_.reset(new EllipPolarStereoGraphicProj(north_pole_on_projection_plane,east_longitude));
+   }
+}
+
+PolarStereoGraphicProj::~PolarStereoGraphicProj(){}
+
+eckit::geometry::Point2 PolarStereoGraphicProj::map_to_plane( const eckit::geometry::LLPoint2& p ) const
+{
+   return proj_->map_to_plane(p);
+}
+
+eckit::geometry::LLPoint2 PolarStereoGraphicProj::map_to_spherical( double x, double y ) const
+{
+   return proj_->map_to_spherical(x, y);
+}
+
+void PolarStereoGraphicProj::set_radius( double r )
+{
+   proj_->set_radius(r);
+}
+
+void PolarStereoGraphicProj::set_scale_factor_at_natural_origin( double Ko )
+{
+   proj_->set_scale_factor_at_natural_origin(Ko);
+}
+
+void PolarStereoGraphicProj::set_eccentricity( double e )
+{
+   proj_->set_eccentricity(e);
+}
+
+void PolarStereoGraphicProj::set_false_easting( double fe )
+{
+   proj_->set_false_easting(fe);
+}
+
+void PolarStereoGraphicProj::set_false_northing( double fn )
+{
+   proj_->set_false_northing(fn);
+}
+
+
+// ------------------------------------------------------------------------
+
+AbsPolarStereoGraphicProj::AbsPolarStereoGraphicProj(
+         bool north_pole_on_projection_plane,
+         long east_longitude                 /* Lov in grib talk */
+)
+: degree_to_radian_(M_PI / 180.0),
+  radian_to_degree_(1/degree_to_radian_),
+  radius_(1),
+  north_pole_on_projection_plane_(north_pole_on_projection_plane),
+  east_longitude_(east_longitude)
+{
+}
+
+AbsPolarStereoGraphicProj::~AbsPolarStereoGraphicProj() {}
+
+// ------------------------------------------------------------------------
+
+// Spherical Polar Stereo Graphic projection
 // The transformation equations for a sphere of radius R are given by
 //    x  =  k.cos(phi).sin(lambda-lambda_0)                                    (1)
 //    y  =  k.[cos(phi_1).sin(phi)-sin(phi_1).cos(phi).cos(lambda-lambda_0)]   (2)
@@ -34,23 +107,12 @@ namespace geometry {
 // This can be used to come up with a scaling factor.
 // i.e circum @ 60 lati on earth / circum @ 60 latitude on projection
 //
-PolarStereoGraphicProj::PolarStereoGraphicProj(
-         bool north_pole_on_projection_plane,
-         bool spherical_earth,               /* false means use oblate spheroid */
-         long east_longitude                 /* Lov in grib talk */
+
+SphericalPolarStereoGraphicProj::SphericalPolarStereoGraphicProj(
+  bool north_pole_on_projection_plane,
+  long east_longitude                 /* Lov in grib talk */
 )
-: degree_to_radian_(M_PI / 180.0),
-  radian_to_degree_(1/degree_to_radian_),
-  radius_((spherical_earth) ? 1.0 : 6378137 ),
-  Ko_( 0.994 ),
-  e_(0.081819191),
-  fe_(0),
-  fn_(0),
-  north_pole_on_projection_plane_(north_pole_on_projection_plane),
-  spherical_earth_(spherical_earth),
-  east_longitude_(east_longitude),
-  cos_phi1_(0),
-  sin_phi1_(0)
+:AbsPolarStereoGraphicProj(north_pole_on_projection_plane,east_longitude)
 {
    double phi_1 = 0;                               // central latitude
    if ( north_pole_on_projection_plane_ )
@@ -62,21 +124,7 @@ PolarStereoGraphicProj::PolarStereoGraphicProj(
    sin_phi1_ = sin( phi_1  * degree_to_radian_);
 }
 
-eckit::geometry::Point2 PolarStereoGraphicProj::map_to_plane( const eckit::geometry::LLPoint2& point) const
-{
-   if (spherical_earth_) return  sp_map_to_plane(point);
-   return el_map_to_plane(point);
-}
-
-
-eckit::geometry::LLPoint2 PolarStereoGraphicProj::map_to_spherical( double x, double y) const
-{
-   if (spherical_earth_) return  sp_map_to_spherical(x,y);
-   return el_map_to_spherical(x,y);
-}
-
-
-eckit::geometry::Point2 PolarStereoGraphicProj::sp_map_to_plane( const eckit::geometry::LLPoint2& point) const
+eckit::geometry::Point2 SphericalPolarStereoGraphicProj::map_to_plane( const eckit::geometry::LLPoint2& point) const
 {
    double cos_phi = cos( point.lat()  * degree_to_radian_);
    double sin_phi = sin( point.lat()  * degree_to_radian_);
@@ -100,7 +148,7 @@ eckit::geometry::Point2 PolarStereoGraphicProj::sp_map_to_plane( const eckit::ge
    return eckit::geometry::Point2(x,y);
 }
 
-eckit::geometry::LLPoint2 PolarStereoGraphicProj::sp_map_to_spherical( double x, double y) const
+eckit::geometry::LLPoint2 SphericalPolarStereoGraphicProj::map_to_spherical( double x, double y) const
 {
    //      rho = sqrt(x^2+y^2)     (6)
    double rho = sqrt(x*x + y*y);
@@ -141,7 +189,7 @@ eckit::geometry::LLPoint2 PolarStereoGraphicProj::sp_map_to_spherical( double x,
 //
 //  a = 6378137.0m for  WGS 84
 //  e = 0.081819191
-// 1/f = 298.2572236
+//  1/f = 298.2572236
 //  Ko = 0.994    central scale factor
 //
 //  lonc = cental logitude.
@@ -151,7 +199,21 @@ eckit::geometry::LLPoint2 PolarStereoGraphicProj::sp_map_to_spherical( double x,
 //  y = p.cos(lon - lonc); // south pole
 //  y = -p.cos(lon - lonc); // north pole
 //
-eckit::geometry::Point2 PolarStereoGraphicProj::el_map_to_plane( const eckit::geometry::LLPoint2& point) const
+
+EllipPolarStereoGraphicProj::EllipPolarStereoGraphicProj(
+  bool north_pole_on_projection_plane,
+  long east_longitude                 /* Lov in grib talk */
+)
+: AbsPolarStereoGraphicProj(north_pole_on_projection_plane,east_longitude),
+  Ko_(0.994),
+  e_(0.081819191),
+  fe_(0),
+  fn_(0)
+{
+   radius_ = 6378137;
+}
+
+eckit::geometry::Point2 EllipPolarStereoGraphicProj::map_to_plane( const eckit::geometry::LLPoint2& point) const
 {
    double lat = point.lat();
    double sin_lat = sin(lat * degree_to_radian_);
@@ -192,15 +254,12 @@ eckit::geometry::Point2 PolarStereoGraphicProj::el_map_to_plane( const eckit::ge
 // Note: while ratio of x/y is same, for north/south pole, atan2 takes into account the quadrant
 // lon = Lon0 + atan( x/y)    # south pole  lon = Lon0 + atan2( x,y)
 // lon = Lon0 + atan( x/-y)   # north pole  lon = Lon0 + atan2( x,-y)
-eckit::geometry::LLPoint2 PolarStereoGraphicProj::el_map_to_spherical( double E, double N) const
+eckit::geometry::LLPoint2 EllipPolarStereoGraphicProj::map_to_spherical( double E, double N) const
 {
+   // Note: to avoid integer division, one must be cast to a double, i.e a(double)/b  || a/(double)b
    double a = radius_;
    double pd = sqrt( (E-fe_)*(E-fe_) + (N-fn_)*(N-fn_) );
-   double pow1 = pow(1.0+e_,1.0+e_);
-   double pow2 = pow(1.0-e_,1.0-e_);
-   double sqrt_pow = sqrt( pow1 * pow2  );
-   double den = 2.0*a*Ko_;
-   double td = pd * sqrt_pow / den ;
+   double td = pd * sqrt( pow(1+e_,1+e_) * pow(1-e_,1-e_)  ) / (double) (2.0*a*Ko_) ;
 
    double X = 0;
    if (north_pole_on_projection_plane_) {
@@ -210,12 +269,10 @@ eckit::geometry::LLPoint2 PolarStereoGraphicProj::el_map_to_spherical( double E,
       X = 2.0 * atan(td) - 90.0 * degree_to_radian_;
    }
 
-   double lat =  X + (e_*e_/2.0    +  5*e_*e_*e_*e_/24  + pow(e_,6)/12 + 13*pow(e_,8)/360.0) * sin(2.0 * X)
-                    + (7*pow(e_,4)/48.0 + 29*pow(e_,6)/240 + 811*pow(e_,8)/11520)              * sin(4.0 * X)
-                    + (7*pow(e_,6)/120  + 81*pow(e_,8)/1120)                                  * sin(6.0 * X)
-                    + (4279*pow(e_,8)/161280)                                                * sin(8.0 * X)
-                  ;
-
+   double lat =  X + (e_*e_/2.0    +  5*e_*e_*e_*e_/24.  + pow(e_,6)/12. + 13*pow(e_,8)/360.0) * sin(2.0 * X)
+                    + (7*pow(e_,4)/48. + 29*pow(e_,6)/240. + 811*pow(e_,8)/11520.)  * sin(4.0 * X)
+                    + (7*pow(e_,6)/120.  + 81*pow(e_,8)/1120.)  * sin(6.0 * X)
+                    + (4279*pow(e_,8)/161280.)  * sin(8.0 * X) ;
    lat *= radian_to_degree_;
 
 

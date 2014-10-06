@@ -281,7 +281,7 @@ eckit::geometry::LLPoint2 EllipPolarStereoGraphicProj::map_to_spherical( double 
       lon = east_longitude_ + atan2((E-fe_),fn_-N) * radian_to_degree_;
    }
    else {
-      lon = east_longitude_ + atan2((E-fe_),(N=fn_)) * radian_to_degree_;
+      lon = east_longitude_ + atan2((E-fe_),(N-fn_)) * radian_to_degree_;
    }
 
    return eckit::geometry::LLPoint2(lat,lon);

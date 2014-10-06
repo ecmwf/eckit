@@ -240,6 +240,12 @@ size_t GribHandle::nbDataPoints() const
 	return GribAccessor<long>("numberOfDataPoints")(*this);
 }
 
+bool GribHandle::hasKey(const char* key) const
+{
+   if (grib_is_defined(handle_,key) == 0) return false;
+   return true;
+}
+
 //------------------------------------------------------------------------------------------------------
 
 } // namespace grib

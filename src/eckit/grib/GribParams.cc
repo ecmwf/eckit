@@ -29,6 +29,7 @@ GribParams* GribParams::create( GribHandle& gh )
 GribParams::GribParams(GribHandle& gh)
 : g_(gh),
   edition_(0),
+  no_of_data_points_(0),
   north_(0),
   south_(0),
   west_(0),
@@ -85,7 +86,8 @@ GribParams::GribParams(GribHandle& gh)
 	   ASSERT(east_ > west_); // This assertion only make sense if we ignore scanning mode
 	}
 
-	set("nbDataPoints", gh.nbDataPoints() );
+	no_of_data_points_ = gh.nbDataPoints();
+	set("nbDataPoints", no_of_data_points_ );
 }
 
 GribParams::~GribParams()
@@ -187,8 +189,12 @@ public:
    static std::string className() { return "eckit.grib.GribPolarStereoGraphic"; }
    GribPolarStereoGraphic( GribHandle& gh ) : GribParams(gh)
    {
-      set( "Nx", GribAccessor<long>("Nx")(gh) );
-      set( "Ny", GribAccessor<long>("Nx")(gh) );
+      long nx = GribAccessor<long>("Nx")(gh);
+      long ny = GribAccessor<long>("Nx")(gh);
+      ASSERT(no_of_data_points_ ==  nx*ny);
+      set( "Nx", nx );
+      set( "Ny", ny );
+
       set( "Dx", GribAccessor<long>("Dx")(gh) );
       set( "Dy", GribAccessor<long>("Dy")(gh) );
       if (gh.hasKey("LoV")) set( "LoV", GribAccessor<long>("LoV")(gh) );
@@ -200,6 +206,23 @@ public:
       long projection_center_flag = GribAccessor<long>("projectionCentreFlag")(gh);
       if (projection_center_flag == 1) north_pole_on_projection_plane =  false;
       set( "north_pole_on_projection_plane", north_pole_on_projection_plane  );
+
+      bool sphere = true;
+      // get sphere from grib ???
+      set( "spherical_earth", eckit::Value(sphere) ); // true means sphere, false oblate spheroid
+
+      if (sphere) {
+         // get radius from grib ???
+         double radius = 6371229.0 ;
+         set( "radius", eckit::Value(radius) );
+      }
+      else {
+         // get radius from  semi_major and semi_minor from grib ???
+         double semi_major = 6378137.0;
+         double semi_minor = 6356752.3;
+         set( "semi_major", eckit::Value(semi_major) );
+         set( "semi_minor", eckit::Value(semi_minor) );
+      }
    }
 };
 

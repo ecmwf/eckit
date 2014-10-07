@@ -38,7 +38,8 @@ protected: // members
 
 	GribHandle& g_;
 
-	long   edition_;                 ///< Grib 1 or Grib 2
+	long edition_;                 ///< Grib 1 or Grib 2
+	size_t no_of_data_points_;
 
 	double north_;                   ///< In degrees
 	double south_;                   ///< In degrees

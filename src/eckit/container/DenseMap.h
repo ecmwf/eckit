@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_DenseMap2_h
-#define eckit_DenseMap2_h
+#ifndef eckit_DenseMap_h
+#define eckit_DenseMap_h
 
 /// @author Tiago Quintino
 
@@ -24,7 +24,7 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 template < typename K, typename V >
-class DenseMap2 {
+class DenseMap {
 
 public: // types
 
@@ -50,12 +50,12 @@ public: // methods
   typedef typename key_store_t::iterator iterator;
   typedef typename key_store_t::const_iterator const_iterator;
 
-  DenseMap2( size_t s = 0 ) : sorted_(true)
+  DenseMap( size_t s = 0 ) : sorted_(true)
   {
 	  if(s > 0) reserve(s);
   }
 
-  ~DenseMap2() {}
+  ~DenseMap() {}
 
   void reserve( size_t s ) 
   {
@@ -147,7 +147,7 @@ public: // methods
   		s << it->key << " " << values_[ it->idx ] << std::endl;
   }
 
-  friend std::ostream& operator<<(std::ostream& s, const DenseMap2& m) { m.print(s);  return s; }
+  friend std::ostream& operator<<(std::ostream& s, const DenseMap& m) { m.print(s);  return s; }
 
 private: // types
 

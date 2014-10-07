@@ -17,7 +17,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/container/DenseMap.h"
-#include "eckit/container/DenseMap2.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/log/Timer.h"
 #include "eckit/types/FixedString.h"
@@ -27,8 +26,8 @@ using namespace eckit;
 
 //-----------------------------------------------------------------------------
 
-#define MSIZE    50000
-#define NSAMPLES 5000000
+#define MSIZE    500
+#define NSAMPLES 50000
 
 template < typename MAP >
 void benchmark_densemap_int_string( const std::string& tname )
@@ -105,12 +104,10 @@ void benchmark_stdmap_int_string( const std::string& tname )
 int main()
 {
     benchmark_densemap_int_string< DenseMap<int,std::string>  >("DenseMap<int,string>");
-    benchmark_densemap_int_string< DenseMap2<int,std::string> >("DenseMap2<int,string>");
     benchmark_stdmap_int_string< std::map<int,std::string> >("std::map<int,string>");
 
     ///
 
     benchmark_densemap_int_string< DenseMap<int, FixedString<256> > >("DenseMap<int,FixedString>");
-    benchmark_densemap_int_string< DenseMap2<int,FixedString<256> > >("DenseMap2<int,FixedString>");
     benchmark_stdmap_int_string< std::map<int,FixedString<256> > >("std::map<int,FixedString>");
 }

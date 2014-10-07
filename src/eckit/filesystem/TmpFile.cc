@@ -8,10 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-
-#include "eckit/filesystem/TmpFile.h"
 #include <unistd.h>
 
+#include "eckit/filesystem/TmpFile.h"
 
 //-----------------------------------------------------------------------------
 
@@ -19,9 +18,11 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static PathName tmp() {
+static PathName tmp()
+{
     const char *tmpdir = ::getenv("TMPDIR");
-    if(!tmpdir) {
+	if(!tmpdir)
+	{
         tmpdir = "/tmp";
     }
 
@@ -37,12 +38,10 @@ static PathName tmp() {
     SYSCALL(::close(fd));
 
     return result;
-
 }
 
 
-TmpFile::TmpFile():
-    PathName(tmp())
+TmpFile::TmpFile(): PathName(tmp())
 {
 }
 

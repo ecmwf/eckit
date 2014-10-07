@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -42,7 +42,7 @@ public: // methods
     /// Destructor
     /// @throws nothing
     ~Exception() throw();
-    
+
     virtual const char *what() const throw() {  return what_.c_str(); }
     virtual bool retryOnServer() const        { return false; }
     virtual bool retryOnClient() const        { return false; }
@@ -54,20 +54,20 @@ public: // methods
     const std::string& callStack() const { return callStack_; }
 
 protected: // methods
-    
+
     void reason(const std::string&);
     Exception();
 
     virtual void print(std::ostream&) const;
-    
+
 private: // members
-    
+
     std::string       what_;      ///< description
     std::string       callStack_; ///< call stack
     SavedStatus       save_;      ///< saved monitor status to recover after destruction
     Exception*        next_;
     CodeLocation      location_;  ///< where exception was first thrown
-    
+
 
     friend std::ostream& operator<<(std::ostream& s,const Exception& p)
     {
@@ -117,6 +117,12 @@ public:
     BadParameter(const std::string&, const CodeLocation&);
 };
 
+class BadCast : public Exception {
+public:
+    BadCast(const std::string& s);
+    BadCast(const std::string&, const CodeLocation&);
+};
+
 class NotImplemented : public Exception {
 public:
 	NotImplemented( const std::string& s, const CodeLocation& );
@@ -153,6 +159,8 @@ public:
 
 class OutOfRange : public Exception {
 public:
+    OutOfRange(const std::string&,const CodeLocation&);
+    OutOfRange(unsigned long long, unsigned long long,const CodeLocation&);
     OutOfRange(unsigned long long, unsigned long long);
 };
 

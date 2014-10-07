@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -29,7 +29,7 @@ static Once<Mutex> local_mutex;
 Context::Context() :
     argc_(0),
     argv_(0),
-    taskID_(0),    
+    taskID_(0),
     home_("/"),
     runName_("undef"),
     displayName_()
@@ -53,8 +53,8 @@ Context& Context::instance()
 }
 
 void Context::setup( int argc, char **argv )
-{   
-    if( argc <= 0 || argv == 0 ) 
+{
+    if( argc <= 0 || argv == 0 )
         throw SeriousBug("Context setup with bad command line arguments");
 
     argc_ = argc;
@@ -85,18 +85,18 @@ void Context::debug( const int d )
     behavior_->debug(d);
 }
 
-int  Context::argc() const 
-{ 
+int  Context::argc() const
+{
     AutoLock<Mutex> lock(local_mutex);
     return argc_;
 }
 
 std::string Context::argv(int n) const
-{ 
+{
     AutoLock<Mutex> lock(local_mutex);
     ASSERT( argc_ != 0 && argv_ != 0 ); // check initialized
     ASSERT( n < argc_ && n >= 0);       // check bounds
-    return argv_[n]; 
+    return argv_[n];
 }
 
 char** Context::argvs() const
@@ -172,6 +172,11 @@ Channel& Context::errorChannel()
 Channel& Context::debugChannel()
 {
     return behavior_->debugChannel();
+}
+
+Channel& Context::channel(int cat)
+{
+    return behavior_->channel(cat);
 }
 
 //-----------------------------------------------------------------------------

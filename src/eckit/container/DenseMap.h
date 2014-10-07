@@ -89,6 +89,10 @@ public: // methods
   	}
   }
 
+  bool has( const K& k ) const { return find(k) != cend(); }
+
+  V get( iterator it ) const { return it->second; }
+  V get( const_iterator it ) const { return it->second; }
   V get( const K& k ) const { return find(k)->second; }
 
   iterator find( const K& k )

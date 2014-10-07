@@ -105,10 +105,10 @@ public: // methods
   }
 
   iterator begin() { return keys_.begin(); }
-  const_iterator cbegin() const { return keys_.cbegin(); }
+  const_iterator cbegin() const { return keys_.begin(); }
 
   iterator end() { return keys_.end(); }
-  const_iterator cend() const { return keys_.cend(); }
+  const_iterator cend() const { return keys_.end(); }
 
   bool has( const K& k ) const { return find(k) != cend(); }
 

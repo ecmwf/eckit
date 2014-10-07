@@ -181,7 +181,9 @@ bool ResourceMgr::lookUp( Configurable* owner,
 		return true;
 	}
 
+#if 0 // DEBUG
     Log::error() << "result not found " << Here() << std::endl;
+#endif
     return false;
 }
 

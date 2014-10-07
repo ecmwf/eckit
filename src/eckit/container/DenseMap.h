@@ -17,6 +17,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "eckit/exception/Exceptions.h"
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -115,6 +117,8 @@ public: // methods
   V get( iterator it ) const { return values_[ it->idx ]; }
   V get( const_iterator it ) const { return values_[ it->idx ]; }
   V get( const K& k ) const { return values_[ find(k)->idx ]; }
+
+  V at( const size_t i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
 
   iterator find( const K& k )
   {

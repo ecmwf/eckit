@@ -1,4 +1,5 @@
 ecbuild_add_test(   TARGET      test_btree
+                    CONDITION   OFF
 					SOURCES     test_btree.cc
 					LIBS        eckit )
 

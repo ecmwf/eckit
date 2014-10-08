@@ -120,6 +120,9 @@ public: // methods
 
   V at( const size_t i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
 
+  const V& operator[] (const K& k ) { return values_[ find(k)->idx ]; }
+  const V& operator[] (const size_t& i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
+
   iterator find( const K& k )
   {
     if( !empty() )

@@ -190,34 +190,41 @@ public:
    GribPolarStereoGraphic( GribHandle& gh ) : GribParams(gh)
    {
       long nx = GribAccessor<long>("Nx")(gh);
-      long ny = GribAccessor<long>("Nx")(gh);
+      long ny = GribAccessor<long>("Ny")(gh);
       ASSERT(no_of_data_points_ ==  nx*ny);
       set( "Nx", nx );
       set( "Ny", ny );
 
-      set( "Dx", GribAccessor<long>("Dx")(gh) );
-      set( "Dy", GribAccessor<long>("Dy")(gh) );
-      if (gh.hasKey("LoV")) set( "LoV", GribAccessor<long>("LoV")(gh) );
-      if (gh.hasKey("LaD")) set( "LaD", GribAccessor<long>("LaD")(gh) );
-      set( "La1", GribAccessor<double>("La1")(gh) );
-      set( "Lo1", GribAccessor<double>("La1")(gh) );
+      set( "Dx", GribAccessor<long>("DxInMetres")(gh) );
+      set( "Dy", GribAccessor<long>("DyInMetres")(gh) );
 
-      bool north_pole_on_projection_plane = true;
-      long projection_center_flag = GribAccessor<long>("projectionCentreFlag")(gh);
-      if (projection_center_flag == 1) north_pole_on_projection_plane =  false;
-      set( "north_pole_on_projection_plane", north_pole_on_projection_plane  );
+      if (gh.hasKey("LaD")) set( "LaD", GribAccessor<double>("LaDInDegrees")(gh) );
+      set( "orientationOfTheGrid", GribAccessor<double>("orientationOfTheGridInDegrees")(gh) );
+      set( "latitudeOfFirstGridPoint", GribAccessor<double>("latitudeOfFirstGridPointInDegrees")(gh) );
+      set( "longitudeOfFirstGridPoint", GribAccessor<double>("longitudeOfFirstGridPointInDegrees")(gh) );
+
+      // Needed to determine bounding box
+      set( "iScansPositively", GribAccessor<bool>("iScansPositively")(gh)  );
+      set( "jScansPositively", GribAccessor<bool>("jScansPositively")(gh)  );
+
+      set( "north_pole_on_projection_plane", !GribAccessor<bool>("southPoleOnProjectionPlane")(gh)  );
+//      bool north_pole_on_projection_plane = true;
+//      long projection_center_flag = GribAccessor<long>("projectionCentreFlag")(gh);
+//      if (projection_center_flag == 1) north_pole_on_projection_plane =  false;
+//      set( "north_pole_on_projection_plane", north_pole_on_projection_plane  );
 
       bool sphere = true;
-      // get sphere from grib ???
+      // TODO get sphere from grib ???
       set( "spherical_earth", eckit::Value(sphere) ); // true means sphere, false oblate spheroid
 
       if (sphere) {
          // get radius from grib ???
+         // TODO
          double radius = 6371229.0 ;
          set( "radius", eckit::Value(radius) );
       }
       else {
-         // get radius from  semi_major and semi_minor from grib ???
+         // TODO get radius from  semi_major and semi_minor from grib ???
          double semi_major = 6378137.0;
          double semi_minor = 6356752.3;
          set( "semi_major", eckit::Value(semi_major) );

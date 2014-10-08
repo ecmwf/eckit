@@ -159,6 +159,14 @@ void ResourceBase::dump(std::ostream& s) const
 		else  s << "(undefined)";
 		s << std::endl;
 	}
+    if( !name_.empty() )
+	{
+		std::string tmpStr;
+        if( ResourceMgr::instance().lookUp(owner_,name_,0,tmpStr) )
+        {
+	   		s << "#   config file : "<< name_ << " (defined as " << tmpStr << ")" << std::endl;
+	   	}
+	}     
 
 	s << name() << " : " << getValue();
 

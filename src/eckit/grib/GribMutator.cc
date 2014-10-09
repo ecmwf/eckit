@@ -42,6 +42,14 @@ void grib_set_value(GribHandle& h, const std::string& name, long x, bool quiet)
 	check_error_code(name,err,quiet);
 }
 
+void grib_set_value(GribHandle& h, const std::string& name, bool xy, bool quiet)
+{
+   long x = 0;
+   if (xy) x = 1;
+   int err = grib_set_long(h.raw(), name.c_str(), x);
+   check_error_code(name,err,quiet);
+}
+
 void grib_set_value(GribHandle& h, const std::string& name, std::string x, bool quiet)
 {
 	size_t s = x.size();

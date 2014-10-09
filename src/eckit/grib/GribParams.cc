@@ -198,6 +198,8 @@ public:
       set( "Dx", GribAccessor<long>("DxInMetres")(gh) );
       set( "Dy", GribAccessor<long>("DyInMetres")(gh) );
 
+      set( "resolutionAndComponentFlag", GribAccessor<long>("resolutionAndComponentFlag")(gh) );
+
       if (gh.hasKey("LaD")) set( "LaD", GribAccessor<double>("LaDInDegrees")(gh) );
       set( "orientationOfTheGrid", GribAccessor<double>("orientationOfTheGridInDegrees")(gh) );
       set( "latitudeOfFirstGridPoint", GribAccessor<double>("latitudeOfFirstGridPointInDegrees")(gh) );
@@ -207,28 +209,17 @@ public:
       set( "iScansPositively", GribAccessor<bool>("iScansPositively")(gh)  );
       set( "jScansPositively", GribAccessor<bool>("jScansPositively")(gh)  );
 
-      set( "north_pole_on_projection_plane", !GribAccessor<bool>("southPoleOnProjectionPlane")(gh)  );
-//      bool north_pole_on_projection_plane = true;
-//      long projection_center_flag = GribAccessor<long>("projectionCentreFlag")(gh);
-//      if (projection_center_flag == 1) north_pole_on_projection_plane =  false;
-//      set( "north_pole_on_projection_plane", north_pole_on_projection_plane  );
+      set( "southPoleOnProjectionPlane", GribAccessor<bool>("southPoleOnProjectionPlane")(gh) );
 
-      bool sphere = true;
-      // TODO get sphere from grib ???
-      set( "spherical_earth", eckit::Value(sphere) ); // true means sphere, false oblate spheroid
+      bool earthIsOblate = GribAccessor<bool>("earthIsOblate")(gh);
+      set( "earthIsOblate", eckit::Value(earthIsOblate) ); // true means sphere, false oblate spheroid
 
-      if (sphere) {
-         // get radius from grib ???
-         // TODO
-         double radius = 6371229.0 ;
-         set( "radius", eckit::Value(radius) );
+      if (earthIsOblate) {
+         set( "earthMajorAxis", GribAccessor<double>("earthMajorAxisInMetres")(gh) );
+         set( "earthMinorAxis", GribAccessor<double>("earthMinorAxisInMetres")(gh) );
       }
       else {
-         // TODO get radius from  semi_major and semi_minor from grib ???
-         double semi_major = 6378137.0;
-         double semi_minor = 6356752.3;
-         set( "semi_major", eckit::Value(semi_major) );
-         set( "semi_minor", eckit::Value(semi_minor) );
+         set( "radius", GribAccessor<double>("radius")(gh) );
       }
    }
 };

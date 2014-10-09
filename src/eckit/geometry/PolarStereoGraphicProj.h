@@ -18,9 +18,9 @@ namespace geometry {
 //            First project unto the plane(x,y), then project back to the sphere(lat,lon)
 //            We should get back same lat,lon
 //
-//    PolarStereoGraphicProj ps(false/*north_pole_on_projection_plane*/,
-//                              true /*spherical_earth*/,
-//                              0    /*east longitude*/);
+//    PolarStereoGraphicProj ps(false /*southPoleOnProjectionPlane*/,
+//                              false /*earth_is_oblate*/,
+//                              0     /*east longitude*/);
 //    double lat = 30;
 //    double lon = 30;
 //    eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
@@ -33,8 +33,8 @@ namespace geometry {
 //            First project unto the plane(x,y), then project back to the sphere(lat,lon)
 //            We should get back same lat,lon
 //
-//   PolarStereoGraphicProj ps(true /*north_pole_on_projection_plane*/,
-//                             false/*spherical_earth*/,
+//   PolarStereoGraphicProj ps(false /*southPoleOnProjectionPlane*/,
+//                             true /*earth_is_oblate*/,
 //                             0    /*east longitude*/);
 //   ps.set_false_easting( 2000000);
 //   ps.set_false_northing(2000000);
@@ -52,9 +52,9 @@ public:
    // Set up transformations for Polar StereoGraphic grids
    // default Assumes we have earth radius of 1.
    PolarStereoGraphicProj(
-            bool north_pole_on_projection_plane,
-            bool spherical_earth,               /* false means use oblate spheroid */
-            long east_longitude                 /* Lov in grib talk */
+            bool southPoleOnProjectionPlane,
+            bool earth_is_oblate = false,      /* false means use shere */
+            long east_longitude  = 0           /* Lov in grib talk */
             );
 
    ~PolarStereoGraphicProj();
@@ -114,7 +114,7 @@ public:
 protected:
 
    AbsPolarStereoGraphicProj(
-             bool north_pole_on_projection_plane,
+             bool southPoleOnProjectionPlane,
              long east_longitude                 /* Lov in grib talk */
              );
 
@@ -123,7 +123,7 @@ protected:
    double radian_to_degree_;
    double radius_;
 
-   bool north_pole_on_projection_plane_;
+   bool southPoleOnProjectionPlane_;
    long east_longitude_;
 };
 
@@ -132,7 +132,7 @@ protected:
 class SphericalPolarStereoGraphicProj : public AbsPolarStereoGraphicProj {
 public:
 
-   SphericalPolarStereoGraphicProj( bool north_pole_on_projection_plane,
+   SphericalPolarStereoGraphicProj( bool southPoleOnProjectionPlane,
                                         long east_longitude                 /* Lov in grib talk */
                                        );
 
@@ -154,7 +154,7 @@ class EllipPolarStereoGraphicProj : public AbsPolarStereoGraphicProj {
 public:
 
    EllipPolarStereoGraphicProj(
-             bool north_pole_on_projection_plane,
+             bool southPoleOnProjectionPlane,
              long east_longitude                 /* Lov in grib talk */
              );
 

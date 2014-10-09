@@ -8,17 +8,17 @@ namespace geometry {
 //
 
 PolarStereoGraphicProj::PolarStereoGraphicProj(
-         bool north_pole_on_projection_plane,
-         bool spherical_earth,               /* false means use oblate spheroid */
-         long east_longitude                 /* Lov in grib talk */
+         bool southPoleOnProjectionPlane,
+         bool earth_is_oblate,
+         long east_longitude
 )
 : proj_(NULL)
 {
-   if (spherical_earth) {
-      proj_.reset(new SphericalPolarStereoGraphicProj(north_pole_on_projection_plane,east_longitude));
+   if (earth_is_oblate) {
+      proj_.reset(new EllipPolarStereoGraphicProj(southPoleOnProjectionPlane,east_longitude));
    }
    else {
-      proj_.reset(new EllipPolarStereoGraphicProj(north_pole_on_projection_plane,east_longitude));
+      proj_.reset(new SphericalPolarStereoGraphicProj(southPoleOnProjectionPlane,east_longitude));
    }
 }
 
@@ -63,13 +63,13 @@ void PolarStereoGraphicProj::set_false_northing( double fn )
 // ------------------------------------------------------------------------
 
 AbsPolarStereoGraphicProj::AbsPolarStereoGraphicProj(
-         bool north_pole_on_projection_plane,
+         bool southPoleOnProjectionPlane,
          long east_longitude                 /* Lov in grib talk */
 )
 : degree_to_radian_(M_PI / 180.0),
   radian_to_degree_(1/degree_to_radian_),
   radius_(1),
-  north_pole_on_projection_plane_(north_pole_on_projection_plane),
+  southPoleOnProjectionPlane_(southPoleOnProjectionPlane),
   east_longitude_(east_longitude)
 {
 }
@@ -109,16 +109,16 @@ AbsPolarStereoGraphicProj::~AbsPolarStereoGraphicProj() {}
 //
 
 SphericalPolarStereoGraphicProj::SphericalPolarStereoGraphicProj(
-  bool north_pole_on_projection_plane,
+  bool southPoleOnProjectionPlane,
   long east_longitude                 /* Lov in grib talk */
 )
-:AbsPolarStereoGraphicProj(north_pole_on_projection_plane,east_longitude)
+:AbsPolarStereoGraphicProj(southPoleOnProjectionPlane,east_longitude)
 {
    double phi_1 = 0;                               // central latitude
-   if ( north_pole_on_projection_plane_ )
-      phi_1 = 90.0;
-   else
+   if ( southPoleOnProjectionPlane )
       phi_1 = -90.0;
+   else
+      phi_1 = 90.0;
 
    cos_phi1_ = cos( phi_1  * degree_to_radian_);
    sin_phi1_ = sin( phi_1  * degree_to_radian_);
@@ -201,10 +201,10 @@ eckit::geometry::LLPoint2 SphericalPolarStereoGraphicProj::map_to_spherical( dou
 //
 
 EllipPolarStereoGraphicProj::EllipPolarStereoGraphicProj(
-  bool north_pole_on_projection_plane,
+  bool southPoleOnProjectionPlane,
   long east_longitude                 /* Lov in grib talk */
 )
-: AbsPolarStereoGraphicProj(north_pole_on_projection_plane,east_longitude),
+: AbsPolarStereoGraphicProj(southPoleOnProjectionPlane,east_longitude),
   Ko_(0.994),
   e_(0.081819191),
   fe_(0),
@@ -227,11 +227,11 @@ eckit::geometry::Point2 EllipPolarStereoGraphicProj::map_to_plane( const eckit::
 
    double x = fe_ + p * sin( lon - lonc );
    double y;
-   if (north_pole_on_projection_plane_) {
-      y = fn_ + -( p * cos( lon - lonc ));
+   if (southPoleOnProjectionPlane_) {
+      y = fn_ + p * cos( lon - lonc );
    }
    else {
-      y = fn_ + p * cos( lon - lonc );
+      y = fn_ + -( p * cos( lon - lonc ));
    }
 
    return eckit::geometry::Point2(x,y);
@@ -262,11 +262,11 @@ eckit::geometry::LLPoint2 EllipPolarStereoGraphicProj::map_to_spherical( double 
    double td = pd * sqrt( pow(1+e_,1+e_) * pow(1-e_,1-e_)  ) / (double) (2.0*a*Ko_) ;
 
    double X = 0;
-   if (north_pole_on_projection_plane_) {
-      X = 90. * degree_to_radian_  - 2. * atan(td) ;
+   if (southPoleOnProjectionPlane_) {
+      X = 2.0 * atan(td) - 90.0 * degree_to_radian_;
    }
    else {
-      X = 2.0 * atan(td) - 90.0 * degree_to_radian_;
+      X = 90. * degree_to_radian_  - 2. * atan(td) ;
    }
 
    double lat =  X + (e_*e_/2.0    +  5*e_*e_*e_*e_/24.  + pow(e_,6)/12. + 13*pow(e_,8)/360.0) * sin(2.0 * X)
@@ -277,11 +277,11 @@ eckit::geometry::LLPoint2 EllipPolarStereoGraphicProj::map_to_spherical( double 
 
 
    double lon;
-   if (north_pole_on_projection_plane_) {
-      lon = east_longitude_ + atan2((E-fe_),fn_-N) * radian_to_degree_;
+   if (southPoleOnProjectionPlane_) {
+      lon = east_longitude_ + atan2((E-fe_),(N-fn_)) * radian_to_degree_;
    }
    else {
-      lon = east_longitude_ + atan2((E-fe_),(N-fn_)) * radian_to_degree_;
+      lon = east_longitude_ + atan2((E-fe_),fn_-N) * radian_to_degree_;
    }
 
    return eckit::geometry::LLPoint2(lat,lon);

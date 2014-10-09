@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE( test_north_polar_stereographic_projection )
 {
    cout << "Geometry:: ...test_north_polar_stereographic_projection\n";
 
-   PolarStereoGraphicProj ps(true/*north_pole_on_projection_plane*/,true/*spherical_earth*/,0 );
+   PolarStereoGraphicProj ps(false/*southPoleOnProjectionPlane*/,false/*earth_is_oblate*/,0 );
    ps.set_radius(6371229);
 
    double lat = 30;
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( test_south_polar_stereographic_projection )
 {
    cout << "Geometry:: ...test_south_polar_stereographic_projection\n";
 
-   PolarStereoGraphicProj ps(false/*north_pole_on_projection_plane*/,true/*spherical_earth*/,0);
+   PolarStereoGraphicProj ps(true/*southPoleOnProjectionPlane*/,false/*earth_is_oblate*/,0);
 
    double lat = 30;
    double lon = 30;
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE( test_global_north_polar_stereographic_projection )
 {
    cout << "Geometry:: ...test_global_north_polar_stereographic_projection\n";
 
-   PolarStereoGraphicProj ps(true/*north_pole_on_projection_plane*/,true/*spherical_earth*/,0);
+   PolarStereoGraphicProj ps(false/*southPoleOnProjectionPlane*/,false/*earth_is_oblate*/,0);
 
    for(size_t lat = -90; lat < 90; lat++) {
       for(size_t lon = 0; lon < 360; lon++) {
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE( test_global_south_polar_stereographic_projection )
 {
    cout << "Geometry:: ...test_global_south_polar_stereographic_projection\n";
 
-   PolarStereoGraphicProj ps(false/*north_pole_on_projection_plane*/,true/*spherical_earth*/,0);
+   PolarStereoGraphicProj ps(true/*southPoleOnProjectionPlane*/,false/*earth_is_oblate*/,0);
 
    for(size_t lat = -90; lat < 90; lat++) {
       for(size_t lon = 0; lon < 360; lon++) {
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE( test_north_ellipsoid_polar_stereographic_projection )
 {
    cout << "\nGeometry:: ...test_north_ellipsoid_polar_stereographic_projection\n";
 
-   PolarStereoGraphicProj ps(true/*north_pole_on_projection_plane*/,false/*spherical_earth*/,0);
+   PolarStereoGraphicProj ps(false/*southPoleOnProjectionPlane*/,true/*earth_is_oblate*/,0);
    ps.set_false_easting( 2000000);
    ps.set_false_northing(2000000);
 
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE( test_global_north_ellipsoid_polar_stereographic_projection
 {
    cout << "Geometry:: ...test_global_north_ellipsoid_polar_stereographic_projection\n";
 
-   PolarStereoGraphicProj ps(true/*north_pole_on_projection_plane*/,false/*spherical_earth*/,0);
+   PolarStereoGraphicProj ps(false/*southPoleOnProjectionPlane*/,true/*earth_is_oblate*/,0);
 
    for(size_t lat = -90; lat < 90; lat++) {
       for(size_t lon = 0; lon < 360; lon++) {
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE( test_global_south_ellipsoid_polar_stereographic_projection
 {
    cout << "Geometry:: ...test_global_south_ellipsoid_polar_stereographic_projection\n";
 
-   PolarStereoGraphicProj ps(false/*north_pole_on_projection_plane*/,false/*spherical_earth*/,0);
+   PolarStereoGraphicProj ps(true/*southPoleOnProjectionPlane*/,true/*earth_is_oblate*/,0);
 
    for(size_t lat = -90; lat < 90; lat++) {
       for(size_t lon = 0; lon < 360; lon++) {

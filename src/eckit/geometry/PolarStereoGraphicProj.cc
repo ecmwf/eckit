@@ -10,15 +10,15 @@ namespace geometry {
 PolarStereoGraphicProj::PolarStereoGraphicProj(
          bool southPoleOnProjectionPlane,
          bool earth_is_oblate,
-         long east_longitude
+         long lon_of_natural_origin
 )
 : proj_(NULL)
 {
    if (earth_is_oblate) {
-      proj_.reset(new EllipPolarStereoGraphicProj(southPoleOnProjectionPlane,east_longitude));
+      proj_.reset(new EllipPolarStereoGraphicProj(southPoleOnProjectionPlane,lon_of_natural_origin));
    }
    else {
-      proj_.reset(new SphericalPolarStereoGraphicProj(southPoleOnProjectionPlane,east_longitude));
+      proj_.reset(new SphericalPolarStereoGraphicProj(southPoleOnProjectionPlane,lon_of_natural_origin));
    }
 }
 
@@ -64,13 +64,13 @@ void PolarStereoGraphicProj::set_false_northing( double fn )
 
 AbsPolarStereoGraphicProj::AbsPolarStereoGraphicProj(
          bool southPoleOnProjectionPlane,
-         long east_longitude                 /* Lov in grib talk */
+         long lon_of_natural_origin                 /* Lov in grib talk */
 )
 : degree_to_radian_(M_PI / 180.0),
   radian_to_degree_(1/degree_to_radian_),
   radius_(1),
   southPoleOnProjectionPlane_(southPoleOnProjectionPlane),
-  east_longitude_(east_longitude)
+  lon_of_natural_origin_(lon_of_natural_origin)
 {
 }
 
@@ -110,9 +110,9 @@ AbsPolarStereoGraphicProj::~AbsPolarStereoGraphicProj() {}
 
 SphericalPolarStereoGraphicProj::SphericalPolarStereoGraphicProj(
   bool southPoleOnProjectionPlane,
-  long east_longitude                 /* Lov in grib talk */
+  long lon_of_natural_origin
 )
-:AbsPolarStereoGraphicProj(southPoleOnProjectionPlane,east_longitude)
+:AbsPolarStereoGraphicProj(southPoleOnProjectionPlane,lon_of_natural_origin)
 {
    double phi_1 = 0;                               // central latitude
    if ( southPoleOnProjectionPlane )
@@ -129,7 +129,7 @@ eckit::geometry::Point2 SphericalPolarStereoGraphicProj::map_to_plane( const eck
    double cos_phi = cos( point.lat()  * degree_to_radian_);
    double sin_phi = sin( point.lat()  * degree_to_radian_);
 
-   double lambda_0 = east_longitude_ * degree_to_radian_;  // central longitude
+   double lambda_0 = lon_of_natural_origin_ * degree_to_radian_;
    double lambda = point.lon() * degree_to_radian_;
    double lambda_diff = lambda - lambda_0;
 
@@ -171,7 +171,7 @@ eckit::geometry::LLPoint2 SphericalPolarStereoGraphicProj::map_to_spherical( dou
    double lat = asin( z ) * radian_to_degree_;
 
    //   lon   =  lambda_0+tan^(-1)((x.sin(c)/(rho.cos(phi_1).cos(c)-y.sin(phi_1).sin(c))), (5)
-   double lambda_0 = east_longitude_ * degree_to_radian_;              // central longitude
+   double lambda_0 = lon_of_natural_origin_ * degree_to_radian_;              // central longitude
    double lon = (lambda_0 + atan2( (x * sin_c) , (rho * cos_phi1_ * cos_c - y * sin_phi1_ * sin_c) )) * radian_to_degree_ ;
 
    // Still get a very small rounding error, round to 6 decimal places
@@ -202,9 +202,9 @@ eckit::geometry::LLPoint2 SphericalPolarStereoGraphicProj::map_to_spherical( dou
 
 EllipPolarStereoGraphicProj::EllipPolarStereoGraphicProj(
   bool southPoleOnProjectionPlane,
-  long east_longitude                 /* Lov in grib talk */
+  long lon_of_natural_origin
 )
-: AbsPolarStereoGraphicProj(southPoleOnProjectionPlane,east_longitude),
+: AbsPolarStereoGraphicProj(southPoleOnProjectionPlane,lon_of_natural_origin),
   Ko_(0.994),
   e_(0.081819191),
   fe_(0),
@@ -223,7 +223,7 @@ eckit::geometry::Point2 EllipPolarStereoGraphicProj::map_to_plane( const eckit::
    double p = (2 * a * Ko_ * t) / sqrt( ( pow(1+e_,1+e_) * pow(1-e_,1-e_)) ) ;
 
    double lon = point.lon() * degree_to_radian_;
-   double lonc = east_longitude_ * degree_to_radian_;
+   double lonc = lon_of_natural_origin_ * degree_to_radian_;
 
    double x = fe_ + p * sin( lon - lonc );
    double y;
@@ -278,10 +278,10 @@ eckit::geometry::LLPoint2 EllipPolarStereoGraphicProj::map_to_spherical( double 
 
    double lon;
    if (southPoleOnProjectionPlane_) {
-      lon = east_longitude_ + atan2((E-fe_),(N-fn_)) * radian_to_degree_;
+      lon = lon_of_natural_origin_ + atan2((E-fe_),(N-fn_)) * radian_to_degree_;
    }
    else {
-      lon = east_longitude_ + atan2((E-fe_),fn_-N) * radian_to_degree_;
+      lon = lon_of_natural_origin_ + atan2((E-fe_),fn_-N) * radian_to_degree_;
    }
 
    return eckit::geometry::LLPoint2(lat,lon);

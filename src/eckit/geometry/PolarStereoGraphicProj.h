@@ -11,16 +11,29 @@ namespace eckit {
 namespace geometry {
 
 // -----------------------------------------------------------------------------------
-// The main class, that will be instantiated by the user
+// The main class, that will be instantiated by the user:
+//
+// We support two variants, however others can be added:
+//    o earth is sphere
+//
+//    o earth is oblate spheroid assumes following parameters apply:
+//      - variant A: - Assumes WGS 84, for a,e by default, can be overridden
+//                   - assumes latitude of natural origin is north/south pole (+/-90)
+//                   - assumes longitude of natural origin is given, typically zero
+//                   - scaling factor Ko at natural origin
+//                   - false easting and false northing at natural origin
+//
+//      - There several other projection variants for the ellipsoid, but this appears to be
+//        closest to the GRIB definition
 //
 // Usage:
-// Example 1: Assume earth is spherical, project to south pole, east longitude is 0
-//            First project unto the plane(x,y), then project back to the sphere(lat,lon)
+// Example 1: Assume earth is spherical, project to south pole, longitude of natural origin is 0
+//            First project on too the plane(x,y), then project back to the sphere(lat,lon)
 //            We should get back same lat,lon
 //
-//    PolarStereoGraphicProj ps(false /*southPoleOnProjectionPlane*/,
-//                              false /*earth_is_oblate*/,
-//                              0     /*east longitude*/);
+//    PolarStereoGraphicProj ps(false /* southPoleOnProjectionPlane */,
+//                              false /* earth_is_oblate */,
+//                              0     /* longitude of natural origin */);
 //    double lat = 30;
 //    double lon = 30;
 //    eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
@@ -28,14 +41,15 @@ namespace geometry {
 //    cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane
 //         <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
 //
-// Example 2: Assume earth is oblate spheroid: project to north pole, east longitude is 0:
-//            WGS84, a=6378137, e=0.081819191, Ko=0.994
+//
+// Example 2: Assume earth is oblate spheroid: project to north pole, longitude of natural origin is 0:
+//            WGS84, a=6378137, e=0.081819191,
 //            First project unto the plane(x,y), then project back to the sphere(lat,lon)
 //            We should get back same lat,lon
 //
-//   PolarStereoGraphicProj ps(false /*southPoleOnProjectionPlane*/,
-//                             true /*earth_is_oblate*/,
-//                             0    /*east longitude*/);
+//   PolarStereoGraphicProj ps(false /* southPoleOnProjectionPlane */,
+//                             true  /* earth_is_oblate            */,
+//                             0     /* longitude of natural origin*/);
 //   ps.set_false_easting( 2000000);
 //   ps.set_false_northing(2000000);
 //   double lat = 73;
@@ -49,20 +63,21 @@ class AbsPolarStereoGraphicProj;
 
 class PolarStereoGraphicProj : private eckit::NonCopyable {
 public:
-   // Set up transformations for Polar StereoGraphic grids
-   // default Assumes we have earth radius of 1.
+
    PolarStereoGraphicProj(
             bool southPoleOnProjectionPlane,
-            bool earth_is_oblate = false,      /* false means use shere */
-            long east_longitude  = 0           /* Lov in grib talk */
+            bool earth_is_oblate = false,     /* false means use earth as sphere */
+            long lon_of_natural_origin  = 0    /* Lov/east latitude' in grib talk */
             );
 
    ~PolarStereoGraphicProj();
 
+   /// Forward conversion:
    /// The input is in spherical co-ordinates(lat,lon), and
    /// the return is mapped to projection plane(x,y)
    eckit::geometry::Point2 map_to_plane( const eckit::geometry::LLPoint2& p) const;
 
+   /// Reverse conversion:
    /// The input is on projection plane, and output is return back to spherical co-ordinates
    eckit::geometry::LLPoint2 map_to_spherical( double x, double y) const;
 
@@ -81,7 +96,8 @@ public:
    /// Where a is semi-major axes and b = semi-minor axes
    void set_eccentricity(double e);
 
-   // By default false nothing and easting set to 0
+   /// Typically false easting and northing are used to avoid negative co-ordinates on the projection plane
+   /// By default false nothing and easting set to 0
    void set_false_easting(double fe);
    void set_false_northing(double fn);
 
@@ -115,7 +131,7 @@ protected:
 
    AbsPolarStereoGraphicProj(
              bool southPoleOnProjectionPlane,
-             long east_longitude                 /* Lov in grib talk */
+             long lon_of_natural_origin
              );
 
 protected:
@@ -124,7 +140,7 @@ protected:
    double radius_;
 
    bool southPoleOnProjectionPlane_;
-   long east_longitude_;
+   long lon_of_natural_origin_;
 };
 
 // -----------------------------------------------------------------------------
@@ -133,7 +149,7 @@ class SphericalPolarStereoGraphicProj : public AbsPolarStereoGraphicProj {
 public:
 
    SphericalPolarStereoGraphicProj( bool southPoleOnProjectionPlane,
-                                        long east_longitude                 /* Lov in grib talk */
+                                        long lon_of_natural_origin
                                        );
 
    virtual ~SphericalPolarStereoGraphicProj() {}
@@ -155,7 +171,7 @@ public:
 
    EllipPolarStereoGraphicProj(
              bool southPoleOnProjectionPlane,
-             long east_longitude                 /* Lov in grib talk */
+             long lon_of_natural_origin
              );
 
    virtual ~EllipPolarStereoGraphicProj() {}
@@ -173,10 +189,10 @@ public:
    virtual void set_false_northing(double fn) { fn_ = fn ;}
 
 protected:
-   double Ko_;    // scale factor at natural origin, by deault = 0.994, can be overridden
-   double e_;     // eccentricity, by default = 0.081819191, WGS84 can be overridden
-   double fe_;    // false easting
-   double fn_;    // false northing
+   double Ko_;    // scale factor at natural origin, by default = 0.994, can be overridden
+   double e_;     // eccentricity, by default = 0.081819191 WGS84, can be overridden
+   double fe_;    // false easting at natural origin, default 0
+   double fn_;    // false northing at natural origin,, default 0
 };
 
 //---------------------------------------------------------------------------------------------------------

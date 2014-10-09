@@ -26,54 +26,68 @@ GribParams* GribParams::create( GribHandle& gh )
 	return Factory<GribParams>::instance().get( gh.gridType() ).create(gh);
 }
 
-GribParams::GribParams(GribHandle& gh) : g_(gh)
+GribParams::GribParams(GribHandle& gh)
+: g_(gh),
+  edition_(0),
+  no_of_data_points_(0),
+  north_(0),
+  south_(0),
+  west_(0),
+  east_(0),
+  degreesEps_(0)
 {
 	set("grid_type",gh.gridType());
 
-	long edition = gh.edition();
-	set("GRIB.edition", edition);
+	edition_ = gh.edition();
+	set("GRIB.edition", edition_);
 
-	if( edition == 1)
+	if( edition_ == 1)
 		set("DegreesEpsilon", 1E-3);
 	else
 		set("DegreesEpsilon", 1E-6);
 
+   degreesEps_ = (edition_ == 1) ? 1e-3 : 1e-6; // GRIB1 is in mili while GRIB2 is in micro degrees
+
 	/// @todo temporary until we use a better unique hash that works also with other formats
-	set("hash", gh.geographyHash());
+	std::string the_hash = gh.geographyHash();
+	set("hash", the_hash);
 
-	set("GRIB.geographyHash", gh.geographyHash());
+	set("GRIB.geographyHash", the_hash);
 
-	double north = gh.latitudeOfFirstGridPointInDegrees();
-	double south = gh.latitudeOfLastGridPointInDegrees();
-	double west = gh.longitudeOfFirstGridPointInDegrees();
-	double east  = gh.longitudeOfLastGridPointInDegrees();
+	// Not all GRID's have a bounding box, i.e Polar Stereographic
+	if (gh.hasKey("latitudeOfLastGridPointInDegrees")) {
 
-	// ignore scanning mode:
-	north_ = std::max(north,south);
-	south_ = std::min(north,south);
-	east_ = std::max(east,west);
-	west_ = std::min(east,west);
+	   double north = gh.latitudeOfFirstGridPointInDegrees();
+	   double south = gh.latitudeOfLastGridPointInDegrees();
+	   double west = gh.longitudeOfFirstGridPointInDegrees();
+	   double east  = gh.longitudeOfLastGridPointInDegrees();
 
-	set("grib_bbox_n", north_ );
-	set("grid_bbox_s", south_ );
-	set("grid_bbox_w", west_  );
-	set("grid_bbox_e", east_  );
+	   // ignore scanning mode:
+	   north_ = std::max(north,south);
+	   south_ = std::min(north,south);
+	   east_ = std::max(east,west);
+	   west_ = std::min(east,west);
 
-	// check area
-	degreesEps_ = (edition_ == 1) ? 1e-3 : 1e-6; // GRIB1 is in mili while GRIB2 is in micro degrees
+	   set("grib_bbox_n", north_ );
+	   set("grid_bbox_s", south_ );
+	   set("grid_bbox_w", west_  );
+	   set("grid_bbox_e", east_  );
 
-	ASSERT(north_ > south_); // This assertion only make sense if we ignore scanning mode
-	ASSERT(north_ < 90.0  || FloatCompare::is_equal(north_,90.0,degreesEps_));
-	ASSERT(south_ < 90.0  || FloatCompare::is_equal(south_,90.0,degreesEps_));
-	ASSERT(north_ > -90.0 || FloatCompare::is_equal(north_,-90.0,degreesEps_));
-	ASSERT(south_ > -90.0 || FloatCompare::is_equal(south_,-90.0,degreesEps_));
+	   // check area
+	   ASSERT(north_ > south_); // This assertion only make sense if we ignore scanning mode
+	   ASSERT(north_ < 90.0  || FloatCompare::is_equal(north_,90.0,degreesEps_));
+	   ASSERT(south_ < 90.0  || FloatCompare::is_equal(south_,90.0,degreesEps_));
+	   ASSERT(north_ > -90.0 || FloatCompare::is_equal(north_,-90.0,degreesEps_));
+	   ASSERT(south_ > -90.0 || FloatCompare::is_equal(south_,-90.0,degreesEps_));
 
-	eckit::geometry::reduceTo2Pi(west_);
-	eckit::geometry::reduceTo2Pi(east_);
+	   eckit::geometry::reduceTo2Pi(west_);
+	   eckit::geometry::reduceTo2Pi(east_);
 
-	ASSERT(east_ > west_); // This assertion only make sense if we ignore scanning mode
+	   ASSERT(east_ > west_); // This assertion only make sense if we ignore scanning mode
+	}
 
-	set("nbDataPoints", gh.nbDataPoints() );
+	no_of_data_points_ = gh.nbDataPoints();
+	set("nbDataPoints", no_of_data_points_ );
 }
 
 GribParams::~GribParams()
@@ -166,6 +180,52 @@ public:
 };
 
 ConcreteBuilderT1<GribParams,GribReducedLatLon> GribReducedLatLon_builder( "reduced_ll" );
+
+//------------------------------------------------------------------------------------------------------
+
+class GribPolarStereoGraphic : public GribParams {
+public:
+
+   static std::string className() { return "eckit.grib.GribPolarStereoGraphic"; }
+   GribPolarStereoGraphic( GribHandle& gh ) : GribParams(gh)
+   {
+      long nx = GribAccessor<long>("Nx")(gh);
+      long ny = GribAccessor<long>("Ny")(gh);
+      ASSERT(no_of_data_points_ ==  nx*ny);
+      set( "Nx", nx );
+      set( "Ny", ny );
+
+      set( "Dx", GribAccessor<long>("DxInMetres")(gh) );
+      set( "Dy", GribAccessor<long>("DyInMetres")(gh) );
+
+      set( "resolutionAndComponentFlag", GribAccessor<long>("resolutionAndComponentFlag")(gh) );
+
+      if (gh.hasKey("LaD")) set( "LaD", GribAccessor<double>("LaDInDegrees")(gh) );
+      set( "orientationOfTheGrid", GribAccessor<double>("orientationOfTheGridInDegrees")(gh) );
+      set( "latitudeOfFirstGridPoint", GribAccessor<double>("latitudeOfFirstGridPointInDegrees")(gh) );
+      set( "longitudeOfFirstGridPoint", GribAccessor<double>("longitudeOfFirstGridPointInDegrees")(gh) );
+
+      // Needed to determine bounding box
+      set( "iScansPositively", GribAccessor<bool>("iScansPositively")(gh)  );
+      set( "jScansPositively", GribAccessor<bool>("jScansPositively")(gh)  );
+
+      set( "southPoleOnProjectionPlane", GribAccessor<bool>("southPoleOnProjectionPlane")(gh) );
+
+      bool earthIsOblate = GribAccessor<bool>("earthIsOblate")(gh);
+      set( "earthIsOblate", eckit::Value(earthIsOblate) ); // true means sphere, false oblate spheroid
+
+      if (earthIsOblate) {
+         set( "earthMajorAxis", GribAccessor<double>("earthMajorAxisInMetres")(gh) );
+         set( "earthMinorAxis", GribAccessor<double>("earthMinorAxisInMetres")(gh) );
+      }
+      else {
+         set( "radius", GribAccessor<double>("radius")(gh) );
+      }
+   }
+};
+
+ConcreteBuilderT1<GribParams,GribPolarStereoGraphic> GribPolarStereoGraphic_builder( "polar_stereographic" );
+
 
 //------------------------------------------------------------------------------------------------------
 

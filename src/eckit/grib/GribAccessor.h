@@ -26,6 +26,8 @@ void grib_get_value(const GribHandle& h, const std::string& name,  unsigned long
 
 void grib_get_value(const GribHandle& h, const std::string& name,  long& x, bool quiet = false);
 
+void grib_get_value(const GribHandle& h, const std::string& name,  bool& x, bool quiet = false);
+
 void grib_get_value(const GribHandle& h, const std::string& name,  std::string& x, bool quiet = false);
 
 void grib_get_value(const GribHandle& h, const std::string& name,  std::vector<long>& x, bool quiet = false);

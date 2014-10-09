@@ -48,6 +48,15 @@ void grib_get_value(const GribHandle& h, const std::string& name, long& x, bool 
 	check_error_code(name,err,quiet);
 }
 
+void grib_get_value(const GribHandle& h, const std::string& name,  bool& x, bool quiet)
+{
+   x = true;
+   long xd = 0;
+   int err = grib_get_long(h.raw(), name.c_str(), &xd);
+   check_error_code(name,err,quiet);
+   if (xd == 0) x = false;
+}
+
 void grib_get_value(const GribHandle& h, const std::string& name, std::string& x, bool quiet)
 {
 	char buf[1024];

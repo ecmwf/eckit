@@ -57,7 +57,6 @@ eckit::geometry::LLPoint2 RotateGrid::magics_unrotate( const eckit::geometry::LL
 
    double sin_south_pole_lat = sin(degree_to_radian_*(south_pole_.lat()+90.));
    double cos_south_pole_lat = cos(degree_to_radian_*(south_pole_.lat()+90.));
-   double sin_lon = sin(degree_to_radian_*lon_x);
    double cos_lon = cos(degree_to_radian_*lon_x);
    double sin_lat = sin(degree_to_radian_*lat_y);
    double cos_lat = cos(degree_to_radian_*lat_y);

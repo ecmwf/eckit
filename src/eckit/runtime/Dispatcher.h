@@ -344,7 +344,22 @@ void Dispatcher<Traits>::push(Request* r)
 }
 
 template<class Traits>
-void Dispatcher<Traits>::_push(Request* r)
+void Dispatcher<Traits>::push(const std::vector<Request*> &r)
+{
+	if(r.empty()) return;
+
+	if(grow_)
+	{
+		int cnt = running();
+		if(cnt == count_) changeThreadCount(r.size());
+	}
+
+	for (typename std::vector<Request*>::const_iterator it = r.begin(); it != r.end(); ++it)
+		do_push(*it);
+}
+
+template<class Traits>
+void Dispatcher<Traits>::do_push(Request* r)
 {
 
 	{

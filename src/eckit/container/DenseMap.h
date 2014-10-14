@@ -120,8 +120,8 @@ public: // methods
 
   V at( const size_t i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
 
-  const V& operator[] (const K& k ) { return values_[ find(k)->idx ]; }
-  const V& operator[] (const size_t& i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
+  const V& operator[] (const K& k ) const { return values_[ find(k)->idx ]; }
+  const V& operator[] (const size_t& i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
 
   iterator find( const K& k )
   {
@@ -137,14 +137,14 @@ public: // methods
 
   const_iterator find( const K& k ) const
   {
-    if( !empty() )
-    {
-      ASSERT(sorted_);
-      const_iterator it = std::lower_bound( cbegin(), cend(), k, Compare());
-      if( it->key == k )
-        return it;
-    }    
-    return cend();
+	  if( !empty() )
+	  {
+		  ASSERT(sorted_);
+		  const_iterator it = std::lower_bound( cbegin(), cend(), k, Compare());
+		  if( it->key == k )
+			  return it;
+	  }
+	  return cend();
   }
 
   void print(std::ostream& s) const

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -54,15 +54,15 @@ public: // methods
 
   DenseMap( size_t s = 0 ) : sorted_(true)
   {
-	  if(s > 0) reserve(s);
+    if(s > 0) reserve(s);
   }
 
   ~DenseMap() {}
 
-  void reserve( size_t s ) 
+  void reserve( size_t s )
   {
-    keys_.reserve(s); 
-    values_.reserve(s); 
+    keys_.reserve(s);
+    values_.reserve(s);
   }
 
   void insert( const K& k, const V& v )
@@ -74,19 +74,19 @@ public: // methods
 
   void replace( const K& k, const V& v )
   {
-  	iterator it = find(k);
-  	if( it != end() )
-  	{
-  		  values_[ it->idx ] = v;
-  	}
-  	else
-  	{
+    iterator it = find(k);
+    if( it != end() )
+    {
+      values_[ it->idx ] = v;
+    }
+    else
+    {
         insert(k,v);
-  	}
+    }
   }
 
-  void clear() 
-  { 
+  void clear()
+  {
     keys_.clear();
     values_.clear();
     sorted_ = true;
@@ -114,14 +114,23 @@ public: // methods
 
   bool has( const K& k ) const { return find(k) != cend(); }
 
-  V get( iterator it ) const { return values_[ it->idx ]; }
-  V get( const_iterator it ) const { return values_[ it->idx ]; }
-  V get( const K& k ) const { return values_[ find(k)->idx ]; }
+  const V& get( iterator it ) const { return values_[ it->idx ]; }
+  V& get( iterator it ) { return values_[ it->idx ]; }
 
-  V at( const size_t i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
+  const V& get( const_iterator it ) const { return values_[ it->idx ]; }
+  V& get( const_iterator it ) { return values_[ it->idx ]; }
 
-  const V& operator[] (const K& k ) { return values_[ find(k)->idx ]; }
-  const V& operator[] (const size_t& i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
+  const V& get( const K& k ) const { return values_[ find(k)->idx ]; }
+  V& get( const K& k ) { return values_[ find(k)->idx ]; }
+
+  const V& at( const size_t i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
+  V& at( const size_t i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
+
+  const V& operator[] (const K& k ) const { return values_[ find(k)->idx ]; }
+  V& operator[] (const K& k ) { return values_[ find(k)->idx ]; }
+
+  const V& operator[] (const size_t& i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
+  V& operator[] (const size_t& i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
 
   iterator find( const K& k )
   {
@@ -131,7 +140,7 @@ public: // methods
       iterator it = std::lower_bound( begin(), end(), k, Compare());
       if( it->key == k )
         return it;
-    }    
+    }
     return end();
   }
 
@@ -143,15 +152,15 @@ public: // methods
       const_iterator it = std::lower_bound( cbegin(), cend(), k, Compare());
       if( it->key == k )
         return it;
-    }    
+    }
     return cend();
   }
 
   void print(std::ostream& s) const
   {
-  	const_iterator it = cbegin();
-  	for( ; it != cend(); ++it )
-  		s << it->key << " " << values_[ it->idx ] << std::endl;
+    const_iterator it = cbegin();
+    for( ; it != cend(); ++it )
+      s << it->key << " " << values_[ it->idx ] << std::endl;
   }
 
   friend std::ostream& operator<<(std::ostream& s, const DenseMap& m) { m.print(s);  return s; }
@@ -183,7 +192,7 @@ private: // members
   key_store_t   keys_;   ///< storage of the keys
   value_store_t values_; ///< storage of the values
 
-  bool sorted_; 
+  bool sorted_;
 
 };
 

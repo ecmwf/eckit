@@ -252,15 +252,17 @@ void DispatchTask<Traits>::run()
 			Log::error() << "** Exception is ignored" << std::endl;
 			owner_.awake();
 		}
-		owner_.running(-1);
 
-		AutoLock<Mutex> lock(mutex_);
-
-		for(typename std::vector<Request*>::iterator i = pick_.begin(); i != pick_.end(); ++i)
 		{
-			delete (*i);
-			*i = 0;
+			AutoLock<Mutex> lock(mutex_);
+			for(typename std::vector<Request*>::iterator i = pick_.begin(); i != pick_.end(); ++i)
+			{
+				delete (*i);
+				*i = 0;
+			}
 		}
+
+		owner_.running(-1);
 	}
 
 	owner_.awake();

@@ -84,6 +84,7 @@ public:
 	int  size();
 	void running(long);
 	long running();
+	void waitForAll();
     void json(JSON&) const;
 
 	// From Configurable
@@ -325,6 +326,7 @@ void Dispatcher<Traits>::running(long delta)
 	AutoLock<MutexCond> lock(lock_);
 	running_ += delta;
 	ASSERT(running_ >= 0);
+	lock_.signal();
 }
 
 template<class Traits>
@@ -458,6 +460,14 @@ void Dispatcher<Traits>::dequeue(DequeuePicker<Request>& p)
 	p.pick(queue_);
 	ready_.signal();
 	
+}
+
+template<class Traits>
+void Dispatcher<Traits>::waitForAll()
+{
+	AutoLock<MutexCond> lock(lock_);
+	while(running_ > 0 || queue_.size() > 0)
+		lock_.wait();
 }
 
 template<class Traits>

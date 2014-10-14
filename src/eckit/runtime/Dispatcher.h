@@ -104,7 +104,7 @@ protected:
 	bool           	  grow_;
 	long              running_;
 
-	Mutex             lock_;
+	MutexCond         lock_;
 
 private:
 
@@ -313,14 +313,14 @@ Dispatcher<Traits>::~Dispatcher()
 template<class Traits>
 long Dispatcher<Traits>::running()
 {
-	AutoLock<Mutex> lock(lock_);
+	AutoLock<MutexCond> lock(lock_);
 	return running_;
 }
 
 template<class Traits>
 void Dispatcher<Traits>::running(long delta)
 {
-	AutoLock<Mutex> lock(lock_);
+	AutoLock<MutexCond> lock(lock_);
 	running_ += delta;
 	ASSERT(running_ >= 0);
 }
@@ -482,7 +482,7 @@ void Dispatcher<Traits>::changeThreadCount(int delta)
 	}
 
 	if(delta) {
-		AutoLock<Mutex> lock(lock_);
+		AutoLock<MutexCond> lock(lock_);
 		count_   += delta;
 	}
 }

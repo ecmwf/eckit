@@ -54,6 +54,8 @@ struct Traits {
 	typedef TestHandler     Handler;
 };
 
+BOOST_AUTO_TEST_SUITE( TestDispatcher )
+
 BOOST_AUTO_TEST_CASE( test_push_one )
 {
 	Dispatcher<Traits> d;
@@ -64,7 +66,25 @@ BOOST_AUTO_TEST_CASE( test_push_one )
 	d.waitForAll();
 	Log::debug() << "TestResource::i " << r.i << std::endl;
 	BOOST_CHECK( r.i == 1 );
-}
+};
+
+BOOST_AUTO_TEST_CASE( test_push_ten )
+{
+	Dispatcher<Traits> d;
+	TestResource r;
+	std::vector<TestRequest*> v;
+	for (int i = 0; i < 10; ++i) {
+		v.push_back(new TestRequest(r));
+	}
+	d.push(v);
+	// Request is immediately consumed
+	BOOST_CHECK( d.size() == 0 );
+	d.waitForAll();
+	Log::debug() << "TestResource::i " << r.i << std::endl;
+	BOOST_CHECK( r.i == 10 );
+};
+
+BOOST_AUTO_TEST_SUITE_END()
 
 }
 }

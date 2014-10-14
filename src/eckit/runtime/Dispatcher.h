@@ -118,7 +118,7 @@ private:
 
 	void print(std::ostream&) const;
 	void changeThreadCount(int delta);
-	void _push(Request*);
+	void do_push(Request*);
 
 	// From Configurable
 
@@ -340,7 +340,7 @@ void Dispatcher<Traits>::push(Request* r)
 		if(cnt == count_) changeThreadCount(1);
 	}
 
-	_push(r);
+	do_push(r);
 }
 
 template<class Traits>
@@ -489,7 +489,7 @@ void Dispatcher<Traits>::changeThreadCount(int delta)
 	{
 		for(int i = 0; i < -delta ; i++)
 		{
-			_push(0);
+			do_push(0);
 		}
 	}
 

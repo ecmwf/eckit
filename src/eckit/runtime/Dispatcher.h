@@ -313,21 +313,16 @@ Dispatcher<Traits>::~Dispatcher()
 template<class Traits>
 long Dispatcher<Traits>::running()
 {
-	if(grow_) {
-		AutoLock<Mutex> lock(lock_);
-		return running_;
-	}
-	return 0;
+	AutoLock<Mutex> lock(lock_);
+	return running_;
 }
 
 template<class Traits>
 void Dispatcher<Traits>::running(long delta)
 {
-	if(grow_) {
-		AutoLock<Mutex> lock(lock_);
-		running_ += delta;
-		ASSERT(running_ >= 0);
-	}
+	AutoLock<Mutex> lock(lock_);
+	running_ += delta;
+	ASSERT(running_ >= 0);
 }
 
 template<class Traits>

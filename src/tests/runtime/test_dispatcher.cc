@@ -54,5 +54,17 @@ struct Traits {
 	typedef TestHandler     Handler;
 };
 
+BOOST_AUTO_TEST_CASE( test_push_one )
+{
+	Dispatcher<Traits> d;
+	TestResource r;
+	d.push(new TestRequest(r));
+	// Request is immediately consumed
+	BOOST_CHECK( d.size() == 0 );
+	d.waitForAll();
+	Log::debug() << "TestResource::i " << r.i << std::endl;
+	BOOST_CHECK( r.i == 1 );
+}
+
 }
 }

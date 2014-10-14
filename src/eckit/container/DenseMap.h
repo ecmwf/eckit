@@ -40,11 +40,11 @@ private: // types
 	struct kidx_t
 	{
 		kidx_t(key_type k, index_t i) : idx(i), key(k)  {}
-		index_t    idx;
+		index_t idx;
 		key_type   key;
 	};
 
-	typedef std::vector< kidx_t >      key_store_t;
+	typedef std::vector< kidx_t >   key_store_t;
 	typedef std::vector< value_type >  value_store_t;
 
 public: // methods
@@ -132,14 +132,23 @@ public: // methods
 
 	bool has( const K& k ) const { return find(k) != cend(); }
 
-	V get( iterator it ) const { return values_[ it->idx ]; }
-	V get( const_iterator it ) const { return values_[ it->idx ]; }
-	V get( const K& k ) const { return values_[ find(k)->idx ]; }
+	const V& get( iterator it ) const { return values_[ it->idx ]; }
+	V& get( iterator it ) { return values_[ it->idx ]; }
 
-	V at( const size_t i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
+	const V& get( const_iterator it ) const { return values_[ it->idx ]; }
+	V& get( const_iterator it ) { return values_[ it->idx ]; }
+
+	const V& get( const K& k ) const { return values_[ find(k)->idx ]; }
+	V& get( const K& k ) { return values_[ find(k)->idx ]; }
+
+	const V& at( const size_t i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
+	V& at( const size_t i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
 
 	const V& operator[] (const K& k ) const { return values_[ find(k)->idx ]; }
+	V& operator[] (const K& k ) { return values_[ find(k)->idx ]; }
+
 	const V& operator[] (const size_t& i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
+	V& operator[] (const size_t& i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
 
 	iterator find( const K& k )
 	{

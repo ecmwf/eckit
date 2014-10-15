@@ -395,8 +395,9 @@ void Dispatcher<Traits>::push(const std::vector<Request*> &r)
 
 	if(grow_)
 	{
-		int cnt = running();
-		if(cnt == count_) changeThreadCount(r.size());
+		// Make sure we have enough threads to serve all requests
+		int avail = count_ - running();
+		if(avail < r.size()) changeThreadCount(r.size() - avail);
 	}
 
 	do_push(r);

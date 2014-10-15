@@ -117,16 +117,26 @@ protected:
 
 // -- Members
 
-    std::list<Request*>    queue_;
+	// Request queue
+	std::list<Request*>    queue_;
+	// Maximum number of threads (if set to 0, a new thread is
+	// created for each request pushed into the queue)
 	Resource<long>    maxTasks_;
+	// Number of currently running threads
 	long              count_;
+	// Counter for thread ids
 	long              next_;
+	// Mutex protecting queue_
 	MutexCond         ready_;
+	// Mutex for thread sleep/wake handling
 	MutexCond         wait_;
-	std::string            name_;
+	// Dispatcher name
+	std::string       name_;
+	// Do we dynamically grow the number of threads?
 	bool           	  grow_;
+	// Number of active threads (i.e. processing work)
 	long              running_;
-
+	// Mutex protecting running_ and count_
 	MutexCond         lock_;
 
 private:

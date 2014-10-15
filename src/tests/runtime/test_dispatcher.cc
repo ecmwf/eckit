@@ -61,9 +61,10 @@ BOOST_AUTO_TEST_CASE( test_push_one )
 	Dispatcher<Traits> d;
 	TestResource r;
 	d.push(new TestRequest(r));
-	// Request is immediately consumed
-	BOOST_CHECK( d.size() == 0 );
 	d.waitForAll();
+	// All request should have been processed
+	BOOST_CHECK( d.size() == 0 );
+	BOOST_CHECK( d.running() == 0 );
 	Log::debug() << "TestResource::i " << r.i << std::endl;
 	BOOST_CHECK( r.i == 1 );
 };
@@ -77,9 +78,10 @@ BOOST_AUTO_TEST_CASE( test_push_ten )
 		v.push_back(new TestRequest(r));
 	}
 	d.push(v);
-	// Request is immediately consumed
-	BOOST_CHECK( d.size() == 0 );
 	d.waitForAll();
+	// All request should have been processed
+	BOOST_CHECK( d.size() == 0 );
+	BOOST_CHECK( d.running() == 0 );
 	Log::debug() << "TestResource::i " << r.i << std::endl;
 	BOOST_CHECK( r.i == 10 );
 };

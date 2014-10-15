@@ -324,7 +324,7 @@ void DispatchInfo<Traits>::run()
 template<class Traits>
 Dispatcher<Traits>::Dispatcher(const std::string& name):
 	name_(name),
-	maxTasks_(this,"numberOfThreads",1),
+	maxTasks_(this,"-numberOfThreads,numberOfThreads",1),
 	count_(0),
 	next_(0),
 	running_(0),

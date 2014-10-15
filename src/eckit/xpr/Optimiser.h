@@ -26,6 +26,8 @@ namespace xpr {
 class Optimiser {
 public:
 
+    virtual ~Optimiser() {}
+
     typedef std::map<std::string,Optimiser*> optimisers_t;
 
     static ExpPtr apply( ExpPtr e, size_t );

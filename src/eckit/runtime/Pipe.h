@@ -178,8 +178,6 @@ template<class PAYLOAD>
 void Pipe<PAYLOAD>::spawn(Proc proc)
 {
 
-    static const char *here = __FUNCTION__;
-
     payloads_ = new OnePayload<PAYLOAD>[count_];
 
     error_   = false;
@@ -203,15 +201,13 @@ PipeTask<PAYLOAD>::PipeTask(Proc &consumer,
 template<class PAYLOAD>
 void PipeTask<PAYLOAD>::run()
 {
-    static const char *here = __FUNCTION__;
-
     try {
         consumer_(owner_);
     }
     catch(std::exception& e)
     {
         Log::error() << "** " << e.what() << " Caught in " <<
-                        here << std::endl;
+                        Here() << std::endl;
         Log::error() << "** Exception is handled" << std::endl;
         owner_.error(e.what());
     }

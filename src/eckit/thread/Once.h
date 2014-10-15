@@ -58,7 +58,7 @@ private:
 template<class T> pthread_once_t Once<T>::once_ = PTHREAD_ONCE_INIT;
 template<class T> pthread_mutex_t Once<T>::mutex_;
 
-template<class T> Once<T>::Once()
+template<class T> Once<T>::Once() : value_(0)
 {
 }
 

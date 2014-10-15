@@ -131,8 +131,8 @@ void AutoLocker::analyse(void* resource)
 {
 }
 
+#endif
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit
-
-#endif

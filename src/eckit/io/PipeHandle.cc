@@ -32,7 +32,9 @@ void PipeHandle::encode(Stream& s) const
 }
 
 PipeHandle::PipeHandle(Stream& s):
-	DataHandle(s)
+	DataHandle(s),
+   file_(0),
+   read_(false)
 {
 	s >> name_;
 }

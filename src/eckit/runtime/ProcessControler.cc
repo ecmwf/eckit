@@ -31,6 +31,7 @@ ProcessControler::ProcessControler(bool forget):
 	ClassExtent<ProcessControler>(this),
 	pid_(-1),
 	child_(false),
+	status_(0),
 	forget_(forget)
 {
 }
@@ -123,8 +124,6 @@ static void init()
 
 void ProcessControler::start()
 {
-	static const char *here = __FUNCTION__;
-
 	pthread_once(&once,init);
 
 	sigset_t newmask, oldmask;
@@ -145,8 +144,9 @@ void ProcessControler::start()
 				run();
 			}
 			catch(std::exception& e){
+
 				Log::error() << "** " << e.what() << " Caught in " 
-					<< here << std::endl;
+					<< Here() << std::endl;
 				Log::error() << "** Exception is terminate process " 
 							 << pid_ << std::endl;
 			}

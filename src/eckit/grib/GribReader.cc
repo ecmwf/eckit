@@ -71,11 +71,6 @@ long GribReader::readSome(Buffer& buffer)
             size_t length = 0;
             long edition = 0;
             int i = 0 ,j;
-            size_t sec1len = 0;
-            size_t sec2len = 0;
-            size_t sec3len = 0;
-            size_t sec4len = 0;
-            unsigned long flags;
 
             off_t here = ::ftello(file_) - 4;
 
@@ -105,6 +100,10 @@ long GribReader::readSome(Buffer& buffer)
 
                 if(length & 0x800000)
                 {
+                    size_t sec1len = 0;
+                    size_t sec4len = 0;
+                    unsigned long flags;
+
                     ASSERT(1 == 0);
 
                     /* Large GRIBs */
@@ -137,6 +136,7 @@ long GribReader::readSome(Buffer& buffer)
 
                     if(flags & (1<<7)) {
                         /* Section 2 */
+                        size_t sec2len = 0;
                         for(j=0;j<3;j++)
                         {
                             ASSERT(fread(&tmp[i],1,1,file_)); read_++;
@@ -151,6 +151,7 @@ long GribReader::readSome(Buffer& buffer)
                     if(flags & (1<<6)) {
 
                         /* Section 3 */
+                        size_t sec3len = 0;
                         for(j=0;j<3;j++)
                         {
                             ASSERT(fread(&tmp[i],1,1,file_)); read_++;

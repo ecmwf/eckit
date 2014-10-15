@@ -32,10 +32,9 @@ StreamParser::StreamParser(std::istream &in) : in_(in)
 
 char StreamParser::peek(bool spaces)
 { 
-    char c;
     for(;;)
     {
-        c = in_.peek();
+        char c = in_.peek();
         if(in_.eof())
             return 0;
         if(spaces || !isspace(c))

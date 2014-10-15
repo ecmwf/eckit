@@ -50,8 +50,6 @@ void PipeHandler<Request>::send(Request* r)
     int retry = 0;
     int max   = 10;
 
-    static const char *here = __FUNCTION__;
-
     Monitor::instance().show(true);
 
     for(;;)
@@ -69,7 +67,7 @@ void PipeHandler<Request>::send(Request* r)
         catch(std::exception& e)
         {
             Log::error() << "** " << e.what()
-                         << " Caught in " << here << std::endl;
+                         << " Caught in " << Here() << std::endl;
             if(++retry >= max)
             {
                 Log::error() << "** Exception is re-thrown" << std::endl;
@@ -101,7 +99,6 @@ void PipeHandler<Request>::receive(Request* r)
 template<class Request>
 void PipeHandler<Request>::handle(const std::vector<Request*>& v)
 {
-    static const char *here = __FUNCTION__;
 
     busy_ = true;
 
@@ -126,7 +123,7 @@ void PipeHandler<Request>::handle(const std::vector<Request*>& v)
                 catch(std::exception& e)
                 {
                     Log::error() << "** " << e.what() << " Caught in "
-                        << here << std::endl;
+                        << Here() << std::endl;
                     Log::error() << "** Exception is handled" << std::endl;
                     retry = r->error(e,++cnt);
                 }

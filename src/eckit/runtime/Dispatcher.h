@@ -72,20 +72,42 @@ public:
 
 // -- Operators
 
-	// Dispatcher takes ownership of Request
-
+	// Push a new Request in the queue
+	// (Dispatcher takes ownership of Request)
 	void push(Request*);
+
+	// Push a vector of Requests in the queue
 	void push(const std::vector<Request*>&);
+
+	// Process a request from the queue
 	bool next(Handler&,std::vector<Request*>&,Mutex&);
+
+	// Remove a request from the queue without processing
 	void dequeue(DequeuePicker<Request>&);
+
+	// Sleep for 0 seconds and yield
 	void sleep();
+
+	// Sleep for a given number of seconds and yield
 	void sleep(int);
+
+	// Signal all sleeping threads
 	void awake();
+
+	// Get the queue size
 	int  size();
+
+	// Increment the running state by given delta
 	void running(long);
+
+	// Get the running state
 	long running();
+
+	// Wait for all threads to finish
 	void waitForAll();
-    void json(JSON&) const;
+
+	// Serialise requests in queue as JSON array
+	void json(JSON&) const;
 
 	// From Configurable
 

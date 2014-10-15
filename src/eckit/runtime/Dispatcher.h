@@ -151,6 +151,7 @@ private:
 	void print(std::ostream&) const;
 	void changeThreadCount(int delta);
 	void do_push(Request*);
+	void do_push(const std::vector<Request *>&);
 
 	// From Configurable
 
@@ -376,6 +377,18 @@ void Dispatcher<Traits>::push(Request* r)
 }
 
 template<class Traits>
+void Dispatcher<Traits>::do_push(Request* r)
+{
+
+	{
+		AutoLock<MutexCond> lock(ready_);
+		queue_.push_back(r); // enqueue Request
+		ready_.signal();
+	}
+	awake();
+}
+
+template<class Traits>
 void Dispatcher<Traits>::push(const std::vector<Request*> &r)
 {
 	if(r.empty()) return;
@@ -386,17 +399,17 @@ void Dispatcher<Traits>::push(const std::vector<Request*> &r)
 		if(cnt == count_) changeThreadCount(r.size());
 	}
 
-	for (typename std::vector<Request*>::const_iterator it = r.begin(); it != r.end(); ++it)
-		do_push(*it);
+	do_push(r);
 }
 
 template<class Traits>
-void Dispatcher<Traits>::do_push(Request* r)
+void Dispatcher<Traits>::do_push(const std::vector<Request*>& r)
 {
 
 	{
 		AutoLock<MutexCond> lock(ready_);
-		queue_.push_back(r); // enqueue Request
+		for (typename std::vector<Request*>::const_iterator it = r.begin(); it != r.end(); ++it)
+			queue_.push_back(*it); // enqueue Request
 		ready_.signal();
 	}
 	awake();

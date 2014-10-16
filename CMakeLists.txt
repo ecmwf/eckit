@@ -55,9 +55,14 @@ endif()
 # Eigen
 ecbuild_add_option( FEATURE EIGEN
                     DEFAULT ON
-                    DESCRIPTION "Eigen support  [EXPERIMENTAL]"
-                    REQUIRED_PACKAGES Eigen3 )
+					DESCRIPTION "Eigen support" )
 set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Accelerated dense matrix operations" )
+
+if( ENABLE_EIGEN )
+
+	# TODO: we should add here a test that we can compile Eigen without problems
+
+endif()
 
 # LAPACK
 if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
@@ -114,7 +119,7 @@ if( HAVE_GRIB )
 endif()
 
 if( HAVE_EIGEN )
-  list( APPEND ECKIT_TPLS Eigen3 )
+	list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib/eigen3 )
 endif()
 
 if( HAVE_XPR )
@@ -131,6 +136,7 @@ ecbuild_find_project_files()
 
 include_directories( ${ECKIT_INCLUDE_DIRS} )
 
+add_subdirectory( contrib )
 add_subdirectory( src )
 
 ############################################################################################

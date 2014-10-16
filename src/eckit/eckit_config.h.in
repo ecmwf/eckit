@@ -35,8 +35,6 @@
 
 // external packages
 
-#cmakedefine EIGEN3_FOUND
-
 #cmakedefine HAVE_EIGEN
 #cmakedefine HAVE_LAPACK
 

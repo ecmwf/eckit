@@ -19,9 +19,7 @@
 
 //--------------------------------------------------------------------------------------------
 
-#ifndef EIGEN3_FOUND
-#error Eigen 3 is not enabled
-#else
+#ifdef HAVE_EIGEN
 
 #define EIGEN_NO_AUTOMATIC_RESIZING
 #define EIGEN_DONT_ALIGN

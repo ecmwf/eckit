@@ -38,8 +38,8 @@ ecbuild_declare_project()
 # GRIB
 ecbuild_add_option( FEATURE GRIB
 					DEFAULT ON
-                    DESCRIPTION "support for GRIB format [EXPERIMENTAL]"
-                    REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.9.9" )
+					DESCRIPTION "C++ interface to GRIB format"
+					REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.9.9" )
 
 set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
 

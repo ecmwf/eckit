@@ -30,11 +30,11 @@
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------
 
 class JSON;
 
@@ -158,12 +158,11 @@ private:
 	virtual std::string kind() const  { return "Dispatcher"; }
 	virtual void reconfigure();
 
-    friend std::ostream& operator<<(std::ostream& s,const Dispatcher<Traits>& p)
-		{ p.print(s); return s; }
-
+	friend std::ostream& operator<<(std::ostream& s,const Dispatcher<Traits>& p)
+	{ p.print(s); return s; }
 };
 
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------
 
 template<class Traits> 
 class DispatchTask : public Thread, public Monitorable {
@@ -202,6 +201,8 @@ private:
 	void operator=(const DT&);
 };
 
+//-----------------------------------------------------------------
+
 template<class Traits> 
 class DispatchInfo : public Thread {
 	Dispatcher<Traits>& owner_;
@@ -210,6 +211,8 @@ public:
 	DispatchInfo(Dispatcher<Traits>& owner):
 		owner_(owner) {}
 };
+
+//=================================================================
 
 template<class Traits> 
 void DispatchTask<Traits>::status(std::ostream& s) const
@@ -244,7 +247,6 @@ void DispatchTask<Traits>::json(JSON& s) const
 template<class Traits> 
 void DispatchTask<Traits>::run()
 {
-
 	static const char *here = __FUNCTION__;
 
 	Log::info() << "Start of " << owner_.name() << " thread " << id_ << std::endl;
@@ -253,13 +255,10 @@ void DispatchTask<Traits>::run()
 
 	Handler handler;
 
-
-
 	while(!stopped())
 	{
 
 		bool stop = owner_.next(handler,pick_,mutex_);
-
 
 		if(stop) // The T must stop
 		{
@@ -301,11 +300,10 @@ void DispatchTask<Traits>::run()
 
 	owner_.awake();
 	Log::info() << "End of thread " << id_ << std::endl;
-
-
 }
 
-//=====================================================================
+//=================================================================
+
 template<class Traits> 
 void DispatchInfo<Traits>::run()
 {
@@ -320,7 +318,8 @@ void DispatchInfo<Traits>::run()
 		/* owner_.awake(); // Awake others */
 	}
 }
-//=====================================================================
+
+//=================================================================
 
 template<class Traits>
 Dispatcher<Traits>::Dispatcher(int maxTasks, const std::string& name):
@@ -406,7 +405,6 @@ void Dispatcher<Traits>::push(const std::vector<Request*> &r)
 template<class Traits>
 void Dispatcher<Traits>::do_push(const std::vector<Request*>& r)
 {
-
 	{
 		AutoLock<MutexCond> lock(ready_);
 		for (typename std::vector<Request*>::const_iterator it = r.begin(); it != r.end(); ++it)
@@ -473,7 +471,6 @@ template<class Traits>
 bool Dispatcher<Traits>::next(Handler& handler,
 	std::vector<Request*>& result,Mutex& mutex)
 {
-
 	Log::status() << "-" << std::endl;
 
 	AutoLock<MutexCond> lock(ready_);
@@ -589,7 +586,7 @@ void DefaultHandler<Request>::json(JSON& s,const Request& r)
 	r.json(s);
 }
 
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------
 
 } // namespace eckit
 

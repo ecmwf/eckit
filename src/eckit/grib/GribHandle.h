@@ -39,61 +39,63 @@ class GribHandle : public eckit::Owned {
 
 public: // types
 
-    typedef eckit::SharedPtr<GribHandle> Ptr;
+   typedef eckit::SharedPtr<GribHandle> Ptr;
 
-	/// constructor from file path, creates grib_handle and takes ownership
-	/// @note currently this only handles local paths
-	explicit GribHandle(const eckit::PathName&);
+   /// constructor from file path, creates grib_handle and takes ownership
+   /// @note currently this only handles local paths
+   explicit GribHandle(const eckit::PathName&);
 
-	/// constructor taking ownership of a grib_handle pointer
-    GribHandle(grib_handle*);
+   /// constructor taking ownership of a grib_handle pointer
+   GribHandle(grib_handle*);
 
-	/// constructor not taking ownership of the grib_handle
-	GribHandle(grib_handle&);
+   /// constructor not taking ownership of the grib_handle
+   GribHandle(grib_handle&);
 
-	/// constructor creating a grib_handle from a passed buffer
-	explicit GribHandle(const eckit::Buffer&, bool copy = true);
+   /// constructor creating a grib_handle from a passed buffer
+   explicit GribHandle(const eckit::Buffer&, bool copy = true);
 
-	/// destructor will delete the grib_handle if we own it
-	~GribHandle();
+   /// destructor will delete the grib_handle if we own it
+   ~GribHandle();
 
 public: // methods
 
-	std::string gridType() const;
+   std::string gridType() const;
 
-	std::string geographyHash() const;
+   std::string geographyHash() const;
 
-    long edition() const;
+   long edition() const;
 
-    GribHandle* clone() const;
+   GribHandle* clone() const;
 
-	std::string shortName() const;
+   std::string shortName() const;
 
-	size_t nbDataPoints() const;
+   size_t nbDataPoints() const;
 
-    size_t getDataValuesSize() const;
-    double* getDataValues(size_t&) const;
-    void getDataValues(double*, const size_t &) const;
+   size_t getDataValuesSize() const;
+   double* getDataValues(size_t&) const;
+   void getDataValues(double*, const size_t &) const;
 
-	void getLatLonPoints( std::vector<geometry::LLPoint2>& ) const;
+   void getLatLonPoints( std::vector<geometry::LLPoint2>& ) const;
 
-    void setDataValues(const double*, size_t);
+   void setDataValues(const double*, size_t);
 
-    void write( DataHandle& );
-    size_t write( Buffer& );
+   void write( DataHandle& );
+   size_t write( Buffer& );
 
-	double latitudeOfFirstGridPointInDegrees()  const;
-	double longitudeOfFirstGridPointInDegrees() const;
-	double latitudeOfLastGridPointInDegrees()   const;
-	double longitudeOfLastGridPointInDegrees()  const;
+   double latitudeOfFirstGridPointInDegrees()  const;
+   double longitudeOfFirstGridPointInDegrees() const;
+   double latitudeOfLastGridPointInDegrees()   const;
+   double longitudeOfLastGridPointInDegrees()  const;
 
-	/// @returns the raw grib_handle so client code can call grib directly
-	grib_handle* raw() const { return handle_; }
+   bool hasKey(const char*) const;
+
+   /// @returns the raw grib_handle so client code can call grib directly
+   grib_handle* raw() const { return handle_; }
 
 private: // members
 
-	bool owns_handle_;
-	grib_handle* handle_; ///< owned grib_handle
+   bool owns_handle_;
+   grib_handle* handle_; ///< owned grib_handle
 
 };
 

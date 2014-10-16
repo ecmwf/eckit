@@ -134,10 +134,10 @@ bool ResourceMgr::lookUp( Configurable* owner,
     }
 
 #if 0 // DEBUG
-    std::cerr << "name [" << name << "]" << std::endl;
-    if(args)  { std::cerr << "args [" ; __print_container(std::cerr,*args); std::cerr << "]" << std::endl; }
-    std::cerr << "resmap [" ; __print_container(std::cerr,resmap); std::cerr << "]" << std::endl;
-    script_->print( std::cerr );
+    Log::error() << "name [" << name << "] looking in " << (args?"args ":"StringDict()") << std::endl;
+    if(args)  { Log::error() << "args [" ; __print_container(Log::error(),*args); Log::error() << "]" << std::endl; }
+    Log::error() << "resmap [" ; __print_container(Log::error(),resmap); Log::error() << "]" << std::endl;
+    script_->print( Log::error() );
 #endif
 
 	StringDict::iterator i;
@@ -152,6 +152,9 @@ bool ResourceMgr::lookUp( Configurable* owner,
         if(i != resmap.end())
         {
             result = (*i).second;
+#if 0 // DEBUG
+    Log::error() << "result : "<< result << " " << Here() << std::endl;
+#endif
             return true;
         }
 
@@ -160,6 +163,9 @@ bool ResourceMgr::lookUp( Configurable* owner,
         if(i != resmap.end())
         {
             result = (*i).second;
+#if 0 // DEBUG
+    Log::error() << "result : "<< result << " " << Here() << std::endl;
+#endif
             return true;
         }
     }
@@ -169,9 +175,15 @@ bool ResourceMgr::lookUp( Configurable* owner,
     if( i != resmap.end() )
 	{
 		result = (*i).second;
+#if 0 // DEBUG
+    Log::error() << "result : "<< result << " " << Here() << std::endl;
+#endif
 		return true;
 	}
 
+#if 0 // DEBUG
+    Log::error() << "result not found " << Here() << std::endl;
+#endif
     return false;
 }
 

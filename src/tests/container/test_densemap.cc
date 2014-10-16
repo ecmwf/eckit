@@ -75,7 +75,7 @@ void test_map_string_int()
 
     // failed find
 
-    ASSERT( m.find("one") == m.end() );
+    ASSERT( ! m.has("one") );
 
     // replace an existing value
 

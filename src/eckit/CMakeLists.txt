@@ -21,6 +21,7 @@ list( APPEND eckit_container_srcs
 container/BTree.h
 container/BTree.cc
 container/Cache.h
+container/DenseMap.h
 container/StatCollector.h
 container/Recycler.h
 container/ClassExtent.h
@@ -541,6 +542,8 @@ ecbuild_add_library(TARGET eckit
 add_subdirectory( web )
 
 add_subdirectory( maths )
+
+add_subdirectory( xpr )
 
 add_subdirectory( geometry )
 

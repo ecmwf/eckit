@@ -15,7 +15,7 @@
 #define eckit_TmpFile_h
 
 #include "eckit/filesystem/PathName.h"
-
+#include "eckit/memory/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
 
@@ -23,91 +23,18 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class TmpFile : public PathName {
+class TmpFile : public  PathName,
+				private NonCopyable {
 public:
-
-// -- Exceptions
-	// None
-
-// -- Contructors
 
 	TmpFile();
 
-// -- Destructor
-
 	~TmpFile(); 
 
-// -- Convertors
-	// None
-
-// -- Operators
-
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-	
-	// void print(std::ostream&) const; 	
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-private:
-
-// No copy allowed
-
-	TmpFile(const TmpFile&);
-	TmpFile& operator=(const TmpFile&);
-
-// -- Members
-
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
-
-	//friend std::ostream& operator<<(std::ostream& s,const TmpFile& p)
-	//	{ p.print(s); return s; }
-
 };
-
-
 
 //-----------------------------------------------------------------------------
 
 } // namespace eckit
-
 
 #endif

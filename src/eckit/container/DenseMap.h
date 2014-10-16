@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -17,6 +17,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "eckit/exception/Exceptions.h"
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -28,131 +30,187 @@ class DenseMap {
 
 public: // types
 
-	typedef K key_t;
-	typedef V value_t;
-	typedef std::pair<K,V> entry_t;
-	typedef std::vector< entry_t > store_t;
-	typedef typename store_t::iterator iterator;
-	typedef typename store_t::const_iterator const_iterator;
-
-public: // methods
-
-  DenseMap( size_t s = 0 ) : sorted_(false)
-  {
-	  if(s > 0)
-	    store_.reserve(s);
-  }
-
-  ~DenseMap() {}
-
-  void reserve( size_t s ) { store_.reserve(s); }
-
-  void insert( const K& k, const V& v )
-  {
-  	sorted_ = false;
-    store_.push_back( std::make_pair(k,v) );
-  }
-
-  void replace( const K& k, const V& v )
-  {
-  	iterator it = find(k);
-  	if( it != end() )
-  	{
-  		it->second = v;
-  	}
-  	else
-  	{
-	    store_.push_back( std::make_pair(k,v) );
-  		sorted_ = false;
-  	}
-  }
-
-  void clear() { store_.clear(); }
-
-  size_t size() const { return store_.size(); }
-  bool empty() const { return store_.size() == 0; }
-
-  iterator begin() { return store_.begin(); }
-  const_iterator cbegin() const { return store_.cbegin(); }
-
-  iterator end() { return store_.end(); }
-  const_iterator cend() const { return store_.cend(); }
-
-  bool sorted() const { return sorted_; }
-
-  void sort()
-  {
-  	if(!sorted_)
-  	{
-	  	std::sort( store_.begin(), store_.end(), LessThan() );
-  		sorted_ = true;
-  	}
-  }
-
-  V get( const K& k ) const { return find(k)->second; }
-
-  iterator find( const K& k )
-  {
-  	if( !empty() )
-  	{
-	  	ASSERT(sorted_);
-    	iterator it = std::lower_bound(store_.begin(), store_.end(), k, Compare());
-    	if( it->first == k )
-    		return it;
-  	}    
-    return end();
-  }
-
-  const_iterator find( const K& k ) const
-  {
-  	if( !empty() )
-  	{
-	  	ASSERT(sorted_);
-    	const_iterator it = std::lower_bound(store_.cbegin(), store_.cend(), k, Compare());
-    	if( it->first == k )
-    		return it;
-  	}    
-    return cend();
-  }
-
-    friend std::ostream& operator<<(std::ostream& s, const DenseMap& m) { m.print(s);  return s; }
-
-private: // methods
-
-    void print(std::ostream& s) const
-    {
-    	const_iterator it = cbegin();
-    	for( ; it != cend(); ++it )
-    		s << it->first << " " << it->second << std::endl;
-    }
+	typedef K key_type;     ///< key type
+	typedef V value_type;   ///< value type
 
 private: // types
 
-  class LessThan {
-  public:
-    bool operator() (const entry_t& e1, const entry_t& e2) const
-    {
-      return (e1.first < e2.first) ? true : false;
-    }
-  };
+	typedef size_t index_t;   ///< index type
 
-  class Compare {
-  public:
-    bool operator() (const entry_t& e, const K& k) const
-    {
-      return (e.first < k) ? true : false;
-    }
-    bool operator() (const K& k, const entry_t& e) const
-    {
-      return (e.first > k) ? true : false;
-    }
-  };
+	struct kidx_t
+	{
+		kidx_t(key_type k, index_t i) : idx(i), key(k)  {}
+		index_t idx;
+		key_type   key;
+	};
+
+	typedef std::vector< kidx_t >   key_store_t;
+	typedef std::vector< value_type >  value_store_t;
+
+public: // methods
+
+	typedef typename key_store_t::iterator iterator;
+	typedef typename key_store_t::const_iterator const_iterator;
+
+	DenseMap( size_t s = 0 ) : sorted_(true)
+	{
+		if(s > 0) reserve(s);
+	}
+
+	~DenseMap() {}
+
+	void reserve( size_t s )
+	{
+		keys_.reserve(s);
+		values_.reserve(s);
+	}
+
+	void insert( const K& k, const V& v )
+	{
+		keys_.push_back( kidx_t(k,values_.size()) );
+		values_.push_back(v);
+		sorted_ = false;
+	}
+
+	size_t erase( const key_type& k )
+	{
+		NOTIMP;
+		///< @todo this code needs to be reviewed
+		sort();
+		if( !empty() )
+		{
+			iterator it = std::lower_bound( begin(), end(), k, Compare());
+			if( it != end() && it->key == k )
+			{
+				values_[it->idx] = value_type();
+				keys_.erase(it);
+				sorted_ = false;
+			}
+		}
+		return end();
+	}
+
+	void replace( const K& k, const V& v )
+	{
+		iterator it = find(k);
+		if( it != end() )
+		{
+			values_[ it->idx ] = v;
+		}
+		else
+		{
+			insert(k,v);
+		}
+	}
+
+	void clear()
+	{
+		keys_.clear();
+		values_.clear();
+		sorted_ = true;
+	}
+
+	bool sorted() const { return sorted_; }
+
+	size_t size() const { return keys_.size(); }
+	bool empty() const { return keys_.size() == 0; }
+
+	void sort()
+	{
+		if(!sorted_)
+		{
+			std::sort( begin(), end(), LessThan() );
+			sorted_ = true;
+		}
+	}
+
+	iterator begin() { return keys_.begin(); }
+	const_iterator cbegin() const { return keys_.begin(); }
+
+	iterator end() { return keys_.end(); }
+	const_iterator cend() const { return keys_.end(); }
+
+	bool has( const K& k ) const { return find(k) != cend(); }
+
+	const V& get( iterator it ) const { return values_[ it->idx ]; }
+	V& get( iterator it ) { return values_[ it->idx ]; }
+
+	const V& get( const_iterator it ) const { return values_[ it->idx ]; }
+	V& get( const_iterator it ) { return values_[ it->idx ]; }
+
+	const V& get( const K& k ) const { return values_[ find(k)->idx ]; }
+	V& get( const K& k ) { return values_[ find(k)->idx ]; }
+
+	const V& at( const size_t i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
+	V& at( const size_t i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
+
+	const V& operator[] (const K& k ) const { return values_[ find(k)->idx ]; }
+	V& operator[] (const K& k ) { return values_[ find(k)->idx ]; }
+
+	const V& operator[] (const size_t& i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
+	V& operator[] (const size_t& i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
+
+	iterator find( const K& k )
+	{
+		if( !empty() )
+		{
+			ASSERT(sorted());
+			iterator it = std::lower_bound( begin(), end(), k, Compare());
+			if( it != end() && it->key == k )
+				return it;
+		}
+		return end();
+	}
+
+	const_iterator find( const K& k ) const
+	{
+		if( !empty() )
+		{
+			ASSERT(sorted());
+			const_iterator it = std::lower_bound( cbegin(), cend(), k, Compare());
+			if( it != cend() && it->key == k )
+				return it;
+		}
+		return cend();
+	}
+
+	void print(std::ostream& s) const
+	{
+		const_iterator it = cbegin();
+		for( ; it != cend(); ++it )
+			s << it->key << " " << values_[ it->idx ] << std::endl;
+	}
+
+	friend std::ostream& operator<<(std::ostream& s, const DenseMap& m) { m.print(s);  return s; }
+
+private: // types
+
+	class LessThan {
+	public:
+		bool operator() (const kidx_t& e1, const kidx_t& e2) const
+		{
+			return (e1.key < e2.key) ? true : false;
+		}
+	};
+
+	class Compare {
+	public:
+		bool operator() (const kidx_t& e, const K& k) const
+		{
+			return (e.key < k) ? true : false;
+		}
+		bool operator() (const K& k, const kidx_t& e) const
+		{
+			return (e.key > k) ? true : false;
+		}
+	};
 
 private: // members
 
-  bool sorted_; 
+	key_store_t   keys_;   ///< storage of the keys
+	value_store_t values_; ///< storage of the values
 
-  store_t store_; ///< storage of the inserted data
+	bool sorted_;
 
 };
 

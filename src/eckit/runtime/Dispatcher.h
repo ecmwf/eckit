@@ -64,7 +64,7 @@ public:
 
 // -- Contructors
 
-	Dispatcher(const std::string& name = Traits::name() );
+	Dispatcher(int maxTasks = 1, const std::string& name = Traits::name() );
 
 // -- Destructor
 
@@ -323,9 +323,9 @@ void DispatchInfo<Traits>::run()
 //=====================================================================
 
 template<class Traits>
-Dispatcher<Traits>::Dispatcher(const std::string& name):
+Dispatcher<Traits>::Dispatcher(int maxTasks, const std::string& name):
 	name_(name),
-	maxTasks_(this,"-numberOfThreads,numberOfThreads",1),
+	maxTasks_(this,"-numberOfThreads,numberOfThreads",maxTasks),
 	count_(0),
 	next_(0),
 	running_(0),

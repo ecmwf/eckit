@@ -58,17 +58,19 @@ ecbuild_add_option( FEATURE XPR
 
 ### Eigen
 
+
+
 ecbuild_add_option( FEATURE EIGEN
                     DEFAULT ON
-					DESCRIPTION "Eigen support" )
+					DESCRIPTION "Eigen support" 
+					REQUIRED_PACKAGES Eigen3 )
+
 set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Accelerated dense matrix operations" )
 
 if( ENABLE_EIGEN )
-
 	# TODO: we should add here a test that we can compile Eigen without problems
-
-	set( ECKIT_CONTRIB_EIGEN 1 )
-
+	# TODO: don't use contrib just yet -- sort out the legal stuff first
+	# set( ECKIT_CONTRIB_EIGEN 1 )
 endif()
 
 ### LAPACK
@@ -150,7 +152,8 @@ if( HAVE_EIGEN )
 	if( ECKIT_CONTRIB_EIGEN )
 		list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
 	else()
-		message( FATAL_ERROR "eckit must use its own Eigen, see contrib/ directory" )
+		list( APPEND ECKIT_TPLS Eigen3 )
+
 	endif()
 endif()
 
@@ -167,6 +170,9 @@ get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
 ecbuild_find_project_files()
 
 include_directories( ${ECKIT_INCLUDE_DIRS} )
+if( HAVE_GRIB )
+	include_directories( ${EIGEN3_INCLUDE_DIR} )
+endif()
 
 add_subdirectory( bamboo )
 add_subdirectory( contrib )

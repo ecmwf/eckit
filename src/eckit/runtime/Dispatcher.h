@@ -69,7 +69,7 @@ public:
 
 // -- Contructors
 
-	Dispatcher(int maxTasks = 1, const std::string& name = Traits::name() );
+	Dispatcher(const std::string& name = Traits::name(), int maxTasks = 1);
 
 // -- Destructor
 
@@ -340,7 +340,7 @@ void DispatchInfo<Traits>::run()
 //=================================================================
 
 template<class Traits>
-Dispatcher<Traits>::Dispatcher(int maxTasks, const std::string& name):
+Dispatcher<Traits>::Dispatcher(const std::string& name, int maxTasks):
 	name_(name),
 	// Maximum number of threads defined on the command line or
 	// in config file or default to maxTasks

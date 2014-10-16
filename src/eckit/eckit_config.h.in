@@ -36,7 +36,6 @@
 // external packages
 
 #cmakedefine HAVE_EIGEN
-#cmakedefine ECKIT_CONTRIB_EIGEN
 #cmakedefine HAVE_LAPACK
 
 #endif // eckit_config_h

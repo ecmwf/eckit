@@ -170,6 +170,9 @@ get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
 ecbuild_find_project_files()
 
 include_directories( ${ECKIT_INCLUDE_DIRS} )
+if( HAVE_GRIB )
+	include_directories( ${EIGEN3_INCLUDE_DIR} )
+endif()
 
 add_subdirectory( bamboo )
 add_subdirectory( contrib )

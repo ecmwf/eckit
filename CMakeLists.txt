@@ -35,7 +35,14 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-# GRIB
+### C++11
+
+ecbuild_add_option( FEATURE CPP11
+					DEFAULT OFF
+					DESCRIPTION "Try compile with C++11 features" )
+
+### GRIB
+
 ecbuild_add_option( FEATURE GRIB
 					DEFAULT ON
 					DESCRIPTION "C++ interface to GRIB format"
@@ -43,16 +50,14 @@ ecbuild_add_option( FEATURE GRIB
 
 set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
 
-# eckit::xpr
+### eckit::xpr
+
 ecbuild_add_option( FEATURE XPR
                     DEFAULT OFF
-                    DESCRIPTION "eckit::xpr [EXPERIMENTAL]"
-                  )
-if( HAVE_XPR )
-  ecbuild_add_cxx11_flags() # enforce c++11
-endif()
+					DESCRIPTION "eckit::xpr [EXPERIMENTAL]" )
 
-# Eigen
+### Eigen
+
 ecbuild_add_option( FEATURE EIGEN
                     DEFAULT ON
 					DESCRIPTION "Eigen support" )
@@ -66,7 +71,8 @@ if( ENABLE_EIGEN )
 
 endif()
 
-# LAPACK
+### LAPACK
+
 if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
   ecbuild_add_option( FEATURE LAPACK
                       DESCRIPTION "Linear Algebra PACKage"
@@ -76,20 +82,40 @@ else() # Don't search for it on cc[abt] as it is already available as scilib
                       DESCRIPTION "Linear Algebra PACKage")
 endif()
 
-ecbuild_check_cxx11( PRINT ) # always test for c++11
-
-# async io support
+### async io support
 
 find_package( AIO )
 set_package_properties( AIO PROPERTIES TYPE RECOMMENDED PURPOSE "support for asynchronous IO" )
 
-# find thread library ( preferably pthreads )
+### thread library ( preferably pthreads )
 
 set( CMAKE_THREAD_PREFER_PTHREAD 1 )
 find_package(Threads REQUIRED)
 
 ###############################################################################
 # checks
+
+### C++11
+
+if( ENABLE_XPR OR ENABLE_CPP11 )
+
+	ecbuild_add_cxx11_flags() # enforce c++11
+
+	list( APPEND cpp11_req
+		auto constexpr constructor_delegate cstdint decltype deleted_constructor
+		initialization lambda long_double long_long noexcept nullptr override
+		rvalue_references shared_ptr sizeof_member static_assert template_alias type_traits
+		unique_ptr variadic_templates )
+
+	# currently not included: __func__ random_device trivial_type_traits explicit_cast enable_if
+
+	# in ecbuild 1.5.0 this will operate on lists so we will need only one call
+
+	foreach( f ${cpp11_req} )
+		ecbuild_check_cxx11( REQUIRED ${f} )
+	endforeach()
+
+endif()
 
 # check thread library is pthreads
 

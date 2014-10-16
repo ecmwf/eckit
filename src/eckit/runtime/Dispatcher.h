@@ -169,6 +169,8 @@ private:
 
 //-----------------------------------------------------------------
 
+// Worker thread (managed by ThreadController)
+
 template<class Traits> 
 class DispatchTask : public Thread, public Monitorable {
 public:
@@ -176,15 +178,23 @@ public:
 	typedef typename Traits::Handler Handler;
 	typedef typename Traits::Request Request;
 
+	// -- Contructors
+
 	DispatchTask(Dispatcher<Traits>&  owner,int id):
 		Thread(false), // Don't delete object when stopped
 		owner_(owner), id_(id) {}
 
 private:
 
+// -- Members
+
+	// Dispatcher owning this thread
 	Dispatcher<Traits>& owner_;
+	// Worker thread id
 	int                 id_;
+	// Requests to be handled by this thread
 	std::vector<Request*>    pick_;
+	// Mutex protecting the queue
 	Mutex               mutex_;
 
 // -- Overridden methods

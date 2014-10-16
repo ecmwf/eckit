@@ -40,14 +40,19 @@ class JSON;
 
 template<class Request>
 struct DefaultHandler {
+	// Pick a request from the queue and put it in processed queue
 	void pick(std::list<Request*>&,std::vector<Request*>&);
+	// No-op
 	void idle() {}
-static void print(std::ostream&,const Request&);
-static void json(JSON&,const Request&);
+	// Print string representation of request to stream
+	static void print(std::ostream&,const Request&);
+	// Emit JSON representation of request
+	static void json(JSON&,const Request&);
 };
 
 template<class Request>
 struct DequeuePicker {
+	// Pick a request from the queue
 	virtual void pick(std::list<Request*>&) = 0;
 };
 

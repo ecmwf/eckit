@@ -30,24 +30,29 @@
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------
 
 class JSON;
 
 template<class Request>
 struct DefaultHandler {
+	// Pick a request from the queue and put it in processed queue
 	void pick(std::list<Request*>&,std::vector<Request*>&);
+	// No-op
 	void idle() {}
-static void print(std::ostream&,const Request&);
-static void json(JSON&,const Request&);
+	// Print string representation of request to stream
+	static void print(std::ostream&,const Request&);
+	// Emit JSON representation of request
+	static void json(JSON&,const Request&);
 };
 
 template<class Request>
 struct DequeuePicker {
+	// Pick a request from the queue
 	virtual void pick(std::list<Request*>&) = 0;
 };
 
@@ -64,7 +69,7 @@ public:
 
 // -- Contructors
 
-	Dispatcher(const std::string& name = Traits::name() );
+	Dispatcher(int maxTasks = 1, const std::string& name = Traits::name() );
 
 // -- Destructor
 
@@ -72,19 +77,42 @@ public:
 
 // -- Operators
 
-	// Dispatcher takes ownership of Request
-
+	// Push a new Request in the queue
+	// (Dispatcher takes ownership of Request)
 	void push(Request*);
+
+	// Push a vector of Requests in the queue
 	void push(const std::vector<Request*>&);
+
+	// Process a request from the queue
 	bool next(Handler&,std::vector<Request*>&,Mutex&);
+
+	// Remove a request from the queue without processing
 	void dequeue(DequeuePicker<Request>&);
+
+	// Sleep for 0 seconds and yield
 	void sleep();
+
+	// Sleep for a given number of seconds and yield
 	void sleep(int);
+
+	// Signal all sleeping threads
 	void awake();
+
+	// Get the queue size
 	int  size();
+
+	// Increment the running state by given delta
 	void running(long);
+
+	// Get the running state
 	long running();
-    void json(JSON&) const;
+
+	// Wait for all threads to finish
+	void waitForAll();
+
+	// Serialise requests in queue as JSON array
+	void json(JSON&) const;
 
 	// From Configurable
 
@@ -94,17 +122,27 @@ protected:
 
 // -- Members
 
-    std::list<Request*>    queue_;
+	// Request queue
+	std::list<Request*>    queue_;
+	// Maximum number of threads (if set to 0, a new thread is
+	// created for each request pushed into the queue)
 	Resource<long>    maxTasks_;
+	// Number of currently running threads
 	long              count_;
+	// Counter for thread ids
 	long              next_;
+	// Mutex protecting queue_
 	MutexCond         ready_;
+	// Mutex for thread sleep/wake handling
 	MutexCond         wait_;
-	std::string            name_;
+	// Dispatcher name
+	std::string       name_;
+	// Do we dynamically grow the number of threads?
 	bool           	  grow_;
+	// Number of active threads (i.e. processing work)
 	long              running_;
-
-	Mutex             lock_;
+	// Mutex protecting running_ and count_
+	MutexCond         lock_;
 
 private:
 
@@ -117,19 +155,21 @@ private:
 
 	void print(std::ostream&) const;
 	void changeThreadCount(int delta);
-	void _push(Request*);
+	void do_push(Request*);
+	void do_push(const std::vector<Request *>&);
 
 	// From Configurable
 
 	virtual std::string kind() const  { return "Dispatcher"; }
 	virtual void reconfigure();
 
-    friend std::ostream& operator<<(std::ostream& s,const Dispatcher<Traits>& p)
-		{ p.print(s); return s; }
-
+	friend std::ostream& operator<<(std::ostream& s,const Dispatcher<Traits>& p)
+	{ p.print(s); return s; }
 };
 
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------
+
+// Worker thread (managed by ThreadController)
 
 template<class Traits> 
 class DispatchTask : public Thread, public Monitorable {
@@ -138,15 +178,23 @@ public:
 	typedef typename Traits::Handler Handler;
 	typedef typename Traits::Request Request;
 
+	// -- Contructors
+
 	DispatchTask(Dispatcher<Traits>&  owner,int id):
 		Thread(false), // Don't delete object when stopped
 		owner_(owner), id_(id) {}
 
 private:
 
+// -- Members
+
+	// Dispatcher owning this thread
 	Dispatcher<Traits>& owner_;
+	// Worker thread id
 	int                 id_;
+	// Requests to be handled by this thread
 	std::vector<Request*>    pick_;
+	// Mutex protecting the queue
 	Mutex               mutex_;
 
 // -- Overridden methods
@@ -168,14 +216,21 @@ private:
 	void operator=(const DT&);
 };
 
+//-----------------------------------------------------------------
+
+// Dispatcher thread (managed by ThreadController)
+
 template<class Traits> 
 class DispatchInfo : public Thread {
+	// Dispatcher owning this thread
 	Dispatcher<Traits>& owner_;
 	virtual void run();
 public:
 	DispatchInfo(Dispatcher<Traits>& owner):
 		owner_(owner) {}
 };
+
+//=================================================================
 
 template<class Traits> 
 void DispatchTask<Traits>::status(std::ostream& s) const
@@ -210,7 +265,6 @@ void DispatchTask<Traits>::json(JSON& s) const
 template<class Traits> 
 void DispatchTask<Traits>::run()
 {
-
 	static const char *here = __FUNCTION__;
 
 	Log::info() << "Start of " << owner_.name() << " thread " << id_ << std::endl;
@@ -219,13 +273,10 @@ void DispatchTask<Traits>::run()
 
 	Handler handler;
 
-
-
 	while(!stopped())
 	{
 
 		bool stop = owner_.next(handler,pick_,mutex_);
-
 
 		if(stop) // The T must stop
 		{
@@ -252,24 +303,25 @@ void DispatchTask<Traits>::run()
 			Log::error() << "** Exception is ignored" << std::endl;
 			owner_.awake();
 		}
-		owner_.running(-1);
 
-		AutoLock<Mutex> lock(mutex_);
-
-		for(typename std::vector<Request*>::iterator i = pick_.begin(); i != pick_.end(); ++i)
 		{
-			delete (*i);
-			*i = 0;
+			AutoLock<Mutex> lock(mutex_);
+			for(typename std::vector<Request*>::iterator i = pick_.begin(); i != pick_.end(); ++i)
+			{
+				delete (*i);
+				*i = 0;
+			}
 		}
+
+		owner_.running(-1);
 	}
 
 	owner_.awake();
 	Log::info() << "End of thread " << id_ << std::endl;
-
-
 }
 
-//=====================================================================
+//=================================================================
+
 template<class Traits> 
 void DispatchInfo<Traits>::run()
 {
@@ -284,12 +336,13 @@ void DispatchInfo<Traits>::run()
 		/* owner_.awake(); // Awake others */
 	}
 }
-//=====================================================================
+
+//=================================================================
 
 template<class Traits>
-Dispatcher<Traits>::Dispatcher(const std::string& name):
+Dispatcher<Traits>::Dispatcher(int maxTasks, const std::string& name):
 	name_(name),
-	maxTasks_(this,"numberOfThreads",1),
+	maxTasks_(this,"-numberOfThreads,numberOfThreads",maxTasks),
 	count_(0),
 	next_(0),
 	running_(0),
@@ -313,21 +366,17 @@ Dispatcher<Traits>::~Dispatcher()
 template<class Traits>
 long Dispatcher<Traits>::running()
 {
-	if(grow_) {
-		AutoLock<Mutex> lock(lock_);
-		return running_;
-	}
-	return 0;
+	AutoLock<MutexCond> lock(lock_);
+	return running_;
 }
 
 template<class Traits>
 void Dispatcher<Traits>::running(long delta)
 {
-	if(grow_) {
-		AutoLock<Mutex> lock(lock_);
-		running_ += delta;
-		ASSERT(running_ >= 0);
-	}
+	AutoLock<MutexCond> lock(lock_);
+	running_ += delta;
+	ASSERT(running_ >= 0);
+	lock_.signal();
 }
 
 template<class Traits>
@@ -341,16 +390,43 @@ void Dispatcher<Traits>::push(Request* r)
 		if(cnt == count_) changeThreadCount(1);
 	}
 
-	_push(r);
+	do_push(r);
 }
 
 template<class Traits>
-void Dispatcher<Traits>::_push(Request* r)
+void Dispatcher<Traits>::do_push(Request* r)
 {
 
 	{
 		AutoLock<MutexCond> lock(ready_);
 		queue_.push_back(r); // enqueue Request
+		ready_.signal();
+	}
+	awake();
+}
+
+template<class Traits>
+void Dispatcher<Traits>::push(const std::vector<Request*> &r)
+{
+	if(r.empty()) return;
+
+	if(grow_)
+	{
+		// Make sure we have enough threads to serve all requests
+		int avail = count_ - running();
+		if(avail < r.size()) changeThreadCount(r.size() - avail);
+	}
+
+	do_push(r);
+}
+
+template<class Traits>
+void Dispatcher<Traits>::do_push(const std::vector<Request*>& r)
+{
+	{
+		AutoLock<MutexCond> lock(ready_);
+		for (typename std::vector<Request*>::const_iterator it = r.begin(); it != r.end(); ++it)
+			queue_.push_back(*it); // enqueue Request
 		ready_.signal();
 	}
 	awake();
@@ -413,7 +489,6 @@ template<class Traits>
 bool Dispatcher<Traits>::next(Handler& handler,
 	std::vector<Request*>& result,Mutex& mutex)
 {
-
 	Log::status() << "-" << std::endl;
 
 	AutoLock<MutexCond> lock(ready_);
@@ -464,6 +539,14 @@ void Dispatcher<Traits>::dequeue(DequeuePicker<Request>& p)
 }
 
 template<class Traits>
+void Dispatcher<Traits>::waitForAll()
+{
+	AutoLock<MutexCond> lock(lock_);
+	while(running_ > 0 || queue_.size() > 0)
+		lock_.wait();
+}
+
+template<class Traits>
 void Dispatcher<Traits>::changeThreadCount(int delta)
 {
 	// We do not take a lock, to aboid dead-locks
@@ -482,12 +565,12 @@ void Dispatcher<Traits>::changeThreadCount(int delta)
 	{
 		for(int i = 0; i < -delta ; i++)
 		{
-			_push(0);
+			do_push(0);
 		}
 	}
 
 	if(delta) {
-		AutoLock<Mutex> lock(lock_);
+		AutoLock<MutexCond> lock(lock_);
 		count_   += delta;
 	}
 }
@@ -521,7 +604,7 @@ void DefaultHandler<Request>::json(JSON& s,const Request& r)
 	r.json(s);
 }
 
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------
 
 } // namespace eckit
 

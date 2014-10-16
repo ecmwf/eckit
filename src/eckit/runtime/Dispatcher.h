@@ -40,7 +40,7 @@ class JSON;
 
 template<class Request>
 struct DefaultHandler {
-	// Pick a request from the queue and put it in processed queue
+	// Pick first request from queue and put it in result queue
 	void pick(std::list<Request*>&,std::vector<Request*>&);
 	// No-op
 	void idle() {}
@@ -171,7 +171,7 @@ private:
 
 // Worker thread (managed by ThreadController)
 
-template<class Traits> 
+template<class Traits>
 class DispatchTask : public Thread, public Monitorable {
 public:
 
@@ -220,7 +220,7 @@ private:
 
 // Dispatcher thread (managed by ThreadController)
 
-template<class Traits> 
+template<class Traits>
 class DispatchInfo : public Thread {
 	// Dispatcher owning this thread
 	Dispatcher<Traits>& owner_;
@@ -232,7 +232,7 @@ public:
 
 //=================================================================
 
-template<class Traits> 
+template<class Traits>
 void DispatchTask<Traits>::status(std::ostream& s) const
 {
 	AutoLock<Mutex> lock(((DispatchTask<Traits>*)this)->mutex_);
@@ -241,7 +241,7 @@ void DispatchTask<Traits>::status(std::ostream& s) const
 		if(pick_[i]) Handler::print(s,*pick_[i]);
 }
 
-template<class Traits> 
+template<class Traits>
 void DispatchTask<Traits>::json(JSON& s) const
 {
 	AutoLock<Mutex> lock(((DispatchTask<Traits>*)this)->mutex_);
@@ -262,7 +262,7 @@ void DispatchTask<Traits>::json(JSON& s) const
     }
 }
 
-template<class Traits> 
+template<class Traits>
 void DispatchTask<Traits>::run()
 {
 	static const char *here = __FUNCTION__;
@@ -278,7 +278,7 @@ void DispatchTask<Traits>::run()
 
 		bool stop = owner_.next(handler,pick_,mutex_);
 
-		if(stop) // The T must stop
+		if(stop) // The thread must stop
 		{
 			Log::info() << "Stopping thread " << id_ << std::endl;
 			break;
@@ -286,7 +286,7 @@ void DispatchTask<Traits>::run()
 
 		owner_.running(1);
 		try {
-			if(pick_.size()) 
+			if(pick_.size())
 			{
 				handler.handle(pick_);
 				owner_.awake(); // Request is finished
@@ -322,7 +322,7 @@ void DispatchTask<Traits>::run()
 
 //=================================================================
 
-template<class Traits> 
+template<class Traits>
 void DispatchInfo<Traits>::run()
 {
 	Monitor::instance().name(owner_.name());
@@ -342,10 +342,13 @@ void DispatchInfo<Traits>::run()
 template<class Traits>
 Dispatcher<Traits>::Dispatcher(int maxTasks, const std::string& name):
 	name_(name),
+	// Maximum number of threads defined on the command line or
+	// in config file or default to maxTasks
 	maxTasks_(this,"-numberOfThreads,numberOfThreads",maxTasks),
 	count_(0),
 	next_(0),
 	running_(0),
+	// Dynamically grow number of threads if set to 0
 	grow_(maxTasks_ == 0)
 {
 	// For some reason xlC require that
@@ -354,6 +357,7 @@ Dispatcher<Traits>::Dispatcher(int maxTasks, const std::string& name):
 	ThreadControler c(new DI(*this));
 	c.start();
 
+	// Spin up appropriate number of threads
 	changeThreadCount(maxTasks_);
 }
 
@@ -467,8 +471,8 @@ template<class Traits>
 void Dispatcher<Traits>::print(std::ostream& s) const
 {
 	AutoLock<MutexCond> lock(const_cast<Dispatcher<Traits>*>(this)->ready_);
-    for(typename std::list<Request*>::const_iterator i = queue_.begin() ; 
-		i != queue_.end(); ++i) 
+    for(typename std::list<Request*>::const_iterator i = queue_.begin() ;
+		i != queue_.end(); ++i)
 			if(*i)
 			Handler::print(s,*(*i));
 }
@@ -478,8 +482,8 @@ void Dispatcher<Traits>::json(JSON& s) const
 {
 	AutoLock<MutexCond> lock(const_cast<Dispatcher<Traits>*>(this)->ready_);
     s.startList();
-    for(typename std::list<Request*>::const_iterator i = queue_.begin() ; 
-		i != queue_.end(); ++i) 
+    for(typename std::list<Request*>::const_iterator i = queue_.begin() ;
+		i != queue_.end(); ++i)
 			if(*i)
 			Handler::json(s,*(*i));
     s.endList();
@@ -502,26 +506,28 @@ bool Dispatcher<Traits>::next(Handler& handler,
 
 	result.clear();
 
-	// Check for null requests
+	// Check for null requests, which serve as thread stop signal
 
 	typename std::list<Request*>::iterator i = std::find(queue_.begin(),queue_.end(),
 		(Request*)0);
 
+	// No null requests found, pick next task from the queue
 	if(i == queue_.end())
 		handler.pick(queue_,result);
+	// A null request was found
 	else {
-		// thread will be stopped
+		// Clear the null request and stop the thread
 		queue_.erase(i);
 		stop = true;
 	}
 
-	Log::debug() << "Got " << result.size() << " requests from the queue" 
+	Log::debug() << "Got " << result.size() << " requests from the queue"
 		<< std::endl;
 
-	Log::debug() << "Left " << queue_.size() << " requests in the queue" 
+	Log::debug() << "Left " << queue_.size() << " requests in the queue"
 		<< std::endl;
 
-	ready_.signal(); // Let other get some more
+	ready_.signal(); // Let other threads get some more
 
 	if(result.size())
 		Log::status() << "Processing request" << std::endl;
@@ -535,13 +541,15 @@ void Dispatcher<Traits>::dequeue(DequeuePicker<Request>& p)
 	AutoLock<MutexCond> lock(ready_);
 	p.pick(queue_);
 	ready_.signal();
-	
+
 }
 
 template<class Traits>
 void Dispatcher<Traits>::waitForAll()
 {
 	AutoLock<MutexCond> lock(lock_);
+	// Wait until BOTH the queue is empty and there are no more
+	// active threads
 	while(running_ > 0 || queue_.size() > 0)
 		lock_.wait();
 }
@@ -549,19 +557,22 @@ void Dispatcher<Traits>::waitForAll()
 template<class Traits>
 void Dispatcher<Traits>::changeThreadCount(int delta)
 {
-	// We do not take a lock, to aboid dead-locks
+	// We do not take a lock, to avoid dead-locks
 	typedef class DispatchTask<Traits> DT;
 
-	if(delta > 0) 
+	// Increase number of threads by starting some more
+	if(delta > 0)
 	{
-		for(int i = 0; i < delta ; i++) 
+		for(int i = 0; i < delta ; i++)
 		{
 			ThreadControler c(new DT(*this,next_++));
 			c.start();
 		}
 	}
 
-	if(delta < 0) 
+	// Decrease number of threads by pushing null requests in
+	// the queue, which will cause threads to stop
+	if(delta < 0)
 	{
 		for(int i = 0; i < -delta ; i++)
 		{
@@ -583,7 +594,9 @@ void Dispatcher<Traits>::reconfigure()
 	awake();
 }
 
-template<class Request> 
+//=================================================================
+
+template<class Request>
 void DefaultHandler<Request>::pick(std::list<Request*>& queue,
 	std::vector<Request*>& result)
 {
@@ -592,13 +605,13 @@ void DefaultHandler<Request>::pick(std::list<Request*>& queue,
 	result.push_back(r);
 }
 
-template<class Request> 
+template<class Request>
 void DefaultHandler<Request>::print(std::ostream& s,const Request& r)
 {
 	s << r << std::endl;
 }
 
-template<class Request> 
+template<class Request>
 void DefaultHandler<Request>::json(JSON& s,const Request& r)
 {
 	r.json(s);

@@ -218,8 +218,11 @@ private:
 
 //-----------------------------------------------------------------
 
+// Dispatcher thread (managed by ThreadController)
+
 template<class Traits> 
 class DispatchInfo : public Thread {
+	// Dispatcher owning this thread
 	Dispatcher<Traits>& owner_;
 	virtual void run();
 public:

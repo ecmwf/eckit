@@ -62,6 +62,8 @@ if( ENABLE_EIGEN )
 
 	# TODO: we should add here a test that we can compile Eigen without problems
 
+	set( ECKIT_CONTRIB_EIGEN 1 )
+
 endif()
 
 # LAPACK
@@ -119,7 +121,11 @@ if( HAVE_GRIB )
 endif()
 
 if( HAVE_EIGEN )
-	list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib/eigen3 )
+	if( ECKIT_CONTRIB_EIGEN )
+		list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
+	else()
+		message( FATAL_ERROR "eckit must use its own Eigen, see contrib/ directory" )
+	endif()
 endif()
 
 if( HAVE_XPR )
@@ -136,6 +142,7 @@ ecbuild_find_project_files()
 
 include_directories( ${ECKIT_INCLUDE_DIRS} )
 
+add_subdirectory( bamboo )
 add_subdirectory( contrib )
 add_subdirectory( src )
 

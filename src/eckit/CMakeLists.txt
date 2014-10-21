@@ -513,7 +513,6 @@ list( APPEND eckit_persistent
 					types/Month.h
 					types/Time.h
 					types/VerifyingDate.h
-					#log/Seconds.h
 					io/Length.h
 					io/Offset.h
 )

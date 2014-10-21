@@ -8,11 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE TestTranslator
-#include "ecbuild/boost_test_framework.h"
-
 #include <string>
+
+#include "eckit/eckit_config.h"
+
+#define BOOST_TEST_MODULE TestTranslator
+
+#include "ecbuild/boost_test_framework.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"

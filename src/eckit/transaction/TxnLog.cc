@@ -260,15 +260,13 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 			}
 			catch(Abort& e)
 			{
-				Log::error() << "** " << e.what() << " Caught in " <<
-					here << std::endl;
+				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
 				Log::error() << "** Exception is re-thrown" << std::endl;
 				throw;
 			}
 			catch(std::exception& e)
 			{
-				Log::error() << "** " << e.what() << " Caught in " <<
-					here << std::endl;
+				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
 				Log::error() << "** Exception is ignored" << std::endl;
 			}
 		}

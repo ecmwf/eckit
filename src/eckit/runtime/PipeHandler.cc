@@ -139,7 +139,7 @@ void PipeHandler<Request>::handle(const std::vector<Request*>& v)
         }
         catch(std::exception& e)
         {
-            Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is handled" << std::endl;
         }
     }
@@ -150,7 +150,7 @@ void PipeHandler<Request>::handle(const std::vector<Request*>& v)
     }
     catch(std::exception& e)
     {
-        Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+		Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
         Log::error() << "** Exception is ignored" << std::endl;
     }
 

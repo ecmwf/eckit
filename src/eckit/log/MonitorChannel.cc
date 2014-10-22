@@ -29,7 +29,9 @@ public: // methods
     /// constructor
     MonitorBuffer( MonitorChannel::Out o ) : 
         ChannelBuffer(),
-        out_(o)
+        out_(o),
+        type_(0),
+        code_(0)
     {
         setg(0, 0, 0);
     }
@@ -74,7 +76,7 @@ MonitorChannel::MonitorChannel( MonitorChannel::Out o ) :
 
 void MonitorChannel::flags(char type, long code)
 {
-    ((MonitorBuffer*) rdbuf())->flags(type,code);
+    static_cast<MonitorBuffer*>(rdbuf())->flags(type,code);
 }
 
 //-----------------------------------------------------------------------------

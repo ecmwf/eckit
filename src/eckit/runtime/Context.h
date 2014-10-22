@@ -45,7 +45,7 @@ public: // methods
 
     // -- Destructor
 
-	~Context();
+	virtual ~Context();
 
     // -- Methods
 

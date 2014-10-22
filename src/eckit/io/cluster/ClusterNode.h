@@ -32,7 +32,7 @@ public:
 
 // -- Destructor
 
-	~ClusterNode();
+	virtual ~ClusterNode();
 
 // -- Methods
 

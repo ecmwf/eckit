@@ -29,7 +29,8 @@ DoubleContent::DoubleContent(double l):
 }
 
 DoubleContent::DoubleContent(Stream& s):
-    Content(s)
+    Content(s),
+    value_(0)
 {
     s >> value_;
 }

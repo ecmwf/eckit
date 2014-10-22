@@ -35,7 +35,6 @@ void JavaResource::html(std::ostream& s,Url& url)
 	url.dontCache();
 
 	eckit::PathName path("~/http/" + url.name());
-	char c;
 
 	std::ifstream in(path.localPath());
 	if(!in)	
@@ -48,6 +47,7 @@ void JavaResource::html(std::ostream& s,Url& url)
 	//	(url.headerOut()).type("image/gif");
 
 		s << HttpBuf::dontEncode;
+		char c;
 		while(in.get(c))
 			s << c;
 		s << HttpBuf::doEncode;

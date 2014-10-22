@@ -46,7 +46,9 @@ void MarsFSPartHandle::encode(Stream& s) const
 
 MarsFSPartHandle::MarsFSPartHandle(Stream& s):
     DataHandle(s),
-    path_(s)
+    path_(s),
+    pos_(0),
+    index_(0)
 {
     s >> offset_;
     s >> length_;
@@ -57,6 +59,8 @@ MarsFSPartHandle::MarsFSPartHandle(Stream& s):
 MarsFSPartHandle::MarsFSPartHandle(const MarsFSPath& path,
     const OffsetList& offset,const LengthList& length):
     path_(path),
+    pos_(0),
+    index_(0),
     offset_(offset),
     length_(length)
 {
@@ -67,6 +71,8 @@ MarsFSPartHandle::MarsFSPartHandle(const MarsFSPath& path,
 MarsFSPartHandle::MarsFSPartHandle(const MarsFSPath& path,
     const Offset& offset,const Length& length):
     path_(path),
+    pos_(0),
+    index_(0),
     offset_(1,offset),
     length_(1,length)
 {

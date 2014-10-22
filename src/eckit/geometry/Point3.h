@@ -69,7 +69,7 @@ class LLPoint3 : public KPoint<3> {
 
 public:
 
-    LLPoint3(): KPoint<3>() {}
+    LLPoint3(): KPoint<3>(), lat_(0), lon_(0) {}
 
     double lat() const { return lat_; }
     double lon() const { return lon_; }

@@ -48,7 +48,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to)
     from.cost(cost, true);
     to.cost(cost, false);
 
-    if (cost.size() == 0) {
+    if (cost.empty()) {
         NodeInfo info = ClusterNodes::any("mover");
         cost[info.node()] = 0;
 //        throw SeriousBug(std::string("No cost for ") + from.title() + " => " + to.title());

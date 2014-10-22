@@ -308,7 +308,6 @@ std::string ClusterDisks::node(const std::string& path)
 {
 
 	pthread_once(&once, init);
-	std::vector<std::string> nodes;
 
 	DiskArray::const_iterator j = clusterDisks->end();
 

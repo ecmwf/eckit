@@ -52,7 +52,9 @@ struct DefaultHandler {
 
 template<class Request>
 struct DequeuePicker {
-	// Pick a request from the queue
+	/// Destructor
+	virtual ~DequeuePicker() {}
+	/// Pick a request from the queue
 	virtual void pick(std::list<Request*>&) = 0;
 };
 
@@ -265,8 +267,6 @@ void DispatchTask<Traits>::json(JSON& s) const
 template<class Traits>
 void DispatchTask<Traits>::run()
 {
-	static const char *here = __FUNCTION__;
-
 	Log::info() << "Start of " << owner_.name() << " thread " << id_ << std::endl;
 
 	Monitor::instance().name(owner_.name());
@@ -299,7 +299,7 @@ void DispatchTask<Traits>::run()
 		catch(std::exception& e)
 		{
 			Log::error() << "** " << e.what() << " Caught in " <<
-				here << std::endl;
+				Here() << std::endl;
 			Log::error() << "** Exception is ignored" << std::endl;
 			owner_.awake();
 		}

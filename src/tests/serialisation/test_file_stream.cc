@@ -22,7 +22,19 @@ class TestApp : public Tool {
 
 public:
 
-    TestApp( int argc, char** argv ) : Tool(argc,argv)
+    TestApp( int argc, char** argv ) : Tool(argc,argv),
+    v_char(0),
+    v_uchar(0),
+    v_bool(0),
+    v_int(0),
+    v_uint(0),
+    v_short(0),
+    v_ushort(0),
+    v_long(0),
+    v_ulong(0),
+    v_longlong(0),
+    v_ulonglong(0),
+    v_double(0)
     {
         PathName filename = PathName::unique( "data." );
         filepath_ = filename.asString();

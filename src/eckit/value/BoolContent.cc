@@ -27,7 +27,8 @@ BoolContent::BoolContent(bool l):
 }
 
 BoolContent::BoolContent(Stream& s):
-	Content(s)
+	Content(s),
+	value_(false)
 {
     s >> value_;
 }

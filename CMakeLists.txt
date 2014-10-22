@@ -35,31 +35,46 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-# GRIB
+### C++11
+
+ecbuild_add_option( FEATURE CPP11
+					DEFAULT OFF
+					DESCRIPTION "Try compile with C++11 features" )
+
+### GRIB
+
 ecbuild_add_option( FEATURE GRIB
 					DEFAULT ON
-                    DESCRIPTION "support for GRIB format [EXPERIMENTAL]"
-                    REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.9.9" )
+					DESCRIPTION "C++ interface to GRIB format"
+					REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.9.9" )
 
 set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
 
-# eckit::xpr
+### eckit::xpr
+
 ecbuild_add_option( FEATURE XPR
                     DEFAULT OFF
-                    DESCRIPTION "eckit::xpr [EXPERIMENTAL]"
-                  )
-if( HAVE_XPR )
-  ecbuild_add_cxx11_flags() # enforce c++11
-endif()
+					DESCRIPTION "eckit::xpr [EXPERIMENTAL]" )
 
-# Eigen
+### Eigen
+
+
+
 ecbuild_add_option( FEATURE EIGEN
                     DEFAULT ON
-                    DESCRIPTION "Eigen support  [EXPERIMENTAL]"
-                    REQUIRED_PACKAGES Eigen3 )
+					DESCRIPTION "Eigen support" 
+					REQUIRED_PACKAGES Eigen3 )
+
 set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Accelerated dense matrix operations" )
 
-# LAPACK
+if( ENABLE_EIGEN )
+	# TODO: we should add here a test that we can compile Eigen without problems
+	# TODO: don't use contrib just yet -- sort out the legal stuff first
+	# set( ECKIT_CONTRIB_EIGEN 1 )
+endif()
+
+### LAPACK
+
 if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
   ecbuild_add_option( FEATURE LAPACK
                       DESCRIPTION "Linear Algebra PACKage"
@@ -69,20 +84,40 @@ else() # Don't search for it on cc[abt] as it is already available as scilib
                       DESCRIPTION "Linear Algebra PACKage")
 endif()
 
-ecbuild_check_cxx11( PRINT ) # always test for c++11
-
-# async io support
+### async io support
 
 find_package( AIO )
 set_package_properties( AIO PROPERTIES TYPE RECOMMENDED PURPOSE "support for asynchronous IO" )
 
-# find thread library ( preferably pthreads )
+### thread library ( preferably pthreads )
 
 set( CMAKE_THREAD_PREFER_PTHREAD 1 )
 find_package(Threads REQUIRED)
 
 ###############################################################################
 # checks
+
+### C++11
+
+if( ENABLE_XPR OR ENABLE_CPP11 )
+
+	ecbuild_add_cxx11_flags() # enforce c++11
+
+	list( APPEND cpp11_req
+		auto constexpr constructor_delegate cstdint decltype deleted_constructor
+		initialization lambda long_double long_long noexcept nullptr override
+		rvalue_references shared_ptr sizeof_member static_assert template_alias type_traits
+		unique_ptr variadic_templates )
+
+	# currently not included: __func__ random_device trivial_type_traits explicit_cast enable_if
+
+	# in ecbuild 1.5.0 this will operate on lists so we will need only one call
+
+	foreach( f ${cpp11_req} )
+		ecbuild_check_cxx11( REQUIRED ${f} )
+	endforeach()
+
+endif()
 
 # check thread library is pthreads
 
@@ -114,7 +149,12 @@ if( HAVE_GRIB )
 endif()
 
 if( HAVE_EIGEN )
-  list( APPEND ECKIT_TPLS Eigen3 )
+	if( ECKIT_CONTRIB_EIGEN )
+		list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
+	else()
+		list( APPEND ECKIT_TPLS Eigen3 )
+
+	endif()
 endif()
 
 if( HAVE_XPR )
@@ -130,7 +170,12 @@ get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
 ecbuild_find_project_files()
 
 include_directories( ${ECKIT_INCLUDE_DIRS} )
+if( HAVE_GRIB )
+	include_directories( ${EIGEN3_INCLUDE_DIR} )
+endif()
 
+add_subdirectory( bamboo )
+add_subdirectory( contrib )
 add_subdirectory( src )
 
 ############################################################################################

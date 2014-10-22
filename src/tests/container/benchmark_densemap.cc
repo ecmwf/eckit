@@ -12,7 +12,6 @@
 #include <cstdlib>
 #include <map>
 
-// #define BOOST_TEST_MODULE test_eckit_container
 // #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/exception/Exceptions.h"

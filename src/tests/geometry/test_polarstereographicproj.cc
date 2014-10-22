@@ -11,8 +11,9 @@
 #include <string>
 #include <iostream>
 
+#include "eckit/eckit_config.h"
+
 #define BOOST_TEST_MODULE TestPolarStereoGraphicProj
-#define BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/geometry/PolarStereoGraphicProj.h"

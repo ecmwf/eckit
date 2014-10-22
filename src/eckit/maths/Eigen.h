@@ -19,18 +19,27 @@
 
 //--------------------------------------------------------------------------------------------
 
-#ifndef EIGEN3_FOUND
-#error Eigen 3 is not enabled
-#else
+#ifdef HAVE_EIGEN
 
 #define EIGEN_NO_AUTOMATIC_RESIZING
 #define EIGEN_DONT_ALIGN
 #define EIGEN_DONT_VECTORIZE
 
+#ifdef ECKIT_CONTRIB_EIGEN
+
+#include "eigen3/Eigen/Core"
+#include "eigen3/Eigen/Dense"
+#include "eigen3/Eigen/Geometry"
+#include "eigen3/Eigen/Sparse"
+
+#else
+
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 #include <Eigen/Sparse>
+
+#endif
 
 #endif
 

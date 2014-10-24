@@ -14,7 +14,7 @@ ecbuild_add_library(TARGET eckit_maths
 						${INSTALL_INCLUDE_DIR}/eckit/maths
 					SOURCES
 						${eckit_maths_srcs}
-					INCLUDES ${EIGEN3_INCLUDE_DIR}
+					INCLUDES "${EIGEN3_INCLUDE_DIR}"
 					LIBS
-						eckit ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} )
+						eckit "${LAPACK_LIBRARIES}" "${BLAS_LIBRARIES}" )
 

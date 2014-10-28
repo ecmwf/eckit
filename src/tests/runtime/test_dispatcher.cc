@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE( test_push_one )
 	Dispatcher<Traits> d;
 	TestResource r;
 	d.push(new TestRequest(r));
-	d.waitForAll();
+	d.stopAll();
 	// All request should have been processed
 	BOOST_CHECK( d.size() == 0 );
 	BOOST_CHECK( d.running() == 0 );
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE( test_push_ten )
 		v.push_back(new TestRequest(r));
 	}
 	d.push(v);
-	d.waitForAll();
+	d.stopAll();
 	// All request should have been processed
 	BOOST_CHECK( d.size() == 0 );
 	BOOST_CHECK( d.running() == 0 );

@@ -8,6 +8,7 @@
  */
 
 #define BOOST_TEST_MODULE TestDispatcher
+#include "boost_auto_param.h"
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/runtime/Dispatcher.h"
@@ -54,11 +55,15 @@ struct Traits {
 	typedef TestHandler     Handler;
 };
 
+static int threads[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+
 BOOST_AUTO_TEST_SUITE( TestDispatcher )
 
-BOOST_AUTO_TEST_CASE( test_push_one )
+BOOST_AUTO_PARAM_TEST_CASE( test_push_one, threads, threads+8 )
 {
-	Dispatcher<Traits> d;
+	BOOST_TEST_MESSAGE("Test pushing 1 task in queue with "
+										 << param << " worker threads");
+	Dispatcher<Traits> d("eckitTest", param);
 	TestResource r;
 	d.push(new TestRequest(r));
 	d.stopAll();
@@ -69,9 +74,11 @@ BOOST_AUTO_TEST_CASE( test_push_one )
 	BOOST_CHECK( r.i == 1 );
 };
 
-BOOST_AUTO_TEST_CASE( test_push_ten )
+BOOST_AUTO_PARAM_TEST_CASE( test_push_ten, threads, threads+8 )
 {
-	Dispatcher<Traits> d;
+	BOOST_TEST_MESSAGE("Test pushing 10 tasks in queue with "
+										 << param << " worker threads");
+	Dispatcher<Traits> d("eckitTest", param);
 	TestResource r;
 	std::vector<TestRequest*> v;
 	for (int i = 0; i < 10; ++i) {

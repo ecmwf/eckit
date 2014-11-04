@@ -17,6 +17,7 @@
 
 class TestBuilder {
 public:
+    virtual ~TestBuilder(){}
     virtual void build() = 0;
 };
 

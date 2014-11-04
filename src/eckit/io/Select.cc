@@ -88,8 +88,6 @@ bool Select::ready(long sec)
 	timeout.tv_sec  = sec;
 	timeout.tv_usec = 0;
 
-	int done = 0;
-
 	for(;;)
 	{
 

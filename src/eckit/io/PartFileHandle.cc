@@ -49,7 +49,10 @@ void PartFileHandle::encode(Stream& s) const
 }
 
 PartFileHandle::PartFileHandle(Stream& s):
-    DataHandle(s)
+    DataHandle(s),
+    file_(0),
+    pos_(0),
+    index_(0)
 {
     s >> name_;
     s >> offset_;
@@ -79,6 +82,8 @@ PartFileHandle::PartFileHandle(const PathName& name,
     const OffsetList& offset,const LengthList& length):
     name_(name),
     file_(0),
+    pos_(0),
+    index_(0),
 #ifdef USE_LINKS
     link_(linkName(name)),
 #endif
@@ -94,6 +99,8 @@ PartFileHandle::PartFileHandle(const PathName& name,
     const Offset& offset,const Length& length):
     name_(name),
     file_(0),
+    pos_(0),
+    index_(0),
 #ifdef USE_LINKS
     link_(linkName(name)),
 #endif

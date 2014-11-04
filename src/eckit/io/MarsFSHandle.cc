@@ -37,7 +37,9 @@ void MarsFSHandle::encode(Stream& s) const
 MarsFSHandle::MarsFSHandle(Stream& s):
 	DataHandle(s),
     path_(s),
-    position_(0)
+    read_(false),
+    position_(0),
+    overwrite_(false)
 {
 	s >> overwrite_;
 }
@@ -45,8 +47,8 @@ MarsFSHandle::MarsFSHandle(Stream& s):
 MarsFSHandle::MarsFSHandle(const MarsFSPath& path, bool overwrite):
 	path_(path),
 	read_(false),
-    position_(0),
-    overwrite_(overwrite)    
+   position_(0),
+   overwrite_(overwrite)
 {
 	//Log::info() << "CREATE " << *this << std::endl;
 }

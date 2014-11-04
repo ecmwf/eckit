@@ -38,8 +38,6 @@ public:
 
 void ClusterHeartBeat::run()
 {
-    static const char *here = __FUNCTION__;
-
     Monitor::instance().name("heartbeat");
     std::string host   = Resource<std::string>("clusterHost","localhost");
     int port =  Port("cluster",9555);
@@ -87,7 +85,7 @@ void ClusterHeartBeat::run()
         }
         catch(std::exception& e)
         {
-            Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is handled" << std::endl;
         }
     }

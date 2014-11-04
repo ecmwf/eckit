@@ -8,11 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE TestEcKit
-#define BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY
-#include "ecbuild/boost_test_framework.h"
-
 #include <string>
+
+#include "eckit/eckit_config.h"
+
+#define BOOST_TEST_MODULE TestTranslator
+
+#include "ecbuild/boost_test_framework.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
@@ -22,7 +24,7 @@
 using namespace std;
 using namespace eckit;
 
-BOOST_AUTO_TEST_SUITE( TestEcKit )
+BOOST_AUTO_TEST_SUITE( TestTranslator )
 
 BOOST_AUTO_TEST_CASE( test_translator_string_double )
 {

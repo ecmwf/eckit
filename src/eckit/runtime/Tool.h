@@ -32,7 +32,7 @@ public: // methods
 
     /// Destructor
 
-	~Tool();
+	virtual ~Tool();
 	
     void start();
     

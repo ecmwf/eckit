@@ -48,7 +48,6 @@ HttpUser::~HttpUser()
 
 void HttpUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out)
 {
-	static const char *here = __FUNCTION__;
 
 	HttpStream http;
 
@@ -60,7 +59,7 @@ void HttpUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out)
 	catch(std::exception& e)
 	{
 		Log::error() << "** " << e.what() << " Caught in " 
-			<< here << std::endl;
+			<< Here() << std::endl;
 		Log::error() << "** Exception is ignored" << std::endl;
 		http << "Exception caught: " << e.what() << std::endl;
 	}

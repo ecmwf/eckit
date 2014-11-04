@@ -280,7 +280,7 @@ void *MemoryPool::fastAllocate(size_t s,MemPool& pool)
 			size = ((s + HEADER_SIZE + (page_size-1)) / page_size) * page_size;
 		}
 
-		memblk* p = (memblk*)largeAllocate(size);
+		memblk* p = static_cast<memblk*>(largeAllocate(size));
 		if(pool.clear_) ::memset(p,0,size);
 
 		p->next_    = pool.first_;
@@ -333,7 +333,7 @@ void MemoryPool::fastDeallocate(void *p,MemPool& pool)
 		m = m->next_;
 	}
 
-    std::cerr << __FUNCTION__ << std::endl;
+    std::cerr << Here() << std::endl;
 	abort();
 }
 

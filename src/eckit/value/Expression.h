@@ -62,12 +62,12 @@ class CondUnary : public Expression<U> {
 
 public:
 	CondUnary(Expression<U>* cond): cond_(cond) {}
+	virtual ~CondUnary(){}
 	virtual eckit::Value eval(U& task) const { return T()(cond_->eval(task));}
 };
 
 template<class T, class U>
 class CondBinary : public Expression<U> {
-
 
 	auto_ptr<Expression<U> > left_;
 	auto_ptr<Expression<U> > right_;
@@ -79,6 +79,7 @@ public:
 	CondBinary(Expression<U>* left,Expression<U>* right):
         left_(left), right_(right) {}
 
+	virtual ~CondBinary(){}
 	eckit::Value eval(U& task) const;
 };
 
@@ -94,6 +95,7 @@ class StringExpression : public Expression<T> {
 	virtual void print(std::ostream& s) const { s << str_; } 
 public:
 	StringExpression(const std::string& s) : str_(s) {}
+	virtual ~StringExpression(){}
 	virtual eckit::Value eval(T&) const { return eckit::Value(str_); }
 };
 
@@ -105,6 +107,7 @@ protected:
 	long long value() const              { return value_; }
 public:
 	NumberExpression(long long n) : value_(n) {}
+	virtual ~NumberExpression() {}
 	virtual eckit::Value eval(T&) const { return eckit::Value(value_); }
 };
 
@@ -115,7 +118,7 @@ class ListExpression : public Expression<T> {
 public:
 	ListExpression();
 	ListExpression(const std::vector<Expression<T>*>& v) : v_(v) {}
-	~ListExpression();
+	virtual ~ListExpression();
 	virtual eckit::Value eval(T&) const;
 };
 

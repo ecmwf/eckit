@@ -28,6 +28,7 @@ namespace eckit {
 template<class PAYLOAD>
 class Producer {
 public:
+    virtual ~Producer() {}
     virtual bool done() = 0;
     virtual void produce(PAYLOAD&) = 0;
 };
@@ -35,6 +36,7 @@ public:
 template<class PAYLOAD>
 class Consumer {
 public:
+    virtual ~Consumer() {}
     virtual void consume(PAYLOAD&) = 0;
 };
 
@@ -144,11 +146,7 @@ template<class PAYLOAD>
 void ProducerConsumer<PAYLOAD>::execute(Producer<PAYLOAD>& producer,Consumer<PAYLOAD>& consumer)
 {
 
-    static const char *here = __FUNCTION__;
-
     OnePayload<PAYLOAD>* payloads = new OnePayload<PAYLOAD>[count_];
-
-
 
     error_   = false;
 
@@ -182,7 +180,7 @@ void ProducerConsumer<PAYLOAD>::execute(Producer<PAYLOAD>& producer,Consumer<PAY
         catch(std::exception& e)
         {
             Log::error() << "** " << e.what() << " Caught in " <<
-                            here << std::endl;
+                            Here() << std::endl;
             Log::error() << "** Exception is handled" << std::endl;
             error(e.what());
         }
@@ -222,8 +220,6 @@ template<class PAYLOAD>
 void ProducerConsumerTask<PAYLOAD>::run()
 {
 
-    static const char *here = __FUNCTION__;
-
     int i = 0;
 
     while(!owner_.error())
@@ -251,7 +247,7 @@ void ProducerConsumerTask<PAYLOAD>::run()
         catch(std::exception& e)
         {
             Log::error() << "** " << e.what() << " Caught in " <<
-                            here << std::endl;
+                            Here() << std::endl;
             Log::error() << "** Exception is handled" << std::endl;
             owner_.error(e.what());
             error = true;

@@ -186,7 +186,7 @@ void TaskInfo::touch()
 		stop_ = false;
 		exit(1);
 		throw Stop("ThreadControler stopped by request");
-		::kill(getpid(),SIGTERM);
+		//::kill(getpid(),SIGTERM);
 	}
 }
 

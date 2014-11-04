@@ -61,6 +61,7 @@ Monitor& Monitor::instance()
 //-----------------------------------------------------------------------------
 
 Monitor::Monitor():
+   slot_(0),
 	ready_(false),
 	check_(false)
 { 

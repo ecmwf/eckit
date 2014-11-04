@@ -42,7 +42,8 @@ void FTPHandle::encode(Stream& s) const
 }
 
 FTPHandle::FTPHandle(Stream& s):
-	DataHandle(s)
+	DataHandle(s),
+	port_(0)
 {
 	s >> remote_;
 	s >> host_;

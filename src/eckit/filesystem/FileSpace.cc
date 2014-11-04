@@ -46,7 +46,6 @@ FileSpace::~FileSpace()
 
 static const PathName& leastUsed(const std::vector<PathName>& fileSystems)
 {
-	static const char *here = __FUNCTION__;
 	unsigned long long free = 0;
 	Ordinal best = 0;
 	Ordinal checked = 0;
@@ -66,7 +65,7 @@ static const PathName& leastUsed(const std::vector<PathName>& fileSystems)
 			}
 			catch(std::exception& e)
 			{
-				Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
 				Log::error() << "** Exception is ignored" << std::endl;
 				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
 				continue;
@@ -92,7 +91,6 @@ static const PathName& leastUsed(const std::vector<PathName>& fileSystems)
 
 static const PathName& roundRobin(const std::vector<PathName>& fileSystems)
 {
-	static const char *here = __FUNCTION__;
 	static long value = -1;
 	static Resource<long> candidate("candidateFileSystem", 99);
 
@@ -119,7 +117,7 @@ static const PathName& roundRobin(const std::vector<PathName>& fileSystems)
 			}
 			catch(std::exception& e)
 			{
-				Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
 				Log::error() << "** Exception is ignored" << std::endl;
 				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
 				continue;
@@ -159,7 +157,6 @@ static const PathName& roundRobin(const std::vector<PathName>& fileSystems)
 
 static const PathName& pureRandom(const std::vector<PathName>& fileSystems)
 {
-	static const char *here = __FUNCTION__;
 	static Resource<long> candidate("candidateFileSystem", 99);
 
 	ASSERT(fileSystems.size() != 0);
@@ -180,7 +177,7 @@ static const PathName& pureRandom(const std::vector<PathName>& fileSystems)
 			}
 			catch(std::exception& e)
 			{
-				Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
 				Log::error() << "** Exception is ignored" << std::endl;
 				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
 				continue;
@@ -207,7 +204,6 @@ static const PathName& pureRandom(const std::vector<PathName>& fileSystems)
 
 static const PathName& weightedRandom(const std::vector<PathName>& fileSystems)
 {
-	static const char *here = __FUNCTION__;
 	static Resource<long> candidate("candidateFileSystem", 99);
 
 	ASSERT(fileSystems.size() != 0);
@@ -228,7 +224,7 @@ static const PathName& weightedRandom(const std::vector<PathName>& fileSystems)
 			}
 			catch(std::exception& e)
 			{
-				Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
 				Log::error() << "** Exception is ignored" << std::endl;
 				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
 				continue;
@@ -247,7 +243,7 @@ static const PathName& weightedRandom(const std::vector<PathName>& fileSystems)
 
 		}
 
-	if(!scores.size())
+	if(scores.empty())
 		return leastUsed(fileSystems);
 
 	while(free_space > 0x7fffffff)

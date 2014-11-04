@@ -25,7 +25,7 @@ namespace config {
 
 static bool isUnderscore( char c ) { return c == '_'; }
 static bool isDot( char c )        { return c == '.'; }
-static bool isSpace( char c )      { return c == ' '; }
+//static bool isSpace( char c )      { return c == ' '; } // not used
 
 Compiler::Compiler( std::istream& in ) : StreamParser(in) {}
 

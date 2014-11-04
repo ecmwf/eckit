@@ -58,8 +58,6 @@ ecbuild_add_option( FEATURE XPR
 
 ### Eigen
 
-
-
 ecbuild_add_option( FEATURE EIGEN
                     DEFAULT ON
 					DESCRIPTION "Eigen support" 
@@ -170,7 +168,7 @@ get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
 ecbuild_find_project_files()
 
 include_directories( ${ECKIT_INCLUDE_DIRS} )
-if( HAVE_GRIB )
+if( HAVE_EIGEN )
 	include_directories( ${EIGEN3_INCLUDE_DIR} )
 endif()
 

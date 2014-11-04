@@ -44,7 +44,10 @@ void FileHandle::encode(Stream& s) const
 }
 
 FileHandle::FileHandle(Stream& s):
-        DataHandle(s)
+        DataHandle(s),
+        overwrite_(false),
+        file_(0),
+        read_(false)
 {
     s >> name_;
     s >> overwrite_;
@@ -64,7 +67,6 @@ FileHandle::~FileHandle()
 
 void FileHandle::open(const char* mode)
 {
-    static long bufSize  = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize",0);
     file_ = ::fopen(name_.c_str(),mode);
     if (file_ == 0)
         throw CantOpenFile(name_);
@@ -78,6 +80,7 @@ void FileHandle::open(const char* mode)
         setbuf(file_,0);
 	else
 	{
+	   static long bufSize  = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize",0);
 		long size = bufSize;
 		if(size)
 		{

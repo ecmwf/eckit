@@ -98,7 +98,6 @@ void Test::run()
 
         b.set(f,f);
 
-        string g;
         FixedString<256> z;
         b.get(f, z);
         std::cout << string(z) << std::endl;

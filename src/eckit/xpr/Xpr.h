@@ -12,8 +12,8 @@
 /// @author Baudouin Raoult
 /// @date November 2013
 
-#ifndef eckit_maths_Math_h
-#define eckit_maths_Math_h
+#ifndef eckit_xpr_Math_h
+#define eckit_xpr_Math_h
 
 #include "eckit/xpr/Expression.h"
 
@@ -21,48 +21,48 @@ namespace eckit {
 namespace xpr {
 
 
-class Math {
+class Xpr {
 public:
 
-    Math(ExpPtr);
-    ~Math();
+	Xpr(ExpPtr);
+	~Xpr();
 
     // From a double
-    Math(double);
-    Math(bool);
+	Xpr(double);
+	Xpr(bool);
 
     // A parameter
-    Math(const std::string&);
-    Math(const char*);
+	Xpr(const std::string&);
+	Xpr(const char*);
 
     // Default copy OK
     //Math(const Math&);
     //Math& operator=(const Math&);
 
     // eval
-    Math operator()() const;
-    Math operator()(const Math&) const;
-    Math operator()(const Math&, const Math&) const;
+	Xpr operator()() const;
+	Xpr operator()(const Xpr&) const;
+	Xpr operator()(const Xpr&, const Xpr&) const;
 
     // Make it compatible with ExpPtr
     operator ExpPtr() const;
 
     // Nice stuff
-    Math operator -(const Math&) const;
-    Math operator +(const Math&) const;
-    Math operator /(const Math&) const;
-    Math operator *(const Math&) const;
-    Math operator ==(const Math&) const;
-    Math operator !=(const Math&) const;
-    Math operator >(const Math&) const;
-    Math operator <(const Math&) const;
-    Math operator >=(const Math&) const;
-    Math operator <=(const Math&) const;
+	Xpr operator -(const Xpr&) const;
+	Xpr operator +(const Xpr&) const;
+	Xpr operator /(const Xpr&) const;
+	Xpr operator *(const Xpr&) const;
+	Xpr operator ==(const Xpr&) const;
+	Xpr operator !=(const Xpr&) const;
+	Xpr operator >(const Xpr&) const;
+	Xpr operator <(const Xpr&) const;
+	Xpr operator >=(const Xpr&) const;
+	Xpr operator <=(const Xpr&) const;
 
     // Just for testing
 
-    Math optimise() const;
-    ExpPtr expr() const;
+	Xpr optimise() const;
+	ExpPtr expr() const;
 
 private:
 
@@ -70,7 +70,7 @@ private:
 
     void print(std::ostream&) const;
 
-    friend std::ostream& operator<<( std::ostream& os, const Math& v)
+	friend std::ostream& operator<<( std::ostream& os, const Xpr& v)
     {
         v.print(os);
         return os;

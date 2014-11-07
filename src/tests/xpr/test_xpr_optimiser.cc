@@ -17,13 +17,14 @@
 #include "eckit/xpr/Call.h"
 #include "eckit/xpr/Bind.h"
 
-#include "eckit/xpr/Math.h"
-#include "eckit/xpr/Scalar.h"
-#include "eckit/xpr/Vector.h"
-#include "eckit/xpr/List.h"
 #include "eckit/xpr/BinaryOperator.h"
 #include "eckit/xpr/Count.h"
+#include "eckit/xpr/List.h"
 #include "eckit/xpr/Merge.h"
+#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Vector.h"
+#include "eckit/xpr/Xpr.h"
+
 
 using namespace std;
 using namespace eckit;
@@ -39,10 +40,10 @@ namespace eckit_test {
 
 class TestOptimiser : public Tool {
 
-    Math a;
-    Math b;
-    Math x;
-    Math y;
+    Xpr a;
+    Xpr b;
+    Xpr x;
+    Xpr y;
 
 public:
 
@@ -94,35 +95,35 @@ void TestOptimiser::test_add_vv()
 {
     // should not optimise
 
-    Math X = xpr::add(x,y);
+    Xpr X = xpr::add(x,y);
 
     ASSERT( X.optimise().expr()->str() == "Add(Vector(5, 5, 5), Vector(7, 7, 7))" );
 }
 
 void TestOptimiser::test_list_add_ss_vv()
 {
-    Math X = xpr::list( xpr::add(a,b), xpr::add(x,y));
+    Xpr X = xpr::list( xpr::add(a,b), xpr::add(x,y));
 
     ASSERT( X.optimise().expr()->str() == "List(Scalar(6), Add(Vector(5, 5, 5), Vector(7, 7, 7)))" );
 }
 
 void TestOptimiser::test_linear_sv_sv()
 {
-    Math e = a+b;
-    Math z = (a-b) * e;
-    Math X = xpr::add( xpr::prod(e,x), xpr::prod(z,y));
+    Xpr e = a+b;
+    Xpr z = (a-b) * e;
+    Xpr X = xpr::add( xpr::prod(e,x), xpr::prod(z,y));
 
     ASSERT( X.optimise().expr()->str() == "Linear(Scalar(6), Vector(5, 5, 5), Scalar(-12), Vector(7, 7, 7))" );
 }
 
 void TestOptimiser::test_linear_with_count()
 {
-    Math e = xpr::count(
+    Xpr e = xpr::count(
                 xpr::merge(
                     xpr::list(a,a,a,a,a,a,a),
                            xpr::list(b,b,b))
                              );
-    Math X = xpr::add( xpr::prod(e,x), xpr::prod(b,y));
+    Xpr X = xpr::add( xpr::prod(e,x), xpr::prod(b,y));
 
     ASSERT( X.optimise().expr()->str() == "Linear(Scalar(10), Vector(5, 5, 5), Scalar(4), Vector(7, 7, 7))" );
 }

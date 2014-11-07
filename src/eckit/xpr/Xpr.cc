@@ -10,124 +10,124 @@
 
 #include <sstream>
 
-#include "eckit/xpr/Math.h"
-#include "eckit/xpr/Value.h"
-#include "eckit/xpr/Scope.h"
-#include "eckit/xpr/Undef.h"
-#include "eckit/xpr/Param.h"
-#include "eckit/xpr/ParamDef.h"
 #include "eckit/xpr/BinaryOperator.h"
 #include "eckit/xpr/BinaryPredicate.h"
+#include "eckit/xpr/Bind.h"
+#include "eckit/xpr/Call.h"
 #include "eckit/xpr/Count.h"
 #include "eckit/xpr/Expression.h"
-#include "eckit/xpr/Map.h"
 #include "eckit/xpr/Filter.h"
-#include "eckit/xpr/Reduce.h"
-#include "eckit/xpr/List.h"
-#include "eckit/xpr/Scalar.h"
-#include "eckit/xpr/UnaryOperator.h"
-#include "eckit/xpr/Vector.h"
-#include "eckit/xpr/ZipWith.h"
-#include "eckit/xpr/Bind.h"
 #include "eckit/xpr/IfElse.h"
 #include "eckit/xpr/Lambda.h"
+#include "eckit/xpr/List.h"
+#include "eckit/xpr/Map.h"
 #include "eckit/xpr/Param.h"
-#include "eckit/xpr/Call.h"
+#include "eckit/xpr/Param.h"
+#include "eckit/xpr/ParamDef.h"
+#include "eckit/xpr/Reduce.h"
+#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Scope.h"
+#include "eckit/xpr/UnaryOperator.h"
+#include "eckit/xpr/Undef.h"
+#include "eckit/xpr/Value.h"
+#include "eckit/xpr/Vector.h"
+#include "eckit/xpr/Xpr.h"
+#include "eckit/xpr/ZipWith.h"
 
 namespace eckit {
 namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-Math::Math(ExpPtr e):
+Xpr::Xpr(ExpPtr e):
     expr_(e)
 {
 }
 
-Math::Math(double v):
+Xpr::Xpr(double v):
     expr_(xpr::scalar(v))
 {
 }
 
-Math::Math(const std::string& v):
+Xpr::Xpr(const std::string& v):
     expr_(xpr::parameter(v))
 {
 }
 
-Math::Math(const char* v):
+Xpr::Xpr(const char* v):
     expr_(xpr::parameter(v))
 {
 }
 
 
-Math::Math(bool v):
+Xpr::Xpr(bool v):
     expr_(xpr::boolean(v))
 {
 }
 
-Math::~Math()
+Xpr::~Xpr()
 {
 }
 
-Math Math::operator()() const
+Xpr Xpr::operator()() const
 {
     ExpPtr e = expr_->eval();
-    return Math(e);
+    return Xpr(e);
 }
 
-Math Math::operator()(const Math& a) const
+Xpr Xpr::operator()(const Xpr& a) const
 {
     ExpPtr e = expr_->eval(a);
-    return Math(e);
+    return Xpr(e);
 }
 
-Math Math::operator()(const Math& a, const Math& b) const
+Xpr Xpr::operator()(const Xpr& a, const Xpr& b) const
 {
     ExpPtr e = expr_->eval(a, b);
-    return Math(e);
+    return Xpr(e);
 }
 
-void Math::print(std::ostream& os) const
+void Xpr::print(std::ostream& os) const
 {
     os << *expr_;
 }
 
-Math::operator ExpPtr() const
+Xpr::operator ExpPtr() const
 {
     return expr_;
 }
 
-Math Math::operator >(const Math& other) const
+Xpr Xpr::operator >(const Xpr& other) const
 {
     return xpr::greater(*this, other);
 }
 
-Math Math::operator ==(const Math& other) const
+Xpr Xpr::operator ==(const Xpr& other) const
 {
     return xpr::equal(*this, other);
 }
 
-Math Math::operator *(const Math& other) const
+Xpr Xpr::operator *(const Xpr& other) const
 {
     return xpr::prod(*this, other);
 }
 
-Math Math::operator -(const Math& other) const
+Xpr Xpr::operator -(const Xpr& other) const
 {
     return xpr::sub(*this, other);
 }
 
-Math Math::operator +(const Math& other) const
+Xpr Xpr::operator +(const Xpr& other) const
 {
     return xpr::add(*this, other);
 }
 
-Math Math::optimise() const
+Xpr Xpr::optimise() const
 {
-    return Math(expr_->optimise(true));
+    return Xpr(expr_->optimise(true));
 }
 
-ExpPtr Math::expr() const
+ExpPtr Xpr::expr() const
 {
     return expr_;
 }

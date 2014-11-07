@@ -12,8 +12,8 @@
 /// @author Baudouin Raoult
 /// @date November 2013
 
-#ifndef eckit_maths_IfElse_h
-#define eckit_maths_IfElse_h
+#ifndef eckit_xpr_IfElse_h
+#define eckit_xpr_IfElse_h
 
 #include "eckit/xpr/Function.h"
 

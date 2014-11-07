@@ -12,8 +12,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_ZipWith_h
-#define eckit_maths_ZipWith_h
+#ifndef eckit_xpr_ZipWith_h
+#define eckit_xpr_ZipWith_h
 
 #include "eckit/xpr/Function.h"
 

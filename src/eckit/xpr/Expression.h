@@ -13,8 +13,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Expression_h
-#define eckit_maths_Expression_h
+#ifndef eckit_xpr_Expression_h
+#define eckit_xpr_Expression_h
 
 /// @todo look into currying / binding -- add2 = curry ( add , 2 )
 /// @todo list --  list 1 2

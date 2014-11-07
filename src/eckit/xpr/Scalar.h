@@ -13,11 +13,11 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Scalar_h
-#define eckit_maths_Scalar_h
+#ifndef eckit_xpr_Scalar_h
+#define eckit_xpr_Scalar_h
 
 #include "eckit/xpr/Value.h"
-#include "eckit/xpr/Math.h"
+#include "eckit/xpr/Xpr.h"
 
 namespace eckit {
 namespace xpr {
@@ -41,7 +41,7 @@ public: // methods
         return e->as<Scalar>()->value();
     }
 
-    static scalar_t extract ( const Math& m )
+    static scalar_t extract ( const Xpr& m )
     {
         ExpPtr e = m;
         ASSERT( Scalar::is(e) );
@@ -54,8 +54,6 @@ public: // methods
 
     /// @returns the value of the scalar
     value_t value() const { return v_; }
-    /// @returns a reference to the scalar
-    //value_t& ref_value() { return v_; }
 
 public: // virtual methods
 

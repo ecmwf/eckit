@@ -11,7 +11,6 @@
 #include "eckit/xpr/Scalar.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/List.h"
-#include "eckit/xpr/Math.h"
 #include "eckit/xpr/BinaryOperator.h"
 #include "eckit/xpr/Optimiser.h"
 

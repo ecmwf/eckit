@@ -12,8 +12,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Filter_h
-#define eckit_maths_Filter_h
+#ifndef eckit_xpr_Filter_h
+#define eckit_xpr_Filter_h
 
 #include "eckit/xpr/Function.h"
 #include "eckit/xpr/Undef.h"

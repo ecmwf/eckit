@@ -12,8 +12,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Merge_h
-#define eckit_maths_Merge_h
+#ifndef eckit_xpr_Merge_h
+#define eckit_xpr_Merge_h
 
 #include "eckit/xpr/Function.h"
 

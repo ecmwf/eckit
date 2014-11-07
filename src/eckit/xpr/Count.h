@@ -12,8 +12,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Count_h
-#define eckit_maths_Count_h
+#ifndef eckit_xpr_Count_h
+#define eckit_xpr_Count_h
 
 #include "eckit/xpr/Function.h"
 #include "eckit/xpr/Undef.h"

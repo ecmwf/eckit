@@ -12,8 +12,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_FMap_h
-#define eckit_maths_FMap_h
+#ifndef eckit_xpr_FMap_h
+#define eckit_xpr_FMap_h
 
 #include "eckit/xpr/Function.h"
 

@@ -12,8 +12,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Boolean_h
-#define eckit_maths_Boolean_h
+#ifndef eckit_xpr_Boolean_h
+#define eckit_xpr_Boolean_h
 
 #include "eckit/xpr/Value.h"
 

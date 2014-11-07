@@ -12,8 +12,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Reduce_h
-#define eckit_maths_Reduce_h
+#ifndef eckit_xpr_Reduce_h
+#define eckit_xpr_Reduce_h
 
 #include "eckit/xpr/Function.h"
 #include "eckit/xpr/Undef.h"

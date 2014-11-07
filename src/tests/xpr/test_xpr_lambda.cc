@@ -17,13 +17,13 @@
 #include "eckit/xpr/Call.h"
 #include "eckit/xpr/Bind.h"
 
-#include "eckit/xpr/Math.h"
-#include "eckit/xpr/Scalar.h"
-#include "eckit/xpr/Vector.h"
-#include "eckit/xpr/List.h"
 #include "eckit/xpr/BinaryOperator.h"
 #include "eckit/xpr/Count.h"
+#include "eckit/xpr/List.h"
 #include "eckit/xpr/Merge.h"
+#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Vector.h"
+#include "eckit/xpr/Xpr.h"
 
 using namespace std;
 using namespace eckit;
@@ -75,19 +75,19 @@ void TestLambda::test_lambda()
 { 
     setformat(std::cout,xpr::CodeFormat);
 
-    Math a = xpr::scalar( 2. );
-    Math b = xpr::scalar( 4. );
-    Math c = xpr::scalar( 1. );
+    Xpr a = xpr::scalar( 2. );
+    Xpr b = xpr::scalar( 4. );
+    Xpr c = xpr::scalar( 1. );
 
-    Math l = xpr::list(a, b, c);
+    Xpr l = xpr::list(a, b, c);
 
-    Math twice  = call(lambda("a", Math(2.0) * Math("a")));
+    Xpr twice  = call(lambda("a", Xpr(2.0) * Xpr("a")));
 
 //    std::cout << twice(c) << std::endl;
 
     ASSERT( Scalar::extract(twice(c)) == 2. );
 
-    Math neg    = call(lambda("a", Math(0.0) - Math("a")));
+    Xpr neg    = call(lambda("a", Xpr(0.0) - Xpr("a")));
 
 //    std::cout << neg(a) << std::endl;
 
@@ -96,7 +96,7 @@ void TestLambda::test_lambda()
     if( false ) // why does this work?
     {
 
-    Math X = l + l;
+    Xpr X = l + l;
 
     std::cout << X << std::endl;
     std::cout << X.expr()->str() << std::endl;

@@ -12,8 +12,8 @@
 /// @author Baudouin Raoult
 /// @date November 2013
 
-#ifndef eckit_maths_Lambda_h
-#define eckit_maths_Lambda_h
+#ifndef eckit_xpr_Lambda_h
+#define eckit_xpr_Lambda_h
 
 #include "eckit/xpr/Function.h"
 
@@ -22,7 +22,8 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-/// Generates a Lambda combination of vectors
+/// Generates a Lambda
+
 class Lambda : public Function {
 
 public: // methods

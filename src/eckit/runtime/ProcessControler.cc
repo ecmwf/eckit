@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -38,14 +38,14 @@ ProcessControler::ProcessControler(bool forget):
 
 ProcessControler::~ProcessControler()
 {
-	if(!forget_ && active()) 
+	if(!forget_ && active())
 		Log::warning() << "~ProcessControler called while process still active" << std::endl;
 }
 
 void ProcessControler::printStatus(pid_t pid,int status)
 {
 	Log::info() << "-------- End of " << pid;
-	
+
 	if(WIFEXITED(status))
 		Log::info() << " exited ";
 
@@ -53,7 +53,7 @@ void ProcessControler::printStatus(pid_t pid,int status)
 		Log::info() << " status " << WEXITSTATUS(status) << ' ';
 
 	if(WIFSIGNALED(status))
-		Log::info() << " with signal " << WTERMSIG(status); 
+		Log::info() << " with signal " << WTERMSIG(status);
 
 	Log::info() << std::endl;
 }
@@ -78,7 +78,7 @@ void ChildReaper::run()
 {
 
 	sigset_t newmask, oldmask;
-	sigemptyset(&newmask); 
+	sigemptyset(&newmask);
 	sigaddset(&newmask, SIGCHLD);
 	pthread_sigmask(SIG_UNBLOCK,&newmask,&oldmask);
 
@@ -96,7 +96,7 @@ void ChildReaper::run()
 
 		if(r.pid_ == -1) {
 			// Todo: use mutex cond....
-            if(errno != ECHILD) 
+            if(errno != ECHILD)
                 Log::error() << "Wait pid " << Log::syserr << std::endl;
 			::sleep(5);
 		}
@@ -145,9 +145,9 @@ void ProcessControler::start()
 			}
 			catch(std::exception& e){
 
-				Log::error() << "** " << e.what() << " Caught in " 
+				Log::error() << "** " << e.what() << " Caught in "
 					<< Here() << std::endl;
-				Log::error() << "** Exception is terminate process " 
+				Log::error() << "** Exception is terminate process "
 							 << pid_ << std::endl;
 			}
 
@@ -165,7 +165,7 @@ void ProcessControler::start()
 
 	}
 
-	sigemptyset(&newmask); 
+	sigemptyset(&newmask);
 	sigaddset(&newmask, SIGCHLD);
 	pthread_sigmask(SIG_UNBLOCK,&newmask,&oldmask);
 
@@ -244,10 +244,13 @@ bool ProcessControler::isRunning(pid_t pid)
 	}
 	return true;
 #else
-
+#ifdef __APPLE__
+	return ::kill(pid, 0) == 0;
+#else
 	char buf[1024];
 	snprintf(buf,1024,"/proc/%d",pid);
 	return access(buf,F_OK) == 0;
+#endif
 
 #endif
 

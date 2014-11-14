@@ -154,6 +154,7 @@ std::vector< typename Factory<T>::key_t > Factory<T>::keys() const
   {
     keysv.push_back(i->first);
   }
+  return keysv;
 }
 
 

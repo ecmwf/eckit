@@ -135,7 +135,7 @@ public: // methods
 
 	virtual ~ConcreteBuilderT0()
 	{
-		Factory<product_t>::instance().unregist( name() );
+		Factory<product_t>::instance().unregist( k_ );
 	}
 
 	virtual typename base_t::key_t name() const { return T::className(); }
@@ -221,7 +221,7 @@ public: // methods
 
 	virtual ~ConcreteBuilderT2()
 	{
-		Factory<product_t>::instance().unregist( name() );
+		Factory<product_t>::instance().unregist( k_ );
 	}
 
 	virtual typename base_t::key_t name() const { return T::className(); }

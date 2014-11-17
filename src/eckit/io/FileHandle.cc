@@ -128,7 +128,9 @@ long FileHandle::read(void* buffer,long length)
 
 long FileHandle::write(const void* buffer,long length)
 {
-    long written = ::fwrite(buffer,1,length,file_);
+	ASSERT( buffer );
+
+	long written = ::fwrite(buffer,1,length,file_);
 
     if (written != length && errno == ENOSPC)
     {

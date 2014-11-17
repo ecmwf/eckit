@@ -188,10 +188,15 @@ void GribHandle::setDataValues(const double *values, size_t count)
 
 void GribHandle::write( DataHandle& handle )
 {
-    const void* message;
-    size_t length;
+	const void* message = NULL;
+	size_t length = 0;
+
 	GRIB_CALL(grib_get_message(raw(), &message, &length));
-    ASSERT(handle.write(message, length) == length);
+
+	ASSERT( message );
+	ASSERT( length );
+
+	ASSERT( handle.write(message, length) == length );
 }
 
 size_t GribHandle::write( Buffer& buff )

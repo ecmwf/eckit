@@ -35,7 +35,7 @@ public:
 
 // -- Destructor
 
-	~Configurable();
+	virtual ~Configurable();
 
 // -- Methods
 	

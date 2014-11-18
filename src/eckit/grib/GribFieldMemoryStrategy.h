@@ -15,45 +15,22 @@
 #ifndef GribFieldMemoryStrategy_H
 #define GribFieldMemoryStrategy_H
 
-// namespace mpi;
-
-// Headers
-// #ifndef   machine_H
-// #include "machine.h"
-// #endif
-
-// Forward declarations
-
-// class ostream;
-
-// 
 #include "eckit/eckit.h"
 
 namespace eckit {
+namespace grib {
+
+//------------------------------------------------------------------------------------------------------
 
 class GribField;
 
 class GribFieldMemoryStrategy {
-public:
 
-
-
-// -- Exceptions
-	// None
-
-// -- Contructors
+public: // methods
 
     GribFieldMemoryStrategy();
 
-// -- Destructor
-
-    virtual ~GribFieldMemoryStrategy(); // Change to virtual if base class
-
-// -- Convertors
-	// None
-
-// -- Operators
-
+    virtual ~GribFieldMemoryStrategy();
 
     void touch(GribField&);
     void purgeable(GribField&);
@@ -62,66 +39,23 @@ public:
     void newValues(GribField&);
     void newHandle(GribField&);
 
-// -- Overridden methods
-	// None
+protected: // methods
 
-// -- Class members
-	// None
-
-// -- Class methods
-
-
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-	
     void print(std::ostream&) const; // Change to virtual if base class
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-private:
-
-// No copy allowed
-
-// -- Members
-//
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
+private: // members
 
     std::set<GribField*> released_;
     size_t max_;
     size_t count_;
 
-// -- Class methods
-	// None
-
-// -- Friends
-
-    friend std::ostream& operator<<(std::ostream& s,const GribFieldMemoryStrategy& p)
-        { p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s,const GribFieldMemoryStrategy& p)  { p.print(s); return s; }
 
 };
 
+//------------------------------------------------------------------------------------------------------
+
+}
 } // namespace eckit
-
-
 
 #endif

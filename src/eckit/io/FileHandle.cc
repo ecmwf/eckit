@@ -44,7 +44,10 @@ void FileHandle::encode(Stream& s) const
 }
 
 FileHandle::FileHandle(Stream& s):
-        DataHandle(s)
+        DataHandle(s),
+        overwrite_(false),
+        file_(0),
+        read_(false)
 {
     s >> name_;
     s >> overwrite_;
@@ -64,7 +67,6 @@ FileHandle::~FileHandle()
 
 void FileHandle::open(const char* mode)
 {
-    static long bufSize  = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize",0);
     file_ = ::fopen(name_.c_str(),mode);
     if (file_ == 0)
         throw CantOpenFile(name_);
@@ -78,6 +80,7 @@ void FileHandle::open(const char* mode)
         setbuf(file_,0);
 	else
 	{
+	   static long bufSize  = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize",0);
 		long size = bufSize;
 		if(size)
 		{
@@ -125,7 +128,9 @@ long FileHandle::read(void* buffer,long length)
 
 long FileHandle::write(const void* buffer,long length)
 {
-    long written = ::fwrite(buffer,1,length,file_);
+	ASSERT( buffer );
+
+	long written = ::fwrite(buffer,1,length,file_);
 
     if (written != length && errno == ENOSPC)
     {
@@ -170,34 +175,8 @@ void FileHandle::flush()
                 Log::error() << "Cannot fsync(" << name_ << ") " <<fileno(file_) <<  Log::syserr << std::endl;
             }
             
-            //if(ret<0)
-            //throw FailedSystemCall(std::string("fsync(") + name_ + ")");
-
             // On Linux, you must also flush the directory
-            
-#ifdef EC_HAVE_DIRFD
-
-            static bool syncDirOnFileFlush = Resource<bool>("syncDirOnFileFlush",true);
-            
-            if( syncDirOnFileFlush )
-            {
-                PathName directory = PathName(name_).dirName();
-                DIR *d = opendir(directory.localPath());
-                if (!d) SYSCALL(-1);
-    
-                int dir;
-                SYSCALL(dir = dirfd(d));
-                ret = fsync(dir);
-    
-                while (ret < 0 && errno == EINTR)
-                    ret = fsync(dir);
-    
-                if (ret < 0) {
-                    Log::error() << "Cannot fsync(" << directory << ")" << Log::syserr << std::endl;
-                }
-                ::closedir(d);
-            }
-#endif
+            PathName(name_).syncParentDirectory();
 
         }
     }

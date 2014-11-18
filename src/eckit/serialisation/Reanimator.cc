@@ -34,7 +34,7 @@ Streamable* Reanimator<T>::ressucitate(Stream& s) const
 template<class T>
 T*  Reanimator<T>::reanimate(Stream& s) 
 { 
-	return (T*)ReanimatorBase::reanimate(s,&T::classSpec()); 
+	return static_cast<T*>(ReanimatorBase::reanimate(s,&T::classSpec()));
 }
 
 //-----------------------------------------------------------------------------

@@ -42,78 +42,74 @@ Connector::Connector(const std::string& host, int port) :
 
 Connector::~Connector()
 {
-	static const char *here = __FUNCTION__;
-
-	try
-	{
-		if (socket_.isConnected())
-		{
-			(*this) << "bye";
-		}
-    } catch (std::exception& e)
-	{
-		Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
-		Log::error() << "** Exception is ignored" << std::endl;
-	}
+   try
+   {
+      if (socket_.isConnected())
+      {
+         (*this) << "bye";
+      }
+   } catch (std::exception& e)
+   {
+      Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+      Log::error() << "** Exception is ignored" << std::endl;
+   }
 
 }
 
 TCPSocket& Connector::socket()
 {
 
-	static const char *here = __FUNCTION__;
 
 	if (!socket_.isConnected())
 	{
-		try
-		{
-			NodeInfo remote;
-			TCPClient client;
-			Log::info() << "Connector::stream connecting to " << host_ << ":" << port_ << std::endl;
-			socket_ = client.connect(host_, port_);
-			InstantTCPStream s(socket_);
+	   try
+	   {
+	      NodeInfo remote;
+	      TCPClient client;
+	      Log::info() << "Connector::stream connecting to " << host_ << ":" << port_ << std::endl;
+	      socket_ = client.connect(host_, port_);
+	      InstantTCPStream s(socket_);
 
-			// Login
-			remote = NodeInfo::sendLogin(s);
+	      // Login
+	      remote = NodeInfo::sendLogin(s);
 
-            ClusterNodes::onLine(host_, port_);
-        } catch (std::exception& e)
-		{
-			Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
-			Log::error() << "** Exception is handled" << std::endl;
+	      ClusterNodes::onLine(host_, port_);
+	   } catch (std::exception& e)
+	   {
 
-            offLine(host_, port_);
+	      Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+	      Log::error() << "** Exception is handled" << std::endl;
 
-            StrStream os;
-			os << name() << ": " << e.what() << StrStream::ends;
-			throw ConnectorException(std::string(os));
-		}
+	      offLine(host_, port_);
+
+	      StrStream os;
+	      os << name() << ": " << e.what() << StrStream::ends;
+	      throw ConnectorException(std::string(os));
+	   }
 	}
 	return socket_;
 }
 
 void Connector::check()
 {
+   if (socket_.isConnected())
+   {
+      try
+      {
+         if (!socket_.stillConnected())
+         {
+            socket_.close();
+            offLine(host_, port_); /// @todo maybe remove this from here, substitute with a descriptive exception
+         }
+      } catch (std::exception& e)
+      {
 
-	static const char *here = __FUNCTION__;
-
-	if (socket_.isConnected())
-	{
-		try
-		{
-			if (!socket_.stillConnected())
-			{
-				socket_.close();
-                offLine(host_, port_); /// @todo maybe remove this from here, substitute with a descriptive exception
-			}
-        } catch (std::exception& e)
-		{
-			Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
-			Log::error() << "** Exception is handled" << std::endl;
-			socket_.close();
-            offLine(host_, port_); /// @todo maybe remove this from here
-		}
-	}
+         Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+         Log::error() << "** Exception is handled" << std::endl;
+         socket_.close();
+         offLine(host_, port_); /// @todo maybe remove this from here
+      }
+   }
 }
 
 void Connector::print(std::ostream&) const
@@ -282,20 +278,18 @@ void Connector::unlock()
 
 void Connector::reset()
 {
-	static const char *here = __FUNCTION__;
+   in_.reset();
+   out_.reset();
+   cache_.clear();
 
-	in_.reset();
-	out_.reset();
-	cache_.clear();
-
-	try
-	{
-		socket_.close();
-    } catch (std::exception& e)
-	{
-		Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
-		Log::error() << "** Exception is ignored" << std::endl;
-	}
+   try
+   {
+      socket_.close();
+   } catch (std::exception& e)
+   {
+      Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+      Log::error() << "** Exception is ignored" << std::endl;
+   }
 }
 
 std::string Connector::name() const

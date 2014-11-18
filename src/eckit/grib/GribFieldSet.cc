@@ -1,18 +1,20 @@
 // File GribFieldSet.cc
 // Baudouin Raoult - (c) ECMWF Nov 13
 
-#include "GribFieldSet.h"
-#include "GribFile.h"
-#include "GribField.h"
+#include "eckit/grib/GribField.h"
+#include "eckit/grib/GribFieldSet.h"
+#include "eckit/grib/GribFile.h"
 #include "eckit/io/FileHandle.h"
 
 namespace eckit {
+namespace grib {
+
+//------------------------------------------------------------------------------------------------------
 
 void GribFieldSet::setStrategy(GribFieldMemoryStrategy& s)
 {
     GribField::setStrategy(s);
 }
-
 
 GribFieldSet::GribFieldSet()
 {
@@ -146,8 +148,7 @@ GribFieldSet GribFieldSet::slice(const std::vector<size_t>& v) const
     return out;
 }
 
-//========================================================================================================
+//------------------------------------------------------------------------------------------------------
 
-
-
+}
 }

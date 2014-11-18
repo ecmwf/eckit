@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -91,7 +91,7 @@ void Exception::reason(const std::string& w)
     what_ = w;
 }
 
-bool Exception::throwing() 
+bool Exception::throwing()
 {
     return first() != 0;
 }
@@ -113,7 +113,7 @@ TooManyRetries::TooManyRetries( const int retries, const std::string& msg )
 }
 
 TimeOut::TimeOut(const std::string& msg, const unsigned long timeout)
-{   
+{
     StrStream s;
     s  << "Timeout expired: " << timeout << " (" << msg << ")" << StrStream::ends ;
     reason(std::string(s));
@@ -121,7 +121,7 @@ TimeOut::TimeOut(const std::string& msg, const unsigned long timeout)
 
 
 FailedSystemCall::FailedSystemCall(const std::string& w)
-{   
+{
     StrStream s;
     s << "Failed system call: " << w << " " << Log::syserr << StrStream::ends;
     reason(std::string(s));
@@ -158,11 +158,37 @@ FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, cons
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
-AssertionFailed::AssertionFailed(const std::string& w): 
+SeriousBug::SeriousBug(const std::string& msg,const CodeLocation& loc)
+{
+   StrStream s;
+   s << "SeriousBug: " << msg << " " << " in " << loc << " "  << StrStream::ends;
+   reason(std::string(s));
+}
+
+SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
+{
+   StrStream s;
+   s << "SeriousBug: " << msg << " " << " in " << loc << " "  << StrStream::ends;
+   reason(std::string(s));
+}
+
+
+
+AssertionFailed::AssertionFailed(const std::string& w):
     Exception(std::string("Assertion failed: ") + w)
-{   
+{
     Log::monitor(Log::App,1) << what() << std::endl;
-} 
+
+#ifndef NDEBUG
+    if( ::getenv("ECKIT_ASSERT_FAILS_AND_ABORTS") )
+    {
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
+        ::abort();
+    }
+#endif
+
+}
 
 AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
 {
@@ -173,25 +199,61 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
 
     reason(std::string(s));
     Log::monitor(Log::App,2) << what() << std::endl;
+
+#ifndef NDEBUG
+    if( ::getenv("ECKIT_ASSERT_FAILS_AND_ABORTS") )
+    {
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
+        ::abort();
+    }
+#endif
 }
 
 BadParameter::BadParameter(const std::string& w):
     Exception(std::string("Bad parameter: ") + w)
-{   
+{
+}
+
+BadParameter::BadParameter(const std::string& w, const CodeLocation& loc):
+    Exception(std::string("Bad parameter: ") + w, loc)
+{
+}
+
+BadCast::BadCast(const std::string& w):
+    Exception(std::string("Bad cast: ") + w)
+{
+}
+
+BadCast::BadCast(const std::string& w, const CodeLocation& loc):
+    Exception(std::string("Bad cast: ") + w, loc)
+{
+}
+
+NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& loc)
+{
+	StrStream ss;
+
+	ss << "Not implemented: " << s << " @ " << loc.func()
+	   << ", line " << loc.line()
+	   << " of " << loc.file()
+	   << StrStream::ends;
+
+	reason(std::string(ss));
+	Log::monitor(Log::App,2) << what() << std::endl;
 }
 
 NotImplemented::NotImplemented( const CodeLocation& loc )
-{   
-    StrStream s;
+{
+	StrStream ss;
 
-    s << "Not implemented: " << loc.func()
-        << ", line " << loc.line() << " of " << loc.file() << StrStream::ends;
+	ss << "Not implemented: " << loc.func()
+	   << ", line " << loc.line()
+	   << " of " << loc.file()
+	   << StrStream::ends;
 
-    reason(std::string(s));
+	reason(std::string(ss));
     Log::monitor(Log::App,2) << what() << std::endl;
-    std::string t = std::string(s);
-    //	Panic(t.c_str());
-
 }
 
 UserError::UserError(const std::string& r, const CodeLocation& loc):
@@ -206,17 +268,17 @@ UserError::UserError(const std::string& r):
 
 UserError::UserError(const std::string& r,const std::string& x):
     Exception(std::string("UserError: ") + r + " : " + x)
-{   
+{
 }
 
 Stop::Stop(const std::string& r):
     Exception(std::string("Stop: ") + r)
-{   
+{
 }
 
 Abort::Abort(const std::string& r):
     Exception(std::string("Abort: ") + r)
-{   
+{
 }
 
 Retry::Retry(const std::string& r):
@@ -226,19 +288,33 @@ Retry::Retry(const std::string& r):
 
 Cancel::Cancel(const std::string& r):
     Exception(std::string("Cancel: ") + r)
-{   
+{
 }
 
 OutOfRange::OutOfRange(unsigned long long index, unsigned long long max)
-{   
+{
     StrStream s;
-    s << "Out of range accessing element " << index 
+    s << "Out of range accessing element " << index
         << ", but maximum is " << max - 1 << StrStream::ends;
     reason(std::string(s));
 }
 
+OutOfRange::OutOfRange(unsigned long long index, unsigned long long max,const CodeLocation& loc)
+{
+  StrStream s;
+  s << "Out of range accessing element " << index
+      << ", but maximum is " << max - 1 << StrStream::ends;
+  Exception(std::string(s),loc);
+}
+
+OutOfRange::OutOfRange(const std::string& w,const CodeLocation& loc):
+    Exception(std::string("OutOfRange: ")+w,loc)
+{
+}
+
+
 FileError::FileError(const std::string& msg)
-{   
+{
     StrStream s;
     s << msg <<  Log::syserr;
     s << StrStream::ends;
@@ -248,7 +324,7 @@ FileError::FileError(const std::string& msg)
 
 CantOpenFile::CantOpenFile(const std::string& file, bool retry):
     retry_(retry)
-{   
+{
     /* std::cout << "cannot open file [" << file << "]" << std::endl; */
     StrStream s;
     s << "Cannot open " << file << " " << Log::syserr;
@@ -263,19 +339,19 @@ MethodNotYetImplemented::MethodNotYetImplemented(const std::string &msg):
 {
 }
 
-WriteError::WriteError(const std::string& file): 
+WriteError::WriteError(const std::string& file):
     FileError(std::string("Write error on ") + file)
-{   
+{
 }
 
-ReadError::ReadError(const std::string& file): 
+ReadError::ReadError(const std::string& file):
     FileError(std::string("Read error on ") + file)
-{   
+{
 }
 
-ShortFile::ShortFile(const std::string& file): 
+ShortFile::ShortFile(const std::string& file):
     ReadError(std::string("Short file while reading ") + file)
-{   
+{
 }
 
 RemoteException::RemoteException(const std::string& msg, const std::string& from):
@@ -294,9 +370,9 @@ void handle_panic(const char *msg)
 
     Log::panic() << "PANIC IS CALLED!!!" << std::endl;
     Log::panic() << msg << std::endl;
-    
+
     Log::panic() << "----------------------------------------\n"
-                 << "BACKTRACE\n" 
+                 << "BACKTRACE\n"
                  << "----------------------------------------\n"
                  << BackTrace::dump() << std::endl
                  << "----------------------------------------\n"
@@ -307,9 +383,9 @@ void handle_panic(const char *msg)
         Log::panic() << "Use dbx -a " << getpid() << " or xldb -a " << getpid() << std::endl;
         ::kill(::getpid(),SIGSTOP);
     }
-    else 
+    else
         ::kill(::getpid(),SIGABRT);
-    
+
     ::pause();
 }
 

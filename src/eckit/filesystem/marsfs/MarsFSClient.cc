@@ -558,6 +558,31 @@ void MarsFSClient::unlink(const std::string& path)
 	}
 }
 
+void MarsFSClient::syncParentDirectory(const std::string& path)
+{
+    X(MarsFSClient::syncParentDirectory);
+    for(;;)
+    {
+        try
+        {
+
+            bool ok;
+            Stream& s = connector_;
+            s << "syncParentDirectory";
+            s << path;
+            s >> ok;
+            return;
+        }
+        catch(ConnectorException& e)
+        {
+            if(!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
+}
+
 void MarsFSClient::rmdir(const std::string& path)
 {
 	X(MarsFSClient::rmdir);

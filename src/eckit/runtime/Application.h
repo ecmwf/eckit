@@ -204,6 +204,7 @@ typedef Application<DefaultLogging,NoMonitor,DefaultLocations,NoSignalRegist> De
 
 template< class LG, class MN, class LC, class SH >
 Application<LG,MN,LC,SH>::Application(int argc,char **argv)
+: running_(false)
 {    
     location_policy.setup(); // location policy first -- sets home()
     

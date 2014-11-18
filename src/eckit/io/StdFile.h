@@ -17,7 +17,7 @@
 #include <stdio.h>
 
 #include "eckit/filesystem/PathName.h"
-
+#include "eckit/memory/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
 
@@ -29,29 +29,16 @@ namespace eckit {
 
 class PathName;
 
-class StdFile {
+class StdFile : private NonCopyable {
 public:
-
-// -- Contructors
 
 	StdFile(const PathName& name,const std::string& mode = "r");
 
-// -- Destructor
-
 	~StdFile();
-
-// -- Convertors
 
 	operator FILE*() { return file_; } // don't call fclose !!!
 
-private:
-
-// No copy allowed
-
-	StdFile(const StdFile&);
-	StdFile& operator=(const StdFile&);
-
-// -- Members
+private: // members
 
 	FILE *file_;
 

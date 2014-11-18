@@ -8,14 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Counted.h
+#ifndef eckit_memory_SharedPtr_h
+#define eckit_memory_SharedPtr_h
+
+/// @file SharedPtr.h
 /// @author Tiago Quintino
-/// @date Dec 2013
+/// @date Mar 2014
 
 #include "eckit/exception/Exceptions.h"
-
-#ifndef eckit_SharedPtr_h
-#define eckit_SharedPtr_h
 
 //-----------------------------------------------------------------------------
 
@@ -53,6 +53,8 @@ void delete_ptr_array(T*& p)
   }
 }
 
+//-----------------------------------------------------------------------------
+
 template <class T>
 struct NewDealloc
 {
@@ -65,10 +67,14 @@ struct NewArrayDealloc
     static void deallocate( T*& p ) { delete_ptr_array(p); }
 };
 
-/// A smart pointer that allows to share resources that have derived from Counted
-/// @see CountedT
+//-----------------------------------------------------------------------------
+
+/// A smart pointer that allows to share resources that have derived from Owned
+/// @see Owned
+
 template< class T, class ALLOC = NewDealloc<T> >
 class SharedPtr {
+
 public: // types
 
     typedef T  element_type;
@@ -85,7 +91,7 @@ public: // methods
     {
         if( ! null() )
             ptr_->attach();
-    }
+	}
 
     /// Copy constructor
     SharedPtr ( const SharedPtr& other ) : ptr_(other.ptr_)
@@ -108,7 +114,7 @@ public: // methods
         {
             ptr_->detach();
 
-            if( ptr_->count() == 0 )
+            if( ptr_->owners() == 0 )
                 ALLOC::deallocate( ptr_ );
 
             ptr_ = 0;
@@ -143,7 +149,8 @@ public: // methods
     /// @return missing documentation
     const SharedPtr& operator= (const SharedPtr& other)
     {
-        reset(other);
+        if( ptr_ != other.ptr_ )
+            reset(other);
         return *this;
     }
 
@@ -151,7 +158,8 @@ public: // methods
     /// @return missing documentation
     const SharedPtr& operator= (T* other)
     {
-        reset(other);
+        if( ptr_ != other )
+            reset(other);
         return *this;
     }
 
@@ -189,7 +197,7 @@ public: // methods
     bool unique() const
     {
         ASSERT( ! null() );
-        return ptr_->count() == 1;
+        return ptr_->owners() == 1;
     }
 
     /// Overloading of "->"
@@ -208,19 +216,23 @@ public: // methods
         return *ptr_;
     }
 
-    /// @returns true if ptr_ == 0
-    bool null() const { return ( ptr_ == 0 ); }
-
     size_t owners() const
     {
         if( !null() )
-            return ptr_->count();
+            return ptr_->owners();
         return 0;
     }
 
-private:
+    size_t use_count() const { return owners(); }
 
-    pointer_type ptr_; //< raw pointer
+private: // methods
+
+    /// @returns true if ptr_ == 0
+    bool null() const { return ( ptr_ == 0 ); }
+
+private: // members
+
+    pointer_type ptr_; ///< raw pointer
 
 };
 
@@ -230,4 +242,4 @@ private:
 
 //-----------------------------------------------------------------------------
 
-#endif // eckit_SharedPtr_h
+#endif // eckit_memory_SharedPtr_h

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-
+#include "eckit/utils/Translator.h"
 #include "eckit/value/StringContent.h"
 #include "eckit/parser/JSON.h"
 
@@ -74,8 +74,8 @@ void StringContent::value(std::string& s) const
 	s = value_; 
 }
 
-void StringContent::value(bool& b) const 
-{ 
+void StringContent::value(bool& b) const
+{
     if( value_ == "true" || value_ == "on" || value_ == "yes" || value_ == "1" )
     {
         b = true;
@@ -87,6 +87,16 @@ void StringContent::value(bool& b) const
             else
                 Content::value(b);
     }
+}
+
+void StringContent::value(long long& l) const
+{
+	l = Translator<std::string,long long>()(value_);
+}
+
+void StringContent::value(double& d) const
+{
+	d = Translator<std::string,double>()(value_);
 }
 
 Content* StringContent::add(const Content& other) const

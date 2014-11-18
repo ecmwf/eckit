@@ -11,6 +11,7 @@
 #include "eckit/io/Length.h"
 
 namespace eckit {
+namespace grib {
 
 //------------------------------------------------------------------------------------------------------
 
@@ -39,16 +40,9 @@ protected: // methods
 
     void print(std::ostream&) const; // Change to virtual if base class
 
-private:
+private: // members
 
-// No copy allowed
-
-	GribFile(const GribFile&);
-	GribFile& operator=(const GribFile&);
-
-// -- Members
-//
-	PathName path_;
+    PathName path_;
     EmosFile* file_;
 
     friend std::ostream& operator<<(std::ostream& s,const GribFile& p) { p.print(s); return s; }
@@ -57,6 +51,7 @@ private:
 
 //------------------------------------------------------------------------------------------------------
 
-} // end namespace eckit
+} // namespace grib
+} // namespace eckit
 
 #endif

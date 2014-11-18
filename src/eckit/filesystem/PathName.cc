@@ -148,7 +148,12 @@ bool PathName::available() const
 
 void PathName::unlink() const
 {
-	path_->unlink();
+    path_->unlink();
+}
+
+void PathName::syncParentDirectory() const
+{
+    path_->syncParentDirectory();
 }
 
 void PathName::rmdir() const

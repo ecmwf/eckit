@@ -69,7 +69,8 @@ TCPSocket::TCPSocket(TCPSocket& other):
     remoteHost_(other.remoteHost_),
     localPort_(other.remotePort_),
     localHost_(other.remoteHost_),
-    localAddr_(other.remoteAddr_)
+    localAddr_(other.remoteAddr_),
+    bufSize_(0)
 {
     other.socket_ = -1;  // Detach socket from other
 }
@@ -79,7 +80,7 @@ TCPSocket::~TCPSocket()
     close();
 }
 
-// This contructor performs a cahnge of ownership of the socket
+// This contructor performs a change of ownership of the socket
 TCPSocket& TCPSocket::operator=(TCPSocket& other)
 {
     socket_     = other.socket_;

@@ -31,30 +31,36 @@ class MultiplexBuffer;
 
 class MultiChannel : public Channel {
 public:
-    
+
     /// Constructor
     /// No parameters, add target streams later with add() function
     MultiChannel();
-    
+
     /// Destructor
     ~MultiChannel();
-    
+
     /// remove a stream associated to key
     bool remove( const std::string& k );
-    
+
     /// add a stream, passing ownership
     void add( const std::string& k, std::ostream* s );
 
     /// add a stream, not passing ownership
     void add( const std::string& k, std::ostream& s );
 
+    /// get a stream associated to key
+    std::ostream& get(const std::string &k);
+
+    /// check if associated key exists
+    bool has(const std::string &k) const;
+
     /// clears all streams from this channel
     void clear();
 
 protected:
-    
+
     MultiplexBuffer* buff_; ///< storage of output streams
-    
+
 };
 
 //-----------------------------------------------------------------------------

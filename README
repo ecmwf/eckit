@@ -6,7 +6,7 @@ eckit README
 
 The tarball of the source can be downloaded from 
 
-     https://software.ecmwf.int/ecsdk/Releases
+     https://software.ecmwf.int/wiki/display/eckit/Releases
 
 
 2. Installation
@@ -14,7 +14,7 @@ The tarball of the source can be downloaded from
 
 Please read the installation guide:
 
-  https://software.ecmwf.int/ecsdk/Installation+Guide
+  https://software.ecmwf.int/wiki/display/eckit/Building
 
 
 3. License

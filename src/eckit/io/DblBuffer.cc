@@ -133,8 +133,6 @@ Length DblBuffer::copy(DataHandle& in,DataHandle& out)
 
 Length DblBuffer::copy(DataHandle& in,DataHandle& out,const Length& estimate)
 {
-    static const char *here = __FUNCTION__;
-
     Buffer bigbuf(count_ * bufSize_);
 
     OneBuffer* buffers = new OneBuffer[count_];
@@ -194,7 +192,7 @@ Length DblBuffer::copy(DataHandle& in,DataHandle& out,const Length& estimate)
         catch(std::exception& e)
         {
             Log::error() << "** " << e.what() 
-                << " Caught in " << here << std::endl;
+                << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is handled" << std::endl;
             buffers[i].length_ = -1;
             error(e.what());
@@ -258,9 +256,6 @@ DblBufferTask::DblBufferTask(DataHandle& out,DblBuffer& owner,OneBuffer* buffers
 
 void DblBufferTask::run()
 {
-
-    static const char *here = __FUNCTION__;
-
     Log::status() << "Double buffering " << Bytes(estimate_) << std::endl;
     Progress progress("Writing data",0,estimate_);
 
@@ -305,7 +300,7 @@ void DblBufferTask::run()
         catch(std::exception& e)
         {
             Log::error() << "** " << e.what() << " Caught in " <<
-                here << std::endl;
+                Here() << std::endl;
             Log::error() << "** Exception is handled" << std::endl;
             length = -1;
             owner_.error(e.what());

@@ -39,7 +39,8 @@ NumberContent::NumberContent(long long l):
 }
 
 NumberContent::NumberContent(Stream& s):
-	Content(s)
+	Content(s),
+	value_(0)
 {
     s >> value_;
 }

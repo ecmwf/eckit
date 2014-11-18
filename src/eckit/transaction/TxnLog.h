@@ -29,11 +29,13 @@ namespace eckit {
 
 template<class T>
 struct TxnRecoverer {
+   virtual ~TxnRecoverer() {}
 	virtual void push(T*) = 0;
 };
 
 template<class T>
 struct TxnFinder {
+   virtual ~TxnFinder() {}
 	virtual bool found(T&) = 0;
 	virtual bool old() { return false; }
 };

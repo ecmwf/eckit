@@ -4,5 +4,5 @@ ecbuild_add_test(   TARGET      test_config
 
 ecbuild_add_test(   TARGET      test_resource
                     SOURCES     test_resource.cc
-                    ARGS        -integer 100
+                    ARGS        -integer 100 -listlong "88,99	11 22"
                     LIBS        eckit )

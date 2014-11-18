@@ -14,46 +14,74 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"
 
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+/// A smart pointer that deletes the pointee object when going out of scope.
+/// This should have a very similar interface to boost scoped_ptr or std unique_ptr
+/// so that once C++11 is suported overall compilers we can swithc easily.
+/// However due to lack of C++11 support, it does not support move semantics.
+
 template < typename T >
 class ScopedPtr : private NonCopyable {
 
 public: // types
 
-    typedef T element_type;
-    
+    typedef T  element_type;
+    typedef T* pointer_type;
+    typedef T& reference_type;
+
 public: // methods
 
     /// Constructor
     /// @throws nothing
-    explicit ScopedPtr( T* ptr = 0 ) : ptr_(ptr) {}
+    explicit ScopedPtr( pointer_type ptr = 0 ) : ptr_(ptr) {}
     
     /// Destructor
     /// @throws nothing
-    ~ScopedPtr() { release(); }
+    ~ScopedPtr() { destroy(); }
     
     /// Resets the pointee
     /// @throws nothing
-    void reset( T* ptr = 0 )
+    void reset( pointer_type ptr = 0 )
     {
-        release();
+        destroy();
         ptr_ = ptr;
     }
-    
-    /// Dereferences the pointee
-    T& operator*() const { ASSERT(ptr_); return *ptr_; }
 
-    /// Calling operator
-    T* operator->() const { ASSERT(ptr_); return ptr_; }
+    /// Releases the ownership of the pointee
+    /// @throws nothing
+    pointer_type release()
+    {
+        pointer_type r = ptr_;
+        ptr_ = 0;
+        return r;
+    }
+
+    /// Assignement operator transfers ownership to another ScopedPtr
+    const ScopedPtr& operator= (ScopedPtr& other)
+    {
+        reset( other.release() );
+        return *this;
+    }
+
+    /// Dereferences the pointee
+    reference_type operator*() const { ASSERT(ptr_); return *ptr_; }
+
+    /// Dereferences object member
+    pointer_type operator->() const { ASSERT(ptr_); return ptr_; }
     
-    /// @returns the pointee
-    T* get() const { ASSERT(ptr_); return ptr_; }
+    /// @returns a pointer to the managed object or null if no object is owned.
+    /// Should be used with caution, because of issues dealing with raw pointers.
+    /// However, get makes it possible to explicitly test whether the stored point is NULL.
+    /// The function never throws. get is typically used when calling functions
+    /// that require a raw pointer.
+    /// Note: previously this asserted ptr_ was not null, however this is in-consistent
+    ///       with the standard boost scoped_ptr or std unique_ptr
+    pointer_type get() const { return ptr_; }
     
     /// @returns true if pointer is not null
     /// @throws nothing
@@ -63,27 +91,27 @@ public: // methods
     /// @throws nothing
     void swap( ScopedPtr<T>& other ) 
     {
-        T* tmp( ptr_ ); 
+        pointer_type tmp( ptr_ );
         ptr_ = other.ptr_; 
         other.ptr_ = tmp;
     }
     
 protected: // methods
     
-    void release() { if(ptr_) delete ptr_; ptr_ = 0; }
-    
+    void destroy() { if( ptr_ ) delete ptr_; ptr_ = 0; }
+
 private: // members 
 
-    T* ptr_;
+    pointer_type ptr_;
     
 };
 
+/// non-member function overload
 template< typename T > 
 void swap( ScopedPtr<T>& a, ScopedPtr<T>& b )
 {
     a.swap(b);
 }
-
 
 //-----------------------------------------------------------------------------
 

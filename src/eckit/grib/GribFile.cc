@@ -10,12 +10,10 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Timer.h"
 
-#include "eckit/thread/Mutex.h"
-#include "eckit/thread/AutoLock.h"
-
-
 namespace eckit {
+namespace grib {
 
+//------------------------------------------------------------------------------------------------------
 
 GribFile::GribFile(const PathName& path):
     path_(path),
@@ -28,7 +26,8 @@ GribFile::~GribFile()
     delete file_;
 }
 
-GribFile* GribFile::newGribFile(const PathName& path) {
+GribFile* GribFile::newGribFile(const PathName& path)
+{
     return new GribFile(path);
 }
 
@@ -87,5 +86,7 @@ void GribFile::getBuffer(Buffer& buffer, const Offset& offset, const Length& len
         throw eckit::SeriousBug("No 7777 found");
 }
 
+//------------------------------------------------------------------------------------------------------
 
+}
 }

@@ -23,7 +23,7 @@ set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} 
 
 include( ecbuild_system )
 
-ecbuild_requires_macro_version( 1.3 )
+ecbuild_requires_macro_version( 1.4 )
 
 set( PERSISTENT_NAMESPACE eckit CACHE INTERNAL "" )
 
@@ -35,71 +35,87 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-# Eigen
+### C++11
+
+ecbuild_add_option( FEATURE CPP11
+					DEFAULT OFF
+					DESCRIPTION "Try compile with C++11 features" )
+
+### GRIB
+
+ecbuild_add_option( FEATURE GRIB
+					DEFAULT ON
+					DESCRIPTION "C++ interface to GRIB format"
+					REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.9.9" )
+
+set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
+
+### eckit::xpr
+
+ecbuild_add_option( FEATURE XPR
+                    DEFAULT OFF
+					DESCRIPTION "eckit::xpr [EXPERIMENTAL]" )
+
+### Eigen
 
 ecbuild_add_option( FEATURE EIGEN
-					DEFAULT OFF
-					DESCRIPTION "Eigen support  [EXPERIMENTAL]"
+                    DEFAULT ON
+					DESCRIPTION "Eigen support" 
 					REQUIRED_PACKAGES Eigen3 )
 
 set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Accelerated dense matrix operations" )
 
-# GRIB
-
-ecbuild_add_option( FEATURE GRIB
-					DEFAULT OFF
-					DESCRIPTION "support for GRIB format [EXPERIMENTAL]" )
-
-if( ENABLE_GRIB )
-	ecbuild_use_package( PROJECT grib_api VERSION 1.9.9 )
-	if( NOT GRIB_API_FOUND )
-		set( HAVE_GRIB 0 )
-	endif()
+if( ENABLE_EIGEN )
+	# TODO: we should add here a test that we can compile Eigen without problems
+	# TODO: don't use contrib just yet -- sort out the legal stuff first
+	# set( ECKIT_CONTRIB_EIGEN 1 )
 endif()
 
-set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
+### LAPACK
 
-# eckit::maths
-
-ecbuild_add_option( FEATURE MATHS
-					DEFAULT OFF
-					DESCRIPTION "eckit::maths expressions [EXPERIMENTAL]" )
-
-if( HAVE_MATHS )
-
-	ecbuild_add_cxx11_flags()
-	ecbuild_check_cxx11( PRINT )
-
+if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
+  ecbuild_add_option( FEATURE LAPACK
+                      DESCRIPTION "Linear Algebra PACKage"
+                      REQUIRED_PACKAGES LAPACK )
+else() # Don't search for it on cc[abt] as it is already available as scilib
+  ecbuild_add_option( FEATURE LAPACK
+                      DESCRIPTION "Linear Algebra PACKage")
 endif()
 
-# boost support
-
-set(Boost_USE_MULTITHREADED      ON )
-# set(Boost_DEBUG                  ON )
-# set(Boost_USE_STATIC_LIBS        ON )
-# set(Boost_NO_SYSTEM_PATHS        ON )
-
-ecbuild_add_option( FEATURE BOOST
-					DEFAULT ${ENABLE_MATHS}
-					DESCRIPTION "Boost support [EXPERIMENTAL]"
-					REQUIRED_PACKAGES "Boost 1.45.0" )
-
-set_package_properties( Boost PROPERTIES TYPE RECOMMENDED PURPOSE "" )
-
-#list( APPEND ECKIT_BOOST_LIBS    ${Boost_FILESYSTEM_LIBRARY}  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} )
-
-# async io support
+### async io support
 
 find_package( AIO )
 set_package_properties( AIO PROPERTIES TYPE RECOMMENDED PURPOSE "support for asynchronous IO" )
 
-# find thread library ( preferably pthreads )
+### thread library ( preferably pthreads )
 
 set( CMAKE_THREAD_PREFER_PTHREAD 1 )
 find_package(Threads REQUIRED)
 
 ###############################################################################
 # checks
+
+### C++11
+
+if( ENABLE_XPR OR ENABLE_CPP11 )
+
+	ecbuild_add_cxx11_flags() # enforce c++11
+
+	list( APPEND cpp11_req
+		auto constexpr constructor_delegate cstdint decltype deleted_constructor
+		initialization lambda long_double long_long noexcept nullptr override
+		rvalue_references shared_ptr sizeof_member static_assert template_alias type_traits
+		unique_ptr variadic_templates )
+
+	# currently not included: __func__ random_device trivial_type_traits explicit_cast enable_if
+
+	# in ecbuild 1.5.0 this will operate on lists so we will need only one call
+
+	foreach( f ${cpp11_req} )
+		ecbuild_check_cxx11( REQUIRED ${f} )
+	endforeach()
+
+endif()
 
 # check thread library is pthreads
 
@@ -119,17 +135,29 @@ endif()
 ############################################################################################
 # export package info
 
+set( ECKIT_PACKAGES       "" )
 set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
-set( ECKIT_LIBRARIES      eckit eckit_web eckit_geometry )
+set( ECKIT_LIBRARIES      eckit eckit_web eckit_maths eckit_geometry )
 
 if( HAVE_GRIB )
-	list( APPEND ECKIT_LIBRARIES eckit_grib )
-	list( APPEND ECKIT_TPLS grib_api )
+  list( APPEND ECKIT_PACKAGES ECKIT_GRIB )
+  list( APPEND ECKIT_LIBRARIES eckit_grib )
+  list( APPEND ECKIT_TPLS grib_api )
 endif()
 
 if( HAVE_EIGEN )
-	list( APPEND ECKIT_TPLS Eigen3 )
+	if( ECKIT_CONTRIB_EIGEN )
+		list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
+	else()
+		list( APPEND ECKIT_TPLS Eigen3 )
+
+	endif()
+endif()
+
+if( HAVE_XPR )
+  list( APPEND ECKIT_PACKAGES ECKIT_XPR )
+  list( APPEND ECKIT_LIBRARIES eckit_xpr )
 endif()
 
 get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
@@ -140,7 +168,12 @@ get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
 ecbuild_find_project_files()
 
 include_directories( ${ECKIT_INCLUDE_DIRS} )
+if( HAVE_EIGEN )
+	include_directories( ${EIGEN3_INCLUDE_DIR} )
+endif()
 
+add_subdirectory( bamboo )
+add_subdirectory( contrib )
 add_subdirectory( src )
 
 ############################################################################################

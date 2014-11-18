@@ -35,7 +35,6 @@ void ThreadPoolThread::run()
 {
     owner_.notifyStart();
 
-    static const char *here = __FUNCTION__;
     Monitor::instance().name(owner_.name());
 
     //Log::info() << "Start of ThreadPoolThread " << std::endl;
@@ -56,7 +55,7 @@ void ThreadPoolThread::run()
         }
         catch(std::exception& e)
         {
-            Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is reported" << std::endl;
             owner_.error(e.what());
         }
@@ -66,7 +65,7 @@ void ThreadPoolThread::run()
         }
         catch(std::exception& e)
         {
-            Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is reported" << std::endl;
             owner_.error(e.what());
         }
@@ -96,8 +95,6 @@ ThreadPool::ThreadPool(const std::string& name,int count, size_t stack):
 
 ThreadPool::~ThreadPool()
 {
-    static const char *here = __FUNCTION__;
-
     //Log::info() << "ThreadPool::~ThreadPool " << name_ << std::endl;
 
     try {
@@ -105,7 +102,7 @@ ThreadPool::~ThreadPool()
     }
     catch(std::exception& e)
     {       
-        Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
         Log::error() << "** Exception is ignored" << std::endl;
     }
 }

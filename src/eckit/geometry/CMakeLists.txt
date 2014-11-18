@@ -4,6 +4,10 @@ Point2.h
 Point2.cc
 Point3.h
 Point3.cc
+RotateGrid.h
+RotateGrid.cc
+PolarStereoGraphicProj.h
+PolarStereoGraphicProj.cc
 )
 
 ecbuild_add_library(TARGET eckit_geometry

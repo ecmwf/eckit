@@ -1,6 +1,7 @@
 ecbuild_add_library( TARGET      test_factory
                      NOINSTALL
-                     SOURCES     TestFactory.cc TestFactory.h )
+					 SOURCES     TestFactory.cc TestFactory.h
+					 LIBS        eckit )
 
 ecbuild_add_library( TARGET      test_builder1
                      NOINSTALL

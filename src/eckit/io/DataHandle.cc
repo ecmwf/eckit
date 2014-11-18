@@ -273,6 +273,8 @@ bool DataHandle::compare(DataHandle& other)
         }
 
     }
+
+    return false; // keep linter happy
 }
 
 Offset DataHandle::position() {

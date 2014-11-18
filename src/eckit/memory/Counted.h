@@ -9,8 +9,9 @@
  */
 
 /// @file Counted.h
-/// @author Baudouin Raoult
 /// @date Jun 1996
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
 
 #ifndef eckit_Counted_h
 #define eckit_Counted_h
@@ -18,29 +19,28 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
-#include "eckit/log/Log.h"
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+namespace memory {
 namespace detail {
 
-struct DoDelete
+struct SelfManaged
 {
     template < typename T >
     static void deallocate( T* p ) { delete p; }
 };
 
-struct DontDelete
+struct NotManaged
 {
     template < typename T >
     static void deallocate( T* p ) {}
 };
 
-class WithThreadLock
+class ThreadedLock
 {
     Mutex mutex_;
 public:
@@ -48,7 +48,7 @@ public:
     void unlock() { mutex_.unlock(); }
 };
 
-class NoThreadLock
+class NoLock
 {
 public:
     void lock()   {}
@@ -56,14 +56,15 @@ public:
 };
 
 } // detail
+} // memory
 
 //-----------------------------------------------------------------------------
 
 /// Reference counting objects
 /// Subclass from this class if you want reference counting object.
 /// @note Remember to use 'virtual' inheritance in case of multiple inheritance
-template < typename LOCK = detail::WithThreadLock,
-           typename DEL  = detail::DoDelete >
+
+template < typename LOCK, typename MEMORY >
 class CountedT :
         private NonCopyable,
         public LOCK {
@@ -87,7 +88,7 @@ public: // methods
         if( --count_ == 0 )
         {
             LOCK::unlock();
-            DEL::deallocate( this );
+            MEMORY::deallocate( this );
         }
         else
             LOCK::unlock();
@@ -106,13 +107,15 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-typedef CountedT<>  Counted;
+/// Counted object, with self-managed memory and thread lockable resource
+typedef CountedT< memory::detail::ThreadedLock, memory::detail::SelfManaged >  CountedLock;
 
-typedef CountedT< detail::WithThreadLock, detail::DoDelete >  CountedLock; //< same as Counted
-typedef CountedT< detail::NoThreadLock,   detail::DoDelete >  CountedNoLock;
+/// Counted object, with self-managed memory and not thread lockable resource
+typedef CountedT< memory::detail::NoLock, memory::detail::SelfManaged >  CountedNoLock;
 
-typedef CountedT< detail::WithThreadLock, detail::DontDelete >  CountedSharedLock;
-typedef CountedT< detail::NoThreadLock,   detail::DontDelete >  CountedSharedNoLock;
+/// Default Counted type for backward compatibility
+/// Same as CountedLock
+typedef CountedLock  Counted;
 
 //-----------------------------------------------------------------------------
 

@@ -10,18 +10,18 @@
 
 #include "grib_api.h"
 
+#include "eckit/config/Resource.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/grib/EmosFile.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/BufferedHandle.h"
 #include "eckit/io/MoverHandle.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/config/Resource.h"
-
-#include "EmosFile.h"
-
 #include "eckit/log/Log.h"
 
 namespace eckit {
+namespace grib {
 
+//------------------------------------------------------------------------------------------------------
 
 static long readcb(void *data, void *buffer, long len)
 {
@@ -87,5 +87,6 @@ long EmosFile::readSome(Buffer& buffer)
 	throw ReadError("in EmosFile::readSome");
 }
 
+}
 } // namespace
 

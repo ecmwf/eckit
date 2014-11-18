@@ -55,12 +55,15 @@ GribParams::GribParams(GribHandle& gh)
 	set("GRIB.geographyHash", the_hash);
 
 	// Not all GRID's have a bounding box, i.e Polar Stereographic
-	if (gh.hasKey("latitudeOfLastGridPointInDegrees")) {
-
+	if (gh.hasKey("latitudeOfLastGridPointInDegrees")) 
+	{
 	   double north = gh.latitudeOfFirstGridPointInDegrees();
 	   double south = gh.latitudeOfLastGridPointInDegrees();
-	   double west = gh.longitudeOfFirstGridPointInDegrees();
+	   double west  = gh.longitudeOfFirstGridPointInDegrees();
 	   double east  = gh.longitudeOfLastGridPointInDegrees();
+
+	   eckit::geometry::reduceTo2Pi(west);
+	   eckit::geometry::reduceTo2Pi(east);
 
 	   // ignore scanning mode:
 	   north_ = std::max(north,south);
@@ -79,9 +82,6 @@ GribParams::GribParams(GribHandle& gh)
 	   ASSERT(south_ < 90.0  || FloatCompare::is_equal(south_,90.0,degreesEps_));
 	   ASSERT(north_ > -90.0 || FloatCompare::is_equal(north_,-90.0,degreesEps_));
 	   ASSERT(south_ > -90.0 || FloatCompare::is_equal(south_,-90.0,degreesEps_));
-
-	   eckit::geometry::reduceTo2Pi(west_);
-	   eckit::geometry::reduceTo2Pi(east_);
 
 	   ASSERT(east_ > west_); // This assertion only make sense if we ignore scanning mode
 	}

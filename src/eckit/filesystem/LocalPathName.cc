@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -109,7 +109,7 @@ BasePathName* LocalPathName::checkClusterNode() const
 {
     std::string n = ClusterDisks::node(path_);
     if(n != "local") {
-//        Log::warning() << *this << " is now on node [" << n << "]" << std::endl; 
+//        Log::warning() << *this << " is now on node [" << n << "]" << std::endl;
         return new BasePathNameT<MarsFSPath>(MarsFSPath(n,path_));
     }
     return new BasePathNameT<LocalPathName>(LocalPathName(path_));
@@ -150,7 +150,7 @@ LocalPathName LocalPathName::cwd()
     AutoLock<Mutex> lock(local_mutex);
     char buf [PATH_MAX+1];
 	if(!getcwd(buf, sizeof(buf)))
-		throw FailedSystemCall("getcwd");    
+		throw FailedSystemCall("getcwd");
     return LocalPathName( buf );
 }
 
@@ -300,7 +300,7 @@ LocalPathName& LocalPathName::tidy()
 		{
 			if( (*j) == "" || (*j) == ".")
 			{
-				v.erase(j);	
+				v.erase(j);
 				more = true;
 				break;
 			}
@@ -309,7 +309,7 @@ LocalPathName& LocalPathName::tidy()
 			{
 				if ((*i) != "")
 					*i = ".";
-				v.erase(j);			
+				v.erase(j);
 				more = true;
 				break;
 			}
@@ -366,12 +366,12 @@ void LocalPathName::match(const LocalPathName& root,std::vector<LocalPathName>& 
 		throw FailedSystemCall(std::string("opendir(") + std::string(dir) + ")");
 	}
 
-	struct dirent *e;
 	struct dirent buf;
 
 
 	for(;;)
 	{
+		struct dirent *e;
 #ifdef EC_HAVE_READDIR_R
 		errno = 0;
 		if(readdir_r(d,&buf,&e) != 0)
@@ -385,7 +385,7 @@ void LocalPathName::match(const LocalPathName& root,std::vector<LocalPathName>& 
 		e = readdir(d);
 #endif
 
-		if(e == 0) 
+		if(e == 0)
 			break;
 
 		if(re.match(e->d_name))
@@ -417,12 +417,12 @@ void LocalPathName::children(std::vector<LocalPathName>& files,std::vector<Local
 		throw FailedSystemCall("opendir");
 	}
 
-	struct dirent *e;
 	struct dirent buf;
 
 
 	for(;;)
 	{
+		struct dirent *e;
 #ifdef EC_HAVE_READDIR_R
 		errno = 0;
 		if(readdir_r(d,&buf,&e) != 0)
@@ -436,7 +436,7 @@ void LocalPathName::children(std::vector<LocalPathName>& files,std::vector<Local
 		e = readdir(d);
 #endif
 
-		if(e == 0) 
+		if(e == 0)
 			break;
 
 		if(e->d_name[0] == '.')
@@ -567,12 +567,12 @@ LocalPathName LocalPathName::realName() const
 	else
 		return LocalPathName(std::string(dir) + "/" + baseName());
 #endif
-	
+
 }
 
 void LocalPathName::truncate(Length len) const
 {
-	SYSCALL(::truncate(path_.c_str(),len));	
+	SYSCALL(::truncate(path_.c_str(),len));
 }
 
 void LocalPathName::reserve(const Length& len) const

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -55,7 +55,7 @@ GribParams::GribParams(GribHandle& gh)
 	set("GRIB.geographyHash", the_hash);
 
 	// Not all GRID's have a bounding box, i.e Polar Stereographic
-	if (gh.hasKey("latitudeOfLastGridPointInDegrees")) 
+	if (gh.hasKey("latitudeOfLastGridPointInDegrees"))
 	{
 	   double north = gh.latitudeOfFirstGridPointInDegrees();
 	   double south = gh.latitudeOfLastGridPointInDegrees();
@@ -71,10 +71,10 @@ GribParams::GribParams(GribHandle& gh)
 	   east_ = std::max(east,west);
 	   west_ = std::min(east,west);
 
-	   set("grib_bbox_n", north_ );
-	   set("grid_bbox_s", south_ );
-	   set("grid_bbox_w", west_  );
-	   set("grid_bbox_e", east_  );
+	   set("bbox_n", north_ );
+	   set("bbox_s", south_ );
+	   set("bbox_w", west_  );
+	   set("bbox_e", east_  );
 
 	   // check area
 	   ASSERT(north_ > south_); // This assertion only make sense if we ignore scanning mode
@@ -146,8 +146,8 @@ public:
 	static std::string className() { return "eckit.grib.GribRegularLatLon"; }
 	GribRegularLatLon( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "grid_lat_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
-		set( "grid_lon_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh) );
+		set( "lat_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
+		set( "lon_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh) );
 
 		set( "Nj", GribAccessor<long>("Nj")(gh) );
 		set( "Ni", GribAccessor<long>("Ni")(gh) );
@@ -165,7 +165,7 @@ public:
 	static std::string className() { return "eckit.grib.GribReducedLatLon"; }
 	GribReducedLatLon( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "grid_lat_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
+		set( "lat_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
 
 		set( "Nj", GribAccessor<long>("Nj")(gh) );
 
@@ -235,8 +235,8 @@ public:
 	static std::string className() { return "eckit.grib.GribRotatedLatLon"; }
 	GribRotatedLatLon( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "grid_lat_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
-		set( "grid_lon_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh) );
+		set( "lat_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
+		set( "lon_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh) );
 
 		set( "Nj", GribAccessor<long>("Nj")(gh) );
 		set( "Ni", GribAccessor<long>("Ni")(gh) );

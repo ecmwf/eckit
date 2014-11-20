@@ -145,11 +145,57 @@ long TCPSocket::read(void *buf,long length)
 
     long received = 0;
     char *p = (char*)buf;
-
+#if 0
+    bool nonews = false;
+#endif
 
     while(length > 0)
     {
-        long len = ::read(socket_,p,length);
+#if 0  // FIXME: why is this code disabled?
+        long len = -1;
+        Select select(socket_);
+        bool more = socketSelectTimeout > 0;
+        while(more)
+        {
+            more = false;
+            if(!select.ready(socketSelectTimeout))
+            {
+                SavedStatus save;
+
+				Log::warning() << "No news from " << remoteHost()
+                              << " from " << Seconds(socketSelectTimeout) << std::endl;
+
+                Log::status() << "No news from " << remoteHost()
+                              << " from " << Seconds(socketSelectTimeout) << std::endl;
+
+// For now ...
+        //		nonews = true;
+
+                // Time out, write 0 bytes to check that peer is alive
+                if(::write(socket_,0,0) != 0)
+                {
+                    Log::error() << "TCPSocket::read write" <<
+                        Log::syserr << std::endl;
+                    return -1;
+                }
+                more = true;
+                break;
+            }
+        }
+
+        len = -1;
+
+        if(nonews)
+        {
+            AutoAlarm alarm(60,true);
+            Log::status() << "Resuming transfer" << std::endl;
+            len = ::read(socket_,p,length);
+        }
+        else
+					len = ::read(socket_,p,length);
+#else
+			long len = ::read(socket_,p,length);
+#endif
 
         if(len <  0) {
             Log::error() << "Socket read" << Log::syserr << std::endl;

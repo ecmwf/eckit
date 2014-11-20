@@ -103,7 +103,7 @@ public:
 
 	GribReducedGG( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "GaussN", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh) );
+		set( "N", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh) );
 
 		set( "Nj", GribAccessor<long>("Nj")(gh) );
 
@@ -129,7 +129,7 @@ public:
 	static std::string className() { return "eckit.grib.GribRegularGG"; }
 	GribRegularGG( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "GaussN", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh) );
+		set( "N", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh) );
 
 		set( "Ni", GribAccessor<long>("Ni")(gh) );
 	}

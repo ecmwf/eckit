@@ -57,16 +57,11 @@ MapAllocator::~MapAllocator()
 }
 
 union Align {
-	// cppcheck-suppress unusedStructMember
-	char      char_;
-	// cppcheck-suppress unusedStructMember
-	double    double_;
-	// cppcheck-suppress unusedStructMember
-	long long longlong_;
-	// cppcheck-suppress unusedStructMember
-	void*     voidstar_;
-	// cppcheck-suppress unusedStructMember
-	float     float_;
+        char      char_;
+        double    double_;
+        long long longlong_;
+        void*     voidstar_;
+        float     float_;
 };
 
 const int WORD = sizeof(Align);

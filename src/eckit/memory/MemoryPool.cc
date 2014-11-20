@@ -70,15 +70,10 @@ static void init()
 //-----------------------------------------------------------------------------
 
 union Align {
-	// cppcheck-suppress unusedStructMember
 	char      char_;
-	// cppcheck-suppress unusedStructMember
 	double    double_;
-	// cppcheck-suppress unusedStructMember
 	long long longlong_;
-	// cppcheck-suppress unusedStructMember
 	void*     voidstar_;
-	// cppcheck-suppress unusedStructMember
 	float     float_;
 };
 

@@ -139,7 +139,7 @@ void GribHandle::getDataValues(double* values, const size_t& count) const
 	ASSERT(n == count);
 }
 
-void GribHandle::getLatLonPoints(std::vector<geometry::LLPoint2>& points) const
+void GribHandle::getLonLatPoints(std::vector<geometry::LLPoint2>& points) const
 {
 	size_t nb_nodes = npts();
 
@@ -161,7 +161,7 @@ void GribHandle::getLatLonPoints(std::vector<geometry::LLPoint2>& points) const
 	size_t idx = 0;
 	while( grib_iterator_next(i,&lat,&lon,&value) )
 	{
-	   points[idx].assign(lat,lon);
+	   points[idx].assign(lon,lat);
 	   ++idx;
 	}
 

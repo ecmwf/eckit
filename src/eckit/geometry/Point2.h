@@ -56,18 +56,21 @@ public:
 
     LLPoint2() : Point2() {}
 
-	LLPoint2( const Point2& p ) : Point2(p) { reduceTo2Pi(x_[LON]); }
+    LLPoint2( const Point2& p ) : Point2(p) { reduceTo2Pi(x_[LON]); }
 
-	LLPoint2( double lat, double lon ) : Point2(lat,lon) { reduceTo2Pi(x_[LON]); }
+    LLPoint2( double lon, double lat ) : Point2(lon,lat) { reduceTo2Pi(x_[LON]); }
 
     double lat() const { return x_[LAT]; }
     double lon() const { return x_[LON]; }
 
-    void assign( double lat, double lon )
+    LLPoint2& lon(double lon) { x_[LON] = lon; reduceTo2Pi(x_[LON]); return *this; }
+    LLPoint2& lat(double lat) { x_[LAT] = lat; return *this; }
+
+    void assign( double lon, double lat )
     {
-        x_[LAT] = lat;
         x_[LON] = lon;
-		reduceTo2Pi(x_[LON]);
+        x_[LAT] = lat;
+        reduceTo2Pi(x_[LON]);
     }
 
     operator eckit::Value() const;
@@ -81,23 +84,32 @@ class LLBoundBox2 {
 public: // methods
 
     LLBoundBox2() :
-    bl_( 0., 0. ),
-    tr_( 0., 0. )
+    lonlat_min_( 0., 0. ),
+    lonlat_max_( 0., 0. )
     {}
 
-    LLBoundBox2( double top, double bottom, double right, double left ) :
-        bl_( bottom, left ),
-        tr_( top, right )
+    LLBoundBox2( double __north, double __south, double __east, double __west ) :
+        lonlat_min_( __west, __south ),
+        lonlat_max_( __east, __north )
     {
-        ASSERT( validate() );
+      if( !validate() )
+      {
+        std::stringstream msg;
+        msg << "Invalid bounding box: N,S,E,W = " << north() << ", " << south() << ", " << east() << ", " << west();
+        throw eckit::BadParameter(msg.str(),Here());
+      }
     }
 
-    LLBoundBox2( const LLPoint2& bottom_left, const LLPoint2& top_right ) :
-        bl_(bottom_left),
-        tr_(top_right)
+    LLBoundBox2( const LLPoint2& lonlat_min, const LLPoint2& lonlat_max ) :
+        lonlat_min_(lonlat_min),
+        lonlat_max_(lonlat_max)
     {
-        ASSERT( validate() );
-    }
+      if( !validate() )
+      {
+        std::stringstream msg;
+        msg << "Invalid bounding box: N,S,E,W = " << north() << ", " << south() << ", " << east() << ", " << west();
+        throw eckit::BadParameter(msg.str(),Here());
+      }    }
 
     static LLBoundBox2 make( const eckit::Value& v )
     {
@@ -112,7 +124,7 @@ public: // methods
 
     bool operator==(const LLBoundBox2& rhs) const
     {
-       return (bl_ == rhs.bl_) && (tr_ == rhs.tr_);
+       return (lonlat_min_ == rhs.lonlat_min_) && (lonlat_max_ == rhs.lonlat_max_);
     }
 
     bool operator!=(const LLBoundBox2& rhs) const
@@ -123,26 +135,26 @@ public: // methods
     operator eckit::Value() const
     {
         std::vector<Value> pts;
-        pts.push_back(bl_);
-        pts.push_back(tr_);
+        pts.push_back(lonlat_min_);
+        pts.push_back(lonlat_max_);
         return Value::makeList(pts);
     }
 
     bool validate() const
     {
-        return ( bl_(LAT) <= tr_(LAT) ) && ( bl_(LON) <= tr_(LON) ) && ( area() > 0 );
+        return ( lonlat_min_(LAT) <= lonlat_max_(LAT) ) && ( lonlat_min_(LON) <= lonlat_max_(LON) ) && ( area() > 0 );
     }
 
-    LLPoint2 bottom_left() const { return bl_; }
-    LLPoint2 top_right()   const { return tr_;   }
+    LLPoint2 lonlat_min() const { return lonlat_min_; }
+    LLPoint2 lonlat_max() const { return lonlat_max_;   }
 
-    double area() const { return ( tr_[LON] - bl_[LON] ) * ( tr_[LAT] - bl_[LAT] ); }
+    double area() const { return ( lonlat_max_[LON] - lonlat_min_[LON] ) * ( lonlat_max_[LAT] - lonlat_min_[LAT] ); }
 
     bool empty() const { return ( area() == 0. ); }
 
     void print( std::ostream& out ) const
     {
-        out << "BoundBox2( " << bl_ << "," << tr_ << ")";
+        out << "BoundBox2( " << lonlat_min_ << "," << lonlat_max_ << ")";
     }
 
     friend std::ostream& operator<<(std::ostream& s,const LLBoundBox2& o)
@@ -150,15 +162,15 @@ public: // methods
         o.print(s); return s;
     }
 
-    double east()  const { return tr_.lon(); }
-    double north() const { return tr_.lat(); }
-    double west()  const { return bl_.lon(); }
-    double south() const { return bl_.lat(); }
+    double east()  const { return lonlat_max_.lon(); }
+    double north() const { return lonlat_max_.lat(); }
+    double west()  const { return lonlat_min_.lon(); }
+    double south() const { return lonlat_min_.lat(); }
 
 private: // members
 
-    LLPoint2 bl_;
-    LLPoint2 tr_;
+    LLPoint2 lonlat_min_;
+    LLPoint2 lonlat_max_;
 
 };
 

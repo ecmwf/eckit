@@ -75,7 +75,7 @@ public: // methods
    double* getDataValues(size_t&) const;
    void getDataValues(double*, const size_t &) const;
 
-   void getLatLonPoints( std::vector<geometry::LLPoint2>& ) const;
+   void getLonLatPoints( std::vector<geometry::LLPoint2>& ) const;
 
    void setDataValues(const double*, size_t);
 

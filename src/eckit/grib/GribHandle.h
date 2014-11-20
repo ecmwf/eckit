@@ -69,7 +69,7 @@ public: // methods
 
    std::string shortName() const;
 
-   size_t nbDataPoints() const;
+   size_t npts() const;
 
    size_t getDataValuesSize() const;
    double* getDataValues(size_t&) const;

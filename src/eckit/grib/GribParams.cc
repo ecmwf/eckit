@@ -86,8 +86,8 @@ GribParams::GribParams(GribHandle& gh)
 	   ASSERT(east_ > west_); // This assertion only make sense if we ignore scanning mode
 	}
 
-	no_of_data_points_ = gh.nbDataPoints();
-	set("nbDataPoints", no_of_data_points_ );
+	no_of_data_points_ = gh.npts();
+	set("npts", no_of_data_points_ );
 }
 
 GribParams::~GribParams()
@@ -115,7 +115,7 @@ public:
 		for( size_t i = 0; i < pl.size(); ++i )
 			vpl[i] = pl[i];
 
-		set( "NPtsPerLat", vpl );
+		set( "npts_per_lat", vpl );
 	}
 };
 
@@ -174,7 +174,7 @@ public:
       for( size_t i = 0; i < pl.size(); ++i )
          vpl[i] = pl[i];
 
-      set( "NPtsPerLat", vpl );
+      set( "npts_per_lat", vpl );
 	}
 
 };

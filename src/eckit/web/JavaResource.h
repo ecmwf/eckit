@@ -36,7 +36,7 @@ public:
 
 // -- Destructor
 
-    ~JavaResource();
+	virtual ~JavaResource();
 
 // -- Convertors
 	// None

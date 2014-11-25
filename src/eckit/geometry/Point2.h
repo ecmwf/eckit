@@ -84,13 +84,15 @@ class LLBoundBox2 {
 public: // methods
 
     LLBoundBox2() :
-    lonlat_min_( 0., 0. ),
-    lonlat_max_( 0., 0. )
+    min_( 0., 0. ),
+    max_( 0., 0. ),
+    global_(true)
     {}
 
     LLBoundBox2( double __north, double __south, double __east, double __west ) :
-        lonlat_min_( __west, __south ),
-        lonlat_max_( __east, __north )
+        min_( __west, __south ),
+        max_( __east, __north ),
+        global_(true)
     {
       if( !validate() )
       {
@@ -100,9 +102,10 @@ public: // methods
       }
     }
 
-    LLBoundBox2( const LLPoint2& lonlat_min, const LLPoint2& lonlat_max ) :
-        lonlat_min_(lonlat_min),
-        lonlat_max_(lonlat_max)
+    LLBoundBox2( const LLPoint2& min, const LLPoint2& max ) :
+        min_(min),
+        max_(max),
+        global_(true)
     {
       if( !validate() )
       {
@@ -124,7 +127,7 @@ public: // methods
 
     bool operator==(const LLBoundBox2& rhs) const
     {
-       return (lonlat_min_ == rhs.lonlat_min_) && (lonlat_max_ == rhs.lonlat_max_);
+       return (min_ == rhs.min_) && (max_ == rhs.max_);
     }
 
     bool operator!=(const LLBoundBox2& rhs) const
@@ -135,26 +138,30 @@ public: // methods
     operator eckit::Value() const
     {
         std::vector<Value> pts;
-        pts.push_back(lonlat_min_);
-        pts.push_back(lonlat_max_);
+        pts.push_back(min_);
+        pts.push_back(max_);
         return Value::makeList(pts);
     }
 
     bool validate() const
     {
-        return ( lonlat_min_(LAT) <= lonlat_max_(LAT) ) && ( lonlat_min_(LON) <= lonlat_max_(LON) ) && ( area() > 0 );
+        return ( min_(LAT) <= max_(LAT) ) && ( min_(LON) <= max_(LON) ) && ( area() > 0 );
     }
 
-    LLPoint2 lonlat_min() const { return lonlat_min_; }
-    LLPoint2 lonlat_max() const { return lonlat_max_;   }
+    LLPoint2 min() const { return min_; }
+    LLPoint2 max() const { return max_;   }
 
-    double area() const { return ( lonlat_max_[LON] - lonlat_min_[LON] ) * ( lonlat_max_[LAT] - lonlat_min_[LAT] ); }
+    double area() const { return ( max_[LON] - min_[LON] ) * ( max_[LAT] - min_[LAT] ); }
 
     bool empty() const { return ( area() == 0. ); }
 
+    bool global() const { return global_; }
+
+    LLBoundBox2& global(bool global) { global_=global; return *this; }
+
     void print( std::ostream& out ) const
     {
-        out << "BoundBox2( " << lonlat_min_ << "," << lonlat_max_ << ")";
+        out << "BoundBox2( " << min_ << "," << max_ << ")";
     }
 
     friend std::ostream& operator<<(std::ostream& s,const LLBoundBox2& o)
@@ -162,15 +169,16 @@ public: // methods
         o.print(s); return s;
     }
 
-    double east()  const { return lonlat_max_.lon(); }
-    double north() const { return lonlat_max_.lat(); }
-    double west()  const { return lonlat_min_.lon(); }
-    double south() const { return lonlat_min_.lat(); }
+    double east()  const { return max_.lon(); }
+    double north() const { return max_.lat(); }
+    double west()  const { return min_.lon(); }
+    double south() const { return min_.lat(); }
 
 private: // members
 
-    LLPoint2 lonlat_min_;
-    LLPoint2 lonlat_max_;
+    LLPoint2 min_;
+    LLPoint2 max_;
+    bool     global_;
 
 };
 

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -137,75 +137,74 @@ long TCPSocket::write(const void *buf,long length)
     return sent;
 }
 
-//static  Resource<long> socketSelectTimeout("socketSelectTimeout", 0);
-
 long TCPSocket::read(void *buf,long length)
 {
     if(length <= 0 ) return length;
 
-    long received = 0;
+    static bool useSelectOnTCPSocket = Resource<bool>("useSelectOnTCPSocket", false);
+		long received = 0;
     char *p = (char*)buf;
     bool nonews = false;
 
-
     while(length > 0)
     {
+			long len;
+			if (useSelectOnTCPSocket) {
+				static long socketSelectTimeout = Resource<long>("socketSelectTimeout", 0);
+				Select select(socket_);
+				bool more = socketSelectTimeout > 0;
+				while(more)
+				{
+					more = false;
+					if(!select.ready(socketSelectTimeout))
+					{
+						SavedStatus save;
 
-        long len = -1;
-#if 0
-        Select select(socket_);
-        bool more = socketSelectTimeout > 0;
-        while(more)
-        {
-            more = false;
-            if(!select.ready(socketSelectTimeout)) 
-            {
-                SavedStatus save;
-				
-				Log::warning() << "No news from " << remoteHost()
-                              << " from " << Seconds(socketSelectTimeout) << std::endl;
+						Log::warning() << "No news from " << remoteHost()
+						               << " from " << Seconds(socketSelectTimeout) << std::endl;
 
-                Log::status() << "No news from " << remoteHost()
-                              << " from " << Seconds(socketSelectTimeout) << std::endl;
+						Log::status() << "No news from " << remoteHost()
+						              << " from " << Seconds(socketSelectTimeout) << std::endl;
 
-// For now ...
-        //		nonews = true;
+						// FIXME: enable the nonews flag here?
+						// nonews = true;
 
-                // Time out, write 0 bytes to check that peer is alive
-                if(::write(socket_,0,0) != 0)
-                {
-                    Log::error() << "TCPSocket::read write" <<
-                        Log::syserr << std::endl;
-                    return -1;
-                }
-                more = true;
-                break;
-            }
-        }
+						// Time out, write 0 bytes to check that peer is alive
+						if(::write(socket_,0,0) != 0)
+						{
+							Log::error() << "TCPSocket::read write" <<
+							                Log::syserr << std::endl;
+							return -1;
+						}
+						more = true;
+						break;
+					}
+				}
 
-        len = -1;
+				len = -1;
 
-        if(nonews)
-        {
-            AutoAlarm alarm(60,true);
-            Log::status() << "Resuming transfer" << std::endl;
-            len = ::read(socket_,p,length);
-        }
-        else
-#endif
-            len = ::read(socket_,p,length);
+				if(nonews)
+				{
+					AutoAlarm alarm(60,true);
+					Log::status() << "Resuming transfer" << std::endl;
+					len = ::read(socket_,p,length);
+				}
+				else
+					len = ::read(socket_,p,length);
+			} else {
+				len = ::read(socket_,p,length);
+			}
 
-        if(len <  0) {
-            Log::error() << "Socket read" << Log::syserr << std::endl;
-            return len;
-        }
+			if(len <  0) {
+				Log::error() << "Socket read" << Log::syserr << std::endl;
+				return len;
+			}
 
-        if(len == 0) return received;
+			if(len == 0) return received;
 
-        received  += len;
-        length    -= len;
-        p         += len;
-
+			received  += len;
+			length    -= len;
+			p         += len;
     }
 
     return received;
@@ -509,7 +508,7 @@ int TCPSocket::newSocket(int port)
     localAddr_ = sin.sin_addr;
     localHost_ = addrToHost(sin.sin_addr);
 
-    if(localHost_ == "0.0.0.0") 
+    if(localHost_ == "0.0.0.0")
     {
         if(addr.length() == 0)
         {

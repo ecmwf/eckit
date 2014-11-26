@@ -137,76 +137,74 @@ long TCPSocket::write(const void *buf,long length)
     return sent;
 }
 
-//static  Resource<long> socketSelectTimeout("socketSelectTimeout", 0);
-
 long TCPSocket::read(void *buf,long length)
 {
     if(length <= 0 ) return length;
 
-    long received = 0;
+    static bool useSelectOnTCPSocket = Resource<bool>("useSelectOnTCPSocket", false);
+		long received = 0;
     char *p = (char*)buf;
-#if 0
     bool nonews = false;
-#endif
 
     while(length > 0)
     {
-#if 0  // FIXME: why is this code disabled?
-        long len = -1;
-        Select select(socket_);
-        bool more = socketSelectTimeout > 0;
-        while(more)
-        {
-            more = false;
-            if(!select.ready(socketSelectTimeout))
-            {
-                SavedStatus save;
+			long len;
+			if (useSelectOnTCPSocket) {
+				static long socketSelectTimeout = Resource<long>("socketSelectTimeout", 0);
+				Select select(socket_);
+				bool more = socketSelectTimeout > 0;
+				while(more)
+				{
+					more = false;
+					if(!select.ready(socketSelectTimeout))
+					{
+						SavedStatus save;
 
-				Log::warning() << "No news from " << remoteHost()
-                              << " from " << Seconds(socketSelectTimeout) << std::endl;
+						Log::warning() << "No news from " << remoteHost()
+						               << " from " << Seconds(socketSelectTimeout) << std::endl;
 
-                Log::status() << "No news from " << remoteHost()
-                              << " from " << Seconds(socketSelectTimeout) << std::endl;
+						Log::status() << "No news from " << remoteHost()
+						              << " from " << Seconds(socketSelectTimeout) << std::endl;
 
-// For now ...
-        //		nonews = true;
+						// FIXME: enable the nonews flag here?
+						// nonews = true;
 
-                // Time out, write 0 bytes to check that peer is alive
-                if(::write(socket_,0,0) != 0)
-                {
-                    Log::error() << "TCPSocket::read write" <<
-                        Log::syserr << std::endl;
-                    return -1;
-                }
-                more = true;
-                break;
-            }
-        }
+						// Time out, write 0 bytes to check that peer is alive
+						if(::write(socket_,0,0) != 0)
+						{
+							Log::error() << "TCPSocket::read write" <<
+							                Log::syserr << std::endl;
+							return -1;
+						}
+						more = true;
+						break;
+					}
+				}
 
-        len = -1;
+				len = -1;
 
-        if(nonews)
-        {
-            AutoAlarm alarm(60,true);
-            Log::status() << "Resuming transfer" << std::endl;
-            len = ::read(socket_,p,length);
-        }
-        else
+				if(nonews)
+				{
+					AutoAlarm alarm(60,true);
+					Log::status() << "Resuming transfer" << std::endl;
 					len = ::read(socket_,p,length);
-#else
-			long len = ::read(socket_,p,length);
-#endif
+				}
+				else
+					len = ::read(socket_,p,length);
+			} else {
+				len = ::read(socket_,p,length);
+			}
 
-        if(len <  0) {
-            Log::error() << "Socket read" << Log::syserr << std::endl;
-            return len;
-        }
+			if(len <  0) {
+				Log::error() << "Socket read" << Log::syserr << std::endl;
+				return len;
+			}
 
-        if(len == 0) return received;
+			if(len == 0) return received;
 
-        received  += len;
-        length    -= len;
-        p         += len;
+			received  += len;
+			length    -= len;
+			p         += len;
     }
 
     return received;

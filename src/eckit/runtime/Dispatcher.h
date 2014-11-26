@@ -71,7 +71,7 @@ public:
 
 // -- Contructors
 
-	Dispatcher(const std::string& name = Traits::name(), int maxTasks = 1);
+	Dispatcher(const std::string& name = Traits::name(), int numberOfThreads = 1);
 
 // -- Destructor
 
@@ -128,7 +128,7 @@ protected:
 	std::list<Request*>    queue_;
 	// Maximum number of threads (if set to 0, a new thread is
 	// created for each request pushed into the queue)
-	Resource<long>    maxTasks_;
+	long              numberOfThreads_;
 	// Number of currently running threads
 	long              count_;
 	// Counter for thread ids
@@ -340,16 +340,18 @@ void DispatchInfo<Traits>::run()
 //=================================================================
 
 template<class Traits>
-Dispatcher<Traits>::Dispatcher(const std::string& name, int maxTasks):
+Dispatcher<Traits>::Dispatcher(const std::string& name, int numberOfThreads):
 	name_(name),
 	// Maximum number of threads defined on the command line or
-	// in config file or default to maxTasks
-	maxTasks_(this,"-numberOfThreads;numberOfThreads",maxTasks),
+	// in config file or default to the argument value
+	numberOfThreads_(Resource<long>(this,
+                                  "-numberOfThreads;numberOfThreads",
+                                  numberOfThreads)),
 	count_(0),
 	next_(0),
 	running_(0),
 	// Dynamically grow number of threads if set to 0
-	grow_(maxTasks_ == 0)
+	grow_(numberOfThreads_ == 0)
 {
 	// For some reason xlC require that
 	typedef class DispatchInfo<Traits> DI;
@@ -358,7 +360,7 @@ Dispatcher<Traits>::Dispatcher(const std::string& name, int maxTasks):
 	c.start();
 
 	// Spin up appropriate number of threads
-	changeThreadCount(maxTasks_);
+	changeThreadCount(numberOfThreads_);
 }
 
 
@@ -589,8 +591,8 @@ void Dispatcher<Traits>::changeThreadCount(int delta)
 template<class Traits>
 void Dispatcher<Traits>::reconfigure()
 {
-	Log::info() << "Max is now : " << maxTasks_ << std::endl;
-	changeThreadCount(maxTasks_ - count_);
+	Log::info() << "Max is now : " << numberOfThreads_ << std::endl;
+	changeThreadCount(numberOfThreads_ - count_);
 	awake();
 }
 

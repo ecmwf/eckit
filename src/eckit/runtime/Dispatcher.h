@@ -344,7 +344,7 @@ Dispatcher<Traits>::Dispatcher(const std::string& name, int maxTasks):
 	name_(name),
 	// Maximum number of threads defined on the command line or
 	// in config file or default to maxTasks
-	maxTasks_(this,"-numberOfThreads,numberOfThreads",maxTasks),
+	maxTasks_(this,"-numberOfThreads;numberOfThreads",maxTasks),
 	count_(0),
 	next_(0),
 	running_(0),

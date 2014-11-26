@@ -92,7 +92,7 @@ MarsFSPartHandle::~MarsFSPartHandle()
 Length MarsFSPartHandle::openForRead()
 {
     ASSERT(!file_.get());
-    file_ = std::auto_ptr<MarsFSFile>(new MarsFSFile(path_));
+	file_.reset( new MarsFSFile(path_) );
     file_->open("r");
     rewind();
     return estimate();
@@ -176,7 +176,7 @@ void MarsFSPartHandle::close()
 {
     if(file_.get()) {
         file_->close();
-        file_ = std::auto_ptr<MarsFSFile>(0);
+		file_.reset(0) ;
     }
 }
 

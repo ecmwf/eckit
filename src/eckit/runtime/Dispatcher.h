@@ -128,7 +128,7 @@ protected:
 	std::list<Request*>    queue_;
 	// Maximum number of threads (if set to 0, a new thread is
 	// created for each request pushed into the queue)
-	long              numberOfThreads_;
+	Resource<long>    numberOfThreads_;
 	// Number of currently running threads
 	long              count_;
 	// Counter for thread ids
@@ -344,9 +344,9 @@ Dispatcher<Traits>::Dispatcher(const std::string& name, int numberOfThreads):
 	name_(name),
 	// Maximum number of threads defined on the command line or
 	// in config file or default to the argument value
-	numberOfThreads_(Resource<long>(this,
-                                  "-numberOfThreads;numberOfThreads",
-                                  numberOfThreads)),
+	numberOfThreads_(this,
+                   "-numberOfThreads;numberOfThreads",
+                   numberOfThreads),
 	count_(0),
 	next_(0),
 	running_(0),

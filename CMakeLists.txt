@@ -174,6 +174,7 @@ endif()
 
 add_subdirectory( bamboo )
 add_subdirectory( contrib )
+add_subdirectory( doc )
 add_subdirectory( src )
 
 ############################################################################################

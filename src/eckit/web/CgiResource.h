@@ -27,7 +27,7 @@ public:
 
 	CgiResource();
 
-    ~CgiResource();
+	virtual ~CgiResource();
 
 protected: // members
 

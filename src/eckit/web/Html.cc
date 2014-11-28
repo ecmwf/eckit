@@ -343,6 +343,7 @@ void ImageProvider::html(std::ostream& out, Url& url)
 class HtmlProvider : public HtmlResource {
 public:
 	HtmlProvider(): HtmlResource("/html") { }
+	virtual ~HtmlProvider() {}
 	void html(std::ostream& , Url&);
 };
 

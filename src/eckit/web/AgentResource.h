@@ -28,7 +28,7 @@ public:
 
 	AgentResource();
 
-    ~AgentResource();
+	virtual ~AgentResource();
 
 protected: // members
 

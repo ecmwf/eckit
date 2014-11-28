@@ -17,6 +17,7 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/filesystem/marsfs/MarsFSFile.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
+#include "eckit/memory/ScopedPtr.h"
 
 //-----------------------------------------------------------------------------
 
@@ -84,7 +85,7 @@ private:
 	OffsetList         offset_;
 	LengthList         length_;
 
-    std::auto_ptr<MarsFSFile>  file_;
+	ScopedPtr<MarsFSFile>  file_;
 
 // -- Methods
 

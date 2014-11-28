@@ -85,14 +85,12 @@ public: // methods
 
     LLBoundBox2() :
     min_( 0., 0. ),
-    max_( 0., 0. ),
-    global_(true)
+    max_( 0., 0. )
     {}
 
     LLBoundBox2( double __north, double __south, double __east, double __west ) :
         min_( __west, __south ),
-        max_( __east, __north ),
-        global_(true)
+        max_( __east, __north )
     {
       if( !validate() )
       {
@@ -104,8 +102,7 @@ public: // methods
 
     LLBoundBox2( const LLPoint2& min, const LLPoint2& max ) :
         min_(min),
-        max_(max),
-        global_(true)
+        max_(max)
     {
       if( !validate() )
       {
@@ -155,10 +152,6 @@ public: // methods
 
     bool empty() const { return ( area() == 0. ); }
 
-    bool global() const { return global_; }
-
-    LLBoundBox2& global(bool global) { global_=global; return *this; }
-
     void print( std::ostream& out ) const
     {
         out << "BoundBox2( " << min_ << "," << max_ << ")";
@@ -178,7 +171,6 @@ private: // members
 
     LLPoint2 min_;
     LLPoint2 max_;
-    bool     global_;
 
 };
 

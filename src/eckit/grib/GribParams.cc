@@ -131,7 +131,7 @@ public:
 	{
 		set( "N", GribAccessor<long>("numberOfParallelsBetweenAPoleAndTheEquator")(gh) );
 
-		set( "Ni", GribAccessor<long>("Ni")(gh) );
+		set( "nlon", GribAccessor<long>("Ni")(gh) );
 	}
 
 };
@@ -149,9 +149,9 @@ public:
 		set( "lat_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
 		set( "lon_inc", GribAccessor<double>("iDirectionIncrementInDegrees")(gh) );
 
-		set( "Nj", GribAccessor<long>("Nj")(gh) );
-		set( "Ni", GribAccessor<long>("Ni")(gh) );
-	}
+		set( "nlon", GribAccessor<long>("Ni")(gh) );
+		set( "nlat", GribAccessor<long>("Nj")(gh) );
+  }
 
 };
 
@@ -165,17 +165,22 @@ public:
 	static std::string className() { return "eckit.grib.GribReducedLatLon"; }
 	GribReducedLatLon( GribHandle& gh ) : GribParams(gh)
 	{
-		set( "lat_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
+    set( "lat_inc", GribAccessor<double>("jDirectionIncrementInDegrees")(gh) );
 
-		set( "Nj", GribAccessor<long>("Nj")(gh) );
+    set( "nlat", GribAccessor<long>("Nj")(gh) );
 
-      std::vector<long> pl = GribAccessor< std::vector<long> >("pl")(gh);
-      ValueList vpl(pl.size());
-      for( size_t i = 0; i < pl.size(); ++i )
-         vpl[i] = pl[i];
+    std::vector<long> pl = GribAccessor< std::vector<long> >("pl")(gh);
+    ValueList vpl(pl.size());
+    for( size_t i = 0; i < pl.size(); ++i )
+    {
+       vpl[i] = pl[i];
+    }
+    set( "npts_per_lat", vpl );
 
-      set( "npts_per_lat", vpl );
-	}
+    // ReducedLatLon is a global grid. The "poles" variable notifies that
+    // the poles are included in the grid
+    set( "poles", true );
+  }
 
 };
 

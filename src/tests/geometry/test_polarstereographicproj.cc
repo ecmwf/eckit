@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( test_north_polar_stereographic_projection )
 
    double lat = 30;
    double lon = 30;
-   eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
+   eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lat) );
    eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
 
    //cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
@@ -56,8 +56,8 @@ BOOST_AUTO_TEST_CASE( test_south_polar_stereographic_projection )
 
    double lat = 30;
    double lon = 30;
-   eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
-   eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
+   eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lat) );
+   eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
 
    //cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
    BOOST_CHECK_CLOSE(pt_on_sphere.lat(),lat,degrees_eps());
@@ -73,8 +73,8 @@ BOOST_AUTO_TEST_CASE( test_global_north_polar_stereographic_projection )
    for(size_t lat = -90; lat < 90; lat++) {
       for(size_t lon = 0; lon < 360; lon++) {
 
-         eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
-         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
+         eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lat) );
+         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
 
          //cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
          BOOST_CHECK_CLOSE(pt_on_sphere.lat(),(double)lat,degrees_eps());
@@ -92,8 +92,8 @@ BOOST_AUTO_TEST_CASE( test_global_south_polar_stereographic_projection )
    for(size_t lat = -90; lat < 90; lat++) {
       for(size_t lon = 0; lon < 360; lon++) {
 
-         eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
-         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
+         eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lon) );
+         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
 
          //cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
          BOOST_CHECK_CLOSE(pt_on_sphere.lat(),(double)lat,degrees_eps());
@@ -112,8 +112,8 @@ BOOST_AUTO_TEST_CASE( test_north_ellipsoid_polar_stereographic_projection )
 
    double lat = 73;
    double lon = 44;
-   eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
-   eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
+   eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lat) );
+   eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
 
    // cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
    BOOST_CHECK_CLOSE(pt_on_plane[0],3320416.75,degrees_eps());
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE( test_global_north_ellipsoid_polar_stereographic_projection
       for(size_t lon = 0; lon < 360; lon++) {
 
          eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
-         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
+         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
 
          //cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
          BOOST_CHECK_CLOSE(pt_on_sphere.lat(),(double)lat,degrees_eps());
@@ -152,8 +152,8 @@ BOOST_AUTO_TEST_CASE( test_global_south_ellipsoid_polar_stereographic_projection
    for(size_t lat = -90; lat < 90; lat++) {
       for(size_t lon = 0; lon < 360; lon++) {
 
-         eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
-         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
+         eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lat) );
+         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
 
          //cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
          BOOST_CHECK_CLOSE(pt_on_sphere.lat(),(double)lat,degrees_eps());

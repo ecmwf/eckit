@@ -26,7 +26,7 @@ namespace geometry {
 //------------------------------------------------------------------------------------------------------
 
 enum XYZCOORDS { XX = 0, YY = 1, ZZ = 2 };
-enum LLCOORDS  { LAT = XX, LON = YY };
+enum LLCOORDS  { LON = XX, LAT = YY };
 
 /// A generic point in K dimension cartesian space
 

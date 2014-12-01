@@ -49,7 +49,7 @@ public: // methods
 
     value_t operator[] ( const key_t& key ) const;
 
-	virtual value_t get( const key_t& key ) const = 0;
+    virtual value_t get( const key_t& key ) const = 0;
 
     virtual void print(std::ostream& s) const = 0;
 

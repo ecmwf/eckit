@@ -148,6 +148,13 @@ private:
 
 };
 
+#define register_BuilderT0(ABSTRACT,CONCRETE,NAME)\
+  static struct Register__##ABSTRACT##__##CONCRETE##__T0 {\
+    Register__##ABSTRACT##__##CONCRETE##__T0()\
+    {\
+      static eckit::ConcreteBuilderT0<ABSTRACT,CONCRETE> builder(NAME); }\
+    } register_##ABSTRACT##__##CONCRETE##_T0
+
 //------------------------------------------------------------------------------------------------------
 
 template< class Base, class T >
@@ -189,6 +196,13 @@ private:
 	key_t k_;
 
 };
+
+#define register_BuilderT1(ABSTRACT,CONCRETE,NAME)\
+  static struct Register__##ABSTRACT##__##CONCRETE##__T1 {\
+    Register__##ABSTRACT##__##CONCRETE##__T1()\
+    {\
+      static eckit::ConcreteBuilderT1<ABSTRACT,CONCRETE> builder(NAME); }\
+    } register_##ABSTRACT##__##CONCRETE##_T1
 
 //------------------------------------------------------------------------------------------------------
 
@@ -233,6 +247,13 @@ private:
 	key_t k_;
 
 };
+
+#define register_BuilderT2(ABSTRACT,CONCRETE,NAME)\
+  static struct Register__##ABSTRACT##__##CONCRETE##__T2 {\
+    Register__##ABSTRACT##__##CONCRETE##__T2()\
+    {\
+      static eckit::ConcreteBuilderT2<ABSTRACT,CONCRETE> builder(NAME); }\
+    } register_##ABSTRACT##__##CONCRETE##_T2
 
 //------------------------------------------------------------------------------------------------------
 

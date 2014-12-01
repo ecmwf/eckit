@@ -10,9 +10,17 @@ namespace geometry {
 
 //------------------------------------------------------------------------------------------------------
 
-void latlon_to_3d( const double lat, const double lon, double* x, const double r, const double h );
+void lonlat_to_3d( const double lonlat[], double xyz[], const double r, const double h );
 
-void latlon_to_3d( const double lat, const double lon, double* x );
+void lonlat_to_3d( const double lonlat[], double xyz[] );
+
+void lonlat_to_3d( const double lon, const double lat, double xyz[], const double r, const double h );
+
+void lonlat_to_3d( const double lon, const double lat, double xyz[] );
+
+void latlon_to_3d( const double lat, const double lon, double xyz[], const double r, const double h );
+
+void latlon_to_3d( const double lat, const double lon, double xyz[] );
 
 //-----------------------------------------------------------------------------
 

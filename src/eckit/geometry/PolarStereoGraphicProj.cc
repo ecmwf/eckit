@@ -178,7 +178,7 @@ eckit::geometry::LLPoint2 SphericalPolarStereoGraphicProj::map_to_spherical( dou
    lat = roundf( lat * 1000000.0 )/1000000.0;
    lon = roundf( lon * 1000000.0 )/1000000.0;
 
-   return eckit::geometry::LLPoint2(lat,lon);
+   return eckit::geometry::LLPoint2(lon,lat);
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -284,7 +284,7 @@ eckit::geometry::LLPoint2 EllipPolarStereoGraphicProj::map_to_spherical( double 
       lon = lon_of_natural_origin_ + atan2((E-fe_),fn_-N) * radian_to_degree_;
    }
 
-   return eckit::geometry::LLPoint2(lat,lon);
+   return eckit::geometry::LLPoint2(lon,lat);
 }
 
 //------------------------------------------------------------------------------------------------------

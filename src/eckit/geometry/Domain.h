@@ -8,7 +8,8 @@
 namespace eckit {
 namespace geometry {
 
-// Domain defines a abstract base class
+// Domain defines a abstract base class, used for cropping, masking, etc
+//
 class Domain {
 public:
 

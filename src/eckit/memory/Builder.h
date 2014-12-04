@@ -19,6 +19,13 @@
 #include "eckit/memory/Factory.h"
 #include "eckit/value/Params.h"
 
+// #define DEBUG_ECKIT_BUILDERS
+#ifdef  DEBUG_ECKIT_BUILDERS
+#define DEBUG_BUILDER(x) std::cerr << " DEBUG (" << x << ") " << Here() << std::endl;
+#else
+#define DEBUG_BUILDER(x)
+#endif
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -30,7 +37,8 @@ public:
 
 	typedef std::string key_t;
 
-	virtual ~Builder() {}
+	virtual ~Builder();
+
 	virtual key_t name() const = 0;
 	virtual key_t build_type() const = 0;
 
@@ -48,6 +56,10 @@ template< class Base >
 class BuilderT0 : public Builder {
 
 public: // types
+
+	BuilderT0() {}
+
+	~BuilderT0() {}
 
 	typedef Base product_t;
 	typedef product_t* product_ptr;
@@ -68,6 +80,10 @@ template< class Base >
 class BuilderT1 : public Builder {
 
 public: // types
+
+	BuilderT1() {}
+
+	~BuilderT1() {}
 
 	typedef Base product_t;
 	typedef product_t* product_ptr;
@@ -90,6 +106,10 @@ template< class Base >
 class BuilderT2 : public Builder {
 
 public: // types
+
+	BuilderT2() {};
+
+	~BuilderT2() {}
 
 	typedef Base product_t;
 	typedef product_t* product_ptr;
@@ -125,16 +145,19 @@ public: // methods
 
 	ConcreteBuilderT0() : k_(name())
 	{
+		DEBUG_BUILDER( "ConcreteBuilderT0() -- " << T::className() );
 		Factory<product_t>::instance().regist(k_, builder_ptr(this) );
 	}
 
 	ConcreteBuilderT0(const key_t& k) : k_(k)
 	{
+		DEBUG_BUILDER( "ConcreteBuilderT0() -- " << T::className() );
 		Factory<product_t>::instance().regist(k_, builder_ptr(this) );
 	}
 
 	virtual ~ConcreteBuilderT0()
 	{
+		DEBUG_BUILDER( "~ConcreteBuilderT0() -- " << T::className() );
 		Factory<product_t>::instance().unregist( k_ );
 	}
 
@@ -174,16 +197,19 @@ public: // methods
 
 	ConcreteBuilderT1() : k_(name())
 	{
+		DEBUG_BUILDER( "ConcreteBuilderT1() -- " << T::className() );
 		Factory<product_t>::instance().regist(k_, builder_ptr(this) );
 	}
 
 	ConcreteBuilderT1(const key_t& k) : k_(k)
 	{
+		DEBUG_BUILDER( "ConcreteBuilderT1() -- " << T::className() );
 		Factory<product_t>::instance().regist(k_, builder_ptr(this) );
 	}
 
 	virtual ~ConcreteBuilderT1()
 	{
+		DEBUG_BUILDER( "~ConcreteBuilderT1() -- " << T::className() );
 		Factory<product_t>::instance().unregist( k_ );
 	}
 
@@ -225,16 +251,19 @@ public: // methods
 
 	ConcreteBuilderT2() : k_(name())
 	{
+		DEBUG_BUILDER( "ConcreteBuilderT2() -- " << T::className() );
 		Factory<product_t>::instance().regist(k_, builder_ptr(this) );
 	}
 
 	ConcreteBuilderT2(const key_t& k) : k_(k)
 	{
+		DEBUG_BUILDER( "ConcreteBuilderT2() -- " << T::className() );
 		Factory<product_t>::instance().regist(k_, builder_ptr(this));
 	}
 
 	virtual ~ConcreteBuilderT2()
 	{
+		DEBUG_BUILDER( "~ConcreteBuilderT2() -- " << T::className() );
 		Factory<product_t>::instance().unregist( k_ );
 	}
 

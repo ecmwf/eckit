@@ -45,7 +45,7 @@ public:
 
 // -- Destructor
 
-    ~Recycler(); 
+    ~Recycler();
 
 // -- Convertors
     // None
@@ -87,7 +87,7 @@ protected:
 
 // -- Methods
 
-    void print(std::ostream&) const; 
+    void print(std::ostream&) const;
 
 // -- Overridden methods
     // None
@@ -141,7 +141,11 @@ Recycler<T>::Recycler(const PathName& path):
         path_(path),
         fd_(-1)
 {
-    SYSCALL(fd_ = ::open(path_.localPath(),O_RDWR|O_CREAT,0777));
+    path_.dirName().mkdir();
+    fd_ = ::open(path_.localPath(),O_RDWR|O_CREAT,0777);
+    if(fd_ < 0) {
+        throw CantOpenFile(path_);
+    }
 }
 
 template<class T>
@@ -210,7 +214,7 @@ Ordinal Recycler<T>::pop(Iter begin, Ordinal count)
     ASSERT((here % sizeof(T)) == 0);
 
     Ordinal cnt = std::min(Ordinal(here/sizeof(T)), count);
-    
+
     here -= cnt * sizeof(T);
 
     SYSCALL(there = ::lseek(fd_, here ,SEEK_SET));
@@ -225,7 +229,7 @@ Ordinal Recycler<T>::pop(Iter begin, Ordinal count)
     }
 
     SYSCALL(::ftruncate(fd_, here));
-    
+
     return cnt;
 }
 

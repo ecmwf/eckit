@@ -18,8 +18,7 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-                            \
-ExpPtr neg( ExpPtr e )           { return ExpPtr( new UnaryOperator<Neg>(e) ); }
+ExpPtr neg( ExpPtr e ) { return ExpPtr( new UnaryOperator<Neg>(e) ); }
 
 //--------------------------------------------------------------------------------------------
 

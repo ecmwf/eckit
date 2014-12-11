@@ -49,7 +49,7 @@ ExpPtr scalar(const scalar_t &s)
 
 void Scalar::asCode(std::ostream&o) const
 {
-    o << "Math(" << v_ << ")";
+    o << "xpr::scalar(" << v_ << ")";
 }
 
 

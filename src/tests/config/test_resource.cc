@@ -10,6 +10,10 @@
 
 #include <cmath>
 
+#define BOOST_TEST_MODULE test_eckit_config
+
+#include "ecbuild/boost_test_framework.h"
+
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
@@ -22,82 +26,68 @@ using namespace eckit;
 
 //-----------------------------------------------------------------------------
 
-namespace eckit_test {
+namespace eckit_test {}
 
 //-----------------------------------------------------------------------------
 
-class TestResource : public Tool {
-public:
+using namespace eckit_test;
 
-    TestResource(int argc,char **argv): Tool(argc,argv) {}
+BOOST_AUTO_TEST_SUITE( test_eckit_resource )
 
-    ~TestResource() {}
-
-    virtual void run();
-
-    void test_default();
-    void test_vector_long();
-    void test_command_line();
-    void test_environment_var();
-    void test_config_file();
-
-};
-
-//-----------------------------------------------------------------------------
-
-void TestResource::test_default()
+BOOST_AUTO_TEST_CASE( test_default )
 {
     string s = Resource<string>("s","some");
 
-    ASSERT( s == "some" );
+    BOOST_CHECK( s == "some" );
 
     double d = Resource<double>("d", 777.7);
 
     DEBUG_VAR(d);
-    ASSERT( ( abs(d - 777.7) ) <= 10E-6 );
+
+    BOOST_CHECK( ( abs(d - 777.7) ) <= 10E-6 );
 }
 
 //-----------------------------------------------------------------------------
 
-void TestResource::test_vector_long()
+BOOST_AUTO_TEST_CASE( test_vector_long )
 {
     std::vector<long> def(3,77);
     std::vector<long> v = Resource< std::vector<long> >("listlong;-listlong",def);
 
-    ASSERT( v[0] == 88 );
-    ASSERT( v[1] == 99 );
-    ASSERT( v[2] == 11 );
-    ASSERT( v[3] == 22 );
+    BOOST_CHECK( v[0] == 88 );
+    BOOST_CHECK( v[1] == 99 );
+    BOOST_CHECK( v[2] == 11 );
+    BOOST_CHECK( v[3] == 22 );
 }
 
 //-----------------------------------------------------------------------------
 
-void TestResource::test_command_line()
+BOOST_AUTO_TEST_CASE( test_command_line )
 {
-    ASSERT( Resource<int>("integer;-integer",0) == 100 );
+    BOOST_CHECK( Resource<int>("integer;-integer",0) == 100 );
 }
 
 //-----------------------------------------------------------------------------
 
-void TestResource::test_environment_var()
+BOOST_AUTO_TEST_CASE( test_environment_var )
 {
     char v [] = "TEST_ENV_INT=333";
     putenv(v);
     
-    ASSERT( Resource<int>("intEnv;$TEST_ENV_INT",777) == 333 );
+    BOOST_CHECK( Resource<int>("intEnv;$TEST_ENV_INT",777) == 333 );
 
     char foo [] = "FOO=1Mb";
     putenv(foo);
 
-    ASSERT( Resource<long>("$FOO",0) == 1024*1024);
-    ASSERT( Resource<long>("$FOO;-foo",0) == 1024*1024);
-    ASSERT( Resource<long>("-foo;$FOO",0) == 1024*1024);
-    ASSERT( Resource<long>("$FOO;foo;-foo",0) == 1024*1024);
+    BOOST_CHECK( Resource<long>("$FOO",0) == 1024*1024);
+    BOOST_CHECK( Resource<long>("$FOO;-foo",0) == 1024*1024);
+    BOOST_CHECK( Resource<long>("-foo;$FOO",0) == 1024*1024);
+    BOOST_CHECK( Resource<long>("$FOO;foo;-foo",0) == 1024*1024);
 }
 
 //-----------------------------------------------------------------------------
 
-void TestResource::test_config_file()
+BOOST_AUTO_TEST_CASE( test_config_file )
 {
     ostringstream code;
 
@@ -117,36 +107,16 @@ void TestResource::test_config_file()
 
     DEBUG_VAR(b);
 
-    ASSERT( b == "bar" );
+    BOOST_CHECK( b == "bar" );
 
     long buffer = Resource<long>("buffer",0);
 
     DEBUG_VAR(buffer);
     
-    ASSERT( buffer == Bytes::MiB(60) );
-}
-
-//-----------------------------------------------------------------------------
-            
-void TestResource::run()
-{
-    test_default();
-    test_vector_long();
-    test_command_line();
-    test_environment_var();
-    test_config_file();
+    BOOST_CHECK( buffer == Bytes::MiB(60) );
 }
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit_test
-
-//-----------------------------------------------------------------------------
-
-int main(int argc,char **argv)
-{
-    eckit_test::TestResource mytest(argc,argv);
-    mytest.start();
-    return 0;
-}
+BOOST_AUTO_TEST_SUITE_END()
 

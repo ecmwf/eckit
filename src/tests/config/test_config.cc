@@ -8,6 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#define BOOST_TEST_MODULE test_eckit_config
+
+#include "ecbuild/boost_test_framework.h"
+
 #include "eckit/log/Log.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
@@ -22,26 +26,15 @@ using namespace eckit;
 
 //-----------------------------------------------------------------------------
 
-namespace eckit_test {
+namespace eckit_test {}
 
 //-----------------------------------------------------------------------------
 
-class TestConfig : public Tool {
-public:
+using namespace eckit_test;
 
-    TestConfig(int argc,char **argv): Tool(argc,argv) {}
+BOOST_AUTO_TEST_SUITE( test_eckit_config )
 
-    ~TestConfig() {}
-
-    virtual void run();
-
-    void test_parse();
-    void test_resource();
-};
-
-//-----------------------------------------------------------------------------
-
-void TestConfig::test_parse()
+BOOST_AUTO_TEST_CASE( test_parse )
 {
     ostringstream code;
      
@@ -112,44 +105,26 @@ void TestConfig::test_parse()
     for( StringDict::const_iterator i = dout.begin(); i != dout.end(); ++i )
         std::cout << i->first << " : " << i->second << std::endl;    
     
-    ASSERT( dout["a"] == "1" );
-    ASSERT( dout["b"] == "lolo" );
-    ASSERT( dout["fdbRoot"] == "/tmp/fdb" );
-    ASSERT( dout["c1"] == "4 x 4" );
-    ASSERT( dout["d"] == "4" );
-    ASSERT( dout["c2"] == "5 x 5" );
-    ASSERT( dout["cc"] == "lolo popo   gege" );
-    ASSERT( dout["e"] == "66" );
-    ASSERT( dout["s"] == "ss" );
-    ASSERT( dout["t"] == "22" );
-    ASSERT( dout["h"] == "here" );
-    ASSERT( dout["g"] == "go" );
-    ASSERT( dout["k"] == "koko" );
-    ASSERT( dout["j"] == "jojo" );
-    ASSERT( dout["m"] == "momo" );
-    ASSERT( dout["z1"] == "11" );
-    ASSERT( dout["z2"] == "22" );
+    BOOST_CHECK( dout["a"] == "1" );
+    BOOST_CHECK( dout["b"] == "lolo" );
+    BOOST_CHECK( dout["fdbRoot"] == "/tmp/fdb" );
+    BOOST_CHECK( dout["c1"] == "4 x 4" );
+    BOOST_CHECK( dout["d"] == "4" );
+    BOOST_CHECK( dout["c2"] == "5 x 5" );
+    BOOST_CHECK( dout["cc"] == "lolo popo   gege" );
+    BOOST_CHECK( dout["e"] == "66" );
+    BOOST_CHECK( dout["s"] == "ss" );
+    BOOST_CHECK( dout["t"] == "22" );
+    BOOST_CHECK( dout["h"] == "here" );
+    BOOST_CHECK( dout["g"] == "go" );
+    BOOST_CHECK( dout["k"] == "koko" );
+    BOOST_CHECK( dout["j"] == "jojo" );
+    BOOST_CHECK( dout["m"] == "momo" );
+    BOOST_CHECK( dout["z1"] == "11" );
+    BOOST_CHECK( dout["z2"] == "22" );
     
-    
 }
 
 //-----------------------------------------------------------------------------
 
-void TestConfig::run()
-{
-    test_parse();
-}
-
-//-----------------------------------------------------------------------------
-
-} // namespace eckit_test
-
-//-----------------------------------------------------------------------------
-
-int main(int argc,char **argv)
-{
-    eckit_test::TestConfig mytest(argc,argv);
-    mytest.start();
-    return 0;
-}
-
+BOOST_AUTO_TEST_SUITE_END()

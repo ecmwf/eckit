@@ -37,6 +37,8 @@ ProdAdd.cc
 ProdAdd.h
 Optimiser.cc
 Optimiser.h
+String.cc
+String.h
 Scalar.cc
 Scalar.h
 Value.cc

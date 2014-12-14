@@ -386,5 +386,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_xpr_usage )
     // f.eval();
 }
 
+//-----------------------------------------------------------------------------
+
 BOOST_AUTO_TEST_SUITE_END()
 

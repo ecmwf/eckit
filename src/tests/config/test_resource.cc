@@ -10,13 +10,12 @@
 
 #include <cmath>
 
-#define BOOST_TEST_MODULE test_eckit_config
+#define BOOST_TEST_MODULE test_eckit_resource
 
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
-#include "eckit/runtime/Tool.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
 #include "eckit/types/Types.h"
@@ -54,10 +53,10 @@ BOOST_AUTO_TEST_CASE( test_vector_long )
     std::vector<long> def(3,77);
     std::vector<long> v = Resource< std::vector<long> >("listlong;-listlong",def);
 
-    BOOST_CHECK( v[0] == 88 );
-    BOOST_CHECK( v[1] == 99 );
-    BOOST_CHECK( v[2] == 11 );
-    BOOST_CHECK( v[3] == 22 );
+    BOOST_CHECK_EQUAL( v[0] , 88 );
+    BOOST_CHECK_EQUAL( v[1] , 99 );
+    BOOST_CHECK_EQUAL( v[2] , 11 );
+    BOOST_CHECK_EQUAL( v[3] , 22 );
 }
 
 //-----------------------------------------------------------------------------

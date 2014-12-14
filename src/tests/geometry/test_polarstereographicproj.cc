@@ -11,9 +11,8 @@
 #include <string>
 #include <iostream>
 
-#include "eckit/eckit_config.h"
+#define BOOST_TEST_MODULE test_eckit_geometry
 
-#define BOOST_TEST_MODULE TestPolarStereoGraphicProj
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/geometry/PolarStereoGraphicProj.h"
@@ -22,12 +21,22 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::geometry;
 
+//-----------------------------------------------------------------------------
+
+namespace eckit_test {
+
 static double degrees_eps()
 {
    /// default is 1E-3 because
    /// some bugs in IFS means we need a lower resolution epsilon when decoding from grib2
    return 1E-3 ;
 }
+
+}
+
+//-----------------------------------------------------------------------------
+
+using namespace eckit_test;
 
 BOOST_AUTO_TEST_SUITE( TestPolarStereoGraphicProj )
 
@@ -162,5 +171,6 @@ BOOST_AUTO_TEST_CASE( test_global_south_ellipsoid_polar_stereographic_projection
    }
 }
 
+//-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

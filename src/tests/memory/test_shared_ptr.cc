@@ -101,6 +101,8 @@ using namespace eckit_test;
 //
 // eckit::SharedPtr has null() member function, this does not exist on the standard/boost
 
+//-----------------------------------------------------------------------------
+
 BOOST_AUTO_TEST_SUITE( test_eckit_memory_shared_ptr )
 
 BOOST_AUTO_TEST_CASE( test_intrusive_shared_ptr )
@@ -145,7 +147,7 @@ BOOST_AUTO_TEST_CASE( test_intrusive_shared_ptr )
 
    }
 
-   BOOST_CHECK(UDT_use_count == 0 );
+    BOOST_CHECK_EQUAL( UDT_use_count , 0 );
 
    {
 //      std::cout << "test SharedPtr swap\n";
@@ -167,33 +169,39 @@ BOOST_AUTO_TEST_CASE( test_intrusive_shared_ptr )
 	  BOOST_CHECK(sup1.use_count() == 0 );
 	  BOOST_CHECK(sup1.get() == 0);
    }
-   BOOST_CHECK(UDT_use_count == 0 );
+
+   BOOST_CHECK_EQUAL( UDT_use_count , 0 );
 
 
-//   std::cout << "test SharedPtr with a user defined type in std::vector\n";
+   //   std::cout << "test SharedPtr with a user defined type in std::vector\n";
    {
       std::vector< eckit::SharedPtr<UDT> > vec;
       vec.push_back(eckit::SharedPtr<UDT>(new UDT(0)));
       vec.push_back(eckit::SharedPtr<UDT>(new UDT(1)));
       vec.push_back(eckit::SharedPtr<UDT>(new UDT(2)));
    }
-   BOOST_CHECK(UDT_use_count == 0 );
-//   std::cout << "test SharedPtr with a user defined type in std::set\n";
+   BOOST_CHECK_EQUAL( UDT_use_count , 0 );
+
+   //   std::cout << "test SharedPtr with a user defined type in std::set\n";
    {
       std::set< eckit::SharedPtr<UDT> > vec;
       vec.insert(eckit::SharedPtr<UDT>(new UDT(0)));
       vec.insert(eckit::SharedPtr<UDT>(new UDT(1)));
       vec.insert(eckit::SharedPtr<UDT>(new UDT(3)));
    }
-   BOOST_CHECK(UDT_use_count == 0 );
-//   std::cout << "test SharedPtr with a user defined type in std::map\n";
+   BOOST_CHECK_EQUAL( UDT_use_count , 0 );
+
+   //   std::cout << "test SharedPtr with a user defined type in std::map\n";
    {
       std::map<std::string, eckit::SharedPtr<UDT> > map;
       map.insert(std::make_pair(std::string("first"),eckit::SharedPtr<UDT>(new UDT(0))));
       map.insert(std::make_pair(std::string("secon"),eckit::SharedPtr<UDT>(new UDT(1))));
       map.insert(std::make_pair(std::string("third"),eckit::SharedPtr<UDT>(new UDT(2))));
    }
-   BOOST_CHECK(UDT_use_count == 0 );
+   BOOST_CHECK_EQUAL( UDT_use_count , 0 );
+
 }
+
+//-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

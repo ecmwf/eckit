@@ -7,15 +7,17 @@
  * of its status as an intergovernmental organisation nor does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE TestDispatcher
+#define BOOST_TEST_MODULE test_eckit_runtime_dispatcher
+
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/runtime/Dispatcher.h"
 
 using namespace eckit;
 
-namespace eckit {
-namespace test {
+//-----------------------------------------------------------------------------
+
+namespace eckit_test {
 
 struct TestResource {
 	TestResource() : i(0) {}
@@ -54,7 +56,9 @@ struct Traits {
 	typedef TestHandler     Handler;
 };
 
-BOOST_AUTO_TEST_SUITE( TestDispatcher )
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE( test_eckit_runtime_dispatcher )
 
 BOOST_AUTO_TEST_CASE( test_push_one )
 {
@@ -86,7 +90,8 @@ BOOST_AUTO_TEST_CASE( test_push_ten )
 	BOOST_CHECK( r.i == 10 );
 };
 
+//-----------------------------------------------------------------------------
+
 BOOST_AUTO_TEST_SUITE_END()
 
-}
-}
+} // namespace eckit_test

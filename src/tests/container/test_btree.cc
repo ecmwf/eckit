@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "ecbuild/boost_test_framework.h"
 
-#include "eckit/runtime/Tool.h"
 #include "eckit/container/BTree.h"
 #include "eckit/os/Semaphore.h"
 #include "eckit/types/FixedString.h"
@@ -17,17 +17,17 @@
 using namespace std;
 using namespace eckit;
 
-class Test : public Tool {
-    virtual void run();
+//-----------------------------------------------------------------------------
 
-    public:
+namespace eckit_test {}
 
-    Test(int argc, char** argv): Tool(argc,argv) { }
+//-----------------------------------------------------------------------------
 
-};
+using namespace eckit_test;
 
+BOOST_AUTO_TEST_SUITE( test_eckit_container_btree )
 
-void Test::run()
+BOOST_AUTO_TEST_CASE( test_eckit_container_btree_constructor )
 {
     char test[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\0";
 
@@ -45,14 +45,15 @@ void Test::run()
             b.set(test[i],-int(i));
         }
 
-        std::cout << std::endl;
-        b.dump();
-        std::cout << std::endl;
+//        std::cout << std::endl;
+//        b.dump();
+//        std::cout << std::endl;
 
         for(int i = 0; i < count; i++)
         {
             int k;
-            ASSERT(b.get(test[i],k) && k == (-int(i)));
+            BOOST_CHECK( b.get(test[i],k) );
+            BOOST_CHECK_EQUAL( k , (-int(i)) );
         }
     }
 
@@ -74,8 +75,7 @@ void Test::run()
             b.set(s,-int(i));
         }
 
-
-        b.dump();
+//        b.dump();
     }
 
 
@@ -108,11 +108,6 @@ void Test::run()
 
 }
 
-//=============================================================
+//-----------------------------------------------------------------------------
 
-int main(int argc,char **argv)
-{
-    Test app(argc,argv);
-    app.start();
-    return 0;
-}
+BOOST_AUTO_TEST_SUITE_END()

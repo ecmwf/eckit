@@ -16,7 +16,6 @@
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
 #include "eckit/types/Types.h"
-#include "eckit/runtime/Tool.h"
 
 #include "eckit/config/Script.h"
 #include "eckit/config/Compiler.h"

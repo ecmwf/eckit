@@ -8,10 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/AIOHandle.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/FileHandle.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"

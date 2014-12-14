@@ -10,7 +10,8 @@
 
 #include <list>
 
-#include "eckit/runtime/Tool.h"
+#include "ecbuild/boost_test_framework.h"
+
 #include "eckit/container/KDTree.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/os/Semaphore.h"
@@ -19,25 +20,28 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::geometry;
 
-class Test : public Tool {
-    virtual void run();
+using namespace std;
+using namespace eckit;
 
-    public:
+//-----------------------------------------------------------------------------
 
-    Test(int argc, char** argv): Tool(argc,argv) { }
-
-};
-
+namespace eckit_test {
 
 struct TestTreeTrait {
     typedef Point2   Point;
     typedef double   Payload;
 };
 
+}
 
-void Test::run()
+//-----------------------------------------------------------------------------
+
+using namespace eckit_test;
+
+BOOST_AUTO_TEST_SUITE( test_eckit_container_kdtree )
+
+BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_constructor )
 {
-
     typedef KDTreeMemory<TestTreeTrait> Tree;
 
     Tree kd;
@@ -69,14 +73,14 @@ void Test::run()
     
     // we should find the same point
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        ASSERT(nr.x(i) == refPoint.x(i));
+        BOOST_CHECK_EQUAL(nr.x(i) , refPoint.x(i));
 
 
     // test exact match to a point
 
     nr = kd.nearestNeighbour(refPoint).point();
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        ASSERT(nr.x(i) == refPoint.x(i));
+        BOOST_CHECK_EQUAL(nr.x(i) , refPoint.x(i));
 
 
     // test "off the scale" - i.e. not within a group of points
@@ -86,7 +90,7 @@ void Test::run()
     nr = kd.nearestNeighbour(testPoint).point();
 
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        ASSERT(nr.x(i) == points.back().point().x(i));
+        BOOST_CHECK_EQUAL(nr.x(i) , points.back().point().x(i));
 
     // and negatively
     //
@@ -96,7 +100,7 @@ void Test::run()
     nr = kd.nearestNeighbour(testPoint).point();
 
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        ASSERT(nr.x(i) == points.front().point().x(i));
+        BOOST_CHECK_EQUAL(nr.x(i) , points.front().point().x(i));
 
 
     // test N nearest
@@ -113,19 +117,13 @@ void Test::run()
         for (unsigned int i = 0; i < Point::dimensions(); ++i)
         {
             std::cout << "distance along point " << Point::distance(Point(0.0, 0.0), diff, i)  << std::endl;
-            ASSERT(Point::distance(Point(0.0, 0.0), diff, i) == 0.5);
+            BOOST_CHECK_EQUAL(Point::distance(Point(0.0, 0.0), diff, i) , 0.5);
         }
 
     }
 
-
 }
 
-//=============================================================
+//-----------------------------------------------------------------------------
 
-int main(int argc,char **argv)
-{
-    Test app(argc,argv);
-    app.start();
-    return 0;
-}
+BOOST_AUTO_TEST_SUITE_END()

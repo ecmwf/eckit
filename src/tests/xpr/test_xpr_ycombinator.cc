@@ -13,15 +13,14 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 
+#include "eckit/xpr/Call.h"
 #include "eckit/xpr/IfElse.h"
 #include "eckit/xpr/Lambda.h"
-#include "eckit/xpr/ParamDef.h"
 #include "eckit/xpr/List.h"
-#include "eckit/xpr/Take.h"
-#include "eckit/xpr/Call.h"
-
-#include "eckit/xpr/Math.h"
+#include "eckit/xpr/ParamDef.h"
 #include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Take.h"
+#include "eckit/xpr/Xpr.h"
 
 using namespace std;
 using namespace eckit;
@@ -37,7 +36,7 @@ namespace eckit_test {
 
 class TestYCombinator : public Tool {
 
-    Math Y; ///< y-combinator math expression
+	Xpr Y; ///< y-combinator math expression
 
 public:
 
@@ -69,7 +68,7 @@ void TestYCombinator::run()
 
 void TestYCombinator::setup()
 {
-    Y = lambda("f", call(Math("f"), Math("f")));
+	Y = lambda("f", call(Xpr("f"), Xpr("f")));
 }
 
 void TestYCombinator::teardown()
@@ -80,12 +79,12 @@ void TestYCombinator::test_ycombinator_factorial()
 {
     // define the factorial (non-recursive) lambda function
 
-    Math fact = lambda("f",
+	Xpr fact = lambda("f",
                        call(lambda("n",
                                    ifelse(
-                                       Math("n") == Math(0.0),
-                                       Math(1.0),
-                                       Math("n") * call( Math("f"), Math("f"), Math("n") - Math(1.0))
+									   Xpr("n") == Xpr(0.0),
+									   Xpr(1.0),
+									   Xpr("n") * call( Xpr("f"), Xpr("f"), Xpr("n") - Xpr(1.0))
                                        )
                                    )
                             )
@@ -94,7 +93,7 @@ void TestYCombinator::test_ycombinator_factorial()
 
     // use y-combinator to recurse the function
 
-    Math factorial = call(Y, fact);
+	Xpr factorial = call(Y, fact);
 
 //    setformat(cout, xpr::CodeFormat);
 //    std::cout << factorial << std::endl;
@@ -102,9 +101,9 @@ void TestYCombinator::test_ycombinator_factorial()
 
     // compute some values
 
-    Math fac3 = factorial( 3. );
-    Math fac5 = factorial( 5. );
-    Math fac8 = factorial( 8. );
+	Xpr fac3 = factorial( 3. );
+	Xpr fac5 = factorial( 5. );
+	Xpr fac8 = factorial( 8. );
 
     // check results values
 
@@ -121,18 +120,18 @@ void TestYCombinator::test_ycombinator_fibonacci()
 {
     // define the fibonacci lookup-table to speed-up the lower order evaluations
 
-    Math fibtable = xpr::list( Math(0.), Math(1.), Math(1.), Math(2.), Math(3.), Math(5.),
-                                 Math(8.), Math(13.), Math(21.), Math(34.), Math(55.) );
+	Xpr fibtable = xpr::list( Xpr(0.), Xpr(1.), Xpr(1.), Xpr(2.), Xpr(3.), Xpr(5.),
+								 Xpr(8.), Xpr(13.), Xpr(21.), Xpr(34.), Xpr(55.) );
 
     // define the factorial (non-recursive) lambda function
 
-    Math fib = lambda("f",
+	Xpr fib = lambda("f",
                       call(lambda("n",
                                   ifelse(
-                                      Math("n") > Math(10.),
-                                      Math(call(Math("f"), Math("f"), Math("n") - Math(1.0))) +
-                                      Math(call(Math("f"), Math("f"), Math("n") - Math(2.0))),
-                                      take( Math("n"), fibtable )
+									  Xpr("n") > Xpr(10.),
+									  Xpr(call(Xpr("f"), Xpr("f"), Xpr("n") - Xpr(1.0))) +
+									  Xpr(call(Xpr("f"), Xpr("f"), Xpr("n") - Xpr(2.0))),
+									  take( Xpr("n"), fibtable )
                                       )
                                   )
                            )
@@ -140,13 +139,13 @@ void TestYCombinator::test_ycombinator_fibonacci()
 
     // use y-combinator to recurse the function
 
-    Math fibonnaci = call(Y, fib);
+	Xpr fibonnaci = call(Y, fib);
 
     // compute some fibonacci numbers
 
-    Math f5  = fibonnaci( 5. );
-    Math f10 = fibonnaci( 10.);
-    Math f20 = fibonnaci( 20.);
+	Xpr f5  = fibonnaci( 5. );
+	Xpr f10 = fibonnaci( 10.);
+	Xpr f20 = fibonnaci( 20.);
 //    Math f30 = fibonnaci( 30.); // -- rather slow test
 
     // check results values

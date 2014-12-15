@@ -49,8 +49,6 @@ class MoverHandleThread : public Thread {
 
 	void run() 
 	{
-		static const char* here = __FUNCTION__;
-
 		{
 			AutoLock<Mutex> lock(mutex_);
 			if(fail_)
@@ -73,13 +71,13 @@ class MoverHandleThread : public Thread {
 		}
 		catch(TimeOut& e)
 		{
-			Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
 			Log::error() << "** Exception is handled" << std::endl;
 			owner_.fail(Retry(e.what()).what());
 		}
 		catch(std::exception& e)
 		{
-			Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
 			Log::error() << "** Exception is handled" << std::endl;
 			owner_.fail(e.what());
 		}
@@ -88,8 +86,6 @@ class MoverHandleThread : public Thread {
 
 	TCPSocket& accept() {
 
-		static const char* here = __FUNCTION__;
-
 		try {
 			return server_.accept("MoverHandle waiting for connection", 60);
 		}
@@ -97,7 +93,7 @@ class MoverHandleThread : public Thread {
 		{
 			AutoLock<Mutex> lock(mutex_);
 			fail_ = true;
-			Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
 			Log::error() << "** Exception is handled" << std::endl;
 			throw Retry(e.what());
 		}
@@ -143,8 +139,6 @@ Length MoverHandle::openForRead()
 
 void MoverHandle::openForWrite(const Length&)
 {
-	static const char* here = __FUNCTION__;
-
 	MoverHandleThread* t = new MoverHandleThread(*this, false);
 	ThreadControler tc(t);
 	tc.start();
@@ -155,7 +149,7 @@ void MoverHandle::openForWrite(const Length&)
 	catch(TimeOut& e)
 	{
 		// TODO: Check if the thread disapear
-		Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+		Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
 		Log::error() << "** Exception is handled" << std::endl;
 		throw Retry(e.what());
 	}

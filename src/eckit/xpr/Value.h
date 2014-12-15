@@ -13,8 +13,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Value_h
-#define eckit_maths_Value_h
+#ifndef eckit_xpr_Value_h
+#define eckit_xpr_Value_h
 
 #include "eckit/eckit.h"
 

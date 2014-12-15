@@ -28,7 +28,7 @@ namespace eckit {
 static Mutex local_mutex;
 
 NodeInfo::NodeInfo() :
-	port_(0), id_(0), task_(-1)
+	port_(0), active_(false), id_(0), task_(-1)
 {
 }
 

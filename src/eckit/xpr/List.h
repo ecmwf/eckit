@@ -12,13 +12,12 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_List_h
-#define eckit_maths_List_h
+#ifndef eckit_xpr_List_h
+#define eckit_xpr_List_h
 
 #include "eckit/memory/SharedPtr.h"
 
 #include "eckit/xpr/Value.h"
-#include "eckit/xpr/Math.h"
 
 namespace eckit {
 namespace xpr {
@@ -94,7 +93,6 @@ ExpPtr list(A... args)
     build_list(l, args...);
     return ExpPtr(new List(l, List::Swap()));
 }
-
 
 //--------------------------------------------------------------------------------------------
 

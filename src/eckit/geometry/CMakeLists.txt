@@ -1,5 +1,6 @@
 list( APPEND eckit_geometry_srcs
-KPoint.h
+Domain.h
+Domain.cc
 Point2.h
 Point2.cc
 Point3.h

@@ -13,8 +13,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Param_h
-#define eckit_maths_Param_h
+#ifndef eckit_xpr_Param_h
+#define eckit_xpr_Param_h
 
 #include "Expression.h"
 

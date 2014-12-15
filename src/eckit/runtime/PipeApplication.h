@@ -40,7 +40,7 @@ public: // methods
 
 	PipeApplication(int,char**);
 
-	~PipeApplication();
+	virtual ~PipeApplication();
 
 	virtual void process(Stream&) = 0;
 	virtual void endBatch();
@@ -85,7 +85,6 @@ PipeApplication<APP>::~PipeApplication()
 template< class APP >
 void PipeApplication<APP>::run()
 {
-	static const char* here = __FUNCTION__;
 	long timeout = Resource<long>("selectTimeout",10*60); // 10 Minutes
 
 	bool debug = false;
@@ -142,7 +141,7 @@ void PipeApplication<APP>::run()
 		}
 		catch(std::exception& e) {
 			Log::error() << "** " << e.what() << " Caught in " <<
-				here << std::endl;
+				Here() << std::endl;
 			Log::error() << "** Exception is re-thrown" << std::endl;
 			pipe << e;
 			throw;

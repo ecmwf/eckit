@@ -13,8 +13,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_Scope_h
-#define eckit_maths_Scope_h
+#ifndef eckit_xpr_Scope_h
+#define eckit_xpr_Scope_h
 
 #include "eckit/xpr/Expression.h"
 

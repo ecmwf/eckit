@@ -316,7 +316,6 @@ static ImageProvider imageProvider;
 void ImageProvider::html(std::ostream& out, Url& url)
 {
 	eckit::PathName path = eckit::Resource<PathName>("imagePath","~/html/image");
-	char c;
 
 	for(int i = 1; i < url.size() ; i++)
 		path = path + "/" + url[i] ;
@@ -332,6 +331,7 @@ void ImageProvider::html(std::ostream& out, Url& url)
 		(url.headerOut()).type("image/gif");
 
 		out << HttpBuf::dontEncode;
+		char c;
 		while(in.get(c))
 			out << c;
 		out << HttpBuf::doEncode;
@@ -343,6 +343,7 @@ void ImageProvider::html(std::ostream& out, Url& url)
 class HtmlProvider : public HtmlResource {
 public:
 	HtmlProvider(): HtmlResource("/html") { }
+	virtual ~HtmlProvider() {}
 	void html(std::ostream& , Url&);
 };
 

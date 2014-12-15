@@ -24,6 +24,7 @@ class Watcher {
 public:
 
 // -- Methods
+   virtual ~Watcher() {}
 
 	virtual void watch() = 0;
 

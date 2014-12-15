@@ -10,6 +10,8 @@
 
 #include <cmath>
 
+#include "eckit/eckit_config.h"
+
 #define BOOST_TEST_MODULE test_eckit_memory
 
 #include "ecbuild/boost_test_framework.h"

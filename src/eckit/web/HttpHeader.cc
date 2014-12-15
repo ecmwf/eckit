@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -39,6 +39,7 @@ bool HttpHeader::compare::operator()(const std::string& a,const std::string& b) 
 HttpHeader::HttpHeader():
 	version_("HTTP/1.0"),
 	statusCode_(200),
+	contentLength_(0),
 	content_(0,false)
 {
 	header_[Content_Type] = " text/html";
@@ -47,7 +48,7 @@ HttpHeader::HttpHeader():
 HttpHeader& HttpHeader::operator=(std::map<std::string,std::string,std::less<std::string> >& parsed)
 {
     for(std::map<std::string,std::string,std::less<std::string> >::const_iterator i = parsed.begin();
-		i != parsed.end(); ++i) 
+		i != parsed.end(); ++i)
 			header_[(*i).first] = (*i).second;
 
 	Map::const_iterator j = header_.find(Content_Length);
@@ -57,7 +58,7 @@ HttpHeader& HttpHeader::operator=(std::map<std::string,std::string,std::less<std
 	else
 		contentLength_ = 0;
 
-	return *this; 
+	return *this;
 }
 
 HttpHeader::~HttpHeader()
@@ -88,7 +89,7 @@ void HttpHeader::print(std::ostream& s) const
 		s << (*i).first <<  ": " << (*i).second << std::endl;
 	}
 
-	// Entity-Header  : Allow, Content-Encoding, 
+	// Entity-Header  : Allow, Content-Encoding,
 	// Content-Length, Content-Type, Expires, Last-Modified
 
 	s << Content_Length << ": " << contentLength_ + content_.size() << std::endl;
@@ -115,7 +116,7 @@ void HttpHeader::forward(const std::string& s)
 
 void HttpHeader::length(const long l)
 {
-	contentLength_ = l;	
+	contentLength_ = l;
 }
 
 long HttpHeader::contentLength() const
@@ -145,7 +146,7 @@ void HttpHeader::status(const long code)
 
 void HttpHeader::authenticate(const std::string& login)
 {
-	header_[WWW_Authenticate] = ("Basic realm=\"" + login + "\""); 
+	header_[WWW_Authenticate] = ("Basic realm=\"" + login + "\"");
 	status(401);
 }
 
@@ -167,11 +168,11 @@ bool HttpHeader::authenticated() const
 		unsigned char b64[256];
 		for(int j = 0; j < 256; j++) b64[j] = 64;
 
-		for(char c = 'A'; c <= 'Z' ; c++) b64[c] = c - 'A';
-		for(char c = 'a'; c <= 'z' ; c++) b64[c] = c - 'a' + 26;
-		for(char c = '0'; c <= '9' ; c++) b64[c] = c - '0' + 52;
+		for(unsigned char c = 'A'; c <= 'Z' ; c++) b64[c] = c - 'A';
+		for(unsigned char c = 'a'; c <= 'z' ; c++) b64[c] = c - 'a' + 26;
+		for(unsigned char c = '0'; c <= '9' ; c++) b64[c] = c - '0' + 52;
 
-		b64['+']=62; 
+		b64['+']=62;
 		b64['/']=63;
 
 		const unsigned char *p = (const unsigned char*)s;

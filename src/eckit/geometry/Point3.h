@@ -10,9 +10,17 @@ namespace geometry {
 
 //------------------------------------------------------------------------------------------------------
 
-void latlon_to_3d( const double lat, const double lon, double* x, const double r, const double h );
+void lonlat_to_3d( const double lonlat[], double xyz[], const double r, const double h );
 
-void latlon_to_3d( const double lat, const double lon, double* x );
+void lonlat_to_3d( const double lonlat[], double xyz[] );
+
+void lonlat_to_3d( const double lon, const double lat, double xyz[], const double r, const double h );
+
+void lonlat_to_3d( const double lon, const double lat, double xyz[] );
+
+void latlon_to_3d( const double lat, const double lon, double xyz[], const double r, const double h );
+
+void latlon_to_3d( const double lat, const double lon, double xyz[] );
 
 //-----------------------------------------------------------------------------
 
@@ -69,7 +77,7 @@ class LLPoint3 : public KPoint<3> {
 
 public:
 
-    LLPoint3(): KPoint<3>() {}
+    LLPoint3(): KPoint<3>(), lat_(0), lon_(0) {}
 
     double lat() const { return lat_; }
     double lon() const { return lon_; }

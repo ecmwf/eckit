@@ -1,0 +1,19 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "."
+		}
+	],
+	"build_systems": [
+        {
+            "working_dir": "${project_path}/../../build/eckit",
+            "cmd": [
+                "make"
+            ],
+            "file_regex": "([/\\w\\-\\.]+):(\\d+):(\\d+:)?",
+            "name": "Build"
+        }
+    ]
+}

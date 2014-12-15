@@ -1,2 +1,5 @@
 CMakeLists.txt.user*
 *.autosave
+doc/html
+doc/latex
+*.sublime-workspace

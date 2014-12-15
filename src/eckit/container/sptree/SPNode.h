@@ -48,6 +48,7 @@ protected:
 
 public:
     SPNode(const Value& value);
+    virtual ~SPNode() {}
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);
     NodeList findInSphere(Alloc& a,const Point& p, double radius);

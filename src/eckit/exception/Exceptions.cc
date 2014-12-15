@@ -82,7 +82,7 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
     callStack_ = BackTrace::dump();
 
     first() = this;
-    Log::status() << "** " << w << " @ " << location_ << std::endl;
+	Log::status() << "** " << w << " @ " << location_ << std::endl;
 }
 
 void Exception::reason(const std::string& w)
@@ -241,7 +241,6 @@ NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& 
 
 	reason(std::string(ss));
 	Log::monitor(Log::App,2) << what() << std::endl;
-	std::string t = std::string(ss);
 }
 
 NotImplemented::NotImplemented( const CodeLocation& loc )
@@ -255,8 +254,6 @@ NotImplemented::NotImplemented( const CodeLocation& loc )
 
 	reason(std::string(ss));
     Log::monitor(Log::App,2) << what() << std::endl;
-	std::string t = std::string(ss);
-    //	Panic(t.c_str());
 }
 
 UserError::UserError(const std::string& r, const CodeLocation& loc):

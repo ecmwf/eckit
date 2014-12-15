@@ -12,8 +12,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_BinaryPredicate_h
-#define eckit_maths_BinaryPredicate_h
+#ifndef eckit_xpr_BinaryPredicate_h
+#define eckit_xpr_BinaryPredicate_h
 
 #include <functional>
 

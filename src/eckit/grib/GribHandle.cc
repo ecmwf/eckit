@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -139,9 +139,9 @@ void GribHandle::getDataValues(double* values, const size_t& count) const
 	ASSERT(n == count);
 }
 
-void GribHandle::getLatLonPoints(std::vector<geometry::LLPoint2>& points) const
+void GribHandle::getLonLatPoints(std::vector<geometry::LLPoint2>& points) const
 {
-	size_t nb_nodes = nbDataPoints();
+	size_t nb_nodes = npts();
 
 	points.resize(nb_nodes);
 
@@ -161,7 +161,7 @@ void GribHandle::getLatLonPoints(std::vector<geometry::LLPoint2>& points) const
 	size_t idx = 0;
 	while( grib_iterator_next(i,&lat,&lon,&value) )
 	{
-	   points[idx].assign(lat,lon);
+	   points[idx].assign(lon,lat);
 	   ++idx;
 	}
 
@@ -188,10 +188,15 @@ void GribHandle::setDataValues(const double *values, size_t count)
 
 void GribHandle::write( DataHandle& handle )
 {
-    const void* message;
-    size_t length;
+	const void* message = NULL;
+	size_t length = 0;
+
 	GRIB_CALL(grib_get_message(raw(), &message, &length));
-    ASSERT(handle.write(message, length) == length);
+
+	ASSERT( message );
+	ASSERT( length );
+
+	ASSERT( handle.write(message, length) == length );
 }
 
 size_t GribHandle::write( Buffer& buff )
@@ -235,7 +240,7 @@ string GribHandle::shortName() const
 	return GribAccessor<std::string>("shortName")(*this);
 }
 
-size_t GribHandle::nbDataPoints() const
+size_t GribHandle::npts() const
 {
 	return GribAccessor<long>("numberOfDataPoints")(*this);
 }

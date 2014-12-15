@@ -24,6 +24,7 @@ namespace eckit {
 
 class UserMsg {
 public:
+    virtual ~UserMsg() {}
     virtual void infoMsg(const std::string&)      = 0;
     virtual void warningMsg(const std::string&)   = 0;
     virtual void errorMsg(const std::string&)     = 0;

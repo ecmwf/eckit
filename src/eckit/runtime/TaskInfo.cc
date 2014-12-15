@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -38,7 +38,7 @@ TaskInfo::TaskInfo()
 	strcpy(kind_,name_);
 	strcpy(application_,name_);
 	strcpy(status_,"Starting");
-	show_ = true; 
+	show_ = true;
 	start(0,0);
 	busy_   = true;
 	stoppable_ = true;
@@ -102,13 +102,13 @@ unsigned long TaskInfo::text(char *buf,unsigned long max,unsigned long& pos) con
 	while(n-->0) *buf++ = buffer_[(p++)%size_];
 
 	pos = pos_;
-	
+
 	return len;
 }
 
 bool TaskInfo::busy(bool check)
 {
-	if(!busy_) 
+	if(!busy_)
 		return false;
 
 	time_t now = ::time(0);
@@ -119,7 +119,7 @@ bool TaskInfo::busy(bool check)
 
 	check_ = now;
 
-	if(!check) 
+	if(!check)
 		return busy_;
 
 	// Check first
@@ -152,12 +152,12 @@ void TaskInfo::progress(unsigned long long val)
 
 	timeval diff = now - progress_.last_;
 
-    progress_.rate_ = (val - progress_.val_) / 
+    progress_.rate_ = (val - progress_.val_) /
 		((double)diff.tv_sec + ((double)diff.tv_usec / 1000000.));
 
 	diff = now - progress_.start_;
 
-    progress_.speed_ = (val - progress_.min_) / 
+    progress_.speed_ = (val - progress_.min_) /
 		((double)diff.tv_sec + ((double)diff.tv_usec / 1000000.));
 
 	progress_.val_ = val;
@@ -168,16 +168,16 @@ void TaskInfo::progress(unsigned long long val)
 
 void TaskInfo::done()
 {
-	start(0,0);	
+	start(0,0);
 }
 
 void TaskInfo::touch()
-{ 
+{
 	checkAbort();
 
 	check_ = last_ = ::time(0);
 	busy_  = true;
-	
+
 	SignalHandler::checkInterrupt();
 
 	if(stop_ && stoppable_)
@@ -185,8 +185,6 @@ void TaskInfo::touch()
 		stopped_ = true;
 		stop_ = false;
 		exit(1);
-		throw Stop("ThreadControler stopped by request");
-		::kill(getpid(),SIGTERM);
 	}
 }
 

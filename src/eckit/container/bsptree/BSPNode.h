@@ -41,6 +41,7 @@ private:
 public:
 
     BSPNode(const Value& v, const HyperPlane& plane, double dist);
+    virtual ~BSPNode() {}
 
     template<typename Container>
     static BSPNode* build(Alloc& a, Partition& p, const Container& nodes, double dist, int depth = 0);

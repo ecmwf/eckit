@@ -59,7 +59,18 @@ public:
 
 	// I/O
 	long write(const void*,long);
-	long read(void*,long);
+
+	/// Read from a TCP socket
+	///
+	/// \param buf The buffer to read into
+	/// \param length The maximum number of bytes to read
+	///
+	/// **Configuration flags**
+	/// \arg **useSelectOnTCPSocket** (*bool*): use select for improved resilience
+	///   on flaky connections
+	/// \arg **socketSelectTimeout** (*long*): timeout in seconds for the select
+	///   (only if **useSelectOnTCPSocket** is enabled)
+	long read(void * buf,long length);
 
 	long rawRead(void*,long); // Non-blocking version
 

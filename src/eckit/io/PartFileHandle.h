@@ -18,6 +18,7 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/types/Types.h"
+#include "eckit/memory/ScopedPtr.h"
 
 //-----------------------------------------------------------------------------
 
@@ -86,7 +87,7 @@ private:
 	Ordinal            index_;
 	OffsetList         offset_;
 	LengthList         length_;
-    std::auto_ptr<Buffer>   buffer_;
+	ScopedPtr<Buffer>  buffer_;
 
 // -- Methods
 

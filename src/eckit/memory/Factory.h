@@ -15,6 +15,7 @@
 /// @author Tiago Quintino
 /// @date Jul 2014
 
+#include <iomanip>
 #include "eckit/memory/SharedPtr.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/Mutex.h"
@@ -47,7 +48,7 @@ public: // methods
 
 	/// Checks if a builder is registered
 	/// @param name of the builder
-	bool exists( const key_t& k) { return (store_.find(k) != store_.end() ); }
+	bool exists( const key_t& k) const;
 
 	/// Registers a builder
 	/// @param builder pointer
@@ -60,9 +61,12 @@ public: // methods
 
 	/// Gets the builder registered to the associated key
 	/// @param name of the builder
-	const builder_t& get( const key_t& name );
+	const builder_t& get( const key_t& name ) const;
 
-	size_t size() const { return store_.size(); }
+	/// @returns the number of builders registered to the factory
+	size_t size() const;
+
+	std::vector<key_t> keys() const;
 
 	friend std::ostream& operator<<( std::ostream& os, const Factory<T>& o) { o.print(os); return os;}
 
@@ -70,14 +74,27 @@ private: // methods
 
 	void print( std::ostream& ) const;
 
-	Factory()  {}
+	Factory()
+	{
+		// std::cout << "Building Factory of " << build_type() << std::endl;
+	}
 
-	~Factory() {}
+	~Factory()
+	{		
+//		std::cout << "Destroying Factory of " << build_type() << std::endl;
+//		if( store_.size() != 0 )
+//		{
+//			std::cout << "WARNING : Factory of " << build_type() << " still has " << size() << " providers" << std::endl;
+//			std::cout << *this << std::endl;
+//		}
+
+		ASSERT( store_.size() == 0 );
+	}
 
 private: // members
 
-	mutable Mutex mutex_;
-	storage_t store_; ///< storage for the builders in a map indexed by key_t
+	mutable Mutex mutex_;          ///< mutex protecting Factory singleton
+	storage_t store_;              ///< storage for the builders in a map indexed by key_t
 
 };
 
@@ -88,6 +105,13 @@ Factory<T>& Factory<T>::instance()
 {
 	static Factory<T> obj;
 	return obj;
+}
+
+template <class T>
+bool Factory<T>::exists( const key_t& k ) const
+{
+	AutoLock<Mutex> lock(mutex_);
+	return (store_.find(k) != store_.end() );
 }
 
 template <class T>
@@ -114,14 +138,21 @@ void Factory<T>::unregist(const key_t& k)
 }
 
 template <class T>
-const typename Factory<T>::builder_t& Factory<T>::get(const key_t& k)
+size_t Factory<T>::size() const
+{
+	AutoLock<Mutex> lock(mutex_);
+	return store_.size();
+}
+
+template <class T>
+const typename Factory<T>::builder_t& Factory<T>::get(const key_t& k) const
 {
 	AutoLock<Mutex> lock(mutex_);
 	if( !exists(k) )
 	{
 		throw BadParameter( "Factory of " + build_type() + " has no builder for " + k, Here() );
 	}
-	return *store_[k];
+	return *store_.find(k)->second;
 }
 
 template <class T>
@@ -129,10 +160,31 @@ void Factory<T>::print(std::ostream& os) const
 {
 	AutoLock<Mutex> lock(mutex_);
 	os << "Factory(" << build_type() << ")" << std::endl;
+
+	size_t key_width = 0;
 	for( typename storage_t::const_iterator i = store_.begin(); i != store_.end(); ++i )
 	{
-		os << (*(*i).second) << std::endl;
+		key_width = std::max(i->first.size(),key_width);
 	}
+
+	for( typename storage_t::const_iterator i = store_.begin(); i != store_.end(); ++i )
+	{
+		os << "    " << std::setw(key_width) << std::left << i->first
+		   << "  --  " << (*(*i).second) << std::endl;
+	}
+}
+
+template <class T>
+std::vector< typename Factory<T>::key_t > Factory<T>::keys() const
+{
+	AutoLock<Mutex> lock(mutex_);
+
+	std::vector<key_t> keysv; keysv.reserve( store_.size() );
+	for( typename storage_t::const_iterator i = store_.begin(); i != store_.end(); ++i )
+	{
+		keysv.push_back(i->first);
+	}
+	return keysv;
 }
 
 //------------------------------------------------------------------------------------------------------

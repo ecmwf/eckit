@@ -444,6 +444,7 @@ utils/RLE.cc )
 
 list( APPEND eckit_memory_srcs
 memory/Builder.h
+memory/Builder.cc
 memory/Counted.h
 memory/Factory.h
 memory/Owned.h
@@ -513,7 +514,6 @@ list( APPEND eckit_persistent
 					types/Month.h
 					types/Time.h
 					types/VerifyingDate.h
-					#log/Seconds.h
 					io/Length.h
 					io/Offset.h
 )

@@ -39,11 +39,11 @@ Url.h )
 
 
 ecbuild_add_library( TARGET eckit_web
-					 INSTALL_HEADERS ALL
+					 INSTALL_HEADERS LISTED
 					 SOURCES
 						${eckit_web_srcs}
 					 PERSISTENT
-						HtmlObject
+						HtmlObject.h
 					 HEADER_DESTINATION
 						${INSTALL_INCLUDE_DIR}/eckit/web
 					 LIBS

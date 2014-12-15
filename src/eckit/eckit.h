@@ -199,6 +199,7 @@ public:
 
 class Schema {
 public:
+    virtual ~Schema(){}
     virtual void start(const std::string&, size_t size) = 0;
     virtual void member(const std::string&, size_t size, size_t offset, const std::string& type) = 0;
     virtual void end(const std::string&) = 0;

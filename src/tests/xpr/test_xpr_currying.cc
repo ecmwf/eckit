@@ -17,7 +17,7 @@
 #include "eckit/xpr/Call.h"
 #include "eckit/xpr/Bind.h"
 
-#include "eckit/xpr/Math.h"
+#include "eckit/xpr/Xpr.h"
 #include "eckit/xpr/Scalar.h"
 
 using namespace std;
@@ -74,10 +74,10 @@ void TestCurrying::teardown()
 
 void TestCurrying::test_2args()
 {
-    Math X = lambda("i", "j", Math("i") + Math("j"));
-    Math Y = call(X);
+    Xpr X = lambda("i", "j", Xpr("i") + Xpr("j"));
+    Xpr Y = call(X);
 
-    Math r = Y(1.0, 2.4);
+    Xpr r = Y(1.0, 2.4);
 
 //    std::cout << "-----------------------" << std::endl;
 //    std::cout << Y << std::endl;
@@ -89,10 +89,10 @@ void TestCurrying::test_2args()
 
 void TestCurrying::test_twice_1arg()
 {
-    Math X = lambda("i", call( lambda("j", Math("i") * Math("j"))));
-    Math Y = call(X, Math( 2. ));
+    Xpr X = lambda("i", call( lambda("j", Xpr("i") * Xpr("j"))));
+    Xpr Y = call(X, Xpr( 2. ));
 
-    Math r = Y( 3. );
+    Xpr r = Y( 3. );
 
 //    std::cout << "-----------------------" << std::endl;
 //    std::cout << Y << std::endl;
@@ -104,10 +104,10 @@ void TestCurrying::test_twice_1arg()
 
 void TestCurrying::test_with_bind()
 {
-    Math X = lambda("i", "j", Math("i") * Math("j"));
-    Math Q = xpr::bind<2>(call(X), Math( 4. ));
+    Xpr X = lambda("i", "j", Xpr("i") * Xpr("j"));
+    Xpr Q = xpr::bind<2>(call(X), Xpr( 4. ));
 
-    Math r = Q( 2. );
+    Xpr r = Q( 2. );
 
 //    cout << r << endl;
 
@@ -116,18 +116,18 @@ void TestCurrying::test_with_bind()
 
 void TestCurrying::test_twice_lambda()
 {
-    Math C = call(
+    Xpr C = call(
                   lambda("i",
                          call(
                              lambda("j",
-                                      (Math("i") - Math("j")
+                                      (Xpr("i") - Xpr("j")
                                        )
                                     )
                              )
                          ),
-                 Math(2.0)); // bound to 'i'
+                 Xpr(2.0)); // bound to 'i'
 
-    Math r = C( 4.0 ); // value for 'j'
+    Xpr r = C( 4.0 ); // value for 'j'
 
 //    std::cout << C << std::endl;
 //    std::cout << r << std::endl;

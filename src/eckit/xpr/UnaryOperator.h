@@ -13,8 +13,8 @@
 /// @author Tiago Quintino
 /// @date November 2013
 
-#ifndef eckit_maths_UnaryFunc_h
-#define eckit_maths_UnaryFunc_h
+#ifndef eckit_xpr_UnaryFunc_h
+#define eckit_xpr_UnaryFunc_h
 
 #include <functional>
 

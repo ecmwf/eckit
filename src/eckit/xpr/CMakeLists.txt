@@ -9,8 +9,6 @@ UnaryOperator.cc
 UnaryOperator.h
 Call.cc
 Call.h
-Math.cc
-Math.h
 Bind.cc
 Bind.h
 Expression.cc
@@ -57,6 +55,8 @@ Undef.cc
 Undef.h
 Take.h
 Take.cc
+Xpr.cc
+Xpr.h
 )
 
 

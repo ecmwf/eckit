@@ -27,7 +27,7 @@ public:
 
 	FileResource();
 
-    ~FileResource();
+	virtual ~FileResource();
 
 protected:
 

@@ -97,7 +97,7 @@ ExpPtr Lambda::cloneWith(args_t& a) const
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr lambda( const std::string &a, const std::string& b, ExpPtr body )
+ExpPtr lambda( const std::string& a, const std::string& b, ExpPtr body )
 {
     return ExpPtr( new Lambda(a, b, body) );
 }

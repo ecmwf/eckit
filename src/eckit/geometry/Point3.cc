@@ -20,13 +20,13 @@ std::ostream& operator<<(std::ostream& s,const Point3& p)
 
 const double radius_earth = 6367.47; // from ECMWF model ...
 
-void latlon_to_3d(const double lat, const double lon, double* x, const double r, const double h )
+void latlon_to_3d(const double lat, const double lon, double xyz[], const double r, const double h )
 {
     // See http://en.wikipedia.org/wiki/Geodetic_system#From_geodetic_to_ECEF
 
-    double& X = x[XX];
-    double& Y = x[YY];
-    double& Z = x[ZZ];
+    double& X = xyz[XX];
+    double& Y = xyz[YY];
+    double& Z = xyz[ZZ];
 
     const double a = r;   // 6378137.0 ;       // WGS84 semi-major axis
     const double e2 = 0;  // ignored -- 6.69437999014E-3; // WGS84 first numerical eccentricity squared
@@ -46,10 +46,31 @@ void latlon_to_3d(const double lat, const double lon, double* x, const double r,
     Z = (N_phi * (1-e2) + h) * sin_phi;
 }
 
-void latlon_to_3d( const double lat, const double lon, double* x )
+void latlon_to_3d( const double lat, const double lon, double xyz[] )
 {
-    latlon_to_3d( lat, lon, x, radius_earth, 0. );
+    latlon_to_3d( lat, lon, xyz, radius_earth, 0. );
 }
+
+void lonlat_to_3d( const double lon, const double lat, double xyz[] )
+{
+    latlon_to_3d( lat, lon, xyz, radius_earth, 0. );
+}
+
+void lonlat_to_3d( const double lonlat[], double xyz[] )
+{
+  latlon_to_3d(lonlat[LAT],lonlat[LON],xyz);
+}
+
+void lonlat_to_3d(const double lon, const double lat, double xyz[], const double r, const double h )
+{
+  latlon_to_3d(lat, lon, xyz, r, h);
+}
+
+void lonlat_to_3d( const double lonlat[], double xyz[], const double r, const double h )
+{
+  latlon_to_3d(lonlat[LAT],lonlat[LON],xyz,r,h);
+}
+
 
 //------------------------------------------------------------------------------------------------------
 

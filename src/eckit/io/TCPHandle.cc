@@ -34,7 +34,7 @@ void TCPHandle::encode(Stream& s) const
 }
 
 TCPHandle::TCPHandle(Stream& s):
-	DataHandle(s)
+	DataHandle(s),port_(0)
 {
 	s >> host_;
 	s >> port_;

@@ -34,7 +34,7 @@ public:
 
 // -- Destructor
 
-	~DumpLoad(); 
+	virtual ~DumpLoad();
 
 // -- Convertors
 	// None

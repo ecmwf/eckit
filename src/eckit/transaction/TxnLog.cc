@@ -159,7 +159,6 @@ void RecoverThread<T>::run()
 template<class T>
 void RecoverThread<T>::recover()
 {
-	static const char *here = __FUNCTION__;
 	for(Ordinal i = 0 ; i < result_.size() ; i++)
 	{
 
@@ -178,7 +177,7 @@ void RecoverThread<T>::recover()
 			catch(std::exception& e)
 			{
 				Log::error() << "** " << e.what() << " Caught in " <<
-					here << std::endl;
+					Here() << std::endl;
 				Log::error() << "** Exception is ignored" << std::endl;
 			}
 	}
@@ -202,7 +201,6 @@ void TxnLog<T>::recover(TxnRecoverer<T>& client,bool inThread,long age)
 template <class T>
 void TxnLog<T>::find(TxnFinder<T>& r)
 {
-	static const char *here = __FUNCTION__;
 
 	PathName path = path_ + "/[0-9]*";
 	std::vector<PathName>  active;
@@ -221,14 +219,14 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 		catch(Abort& e)
 		{
 			Log::error() << "** " << e.what() << " Caught in " <<
-				here << std::endl;
+				Here() << std::endl;
 			Log::error() << "** Exception is re-thrown" << std::endl;
 			throw;
 		}
 		catch(std::exception& e)
 		{
 			Log::error() << "** " << e.what() << " Caught in " <<
-							here << std::endl;
+							Here() << std::endl;
 			Log::error() << "** Exception is ignored" << std::endl;
 		}
 	}
@@ -262,15 +260,13 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 			}
 			catch(Abort& e)
 			{
-				Log::error() << "** " << e.what() << " Caught in " <<
-					here << std::endl;
+				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
 				Log::error() << "** Exception is re-thrown" << std::endl;
 				throw;
 			}
 			catch(std::exception& e)
 			{
-				Log::error() << "** " << e.what() << " Caught in " <<
-					here << std::endl;
+				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
 				Log::error() << "** Exception is ignored" << std::endl;
 			}
 		}

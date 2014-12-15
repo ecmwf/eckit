@@ -38,7 +38,7 @@ private:
 
 public:
     KDNode(const Value& value, size_t axis);
-
+    virtual ~KDNode() {}
 
     template<typename ITER>
     static KDNode* build(Alloc& a,const ITER& begin, const ITER& end, int depth = 0);

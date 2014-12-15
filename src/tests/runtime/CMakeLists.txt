@@ -21,7 +21,6 @@ set( BOOST_UNIT_TEST_FRAMEWORK_LINKED OFF )
 
 ecbuild_add_test( TARGET test_dispatcher
 	BOOST
-	CONDITION OFF
 	SOURCES  test_dispatcher.cc
 	LIBS     eckit
 )

@@ -586,7 +586,6 @@ void Dispatcher<Traits>::waitForAll()
 	// Wait until BOTH the queue is empty and there are no more
 	// active threads
 	while(running_ > 0 || queue_.size() > 0)
-		Log::info() << "running: " << running_ << ", queued: " << queue_.size() << std::endl;
 		run_.wait();
 }
 
@@ -634,7 +633,7 @@ void Dispatcher<Traits>::changeThreadCount(int delta)
 template<class Traits>
 void Dispatcher<Traits>::reconfigure()
 {
-	Log::info() << "Max is now : " << numberOfThreads_ << std::endl;
+	Log::info() << "Reconfiguring maximum thread number to: " << numberOfThreads_ << std::endl;
 	changeThreadCount(numberOfThreads_ - count_);
 	awake();
 }

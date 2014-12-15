@@ -70,9 +70,9 @@ BOOST_AUTO_PARAM_TEST_CASE( test_push_one, threads, threads+8 )
 	// All request should have been processed
 	BOOST_CHECK( d.size() == 0 );
 	BOOST_CHECK( d.running() == 0 );
-	Log::debug() << "TestResource::i " << r.i << std::endl;
+	BOOST_TEST_MESSAGE("TestResource::i " << r.i);
 	BOOST_CHECK( r.i == 1 );
-};
+}
 
 BOOST_AUTO_PARAM_TEST_CASE( test_push_ten, threads, threads+8 )
 {
@@ -89,9 +89,9 @@ BOOST_AUTO_PARAM_TEST_CASE( test_push_ten, threads, threads+8 )
 	// All request should have been processed
 	BOOST_CHECK( d.size() == 0 );
 	BOOST_CHECK( d.running() == 0 );
-	Log::debug() << "TestResource::i " << r.i << std::endl;
+	BOOST_TEST_MESSAGE("TestResource::i " << r.i);
 	BOOST_CHECK( r.i == 10 );
-};
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 

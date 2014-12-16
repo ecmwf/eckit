@@ -180,43 +180,57 @@ LocalPathName LocalPathName::unique(const LocalPathName& path)
 	return result;
 }
 
-
-void LocalPathName::mkdir(short mode) const
+static void mkdir_if_not_exists( const char* path )
 {
-	std::string s = path_;
-	long   l = path_.length();
+	Stat::Struct info;
 
-	for(long i=1; i < l; i++)
+	if( Stat::stat( path, &info) < 0 )
 	{
-		if(s[i] == '/')
+		if( errno == ENOENT ) // no such file or dir
 		{
-			s[i] = 0;
-
-			Stat::Struct info;
-
-			if( Stat::stat( s.c_str(),&info) < 0 )
+			if(::mkdir(path,mode) < 0)
 			{
-				if( errno == ENOENT ) // no such file or dir
-				{
-					if(::mkdir(s.c_str(),mode) < 0)
-					{
-						s[i] = '/';
-						throw FailedSystemCall(std::string("mkdir ") + s);
-					}
-				}
-				else // stat fails for unknown reason
-				{
-					s[i] = '/';
-					throw FailedSystemCall( std::string("stat ") + s);
-				}
+				throw FailedSystemCall(std::string("mkdir ") + path);
 			}
-
-			s[i] = '/'; // put slash back
+		}
+		else // stat fails for unknown reason
+		{
+			throw FailedSystemCall( std::string("stat ") + path);
 		}
 	}
 
-	if(::mkdir(path_.c_str(),mode) != 0 && errno != EEXIST)
-		throw FailedSystemCall(std::string("mkdir ") + path_);
+}
+
+void LocalPathName::mkdir(short mode) const
+{
+	try
+	{
+		char path[MAXNAMLEN+1];
+		zero(path);
+
+		::strcpy( path,path_.c_str(),path_.length() );
+
+		long l = strlen(path);
+
+		for(long i=1; i < l; i++)
+		{
+			if(path[i] == '/')
+			{
+				path[i] = 0;
+
+				mkdir_if_not_exists(path);
+
+				path[i] = '/'; // put slash back
+			}
+		}
+
+		mkdir_if_not_exists(path);
+	}
+	catch( FailedSystemCall& e )
+	{
+		Log::error() << "Failed to mkdir " << path_ << std::endl;
+		throw;
+	}
 }
 
 void LocalPathName::link(const LocalPathName& from,const LocalPathName& to)

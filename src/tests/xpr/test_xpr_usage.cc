@@ -377,13 +377,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_xpr_usage )
 
     f.eval();
 
-//    Xpr m =  src );
-
-    // Xpr avg = FAvg( m );
-
-    // Xpr f = FSnk( avg );
-
-    // f.eval();
 }
 
 //-----------------------------------------------------------------------------

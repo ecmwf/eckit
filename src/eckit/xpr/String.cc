@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/String.h"
 #include "eckit/xpr/Scope.h"
 
 namespace eckit {
@@ -16,40 +16,40 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-Scalar::Scalar( const scalar_t& v ) : v_(v)
+String::String( const std::string& v ) : v_(v)
 {
 }
 
-bool Scalar::is(const ExpPtr &e)
+bool String::is(const ExpPtr &e)
 {
-    return dynamic_cast<Scalar*>(e.get()) != 0;
+    return dynamic_cast<String*>(e.get()) != 0;
 }
 
-void Scalar::print(std::ostream&o) const
+void String::print(std::ostream&o) const
 {
     o << className() << "(" << v_ << ")";
 }
 
-Scalar::Scalar(ExpPtr e) : v_(0)
+String::String(ExpPtr e) : v_(0)
 {
-   Scope dummy("Scalar::Scalar");
-   v_ = Scalar::extract(dummy, e->eval(dummy) );
+   Scope dummy("String::String");
+   v_ = String::extract(dummy, e->eval(dummy) );
 }
 
-ExpPtr Scalar::cloneWith(args_t& a) const {
+ExpPtr String::cloneWith(args_t& a) const {
     NOTIMP; // Should not be called
 }
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr scalar(const scalar_t &s)
+ExpPtr string(const std::string &s)
 {
-    return ExpPtr( new Scalar(s) );
+    return ExpPtr( new String(s) );
 }
 
-void Scalar::asCode(std::ostream&o) const
+void String::asCode(std::ostream&o) const
 {
-    o << "xpr::scalar(" << v_ << ")";
+    o << "xpr::string(" << v_ << ")";
 }
 
 

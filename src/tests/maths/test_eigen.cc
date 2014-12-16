@@ -8,75 +8,31 @@
  * does it submit to any jurisdiction.
  */
 
+#define BOOST_TEST_MODULE test_eckit_maths_eigen
+
+#include "ecbuild/boost_test_framework.h"
+
 #include "eckit/maths/Eigen.h"
-#include "eckit/runtime/Tool.h"
-
-using namespace eckit;
 
 //-----------------------------------------------------------------------------
 
-namespace eckit_test {
+namespace eckit_test {}
 
 //-----------------------------------------------------------------------------
 
-class TestEigen : public Tool {
-public:
+using namespace eckit_test;
 
-    TestEigen(int argc,char **argv): Tool(argc,argv) {}
+BOOST_AUTO_TEST_SUITE( test_eckit_resource )
 
-    virtual void run();
-
-    void setup();
-
-    void test_vector();
-
-    void teardown();
-};
-
-//-----------------------------------------------------------------------------
-
-void TestEigen::setup()
+BOOST_AUTO_TEST_CASE( test_default )
 {
+    Eigen::Vector3d v1;
+    Eigen::Vector3d v2;
+    Eigen::Vector3d r;
+
+    r = v2 - v1;
 }
 
 //-----------------------------------------------------------------------------
 
-void TestEigen::teardown()
-{
-}
-
-//-----------------------------------------------------------------------------
-
-void TestEigen::test_vector()
-{
-	Eigen::Vector3d v1;
-	Eigen::Vector3d v2;
-	Eigen::Vector3d r;
-
-	r = v2 - v1;
-}
-
-//-----------------------------------------------------------------------------
-
-void TestEigen::run()
-{
-    setup();
-
-    test_vector();
-
-    teardown();
-}
-
-//-----------------------------------------------------------------------------
-
-} // namespace eckit_test
-
-//-----------------------------------------------------------------------------
-
-int main(int argc,char **argv)
-{
-    eckit_test::TestEigen mytest(argc,argv);
-    mytest.start();
-    return 0;
-}
-
+BOOST_AUTO_TEST_SUITE_END()

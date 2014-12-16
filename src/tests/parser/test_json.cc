@@ -8,8 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#define BOOST_TEST_MODULE test_eckit_parser
 
-#include "eckit/runtime/Tool.h"
+#include "ecbuild/boost_test_framework.h"
+
 #include "eckit/parser/JSONParser.h"
 #include "eckit/parser/JSON.h"
 
@@ -18,32 +20,15 @@ using namespace eckit;
 
 //-----------------------------------------------------------------------------
 
-namespace eckit_test {
+namespace eckit_test {}
 
 //-----------------------------------------------------------------------------
 
-class TestJson : public Tool {
-public:
+using namespace eckit_test;
 
-    TestJson(int argc,char **argv): Tool(argc,argv) {}
+BOOST_AUTO_TEST_SUITE( test_eckit_parser_json )
 
-    virtual void run()
-    {
-        test_parse_to_value();
-        test_parse_to_map();
-    }
-
-    void setup();
-    void teardown();
-
-    void test_parse_to_value();
-    void test_parse_to_map();
-
-};
-
-//-----------------------------------------------------------------------------
-
-void TestJson::test_parse_to_value()
+BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value )
 {
     std::istringstream in("{ \"a\" : [true, false, 3], \"b\" : 42.3 , \"c\" : null, \"d\" : \"y\n\tr\rh\", \"e\" : \"867017db84f4bc2b5078ca56ffd3b9b9\"}");
     JSONParser p(in);
@@ -88,7 +73,7 @@ void TestJson::test_parse_to_value()
 
 //-----------------------------------------------------------------------------
 
-void TestJson::test_parse_to_map()
+BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_map )
 {
     istringstream in("{ \"a\" : \"AAA\", \"b\" : 0.0 , \"c\" : \"null\", \"d\" : \"\"}" );
     JSONParser p(in);
@@ -119,13 +104,4 @@ void TestJson::test_parse_to_map()
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit_test
-
-//-----------------------------------------------------------------------------
-
-int main(int argc,char **argv)
-{
-    eckit_test::TestJson mytest(argc,argv);
-    mytest.start();
-    return 0;
-}
+BOOST_AUTO_TEST_SUITE_END()

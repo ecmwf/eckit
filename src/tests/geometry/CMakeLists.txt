@@ -1,13 +1,5 @@
-
-ecbuild_add_test( TARGET      test_rotategrid
+ecbuild_add_test( TARGET      test_geometry
                   BOOST
-                  SOURCES     test_rotategrid.cc
-                  LIBS        eckit  eckit_geometry
+				  SOURCES     test_rotategrid.cc test_polarstereographicproj.cc
+				  LIBS        eckit_geometry
                 )
-
-ecbuild_add_test( TARGET      test_polarstereographicproj
-                  BOOST
-                  SOURCES     test_polarstereographicproj.cc
-                  LIBS        eckit  eckit_geometry
-                )
-                

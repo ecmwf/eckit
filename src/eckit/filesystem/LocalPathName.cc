@@ -191,9 +191,27 @@ void LocalPathName::mkdir(short mode) const
 		if(s[i] == '/')
 		{
 			s[i] = 0;
-			if(::mkdir(s.c_str(),mode) != 0 &&  errno != EEXIST)
-				throw FailedSystemCall(std::string("mkdir ") + s);
-			s[i] = '/';
+
+			Stat::Struct info;
+
+			if( Stat::stat( s.c_str(),&info) < 0 )
+			{
+				if( errno == ENOENT ) // no such file or dir
+				{
+					if(::mkdir(s.c_str(),mode) < 0)
+					{
+						s[i] = '/';
+						throw FailedSystemCall(std::string("mkdir ") + s);
+					}
+				}
+				else // stat fails for unknown reason
+				{
+					s[i] = '/';
+					throw FailedSystemCall( std::string("stat ") + s);
+				}
+			}
+
+			s[i] = '/'; // put slash back
 		}
 	}
 

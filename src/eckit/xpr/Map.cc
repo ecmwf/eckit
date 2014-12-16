@@ -36,7 +36,9 @@ ExpPtr Map::evaluate( Scope &ctx ) const
 {
     ExpPtr f = args(0, ctx, false);
 
-    const List::value_t& list = List::extract( ctx, args(1, ctx, true) );
+    ExpPtr ls = args(1, ctx, true);
+
+    const List::value_t& list = List::extract( ctx, ls );
 
     const size_t nlist = list.size();
 
@@ -56,7 +58,7 @@ ExpPtr Map::evaluate( Scope &ctx ) const
 
 void Map::asCode(std::ostream&o) const
 {
-    o << "xpr::std::map("; printArgs(o); o << ")";
+    o << "xpr::map("; printArgs(o); o << ")";
 }
 
 ExpPtr Map::cloneWith(args_t& a) const

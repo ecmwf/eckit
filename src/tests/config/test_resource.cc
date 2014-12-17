@@ -19,17 +19,35 @@
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
 #include "eckit/types/Types.h"
+#include "eckit/runtime/Tool.h"
 
 using namespace std;
 using namespace eckit;
 
 //-----------------------------------------------------------------------------
 
-namespace eckit_test {}
+namespace eckit_test {
+
+struct TestFixture : public eckit::Tool {
+public:
+
+	TestFixture() : Tool( boost::unit_test::framework::master_test_suite().argc,
+						  boost::unit_test::framework::master_test_suite().argv )
+	{
+		for( int i = 0; i <  boost::unit_test::framework::master_test_suite().argc; ++i )
+			std::cout << "[" << boost::unit_test::framework::master_test_suite().argv[i] << "]" << std::endl;
+	}
+
+	virtual void run() {};
+};
+
+}
 
 //-----------------------------------------------------------------------------
 
 using namespace eckit_test;
+
+BOOST_GLOBAL_FIXTURE( TestFixture );
 
 BOOST_AUTO_TEST_SUITE( test_eckit_resource )
 
@@ -41,9 +59,7 @@ BOOST_AUTO_TEST_CASE( test_default )
 
     double d = Resource<double>("d", 777.7);
 
-    DEBUG_VAR(d);
-
-    BOOST_CHECK( ( abs(d - 777.7) ) <= 10E-6 );
+	BOOST_CHECK_CLOSE( d , 777.7, 0.0001 ); // accept 0.0001% tolerance
 }
 
 //-----------------------------------------------------------------------------
@@ -63,7 +79,8 @@ BOOST_AUTO_TEST_CASE( test_vector_long )
 
 BOOST_AUTO_TEST_CASE( test_command_line )
 {
-    BOOST_CHECK( Resource<int>("integer;-integer",0) == 100 );
+	int myint = Resource<int>("integer;-integer",0);
+	BOOST_CHECK_EQUAL( myint , 100 );
 }
 
 //-----------------------------------------------------------------------------
@@ -73,15 +90,23 @@ BOOST_AUTO_TEST_CASE( test_environment_var )
     char v [] = "TEST_ENV_INT=333";
     putenv(v);
     
-    BOOST_CHECK( Resource<int>("intEnv;$TEST_ENV_INT",777) == 333 );
+	int intenv = Resource<int>("intEnv;$TEST_ENV_INT",777);
+	BOOST_CHECK_EQUAL( intenv , 333 );
 
     char foo [] = "FOO=1Mb";
     putenv(foo);
 
-    BOOST_CHECK( Resource<long>("$FOO",0) == 1024*1024);
-    BOOST_CHECK( Resource<long>("$FOO;-foo",0) == 1024*1024);
-    BOOST_CHECK( Resource<long>("-foo;$FOO",0) == 1024*1024);
-    BOOST_CHECK( Resource<long>("$FOO;foo;-foo",0) == 1024*1024);
+	long l1 = Resource<long>("$FOO",0);
+	BOOST_CHECK_EQUAL( l1 , 1024*1024 );
+
+	long l2 = Resource<long>("$FOO;-foo",0);
+	BOOST_CHECK_EQUAL( l2 , 1024*1024);
+
+	long l3 = Resource<long>("-foo;$FOO",0);
+	BOOST_CHECK_EQUAL( l3, 1024*1024);
+
+	long l4 = Resource<long>("$FOO;foo;-foo",0);
+	BOOST_CHECK_EQUAL( l4 , 1024*1024);
 }
 
 //-----------------------------------------------------------------------------
@@ -102,17 +127,13 @@ BOOST_AUTO_TEST_CASE( test_config_file )
 
     args["class"] = "od";
 
-    string b = Resource<string>("b","none",args);
+	std::string bar = Resource<string>("b","none",args);
 
-    DEBUG_VAR(b);
-
-    BOOST_CHECK( b == "bar" );
+	BOOST_CHECK_EQUAL( bar , std::string("bar") );
 
     long buffer = Resource<long>("buffer",0);
-
-    DEBUG_VAR(buffer);
     
-    BOOST_CHECK( buffer == Bytes::MiB(60) );
+	BOOST_CHECK_EQUAL( buffer , Bytes::MiB(60) );
 }
 
 //-----------------------------------------------------------------------------

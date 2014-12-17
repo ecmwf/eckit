@@ -180,7 +180,7 @@ LocalPathName LocalPathName::unique(const LocalPathName& path)
 	return result;
 }
 
-static void mkdir_if_not_exists( const char* path )
+static void mkdir_if_not_exists( const char* path, short mode )
 {
 	Stat::Struct info;
 
@@ -206,11 +206,12 @@ void LocalPathName::mkdir(short mode) const
 	try
 	{
 		char path[MAXNAMLEN+1];
-		zero(path);
 
-		::strcpy( path,path_.c_str(),path_.length() );
+		long l = path_.length();
+	
+		ASSERT( sizeof(path) > l );
 
-		long l = strlen(path);
+		::strcpy( path, path_.c_str()  );
 
 		for(long i=1; i < l; i++)
 		{
@@ -218,13 +219,13 @@ void LocalPathName::mkdir(short mode) const
 			{
 				path[i] = 0;
 
-				mkdir_if_not_exists(path);
+				mkdir_if_not_exists(path,mode);
 
 				path[i] = '/'; // put slash back
 			}
 		}
 
-		mkdir_if_not_exists(path);
+		mkdir_if_not_exists(path,mode);
 	}
 	catch( FailedSystemCall& e )
 	{

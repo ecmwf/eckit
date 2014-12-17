@@ -10,6 +10,7 @@
 
 #include "ecbuild/boost_test_framework.h"
 
+#include "eckit/types/Types.h"
 #include "eckit/container/BTree.h"
 #include "eckit/os/Semaphore.h"
 #include "eckit/types/FixedString.h"
@@ -29,34 +30,44 @@ BOOST_AUTO_TEST_SUITE( test_eckit_container_btree )
 
 BOOST_AUTO_TEST_CASE( test_eckit_container_btree_constructor )
 {
-    char test[] = "EzLPYjRkayhnTCv47SgoFV5MOqbGt6emNlD231JWIXUiBKfAupwc0rQ8xHsZd9\0";
-    // char test[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\0";
+	std::string test = "EzLPYjRkayhnTCv47SgoFV5MOqbGt6emNlD231JWIXUiBKfAupwc0rQ8xHsZd9";
+//	std::string test = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    int count = strlen(test);
+	int count = test.size();
 
     // for(int j = 0; j < 100 ; j++)
     {
-        // std::random_shuffle(test,test+count);
+		// std::random_shuffle( test.begin(),test.end() );
 
         std::cout << test << std::endl;
 
         unlink("foo");
-        BTree<char,int, 128> b("foo");
+		BTree<char,int, 128> btree("foo");
 
         for(int i = 0; i < count;  i++)
         {
-            std::cout << "[" << test[i] << "," << -int(i) << "]" << std::endl;
-            b.set(test[i],-int(i));
+			std::cout << "[" << test[i] << "," << -int(i) << "]" << std::endl;
+			btree.set(test[i],-int(i));
         }
+		std::cout << std::endl;
 
-       std::cout << std::endl;
-       b.dump();
-       std::cout << std::endl;
-       
+		std::vector< std::pair<char,int> > res;
+		btree.range(char(32),char(126), res);
+		for(int i = 0; i < res.size();  ++i)
+			std::cout << "[" << res[i].first << "," << res[i].second << "]" << std::endl;
+
+		std::cout << std::endl;
+
+		BOOST_CHECK_EQUAL( btree.count() , test.size() );
+
+		std::cout << std::endl;
+		btree.dump() ;
+		std::cout << std::endl;
+
         for(int i = 0; i < count; i++)
         {
             int k;
-            BOOST_CHECK( b.get(test[i],k) );
+			BOOST_CHECK( btree.get(test[i],k) );
             BOOST_CHECK_EQUAL( k , (-int(i)) );
         }
     }
@@ -64,31 +75,29 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_constructor )
     {
         unlink("bar");
 
-        BTree<FixedString<80>,int,1024> b("bar");
+		BTree<FixedString<80>,int,1024> btree("bar");
         string f("foo");
 
-        b.set(f, 22);
-        b.set("barbar", 44);
-        b.set("zoulou", 484);
-        b.set("ZOULOU", 484);
+		btree.set(f, 22);
+		btree.set("barbar", 44);
+		btree.set("zoulou", 484);
+		btree.set("ZOULOU", 484);
 
         for(int i = 0; i < count;  i++)
         {
             string s;
             s += test[i];
-            b.set(s,-int(i));
+			btree.set(s,-int(i));
         }
 
-//        b.dump();
+//        btree.dump();
     }
 
-
-    if(1)
     {
 
         unlink("bar");
 
-        BTree< FixedString<80>, FixedString<256>, 2048 > b("bar");
+		BTree< FixedString<80>, FixedString<256>, 2048 > btree("bar");
         string f("foo");
 
 
@@ -96,17 +105,17 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_constructor )
         {
             string s;
             s += test[i];
-            b.set(s,s);
+			btree.set(s,s);
         }
 
 
-        b.set(f,f);
+		btree.set(f,f);
 
         FixedString<256> z;
-        b.get(f, z);
+		btree.get(f, z);
         std::cout << string(z) << std::endl;
 
-        b.dump();
+		btree.dump();
 
     }
 

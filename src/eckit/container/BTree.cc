@@ -123,7 +123,6 @@ void BTree<K,V,S>::flush()
 template<class K, class V, int S>
 void BTree<K,V,S>::dump(std::ostream& s, unsigned long page, int depth) const
 {
-
     Page p;
     loadPage(page, p);
     for (int i = 0; i < depth; i++)
@@ -674,7 +673,35 @@ void BTree<K,V,S>::lock()
 template<class K, class V,int S>
 void BTree<K,V,S>::unlock()
 {
-    lockRange(0,0,F_SETLK,F_UNLCK);
+	lockRange(0,0,F_SETLK,F_UNLCK);
+}
+
+template<class K, class V,int S>
+size_t BTree<K,V,S>::count() const
+{
+	return count(1);
+}
+
+template<class K, class V, int S>
+size_t BTree<K,V,S>::count(unsigned long page) const
+{
+	Page p;
+	loadPage(page, p);
+
+	size_t c = 0;
+
+	if( p.node_ )
+	{
+		c += this->count( p.left_ );
+		for (int i = 0; i < p.count_ ; i ++ )
+			c += count( p.nodePage().nentries_[i].page_ );
+	}
+	else // leaf
+	{
+		c = p.count_;
+	}
+
+	return c;
 }
 
 //-----------------------------------------------------------------------------

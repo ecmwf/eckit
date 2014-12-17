@@ -28,27 +28,60 @@ using namespace eckit_test;
 
 BOOST_AUTO_TEST_SUITE( test_eckit_container_btree )
 
-BOOST_AUTO_TEST_CASE( test_eckit_container_btree_constructor )
+BOOST_AUTO_TEST_CASE( test_eckit_container_btree_int_int )
 {
 	std::string test = "EzLPYjRkayhnTCv47SgoFV5MOqbGt6emNlD231JWIXUiBKfAupwc0rQ8xHsZd9";
-//	std::string test = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-	int count = test.size();
+	unlink("foo");
 
-    // for(int j = 0; j < 100 ; j++)
-    {
-		// std::random_shuffle( test.begin(),test.end() );
+	BTree<int,int, 128> btree("foo");
 
-        std::cout << test << std::endl;
+	for(int i = 0; i < test.size();  i++)
+	{
+		std::cout << "[" << test[i] << "," << -int(i) << "]" << std::endl;
+		int k = int(test[i]);
+		btree.set(k,-int(i));
+	}
 
-        unlink("foo");
+	std::cout << "---------------------------------" << std::endl;
+
+	std::vector< std::pair<int,int> > res;
+	btree.range(32,126, res);
+	for(int i = 0; i < res.size();  ++i)
+		std::cout << "[" << res[i].first << "," << res[i].second << "]" << std::endl;
+
+	BOOST_CHECK_EQUAL( btree.count() , test.size() );
+
+	std::cout << std::endl;
+	btree.dump() ;
+	std::cout << std::endl;
+
+	for(int i = 0; i < test.size(); i++)
+	{
+		int k;
+		BOOST_CHECK( btree.get(test[i],k) );
+		BOOST_CHECK_EQUAL( k , (-int(i)) );
+	}
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_container_btree_char_int )
+{
+	std::string test = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+//	for(int j = 0; j < 100 ; j++)
+	{
+		//		 std::random_shuffle( test.begin(),test.end() );
+
+		std::cout << test << std::endl;
+
+		unlink("foo");
 		BTree<char,int, 128> btree("foo");
 
-        for(int i = 0; i < count;  i++)
-        {
+		for(int i = 0; i < test.size();  i++)
+		{
 			std::cout << "[" << test[i] << "," << -int(i) << "]" << std::endl;
 			btree.set(test[i],-int(i));
-        }
+		}
 		std::cout << std::endl;
 
 		std::vector< std::pair<char,int> > res;
@@ -64,61 +97,84 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_constructor )
 		btree.dump() ;
 		std::cout << std::endl;
 
-        for(int i = 0; i < count; i++)
-        {
-            int k;
+		for(int i = 0; i < test.size(); i++)
+		{
+			int k;
 			BOOST_CHECK( btree.get(test[i],k) );
-            BOOST_CHECK_EQUAL( k , (-int(i)) );
-        }
-    }
+			BOOST_CHECK_EQUAL( k , (-int(i)) );
+		}
+	}
+}
 
-    {
-        unlink("bar");
+BOOST_AUTO_TEST_CASE( test_eckit_container_btree_fixedsttring_int )
+{
+	std::string test = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-		BTree<FixedString<80>,int,1024> btree("bar");
-        string f("foo");
+	unlink("bar");
 
-		btree.set(f, 22);
-		btree.set("barbar", 44);
-		btree.set("zoulou", 484);
-		btree.set("ZOULOU", 484);
+	BTree<FixedString<80>,int,1024> btree("bar");
 
-        for(int i = 0; i < count;  i++)
-        {
-            string s;
-            s += test[i];
-			btree.set(s,-int(i));
-        }
+	string f("foo");
 
-//        btree.dump();
-    }
+	btree.set(f, 22);
+	btree.set("barbar", 44);
+	btree.set("zoulou", 484);
+	btree.set("ZOULOU", 484);
 
-    {
+	for(int i = 0; i < test.size(); ++i)
+	{
+		string s;
+		s += test[i];
+		btree.set(s,-int(i));
+	}
 
-        unlink("bar");
+	int k;
 
-		BTree< FixedString<80>, FixedString<256>, 2048 > btree("bar");
-        string f("foo");
+	BOOST_CHECK( btree.get("foo",k) );
+	BOOST_CHECK_EQUAL( k, 22 );
 
+	BOOST_CHECK( btree.get("barbar",k) );
+	BOOST_CHECK_EQUAL( k, 44 );
 
-        for(int i = 0; i < count;  i++)
-        {
-            string s;
-            s += test[i];
-			btree.set(s,s);
-        }
+	BOOST_CHECK( btree.get("zoulou",k) );
+	BOOST_CHECK_EQUAL( k, 484 );
 
+	BOOST_CHECK( btree.get("ZOULOU",k) );
+	BOOST_CHECK_EQUAL( k, 484 );
+}
 
-		btree.set(f,f);
+BOOST_AUTO_TEST_CASE( test_eckit_container_fixedsttring_fixedsttring )
+{
+	std::string test = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-        FixedString<256> z;
-		btree.get(f, z);
-        std::cout << string(z) << std::endl;
+	unlink("bar");
 
-		btree.dump();
+	BTree< FixedString<80>, FixedString<256>, 2048 > btree("bar");
 
-    }
+	for(int i = 0; i < test.size(); ++i)
+	{
+		string s;
+		s += test[i];
+		btree.set(s,s);
+	}
 
+	string f("foo");
+	btree.set(f,f);
+
+	for(int i = 0; i < test.size(); ++i)
+	{
+		string s;
+		s += test[i];
+		s += std::string("_bar");
+		btree.set(s,s);
+	}
+
+	FixedString<256> z;
+
+	BOOST_CHECK( btree.get(f, z) );
+	BOOST_CHECK_EQUAL( z, "foo" );
+
+	//	btree.dump();
 }
 
 //-----------------------------------------------------------------------------

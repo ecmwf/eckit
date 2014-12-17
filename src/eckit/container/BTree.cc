@@ -484,13 +484,20 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, std:
 
     //while((*e).key_ < key1) { e++; if (e == end) return; }
 
-    //cout << "range " << (*e).key_ << " .... " << p.count_ << " " << (e - begin) << std::endl;
-    //cout << " key1 " << key1 << std::endl;
-    //cout << " key2 " << key2 << std::endl;
+	std::cout << "range " << (*e).key_ << " .... " << p.count_ << " " << (e - begin) << std::endl;
+	std::cout << " key1 " << key1 << std::endl;
+	std::cout << " key2 " << key2 << std::endl;
 
-    while( !(key2 < (*e).key_) )
+	std::cout << " begin " << (*begin).key_ << std::endl;
+	if( p.count_ )
+	{
+		const LeafEntry *last   = begin + p.count_ -1;
+		std::cout << " last "   << (*last).key_ << std::endl;
+	}
+
+	while( !(key2 < (*e).key_) )
     {
-        //cout << "match " << p.id_ << " pos " << (e - begin) << " " << (*e).key_ << std::endl;
+		std::cout << "match " << p.id_ << " pos " << (e - begin) << " " << (*e).key_ << std::endl;
         result.push_back( result_type((*e).key_,(*e).value_) );
 
         ++e;
@@ -500,7 +507,8 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, std:
                 loadPage(p.right_, p);
                 ASSERT(!p.node_);
                 e = p.leafPage().lentries_;
-            }
+				end = e + p.count_;
+			}
             else
             {
                 return;

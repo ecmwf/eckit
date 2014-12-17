@@ -29,26 +29,30 @@ BOOST_AUTO_TEST_SUITE( test_eckit_container_btree )
 
 BOOST_AUTO_TEST_CASE( test_eckit_container_btree_constructor )
 {
-    char test[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\0";
+    char test[] = "EzLPYjRkayhnTCv47SgoFV5MOqbGt6emNlD231JWIXUiBKfAupwc0rQ8xHsZd9\0";
+    // char test[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\0";
 
     int count = strlen(test);
 
-    for(int j = 0; j < 100 ; j++)
+    // for(int j = 0; j < 100 ; j++)
     {
-        std::random_shuffle(test,test+count);
+        // std::random_shuffle(test,test+count);
+
+        std::cout << test << std::endl;
 
         unlink("foo");
         BTree<char,int, 128> b("foo");
 
         for(int i = 0; i < count;  i++)
         {
+            std::cout << "[" << test[i] << "," << -int(i) << "]" << std::endl;
             b.set(test[i],-int(i));
         }
 
-//        std::cout << std::endl;
-//        b.dump();
-//        std::cout << std::endl;
-
+       std::cout << std::endl;
+       b.dump();
+       std::cout << std::endl;
+       
         for(int i = 0; i < count; i++)
         {
             int k;

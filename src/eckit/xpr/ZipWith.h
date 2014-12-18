@@ -35,7 +35,7 @@ private: // methods
 
     ZipWith( args_t& a );
 
-    virtual std::string typeName() const { return ZipWith::className(); }
+    virtual std::string typeName() const { return className(); }
 
     virtual std::string returnSignature() const;
 

@@ -57,9 +57,9 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return Scalar::className(); }
-    virtual std::string signature() const { return Scalar::sig(); }
-    virtual std::string returnSignature() const { return Scalar::sig(); }
+    virtual std::string typeName() const { return className(); }
+    virtual std::string signature() const { return sig(); }
+    virtual std::string returnSignature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& o ) const;

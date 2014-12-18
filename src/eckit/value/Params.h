@@ -42,8 +42,8 @@ public: // methods
 
     virtual ~Params();
 
-    Ptr self() { return Params::Ptr(this); }
-    Ptr self() const { return Params::Ptr( const_cast<Params*>(this) ); }
+    Ptr self() { return Ptr(this); }
+    Ptr self() const { return Ptr( const_cast<Params*>(this) ); }
 
     bool has( const key_t& key ) const;
 

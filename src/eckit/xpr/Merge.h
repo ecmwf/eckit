@@ -37,7 +37,7 @@ private: // methods
 
     Merge( args_t& a );
 
-    virtual std::string typeName() const { return Merge::className(); }
+    virtual std::string typeName() const { return className(); }
 
     virtual std::string returnSignature() const;
 

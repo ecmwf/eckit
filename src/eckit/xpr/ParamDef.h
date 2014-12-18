@@ -49,9 +49,9 @@ private:
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual std::string typeName() const { return ParamDef::className(); }
-    virtual std::string signature() const { return ParamDef::sig(); }
-    virtual std::string returnSignature() const { return ParamDef::sig(); }
+    virtual std::string typeName() const { return className(); }
+    virtual std::string signature() const { return sig(); }
+    virtual std::string returnSignature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;

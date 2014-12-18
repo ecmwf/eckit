@@ -53,9 +53,9 @@ public: // methods
 
 private: // methods
 
-    virtual std::string typeName() const { return List::className(); }
-    virtual std::string signature() const { return List::sig(); }
-    virtual std::string returnSignature() const { return List::sig(); }
+    virtual std::string typeName() const { return className(); }
+    virtual std::string signature() const { return sig(); }
+    virtual std::string returnSignature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;

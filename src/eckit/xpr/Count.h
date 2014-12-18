@@ -37,7 +37,7 @@ private: // methods
 
     Count( args_t& a );
 
-    virtual std::string typeName() const { return Count::className(); }
+    virtual std::string typeName() const { return className(); }
 
     virtual std::string returnSignature() const;
 

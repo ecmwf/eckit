@@ -62,7 +62,7 @@ private:
 
     ProdAdd( const args_t& args );
 
-    virtual std::string typeName() const { return ProdAdd::className(); }
+    virtual std::string typeName() const { return className(); }
 
     virtual std::string returnSignature() const;
 

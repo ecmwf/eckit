@@ -52,7 +52,7 @@ public: // methods
     static std::string sig() { return "f"; }
     static std::string className() { return "F"; }
     
-    static bool is ( const ExpPtr& e ) { return e->typeName() == F::className(); }
+    static bool is ( const ExpPtr& e ) { return e->typeName() == className(); }
 
     F( const string& n, const double& v ) : n_(n)
     {
@@ -67,9 +67,9 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return F::className(); }
-    virtual std::string signature() const { return F::sig(); }
-    virtual std::string returnSignature() const { return F::sig(); }
+    virtual std::string typeName() const { return className(); }
+    virtual std::string signature() const { return sig(); }
+    virtual std::string returnSignature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const
     {
@@ -115,8 +115,8 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return FSrc::className(); }
-    virtual std::string signature() const { return FSrc::sig(); }
+    virtual std::string typeName() const { return className(); }
+    virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { NOTIMP; }
 
     virtual void print( std::ostream& o ) const { o << "FSrc("; printArgs(o); o << ")"; }
@@ -170,8 +170,8 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return FSnk::className(); }
-    virtual std::string signature() const { return FSnk::sig(); }
+    virtual std::string typeName() const { return className(); }
+    virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); }
 
     virtual void print( std::ostream& o ) const { o << "FSnk("; printArgs(o); o << ")"; }
@@ -239,8 +239,8 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return FAvg::className(); }
-    virtual std::string signature() const { return FAvg::sig(); }
+    virtual std::string typeName() const { return className(); }
+    virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); } //< returns a field
 
     virtual void print( std::ostream& o ) const { o << "FAvg("; printArgs(o); o << ")"; }
@@ -321,8 +321,8 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return FInterp::className(); }
-    virtual std::string signature() const { return FInterp::sig(); }
+    virtual std::string typeName() const { return className(); }
+    virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); } //< returns a field
 
     virtual void print( std::ostream& o ) const { o << "FInterp("; printArgs(o); o << ")"; }

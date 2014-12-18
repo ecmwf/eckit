@@ -37,7 +37,7 @@ private: // methods
 
     Take( args_t& a );
 
-    virtual std::string typeName() const { return Take::className(); }
+    virtual std::string typeName() const { return className(); }
 
     virtual std::string returnSignature() const;
 

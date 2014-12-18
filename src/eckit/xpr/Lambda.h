@@ -40,7 +40,7 @@ private:
 
     Lambda(args_t& a);
 
-    virtual std::string typeName() const { return Lambda::className(); }
+    virtual std::string typeName() const { return className(); }
 
     virtual std::string returnSignature() const;
 

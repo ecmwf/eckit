@@ -67,7 +67,6 @@ public:
     bool set(const K&, const V&);
     void range(const K& key1, const K& key2, std::vector< result_type >& result);
 
-
     bool remove(const K&);
 
     void dump(std::ostream& s = std::cout) const;
@@ -215,15 +214,15 @@ private:
 
 
     struct _LeafPage : public _Page {
-
-        LeafEntry lentries_[1];
+	static const size_t SIZE = (S - sizeof(_Page)) / sizeof(LeafEntry);
+        LeafEntry lentries_[SIZE];
         void print(std::ostream& s) const ;
     };
 
 
     struct _NodePage : public _Page  {
-
-        NodeEntry nentries_[1];
+	static const size_t SIZE = (S - sizeof(_Page)) / sizeof(NodeEntry);
+        NodeEntry nentries_[SIZE];
         void print(std::ostream& s) const ;
     };
 

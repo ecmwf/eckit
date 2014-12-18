@@ -28,17 +28,43 @@ using namespace eckit_test;
 
 BOOST_AUTO_TEST_SUITE( test_eckit_container_btree )
 
+#if 0
+BOOST_AUTO_TEST_CASE( test_eckit_container_btree_lowerbound )
+{
+	std::string test = "EzLPYjRkayhnTCv47SgoFV5MOqbGt6emNlD231JWIXUiBKfAupwc0rQ8xHsZd9";
+
+	std::vector<char> v;
+	for( int i = 0; i < test.size(); ++i )
+		v.push_back(test[i]);
+
+	std::sort(v.begin(),v.end());
+
+	for( int i = 0; i < v.size(); ++i )
+		std::cout << v[i] ;
+	std::cout << std::endl;
+	
+	for( int i = 0; i < test.size(); ++i )
+	{
+		std::vector<char>::iterator it = std::lower_bound(v.begin(),v.end(),test[i]);
+		
+		std::cout << test[i] << " " << *it << std::endl;
+	}
+}
+#endif
+
 BOOST_AUTO_TEST_CASE( test_eckit_container_btree_int_int )
 {
+	int N = 10;
+
 	std::string test = "EzLPYjRkayhnTCv47SgoFV5MOqbGt6emNlD231JWIXUiBKfAupwc0rQ8xHsZd9";
 
 	unlink("foo");
 
 	BTree<int,int, 128> btree("foo");
 
-	for(int i = 0; i < test.size();  i++)
+	for(int i = 0; i < N;  i++)
 	{
-		std::cout << "[" << test[i] << "," << -int(i) << "]" << std::endl;
+//		std::cout << "[" << test[i] << "," << -int(i) << "]" << std::endl;
 		int k = int(test[i]);
 		btree.set(k,-int(i));
 	}
@@ -50,13 +76,13 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_int_int )
 	for(int i = 0; i < res.size();  ++i)
 		std::cout << "[" << res[i].first << "," << res[i].second << "]" << std::endl;
 
-	BOOST_CHECK_EQUAL( btree.count() , test.size() );
+	BOOST_CHECK_EQUAL( btree.count() , N );
 
 	std::cout << std::endl;
 	btree.dump() ;
 	std::cout << std::endl;
 
-	for(int i = 0; i < test.size(); i++)
+	for(int i = 0; i < N; i++)
 	{
 		int k;
 		BOOST_CHECK( btree.get(test[i],k) );

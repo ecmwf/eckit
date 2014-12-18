@@ -34,11 +34,11 @@ public:
 	TestFixture() : Tool( boost::unit_test::framework::master_test_suite().argc,
 						  boost::unit_test::framework::master_test_suite().argv )
 	{
-		for( int i = 0; i <  boost::unit_test::framework::master_test_suite().argc; ++i )
-			std::cout << "[" << boost::unit_test::framework::master_test_suite().argv[i] << "]" << std::endl;
+//		for( int i = 0; i <  boost::unit_test::framework::master_test_suite().argc; ++i )
+//			std::cout << "[" << boost::unit_test::framework::master_test_suite().argv[i] << "]" << std::endl;
 	}
 
-	virtual void run() {};
+	virtual void run() {}
 };
 
 }

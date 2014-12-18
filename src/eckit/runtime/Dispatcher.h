@@ -104,14 +104,23 @@ public:
 	// Get the queue size
 	int  size();
 
+	// Increment the number of live threads by given delta
+	void alive(long);
+
+	// Get the number of live threads
+	long alive();
+
 	// Increment the running state by given delta
 	void running(long);
 
 	// Get the running state
 	long running();
 
-	// Wait for all threads to finish
+	// Wait for all threads to finish work
 	void waitForAll();
+
+	// Stop all running worker threads
+	void stopAll();
 
 	// Serialise requests in queue as JSON array
 	void json(JSON&) const;
@@ -143,8 +152,10 @@ protected:
 	bool           	  grow_;
 	// Number of active threads (i.e. processing work)
 	long              running_;
-	// Mutex protecting running_ and count_
-	MutexCond         lock_;
+	// Mutex protecting running_
+	MutexCond         run_;
+	// Mutex protecting count_
+	MutexCond         cnt_;
 
 private:
 
@@ -273,6 +284,9 @@ void DispatchTask<Traits>::run()
 
 	Handler handler;
 
+	// Inform dispatcher that a thread has started
+	owner_.alive(1);
+
 	while(!stopped())
 	{
 
@@ -315,6 +329,9 @@ void DispatchTask<Traits>::run()
 
 		owner_.running(-1);
 	}
+
+	// Inform dispatcher that a thread has died
+	owner_.alive(-1);
 
 	owner_.awake();
 	Log::info() << "End of thread " << id_ << std::endl;
@@ -370,19 +387,35 @@ Dispatcher<Traits>::~Dispatcher()
 }
 
 template<class Traits>
+long Dispatcher<Traits>::alive()
+{
+	AutoLock<MutexCond> lock(cnt_);
+	return count_;
+}
+
+template<class Traits>
+void Dispatcher<Traits>::alive(long delta)
+{
+	AutoLock<MutexCond> lock(cnt_);
+	count_ += delta;
+	ASSERT(count_ >= 0);
+	cnt_.signal();
+}
+
+template<class Traits>
 long Dispatcher<Traits>::running()
 {
-	AutoLock<MutexCond> lock(lock_);
+	AutoLock<MutexCond> lock(run_);
 	return running_;
 }
 
 template<class Traits>
 void Dispatcher<Traits>::running(long delta)
 {
-	AutoLock<MutexCond> lock(lock_);
+	AutoLock<MutexCond> lock(run_);
 	running_ += delta;
 	ASSERT(running_ >= 0);
-	lock_.signal();
+	run_.signal();
 }
 
 template<class Traits>
@@ -549,11 +582,25 @@ void Dispatcher<Traits>::dequeue(DequeuePicker<Request>& p)
 template<class Traits>
 void Dispatcher<Traits>::waitForAll()
 {
-	AutoLock<MutexCond> lock(lock_);
+	AutoLock<MutexCond> lock(run_);
 	// Wait until BOTH the queue is empty and there are no more
 	// active threads
 	while(running_ > 0 || queue_.size() > 0)
-		lock_.wait();
+		run_.wait();
+}
+
+template<class Traits>
+void Dispatcher<Traits>::stopAll()
+{
+	waitForAll();
+
+	Log::info() << "Killing " << count_ << " threads" << std::endl;
+
+	changeThreadCount(-count_);
+
+	AutoLock<MutexCond> lock(cnt_);
+	while(count_ > 0)
+		cnt_.wait();
 }
 
 template<class Traits>
@@ -581,17 +628,12 @@ void Dispatcher<Traits>::changeThreadCount(int delta)
 			do_push(0);
 		}
 	}
-
-	if(delta) {
-		AutoLock<MutexCond> lock(lock_);
-		count_   += delta;
-	}
 }
 
 template<class Traits>
 void Dispatcher<Traits>::reconfigure()
 {
-	Log::info() << "Max is now : " << numberOfThreads_ << std::endl;
+	Log::info() << "Reconfiguring maximum thread number to: " << numberOfThreads_ << std::endl;
 	changeThreadCount(numberOfThreads_ - count_);
 	awake();
 }

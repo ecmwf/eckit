@@ -19,7 +19,6 @@ ecbuild_add_test(	TARGET  test_runtime
 
 ecbuild_add_test(	TARGET test_dispatcher
 					BOOST
-					CONDITION OFF
 					SOURCES  test_dispatcher.cc
 					LIBS     eckit
 )

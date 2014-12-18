@@ -8,11 +8,12 @@
  */
 
 #define BOOST_TEST_MODULE test_eckit_runtime_dispatcher
-#include "boost_auto_param.h"
 
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/runtime/Dispatcher.h"
+
+#include "boost_auto_param.h"
 
 using namespace eckit;
 

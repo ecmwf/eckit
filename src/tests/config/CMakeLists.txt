@@ -1,8 +1,10 @@
 ecbuild_add_test(   TARGET      test_config
-                    SOURCES     test_config.cc
-                    LIBS        eckit )
+					BOOST
+					SOURCES     test_config.cc
+					LIBS        eckit )
 
 ecbuild_add_test(   TARGET      test_resource
-                    SOURCES     test_resource.cc
-                    ARGS        -integer 100 -listlong "88,99	11 22"
+					BOOST
+					SOURCES     test_resource.cc
+					ARGS        "-integer 100 -listlong 88,99,11,22"
                     LIBS        eckit )

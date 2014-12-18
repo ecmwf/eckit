@@ -34,8 +34,9 @@ public: // types
 public: // methods
 
     static std::string className() { return "List"; }
-
     static std::string sig() { return "l"; }
+
+    static bool is ( const ExpPtr& e);
 
     static const value_t& extract ( Scope& ctx , const ExpPtr& e )
     {
@@ -49,7 +50,6 @@ public: // methods
 
     /// @returns the size of the internal std::vector
     const value_t& value() const { return args(); }
-
 
 private: // methods
 
@@ -72,6 +72,7 @@ private: // methods
 
 ExpPtr list();
 ExpPtr list( const List::value_t& v  );
+ExpPtr list( ExpPtr head, ExpPtr tail );
 
 //--------------------------------------------------------------------------------------------
 

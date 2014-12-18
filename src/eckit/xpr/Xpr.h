@@ -64,6 +64,8 @@ public:
 	Xpr optimise() const;
 	ExpPtr expr() const;
 
+    Xpr eval() const { return expr()->eval(); }
+
 private:
 
     ExpPtr expr_;

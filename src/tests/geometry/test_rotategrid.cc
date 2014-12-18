@@ -11,9 +11,6 @@
 #include <string>
 #include <iostream>
 
-#include "eckit/eckit_config.h"
-
-#define BOOST_TEST_MODULE TestRotatedLatLon
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/geometry/RotateGrid.h"
@@ -21,6 +18,10 @@
 using namespace std;
 using namespace eckit;
 using namespace eckit::geometry;
+
+//-----------------------------------------------------------------------------
+
+namespace eckit_test {
 
 static void rotgrid_py(double sp_lat,double sp_lon, double sp_rot, double lat, double lon)
 {
@@ -48,9 +49,13 @@ static double degrees_eps()
    return 1E-3 ;
 }
 
+}
+
+//-----------------------------------------------------------------------------
+
+using namespace eckit_test;
 
 BOOST_AUTO_TEST_SUITE( TestRotateGrid )
-
 
 BOOST_AUTO_TEST_CASE( test_rotated_lat_lon )
 {
@@ -268,5 +273,7 @@ BOOST_AUTO_TEST_CASE( test_south_pole_at_minus_90_0_rot_10 )
       BOOST_CHECK_CLOSE(point.lon(),unrotated2.lon(),degrees_eps());
    }
 }
+
+//-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

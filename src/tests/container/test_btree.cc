@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include "ecbuild/boost_test_framework.h"
 
-#include "eckit/runtime/Tool.h"
+#include "eckit/types/Types.h"
 #include "eckit/container/BTree.h"
 #include "eckit/os/Semaphore.h"
 #include "eckit/types/FixedString.h"
@@ -17,102 +18,165 @@
 using namespace std;
 using namespace eckit;
 
-class Test : public Tool {
-    virtual void run();
+//-----------------------------------------------------------------------------
 
-    public:
+namespace eckit_test {}
 
-    Test(int argc, char** argv): Tool(argc,argv) { }
+//-----------------------------------------------------------------------------
 
-};
+using namespace eckit_test;
 
+BOOST_AUTO_TEST_SUITE( test_eckit_container_btree )
 
-void Test::run()
+BOOST_AUTO_TEST_CASE( test_eckit_container_btree_int_int )
 {
-    char test[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\0";
+	std::string test = "EzLPYjRkayhnTCv47SgoFV5MOqbGt6emNlD231JWIXUiBKfAupwc0rQ8xHsZd9";
 
-    int count = strlen(test);
+	unlink("foo");
 
-    for(int j = 0; j < 100 ; j++)
-    {
-        std::random_shuffle(test,test+count);
+	BTree<int,int, 128> btree("foo");
 
-        unlink("foo");
-        BTree<char,int, 128> b("foo");
+	for(int i = 0; i < test.size();  i++)
+	{
+		std::cout << "[" << test[i] << "," << -int(i) << "]" << std::endl;
+		int k = int(test[i]);
+		btree.set(k,-int(i));
+	}
 
-        for(int i = 0; i < count;  i++)
-        {
-            b.set(test[i],-int(i));
-        }
+	std::cout << "---------------------------------" << std::endl;
 
-        std::cout << std::endl;
-        b.dump();
-        std::cout << std::endl;
+	std::vector< std::pair<int,int> > res;
+	btree.range(32,126, res);
+	for(int i = 0; i < res.size();  ++i)
+		std::cout << "[" << res[i].first << "," << res[i].second << "]" << std::endl;
 
-        for(int i = 0; i < count; i++)
-        {
-            int k;
-            ASSERT(b.get(test[i],k) && k == (-int(i)));
-        }
-    }
+	BOOST_CHECK_EQUAL( btree.count() , test.size() );
 
-    {
-        unlink("bar");
+	std::cout << std::endl;
+	btree.dump() ;
+	std::cout << std::endl;
 
-        BTree<FixedString<80>,int,1024> b("bar");
-        string f("foo");
-
-        b.set(f, 22);
-        b.set("barbar", 44);
-        b.set("zoulou", 484);
-        b.set("ZOULOU", 484);
-
-        for(int i = 0; i < count;  i++)
-        {
-            string s;
-            s += test[i];
-            b.set(s,-int(i));
-        }
-
-
-        b.dump();
-    }
-
-
-    if(1)
-    {
-
-        unlink("bar");
-
-        BTree< FixedString<80>, FixedString<256>, 2048 > b("bar");
-        string f("foo");
-
-
-        for(int i = 0; i < count;  i++)
-        {
-            string s;
-            s += test[i];
-            b.set(s,s);
-        }
-
-
-        b.set(f,f);
-
-        FixedString<256> z;
-        b.get(f, z);
-        std::cout << string(z) << std::endl;
-
-        b.dump();
-
-    }
-
+	for(int i = 0; i < test.size(); i++)
+	{
+		int k;
+		BOOST_CHECK( btree.get(test[i],k) );
+		BOOST_CHECK_EQUAL( k , (-int(i)) );
+	}
 }
 
-//=============================================================
-
-int main(int argc,char **argv)
+BOOST_AUTO_TEST_CASE( test_eckit_container_btree_char_int )
 {
-    Test app(argc,argv);
-    app.start();
-    return 0;
+	std::string test = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+//	for(int j = 0; j < 100 ; j++)
+	{
+		//		 std::random_shuffle( test.begin(),test.end() );
+
+		std::cout << test << std::endl;
+
+		unlink("foo");
+		BTree<char,int, 128> btree("foo");
+
+		for(int i = 0; i < test.size();  i++)
+		{
+			std::cout << "[" << test[i] << "," << -int(i) << "]" << std::endl;
+			btree.set(test[i],-int(i));
+		}
+		std::cout << std::endl;
+
+		std::vector< std::pair<char,int> > res;
+		btree.range(char(32),char(126), res);
+		for(int i = 0; i < res.size();  ++i)
+			std::cout << "[" << res[i].first << "," << res[i].second << "]" << std::endl;
+
+		std::cout << std::endl;
+
+		BOOST_CHECK_EQUAL( btree.count() , test.size() );
+
+		std::cout << std::endl;
+		btree.dump() ;
+		std::cout << std::endl;
+
+		for(int i = 0; i < test.size(); i++)
+		{
+			int k;
+			BOOST_CHECK( btree.get(test[i],k) );
+			BOOST_CHECK_EQUAL( k , (-int(i)) );
+		}
+	}
 }
+
+BOOST_AUTO_TEST_CASE( test_eckit_container_btree_fixedsttring_int )
+{
+	std::string test = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+	unlink("bar");
+
+	BTree<FixedString<80>,int,1024> btree("bar");
+
+	string f("foo");
+
+	btree.set(f, 22);
+	btree.set("barbar", 44);
+	btree.set("zoulou", 484);
+	btree.set("ZOULOU", 484);
+
+	for(int i = 0; i < test.size(); ++i)
+	{
+		string s;
+		s += test[i];
+		btree.set(s,-int(i));
+	}
+
+	int k;
+
+	BOOST_CHECK( btree.get("foo",k) );
+	BOOST_CHECK_EQUAL( k, 22 );
+
+	BOOST_CHECK( btree.get("barbar",k) );
+	BOOST_CHECK_EQUAL( k, 44 );
+
+	BOOST_CHECK( btree.get("zoulou",k) );
+	BOOST_CHECK_EQUAL( k, 484 );
+
+	BOOST_CHECK( btree.get("ZOULOU",k) );
+	BOOST_CHECK_EQUAL( k, 484 );
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_container_fixedsttring_fixedsttring )
+{
+	std::string test = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+	unlink("bar");
+
+	BTree< FixedString<80>, FixedString<256>, 2048 > btree("bar");
+
+	for(int i = 0; i < test.size(); ++i)
+	{
+		string s;
+		s += test[i];
+		btree.set(s,s);
+	}
+
+	string f("foo");
+	btree.set(f,f);
+
+	for(int i = 0; i < test.size(); ++i)
+	{
+		string s;
+		s += test[i];
+		s += std::string("_bar");
+		btree.set(s,s);
+	}
+
+	FixedString<256> z;
+
+	BOOST_CHECK( btree.get(f, z) );
+	BOOST_CHECK_EQUAL( z, "foo" );
+
+	//	btree.dump();
+}
+
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE_END()

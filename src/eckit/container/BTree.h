@@ -73,6 +73,12 @@ public:
     void dump(std::ostream& s = std::cout) const;
     void dump(std::ostream&, unsigned long page, int depth) const;
 
+	/// Counts the entries in the whole tree
+	/// This is not an efficient call since it visits the whole tree. Use with care.
+	size_t count() const;
+
+	/// Counts the entries in a page of the tree
+	size_t count(unsigned long page) const;
 
     void lock();
     void lockShared();
@@ -84,7 +90,7 @@ protected:
 
     // -- Methods
 
-    void print(std::ostream&) const; 
+	void print(std::ostream& o) const { dump(o); }
 
 private:
 

@@ -123,7 +123,6 @@ void BTree<K,V,S>::flush()
 template<class K, class V, int S>
 void BTree<K,V,S>::dump(std::ostream& s, unsigned long page, int depth) const
 {
-
     Page p;
     loadPage(page, p);
     for (int i = 0; i < depth; i++)
@@ -485,13 +484,20 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, std:
 
     //while((*e).key_ < key1) { e++; if (e == end) return; }
 
-    //cout << "range " << (*e).key_ << " .... " << p.count_ << " " << (e - begin) << std::endl;
-    //cout << " key1 " << key1 << std::endl;
-    //cout << " key2 " << key2 << std::endl;
+	std::cout << "range " << (*e).key_ << " .... " << p.count_ << " " << (e - begin) << std::endl;
+	std::cout << " key1 " << key1 << std::endl;
+	std::cout << " key2 " << key2 << std::endl;
 
-    while( !(key2 < (*e).key_) )
+	std::cout << " begin " << (*begin).key_ << std::endl;
+	if( p.count_ )
+	{
+		const LeafEntry *last   = begin + p.count_ -1;
+		std::cout << " last "   << (*last).key_ << std::endl;
+	}
+
+	while( !(key2 < (*e).key_) )
     {
-        //cout << "match " << p.id_ << " pos " << (e - begin) << " " << (*e).key_ << std::endl;
+		std::cout << "match " << p.id_ << " pos " << (e - begin) << " " << (*e).key_ << std::endl;
         result.push_back( result_type((*e).key_,(*e).value_) );
 
         ++e;
@@ -501,7 +507,8 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, std:
                 loadPage(p.right_, p);
                 ASSERT(!p.node_);
                 e = p.leafPage().lentries_;
-            }
+				end = e + p.count_;
+			}
             else
             {
                 return;
@@ -674,7 +681,35 @@ void BTree<K,V,S>::lock()
 template<class K, class V,int S>
 void BTree<K,V,S>::unlock()
 {
-    lockRange(0,0,F_SETLK,F_UNLCK);
+	lockRange(0,0,F_SETLK,F_UNLCK);
+}
+
+template<class K, class V,int S>
+size_t BTree<K,V,S>::count() const
+{
+	return count(1);
+}
+
+template<class K, class V, int S>
+size_t BTree<K,V,S>::count(unsigned long page) const
+{
+	Page p;
+	loadPage(page, p);
+
+	size_t c = 0;
+
+	if( p.node_ )
+	{
+		c += this->count( p.left_ );
+		for (int i = 0; i < p.count_ ; i ++ )
+			c += count( p.nodePage().nentries_[i].page_ );
+	}
+	else // leaf
+	{
+		c = p.count_;
+	}
+
+	return c;
 }
 
 //-----------------------------------------------------------------------------

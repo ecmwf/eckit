@@ -167,8 +167,10 @@ unsigned long BTree<K,V,S>::next(const K& key, const Page& p) const
     const NodeEntry *begin = p.nodePage().nentries_;
     const NodeEntry *end   = begin + p.count_;
 
-    ASSERT(begin != end);
+	if( begin == end)
+		dump();
 
+    ASSERT(begin != end);
 
     if (key < (*begin).key_)
     {
@@ -251,14 +253,16 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, std:
 
                 //cout << "SPLIT-NODE " << p << std::endl;
 
-                for (size_t i = middle+1; i < p.count_ ; i ++ ) {
+				for (size_t i = middle+1; i < p.count_ ; ++i ) {
                     n.nodePage().nentries_[n.count_++] = p.nodePage().nentries_[i];
                 }
+
+				ASSERT( n.count_ == p.count_ - middle - 1 );
 
                 k = p.nodePage().nentries_[middle].key_;
 
                 p.count_ -= n.count_;
-                p.count_ --;
+				p.count_ --;
 
                 n.left_ = p.nodePage().nentries_[middle].page_;
 
@@ -269,9 +273,11 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, std:
             {
                 //cout << "SPLIT-LEAF " << p << std::endl;
 
-                for (size_t i = middle; i < p.count_ ; i ++ ) {
+				for (size_t i = middle; i < p.count_ ; ++i ) {
                     n.leafPage().lentries_[n.count_++] = p.leafPage().lentries_[i];
                 }
+
+				ASSERT( n.count_ == p.count_ - middle );
 
                 p.count_ -= n.count_;
 
@@ -370,37 +376,35 @@ void BTree<K,V,S>::splitRoot()
 
         key = p.nodePage().nentries_[middle].key_;
     }
-    else
-    {
-
-
-        pleft.node_  = false;
-        pright.node_ = false;
-
-        for (int i = 0; i < middle ; ++i ) 
+	else
 	{
-//		DEBUG_VAR( pleft.count_ );
-            pleft.leafPage().lentries_[pleft.count_++] = p.leafPage().lentries_[i];
-        }
+		pleft.node_  = false;
+		pright.node_ = false;
 
-	// Some version of Gcc (e.g. 4.8.1) optimize out the increment of this counter
-	ASSERT( pleft.count_ == middle );
+		for (int i = 0; i < middle ; ++i )
+		{
+			//		DEBUG_VAR( pleft.count_ );
+			pleft.leafPage().lentries_[pleft.count_++] = p.leafPage().lentries_[i];
+		}
+
+		// Some version of Gcc (e.g. 4.8.1) optimize out the increment of this counter
+		ASSERT( pleft.count_ == middle );
 
 
-        for (size_t i = middle; i < p.count_ ; ++i ) 
-	{
-            pright.leafPage().lentries_[pright.count_++] = p.leafPage().lentries_[i];
-        }
-	
-	
-	// Some version of Gcc (e.g. 4.8.1) optimize out the increment of this counter
-	ASSERT( pright.count_ == p.count_ - middle );
+		for (size_t i = middle; i < p.count_ ; ++i )
+		{
+			pright.leafPage().lentries_[pright.count_++] = p.leafPage().lentries_[i];
+		}
 
-        key = pright.leafPage().lentries_[0].key_;
 
-        pleft.right_ = pright.id_;
-        pright.left_ = pleft.id_;
-    }
+		// Some version of Gcc (e.g. 4.8.1) optimize out the increment of this counter
+		ASSERT( pright.count_ == p.count_ - middle );
+
+		key = pright.leafPage().lentries_[0].key_;
+
+		pleft.right_ = pright.id_;
+		pright.left_ = pleft.id_;
+	}
 
     zero(p);
     p.id_    = 1;
@@ -539,7 +543,7 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, std:
 template<class K, class V, int S>
 off_t BTree<K,V,S>::pageOffset(unsigned long page) const
 {
-    ASSERT(page > 0); // Root page is 1. 0 in leaf marker
+	ASSERT(page > 0); // Root page is 1. 0 is leaf marker
     return sizeof(Page) * off_t(page-1);
 }
 
@@ -711,6 +715,8 @@ size_t BTree<K,V,S>::count() const
 template<class K, class V, int S>
 size_t BTree<K,V,S>::count(unsigned long page) const
 {
+	AutoSharedLock<BTree<K,V,S> > lock(const_cast<BTree*>(this));
+
 	Page p;
 	loadPage(page, p);
 

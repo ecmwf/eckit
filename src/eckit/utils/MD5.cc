@@ -40,7 +40,12 @@ void MD5::add(const void* buffer, long length)
 	md5_add(&s_,static_cast<const unsigned char*>(buffer), length);
 
 	if( digest_.length() != 0)
-		digest_ = std::string(); // reset the digest
+        digest_ = std::string(); // reset the digest
+}
+
+MD5::operator std::string()
+{
+    return digest();
 }
 
 std::string MD5::digest()

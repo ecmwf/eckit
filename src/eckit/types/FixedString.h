@@ -23,9 +23,11 @@ namespace eckit {
 
 // To be used as a key or value in BTree or other file-based classed
 
-template<int size>
+template< int size >
 class FixedString {
 public:
+
+    static const size_t SIZE = size;
 
     FixedString();
     FixedString(const std::string&);
@@ -63,6 +65,10 @@ public:
     std::string asString() const;
     
     operator std::string() const;
+
+    char* data() { return data_; }
+
+    static size_t static_size() { return SIZE; }
 
 private:
 

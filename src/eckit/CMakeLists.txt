@@ -326,6 +326,8 @@ types/TimeInterval.h
 types/TimeInterval.cc
 types/Date.h
 types/Date.cc
+types/UUID.h
+types/UUID.cc
 types/Time.h
 types/Time.cc
 types/VerifyingDate.h
@@ -435,6 +437,8 @@ persist/Isa.cc )
 list( APPEND eckit_utils_srcs
 utils/Translator.h
 utils/Translator.cc
+utils/MD5.h
+utils/MD5.cc
 utils/Regex.h
 utils/Regex.cc
 utils/HyperCube.h

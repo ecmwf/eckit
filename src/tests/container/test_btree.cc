@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_random_char_fixedstring )
 
 		BOOST_CHECK_EQUAL( btree.count(), test.size() );
 
-		std::vector< std::pair<char,FixedString<16>> > res;
+        std::vector< std::pair<char,FixedString<16> > > res;
 		btree.range(char(32),char(126), res);
 
 		//		for(int i = 0; i < res.size();  ++i)

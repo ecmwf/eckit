@@ -66,7 +66,8 @@ public:
     
     operator std::string() const;
 
-    char* data() { return data_; }
+	char* data() { return data_; }
+	const char* data() const { return data_; }
 
     static size_t static_size() { return SIZE; }
 

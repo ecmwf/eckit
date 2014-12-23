@@ -87,8 +87,8 @@ BTree<K,V,S>::BTree( const PathName& path, bool readOnly ):
         // TODO: Check header
     }
 
-    compile_assert< (maxLeafEntries_>=2) >::check();
-    compile_assert< (maxNodeEntries_>=2) >::check();
+	eckit::compile_assert< (maxLeafEntries_ > 3) >::check();
+	eckit::compile_assert< (maxNodeEntries_ > 3) >::check();
 
     compile_assert< (sizeof(Page) == sizeof(LeafPage)) >::check();
     compile_assert< (sizeof(Page) == sizeof(NodePage)) >::check();
@@ -167,15 +167,12 @@ unsigned long BTree<K,V,S>::next(const K& key, const Page& p) const
     const NodeEntry *begin = p.nodePage().nentries_;
     const NodeEntry *end   = begin + p.count_;
 
-	if( begin == end)
-		dump();
+	ASSERT(begin != end);
 
-    ASSERT(begin != end);
-
-    if (key < (*begin).key_)
+	if (key < (*begin).key_)
     {
-        //cout << "next " << key << " in " << p << " " <<  p.left_ << " (FIRST)" << std::endl;
-        return p.left_;
+		//cout << "next " << key << " in " << p << " " <<  p.left_ << " (FIRST)" << std::endl;
+		return p.left_;
     }
 
     const NodeEntry* e = std::lower_bound(begin, end, key);

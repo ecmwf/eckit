@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_random_char_udf )
 
 		unlink("foo");
 
-		BTree< char, UDF, 5*UDF::SZ > btree("foo");
+		BTree< char, UDF, 6*UDF::SZ > btree("foo");
 
 		for(int i = 0; i < test.size();  i++)
 		{
@@ -128,12 +128,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_random_char_udf )
 	}
 }
 
-/// THIS FAILS!!!!
-///
-///
-
-#if 0
-
 BOOST_AUTO_TEST_CASE( test_eckit_container_btree_random_char_fixedstring )
 {
 	std::string test = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -143,7 +137,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_random_char_fixedstring )
 
 		unlink("foo");
 
-		BTree< char, FixedString<16>, 96 > btree("foo");
+		BTree< char, FixedString<16>, 156 > btree("foo");
 
 		for(int i = 0; i < test.size();  i++)
 		{
@@ -176,8 +170,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_random_char_fixedstring )
 		}
 	}
 }
-
-#endif
 
 BOOST_AUTO_TEST_CASE( test_eckit_container_btree_random_char_int )
 {

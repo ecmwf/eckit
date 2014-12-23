@@ -213,12 +213,12 @@ private:
 
 
 
-    struct _LeafPage : public _Page {
-	static const size_t SIZE = (S - sizeof(_Page)) / sizeof(LeafEntry);
+	struct _LeafPage : public _Page
+	{
+		static const size_t SIZE = (S - sizeof(_Page)) / sizeof(LeafEntry);
         LeafEntry lentries_[SIZE];
         void print(std::ostream& s) const ;
     };
-
 
     struct _NodePage : public _Page  {
 	static const size_t SIZE = (S - sizeof(_Page)) / sizeof(NodeEntry);
@@ -259,11 +259,8 @@ private:
         }
     };
 
-
-    // The -1 is here so we have one extra value for overflows
-    static const size_t maxNodeEntries_ = (sizeof(NodePage) - sizeof(_Page)) / sizeof(NodeEntry) -1;
-    static const size_t maxLeafEntries_ = (sizeof(LeafPage) - sizeof(_Page)) / sizeof(LeafEntry) -1;
-
+	static const size_t maxNodeEntries_ = _NodePage::SIZE; // split at full page -- could be a percentage
+	static const size_t maxLeafEntries_ = _LeafPage::SIZE; // split at full page -- could be a percentage
 
     PathName path_;
 

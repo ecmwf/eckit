@@ -156,7 +156,6 @@ LocalPathName LocalPathName::cwd()
 
 LocalPathName LocalPathName::unique(const LocalPathName& path)
 {
-
     AutoLock<Mutex> lock(local_mutex);
 
 	static std::string format = "%Y%m%d.%H%M%S";

@@ -10,10 +10,11 @@
 
 // Baudouin Raoult - (c) ECMWF Feb 12
 
-#ifndef eckit_FixedString_h
-#define eckit_FixedString_h
+#ifndef eckit_types_FixedString_h
+#define eckit_types_FixedString_h
 
 #include "eckit/eckit.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
@@ -23,44 +24,31 @@ namespace eckit {
 
 // To be used as a key or value in BTree or other file-based classed
 
-template< int size >
+template< int SIZE >
 class FixedString {
 public:
-
-    static const size_t SIZE = size;
 
     FixedString();
     FixedString(const std::string&);
     FixedString(const FixedString&);
     FixedString(const char*);
 
-    FixedString& operator=(const FixedString& other);
+	FixedString& operator=(const FixedString&);
+	FixedString& operator=(const std::string&);
 
-    bool operator<(const FixedString& other) const {
-        return memcmp(data_, other.data_, size) < 0;
-    }
+	bool operator<(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) < 0; }
 
-    bool operator>(const FixedString& other) const {
-        return memcmp(data_, other.data_, size) > 0;
-    }
+	bool operator>(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) > 0; }
 
-    bool operator==(const FixedString& other) const {
-        return memcmp(data_, other.data_, size) == 0;
-    }
+	bool operator==(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) == 0; }
 
-    bool operator!=(const FixedString& other) const {
-        return memcmp(data_, other.data_, size) != 0;
-    }
+	bool operator!=(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) != 0; }
 
-    bool operator>=(const FixedString& other) const {
-        return memcmp(data_, other.data_, size) >= 0;
-    }
+	bool operator>=(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) >= 0; }
 
-    bool operator<=(const FixedString& other) const {
-        return memcmp(data_, other.data_, size) <= 0;
-    }
+	bool operator<=(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) <= 0; }
 
-    size_t length() const;
+	size_t length() const;
 
     std::string asString() const;
     
@@ -69,11 +57,13 @@ public:
 	char* data() { return data_; }
 	const char* data() const { return data_; }
 
-    static size_t static_size() { return SIZE; }
+	size_t size() { return SIZE; }
+
+	static size_t static_size() { return SIZE; }
 
 private:
 
-    char data_[size];
+	char data_[SIZE];
 
     void print(std::ostream& s) const ;
 
@@ -84,11 +74,81 @@ private:
     }
 };
 
+//-----------------------------------------------------------------------------
+
+template<int SIZE>
+FixedString<SIZE>::FixedString()
+{
+	zero(data_);
+}
+
+template<int SIZE>
+FixedString<SIZE>:: FixedString(const std::string& s)
+{
+	ASSERT(s.length() <= SIZE && sizeof(s[0]) == 1);
+	zero(data_);
+	std::copy(s.begin(), s.end(), data_);
+}
+
+template<int SIZE>
+FixedString<SIZE>:: FixedString(const FixedString& other)
+{
+	memcpy(data_,other.data_,SIZE);
+}
+
+template<int SIZE>
+FixedString<SIZE>::FixedString(const char* s) {
+	ASSERT(sizeof(char) == 1 && strlen(s) <= SIZE);
+	zero(data_);
+	memcpy(data_, s, strlen(s));
+}
+
+template<int SIZE>
+FixedString<SIZE>& FixedString<SIZE>::operator=(const FixedString& s)
+{
+	if (this != &s)
+	{
+		memcpy(data_,s.data_,SIZE);
+	}
+	return *this;
+}
+
+template<int SIZE>
+FixedString<SIZE>& FixedString<SIZE>::operator=(const std::string& s)
+{
+	ASSERT(s.length() <= SIZE && sizeof(s[0]) == 1);
+
+	memcpy(data_,s.c_str(),s.length());
+
+	return *this;
+}
+
+template<int SIZE>
+size_t FixedString<SIZE>::length() const
+{
+	return std::find(data_, data_ + SIZE, 0) - data_;
+}
+
+template<int SIZE>
+std::string FixedString<SIZE>::asString() const
+{
+	return std::string(data_, data_ + length());
+}
+
+template<int SIZE>
+void FixedString<SIZE>::print(std::ostream& s) const
+{
+	s.write(data_,length());
+}
+
+template<int SIZE>
+FixedString<SIZE>::operator std::string() const
+{
+	return std::string(data_, data_ + length());
+}
 
 //-----------------------------------------------------------------------------
 
 } // namespace eckit
-
-#include "FixedString.cc"
 
 #endif

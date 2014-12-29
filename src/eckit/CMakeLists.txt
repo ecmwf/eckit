@@ -308,8 +308,6 @@ types/Double.h
 types/Double.cc
 types/FloatCompare.h
 types/FloatCompare.cc
-types/FixedString.h
-types/FixedString.cc
 types/ClimateDate.h
 types/ClimateDate.cc
 types/Coord.h
@@ -482,8 +480,29 @@ list( APPEND eckit_testing_srcs
 testing/UnitTest.h
 testing/UnitTest.cc)
 
-list( APPEND eckit_dirs container io filesystem thread  config runtime log exception types parser
-            value os net serialisation persist utils memory compat bases transaction testing)
+list( APPEND eckit_dirs
+	bases
+	compat
+	config
+	container
+	exception
+	filesystem
+	io
+	log
+	memory
+	net
+	os
+	parser
+	persist
+	runtime
+	serialisation
+	testing
+	thread
+	transaction
+	types
+	utils
+	value
+)
 
 foreach( dir ${eckit_dirs} )
   list( APPEND eckit_srcs ${eckit_${dir}_srcs} )
@@ -492,34 +511,31 @@ endforeach()
 list( APPEND eckit_templates
 					container/BTree.cc
 					container/MappedArray.cc
-					container/sptree/SPNode.cc
-					container/kdtree/KDNode.cc
+					container/SimpleMappedArray.cc
 					container/bsptree/BSPNode.cc
-
-
+					container/kdtree/KDNode.cc
+					container/sptree/SPNode.cc
 					filesystem/BasePathNameT.cc
 					io/FileBase.cc
 					runtime/PipeHandler.cc
 					serialisation/Reanimator.cc
 					transaction/TxnLog.cc
 					types/Types.cc
-					types/FixedString.cc
 					utils/RLE.cc
-                                        container/SimpleMappedArray.cc
 )
 
 list( APPEND eckit_persistent
+					io/Length.h
+					io/Offset.h
 					types/ClimateDate.h
 					types/Date.h
-					types/DayOfYear.h
 					types/DateTime.h
+					types/DayOfYear.h
 					types/Double.h
 					types/Grid.h
 					types/Month.h
 					types/Time.h
 					types/VerifyingDate.h
-					io/Length.h
-					io/Offset.h
 )
 
 ### eckit library

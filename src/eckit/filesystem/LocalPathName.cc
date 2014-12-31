@@ -669,7 +669,7 @@ void LocalPathName::syncParentDirectory() const
 {
     PathName directory = dirName();
 #ifdef EC_HAVE_DIRFD
-    Log::info() << "Syncing directory " << directory << std::endl;
+//    Log::info() << "Syncing directory " << directory << std::endl;
     DIR *d = opendir(directory.localPath());
     if (!d) SYSCALL(-1);
 

@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File Double.h
-// Baudouin Raoult - ECMWF Dec 97
+/// @author Tiago Quintino
+/// @date Dec 2014
 
-#ifndef eckit_Double_h
-#define eckit_Double_h
+#ifndef eckit_UUID_h
+#define eckit_UUID_h
 
 #include <stdint.h>
 

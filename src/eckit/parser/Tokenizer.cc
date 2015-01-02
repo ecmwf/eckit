@@ -48,6 +48,11 @@ void tokenizeInsert(const std::set<char, std::less<char> >& separator, const std
 
 //-----------------------------------------------------------------------------
 
+Tokenizer::Tokenizer(char c)
+{
+	separator_.insert(c);
+}
+
 Tokenizer::Tokenizer(const std::string& separators)
 {
 	for(int i=0; i<separators.length(); i++)

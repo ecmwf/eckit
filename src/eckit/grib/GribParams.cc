@@ -56,7 +56,7 @@ GribParams::GribParams(GribHandle& gh)
 	set("GRIB.geographyHash", the_hash);
 
 	// *****************************************************************************
-	// get the scanning mode, needed for bounding box
+	// Get the scanning mode, needed for bounding box, ECKIT-24
 	// and to align iterators to atlas/mir defaults
 	// make sure any access to grib iterators, returns the points according to our defaults: i.e
 	//    iScansPositively(true),

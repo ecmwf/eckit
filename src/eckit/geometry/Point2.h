@@ -73,8 +73,14 @@ public:
         reduceTo2Pi(x_[LON]);
     }
 
-    operator eckit::Value() const;
+    bool operator <(const LLPoint2& rhs) const {
+       return lon() < rhs.lon() || lat() < rhs.lat();
+    }
+    bool operator >(const LLPoint2& rhs) const {
+       return lon() > rhs.lon() || lat() > rhs.lat();
+    }
 
+    operator eckit::Value() const;
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -109,7 +115,22 @@ public: // methods
         std::stringstream msg;
         msg << "Invalid bounding box: N,S,E,W = " << north() << ", " << south() << ", " << east() << ", " << west();
         throw eckit::BadParameter(msg.str(),Here());
-      }    }
+      }
+    }
+
+    LLBoundBox2( LLPoint2 pt, double x_delta, double y_delta )
+    {
+       LLPoint2 pt2(pt.lon() + x_delta,pt.lat() + y_delta);
+       min_ = std::min(pt,pt2);
+       max_ = std::max(pt,pt2);
+
+       if( !validate() )
+       {
+          std::stringstream msg;
+          msg << "Invalid bounding box: N,S,E,W = " << north() << ", " << south() << ", " << east() << ", " << west();
+          throw eckit::BadParameter(msg.str(),Here());
+       }
+    }
 
     static LLBoundBox2 make( const eckit::Value& v )
     {
@@ -142,13 +163,16 @@ public: // methods
 
     bool validate() const
     {
-        return ( min_(LAT) <= max_(LAT) ) && ( min_(LON) <= max_(LON) ) && ( area() > 0 );
+        // For grib1[-180->+180], describing areas which overlaps over +180 or -180,
+        // we can assume min_(LON) <= max_(LON) ?
+        // return ( min_(LAT) <= max_(LAT) ) && ( min_(LON) <= max_(LON) ) && ( area() > 0 );
+        return ( (min_(LAT) <= max_(LAT)) && (area() > 0) );
     }
 
     LLPoint2 min() const { return min_; }
     LLPoint2 max() const { return max_;   }
 
-    double area() const { return ( max_[LON] - min_[LON] ) * ( max_[LAT] - min_[LAT] ); }
+    double area() const { return fabs(( max_[LON] - min_[LON] ) * ( max_[LAT] - min_[LAT] )); }
 
     bool empty() const { return ( area() == 0. ); }
 

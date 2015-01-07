@@ -64,7 +64,7 @@ static int threads[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
 BOOST_AUTO_TEST_SUITE( test_eckit_runtime_dispatcher )
 
-BOOST_AUTO_PARAM_TEST_CASE( test_push_one, threads, threads+8 )
+BOOST_AUTO_PARAM_TEST_CASE( test_push_one, int, threads, threads+8 )
 {
 	BOOST_TEST_MESSAGE("Test pushing 1 task in queue with "
 										 << param << " worker threads");
@@ -79,7 +79,7 @@ BOOST_AUTO_PARAM_TEST_CASE( test_push_one, threads, threads+8 )
 	BOOST_CHECK( r.i == 1 );
 }
 
-BOOST_AUTO_PARAM_TEST_CASE( test_push_ten, threads, threads+8 )
+BOOST_AUTO_PARAM_TEST_CASE( test_push_ten, int, threads, threads+8 )
 {
 	BOOST_TEST_MESSAGE("Test pushing 10 tasks in queue with "
 										 << param << " worker threads");

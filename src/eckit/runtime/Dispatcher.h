@@ -594,6 +594,7 @@ void Dispatcher<Traits>::stopAll()
 {
 	waitForAll();
 
+	// FIXME: potential race condition (reported by Clang ThreadSanitizer)
 	Log::info() << "Killing " << count_ << " threads" << std::endl;
 
 	changeThreadCount(-count_);

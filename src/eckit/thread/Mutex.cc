@@ -49,7 +49,7 @@ void Mutex::lock(void)
 
 	if(!this || !exists_)
 	{
-        std::cerr << "Mutex used before being contructed" << std::endl;
+        std::cerr << "Mutex used before being constructed" << std::endl;
         ::abort();
 	}
 
@@ -60,7 +60,7 @@ void Mutex::unlock(void)
 {
 	if(!exists_)
 	{
-        std::cerr << "Mutex used before being contructed" << std::endl;
+        std::cerr << "Mutex used before being constructed" << std::endl;
         ::abort();
 	}
 	THRCALL(::pthread_mutex_unlock(&mutex_));

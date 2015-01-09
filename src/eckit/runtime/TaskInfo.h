@@ -153,6 +153,7 @@ public:
 	void message(const std::string&);
 	void progressName(const std::string&);
 
+	// FIXME: potential race condition (reported by Clang ThreadSanitizer)
 	void show(bool s) { touch(); show_ = s; }
 	bool show() const { return show_; }
 

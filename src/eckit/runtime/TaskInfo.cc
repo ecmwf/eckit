@@ -175,6 +175,7 @@ void TaskInfo::touch()
 {
 	checkAbort();
 
+	// FIXME: potential race condition (reported by Clang ThreadSanitizer)
 	check_ = last_ = ::time(0);
 	busy_  = true;
 

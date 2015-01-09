@@ -16,8 +16,7 @@ public:
    virtual ~Domain();
 
    virtual bool is_global() const = 0;
-   virtual bool is_lon_periodic() const = 0;
-   virtual bool has_north_pole() const = 0;
+   virtual bool has_poles() const = 0;
 };
 
 
@@ -26,8 +25,7 @@ public:
    Globe() {}
 
    virtual bool is_global() const { return true;}
-   virtual bool is_lon_periodic() const { return true; }
-   virtual bool has_north_pole() const { return true; }
+   virtual bool has_poles() const { return true; }
 };
 
 
@@ -38,8 +36,7 @@ public:
    BoxLL( const LLPoint2& min, const LLPoint2& max ) : bbox_(min,max) {}
 
    virtual bool is_global() const;
-   virtual bool is_lon_periodic() const ;
-   virtual bool has_north_pole() const ;
+   virtual bool has_poles() const ;
 
    bool operator==(const BoxLL& rhs) const
    {

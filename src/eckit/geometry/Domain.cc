@@ -20,13 +20,7 @@ bool BoxLL::is_global() const
    return false;
 }
 
-bool BoxLL::is_lon_periodic() const
-{
-   // need to determine this
-   return false;
-}
-
-bool BoxLL::has_north_pole() const
+bool BoxLL::has_poles() const
 {
    // need to determine this
    return false;

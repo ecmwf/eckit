@@ -70,7 +70,11 @@ Reanimator< TestItem<T> > TestItem<T>::reanimator_;
 template <>
 ClassSpec TestItem<int>::classSpec_ = {&Streamable::classSpec(),"TestItemInt",};
 template <>
+ClassSpec TestItem<uint>::classSpec_ = {&Streamable::classSpec(),"TestItemUInt",};
+template <>
 ClassSpec TestItem<long>::classSpec_ = {&Streamable::classSpec(),"TestItemLong",};
+template <>
+ClassSpec TestItem<ulong>::classSpec_ = {&Streamable::classSpec(),"TestItemULong",};
 template <>
 ClassSpec TestItem<string>::classSpec_ = {&Streamable::classSpec(),"TestItemString",};
 
@@ -121,8 +125,14 @@ BOOST_AUTO_TEST_SUITE( TestStreamable )
 test_decode(int, 2147483647)
 test_reanimate(int, 2147483647)
 
+test_decode(uint, 4294967295)
+test_reanimate(uint, 4294967295)
+
 test_decode(long, 2147483647)
 test_reanimate(long, 2147483647)
+
+test_decode(ulong, 4294967295)
+test_reanimate(ulong, 4294967295)
 
 test_decode(string, "2147483647")
 test_reanimate(string, "2147483647")

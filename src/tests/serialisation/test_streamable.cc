@@ -18,6 +18,7 @@
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/Streamable.h"
 
+using namespace std;
 using namespace eckit;
 
 namespace eckit {
@@ -29,7 +30,7 @@ class TestItem : public Streamable {
 public:
 	TestItem(const T& s) : payload_(s) {}
 
-	TestItem(Stream& s) : Streamable(s), payload_(0) {
+	TestItem(Stream& s) : Streamable(s), payload_() {
 		s >> payload_;
 	}
 
@@ -63,9 +64,15 @@ private:
 };
 
 template <typename T>
-ClassSpec TestItem<T>::classSpec_ = {&Streamable::classSpec(),"TestItem",};
-template <typename T>
 Reanimator< TestItem<T> > TestItem<T>::reanimator_;
+
+/// Partially specialise ClassSpecs since they must have unique names
+template <>
+ClassSpec TestItem<int>::classSpec_ = {&Streamable::classSpec(),"TestItemInt",};
+template <>
+ClassSpec TestItem<long>::classSpec_ = {&Streamable::classSpec(),"TestItemLong",};
+template <>
+ClassSpec TestItem<string>::classSpec_ = {&Streamable::classSpec(),"TestItemString",};
 
 #define test_decode(TYPE, INITIAL) \
 BOOST_AUTO_TEST_CASE( test_decode_##TYPE ) \

@@ -70,8 +70,7 @@ Reanimator< TestItem<T> > TestItem<T>::reanimator_;
 #define test_decode(TYPE, INITIAL) \
 BOOST_AUTO_TEST_CASE( test_decode_##TYPE ) \
 { \
-	BOOST_TEST_MESSAGE("Manually (de)serialise Streamable with TYPE member"); \
-\
+	BOOST_TEST_MESSAGE("Manually (de)serialise Streamable with " #TYPE " member"); \
 	PathName filename = PathName::unique( "data" ); \
 	std::string filepath = filename.asString(); \
 	TestItem<TYPE> t(INITIAL); \
@@ -82,6 +81,8 @@ BOOST_AUTO_TEST_CASE( test_decode_##TYPE ) \
 	{ \
 		FileStream sin( filepath.c_str(), "r" ); \
 		TestItem<TYPE> t2(sin); \
+		BOOST_TEST_MESSAGE("original: " << t.payload_); \
+		BOOST_TEST_MESSAGE("streamed: " << t2.payload_); \
 		BOOST_CHECK(t.payload_ == t2.payload_); \
 	} \
 	if (filename.exists()) filename.unlink(); \
@@ -90,8 +91,7 @@ BOOST_AUTO_TEST_CASE( test_decode_##TYPE ) \
 #define test_reanimate(TYPE, INITIAL) \
 BOOST_AUTO_TEST_CASE( test_reanimate_##TYPE ) \
 { \
-	BOOST_TEST_MESSAGE("(de)serialise Streamable with TYPE member via Reanimator"); \
-\
+	BOOST_TEST_MESSAGE("(de)serialise Streamable with " #TYPE " member via Reanimator"); \
 	PathName filename = PathName::unique( "data" ); \
 	std::string filepath = filename.asString(); \
 	TestItem<TYPE> t(INITIAL); \
@@ -102,6 +102,8 @@ BOOST_AUTO_TEST_CASE( test_reanimate_##TYPE ) \
 	{ \
 		FileStream sin( filepath.c_str(), "r" ); \
 		TestItem<TYPE>* t2 = eckit::Reanimator< TestItem<TYPE> >::reanimate(sin); \
+		BOOST_TEST_MESSAGE("orginal: " << t.payload_); \
+		BOOST_TEST_MESSAGE("streamed: " << t2->payload_); \
 		BOOST_CHECK(t.payload_ == t2->payload_); \
 	} \
 	if (filename.exists()) filename.unlink(); \

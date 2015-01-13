@@ -118,9 +118,14 @@ BOOST_AUTO_TEST_CASE( test_reanimate_##TYPE ) \
 
 BOOST_AUTO_TEST_SUITE( TestStreamable )
 
-test_decode(int, 10)
+test_decode(int, 2147483647)
+test_reanimate(int, 2147483647)
 
-test_reanimate(int, 10)
+test_decode(long, 2147483647)
+test_reanimate(long, 2147483647)
+
+test_decode(string, "2147483647")
+test_reanimate(string, "2147483647")
 
 BOOST_AUTO_TEST_SUITE_END()
 

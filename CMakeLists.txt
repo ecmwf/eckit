@@ -46,7 +46,7 @@ ecbuild_add_option( FEATURE CPP11
 ecbuild_add_option( FEATURE GRIB
 					DEFAULT ON
 					DESCRIPTION "C++ interface to GRIB format"
-					REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.9.9" )
+					REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.12.3" )
 
 set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
 

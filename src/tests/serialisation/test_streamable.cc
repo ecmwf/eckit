@@ -11,6 +11,7 @@
 /// @date Jan 2015
 /// @author Florian Rathgeber
 
+#include <climits>
 #include <cfloat>
 
 #define BOOST_TEST_MODULE TestStreamable
@@ -147,40 +148,40 @@ BOOST_AUTO_TEST_CASE( test_reanimate_##TYPE ) \
 
 BOOST_AUTO_TEST_SUITE( TestStreamable )
 
-test_decode(char, 'a')
-test_reanimate(char, 'a')
+test_decode(char, SCHAR_MAX)
+test_reanimate(char, SCHAR_MAX)
 
-test_decode(uchar, 'b')
-test_reanimate(uchar, 'b')
+test_decode(uchar, UCHAR_MAX)
+test_reanimate(uchar, UCHAR_MAX)
 
 test_decode(bool, true)
 test_reanimate(bool, true)
 
-test_decode(int, 2147483647)
-test_reanimate(int, 2147483647)
+test_decode(int, INT32_MAX)
+test_reanimate(int, INT32_MAX)
 
-test_decode(uint, 4294967295)
-test_reanimate(uint, 4294967295)
+test_decode(uint, UINT32_MAX)
+test_reanimate(uint, UINT32_MAX)
 
-test_decode(short, 32767)
-test_reanimate(short, 32767)
+test_decode(short, SHRT_MAX)
+test_reanimate(short, SHRT_MAX)
 
-test_decode(ushort, 65535)
-test_reanimate(ushort, 65535l)
+test_decode(ushort, USHRT_MAX)
+test_reanimate(ushort, USHRT_MAX)
 
 // NOTE: long in eckit is always 32 bit!
 
-test_decode(long, 2147483647)
-test_reanimate(long, 2147483647)
+test_decode(long, INT32_MAX)
+test_reanimate(long, INT32_MAX)
 
-test_decode(ulong, 4294967295)
-test_reanimate(ulong, 4294967295)
+test_decode(ulong, UINT32_MAX)
+test_reanimate(ulong, UINT32_MAX)
 
-test_decode(llong, 9223372036854775807)
-test_reanimate(llong, 9223372036854775807)
+test_decode(llong, LLONG_MAX)
+test_reanimate(llong, LLONG_MAX)
 
-test_decode(ullong, 18446744073709551615)
-test_reanimate(ullong, 18446744073709551615)
+test_decode(ullong, ULLONG_MAX)
+test_reanimate(ullong, ULLONG_MAX)
 
 // NOTE: float is not implemented!
 // test_decode(float, FLT_MAX)
@@ -189,8 +190,8 @@ test_reanimate(ullong, 18446744073709551615)
 test_decode(double, DBL_MAX)
 test_reanimate(double, DBL_MAX)
 
-test_decode(string, "2147483647")
-test_reanimate(string, "2147483647")
+test_decode(string, "Hello, World!")
+test_reanimate(string, "Hello, World!")
 
 BOOST_AUTO_TEST_SUITE_END()
 

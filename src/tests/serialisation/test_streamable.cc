@@ -64,6 +64,8 @@ private:
 };
 
 typedef unsigned char uchar;
+typedef long long llong;
+typedef unsigned long long ullong;
 
 template <typename T>
 Reanimator< TestItem<T> > TestItem<T>::reanimator_;
@@ -87,6 +89,10 @@ template <>
 ClassSpec TestItem<long>::classSpec_ = {&Streamable::classSpec(),"TestItemLong",};
 template <>
 ClassSpec TestItem<ulong>::classSpec_ = {&Streamable::classSpec(),"TestItemULong",};
+template <>
+ClassSpec TestItem<llong>::classSpec_ = {&Streamable::classSpec(),"TestItemLLong",};
+template <>
+ClassSpec TestItem<ullong>::classSpec_ = {&Streamable::classSpec(),"TestItemULLong",};
 template <>
 ClassSpec TestItem<string>::classSpec_ = {&Streamable::classSpec(),"TestItemString",};
 
@@ -155,11 +161,19 @@ test_reanimate(short, 32767)
 test_decode(ushort, 65535)
 test_reanimate(ushort, 65535l)
 
+// NOTE: long in eckit is always 32 bit!
+
 test_decode(long, 2147483647)
 test_reanimate(long, 2147483647)
 
 test_decode(ulong, 4294967295)
 test_reanimate(ulong, 4294967295)
+
+test_decode(llong, 9223372036854775807)
+test_reanimate(llong, 9223372036854775807)
+
+test_decode(ullong, 18446744073709551615)
+test_reanimate(ullong, 18446744073709551615)
 
 test_decode(string, "2147483647")
 test_reanimate(string, "2147483647")

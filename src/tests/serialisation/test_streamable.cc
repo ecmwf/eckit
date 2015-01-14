@@ -63,10 +63,18 @@ private:
 	}
 };
 
+typedef unsigned char uchar;
+
 template <typename T>
 Reanimator< TestItem<T> > TestItem<T>::reanimator_;
 
 /// Partially specialise ClassSpecs since they must have unique names
+template <>
+ClassSpec TestItem<char>::classSpec_ = {&Streamable::classSpec(),"TestItemChar",};
+template <>
+ClassSpec TestItem<uchar>::classSpec_ = {&Streamable::classSpec(),"TestItemUChar",};
+template <>
+ClassSpec TestItem<bool>::classSpec_ = {&Streamable::classSpec(),"TestItemBool",};
 template <>
 ClassSpec TestItem<int>::classSpec_ = {&Streamable::classSpec(),"TestItemInt",};
 template <>
@@ -121,6 +129,15 @@ BOOST_AUTO_TEST_CASE( test_reanimate_##TYPE ) \
 }
 
 BOOST_AUTO_TEST_SUITE( TestStreamable )
+
+test_decode(char, 'a')
+test_reanimate(char, 'a')
+
+test_decode(uchar, 'b')
+test_reanimate(uchar, 'b')
+
+test_decode(bool, true)
+test_reanimate(bool, true)
 
 test_decode(int, 2147483647)
 test_reanimate(int, 2147483647)

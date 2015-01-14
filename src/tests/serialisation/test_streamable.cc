@@ -104,8 +104,8 @@ ClassSpec TestItem<double>::classSpec_ = {&Streamable::classSpec(),"TestItemDoub
 template <>
 ClassSpec TestItem<string>::classSpec_ = {&Streamable::classSpec(),"TestItemString",};
 
-#define test_decode(TYPE, INITIAL) \
-BOOST_AUTO_TEST_CASE( test_decode_##TYPE ) \
+#define test_decode(TYPE, INITIAL, SUFFIX) \
+BOOST_AUTO_TEST_CASE( test_decode_##TYPE##_##SUFFIX ) \
 { \
 	BOOST_TEST_MESSAGE("Manually (de)serialise Streamable with " #TYPE " member"); \
 	PathName filename = PathName::unique( "data" ); \
@@ -125,8 +125,8 @@ BOOST_AUTO_TEST_CASE( test_decode_##TYPE ) \
 	if (filename.exists()) filename.unlink(); \
 }
 
-#define test_reanimate(TYPE, INITIAL) \
-BOOST_AUTO_TEST_CASE( test_reanimate_##TYPE ) \
+#define test_reanimate(TYPE, INITIAL, SUFFIX) \
+BOOST_AUTO_TEST_CASE( test_reanimate_##TYPE##_##SUFFIX ) \
 { \
 	BOOST_TEST_MESSAGE("(de)serialise Streamable with " #TYPE " member via Reanimator"); \
 	PathName filename = PathName::unique( "data" ); \
@@ -148,50 +148,64 @@ BOOST_AUTO_TEST_CASE( test_reanimate_##TYPE ) \
 
 BOOST_AUTO_TEST_SUITE( TestStreamable )
 
-test_decode(char, SCHAR_MAX)
-test_reanimate(char, SCHAR_MAX)
+test_decode(char, SCHAR_MAX, max)
+test_decode(char, SCHAR_MIN, min)
+test_reanimate(char, SCHAR_MAX, max)
+test_reanimate(char, SCHAR_MIN, min)
 
-test_decode(uchar, UCHAR_MAX)
-test_reanimate(uchar, UCHAR_MAX)
+test_decode(uchar, UCHAR_MAX, max)
+test_reanimate(uchar, UCHAR_MAX, max)
 
-test_decode(bool, true)
-test_reanimate(bool, true)
+test_decode(bool, true, true)
+test_reanimate(bool, true, true)
 
-test_decode(int, INT32_MAX)
-test_reanimate(int, INT32_MAX)
+test_decode(int, INT32_MAX, max)
+test_decode(int, INT32_MIN, min)
+test_reanimate(int, INT32_MAX, max)
+test_reanimate(int, INT32_MIN, min)
 
-test_decode(uint, UINT32_MAX)
-test_reanimate(uint, UINT32_MAX)
+test_decode(uint, UINT32_MAX, max)
+test_reanimate(uint, UINT32_MAX, max)
 
-test_decode(short, SHRT_MAX)
-test_reanimate(short, SHRT_MAX)
+test_decode(short, SHRT_MAX, max)
+test_decode(short, SHRT_MIN, min)
+test_reanimate(short, SHRT_MAX, max)
+test_reanimate(short, SHRT_MIN, min)
 
-test_decode(ushort, USHRT_MAX)
-test_reanimate(ushort, USHRT_MAX)
+test_decode(ushort, USHRT_MAX, max)
+test_reanimate(ushort, USHRT_MAX, max)
 
 // NOTE: long in eckit is always 32 bit!
 
-test_decode(long, INT32_MAX)
-test_reanimate(long, INT32_MAX)
+test_decode(long, INT32_MAX, max)
+test_decode(long, INT32_MIN, min)
+test_reanimate(long, INT32_MAX, max)
+test_reanimate(long, INT32_MIN, min)
 
-test_decode(ulong, UINT32_MAX)
-test_reanimate(ulong, UINT32_MAX)
+test_decode(ulong, UINT32_MAX, max)
+test_reanimate(ulong, UINT32_MAX, max)
 
-test_decode(llong, LLONG_MAX)
-test_reanimate(llong, LLONG_MAX)
+test_decode(llong, LLONG_MAX, max)
+test_decode(llong, LLONG_MIN, min)
+test_reanimate(llong, LLONG_MAX, max)
+test_reanimate(llong, LLONG_MIN, min)
 
-test_decode(ullong, ULLONG_MAX)
-test_reanimate(ullong, ULLONG_MAX)
+test_decode(ullong, ULLONG_MAX, max)
+test_reanimate(ullong, ULLONG_MAX, max)
 
 // NOTE: float is not implemented!
-// test_decode(float, FLT_MAX)
-// test_reanimate(float, FLT_MAX)
+// test_decode(float, FLT_MAX, max)
+// test_decode(float, FLT_MIN, min)
+// test_reanimate(float, FLT_MAX, max)
+// test_reanimate(float, FLT_MIN, min)
 
-test_decode(double, DBL_MAX)
-test_reanimate(double, DBL_MAX)
+test_decode(double, DBL_MAX, max)
+test_decode(double, DBL_MIN, min)
+test_reanimate(double, DBL_MAX, max)
+test_reanimate(double, DBL_MIN, min)
 
-test_decode(string, "Hello, World!")
-test_reanimate(string, "Hello, World!")
+test_decode(string, "Hello, World!", _)
+test_reanimate(string, "Hello, World!", _)
 
 BOOST_AUTO_TEST_SUITE_END()
 

@@ -11,6 +11,8 @@
 /// @date Jan 2015
 /// @author Florian Rathgeber
 
+#include <cfloat>
+
 #define BOOST_TEST_MODULE TestStreamable
 #include "ecbuild/boost_test_framework.h"
 
@@ -93,6 +95,11 @@ template <>
 ClassSpec TestItem<llong>::classSpec_ = {&Streamable::classSpec(),"TestItemLLong",};
 template <>
 ClassSpec TestItem<ullong>::classSpec_ = {&Streamable::classSpec(),"TestItemULLong",};
+// NOTE: float is not implemented!
+// template <>
+// ClassSpec TestItem<float>::classSpec_ = {&Streamable::classSpec(),"TestItemFloat",};
+template <>
+ClassSpec TestItem<double>::classSpec_ = {&Streamable::classSpec(),"TestItemDouble",};
 template <>
 ClassSpec TestItem<string>::classSpec_ = {&Streamable::classSpec(),"TestItemString",};
 
@@ -174,6 +181,13 @@ test_reanimate(llong, 9223372036854775807)
 
 test_decode(ullong, 18446744073709551615)
 test_reanimate(ullong, 18446744073709551615)
+
+// NOTE: float is not implemented!
+// test_decode(float, FLT_MAX)
+// test_reanimate(float, FLT_MAX)
+
+test_decode(double, DBL_MAX)
+test_reanimate(double, DBL_MAX)
 
 test_decode(string, "2147483647")
 test_reanimate(string, "2147483647")

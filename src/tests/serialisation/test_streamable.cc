@@ -80,6 +80,10 @@ ClassSpec TestItem<int>::classSpec_ = {&Streamable::classSpec(),"TestItemInt",};
 template <>
 ClassSpec TestItem<uint>::classSpec_ = {&Streamable::classSpec(),"TestItemUInt",};
 template <>
+ClassSpec TestItem<short>::classSpec_ = {&Streamable::classSpec(),"TestItemShort",};
+template <>
+ClassSpec TestItem<ushort>::classSpec_ = {&Streamable::classSpec(),"TestItemUShort",};
+template <>
 ClassSpec TestItem<long>::classSpec_ = {&Streamable::classSpec(),"TestItemLong",};
 template <>
 ClassSpec TestItem<ulong>::classSpec_ = {&Streamable::classSpec(),"TestItemULong",};
@@ -144,6 +148,12 @@ test_reanimate(int, 2147483647)
 
 test_decode(uint, 4294967295)
 test_reanimate(uint, 4294967295)
+
+test_decode(short, 32767)
+test_reanimate(short, 32767)
+
+test_decode(ushort, 65535)
+test_reanimate(ushort, 65535l)
 
 test_decode(long, 2147483647)
 test_reanimate(long, 2147483647)

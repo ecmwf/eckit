@@ -23,9 +23,6 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-#define UNSIGNED(type,var) ((unsigned type)(var))
-#define SIGNED(type,var)   ((type)(var))
- 
 #if 0
 #define T(a,x) do { std::cout << "Stream: " << a << " ->  "  << x << std::endl;} while(0)
 #else
@@ -240,10 +237,15 @@ void Stream::writeTag(Stream::tag t)
 
 Stream& Stream::operator<<(char x)
 {
-    T("w char",x);
-    writeTag(tag_char);
-    putChar(UNSIGNED(char,x));
-    return *this;
+	union {
+		u_int8_t u;
+		int8_t s;
+	} u;
+	T("w char",x);
+	u.s = x;
+	writeTag(tag_char);
+	putChar(u.u);
+	return *this;
 }
 
 Stream& Stream::operator<<(unsigned char x)
@@ -256,10 +258,15 @@ Stream& Stream::operator<<(unsigned char x)
 
 Stream& Stream::operator<<(int x)
 {
-    T("w int",x);
-    writeTag(tag_int);
-    putLong(UNSIGNED(int,x));
-    return *this;
+	union {
+		u_int32_t u;
+		int32_t s;
+	} u;
+	T("w int",x);
+	u.s = x;
+	writeTag(tag_int);
+	putLong(u.u);
+	return *this;
 }
 
 Stream& Stream::operator<<(bool x)
@@ -278,10 +285,15 @@ Stream& Stream::operator<<(unsigned int x)
 
 Stream& Stream::operator<<(long x)
 {
-    T("w long",x);
-    writeTag(tag_long);
-    putLong(UNSIGNED(long,x));
-    return *this;
+	union {
+		u_int32_t u;
+		int32_t s;
+	} u;
+	T("w long",x);
+	u.s = x;
+	writeTag(tag_long);
+	putLong(u.u);
+	return *this;
 }
 
 Stream& Stream::operator<<(unsigned long x)
@@ -294,12 +306,16 @@ Stream& Stream::operator<<(unsigned long x)
 
 Stream& Stream::operator<<(long long x)
 {
-    T("w long long",x);
-    writeTag(tag_long_long);
-    unsigned long long ull = UNSIGNED(long long,x);
-    putLong(ull >> 32);
-    putLong(ull & 0xffffffff);
-    return *this;
+	union {
+		u_int64_t u;
+		int64_t s;
+	} u;
+	T("w long long",x);
+	u.s = x;
+	writeTag(tag_long_long);
+	putLong(u.u >> 32);
+	putLong(u.u & 0xffffffff);
+	return *this;
 }
 
 Stream& Stream::operator<<(unsigned long long x)
@@ -313,10 +329,15 @@ Stream& Stream::operator<<(unsigned long long x)
 
 Stream& Stream::operator<<(short x)
 {
-    T("w short",x);
-    writeTag(tag_short);
-    putLong(UNSIGNED(short,x));
-    return *this;
+	union {
+		u_int16_t u;
+		int16_t s;
+	} u;
+	T("w short",x);
+	u.s = x;
+	writeTag(tag_short);
+	putLong(u.u);
+	return *this;
 }
 
 Stream& Stream::operator<<(unsigned short x)
@@ -403,11 +424,15 @@ Stream& Stream::operator<<(const std::exception& e)
 
 Stream& Stream::operator>>(char& x)
 {
-    readTag(tag_char);
-    unsigned char c = getChar();
-    x = SIGNED(char,c);
-    T("r char",x);
-    return *this;
+	union {
+		u_int8_t u;
+		int8_t s;
+	} u;
+	readTag(tag_char);
+	u.u = getChar();
+	x = u.s;
+	T("r char",x);
+	return *this;
 }
 
 Stream& Stream::operator>>(unsigned char& x)
@@ -420,11 +445,15 @@ Stream& Stream::operator>>(unsigned char& x)
 
 Stream& Stream::operator>>(int& x)
 {
-    readTag(tag_int);
-    unsigned long p = getLong();
-    x = SIGNED(int,p);
-    T("r int",x);
-    return *this;
+	union {
+		u_int32_t u;
+		int32_t s;
+	} u;
+	readTag(tag_int);
+	u.u = getLong();
+	x = u.s;
+	T("r int",x);
+	return *this;
 }
 
 Stream& Stream::operator>>(bool& x)
@@ -444,11 +473,15 @@ Stream& Stream::operator>>(unsigned int& x)
 
 Stream& Stream::operator>>(short& x)
 {
-    readTag(tag_short);
-    unsigned long p = getLong();
-    x = SIGNED(short,p);
-    T("r short",x);
-    return *this;
+	union {
+		u_int16_t u;
+		int16_t s;
+	} u;
+	readTag(tag_short);
+	u.u = getLong();
+	x = u.s;
+	T("r short",x);
+	return *this;
 }
 
 Stream& Stream::operator>>(unsigned short& x)
@@ -461,11 +494,15 @@ Stream& Stream::operator>>(unsigned short& x)
 
 Stream& Stream::operator>>(long& x)
 {
-    readTag(tag_long);
-    unsigned long p = getLong();
-    x = SIGNED(long,p);
-    T("r long",x);
-    return *this;
+	union {
+		u_int32_t u;
+		int32_t s;
+	} u;
+	readTag(tag_long);
+	u.u = getLong();
+	x = u.s;
+	T("r long",x);
+	return *this;
 }
 
 Stream& Stream::operator>>(unsigned long& x)
@@ -478,13 +515,17 @@ Stream& Stream::operator>>(unsigned long& x)
 
 Stream& Stream::operator>>(long long& x)
 {
-    readTag(tag_long_long);
-    unsigned long long u1 = getLong();;
-    unsigned long long u2 = getLong();
-    unsigned long long ull = (u1 << 32) | u2;
-    x = SIGNED(long long,ull);
-    T("r long long",x);
-    return *this;
+	union {
+		u_int64_t u;
+		int64_t s;
+	} u;
+	readTag(tag_long_long);
+	u_int64_t u1 = getLong();;
+	u_int64_t u2 = getLong();
+	u.u = (u1 << 32) | u2;
+	x = u.s;
+	T("r long long",x);
+	return *this;
 }
 
 Stream& Stream::operator>>(unsigned long long& x)

@@ -11,8 +11,10 @@
 /// @date Jan 2015
 /// @author Florian Rathgeber
 
-#include <climits>
-#include <cfloat>
+// NOTE: cannot include cstdint due to backwards compatbility with gcc 4.5
+// which requires enabling c++0x mode for including cstdint
+#include <stdint.h>
+#include <limits>
 
 #define BOOST_TEST_MODULE TestStreamable
 #include "ecbuild/boost_test_framework.h"
@@ -148,61 +150,61 @@ BOOST_AUTO_TEST_CASE( test_reanimate_##TYPE##_##SUFFIX ) \
 
 BOOST_AUTO_TEST_SUITE( TestStreamable )
 
-test_decode(char, SCHAR_MAX, max)
-test_decode(char, SCHAR_MIN, min)
-test_reanimate(char, SCHAR_MAX, max)
-test_reanimate(char, SCHAR_MIN, min)
+test_decode(char, numeric_limits<char>::max(), max)
+test_decode(char, numeric_limits<char>::min(), min)
+test_reanimate(char, numeric_limits<char>::max(), max)
+test_reanimate(char, numeric_limits<char>::min(), min)
 
-test_decode(uchar, UCHAR_MAX, max)
-test_reanimate(uchar, UCHAR_MAX, max)
+test_decode(uchar, numeric_limits<uchar>::max(), max)
+test_reanimate(uchar, numeric_limits<uchar>::max(), max)
 
 test_decode(bool, true, true)
 test_reanimate(bool, true, true)
 
-test_decode(int, INT32_MAX, max)
-test_decode(int, INT32_MIN, min)
-test_reanimate(int, INT32_MAX, max)
-test_reanimate(int, INT32_MIN, min)
+test_decode(int, numeric_limits<int32_t>::max(), max)
+test_decode(int, numeric_limits<int32_t>::min(), min)
+test_reanimate(int, numeric_limits<int32_t>::max(), max)
+test_reanimate(int, numeric_limits<int32_t>::min(), min)
 
-test_decode(uint, UINT32_MAX, max)
-test_reanimate(uint, UINT32_MAX, max)
+test_decode(uint, numeric_limits<uint32_t>::max(), max)
+test_reanimate(uint, numeric_limits<uint32_t>::max(), max)
 
-test_decode(short, SHRT_MAX, max)
-test_decode(short, SHRT_MIN, min)
-test_reanimate(short, SHRT_MAX, max)
-test_reanimate(short, SHRT_MIN, min)
+test_decode(short, numeric_limits<short>::max(), max)
+test_decode(short, numeric_limits<short>::min(), min)
+test_reanimate(short, numeric_limits<short>::max(), max)
+test_reanimate(short, numeric_limits<short>::min(), min)
 
-test_decode(ushort, USHRT_MAX, max)
-test_reanimate(ushort, USHRT_MAX, max)
+test_decode(ushort, numeric_limits<ushort>::max(), max)
+test_reanimate(ushort, numeric_limits<ushort>::max(), max)
 
 // NOTE: long in eckit is always 32 bit!
 
-test_decode(long, INT32_MAX, max)
-test_decode(long, INT32_MIN, min)
-test_reanimate(long, INT32_MAX, max)
-test_reanimate(long, INT32_MIN, min)
+test_decode(long, numeric_limits<int32_t>::max(), max)
+test_decode(long, numeric_limits<int32_t>::min(), min)
+test_reanimate(long, numeric_limits<int32_t>::max(), max)
+test_reanimate(long, numeric_limits<int32_t>::min(), min)
 
-test_decode(ulong, UINT32_MAX, max)
-test_reanimate(ulong, UINT32_MAX, max)
+test_decode(ulong, numeric_limits<uint32_t>::max(), max)
+test_reanimate(ulong, numeric_limits<uint32_t>::max(), max)
 
-test_decode(llong, LLONG_MAX, max)
-test_decode(llong, LLONG_MIN, min)
-test_reanimate(llong, LLONG_MAX, max)
-test_reanimate(llong, LLONG_MIN, min)
+test_decode(llong, numeric_limits<llong>::max(), max)
+test_decode(llong, numeric_limits<llong>::min(), min)
+test_reanimate(llong, numeric_limits<llong>::max(), max)
+test_reanimate(llong, numeric_limits<llong>::min(), min)
 
-test_decode(ullong, ULLONG_MAX, max)
-test_reanimate(ullong, ULLONG_MAX, max)
+test_decode(ullong, numeric_limits<ullong>::max(), max)
+test_reanimate(ullong, numeric_limits<ullong>::max(), max)
 
 // NOTE: float is not implemented!
-// test_decode(float, FLT_MAX, max)
-// test_decode(float, FLT_MIN, min)
-// test_reanimate(float, FLT_MAX, max)
-// test_reanimate(float, FLT_MIN, min)
+// test_decode(float, numeric_limits<float>::max(), max)
+// test_decode(float, numeric_limits<float>::min(), min)
+// test_reanimate(float, numeric_limits<float>::max(), max)
+// test_reanimate(float, numeric_limits<float>::min(), min)
 
-test_decode(double, DBL_MAX, max)
-test_decode(double, DBL_MIN, min)
-test_reanimate(double, DBL_MAX, max)
-test_reanimate(double, DBL_MIN, min)
+test_decode(double, numeric_limits<double>::max(), max)
+test_decode(double, numeric_limits<double>::min(), min)
+test_reanimate(double, numeric_limits<double>::max(), max)
+test_reanimate(double, numeric_limits<double>::min(), min)
 
 test_decode(string, "Hello, World!", _)
 test_reanimate(string, "Hello, World!", _)

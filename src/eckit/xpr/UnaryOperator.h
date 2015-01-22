@@ -41,7 +41,7 @@ public:
         return ExpPtr( new UnaryOperator<T>(args) );
     }
 
-    static std::string className();
+    static std::string nodeName();
 
     UnaryOperator( ExpPtr e );
 

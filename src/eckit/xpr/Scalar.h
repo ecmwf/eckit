@@ -31,7 +31,7 @@ public: // methods
     typedef scalar_t value_t;
 
     static std::string sig() { return "s"; }
-    static std::string className() { return "Scalar"; }
+    static std::string nodeName() { return "Scalar"; }
 
     static bool is ( const ExpPtr& e ) ;
 
@@ -57,7 +57,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 

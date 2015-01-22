@@ -38,7 +38,7 @@ public: // methods
         return ExpPtr( new ProdAdd(args) );
     }
 
-    static std::string className() { return "ProdAdd"; }
+    static std::string nodeName() { return "ProdAdd"; }
 
     ProdAdd( const ExpPtr& e );
 
@@ -62,7 +62,7 @@ private:
 
     ProdAdd( const args_t& args );
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 

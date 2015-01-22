@@ -29,7 +29,7 @@ class Take : public Function {
 
 public: // methods
 
-    static std::string className() { return "Take"; }
+    static std::string nodeName() { return "Take"; }
 
     Take( ExpPtr e = undef(), ExpPtr l = undef()  );
 
@@ -37,7 +37,7 @@ private: // methods
 
     Take( args_t& a );
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 

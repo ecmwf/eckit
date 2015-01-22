@@ -28,7 +28,7 @@ class Linear : public Function {
 
 public: // methods
 
-    static std::string className() { return "Linear"; }
+    static std::string nodeName() { return "Linear"; }
 
     Linear( ExpPtr e );
 
@@ -38,7 +38,7 @@ private: // methods
 
     Linear(args_t& a);
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 

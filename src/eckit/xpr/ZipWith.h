@@ -27,7 +27,7 @@ class ZipWith : public Function {
 
 public: // methods
 
-    static std::string className() { return "ZipWith"; }
+    static std::string nodeName() { return "ZipWith"; }
 
     ZipWith( ExpPtr f, ExpPtr l0, ExpPtr l1 );
 
@@ -35,7 +35,7 @@ private: // methods
 
     ZipWith( args_t& a );
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 

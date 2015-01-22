@@ -53,7 +53,7 @@ public: // methods
     static dispatcher_t& dispatcher();
     //static factory_t& factory();
 
-    static std::string className() { return "Function"; }
+    static std::string nodeName() { return "Function"; }
 
 public: // virtual methods
 

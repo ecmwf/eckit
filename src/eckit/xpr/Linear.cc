@@ -98,7 +98,7 @@ std::string Linear::returnSignature() const
 
 Linear::Register::Register()
 {
-    Function::dispatcher()[ className() + "(s,v,s,v)" ] = &compute;
+    Function::dispatcher()[ nodeName() + "(s,v,s,v)" ] = &compute;
 }
 
 

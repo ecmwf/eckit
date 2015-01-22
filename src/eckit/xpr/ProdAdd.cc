@@ -110,17 +110,17 @@ ExpPtr ProdAdd::cloneWith(args_t& a) const
 
 ProdAdd::Register::Register()
 {
-    Function::dispatcher()[ className() + "(s,s,s)" ] = &compute_ggg;
-    Function::dispatcher()[ className() + "(s,v,s)" ] = &compute_ggg;
-    Function::dispatcher()[ className() + "(s,s,v)" ] = &compute_ggg;
+    Function::dispatcher()[ nodeName() + "(s,s,s)" ] = &compute_ggg;
+    Function::dispatcher()[ nodeName() + "(s,v,s)" ] = &compute_ggg;
+    Function::dispatcher()[ nodeName() + "(s,s,v)" ] = &compute_ggg;
 
-    Function::dispatcher()[ className() + "(s,v,v)" ] = &compute_svv;
+    Function::dispatcher()[ nodeName() + "(s,v,v)" ] = &compute_svv;
 
-    Function::dispatcher()[ className() + "(v,s,s)" ] = &compute_ggg;
-    Function::dispatcher()[ className() + "(v,s,v)" ] = &compute_ggg;
-    Function::dispatcher()[ className() + "(v,v,s)" ] = &compute_ggg;
+    Function::dispatcher()[ nodeName() + "(v,s,s)" ] = &compute_ggg;
+    Function::dispatcher()[ nodeName() + "(v,s,v)" ] = &compute_ggg;
+    Function::dispatcher()[ nodeName() + "(v,v,s)" ] = &compute_ggg;
 
-    Function::dispatcher()[ className() + "(v,v,v)" ] = &compute_vvv;
+    Function::dispatcher()[ nodeName() + "(v,v,v)" ] = &compute_vvv;
 }
 
 //--------------------------------------------------------------------------------------------

@@ -44,7 +44,7 @@ Bind::Bind(args_t& a) : Function(a)
 
 std::string Bind::typeName() const
 {
-    return Bind::className();
+    return Bind::nodeName();
 }
 
 std::string Bind::returnSignature() const

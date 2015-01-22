@@ -27,7 +27,7 @@ bool String::is(const ExpPtr &e)
 
 void String::print(std::ostream&o) const
 {
-    o << className() << "(" << v_ << ")";
+    o << nodeName() << "(" << v_ << ")";
 }
 
 String::String(ExpPtr e) : v_(0)

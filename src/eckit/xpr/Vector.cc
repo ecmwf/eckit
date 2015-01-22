@@ -42,7 +42,7 @@ ExpPtr Vector::cloneWith(args_t& a) const
 
 void Vector::print(std::ostream&o) const
 {
-    o << className() << "(";
+    o << nodeName() << "(";
     for( size_t i = 0; i < v_.size(); ++i )
     {
         if(i) o << ", ";

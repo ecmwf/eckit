@@ -34,7 +34,7 @@ template <class T>
 class BinaryPredicate : public Function  {
 public:
 
-    static std::string className();
+    static std::string nodeName();
 
     BinaryPredicate( ExpPtr a, ExpPtr b);
 

@@ -32,7 +32,7 @@ class Param : public Expression {
 
 public: //  methods
 
-    static std::string className()     { return "Param"; }
+    static std::string nodeName()     { return "Param"; }
     static std::string sig()           { return "?";     }
 
     Param(const std::string& name);
@@ -43,7 +43,7 @@ private: //  methods
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 

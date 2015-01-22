@@ -27,7 +27,7 @@ class Merge : public Function {
 
 public: // methods
 
-    static std::string className() { return "Merge"; }
+    static std::string nodeName() { return "Merge"; }
 
     Merge( ExpPtr l0, ExpPtr l1 );
 
@@ -37,7 +37,7 @@ private: // methods
 
     Merge( args_t& a );
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 

@@ -27,7 +27,7 @@ bool Scalar::is(const ExpPtr &e)
 
 void Scalar::print(std::ostream&o) const
 {
-    o << className() << "(" << v_ << ")";
+    o << nodeName() << "(" << v_ << ")";
 }
 
 Scalar::Scalar(ExpPtr e) : v_(0)

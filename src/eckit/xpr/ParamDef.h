@@ -34,7 +34,7 @@ class ParamDef : public Expression {
 
 public: //  methods
 
-    static std::string className() { return "ParamDef"; }
+    static std::string nodeName() { return "ParamDef"; }
     static std::string sig()       { return "?"; }
 
     static bool is ( const ExpPtr& e );
@@ -49,7 +49,7 @@ private:
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 

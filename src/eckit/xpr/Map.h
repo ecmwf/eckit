@@ -27,7 +27,7 @@ class Map : public Function {
 
 public: // methods
 
-    static std::string className() { return "Map"; }
+    static std::string nodeName() { return "Map"; }
 
     Map( ExpPtr f, ExpPtr l );
 
@@ -35,7 +35,7 @@ private: // methods
 
     Map( args_t& a );
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 

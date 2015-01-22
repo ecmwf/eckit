@@ -27,7 +27,7 @@ class IfElse : public Function {
 
 public: // methods
 
-    static std::string className() { return "IfElse"; }
+    static std::string nodeName() { return "IfElse"; }
 
     IfElse( ExpPtr f, ExpPtr i, ExpPtr e );
 
@@ -35,7 +35,7 @@ private: // methods
 
     IfElse(args_t& a);
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 

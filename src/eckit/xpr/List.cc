@@ -21,7 +21,7 @@ namespace xpr {
 
 bool List::is(const ExpPtr& e)
 {
-    return e->typeName() == List::className();
+    return e->typeName() == List::nodeName();
 }
 
 List::List() : Value()
@@ -51,7 +51,7 @@ void List::asCode(std::ostream&o) const
 
 void List::print(std::ostream&o) const
 {
-    o << className() << "(";
+    o << nodeName() << "(";
     for( size_t i = 0; i < size(); ++i )
     {
         if(i) o << ", ";

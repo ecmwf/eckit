@@ -28,7 +28,7 @@ class Lambda : public Function {
 
 public: // methods
 
-    static std::string className() { return "Lambda"; }
+    static std::string nodeName() { return "Lambda"; }
 
     Lambda( ExpPtr body);
     Lambda( const std::string& a, ExpPtr body);
@@ -40,7 +40,7 @@ private:
 
     Lambda(args_t& a);
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 

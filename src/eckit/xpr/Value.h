@@ -29,7 +29,7 @@ class Value : public Expression {
 
 public: // methods
 
-    static std::string className() { return "Value"; }
+    static std::string nodeName() { return "Value"; }
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves

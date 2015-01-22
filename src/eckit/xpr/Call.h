@@ -27,7 +27,7 @@ class Call : public Function {
 
 public: // methods
 
-    static std::string className() { return "Call"; }
+    static std::string nodeName() { return "Call"; }
 
     Call( ExpPtr f );
     Call( ExpPtr f, ExpPtr a);
@@ -37,7 +37,7 @@ private : // methods
 
     Call( args_t &a );
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 

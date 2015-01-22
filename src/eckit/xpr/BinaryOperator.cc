@@ -129,11 +129,11 @@ std::string BinaryOperator<T>::returnSignature() const
 template < class T >
 std::string BinaryOperator<T>::typeName() const
 {
-    return BinaryOperator<T>::className();
+    return BinaryOperator<T>::nodeName();
 }
 
 template < class T >
-std::string BinaryOperator<T>::className()
+std::string BinaryOperator<T>::nodeName()
 {
     return opname( T() );
 }

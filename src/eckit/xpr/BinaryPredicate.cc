@@ -206,11 +206,11 @@ std::string BinaryPredicate<T>::returnSignature() const
 template < class T >
 std::string BinaryPredicate<T>::typeName() const
 {
-    return BinaryPredicate<T>::className();
+    return BinaryPredicate<T>::nodeName();
 }
 
 template < class T >
-std::string BinaryPredicate<T>::className()
+std::string BinaryPredicate<T>::nodeName()
 {
     return opname( T() );
 }

@@ -27,7 +27,7 @@ class Bind : public Function {
 
 public: // methods
 
-    static std::string className() { return "Bind"; }
+    static std::string nodeName() { return "Bind"; }
 
     Bind( size_t i, ExpPtr f, ExpPtr e );
     Bind( ExpPtr i, ExpPtr f, ExpPtr e );

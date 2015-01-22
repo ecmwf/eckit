@@ -75,11 +75,11 @@ std::string UnaryOperator<T>::returnSignature() const
 template < class T >
 std::string UnaryOperator<T>::typeName() const
 {
-    return UnaryOperator<T>::className();
+    return UnaryOperator<T>::nodeName();
 }
 
 template < class T >
-std::string UnaryOperator<T>::className()
+std::string UnaryOperator<T>::nodeName()
 {
     return opname( T() );
 }

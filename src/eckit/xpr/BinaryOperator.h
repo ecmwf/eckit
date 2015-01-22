@@ -32,7 +32,7 @@ template <class T>
 class BinaryOperator : public Function  {
 public:
 
-    static std::string className();
+    static std::string nodeName();
 
     BinaryOperator(ExpPtr a, ExpPtr b);
 

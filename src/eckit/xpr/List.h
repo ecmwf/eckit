@@ -33,7 +33,7 @@ public: // types
 
 public: // methods
 
-    static std::string className() { return "List"; }
+    static std::string nodeName() { return "List"; }
     static std::string sig() { return "l"; }
 
     static bool is ( const ExpPtr& e);
@@ -53,7 +53,7 @@ public: // methods
 
 private: // methods
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 

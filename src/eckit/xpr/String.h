@@ -31,7 +31,7 @@ public: // methods
     typedef std::string value_t;
 
     static std::string sig() { return "str"; }
-    static std::string className() { return "String"; }
+    static std::string nodeName() { return "String"; }
 
     static bool is ( const ExpPtr& e ) ;
 
@@ -57,7 +57,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 

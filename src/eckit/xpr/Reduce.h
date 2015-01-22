@@ -29,7 +29,7 @@ class Reduce : public Function {
 
 public: // methods
 
-    static std::string className() { return "Reduce"; }
+    static std::string nodeName() { return "Reduce"; }
 
     Reduce( ExpPtr f = undef(), ExpPtr l = undef() );
 
@@ -37,7 +37,7 @@ private:
 
     Reduce( args_t& a );
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 

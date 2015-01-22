@@ -22,7 +22,7 @@ Boolean::Boolean( const Boolean::value_t& v ) : v_(v)
 
 void Boolean::print(std::ostream&o) const
 {
-    o << className() << "(" << (v_? "true" : "false") << ")";
+    o << nodeName() << "(" << (v_? "true" : "false") << ")";
 }
 
 void Boolean::asCode(std::ostream&o) const

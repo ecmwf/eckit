@@ -50,9 +50,9 @@ public: // methods
     typedef std::vector<double> value_t;
 
     static std::string sig() { return "f"; }
-    static std::string className() { return "F"; }
+    static std::string nodeName() { return "F"; }
     
-    static bool is ( const ExpPtr& e ) { return e->typeName() == className(); }
+    static bool is ( const ExpPtr& e ) { return e->typeName() == nodeName(); }
 
     F( const string& n, const double& v ) : n_(n)
     {
@@ -67,7 +67,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 
@@ -100,7 +100,7 @@ class FSrc : public eckit::xpr::Function {
 public: // methods
 
     static std::string sig() { return "fsrc"; }
-    static std::string className() { return "FSrc"; }
+    static std::string nodeName() { return "FSrc"; }
 
     FSrc( const ExpPtr& e ) : Function()
     {
@@ -115,7 +115,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { NOTIMP; }
 
@@ -155,7 +155,7 @@ class FSnk : public eckit::xpr::Function {
 public: // methods
 
     static std::string sig() { return "fsnk"; }
-    static std::string className() { return "FSnk"; }
+    static std::string nodeName() { return "FSnk"; }
 
     FSnk( const ExpPtr& e ) : Function()
     {
@@ -170,7 +170,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); }
 
@@ -225,7 +225,7 @@ class FAvg  : public eckit::xpr::Function  {
 public: // methods
 
     static std::string sig() { return "favg"; }
-    static std::string className() { return "FAvg"; }
+    static std::string nodeName() { return "FAvg"; }
 
     FAvg( const ExpPtr& e ) : Function()
     {
@@ -239,7 +239,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); } //< returns a field
 
@@ -307,7 +307,7 @@ class FInterp : public eckit::xpr::Function  {
 public: // methods
 
     static std::string sig() { return "interp"; }
-    static std::string className() { return "FInterp"; }
+    static std::string nodeName() { return "FInterp"; }
 
     FInterp( const ExpPtr& e ) : Function()
     {
@@ -321,7 +321,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); } //< returns a field
 

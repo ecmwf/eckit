@@ -29,7 +29,7 @@ public: // static methods
     typedef bool value_t;
 
     static std::string sig() { return "b"; }
-    static std::string className() { return "Boolean"; }
+    static std::string nodeName() { return "Boolean"; }
 
     static scalar_t extract ( Scope& ctx , const ExpPtr& e )
     {
@@ -47,7 +47,7 @@ public: // methods
 
 private: // virtual methods
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 

@@ -88,7 +88,7 @@ public: // methods
 
     struct Swap {};
 
-    static std::string className() { return "Expression"; }
+    static std::string nodeName() { return "Expression"; }
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves

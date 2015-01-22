@@ -32,7 +32,7 @@ public: // types
 
 public: // methods
 
-    static std::string className() { return "Vector"; }
+    static std::string nodeName() { return "Vector"; }
 
     static std::string sig() { return "v"; }
 
@@ -56,7 +56,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 

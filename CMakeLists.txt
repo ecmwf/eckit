@@ -135,13 +135,11 @@ endif()
 ############################################################################################
 # export package info
 
-set( ECKIT_PACKAGES       "" )
 set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
 set( ECKIT_LIBRARIES      eckit eckit_web eckit_maths eckit_geometry )
 
 if( HAVE_GRIB )
-  list( APPEND ECKIT_PACKAGES ECKIT_GRIB )
   list( APPEND ECKIT_LIBRARIES eckit_grib )
   list( APPEND ECKIT_TPLS grib_api )
 endif()
@@ -156,7 +154,6 @@ if( HAVE_EIGEN )
 endif()
 
 if( HAVE_XPR )
-  list( APPEND ECKIT_PACKAGES ECKIT_XPR )
   list( APPEND ECKIT_LIBRARIES eckit_xpr )
 endif()
 

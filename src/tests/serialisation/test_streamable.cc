@@ -70,6 +70,9 @@ private:
 
 typedef unsigned char uchar;
 typedef long long llong;
+#ifndef ulong
+typedef unsigned long ulong;
+#endif
 typedef unsigned long long ullong;
 
 template <typename T>

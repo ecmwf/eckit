@@ -11,6 +11,7 @@
 /// @file Undef.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Undef_h
@@ -30,7 +31,16 @@ public: //  methods
 
     Undef();
 
+    Undef( Stream& s );
+
     virtual ~Undef();
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
 
 private:
 
@@ -45,6 +55,10 @@ private:
     virtual ExpPtr resolve(Scope & ctx) const;
     virtual ExpPtr cloneWith(args_t& a) const;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Undef> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

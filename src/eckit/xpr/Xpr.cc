@@ -15,7 +15,6 @@
 #include "eckit/xpr/Bind.h"
 #include "eckit/xpr/Call.h"
 #include "eckit/xpr/Count.h"
-#include "eckit/xpr/Expression.h"
 #include "eckit/xpr/Filter.h"
 #include "eckit/xpr/IfElse.h"
 #include "eckit/xpr/Lambda.h"

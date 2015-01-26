@@ -10,6 +10,7 @@
 
 /// @file IfElse.h
 /// @author Baudouin Raoult
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_IfElse_h
@@ -31,6 +32,15 @@ public: // methods
 
     IfElse( ExpPtr f, ExpPtr i, ExpPtr e );
 
+    IfElse( Stream& s );
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
+
 private: // methods
 
     IfElse(args_t& a);
@@ -44,6 +54,11 @@ private: // methods
     virtual void asCode( std::ostream& ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;
+
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<IfElse> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

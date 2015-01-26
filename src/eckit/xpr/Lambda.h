@@ -10,6 +10,7 @@
 
 /// @file Lambda.h
 /// @author Baudouin Raoult
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Lambda_h
@@ -34,7 +35,16 @@ public: // methods
     Lambda( const std::string& a, ExpPtr body);
     Lambda( const std::string& a, const std::string& b, ExpPtr body);
 
+    Lambda(Stream& s);
+
     ExpPtr call( Scope& ctx ) const;
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
 
 private:
 
@@ -49,6 +59,11 @@ private:
     virtual void asCode( std::ostream& ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;
+
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Lambda> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

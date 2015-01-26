@@ -10,6 +10,7 @@
 
 /// @file Map.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_FMap_h
@@ -31,6 +32,15 @@ public: // methods
 
     Map( ExpPtr f, ExpPtr l );
 
+    Map(Stream& s);
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
+
 private: // methods
 
     Map( args_t& a );
@@ -49,6 +59,10 @@ private: // methods
     virtual bool countable() const;
     virtual size_t count() const;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Map> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

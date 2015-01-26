@@ -30,6 +30,25 @@ Vector::Vector(Vector::value_t &v, Swap ignored )
     std::swap(v_,v);
 }
 
+Vector::Vector(Stream &s) : Value(s), v_()
+{
+    size_t l;
+    s >> l;
+    v_.resize(l);
+    for( size_t i = 0; i < l; ++i ) {
+        s >> v_[i];
+    }
+}
+
+void Vector::encode(Stream &s) const
+{
+    Value::encode(s);
+    s << v_.size();
+    for( size_t i = 0; i < v_.size(); ++i ) {
+        s << v_[i];
+    }
+}
+
 bool Vector::is(const ExpPtr &e)
 {
     return dynamic_cast<Vector*>(e.get()) != 0;
@@ -62,6 +81,14 @@ void Vector::asCode(std::ostream&o) const
     o << ")";
 }
 
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Vector::classSpec_ = {
+    &Value::classSpec(),
+    Vector::nodeName().c_str(),
+};
+
+Reanimator< Vector > Vector::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

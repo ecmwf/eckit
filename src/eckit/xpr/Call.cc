@@ -42,6 +42,8 @@ Call::Call(args_t& a) : Function(a)
     ASSERT( a.size() >= 1 && a.size() <= 3);
 }
 
+Call::Call(Stream &s) : Function(s) {}
+
 std::string Call::returnSignature() const
 {
     return ";";
@@ -65,6 +67,20 @@ ExpPtr Call::cloneWith( args_t& a ) const
 {
     return ExpPtr( new Call(a) );
 }
+
+void Call::encode(Stream &s) const
+{
+    Function::encode(s);
+}
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Call::classSpec_ = {
+    &Function::classSpec(),
+    Call::nodeName().c_str(),
+};
+
+Reanimator< Call > Call::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

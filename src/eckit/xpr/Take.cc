@@ -26,6 +26,13 @@ Take::Take( args_t& a ) : Function(a)
     ASSERT( a.size() == 2 );
 }
 
+Take::Take(Stream &s) : Function(s) {}
+
+void Take::encode(Stream &s) const
+{
+    Function::encode(s);
+}
+
 std::string Take::returnSignature() const
 {
     return Undef::sig();
@@ -54,6 +61,15 @@ ExpPtr Take::cloneWith(args_t& a) const
 {
     return ExpPtr( new Take(a) );
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Take::classSpec_ = {
+    &Function::classSpec(),
+    Take::nodeName().c_str(),
+};
+
+Reanimator< Take > Take::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

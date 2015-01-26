@@ -46,6 +46,13 @@ ProdAdd::ProdAdd(const ExpPtr& e)
     push_back(a2);
 }
 
+ProdAdd::ProdAdd(Stream &s) : Function(s) {}
+
+void ProdAdd::encode(Stream &s) const
+{
+    Function::encode(s);
+}
+
 std::string ProdAdd::returnSignature() const
 {
     for( args_t::const_iterator i = begin(); i != end(); ++i )
@@ -122,6 +129,15 @@ ProdAdd::Register::Register()
 
     Function::dispatcher()[ nodeName() + "(v,v,v)" ] = &compute_vvv;
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec ProdAdd::classSpec_ = {
+    &Function::classSpec(),
+    ProdAdd::nodeName().c_str(),
+};
+
+Reanimator< ProdAdd > ProdAdd::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

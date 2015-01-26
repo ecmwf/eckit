@@ -10,6 +10,7 @@
 
 /// @file Count.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Count_h
@@ -33,6 +34,12 @@ public: // methods
 
     Count( ExpPtr e = undef() );
 
+    Count ( Stream& s );
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
+
 private: // methods
 
     Count( args_t& a );
@@ -49,6 +56,10 @@ private: // methods
 
     virtual ExpPtr optimise(size_t depth) const;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Count> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

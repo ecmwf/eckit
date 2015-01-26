@@ -11,12 +11,11 @@
 /// @file Value.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Value_h
 #define eckit_xpr_Value_h
-
-#include "eckit/eckit.h"
 
 #include "eckit/xpr/Expression.h"
 
@@ -39,12 +38,20 @@ public: // methods
     Value( const args_t& args );
     Value( args_t& args, Swap ignored );
 
+    Value(Stream& s);
+
     virtual ~Value();
+
+    virtual void encode(eckit::Stream& s) const;
+
+    // Class members
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
 
     virtual ExpPtr evaluate( Scope& ) const;
 
+    static  ClassSpec classSpec_;
 };
 
 //--------------------------------------------------------------------------------------------

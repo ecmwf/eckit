@@ -42,6 +42,13 @@ Lambda::Lambda(args_t& a) : Function(a)
     ASSERT( a.size() <= 3 );
 }
 
+Lambda::Lambda(Stream &s) : Function(s) {}
+
+void Lambda::encode(Stream &s) const
+{
+    Function::encode(s);
+}
+
 std::string Lambda::returnSignature() const
 {
     return "()";
@@ -94,6 +101,15 @@ ExpPtr Lambda::cloneWith(args_t& a) const
 {
     return ExpPtr(new Lambda(a));
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Lambda::classSpec_ = {
+    &Function::classSpec(),
+    Lambda::nodeName().c_str(),
+};
+
+Reanimator< Lambda > Lambda::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

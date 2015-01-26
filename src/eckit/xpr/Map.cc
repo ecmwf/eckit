@@ -27,6 +27,13 @@ Map::Map( args_t& a ) : Function(a)
     ASSERT( a.size() == 2 );
 }
 
+Map::Map(Stream &s) : Function(s) {}
+
+void Map::encode(Stream &s) const
+{
+    Function::encode(s);
+}
+
 std::string Map::returnSignature() const
 {
     return List::sig();
@@ -75,6 +82,15 @@ size_t Map::count() const
 {
     return args(1)->count();
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Map::classSpec_ = {
+    &Function::classSpec(),
+    Map::nodeName().c_str(),
+};
+
+Reanimator< Map > Map::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

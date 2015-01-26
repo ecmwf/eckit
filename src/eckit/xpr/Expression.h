@@ -11,6 +11,7 @@
 /// @file Expression.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Expression_h
@@ -38,10 +39,10 @@
 #include <map>
 #include <utility>
 
-#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/Owned.h"
 #include "eckit/memory/SharedPtr.h"
+#include "eckit/serialisation/Streamable.h"
 
 //--------------------------------------------------------------------------------------------
 
@@ -82,7 +83,7 @@ public:
 
 class Optimiser;
 
-class Expression : public Owned {
+class Expression : public Owned, public Streamable {
 
 public: // methods
 
@@ -98,6 +99,8 @@ public: // methods
     /// handle the setup of the parameters themselves
     Expression( const args_t& args );
     Expression(args_t& args, Swap);
+
+    Expression(Stream& s);
 
     virtual ~Expression();
 
@@ -125,6 +128,8 @@ public: // methods
     // Used to bind undef() and lambda parameters
     virtual ExpPtr resolve(Scope &) const;
 
+    static const eckit::ClassSpec& classSpec() { return classSpec_; }
+
 public: // virtual methods
 
     virtual std::string typeName() const = 0;
@@ -137,6 +142,9 @@ public: // virtual methods
     virtual bool countable() const { return false; }
     virtual size_t count() const { return 0; }
     virtual ExpPtr optimise(size_t) const;
+
+    // From Streamable
+    virtual void encode(eckit::Stream& s) const;
 
 protected: // members
 
@@ -175,8 +183,8 @@ private:
     // For unit tests....
     friend class eckit_test::TestExp;
 
+    static  ClassSpec classSpec_;
 };
-
 
 //--------------------------------------------------------------------------------------------
 

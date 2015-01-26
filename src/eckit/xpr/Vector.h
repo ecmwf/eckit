@@ -11,6 +11,7 @@
 /// @file Vector.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Vector_h
@@ -48,11 +49,16 @@ public: // methods
     Vector( const value_t& v );
     Vector( value_t& v, Swap );
 
+    Vector( Stream& s );
+
     /// @returns the size of the internal vector
     size_t size() const { return v_.size(); }
 
     /// @returns a copy of the internal vector
     const value_t& value() const { return v_; }
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 public: // virtual methods
 
@@ -64,10 +70,18 @@ public: // virtual methods
     virtual void asCode( std::ostream& o ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
 
+protected: // virtual methods
+
+    virtual void encode( Stream& s ) const;
+
 protected: // members
 
     value_t v_;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Vector> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

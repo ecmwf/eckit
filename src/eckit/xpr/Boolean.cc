@@ -20,6 +20,17 @@ Boolean::Boolean( const Boolean::value_t& v ) : v_(v)
 {
 }
 
+Boolean::Boolean(Stream &s) : Value(s), v_(0)
+{
+    s >> v_;
+}
+
+void Boolean::encode(Stream &s) const
+{
+    Value::encode(s);
+    s << v_;
+}
+
 void Boolean::print(std::ostream&o) const
 {
     o << nodeName() << "(" << (v_? "true" : "false") << ")";
@@ -40,6 +51,15 @@ ExpPtr Boolean::cloneWith(args_t& a) const
 {
     NOTIMP; // Should not be called
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Boolean::classSpec_ = {
+    &Value::classSpec(),
+    Boolean::nodeName().c_str(),
+};
+
+Reanimator< Boolean > Boolean::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

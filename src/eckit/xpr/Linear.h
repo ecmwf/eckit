@@ -11,6 +11,7 @@
 /// @file Linear.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Linear_h
@@ -32,7 +33,16 @@ public: // methods
 
     Linear( ExpPtr e );
 
+    Linear(Stream& s);
+
     struct Register { Register(); };
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
 
 private: // methods
 
@@ -50,6 +60,10 @@ protected: // methods
 
     static ExpPtr compute( Scope& ctx , const args_t& p );
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Linear> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

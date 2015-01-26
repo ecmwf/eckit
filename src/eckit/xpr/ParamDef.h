@@ -11,6 +11,7 @@
 /// @file ParamDef.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_ParamDef_h
@@ -41,9 +42,18 @@ public: //  methods
 
     ParamDef(const std::string& name);
 
+    ParamDef( Stream& s );
+
     virtual ~ParamDef();
 
     const std::string& name() const { return name_; }
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
 
 private:
 
@@ -56,6 +66,11 @@ private:
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
+
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<ParamDef> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

@@ -21,6 +21,13 @@ Count::Count(ExpPtr e) : Function()
     push_back(e);
 }
 
+Count::Count(Stream &s) : Function(s) {}
+
+void Count::encode(Stream &s) const
+{
+    Function::encode(s);
+}
+
 ExpPtr Count::optimise(size_t depth) const
 {
     ExpPtr o = Function::optimise(depth);
@@ -57,6 +64,15 @@ void Count::asCode(std::ostream&o) const
 {
     o << "xpr::count("; printArgs(o); o << ")";
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Count::classSpec_ = {
+    &Function::classSpec(),
+    Count::nodeName().c_str(),
+};
+
+Reanimator< Count > Count::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

@@ -11,6 +11,7 @@
 /// @file Function.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Function_h
@@ -46,14 +47,20 @@ protected: // methods
     Function( const args_t& args );
     Function( args_t& args, Swap ignored );
 
+    Function(Stream& s);
+
 public: // methods
 
     virtual ~Function();
+
+    virtual void encode(eckit::Stream& s) const;
 
     static dispatcher_t& dispatcher();
     //static factory_t& factory();
 
     static std::string nodeName() { return "Function"; }
+
+    static const eckit::ClassSpec& classSpec() { return classSpec_; }
 
 public: // virtual methods
 
@@ -70,6 +77,8 @@ protected: // methods
 
     std::string signatureArguments( const args_t& args ) const;
 
+private:
+    static  ClassSpec classSpec_;
 };
 
 //--------------------------------------------------------------------------------------------

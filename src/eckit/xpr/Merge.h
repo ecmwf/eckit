@@ -10,6 +10,7 @@
 
 /// @file Merge.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Merge_h
@@ -31,7 +32,12 @@ public: // methods
 
     Merge( ExpPtr l0, ExpPtr l1 );
 
+    Merge( Stream& s );
+
     struct Register { Register(); };
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private: // methods
 
@@ -53,8 +59,14 @@ private: // methods
 
 protected:
 
+    virtual void encode(Stream& s) const;
+
     static ExpPtr compute( Scope& ctx, const args_t& p );
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Merge> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

@@ -27,9 +27,14 @@ Value::Value(args_t &args, Swap ignored) : Expression(args, ignored)
 {
 }
 
+Value::Value(Stream &s) : Expression(s) {}
 
 Value::~Value()
 {
+}
+
+void Value::encode(eckit::Stream& s) const {
+    Expression::encode(s);
 }
 
 ExpPtr Value::evaluate( Scope &ctx ) const
@@ -37,8 +42,12 @@ ExpPtr Value::evaluate( Scope &ctx ) const
     return self();
 }
 
-
 //--------------------------------------------------------------------------------------------
+
+ClassSpec Value::classSpec_ = {
+    &Expression::classSpec(),
+    Value::nodeName().c_str(),
+};
 
 } // namespace xpr
 } // namespace eckit

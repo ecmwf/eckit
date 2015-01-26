@@ -42,6 +42,13 @@ List::List(args_t &args, Swap ignored) : Value(args, ignored)
 {
 }
 
+List::List(Stream &s) : Value(s) {}
+
+void List::encode(Stream &s) const
+{
+    Value::encode(s);
+}
+
 void List::asCode(std::ostream&o) const
 {
     o << "xpr::list("; printArgs(o); o <<")";
@@ -64,6 +71,15 @@ ExpPtr List::cloneWith(args_t& a) const
 {
     return ExpPtr(new List(a, List::Swap()));
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec List::classSpec_ = {
+    &Value::classSpec(),
+    List::nodeName().c_str(),
+};
+
+Reanimator< List > List::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

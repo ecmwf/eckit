@@ -10,6 +10,7 @@
 
 /// @file Call.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Call_h
@@ -33,6 +34,15 @@ public: // methods
     Call( ExpPtr f, ExpPtr a);
     Call( ExpPtr f, ExpPtr a, ExpPtr b);
 
+    Call( Stream& s );
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
+
 private : // methods
 
     Call( args_t &a );
@@ -45,6 +55,8 @@ private : // methods
     virtual void asCode( std::ostream& o ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
 
+    static  ClassSpec classSpec_;
+    static  Reanimator<Call> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

@@ -20,6 +20,17 @@ Scalar::Scalar( const scalar_t& v ) : v_(v)
 {
 }
 
+Scalar::Scalar(Stream &s) : Value(s), v_(0)
+{
+    s >> v_;
+}
+
+void Scalar::encode(Stream &s) const
+{
+    Value::encode(s);
+    s << v_;
+}
+
 bool Scalar::is(const ExpPtr &e)
 {
     return dynamic_cast<Scalar*>(e.get()) != 0;
@@ -39,6 +50,15 @@ Scalar::Scalar(ExpPtr e) : v_(0)
 ExpPtr Scalar::cloneWith(args_t& a) const {
     NOTIMP; // Should not be called
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Scalar::classSpec_ = {
+    &Value::classSpec(),
+    Scalar::nodeName().c_str(),
+};
+
+Reanimator< Scalar > Scalar::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

@@ -10,6 +10,7 @@
 
 /// @file List.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_List_h
@@ -48,8 +49,17 @@ public: // methods
     List(const args_t &args );
     List(args_t &args, Swap );
 
+    List(Stream& s);
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
     /// @returns the size of the internal std::vector
     const value_t& value() const { return args(); }
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
 
 private: // methods
 
@@ -66,6 +76,10 @@ private: // methods
     virtual bool countable() const { return true; }
     virtual size_t count() const { return size(); }
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<List> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

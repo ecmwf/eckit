@@ -10,6 +10,7 @@
 
 /// @file ZipWith.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_ZipWith_h
@@ -31,6 +32,15 @@ public: // methods
 
     ZipWith( ExpPtr f, ExpPtr l0, ExpPtr l1 );
 
+    ZipWith( Stream& s );
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
+
 private: // methods
 
     ZipWith( args_t& a );
@@ -49,6 +59,10 @@ private: // methods
     virtual bool countable() const;
     virtual size_t count() const;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<ZipWith> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

@@ -27,6 +27,13 @@ Reduce::Reduce( args_t& a ) : Function(a)
     ASSERT( a.size() == 2 );
 }
 
+Reduce::Reduce(Stream &s) : Function(s) {}
+
+void Reduce::encode(Stream &s) const
+{
+    Function::encode(s);
+}
+
 std::string Reduce::returnSignature() const
 {
     return Undef::sig(); /// @todo review this -- it could be the signature iterated over the list
@@ -62,6 +69,16 @@ ExpPtr Reduce::cloneWith(args_t& a) const
 {
     return ExpPtr( new Reduce(a) );
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Reduce::classSpec_ = {
+    &Function::classSpec(),
+    Reduce::nodeName().c_str(),
+};
+
+Reanimator< Reduce > Reduce::reanimator_;
+
 //--------------------------------------------------------------------------------------------
 
 ExpPtr reduce( ExpPtr f,  ExpPtr list )

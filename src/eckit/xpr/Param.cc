@@ -21,8 +21,19 @@ Param::Param(const std::string& name) : Expression(), name_(name)
 {
 }
 
+Param::Param(Stream &s) : Expression(s), name_()
+{
+    s >> name_;
+}
+
 Param::~Param()
 {
+}
+
+void Param::encode(Stream &s) const
+{
+    Expression::encode(s);
+    s << name_;
 }
 
 void Param::print(std::ostream&o) const
@@ -50,6 +61,15 @@ ExpPtr Param::cloneWith( args_t& a ) const
 {
     NOTIMP; // Should not be called
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Param::classSpec_ = {
+    &Expression::classSpec(),
+    Param::nodeName().c_str(),
+};
+
+Reanimator< Param > Param::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

@@ -10,6 +10,7 @@
 
 /// @file Take.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Take_h
@@ -33,6 +34,15 @@ public: // methods
 
     Take( ExpPtr e = undef(), ExpPtr l = undef()  );
 
+    Take( Stream& s );
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
+
 private: // methods
 
     Take( args_t& a );
@@ -47,6 +57,10 @@ private: // methods
 
     virtual ExpPtr cloneWith(args_t& a) const;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Take> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

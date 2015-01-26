@@ -37,8 +37,24 @@ Expression::Expression(args_t &args, Swap )
     std::swap(args_, args);
 }
 
+Expression::Expression(Stream& s) : Streamable(s) {
+    args_t::size_type l;
+    s >> l;
+    for (int i = 0; i < l; ++i) {
+        Expression *e = Reanimator<Expression>::reanimate(s);
+        push_back(ExpPtr(e));
+    }
+}
+
 Expression::~Expression()
 {
+}
+
+void Expression::encode(Stream& s) const {
+    Streamable::encode(s);
+    s << args_.size();
+    for (const auto& a : args_)
+        s << *a;
 }
 
 ExpPtr Expression::eval(bool optimize) const
@@ -193,6 +209,11 @@ std::ostream& operator<<( std::ostream& os, const Expression& v)
 }
 
 //--------------------------------------------------------------------------------------------
+
+ClassSpec Expression::classSpec_ = {
+    &Streamable::classSpec(),
+    Expression::nodeName().c_str(),
+};
 
 } // namespace xpr
 } // namespace eckit

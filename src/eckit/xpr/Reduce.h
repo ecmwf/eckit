@@ -10,6 +10,7 @@
 
 /// @file Reduce.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Reduce_h
@@ -33,6 +34,15 @@ public: // methods
 
     Reduce( ExpPtr f = undef(), ExpPtr l = undef() );
 
+    Reduce( Stream& s );
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
+
 private:
 
     Reduce( args_t& a );
@@ -46,6 +56,11 @@ private:
      virtual void asCode( std::ostream& ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;
+
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Reduce> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

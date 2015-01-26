@@ -42,6 +42,13 @@ Bind::Bind(args_t& a) : Function(a)
     ASSERT( a.size() == 3 );
 }
 
+Bind::Bind(Stream &s) : Function(s) {}
+
+void Bind::encode(Stream &s) const
+{
+    Function::encode(s);
+}
+
 std::string Bind::typeName() const
 {
     return Bind::nodeName();
@@ -76,6 +83,15 @@ ExpPtr Bind::cloneWith(args_t& a) const
 {
     return ExpPtr( new Bind(a) );
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Bind::classSpec_ = {
+    &Function::classSpec(),
+    Bind::nodeName().c_str(),
+};
+
+Reanimator< Bind > Bind::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

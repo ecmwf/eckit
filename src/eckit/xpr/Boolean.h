@@ -10,6 +10,7 @@
 
 /// @file Boolean.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Boolean_h
@@ -42,8 +43,13 @@ public: // methods
 
     Boolean( const value_t& v );
 
+    Boolean( Stream& s );
+
     /// @returns the value of the scalar
     value_t value() const { return v_; }
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private: // virtual methods
 
@@ -55,10 +61,18 @@ private: // virtual methods
     virtual void asCode( std::ostream& o ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
 
+protected: // virtual methods
+
+    virtual void encode( Stream& s ) const;
+
 protected: // members
 
     value_t v_;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Boolean> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

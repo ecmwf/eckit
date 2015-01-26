@@ -22,8 +22,15 @@ Undef::Undef() : Expression()
 {
 }
 
+Undef::Undef(Stream &s) : Expression(s) {}
+
 Undef::~Undef()
 {
+}
+
+void Undef::encode(Stream &s) const
+{
+    Expression::encode(s);
 }
 
 bool Undef::is(const ExpPtr &e) {
@@ -59,6 +66,14 @@ ExpPtr Undef::cloneWith(args_t& a) const {
     NOTIMP; // Should not be called
 }
 
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Undef::classSpec_ = {
+    &Expression::classSpec(),
+    Undef::nodeName().c_str(),
+};
+
+Reanimator< Undef > Undef::reanimator_;
 
 } // namespace xpr
 } // namespace eckit

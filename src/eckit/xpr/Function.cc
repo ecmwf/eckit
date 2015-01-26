@@ -25,8 +25,14 @@ Function::Function(const args_t &args) : Expression(args)
 {
 }
 
+Function::Function(Stream& s) : Expression(s) {}
+
 Function::~Function()
 {
+}
+
+void Function::encode(eckit::Stream& s) const {
+    Expression::encode(s);
 }
 
 Function::dispatcher_t& Function::dispatcher()
@@ -95,6 +101,11 @@ std::string Function::signatureArguments(const args_t &args) const
 }
 
 //--------------------------------------------------------------------------------------------
+
+ClassSpec Function::classSpec_ = {
+    &Expression::classSpec(),
+    Function::nodeName().c_str(),
+};
 
 } // namespace xpr
 } // namespace eckit

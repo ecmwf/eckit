@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/xpr/Scalar.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/BinaryPredicate.h"
 #include "eckit/xpr/Optimiser.h"
@@ -198,6 +197,25 @@ BinaryPredicate<T>::BinaryPredicate(args_t& a) : Function(a)
 }
 
 template < class T >
+BinaryPredicate<T>::BinaryPredicate(Stream& s) : Function(s) {}
+
+template < class T >
+const ClassSpec& BinaryPredicate<T>::classSpec()
+{
+     static ClassSpec myClassSpec = {
+         &Function::classSpec(),
+         BinaryPredicate<T>::nodeName().c_str(),
+     };
+     return myClassSpec;
+}
+
+template < class T >
+void BinaryPredicate<T>::encode(Stream &s) const
+{
+    Function::encode(s);
+}
+
+template < class T >
 std::string BinaryPredicate<T>::returnSignature() const
 {
     return Boolean::sig();
@@ -250,6 +268,11 @@ ExpPtr BinaryPredicate<T>::Computer<U,V,I>::compute(Scope& ctx, const args_t &p)
 
     return I::apply(op,a,b);
 }
+
+//--------------------------------------------------------------------------------------------
+
+template < class T >
+Reanimator< BinaryPredicate<T> > BinaryPredicate<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

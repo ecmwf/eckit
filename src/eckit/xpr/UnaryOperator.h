@@ -11,6 +11,7 @@
 /// @file UnaryOperator.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_UnaryFunc_h
@@ -45,6 +46,8 @@ public:
 
     UnaryOperator( ExpPtr e );
 
+    UnaryOperator(Stream& s);
+
     /// Applies an implementation of the unary operator
     /// U is the left operand type ( Scalar, Vector, ... )
     /// I is the implementation type
@@ -64,6 +67,13 @@ public:
         static ExpPtr compute( Scope& ctx , const args_t& p );
     };
 
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec();
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
+
 private: // methods
 
     UnaryOperator( args_t& a );
@@ -79,6 +89,9 @@ private: // methods
 
     virtual void asCode( std::ostream& o ) const;
 
+private: // static members
+
+    static  Reanimator<UnaryOperator> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

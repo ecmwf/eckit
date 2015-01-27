@@ -10,6 +10,7 @@
 
 /// @file BinaryPredicate.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_BinaryPredicate_h
@@ -38,6 +39,8 @@ public:
 
     BinaryPredicate( ExpPtr a, ExpPtr b);
 
+    BinaryPredicate(Stream &s);
+
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
     /// U is the left operand type ( Scalar, Vector, ... )
@@ -59,6 +62,13 @@ public:
         static ExpPtr compute( Scope& ct , const args_t& p );
     };
 
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec();
+
+protected:
+
+    virtual void encode(Stream&) const;
+
 private: // methods
 
     BinaryPredicate( args_t& a );
@@ -73,6 +83,8 @@ private: // methods
     }
 
     virtual void asCode( std::ostream& o ) const;
+
+    static  Reanimator<BinaryPredicate> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

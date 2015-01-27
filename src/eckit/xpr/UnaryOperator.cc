@@ -67,6 +67,25 @@ UnaryOperator<T>::UnaryOperator(args_t& a) : Function(a)
 }
 
 template < class T >
+UnaryOperator<T>::UnaryOperator(Stream& s) : Function(s) {}
+
+template < class T >
+const ClassSpec& UnaryOperator<T>::classSpec()
+{
+     static ClassSpec myClassSpec = {
+         &Function::classSpec(),
+         UnaryOperator<T>::nodeName().c_str(),
+     };
+     return myClassSpec;
+}
+
+template < class T >
+void UnaryOperator<T>::encode(Stream &s) const
+{
+    Function::encode(s);
+}
+
+template < class T >
 std::string UnaryOperator<T>::returnSignature() const
 {
     return args(0)->returnSignature();
@@ -117,6 +136,11 @@ ExpPtr UnaryOperator<T>::Computer<U,I>::compute(Scope& ctx, const args_t &p)
     typename U::value_t a = U::extract(ctx, p[0]);
     return I::apply(T(),a);
 }
+
+//--------------------------------------------------------------------------------------------
+
+template < class T >
+Reanimator< UnaryOperator<T> > UnaryOperator<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

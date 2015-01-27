@@ -116,6 +116,25 @@ BinaryOperator<T>::BinaryOperator(args_t& a) : Function(a)
 }
 
 template < class T >
+BinaryOperator<T>::BinaryOperator(Stream& s) : Function(s) {}
+
+template < class T >
+const ClassSpec& BinaryOperator<T>::classSpec()
+{
+     static ClassSpec myClassSpec = {
+         &Function::classSpec(),
+         BinaryOperator<T>::nodeName().c_str(),
+     };
+     return myClassSpec;
+}
+
+template < class T >
+void BinaryOperator<T>::encode(Stream &s) const
+{
+    Function::encode(s);
+}
+
+template < class T >
 std::string BinaryOperator<T>::returnSignature() const
 {
     for( args_t::const_iterator i = begin(); i != end(); ++i )
@@ -167,6 +186,11 @@ ExpPtr BinaryOperator<T>::Computer<U,V,I>::compute(Scope& ctx, const args_t &p)
 
     return I::apply(op,a,b);
 }
+
+//--------------------------------------------------------------------------------------------
+
+template < class T >
+Reanimator< BinaryOperator<T> > BinaryOperator<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

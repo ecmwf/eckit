@@ -11,6 +11,7 @@
 /// @file BinaryOperator.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_BinaryFunc_h
@@ -36,6 +37,8 @@ public:
 
     BinaryOperator(ExpPtr a, ExpPtr b);
 
+    BinaryOperator(Stream& s);
+
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
     /// U is the left operand type ( Scalar, Vector, ... )
@@ -57,6 +60,13 @@ public:
         static ExpPtr compute( Scope& ctx , const args_t& p );
     };
 
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec();
+
+protected: // virtual methods
+
+    virtual void encode(Stream& s) const;
+
 private: // methods
 
     BinaryOperator( args_t& a );
@@ -72,6 +82,9 @@ private: // methods
 
     virtual void asCode( std::ostream& o ) const;
 
+private: // static members
+
+    static  Reanimator<BinaryOperator> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

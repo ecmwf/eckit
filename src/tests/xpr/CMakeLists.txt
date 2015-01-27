@@ -23,6 +23,12 @@ ecbuild_add_test(   TARGET      test_xpr_lambda
 					SOURCES     test_xpr_lambda.cc
 					LIBS        eckit_xpr eckit )
 
+ecbuild_add_test(   TARGET      test_xpr_streaming
+					BOOST
+					CONDITION   HAVE_XPR
+					SOURCES     test_xpr_streaming.cc
+					LIBS        eckit_xpr eckit )
+
 ecbuild_add_test(   TARGET      test_xpr_usage
 					BOOST
 					CONDITION   HAVE_XPR

@@ -63,6 +63,7 @@ private: // methods
 
 protected:
 
+    // From Streamable
     virtual void encode(Stream& s) const;
 
     static ExpPtr compute( Scope& ctx, const args_t& p );

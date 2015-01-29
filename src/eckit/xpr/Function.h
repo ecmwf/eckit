@@ -57,8 +57,6 @@ public: // methods
 
     virtual ~Function();
 
-    virtual void encode(eckit::Stream& s) const;
-
     static dispatcher_t& dispatcher();
     //static factory_t& factory();
 
@@ -78,6 +76,9 @@ public: // virtual methods
 
 
 protected: // methods
+
+    // From Streamable
+    virtual void encode(eckit::Stream& s) const;
 
     std::string signatureArguments( const args_t& args ) const;
 

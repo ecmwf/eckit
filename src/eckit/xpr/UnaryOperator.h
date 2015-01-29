@@ -76,6 +76,7 @@ public:
 
 protected: // virtual methods
 
+    // From Streamable
     virtual void encode(Stream& s) const;
 
 private: // methods

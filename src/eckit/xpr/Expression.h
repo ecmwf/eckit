@@ -147,11 +147,10 @@ public: // virtual methods
     virtual size_t count() const { return 0; }
     virtual ExpPtr optimise(size_t) const;
 
-    // From Streamable
-    virtual void encode(eckit::Stream& s) const;
-
 protected: // members
 
+    // From Streamable
+    virtual void encode(eckit::Stream& s) const;
 
     void printArgs(std::ostream& ) const;
     virtual void asCode( std::ostream& ) const = 0;

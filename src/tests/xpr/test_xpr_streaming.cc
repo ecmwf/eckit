@@ -477,32 +477,6 @@ using namespace eckit_test;
 
 BOOST_AUTO_TEST_SUITE( test_eckit_xpr_streaming )
 
-BOOST_AUTO_TEST_CASE( test_eckit_xpr_encode )
-{
-    Xpr f = fsnk(
-                favg(
-                    xpr::map( finterp(), fsrc( 10 ) )
-                    )
-                );
-
-    PathName filename = PathName::unique( "data" );
-    std::string filepath = filename.asString();
-    {
-        BOOST_TEST_MESSAGE("Streaming to file:");
-        BOOST_TEST_MESSAGE("  " << f);
-        FileStream sout( filepath.c_str(), "w" );
-        f.expr()->encode(sout);
-    }
-    {
-        BOOST_TEST_MESSAGE("Streaming from file:");
-        FileStream sin( filepath.c_str(), "r" );
-        Xpr f2( (new FSnk( sin ))->self() );
-        BOOST_TEST_MESSAGE("  " << f2);
-        f2.eval();
-    }
-    if (filename.exists()) filename.unlink();
-}
-
 BOOST_AUTO_TEST_CASE( test_eckit_xpr_reanimate )
 {
     Xpr f = fsnk(

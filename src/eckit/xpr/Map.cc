@@ -62,12 +62,6 @@ ExpPtr Map::evaluate( Scope &ctx ) const
     return ExpPtr(new List( res, List::Swap()));
 }
 
-
-void Map::asCode(std::ostream&o) const
-{
-    o << "xpr::map("; printArgs(o); o << ")";
-}
-
 ExpPtr Map::cloneWith(args_t& a) const
 {
     return ExpPtr( new Map(a) );

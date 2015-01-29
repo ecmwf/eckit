@@ -60,11 +60,6 @@ Count::Count(args_t& a) : Function(a)
     ASSERT( a.size() == 1);
 }
 
-void Count::asCode(std::ostream&o) const
-{
-    o << "xpr::count("; printArgs(o); o << ")";
-}
-
 //--------------------------------------------------------------------------------------------
 
 ClassSpec Count::classSpec_ = {

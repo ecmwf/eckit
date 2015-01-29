@@ -136,6 +136,7 @@ public: // methods
 
 public: // virtual methods
 
+    virtual std::string factoryName() const { return "xpr::expression"; }
     virtual std::string typeName() const = 0;
     virtual std::string signature() const = 0;
     virtual std::string returnSignature() const = 0;
@@ -153,7 +154,7 @@ protected: // members
     virtual void encode(eckit::Stream& s) const;
 
     void printArgs(std::ostream& ) const;
-    virtual void asCode( std::ostream& ) const = 0;
+    virtual void asCode( std::ostream& ) const;
 
     // args_ are read-only, use these methods instead
 

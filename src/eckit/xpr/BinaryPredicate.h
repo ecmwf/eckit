@@ -78,6 +78,7 @@ private: // methods
 
     BinaryPredicate( args_t& a );
 
+    virtual std::string factoryName() const;
     virtual std::string typeName() const;
 
     virtual std::string returnSignature() const;

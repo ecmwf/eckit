@@ -38,7 +38,7 @@ void Boolean::print(std::ostream&o) const
 
 void Boolean::asCode(std::ostream&o) const
 {
-    o << "xpr::boolean(" << (v_? "true" : "false") << ")";
+    o << factoryName() << "(" << (v_? "true" : "false") << ")";
 }
 
 Boolean::Boolean(const ExpPtr& e) : v_(0)

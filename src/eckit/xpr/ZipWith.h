@@ -50,13 +50,12 @@ private: // methods
 
     ZipWith( args_t& a );
 
+    virtual std::string factoryName() const { return "xpr::zipWith"; }
     virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
-
-    virtual void asCode( std::ostream& ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;
 

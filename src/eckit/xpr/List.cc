@@ -49,11 +49,6 @@ void List::encode(Stream &s) const
     Value::encode(s);
 }
 
-void List::asCode(std::ostream&o) const
-{
-    o << "xpr::list("; printArgs(o); o <<")";
-}
-
 //--------------------------------------------------------------------------------------------
 
 void List::print(std::ostream&o) const

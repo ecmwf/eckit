@@ -57,6 +57,7 @@ public: // methods
 
 private: // virtual methods
 
+    virtual std::string factoryName() const { return "xpr::boolean"; }
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }

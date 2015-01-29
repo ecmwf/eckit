@@ -77,6 +77,7 @@ private:
 
     ProdAdd( const args_t& args );
 
+    virtual std::string factoryName() const { return "xpr::prod_add"; }
     virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;

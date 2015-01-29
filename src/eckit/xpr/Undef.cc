@@ -44,7 +44,7 @@ void Undef::print(std::ostream&o) const
 
 void Undef::asCode(std::ostream&o) const
 {
-    o << "xpr::undef()";
+    o << factoryName() << "()";
 }
 
 ExpPtr Undef::evaluate( Scope &ctx ) const

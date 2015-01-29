@@ -72,7 +72,7 @@ void Vector::print(std::ostream&o) const
 
 void Vector::asCode(std::ostream&o) const
 {
-    o << "xpr::vector(";
+    o << factoryName() << "(";
     for( size_t i = 0; i < v_.size(); ++i )
     {
         if(i) o << ", ";

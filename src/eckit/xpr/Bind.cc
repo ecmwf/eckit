@@ -74,11 +74,6 @@ ExpPtr Bind::evaluate( Scope &ctx ) const
     return f->eval(ctx);
 }
 
-void Bind::asCode(std::ostream& o) const
-{
-    o << "xpr::bind("; printArgs(o); o << ")";
-}
-
 ExpPtr Bind::cloneWith(args_t& a) const
 {
     return ExpPtr( new Bind(a) );

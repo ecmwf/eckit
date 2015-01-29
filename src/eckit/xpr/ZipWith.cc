@@ -68,11 +68,6 @@ ExpPtr ZipWith::evaluate( Scope &ctx ) const
      return ExpPtr(new List( res, List::Swap()));
 }
 
-void ZipWith::asCode(std::ostream&o) const
-{
-    o << "xpr::zipWith("; printArgs(o); o <<")";
-}
-
 ExpPtr ZipWith::cloneWith(args_t& a) const
 {
     return ExpPtr( new ZipWith(a) );

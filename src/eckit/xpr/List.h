@@ -68,12 +68,12 @@ protected: // virtual methods
 
 private: // methods
 
+    virtual std::string factoryName() const { return "xpr::list"; }
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
-    virtual void asCode( std::ostream& ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;
 

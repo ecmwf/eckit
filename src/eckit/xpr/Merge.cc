@@ -66,11 +66,6 @@ ExpPtr Merge::evaluate( Scope &ctx ) const
     return ExpPtr(new List( res, Expression::Swap()));
 }
 
-void Merge::asCode(std::ostream&o) const
-{
-    o << "xpr::merge("; printArgs(o); o <<")";
-}
-
 ExpPtr Merge::cloneWith(args_t& a) const
 {
     return ExpPtr( new Merge(a) );

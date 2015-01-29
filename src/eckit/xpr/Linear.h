@@ -53,6 +53,7 @@ private: // methods
 
     Linear(args_t& a);
 
+    virtual std::string factoryName() const { return "xpr::linear"; }
     virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;

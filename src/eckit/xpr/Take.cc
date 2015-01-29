@@ -51,12 +51,6 @@ ExpPtr Take::evaluate( Scope &ctx ) const
     return list->args(i);
 }
 
-
-void Take::asCode(std::ostream&o) const
-{
-    o << "xpr::take("; printArgs(o); o << ")";
-}
-
 ExpPtr Take::cloneWith(args_t& a) const
 {
     return ExpPtr( new Take(a) );

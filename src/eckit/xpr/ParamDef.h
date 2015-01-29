@@ -64,6 +64,7 @@ private:
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
+    virtual std::string factoryName() const { return "xpr::paramdef"; }
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }

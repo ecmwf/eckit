@@ -91,12 +91,6 @@ ExpPtr Lambda::call( Scope &ctx ) const
     return body->eval(scope);
 }
 
-
-void Lambda::asCode(std::ostream&o) const
-{
-    o << "xpr::lambda("; printArgs(o); o <<")";
-}
-
 ExpPtr Lambda::cloneWith(args_t& a) const
 {
     return ExpPtr(new Lambda(a));

@@ -63,13 +63,6 @@ ExpPtr Filter::evaluate( Scope &ctx ) const
     return ExpPtr(new List( res, List::Swap()));
 }
 
-
-void Filter::asCode(std::ostream&o) const
-{
-    o << "xpr::filter("; printArgs(o); o <<")";
-}
-
-
 ExpPtr Filter::cloneWith(args_t& a) const
 {
     return ExpPtr(new Filter(a));

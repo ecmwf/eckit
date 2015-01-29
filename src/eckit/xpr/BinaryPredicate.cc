@@ -35,6 +35,15 @@ static const char *opsymbol(const NotEqual&)      { return "!=";  }
 static const char *opsymbol(const And&)           { return "&&";  }
 static const char *opsymbol(const Or&)            { return "||";  }
 
+static const char *opfactory(const Greater&)       { return "xpr::greater";  }
+static const char *opfactory(const GreaterEqual&)  { return "xpr::greater_equal";  }
+static const char *opfactory(const Less&)          { return "xpr::less";  }
+static const char *opfactory(const LessEqual&)     { return "xpr::less_equal";  }
+static const char *opfactory(const Equal&)         { return "xpr::equal";  }
+static const char *opfactory(const NotEqual&)      { return "xpr::not_equal";  }
+static const char *opfactory(const And&)           { return "xpr::logical_and";  }
+static const char *opfactory(const Or&)            { return "xpr::logical_or";  }
+
 //--------------------------------------------------------------------------------------------
 
 struct Generic
@@ -219,6 +228,12 @@ template < class T >
 std::string BinaryPredicate<T>::returnSignature() const
 {
     return Boolean::sig();
+}
+
+template < class T >
+std::string BinaryPredicate<T>::factoryName() const
+{
+    return opfactory( T() );
 }
 
 template < class T >

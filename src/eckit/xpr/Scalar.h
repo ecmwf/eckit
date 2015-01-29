@@ -67,6 +67,7 @@ public: // methods
 
 public: // virtual methods
 
+    virtual std::string factoryName() const { return "xpr::scalar"; }
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }

@@ -52,12 +52,12 @@ private : // methods
 
     Call( args_t &a );
 
+    virtual std::string factoryName() const { return "xpr::call"; }
     virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
-    virtual void asCode( std::ostream& o ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
 
     static  ClassSpec classSpec_;

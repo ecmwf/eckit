@@ -51,12 +51,12 @@ private: // methods
 
     Bind(args_t& a);
 
+    virtual std::string factoryName() const { return "xpr::bind"; }
     virtual std::string typeName() const;
 
     virtual std::string returnSignature() const;
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
-    virtual void asCode( std::ostream& o ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
 
 private: // static members

@@ -54,7 +54,7 @@ ExpPtr Param::evaluate( Scope &ctx ) const
 
 void Param::asCode(std::ostream&o) const
 {
-    o << "xpr::parameter(\"" << name_ << "\")";
+    o << factoryName() << "(\"" << name_ << "\")";
 }
 
 ExpPtr Param::cloneWith( args_t& a ) const

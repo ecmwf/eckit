@@ -30,6 +30,12 @@ static const char *opsymbol(const Add&)   { return "+";  }
 static const char *opsymbol(const Sub&)   { return "-";  }
 static const char *opsymbol(const Mod&)   { return "%";  }
 
+static const char *opfactory(const Prod&)  { return "xpr::prod";  }
+static const char *opfactory(const Div&)   { return "xpr::div";  }
+static const char *opfactory(const Add&)   { return "xpr::add";  }
+static const char *opfactory(const Sub&)   { return "xpr::sub";  }
+static const char *opfactory(const Mod&)   { return "xpr::mod";  }
+
 ExpPtr prod( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Prod >(l,r) ); }
 ExpPtr div( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Div >(l,r) );  }
 ExpPtr add( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Add >(l,r) );  }
@@ -143,6 +149,12 @@ std::string BinaryOperator<T>::returnSignature() const
             return Vector::sig();
     }
     return Scalar::sig();
+}
+
+template < class T >
+std::string BinaryOperator<T>::factoryName() const
+{
+    return opfactory( T() );
 }
 
 template < class T >

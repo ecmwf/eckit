@@ -66,11 +66,6 @@ ExpPtr IfElse::evaluate( Scope &ctx ) const
     }
 }
 
-void IfElse::asCode(std::ostream&o) const
-{
-    o << "xpr::ifelse("; printArgs(o); o <<")";
-}
-
 ExpPtr IfElse::cloneWith(args_t& a) const
 {
     return ExpPtr(new IfElse(a));

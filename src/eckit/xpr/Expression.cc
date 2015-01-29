@@ -205,6 +205,11 @@ void Expression::printArgs(std::ostream& out) const
     }
 }
 
+void Expression::asCode(std::ostream&o) const
+{
+    o << factoryName() << "("; printArgs(o); o << ")";
+}
+
 std::ostream& operator<<( std::ostream& os, const Expression& v)
 {
     if(format(os) == xpr::CodeFormat)

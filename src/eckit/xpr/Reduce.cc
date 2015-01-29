@@ -60,11 +60,6 @@ ExpPtr Reduce::evaluate( Scope &ctx ) const
     return e->eval(ctx);
 }
 
-void Reduce::asCode(std::ostream&o) const
-{
-    o << "xpr::reduce("; printArgs(o); o <<")";
-}
-
 ExpPtr Reduce::cloneWith(args_t& a) const
 {
     return ExpPtr( new Reduce(a) );

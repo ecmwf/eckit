@@ -24,6 +24,7 @@ ExpPtr neg( ExpPtr e ) { return ExpPtr( new UnaryOperator<Neg>(e) ); }
 
 static const char *opname(const Neg&)  { return "Neg";  }
 static const char *opsymbol(const Neg&)  { return "-";  }
+static const char *opfactory(const Neg&)  { return "xpr::neg";  }
 
 //--------------------------------------------------------------------------------------------
 
@@ -89,6 +90,12 @@ template < class T >
 std::string UnaryOperator<T>::returnSignature() const
 {
     return args(0)->returnSignature();
+}
+
+template < class T >
+std::string UnaryOperator<T>::factoryName() const
+{
+    return opfactory( T() );
 }
 
 template < class T >

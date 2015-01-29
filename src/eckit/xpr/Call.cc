@@ -99,12 +99,6 @@ ExpPtr call( ExpPtr f, ExpPtr a, ExpPtr b)
     return ExpPtr( new Call(f, a, b) );
 }
 
-
-void Call::asCode(std::ostream&o) const
-{
-    o << "xpr::call("; printArgs(o); o << ")";
-}
-
 //--------------------------------------------------------------------------------------------
 
 } // namespace xpr

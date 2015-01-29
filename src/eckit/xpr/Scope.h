@@ -33,7 +33,7 @@ public:
     Scope(const char* name, ExpPtr, Scope* = 0);
     Scope(const char* name, ExpPtr, ExpPtr, Scope* = 0);
 
-    ~Scope();
+    virtual ~Scope();
 
 
     ExpPtr nextArg();

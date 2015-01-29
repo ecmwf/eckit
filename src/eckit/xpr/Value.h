@@ -38,9 +38,13 @@ public: // methods
     Value( const args_t& args );
     Value( args_t& args, Swap ignored );
 
+    Value(Value&&) = default;
+
     Value(Stream& s);
 
     virtual ~Value();
+
+    Value& operator=(Value&&) = default;
 
     virtual void encode(eckit::Stream& s) const;
 

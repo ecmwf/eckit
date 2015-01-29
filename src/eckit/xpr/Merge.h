@@ -32,7 +32,11 @@ public: // methods
 
     Merge( ExpPtr l0, ExpPtr l1 );
 
+    Merge( Merge&& ) = default;
+
     Merge( Stream& s );
+
+    Merge& operator=(Merge&&) = default;
 
     struct Register { Register(); };
 

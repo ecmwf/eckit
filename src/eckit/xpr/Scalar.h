@@ -53,7 +53,11 @@ public: // methods
 
     Scalar( const scalar_t& v );
 
+    Scalar( Scalar&& ) = default;
+
     Scalar( Stream& s );
+
+    Scalar& operator=(Scalar&&) = default;
 
     /// @returns the value of the scalar
     value_t value() const { return v_; }

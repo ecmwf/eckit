@@ -42,9 +42,13 @@ public: //  methods
 
     ParamDef(const std::string& name);
 
+    ParamDef( ParamDef&& ) = default;
+
     ParamDef( Stream& s );
 
     virtual ~ParamDef();
+
+    ParamDef& operator=(ParamDef&&) = default;
 
     const std::string& name() const { return name_; }
 

@@ -39,7 +39,11 @@ public:
 
     BinaryPredicate( ExpPtr a, ExpPtr b);
 
+    BinaryPredicate(BinaryPredicate&&) = default;
+
     BinaryPredicate(Stream &s);
+
+    BinaryPredicate& operator=(BinaryPredicate&&) = default;
 
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )

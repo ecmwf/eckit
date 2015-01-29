@@ -43,7 +43,11 @@ public: // methods
 
     Boolean( const value_t& v );
 
+    Boolean( Boolean&& ) = default;
+
     Boolean( Stream& s );
+
+    Boolean& operator=(Boolean&&) = default;
 
     /// @returns the value of the scalar
     value_t value() const { return v_; }

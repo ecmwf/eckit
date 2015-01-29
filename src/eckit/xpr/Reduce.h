@@ -34,7 +34,11 @@ public: // methods
 
     Reduce( ExpPtr f = undef(), ExpPtr l = undef() );
 
+    Reduce( Reduce&& ) = default;
+
     Reduce( Stream& s );
+
+    Reduce& operator=(Reduce&&) = default;
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }

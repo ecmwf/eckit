@@ -33,7 +33,11 @@ public: // methods
     Bind( size_t i, ExpPtr f, ExpPtr e );
     Bind( ExpPtr i, ExpPtr f, ExpPtr e );
 
+    Bind( Bind&& ) = default;
+
     Bind( Stream& s );
+
+    Bind& operator=(Bind&&) = default;
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }

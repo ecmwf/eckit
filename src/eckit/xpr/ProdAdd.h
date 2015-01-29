@@ -43,7 +43,11 @@ public: // methods
 
     ProdAdd( const ExpPtr& e );
 
+    ProdAdd( ProdAdd&& ) = default;
+
     ProdAdd( Stream& s );
+
+    ProdAdd& operator=(ProdAdd&&) = default;
 
     struct Register
     {

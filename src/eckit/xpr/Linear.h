@@ -33,7 +33,11 @@ public: // methods
 
     Linear( ExpPtr e );
 
+    Linear(Linear&&) = default;
+
     Linear(Stream& s);
+
+    Linear& operator=(Linear&&) = default;
 
     struct Register { Register(); };
 

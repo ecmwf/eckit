@@ -38,9 +38,13 @@ public: //  methods
 
     Param(const std::string& name);
 
+    Param( Param&& ) = default;
+
     Param( Stream& s );
 
     virtual ~Param();
+
+    Param& operator=(Param&&) = default;
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }

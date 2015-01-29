@@ -37,6 +37,9 @@ Expression::Expression(args_t &args, Swap )
     std::swap(args_, args);
 }
 
+Expression::Expression(Expression&& e)
+    : args_(std::move(e.args_)) {}
+
 Expression::Expression(Stream& s) : Streamable(s) {
     args_t::size_type l;
     s >> l;
@@ -48,6 +51,12 @@ Expression::Expression(Stream& s) : Streamable(s) {
 
 Expression::~Expression()
 {
+}
+
+Expression& Expression::operator=(Expression&& e)
+{
+    args_ = std::move(e.args_);
+    return *this;
 }
 
 void Expression::encode(Stream& s) const {

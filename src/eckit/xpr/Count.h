@@ -34,7 +34,11 @@ public: // methods
 
     Count( ExpPtr e = undef() );
 
+    Count ( Count&& ) = default;
+
     Count ( Stream& s );
+
+    Count& operator=(Count&&) = default;
 
 protected: // virtual methods
 

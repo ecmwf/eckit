@@ -31,9 +31,13 @@ public: //  methods
 
     Undef();
 
+    Undef( Undef&& ) = default;
+
     Undef( Stream& s );
 
     virtual ~Undef();
+
+    Undef& operator=(Undef&&) = default;
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }

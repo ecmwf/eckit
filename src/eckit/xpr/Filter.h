@@ -33,7 +33,11 @@ public: // methods
 
     Filter( ExpPtr pred = undef(), ExpPtr list = undef() );
 
+    Filter( Filter&& ) = default;
+
     Filter( Stream& s );
+
+    Filter& operator=(Filter&&) = default;
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }

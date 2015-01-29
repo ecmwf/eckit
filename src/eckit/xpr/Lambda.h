@@ -35,7 +35,11 @@ public: // methods
     Lambda( const std::string& a, ExpPtr body);
     Lambda( const std::string& a, const std::string& b, ExpPtr body);
 
+    Lambda(Lambda&&) = default;
+
     Lambda(Stream& s);
+
+    Lambda& operator=(Lambda&&) = default;
 
     ExpPtr call( Scope& ctx ) const;
 

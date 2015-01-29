@@ -46,7 +46,11 @@ public:
 
     UnaryOperator( ExpPtr e );
 
+    UnaryOperator(UnaryOperator&&) = default;
+
     UnaryOperator(Stream& s);
+
+    UnaryOperator& operator=(UnaryOperator&&) = default;
 
     /// Applies an implementation of the unary operator
     /// U is the left operand type ( Scalar, Vector, ... )

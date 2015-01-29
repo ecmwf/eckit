@@ -49,7 +49,11 @@ public: // methods
     List(const args_t &args );
     List(args_t &args, Swap );
 
+    List(List &&) = default;
+
     List(Stream& s);
+
+    List& operator=(List&&) = default;
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }

@@ -47,7 +47,11 @@ protected: // methods
     Function( const args_t& args );
     Function( args_t& args, Swap ignored );
 
+    Function(Function&&) = default;
+
     Function(Stream& s);
+
+    Function& operator=(Function&&) = default;
 
 public: // methods
 

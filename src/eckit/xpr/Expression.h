@@ -100,9 +100,13 @@ public: // methods
     Expression( const args_t& args );
     Expression(args_t& args, Swap);
 
+    Expression(Expression&&);
+
     Expression(Stream& s);
 
     virtual ~Expression();
+
+    Expression& operator=(Expression&&);
 
     ExpPtr self()       { return ExpPtr(this); }
     ExpPtr self() const { return ExpPtr( const_cast<Expression*>( this ) ); }

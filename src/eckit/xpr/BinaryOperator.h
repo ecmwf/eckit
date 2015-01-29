@@ -37,6 +37,10 @@ public:
 
     BinaryOperator(ExpPtr a, ExpPtr b);
 
+    BinaryOperator(BinaryOperator&&) = default;
+
+    BinaryOperator& operator=(BinaryOperator&&) = default;
+
     BinaryOperator(Stream& s);
 
     /// Applies an implementation of the binary operator

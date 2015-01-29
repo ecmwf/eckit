@@ -53,7 +53,11 @@ public: // methods
 
     String( const value_t& v );
 
+    String( String&& ) = default;
+
     String( Stream& s );
+
+    String& operator=(String&&) = default;
 
     /// @returns the value of the scalar
     value_t value() const { return v_; }

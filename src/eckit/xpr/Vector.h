@@ -49,7 +49,11 @@ public: // methods
     Vector( const value_t& v );
     Vector( value_t& v, Swap );
 
+    Vector( Vector&& ) = default;
+
     Vector( Stream& s );
+
+    Vector& operator=(Vector&&) = default;
 
     /// @returns the size of the internal vector
     size_t size() const { return v_.size(); }

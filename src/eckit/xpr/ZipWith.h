@@ -32,7 +32,11 @@ public: // methods
 
     ZipWith( ExpPtr f, ExpPtr l0, ExpPtr l1 );
 
+    ZipWith( ZipWith&& ) = default;
+
     ZipWith( Stream& s );
+
+    ZipWith& operator=(ZipWith&&) = default;
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }

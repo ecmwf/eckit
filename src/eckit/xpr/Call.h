@@ -34,7 +34,11 @@ public: // methods
     Call( ExpPtr f, ExpPtr a);
     Call( ExpPtr f, ExpPtr a, ExpPtr b);
 
+    Call( Call&& ) = default;
+
     Call( Stream& s );
+
+    Call& operator=(Call&&) = default;
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }

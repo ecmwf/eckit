@@ -32,7 +32,11 @@ public: // methods
 
     Map( ExpPtr f, ExpPtr l );
 
+    Map(Map&&) = default;
+
     Map(Stream& s);
+
+    Map& operator=(Map&&) = default;
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }

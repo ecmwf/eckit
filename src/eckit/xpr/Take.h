@@ -34,7 +34,11 @@ public: // methods
 
     Take( ExpPtr e = undef(), ExpPtr l = undef()  );
 
+    Take( Take&& ) = default;
+
     Take( Stream& s );
+
+    Take& operator=(Take&&) = default;
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }

@@ -32,7 +32,11 @@ public: // methods
 
     IfElse( ExpPtr f, ExpPtr i, ExpPtr e );
 
+    IfElse( IfElse&& ) = default;
+
     IfElse( Stream& s );
+
+    IfElse& operator=(IfElse&&) = default;
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }

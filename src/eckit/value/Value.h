@@ -191,6 +191,17 @@ private:
 
 };
 
+//-----------------------------------------------------------------------------
+
+template < typename T >
+Value makeVectorValue( std::vector<T>& v )
+{
+	std::vector<Value> r;
+	r.reserve(v.size());
+	for( size_t i = 0; i < v.size(); ++i )
+		r.push_back( Value(v[i]) );
+	return Value::makeList(r);
+}
 
 //-----------------------------------------------------------------------------
 

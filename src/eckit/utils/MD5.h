@@ -34,7 +34,7 @@ public:
 
 	void add(const void*, long);
 	
-    operator std::string();
+	operator std::string();
 
 	std::string digest();
 

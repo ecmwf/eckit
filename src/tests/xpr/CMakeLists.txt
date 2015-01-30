@@ -1,4 +1,5 @@
 ecbuild_add_test(   TARGET      test_xpr_expr
+					BOOST
 					CONDITION   HAVE_XPR
 					SOURCES     test_xpr_expr.cc
 					LIBS        eckit_xpr eckit )

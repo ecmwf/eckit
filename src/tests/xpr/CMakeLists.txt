@@ -21,6 +21,7 @@ ecbuild_add_test(   TARGET      test_xpr_optimiser
 					LIBS        eckit_xpr eckit )
 
 ecbuild_add_test(   TARGET      test_xpr_lambda
+					BOOST
 					CONDITION   HAVE_XPR
 					SOURCES     test_xpr_lambda.cc
 					LIBS        eckit_xpr eckit )

@@ -128,6 +128,7 @@ public: // methods
     size_t arity() const { return args_.size(); }
 
     std::string str() const;
+    std::string code() const;
 
     // Used to bind undef() and lambda parameters
     virtual ExpPtr resolve(Scope &) const;

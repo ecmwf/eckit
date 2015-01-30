@@ -195,6 +195,13 @@ std::string Expression::str() const
     return os.str();
 }
 
+std::string Expression::code() const
+{
+    std::ostringstream os;
+    setformat(os, CodeFormat);
+    asCode(os);
+    return os.str();
+}
 
 void Expression::printArgs(std::ostream& out) const
 {

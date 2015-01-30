@@ -74,6 +74,7 @@ public: // virtual methods
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& o ) const;
+    virtual void asJSON( JSON& s ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
 
 protected: // virtual methods

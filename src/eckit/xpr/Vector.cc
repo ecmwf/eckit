@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/parser/JSON.h"
+
 #include "eckit/xpr/Vector.h"
 
 namespace eckit {
@@ -79,6 +81,15 @@ void Vector::asCode(std::ostream&o) const
         o << v_[i];
     }
     o << ")";
+}
+
+void Vector::asJSON(JSON& s) const
+{
+    s.startList();
+    for( size_t i = 0; i < v_.size(); ++i ) {
+        s << v_[i];
+    }
+    s.endList();
 }
 
 //--------------------------------------------------------------------------------------------

@@ -94,6 +94,7 @@ private: // methods
     }
 
     virtual void asCode( std::ostream& o ) const;
+    virtual void asJSON( JSON& s ) const;
 
 private: // static members
 

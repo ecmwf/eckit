@@ -10,6 +10,8 @@
 
 #include <sstream>
 
+#include "eckit/parser/JSON.h"
+
 #include "eckit/xpr/Expression.h"
 #include "eckit/xpr/Value.h"
 #include "eckit/xpr/Scope.h"
@@ -203,6 +205,14 @@ std::string Expression::code() const
     return os.str();
 }
 
+std::string Expression::json() const
+{
+    std::ostringstream os;
+    JSON s(os);
+    asJSON(s);
+    return os.str();
+}
+
 void Expression::printArgs(std::ostream& out) const
 {
     size_t count = arity();
@@ -212,9 +222,26 @@ void Expression::printArgs(std::ostream& out) const
     }
 }
 
+void Expression::printArgs(JSON& s) const
+{
+    s.startList();
+    for(size_t i = 0; i < arity(); ++i) {
+        s << *args_[i];
+    }
+    s.endList();
+}
+
 void Expression::asCode(std::ostream&o) const
 {
     o << factoryName() << "("; printArgs(o); o << ")";
+}
+
+void Expression::asJSON(JSON& s) const
+{
+    s.startObject();
+    s << factoryName();
+    printArgs(s);
+    s.endObject();
 }
 
 std::ostream& operator<<( std::ostream& os, const Expression& v)
@@ -227,6 +254,12 @@ std::ostream& operator<<( std::ostream& os, const Expression& v)
         v.print(os);
     }
     return os;
+}
+
+JSON& operator<<( JSON& s, const Expression& v)
+{
+    v.asJSON(s);
+    return s;
 }
 
 //--------------------------------------------------------------------------------------------

@@ -10,6 +10,8 @@
 
 #include <sstream>
 
+#include "eckit/parser/JSON.h"
+
 #include "eckit/xpr/Undef.h"
 #include "eckit/xpr/Scope.h"
 
@@ -45,6 +47,11 @@ void Undef::print(std::ostream&o) const
 void Undef::asCode(std::ostream&o) const
 {
     o << factoryName() << "()";
+}
+
+void Undef::asJSON(JSON& s) const
+{
+    s << factoryName();
 }
 
 ExpPtr Undef::evaluate( Scope &ctx ) const

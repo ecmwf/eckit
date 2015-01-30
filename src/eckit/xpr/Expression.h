@@ -51,6 +51,9 @@ namespace eckit_test { // For unit tests....
 }
 
 namespace eckit {
+
+class JSON;
+
 namespace xpr {
 
 //--------------------------------------------------------------------------------------------
@@ -118,6 +121,7 @@ public: // methods
     }
 
     friend std::ostream& operator<<( std::ostream& os, const Expression& v);
+    friend JSON& operator<<(JSON& s, const Expression& v);
 
     ExpPtr eval(bool optimize = true) const;
     ExpPtr eval(ExpPtr, bool optimize = true ) const;
@@ -129,6 +133,7 @@ public: // methods
 
     std::string str() const;
     std::string code() const;
+    std::string json() const;
 
     // Used to bind undef() and lambda parameters
     virtual ExpPtr resolve(Scope &) const;
@@ -155,7 +160,9 @@ protected: // members
     virtual void encode(eckit::Stream& s) const;
 
     void printArgs(std::ostream& ) const;
+    void printArgs(JSON&) const;
     virtual void asCode( std::ostream& ) const;
+    virtual void asJSON( JSON& ) const;
 
     // args_ are read-only, use these methods instead
 

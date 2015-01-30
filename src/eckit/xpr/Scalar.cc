@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/parser/JSON.h"
+
 #include "eckit/xpr/Scalar.h"
 #include "eckit/xpr/Scope.h"
 
@@ -72,6 +74,10 @@ void Scalar::asCode(std::ostream&o) const
     o << "xpr::scalar(" << v_ << ")";
 }
 
+void Scalar::asJSON(JSON& s) const
+{
+    s << v_;
+}
 
 //--------------------------------------------------------------------------------------------
 

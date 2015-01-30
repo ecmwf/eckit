@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/parser/JSON.h"
+
 #include "eckit/xpr/Boolean.h"
 #include "eckit/xpr/Scope.h"
 
@@ -39,6 +41,11 @@ void Boolean::print(std::ostream&o) const
 void Boolean::asCode(std::ostream&o) const
 {
     o << factoryName() << "(" << (v_? "true" : "false") << ")";
+}
+
+void Boolean::asJSON(JSON& s) const
+{
+    s << v_;
 }
 
 Boolean::Boolean(const ExpPtr& e) : v_(0)

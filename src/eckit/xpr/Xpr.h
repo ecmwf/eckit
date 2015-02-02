@@ -29,6 +29,7 @@ public:
 
     // From a double
 	Xpr(double);
+	Xpr(int);
 	Xpr(bool);
 
     // A parameter

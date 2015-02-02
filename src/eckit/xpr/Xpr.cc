@@ -48,6 +48,11 @@ Xpr::Xpr(double v):
 {
 }
 
+Xpr::Xpr(int v):
+    expr_(xpr::scalar(v))
+{
+}
+
 Xpr::Xpr(const std::string& v):
     expr_(xpr::parameter(v))
 {

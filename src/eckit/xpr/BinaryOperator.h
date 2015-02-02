@@ -86,8 +86,6 @@ private: // methods
         return ExpPtr( new BinaryOperator<T>(a) );
     }
 
-    virtual void asCode( std::ostream& o ) const;
-
 private: // static members
 
     static  Reanimator<BinaryOperator> reanimator_;

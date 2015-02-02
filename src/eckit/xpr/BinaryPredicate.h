@@ -88,8 +88,6 @@ private: // methods
         return ExpPtr( new BinaryPredicate<T>(a) );
     }
 
-    virtual void asCode( std::ostream& o ) const;
-
     static  Reanimator<BinaryPredicate> reanimator_;
 };
 

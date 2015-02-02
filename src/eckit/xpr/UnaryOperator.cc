@@ -113,11 +113,6 @@ std::string UnaryOperator<T>::nodeName()
 }
 
 template < class T >
-void UnaryOperator<T>::asCode( std::ostream& o ) const {
-    o << opsymbol(T()) << '(' << *args(0) << ')';
-}
-
-template < class T >
 void UnaryOperator<T>::asJSON( JSON& s ) const {
     s.startObject();
     s << factoryName() << *args(0);

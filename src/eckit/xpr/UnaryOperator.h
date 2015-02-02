@@ -93,7 +93,6 @@ private: // methods
         return ExpPtr( new UnaryOperator<T>(a) );
     }
 
-    virtual void asCode( std::ostream& o ) const;
     virtual void asJSON( JSON& s ) const;
 
 private: // static members

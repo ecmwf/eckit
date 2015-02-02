@@ -24,12 +24,6 @@ static const char *opname(const Add&)   { return "Add";  }
 static const char *opname(const Sub&)   { return "Sub";  }
 static const char *opname(const Mod&)   { return "Mod";  }
 
-static const char *opsymbol(const Prod&)  { return "*";  }
-static const char *opsymbol(const Div&)   { return "/";  }
-static const char *opsymbol(const Add&)   { return "+";  }
-static const char *opsymbol(const Sub&)   { return "-";  }
-static const char *opsymbol(const Mod&)   { return "%";  }
-
 static const char *opfactory(const Prod&)  { return "xpr::prod";  }
 static const char *opfactory(const Div&)   { return "xpr::div";  }
 static const char *opfactory(const Add&)   { return "xpr::add";  }
@@ -167,11 +161,6 @@ template < class T >
 std::string BinaryOperator<T>::nodeName()
 {
     return opname( T() );
-}
-
-template < class T >
-void BinaryOperator<T>::asCode( std::ostream& o ) const {
-    o << '(' << *args(0) << ' ' << opsymbol(T()) << ' ' << *args(1) << ')';
 }
 
 template < class T >

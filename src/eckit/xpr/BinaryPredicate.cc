@@ -26,15 +26,6 @@ static const char *opname(const NotEqual&)      { return "NotEqual";  }
 static const char *opname(const And&)           { return "And";  }
 static const char *opname(const Or&)            { return "Or";  }
 
-static const char *opsymbol(const Greater&)       { return ">";  }
-static const char *opsymbol(const GreaterEqual&)  { return ">=";  }
-static const char *opsymbol(const Less&)          { return "<";  }
-static const char *opsymbol(const LessEqual&)     { return "<=";  }
-static const char *opsymbol(const Equal&)         { return "==";  }
-static const char *opsymbol(const NotEqual&)      { return "!=";  }
-static const char *opsymbol(const And&)           { return "&&";  }
-static const char *opsymbol(const Or&)            { return "||";  }
-
 static const char *opfactory(const Greater&)       { return "xpr::greater";  }
 static const char *opfactory(const GreaterEqual&)  { return "xpr::greater_equal";  }
 static const char *opfactory(const Less&)          { return "xpr::less";  }
@@ -248,10 +239,6 @@ std::string BinaryPredicate<T>::nodeName()
     return opname( T() );
 }
 
-template < class T >
-void BinaryPredicate<T>::asCode( std::ostream& o ) const {
-    o << '(' << *args(0) << ' ' << opsymbol(T()) << ' ' << *args(1) << ')';
-}
 /*
 template < class T >
 ExpPtr BinaryPredicate<T>::optimise() const

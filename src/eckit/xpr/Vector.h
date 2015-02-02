@@ -95,6 +95,7 @@ private: // static members
 
 ExpPtr vector( const size_t& sz, const scalar_t& v = scalar_t()  );
 ExpPtr vector( const Vector::value_t& v  );
+ExpPtr vector( const std::initializer_list<scalar_t> v );
 
 //--------------------------------------------------------------------------------------------
 

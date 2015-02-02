@@ -49,6 +49,13 @@ void Bind::encode(Stream &s) const
     Function::encode(s);
 }
 
+void Bind::asCode(std::ostream&o) const
+{
+    // FIXME: is there a better way to "cast" the 1st argument to a Scalar?
+    o << factoryName() << "<" << ((Scalar*)(args()[0]->eval().get()))->value();
+    o << ">(" << *args()[1] << ", " << *args()[2] << ")";
+}
+
 std::string Bind::typeName() const
 {
     return Bind::nodeName();

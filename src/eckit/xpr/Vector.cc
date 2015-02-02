@@ -74,13 +74,13 @@ void Vector::print(std::ostream&o) const
 
 void Vector::asCode(std::ostream&o) const
 {
-    o << factoryName() << "(";
+    o << factoryName() << "({";
     for( size_t i = 0; i < v_.size(); ++i )
     {
         if(i) o << ", ";
         o << v_[i];
     }
-    o << ")";
+    o << "})";
 }
 
 void Vector::asJSON(JSON& s) const
@@ -111,6 +111,11 @@ ExpPtr vector( const size_t& sz, const scalar_t& v )
 ExpPtr vector( const Vector::value_t& v  )
 {
     return ExpPtr( new Vector(v) );
+}
+
+ExpPtr vector( const std::initializer_list<scalar_t> v )
+{
+    return ExpPtr( new Vector(Vector::value_t(v)) );
 }
 
 //--------------------------------------------------------------------------------------------

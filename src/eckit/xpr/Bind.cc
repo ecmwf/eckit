@@ -46,8 +46,7 @@ Bind::Bind(Stream &s) : Function(s) {}
 
 void Bind::asCode(std::ostream&o) const
 {
-    // FIXME: is there a better way to "cast" the 1st argument to a Scalar?
-    o << factoryName() << "<" << ((Scalar*)(args()[0]->eval().get()))->value();
+    o << factoryName() << "<" << Scalar::extract(args()[0]);
     o << ">(" << *args()[1] << ", " << *args()[2] << ")";
 }
 

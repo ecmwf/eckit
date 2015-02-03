@@ -12,7 +12,6 @@
 #define ECKIT_MPI_COLLECTIVES_h
 
 #include "eckit/mpi/mpi.h"
-#include "eckit/mpi/Comm.h"
 #include "eckit/mpi/Exceptions.h"
 
 namespace eckit {

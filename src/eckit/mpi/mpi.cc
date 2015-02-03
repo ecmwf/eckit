@@ -9,7 +9,6 @@
  */
 
 #include "eckit/mpi/mpi.h"
-#include "eckit/mpi/Comm.h"
 #include "eckit/mpi/Exceptions.h"
 
 namespace eckit {

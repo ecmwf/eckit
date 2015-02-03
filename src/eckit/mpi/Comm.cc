@@ -19,30 +19,34 @@ Comm::Comm()
 {
   if( ! initialized() )
     throw mpi::Error( "Trying to construct MPI communicator without MPI being initialized", Here() );
-  set_with_C_handle(MPI_COMM_WORLD);
+  attach_communicator(MPI_COMM_WORLD);
 }
 
-Comm::Comm( MPI_Comm comm )
-{
-  if( ! initialized() )
-    throw mpi::Error( "Trying to construct MPI communicator without MPI being initialized", Here() );
-  set_with_C_handle(comm);
-}
-
-MPI_Fint Comm::fortran_handle()
+MPI_Fint Comm::fortran_communicator()
 {
   MPI_Fint fortran_comm = MPI_Comm_c2f(*this);
   return fortran_comm;
 }
 
-void Comm::set_with_fortran_handle( MPI_Fint handle )
+void Comm::attach_fortran_communicator( MPI_Fint fcomm )
 {
-  comm_ = MPI_Comm_f2c( handle );
+  MPI_Comm comm = MPI_Comm_f2c( fcomm );
+  attach_communicator( comm );
 }
 
-void Comm::set_with_C_handle( MPI_Comm handle )
+void Comm::attach_communicator( MPI_Comm comm )
 {
-  comm_ = handle;
+  int result;
+  ECKIT_MPI_CHECK_RESULT( MPI_Comm_compare( comm, comm_, &result ) );
+  if( result == MPI_UNEQUAL )
+  {
+    ECKIT_MPI_CHECK_RESULT( MPI_Comm_compare( comm_, MPI_COMM_WORLD, &result ) );
+    if( result == MPI_UNEQUAL )
+    {
+      ECKIT_MPI_CHECK_RESULT( MPI_Comm_free( &comm_ ) );
+    }
+  }
+  comm_ = comm;
 }
 
 size_t Comm::rank() const

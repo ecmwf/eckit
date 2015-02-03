@@ -20,10 +20,11 @@
 #include "mpistubs.h"
 #endif
 
+#include "eckit/mpi/Comm.h"
+
 namespace eckit {
 namespace mpi {
 
-/// @brief MPI Communicator type
 class Comm;
 
 /// @brief World MPI communicator

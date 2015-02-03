@@ -80,6 +80,19 @@ using namespace eckit_test;
 
 BOOST_AUTO_TEST_SUITE( test_eckit_memory_scope_ptr )
 
+BOOST_AUTO_TEST_CASE( test_scoped_ptr_empty_constructor )
+{
+  eckit::ScopedPtr<long> sp;
+
+  BOOST_CHECK( sp.get() == 0 );
+
+  BOOST_CHECK( sp.release() == 0 );
+
+  BOOST_CHECK( !sp );
+
+  BOOST_CHECK_NO_THROW( sp.reset() );
+}
+
 BOOST_AUTO_TEST_CASE( test_scoped_ptr )
 {
 //   std::cout << "test ScopedPtr with a built-in type\n";

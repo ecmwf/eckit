@@ -32,13 +32,16 @@ public:
 	Xpr(int);
 	Xpr(bool);
 
+    // From an initializer list
+    Xpr(std::initializer_list<double>);
+
     // A parameter
 	Xpr(const std::string&);
 	Xpr(const char*);
 
     // Default copy OK
-    //Math(const Math&);
-    //Math& operator=(const Math&);
+    //Xpr(const Xpr&);
+    //Xpr& operator=(const Xpr&);
 
     // eval
 	Xpr operator()() const;

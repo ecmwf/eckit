@@ -53,6 +53,11 @@ Xpr::Xpr(int v):
 {
 }
 
+Xpr::Xpr(std::initializer_list<double> v):
+    expr_(xpr::vector(v))
+{
+}
+
 Xpr::Xpr(const std::string& v):
     expr_(xpr::parameter(v))
 {

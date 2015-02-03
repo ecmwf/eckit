@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/parser/JSON.h"
+
 #include "eckit/xpr/Scalar.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/UnaryOperator.h"
@@ -24,6 +26,7 @@ ExpPtr neg( ExpPtr e ) { return ExpPtr( new UnaryOperator<Neg>(e) ); }
 
 static const char *opname(const Neg&)  { return "Neg";  }
 static const char *opsymbol(const Neg&)  { return "-";  }
+static const char *opfactory(const Neg&)  { return "xpr::neg";  }
 
 //--------------------------------------------------------------------------------------------
 
@@ -67,26 +70,47 @@ UnaryOperator<T>::UnaryOperator(args_t& a) : Function(a)
 }
 
 template < class T >
+UnaryOperator<T>::UnaryOperator(Stream& s) : Function(s) {}
+
+template < class T >
+const ClassSpec& UnaryOperator<T>::classSpec()
+{
+     static ClassSpec myClassSpec = {
+         &Function::classSpec(),
+         UnaryOperator<T>::nodeName().c_str(),
+     };
+     return myClassSpec;
+}
+
+template < class T >
 std::string UnaryOperator<T>::returnSignature() const
 {
     return args(0)->returnSignature();
 }
 
 template < class T >
-std::string UnaryOperator<T>::typeName() const
+std::string UnaryOperator<T>::factoryName() const
 {
-    return UnaryOperator<T>::className();
+    return opfactory( T() );
 }
 
 template < class T >
-std::string UnaryOperator<T>::className()
+std::string UnaryOperator<T>::typeName() const
+{
+    return UnaryOperator<T>::nodeName();
+}
+
+template < class T >
+std::string UnaryOperator<T>::nodeName()
 {
     return opname( T() );
 }
 
 template < class T >
-void UnaryOperator<T>::asCode( std::ostream& o ) const {
-    o << opsymbol(T()) << '(' << *args(0) << ')';
+void UnaryOperator<T>::asJSON( JSON& s ) const {
+    s.startObject();
+    s << factoryName() << *args(0);
+    s.endObject();
 }
 
 /*
@@ -117,6 +141,11 @@ ExpPtr UnaryOperator<T>::Computer<U,I>::compute(Scope& ctx, const args_t &p)
     typename U::value_t a = U::extract(ctx, p[0]);
     return I::apply(T(),a);
 }
+
+//--------------------------------------------------------------------------------------------
+
+template < class T >
+Reanimator< UnaryOperator<T> > UnaryOperator<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

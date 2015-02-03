@@ -15,7 +15,6 @@
 #include "eckit/xpr/Bind.h"
 #include "eckit/xpr/Call.h"
 #include "eckit/xpr/Count.h"
-#include "eckit/xpr/Expression.h"
 #include "eckit/xpr/Filter.h"
 #include "eckit/xpr/IfElse.h"
 #include "eckit/xpr/Lambda.h"
@@ -46,6 +45,16 @@ Xpr::Xpr(ExpPtr e):
 
 Xpr::Xpr(double v):
     expr_(xpr::scalar(v))
+{
+}
+
+Xpr::Xpr(int v):
+    expr_(xpr::scalar(v))
+{
+}
+
+Xpr::Xpr(std::initializer_list<double> v):
+    expr_(xpr::vector(v))
 {
 }
 
@@ -97,21 +106,6 @@ Xpr::operator ExpPtr() const
     return expr_;
 }
 
-Xpr Xpr::operator >(const Xpr& other) const
-{
-    return xpr::greater(*this, other);
-}
-
-Xpr Xpr::operator ==(const Xpr& other) const
-{
-    return xpr::equal(*this, other);
-}
-
-Xpr Xpr::operator *(const Xpr& other) const
-{
-    return xpr::prod(*this, other);
-}
-
 Xpr Xpr::operator -(const Xpr& other) const
 {
     return xpr::sub(*this, other);
@@ -120,6 +114,46 @@ Xpr Xpr::operator -(const Xpr& other) const
 Xpr Xpr::operator +(const Xpr& other) const
 {
     return xpr::add(*this, other);
+}
+
+Xpr Xpr::operator /(const Xpr& other) const
+{
+    return xpr::div(*this, other);
+}
+
+Xpr Xpr::operator *(const Xpr& other) const
+{
+    return xpr::prod(*this, other);
+}
+
+Xpr Xpr::operator ==(const Xpr& other) const
+{
+    return xpr::equal(*this, other);
+}
+
+Xpr Xpr::operator !=(const Xpr& other) const
+{
+    return xpr::not_equal(*this, other);
+}
+
+Xpr Xpr::operator >(const Xpr& other) const
+{
+    return xpr::greater(*this, other);
+}
+
+Xpr Xpr::operator <(const Xpr& other) const
+{
+    return xpr::less(*this, other);
+}
+
+Xpr Xpr::operator >=(const Xpr& other) const
+{
+    return xpr::greater_equal(*this, other);
+}
+
+Xpr Xpr::operator <=(const Xpr& other) const
+{
+    return xpr::less_equal(*this, other);
 }
 
 Xpr Xpr::optimise() const

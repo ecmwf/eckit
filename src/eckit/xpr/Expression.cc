@@ -10,6 +10,8 @@
 
 #include <sstream>
 
+#include "eckit/parser/JSON.h"
+
 #include "eckit/xpr/Expression.h"
 #include "eckit/xpr/Value.h"
 #include "eckit/xpr/Scope.h"
@@ -37,8 +39,33 @@ Expression::Expression(args_t &args, Swap )
     std::swap(args_, args);
 }
 
+Expression::Expression(Expression&& e)
+    : args_(std::move(e.args_)) {}
+
+Expression::Expression(Stream& s) : Streamable(s) {
+    args_t::size_type l;
+    s >> l;
+    for (int i = 0; i < l; ++i) {
+        Expression *e = Reanimator<Expression>::reanimate(s);
+        push_back(ExpPtr(e));
+    }
+}
+
 Expression::~Expression()
 {
+}
+
+Expression& Expression::operator=(Expression&& e)
+{
+    args_ = std::move(e.args_);
+    return *this;
+}
+
+void Expression::encode(Stream& s) const {
+    Streamable::encode(s);
+    s << args_.size();
+    for (const auto& a : args_)
+        s << *a;
 }
 
 ExpPtr Expression::eval(bool optimize) const
@@ -170,6 +197,21 @@ std::string Expression::str() const
     return os.str();
 }
 
+std::string Expression::code() const
+{
+    std::ostringstream os;
+    setformat(os, CodeFormat);
+    asCode(os);
+    return os.str();
+}
+
+std::string Expression::json() const
+{
+    std::ostringstream os;
+    JSON s(os);
+    asJSON(s);
+    return os.str();
+}
 
 void Expression::printArgs(std::ostream& out) const
 {
@@ -178,6 +220,28 @@ void Expression::printArgs(std::ostream& out) const
         if(i) out << ", ";
         out << *args_[i];
     }
+}
+
+void Expression::printArgs(JSON& s) const
+{
+    s.startList();
+    for(size_t i = 0; i < arity(); ++i) {
+        s << *args_[i];
+    }
+    s.endList();
+}
+
+void Expression::asCode(std::ostream&o) const
+{
+    o << factoryName() << "("; printArgs(o); o << ")";
+}
+
+void Expression::asJSON(JSON& s) const
+{
+    s.startObject();
+    s << factoryName();
+    printArgs(s);
+    s.endObject();
 }
 
 std::ostream& operator<<( std::ostream& os, const Expression& v)
@@ -192,7 +256,18 @@ std::ostream& operator<<( std::ostream& os, const Expression& v)
     return os;
 }
 
+JSON& operator<<( JSON& s, const Expression& v)
+{
+    v.asJSON(s);
+    return s;
+}
+
 //--------------------------------------------------------------------------------------------
+
+ClassSpec Expression::classSpec_ = {
+    &Streamable::classSpec(),
+    Expression::nodeName().c_str(),
+};
 
 } // namespace xpr
 } // namespace eckit

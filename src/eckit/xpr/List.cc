@@ -21,7 +21,7 @@ namespace xpr {
 
 bool List::is(const ExpPtr& e)
 {
-    return e->typeName() == List::className();
+    return e->typeName() == List::nodeName();
 }
 
 List::List() : Value()
@@ -42,16 +42,13 @@ List::List(args_t &args, Swap ignored) : Value(args, ignored)
 {
 }
 
-void List::asCode(std::ostream&o) const
-{
-    o << "xpr::list("; printArgs(o); o <<")";
-}
+List::List(Stream &s) : Value(s) {}
 
 //--------------------------------------------------------------------------------------------
 
 void List::print(std::ostream&o) const
 {
-    o << className() << "(";
+    o << nodeName() << "(";
     for( size_t i = 0; i < size(); ++i )
     {
         if(i) o << ", ";
@@ -64,6 +61,15 @@ ExpPtr List::cloneWith(args_t& a) const
 {
     return ExpPtr(new List(a, List::Swap()));
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec List::classSpec_ = {
+    &Value::classSpec(),
+    List::nodeName().c_str(),
+};
+
+Reanimator< List > List::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

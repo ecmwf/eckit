@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2012 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -12,12 +12,14 @@
 
 #include "eckit/eckit_config.h"
 
-#define BOOST_TEST_MODULE test_eckit_xpr
+#define BOOST_TEST_MODULE test_eckit_xpr_streaming
 
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"
+#include "eckit/serialisation/FileStream.h"
 #include "eckit/utils/Translator.h"
 
 #include "eckit/xpr/BinaryOperator.h"
@@ -43,27 +45,31 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-class F : public eckit::xpr::Value  {
+class F : public Vector  {
 
 public: // methods
-
-    typedef std::vector<double> value_t;
 
     static std::string sig() { return "f"; }
     static std::string nodeName() { return "F"; }
     
     static bool is ( const ExpPtr& e ) { return e->typeName() == nodeName(); }
 
-    F( const string& n, const double& v ) : n_(n)
-    {
-        f_.resize(32,v);
+    F( const string& n, const double& v ) : Vector(32, v), n_(n) {}
+
+    F( const string& n, const value_t& v ) : n_(n), Vector(v) {}
+
+    F(Stream& s) : Vector(s), n_("") {
+        s >> n_;
     }
 
-    F( const string& n, const std::vector<double>& v ) : n_(n), f_(v) {}
+    virtual void encode( Stream& s ) const {
+        Vector::encode(s);
+        s << n_;
+    }
 
     const std::string& fname() const { return n_; }
 
-    const std::vector<double> fvec() const { return f_; }
+    const value_t fvec() const { return v_; }
 
 public: // virtual methods
 
@@ -83,12 +89,23 @@ public: // virtual methods
     virtual void asCode( std::ostream& o ) const { NOTIMP; }
     virtual ExpPtr cloneWith(args_t& a) const { NOTIMP; }
 
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
 private:
 
     std::string n_;
-    value_t f_;
 
+    static  ClassSpec classSpec_;
+    static  Reanimator<F> reanimator_;
 };
+
+ClassSpec F::classSpec_ = {
+    &Vector::classSpec(),
+    F::nodeName().c_str(),
+};
+
+Reanimator<F> F::reanimator_;
 
 ExpPtr fld( const string& n, const double& v) { return ExpPtr( new F(n,v) ); }
 
@@ -96,7 +113,8 @@ ExpPtr fld( const string& n, const double& v) { return ExpPtr( new F(n,v) ); }
 
 /// Creates a list of Fields
 
-class FSrc : public eckit::xpr::Function {
+class FSrc : public Function {
+
 public: // methods
 
     static std::string sig() { return "fsrc"; }
@@ -113,13 +131,25 @@ public: // methods
         ASSERT( args.size() == 1 );
     }
 
+    FSrc(Stream& s) : Function(s) {}
+
+    virtual void encode(Stream& s) const {
+        Function::encode(s);
+    }
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
 public: // virtual methods
 
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { NOTIMP; }
 
-    virtual void print( std::ostream& o ) const { o << "FSrc("; printArgs(o); o << ")"; }
+    virtual void print( std::ostream& o ) const
+    {
+        o << "FSrc("; printArgs(o); o << ")";
+    }
     virtual void asCode( std::ostream& o ) const { NOTIMP; }
     virtual ExpPtr cloneWith(args_t& a) const { NOTIMP; }
 
@@ -143,7 +173,18 @@ public: // virtual methods
         return lst;
     }
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<FSrc> reanimator_;
 };
+
+ClassSpec FSrc::classSpec_ = {
+    &Function::classSpec(),
+    FSrc::nodeName().c_str(),
+};
+
+Reanimator< FSrc > FSrc::reanimator_;
 
 ExpPtr fsrc( const long& n ) { return ExpPtr( new FSrc( xpr::scalar(n) ) ); }
 
@@ -168,13 +209,25 @@ public: // methods
         ASSERT( args.size() == 1 );
     }
 
+    FSnk(Stream& s) : Function(s) {}
+
+    virtual void encode(Stream& s) const {
+        Function::encode(s);
+    }
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
 public: // virtual methods
 
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); }
 
-    virtual void print( std::ostream& o ) const { o << "FSnk("; printArgs(o); o << ")"; }
+    virtual void print( std::ostream& o ) const
+    {
+        o << "FSnk("; printArgs(o); o << ")";
+    }
     virtual void asCode( std::ostream& o ) const { NOTIMP; }
     virtual ExpPtr cloneWith(args_t& a) const { NOTIMP; }
 
@@ -212,7 +265,19 @@ private:
     {
         std::cout << f << std::endl;
     }
+
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<FSnk> reanimator_;
 };
+
+ClassSpec FSnk::classSpec_ = {
+    &Function::classSpec(),
+    FSnk::nodeName().c_str(),
+};
+
+Reanimator< FSnk > FSnk::reanimator_;
 
 ExpPtr fsnk( const ExpPtr& e ) { return ExpPtr( new FSnk( e ) ); }
 
@@ -220,7 +285,7 @@ ExpPtr fsnk( const ExpPtr& e ) { return ExpPtr( new FSnk( e ) ); }
 
 /// Averages a list of fields and produces a field
 
-class FAvg  : public eckit::xpr::Function  {
+class FAvg  : public Function  {
 
 public: // methods
 
@@ -237,13 +302,25 @@ public: // methods
         ASSERT( args.size() == 1 );
     }
 
+    FAvg(Stream& s) : Function(s) {}
+
+    virtual void encode(Stream& s) const {
+        Function::encode(s);
+    }
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
 public: // virtual methods
 
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); } //< returns a field
 
-    virtual void print( std::ostream& o ) const { o << "FAvg("; printArgs(o); o << ")"; }
+    virtual void print( std::ostream& o ) const
+    {
+        o << "FAvg("; printArgs(o); o << ")";
+    }
     virtual void asCode( std::ostream& o ) const { NOTIMP; }
     virtual ExpPtr cloneWith(args_t& a) const { NOTIMP; }
 
@@ -282,7 +359,8 @@ private:
             std::transform(rv.begin(), rv.end(), rv.begin(),
                                [=](double x) { return x / (double) n; } );
 
-            for( int i = 0; i < rv.size(); ++i ) std::cout << rv[i] << std::endl;
+            for( int i = 0; i < rv.size(); ++i )
+                std::cout << rv[i] << std::endl;
 
             return ExpPtr( new F("avg", rv) );
         }
@@ -294,7 +372,18 @@ private:
         }
     }
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<FAvg> reanimator_;
 };
+
+ClassSpec FAvg::classSpec_ = {
+    &Function::classSpec(),
+    FAvg::nodeName().c_str(),
+};
+
+Reanimator< FAvg> FAvg::reanimator_;
 
 ExpPtr favg( ExpPtr f = undef() ) { return ExpPtr( new FAvg( f ) ); }
 
@@ -302,7 +391,7 @@ ExpPtr favg( ExpPtr f = undef() ) { return ExpPtr( new FAvg( f ) ); }
 
 /// Expects only one field at a time
 
-class FInterp : public eckit::xpr::Function  {
+class FInterp : public Function  {
 
 public: // methods
 
@@ -319,13 +408,25 @@ public: // methods
         ASSERT( args.size() == 1 );
     }
 
+    FInterp(Stream& s) : Function(s) {}
+
+    virtual void encode(Stream& s) const {
+        Function::encode(s);
+    }
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
 public: // virtual methods
 
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); } //< returns a field
 
-    virtual void print( std::ostream& o ) const { o << "FInterp("; printArgs(o); o << ")"; }
+    virtual void print( std::ostream& o ) const
+    {
+        o << "FInterp("; printArgs(o); o << ")";
+    }
     virtual void asCode( std::ostream& o ) const { NOTIMP; }
     virtual ExpPtr cloneWith(args_t& a) const { NOTIMP; }
 
@@ -353,7 +454,18 @@ private:
         return r;
     }
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<FInterp> reanimator_;
 };
+
+ClassSpec FInterp::classSpec_ = {
+    &Function::classSpec(),
+    FInterp::nodeName().c_str(),
+};
+
+Reanimator< FInterp > FInterp::reanimator_;
 
 ExpPtr finterp( ExpPtr f = undef() ) { return ExpPtr( new FInterp( f ) ); }
 
@@ -363,9 +475,9 @@ ExpPtr finterp( ExpPtr f = undef() ) { return ExpPtr( new FInterp( f ) ); }
 
 using namespace eckit_test;
 
-BOOST_AUTO_TEST_SUITE( test_eckit_xpr_usage )
+BOOST_AUTO_TEST_SUITE( test_eckit_xpr_streaming )
 
-BOOST_AUTO_TEST_CASE( test_eckit_xpr_usage )
+BOOST_AUTO_TEST_CASE( test_eckit_xpr_reanimate )
 {
     Xpr f = fsnk(
                 favg(
@@ -373,10 +485,22 @@ BOOST_AUTO_TEST_CASE( test_eckit_xpr_usage )
                     )
                 );
 
-    BOOST_TEST_MESSAGE("Evaluating " << f);
-
-    f.eval();
-
+    PathName filename = PathName::unique( "data" );
+    std::string filepath = filename.asString();
+    {
+        BOOST_TEST_MESSAGE("Streaming to file:");
+        BOOST_TEST_MESSAGE("  " << f);
+        FileStream sout( filepath.c_str(), "w" );
+        sout << *(f.expr());
+    }
+    {
+        BOOST_TEST_MESSAGE("Streaming from file:");
+        FileStream sin( filepath.c_str(), "r" );
+        Xpr f2( Reanimator<FSnk>::reanimate(sin)->self() );
+        BOOST_TEST_MESSAGE("  " << f2);
+        f2.eval();
+    }
+    if (filename.exists()) filename.unlink();
 }
 
 //-----------------------------------------------------------------------------

@@ -28,6 +28,8 @@ Filter::Filter(args_t& a) : Function(a)
     ASSERT( a.size() == 2);
 }
 
+Filter::Filter(Stream &s) : Function(s) {}
+
 std::string Filter::returnSignature() const
 {
     return List::sig();
@@ -56,17 +58,19 @@ ExpPtr Filter::evaluate( Scope &ctx ) const
     return ExpPtr(new List( res, List::Swap()));
 }
 
-
-void Filter::asCode(std::ostream&o) const
-{
-    o << "xpr::filter("; printArgs(o); o <<")";
-}
-
-
 ExpPtr Filter::cloneWith(args_t& a) const
 {
     return ExpPtr(new Filter(a));
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Filter::classSpec_ = {
+    &Function::classSpec(),
+    Filter::nodeName().c_str(),
+};
+
+Reanimator< Filter > Filter::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

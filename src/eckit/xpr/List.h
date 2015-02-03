@@ -10,6 +10,7 @@
 
 /// @file List.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_List_h
@@ -33,7 +34,7 @@ public: // types
 
 public: // methods
 
-    static std::string className() { return "List"; }
+    static std::string nodeName() { return "List"; }
     static std::string sig() { return "l"; }
 
     static bool is ( const ExpPtr& e);
@@ -48,17 +49,26 @@ public: // methods
     List(const args_t &args );
     List(args_t &args, Swap );
 
+    List(List &&) = default;
+
+    List(Stream& s);
+
+    List& operator=(List&&) = default;
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
     /// @returns the size of the internal std::vector
     const value_t& value() const { return args(); }
 
 private: // methods
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string factoryName() const { return "xpr::list"; }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
-    virtual void asCode( std::ostream& ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;
 
@@ -66,6 +76,10 @@ private: // methods
     virtual bool countable() const { return true; }
     virtual size_t count() const { return size(); }
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<List> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

@@ -29,6 +29,8 @@ Merge::Merge( args_t& a ) : Function(a)
     ASSERT( a.size() == 2 );
 }
 
+Merge::Merge(Stream &s) : Function(s) {}
+
 std::string Merge::returnSignature() const
 {
     return List::sig();
@@ -59,11 +61,6 @@ ExpPtr Merge::evaluate( Scope &ctx ) const
     return ExpPtr(new List( res, Expression::Swap()));
 }
 
-void Merge::asCode(std::ostream&o) const
-{
-    o << "xpr::merge("; printArgs(o); o <<")";
-}
-
 ExpPtr Merge::cloneWith(args_t& a) const
 {
     return ExpPtr( new Merge(a) );
@@ -78,6 +75,15 @@ size_t Merge::count() const
 {
     return args(0)->count() + args(1)->count();
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Merge::classSpec_ = {
+    &Function::classSpec(),
+    Merge::nodeName().c_str(),
+};
+
+Reanimator< Merge > Merge::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

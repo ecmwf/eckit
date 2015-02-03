@@ -11,6 +11,7 @@
 /// @file Expression.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Expression_h
@@ -38,10 +39,10 @@
 #include <map>
 #include <utility>
 
-#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/Owned.h"
 #include "eckit/memory/SharedPtr.h"
+#include "eckit/serialisation/Streamable.h"
 
 //--------------------------------------------------------------------------------------------
 
@@ -50,6 +51,9 @@ namespace eckit_test { // For unit tests....
 }
 
 namespace eckit {
+
+class JSON;
+
 namespace xpr {
 
 //--------------------------------------------------------------------------------------------
@@ -82,13 +86,13 @@ public:
 
 class Optimiser;
 
-class Expression : public Owned {
+class Expression : public Owned, public Streamable {
 
 public: // methods
 
     struct Swap {};
 
-    static std::string className() { return "Expression"; }
+    static std::string nodeName() { return "Expression"; }
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves
@@ -99,7 +103,13 @@ public: // methods
     Expression( const args_t& args );
     Expression(args_t& args, Swap);
 
+    Expression(Expression&&);
+
+    Expression(Stream& s);
+
     virtual ~Expression();
+
+    Expression& operator=(Expression&&);
 
     ExpPtr self()       { return ExpPtr(this); }
     ExpPtr self() const { return ExpPtr( const_cast<Expression*>( this ) ); }
@@ -111,6 +121,7 @@ public: // methods
     }
 
     friend std::ostream& operator<<( std::ostream& os, const Expression& v);
+    friend JSON& operator<<(JSON& s, const Expression& v);
 
     ExpPtr eval(bool optimize = true) const;
     ExpPtr eval(ExpPtr, bool optimize = true ) const;
@@ -121,12 +132,17 @@ public: // methods
     size_t arity() const { return args_.size(); }
 
     std::string str() const;
+    std::string code() const;
+    std::string json() const;
 
     // Used to bind undef() and lambda parameters
     virtual ExpPtr resolve(Scope &) const;
 
+    static const eckit::ClassSpec& classSpec() { return classSpec_; }
+
 public: // virtual methods
 
+    virtual std::string factoryName() const { return "xpr::expression"; }
     virtual std::string typeName() const = 0;
     virtual std::string signature() const = 0;
     virtual std::string returnSignature() const = 0;
@@ -140,9 +156,13 @@ public: // virtual methods
 
 protected: // members
 
+    // From Streamable
+    virtual void encode(eckit::Stream& s) const;
 
     void printArgs(std::ostream& ) const;
-    virtual void asCode( std::ostream& ) const = 0;
+    void printArgs(JSON&) const;
+    virtual void asCode( std::ostream& ) const;
+    virtual void asJSON( JSON& ) const;
 
     // args_ are read-only, use these methods instead
 
@@ -175,8 +195,8 @@ private:
     // For unit tests....
     friend class eckit_test::TestExp;
 
+    static  ClassSpec classSpec_;
 };
-
 
 //--------------------------------------------------------------------------------------------
 

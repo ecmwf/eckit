@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/parser/JSON.h"
+
 #include "eckit/xpr/Scalar.h"
 #include "eckit/xpr/Scope.h"
 
@@ -20,6 +22,17 @@ Scalar::Scalar( const scalar_t& v ) : v_(v)
 {
 }
 
+Scalar::Scalar(Stream &s) : Value(s), v_(0)
+{
+    s >> v_;
+}
+
+void Scalar::encode(Stream &s) const
+{
+    Value::encode(s);
+    s << v_;
+}
+
 bool Scalar::is(const ExpPtr &e)
 {
     return dynamic_cast<Scalar*>(e.get()) != 0;
@@ -27,7 +40,7 @@ bool Scalar::is(const ExpPtr &e)
 
 void Scalar::print(std::ostream&o) const
 {
-    o << className() << "(" << v_ << ")";
+    o << nodeName() << "(" << v_ << ")";
 }
 
 Scalar::Scalar(ExpPtr e) : v_(0)
@@ -42,6 +55,15 @@ ExpPtr Scalar::cloneWith(args_t& a) const {
 
 //--------------------------------------------------------------------------------------------
 
+ClassSpec Scalar::classSpec_ = {
+    &Value::classSpec(),
+    Scalar::nodeName().c_str(),
+};
+
+Reanimator< Scalar > Scalar::reanimator_;
+
+//--------------------------------------------------------------------------------------------
+
 ExpPtr scalar(const scalar_t &s)
 {
     return ExpPtr( new Scalar(s) );
@@ -52,6 +74,10 @@ void Scalar::asCode(std::ostream&o) const
     o << "xpr::scalar(" << v_ << ")";
 }
 
+void Scalar::asJSON(JSON& s) const
+{
+    s << v_;
+}
 
 //--------------------------------------------------------------------------------------------
 

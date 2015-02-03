@@ -10,6 +10,7 @@
 
 /// @file Boolean.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Boolean_h
@@ -29,7 +30,7 @@ public: // static methods
     typedef bool value_t;
 
     static std::string sig() { return "b"; }
-    static std::string className() { return "Boolean"; }
+    static std::string nodeName() { return "Boolean"; }
 
     static scalar_t extract ( Scope& ctx , const ExpPtr& e )
     {
@@ -42,23 +43,43 @@ public: // methods
 
     Boolean( const value_t& v );
 
+    Boolean( Boolean&& ) = default;
+
+    Boolean( Stream& s );
+
+    Boolean& operator=(Boolean&&) = default;
+
     /// @returns the value of the scalar
     value_t value() const { return v_; }
 
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
 private: // virtual methods
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string factoryName() const { return "xpr::boolean"; }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& o ) const;
+    virtual void asJSON( JSON& s ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
+
+protected: // virtual methods
+
+    // From Streamable
+    virtual void encode( Stream& s ) const;
 
 protected: // members
 
     value_t v_;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Boolean> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

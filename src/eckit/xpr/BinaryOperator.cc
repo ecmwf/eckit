@@ -24,11 +24,11 @@ static const char *opname(const Add&)   { return "Add";  }
 static const char *opname(const Sub&)   { return "Sub";  }
 static const char *opname(const Mod&)   { return "Mod";  }
 
-static const char *opsymbol(const Prod&)  { return "*";  }
-static const char *opsymbol(const Div&)   { return "/";  }
-static const char *opsymbol(const Add&)   { return "+";  }
-static const char *opsymbol(const Sub&)   { return "-";  }
-static const char *opsymbol(const Mod&)   { return "%";  }
+static const char *opfactory(const Prod&)  { return "xpr::prod";  }
+static const char *opfactory(const Div&)   { return "xpr::div";  }
+static const char *opfactory(const Add&)   { return "xpr::add";  }
+static const char *opfactory(const Sub&)   { return "xpr::sub";  }
+static const char *opfactory(const Mod&)   { return "xpr::mod";  }
 
 ExpPtr prod( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Prod >(l,r) ); }
 ExpPtr div( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Div >(l,r) );  }
@@ -116,6 +116,19 @@ BinaryOperator<T>::BinaryOperator(args_t& a) : Function(a)
 }
 
 template < class T >
+BinaryOperator<T>::BinaryOperator(Stream& s) : Function(s) {}
+
+template < class T >
+const ClassSpec& BinaryOperator<T>::classSpec()
+{
+     static ClassSpec myClassSpec = {
+         &Function::classSpec(),
+         BinaryOperator<T>::nodeName().c_str(),
+     };
+     return myClassSpec;
+}
+
+template < class T >
 std::string BinaryOperator<T>::returnSignature() const
 {
     for( args_t::const_iterator i = begin(); i != end(); ++i )
@@ -127,20 +140,21 @@ std::string BinaryOperator<T>::returnSignature() const
 }
 
 template < class T >
+std::string BinaryOperator<T>::factoryName() const
+{
+    return opfactory( T() );
+}
+
+template < class T >
 std::string BinaryOperator<T>::typeName() const
 {
-    return BinaryOperator<T>::className();
+    return BinaryOperator<T>::nodeName();
 }
 
 template < class T >
-std::string BinaryOperator<T>::className()
+std::string BinaryOperator<T>::nodeName()
 {
     return opname( T() );
-}
-
-template < class T >
-void BinaryOperator<T>::asCode( std::ostream& o ) const {
-    o << '(' << *args(0) << ' ' << opsymbol(T()) << ' ' << *args(1) << ')';
 }
 
 template < class T >
@@ -167,6 +181,11 @@ ExpPtr BinaryOperator<T>::Computer<U,V,I>::compute(Scope& ctx, const args_t &p)
 
     return I::apply(op,a,b);
 }
+
+//--------------------------------------------------------------------------------------------
+
+template < class T >
+Reanimator< BinaryOperator<T> > BinaryOperator<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

@@ -11,6 +11,7 @@
 /// @file BinaryOperator.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_BinaryFunc_h
@@ -32,9 +33,15 @@ template <class T>
 class BinaryOperator : public Function  {
 public:
 
-    static std::string className();
+    static std::string nodeName();
 
     BinaryOperator(ExpPtr a, ExpPtr b);
+
+    BinaryOperator(BinaryOperator&&) = default;
+
+    BinaryOperator& operator=(BinaryOperator&&) = default;
+
+    BinaryOperator(Stream& s);
 
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
@@ -57,10 +64,14 @@ public:
         static ExpPtr compute( Scope& ctx , const args_t& p );
     };
 
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec();
+
 private: // methods
 
     BinaryOperator( args_t& a );
 
+    virtual std::string factoryName() const;
     virtual std::string typeName() const;
 
     virtual std::string returnSignature() const;
@@ -70,8 +81,9 @@ private: // methods
         return ExpPtr( new BinaryOperator<T>(a) );
     }
 
-    virtual void asCode( std::ostream& o ) const;
+private: // static members
 
+    static  Reanimator<BinaryOperator> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

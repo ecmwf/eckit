@@ -10,6 +10,7 @@
 
 /// @file Call.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Call_h
@@ -27,24 +28,35 @@ class Call : public Function {
 
 public: // methods
 
-    static std::string className() { return "Call"; }
+    static std::string nodeName() { return "Call"; }
 
     Call( ExpPtr f );
     Call( ExpPtr f, ExpPtr a);
     Call( ExpPtr f, ExpPtr a, ExpPtr b);
 
+    Call( Call&& ) = default;
+
+    Call( Stream& s );
+
+    Call& operator=(Call&&) = default;
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
 private : // methods
 
     Call( args_t &a );
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string factoryName() const { return "xpr::call"; }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
-    virtual void asCode( std::ostream& o ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
 
+    static  ClassSpec classSpec_;
+    static  Reanimator<Call> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

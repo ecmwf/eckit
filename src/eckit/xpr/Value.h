@@ -11,12 +11,11 @@
 /// @file Value.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Value_h
 #define eckit_xpr_Value_h
-
-#include "eckit/eckit.h"
 
 #include "eckit/xpr/Expression.h"
 
@@ -29,7 +28,7 @@ class Value : public Expression {
 
 public: // methods
 
-    static std::string className() { return "Value"; }
+    static std::string nodeName() { return "Value"; }
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves
@@ -39,12 +38,22 @@ public: // methods
     Value( const args_t& args );
     Value( args_t& args, Swap ignored );
 
+    Value(Value&&) = default;
+
+    Value(Stream& s);
+
     virtual ~Value();
+
+    Value& operator=(Value&&) = default;
+
+    // Class members
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
 
     virtual ExpPtr evaluate( Scope& ) const;
 
+    static  ClassSpec classSpec_;
 };
 
 //--------------------------------------------------------------------------------------------

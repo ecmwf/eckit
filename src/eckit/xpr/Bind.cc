@@ -42,9 +42,17 @@ Bind::Bind(args_t& a) : Function(a)
     ASSERT( a.size() == 3 );
 }
 
+Bind::Bind(Stream &s) : Function(s) {}
+
+void Bind::asCode(std::ostream&o) const
+{
+    o << factoryName() << "<" << Scalar::extract(args()[0]);
+    o << ">(" << *args()[1] << ", " << *args()[2] << ")";
+}
+
 std::string Bind::typeName() const
 {
-    return Bind::className();
+    return Bind::nodeName();
 }
 
 std::string Bind::returnSignature() const
@@ -67,15 +75,19 @@ ExpPtr Bind::evaluate( Scope &ctx ) const
     return f->eval(ctx);
 }
 
-void Bind::asCode(std::ostream& o) const
-{
-    o << "xpr::bind("; printArgs(o); o << ")";
-}
-
 ExpPtr Bind::cloneWith(args_t& a) const
 {
     return ExpPtr( new Bind(a) );
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Bind::classSpec_ = {
+    &Function::classSpec(),
+    Bind::nodeName().c_str(),
+};
+
+Reanimator< Bind > Bind::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

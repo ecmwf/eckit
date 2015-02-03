@@ -106,21 +106,6 @@ Xpr::operator ExpPtr() const
     return expr_;
 }
 
-Xpr Xpr::operator >(const Xpr& other) const
-{
-    return xpr::greater(*this, other);
-}
-
-Xpr Xpr::operator ==(const Xpr& other) const
-{
-    return xpr::equal(*this, other);
-}
-
-Xpr Xpr::operator *(const Xpr& other) const
-{
-    return xpr::prod(*this, other);
-}
-
 Xpr Xpr::operator -(const Xpr& other) const
 {
     return xpr::sub(*this, other);
@@ -129,6 +114,46 @@ Xpr Xpr::operator -(const Xpr& other) const
 Xpr Xpr::operator +(const Xpr& other) const
 {
     return xpr::add(*this, other);
+}
+
+Xpr Xpr::operator /(const Xpr& other) const
+{
+    return xpr::div(*this, other);
+}
+
+Xpr Xpr::operator *(const Xpr& other) const
+{
+    return xpr::prod(*this, other);
+}
+
+Xpr Xpr::operator ==(const Xpr& other) const
+{
+    return xpr::equal(*this, other);
+}
+
+Xpr Xpr::operator !=(const Xpr& other) const
+{
+    return xpr::not_equal(*this, other);
+}
+
+Xpr Xpr::operator >(const Xpr& other) const
+{
+    return xpr::greater(*this, other);
+}
+
+Xpr Xpr::operator <(const Xpr& other) const
+{
+    return xpr::less(*this, other);
+}
+
+Xpr Xpr::operator >=(const Xpr& other) const
+{
+    return xpr::greater_equal(*this, other);
+}
+
+Xpr Xpr::operator <=(const Xpr& other) const
+{
+    return xpr::less_equal(*this, other);
 }
 
 Xpr Xpr::optimise() const

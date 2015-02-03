@@ -32,11 +32,6 @@ IfElse::IfElse(args_t& a) : Function(a)
 
 IfElse::IfElse(Stream &s) : Function(s) {}
 
-void IfElse::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
 std::string IfElse::returnSignature() const
 {
     std::string i = args(1)->returnSignature();

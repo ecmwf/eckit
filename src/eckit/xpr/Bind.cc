@@ -44,11 +44,6 @@ Bind::Bind(args_t& a) : Function(a)
 
 Bind::Bind(Stream &s) : Function(s) {}
 
-void Bind::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
 void Bind::asCode(std::ostream&o) const
 {
     // FIXME: is there a better way to "cast" the 1st argument to a Scalar?

@@ -44,9 +44,6 @@ public: // methods
 
 protected: // virtual methods
 
-    // From Streamable
-    virtual void encode(Stream& s) const;
-
     virtual void asCode( std::ostream& ) const;
 
 private: // methods

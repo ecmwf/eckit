@@ -68,11 +68,6 @@ ExpPtr Call::cloneWith( args_t& a ) const
     return ExpPtr( new Call(a) );
 }
 
-void Call::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
 //--------------------------------------------------------------------------------------------
 
 ClassSpec Call::classSpec_ = {

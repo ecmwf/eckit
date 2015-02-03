@@ -44,11 +44,6 @@ Lambda::Lambda(args_t& a) : Function(a)
 
 Lambda::Lambda(Stream &s) : Function(s) {}
 
-void Lambda::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
 std::string Lambda::returnSignature() const
 {
     return "()";

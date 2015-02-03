@@ -31,10 +31,6 @@ Function::~Function()
 {
 }
 
-void Function::encode(eckit::Stream& s) const {
-    Expression::encode(s);
-}
-
 Function::dispatcher_t& Function::dispatcher()
 {
     static dispatcher_t d;

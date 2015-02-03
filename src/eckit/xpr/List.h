@@ -61,11 +61,6 @@ public: // methods
     /// @returns the size of the internal std::vector
     const value_t& value() const { return args(); }
 
-protected: // virtual methods
-
-    // From Streamable
-    virtual void encode(Stream& s) const;
-
 private: // methods
 
     virtual std::string factoryName() const { return "xpr::list"; }

@@ -30,11 +30,6 @@ Filter::Filter(args_t& a) : Function(a)
 
 Filter::Filter(Stream &s) : Function(s) {}
 
-void Filter::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
 std::string Filter::returnSignature() const
 {
     return List::sig();

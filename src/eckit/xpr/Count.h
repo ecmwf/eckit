@@ -40,11 +40,6 @@ public: // methods
 
     Count& operator=(Count&&) = default;
 
-protected: // virtual methods
-
-    // From Streamable
-    virtual void encode(Stream& s) const;
-
 private: // methods
 
     Count( args_t& a );

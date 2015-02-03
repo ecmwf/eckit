@@ -77,9 +77,6 @@ public: // virtual methods
 
 protected: // methods
 
-    // From Streamable
-    virtual void encode(eckit::Stream& s) const;
-
     std::string signatureArguments( const args_t& args ) const;
 
 private:

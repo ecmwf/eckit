@@ -67,11 +67,6 @@ Linear::Linear(args_t& a) : Function(a)
 
 Linear::Linear(Stream &s) : Function(s) {}
 
-void Linear::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
 ExpPtr Linear::compute(Scope &ctx, const args_t& p )
 {
     scalar_t a = Scalar::extract( ctx, p[0] );

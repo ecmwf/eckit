@@ -28,11 +28,6 @@ Take::Take( args_t& a ) : Function(a)
 
 Take::Take(Stream &s) : Function(s) {}
 
-void Take::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
 std::string Take::returnSignature() const
 {
     return Undef::sig();

@@ -30,11 +30,6 @@ Undef::~Undef()
 {
 }
 
-void Undef::encode(Stream &s) const
-{
-    Expression::encode(s);
-}
-
 bool Undef::is(const ExpPtr &e) {
     return dynamic_cast<Undef*>(e.get()) != 0;
 }

@@ -29,11 +29,6 @@ Reduce::Reduce( args_t& a ) : Function(a)
 
 Reduce::Reduce(Stream &s) : Function(s) {}
 
-void Reduce::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
 std::string Reduce::returnSignature() const
 {
     return Undef::sig(); /// @todo review this -- it could be the signature iterated over the list

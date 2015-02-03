@@ -23,11 +23,6 @@ Count::Count(ExpPtr e) : Function()
 
 Count::Count(Stream &s) : Function(s) {}
 
-void Count::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
 ExpPtr Count::optimise(size_t depth) const
 {
     ExpPtr o = Function::optimise(depth);

@@ -32,11 +32,6 @@ ZipWith::ZipWith( args_t& a ) : Function(a)
 
 ZipWith::ZipWith(Stream &s) : Function(s) {}
 
-void ZipWith::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
 std::string ZipWith::returnSignature() const
 {
     return List::sig();

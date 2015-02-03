@@ -33,10 +33,6 @@ Value::~Value()
 {
 }
 
-void Value::encode(eckit::Stream& s) const {
-    Expression::encode(s);
-}
-
 ExpPtr Value::evaluate( Scope &ctx ) const
 {
     return self();

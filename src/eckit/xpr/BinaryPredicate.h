@@ -69,11 +69,6 @@ public:
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec();
 
-protected: // virtual methods
-
-    // From Streamable
-    virtual void encode(Stream&) const;
-
 private: // methods
 
     BinaryPredicate( args_t& a );

@@ -210,12 +210,6 @@ const ClassSpec& BinaryPredicate<T>::classSpec()
 }
 
 template < class T >
-void BinaryPredicate<T>::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
-template < class T >
 std::string BinaryPredicate<T>::returnSignature() const
 {
     return Boolean::sig();

@@ -49,11 +49,6 @@ public: // methods
     // Class members
     static const ClassSpec& classSpec() { return classSpec_; }
 
-protected: // virtual methods
-
-    // From Streamable
-    virtual void encode(eckit::Stream& s) const;
-
 private:
 
     virtual ExpPtr evaluate( Scope& ) const;

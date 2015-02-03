@@ -83,12 +83,6 @@ const ClassSpec& UnaryOperator<T>::classSpec()
 }
 
 template < class T >
-void UnaryOperator<T>::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
-template < class T >
 std::string UnaryOperator<T>::returnSignature() const
 {
     return args(0)->returnSignature();

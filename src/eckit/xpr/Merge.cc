@@ -31,11 +31,6 @@ Merge::Merge( args_t& a ) : Function(a)
 
 Merge::Merge(Stream &s) : Function(s) {}
 
-void Merge::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
 std::string Merge::returnSignature() const
 {
     return List::sig();

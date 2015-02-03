@@ -48,11 +48,6 @@ ProdAdd::ProdAdd(const ExpPtr& e)
 
 ProdAdd::ProdAdd(Stream &s) : Function(s) {}
 
-void ProdAdd::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
 std::string ProdAdd::returnSignature() const
 {
     for( args_t::const_iterator i = begin(); i != end(); ++i )

@@ -44,11 +44,6 @@ List::List(args_t &args, Swap ignored) : Value(args, ignored)
 
 List::List(Stream &s) : Value(s) {}
 
-void List::encode(Stream &s) const
-{
-    Value::encode(s);
-}
-
 //--------------------------------------------------------------------------------------------
 
 void List::print(std::ostream&o) const

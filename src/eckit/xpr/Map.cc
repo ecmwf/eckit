@@ -29,11 +29,6 @@ Map::Map( args_t& a ) : Function(a)
 
 Map::Map(Stream &s) : Function(s) {}
 
-void Map::encode(Stream &s) const
-{
-    Function::encode(s);
-}
-
 std::string Map::returnSignature() const
 {
     return List::sig();

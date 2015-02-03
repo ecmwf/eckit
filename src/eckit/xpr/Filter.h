@@ -42,11 +42,6 @@ public: // methods
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }
 
-protected: // virtual methods
-
-    // From Streamable
-    virtual void encode(Stream& s) const;
-
 private:
 
     Filter(args_t& a);

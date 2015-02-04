@@ -48,7 +48,7 @@ private : // methods
     Call( args_t &a );
 
     virtual std::string factoryName() const { return "xpr::call"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
     virtual ExpPtr cloneWith(args_t& a) const;

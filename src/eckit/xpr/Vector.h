@@ -67,7 +67,7 @@ public: // methods
 public: // virtual methods
 
     virtual std::string factoryName() const { return "xpr::vector"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;

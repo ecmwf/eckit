@@ -67,7 +67,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const
@@ -114,7 +114,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const { o << "FSrc("; printArgs(o); o << ")"; }
@@ -168,7 +168,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const { o << "FSnk("; printArgs(o); o << ")"; }
@@ -236,7 +236,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const { o << "FAvg("; printArgs(o); o << ")"; }
@@ -317,7 +317,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const { o << "FInterp("; printArgs(o); o << ")"; }

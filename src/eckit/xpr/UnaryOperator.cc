@@ -89,7 +89,7 @@ std::string UnaryOperator<T>::factoryName() const
 }
 
 template < class T >
-std::string UnaryOperator<T>::typeName() const
+const char * UnaryOperator<T>::typeName() const
 {
     return UnaryOperator<T>::nodeName();
 }

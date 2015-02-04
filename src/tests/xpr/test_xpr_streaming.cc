@@ -73,7 +73,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 
@@ -142,7 +142,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { NOTIMP; }
 
@@ -220,7 +220,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); }
 
@@ -313,7 +313,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); } //< returns a field
 
@@ -419,7 +419,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); } //< returns a field
 

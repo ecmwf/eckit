@@ -45,7 +45,7 @@ private: // methods
     Count( args_t& a );
 
     virtual std::string factoryName() const { return "xpr::count"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 

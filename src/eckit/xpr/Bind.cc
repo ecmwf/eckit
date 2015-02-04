@@ -50,7 +50,7 @@ void Bind::asCode(std::ostream&o) const
     o << ">(" << *args()[1] << ", " << *args()[2] << ")";
 }
 
-std::string Bind::typeName() const
+const char * Bind::typeName() const
 {
     return Bind::nodeName();
 }

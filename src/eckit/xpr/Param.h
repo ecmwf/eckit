@@ -59,7 +59,7 @@ private: //  methods
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
     virtual std::string factoryName() const { return "xpr::parameter"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;

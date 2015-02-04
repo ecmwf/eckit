@@ -47,7 +47,7 @@ private:
     Filter(args_t& a);
 
     virtual std::string factoryName() const { return "xpr::filter"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 

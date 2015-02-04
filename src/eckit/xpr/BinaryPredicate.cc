@@ -216,7 +216,7 @@ std::string BinaryPredicate<T>::factoryName() const
 }
 
 template < class T >
-std::string BinaryPredicate<T>::typeName() const
+const char * BinaryPredicate<T>::typeName() const
 {
     return BinaryPredicate<T>::nodeName();
 }

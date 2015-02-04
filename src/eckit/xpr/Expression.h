@@ -145,7 +145,7 @@ public: // methods
 public: // virtual methods
 
     virtual std::string factoryName() const { return "xpr::expression"; }
-    virtual std::string typeName() const = 0;
+    virtual const char * typeName() const = 0;
     virtual std::string signature() const = 0;
 
     ExpPtr optimise(bool doit, size_t depth = 0) const;

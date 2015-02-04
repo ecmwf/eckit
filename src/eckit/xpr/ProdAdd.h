@@ -73,7 +73,7 @@ private:
     ProdAdd( const args_t& args );
 
     virtual std::string factoryName() const { return "xpr::prod_add"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual void asCode( std::ostream& ) const;
 

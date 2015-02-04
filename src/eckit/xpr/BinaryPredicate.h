@@ -74,7 +74,7 @@ private: // methods
     BinaryPredicate( args_t& a );
 
     virtual std::string factoryName() const;
-    virtual std::string typeName() const;
+    virtual const char * typeName() const;
 
     virtual ExpPtr cloneWith(args_t& a) const
     {

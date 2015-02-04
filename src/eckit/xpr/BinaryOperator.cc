@@ -135,7 +135,7 @@ std::string BinaryOperator<T>::factoryName() const
 }
 
 template < class T >
-std::string BinaryOperator<T>::typeName() const
+const char * BinaryOperator<T>::typeName() const
 {
     return BinaryOperator<T>::nodeName();
 }

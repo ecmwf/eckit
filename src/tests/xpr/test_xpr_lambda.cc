@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_SUITE( test_eckit_xpr_lambda )
 /// test lambda expressions
 
 BOOST_AUTO_TEST_CASE( test_lambda )
-{ 
+{
     setformat(std::cout,xpr::CodeFormat);
 
     Xpr a = xpr::scalar( 2. );
@@ -54,13 +54,13 @@ BOOST_AUTO_TEST_CASE( test_lambda )
 
     BOOST_TEST_MESSAGE( "twice: " << twice(c) );
 
-    BOOST_CHECK( Scalar::extract(twice(c)) == 2. );
+    BOOST_CHECK_EQUAL( Scalar::extract(twice(c)) , 2. );
 
     Xpr neg    = call(lambda("a", Xpr(0.0) - Xpr("a")));
 
     BOOST_TEST_MESSAGE( "neg: " << neg(a) );
 
-    BOOST_CHECK( Scalar::extract(neg(a)) == -2. );
+    BOOST_CHECK_EQUAL( Scalar::extract(neg(a)) , -2. );
 
     Xpr X = l + l;
 

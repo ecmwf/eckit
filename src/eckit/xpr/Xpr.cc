@@ -166,6 +166,27 @@ ExpPtr Xpr::expr() const
     return expr_;
 }
 
+Xpr operator - (double a, const Xpr& b) { return Xpr(a) - b; }
+Xpr operator - (int a,    const Xpr& b) { return Xpr(a) - b; }
+Xpr operator + (double a, const Xpr& b) { return Xpr(a) + b; }
+Xpr operator + (int a,    const Xpr& b) { return Xpr(a) + b; }
+Xpr operator / (double a, const Xpr& b) { return Xpr(a) / b; }
+Xpr operator / (int a,    const Xpr& b) { return Xpr(a) / b; }
+Xpr operator * (double a, const Xpr& b) { return Xpr(a) * b; }
+Xpr operator * (int a,    const Xpr& b) { return Xpr(a) * b; }
+Xpr operator ==(double a, const Xpr& b) { return Xpr(a) == b; }
+Xpr operator ==(int a,    const Xpr& b) { return Xpr(a) == b; }
+Xpr operator !=(double a, const Xpr& b) { return Xpr(a) != b; }
+Xpr operator !=(int a,    const Xpr& b) { return Xpr(a) != b; }
+Xpr operator > (double a, const Xpr& b) { return Xpr(a) > b; }
+Xpr operator > (int a,    const Xpr& b) { return Xpr(a) > b; }
+Xpr operator < (double a, const Xpr& b) { return Xpr(a) < b; }
+Xpr operator < (int a,    const Xpr& b) { return Xpr(a) < b; }
+Xpr operator >=(double a, const Xpr& b) { return Xpr(a) >= b; }
+Xpr operator >=(int a,    const Xpr& b) { return Xpr(a) >= b; }
+Xpr operator <=(double a, const Xpr& b) { return Xpr(a) <= b; }
+Xpr operator <=(int a,    const Xpr& b) { return Xpr(a) <= b; }
+
 //--------------------------------------------------------------------------------------------
 
 } // namespace xpr

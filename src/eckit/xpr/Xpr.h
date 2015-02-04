@@ -84,6 +84,27 @@ private:
 
 };
 
+Xpr operator -(double, const Xpr&);
+Xpr operator -(int, const Xpr&);
+Xpr operator +(double, const Xpr&);
+Xpr operator +(int, const Xpr&);
+Xpr operator /(double, const Xpr&);
+Xpr operator /(int, const Xpr&);
+Xpr operator *(double, const Xpr&);
+Xpr operator *(int, const Xpr&);
+Xpr operator ==(double, const Xpr&);
+Xpr operator ==(int, const Xpr&);
+Xpr operator !=(double, const Xpr&);
+Xpr operator !=(int, const Xpr&);
+Xpr operator >(double, const Xpr&);
+Xpr operator >(int, const Xpr&);
+Xpr operator <(double, const Xpr&);
+Xpr operator <(int, const Xpr&);
+Xpr operator >=(double, const Xpr&);
+Xpr operator >=(int, const Xpr&);
+Xpr operator <=(double, const Xpr&);
+Xpr operator <=(int, const Xpr&);
+
 //--------------------------------------------------------------------------------------------
 
 } // namespace xpr

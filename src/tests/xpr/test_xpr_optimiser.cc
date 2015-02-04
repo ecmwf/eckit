@@ -39,28 +39,25 @@ namespace eckit_test {
 
 /// Test if expression engine can optimise expression trees without evaluating them
 
-struct ExpFixture {
+struct XprFixture {
 
-    ExpFixture() : a( xpr::scalar( 2. ) ),
-                   b( xpr::scalar( 4. ) ),
-                   x( xpr::vector( 3, 5. ) ),
-                   y( xpr::vector( 3, 7. ) ) {}
+    XprFixture() : a( 2 ), b( 4. ), x({5, 5, 5}), y({7, 7, 7}) {}
 
-    ExpPtr a;
-    ExpPtr b;
-    ExpPtr x;
-    ExpPtr y;
+    Xpr a;
+    Xpr b;
+    Xpr x;
+    Xpr y;
 };
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_SUITE( test_eckit_xpr_optimiser, ExpFixture )
+BOOST_FIXTURE_TEST_SUITE( test_eckit_xpr_optimiser, XprFixture )
 
 BOOST_AUTO_TEST_CASE( test_add_vv )
 {
     // should not optimise
 
-    Xpr X = xpr::add(x,y);
+    Xpr X = x + y;
 
     BOOST_CHECK( X.optimise().expr()->str() == "Add(Vector(5, 5, 5), Vector(7, 7, 7))" );
     BOOST_CHECK( X.optimise().expr()->code() == "xpr::add(xpr::vector({5, 5, 5}), xpr::vector({7, 7, 7}))" );
@@ -69,7 +66,7 @@ BOOST_AUTO_TEST_CASE( test_add_vv )
 
 BOOST_AUTO_TEST_CASE( test_list_add_ss_vv )
 {
-    Xpr X = xpr::list( xpr::add(a,b), xpr::add(x,y));
+    Xpr X = xpr::list( a + b, x + y);
 
     BOOST_CHECK( X.optimise().expr()->str() == "List(Scalar(6), Add(Vector(5, 5, 5), Vector(7, 7, 7)))" );
     BOOST_CHECK( X.optimise().expr()->code() == "xpr::list(xpr::scalar(6), xpr::add(xpr::vector({5, 5, 5}), xpr::vector({7, 7, 7})))" );
@@ -78,9 +75,9 @@ BOOST_AUTO_TEST_CASE( test_list_add_ss_vv )
 
 BOOST_AUTO_TEST_CASE( test_linear_sv_sv )
 {
-    Xpr e = add(a, b); // FIXME: a + b does not compile
-    Xpr z = prod(sub(a, b), e); // FIXME: (a-b)*e does not compile
-    Xpr X = xpr::add( xpr::prod(e,x), xpr::prod(z,y));
+    Xpr e = a + b;
+    Xpr z = (a - b) * e;
+    Xpr X = e * x + z * y;
 
     BOOST_CHECK( X.optimise().expr()->str() == "Linear(Scalar(6), Vector(5, 5, 5), Scalar(-12), Vector(7, 7, 7))" );
     BOOST_CHECK( X.optimise().expr()->code() == "xpr::linear(xpr::scalar(6), xpr::vector({5, 5, 5}), xpr::scalar(-12), xpr::vector({7, 7, 7})))" );
@@ -94,7 +91,7 @@ BOOST_AUTO_TEST_CASE( test_linear_with_count )
                     xpr::list(a,a,a,a,a,a,a),
                            xpr::list(b,b,b))
                              );
-    Xpr X = xpr::add( xpr::prod(e,x), xpr::prod(b,y));
+    Xpr X = e * x + b * y;
 
     BOOST_CHECK( X.optimise().expr()->str() == "Linear(Scalar(10), Vector(5, 5, 5), Scalar(4), Vector(7, 7, 7))" );
     BOOST_CHECK( X.optimise().expr()->code() == "xpr::linear(xpr::scalar(10), xpr::vector({5, 5, 5}), xpr::scalar(4), xpr::vector({7, 7, 7})))" );

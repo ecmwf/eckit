@@ -32,8 +32,11 @@ public: // static methods
     static std::string sig() { return "b"; }
     static const char * nodeName() { return "Boolean"; }
 
-    static scalar_t extract ( Scope& ctx , const ExpPtr& e )
+    static bool is ( const ExpPtr& e );
+
+    static value_t extract ( const ExpPtr& e )
     {
+        ASSERT( Boolean::is(e) );
         return e->as<Boolean>()->value();
     }
 

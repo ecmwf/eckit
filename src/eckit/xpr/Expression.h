@@ -200,6 +200,12 @@ private: // methods
 
 //--------------------------------------------------------------------------------------------
 
+template < typename T >
+typename T::value_t extract( const ExpPtr& x )
+{
+    return T::extract( x );
+}
+
 } // namespace xpr
 } // namespace eckit
 

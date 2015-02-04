@@ -165,8 +165,8 @@ template < class U, class V, class I >
 ExpPtr BinaryOperator<T>::Computer<U,V,I>::compute(Scope& ctx, const args_t &p)
 {
     T op;
-    typename U::value_t a = U::extract(ctx, p[0]);
-    typename V::value_t b = V::extract(ctx, p[1]);
+    typename U::value_t a = U::extract(p[0]);
+    typename V::value_t b = V::extract(p[1]);
 
     return I::apply(op,a,b);
 }

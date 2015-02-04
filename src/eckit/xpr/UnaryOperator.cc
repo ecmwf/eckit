@@ -132,7 +132,7 @@ template < class T >
 template < class U, class I >
 ExpPtr UnaryOperator<T>::Computer<U,I>::compute(Scope& ctx, const args_t &p)
 {
-    typename U::value_t a = U::extract(ctx, p[0]);
+    typename U::value_t a = U::extract(p[0]);
     return I::apply(T(),a);
 }
 

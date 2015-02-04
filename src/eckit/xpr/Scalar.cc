@@ -45,8 +45,7 @@ void Scalar::print(std::ostream&o) const
 
 Scalar::Scalar(ExpPtr e) : v_(0)
 {
-   Scope dummy("Scalar::Scalar");
-   v_ = Scalar::extract(dummy, e->eval(dummy) );
+   v_ = Scalar::extract( e->eval(false) );
 }
 
 ExpPtr Scalar::cloneWith(args_t& a) const {

@@ -69,13 +69,13 @@ Linear::Linear(Stream &s) : Function(s) {}
 
 ExpPtr Linear::compute(Scope &ctx, const args_t& p )
 {
-    scalar_t a = Scalar::extract( ctx, p[0] );
+    scalar_t a = Scalar::extract( p[0] );
 
-    const Vector::value_t& v1 = Vector::extract(ctx, p[1] );
+    const Vector::value_t& v1 = Vector::extract( p[1] );
 
-    scalar_t b = Scalar::extract( ctx, p[2] );
+    scalar_t b = Scalar::extract( p[2] );
 
-    const Vector::value_t& v2 = Vector::extract(ctx, p[3] );
+    const Vector::value_t& v2 = Vector::extract( p[3] );
 
     ASSERT( v1.size() == v2.size() );
 

@@ -34,17 +34,10 @@ public: // methods
     static std::string sig() { return "s"; }
     static const char * nodeName() { return "Scalar"; }
 
-    static bool is ( const ExpPtr& e ) ;
+    static bool is ( const ExpPtr& e );
 
-    static scalar_t extract ( Scope& ctx , const ExpPtr& e )
+    static value_t extract ( const ExpPtr& e )
     {
-        ASSERT( Scalar::is(e) );
-        return e->as<Scalar>()->value();
-    }
-
-    static scalar_t extract ( const Xpr& m )
-    {
-        ExpPtr e = m;
         ASSERT( Scalar::is(e) );
         return e->as<Scalar>()->value();
     }

@@ -46,7 +46,7 @@ ExpPtr Filter::evaluate( Scope &ctx ) const
         ExpPtr e = list[i]->eval(ctx);
         ExpPtr b = f->eval(e);
 
-        if( Boolean::extract(ctx, b) )
+        if( Boolean::extract( b) )
             res.push_back( e );
     }
 

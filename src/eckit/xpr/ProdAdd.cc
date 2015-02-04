@@ -57,9 +57,9 @@ ExpPtr ProdAdd::compute_svv(Scope& ctx, const args_t &p)
 {
     ASSERT( p.size() == 3 );
 
-    scalar_t a = Scalar::extract(ctx, p[0] );
-    const Vector::value_t& v1 = Vector::extract(ctx, p[1] );
-    const Vector::value_t& v2 = Vector::extract(ctx, p[2] );
+    scalar_t a = Scalar::extract( p[0] );
+    const Vector::value_t& v1 = Vector::extract( p[1] );
+    const Vector::value_t& v2 = Vector::extract( p[2] );
 
     ASSERT( v1.size() == v2.size() );
 
@@ -75,9 +75,9 @@ ExpPtr ProdAdd::compute_vvv(Scope& ctx,const args_t &p)
 {
     ASSERT( p.size() == 3 );
 
-    const Vector::value_t& v0 = Vector::extract(ctx, p[0] );
-    const Vector::value_t& v1 = Vector::extract(ctx, p[1] );
-    const Vector::value_t& v2 = Vector::extract(ctx, p[2] );
+    const Vector::value_t& v0 = Vector::extract( p[0] );
+    const Vector::value_t& v1 = Vector::extract( p[1] );
+    const Vector::value_t& v2 = Vector::extract( p[2] );
 
     ASSERT( v0.size() == v1.size() );
     ASSERT( v1.size() == v2.size() );

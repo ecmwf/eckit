@@ -17,9 +17,7 @@ namespace mpi {
 
 Comm::Comm()
 {
-  if( ! initialized() )
-    throw mpi::Error( "Trying to construct MPI communicator without MPI being initialized", Here() );
-  attach_communicator(MPI_COMM_WORLD);
+  comm_ = MPI_COMM_WORLD;
 }
 
 MPI_Fint Comm::fortran_communicator()
@@ -37,13 +35,16 @@ void Comm::attach_fortran_communicator( MPI_Fint fcomm )
 void Comm::attach_communicator( MPI_Comm comm )
 {
   int result;
-  ECKIT_MPI_CHECK_RESULT( MPI_Comm_compare( comm, comm_, &result ) );
-  if( result == MPI_UNEQUAL )
+  if( comm_ )
   {
-    ECKIT_MPI_CHECK_RESULT( MPI_Comm_compare( comm_, MPI_COMM_WORLD, &result ) );
+      ECKIT_MPI_CHECK_RESULT( MPI_Comm_compare( comm, comm_, &result ) );
     if( result == MPI_UNEQUAL )
     {
-      ECKIT_MPI_CHECK_RESULT( MPI_Comm_free( &comm_ ) );
+      ECKIT_MPI_CHECK_RESULT( MPI_Comm_compare( comm_, MPI_COMM_WORLD, &result ) );
+      if( result == MPI_UNEQUAL )
+      {
+        ECKIT_MPI_CHECK_RESULT( MPI_Comm_free( &comm_ ) );
+      }
     }
   }
   comm_ = comm;

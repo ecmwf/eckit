@@ -64,7 +64,7 @@ ecbuild_add_option( FEATURE MPI
 
 ecbuild_add_option( FEATURE MPISTUBS
                     DESCRIPTION "Support for MPI distributed parallelism"
-                    REQUIRED_PACKAGES "PROJECT mpistubs" )
+                    REQUIRED_PACKAGES "PROJECT mpistubs VERSION 1.0.0" )
 
 ecbuild_add_option( FEATURE ECKIT_MPI
                     DESCRIPTION "eckit C++ wrapper for mpi"

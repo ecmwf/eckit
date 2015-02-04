@@ -30,6 +30,8 @@ ZipWith::ZipWith( args_t& a ) : Function(a)
     ASSERT( a.size() == 3 );
 }
 
+ZipWith::ZipWith(Stream &s) : Function(s) {}
+
 std::string ZipWith::returnSignature() const
 {
     return List::sig();
@@ -61,11 +63,6 @@ ExpPtr ZipWith::evaluate( Scope &ctx ) const
      return ExpPtr(new List( res, List::Swap()));
 }
 
-void ZipWith::asCode(std::ostream&o) const
-{
-    o << "xpr::zipWith("; printArgs(o); o <<")";
-}
-
 ExpPtr ZipWith::cloneWith(args_t& a) const
 {
     return ExpPtr( new ZipWith(a) );
@@ -80,6 +77,15 @@ size_t ZipWith::count() const
 {
     return std::min( args(1)->count(),  args(2)->count());
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec ZipWith::classSpec_ = {
+    &Function::classSpec(),
+    ZipWith::nodeName().c_str(),
+};
+
+Reanimator< ZipWith > ZipWith::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

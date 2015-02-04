@@ -11,6 +11,7 @@
 /// @file ProdAdd.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_ProdAdd_h
@@ -38,14 +39,23 @@ public: // methods
         return ExpPtr( new ProdAdd(args) );
     }
 
-    static std::string className() { return "ProdAdd"; }
+    static std::string nodeName() { return "ProdAdd"; }
 
     ProdAdd( const ExpPtr& e );
+
+    ProdAdd( ProdAdd&& ) = default;
+
+    ProdAdd( Stream& s );
+
+    ProdAdd& operator=(ProdAdd&&) = default;
 
     struct Register
     {
         Register();
     };
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 protected: // methods
 
@@ -62,13 +72,19 @@ private:
 
     ProdAdd( const args_t& args );
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string factoryName() const { return "xpr::prod_add"; }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 
     virtual void asCode( std::ostream& ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;
+
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<ProdAdd> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

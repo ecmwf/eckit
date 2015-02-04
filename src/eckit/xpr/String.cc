@@ -20,6 +20,17 @@ String::String( const std::string& v ) : v_(v)
 {
 }
 
+String::String(Stream &s) : Value(s), v_(0)
+{
+    s >> v_;
+}
+
+void String::encode(Stream &s) const
+{
+    Value::encode(s);
+    s << v_;
+}
+
 bool String::is(const ExpPtr &e)
 {
     return dynamic_cast<String*>(e.get()) != 0;
@@ -27,7 +38,7 @@ bool String::is(const ExpPtr &e)
 
 void String::print(std::ostream&o) const
 {
-    o << className() << "(" << v_ << ")";
+    o << nodeName() << "(" << v_ << ")";
 }
 
 String::String(ExpPtr e) : v_(0)
@@ -39,6 +50,15 @@ String::String(ExpPtr e) : v_(0)
 ExpPtr String::cloneWith(args_t& a) const {
     NOTIMP; // Should not be called
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec String::classSpec_ = {
+    &Value::classSpec(),
+    String::nodeName().c_str(),
+};
+
+Reanimator< String > String::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

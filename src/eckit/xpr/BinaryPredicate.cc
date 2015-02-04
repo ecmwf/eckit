@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/xpr/Scalar.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/BinaryPredicate.h"
 #include "eckit/xpr/Optimiser.h"
@@ -27,14 +26,14 @@ static const char *opname(const NotEqual&)      { return "NotEqual";  }
 static const char *opname(const And&)           { return "And";  }
 static const char *opname(const Or&)            { return "Or";  }
 
-static const char *opsymbol(const Greater&)       { return ">";  }
-static const char *opsymbol(const GreaterEqual&)  { return ">=";  }
-static const char *opsymbol(const Less&)          { return "<";  }
-static const char *opsymbol(const LessEqual&)     { return "<=";  }
-static const char *opsymbol(const Equal&)         { return "==";  }
-static const char *opsymbol(const NotEqual&)      { return "!=";  }
-static const char *opsymbol(const And&)           { return "&&";  }
-static const char *opsymbol(const Or&)            { return "||";  }
+static const char *opfactory(const Greater&)       { return "xpr::greater";  }
+static const char *opfactory(const GreaterEqual&)  { return "xpr::greater_equal";  }
+static const char *opfactory(const Less&)          { return "xpr::less";  }
+static const char *opfactory(const LessEqual&)     { return "xpr::less_equal";  }
+static const char *opfactory(const Equal&)         { return "xpr::equal";  }
+static const char *opfactory(const NotEqual&)      { return "xpr::not_equal";  }
+static const char *opfactory(const And&)           { return "xpr::logical_and";  }
+static const char *opfactory(const Or&)            { return "xpr::logical_or";  }
 
 //--------------------------------------------------------------------------------------------
 
@@ -198,27 +197,42 @@ BinaryPredicate<T>::BinaryPredicate(args_t& a) : Function(a)
 }
 
 template < class T >
+BinaryPredicate<T>::BinaryPredicate(Stream& s) : Function(s) {}
+
+template < class T >
+const ClassSpec& BinaryPredicate<T>::classSpec()
+{
+     static ClassSpec myClassSpec = {
+         &Function::classSpec(),
+         BinaryPredicate<T>::nodeName().c_str(),
+     };
+     return myClassSpec;
+}
+
+template < class T >
 std::string BinaryPredicate<T>::returnSignature() const
 {
     return Boolean::sig();
 }
 
 template < class T >
-std::string BinaryPredicate<T>::typeName() const
+std::string BinaryPredicate<T>::factoryName() const
 {
-    return BinaryPredicate<T>::className();
+    return opfactory( T() );
 }
 
 template < class T >
-std::string BinaryPredicate<T>::className()
+std::string BinaryPredicate<T>::typeName() const
+{
+    return BinaryPredicate<T>::nodeName();
+}
+
+template < class T >
+std::string BinaryPredicate<T>::nodeName()
 {
     return opname( T() );
 }
 
-template < class T >
-void BinaryPredicate<T>::asCode( std::ostream& o ) const {
-    o << '(' << *args(0) << ' ' << opsymbol(T()) << ' ' << *args(1) << ')';
-}
 /*
 template < class T >
 ExpPtr BinaryPredicate<T>::optimise() const
@@ -250,6 +264,11 @@ ExpPtr BinaryPredicate<T>::Computer<U,V,I>::compute(Scope& ctx, const args_t &p)
 
     return I::apply(op,a,b);
 }
+
+//--------------------------------------------------------------------------------------------
+
+template < class T >
+Reanimator< BinaryPredicate<T> > BinaryPredicate<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

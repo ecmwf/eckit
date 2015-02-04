@@ -10,6 +10,7 @@
 
 /// @file Count.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Count_h
@@ -29,26 +30,35 @@ class Count : public Function {
 
 public: // methods
 
-    static std::string className() { return "Count"; }
+    static std::string nodeName() { return "Count"; }
 
     Count( ExpPtr e = undef() );
+
+    Count ( Count&& ) = default;
+
+    Count ( Stream& s );
+
+    Count& operator=(Count&&) = default;
 
 private: // methods
 
     Count( args_t& a );
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string factoryName() const { return "xpr::count"; }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual void asCode( std::ostream& ) const;
-
     virtual ExpPtr cloneWith(args_t& a) const;
 
     virtual ExpPtr optimise(size_t depth) const;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Count> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

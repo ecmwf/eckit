@@ -30,6 +30,8 @@ IfElse::IfElse(args_t& a) : Function(a)
     ASSERT( a.size() == 3 );
 }
 
+IfElse::IfElse(Stream &s) : Function(s) {}
+
 std::string IfElse::returnSignature() const
 {
     std::string i = args(1)->returnSignature();
@@ -59,15 +61,19 @@ ExpPtr IfElse::evaluate( Scope &ctx ) const
     }
 }
 
-void IfElse::asCode(std::ostream&o) const
-{
-    o << "xpr::ifelse("; printArgs(o); o <<")";
-}
-
 ExpPtr IfElse::cloneWith(args_t& a) const
 {
     return ExpPtr(new IfElse(a));
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec IfElse::classSpec_ = {
+    &Function::classSpec(),
+    IfElse::nodeName().c_str(),
+};
+
+Reanimator< IfElse > IfElse::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

@@ -21,8 +21,19 @@ ParamDef::ParamDef(const std::string& name) : Expression(), name_(name)
 {
 }
 
+ParamDef::ParamDef(Stream &s) : Expression(s), name_()
+{
+    s >> name_;
+}
+
 ParamDef::~ParamDef()
 {
+}
+
+void ParamDef::encode(Stream &s) const
+{
+    Expression::encode(s);
+    s << name_;
 }
 
 ExpPtr ParamDef::resolve(Scope & ctx) const
@@ -55,13 +66,20 @@ ExpPtr ParamDef::cloneWith(args_t& a) const {
     NOTIMP;
 }
 
+//--------------------------------------------------------------------------------------------
 
+ClassSpec ParamDef::classSpec_ = {
+    &Expression::classSpec(),
+    ParamDef::nodeName().c_str(),
+};
+
+Reanimator< ParamDef > ParamDef::reanimator_;
+
+//--------------------------------------------------------------------------------------------
 
 bool ParamDef::is(const ExpPtr &e) {
     return dynamic_cast<ParamDef*>(e.get()) != 0;
 }
-
-
 
 //--------------------------------------------------------------------------------------------
 

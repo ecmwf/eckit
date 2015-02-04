@@ -27,6 +27,8 @@ Map::Map( args_t& a ) : Function(a)
     ASSERT( a.size() == 2 );
 }
 
+Map::Map(Stream &s) : Function(s) {}
+
 std::string Map::returnSignature() const
 {
     return List::sig();
@@ -55,12 +57,6 @@ ExpPtr Map::evaluate( Scope &ctx ) const
     return ExpPtr(new List( res, List::Swap()));
 }
 
-
-void Map::asCode(std::ostream&o) const
-{
-    o << "xpr::map("; printArgs(o); o << ")";
-}
-
 ExpPtr Map::cloneWith(args_t& a) const
 {
     return ExpPtr( new Map(a) );
@@ -75,6 +71,15 @@ size_t Map::count() const
 {
     return args(1)->count();
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Map::classSpec_ = {
+    &Function::classSpec(),
+    Map::nodeName().c_str(),
+};
+
+Reanimator< Map > Map::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

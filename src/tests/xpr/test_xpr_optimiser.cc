@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/log/Log.h"
-#include "eckit/runtime/Tool.h"
+#define BOOST_TEST_MODULE test_eckit_xpr_optimiser
+
+#include "ecbuild/boost_test_framework.h"
 
 #include "eckit/xpr/IfElse.h"
 #include "eckit/xpr/Lambda.h"
@@ -38,85 +39,55 @@ namespace eckit_test {
 
 /// Test if expression engine can optimise expression trees without evaluating them
 
-class TestOptimiser : public Tool {
+struct ExpFixture {
 
-    Xpr a;
-    Xpr b;
-    Xpr x;
-    Xpr y;
+    ExpFixture() : a( xpr::scalar( 2. ) ),
+                   b( xpr::scalar( 4. ) ),
+                   x( xpr::vector( 3, 5. ) ),
+                   y( xpr::vector( 3, 7. ) ) {}
 
-public:
-
-    TestOptimiser(int argc,char **argv): Tool(argc,argv),
-      a( undef() ),
-      b( undef() ),
-      x( undef() ),
-      y( undef() )
-    {
-    }
-
-    virtual void run();
-
-    void setup();
-
-    void test_add_vv();
-    void test_list_add_ss_vv();
-    void test_linear_sv_sv();
-    void test_linear_with_count();
-
-    void teardown();
+    ExpPtr a;
+    ExpPtr b;
+    ExpPtr x;
+    ExpPtr y;
 };
 
-void TestOptimiser::run()
-{
-    setup();
+//-----------------------------------------------------------------------------
 
-    test_add_vv();
-    test_list_add_ss_vv();
-    test_linear_sv_sv();
-    test_linear_with_count();
+BOOST_FIXTURE_TEST_SUITE( test_eckit_xpr_optimiser, ExpFixture )
 
-    teardown();
-}
-
-void TestOptimiser::setup()
-{
-    a = xpr::scalar( 2. );
-    b = xpr::scalar( 4. );
-    x = xpr::vector( 3, 5. );
-    y = xpr::vector( 3, 7. );
-}
-
-void TestOptimiser::teardown()
-{
-}
-
-void TestOptimiser::test_add_vv()
+BOOST_AUTO_TEST_CASE( test_add_vv )
 {
     // should not optimise
 
     Xpr X = xpr::add(x,y);
 
-    ASSERT( X.optimise().expr()->str() == "Add(Vector(5, 5, 5), Vector(7, 7, 7))" );
+    BOOST_CHECK( X.optimise().expr()->str() == "Add(Vector(5, 5, 5), Vector(7, 7, 7))" );
+    BOOST_CHECK( X.optimise().expr()->code() == "xpr::add(xpr::vector({5, 5, 5}), xpr::vector({7, 7, 7}))" );
+    BOOST_CHECK( X.optimise().expr()->json() == "{\"xpr::add\":[[5,5,5],[7,7,7]]}" );
 }
 
-void TestOptimiser::test_list_add_ss_vv()
+BOOST_AUTO_TEST_CASE( test_list_add_ss_vv )
 {
     Xpr X = xpr::list( xpr::add(a,b), xpr::add(x,y));
 
-    ASSERT( X.optimise().expr()->str() == "List(Scalar(6), Add(Vector(5, 5, 5), Vector(7, 7, 7)))" );
+    BOOST_CHECK( X.optimise().expr()->str() == "List(Scalar(6), Add(Vector(5, 5, 5), Vector(7, 7, 7)))" );
+    BOOST_CHECK( X.optimise().expr()->code() == "xpr::list(xpr::scalar(6), xpr::add(xpr::vector({5, 5, 5}), xpr::vector({7, 7, 7})))" );
+    BOOST_CHECK( X.optimise().expr()->json() == "{\"xpr::list\":[6,{\"xpr::add\":[[5,5,5],[7,7,7]]}]}" );
 }
 
-void TestOptimiser::test_linear_sv_sv()
+BOOST_AUTO_TEST_CASE( test_linear_sv_sv )
 {
-    Xpr e = a+b;
-    Xpr z = (a-b) * e;
+    Xpr e = add(a, b); // FIXME: a + b does not compile
+    Xpr z = prod(sub(a, b), e); // FIXME: (a-b)*e does not compile
     Xpr X = xpr::add( xpr::prod(e,x), xpr::prod(z,y));
 
-    ASSERT( X.optimise().expr()->str() == "Linear(Scalar(6), Vector(5, 5, 5), Scalar(-12), Vector(7, 7, 7))" );
+    BOOST_CHECK( X.optimise().expr()->str() == "Linear(Scalar(6), Vector(5, 5, 5), Scalar(-12), Vector(7, 7, 7))" );
+    BOOST_CHECK( X.optimise().expr()->code() == "xpr::linear(xpr::scalar(6), xpr::vector({5, 5, 5}), xpr::scalar(-12), xpr::vector({7, 7, 7})))" );
+    BOOST_CHECK( X.optimise().expr()->json() == "{\"xpr::linear\":[6,[5,5,5],-12,[7,7,7]]}" );
 }
 
-void TestOptimiser::test_linear_with_count()
+BOOST_AUTO_TEST_CASE( test_linear_with_count )
 {
     Xpr e = xpr::count(
                 xpr::merge(
@@ -125,19 +96,13 @@ void TestOptimiser::test_linear_with_count()
                              );
     Xpr X = xpr::add( xpr::prod(e,x), xpr::prod(b,y));
 
-    ASSERT( X.optimise().expr()->str() == "Linear(Scalar(10), Vector(5, 5, 5), Scalar(4), Vector(7, 7, 7))" );
+    BOOST_CHECK( X.optimise().expr()->str() == "Linear(Scalar(10), Vector(5, 5, 5), Scalar(4), Vector(7, 7, 7))" );
+    BOOST_CHECK( X.optimise().expr()->code() == "xpr::linear(xpr::scalar(10), xpr::vector({5, 5, 5}), xpr::scalar(4), xpr::vector({7, 7, 7})))" );
+    BOOST_CHECK( X.optimise().expr()->json() == "{\"xpr::linear\":[10,[5,5,5],4,[7,7,7]]}" );
 }
+
+BOOST_AUTO_TEST_SUITE_END()
 
 //-----------------------------------------------------------------------------
 
 } // namespace eckit_test
-
-//-----------------------------------------------------------------------------
-
-int main(int argc,char **argv)
-{
-    eckit_test::TestOptimiser mytest(argc,argv);
-    mytest.start();
-    return 0;
-}
-

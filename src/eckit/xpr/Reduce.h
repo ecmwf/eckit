@@ -10,6 +10,7 @@
 
 /// @file Reduce.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Reduce_h
@@ -29,23 +30,36 @@ class Reduce : public Function {
 
 public: // methods
 
-    static std::string className() { return "Reduce"; }
+    static std::string nodeName() { return "Reduce"; }
 
     Reduce( ExpPtr f = undef(), ExpPtr l = undef() );
+
+    Reduce( Reduce&& ) = default;
+
+    Reduce( Stream& s );
+
+    Reduce& operator=(Reduce&&) = default;
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
 
     Reduce( args_t& a );
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string factoryName() const { return "xpr::reduce"; }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-     virtual void asCode( std::ostream& ) const;
-
     virtual ExpPtr cloneWith(args_t& a) const;
+
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Reduce> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

@@ -10,6 +10,7 @@
 
 /// @file BinaryPredicate.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_BinaryPredicate_h
@@ -34,9 +35,15 @@ template <class T>
 class BinaryPredicate : public Function  {
 public:
 
-    static std::string className();
+    static std::string nodeName();
 
     BinaryPredicate( ExpPtr a, ExpPtr b);
+
+    BinaryPredicate(BinaryPredicate&&) = default;
+
+    BinaryPredicate(Stream &s);
+
+    BinaryPredicate& operator=(BinaryPredicate&&) = default;
 
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
@@ -59,10 +66,14 @@ public:
         static ExpPtr compute( Scope& ct , const args_t& p );
     };
 
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec();
+
 private: // methods
 
     BinaryPredicate( args_t& a );
 
+    virtual std::string factoryName() const;
     virtual std::string typeName() const;
 
     virtual std::string returnSignature() const;
@@ -72,7 +83,7 @@ private: // methods
         return ExpPtr( new BinaryPredicate<T>(a) );
     }
 
-    virtual void asCode( std::ostream& o ) const;
+    static  Reanimator<BinaryPredicate> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

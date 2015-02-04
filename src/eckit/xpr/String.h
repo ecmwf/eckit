@@ -11,6 +11,7 @@
 /// @file String.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_String_h
@@ -31,7 +32,7 @@ public: // methods
     typedef std::string value_t;
 
     static std::string sig() { return "str"; }
-    static std::string className() { return "String"; }
+    static std::string nodeName() { return "String"; }
 
     static bool is ( const ExpPtr& e ) ;
 
@@ -52,12 +53,22 @@ public: // methods
 
     String( const value_t& v );
 
+    String( String&& ) = default;
+
+    String( Stream& s );
+
+    String& operator=(String&&) = default;
+
     /// @returns the value of the scalar
     value_t value() const { return v_; }
 
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
 public: // virtual methods
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string factoryName() const { return "xpr::string"; }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 
@@ -65,10 +76,19 @@ public: // virtual methods
     virtual void asCode( std::ostream& o ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
 
+protected: // virtual methods
+
+    // From Streamable
+    virtual void encode( Stream& s ) const;
+
 protected: // members
 
     value_t v_;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<String> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

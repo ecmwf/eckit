@@ -11,6 +11,7 @@
 /// @file Param.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Param_h
@@ -32,18 +33,33 @@ class Param : public Expression {
 
 public: //  methods
 
-    static std::string className()     { return "Param"; }
+    static std::string nodeName()     { return "Param"; }
     static std::string sig()           { return "?";     }
 
     Param(const std::string& name);
 
+    Param( Param&& ) = default;
+
+    Param( Stream& s );
+
     virtual ~Param();
+
+    Param& operator=(Param&&) = default;
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
+protected: // virtual methods
+
+    // From Streamable
+    virtual void encode(Stream& s) const;
 
 private: //  methods
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string factoryName() const { return "xpr::parameter"; }
+    virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 
@@ -51,6 +67,10 @@ private: //  methods
     virtual void asCode( std::ostream& ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Param> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

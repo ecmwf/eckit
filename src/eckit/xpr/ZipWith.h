@@ -10,6 +10,7 @@
 
 /// @file ZipWith.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_ZipWith_h
@@ -27,21 +28,29 @@ class ZipWith : public Function {
 
 public: // methods
 
-    static std::string className() { return "ZipWith"; }
+    static std::string nodeName() { return "ZipWith"; }
 
     ZipWith( ExpPtr f, ExpPtr l0, ExpPtr l1 );
+
+    ZipWith( ZipWith&& ) = default;
+
+    ZipWith( Stream& s );
+
+    ZipWith& operator=(ZipWith&&) = default;
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private: // methods
 
     ZipWith( args_t& a );
 
-    virtual std::string typeName() const { return className(); }
+    virtual std::string factoryName() const { return "xpr::zipWith"; }
+    virtual std::string typeName() const { return nodeName(); }
 
     virtual std::string returnSignature() const;
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
-
-    virtual void asCode( std::ostream& ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;
 
@@ -49,6 +58,10 @@ private: // methods
     virtual bool countable() const;
     virtual size_t count() const;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<ZipWith> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

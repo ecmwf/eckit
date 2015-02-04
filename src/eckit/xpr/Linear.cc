@@ -65,6 +65,8 @@ Linear::Linear(args_t& a) : Function(a)
     ASSERT( a.size() == 2 );
 }
 
+Linear::Linear(Stream &s) : Function(s) {}
+
 ExpPtr Linear::compute(Scope &ctx, const args_t& p )
 {
     scalar_t a = Scalar::extract( ctx, p[0] );
@@ -88,7 +90,7 @@ ExpPtr Linear::compute(Scope &ctx, const args_t& p )
 
 void Linear::asCode(std::ostream&o) const
 {
-    o << "xpr::linear(" << *args(0) << ", " << *args(1) << ", " << *args(2) << ", " << *args(3) << "))";
+    o << factoryName() << "(" << *args(0) << ", " << *args(1) << ", " << *args(2) << ", " << *args(3) << "))";
 }
 
 std::string Linear::returnSignature() const
@@ -98,7 +100,7 @@ std::string Linear::returnSignature() const
 
 Linear::Register::Register()
 {
-    Function::dispatcher()[ className() + "(s,v,s,v)" ] = &compute;
+    Function::dispatcher()[ nodeName() + "(s,v,s,v)" ] = &compute;
 }
 
 
@@ -106,6 +108,15 @@ ExpPtr Linear::cloneWith(args_t& a) const
 {
     return ExpPtr(new Linear(a));
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Linear::classSpec_ = {
+    &Function::classSpec(),
+    Linear::nodeName().c_str(),
+};
+
+Reanimator< Linear > Linear::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

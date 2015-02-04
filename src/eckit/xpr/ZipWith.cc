@@ -32,11 +32,6 @@ ZipWith::ZipWith( args_t& a ) : Function(a)
 
 ZipWith::ZipWith(Stream &s) : Function(s) {}
 
-std::string ZipWith::returnSignature() const
-{
-    return List::sig();
-}
-
 ExpPtr ZipWith::evaluate( Scope &ctx ) const
 {
     ExpPtr f = args(0, ctx, false);

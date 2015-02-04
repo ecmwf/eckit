@@ -59,8 +59,6 @@ BOOST_AUTO_TEST_CASE( test_optimise_scalars )
 
     ExpPtr e = add( prod( c , x_ ) , prod( b_, y_ ));
 
-    BOOST_CHECK( e->returnSignature() == Vector::sig() );
-
     // signature and code representation before optimising
     BOOST_CHECK( e->signature() == "Add(Prod(Add(s,s),v),Prod(s,v))" );
     BOOST_CHECK( e->code() == "xpr::add(xpr::prod(xpr::add(xpr::scalar(2), xpr::scalar(4)), xpr::vector({5, 5, 5})), xpr::prod(xpr::scalar(4), xpr::vector({7, 7, 7})))" );
@@ -85,8 +83,6 @@ BOOST_AUTO_TEST_CASE( test_optimise_recursive_scalars )
     ExpPtr c3 = xpr::add(c2,c2);
     ExpPtr c4 = xpr::add(c3,c3);
     ExpPtr e  = xpr::add(c4,c4);
-
-    BOOST_CHECK( e->returnSignature() == Scalar::sig() );
 
     // signature and code representation before reducing
     BOOST_CHECK( e->signature() == "Add(Add(Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s))),Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s)))),Add(Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s))),Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s)))))" );

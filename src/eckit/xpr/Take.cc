@@ -28,11 +28,6 @@ Take::Take( args_t& a ) : Function(a)
 
 Take::Take(Stream &s) : Function(s) {}
 
-std::string Take::returnSignature() const
-{
-    return Undef::sig();
-}
-
 ExpPtr Take::evaluate( Scope &ctx ) const
 {
     ExpPtr idx  = args(0, ctx, true);

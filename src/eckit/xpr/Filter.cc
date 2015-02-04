@@ -30,11 +30,6 @@ Filter::Filter(args_t& a) : Function(a)
 
 Filter::Filter(Stream &s) : Function(s) {}
 
-std::string Filter::returnSignature() const
-{
-    return List::sig();
-}
-
 ExpPtr Filter::evaluate( Scope &ctx ) const
 {
     ExpPtr f = args(0, ctx, false);

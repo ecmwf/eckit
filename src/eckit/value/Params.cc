@@ -91,36 +91,6 @@ void ValueParams::print(std::ostream &s) const
 
 //------------------------------------------------------------------------------------------------------
 
-RuntimeParams::RuntimeParams( Params** runtime ) : runtime_(runtime)
-{
-}
-
-Params::value_t RuntimeParams::get(const key_t& key ) const
-{
-    if( runtime_ )
-    {
-        Params* r = *runtime_;
-        ASSERT( r );
-        return r->get(key);
-    }
-    else
-    {
-        return value_t();
-    }
-}
-
-void RuntimeParams::print(std::ostream &s) const
-{
-    if( runtime_ )
-    {
-        Params* r = *runtime_;
-        ASSERT( r );
-        r->print(s);
-    }
-}
-
-//------------------------------------------------------------------------------------------------------
-
 ScopeParams::ScopeParams(const Params::key_t& scope_key, const Params::Ptr& p ) :
     scope_( scope_key + "." ),
     p_(p)

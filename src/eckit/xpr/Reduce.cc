@@ -29,11 +29,6 @@ Reduce::Reduce( args_t& a ) : Function(a)
 
 Reduce::Reduce(Stream &s) : Function(s) {}
 
-std::string Reduce::returnSignature() const
-{
-    return Undef::sig(); /// @todo review this -- it could be the signature iterated over the list
-}
-
 ExpPtr Reduce::evaluate( Scope &ctx ) const
 {
     ExpPtr f = args(0, ctx, false);

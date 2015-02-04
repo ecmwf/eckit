@@ -55,11 +55,6 @@ std::string Bind::typeName() const
     return Bind::nodeName();
 }
 
-std::string Bind::returnSignature() const
-{
-    return args(0)->returnSignature();
-}
-
 ExpPtr Bind::evaluate( Scope &ctx ) const
 {    
     ExpPtr ix = args(0, ctx, true);

@@ -31,11 +31,6 @@ Merge::Merge( args_t& a ) : Function(a)
 
 Merge::Merge(Stream &s) : Function(s) {}
 
-std::string Merge::returnSignature() const
-{
-    return List::sig();
-}
-
 ExpPtr Merge::evaluate( Scope &ctx ) const
 {
     ExpPtr f = args(0, ctx, false);

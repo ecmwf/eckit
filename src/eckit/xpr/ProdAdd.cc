@@ -48,16 +48,6 @@ ProdAdd::ProdAdd(const ExpPtr& e)
 
 ProdAdd::ProdAdd(Stream &s) : Function(s) {}
 
-std::string ProdAdd::returnSignature() const
-{
-    for( args_t::const_iterator i = begin(); i != end(); ++i )
-    {
-        if ( (*i)->returnSignature() == Vector::sig() )
-            return Vector::sig();
-    }
-    return Scalar::sig();
-}
-
 void ProdAdd::asCode(std::ostream&o) const
 {
     o << "(" << *args(0) << " * (" << *args(1) << " + " << *args(2) << "))";

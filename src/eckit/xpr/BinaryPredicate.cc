@@ -210,12 +210,6 @@ const ClassSpec& BinaryPredicate<T>::classSpec()
 }
 
 template < class T >
-std::string BinaryPredicate<T>::returnSignature() const
-{
-    return Boolean::sig();
-}
-
-template < class T >
 std::string BinaryPredicate<T>::factoryName() const
 {
     return opfactory( T() );

@@ -76,8 +76,6 @@ private: // methods
     virtual std::string factoryName() const;
     virtual std::string typeName() const;
 
-    virtual std::string returnSignature() const;
-
     virtual ExpPtr cloneWith(args_t& a) const
     {
         return ExpPtr( new BinaryPredicate<T>(a) );

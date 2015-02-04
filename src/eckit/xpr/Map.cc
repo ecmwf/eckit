@@ -29,11 +29,6 @@ Map::Map( args_t& a ) : Function(a)
 
 Map::Map(Stream &s) : Function(s) {}
 
-std::string Map::returnSignature() const
-{
-    return List::sig();
-}
-
 ExpPtr Map::evaluate( Scope &ctx ) const
 {
     ExpPtr f = args(0, ctx, false);

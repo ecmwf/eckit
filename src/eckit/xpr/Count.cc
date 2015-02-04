@@ -35,11 +35,6 @@ ExpPtr Count::optimise(size_t depth) const
     return self();
 }
 
-std::string Count::returnSignature() const
-{
-    return Scalar::sig();
-}
-
 ExpPtr Count::evaluate( Scope &ctx ) const
 {
     return ExpPtr(new Scalar(args(0, ctx, true)->count() ));

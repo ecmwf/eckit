@@ -83,12 +83,6 @@ const ClassSpec& UnaryOperator<T>::classSpec()
 }
 
 template < class T >
-std::string UnaryOperator<T>::returnSignature() const
-{
-    return args(0)->returnSignature();
-}
-
-template < class T >
 std::string UnaryOperator<T>::factoryName() const
 {
     return opfactory( T() );

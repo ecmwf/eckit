@@ -67,7 +67,6 @@ private:
     virtual std::string factoryName() const { return "xpr::paramdef"; }
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
-    virtual std::string returnSignature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;

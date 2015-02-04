@@ -44,11 +44,6 @@ Lambda::Lambda(args_t& a) : Function(a)
 
 Lambda::Lambda(Stream &s) : Function(s) {}
 
-std::string Lambda::returnSignature() const
-{
-    return "()";
-}
-
 ExpPtr Lambda::evaluate( Scope &ctx ) const
 {
     return self();

@@ -66,7 +66,6 @@ private: // methods
     virtual std::string factoryName() const { return "xpr::list"; }
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
-    virtual std::string returnSignature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
 

@@ -30,7 +30,7 @@ class Count : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Count"; }
+    static const char * nodeName() { return "Count"; }
 
     Count( ExpPtr e = undef() );
 

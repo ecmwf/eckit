@@ -90,7 +90,7 @@ ExpPtr Lambda::cloneWith(args_t& a) const
 
 ClassSpec Lambda::classSpec_ = {
     &Function::classSpec(),
-    Lambda::nodeName().c_str(),
+    Lambda::nodeName(),
 };
 
 Reanimator< Lambda > Lambda::reanimator_;

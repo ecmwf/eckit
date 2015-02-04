@@ -67,7 +67,7 @@ ExpPtr Call::cloneWith( args_t& a ) const
 
 ClassSpec Call::classSpec_ = {
     &Function::classSpec(),
-    Call::nodeName().c_str(),
+    Call::nodeName(),
 };
 
 Reanimator< Call > Call::reanimator_;

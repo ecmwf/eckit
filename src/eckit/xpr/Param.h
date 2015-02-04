@@ -33,7 +33,7 @@ class Param : public Expression {
 
 public: //  methods
 
-    static std::string nodeName()     { return "Param"; }
+    static const char * nodeName()     { return "Param"; }
     static std::string sig()           { return "?";     }
 
     Param(const std::string& name);

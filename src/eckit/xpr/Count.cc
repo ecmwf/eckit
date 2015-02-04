@@ -54,7 +54,7 @@ Count::Count(args_t& a) : Function(a)
 
 ClassSpec Count::classSpec_ = {
     &Function::classSpec(),
-    Count::nodeName().c_str(),
+    Count::nodeName(),
 };
 
 Reanimator< Count > Count::reanimator_;

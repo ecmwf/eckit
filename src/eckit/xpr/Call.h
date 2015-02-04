@@ -28,7 +28,7 @@ class Call : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Call"; }
+    static const char * nodeName() { return "Call"; }
 
     Call( ExpPtr f );
     Call( ExpPtr f, ExpPtr a);

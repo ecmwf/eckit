@@ -62,7 +62,7 @@ ExpPtr Filter::cloneWith(args_t& a) const
 
 ClassSpec Filter::classSpec_ = {
     &Function::classSpec(),
-    Filter::nodeName().c_str(),
+    Filter::nodeName(),
 };
 
 Reanimator< Filter > Filter::reanimator_;

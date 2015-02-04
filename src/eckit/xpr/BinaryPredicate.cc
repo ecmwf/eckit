@@ -204,7 +204,7 @@ const ClassSpec& BinaryPredicate<T>::classSpec()
 {
      static ClassSpec myClassSpec = {
          &Function::classSpec(),
-         BinaryPredicate<T>::nodeName().c_str(),
+         BinaryPredicate<T>::nodeName(),
      };
      return myClassSpec;
 }
@@ -222,7 +222,7 @@ std::string BinaryPredicate<T>::typeName() const
 }
 
 template < class T >
-std::string BinaryPredicate<T>::nodeName()
+const char * BinaryPredicate<T>::nodeName()
 {
     return opname( T() );
 }

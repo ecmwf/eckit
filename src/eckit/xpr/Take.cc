@@ -50,7 +50,7 @@ ExpPtr Take::cloneWith(args_t& a) const
 
 ClassSpec Take::classSpec_ = {
     &Function::classSpec(),
-    Take::nodeName().c_str(),
+    Take::nodeName(),
 };
 
 Reanimator< Take > Take::reanimator_;

@@ -35,7 +35,7 @@ class ParamDef : public Expression {
 
 public: //  methods
 
-    static std::string nodeName() { return "ParamDef"; }
+    static const char * nodeName() { return "ParamDef"; }
     static std::string sig()       { return "?"; }
 
     static bool is ( const ExpPtr& e );

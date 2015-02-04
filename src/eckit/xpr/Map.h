@@ -28,7 +28,7 @@ class Map : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Map"; }
+    static const char * nodeName() { return "Map"; }
 
     Map( ExpPtr f, ExpPtr l );
 

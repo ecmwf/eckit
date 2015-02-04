@@ -28,7 +28,7 @@ class Merge : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Merge"; }
+    static const char * nodeName() { return "Merge"; }
 
     Merge( ExpPtr l0, ExpPtr l1 );
 

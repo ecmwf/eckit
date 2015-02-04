@@ -79,7 +79,7 @@ ExpPtr Bind::cloneWith(args_t& a) const
 
 ClassSpec Bind::classSpec_ = {
     &Function::classSpec(),
-    Bind::nodeName().c_str(),
+    Bind::nodeName(),
 };
 
 Reanimator< Bind > Bind::reanimator_;

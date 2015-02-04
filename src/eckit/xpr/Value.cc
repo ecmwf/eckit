@@ -42,7 +42,7 @@ ExpPtr Value::evaluate( Scope &ctx ) const
 
 ClassSpec Value::classSpec_ = {
     &Expression::classSpec(),
-    Value::nodeName().c_str(),
+    Value::nodeName(),
 };
 
 } // namespace xpr

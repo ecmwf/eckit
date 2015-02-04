@@ -77,7 +77,7 @@ const ClassSpec& UnaryOperator<T>::classSpec()
 {
      static ClassSpec myClassSpec = {
          &Function::classSpec(),
-         UnaryOperator<T>::nodeName().c_str(),
+         UnaryOperator<T>::nodeName(),
      };
      return myClassSpec;
 }
@@ -95,7 +95,7 @@ std::string UnaryOperator<T>::typeName() const
 }
 
 template < class T >
-std::string UnaryOperator<T>::nodeName()
+const char * UnaryOperator<T>::nodeName()
 {
     return opname( T() );
 }

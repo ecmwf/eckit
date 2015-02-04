@@ -123,7 +123,7 @@ const ClassSpec& BinaryOperator<T>::classSpec()
 {
      static ClassSpec myClassSpec = {
          &Function::classSpec(),
-         BinaryOperator<T>::nodeName().c_str(),
+         BinaryOperator<T>::nodeName(),
      };
      return myClassSpec;
 }
@@ -141,7 +141,7 @@ std::string BinaryOperator<T>::typeName() const
 }
 
 template < class T >
-std::string BinaryOperator<T>::nodeName()
+const char * BinaryOperator<T>::nodeName()
 {
     return opname( T() );
 }

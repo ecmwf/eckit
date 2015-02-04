@@ -63,7 +63,7 @@ ExpPtr Boolean::cloneWith(args_t& a) const
 
 ClassSpec Boolean::classSpec_ = {
     &Value::classSpec(),
-    Boolean::nodeName().c_str(),
+    Boolean::nodeName(),
 };
 
 Reanimator< Boolean > Boolean::reanimator_;

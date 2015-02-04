@@ -34,7 +34,7 @@ public: // types
 
 public: // methods
 
-    static std::string nodeName() { return "List"; }
+    static const char * nodeName() { return "List"; }
     static std::string sig() { return "l"; }
 
     static bool is ( const ExpPtr& e);

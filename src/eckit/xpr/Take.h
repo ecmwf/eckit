@@ -30,7 +30,7 @@ class Take : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Take"; }
+    static const char * nodeName() { return "Take"; }
 
     Take( ExpPtr e = undef(), ExpPtr l = undef()  );
 

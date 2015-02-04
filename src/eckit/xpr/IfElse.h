@@ -28,7 +28,7 @@ class IfElse : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "IfElse"; }
+    static const char * nodeName() { return "IfElse"; }
 
     IfElse( ExpPtr f, ExpPtr i, ExpPtr e );
 

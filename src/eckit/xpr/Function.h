@@ -60,7 +60,7 @@ public: // methods
     static dispatcher_t& dispatcher();
     //static factory_t& factory();
 
-    static std::string nodeName() { return "Function"; }
+    static const char * nodeName() { return "Function"; }
 
     static const eckit::ClassSpec& classSpec() { return classSpec_; }
 

@@ -30,7 +30,7 @@ class Reduce : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Reduce"; }
+    static const char * nodeName() { return "Reduce"; }
 
     Reduce( ExpPtr f = undef(), ExpPtr l = undef() );
 

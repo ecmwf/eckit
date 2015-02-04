@@ -29,7 +29,7 @@ class Filter : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Filter"; }
+    static const char * nodeName() { return "Filter"; }
 
     Filter( ExpPtr pred = undef(), ExpPtr list = undef() );
 

@@ -102,24 +102,24 @@ ExpPtr ProdAdd::cloneWith(args_t& a) const
 
 ProdAdd::Register::Register()
 {
-    Function::dispatcher()[ nodeName() + "(s,s,s)" ] = &compute_ggg;
-    Function::dispatcher()[ nodeName() + "(s,v,s)" ] = &compute_ggg;
-    Function::dispatcher()[ nodeName() + "(s,s,v)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(s,s,s)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(s,v,s)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(s,s,v)" ] = &compute_ggg;
 
-    Function::dispatcher()[ nodeName() + "(s,v,v)" ] = &compute_svv;
+    Function::dispatcher()[ std::string(nodeName()) + "(s,v,v)" ] = &compute_svv;
 
-    Function::dispatcher()[ nodeName() + "(v,s,s)" ] = &compute_ggg;
-    Function::dispatcher()[ nodeName() + "(v,s,v)" ] = &compute_ggg;
-    Function::dispatcher()[ nodeName() + "(v,v,s)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,s,s)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,s,v)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,v,s)" ] = &compute_ggg;
 
-    Function::dispatcher()[ nodeName() + "(v,v,v)" ] = &compute_vvv;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,v,v)" ] = &compute_vvv;
 }
 
 //--------------------------------------------------------------------------------------------
 
 ClassSpec ProdAdd::classSpec_ = {
     &Function::classSpec(),
-    ProdAdd::nodeName().c_str(),
+    ProdAdd::nodeName(),
 };
 
 Reanimator< ProdAdd > ProdAdd::reanimator_;

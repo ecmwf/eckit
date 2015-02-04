@@ -33,7 +33,7 @@ public: // types
 
 public: // methods
 
-    static std::string nodeName() { return "Vector"; }
+    static const char * nodeName() { return "Vector"; }
 
     static std::string sig() { return "v"; }
 

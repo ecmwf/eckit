@@ -29,7 +29,7 @@ class Linear : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Linear"; }
+    static const char * nodeName() { return "Linear"; }
 
     Linear( ExpPtr e );
 

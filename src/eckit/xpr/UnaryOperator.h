@@ -42,7 +42,7 @@ public:
         return ExpPtr( new UnaryOperator<T>(args) );
     }
 
-    static std::string nodeName();
+    static const char * nodeName();
 
     UnaryOperator( ExpPtr e );
 

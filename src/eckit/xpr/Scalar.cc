@@ -57,7 +57,7 @@ ExpPtr Scalar::cloneWith(args_t& a) const {
 
 ClassSpec Scalar::classSpec_ = {
     &Value::classSpec(),
-    Scalar::nodeName().c_str(),
+    Scalar::nodeName(),
 };
 
 Reanimator< Scalar > Scalar::reanimator_;

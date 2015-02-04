@@ -95,7 +95,7 @@ void Linear::asCode(std::ostream&o) const
 
 Linear::Register::Register()
 {
-    Function::dispatcher()[ nodeName() + "(s,v,s,v)" ] = &compute;
+    Function::dispatcher()[ std::string(nodeName()) + "(s,v,s,v)" ] = &compute;
 }
 
 
@@ -108,7 +108,7 @@ ExpPtr Linear::cloneWith(args_t& a) const
 
 ClassSpec Linear::classSpec_ = {
     &Function::classSpec(),
-    Linear::nodeName().c_str(),
+    Linear::nodeName(),
 };
 
 Reanimator< Linear > Linear::reanimator_;

@@ -75,7 +75,7 @@ size_t Merge::count() const
 
 ClassSpec Merge::classSpec_ = {
     &Function::classSpec(),
-    Merge::nodeName().c_str(),
+    Merge::nodeName(),
 };
 
 Reanimator< Merge > Merge::reanimator_;

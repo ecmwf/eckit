@@ -55,7 +55,7 @@ ExpPtr String::cloneWith(args_t& a) const {
 
 ClassSpec String::classSpec_ = {
     &Value::classSpec(),
-    String::nodeName().c_str(),
+    String::nodeName(),
 };
 
 Reanimator< String > String::reanimator_;

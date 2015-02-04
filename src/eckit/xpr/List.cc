@@ -66,7 +66,7 @@ ExpPtr List::cloneWith(args_t& a) const
 
 ClassSpec List::classSpec_ = {
     &Value::classSpec(),
-    List::nodeName().c_str(),
+    List::nodeName(),
 };
 
 Reanimator< List > List::reanimator_;

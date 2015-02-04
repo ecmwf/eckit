@@ -96,7 +96,7 @@ void Vector::asJSON(JSON& s) const
 
 ClassSpec Vector::classSpec_ = {
     &Value::classSpec(),
-    Vector::nodeName().c_str(),
+    Vector::nodeName(),
 };
 
 Reanimator< Vector > Vector::reanimator_;

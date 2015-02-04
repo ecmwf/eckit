@@ -39,7 +39,7 @@ public: // methods
         return ExpPtr( new ProdAdd(args) );
     }
 
-    static std::string nodeName() { return "ProdAdd"; }
+    static const char * nodeName() { return "ProdAdd"; }
 
     ProdAdd( const ExpPtr& e );
 

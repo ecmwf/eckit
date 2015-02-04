@@ -28,7 +28,7 @@ class ZipWith : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "ZipWith"; }
+    static const char * nodeName() { return "ZipWith"; }
 
     ZipWith( ExpPtr f, ExpPtr l0, ExpPtr l1 );
 

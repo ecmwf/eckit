@@ -32,7 +32,7 @@ public: // methods
     typedef scalar_t value_t;
 
     static std::string sig() { return "s"; }
-    static std::string nodeName() { return "Scalar"; }
+    static const char * nodeName() { return "Scalar"; }
 
     static bool is ( const ExpPtr& e ) ;
 

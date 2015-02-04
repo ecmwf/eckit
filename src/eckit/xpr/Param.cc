@@ -66,7 +66,7 @@ ExpPtr Param::cloneWith( args_t& a ) const
 
 ClassSpec Param::classSpec_ = {
     &Expression::classSpec(),
-    Param::nodeName().c_str(),
+    Param::nodeName(),
 };
 
 Reanimator< Param > Param::reanimator_;

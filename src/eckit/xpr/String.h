@@ -32,7 +32,7 @@ public: // methods
     typedef std::string value_t;
 
     static std::string sig() { return "str"; }
-    static std::string nodeName() { return "String"; }
+    static const char * nodeName() { return "String"; }
 
     static bool is ( const ExpPtr& e ) ;
 

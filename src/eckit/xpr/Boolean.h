@@ -30,7 +30,7 @@ public: // static methods
     typedef bool value_t;
 
     static std::string sig() { return "b"; }
-    static std::string nodeName() { return "Boolean"; }
+    static const char * nodeName() { return "Boolean"; }
 
     static scalar_t extract ( Scope& ctx , const ExpPtr& e )
     {

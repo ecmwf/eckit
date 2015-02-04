@@ -50,7 +50,7 @@ public: // methods
     typedef std::vector<double> value_t;
 
     static std::string sig() { return "f"; }
-    static std::string nodeName() { return "F"; }
+    static const char * nodeName() { return "F"; }
     
     static bool is ( const ExpPtr& e ) { return e->typeName() == nodeName(); }
 
@@ -99,7 +99,7 @@ class FSrc : public eckit::xpr::Function {
 public: // methods
 
     static std::string sig() { return "fsrc"; }
-    static std::string nodeName() { return "FSrc"; }
+    static const char * nodeName() { return "FSrc"; }
 
     FSrc( const ExpPtr& e ) : Function()
     {
@@ -153,7 +153,7 @@ class FSnk : public eckit::xpr::Function {
 public: // methods
 
     static std::string sig() { return "fsnk"; }
-    static std::string nodeName() { return "FSnk"; }
+    static const char * nodeName() { return "FSnk"; }
 
     FSnk( const ExpPtr& e ) : Function()
     {
@@ -222,7 +222,7 @@ class FAvg  : public eckit::xpr::Function  {
 public: // methods
 
     static std::string sig() { return "favg"; }
-    static std::string nodeName() { return "FAvg"; }
+    static const char * nodeName() { return "FAvg"; }
 
     FAvg( const ExpPtr& e ) : Function()
     {
@@ -303,7 +303,7 @@ class FInterp : public eckit::xpr::Function  {
 public: // methods
 
     static std::string sig() { return "interp"; }
-    static std::string nodeName() { return "FInterp"; }
+    static const char * nodeName() { return "FInterp"; }
 
     FInterp( const ExpPtr& e ) : Function()
     {

@@ -78,9 +78,9 @@ BOOST_AUTO_TEST_CASE( test_ycombinator_factorial )
 
     // check results values
 
-    BOOST_CHECK( Scalar::extract(fac3) == 6 );
-    BOOST_CHECK( Scalar::extract(fac5) == 120 );
-    BOOST_CHECK( Scalar::extract(fac8) == 40320 );
+    BOOST_CHECK_EQUAL( Scalar::extract(fac3) , 6 );
+    BOOST_CHECK_EQUAL( Scalar::extract(fac5) , 120 );
+    BOOST_CHECK_EQUAL( Scalar::extract(fac8) , 40320 );
 
     BOOST_TEST_MESSAGE( "factorial(3) = " << fac3 );
     BOOST_TEST_MESSAGE( "factorial(5) = " << fac5 );
@@ -121,10 +121,10 @@ BOOST_AUTO_TEST_CASE( test_ycombinator_fibonacci )
 
     // check results values
 
-    BOOST_CHECK( Scalar::extract(f5)  == 5 );
-    BOOST_CHECK( Scalar::extract(f10) == 55 );
-    BOOST_CHECK( Scalar::extract(f20) == 6765 );
-//    BOOST_CHECK( Scalar::extract(f30) == 832040 ); // -- rather slow test
+    BOOST_CHECK_EQUAL( Scalar::extract(f5)  , 5 );
+    BOOST_CHECK_EQUAL( Scalar::extract(f10) , 55 );
+    BOOST_CHECK_EQUAL( Scalar::extract(f20) , 6765 );
+//    BOOST_CHECK_EQUAL( Scalar::extract(f30) , 832040 ); // -- rather slow test
 
     BOOST_TEST_MESSAGE( "fibonnaci(3) = " << f5 );
     BOOST_TEST_MESSAGE( "fibonnaci(10) = " << f10 );

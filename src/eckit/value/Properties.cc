@@ -19,6 +19,18 @@ Properties::Properties()
 {
 }
 
+Properties::Properties(Stream &s)
+{
+    PropertyMap::size_type len;
+    s >> len;
+    for (int i = 0; i < len; ++i) {
+        std::string k;
+        s >> k;
+        property_t v(s);
+        props_[k] = v;
+    }
+}
+
 bool Properties::has(const std::string &k) const
 {
     return ( props_.find(k) != props_.end() );
@@ -61,6 +73,7 @@ void Properties::print( std::ostream& s ) const
 
 void Properties::encode( Stream& s ) const
 {
+    s << props_.size();
     for( PropertyMap::const_iterator vit = props_.begin(); vit != props_.end(); ++vit )
         s << (*vit).first << (*vit).second;
 }

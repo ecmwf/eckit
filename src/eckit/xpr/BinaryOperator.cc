@@ -129,17 +129,6 @@ const ClassSpec& BinaryOperator<T>::classSpec()
 }
 
 template < class T >
-std::string BinaryOperator<T>::returnSignature() const
-{
-    for( args_t::const_iterator i = begin(); i != end(); ++i )
-    {
-        if ( (*i)->returnSignature() == Vector::sig() )
-            return Vector::sig();
-    }
-    return Scalar::sig();
-}
-
-template < class T >
 std::string BinaryOperator<T>::factoryName() const
 {
     return opfactory( T() );

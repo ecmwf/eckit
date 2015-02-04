@@ -51,8 +51,6 @@ private: // methods
     virtual std::string factoryName() const { return "xpr::linear"; }
     virtual std::string typeName() const { return nodeName(); }
 
-    virtual std::string returnSignature() const;
-
     virtual void asCode( std::ostream& ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;

@@ -44,11 +44,6 @@ Call::Call(args_t& a) : Function(a)
 
 Call::Call(Stream &s) : Function(s) {}
 
-std::string Call::returnSignature() const
-{
-    return ";";
-}
-
 ExpPtr Call::evaluate( Scope &ctx ) const
 {
     ExpPtr f = args(0, ctx, true);

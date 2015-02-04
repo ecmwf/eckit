@@ -32,19 +32,6 @@ IfElse::IfElse(args_t& a) : Function(a)
 
 IfElse::IfElse(Stream &s) : Function(s) {}
 
-std::string IfElse::returnSignature() const
-{
-    std::string i = args(1)->returnSignature();
-    std::string e = args(2)->returnSignature();
-
-    if(i == e) {
-        return i;
-    }
-    else {
-        return "?";
-    }
-}
-
 ExpPtr IfElse::evaluate( Scope &ctx ) const
 {
     //std::cout << "evalute " << *this << " with " << ctx << std::endl;

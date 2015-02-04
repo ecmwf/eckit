@@ -93,11 +93,6 @@ void Linear::asCode(std::ostream&o) const
     o << factoryName() << "(" << *args(0) << ", " << *args(1) << ", " << *args(2) << ", " << *args(3) << "))";
 }
 
-std::string Linear::returnSignature() const
-{
-    return Vector::sig();
-}
-
 Linear::Register::Register()
 {
     Function::dispatcher()[ nodeName() + "(s,v,s,v)" ] = &compute;

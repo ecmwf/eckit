@@ -49,8 +49,6 @@ private:
     virtual std::string factoryName() const { return "xpr::filter"; }
     virtual std::string typeName() const { return nodeName(); }
 
-    virtual std::string returnSignature() const;
-
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;

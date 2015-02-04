@@ -69,7 +69,6 @@ public: // virtual methods
 
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
-    virtual std::string returnSignature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const
     {
@@ -117,7 +116,6 @@ public: // virtual methods
 
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
-    virtual std::string returnSignature() const { NOTIMP; }
 
     virtual void print( std::ostream& o ) const { o << "FSrc("; printArgs(o); o << ")"; }
     virtual void asCode( std::ostream& o ) const { NOTIMP; }
@@ -172,7 +170,6 @@ public: // virtual methods
 
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
-    virtual std::string returnSignature() const { return F::sig(); }
 
     virtual void print( std::ostream& o ) const { o << "FSnk("; printArgs(o); o << ")"; }
     virtual void asCode( std::ostream& o ) const { NOTIMP; }
@@ -241,7 +238,6 @@ public: // virtual methods
 
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
-    virtual std::string returnSignature() const { return F::sig(); } //< returns a field
 
     virtual void print( std::ostream& o ) const { o << "FAvg("; printArgs(o); o << ")"; }
     virtual void asCode( std::ostream& o ) const { NOTIMP; }
@@ -323,7 +319,6 @@ public: // virtual methods
 
     virtual std::string typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
-    virtual std::string returnSignature() const { return F::sig(); } //< returns a field
 
     virtual void print( std::ostream& o ) const { o << "FInterp("; printArgs(o); o << ")"; }
     virtual void asCode( std::ostream& o ) const { NOTIMP; }

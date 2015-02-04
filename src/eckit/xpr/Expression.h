@@ -140,12 +140,13 @@ public: // methods
 
     static const eckit::ClassSpec& classSpec() { return classSpec_; }
 
+    ExpPtr args( size_t i) const;
+
 public: // virtual methods
 
     virtual std::string factoryName() const { return "xpr::expression"; }
     virtual std::string typeName() const = 0;
     virtual std::string signature() const = 0;
-    virtual std::string returnSignature() const = 0;
 
     ExpPtr optimise(bool doit, size_t depth = 0) const;
 
@@ -159,10 +160,11 @@ protected: // members
     // From Streamable
     virtual void encode(eckit::Stream& s) const;
 
-    void printArgs(std::ostream& ) const;
-    void printArgs(JSON&) const;
     virtual void asCode( std::ostream& ) const;
     virtual void asJSON( JSON& ) const;
+
+    void printArgs(std::ostream& ) const;
+    void printArgs(JSON&) const;
 
     // args_ are read-only, use these methods instead
 
@@ -176,13 +178,11 @@ protected: // members
 
     ExpPtr args(size_t i, Scope& ctx , bool eval) const;
 
-public:
-    ExpPtr args( size_t i) const;
-
-private:
+private: // members
 
     args_t args_;     ///< parameters of this expression
 
+private: // methods
 
     virtual ExpPtr evaluate( Scope& ) const = 0;
 

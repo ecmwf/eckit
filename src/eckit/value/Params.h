@@ -73,6 +73,9 @@ public: // methods
     void push_front( const Params::Ptr& p );
     void push_back( const Params::Ptr& p );
 
+    void pop_front() { plist_.pop_front(); }
+    void pop_back()  { plist_.pop_back(); }
+
 protected: // methods
 
     virtual void print(std::ostream& s) const;
@@ -188,26 +191,6 @@ private: // members
 
     key_t scope_;
     Params::Ptr p_;
-
-};
-
-//-------------------------------------------------------------------------------------------
-
-class RuntimeParams : public Params {
-
-public: // methods
-
-    RuntimeParams( Params** runtime );
-
-    virtual value_t get( const key_t& key ) const;
-
-protected: // methods
-
-    virtual void print(std::ostream& s) const;
-
-private: // members
-
-    Params** runtime_;
 
 };
 

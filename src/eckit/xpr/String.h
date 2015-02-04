@@ -59,7 +59,7 @@ public: // methods
 
     String& operator=(String&&) = default;
 
-    /// @returns the value of the scalar
+    /// @returns the value of the real
     value_t value() const { return v_; }
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
@@ -92,8 +92,8 @@ private: // static members
 
 //--------------------------------------------------------------------------------------------
 
-/// Helper function to construct scalar expressions
-ExpPtr scalar( const std::string& s  );
+/// Helper function to construct real expressions
+ExpPtr real( const std::string& s  );
 
 //--------------------------------------------------------------------------------------------
 

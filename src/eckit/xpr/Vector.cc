@@ -17,7 +17,7 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-Vector::Vector( const size_t& s, const scalar_t& v )
+Vector::Vector( const size_t& s, const real_t& v )
     : v_(s,v)
 {
 }
@@ -103,7 +103,7 @@ Reanimator< Vector > Vector::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr vector( const size_t& sz, const scalar_t& v )
+ExpPtr vector( const size_t& sz, const real_t& v )
 {
     return ExpPtr( new Vector(sz,v) );
 }
@@ -113,7 +113,7 @@ ExpPtr vector( const Vector::value_t& v  )
     return ExpPtr( new Vector(v) );
 }
 
-ExpPtr vector( const std::initializer_list<scalar_t> v )
+ExpPtr vector( const std::initializer_list<real_t> v )
 {
     return ExpPtr( new Vector(Vector::value_t(v)) );
 }

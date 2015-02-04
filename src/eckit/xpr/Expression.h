@@ -23,7 +23,7 @@
 /// @todo fold
 /// @todo comparison operator Equal()(v,2) -- returns what?
 /// @todo unary operator
-/// @todo operator returning scalar
+/// @todo operator returning real
 /// @todo operator returning multiple outputs
 /// @todo how to support multiple implementations ( MKL, CuBLAS, etc. )
 /// @todo create a expression tree Visitor class that takes an operation as parameter
@@ -67,7 +67,7 @@ class List;
 class Expression;
 class Scope;
 
-typedef double scalar_t;
+typedef double real_t;
 
 typedef SharedPtr<List>        ListPtr;
 typedef SharedPtr<Expression>  ExpPtr;

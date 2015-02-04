@@ -53,7 +53,7 @@ public:
     UnaryOperator& operator=(UnaryOperator&&) = default;
 
     /// Applies an implementation of the unary operator
-    /// U is the left operand type ( Scalar, Vector, ... )
+    /// U is the left operand type ( Real, Vector, ... )
     /// I is the implementation type
     template < class U, class I >
     class Computer {
@@ -95,7 +95,7 @@ private: // static members
 
 //--------------------------------------------------------------------------------------------
 
-typedef std::negate<scalar_t>  Neg;
+typedef std::negate<real_t>  Neg;
 
 //--------------------------------------------------------------------------------------------
 

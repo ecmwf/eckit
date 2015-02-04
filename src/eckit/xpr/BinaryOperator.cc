@@ -1,14 +1,14 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/List.h"
 #include "eckit/xpr/BinaryOperator.h"
@@ -42,13 +42,13 @@ struct Generic
 {
 
     template <class T>
-    static ExpPtr apply( T op, const Scalar::value_t& a, const Scalar::value_t& b )
+    static ExpPtr apply( T op, const Real::value_t& a, const Real::value_t& b )
     {
-        return ExpPtr( new Scalar( op( a , b ) ) );
+        return ExpPtr( new Real( op( a , b ) ) );
     }
 
     template <class T>
-    static ExpPtr apply( T op, const Scalar::value_t& a, const Vector::value_t& v )
+    static ExpPtr apply( T op, const Real::value_t& a, const Vector::value_t& v )
     {
         Vector::value_t rv( v.size() );
 
@@ -59,7 +59,7 @@ struct Generic
     }
 
     template <class T>
-    static ExpPtr apply( T op, const Vector::value_t& v, const Scalar::value_t& a )
+    static ExpPtr apply( T op, const Vector::value_t& v, const Real::value_t& a )
     {
         return apply(op,a,v);
     }
@@ -80,24 +80,24 @@ struct Generic
 
 //--------------------------------------------------------------------------------------------
 
-static BinaryOperator<Prod>::Computer<Scalar,Scalar,Generic> prod_ssg;
-static BinaryOperator<Prod>::Computer<Scalar,Vector,Generic> prod_svg;
-static BinaryOperator<Prod>::Computer<Vector,Scalar,Generic> prod_vsg;
+static BinaryOperator<Prod>::Computer<Real,Real,Generic> prod_ssg;
+static BinaryOperator<Prod>::Computer<Real,Vector,Generic> prod_svg;
+static BinaryOperator<Prod>::Computer<Vector,Real,Generic> prod_vsg;
 static BinaryOperator<Prod>::Computer<Vector,Vector,Generic> prod_vvg;
 
-static BinaryOperator<Div>::Computer<Scalar,Scalar,Generic> div_ssg;
-static BinaryOperator<Div>::Computer<Scalar,Vector,Generic> div_svg;
-static BinaryOperator<Div>::Computer<Vector,Scalar,Generic> div_vsg;
+static BinaryOperator<Div>::Computer<Real,Real,Generic> div_ssg;
+static BinaryOperator<Div>::Computer<Real,Vector,Generic> div_svg;
+static BinaryOperator<Div>::Computer<Vector,Real,Generic> div_vsg;
 static BinaryOperator<Div>::Computer<Vector,Vector,Generic> div_vvg;
 
-static BinaryOperator<Add>::Computer<Scalar,Scalar,Generic> add_ssg;
-static BinaryOperator<Add>::Computer<Scalar,Vector,Generic> add_svg;
-static BinaryOperator<Add>::Computer<Vector,Scalar,Generic> add_vsg;
+static BinaryOperator<Add>::Computer<Real,Real,Generic> add_ssg;
+static BinaryOperator<Add>::Computer<Real,Vector,Generic> add_svg;
+static BinaryOperator<Add>::Computer<Vector,Real,Generic> add_vsg;
 static BinaryOperator<Add>::Computer<Vector,Vector,Generic> add_vvg;
 
-static BinaryOperator<Sub>::Computer<Scalar,Scalar,Generic> sub_ssg;
-static BinaryOperator<Sub>::Computer<Scalar,Vector,Generic> sub_svg;
-static BinaryOperator<Sub>::Computer<Vector,Scalar,Generic> sub_vsg;
+static BinaryOperator<Sub>::Computer<Real,Real,Generic> sub_ssg;
+static BinaryOperator<Sub>::Computer<Real,Vector,Generic> sub_svg;
+static BinaryOperator<Sub>::Computer<Vector,Real,Generic> sub_vsg;
 static BinaryOperator<Sub>::Computer<Vector,Vector,Generic> sub_vvg;
 
 //--------------------------------------------------------------------------------------------
@@ -178,10 +178,10 @@ Reanimator< BinaryOperator<T> > BinaryOperator<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 
-static OptimiseTo<Scalar> optimise_add_ss ( std::string(opname( Add() )) + "(s,s)" );
-static OptimiseTo<Scalar> optimise_sub_ss ( std::string(opname( Sub() )) + "(s,s)" );
-static OptimiseTo<Scalar> optimise_prod_ss( std::string(opname(Prod() )) + "(s,s)" );
-static OptimiseTo<Scalar> optimise_div_ss ( std::string(opname( Div() )) + "(s,s)" );
+static OptimiseTo<Real> optimise_add_ss ( std::string(opname( Add() )) + "(s,s)" );
+static OptimiseTo<Real> optimise_sub_ss ( std::string(opname( Sub() )) + "(s,s)" );
+static OptimiseTo<Real> optimise_prod_ss( std::string(opname(Prod() )) + "(s,s)" );
+static OptimiseTo<Real> optimise_div_ss ( std::string(opname( Div() )) + "(s,s)" );
 
 //--------------------------------------------------------------------------------------------
 } // namespace xpr

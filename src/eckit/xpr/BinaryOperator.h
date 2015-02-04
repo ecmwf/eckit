@@ -45,8 +45,8 @@ public:
 
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
-    /// U is the left operand type ( Scalar, Vector, ... )
-    /// V is the right operand type ( Scalar, Vector, ... )
+    /// U is the left operand type ( Real, Vector, ... )
+    /// V is the right operand type ( Real, Vector, ... )
     /// I is the implementation type
     template < class U, class V, class I >
     class Computer {
@@ -86,11 +86,11 @@ private: // static members
 
 //--------------------------------------------------------------------------------------------
 
-typedef std::multiplies<scalar_t>  Prod;
-typedef std::divides<scalar_t>     Div;
-typedef std::plus<scalar_t>        Add;
-typedef std::minus<scalar_t>       Sub;
-typedef std::modulus<scalar_t>     Mod;
+typedef std::multiplies<real_t>  Prod;
+typedef std::divides<real_t>     Div;
+typedef std::plus<real_t>        Add;
+typedef std::minus<real_t>       Sub;
+typedef std::modulus<real_t>     Mod;
 
 //--------------------------------------------------------------------------------------------
 

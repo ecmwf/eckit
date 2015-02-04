@@ -16,7 +16,7 @@
 #include "eckit/xpr/Count.h"
 #include "eckit/xpr/List.h"
 #include "eckit/xpr/Merge.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Xpr.h"
 
 
@@ -59,14 +59,14 @@ BOOST_AUTO_TEST_CASE( test_##OPSM##_ss ) \
     BOOST_CHECK_EQUAL( extract<TYPE>(C.eval()) , RESULT ); \
     BOOST_CHECK_EQUAL( extract<TYPE>(D.eval()) , RESULT ); \
 \
-    BOOST_CHECK_EQUAL( A.expr()->str() , #OP "(Scalar(2), Scalar(4))" ); \
-    BOOST_CHECK_EQUAL( B.expr()->str() , #OP "(Scalar(2), Scalar(4))" ); \
-    BOOST_CHECK_EQUAL( C.expr()->str() , #OP "(Scalar(2), Scalar(4))" ); \
+    BOOST_CHECK_EQUAL( A.expr()->str() , #OP "(Real(2), Real(4))" ); \
+    BOOST_CHECK_EQUAL( B.expr()->str() , #OP "(Real(2), Real(4))" ); \
+    BOOST_CHECK_EQUAL( C.expr()->str() , #OP "(Real(2), Real(4))" ); \
     BOOST_CHECK_EQUAL( D.expr()->str() , #TYPE "(" #RESULT ")" ); \
 \
-    BOOST_CHECK_EQUAL( A.expr()->code() , "xpr::" #OPSM "(xpr::scalar(2), xpr::scalar(4))" ); \
-    BOOST_CHECK_EQUAL( B.expr()->code() , "xpr::" #OPSM "(xpr::scalar(2), xpr::scalar(4))" ); \
-    BOOST_CHECK_EQUAL( C.expr()->code() , "xpr::" #OPSM "(xpr::scalar(2), xpr::scalar(4))" ); \
+    BOOST_CHECK_EQUAL( A.expr()->code() , "xpr::" #OPSM "(xpr::real(2), xpr::real(4))" ); \
+    BOOST_CHECK_EQUAL( B.expr()->code() , "xpr::" #OPSM "(xpr::real(2), xpr::real(4))" ); \
+    BOOST_CHECK_EQUAL( C.expr()->code() , "xpr::" #OPSM "(xpr::real(2), xpr::real(4))" ); \
     BOOST_CHECK_EQUAL( D.expr()->code() , "xpr::" #TYPESM "(" #RESULT ")" ); \
 \
     BOOST_CHECK_EQUAL( A.expr()->json() , "{\"xpr::" #OPSM "\":[2,4]}" ); \
@@ -75,10 +75,10 @@ BOOST_AUTO_TEST_CASE( test_##OPSM##_ss ) \
     BOOST_CHECK_EQUAL( D.expr()->json() , #RESULT ); \
 }
 
-test_operator( Add, add, +, 6, Scalar, scalar )
-test_operator( Sub, sub, -, -2, Scalar, scalar )
-test_operator( Div, div, /, 0.5, Scalar, scalar )
-test_operator( Prod, prod, *, 8, Scalar, scalar )
+test_operator( Add, add, +, 6, Real, real )
+test_operator( Sub, sub, -, -2, Real, real )
+test_operator( Div, div, /, 0.5, Real, real )
+test_operator( Prod, prod, *, 8, Real, real )
 test_operator( Equal, equal, ==, false, Boolean, boolean )
 test_operator( NotEqual, not_equal, !=, true, Boolean, boolean )
 test_operator( Greater, greater, >, false, Boolean, boolean )

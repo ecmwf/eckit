@@ -9,7 +9,7 @@
  */
 
 #include "eckit/xpr/ProdAdd.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/BinaryOperator.h"
 #include "eckit/xpr/Optimiser.h"
@@ -36,7 +36,7 @@ ProdAdd::ProdAdd(const ExpPtr& e)
     ExpPtr a1 = e->args(1)->args(0);
     ExpPtr a2 = e->args(1)->args(1);
 
-    ASSERT( Scalar::is( a0 ) || Vector::is( a0 ) );
+    ASSERT( Real::is( a0 ) || Vector::is( a0 ) );
     push_back(a0);
 
     ASSERT( Vector::is( a1 ) );
@@ -57,7 +57,7 @@ ExpPtr ProdAdd::compute_svv(Scope& ctx, const args_t &p)
 {
     ASSERT( p.size() == 3 );
 
-    scalar_t a = Scalar::extract( p[0] );
+    real_t a = Real::extract( p[0] );
     const Vector::value_t& v1 = Vector::extract( p[1] );
     const Vector::value_t& v2 = Vector::extract( p[2] );
 

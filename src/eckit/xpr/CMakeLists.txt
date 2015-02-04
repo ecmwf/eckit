@@ -35,12 +35,12 @@ List.h
 List.cc
 ProdAdd.cc
 ProdAdd.h
+Real.cc
+Real.h
 Optimiser.cc
 Optimiser.h
 String.cc
 String.h
-Scalar.cc
-Scalar.h
 Value.cc
 Value.h
 Vector.cc

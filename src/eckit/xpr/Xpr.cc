@@ -24,7 +24,7 @@
 #include "eckit/xpr/Param.h"
 #include "eckit/xpr/ParamDef.h"
 #include "eckit/xpr/Reduce.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Scope.h"
 #include "eckit/xpr/UnaryOperator.h"
 #include "eckit/xpr/Undef.h"
@@ -44,12 +44,12 @@ Xpr::Xpr(ExpPtr e):
 }
 
 Xpr::Xpr(double v):
-    expr_(xpr::scalar(v))
+    expr_(xpr::real(v))
 {
 }
 
 Xpr::Xpr(int v):
-    expr_(xpr::scalar(v))
+    expr_(xpr::real(v))
 {
 }
 

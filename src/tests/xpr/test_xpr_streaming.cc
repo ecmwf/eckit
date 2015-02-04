@@ -31,7 +31,7 @@
 #include "eckit/xpr/Reduce.h"
 #include "eckit/xpr/List.h"
 #include "eckit/xpr/Value.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/UnaryOperator.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/ZipWith.h"
@@ -157,7 +157,7 @@ public: // virtual methods
     {
         ExpPtr s = args(0, ctx, true);
 
-        long n = (long) ::ceil( Scalar::extract( s ) );
+        long n = (long) ::ceil( Real::extract( s ) );
 
         ExpPtr lst = xpr::list();
 
@@ -186,7 +186,7 @@ ClassSpec FSrc::classSpec_ = {
 
 Reanimator< FSrc > FSrc::reanimator_;
 
-ExpPtr fsrc( const long& n ) { return ExpPtr( new FSrc( xpr::scalar(n) ) ); }
+ExpPtr fsrc( const long& n ) { return ExpPtr( new FSrc( xpr::real(n) ) ); }
 
 //-----------------------------------------------------------------------------
 

@@ -20,7 +20,7 @@
 
 #include "eckit/xpr/Function.h"
 #include "eckit/xpr/Boolean.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Undef.h"
 
 namespace eckit {
@@ -47,8 +47,8 @@ public:
 
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
-    /// U is the left operand type ( Scalar, Vector, ... )
-    /// V is the right operand type ( Scalar, Vector, ... )
+    /// U is the left operand type ( Real, Vector, ... )
+    /// V is the right operand type ( Real, Vector, ... )
     /// I is the implementation type
     template < class U, class V, class I >
     class Computer {
@@ -86,19 +86,19 @@ private: // methods
 
 //--------------------------------------------------------------------------------------------
 
-// only for scalar
+// only for real
 
-typedef std::greater<Scalar::value_t>           Greater;
-typedef std::greater_equal<Scalar::value_t>     GreaterEqual;
-typedef std::less<Scalar::value_t>              Less;
-typedef std::less_equal<Scalar::value_t>        LessEqual;
-typedef std::equal_to<Scalar::value_t>         Equal;
-typedef std::not_equal_to<Scalar::value_t>     NotEqual;
+typedef std::greater<Real::value_t>           Greater;
+typedef std::greater_equal<Real::value_t>     GreaterEqual;
+typedef std::less<Real::value_t>              Less;
+typedef std::less_equal<Real::value_t>        LessEqual;
+typedef std::equal_to<Real::value_t>         Equal;
+typedef std::not_equal_to<Real::value_t>     NotEqual;
 
 /// @todo handle these
 
-typedef std::logical_and<Scalar::value_t>      And;
-typedef std::logical_or<Scalar::value_t>       Or;
+typedef std::logical_and<Real::value_t>      And;
+typedef std::logical_or<Real::value_t>       Or;
 
 //--------------------------------------------------------------------------------------------
 

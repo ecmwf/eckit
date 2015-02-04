@@ -9,7 +9,7 @@
  */
 
 #include "eckit/xpr/Take.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 
 namespace eckit {
 namespace xpr {
@@ -33,7 +33,7 @@ ExpPtr Take::evaluate( Scope &ctx ) const
     ExpPtr idx  = args(0, ctx, true);
     ExpPtr list = args(1, ctx, true);
 
-    size_t i = (size_t) Scalar::extract( idx );
+    size_t i = (size_t) Real::extract( idx );
 
     if( i >= list->arity() )
         throw UserError("Take supplied index larger than size of list" );

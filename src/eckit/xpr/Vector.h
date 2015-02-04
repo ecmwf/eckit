@@ -28,7 +28,7 @@ class Vector : public Value {
 
 public: // types
 
-    typedef scalar_t elemt_t;
+    typedef real_t elemt_t;
     typedef std::vector<elemt_t> value_t;
 
 public: // methods
@@ -45,7 +45,7 @@ public: // methods
         return e->as<Vector>()->value();
     }
 
-    Vector( const size_t& s, const scalar_t& v = scalar_t() );
+    Vector( const size_t& s, const real_t& v = real_t() );
     Vector( const value_t& v );
     Vector( value_t& v, Swap );
 
@@ -92,9 +92,9 @@ private: // static members
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr vector( const size_t& sz, const scalar_t& v = scalar_t()  );
+ExpPtr vector( const size_t& sz, const real_t& v = real_t()  );
 ExpPtr vector( const Vector::value_t& v  );
-ExpPtr vector( const std::initializer_list<scalar_t> v );
+ExpPtr vector( const std::initializer_list<real_t> v );
 
 //--------------------------------------------------------------------------------------------
 

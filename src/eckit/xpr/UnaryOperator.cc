@@ -10,7 +10,7 @@
 
 #include "eckit/parser/JSON.h"
 
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/UnaryOperator.h"
 #include "eckit/xpr/Optimiser.h"
@@ -33,9 +33,9 @@ static const char *opfactory(const Neg&)  { return "xpr::neg";  }
 struct Generic
 {
     template <class T>
-    static ExpPtr apply( T op, const Scalar::value_t& a )
+    static ExpPtr apply( T op, const Real::value_t& a )
     {
-        return ExpPtr( new Scalar( op( a ) ) );
+        return ExpPtr( new Real( op( a ) ) );
     }
 
     template <class T>
@@ -52,7 +52,7 @@ struct Generic
 
 //--------------------------------------------------------------------------------------------
 
-static UnaryOperator<Neg>::Computer<Scalar,Generic> neg_sg;
+static UnaryOperator<Neg>::Computer<Real,Generic> neg_sg;
 static UnaryOperator<Neg>::Computer<Vector,Generic> neg_vg;
 
 //--------------------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ Reanimator< UnaryOperator<T> > UnaryOperator<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 
-static OptimiseTo<Scalar> optimise_neg_s ( std::string(opname( Neg() )) + "(s)" );
+static OptimiseTo<Real> optimise_neg_s ( std::string(opname( Neg() )) + "(s)" );
 
 //--------------------------------------------------------------------------------------------
 

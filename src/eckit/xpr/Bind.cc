@@ -13,7 +13,7 @@
 #include "eckit/xpr/Bind.h"
 #include "eckit/xpr/List.h"
 #include "eckit/xpr/Boolean.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Scope.h"
 
 
@@ -25,7 +25,7 @@ namespace xpr {
 Bind::Bind( size_t i, ExpPtr f, ExpPtr e ) : Function()
 {
     ASSERT( i > 1 );
-    push_back( xpr::scalar( (scalar_t)i ) ); // casted to scalar_t (real)
+    push_back( xpr::real( (real_t)i ) ); // casted to real_t (real)
     push_back(f);
     push_back(e);
 }
@@ -46,7 +46,7 @@ Bind::Bind(Stream &s) : Function(s) {}
 
 void Bind::asCode(std::ostream&o) const
 {
-    o << factoryName() << "<" << Scalar::extract(args()[0]);
+    o << factoryName() << "<" << Real::extract(args()[0]);
     o << ">(" << *args()[1] << ", " << *args()[2] << ")";
 }
 
@@ -59,7 +59,7 @@ ExpPtr Bind::evaluate( Scope &ctx ) const
 {    
     ExpPtr ix = args(0, ctx, true);
 
-    const size_t i = static_cast<size_t>( Scalar::extract(ix) );
+    const size_t i = static_cast<size_t>( Real::extract(ix) );
 
     ExpPtr f = args(1, ctx, false);
     ExpPtr e = args(2, ctx, true);

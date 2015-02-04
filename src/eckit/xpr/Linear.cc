@@ -9,7 +9,7 @@
  */
 
 #include "eckit/xpr/Linear.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/Optimiser.h"
 
@@ -29,10 +29,10 @@ Linear::Linear(ExpPtr e) : Function()
 
     ASSERT( left->arity() == 2 );
 
-    ASSERT( Scalar::is( left->args(0) ) || Scalar::is( left->args(1) ) );
+    ASSERT( Real::is( left->args(0) ) || Real::is( left->args(1) ) );
     ASSERT( Vector::is( left->args(0) ) || Vector::is( left->args(1) ) );
 
-    if( Scalar::is( left->args(0) ) )
+    if( Real::is( left->args(0) ) )
     {
         push_back( left->args(0) );
         push_back( left->args(1) );
@@ -45,10 +45,10 @@ Linear::Linear(ExpPtr e) : Function()
 
     ASSERT( right->arity() == 2 );
 
-    ASSERT( Scalar::is( right->args(0) ) || Scalar::is( right->args(1) ) );
+    ASSERT( Real::is( right->args(0) ) || Real::is( right->args(1) ) );
     ASSERT( Vector::is( right->args(0) ) || Vector::is( right->args(1) ) );
 
-    if( Scalar::is( right->args(0) ) )
+    if( Real::is( right->args(0) ) )
     {
         push_back( right->args(0) );
         push_back( right->args(1) );
@@ -69,11 +69,11 @@ Linear::Linear(Stream &s) : Function(s) {}
 
 ExpPtr Linear::compute(Scope &ctx, const args_t& p )
 {
-    scalar_t a = Scalar::extract( p[0] );
+    real_t a = Real::extract( p[0] );
 
     const Vector::value_t& v1 = Vector::extract( p[1] );
 
-    scalar_t b = Scalar::extract( p[2] );
+    real_t b = Real::extract( p[2] );
 
     const Vector::value_t& v2 = Vector::extract( p[3] );
 

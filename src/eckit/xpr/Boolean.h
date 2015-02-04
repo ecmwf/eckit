@@ -52,7 +52,7 @@ public: // methods
 
     Boolean& operator=(Boolean&&) = default;
 
-    /// @returns the value of the scalar
+    /// @returns the value of the real
     value_t value() const { return v_; }
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }

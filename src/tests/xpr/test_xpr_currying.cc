@@ -19,7 +19,7 @@
 #include "eckit/xpr/Bind.h"
 
 #include "eckit/xpr/Xpr.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 
 using namespace std;
 using namespace eckit;
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( test_2args )
     BOOST_TEST_MESSAGE( "Y: " << Y );
     BOOST_TEST_MESSAGE( "r: " << r );
 
-    BOOST_CHECK_EQUAL( Scalar::extract(r) , 3.4 );
+    BOOST_CHECK_EQUAL( Real::extract(r) , 3.4 );
 }
 
 BOOST_AUTO_TEST_CASE( test_twice_1arg )
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE( test_twice_1arg )
     BOOST_TEST_MESSAGE( "Y: " << Y );
     BOOST_TEST_MESSAGE( "r: " << r );
 
-    BOOST_CHECK_EQUAL( Scalar::extract(r) , 6. );
+    BOOST_CHECK_EQUAL( Real::extract(r) , 6. );
 }
 
 BOOST_AUTO_TEST_CASE( test_with_bind )
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE( test_with_bind )
 
     BOOST_TEST_MESSAGE( "r: " << r );
 
-    BOOST_CHECK_EQUAL( Scalar::extract(r) , 8. );
+    BOOST_CHECK_EQUAL( Real::extract(r) , 8. );
 }
 
 BOOST_AUTO_TEST_CASE( test_twice_lambda )
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE( test_twice_lambda )
     BOOST_TEST_MESSAGE( "C: " << C );
     BOOST_TEST_MESSAGE( "r: " << r );
 
-    BOOST_CHECK_EQUAL( Scalar::extract(r) , -2. );
+    BOOST_CHECK_EQUAL( Real::extract(r) , -2. );
 }
 
 //-----------------------------------------------------------------------------

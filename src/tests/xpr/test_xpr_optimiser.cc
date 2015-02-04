@@ -59,18 +59,18 @@ BOOST_AUTO_TEST_CASE( test_add_vv )
 
     Xpr X = x + y;
 
-    BOOST_CHECK( X.optimise().expr()->str() == "Add(Vector(5, 5, 5), Vector(7, 7, 7))" );
-    BOOST_CHECK( X.optimise().expr()->code() == "xpr::add(xpr::vector({5, 5, 5}), xpr::vector({7, 7, 7}))" );
-    BOOST_CHECK( X.optimise().expr()->json() == "{\"xpr::add\":[[5,5,5],[7,7,7]]}" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->str() , "Add(Vector(5, 5, 5), Vector(7, 7, 7))" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->code() , "xpr::add(xpr::vector({5, 5, 5}), xpr::vector({7, 7, 7}))" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->json() , "{\"xpr::add\":[[5,5,5],[7,7,7]]}" );
 }
 
 BOOST_AUTO_TEST_CASE( test_list_add_ss_vv )
 {
     Xpr X = xpr::list( a + b, x + y);
 
-    BOOST_CHECK( X.optimise().expr()->str() == "List(Scalar(6), Add(Vector(5, 5, 5), Vector(7, 7, 7)))" );
-    BOOST_CHECK( X.optimise().expr()->code() == "xpr::list(xpr::scalar(6), xpr::add(xpr::vector({5, 5, 5}), xpr::vector({7, 7, 7})))" );
-    BOOST_CHECK( X.optimise().expr()->json() == "{\"xpr::list\":[6,{\"xpr::add\":[[5,5,5],[7,7,7]]}]}" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->str() , "List(Scalar(6), Add(Vector(5, 5, 5), Vector(7, 7, 7)))" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->code() , "xpr::list(xpr::scalar(6), xpr::add(xpr::vector({5, 5, 5}), xpr::vector({7, 7, 7})))" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->json() , "{\"xpr::list\":[6,{\"xpr::add\":[[5,5,5],[7,7,7]]}]}" );
 }
 
 BOOST_AUTO_TEST_CASE( test_linear_sv_sv )
@@ -79,9 +79,9 @@ BOOST_AUTO_TEST_CASE( test_linear_sv_sv )
     Xpr z = (a - b) * e;
     Xpr X = e * x + z * y;
 
-    BOOST_CHECK( X.optimise().expr()->str() == "Linear(Scalar(6), Vector(5, 5, 5), Scalar(-12), Vector(7, 7, 7))" );
-    BOOST_CHECK( X.optimise().expr()->code() == "xpr::linear(xpr::scalar(6), xpr::vector({5, 5, 5}), xpr::scalar(-12), xpr::vector({7, 7, 7})))" );
-    BOOST_CHECK( X.optimise().expr()->json() == "{\"xpr::linear\":[6,[5,5,5],-12,[7,7,7]]}" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->str() , "Linear(Scalar(6), Vector(5, 5, 5), Scalar(-12), Vector(7, 7, 7))" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->code() , "xpr::linear(xpr::scalar(6), xpr::vector({5, 5, 5}), xpr::scalar(-12), xpr::vector({7, 7, 7})))" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->json() , "{\"xpr::linear\":[6,[5,5,5],-12,[7,7,7]]}" );
 }
 
 BOOST_AUTO_TEST_CASE( test_linear_with_count )
@@ -93,9 +93,9 @@ BOOST_AUTO_TEST_CASE( test_linear_with_count )
                              );
     Xpr X = e * x + b * y;
 
-    BOOST_CHECK( X.optimise().expr()->str() == "Linear(Scalar(10), Vector(5, 5, 5), Scalar(4), Vector(7, 7, 7))" );
-    BOOST_CHECK( X.optimise().expr()->code() == "xpr::linear(xpr::scalar(10), xpr::vector({5, 5, 5}), xpr::scalar(4), xpr::vector({7, 7, 7})))" );
-    BOOST_CHECK( X.optimise().expr()->json() == "{\"xpr::linear\":[10,[5,5,5],4,[7,7,7]]}" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->str() , "Linear(Scalar(10), Vector(5, 5, 5), Scalar(4), Vector(7, 7, 7))" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->code() , "xpr::linear(xpr::scalar(10), xpr::vector({5, 5, 5}), xpr::scalar(4), xpr::vector({7, 7, 7})))" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->json() , "{\"xpr::linear\":[10,[5,5,5],4,[7,7,7]]}" );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

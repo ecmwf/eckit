@@ -52,7 +52,7 @@ struct Generic
 
 //--------------------------------------------------------------------------------------------
 
-static UnaryOperator<Neg>::Computer<Real,Generic> neg_sg;
+static UnaryOperator<Neg>::Computer<Real,Generic> neg_rg;
 static UnaryOperator<Neg>::Computer<Vector,Generic> neg_vg;
 
 //--------------------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ Reanimator< UnaryOperator<T> > UnaryOperator<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 
-static OptimiseTo<Real> optimise_neg_s ( std::string(opname( Neg() )) + "(s)" );
+static OptimiseTo<Real> optimise_neg_r ( std::string(opname( Neg() )) + "(r)" );
 
 //--------------------------------------------------------------------------------------------
 

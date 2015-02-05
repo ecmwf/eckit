@@ -80,24 +80,24 @@ struct Generic
 
 //--------------------------------------------------------------------------------------------
 
-static BinaryOperator<Prod>::Computer<Real,Real,Generic> prod_ssg;
-static BinaryOperator<Prod>::Computer<Real,Vector,Generic> prod_svg;
-static BinaryOperator<Prod>::Computer<Vector,Real,Generic> prod_vsg;
+static BinaryOperator<Prod>::Computer<Real,Real,Generic> prod_rrg;
+static BinaryOperator<Prod>::Computer<Real,Vector,Generic> prod_rvg;
+static BinaryOperator<Prod>::Computer<Vector,Real,Generic> prod_vrg;
 static BinaryOperator<Prod>::Computer<Vector,Vector,Generic> prod_vvg;
 
-static BinaryOperator<Div>::Computer<Real,Real,Generic> div_ssg;
-static BinaryOperator<Div>::Computer<Real,Vector,Generic> div_svg;
-static BinaryOperator<Div>::Computer<Vector,Real,Generic> div_vsg;
+static BinaryOperator<Div>::Computer<Real,Real,Generic> div_rrg;
+static BinaryOperator<Div>::Computer<Real,Vector,Generic> div_rvg;
+static BinaryOperator<Div>::Computer<Vector,Real,Generic> div_vrg;
 static BinaryOperator<Div>::Computer<Vector,Vector,Generic> div_vvg;
 
-static BinaryOperator<Add>::Computer<Real,Real,Generic> add_ssg;
-static BinaryOperator<Add>::Computer<Real,Vector,Generic> add_svg;
-static BinaryOperator<Add>::Computer<Vector,Real,Generic> add_vsg;
+static BinaryOperator<Add>::Computer<Real,Real,Generic> add_rrg;
+static BinaryOperator<Add>::Computer<Real,Vector,Generic> add_rvg;
+static BinaryOperator<Add>::Computer<Vector,Real,Generic> add_vrg;
 static BinaryOperator<Add>::Computer<Vector,Vector,Generic> add_vvg;
 
-static BinaryOperator<Sub>::Computer<Real,Real,Generic> sub_ssg;
-static BinaryOperator<Sub>::Computer<Real,Vector,Generic> sub_svg;
-static BinaryOperator<Sub>::Computer<Vector,Real,Generic> sub_vsg;
+static BinaryOperator<Sub>::Computer<Real,Real,Generic> sub_rrg;
+static BinaryOperator<Sub>::Computer<Real,Vector,Generic> sub_rvg;
+static BinaryOperator<Sub>::Computer<Vector,Real,Generic> sub_vrg;
 static BinaryOperator<Sub>::Computer<Vector,Vector,Generic> sub_vvg;
 
 //--------------------------------------------------------------------------------------------
@@ -178,10 +178,10 @@ Reanimator< BinaryOperator<T> > BinaryOperator<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 
-static OptimiseTo<Real> optimise_add_ss ( std::string(opname( Add() )) + "(s,s)" );
-static OptimiseTo<Real> optimise_sub_ss ( std::string(opname( Sub() )) + "(s,s)" );
-static OptimiseTo<Real> optimise_prod_ss( std::string(opname(Prod() )) + "(s,s)" );
-static OptimiseTo<Real> optimise_div_ss ( std::string(opname( Div() )) + "(s,s)" );
+static OptimiseTo<Real> optimise_add_rr ( std::string(opname( Add() )) + "(r,r)" );
+static OptimiseTo<Real> optimise_sub_rr ( std::string(opname( Sub() )) + "(r,r)" );
+static OptimiseTo<Real> optimise_prod_rr( std::string(opname(Prod() )) + "(r,r)" );
+static OptimiseTo<Real> optimise_div_rr ( std::string(opname( Div() )) + "(r,r)" );
 
 //--------------------------------------------------------------------------------------------
 } // namespace xpr

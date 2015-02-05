@@ -25,7 +25,7 @@ Linear::Linear(ExpPtr e) : Function()
     ExpPtr left  = e->args(0);
     ExpPtr right = e->args(1);
 
-    // cater for swap in s,v pairs -> insures final signature is linear(s,v,s,v)
+    // cater for swap in r,v pairs -> insures final signature is linear(r,v,r,v)
 
     ASSERT( left->arity() == 2 );
 
@@ -95,7 +95,7 @@ void Linear::asCode(std::ostream&o) const
 
 Linear::Register::Register()
 {
-    Function::dispatcher()[ std::string(nodeName()) + "(s,v,s,v)" ] = &compute;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,v,r,v)" ] = &compute;
 }
 
 
@@ -117,10 +117,10 @@ Reanimator< Linear > Linear::reanimator_;
 
 static Linear::Register linear_register;
 
-static OptimiseTo<Linear> optimise_linear_svsv("Add(Prod(s,v),Prod(s,v))");
-static OptimiseTo<Linear> optimise_linear_vsvs("Add(Prod(v,s),Prod(v,s))");
-static OptimiseTo<Linear> optimise_linear_vssv("Add(Prod(v,s),Prod(s,v))");
-static OptimiseTo<Linear> optimise_linear_svvs("Add(Prod(s,v),Prod(v,s))");
+static OptimiseTo<Linear> optimise_linear_rvrv("Add(Prod(r,v),Prod(r,v))");
+static OptimiseTo<Linear> optimise_linear_vrvr("Add(Prod(v,r),Prod(v,r))");
+static OptimiseTo<Linear> optimise_linear_vrrv("Add(Prod(v,r),Prod(r,v))");
+static OptimiseTo<Linear> optimise_linear_rvvr("Add(Prod(r,v),Prod(v,r))");
 
 //--------------------------------------------------------------------------------------------
 

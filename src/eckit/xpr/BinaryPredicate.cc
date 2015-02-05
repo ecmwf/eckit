@@ -54,120 +54,120 @@ struct Generic
 namespace _Greater {
 typedef Greater T;
 
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Real,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Real,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Real,Real,Generic>    ssg;
+static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic> bbg;
+static BinaryPredicate< T >::Computer<Boolean,Real,Generic>    brg;
+static BinaryPredicate< T >::Computer<Real,Boolean,Generic>    rbg;
+static BinaryPredicate< T >::Computer<Real,Real,Generic>       rrg;
 
 static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
+static OptimiseTo<Boolean> rb( std::string(opname( T () )) + "(r,b)" );
+static OptimiseTo<Boolean> br( std::string(opname( T () )) + "(b,r)" );
+static OptimiseTo<Boolean> rr( std::string(opname( T () )) + "(r,r)" );
 
 }
 
 namespace _GreaterEqual {
 typedef GreaterEqual T;
 
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Real,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Real,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Real,Real,Generic>    ssg;
+static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic> bbg;
+static BinaryPredicate< T >::Computer<Boolean,Real,Generic>    brg;
+static BinaryPredicate< T >::Computer<Real,Boolean,Generic>    rbg;
+static BinaryPredicate< T >::Computer<Real,Real,Generic>       rrg;
 
 static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
+static OptimiseTo<Boolean> rb( std::string(opname( T () )) + "(r,b)" );
+static OptimiseTo<Boolean> br( std::string(opname( T () )) + "(b,r)" );
+static OptimiseTo<Boolean> rr( std::string(opname( T () )) + "(r,r)" );
 
 }
 
 namespace _Less {
 typedef Less T;
 
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Real,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Real,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Real,Real,Generic>    ssg;
+static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic> bbg;
+static BinaryPredicate< T >::Computer<Boolean,Real,Generic>    brg;
+static BinaryPredicate< T >::Computer<Real,Boolean,Generic>    rbg;
+static BinaryPredicate< T >::Computer<Real,Real,Generic>       rrg;
 
 static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
+static OptimiseTo<Boolean> rb( std::string(opname( T () )) + "(r,b)" );
+static OptimiseTo<Boolean> br( std::string(opname( T () )) + "(b,r)" );
+static OptimiseTo<Boolean> rr( std::string(opname( T () )) + "(r,r)" );
 
 }
 
 namespace _LessEqual {
 typedef LessEqual T;
 
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Real,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Real,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Real,Real,Generic>    ssg;
+static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic> bbg;
+static BinaryPredicate< T >::Computer<Boolean,Real,Generic>    brg;
+static BinaryPredicate< T >::Computer<Real,Boolean,Generic>    rbg;
+static BinaryPredicate< T >::Computer<Real,Real,Generic>       rrg;
 
 static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
+static OptimiseTo<Boolean> rb( std::string(opname( T () )) + "(r,b)" );
+static OptimiseTo<Boolean> br( std::string(opname( T () )) + "(b,r)" );
+static OptimiseTo<Boolean> rr( std::string(opname( T () )) + "(r,r)" );
 
 }
 
 namespace _Equal {
 typedef Equal T;
 
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Real,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Real,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Real,Real,Generic>    ssg;
+static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic> bbg;
+static BinaryPredicate< T >::Computer<Boolean,Real,Generic>    brg;
+static BinaryPredicate< T >::Computer<Real,Boolean,Generic>    rbg;
+static BinaryPredicate< T >::Computer<Real,Real,Generic>       rrg;
 
 static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
+static OptimiseTo<Boolean> rb( std::string(opname( T () )) + "(r,b)" );
+static OptimiseTo<Boolean> br( std::string(opname( T () )) + "(b,r)" );
+static OptimiseTo<Boolean> rr( std::string(opname( T () )) + "(r,r)" );
 
 }
 
 namespace _NotEqual {
 typedef NotEqual T;
 
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Real,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Real,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Real,Real,Generic>    ssg;
+static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic> bbg;
+static BinaryPredicate< T >::Computer<Boolean,Real,Generic>    brg;
+static BinaryPredicate< T >::Computer<Real,Boolean,Generic>    rbg;
+static BinaryPredicate< T >::Computer<Real,Real,Generic>       rrg;
 
 static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
+static OptimiseTo<Boolean> rb( std::string(opname( T () )) + "(r,b)" );
+static OptimiseTo<Boolean> br( std::string(opname( T () )) + "(b,r)" );
+static OptimiseTo<Boolean> rr( std::string(opname( T () )) + "(r,r)" );
 
 }
 
 namespace _And {
 typedef And T;
 
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Real,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Real,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Real,Real,Generic>    ssg;
+static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic> bbg;
+static BinaryPredicate< T >::Computer<Boolean,Real,Generic>    brg;
+static BinaryPredicate< T >::Computer<Real,Boolean,Generic>    rbg;
+static BinaryPredicate< T >::Computer<Real,Real,Generic>       rrg;
 
 static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
+static OptimiseTo<Boolean> rb( std::string(opname( T () )) + "(r,b)" );
+static OptimiseTo<Boolean> br( std::string(opname( T () )) + "(b,r)" );
+static OptimiseTo<Boolean> rr( std::string(opname( T () )) + "(r,r)" );
 
 }
 
 namespace _Or {
 typedef Or T;
 
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Real,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Real,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Real,Real,Generic>    ssg;
+static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic> bbg;
+static BinaryPredicate< T >::Computer<Boolean,Real,Generic>    brg;
+static BinaryPredicate< T >::Computer<Real,Boolean,Generic>    rbg;
+static BinaryPredicate< T >::Computer<Real,Real,Generic>       rrg;
 
 static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
+static OptimiseTo<Boolean> rb( std::string(opname( T () )) + "(r,b)" );
+static OptimiseTo<Boolean> br( std::string(opname( T () )) + "(b,r)" );
+static OptimiseTo<Boolean> rr( std::string(opname( T () )) + "(r,r)" );
 
 }
 

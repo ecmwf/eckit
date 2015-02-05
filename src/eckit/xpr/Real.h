@@ -31,7 +31,7 @@ public: // methods
 
     typedef real_t value_t;
 
-    static std::string sig() { return "s"; }
+    static std::string sig() { return "r"; }
     static const char * nodeName() { return "Real"; }
 
     static bool is ( const ExpPtr& e );

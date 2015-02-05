@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE( test_optimise_reals )
     ExpPtr e = add( prod( c , x_ ) , prod( b_, y_ ));
 
     // signature and code representation before optimising
-    BOOST_CHECK_EQUAL( e->signature() , "Add(Prod(Add(s,s),v),Prod(s,v))" );
+    BOOST_CHECK_EQUAL( e->signature() , "Add(Prod(Add(r,r),v),Prod(r,v))" );
     BOOST_CHECK_EQUAL( e->code() , "xpr::add(xpr::prod(xpr::add(xpr::real(2), xpr::real(4)), xpr::vector({5, 5, 5})), xpr::prod(xpr::real(4), xpr::vector({7, 7, 7})))" );
     BOOST_CHECK_EQUAL( e->json() , "{\"xpr::add\":[{\"xpr::prod\":[{\"xpr::add\":[2,4]},[5,5,5]]},{\"xpr::prod\":[4,[7,7,7]]}]}" );
 
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE( test_optimise_reals )
     ExpPtr opt = e->optimise(true);
 
     // signature after reducing
-    BOOST_CHECK_EQUAL( opt->signature() , "Linear(s,v,s,v)" );
+    BOOST_CHECK_EQUAL( opt->signature() , "Linear(r,v,r,v)" );
 }
 
 BOOST_AUTO_TEST_CASE( test_optimise_recursive_reals )
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( test_optimise_recursive_reals )
     ExpPtr e  = xpr::add(c4,c4);
 
     // signature and code representation before reducing
-    BOOST_CHECK_EQUAL( e->signature() , "Add(Add(Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s))),Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s)))),Add(Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s))),Add(Add(Add(s,s),Add(s,s)),Add(Add(s,s),Add(s,s)))))" );
+    BOOST_CHECK_EQUAL( e->signature() , "Add(Add(Add(Add(Add(r,r),Add(r,r)),Add(Add(r,r),Add(r,r))),Add(Add(Add(r,r),Add(r,r)),Add(Add(r,r),Add(r,r)))),Add(Add(Add(Add(r,r),Add(r,r)),Add(Add(r,r),Add(r,r))),Add(Add(Add(r,r),Add(r,r)),Add(Add(r,r),Add(r,r)))))" );
     BOOST_CHECK_EQUAL( e->code() , "xpr::add(xpr::add(xpr::add(xpr::add(xpr::add(xpr::real(2), xpr::real(4)), xpr::add(xpr::real(2), xpr::real(4))), xpr::add(xpr::add(xpr::real(2), xpr::real(4)), xpr::add(xpr::real(2), xpr::real(4)))), xpr::add(xpr::add(xpr::add(xpr::real(2), xpr::real(4)), xpr::add(xpr::real(2), xpr::real(4))), xpr::add(xpr::add(xpr::real(2), xpr::real(4)), xpr::add(xpr::real(2), xpr::real(4))))), xpr::add(xpr::add(xpr::add(xpr::add(xpr::real(2), xpr::real(4)), xpr::add(xpr::real(2), xpr::real(4))), xpr::add(xpr::add(xpr::real(2), xpr::real(4)), xpr::add(xpr::real(2), xpr::real(4)))), xpr::add(xpr::add(xpr::add(xpr::real(2), xpr::real(4)), xpr::add(xpr::real(2), xpr::real(4))), xpr::add(xpr::add(xpr::real(2), xpr::real(4)), xpr::add(xpr::real(2), xpr::real(4))))))" );
     BOOST_CHECK_EQUAL( e->json() , "{\"xpr::add\":[{\"xpr::add\":[{\"xpr::add\":[{\"xpr::add\":[{\"xpr::add\":[2,4]},{\"xpr::add\":[2,4]}]},{\"xpr::add\":[{\"xpr::add\":[2,4]},{\"xpr::add\":[2,4]}]}]},{\"xpr::add\":[{\"xpr::add\":[{\"xpr::add\":[2,4]},{\"xpr::add\":[2,4]}]},{\"xpr::add\":[{\"xpr::add\":[2,4]},{\"xpr::add\":[2,4]}]}]}]},{\"xpr::add\":[{\"xpr::add\":[{\"xpr::add\":[{\"xpr::add\":[2,4]},{\"xpr::add\":[2,4]}]},{\"xpr::add\":[{\"xpr::add\":[2,4]},{\"xpr::add\":[2,4]}]}]},{\"xpr::add\":[{\"xpr::add\":[{\"xpr::add\":[2,4]},{\"xpr::add\":[2,4]}]},{\"xpr::add\":[{\"xpr::add\":[2,4]},{\"xpr::add\":[2,4]}]}]}]}]}" );
 
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE( test_optimise_recursive_reals )
 BOOST_AUTO_TEST_CASE( test_optimise_prodadd )
 {
     ExpPtr e0 = xpr::prod( a_, xpr::add(y_, x_ ) );
-    BOOST_CHECK_EQUAL( e0->optimise(true)->signature() , "ProdAdd(s,v,v)" );
+    BOOST_CHECK_EQUAL( e0->optimise(true)->signature() , "ProdAdd(r,v,v)" );
     BOOST_CHECK_EQUAL( e0->eval()->str() , "Vector(24, 24, 24)" );
     BOOST_CHECK_EQUAL( e0->eval()->code() , "xpr::vector({24, 24, 24})" );
     BOOST_CHECK_EQUAL( e0->eval()->json() , "[24,24,24]" );
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE( test_optimise_prodadd )
 
     // involves also reducing the real-real
     ExpPtr e2 = xpr::prod( xpr::prod(a_,b_), xpr::add(y_, x_ ) );
-    BOOST_CHECK_EQUAL( e2->optimise(true)->signature() , "ProdAdd(s,v,v)" );
+    BOOST_CHECK_EQUAL( e2->optimise(true)->signature() , "ProdAdd(r,v,v)" );
     BOOST_CHECK_EQUAL( e2->eval()->str() , "Vector(96, 96, 96)" );
     BOOST_CHECK_EQUAL( e2->eval()->code() , "xpr::vector({96, 96, 96})" );
     BOOST_CHECK_EQUAL( e2->eval()->json() , "[96,96,96]" );

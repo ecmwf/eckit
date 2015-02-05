@@ -23,6 +23,8 @@ Merge.cc
 Merge.h
 IfElse.cc
 IfElse.h
+Integer.cc
+Integer.h
 Lambda.cc
 Lambda.h
 Filter.cc

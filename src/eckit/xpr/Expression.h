@@ -68,6 +68,7 @@ class Expression;
 class Scope;
 
 typedef double real_t;
+typedef int64_t integer_t;
 
 typedef SharedPtr<List>        ListPtr;
 typedef SharedPtr<Expression>  ExpPtr;

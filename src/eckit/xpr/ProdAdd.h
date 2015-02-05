@@ -60,7 +60,7 @@ public: // methods
 protected: // methods
 
     /// Specific computation for s * ( v + v )
-    static ExpPtr compute_svv(Scope& ctx, const args_t& p );
+    static ExpPtr compute_rvv(Scope& ctx, const args_t& p );
 
     /// Specific computation for v * ( v + v )
     static ExpPtr compute_vvv(Scope &ctx, const args_t& p );

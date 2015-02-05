@@ -17,6 +17,7 @@
 #include "eckit/xpr/Count.h"
 #include "eckit/xpr/Filter.h"
 #include "eckit/xpr/IfElse.h"
+#include "eckit/xpr/Integer.h"
 #include "eckit/xpr/Lambda.h"
 #include "eckit/xpr/List.h"
 #include "eckit/xpr/Map.h"
@@ -49,7 +50,7 @@ Xpr::Xpr(double v):
 }
 
 Xpr::Xpr(int v):
-    expr_(xpr::real(v))
+    expr_(xpr::integer(v))
 {
 }
 

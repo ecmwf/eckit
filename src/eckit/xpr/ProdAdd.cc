@@ -53,7 +53,7 @@ void ProdAdd::asCode(std::ostream&o) const
     o << "(" << *args(0) << " * (" << *args(1) << " + " << *args(2) << "))";
 }
 
-ExpPtr ProdAdd::compute_svv(Scope& ctx, const args_t &p)
+ExpPtr ProdAdd::compute_rvv(Scope& ctx, const args_t &p)
 {
     ASSERT( p.size() == 3 );
 
@@ -103,14 +103,33 @@ ExpPtr ProdAdd::cloneWith(args_t& a) const
 ProdAdd::Register::Register()
 {
     Function::dispatcher()[ std::string(nodeName()) + "(r,r,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,r,i)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,i,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,r,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,i,i)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,r,i)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,i,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,i,i)" ] = &compute_ggg;
     Function::dispatcher()[ std::string(nodeName()) + "(r,v,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,v,i)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,v,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,v,i)" ] = &compute_ggg;
     Function::dispatcher()[ std::string(nodeName()) + "(r,r,v)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,i,v)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,r,v)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,i,v)" ] = &compute_ggg;
 
-    Function::dispatcher()[ std::string(nodeName()) + "(r,v,v)" ] = &compute_svv;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,v,v)" ] = &compute_rvv;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,v,v)" ] = &compute_rvv;
 
     Function::dispatcher()[ std::string(nodeName()) + "(v,r,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,r,i)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,i,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,i,i)" ] = &compute_ggg;
     Function::dispatcher()[ std::string(nodeName()) + "(v,r,v)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,i,v)" ] = &compute_ggg;
     Function::dispatcher()[ std::string(nodeName()) + "(v,v,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,v,i)" ] = &compute_ggg;
 
     Function::dispatcher()[ std::string(nodeName()) + "(v,v,v)" ] = &compute_vvv;
 }
@@ -129,6 +148,7 @@ Reanimator< ProdAdd > ProdAdd::reanimator_;
 static ProdAdd::Register prodadd_register;
 
 static OptimiseTo<ProdAdd> optimise_prodadd_rvv("Prod(r,Add(v,v))");
+static OptimiseTo<ProdAdd> optimise_prodadd_ivv("Prod(i,Add(v,v))");
 static OptimiseTo<ProdAdd> optimise_prodadd_vvv("Prod(v,Add(v,v))");
 
 

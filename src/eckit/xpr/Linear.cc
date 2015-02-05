@@ -96,6 +96,9 @@ void Linear::asCode(std::ostream&o) const
 Linear::Register::Register()
 {
     Function::dispatcher()[ std::string(nodeName()) + "(r,v,r,v)" ] = &compute;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,v,i,v)" ] = &compute;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,v,r,v)" ] = &compute;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,v,i,v)" ] = &compute;
 }
 
 
@@ -121,6 +124,18 @@ static OptimiseTo<Linear> optimise_linear_rvrv("Add(Prod(r,v),Prod(r,v))");
 static OptimiseTo<Linear> optimise_linear_vrvr("Add(Prod(v,r),Prod(v,r))");
 static OptimiseTo<Linear> optimise_linear_vrrv("Add(Prod(v,r),Prod(r,v))");
 static OptimiseTo<Linear> optimise_linear_rvvr("Add(Prod(r,v),Prod(v,r))");
+static OptimiseTo<Linear> optimise_linear_rviv("Add(Prod(r,v),Prod(i,v))");
+static OptimiseTo<Linear> optimise_linear_vrvi("Add(Prod(v,r),Prod(v,i))");
+static OptimiseTo<Linear> optimise_linear_vriv("Add(Prod(v,r),Prod(i,v))");
+static OptimiseTo<Linear> optimise_linear_rvvi("Add(Prod(r,v),Prod(v,i))");
+static OptimiseTo<Linear> optimise_linear_ivrv("Add(Prod(i,v),Prod(r,v))");
+static OptimiseTo<Linear> optimise_linear_vivr("Add(Prod(v,i),Prod(v,r))");
+static OptimiseTo<Linear> optimise_linear_virv("Add(Prod(v,i),Prod(r,v))");
+static OptimiseTo<Linear> optimise_linear_ivvr("Add(Prod(i,v),Prod(v,r))");
+static OptimiseTo<Linear> optimise_linear_iviv("Add(Prod(i,v),Prod(i,v))");
+static OptimiseTo<Linear> optimise_linear_vivi("Add(Prod(v,i),Prod(v,i))");
+static OptimiseTo<Linear> optimise_linear_viiv("Add(Prod(v,i),Prod(i,v))");
+static OptimiseTo<Linear> optimise_linear_ivvi("Add(Prod(i,v),Prod(v,i))");
 
 //--------------------------------------------------------------------------------------------
 

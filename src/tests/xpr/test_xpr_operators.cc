@@ -15,6 +15,7 @@
 #include "eckit/xpr/Boolean.h"
 #include "eckit/xpr/Count.h"
 #include "eckit/xpr/List.h"
+#include "eckit/xpr/Integer.h"
 #include "eckit/xpr/Merge.h"
 #include "eckit/xpr/Real.h"
 #include "eckit/xpr/Xpr.h"
@@ -59,14 +60,14 @@ BOOST_AUTO_TEST_CASE( test_##OPSM##_ss ) \
     BOOST_CHECK_EQUAL( extract<TYPE>(C.eval()) , RESULT ); \
     BOOST_CHECK_EQUAL( extract<TYPE>(D.eval()) , RESULT ); \
 \
-    BOOST_CHECK_EQUAL( A.expr()->str() , #OP "(Real(2), Real(4))" ); \
-    BOOST_CHECK_EQUAL( B.expr()->str() , #OP "(Real(2), Real(4))" ); \
-    BOOST_CHECK_EQUAL( C.expr()->str() , #OP "(Real(2), Real(4))" ); \
+    BOOST_CHECK_EQUAL( A.expr()->str() , #OP "(Integer(2), Real(4))" ); \
+    BOOST_CHECK_EQUAL( B.expr()->str() , #OP "(Integer(2), Real(4))" ); \
+    BOOST_CHECK_EQUAL( C.expr()->str() , #OP "(Integer(2), Real(4))" ); \
     BOOST_CHECK_EQUAL( D.expr()->str() , #TYPE "(" #RESULT ")" ); \
 \
-    BOOST_CHECK_EQUAL( A.expr()->code() , "xpr::" #OPSM "(xpr::real(2), xpr::real(4))" ); \
-    BOOST_CHECK_EQUAL( B.expr()->code() , "xpr::" #OPSM "(xpr::real(2), xpr::real(4))" ); \
-    BOOST_CHECK_EQUAL( C.expr()->code() , "xpr::" #OPSM "(xpr::real(2), xpr::real(4))" ); \
+    BOOST_CHECK_EQUAL( A.expr()->code() , "xpr::" #OPSM "(xpr::integer(2), xpr::real(4))" ); \
+    BOOST_CHECK_EQUAL( B.expr()->code() , "xpr::" #OPSM "(xpr::integer(2), xpr::real(4))" ); \
+    BOOST_CHECK_EQUAL( C.expr()->code() , "xpr::" #OPSM "(xpr::integer(2), xpr::real(4))" ); \
     BOOST_CHECK_EQUAL( D.expr()->code() , "xpr::" #TYPESM "(" #RESULT ")" ); \
 \
     BOOST_CHECK_EQUAL( A.expr()->json() , "{\"xpr::" #OPSM "\":[2,4]}" ); \

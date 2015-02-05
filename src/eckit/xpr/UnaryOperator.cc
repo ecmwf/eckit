@@ -10,6 +10,7 @@
 
 #include "eckit/parser/JSON.h"
 
+#include "eckit/xpr/Integer.h"
 #include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/UnaryOperator.h"
@@ -53,6 +54,7 @@ struct Generic
 //--------------------------------------------------------------------------------------------
 
 static UnaryOperator<Neg>::Computer<Real,Generic> neg_rg;
+static UnaryOperator<Neg>::Computer<Integer,Generic> neg_ig;
 static UnaryOperator<Neg>::Computer<Vector,Generic> neg_vg;
 
 //--------------------------------------------------------------------------------------------
@@ -144,6 +146,7 @@ Reanimator< UnaryOperator<T> > UnaryOperator<T>::reanimator_;
 //--------------------------------------------------------------------------------------------
 
 static OptimiseTo<Real> optimise_neg_r ( std::string(opname( Neg() )) + "(r)" );
+static OptimiseTo<Integer> optimise_neg_i ( std::string(opname( Neg() )) + "(i)" );
 
 //--------------------------------------------------------------------------------------------
 

@@ -1,3 +1,12 @@
+find_package(PythonInterp)
+if(PYTHONINTERP_FOUND)
+  ADD_CUSTOM_COMMAND(
+    OUTPUT test_xpr_operators.cc
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gen_xpr_tests.py ${CMAKE_CURRENT_SOURCE_DIR}/test_xpr_operators.cc.in test_xpr_operators.cc
+    DEPENDS gen_xpr_tests.py
+  )
+endif()
+
 ecbuild_add_test(   TARGET      test_xpr_expr
 					BOOST
 					CONDITION   HAVE_XPR
@@ -18,7 +27,7 @@ ecbuild_add_test(   TARGET      test_xpr_currying
 
 ecbuild_add_test(   TARGET      test_xpr_operators
 					BOOST
-					CONDITION   HAVE_XPR
+					CONDITION   HAVE_XPR AND PYTHONINTERP_FOUND
 					SOURCES     test_xpr_operators.cc
 					LIBS        eckit_xpr eckit )
 

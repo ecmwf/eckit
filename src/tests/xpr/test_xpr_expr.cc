@@ -144,12 +144,19 @@ BOOST_AUTO_TEST_CASE( test_list )
     BOOST_CHECK_EQUAL( l2->eval()->json() , "{\"xpr::list\":[2,4,2,4,2]}" );
     BOOST_CHECK_EQUAL( l2->arity() , 5 );
 
-    ExpPtr c3 = xpr::count( xpr::list( a_, b_, a_, b_, a_ ) );
+    ExpPtr l3 = xpr::list( a_, b_, 2., 4 );
 
-    BOOST_CHECK_EQUAL( c3->eval()->str() , "Integer(5)" );
-    BOOST_CHECK_EQUAL( c3->eval()->code() , "xpr::integer(5)" );
-    BOOST_CHECK_EQUAL( c3->eval()->json() , "5" );
-    BOOST_CHECK_EQUAL( c3->eval()->as<Integer>()->value() , 5 );
+    BOOST_CHECK_EQUAL( l3->eval()->str() , "List(Real(2), Real(4), Real(2), Integer(4))" );
+    BOOST_CHECK_EQUAL( l3->eval()->code() , "xpr::list(xpr::real(2), xpr::real(4), xpr::real(2), xpr::integer(4))" );
+    BOOST_CHECK_EQUAL( l3->eval()->json() , "{\"xpr::list\":[2,4,2,4]}" );
+    BOOST_CHECK_EQUAL( l3->arity() , 4 );
+
+    ExpPtr c4 = xpr::count( xpr::list( a_, b_, a_, b_, a_ ) );
+
+    BOOST_CHECK_EQUAL( c4->eval()->str() , "Integer(5)" );
+    BOOST_CHECK_EQUAL( c4->eval()->code() , "xpr::integer(5)" );
+    BOOST_CHECK_EQUAL( c4->eval()->json() , "5" );
+    BOOST_CHECK_EQUAL( c4->eval()->as<Integer>()->value() , 5 );
 }
 
 BOOST_AUTO_TEST_CASE( test_map )

@@ -18,6 +18,9 @@
 
 #include "eckit/memory/SharedPtr.h"
 
+#include "eckit/xpr/Boolean.h"
+#include "eckit/xpr/Integer.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Value.h"
 
 namespace eckit {
@@ -93,9 +96,33 @@ static void build_list(List::value_t &l) {
     // End of recursion
 }
 
-template <typename T, typename ...A>
-static void build_list(List::value_t& l, T head, A... tail) {
+template <typename ...A>
+static void build_list(List::value_t& l, const ExpPtr& head, A... tail) {
     l.push_back(head);
+    build_list(l, tail...);
+}
+
+template <typename ...A>
+static void build_list(List::value_t& l, Boolean::value_t head, A... tail) {
+    l.push_back(ExpPtr(new Boolean(head)));
+    build_list(l, tail...);
+}
+
+template <typename ...A>
+static void build_list(List::value_t& l, Integer::value_t head, A... tail) {
+    l.push_back(ExpPtr(new Integer(head)));
+    build_list(l, tail...);
+}
+
+template <typename ...A>
+static void build_list(List::value_t& l, int head, A... tail) {
+    l.push_back(ExpPtr(new Integer(head)));
+    build_list(l, tail...);
+}
+
+template <typename ...A>
+static void build_list(List::value_t& l, Real::value_t head, A... tail) {
+    l.push_back(ExpPtr(new Real(head)));
     build_list(l, tail...);
 }
 

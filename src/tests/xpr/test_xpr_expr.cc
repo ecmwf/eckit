@@ -18,9 +18,11 @@
 #include "eckit/xpr/Expression.h"
 #include "eckit/xpr/Map.h"
 #include "eckit/xpr/Filter.h"
+#include "eckit/xpr/IfElse.h"
 #include "eckit/xpr/Reduce.h"
 #include "eckit/xpr/List.h"
 #include "eckit/xpr/Real.h"
+#include "eckit/xpr/String.h"
 #include "eckit/xpr/UnaryOperator.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/ZipWith.h"
@@ -119,6 +121,16 @@ BOOST_AUTO_TEST_CASE( test_optimise_prodadd )
     BOOST_CHECK_EQUAL( e2->eval()->str() , "Vector(96, 96, 96)" );
     BOOST_CHECK_EQUAL( e2->eval()->code() , "xpr::vector({96, 96, 96})" );
     BOOST_CHECK_EQUAL( e2->eval()->json() , "[96,96,96]" );
+}
+
+BOOST_AUTO_TEST_CASE( test_if )
+{
+    ExpPtr i = xpr::ifelse( xpr::boolean( xpr::count( xpr::list( 7, 8, 9 ) ) ),
+                            xpr::string("I'm True"), xpr::string("I'm False") );
+
+    BOOST_CHECK_EQUAL( i->eval()->str() , "String(\"I'm True\")" );
+    BOOST_CHECK_EQUAL( i->eval()->code() , "xpr::string(\"I'm True\")" );
+    BOOST_CHECK_EQUAL( i->eval()->json() , "\"I'm True\"" );
 }
 
 BOOST_AUTO_TEST_CASE( test_list )

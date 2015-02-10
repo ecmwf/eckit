@@ -11,9 +11,9 @@
 #include <sstream>
 
 #include "eckit/xpr/Bind.h"
-#include "eckit/xpr/List.h"
 #include "eckit/xpr/Boolean.h"
-#include "eckit/xpr/Real.h"
+#include "eckit/xpr/Integer.h"
+#include "eckit/xpr/List.h"
 #include "eckit/xpr/Scope.h"
 
 
@@ -25,7 +25,7 @@ namespace xpr {
 Bind::Bind( size_t i, ExpPtr f, ExpPtr e ) : Function()
 {
     ASSERT( i > 1 );
-    push_back( xpr::real( (real_t)i ) ); // casted to real_t (real)
+    push_back( xpr::integer( (integer_t)i ) ); // casted to real_t (real)
     push_back(f);
     push_back(e);
 }
@@ -46,7 +46,7 @@ Bind::Bind(Stream &s) : Function(s) {}
 
 void Bind::asCode(std::ostream&o) const
 {
-    o << factoryName() << "<" << Real::extract(args()[0]);
+    o << factoryName() << "<" << Integer::extract(args()[0]);
     o << ">(" << *args()[1] << ", " << *args()[2] << ")";
 }
 
@@ -57,14 +57,13 @@ const char * Bind::typeName() const
 
 ExpPtr Bind::evaluate( Scope &ctx ) const
 {    
-    ExpPtr ix = args(0, ctx, true);
-
-    const size_t i = static_cast<size_t>( Real::extract(ix) );
+    Integer::value_t it = Integer::extract(args(0, ctx, true));
+    ASSERT(it >= 1);
+    const size_t i = static_cast<size_t>( it );
 
     ExpPtr f = args(1, ctx, false);
     ExpPtr e = args(2, ctx, true);
 
-    ASSERT(i>=1);
     ctx.insertArg(i-1, e);
 
     return f->eval(ctx);

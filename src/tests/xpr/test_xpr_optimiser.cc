@@ -93,9 +93,9 @@ BOOST_AUTO_TEST_CASE( test_linear_with_count )
                              );
     Xpr X = e * x + b * y;
 
-    BOOST_CHECK_EQUAL( X.optimise().expr()->str() , "Linear(Real(10), Vector(5, 5, 5), Real(4), Vector(7, 7, 7))" );
-    BOOST_CHECK_EQUAL( X.optimise().expr()->code() , "xpr::linear(xpr::real(10), xpr::vector({5, 5, 5}), xpr::real(4), xpr::vector({7, 7, 7})))" );
-    BOOST_CHECK_EQUAL( X.optimise().expr()->json() , "{\"xpr::linear\":[10,[5,5,5],4,[7,7,7]]}" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->str() , "Linear(Vector(5, 5, 5), Integer(10), Real(4), Vector(7, 7, 7))" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->code() , "xpr::linear(xpr::vector({5, 5, 5}), xpr::integer(10), xpr::real(4), xpr::vector({7, 7, 7})))" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->json() , "{\"xpr::linear\":[[5,5,5],10,4,[7,7,7]]}" );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

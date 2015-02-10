@@ -146,10 +146,10 @@ BOOST_AUTO_TEST_CASE( test_list )
 
     ExpPtr c3 = xpr::count( xpr::list( a_, b_, a_, b_, a_ ) );
 
-    BOOST_CHECK_EQUAL( c3->eval()->str() , "Real(5)" );
-    BOOST_CHECK_EQUAL( c3->eval()->code() , "xpr::real(5)" );
+    BOOST_CHECK_EQUAL( c3->eval()->str() , "Integer(5)" );
+    BOOST_CHECK_EQUAL( c3->eval()->code() , "xpr::integer(5)" );
     BOOST_CHECK_EQUAL( c3->eval()->json() , "5" );
-    BOOST_CHECK_EQUAL( c3->eval()->as<Real>()->value() , 5 );
+    BOOST_CHECK_EQUAL( c3->eval()->as<Integer>()->value() , 5 );
 }
 
 BOOST_AUTO_TEST_CASE( test_map )
@@ -295,7 +295,7 @@ BOOST_AUTO_TEST_CASE( test_bind )
     BOOST_TEST_MESSAGE("Bind string representation before eval: " << f0->str());
     BOOST_TEST_MESSAGE("Bind string representation after eval: " << f0->eval()->str());
 
-    BOOST_CHECK_EQUAL( f0->str() , "Filter(Bind(Real(2), Greater(?, ?), Real(2)), List(Real(2), Real(4), Real(2), Real(4)))" );
+    BOOST_CHECK_EQUAL( f0->str() , "Filter(Bind(Integer(2), Greater(?, ?), Real(2)), List(Real(2), Real(4), Real(2), Real(4)))" );
     BOOST_CHECK_EQUAL( f0->code() , "xpr::filter(xpr::bind<2>(xpr::greater(xpr::undef(), xpr::undef()), xpr::real(2)), xpr::list(xpr::real(2), xpr::real(4), xpr::real(2), xpr::real(4)))" );
     BOOST_CHECK_EQUAL( f0->json() , "{\"xpr::filter\":[{\"xpr::bind\":[2,{\"xpr::greater\":[\"xpr::undef\",\"xpr::undef\"]},2]},{\"xpr::list\":[2,4,2,4]}]}" );
     BOOST_CHECK_EQUAL( xpr::filter(xpr::bind<2>(xpr::greater(xpr::undef(), xpr::undef()), xpr::real(2)), xpr::list(xpr::real(2), xpr::real(4), xpr::real(2), xpr::real(4)))->eval()->str() , "List(Real(4), Real(4))" );

@@ -8,10 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/xpr/Integer.h"
 #include "eckit/xpr/Linear.h"
+#include "eckit/xpr/Optimiser.h"
 #include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
-#include "eckit/xpr/Optimiser.h"
 
 namespace eckit {
 namespace xpr {
@@ -29,7 +30,8 @@ Linear::Linear(ExpPtr e) : Function()
 
     ASSERT( left->arity() == 2 );
 
-    ASSERT( Real::is( left->args(0) ) || Real::is( left->args(1) ) );
+    ASSERT( Real::is( left->args(0) ) || Real::is( left->args(1) ) ||
+            Integer::is( left->args(0) ) || Integer::is( left->args(1) ) );
     ASSERT( Vector::is( left->args(0) ) || Vector::is( left->args(1) ) );
 
     if( Real::is( left->args(0) ) )

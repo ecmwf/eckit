@@ -16,6 +16,7 @@
 #ifndef eckit_xpr_Boolean_h
 #define eckit_xpr_Boolean_h
 
+#include "eckit/xpr/Integer.h"
 #include "eckit/xpr/Value.h"
 
 namespace eckit {

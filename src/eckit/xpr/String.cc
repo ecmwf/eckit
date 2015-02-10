@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/parser/JSON.h"
+
 #include "eckit/xpr/String.h"
 #include "eckit/xpr/Scope.h"
 
@@ -18,6 +20,11 @@ namespace xpr {
 
 String::String( const std::string& v ) : v_(v)
 {
+}
+
+String::String(ExpPtr e) : v_(0)
+{
+   v_ = String::extract(e->eval(false) );
 }
 
 String::String(Stream &s) : Value(s), v_(0)
@@ -38,13 +45,17 @@ bool String::is(const ExpPtr &e)
 
 void String::print(std::ostream&o) const
 {
-    o << nodeName() << "(" << v_ << ")";
+    o << nodeName() << "(\"" << v_ << "\")";
 }
 
-String::String(ExpPtr e) : v_(0)
+void String::asCode(std::ostream&o) const
 {
-   Scope dummy("String::String");
-   v_ = String::extract(dummy, e->eval(dummy) );
+    o << factoryName() << "(\"" << v_ << "\")";
+}
+
+void String::asJSON(JSON& s) const
+{
+    s << v_;
 }
 
 ExpPtr String::cloneWith(args_t& a) const {
@@ -66,12 +77,6 @@ ExpPtr string(const std::string &s)
 {
     return ExpPtr( new String(s) );
 }
-
-void String::asCode(std::ostream&o) const
-{
-    o << "xpr::string(" << v_ << ")";
-}
-
 
 //--------------------------------------------------------------------------------------------
 

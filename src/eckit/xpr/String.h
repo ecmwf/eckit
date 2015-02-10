@@ -36,15 +36,8 @@ public: // methods
 
     static bool is ( const ExpPtr& e ) ;
 
-    static value_t extract ( Scope& ctx , const ExpPtr& e )
+    static value_t extract ( const ExpPtr& e )
     {
-        ASSERT( String::is(e) );
-        return e->as<String>()->value();
-    }
-
-    static value_t extract ( const Xpr& m )
-    {
-        ExpPtr e = m;
         ASSERT( String::is(e) );
         return e->as<String>()->value();
     }
@@ -73,6 +66,7 @@ public: // virtual methods
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& o ) const;
+    virtual void asJSON( JSON& s ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
 
 protected: // virtual methods
@@ -92,8 +86,8 @@ private: // static members
 
 //--------------------------------------------------------------------------------------------
 
-/// Helper function to construct real expressions
-ExpPtr real( const std::string& s  );
+/// Helper function to construct string expressions
+ExpPtr string( const std::string& s  );
 
 //--------------------------------------------------------------------------------------------
 

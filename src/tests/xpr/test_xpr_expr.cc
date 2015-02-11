@@ -323,6 +323,12 @@ BOOST_AUTO_TEST_CASE( test_bind )
     BOOST_CHECK_EQUAL( f0->eval()->json() , "{\"xpr::list\":[4,4]}" );
 }
 
+BOOST_AUTO_TEST_CASE( test_bind_fail )
+{
+    BOOST_TEST_MESSAGE("Binding to negative number should raise an assertion failure");
+    BOOST_CHECK_THROW( xpr::bind<-2>( xpr::greater(), xpr::real(2) ), AssertionFailed);
+}
+
 BOOST_AUTO_TEST_CASE( test_zipwith )
 {
     // simple reduce

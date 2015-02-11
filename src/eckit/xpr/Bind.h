@@ -30,7 +30,7 @@ public: // methods
 
     static const char * nodeName() { return "Bind"; }
 
-    Bind( size_t i, ExpPtr f, ExpPtr e );
+    Bind( integer_t i, ExpPtr f, ExpPtr e );
     Bind( ExpPtr i, ExpPtr f, ExpPtr e );
 
     Bind( Bind&& ) = default;
@@ -64,7 +64,7 @@ private: // static members
 
 //--------------------------------------------------------------------------------------------
 
-template < int i >
+template < integer_t i >
 ExpPtr bind( ExpPtr f, ExpPtr p )
 {
     return ExpPtr( new Bind( i, f, p ) );

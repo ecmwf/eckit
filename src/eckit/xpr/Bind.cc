@@ -22,7 +22,7 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-Bind::Bind( size_t i, ExpPtr f, ExpPtr e ) : Function()
+Bind::Bind( integer_t i, ExpPtr f, ExpPtr e ) : Function()
 {
     ASSERT( i > 1 );
     push_back( xpr::integer( (integer_t)i ) ); // casted to real_t (real)

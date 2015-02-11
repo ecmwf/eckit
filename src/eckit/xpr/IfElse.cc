@@ -38,7 +38,7 @@ ExpPtr IfElse::evaluate( Scope &ctx ) const
 
     ExpPtr v = args(0, ctx, true);
 
-    bool b = Boolean::extract( ctx, v );
+    bool b = Boolean::extract( v );
 
     if(b) {
         return args(1, ctx, true);
@@ -57,7 +57,7 @@ ExpPtr IfElse::cloneWith(args_t& a) const
 
 ClassSpec IfElse::classSpec_ = {
     &Function::classSpec(),
-    IfElse::nodeName().c_str(),
+    IfElse::nodeName(),
 };
 
 Reanimator< IfElse > IfElse::reanimator_;

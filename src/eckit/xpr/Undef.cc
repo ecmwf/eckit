@@ -72,7 +72,7 @@ ExpPtr Undef::cloneWith(args_t& a) const {
 
 ClassSpec Undef::classSpec_ = {
     &Expression::classSpec(),
-    Undef::nodeName().c_str(),
+    Undef::nodeName(),
 };
 
 Reanimator< Undef > Undef::reanimator_;

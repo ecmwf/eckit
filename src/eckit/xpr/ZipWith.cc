@@ -77,7 +77,7 @@ size_t ZipWith::count() const
 
 ClassSpec ZipWith::classSpec_ = {
     &Function::classSpec(),
-    ZipWith::nodeName().c_str(),
+    ZipWith::nodeName(),
 };
 
 Reanimator< ZipWith > ZipWith::reanimator_;

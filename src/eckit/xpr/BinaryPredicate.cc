@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/xpr/Integer.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/BinaryPredicate.h"
 #include "eckit/xpr/Optimiser.h"
@@ -50,127 +52,39 @@ struct Generic
 
 //--------------------------------------------------------------------------------------------
 
-
-namespace _Greater {
-typedef Greater T;
-
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Scalar,Scalar,Generic>    ssg;
-
-static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
-
+#define operator_namespace(OP) \
+namespace _##OP { \
+typedef OP T; \
+\
+static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic> bbg; \
+static BinaryPredicate< T >::Computer<Boolean,Real,Generic>    brg; \
+static BinaryPredicate< T >::Computer<Boolean,Integer,Generic> big; \
+static BinaryPredicate< T >::Computer<Real,Boolean,Generic>    rbg; \
+static BinaryPredicate< T >::Computer<Integer,Boolean,Generic> ibg; \
+static BinaryPredicate< T >::Computer<Real,Real,Generic>       rrg; \
+static BinaryPredicate< T >::Computer<Real,Integer,Generic>    rig; \
+static BinaryPredicate< T >::Computer<Integer,Real,Generic>    irg; \
+static BinaryPredicate< T >::Computer<Integer,Integer,Generic> iig; \
+\
+static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" ); \
+static OptimiseTo<Boolean> rb( std::string(opname( T () )) + "(r,b)" ); \
+static OptimiseTo<Boolean> ib( std::string(opname( T () )) + "(i,b)" ); \
+static OptimiseTo<Boolean> br( std::string(opname( T () )) + "(b,r)" ); \
+static OptimiseTo<Boolean> bi( std::string(opname( T () )) + "(b,i)" ); \
+static OptimiseTo<Boolean> rr( std::string(opname( T () )) + "(r,r)" ); \
+static OptimiseTo<Boolean> ri( std::string(opname( T () )) + "(r,i)" ); \
+static OptimiseTo<Boolean> ir( std::string(opname( T () )) + "(i,r)" ); \
+static OptimiseTo<Boolean> ii( std::string(opname( T () )) + "(i,i)" ); \
 }
 
-namespace _GreaterEqual {
-typedef GreaterEqual T;
-
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Scalar,Scalar,Generic>    ssg;
-
-static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
-
-}
-
-namespace _Less {
-typedef Less T;
-
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Scalar,Scalar,Generic>    ssg;
-
-static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
-
-}
-
-namespace _LessEqual {
-typedef LessEqual T;
-
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Scalar,Scalar,Generic>    ssg;
-
-static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
-
-}
-
-namespace _Equal {
-typedef Equal T;
-
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Scalar,Scalar,Generic>    ssg;
-
-static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
-
-}
-
-namespace _NotEqual {
-typedef NotEqual T;
-
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Scalar,Scalar,Generic>    ssg;
-
-static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
-
-}
-
-namespace _And {
-typedef And T;
-
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Scalar,Scalar,Generic>    ssg;
-
-static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
-
-}
-
-namespace _Or {
-typedef Or T;
-
-static BinaryPredicate< T >::Computer<Boolean,Boolean,Generic>  bbg;
-static BinaryPredicate< T >::Computer<Boolean,Scalar,Generic>   bsg;
-static BinaryPredicate< T >::Computer<Scalar,Boolean,Generic>   sbg;
-static BinaryPredicate< T >::Computer<Scalar,Scalar,Generic>    ssg;
-
-static OptimiseTo<Boolean> bb( std::string(opname( T () )) + "(b,b)" );
-static OptimiseTo<Boolean> sb( std::string(opname( T () )) + "(s,b)" );
-static OptimiseTo<Boolean> bs( std::string(opname( T () )) + "(b,s)" );
-static OptimiseTo<Boolean> ss( std::string(opname( T () )) + "(s,s)" );
-
-}
-
+operator_namespace( Greater )
+operator_namespace( GreaterEqual )
+operator_namespace( Less )
+operator_namespace( LessEqual )
+operator_namespace( Equal )
+operator_namespace( NotEqual )
+operator_namespace( And )
+operator_namespace( Or )
 
 ExpPtr greater( ExpPtr l, ExpPtr r )        { return ExpPtr( new BinaryPredicate< Greater >(l,r) );      }
 ExpPtr greater_equal( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryPredicate< GreaterEqual >(l,r) ); }
@@ -204,7 +118,7 @@ const ClassSpec& BinaryPredicate<T>::classSpec()
 {
      static ClassSpec myClassSpec = {
          &Function::classSpec(),
-         BinaryPredicate<T>::nodeName().c_str(),
+         BinaryPredicate<T>::nodeName(),
      };
      return myClassSpec;
 }
@@ -216,13 +130,13 @@ std::string BinaryPredicate<T>::factoryName() const
 }
 
 template < class T >
-std::string BinaryPredicate<T>::typeName() const
+const char * BinaryPredicate<T>::typeName() const
 {
     return BinaryPredicate<T>::nodeName();
 }
 
 template < class T >
-std::string BinaryPredicate<T>::nodeName()
+const char * BinaryPredicate<T>::nodeName()
 {
     return opname( T() );
 }
@@ -253,8 +167,8 @@ template < class U, class V, class I >
 ExpPtr BinaryPredicate<T>::Computer<U,V,I>::compute(Scope& ctx, const args_t &p)
 {
     T op;
-    typename U::value_t a = U::extract(ctx, p[0]);
-    typename V::value_t b = V::extract(ctx, p[1]);
+    typename U::value_t a = U::extract(p[0]);
+    typename V::value_t b = V::extract(p[1]);
 
     return I::apply(op,a,b);
 }

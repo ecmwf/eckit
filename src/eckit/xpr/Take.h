@@ -30,7 +30,7 @@ class Take : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Take"; }
+    static const char * nodeName() { return "Take"; }
 
     Take( ExpPtr e = undef(), ExpPtr l = undef()  );
 
@@ -48,7 +48,7 @@ private: // methods
     Take( args_t& a );
 
     virtual std::string factoryName() const { return "xpr::take"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 

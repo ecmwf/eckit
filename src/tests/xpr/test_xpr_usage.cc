@@ -29,7 +29,7 @@
 #include "eckit/xpr/Reduce.h"
 #include "eckit/xpr/List.h"
 #include "eckit/xpr/Value.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/UnaryOperator.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/ZipWith.h"
@@ -50,7 +50,7 @@ public: // methods
     typedef std::vector<double> value_t;
 
     static std::string sig() { return "f"; }
-    static std::string nodeName() { return "F"; }
+    static const char * nodeName() { return "F"; }
     
     static bool is ( const ExpPtr& e ) { return e->typeName() == nodeName(); }
 
@@ -67,7 +67,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const
@@ -99,7 +99,7 @@ class FSrc : public eckit::xpr::Function {
 public: // methods
 
     static std::string sig() { return "fsrc"; }
-    static std::string nodeName() { return "FSrc"; }
+    static const char * nodeName() { return "FSrc"; }
 
     FSrc( const ExpPtr& e ) : Function()
     {
@@ -114,7 +114,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const { o << "FSrc("; printArgs(o); o << ")"; }
@@ -125,7 +125,7 @@ public: // virtual methods
     {
         ExpPtr s = args(0, ctx, true);
 
-        long n = (long) ::ceil( Scalar::extract( s ) );
+        long n = (long) ::ceil( Real::extract( s ) );
 
         ExpPtr lst = xpr::list();
 
@@ -143,7 +143,7 @@ public: // virtual methods
 
 };
 
-ExpPtr fsrc( const long& n ) { return ExpPtr( new FSrc( xpr::scalar(n) ) ); }
+ExpPtr fsrc( const long& n ) { return ExpPtr( new FSrc( xpr::real(n) ) ); }
 
 //-----------------------------------------------------------------------------
 
@@ -153,7 +153,7 @@ class FSnk : public eckit::xpr::Function {
 public: // methods
 
     static std::string sig() { return "fsnk"; }
-    static std::string nodeName() { return "FSnk"; }
+    static const char * nodeName() { return "FSnk"; }
 
     FSnk( const ExpPtr& e ) : Function()
     {
@@ -168,7 +168,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const { o << "FSnk("; printArgs(o); o << ")"; }
@@ -222,7 +222,7 @@ class FAvg  : public eckit::xpr::Function  {
 public: // methods
 
     static std::string sig() { return "favg"; }
-    static std::string nodeName() { return "FAvg"; }
+    static const char * nodeName() { return "FAvg"; }
 
     FAvg( const ExpPtr& e ) : Function()
     {
@@ -236,7 +236,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const { o << "FAvg("; printArgs(o); o << ")"; }
@@ -303,7 +303,7 @@ class FInterp : public eckit::xpr::Function  {
 public: // methods
 
     static std::string sig() { return "interp"; }
-    static std::string nodeName() { return "FInterp"; }
+    static const char * nodeName() { return "FInterp"; }
 
     FInterp( const ExpPtr& e ) : Function()
     {
@@ -317,7 +317,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const { o << "FInterp("; printArgs(o); o << ")"; }

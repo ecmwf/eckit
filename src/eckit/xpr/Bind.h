@@ -28,9 +28,9 @@ class Bind : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Bind"; }
+    static const char * nodeName() { return "Bind"; }
 
-    Bind( size_t i, ExpPtr f, ExpPtr e );
+    Bind( integer_t i, ExpPtr f, ExpPtr e );
     Bind( ExpPtr i, ExpPtr f, ExpPtr e );
 
     Bind( Bind&& ) = default;
@@ -51,7 +51,7 @@ private: // methods
     Bind(args_t& a);
 
     virtual std::string factoryName() const { return "xpr::bind"; }
-    virtual std::string typeName() const;
+    virtual const char * typeName() const;
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
@@ -64,7 +64,7 @@ private: // static members
 
 //--------------------------------------------------------------------------------------------
 
-template < int i >
+template < integer_t i >
 ExpPtr bind( ExpPtr f, ExpPtr p )
 {
     return ExpPtr( new Bind( i, f, p ) );

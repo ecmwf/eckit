@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,14 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file String.h
-/// @author Baudouin Raoult
-/// @author Tiago Quintino
+/// @file Integer.h
 /// @author Florian Rathgeber
-/// @date November 2013
+/// @date February 2015
 
-#ifndef eckit_xpr_String_h
-#define eckit_xpr_String_h
+#ifndef eckit_xpr_Integer_h
+#define eckit_xpr_Integer_h
 
 #include "eckit/xpr/Value.h"
 #include "eckit/xpr/Xpr.h"
@@ -25,34 +23,34 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-class String : public Value {
+class Integer : public Value {
 
 public: // methods
 
-    typedef std::string value_t;
+    typedef integer_t value_t;
 
-    static std::string sig() { return "str"; }
-    static const char * nodeName() { return "String"; }
+    static std::string sig() { return "i"; }
+    static const char * nodeName() { return "Integer"; }
 
-    static bool is ( const ExpPtr& e ) ;
+    static bool is ( const ExpPtr& e );
 
     static value_t extract ( const ExpPtr& e )
     {
-        ASSERT( String::is(e) );
-        return e->as<String>()->value();
+        ASSERT( Integer::is(e) );
+        return e->as<Integer>()->value();
     }
 
-    String(ExpPtr e);
+    Integer(ExpPtr e);
 
-    String( const value_t& v );
+    Integer(const integer_t & v );
 
-    String( String&& ) = default;
+    Integer( Integer&& ) = default;
 
-    String( Stream& s );
+    Integer( Stream& s );
 
-    String& operator=(String&&) = default;
+    Integer& operator=(Integer&&) = default;
 
-    /// @returns the value of the real
+    /// @returns the value of the integer
     value_t value() const { return v_; }
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
@@ -60,9 +58,10 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string factoryName() const { return "xpr::string"; }
+    virtual std::string factoryName() const { return "xpr::integer"; }
     virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
+    virtual std::string returnSignature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& o ) const;
@@ -81,13 +80,13 @@ protected: // members
 private: // static members
 
     static  ClassSpec classSpec_;
-    static  Reanimator<String> reanimator_;
+    static  Reanimator<Integer> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------
 
-/// Helper function to construct string expressions
-ExpPtr string( const std::string& s  );
+/// Helper function to construct integer expressions
+ExpPtr integer( const integer_t& s );
 
 //--------------------------------------------------------------------------------------------
 

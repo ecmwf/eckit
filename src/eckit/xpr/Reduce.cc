@@ -59,7 +59,7 @@ ExpPtr Reduce::cloneWith(args_t& a) const
 
 ClassSpec Reduce::classSpec_ = {
     &Function::classSpec(),
-    Reduce::nodeName().c_str(),
+    Reduce::nodeName(),
 };
 
 Reanimator< Reduce > Reduce::reanimator_;

@@ -10,7 +10,8 @@
 
 #include "eckit/parser/JSON.h"
 
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Integer.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/UnaryOperator.h"
 #include "eckit/xpr/Optimiser.h"
@@ -33,9 +34,9 @@ static const char *opfactory(const Neg&)  { return "xpr::neg";  }
 struct Generic
 {
     template <class T>
-    static ExpPtr apply( T op, const Scalar::value_t& a )
+    static ExpPtr apply( T op, const Real::value_t& a )
     {
-        return ExpPtr( new Scalar( op( a ) ) );
+        return ExpPtr( new Real( op( a ) ) );
     }
 
     template <class T>
@@ -52,7 +53,8 @@ struct Generic
 
 //--------------------------------------------------------------------------------------------
 
-static UnaryOperator<Neg>::Computer<Scalar,Generic> neg_sg;
+static UnaryOperator<Neg>::Computer<Real,Generic> neg_rg;
+static UnaryOperator<Neg>::Computer<Integer,Generic> neg_ig;
 static UnaryOperator<Neg>::Computer<Vector,Generic> neg_vg;
 
 //--------------------------------------------------------------------------------------------
@@ -77,7 +79,7 @@ const ClassSpec& UnaryOperator<T>::classSpec()
 {
      static ClassSpec myClassSpec = {
          &Function::classSpec(),
-         UnaryOperator<T>::nodeName().c_str(),
+         UnaryOperator<T>::nodeName(),
      };
      return myClassSpec;
 }
@@ -89,13 +91,13 @@ std::string UnaryOperator<T>::factoryName() const
 }
 
 template < class T >
-std::string UnaryOperator<T>::typeName() const
+const char * UnaryOperator<T>::typeName() const
 {
     return UnaryOperator<T>::nodeName();
 }
 
 template < class T >
-std::string UnaryOperator<T>::nodeName()
+const char * UnaryOperator<T>::nodeName()
 {
     return opname( T() );
 }
@@ -132,7 +134,7 @@ template < class T >
 template < class U, class I >
 ExpPtr UnaryOperator<T>::Computer<U,I>::compute(Scope& ctx, const args_t &p)
 {
-    typename U::value_t a = U::extract(ctx, p[0]);
+    typename U::value_t a = U::extract(p[0]);
     return I::apply(T(),a);
 }
 
@@ -143,7 +145,8 @@ Reanimator< UnaryOperator<T> > UnaryOperator<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 
-static OptimiseTo<Scalar> optimise_neg_s ( std::string(opname( Neg() )) + "(s)" );
+static OptimiseTo<Real> optimise_neg_r ( std::string(opname( Neg() )) + "(r)" );
+static OptimiseTo<Integer> optimise_neg_i ( std::string(opname( Neg() )) + "(i)" );
 
 //--------------------------------------------------------------------------------------------
 

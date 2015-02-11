@@ -70,7 +70,7 @@ ExpPtr ParamDef::cloneWith(args_t& a) const {
 
 ClassSpec ParamDef::classSpec_ = {
     &Expression::classSpec(),
-    ParamDef::nodeName().c_str(),
+    ParamDef::nodeName(),
 };
 
 Reanimator< ParamDef > ParamDef::reanimator_;

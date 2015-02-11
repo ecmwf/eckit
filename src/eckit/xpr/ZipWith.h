@@ -28,7 +28,7 @@ class ZipWith : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "ZipWith"; }
+    static const char * nodeName() { return "ZipWith"; }
 
     ZipWith( ExpPtr f, ExpPtr l0, ExpPtr l1 );
 
@@ -46,7 +46,7 @@ private: // methods
     ZipWith( args_t& a );
 
     virtual std::string factoryName() const { return "xpr::zipWith"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 

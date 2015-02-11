@@ -29,7 +29,7 @@ class Lambda : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Lambda"; }
+    static const char * nodeName() { return "Lambda"; }
 
     Lambda( ExpPtr body);
     Lambda( const std::string& a, ExpPtr body);
@@ -51,7 +51,7 @@ private:
     Lambda(args_t& a);
 
     virtual std::string factoryName() const { return "xpr::lambda"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 

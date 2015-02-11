@@ -30,7 +30,7 @@ class Reduce : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Reduce"; }
+    static const char * nodeName() { return "Reduce"; }
 
     Reduce( ExpPtr f = undef(), ExpPtr l = undef() );
 
@@ -48,7 +48,7 @@ private:
     Reduce( args_t& a );
 
     virtual std::string factoryName() const { return "xpr::reduce"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 

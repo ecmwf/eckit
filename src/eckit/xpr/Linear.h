@@ -29,7 +29,7 @@ class Linear : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Linear"; }
+    static const char * nodeName() { return "Linear"; }
 
     Linear( ExpPtr e );
 
@@ -49,7 +49,7 @@ private: // methods
     Linear(args_t& a);
 
     virtual std::string factoryName() const { return "xpr::linear"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual void asCode( std::ostream& ) const;
 

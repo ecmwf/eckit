@@ -100,7 +100,7 @@ std::string Function::signatureArguments(const args_t &args) const
 
 ClassSpec Function::classSpec_ = {
     &Expression::classSpec(),
-    Function::nodeName().c_str(),
+    Function::nodeName(),
 };
 
 } // namespace xpr

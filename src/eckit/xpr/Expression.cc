@@ -266,7 +266,7 @@ JSON& operator<<( JSON& s, const Expression& v)
 
 ClassSpec Expression::classSpec_ = {
     &Streamable::classSpec(),
-    Expression::nodeName().c_str(),
+    Expression::nodeName(),
 };
 
 } // namespace xpr

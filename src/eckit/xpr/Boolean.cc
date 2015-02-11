@@ -33,6 +33,11 @@ void Boolean::encode(Stream &s) const
     s << v_;
 }
 
+bool Boolean::is(const ExpPtr &e)
+{
+    return dynamic_cast<Boolean*>(e.get()) != 0;
+}
+
 void Boolean::print(std::ostream&o) const
 {
     o << nodeName() << "(" << (v_? "true" : "false") << ")";
@@ -50,8 +55,7 @@ void Boolean::asJSON(JSON& s) const
 
 Boolean::Boolean(const ExpPtr& e) : v_(0)
 {
-   Scope dummy("Boolean::Boolean");
-   v_ = Boolean::extract( dummy, e->eval(dummy) );
+   v_ = Boolean::extract( e->eval(false) );
 }
 
 ExpPtr Boolean::cloneWith(args_t& a) const
@@ -63,7 +67,7 @@ ExpPtr Boolean::cloneWith(args_t& a) const
 
 ClassSpec Boolean::classSpec_ = {
     &Value::classSpec(),
-    Boolean::nodeName().c_str(),
+    Boolean::nodeName(),
 };
 
 Reanimator< Boolean > Boolean::reanimator_;

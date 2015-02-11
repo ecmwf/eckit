@@ -69,6 +69,9 @@ public:
 	ExpPtr expr() const;
 
     Xpr eval() const { return expr()->eval(); }
+    std::string str() const { return expr()->str(); }
+    std::string code() const { return expr()->code(); }
+    std::string json() const { return expr()->json(); }
 
 private:
 
@@ -83,6 +86,27 @@ private:
     }
 
 };
+
+Xpr operator -(double, const Xpr&);
+Xpr operator -(int, const Xpr&);
+Xpr operator +(double, const Xpr&);
+Xpr operator +(int, const Xpr&);
+Xpr operator /(double, const Xpr&);
+Xpr operator /(int, const Xpr&);
+Xpr operator *(double, const Xpr&);
+Xpr operator *(int, const Xpr&);
+Xpr operator ==(double, const Xpr&);
+Xpr operator ==(int, const Xpr&);
+Xpr operator !=(double, const Xpr&);
+Xpr operator !=(int, const Xpr&);
+Xpr operator >(double, const Xpr&);
+Xpr operator >(int, const Xpr&);
+Xpr operator <(double, const Xpr&);
+Xpr operator <(int, const Xpr&);
+Xpr operator >=(double, const Xpr&);
+Xpr operator >=(int, const Xpr&);
+Xpr operator <=(double, const Xpr&);
+Xpr operator <=(int, const Xpr&);
 
 //--------------------------------------------------------------------------------------------
 

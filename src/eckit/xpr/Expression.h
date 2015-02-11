@@ -23,7 +23,7 @@
 /// @todo fold
 /// @todo comparison operator Equal()(v,2) -- returns what?
 /// @todo unary operator
-/// @todo operator returning scalar
+/// @todo operator returning real
 /// @todo operator returning multiple outputs
 /// @todo how to support multiple implementations ( MKL, CuBLAS, etc. )
 /// @todo create a expression tree Visitor class that takes an operation as parameter
@@ -67,7 +67,8 @@ class List;
 class Expression;
 class Scope;
 
-typedef double scalar_t;
+typedef double real_t;
+typedef int64_t integer_t;
 
 typedef SharedPtr<List>        ListPtr;
 typedef SharedPtr<Expression>  ExpPtr;
@@ -92,7 +93,7 @@ public: // methods
 
     struct Swap {};
 
-    static std::string nodeName() { return "Expression"; }
+    static const char * nodeName() { return "Expression"; }
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves
@@ -145,7 +146,7 @@ public: // methods
 public: // virtual methods
 
     virtual std::string factoryName() const { return "xpr::expression"; }
-    virtual std::string typeName() const = 0;
+    virtual const char * typeName() const = 0;
     virtual std::string signature() const = 0;
 
     ExpPtr optimise(bool doit, size_t depth = 0) const;
@@ -199,6 +200,12 @@ private: // methods
 };
 
 //--------------------------------------------------------------------------------------------
+
+template < typename T >
+typename T::value_t extract( const ExpPtr& x )
+{
+    return T::extract( x );
+}
 
 } // namespace xpr
 } // namespace eckit

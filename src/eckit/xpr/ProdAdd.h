@@ -39,7 +39,7 @@ public: // methods
         return ExpPtr( new ProdAdd(args) );
     }
 
-    static std::string nodeName() { return "ProdAdd"; }
+    static const char * nodeName() { return "ProdAdd"; }
 
     ProdAdd( const ExpPtr& e );
 
@@ -60,7 +60,7 @@ public: // methods
 protected: // methods
 
     /// Specific computation for s * ( v + v )
-    static ExpPtr compute_svv(Scope& ctx, const args_t& p );
+    static ExpPtr compute_rvv(Scope& ctx, const args_t& p );
 
     /// Specific computation for v * ( v + v )
     static ExpPtr compute_vvv(Scope &ctx, const args_t& p );
@@ -73,7 +73,7 @@ private:
     ProdAdd( const args_t& args );
 
     virtual std::string factoryName() const { return "xpr::prod_add"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual void asCode( std::ostream& ) const;
 

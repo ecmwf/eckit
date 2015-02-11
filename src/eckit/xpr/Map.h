@@ -28,7 +28,7 @@ class Map : public Function {
 
 public: // methods
 
-    static std::string nodeName() { return "Map"; }
+    static const char * nodeName() { return "Map"; }
 
     Map( ExpPtr f, ExpPtr l );
 
@@ -46,7 +46,7 @@ private: // methods
     Map( args_t& a );
 
     virtual std::string factoryName() const { return "xpr::map"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 

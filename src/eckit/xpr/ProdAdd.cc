@@ -9,7 +9,7 @@
  */
 
 #include "eckit/xpr/ProdAdd.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/BinaryOperator.h"
 #include "eckit/xpr/Optimiser.h"
@@ -36,7 +36,7 @@ ProdAdd::ProdAdd(const ExpPtr& e)
     ExpPtr a1 = e->args(1)->args(0);
     ExpPtr a2 = e->args(1)->args(1);
 
-    ASSERT( Scalar::is( a0 ) || Vector::is( a0 ) );
+    ASSERT( Real::is( a0 ) || Vector::is( a0 ) );
     push_back(a0);
 
     ASSERT( Vector::is( a1 ) );
@@ -53,13 +53,13 @@ void ProdAdd::asCode(std::ostream&o) const
     o << "(" << *args(0) << " * (" << *args(1) << " + " << *args(2) << "))";
 }
 
-ExpPtr ProdAdd::compute_svv(Scope& ctx, const args_t &p)
+ExpPtr ProdAdd::compute_rvv(Scope& ctx, const args_t &p)
 {
     ASSERT( p.size() == 3 );
 
-    scalar_t a = Scalar::extract(ctx, p[0] );
-    const Vector::value_t& v1 = Vector::extract(ctx, p[1] );
-    const Vector::value_t& v2 = Vector::extract(ctx, p[2] );
+    real_t a = Real::extract( p[0] );
+    const Vector::value_t& v1 = Vector::extract( p[1] );
+    const Vector::value_t& v2 = Vector::extract( p[2] );
 
     ASSERT( v1.size() == v2.size() );
 
@@ -75,9 +75,9 @@ ExpPtr ProdAdd::compute_vvv(Scope& ctx,const args_t &p)
 {
     ASSERT( p.size() == 3 );
 
-    const Vector::value_t& v0 = Vector::extract(ctx, p[0] );
-    const Vector::value_t& v1 = Vector::extract(ctx, p[1] );
-    const Vector::value_t& v2 = Vector::extract(ctx, p[2] );
+    const Vector::value_t& v0 = Vector::extract( p[0] );
+    const Vector::value_t& v1 = Vector::extract( p[1] );
+    const Vector::value_t& v2 = Vector::extract( p[2] );
 
     ASSERT( v0.size() == v1.size() );
     ASSERT( v1.size() == v2.size() );
@@ -102,24 +102,43 @@ ExpPtr ProdAdd::cloneWith(args_t& a) const
 
 ProdAdd::Register::Register()
 {
-    Function::dispatcher()[ nodeName() + "(s,s,s)" ] = &compute_ggg;
-    Function::dispatcher()[ nodeName() + "(s,v,s)" ] = &compute_ggg;
-    Function::dispatcher()[ nodeName() + "(s,s,v)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,r,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,r,i)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,i,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,r,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,i,i)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,r,i)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,i,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,i,i)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,v,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,v,i)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,v,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,v,i)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,r,v)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,i,v)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,r,v)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,i,v)" ] = &compute_ggg;
 
-    Function::dispatcher()[ nodeName() + "(s,v,v)" ] = &compute_svv;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,v,v)" ] = &compute_rvv;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,v,v)" ] = &compute_rvv;
 
-    Function::dispatcher()[ nodeName() + "(v,s,s)" ] = &compute_ggg;
-    Function::dispatcher()[ nodeName() + "(v,s,v)" ] = &compute_ggg;
-    Function::dispatcher()[ nodeName() + "(v,v,s)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,r,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,r,i)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,i,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,i,i)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,r,v)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,i,v)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,v,r)" ] = &compute_ggg;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,v,i)" ] = &compute_ggg;
 
-    Function::dispatcher()[ nodeName() + "(v,v,v)" ] = &compute_vvv;
+    Function::dispatcher()[ std::string(nodeName()) + "(v,v,v)" ] = &compute_vvv;
 }
 
 //--------------------------------------------------------------------------------------------
 
 ClassSpec ProdAdd::classSpec_ = {
     &Function::classSpec(),
-    ProdAdd::nodeName().c_str(),
+    ProdAdd::nodeName(),
 };
 
 Reanimator< ProdAdd > ProdAdd::reanimator_;
@@ -128,7 +147,8 @@ Reanimator< ProdAdd > ProdAdd::reanimator_;
 
 static ProdAdd::Register prodadd_register;
 
-static OptimiseTo<ProdAdd> optimise_prodadd_svv("Prod(s,Add(v,v))");
+static OptimiseTo<ProdAdd> optimise_prodadd_rvv("Prod(r,Add(v,v))");
+static OptimiseTo<ProdAdd> optimise_prodadd_ivv("Prod(i,Add(v,v))");
 static OptimiseTo<ProdAdd> optimise_prodadd_vvv("Prod(v,Add(v,v))");
 
 

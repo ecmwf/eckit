@@ -71,7 +71,7 @@ size_t Map::count() const
 
 ClassSpec Map::classSpec_ = {
     &Function::classSpec(),
-    Map::nodeName().c_str(),
+    Map::nodeName(),
 };
 
 Reanimator< Map > Map::reanimator_;

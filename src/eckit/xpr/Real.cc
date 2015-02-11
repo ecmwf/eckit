@@ -10,7 +10,7 @@
 
 #include "eckit/parser/JSON.h"
 
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Scope.h"
 
 namespace eckit {
@@ -18,63 +18,62 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-Scalar::Scalar( const scalar_t& v ) : v_(v)
+Real::Real( const real_t& v ) : v_(v)
 {
 }
 
-Scalar::Scalar(Stream &s) : Value(s), v_(0)
+Real::Real(Stream &s) : Value(s), v_(0)
 {
     s >> v_;
 }
 
-void Scalar::encode(Stream &s) const
+void Real::encode(Stream &s) const
 {
     Value::encode(s);
     s << v_;
 }
 
-bool Scalar::is(const ExpPtr &e)
+bool Real::is(const ExpPtr &e)
 {
-    return dynamic_cast<Scalar*>(e.get()) != 0;
+    return dynamic_cast<Real*>(e.get()) != 0;
 }
 
-void Scalar::print(std::ostream&o) const
+void Real::print(std::ostream&o) const
 {
     o << nodeName() << "(" << v_ << ")";
 }
 
-Scalar::Scalar(ExpPtr e) : v_(0)
+Real::Real(ExpPtr e) : v_(0)
 {
-   Scope dummy("Scalar::Scalar");
-   v_ = Scalar::extract(dummy, e->eval(dummy) );
+   v_ = Real::extract( e->eval(false) );
 }
 
-ExpPtr Scalar::cloneWith(args_t& a) const {
+ExpPtr Real::cloneWith(args_t& a) const {
     NOTIMP; // Should not be called
 }
 
 //--------------------------------------------------------------------------------------------
 
-ClassSpec Scalar::classSpec_ = {
+ClassSpec Real::classSpec_ = {
     &Value::classSpec(),
-    Scalar::nodeName().c_str(),
+    Real::nodeName(),
 };
 
-Reanimator< Scalar > Scalar::reanimator_;
+Reanimator< Real > Real::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr scalar(const scalar_t &s)
+ExpPtr real(const real_t &s)
 {
-    return ExpPtr( new Scalar(s) );
+    return ExpPtr( new Real(s) );
 }
 
-void Scalar::asCode(std::ostream&o) const
+void Real::asCode(std::ostream&o) const
 {
-    o << "xpr::scalar(" << v_ << ")";
+    o << "xpr::real(" << v_ << ")";
 }
 
-void Scalar::asJSON(JSON& s) const
+void Real::asJSON(JSON& s) const
 {
     s << v_;
 }

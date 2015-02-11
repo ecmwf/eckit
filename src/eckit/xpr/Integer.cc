@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -10,7 +10,7 @@
 
 #include "eckit/parser/JSON.h"
 
-#include "eckit/xpr/String.h"
+#include "eckit/xpr/Integer.h"
 #include "eckit/xpr/Scope.h"
 
 namespace eckit {
@@ -18,64 +18,64 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-String::String( const std::string& v ) : v_(v)
+Integer::Integer( const integer_t& v ) : v_(v)
 {
 }
 
-String::String(ExpPtr e) : v_(0)
-{
-   v_ = String::extract(e->eval(false) );
-}
-
-String::String(Stream &s) : Value(s), v_(0)
+Integer::Integer(Stream &s) : Value(s), v_(0)
 {
     s >> v_;
 }
 
-void String::encode(Stream &s) const
+void Integer::encode(Stream &s) const
 {
     Value::encode(s);
     s << v_;
 }
 
-bool String::is(const ExpPtr &e)
+bool Integer::is(const ExpPtr &e)
 {
-    return dynamic_cast<String*>(e.get()) != 0;
+    return dynamic_cast<Integer*>(e.get()) != 0;
 }
 
-void String::print(std::ostream&o) const
+void Integer::print(std::ostream&o) const
 {
-    o << nodeName() << "(\"" << v_ << "\")";
+    o << nodeName() << "(" << v_ << ")";
 }
 
-void String::asCode(std::ostream&o) const
+Integer::Integer(ExpPtr e) : v_(0)
 {
-    o << factoryName() << "(\"" << v_ << "\")";
+   v_ = Integer::extract( e->eval(false) );
 }
 
-void String::asJSON(JSON& s) const
-{
-    s << v_;
-}
-
-ExpPtr String::cloneWith(args_t& a) const {
+ExpPtr Integer::cloneWith(args_t& a) const {
     NOTIMP; // Should not be called
 }
 
 //--------------------------------------------------------------------------------------------
 
-ClassSpec String::classSpec_ = {
+ClassSpec Integer::classSpec_ = {
     &Value::classSpec(),
-    String::nodeName(),
+    Integer::nodeName(),
 };
 
-Reanimator< String > String::reanimator_;
+Reanimator< Integer > Integer::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr string(const std::string &s)
+ExpPtr integer(const integer_t &s)
 {
-    return ExpPtr( new String(s) );
+    return ExpPtr( new Integer(s) );
+}
+
+void Integer::asCode(std::ostream&o) const
+{
+    o << factoryName() << "(" << v_ << ")";
+}
+
+void Integer::asJSON(JSON& s) const
+{
+    s << v_;
 }
 
 //--------------------------------------------------------------------------------------------

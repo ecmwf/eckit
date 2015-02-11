@@ -16,6 +16,7 @@
 #ifndef eckit_xpr_Boolean_h
 #define eckit_xpr_Boolean_h
 
+#include "eckit/xpr/Integer.h"
 #include "eckit/xpr/Value.h"
 
 namespace eckit {
@@ -30,10 +31,13 @@ public: // static methods
     typedef bool value_t;
 
     static std::string sig() { return "b"; }
-    static std::string nodeName() { return "Boolean"; }
+    static const char * nodeName() { return "Boolean"; }
 
-    static scalar_t extract ( Scope& ctx , const ExpPtr& e )
+    static bool is ( const ExpPtr& e );
+
+    static value_t extract ( const ExpPtr& e )
     {
+        ASSERT( Boolean::is(e) );
         return e->as<Boolean>()->value();
     }
 
@@ -49,7 +53,7 @@ public: // methods
 
     Boolean& operator=(Boolean&&) = default;
 
-    /// @returns the value of the scalar
+    /// @returns the value of the real
     value_t value() const { return v_; }
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
@@ -58,7 +62,7 @@ public: // methods
 private: // virtual methods
 
     virtual std::string factoryName() const { return "xpr::boolean"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;

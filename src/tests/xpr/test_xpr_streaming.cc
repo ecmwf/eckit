@@ -31,7 +31,7 @@
 #include "eckit/xpr/Reduce.h"
 #include "eckit/xpr/List.h"
 #include "eckit/xpr/Value.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/UnaryOperator.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/ZipWith.h"
@@ -50,7 +50,7 @@ class F : public Vector  {
 public: // methods
 
     static std::string sig() { return "f"; }
-    static std::string nodeName() { return "F"; }
+    static const char * nodeName() { return "F"; }
     
     static bool is ( const ExpPtr& e ) { return e->typeName() == nodeName(); }
 
@@ -73,7 +73,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return sig(); }
 
@@ -102,7 +102,7 @@ private:
 
 ClassSpec F::classSpec_ = {
     &Vector::classSpec(),
-    F::nodeName().c_str(),
+    F::nodeName(),
 };
 
 Reanimator<F> F::reanimator_;
@@ -118,7 +118,7 @@ class FSrc : public Function {
 public: // methods
 
     static std::string sig() { return "fsrc"; }
-    static std::string nodeName() { return "FSrc"; }
+    static const char * nodeName() { return "FSrc"; }
 
     FSrc( const ExpPtr& e ) : Function()
     {
@@ -142,7 +142,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { NOTIMP; }
 
@@ -157,7 +157,7 @@ public: // virtual methods
     {
         ExpPtr s = args(0, ctx, true);
 
-        long n = (long) ::ceil( Scalar::extract( s ) );
+        long n = (long) ::ceil( Real::extract( s ) );
 
         ExpPtr lst = xpr::list();
 
@@ -181,12 +181,12 @@ private: // static members
 
 ClassSpec FSrc::classSpec_ = {
     &Function::classSpec(),
-    FSrc::nodeName().c_str(),
+    FSrc::nodeName(),
 };
 
 Reanimator< FSrc > FSrc::reanimator_;
 
-ExpPtr fsrc( const long& n ) { return ExpPtr( new FSrc( xpr::scalar(n) ) ); }
+ExpPtr fsrc( const long& n ) { return ExpPtr( new FSrc( xpr::real(n) ) ); }
 
 //-----------------------------------------------------------------------------
 
@@ -196,7 +196,7 @@ class FSnk : public eckit::xpr::Function {
 public: // methods
 
     static std::string sig() { return "fsnk"; }
-    static std::string nodeName() { return "FSnk"; }
+    static const char * nodeName() { return "FSnk"; }
 
     FSnk( const ExpPtr& e ) : Function()
     {
@@ -220,7 +220,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); }
 
@@ -274,7 +274,7 @@ private: // static members
 
 ClassSpec FSnk::classSpec_ = {
     &Function::classSpec(),
-    FSnk::nodeName().c_str(),
+    FSnk::nodeName(),
 };
 
 Reanimator< FSnk > FSnk::reanimator_;
@@ -290,7 +290,7 @@ class FAvg  : public Function  {
 public: // methods
 
     static std::string sig() { return "favg"; }
-    static std::string nodeName() { return "FAvg"; }
+    static const char * nodeName() { return "FAvg"; }
 
     FAvg( const ExpPtr& e ) : Function()
     {
@@ -313,7 +313,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); } //< returns a field
 
@@ -380,7 +380,7 @@ private: // static members
 
 ClassSpec FAvg::classSpec_ = {
     &Function::classSpec(),
-    FAvg::nodeName().c_str(),
+    FAvg::nodeName(),
 };
 
 Reanimator< FAvg> FAvg::reanimator_;
@@ -396,7 +396,7 @@ class FInterp : public Function  {
 public: // methods
 
     static std::string sig() { return "interp"; }
-    static std::string nodeName() { return "FInterp"; }
+    static const char * nodeName() { return "FInterp"; }
 
     FInterp( const ExpPtr& e ) : Function()
     {
@@ -419,7 +419,7 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
     virtual std::string returnSignature() const { return F::sig(); } //< returns a field
 
@@ -462,7 +462,7 @@ private: // static members
 
 ClassSpec FInterp::classSpec_ = {
     &Function::classSpec(),
-    FInterp::nodeName().c_str(),
+    FInterp::nodeName(),
 };
 
 Reanimator< FInterp > FInterp::reanimator_;

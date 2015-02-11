@@ -17,6 +17,7 @@
 #include "eckit/xpr/Count.h"
 #include "eckit/xpr/Filter.h"
 #include "eckit/xpr/IfElse.h"
+#include "eckit/xpr/Integer.h"
 #include "eckit/xpr/Lambda.h"
 #include "eckit/xpr/List.h"
 #include "eckit/xpr/Map.h"
@@ -24,7 +25,7 @@
 #include "eckit/xpr/Param.h"
 #include "eckit/xpr/ParamDef.h"
 #include "eckit/xpr/Reduce.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Scope.h"
 #include "eckit/xpr/UnaryOperator.h"
 #include "eckit/xpr/Undef.h"
@@ -44,12 +45,12 @@ Xpr::Xpr(ExpPtr e):
 }
 
 Xpr::Xpr(double v):
-    expr_(xpr::scalar(v))
+    expr_(xpr::real(v))
 {
 }
 
 Xpr::Xpr(int v):
-    expr_(xpr::scalar(v))
+    expr_(xpr::integer(v))
 {
 }
 
@@ -165,6 +166,27 @@ ExpPtr Xpr::expr() const
 {
     return expr_;
 }
+
+Xpr operator - (double a, const Xpr& b) { return Xpr(a) - b; }
+Xpr operator - (int a,    const Xpr& b) { return Xpr(a) - b; }
+Xpr operator + (double a, const Xpr& b) { return Xpr(a) + b; }
+Xpr operator + (int a,    const Xpr& b) { return Xpr(a) + b; }
+Xpr operator / (double a, const Xpr& b) { return Xpr(a) / b; }
+Xpr operator / (int a,    const Xpr& b) { return Xpr(a) / b; }
+Xpr operator * (double a, const Xpr& b) { return Xpr(a) * b; }
+Xpr operator * (int a,    const Xpr& b) { return Xpr(a) * b; }
+Xpr operator ==(double a, const Xpr& b) { return Xpr(a) == b; }
+Xpr operator ==(int a,    const Xpr& b) { return Xpr(a) == b; }
+Xpr operator !=(double a, const Xpr& b) { return Xpr(a) != b; }
+Xpr operator !=(int a,    const Xpr& b) { return Xpr(a) != b; }
+Xpr operator > (double a, const Xpr& b) { return Xpr(a) > b; }
+Xpr operator > (int a,    const Xpr& b) { return Xpr(a) > b; }
+Xpr operator < (double a, const Xpr& b) { return Xpr(a) < b; }
+Xpr operator < (int a,    const Xpr& b) { return Xpr(a) < b; }
+Xpr operator >=(double a, const Xpr& b) { return Xpr(a) >= b; }
+Xpr operator >=(int a,    const Xpr& b) { return Xpr(a) >= b; }
+Xpr operator <=(double a, const Xpr& b) { return Xpr(a) <= b; }
+Xpr operator <=(int a,    const Xpr& b) { return Xpr(a) <= b; }
 
 //--------------------------------------------------------------------------------------------
 

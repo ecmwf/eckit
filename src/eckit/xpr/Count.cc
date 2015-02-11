@@ -9,7 +9,7 @@
  */
 
 #include "eckit/xpr/Count.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Integer.h"
 
 namespace eckit {
 namespace xpr {
@@ -30,14 +30,14 @@ ExpPtr Count::optimise(size_t depth) const
         return o->optimise(depth+1);
     }
     if(args(0)->countable()) {
-        return ExpPtr(new Scalar(args(0)->count()));
+        return ExpPtr(new Integer(args(0)->count()));
     }
     return self();
 }
 
 ExpPtr Count::evaluate( Scope &ctx ) const
 {
-    return ExpPtr(new Scalar(args(0, ctx, true)->count() ));
+    return ExpPtr(new Integer(args(0, ctx, true)->count() ));
 }
 
 ExpPtr Count::cloneWith( args_t& a ) const
@@ -54,7 +54,7 @@ Count::Count(args_t& a) : Function(a)
 
 ClassSpec Count::classSpec_ = {
     &Function::classSpec(),
-    Count::nodeName().c_str(),
+    Count::nodeName(),
 };
 
 Reanimator< Count > Count::reanimator_;

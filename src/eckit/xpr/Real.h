@@ -8,14 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Scalar.h
+/// @file Real.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @author Florian Rathgeber
 /// @date November 2013
 
-#ifndef eckit_xpr_Scalar_h
-#define eckit_xpr_Scalar_h
+#ifndef eckit_xpr_Real_h
+#define eckit_xpr_Real_h
 
 #include "eckit/xpr/Value.h"
 #include "eckit/xpr/Xpr.h"
@@ -25,41 +25,34 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-class Scalar : public Value {
+class Real : public Value {
 
 public: // methods
 
-    typedef scalar_t value_t;
+    typedef real_t value_t;
 
-    static std::string sig() { return "s"; }
-    static std::string nodeName() { return "Scalar"; }
+    static std::string sig() { return "r"; }
+    static const char * nodeName() { return "Real"; }
 
-    static bool is ( const ExpPtr& e ) ;
+    static bool is ( const ExpPtr& e );
 
-    static scalar_t extract ( Scope& ctx , const ExpPtr& e )
+    static value_t extract ( const ExpPtr& e )
     {
-        ASSERT( Scalar::is(e) );
-        return e->as<Scalar>()->value();
+        ASSERT( Real::is(e) );
+        return e->as<Real>()->value();
     }
 
-    static scalar_t extract ( const Xpr& m )
-    {
-        ExpPtr e = m;
-        ASSERT( Scalar::is(e) );
-        return e->as<Scalar>()->value();
-    }
+    Real(ExpPtr e);
 
-    Scalar(ExpPtr e);
+    Real( const real_t& v );
 
-    Scalar( const scalar_t& v );
+    Real( Real&& ) = default;
 
-    Scalar( Scalar&& ) = default;
+    Real( Stream& s );
 
-    Scalar( Stream& s );
+    Real& operator=(Real&&) = default;
 
-    Scalar& operator=(Scalar&&) = default;
-
-    /// @returns the value of the scalar
+    /// @returns the value of the real
     value_t value() const { return v_; }
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
@@ -67,8 +60,8 @@ public: // methods
 
 public: // virtual methods
 
-    virtual std::string factoryName() const { return "xpr::scalar"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual std::string factoryName() const { return "xpr::real"; }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
@@ -88,13 +81,13 @@ protected: // members
 private: // static members
 
     static  ClassSpec classSpec_;
-    static  Reanimator<Scalar> reanimator_;
+    static  Reanimator<Real> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------
 
-/// Helper function to construct scalar expressions
-ExpPtr scalar( const scalar_t& s  );
+/// Helper function to construct real expressions
+ExpPtr real( const real_t& s  );
 
 //--------------------------------------------------------------------------------------------
 

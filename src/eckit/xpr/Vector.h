@@ -28,24 +28,24 @@ class Vector : public Value {
 
 public: // types
 
-    typedef scalar_t elemt_t;
+    typedef real_t elemt_t;
     typedef std::vector<elemt_t> value_t;
 
 public: // methods
 
-    static std::string nodeName() { return "Vector"; }
+    static const char * nodeName() { return "Vector"; }
 
     static std::string sig() { return "v"; }
 
     static bool is ( const ExpPtr& e );
 
-    static const value_t& extract ( Scope& ctx, const ExpPtr& e )
+    static const value_t& extract ( const ExpPtr& e )
     {
         ASSERT( Vector::is(e) );
         return e->as<Vector>()->value();
     }
 
-    Vector( const size_t& s, const scalar_t& v = scalar_t() );
+    Vector( const size_t& s, const real_t& v = real_t() );
     Vector( const value_t& v );
     Vector( value_t& v, Swap );
 
@@ -67,7 +67,7 @@ public: // methods
 public: // virtual methods
 
     virtual std::string factoryName() const { return "xpr::vector"; }
-    virtual std::string typeName() const { return nodeName(); }
+    virtual const char * typeName() const { return nodeName(); }
     virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
@@ -92,9 +92,9 @@ private: // static members
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr vector( const size_t& sz, const scalar_t& v = scalar_t()  );
+ExpPtr vector( const size_t& sz, const real_t& v = real_t()  );
 ExpPtr vector( const Vector::value_t& v  );
-ExpPtr vector( const std::initializer_list<scalar_t> v );
+ExpPtr vector( const std::initializer_list<real_t> v );
 
 //--------------------------------------------------------------------------------------------
 

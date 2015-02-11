@@ -42,7 +42,7 @@ public:
         return ExpPtr( new UnaryOperator<T>(args) );
     }
 
-    static std::string nodeName();
+    static const char * nodeName();
 
     UnaryOperator( ExpPtr e );
 
@@ -53,7 +53,7 @@ public:
     UnaryOperator& operator=(UnaryOperator&&) = default;
 
     /// Applies an implementation of the unary operator
-    /// U is the left operand type ( Scalar, Vector, ... )
+    /// U is the left operand type ( Real, Vector, ... )
     /// I is the implementation type
     template < class U, class I >
     class Computer {
@@ -79,7 +79,7 @@ private: // methods
     UnaryOperator( args_t& a );
 
     virtual std::string factoryName() const;
-    virtual std::string typeName() const;
+    virtual const char * typeName() const;
 
     virtual ExpPtr cloneWith(args_t& a) const
     {
@@ -95,7 +95,7 @@ private: // static members
 
 //--------------------------------------------------------------------------------------------
 
-typedef std::negate<scalar_t>  Neg;
+typedef std::negate<real_t>  Neg;
 
 //--------------------------------------------------------------------------------------------
 

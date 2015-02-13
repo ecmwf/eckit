@@ -36,6 +36,8 @@ public: // methods
 
     Properties();
 
+    Properties(Stream&);
+
     /// @returns true is a property exists
     bool has( const std::string& k ) const;
 

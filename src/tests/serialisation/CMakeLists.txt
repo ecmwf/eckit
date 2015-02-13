@@ -1,4 +1,6 @@
 ecbuild_add_test( TARGET   test_file_stream
+                  ARGS --log_level=message
+                  BOOST
                   SOURCES  test_file_stream.cc
                   LIBS     eckit )
 

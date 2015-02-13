@@ -57,12 +57,7 @@ bool Properties::remove(const std::string& k)
 
 void Properties::json( JSON& s ) const
 {
-    s.startObject();
-
-    for( PropertyMap::const_iterator vit = props_.begin(); vit != props_.end(); ++vit )
-        s << (*vit).first << (*vit).second;
-
-    s.endObject();
+    s << props_;
 }
 
 void Properties::print( std::ostream& s ) const

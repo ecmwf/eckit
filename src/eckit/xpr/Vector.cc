@@ -85,11 +85,7 @@ void Vector::asCode(std::ostream&o) const
 
 void Vector::asJSON(JSON& s) const
 {
-    s.startList();
-    for( size_t i = 0; i < v_.size(); ++i ) {
-        s << v_[i];
-    }
-    s.endList();
+    s << v_;
 }
 
 //--------------------------------------------------------------------------------------------

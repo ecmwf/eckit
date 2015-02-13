@@ -49,6 +49,11 @@ public: // methods
 	JSON& operator<<(const std::string&);
 	JSON& operator<<(const char*);
 
+    template < typename T >
+    JSON& operator<<(const std::vector<T>&);
+    template < typename T >
+    JSON& operator<<(const std::map<std::string, T>&);
+
     JSON& null();
 
     JSON& startObject();
@@ -76,6 +81,28 @@ private: // methods
 };
 
 //-----------------------------------------------------------------------------
+
+template < typename T >
+JSON &JSON::operator<<(const std::vector<T> &v)
+{
+    startList();
+    for( size_t i = 0; i < v.size(); ++i ) {
+        *this << v[i];
+    }
+    endList();
+    return *this;
+}
+
+template < typename T >
+JSON &JSON::operator<<(const std::map<std::string, T> &m)
+{
+    startObject();
+
+    for( typename std::map<std::string, T>::const_iterator it = m.begin(); it != m.end(); ++it )
+        *this << (*it).first << (*it).second;
+
+    endObject();
+}
 
 } // namespace eckit
 

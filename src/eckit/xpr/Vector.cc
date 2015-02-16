@@ -9,6 +9,7 @@
  */
 
 #include "eckit/parser/JSON.h"
+#include "eckit/types/Types.h"
 
 #include "eckit/xpr/Vector.h"
 
@@ -34,21 +35,13 @@ Vector::Vector(Vector::value_t &v, Swap ignored )
 
 Vector::Vector(Stream &s) : Value(s), v_()
 {
-    size_t l;
-    s >> l;
-    v_.resize(l);
-    for( size_t i = 0; i < l; ++i ) {
-        s >> v_[i];
-    }
+    s >> v_;
 }
 
 void Vector::encode(Stream &s) const
 {
     Value::encode(s);
-    s << v_.size();
-    for( size_t i = 0; i < v_.size(); ++i ) {
-        s << v_[i];
-    }
+    s << v_;
 }
 
 bool Vector::is(const ExpPtr &e)

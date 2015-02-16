@@ -49,7 +49,7 @@ template<class K, class V>
 void operator<<(Stream& s,const std::map<K,V>& t)
 {
     s << Ordinal(t.size());
-    for(typename std::map<K,V>::const_iterator i = t.cbegin(); i != t.cend() ; ++i)
+    for(typename std::map<K,V>::const_iterator i = t.begin(); i != t.end() ; ++i)
         s << i->first << i->second;
 }
 

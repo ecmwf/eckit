@@ -45,6 +45,31 @@ void operator>>(Stream& s, std::vector<T>& t)
 	}
 }
 
+template<class K, class V>
+void operator<<(Stream& s,const std::map<K,V>& t)
+{
+    s << Ordinal(t.size());
+    for(typename std::map<K,V>::const_iterator i = t.begin(); i != t.end() ; ++i)
+        s << i->first << i->second;
+}
+
+template<class K, class V>
+void operator>>(Stream& s, std::map<K,V>& t)
+{
+
+	Ordinal size;
+	s >> size;
+
+	t.clear();
+
+	for(Ordinal i = 0; i < size; i++)
+	{
+		K k;
+		s >> k;
+        V v(s);
+		t[k] = v;
+	}
+}
 
 //====================================================================
 

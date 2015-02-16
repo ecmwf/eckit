@@ -11,83 +11,68 @@
 #include <cstdlib>
 #include <cstdio>
 
-#include "eckit/runtime/Tool.h"
+#define BOOST_TEST_MODULE TestStreamable
+#include "ecbuild/boost_test_framework.h"
+
 #include "eckit/serialisation/FileStream.h"
-#include "eckit/log/Log.h"
 
 using namespace std;
 using namespace eckit;
 
-class TestApp : public Tool {
+namespace eckit {
+namespace test {
 
-public:
-
-    TestApp( int argc, char** argv ) : Tool(argc,argv),
-    v_char(0),
-    v_uchar(0),
-    v_bool(0),
-    v_int(0),
-    v_uint(0),
-    v_short(0),
-    v_ushort(0),
-    v_long(0),
-    v_ulong(0),
-    v_longlong(0),
-    v_ulonglong(0),
-    v_double(0)
+struct F {
+    ~F()
     {
-        PathName filename = PathName::unique( "data." );
-        filepath_ = filename.asString();
+        if (filename.exists()) filename.unlink();
     }
 
-private: // methods
+    static PathName filename;
+};
 
-    void run();
+PathName F::filename = PathName::unique( "data" );
 
-    void write_data();
-    void read_data();
-    void check_data();
-    void remove_file();
+struct TestFixture {
 
-private: // data members
+    TestFixture() : v_char(0),
+                    v_uchar(0),
+                    v_bool(0),
+                    v_int(0),
+                    v_uint(0),
+                    v_short(0),
+                    v_ushort(0),
+                    v_long(0),
+                    v_ulong(0),
+                    v_longlong(0),
+                    v_ulonglong(0),
+                    v_double(0) {}
 
-    std::string filepath_;
-
-    char             v_char;
-    unsigned char    v_uchar;
-    bool             v_bool;
-    int              v_int;
-    unsigned int     v_uint;
-    short            v_short;
-    unsigned short   v_ushort;
-    long             v_long;
-    unsigned long    v_ulong;
+    char               v_char;
+    unsigned char      v_uchar;
+    bool               v_bool;
+    int                v_int;
+    unsigned int       v_uint;
+    short              v_short;
+    unsigned short     v_ushort;
+    long               v_long;
+    unsigned long      v_ulong;
     long long          v_longlong;
     unsigned long long v_ulonglong;
-//    float             v_float;
+//  float              v_float;
     double             v_double;
     string             v_string;
     string             v_charp;
-
 };
 
-void TestApp::run()
-{
-    write_data();
-    read_data();
-    check_data();
-    remove_file();
-}
+BOOST_GLOBAL_FIXTURE( F );
 
-void TestApp::remove_file()
-{
-//    if( ::unlink(filepath) == -1 )
-//      perror("Error removing the file"), exit(EXIT_FAILURE);
-}
+BOOST_FIXTURE_TEST_SUITE( TestFileStream, TestFixture )
 
-void TestApp::write_data()
+BOOST_AUTO_TEST_CASE( write_data )
 {
-    FileStream sout( filepath_.c_str(), "w" );
+    BOOST_TEST_MESSAGE("Write to FileStream");
+    FileStream sout( F::filename.asString().c_str(), "w" );
 
     sout
       << char('a')
@@ -101,16 +86,17 @@ void TestApp::write_data()
       << (unsigned long)(70000000)
       << (long long)(80000000)
       << (unsigned long long)(90000000)
-//      << float(3)
+//    << float(3)
       << double(100000000)
       << std::string("abcdefghijklmnopqrstuvwyxz")
       << "abcdefghijklmnopqrstuvwyxz"
     ;
 }
 
-void TestApp::read_data()
+BOOST_AUTO_TEST_CASE( read_data )
 {
-    FileStream sin( filepath_.c_str(), "r" );
+    BOOST_TEST_MESSAGE("Read from FileStream");
+    FileStream sin( F::filename.asString().c_str(), "r" );
 
     sin
         >> v_char
@@ -131,31 +117,27 @@ void TestApp::read_data()
     ;
 }
 
-void TestApp::check_data()
+BOOST_AUTO_TEST_CASE( check_data )
 {
-
-    Log::info()
-        << v_char << std::endl
-        << v_uchar << std::endl
-        << v_bool << std::endl
-        << v_int << std::endl
-        << v_uint << std::endl
-        << v_short << std::endl
-        << v_ushort << std::endl
-        << v_long << std::endl
-        << v_ulong << std::endl
-        << v_longlong << std::endl
-        << v_ulonglong << std::endl
-    //  << v_float << std::endl
-        << v_double << std::endl
-        << v_string << std::endl
-        << v_charp << std::endl
-    ;
-
+    BOOST_TEST_MESSAGE("Data read:");
+    BOOST_TEST_MESSAGE( v_char );
+    BOOST_TEST_MESSAGE( v_uchar );
+    BOOST_TEST_MESSAGE( v_bool );
+    BOOST_TEST_MESSAGE( v_int );
+    BOOST_TEST_MESSAGE( v_uint );
+    BOOST_TEST_MESSAGE( v_short );
+    BOOST_TEST_MESSAGE( v_ushort );
+    BOOST_TEST_MESSAGE( v_long );
+    BOOST_TEST_MESSAGE( v_ulong );
+    BOOST_TEST_MESSAGE( v_longlong );
+    BOOST_TEST_MESSAGE( v_ulonglong );
+//  BOOST_TEST_MESSAGE( v_float );
+    BOOST_TEST_MESSAGE( v_double );
+    BOOST_TEST_MESSAGE( v_string );
+    BOOST_TEST_MESSAGE( v_charp );
 }
 
-int main(int argc,char **argv)
-{
-    TestApp app(argc,argv);
-    app.start();
-}
+BOOST_AUTO_TEST_SUITE_END()
+
+} // namespace test
+} // namespace eckit

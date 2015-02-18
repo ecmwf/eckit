@@ -83,7 +83,7 @@ private: // methods
 //-----------------------------------------------------------------------------
 
 template < typename T >
-JSON &JSON::operator<<(const std::vector<T> &v)
+JSON& JSON::operator<<(const std::vector<T> &v)
 {
     startList();
     for( size_t i = 0; i < v.size(); ++i ) {
@@ -94,7 +94,7 @@ JSON &JSON::operator<<(const std::vector<T> &v)
 }
 
 template < typename T >
-JSON &JSON::operator<<(const std::map<std::string, T> &m)
+JSON& JSON::operator<<(const std::map<std::string, T> &m)
 {
     startObject();
 
@@ -102,6 +102,7 @@ JSON &JSON::operator<<(const std::map<std::string, T> &m)
         *this << (*it).first << (*it).second;
 
     endObject();
+    return *this;
 }
 
 } // namespace eckit

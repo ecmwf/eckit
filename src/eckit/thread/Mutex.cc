@@ -47,7 +47,7 @@ Mutex::~Mutex()
 void Mutex::lock(void)
 {
 
-	if(!this || !exists_)
+	if(!exists_)
 	{
         std::cerr << "Mutex used before being constructed" << std::endl;
         ::abort();

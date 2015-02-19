@@ -368,7 +368,6 @@ void Html::BeginTable::print(std::ostream& s) const
 {
 	s << "<TABLE";
 	if(border_)  s << " BORDER";
-	if(border_>1) s << "=" << border_;
 	if(padding_) s << " CELLPADDING=" << padding_;
 	if(spacing_) s << " CELLSPACING=" << spacing_;
 	if(width_)   s << " WIDTH=" << '"' << width_ << '%' << '"' ;

@@ -190,6 +190,26 @@ AssertionFailed::AssertionFailed(const std::string& w):
 
 }
 
+AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc)
+{
+    StrStream s;
+
+    s << "Assertion failed: " << msg << " in " << loc.func()
+        << ", line " << loc.line() << " of " << loc.file() << StrStream::ends;
+
+    reason(std::string(s));
+    Log::monitor(Log::App,2) << what() << std::endl;
+
+#ifndef NDEBUG
+    if( ::getenv("ECKIT_ASSERT_FAILS_AND_ABORTS") )
+    {
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
+        ::abort();
+    }
+#endif
+}
+
 AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
 {
     StrStream s;

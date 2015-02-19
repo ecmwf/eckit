@@ -36,7 +36,7 @@ std::string CodeLocation::asString() const
     return oss.str();
 }
 
-CodeLocation::operator bool()
+CodeLocation::operator bool() const
 {
     return file_ != 0;
 }

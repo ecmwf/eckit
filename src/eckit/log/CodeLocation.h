@@ -41,7 +41,7 @@ public: // methods
     operator std::string() const { return asString(); }
 
     /// conversion to bool for checking if location was set
-    operator bool();
+    operator bool() const;
 
     /// accessor to line
     int line() const { return line_; }

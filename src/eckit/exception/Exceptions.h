@@ -53,6 +53,8 @@ public: // methods
 
     const std::string& callStack() const { return callStack_; }
 
+    const CodeLocation& location() const { return location_; }
+
 protected: // methods
 
     void reason(const std::string&);
@@ -108,6 +110,7 @@ public:
 class AssertionFailed : public Exception {
 public:
     AssertionFailed(const std::string&);
+    AssertionFailed(const std::string&, const CodeLocation& );
     AssertionFailed(const char*, const CodeLocation& );
 };
 

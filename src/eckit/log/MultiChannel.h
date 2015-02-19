@@ -32,6 +32,10 @@ class MultiplexBuffer;
 class MultiChannel : public Channel {
 public:
 
+    typedef std::map<std::string,ostream_handle>::iterator iterator;
+
+public:
+
     /// Constructor
     /// No parameters, add target streams later with add() function
     MultiChannel();
@@ -56,6 +60,9 @@ public:
 
     /// clears all streams from this channel
     void clear();
+
+    iterator begin();
+    iterator end();
 
 protected:
 

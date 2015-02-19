@@ -28,7 +28,6 @@ ContextBehavior::~ContextBehavior()
 
 void ContextBehavior::reconfigure()
 {
-	Log::info() << "ContextBehavior::reconfigure" << std::endl;
 }
 
 Channel& ContextBehavior::channel(int cat)

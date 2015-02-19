@@ -44,7 +44,7 @@ public:
 		Streamable::encode(s);
 		s << payload_;
 	}
-	virtual const eckit::ReanimatorBase& reanimator() const { return reanimator_; }
+	virtual const eckit::ReanimatorBase& reanimator() const;
 
 	// Class members
 	static const eckit::ClassSpec& classSpec() { return classSpec_; }
@@ -60,7 +60,6 @@ protected:
 private:
 	// -- Class members
 	static eckit::ClassSpec            classSpec_;
-	static eckit::Reanimator<TestItem> reanimator_;
 
 	// -- Friends
 	friend std::ostream& operator<<(std::ostream& s,const TestItem& p) {
@@ -68,15 +67,19 @@ private:
 	}
 };
 
+template <typename T>
+const ReanimatorBase& TestItem<T>::reanimator() const
+{
+	static Reanimator< TestItem<T> > reanimator;
+	return reanimator;
+}
+
 typedef unsigned char uchar;
 typedef long long llong;
 #ifndef ulong
 typedef unsigned long ulong;
 #endif
 typedef unsigned long long ullong;
-
-template <typename T>
-Reanimator< TestItem<T> > TestItem<T>::reanimator_;
 
 /// Partially specialise ClassSpecs since they must have unique names
 template <>

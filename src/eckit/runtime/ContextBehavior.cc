@@ -10,6 +10,7 @@
 
 #include "eckit/runtime/ContextBehavior.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 
 //-----------------------------------------------------------------------------
 
@@ -40,6 +41,24 @@ Channel& ContextBehavior::channel(int cat)
   }
   throw Exception("Logging category "+Translator<int,std::string>()(cat)+" not known.",Here());
   return infoChannel();
+}
+
+std::string ContextBehavior::readConfig(const std::string& path)
+{
+  std::stringstream stream;
+
+  PathName p(path);
+  if( p.exists() )
+  {
+      std::ifstream in;
+      in.open ( p.asString().c_str() );
+      if (!in)
+          throw CantOpenFile( p.asString() );
+
+      stream << in.rdbuf();
+      in.close();
+  }
+  return stream.str();
 }
 
 //-----------------------------------------------------------------------------

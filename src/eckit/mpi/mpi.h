@@ -14,7 +14,7 @@
 #include <stdlib.h>
 
 #include "eckit/eckit_config.h"
-#if defined(ECKIT_HAVE_MPI) && !defined(ECKIT_MPISTUBS)
+#if defined(ECKIT_HAVE_MPI) && !defined(ECKIT_USE_MPISTUBS)
 #include <mpi.h>
 #else
 #include "mpistubs.h"
@@ -24,6 +24,16 @@
 
 namespace eckit {
 namespace mpi {
+
+class Environment
+{
+private:
+  Environment();
+  ~Environment();
+
+public:
+  static Environment& instance();
+};
 
 class Comm;
 

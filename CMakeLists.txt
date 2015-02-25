@@ -56,7 +56,7 @@ ecbuild_add_option( FEATURE XPR
                     DEFAULT OFF
                     DESCRIPTION "eckit::xpr [EXPERIMENTAL]" )
 
-### eckit::mpi   AND   eckit::mpi_serial
+### eckit::mpi
 
 ecbuild_add_option( FEATURE MPI
                     DESCRIPTION "Support for MPI distributed parallelism"
@@ -175,11 +175,12 @@ if( HAVE_XPR )
   list( APPEND ECKIT_LIBRARIES eckit_xpr )
 endif()
 
-if( HAVE_MPI )
+if( HAVE_ECKIT_MPI )
   list( APPEND ECKIT_LIBRARIES eckit_mpi )
 endif()
 
-if( ECKIT_HAVE_MPISTUBS )
+if( HAVE_ECKIT_MPISTUBS )
+  list( APPEND ECKIT_LIBRARIES eckit_mpistubs )
   list( APPEND ECKIT_TPLS mpistubs )
 endif()
 

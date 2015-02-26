@@ -43,22 +43,19 @@ Channel& ContextBehavior::channel(int cat)
   return infoChannel();
 }
 
-std::string ContextBehavior::readConfig(const std::string& path)
+
+class StandardScriptReadPolicy
 {
-  std::stringstream stream;
-
-  PathName p(path);
-  if( p.exists() )
+  friend bool read_file(const StandardScriptReadPolicy&, const PathName& path, config::Script& script )
   {
-      std::ifstream in;
-      in.open ( p.asString().c_str() );
-      if (!in)
-          throw CantOpenFile( p.asString() );
-
-      stream << in.rdbuf();
-      in.close();
+    return script.readFile(path);
   }
-  return stream.str();
+};
+
+
+config::Script::ReadPolicy ContextBehavior::readScriptPolicy()
+{
+  return StandardScriptReadPolicy();
 }
 
 //-----------------------------------------------------------------------------

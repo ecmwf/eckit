@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -29,9 +29,9 @@ Script::Script()
 Script::Script( Compiler& c )
 {
     Block* blk = new Block(c, new Scope() );
-    
+
     ASSERT(c.peek() == 0);
-    
+
     blocks_.push_back(blk);
 }
 
@@ -53,7 +53,7 @@ void Script::print(std::ostream&out)
 }
 
 bool Script::readFile(const PathName& path)
-{       
+{
     if( path.exists() )
     {
         std::ifstream in;
@@ -62,15 +62,15 @@ bool Script::readFile(const PathName& path)
             throw CantOpenFile( path.asString() );
 
 //        std::cout << "reading config file [" << path.asString() << "]" << std::endl;
-        
+
         Compiler c(in);
-        
+
         Block* blk = new Block(c, new Scope() );
-        
+
         ASSERT(c.peek() == 0);
-        
+
         blocks_.push_back(blk);
-        
+
         return true;
     }
     return false;
@@ -79,11 +79,11 @@ bool Script::readFile(const PathName& path)
 void Script::readStream(std::istream &in)
 {
     Compiler c(in);
-    
+
     Block* blk = new Block(c, new Scope() );
-    
+
     ASSERT(c.peek() == 0);
-    
+
     blocks_.push_back(blk);
 }
 

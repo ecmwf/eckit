@@ -87,14 +87,13 @@ bool ResourceMgr::appendConfig(const PathName& path)
 {
     AutoLock<Mutex> lock(local_mutex);
 
+    config::Script::ReadPolicy policy = Context::instance().behavior().readScriptPolicy();
+
     bool retval(false);
     if( parsed_.find(path) == parsed_.end() )
     {
-       std::string config = Context::instance().behavior().readConfig(path);
-       std::stringstream stream; stream << config;
-       script_->readStream( stream );
+       retval = script_->readFile( path, policy );
        parsed_.insert(path);
-       retval = (config.size() > 0);
     }
     return retval;
 }

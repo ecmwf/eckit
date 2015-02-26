@@ -8,6 +8,8 @@ Comm.cc
 Exceptions.h
 ParallelContextBehavior.h
 ParallelContextBehavior.cc
+BroadcastFile.h
+BroadcastFile.cc
 )
 
 if( NOT HAVE_MPI )

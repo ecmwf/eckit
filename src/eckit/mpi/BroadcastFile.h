@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_ParallelContextBehavior_h
-#define eckit_mpi_ParallelContextBehavior_h
+#ifndef eckit_mpi_ReadFile_h
+#define eckit_mpi_ReadFile_h
 
-#include <string>
-#include "eckit/runtime/ContextBehavior.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/mpi/Comm.h"
 
 //-----------------------------------------------------------------------------
 
@@ -21,14 +21,11 @@ namespace mpi {
 
 //-----------------------------------------------------------------------------
 
-class ParallelContextBehavior : public ContextBehavior {
-public:
-    ParallelContextBehavior();
-    virtual ~ParallelContextBehavior() {}
-
-    virtual config::Script::ReadPolicy readScriptPolicy();
-};
-
+/// @brief Read file with 1 MPI task, broadcast content, and append to stream
+/// @return True if file was read
+bool broadcast_file( const PathName&, std::ostream&,
+                     const int root = 0,
+                     const mpi::Comm& = mpi::DefaultComm::instance() );
 
 //-----------------------------------------------------------------------------
 

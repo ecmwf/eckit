@@ -37,25 +37,25 @@ inline int all_to_all( std::vector< std::vector<DATA_TYPE> >& sendvec,
 
 
 template<typename DATA_TYPE>
-inline void all_gather( const Comm& comm,
-                        const DATA_TYPE send[], int sendcnt,
-                        Buffer<DATA_TYPE>& recv );
+inline int all_gather( const Comm& comm,
+                       const DATA_TYPE send[], int sendcnt,
+                       Buffer<DATA_TYPE>& recv );
 
 
 template<typename DATA_TYPE>
-inline void all_gather( const DATA_TYPE send[], int sendcnt,
-                        Buffer<DATA_TYPE>& recv );
+inline int all_gather( const DATA_TYPE send[], int sendcnt,
+                       Buffer<DATA_TYPE>& recv );
 
 
 template<typename VECTOR>
-inline void all_gather( const Comm& comm,
-                        const VECTOR& send,
-                        Buffer<typename VECTOR::value_type>& recv );
+inline int all_gather( const Comm& comm,
+                       const VECTOR& send,
+                       Buffer<typename VECTOR::value_type>& recv );
 
 
 template<typename VECTOR>
-inline void all_gather( const VECTOR& send,
-                        Buffer<typename VECTOR::value_type>& recv );
+inline int all_gather( const VECTOR& send,
+                       Buffer<typename VECTOR::value_type>& recv );
 
 
 // ----------------------------------------------------------------------------------
@@ -63,6 +63,8 @@ inline void all_gather( const VECTOR& send,
 template <typename DATA_TYPE>
 struct Buffer
 {
+  typedef DATA_TYPE value_type;
+  typedef typename std::vector<DATA_TYPE>::iterator iterator;
   int                    cnt;
   std::vector<int>       counts;
   std::vector<int>       displs;
@@ -73,6 +75,10 @@ struct Buffer
     counts.resize( eckit::mpi::size() );
     displs.resize( eckit::mpi::size() );
   }
+
+  iterator begin() { return buf.begin(); }
+  iterator end()   { return buf.end();   }
+
 };
 
 // ----------------------------------------------------------------------------------
@@ -84,6 +90,8 @@ inline int all_to_all( const Comm& comm,
 {
   int cnt;
   int mpi_size = comm.size();
+  ASSERT( sendvec.size() == mpi_size );
+  ASSERT( recvvec.size() == mpi_size );
   // Get send-information
   std::vector<int> sendcounts(mpi_size);
   std::vector<int> senddispls(mpi_size);
@@ -150,11 +158,11 @@ inline int all_to_all( std::vector< std::vector<DATA_TYPE> >& sendvec,
 
 
 template<typename DATA_TYPE>
-inline void all_gather( const Comm& comm, const DATA_TYPE send[], int sendcnt, Buffer<DATA_TYPE>& recv )
+inline int all_gather( const Comm& comm, const DATA_TYPE send[], int sendcnt, Buffer<DATA_TYPE>& recv )
 {
   int mpi_size = comm.size();
   ECKIT_MPI_CHECK_RESULT( MPI_Allgather( &sendcnt,           1, MPI_INT,
-                                   recv.counts.data(), 1, MPI_INT, comm ) );
+                                         recv.counts.data(), 1, MPI_INT, comm ) );
   recv.displs[0] = 0;
   recv.cnt = recv.counts[0];
   for( int jpart=1; jpart<mpi_size; ++jpart )
@@ -165,27 +173,51 @@ inline void all_gather( const Comm& comm, const DATA_TYPE send[], int sendcnt, B
   recv.buf.resize(recv.cnt);
 
   ECKIT_MPI_CHECK_RESULT( MPI_Allgatherv( const_cast<DATA_TYPE*>(send), sendcnt, eckit::mpi::datatype<DATA_TYPE>(),
-                    recv.buf.data(), recv.counts.data(), recv.displs.data(),
-                    eckit::mpi::datatype<DATA_TYPE>(), comm ) );
+                                          recv.buf.data(), recv.counts.data(), recv.displs.data(),
+                                          eckit::mpi::datatype<DATA_TYPE>(), comm ) );
+  return MPI_SUCCESS;
 }
 template<typename DATA_TYPE>
-inline void all_gather( const DATA_TYPE send[], int sendcnt, Buffer<DATA_TYPE>& recv )
+inline int all_gather( const DATA_TYPE send[], int sendcnt, Buffer<DATA_TYPE>& recv )
 {
   return all_gather( comm(), send, sendcnt, recv );
 }
 
 template<typename VECTOR>
-inline void all_gather( const Comm& comm, const VECTOR& send, Buffer<typename VECTOR::value_type>& recv )
+inline int all_gather( const Comm& comm, const VECTOR& send, Buffer<typename VECTOR::value_type>& recv )
 {
-  all_gather( comm, send.data(), send.size(), recv );
+  return all_gather( comm, send.data(), send.size(), recv );
 }
 
 template<typename VECTOR>
-inline void all_gather( const VECTOR& send, Buffer<typename VECTOR::value_type>& recv )
+inline int all_gather( const VECTOR& send, Buffer<typename VECTOR::value_type>& recv )
 {
-  all_gather( comm(), send, recv );
+  return all_gather( comm(), send, recv );
 }
 
+
+template<typename VECTOR>
+inline int all_gather( const Comm& comm, const typename VECTOR::value_type& send, VECTOR& recv )
+{
+  typedef typename VECTOR::value_type DATA_TYPE;
+  const int mpi_size = comm.size();
+  const int sendcnt = 1;
+  std::vector<int> displs(mpi_size);
+  std::vector<int> counts(mpi_size,1);
+  for( int jpart=0; jpart<mpi_size; ++jpart )
+    displs[jpart] = jpart;
+  recv.resize(mpi_size);
+  ECKIT_MPI_CHECK_RESULT( MPI_Allgatherv( const_cast<DATA_TYPE*>(&send), sendcnt, eckit::mpi::datatype<DATA_TYPE>(),
+                          recv.data(), counts.data(), displs.data(),
+                          eckit::mpi::datatype<DATA_TYPE>(), comm ) );
+  return MPI_SUCCESS;
+}
+
+template<typename VECTOR>
+inline int all_gather( const typename VECTOR::value_type& send, VECTOR& recv )
+{
+  return all_gather( comm(), send, recv );
+}
 
 } // namespace mpi
 } // namepsace eckit

@@ -12,7 +12,7 @@
 #define eckit_mpi_ParallelContextBehavior_h
 
 #include <string>
-#include "eckit/runtime/ContextBehavior.h"
+#include "eckit/runtime/StandardBehavior.h"
 
 //-----------------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ namespace mpi {
 
 //-----------------------------------------------------------------------------
 
-class ParallelContextBehavior : public ContextBehavior {
+class ParallelContextBehavior : public StandardBehavior {
 public:
     ParallelContextBehavior();
     virtual ~ParallelContextBehavior() {}

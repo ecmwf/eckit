@@ -22,7 +22,7 @@ namespace mpi {
 //-----------------------------------------------------------------------------
 
 ParallelContextBehavior::ParallelContextBehavior() :
-  ContextBehavior()
+  StandardBehavior()
 {
   mpi::Environment::instance();
 }

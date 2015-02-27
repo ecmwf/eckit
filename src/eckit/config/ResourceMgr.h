@@ -59,6 +59,10 @@ public: // methods
     /// Internally the ContextBehavior will be responsible for the actual reading.
     bool appendConfig( const PathName& );
 
+    /// prints the consolidated script
+    /// @param out stream where to print
+    void printScript( std::ostream& out );
+
 protected: // methods
 
     void readConfigFiles();

@@ -192,5 +192,12 @@ bool ResourceMgr::lookUp( Configurable* owner,
 
 //-----------------------------------------------------------------------------
 
+void ResourceMgr::printScript( std::ostream& out )
+{
+  script_->print(out);
+}
+
+//-----------------------------------------------------------------------------
+
 } // namespace eckit
 

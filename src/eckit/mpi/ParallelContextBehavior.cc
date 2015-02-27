@@ -10,14 +10,27 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/config/ResourceFromFiles.h"
 #include "eckit/mpi/ParallelContextBehavior.h"
 #include "eckit/mpi/mpi.h"
 #include "eckit/mpi/BroadcastFile.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 namespace mpi {
+
+//-----------------------------------------------------------------------------
+
+struct ParallelReadPolicy
+{
+  int root; // master task that reads
+
+  /// @return true if file was read
+  friend bool read(const ParallelReadPolicy& policy, const PathName& path, std::stringstream& stream )
+  {
+    return mpi::broadcast_file(path,stream,policy.root);
+  }
+
+};
 
 //-----------------------------------------------------------------------------
 
@@ -27,26 +40,11 @@ ParallelContextBehavior::ParallelContextBehavior() :
   mpi::Environment::instance();
 }
 
-struct ParallelScriptReadPolicy
+FileReadPolicy ParallelContextBehavior::fileReadPolicy()
 {
-  int root; // master task that reads
-
-  /// @return true if file was read
-  friend bool read_file(const ParallelScriptReadPolicy& policy, const PathName& path, config::Script& script )
-  {
-    std::stringstream stream;
-    bool retval = mpi::broadcast_file(path,stream,policy.root);
-    script.readStream(stream);
-    return retval;
-  }
-};
-
-
-config::Script::ReadPolicy ParallelContextBehavior::readScriptPolicy()
-{
-  ParallelScriptReadPolicy policy;
-  policy.root = 0;
-  return policy;
+  ParallelReadPolicy mypolicy;
+  mypolicy.root = 0;
+  return mypolicy;
 }
 
 //-----------------------------------------------------------------------------

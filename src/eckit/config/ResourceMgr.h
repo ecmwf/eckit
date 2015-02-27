@@ -8,16 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-// File ResourceMgr.h
-// Baudouin Raoult - ECMWF May 96
-
 #ifndef eckit_ResourceMgr_h
 #define eckit_ResourceMgr_h
 
-#include <set>
-
-#include "eckit/memory/NonCopyable.h"
+#include "eckit/config/Script.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
@@ -26,7 +22,6 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class LocalPathName;
 class Configurable;
 
 namespace config { class Script; }
@@ -51,21 +46,13 @@ public: // methods
     /// @brief Set a Resource
     void set(const std::string&,const std::string&);
 
-    /// @brief Append configuration stream for Resource lookup
-    void appendConfig( std::istream& in );
-
-    /// @brief Append configuration file for Resource lookup.
-    /// @returns true if appended
-    /// Internally the ContextBehavior will be responsible for the actual reading.
-    bool appendConfig( const PathName& );
-
     /// prints the consolidated script
     /// @param out stream where to print
     void printScript( std::ostream& out );
 
-protected: // methods
+    void appendConfig(std::istream& in);
 
-    void readConfigFiles();
+    void appendConfig( const PathName& path);
 
 private: // methods
 
@@ -76,11 +63,8 @@ private: // members
 
     bool inited_;
 
-    config::Script* script_;
-
-    std::set<PathName> parsed_;
+    eckit::config::Script script_;
 };
-
 
 //-----------------------------------------------------------------------------
 

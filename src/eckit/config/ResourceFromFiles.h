@@ -8,29 +8,40 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_ReadFile_h
-#define eckit_mpi_ReadFile_h
+#ifndef eckit_ResourceFromFiles_h
+#define eckit_ResourceFromFiles_h
 
+#include <set>
+
+#include "eckit/config/Script.h"
+#include "eckit/memory/ScopedPtr.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/mpi/Comm.h"
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
-namespace mpi {
 
 //-----------------------------------------------------------------------------
 
-/// @brief Read file with 1 MPI task, broadcast content, and append to stream
-/// @return True if file was read
-bool broadcast_file( const PathName&,
-                     std::ostream&,
-                     const int root = 0,
-                     const mpi::Comm& = mpi::DefaultComm::instance() );
+class LocalPathName;
+
+class ResourceFromFiles {
+
+public: // methods
+
+  ResourceFromFiles();
+
+  friend void configure( ResourceFromFiles& p, config::Script& script );
+
+protected:
+
+  /// @brief Append configuration file to the script
+  void appendConfig( const PathName& path, config::Script& script );
+
+  void readConfigFiles( config::Script& script );
+
+};
 
 //-----------------------------------------------------------------------------
 
-} // namespace mpi
 } // namespace eckit
 
-#endif // eckit_mpi_ReadFile_h
+#endif

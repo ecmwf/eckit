@@ -11,7 +11,6 @@
 #ifndef eckit_mpi_ParallelContextBehavior_h
 #define eckit_mpi_ParallelContextBehavior_h
 
-#include <string>
 #include "eckit/runtime/StandardBehavior.h"
 
 //-----------------------------------------------------------------------------
@@ -23,10 +22,11 @@ namespace mpi {
 
 class ParallelContextBehavior : public StandardBehavior {
 public:
-    ParallelContextBehavior();
-    virtual ~ParallelContextBehavior() {}
 
-    virtual config::Script::ReadPolicy readScriptPolicy();
+  ParallelContextBehavior();
+
+  virtual FileReadPolicy fileReadPolicy();
+
 };
 
 

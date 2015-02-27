@@ -8,29 +8,31 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_ReadFile_h
-#define eckit_mpi_ReadFile_h
-
-#include "eckit/filesystem/PathName.h"
-#include "eckit/mpi/Comm.h"
+#include "eckit/config/FileReadPolicy.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
-namespace mpi {
 
 //-----------------------------------------------------------------------------
 
-/// @brief Read file with 1 MPI task, broadcast content, and append to stream
-/// @return True if file was read
-bool broadcast_file( const PathName&,
-                     std::ostream&,
-                     const int root = 0,
-                     const mpi::Comm& = mpi::DefaultComm::instance() );
+bool read(const DirectReadPolicy&, const PathName& path, std::stringstream& s )
+{
+    bool r = false;
+    if( path.exists() )
+    {
+          std::ifstream in;
+          in.open ( path.asString().c_str() );
+          if ( !in )
+             throw CantOpenFile( path.asString(), Here() );
+
+          s << in.rdbuf();
+          r = true;
+    }
+    return r;
+}
 
 //-----------------------------------------------------------------------------
 
-} // namespace mpi
 } // namespace eckit
 
-#endif // eckit_mpi_ReadFile_h

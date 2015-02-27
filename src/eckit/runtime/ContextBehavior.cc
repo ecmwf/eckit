@@ -11,6 +11,9 @@
 #include "eckit/runtime/ContextBehavior.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/config/ResourceFromFiles.h"
+#include "eckit/config/FileReadPolicy.h"
+#include "eckit/utils/Translator.h"
 
 //-----------------------------------------------------------------------------
 
@@ -33,29 +36,27 @@ void ContextBehavior::reconfigure()
 
 Channel& ContextBehavior::channel(int cat)
 {
-  switch( cat ) {
+  switch( cat )
+  {
     case ERROR: return errorChannel();
     case WARN:  return warnChannel();
     case INFO:  return infoChannel();
     case DEBUG: return debugChannel();
   }
+
   throw Exception("Logging category "+Translator<int,std::string>()(cat)+" not known.",Here());
+
   return infoChannel();
 }
 
-
-class StandardScriptReadPolicy
+ResourcePolicy ContextBehavior::resourcePolicy()
 {
-  friend bool read_file(const StandardScriptReadPolicy&, const PathName& path, config::Script& script )
-  {
-    return script.readFile(path);
-  }
-};
+  return ResourceFromFiles();
+}
 
-
-config::Script::ReadPolicy ContextBehavior::readScriptPolicy()
+FileReadPolicy ContextBehavior::fileReadPolicy()
 {
-  return StandardScriptReadPolicy();
+  return DirectReadPolicy();
 }
 
 //-----------------------------------------------------------------------------

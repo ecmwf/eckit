@@ -52,30 +52,6 @@ void Script::print(std::ostream&out)
         (*i)->print(out);
 }
 
-bool Script::readFile(const PathName& path)
-{
-    if( path.exists() )
-    {
-        std::ifstream in;
-        in.open ( path.asString().c_str() );
-        if (!in)
-            throw CantOpenFile( path.asString() );
-
-//        std::cout << "reading config file [" << path.asString() << "]" << std::endl;
-
-        Compiler c(in);
-
-        Block* blk = new Block(c, new Scope() );
-
-        ASSERT(c.peek() == 0);
-
-        blocks_.push_back(blk);
-
-        return true;
-    }
-    return false;
-}
-
 void Script::readStream(std::istream &in)
 {
     Compiler c(in);

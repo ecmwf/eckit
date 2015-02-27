@@ -14,8 +14,8 @@
 #include <string>
 
 #include "eckit/config/Configurable.h"
-#include "eckit/config/Resource.h"
-#include "eckit/config/Script.h"
+#include "eckit/config/ResourcePolicy.h"
+#include "eckit/config/FileReadPolicy.h"
 #include "eckit/log/Channel.h"
 
 //-----------------------------------------------------------------------------
@@ -54,7 +54,8 @@ public: // interface methods
     virtual void   reconfigure();
     virtual std::string name() const   { return "ContextBehavior"; }
 
-    virtual config::Script::ReadPolicy readScriptPolicy();
+    virtual ResourcePolicy resourcePolicy();
+    virtual FileReadPolicy fileReadPolicy();
 
 public :
 

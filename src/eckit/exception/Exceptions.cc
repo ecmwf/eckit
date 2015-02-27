@@ -342,14 +342,33 @@ FileError::FileError(const std::string& msg)
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
+FileError::FileError(const std::string& msg, const CodeLocation& here )
+{
+    StrStream s;
+    s << msg << " @ " << here <<  Log::syserr;
+    s << StrStream::ends;
+    reason(std::string(s));
+    Log::monitor(Log::Unix,errno) << what() << std::endl;
+}
+
 CantOpenFile::CantOpenFile(const std::string& file, bool retry):
     retry_(retry)
 {
-    /* std::cout << "cannot open file [" << file << "]" << std::endl; */
     StrStream s;
     s << "Cannot open " << file << " " << Log::syserr;
     if(retry) s << " (retry ok)";
     s << StrStream::ends;
+    reason(std::string(s));
+    Log::monitor(Log::Unix,errno) << what() << std::endl;
+}
+
+CantOpenFile::CantOpenFile(const std::string& file, const CodeLocation& loc, bool retry):
+    retry_(retry)
+{
+    StrStream s;
+    s << "Cannot open " << file << " " << Log::syserr;
+    if(retry) s << " (retry ok)";
+    s << " @ " << loc << StrStream::ends;
     reason(std::string(s));
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
@@ -359,12 +378,22 @@ MethodNotYetImplemented::MethodNotYetImplemented(const std::string &msg):
 {
 }
 
+WriteError::WriteError(const std::string& file, const CodeLocation& loc):
+    FileError(std::string("Write error on ") + file, loc)
+{
+}
+
 WriteError::WriteError(const std::string& file):
     FileError(std::string("Write error on ") + file)
 {
 }
 
-ReadError::ReadError(const std::string& file):
+ReadError::ReadError(const std::string& file, const CodeLocation& loc):
+    FileError(std::string("Read error on ") + file, loc)
+{
+}
+
+ReadError::ReadError(const std::string& file ):
     FileError(std::string("Read error on ") + file)
 {
 }

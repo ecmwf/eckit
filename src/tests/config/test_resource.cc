@@ -14,12 +14,12 @@
 
 #include "ecbuild/boost_test_framework.h"
 
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Log.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
-#include "eckit/types/Types.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
+#include "eckit/types/Types.h"
 
 using namespace std;
 using namespace eckit;

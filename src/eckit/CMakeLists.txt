@@ -192,6 +192,9 @@ thread/Once.h )
 
 list( APPEND eckit_config_srcs
 config/Resource.h
+config/ResourceFromFiles.h
+config/ResourceFromFiles.cc
+config/ResourcePolicy.h
 config/ResourceMgr.h
 config/ResourceMgr.cc
 config/Assignment.h
@@ -216,6 +219,8 @@ config/Configurable.h
 config/Configurable.cc
 config/EtcTable.h
 config/EtcTable.cc
+config/FileReadPolicy.h
+config/FileReadPolicy.cc
 config/ResourceBase.cc )
 
 list( APPEND eckit_runtime_srcs

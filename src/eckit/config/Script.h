@@ -14,11 +14,9 @@
 #include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/types/Types.h"
 
-#include "eckit/config/Statement.h"
 #include "eckit/config/Compiler.h"
 
 //-----------------------------------------------------------------------------
@@ -34,55 +32,10 @@ class Block;
 
 class Script : private NonCopyable {
 
-public:
-
-  class ReadPolicy {
-  public:
-
-    template <typename T>
-    ReadPolicy( T x ) : self_(new Model<T>(x))
-    { }
-
-    ~ReadPolicy()
-    {
-      delete self_;
-    }
-
-    ReadPolicy& operator=( const ReadPolicy& x )
-    {
-      ReadPolicy tmp(x);
-      std::swap(tmp,*this);
-      return *this;
-    }
-
-    friend bool read_file(const ReadPolicy& x, const PathName& path, Script& script )
-    {
-      return x.self_->readFile_(path,script);
-    }
-
-  private:
-
-    struct Concept {
-      virtual ~Concept() {}
-      virtual bool readFile_( const PathName&, Script& ) const = 0;
-    };
-
-    template <typename T>
-    struct Model : Concept {
-      Model( T x ) : data_(x) {}
-      virtual bool readFile_( const PathName& path, Script& script ) const
-      {
-        return read_file( data_, path, script );
-      }
-      T data_;
-    };
-
-    const Concept* self_;
-  };
-
 public: // methods
 
     Script();
+
     Script( Compiler& c );
 
     virtual ~Script();
@@ -92,16 +45,6 @@ public: // methods
     /// prints the script
     /// @param out stream where to print
     void print( std::ostream& out );
-
-    /// reads the contents of the file into the script
-    /// @param path to the file
-    /// @returns true if the file was found and successfully parsed
-    bool readFile( const PathName& path );
-
-    bool readFile( const PathName& path, const ReadPolicy& policy )
-    {
-      return read_file(policy,path,*this);
-    }
 
     /// reads the contents of the stream into the script
     void readStream( std::istream& in );

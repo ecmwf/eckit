@@ -30,15 +30,12 @@ namespace eckit {
 static Once<Mutex> local_mutex;
 
 ResourceMgr::ResourceMgr() :
-    inited_(false),
-    script_( new config::Script() ),
-    parsed_()
+    inited_(false)
 {
 }
 
 ResourceMgr::~ResourceMgr()
 {
-    delete script_;
 }
 
 ResourceMgr& ResourceMgr::instance()
@@ -58,8 +55,7 @@ void ResourceMgr::reset()
     AutoLock<Mutex> lock(local_mutex);
 
     inited_ = false;
-    parsed_.clear();
-    script_->clear();
+    script_.clear();
 }
 
 void ResourceMgr::set(const std::string& name,const std::string& value)
@@ -71,51 +67,22 @@ void ResourceMgr::set(const std::string& name,const std::string& value)
 
     std::istringstream in( code.str() );
 
-    script_->readStream(in);
+    script_.readStream(in);
 }
 
-void ResourceMgr::appendConfig(std::istream &in)
+void ResourceMgr::appendConfig(std::istream& in)
 {
-    AutoLock<Mutex> lock(local_mutex);
-
-    script_->readStream(in);
+  AutoLock<Mutex> lock(local_mutex);
+  script_.readStream(in);
 }
 
-bool ResourceMgr::appendConfig(const PathName& path)
+void ResourceMgr::appendConfig(const PathName& path)
 {
-    AutoLock<Mutex> lock(local_mutex);
-
-    config::Script::ReadPolicy policy = Context::instance().behavior().readScriptPolicy();
-
-    bool retval(false);
-    if( parsed_.find(path) == parsed_.end() )
-    {
-       retval = script_->readFile( path, policy );
-       parsed_.insert(path);
-    }
-    return retval;
-}
-
-void ResourceMgr::readConfigFiles()
-{
-    AutoLock<Mutex> lock(local_mutex);
-
-    if(!inited_)
-    {
-        inited_ = true;
-
-        std::string appName = Context::instance().runName();
-
-        PathName general ("~/etc/config/general");
-        PathName local ("~/etc/config/local");
-        PathName app ( std::string("~/etc/config/" ) + appName );
-        PathName applocal ( std::string("~/etc/config/" ) + appName + ".local" );
-
-        appendConfig( general );
-        appendConfig( local );
-        appendConfig( app );
-        appendConfig( applocal );
-    }
+  AutoLock<Mutex> lock(local_mutex);
+  FileReadPolicy p = Context::instance().behavior().fileReadPolicy();
+  std::stringstream s;
+  read(p,path,s);
+  script_.readStream(s);
 }
 
 bool ResourceMgr::lookUp( Configurable* owner,
@@ -125,22 +92,25 @@ bool ResourceMgr::lookUp( Configurable* owner,
 {
     AutoLock<Mutex> lock(local_mutex);
 
-    readConfigFiles();
+    ResourcePolicy p = Context::instance().behavior().resourcePolicy();
+
+    if(!inited_)
+      configure( p , script_ );
 
     StringDict resmap;
 
     if(args)
-        script_->execute( *args, resmap );
+        script_.execute( *args, resmap );
     else
     {
-        script_->execute( StringDict(), resmap );
+        script_.execute( StringDict(), resmap );
     }
 
 #if 0 // DEBUG
     Log::error() << "name [" << name << "] looking in " << (args?"args ":"StringDict()") << std::endl;
     if(args)  { Log::error() << "args [" ; __print_container(Log::error(),*args); Log::error() << "]" << std::endl; }
     Log::error() << "resmap [" ; __print_container(Log::error(),resmap); Log::error() << "]" << std::endl;
-    script_->print( Log::error() );
+    script_.print( Log::error() );
 #endif
 
     StringDict::iterator i;
@@ -190,11 +160,9 @@ bool ResourceMgr::lookUp( Configurable* owner,
     return false;
 }
 
-//-----------------------------------------------------------------------------
-
 void ResourceMgr::printScript( std::ostream& out )
 {
-  script_->print(out);
+  script_.print(out);
 }
 
 //-----------------------------------------------------------------------------

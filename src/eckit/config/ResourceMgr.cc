@@ -8,19 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/thread/AutoLock.h"
+#include "eckit/config/Compiler.h"
 #include "eckit/config/Configurable.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/config/ResourceMgr.h"
+#include "eckit/config/Script.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
-#include "eckit/thread/Mutex.h"
-#include "eckit/config/ResourceMgr.h"
-#include "eckit/types/Types.h"
-
-#include "eckit/config/Compiler.h"
-#include "eckit/config/Script.h"
+#include "eckit/runtime/Context.h"
 #include "eckit/runtime/ContextBehavior.h"
-
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
+#include "eckit/thread/Once.h"
+#include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
 
@@ -28,8 +27,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static Mutex local_mutex;
-static Mutex mutex_instance;
+static Once<Mutex> local_mutex;
 
 ResourceMgr::ResourceMgr() :
     inited_(false),
@@ -45,7 +43,7 @@ ResourceMgr::~ResourceMgr()
 
 ResourceMgr& ResourceMgr::instance()
 {
-    AutoLock<Mutex> lock(mutex_instance);
+    AutoLock<Mutex> lock(local_mutex);
 
     static ResourceMgr* obj = 0;
 

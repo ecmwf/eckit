@@ -33,6 +33,7 @@
 #include "eckit/os/Stat.h"
 #include "eckit/runtime/Context.h"
 #include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Once.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/Regex.h"
 
@@ -42,7 +43,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static Mutex local_mutex;
+static Once<Mutex> local_mutex;
 
 // I need to come back here when we have a proper std::string class
 

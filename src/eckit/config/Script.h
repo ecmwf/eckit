@@ -57,7 +57,7 @@ public:
 
     friend bool read_file(const ReadPolicy& x, const PathName& path, Script& script )
     {
-      x.self_->readFile_(path,script);
+      return x.self_->readFile_(path,script);
     }
 
   private:

@@ -10,6 +10,7 @@
 
 #include "eckit/runtime/ContextBehavior.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 
 //-----------------------------------------------------------------------------
 
@@ -40,6 +41,21 @@ Channel& ContextBehavior::channel(int cat)
   }
   throw Exception("Logging category "+Translator<int,std::string>()(cat)+" not known.",Here());
   return infoChannel();
+}
+
+
+class StandardScriptReadPolicy
+{
+  friend bool read_file(const StandardScriptReadPolicy&, const PathName& path, config::Script& script )
+  {
+    return script.readFile(path);
+  }
+};
+
+
+config::Script::ReadPolicy ContextBehavior::readScriptPolicy()
+{
+  return StandardScriptReadPolicy();
 }
 
 //-----------------------------------------------------------------------------

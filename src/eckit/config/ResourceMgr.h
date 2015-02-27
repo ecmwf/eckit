@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -37,31 +37,41 @@ class ResourceMgr : private NonCopyable {
 public: // methods
 
     /// destructor for singleton
-	~ResourceMgr();
+    ~ResourceMgr();
 
     /// @returns the singleton instance of this class
     static ResourceMgr& instance();
-    
-	void reset();
-    bool lookUp( Configurable*, const std::string&, const StringDict* args, std::string&);
-	void set(const std::string&,const std::string&);
 
+    /// @brief Clear all stored Resources
+    void reset();
+
+    /// @brief Lookup Resource value
+    bool lookUp( Configurable*, const std::string&, const StringDict* args, std::string&);
+
+    /// @brief Set a Resource
+    void set(const std::string&,const std::string&);
+
+    /// @brief Append configuration stream for Resource lookup
     void appendConfig( std::istream& in );
-    void appendConfig( const PathName& );
-    
+
+    /// @brief Append configuration file for Resource lookup.
+    /// @returns true if appended
+    /// Internally the ContextBehavior will be responsible for the actual reading.
+    bool appendConfig( const PathName& );
+
 protected: // methods
-    
+
     void readConfigFiles();
-    
+
 private: // methods
 
     /// private contructor for singleton
-	ResourceMgr();
+    ResourceMgr();
 
 private: // members
 
-	bool inited_;
-    
+    bool inited_;
+
     config::Script* script_;
 
     std::set<PathName> parsed_;

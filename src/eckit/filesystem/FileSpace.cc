@@ -10,12 +10,13 @@
 
 #include <unistd.h>
 
-#include "eckit/thread/AutoLock.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/io/cluster/ClusterDisks.h"
-#include "eckit/filesystem/FileSpace.h"
-#include "eckit/thread/Mutex.h"
 #include "eckit/config/Resource.h"
+#include "eckit/filesystem/FileSpace.h"
+#include "eckit/io/cluster/ClusterDisks.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
+#include "eckit/thread/Once.h"
 #include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
@@ -26,7 +27,7 @@ namespace eckit {
 
 typedef std::map<std::string, FileSpace*> Map;
 
-static Mutex local_mutex;
+static Once<Mutex> local_mutex;
 static Map space;
 
 FileSpace::FileSpace(const std::string& name) :

@@ -8,38 +8,31 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_StandardBehavior_h
-#define eckit_StandardBehavior_h
+#ifndef eckit_mpi_ParallelContextBehavior_h
+#define eckit_mpi_ParallelContextBehavior_h
 
+#include <string>
 #include "eckit/runtime/ContextBehavior.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
+namespace mpi {
 
 //-----------------------------------------------------------------------------
 
-class StandardBehavior : public ContextBehavior {
+class ParallelContextBehavior : public ContextBehavior {
 public:
+    ParallelContextBehavior();
+    virtual ~ParallelContextBehavior() {}
 
-    /// Contructors
-
-    StandardBehavior();
-
-    /// Destructor
-
-    ~StandardBehavior();
-
-public: // methods
-
-    virtual Channel& infoChannel();
-    virtual Channel& warnChannel();
-    virtual Channel& errorChannel();
-    virtual Channel& debugChannel();
+    virtual config::Script::ReadPolicy readScriptPolicy();
 };
 
+
 //-----------------------------------------------------------------------------
 
+} // namespace mpi
 } // namespace eckit
 
-#endif // eckit_StandardBehavior_h
+#endif // eckit_mpi_ParallelContextBehavior_h

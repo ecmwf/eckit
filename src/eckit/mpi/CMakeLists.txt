@@ -6,6 +6,10 @@ Collectives.h
 Comm.h
 Comm.cc
 Exceptions.h
+ParallelContextBehavior.h
+ParallelContextBehavior.cc
+BroadcastFile.h
+BroadcastFile.cc
 )
 
 if( NOT HAVE_MPI )
@@ -44,7 +48,7 @@ if( HAVE_ECKIT_MPISTUBS)
                           ${MPISTUBS_INCLUDE_DIRS}
                       LIBS
                           eckit mpistubs
-                      DEFINITIONS ECKIT_MPISTUBS )
+                      DEFINITIONS ECKIT_USE_MPISTUBS )
 
   get_property( defs TARGET eckit_mpistubs PROPERTY COMPILE_DEFINITIONS )
     foreach(def ${defs})

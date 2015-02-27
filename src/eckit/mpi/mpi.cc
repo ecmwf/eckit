@@ -10,6 +10,7 @@
 
 #include "eckit/mpi/mpi.h"
 #include "eckit/mpi/Exceptions.h"
+#include "eckit/runtime/Context.h"
 
 namespace eckit {
 namespace mpi {
@@ -29,6 +30,23 @@ template<> MPI_Datatype datatype<long>(long&)                   { return datatyp
 template<> MPI_Datatype datatype<unsigned long>(unsigned long&) { return datatype<unsigned long>(); }
 template<> MPI_Datatype datatype<float>(float&)                 { return datatype<float>(); }
 template<> MPI_Datatype datatype<double>(double&)               { return datatype<double>(); }
+
+
+Environment::Environment()
+{
+  eckit::mpi::init( Context::instance().argc(), Context::instance().argvs() );
+}
+
+Environment::~Environment()
+{
+  eckit::mpi::finalize();
+}
+
+Environment& Environment::instance()
+{
+  static Environment env;
+  return env;
+}
 
 bool initialized()
 {

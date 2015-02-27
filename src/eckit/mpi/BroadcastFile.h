@@ -8,38 +8,28 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_StandardBehavior_h
-#define eckit_StandardBehavior_h
+#ifndef eckit_mpi_ReadFile_h
+#define eckit_mpi_ReadFile_h
 
-#include "eckit/runtime/ContextBehavior.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/mpi/Comm.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
+namespace mpi {
 
 //-----------------------------------------------------------------------------
 
-class StandardBehavior : public ContextBehavior {
-public:
-
-    /// Contructors
-
-    StandardBehavior();
-
-    /// Destructor
-
-    ~StandardBehavior();
-
-public: // methods
-
-    virtual Channel& infoChannel();
-    virtual Channel& warnChannel();
-    virtual Channel& errorChannel();
-    virtual Channel& debugChannel();
-};
+/// @brief Read file with 1 MPI task, broadcast content, and append to stream
+/// @return True if file was read
+bool broadcast_file( const PathName&, std::ostream&,
+                     const int root = 0,
+                     const mpi::Comm& = mpi::DefaultComm::instance() );
 
 //-----------------------------------------------------------------------------
 
+} // namespace mpi
 } // namespace eckit
 
-#endif // eckit_StandardBehavior_h
+#endif // eckit_mpi_ParallelContextBehavior_h

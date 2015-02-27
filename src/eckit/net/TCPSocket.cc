@@ -23,6 +23,7 @@
 #include "eckit/os/AutoAlarm.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/log/Log.h"
+#include "eckit/thread/Once.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/config/Resource.h"
 #include "eckit/io/Select.h"
@@ -43,7 +44,7 @@ namespace eckit {
 
 static in_addr none = { INADDR_NONE };
 
-static Mutex local_mutex;
+static Once<Mutex> local_mutex;
 
 TCPSocket::UnknownHost::UnknownHost(const std::string& host):
     Exception(std::string("Unknown host ") + host)

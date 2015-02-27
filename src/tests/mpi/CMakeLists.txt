@@ -1,12 +1,3 @@
-ecbuild_add_test(
-		TARGET      test_mpi_comm
-		SOURCES     test_mpi_comm.cc
-		CONDITION   OFF
-		INCLUDES ${MPI_CXX_INCLUDE_PATH}
-		LIBS eckit_mpi eckit ${MPI_CXX_LIBRARIES}
-		COMMAND ${MPIEXEC} ARGS -np 4 test_mpi_comm
-		)
-
 if( ECKIT_HAVE_ECKIT_MPI )
 ecbuild_add_test(
     TARGET      eckit_test_mpi

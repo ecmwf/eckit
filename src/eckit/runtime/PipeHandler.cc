@@ -10,12 +10,12 @@
 
 #include <signal.h>
 
-#include "eckit/thread/AutoLock.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/thread/Once.h"
-#include "eckit/thread/Mutex.h"
 #include "eckit/runtime/PipeHandler.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
+#include "eckit/thread/Once.h"
 
 //-----------------------------------------------------------------------------
 
@@ -170,7 +170,7 @@ void PipeHandler<Request>::idle()
 
 //=========================================================================
 
-static Once<Mutex> local_mutex;
+static Once<Mutex> PipeHandler_mutex_;
 
 template<class Request>
 void PipeHandler<Request>::start()
@@ -181,7 +181,7 @@ void PipeHandler<Request>::start()
     // thread is creating a pipe. The child process
     // will then also has a file descriptor for this pipe
 
-    AutoLock<Mutex> lock(local_mutex);
+    AutoLock<Mutex> lock(PipeHandler_mutex_);
     Log::debug() << "PipeHandler - Locked..." << std::endl;
 
 

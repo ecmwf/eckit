@@ -23,7 +23,7 @@ set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} 
 
 include( ecbuild_system )
 
-ecbuild_requires_macro_version( 1.4 )
+ecbuild_requires_macro_version( 1.6 )
 
 set( PERSISTENT_NAMESPACE eckit CACHE INTERNAL "" )
 
@@ -129,9 +129,7 @@ if( ENABLE_XPR OR ENABLE_CPP11 )
 
     # in ecbuild 1.5.0 this will operate on lists so we will need only one call
 
-    foreach( f ${cpp11_req} )
-        ecbuild_check_cxx11( REQUIRED ${f} )
-    endforeach()
+    ecbuild_check_cxx11( REQUIRED ${cpp11_req} )
 
 endif()
 

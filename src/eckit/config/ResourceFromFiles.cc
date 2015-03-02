@@ -38,9 +38,8 @@ void ResourceFromFiles::appendConfig( const PathName& path, config::Script& scri
 
   std::stringstream s;
 
-  read( p, path, s );
-
-  script.readStream(s);
+  if( read( p, path, s ) )
+    script.readStream(s);
 }
 
 void ResourceFromFiles::readConfigFiles(config::Script& script)

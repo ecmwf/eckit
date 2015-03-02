@@ -76,13 +76,16 @@ void ResourceMgr::appendConfig(std::istream& in)
   script_.readStream(in);
 }
 
-void ResourceMgr::appendConfig(const PathName& path)
+bool ResourceMgr::appendConfig(const PathName& path)
 {
   AutoLock<Mutex> lock(local_mutex);
   FileReadPolicy p = Context::instance().behavior().fileReadPolicy();
+
   std::stringstream s;
-  read(p,path,s);
+  if( !read(p,path,s) )  return false;
+
   script_.readStream(s);
+  return true;
 }
 
 bool ResourceMgr::lookUp( Configurable* owner,

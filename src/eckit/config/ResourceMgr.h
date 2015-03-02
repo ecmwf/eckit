@@ -52,7 +52,7 @@ public: // methods
 
     void appendConfig(std::istream& in);
 
-    void appendConfig( const PathName& path);
+    bool appendConfig( const PathName& path );
 
 private: // methods
 

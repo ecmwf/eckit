@@ -146,32 +146,17 @@ private: // members
 //-------------------------------------------------------------------------------------------
 
 template < class Derived >
-class DispatchParams : public Params {
+class DispatchParams {
 
 public: // methods
 
     DispatchParams() {}
 
-public: // methods
+private: // methods
 
-    virtual value_t get( const Params::key_t& key ) const
-    {
-        typename store_t::const_iterator i = dispatch_.find(key);
-        if( i != dispatch_.end() )
-        {
-            parametrizer_t fptr = i->second;
-            const Derived* pobj = static_cast<const Derived*>(this);
-            return (pobj->*fptr)( key );
-        }
-        else
-            return Params::value_t();
-    }
+    friend Params::value_t get( const DispatchParams& p, const Params::key_t& key );
 
-protected: // methods
-
-    virtual void print(std::ostream& s) const {}
-
-protected: // members
+private: // members
 
     typedef Params::value_t ( Derived::* parametrizer_t ) ( const Params::key_t& ) const ;
     typedef std::map< std::string, parametrizer_t > store_t;

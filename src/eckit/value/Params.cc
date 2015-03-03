@@ -87,6 +87,22 @@ void print(const ValueParams & p, std::ostream &s)
 
 //------------------------------------------------------------------------------------------------------
 
+template < class Derived >
+Params::value_t get( const DispatchParams<Derived>& p, const Params::key_t& key )
+{
+    typename DispatchParams<Derived>::store_t::const_iterator i = p.dispatch_.find(key);
+    if( i != p.dispatch_.end() )
+    {
+        typename DispatchParams<Derived>::parametrizer_t fptr = i->second;
+        const Derived* pobj = static_cast<const Derived*>(&p);
+        return (pobj->*fptr)( key );
+    }
+    else
+        return Params::value_t();
+}
+
+//------------------------------------------------------------------------------------------------------
+
 ScopeParams::ScopeParams(const Params::key_t& scope_key, const Params & p ) :
     scope_( scope_key + "." ),
     p_(p)

@@ -16,8 +16,6 @@
 
 #include <list>
 
-#include "eckit/memory/Owned.h"
-#include "eckit/memory/SharedPtr.h"
 #include "eckit/value/Value.h"
 #include "eckit/value/Properties.h"
 
@@ -27,88 +25,122 @@ namespace eckit {
 
 //------------------------------------------------------------------------------------------------------
 
-class Params : public eckit::Owned {
+class Params {
 
 public: // types
 
-    typedef eckit::SharedPtr<Params> Ptr;
-
-    typedef std::list< Params::Ptr > List;
-
+    typedef std::list<Params> List;
     typedef std::string  key_t;
     typedef eckit::Value value_t;
 
 public: // methods
 
-    virtual ~Params();
+    template <typename T>
+    Params( T x ) : self_(new Model<T>(x)) {}
 
-    Ptr self() { return Ptr(this); }
-    Ptr self() const { return Ptr( const_cast<Params*>(this) ); }
+    ~Params() { delete self_; }
+
+    Params& operator=( const Params& x )
+    {
+        Params tmp(x);
+        std::swap(tmp, *this);
+        return *this;
+    }
 
     bool has( const key_t& key ) const;
 
     value_t operator[] ( const key_t& key ) const;
 
-    virtual value_t get( const key_t& key ) const = 0;
+    friend value_t get( const Params& p, const key_t& key )
+    {
+        return p.self_->get_(key);
+    }
 
-    virtual void print(std::ostream& s) const = 0;
+    friend void print( const Params& p, std::ostream& s )
+    {
+        p.self_->print_(s);
+    }
+
+private: // internal classes
+
+    struct Concept {
+        virtual ~Concept() {}
+        virtual value_t get_( const key_t& key ) const = 0;
+        virtual void print_( std::ostream& s ) const = 0;
+    };
+
+    template <typename T>
+    struct Model : Concept
+    {
+        Model( T x ) : data_(x) {}
+        virtual value_t get_( const key_t& key ) const {
+            return get( data_, key );
+        }
+        virtual void print_( std::ostream& s ) const {
+            print( data_, s );
+        }
+        T data_;
+    };
 
 private: // methods
 
-    friend std::ostream& operator<<(std::ostream& s, const Params& p) { p.print(s);  return s; }
+    friend std::ostream& operator<<(std::ostream& s, const Params& p)
+    {
+        print(p, s);
+        return s;
+    }
 
+private: // members
+
+    const Concept* self_;
 };
 
 //------------------------------------------------------------------------------------------------------
 
-class CompositeParams : public Params {
+class CompositeParams {
 
 public: // methods
 
     CompositeParams();
     CompositeParams( const Params::List& );
 
-    virtual value_t get( const key_t& key ) const;
-
-    void push_front( const Params::Ptr& p );
-    void push_back( const Params::Ptr& p );
+    void push_front( const Params& p );
+    void push_back( const Params& p );
 
     void pop_front() { plist_.pop_front(); }
     void pop_back()  { plist_.pop_back(); }
 
-protected: // methods
+private: // methods
 
-    virtual void print(std::ostream& s) const;
+    friend Params::value_t get( const CompositeParams& p, const Params::key_t& key );
+    friend void print( const CompositeParams& p, std::ostream& s );
 
 private: // members
 
     Params::List plist_;
-
 };
 
 //------------------------------------------------------------------------------------------------------
 
-class ValueParams : public Params {
+class ValueParams {
 
 public: // methods
 
     ValueParams() : props_() {}
     ValueParams( const eckit::Properties& p ) : props_(p) {}
 
-    virtual value_t get( const key_t& key ) const;
+    void set( const Params::key_t& k, const Params::value_t& v );
 
-    void set( const key_t& k, const value_t& v );
+private: // methods
 
-protected: // methods
-
-    virtual void print(std::ostream& s) const;
+    friend Params::value_t get( const ValueParams& p, const Params::key_t& key );
+    friend void print( const ValueParams& p, std::ostream& s );
 
 	Properties& props() { return props_; }
 
 private: // members
 
     eckit::Properties props_;
-
 };
 
 //-------------------------------------------------------------------------------------------
@@ -122,7 +154,7 @@ public: // methods
 
 public: // methods
 
-    virtual value_t get( const key_t& key ) const
+    virtual value_t get( const Params::key_t& key ) const
     {
         typename store_t::const_iterator i = dispatch_.find(key);
         if( i != dispatch_.end() )
@@ -141,56 +173,52 @@ protected: // methods
 
 protected: // members
 
-    typedef Params::value_t ( Derived::* parametrizer_t ) ( const key_t& ) const ;
+    typedef Params::value_t ( Derived::* parametrizer_t ) ( const Params::key_t& ) const ;
     typedef std::map< std::string, parametrizer_t > store_t;
 
     store_t dispatch_;
-
 };
 
 //-------------------------------------------------------------------------------------------
 
 /// Wraps the parameters within a given scope
 
-class ScopeParams : public Params {
+class ScopeParams {
 
 public: // methods
 
-    ScopeParams( const key_t& scope_key, const Params::Ptr& p );
+    ScopeParams( const Params::key_t& scope_key, const Params& p );
 
-    virtual value_t get( const key_t& key ) const;
+private: // methods
 
-protected: // methods
-
-    virtual void print(std::ostream& s) const;
+    friend Params::value_t get( const ScopeParams& p, const Params::key_t& key );
+    friend void print( const ScopeParams& p, std::ostream& s );
 
 private: // members
 
-    key_t scope_;
-    Params::Ptr p_;
-
+    Params::key_t scope_;
+    Params p_;
 };
 
 //-------------------------------------------------------------------------------------------
 
 /// Searches the parameters within a given scope
 
-class UnScopeParams : public Params {
+class UnScopeParams {
 
 public: // methods
 
-    UnScopeParams( const key_t& scope_key, const Params::Ptr& p );
+    UnScopeParams( const Params::key_t& scope_key, const Params& p );
 
-    virtual value_t get( const key_t& key ) const;
+private: // methods
 
-protected: // methods
-
-    virtual void print(std::ostream& s) const;
+    friend Params::value_t get( const UnScopeParams& p, const Params::key_t& key );
+    friend void print( const UnScopeParams& p, std::ostream& s );
 
 private: // members
 
-    key_t scope_;
-    Params::Ptr p_;
+    Params::key_t scope_;
+    Params p_;
 
 };
 

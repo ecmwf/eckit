@@ -18,18 +18,14 @@ namespace eckit {
 
 //------------------------------------------------------------------------------------------------------
 
-Params::~Params()
-{
-}
-
 bool Params::has(const Params::key_t &key) const
 {
-    return !get(key).isNil();
+    return !get(*this, key).isNil();
 }
 
 Params::value_t Params::operator[]( const Params::key_t& key ) const
 {
-    value_t v = get(key);
+    value_t v = get(*this, key);
     if( v.isNil() )
         throw BadParameter("Params does not contain key: " + key, Here());
     return v;
@@ -45,93 +41,91 @@ CompositeParams::CompositeParams(const Params::List& plist) : plist_(plist)
 {
 }
 
-CompositeParams::value_t CompositeParams::get( const key_t& key ) const
+void CompositeParams::push_front(const Params& p)
 {
-    for( Params::List::const_iterator citr = plist_.begin(); citr != plist_.end(); ++citr )
+    plist_.push_front(p);
+}
+
+void CompositeParams::push_back(const Params& p)
+{
+    plist_.push_back(p);
+}
+
+Params::value_t get( const CompositeParams& p, const Params::key_t& key )
+{
+    for( Params::List::const_iterator citr = p.plist_.begin(); citr != p.plist_.end(); ++citr )
     {
-        Value v = (*citr)->get(key);
+        Value v = get(*citr, key);
         if( !v.isNil() )
             return v;
     }
     return Value();
 }
 
-void CompositeParams::push_front(const Params::Ptr& p)
+void print( const CompositeParams& p, std::ostream& s )
 {
-    plist_.push_front(p);
-}
-
-void CompositeParams::push_back(const Params::Ptr& p)
-{
-    plist_.push_back(p);
-}
-
-void CompositeParams::print(std::ostream &s) const
-{
-    for( Params::List::const_iterator citr = plist_.begin(); citr != plist_.end(); ++citr )
-        (*citr)->print(s);
+    for( Params::List::const_iterator citr = p.plist_.begin(); citr != p.plist_.end(); ++citr )
+        print(*citr, s);
 }
 
 //------------------------------------------------------------------------------------------------------
-
-Params::value_t ValueParams::get( const key_t& key ) const
-{
-    return props_.get(key); // returns Value Nil if doesn't exist
-}
 
 void ValueParams::set(const Params::key_t& k, const Params::value_t& v)
 {
     props_.set(k,v);
 }
 
-void ValueParams::print(std::ostream &s) const
+Params::value_t get( const ValueParams& p, const Params::key_t& key )
 {
-    s << props_;
+    return p.props_.get(key); // returns Value Nil if doesn't exist
+}
+
+void print(const ValueParams & p, std::ostream &s)
+{
+    s << p.props_;
 }
 
 //------------------------------------------------------------------------------------------------------
 
-ScopeParams::ScopeParams(const Params::key_t& scope_key, const Params::Ptr& p ) :
+ScopeParams::ScopeParams(const Params::key_t& scope_key, const Params & p ) :
     scope_( scope_key + "." ),
     p_(p)
 {
-    ASSERT(p_);
 }
 
-Params::value_t ScopeParams::get(const key_t& key ) const
+Params::value_t get( const ScopeParams& p, const Params::key_t& key )
 {
-    if( StringTools::startsWith(key, scope_) )
+    if( StringTools::startsWith(key, p.scope_) )
     {
-        return p_->get( key );
+        return get( p.p_, key );
     }
     else
     {
-    	return value_t();
+        return Params::value_t();
     }
 }
 
-void ScopeParams::print(std::ostream &s) const
+void print( const ScopeParams& p, std::ostream &s )
 {
-    p_->print(s);
+    print(p.p_, s);
 }
 
 //------------------------------------------------------------------------------------------------------
 
-UnScopeParams::UnScopeParams(const key_t& scope_key, const Params::Ptr& p ) :
+UnScopeParams::UnScopeParams( const Params::key_t& scope_key, const Params& p ) :
     scope_( scope_key + "." ),
     p_(p)
 {
-    ASSERT(p_);
 }
 
-Params::value_t UnScopeParams::get(const key_t& key ) const
+Params::value_t get( const UnScopeParams& p, const Params::key_t& key )
 {
-    return p_->get( scope_ + key );
+    return get( p.p_, p.scope_ + key );
 }
 
-void UnScopeParams::print(std::ostream &s) const
+void print( const UnScopeParams& p, std::ostream &s )
 {
-    p_->print(s);
+    print(p.p_, s);
 }
 
 //------------------------------------------------------------------------------------------------------

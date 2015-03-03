@@ -51,15 +51,9 @@ public: // methods
 
     value_t operator[] ( const key_t& key ) const;
 
-    friend value_t get( const Params& p, const key_t& key )
-    {
-        return p.self_->get_(key);
-    }
+    friend value_t get( const Params& p, const key_t& key );
 
-    friend void print( const Params& p, std::ostream& s )
-    {
-        p.self_->print_(s);
-    }
+    friend void print( const Params& p, std::ostream& s );
 
 private: // internal classes
 

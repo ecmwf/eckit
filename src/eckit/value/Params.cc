@@ -31,6 +31,16 @@ Params::value_t Params::operator[]( const Params::key_t& key ) const
     return v;
 }
 
+Params::value_t get( const Params& p, const Params::key_t& key )
+{
+    return p.self_->get_(key);
+}
+
+void print( const Params& p, std::ostream& s )
+{
+    p.self_->print_(s);
+}
+
 //------------------------------------------------------------------------------------------------------
 
 CompositeParams::CompositeParams() : plist_() 

@@ -149,7 +149,7 @@ public: // methods
     template < typename T >
     friend Params::value_t get( const DispatchParams<T>& p, const Params::key_t& key );
 
-private: // members
+protected: // members
 
     typedef Params::value_t ( Derived::* parametrizer_t ) ( const Params::key_t& ) const ;
     typedef std::map< std::string, parametrizer_t > store_t;

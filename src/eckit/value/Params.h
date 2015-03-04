@@ -146,9 +146,8 @@ public: // methods
 
     DispatchParams() {}
 
-private: // methods
-
-    friend Params::value_t get( const DispatchParams& p, const Params::key_t& key );
+    template < typename T >
+    friend Params::value_t get( const DispatchParams<T>& p, const Params::key_t& key );
 
 private: // members
 

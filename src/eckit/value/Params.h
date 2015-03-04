@@ -36,7 +36,7 @@ public: // types
 public: // methods
 
     template <typename T>
-    Params( T x ) : self_(new Model<T>(x)) {}
+    explicit Params( T x ) : self_(new Model<T>(x)) {}
 
     ~Params() { delete self_; }
 

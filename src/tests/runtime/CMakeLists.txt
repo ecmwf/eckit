@@ -16,9 +16,3 @@ ecbuild_add_test(	TARGET  test_runtime
 					SOURCES test_context.cc
 					LIBS    eckit
 )
-
-ecbuild_add_test(	TARGET test_dispatcher
-					BOOST
-					SOURCES  test_dispatcher.cc
-					LIBS     eckit
-)

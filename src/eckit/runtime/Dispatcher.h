@@ -104,23 +104,11 @@ public:
 	// Get the queue size
 	int  size();
 
-	// Increment the number of live threads by given delta
-	void alive(long);
-
-	// Get the number of live threads
-	long alive();
-
 	// Increment the running state by given delta
 	void running(long);
 
 	// Get the running state
 	long running();
-
-	// Wait for all threads to finish work
-	void waitForAll();
-
-	// Stop all running worker threads
-	void stopAll();
 
 	// Serialise requests in queue as JSON array
 	void json(JSON&) const;
@@ -152,10 +140,8 @@ protected:
 	bool           	  grow_;
 	// Number of active threads (i.e. processing work)
 	long              running_;
-	// Mutex protecting running_
-	MutexCond         run_;
-	// Mutex protecting count_
-	MutexCond         cnt_;
+
+	Mutex             lock_;
 
 private:
 
@@ -168,8 +154,7 @@ private:
 
 	void print(std::ostream&) const;
 	void changeThreadCount(int delta);
-	void do_push(Request*);
-	void do_push(const std::vector<Request *>&);
+	void _push(Request*);
 
 	// From Configurable
 
@@ -284,9 +269,6 @@ void DispatchTask<Traits>::run()
 
 	Handler handler;
 
-	// Inform dispatcher that a thread has started
-	owner_.alive(1);
-
 	while(!stopped())
 	{
 
@@ -317,21 +299,16 @@ void DispatchTask<Traits>::run()
 			Log::error() << "** Exception is ignored" << std::endl;
 			owner_.awake();
 		}
-
-		{
-			AutoLock<Mutex> lock(mutex_);
-			for(typename std::vector<Request*>::iterator i = pick_.begin(); i != pick_.end(); ++i)
-			{
-				delete (*i);
-				*i = 0;
-			}
-		}
-
 		owner_.running(-1);
-	}
 
-	// Inform dispatcher that a thread has died
-	owner_.alive(-1);
+		AutoLock<Mutex> lock(mutex_);
+
+		for(typename std::vector<Request*>::iterator i = pick_.begin(); i != pick_.end(); ++i)
+		{
+			delete (*i);
+			*i = 0;
+		}
+	}
 
 	owner_.awake();
 	Log::info() << "End of thread " << id_ << std::endl;
@@ -387,35 +364,23 @@ Dispatcher<Traits>::~Dispatcher()
 }
 
 template<class Traits>
-long Dispatcher<Traits>::alive()
-{
-	AutoLock<MutexCond> lock(cnt_);
-	return count_;
-}
-
-template<class Traits>
-void Dispatcher<Traits>::alive(long delta)
-{
-	AutoLock<MutexCond> lock(cnt_);
-	count_ += delta;
-	ASSERT(count_ >= 0);
-	cnt_.signal();
-}
-
-template<class Traits>
 long Dispatcher<Traits>::running()
 {
-	AutoLock<MutexCond> lock(run_);
-	return running_;
+	if(grow_) {
+		AutoLock<Mutex> lock(lock_);
+		return running_;
+	}
+	return 0;
 }
 
 template<class Traits>
 void Dispatcher<Traits>::running(long delta)
 {
-	AutoLock<MutexCond> lock(run_);
-	running_ += delta;
-	ASSERT(running_ >= 0);
-	run_.signal();
+	if(grow_) {
+		AutoLock<Mutex> lock(lock_);
+		running_ += delta;
+		ASSERT(running_ >= 0);
+	}
 }
 
 template<class Traits>
@@ -429,43 +394,16 @@ void Dispatcher<Traits>::push(Request* r)
 		if(cnt == count_) changeThreadCount(1);
 	}
 
-	do_push(r);
+	_push(r);
 }
 
 template<class Traits>
-void Dispatcher<Traits>::do_push(Request* r)
+void Dispatcher<Traits>::_push(Request* r)
 {
 
 	{
 		AutoLock<MutexCond> lock(ready_);
 		queue_.push_back(r); // enqueue Request
-		ready_.signal();
-	}
-	awake();
-}
-
-template<class Traits>
-void Dispatcher<Traits>::push(const std::vector<Request*> &r)
-{
-	if(r.empty()) return;
-
-	if(grow_)
-	{
-		// Make sure we have enough threads to serve all requests
-		int avail = count_ - running();
-		if(avail < r.size()) changeThreadCount(r.size() - avail);
-	}
-
-	do_push(r);
-}
-
-template<class Traits>
-void Dispatcher<Traits>::do_push(const std::vector<Request*>& r)
-{
-	{
-		AutoLock<MutexCond> lock(ready_);
-		for (typename std::vector<Request*>::const_iterator it = r.begin(); it != r.end(); ++it)
-			queue_.push_back(*it); // enqueue Request
 		ready_.signal();
 	}
 	awake();
@@ -576,32 +514,6 @@ void Dispatcher<Traits>::dequeue(DequeuePicker<Request>& p)
 	AutoLock<MutexCond> lock(ready_);
 	p.pick(queue_);
 	ready_.signal();
-
-}
-
-template<class Traits>
-void Dispatcher<Traits>::waitForAll()
-{
-	AutoLock<MutexCond> lock(run_);
-	// Wait until BOTH the queue is empty and there are no more
-	// active threads
-	while(running_ > 0 || queue_.size() > 0)
-		run_.wait();
-}
-
-template<class Traits>
-void Dispatcher<Traits>::stopAll()
-{
-	waitForAll();
-
-	// FIXME: potential race condition (reported by Clang ThreadSanitizer)
-	Log::info() << "Killing " << count_ << " threads" << std::endl;
-
-	changeThreadCount(-count_);
-
-	AutoLock<MutexCond> lock(cnt_);
-	while(count_ > 0)
-		cnt_.wait();
 }
 
 template<class Traits>
@@ -626,8 +538,13 @@ void Dispatcher<Traits>::changeThreadCount(int delta)
 	{
 		for(int i = 0; i < -delta ; i++)
 		{
-			do_push(0);
+			_push(0);
 		}
+	}
+
+	if(delta) {
+		AutoLock<Mutex> lock(lock_);
+		count_   += delta;
 	}
 }
 

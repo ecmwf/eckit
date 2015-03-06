@@ -148,6 +148,8 @@ public: // methods
 
     template < typename T >
     friend Params::value_t get( const DispatchParams<T>& p, const Params::key_t& key );
+    template < typename T >
+    friend void print( const DispatchParams<T>& p, std::ostream& s );
 
 protected: // members
 
@@ -156,6 +158,25 @@ protected: // members
 
     store_t dispatch_;
 };
+
+template < class Derived >
+Params::value_t get( const DispatchParams<Derived>& p, const Params::key_t& key )
+{
+    typename DispatchParams<Derived>::store_t::const_iterator i = p.dispatch_.find(key);
+    if( i != p.dispatch_.end() )
+    {
+        typename DispatchParams<Derived>::parametrizer_t fptr = i->second;
+        const Derived* pobj = static_cast<const Derived*>(&p);
+        return (pobj->*fptr)( key );
+    }
+    else
+        return Params::value_t();
+}
+
+template < class Derived >
+void print( const DispatchParams<Derived>& p, std::ostream& s )
+{
+}
 
 //-------------------------------------------------------------------------------------------
 

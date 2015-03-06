@@ -25,6 +25,36 @@ namespace eckit_test {
 
 BOOST_AUTO_TEST_SUITE( test_eckit_value_params )
 
+BOOST_AUTO_TEST_CASE( test_value_params_keys )
+{
+    BOOST_TEST_MESSAGE("Test keys present in ValueParams");
+    ValueParams p;
+    p.set("bool", true);
+    p.set("int", numeric_limits<int>::max());
+    p.set("unsigned int", numeric_limits<unsigned int>::max());
+    p.set("long long", numeric_limits<long long>::max());
+    p.set("unsigned long long", numeric_limits<unsigned long long>::max());
+    p.set("double", numeric_limits<double>::max());
+    p.set("string", "foo");
+    p.set("Length", Length(42));
+    p.set("Date", Date(2015, 2, 1));
+    p.set("PathName", PathName("/var/tmp"));
+
+    Params params{p};
+    BOOST_TEST_MESSAGE("Params: " << params);
+    BOOST_CHECK( params.has("bool") );
+    BOOST_CHECK( params.has("int") );
+    BOOST_CHECK( params.has("unsigned int") );
+    BOOST_CHECK( params.has("long long") );
+    BOOST_CHECK( params.has("unsigned long long") );
+    BOOST_CHECK( params.has("double") );
+    BOOST_CHECK( params.has("string") );
+    BOOST_CHECK( params.has("Length") );
+    BOOST_CHECK( params.has("Date") );
+    BOOST_CHECK( params.has("PathName") );
+    BOOST_CHECK( !params.has("foo") );
+}
+
 BOOST_AUTO_TEST_CASE( test_value_params )
 {
     BOOST_TEST_MESSAGE("Initialize ValueParams");

@@ -25,6 +25,38 @@ namespace eckit_test {
 
 BOOST_AUTO_TEST_SUITE( test_eckit_value_params )
 
+BOOST_AUTO_TEST_CASE( test_value_params )
+{
+    BOOST_TEST_MESSAGE("Initialize ValueParams");
+    ValueParams p;
+    p.set("bool", true);
+    p.set("int", numeric_limits<int>::max());
+    p.set("unsigned int", numeric_limits<unsigned int>::max());
+    p.set("long long", numeric_limits<long long>::max());
+    p.set("unsigned long long", numeric_limits<unsigned long long>::max());
+    p.set("double", numeric_limits<double>::max());
+    p.set("string", "foo");
+    p.set("Length", Length(42));
+    p.set("Date", Date(2015, 2, 1));
+    p.set("PathName", PathName("/var/tmp"));
+
+    Params params{p};
+    BOOST_TEST_MESSAGE("Params: " << params);
+    BOOST_CHECK_EQUAL(true, (bool)params["bool"]);
+    BOOST_CHECK_EQUAL(numeric_limits<int>::max(), (int)params["int"]);
+    BOOST_CHECK_EQUAL(numeric_limits<unsigned int>::max(),
+                      (unsigned int)params["unsigned int"]);
+    BOOST_CHECK_EQUAL(numeric_limits<long long>::max(),
+                      (long long)params["long long"]);
+    BOOST_CHECK_EQUAL(numeric_limits<unsigned long long>::max(),
+                      (unsigned long long)params["unsigned long long"]);
+    BOOST_CHECK_EQUAL(numeric_limits<double>::max(), (double)params["double"]);
+    BOOST_CHECK_EQUAL("foo", params["string"]);
+    BOOST_CHECK_EQUAL(Length(42), params["Length"]);
+    BOOST_CHECK(params["Date"].compare(Date(2015, 2, 1))); // FIXME: equality check fails
+    BOOST_CHECK_EQUAL(PathName("/var/tmp"), params["PathName"]);
+}
+
 BOOST_AUTO_TEST_CASE( test_value_params_from_properties )
 {
     BOOST_TEST_MESSAGE("Initialize ValueParams from Properties");

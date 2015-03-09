@@ -31,7 +31,7 @@ public: // types
 
     typedef std::list<Params> List;
     typedef std::string  key_t;
-    typedef eckit::Value value_t;
+    typedef Value value_t;
 
 public: // methods
 
@@ -126,7 +126,7 @@ class ValueParams {
 public: // methods
 
     ValueParams() : props_() {}
-    ValueParams( const eckit::Properties& p ) : props_(p) {}
+    ValueParams( const Properties& p ) : props_(p) {}
 
     void set( const Params::key_t& k, const Params::value_t& v );
 
@@ -139,7 +139,7 @@ private: // methods
 
 private: // members
 
-    eckit::Properties props_;
+    Properties props_;
 };
 
 //-------------------------------------------------------------------------------------------

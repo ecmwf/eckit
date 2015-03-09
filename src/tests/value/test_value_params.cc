@@ -21,6 +21,12 @@ using namespace eckit;
 
 namespace eckit_test {
 
+const int imax = numeric_limits<int>::max();
+const unsigned int uimax = numeric_limits<unsigned int>::max();
+const long long llmax = numeric_limits<long long>::max();
+const unsigned long long ullmax = numeric_limits<unsigned long long>::max();
+const double dmax = numeric_limits<double>::max();
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE( test_eckit_value_params )
@@ -30,11 +36,11 @@ BOOST_AUTO_TEST_CASE( test_value_params_keys )
     BOOST_TEST_MESSAGE("Test keys present in ValueParams");
     ValueParams p;
     p.set("bool", true);
-    p.set("int", numeric_limits<int>::max());
-    p.set("unsigned int", numeric_limits<unsigned int>::max());
-    p.set("long long", numeric_limits<long long>::max());
-    p.set("unsigned long long", numeric_limits<unsigned long long>::max());
-    p.set("double", numeric_limits<double>::max());
+    p.set("int", imax);
+    p.set("unsigned int", uimax);
+    p.set("long long", llmax);
+    p.set("unsigned long long", ullmax);
+    p.set("double", dmax);
     p.set("string", "foo");
     p.set("Length", Length(42));
     p.set("Date", Date(2015, 2, 1));
@@ -60,11 +66,11 @@ BOOST_AUTO_TEST_CASE( test_value_params )
     BOOST_TEST_MESSAGE("Initialize ValueParams");
     ValueParams p;
     p.set("bool", true);
-    p.set("int", numeric_limits<int>::max());
-    p.set("unsigned int", numeric_limits<unsigned int>::max());
-    p.set("long long", numeric_limits<long long>::max());
-    p.set("unsigned long long", numeric_limits<unsigned long long>::max());
-    p.set("double", numeric_limits<double>::max());
+    p.set("int", imax);
+    p.set("unsigned int", uimax);
+    p.set("long long", llmax);
+    p.set("unsigned long long", ullmax);
+    p.set("double", dmax);
     p.set("string", "foo");
     p.set("Length", Length(42));
     p.set("Date", Date(2015, 2, 1));
@@ -72,19 +78,16 @@ BOOST_AUTO_TEST_CASE( test_value_params )
 
     Params params(p);
     BOOST_TEST_MESSAGE("Params: " << params);
-    BOOST_CHECK_EQUAL(true, (bool)params["bool"]);
-    BOOST_CHECK_EQUAL(numeric_limits<int>::max(), (int)params["int"]);
-    BOOST_CHECK_EQUAL(numeric_limits<unsigned int>::max(),
-                      (unsigned int)params["unsigned int"]);
-    BOOST_CHECK_EQUAL(numeric_limits<long long>::max(),
-                      (long long)params["long long"]);
-    BOOST_CHECK_EQUAL(numeric_limits<unsigned long long>::max(),
-                      (unsigned long long)params["unsigned long long"]);
-    BOOST_CHECK_EQUAL(numeric_limits<double>::max(), (double)params["double"]);
-    BOOST_CHECK_EQUAL("foo", params["string"]);
-    BOOST_CHECK_EQUAL(Length(42), params["Length"]);
+    BOOST_CHECK_EQUAL((bool)params["bool"], true);
+    BOOST_CHECK_EQUAL((int)params["int"], imax);
+    BOOST_CHECK_EQUAL((unsigned int)params["unsigned int"], uimax);
+    BOOST_CHECK_EQUAL((long long)params["long long"], llmax);
+    BOOST_CHECK_EQUAL((unsigned long long)params["unsigned long long"], ullmax);
+    BOOST_CHECK_EQUAL((double)params["double"], dmax);
+    BOOST_CHECK_EQUAL(params["string"], "foo");
+    BOOST_CHECK_EQUAL(params["Length"], Length(42));
     BOOST_CHECK(params["Date"].compare(Date(2015, 2, 1))); // FIXME: equality check fails
-    BOOST_CHECK_EQUAL(PathName("/var/tmp"), params["PathName"]);
+    BOOST_CHECK_EQUAL(params["PathName"], PathName("/var/tmp"));
 }
 
 BOOST_AUTO_TEST_CASE( test_value_params_from_properties )
@@ -92,11 +95,11 @@ BOOST_AUTO_TEST_CASE( test_value_params_from_properties )
     BOOST_TEST_MESSAGE("Initialize ValueParams from Properties");
     Properties p;
     p.set("bool", true);
-    p.set("int", numeric_limits<int>::max());
-    p.set("unsigned int", numeric_limits<unsigned int>::max());
-    p.set("long long", numeric_limits<long long>::max());
-    p.set("unsigned long long", numeric_limits<unsigned long long>::max());
-    p.set("double", numeric_limits<double>::max());
+    p.set("int", imax);
+    p.set("unsigned int", uimax);
+    p.set("long long", llmax);
+    p.set("unsigned long long", ullmax);
+    p.set("double", dmax);
     p.set("string", "foo");
     p.set("Length", Length(42));
     p.set("Date", Date(2015, 2, 1));
@@ -122,11 +125,11 @@ BOOST_AUTO_TEST_CASE( test_composite_params )
 
     CompositeParams cp;
     cp.push_back(Params(ValueParams().set("bool", true)));
-    cp.push_back(Params(ValueParams().set("int", numeric_limits<int>::max())));
-    cp.push_back(Params(ValueParams().set("unsigned int", numeric_limits<unsigned int>::max())));
-    cp.push_back(Params(ValueParams().set("long long", numeric_limits<long long>::max())));
-    cp.push_back(Params(ValueParams().set("unsigned long long", numeric_limits<unsigned long long>::max())));
-    cp.push_back(Params(ValueParams().set("double", numeric_limits<double>::max())));
+    cp.push_back(Params(ValueParams().set("int", imax)));
+    cp.push_back(Params(ValueParams().set("unsigned int", uimax)));
+    cp.push_back(Params(ValueParams().set("long long", llmax)));
+    cp.push_back(Params(ValueParams().set("unsigned long long", ullmax)));
+    cp.push_back(Params(ValueParams().set("double", dmax)));
     cp.push_back(Params(ValueParams().set("string", "foo")));
     cp.push_back(Params(ValueParams().set("Length", Length(42))));
     cp.push_back(Params(ValueParams().set("Date", Date(2015, 2, 1))));
@@ -134,19 +137,16 @@ BOOST_AUTO_TEST_CASE( test_composite_params )
 
     Params params(cp);
     BOOST_TEST_MESSAGE("Params: " << params);
-    BOOST_CHECK_EQUAL(true, (bool)params["bool"]);
-    BOOST_CHECK_EQUAL(numeric_limits<int>::max(), (int)params["int"]);
-    BOOST_CHECK_EQUAL(numeric_limits<unsigned int>::max(),
-                      (unsigned int)params["unsigned int"]);
-    BOOST_CHECK_EQUAL(numeric_limits<long long>::max(),
-                      (long long)params["long long"]);
-    BOOST_CHECK_EQUAL(numeric_limits<unsigned long long>::max(),
-                      (unsigned long long)params["unsigned long long"]);
-    BOOST_CHECK_EQUAL(numeric_limits<double>::max(), (double)params["double"]);
-    BOOST_CHECK_EQUAL("foo", params["string"]);
-    BOOST_CHECK_EQUAL(Length(42), params["Length"]);
+    BOOST_CHECK_EQUAL((bool)params["bool"], true);
+    BOOST_CHECK_EQUAL((int)params["int"], imax);
+    BOOST_CHECK_EQUAL((unsigned int)params["unsigned int"], uimax);
+    BOOST_CHECK_EQUAL((long long)params["long long"], llmax);
+    BOOST_CHECK_EQUAL((unsigned long long)params["unsigned long long"], ullmax);
+    BOOST_CHECK_EQUAL((double)params["double"], dmax);
+    BOOST_CHECK_EQUAL(params["string"], "foo");
+    BOOST_CHECK_EQUAL(params["Length"], Length(42));
     BOOST_CHECK(params["Date"].compare(Date(2015, 2, 1))); // FIXME: equality check fails
-    BOOST_CHECK_EQUAL(PathName("/var/tmp"), params["PathName"]);
+    BOOST_CHECK_EQUAL(params["PathName"], PathName("/var/tmp"));
 }
 
 //-----------------------------------------------------------------------------

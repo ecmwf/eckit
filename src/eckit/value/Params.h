@@ -36,14 +36,15 @@ public: // types
 public: // methods
 
     template <typename T>
-    explicit Params( T x ) : self_(new Model<T>(x)) {}
+    explicit Params( const T& x ) : self_(new Model<T>(x)) {}
+
+    explicit Params( const Params& x ) : self_(x.self_->copy_()) {}
 
     ~Params() { delete self_; }
 
-    Params& operator=( const Params& x )
+    Params& operator=( Params x )
     {
-        Params tmp(x);
-        std::swap(tmp, *this);
+        std::swap(x.self_, this->self_);
         return *this;
     }
 
@@ -59,6 +60,7 @@ private: // internal classes
 
     struct Concept {
         virtual ~Concept() {}
+        virtual Concept* copy_() const = 0;
         virtual value_t get_( const key_t& key ) const = 0;
         virtual void print_( std::ostream& s ) const = 0;
     };
@@ -67,6 +69,9 @@ private: // internal classes
     struct Model : Concept
     {
         Model( T x ) : data_(x) {}
+        virtual Concept* copy_() const {
+            return new Model(*this);
+        }
         virtual value_t get_( const key_t& key ) const {
             return get( data_, key );
         }

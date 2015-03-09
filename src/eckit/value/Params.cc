@@ -80,9 +80,10 @@ void print( const CompositeParams& p, std::ostream& s )
 
 //------------------------------------------------------------------------------------------------------
 
-void ValueParams::set(const Params::key_t& k, const Params::value_t& v)
+ValueParams & ValueParams::set(const Params::key_t& k, const Params::value_t& v)
 {
     props_.set(k,v);
+    return *this;
 }
 
 Params::value_t get( const ValueParams& p, const Params::key_t& key )

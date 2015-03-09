@@ -128,7 +128,7 @@ public: // methods
     ValueParams() : props_() {}
     ValueParams( const Properties& p ) : props_(p) {}
 
-    void set( const Params::key_t& k, const Params::value_t& v );
+    ValueParams& set( const Params::key_t& k, const Params::value_t& v );
 
 private: // methods
 

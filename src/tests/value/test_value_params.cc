@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( test_value_params_keys )
     p.set("Date", Date(2015, 2, 1));
     p.set("PathName", PathName("/var/tmp"));
 
-    Params params{p};
+    Params params(p);
     BOOST_TEST_MESSAGE("Params: " << params);
     BOOST_CHECK( params.has("bool") );
     BOOST_CHECK( params.has("int") );
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE( test_value_params )
     p.set("Date", Date(2015, 2, 1));
     p.set("PathName", PathName("/var/tmp"));
 
-    Params params{p};
+    Params params(p);
     BOOST_TEST_MESSAGE("Params: " << params);
     BOOST_CHECK_EQUAL(true, (bool)params["bool"]);
     BOOST_CHECK_EQUAL(numeric_limits<int>::max(), (int)params["int"]);
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE( test_value_params_from_properties )
     p.set("Date", Date(2015, 2, 1));
     p.set("PathName", PathName("/var/tmp"));
 
-    Params params{ValueParams(p)};
+    Params params( (ValueParams(p)) ); // C++ Most Vexing Parse
     BOOST_TEST_MESSAGE("Params: " << params);
     BOOST_CHECK_EQUAL((bool)p["bool"], (bool)params["bool"]);
     BOOST_CHECK_EQUAL(p["int"], params["int"]);

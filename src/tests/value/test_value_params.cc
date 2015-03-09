@@ -119,38 +119,19 @@ BOOST_AUTO_TEST_CASE( test_value_params_from_properties )
 BOOST_AUTO_TEST_CASE( test_composite_params )
 {
     BOOST_TEST_MESSAGE("Initialize CompositeParams from ValueParams");
-    ValueParams p1;
-    p1.set("bool", true);
-    ValueParams p2;
-    p2.set("int", numeric_limits<int>::max());
-    ValueParams p3;
-    p3.set("unsigned int", numeric_limits<unsigned int>::max());
-    ValueParams p4;
-    p4.set("long long", numeric_limits<long long>::max());
-    ValueParams p5;
-    p5.set("unsigned long long", numeric_limits<unsigned long long>::max());
-    ValueParams p6;
-    p6.set("double", numeric_limits<double>::max());
-    ValueParams p7;
-    p7.set("string", "foo");
-    ValueParams p8;
-    p8.set("Length", Length(42));
-    ValueParams p9;
-    p9.set("Date", Date(2015, 2, 1));
-    ValueParams p10;
-    p10.set("PathName", PathName("/var/tmp"));
 
     CompositeParams cp;
-    cp.push_back(Params(p1));
-    cp.push_back(Params(p2));
-    cp.push_back(Params(p3));
-    cp.push_back(Params(p4));
-    cp.push_back(Params(p5));
-    cp.push_back(Params(p6));
-    cp.push_back(Params(p7));
-    cp.push_back(Params(p8));
-    cp.push_back(Params(p9));
-    cp.push_back(Params(p10));
+    cp.push_back(Params(ValueParams().set("bool", true)));
+    cp.push_back(Params(ValueParams().set("int", numeric_limits<int>::max())));
+    cp.push_back(Params(ValueParams().set("unsigned int", numeric_limits<unsigned int>::max())));
+    cp.push_back(Params(ValueParams().set("long long", numeric_limits<long long>::max())));
+    cp.push_back(Params(ValueParams().set("unsigned long long", numeric_limits<unsigned long long>::max())));
+    cp.push_back(Params(ValueParams().set("double", numeric_limits<double>::max())));
+    cp.push_back(Params(ValueParams().set("string", "foo")));
+    cp.push_back(Params(ValueParams().set("Length", Length(42))));
+    cp.push_back(Params(ValueParams().set("Date", Date(2015, 2, 1))));
+    cp.push_back(Params(ValueParams().set("PathName", PathName("/var/tmp"))));
+
     Params params(cp);
     BOOST_TEST_MESSAGE("Params: " << params);
     BOOST_CHECK_EQUAL(true, (bool)params["bool"]);

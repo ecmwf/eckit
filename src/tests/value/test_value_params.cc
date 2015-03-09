@@ -149,6 +149,36 @@ BOOST_AUTO_TEST_CASE( test_composite_params )
     BOOST_CHECK_EQUAL(params["PathName"], PathName("/var/tmp"));
 }
 
+BOOST_AUTO_TEST_CASE( test_composite_params_list )
+{
+    BOOST_TEST_MESSAGE("Initialize CompositeParams from list of ValueParams");
+
+    Params::List l;
+    l.push_back(Params(ValueParams().set("bool", true)));
+    l.push_back(Params(ValueParams().set("int", imax)));
+    l.push_back(Params(ValueParams().set("unsigned int", uimax)));
+    l.push_back(Params(ValueParams().set("long long", llmax)));
+    l.push_back(Params(ValueParams().set("unsigned long long", ullmax)));
+    l.push_back(Params(ValueParams().set("double", dmax)));
+    l.push_back(Params(ValueParams().set("string", "foo")));
+    l.push_back(Params(ValueParams().set("Length", Length(42))));
+    l.push_back(Params(ValueParams().set("Date", Date(2015, 2, 1))));
+    l.push_back(Params(ValueParams().set("PathName", PathName("/var/tmp"))));
+
+    Params params( (CompositeParams(l)) ); // C++ Most Vexing Parse
+    BOOST_TEST_MESSAGE("Params: " << params);
+    BOOST_CHECK_EQUAL((bool)params["bool"], true);
+    BOOST_CHECK_EQUAL((int)params["int"], imax);
+    BOOST_CHECK_EQUAL((unsigned int)params["unsigned int"], uimax);
+    BOOST_CHECK_EQUAL((long long)params["long long"], llmax);
+    BOOST_CHECK_EQUAL((unsigned long long)params["unsigned long long"], ullmax);
+    BOOST_CHECK_EQUAL((double)params["double"], dmax);
+    BOOST_CHECK_EQUAL(params["string"], "foo");
+    BOOST_CHECK_EQUAL(params["Length"], Length(42));
+    BOOST_CHECK(params["Date"].compare(Date(2015, 2, 1))); // FIXME: equality check fails
+    BOOST_CHECK_EQUAL(params["PathName"], PathName("/var/tmp"));
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

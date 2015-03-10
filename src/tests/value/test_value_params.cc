@@ -59,6 +59,7 @@ BOOST_AUTO_TEST_CASE( test_value_params_keys )
     BOOST_CHECK( params.has("Date") );
     BOOST_CHECK( params.has("PathName") );
     BOOST_CHECK( !params.has("foo") );
+    BOOST_CHECK_THROW( params["foo"], BadParameter );
 }
 
 BOOST_AUTO_TEST_CASE( test_value_params )

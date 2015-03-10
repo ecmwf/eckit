@@ -68,7 +68,7 @@ ecbuild_add_option( FEATURE MPISTUBS
 
 ecbuild_add_option( FEATURE ECKIT_MPI
                     DESCRIPTION "eckit C++ wrapper for mpi"
-                    CONDITION HAVE_MPI OR HAVE_MPISTUBS )
+                    CONDITION HAVE_MPI )
 
 ecbuild_add_option( FEATURE ECKIT_MPISTUBS
                     DESCRIPTION "eckit C++ wrapper for mpi using mpistubs"

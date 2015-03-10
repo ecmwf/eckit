@@ -12,12 +12,6 @@ BroadcastFile.h
 BroadcastFile.cc
 )
 
-if( NOT HAVE_MPI )
-  set( MPI_CXX_INCLUDE_PATH ${MPISTUBS_INCLUDE_DIRS} )
-  set( MPI_CXX_LIBRARIES    mpistubs )
-  set( MPI_CXX_DEFINITIONS ECKIT_MPISTUBS)
-endif()
-
 
 if( HAVE_ECKIT_MPI )
 
@@ -45,15 +39,11 @@ if( HAVE_ECKIT_MPISTUBS)
                       SOURCES
                         ${eckit_mpi_srcs}
                       INCLUDES
-                          ${MPISTUBS_INCLUDE_DIRS}
+                        ${MPISTUBS_INCLUDE_DIRS}
                       LIBS
                           eckit mpistubs
-                      DEFINITIONS ECKIT_USE_MPISTUBS )
-
-  get_property( defs TARGET eckit_mpistubs PROPERTY COMPILE_DEFINITIONS )
-    foreach(def ${defs})
-      message(STATUS "eckit_mpistubs definition: '${def}'")
-    endforeach()
+                      DEFINITIONS ECKIT_USE_MPISTUBS
+                      )
 
 endif()
 

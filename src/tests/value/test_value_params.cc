@@ -194,6 +194,20 @@ BOOST_AUTO_TEST_CASE( test_scope_params )
     BOOST_CHECK_THROW( sp["foo"], BadParameter );
 }
 
+BOOST_AUTO_TEST_CASE( test_unscope_params )
+{
+    Params p(ValueParams().set("scope.foo", "bar").set("foo", "baz"));
+    BOOST_CHECK( p.has("scope.foo") );
+    BOOST_CHECK( p.has("foo") );
+    BOOST_CHECK_EQUAL( p["scope.foo"], "bar" );
+    BOOST_CHECK_EQUAL( p["foo"], "baz" );
+    Params sp(UnScopeParams("scope", p));
+    BOOST_CHECK( !sp.has("scope.foo") );
+    BOOST_CHECK( sp.has("foo") );
+    BOOST_CHECK_THROW( sp["scope.foo"], BadParameter );
+    BOOST_CHECK_EQUAL( sp["foo"], "bar" );
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -108,7 +108,7 @@ Params::value_t get( const ScopeParams& p, const Params::key_t& key )
 {
     if( StringTools::startsWith(key, p.scope_) )
     {
-        return get( p.p_, key );
+        return get( p.p_, key.substr(p.scope_.length()) );
     }
     else
     {

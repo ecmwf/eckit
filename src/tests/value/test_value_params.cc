@@ -138,30 +138,29 @@ BOOST_AUTO_TEST_CASE( test_composite_params )
 {
     BOOST_TEST_MESSAGE("Initialize CompositeParams from ValueParams");
 
-    CompositeParams cp;
-    cp.push_back(Params(ValueParams().set("bool", true)));
-    cp.push_back(Params(ValueParams().set("int", imax)));
-    cp.push_back(Params(ValueParams().set("unsigned int", uimax)));
-    cp.push_back(Params(ValueParams().set("long long", llmax)));
-    cp.push_back(Params(ValueParams().set("unsigned long long", ullmax)));
-    cp.push_back(Params(ValueParams().set("double", dmax)));
-    cp.push_back(Params(ValueParams().set("string", "foo")));
-    cp.push_back(Params(ValueParams().set("Length", Length(42))));
-    cp.push_back(Params(ValueParams().set("Date", Date(2015, 2, 1))));
-    cp.push_back(Params(ValueParams().set("PathName", PathName("/var/tmp"))));
+    Params cp(CompositeParams()
+              .push_back(Params(ValueParams().set("bool", true)))
+              .push_back(Params(ValueParams().set("int", imax)))
+              .push_back(Params(ValueParams().set("unsigned int", uimax)))
+              .push_back(Params(ValueParams().set("long long", llmax)))
+              .push_back(Params(ValueParams().set("unsigned long long", ullmax)))
+              .push_back(Params(ValueParams().set("double", dmax)))
+              .push_back(Params(ValueParams().set("string", "foo")))
+              .push_back(Params(ValueParams().set("Length", Length(42))))
+              .push_back(Params(ValueParams().set("Date", Date(2015, 2, 1))))
+              .push_back(Params(ValueParams().set("PathName", PathName("/var/tmp")))));
 
-    Params params(cp);
-    BOOST_TEST_MESSAGE("Params: " << params);
-    BOOST_CHECK_EQUAL((bool)params["bool"], true);
-    BOOST_CHECK_EQUAL((int)params["int"], imax);
-    BOOST_CHECK_EQUAL((unsigned int)params["unsigned int"], uimax);
-    BOOST_CHECK_EQUAL((long long)params["long long"], llmax);
-    BOOST_CHECK_EQUAL((unsigned long long)params["unsigned long long"], ullmax);
-    BOOST_CHECK_EQUAL((double)params["double"], dmax);
-    BOOST_CHECK_EQUAL(params["string"], "foo");
-    BOOST_CHECK_EQUAL(params["Length"], Length(42));
-    BOOST_CHECK(params["Date"].compare(Date(2015, 2, 1))); // FIXME: equality check fails
-    BOOST_CHECK_EQUAL(params["PathName"], PathName("/var/tmp"));
+    BOOST_TEST_MESSAGE("Params: " << cp);
+    BOOST_CHECK_EQUAL((bool)cp["bool"], true);
+    BOOST_CHECK_EQUAL((int)cp["int"], imax);
+    BOOST_CHECK_EQUAL((unsigned int)cp["unsigned int"], uimax);
+    BOOST_CHECK_EQUAL((long long)cp["long long"], llmax);
+    BOOST_CHECK_EQUAL((unsigned long long)cp["unsigned long long"], ullmax);
+    BOOST_CHECK_EQUAL((double)cp["double"], dmax);
+    BOOST_CHECK_EQUAL(cp["string"], "foo");
+    BOOST_CHECK_EQUAL(cp["Length"], Length(42));
+    BOOST_CHECK(cp["Date"].compare(Date(2015, 2, 1))); // FIXME: equality check fails
+    BOOST_CHECK_EQUAL(cp["PathName"], PathName("/var/tmp"));
 }
 
 BOOST_AUTO_TEST_CASE( test_composite_params_list )
@@ -217,10 +216,9 @@ BOOST_AUTO_TEST_CASE( test_scope_unscope_params )
     Params user(ValueParams().set("resol", 100));
     Params def(ValueParams().set("resol", 200));
 
-    CompositeParams cp;
-    cp.push_back(Params(ScopeParams("user", user)));
-    cp.push_back(Params(ScopeParams("default", def)));
-    Params p(cp);
+    Params p(CompositeParams()
+             .push_back(Params(ScopeParams("user", user)))
+             .push_back(Params(ScopeParams("default", def))));
 
     BOOST_CHECK( p.has("user.resol") );
     BOOST_CHECK( p.has("default.resol") );

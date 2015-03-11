@@ -103,11 +103,11 @@ public: // methods
     CompositeParams();
     CompositeParams( const Params::List& );
 
-    void push_front( const Params& p );
-    void push_back( const Params& p );
+    CompositeParams& push_front( const Params& p );
+    CompositeParams& push_back( const Params& p );
 
-    void pop_front() { plist_.pop_front(); }
-    void pop_back()  { plist_.pop_back(); }
+    CompositeParams& pop_front() { plist_.pop_front(); return *this; }
+    CompositeParams& pop_back()  { plist_.pop_back(); return *this; }
 
 private: // methods
 

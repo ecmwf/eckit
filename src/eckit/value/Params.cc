@@ -51,14 +51,16 @@ CompositeParams::CompositeParams(const Params::List& plist) : plist_(plist)
 {
 }
 
-void CompositeParams::push_front(const Params& p)
+CompositeParams& CompositeParams::push_front(const Params& p)
 {
     plist_.push_front(p);
+    return *this;
 }
 
-void CompositeParams::push_back(const Params& p)
+CompositeParams& CompositeParams::push_back(const Params& p)
 {
     plist_.push_back(p);
+    return *this;
 }
 
 Params::value_t get( const CompositeParams& p, const Params::key_t& key )

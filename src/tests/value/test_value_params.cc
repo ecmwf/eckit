@@ -212,6 +212,37 @@ BOOST_AUTO_TEST_CASE( test_unscope_params )
     BOOST_CHECK_EQUAL( sp["foo"], "bar" );
 }
 
+BOOST_AUTO_TEST_CASE( test_scope_unscope_params )
+{
+    Params user(ValueParams().set("resol", 100));
+    Params def(ValueParams().set("resol", 200));
+
+    CompositeParams cp;
+    cp.push_back(Params(ScopeParams("user", user)));
+    cp.push_back(Params(ScopeParams("default", def)));
+    Params p(cp);
+
+    BOOST_CHECK( p.has("user.resol") );
+    BOOST_CHECK( p.has("default.resol") );
+    BOOST_CHECK( !p.has("resol") );
+    BOOST_CHECK_EQUAL( (uint)p["user.resol"], 100 );
+    BOOST_CHECK_EQUAL( (uint)p["default.resol"], 200 );
+
+    Params usp(UnScopeParams("user", p));
+
+    BOOST_CHECK( !usp.has("user.resol") );
+    BOOST_CHECK( !usp.has("default.resol") );
+    BOOST_CHECK( usp.has("resol") );
+    BOOST_CHECK_EQUAL( (uint)usp["resol"], 100 );
+
+    Params dsp(UnScopeParams("default", p));
+
+    BOOST_CHECK( !dsp.has("user.resol") );
+    BOOST_CHECK( !dsp.has("default.resol") );
+    BOOST_CHECK( dsp.has("resol") );
+    BOOST_CHECK_EQUAL( (uint)dsp["resol"], 200 );
+}
+
 BOOST_AUTO_TEST_CASE( test_dispatch_params )
 {
     class TestParams : public DispatchParams<TestParams> {

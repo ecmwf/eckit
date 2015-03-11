@@ -208,6 +208,26 @@ BOOST_AUTO_TEST_CASE( test_unscope_params )
     BOOST_CHECK_EQUAL( sp["foo"], "bar" );
 }
 
+BOOST_AUTO_TEST_CASE( test_dispatch_params )
+{
+    class TestParams : public DispatchParams<TestParams> {
+    public:
+        TestParams() {
+            dispatch_["foo"] = &TestParams::getFoo;
+        }
+
+    private:
+        Params::value_t getFoo( const Params::key_t& key ) const {
+            return Params::value_t("bar");
+        }
+    };
+
+    Params p( (TestParams()) ); // C++ Most Vexing Parse
+    BOOST_CHECK( p.has("foo") );
+    BOOST_CHECK( !p.has("bar") );
+    BOOST_CHECK_EQUAL( p["foo"], "bar" );
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

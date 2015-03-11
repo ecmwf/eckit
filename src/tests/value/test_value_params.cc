@@ -29,6 +29,20 @@ const double dmax = numeric_limits<double>::max();
 
 //-----------------------------------------------------------------------------
 
+class AnyKeyParams {
+    friend Params::value_t get( const AnyKeyParams&, const Params::key_t& );
+    friend void print( const AnyKeyParams&, std::ostream& );
+};
+
+Params::value_t get( const AnyKeyParams&, const Params::key_t& )
+{
+    return Params::value_t("foo");
+}
+
+void print( const AnyKeyParams&, std::ostream& ) {}
+
+//-----------------------------------------------------------------------------
+
 BOOST_AUTO_TEST_SUITE( test_eckit_value_params )
 
 BOOST_AUTO_TEST_CASE( test_value_params_keys )
@@ -226,6 +240,15 @@ BOOST_AUTO_TEST_CASE( test_dispatch_params )
     BOOST_CHECK( p.has("foo") );
     BOOST_CHECK( !p.has("bar") );
     BOOST_CHECK_EQUAL( p["foo"], "bar" );
+}
+
+BOOST_AUTO_TEST_CASE( test_custom_params )
+{
+    Params p( (AnyKeyParams()) ); // C++ Most Vexing Parse
+    BOOST_CHECK( p.has("foo") );
+    BOOST_CHECK( p.has("bar") );
+    BOOST_CHECK_EQUAL( p["foo"], "foo" );
+    BOOST_CHECK_EQUAL( p["bar"], "foo" );
 }
 
 //-----------------------------------------------------------------------------

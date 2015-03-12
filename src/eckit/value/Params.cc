@@ -41,6 +41,11 @@ void print( const Params& p, std::ostream& s )
     p.self_->print_(s);
 }
 
+void encode( const Params& p, Stream& s )
+{
+    p.self_->encode_(s);
+}
+
 //------------------------------------------------------------------------------------------------------
 
 CompositeParams::CompositeParams() : plist_() 
@@ -80,6 +85,13 @@ void print( const CompositeParams& p, std::ostream& s )
         print(*citr, s);
 }
 
+
+void encode( const CompositeParams& p, Stream& s )
+{
+    for( Params::List::const_iterator citr = p.plist_.begin(); citr != p.plist_.end(); ++citr )
+        encode(*citr, s);
+}
+
 //------------------------------------------------------------------------------------------------------
 
 ValueParams & ValueParams::set(const Params::key_t& k, const Params::value_t& v)
@@ -94,6 +106,11 @@ Params::value_t get( const ValueParams& p, const Params::key_t& key )
 }
 
 void print(const ValueParams & p, std::ostream &s)
+{
+    s << p.props_;
+}
+
+void encode(const ValueParams& p, Stream& s)
 {
     s << p.props_;
 }
@@ -123,6 +140,12 @@ void print( const ScopeParams& p, std::ostream &s )
     print(p.p_, s);
 }
 
+void encode( const ScopeParams& p, Stream &s )
+{
+    s << p.scope_;
+    encode(p.p_, s);
+}
+
 //------------------------------------------------------------------------------------------------------
 
 UnScopeParams::UnScopeParams( const Params::key_t& scope_key, const Params& p ) :
@@ -139,6 +162,12 @@ Params::value_t get( const UnScopeParams& p, const Params::key_t& key )
 void print( const UnScopeParams& p, std::ostream &s )
 {
     print(p.p_, s);
+}
+
+void encode( const UnScopeParams& p, Stream &s )
+{
+    s << p.scope_;
+    encode(p.p_, s);
 }
 
 //------------------------------------------------------------------------------------------------------

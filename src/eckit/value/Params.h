@@ -16,6 +16,7 @@
 
 #include <list>
 
+#include "eckit/serialisation/Stream.h"
 #include "eckit/value/Value.h"
 #include "eckit/value/Properties.h"
 
@@ -56,6 +57,8 @@ public: // methods
 
     friend void print( const Params& p, std::ostream& s );
 
+    friend void encode( const Params& p, Stream& s );
+
 private: // internal classes
 
     struct Concept {
@@ -63,6 +66,7 @@ private: // internal classes
         virtual Concept* copy_() const = 0;
         virtual value_t get_( const key_t& key ) const = 0;
         virtual void print_( std::ostream& s ) const = 0;
+        virtual void encode_( Stream& s ) const = 0;
     };
 
     template <typename T>
@@ -78,6 +82,9 @@ private: // internal classes
         virtual void print_( std::ostream& s ) const {
             print( data_, s );
         }
+        virtual void encode_( Stream& s ) const {
+            encode( data_, s );
+        }
         T data_;
     };
 
@@ -86,6 +93,12 @@ private: // methods
     friend std::ostream& operator<<(std::ostream& s, const Params& p)
     {
         print(p, s);
+        return s;
+    }
+
+    friend Stream& operator<<(Stream& s, const Params& p)
+    {
+        encode(p, s);
         return s;
     }
 
@@ -113,6 +126,7 @@ private: // methods
 
     friend Params::value_t get( const CompositeParams& p, const Params::key_t& key );
     friend void print( const CompositeParams& p, std::ostream& s );
+    friend void encode( const CompositeParams& p, Stream& s );
 
 private: // members
 
@@ -134,6 +148,7 @@ private: // methods
 
     friend Params::value_t get( const ValueParams& p, const Params::key_t& key );
     friend void print( const ValueParams& p, std::ostream& s );
+    friend void encode( const ValueParams& p, Stream& s );
 
 	Properties& props() { return props_; }
 
@@ -154,7 +169,9 @@ public: // methods
     template < typename T >
     friend Params::value_t get( const DispatchParams<T>& p, const Params::key_t& key );
     template < typename T >
-    friend void print( const DispatchParams<T>& p, std::ostream& s );
+    friend void print( const DispatchParams<T>&, std::ostream& );
+    template < typename T >
+    friend void encode( const DispatchParams<T>&, Stream& );
 
 protected: // members
 
@@ -179,7 +196,12 @@ Params::value_t get( const DispatchParams<Derived>& p, const Params::key_t& key 
 }
 
 template < class Derived >
-void print( const DispatchParams<Derived>& p, std::ostream& s )
+void print( const DispatchParams<Derived>&, std::ostream& )
+{
+}
+
+template < class Derived >
+void encode( const DispatchParams<Derived>&, Stream& )
 {
 }
 
@@ -197,6 +219,7 @@ private: // methods
 
     friend Params::value_t get( const ScopeParams& p, const Params::key_t& key );
     friend void print( const ScopeParams& p, std::ostream& s );
+    friend void encode( const ScopeParams& p, Stream& s );
 
 private: // members
 
@@ -218,6 +241,7 @@ private: // methods
 
     friend Params::value_t get( const UnScopeParams& p, const Params::key_t& key );
     friend void print( const UnScopeParams& p, std::ostream& s );
+    friend void encode( const UnScopeParams& p, Stream& s );
 
 private: // members
 

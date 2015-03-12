@@ -54,6 +54,7 @@ Params::value_t get( const AnyKeyParams&, const Params::key_t& )
 }
 
 void print( const AnyKeyParams&, std::ostream& ) {}
+void encode( const AnyKeyParams&, Stream& ) {}
 
 //-----------------------------------------------------------------------------
 

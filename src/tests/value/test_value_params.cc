@@ -46,6 +46,7 @@ private:
 class AnyKeyParams {
     friend Params::value_t get( const AnyKeyParams&, const Params::key_t& );
     friend void print( const AnyKeyParams&, std::ostream& );
+    static const char* className() { return "AnyKeyParams"; }
 };
 
 Params::value_t get( const AnyKeyParams&, const Params::key_t& )

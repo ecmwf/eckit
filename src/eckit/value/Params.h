@@ -122,6 +122,8 @@ public: // methods
     CompositeParams& pop_front() { plist_.pop_front(); return *this; }
     CompositeParams& pop_back()  { plist_.pop_back(); return *this; }
 
+    static const char* className() { return "CompositeParams"; }
+
 private: // methods
 
     friend Params::value_t get( const CompositeParams& p, const Params::key_t& key );
@@ -144,6 +146,8 @@ public: // methods
 
     ValueParams& set( const Params::key_t& k, const Params::value_t& v );
 
+    static const char* className() { return "ValueParams"; }
+
 private: // methods
 
     friend Params::value_t get( const ValueParams& p, const Params::key_t& key );
@@ -165,6 +169,8 @@ class DispatchParams {
 public: // methods
 
     DispatchParams() {}
+
+    static const char* className() { return "DispatchParams"; }
 
     template < typename T >
     friend Params::value_t get( const DispatchParams<T>& p, const Params::key_t& key );
@@ -215,6 +221,8 @@ public: // methods
 
     ScopeParams( const Params::key_t& scope_key, const Params& p );
 
+    static const char* className() { return "ScopeParams"; }
+
 private: // methods
 
     friend Params::value_t get( const ScopeParams& p, const Params::key_t& key );
@@ -236,6 +244,8 @@ class UnScopeParams {
 public: // methods
 
     UnScopeParams( const Params::key_t& scope_key, const Params& p );
+
+    static const char* className() { return "UnScopeParams"; }
 
 private: // methods
 

@@ -209,6 +209,7 @@ void print( const DispatchParams<Derived>&, std::ostream& )
 template < class Derived >
 void encode( const DispatchParams<Derived>&, Stream& )
 {
+    NOTIMP;
 }
 
 //-------------------------------------------------------------------------------------------

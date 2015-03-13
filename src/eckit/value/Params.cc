@@ -48,11 +48,11 @@ void encode( const Params& p, Stream& s )
 
 //------------------------------------------------------------------------------------------------------
 
-CompositeParams::CompositeParams() : plist_() 
+CompositeParams::CompositeParams() : plist_()
 {
 }
 
-CompositeParams::CompositeParams(const Params::List& plist) : plist_(plist) 
+CompositeParams::CompositeParams(const Params::List& plist) : plist_(plist)
 {
 }
 
@@ -143,8 +143,8 @@ void print( const ScopeParams& p, std::ostream &s )
 
 void encode( const ScopeParams& p, Stream &s )
 {
+    s << p.p_;
     s << p.scope_;
-    encode(p.p_, s);
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -167,8 +167,8 @@ void print( const UnScopeParams& p, std::ostream &s )
 
 void encode( const UnScopeParams& p, Stream &s )
 {
+    s << p.p_;
     s << p.scope_;
-    encode(p.p_, s);
 }
 
 //------------------------------------------------------------------------------------------------------

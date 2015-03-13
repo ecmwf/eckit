@@ -88,6 +88,7 @@ void print( const CompositeParams& p, std::ostream& s )
 
 void encode( const CompositeParams& p, Stream& s )
 {
+    s << p.plist_.size();
     for( Params::List::const_iterator citr = p.plist_.begin(); citr != p.plist_.end(); ++citr )
         encode(*citr, s);
 }

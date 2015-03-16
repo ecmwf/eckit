@@ -14,7 +14,12 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/FileStream.h"
+#include "eckit/value/CompositeParams.h"
+#include "eckit/value/DispatchParams.h"
 #include "eckit/value/Params.h"
+#include "eckit/value/ScopeParams.h"
+#include "eckit/value/UnScopeParams.h"
+#include "eckit/value/ValueParams.h"
 
 using namespace std;
 using namespace eckit;

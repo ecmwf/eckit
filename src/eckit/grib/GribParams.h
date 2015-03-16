@@ -13,7 +13,7 @@
 
 #include "eckit/grib/GribHandle.h"
 #include "eckit/memory/Builder.h"
-#include "eckit/value/Params.h"
+#include "eckit/value/ValueParams.h"
 
 namespace eckit {
 namespace grib {

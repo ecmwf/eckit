@@ -18,6 +18,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/value/ValueParams.h"
 
 using namespace std;
 using namespace eckit;

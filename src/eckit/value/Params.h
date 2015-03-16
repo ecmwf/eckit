@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2014 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -9,6 +9,7 @@
  */
 
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date July 2014
 
 #ifndef eckit_value_Params_H
@@ -16,16 +17,18 @@
 
 #include <list>
 
+#include "eckit/serialisation/Stream.h"
 #include "eckit/value/Value.h"
-#include "eckit/value/Properties.h"
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 namespace eckit {
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 class Params {
+
+    struct Concept;
 
 public: // types
 
@@ -33,12 +36,51 @@ public: // types
     typedef std::string  key_t;
     typedef Value value_t;
 
+    struct BaseFactory {
+        virtual ~BaseFactory() {}
+        virtual Concept* build( Stream& s ) = 0;
+    };
+
+    typedef BaseFactory* factory_t;
+
+    template <typename T>
+    struct Factory : BaseFactory {
+        Factory()
+        {
+            Params::registerFactory(T::className(), this);
+        }
+
+        Concept* build( Stream& s );
+    };
+
 public: // methods
 
     template <typename T>
     explicit Params( const T& x ) : self_(new Model<T>(x)) {}
 
-    explicit Params( const Params& x ) : self_(x.self_->copy_()) {}
+    Params( const Params& x ) : self_(x.self_->copy_()) {}
+
+    static void registerFactory( const std::string& name, factory_t f )
+    {
+        factories()[name] = f;
+    }
+
+    static factory_t& getFactory(const std::string& name )
+    {
+        return factories()[name];
+    }
+
+    static Params build(const std::string& name, Stream& s)
+    {
+         return Params( getFactory(name)->build(s) ); // returns Concept*
+    }
+
+    static Params decode( Stream& s )
+    {
+        std::string name;
+        s >> name;
+        return Params::build(name,s);
+    }
 
     ~Params() { delete self_; }
 
@@ -56,177 +98,69 @@ public: // methods
 
     friend void print( const Params& p, std::ostream& s );
 
+    friend void encode( const Params& p, Stream& s );
+
 private: // internal classes
+
+    typedef std::map<std::string, factory_t> factory_map;
+    static factory_map& factories();
+
+    Params(Concept* concept) : self_(concept) {}
 
     struct Concept {
         virtual ~Concept() {}
         virtual Concept* copy_() const = 0;
         virtual value_t get_( const key_t& key ) const = 0;
         virtual void print_( std::ostream& s ) const = 0;
+        virtual void encode_( Stream& s ) const = 0;
     };
 
     template <typename T>
     struct Model : Concept
     {
         Model( T x ) : data_(x) {}
+        Model( Stream& s ) : data_(s) {}
+
         virtual Concept* copy_() const {
-            return new Model(*this);
+            return new Model(data_);
         }
+
         virtual value_t get_( const key_t& key ) const {
             return get( data_, key );
         }
+
         virtual void print_( std::ostream& s ) const {
             print( data_, s );
         }
+
+        virtual void encode_( Stream& s ) const {
+            s << T::className();
+            encode( data_, s );
+        }
+
         T data_;
     };
 
 private: // methods
 
-    friend std::ostream& operator<<(std::ostream& s, const Params& p)
-    {
-        print(p, s);
-        return s;
-    }
+    friend std::ostream& operator<<(std::ostream& s, const Params& p);
+
+    friend Stream& operator<<(Stream& s, const Params& p);
 
 private: // members
 
     const Concept* self_;
 };
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
-class CompositeParams {
-
-public: // methods
-
-    CompositeParams();
-    CompositeParams( const Params::List& );
-
-    CompositeParams& push_front( const Params& p );
-    CompositeParams& push_back( const Params& p );
-
-    CompositeParams& pop_front() { plist_.pop_front(); return *this; }
-    CompositeParams& pop_back()  { plist_.pop_back(); return *this; }
-
-private: // methods
-
-    friend Params::value_t get( const CompositeParams& p, const Params::key_t& key );
-    friend void print( const CompositeParams& p, std::ostream& s );
-
-private: // members
-
-    Params::List plist_;
-};
-
-//------------------------------------------------------------------------------------------------------
-
-class ValueParams {
-
-public: // methods
-
-    ValueParams() : props_() {}
-    ValueParams( const Properties& p ) : props_(p) {}
-
-    ValueParams& set( const Params::key_t& k, const Params::value_t& v );
-
-private: // methods
-
-    friend Params::value_t get( const ValueParams& p, const Params::key_t& key );
-    friend void print( const ValueParams& p, std::ostream& s );
-
-	Properties& props() { return props_; }
-
-private: // members
-
-    Properties props_;
-};
-
-//-------------------------------------------------------------------------------------------
-
-template < class Derived >
-class DispatchParams {
-
-public: // methods
-
-    DispatchParams() {}
-
-    template < typename T >
-    friend Params::value_t get( const DispatchParams<T>& p, const Params::key_t& key );
-    template < typename T >
-    friend void print( const DispatchParams<T>& p, std::ostream& s );
-
-protected: // members
-
-    typedef Params::value_t ( Derived::* parametrizer_t ) ( const Params::key_t& ) const ;
-    typedef std::map< std::string, parametrizer_t > store_t;
-
-    store_t dispatch_;
-};
-
-template < class Derived >
-Params::value_t get( const DispatchParams<Derived>& p, const Params::key_t& key )
+template <typename T>
+Params::Concept* Params::Factory<T>::build(Stream & s)
 {
-    typename DispatchParams<Derived>::store_t::const_iterator i = p.dispatch_.find(key);
-    if( i != p.dispatch_.end() )
-    {
-        typename DispatchParams<Derived>::parametrizer_t fptr = i->second;
-        const Derived* pobj = static_cast<const Derived*>(&p);
-        return (pobj->*fptr)( key );
-    }
-    else
-        return Params::value_t();
+    return new Model<T>(s);
 }
 
-template < class Derived >
-void print( const DispatchParams<Derived>& p, std::ostream& s )
-{
-}
-
-//-------------------------------------------------------------------------------------------
-
-/// Wraps the parameters within a given scope
-
-class ScopeParams {
-
-public: // methods
-
-    ScopeParams( const Params::key_t& scope_key, const Params& p );
-
-private: // methods
-
-    friend Params::value_t get( const ScopeParams& p, const Params::key_t& key );
-    friend void print( const ScopeParams& p, std::ostream& s );
-
-private: // members
-
-    Params::key_t scope_;
-    Params p_;
-};
-
-//-------------------------------------------------------------------------------------------
-
-/// Searches the parameters within a given scope
-
-class UnScopeParams {
-
-public: // methods
-
-    UnScopeParams( const Params::key_t& scope_key, const Params& p );
-
-private: // methods
-
-    friend Params::value_t get( const UnScopeParams& p, const Params::key_t& key );
-    friend void print( const UnScopeParams& p, std::ostream& s );
-
-private: // members
-
-    Params::key_t scope_;
-    Params p_;
-
-};
-
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 } // namespace eckit
 

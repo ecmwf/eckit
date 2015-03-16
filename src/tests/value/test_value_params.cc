@@ -12,7 +12,12 @@
 
 #include "ecbuild/boost_test_framework.h"
 
+#include "eckit/value/CompositeParams.h"
+#include "eckit/value/DispatchParams.h"
 #include "eckit/value/Params.h"
+#include "eckit/value/ScopeParams.h"
+#include "eckit/value/UnScopeParams.h"
+#include "eckit/value/ValueParams.h"
 
 using namespace std;
 using namespace eckit;
@@ -34,6 +39,7 @@ public:
     TestParams() {
         dispatch_["foo"] = &TestParams::getFoo;
     }
+    TestParams( Stream& ) {}
 
 private:
     Params::value_t getFoo( const Params::key_t& key ) const {
@@ -43,9 +49,10 @@ private:
 
 //-----------------------------------------------------------------------------
 
-class AnyKeyParams {
-    friend Params::value_t get( const AnyKeyParams&, const Params::key_t& );
-    friend void print( const AnyKeyParams&, std::ostream& );
+struct AnyKeyParams {
+    AnyKeyParams() {}
+    AnyKeyParams( Stream& ) {}
+    static const char* className() { return "AnyKeyParams"; }
 };
 
 Params::value_t get( const AnyKeyParams&, const Params::key_t& )
@@ -54,6 +61,7 @@ Params::value_t get( const AnyKeyParams&, const Params::key_t& )
 }
 
 void print( const AnyKeyParams&, std::ostream& ) {}
+void encode( const AnyKeyParams&, Stream& ) {}
 
 //-----------------------------------------------------------------------------
 

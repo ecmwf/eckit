@@ -28,11 +28,30 @@ namespace eckit {
 
 class Params {
 
+    struct Concept;
+
 public: // types
 
     typedef std::list<Params> List;
     typedef std::string  key_t;
     typedef Value value_t;
+
+    struct BaseFactory {
+        virtual ~BaseFactory() {}
+        virtual Concept* build( Stream& s ) = 0;
+    };
+
+    typedef BaseFactory* factory_t;
+
+    template <typename T>
+    struct Factory : BaseFactory {
+        Factory()
+        {
+            Params::registerFactory(T::className(), this);
+        }
+
+        Concept* build( Stream& s );
+    };
 
 public: // methods
 
@@ -40,6 +59,28 @@ public: // methods
     explicit Params( const T& x ) : self_(new Model<T>(x)) {}
 
     Params( const Params& x ) : self_(x.self_->copy_()) {}
+
+    static void registerFactory( const std::string& name, factory_t f )
+    {
+        factories_[name] = f;
+    }
+
+    static factory_t& getFactory(const std::string& name )
+    {
+        return factories_[name];
+    }
+
+    static Params build(const std::string& name, Stream& s)
+    {
+         return Params( getFactory(name)->build(s) ); // returns Concept*
+    }
+
+    static Params decode( Stream& s )
+    {
+        std::string name;
+        s >> name;
+        return Params::build(name,s);
+    }
 
     ~Params() { delete self_; }
 
@@ -60,6 +101,10 @@ public: // methods
     friend void encode( const Params& p, Stream& s );
 
 private: // internal classes
+
+    static std::map<std::string, factory_t> factories_;
+
+    Params(Concept* concept) : self_(concept) {}
 
     struct Concept {
         virtual ~Concept() {}
@@ -107,6 +152,12 @@ private: // members
 
     const Concept* self_;
 };
+
+template <typename T>
+Params::Concept* Params::Factory<T>::build(Stream & s)
+{
+    return new Model<T>(s);
+}
 
 //------------------------------------------------------------------------------------------------------
 

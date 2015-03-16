@@ -46,6 +46,8 @@ void encode( const Params& p, Stream& s )
     p.self_->encode_(s);
 }
 
+std::map<std::string, Params::factory_t> Params::factories_;
+
 //------------------------------------------------------------------------------------------------------
 
 CompositeParams::CompositeParams() : plist_()
@@ -93,6 +95,8 @@ void encode( const CompositeParams& p, Stream& s )
         encode(*citr, s);
 }
 
+Params::Factory<CompositeParams> compositeParamsFactory;
+
 //------------------------------------------------------------------------------------------------------
 
 ValueParams & ValueParams::set(const Params::key_t& k, const Params::value_t& v)
@@ -115,6 +119,8 @@ void encode(const ValueParams& p, Stream& s)
 {
     s << p.props_;
 }
+
+Params::Factory<ValueParams> valueParamsFactory;
 
 //------------------------------------------------------------------------------------------------------
 
@@ -147,6 +153,8 @@ void encode( const ScopeParams& p, Stream &s )
     s << p.scope_;
 }
 
+Params::Factory<ScopeParams> scopeParamsFactory;
+
 //------------------------------------------------------------------------------------------------------
 
 UnScopeParams::UnScopeParams( const Params::key_t& scope_key, const Params& p ) :
@@ -170,6 +178,8 @@ void encode( const UnScopeParams& p, Stream &s )
     s << p.p_;
     s << p.scope_;
 }
+
+Params::Factory<UnScopeParams> unScopeParamsFactory;
 
 //------------------------------------------------------------------------------------------------------
 

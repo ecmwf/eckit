@@ -83,6 +83,7 @@ private: // internal classes
             print( data_, s );
         }
         virtual void encode_( Stream& s ) const {
+            s << T::className();
             encode( data_, s );
         }
         T data_;

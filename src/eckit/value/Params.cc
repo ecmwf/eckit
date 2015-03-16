@@ -58,6 +58,14 @@ CompositeParams::CompositeParams(const Params::List& plist) : plist_(plist)
 {
 }
 
+CompositeParams::CompositeParams( Stream& s )
+{
+    Params::List::size_type len;
+    s >> len;
+    for (int i = 0; i < len; ++i)
+        push_back(Params::decode(s));
+}
+
 CompositeParams& CompositeParams::push_front(const Params& p)
 {
     plist_.push_front(p);
@@ -130,6 +138,11 @@ ScopeParams::ScopeParams(const Params::key_t& scope_key, const Params & p ) :
 {
 }
 
+ScopeParams::ScopeParams( Stream & s ) : p_( Params::decode(s) )
+{
+    s >> scope_;
+}
+
 Params::value_t get( const ScopeParams& p, const Params::key_t& key )
 {
     if( StringTools::startsWith(key, p.scope_) )
@@ -161,6 +174,11 @@ UnScopeParams::UnScopeParams( const Params::key_t& scope_key, const Params& p ) 
     scope_( scope_key + "." ),
     p_(p)
 {
+}
+
+UnScopeParams::UnScopeParams( Stream& s ) : p_( Params::decode(s) )
+{
+    s >> scope_;
 }
 
 Params::value_t get( const UnScopeParams& p, const Params::key_t& key )

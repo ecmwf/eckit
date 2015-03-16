@@ -34,6 +34,7 @@ public:
     TestParams() {
         dispatch_["foo"] = &TestParams::getFoo;
     }
+    TestParams( Stream& ) {}
 
 private:
     Params::value_t getFoo( const Params::key_t& key ) const {
@@ -43,9 +44,9 @@ private:
 
 //-----------------------------------------------------------------------------
 
-class AnyKeyParams {
-    friend Params::value_t get( const AnyKeyParams&, const Params::key_t& );
-    friend void print( const AnyKeyParams&, std::ostream& );
+struct AnyKeyParams {
+    AnyKeyParams() {}
+    AnyKeyParams( Stream& ) {}
     static const char* className() { return "AnyKeyParams"; }
 };
 

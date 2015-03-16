@@ -118,19 +118,25 @@ private: // internal classes
     struct Model : Concept
     {
         Model( T x ) : data_(x) {}
+        Model( Stream& s ) : data_(s) {}
+
         virtual Concept* copy_() const {
             return new Model(data_);
         }
+
         virtual value_t get_( const key_t& key ) const {
             return get( data_, key );
         }
+
         virtual void print_( std::ostream& s ) const {
             print( data_, s );
         }
+
         virtual void encode_( Stream& s ) const {
             s << T::className();
             encode( data_, s );
         }
+
         T data_;
     };
 
@@ -167,6 +173,7 @@ public: // methods
 
     CompositeParams();
     CompositeParams( const Params::List& );
+    CompositeParams( Stream& );
 
     CompositeParams& push_front( const Params& p );
     CompositeParams& push_back( const Params& p );
@@ -195,6 +202,7 @@ public: // methods
 
     ValueParams() : props_() {}
     ValueParams( const Properties& p ) : props_(p) {}
+    ValueParams( Stream& s ) : props_(s) {}
 
     ValueParams& set( const Params::key_t& k, const Params::value_t& v );
 
@@ -221,6 +229,7 @@ class DispatchParams {
 public: // methods
 
     DispatchParams() {}
+    DispatchParams( Stream& s ) { NOTIMP; }
 
     static const char* className() { return "DispatchParams"; }
 
@@ -273,6 +282,7 @@ class ScopeParams {
 public: // methods
 
     ScopeParams( const Params::key_t& scope_key, const Params& p );
+    ScopeParams( Stream& s );
 
     static const char* className() { return "ScopeParams"; }
 
@@ -297,6 +307,7 @@ class UnScopeParams {
 public: // methods
 
     UnScopeParams( const Params::key_t& scope_key, const Params& p );
+    UnScopeParams( Stream& s );
 
     static const char* className() { return "UnScopeParams"; }
 

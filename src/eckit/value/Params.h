@@ -39,7 +39,7 @@ public: // methods
     template <typename T>
     explicit Params( const T& x ) : self_(new Model<T>(x)) {}
 
-    explicit Params( const Params& x ) : self_(x.self_->copy_()) {}
+    Params( const Params& x ) : self_(x.self_->copy_()) {}
 
     ~Params() { delete self_; }
 

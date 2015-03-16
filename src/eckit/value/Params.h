@@ -74,7 +74,7 @@ private: // internal classes
     {
         Model( T x ) : data_(x) {}
         virtual Concept* copy_() const {
-            return new Model(*this);
+            return new Model(data_);
         }
         virtual value_t get_( const key_t& key ) const {
             return get( data_, key );

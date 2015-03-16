@@ -29,6 +29,20 @@ const double dmax = numeric_limits<double>::max();
 
 //-----------------------------------------------------------------------------
 
+class TestParams : public DispatchParams<TestParams> {
+public:
+    TestParams() {
+        dispatch_["foo"] = &TestParams::getFoo;
+    }
+
+private:
+    Params::value_t getFoo( const Params::key_t& key ) const {
+        return Params::value_t("bar");
+    }
+};
+
+//-----------------------------------------------------------------------------
+
 class AnyKeyParams {
     friend Params::value_t get( const AnyKeyParams&, const Params::key_t& );
     friend void print( const AnyKeyParams&, std::ostream& );
@@ -243,18 +257,6 @@ BOOST_AUTO_TEST_CASE( test_scope_unscope_params )
 
 BOOST_AUTO_TEST_CASE( test_dispatch_params )
 {
-    class TestParams : public DispatchParams<TestParams> {
-    public:
-        TestParams() {
-            dispatch_["foo"] = &TestParams::getFoo;
-        }
-
-    private:
-        Params::value_t getFoo( const Params::key_t& key ) const {
-            return Params::value_t("bar");
-        }
-    };
-
     Params p( (TestParams()) ); // C++ Most Vexing Parse
     BOOST_CHECK( p.has("foo") );
     BOOST_CHECK( !p.has("bar") );

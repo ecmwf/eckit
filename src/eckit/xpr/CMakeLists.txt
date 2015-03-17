@@ -59,6 +59,8 @@ Undef.cc
 Undef.h
 Take.h
 Take.cc
+While.h
+While.cc
 Xpr.cc
 Xpr.h
 )

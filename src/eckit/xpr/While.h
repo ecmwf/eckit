@@ -8,13 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Map.h
+/// @file While.h
 /// @author Tiago Quintino
-/// @author Florian Rathgeber
-/// @date November 2013
+/// @date March 2015
 
-#ifndef eckit_xpr_Map_h
-#define eckit_xpr_Map_h
+#ifndef eckit_xpr_While_h
+#define eckit_xpr_While_h
 
 #include "eckit/xpr/Function.h"
 
@@ -23,48 +22,43 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-/// Generates a Map combination of vectors
-class Map : public Function {
+class While : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "Map"; }
+    static const char * nodeName() { return "While"; }
 
-    Map( ExpPtr f, ExpPtr l );
+    While( ExpPtr range, ExpPtr func );
 
-    Map(Map&&) = default;
+    While(While&&) = default;
 
-    Map(Stream& s);
+    While(Stream& s);
 
-    Map& operator=(Map&&) = default;
+    While& operator=(While&&) = default;
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private: // methods
 
-    Map( args_t& a );
+    While( args_t& a );
 
-    virtual std::string factoryName() const { return "xpr::map"; }
+    virtual std::string factoryName() const { return "xpr::while"; }
     virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;
 
-    /// Adds support for count()
-    virtual bool countable() const;
-    virtual size_t count() const;
-
 private: // static members
 
     static  ClassSpec classSpec_;
-    static  Reanimator<Map> reanimator_;
+    static  Reanimator<While> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr map( ExpPtr f, ExpPtr l );
+ExpPtr while( ExpPtr range, ExpPtr func );
 
 //--------------------------------------------------------------------------------------------
 

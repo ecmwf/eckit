@@ -27,35 +27,35 @@ namespace eckit {
 //----------------------------------------------------------------------------
 
 /// Params provides a value-based behaviour for parametrisations of objects.
+
+/// A class `MyParams` to be wrapped into Params needs to implement:
 ///
-/// A class MyParams to be wrapped into Params needs to implement:
+/// 1. A constructor from `Stream&`
 ///
-/// 1. A constructor from Stream&
+/// 2. A static method `className` returning a `const char*`
 ///
-/// 2. A static method className returning a const char*
+/// 3. A `get` function taking a `Params::key_t` and returning a `Params::value_t`:
 ///
-/// 3. A get function taking a Params::key_t and returning a Params::value_t:
-///
-///    Params::value_t get( const MyParams&, const Params::key_t& )
+///        Params::value_t get( const MyParams&, const Params::key_t& )
 ///
 ///    This function performs the lookup of a parameter by key.
 ///
-/// 4. A print function taking a std::ostream&:
+/// 4. A `print` function taking a `std::ostream&`:
 ///
-///    void print( const MyParams&, std::ostream& )
+///        void print( const MyParams&, std::ostream& )
 ///
 ///   This function prints a representation of the parameters to the ostream.
 ///
-/// 5. An encode function taking a Stream&:
+/// 5. An `encode` function taking a `Stream&`:
 ///
-///    void encode( const MyParams&, Stream& )
+///        void encode( const MyParams&, Stream& )
 ///
 ///    This function encodes the parameters to the Stream.
 ///
-/// If the free functions get, print and encode need access to private members
-/// of MyParams, they need to be declared as friend functions.
+/// If the free functions `get`, `print` and `encode` need access to private
+/// members of `MyParams`, they need to be declared as friend functions.
 ///
-/// In addition a Params::Factory<MyParams> needs to be initialised.
+/// In addition a `Params::Factory<MyParams>` needs to be initialised.
 
 class Params {
 

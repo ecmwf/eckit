@@ -31,7 +31,7 @@ public: // methods
     DispatchParams() {}
     DispatchParams( Stream& s ) { NOTIMP; }
 
-    static const char* className() { return "DispatchParams"; }
+    static const char* className() { return "eckit::DispatchParams"; }
 
     template < typename T >
     friend Params::value_t get( const DispatchParams<T>& p, const Params::key_t& key );

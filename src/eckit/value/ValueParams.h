@@ -34,7 +34,7 @@ public: // methods
 
     ValueParams& set( const Params::key_t& k, const Params::value_t& v );
 
-    static const char* className() { return "ValueParams"; }
+    static const char* className() { return "eckit::ValueParams"; }
 
 private: // methods
 

@@ -32,7 +32,7 @@ public: // methods
     ScopeParams( const Params::key_t& scope_key, const Params& p );
     ScopeParams( Stream& s );
 
-    static const char* className() { return "ScopeParams"; }
+    static const char* className() { return "eckit::ScopeParams"; }
 
 private: // methods
 

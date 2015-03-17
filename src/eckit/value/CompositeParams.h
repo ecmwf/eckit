@@ -37,7 +37,7 @@ public: // methods
     CompositeParams& pop_front() { plist_.pop_front(); return *this; }
     CompositeParams& pop_back()  { plist_.pop_back(); return *this; }
 
-    static const char* className() { return "CompositeParams"; }
+    static const char* className() { return "eckit::CompositeParams"; }
 
 private: // methods
 

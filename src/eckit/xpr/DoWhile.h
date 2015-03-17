@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file While.h
+/// @file DoWhile.h
 /// @author Tiago Quintino
 /// @date March 2015
 
-#ifndef eckit_xpr_While_h
-#define eckit_xpr_While_h
+#ifndef eckit_xpr_DoWhile_h
+#define eckit_xpr_DoWhile_h
 
 #include "eckit/xpr/Function.h"
 
@@ -22,28 +22,28 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-class While : public Function {
+class DoWhile : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "While"; }
+    static const char * nodeName() { return "DoWhile"; }
 
-    While( ExpPtr range, ExpPtr func );
+    DoWhile( ExpPtr range, ExpPtr func );
 
-    While(While&&) = default;
+    DoWhile(DoWhile&&) = default;
 
-    While(Stream& s);
+    DoWhile(Stream& s);
 
-    While& operator=(While&&) = default;
+    DoWhile& operator=(DoWhile&&) = default;
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private: // methods
 
-    While( args_t& a );
+    DoWhile( args_t& a );
 
-    virtual std::string factoryName() const { return "xpr::while"; }
+    virtual std::string factoryName() const { return "xpr::doWhile"; }
     virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
@@ -53,12 +53,12 @@ private: // methods
 private: // static members
 
     static  ClassSpec classSpec_;
-    static  Reanimator<While> reanimator_;
+    static  Reanimator<DoWhile> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr while( ExpPtr range, ExpPtr func );
+ExpPtr doWhile( ExpPtr range, ExpPtr func );
 
 //--------------------------------------------------------------------------------------------
 

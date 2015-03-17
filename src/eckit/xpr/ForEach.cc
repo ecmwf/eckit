@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/xpr/While.h"
+#include "eckit/xpr/ForEach.h"
 #include "eckit/xpr/List.h"
 
 namespace eckit {
@@ -16,20 +16,20 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-While::While( ExpPtr range,  ExpPtr func ) : Function()
+ForEach::ForEach( ExpPtr range,  ExpPtr func ) : Function()
 {
     push_back(range);
     push_back(func);
 }
 
-While::While( args_t& a ) : Function(a)
+ForEach::ForEach( args_t& a ) : Function(a)
 {
     ASSERT( a.size() == 2 );
 }
 
-While::While(Stream &s) : Function(s) {}
+ForEach::ForEach(Stream &s) : Function(s) {}
 
-ExpPtr While::evaluate( Scope &ctx ) const
+ExpPtr ForEach::evaluate( Scope &ctx ) const
 {
     ExpPtr f = args(0, ctx, false);
 
@@ -52,25 +52,25 @@ ExpPtr While::evaluate( Scope &ctx ) const
     return ExpPtr(new List( res, List::Swap()));
 }
 
-ExpPtr While::cloneWith(args_t& a) const
+ExpPtr ForEach::cloneWith(args_t& a) const
 {
-    return ExpPtr( new While(a) );
+    return ExpPtr( new ForEach(a) );
 }
 
 //--------------------------------------------------------------------------------------------
 
-ClassSpec While::classSpec_ = {
+ClassSpec ForEach::classSpec_ = {
     &Function::classSpec(),
-    While::nodeName(),
+    ForEach::nodeName(),
 };
 
-Reanimator< While > While::reanimator_;
+Reanimator< ForEach > ForEach::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr while( ExpPtr range,  ExpPtr func )
+ExpPtr forEach( ExpPtr range,  ExpPtr func )
 {
-    return ExpPtr( new While(range,func) );
+    return ExpPtr( new ForEach(range,func) );
 }
 
 //--------------------------------------------------------------------------------------------

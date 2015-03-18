@@ -16,9 +16,9 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-DoWhile::DoWhile( ExpPtr range,  ExpPtr func ) : Function()
+DoWhile::DoWhile( ExpPtr pred,  ExpPtr func ) : Function()
 {
-    push_back(range);
+    push_back(pred);
     push_back(func);
 }
 
@@ -31,25 +31,12 @@ DoWhile::DoWhile(Stream &s) : Function(s) {}
 
 ExpPtr DoWhile::evaluate( Scope &ctx ) const
 {
-    ExpPtr f = args(0, ctx, false);
+    ExpPtr pred = args(0, ctx, false);
+    ExpPtr func = args(1, ctx, true);
 
-    ExpPtr ls = args(1, ctx, true);
+    /// ....
 
-    const List::value_t& list = List::extract( ctx, ls );
-
-    const size_t nlist = list.size();
-
-    List::value_t res;
-    res.reserve(nlist);
-
-    for( size_t i = 0; i < nlist; ++i )
-    {
-        ExpPtr e = list[i]->resolve(ctx)->eval(ctx);
-        ExpPtr v = f->eval(e);
-        res.push_back( v );
-    }
-
-    return ExpPtr(new List( res, List::Swap()));
+    //  return ExpPtr(new List( res, List::Swap()));
 }
 
 ExpPtr DoWhile::cloneWith(args_t& a) const

@@ -31,22 +31,21 @@ ForEach::ForEach(Stream &s) : Function(s) {}
 
 ExpPtr ForEach::evaluate( Scope &ctx ) const
 {
-    ExpPtr f = args(0, ctx, false);
+    ExpPtr range = args(0, ctx, false);
 
-    ExpPtr ls = args(1, ctx, true);
-
-    const List::value_t& list = List::extract( ctx, ls );
-
-    const size_t nlist = list.size();
+    ExpPtr func  = args(1, ctx, true);
 
     List::value_t res;
-    res.reserve(nlist);
 
-    for( size_t i = 0; i < nlist; ++i )
+    XprIterator it( range );
+
+    /// XprIterator evaluates to the current entry ==> list[i]->resolve(ctx)->eval(ctx);
+    ///             has a next() method (also returns the evaluated current entry)
+    ///             has a bool operator to check for end
+
+    while( it.next() )
     {
-        ExpPtr e = list[i]->resolve(ctx)->eval(ctx);
-        ExpPtr v = f->eval(e);
-        res.push_back( v );
+        res.push_back( func->eval( it ) );
     }
 
     return ExpPtr(new List( res, List::Swap()));

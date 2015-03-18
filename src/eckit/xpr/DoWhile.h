@@ -22,13 +22,15 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
+/// Executes a function while the predicate remains true
+
 class DoWhile : public Function {
 
 public: // methods
 
     static const char * nodeName() { return "DoWhile"; }
 
-    DoWhile( ExpPtr range, ExpPtr func );
+    DoWhile( ExpPtr pred, ExpPtr func );
 
     DoWhile(DoWhile&&) = default;
 
@@ -58,7 +60,7 @@ private: // static members
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr doWhile( ExpPtr range, ExpPtr func );
+ExpPtr doWhile( ExpPtr pred, ExpPtr func );
 
 //--------------------------------------------------------------------------------------------
 

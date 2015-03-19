@@ -25,6 +25,7 @@ IfElse.cc
 IfElse.h
 Integer.cc
 Integer.h
+Iterable.h
 Lambda.cc
 Lambda.h
 Linear.cc

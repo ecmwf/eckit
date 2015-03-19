@@ -379,8 +379,6 @@ value/ScopeParams.cc
 value/ScopeParams.h
 value/StringContent.h
 value/StringContent.cc
-value/UnScopeParams.cc
-value/UnScopeParams.h
 value/Value.h
 value/Value.cc
 value/ValueParams.h

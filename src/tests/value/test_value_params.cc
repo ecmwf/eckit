@@ -16,7 +16,6 @@
 #include "eckit/value/DispatchParams.h"
 #include "eckit/value/Params.h"
 #include "eckit/value/ScopeParams.h"
-#include "eckit/value/UnScopeParams.h"
 #include "eckit/value/ValueParams.h"
 
 using namespace std;
@@ -224,16 +223,7 @@ BOOST_AUTO_TEST_CASE( test_scope_params )
     BOOST_CHECK_THROW( sp["foo"], BadParameter );
 }
 
-BOOST_AUTO_TEST_CASE( test_unscope_params )
-{
-    Params sp(UnScopeParams("scope", Params(ValueParams().set("scope.foo", "bar"))));
-    BOOST_CHECK( !sp.has("scope.foo") );
-    BOOST_CHECK( sp.has("foo") );
-    BOOST_CHECK_THROW( sp["scope.foo"], BadParameter );
-    BOOST_CHECK_EQUAL( sp["foo"], "bar" );
-}
-
-BOOST_AUTO_TEST_CASE( test_scope_unscope_params )
+BOOST_AUTO_TEST_CASE( test_composite_scope_params )
 {
     Params user(ValueParams().set("resol", 100));
     Params def(ValueParams().set("resol", 200));
@@ -247,20 +237,6 @@ BOOST_AUTO_TEST_CASE( test_scope_unscope_params )
     BOOST_CHECK( !p.has("resol") );
     BOOST_CHECK_EQUAL( (uint)p["user.resol"], 100 );
     BOOST_CHECK_EQUAL( (uint)p["default.resol"], 200 );
-
-    Params usp(UnScopeParams("user", p));
-
-    BOOST_CHECK( !usp.has("user.resol") );
-    BOOST_CHECK( !usp.has("default.resol") );
-    BOOST_CHECK( usp.has("resol") );
-    BOOST_CHECK_EQUAL( (uint)usp["resol"], 100 );
-
-    Params dsp(UnScopeParams("default", p));
-
-    BOOST_CHECK( !dsp.has("user.resol") );
-    BOOST_CHECK( !dsp.has("default.resol") );
-    BOOST_CHECK( dsp.has("resol") );
-    BOOST_CHECK_EQUAL( (uint)dsp["resol"], 200 );
 }
 
 BOOST_AUTO_TEST_CASE( test_dispatch_params )

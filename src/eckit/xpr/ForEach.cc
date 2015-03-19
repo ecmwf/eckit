@@ -9,6 +9,7 @@
  */
 
 #include "eckit/xpr/ForEach.h"
+#include "eckit/xpr/Iterable.h"
 #include "eckit/xpr/List.h"
 
 namespace eckit {
@@ -37,16 +38,15 @@ ExpPtr ForEach::evaluate( Scope &ctx ) const
 
     List::value_t res;
 
-    XprIterator it( range );
+    /// XprIterator it( range );
 
     /// XprIterator evaluates to the current entry ==> list[i]->resolve(ctx)->eval(ctx);
     ///             has a next() method (also returns the evaluated current entry)
     ///             has a bool operator to check for end
 
-    while( it.next() )
-    {
-        res.push_back( func->eval( it ) );
-    }
+    Iterable* it = dynamic_cast<Iterable*>(range.get());
+    for (ExpPtr e = it->next(); e->className() != "Undef"; e = it->next())
+        res.push_back( func->eval( e ) );
 
     return ExpPtr(new List( res, List::Swap()));
 }

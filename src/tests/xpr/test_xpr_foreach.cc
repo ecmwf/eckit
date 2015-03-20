@@ -8,14 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_xpr_lambda
+#define BOOST_TEST_MODULE test_eckit_xpr_foreach
 
 #include "ecbuild/boost_test_framework.h"
 
-#include "eckit/xpr/Lambda.h"
 #include "eckit/xpr/Call.h"
-
 #include "eckit/xpr/ForEach.h"
+#include "eckit/xpr/Lambda.h"
 #include "eckit/xpr/List.h"
 #include "eckit/xpr/Real.h"
 #include "eckit/xpr/Xpr.h"
@@ -30,11 +29,11 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE( test_eckit_xpr_lambda )
+BOOST_AUTO_TEST_SUITE( test_eckit_xpr_foreach )
 
-/// test lambda expressions
+/// test ForEach expressions
 
-BOOST_AUTO_TEST_CASE( test_lambda )
+BOOST_AUTO_TEST_CASE( test_lambda_list )
 {
     Xpr a = xpr::real( 2. );
     Xpr b = xpr::real( 4. );

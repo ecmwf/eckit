@@ -35,7 +35,7 @@ ForEach::ForEach(Stream &s) : Function(s) {}
 
 ExpPtr ForEach::evaluate( Scope &ctx ) const
 {
-    ExpPtr range = args(0, ctx, false);
+    ExpPtr range = args(0, ctx, true);
 
     ExpPtr func  = args(1, ctx, false);
 

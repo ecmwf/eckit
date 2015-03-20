@@ -33,7 +33,7 @@ ExpPtr ForEach::evaluate( Scope &ctx ) const
 {
     ExpPtr range = args(0, ctx, false);
 
-    ExpPtr func  = args(1, ctx, true);
+    ExpPtr func  = args(1, ctx, false);
 
     List::value_t res;
 

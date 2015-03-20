@@ -48,6 +48,21 @@ BOOST_AUTO_TEST_CASE( test_lambda_list )
     BOOST_CHECK_EQUAL( loop.eval().json(), "{\"xpr::list\":[6,12,3]}" );
 }
 
+BOOST_AUTO_TEST_CASE( test_lambda_list_nested )
+{
+    Xpr l = xpr::list( xpr::real( 2. ), xpr::real( 4. ), xpr::real( 1. ) );
+    Xpr trice = call(lambda("a", Xpr(3.0) * Xpr("a")));
+    Xpr loop = xpr::forEach( xpr::forEach( l, trice ), trice );
+
+    BOOST_CHECK_EQUAL( loop.str(), "ForEach(ForEach(List(Real(2), Real(4), Real(1)), Call(Lambda(=(a), Prod(Real(3), _(a))))), Call(Lambda(=(a), Prod(Real(3), _(a)))))" );
+    BOOST_CHECK_EQUAL( loop.code(), "xpr::forEach(xpr::forEach(xpr::list(xpr::real(2), xpr::real(4), xpr::real(1)), xpr::call(xpr::lambda(\"a\", xpr::prod(xpr::real(3), xpr::parameter(\"a\"))))), xpr::call(xpr::lambda(\"a\", xpr::prod(xpr::real(3), xpr::parameter(\"a\")))))" );
+    BOOST_CHECK_EQUAL( loop.json(), "{\"xpr::forEach\":[{\"xpr::forEach\":[{\"xpr::list\":[2,4,1]},{\"xpr::call\":[{\"xpr::lambda\":[{\"xpr::paramdef\":[]},{\"xpr::prod\":[3,{\"xpr::parameter\":[]}]}]}]}]},{\"xpr::call\":[{\"xpr::lambda\":[{\"xpr::paramdef\":[]},{\"xpr::prod\":[3,{\"xpr::parameter\":[]}]}]}]}]}" );
+
+    BOOST_CHECK_EQUAL( loop.eval().str(), "List(Real(18), Real(36), Real(9))" );
+    BOOST_CHECK_EQUAL( loop.eval().code(), "xpr::list(xpr::real(18), xpr::real(36), xpr::real(9))" );
+    BOOST_CHECK_EQUAL( loop.eval().json(), "{\"xpr::list\":[18,36,9]}" );
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -8,6 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/memory/ScopedPtr.h"
+
+#include "eckit/xpr/Countable.h"
 #include "eckit/xpr/ForEach.h"
 #include "eckit/xpr/Iterable.h"
 #include "eckit/xpr/List.h"
@@ -44,7 +47,10 @@ ExpPtr ForEach::evaluate( Scope &ctx ) const
     ///             has a next() method (also returns the evaluated current entry)
     ///             has a bool operator to check for end
 
-    Iterable* it = dynamic_cast<Iterable*>(range.get());
+    ScopedPtr<Iterable> it( dynamic_cast<Iterable*>(range.get()) );
+    // If range is not itself Iterable, wrap it into a Countable iterator
+    if (!it)
+        it.reset( new Countable( range ) );
     for (ExpPtr e = it->next(); e->className() != "Undef"; e = it->next())
         res.push_back( func->eval( e ) );
 

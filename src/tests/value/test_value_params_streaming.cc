@@ -17,8 +17,8 @@
 #include "eckit/value/CompositeParams.h"
 #include "eckit/value/DispatchParams.h"
 #include "eckit/value/Params.h"
+#include "eckit/value/Properties.h"
 #include "eckit/value/ScopeParams.h"
-#include "eckit/value/ValueParams.h"
 
 using namespace std;
 using namespace eckit;
@@ -93,30 +93,30 @@ BOOST_AUTO_TEST_SUITE( test_eckit_value_params )
 
 BOOST_AUTO_TEST_CASE( test_value_params_keys )
 {
-    BOOST_TEST_MESSAGE("Test keys present in ValueParams");
-    ValueParams p;
-    p.set("bool", true);
-    p.set("int", imax);
-    p.set("unsigned int", uimax);
-    p.set("long long", llmax);
-    p.set("unsigned long long", ullmax);
-    p.set("double", dmax);
-    p.set("string", "foo");
-    p.set("Length", Length(42));
-    p.set("Date", Date(2015, 2, 1));
-    p.set("PathName", PathName("/var/tmp"));
+    BOOST_TEST_MESSAGE("Test keys present in Properties");
+    Params p(Properties()
+             .set("bool", true)
+             .set("int", imax)
+             .set("unsigned int", uimax)
+             .set("long long", llmax)
+             .set("unsigned long long", ullmax)
+             .set("double", dmax)
+             .set("string", "foo")
+             .set("Length", Length(42))
+             .set("Date", Date(2015, 2, 1))
+             .set("PathName", PathName("/var/tmp"))
+             );
 
-    Params pin(p);
     PathName filename = PathName::unique( "data" );
     std::string filepath = filename.asString();
     {
         FileStream sout( filepath.c_str(), "w" );
-        sout << pin;
+        sout << p;
     }
     {
         FileStream sin( filepath.c_str(), "r" );
         Params params(Params::decode(sin));
-        BOOST_TEST_MESSAGE("original: " << pin);
+        BOOST_TEST_MESSAGE("original: " << p);
         BOOST_TEST_MESSAGE("streamed: " << params);
         BOOST_CHECK( params.has("bool") );
         BOOST_CHECK( params.has("int") );
@@ -135,30 +135,30 @@ BOOST_AUTO_TEST_CASE( test_value_params_keys )
 
 BOOST_AUTO_TEST_CASE( test_value_params )
 {
-    BOOST_TEST_MESSAGE("Initialize ValueParams");
-    ValueParams p;
-    p.set("bool", true);
-    p.set("int", imax);
-    p.set("unsigned int", uimax);
-    p.set("long long", llmax);
-    p.set("unsigned long long", ullmax);
-    p.set("double", dmax);
-    p.set("string", "foo");
-    p.set("Length", Length(42));
-    p.set("Date", Date(2015, 2, 1));
-    p.set("PathName", PathName("/var/tmp"));
+    BOOST_TEST_MESSAGE("Initialize Properties");
+    Params p(Properties()
+             .set("bool", true)
+             .set("int", imax)
+             .set("unsigned int", uimax)
+             .set("long long", llmax)
+             .set("unsigned long long", ullmax)
+             .set("double", dmax)
+             .set("string", "foo")
+             .set("Length", Length(42))
+             .set("Date", Date(2015, 2, 1))
+             .set("PathName", PathName("/var/tmp"))
+             );
 
-    Params pin(p);
     PathName filename = PathName::unique( "data" );
     std::string filepath = filename.asString();
     {
         FileStream sout( filepath.c_str(), "w" );
-        sout << pin;
+        sout << p;
     }
     {
         FileStream sin( filepath.c_str(), "r" );
         Params params(Params::decode(sin));
-        BOOST_TEST_MESSAGE("original: " << pin);
+        BOOST_TEST_MESSAGE("original: " << p);
         BOOST_TEST_MESSAGE("streamed: " << params);
         BOOST_TEST_MESSAGE("Params: " << params);
         BOOST_CHECK_EQUAL((bool)params["bool"], true);
@@ -174,61 +174,21 @@ BOOST_AUTO_TEST_CASE( test_value_params )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_value_params_from_properties )
-{
-    BOOST_TEST_MESSAGE("Initialize ValueParams from Properties");
-    Properties p;
-    p.set("bool", true);
-    p.set("int", imax);
-    p.set("unsigned int", uimax);
-    p.set("long long", llmax);
-    p.set("unsigned long long", ullmax);
-    p.set("double", dmax);
-    p.set("string", "foo");
-    p.set("Length", Length(42));
-    p.set("Date", Date(2015, 2, 1));
-    p.set("PathName", PathName("/var/tmp"));
-
-    Params pin( (ValueParams(p)) ); // C++ Most Vexing Parse
-    PathName filename = PathName::unique( "data" );
-    std::string filepath = filename.asString();
-    {
-        FileStream sout( filepath.c_str(), "w" );
-        sout << pin;
-    }
-    {
-        FileStream sin( filepath.c_str(), "r" );
-        Params params(Params::decode(sin));
-        BOOST_TEST_MESSAGE("original: " << pin);
-        BOOST_TEST_MESSAGE("streamed: " << params);
-        BOOST_CHECK_EQUAL((bool)p["bool"], (bool)params["bool"]);
-        BOOST_CHECK_EQUAL(p["int"], params["int"]);
-        BOOST_CHECK_EQUAL(p["unsigned int"], params["unsigned int"]);
-        BOOST_CHECK_EQUAL(p["long long"], params["long long"]);
-        BOOST_CHECK_EQUAL(p["unsigned long long"], params["unsigned long long"]);
-        BOOST_CHECK_EQUAL(p["double"], params["double"]);
-        BOOST_CHECK_EQUAL(p["string"], params["string"]);
-        BOOST_CHECK_EQUAL(p["Length"], params["Length"]);
-        BOOST_CHECK(p["Date"].compare(params["Date"])); // FIXME: equality check fails
-        BOOST_CHECK_EQUAL(p["PathName"], params["PathName"]);
-    }
-}
-
 BOOST_AUTO_TEST_CASE( test_composite_params )
 {
-    BOOST_TEST_MESSAGE("Initialize CompositeParams from ValueParams");
+    BOOST_TEST_MESSAGE("Initialize CompositeParams from Properties");
 
     Params cp(CompositeParams()
-              .push_back(Params(ValueParams().set("bool", true)))
-              .push_back(Params(ValueParams().set("int", imax)))
-              .push_back(Params(ValueParams().set("unsigned int", uimax)))
-              .push_back(Params(ValueParams().set("long long", llmax)))
-              .push_back(Params(ValueParams().set("unsigned long long", ullmax)))
-              .push_back(Params(ValueParams().set("double", dmax)))
-              .push_back(Params(ValueParams().set("string", "foo")))
-              .push_back(Params(ValueParams().set("Length", Length(42))))
-              .push_back(Params(ValueParams().set("Date", Date(2015, 2, 1))))
-              .push_back(Params(ValueParams().set("PathName", PathName("/var/tmp")))));
+              .push_back(Params(Properties().set("bool", true)))
+              .push_back(Params(Properties().set("int", imax)))
+              .push_back(Params(Properties().set("unsigned int", uimax)))
+              .push_back(Params(Properties().set("long long", llmax)))
+              .push_back(Params(Properties().set("unsigned long long", ullmax)))
+              .push_back(Params(Properties().set("double", dmax)))
+              .push_back(Params(Properties().set("string", "foo")))
+              .push_back(Params(Properties().set("Length", Length(42))))
+              .push_back(Params(Properties().set("Date", Date(2015, 2, 1))))
+              .push_back(Params(Properties().set("PathName", PathName("/var/tmp")))));
 
     PathName filename = PathName::unique( "data" );
     std::string filepath = filename.asString();
@@ -256,19 +216,19 @@ BOOST_AUTO_TEST_CASE( test_composite_params )
 
 BOOST_AUTO_TEST_CASE( test_composite_params_list )
 {
-    BOOST_TEST_MESSAGE("Initialize CompositeParams from list of ValueParams");
+    BOOST_TEST_MESSAGE("Initialize CompositeParams from list of Properties");
 
     Params::List l;
-    l.push_back(Params(ValueParams().set("bool", true)));
-    l.push_back(Params(ValueParams().set("int", imax)));
-    l.push_back(Params(ValueParams().set("unsigned int", uimax)));
-    l.push_back(Params(ValueParams().set("long long", llmax)));
-    l.push_back(Params(ValueParams().set("unsigned long long", ullmax)));
-    l.push_back(Params(ValueParams().set("double", dmax)));
-    l.push_back(Params(ValueParams().set("string", "foo")));
-    l.push_back(Params(ValueParams().set("Length", Length(42))));
-    l.push_back(Params(ValueParams().set("Date", Date(2015, 2, 1))));
-    l.push_back(Params(ValueParams().set("PathName", PathName("/var/tmp"))));
+    l.push_back(Params(Properties().set("bool", true)));
+    l.push_back(Params(Properties().set("int", imax)));
+    l.push_back(Params(Properties().set("unsigned int", uimax)));
+    l.push_back(Params(Properties().set("long long", llmax)));
+    l.push_back(Params(Properties().set("unsigned long long", ullmax)));
+    l.push_back(Params(Properties().set("double", dmax)));
+    l.push_back(Params(Properties().set("string", "foo")));
+    l.push_back(Params(Properties().set("Length", Length(42))));
+    l.push_back(Params(Properties().set("Date", Date(2015, 2, 1))));
+    l.push_back(Params(Properties().set("PathName", PathName("/var/tmp"))));
 
     Params pin( (CompositeParams(l)) ); // C++ Most Vexing Parse
     PathName filename = PathName::unique( "data" );
@@ -298,7 +258,7 @@ BOOST_AUTO_TEST_CASE( test_composite_params_list )
 
 BOOST_AUTO_TEST_CASE( test_scope_params )
 {
-    Params pin(ScopeParams("scope", Params(ValueParams().set("foo", "bar"))));
+    Params pin(ScopeParams("scope", Params(Properties().set("foo", "bar"))));
     PathName filename = PathName::unique( "data" );
     std::string filepath = filename.asString();
     {
@@ -319,8 +279,8 @@ BOOST_AUTO_TEST_CASE( test_scope_params )
 
 BOOST_AUTO_TEST_CASE( test_composite_scope_params )
 {
-    Params user(ValueParams().set("resol", 100));
-    Params def(ValueParams().set("resol", 200));
+    Params user(Properties().set("resol", 100));
+    Params def(Properties().set("resol", 200));
 
     Params pin(CompositeParams()
                .push_back(Params(ScopeParams("user", user)))

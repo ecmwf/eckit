@@ -11,8 +11,6 @@ Call.cc
 Call.h
 Count.cc
 Count.h
-DoWhile.cc
-DoWhile.h
 Expression.cc
 Expression.h
 Filter.cc

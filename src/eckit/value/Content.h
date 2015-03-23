@@ -41,6 +41,9 @@ class DateTime;
 class Value;
 class JSON;
 
+typedef std::vector<Value>     ValueList;
+typedef std::map<Value,Value>  ValueMap;
+
 //=============================================================================
 
 // Assuptions for comparisons:
@@ -152,8 +155,8 @@ protected:
 	virtual void value(Date&)      const;
 	virtual void value(Time&)      const;
 	virtual void value(DateTime&)  const;
-	virtual void value(std::vector<Value>&) const;
-    virtual void value(std::map<Value,Value>&) const;
+	virtual void value(ValueList&) const;
+    virtual void value(ValueMap&)  const;
 
 	Content* operator+(const Content&) const;
 	Content* operator-(const Content&) const;

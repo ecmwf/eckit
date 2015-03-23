@@ -40,15 +40,15 @@ protected:
 
     virtual int compare(const Content& other) const;
 
-    virtual void value(bool& n)                 const { Content::value(n); }
-    virtual void value(long long& n)            const { Content::value(n); }
-    virtual void value(double& n)               const { Content::value(n); }
-    virtual void value(std::string& n)               const { Content::value(n); }
-    virtual void value(Date& n)                 const { Content::value(n); }
-    virtual void value(Time& n)                 const { Content::value(n); }
-    virtual void value(DateTime& n)             const { Content::value(n); }
-    virtual void value(std::vector<Value>& n)        const;
-    virtual void value(std::map<Value,Value>& n)     const { Content::value(n); }
+    virtual void value(bool& n)        const { Content::value(n); }
+    virtual void value(long long& n)   const { Content::value(n); }
+    virtual void value(double& n)      const { Content::value(n); }
+    virtual void value(std::string& n) const { Content::value(n); }
+    virtual void value(Date& n)        const { Content::value(n); }
+    virtual void value(Time& n)        const { Content::value(n); }
+    virtual void value(DateTime& n)    const { Content::value(n); }
+    virtual void value(ValueList& n)   const;
+    virtual void value(ValueMap& n)    const { Content::value(n); }
 
     virtual int  compareBool(const BoolContent&)            const {return -1; }
     virtual int  compareNumber(const NumberContent&)        const {return -1; }

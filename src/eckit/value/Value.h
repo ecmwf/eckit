@@ -35,9 +35,6 @@ class Length;
 class PathName;
 class JSON;
 
-typedef std::vector<Value>     ValueList;
-typedef std::map<Value,Value>  ValueMap;
-
 class Value {
 public:
 
@@ -196,7 +193,7 @@ private:
 template < typename T >
 Value makeVectorValue( std::vector<T>& v )
 {
-	std::vector<Value> r;
+	ValueList r;
 	r.reserve(v.size());
 	for( size_t i = 0; i < v.size(); ++i )
 		r.push_back( Value(v[i]) );

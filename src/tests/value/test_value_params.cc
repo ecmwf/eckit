@@ -64,9 +64,9 @@ void encode( const AnyKeyParams&, Stream& ) {}
 
 //-----------------------------------------------------------------------------
 
-struct ParamsFixture
+struct PropertiesFixture
 {
-    ParamsFixture()
+    PropertiesFixture()
       : p( Properties()
            .set("bool", true)
            .set("int", imax)
@@ -96,6 +96,7 @@ struct CompositeParamsFixture
            .push_back(Params(Properties().set("Length", Length(42))))
            .push_back(Params(Properties().set("Date", Date(2015, 2, 1))))
            .push_back(Params(Properties().set("PathName", PathName("/var/tmp")))) ) {}
+
     Params p;
 };
 
@@ -162,12 +163,8 @@ struct AnyKeyParamsFixture
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE( test_eckit_value_params )
-
-BOOST_FIXTURE_TEST_CASE( test_value_params_keys, ParamsFixture )
+void test_keys(const Params& p)
 {
-    BOOST_TEST_MESSAGE("Test keys present in Properties");
-    BOOST_TEST_MESSAGE("Params: " << p);
     BOOST_CHECK( p.has("bool") );
     BOOST_CHECK( p.has("int") );
     BOOST_CHECK( p.has("unsigned int") );
@@ -182,10 +179,8 @@ BOOST_FIXTURE_TEST_CASE( test_value_params_keys, ParamsFixture )
     BOOST_CHECK_THROW( p["foo"], BadParameter );
 }
 
-BOOST_FIXTURE_TEST_CASE( test_value_params, ParamsFixture )
+void test_vals(const Params& p)
 {
-    BOOST_TEST_MESSAGE("Initialize Properties");
-    BOOST_TEST_MESSAGE("Params: " << p);
     BOOST_CHECK_EQUAL((bool)p["bool"], true);
     BOOST_CHECK_EQUAL((int)p["int"], imax);
     BOOST_CHECK_EQUAL((unsigned int)p["unsigned int"], uimax);
@@ -198,39 +193,7 @@ BOOST_FIXTURE_TEST_CASE( test_value_params, ParamsFixture )
     BOOST_CHECK_EQUAL(p["PathName"], PathName("/var/tmp"));
 }
 
-BOOST_FIXTURE_TEST_CASE( test_composite_params, CompositeParamsFixture )
-{
-    BOOST_TEST_MESSAGE("Initialize CompositeParams from Properties");
-    BOOST_TEST_MESSAGE("Params: " << p);
-    BOOST_CHECK_EQUAL((bool)p["bool"], true);
-    BOOST_CHECK_EQUAL((int)p["int"], imax);
-    BOOST_CHECK_EQUAL((unsigned int)p["unsigned int"], uimax);
-    BOOST_CHECK_EQUAL((long long)p["long long"], llmax);
-    BOOST_CHECK_EQUAL((unsigned long long)p["unsigned long long"], ullmax);
-    BOOST_CHECK_EQUAL((double)p["double"], dmax);
-    BOOST_CHECK_EQUAL(p["string"], "foo");
-    BOOST_CHECK_EQUAL(p["Length"], Length(42));
-    BOOST_CHECK(p["Date"].compare(Date(2015, 2, 1))); // FIXME: equality check fails
-    BOOST_CHECK_EQUAL(p["PathName"], PathName("/var/tmp"));
-}
-
-BOOST_FIXTURE_TEST_CASE( test_composite_params_list, ListParamsFixture )
-{
-    BOOST_TEST_MESSAGE("Initialize CompositeParams from list of Properties");
-    BOOST_TEST_MESSAGE("Params: " << p);
-    BOOST_CHECK_EQUAL((bool)p["bool"], true);
-    BOOST_CHECK_EQUAL((int)p["int"], imax);
-    BOOST_CHECK_EQUAL((unsigned int)p["unsigned int"], uimax);
-    BOOST_CHECK_EQUAL((long long)p["long long"], llmax);
-    BOOST_CHECK_EQUAL((unsigned long long)p["unsigned long long"], ullmax);
-    BOOST_CHECK_EQUAL((double)p["double"], dmax);
-    BOOST_CHECK_EQUAL(p["string"], "foo");
-    BOOST_CHECK_EQUAL(p["Length"], Length(42));
-    BOOST_CHECK(p["Date"].compare(Date(2015, 2, 1))); // FIXME: equality check fails
-    BOOST_CHECK_EQUAL(p["PathName"], PathName("/var/tmp"));
-}
-
-BOOST_FIXTURE_TEST_CASE( test_scope_params, ScopedParamsFixture )
+void test_scope(const Params& p)
 {
     BOOST_CHECK( p.has("scope.foo") );
     BOOST_CHECK( !p.has("foo") );
@@ -238,7 +201,7 @@ BOOST_FIXTURE_TEST_CASE( test_scope_params, ScopedParamsFixture )
     BOOST_CHECK_THROW( p["foo"], BadParameter );
 }
 
-BOOST_FIXTURE_TEST_CASE( test_composite_scope_params, CompositeScopedParamsFixture )
+void test_composite_scope(const Params& p)
 {
     BOOST_CHECK( p.has("user.resol") );
     BOOST_CHECK( p.has("default.resol") );
@@ -247,19 +210,73 @@ BOOST_FIXTURE_TEST_CASE( test_composite_scope_params, CompositeScopedParamsFixtu
     BOOST_CHECK_EQUAL( (uint)p["default.resol"], 200 );
 }
 
-BOOST_FIXTURE_TEST_CASE( test_dispatch_params, DispatchParamsFixture )
+void test_dispatch(const Params& p)
 {
     BOOST_CHECK( p.has("foo") );
     BOOST_CHECK( !p.has("bar") );
     BOOST_CHECK_EQUAL( p["foo"], "bar" );
 }
 
-BOOST_FIXTURE_TEST_CASE( test_custom_params, AnyKeyParamsFixture )
+void test_custom(const Params& p)
 {
     BOOST_CHECK( p.has("foo") );
     BOOST_CHECK( p.has("bar") );
     BOOST_CHECK_EQUAL( p["foo"], "foo" );
     BOOST_CHECK_EQUAL( p["bar"], "foo" );
+}
+
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE( test_eckit_value_params )
+
+BOOST_FIXTURE_TEST_CASE( test_properties_params, PropertiesFixture )
+{
+    BOOST_TEST_MESSAGE("Initialize Properties");
+    BOOST_TEST_MESSAGE("Params: " << p);
+    test_keys(p);
+    test_vals(p);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_composite_params, CompositeParamsFixture )
+{
+    BOOST_TEST_MESSAGE("Initialize CompositeParams from Properties");
+    BOOST_TEST_MESSAGE("Params: " << p);
+    test_keys(p);
+    test_vals(p);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_composite_params_list, ListParamsFixture )
+{
+    BOOST_TEST_MESSAGE("Initialize CompositeParams from list of Properties");
+    BOOST_TEST_MESSAGE("Params: " << p);
+    test_keys(p);
+    test_vals(p);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_scope_params, ScopedParamsFixture )
+{
+    BOOST_TEST_MESSAGE("Initialize ScopedParams");
+    BOOST_TEST_MESSAGE("Params: " << p);
+    test_scope(p);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_composite_scope_params, CompositeScopedParamsFixture )
+{
+    BOOST_TEST_MESSAGE("Initialize CompositeParams from ScopedParams");
+    BOOST_TEST_MESSAGE("Params: " << p);
+    test_composite_scope(p);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_dispatch_params, DispatchParamsFixture )
+{
+    BOOST_TEST_MESSAGE("Initialize DispatchParams");
+    test_dispatch(p);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_custom_params, AnyKeyParamsFixture )
+{
+    BOOST_TEST_MESSAGE("Initialize custom AnyKeyParams");
+    test_custom(p);
 }
 
 //-----------------------------------------------------------------------------

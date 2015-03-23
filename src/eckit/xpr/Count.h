@@ -40,6 +40,9 @@ public: // methods
 
     Count& operator=(Count&&) = default;
 
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
 private: // methods
 
     Count( args_t& a );

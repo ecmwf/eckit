@@ -161,10 +161,10 @@ public:
 
     static Value makeList();
     static Value makeList(const Value&);
-    static Value makeList(const std::vector<Value>&);
+    static Value makeList(const ValueList&);
 
     static Value makeMap();
-    static Value makeMap(const std::map<Value,Value>&);
+    static Value makeMap(const ValueMap&);
 
 protected:
 

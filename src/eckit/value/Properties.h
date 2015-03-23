@@ -46,7 +46,7 @@ public: // methods
     property_t get( const key_t& k ) const;
 
     /// Sets a property by inserting a new or overwrites an existing property
-    void set( const key_t& k, const property_t& v );
+    Properties& set( const key_t& k, const property_t& v );
 
     /// Removes a property
     bool remove( const key_t& k );

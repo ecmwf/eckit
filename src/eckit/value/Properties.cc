@@ -39,9 +39,10 @@ Properties::property_t Properties::get(const key_t & k) const
         return property_t(); // return Nil Value...
 }
 
-void Properties::set(const key_t & k, const property_t& v)
+Properties& Properties::set(const key_t & k, const property_t& v)
 {
     props_[k] = v;
+    return *this;
 }
 
 bool Properties::remove(const key_t & k)

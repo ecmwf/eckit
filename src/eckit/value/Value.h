@@ -62,6 +62,7 @@ public:
 
     Value(Stream&);
     Value(const ValueList&);
+    Value(const ValueMap&);
 
 // -- Copy
 

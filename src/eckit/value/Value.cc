@@ -226,6 +226,12 @@ Value::Value(const ValueList& v):
 	content_->attach();
 }
 
+Value::Value(const ValueMap& m):
+	content_(new MapContent(m))
+{
+	content_->attach();
+}
+
 Value::Value(Content* c):
 	content_(c)
 {

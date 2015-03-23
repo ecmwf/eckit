@@ -380,9 +380,7 @@ value/ScopeParams.h
 value/StringContent.h
 value/StringContent.cc
 value/Value.h
-value/Value.cc
-value/ValueParams.h
-value/ValueParams.cc )
+value/Value.cc )
 
 list( APPEND eckit_os_srcs
 os/Stat.h

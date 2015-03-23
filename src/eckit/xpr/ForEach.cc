@@ -47,7 +47,7 @@ ExpPtr ForEach::evaluate( Scope &ctx ) const
     ///             has a bool operator to check for end
 
     Iterator it( range );
-    for (ExpPtr e = it.next(); e->className() != "Undef"; e = it.next())
+    for (ExpPtr e = it.next(); !Undef::is(e); e = it.next())
         res.push_back( func->eval( e ) );
 
     return ExpPtr(new List( res, List::Swap()));

@@ -49,6 +49,7 @@ BOOST_AUTO_TEST_CASE( test_serialize )
     // p.set("Time", Time(11, 59, 59));  <-- not implemented
     // p.set("DateTime", DateTime(Date(1, 2, 2015), Time(11, 59, 59)));  <-- not implemented
     p.set("PathName", PathName("/var/tmp"));
+    p.set("Vector", ValueList(5, "string"));
     BOOST_TEST_MESSAGE("encoded Properties: " << p);
     {
         FileStream sout( filepath.c_str(), "w" );
@@ -70,6 +71,7 @@ BOOST_AUTO_TEST_CASE( test_serialize )
         // BOOST_CHECK_EQUAL(p["Time"], p2["Time"]);  <-- not implemented
         // BOOST_CHECK_EQUAL(p["DateTime"], p2["DateTime"]); <-- not implemented
         BOOST_CHECK_EQUAL(p["PathName"], p2["PathName"]);
+        BOOST_CHECK_EQUAL(p["Vector"], p2["Vector"]);
     }
     if (filename.exists()) filename.unlink();
 }

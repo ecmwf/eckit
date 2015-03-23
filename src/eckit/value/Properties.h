@@ -57,6 +57,8 @@ public: // methods
 	/// @returns a bool, true if empty false otherwise
 	bool empty() const { return props_.empty(); }
 
+    static const char* className() { return "eckit::Properties"; }
+
 protected:
     void print(std::ostream& s) const;
 
@@ -76,6 +78,10 @@ private: // methods
     friend JSON& operator<<(JSON& s, const Properties& v) { v.json(s);  return s; }
     friend std::ostream& operator<<(std::ostream& s, const Properties& v) { v.print(s);  return s; }
     friend Stream&  operator<<(Stream&  s, const Properties& v) { v.encode(s); return s; }
+
+    friend property_t get( const Properties& p, const key_t& key );
+    friend void print( const Properties& p, std::ostream& s );
+    friend void encode( const Properties& p, Stream& s );
 
     friend class Value;
 };

@@ -10,11 +10,12 @@
 
 #include "eckit/parser/JSON.h"
 #include "eckit/types/Types.h"
+#include "eckit/value/Params.h"
 #include "eckit/value/Properties.h"
 
 namespace eckit {
 
-//------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 Properties::Properties()
 {
@@ -66,7 +67,28 @@ void Properties::encode( Stream& s ) const
     s << props_;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+Properties::property_t get( const Properties& p, const Properties::key_t& key )
+{
+    return p.get(key);
+}
+
+void print( const Properties& p, std::ostream& s )
+{
+    s << p;
+}
+
+void encode( const Properties& p, Stream& s )
+{
+    s << p;
+}
+
+//-----------------------------------------------------------------------------
+
+Params::Factory<Properties> propertiesFactory;
+
+//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

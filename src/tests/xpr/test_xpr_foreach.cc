@@ -14,10 +14,12 @@
 
 #include "eckit/xpr/Call.h"
 #include "eckit/xpr/ForEach.h"
+#include "eckit/xpr/Iterable.h"
 #include "eckit/xpr/Lambda.h"
 #include "eckit/xpr/List.h"
 #include "eckit/xpr/Map.h"
 #include "eckit/xpr/Real.h"
+#include "eckit/xpr/Undef.h"
 #include "eckit/xpr/Xpr.h"
 
 using namespace std;
@@ -27,6 +29,18 @@ using namespace eckit::xpr;
 //-----------------------------------------------------------------------------
 
 namespace eckit_test {
+
+struct Counter : Integer, Iterable
+{
+    Counter( value_t count = 0, value_t limit = 0 ) : Integer(count), limit_(limit) {}
+    ExpPtr next() {
+        if (limit_ && v_ >= limit_)
+            return ExpPtr( new Undef() );
+        return ExpPtr( new Integer(v_++) );
+    }
+private:
+    value_t limit_;
+};
 
 //-----------------------------------------------------------------------------
 
@@ -74,6 +88,25 @@ BOOST_AUTO_TEST_CASE( test_lambda_list_map )
     BOOST_CHECK_EQUAL( l.eval().str(), "List(Real(18), Real(36), Real(9))" );
     BOOST_CHECK_EQUAL( l.eval().code(), "xpr::list(xpr::real(18), xpr::real(36), xpr::real(9))" );
     BOOST_CHECK_EQUAL( l.eval().json(), "{\"xpr::list\":[18,36,9]}" );
+}
+
+BOOST_AUTO_TEST_CASE( test_lambda_iterable )
+{
+    Xpr trice = call(lambda("a", Xpr(3.0) * Xpr("a")));
+    Xpr l = xpr::forEach( ExpPtr( new Counter(1, 4) ), trice );
+
+    BOOST_CHECK_EQUAL( l.str(), "ForEach(Integer(1), Call(Lambda(=(a), Prod(Real(3), _(a)))))" );
+    BOOST_CHECK_EQUAL( l.code(), "xpr::forEach(xpr::integer(1), xpr::call(xpr::lambda(\"a\", xpr::prod(xpr::real(3), xpr::parameter(\"a\")))))" );
+    BOOST_CHECK_EQUAL( l.json(), "{\"xpr::forEach\":[1,{\"xpr::call\":[{\"xpr::lambda\":[{\"xpr::paramdef\":[]},{\"xpr::prod\":[3,{\"xpr::parameter\":[]}]}]}]}]}" );
+
+    Xpr le = l.eval();
+
+    BOOST_CHECK_EQUAL( le.str(), "List(Real(3), Real(6), Real(9))" );
+    BOOST_CHECK_EQUAL( le.code(), "xpr::list(xpr::real(3), xpr::real(6), xpr::real(9))" );
+    BOOST_CHECK_EQUAL( le.json(), "{\"xpr::list\":[3,6,9]}" );
+
+    // Counter is exhausted after iterating it once
+    BOOST_CHECK_EQUAL( l.eval().str(), "List()" );
 }
 
 //-----------------------------------------------------------------------------

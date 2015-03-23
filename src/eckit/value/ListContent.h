@@ -29,7 +29,7 @@ protected:
 // -- Constructor 
 
 	ListContent();
-	ListContent(const std::vector<Value>&);
+	ListContent(const ValueList&);
 	ListContent(const Value&);
 
 	ListContent(Stream&);
@@ -44,15 +44,15 @@ protected:
 
     virtual int compare(const Content& other) const;
 
-    virtual void value(bool& n)                 const;
-    virtual void value(long long& n)            const;
-    virtual void value(double& n)               const;
-    virtual void value(std::string& n)               const;
-    virtual void value(Date& n)                 const;
-    virtual void value(Time& n)                 const;
-    virtual void value(DateTime& n)             const;
-    virtual void value(std::vector<Value>& n)        const;
-    virtual void value(std::map<Value,Value>& n)     const { Content::value(n); }
+    virtual void value(bool& n)        const;
+    virtual void value(long long& n)   const;
+    virtual void value(double& n)      const;
+    virtual void value(std::string& n) const;
+    virtual void value(Date& n)        const;
+    virtual void value(Time& n)        const;
+    virtual void value(DateTime& n)    const;
+    virtual void value(ValueList& n)   const;
+    virtual void value(ValueMap& n)    const { Content::value(n); }
 
     virtual int  compareBool(const BoolContent&)            const {return -1; }
     virtual int  compareNumber(const NumberContent&)        const {return -1; }
@@ -96,7 +96,7 @@ private:
 
 // -- Members
 
-    std::vector<Value> value_;
+    ValueList value_;
 
 // -- Class Members
 

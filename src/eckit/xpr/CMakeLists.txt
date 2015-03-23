@@ -28,6 +28,8 @@ IfElse.h
 Integer.cc
 Integer.h
 Iterable.h
+Iterator.cc
+Iterator.h
 Lambda.cc
 Lambda.h
 Linear.cc

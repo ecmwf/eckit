@@ -15,8 +15,8 @@
 #ifndef eckit_xpr_Iterator_h
 #define eckit_xpr_Iterator_h
 
-#include "eckit/xpr/Countable.h"
 #include "eckit/xpr/Iterable.h"
+#include "eckit/xpr/Undef.h"
 
 namespace eckit {
 namespace xpr {
@@ -26,6 +26,24 @@ namespace xpr {
 /// Iterator adaptor for iterable and countable Expressions
 
 class Iterator : public Iterable {
+
+    /// Iterator wrapper for finite Expressions, implementing the iterable interface
+
+    struct Countable : Iterable {
+
+        Countable( ExpPtr expr ) : expr_( expr ), counter_( 0 ) {}
+
+        virtual ExpPtr next()
+        {
+            if (counter_ >= expr_->arity())
+                return ExpPtr( new Undef() );
+            return expr_->args( counter_++ );
+        }
+
+    private: // members
+        ExpPtr expr_;
+        size_t counter_;
+    };
 
 public: // methods
 

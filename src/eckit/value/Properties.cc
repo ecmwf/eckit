@@ -25,12 +25,12 @@ Properties::Properties(Stream &s)
     s >> props_;
 }
 
-bool Properties::has(const std::string &k) const
+bool Properties::has(const key_t & k) const
 {
     return ( props_.find(k) != props_.end() );
 }
 
-Properties::property_t Properties::get(const std::string& k) const
+Properties::property_t Properties::get(const key_t & k) const
 {
     PropertyMap::const_iterator vit = props_.find(k);
     if( vit != props_.end() )
@@ -39,12 +39,12 @@ Properties::property_t Properties::get(const std::string& k) const
         return property_t(); // return Nil Value...
 }
 
-void Properties::set(const std::string& k, const property_t& v)
+void Properties::set(const key_t & k, const property_t& v)
 {
     props_[k] = v;
 }
 
-bool Properties::remove(const std::string& k)
+bool Properties::remove(const key_t & k)
 {
     return props_.erase(k);
 }

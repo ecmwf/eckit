@@ -13,14 +13,14 @@
 
 #include "eckit/grib/GribHandle.h"
 #include "eckit/memory/Builder.h"
-#include "eckit/value/ValueParams.h"
+#include "eckit/value/Properties.h"
 
 namespace eckit {
 namespace grib {
 
 //------------------------------------------------------------------------------------------------------
 
-class GribParams : public eckit::ValueParams {
+class GribParams : public eckit::Properties {
 public:
 
 	typedef BuilderT1<GribParams> builder_t;

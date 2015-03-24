@@ -37,7 +37,7 @@ public: // types
 
 public: // methods
 
-    static const char * nodeName() { return "List"; }
+    static const char * nodeName() { return "eckit::xpr::List"; }
     static std::string sig() { return "l"; }
 
     static bool is ( const ExpPtr& e);

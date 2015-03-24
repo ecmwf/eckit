@@ -28,7 +28,7 @@ class Call : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "Call"; }
+    static const char * nodeName() { return "eckit::xpr::Call"; }
 
     Call( ExpPtr f );
     Call( ExpPtr f, ExpPtr a);

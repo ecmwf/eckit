@@ -35,7 +35,7 @@ class ParamDef : public Expression {
 
 public: //  methods
 
-    static const char * nodeName() { return "ParamDef"; }
+    static const char * nodeName() { return "eckit::xpr::ParamDef"; }
     static std::string sig()       { return "?"; }
 
     static bool is ( const ExpPtr& e );

@@ -39,7 +39,7 @@ public: // methods
         return ExpPtr( new ProdAdd(args) );
     }
 
-    static const char * nodeName() { return "ProdAdd"; }
+    static const char * nodeName() { return "eckit::xpr::ProdAdd"; }
 
     ProdAdd( const ExpPtr& e );
 

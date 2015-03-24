@@ -28,7 +28,7 @@ class Value : public Expression {
 
 public: // methods
 
-    static const char * nodeName() { return "Value"; }
+    static const char * nodeName() { return "eckit::xpr::Value"; }
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves

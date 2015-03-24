@@ -19,14 +19,14 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-static const char *opname(const Greater&)       { return "Greater";  }
-static const char *opname(const GreaterEqual&)  { return "GreaterEqual";  }
-static const char *opname(const Less&)          { return "Less";  }
-static const char *opname(const LessEqual&)     { return "LessEqual";  }
-static const char *opname(const Equal&)         { return "Equal";  }
-static const char *opname(const NotEqual&)      { return "NotEqual";  }
-static const char *opname(const And&)           { return "And";  }
-static const char *opname(const Or&)            { return "Or";  }
+static const char *opname(const Greater&)       { return "eckit::xpr::Greater";  }
+static const char *opname(const GreaterEqual&)  { return "eckit::xpr::GreaterEqual";  }
+static const char *opname(const Less&)          { return "eckit::xpr::Less";  }
+static const char *opname(const LessEqual&)     { return "eckit::xpr::LessEqual";  }
+static const char *opname(const Equal&)         { return "eckit::xpr::Equal";  }
+static const char *opname(const NotEqual&)      { return "eckit::xpr::NotEqual";  }
+static const char *opname(const And&)           { return "eckit::xpr::And";  }
+static const char *opname(const Or&)            { return "eckit::xpr::Or";  }
 
 static const char *opfactory(const Greater&)       { return "xpr::greater";  }
 static const char *opfactory(const GreaterEqual&)  { return "xpr::greater_equal";  }

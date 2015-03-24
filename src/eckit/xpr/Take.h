@@ -30,7 +30,7 @@ class Take : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "Take"; }
+    static const char * nodeName() { return "eckit::xpr::Take"; }
 
     Take( ExpPtr e = undef(), ExpPtr l = undef()  );
 

@@ -25,7 +25,7 @@ namespace xpr {
 class Undef : public Expression {
 public: //  methods
 
-    static const char * nodeName() { return "Undef"; }
+    static const char * nodeName() { return "eckit::xpr::Undef"; }
     static std::string sig() { return "?"; }
     static bool is ( const ExpPtr& e );
 

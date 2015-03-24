@@ -28,7 +28,7 @@ class Merge : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "Merge"; }
+    static const char * nodeName() { return "eckit::xpr::Merge"; }
 
     Merge( ExpPtr l0, ExpPtr l1 );
 

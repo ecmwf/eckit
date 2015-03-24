@@ -25,7 +25,7 @@ ExpPtr neg( ExpPtr e ) { return ExpPtr( new UnaryOperator<Neg>(e) ); }
 
 //--------------------------------------------------------------------------------------------
 
-static const char *opname(const Neg&)  { return "Neg";  }
+static const char *opname(const Neg&)  { return "eckit::xpr::Neg";  }
 static const char *opsymbol(const Neg&)  { return "-";  }
 static const char *opfactory(const Neg&)  { return "xpr::neg";  }
 

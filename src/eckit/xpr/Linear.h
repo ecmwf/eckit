@@ -29,7 +29,7 @@ class Linear : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "Linear"; }
+    static const char * nodeName() { return "eckit::xpr::Linear"; }
 
     Linear( ExpPtr e );
 

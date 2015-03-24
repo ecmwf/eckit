@@ -29,7 +29,7 @@ class Lambda : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "Lambda"; }
+    static const char * nodeName() { return "eckit::xpr::Lambda"; }
 
     Lambda( ExpPtr body);
     Lambda( const std::string& a, ExpPtr body);

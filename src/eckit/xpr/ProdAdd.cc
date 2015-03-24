@@ -147,9 +147,9 @@ Reanimator< ProdAdd > ProdAdd::reanimator_;
 
 static ProdAdd::Register prodadd_register;
 
-static OptimiseTo<ProdAdd> optimise_prodadd_rvv("Prod(r,Add(v,v))");
-static OptimiseTo<ProdAdd> optimise_prodadd_ivv("Prod(i,Add(v,v))");
-static OptimiseTo<ProdAdd> optimise_prodadd_vvv("Prod(v,Add(v,v))");
+static OptimiseTo<ProdAdd> optimise_prodadd_rvv("xpr::Prod(r,xpr::Add(v,v))");
+static OptimiseTo<ProdAdd> optimise_prodadd_ivv("xpr::Prod(i,xpr::Add(v,v))");
+static OptimiseTo<ProdAdd> optimise_prodadd_vvv("xpr::Prod(v,xpr::Add(v,v))");
 
 
 //--------------------------------------------------------------------------------------------

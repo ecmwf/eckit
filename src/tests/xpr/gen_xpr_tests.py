@@ -16,10 +16,10 @@ BOOST_AUTO_TEST_CASE( test_{op_c}_{a_c}_{b_c} )
     BOOST_CHECK_EQUAL( extract<{res_c}>(C.eval()) , {res} );
     BOOST_CHECK_EQUAL( extract<{res_c}>(D.eval()) , {res} );
 
-    BOOST_CHECK_EQUAL( A.str() , "{op_c}({a_c}({ad}), {b_c}({bd}))" );
-    BOOST_CHECK_EQUAL( B.str() , "{op_c}({a_c}({ad}), {b_c}({bd}))" );
-    BOOST_CHECK_EQUAL( C.str() , "{op_c}({a_c}({ad}), {b_c}({bd}))" );
-    BOOST_CHECK_EQUAL( D.str() , "{res_c}({res})" );
+    BOOST_CHECK_EQUAL( A.str() , "xpr::{op_c}(xpr::{a_c}({ad}), xpr::{b_c}({bd}))" );
+    BOOST_CHECK_EQUAL( B.str() , "xpr::{op_c}(xpr::{a_c}({ad}), xpr::{b_c}({bd}))" );
+    BOOST_CHECK_EQUAL( C.str() , "xpr::{op_c}(xpr::{a_c}({ad}), xpr::{b_c}({bd}))" );
+    BOOST_CHECK_EQUAL( D.str() , "xpr::{res_c}({res})" );
 
     BOOST_CHECK_EQUAL( A.code() , "{op_f}({a_f}({ad}), {b_f}({bd}))" );
     BOOST_CHECK_EQUAL( B.code() , "{op_f}({a_f}({ad}), {b_f}({bd}))" );

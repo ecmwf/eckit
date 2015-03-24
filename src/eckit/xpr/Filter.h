@@ -29,7 +29,7 @@ class Filter : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "eckit::xpr::Filter"; }
+    static const char * nodeName() { return "xpr::Filter"; }
 
     Filter( ExpPtr pred = undef(), ExpPtr list = undef() );
 

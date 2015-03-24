@@ -28,7 +28,7 @@ class ZipWith : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "eckit::xpr::ZipWith"; }
+    static const char * nodeName() { return "xpr::ZipWith"; }
 
     ZipWith( ExpPtr f, ExpPtr l0, ExpPtr l1 );
 

@@ -122,22 +122,22 @@ Reanimator< Linear > Linear::reanimator_;
 
 static Linear::Register linear_register;
 
-static OptimiseTo<Linear> optimise_linear_rvrv("Add(Prod(r,v),Prod(r,v))");
-static OptimiseTo<Linear> optimise_linear_vrvr("Add(Prod(v,r),Prod(v,r))");
-static OptimiseTo<Linear> optimise_linear_vrrv("Add(Prod(v,r),Prod(r,v))");
-static OptimiseTo<Linear> optimise_linear_rvvr("Add(Prod(r,v),Prod(v,r))");
-static OptimiseTo<Linear> optimise_linear_rviv("Add(Prod(r,v),Prod(i,v))");
-static OptimiseTo<Linear> optimise_linear_vrvi("Add(Prod(v,r),Prod(v,i))");
-static OptimiseTo<Linear> optimise_linear_vriv("Add(Prod(v,r),Prod(i,v))");
-static OptimiseTo<Linear> optimise_linear_rvvi("Add(Prod(r,v),Prod(v,i))");
-static OptimiseTo<Linear> optimise_linear_ivrv("Add(Prod(i,v),Prod(r,v))");
-static OptimiseTo<Linear> optimise_linear_vivr("Add(Prod(v,i),Prod(v,r))");
-static OptimiseTo<Linear> optimise_linear_virv("Add(Prod(v,i),Prod(r,v))");
-static OptimiseTo<Linear> optimise_linear_ivvr("Add(Prod(i,v),Prod(v,r))");
-static OptimiseTo<Linear> optimise_linear_iviv("Add(Prod(i,v),Prod(i,v))");
-static OptimiseTo<Linear> optimise_linear_vivi("Add(Prod(v,i),Prod(v,i))");
-static OptimiseTo<Linear> optimise_linear_viiv("Add(Prod(v,i),Prod(i,v))");
-static OptimiseTo<Linear> optimise_linear_ivvi("Add(Prod(i,v),Prod(v,i))");
+static OptimiseTo<Linear> optimise_linear_rvrv("xpr::Add(xpr::Prod(r,v),xpr::Prod(r,v))");
+static OptimiseTo<Linear> optimise_linear_vrvr("xpr::Add(xpr::Prod(v,r),xpr::Prod(v,r))");
+static OptimiseTo<Linear> optimise_linear_vrrv("xpr::Add(xpr::Prod(v,r),xpr::Prod(r,v))");
+static OptimiseTo<Linear> optimise_linear_rvvr("xpr::Add(xpr::Prod(r,v),xpr::Prod(v,r))");
+static OptimiseTo<Linear> optimise_linear_rviv("xpr::Add(xpr::Prod(r,v),xpr::Prod(i,v))");
+static OptimiseTo<Linear> optimise_linear_vrvi("xpr::Add(xpr::Prod(v,r),xpr::Prod(v,i))");
+static OptimiseTo<Linear> optimise_linear_vriv("xpr::Add(xpr::Prod(v,r),xpr::Prod(i,v))");
+static OptimiseTo<Linear> optimise_linear_rvvi("xpr::Add(xpr::Prod(r,v),xpr::Prod(v,i))");
+static OptimiseTo<Linear> optimise_linear_ivrv("xpr::Add(xpr::Prod(i,v),xpr::Prod(r,v))");
+static OptimiseTo<Linear> optimise_linear_vivr("xpr::Add(xpr::Prod(v,i),xpr::Prod(v,r))");
+static OptimiseTo<Linear> optimise_linear_virv("xpr::Add(xpr::Prod(v,i),xpr::Prod(r,v))");
+static OptimiseTo<Linear> optimise_linear_ivvr("xpr::Add(xpr::Prod(i,v),xpr::Prod(v,r))");
+static OptimiseTo<Linear> optimise_linear_iviv("xpr::Add(xpr::Prod(i,v),xpr::Prod(i,v))");
+static OptimiseTo<Linear> optimise_linear_vivi("xpr::Add(xpr::Prod(v,i),xpr::Prod(v,i))");
+static OptimiseTo<Linear> optimise_linear_viiv("xpr::Add(xpr::Prod(v,i),xpr::Prod(i,v))");
+static OptimiseTo<Linear> optimise_linear_ivvi("xpr::Add(xpr::Prod(i,v),xpr::Prod(v,i))");
 
 //--------------------------------------------------------------------------------------------
 

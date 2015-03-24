@@ -33,7 +33,7 @@ public: // types
 
 public: // methods
 
-    static const char * nodeName() { return "eckit::xpr::Vector"; }
+    static const char * nodeName() { return "xpr::Vector"; }
 
     static std::string sig() { return "v"; }
 

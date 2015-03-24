@@ -19,11 +19,11 @@ namespace eckit {
 namespace xpr {
 
 //--------------------------------------------------------------------------------------------
-static const char *opname(const Prod&)  { return "eckit::xpr::Prod";  }
-static const char *opname(const Div&)   { return "eckit::xpr::Div";  }
-static const char *opname(const Add&)   { return "eckit::xpr::Add";  }
-static const char *opname(const Sub&)   { return "eckit::xpr::Sub";  }
-static const char *opname(const Mod&)   { return "eckit::xpr::Mod";  }
+static const char *opname(const Prod&)  { return "xpr::Prod";  }
+static const char *opname(const Div&)   { return "xpr::Div";  }
+static const char *opname(const Add&)   { return "xpr::Add";  }
+static const char *opname(const Sub&)   { return "xpr::Sub";  }
+static const char *opname(const Mod&)   { return "xpr::Mod";  }
 
 static const char *opfactory(const Prod&)  { return "xpr::prod";  }
 static const char *opfactory(const Div&)   { return "xpr::div";  }

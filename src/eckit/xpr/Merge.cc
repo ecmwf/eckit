@@ -94,7 +94,7 @@ ExpPtr Merge::compute(Scope &ctx, const args_t& p )
 
 Merge::Register::Register()
 {
-    Function::dispatcher()[ "Add(l,l)" ] = &compute;
+    Function::dispatcher()[ "xpr::Add(l,l)" ] = &compute;
 }
 
 

@@ -93,7 +93,7 @@ public: // methods
 
     struct Swap {};
 
-    static const char * nodeName() { return "eckit::xpr::Expression"; }
+    static const char * nodeName() { return "xpr::Expression"; }
 
     /// Empty contructor is usually used by derived classes that
     /// handle the setup of the parameters themselves

@@ -28,7 +28,7 @@ class IfElse : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "eckit::xpr::IfElse"; }
+    static const char * nodeName() { return "xpr::IfElse"; }
 
     IfElse( ExpPtr f, ExpPtr i, ExpPtr e );
 

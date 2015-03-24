@@ -28,7 +28,7 @@ class Bind : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "eckit::xpr::Bind"; }
+    static const char * nodeName() { return "xpr::Bind"; }
 
     Bind( integer_t i, ExpPtr f, ExpPtr e );
     Bind( ExpPtr i, ExpPtr f, ExpPtr e );

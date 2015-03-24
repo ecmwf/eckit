@@ -28,7 +28,7 @@ class Map : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "eckit::xpr::Map"; }
+    static const char * nodeName() { return "xpr::Map"; }
 
     Map( ExpPtr f, ExpPtr l );
 

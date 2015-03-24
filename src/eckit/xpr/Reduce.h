@@ -30,7 +30,7 @@ class Reduce : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "eckit::xpr::Reduce"; }
+    static const char * nodeName() { return "xpr::Reduce"; }
 
     Reduce( ExpPtr f = undef(), ExpPtr l = undef() );
 

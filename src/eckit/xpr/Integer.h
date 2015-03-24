@@ -30,7 +30,7 @@ public: // methods
     typedef integer_t value_t;
 
     static std::string sig() { return "i"; }
-    static const char * nodeName() { return "eckit::xpr::Integer"; }
+    static const char * nodeName() { return "xpr::Integer"; }
 
     static bool is ( const ExpPtr& e );
 

@@ -31,7 +31,7 @@ public: // static methods
     typedef bool value_t;
 
     static std::string sig() { return "b"; }
-    static const char * nodeName() { return "eckit::xpr::Boolean"; }
+    static const char * nodeName() { return "xpr::Boolean"; }
 
     static bool is ( const ExpPtr& e );
 

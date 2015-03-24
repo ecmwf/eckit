@@ -26,7 +26,7 @@ class ForEach : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "eckit::xpr::ForEach"; }
+    static const char * nodeName() { return "xpr::ForEach"; }
 
     ForEach( ExpPtr range, ExpPtr func );
 

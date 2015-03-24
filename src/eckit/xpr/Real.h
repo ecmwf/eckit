@@ -32,7 +32,7 @@ public: // methods
     typedef real_t value_t;
 
     static std::string sig() { return "r"; }
-    static const char * nodeName() { return "eckit::xpr::Real"; }
+    static const char * nodeName() { return "xpr::Real"; }
 
     static bool is ( const ExpPtr& e );
 

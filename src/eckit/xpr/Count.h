@@ -30,7 +30,7 @@ class Count : public Function {
 
 public: // methods
 
-    static const char * nodeName() { return "eckit::xpr::Count"; }
+    static const char * nodeName() { return "xpr::Count"; }
 
     Count( ExpPtr e = undef() );
 

@@ -35,23 +35,42 @@ const double dmax = numeric_limits<double>::max();
 
 class TestParams : public DispatchParams<TestParams> {
 public:
-    TestParams() {
-        dispatch_["foo"] = &TestParams::getFoo;
+    TestParams(const std::string& payload) : payload_(payload) {
+        dispatch_["foo"] = &TestParams::getPayload;
     }
-    TestParams( Stream& ) {}
+    TestParams( Stream& s ) {
+        dispatch_["foo"] = &TestParams::getPayload;
+        s >> payload_;
+    }
 
 private:
-    Params::value_t getFoo( const Params::key_t& key ) const {
-        return Params::value_t("bar");
+    Params::value_t getPayload( const Params::key_t& key ) const {
+        return payload_;
     }
+
+    friend void encode( const TestParams&, Stream& );
+
+    string payload_;
 };
+
+void encode( const TestParams& p, Stream& s )
+{
+    s << p.payload_;
+}
+
+Params::Factory<TestParams> testParamsFactory;
 
 //-----------------------------------------------------------------------------
 
 struct AnyKeyParams {
-    AnyKeyParams() {}
-    AnyKeyParams( Stream& ) {}
+    AnyKeyParams(std::string payload) : payload_(payload) {}
+    AnyKeyParams( Stream& s ) {
+        s >> payload_;
+    }
     static const char* className() { return "AnyKeyParams"; }
+private:
+    friend void encode( const AnyKeyParams&, Stream& );
+    std::string payload_;
 };
 
 Params::value_t get( const AnyKeyParams&, const Params::key_t& )
@@ -60,7 +79,11 @@ Params::value_t get( const AnyKeyParams&, const Params::key_t& )
 }
 
 void print( const AnyKeyParams&, std::ostream& ) {}
-void encode( const AnyKeyParams&, Stream& ) {}
+void encode( const AnyKeyParams& p, Stream& s ) {
+    s << p.payload_;
+}
+
+Params::Factory<AnyKeyParams> anyKeyParamsFactory;
 
 //-----------------------------------------------------------------------------
 
@@ -148,7 +171,7 @@ struct CompositeScopedParamsFixture
 struct DispatchParamsFixture
 {
     DispatchParamsFixture()
-      : p( TestParams() ) {}
+      : p( TestParams("bar") ) {}
 
     Params p;
 };
@@ -156,7 +179,7 @@ struct DispatchParamsFixture
 struct AnyKeyParamsFixture
 {
     AnyKeyParamsFixture()
-      : p( AnyKeyParams() ) {}
+      : p( AnyKeyParams("foo") ) {}
 
     Params p;
 };

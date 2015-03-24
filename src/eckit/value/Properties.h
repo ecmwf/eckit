@@ -31,6 +31,7 @@ class Properties {
 public: // types
 
     typedef Value property_t;
+    typedef std::string key_t;
 
 public: // methods
 
@@ -39,29 +40,31 @@ public: // methods
     Properties(Stream&);
 
     /// @returns true is a property exists
-    bool has( const std::string& k ) const;
+    bool has( const key_t& k ) const;
 
     /// @returns a property
-    property_t get( const std::string& k ) const;
+    property_t get( const key_t& k ) const;
 
     /// Sets a property by inserting a new or overwrites an existing property
-    void set( const std::string& k, const property_t& v );
+    Properties& set( const key_t& k, const property_t& v );
 
     /// Removes a property
-    bool remove( const std::string& k );
+    bool remove( const key_t& k );
 
 	/// @returns a property
-	property_t operator[]( const std::string& k ) const { return get(k); }
+	property_t operator[]( const key_t& k ) const { return get(k); }
 
 	/// @returns a bool, true if empty false otherwise
 	bool empty() const { return props_.empty(); }
+
+    static const char* className() { return "eckit::Properties"; }
 
 protected:
     void print(std::ostream& s) const;
 
 private: // types
 
-    typedef std::map< std::string, property_t > PropertyMap;
+    typedef std::map< key_t, property_t > PropertyMap;
 
 private: // members
 
@@ -75,6 +78,10 @@ private: // methods
     friend JSON& operator<<(JSON& s, const Properties& v) { v.json(s);  return s; }
     friend std::ostream& operator<<(std::ostream& s, const Properties& v) { v.print(s);  return s; }
     friend Stream&  operator<<(Stream&  s, const Properties& v) { v.encode(s); return s; }
+
+    friend property_t get( const Properties& p, const key_t& key );
+    friend void print( const Properties& p, std::ostream& s );
+    friend void encode( const Properties& p, Stream& s );
 
     friend class Value;
 };

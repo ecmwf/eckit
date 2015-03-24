@@ -10,11 +10,12 @@
 
 #include "eckit/parser/JSON.h"
 #include "eckit/types/Types.h"
+#include "eckit/value/Params.h"
 #include "eckit/value/Properties.h"
 
 namespace eckit {
 
-//------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 Properties::Properties()
 {
@@ -25,12 +26,12 @@ Properties::Properties(Stream &s)
     s >> props_;
 }
 
-bool Properties::has(const std::string &k) const
+bool Properties::has(const key_t & k) const
 {
     return ( props_.find(k) != props_.end() );
 }
 
-Properties::property_t Properties::get(const std::string& k) const
+Properties::property_t Properties::get(const key_t & k) const
 {
     PropertyMap::const_iterator vit = props_.find(k);
     if( vit != props_.end() )
@@ -39,12 +40,13 @@ Properties::property_t Properties::get(const std::string& k) const
         return property_t(); // return Nil Value...
 }
 
-void Properties::set(const std::string& k, const property_t& v)
+Properties& Properties::set(const key_t & k, const property_t& v)
 {
     props_[k] = v;
+    return *this;
 }
 
-bool Properties::remove(const std::string& k)
+bool Properties::remove(const key_t & k)
 {
     return props_.erase(k);
 }
@@ -65,7 +67,28 @@ void Properties::encode( Stream& s ) const
     s << props_;
 }
 
-//------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+Properties::property_t get( const Properties& p, const Properties::key_t& key )
+{
+    return p.get(key);
+}
+
+void print( const Properties& p, std::ostream& s )
+{
+    s << p;
+}
+
+void encode( const Properties& p, Stream& s )
+{
+    s << p;
+}
+
+//-----------------------------------------------------------------------------
+
+Params::Factory<Properties> propertiesFactory;
+
+//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

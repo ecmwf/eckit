@@ -125,13 +125,13 @@ void Content::value(DateTime&) const
 	badConvertion("DateTime");
 }
 
-void Content::value(std::map<Value,Value>& v) const
+void Content::value(ValueMap & v) const
 {
     badConvertion("Map");
 }
 
 
-void Content::value(std::vector<Value>& v) const
+void Content::value(ValueList & v) const
 {
 	// Cast away constness, so the Contnt can be attached by the value
 	v.push_back(Value((Content*)this));

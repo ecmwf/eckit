@@ -205,7 +205,7 @@ Value Value::makeMap()
     return Value(new MapContent());
 }
 
-Value Value::makeMap(const std::map<Value, Value> & m)
+Value Value::makeMap(const ValueMap & m)
 {
     return Value(new MapContent(m));
 }
@@ -215,13 +215,19 @@ Value Value::makeList(const Value& v)
 	return Value(new ListContent(v));
 }
 
-Value Value::makeList(const std::vector<Value>& v)
+Value Value::makeList(const ValueList& v)
 {
     return Value(new ListContent(v));
 }
 
 Value::Value(const ValueList& v):
 	content_(new ListContent(v))
+{
+	content_->attach();
+}
+
+Value::Value(const ValueMap& m):
+	content_(new MapContent(m))
 {
 	content_->attach();
 }

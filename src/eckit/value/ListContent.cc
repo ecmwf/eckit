@@ -26,7 +26,7 @@ ListContent::ListContent()
 {
 }
 
-ListContent::ListContent(const std::vector<Value>& v)
+ListContent::ListContent(const ValueList & v)
 {
     std::copy(v.begin(),v.end(), std::back_inserter(value_));
 }
@@ -60,7 +60,7 @@ ListContent::~ListContent()
 {
 }
 
-void ListContent::value(std::vector<Value>& v) const
+void ListContent::value(ValueList& v) const
 {
     v = value_;
 }
@@ -114,7 +114,7 @@ Content* ListContent::add(const Content& other) const
 
 Content* ListContent::addList(const ListContent& other) const
 {
-    std::vector<Value> tmp;
+    ValueList tmp;
     std::copy(other.value_.begin(), other.value_.end(), std::back_inserter(tmp));
     std::copy(value_.begin(), value_.end(), std::back_inserter(tmp));
 	return new ListContent(tmp);

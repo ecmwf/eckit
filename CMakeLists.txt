@@ -69,7 +69,7 @@ set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encod
 ### eckit::xpr
 
 ecbuild_add_option( FEATURE XPR
-                    DEFAULT OFF
+                    DEFAULT ON
                     DESCRIPTION "eckit::xpr [EXPERIMENTAL]"
                     CONDITION HAVE_CPP11 )
 

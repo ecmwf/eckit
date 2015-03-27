@@ -68,14 +68,12 @@ ZipWith.cc
 ZipWith.h
 )
 
+ecbuild_get_cxx11_flags( CXX11_FLAGS )
 
-ecbuild_add_library(TARGET eckit_xpr
-					INSTALL_HEADERS ALL
-					HEADER_DESTINATION
-						${INSTALL_INCLUDE_DIR}/eckit/xpr
-					CONDITION HAVE_XPR
-					SOURCES
-						${eckit_xpr_srcs}
-					LIBS
-						eckit  )
-
+ecbuild_add_library( TARGET eckit_xpr
+                     INSTALL_HEADERS ALL
+                     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/xpr
+                     CONDITION HAVE_XPR
+                     SOURCES ${eckit_xpr_srcs}
+                     CXXFLAGS ${CXX11_FLAGS}
+                     LIBS eckit )

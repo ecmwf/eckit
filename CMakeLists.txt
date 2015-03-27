@@ -35,11 +35,24 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-### C++11
+### Check for C++11 support
 
-ecbuild_add_option( FEATURE CPP11
-                    DEFAULT OFF
-                    DESCRIPTION "Try compile with C++11 features" )
+list( APPEND cpp11_req
+      auto constexpr constructor_delegate cstdint decltype deleted_constructor
+      initialization lambda long_double long_long noexcept nullptr override
+      rvalue_references shared_ptr sizeof_member static_assert template_alias
+      type_traits unique_ptr variadic_templates )
+
+# currently not included: __func__ random_device trivial_type_traits explicit_cast enable_if
+
+ecbuild_check_cxx11( PRINT FEATURES ${cpp11_req} )
+
+message( STATUS ${CXX11_NOT_SUPPORTED_FEATURES} )
+
+# If any features are not supported
+if( NOT CXX11_NOT_SUPPORTED_FEATURES )
+    set( HAVE_CPP11 ON )
+endif()
 
 ### GRIB
 
@@ -54,7 +67,8 @@ set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encod
 
 ecbuild_add_option( FEATURE XPR
                     DEFAULT OFF
-                    DESCRIPTION "eckit::xpr [EXPERIMENTAL]" )
+                    DESCRIPTION "eckit::xpr [EXPERIMENTAL]"
+                    CONDITION HAVE_CPP11 )
 
 ### eckit::mpi
 
@@ -112,26 +126,6 @@ find_package(Threads REQUIRED)
 
 ###############################################################################
 # checks
-
-### C++11
-
-if( ENABLE_XPR OR ENABLE_CPP11 )
-
-    ecbuild_add_cxx11_flags() # enforce c++11
-
-    list( APPEND cpp11_req
-        auto constexpr constructor_delegate cstdint decltype deleted_constructor
-        initialization lambda long_double long_long noexcept nullptr override
-        rvalue_references shared_ptr sizeof_member static_assert template_alias type_traits
-        unique_ptr variadic_templates )
-
-    # currently not included: __func__ random_device trivial_type_traits explicit_cast enable_if
-
-    # in ecbuild 1.5.0 this will operate on lists so we will need only one call
-
-    ecbuild_check_cxx11( REQUIRED ${cpp11_req} )
-
-endif()
 
 # check thread library is pthreads
 

@@ -47,11 +47,14 @@ list( APPEND cpp11_req
 
 ecbuild_check_cxx11( PRINT FEATURES ${cpp11_req} )
 
-message( STATUS ${CXX11_NOT_SUPPORTED_FEATURES} )
-
 # If any features are not supported
 if( NOT CXX11_NOT_SUPPORTED_FEATURES )
     set( HAVE_CPP11 ON )
+    message( STATUS "Required C++11 features detected" )
+    message( STATUS "  enabling C++11 support" )
+else()
+    message( STATUS "Required C++11 features not detected" )
+    message( STATUS "  disabling C++11 support" )
 endif()
 
 ### GRIB

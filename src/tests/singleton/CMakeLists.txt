@@ -1,3 +1,5 @@
+ecbuild_append_to_rpath( "./" )
+
 ecbuild_add_library( TARGET      test_factory
                      NOINSTALL
 					 SOURCES     TestFactory.cc TestFactory.h

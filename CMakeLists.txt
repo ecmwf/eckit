@@ -23,7 +23,7 @@ set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} 
 
 include( ecbuild_system )
 
-ecbuild_requires_macro_version( 1.6 )
+ecbuild_requires_macro_version( 1.7 )
 
 set( PERSISTENT_NAMESPACE eckit CACHE INTERNAL "" )
 

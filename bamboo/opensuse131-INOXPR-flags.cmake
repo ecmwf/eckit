@@ -1,2 +1,0 @@
-SET( ENABLE_XPR OFF  CACHE BOOL "do not use Xpr engine" )
-SET( ENABLE_MPI OFF CACHE BOOL "Disable MPI" )

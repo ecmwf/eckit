@@ -28,7 +28,9 @@ class Iterable {
 
 public: // methods
 
-    virtual ExpPtr next() = 0;
+  virtual ~Iterable();
+  virtual ExpPtr next() = 0;
+
 };
 
 //--------------------------------------------------------------------------------------------

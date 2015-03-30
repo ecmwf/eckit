@@ -1,4 +1,4 @@
-from sys import argv
+from sys import argv, exit
 
 camelcase = lambda s: ''.join([w.capitalize() for w in s.split('_')])
 f = lambda s: 'xpr::' + s
@@ -78,6 +78,9 @@ def gen_operator_tests(testfile):
     return testfile % {'test_cases': '\n\n'.join(tests)}
 
 if __name__ == '__main__':
+    if (len(argv)) < 3:
+        print "Usage: python %s TEMPLATE OUTPUT" % argv[0]
+        exit(1)
     with open(argv[1]) as fin:
         with open(argv[2], 'w') as fout:
             fout.write(gen_operator_tests(fin.read()))

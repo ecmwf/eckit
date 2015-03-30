@@ -20,6 +20,8 @@
 #include "eckit/value/Properties.h"
 #include "eckit/value/ScopeParams.h"
 
+#include "AnyKeyParams.h"
+
 using namespace std;
 using namespace eckit;
 
@@ -61,31 +63,6 @@ void encode( const TestParams& p, Stream& s )
 }
 
 Params::Factory<TestParams> testParamsFactory;
-
-//-----------------------------------------------------------------------------
-
-struct AnyKeyParams {
-    AnyKeyParams(std::string payload) : payload_(payload) {}
-    AnyKeyParams( Stream& s ) {
-        s >> payload_;
-    }
-    static const char* className() { return "AnyKeyParams"; }
-private:
-    friend void encode( const AnyKeyParams&, Stream& );
-    std::string payload_;
-};
-
-Params::value_t get( const AnyKeyParams&, const Params::key_t& )
-{
-    return Params::value_t("foo");
-}
-
-void print( const AnyKeyParams&, std::ostream& ) {}
-void encode( const AnyKeyParams& p, Stream& s ) {
-    s << p.payload_;
-}
-
-Params::Factory<AnyKeyParams> anyKeyParamsFactory;
 
 //-----------------------------------------------------------------------------
 

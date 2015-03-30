@@ -78,5 +78,6 @@ def gen_operator_tests(testfile):
     return testfile % {'test_cases': '\n\n'.join(tests)}
 
 if __name__ == '__main__':
-    with open(argv[1]) as fin, open(argv[2], 'w') as fout:
-        fout.write(gen_operator_tests(fin.read()))
+    with open(argv[1]) as fin:
+        with open(argv[2], 'w') as fout:
+            fout.write(gen_operator_tests(fin.read()))

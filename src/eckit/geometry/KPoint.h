@@ -106,7 +106,6 @@ public:
 
     static bool equal(const KPoint& p1, const KPoint& p2)
     {
-        double m = 0;
         for(size_t i = 0; i < dimensions(); i++)
         {
             if(p1.x_[i]  != p2.x_[i])
@@ -215,7 +214,6 @@ public:
         typename Container::value_type result(*j);
 
         ++j;
-        size_t count = points.size();
 
         for(; j != points.end(); ++j) {
             for(size_t i = 0; i < dimensions(); i++) {

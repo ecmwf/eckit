@@ -37,8 +37,8 @@ struct SPNodeInfo {
     typedef NodeType Node;
 
     const Node* node_;
-    double distance_;
     ID id_;
+    double distance_;
 
 public:
 

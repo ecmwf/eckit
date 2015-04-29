@@ -10,6 +10,7 @@
 
 #include "eckit/xpr/Reduce.h"
 #include "eckit/xpr/List.h"
+#include "eckit/xpr/Vector.h"
 
 namespace eckit {
 namespace xpr {
@@ -32,22 +33,40 @@ Reduce::Reduce(Stream &s) : Function(s) {}
 ExpPtr Reduce::evaluate( Scope &ctx ) const
 {
     ExpPtr f = args(0, ctx, false);
+    ExpPtr l = args(1, ctx, true);
 
-    const List::value_t& list = List::extract( ctx, args(1, ctx, true) );
-
-    const size_t nlist = list.size();
-
-    if(!nlist) // empty list
-        return ExpPtr( new List() );
-
-    ExpPtr e = list[0]->eval(ctx);
-
-    for( size_t i = 1; i < nlist; ++i )
+    if (Vector::is(l))
     {
-        e = f->eval( e, list[i]->eval(ctx) );
-    }
+        const Vector::value_t& vec = Vector::extract( l );
+        const size_t nvec = vec.size();
+        if(!nvec) // empty vector
+            return ExpPtr( new Vector(0) );
 
-    return e->eval(ctx);
+        ExpPtr e( new Real(vec[0]) );
+
+        for( size_t i = 1; i < nvec; ++i )
+        {
+            e = f->eval( e, ExpPtr( new Real(vec[i]) ) );
+        }
+
+        return e->eval(ctx);
+    }
+    else // List
+    {
+        const List::value_t& list = List::extract( ctx, l );
+        const size_t nlist = list.size();
+        if(!nlist) // empty list
+            return ExpPtr( new List() );
+
+        ExpPtr e = list[0]->eval(ctx);
+
+        for( size_t i = 1; i < nlist; ++i )
+        {
+            e = f->eval( e, list[i]->eval(ctx) );
+        }
+
+        return e->eval(ctx);
+    }
 }
 
 ExpPtr Reduce::cloneWith(args_t& a) const

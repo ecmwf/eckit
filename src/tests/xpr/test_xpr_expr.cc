@@ -248,6 +248,29 @@ BOOST_AUTO_TEST_CASE( test_reduce )
     BOOST_CHECK_EQUAL( f3->eval()->str() , "xpr::List()" );
     BOOST_CHECK_EQUAL( f3->eval()->code() , "xpr::list()" );
     BOOST_CHECK_EQUAL( f3->eval()->json() , "{\"xpr::list\":[]}" );
+
+    // reduce vector
+
+    ExpPtr f4 =  reduce( xpr::add(), x_ );
+
+    BOOST_CHECK_EQUAL( f4->str() , "xpr::Reduce(xpr::Add(?, ?), xpr::Vector(5, 5, 5))" );
+    BOOST_CHECK_EQUAL( f4->code() , "xpr::reduce(xpr::add(xpr::undef(), xpr::undef()), xpr::vector({5, 5, 5}))" );
+    BOOST_CHECK_EQUAL( f4->json() , "{\"xpr::reduce\":[{\"xpr::add\":[\"xpr::undef\",\"xpr::undef\"]},[5,5,5]]}" );
+    BOOST_CHECK_EQUAL( xpr::reduce(xpr::add(xpr::undef(), xpr::undef()), xpr::vector({5, 5, 5}))->eval()->str() , "xpr::Real(15)" );
+    BOOST_CHECK_EQUAL( f4->eval()->str() , "xpr::Real(15)" );
+    BOOST_CHECK_EQUAL( f4->eval()->code() , "xpr::real(15)" );
+    BOOST_CHECK_EQUAL( f4->eval()->json() , "15" );
+
+    // reduce empty vector
+
+    ExpPtr f5 =  reduce( xpr::add(), xpr::vector({}) );
+    BOOST_CHECK_EQUAL( f5->str() , "xpr::Reduce(xpr::Add(?, ?), xpr::Vector())" );
+    BOOST_CHECK_EQUAL( f5->code() , "xpr::reduce(xpr::add(xpr::undef(), xpr::undef()), xpr::vector({}))" );
+    BOOST_CHECK_EQUAL( f5->json() , "{\"xpr::reduce\":[{\"xpr::add\":[\"xpr::undef\",\"xpr::undef\"]},[]]}" );
+    BOOST_CHECK_EQUAL( xpr::reduce(xpr::add(xpr::undef(), xpr::undef()), xpr::vector({}))->eval()->str() , "xpr::Vector()" );
+    BOOST_CHECK_EQUAL( f5->eval()->str() , "xpr::Vector()" );
+    BOOST_CHECK_EQUAL( f5->eval()->code() , "xpr::vector({})" );
+    BOOST_CHECK_EQUAL( f5->eval()->json() , "[]" );
 }
 
 BOOST_AUTO_TEST_CASE( test_predicates )

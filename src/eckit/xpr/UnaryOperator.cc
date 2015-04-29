@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cmath>
+
 #include "eckit/parser/JSON.h"
 
 #include "eckit/xpr/Integer.h"
@@ -19,15 +21,27 @@
 namespace eckit {
 namespace xpr {
 
+struct Sqrt
+{
+    real_t operator()(const real_t arg) const {
+        return std::sqrt(arg);
+    }
+};
+
 //--------------------------------------------------------------------------------------------
 
 ExpPtr neg( ExpPtr e ) { return ExpPtr( new UnaryOperator<Neg>(e) ); }
+ExpPtr sqrt( ExpPtr e ) { return ExpPtr( new UnaryOperator<Sqrt>(e) ); }
 
 //--------------------------------------------------------------------------------------------
 
 static const char *opname(const Neg&)  { return "xpr::Neg";  }
 static const char *opsymbol(const Neg&)  { return "-";  }
 static const char *opfactory(const Neg&)  { return "xpr::neg";  }
+
+static const char *opname(const Sqrt&)  { return "xpr::Sqrt";  }
+static const char *opsymbol(const Sqrt&)  { return "sqrt";  }
+static const char *opfactory(const Sqrt&)  { return "xpr::sqrt";  }
 
 //--------------------------------------------------------------------------------------------
 
@@ -56,6 +70,10 @@ struct Generic
 static UnaryOperator<Neg>::Computer<Real,Generic> neg_rg;
 static UnaryOperator<Neg>::Computer<Integer,Generic> neg_ig;
 static UnaryOperator<Neg>::Computer<Vector,Generic> neg_vg;
+
+static UnaryOperator<Sqrt>::Computer<Real,Generic> sqrt_rg;
+static UnaryOperator<Sqrt>::Computer<Integer,Generic> sqrt_ig;
+static UnaryOperator<Sqrt>::Computer<Vector,Generic> sqrt_vg;
 
 //--------------------------------------------------------------------------------------------
 
@@ -147,6 +165,9 @@ Reanimator< UnaryOperator<T> > UnaryOperator<T>::reanimator_;
 
 static OptimiseTo<Real> optimise_neg_r ( std::string(opname( Neg() )) + "(r)" );
 static OptimiseTo<Integer> optimise_neg_i ( std::string(opname( Neg() )) + "(i)" );
+
+static OptimiseTo<Real> optimise_sqrt_r ( std::string(opname( Sqrt() )) + "(r)" );
+static OptimiseTo<Integer> optimise_sqrt_i ( std::string(opname( Sqrt() )) + "(i)" );
 
 //--------------------------------------------------------------------------------------------
 

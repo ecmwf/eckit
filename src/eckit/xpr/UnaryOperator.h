@@ -95,6 +95,7 @@ private: // static members
 
 //--------------------------------------------------------------------------------------------
 
+class Sqrt;
 typedef std::negate<real_t>  Neg;
 
 //--------------------------------------------------------------------------------------------
@@ -104,6 +105,8 @@ typedef std::negate<real_t>  Neg;
 ExpPtr neg( ExpPtr e = undef() );
 ExpPtr neg( Expression& e );
 
+ExpPtr sqrt( ExpPtr e = undef() );
+ExpPtr sqrt( Expression& e );
 
 //--------------------------------------------------------------------------------------------
 

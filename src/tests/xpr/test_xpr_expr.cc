@@ -190,9 +190,6 @@ BOOST_AUTO_TEST_CASE( test_map )
 
     ExpPtr f1 =  xpr::map( neg(), xpr::list( xpr::add(a_, b_), x_ ) );
 
-    BOOST_TEST_MESSAGE("Map string representation before eval: " << f1->str());
-    BOOST_TEST_MESSAGE("Map string representation after eval: " << f1->eval()->str());
-
     BOOST_CHECK_EQUAL( f1->str() , "xpr::Map(xpr::Neg(?), xpr::List(xpr::Add(xpr::Real(2), xpr::Real(4)), xpr::Vector(5, 5, 5)))" );
     BOOST_CHECK_EQUAL( f1->code() , "xpr::map(xpr::neg(xpr::undef()), xpr::list(xpr::add(xpr::real(2), xpr::real(4)), xpr::vector({5, 5, 5})))" );
     BOOST_CHECK_EQUAL( f1->json() , "{\"xpr::map\":[{\"xpr::neg\":\"xpr::undef\"},{\"xpr::list\":[{\"xpr::add\":[2,4]},[5,5,5]]}]}" );
@@ -311,9 +308,6 @@ BOOST_AUTO_TEST_CASE( test_bind )
 
     ExpPtr f0 = xpr::filter( pred, xpr::list( a_ , b_, a_, b_ ) );
 
-    BOOST_TEST_MESSAGE("Bind string representation before eval: " << f0->str());
-    BOOST_TEST_MESSAGE("Bind string representation after eval: " << f0->eval()->str());
-
     BOOST_CHECK_EQUAL( f0->str() , "xpr::Filter(xpr::Bind(xpr::Integer(2), xpr::Greater(?, ?), xpr::Real(2)), xpr::List(xpr::Real(2), xpr::Real(4), xpr::Real(2), xpr::Real(4)))" );
     BOOST_CHECK_EQUAL( f0->code() , "xpr::filter(xpr::bind<2>(xpr::greater(xpr::undef(), xpr::undef()), xpr::real(2)), xpr::list(xpr::real(2), xpr::real(4), xpr::real(2), xpr::real(4)))" );
     BOOST_CHECK_EQUAL( f0->json() , "{\"xpr::filter\":[{\"xpr::bind\":[2,{\"xpr::greater\":[\"xpr::undef\",\"xpr::undef\"]},2]},{\"xpr::list\":[2,4,2,4]}]}" );
@@ -334,9 +328,6 @@ BOOST_AUTO_TEST_CASE( test_zipwith )
     // simple reduce
 
     ExpPtr f0 =  zipWith( xpr::add(), xpr::list( a_ , b_, a_, b_ ), xpr::list( a_ , b_, a_, b_ ) );
-
-    BOOST_TEST_MESSAGE("zipWith string representation before eval: " << f0->str());
-    BOOST_TEST_MESSAGE("zipWith string representation after eval: " << f0->eval()->str());
 
     BOOST_CHECK_EQUAL( f0->eval()->str() , xpr::map( xpr::prod(real(2.)), xpr::list( a_ , b_, a_, b_ ) )->eval()->str() );
     BOOST_CHECK_EQUAL( f0->eval()->code() , "xpr::list(xpr::real(4), xpr::real(8), xpr::real(4), xpr::real(8))" );

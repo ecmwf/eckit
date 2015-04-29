@@ -302,6 +302,33 @@ BOOST_AUTO_TEST_CASE( test_filter )
     BOOST_CHECK_EQUAL( f3->eval()->json() , "{\"xpr::list\":[4,4]}" );
 }
 
+BOOST_AUTO_TEST_CASE( test_sqrt )
+{
+    ExpPtr e1 = xpr::sqrt( a_ );
+    BOOST_CHECK_EQUAL( e1->str() , "xpr::Sqrt(xpr::Real(2))");
+    BOOST_CHECK_EQUAL( e1->code() , "xpr::sqrt(xpr::real(2))" );
+    BOOST_CHECK_EQUAL( e1->json() , "{\"xpr::sqrt\":2}" );
+    BOOST_CHECK_EQUAL( e1->eval()->str() , "xpr::Real(1.41421)" );
+    BOOST_CHECK_EQUAL( e1->eval()->code() , "xpr::real(1.41421)" );
+    BOOST_CHECK_EQUAL( e1->eval()->json() , "1.41421" );
+
+    ExpPtr e2 = xpr::sqrt( x_ );
+    BOOST_CHECK_EQUAL( e2->str() , "xpr::Sqrt(xpr::Vector(5, 5, 5))" );
+    BOOST_CHECK_EQUAL( e2->code() , "xpr::sqrt(xpr::vector({5, 5, 5}))" );
+    BOOST_CHECK_EQUAL( e2->json() , "{\"xpr::sqrt\":[5,5,5]}" );
+    BOOST_CHECK_EQUAL( e2->eval()->str() , "xpr::Vector(2.23607, 2.23607, 2.23607)" );
+    BOOST_CHECK_EQUAL( e2->eval()->code() , "xpr::vector({2.23607, 2.23607, 2.23607})" );
+    BOOST_CHECK_EQUAL( e2->eval()->json() , "[2.23607,2.23607,2.23607]" );
+
+    ExpPtr e3 = xpr::map( xpr::sqrt(), xpr::list( a_, x_ ) );
+    BOOST_CHECK_EQUAL( e3->str() , "xpr::Map(xpr::Sqrt(?), xpr::List(xpr::Real(2), xpr::Vector(5, 5, 5)))" );
+    BOOST_CHECK_EQUAL( e3->code() , "xpr::map(xpr::sqrt(xpr::undef()), xpr::list(xpr::real(2), xpr::vector({5, 5, 5})))" );
+    BOOST_CHECK_EQUAL( e3->json() , "{\"xpr::map\":[{\"xpr::sqrt\":\"xpr::undef\"},{\"xpr::list\":[2,[5,5,5]]}]}" );
+    BOOST_CHECK_EQUAL( e3->eval()->str() , "xpr::List(xpr::Real(1.41421), xpr::Vector(2.23607, 2.23607, 2.23607))" );
+    BOOST_CHECK_EQUAL( e3->eval()->code() , "xpr::list(xpr::real(1.41421), xpr::vector({2.23607, 2.23607, 2.23607}))" );
+    BOOST_CHECK_EQUAL( e3->eval()->json() , "{\"xpr::list\":[1.41421,[2.23607,2.23607,2.23607]]}" );
+}
+
 BOOST_AUTO_TEST_CASE( test_bind )
 {
     ExpPtr pred = xpr::bind<2>( xpr::greater(), xpr::real(2) );

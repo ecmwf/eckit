@@ -92,6 +92,9 @@ typedef std::plus<real_t>        Add;
 typedef std::minus<real_t>       Sub;
 typedef std::modulus<real_t>     Mod;
 
+struct Min;
+struct Max;
+
 //--------------------------------------------------------------------------------------------
 
 // version with stand alone functions
@@ -101,6 +104,9 @@ ExpPtr div ( ExpPtr l = undef(), ExpPtr r = undef() );
 ExpPtr add ( ExpPtr l = undef(), ExpPtr r = undef() );
 ExpPtr sub ( ExpPtr l = undef(), ExpPtr r = undef() );
 ExpPtr mod ( ExpPtr l = undef(), ExpPtr r = undef() );
+
+ExpPtr min ( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr max ( ExpPtr l = undef(), ExpPtr r = undef() );
 
 //--------------------------------------------------------------------------------------------
 

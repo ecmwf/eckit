@@ -312,6 +312,33 @@ BOOST_AUTO_TEST_CASE( test_predicates )
     BOOST_CHECK_EQUAL( f2->eval()->json() , "true" );
 }
 
+BOOST_AUTO_TEST_CASE( test_binary_operators )
+{
+    // min
+
+    ExpPtr f0 =  xpr::min( a_ , b_ );
+
+    BOOST_CHECK_EQUAL( f0->str() , "xpr::Min(xpr::Real(2), xpr::Real(4))" );
+    BOOST_CHECK_EQUAL( f0->code() , "xpr::min(xpr::real(2), xpr::real(4))" );
+    BOOST_CHECK_EQUAL( f0->json() , "{\"xpr::min\":[2,4]}" );
+    BOOST_CHECK_EQUAL( xpr::min(xpr::real(2), xpr::real(4))->eval()->str() , "xpr::Real(2)" );
+    BOOST_CHECK_EQUAL( f0->eval()->str() , "xpr::Real(2)" );
+    BOOST_CHECK_EQUAL( f0->eval()->code() , "xpr::real(2)" );
+    BOOST_CHECK_EQUAL( f0->eval()->json() , "2" );
+
+    // max
+
+    ExpPtr f1 =  xpr::max( a_ , b_ );
+
+    BOOST_CHECK_EQUAL( f1->str() , "xpr::Max(xpr::Real(2), xpr::Real(4))" );
+    BOOST_CHECK_EQUAL( f1->code() , "xpr::max(xpr::real(2), xpr::real(4))" );
+    BOOST_CHECK_EQUAL( f1->json() , "{\"xpr::max\":[2,4]}" );
+    BOOST_CHECK_EQUAL( xpr::max(xpr::real(2), xpr::real(4))->eval()->str() , "xpr::Real(4)" );
+    BOOST_CHECK_EQUAL( f1->eval()->str() , "xpr::Real(4)" );
+    BOOST_CHECK_EQUAL( f1->eval()->code() , "xpr::real(4)" );
+    BOOST_CHECK_EQUAL( f1->eval()->json() , "4" );
+}
+
 BOOST_AUTO_TEST_CASE( test_filter )
 {
     ExpPtr f3 = xpr::filter( xpr::greater( undef(), xpr::real(2) ),xpr::list( a_ , b_, a_, b_ ) );

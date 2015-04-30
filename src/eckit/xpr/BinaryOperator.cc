@@ -19,23 +19,46 @@ namespace eckit {
 namespace xpr {
 
 //--------------------------------------------------------------------------------------------
+
+struct Min
+{
+    real_t operator()(const real_t a, const real_t b) const {
+        return std::min(a, b);
+    }
+};
+
+struct Max
+{
+    real_t operator()(const real_t a, const real_t b) const {
+        return std::max(a, b);
+    }
+};
+
+//--------------------------------------------------------------------------------------------
+
 static const char *opname(const Prod&)  { return "xpr::Prod";  }
 static const char *opname(const Div&)   { return "xpr::Div";  }
 static const char *opname(const Add&)   { return "xpr::Add";  }
 static const char *opname(const Sub&)   { return "xpr::Sub";  }
 static const char *opname(const Mod&)   { return "xpr::Mod";  }
+static const char *opname(const Min&)   { return "xpr::Min";  }
+static const char *opname(const Max&)   { return "xpr::Max";  }
 
 static const char *opfactory(const Prod&)  { return "xpr::prod";  }
 static const char *opfactory(const Div&)   { return "xpr::div";  }
 static const char *opfactory(const Add&)   { return "xpr::add";  }
 static const char *opfactory(const Sub&)   { return "xpr::sub";  }
 static const char *opfactory(const Mod&)   { return "xpr::mod";  }
+static const char *opfactory(const Min&)   { return "xpr::min";  }
+static const char *opfactory(const Max&)   { return "xpr::max";  }
 
 ExpPtr prod( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Prod >(l,r) ); }
 ExpPtr div( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Div >(l,r) );  }
 ExpPtr add( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Add >(l,r) );  }
 ExpPtr sub( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Sub >(l,r) );  }
 ExpPtr mod( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Mod >(l,r) );  }
+ExpPtr min( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Min >(l,r) );  }
+ExpPtr max( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Max >(l,r) );  }
 
 //--------------------------------------------------------------------------------------------
 
@@ -99,45 +122,65 @@ struct Generic
 
 //--------------------------------------------------------------------------------------------
 
-static BinaryOperator<Prod>::Computer<Real,Real,Generic> prod_rrg;
-static BinaryOperator<Prod>::Computer<Real,Integer,Generic> prod_rig;
-static BinaryOperator<Prod>::Computer<Integer,Real,Generic> prod_irg;
+static BinaryOperator<Prod>::Computer<Real,   Real,   Generic> prod_rrg;
+static BinaryOperator<Prod>::Computer<Real,   Integer,Generic> prod_rig;
+static BinaryOperator<Prod>::Computer<Integer,Real,   Generic> prod_irg;
 static BinaryOperator<Prod>::Computer<Integer,Integer,Generic> prod_iig;
-static BinaryOperator<Prod>::Computer<Real,Vector,Generic> prod_rvg;
-static BinaryOperator<Prod>::Computer<Vector,Real,Generic> prod_vrg;
-static BinaryOperator<Prod>::Computer<Integer,Vector,Generic> prod_ivg;
-static BinaryOperator<Prod>::Computer<Vector,Integer,Generic> prod_vig;
-static BinaryOperator<Prod>::Computer<Vector,Vector,Generic> prod_vvg;
+static BinaryOperator<Prod>::Computer<Real,   Vector, Generic> prod_rvg;
+static BinaryOperator<Prod>::Computer<Vector, Real,   Generic> prod_vrg;
+static BinaryOperator<Prod>::Computer<Integer,Vector, Generic> prod_ivg;
+static BinaryOperator<Prod>::Computer<Vector, Integer,Generic> prod_vig;
+static BinaryOperator<Prod>::Computer<Vector, Vector, Generic> prod_vvg;
 
-static BinaryOperator<Div>::Computer<Real,Real,Generic> div_rrg;
-static BinaryOperator<Div>::Computer<Real,Integer,Generic> div_rig;
-static BinaryOperator<Div>::Computer<Integer,Real,Generic> div_irg;
+static BinaryOperator<Div>::Computer<Real,   Real,   Generic> div_rrg;
+static BinaryOperator<Div>::Computer<Real,   Integer,Generic> div_rig;
+static BinaryOperator<Div>::Computer<Integer,Real,   Generic> div_irg;
 static BinaryOperator<Div>::Computer<Integer,Integer,Generic> div_iig;
-static BinaryOperator<Div>::Computer<Real,Vector,Generic> div_rvg;
-static BinaryOperator<Div>::Computer<Vector,Real,Generic> div_vrg;
-static BinaryOperator<Div>::Computer<Integer,Vector,Generic> div_ivg;
-static BinaryOperator<Div>::Computer<Vector,Integer,Generic> div_vig;
-static BinaryOperator<Div>::Computer<Vector,Vector,Generic> div_vvg;
+static BinaryOperator<Div>::Computer<Real,   Vector, Generic> div_rvg;
+static BinaryOperator<Div>::Computer<Vector, Real,   Generic> div_vrg;
+static BinaryOperator<Div>::Computer<Integer,Vector, Generic> div_ivg;
+static BinaryOperator<Div>::Computer<Vector, Integer,Generic> div_vig;
+static BinaryOperator<Div>::Computer<Vector, Vector, Generic> div_vvg;
 
-static BinaryOperator<Add>::Computer<Real,Real,Generic> add_rrg;
-static BinaryOperator<Add>::Computer<Real,Integer,Generic> add_rig;
-static BinaryOperator<Add>::Computer<Integer,Real,Generic> add_irg;
+static BinaryOperator<Add>::Computer<Real,   Real,   Generic> add_rrg;
+static BinaryOperator<Add>::Computer<Real,   Integer,Generic> add_rig;
+static BinaryOperator<Add>::Computer<Integer,Real,   Generic> add_irg;
 static BinaryOperator<Add>::Computer<Integer,Integer,Generic> add_iig;
-static BinaryOperator<Add>::Computer<Real,Vector,Generic> add_rvg;
-static BinaryOperator<Add>::Computer<Vector,Real,Generic> add_vrg;
-static BinaryOperator<Add>::Computer<Integer,Vector,Generic> add_ivg;
-static BinaryOperator<Add>::Computer<Vector,Integer,Generic> add_vig;
-static BinaryOperator<Add>::Computer<Vector,Vector,Generic> add_vvg;
+static BinaryOperator<Add>::Computer<Real,   Vector, Generic> add_rvg;
+static BinaryOperator<Add>::Computer<Vector, Real,   Generic> add_vrg;
+static BinaryOperator<Add>::Computer<Integer,Vector, Generic> add_ivg;
+static BinaryOperator<Add>::Computer<Vector, Integer,Generic> add_vig;
+static BinaryOperator<Add>::Computer<Vector, Vector, Generic> add_vvg;
 
-static BinaryOperator<Sub>::Computer<Real,Real,Generic> sub_rrg;
-static BinaryOperator<Sub>::Computer<Real,Integer,Generic> sub_rig;
-static BinaryOperator<Sub>::Computer<Integer,Real,Generic> sub_irg;
+static BinaryOperator<Sub>::Computer<Real,   Real,   Generic> sub_rrg;
+static BinaryOperator<Sub>::Computer<Real,   Integer,Generic> sub_rig;
+static BinaryOperator<Sub>::Computer<Integer,Real,   Generic> sub_irg;
 static BinaryOperator<Sub>::Computer<Integer,Integer,Generic> sub_iig;
-static BinaryOperator<Sub>::Computer<Real,Vector,Generic> sub_rvg;
-static BinaryOperator<Sub>::Computer<Vector,Real,Generic> sub_vrg;
-static BinaryOperator<Sub>::Computer<Integer,Vector,Generic> sub_ivg;
-static BinaryOperator<Sub>::Computer<Vector,Integer,Generic> sub_vig;
-static BinaryOperator<Sub>::Computer<Vector,Vector,Generic> sub_vvg;
+static BinaryOperator<Sub>::Computer<Real,   Vector, Generic> sub_rvg;
+static BinaryOperator<Sub>::Computer<Vector, Real,   Generic> sub_vrg;
+static BinaryOperator<Sub>::Computer<Integer,Vector, Generic> sub_ivg;
+static BinaryOperator<Sub>::Computer<Vector, Integer,Generic> sub_vig;
+static BinaryOperator<Sub>::Computer<Vector, Vector, Generic> sub_vvg;
+
+static BinaryOperator<Min>::Computer<Real,   Real,   Generic> min_rrg;
+static BinaryOperator<Min>::Computer<Real,   Integer,Generic> min_rig;
+static BinaryOperator<Min>::Computer<Integer,Real,   Generic> min_irg;
+static BinaryOperator<Min>::Computer<Integer,Integer,Generic> min_iig;
+static BinaryOperator<Min>::Computer<Real,   Vector, Generic> min_rvg;
+static BinaryOperator<Min>::Computer<Vector, Real,   Generic> min_vrg;
+static BinaryOperator<Min>::Computer<Integer,Vector, Generic> min_ivg;
+static BinaryOperator<Min>::Computer<Vector, Integer,Generic> min_vig;
+static BinaryOperator<Min>::Computer<Vector, Vector, Generic> min_vvg;
+
+static BinaryOperator<Max>::Computer<Real,   Real,   Generic> max_rrg;
+static BinaryOperator<Max>::Computer<Real,   Integer,Generic> max_rig;
+static BinaryOperator<Max>::Computer<Integer,Real,   Generic> max_irg;
+static BinaryOperator<Max>::Computer<Integer,Integer,Generic> max_iig;
+static BinaryOperator<Max>::Computer<Real,   Vector, Generic> max_rvg;
+static BinaryOperator<Max>::Computer<Vector, Real,   Generic> max_vrg;
+static BinaryOperator<Max>::Computer<Integer,Vector, Generic> max_ivg;
+static BinaryOperator<Max>::Computer<Vector, Integer,Generic> max_vig;
+static BinaryOperator<Max>::Computer<Vector, Vector, Generic> max_vvg;
 
 //--------------------------------------------------------------------------------------------
 
@@ -217,22 +260,33 @@ Reanimator< BinaryOperator<T> > BinaryOperator<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 
-static OptimiseTo<Real> optimise_add_rr ( std::string(opname( Add() )) + "(r,r)" );
-static OptimiseTo<Real> optimise_sub_rr ( std::string(opname( Sub() )) + "(r,r)" );
-static OptimiseTo<Real> optimise_prod_rr( std::string(opname(Prod() )) + "(r,r)" );
-static OptimiseTo<Real> optimise_div_rr ( std::string(opname( Div() )) + "(r,r)" );
-static OptimiseTo<Real> optimise_add_ri ( std::string(opname( Add() )) + "(r,i)" );
-static OptimiseTo<Real> optimise_sub_ri ( std::string(opname( Sub() )) + "(r,i)" );
-static OptimiseTo<Real> optimise_prod_ri( std::string(opname(Prod() )) + "(r,i)" );
-static OptimiseTo<Real> optimise_div_ri ( std::string(opname( Div() )) + "(r,i)" );
-static OptimiseTo<Real> optimise_add_ir ( std::string(opname( Add() )) + "(i,r)" );
-static OptimiseTo<Real> optimise_sub_ir ( std::string(opname( Sub() )) + "(i,r)" );
-static OptimiseTo<Real> optimise_prod_ir( std::string(opname(Prod() )) + "(i,r)" );
-static OptimiseTo<Real> optimise_div_ir ( std::string(opname( Div() )) + "(i,r)" );
+static OptimiseTo<Real>    optimise_add_rr ( std::string(opname( Add() )) + "(r,r)" );
+static OptimiseTo<Real>    optimise_sub_rr ( std::string(opname( Sub() )) + "(r,r)" );
+static OptimiseTo<Real>    optimise_prod_rr( std::string(opname(Prod() )) + "(r,r)" );
+static OptimiseTo<Real>    optimise_div_rr ( std::string(opname( Div() )) + "(r,r)" );
+static OptimiseTo<Real>    optimise_min_rr ( std::string(opname( Min() )) + "(r,r)" );
+static OptimiseTo<Real>    optimise_max_rr ( std::string(opname( Max() )) + "(r,r)" );
+
+static OptimiseTo<Real>    optimise_add_ri ( std::string(opname( Add() )) + "(r,i)" );
+static OptimiseTo<Real>    optimise_sub_ri ( std::string(opname( Sub() )) + "(r,i)" );
+static OptimiseTo<Real>    optimise_prod_ri( std::string(opname(Prod() )) + "(r,i)" );
+static OptimiseTo<Real>    optimise_div_ri ( std::string(opname( Div() )) + "(r,i)" );
+static OptimiseTo<Real>    optimise_min_ri ( std::string(opname( Min() )) + "(r,i)" );
+static OptimiseTo<Real>    optimise_max_ri ( std::string(opname( Max() )) + "(r,i)" );
+
+static OptimiseTo<Real>    optimise_add_ir ( std::string(opname( Add() )) + "(i,r)" );
+static OptimiseTo<Real>    optimise_sub_ir ( std::string(opname( Sub() )) + "(i,r)" );
+static OptimiseTo<Real>    optimise_prod_ir( std::string(opname(Prod() )) + "(i,r)" );
+static OptimiseTo<Real>    optimise_div_ir ( std::string(opname( Div() )) + "(i,r)" );
+static OptimiseTo<Real>    optimise_min_ir ( std::string(opname( Min() )) + "(i,r)" );
+static OptimiseTo<Real>    optimise_max_ir ( std::string(opname( Max() )) + "(i,r)" );
+
 static OptimiseTo<Integer> optimise_add_ii ( std::string(opname( Add() )) + "(i,i)" );
 static OptimiseTo<Integer> optimise_sub_ii ( std::string(opname( Sub() )) + "(i,i)" );
 static OptimiseTo<Integer> optimise_prod_ii( std::string(opname(Prod() )) + "(i,i)" );
 static OptimiseTo<Integer> optimise_div_ii ( std::string(opname( Div() )) + "(i,i)" );
+static OptimiseTo<Integer> optimise_min_ii ( std::string(opname( Min() )) + "(i,i)" );
+static OptimiseTo<Integer> optimise_max_ii ( std::string(opname( Max() )) + "(i,i)" );
 
 //--------------------------------------------------------------------------------------------
 } // namespace xpr

@@ -122,65 +122,91 @@ struct Generic
 
 //--------------------------------------------------------------------------------------------
 
-static BinaryOperator<Prod>::Computer<Real,   Real,   Generic> prod_rrg;
-static BinaryOperator<Prod>::Computer<Real,   Integer,Generic> prod_rig;
-static BinaryOperator<Prod>::Computer<Integer,Real,   Generic> prod_irg;
-static BinaryOperator<Prod>::Computer<Integer,Integer,Generic> prod_iig;
-static BinaryOperator<Prod>::Computer<Real,   Vector, Generic> prod_rvg;
-static BinaryOperator<Prod>::Computer<Vector, Real,   Generic> prod_vrg;
-static BinaryOperator<Prod>::Computer<Integer,Vector, Generic> prod_ivg;
-static BinaryOperator<Prod>::Computer<Vector, Integer,Generic> prod_vig;
-static BinaryOperator<Prod>::Computer<Vector, Vector, Generic> prod_vvg;
+namespace detail {
 
-static BinaryOperator<Div>::Computer<Real,   Real,   Generic> div_rrg;
-static BinaryOperator<Div>::Computer<Real,   Integer,Generic> div_rig;
-static BinaryOperator<Div>::Computer<Integer,Real,   Generic> div_irg;
-static BinaryOperator<Div>::Computer<Integer,Integer,Generic> div_iig;
-static BinaryOperator<Div>::Computer<Real,   Vector, Generic> div_rvg;
-static BinaryOperator<Div>::Computer<Vector, Real,   Generic> div_vrg;
-static BinaryOperator<Div>::Computer<Integer,Vector, Generic> div_ivg;
-static BinaryOperator<Div>::Computer<Vector, Integer,Generic> div_vig;
-static BinaryOperator<Div>::Computer<Vector, Vector, Generic> div_vvg;
+template < class T, class U, class V, class I >
+BinaryOperatorComputer<T,U,V,I>::BinaryOperatorComputer()
+{
+    Function::dispatcher()[ sig() ] = &compute;
+}
 
-static BinaryOperator<Add>::Computer<Real,   Real,   Generic> add_rrg;
-static BinaryOperator<Add>::Computer<Real,   Integer,Generic> add_rig;
-static BinaryOperator<Add>::Computer<Integer,Real,   Generic> add_irg;
-static BinaryOperator<Add>::Computer<Integer,Integer,Generic> add_iig;
-static BinaryOperator<Add>::Computer<Real,   Vector, Generic> add_rvg;
-static BinaryOperator<Add>::Computer<Vector, Real,   Generic> add_vrg;
-static BinaryOperator<Add>::Computer<Integer,Vector, Generic> add_ivg;
-static BinaryOperator<Add>::Computer<Vector, Integer,Generic> add_vig;
-static BinaryOperator<Add>::Computer<Vector, Vector, Generic> add_vvg;
+template < class T, class U, class V, class I >
+std::string BinaryOperatorComputer<T,U,V,I>::sig()
+{
+    return opname( T() ) + std::string("(") + U::sig() + std::string(",") + V::sig() + std::string(")");
+}
 
-static BinaryOperator<Sub>::Computer<Real,   Real,   Generic> sub_rrg;
-static BinaryOperator<Sub>::Computer<Real,   Integer,Generic> sub_rig;
-static BinaryOperator<Sub>::Computer<Integer,Real,   Generic> sub_irg;
-static BinaryOperator<Sub>::Computer<Integer,Integer,Generic> sub_iig;
-static BinaryOperator<Sub>::Computer<Real,   Vector, Generic> sub_rvg;
-static BinaryOperator<Sub>::Computer<Vector, Real,   Generic> sub_vrg;
-static BinaryOperator<Sub>::Computer<Integer,Vector, Generic> sub_ivg;
-static BinaryOperator<Sub>::Computer<Vector, Integer,Generic> sub_vig;
-static BinaryOperator<Sub>::Computer<Vector, Vector, Generic> sub_vvg;
+template < class T, class U, class V, class I >
+ExpPtr BinaryOperatorComputer<T,U,V,I>::compute(Scope& ctx, const args_t &p)
+{
+    T op;
+    typename U::value_t a = U::extract(p[0]);
+    typename V::value_t b = V::extract(p[1]);
 
-static BinaryOperator<Min>::Computer<Real,   Real,   Generic> min_rrg;
-static BinaryOperator<Min>::Computer<Real,   Integer,Generic> min_rig;
-static BinaryOperator<Min>::Computer<Integer,Real,   Generic> min_irg;
-static BinaryOperator<Min>::Computer<Integer,Integer,Generic> min_iig;
-static BinaryOperator<Min>::Computer<Real,   Vector, Generic> min_rvg;
-static BinaryOperator<Min>::Computer<Vector, Real,   Generic> min_vrg;
-static BinaryOperator<Min>::Computer<Integer,Vector, Generic> min_ivg;
-static BinaryOperator<Min>::Computer<Vector, Integer,Generic> min_vig;
-static BinaryOperator<Min>::Computer<Vector, Vector, Generic> min_vvg;
+    return I::apply(op,a,b);
+}
 
-static BinaryOperator<Max>::Computer<Real,   Real,   Generic> max_rrg;
-static BinaryOperator<Max>::Computer<Real,   Integer,Generic> max_rig;
-static BinaryOperator<Max>::Computer<Integer,Real,   Generic> max_irg;
-static BinaryOperator<Max>::Computer<Integer,Integer,Generic> max_iig;
-static BinaryOperator<Max>::Computer<Real,   Vector, Generic> max_rvg;
-static BinaryOperator<Max>::Computer<Vector, Real,   Generic> max_vrg;
-static BinaryOperator<Max>::Computer<Integer,Vector, Generic> max_ivg;
-static BinaryOperator<Max>::Computer<Vector, Integer,Generic> max_vig;
-static BinaryOperator<Max>::Computer<Vector, Vector, Generic> max_vvg;
+static BinaryOperatorComputer<Prod, Real,   Real,   Generic> prod_rrg;
+static BinaryOperatorComputer<Prod, Real,   Integer,Generic> prod_rig;
+static BinaryOperatorComputer<Prod, Integer,Real,   Generic> prod_irg;
+static BinaryOperatorComputer<Prod, Integer,Integer,Generic> prod_iig;
+static BinaryOperatorComputer<Prod, Real,   Vector, Generic> prod_rvg;
+static BinaryOperatorComputer<Prod, Vector, Real,   Generic> prod_vrg;
+static BinaryOperatorComputer<Prod, Integer,Vector, Generic> prod_ivg;
+static BinaryOperatorComputer<Prod, Vector, Integer,Generic> prod_vig;
+static BinaryOperatorComputer<Prod, Vector, Vector, Generic> prod_vvg;
+
+static BinaryOperatorComputer<Div, Real,   Real,   Generic> div_rrg;
+static BinaryOperatorComputer<Div, Real,   Integer,Generic> div_rig;
+static BinaryOperatorComputer<Div, Integer,Real,   Generic> div_irg;
+static BinaryOperatorComputer<Div, Integer,Integer,Generic> div_iig;
+static BinaryOperatorComputer<Div, Real,   Vector, Generic> div_rvg;
+static BinaryOperatorComputer<Div, Vector, Real,   Generic> div_vrg;
+static BinaryOperatorComputer<Div, Integer,Vector, Generic> div_ivg;
+static BinaryOperatorComputer<Div, Vector, Integer,Generic> div_vig;
+static BinaryOperatorComputer<Div, Vector, Vector, Generic> div_vvg;
+
+static BinaryOperatorComputer<Add, Real,   Real,   Generic> add_rrg;
+static BinaryOperatorComputer<Add, Real,   Integer,Generic> add_rig;
+static BinaryOperatorComputer<Add, Integer,Real,   Generic> add_irg;
+static BinaryOperatorComputer<Add, Integer,Integer,Generic> add_iig;
+static BinaryOperatorComputer<Add, Real,   Vector, Generic> add_rvg;
+static BinaryOperatorComputer<Add, Vector, Real,   Generic> add_vrg;
+static BinaryOperatorComputer<Add, Integer,Vector, Generic> add_ivg;
+static BinaryOperatorComputer<Add, Vector, Integer,Generic> add_vig;
+static BinaryOperatorComputer<Add, Vector, Vector, Generic> add_vvg;
+
+static BinaryOperatorComputer<Sub, Real,   Real,   Generic> sub_rrg;
+static BinaryOperatorComputer<Sub, Real,   Integer,Generic> sub_rig;
+static BinaryOperatorComputer<Sub, Integer,Real,   Generic> sub_irg;
+static BinaryOperatorComputer<Sub, Integer,Integer,Generic> sub_iig;
+static BinaryOperatorComputer<Sub, Real,   Vector, Generic> sub_rvg;
+static BinaryOperatorComputer<Sub, Vector, Real,   Generic> sub_vrg;
+static BinaryOperatorComputer<Sub, Integer,Vector, Generic> sub_ivg;
+static BinaryOperatorComputer<Sub, Vector, Integer,Generic> sub_vig;
+static BinaryOperatorComputer<Sub, Vector, Vector, Generic> sub_vvg;
+
+static BinaryOperatorComputer<Min, Real,   Real,   Generic> min_rrg;
+static BinaryOperatorComputer<Min, Real,   Integer,Generic> min_rig;
+static BinaryOperatorComputer<Min, Integer,Real,   Generic> min_irg;
+static BinaryOperatorComputer<Min, Integer,Integer,Generic> min_iig;
+static BinaryOperatorComputer<Min, Real,   Vector, Generic> min_rvg;
+static BinaryOperatorComputer<Min, Vector, Real,   Generic> min_vrg;
+static BinaryOperatorComputer<Min, Integer,Vector, Generic> min_ivg;
+static BinaryOperatorComputer<Min, Vector, Integer,Generic> min_vig;
+static BinaryOperatorComputer<Min, Vector, Vector, Generic> min_vvg;
+
+static BinaryOperatorComputer<Max, Real,   Real,   Generic> max_rrg;
+static BinaryOperatorComputer<Max, Real,   Integer,Generic> max_rig;
+static BinaryOperatorComputer<Max, Integer,Real,   Generic> max_irg;
+static BinaryOperatorComputer<Max, Integer,Integer,Generic> max_iig;
+static BinaryOperatorComputer<Max, Real,   Vector, Generic> max_rvg;
+static BinaryOperatorComputer<Max, Vector, Real,   Generic> max_vrg;
+static BinaryOperatorComputer<Max, Integer,Vector, Generic> max_ivg;
+static BinaryOperatorComputer<Max, Vector, Integer,Generic> max_vig;
+static BinaryOperatorComputer<Max, Vector, Vector, Generic> max_vvg;
+
+} // namespace detail
 
 //--------------------------------------------------------------------------------------------
 
@@ -226,31 +252,6 @@ template < class T >
 const char * BinaryOperator<T>::nodeName()
 {
     return opname( T() );
-}
-
-template < class T >
-template < class U, class V, class I >
-BinaryOperator<T>::Computer<U,V,I>::Computer()
-{
-    Function::dispatcher()[ sig() ] = &compute;
-}
-
-template < class T >
-template < class U, class V, class I >
-std::string BinaryOperator<T>::Computer<U,V,I>::sig()
-{
-    return opname( T() ) + std::string("(") + U::sig() + std::string(",") + V::sig() + std::string(")");
-}
-
-template < class T >
-template < class U, class V, class I >
-ExpPtr BinaryOperator<T>::Computer<U,V,I>::compute(Scope& ctx, const args_t &p)
-{
-    T op;
-    typename U::value_t a = U::extract(p[0]);
-    typename V::value_t b = V::extract(p[1]);
-
-    return I::apply(op,a,b);
 }
 
 //--------------------------------------------------------------------------------------------

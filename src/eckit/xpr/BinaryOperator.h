@@ -99,7 +99,7 @@ typedef std::multiplies<real_t>  Prod;
 typedef std::divides<real_t>     Div;
 typedef std::plus<real_t>        Add;
 typedef std::minus<real_t>       Sub;
-typedef std::modulus<real_t>     Mod;
+typedef std::modulus<integer_t>  Mod;
 
 struct Min;
 struct Max;

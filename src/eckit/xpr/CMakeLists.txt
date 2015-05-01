@@ -11,6 +11,8 @@ Call.cc
 Call.h
 Count.cc
 Count.h
+Dot.cc
+Dot.h
 Expression.cc
 Expression.h
 Filter.cc

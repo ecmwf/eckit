@@ -58,6 +58,13 @@ ecbuild_add_test( TARGET      test_xpr_foreach
                   CXXFLAGS    ${CXX11_FLAGS}
                   LIBS        eckit_xpr eckit )
 
+ecbuild_add_test( TARGET      test_xpr_linalg
+                  BOOST
+                  CONDITION   HAVE_XPR
+                  SOURCES     test_xpr_linalg.cc
+                  CXXFLAGS    ${CXX11_FLAGS}
+                  LIBS        eckit_xpr eckit )
+
 ecbuild_add_test( TARGET      test_xpr_streaming
                   BOOST
                   CONDITION   HAVE_XPR

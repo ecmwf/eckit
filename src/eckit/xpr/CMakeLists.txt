@@ -35,6 +35,8 @@ List.cc
 List.h
 Map.cc
 Map.h
+Matrix.cc
+Matrix.h
 Merge.cc
 Merge.h
 Optimiser.cc

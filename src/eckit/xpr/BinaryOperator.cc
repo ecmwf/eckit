@@ -127,50 +127,38 @@ struct Generic
 
 //--------------------------------------------------------------------------------------------
 
-namespace detail {
-
 /// Applies an implementation of the binary operator
 /// T is the operator type ( Add, Sub, etc ... )
 /// U is the left operand type ( Real, Vector, ... )
 /// V is the right operand type ( Real, Vector, ... )
 /// I is the implementation type
 template < class T, class U, class V, class I >
-class BinaryOperatorComputer {
-public:
-
+struct BinaryOperatorComputer {
     /// @todo adapt this to regist multiple implmentations ( class I )
 
     /// The signature that this computer implements
-    static std::string sig();
+    static std::string sig()
+    {
+        return opname( T() ) + std::string("(") + U::sig() + std::string(",") + V::sig() + std::string(")");
+    }
 
     /// Constructor regists the implementation of this computer in the Function::dispatcher()
-    BinaryOperatorComputer();
+    BinaryOperatorComputer()
+    {
+        Function::dispatcher()[ sig() ] = &compute;
+    }
 
     /// Computes the expression with the passed arguments
-    static ExpPtr compute( Scope& ctx , const args_t& p );
+    static ExpPtr compute( Scope& ctx , const args_t& p )
+    {
+        T op;
+        typename U::value_t a = U::extract(p[0]);
+        typename V::value_t b = V::extract(p[1]);
+
+        return I::apply(op,a,b);
+    }
+
 };
-
-template < class T, class U, class V, class I >
-BinaryOperatorComputer<T,U,V,I>::BinaryOperatorComputer()
-{
-    Function::dispatcher()[ sig() ] = &compute;
-}
-
-template < class T, class U, class V, class I >
-std::string BinaryOperatorComputer<T,U,V,I>::sig()
-{
-    return opname( T() ) + std::string("(") + U::sig() + std::string(",") + V::sig() + std::string(")");
-}
-
-template < class T, class U, class V, class I >
-ExpPtr BinaryOperatorComputer<T,U,V,I>::compute(Scope& ctx, const args_t &p)
-{
-    T op;
-    typename U::value_t a = U::extract(p[0]);
-    typename V::value_t b = V::extract(p[1]);
-
-    return I::apply(op,a,b);
-}
 
 static BinaryOperatorComputer<Prod, Real,   Real,   Generic> prod_rrg;
 static BinaryOperatorComputer<Prod, Real,   Integer,Generic> prod_rig;
@@ -241,8 +229,6 @@ static BinaryOperatorComputer<Max, Vector, Real,   Generic> max_vrg;
 static BinaryOperatorComputer<Max, Integer,Vector, Generic> max_ivg;
 static BinaryOperatorComputer<Max, Vector, Integer,Generic> max_vig;
 static BinaryOperatorComputer<Max, Vector, Vector, Generic> max_vvg;
-
-} // namespace detail
 
 //--------------------------------------------------------------------------------------------
 

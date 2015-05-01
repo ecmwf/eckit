@@ -113,6 +113,12 @@ struct Generic
     }
 
     template <class T>
+    static ExpPtr apply( T op, const Integer::value_t& a )
+    {
+        return ExpPtr( new Integer( op( a ) ) );
+    }
+
+    template <class T>
     static ExpPtr apply( T op, const Vector::value_t& v )
     {
         Vector::value_t rv( v.size() );

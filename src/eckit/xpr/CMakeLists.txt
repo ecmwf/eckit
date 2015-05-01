@@ -41,6 +41,8 @@ Matrix.cc
 Matrix.h
 Merge.cc
 Merge.h
+Norm.cc
+Norm.h
 Optimiser.cc
 Optimiser.h
 Param.cc

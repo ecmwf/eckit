@@ -13,6 +13,7 @@
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/xpr/BinaryOperator.h"
+#include "eckit/xpr/Dot.h"
 #include "eckit/xpr/Integer.h"
 #include "eckit/xpr/Matrix.h"
 #include "eckit/xpr/Real.h"
@@ -176,6 +177,21 @@ BOOST_AUTO_TEST_CASE( test_matrix_max )
     test<Matrix>(max(m, a), {2.,2.,2.,2.});
     test<Matrix>(max(m, n), {2.,2.,2.,2.});
     test<Matrix>(max(m, m), {1.,-2.,-4.,2.});
+}
+
+BOOST_AUTO_TEST_CASE( test_dot_vec_vec )
+{
+    BOOST_CHECK_EQUAL( Real::extract(dot(x, x)->eval()), 21. );
+}
+
+BOOST_AUTO_TEST_CASE( test_dot_mat_vec )
+{
+    test<Vector>( dot(m, vector({-1., -2.})), {3., 0.} );
+}
+
+BOOST_AUTO_TEST_CASE( test_dot_mat_mat )
+{
+    test<Matrix>( dot(m, m), {9., -6., -12., 12.} );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

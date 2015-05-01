@@ -9,6 +9,7 @@
  */
 
 #include "eckit/xpr/Integer.h"
+#include "eckit/xpr/Matrix.h"
 #include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/List.h"
@@ -229,6 +230,118 @@ static BinaryOperatorComputer<Max, Vector, Real,   Generic> max_vrg;
 static BinaryOperatorComputer<Max, Integer,Vector, Generic> max_ivg;
 static BinaryOperatorComputer<Max, Vector, Integer,Generic> max_vig;
 static BinaryOperatorComputer<Max, Vector, Vector, Generic> max_vvg;
+
+template < class T, class U, class I >
+struct ScalarMatrixComputer : BinaryOperatorComputer<T,U,Matrix,I>
+{
+    ScalarMatrixComputer()
+    {
+        Function::dispatcher()[ BinaryOperatorComputer<T,U,Matrix,I>::sig() ] = &compute;
+    }
+
+    static ExpPtr compute(Scope& ctx, const args_t &p)
+    {
+        T op;
+        typename U::value_t a = U::extract(p[0]);
+        typename Matrix::value_t v = Matrix::extract(p[1]);
+        Matrix::value_t rv( v.size() );
+
+        for( size_t i = 0; i < rv.size(); ++i )
+            rv[i] = op( a , v[i] );
+
+        return ExpPtr( new Matrix(Matrix::rows(p[1]), Matrix::cols(p[1]), rv, Expression::Swap()) );
+    }
+};
+
+template < class T, class V, class I >
+struct MatrixScalarComputer : BinaryOperatorComputer<T,Matrix,V,I>
+{
+    MatrixScalarComputer()
+    {
+        Function::dispatcher()[ BinaryOperatorComputer<T,Matrix,V,I>::sig() ] = &compute;
+    }
+
+    static ExpPtr compute(Scope& ctx, const args_t &p)
+    {
+        T op;
+        typename Matrix::value_t v = Matrix::extract(p[0]);
+        typename V::value_t a = V::extract(p[1]);
+        Matrix::value_t rv( v.size() );
+
+        for( size_t i = 0; i < rv.size(); ++i )
+            rv[i] = op( v[i], a );
+
+        return ExpPtr( new Matrix(Matrix::rows(p[0]), Matrix::cols(p[0]), rv, Expression::Swap()) );
+    }
+};
+
+template < class T, class I >
+struct MatrixMatrixComputer : BinaryOperatorComputer<T,Matrix,Matrix,I>
+{
+    MatrixMatrixComputer() {
+        Function::dispatcher()[ BinaryOperatorComputer<T,Matrix,Matrix,I>::sig() ] = &compute;
+    }
+
+    static ExpPtr compute(Scope& ctx, const args_t &p)
+    {
+        size_t r0 = Matrix::rows(p[0]);
+        size_t r1 = Matrix::rows(p[1]);
+        size_t c0 = Matrix::cols(p[0]);
+        size_t c1 = Matrix::cols(p[1]);
+        ASSERT( r0 == r1 && c0 == c1 );
+        T op;
+        typename Matrix::value_t v1 = Matrix::extract(p[0]);
+        typename Matrix::value_t v2 = Matrix::extract(p[1]);
+        Matrix::value_t rv( v1.size() );
+
+        for( size_t i = 0; i < rv.size(); ++i )
+            rv[i] = op( v1[i], v2[i] );
+
+        return ExpPtr( new Matrix(r1, c1, rv, Expression::Swap()) );
+    }
+};
+
+static ScalarMatrixComputer<Prod, Real,   Generic> prod_rmg;
+static MatrixScalarComputer<Prod, Real,   Generic> prod_mrg;
+static ScalarMatrixComputer<Prod, Integer,Generic> prod_img;
+static MatrixScalarComputer<Prod, Integer,Generic> prod_mig;
+static MatrixMatrixComputer<Prod, Generic>         prod_mmg;
+
+static ScalarMatrixComputer<Div, Real,   Generic> div_rmg;
+static MatrixScalarComputer<Div, Real,   Generic> div_mrg;
+static ScalarMatrixComputer<Div, Integer,Generic> div_img;
+static MatrixScalarComputer<Div, Integer,Generic> div_mig;
+static MatrixMatrixComputer<Div, Generic>         div_mmg;
+
+static ScalarMatrixComputer<Add, Real,   Generic> add_rmg;
+static MatrixScalarComputer<Add, Real,   Generic> add_mrg;
+static ScalarMatrixComputer<Add, Integer,Generic> add_img;
+static MatrixScalarComputer<Add, Integer,Generic> add_mig;
+static MatrixMatrixComputer<Add, Generic>         add_mmg;
+
+static ScalarMatrixComputer<Sub, Real,   Generic> sub_rmg;
+static MatrixScalarComputer<Sub, Real,   Generic> sub_mrg;
+static ScalarMatrixComputer<Sub, Integer,Generic> sub_img;
+static MatrixScalarComputer<Sub, Integer,Generic> sub_mig;
+static MatrixMatrixComputer<Sub, Generic>         sub_mmg;
+
+static ScalarMatrixComputer<Mod, Real,   Generic> mod_rmg;
+static MatrixScalarComputer<Mod, Real,   Generic> mod_mrg;
+static ScalarMatrixComputer<Mod, Integer,Generic> mod_img;
+static MatrixScalarComputer<Mod, Integer,Generic> mod_mig;
+static MatrixMatrixComputer<Mod, Generic>         mod_mmg;
+
+static ScalarMatrixComputer<Min, Real,   Generic> min_rmg;
+static MatrixScalarComputer<Min, Real,   Generic> min_mrg;
+static ScalarMatrixComputer<Min, Integer,Generic> min_img;
+static MatrixScalarComputer<Min, Integer,Generic> min_mig;
+static MatrixMatrixComputer<Min, Generic>         min_mmg;
+
+static ScalarMatrixComputer<Max, Real,   Generic> max_rmg;
+static MatrixScalarComputer<Max, Real,   Generic> max_mrg;
+static ScalarMatrixComputer<Max, Integer,Generic> max_img;
+static MatrixScalarComputer<Max, Integer,Generic> max_mig;
+static MatrixMatrixComputer<Max, Generic>         max_mmg;
 
 //--------------------------------------------------------------------------------------------
 

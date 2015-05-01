@@ -52,25 +52,6 @@ public:
 
     UnaryOperator& operator=(UnaryOperator&&) = default;
 
-    /// Applies an implementation of the unary operator
-    /// U is the left operand type ( Real, Vector, ... )
-    /// I is the implementation type
-    template < class U, class I >
-    class Computer {
-    public:
-
-        /// @todo adapt this to regist multiple implmentations ( class I )
-
-        /// The signature that this computer implements
-        static std::string sig();
-
-        /// Constructor regists the implementation of this computer in the Function::dispatcher()
-        Computer();
-
-        /// Computes the expression with the passed arguments
-        static ExpPtr compute( Scope& ctx , const args_t& p );
-    };
-
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec();
 

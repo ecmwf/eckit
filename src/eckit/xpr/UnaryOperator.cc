@@ -45,38 +45,6 @@ static const char *opfactory(const Sqrt&)  { return "xpr::sqrt";  }
 
 //--------------------------------------------------------------------------------------------
 
-struct Generic
-{
-    template <class T>
-    static ExpPtr apply( T op, const Real::value_t& a )
-    {
-        return ExpPtr( new Real( op( a ) ) );
-    }
-
-    template <class T>
-    static ExpPtr apply( T op, const Vector::value_t& v )
-    {
-        Vector::value_t rv( v.size() );
-
-        for( size_t i = 0; i < rv.size(); ++i )
-            rv[i] = op( v[i] );
-
-        return ExpPtr( new Vector( rv, Vector::Swap() ));
-    }
-};
-
-//--------------------------------------------------------------------------------------------
-
-static UnaryOperator<Neg>::Computer<Real,Generic> neg_rg;
-static UnaryOperator<Neg>::Computer<Integer,Generic> neg_ig;
-static UnaryOperator<Neg>::Computer<Vector,Generic> neg_vg;
-
-static UnaryOperator<Sqrt>::Computer<Real,Generic> sqrt_rg;
-static UnaryOperator<Sqrt>::Computer<Integer,Generic> sqrt_ig;
-static UnaryOperator<Sqrt>::Computer<Vector,Generic> sqrt_vg;
-
-//--------------------------------------------------------------------------------------------
-
 template < class T >
 UnaryOperator<T>::UnaryOperator(ExpPtr e)
 {
@@ -134,27 +102,67 @@ ExpPtr UnaryOperator<T>::optimise() const
     return Optimiser::apply(self());
 }*/
 
-template < class T >
-template < class U, class I >
-UnaryOperator<T>::Computer<U,I>::Computer()
-{
-    Function::dispatcher()[ sig() ] = &compute;
-}
+//--------------------------------------------------------------------------------------------
 
-template < class T >
-template < class U, class I >
-std::string UnaryOperator<T>::Computer<U,I>::sig()
+struct Generic
 {
-    return opname( T() ) + std::string("(") + U::sig() + std::string(")");
-}
+    template <class T>
+    static ExpPtr apply( T op, const Real::value_t& a )
+    {
+        return ExpPtr( new Real( op( a ) ) );
+    }
 
-template < class T >
-template < class U, class I >
-ExpPtr UnaryOperator<T>::Computer<U,I>::compute(Scope& ctx, const args_t &p)
-{
-    typename U::value_t a = U::extract(p[0]);
-    return I::apply(T(),a);
-}
+    template <class T>
+    static ExpPtr apply( T op, const Vector::value_t& v )
+    {
+        Vector::value_t rv( v.size() );
+
+        for( size_t i = 0; i < rv.size(); ++i )
+            rv[i] = op( v[i] );
+
+        return ExpPtr( new Vector( rv, Vector::Swap() ));
+    }
+};
+
+//--------------------------------------------------------------------------------------------
+
+/// Applies an implementation of the unary operator
+/// U is the left operand type ( Real, Vector, ... )
+/// I is the implementation type
+template < class T, class U, class I >
+struct UnaryOperatorComputer {
+    /// @todo adapt this to regist multiple implmentations ( class I )
+
+    /// The signature that this computer implements
+    static std::string sig()
+    {
+        return opname( T() ) + std::string("(") + U::sig() + std::string(")");
+    }
+
+
+    /// Constructor regists the implementation of this computer in the Function::dispatcher()
+    UnaryOperatorComputer()
+    {
+        Function::dispatcher()[ sig() ] = &compute;
+    }
+
+    /// Computes the expression with the passed arguments
+    static ExpPtr compute( Scope& ctx , const args_t& p )
+    {
+        typename U::value_t a = U::extract(p[0]);
+        return I::apply(T(),a);
+    }
+};
+
+//--------------------------------------------------------------------------------------------
+
+static UnaryOperatorComputer<Neg,Real,   Generic> neg_rg;
+static UnaryOperatorComputer<Neg,Integer,Generic> neg_ig;
+static UnaryOperatorComputer<Neg,Vector, Generic> neg_vg;
+
+static UnaryOperatorComputer<Sqrt,Real,   Generic> sqrt_rg;
+static UnaryOperatorComputer<Sqrt,Integer,Generic> sqrt_ig;
+static UnaryOperatorComputer<Sqrt,Vector, Generic> sqrt_vg;
 
 //--------------------------------------------------------------------------------------------
 

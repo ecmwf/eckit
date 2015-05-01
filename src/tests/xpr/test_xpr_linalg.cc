@@ -14,6 +14,7 @@
 
 #include "eckit/xpr/BinaryOperator.h"
 #include "eckit/xpr/Integer.h"
+#include "eckit/xpr/Matrix.h"
 #include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 
@@ -32,17 +33,20 @@ struct ExpFixture {
 
     ExpFixture() : a( xpr::real( 2. ) ),
                    n( xpr::integer( 2 ) ),
-                   x( xpr::vector( {1., 2., 4.} ) ) {}
+                   x( xpr::vector( {1., 2., 4.} ) ),
+                   m( xpr::matrix( 2, 2, {1., -2., -4., 2.} ) ) {}
 
     ExpPtr a;
     ExpPtr n;
     ExpPtr x;
+    ExpPtr m;
 };
 
-void test_vector(ExpPtr e, const std::initializer_list<real_t>& res)
+template < class T >
+void test(ExpPtr e, const std::initializer_list<real_t>& res)
 {
-    Vector::value_t v = Vector::extract(e->eval());
-    Vector::value_t r(res);
+    typename T::value_t v = T::extract(e->eval());
+    typename T::value_t r(res);
     BOOST_CHECK_EQUAL_COLLECTIONS( v.begin(), v.end(), r.begin(), r.end() );
 }
 
@@ -50,65 +54,128 @@ BOOST_FIXTURE_TEST_SUITE( test_eckit_xpr_linalg, ExpFixture )
 
 BOOST_AUTO_TEST_CASE( test_vector_add )
 {
-    test_vector(add(a, x), {3.,4.,6.});
-    test_vector(add(n, x), {3.,4.,6.});
-    test_vector(add(x, a), {3.,4.,6.});
-    test_vector(add(x, n), {3.,4.,6.});
-    test_vector(add(x, x), {2.,4.,8.});
+    test<Vector>(add(a, x), {3.,4.,6.});
+    test<Vector>(add(n, x), {3.,4.,6.});
+    test<Vector>(add(x, a), {3.,4.,6.});
+    test<Vector>(add(x, n), {3.,4.,6.});
+    test<Vector>(add(x, x), {2.,4.,8.});
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_sub )
 {
-    test_vector(sub(a, x), {1.,0.,-2.});
-    test_vector(sub(n, x), {1.,0.,-2.});
-    test_vector(sub(x, a), {-1.,0.,2.});
-    test_vector(sub(x, n), {-1.,0.,2.});
-    test_vector(sub(x, x), {0.,0.,0.});
+    test<Vector>(sub(a, x), {1.,0.,-2.});
+    test<Vector>(sub(n, x), {1.,0.,-2.});
+    test<Vector>(sub(x, a), {-1.,0.,2.});
+    test<Vector>(sub(x, n), {-1.,0.,2.});
+    test<Vector>(sub(x, x), {0.,0.,0.});
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_prod )
 {
-    test_vector(prod(a, x), {2.,4.,8.});
-    test_vector(prod(n, x), {2.,4.,8.});
-    test_vector(prod(x, a), {2.,4.,8.});
-    test_vector(prod(x, n), {2.,4.,8.});
-    test_vector(prod(x, x), {1.,4.,16.});
+    test<Vector>(prod(a, x), {2.,4.,8.});
+    test<Vector>(prod(n, x), {2.,4.,8.});
+    test<Vector>(prod(x, a), {2.,4.,8.});
+    test<Vector>(prod(x, n), {2.,4.,8.});
+    test<Vector>(prod(x, x), {1.,4.,16.});
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_div )
 {
-    test_vector(div(a, x), {2.,1.,.5});
-    test_vector(div(n, x), {2.,1.,.5});
-    test_vector(div(x, a), {.5,1.,2.});
-    test_vector(div(x, n), {.5,1.,2.});
-    test_vector(div(x, x), {1.,1.,1.});
+    test<Vector>(div(a, x), {2.,1.,.5});
+    test<Vector>(div(n, x), {2.,1.,.5});
+    test<Vector>(div(x, a), {.5,1.,2.});
+    test<Vector>(div(x, n), {.5,1.,2.});
+    test<Vector>(div(x, x), {1.,1.,1.});
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_mod )
 {
-    test_vector(mod(a, x), {0.,0.,2.});
-    test_vector(mod(n, x), {0.,0.,2.});
-    test_vector(mod(x, a), {1.,0.,0.});
-    test_vector(mod(x, n), {1.,0.,0.});
-    test_vector(mod(x, x), {0.,0.,0.});
+    test<Vector>(mod(a, x), {0.,0.,2.});
+    test<Vector>(mod(n, x), {0.,0.,2.});
+    test<Vector>(mod(x, a), {1.,0.,0.});
+    test<Vector>(mod(x, n), {1.,0.,0.});
+    test<Vector>(mod(x, x), {0.,0.,0.});
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_min )
 {
-    test_vector(min(a, x), {1.,2.,2.});
-    test_vector(min(n, x), {1.,2.,2.});
-    test_vector(min(x, a), {1.,2.,2.});
-    test_vector(min(x, n), {1.,2.,2.});
-    test_vector(min(x, x), {1.,2.,4.});
+    test<Vector>(min(a, x), {1.,2.,2.});
+    test<Vector>(min(n, x), {1.,2.,2.});
+    test<Vector>(min(x, a), {1.,2.,2.});
+    test<Vector>(min(x, n), {1.,2.,2.});
+    test<Vector>(min(x, x), {1.,2.,4.});
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_max )
 {
-    test_vector(max(a, x), {2.,2.,4.});
-    test_vector(max(n, x), {2.,2.,4.});
-    test_vector(max(x, a), {2.,2.,4.});
-    test_vector(max(x, n), {2.,2.,4.});
-    test_vector(max(x, x), {1.,2.,4.});
+    test<Vector>(max(a, x), {2.,2.,4.});
+    test<Vector>(max(n, x), {2.,2.,4.});
+    test<Vector>(max(x, a), {2.,2.,4.});
+    test<Vector>(max(x, n), {2.,2.,4.});
+    test<Vector>(max(x, x), {1.,2.,4.});
+}
+
+BOOST_AUTO_TEST_CASE( test_matrix_add )
+{
+    test<Matrix>(add(a, m), {3.,0.,-2.,4.});
+    test<Matrix>(add(n, m), {3.,0.,-2.,4.});
+    test<Matrix>(add(m, a), {3.,0.,-2.,4.});
+    test<Matrix>(add(m, n), {3.,0.,-2.,4.});
+    test<Matrix>(add(m, m), {2.,-4.,-8.,4.});
+}
+
+BOOST_AUTO_TEST_CASE( test_matrix_sub )
+{
+    test<Matrix>(sub(a, m), {1.,4.,6.,0.});
+    test<Matrix>(sub(n, m), {1.,4.,6.,0.});
+    test<Matrix>(sub(m, a), {-1.,-4.,-6.,0.});
+    test<Matrix>(sub(m, n), {-1.,-4.,-6.,0.});
+    test<Matrix>(sub(m, m), {0.,0.,0.,0.});
+}
+
+BOOST_AUTO_TEST_CASE( test_matrix_prod )
+{
+    test<Matrix>(prod(a, m), {2.,-4.,-8.,4.});
+    test<Matrix>(prod(n, m), {2.,-4.,-8.,4.});
+    test<Matrix>(prod(m, a), {2.,-4.,-8.,4.});
+    test<Matrix>(prod(m, n), {2.,-4.,-8.,4.});
+    test<Matrix>(prod(m, m), {1.,4.,16.,4.});
+}
+
+BOOST_AUTO_TEST_CASE( test_matrix_div )
+{
+    test<Matrix>(div(a, m), {2.,-1.,-.5,1.});
+    test<Matrix>(div(n, m), {2.,-1.,-.5,1.});
+    test<Matrix>(div(m, a), {.5,-1.,-2.,1.});
+    test<Matrix>(div(m, n), {.5,-1.,-2.,1.});
+    test<Matrix>(div(m, m), {1.,1.,1.,1.});
+}
+
+BOOST_AUTO_TEST_CASE( test_matrix_mod )
+{
+    test<Matrix>(mod(a, m), {0.,0.,2.,0.});
+    test<Matrix>(mod(n, m), {0.,0.,2.,0.});
+    test<Matrix>(mod(m, a), {1.,0.,0.,0.});
+    test<Matrix>(mod(m, n), {1.,0.,0.,0.});
+    test<Matrix>(mod(m, m), {0.,0.,0.,0.});
+}
+
+BOOST_AUTO_TEST_CASE( test_matrix_min )
+{
+    test<Matrix>(min(a, m), {1.,-2.,-4.,2.});
+    test<Matrix>(min(n, m), {1.,-2.,-4.,2.});
+    test<Matrix>(min(m, a), {1.,-2.,-4.,2.});
+    test<Matrix>(min(m, n), {1.,-2.,-4.,2.});
+    test<Matrix>(min(m, m), {1.,-2.,-4.,2.});
+}
+
+BOOST_AUTO_TEST_CASE( test_matrix_max )
+{
+    test<Matrix>(max(a, m), {2.,2.,2.,2.});
+    test<Matrix>(max(n, m), {2.,2.,2.,2.});
+    test<Matrix>(max(m, a), {2.,2.,2.,2.});
+    test<Matrix>(max(m, n), {2.,2.,2.,2.});
+    test<Matrix>(max(m, m), {1.,-2.,-4.,2.});
 }
 
 BOOST_AUTO_TEST_SUITE_END()

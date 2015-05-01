@@ -186,6 +186,16 @@ static BinaryOperatorComputer<Sub, Integer,Vector, Generic> sub_ivg;
 static BinaryOperatorComputer<Sub, Vector, Integer,Generic> sub_vig;
 static BinaryOperatorComputer<Sub, Vector, Vector, Generic> sub_vvg;
 
+static BinaryOperatorComputer<Mod, Real,   Real,   Generic> mod_rrg;
+static BinaryOperatorComputer<Mod, Real,   Integer,Generic> mod_rig;
+static BinaryOperatorComputer<Mod, Integer,Real,   Generic> mod_irg;
+static BinaryOperatorComputer<Mod, Integer,Integer,Generic> mod_iig;
+static BinaryOperatorComputer<Mod, Real,   Vector, Generic> mod_rvg;
+static BinaryOperatorComputer<Mod, Vector, Real,   Generic> mod_vrg;
+static BinaryOperatorComputer<Mod, Integer,Vector, Generic> mod_ivg;
+static BinaryOperatorComputer<Mod, Vector, Integer,Generic> mod_vig;
+static BinaryOperatorComputer<Mod, Vector, Vector, Generic> mod_vvg;
+
 static BinaryOperatorComputer<Min, Real,   Real,   Generic> min_rrg;
 static BinaryOperatorComputer<Min, Real,   Integer,Generic> min_rig;
 static BinaryOperatorComputer<Min, Integer,Real,   Generic> min_irg;

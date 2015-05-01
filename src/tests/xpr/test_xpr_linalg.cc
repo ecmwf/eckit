@@ -16,6 +16,7 @@
 #include "eckit/xpr/Dot.h"
 #include "eckit/xpr/Integer.h"
 #include "eckit/xpr/Matrix.h"
+#include "eckit/xpr/Norm.h"
 #include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 
@@ -226,6 +227,11 @@ BOOST_AUTO_TEST_CASE( test_dot_mat_mat )
     test<Matrix>( dot(m, m), {9., -6., -12., 12.} );
     BOOST_TEST_MESSAGE("Dot product of matrices of nonmatching sizes should fail");
     BOOST_CHECK_THROW( dot(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
+}
+
+BOOST_AUTO_TEST_CASE( test_norm )
+{
+    BOOST_CHECK_EQUAL( Real::extract(norm(vector({3.,4.}))->eval()), 5.0 );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

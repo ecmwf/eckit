@@ -13,6 +13,7 @@
 #include "eckit/parser/JSON.h"
 
 #include "eckit/xpr/Integer.h"
+#include "eckit/xpr/Matrix.h"
 #include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/UnaryOperator.h"
@@ -154,7 +155,6 @@ struct UnaryOperatorComputer {
         return opname( T() ) + std::string("(") + U::sig() + std::string(")");
     }
 
-
     /// Constructor regists the implementation of this computer in the Function::dispatcher()
     UnaryOperatorComputer()
     {
@@ -182,6 +182,32 @@ static UnaryOperatorComputer<Sqrt,Vector, Generic> sqrt_vg;
 static UnaryOperatorComputer<Abs,Real,   Generic> abs_rg;
 static UnaryOperatorComputer<Abs,Integer,Generic> abs_ig;
 static UnaryOperatorComputer<Abs,Vector, Generic> abs_vg;
+
+//--------------------------------------------------------------------------------------------
+
+template < class T >
+struct UnaryMatrixOperatorComputer {
+    UnaryMatrixOperatorComputer()
+    {
+        Function::dispatcher()[ opname( T() ) + std::string("(m)") ] = &compute;
+    }
+
+    static ExpPtr compute( Scope&, const args_t& p )
+    {
+        T op;
+        typename Matrix::value_t v = Matrix::extract(p[0]);
+        Matrix::value_t rv( v.size() );
+
+        for( size_t i = 0; i < rv.size(); ++i )
+            rv[i] = op( v[i] );
+
+        return ExpPtr( new Matrix(Matrix::rows(p[0]), Matrix::cols(p[0]), rv, Expression::Swap()) );
+    }
+};
+
+static UnaryMatrixOperatorComputer<Neg>  neg_m;
+static UnaryMatrixOperatorComputer<Sqrt> sqrt_m;
+static UnaryMatrixOperatorComputer<Abs>  abs_m;
 
 //--------------------------------------------------------------------------------------------
 

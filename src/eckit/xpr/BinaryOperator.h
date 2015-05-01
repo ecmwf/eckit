@@ -28,33 +28,6 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-namespace detail {
-
-/// Applies an implementation of the binary operator
-/// T is the operator type ( Add, Sub, etc ... )
-/// U is the left operand type ( Real, Vector, ... )
-/// V is the right operand type ( Real, Vector, ... )
-/// I is the implementation type
-template < class T, class U, class V, class I >
-class BinaryOperatorComputer {
-public:
-
-    /// @todo adapt this to regist multiple implmentations ( class I )
-
-    /// The signature that this computer implements
-    static std::string sig();
-
-    /// Constructor regists the implementation of this computer in the Function::dispatcher()
-    BinaryOperatorComputer();
-
-    /// Computes the expression with the passed arguments
-    static ExpPtr compute( Scope& ctx , const args_t& p );
-};
-
-}
-
-//--------------------------------------------------------------------------------------------
-
 /// Generates a expressions
 template <class T>
 class BinaryOperator : public Function  {
@@ -69,9 +42,6 @@ public:
     BinaryOperator& operator=(BinaryOperator&&) = default;
 
     BinaryOperator(Stream& s);
-
-    template < class U, class V, class I >
-    struct Computer : detail::BinaryOperatorComputer<T,U,V,I> {};
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec();

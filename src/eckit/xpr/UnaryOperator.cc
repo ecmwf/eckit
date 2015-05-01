@@ -28,20 +28,29 @@ struct Sqrt
     }
 };
 
+struct Abs
+{
+    real_t operator()(const real_t arg) const {
+        return std::abs(arg);
+    }
+};
+
 //--------------------------------------------------------------------------------------------
 
 ExpPtr neg( ExpPtr e ) { return ExpPtr( new UnaryOperator<Neg>(e) ); }
 ExpPtr sqrt( ExpPtr e ) { return ExpPtr( new UnaryOperator<Sqrt>(e) ); }
+ExpPtr abs( ExpPtr e ) { return ExpPtr( new UnaryOperator<Abs>(e) ); }
 
 //--------------------------------------------------------------------------------------------
 
 static const char *opname(const Neg&)  { return "xpr::Neg";  }
-static const char *opsymbol(const Neg&)  { return "-";  }
 static const char *opfactory(const Neg&)  { return "xpr::neg";  }
 
 static const char *opname(const Sqrt&)  { return "xpr::Sqrt";  }
-static const char *opsymbol(const Sqrt&)  { return "sqrt";  }
 static const char *opfactory(const Sqrt&)  { return "xpr::sqrt";  }
+
+static const char *opname(const Abs&)  { return "xpr::Abs";  }
+static const char *opfactory(const Abs&)  { return "xpr::abs";  }
 
 //--------------------------------------------------------------------------------------------
 
@@ -170,6 +179,10 @@ static UnaryOperatorComputer<Sqrt,Real,   Generic> sqrt_rg;
 static UnaryOperatorComputer<Sqrt,Integer,Generic> sqrt_ig;
 static UnaryOperatorComputer<Sqrt,Vector, Generic> sqrt_vg;
 
+static UnaryOperatorComputer<Abs,Real,   Generic> abs_rg;
+static UnaryOperatorComputer<Abs,Integer,Generic> abs_ig;
+static UnaryOperatorComputer<Abs,Vector, Generic> abs_vg;
+
 //--------------------------------------------------------------------------------------------
 
 template < class T >
@@ -177,11 +190,14 @@ Reanimator< UnaryOperator<T> > UnaryOperator<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 
-static OptimiseTo<Real> optimise_neg_r ( std::string(opname( Neg() )) + "(r)" );
+static OptimiseTo<Real>    optimise_neg_r ( std::string(opname( Neg() )) + "(r)" );
 static OptimiseTo<Integer> optimise_neg_i ( std::string(opname( Neg() )) + "(i)" );
 
-static OptimiseTo<Real> optimise_sqrt_r ( std::string(opname( Sqrt() )) + "(r)" );
+static OptimiseTo<Real>    optimise_sqrt_r ( std::string(opname( Sqrt() )) + "(r)" );
 static OptimiseTo<Integer> optimise_sqrt_i ( std::string(opname( Sqrt() )) + "(i)" );
+
+static OptimiseTo<Real>    optimise_abs_r ( std::string(opname( Abs() )) + "(r)" );
+static OptimiseTo<Integer> optimise_abs_i ( std::string(opname( Abs() )) + "(i)" );
 
 //--------------------------------------------------------------------------------------------
 

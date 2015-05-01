@@ -76,8 +76,9 @@ private: // static members
 
 //--------------------------------------------------------------------------------------------
 
-class Sqrt;
 typedef std::negate<real_t>  Neg;
+struct Sqrt;
+struct Abs;
 
 //--------------------------------------------------------------------------------------------
 
@@ -88,6 +89,9 @@ ExpPtr neg( Expression& e );
 
 ExpPtr sqrt( ExpPtr e = undef() );
 ExpPtr sqrt( Expression& e );
+
+ExpPtr abs( ExpPtr e = undef() );
+ExpPtr abs( Expression& e );
 
 //--------------------------------------------------------------------------------------------
 

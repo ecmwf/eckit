@@ -103,7 +103,12 @@ struct Generic
     template <class T>
     static ExpPtr apply( T op, const Vector::value_t& v, const Real::value_t& a )
     {
-        return apply(op,a,v);
+        Vector::value_t rv( v.size() );
+
+        for( size_t i = 0; i < rv.size(); ++i )
+            rv[i] = op( v[i] , a );
+
+        return ExpPtr( new Vector(rv, Expression::Swap()) );
     }
 
     template <class T>

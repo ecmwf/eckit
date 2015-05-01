@@ -60,6 +60,8 @@ BOOST_AUTO_TEST_CASE( test_vector_add )
     test<Vector>(add(x, a), {3.,4.,6.});
     test<Vector>(add(x, n), {3.,4.,6.});
     test<Vector>(add(x, x), {2.,4.,8.});
+    BOOST_TEST_MESSAGE("Adding vectors of different sizes should fail");
+    BOOST_CHECK_THROW( add(x, vector({1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_sub )
@@ -69,6 +71,8 @@ BOOST_AUTO_TEST_CASE( test_vector_sub )
     test<Vector>(sub(x, a), {-1.,0.,2.});
     test<Vector>(sub(x, n), {-1.,0.,2.});
     test<Vector>(sub(x, x), {0.,0.,0.});
+    BOOST_TEST_MESSAGE("Subtracting vectors of different sizes should fail");
+    BOOST_CHECK_THROW( sub(x, vector({1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_prod )
@@ -78,6 +82,8 @@ BOOST_AUTO_TEST_CASE( test_vector_prod )
     test<Vector>(prod(x, a), {2.,4.,8.});
     test<Vector>(prod(x, n), {2.,4.,8.});
     test<Vector>(prod(x, x), {1.,4.,16.});
+    BOOST_TEST_MESSAGE("Multiplying vectors of different sizes should fail");
+    BOOST_CHECK_THROW( prod(x, vector({1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_div )
@@ -87,6 +93,8 @@ BOOST_AUTO_TEST_CASE( test_vector_div )
     test<Vector>(div(x, a), {.5,1.,2.});
     test<Vector>(div(x, n), {.5,1.,2.});
     test<Vector>(div(x, x), {1.,1.,1.});
+    BOOST_TEST_MESSAGE("Dividing vectors of different sizes should fail");
+    BOOST_CHECK_THROW( div(x, vector({1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_mod )
@@ -96,6 +104,8 @@ BOOST_AUTO_TEST_CASE( test_vector_mod )
     test<Vector>(mod(x, a), {1.,0.,0.});
     test<Vector>(mod(x, n), {1.,0.,0.});
     test<Vector>(mod(x, x), {0.,0.,0.});
+    BOOST_TEST_MESSAGE("Modulo operation on vectors of different sizes should fail");
+    BOOST_CHECK_THROW( mod(x, vector({1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_min )
@@ -105,6 +115,8 @@ BOOST_AUTO_TEST_CASE( test_vector_min )
     test<Vector>(min(x, a), {1.,2.,2.});
     test<Vector>(min(x, n), {1.,2.,2.});
     test<Vector>(min(x, x), {1.,2.,4.});
+    BOOST_TEST_MESSAGE("Minimum of vectors of different sizes should fail");
+    BOOST_CHECK_THROW( min(x, vector({1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_max )
@@ -114,6 +126,8 @@ BOOST_AUTO_TEST_CASE( test_vector_max )
     test<Vector>(max(x, a), {2.,2.,4.});
     test<Vector>(max(x, n), {2.,2.,4.});
     test<Vector>(max(x, x), {1.,2.,4.});
+    BOOST_TEST_MESSAGE("Maximum of vectors of different sizes should fail");
+    BOOST_CHECK_THROW( add(x, vector({1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_matrix_add )
@@ -123,6 +137,8 @@ BOOST_AUTO_TEST_CASE( test_matrix_add )
     test<Matrix>(add(m, a), {3.,0.,-2.,4.});
     test<Matrix>(add(m, n), {3.,0.,-2.,4.});
     test<Matrix>(add(m, m), {2.,-4.,-8.,4.});
+    BOOST_TEST_MESSAGE("Adding matrices of different sizes should fail");
+    BOOST_CHECK_THROW( add(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_matrix_sub )
@@ -132,6 +148,8 @@ BOOST_AUTO_TEST_CASE( test_matrix_sub )
     test<Matrix>(sub(m, a), {-1.,-4.,-6.,0.});
     test<Matrix>(sub(m, n), {-1.,-4.,-6.,0.});
     test<Matrix>(sub(m, m), {0.,0.,0.,0.});
+    BOOST_TEST_MESSAGE("Subtracting matrices of different sizes should fail");
+    BOOST_CHECK_THROW( sub(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_matrix_prod )
@@ -141,6 +159,8 @@ BOOST_AUTO_TEST_CASE( test_matrix_prod )
     test<Matrix>(prod(m, a), {2.,-4.,-8.,4.});
     test<Matrix>(prod(m, n), {2.,-4.,-8.,4.});
     test<Matrix>(prod(m, m), {1.,4.,16.,4.});
+    BOOST_TEST_MESSAGE("Multiplying matrices of different sizes should fail");
+    BOOST_CHECK_THROW( prod(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_matrix_div )
@@ -150,6 +170,8 @@ BOOST_AUTO_TEST_CASE( test_matrix_div )
     test<Matrix>(div(m, a), {.5,-1.,-2.,1.});
     test<Matrix>(div(m, n), {.5,-1.,-2.,1.});
     test<Matrix>(div(m, m), {1.,1.,1.,1.});
+    BOOST_TEST_MESSAGE("Dividing matrices of different sizes should fail");
+    BOOST_CHECK_THROW( div(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_matrix_mod )
@@ -159,6 +181,8 @@ BOOST_AUTO_TEST_CASE( test_matrix_mod )
     test<Matrix>(mod(m, a), {1.,0.,0.,0.});
     test<Matrix>(mod(m, n), {1.,0.,0.,0.});
     test<Matrix>(mod(m, m), {0.,0.,0.,0.});
+    BOOST_TEST_MESSAGE("Modulo operations on matrices of different sizes should fail");
+    BOOST_CHECK_THROW( mod(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_matrix_min )
@@ -168,6 +192,8 @@ BOOST_AUTO_TEST_CASE( test_matrix_min )
     test<Matrix>(min(m, a), {1.,-2.,-4.,2.});
     test<Matrix>(min(m, n), {1.,-2.,-4.,2.});
     test<Matrix>(min(m, m), {1.,-2.,-4.,2.});
+    BOOST_TEST_MESSAGE("Minimum of matrices of different sizes should fail");
+    BOOST_CHECK_THROW( min(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_matrix_max )
@@ -177,21 +203,29 @@ BOOST_AUTO_TEST_CASE( test_matrix_max )
     test<Matrix>(max(m, a), {2.,2.,2.,2.});
     test<Matrix>(max(m, n), {2.,2.,2.,2.});
     test<Matrix>(max(m, m), {1.,-2.,-4.,2.});
+    BOOST_TEST_MESSAGE("Maximum of matrices of different sizes should fail");
+    BOOST_CHECK_THROW( max(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_dot_vec_vec )
 {
     BOOST_CHECK_EQUAL( Real::extract(dot(x, x)->eval()), 21. );
+    BOOST_TEST_MESSAGE("Dot product of vectors of different sizes should fail");
+    BOOST_CHECK_THROW( dot(x, vector({1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_dot_mat_vec )
 {
     test<Vector>( dot(m, vector({-1., -2.})), {3., 0.} );
+    BOOST_TEST_MESSAGE("Dot product of matrix and vector of nonmatching sizes should fail");
+    BOOST_CHECK_THROW( dot(m, x)->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_dot_mat_mat )
 {
     test<Matrix>( dot(m, m), {9., -6., -12., 12.} );
+    BOOST_TEST_MESSAGE("Dot product of matrices of nonmatching sizes should fail");
+    BOOST_CHECK_THROW( dot(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -11,9 +11,6 @@
 #include <string>
 #include <iostream>
 
-#include "eckit/eckit_config.h"
-
-#define BOOST_TEST_MODULE TestRotatedLatLon
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/geometry/RotateGrid.h"
@@ -21,6 +18,10 @@
 using namespace std;
 using namespace eckit;
 using namespace eckit::geometry;
+
+//-----------------------------------------------------------------------------
+
+namespace eckit_test {
 
 static void rotgrid_py(double sp_lat,double sp_lon, double sp_rot, double lat, double lon)
 {
@@ -48,9 +49,13 @@ static double degrees_eps()
    return 1E-3 ;
 }
 
+}
+
+//-----------------------------------------------------------------------------
+
+using namespace eckit_test;
 
 BOOST_AUTO_TEST_SUITE( TestRotateGrid )
-
 
 BOOST_AUTO_TEST_CASE( test_rotated_lat_lon )
 {
@@ -62,11 +67,11 @@ BOOST_AUTO_TEST_CASE( test_rotated_lat_lon )
    double sp_lat = 37.5;
    double sp_lon = 177.5;
    double polerot = 10.0 ;
-   eckit::geometry::LLPoint2 south_pole(sp_lat,sp_lon);
+   eckit::geometry::LLPoint2 south_pole(sp_lon,sp_lat);
 
    double lat = 51.0 ;
    double lon = -3.0 ;
-   eckit::geometry::LLPoint2 point(lat,lon);
+   eckit::geometry::LLPoint2 point(lon,lat);
 
    rotgrid_py(sp_lat,sp_lon,polerot,lat,lon);
    {
@@ -93,7 +98,7 @@ BOOST_AUTO_TEST_CASE( test_rotated_lat_lon_2 )
 
    double sp_lat = 18;
    double sp_lon = -39;
-   eckit::geometry::LLPoint2 south_pole(sp_lat,sp_lon);
+   eckit::geometry::LLPoint2 south_pole(sp_lon,sp_lat);
 
    double polerot = 0.0 ;
    RotateGrid mapping(south_pole, polerot);
@@ -119,7 +124,7 @@ BOOST_AUTO_TEST_CASE( test_rotated_lat_lon_2 )
       double lon = 54.0 ;
       rotgrid_py(sp_lat,sp_lon,polerot,lat,lon);
 
-      eckit::geometry::LLPoint2 point(lat,lon);
+      eckit::geometry::LLPoint2 point(lon,lat);
       eckit::geometry::LLPoint2 rotated = mapping.magics_rotate(point);
       eckit::geometry::LLPoint2 unrotated = mapping.magics_rotate(rotated);
       std::cout << " sp" << south_pole << " sp_rot(" << polerot << ") " << point << " Magic rotated " <<  rotated << " unrotated " << unrotated << "  **ignores south pol rotation**\n";
@@ -136,7 +141,7 @@ BOOST_AUTO_TEST_CASE( test_rotated_lat_lon_2 )
       double lon = 53.0 ;
       rotgrid_py(sp_lat,sp_lon,polerot,lat,lon);
 
-      eckit::geometry::LLPoint2 point(lat,lon);
+      eckit::geometry::LLPoint2 point(lon,lat);
       eckit::geometry::LLPoint2 rotated = mapping.magics_rotate(point);
       eckit::geometry::LLPoint2 unrotated = mapping.magics_rotate(rotated);
       std::cout << " sp" << south_pole << " sp_rot(" << polerot << ") " << point << " Magic rotated " <<  rotated << " unrotated " << unrotated << "  **ignores south pol rotation**\n";
@@ -158,14 +163,14 @@ BOOST_AUTO_TEST_CASE( test_south_pole_at_south_pole )
    double sp_lat = -90.0;
    double sp_lon = 0;
    double polerot = 0.0 ;
-   eckit::geometry::LLPoint2 south_pole(sp_lat,sp_lon);
+   eckit::geometry::LLPoint2 south_pole(sp_lon,sp_lat);
    RotateGrid mapping(south_pole, polerot);
    {
       double lat = 12.0 ;
       double lon = 55.0 ;
       rotgrid_py(sp_lat,sp_lon,polerot,lat,lon);
 
-      eckit::geometry::LLPoint2 point(lat,lon);
+      eckit::geometry::LLPoint2 point(lon,lat);
       eckit::geometry::LLPoint2 rotated = mapping.magics_rotate(point);
       eckit::geometry::LLPoint2 unrotated = mapping.magics_rotate(rotated);
       std::cout << " sp" << south_pole << " sp_rot(" << polerot << ") " << point << " Magic rotated " <<  rotated << " unrotated " << unrotated << "  **ignores south pol rotation**\n";
@@ -188,14 +193,14 @@ BOOST_AUTO_TEST_CASE( test_south_pole_at_north_pole )
    double sp_lat = 90.0;
    double sp_lon = 0;
    double polerot = 0.0 ;
-   eckit::geometry::LLPoint2 south_pole(sp_lat,sp_lon);
+   eckit::geometry::LLPoint2 south_pole(sp_lon,sp_lat);
    RotateGrid mapping(south_pole, polerot);
    {
       double lat = 12.0 ;
       double lon = 55.0 ;
       rotgrid_py(sp_lat,sp_lon,polerot,lat,lon);
 
-      eckit::geometry::LLPoint2 point(lat,lon);
+      eckit::geometry::LLPoint2 point(lon,lat);
       eckit::geometry::LLPoint2 rotated = mapping.magics_rotate(point);
       eckit::geometry::LLPoint2 unrotated = mapping.magics_rotate(rotated);
       std::cout << " sp" << south_pole << " sp_rot(" << polerot << ") " << point << " Magic rotated " <<  rotated << " unrotated " << unrotated << "  **ignores south pol rotation**\n";
@@ -226,7 +231,7 @@ BOOST_AUTO_TEST_CASE( test_south_pole_at_equator )
       double lon = 0 ;
       rotgrid_py(sp_lat,sp_lon,polerot,lat,lon);
 
-      eckit::geometry::LLPoint2 point(lat,lon);
+      eckit::geometry::LLPoint2 point(lon,lon);
       eckit::geometry::LLPoint2 rotated = mapping.magics_rotate(point);
       eckit::geometry::LLPoint2 unrotated = mapping.magics_rotate(rotated);
       std::cout << " sp" << south_pole << " sp_rot(" << polerot << ") " << point << " Magic rotated " <<  rotated << " unrotated " << unrotated << "  **ignores south pol rotation**\n";
@@ -256,7 +261,7 @@ BOOST_AUTO_TEST_CASE( test_south_pole_at_minus_90_0_rot_10 )
       double lon = 55 ;
       rotgrid_py(sp_lat,sp_lon,polerot,lat,lon);
 
-      eckit::geometry::LLPoint2 point(lat,lon);
+      eckit::geometry::LLPoint2 point(lon,lat);
       eckit::geometry::LLPoint2 rotated = mapping.magics_rotate(point);
       eckit::geometry::LLPoint2 unrotated = mapping.magics_rotate(rotated);
       std::cout << " sp" << south_pole << " sp_rot(" << polerot << ") " << point << " Magic rotated " <<  rotated << " unrotated " << unrotated << "  **ignores south pol rotation**\n";
@@ -268,5 +273,7 @@ BOOST_AUTO_TEST_CASE( test_south_pole_at_minus_90_0_rot_10 )
       BOOST_CHECK_CLOSE(point.lon(),unrotated2.lon(),degrees_eps());
    }
 }
+
+//-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

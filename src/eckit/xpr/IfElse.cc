@@ -30,18 +30,7 @@ IfElse::IfElse(args_t& a) : Function(a)
     ASSERT( a.size() == 3 );
 }
 
-std::string IfElse::returnSignature() const
-{
-    std::string i = args(1)->returnSignature();
-    std::string e = args(2)->returnSignature();
-
-    if(i == e) {
-        return i;
-    }
-    else {
-        return "?";
-    }
-}
+IfElse::IfElse(Stream &s) : Function(s) {}
 
 ExpPtr IfElse::evaluate( Scope &ctx ) const
 {
@@ -49,7 +38,7 @@ ExpPtr IfElse::evaluate( Scope &ctx ) const
 
     ExpPtr v = args(0, ctx, true);
 
-    bool b = Boolean::extract( ctx, v );
+    bool b = Boolean::extract( v );
 
     if(b) {
         return args(1, ctx, true);
@@ -59,15 +48,19 @@ ExpPtr IfElse::evaluate( Scope &ctx ) const
     }
 }
 
-void IfElse::asCode(std::ostream&o) const
-{
-    o << "xpr::ifelse("; printArgs(o); o <<")";
-}
-
 ExpPtr IfElse::cloneWith(args_t& a) const
 {
     return ExpPtr(new IfElse(a));
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec IfElse::classSpec_ = {
+    &Function::classSpec(),
+    IfElse::nodeName(),
+};
+
+Reanimator< IfElse > IfElse::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

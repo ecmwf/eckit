@@ -8,12 +8,12 @@ namespace geometry {
 RotateGrid::RotateGrid(const eckit::geometry::LLPoint2& south_pole,
                  double  south_pole_rot_angle,
                  double lonMin)
- : degree_to_radian_(M_PI / 180.0),
-   radian_to_degree_(1/degree_to_radian_),
+ : degree_to_radian_(M_PI / 180.),
+   radian_to_degree_(180. * M_1_PI),
    south_pole_(south_pole),
    south_pole_rot_angle_(south_pole_rot_angle),
    lonmin_(lonMin),
-   lonmax_(lonMin + 360.0)
+   lonmax_(lonMin + 360.)
 {
 }
 
@@ -47,7 +47,7 @@ eckit::geometry::LLPoint2 RotateGrid::magics_rotate( const eckit::geometry::LLPo
    if( ZSXROT < 0.0)
       PXROT = -PXROT;
 
-   return eckit::geometry::LLPoint2( PYROT, PXROT);
+   return eckit::geometry::LLPoint2( PXROT, PYROT);
 }
 
 eckit::geometry::LLPoint2 RotateGrid::magics_unrotate( const eckit::geometry::LLPoint2& point ) const
@@ -72,7 +72,7 @@ eckit::geometry::LLPoint2 RotateGrid::magics_unrotate( const eckit::geometry::LL
       ZXMXC = -ZXMXC;
    double PXREG = ZXMXC + south_pole_.lon();
 
-   return eckit::geometry::LLPoint2( PYREG, PXREG);
+   return eckit::geometry::LLPoint2( PXREG, PYREG);
 }
 
 eckit::geometry::LLPoint2 RotateGrid::rotate( const eckit::geometry::LLPoint2& point) const
@@ -138,7 +138,7 @@ eckit::geometry::LLPoint2 RotateGrid::rotate( const eckit::geometry::LLPoint2& p
    while (ret_lon < lonmin_) ret_lon += 360.0;
    while (ret_lon >= lonmax_) ret_lon -= 360.0;
 
-   return eckit::geometry::LLPoint2(ret_lat,ret_lon);
+   return eckit::geometry::LLPoint2(ret_lon,ret_lat);
 }
 
 eckit::geometry::LLPoint2 RotateGrid::unrotate( const eckit::geometry::LLPoint2& point) const
@@ -195,7 +195,7 @@ eckit::geometry::LLPoint2 RotateGrid::unrotate( const eckit::geometry::LLPoint2&
    while (ret_lon < lonmin_) ret_lon += 360.0;
    while (ret_lon >= lonmax_) ret_lon -= 360.0;
 
-   return eckit::geometry::LLPoint2(ret_lat ,ret_lon);
+   return eckit::geometry::LLPoint2(ret_lon ,ret_lat);
 }
 
 //-----------------------------------------------------------------------------

@@ -27,10 +27,7 @@ Reduce::Reduce( args_t& a ) : Function(a)
     ASSERT( a.size() == 2 );
 }
 
-std::string Reduce::returnSignature() const
-{
-    return Undef::sig(); /// @todo review this -- it could be the signature iterated over the list
-}
+Reduce::Reduce(Stream &s) : Function(s) {}
 
 ExpPtr Reduce::evaluate( Scope &ctx ) const
 {
@@ -53,15 +50,20 @@ ExpPtr Reduce::evaluate( Scope &ctx ) const
     return e->eval(ctx);
 }
 
-void Reduce::asCode(std::ostream&o) const
-{
-    o << "xpr::reduce("; printArgs(o); o <<")";
-}
-
 ExpPtr Reduce::cloneWith(args_t& a) const
 {
     return ExpPtr( new Reduce(a) );
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Reduce::classSpec_ = {
+    &Function::classSpec(),
+    Reduce::nodeName(),
+};
+
+Reanimator< Reduce > Reduce::reanimator_;
+
 //--------------------------------------------------------------------------------------------
 
 ExpPtr reduce( ExpPtr f,  ExpPtr list )

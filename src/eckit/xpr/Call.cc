@@ -42,10 +42,7 @@ Call::Call(args_t& a) : Function(a)
     ASSERT( a.size() >= 1 && a.size() <= 3);
 }
 
-std::string Call::returnSignature() const
-{
-    return ";";
-}
+Call::Call(Stream &s) : Function(s) {}
 
 ExpPtr Call::evaluate( Scope &ctx ) const
 {
@@ -68,6 +65,15 @@ ExpPtr Call::cloneWith( args_t& a ) const
 
 //--------------------------------------------------------------------------------------------
 
+ClassSpec Call::classSpec_ = {
+    &Function::classSpec(),
+    Call::nodeName(),
+};
+
+Reanimator< Call > Call::reanimator_;
+
+//--------------------------------------------------------------------------------------------
+
 ExpPtr call( ExpPtr f)
 {
     return ExpPtr( new Call(f) );
@@ -81,12 +87,6 @@ ExpPtr call( ExpPtr f, ExpPtr a)
 ExpPtr call( ExpPtr f, ExpPtr a, ExpPtr b)
 {
     return ExpPtr( new Call(f, a, b) );
-}
-
-
-void Call::asCode(std::ostream&o) const
-{
-    o << "xpr::call("; printArgs(o); o << ")";
 }
 
 //--------------------------------------------------------------------------------------------

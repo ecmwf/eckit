@@ -29,15 +29,19 @@ public:
 
     // From a double
 	Xpr(double);
+	Xpr(int);
 	Xpr(bool);
+
+    // From an initializer list
+    Xpr(std::initializer_list<double>);
 
     // A parameter
 	Xpr(const std::string&);
 	Xpr(const char*);
 
     // Default copy OK
-    //Math(const Math&);
-    //Math& operator=(const Math&);
+    //Xpr(const Xpr&);
+    //Xpr& operator=(const Xpr&);
 
     // eval
 	Xpr operator()() const;
@@ -64,6 +68,11 @@ public:
 	Xpr optimise() const;
 	ExpPtr expr() const;
 
+    Xpr eval() const { return expr()->eval(); }
+    std::string str() const { return expr()->str(); }
+    std::string code() const { return expr()->code(); }
+    std::string json() const { return expr()->json(); }
+
 private:
 
     ExpPtr expr_;
@@ -77,6 +86,27 @@ private:
     }
 
 };
+
+Xpr operator -(double, const Xpr&);
+Xpr operator -(int, const Xpr&);
+Xpr operator +(double, const Xpr&);
+Xpr operator +(int, const Xpr&);
+Xpr operator /(double, const Xpr&);
+Xpr operator /(int, const Xpr&);
+Xpr operator *(double, const Xpr&);
+Xpr operator *(int, const Xpr&);
+Xpr operator ==(double, const Xpr&);
+Xpr operator ==(int, const Xpr&);
+Xpr operator !=(double, const Xpr&);
+Xpr operator !=(int, const Xpr&);
+Xpr operator >(double, const Xpr&);
+Xpr operator >(int, const Xpr&);
+Xpr operator <(double, const Xpr&);
+Xpr operator <(int, const Xpr&);
+Xpr operator >=(double, const Xpr&);
+Xpr operator >=(int, const Xpr&);
+Xpr operator <=(double, const Xpr&);
+Xpr operator <=(int, const Xpr&);
 
 //--------------------------------------------------------------------------------------------
 

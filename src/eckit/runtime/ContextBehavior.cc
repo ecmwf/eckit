@@ -10,6 +10,10 @@
 
 #include "eckit/runtime/ContextBehavior.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/config/ResourceFromFiles.h"
+#include "eckit/config/FileReadPolicy.h"
+#include "eckit/utils/Translator.h"
 
 //-----------------------------------------------------------------------------
 
@@ -28,19 +32,31 @@ ContextBehavior::~ContextBehavior()
 
 void ContextBehavior::reconfigure()
 {
-	Log::info() << "ContextBehavior::reconfigure" << std::endl;
 }
 
 Channel& ContextBehavior::channel(int cat)
 {
-  switch( cat ) {
+  switch( cat )
+  {
     case ERROR: return errorChannel();
     case WARN:  return warnChannel();
     case INFO:  return infoChannel();
     case DEBUG: return debugChannel();
   }
+
   throw Exception("Logging category "+Translator<int,std::string>()(cat)+" not known.",Here());
+
   return infoChannel();
+}
+
+ResourcePolicy ContextBehavior::resourcePolicy()
+{
+  return ResourceFromFiles();
+}
+
+FileReadPolicy ContextBehavior::fileReadPolicy()
+{
+  return DirectReadPolicy();
 }
 
 //-----------------------------------------------------------------------------

@@ -82,7 +82,7 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
     callStack_ = BackTrace::dump();
 
     first() = this;
-    Log::status() << "** " << w << " @ " << location_ << std::endl;
+	Log::status() << "** " << w << " @ " << location_ << std::endl;
 }
 
 void Exception::reason(const std::string& w)
@@ -188,6 +188,26 @@ AssertionFailed::AssertionFailed(const std::string& w):
     }
 #endif
 
+}
+
+AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc)
+{
+    StrStream s;
+
+    s << "Assertion failed: " << msg << " in " << loc.func()
+        << ", line " << loc.line() << " of " << loc.file() << StrStream::ends;
+
+    reason(std::string(s));
+    Log::monitor(Log::App,2) << what() << std::endl;
+
+#ifndef NDEBUG
+    if( ::getenv("ECKIT_ASSERT_FAILS_AND_ABORTS") )
+    {
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
+        ::abort();
+    }
+#endif
 }
 
 AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
@@ -322,14 +342,33 @@ FileError::FileError(const std::string& msg)
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
+FileError::FileError(const std::string& msg, const CodeLocation& here )
+{
+    StrStream s;
+    s << msg << " @ " << here <<  Log::syserr;
+    s << StrStream::ends;
+    reason(std::string(s));
+    Log::monitor(Log::Unix,errno) << what() << std::endl;
+}
+
 CantOpenFile::CantOpenFile(const std::string& file, bool retry):
     retry_(retry)
 {
-    /* std::cout << "cannot open file [" << file << "]" << std::endl; */
     StrStream s;
     s << "Cannot open " << file << " " << Log::syserr;
     if(retry) s << " (retry ok)";
     s << StrStream::ends;
+    reason(std::string(s));
+    Log::monitor(Log::Unix,errno) << what() << std::endl;
+}
+
+CantOpenFile::CantOpenFile(const std::string& file, const CodeLocation& loc, bool retry):
+    retry_(retry)
+{
+    StrStream s;
+    s << "Cannot open " << file << " " << Log::syserr;
+    if(retry) s << " (retry ok)";
+    s << " @ " << loc << StrStream::ends;
     reason(std::string(s));
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
@@ -339,12 +378,22 @@ MethodNotYetImplemented::MethodNotYetImplemented(const std::string &msg):
 {
 }
 
+WriteError::WriteError(const std::string& file, const CodeLocation& loc):
+    FileError(std::string("Write error on ") + file, loc)
+{
+}
+
 WriteError::WriteError(const std::string& file):
     FileError(std::string("Write error on ") + file)
 {
 }
 
-ReadError::ReadError(const std::string& file):
+ReadError::ReadError(const std::string& file, const CodeLocation& loc):
+    FileError(std::string("Read error on ") + file, loc)
+{
+}
+
+ReadError::ReadError(const std::string& file ):
     FileError(std::string("Read error on ") + file)
 {
 }

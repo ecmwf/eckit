@@ -32,7 +32,7 @@ JSON::~JSON()
     if(null_) out_ << "null";
 }
 
-void JSON::sep() 
+void JSON::sep()
 {
     null_ = false;
     out_ << sep_.back();
@@ -88,7 +88,7 @@ static std::ostream& encode(std::ostream& s,const char *p) {
 }
 
 
-JSON& JSON::startObject() 
+JSON& JSON::startObject()
 {
     null_ = false;
     sep();
@@ -106,7 +106,7 @@ JSON& JSON::null()
     return *this;
 }
 
-JSON& JSON::startList() 
+JSON& JSON::startList()
 {
     null_ = false;
     sep();
@@ -116,7 +116,7 @@ JSON& JSON::startList()
     return *this;
 }
 
-JSON& JSON::endObject() 
+JSON& JSON::endObject()
 {
     sep_.pop_back();
     state_.pop_back();
@@ -124,7 +124,7 @@ JSON& JSON::endObject()
     return *this;
 }
 
-JSON& JSON::endList() 
+JSON& JSON::endList()
 {
     sep_.pop_back();
     state_.pop_back();
@@ -210,6 +210,12 @@ JSON& JSON::operator<<(double n)
     sep();
     out_ << n;
     return *this;
+}
+
+JSON& JSON::precision(int n)
+{
+  out_ << std::setprecision(n);
+  return *this;
 }
 
 //-----------------------------------------------------------------------------

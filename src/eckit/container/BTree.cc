@@ -84,13 +84,13 @@ BTree<K,V,S>::BTree( const PathName& path, bool readOnly ):
         // TODO: Check header
     }
 
-    compile_assert< (maxLeafEntries_>=2) >::check();
-    compile_assert< (maxNodeEntries_>=2) >::check();
+	eckit::compile_assert< (maxLeafEntries_ > 3) >::check();
+	eckit::compile_assert< (maxNodeEntries_ > 3) >::check();
 
     compile_assert< (sizeof(Page) == sizeof(LeafPage)) >::check();
     compile_assert< (sizeof(Page) == sizeof(NodePage)) >::check();
 
-    //cout << "::BTree : maxLeafEntries_=" << maxLeafEntries_ << ", maxNodeEntries_=" << maxNodeEntries_ << std::endl;
+	// std::cout << "::BTree : maxLeafEntries_=" << maxLeafEntries_ << ", maxNodeEntries_=" << maxNodeEntries_ << std::endl;
 }
 
 
@@ -123,7 +123,6 @@ void BTree<K,V,S>::flush()
 template<class K, class V, int S>
 void BTree<K,V,S>::dump(std::ostream& s, unsigned long page, int depth) const
 {
-
     Page p;
     loadPage(page, p);
     for (int i = 0; i < depth; i++)
@@ -151,7 +150,7 @@ template<class K, class V, int S>
 bool BTree<K,V,S>::set(const K& key, const V& value)
 {
     AutoLock<BTree<K,V,S> > lock(this);
-    //cout << "Set " << key << " -> " << value << std::endl;
+	// std::cout << "Set " << key << " -> " << value << std::endl;
     std::vector<unsigned long> path;
     return insert(1,key,value,path);
 }
@@ -165,13 +164,12 @@ unsigned long BTree<K,V,S>::next(const K& key, const Page& p) const
     const NodeEntry *begin = p.nodePage().nentries_;
     const NodeEntry *end   = begin + p.count_;
 
-    ASSERT(begin != end);
+	ASSERT(begin != end);
 
-
-    if (key < (*begin).key_)
+	if (key < (*begin).key_)
     {
-        //cout << "next " << key << " in " << p << " " <<  p.left_ << " (FIRST)" << std::endl;
-        return p.left_;
+		// std::cout << "next " << key << " in " << p << " " <<  p.left_ << " (FIRST)" << std::endl;
+		return p.left_;
     }
 
     const NodeEntry* e = std::lower_bound(begin, end, key);
@@ -180,7 +178,7 @@ unsigned long BTree<K,V,S>::next(const K& key, const Page& p) const
         e--;
     }
 
-    //cout << "next " << key << " -> " << (*e).key_ << ":" << (*e).page_ << std::endl;
+	// std::cout << "next " << key << " -> " << (*e).key_ << ":" << (*e).page_ << std::endl;
 
     return (*e).page_;
 }
@@ -193,7 +191,7 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, std:
     Page p;
     loadPage(page,p);
 
-    //cout << "::VISIT " << p << std::endl;
+	// std::cout << "::VISIT " << p << std::endl;
 
     if (p.node_) {
         path.push_back(page);
@@ -205,13 +203,13 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, std:
 
     LeafEntry* e = std::lower_bound(begin, end, key);
 
-    //cout << "::store " << key << " in " << p << std::endl;
-    //cout << "insert at at " << (e - p.lentries_) << std::endl;
+	// std::cout << "::store " << key << " in " << p << std::endl;
+	// std::cout << "insert at at " << (e - p.lentries_) << std::endl;
 
     if ((e != end) && ((*e).key_ == key))
     {
-        //cout << "Page " << p.id_ << " at pos " << e - begin << std::endl;
-        //cout << "Replace " << key << std::endl << (*e).value_ << std::endl << value << std::endl;
+		// std::cout << "Page " << p.id_ << " at pos " << e - begin << std::endl;
+		// std::cout << "Replace " << key << std::endl << (*e).value_ << std::endl << value << std::endl;
         (*e).value_ = value;
         savePage(p);
         return true;
@@ -219,7 +217,7 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, std:
 
     // Assumes that K and V are PODs....
     size_t count = p.count_ - (e - begin);
-    //cout << "Move count " << count << std::endl;
+	// std::cout << "Move count " << count << std::endl;
     memmove(e+1, e , count  * sizeof(LeafEntry));
     (*e).key_   = key;
     (*e).value_ = value;
@@ -228,7 +226,9 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, std:
 
     while ((p.node_ && (p.count_ == maxNodeEntries_)) || (!p.node_ && (p.count_ == maxLeafEntries_)) )
     {
-        //cout << p << " needs spliting" << std::endl;
+
+		// std::cout << p << " needs spliting" << std::endl;
+
         if (p.id_ == 1) {
             splitRoot();
             return false;
@@ -245,30 +245,33 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, std:
             if (p.node_)
             {
 
-                //cout << "SPLIT-NODE " << p << std::endl;
+				// std::cout << "SPLIT-NODE " << p << std::endl;
 
-                for (size_t i = middle+1; i < p.count_ ; i ++ ) {
+				for (size_t i = middle+1; i < p.count_ ; ++i ) {
                     n.nodePage().nentries_[n.count_++] = p.nodePage().nentries_[i];
                 }
+
+				ASSERT( n.count_ == p.count_ - middle - 1 );
 
                 k = p.nodePage().nentries_[middle].key_;
 
                 p.count_ -= n.count_;
-                p.count_ --;
+				p.count_ --;
 
                 n.left_ = p.nodePage().nentries_[middle].page_;
 
                 // It's a node, Push-up
 
-
             }
             else
             {
-                //cout << "SPLIT-LEAF " << p << std::endl;
+				// std::cout << "SPLIT-LEAF " << p << std::endl;
 
-                for (size_t i = middle; i < p.count_ ; i ++ ) {
+				for (size_t i = middle; i < p.count_ ; ++i ) {
                     n.leafPage().lentries_[n.count_++] = p.leafPage().lentries_[i];
                 }
+
+				ASSERT( n.count_ == p.count_ - middle );
 
                 p.count_ -= n.count_;
 
@@ -312,7 +315,7 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, std:
             ASSERT(! ( e != end && (*e).key_ == k ) );
 
             size_t count = p.count_ - (e - begin);
-            //cout << "Move node count " << count << std::endl;
+			// std::cout << "Move node count " << count << std::endl;
 
             memmove(e+1, e , count  * sizeof(NodeEntry));
 
@@ -342,7 +345,7 @@ void BTree<K,V,S>::splitRoot()
     newPage(pleft);
     newPage(pright);
 
-    //cout << "SPLIT ROOT " << p << std::endl;
+	// std::cout << "SPLIT ROOT " << p << std::endl;
     int middle = p.count_ / 2;
 
     K key;
@@ -367,26 +370,35 @@ void BTree<K,V,S>::splitRoot()
 
         key = p.nodePage().nentries_[middle].key_;
     }
-    else
-    {
+	else
+	{
+		pleft.node_  = false;
+		pright.node_ = false;
 
-        pleft.node_  = false;
-        pright.node_ = false;
+		for (int i = 0; i < middle ; ++i )
+		{
+			//		DEBUG_VAR( pleft.count_ );
+			pleft.leafPage().lentries_[pleft.count_++] = p.leafPage().lentries_[i];
+		}
 
-        for (int i = 0; i < middle ; i ++ ) {
-            pleft.leafPage().lentries_[pleft.count_++] = p.leafPage().lentries_[i];
-        }
+		// Some version of Gcc (e.g. 4.8.1) optimize out the increment of this counter
+		ASSERT( pleft.count_ == middle );
 
 
-        for (size_t i = middle; i < p.count_ ; i ++ ) {
-            pright.leafPage().lentries_[pright.count_++] = p.leafPage().lentries_[i];
-        }
+		for (size_t i = middle; i < p.count_ ; ++i )
+		{
+			pright.leafPage().lentries_[pright.count_++] = p.leafPage().lentries_[i];
+		}
 
-        key = pright.leafPage().lentries_[0].key_;
 
-        pleft.right_ = pright.id_;
-        pright.left_ = pleft.id_;
-    }
+		// Some version of Gcc (e.g. 4.8.1) optimize out the increment of this counter
+		ASSERT( pright.count_ == p.count_ - middle );
+
+		key = pright.leafPage().lentries_[0].key_;
+
+		pleft.right_ = pright.id_;
+		pright.left_ = pleft.id_;
+	}
 
     zero(p);
     p.id_    = 1;
@@ -401,6 +413,9 @@ void BTree<K,V,S>::splitRoot()
     savePage(pright);
     savePage(pleft);
     savePage(p);
+
+//	cout << "LEFT\n" << pleft << endl;
+//	cout << "RIGHT\n" << pright << endl;
 }
 
 
@@ -413,12 +428,12 @@ bool BTree<K,V,S>::get(const K& key, V& value)
 
     if (search(1, key, result))
     {
-        //cout << "Found " << result << std::endl;
+		// std::cout << "Found " << result << std::endl;
         value = result;
         return true;
     }
 
-    //cout << "Not Found " << std::endl;
+	// std::cout << "Not Found " << std::endl;
     return false;
 }
 
@@ -429,7 +444,7 @@ bool BTree<K,V,S>::search(unsigned long page, const K& key, V& result) const
     Page p;
     loadPage(page, p);
 
-    //cout << "Search " << key << ", Visit " << p << std::endl;
+	// std::cout << "Search " << key << ", Visit " << p << std::endl;
 
     if (p.node_) {
         return search(next(key,p), key, result);
@@ -469,7 +484,7 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, std:
     Page p;
     loadPage(page, p);
 
-    //cout << "Search " << key << ", Visit " << p << std::endl;
+	// std::cout << "Search " << key << ", Visit " << p << std::endl;
 
     if (p.node_) {
         return search(next(key1,p), key1, key2, result);
@@ -485,13 +500,20 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, std:
 
     //while((*e).key_ < key1) { e++; if (e == end) return; }
 
-    //cout << "range " << (*e).key_ << " .... " << p.count_ << " " << (e - begin) << std::endl;
-    //cout << " key1 " << key1 << std::endl;
-    //cout << " key2 " << key2 << std::endl;
+	//std::cout << "range " << (*e).key_ << " .... " << p.count_ << " " << (e - begin) << std::endl;
+	//std::cout << " key1 " << key1 << std::endl;
+	//std::cout << " key2 " << key2 << std::endl;
 
-    while( !(key2 < (*e).key_) )
+	//std::cout << " begin " << (*begin).key_ << std::endl;
+	if( p.count_ )
+	{
+		const LeafEntry *last   = begin + p.count_ -1;
+		//std::cout << " last "   << (*last).key_ << std::endl;
+	}
+
+	while( !(key2 < (*e).key_) )
     {
-        //cout << "match " << p.id_ << " pos " << (e - begin) << " " << (*e).key_ << std::endl;
+		//std::cout << "match " << p.id_ << " pos " << (e - begin) << " " << (*e).key_ << std::endl;
         result.push_back( result_type((*e).key_,(*e).value_) );
 
         ++e;
@@ -501,7 +523,8 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, std:
                 loadPage(p.right_, p);
                 ASSERT(!p.node_);
                 e = p.leafPage().lentries_;
-            }
+				end = e + p.count_;
+			}
             else
             {
                 return;
@@ -514,7 +537,7 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, std:
 template<class K, class V, int S>
 off_t BTree<K,V,S>::pageOffset(unsigned long page) const
 {
-    ASSERT(page > 0); // Root page is 1. 0 in leaf marker
+	ASSERT(page > 0); // Root page is 1. 0 is leaf marker
     return sizeof(Page) * off_t(page-1);
 }
 
@@ -522,7 +545,7 @@ off_t BTree<K,V,S>::pageOffset(unsigned long page) const
 template<class K, class V, int S>
 void BTree<K,V,S>::_loadPage(unsigned long page, Page& p) const
 {
-    //cout << "Load " << page << std::endl;
+	// std::cout << "Load " << page << std::endl;
 
     off_t o = pageOffset(page);
     off_t here;
@@ -564,7 +587,7 @@ template<class K, class V, int S>
 void BTree<K,V,S>::_savePage(const Page& p)
 {
     ASSERT(!readOnly_);
-    //cout << "Save " << p << std::endl;
+	// std::cout << "Save " << p << std::endl;
 
     off_t o = pageOffset(p.id_);
     off_t here;
@@ -614,7 +637,7 @@ void BTree<K,V,S>::_newPage(Page& p)
 
     unsigned long long page = here/sizeof(Page) + 1;
 
-    //cout << "NEWPAGE " << page << std::endl;
+	// std::cout << "NEWPAGE " << page << std::endl;
 
     zero(p);
     p.id_ = (unsigned long)page;
@@ -674,7 +697,37 @@ void BTree<K,V,S>::lock()
 template<class K, class V,int S>
 void BTree<K,V,S>::unlock()
 {
-    lockRange(0,0,F_SETLK,F_UNLCK);
+	lockRange(0,0,F_SETLK,F_UNLCK);
+}
+
+template<class K, class V,int S>
+size_t BTree<K,V,S>::count() const
+{
+	return count(1);
+}
+
+template<class K, class V, int S>
+size_t BTree<K,V,S>::count(unsigned long page) const
+{
+	AutoSharedLock<BTree<K,V,S> > lock(const_cast<BTree*>(this));
+
+	Page p;
+	loadPage(page, p);
+
+	size_t c = 0;
+
+	if( p.node_ )
+	{
+		c += this->count( p.left_ );
+		for (int i = 0; i < p.count_ ; i ++ )
+			c += count( p.nodePage().nentries_[i].page_ );
+	}
+	else // leaf
+	{
+		c = p.count_;
+	}
+
+	return c;
 }
 
 //-----------------------------------------------------------------------------

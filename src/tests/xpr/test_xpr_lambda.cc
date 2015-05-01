@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/log/Log.h"
-#include "eckit/runtime/Tool.h"
+#define BOOST_TEST_MODULE test_eckit_xpr_lambda
+
+#include "ecbuild/boost_test_framework.h"
 
 #include "eckit/xpr/IfElse.h"
 #include "eckit/xpr/Lambda.h"
@@ -21,7 +22,7 @@
 #include "eckit/xpr/Count.h"
 #include "eckit/xpr/List.h"
 #include "eckit/xpr/Merge.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/Xpr.h"
 
@@ -35,92 +36,47 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_SUITE( test_eckit_xpr_lambda )
+
 /// test lambda expressions
 
-class TestLambda : public Tool {
-
-public:
-
-    TestLambda(int argc,char **argv): Tool(argc,argv)
-    {
-    }
-
-    virtual void run();
-
-    void setup();
-
-    void test_lambda();
-
-    void teardown();
-};
-
-void TestLambda::run()
+BOOST_AUTO_TEST_CASE( test_lambda )
 {
-    setup();
-
-    test_lambda();
-
-    teardown();
-}
-
-void TestLambda::setup()
-{
-}
-
-void TestLambda::teardown()
-{
-}
-
-void TestLambda::test_lambda()
-{ 
     setformat(std::cout,xpr::CodeFormat);
 
-    Xpr a = xpr::scalar( 2. );
-    Xpr b = xpr::scalar( 4. );
-    Xpr c = xpr::scalar( 1. );
+    Xpr a = xpr::real( 2. );
+    Xpr b = xpr::real( 4. );
+    Xpr c = xpr::real( 1. );
 
     Xpr l = xpr::list(a, b, c);
 
     Xpr twice  = call(lambda("a", Xpr(2.0) * Xpr("a")));
 
-//    std::cout << twice(c) << std::endl;
+    BOOST_TEST_MESSAGE( "twice: " << twice(c) );
 
-    ASSERT( Scalar::extract(twice(c)) == 2. );
+    BOOST_CHECK_EQUAL( Real::extract(twice(c)) , 2. );
 
     Xpr neg    = call(lambda("a", Xpr(0.0) - Xpr("a")));
 
-//    std::cout << neg(a) << std::endl;
+    BOOST_TEST_MESSAGE( "neg: " << neg(a) );
 
-    ASSERT( Scalar::extract(neg(a)) == -2. );
-
-    if( false ) // why does this work?
-    {
+    BOOST_CHECK_EQUAL( Real::extract(neg(a)) , -2. );
 
     Xpr X = l + l;
 
-    std::cout << X << std::endl;
-    std::cout << X.expr()->str() << std::endl;
+    BOOST_TEST_MESSAGE( "X: " << X );
+    BOOST_TEST_MESSAGE( "X string representation: " << X.expr()->str() );
 
 
     X = X(); // evaluation to self
 
-    std::cout << X << std::endl;
-    std::cout << X.expr()->str() << std::endl;
-
-    }
-
+    BOOST_TEST_MESSAGE( "== After evaluation ==" );
+    BOOST_TEST_MESSAGE( "X: " << X );
+    BOOST_TEST_MESSAGE( "X string representation: " << X.expr()->str() );
 }
 
 //-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE_END()
 
 } // namespace eckit_test
-
-//-----------------------------------------------------------------------------
-
-int main(int argc,char **argv)
-{
-    eckit_test::TestLambda mytest(argc,argv);
-    mytest.start();
-    return 0;
-}
-

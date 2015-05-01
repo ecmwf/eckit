@@ -11,6 +11,7 @@
 #include "eckit/filesystem/FileName.h"
 #include "eckit/filesystem/FileManager.h"
 #include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Once.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathName.h"
@@ -42,7 +43,7 @@ static void init(void)
 
 #endif
 
-static Mutex local_mutex;
+static Once<Mutex> local_mutex;
 static std::map<std::string,FileManager*> m;
 
 //-----------------------------------------------------------------------------

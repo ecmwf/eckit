@@ -11,6 +11,7 @@
 /// @file ParamDef.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_ParamDef_h
@@ -34,28 +35,47 @@ class ParamDef : public Expression {
 
 public: //  methods
 
-    static std::string className() { return "ParamDef"; }
+    static const char * nodeName() { return "ParamDef"; }
     static std::string sig()       { return "?"; }
 
     static bool is ( const ExpPtr& e );
 
     ParamDef(const std::string& name);
 
+    ParamDef( ParamDef&& ) = default;
+
+    ParamDef( Stream& s );
+
     virtual ~ParamDef();
 
+    ParamDef& operator=(ParamDef&&) = default;
+
     const std::string& name() const { return name_; }
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
+protected: // virtual methods
+
+    // From Streamable
+    virtual void encode(Stream& s) const;
 
 private:
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual std::string typeName() const { return ParamDef::className(); }
-    virtual std::string signature() const { return ParamDef::sig(); }
-    virtual std::string returnSignature() const { return ParamDef::sig(); }
+    virtual std::string factoryName() const { return "xpr::paramdef"; }
+    virtual const char * typeName() const { return nodeName(); }
+    virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
+
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<ParamDef> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

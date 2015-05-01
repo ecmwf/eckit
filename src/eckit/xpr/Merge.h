@@ -10,6 +10,7 @@
 
 /// @file Merge.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Merge_h
@@ -27,23 +28,29 @@ class Merge : public Function {
 
 public: // methods
 
-    static std::string className() { return "Merge"; }
+    static const char * nodeName() { return "Merge"; }
 
     Merge( ExpPtr l0, ExpPtr l1 );
 
+    Merge( Merge&& ) = default;
+
+    Merge( Stream& s );
+
+    Merge& operator=(Merge&&) = default;
+
     struct Register { Register(); };
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private: // methods
 
     Merge( args_t& a );
 
-    virtual std::string typeName() const { return Merge::className(); }
-
-    virtual std::string returnSignature() const;
+    virtual std::string factoryName() const { return "xpr::merge"; }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
-
-    virtual void asCode( std::ostream& ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;
 
@@ -55,6 +62,10 @@ protected:
 
     static ExpPtr compute( Scope& ctx, const args_t& p );
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Merge> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

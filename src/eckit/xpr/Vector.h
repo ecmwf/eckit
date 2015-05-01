@@ -11,6 +11,7 @@
 /// @file Vector.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Vector_h
@@ -27,26 +28,32 @@ class Vector : public Value {
 
 public: // types
 
-    typedef scalar_t elemt_t;
+    typedef real_t elemt_t;
     typedef std::vector<elemt_t> value_t;
 
 public: // methods
 
-    static std::string className() { return "Vector"; }
+    static const char * nodeName() { return "Vector"; }
 
     static std::string sig() { return "v"; }
 
     static bool is ( const ExpPtr& e );
 
-    static const value_t& extract ( Scope& ctx, const ExpPtr& e )
+    static const value_t& extract ( const ExpPtr& e )
     {
         ASSERT( Vector::is(e) );
         return e->as<Vector>()->value();
     }
 
-    Vector( const size_t& s, const scalar_t& v = scalar_t() );
+    Vector( const size_t& s, const real_t& v = real_t() );
     Vector( const value_t& v );
     Vector( value_t& v, Swap );
+
+    Vector( Vector&& ) = default;
+
+    Vector( Stream& s );
+
+    Vector& operator=(Vector&&) = default;
 
     /// @returns the size of the internal vector
     size_t size() const { return v_.size(); }
@@ -54,26 +61,40 @@ public: // methods
     /// @returns a copy of the internal vector
     const value_t& value() const { return v_; }
 
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
 public: // virtual methods
 
-    virtual std::string typeName() const { return Vector::className(); }
-    virtual std::string signature() const { return Vector::sig(); }
-    virtual std::string returnSignature() const { return Vector::sig(); }
+    virtual std::string factoryName() const { return "xpr::vector"; }
+    virtual const char * typeName() const { return nodeName(); }
+    virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& o ) const;
+    virtual void asJSON( JSON& s ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
+
+protected: // virtual methods
+
+    // From Streamable
+    virtual void encode( Stream& s ) const;
 
 protected: // members
 
     value_t v_;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Vector> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr vector( const size_t& sz, const scalar_t& v = scalar_t()  );
+ExpPtr vector( const size_t& sz, const real_t& v = real_t()  );
 ExpPtr vector( const Vector::value_t& v  );
+ExpPtr vector( const std::initializer_list<real_t> v );
 
 //--------------------------------------------------------------------------------------------
 

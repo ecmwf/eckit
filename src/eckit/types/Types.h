@@ -134,6 +134,11 @@ class Stream; // forward
 template<class T> void operator<<(Stream&,const std::vector<T>&);
 template<class T> void operator>>(Stream&,std::vector<T>&);
 
+/// Operators to send maps in streams
+/// Note: the value type V must have a constructor from Stream&
+template<class K, class V> void operator<<(Stream&,const std::map<K,V>&);
+template<class K, class V> void operator>>(Stream&,std::map<K,V>&);
+
 //-----------------------------------------------------------------------------
 
 typedef unsigned long long TaskID;

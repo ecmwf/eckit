@@ -81,7 +81,6 @@ private:
 
 	virtual void run();
 
-
 };
 
 

@@ -12,7 +12,9 @@ namespace geometry {
 
 void reduceTo2Pi( double& d )
 {
-	while( d < 0 )    d += 360;
+   // See ECKIT-25
+   // while( d < 0 )  d += 360;
+   while( d < -360 ) d += 360;
 	while( d >= 360 ) d -= 360;
 }
 

@@ -10,6 +10,8 @@
 
 #include <sstream>
 
+#include "eckit/parser/JSON.h"
+
 #include "eckit/xpr/Undef.h"
 #include "eckit/xpr/Scope.h"
 
@@ -21,6 +23,8 @@ namespace xpr {
 Undef::Undef() : Expression()
 {
 }
+
+Undef::Undef(Stream &s) : Expression(s) {}
 
 Undef::~Undef()
 {
@@ -37,7 +41,12 @@ void Undef::print(std::ostream&o) const
 
 void Undef::asCode(std::ostream&o) const
 {
-    o << "xpr::undef()";
+    o << factoryName() << "()";
+}
+
+void Undef::asJSON(JSON& s) const
+{
+    s << factoryName();
 }
 
 ExpPtr Undef::evaluate( Scope &ctx ) const
@@ -59,6 +68,14 @@ ExpPtr Undef::cloneWith(args_t& a) const {
     NOTIMP; // Should not be called
 }
 
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Undef::classSpec_ = {
+    &Expression::classSpec(),
+    Undef::nodeName(),
+};
+
+Reanimator< Undef > Undef::reanimator_;
 
 } // namespace xpr
 } // namespace eckit

@@ -71,7 +71,7 @@ public:
 
 // -- Contructors
 
-	Dispatcher(const std::string& name = Traits::name(), int maxTasks = 1);
+	Dispatcher(const std::string& name = Traits::name(), int numberOfThreads = 1);
 
 // -- Destructor
 
@@ -110,9 +110,6 @@ public:
 	// Get the running state
 	long running();
 
-	// Wait for all threads to finish
-	void waitForAll();
-
 	// Serialise requests in queue as JSON array
 	void json(JSON&) const;
 
@@ -128,7 +125,7 @@ protected:
 	std::list<Request*>    queue_;
 	// Maximum number of threads (if set to 0, a new thread is
 	// created for each request pushed into the queue)
-	Resource<long>    maxTasks_;
+	Resource<long>    numberOfThreads_;
 	// Number of currently running threads
 	long              count_;
 	// Counter for thread ids
@@ -143,8 +140,8 @@ protected:
 	bool           	  grow_;
 	// Number of active threads (i.e. processing work)
 	long              running_;
-	// Mutex protecting running_ and count_
-	MutexCond         lock_;
+
+	Mutex             lock_;
 
 private:
 
@@ -157,8 +154,7 @@ private:
 
 	void print(std::ostream&) const;
 	void changeThreadCount(int delta);
-	void do_push(Request*);
-	void do_push(const std::vector<Request *>&);
+	void _push(Request*);
 
 	// From Configurable
 
@@ -303,17 +299,15 @@ void DispatchTask<Traits>::run()
 			Log::error() << "** Exception is ignored" << std::endl;
 			owner_.awake();
 		}
-
-		{
-			AutoLock<Mutex> lock(mutex_);
-			for(typename std::vector<Request*>::iterator i = pick_.begin(); i != pick_.end(); ++i)
-			{
-				delete (*i);
-				*i = 0;
-			}
-		}
-
 		owner_.running(-1);
+
+		AutoLock<Mutex> lock(mutex_);
+
+		for(typename std::vector<Request*>::iterator i = pick_.begin(); i != pick_.end(); ++i)
+		{
+			delete (*i);
+			*i = 0;
+		}
 	}
 
 	owner_.awake();
@@ -340,16 +334,18 @@ void DispatchInfo<Traits>::run()
 //=================================================================
 
 template<class Traits>
-Dispatcher<Traits>::Dispatcher(const std::string& name, int maxTasks):
+Dispatcher<Traits>::Dispatcher(const std::string& name, int numberOfThreads):
 	name_(name),
 	// Maximum number of threads defined on the command line or
-	// in config file or default to maxTasks
-	maxTasks_(this,"-numberOfThreads,numberOfThreads",maxTasks),
+	// in config file or default to the argument value
+	numberOfThreads_(this,
+                   "-numberOfThreads;numberOfThreads",
+                   numberOfThreads),
 	count_(0),
 	next_(0),
 	running_(0),
 	// Dynamically grow number of threads if set to 0
-	grow_(maxTasks_ == 0)
+	grow_(numberOfThreads_ == 0)
 {
 	// For some reason xlC require that
 	typedef class DispatchInfo<Traits> DI;
@@ -358,7 +354,7 @@ Dispatcher<Traits>::Dispatcher(const std::string& name, int maxTasks):
 	c.start();
 
 	// Spin up appropriate number of threads
-	changeThreadCount(maxTasks_);
+	changeThreadCount(numberOfThreads_);
 }
 
 
@@ -370,17 +366,21 @@ Dispatcher<Traits>::~Dispatcher()
 template<class Traits>
 long Dispatcher<Traits>::running()
 {
-	AutoLock<MutexCond> lock(lock_);
-	return running_;
+	if(grow_) {
+		AutoLock<Mutex> lock(lock_);
+		return running_;
+	}
+	return 0;
 }
 
 template<class Traits>
 void Dispatcher<Traits>::running(long delta)
 {
-	AutoLock<MutexCond> lock(lock_);
-	running_ += delta;
-	ASSERT(running_ >= 0);
-	lock_.signal();
+	if(grow_) {
+		AutoLock<Mutex> lock(lock_);
+		running_ += delta;
+		ASSERT(running_ >= 0);
+	}
 }
 
 template<class Traits>
@@ -394,43 +394,16 @@ void Dispatcher<Traits>::push(Request* r)
 		if(cnt == count_) changeThreadCount(1);
 	}
 
-	do_push(r);
+	_push(r);
 }
 
 template<class Traits>
-void Dispatcher<Traits>::do_push(Request* r)
+void Dispatcher<Traits>::_push(Request* r)
 {
 
 	{
 		AutoLock<MutexCond> lock(ready_);
 		queue_.push_back(r); // enqueue Request
-		ready_.signal();
-	}
-	awake();
-}
-
-template<class Traits>
-void Dispatcher<Traits>::push(const std::vector<Request*> &r)
-{
-	if(r.empty()) return;
-
-	if(grow_)
-	{
-		// Make sure we have enough threads to serve all requests
-		int avail = count_ - running();
-		if(avail < r.size()) changeThreadCount(r.size() - avail);
-	}
-
-	do_push(r);
-}
-
-template<class Traits>
-void Dispatcher<Traits>::do_push(const std::vector<Request*>& r)
-{
-	{
-		AutoLock<MutexCond> lock(ready_);
-		for (typename std::vector<Request*>::const_iterator it = r.begin(); it != r.end(); ++it)
-			queue_.push_back(*it); // enqueue Request
 		ready_.signal();
 	}
 	awake();
@@ -541,17 +514,6 @@ void Dispatcher<Traits>::dequeue(DequeuePicker<Request>& p)
 	AutoLock<MutexCond> lock(ready_);
 	p.pick(queue_);
 	ready_.signal();
-
-}
-
-template<class Traits>
-void Dispatcher<Traits>::waitForAll()
-{
-	AutoLock<MutexCond> lock(lock_);
-	// Wait until BOTH the queue is empty and there are no more
-	// active threads
-	while(running_ > 0 || queue_.size() > 0)
-		lock_.wait();
 }
 
 template<class Traits>
@@ -576,12 +538,12 @@ void Dispatcher<Traits>::changeThreadCount(int delta)
 	{
 		for(int i = 0; i < -delta ; i++)
 		{
-			do_push(0);
+			_push(0);
 		}
 	}
 
 	if(delta) {
-		AutoLock<MutexCond> lock(lock_);
+		AutoLock<Mutex> lock(lock_);
 		count_   += delta;
 	}
 }
@@ -589,8 +551,8 @@ void Dispatcher<Traits>::changeThreadCount(int delta)
 template<class Traits>
 void Dispatcher<Traits>::reconfigure()
 {
-	Log::info() << "Max is now : " << maxTasks_ << std::endl;
-	changeThreadCount(maxTasks_ - count_);
+	Log::info() << "Reconfiguring maximum thread number to: " << numberOfThreads_ << std::endl;
+	changeThreadCount(numberOfThreads_ - count_);
 	awake();
 }
 

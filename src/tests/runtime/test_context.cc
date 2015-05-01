@@ -8,6 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#define BOOST_TEST_MODULE test_eckit_runtime
+
+#include "ecbuild/boost_test_framework.h"
+
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Context.h"
 #include "eckit/runtime/ToolBehavior.h"
@@ -17,13 +21,9 @@ using namespace eckit;
 
 //-----------------------------------------------------------------------------
 
-namespace eckit_test {
+BOOST_AUTO_TEST_SUITE( test_eckit_resource )
 
-} // namespace eckit_test
-
-//-----------------------------------------------------------------------------
-
-int main(int argc,char **argv)
+BOOST_AUTO_TEST_CASE( test_default )
 {
     /* log before context build */
 
@@ -32,10 +32,13 @@ int main(int argc,char **argv)
     /* setting context another time */
 
     Context::instance().behavior( new ToolBehavior() );
+
     Log::info()   << "logging after resetting behavior" << std::endl;
     Log::debug()  << "logging after resetting behavior" << std::endl;
     Log::warning()<< "logging after resetting behavior" << std::endl;
     Log::error()  << "logging after resetting behavior" << std::endl;
-
-    return 0;
 }
+
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -67,12 +67,17 @@ public:
     bool set(const K&, const V&);
     void range(const K& key1, const K& key2, std::vector< result_type >& result);
 
-
     bool remove(const K&);
 
     void dump(std::ostream& s = std::cout) const;
     void dump(std::ostream&, unsigned long page, int depth) const;
 
+	/// Counts the entries in the whole tree
+	/// This is not an efficient call since it visits the whole tree. Use with care.
+	size_t count() const;
+
+	/// Counts the entries in a page of the tree
+	size_t count(unsigned long page) const;
 
     void lock();
     void lockShared();
@@ -84,7 +89,7 @@ protected:
 
     // -- Methods
 
-    void print(std::ostream&) const; 
+	void print(std::ostream& o) const { dump(o); }
 
 private:
 
@@ -208,16 +213,16 @@ private:
 
 
 
-    struct _LeafPage : public _Page {
-
-        LeafEntry lentries_[1];
+	struct _LeafPage : public _Page
+	{
+		static const size_t SIZE = (S - sizeof(_Page)) / sizeof(LeafEntry);
+        LeafEntry lentries_[SIZE];
         void print(std::ostream& s) const ;
     };
 
-
     struct _NodePage : public _Page  {
-
-        NodeEntry nentries_[1];
+	static const size_t SIZE = (S - sizeof(_Page)) / sizeof(NodeEntry);
+        NodeEntry nentries_[SIZE];
         void print(std::ostream& s) const ;
     };
 
@@ -254,11 +259,8 @@ private:
         }
     };
 
-
-    // The -1 is here so we have one extra value for overflows
-    static const size_t maxNodeEntries_ = (sizeof(NodePage) - sizeof(_Page)) / sizeof(NodeEntry) -1;
-    static const size_t maxLeafEntries_ = (sizeof(LeafPage) - sizeof(_Page)) / sizeof(LeafEntry) -1;
-
+	static const size_t maxNodeEntries_ = _NodePage::SIZE; // split at full page -- could be a percentage
+	static const size_t maxLeafEntries_ = _LeafPage::SIZE; // split at full page -- could be a percentage
 
     PathName path_;
 

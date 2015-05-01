@@ -69,13 +69,13 @@ public: // methods
 
    std::string shortName() const;
 
-   size_t nbDataPoints() const;
+   size_t npts() const;
 
    size_t getDataValuesSize() const;
    double* getDataValues(size_t&) const;
    void getDataValues(double*, const size_t &) const;
 
-   void getLatLonPoints( std::vector<geometry::LLPoint2>& ) const;
+   void getLonLatPoints( std::vector<geometry::LLPoint2>& ) const;
 
    void setDataValues(const double*, size_t);
 

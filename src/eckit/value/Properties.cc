@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/value/Properties.h"
 #include "eckit/parser/JSON.h"
+#include "eckit/types/Types.h"
+#include "eckit/value/Properties.h"
 
 namespace eckit {
 
@@ -17,6 +18,11 @@ namespace eckit {
 
 Properties::Properties()
 {
+}
+
+Properties::Properties(Stream &s)
+{
+    s >> props_;
 }
 
 bool Properties::has(const std::string &k) const
@@ -45,12 +51,7 @@ bool Properties::remove(const std::string& k)
 
 void Properties::json( JSON& s ) const
 {
-    s.startObject();
-
-    for( PropertyMap::const_iterator vit = props_.begin(); vit != props_.end(); ++vit )
-        s << (*vit).first << (*vit).second;
-
-    s.endObject();
+    s << props_;
 }
 
 void Properties::print( std::ostream& s ) const
@@ -61,8 +62,7 @@ void Properties::print( std::ostream& s ) const
 
 void Properties::encode( Stream& s ) const
 {
-    for( PropertyMap::const_iterator vit = props_.begin(); vit != props_.end(); ++vit )
-        s << (*vit).first << (*vit).second;
+    s << props_;
 }
 
 //------------------------------------------------------------------------------------------------------

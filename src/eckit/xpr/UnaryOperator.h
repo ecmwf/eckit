@@ -11,6 +11,7 @@
 /// @file UnaryOperator.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_UnaryFunc_h
@@ -41,12 +42,18 @@ public:
         return ExpPtr( new UnaryOperator<T>(args) );
     }
 
-    static std::string className();
+    static const char * nodeName();
 
     UnaryOperator( ExpPtr e );
 
+    UnaryOperator(UnaryOperator&&) = default;
+
+    UnaryOperator(Stream& s);
+
+    UnaryOperator& operator=(UnaryOperator&&) = default;
+
     /// Applies an implementation of the unary operator
-    /// U is the left operand type ( Scalar, Vector, ... )
+    /// U is the left operand type ( Real, Vector, ... )
     /// I is the implementation type
     template < class U, class I >
     class Computer {
@@ -64,26 +71,31 @@ public:
         static ExpPtr compute( Scope& ctx , const args_t& p );
     };
 
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec();
+
 private: // methods
 
     UnaryOperator( args_t& a );
 
-    virtual std::string typeName() const;
-
-    virtual std::string returnSignature() const;
+    virtual std::string factoryName() const;
+    virtual const char * typeName() const;
 
     virtual ExpPtr cloneWith(args_t& a) const
     {
         return ExpPtr( new UnaryOperator<T>(a) );
     }
 
-    virtual void asCode( std::ostream& o ) const;
+    virtual void asJSON( JSON& s ) const;
 
+private: // static members
+
+    static  Reanimator<UnaryOperator> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------
 
-typedef std::negate<scalar_t>  Neg;
+typedef std::negate<real_t>  Neg;
 
 //--------------------------------------------------------------------------------------------
 

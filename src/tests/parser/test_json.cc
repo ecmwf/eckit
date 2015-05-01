@@ -8,8 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#define BOOST_TEST_MODULE test_eckit_parser
 
-#include "eckit/runtime/Tool.h"
+#include "ecbuild/boost_test_framework.h"
+
 #include "eckit/parser/JSONParser.h"
 #include "eckit/parser/JSON.h"
 
@@ -18,77 +20,52 @@ using namespace eckit;
 
 //-----------------------------------------------------------------------------
 
-namespace eckit_test {
+BOOST_AUTO_TEST_SUITE( test_eckit_parser_json )
 
-//-----------------------------------------------------------------------------
-
-class TestJson : public Tool {
-public:
-
-    TestJson(int argc,char **argv): Tool(argc,argv) {}
-
-    virtual void run()
-    {
-        test_parse_to_value();
-        test_parse_to_map();
-    }
-
-    void setup();
-    void teardown();
-
-    void test_parse_to_value();
-    void test_parse_to_map();
-
-};
-
-//-----------------------------------------------------------------------------
-
-void TestJson::test_parse_to_value()
+BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value )
 {
     std::istringstream in("{ \"a\" : [true, false, 3], \"b\" : 42.3 , \"c\" : null, \"d\" : \"y\n\tr\rh\", \"e\" : \"867017db84f4bc2b5078ca56ffd3b9b9\"}");
     JSONParser p(in);
 
     Value v = p.parse();
 
-    std::cout << v         << std::endl;
-    std::cout << v["a"]    << std::endl;
-    std::cout << v["a"][2] << std::endl;
+    BOOST_TEST_MESSAGE( v );
+    BOOST_TEST_MESSAGE( v["a"] );
+    BOOST_TEST_MESSAGE( v["a"][2] );
 
     JSON j(cout);
     j << v;
 
-    ASSERT( v.isMap() );
-    ASSERT( v.as<ValueMap>().size() == 5 );
+    BOOST_CHECK( v.isMap() );
+    BOOST_CHECK_EQUAL( v.as<ValueMap>().size(), 5 );
 
-    ASSERT( v["a"].isList() );
-    ASSERT( v["a"].as<ValueList>().size() == 3 );
+    BOOST_CHECK( v["a"].isList() );
+    BOOST_CHECK_EQUAL( v["a"].as<ValueList>().size(), 3 );
 
 
-    ASSERT( v["a"][0].isBool() );
-    ASSERT( v["a"][0].as<bool>() == true );
+    BOOST_CHECK( v["a"][0].isBool() );
+    BOOST_CHECK_EQUAL( v["a"][0].as<bool>(), true );
 
-    ASSERT( v["a"][1].isBool() );
-    ASSERT( v["a"][1].as<bool>() == false );
+    BOOST_CHECK( v["a"][1].isBool() );
+    BOOST_CHECK_EQUAL( v["a"][1].as<bool>(), false );
 
-    ASSERT( v["a"][2].isNumber() );
-    ASSERT( (int) v["a"][2] == 3 );
+    BOOST_CHECK( v["a"][2].isNumber() );
+    BOOST_CHECK_EQUAL( (int) v["a"][2], 3 );
 
-    ASSERT( v["b"].isDouble() );
-    ASSERT( v["b"].as<double>() - 42.3 < 1E-12 );
+    BOOST_CHECK( v["b"].isDouble() );
+    BOOST_CHECK_LT( v["b"].as<double>() - 42.3, 1E-12 );
 
-    ASSERT( v["c"].isNil() );
+    BOOST_CHECK( v["c"].isNil() );
 
-    ASSERT( v["d"].isString() );
+    BOOST_CHECK( v["d"].isString() );
 
-    ASSERT( v["e"].isString() );
-    ASSERT( v["e"].as<string>() == "867017db84f4bc2b5078ca56ffd3b9b9" );
-
-    std::cout << std::endl;
+    BOOST_CHECK( v["e"].isString() );
+    BOOST_CHECK_EQUAL( v["e"].as<string>(), "867017db84f4bc2b5078ca56ffd3b9b9" );
 }
 
 //-----------------------------------------------------------------------------
 
-void TestJson::test_parse_to_map()
+BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_map )
 {
     istringstream in("{ \"a\" : \"AAA\", \"b\" : 0.0 , \"c\" : \"null\", \"d\" : \"\"}" );
     JSONParser p(in);
@@ -97,35 +74,24 @@ void TestJson::test_parse_to_map()
     StringDict d;
     JSONParser::toStrDict(v,d);
 
-    __print_container(std::cout,d);
+    BOOST_TEST_MESSAGE( v );
 
-    ASSERT( v.isMap() );
-    ASSERT( v.as<ValueMap>().size() == 4 );
+    BOOST_CHECK( v.isMap() );
+    BOOST_CHECK_EQUAL( v.as<ValueMap>().size(), 4 );
 
-    ASSERT( v["a"].isString() );
-    ASSERT( v["a"].as<string>() == "AAA" );
+    BOOST_CHECK( v["a"].isString() );
+    BOOST_CHECK_EQUAL( v["a"].as<string>(), "AAA" );
 
-    ASSERT( v["b"].isDouble() );
-    ASSERT( v["b"].as<double>() == 0.0 );
+    BOOST_CHECK( v["b"].isDouble() );
+    BOOST_CHECK_EQUAL( v["b"].as<double>(), 0.0 );
 
-    ASSERT( v["c"].isString() );
-    ASSERT( v["c"].as<string>() == "null" );
+    BOOST_CHECK( v["c"].isString() );
+    BOOST_CHECK_EQUAL( v["c"].as<string>(), "null" );
 
-    ASSERT( v["d"].isString() );
-    ASSERT( v["d"].as<string>() == "" );
-
-    std::cout << std::endl;
+    BOOST_CHECK( v["d"].isString() );
+    BOOST_CHECK_EQUAL( v["d"].as<string>(), "" );
 }
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit_test
-
-//-----------------------------------------------------------------------------
-
-int main(int argc,char **argv)
-{
-    eckit_test::TestJson mytest(argc,argv);
-    mytest.start();
-    return 0;
-}
+BOOST_AUTO_TEST_SUITE_END()

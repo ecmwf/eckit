@@ -8,10 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/xpr/Integer.h"
 #include "eckit/xpr/Linear.h"
-#include "eckit/xpr/Scalar.h"
-#include "eckit/xpr/Vector.h"
 #include "eckit/xpr/Optimiser.h"
+#include "eckit/xpr/Real.h"
+#include "eckit/xpr/Vector.h"
 
 namespace eckit {
 namespace xpr {
@@ -25,14 +26,15 @@ Linear::Linear(ExpPtr e) : Function()
     ExpPtr left  = e->args(0);
     ExpPtr right = e->args(1);
 
-    // cater for swap in s,v pairs -> insures final signature is linear(s,v,s,v)
+    // cater for swap in r,v pairs -> insures final signature is linear(r,v,r,v)
 
     ASSERT( left->arity() == 2 );
 
-    ASSERT( Scalar::is( left->args(0) ) || Scalar::is( left->args(1) ) );
+    ASSERT( Real::is( left->args(0) ) || Real::is( left->args(1) ) ||
+            Integer::is( left->args(0) ) || Integer::is( left->args(1) ) );
     ASSERT( Vector::is( left->args(0) ) || Vector::is( left->args(1) ) );
 
-    if( Scalar::is( left->args(0) ) )
+    if( Real::is( left->args(0) ) )
     {
         push_back( left->args(0) );
         push_back( left->args(1) );
@@ -45,10 +47,10 @@ Linear::Linear(ExpPtr e) : Function()
 
     ASSERT( right->arity() == 2 );
 
-    ASSERT( Scalar::is( right->args(0) ) || Scalar::is( right->args(1) ) );
+    ASSERT( Real::is( right->args(0) ) || Real::is( right->args(1) ) );
     ASSERT( Vector::is( right->args(0) ) || Vector::is( right->args(1) ) );
 
-    if( Scalar::is( right->args(0) ) )
+    if( Real::is( right->args(0) ) )
     {
         push_back( right->args(0) );
         push_back( right->args(1) );
@@ -65,15 +67,17 @@ Linear::Linear(args_t& a) : Function(a)
     ASSERT( a.size() == 2 );
 }
 
+Linear::Linear(Stream &s) : Function(s) {}
+
 ExpPtr Linear::compute(Scope &ctx, const args_t& p )
 {
-    scalar_t a = Scalar::extract( ctx, p[0] );
+    real_t a = Real::extract( p[0] );
 
-    const Vector::value_t& v1 = Vector::extract(ctx, p[1] );
+    const Vector::value_t& v1 = Vector::extract( p[1] );
 
-    scalar_t b = Scalar::extract( ctx, p[2] );
+    real_t b = Real::extract( p[2] );
 
-    const Vector::value_t& v2 = Vector::extract(ctx, p[3] );
+    const Vector::value_t& v2 = Vector::extract( p[3] );
 
     ASSERT( v1.size() == v2.size() );
 
@@ -88,17 +92,15 @@ ExpPtr Linear::compute(Scope &ctx, const args_t& p )
 
 void Linear::asCode(std::ostream&o) const
 {
-    o << "math::linear(" << *args(0) << ", " << *args(1) << ", " << *args(2) << ", " << *args(3) << "))";
-}
-
-std::string Linear::returnSignature() const
-{
-    return Vector::sig();
+    o << factoryName() << "(" << *args(0) << ", " << *args(1) << ", " << *args(2) << ", " << *args(3) << "))";
 }
 
 Linear::Register::Register()
 {
-    Function::dispatcher()[ className() + "(s,v,s,v)" ] = &compute;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,v,r,v)" ] = &compute;
+    Function::dispatcher()[ std::string(nodeName()) + "(r,v,i,v)" ] = &compute;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,v,r,v)" ] = &compute;
+    Function::dispatcher()[ std::string(nodeName()) + "(i,v,i,v)" ] = &compute;
 }
 
 
@@ -109,12 +111,33 @@ ExpPtr Linear::cloneWith(args_t& a) const
 
 //--------------------------------------------------------------------------------------------
 
+ClassSpec Linear::classSpec_ = {
+    &Function::classSpec(),
+    Linear::nodeName(),
+};
+
+Reanimator< Linear > Linear::reanimator_;
+
+//--------------------------------------------------------------------------------------------
+
 static Linear::Register linear_register;
 
-static OptimiseTo<Linear> optimise_linear_svsv("Add(Prod(s,v),Prod(s,v))");
-static OptimiseTo<Linear> optimise_linear_vsvs("Add(Prod(v,s),Prod(v,s))");
-static OptimiseTo<Linear> optimise_linear_vssv("Add(Prod(v,s),Prod(s,v))");
-static OptimiseTo<Linear> optimise_linear_svvs("Add(Prod(s,v),Prod(v,s))");
+static OptimiseTo<Linear> optimise_linear_rvrv("Add(Prod(r,v),Prod(r,v))");
+static OptimiseTo<Linear> optimise_linear_vrvr("Add(Prod(v,r),Prod(v,r))");
+static OptimiseTo<Linear> optimise_linear_vrrv("Add(Prod(v,r),Prod(r,v))");
+static OptimiseTo<Linear> optimise_linear_rvvr("Add(Prod(r,v),Prod(v,r))");
+static OptimiseTo<Linear> optimise_linear_rviv("Add(Prod(r,v),Prod(i,v))");
+static OptimiseTo<Linear> optimise_linear_vrvi("Add(Prod(v,r),Prod(v,i))");
+static OptimiseTo<Linear> optimise_linear_vriv("Add(Prod(v,r),Prod(i,v))");
+static OptimiseTo<Linear> optimise_linear_rvvi("Add(Prod(r,v),Prod(v,i))");
+static OptimiseTo<Linear> optimise_linear_ivrv("Add(Prod(i,v),Prod(r,v))");
+static OptimiseTo<Linear> optimise_linear_vivr("Add(Prod(v,i),Prod(v,r))");
+static OptimiseTo<Linear> optimise_linear_virv("Add(Prod(v,i),Prod(r,v))");
+static OptimiseTo<Linear> optimise_linear_ivvr("Add(Prod(i,v),Prod(v,r))");
+static OptimiseTo<Linear> optimise_linear_iviv("Add(Prod(i,v),Prod(i,v))");
+static OptimiseTo<Linear> optimise_linear_vivi("Add(Prod(v,i),Prod(v,i))");
+static OptimiseTo<Linear> optimise_linear_viiv("Add(Prod(v,i),Prod(i,v))");
+static OptimiseTo<Linear> optimise_linear_ivvi("Add(Prod(i,v),Prod(v,i))");
 
 //--------------------------------------------------------------------------------------------
 

@@ -31,7 +31,8 @@ public: // methods
 
     /// Contructor
 
-    Tokenizer(const std::string&);
+	Tokenizer(char);
+	Tokenizer(const std::string&);
 
     /// Destructor
 

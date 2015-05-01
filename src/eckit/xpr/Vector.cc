@@ -8,6 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/parser/JSON.h"
+#include "eckit/types/Types.h"
+
 #include "eckit/xpr/Vector.h"
 
 namespace eckit {
@@ -15,7 +18,7 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-Vector::Vector( const size_t& s, const scalar_t& v )
+Vector::Vector( const size_t& s, const real_t& v )
     : v_(s,v)
 {
 }
@@ -30,6 +33,17 @@ Vector::Vector(Vector::value_t &v, Swap ignored )
     std::swap(v_,v);
 }
 
+Vector::Vector(Stream &s) : Value(s), v_()
+{
+    s >> v_;
+}
+
+void Vector::encode(Stream &s) const
+{
+    Value::encode(s);
+    s << v_;
+}
+
 bool Vector::is(const ExpPtr &e)
 {
     return dynamic_cast<Vector*>(e.get()) != 0;
@@ -42,7 +56,7 @@ ExpPtr Vector::cloneWith(args_t& a) const
 
 void Vector::print(std::ostream&o) const
 {
-    o << className() << "(";
+    o << nodeName() << "(";
     for( size_t i = 0; i < v_.size(); ++i )
     {
         if(i) o << ", ";
@@ -53,19 +67,32 @@ void Vector::print(std::ostream&o) const
 
 void Vector::asCode(std::ostream&o) const
 {
-    o << "xpr::vector(";
+    o << factoryName() << "({";
     for( size_t i = 0; i < v_.size(); ++i )
     {
         if(i) o << ", ";
         o << v_[i];
     }
-    o << ")";
+    o << "})";
 }
 
+void Vector::asJSON(JSON& s) const
+{
+    s << v_;
+}
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr vector( const size_t& sz, const scalar_t& v )
+ClassSpec Vector::classSpec_ = {
+    &Value::classSpec(),
+    Vector::nodeName(),
+};
+
+Reanimator< Vector > Vector::reanimator_;
+
+//--------------------------------------------------------------------------------------------
+
+ExpPtr vector( const size_t& sz, const real_t& v )
 {
     return ExpPtr( new Vector(sz,v) );
 }
@@ -73,6 +100,11 @@ ExpPtr vector( const size_t& sz, const scalar_t& v )
 ExpPtr vector( const Vector::value_t& v  )
 {
     return ExpPtr( new Vector(v) );
+}
+
+ExpPtr vector( const std::initializer_list<real_t> v )
+{
+    return ExpPtr( new Vector(Vector::value_t(v)) );
 }
 
 //--------------------------------------------------------------------------------------------

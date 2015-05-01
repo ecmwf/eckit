@@ -24,11 +24,11 @@ public:
 
     /// Contructors
 
-	StandardBehavior();
+    StandardBehavior();
 
     /// Destructor
 
-	~StandardBehavior();
+    ~StandardBehavior();
 
 public: // methods
 

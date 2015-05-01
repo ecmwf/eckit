@@ -10,6 +10,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/thread/Once.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/io/StdFile.h"
 #include "eckit/os/Stat.h"
@@ -24,7 +25,8 @@ using namespace eckit::grib;
 
 //------------------------------------------------------------------------------------------------------
 
-static Mutex  local_mutex;
+static Once<Mutex>  local_mutex;
+
 static std::set<std::string> done_;
 static std::map<PathName,PointIndex*> cache_;
 

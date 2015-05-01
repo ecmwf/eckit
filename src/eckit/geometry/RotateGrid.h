@@ -31,7 +31,7 @@ public:
    // Assumes earth is a sphere. (if you need it as a ellipsoid, this will not suffice)
    RotateGrid(const eckit::geometry::LLPoint2& south_pole,
            double polerotate = 0,
-           double lonMin = 0); // for -180 - +180, choose lonMin as -180
+           double lonMin = -180); // for -180 - +180, choose lonMin as -180
 
    // magics, assume south_pole_rot_angle_ = 0; *** Used for test comparison ***
    eckit::geometry::LLPoint2 magics_rotate( const eckit::geometry::LLPoint2&) const;

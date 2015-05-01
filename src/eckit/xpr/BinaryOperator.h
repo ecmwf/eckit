@@ -11,6 +11,7 @@
 /// @file BinaryOperator.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_BinaryFunc_h
@@ -32,14 +33,20 @@ template <class T>
 class BinaryOperator : public Function  {
 public:
 
-    static std::string className();
+    static const char * nodeName();
 
     BinaryOperator(ExpPtr a, ExpPtr b);
 
+    BinaryOperator(BinaryOperator&&) = default;
+
+    BinaryOperator& operator=(BinaryOperator&&) = default;
+
+    BinaryOperator(Stream& s);
+
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
-    /// U is the left operand type ( Scalar, Vector, ... )
-    /// V is the right operand type ( Scalar, Vector, ... )
+    /// U is the left operand type ( Real, Vector, ... )
+    /// V is the right operand type ( Real, Vector, ... )
     /// I is the implementation type
     template < class U, class V, class I >
     class Computer {
@@ -57,30 +64,33 @@ public:
         static ExpPtr compute( Scope& ctx , const args_t& p );
     };
 
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec();
+
 private: // methods
 
     BinaryOperator( args_t& a );
 
-    virtual std::string typeName() const;
-
-    virtual std::string returnSignature() const;
+    virtual std::string factoryName() const;
+    virtual const char * typeName() const;
 
     virtual ExpPtr cloneWith(args_t& a) const
     {
         return ExpPtr( new BinaryOperator<T>(a) );
     }
 
-    virtual void asCode( std::ostream& o ) const;
+private: // static members
 
+    static  Reanimator<BinaryOperator> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------
 
-typedef std::multiplies<scalar_t>  Prod;
-typedef std::divides<scalar_t>     Div;
-typedef std::plus<scalar_t>        Add;
-typedef std::minus<scalar_t>       Sub;
-typedef std::modulus<scalar_t>     Mod;
+typedef std::multiplies<real_t>  Prod;
+typedef std::divides<real_t>     Div;
+typedef std::plus<real_t>        Add;
+typedef std::minus<real_t>       Sub;
+typedef std::modulus<real_t>     Mod;
 
 //--------------------------------------------------------------------------------------------
 

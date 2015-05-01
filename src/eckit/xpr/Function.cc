@@ -25,6 +25,8 @@ Function::Function(const args_t &args) : Expression(args)
 {
 }
 
+Function::Function(Stream& s) : Expression(s) {}
+
 Function::~Function()
 {
 }
@@ -95,6 +97,11 @@ std::string Function::signatureArguments(const args_t &args) const
 }
 
 //--------------------------------------------------------------------------------------------
+
+ClassSpec Function::classSpec_ = {
+    &Expression::classSpec(),
+    Function::nodeName(),
+};
 
 } // namespace xpr
 } // namespace eckit

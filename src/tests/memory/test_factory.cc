@@ -231,8 +231,8 @@ BOOST_AUTO_TEST_CASE( test_eckit_memory_factory_1 )
 	ValueParams p;
 	p.set("mystr","lolo");
 
-	Base1::Ptr p1 ( Factory<Base1>::instance().get( "eckit_test.A1" ).create(p) );
-	Base1::Ptr p2 ( Factory<Base1>::instance().get( "eckit_test.B1" ).create(p) );
+	Base1::Ptr p1 ( Factory<Base1>::instance().get( "eckit_test.A1" ).create(Params(p)) );
+	Base1::Ptr p2 ( Factory<Base1>::instance().get( "eckit_test.B1" ).create(Params(p)) );
 
 	BOOST_CHECK( p1 );
 	BOOST_CHECK( p2 );

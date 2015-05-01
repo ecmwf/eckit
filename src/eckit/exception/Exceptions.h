@@ -53,6 +53,8 @@ public: // methods
 
     const std::string& callStack() const { return callStack_; }
 
+    const CodeLocation& location() const { return location_; }
+
 protected: // methods
 
     void reason(const std::string&);
@@ -108,6 +110,7 @@ public:
 class AssertionFailed : public Exception {
 public:
     AssertionFailed(const std::string&);
+    AssertionFailed(const std::string&, const CodeLocation& );
     AssertionFailed(const char*, const CodeLocation& );
 };
 
@@ -173,8 +176,9 @@ public:
 
 class FileError : public Exception {
 protected:
-    FileError(const std::string&);
-    FileError()					{  }
+    FileError( const std::string& );
+    FileError( const std::string&, const CodeLocation& );
+    FileError() {}
 };
 
 class CantOpenFile : public FileError {
@@ -182,16 +186,19 @@ class CantOpenFile : public FileError {
     virtual bool retryOnServer() const { return retry_; }
 public:
     CantOpenFile(const std::string&,bool retry = false);
+    CantOpenFile(const std::string&, const CodeLocation&, bool retry = false);
 };
 
 class WriteError : public FileError {
 public:
-    WriteError(const std::string&);
+  WriteError(const std::string& );
+  WriteError(const std::string&, const CodeLocation& );
 };
 
 class ReadError : public FileError {
 public:
-    ReadError(const std::string&);
+  ReadError(const std::string&);
+  ReadError(const std::string&, const CodeLocation&);
 };
 
 class ShortFile : public ReadError {

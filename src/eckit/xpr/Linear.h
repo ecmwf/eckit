@@ -11,6 +11,7 @@
 /// @file Linear.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Linear_h
@@ -28,19 +29,27 @@ class Linear : public Function {
 
 public: // methods
 
-    static std::string className() { return "Linear"; }
+    static const char * nodeName() { return "Linear"; }
 
     Linear( ExpPtr e );
 
+    Linear(Linear&&) = default;
+
+    Linear(Stream& s);
+
+    Linear& operator=(Linear&&) = default;
+
     struct Register { Register(); };
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private: // methods
 
     Linear(args_t& a);
 
-    virtual std::string typeName() const { return Linear::className(); }
-
-    virtual std::string returnSignature() const;
+    virtual std::string factoryName() const { return "xpr::linear"; }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual void asCode( std::ostream& ) const;
 
@@ -50,6 +59,10 @@ protected: // methods
 
     static ExpPtr compute( Scope& ctx , const args_t& p );
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Linear> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

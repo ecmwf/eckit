@@ -10,6 +10,7 @@
 
 /// @file Lambda.h
 /// @author Baudouin Raoult
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Lambda_h
@@ -28,27 +29,38 @@ class Lambda : public Function {
 
 public: // methods
 
-    static std::string className() { return "Lambda"; }
+    static const char * nodeName() { return "Lambda"; }
 
     Lambda( ExpPtr body);
     Lambda( const std::string& a, ExpPtr body);
     Lambda( const std::string& a, const std::string& b, ExpPtr body);
 
+    Lambda(Lambda&&) = default;
+
+    Lambda(Stream& s);
+
+    Lambda& operator=(Lambda&&) = default;
+
     ExpPtr call( Scope& ctx ) const;
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
 
     Lambda(args_t& a);
 
-    virtual std::string typeName() const { return Lambda::className(); }
-
-    virtual std::string returnSignature() const;
+    virtual std::string factoryName() const { return "xpr::lambda"; }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual void asCode( std::ostream& ) const;
-
     virtual ExpPtr cloneWith(args_t& a) const;
+
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Lambda> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

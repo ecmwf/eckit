@@ -8,18 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/runtime/Tool.h"
+#include "eckit/config/Compiler.h"
+#include "eckit/config/Resource.h"
+#include "eckit/config/Script.h"
 #include "eckit/exception/BadValue.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/log/Log.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/config/Resource.h"
 #include "eckit/parser/Tokenizer.h"
+#include "eckit/runtime/Context.h"
+#include "eckit/runtime/ContextBehavior.h"
+#include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"
-
-#include "eckit/config/Script.h"
-#include "eckit/config/Compiler.h"
 
 //-----------------------------------------------------------------------------
 
@@ -73,8 +73,14 @@ void ReadConfig::run()
         throw BadValue( "file does not exist -- " + filename );
     
     config::Script s;
+
+    std::stringstream stream;
+
+    FileReadPolicy p = Context::instance().behavior().fileReadPolicy();
+
+    read(p,filepath,stream);
     
-    s.readFile(filepath);
+    s.readStream(stream);
 
     // print ???
     

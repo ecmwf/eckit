@@ -10,6 +10,7 @@
 
 /// @file IfElse.h
 /// @author Baudouin Raoult
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_IfElse_h
@@ -27,23 +28,34 @@ class IfElse : public Function {
 
 public: // methods
 
-    static std::string className() { return "IfElse"; }
+    static const char * nodeName() { return "IfElse"; }
 
     IfElse( ExpPtr f, ExpPtr i, ExpPtr e );
+
+    IfElse( IfElse&& ) = default;
+
+    IfElse( Stream& s );
+
+    IfElse& operator=(IfElse&&) = default;
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private: // methods
 
     IfElse(args_t& a);
 
-    virtual std::string typeName() const { return IfElse::className(); }
-
-    virtual std::string returnSignature() const;
+    virtual std::string factoryName() const { return "xpr::ifelse"; }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual void asCode( std::ostream& ) const;
-
     virtual ExpPtr cloneWith(args_t& a) const;
+
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<IfElse> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

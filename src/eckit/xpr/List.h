@@ -10,6 +10,7 @@
 
 /// @file List.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_List_h
@@ -17,6 +18,9 @@
 
 #include "eckit/memory/SharedPtr.h"
 
+#include "eckit/xpr/Boolean.h"
+#include "eckit/xpr/Integer.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Value.h"
 
 namespace eckit {
@@ -33,9 +37,10 @@ public: // types
 
 public: // methods
 
-    static std::string className() { return "List"; }
-
+    static const char * nodeName() { return "List"; }
     static std::string sig() { return "l"; }
+
+    static bool is ( const ExpPtr& e);
 
     static const value_t& extract ( Scope& ctx , const ExpPtr& e )
     {
@@ -47,18 +52,25 @@ public: // methods
     List(const args_t &args );
     List(args_t &args, Swap );
 
+    List(List &&) = default;
+
+    List(Stream& s);
+
+    List& operator=(List&&) = default;
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
+
     /// @returns the size of the internal std::vector
     const value_t& value() const { return args(); }
 
-
 private: // methods
 
-    virtual std::string typeName() const { return List::className(); }
-    virtual std::string signature() const { return List::sig(); }
-    virtual std::string returnSignature() const { return List::sig(); }
+    virtual std::string factoryName() const { return "xpr::list"; }
+    virtual const char * typeName() const { return nodeName(); }
+    virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
-    virtual void asCode( std::ostream& ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;
 
@@ -66,12 +78,17 @@ private: // methods
     virtual bool countable() const { return true; }
     virtual size_t count() const { return size(); }
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<List> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------
 
 ExpPtr list();
 ExpPtr list( const List::value_t& v  );
+ExpPtr list( ExpPtr head, ExpPtr tail );
 
 //--------------------------------------------------------------------------------------------
 
@@ -79,9 +96,33 @@ static void build_list(List::value_t &l) {
     // End of recursion
 }
 
-template <typename T, typename ...A>
-static void build_list(List::value_t& l, T head, A... tail) {
+template <typename ...A>
+static void build_list(List::value_t& l, const ExpPtr& head, A... tail) {
     l.push_back(head);
+    build_list(l, tail...);
+}
+
+template <typename ...A>
+static void build_list(List::value_t& l, Boolean::value_t head, A... tail) {
+    l.push_back(ExpPtr(new Boolean(head)));
+    build_list(l, tail...);
+}
+
+template <typename ...A>
+static void build_list(List::value_t& l, Integer::value_t head, A... tail) {
+    l.push_back(ExpPtr(new Integer(head)));
+    build_list(l, tail...);
+}
+
+template <typename ...A>
+static void build_list(List::value_t& l, int head, A... tail) {
+    l.push_back(ExpPtr(new Integer(head)));
+    build_list(l, tail...);
+}
+
+template <typename ...A>
+static void build_list(List::value_t& l, Real::value_t head, A... tail) {
+    l.push_back(ExpPtr(new Real(head)));
     build_list(l, tail...);
 }
 

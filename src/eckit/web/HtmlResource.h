@@ -24,6 +24,36 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 class Stream;
+class HtmlResource;
+
+class HtmlResourceMap {
+
+private:
+	typedef std::map<std::string,HtmlResource*,std::less<std::string> > Map;
+	Map * ptr_;
+
+public:
+	void init() {
+		if (!ptr_) ptr_ = new Map;
+	}
+
+	~HtmlResourceMap() {
+		if (ptr_) {
+			delete ptr_;
+			ptr_ = 0;
+		}
+	}
+
+	Map * operator->() const {
+		return ptr_;
+	}
+
+	Map & operator*() const {
+		return *ptr_;
+	}
+
+	typedef Map::iterator iterator;
+};
 
 class HtmlResource : public HtmlObject,
                      public eckit::NonCopyable {
@@ -48,13 +78,7 @@ public:
     static void dispatch(eckit::Stream&,std::istream&,std::ostream&,Url&);
 	static void index(std::ostream&,Url&);
 
-private:
-
-    typedef std::map<std::string,HtmlResource*,std::less<std::string> > Map;
-
-// -- Class members
-
-	static Map* resources_;
+	static HtmlResourceMap resources_;
 
 };
 

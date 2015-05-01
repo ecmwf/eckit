@@ -10,11 +10,13 @@
 
 /// @file Boolean.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Boolean_h
 #define eckit_xpr_Boolean_h
 
+#include "eckit/xpr/Integer.h"
 #include "eckit/xpr/Value.h"
 
 namespace eckit {
@@ -29,10 +31,13 @@ public: // static methods
     typedef bool value_t;
 
     static std::string sig() { return "b"; }
-    static std::string className() { return "Boolean"; }
+    static const char * nodeName() { return "Boolean"; }
 
-    static scalar_t extract ( Scope& ctx , const ExpPtr& e )
+    static bool is ( const ExpPtr& e );
+
+    static value_t extract ( const ExpPtr& e )
     {
+        ASSERT( Boolean::is(e) );
         return e->as<Boolean>()->value();
     }
 
@@ -42,23 +47,42 @@ public: // methods
 
     Boolean( const value_t& v );
 
-    /// @returns the value of the scalar
+    Boolean( Boolean&& ) = default;
+
+    Boolean( Stream& s );
+
+    Boolean& operator=(Boolean&&) = default;
+
+    /// @returns the value of the real
     value_t value() const { return v_; }
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private: // virtual methods
 
-    virtual std::string typeName() const { return Boolean::className(); }
-    virtual std::string signature() const { return Boolean::sig(); }
-    virtual std::string returnSignature() const { return Boolean::sig(); }
+    virtual std::string factoryName() const { return "xpr::boolean"; }
+    virtual const char * typeName() const { return nodeName(); }
+    virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& o ) const;
+    virtual void asJSON( JSON& s ) const;
     virtual ExpPtr cloneWith(args_t& a) const;
+
+protected: // virtual methods
+
+    // From Streamable
+    virtual void encode( Stream& s ) const;
 
 protected: // members
 
     value_t v_;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Boolean> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

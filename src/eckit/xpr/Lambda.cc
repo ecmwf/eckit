@@ -42,10 +42,7 @@ Lambda::Lambda(args_t& a) : Function(a)
     ASSERT( a.size() <= 3 );
 }
 
-std::string Lambda::returnSignature() const
-{
-    return "()";
-}
+Lambda::Lambda(Stream &s) : Function(s) {}
 
 ExpPtr Lambda::evaluate( Scope &ctx ) const
 {
@@ -84,16 +81,19 @@ ExpPtr Lambda::call( Scope &ctx ) const
     return body->eval(scope);
 }
 
-
-void Lambda::asCode(std::ostream&o) const
-{
-    o << "xpr::lambda("; printArgs(o); o <<")";
-}
-
 ExpPtr Lambda::cloneWith(args_t& a) const
 {
     return ExpPtr(new Lambda(a));
 }
+
+//--------------------------------------------------------------------------------------------
+
+ClassSpec Lambda::classSpec_ = {
+    &Function::classSpec(),
+    Lambda::nodeName(),
+};
+
+Reanimator< Lambda > Lambda::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

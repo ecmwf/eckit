@@ -22,11 +22,11 @@ namespace eckit {
 
 // remember to add a mutex
 
-HtmlResource::Map* HtmlResource::resources_ = 0;
+HtmlResourceMap HtmlResource::resources_;
 
 HtmlResource::HtmlResource(const std::string& s)
 {
-	if(!resources_) resources_ = new Map();
+	resources_.init();
 	(*resources_)[s] = this;
 }
 
@@ -37,8 +37,6 @@ HtmlResource::~HtmlResource()
 
 void HtmlResource::dispatch(eckit::Stream& s,std::istream& in,std::ostream& out,Url& url)
 {
-	Map* m = resources_;
-
 	std::string str;
 
 	for(int i = 0; i < url.size() ; i++)
@@ -46,8 +44,8 @@ void HtmlResource::dispatch(eckit::Stream& s,std::istream& in,std::ostream& out,
 		str += "/" + url[i];
 
 
-		Map::iterator j = m->find(str);
-		if(j != m->end())
+		HtmlResourceMap::iterator j = resources_->find(str);
+		if(j != resources_->end())
 		{
 			HtmlResource *r = (*j).second;
 
@@ -75,7 +73,7 @@ void HtmlResource::dispatch(eckit::Stream& s,std::istream& in,std::ostream& out,
 
 void HtmlResource::index(std::ostream& s,Url& url)
 {
-	for(Map::iterator j = resources_->begin(); j != resources_->end(); ++j)
+	for(HtmlResourceMap::iterator j = resources_->begin(); j != resources_->end(); ++j)
 	{
 		s   << Html::Link((*j).first) << (*j).first << Html::Link() << std::endl;		
 	}

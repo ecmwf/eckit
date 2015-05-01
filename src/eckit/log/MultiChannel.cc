@@ -140,6 +140,17 @@ void MultiChannel::clear()
 {
 }
 
+MultiChannel::iterator MultiChannel::begin()
+{
+  return buff_->streams_.begin();
+}
+
+
+MultiChannel::iterator MultiChannel::end()
+{
+  return buff_->streams_.end();
+}
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

@@ -10,6 +10,7 @@
 
 /// @file BinaryPredicate.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_BinaryPredicate_h
@@ -19,7 +20,7 @@
 
 #include "eckit/xpr/Function.h"
 #include "eckit/xpr/Boolean.h"
-#include "eckit/xpr/Scalar.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Undef.h"
 
 namespace eckit {
@@ -34,14 +35,20 @@ template <class T>
 class BinaryPredicate : public Function  {
 public:
 
-    static std::string className();
+    static const char * nodeName();
 
     BinaryPredicate( ExpPtr a, ExpPtr b);
 
+    BinaryPredicate(BinaryPredicate&&) = default;
+
+    BinaryPredicate(Stream &s);
+
+    BinaryPredicate& operator=(BinaryPredicate&&) = default;
+
     /// Applies an implementation of the binary operator
     /// T is the operator type ( Add, Sub, etc ... )
-    /// U is the left operand type ( Scalar, Vector, ... )
-    /// V is the right operand type ( Scalar, Vector, ... )
+    /// U is the left operand type ( Real, Vector, ... )
+    /// V is the right operand type ( Real, Vector, ... )
     /// I is the implementation type
     template < class U, class V, class I >
     class Computer {
@@ -59,37 +66,39 @@ public:
         static ExpPtr compute( Scope& ct , const args_t& p );
     };
 
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec();
+
 private: // methods
 
     BinaryPredicate( args_t& a );
 
-    virtual std::string typeName() const;
-
-    virtual std::string returnSignature() const;
+    virtual std::string factoryName() const;
+    virtual const char * typeName() const;
 
     virtual ExpPtr cloneWith(args_t& a) const
     {
         return ExpPtr( new BinaryPredicate<T>(a) );
     }
 
-    virtual void asCode( std::ostream& o ) const;
+    static  Reanimator<BinaryPredicate> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------
 
-// only for scalar
+// only for real
 
-typedef std::greater<Scalar::value_t>           Greater;
-typedef std::greater_equal<Scalar::value_t>     GreaterEqual;
-typedef std::less<Scalar::value_t>              Less;
-typedef std::less_equal<Scalar::value_t>        LessEqual;
-typedef std::equal_to<Scalar::value_t>         Equal;
-typedef std::not_equal_to<Scalar::value_t>     NotEqual;
+typedef std::greater<Real::value_t>           Greater;
+typedef std::greater_equal<Real::value_t>     GreaterEqual;
+typedef std::less<Real::value_t>              Less;
+typedef std::less_equal<Real::value_t>        LessEqual;
+typedef std::equal_to<Real::value_t>         Equal;
+typedef std::not_equal_to<Real::value_t>     NotEqual;
 
 /// @todo handle these
 
-typedef std::logical_and<Scalar::value_t>      And;
-typedef std::logical_or<Scalar::value_t>       Or;
+typedef std::logical_and<Real::value_t>      And;
+typedef std::logical_or<Real::value_t>       Or;
 
 //--------------------------------------------------------------------------------------------
 

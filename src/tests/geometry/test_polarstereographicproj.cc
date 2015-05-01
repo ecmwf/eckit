@@ -11,9 +11,8 @@
 #include <string>
 #include <iostream>
 
-#include "eckit/eckit_config.h"
+#define BOOST_TEST_MODULE test_eckit_geometry
 
-#define BOOST_TEST_MODULE TestPolarStereoGraphicProj
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/geometry/PolarStereoGraphicProj.h"
@@ -22,12 +21,22 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::geometry;
 
+//-----------------------------------------------------------------------------
+
+namespace eckit_test {
+
 static double degrees_eps()
 {
    /// default is 1E-3 because
    /// some bugs in IFS means we need a lower resolution epsilon when decoding from grib2
    return 1E-3 ;
 }
+
+}
+
+//-----------------------------------------------------------------------------
+
+using namespace eckit_test;
 
 BOOST_AUTO_TEST_SUITE( TestPolarStereoGraphicProj )
 
@@ -40,7 +49,7 @@ BOOST_AUTO_TEST_CASE( test_north_polar_stereographic_projection )
 
    double lat = 30;
    double lon = 30;
-   eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
+   eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lat) );
    eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
 
    //cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
@@ -56,8 +65,8 @@ BOOST_AUTO_TEST_CASE( test_south_polar_stereographic_projection )
 
    double lat = 30;
    double lon = 30;
-   eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
-   eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
+   eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lat) );
+   eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
 
    //cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
    BOOST_CHECK_CLOSE(pt_on_sphere.lat(),lat,degrees_eps());
@@ -73,8 +82,8 @@ BOOST_AUTO_TEST_CASE( test_global_north_polar_stereographic_projection )
    for(size_t lat = -90; lat < 90; lat++) {
       for(size_t lon = 0; lon < 360; lon++) {
 
-         eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
-         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
+         eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lat) );
+         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
 
          //cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
          BOOST_CHECK_CLOSE(pt_on_sphere.lat(),(double)lat,degrees_eps());
@@ -92,8 +101,8 @@ BOOST_AUTO_TEST_CASE( test_global_south_polar_stereographic_projection )
    for(size_t lat = -90; lat < 90; lat++) {
       for(size_t lon = 0; lon < 360; lon++) {
 
-         eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
-         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
+         eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lon) );
+         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
 
          //cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
          BOOST_CHECK_CLOSE(pt_on_sphere.lat(),(double)lat,degrees_eps());
@@ -112,8 +121,8 @@ BOOST_AUTO_TEST_CASE( test_north_ellipsoid_polar_stereographic_projection )
 
    double lat = 73;
    double lon = 44;
-   eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
-   eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
+   eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lat) );
+   eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
 
    // cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
    BOOST_CHECK_CLOSE(pt_on_plane[0],3320416.75,degrees_eps());
@@ -134,7 +143,7 @@ BOOST_AUTO_TEST_CASE( test_global_north_ellipsoid_polar_stereographic_projection
       for(size_t lon = 0; lon < 360; lon++) {
 
          eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
-         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
+         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
 
          //cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
          BOOST_CHECK_CLOSE(pt_on_sphere.lat(),(double)lat,degrees_eps());
@@ -152,8 +161,8 @@ BOOST_AUTO_TEST_CASE( test_global_south_ellipsoid_polar_stereographic_projection
    for(size_t lat = -90; lat < 90; lat++) {
       for(size_t lon = 0; lon < 360; lon++) {
 
-         eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
-         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[0],  pt_on_plane[1] );
+         eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lat) );
+         eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
 
          //cout << "spherical(" << lat << "," << lon << ") -> pt_on_plane" << pt_on_plane <<  " -> pt_on_sphere" << pt_on_sphere << "\n";
          BOOST_CHECK_CLOSE(pt_on_sphere.lat(),(double)lat,degrees_eps());
@@ -162,5 +171,6 @@ BOOST_AUTO_TEST_CASE( test_global_south_ellipsoid_polar_stereographic_projection
    }
 }
 
+//-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

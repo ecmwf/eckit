@@ -13,6 +13,7 @@
 
 #include "eckit/config/Configurable.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/memory/ScopedPtr.h"
 
 //-----------------------------------------------------------------------------
 
@@ -38,16 +39,6 @@ public: // types
     };
 
 public: // methods
-
-    // -- Contructors
-
-	Context();
-
-    // -- Destructor
-
-	virtual ~Context();
-
-    // -- Methods
 
     static Context& instance();
 
@@ -91,6 +82,12 @@ public: // methods
 
 private: // methods
 
+	/// Singleton class with private constructor
+	Context();
+
+	/// Singleton class with private destructor
+	virtual ~Context();
+
     // From Configurable
 
 	virtual std::string kind() const  { return "Context"; }
@@ -99,7 +96,7 @@ protected:
 
     // -- Members
 
-    std::auto_ptr<ContextBehavior> behavior_;
+	eckit::ScopedPtr<ContextBehavior> behavior_;
 
     int     argc_;
 	char**  argv_;
@@ -111,7 +108,6 @@ protected:
     std::string  displayName_;  ///< name to be displayed of running application
 
 };
-
 
 //-----------------------------------------------------------------------------
 

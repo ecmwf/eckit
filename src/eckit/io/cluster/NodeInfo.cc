@@ -13,6 +13,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/runtime/Context.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/thread/Once.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/config/Resource.h"
@@ -25,7 +26,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static Mutex local_mutex;
+static Once<Mutex> local_mutex;
 
 NodeInfo::NodeInfo() :
 	port_(0), active_(false), id_(0), task_(-1)

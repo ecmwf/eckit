@@ -131,7 +131,7 @@ Channel& Log::warning(const CodeLocation& where)
 Channel& Log::debug(int level)
 {
     static MultiChannel no_output;
-    if(level >= Context::instance().debug())
+    if(level > Context::instance().debug())
         return no_output;
     else
         return Context::instance().debugChannel();
@@ -140,7 +140,7 @@ Channel& Log::debug(int level)
 Channel& Log::debug(const CodeLocation& where, int level)
 {
     static MultiChannel no_output;
-    if(level >= Context::instance().debug())
+    if(level > Context::instance().debug())
         return no_output;
     else
         return Context::instance().debugChannel().source(where);

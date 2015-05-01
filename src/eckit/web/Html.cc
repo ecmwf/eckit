@@ -343,6 +343,7 @@ void ImageProvider::html(std::ostream& out, Url& url)
 class HtmlProvider : public HtmlResource {
 public:
 	HtmlProvider(): HtmlResource("/html") { }
+	virtual ~HtmlProvider() {}
 	void html(std::ostream& , Url&);
 };
 
@@ -367,7 +368,6 @@ void Html::BeginTable::print(std::ostream& s) const
 {
 	s << "<TABLE";
 	if(border_)  s << " BORDER";
-	if(border_>1) s << "=" << border_;
 	if(padding_) s << " CELLPADDING=" << padding_;
 	if(spacing_) s << " CELLSPACING=" << spacing_;
 	if(width_)   s << " WIDTH=" << '"' << width_ << '%' << '"' ;

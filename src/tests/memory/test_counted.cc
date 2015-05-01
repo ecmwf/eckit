@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_default, F, test_types )
     p.release();
 
     BOOST_CHECK( !p );
-    BOOST_CHECK( p.owners() == 0 );
+    BOOST_CHECK_EQUAL( p.owners() , 0 );
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_copy, F, test_types )
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_copy, F, test_types )
     typename F::ptype p3;
 
     BOOST_CHECK( !p1 );
-    BOOST_CHECK( p1.owners() == 0 );
+    BOOST_CHECK_EQUAL( p1.owners() , 0 );
 
     p1.reset( new F(10) );
 
@@ -97,19 +97,19 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_copy, F, test_types )
     BOOST_CHECK( !p2 );
     BOOST_CHECK( !p3 );
 
-    BOOST_CHECK( p1.owners() == 1 );
-    BOOST_CHECK( p2.owners() == 0 );
-    BOOST_CHECK( p3.owners() == 0 );
+    BOOST_CHECK_EQUAL( p1.owners() , 1 );
+    BOOST_CHECK_EQUAL( p2.owners() , 0 );
+    BOOST_CHECK_EQUAL( p3.owners() , 0 );
 
     p2.reset(p1);
 
-    BOOST_CHECK( p1->i == 20 );
-    BOOST_CHECK( p2->i == 20 );
+    BOOST_CHECK_EQUAL( p1->i , 20 );
+    BOOST_CHECK_EQUAL( p2->i , 20 );
 
     p1->i = 30;
 
-    BOOST_CHECK( p1->i == 30 );
-    BOOST_CHECK( p2->i == 30 );
+    BOOST_CHECK_EQUAL( p1->i , 30 );
+    BOOST_CHECK_EQUAL( p2->i , 30 );
 
     BOOST_CHECK( p1 == p2 );
     BOOST_CHECK( p1 != p3 );
@@ -119,17 +119,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_copy, F, test_types )
     BOOST_CHECK(  p2 );
     BOOST_CHECK( !p3 );
 
-    BOOST_CHECK( p1.owners() == 2 );
-    BOOST_CHECK( p2.owners() == 2 );
-    BOOST_CHECK( p3.owners() == 0 );
+    BOOST_CHECK_EQUAL( p1.owners() , 2 );
+    BOOST_CHECK_EQUAL( p2.owners() , 2 );
+    BOOST_CHECK_EQUAL( p3.owners() , 0 );
 
     p3 = p1;
 
     p1->i = 40;
 
-    BOOST_CHECK( p1->i == 40 );
-    BOOST_CHECK( p2->i == 40 );
-    BOOST_CHECK( p3->i == 40 );
+    BOOST_CHECK_EQUAL( p1->i , 40 );
+    BOOST_CHECK_EQUAL( p2->i , 40 );
+    BOOST_CHECK_EQUAL( p3->i , 40 );
 
     BOOST_CHECK( p1 == p2 );
     BOOST_CHECK( p1 == p3 );
@@ -139,9 +139,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_copy, F, test_types )
     BOOST_CHECK( p2 );
     BOOST_CHECK( p3 );
 
-    BOOST_CHECK( p1.owners() == 3 );
-    BOOST_CHECK( p2.owners() == 3 );
-    BOOST_CHECK( p3.owners() == 3 );
+    BOOST_CHECK_EQUAL( p1.owners() , 3 );
+    BOOST_CHECK_EQUAL( p2.owners() , 3 );
+    BOOST_CHECK_EQUAL( p3.owners() , 3 );
 
     p1.release();
 
@@ -149,9 +149,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_copy, F, test_types )
     BOOST_CHECK(  p2 );
     BOOST_CHECK(  p3 );
 
-    BOOST_CHECK( p1.owners() == 0 );
-    BOOST_CHECK( p2.owners() == 2 );
-    BOOST_CHECK( p3.owners() == 2 );
+    BOOST_CHECK_EQUAL( p1.owners() , 0 );
+    BOOST_CHECK_EQUAL( p2.owners() , 2 );
+    BOOST_CHECK_EQUAL( p3.owners() , 2 );
 
     p2.release();
 
@@ -159,9 +159,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_copy, F, test_types )
     BOOST_CHECK( !p2 );
     BOOST_CHECK(  p3 );
 
-    BOOST_CHECK( p1.owners() == 0 );
-    BOOST_CHECK( p2.owners() == 0 );
-    BOOST_CHECK( p3.owners() == 1 );
+    BOOST_CHECK_EQUAL( p1.owners() , 0 );
+    BOOST_CHECK_EQUAL( p2.owners() , 0 );
+    BOOST_CHECK_EQUAL( p3.owners() , 1 );
 
     p3.release();
 
@@ -169,9 +169,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_copy, F, test_types )
     BOOST_CHECK( !p2 );
     BOOST_CHECK( !p3 );
 
-    BOOST_CHECK( p1.owners() == 0 );
-    BOOST_CHECK( p2.owners() == 0 );
-    BOOST_CHECK( p3.owners() == 0 );
+    BOOST_CHECK_EQUAL( p1.owners() , 0 );
+    BOOST_CHECK_EQUAL( p2.owners() , 0 );
+    BOOST_CHECK_EQUAL( p3.owners() , 0 );
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_release, F, test_types )
@@ -205,13 +205,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_swap, F, test_types )
     BOOST_CHECK( p2.unique() );
 
 
-    BOOST_CHECK( p1->i == 10 );
-    BOOST_CHECK( p2->i == 5 );
+    BOOST_CHECK_EQUAL( p1->i , 10 );
+    BOOST_CHECK_EQUAL( p2->i , 5 );
 
     p1.swap(p2);
 
-    BOOST_CHECK( p1->i == 5 );
-    BOOST_CHECK( p2->i == 10 );
+    BOOST_CHECK_EQUAL( p1->i , 5 );
+    BOOST_CHECK_EQUAL( p2->i , 10 );
 
     BOOST_CHECK( p1.unique() );
     BOOST_CHECK( p2.unique() );

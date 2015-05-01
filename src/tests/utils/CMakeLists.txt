@@ -10,3 +10,8 @@ ecbuild_add_test(   TARGET      test_translator
 ecbuild_add_test(   TARGET      test_tokenizer
                     SOURCES     test_tokenizer.cc
                     LIBS        eckit )
+
+ecbuild_add_test(   TARGET      test_eckit_utils
+					BOOST
+                    SOURCES     test_md5.cc
+                    LIBS        eckit )

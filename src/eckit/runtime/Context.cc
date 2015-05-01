@@ -106,7 +106,6 @@ char** Context::argvs() const
 
 void Context::reconfigure()
 {
-	Log::info() << "Context::reconfigure" << std::endl;
     behavior_->reconfigure();
 }
 

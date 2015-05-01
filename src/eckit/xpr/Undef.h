@@ -11,6 +11,7 @@
 /// @file Undef.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Undef_h
@@ -24,27 +25,41 @@ namespace xpr {
 class Undef : public Expression {
 public: //  methods
 
-    static std::string className() { return "Undef"; }
+    static const char * nodeName() { return "Undef"; }
     static std::string sig() { return "?"; }
     static bool is ( const ExpPtr& e );
 
     Undef();
 
+    Undef( Undef&& ) = default;
+
+    Undef( Stream& s );
+
     virtual ~Undef();
+
+    Undef& operator=(Undef&&) = default;
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual std::string typeName() const { return Undef::className(); }
-    virtual std::string signature() const { return Undef::sig(); }
-    virtual std::string returnSignature() const { return Undef::sig(); }
+    virtual std::string factoryName() const { return "xpr::undef"; }
+    virtual const char * typeName() const { return nodeName(); }
+    virtual std::string signature() const { return sig(); }
 
     virtual void print( std::ostream& o ) const;
     virtual void asCode( std::ostream& ) const;
+    virtual void asJSON( JSON& ) const;
     virtual ExpPtr resolve(Scope & ctx) const;
     virtual ExpPtr cloneWith(args_t& a) const;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Undef> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

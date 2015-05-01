@@ -176,7 +176,9 @@ void FileHandle::flush()
             }
             
             // On Linux, you must also flush the directory
-            PathName(name_).syncParentDirectory();
+			static bool fileHandleSyncsParentDir = eckit::Resource<bool>("fileHandleSyncsParentDir", true);
+			if( fileHandleSyncsParentDir )
+				PathName(name_).syncParentDirectory();
 
         }
     }

@@ -10,6 +10,7 @@
 
 /// @file Map.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_FMap_h
@@ -27,21 +28,27 @@ class Map : public Function {
 
 public: // methods
 
-    static std::string className() { return "Map"; }
+    static const char * nodeName() { return "Map"; }
 
     Map( ExpPtr f, ExpPtr l );
+
+    Map(Map&&) = default;
+
+    Map(Stream& s);
+
+    Map& operator=(Map&&) = default;
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private: // methods
 
     Map( args_t& a );
 
-    virtual std::string typeName() const { return Map::className(); }
-
-    virtual std::string returnSignature() const;
+    virtual std::string factoryName() const { return "xpr::map"; }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
-
-    virtual void asCode( std::ostream& ) const;
 
     virtual ExpPtr cloneWith(args_t& a) const;
 
@@ -49,6 +56,10 @@ private: // methods
     virtual bool countable() const;
     virtual size_t count() const;
 
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Map> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

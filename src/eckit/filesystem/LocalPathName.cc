@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -33,6 +33,7 @@
 #include "eckit/os/Stat.h"
 #include "eckit/runtime/Context.h"
 #include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Once.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/Regex.h"
 
@@ -42,7 +43,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static Mutex local_mutex;
+static Once<Mutex> local_mutex;
 
 // I need to come back here when we have a proper std::string class
 
@@ -109,7 +110,7 @@ BasePathName* LocalPathName::checkClusterNode() const
 {
     std::string n = ClusterDisks::node(path_);
     if(n != "local") {
-//        Log::warning() << *this << " is now on node [" << n << "]" << std::endl; 
+//        Log::warning() << *this << " is now on node [" << n << "]" << std::endl;
         return new BasePathNameT<MarsFSPath>(MarsFSPath(n,path_));
     }
     return new BasePathNameT<LocalPathName>(LocalPathName(path_));
@@ -150,13 +151,12 @@ LocalPathName LocalPathName::cwd()
     AutoLock<Mutex> lock(local_mutex);
     char buf [PATH_MAX+1];
 	if(!getcwd(buf, sizeof(buf)))
-		throw FailedSystemCall("getcwd");    
+		throw FailedSystemCall("getcwd");
     return LocalPathName( buf );
 }
 
 LocalPathName LocalPathName::unique(const LocalPathName& path)
 {
-
     AutoLock<Mutex> lock(local_mutex);
 
 	static std::string format = "%Y%m%d.%H%M%S";
@@ -180,25 +180,58 @@ LocalPathName LocalPathName::unique(const LocalPathName& path)
 	return result;
 }
 
-
-void LocalPathName::mkdir(short mode) const
+static void mkdir_if_not_exists( const char* path, short mode )
 {
-	std::string s = path_;
-	long   l = path_.length();
+	Stat::Struct info;
 
-	for(long i=1; i < l; i++)
+	if( Stat::stat( path, &info) < 0 )
 	{
-		if(s[i] == '/')
+		if( errno == ENOENT ) // no such file or dir
 		{
-			s[i] = 0;
-			if(::mkdir(s.c_str(),mode) != 0 &&  errno != EEXIST)
-				throw FailedSystemCall(std::string("mkdir ") + s);
-			s[i] = '/';
+			if(::mkdir(path,mode) < 0)
+			{
+				throw FailedSystemCall(std::string("mkdir ") + path);
+			}
+		}
+		else // stat fails for unknown reason
+		{
+			throw FailedSystemCall( std::string("stat ") + path);
 		}
 	}
 
-	if(::mkdir(path_.c_str(),mode) != 0 && errno != EEXIST)
-		throw FailedSystemCall(std::string("mkdir ") + path_);
+}
+
+void LocalPathName::mkdir(short mode) const
+{
+	try
+	{
+		char path[MAXNAMLEN+1];
+
+		long l = path_.length();
+	
+		ASSERT( sizeof(path) > l );
+
+		::strcpy( path, path_.c_str()  );
+
+		for(long i=1; i < l; i++)
+		{
+			if(path[i] == '/')
+			{
+				path[i] = 0;
+
+				mkdir_if_not_exists(path,mode);
+
+				path[i] = '/'; // put slash back
+			}
+		}
+
+		mkdir_if_not_exists(path,mode);
+	}
+	catch( FailedSystemCall& e )
+	{
+		Log::error() << "Failed to mkdir " << path_ << std::endl;
+		throw;
+	}
 }
 
 void LocalPathName::link(const LocalPathName& from,const LocalPathName& to)
@@ -300,7 +333,7 @@ LocalPathName& LocalPathName::tidy()
 		{
 			if( (*j) == "" || (*j) == ".")
 			{
-				v.erase(j);	
+				v.erase(j);
 				more = true;
 				break;
 			}
@@ -309,7 +342,7 @@ LocalPathName& LocalPathName::tidy()
 			{
 				if ((*i) != "")
 					*i = ".";
-				v.erase(j);			
+				v.erase(j);
 				more = true;
 				break;
 			}
@@ -366,12 +399,12 @@ void LocalPathName::match(const LocalPathName& root,std::vector<LocalPathName>& 
 		throw FailedSystemCall(std::string("opendir(") + std::string(dir) + ")");
 	}
 
-	struct dirent *e;
 	struct dirent buf;
 
 
 	for(;;)
 	{
+		struct dirent *e;
 #ifdef EC_HAVE_READDIR_R
 		errno = 0;
 		if(readdir_r(d,&buf,&e) != 0)
@@ -385,7 +418,7 @@ void LocalPathName::match(const LocalPathName& root,std::vector<LocalPathName>& 
 		e = readdir(d);
 #endif
 
-		if(e == 0) 
+		if(e == 0)
 			break;
 
 		if(re.match(e->d_name))
@@ -417,12 +450,12 @@ void LocalPathName::children(std::vector<LocalPathName>& files,std::vector<Local
 		throw FailedSystemCall("opendir");
 	}
 
-	struct dirent *e;
 	struct dirent buf;
 
 
 	for(;;)
 	{
+		struct dirent *e;
 #ifdef EC_HAVE_READDIR_R
 		errno = 0;
 		if(readdir_r(d,&buf,&e) != 0)
@@ -436,7 +469,7 @@ void LocalPathName::children(std::vector<LocalPathName>& files,std::vector<Local
 		e = readdir(d);
 #endif
 
-		if(e == 0) 
+		if(e == 0)
 			break;
 
 		if(e->d_name[0] == '.')
@@ -567,12 +600,12 @@ LocalPathName LocalPathName::realName() const
 	else
 		return LocalPathName(std::string(dir) + "/" + baseName());
 #endif
-	
+
 }
 
 void LocalPathName::truncate(Length len) const
 {
-	SYSCALL(::truncate(path_.c_str(),len));	
+	SYSCALL(::truncate(path_.c_str(),len));
 }
 
 void LocalPathName::reserve(const Length& len) const
@@ -637,7 +670,7 @@ void LocalPathName::syncParentDirectory() const
 {
     PathName directory = dirName();
 #ifdef EC_HAVE_DIRFD
-    Log::info() << "Syncing directory " << directory << std::endl;
+//    Log::info() << "Syncing directory " << directory << std::endl;
     DIR *d = opendir(directory.localPath());
     if (!d) SYSCALL(-1);
 

@@ -8,7 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/xpr/Scalar.h"
+#include "eckit/parser/JSON.h"
+
+#include "eckit/xpr/Integer.h"
+#include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"
 #include "eckit/xpr/UnaryOperator.h"
 #include "eckit/xpr/Optimiser.h"
@@ -18,22 +21,22 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-                            \
-ExpPtr neg( ExpPtr e )           { return ExpPtr( new UnaryOperator<Neg>(e) ); }
+ExpPtr neg( ExpPtr e ) { return ExpPtr( new UnaryOperator<Neg>(e) ); }
 
 //--------------------------------------------------------------------------------------------
 
 static const char *opname(const Neg&)  { return "Neg";  }
 static const char *opsymbol(const Neg&)  { return "-";  }
+static const char *opfactory(const Neg&)  { return "xpr::neg";  }
 
 //--------------------------------------------------------------------------------------------
 
 struct Generic
 {
     template <class T>
-    static ExpPtr apply( T op, const Scalar::value_t& a )
+    static ExpPtr apply( T op, const Real::value_t& a )
     {
-        return ExpPtr( new Scalar( op( a ) ) );
+        return ExpPtr( new Real( op( a ) ) );
     }
 
     template <class T>
@@ -50,7 +53,8 @@ struct Generic
 
 //--------------------------------------------------------------------------------------------
 
-static UnaryOperator<Neg>::Computer<Scalar,Generic> neg_sg;
+static UnaryOperator<Neg>::Computer<Real,Generic> neg_rg;
+static UnaryOperator<Neg>::Computer<Integer,Generic> neg_ig;
 static UnaryOperator<Neg>::Computer<Vector,Generic> neg_vg;
 
 //--------------------------------------------------------------------------------------------
@@ -68,26 +72,41 @@ UnaryOperator<T>::UnaryOperator(args_t& a) : Function(a)
 }
 
 template < class T >
-std::string UnaryOperator<T>::returnSignature() const
+UnaryOperator<T>::UnaryOperator(Stream& s) : Function(s) {}
+
+template < class T >
+const ClassSpec& UnaryOperator<T>::classSpec()
 {
-    return args(0)->returnSignature();
+     static ClassSpec myClassSpec = {
+         &Function::classSpec(),
+         UnaryOperator<T>::nodeName(),
+     };
+     return myClassSpec;
 }
 
 template < class T >
-std::string UnaryOperator<T>::typeName() const
+std::string UnaryOperator<T>::factoryName() const
 {
-    return UnaryOperator<T>::className();
+    return opfactory( T() );
 }
 
 template < class T >
-std::string UnaryOperator<T>::className()
+const char * UnaryOperator<T>::typeName() const
+{
+    return UnaryOperator<T>::nodeName();
+}
+
+template < class T >
+const char * UnaryOperator<T>::nodeName()
 {
     return opname( T() );
 }
 
 template < class T >
-void UnaryOperator<T>::asCode( std::ostream& o ) const {
-    o << opsymbol(T()) << '(' << *args(0) << ')';
+void UnaryOperator<T>::asJSON( JSON& s ) const {
+    s.startObject();
+    s << factoryName() << *args(0);
+    s.endObject();
 }
 
 /*
@@ -115,13 +134,19 @@ template < class T >
 template < class U, class I >
 ExpPtr UnaryOperator<T>::Computer<U,I>::compute(Scope& ctx, const args_t &p)
 {
-    typename U::value_t a = U::extract(ctx, p[0]);
+    typename U::value_t a = U::extract(p[0]);
     return I::apply(T(),a);
 }
 
 //--------------------------------------------------------------------------------------------
 
-static OptimiseTo<Scalar> optimise_neg_s ( std::string(opname( Neg() )) + "(s)" );
+template < class T >
+Reanimator< UnaryOperator<T> > UnaryOperator<T>::reanimator_;
+
+//--------------------------------------------------------------------------------------------
+
+static OptimiseTo<Real> optimise_neg_r ( std::string(opname( Neg() )) + "(r)" );
+static OptimiseTo<Integer> optimise_neg_i ( std::string(opname( Neg() )) + "(i)" );
 
 //--------------------------------------------------------------------------------------------
 

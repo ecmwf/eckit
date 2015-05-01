@@ -10,6 +10,7 @@
 
 /// @file Filter.h
 /// @author Tiago Quintino
+/// @author Florian Rathgeber
 /// @date November 2013
 
 #ifndef eckit_xpr_Filter_h
@@ -28,23 +29,34 @@ class Filter : public Function {
 
 public: // methods
 
-    static std::string className() { return "Filter"; }
+    static const char * nodeName() { return "Filter"; }
 
     Filter( ExpPtr pred = undef(), ExpPtr list = undef() );
+
+    Filter( Filter&& ) = default;
+
+    Filter( Stream& s );
+
+    Filter& operator=(Filter&&) = default;
+
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
 
     Filter(args_t& a);
 
-    virtual std::string typeName() const { return Filter::className(); }
-
-    virtual std::string returnSignature() const;
+    virtual std::string factoryName() const { return "xpr::filter"; }
+    virtual const char * typeName() const { return nodeName(); }
 
     virtual ExpPtr evaluate( Scope& ctx ) const;
 
-    virtual void asCode( std::ostream& ) const;
-
     virtual ExpPtr cloneWith(args_t& a) const;
+
+private: // static members
+
+    static  ClassSpec classSpec_;
+    static  Reanimator<Filter> reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

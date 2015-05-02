@@ -21,22 +21,6 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-struct Min
-{
-    real_t operator()(const real_t a, const real_t b) const {
-        return std::min(a, b);
-    }
-};
-
-struct Max
-{
-    real_t operator()(const real_t a, const real_t b) const {
-        return std::max(a, b);
-    }
-};
-
-//--------------------------------------------------------------------------------------------
-
 static const char *opname(const Prod&)  { return "xpr::Prod";  }
 static const char *opname(const Div&)   { return "xpr::Div";  }
 static const char *opname(const Add&)   { return "xpr::Add";  }
@@ -53,13 +37,94 @@ static const char *opfactory(const Mod&)   { return "xpr::mod";  }
 static const char *opfactory(const Min&)   { return "xpr::min";  }
 static const char *opfactory(const Max&)   { return "xpr::max";  }
 
-ExpPtr prod( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Prod >(l,r) ); }
-ExpPtr div( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Div >(l,r) );  }
-ExpPtr add( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Add >(l,r) );  }
-ExpPtr sub( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Sub >(l,r) );  }
-ExpPtr mod( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Mod >(l,r) );  }
-ExpPtr min( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Min >(l,r) );  }
-ExpPtr max( ExpPtr l, ExpPtr r )  { return ExpPtr( new BinaryOperator< Max >(l,r) );  }
+//--------------------------------------------------------------------------------------------
+
+template < class T >
+BinaryOperator<T>::BinaryOperator(ExpPtr a, ExpPtr b)
+{
+    push_back(a);
+    push_back(b);
+}
+
+template < class T >
+BinaryOperator<T>::BinaryOperator(args_t& a) : Function(a)
+{
+    ASSERT( a.size() == 2 );
+}
+
+template < class T >
+BinaryOperator<T>::BinaryOperator(Stream& s) : Function(s) {}
+
+template < class T >
+const ClassSpec& BinaryOperator<T>::classSpec()
+{
+     static ClassSpec myClassSpec = {
+         &Function::classSpec(),
+         BinaryOperator<T>::nodeName(),
+     };
+     return myClassSpec;
+}
+
+template < class T >
+std::string BinaryOperator<T>::factoryName() const
+{
+    return opfactory( T() );
+}
+
+template < class T >
+const char * BinaryOperator<T>::typeName() const
+{
+    return BinaryOperator<T>::nodeName();
+}
+
+template < class T >
+const char * BinaryOperator<T>::nodeName()
+{
+    return opname( T() );
+}
+
+//--------------------------------------------------------------------------------------------
+
+template < class T >
+Reanimator< BinaryOperator<T> > BinaryOperator<T>::reanimator_;
+
+//--------------------------------------------------------------------------------------------
+
+struct Min
+{
+    real_t operator()(const real_t a, const real_t b) const {
+        return std::min(a, b);
+    }
+};
+
+struct Max
+{
+    real_t operator()(const real_t a, const real_t b) const {
+        return std::max(a, b);
+    }
+};
+
+//--------------------------------------------------------------------------------------------
+
+// explicit template instantiations
+
+template class BinaryOperator<Prod>;
+template class BinaryOperator<Div>;
+template class BinaryOperator<Add>;
+template class BinaryOperator<Sub>;
+template class BinaryOperator<Mod>;
+template class BinaryOperator<Min>;
+template class BinaryOperator<Max>;
+
+//--------------------------------------------------------------------------------------------
+
+ExpPtr prod( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Prod >(l,r) );  }
+ExpPtr div ( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Div  >(l,r) );  }
+ExpPtr add ( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Add  >(l,r) );  }
+ExpPtr sub ( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Sub  >(l,r) );  }
+ExpPtr mod ( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Mod  >(l,r) );  }
+ExpPtr min ( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Min  >(l,r) );  }
+ExpPtr max ( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Max  >(l,r) );  }
 
 //--------------------------------------------------------------------------------------------
 
@@ -342,57 +407,6 @@ static MatrixScalarComputer<Max, Real,   Generic> max_mrg;
 static ScalarMatrixComputer<Max, Integer,Generic> max_img;
 static MatrixScalarComputer<Max, Integer,Generic> max_mig;
 static MatrixMatrixComputer<Max, Generic>         max_mmg;
-
-//--------------------------------------------------------------------------------------------
-
-template < class T >
-BinaryOperator<T>::BinaryOperator(ExpPtr a, ExpPtr b)
-{
-    push_back(a);
-    push_back(b);
-}
-
-template < class T >
-BinaryOperator<T>::BinaryOperator(args_t& a) : Function(a)
-{
-    ASSERT( a.size() == 2 );
-}
-
-template < class T >
-BinaryOperator<T>::BinaryOperator(Stream& s) : Function(s) {}
-
-template < class T >
-const ClassSpec& BinaryOperator<T>::classSpec()
-{
-     static ClassSpec myClassSpec = {
-         &Function::classSpec(),
-         BinaryOperator<T>::nodeName(),
-     };
-     return myClassSpec;
-}
-
-template < class T >
-std::string BinaryOperator<T>::factoryName() const
-{
-    return opfactory( T() );
-}
-
-template < class T >
-const char * BinaryOperator<T>::typeName() const
-{
-    return BinaryOperator<T>::nodeName();
-}
-
-template < class T >
-const char * BinaryOperator<T>::nodeName()
-{
-    return opname( T() );
-}
-
-//--------------------------------------------------------------------------------------------
-
-template < class T >
-Reanimator< BinaryOperator<T> > BinaryOperator<T>::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 

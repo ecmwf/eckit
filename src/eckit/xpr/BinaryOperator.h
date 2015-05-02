@@ -28,7 +28,8 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-/// Generates a expressions
+/// Binary operator
+///
 template <class T>
 class BinaryOperator : public Function  {
 public:
@@ -60,7 +61,7 @@ private: // methods
 
 private: // static members
 
-    static  Reanimator<BinaryOperator> reanimator_;
+    static  Reanimator< BinaryOperator > reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------

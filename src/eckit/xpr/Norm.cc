@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cmath>
+
 #include "eckit/xpr/Norm.h"
 #include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"

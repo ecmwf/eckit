@@ -19,6 +19,7 @@
 #include "eckit/thread/ThreadSingleton.h"
 #include "eckit/parser/Tokenizer.h"
 
+#include <sys/param.h>
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -161,7 +162,7 @@ static PathName proc_path(const std::string& name) {
     }
 
     if (name[0] == '.') {
-        char buf[PATH_MAX];
+        char buf[MAXPATHLEN];
         ASSERT(getcwd (buf, sizeof(buf)));
         return PathName(std::string(buf) + "/" + name);
     }

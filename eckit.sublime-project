@@ -16,5 +16,14 @@
             "file_regex": "([/\\w\\-\\.]+):(\\d+):(\\d+:)?",
             "name": "Build"
         }
-    ]
+    ],
+    "SublimeLinter":
+    {
+        "linters":
+        {
+            "cpplint": {
+                "filter": "-whitespace/line_length,-whitespace/blank_line" // ,-runtime/references
+            },
+        }
+    }
 }

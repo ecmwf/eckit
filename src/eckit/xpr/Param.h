@@ -17,7 +17,9 @@
 #ifndef eckit_xpr_Param_h
 #define eckit_xpr_Param_h
 
-#include "Expression.h"
+#include <string>
+
+#include "eckit/xpr/Expression.h"
 
 //--------------------------------------------------------------------------------------------
 
@@ -29,56 +31,57 @@ namespace xpr {
 
 class Param : public Expression {
 
-    std::string name_;
+  std::string name_;
 
-public: //  methods
+ public:  //  methods
 
-    static const char * nodeName()     { return "xpr::Param"; }
-    static std::string sig()           { return "?";     }
+  static const char* nodeName() { return "xpr::Param"; }
+  static std::string sig() { return "?"; }
 
-    Param(const std::string& name);
+  explicit Param(const std::string& name);
 
-    Param( Param&& ) = default;
+  Param(Param&&) = default;
 
-    Param( Stream& s );
+  Param(Stream& s);
 
-    virtual ~Param();
+  virtual ~Param();
 
-    Param& operator=(Param&&) = default;
+  Param& operator=(Param&&) = default;
 
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
-    static const ClassSpec& classSpec() { return classSpec_; }
+  virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+  static const ClassSpec& classSpec() { return classSpec_; }
 
-protected: // virtual methods
+ protected:  // virtual methods
 
-    // From Streamable
-    virtual void encode(Stream& s) const;
+  // From Streamable
+  virtual void encode(Stream& s) const;
 
-private: //  methods
+ private:  //  methods
 
-    virtual ExpPtr evaluate( Scope& ctx ) const;
+  virtual ExpPtr evaluate(Scope& ctx) const;
 
-    virtual std::string factoryName() const { return "xpr::parameter"; }
-    virtual const char * typeName() const { return nodeName(); }
-    virtual std::string signature() const { return sig(); }
+  virtual std::string factoryName() const { return "xpr::parameter"; }
+  virtual const char* typeName() const { return nodeName(); }
+  virtual std::string signature() const { return sig(); }
 
-    virtual void print( std::ostream& o ) const;
-    virtual void asCode( std::ostream& ) const;
-    virtual ExpPtr cloneWith(args_t& a) const;
+  virtual void print(std::ostream& o) const;
+  virtual void asCode(std::ostream&) const;
+  virtual ExpPtr cloneWith(args_t& a) const;
 
-private: // static members
+ private:  // static members
 
-    static  ClassSpec classSpec_;
-    static  Reanimator<Param> reanimator_;
+  static ClassSpec classSpec_;
+  static Reanimator<Param> reanimator_;
+
 };
 
-//--------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 ExpPtr parameter(const std::string& name);
 
 //--------------------------------------------------------------------------------------------
 
-} // namespace xpr
-} // namespace eckit
+}  // namespace xpr
+}  // namespace eckit
 
 #endif

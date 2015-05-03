@@ -208,7 +208,7 @@ void LocalPathName::mkdir(short mode) const
 		char path[MAXNAMLEN+1];
 
 		long l = path_.length();
-	
+
 		ASSERT( sizeof(path) > l );
 
 		::strcpy( path, path_.c_str()  );
@@ -299,7 +299,22 @@ LocalPathName& LocalPathName::tidy()
 
 	if(path_[0] == '~')
 	{
-        path_ =  Context::instance().home() + "/" + path_.substr(1);
+        if(path_.length() > 1) {
+            if(path_[1] != '/') {
+                std::string s;
+                size_t j = 1;
+                while(j < path_.length() && path_[j] != '/') {
+                    s += path_[j];
+                    j++;
+                }
+                path_ =  Context::instance().configHome(s) + "/" + path_.substr(j);
+            } else {
+                path_ =  Context::instance().home() + "/" + path_.substr(1);
+            }
+        }
+        else {
+            path_ =  Context::instance().home() + "/" + path_.substr(1);
+        }
 	}
 
 

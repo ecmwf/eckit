@@ -13,7 +13,7 @@
                 "make"
             ],
             "file_regex": "([/\\w\\-\\.]+):(\\d+):(\\d+:)?",
-            "name": "Build"
+            "name": "ecbuild"
         }
     ]
 }

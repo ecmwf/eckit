@@ -110,7 +110,7 @@ public: // methods
     {
         std::string name;
         s >> name;
-        return Params::build(name,s);
+        return build(name,s);
     }
 
     ~Params() { delete self_; }

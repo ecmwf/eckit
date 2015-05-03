@@ -8,70 +8,53 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sstream>
+#include "Param.h"
 
-#include "eckit/xpr/Param.h"
+#include <sstream>
+#include <string>
+
 #include "eckit/xpr/Scope.h"
 
 namespace eckit {
 namespace xpr {
 
+Param::Param(const std::string& name) : Expression(), name_(name) {}
 
-Param::Param(const std::string& name) : Expression(), name_(name)
-{
+Param::Param(Stream& s) : Expression(s), name_() { s >> name_; }
+
+Param::~Param() {}
+
+void Param::encode(Stream& s) const {
+
+  Expression::encode(s);
+  s << name_;
+
 }
 
-Param::Param(Stream &s) : Expression(s), name_()
-{
-    s >> name_;
+void Param::print(std::ostream& o) const { o << "_(" << name_ << ")"; }
+
+ExpPtr parameter(const std::string& name) { return ExpPtr(new Param(name)); }
+
+ExpPtr Param::evaluate(Scope& ctx) const {
+  ExpPtr e = ctx.param(name_);
+  return e->eval();
 }
 
-Param::~Param()
-{
-}
+void Param::asCode(std::ostream& o) const { o << factoryName() << "(\"" << name_ << "\")"; }
 
-void Param::encode(Stream &s) const
-{
-    Expression::encode(s);
-    s << name_;
-}
-
-void Param::print(std::ostream&o) const
-{
-    o << "_(" << name_ << ")";
-}
-
-ExpPtr parameter(const std::string& name)
-{
-    return ExpPtr( new Param(name) );
-}
-
-ExpPtr Param::evaluate( Scope &ctx ) const
-{
-    ExpPtr e = ctx.param(name_);
-    return e->eval();
-}
-
-void Param::asCode(std::ostream&o) const
-{
-    o << factoryName() << "(\"" << name_ << "\")";
-}
-
-ExpPtr Param::cloneWith( args_t& a ) const
-{
-    NOTIMP; // Should not be called
+ExpPtr Param::cloneWith(args_t& a) const {
+  NOTIMP;  // Should not be called
 }
 
 //--------------------------------------------------------------------------------------------
 
 ClassSpec Param::classSpec_ = {
-    &Expression::classSpec(),
-    Param::nodeName(),
+    &Expression::classSpec(), Param::nodeName(),
 };
 
-Reanimator< Param > Param::reanimator_;
+Reanimator<Param> Param::reanimator_;
 
 //--------------------------------------------------------------------------------------------
 
-} // namespace xpr
-} // namespace eckit
+}  // namespace xpr
+}  // namespace eckit

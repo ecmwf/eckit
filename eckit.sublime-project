@@ -2,6 +2,7 @@
 	"folders":
 	[
 		{
+            "file_exclude_patterns": [".tags", ".tags_sorted_by_file", ".gemtags","CMakeLists.txt.user*"],
 			"follow_symlinks": true,
 			"path": "."
 		}

@@ -241,7 +241,7 @@ PathName Context::configHome(const std::string& name) const {
         d = d->next_;
     }
 
-    throw SeriousBug("Not registered HOME for ~/" + name);
+    throw SeriousBug("Not registered HOME for ~" + name);
 }
 //-----------------------------------------------------------------------------
 

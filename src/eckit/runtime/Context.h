@@ -100,7 +100,8 @@ private: // methods
 
 	virtual std::string kind() const  { return "Context"; }
 
-    PathName configHome(const char* install_bin_dir,
+    PathName configHome(bool&,
+                       const char* install_bin_dir,
                        const char* developer_bin_dir,
                        const char* install_config_dir,
                        const char* developer_config_dir) const;
@@ -125,6 +126,7 @@ protected:
 class RegisterConfigHome {
     friend class Context;
     RegisterConfigHome* next_;
+    bool first_;
     const char* name_;
     const char* install_bin_dir_;
     const char* developer_bin_dir_;

@@ -195,6 +195,7 @@ RegisterConfigHome::RegisterConfigHome(const char* name,
                                      const char* install_config_dir,
                                      const char* developer_config_dir):
     next_(config_dirs),
+    first_(true),
     name_(name),
     install_bin_dir_(install_bin_dir),
     developer_bin_dir_(developer_bin_dir),
@@ -204,11 +205,22 @@ RegisterConfigHome::RegisterConfigHome(const char* name,
     config_dirs = this;
 }
 
-PathName Context::configHome(const char* install_bin_dir,  // From ecbuild : APPNAME_INSTALL_BIN_DIR
+PathName Context::configHome(bool& first,
+                            const char* install_bin_dir,  // From ecbuild : APPNAME_INSTALL_BIN_DIR
                             const char* developer_bin_dir, // From ecbuild : APPNAME_DEVELOPER_BIN_DIR
                             const char* install_config_dir, // From ecbuild : APPNAME_DATA_DIR
                             const char* developer_config_dir) const { // From ecbuild: APPNAME_DEVELOPER_SRC_DIR
-    static bool first = true;
+
+    if(argc_ == 0) // Context was not initialised
+    {
+        if (first) {
+            Log::warning() << "Context::setup(argc, argv) was not called, assuming running from " << install_bin_dir << std::endl;
+            Log::warning() << "Using development configuration path " << install_config_dir << std::endl;
+            first = false;
+        }
+        return install_config_dir;
+    }
+
     std::string path = commandPath();
     if (path.find(install_bin_dir) == 0) {
         return install_config_dir;
@@ -236,7 +248,7 @@ PathName Context::configHome(const std::string& name) const {
     RegisterConfigHome* d = config_dirs;
     while(d) {
         if(name == d->name_) {
-            return configHome(d->install_bin_dir_, d->developer_bin_dir_, d->install_config_dir_, d->developer_config_dir_);
+            return configHome(d->first_, d->install_bin_dir_, d->developer_bin_dir_, d->install_config_dir_, d->developer_config_dir_);
         }
         d = d->next_;
     }

@@ -24,13 +24,27 @@
 
 namespace eckit {
 
+
+
+static int saved_argc = 0;
+static char** saved_argv = 0;
+static char** saved_envp = 0;
+
+__attribute__ ((__constructor__))
+static void before_main(int argc, char* argv[], char* envp[])
+{
+    saved_argc = argc;
+    saved_argv = argv;
+    saved_envp = envp;
+}
+
 //-----------------------------------------------------------------------------
 
 static Once<Mutex> local_mutex;
 
 Context::Context() :
-    argc_(0),
-    argv_(0),
+    argc_(saved_argc),
+    argv_(saved_envp),
     taskID_(0),
     home_("/"),
     runName_("undef"),

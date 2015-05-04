@@ -209,6 +209,17 @@ PathName Context::configHome(const char* install_bin_dir,  // From ecbuild : APP
                             const char* install_config_dir, // From ecbuild : APPNAME_DATA_DIR
                             const char* developer_config_dir) const { // From ecbuild: APPNAME_DEVELOPER_SRC_DIR
     static bool first = true;
+
+    if(argc_ == 0) // Context was not initialised
+    {
+        if (first) {
+            Log::warning() << "Context::setup(argc, argv) was not called, assuming running from " << install_bin_dir << std::endl;
+            Log::warning() << "Using development configuration path " << install_config_dir << std::endl;
+            first = false;
+        }
+        return install_config_dir;
+    }
+
     std::string path = commandPath();
     if (path.find(install_bin_dir) == 0) {
         return install_config_dir;

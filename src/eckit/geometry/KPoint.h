@@ -64,6 +64,7 @@ public:
     }
 
     double * data() { return x_; }
+    const double* data() const { return x_; }
 
     double operator()( const size_t& i ) const { assert( i < SIZE ); return x_[i]; }
 

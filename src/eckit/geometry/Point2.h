@@ -191,7 +191,7 @@ public: // methods
     double west()  const { return min_.lon(); }
     double south() const { return min_.lat(); }
 
-private: // members
+protected: // members
 
     LLPoint2 min_;
     LLPoint2 max_;

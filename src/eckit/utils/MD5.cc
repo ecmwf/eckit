@@ -19,7 +19,7 @@ MD5::MD5()
 	md5_init(&s_);
 }
 
-MD5::MD5(const std::string& s)
+MD5::MD5(const digest_t& s)
 {
 	md5_init(&s_);
 	add( s.c_str(), s.size() );
@@ -35,29 +35,37 @@ MD5::~MD5() {}
 
 void MD5::add(const void* buffer, long length)
 {
-	ASSERT(length > 0);
-
-	md5_add(&s_,static_cast<const unsigned char*>(buffer), length);
-
-	if( digest_.length() != 0)
-        digest_ = std::string(); // reset the digest
+    if(length > 0) {
+        md5_add(&s_,static_cast<const unsigned char*>(buffer), length);
+        if(!digest_.empty())
+            digest_ = digest_t(); // reset the digest
+    }
 }
+
+void MD5::add(const int& e)     { add(&e,sizeof(e)); }
+void MD5::add(const long& e)    { add(&e,sizeof(e)); }
+void MD5::add(const size_t& e)  { add(&e,sizeof(e)); }
+void MD5::add(const double& e)  { add(&e,sizeof(e)); }
+
+void MD5::add(const std::string& e) { add(e.c_str(),e.size()); }
+
+void MD5::add(const MD5& md5) { add(md5.digest()); }
 
 MD5::operator std::string()
 {
     return digest();
 }
 
-std::string MD5::digest()
-{
-	if(digest_.length() == 0) // recompute the digest
-	{
-		char digest[33];
-		md5_end(&s_,digest);
-		digest[32] = 0;
-		digest_ = digest;
-	}
-	return digest_;
+MD5::digest_t MD5::digest() const {
+
+  if(digest_.empty()) // recompute the digest
+  {
+    char digest[33];
+    md5_end(&s_,digest);
+    digest[32] = 0;
+    digest_ = digest;
+  }
+  return digest_;
 }
 
 static unsigned long r[] = {
@@ -80,12 +88,10 @@ static const unsigned long t = 32;
 
 //static unsigned long rotate(unsigned long x,unsigned long c) { return (x << c) | (x >> (t-c)); }
 
-
 //static unsigned long F(unsigned long x,unsigned long y,unsigned long z) { return (x&y)|((~x)&z); }
 //static unsigned long G(unsigned long x,unsigned long y,unsigned long z) { return (x&z)|(y&(~z)); }
 //static unsigned long H(unsigned long x,unsigned long y,unsigned long z) { return x^y^z;          }
 //static unsigned long I(unsigned long x,unsigned long y,unsigned long z) { return y^(x|(~z));     }
-
 
 #define ROT(x,c) ((x << c) | (x >> (32-c)))
 
@@ -246,22 +252,23 @@ void MD5::md5_flush(State* s)
     s->word_count = 0;
 }
 
-void MD5::md5_init(State* s) 
-{
+void MD5::md5_init(State* s) {
+
     memset(s,0,sizeof(State));
+
     s->h0 = 0x67452301;
     s->h1 = 0xefcdab89;
     s->h2 = 0x98badcfe;
     s->h3 = 0x10325476;
-
 }
 
-void MD5::md5_add(State* s,const void* data,size_t len) 
-{
+void MD5::md5_add(State* s,const void* data,size_t len) {
+
     unsigned char* p = (unsigned char*)data;
     s->size += len;
 
     while(len-- > 0) {
+
         s->bytes[s->byte_count++] = *p++;
 
         if(s->byte_count == 4) {
@@ -282,7 +289,6 @@ void MD5::md5_end(State* s, char *digest)
     unsigned char c = 0x80;
     int i;
 
-
     md5_add(s,&c,1);
 
     bits = s->size * h;
@@ -292,7 +298,6 @@ void MD5::md5_end(State* s, char *digest)
         md5_add(s,&c,1);
         bits = s->size * h;
     }
-
 
     for(i = 0; i < 8 ; i++) {
         c =  leng & 0xff;

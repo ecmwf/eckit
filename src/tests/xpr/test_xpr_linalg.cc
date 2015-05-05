@@ -12,6 +12,7 @@
 
 #include "ecbuild/boost_test_framework.h"
 
+#include "eckit/xpr/Accumulate.h"
 #include "eckit/xpr/BinaryOperator.h"
 #include "eckit/xpr/Dot.h"
 #include "eckit/xpr/Integer.h"
@@ -50,6 +51,11 @@ void test(ExpPtr e, const std::initializer_list<real_t>& res)
     typename T::value_t v = T::extract(e->eval());
     typename T::value_t r(res);
     BOOST_CHECK_EQUAL_COLLECTIONS( v.begin(), v.end(), r.begin(), r.end() );
+}
+
+void test(ExpPtr e, real_t res)
+{
+    BOOST_CHECK_EQUAL( Real::extract(e->eval()), res );
 }
 
 BOOST_FIXTURE_TEST_SUITE( test_eckit_xpr_linalg, ExpFixture )
@@ -229,9 +235,19 @@ BOOST_AUTO_TEST_CASE( test_dot_mat_mat )
     BOOST_CHECK_THROW( dot(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
 }
 
+BOOST_AUTO_TEST_CASE( test_sum )
+{
+    test(sum(x), 7.0 );
+}
+
+BOOST_AUTO_TEST_CASE( test_product )
+{
+    test(product(x), 8.0 );
+}
+
 BOOST_AUTO_TEST_CASE( test_norm )
 {
-    BOOST_CHECK_EQUAL( Real::extract(norm(vector({3.,4.}))->eval()), 5.0 );
+    test(norm(vector({3.,4.})), 5.0 );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

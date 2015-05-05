@@ -1,4 +1,6 @@
 list( APPEND eckit_xpr_srcs
+Accumulate.cc
+Accumulate.h
 BinaryOperator.cc
 BinaryOperator.h
 BinaryPredicate.cc

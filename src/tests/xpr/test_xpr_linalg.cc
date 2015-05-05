@@ -78,13 +78,13 @@ BOOST_AUTO_TEST_CASE( test_vector_sub )
 
 BOOST_AUTO_TEST_CASE( test_vector_prod )
 {
-    test<Vector>(prod(a, x), {2.,4.,8.});
-    test<Vector>(prod(n, x), {2.,4.,8.});
-    test<Vector>(prod(x, a), {2.,4.,8.});
-    test<Vector>(prod(x, n), {2.,4.,8.});
-    test<Vector>(prod(x, x), {1.,4.,16.});
+    test<Vector>(mul(a, x), {2.,4.,8.});
+    test<Vector>(mul(n, x), {2.,4.,8.});
+    test<Vector>(mul(x, a), {2.,4.,8.});
+    test<Vector>(mul(x, n), {2.,4.,8.});
+    test<Vector>(mul(x, x), {1.,4.,16.});
     BOOST_TEST_MESSAGE("Multiplying vectors of different sizes should fail");
-    BOOST_CHECK_THROW( prod(x, vector({1.,2.}))->eval(), AssertionFailed );
+    BOOST_CHECK_THROW( mul(x, vector({1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_div )
@@ -155,13 +155,13 @@ BOOST_AUTO_TEST_CASE( test_matrix_sub )
 
 BOOST_AUTO_TEST_CASE( test_matrix_prod )
 {
-    test<Matrix>(prod(a, m), {2.,-4.,-8.,4.});
-    test<Matrix>(prod(n, m), {2.,-4.,-8.,4.});
-    test<Matrix>(prod(m, a), {2.,-4.,-8.,4.});
-    test<Matrix>(prod(m, n), {2.,-4.,-8.,4.});
-    test<Matrix>(prod(m, m), {1.,4.,16.,4.});
+    test<Matrix>(mul(a, m), {2.,-4.,-8.,4.});
+    test<Matrix>(mul(n, m), {2.,-4.,-8.,4.});
+    test<Matrix>(mul(m, a), {2.,-4.,-8.,4.});
+    test<Matrix>(mul(m, n), {2.,-4.,-8.,4.});
+    test<Matrix>(mul(m, m), {1.,4.,16.,4.});
     BOOST_TEST_MESSAGE("Multiplying matrices of different sizes should fail");
-    BOOST_CHECK_THROW( prod(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
+    BOOST_CHECK_THROW( mul(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_matrix_div )

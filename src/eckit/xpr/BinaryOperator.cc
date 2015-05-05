@@ -21,21 +21,21 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-static const char *opname(const Prod&)  { return "xpr::Prod";  }
-static const char *opname(const Div&)   { return "xpr::Div";  }
-static const char *opname(const Add&)   { return "xpr::Add";  }
-static const char *opname(const Sub&)   { return "xpr::Sub";  }
-static const char *opname(const Mod&)   { return "xpr::Mod";  }
-static const char *opname(const Min&)   { return "xpr::Min";  }
-static const char *opname(const Max&)   { return "xpr::Max";  }
+static const char *opname(const Mul&) { return "xpr::Mul"; }
+static const char *opname(const Div&) { return "xpr::Div"; }
+static const char *opname(const Add&) { return "xpr::Add"; }
+static const char *opname(const Sub&) { return "xpr::Sub"; }
+static const char *opname(const Mod&) { return "xpr::Mod"; }
+static const char *opname(const Min&) { return "xpr::Min"; }
+static const char *opname(const Max&) { return "xpr::Max"; }
 
-static const char *opfactory(const Prod&)  { return "xpr::prod";  }
-static const char *opfactory(const Div&)   { return "xpr::div";  }
-static const char *opfactory(const Add&)   { return "xpr::add";  }
-static const char *opfactory(const Sub&)   { return "xpr::sub";  }
-static const char *opfactory(const Mod&)   { return "xpr::mod";  }
-static const char *opfactory(const Min&)   { return "xpr::min";  }
-static const char *opfactory(const Max&)   { return "xpr::max";  }
+static const char *opfactory(const Mul&) { return "xpr::mul"; }
+static const char *opfactory(const Div&) { return "xpr::div"; }
+static const char *opfactory(const Add&) { return "xpr::add"; }
+static const char *opfactory(const Sub&) { return "xpr::sub"; }
+static const char *opfactory(const Mod&) { return "xpr::mod"; }
+static const char *opfactory(const Min&) { return "xpr::min"; }
+static const char *opfactory(const Max&) { return "xpr::max"; }
 
 //--------------------------------------------------------------------------------------------
 
@@ -108,7 +108,7 @@ struct Max
 
 // explicit template instantiations
 
-template class BinaryOperator<Prod>;
+template class BinaryOperator<Mul>;
 template class BinaryOperator<Div>;
 template class BinaryOperator<Add>;
 template class BinaryOperator<Sub>;
@@ -118,13 +118,13 @@ template class BinaryOperator<Max>;
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr prod( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Prod >(l,r) );  }
-ExpPtr div ( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Div  >(l,r) );  }
-ExpPtr add ( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Add  >(l,r) );  }
-ExpPtr sub ( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Sub  >(l,r) );  }
-ExpPtr mod ( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Mod  >(l,r) );  }
-ExpPtr min ( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Min  >(l,r) );  }
-ExpPtr max ( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Max  >(l,r) );  }
+ExpPtr mul( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Mul >(l,r) ); }
+ExpPtr div( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Div >(l,r) ); }
+ExpPtr add( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Add >(l,r) ); }
+ExpPtr sub( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Sub >(l,r) ); }
+ExpPtr mod( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Mod >(l,r) ); }
+ExpPtr min( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Min >(l,r) ); }
+ExpPtr max( ExpPtr l, ExpPtr r ) { return ExpPtr( new BinaryOperator< Max >(l,r) ); }
 
 //--------------------------------------------------------------------------------------------
 
@@ -226,15 +226,15 @@ struct BinaryOperatorComputer {
 
 };
 
-static BinaryOperatorComputer<Prod, Real,   Real,   Generic> prod_rrg;
-static BinaryOperatorComputer<Prod, Real,   Integer,Generic> prod_rig;
-static BinaryOperatorComputer<Prod, Integer,Real,   Generic> prod_irg;
-static BinaryOperatorComputer<Prod, Integer,Integer,Generic> prod_iig;
-static BinaryOperatorComputer<Prod, Real,   Vector, Generic> prod_rvg;
-static BinaryOperatorComputer<Prod, Vector, Real,   Generic> prod_vrg;
-static BinaryOperatorComputer<Prod, Integer,Vector, Generic> prod_ivg;
-static BinaryOperatorComputer<Prod, Vector, Integer,Generic> prod_vig;
-static BinaryOperatorComputer<Prod, Vector, Vector, Generic> prod_vvg;
+static BinaryOperatorComputer<Mul, Real,   Real,   Generic> mul_rrg;
+static BinaryOperatorComputer<Mul, Real,   Integer,Generic> mul_rig;
+static BinaryOperatorComputer<Mul, Integer,Real,   Generic> mul_irg;
+static BinaryOperatorComputer<Mul, Integer,Integer,Generic> mul_iig;
+static BinaryOperatorComputer<Mul, Real,   Vector, Generic> mul_rvg;
+static BinaryOperatorComputer<Mul, Vector, Real,   Generic> mul_vrg;
+static BinaryOperatorComputer<Mul, Integer,Vector, Generic> mul_ivg;
+static BinaryOperatorComputer<Mul, Vector, Integer,Generic> mul_vig;
+static BinaryOperatorComputer<Mul, Vector, Vector, Generic> mul_vvg;
 
 static BinaryOperatorComputer<Div, Real,   Real,   Generic> div_rrg;
 static BinaryOperatorComputer<Div, Real,   Integer,Generic> div_rig;
@@ -366,11 +366,11 @@ struct MatrixMatrixComputer : BinaryOperatorComputer<T,Matrix,Matrix,I>
     }
 };
 
-static ScalarMatrixComputer<Prod, Real,   Generic> prod_rmg;
-static MatrixScalarComputer<Prod, Real,   Generic> prod_mrg;
-static ScalarMatrixComputer<Prod, Integer,Generic> prod_img;
-static MatrixScalarComputer<Prod, Integer,Generic> prod_mig;
-static MatrixMatrixComputer<Prod, Generic>         prod_mmg;
+static ScalarMatrixComputer<Mul, Real,   Generic> mul_rmg;
+static MatrixScalarComputer<Mul, Real,   Generic> mul_mrg;
+static ScalarMatrixComputer<Mul, Integer,Generic> mul_img;
+static MatrixScalarComputer<Mul, Integer,Generic> mul_mig;
+static MatrixMatrixComputer<Mul, Generic>         mul_mmg;
 
 static ScalarMatrixComputer<Div, Real,   Generic> div_rmg;
 static MatrixScalarComputer<Div, Real,   Generic> div_mrg;
@@ -410,33 +410,33 @@ static MatrixMatrixComputer<Max, Generic>         max_mmg;
 
 //--------------------------------------------------------------------------------------------
 
-static OptimiseTo<Real>    optimise_add_rr ( std::string(opname( Add() )) + "(r,r)" );
-static OptimiseTo<Real>    optimise_sub_rr ( std::string(opname( Sub() )) + "(r,r)" );
-static OptimiseTo<Real>    optimise_prod_rr( std::string(opname(Prod() )) + "(r,r)" );
-static OptimiseTo<Real>    optimise_div_rr ( std::string(opname( Div() )) + "(r,r)" );
-static OptimiseTo<Real>    optimise_min_rr ( std::string(opname( Min() )) + "(r,r)" );
-static OptimiseTo<Real>    optimise_max_rr ( std::string(opname( Max() )) + "(r,r)" );
+static OptimiseTo<Real>    optimise_add_rr( std::string(opname( Add() )) + "(r,r)" );
+static OptimiseTo<Real>    optimise_sub_rr( std::string(opname( Sub() )) + "(r,r)" );
+static OptimiseTo<Real>    optimise_mul_rr( std::string(opname( Mul() )) + "(r,r)" );
+static OptimiseTo<Real>    optimise_div_rr( std::string(opname( Div() )) + "(r,r)" );
+static OptimiseTo<Real>    optimise_min_rr( std::string(opname( Min() )) + "(r,r)" );
+static OptimiseTo<Real>    optimise_max_rr( std::string(opname( Max() )) + "(r,r)" );
 
-static OptimiseTo<Real>    optimise_add_ri ( std::string(opname( Add() )) + "(r,i)" );
-static OptimiseTo<Real>    optimise_sub_ri ( std::string(opname( Sub() )) + "(r,i)" );
-static OptimiseTo<Real>    optimise_prod_ri( std::string(opname(Prod() )) + "(r,i)" );
-static OptimiseTo<Real>    optimise_div_ri ( std::string(opname( Div() )) + "(r,i)" );
-static OptimiseTo<Real>    optimise_min_ri ( std::string(opname( Min() )) + "(r,i)" );
-static OptimiseTo<Real>    optimise_max_ri ( std::string(opname( Max() )) + "(r,i)" );
+static OptimiseTo<Real>    optimise_add_ri( std::string(opname( Add() )) + "(r,i)" );
+static OptimiseTo<Real>    optimise_sub_ri( std::string(opname( Sub() )) + "(r,i)" );
+static OptimiseTo<Real>    optimise_mul_ri( std::string(opname( Mul() )) + "(r,i)" );
+static OptimiseTo<Real>    optimise_div_ri( std::string(opname( Div() )) + "(r,i)" );
+static OptimiseTo<Real>    optimise_min_ri( std::string(opname( Min() )) + "(r,i)" );
+static OptimiseTo<Real>    optimise_max_ri( std::string(opname( Max() )) + "(r,i)" );
 
-static OptimiseTo<Real>    optimise_add_ir ( std::string(opname( Add() )) + "(i,r)" );
-static OptimiseTo<Real>    optimise_sub_ir ( std::string(opname( Sub() )) + "(i,r)" );
-static OptimiseTo<Real>    optimise_prod_ir( std::string(opname(Prod() )) + "(i,r)" );
-static OptimiseTo<Real>    optimise_div_ir ( std::string(opname( Div() )) + "(i,r)" );
-static OptimiseTo<Real>    optimise_min_ir ( std::string(opname( Min() )) + "(i,r)" );
-static OptimiseTo<Real>    optimise_max_ir ( std::string(opname( Max() )) + "(i,r)" );
+static OptimiseTo<Real>    optimise_add_ir( std::string(opname( Add() )) + "(i,r)" );
+static OptimiseTo<Real>    optimise_sub_ir( std::string(opname( Sub() )) + "(i,r)" );
+static OptimiseTo<Real>    optimise_mul_ir( std::string(opname( Mul() )) + "(i,r)" );
+static OptimiseTo<Real>    optimise_div_ir( std::string(opname( Div() )) + "(i,r)" );
+static OptimiseTo<Real>    optimise_min_ir( std::string(opname( Min() )) + "(i,r)" );
+static OptimiseTo<Real>    optimise_max_ir( std::string(opname( Max() )) + "(i,r)" );
 
-static OptimiseTo<Integer> optimise_add_ii ( std::string(opname( Add() )) + "(i,i)" );
-static OptimiseTo<Integer> optimise_sub_ii ( std::string(opname( Sub() )) + "(i,i)" );
-static OptimiseTo<Integer> optimise_prod_ii( std::string(opname(Prod() )) + "(i,i)" );
-static OptimiseTo<Integer> optimise_div_ii ( std::string(opname( Div() )) + "(i,i)" );
-static OptimiseTo<Integer> optimise_min_ii ( std::string(opname( Min() )) + "(i,i)" );
-static OptimiseTo<Integer> optimise_max_ii ( std::string(opname( Max() )) + "(i,i)" );
+static OptimiseTo<Integer> optimise_add_ii( std::string(opname( Add() )) + "(i,i)" );
+static OptimiseTo<Integer> optimise_sub_ii( std::string(opname( Sub() )) + "(i,i)" );
+static OptimiseTo<Integer> optimise_mul_ii( std::string(opname( Mul() )) + "(i,i)" );
+static OptimiseTo<Integer> optimise_div_ii( std::string(opname( Div() )) + "(i,i)" );
+static OptimiseTo<Integer> optimise_min_ii( std::string(opname( Min() )) + "(i,i)" );
+static OptimiseTo<Integer> optimise_max_ii( std::string(opname( Max() )) + "(i,i)" );
 
 //--------------------------------------------------------------------------------------------
 } // namespace xpr

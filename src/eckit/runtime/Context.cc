@@ -11,6 +11,8 @@
 #include "Context.h"
 
 #include <sys/param.h>
+#include <string>
+#include <vector>
 
 #include "eckit/log/Log.h"
 #include "eckit/os/BackTrace.h"
@@ -26,252 +28,218 @@
 
 namespace eckit {
 
-
-
 static int saved_argc = 0;
 static char** saved_argv = 0;
 static char** saved_envp = 0;
 
-__attribute__ ((__constructor__))
-static void before_main(int argc, char* argv[], char* envp[])
-{
-    saved_argc = argc;
-    saved_argv = argv;
-    saved_envp = envp;
+#ifdef EC_HAVE_ATTRIBUTE_CONSTRUCTOR
+__attribute__((__constructor__))
+#endif
+static void before_main(int argc, char* argv[], char* envp[]) {
+  saved_argc = argc;
+  saved_argv = argv;
+  saved_envp = envp;
 }
 
 //-----------------------------------------------------------------------------
 
 static Once<Mutex> local_mutex;
 
-Context::Context() :
-    argc_(saved_argc),
-    argv_(saved_argv),
-    taskID_(0),
-    home_("/"),
-    runName_("undef"),
-    displayName_() {
-    char* h = getenv("HOME");
-    if (h)
-        home_ = h;
+Context::Context() : argc_(saved_argc), argv_(saved_argv), taskID_(0), home_("/"), runName_("undef"), displayName_() {
+  char* h = getenv("HOME");
+  if (h) home_ = h;
 
-    behavior_.reset( new StandardBehavior() );
+  behavior_.reset(new StandardBehavior());
 }
 
-Context::~Context() {
-}
+Context::~Context() {}
 
 Context& Context::instance() {
-    AutoLock<Mutex> lock(local_mutex);
-    static Context ctxt;
-    return ctxt;
+  AutoLock<Mutex> lock(local_mutex);
+  static Context ctxt;
+  return ctxt;
 }
 
-void Context::setup( int argc, char **argv ) {
-    if ( argc <= 0 || argv == 0 )
-        throw SeriousBug("Context setup with bad command line arguments");
+void Context::setup(int argc, char** argv) {
+  if (argc <= 0 || argv == 0)
+    throw SeriousBug("Context setup with bad command line arguments");
 
-    argc_ = argc;
-    argv_ = argv;
+  argc_ = argc;
+  argv_ = argv;
 }
 
-void Context::behavior( ContextBehavior* b ) {
-    AutoLock<Mutex> lock(local_mutex);
-    if ( !b )
-        throw SeriousBug("Context setup with bad context behavior");
-    behavior_.reset(b);
+void Context::behavior(ContextBehavior* b) {
+  AutoLock<Mutex> lock(local_mutex);
+  if (!b) throw SeriousBug("Context setup with bad context behavior");
+  behavior_.reset(b);
 }
 
 ContextBehavior& Context::behavior() const {
-    AutoLock<Mutex> lock(local_mutex);
-    return *behavior_.get();
+  AutoLock<Mutex> lock(local_mutex);
+  return *behavior_.get();
 }
 
-int  Context::debug() const {
-    return behavior_->debug();
-}
+int Context::debug() const { return behavior_->debug(); }
 
-void Context::debug( const int d ) {
-    behavior_->debug(d);
-}
+void Context::debug(const int d) { behavior_->debug(d); }
 
-int  Context::argc() const {
-    AutoLock<Mutex> lock(local_mutex);
-    return argc_;
+int Context::argc() const {
+  AutoLock<Mutex> lock(local_mutex);
+  return argc_;
 }
 
 std::string Context::argv(int n) const {
-    AutoLock<Mutex> lock(local_mutex);
-    ASSERT( argc_ != 0 && argv_ != 0 ); // check initialized
-    ASSERT( n < argc_ && n >= 0);       // check bounds
-    return argv_[n];
+  AutoLock<Mutex> lock(local_mutex);
+  ASSERT(argc_ != 0 && argv_ != 0);  // check initialized
+  ASSERT(n < argc_ && n >= 0);       // check bounds
+  return argv_[n];
 }
 
-char** Context::argvs() const {
-    return argv_;
+char** Context::argvs() const { return argv_; }
+
+void Context::reconfigure() { behavior_->reconfigure(); }
+
+const std::string& Context::home() const { return home_; }
+
+void Context::home(const std::string& h) {
+  AutoLock<Mutex> lock(local_mutex);
+  home_ = h;
 }
 
-void Context::reconfigure() {
-    behavior_->reconfigure();
-}
+long Context::self() const { return taskID_; }
 
-const std::string& Context::home() const {
-    return home_;
-}
-
-void Context::home(const std::string &h) {
-    AutoLock<Mutex> lock(local_mutex);
-    home_ = h;
-}
-
-long Context::self() const {
-    return taskID_;
-}
-
-void Context::self(long id) {
-    taskID_ = id;
-}
+void Context::self(long id) { taskID_ = id; }
 
 const std::string& Context::runName() const {
-    return runName_;
+  AutoLock<Mutex> lock(local_mutex);
+  return runName_;
 }
 
-void Context::runName(const std::string &name) {
-    runName_ = name;
+void Context::runName(const std::string& name) {
+  AutoLock<Mutex> lock(local_mutex);
+  runName_ = name;
 }
 
 const std::string& Context::displayName() const {
-    if (displayName_.empty())
-        return runName();
-    else
-        return displayName_;
+  AutoLock<Mutex> lock(local_mutex);
+  if (displayName_.empty())
+    return runName();
+  else
+    return displayName_;
 }
 
-void Context::displayName(const std::string &name) {
-    displayName_ = name;
+void Context::displayName(const std::string& name) {
+  AutoLock<Mutex> lock(local_mutex);
+  displayName_ = name;
 }
 
-Channel& Context::infoChannel() {
-    return behavior_->infoChannel();
-}
+Channel& Context::infoChannel() { return behavior_->infoChannel(); }
 
-Channel& Context::warnChannel() {
-    return behavior_->warnChannel();
-}
+Channel& Context::warnChannel() { return behavior_->warnChannel(); }
 
-Channel& Context::errorChannel() {
-    return behavior_->errorChannel();
-}
+Channel& Context::errorChannel() { return behavior_->errorChannel(); }
 
-Channel& Context::debugChannel() {
-    return behavior_->debugChannel();
-}
+Channel& Context::debugChannel() { return behavior_->debugChannel(); }
 
-Channel& Context::channel(int cat) {
-    return behavior_->channel(cat);
-}
+Channel& Context::channel(int cat) { return behavior_->channel(cat); }
 
 static PathName proc_path(const std::string& name) {
-    ASSERT(name.size() > 0);
-    if (name[0] == '/') {
-        return PathName(name);
+  ASSERT(name.size() > 0);
+  if (name[0] == '/') {
+    return PathName(name);
+  }
+
+  if (name[0] == '.') {
+    char buf[MAXPATHLEN];
+    ASSERT(getcwd(buf, sizeof(buf)));
+    return PathName(std::string(buf) + "/" + name);
+  }
+
+  char* path = getenv("PATH");
+  ASSERT(path);
+
+  Tokenizer parse(":");
+  std::vector<std::string> v;
+
+  parse(path, v);
+  for (size_t i = 0; i < v.size(); i++) {
+    PathName p(v[i] + "/" + name);
+    if (p.exists()) {
+      return proc_path(p);
     }
-
-    if (name[0] == '.') {
-        char buf[MAXPATHLEN];
-        ASSERT(getcwd (buf, sizeof(buf)));
-        return PathName(std::string(buf) + "/" + name);
-    }
-
-    char *path = getenv("PATH");
-    ASSERT(path);
-
-    Tokenizer parse(":");
-    std::vector<std::string> v;
-
-    parse(path, v);
-    for (size_t i = 0; i < v.size(); i++) {
-        PathName p(v[i] + "/" + name);
-        if (p.exists()) {
-            return proc_path(p);
-        }
-    }
-    throw SeriousBug("Cannot find " + name + " in PATH");
+  }
+  throw SeriousBug("Cannot find " + name + " in PATH");
 }
 
-PathName Context::commandPath() const {
-    return proc_path(argv(0));
-}
+PathName Context::commandPath() const { return proc_path(argv(0)); }
 
 static RegisterConfigHome* config_dirs = 0;
 
-RegisterConfigHome::RegisterConfigHome(const char* name,
-                                     const char* install_bin_dir,
-                                     const char* developer_bin_dir,
-                                     const char* install_config_dir,
-                                     const char* developer_config_dir):
-    next_(config_dirs),
-    first_(true),
-    name_(name),
-    install_bin_dir_(install_bin_dir),
-    developer_bin_dir_(developer_bin_dir),
-    install_config_dir_(install_config_dir),
-    developer_config_dir_(developer_config_dir)
-{
-    config_dirs = this;
+RegisterConfigHome::RegisterConfigHome(const char* name, const char* install_bin_dir, const char* developer_bin_dir,
+                                       const char* install_config_dir, const char* developer_config_dir)
+    : next_(config_dirs),
+      first_(true),
+      name_(name),
+      install_bin_dir_(install_bin_dir),
+      developer_bin_dir_(developer_bin_dir),
+      install_config_dir_(install_config_dir),
+      developer_config_dir_(developer_config_dir) {
+  config_dirs = this;
 }
 
 PathName Context::configHome(bool& first,
-                            const char* install_bin_dir,  // From ecbuild : APPNAME_INSTALL_BIN_DIR
-                            const char* developer_bin_dir, // From ecbuild : APPNAME_DEVELOPER_BIN_DIR
-                            const char* install_config_dir, // From ecbuild : APPNAME_DATA_DIR
-                            const char* developer_config_dir) const { // From ecbuild: APPNAME_DEVELOPER_SRC_DIR
+                             const char* install_bin_dir,               // From ecbuild : APPNAME_INSTALL_BIN_DIR
+                             const char* developer_bin_dir,             // From ecbuild : APPNAME_DEVELOPER_BIN_DIR
+                             const char* install_config_dir,            // From ecbuild : APPNAME_DATA_DIR
+                             const char* developer_config_dir) const {  // From ecbuild: APPNAME_DEVELOPER_SRC_DIR
 
-    if(argc_ == 0) // Context was not initialised
-    {
-        if (first) {
-            Log::warning() << "Context::setup(argc, argv) was not called, assuming running from " << install_bin_dir << std::endl;
-            Log::warning() << "Using development configuration path " << install_config_dir << std::endl;
-            first = false;
-        }
-        return install_config_dir;
-    }
-
-    std::string path = commandPath();
-    if (path.find(install_bin_dir) == 0) {
-        return install_config_dir;
-    }
-
-    if (path.find(developer_bin_dir) == 0) {
-        if (first) {
-            Log::warning() << "Current command is from " << developer_bin_dir << std::endl;
-            Log::warning() << "Using development configuration path " << developer_config_dir << std::endl;
-            first = false;
-        }
-        return developer_config_dir;
-    }
+  if (argc_ == 0) {   // Context was not initialised
 
     if (first) {
-        Log::warning() << "Current command is " << path << ", and is neither in " << install_bin_dir << " or " << developer_config_dir << std::endl;
-        Log::warning() << "Assuming configuration files are in " << install_config_dir << std::endl;
-        first = false;
+      Log::warning() << "Context::setup(argc, argv) was not called, assuming running from " << install_bin_dir
+                     << std::endl;
+      Log::warning() << "Using development configuration path " << install_config_dir << std::endl;
+      first = false;
     }
-
     return install_config_dir;
+  }
+
+  std::string path = commandPath();
+  if (path.find(install_bin_dir) == 0) {
+    return install_config_dir;
+  }
+
+  if (path.find(developer_bin_dir) == 0) {
+    if (first) {
+      Log::warning() << "Current command is from " << developer_bin_dir << std::endl;
+      Log::warning() << "Using development configuration path " << developer_config_dir << std::endl;
+      first = false;
+    }
+    return developer_config_dir;
+  }
+
+  if (first) {
+    Log::warning() << "Current command is " << path << ", and is neither in " << install_bin_dir << " or "
+                   << developer_config_dir << std::endl;
+    Log::warning() << "Assuming configuration files are in " << install_config_dir << std::endl;
+    first = false;
+  }
+
+  return install_config_dir;
 }
 
 PathName Context::configHome(const std::string& name) const {
-    RegisterConfigHome* d = config_dirs;
-    while(d) {
-        if(name == d->name_) {
-            return configHome(d->first_, d->install_bin_dir_, d->developer_bin_dir_, d->install_config_dir_, d->developer_config_dir_);
-        }
-        d = d->next_;
+  RegisterConfigHome* d = config_dirs;
+  while (d) {
+    if (name == d->name_) {
+      return configHome(d->first_, d->install_bin_dir_, d->developer_bin_dir_, d->install_config_dir_,
+                        d->developer_config_dir_);
     }
+    d = d->next_;
+  }
 
-    throw SeriousBug("Not registered HOME for ~" + name);
+  throw SeriousBug("Not registered HOME for ~" + name);
 }
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

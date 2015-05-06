@@ -8,9 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
+#include "Context.h"
+
+#include <sys/param.h>
+
 #include "eckit/log/Log.h"
 #include "eckit/os/BackTrace.h"
-#include "eckit/runtime/Context.h"
 #include "eckit/runtime/ContextBehavior.h"
 #include "eckit/runtime/StandardBehavior.h"
 #include "eckit/runtime/Monitor.h"
@@ -19,7 +22,6 @@
 #include "eckit/thread/ThreadSingleton.h"
 #include "eckit/parser/Tokenizer.h"
 
-#include <sys/param.h>
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -35,7 +37,7 @@ Context::Context() :
     home_("/"),
     runName_("undef"),
     displayName_() {
-    char * h = getenv( "HOME" );
+    char* h = getenv("HOME");
     if (h)
         home_ = h;
 

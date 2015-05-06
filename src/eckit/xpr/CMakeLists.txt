@@ -1,4 +1,6 @@
 list( APPEND eckit_xpr_srcs
+Accumulate.cc
+Accumulate.h
 BinaryOperator.cc
 BinaryOperator.h
 BinaryPredicate.cc
@@ -11,6 +13,8 @@ Call.cc
 Call.h
 Count.cc
 Count.h
+Dot.cc
+Dot.h
 Expression.cc
 Expression.h
 Filter.cc
@@ -35,8 +39,12 @@ List.cc
 List.h
 Map.cc
 Map.h
+Matrix.cc
+Matrix.h
 Merge.cc
 Merge.h
+Norm.cc
+Norm.h
 Optimiser.cc
 Optimiser.h
 Param.cc

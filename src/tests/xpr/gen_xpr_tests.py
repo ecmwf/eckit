@@ -1,3 +1,4 @@
+
 from sys import argv, exit
 
 camelcase = lambda s: ''.join([w.capitalize() for w in s.split('_')])
@@ -60,7 +61,7 @@ def run_operator_test(op, sym, a, a_t, b, b_t, res_t):
 def gen_operator_tests(testfile):
     tests = []
     # Arithmetic operators
-    for op, sym in [('add', '+'), ('sub', '-'), ('div', '/'), ('prod', '*')]:
+    for op, sym in [('add', '+'), ('sub', '-'), ('div', '/'), ('mul', '*')]:
         for a, a_t, b, b_t, res_t in [(2, 'integer', 4., 'real', 'real'),
                                       (2., 'real', 4, 'integer', 'real'),
                                       (2., 'real', 4., 'real', 'real'),

@@ -124,7 +124,7 @@ Xpr Xpr::operator /(const Xpr& other) const
 
 Xpr Xpr::operator *(const Xpr& other) const
 {
-    return xpr::prod(*this, other);
+    return xpr::mul(*this, other);
 }
 
 Xpr Xpr::operator ==(const Xpr& other) const

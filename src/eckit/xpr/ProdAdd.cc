@@ -29,7 +29,7 @@ ProdAdd::ProdAdd(const ExpPtr& e)
     ASSERT( e );
     ASSERT( e->arity() == 2 );
 
-    //ASSERT( e->typeName() == opname(Prod()) );
+    //ASSERT( e->typeName() == opname(Mul()) );
     //ASSERT( e->param(1)->typeName() == opname(Add()) );
 
     ExpPtr a0 = e->args(0);
@@ -92,7 +92,7 @@ ExpPtr ProdAdd::compute_vvv(Scope& ctx,const args_t &p)
 
 ExpPtr ProdAdd::compute_ggg(Scope& ctx, const args_t &p)
 {
-    return prod(p[0],add(p[1],p[2]))->eval(ctx);
+    return mul(p[0],add(p[1],p[2]))->eval(ctx);
 }
 
 ExpPtr ProdAdd::cloneWith(args_t& a) const
@@ -147,9 +147,9 @@ Reanimator< ProdAdd > ProdAdd::reanimator_;
 
 static ProdAdd::Register prodadd_register;
 
-static OptimiseTo<ProdAdd> optimise_prodadd_rvv("xpr::Prod(r,xpr::Add(v,v))");
-static OptimiseTo<ProdAdd> optimise_prodadd_ivv("xpr::Prod(i,xpr::Add(v,v))");
-static OptimiseTo<ProdAdd> optimise_prodadd_vvv("xpr::Prod(v,xpr::Add(v,v))");
+static OptimiseTo<ProdAdd> optimise_prodadd_rvv("xpr::Mul(r,xpr::Add(v,v))");
+static OptimiseTo<ProdAdd> optimise_prodadd_ivv("xpr::Mul(i,xpr::Add(v,v))");
+static OptimiseTo<ProdAdd> optimise_prodadd_vvv("xpr::Mul(v,xpr::Add(v,v))");
 
 
 //--------------------------------------------------------------------------------------------

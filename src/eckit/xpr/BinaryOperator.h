@@ -28,7 +28,8 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-/// Generates a expressions
+/// Binary operator
+///
 template <class T>
 class BinaryOperator : public Function  {
 public:
@@ -42,27 +43,6 @@ public:
     BinaryOperator& operator=(BinaryOperator&&) = default;
 
     BinaryOperator(Stream& s);
-
-    /// Applies an implementation of the binary operator
-    /// T is the operator type ( Add, Sub, etc ... )
-    /// U is the left operand type ( Real, Vector, ... )
-    /// V is the right operand type ( Real, Vector, ... )
-    /// I is the implementation type
-    template < class U, class V, class I >
-    class Computer {
-    public:
-
-        /// @todo adapt this to regist multiple implmentations ( class I )
-
-        /// The signature that this computer implements
-        static std::string sig();
-
-        /// Constructor regists the implementation of this computer in the Function::dispatcher()
-        Computer();
-
-        /// Computes the expression with the passed arguments
-        static ExpPtr compute( Scope& ctx , const args_t& p );
-    };
 
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
     static const ClassSpec& classSpec();
@@ -81,26 +61,32 @@ private: // methods
 
 private: // static members
 
-    static  Reanimator<BinaryOperator> reanimator_;
+    static  Reanimator< BinaryOperator > reanimator_;
 };
 
 //--------------------------------------------------------------------------------------------
 
-typedef std::multiplies<real_t>  Prod;
+typedef std::multiplies<real_t>  Mul;
 typedef std::divides<real_t>     Div;
 typedef std::plus<real_t>        Add;
 typedef std::minus<real_t>       Sub;
-typedef std::modulus<real_t>     Mod;
+typedef std::modulus<integer_t>  Mod;
+
+struct Min;
+struct Max;
 
 //--------------------------------------------------------------------------------------------
 
 // version with stand alone functions
 
-ExpPtr prod( ExpPtr l = undef(), ExpPtr r = undef() );
-ExpPtr div ( ExpPtr l = undef(), ExpPtr r = undef() );
-ExpPtr add ( ExpPtr l = undef(), ExpPtr r = undef() );
-ExpPtr sub ( ExpPtr l = undef(), ExpPtr r = undef() );
-ExpPtr mod ( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr mul( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr div( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr add( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr sub( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr mod( ExpPtr l = undef(), ExpPtr r = undef() );
+
+ExpPtr min( ExpPtr l = undef(), ExpPtr r = undef() );
+ExpPtr max( ExpPtr l = undef(), ExpPtr r = undef() );
 
 //--------------------------------------------------------------------------------------------
 

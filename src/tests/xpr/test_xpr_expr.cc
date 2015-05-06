@@ -59,15 +59,15 @@ BOOST_AUTO_TEST_CASE( test_optimise_reals )
 {
     ExpPtr c = add(a_,b_); // real-real
 
-    ExpPtr e = add( prod( c , x_ ) , prod( b_, y_ ));
+    ExpPtr e = add( mul( c , x_ ) , mul( b_, y_ ));
 
     // signature and code representation before optimising
-    BOOST_CHECK_EQUAL( e->signature() , "xpr::Add(xpr::Prod(xpr::Add(r,r),v),xpr::Prod(r,v))" );
-    BOOST_CHECK_EQUAL( e->code() , "xpr::add(xpr::prod(xpr::add(xpr::real(2), xpr::real(4)), xpr::vector({5, 5, 5})), xpr::prod(xpr::real(4), xpr::vector({7, 7, 7})))" );
-    BOOST_CHECK_EQUAL( e->json() , "{\"xpr::add\":[{\"xpr::prod\":[{\"xpr::add\":[2,4]},[5,5,5]]},{\"xpr::prod\":[4,[7,7,7]]}]}" );
+    BOOST_CHECK_EQUAL( e->signature() , "xpr::Add(xpr::Mul(xpr::Add(r,r),v),xpr::Mul(r,v))" );
+    BOOST_CHECK_EQUAL( e->code() , "xpr::add(xpr::mul(xpr::add(xpr::real(2), xpr::real(4)), xpr::vector({5, 5, 5})), xpr::mul(xpr::real(4), xpr::vector({7, 7, 7})))" );
+    BOOST_CHECK_EQUAL( e->json() , "{\"xpr::add\":[{\"xpr::mul\":[{\"xpr::add\":[2,4]},[5,5,5]]},{\"xpr::mul\":[4,[7,7,7]]}]}" );
 
     // eval() first calls optimise internally
-    BOOST_CHECK_EQUAL( xpr::add(xpr::prod(xpr::add(xpr::real(2), xpr::real(4)), xpr::vector({5, 5, 5})), xpr::prod(xpr::real(4), xpr::vector({7, 7, 7})))->eval()->str(), "xpr::Vector(58, 58, 58)" );
+    BOOST_CHECK_EQUAL( xpr::add(xpr::mul(xpr::add(xpr::real(2), xpr::real(4)), xpr::vector({5, 5, 5})), xpr::mul(xpr::real(4), xpr::vector({7, 7, 7})))->eval()->str(), "xpr::Vector(58, 58, 58)" );
     BOOST_CHECK_EQUAL( e->eval()->str(), "xpr::Vector(58, 58, 58)" );
     BOOST_CHECK_EQUAL( e->eval()->code(), "xpr::vector({58, 58, 58})" );
     BOOST_CHECK_EQUAL( e->eval()->json(), "[58,58,58]" );
@@ -103,20 +103,20 @@ BOOST_AUTO_TEST_CASE( test_optimise_recursive_reals )
 
 BOOST_AUTO_TEST_CASE( test_optimise_prodadd )
 {
-    ExpPtr e0 = xpr::prod( a_, xpr::add(y_, x_ ) );
+    ExpPtr e0 = xpr::mul( a_, xpr::add(y_, x_ ) );
     BOOST_CHECK_EQUAL( e0->optimise(true)->signature() , "xpr::ProdAdd(r,v,v)" );
     BOOST_CHECK_EQUAL( e0->eval()->str() , "xpr::Vector(24, 24, 24)" );
     BOOST_CHECK_EQUAL( e0->eval()->code() , "xpr::vector({24, 24, 24})" );
     BOOST_CHECK_EQUAL( e0->eval()->json() , "[24,24,24]" );
 
-    ExpPtr e1 = xpr::prod( x_, xpr::add(y_, x_ ) );
+    ExpPtr e1 = xpr::mul( x_, xpr::add(y_, x_ ) );
     BOOST_CHECK_EQUAL( e1->optimise(true)->signature() , "xpr::ProdAdd(v,v,v)" );
     BOOST_CHECK_EQUAL( e1->eval()->str() , "xpr::Vector(60, 60, 60)" );
     BOOST_CHECK_EQUAL( e1->eval()->code() , "xpr::vector({60, 60, 60})" );
     BOOST_CHECK_EQUAL( e1->eval()->json() , "[60,60,60]" );
 
     // involves also reducing the real-real
-    ExpPtr e2 = xpr::prod( xpr::prod(a_,b_), xpr::add(y_, x_ ) );
+    ExpPtr e2 = xpr::mul( xpr::mul(a_,b_), xpr::add(y_, x_ ) );
     BOOST_CHECK_EQUAL( e2->optimise(true)->signature() , "xpr::ProdAdd(r,v,v)" );
     BOOST_CHECK_EQUAL( e2->eval()->str() , "xpr::Vector(96, 96, 96)" );
     BOOST_CHECK_EQUAL( e2->eval()->code() , "xpr::vector({96, 96, 96})" );
@@ -190,9 +190,6 @@ BOOST_AUTO_TEST_CASE( test_map )
 
     ExpPtr f1 =  xpr::map( neg(), xpr::list( xpr::add(a_, b_), x_ ) );
 
-    BOOST_TEST_MESSAGE("Map string representation before eval: " << f1->str());
-    BOOST_TEST_MESSAGE("Map string representation after eval: " << f1->eval()->str());
-
     BOOST_CHECK_EQUAL( f1->str() , "xpr::Map(xpr::Neg(?), xpr::List(xpr::Add(xpr::Real(2), xpr::Real(4)), xpr::Vector(5, 5, 5)))" );
     BOOST_CHECK_EQUAL( f1->code() , "xpr::map(xpr::neg(xpr::undef()), xpr::list(xpr::add(xpr::real(2), xpr::real(4)), xpr::vector({5, 5, 5})))" );
     BOOST_CHECK_EQUAL( f1->json() , "{\"xpr::map\":[{\"xpr::neg\":\"xpr::undef\"},{\"xpr::list\":[{\"xpr::add\":[2,4]},[5,5,5]]}]}" );
@@ -218,12 +215,12 @@ BOOST_AUTO_TEST_CASE( test_reduce )
 
     // reduce with different types
 
-    ExpPtr f1 =  reduce( xpr::prod(), xpr::list( a_, x_, x_ ) );
+    ExpPtr f1 =  reduce( xpr::mul(), xpr::list( a_, x_, x_ ) );
 
-    BOOST_CHECK_EQUAL( f1->str() , "xpr::Reduce(xpr::Prod(?, ?), xpr::List(xpr::Real(2), xpr::Vector(5, 5, 5), xpr::Vector(5, 5, 5)))" );
-    BOOST_CHECK_EQUAL( f1->code() , "xpr::reduce(xpr::prod(xpr::undef(), xpr::undef()), xpr::list(xpr::real(2), xpr::vector({5, 5, 5}), xpr::vector({5, 5, 5})))" );
-    BOOST_CHECK_EQUAL( f1->json() , "{\"xpr::reduce\":[{\"xpr::prod\":[\"xpr::undef\",\"xpr::undef\"]},{\"xpr::list\":[2,[5,5,5],[5,5,5]]}]}" );
-    BOOST_CHECK_EQUAL( xpr::reduce(xpr::prod(xpr::undef(), xpr::undef()), xpr::list(xpr::real(2), xpr::vector({5, 5, 5}), xpr::vector({5, 5, 5})))->eval()->str() , "xpr::Vector(50, 50, 50)" );
+    BOOST_CHECK_EQUAL( f1->str() , "xpr::Reduce(xpr::Mul(?, ?), xpr::List(xpr::Real(2), xpr::Vector(5, 5, 5), xpr::Vector(5, 5, 5)))" );
+    BOOST_CHECK_EQUAL( f1->code() , "xpr::reduce(xpr::mul(xpr::undef(), xpr::undef()), xpr::list(xpr::real(2), xpr::vector({5, 5, 5}), xpr::vector({5, 5, 5})))" );
+    BOOST_CHECK_EQUAL( f1->json() , "{\"xpr::reduce\":[{\"xpr::mul\":[\"xpr::undef\",\"xpr::undef\"]},{\"xpr::list\":[2,[5,5,5],[5,5,5]]}]}" );
+    BOOST_CHECK_EQUAL( xpr::reduce(xpr::mul(xpr::undef(), xpr::undef()), xpr::list(xpr::real(2), xpr::vector({5, 5, 5}), xpr::vector({5, 5, 5})))->eval()->str() , "xpr::Vector(50, 50, 50)" );
     BOOST_CHECK_EQUAL( f1->eval()->str() , "xpr::Vector(50, 50, 50)" );
     BOOST_CHECK_EQUAL( f1->eval()->code() , "xpr::vector({50, 50, 50})" );
     BOOST_CHECK_EQUAL( f1->eval()->json() , "[50,50,50]" );
@@ -251,6 +248,29 @@ BOOST_AUTO_TEST_CASE( test_reduce )
     BOOST_CHECK_EQUAL( f3->eval()->str() , "xpr::List()" );
     BOOST_CHECK_EQUAL( f3->eval()->code() , "xpr::list()" );
     BOOST_CHECK_EQUAL( f3->eval()->json() , "{\"xpr::list\":[]}" );
+
+    // reduce vector
+
+    ExpPtr f4 =  reduce( xpr::add(), x_ );
+
+    BOOST_CHECK_EQUAL( f4->str() , "xpr::Reduce(xpr::Add(?, ?), xpr::Vector(5, 5, 5))" );
+    BOOST_CHECK_EQUAL( f4->code() , "xpr::reduce(xpr::add(xpr::undef(), xpr::undef()), xpr::vector({5, 5, 5}))" );
+    BOOST_CHECK_EQUAL( f4->json() , "{\"xpr::reduce\":[{\"xpr::add\":[\"xpr::undef\",\"xpr::undef\"]},[5,5,5]]}" );
+    BOOST_CHECK_EQUAL( xpr::reduce(xpr::add(xpr::undef(), xpr::undef()), xpr::vector({5, 5, 5}))->eval()->str() , "xpr::Real(15)" );
+    BOOST_CHECK_EQUAL( f4->eval()->str() , "xpr::Real(15)" );
+    BOOST_CHECK_EQUAL( f4->eval()->code() , "xpr::real(15)" );
+    BOOST_CHECK_EQUAL( f4->eval()->json() , "15" );
+
+    // reduce empty vector
+
+    ExpPtr f5 =  reduce( xpr::add(), xpr::vector({}) );
+    BOOST_CHECK_EQUAL( f5->str() , "xpr::Reduce(xpr::Add(?, ?), xpr::Vector())" );
+    BOOST_CHECK_EQUAL( f5->code() , "xpr::reduce(xpr::add(xpr::undef(), xpr::undef()), xpr::vector({}))" );
+    BOOST_CHECK_EQUAL( f5->json() , "{\"xpr::reduce\":[{\"xpr::add\":[\"xpr::undef\",\"xpr::undef\"]},[]]}" );
+    BOOST_CHECK_EQUAL( xpr::reduce(xpr::add(xpr::undef(), xpr::undef()), xpr::vector({}))->eval()->str() , "xpr::Vector()" );
+    BOOST_CHECK_EQUAL( f5->eval()->str() , "xpr::Vector()" );
+    BOOST_CHECK_EQUAL( f5->eval()->code() , "xpr::vector({})" );
+    BOOST_CHECK_EQUAL( f5->eval()->json() , "[]" );
 }
 
 BOOST_AUTO_TEST_CASE( test_predicates )
@@ -292,6 +312,33 @@ BOOST_AUTO_TEST_CASE( test_predicates )
     BOOST_CHECK_EQUAL( f2->eval()->json() , "true" );
 }
 
+BOOST_AUTO_TEST_CASE( test_binary_operators )
+{
+    // min
+
+    ExpPtr f0 =  xpr::min( a_ , b_ );
+
+    BOOST_CHECK_EQUAL( f0->str() , "xpr::Min(xpr::Real(2), xpr::Real(4))" );
+    BOOST_CHECK_EQUAL( f0->code() , "xpr::min(xpr::real(2), xpr::real(4))" );
+    BOOST_CHECK_EQUAL( f0->json() , "{\"xpr::min\":[2,4]}" );
+    BOOST_CHECK_EQUAL( xpr::min(xpr::real(2), xpr::real(4))->eval()->str() , "xpr::Real(2)" );
+    BOOST_CHECK_EQUAL( f0->eval()->str() , "xpr::Real(2)" );
+    BOOST_CHECK_EQUAL( f0->eval()->code() , "xpr::real(2)" );
+    BOOST_CHECK_EQUAL( f0->eval()->json() , "2" );
+
+    // max
+
+    ExpPtr f1 =  xpr::max( a_ , b_ );
+
+    BOOST_CHECK_EQUAL( f1->str() , "xpr::Max(xpr::Real(2), xpr::Real(4))" );
+    BOOST_CHECK_EQUAL( f1->code() , "xpr::max(xpr::real(2), xpr::real(4))" );
+    BOOST_CHECK_EQUAL( f1->json() , "{\"xpr::max\":[2,4]}" );
+    BOOST_CHECK_EQUAL( xpr::max(xpr::real(2), xpr::real(4))->eval()->str() , "xpr::Real(4)" );
+    BOOST_CHECK_EQUAL( f1->eval()->str() , "xpr::Real(4)" );
+    BOOST_CHECK_EQUAL( f1->eval()->code() , "xpr::real(4)" );
+    BOOST_CHECK_EQUAL( f1->eval()->json() , "4" );
+}
+
 BOOST_AUTO_TEST_CASE( test_filter )
 {
     ExpPtr f3 = xpr::filter( xpr::greater( undef(), xpr::real(2) ),xpr::list( a_ , b_, a_, b_ ) );
@@ -305,14 +352,38 @@ BOOST_AUTO_TEST_CASE( test_filter )
     BOOST_CHECK_EQUAL( f3->eval()->json() , "{\"xpr::list\":[4,4]}" );
 }
 
+BOOST_AUTO_TEST_CASE( test_sqrt )
+{
+    ExpPtr e1 = xpr::sqrt( a_ );
+    BOOST_CHECK_EQUAL( e1->str() , "xpr::Sqrt(xpr::Real(2))");
+    BOOST_CHECK_EQUAL( e1->code() , "xpr::sqrt(xpr::real(2))" );
+    BOOST_CHECK_EQUAL( e1->json() , "{\"xpr::sqrt\":2}" );
+    BOOST_CHECK_EQUAL( e1->eval()->str() , "xpr::Real(1.41421)" );
+    BOOST_CHECK_EQUAL( e1->eval()->code() , "xpr::real(1.41421)" );
+    BOOST_CHECK_EQUAL( e1->eval()->json() , "1.41421" );
+
+    ExpPtr e2 = xpr::sqrt( x_ );
+    BOOST_CHECK_EQUAL( e2->str() , "xpr::Sqrt(xpr::Vector(5, 5, 5))" );
+    BOOST_CHECK_EQUAL( e2->code() , "xpr::sqrt(xpr::vector({5, 5, 5}))" );
+    BOOST_CHECK_EQUAL( e2->json() , "{\"xpr::sqrt\":[5,5,5]}" );
+    BOOST_CHECK_EQUAL( e2->eval()->str() , "xpr::Vector(2.23607, 2.23607, 2.23607)" );
+    BOOST_CHECK_EQUAL( e2->eval()->code() , "xpr::vector({2.23607, 2.23607, 2.23607})" );
+    BOOST_CHECK_EQUAL( e2->eval()->json() , "[2.23607,2.23607,2.23607]" );
+
+    ExpPtr e3 = xpr::map( xpr::sqrt(), xpr::list( a_, x_ ) );
+    BOOST_CHECK_EQUAL( e3->str() , "xpr::Map(xpr::Sqrt(?), xpr::List(xpr::Real(2), xpr::Vector(5, 5, 5)))" );
+    BOOST_CHECK_EQUAL( e3->code() , "xpr::map(xpr::sqrt(xpr::undef()), xpr::list(xpr::real(2), xpr::vector({5, 5, 5})))" );
+    BOOST_CHECK_EQUAL( e3->json() , "{\"xpr::map\":[{\"xpr::sqrt\":\"xpr::undef\"},{\"xpr::list\":[2,[5,5,5]]}]}" );
+    BOOST_CHECK_EQUAL( e3->eval()->str() , "xpr::List(xpr::Real(1.41421), xpr::Vector(2.23607, 2.23607, 2.23607))" );
+    BOOST_CHECK_EQUAL( e3->eval()->code() , "xpr::list(xpr::real(1.41421), xpr::vector({2.23607, 2.23607, 2.23607}))" );
+    BOOST_CHECK_EQUAL( e3->eval()->json() , "{\"xpr::list\":[1.41421,[2.23607,2.23607,2.23607]]}" );
+}
+
 BOOST_AUTO_TEST_CASE( test_bind )
 {
     ExpPtr pred = xpr::bind<2>( xpr::greater(), xpr::real(2) );
 
     ExpPtr f0 = xpr::filter( pred, xpr::list( a_ , b_, a_, b_ ) );
-
-    BOOST_TEST_MESSAGE("Bind string representation before eval: " << f0->str());
-    BOOST_TEST_MESSAGE("Bind string representation after eval: " << f0->eval()->str());
 
     BOOST_CHECK_EQUAL( f0->str() , "xpr::Filter(xpr::Bind(xpr::Integer(2), xpr::Greater(?, ?), xpr::Real(2)), xpr::List(xpr::Real(2), xpr::Real(4), xpr::Real(2), xpr::Real(4)))" );
     BOOST_CHECK_EQUAL( f0->code() , "xpr::filter(xpr::bind<2>(xpr::greater(xpr::undef(), xpr::undef()), xpr::real(2)), xpr::list(xpr::real(2), xpr::real(4), xpr::real(2), xpr::real(4)))" );
@@ -335,10 +406,7 @@ BOOST_AUTO_TEST_CASE( test_zipwith )
 
     ExpPtr f0 =  zipWith( xpr::add(), xpr::list( a_ , b_, a_, b_ ), xpr::list( a_ , b_, a_, b_ ) );
 
-    BOOST_TEST_MESSAGE("zipWith string representation before eval: " << f0->str());
-    BOOST_TEST_MESSAGE("zipWith string representation after eval: " << f0->eval()->str());
-
-    BOOST_CHECK_EQUAL( f0->eval()->str() , xpr::map( xpr::prod(real(2.)), xpr::list( a_ , b_, a_, b_ ) )->eval()->str() );
+    BOOST_CHECK_EQUAL( f0->eval()->str() , xpr::map( xpr::mul(real(2.)), xpr::list( a_ , b_, a_, b_ ) )->eval()->str() );
     BOOST_CHECK_EQUAL( f0->eval()->code() , "xpr::list(xpr::real(4), xpr::real(8), xpr::real(4), xpr::real(8))" );
     BOOST_CHECK_EQUAL( f0->eval()->json() , "{\"xpr::list\":[4,8,4,8]}" );
 

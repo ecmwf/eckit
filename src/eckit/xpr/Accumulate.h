@@ -64,6 +64,7 @@ private: // static members
 
 ExpPtr sum    ( ExpPtr v );
 ExpPtr product( ExpPtr v );
+ExpPtr mean   ( ExpPtr v );
 
 //--------------------------------------------------------------------------------------------
 

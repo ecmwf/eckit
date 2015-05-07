@@ -17,11 +17,15 @@ namespace xpr {
 
 //--------------------------------------------------------------------------------------------
 
-static const char *opname(const Add&) { return "xpr::Sum"; }
-static const char *opname(const Mul&) { return "xpr::Product"; }
+struct Mean {};
 
-static const char *opfactory(const Add&) { return "xpr::sum"; }
-static const char *opfactory(const Mul&) { return "xpr::product"; }
+static const char *opname(const Add& ) { return "xpr::Sum"; }
+static const char *opname(const Mul& ) { return "xpr::Product"; }
+static const char *opname(const Mean&) { return "xpr::Mean"; }
+
+static const char *opfactory(const Add& ) { return "xpr::sum"; }
+static const char *opfactory(const Mul& ) { return "xpr::product"; }
+static const char *opfactory(const Mean&) { return "xpr::mean"; }
 
 static const real_t opinit(const Add&) { return 0.; }
 static const real_t opinit(const Mul&) { return 1.; }
@@ -88,12 +92,18 @@ ExpPtr product( ExpPtr v )
     return ExpPtr( new Accumulate<Mul>(v) );
 }
 
+ExpPtr mean( ExpPtr v )
+{
+    return ExpPtr( new Accumulate<Mean>(v) );
+}
+
 //--------------------------------------------------------------------------------------------
 
 // explicit template instantiations
 
 template class Accumulate<Add>;
 template class Accumulate<Mul>;
+template class Accumulate<Mean>;
 
 //-----------------------------------------------------------------------------
 
@@ -111,8 +121,23 @@ struct AccumulateComputer
     }
 };
 
-static AccumulateComputer<Add> add_vv;
-static AccumulateComputer<Mul> mul_vv;
+static AccumulateComputer<Add> add_v;
+static AccumulateComputer<Mul> mul_v;
+
+struct AccumulateMeanComputer
+{
+    AccumulateMeanComputer() {
+        Function::dispatcher()["xpr::Mean(v)"] = &compute;
+    }
+
+    static ExpPtr compute(Scope&, const args_t &p)
+    {
+        Vector::value_t v = Vector::extract(p[0]);
+        return real( std::accumulate(v.begin(), v.end(), 0.) / v.size() );
+    }
+};
+
+static AccumulateMeanComputer mean_v;
 
 //-----------------------------------------------------------------------------
 

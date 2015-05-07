@@ -245,6 +245,11 @@ BOOST_AUTO_TEST_CASE( test_product )
     test(product(x), 8.0 );
 }
 
+BOOST_AUTO_TEST_CASE( test_mean )
+{
+    test(mean(x), 7.0/3 );
+}
+
 BOOST_AUTO_TEST_CASE( test_norm )
 {
     test(norm(vector({3.,4.})), 5.0 );

@@ -341,6 +341,10 @@ types/VerifyingDate.cc
 )
 
 list( APPEND eckit_parser_srcs
+parser/Request.h 
+parser/Request.cc 
+parser/RequestParser.h 
+parser/RequestParser.cc 
 parser/StreamParser.h
 parser/StreamParser.cc
 parser/StringTools.h
@@ -351,6 +355,13 @@ parser/JSON.h
 parser/JSON.cc
 parser/JSONParser.h
 parser/JSONParser.cc )
+
+ecbuild_generate_yy( YYPREFIX    request_
+                     YACC        parser/requesty
+                     YACC_TARGET requesty
+                     LEX         parser/requestl
+                     LEX_TARGET  requestl
+                     DEPENDANT   parser/RequestParser.cc )
 
 list( APPEND eckit_value_srcs
 value/BoolContent.h

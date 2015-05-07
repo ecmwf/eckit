@@ -62,9 +62,12 @@ private: // static members
 
 //--------------------------------------------------------------------------------------------
 
-ExpPtr sum    ( ExpPtr v );
-ExpPtr product( ExpPtr v );
-ExpPtr mean   ( ExpPtr v );
+ExpPtr sum      ( ExpPtr v );
+ExpPtr product  ( ExpPtr v );
+ExpPtr mean     ( ExpPtr v );
+ExpPtr variance ( ExpPtr v );
+ExpPtr mean     ( ExpPtr v );
+ExpPtr stddev   ( ExpPtr v );
 
 //--------------------------------------------------------------------------------------------
 

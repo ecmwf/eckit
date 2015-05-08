@@ -136,8 +136,8 @@ public:
     RegisterConfigHome(const char* name, // APPNAME
                       const char* install_bin_dir,  // From ecbuild : APPNAME_INSTALL_BIN_DIR
                       const char* developer_bin_dir, // From ecbuild : APPNAME_DEVELOPER_BIN_DIR
-                      const char* install_config_dir, // From ecbuild : APPNAME_DATA_DIR
-                      const char* developer_config_dir); // From ecbuild: APPNAME_DEVELOPER_SRC_DIR
+                      const char* install_config_dir, // From ecbuild : APPNAME_INSTALL_DATA_DIR
+                      const char* developer_config_dir); // From ecbuild: APPNAME_DEVELOPER_BIN_DIR
 };
 //-----------------------------------------------------------------------------
 

@@ -42,15 +42,6 @@ void MD5::add(const void* buffer, long length)
     }
 }
 
-void MD5::add(const int& e)     { add(&e,sizeof(e)); }
-void MD5::add(const long& e)    { add(&e,sizeof(e)); }
-void MD5::add(const size_t& e)  { add(&e,sizeof(e)); }
-void MD5::add(const double& e)  { add(&e,sizeof(e)); }
-
-void MD5::add(const std::string& e) { add(e.c_str(),e.size()); }
-
-void MD5::add(const MD5& md5) { add(md5.digest()); }
-
 MD5::operator std::string()
 {
     return digest();

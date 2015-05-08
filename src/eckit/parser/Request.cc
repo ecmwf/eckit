@@ -8,3 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <string>
+#include "Request.h"
+
+std::string requestName(const Request& r) { return r.at("_verb")[0]; }

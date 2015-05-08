@@ -75,6 +75,7 @@ std::list<Request> RequestParser::parseFileUnprotected(const char* path, bool de
 
     std::list<Request> result;
     std::swap(result, RequestParserResult::result_);
+
     return result;
 }
 

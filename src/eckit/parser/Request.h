@@ -21,8 +21,8 @@
 typedef std::vector<std::string>      Values;
 typedef std::map<std::string, Values> RequestBase;
 
-struct Request : public RequestBase {
-    std::string name() const { return (*this).at("_verb")[0]; }
-};
+typedef RequestBase Request;
+
+std::string requestName(const Request&);
 
 #endif

@@ -33,8 +33,8 @@ struct YYSTYPE {
 
 static void update(Request& r, const ParList& p)
 {
-	for(ParList::const_iterator j = p.begin(); j != p.end(); ++j)
-		r[(*j).first] = (*j).second;
+	for(ParList::const_iterator j (p.begin()); j != p.end(); ++j)
+		r[ (*j).first ] = (*j).second;
 }
 
 static void name(Request& r, const std::string& s)
@@ -83,7 +83,7 @@ parameter : WORD '=' values        { $$ = std::pair<std::string,std::vector<std:
 		  ;
 
 values : value             { $$ = std::vector<std::string>(); $$.push_back($1);  }
-	   | values '/' value  { $$ = $1;               $$.push_back($3);  }
+	   | values '/' value  { $$ = $1;                         $$.push_back($3);  }
 	   ;
 
 value: WORD   

@@ -43,7 +43,7 @@ bool CacheManager::get(const key_t& k, PathName& v) const {
 }
 
 PathName CacheManager::entry(const key_t &key) const {
-  return root_path() / name() / version() / PathName(key) / extension();
+  return root_path() / name() / version() / key + extension();
 }
 
 PathName CacheManager::stage(const key_t& k) const {

@@ -47,7 +47,7 @@ PathName CacheManager::stage(const key_t& k) const {
   return PathName::unique(p);
 }
 
-bool CacheManager::commit(const key_t& k, const PathName& tmpfile)
+bool CacheManager::commit(const key_t& k, const PathName& tmpfile) const
 {
     PathName file = entry(k);
     try {

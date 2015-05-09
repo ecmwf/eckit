@@ -42,7 +42,7 @@ class CacheManager : private NonCopyable {
 
   virtual PathName stage(const key_t& k) const;
 
-  virtual bool commit(const key_t& k, const PathName& v);
+  virtual bool commit(const key_t& k, const PathName& v) const;
 
  protected:
 

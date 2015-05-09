@@ -57,17 +57,17 @@ PathName CacheManager::stage(const key_t& k) const {
   return PathName::unique(p);
 }
 
-bool CacheManager::commit(const key_t& k, const PathName& tmpfile) {
-  PathName file = entry(k);
-  Log::info() << "CacheManager committing file " << file << std::endl;
-  try {
-    SYSCALL(::chmod(tmpfile.asString().c_str(), 0444));
-    PathName::rename(tmpfile, file);
-  } catch (FailedSystemCall& e) {  // ignore failed system call -- another process nay have created the file meanwhile
-    Log::debug() << "Failed rename of cache file -- " << e.what() << std::endl;
-    return false;
-  }
-  return true;
+bool CacheManager::commit(const key_t& k, const PathName& tmpfile) const
+{
+    PathName file = entry(k);
+    try {
+        SYSCALL(::chmod(tmpfile.asString().c_str(), 0444));
+        PathName::rename( tmpfile, file );
+    } catch( FailedSystemCall& e ) { // ignore failed system call -- another process nay have created the file meanwhile
+        Log::debug() << "Failed rename of cache file -- " << e.what() << std::endl;
+        return false;
+    }
+    return true;
 }
 
 void CacheManager::print(std::ostream& s) const { s << "CacheManager[name=" << name() << "]"; }

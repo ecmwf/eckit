@@ -28,16 +28,22 @@ class AutoUmask {
   ~AutoUmask() { ::umask(umask_); }
 };
 
-CacheManager::CacheManager(const std::string& name, const std::string& version) : name_(name), version_(version) {}
+CacheManager::CacheManager(const std::string& name) :
+  name_(name),
+  root_path_( Resource<PathName>("eckitCacheDir", "/tmp/cache") ) {
+}
 
 bool CacheManager::get(const key_t& k, PathName& v) const {
   PathName p = entry(k);
-
   if (p.exists()) {
     v = p;
     return true;
   }
   return false;
+}
+
+PathName CacheManager::entry(const key_t &key) const {
+  return root_path() / name() / version() / PathName(key) / extension();
 }
 
 PathName CacheManager::stage(const key_t& k) const {
@@ -64,7 +70,7 @@ bool CacheManager::commit(const key_t& k, const PathName& tmpfile) {
   return true;
 }
 
-void CacheManager::print(std::ostream& s) const { NOTIMP; }
+void CacheManager::print(std::ostream& s) const { s << "CacheManager[name=" << name() << "]"; }
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -29,14 +29,14 @@ namespace eckit {
 
 class CacheManager : private NonCopyable {
 
-    std::string name_;
-    std::string version_;
+  std::string name_;
+  PathName root_path_;
 
  public:
   typedef std::string key_t;
 
  public:
-  explicit CacheManager(const std::string& name, const std::string& version);
+  explicit CacheManager(const std::string& name);
 
   virtual bool get(const key_t& k, PathName& v) const;
 
@@ -51,10 +51,13 @@ class CacheManager : private NonCopyable {
 
  protected:
 
-    const std::string& name() const { return name_; }
-    const std::string& version() const { return version_; }
+  const std::string& name() const { return name_; }
+  const PathName& root_path() const { return root_path_; }
 
-    virtual PathName entry(const key_t& k) const = 0;
+  virtual const char* version() const = 0;
+  virtual const char* extension() const = 0;
+
+  virtual PathName entry(const key_t& k) const;
 
  private:
 

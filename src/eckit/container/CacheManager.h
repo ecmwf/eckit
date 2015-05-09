@@ -44,11 +44,6 @@ class CacheManager : private NonCopyable {
 
   virtual bool commit(const key_t& k, const PathName& v);
 
-  friend std::ostream& operator<<(std::ostream& s, const CacheManager& p) {
-    p.print(s);
-    return s;
-  }
-
  protected:
 
   const std::string& name() const { return name_; }
@@ -59,9 +54,14 @@ class CacheManager : private NonCopyable {
 
   virtual PathName entry(const key_t& k) const;
 
+  virtual void print(std::ostream& s) const;
+
  private:
 
-      virtual void print(std::ostream& s) const;
+  friend std::ostream& operator<<(std::ostream& s, const CacheManager& p) {
+    p.print(s);
+    return s;
+  }
 
 };
 

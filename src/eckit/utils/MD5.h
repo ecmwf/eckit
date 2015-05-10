@@ -37,20 +37,42 @@ public:  // types
 
   void add(const void*, long);
 
-  void add(const int&);
-  void add(const long&);
-  void add(const size_t&);
-  void add(const double&);
+  void add(bool);
+  void add(int);
+  void add(long);
+  void add(long long);
+  void add(unsigned int);
+  void add(unsigned long);
+  void add(unsigned long long);
+  void add(float);
+  void add(double);
   void add(const std::string&);
+  void add(const char*);
 
-  /// Double hashing
-  void add(const MD5&);
+
+  template<class T>
+  void add(const T& x) { x.hash(*this); }
+
+  template<class T>
+  MD5& operator<<(const T& x) { add(x); return *this; }
+
+
 
   operator std::string();
 
   digest_t digest() const;
 
 private:  // types
+
+  // Make sure this is not called with a pointer
+  template<class T>
+  void add(const T* x);
+  void add(const void*);
+
+  /// Double hashing
+  void add(const MD5&);
+
+
 
   struct State {
 

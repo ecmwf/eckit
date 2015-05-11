@@ -73,9 +73,10 @@ ExpPtr compute_mat_vec(Scope&, const args_t &p)
     size_t cols = Matrix::cols(p[0]);
     ASSERT( v.size() == cols );
     Vector::value_t rv(rows, 0.);
+    // Column major storage order
     for( size_t r = 0; r < rows; ++r )
         for (size_t c = 0; c < cols; ++c )
-            rv[r] += M[r*cols+c] * v[c];
+            rv[r] += M[r+rows*c] * v[c];
     return ExpPtr( new Vector(rv, Expression::Swap()) );
 }
 
@@ -89,10 +90,11 @@ ExpPtr compute_mat_mat(Scope&, const args_t &p)
     size_t colsB = Matrix::cols(p[1]);
     ASSERT( colsA == rowsB );
     Matrix::value_t C(rowsA*colsB, 0.);
-    for( size_t r = 0; r < rowsA; ++r )
-        for( size_t c = 0; c < colsB; ++c )
+    // Column major storage order
+    for( size_t c = 0; c < colsB; ++c )
+        for( size_t r = 0; r < rowsA; ++r )
             for( size_t k = 0; k < colsA; ++k )
-                C[r*rowsA+c] += A[r*rowsA+k] * B[k*rowsB+c];
+                C[r+rowsA*c] += A[r+rowsA*k] * B[k+rowsB*c];
     return ExpPtr( new Matrix(rowsA, colsB, C, Expression::Swap()) );
 }
 

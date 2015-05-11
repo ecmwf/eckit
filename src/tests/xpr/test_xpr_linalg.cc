@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE( test_dot_vec_vec )
 
 BOOST_AUTO_TEST_CASE( test_dot_mat_vec )
 {
-    test<Vector>( dot(m, vector({-1., -2.})), {3., 0.} );
+    test<Vector>( dot(m, vector({-1., -2.})), {7., -2.} );
     BOOST_TEST_MESSAGE("Dot product of matrix and vector of nonmatching sizes should fail");
     BOOST_CHECK_THROW( dot(m, x)->eval(), AssertionFailed );
 }

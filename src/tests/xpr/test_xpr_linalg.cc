@@ -231,6 +231,9 @@ BOOST_AUTO_TEST_CASE( test_dot_mat_vec )
 BOOST_AUTO_TEST_CASE( test_dot_mat_mat )
 {
     test<Matrix>( dot(m, m), {9., -6., -12., 12.} );
+    test<Matrix>( dot(matrix(2, 3, {1., 4., 2., 5., 3., 6.}),
+                      matrix(3, 2, {1., 3., 5., 2., 4., 6.})),
+                  {22., 49., 28., 64.} );
     BOOST_TEST_MESSAGE("Dot product of matrices of nonmatching sizes should fail");
     BOOST_CHECK_THROW( dot(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
 }

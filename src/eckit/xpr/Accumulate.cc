@@ -8,6 +8,8 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <cmath>
+
 #include "eckit/xpr/Accumulate.h"
 #include "eckit/xpr/Real.h"
 #include "eckit/xpr/Vector.h"

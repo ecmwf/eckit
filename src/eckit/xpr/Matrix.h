@@ -15,6 +15,8 @@
 #ifndef eckit_xpr_Matrix_h
 #define eckit_xpr_Matrix_h
 
+#include <functional>
+
 #include "eckit/xpr/Value.h"
 
 namespace eckit {
@@ -58,6 +60,8 @@ public: // methods
     Matrix( const size_t& rows, const size_t& cols, const real_t& v = real_t() );
     Matrix( const size_t& rows, const size_t& cols, const value_t& v );
     Matrix( const size_t& rows, const size_t& cols, value_t& v, Swap );
+    Matrix( const size_t& rows, const size_t& cols,
+            const std::function< real_t(size_t, size_t) >& );
 
     Matrix( Matrix&& ) = default;
 
@@ -107,6 +111,7 @@ private: // static members
 ExpPtr matrix( const size_t& rows, const size_t& cols, const real_t& v = real_t() );
 ExpPtr matrix( const size_t& rows, const size_t& cols, const Matrix::value_t& v  );
 ExpPtr matrix( const size_t& rows, const size_t& cols, const std::initializer_list<real_t> v );
+ExpPtr matrix( const size_t& rows, const size_t& cols, const std::function< real_t(size_t, size_t) >& );
 
 //--------------------------------------------------------------------------------------------
 

@@ -48,6 +48,7 @@ public: // methods
     Vector( const size_t& s, const real_t& v = real_t() );
     Vector( const value_t& v );
     Vector( value_t& v, Swap );
+    Vector( const size_t& s, const std::function< real_t(size_t) >& );
 
     Vector( Vector&& ) = default;
 
@@ -95,6 +96,7 @@ private: // static members
 ExpPtr vector( const size_t& sz, const real_t& v = real_t()  );
 ExpPtr vector( const Vector::value_t& v  );
 ExpPtr vector( const std::initializer_list<real_t> v );
+ExpPtr vector( const size_t& sz, const std::function< real_t(size_t) >& );
 
 //--------------------------------------------------------------------------------------------
 

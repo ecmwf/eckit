@@ -67,7 +67,7 @@ public:
    PolarStereoGraphicProj(
             bool southPoleOnProjectionPlane,
             bool earth_is_oblate = false,     /* false means use earth as sphere */
-            long lon_of_natural_origin  = 0    /* Lov/east latitude' in grib talk */
+            double lon_of_natural_origin  = 0    /* Lov/east latitude' in grib talk */
             );
 
    ~PolarStereoGraphicProj();
@@ -131,7 +131,7 @@ protected:
 
    AbsPolarStereoGraphicProj(
              bool southPoleOnProjectionPlane,
-             long lon_of_natural_origin
+             double lon_of_natural_origin
              );
 
 protected:
@@ -140,7 +140,7 @@ protected:
    double radius_;
 
    bool southPoleOnProjectionPlane_;
-   long lon_of_natural_origin_;
+   double lon_of_natural_origin_;
 };
 
 // -----------------------------------------------------------------------------
@@ -149,7 +149,7 @@ class SphericalPolarStereoGraphicProj : public AbsPolarStereoGraphicProj {
 public:
 
    SphericalPolarStereoGraphicProj( bool southPoleOnProjectionPlane,
-                                        long lon_of_natural_origin
+                                        double lon_of_natural_origin
                                        );
 
    virtual ~SphericalPolarStereoGraphicProj() {}
@@ -171,7 +171,7 @@ public:
 
    EllipPolarStereoGraphicProj(
              bool southPoleOnProjectionPlane,
-             long lon_of_natural_origin
+             double lon_of_natural_origin
              );
 
    virtual ~EllipPolarStereoGraphicProj() {}

@@ -457,6 +457,12 @@ persist/DumpLoad.cc
 persist/Isa.cc )
 
 list( APPEND eckit_utils_srcs
+utils/Interpreter.cc
+utils/Environment.cc
+utils/RequestHandler.cc
+utils/ExecutionContext.cc
+utils/Stack.cc
+utils/Module.cc
 utils/Translator.h
 utils/Translator.cc
 utils/MD5.h

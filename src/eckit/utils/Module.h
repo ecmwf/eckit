@@ -8,19 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Piotr Kuchta - ECMWF March 2015
+// File Module.h
+// Piotr Kuchta - (c) ECMWF May 2015
 
-#ifndef Request_H
-#define Request_H
+#ifndef Module_H
+#define Module_H
 
-#include <string>
-#include <list>
-#include <vector>
-#include <map>
+class ExecutionContext;
 
-typedef std::vector<std::string>      Values;
-typedef std::map<std::string, Values> Request;
+class Module {
+public:
+	virtual ~Module(); 
 
-std::string requestName(const Request&);
+    virtual void importInto(ExecutionContext&) = 0;
+};
 
 #endif

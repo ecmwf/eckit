@@ -7,20 +7,20 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
+/// @author Piotr Kuchta, May 2015
 
-/// @author Piotr Kuchta - ECMWF March 2015
+#ifndef Interpreter_H
+#define Interpreter_H
 
-#ifndef Request_H
-#define Request_H
-
-#include <string>
+#include "eckit/parser/Request.h"
 #include <list>
-#include <vector>
-#include <map>
 
-typedef std::vector<std::string>      Values;
-typedef std::map<std::string, Values> Request;
+class ExecutionContext;
 
-std::string requestName(const Request&);
+class Interpreter {
+public:
+    Values eval(const std::list<Request>&, ExecutionContext&);
+    Values eval(const Request&, ExecutionContext&);
+};
 
 #endif

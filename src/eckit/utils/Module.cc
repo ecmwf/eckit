@@ -8,19 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Piotr Kuchta - ECMWF March 2015
+// File Module.cc
+// Piotr Kuchta - (c) ECMWF May 2015
 
-#ifndef Request_H
-#define Request_H
+#include "eckit/utils/Module.h"
 
-#include <string>
-#include <list>
-#include <vector>
-#include <map>
+Module::~Module() {}
 
-typedef std::vector<std::string>      Values;
-typedef std::map<std::string, Values> Request;
-
-std::string requestName(const Request&);
-
-#endif

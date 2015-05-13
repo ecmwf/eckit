@@ -64,9 +64,6 @@ public:  // types
   template <class T>
   void add(const T& x) { x.hash(*this); }
 
-  /// Double hashing
-  void add(const MD5& md5) { add(md5.digest()); }
-
   template<class T>
   MD5& operator<<(const T& x) { add(x); return *this; }
 
@@ -82,9 +79,7 @@ private:  // types
   void add(const void*);
 
   /// Double hashing
-  void add(const MD5&);
-
-
+  void add(const MD5& md5) { add(md5.digest()); }
 
   struct State {
 

@@ -40,8 +40,8 @@ Matrix::Matrix( const size_t& rows, const size_t& cols,
                 const std::function< real_t(size_t, size_t) >& init )
     : v_(rows*cols), rows_(rows), cols_(cols)
 {
-    for (size_t c = 0; c < rows; ++c)
-        for (size_t r = 0; r < cols; ++r)
+    for (size_t c = 0; c < cols; ++c)
+        for (size_t r = 0; r < rows; ++r)
             v_[r+rows*c] = init(r, c);
 }
 

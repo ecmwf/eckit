@@ -37,6 +37,10 @@ Linear.cc
 Linear.h
 List.cc
 List.h
+LoadMatrix.cc
+LoadMatrix.h
+LoadVector.cc
+LoadVector.h
 Map.cc
 Map.h
 Matrix.cc

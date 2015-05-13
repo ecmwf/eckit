@@ -48,7 +48,8 @@ public: // types
 		compactFormat = 0,
 		normalFormat  = 1,
 		fullFormat    = 2,
-		monitorFormat = 3
+		monitorFormat = 3,
+        applicationFormat = 4, // Free to use for applications
 	};
 
 public: // methods

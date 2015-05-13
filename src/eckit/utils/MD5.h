@@ -62,22 +62,29 @@ public:  // types
   
   /// for generic objects
   template <class T>
-  void add(const T& x)
-  {
-    x.hash(*this);
-  }
+  void add(const T& x) { x.hash(*this); }
 
   /// Double hashing
   void add(const MD5& md5) { add(md5.digest()); }
+
+  template<class T>
+  MD5& operator<<(const T& x) { add(x); return *this; }
 
   operator std::string();
 
   digest_t digest() const;
 
-  template <class T>
-  MD5& operator<< (const T& t) { add(t); return *this; }
-
 private:  // types
+
+  // Make sure this is not called with a pointer
+  template<class T>
+  void add(const T* x);
+  void add(const void*);
+
+  /// Double hashing
+  void add(const MD5&);
+
+
 
   struct State {
 

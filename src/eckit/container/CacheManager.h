@@ -29,35 +29,39 @@ namespace eckit {
 
 class CacheManager : private NonCopyable {
 
-    std::string name_;
+  std::string name_;
+  PathName root_path_;
 
  public:
   typedef std::string key_t;
 
  public:
-
   explicit CacheManager(const std::string& name);
 
   virtual bool get(const key_t& k, PathName& v) const;
 
   virtual PathName stage(const key_t& k) const;
 
-  virtual bool commit(const key_t& k, const PathName& v);
+  virtual bool commit(const key_t& k, const PathName& v) const;
+
+ protected:
+
+  const std::string& name() const { return name_; }
+  const PathName& root_path() const { return root_path_; }
+
+  virtual const char* version() const = 0;
+  virtual const char* extension() const = 0;
+
+  virtual PathName entry(const key_t& k) const;
+
+  virtual void print(std::ostream& s) const;
+
+ private:
 
   friend std::ostream& operator<<(std::ostream& s, const CacheManager& p) {
     p.print(s);
     return s;
   }
-
-protected:
-
-    const std::string& name() const { return name_; }
-
-    virtual PathName entry(const key_t& k) const = 0;
-
-private:
-
-      virtual void print(std::ostream& s) const;
 
 };
 

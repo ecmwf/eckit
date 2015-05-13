@@ -216,7 +216,9 @@ BOOST_AUTO_TEST_CASE( test_matrix_max )
 
 BOOST_AUTO_TEST_CASE( test_dot_vec_vec )
 {
-    BOOST_CHECK_EQUAL( Real::extract(dot(x, x)->eval()), 21. );
+    test( dot(x, x), 21. );
+    auto init_seq = [](int i) { return (real_t)(i+1); };
+    test( dot( vector(5, init_seq), vector(5, init_seq) ), 55. );
     BOOST_TEST_MESSAGE("Dot product of vectors of different sizes should fail");
     BOOST_CHECK_THROW( dot(x, vector({1.,2.}))->eval(), AssertionFailed );
 }
@@ -224,6 +226,9 @@ BOOST_AUTO_TEST_CASE( test_dot_vec_vec )
 BOOST_AUTO_TEST_CASE( test_dot_mat_vec )
 {
     test<Vector>( dot(m, vector({-1., -2.})), {7., -2.} );
+    test<Vector>( dot( matrix(5, 5, [](int i, int j) { return (real_t)(j-i+1); }),
+                       vector(5, [](int i) { return (real_t)(i+1); })),
+                  {55., 40., 25., 10., -5.} );
     BOOST_TEST_MESSAGE("Dot product of matrix and vector of nonmatching sizes should fail");
     BOOST_CHECK_THROW( dot(m, x)->eval(), AssertionFailed );
 }
@@ -231,9 +236,9 @@ BOOST_AUTO_TEST_CASE( test_dot_mat_vec )
 BOOST_AUTO_TEST_CASE( test_dot_mat_mat )
 {
     test<Matrix>( dot(m, m), {9., -6., -12., 12.} );
-    test<Matrix>( dot(matrix(2, 3, {1., 4., 2., 5., 3., 6.}),
-                      matrix(3, 2, {1., 3., 5., 2., 4., 6.})),
-                  {22., 49., 28., 64.} );
+    test<Matrix>( dot(matrix(2, 3, [](int i, int j) { return (real_t)(j-i+1); }),
+                      matrix(3, 2, [](int i, int j) { return (real_t)(j+i+1); })),
+                  {14., 8., 20., 11.} );
     BOOST_TEST_MESSAGE("Dot product of matrices of nonmatching sizes should fail");
     BOOST_CHECK_THROW( dot(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
 }

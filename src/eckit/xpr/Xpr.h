@@ -66,7 +66,7 @@ public:
     // Just for testing
 
 	Xpr optimise() const;
-	ExpPtr expr() const;
+        ExpPtr expr() const { return expr_; }
 
     Xpr eval() const { return expr()->eval(); }
     std::string str() const { return expr()->str(); }

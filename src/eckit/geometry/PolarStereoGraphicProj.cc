@@ -1,5 +1,7 @@
 #include "eckit/geometry/PolarStereoGraphicProj.h"
 
+#include <cmath>
+
 namespace eckit {
 namespace geometry {
 
@@ -10,7 +12,7 @@ namespace geometry {
 PolarStereoGraphicProj::PolarStereoGraphicProj(
          bool southPoleOnProjectionPlane,
          bool earth_is_oblate,
-         long lon_of_natural_origin
+         double lon_of_natural_origin
 )
 : proj_(NULL)
 {
@@ -64,7 +66,7 @@ void PolarStereoGraphicProj::set_false_northing( double fn )
 
 AbsPolarStereoGraphicProj::AbsPolarStereoGraphicProj(
          bool southPoleOnProjectionPlane,
-         long lon_of_natural_origin                 /* Lov in grib talk */
+         double lon_of_natural_origin                 /* Lov in grib talk */
 )
 : degree_to_radian_(M_PI / 180.0),
   radian_to_degree_(1/degree_to_radian_),
@@ -110,9 +112,9 @@ AbsPolarStereoGraphicProj::~AbsPolarStereoGraphicProj() {}
 
 SphericalPolarStereoGraphicProj::SphericalPolarStereoGraphicProj(
   bool southPoleOnProjectionPlane,
-  long lon_of_natural_origin
+  double lon_of_natural_origin
 )
-:AbsPolarStereoGraphicProj(southPoleOnProjectionPlane,lon_of_natural_origin)
+:AbsPolarStereoGraphicProj(southPoleOnProjectionPlane, lon_of_natural_origin)
 {
    double phi_1 = 0;                               // central latitude
    if ( southPoleOnProjectionPlane )
@@ -202,7 +204,7 @@ eckit::geometry::LLPoint2 SphericalPolarStereoGraphicProj::map_to_spherical( dou
 
 EllipPolarStereoGraphicProj::EllipPolarStereoGraphicProj(
   bool southPoleOnProjectionPlane,
-  long lon_of_natural_origin
+  double lon_of_natural_origin
 )
 : AbsPolarStereoGraphicProj(southPoleOnProjectionPlane,lon_of_natural_origin),
   Ko_(0.994),

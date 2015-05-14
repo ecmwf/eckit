@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE( test_linear_sv_sv )
     Xpr z = (a - b) * e;
     Xpr X = e * x + z * y;
 
-    BOOST_CHECK_EQUAL( X.optimise().expr()->str() , "xpr::Linear(xpr::Real\(6), xpr::Vector(5, 5, 5), xpr::Real(-12), xpr::Vector(7, 7, 7))" );
+    BOOST_CHECK_EQUAL( X.optimise().expr()->str() , "xpr::Linear(xpr::Real(6), xpr::Vector(5, 5, 5), xpr::Real(-12), xpr::Vector(7, 7, 7))" );
     BOOST_CHECK_EQUAL( X.optimise().expr()->code() , "xpr::linear(xpr::real(6), xpr::vector({5, 5, 5}), xpr::real(-12), xpr::vector({7, 7, 7})))" );
     BOOST_CHECK_EQUAL( X.optimise().expr()->json() , "{\"xpr::linear\":[6,[5,5,5],-12,[7,7,7]]}" );
 }

@@ -33,6 +33,12 @@ Vector::Vector(Vector::value_t &v, Swap ignored )
     std::swap(v_,v);
 }
 
+Vector::Vector( const size_t& s, const std::function< real_t(size_t) >& init )
+    : v_(s)
+{
+    for (size_t i = 0; i < s; ++i) v_[i] = init(i);
+}
+
 Vector::Vector(Stream &s) : Value(s), v_()
 {
     s >> v_;
@@ -57,10 +63,13 @@ ExpPtr Vector::cloneWith(args_t& a) const
 void Vector::print(std::ostream&o) const
 {
     o << nodeName() << "(";
-    for( size_t i = 0; i < v_.size(); ++i )
-    {
-        if(i) o << ", ";
-        o << v_[i];
+    if ( v_.size() < 10 ) {
+        for( size_t i = 0; i < v_.size(); ++i ) {
+            if(i) o << ", ";
+            o << v_[i];
+        }
+    } else {
+        o << v_[0] << ", " << v_[1] << ", ..., " << v_[v_.size()-1];
     }
     o << ")";
 }
@@ -105,6 +114,11 @@ ExpPtr vector( const Vector::value_t& v  )
 ExpPtr vector( const std::initializer_list<real_t> v )
 {
     return ExpPtr( new Vector(Vector::value_t(v)) );
+}
+
+ExpPtr vector( const size_t& sz, const std::function< real_t(size_t) >& init )
+{
+    return ExpPtr( new Vector(sz, init) );
 }
 
 //--------------------------------------------------------------------------------------------

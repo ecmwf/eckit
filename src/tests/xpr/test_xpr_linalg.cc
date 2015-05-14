@@ -216,14 +216,19 @@ BOOST_AUTO_TEST_CASE( test_matrix_max )
 
 BOOST_AUTO_TEST_CASE( test_dot_vec_vec )
 {
-    BOOST_CHECK_EQUAL( Real::extract(dot(x, x)->eval()), 21. );
+    test( dot(x, x), 21. );
+    auto init_seq = [](int i) { return (real_t)(i+1); };
+    test( dot( vector(5, init_seq), vector(5, init_seq) ), 55. );
     BOOST_TEST_MESSAGE("Dot product of vectors of different sizes should fail");
     BOOST_CHECK_THROW( dot(x, vector({1.,2.}))->eval(), AssertionFailed );
 }
 
 BOOST_AUTO_TEST_CASE( test_dot_mat_vec )
 {
-    test<Vector>( dot(m, vector({-1., -2.})), {3., 0.} );
+    test<Vector>( dot(m, vector({-1., -2.})), {7., -2.} );
+    test<Vector>( dot( matrix(5, 5, [](int i, int j) { return (real_t)(j-i+1); }),
+                       vector(5, [](int i) { return (real_t)(i+1); })),
+                  {55., 40., 25., 10., -5.} );
     BOOST_TEST_MESSAGE("Dot product of matrix and vector of nonmatching sizes should fail");
     BOOST_CHECK_THROW( dot(m, x)->eval(), AssertionFailed );
 }
@@ -231,6 +236,9 @@ BOOST_AUTO_TEST_CASE( test_dot_mat_vec )
 BOOST_AUTO_TEST_CASE( test_dot_mat_mat )
 {
     test<Matrix>( dot(m, m), {9., -6., -12., 12.} );
+    test<Matrix>( dot(matrix(2, 3, [](int i, int j) { return (real_t)(j-i+1); }),
+                      matrix(3, 2, [](int i, int j) { return (real_t)(j+i+1); })),
+                  {14., 8., 20., 11.} );
     BOOST_TEST_MESSAGE("Dot product of matrices of nonmatching sizes should fail");
     BOOST_CHECK_THROW( dot(m, matrix(1, 2, {1.,2.}))->eval(), AssertionFailed );
 }
@@ -243,6 +251,21 @@ BOOST_AUTO_TEST_CASE( test_sum )
 BOOST_AUTO_TEST_CASE( test_product )
 {
     test(product(x), 8.0 );
+}
+
+BOOST_AUTO_TEST_CASE( test_mean )
+{
+    test(mean(x), 7.0/3 );
+}
+
+BOOST_AUTO_TEST_CASE( test_variance )
+{
+    test(variance(vector({10.,2.})), 16.0 );
+}
+
+BOOST_AUTO_TEST_CASE( test_stddev )
+{
+    test(stddev(vector({10.,2.})), 4.0 );
 }
 
 BOOST_AUTO_TEST_CASE( test_norm )

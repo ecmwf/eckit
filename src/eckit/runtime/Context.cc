@@ -1,4 +1,4 @@
-/*
+  /*
  * (C) Copyright 1996-2013 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
@@ -190,8 +190,8 @@ RegisterConfigHome::RegisterConfigHome(const char* name, const char* install_bin
 PathName Context::configHome(bool& first,
                              const char* install_bin_dir,               // From ecbuild : APPNAME_INSTALL_BIN_DIR
                              const char* developer_bin_dir,             // From ecbuild : APPNAME_DEVELOPER_BIN_DIR
-                             const char* install_config_dir,            // From ecbuild : APPNAME_DATA_DIR
-                             const char* developer_config_dir) const {  // From ecbuild: APPNAME_DEVELOPER_SRC_DIR
+                             const char* install_config_dir,            // From ecbuild : APPNAME_INSTALL_DATA_DIR
+                             const char* developer_config_dir) const {  // From ecbuild : APPNAME_DEVELOPER_BIN_DIR
 
   if (argc_ == 0) {   // Context was not initialised
 
@@ -204,12 +204,16 @@ PathName Context::configHome(bool& first,
     return install_config_dir;
   }
 
-  std::string path = commandPath();
-  if (path.find(install_bin_dir) == 0) {
+  std::string path = eckit::PathName(commandPath()).realName().asString();
+  std::string install_bin_dir_path = eckit::PathName(install_bin_dir).realName().asString();
+
+  if (path.find(install_bin_dir_path) == 0) {
     return install_config_dir;
   }
 
-  if (path.find(developer_bin_dir) == 0) {
+  std::string developer_bin_dir_path = eckit::PathName(developer_bin_dir).realName().asString();
+
+  if (path.find(developer_bin_dir_path) == 0) {
     if (first) {
       Log::warning() << "Current command is from " << developer_bin_dir << std::endl;
       Log::warning() << "Using development configuration path " << developer_config_dir << std::endl;

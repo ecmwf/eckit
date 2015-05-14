@@ -26,7 +26,7 @@ namespace xpr {
 
 class Value : public Expression {
 
-public: // methods
+protected: // methods
 
     static const char * nodeName() { return "xpr::Value"; }
 

@@ -37,20 +37,49 @@ public:  // types
 
   void add(const void*, long);
 
-  void add(const int&);
-  void add(const long&);
-  void add(const size_t&);
-  void add(const double&);
-  void add(const std::string&);
+  void add(char x){ add(&x, sizeof(x)); }
+  void add(unsigned char x){ add(&x, sizeof(x)); }
 
-  /// Double hashing
-  void add(const MD5&);
+  void add(bool x){ add(&x, sizeof(x)); }
+
+  void add(int x){ add(&x, sizeof(x)); }
+  void add(unsigned int x){ add(&x, sizeof(x)); }
+
+  void add(short x){ add(&x, sizeof(x)); }
+  void add(unsigned short x){ add(&x, sizeof(x)); }
+
+  void add(long x){ add(&x, sizeof(x)); }
+  void add(unsigned long x){ add(&x, sizeof(x)); }
+
+  void add(long long x){ add(&x, sizeof(x)); }
+  void add(unsigned long long x){ add(&x, sizeof(x)); }
+
+  void add(float x){ add(&x, sizeof(x)); }
+  void add(double x){ add(&x, sizeof(x)); }
+
+  void add(const std::string& x)  { add(x.c_str(),x.size()); }
+  void add(const char* x) { add(std::string(x)); }
+  
+  /// for generic objects
+  template <class T>
+  void add(const T& x) { x.hash(*this); }
+
+  template<class T>
+  MD5& operator<<(const T& x) { add(x); return *this; }
 
   operator std::string();
 
   digest_t digest() const;
 
 private:  // types
+
+  // Make sure this is not called with a pointer
+  template<class T>
+  void add(const T* x);
+  void add(const void*);
+
+  /// Double hashing
+  void add(const MD5& md5) { add(md5.digest()); }
 
   struct State {
 

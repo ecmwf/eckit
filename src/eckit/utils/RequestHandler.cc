@@ -39,10 +39,25 @@ PathName RequestHandler::getValueAsPathName(const Request& request, const string
 
 string RequestHandler::database(const Request& request) 
 {
+    if (request.find("database") == request.end())
+        throw UserError("You must specify DATABASE explicitly");
+
     vector<string> values (request.at("database"));
     if (values.size() != 1)
-        throw UserError("You must specify DATABASE explicitly");
+        throw UserError("You must specify DATABASE as a single value");
     return values[0];
+}
+
+long RequestHandler::port(const Request& request) 
+{
+    long r (9000); // default
+    if (request.find("port") != request.end())
+    {
+        vector<string> values (request.at("port"));
+        if (values.size() != 1 || !(r = atol(values[0].c_str())))
+            throw UserError("You must specify PORT as a single positive integer value");
+    }
+    return r;
 }
 
 vector<string> RequestHandler::pathNamesToStrings(const vector<PathName>& ps)

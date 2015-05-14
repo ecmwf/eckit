@@ -7,22 +7,19 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
+/// @author Piotr Kuchta, May 2015
 
-/// @author Piotr Kuchta - ECMWF March 2015
+#ifndef FileHandleFactory_H
+#define FileHandleFactory_H
 
-#ifndef Request_H
-#define Request_H
+#include "DataHandleFactory.h"
 
-#include <string>
-#include <list>
-#include <vector>
-#include <map>
-#include <ostream>
-
-typedef std::vector<std::string>      Values;
-typedef std::map<std::string, Values> Request;
-
-std::string requestName(const Request&);
-std::ostream& operator<<(std::ostream&, const Request&);
+class FileHandleFactory : public DataHandleFactory
+{
+public:
+    FileHandleFactory();
+protected:
+    eckit::DataHandle* makeHandle(const std::string&);
+};
 
 #endif

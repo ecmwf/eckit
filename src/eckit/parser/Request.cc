@@ -8,7 +8,33 @@
  * does it submit to any jurisdiction.
  */
 
-#include <string>
 #include "Request.h"
+#include "eckit/parser/StringTools.h"
 
-std::string requestName(const Request& r) { return r.at("_verb")[0]; }
+using namespace std;
+using namespace eckit;
+
+string requestName(const Request& r) { return r.at("_verb")[0]; }
+
+//static std::string join(const std::string &, const std::vector<std::string>&);
+
+vector<string> quote(const vector<string>& v)
+{
+    vector<string> r;
+    for (size_t i(0); i < v.size(); ++i)
+        r.push_back("\"" + v[i] + "\"");
+    return r;
+}
+
+
+std::ostream& operator<<(std::ostream& s, const Request& r)
+{
+    s << r.at("_verb")[0];
+    for (std::map<string,Values>::const_iterator it(r.begin()); it != r.end(); ++it)
+    {
+        if (it->first == "_verb")
+            continue;
+        s << ", " << it->first << "=" << StringTools::join("/", quote(it->second));
+    }
+    return s;
+}

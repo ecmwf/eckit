@@ -8,21 +8,22 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Piotr Kuchta - ECMWF March 2015
+#include <sstream>
 
-#ifndef Request_H
-#define Request_H
+#include "eckit/utils/FileHandleFactory.h"
+#include "eckit/io/FileHandle.h"
 
-#include <string>
-#include <list>
-#include <vector>
-#include <map>
-#include <ostream>
+using namespace eckit;
+using namespace std;
 
-typedef std::vector<std::string>      Values;
-typedef std::map<std::string, Values> Request;
+FileHandleFactory::FileHandleFactory()
+: DataHandleFactory("file")
+{}
 
-std::string requestName(const Request&);
-std::ostream& operator<<(std::ostream&, const Request&);
+DataHandle* FileHandleFactory::makeHandle(const string& fileName)
+{
+    return new FileHandle(fileName);
+}
 
-#endif
+FileHandleFactory fileHandleFactory;
+

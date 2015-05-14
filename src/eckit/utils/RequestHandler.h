@@ -26,7 +26,9 @@ public:
     virtual Values handle(const Request&, ExecutionContext&) = 0;
 
     virtual std::string name() const;
+
     static std::string database(const Request& request);
+    static long port(const Request& request);
 
 protected:
     RequestHandler(const std::string&);

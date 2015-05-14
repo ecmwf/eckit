@@ -457,6 +457,8 @@ persist/DumpLoad.cc
 persist/Isa.cc )
 
 list( APPEND eckit_utils_srcs
+utils/DataHandleFactory.cc
+utils/FileHandleFactory.cc
 utils/Interpreter.cc
 utils/Environment.cc
 utils/RequestHandler.cc

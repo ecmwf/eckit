@@ -45,13 +45,13 @@ public: // methods
         return e->as<Matrix>()->value();
     }
 
-    static const size_t rows( const ExpPtr& e )
+    static size_t rows( const ExpPtr& e )
     {
         ASSERT( Matrix::is(e) );
         return e->as<Matrix>()->rows();
     }
 
-    static const size_t cols( const ExpPtr& e )
+    static size_t cols( const ExpPtr& e )
     {
         ASSERT( Matrix::is(e) );
         return e->as<Matrix>()->cols();

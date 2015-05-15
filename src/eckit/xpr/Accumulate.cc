@@ -35,8 +35,8 @@ static const char *opfactory(const Mean&)     { return "xpr::mean"; }
 static const char *opfactory(const Variance&) { return "xpr::variance"; }
 static const char *opfactory(const StdDev&)   { return "xpr::stddev"; }
 
-static const real_t opinit(const Add&) { return 0.; }
-static const real_t opinit(const Mul&) { return 1.; }
+static real_t opinit(const Add&) { return 0.; }
+static real_t opinit(const Mul&) { return 1.; }
 
 //-----------------------------------------------------------------------------
 

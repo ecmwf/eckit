@@ -83,7 +83,7 @@ private: // members
 
 class SeriousBug : public Exception {
 public:
-    SeriousBug(const std::string& w) : Exception(std::string("Serious Bug:") + w) {}
+    SeriousBug(const std::string& w) : Exception(std::string("Serious Bug: ") + w) {}
     SeriousBug(const std::string&,const CodeLocation&);
     SeriousBug(const char*,const CodeLocation&);
 };

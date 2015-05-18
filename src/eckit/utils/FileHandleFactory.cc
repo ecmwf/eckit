@@ -25,5 +25,5 @@ DataHandle* FileHandleFactory::makeHandle(const string& fileName)
     return new FileHandle(fileName);
 }
 
-FileHandleFactory fileHandleFactory;
+static FileHandleFactory fileHandleFactory;
 

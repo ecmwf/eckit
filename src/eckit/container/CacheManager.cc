@@ -52,7 +52,7 @@ PathName CacheManager::stage(const key_t& k) const {
   AutoUmask umask(0);
   // FIXME: mask does not seem to affect first level directory
   p.dirName().mkdir(0777);  // ensure directory exists
-  Log::info() << "CacheManager staging file " << p << std::endl;
+  Log::info() << "CacheManager creating file " << p << std::endl;
   // unique file name avoids race conditions on the file from multiple processes
   return PathName::unique(p);
 }

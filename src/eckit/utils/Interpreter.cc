@@ -17,20 +17,27 @@
 using namespace std;
 using namespace eckit;
 
-Values Interpreter::eval(const std::list<Request>& requests, ExecutionContext& context)
+Values Interpreter::evalList(const Request requests, ExecutionContext& context)
 {
-    Values r;
-    for(list<Request>::const_iterator j (requests.begin()); j != requests.end(); ++j)
+    Values r(0);
+    for(Request request(requests->rest()); request; request = request->rest())
     {
-        const Request& request (*j);
+        delete r;
         r = eval(request, context);
     }
     return r;
 }
 
-Values Interpreter::eval(const Request& request, ExecutionContext& context)
+Values Interpreter::eval(const Request request, ExecutionContext& context)
 {
-    RequestHandler& handler(*context.environment().lookup(requestName(request)));
+    if (request->name() == "_list")
+        return evalList(request, context);
+
+    ASSERT("Currently we evaluate _verb only" && (request->name() == "_verb"));
+    ASSERT(request->value());
+
+    string verb (request->value()->name());
+    RequestHandler& handler(*context.environment().lookup(verb));
 
     Log::info() << "Executing handler " << handler.name() << endl;
 

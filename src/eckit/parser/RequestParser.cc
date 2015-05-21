@@ -35,12 +35,9 @@ public:
     RequestParseError(const char*);
 };
 
-struct RequestParserResult
-{
-    static std::list<Request> result_;
-};
+struct RequestParserResult { static Cell* result_; };
 
-std::list<Request> RequestParser::parse(const std::string& s, bool debug)
+Request RequestParser::parse(const std::string& s, bool debug)
 {
     eckit::TmpFile tempFile;
     std::ofstream stream(std::string(tempFile).c_str());
@@ -50,7 +47,7 @@ std::list<Request> RequestParser::parse(const std::string& s, bool debug)
     return parseFile(tempFile.localPath(), debug);
 }
 
-std::list<Request> RequestParser::parseFile(const char* path, bool debug)
+Request RequestParser::parseFile(const char* path, bool debug)
 {
     RequestParserMutex mutex;
     return parseFileUnprotected(path, debug);
@@ -58,9 +55,9 @@ std::list<Request> RequestParser::parseFile(const char* path, bool debug)
 
 typedef RequestParser ClientRequestParser;
 
-std::list<Request> RequestParser::parseFileUnprotected(const char* path, bool debug)
+Request RequestParser::parseFileUnprotected(const char* path, bool debug)
 {
-    RequestParserResult::result_.clear();
+    RequestParserResult::result_ = 0;
 
     FILE* in (::fopen(path, "r"));
     if(!in) throw eckit::CantOpenFile(path);
@@ -73,13 +70,14 @@ std::list<Request> RequestParser::parseFileUnprotected(const char* path, bool de
     }
     fclose(in);
 
-    std::list<Request> result;
-    std::swap(result, RequestParserResult::result_);
+    Request result (RequestParserResult::result_);
+    RequestParserResult::result_ = 0;
 
+    //result->showGraph("AST");
     return result;
 }
 
-std::list<Request> RequestParserResult::result_ = std::list<Request>();
+Request RequestParserResult::result_ = 0;
 
 eckit::Mutex RequestParserMutex::mutex_;
 RequestParserMutex::RequestParserMutex() : eckit::AutoLock<eckit::Mutex>(mutex_) {}

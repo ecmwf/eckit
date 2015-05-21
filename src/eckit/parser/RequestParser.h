@@ -20,9 +20,9 @@
 class RequestParser
 {
 public:
-    static std::list<Request> parseFile(const char*, bool debug=false);
-    static std::list<Request> parse(const std::string&, bool debug=false);
-    static std::list<Request> parseFileUnprotected(const char*, bool debug=false);
+    static Request parseFile(const char*, bool debug=false);
+    static Request parse(const std::string&, bool debug=false);
+    static Request parseFileUnprotected(const char*, bool debug=false);
 
 private:
     RequestParser(const RequestParser&);

@@ -10,13 +10,35 @@
 
 #include "Request.h"
 #include "eckit/parser/StringTools.h"
+#include "eckit/io/FileHandle.h"
+#include "eckit/parser/StringTools.h"
 
 using namespace std;
 using namespace eckit;
 
-string requestName(const Request& r) { return r.at("_verb")[0]; }
+typedef StringTools S;
 
-//static std::string join(const std::string &, const std::vector<std::string>&);
+Cell::Cell(const std::string& name, Cell* value, Cell* rest)
+: name_(name),
+  value_(value),
+  rest_(rest)
+{}
+
+const std::string& Cell::name() const { return name_; }
+Cell* Cell::value() const { return value_; }
+Cell* Cell::rest() const { return rest_; }
+
+Cell* Cell::value(Cell* v) { return value_ = v; }
+Cell* Cell::rest(Cell* r) { return rest_ = r; }
+
+Cell* Cell::append(Cell* r)
+{ 
+    Cell* last (this);
+    for ( ; last->rest_; last = last->rest_)
+        ;
+    last->rest_ = r;
+    return this;
+}
 
 vector<string> quote(const vector<string>& v)
 {
@@ -26,15 +48,108 @@ vector<string> quote(const vector<string>& v)
     return r;
 }
 
-
-std::ostream& operator<<(std::ostream& s, const Request& r)
+std::ostream& Cell::printAttributes(std::ostream& s, size_t depth) const
 {
-    s << r.at("_verb")[0];
-    for (std::map<string,Values>::const_iterator it(r.begin()); it != r.end(); ++it)
+    for (Request r(rest()); r; r = r->rest())
     {
-        if (it->first == "_verb")
-            continue;
-        s << ", " << it->first << "=" << StringTools::join("/", quote(it->second));
+        s << ", " << r->name() << " = ";
+        r->printValues(s, depth + 1);
     }
     return s;
+}
+
+std::ostream& Cell::printValues(std::ostream& s, size_t depth) const
+{
+    bool many (false);
+    for (Cell* lst(value()); lst; lst = lst->rest(), many = true)
+    {
+        ASSERT(lst->name() == "_list");
+        if (many)
+            s << " / ";
+        if (lst->value()->name().size() && lst->value()->name()[0] != '_')
+        {
+            s << "\"";
+            lst->value()->print(s, depth + 1);
+            s << "\"";
+        }
+        else
+            lst->value()->print(s, depth + 1);
+    }
+    return s;
+}
+
+std::ostream& Cell::print(std::ostream& s, size_t depth) const
+{
+    if (name_ == "_list")
+    {
+        s << value();
+        for (Request lst(rest()); lst; lst = lst->rest())
+        {
+            ASSERT(lst->name() == "_list");
+            s << " / ";
+            ASSERT(lst->value());
+            lst->value()->print(s, depth + 1);
+        }
+    } else
+    if (name_ == "_verb")
+    {
+        s << (depth ? "(" : "") << value_->name();
+        printAttributes(s, depth);
+        s << (depth ? ")" : "");
+        return s;
+    }
+
+    return s << name();
+}
+
+
+std::string Cell::str() const
+{
+    stringstream ss;
+    if (this)
+        ss << this;
+    else
+        ss << "NULL";
+    return ss.str();
+}
+
+ostream& Cell::printDot(ostream& s, bool detailed) const
+{
+    s << "\"node" << (void*) this << "\" [ label=\"<f0>";
+    if (detailed) s << (void*) this;
+    s << " " << name() << " | <f1>value_ | <f2>rest_\" shape = \"record\" ];" << endl;
+    if (value())
+    {
+        s << "\"node" << (void*) this << "\":f1 -> \"node" << (void*) value() << "\":f0;" << endl;
+        value()->printDot(s);
+    }
+    if (rest())
+    {
+        s << "\"node" << (void*) this << "\":f2 -> \"node" << (void*) rest() << "\":f0;" << endl;
+        rest()->printDot(s);
+    }
+    return s;
+}
+
+ostream& Cell::dot(ostream& s, const string& label) const
+{
+    s << "digraph g  {\n"
+        "graph [ rankdir = \"LR\" label=\"" << S::join("\\\"", (S::split("\"", label))) << "\"];\n"
+        "node [ fontsize = \"16\" shape = \"ellipse\" ];\n"
+        "edge [ ];\n";
+    printDot(s);
+    s << "}\n";
+    return s;
+}
+
+void Cell::showGraph(const string& label)
+{
+    stringstream ss;
+    dot(ss, label);
+    string s(ss.str());
+    FileHandle f("graph.gv");
+    f.openForWrite(s.size());
+    f.write(s.c_str(), s.size());
+    system("(dot -Tpng -o graph.png graph.gv && xv graph.png) &");
+
 }

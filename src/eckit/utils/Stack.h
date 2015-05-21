@@ -14,6 +14,7 @@
 
 #include <vector>
 
+#include "eckit/parser/Request.h"
 #include "RequestHandler.h"
 
 class Stack {
@@ -24,7 +25,7 @@ public:
     size_t size() const;
     Values top();
     Values pop();
-    void push(const Values&);
+    void push(const Values);
 
 private:
     std::vector<Values> stack_;

@@ -20,7 +20,7 @@ Stack::Stack() : stack_() {}
 
 size_t Stack::size() const { return stack_.size(); }
 
-void Stack::push(const Values& vs) { stack_.push_back(vs); }
+void Stack::push(const Values vs) { stack_.push_back(vs); }
 
 Values Stack::top()
 {
@@ -43,7 +43,7 @@ Values Stack::pop()
 std::ostream& Stack::print(std::ostream& s) const
 {
     for (size_t i(0); i < stack_.size(); ++i)
-        s << "[" << i << ", " << stack_[i].size() << " values] " << stack_[i] << endl;
+        s << "[" << i << "] " << stack_[i] << endl;
     return s;
 }
 

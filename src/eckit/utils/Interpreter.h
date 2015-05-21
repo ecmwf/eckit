@@ -19,8 +19,9 @@ class ExecutionContext;
 
 class Interpreter {
 public:
-    Values eval(const std::list<Request>&, ExecutionContext&);
-    Values eval(const Request&, ExecutionContext&);
+    Values eval(const Request, ExecutionContext&);
+private:
+    Values evalList(const Request, ExecutionContext&);
 };
 
 #endif

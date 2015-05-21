@@ -18,26 +18,27 @@
 class ExecutionContext;
 namespace eckit { class MultiHandle; }
 
-typedef std::vector<std::string> Values;
-
 class RequestHandler {
 public:
-    virtual Values handle(const Request&) = 0;
-    virtual Values handle(const Request&, ExecutionContext&) = 0;
+    virtual Values handle(const Request) = 0;
+    virtual Values handle(const Request, ExecutionContext&) = 0;
 
     virtual std::string name() const;
 
-    static std::string database(const Request& request);
-    static long port(const Request& request);
+    static std::string database(const Request request);
+    static long port(const Request request);
 
 protected:
     RequestHandler(const std::string&);
 
-    virtual std::string getValueAsString(const Request& request, const std::string& keyword, const std::string& defaultValue) const;
-    virtual eckit::PathName getValueAsPathName(const Request& request, const std::string& keyword, const std::string& defaultValue) const;
-    void popIfNotSet(const std::string&, Request&, ExecutionContext&);
-
-    Values pathNamesToStrings(const std::vector<eckit::PathName>&);
+    static Request setValue(const Request request, const std::string& keyword, const Request value); 
+    static Request setValue(const Request request, const std::string& keyword, const std::string& value); 
+    static Request getValue(const Request request, const std::string& keyword, const Request defaultValue);
+    static std::string getValueAsString(const Request request, const std::string& keyword, const std::string& defaultValue);
+    static std::vector<std::string> getValueAsList(const Request request, const std::string& keyword);
+    static eckit::PathName getValueAsPathName(const Request request, const std::string& keyword, const std::string& defaultValue);
+    static void popIfNotSet(const std::string&, Request, ExecutionContext&);
+    static std::vector<std::string> pathNamesToStrings(const std::vector<eckit::PathName>&);
 
     std::string name_;
 };

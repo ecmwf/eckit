@@ -18,41 +18,20 @@ int yylex();
 /*int yydebug;*/
 #endif
 
-typedef std::pair<std::string,std::vector<std::string> > Par;
-typedef std::list<Request>                               ReqList;
-typedef std::list<Par>                                   ParList;
-
 struct YYSTYPE {
-    std::string               str;
-    ReqList                   req_list;
-    Request                   req;
-    std::vector<std::string>  vec;
-    Par                       par;
-    ParList                   par_list;
+    Cell* v;
+    std::string str;
 };
-
-static void update(Request& r, const ParList& p)
-{
-	for(ParList::const_iterator j (p.begin()); j != p.end(); ++j)
-		r[ (*j).first ] = (*j).second;
-}
-
-static void name(Request& r, const std::string& s)
-{
-    std::vector<std::string> ps;
-    ps.push_back(s);
-    r["_verb"] = ps; 
-}
 
 %}
 
-%type <req_list>requests;
+%type <v>requests;
 
-%type <req>request
+%type <v>request
 %type <str>value
-%type <vec>values
-%type <par>parameter
-%type <par_list>parameters
+%type <v>values
+%type <v>parameter
+%type <v>parameters
 
 %token <str>WORD
 %token <str>STRING
@@ -62,28 +41,27 @@ static void name(Request& r, const std::string& s)
 
 %%
 
-all:	 requests  { RequestParserResult::result_ = $1; }
+all:	 requests                     { RequestParserResult::result_ = $1; }
 	;
 
-requests : request            { $$ = ReqList(); $$.push_back($1); }
-		 | requests request   { $$ = $1;        $$.push_back($2); }
-		 ;
+requests : request                    { $$ = new Cell("_list", $1, 0); }
+		 | requests request           { $$ = ($1)->append(new Cell("_list", $2, 0)); }
 
-request : WORD                     { $$ = Request(); name($$, $1); }
-		| WORD ',' parameters      { $$ = Request(); name($$, $1); update($$, $3); }
-		| WORD '.'                 { $$ = Request(); name($$, $1); }
-		| WORD ',' parameters '.'  { $$ = Request(); name($$, $1); update($$, $3); }
+request : WORD                        { $$ = new Cell("_verb", new Cell($1, 0, 0), 0); }
+		| WORD ',' parameters         { $$ = new Cell("_verb", new Cell($1, 0, 0), $3); }
+		| WORD '.'                    { $$ = new Cell("_verb", new Cell($1, 0, 0), 0); }
+		| WORD ',' parameters '.'     { $$ = new Cell("_verb", new Cell($1, 0, 0), $3); }
 		;
 
-parameters : parameter                { $$ = ParList(); $$.push_back($1);  }
-		   | parameters ',' parameter { $$ = $1;        $$.push_back($3);  }
+parameters : parameter                { $$ = $1; }
+		   | parameters ',' parameter { $$ = ($1)->append($3); }
 		   ;
 
-parameter : WORD '=' values        { $$ = std::pair<std::string,std::vector<std::string> >($1, $3); }
+parameter : WORD '=' values           { $$ = new Cell($1, $3, 0); }
 		  ;
 
-values : value             { $$ = std::vector<std::string>(); $$.push_back($1);  }
-	   | values '/' value  { $$ = $1;                         $$.push_back($3);  }
+values : value                        { $$ = new Cell("_list", new Cell($1, 0, 0), 0); }
+	   | values '/' value             { $$ = ($1)->append(new Cell("_list", new Cell($3, 0, 0), 0)); }
 	   ;
 
 value: WORD   

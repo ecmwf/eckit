@@ -24,6 +24,12 @@ Cell::Cell(const std::string& name, Cell* value, Cell* rest)
   rest_(rest)
 {}
 
+Cell::Cell(Cell* o)
+: name_(o->name_),
+  value_(o->value_ ? new Cell(o->value_) : 0),
+  rest_(o->rest_ ? new Cell(o->rest_) : 0)
+{}
+
 const std::string& Cell::name() const { return name_; }
 Cell* Cell::value() const { return value_; }
 Cell* Cell::rest() const { return rest_; }
@@ -80,6 +86,8 @@ std::ostream& Cell::printValues(std::ostream& s, size_t depth) const
 
 std::ostream& Cell::print(std::ostream& s, size_t depth) const
 {
+    if (! this) return s << "NULL";
+
     if (name_ == "_list")
     {
         s << value();
@@ -142,7 +150,12 @@ ostream& Cell::dot(ostream& s, const string& label) const
     return s;
 }
 
-void Cell::showGraph(const string& label)
+void Cell::showGraph(bool background)
+{
+    showGraph(this->str(), background);
+}
+
+void Cell::showGraph(const string& label, bool background)
 {
     stringstream ss;
     dot(ss, label);
@@ -150,6 +163,11 @@ void Cell::showGraph(const string& label)
     FileHandle f("graph.gv");
     f.openForWrite(s.size());
     f.write(s.c_str(), s.size());
-    system("(dot -Tpng -o graph.png graph.gv && xv graph.png) &");
+    
+    stringstream cmd;
+    cmd << "(dot -Tpng -o graph.png graph.gv && xv graph.png) ";
+    if (background)
+        cmd << "&";
+    system(cmd.str().c_str());
 
 }

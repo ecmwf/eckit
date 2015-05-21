@@ -41,10 +41,15 @@ Values Interpreter::eval(const Request request, ExecutionContext& context)
 
     Log::info() << "Executing handler " << handler.name() << endl;
 
+    //request->showGraph(string("Executing handler ") + handler.name() + ", request: " + request->str(), true);
+
     Values r = handler.handle(request, context);
 
     Log::info() << "Executed " << handler.name() << ". "
                 << (context.stack().size() ? "Stack:\n" : "")
                 << context.stack();
+
+    //request->showGraph(string("Executed handler ") + handler.name() + ", values: " + r->str(), false);
+
     return r;
 }

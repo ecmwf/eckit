@@ -25,6 +25,7 @@
 class Cell {
 public:
     Cell(const std::string&, Cell*, Cell*);
+    Cell(Cell*); // cloning
 
     const std::string& name() const;
     Cell* value() const;
@@ -40,7 +41,8 @@ public:
 
     std::string str() const;
 
-    void showGraph(const std::string&);
+    void showGraph(bool background = false);
+    void showGraph(const std::string&, bool background = false);
 
 private:
     std::string name_;

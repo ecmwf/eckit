@@ -75,11 +75,20 @@ inline std::ostream& __print_list(std::ostream& s,const T& t)
 
 inline std::ostream& __print_list(std::ostream& s,const std::vector<std::string>& t)
 {
-	s << '[';
-	for(Ordinal i = 0; i < t.size(); i++)
-		if(i) s << ',' << t[i]; else s << t[i];
-	s << ']';
-    return s;    
+        s << '[';
+        for(Ordinal i = 0; i < t.size(); i++)
+                if(i) s << ',' << t[i]; else s << t[i];
+        s << ']';
+    return s;
+}
+
+inline std::ostream& __print_list(std::ostream& s,const std::vector<double>& t)
+{
+        s << '[';
+        for(Ordinal i = 0; i < t.size(); i++)
+                if(i) s << ',' << t[i]; else s << t[i];
+        s << ']';
+    return s;
 }
 
 template<class T>

@@ -64,6 +64,8 @@ public:
         x_[ZZ] = p[ZZ];
     }
 
+    void print(std::ostream& s) const;
+
     friend std::ostream& operator<<(std::ostream& s,const Point3& p);
 
 };
@@ -89,11 +91,9 @@ public:
         latlon_to_3d(lat,lon,this->data());
     }
 
-    friend std::ostream& operator<<(std::ostream& s,const LLPoint3& p)
-    {
-        s << '(' << p.lat_ << "," << p.lon_ << ')';
-        return s;
-    }
+    void print(std::ostream& s) const;
+
+    friend std::ostream& operator<<(std::ostream& s,const LLPoint3& p);
 
 };
 

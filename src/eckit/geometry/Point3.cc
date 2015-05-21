@@ -8,15 +8,24 @@ namespace geometry {
 
 //------------------------------------------------------------------------------------------------------
 
+void Point3::print(std::ostream &s) const { s << "Point3["
+                                              << x_[XX] << ","
+                                              << x_[YY] << ","
+                                              << x_[ZZ] << "]"; }
+
 std::ostream& operator<<(std::ostream& s,const Point3& p)
 {
-    s << '(' << p.x_[XX] << ","
-             << p.x_[YY] << ","
-             << p.x_[ZZ] << ')';
-    return s;
+    p.print(s); return s;
 }
 
-//------------------------------------------------------------------------------------------------------
+void LLPoint3::print(std::ostream &s) const { s << "LLPoint3["
+                                                << "lat=" << lat_ << ","
+                                                << "lon=" << lon_ << "]"; }
+
+std::ostream& operator<<(std::ostream& s,const LLPoint3& p)
+{
+    p.print(s); return s;
+}
 
 const double radius_earth = 6367.47; // from ECMWF model ...
 
@@ -70,9 +79,6 @@ void lonlat_to_3d( const double lonlat[], double xyz[], const double r, const do
 {
   latlon_to_3d(lonlat[LAT],lonlat[LON],xyz,r,h);
 }
-
-
-//------------------------------------------------------------------------------------------------------
 
 bool points_equal(const Point3 &a, const Point3 &b)
 {

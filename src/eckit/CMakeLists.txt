@@ -100,6 +100,8 @@ io/AIOHandle.h
 io/AIOHandle.cc
 io/BufferedHandle.h
 io/BufferedHandle.cc
+io/MemoryHandle.h
+io/MemoryHandle.cc
 io/EmptyHandle.h
 io/EmptyHandle.cc
 io/FTPHandle.h

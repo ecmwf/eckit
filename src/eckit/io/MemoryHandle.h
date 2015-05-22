@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -23,17 +23,13 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class MemoryHandle : public DataHandle, public HandleHolder {
+class MemoryHandle : public DataHandle {
 public:
 
 
-    /// Contructor, taking ownership
 
-	MemoryHandle(DataHandle*,size_t = 1024*1024);
-
-    /// Contructor, not taking ownership
-
-	MemoryHandle(DataHandle&,size_t = 1024*1024);
+	MemoryHandle(const void* address,size_t size);
+    MemoryHandle(void* address,size_t size);
 
     /// Destructor
 
@@ -79,19 +75,18 @@ public:
 #endif
 
 private: // methods
-    
-    void bufferFlush();
+
 
 private: // members
-    
-	Buffer               buffer_;
-	size_t               pos_;
-	size_t               size_;
-	size_t               used_;
-    bool                 eof_;
-    bool                 read_;
-    Offset               position_;
-    
+
+	char*          address_;
+    const size_t   size_;
+
+    bool           opened_;
+    bool           readOnly_;
+    bool           read_;
+    Offset         position_;
+
     virtual std::string title() const;
 
 // -- Class members

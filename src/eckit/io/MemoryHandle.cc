@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -23,49 +23,45 @@ Reanimator<MemoryHandle> MemoryHandle::reanimator_;
 #endif
 
 
-MemoryHandle::MemoryHandle(DataHandle* h, size_t size):
-    HandleHolder(h),
-	buffer_(size),
-	pos_(0),
+MemoryHandle::MemoryHandle(const void* address,size_t size):
+	address_(const_cast<char*>(reinterpret_cast<const char*>(address))),
     size_(size),
-    used_(0),
-    eof_(false),
     read_(false),
+    opened_(false),
+    readOnly_(true),
     position_(0)
 {
 }
 
-MemoryHandle::MemoryHandle(DataHandle& h, size_t size):
-    HandleHolder(h),
-	buffer_(size),
-	pos_(0),
+
+MemoryHandle::MemoryHandle(void* address,size_t size):
+    address_(reinterpret_cast<char*>(address)),
     size_(size),
-    used_(0),
-    eof_(false),
+    opened_(false),
     read_(false),
+    readOnly_(false),
     position_(0)
 {
 }
 
-MemoryHandle::~MemoryHandle() 
+MemoryHandle::~MemoryHandle()
 {
 }
 
 Length MemoryHandle::openForRead()
 {
     read_ = true;
-	used_ = pos_ = 0;
-    eof_ = false;
     position_ = 0;
-    return handle().openForRead();
+    opened_ = true;
+    return size_;
 }
 
 void MemoryHandle::openForWrite(const Length& length)
 {
+    ASSERT(!readOnly_);
     read_ = false;
-	pos_ = 0;
     position_ = 0;
-    handle().openForWrite(length);
+    opened_ = true;
 }
 
 void MemoryHandle::openForAppend(const Length& )
@@ -76,149 +72,89 @@ void MemoryHandle::openForAppend(const Length& )
 void MemoryHandle::skip(const Length& len)
 {
     ASSERT(read_);
-    unsigned long long left = used_ - pos_;
-    unsigned long long n    = len;
-
-    if(n < left) {
-        position_ += n;
-        pos_ += n;
-        return;
-    }
-
     seek(position() + len);
 }
 
 long MemoryHandle::read(void* buffer,long length)
 {
-    long len  = 0;
-    long size = length;
+    ASSERT(opened_);
+
     char *buf = (char*)buffer;
 
     ASSERT(read_);
-        
-    if(eof_)
-        return -1;
 
-    while(len < length && !eof_) {
-        long left = used_ - pos_;
-        ASSERT(left>=0);
+    size_t left = size_ - position_;
+    size_t size = std::min(left, size_t(length));
+    ::memcpy(buffer, address_ + position_, size);
+    position_ += size;
 
-        if(left == 0 && !eof_ )
-        {
-            used_   = handle().read(buffer_,size_);
-            pos_    = 0;
-            if(used_ <= 0) 
-            {
-                eof_ = true;
-                len = len ? len : used_;
-                if(len > 0) position_ += len;
-				if(len == 0) return -1;
-                return len;
-            }
-            left = used_;
-        }
-
-		char* p = buffer_;
-        long s = size < left ? size : left;
-		::memcpy(buf + len, p + pos_, s);
-        len  += s; ASSERT(len <= length);
-        pos_ += s; ASSERT(pos_ <= used_);
-        size -= s; ASSERT(size >= 0);
-    }
-
-    if(len > 0) position_ += len;
-	return len;
+	return size;
 }
 
 long MemoryHandle::write(const void* buffer,long length)
 {
-	long left = size_ - pos_;
-	ASSERT(left >= 0);
+    ASSERT(opened_);
+
+	char *buf = (char*)buffer;
 
     ASSERT(!read_);
 
-	if(length > left)
-	{
-		bufferFlush();
-		left = size_;
-	}
+    size_t left = size_ - position_;
+    size_t size = std::min(left, size_t(length));
+    ::memcpy(address_ + position_, buffer, size);
+    position_ += size;
 
-	if(length <= left)
-	{
-		char* p = buffer_;
-		::memcpy(p + pos_, buffer,length);
-		pos_ += length; ASSERT(pos_ <= size_);
-		return length;
-	}
-
-    ASSERT(pos_ == 0);
-    return handle().write(buffer,length);
+    return size;
 }
 
 void MemoryHandle::close()
 {
-	if(!read_) 
-        bufferFlush();
-    handle().close();
+    opened_ = false;
 }
 
 void MemoryHandle::flush()
 {
-    bufferFlush();
-    handle().flush();
+
 }
 
 void MemoryHandle::rewind()
 {
-	used_ = pos_ = 0;
-    eof_  = false;
-    handle().rewind();
+    ASSERT(opened_);
+	position_ = 0;
 }
 
 Offset MemoryHandle::seek(const Offset& off)
 {
-    used_ = pos_ = 0;
-    eof_  = false;
-    position_ = handle().seek(off);
+    ASSERT(opened_);
+    ASSERT(size_t(off) < size_);
+    position_ = off;
     return position_;
 }
 
 
 void MemoryHandle::print(std::ostream& s) const
 {
-	s << "MemoryHandle[";
-    handle().print(s);
-	s << ']';
+	s << "MemoryHandle[size=" << size_ << ']';
 }
 
 Length MemoryHandle::estimate()
 {
-    return handle().estimate();
+    return size_;
 }
 
 Offset MemoryHandle::position()
 {
-    ASSERT(read_);
+    ASSERT(opened_);
     return position_;
 }
 
-void MemoryHandle::bufferFlush()
-{
-	if(pos_)
-	{
-        long len = handle().write(buffer_,pos_);
-		ASSERT( (size_t) len == pos_ );
-		pos_ = 0;
-	}
-}
-
 std::string MemoryHandle::title() const {
-    return std::string("{") + handle().title() + "}";
+    return "<mem>";
 }
 
 DataHandle* MemoryHandle::clone() const
 {
-    return new MemoryHandle(handle().clone(), buffer_.size());
+    return new MemoryHandle(address_, size_);
 }
 //-----------------------------------------------------------------------------
 

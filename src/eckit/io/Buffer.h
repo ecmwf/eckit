@@ -40,6 +40,9 @@ public: // methods
 	operator char*()                 { return (char*)buffer_; }
 	operator const char*() const     { return (char*)buffer_; }
 
+	operator unsigned char*()                 { return (unsigned char*)buffer_; }
+	operator const unsigned char*() const     { return (unsigned char*)buffer_; }
+
 	operator void*()                 { return buffer_; }
 	operator const void*() const     { return buffer_; }
 

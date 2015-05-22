@@ -31,7 +31,7 @@ std::vector<std::string> RequestHandler::getValueAsList(const Request request, c
 
     std::vector<std::string> r;
 
-    Request v (request->value(keyword, 0));
+    Request v (request->valueOrDefault(keyword, 0));
     if (! v)
         throw UserError(string("Keyword '") + keyword + "' not found");
 
@@ -75,10 +75,9 @@ vector<string> RequestHandler::pathNamesToStrings(const vector<PathName>& ps)
 void RequestHandler::popIfNotSet(const string& keyword, Request request, ExecutionContext& context)
 {
     //request->showGraph("popIfNotSet: '" + keyword + "'");
-    Request v(request->value(keyword, 0));
-    if (! v)
+    if (! request->valueOrDefault(keyword, 0))
     {
-        v = context.stack().pop();
+        Request v = context.stack().pop();
 
         Log::info() << keyword << " not set. Using values from the stack: " << v << endl;
 

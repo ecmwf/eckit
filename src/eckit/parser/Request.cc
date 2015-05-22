@@ -60,9 +60,10 @@ Cell* Cell::value(const std::string& keyword, Cell* v)
 {
     //showGraph(string("value: request = ") + str() + ", keyword = " + keyword + ", v = " + v->str());
 
+    std::string k (StringTools::lower(keyword));
     for (Cell* r (this); r; r = r->rest())
     {
-        if (r->name() == keyword)
+        if (StringTools::lower(r->name()) == k)
             return r->value(v);
 
         if (! r->rest())
@@ -92,7 +93,7 @@ std::string Cell::valueAsString(const string& keyword, const std::string& defaul
 {
     //showGraph(string("valueAsString: request = ") + str() + ", keyword = " + keyword);
 
-    Request p (value(keyword, 0));
+    Request p (valueOrDefault(keyword, 0));
 
     //showGraph(string("getValueAsString: found ") + p->str());
 

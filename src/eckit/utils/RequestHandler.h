@@ -31,12 +31,7 @@ public:
 protected:
     RequestHandler(const std::string&);
 
-    static Request setValue(const Request request, const std::string& keyword, const Request value); 
-    static Request setValue(const Request request, const std::string& keyword, const std::string& value); 
-    static Request getValue(const Request request, const std::string& keyword, const Request defaultValue);
-    static std::string getValueAsString(const Request request, const std::string& keyword, const std::string& defaultValue);
     static std::vector<std::string> getValueAsList(const Request request, const std::string& keyword);
-    static eckit::PathName getValueAsPathName(const Request request, const std::string& keyword, const std::string& defaultValue);
     static void popIfNotSet(const std::string&, Request, ExecutionContext&);
     static std::vector<std::string> pathNamesToStrings(const std::vector<eckit::PathName>&);
 

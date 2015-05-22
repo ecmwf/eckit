@@ -19,13 +19,11 @@
 #include <map>
 #include <ostream>
 
-//typedef std::vector<std::string>      Values;
-//typedef std::map<std::string, Values> Request;
-
 class Cell {
 public:
     Cell(const std::string&, Cell*, Cell*);
-    Cell(Cell*); // cloning
+
+    static Cell* clone(Cell*);
 
     const std::string& name() const;
     Cell* value() const;
@@ -37,6 +35,11 @@ public:
 
     Cell* append(Cell*);
 
+    Cell* value(const std::string& keyword, Cell* value); 
+    Cell* value(const std::string& keyword, const std::string& value); 
+    Cell* valueOrDefault(const std::string& keyword, Cell* defaultValue);
+    std::string valueAsString(const std::string& keyword, const std::string& defaultValue);
+
     std::ostream& dot(std::ostream&, const std::string&) const;
 
     std::string str() const;
@@ -45,6 +48,8 @@ public:
     void showGraph(const std::string&, bool background = false);
 
 private:
+    Cell(Cell*); // cloning
+
     std::string name_;
     Cell *value_;
     Cell *rest_;

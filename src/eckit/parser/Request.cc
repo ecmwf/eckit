@@ -30,6 +30,11 @@ Cell::Cell(Cell* o)
   rest_(o->rest_ ? new Cell(o->rest_) : 0)
 {}
 
+Cell* Cell::clone(Cell* c)
+{
+    return c ? new Cell(c) : 0;
+}
+
 const std::string& Cell::name() const { return name_; }
 Cell* Cell::value() const { return value_; }
 Cell* Cell::rest() const { return rest_; }
@@ -44,6 +49,63 @@ Cell* Cell::append(Cell* r)
         ;
     last->rest_ = r;
     return this;
+}
+
+Cell* Cell::value(const std::string& keyword, const std::string& value)
+{
+   return this->value(keyword, new Cell("_list", new Cell(value, 0, 0), 0));
+}
+
+Cell* Cell::value(const std::string& keyword, Cell* v) 
+{
+    //showGraph(string("value: request = ") + str() + ", keyword = " + keyword + ", v = " + v->str());
+
+    for (Cell* r (this); r; r = r->rest())
+    {
+        if (r->name() == keyword)
+            return r->value(v);
+
+        if (! r->rest())
+            return r->rest(new Cell(keyword, v, 0))->value();
+    }
+
+    ASSERT("Should not reach here" && 0);
+    return 0;
+}
+
+Cell* Cell::valueOrDefault(const string& keyword, Cell* defaultValue) 
+{
+    //showGraph(string("valueOrDefault: request = ") + str() + ", keyword = " + keyword);
+    std::string k (StringTools::lower(keyword));
+    Cell* p(0);
+    for (Cell* r (this); r; r = r->rest())
+        if (StringTools::lower(r->name()) == k)
+            p = r;
+
+    if (p == 0)
+        return defaultValue;
+
+    return p;
+}
+
+std::string Cell::valueAsString(const string& keyword, const std::string& defaultValue)
+{
+    //showGraph(string("valueAsString: request = ") + str() + ", keyword = " + keyword);
+
+    Request p (value(keyword, 0));
+
+    //showGraph(string("getValueAsString: found ") + p->str());
+
+    if (! p)
+        return defaultValue;
+
+    ASSERT(p->value()->name() == "_list");
+    string r (p->value()->value()->name());
+
+    if (p->value()->rest())
+        throw UserError(string("Expected only one value of ") + keyword + ", found: " + p->value()->str());
+
+    return r;
 }
 
 vector<string> quote(const vector<string>& v)

@@ -11,15 +11,15 @@
 // File io/MemoryHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef eckit_filesystem_BufferedHandle_h
-#define eckit_filesystem_BufferedHandle_h
+#ifndef eckit_filesystem_MemoryHandle_h
+#define eckit_filesystem_MemoryHandle_h
 
-#include "eckit/io/Buffer.h"
-#include "eckit/io/HandleHolder.h"
+#include "eckit/io/DataHandle.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
+class Buffer;
 
 //-----------------------------------------------------------------------------
 
@@ -27,6 +27,9 @@ class MemoryHandle : public DataHandle {
 public:
 
 
+
+	MemoryHandle(const Buffer&);
+    MemoryHandle(Buffer&);
 
 	MemoryHandle(const void* address,size_t size);
     MemoryHandle(void* address,size_t size);

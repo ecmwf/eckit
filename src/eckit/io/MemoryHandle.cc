@@ -10,6 +10,7 @@
 
 
 #include "eckit/io/MemoryHandle.h"
+#include "eckit/io/Buffer.h"
 
 //-----------------------------------------------------------------------------
 
@@ -22,6 +23,27 @@ ClassSpec MemoryHandle::classSpec_ = {&DataHandle::classSpec(),"MemoryHandle",};
 Reanimator<MemoryHandle> MemoryHandle::reanimator_;
 #endif
 
+
+MemoryHandle::MemoryHandle(const Buffer& buffer):
+	address_(const_cast<Buffer&>(buffer)),
+    size_(buffer.size()),
+    read_(false),
+    opened_(false),
+    readOnly_(true),
+    position_(0)
+{
+}
+
+
+MemoryHandle::MemoryHandle(Buffer& buffer):
+    address_(buffer),
+    size_(buffer.size()),
+    opened_(false),
+    read_(false),
+    readOnly_(false),
+    position_(0)
+{
+}
 
 MemoryHandle::MemoryHandle(const void* address,size_t size):
 	address_(const_cast<char*>(reinterpret_cast<const char*>(address))),

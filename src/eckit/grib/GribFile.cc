@@ -56,7 +56,7 @@ void GribFile::getFieldSet(GribFieldSet& fs) const
     {
             ASSERT(len < buffer.size());
 
-            const char *p = buffer + len - 4;
+            const char *p = (const char*)buffer + len - 4;
 
             if(p[0] != '7' || p[1] != '7' || p[2] != '7' || p[3] != '7')
                 throw eckit::SeriousBug("No 7777 found");
@@ -80,7 +80,7 @@ void GribFile::getBuffer(Buffer& buffer, const Offset& offset, const Length& len
 
     Length len = file_->readSome(buffer);
     ASSERT(len == length);
-    const char *p = buffer + len - 4;
+    const char *p = (const char*)buffer + len - 4;
 
     if(p[0] != '7' || p[1] != '7' || p[2] != '7' || p[3] != '7')
         throw eckit::SeriousBug("No 7777 found");

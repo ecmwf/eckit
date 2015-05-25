@@ -59,11 +59,26 @@ private:
     std::ostream& printValues(std::ostream&, size_t depth=0) const;
 
     std::ostream& printDot(std::ostream&, bool=true) const;
+    std::ostream& printDotList(std::ostream&, bool=true) const;
 
     friend std::ostream& operator<< (std::ostream& s, const Cell *r) { return r->print(s); }
 };
 
 typedef Cell* Values;
 typedef Cell* Request;
+
+class List {
+public:
+    List(Cell*&);
+    List& append(Cell*);
+    List& append(const std::string&);
+
+    std::ostream& print(std::ostream&) const;
+
+private:
+    Cell*& cell_;
+
+    friend std::ostream& operator<<(std::ostream& s, const List& l) { return l.print(s); }
+};
 
 #endif

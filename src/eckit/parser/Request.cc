@@ -109,6 +109,18 @@ std::string Cell::valueAsString(const string& keyword, const std::string& defaul
     return r;
 }
 
+string quote(const string& s) 
+{
+    stringstream ss;
+    for (size_t i(0); i < s.size(); ++i)
+        if (s[i] == '"')
+            ss << "\\\"";
+        else
+            ss << s[i];
+
+    return ss.str();
+}
+
 vector<string> quote(const vector<string>& v)
 {
     vector<string> r;
@@ -186,9 +198,12 @@ std::string Cell::str() const
 
 ostream& Cell::printDot(ostream& s, bool detailed) const
 {
+    if (name() == "_list")
+        return printDotList(s, detailed);
+
     s << "\"node" << (void*) this << "\" [ label=\"<f0>";
     if (detailed) s << (void*) this;
-    s << " " << name() << " | <f1>value_ | <f2>rest_\" shape = \"record\" ];" << endl;
+    s << " " << quote(name()) << " | <f1>value_ | <f2>rest_\" shape = \"record\" ];" << endl;
     if (value())
     {
         s << "\"node" << (void*) this << "\":f1 -> \"node" << (void*) value() << "\":f0;" << endl;
@@ -202,10 +217,42 @@ ostream& Cell::printDot(ostream& s, bool detailed) const
     return s;
 }
 
+ostream& Cell::printDotList(ostream& s, bool detailed) const
+{
+    ASSERT(name() == "_list");
+
+    stringstream listBox, arrows;
+
+    listBox << "\"node" << (void*) this << "\" [ label=\"";
+
+    size_t i(0);
+    for (const Cell* p(this); p; ++i, p = p->rest())
+    {
+        ASSERT(p->name() == "_list");
+
+        if (i)
+            listBox << " | ";
+        listBox << "<f" << i << "> ";
+        if (detailed)
+            listBox << (void*) p;
+
+        if (! (p->value() && (p->value()->value() || p->value()->rest())))
+            listBox << " " << quote(p->value()->name());
+        else
+        {
+            arrows << "\"node" << (void*) this << "\":f" << i << " -> \"node" << (void*) p->value() << "\":f0;" << endl;
+            p->value()->printDot(s);
+        }
+
+    }
+    listBox << "\" shape=\"record\" ]; ";
+    return s << listBox.str() << endl << arrows.str();
+}
+
 ostream& Cell::dot(ostream& s, const string& label) const
 {
     s << "digraph g  {\n"
-        "graph [ rankdir = \"LR\" label=\"" << S::join("\\\"", (S::split("\"", label))) << "\"];\n"
+        "graph [ rankdir = \"LR\" label=\"" << quote(label) << "\"];\n"
         "node [ fontsize = \"16\" shape = \"ellipse\" ];\n"
         "edge [ ];\n";
     printDot(s);
@@ -232,5 +279,26 @@ void Cell::showGraph(const string& label, bool background)
     if (background)
         cmd << "&";
     system(cmd.str().c_str());
-
 }
+
+List::List(Cell*& c) : cell_(c) {}
+
+
+List& List::append(Cell* c)
+{
+    if (cell_ == 0)
+        cell_ = new Cell("_list", c, 0); 
+    else
+        cell_->append(new Cell("_list", c, 0));
+    return *this;
+}
+
+List& List::append(const string& s)
+{
+    return append(new Cell(s, 0, 0));
+}
+
+std::ostream& List::print(std::ostream&) const 
+{
+}
+

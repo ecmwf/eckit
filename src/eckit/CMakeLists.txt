@@ -223,6 +223,8 @@ config/Configurable.h
 config/Configurable.cc
 config/EtcTable.h
 config/EtcTable.cc
+config/Parametrisation.h
+config/Parametrisation.cc
 config/FileReadPolicy.h
 config/FileReadPolicy.cc
 config/ResourceBase.cc )

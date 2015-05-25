@@ -112,11 +112,20 @@ std::string Cell::valueAsString(const string& keyword, const std::string& defaul
 string quote(const string& s) 
 {
     stringstream ss;
+
     for (size_t i(0); i < s.size(); ++i)
-        if (s[i] == '"')
-            ss << "\\\"";
-        else
-            ss << s[i];
+        switch (s[i]) {
+            case '"':
+                ss << "\\\"";
+                break;
+            case '{': 
+            case '}': 
+                ss << "\\" << s[i];
+                break;
+            default: 
+                ss << s[i];
+                break;
+        }
 
     return ss.str();
 }
@@ -165,7 +174,7 @@ std::ostream& Cell::print(std::ostream& s, size_t depth) const
 
     if (name_ == "_list")
     {
-        s << value();
+        value()->print(s, depth + 1);
         for (Request lst(rest()); lst; lst = lst->rest())
         {
             ASSERT(lst->name() == "_list");
@@ -173,11 +182,13 @@ std::ostream& Cell::print(std::ostream& s, size_t depth) const
             ASSERT(lst->value());
             lst->value()->print(s, depth + 1);
         }
-    } else
+        return s;
+    } 
+
     if (name_ == "_verb")
     {
         s << (depth ? "(" : "") << value_->name();
-        printAttributes(s, depth);
+        printAttributes(s, depth+ 1);
         s << (depth ? ")" : "");
         return s;
     }
@@ -198,8 +209,12 @@ std::string Cell::str() const
 
 ostream& Cell::printDot(ostream& s, bool detailed) const
 {
-    if (name() == "_list")
-        return printDotList(s, detailed);
+    bool clever (true);
+    if (clever)
+    {
+        if (name() == "_list") return printDotList(s, detailed);
+        if (name() == "_verb") return printDotVerb(s, detailed);
+    }
 
     s << "\"node" << (void*) this << "\" [ label=\"<f0>";
     if (detailed) s << (void*) this;
@@ -215,6 +230,47 @@ ostream& Cell::printDot(ostream& s, bool detailed) const
         rest()->printDot(s);
     }
     return s;
+}
+
+bool oneElementList(Cell* p)
+{
+    return p->name() == "_list"
+         && p->value() 
+         && ! p->rest()
+         && ! (p->value()->name() == "_list")
+           ;
+}
+
+ostream& Cell::printDotVerb(ostream& s, bool detailed) const
+{
+    ASSERT(name() == "_verb");
+
+    stringstream listBox, arrows;
+
+    listBox << "\"node" << (void*) this << "\" [ label=\"<f0>";
+    if (detailed)
+        listBox << (void*) this;
+    listBox << " " << quote(value()->name());
+
+    size_t i(1);
+    for (const Cell* p(rest()); p; ++i, p = p->rest())
+    {
+        listBox << " | <f" << i << "> ";
+        if (detailed)
+            listBox << (void*) p;
+
+        listBox << " " << p->name() << " = "; 
+        if (oneElementList(p->value()))
+            listBox << quote(p->value()->value()->name());
+        else
+        {
+            arrows << "\"node" << (void*) this << "\":f" << i << " -> \"node" << (void*) p->value() << "\":f0;" << endl;
+            p->value()->printDot(s);
+        }
+
+    }
+    listBox << "\" shape=\"record\" ]; ";
+    return s << listBox.str() << endl << arrows.str();
 }
 
 ostream& Cell::printDotList(ostream& s, bool detailed) const

@@ -60,6 +60,7 @@ private:
 
     std::ostream& printDot(std::ostream&, bool=true) const;
     std::ostream& printDotList(std::ostream&, bool=true) const;
+    std::ostream& printDotVerb(std::ostream&, bool=true) const;
 
     friend std::ostream& operator<< (std::ostream& s, const Cell *r) { return r->print(s); }
 };

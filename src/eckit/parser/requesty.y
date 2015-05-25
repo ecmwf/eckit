@@ -28,7 +28,7 @@ struct YYSTYPE {
 %type <v>requests;
 
 %type <v>request
-%type <str>value
+%type <v>value
 %type <v>values
 %type <v>parameter
 %type <v>parameters
@@ -60,13 +60,14 @@ parameters : parameter                { $$ = $1; }
 parameter : WORD '=' values           { $$ = new Cell($1, $3, 0); }
 		  ;
 
-values : value                        { $$ = new Cell("_list", new Cell($1, 0, 0), 0); }
-	   | values '/' value             { $$ = ($1)->append(new Cell("_list", new Cell($3, 0, 0), 0)); }
+values : value                        { $$ = new Cell("_list", $1, 0); }
+	   | values '/' value             { $$ = ($1)->append(new Cell("_list", $3, 0)); }
 	   ;
 
-value: WORD   
-	 | STRING 
-	 | NUMB
+value: WORD                           { $$ = new Cell($1, 0, 0); } 
+	 | STRING                         { $$ = new Cell($1, 0, 0); }
+	 | NUMB                           { $$ = new Cell($1, 0, 0); }
+     | '(' requests ')'               { $$ = $2; }
 	 ;
 
 %%

@@ -15,10 +15,8 @@
 #ifndef eckit_config_Parametrisation_H
 #define Peckit_config_arametrisation_H
 
-#include <iosfwd>
 #include <string>
 #include <vector>
-
 
 namespace eckit {
 
@@ -31,11 +29,8 @@ class Parametrisation {
 
 // -- Contructors
 
-    Parametrisation();
 
 // -- Destructor
-
-    virtual ~Parametrisation(); // Change to virtual if base class
 
 // -- Convertors
     // None
@@ -74,7 +69,6 @@ class Parametrisation {
 
 // -- Methods
 
-    virtual void print(std::ostream&) const = 0; // Change to virtual if base class
 
 // -- Overridden methods
     // None
@@ -88,9 +82,6 @@ class Parametrisation {
   private:
 
 // No copy allowed
-
-    Parametrisation(const Parametrisation&);
-    Parametrisation& operator=(const Parametrisation&);
 
 // -- Members
     // None
@@ -109,10 +100,6 @@ class Parametrisation {
 
 // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& s, const Parametrisation& p) {
-        p.print(s);
-        return s;
-    }
 
 };
 

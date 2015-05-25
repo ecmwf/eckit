@@ -30,11 +30,11 @@ public: // methods
 
     /// Empty contructor
     CodeLocation():
-        file_(0), line_(0), func_(0) {}
+        line_(0), file_(0), func_(0) {}
 
     /// Full Contructor
     CodeLocation( const char * file, int line, const char * func):
-        file_(file), line_(line), func_(func) {}
+        line_(line), file_(file), func_(func) {}
 
     /// @return as std::string
     std::string asString() const;

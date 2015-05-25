@@ -13,7 +13,7 @@
 
 
 #ifndef eckit_config_Parametrisation_H
-#define Peckit_config_arametrisation_H
+#define eckit_config_Parametrisation_H
 
 #include <string>
 #include <vector>

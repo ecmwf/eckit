@@ -21,15 +21,17 @@
 
 class Cell {
 public:
-    Cell(const std::string&, Cell*, Cell*);
+    Cell(const std::string&, const std::string&, Cell*, Cell*);
 
     static Cell* clone(Cell*);
 
-    const std::string& name() const;
+    const std::string& tag() const;
+    const std::string& text() const;
     Cell* value() const;
     Cell* rest() const;
 
-    Cell* name(const std::string&);
+    Cell* tag(const std::string&);
+    Cell* text(const std::string&);
     Cell* value(Cell*);
     Cell* rest(Cell*);
 
@@ -50,7 +52,8 @@ public:
 private:
     Cell(Cell*); // cloning
 
-    std::string name_;
+    std::string text_;
+    std::string tag_;
     Cell *value_;
     Cell *rest_;
 

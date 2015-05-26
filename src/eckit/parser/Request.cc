@@ -18,14 +18,16 @@ using namespace eckit;
 
 typedef StringTools S;
 
-Cell::Cell(const std::string& name, Cell* value, Cell* rest)
-: name_(name),
+Cell::Cell(const std::string& tag, const std::string& text, Cell* value, Cell* rest)
+: tag_(tag),
+  text_(text),
   value_(value),
   rest_(rest)
 {}
 
 Cell::Cell(Cell* o)
-: name_(o->name_),
+: tag_(o->tag_),
+  text_(o->text_),
   value_(o->value_ ? new Cell(o->value_) : 0),
   rest_(o->rest_ ? new Cell(o->rest_) : 0)
 {}
@@ -35,7 +37,8 @@ Cell* Cell::clone(Cell* c)
     return c ? new Cell(c) : 0;
 }
 
-const std::string& Cell::name() const { return name_; }
+const std::string& Cell::tag() const { return tag_; }
+const std::string& Cell::text() const { return text_; }
 Cell* Cell::value() const { return value_; }
 Cell* Cell::rest() const { return rest_; }
 
@@ -53,7 +56,7 @@ Cell* Cell::append(Cell* r)
 
 Cell* Cell::value(const std::string& keyword, const std::string& value)
 {
-   return this->value(keyword, new Cell("_list", new Cell(value, 0, 0), 0));
+   return this->value(keyword, new Cell("_list", "", new Cell("", value, 0, 0), 0));
 }
 
 Cell* Cell::value(const std::string& keyword, Cell* v) 
@@ -63,11 +66,11 @@ Cell* Cell::value(const std::string& keyword, Cell* v)
     std::string k (StringTools::lower(keyword));
     for (Cell* r (this); r; r = r->rest())
     {
-        if (StringTools::lower(r->name()) == k)
+        if (StringTools::lower(r->text()) == k)
             return r->value(v);
 
         if (! r->rest())
-            return r->rest(new Cell(keyword, v, 0))->value();
+            return r->rest(new Cell("", keyword, v, 0))->value();
     }
 
     ASSERT("Should not reach here" && 0);
@@ -80,7 +83,7 @@ Cell* Cell::valueOrDefault(const string& keyword, Cell* defaultValue)
     std::string k (StringTools::lower(keyword));
     Cell* p(0);
     for (Cell* r (this); r; r = r->rest())
-        if (StringTools::lower(r->name()) == k)
+        if (StringTools::lower(r->text()) == k)
             p = r;
 
     if (p == 0)
@@ -100,8 +103,8 @@ std::string Cell::valueAsString(const string& keyword, const std::string& defaul
     if (! p)
         return defaultValue;
 
-    ASSERT(p->value()->name() == "_list");
-    string r (p->value()->value()->name());
+    ASSERT(p->value()->tag() == "_list");
+    string r (p->value()->value()->text());
 
     if (p->value()->rest())
         throw UserError(string("Expected only one value of ") + keyword + ", found: " + p->value()->str());
@@ -142,7 +145,7 @@ std::ostream& Cell::printAttributes(std::ostream& s, size_t depth) const
 {
     for (Request r(rest()); r; r = r->rest())
     {
-        s << ", " << r->name() << " = ";
+        s << ", " << r->text() << " = ";
         r->printValues(s, depth + 1);
     }
     return s;
@@ -153,10 +156,10 @@ std::ostream& Cell::printValues(std::ostream& s, size_t depth) const
     bool many (false);
     for (Cell* lst(value()); lst; lst = lst->rest(), many = true)
     {
-        ASSERT(lst->name() == "_list");
+        ASSERT(lst->tag() == "_list");
         if (many)
             s << " / ";
-        if (lst->value()->name().size() && lst->value()->name()[0] != '_')
+        if (lst->value()->text().size())
         {
             s << "\"";
             lst->value()->print(s, depth + 1);
@@ -172,12 +175,12 @@ std::ostream& Cell::print(std::ostream& s, size_t depth) const
 {
     if (! this) return s << "NULL";
 
-    if (name_ == "_list")
+    if (tag_ == "_list")
     {
         value()->print(s, depth + 1);
         for (Request lst(rest()); lst; lst = lst->rest())
         {
-            ASSERT(lst->name() == "_list");
+            ASSERT(lst->tag() == "_list");
             s << " / ";
             ASSERT(lst->value());
             lst->value()->print(s, depth + 1);
@@ -185,15 +188,15 @@ std::ostream& Cell::print(std::ostream& s, size_t depth) const
         return s;
     } 
 
-    if (name_ == "_verb")
+    if (tag_ == "_verb")
     {
-        s << (depth ? "(" : "") << value_->name();
+        s << (depth ? "(" : "") << text_;
         printAttributes(s, depth+ 1);
         s << (depth ? ")" : "");
         return s;
     }
 
-    return s << name();
+    return s << text();
 }
 
 
@@ -212,13 +215,13 @@ ostream& Cell::printDot(ostream& s, bool detailed) const
     bool clever (true);
     if (clever)
     {
-        if (name() == "_list") return printDotList(s, detailed);
-        if (name() == "_verb") return printDotVerb(s, detailed);
+        if (tag() == "_list") return printDotList(s, detailed);
+        if (tag() == "_verb") return printDotVerb(s, detailed);
     }
 
     s << "\"node" << (void*) this << "\" [ label=\"<f0>";
     if (detailed) s << (void*) this;
-    s << " " << quote(name()) << " | <f1>value_ | <f2>rest_\" shape = \"record\" ];" << endl;
+    s << " " << quote(text()) << " | <f1>value_ | <f2>rest_\" shape = \"record\" ];" << endl;
     if (value())
     {
         s << "\"node" << (void*) this << "\":f1 -> \"node" << (void*) value() << "\":f0;" << endl;
@@ -234,23 +237,23 @@ ostream& Cell::printDot(ostream& s, bool detailed) const
 
 bool oneElementList(Cell* p)
 {
-    return p->name() == "_list"
+    return p->tag() == "_list"
          && p->value() 
          && ! p->rest()
-         && ! (p->value()->name() == "_list")
+         && ! (p->value()->tag() == "_list")
            ;
 }
 
 ostream& Cell::printDotVerb(ostream& s, bool detailed) const
 {
-    ASSERT(name() == "_verb");
+    ASSERT(tag() == "_verb");
 
     stringstream listBox, arrows;
 
     listBox << "\"node" << (void*) this << "\" [ label=\"<f0>";
     if (detailed)
         listBox << (void*) this;
-    listBox << " " << quote(value()->name());
+    listBox << " " << quote(text());
 
     size_t i(1);
     for (const Cell* p(rest()); p; ++i, p = p->rest())
@@ -259,9 +262,9 @@ ostream& Cell::printDotVerb(ostream& s, bool detailed) const
         if (detailed)
             listBox << (void*) p;
 
-        listBox << " " << p->name() << " = "; 
+        listBox << " " << p->text() << " = "; 
         if (oneElementList(p->value()))
-            listBox << quote(p->value()->value()->name());
+            listBox << quote(p->value()->value()->text());
         else
         {
             arrows << "\"node" << (void*) this << "\":f" << i << " -> \"node" << (void*) p->value() << "\":f0;" << endl;
@@ -275,7 +278,7 @@ ostream& Cell::printDotVerb(ostream& s, bool detailed) const
 
 ostream& Cell::printDotList(ostream& s, bool detailed) const
 {
-    ASSERT(name() == "_list");
+    ASSERT(tag() == "_list");
 
     stringstream listBox, arrows;
 
@@ -284,7 +287,7 @@ ostream& Cell::printDotList(ostream& s, bool detailed) const
     size_t i(0);
     for (const Cell* p(this); p; ++i, p = p->rest())
     {
-        ASSERT(p->name() == "_list");
+        ASSERT(p->tag() == "_list");
 
         if (i)
             listBox << " | ";
@@ -293,7 +296,7 @@ ostream& Cell::printDotList(ostream& s, bool detailed) const
             listBox << (void*) p;
 
         if (! (p->value() && (p->value()->value() || p->value()->rest())))
-            listBox << " " << quote(p->value()->name());
+            listBox << " " << quote(p->value()->text());
         else
         {
             arrows << "\"node" << (void*) this << "\":f" << i << " -> \"node" << (void*) p->value() << "\":f0;" << endl;
@@ -343,15 +346,15 @@ List::List(Cell*& c) : cell_(c) {}
 List& List::append(Cell* c)
 {
     if (cell_ == 0)
-        cell_ = new Cell("_list", c, 0); 
+        cell_ = new Cell("_list", "", c, 0); 
     else
-        cell_->append(new Cell("_list", c, 0));
+        cell_->append(new Cell("_list", "", c, 0));
     return *this;
 }
 
 List& List::append(const string& s)
 {
-    return append(new Cell(s, 0, 0));
+    return append(new Cell("", s, 0, 0));
 }
 
 std::ostream& List::print(std::ostream&) const 

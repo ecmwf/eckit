@@ -30,13 +30,13 @@ Values Interpreter::evalList(const Request requests, ExecutionContext& context)
 
 Values Interpreter::eval(const Request request, ExecutionContext& context)
 {
-    if (request->name() == "_list")
+    if (request->tag() == "_list")
         return evalList(request, context);
 
-    ASSERT("Currently we evaluate _verb only" && (request->name() == "_verb"));
-    ASSERT(request->value());
+    ASSERT("Currently we evaluate _verb only" && (request->tag() == "_verb"));
+    ASSERT(request->text().size());
 
-    string verb (request->value()->name());
+    string verb (request->text());
     RequestHandler& handler(*context.environment().lookup(verb));
 
     Log::info() << "Executing handler " << handler.name() << endl;

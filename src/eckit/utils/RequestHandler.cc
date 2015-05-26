@@ -35,10 +35,10 @@ std::vector<std::string> RequestHandler::getValueAsList(const Request request, c
     if (! v)
         throw UserError(string("Keyword '") + keyword + "' not found");
 
-    ASSERT(v->value() && v->value()->name() == "_list");
+    ASSERT(v->value() && v->value()->tag() == "_list");
 
     for (Request p(v->value()); p; p = p->rest())
-        r.push_back(p->value()->name());
+        r.push_back(p->value()->text());
 
     Log::info() << "getValueAsList(request=" << request <<  ", keyword=" << keyword << ") => " << r << endl;
 

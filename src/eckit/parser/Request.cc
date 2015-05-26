@@ -112,6 +112,21 @@ std::string Cell::valueAsString(const string& keyword, const std::string& defaul
     return r;
 }
 
+string snippet(const string& s, size_t maxCharacters, size_t maxLines) 
+{
+    stringstream ss;
+
+    size_t i(0), nl(0);
+    for ( ;  i < s.size() && i < maxCharacters && nl < maxLines; ++i)
+    {
+        if (s[i] == '\n')
+            ++nl;
+        ss << s[i];
+    }
+
+    return ss.str() + (i < s.size() ? "..." : "");
+}
+
 string quote(const string& s) 
 {
     stringstream ss;
@@ -125,6 +140,9 @@ string quote(const string& s)
             case '}': 
                 ss << "\\" << s[i];
                 break;
+            case '\n':
+                ss << "\\n";
+                break;
             default: 
                 ss << s[i];
                 break;
@@ -132,6 +150,8 @@ string quote(const string& s)
 
     return ss.str();
 }
+
+string quotedSnippet(const string& s) { return quote(snippet(s, 500, 3)); }
 
 vector<string> quote(const vector<string>& v)
 {
@@ -221,7 +241,7 @@ ostream& Cell::printDot(ostream& s, bool detailed) const
 
     s << "\"node" << (void*) this << "\" [ label=\"<f0>";
     if (detailed) s << (void*) this;
-    s << " " << quote(text()) << " | <f1>value_ | <f2>rest_\" shape = \"record\" ];" << endl;
+    s << " " << quotedSnippet(text()) << " | <f1>value_ | <f2>rest_\" shape = \"record\" ];" << endl;
     if (value())
     {
         s << "\"node" << (void*) this << "\":f1 -> \"node" << (void*) value() << "\":f0;" << endl;
@@ -244,27 +264,37 @@ bool oneElementList(Cell* p)
            ;
 }
 
+bool textElement(Cell* p)
+{
+    return p
+        && p->text().size()
+        //&& ! p->tag().size()
+        && ! p->value()
+        && ! p->rest()
+        ;
+}
+
 ostream& Cell::printDotVerb(ostream& s, bool detailed) const
 {
     ASSERT(tag() == "_verb");
 
-    stringstream listBox, arrows;
+    stringstream box, arrows;
 
-    listBox << "\"node" << (void*) this << "\" [ label=\"<f0>";
+    box << "\"node" << (void*) this << "\" [ label=\"<f0>";
     if (detailed)
-        listBox << (void*) this;
-    listBox << " " << quote(text());
+        box << (void*) this;
+    box << " " << quotedSnippet(text()) << ",";
 
     size_t i(1);
     for (const Cell* p(rest()); p; ++i, p = p->rest())
     {
-        listBox << " | <f" << i << "> ";
+        box << " | <f" << i << "> ";
         if (detailed)
-            listBox << (void*) p;
+            box << (void*) p;
 
-        listBox << " " << p->text() << " = "; 
+        box << " " << p->text() << " = "; 
         if (oneElementList(p->value()))
-            listBox << quote(p->value()->value()->text());
+            box << quotedSnippet(p->value()->value()->text());
         else
         {
             arrows << "\"node" << (void*) this << "\":f" << i << " -> \"node" << (void*) p->value() << "\":f0;" << endl;
@@ -272,46 +302,46 @@ ostream& Cell::printDotVerb(ostream& s, bool detailed) const
         }
 
     }
-    listBox << "\" shape=\"record\" ]; ";
-    return s << listBox.str() << endl << arrows.str();
+    box << "\" shape=\"record\" ]; ";
+    return s << box.str() << endl << arrows.str();
 }
 
 ostream& Cell::printDotList(ostream& s, bool detailed) const
 {
     ASSERT(tag() == "_list");
 
-    stringstream listBox, arrows;
+    stringstream box, arrows;
 
-    listBox << "\"node" << (void*) this << "\" [ label=\"";
+    box << "\"node" << (void*) this << "\" [ label=\"<f0> [] ";
 
     size_t i(0);
     for (const Cell* p(this); p; ++i, p = p->rest())
     {
         ASSERT(p->tag() == "_list");
 
-        if (i)
-            listBox << " | ";
-        listBox << "<f" << i << "> ";
+        if (i) 
+            box << " | <f" << i << "> ";
+ 
         if (detailed)
-            listBox << (void*) p;
+            box << (void*) p;
 
-        if (! (p->value() && (p->value()->value() || p->value()->rest())))
-            listBox << " " << quote(p->value()->text());
+        if (textElement(p->value()))
+            box << "  " << quotedSnippet(p->value()->text());
         else
         {
             arrows << "\"node" << (void*) this << "\":f" << i << " -> \"node" << (void*) p->value() << "\":f0;" << endl;
-            p->value()->printDot(s);
+            p->value()->printDot(s, detailed);
         }
 
     }
-    listBox << "\" shape=\"record\" ]; ";
-    return s << listBox.str() << endl << arrows.str();
+    box << "\" shape=\"record\" ]; ";
+    return s << box.str() << endl << arrows.str();
 }
 
 ostream& Cell::dot(ostream& s, const string& label) const
 {
     s << "digraph g  {\n"
-        "graph [ rankdir = \"LR\" label=\"" << quote(label) << "\"];\n"
+        "graph [ rankdir = \"LR\" label=\"" << quotedSnippet(label) << "\"];\n"
         "node [ fontsize = \"16\" shape = \"ellipse\" ];\n"
         "edge [ ];\n";
     printDot(s);
@@ -341,7 +371,6 @@ void Cell::showGraph(const string& label, bool background)
 }
 
 List::List(Cell*& c) : cell_(c) {}
-
 
 List& List::append(Cell* c)
 {

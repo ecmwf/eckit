@@ -573,13 +573,11 @@ ecbuild_add_library(TARGET eckit
 					LIBS
 						${CMAKE_THREAD_LIBS_INIT} ${AIO_LIBRARIES} )
 
-### sub-driectories
+### sub-directories
 
 add_subdirectory( web )
 
 add_subdirectory( maths )
-
-add_subdirectory( xpr )
 
 add_subdirectory( geometry )
 

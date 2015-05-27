@@ -15,6 +15,5 @@ add_subdirectory( thread )
 add_subdirectory( types )
 add_subdirectory( utils )
 add_subdirectory( value )
-add_subdirectory( xpr )
 add_subdirectory( mpi )
 

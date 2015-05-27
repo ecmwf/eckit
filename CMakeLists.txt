@@ -66,13 +66,6 @@ ecbuild_add_option( FEATURE GRIB
 
 set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
 
-### eckit::xpr
-
-ecbuild_add_option( FEATURE XPR
-                    DEFAULT ON
-                    DESCRIPTION "eckit::xpr [EXPERIMENTAL]"
-                    CONDITION HAVE_CPP11 )
-
 ### eckit::mpi
 
 ecbuild_add_option( FEATURE MPI
@@ -164,10 +157,6 @@ if( HAVE_EIGEN )
         list( APPEND ECKIT_TPLS Eigen3 )
 
     endif()
-endif()
-
-if( HAVE_XPR )
-  list( APPEND ECKIT_LIBRARIES eckit_xpr )
 endif()
 
 if( HAVE_ECKIT_MPI )

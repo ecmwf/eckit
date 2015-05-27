@@ -35,28 +35,6 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-### Check for C++11 support
-
-list( APPEND cpp11_req
-      auto constexpr constructor_delegate cstdint decltype deleted_constructor
-      initialization lambda long_double long_long noexcept nullptr override
-      rvalue_references shared_ptr sizeof_member static_assert template_alias
-      type_traits unique_ptr variadic_templates )
-
-# currently not included: __func__ random_device trivial_type_traits explicit_cast enable_if
-
-ecbuild_check_cxx11( PRINT FEATURES ${cpp11_req} )
-
-# If any features are not supported
-if( NOT CXX11_NOT_SUPPORTED_FEATURES )
-    set( HAVE_CPP11 ON )
-    message( STATUS "Required C++11 features detected" )
-    message( STATUS "  enabling C++11 support" )
-else()
-    message( STATUS "Required C++11 features not detected" )
-    message( STATUS "  disabling C++11 support" )
-endif()
-
 ### GRIB
 
 ecbuild_add_option( FEATURE GRIB

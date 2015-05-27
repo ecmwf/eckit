@@ -89,7 +89,6 @@ static void before_main(int argc, char* argv[], char* envp[]) {
     fclose(f);
   }
 
-#endif
 }
 
 //-----------------------------------------------------------------------------

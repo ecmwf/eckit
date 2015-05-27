@@ -43,6 +43,8 @@ static void before_main(int argc, char* argv[], char* envp[]) {
   saved_argv = argv;
   saved_envp = envp;
 
+#if !defined(EC_ATTRIBUTE_CONSTRUCTOR_INITS_ARGV) && defined(EC_HAVE_PROCFS)
+
  FILE* f = fopen("/proc/self/cmdline", "r");
   int max = 0;
 
@@ -88,6 +90,8 @@ static void before_main(int argc, char* argv[], char* envp[]) {
     }
     fclose(f);
   }
+
+#endif
 
 }
 

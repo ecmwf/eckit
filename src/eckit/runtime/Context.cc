@@ -38,15 +38,19 @@ static char** saved_envp = 0;
 __attribute__((__constructor__))
 #endif
 static void before_main(int argc, char* argv[], char* envp[]) {
-#if 0
+
   saved_argc = argc;
   saved_argv = argv;
   saved_envp = envp;
-#else
-  FILE* f = fopen("/proc/self/cmdline", "r");
+
+ FILE* f = fopen("/proc/self/cmdline", "r");
   int max = 0;
 
   if(f) {
+        saved_argc = 0;
+        saved_argc = 0;
+        saved_envp = 0;
+
         int c = 0;
         int n = 0;
 

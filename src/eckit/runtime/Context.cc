@@ -62,7 +62,7 @@ static void before_main(int argc, char* argv[], char* envp[]) {
             else {
                 n++;
                 if(n > max) {
-                    n = max;
+                    max = n;
                 }
             }
     }

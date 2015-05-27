@@ -94,8 +94,8 @@ std::string Context::argv(int n) const {
   AutoLock<Mutex> lock(local_mutex);
   ASSERT(argc_ != 0 && argv_ != 0);  // check initialized
   ASSERT(n < argc_ && n >= 0);       // check bounds
-  ASSERT(argv_[n] != 0);             // check initialized
-  return argv_[n];
+  // ASSERT(argv_[n] != 0);             // check initialized??
+  return argv_[n] ? argv_[n] : "<undefined>";
 }
 
 char** Context::argvs() const { return argv_; }

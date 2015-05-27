@@ -38,9 +38,54 @@ static char** saved_envp = 0;
 __attribute__((__constructor__))
 #endif
 static void before_main(int argc, char* argv[], char* envp[]) {
+#if 0
   saved_argc = argc;
   saved_argv = argv;
   saved_envp = envp;
+#else
+  FILE* f = fopen("/proc/self/cmdline", "r");
+  int max = 0;
+
+  if(f) {
+        int c = 0;
+        int n = 0;
+
+        while( (c = fgetc(f)) != -1) {
+            if(c == 0) {
+                n = 0;
+                saved_argc++;
+            }
+            else {
+                n++;
+                if(n > max) {
+                    n = max;
+                }
+            }
+    }
+    fclose(f);
+  }
+
+  f = fopen("/proc/self/cmdline", "r");
+  if(f) {
+        int c = 0;
+        int i = 0;
+        char *p = 0;
+        saved_argv = (char**)malloc(saved_argc * sizeof(char*));
+        p = saved_argv[i] = (char*)malloc(max + 1);
+
+        while( (c = fgetc(f)) != -1) {
+            *p++ = c;
+            if(c == 0) {
+                 i++;
+                 if(i < saved_argc) {
+                    p = saved_argv[i] = (char*)malloc(max + 1);
+                }
+            }
+    }
+    fclose(f);
+  }
+
+#endif
 }
 
 //-----------------------------------------------------------------------------

@@ -3,3 +3,4 @@ BasedOnStyle:                      Google
 ColumnLimit:                       120
 AccessModifierOffset:              -2
 AllowShortFunctionsOnASingleLine:  Inline
+KeepEmptyLinesAtTheStartOfBlocks:  true

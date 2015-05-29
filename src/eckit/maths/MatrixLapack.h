@@ -52,13 +52,13 @@ namespace detail
 	}
 }
 
-template <typename Scalar>
+template <typename Scalar, typename Index = std::ptrdiff_t>
 class Matrix {
 
 private:
 
 	Scalar* data_;
-	int nr_, nc_;
+	Index nr_, nc_;
 	bool is_proxy_;
 
 public:
@@ -104,7 +104,7 @@ public:
 		memcpy( data_, other.data(), sizeof(Scalar)*nr_*nc_ );
 	}
 
-	void resize(int nr, int nc)
+	void resize(Index nr, Index nc)
 	{
 		if( is_proxy_ )
 		{
@@ -143,11 +143,11 @@ public:
 		return data_;
 	}
 
-	int size() const { return nr_*nc_; }
+	Index size() const { return nr_*nc_; }
 
-	int rows() const { return nr_; }
+	Index rows() const { return nr_; }
 
-	int cols() const { return nc_; }
+	Index cols() const { return nc_; }
 
 	template<typename T>
 	Scalar& operator()(const T& i)
@@ -177,7 +177,7 @@ public:
 	Matrix row(const T& i) const
 	{
 		Matrix r(1,nc_);
-		for( int j=0; j<nc_; ++j )
+		for( Index j=0; j<nc_; ++j )
 			r(j)=at(i,j);
 		return r;
 	}
@@ -186,7 +186,7 @@ public:
 	Matrix col(const T& j) const
 	{
 		Matrix c(nc_,1);
-		for( int i=0; i<nc_; ++i )
+		for( Index i=0; i<nc_; ++i )
 			c(i)=at(i,j);
 		return c;
 	}
@@ -222,7 +222,7 @@ public:
 			inv(2,1) = at(0,1)*at(2,0)-at(0,0)*at(2,1);
 			inv(2,2) = at(0,0)*at(1,1)-at(0,1)*at(1,0);
 
-			for( int i=0; i<9; ++i )
+			for( Index i=0; i<9; ++i )
 				inv.data()[i] *= deti;
 			break;
 		}
@@ -266,8 +266,8 @@ public:
 	Matrix transpose()
 	{
 		Matrix transposed(nc_,nr_);
-		for(int i=0; i<nr_; ++i)
-			for(int j=0; j<nc_; ++j)
+		for(Index i=0; i<nr_; ++i)
+			for(Index j=0; j<nc_; ++j)
 				transposed(j,i) = at(i,j);
 		return transposed;
 	}
@@ -278,7 +278,7 @@ public:
 #define UNARY_OPERATOR_Scalar(OP) \
 	Matrix& operator OP (const Scalar& scal) \
 	{ \
-		for (int i=0; i<size(); ++i) \
+		for (Index i=0; i<size(); ++i) \
 			data_[i] OP scal; \
 	  return *this; \
 	}
@@ -295,10 +295,10 @@ public:
 		// Very naive implementation. We should use BLAS later
 		Matrix result(rows(),m.cols());
 		result *= 0.;
-		for(int i=0; i<rows(); ++i) {
-			for(int j=0; j<m.cols(); ++j) {
+		for(Index i=0; i<rows(); ++i) {
+			for(Index j=0; j<m.cols(); ++j) {
 				result(i,j) = 0.;
-				for(int k=0; k<cols(); ++k)
+				for(Index k=0; k<cols(); ++k)
 					result(i,j) += at(i,k)*m(k,j);
 			}
 		}
@@ -308,7 +308,7 @@ public:
 	Matrix cwiseProduct(const Matrix &m) const
 	{
 		Matrix result(*this);
-		for (int i=0; i<size(); ++i)
+		for (Index i=0; i<size(); ++i)
 			result.data_[i] += m.data_[i];
 		return result;
 	}
@@ -335,7 +335,7 @@ public:
 
 	Matrix& operator += (const Matrix &m)
 	{
-		for (int i=0; i<size(); ++i)
+		for (Index i=0; i<size(); ++i)
 			data_[i] += m.data_[i];
 		return *this;
 	}
@@ -343,19 +343,19 @@ public:
 
 	Matrix& operator -= (const Matrix &m)
 	{
-		for (int i=0; i<size(); ++i)
+		for (Index i=0; i<size(); ++i)
 			data_[i] -= m.data_[i];
 		return *this;
 	}
 
 private:
 
-	Scalar& at(const int i, const int j)
+	Scalar& at(const Index i, const Index j)
 	{
 		return data_[i+nr_*j];
 	}
 
-	const Scalar& at(const int i, const int j) const
+	const Scalar& at(const Index i, const Index j) const
 	{
 		if( ! data_ )
 			throw eckit::Exception("data_ is null",Here());
@@ -364,10 +364,10 @@ private:
 
 };
 
-template< typename Scalar >
-class RowVector : public Matrix<Scalar>
+template< typename Scalar, typename Index = std::ptrdiff_t >
+class RowVector : public Matrix<Scalar, Index>
 {
-	typedef Matrix<Scalar> Base;
+	typedef Matrix<Scalar, Index> Base;
 
 public:
 
@@ -383,7 +383,7 @@ public:
 	// This constructor allows you to construct Matrix from Eigen expressions
 	RowVector(const Base& other) : Base(other) { }
 
-	void resize(int nc)
+	void resize(Index nc)
 	{
 		Base::resize(1,nc);
 	}
@@ -396,10 +396,10 @@ public:
 	}
 };
 
-template< typename Scalar >
-class ColVector : public Matrix<Scalar>
+template< typename Scalar, typename Index = std::ptrdiff_t >
+class ColVector : public Matrix<Scalar, Index>
 {
-	typedef Matrix<Scalar> Base;
+	typedef Matrix<Scalar, Index> Base;
 
 public:
 
@@ -415,7 +415,7 @@ public:
 	// This constructor allows you to construct Matrix from Eigen expressions
 	ColVector(const Base& other) : Base(other) { }
 
-	void resize(int nr)
+	void resize(Index nr)
 	{
 		Base::resize(nr,1);
 	}
@@ -429,12 +429,12 @@ public:
 };
 
 
-template < typename Scalar >
-std::ostream& operator<<( std::ostream& os, const Matrix<Scalar>& m )
+template < typename Scalar, typename Index >
+std::ostream& operator<<( std::ostream& os, const Matrix<Scalar, Index>& m )
 {
-	for(int i=0; i<m.nr_; ++i) {
+	for(Index i=0; i<m.nr_; ++i) {
 		if (i>0) os << "\n";
-		for(int j=0; j<m.nc_; ++j) {
+		for(Index j=0; j<m.nc_; ++j) {
 			os << m(i,j) << " ";
 		}
 	}

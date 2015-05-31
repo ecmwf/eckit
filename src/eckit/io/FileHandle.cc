@@ -235,6 +235,10 @@ bool FileHandle::isEmpty() const
 
 Length FileHandle::saveInto(DataHandle& other,TransferWatcher& w)
 {
+    static bool fileHandleSaveIntoOptimisationUsingHardLinks = eckit::Resource<bool>("fileHandleSaveIntoOptimisationUsingHardLinks", false);
+    if(!fileHandleSaveIntoOptimisationUsingHardLinks)
+        return DataHandle::saveInto(other,w);
+
     // Poor man's RTTI,
     // Does not support inheritance
 

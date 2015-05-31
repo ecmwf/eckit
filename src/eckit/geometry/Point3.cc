@@ -27,7 +27,11 @@ std::ostream& operator<<(std::ostream& s,const LLPoint3& p)
     p.print(s); return s;
 }
 
-const double radius_earth = 6367.47; // from ECMWF model ...
+const double radius_earth = 6371229; // from ECMWF model ...
+
+    // 6371229  -- IFS
+    // 6367470  -- GRIB1
+    // 6378137  -- WGS84 semi-major axis
 
 void latlon_to_3d(const double lat, const double lon, double xyz[], const double r, const double h )
 {
@@ -37,7 +41,7 @@ void latlon_to_3d(const double lat, const double lon, double xyz[], const double
     double& Y = xyz[YY];
     double& Z = xyz[ZZ];
 
-    const double a = r;   // 6378137.0 ;       // WGS84 semi-major axis
+    const double a = r;
     const double e2 = 0;  // ignored -- 6.69437999014E-3; // WGS84 first numerical eccentricity squared
 
     const double phi = lat / 180.0 * M_PI;

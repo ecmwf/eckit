@@ -100,6 +100,8 @@ io/AIOHandle.h
 io/AIOHandle.cc
 io/BufferedHandle.h
 io/BufferedHandle.cc
+io/MemoryHandle.h
+io/MemoryHandle.cc
 io/EmptyHandle.h
 io/EmptyHandle.cc
 io/FTPHandle.h
@@ -221,6 +223,7 @@ config/Configurable.h
 config/Configurable.cc
 config/EtcTable.h
 config/EtcTable.cc
+config/Parametrisation.h
 config/FileReadPolicy.h
 config/FileReadPolicy.cc
 config/ResourceBase.cc )
@@ -589,13 +592,11 @@ ecbuild_add_library(TARGET eckit
 					LIBS
 						${CMAKE_THREAD_LIBS_INIT} ${AIO_LIBRARIES} )
 
-### sub-driectories
+### sub-directories
 
 add_subdirectory( web )
 
 add_subdirectory( maths )
-
-add_subdirectory( xpr )
 
 add_subdirectory( geometry )
 

@@ -28,7 +28,7 @@ namespace maths {
 /// This class is inherited from Eigen's matrix class
 /// Eigen::ColMajor is also Eigen's default (recommended) storage ordering.
 /// Furthermore it is directly compatible with Fortran matrix manipulation routines
-template <typename scalar>
+template <typename scalar, typename index = std::ptrdiff_t>
 class Matrix : public Eigen::Matrix<scalar,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>
 {
 	typedef Eigen::Matrix<scalar,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> Base;
@@ -67,7 +67,7 @@ public:
 /// @brief Row-Vector class
 ///
 /// This class is inherited from Eigen's matrix class
-template <typename scalar>
+template <typename scalar, typename index = std::ptrdiff_t>
 class RowVector : public Eigen::Matrix<scalar,1,Eigen::Dynamic>
 {
 	typedef Eigen::Matrix<scalar,1,Eigen::Dynamic> Base;
@@ -106,7 +106,7 @@ public:
 /// @brief Column-Vector class
 ///
 /// This class is inherited from Eigen's matrix class
-template <typename scalar>
+template <typename scalar, typename index = std::ptrdiff_t>
 class ColVector : public Eigen::Matrix<scalar,Eigen::Dynamic,1>
 {
 	typedef Eigen::Matrix<scalar,Eigen::Dynamic,1> Base;

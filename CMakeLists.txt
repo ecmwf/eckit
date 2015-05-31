@@ -35,28 +35,6 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-### Check for C++11 support
-
-list( APPEND cpp11_req
-      auto constexpr constructor_delegate cstdint decltype deleted_constructor
-      initialization lambda long_double long_long noexcept nullptr override
-      rvalue_references shared_ptr sizeof_member static_assert template_alias
-      type_traits unique_ptr variadic_templates )
-
-# currently not included: __func__ random_device trivial_type_traits explicit_cast enable_if
-
-ecbuild_check_cxx11( PRINT FEATURES ${cpp11_req} )
-
-# If any features are not supported
-if( NOT CXX11_NOT_SUPPORTED_FEATURES )
-    set( HAVE_CPP11 ON )
-    message( STATUS "Required C++11 features detected" )
-    message( STATUS "  enabling C++11 support" )
-else()
-    message( STATUS "Required C++11 features not detected" )
-    message( STATUS "  disabling C++11 support" )
-endif()
-
 ### GRIB
 
 ecbuild_add_option( FEATURE GRIB
@@ -65,13 +43,6 @@ ecbuild_add_option( FEATURE GRIB
                     REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.12.3" )
 
 set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
-
-### eckit::xpr
-
-ecbuild_add_option( FEATURE XPR
-                    DEFAULT ON
-                    DESCRIPTION "eckit::xpr [EXPERIMENTAL]"
-                    CONDITION HAVE_CPP11 )
 
 ### eckit::mpi
 
@@ -164,10 +135,6 @@ if( HAVE_EIGEN )
         list( APPEND ECKIT_TPLS Eigen3 )
 
     endif()
-endif()
-
-if( HAVE_XPR )
-  list( APPEND ECKIT_LIBRARIES eckit_xpr )
 endif()
 
 if( HAVE_ECKIT_MPI )

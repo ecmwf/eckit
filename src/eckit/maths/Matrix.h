@@ -35,9 +35,9 @@ namespace eckit {
 
 namespace maths {
 
-template < typename scalar > class RowVector;
-template < typename scalar > class ColVector;
-template < typename scalar > class Matrix;
+template < typename scalar, typename index > class RowVector;
+template < typename scalar, typename index > class ColVector;
+template < typename scalar, typename index > class Matrix;
 
 } // namespace maths
 

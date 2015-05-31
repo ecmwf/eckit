@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+#include "eckit/eckit_config.h"
+
 #include "eckit/log/Log.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/ContextBehavior.h"
@@ -36,9 +38,61 @@ static char** saved_envp = 0;
 __attribute__((__constructor__))
 #endif
 static void before_main(int argc, char* argv[], char* envp[]) {
+
   saved_argc = argc;
   saved_argv = argv;
   saved_envp = envp;
+
+#if !defined(EC_ATTRIBUTE_CONSTRUCTOR_INITS_ARGV) && defined(EC_HAVE_PROCFS)
+
+ FILE* f = fopen("/proc/self/cmdline", "r");
+  int max = 0;
+
+  if(f) {
+        saved_argc = 0;
+        saved_argc = 0;
+        saved_envp = 0;
+
+        int c = 0;
+        int n = 0;
+
+        while( (c = fgetc(f)) != -1) {
+            if(c == 0) {
+                n = 0;
+                saved_argc++;
+            }
+            else {
+                n++;
+                if(n > max) {
+                    max = n;
+                }
+            }
+    }
+    fclose(f);
+  }
+
+  f = fopen("/proc/self/cmdline", "r");
+  if(f) {
+        int c = 0;
+        int i = 0;
+        char *p = 0;
+        saved_argv = (char**)malloc(saved_argc * sizeof(char*));
+        p = saved_argv[i] = (char*)malloc(max + 1);
+
+        while( (c = fgetc(f)) != -1) {
+            *p++ = c;
+            if(c == 0) {
+                 i++;
+                 if(i < saved_argc) {
+                    p = saved_argv[i] = (char*)malloc(max + 1);
+                }
+            }
+    }
+    fclose(f);
+  }
+
+#endif
+
 }
 
 //-----------------------------------------------------------------------------
@@ -92,7 +146,8 @@ std::string Context::argv(int n) const {
   AutoLock<Mutex> lock(local_mutex);
   ASSERT(argc_ != 0 && argv_ != 0);  // check initialized
   ASSERT(n < argc_ && n >= 0);       // check bounds
-  return argv_[n];
+  // ASSERT(argv_[n] != 0);             // check initialized??
+  return argv_[n] ? argv_[n] : "<undefined>";
 }
 
 char** Context::argvs() const { return argv_; }

@@ -20,22 +20,26 @@ namespace eckit { class MultiHandle; }
 
 class RequestHandler {
 public:
-    virtual Values handle(const Request) = 0;
-    virtual Values handle(const Request, ExecutionContext&) = 0;
+    virtual Values handle(ExecutionContext&) = 0;
 
     virtual std::string name() const;
 
-    static std::string database(const Request request);
-    static long port(const Request request);
+    static std::string database(ExecutionContext&);
+    static long port(ExecutionContext&);
+    static std::string database(Request);
+    static long port(Request);
+
+    static RequestHandler& handler(const std::string&);
 
 protected:
     RequestHandler(const std::string&);
 
-    static std::vector<std::string> getValueAsList(const Request request, const std::string& keyword);
-    static void popIfNotSet(const std::string&, Request, ExecutionContext&);
+    static std::vector<std::string> getValueAsList(ExecutionContext&, const std::string& keyword);
     static std::vector<std::string> pathNamesToStrings(const std::vector<eckit::PathName>&);
 
     std::string name_;
+    
+    static std::map<std::string,RequestHandler*> registeredHandlers_;
 };
 
 #endif

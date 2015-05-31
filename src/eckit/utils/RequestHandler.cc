@@ -15,50 +15,69 @@
 
 #include "RequestHandler.h"
 #include "ExecutionContext.h"
+#include "Environment.h"
+#include "Interpreter.h"
 
 using namespace std;
 using namespace eckit;
 
-RequestHandler::RequestHandler(const string& name): name_(name) {}
+std::map<std::string,RequestHandler*> RequestHandler::registeredHandlers_ = std::map<std::string,RequestHandler*>();
 
-Values RequestHandler::handle(const Request) { return Values(); }
+RequestHandler::RequestHandler(const string& name)
+: name_(name)
+{
+    registeredHandlers_[name] = this;
+}
+
+RequestHandler& RequestHandler::handler(const std::string& name)
+{
+    if (registeredHandlers_.find(name) == registeredHandlers_.end())
+        throw UserError(string("RequestHandler ") + name + " not found");
+
+    return *registeredHandlers_[name];
+}
 
 std::string RequestHandler::name() const { return name_; }
 
-std::vector<std::string> RequestHandler::getValueAsList(const Request request, const std::string& keyword)
+std::vector<std::string> RequestHandler::getValueAsList(ExecutionContext& context, const std::string& keyword)
 {
-    //request->showGraph(string("getValueAsList: request = ") + request->str() + ", keyword = " + keyword);
-
     std::vector<std::string> r;
 
-    Request v (request->valueOrDefault(keyword, 0));
-    if (! v)
-        throw UserError(string("Keyword '") + keyword + "' not found");
+    Request v (context.environment().lookup(keyword));
+    ASSERT(v->tag() == "_list");
 
-    ASSERT(v->value() && v->value()->tag() == "_list");
-
-    for (Request p(v->value()); p; p = p->rest())
+    Request evaluated (Interpreter::evalList(v, context));
+    for (Request p(evaluated); p; p = p->rest())
+    {
         r.push_back(p->value()->text());
-
-    Log::info() << "getValueAsList(request=" << request <<  ", keyword=" << keyword << ") => " << r << endl;
+    }
 
     return r;
 }
 
-string RequestHandler::database(const Request request) 
+string RequestHandler::database(ExecutionContext& context) 
 {
-    //request->showGraph(string("database: request = ") + request->str());
+    string r (context.environment().lookup("database", ""));
+    if (! r.size())
+        throw UserError("You must specify DATABASE explicitly");
+    return r;
+}
 
+string RequestHandler::database(Request request) 
+{
     string r (request->valueAsString("database", ""));
     if (! r.size())
         throw UserError("You must specify DATABASE explicitly");
-    
-    Log::info() << "database => " << r << endl;
-
     return r;
 }
 
-long RequestHandler::port(const Request request) 
+long RequestHandler::port(ExecutionContext& context) 
+{
+    string r (context.environment().lookup("port", "9000"));
+    return atol(r.c_str());
+}
+
+long RequestHandler::port(Request request)
 {
     string r (request->valueAsString("port", "9000"));
     return atol(r.c_str());
@@ -70,18 +89,5 @@ vector<string> RequestHandler::pathNamesToStrings(const vector<PathName>& ps)
     for (size_t i(0); i < ps.size(); ++i)
         r.push_back(ps[i]);
     return r;
-}
-
-void RequestHandler::popIfNotSet(const string& keyword, Request request, ExecutionContext& context)
-{
-    //request->showGraph("popIfNotSet: '" + keyword + "'");
-    if (! request->valueOrDefault(keyword, 0))
-    {
-        Request v = context.stack().pop();
-
-        Log::info() << keyword << " not set. Using values from the stack: " << v << endl;
-
-        request->value(keyword, v);
-    }
 }
 

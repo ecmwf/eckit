@@ -23,10 +23,15 @@ public:
     ~ExecutionContext();
 
     void import(Module&);
+
+    /// Creates a new environment frame and  pushes it onto stack.
     void pushEnvironmentFrame();
+
+    void pushEnvironmentFrame(Cell*);
     void popEnvironmentFrame();
 
     Stack& stack();
+
     Environment& environment();
 
 private:

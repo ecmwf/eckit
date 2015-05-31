@@ -14,25 +14,30 @@
 #ifndef Environment_H
 #define Environment_H
 
-#include "eckit/memory/NonCopyable.h"
+#include "eckit/parser/Request.h"
 
-class RequestHandler;
+class ExecutionContext;
 
-class Environment : private eckit::NonCopyable {
+class Environment {
 public:
-	Environment(Environment*);
+	Environment(Environment*, Request);
 	~Environment(); 
 
-    void set(const std::string&, RequestHandler*);
-    RequestHandler* lookup(const std::string&);
+    void set(const std::string&, Request);
+    Request lookup(const std::string&);
+    std::string lookup(const std::string&, const std::string&);
+    std::vector<std::string> lookupList(const std::string&, ExecutionContext&);
 
     Environment* parent();
+    Request currentFrame();
 
 protected:
 	void print(std::ostream&) const; 	
 
 private:
-    std::map<std::string,RequestHandler*> dictionary_;
+    Request lookupNoThrow(const std::string&);
+
+    Cell* dictionary_;
     Environment* parent_;
 };
 

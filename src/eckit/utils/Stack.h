@@ -20,15 +20,14 @@
 class Stack {
 public:
     Stack();
-    Stack(const std::vector<Values>& vs);
 
     size_t size() const;
-    Values top();
-    Values pop();
-    void push(const Values);
+    Cell* top();
+    Cell* pop();
+    void push(const Request);
 
 private:
-    std::vector<Values> stack_;
+    std::vector<Cell*> stack_;
 
     std::ostream& print(std::ostream&) const;
 

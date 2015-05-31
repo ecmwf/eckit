@@ -16,7 +16,7 @@ using namespace std;
 
 ExecutionContext::ExecutionContext()
 : stack_(),
-  environment_(new Environment(0))
+  environment_(new Environment(0, new Cell("_list", "", 0, 0)))
 {}
 
 ExecutionContext::~ExecutionContext()
@@ -35,9 +35,14 @@ void ExecutionContext::import(Module& module)
     module.importInto(*this);
 }
 
+void ExecutionContext::pushEnvironmentFrame(Request r)
+{
+    environment_ = new Environment(environment_, r);
+}
+
 void ExecutionContext::pushEnvironmentFrame()
 {
-    environment_ = new Environment(environment_);
+    pushEnvironmentFrame(new Cell("_list", "", 0, 0));
 }
 
 void ExecutionContext::popEnvironmentFrame()

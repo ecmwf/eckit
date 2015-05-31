@@ -16,27 +16,45 @@
 using namespace std;
 using namespace eckit;
 
-Stack::Stack() : stack_() {}
+Stack::Stack()
+: stack_()
+{}
 
-size_t Stack::size() const { return stack_.size(); }
-
-void Stack::push(const Values vs) { stack_.push_back(vs); }
-
-Values Stack::top()
+size_t Stack::size() const
 {
-    if (! stack_.size())
-        throw UserError("Stack empty");
-
-    return stack_.back();
+    return stack_.size();
 }
 
-Values Stack::pop()
+void Stack::push(const Request r)
+{
+    //r->showGraph(string("Stack::push: ") + r->str(), false);
+
+    stack_.push_back(r);
+}
+
+Cell* Stack::top()
 {
     if (! stack_.size())
         throw UserError("Stack empty");
 
-    Values r (stack_.back());
+    Cell* r(stack_.back());
+
+    //r->showGraph(string("Stack::top: =>") + r->str(), false);
+
+    return r;
+}
+
+Cell* Stack::pop()
+{
+    if (! stack_.size())
+        throw UserError("Stack empty");
+
+    Cell* r (stack_.back());
+
     stack_.pop_back();
+
+    //r->showGraph(string("Stack::pop: =>") + r->str(), false);
+
     return r;
 }
 

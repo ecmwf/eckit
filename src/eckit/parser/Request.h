@@ -37,10 +37,13 @@ public:
 
     Cell* append(Cell*);
 
+    // Set value pointed by a keyword
     Cell* value(const std::string& keyword, Cell* value); 
     Cell* value(const std::string& keyword, const std::string& value); 
-    Cell* valueOrDefault(const std::string& keyword, Cell* defaultValue);
-    std::string valueAsString(const std::string& keyword, const std::string& defaultValue);
+
+    // Get value pointed by a keyword
+    Cell* valueOrDefault(const std::string& keyword, Cell* defaultValue) const;
+    std::string valueAsString(const std::string& keyword, const std::string& defaultValue) const;
 
     std::ostream& dot(std::ostream&, const std::string&) const;
 
@@ -74,6 +77,8 @@ typedef Cell* Request;
 class List {
 public:
     List(Cell*&);
+
+    size_t size() const;
     List& append(Cell*);
     List& append(const std::string&);
 

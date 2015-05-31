@@ -14,47 +14,86 @@
 #include <unistd.h>
 #include <map>
 
-#include "eckit/utils/RequestHandler.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/utils/Environment.h"
+#include "eckit/utils/Interpreter.h"
 
 using namespace std;
-using namespace eckit;
+using namespace eckit;  // TODO: eckit/utils/Environment.h should be in namespace eckit I think
 
-Environment::Environment(Environment* parent)
-: parent_(parent)
+Environment::Environment(Environment* parent, Request r)
+: parent_(parent),
+  dictionary_(r)
 {}
 
 Environment::~Environment()
 {
-    for (map<string,RequestHandler*>::iterator it(dictionary_.begin()); it != dictionary_.end(); ++it)
-        delete it->second;
-    dictionary_.clear();
+    // TODO
+    //for (map<string,Request>::iterator it(dictionary_.begin()); it != dictionary_.end(); ++it)
+    //    delete it->second;
+    //dictionary_.clear();
 }
 
 void Environment::print(std::ostream& s) const
 {
-    s << "{";
-    for (map<string,RequestHandler*>::const_iterator it(dictionary_.begin()); it != dictionary_.end(); ++it)
-        s << it->first << ",";
-    s << "}";
+    // TODO
+    s << "{" << "Environment@" << this << "}";
 }
 
-void Environment::set(const std::string& name, RequestHandler* handler)
+void Environment::set(const std::string& name, Request request)
 {
-    dictionary_[name] = handler;
+    //dictionary_[name] = request;
+    dictionary_->value(name, request);
 }
 
-RequestHandler* Environment::lookup(const std::string& name)
+string Environment::lookup(const string& name, const string& defaultValue)
 {
-    map<string,RequestHandler*>::iterator it (dictionary_.find(name));
-    if (it != dictionary_.end())
-        return it->second;
+    Request r (lookupNoThrow(name));
+    if (! r)
+        return defaultValue;
 
-    if (parent_)
-        return parent_->lookup(name);
+    ASSERT(r->tag() == "_list");
+    ASSERT(r->rest() == 0);
+    return r->value()->text();
+}
 
-    throw UserError (name + " not defined");
+vector<string> Environment::lookupList(const string& name, ExecutionContext& context)
+{
+    Request r (Interpreter::evalList(lookup(name), context));
+
+    vector<string> list;
+    for (Request e (r); e; e = e->rest())
+    {
+        ASSERT(r->tag() == "_list");
+        ASSERT(r->value()->tag() == "");
+
+        list.push_back(r->value()->text());
+    }
+    return list;
+}
+
+Request Environment::lookupNoThrow(const string& name)
+{
+    Request r (dictionary_->valueOrDefault(name, 0));
+    if (r)
+        return r;
+
+    if (! parent_)
+        return 0;
+
+    return parent_->lookupNoThrow(name);
+}
+
+Request Environment::lookup(const string& name)
+{
+    Request r(lookupNoThrow(name));
+    if (! r)
+        throw UserError (name + " not defined");
+    return r;
 }
 
 
 Environment* Environment::parent() { return parent_; }
+
+Request Environment::currentFrame() { return dictionary_; }
+

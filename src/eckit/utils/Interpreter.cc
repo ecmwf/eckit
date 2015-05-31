@@ -20,36 +20,82 @@ using namespace eckit;
 Values Interpreter::evalList(const Request requests, ExecutionContext& context)
 {
     Values r(0);
-    for(Request request(requests->rest()); request; request = request->rest())
+    List list(r);
+
+    for (Request elt(requests); elt; elt = elt->rest())
     {
-        delete r;
+        Log::info() << "Interpreter::evalList: [" << elt->tag() << "] " << elt << endl;
+
+        if (! elt->tag().size())
+            list.append(elt);
+        else
+        {
+            Values sublist (elt->value()->tag() == "_requests"  
+                            ? evalRequests(elt->value(), context)
+                            : evalList(elt->value(), context));
+
+            for (Request e(sublist); e; e = e->rest())
+                list.append(e->value());
+        }
+    }
+
+    Log::info() << "Interpreter::evalList: => " << r << endl;
+
+    return r;
+}
+
+Values Interpreter::evalRequests(const Request requests, ExecutionContext& context)
+{
+    Values r(0);
+    for (Request elt(requests); elt; elt = elt->rest())
+    {
+        Request request( elt->value() );
+        //TODO:
+        //delete r;
+        Log::info() << "Evaluating request " << request << endl;
         r = eval(request, context);
     }
     return r;
 }
 
-Values Interpreter::eval(const Request request, ExecutionContext& context)
+Values Interpreter::evalNative(const Request object, const Request request, ExecutionContext& context)
 {
-    if (request->tag() == "_list")
-        return evalList(request, context);
-
-    ASSERT("Currently we evaluate _verb only" && (request->tag() == "_verb"));
-    ASSERT(request->text().size());
-
-    string verb (request->text());
-    RequestHandler& handler(*context.environment().lookup(verb));
-
+    RequestHandler& handler (RequestHandler::handler(object->text()));
     Log::info() << "Executing handler " << handler.name() << endl;
 
+    context.pushEnvironmentFrame(request);
+
+    Values r (handler.handle(context));
     //request->showGraph(string("Executing handler ") + handler.name() + ", request: " + request->str(), true);
-
-    Values r = handler.handle(request, context);
-
     Log::info() << "Executed " << handler.name() << ". "
                 << (context.stack().size() ? "Stack:\n" : "")
                 << context.stack();
 
+    context.popEnvironmentFrame();
+
     //request->showGraph(string("Executed handler ") + handler.name() + ", values: " + r->str(), false);
+    return r;
+}
+
+Values Interpreter::eval(const Request request, ExecutionContext& context)
+{
+    if (request->tag() == "_requests")
+        return evalRequests(request, context);
+
+    ASSERT("Currently we evaluate _verb only" && (request->tag() == "_verb") && request->text().size());
+
+    string verb (request->text());
+    Request object (context.environment().lookup(verb));
+
+    Values r(0);
+    if (object->tag() == "_native") r = evalNative(object, request, context);
+    else if (object->tag() == "") r = object;
+    else if (object->tag() == "_requests") r = eval(object, context);
+    else if (object->tag() == "_request") r = eval(object, context);
+    else
+    {
+       NOTIMP; 
+    }
 
     return r;
 }

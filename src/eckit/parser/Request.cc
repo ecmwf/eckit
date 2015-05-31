@@ -34,6 +34,7 @@ Cell::Cell(Cell* o)
 
 Cell* Cell::clone(Cell* c)
 {
+    ASSERT(c);
     return c ? new Cell(c) : 0;
 }
 
@@ -44,6 +45,12 @@ Cell* Cell::rest() const { return rest_; }
 
 Cell* Cell::value(Cell* v) { return value_ = v; }
 Cell* Cell::rest(Cell* r) { return rest_ = r; }
+
+Cell* Cell::text(const std::string& s)
+{
+    text_ = s;
+    return this;
+}
 
 Cell* Cell::append(Cell* r)
 { 
@@ -77,22 +84,22 @@ Cell* Cell::value(const std::string& keyword, Cell* v)
     return 0;
 }
 
-Cell* Cell::valueOrDefault(const string& keyword, Cell* defaultValue) 
+Cell* Cell::valueOrDefault(const string& keyword, Cell* defaultValue) const
 {
     //showGraph(string("valueOrDefault: request = ") + str() + ", keyword = " + keyword);
     std::string k (StringTools::lower(keyword));
-    Cell* p(0);
-    for (Cell* r (this); r; r = r->rest())
+    const Cell* p(0);
+    for (const Cell* r (this); r; r = r->rest())
         if (StringTools::lower(r->text()) == k)
             p = r;
 
     if (p == 0)
         return defaultValue;
 
-    return p;
+    return p->value();
 }
 
-std::string Cell::valueAsString(const string& keyword, const std::string& defaultValue)
+std::string Cell::valueAsString(const string& keyword, const std::string& defaultValue) const
 {
     //showGraph(string("valueAsString: request = ") + str() + ", keyword = " + keyword);
 
@@ -103,10 +110,10 @@ std::string Cell::valueAsString(const string& keyword, const std::string& defaul
     if (! p)
         return defaultValue;
 
-    ASSERT(p->value()->tag() == "_list");
-    string r (p->value()->value()->text());
+    ASSERT(p->tag() == "_list");
+    string r (p->value()->text());
 
-    if (p->value()->rest())
+    if (p->rest())
         throw UserError(string("Expected only one value of ") + keyword + ", found: " + p->value()->str());
 
     return r;
@@ -195,6 +202,19 @@ std::ostream& Cell::print(std::ostream& s, size_t depth) const
 {
     if (! this) return s << "NULL";
 
+    if (tag_ == "_requests")
+    {
+        value()->print(s, depth + 1);
+        for (Request lst(rest()); lst; lst = lst->rest())
+        {
+            ASSERT(lst->tag() == "_requests");
+            s << "  ";
+            ASSERT(lst->value());
+            lst->value()->print(s, depth + 1);
+        }
+        return s;
+    } 
+
     if (tag_ == "_list")
     {
         value()->print(s, depth + 1);
@@ -235,7 +255,7 @@ ostream& Cell::printDot(ostream& s, bool detailed) const
     bool clever (true);
     if (clever)
     {
-        if (tag() == "_list") return printDotList(s, detailed);
+        if (tag() == "_list" || tag() == "_requests") return printDotList(s, detailed);
         if (tag() == "_verb") return printDotVerb(s, detailed);
     }
 
@@ -260,7 +280,7 @@ bool oneElementList(Cell* p)
     return p->tag() == "_list"
          && p->value() 
          && ! p->rest()
-         && ! (p->value()->tag() == "_list")
+         && ! (p->value()->tag().size())
            ;
 }
 
@@ -308,16 +328,16 @@ ostream& Cell::printDotVerb(ostream& s, bool detailed) const
 
 ostream& Cell::printDotList(ostream& s, bool detailed) const
 {
-    ASSERT(tag() == "_list");
+    ASSERT(tag() == "_list" || tag() == "_requests");
 
     stringstream box, arrows;
 
-    box << "\"node" << (void*) this << "\" [ label=\"<f0> [] ";
+    box << "\"node" << (void*) this << "\" [ label=\"<f0> [" << tag() << "] ";
 
     size_t i(0);
     for (const Cell* p(this); p; ++i, p = p->rest())
     {
-        ASSERT(p->tag() == "_list");
+        ASSERT(p->tag() == "_list" || p->tag() == "_requests");
 
         if (i) 
             box << " | <f" << i << "> ";
@@ -371,6 +391,14 @@ void Cell::showGraph(const string& label, bool background)
 }
 
 List::List(Cell*& c) : cell_(c) {}
+
+size_t List::size() const
+{
+    size_t n(0);
+    for (Request r(cell_); r; r = r->rest())
+        ++n;
+    return n;
+}
 
 List& List::append(Cell* c)
 {

@@ -44,8 +44,8 @@ struct YYSTYPE {
 all:	 requests                     { RequestParserResult::result_ = $1; }
 	;
 
-requests : request                    { $$ = new Cell("_list", "", $1, 0); }
-		 | requests request           { $$ = ($1)->append(new Cell("_list", "", $2, 0)); }
+requests : request                    { $$ = new Cell("_requests", "", $1, 0); }
+		 | requests request           { $$ = ($1)->append(new Cell("_requests", "", $2, 0)); }
 
 request : WORD                        { $$ = new Cell("_verb", $1, 0, 0); }
 		| WORD ',' parameters         { $$ = new Cell("_verb", $1, 0, $3); }

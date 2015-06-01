@@ -24,7 +24,9 @@ public:
 
 private:
     static Values evalRequests(const Request, ExecutionContext&);
-    static Values evalNative(const Request object, const Request request, ExecutionContext& context);
+    static Values evalLet(const Request, ExecutionContext&);
+    static Values evalNative(const Request object, const Request request, ExecutionContext&);
+    static Request evalAttributes(const Request, ExecutionContext&);
 };
 
 #endif

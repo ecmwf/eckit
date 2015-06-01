@@ -15,8 +15,7 @@
 using namespace std;
 
 ExecutionContext::ExecutionContext()
-: stack_(),
-  environment_(new Environment(0, new Cell("_list", "", 0, 0)))
+: environment_(new Environment(0, new Cell("_list", "", 0, 0)))
 {}
 
 ExecutionContext::~ExecutionContext()
@@ -24,9 +23,6 @@ ExecutionContext::~ExecutionContext()
     for (Environment* e(environment_); e; e = e->parent())
         delete e;
 }
-
-Stack& ExecutionContext::stack() { return stack_; }
-
 Environment& ExecutionContext::environment() { return *environment_; }
 
 void ExecutionContext::import(Module& module)
@@ -54,4 +50,12 @@ void ExecutionContext::popEnvironmentFrame()
     delete e;
 }
 
+
+void ExecutionContext::popEnvironmentFrame(Request r)
+{
+    while (environment_ && environment_->currentFrame() != r)
+        popEnvironmentFrame(); 
+    ASSERT(environment_);
+    popEnvironmentFrame(); 
+}
 

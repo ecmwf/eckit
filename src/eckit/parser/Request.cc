@@ -250,9 +250,8 @@ std::string Cell::str() const
     return ss.str();
 }
 
-ostream& Cell::printDot(ostream& s, bool detailed) const
+ostream& Cell::printDot(ostream& s, bool detailed, bool clever) const
 {
-    bool clever (true);
     if (clever)
     {
         if (tag() == "_list" || tag() == "_requests") return printDotList(s, detailed);
@@ -265,12 +264,12 @@ ostream& Cell::printDot(ostream& s, bool detailed) const
     if (value())
     {
         s << "\"node" << (void*) this << "\":f1 -> \"node" << (void*) value() << "\":f0;" << endl;
-        value()->printDot(s);
+        value()->printDot(s, detailed, clever);
     }
     if (rest())
     {
         s << "\"node" << (void*) this << "\":f2 -> \"node" << (void*) rest() << "\":f0;" << endl;
-        rest()->printDot(s);
+        rest()->printDot(s, detailed, clever);
     }
     return s;
 }
@@ -318,7 +317,7 @@ ostream& Cell::printDotVerb(ostream& s, bool detailed) const
         else
         {
             arrows << "\"node" << (void*) this << "\":f" << i << " -> \"node" << (void*) p->value() << "\":f0;" << endl;
-            p->value()->printDot(s);
+            p->value()->printDot(s, detailed, true);
         }
 
     }
@@ -350,7 +349,7 @@ ostream& Cell::printDotList(ostream& s, bool detailed) const
         else
         {
             arrows << "\"node" << (void*) this << "\":f" << i << " -> \"node" << (void*) p->value() << "\":f0;" << endl;
-            p->value()->printDot(s, detailed);
+            p->value()->printDot(s, detailed, true);
         }
 
     }
@@ -358,26 +357,29 @@ ostream& Cell::printDotList(ostream& s, bool detailed) const
     return s << box.str() << endl << arrows.str();
 }
 
-ostream& Cell::dot(ostream& s, const string& label) const
+ostream& Cell::dot(ostream& s, const string& label, bool detailed, bool clever) const
 {
     s << "digraph g  {\n"
         "graph [ rankdir = \"LR\" label=\"" << quotedSnippet(label) << "\"];\n"
         "node [ fontsize = \"16\" shape = \"ellipse\" ];\n"
         "edge [ ];\n";
-    printDot(s);
+    printDot(s, detailed, clever);
     s << "}\n";
     return s;
 }
 
-void Cell::showGraph(bool background)
+void Cell::graph() { return showGraph(true, true, true); }
+void Cell::simpleGraph() { return showGraph(true, true, false); }
+
+void Cell::showGraph(bool background, bool detailed, bool clever)
 {
-    showGraph(this->str(), background);
+    showGraph(this->str(), background, detailed, clever);
 }
 
-void Cell::showGraph(const string& label, bool background)
+void Cell::showGraph(const string& label, bool background, bool detailed, bool clever)
 {
     stringstream ss;
-    dot(ss, label);
+    dot(ss, label, detailed, clever);
     string s(ss.str());
     FileHandle f("graph.gv");
     f.openForWrite(s.size());

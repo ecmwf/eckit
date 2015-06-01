@@ -24,18 +24,16 @@ public:
 
     void import(Module&);
 
-    /// Creates a new environment frame and  pushes it onto stack.
+    /// Creates a new environment frame and pushes it onto stack.
     void pushEnvironmentFrame();
 
-    void pushEnvironmentFrame(Cell*);
+    void pushEnvironmentFrame(Request);
     void popEnvironmentFrame();
-
-    Stack& stack();
+    void popEnvironmentFrame(Request);
 
     Environment& environment();
 
 private:
-    Stack stack_;
     Environment* environment_;
 };
 

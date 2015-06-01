@@ -57,7 +57,7 @@ std::vector<std::string> RequestHandler::getValueAsList(ExecutionContext& contex
 
 string RequestHandler::database(ExecutionContext& context) 
 {
-    string r (context.environment().lookup("database", ""));
+    string r (context.environment().lookup("database", "", context));
     if (! r.size())
         throw UserError("You must specify DATABASE explicitly");
     return r;
@@ -73,7 +73,7 @@ string RequestHandler::database(Request request)
 
 long RequestHandler::port(ExecutionContext& context) 
 {
-    string r (context.environment().lookup("port", "9000"));
+    string r (context.environment().lookup("port", "9000", context));
     return atol(r.c_str());
 }
 

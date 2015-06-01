@@ -25,7 +25,7 @@ public:
 
     void set(const std::string&, Request);
     Request lookup(const std::string&);
-    std::string lookup(const std::string&, const std::string&);
+    std::string lookup(const std::string&, const std::string&, ExecutionContext&);
     std::vector<std::string> lookupList(const std::string&, ExecutionContext&);
 
     Environment* parent();

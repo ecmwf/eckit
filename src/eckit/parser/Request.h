@@ -45,12 +45,14 @@ public:
     Cell* valueOrDefault(const std::string& keyword, Cell* defaultValue) const;
     std::string valueAsString(const std::string& keyword, const std::string& defaultValue) const;
 
-    std::ostream& dot(std::ostream&, const std::string&) const;
+    std::ostream& dot(std::ostream&, const std::string&, bool, bool) const;
 
     std::string str() const;
 
-    void showGraph(bool background = false);
-    void showGraph(const std::string&, bool background = false);
+    void showGraph(bool background, bool detailed, bool clever);
+    void showGraph(const std::string&, bool background, bool detailed, bool clever);
+    void graph();
+    void simpleGraph();
 
 private:
     Cell(Cell*); // cloning
@@ -64,9 +66,9 @@ private:
     std::ostream& printAttributes(std::ostream&, size_t depth=0) const;
     std::ostream& printValues(std::ostream&, size_t depth=0) const;
 
-    std::ostream& printDot(std::ostream&, bool=true) const;
-    std::ostream& printDotList(std::ostream&, bool=true) const;
-    std::ostream& printDotVerb(std::ostream&, bool=true) const;
+    std::ostream& printDot(std::ostream&, bool, bool) const;
+    std::ostream& printDotList(std::ostream&, bool) const;
+    std::ostream& printDotVerb(std::ostream&, bool) const;
 
     friend std::ostream& operator<< (std::ostream& s, const Cell *r) { return r->print(s); }
 };

@@ -24,7 +24,7 @@ Values Interpreter::evalList(const Request requests, ExecutionContext& context)
 
     for (Request elt(requests); elt; elt = elt->rest())
     {
-        Log::info() << "Interpreter::evalList: [" << elt->tag() << "] " << elt << endl;
+        //Log::info() << "Interpreter::evalList: [" << elt->tag() << "] " << elt << endl;
 
         if (! elt->tag().size())
             list.append(elt);
@@ -39,7 +39,7 @@ Values Interpreter::evalList(const Request requests, ExecutionContext& context)
         }
     }
 
-    Log::info() << "Interpreter::evalList: => " << r << endl;
+    //Log::info() << "Interpreter::evalList: => " << r << endl;
 
     return r;
 }
@@ -67,14 +67,30 @@ Values Interpreter::evalNative(const Request object, const Request request, Exec
 
     Values r (handler.handle(context));
     //request->showGraph(string("Executing handler ") + handler.name() + ", request: " + request->str(), true);
-    Log::info() << "Executed " << handler.name() << ". "
-                << (context.stack().size() ? "Stack:\n" : "")
-                << context.stack();
+    Log::info() << "Executed " << handler.name() << ".";
 
-    context.popEnvironmentFrame();
+    context.popEnvironmentFrame(request);
 
     //request->showGraph(string("Executed handler ") + handler.name() + ", values: " + r->str(), false);
     return r;
+}
+
+Values Interpreter::evalLet(const Request request, ExecutionContext& context)
+{
+    Request frame (new Cell("_verb", "let", 0, 0));
+    ASSERT(request->tag() == "_verb" && request->text() == "let");
+    for (Request e(request->rest()); e; e = e->rest())
+    {
+        ASSERT(e->tag() == "");
+
+        const string& name (e->text());
+        Values values (evalList(e->value(), context));
+
+        frame->append(new Cell("", name, values, 0));
+    }
+    context.pushEnvironmentFrame(frame);
+    // Not sure what to return here. The job is done with the push of new frame.
+    return Cell::clone(frame);
 }
 
 Values Interpreter::eval(const Request request, ExecutionContext& context)
@@ -84,18 +100,45 @@ Values Interpreter::eval(const Request request, ExecutionContext& context)
 
     ASSERT("Currently we evaluate _verb only" && (request->tag() == "_verb") && request->text().size());
 
-    string verb (request->text());
+    const string verb (request->text());
+    Request evaluatedAttributes (evalAttributes(request, context));
+    // TODO: release request
+
+    if (verb == "let")
+        return evalLet(evaluatedAttributes, context);
+
     Request object (context.environment().lookup(verb));
 
-    Values r(0);
-    if (object->tag() == "_native") r = evalNative(object, request, context);
-    else if (object->tag() == "") r = object;
-    else if (object->tag() == "_requests") r = eval(object, context);
-    else if (object->tag() == "_request") r = eval(object, context);
-    else
-    {
-       NOTIMP; 
-    }
+    const string tag (object->tag());
+    Values r ( tag == "_native" ? evalNative(object, evaluatedAttributes, context)
+             : tag == ""         ? object
+             : tag == "_requests" ? eval(object, context)
+             : tag == "_request" ? eval(object, context)
+             : 0 );
+
+    if (!r)
+        NOTIMP; 
 
     return r;
 }
+
+Request Interpreter::evalAttributes(const Request request, ExecutionContext& context)
+{
+    ASSERT(request->tag() == "_verb");
+    ASSERT(request->value() == 0);
+
+    Request r(new Cell(request->tag(), request->text(), 0, 0));
+
+    for (Request e(request->rest()); e; e = e->rest())
+    {
+        ASSERT(e->tag() == "");
+        string name (e->text());
+        Values values (evalList(e->value(), context));
+
+        Log::info() << "let: " << name << ": " << values << endl;
+
+        r->append(new Cell("", name, values, 0));
+    }
+    return r;
+}
+

@@ -46,15 +46,18 @@ void Environment::set(const std::string& name, Request request)
     dictionary_->value(name, request);
 }
 
-string Environment::lookup(const string& name, const string& defaultValue)
+string Environment::lookup(const string& name, const string& defaultValue, ExecutionContext& context)
 {
     Request r (lookupNoThrow(name));
     if (! r)
         return defaultValue;
 
     ASSERT(r->tag() == "_list");
-    ASSERT(r->rest() == 0);
-    return r->value()->text();
+    Request evaluated (Interpreter::evalList(r, context));
+    ASSERT(evaluated->tag() == "_list");
+    if (evaluated->rest())
+        throw UserError("Expected single string as value of " + name);
+    return evaluated->value()->text();
 }
 
 vector<string> Environment::lookupList(const string& name, ExecutionContext& context)

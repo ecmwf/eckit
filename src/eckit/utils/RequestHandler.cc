@@ -46,7 +46,7 @@ std::vector<std::string> RequestHandler::getValueAsList(ExecutionContext& contex
     Request v (context.environment().lookup(keyword));
     ASSERT(v->tag() == "_list");
 
-    Request evaluated (Interpreter::evalList(v, context));
+    Request evaluated (Interpreter::eval(v, context));
     for (Request p(evaluated); p; p = p->rest())
     {
         r.push_back(p->value()->text());

@@ -32,11 +32,7 @@ Cell::Cell(Cell* o)
   rest_(o->rest_ ? new Cell(o->rest_) : 0)
 {}
 
-Cell* Cell::clone(Cell* c)
-{
-    ASSERT(c);
-    return c ? new Cell(c) : 0;
-}
+Cell* Cell::clone(Cell* c) { return c ? new Cell(c) : 0; }
 
 const std::string& Cell::tag() const { return tag_; }
 const std::string& Cell::text() const { return text_; }

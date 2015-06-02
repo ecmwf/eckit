@@ -53,7 +53,7 @@ string Environment::lookup(const string& name, const string& defaultValue, Execu
         return defaultValue;
 
     ASSERT(r->tag() == "_list");
-    Request evaluated (Interpreter::evalList(r, context));
+    Request evaluated (Interpreter::eval(r, context));
     ASSERT(evaluated->tag() == "_list");
     if (evaluated->rest())
         throw UserError("Expected single string as value of " + name);
@@ -62,7 +62,7 @@ string Environment::lookup(const string& name, const string& defaultValue, Execu
 
 vector<string> Environment::lookupList(const string& name, ExecutionContext& context)
 {
-    Request r (Interpreter::evalList(lookup(name), context));
+    Request r (Interpreter::eval(lookup(name), context));
 
     vector<string> list;
     for (Request e (r); e; e = e->rest())

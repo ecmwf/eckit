@@ -24,8 +24,6 @@ Values Interpreter::evalList(const Request requests, ExecutionContext& context)
 
     for (Request elt(requests); elt; elt = elt->rest())
     {
-        //Log::info() << "Interpreter::evalList: [" << elt->tag() << "] " << elt << endl;
-
         if (! elt->tag().size())
             list.append(elt);
         else
@@ -38,9 +36,6 @@ Values Interpreter::evalList(const Request requests, ExecutionContext& context)
                 list.append(e->value());
         }
     }
-
-    //Log::info() << "Interpreter::evalList: => " << r << endl;
-
     return r;
 }
 
@@ -52,7 +47,7 @@ Values Interpreter::evalRequests(const Request requests, ExecutionContext& conte
         Request request( elt->value() );
         //TODO:
         //delete r;
-        Log::info() << "Evaluating request " << request << endl;
+        Log::debug() << "Evaluating request " << request << endl;
         r = eval(request, context);
     }
     return r;
@@ -61,25 +56,25 @@ Values Interpreter::evalRequests(const Request requests, ExecutionContext& conte
 Values Interpreter::evalNative(const Request object, const Request request, ExecutionContext& context)
 {
     RequestHandler& handler (RequestHandler::handler(object->text()));
-    Log::info() << "Executing handler " << handler.name() << endl;
+    Log::debug() << "Executing handler " << handler.name() << endl;
 
-    context.pushEnvironmentFrame(request);
+    Request evaluatedAttributes (evalAttributes(request, context));
+    context.pushEnvironmentFrame(evaluatedAttributes);
 
     Values r (handler.handle(context));
-    //request->showGraph(string("Executing handler ") + handler.name() + ", request: " + request->str(), true);
-    Log::info() << "Executed " << handler.name() << ".";
 
-    context.popEnvironmentFrame(request);
+    context.popEnvironmentFrame(evaluatedAttributes);
 
-    //request->showGraph(string("Executed handler ") + handler.name() + ", values: " + r->str(), false);
     return r;
 }
 
 Values Interpreter::evalLet(const Request request, ExecutionContext& context)
 {
-    Request frame (new Cell("_verb", "let", 0, 0));
     ASSERT(request->tag() == "_verb" && request->text() == "let");
-    for (Request e(request->rest()); e; e = e->rest())
+
+    Request evaluatedAttributes (evalAttributes(request, context));
+    Request frame (new Cell("_frame", "let", 0, 0));
+    for (Request e(evaluatedAttributes->rest()); e; e = e->rest())
     {
         ASSERT(e->tag() == "");
 
@@ -93,31 +88,78 @@ Values Interpreter::evalLet(const Request request, ExecutionContext& context)
     return Cell::clone(frame);
 }
 
+Values Interpreter::evalFunction(const Request object, const Request request, ExecutionContext& context)
+{
+    ASSERT(object->tag() == "_function");
+    Request body (object->rest());
+
+    Log::debug() << "Evaluating function " << object->text() << ": " << body << endl;
+
+    Request evaluatedRequest (evalAttributes(request, context));
+
+    context.pushEnvironmentFrame(evaluatedRequest);
+    Values r (eval(body, context));
+    context.popEnvironmentFrame(evaluatedRequest);
+
+    Log::debug() << "           function " << object->text() << " => " << r << endl;
+
+    return r;
+}
+
+Values Interpreter::defineFunction(const Request request, ExecutionContext& context)
+{
+    ASSERT(request->tag() == "_verb" && request->text() == "function");
+    Request r (request->rest());
+
+    Request params (0);
+    if (r && r->text() == "of")
+    {
+        params = r->value(); 
+        r = r->rest();
+    }
+
+    ASSERT(r->tag() == "" && r->text().size());
+    string name (r->text());
+    Request code (r->value()->value());
+    ASSERT(code->tag() == "_requests");
+
+    Log::debug() << "Defining function " << name << "(" << params << "): " << code << endl; 
+
+    Request function (new Cell("_function", name, params, code));
+    Request frame (new Cell("_frame", "definition", 0, 0));
+    frame->append(new Cell("", name, function, 0));
+
+    context.pushEnvironmentFrame(frame);
+
+    return Cell::clone(function);
+}
+
 Values Interpreter::eval(const Request request, ExecutionContext& context)
 {
-    if (request->tag() == "_requests")
-        return evalRequests(request, context);
+    if (request->tag() == "_requests") return evalRequests(request, context);
+    if (request->tag() == "_list") return evalList(request, context);
+    if (request->tag() == "") return request;
 
     ASSERT("Currently we evaluate _verb only" && (request->tag() == "_verb") && request->text().size());
 
     const string verb (request->text());
-    Request evaluatedAttributes (evalAttributes(request, context));
-    // TODO: release request
 
     if (verb == "let")
-        return evalLet(evaluatedAttributes, context);
+        return evalLet(request, context);
+    else if (verb == "function")
+        return defineFunction(request, context);
 
     Request object (context.environment().lookup(verb));
 
     const string tag (object->tag());
-    Values r ( tag == "_native" ? evalNative(object, evaluatedAttributes, context)
-             : tag == ""         ? object
+    Values r ( tag == ""          ? object
+             : tag == "_native"   ? evalNative(object, request, context)
+             : tag == "_function" ? evalFunction(object, request, context)
              : tag == "_requests" ? eval(object, context)
-             : tag == "_request" ? eval(object, context)
+             : tag == "_request"  ? eval(object, context)
              : 0 );
 
-    if (!r)
-        NOTIMP; 
+    ASSERT(r);
 
     return r;
 }
@@ -134,9 +176,6 @@ Request Interpreter::evalAttributes(const Request request, ExecutionContext& con
         ASSERT(e->tag() == "");
         string name (e->text());
         Values values (evalList(e->value(), context));
-
-        Log::info() << "let: " << name << ": " << values << endl;
-
         r->append(new Cell("", name, values, 0));
     }
     return r;

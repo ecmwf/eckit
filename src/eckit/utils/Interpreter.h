@@ -20,11 +20,13 @@ class ExecutionContext;
 class Interpreter {
 public:
     static Values eval(const Request, ExecutionContext&);
-    static Values evalList(const Request, ExecutionContext&);
 
 private:
+    static Values evalList(const Request, ExecutionContext&);
     static Values evalRequests(const Request, ExecutionContext&);
     static Values evalLet(const Request, ExecutionContext&);
+    static Values defineFunction(const Request, ExecutionContext&);
+    static Values evalFunction(const Request, const Request, ExecutionContext&);
     static Values evalNative(const Request object, const Request request, ExecutionContext&);
     static Request evalAttributes(const Request, ExecutionContext&);
 };

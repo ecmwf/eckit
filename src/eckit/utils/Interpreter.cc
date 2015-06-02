@@ -10,6 +10,7 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/parser/Request.h"
+#include "eckit/utils/RequestHandler.h"
 #include "eckit/utils/Interpreter.h"
 #include "eckit/utils/ExecutionContext.h"
 #include "eckit/utils/Environment.h"

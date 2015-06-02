@@ -11,8 +11,10 @@
 #include "eckit/utils/ExecutionContext.h"
 #include "eckit/utils/Environment.h"
 #include "eckit/utils/Module.h"
+#include "eckit/exception/Exceptions.h"
 
 using namespace std;
+using namespace eckit;
 
 ExecutionContext::ExecutionContext()
 : environment_(new Environment(0, new Cell("_list", "", 0, 0)))

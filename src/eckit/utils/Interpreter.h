@@ -15,6 +15,8 @@
 #include "eckit/parser/Request.h"
 #include <list>
 
+namespace eckit {
+
 class ExecutionContext;
 
 class Interpreter {
@@ -30,5 +32,7 @@ private:
     static Values evalNative(const Request object, const Request request, ExecutionContext&);
     static Request evalAttributes(const Request, ExecutionContext&);
 };
+
+} // namespace eckit
 
 #endif

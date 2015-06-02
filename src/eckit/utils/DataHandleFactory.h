@@ -18,7 +18,11 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/parser/Request.h"
 
-namespace eckit { class DataHandle; class MultiHandle; class Length; }
+namespace eckit { 
+
+class DataHandle;
+class MultiHandle;
+class Length; 
 
 class DataHandleFactory {
 public:
@@ -46,5 +50,7 @@ private:
 
     static std::map<std::string, DataHandleFactory*> factories_;
 };
+
+} // namespace eckit
 
 #endif

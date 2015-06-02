@@ -16,6 +16,8 @@
 
 #include "eckit/parser/Request.h"
 
+namespace eckit {
+
 class ExecutionContext;
 
 class Environment {
@@ -39,5 +41,7 @@ private:
     Cell* dictionary_;
     Environment* parent_;
 };
+
+} // namespace eckit
 
 #endif

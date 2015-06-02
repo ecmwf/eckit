@@ -14,6 +14,8 @@
 #ifndef Module_H
 #define Module_H
 
+namespace eckit {
+
 class ExecutionContext;
 
 class Module {
@@ -22,5 +24,7 @@ public:
 
     virtual void importInto(ExecutionContext&) = 0;
 };
+
+} // namespace eckit
 
 #endif

@@ -15,8 +15,10 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/parser/Request.h"
 
+namespace eckit { 
+
 class ExecutionContext;
-namespace eckit { class MultiHandle; }
+class MultiHandle; 
 
 class RequestHandler {
 public:
@@ -41,5 +43,7 @@ protected:
     
     static std::map<std::string,RequestHandler*> registeredHandlers_;
 };
+
+} //namespace eckit 
 
 #endif

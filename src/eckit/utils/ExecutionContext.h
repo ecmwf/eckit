@@ -12,7 +12,9 @@
 #ifndef ExecutionContext_H
 #define ExecutionContext_H
 
-#include "Stack.h"
+#include "eckit/parser/Request.h"
+
+namespace eckit {
 
 class Environment;
 class Module;
@@ -36,5 +38,7 @@ public:
 private:
     Environment* environment_;
 };
+
+} // namespace eckit
 
 #endif

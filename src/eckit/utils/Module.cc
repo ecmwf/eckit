@@ -13,5 +13,7 @@
 
 #include "eckit/utils/Module.h"
 
+using namespace eckit;
+
 Module::~Module() {}
 

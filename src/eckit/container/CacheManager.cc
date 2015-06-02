@@ -30,7 +30,7 @@ class AutoUmask {
 
 CacheManager::CacheManager(const std::string& name) :
   name_(name),
-  root_path_( Resource<PathName>("eckitCacheDir,$TEST_ECKIT_CACHE_DIR", "/tmp/cache") ) {
+  root_path_( Resource<PathName>("eckitCacheDir;$TEST_ECKIT_CACHE_DIR", "/tmp/cache") ) {
 }
 
 bool CacheManager::get(const key_t& k, PathName& v) const {

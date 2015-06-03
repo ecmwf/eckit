@@ -344,6 +344,14 @@ types/VerifyingDate.cc
 )
 
 list( APPEND eckit_parser_srcs
+parser/Request.h 
+parser/Request.cc 
+parser/Cell.h
+parser/Cell.cc
+parser/List.cc
+parser/List.h
+parser/RequestParser.h 
+parser/RequestParser.cc 
 parser/StreamParser.h
 parser/StreamParser.cc
 parser/StringTools.h
@@ -354,6 +362,13 @@ parser/JSON.h
 parser/JSON.cc
 parser/JSONParser.h
 parser/JSONParser.cc )
+
+ecbuild_generate_yy( YYPREFIX    request_
+                     YACC        parser/requesty
+                     YACC_TARGET requesty
+                     LEX         parser/requestl
+                     LEX_TARGET  requestl
+                     DEPENDANT   parser/RequestParser.cc )
 
 list( APPEND eckit_value_srcs
 value/BoolContent.h
@@ -449,6 +464,14 @@ persist/DumpLoad.cc
 persist/Isa.cc )
 
 list( APPEND eckit_utils_srcs
+utils/DataHandleFactory.cc
+utils/FileHandleFactory.cc
+utils/Interpreter.cc
+utils/Environment.cc
+utils/RequestHandler.cc
+utils/ExecutionContext.cc
+utils/SpecialFormHandler.cc
+utils/Module.cc
 utils/Translator.h
 utils/Translator.cc
 utils/MD5.h

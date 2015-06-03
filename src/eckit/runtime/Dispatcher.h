@@ -102,13 +102,13 @@ public:
 	void awake();
 
 	// Get the queue size
-	int  size();
+	int  size() const;
 
 	// Increment the running state by given delta
 	void running(long);
 
 	// Get the running state
-	long running();
+	long running() const;
 
 	// Serialise requests in queue as JSON array
 	void json(JSON&) const;
@@ -131,7 +131,7 @@ protected:
 	// Counter for thread ids
 	long              next_;
 	// Mutex protecting queue_
-	MutexCond         ready_;
+	mutable MutexCond ready_;
 	// Mutex for thread sleep/wake handling
 	MutexCond         wait_;
 	// Dispatcher name
@@ -141,7 +141,7 @@ protected:
 	// Number of active threads (i.e. processing work)
 	long              running_;
 
-	Mutex             lock_;
+	mutable Mutex     lock_;
 
 private:
 
@@ -364,7 +364,7 @@ Dispatcher<Traits>::~Dispatcher()
 }
 
 template<class Traits>
-long Dispatcher<Traits>::running()
+long Dispatcher<Traits>::running() const
 {
 	if(grow_) {
 		AutoLock<Mutex> lock(lock_);
@@ -434,7 +434,7 @@ void Dispatcher<Traits>::awake()
 }
 
 template<class Traits>
-int Dispatcher<Traits>::size()
+int Dispatcher<Traits>::size() const
 {
 	AutoLock<MutexCond> lock(ready_);
 	return queue_.size();
@@ -443,7 +443,7 @@ int Dispatcher<Traits>::size()
 template<class Traits>
 void Dispatcher<Traits>::print(std::ostream& s) const
 {
-	AutoLock<MutexCond> lock(const_cast<Dispatcher<Traits>*>(this)->ready_);
+	AutoLock<MutexCond> lock(ready_);
     for(typename std::list<Request*>::const_iterator i = queue_.begin() ;
 		i != queue_.end(); ++i)
 			if(*i)
@@ -453,7 +453,7 @@ void Dispatcher<Traits>::print(std::ostream& s) const
 template<class Traits>
 void Dispatcher<Traits>::json(JSON& s) const
 {
-	AutoLock<MutexCond> lock(const_cast<Dispatcher<Traits>*>(this)->ready_);
+	AutoLock<MutexCond> lock(ready_);
     s.startList();
     for(typename std::list<Request*>::const_iterator i = queue_.begin() ;
 		i != queue_.end(); ++i)

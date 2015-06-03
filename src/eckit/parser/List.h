@@ -10,8 +10,8 @@
 
 /// @author Piotr Kuchta - ECMWF March 2015
 
-#ifndef Request_H
-#define Request_H
+#ifndef List_H
+#define List_H
 
 #include <string>
 #include <list>
@@ -20,12 +20,24 @@
 #include <ostream>
 
 #include "eckit/parser/Cell.h"
-#include "eckit/parser/List.h"
 
 namespace eckit {
 
-typedef Cell* Values;
-typedef Cell* Request;
+class List {
+public:
+    List(Cell*&);
+
+    size_t size() const;
+    List& append(Cell*);
+    List& append(const std::string&);
+
+    std::ostream& print(std::ostream&) const;
+
+private:
+    Cell*& cell_;
+
+    friend std::ostream& operator<<(std::ostream& s, const List& l) { return l.print(s); }
+};
 
 } // namespace eckit
 

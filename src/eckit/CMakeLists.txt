@@ -346,6 +346,10 @@ types/VerifyingDate.cc
 list( APPEND eckit_parser_srcs
 parser/Request.h 
 parser/Request.cc 
+parser/Cell.h
+parser/Cell.cc
+parser/List.cc
+parser/List.h
 parser/RequestParser.h 
 parser/RequestParser.cc 
 parser/StreamParser.h

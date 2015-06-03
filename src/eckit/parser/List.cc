@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "Request.h"
+#include "List.h"
 #include "eckit/parser/StringTools.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/parser/StringTools.h"
@@ -17,6 +17,36 @@ using namespace std;
 using namespace eckit;
 
 namespace eckit {
+
+typedef StringTools S;
+
+List::List(Cell*& c) : cell_(c) {}
+
+size_t List::size() const
+{
+    size_t n(0);
+    for (Cell* r(cell_); r; r = r->rest())
+        ++n;
+    return n;
+}
+
+List& List::append(Cell* c)
+{
+    if (cell_ == 0)
+        cell_ = new Cell("_list", "", c, 0); 
+    else
+        cell_->append(new Cell("_list", "", c, 0));
+    return *this;
+}
+
+List& List::append(const string& s)
+{
+    return append(new Cell("", s, 0, 0));
+}
+
+std::ostream& List::print(std::ostream&) const 
+{
+}
 
 } // namespace eckit
 

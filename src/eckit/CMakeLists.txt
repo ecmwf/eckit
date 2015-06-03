@@ -470,6 +470,7 @@ utils/Interpreter.cc
 utils/Environment.cc
 utils/RequestHandler.cc
 utils/ExecutionContext.cc
+utils/SpecialFormHandler.cc
 utils/Module.cc
 utils/Translator.h
 utils/Translator.cc

@@ -10,6 +10,7 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/parser/Request.h"
+#include "eckit/utils/SpecialFormHandler.h"
 #include "eckit/utils/RequestHandler.h"
 #include "eckit/utils/Interpreter.h"
 #include "eckit/utils/ExecutionContext.h"
@@ -70,24 +71,10 @@ Values Interpreter::evalNative(const Request object, const Request request, Exec
     return r;
 }
 
-Values Interpreter::evalLet(const Request request, ExecutionContext& context)
+Values Interpreter::evalMacro(const Request object, const Request request, ExecutionContext& context)
 {
-    ASSERT(request->tag() == "_verb" && request->text() == "let");
-
-    Request evaluatedAttributes (evalAttributes(request, context));
-    Request frame (new Cell("_frame", "let", 0, 0));
-    for (Request e(evaluatedAttributes->rest()); e; e = e->rest())
-    {
-        ASSERT(e->tag() == "");
-
-        const string& name (e->text());
-        Values values (evalList(e->value(), context));
-
-        frame->append(new Cell("", name, values, 0));
-    }
-    context.pushEnvironmentFrame(frame);
-    // Not sure what to return here. The job is done with the push of new frame.
-    return Cell::clone(frame);
+    SpecialFormHandler& h (SpecialFormHandler::handler(object->text()));
+    return h.handle(request, context);
 }
 
 Values Interpreter::evalFunction(const Request object, const Request request, ExecutionContext& context)
@@ -108,54 +95,25 @@ Values Interpreter::evalFunction(const Request object, const Request request, Ex
     return r;
 }
 
-Values Interpreter::defineFunction(const Request request, ExecutionContext& context)
-{
-    ASSERT(request->tag() == "_verb" && request->text() == "function");
-    Request r (request->rest());
-
-    Request params (0);
-    if (r && r->text() == "of")
-    {
-        params = r->value(); 
-        r = r->rest();
-    }
-
-    ASSERT(r->tag() == "" && r->text().size());
-    string name (r->text());
-    Request code (r->value()->value());
-    ASSERT(code->tag() == "_requests");
-
-    Log::debug() << "Defining function " << name << "(" << params << "): " << code << endl; 
-
-    Request function (new Cell("_function", name, params, code));
-    Request frame (new Cell("_frame", "definition", 0, 0));
-    frame->append(new Cell("", name, function, 0));
-
-    context.pushEnvironmentFrame(frame);
-
-    return Cell::clone(function);
-}
-
 Values Interpreter::eval(const Request request, ExecutionContext& context)
 {
     if (request->tag() == "_requests") return evalRequests(request, context);
     if (request->tag() == "_list") return evalList(request, context);
     if (request->tag() == "") return request;
 
-    ASSERT("Currently we evaluate _verb only" && (request->tag() == "_verb") && request->text().size());
+    ASSERT("Currently we evaluate _verb or _macro only" && (request->tag() == "_verb" || request->tag() == "_macro")  && request->text().size());
 
     const string verb (request->text());
 
-    if (verb == "let")
-        return evalLet(request, context);
-    else if (verb == "function")
-        return defineFunction(request, context);
+    //if (verb == "let") return evalLet(request, context);
+    //else if (verb == "function") return defineFunction(request, context);
 
     Request object (context.environment().lookup(verb));
 
     const string tag (object->tag());
     Values r ( tag == ""          ? object
              : tag == "_native"   ? evalNative(object, request, context)
+             : tag == "_macro"    ? evalMacro(object, request, context)
              : tag == "_function" ? evalFunction(object, request, context)
              : tag == "_requests" ? eval(object, context)
              : tag == "_request"  ? eval(object, context)

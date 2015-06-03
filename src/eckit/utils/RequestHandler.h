@@ -9,8 +9,8 @@
  */
 /// @author Piotr Kuchta, February 2015
 
-#ifndef RequestHandler_H
-#define RequestHandler_H
+#ifndef eckit_utils_RequestHandler_H
+#define eckit_utils_RequestHandler_H
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/parser/Request.h"

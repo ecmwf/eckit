@@ -22,15 +22,14 @@ class ExecutionContext;
 class Interpreter {
 public:
     virtual Values eval(const Request, ExecutionContext&);
+    virtual Request evalAttributes(const Request, ExecutionContext&);
+    virtual Values evalList(const Request, ExecutionContext&);
 
 protected:
-    virtual Values evalList(const Request, ExecutionContext&);
     virtual Values evalRequests(const Request, ExecutionContext&);
-    virtual Values evalLet(const Request, ExecutionContext&);
-    virtual Values defineFunction(const Request, ExecutionContext&);
+    virtual Request evalMacro(const Request, const Request, ExecutionContext&);
     virtual Values evalFunction(const Request, const Request, ExecutionContext&);
     virtual Values evalNative(const Request object, const Request request, ExecutionContext&);
-    virtual Request evalAttributes(const Request, ExecutionContext&);
 };
 
 } // namespace eckit

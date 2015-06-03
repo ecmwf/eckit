@@ -11,19 +11,22 @@
 #include "eckit/utils/ExecutionContext.h"
 #include "eckit/utils/Environment.h"
 #include "eckit/utils/Module.h"
+#include "eckit/utils/Interpreter.h"
 #include "eckit/exception/Exceptions.h"
 
 using namespace std;
 using namespace eckit;
 
 ExecutionContext::ExecutionContext()
-: environment_(new Environment(0, new Cell("_list", "", 0, 0)))
+: environment_(new Environment(0, new Cell("_list", "", 0, 0))),
+  interpreter_(new Interpreter())
 {}
 
 ExecutionContext::~ExecutionContext()
 {
     for (Environment* e(environment_); e; e = e->parent())
         delete e;
+    delete interpreter_;
 }
 Environment& ExecutionContext::environment() { return *environment_; }
 
@@ -59,5 +62,16 @@ void ExecutionContext::popEnvironmentFrame(Request r)
         popEnvironmentFrame(); 
     ASSERT(environment_);
     popEnvironmentFrame(); 
+}
+
+void ExecutionContext::interpreter(Interpreter* interpreter)
+{
+    delete interpreter_;
+    interpreter_ = interpreter;
+}
+
+Interpreter& ExecutionContext::interpreter() const
+{ 
+    return *interpreter_;
 }
 

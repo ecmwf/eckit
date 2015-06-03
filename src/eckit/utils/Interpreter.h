@@ -9,8 +9,8 @@
  */
 /// @author Piotr Kuchta, May 2015
 
-#ifndef Interpreter_H
-#define Interpreter_H
+#ifndef eckit_utils_Interpreter_H
+#define eckit_utils_Interpreter_H
 
 #include "eckit/parser/Request.h"
 #include <list>
@@ -21,16 +21,16 @@ class ExecutionContext;
 
 class Interpreter {
 public:
-    static Values eval(const Request, ExecutionContext&);
+    virtual Values eval(const Request, ExecutionContext&);
 
-private:
-    static Values evalList(const Request, ExecutionContext&);
-    static Values evalRequests(const Request, ExecutionContext&);
-    static Values evalLet(const Request, ExecutionContext&);
-    static Values defineFunction(const Request, ExecutionContext&);
-    static Values evalFunction(const Request, const Request, ExecutionContext&);
-    static Values evalNative(const Request object, const Request request, ExecutionContext&);
-    static Request evalAttributes(const Request, ExecutionContext&);
+protected:
+    virtual Values evalList(const Request, ExecutionContext&);
+    virtual Values evalRequests(const Request, ExecutionContext&);
+    virtual Values evalLet(const Request, ExecutionContext&);
+    virtual Values defineFunction(const Request, ExecutionContext&);
+    virtual Values evalFunction(const Request, const Request, ExecutionContext&);
+    virtual Values evalNative(const Request object, const Request request, ExecutionContext&);
+    virtual Request evalAttributes(const Request, ExecutionContext&);
 };
 
 } // namespace eckit

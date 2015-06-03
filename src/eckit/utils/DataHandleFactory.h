@@ -9,8 +9,8 @@
  */
 /// @author Piotr Kuchta, May 2015
 
-#ifndef DataHandleFactory_H
-#define DataHandleFactory_H
+#ifndef eckit_utils_DataHandleFactory_H
+#define eckit_utils_DataHandleFactory_H
 
 #include <string>
 #include <map>

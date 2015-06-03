@@ -9,8 +9,8 @@
  */
 /// @author Piotr Kuchta, February 2015
 
-#ifndef ExecutionContext_H
-#define ExecutionContext_H
+#ifndef eckit_utils_ExecutionContext_H
+#define eckit_utils_ExecutionContext_H
 
 #include "eckit/parser/Request.h"
 
@@ -18,6 +18,7 @@ namespace eckit {
 
 class Environment;
 class Module;
+class Interpreter;
 
 class ExecutionContext {
 public:
@@ -35,8 +36,12 @@ public:
 
     Environment& environment();
 
+    void interpreter(Interpreter*);
+    Interpreter& interpreter() const;
+
 private:
     Environment* environment_;
+    Interpreter* interpreter_;
 };
 
 } // namespace eckit

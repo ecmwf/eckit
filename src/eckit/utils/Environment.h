@@ -11,8 +11,8 @@
 // File Environment.h
 // Piotr Kuchta - (c) ECMWF May 2015
 
-#ifndef Environment_H
-#define Environment_H
+#ifndef eckit_utils_Environment_H
+#define eckit_utils_Environment_H
 
 #include "eckit/parser/Request.h"
 

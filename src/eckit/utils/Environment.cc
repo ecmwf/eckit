@@ -17,6 +17,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/utils/Environment.h"
 #include "eckit/utils/Interpreter.h"
+#include "eckit/utils/ExecutionContext.h"
 
 using namespace std;
 using namespace eckit;  // TODO: eckit/utils/Environment.h should be in namespace eckit I think
@@ -53,7 +54,7 @@ string Environment::lookup(const string& name, const string& defaultValue, Execu
         return defaultValue;
 
     ASSERT(r->tag() == "_list");
-    Request evaluated (Interpreter::eval(r, context));
+    Request evaluated (context.interpreter().eval(r, context));
     ASSERT(evaluated->tag() == "_list");
     if (evaluated->rest())
         throw UserError("Expected single string as value of " + name);
@@ -62,7 +63,7 @@ string Environment::lookup(const string& name, const string& defaultValue, Execu
 
 vector<string> Environment::lookupList(const string& name, ExecutionContext& context)
 {
-    Request r (Interpreter::eval(lookup(name), context));
+    Request r (context.interpreter().eval(lookup(name), context));
 
     vector<string> list;
     for (Request e (r); e; e = e->rest())

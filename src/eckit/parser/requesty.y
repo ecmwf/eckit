@@ -41,32 +41,32 @@ struct YYSTYPE {
 
 %%
 
-all:	 requests                     { RequestParserResult::result_ = $1; }
+all:	 requests                     { eckit::RequestParserResult::result_ = $1; }
 	;
 
-requests : request                    { $$ = new Cell("_requests", "", $1, 0); }
-		 | requests request           { $$ = ($1)->append(new Cell("_requests", "", $2, 0)); }
+requests : request                    { $$ = new eckit::Cell("_requests", "", $1, 0); }
+		 | requests request           { $$ = ($1)->append(new eckit::Cell("_requests", "", $2, 0)); }
 
-request : WORD                        { $$ = new Cell("_verb", $1, 0, 0); }
-		| WORD ',' parameters         { $$ = new Cell("_verb", $1, 0, $3); }
-		| WORD '.'                    { $$ = new Cell("_verb", $1, 0, 0); }
-		| WORD ',' parameters '.'     { $$ = new Cell("_verb", $1, 0, $3); }
+request : WORD                        { $$ = new eckit::Cell("_verb", $1, 0, 0); }
+		| WORD ',' parameters         { $$ = new eckit::Cell("_verb", $1, 0, $3); }
+		| WORD '.'                    { $$ = new eckit::Cell("_verb", $1, 0, 0); }
+		| WORD ',' parameters '.'     { $$ = new eckit::Cell("_verb", $1, 0, $3); }
 		;
 
 parameters : parameter                { $$ = $1; }
 		   | parameters ',' parameter { $$ = ($1)->append($3); }
 		   ;
 
-parameter : WORD '=' values           { $$ = new Cell("", $1, $3, 0); }
+parameter : WORD '=' values           { $$ = new eckit::Cell("", $1, $3, 0); }
 		  ;
 
-values : value                        { $$ = new Cell("_list", "", $1, 0); }
-	   | values '/' value             { $$ = ($1)->append(new Cell("_list", "", $3, 0)); }
+values : value                        { $$ = new eckit::Cell("_list", "", $1, 0); }
+	   | values '/' value             { $$ = ($1)->append(new eckit::Cell("_list", "", $3, 0)); }
 	   ;
 
-value: WORD                           { $$ = new Cell("", $1, 0, 0); } 
-	 | STRING                         { $$ = new Cell("", $1, 0, 0); }
-	 | NUMB                           { $$ = new Cell("", $1, 0, 0); }
+value: WORD                           { $$ = new eckit::Cell("", $1, 0, 0); } 
+	 | STRING                         { $$ = new eckit::Cell("", $1, 0, 0); }
+	 | NUMB                           { $$ = new eckit::Cell("", $1, 0, 0); }
      | '(' requests ')'               { $$ = $2; }
 	 ;
 

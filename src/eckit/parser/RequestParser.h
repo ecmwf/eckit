@@ -15,7 +15,9 @@
 #ifndef RequestParser_H
 #define RequestParser_H
 
-#include "Request.h"
+#include "eckit/parser/Request.h"
+
+namespace eckit {
 
 class RequestParser
 {
@@ -28,5 +30,7 @@ private:
     RequestParser(const RequestParser&);
     RequestParser& operator=(const RequestParser&);
 };
+
+} // namespace eckit
 
 #endif

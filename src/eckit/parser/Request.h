@@ -19,6 +19,8 @@
 #include <map>
 #include <ostream>
 
+namespace eckit {
+
 class Cell {
 public:
     Cell(const std::string&, const std::string&, Cell*, Cell*);
@@ -91,5 +93,7 @@ private:
 
     friend std::ostream& operator<<(std::ostream& s, const List& l) { return l.print(s); }
 };
+
+} // namespace eckit
 
 #endif

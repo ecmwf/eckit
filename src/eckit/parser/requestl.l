@@ -16,8 +16,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "eckit/parser/RequestParser.h"
-
 %}
 
 IDENT   [_0-9A-Za-z]+[_\.\-\+A-Za-z0-9:\t ]*[_\.\-\+A-Za-z0-9]+

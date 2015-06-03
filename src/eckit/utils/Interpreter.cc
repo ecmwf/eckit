@@ -16,7 +16,8 @@
 #include "eckit/utils/Environment.h"
 
 using namespace std;
-using namespace eckit;
+
+namespace eckit {
 
 Values Interpreter::evalList(const Request requests, ExecutionContext& context)
 {
@@ -182,3 +183,4 @@ Request Interpreter::evalAttributes(const Request request, ExecutionContext& con
     return r;
 }
 
+} // namepsace eckit

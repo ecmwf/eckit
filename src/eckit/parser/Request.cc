@@ -16,6 +16,8 @@
 using namespace std;
 using namespace eckit;
 
+namespace eckit {
+
 typedef StringTools S;
 
 Cell::Cell(const std::string& tag, const std::string& text, Cell* value, Cell* rest)
@@ -415,4 +417,6 @@ List& List::append(const string& s)
 std::ostream& List::print(std::ostream&) const 
 {
 }
+
+} // namespace eckit
 

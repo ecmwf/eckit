@@ -18,6 +18,20 @@ namespace eckit {
 
 class ExecutionContext;
 
+/**
+ * Each software package/library X willing to add some functionality to the MARS language
+ * in forms of a new (native) function aka verb, should derive a class from eckit::RequestHandler
+ * and create instance of it, for example as a static local variable in <X>Module::importInto,
+ * which will register the new RequestHandler, and also insert reference to them in the
+ * context().environment, see ODBModule.cc in ODB API. 
+ *
+ * NOTE: this is a work in progress, no details how to insert reference here as it may
+ * get outdated qwuickly, see ODBModule::importInto for the current way of doing it.
+ * 
+ * After running importInto the new verbs ("native functions") should be avialable in the
+ * ExecutionContext.
+ */
+
 class Module {
 public:
 	virtual ~Module(); 

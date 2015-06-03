@@ -15,6 +15,7 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/TmpFile.h"
+#include "eckit/exception/Exceptions.h"
 
 #include <fstream>
 #include <stdexcept> 
@@ -31,7 +32,7 @@ private:
 static void reset_parser(FILE*,bool);
 static void do_parse_request();
 
-class RequestParseError : public std::runtime_error
+class RequestParseError : public eckit::Exception
 {
 public:
     RequestParseError(const char*);
@@ -84,8 +85,9 @@ Request RequestParserResult::result_ = 0;
 eckit::Mutex RequestParserMutex::mutex_;
 RequestParserMutex::RequestParserMutex() : eckit::AutoLock<eckit::Mutex>(mutex_) {}
 
-RequestParseError::RequestParseError(const char* s) : std::runtime_error(s) {}
-
+RequestParseError::RequestParseError(const char* s)
+: Exception(s)
+{}
 
 namespace RequestYacc {
 

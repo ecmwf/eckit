@@ -21,7 +21,7 @@ class FileHandleFactory : public DataHandleFactory
 public:
     FileHandleFactory();
 protected:
-    eckit::DataHandle* makeHandle(const std::string&);
+    eckit::DataHandle* makeHandle(const std::string&) const;
 };
 
 } // namespace eckit

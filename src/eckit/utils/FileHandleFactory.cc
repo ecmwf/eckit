@@ -20,7 +20,7 @@ FileHandleFactory::FileHandleFactory()
 : DataHandleFactory("file")
 {}
 
-DataHandle* FileHandleFactory::makeHandle(const string& fileName)
+DataHandle* FileHandleFactory::makeHandle(const string& fileName) const
 {
     return new FileHandle(fileName);
 }

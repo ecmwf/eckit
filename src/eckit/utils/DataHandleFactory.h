@@ -40,7 +40,7 @@ protected:
 
     static eckit::DataHandle* makeHandle(const std::string&, const std::string&);
 
-    virtual eckit::DataHandle* makeHandle(const std::string&) = 0;
+    virtual eckit::DataHandle* makeHandle(const std::string&) const = 0;
     std::string prefix() const;
 
 private:

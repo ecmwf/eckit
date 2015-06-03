@@ -16,19 +16,16 @@
 #define RequestParser_H
 
 #include "eckit/parser/Request.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
-class RequestParser
+class RequestParser : private eckit::NonCopyable
 {
 public:
     static Request parseFile(const char*, bool debug=false);
     static Request parse(const std::string&, bool debug=false);
     static Request parseFileUnprotected(const char*, bool debug=false);
-
-private:
-    RequestParser(const RequestParser&);
-    RequestParser& operator=(const RequestParser&);
 };
 
 } // namespace eckit

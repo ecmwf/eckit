@@ -272,8 +272,8 @@ public:
 		return transposed;
 	}
 
-	template<typename S>
-	friend std::ostream& operator<<( std::ostream& os, const Matrix<S>& v);
+	template<typename S, typename I>
+	friend std::ostream& operator<<( std::ostream& os, const Matrix<S, I>& v);
 
 #define UNARY_OPERATOR_Scalar(OP) \
 	Matrix& operator OP (const Scalar& scal) \

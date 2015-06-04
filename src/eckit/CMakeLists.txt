@@ -348,8 +348,8 @@ parser/Request.h
 parser/Request.cc 
 parser/Cell.h
 parser/Cell.cc
-parser/List.cc
 parser/List.h
+parser/List.cc
 parser/RequestParser.h 
 parser/RequestParser.cc 
 parser/StreamParser.h
@@ -464,14 +464,22 @@ persist/DumpLoad.cc
 persist/Isa.cc )
 
 list( APPEND eckit_utils_srcs
+utils/DataHandleFactory.h
 utils/DataHandleFactory.cc
+utils/FileHandleFactory.h
 utils/FileHandleFactory.cc
+utils/Interpreter.h
 utils/Interpreter.cc
+utils/Environment.h
 utils/Environment.cc
+utils/RequestHandler.h
 utils/RequestHandler.cc
+utils/ExecutionContext.h
 utils/ExecutionContext.cc
+utils/SpecialFormHandler.h
 utils/SpecialFormHandler.cc
 utils/Module.cc
+utils/Module.h
 utils/Translator.h
 utils/Translator.cc
 utils/MD5.h

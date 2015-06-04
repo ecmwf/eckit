@@ -13,7 +13,7 @@ namespace lapack {
 // Template specialisations
 //////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef HAVE_LAPACK
+#ifdef ECKIT_HAVE_LAPACK
 
 extern "C" {
     void dgetrf_ (int *M, int *N, double *A, int *lda, int *ipiv, int *info);

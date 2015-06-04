@@ -19,7 +19,7 @@
 
 //--------------------------------------------------------------------------------------------
 
-#ifdef HAVE_EIGEN
+#ifdef ECKIT_HAVE_EIGEN
 
 #define EIGEN_NO_AUTOMATIC_RESIZING
 #define EIGEN_DONT_ALIGN

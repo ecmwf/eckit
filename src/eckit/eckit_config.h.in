@@ -7,8 +7,8 @@
 
 // external packages
 
-#cmakedefine HAVE_EIGEN
-#cmakedefine HAVE_LAPACK
+#cmakedefine ECKIT_HAVE_EIGEN
+#cmakedefine ECKIT_HAVE_LAPACK
 #cmakedefine ECKIT_HAVE_MPI
 #cmakedefine ECKIT_HAVE_MPISTUBS
 

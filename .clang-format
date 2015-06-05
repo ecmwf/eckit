@@ -1,6 +1,7 @@
 Language:                          Cpp
 BasedOnStyle:                      Google
 ColumnLimit:                       120
+IndentWidth:                       4
 AccessModifierOffset:              -2
 AllowShortFunctionsOnASingleLine:  Inline
 KeepEmptyLinesAtTheStartOfBlocks:  true

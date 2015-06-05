@@ -44,8 +44,9 @@ List& List::append(const string& s)
     return append(new Cell("", s, 0, 0));
 }
 
-std::ostream& List::print(std::ostream&) const 
+std::ostream& List::print(std::ostream& s) const
 {
+    return s;
 }
 
 } // namespace eckit

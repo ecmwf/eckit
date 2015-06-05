@@ -154,7 +154,10 @@ char** Context::argvs() const { return argv_; }
 
 void Context::reconfigure() { behavior_->reconfigure(); }
 
-const std::string& Context::home() const { return home_; }
+const std::string& Context::home() const {
+  AutoLock<Mutex> lock(local_mutex);
+  return home_;
+}
 
 void Context::home(const std::string& h) {
   AutoLock<Mutex> lock(local_mutex);

@@ -17,9 +17,8 @@
 #ifndef eckit_Application_h
 #define eckit_Application_h
 
-#include <exception>
-
 #include "eckit/config/Configurable.h"
+#include "eckit/runtime/Policies.h"
 #include "eckit/runtime/Task.h"
 
 //-----------------------------------------------------------------------------
@@ -27,79 +26,6 @@
 namespace eckit {
 
 //-----------------------------------------------------------------------------
-
-// Abstract policy base classes
-
-struct LocationPolicy {
-    virtual void setup() = 0;
-};
-
-struct LoggingPolicy {
-    virtual void setup() = 0;
-};
-
-struct MonitoringPolicy {
-    virtual void start() = 0;
-    virtual void stop() = 0;
-};
-
-struct SignallingPolicy {
-    virtual void regist() = 0;
-    virtual void unregist() = 0;
-};
-
-//-----------------------------------------------------------------------------
-
-struct DefaultLogging : LoggingPolicy {
-    void setup() {}
-};
-
-//-----------------------------------------------------------------------------
-
-struct DefaultLocations : LocationPolicy {
-    void setup() {}
-};
-
-//-----------------------------------------------------------------------------
-
-struct NoMonitor : MonitoringPolicy {
-    void start() {}
-    void stop() {}
-};
-
-struct DoMonitor : MonitoringPolicy {
-    void start();
-    void stop();
-};
-
-//-----------------------------------------------------------------------------
-
-struct NoSignalRegist : SignallingPolicy {
-    void regist() {}
-    void unregist() {}
-};
-
-//-----------------------------------------------------------------------------
-
-struct StdSignalRegist : SignallingPolicy {
-    StdSignalRegist();
-    ~StdSignalRegist();
-    
-    static void catch_terminate();
-    static void catch_unexpected();
-    static void catch_new_handler();
-    
-    bool regist_;
-    
-    std::new_handler nh;
-    std::terminate_handler  th;
-    std::unexpected_handler uh;
-
-    void regist();
-    void unregist();
-};
-
-//=============================================================================
 
 class Application : public Task, 
                     public Configurable {

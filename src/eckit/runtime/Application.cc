@@ -8,8 +8,6 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <stdlib.h>
-
 #include "eckit/bases/Loader.h"
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
@@ -24,98 +22,6 @@
 namespace eckit {
 
 //-----------------------------------------------------------------------------
-
-static char* memoryReserve;
-
-static void end(const char* msg) {
-    static bool in_end = false;
-
-    if (in_end) {
-        fprintf(stderr, "terminate called twice\n");
-        _exit(1);
-    }
-
-    in_end = true;
-
-    delete[] memoryReserve;
-    memoryReserve = 0;
-    Log::monitor(Log::App, 9998) << msg << std::endl;
-
-    try {
-        throw;
-    } catch (std::exception& e) {
-        Log::panic() << "!!!!!!!!!!!!!!!!!! ";
-        Log::panic() << msg << " with the exception:" << std::endl;
-        Log::panic() << e.what() << std::endl;
-        //	Exception::exceptionStack(Log::panic());
-    }
-    _exit(1);
-    // Panic(msg);
-}
-
-//-----------------------------------------------------------------------------
-
-void DoMonitor::start() {
-    try  // activate monitor
-    {
-        Monitor::active(true);
-        Monitor::instance().startup();
-        Context::instance().self(Monitor::instance().self());
-    } catch (std::exception& e) {
-        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception is re-thrown" << std::endl;
-        throw;
-    }
-}
-
-void DoMonitor::stop() {
-    Monitor::instance().shutdown();
-}
-
-//-----------------------------------------------------------------------------
-
-StdSignalRegist::StdSignalRegist() : regist_(false) {
-    memoryReserve = new char[20 * 1024];
-}
-
-StdSignalRegist::~StdSignalRegist() {
-    if (!memoryReserve) {
-        delete[] memoryReserve;
-        memoryReserve = 0;
-    }
-}
-
-void StdSignalRegist::catch_terminate() {
-    end("Terminate was called");
-}
-
-void StdSignalRegist::catch_unexpected() {
-    end("Unexpected was called");
-}
-
-void StdSignalRegist::catch_new_handler() {
-    delete[] memoryReserve;
-    memoryReserve = 0;
-    throw OutOfMemory();
-}
-
-void StdSignalRegist::regist() {
-    if (regist_) return;
-    nh = std::set_new_handler(StdSignalRegist::catch_new_handler);
-    th = std::set_terminate(StdSignalRegist::catch_terminate);
-    uh = std::set_unexpected(StdSignalRegist::catch_unexpected);
-    regist_ = true;
-}
-
-void StdSignalRegist::unregist() {
-    if (!regist_) return;
-    if (nh) std::set_new_handler(nh);
-    if (th) std::set_terminate(th);
-    if (uh) std::set_unexpected(uh);
-    regist_ = false;
-}
-
-//=============================================================================
 
 Application::Application(int argc, char** argv,
                          LoggingPolicy* logPolicy,

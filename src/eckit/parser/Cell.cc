@@ -198,8 +198,6 @@ std::ostream& Cell::printValues(std::ostream& s, size_t depth) const
 
 std::ostream& Cell::print(std::ostream& s, size_t depth) const
 {
-    if (! this) return s << "NULL";
-
     if (tag_ == "_requests")
     {
         value()->print(s, depth + 1);

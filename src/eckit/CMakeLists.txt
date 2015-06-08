@@ -252,6 +252,7 @@ runtime/StandardBehavior.cc
 runtime/ContextBehavior.h
 runtime/ContextBehavior.cc
 runtime/PipeApplication.h
+runtime/PipeApplication.cc
 runtime/PipeHandler.h
 runtime/PipeHandler.cc
 runtime/Policies.h

@@ -18,6 +18,7 @@
 #define eckit_Application_h
 
 #include "eckit/config/Configurable.h"
+#include "eckit/memory/ScopedPtr.h"
 #include "eckit/runtime/Policies.h"
 #include "eckit/runtime/Task.h"
 
@@ -78,10 +79,10 @@ protected: // methods
 
 private: // members
 
-    LoggingPolicy* loggingPolicy_;
-    MonitoringPolicy* monitoringPolicy_;
-    LocationPolicy* locationPolicy_;
-    SignallingPolicy* signallingPolicy_;
+    ScopedPtr<LoggingPolicy> loggingPolicy_;
+    ScopedPtr<MonitoringPolicy> monitoringPolicy_;
+    ScopedPtr<LocationPolicy> locationPolicy_;
+    ScopedPtr<SignallingPolicy> signallingPolicy_;
 
     std::string name_;
     bool   running_;

@@ -240,10 +240,7 @@ std::ostream& Cell::print(std::ostream& s, size_t depth) const
 std::string Cell::str() const
 {
     stringstream ss;
-    if (this)
-        ss << this;
-    else
-        ss << "NULL";
+    ss << this;
     return ss.str();
 }
 

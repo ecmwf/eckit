@@ -69,13 +69,22 @@ ecbuild_add_option( FEATURE EIGEN
                     DESCRIPTION "Eigen support"
                     REQUIRED_PACKAGES Eigen3 )
 
-set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Accelerated dense matrix operations" )
+set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Dense matrix operations" )
 
 if( ENABLE_EIGEN )
     # TODO: we should add here a test that we can compile Eigen without problems
     # TODO: don't use contrib just yet -- sort out the legal stuff first
     # set( ECKIT_CONTRIB_EIGEN 1 )
 endif()
+
+### Armadillo
+
+ecbuild_add_option( FEATURE ARMADILLO
+                    DEFAULT ON
+                    DESCRIPTION "Armadillo support"
+                    REQUIRED_PACKAGES Armadillo )
+
+set_package_properties( Armadillo PROPERTIES TYPE RECOMMENDED PURPOSE "Dense matrix operations" )
 
 ### LAPACK
 

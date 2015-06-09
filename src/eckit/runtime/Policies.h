@@ -30,73 +30,84 @@ class Stream;
 
 // Abstract policy base classes
 
-struct LocationPolicy {
+class LocationPolicy {
+public:
     virtual void setup() = 0;
 };
 
-struct LoggingPolicy {
+class LoggingPolicy {
+public:
     virtual void setup() = 0;
 };
 
-struct MonitoringPolicy {
+class MonitoringPolicy {
+public:
     virtual void start() = 0;
     virtual void stop() = 0;
 };
 
-struct SignallingPolicy {
+class SignallingPolicy {
+public:
     virtual void regist() = 0;
     virtual void unregist() = 0;
 };
 
 //-----------------------------------------------------------------------------
 
-struct DefaultLogging : LoggingPolicy {
-    void setup() {}
+class DefaultLogging : public LoggingPolicy {
+public:
+    virtual void setup() {}
 };
 
 //-----------------------------------------------------------------------------
 
-struct DefaultLocations : LocationPolicy {
-    void setup() {}
+class DefaultLocations : public LocationPolicy {
+public:
+    virtual void setup() {}
 };
 
 //-----------------------------------------------------------------------------
 
-struct NoMonitor : MonitoringPolicy {
-    void start() {}
-    void stop() {}
+class NoMonitor : public MonitoringPolicy {
+public:
+    virtual void start() {}
+    virtual void stop() {}
 };
 
-struct DoMonitor : MonitoringPolicy {
-    void start();
-    void stop();
-};
-
-//-----------------------------------------------------------------------------
-
-struct NoSignalRegist : SignallingPolicy {
-    void regist() {}
-    void unregist() {}
+class DoMonitor : public MonitoringPolicy {
+public:
+    virtual void start();
+    virtual void stop();
 };
 
 //-----------------------------------------------------------------------------
 
-struct StdSignalRegist : SignallingPolicy {
+class NoSignalRegist : public SignallingPolicy {
+public:
+    virtual void regist() {}
+    virtual void unregist() {}
+};
+
+//-----------------------------------------------------------------------------
+
+class StdSignalRegist : public SignallingPolicy {
+public:
     StdSignalRegist();
     ~StdSignalRegist();
-    
+
     static void catch_terminate();
     static void catch_unexpected();
     static void catch_new_handler();
-    
+
+    virtual void regist();
+    virtual void unregist();
+
+private:
     bool regist_;
-    
+
     std::new_handler nh;
     std::terminate_handler  th;
     std::unexpected_handler uh;
-
-    void regist();
-    void unregist();
 };
 
 //-----------------------------------------------------------------------------

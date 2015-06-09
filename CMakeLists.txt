@@ -107,6 +107,10 @@ set_package_properties( AIO PROPERTIES TYPE RECOMMENDED PURPOSE "support for asy
 set( CMAKE_THREAD_PREFER_PTHREAD 1 )
 find_package(Threads REQUIRED)
 
+### Curses
+
+find_package( Curses  REQUIRED )
+
 ###############################################################################
 # checks
 

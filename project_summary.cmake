@@ -9,3 +9,8 @@ if( MPI_CXX_FOUND )
 	message( STATUS "	MPIEXEC               : [${MPIEXEC}]")
 
 endif()
+
+if(CURSES_FOUND)
+  message( STATUS " Curses   includes : [${CURSES_INCLUDE_DIR}]" )
+  message( STATUS "          libs     : [${CURSES_LIBRARIES}]" )
+endif()

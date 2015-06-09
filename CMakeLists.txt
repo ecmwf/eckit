@@ -107,6 +107,10 @@ set_package_properties( AIO PROPERTIES TYPE RECOMMENDED PURPOSE "support for asy
 set( CMAKE_THREAD_PREFER_PTHREAD 1 )
 find_package(Threads REQUIRED)
 
+### Curses
+
+find_package( Curses  REQUIRED )
+
 ###############################################################################
 # checks
 
@@ -130,7 +134,7 @@ endif()
 
 set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
-set( ECKIT_LIBRARIES      eckit eckit_web eckit_maths eckit_geometry )
+set( ECKIT_LIBRARIES      eckit eckit_geometry eckit_cmd eckit_maths eckit_web )
 
 if( HAVE_GRIB )
   list( APPEND ECKIT_LIBRARIES eckit_grib )

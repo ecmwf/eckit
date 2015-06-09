@@ -144,7 +144,6 @@ void CmdResource::help(std::ostream& out, const std::string& cmdname) {
 
 bool CmdResource::run(void (*proc)(CmdResource*, CmdArg&, std::istream&, std::ostream&), CmdArg& arg, std::istream& in,
                       std::ostream& out) {
-    static const char* here = __FUNCTION__;
     static bool fail = eckit::Resource<bool>("-fail", false);
 
     const std::string strcmd = arg[0];
@@ -164,7 +163,7 @@ bool CmdResource::run(void (*proc)(CmdResource*, CmdArg&, std::istream&, std::os
         } catch (std::exception& e) {
             if (fail) throw e;
 
-            Log::error() << "** " << e.what() << " Caught in " << here << std::endl;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is ignored" << std::endl;
         }
     } else {

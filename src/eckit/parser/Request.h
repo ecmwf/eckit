@@ -10,8 +10,8 @@
 
 /// @author Piotr Kuchta - ECMWF March 2015
 
-#ifndef Request_H
-#define Request_H
+#ifndef eckit_parser_Request_H
+#define eckit_parser_Request_H
 
 #include <string>
 #include <list>

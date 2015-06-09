@@ -10,8 +10,8 @@
 
 /// @author Piotr Kuchta - ECMWF March 2015
 
-#ifndef List_H
-#define List_H
+#ifndef eckit_parser_List_H
+#define eckit_parser_List_H
 
 #include <string>
 #include <list>

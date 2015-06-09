@@ -25,23 +25,23 @@ public:
     ExecutionContext();
     ~ExecutionContext();
 
-    void import(Module&);
+    void import(eckit::Module&);
 
     /// Creates a new environment frame and pushes it onto stack.
     void pushEnvironmentFrame();
 
-    void pushEnvironmentFrame(Request);
+    void pushEnvironmentFrame(eckit::Request);
     void popEnvironmentFrame();
-    void popEnvironmentFrame(Request);
+    void popEnvironmentFrame(eckit::Request);
 
     Environment& environment();
 
-    void interpreter(Interpreter*);
-    Interpreter& interpreter() const;
+    void interpreter(eckit::Interpreter*);
+    eckit::Interpreter& interpreter() const;
 
 private:
-    Environment* environment_;
-    Interpreter* interpreter_;
+    eckit::Environment* environment_;
+    eckit::Interpreter* interpreter_;
 };
 
 } // namespace eckit

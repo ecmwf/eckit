@@ -10,8 +10,8 @@
 
 /// @author Piotr Kuchta - ECMWF March 2015
 
-#ifndef Cell_H
-#define Cell_H
+#ifndef eckit_parser_Cell_H
+#define eckit_parser_Cell_H
 
 #include <string>
 #include <list>

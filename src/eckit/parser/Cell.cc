@@ -213,7 +213,8 @@ std::ostream& Cell::print(std::ostream& s, size_t depth) const
 
     if (tag_ == "_list")
     {
-        value()->print(s, depth + 1);
+        if (value()) value()->print(s, depth + 1);
+        else s << " NULL ";
         for (Cell* lst(rest()); lst; lst = lst->rest())
         {
             ASSERT(lst->tag() == "_list");

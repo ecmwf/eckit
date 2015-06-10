@@ -20,7 +20,7 @@ using namespace eckit;
 
 typedef StringTools S;
 
-map<string, DataHandleFactory*> DataHandleFactory::factories_ = map<string, DataHandleFactory*>();
+DataHandleFactory::storage_t DataHandleFactory::factories_;
 
 DataHandleFactory::DataHandleFactory(const string& prefix)
 : prefix_(prefix)

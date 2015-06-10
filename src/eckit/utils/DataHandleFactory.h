@@ -25,22 +25,25 @@ class MultiHandle;
 class Length; 
 
 class DataHandleFactory {
+public:  // Types
+    typedef std::map<std::string, DataHandleFactory*> storage_t;
+
 public:
     virtual ~DataHandleFactory();
 
-    static eckit::DataHandle* openForRead(const std::string&);
-    static eckit::DataHandle* openForWrite(const std::string&, const eckit::Length& = eckit::Length(0));
+    static DataHandle* openForRead(const std::string&);
+    static DataHandle* openForWrite(const std::string&, const Length& = Length(0));
 
-    static void buildMultiHandle(eckit::MultiHandle&, const std::vector<std::string>&);
+    static void buildMultiHandle(MultiHandle&, const std::vector<std::string>&);
 
 protected:
     DataHandleFactory(const std::string&);
 
     static std::pair<std::string,std::string> splitPrefix(const std::string&);
 
-    static eckit::DataHandle* makeHandle(const std::string&, const std::string&);
+    static DataHandle* makeHandle(const std::string&, const std::string&);
 
-    virtual eckit::DataHandle* makeHandle(const std::string&) const = 0;
+    virtual DataHandle* makeHandle(const std::string&) const = 0;
     std::string prefix() const;
 
 private:
@@ -48,7 +51,7 @@ private:
 
     std::string prefix_;
 
-    static std::map<std::string, DataHandleFactory*> factories_;
+    static storage_t factories_;
 };
 
 } // namespace eckit

@@ -4,6 +4,8 @@ Arg.cc
 Arg.h
 CmdArg.cc
 CmdArg.h
+CmdParser.cc
+CmdParser.h
 CmdResource.cc
 CmdResource.h
 ConfigCmd.cc
@@ -20,6 +22,11 @@ TermBuf.cc
 TermBuf.h
 term.c
 )
+
+ecbuild_generate_yy( YYPREFIX eckit_cmd_
+                     YACC cmdsy
+                     LEX  cmdsl
+                     DEPENDANT CmdParser.cc )
 
 ecbuild_add_library( TARGET             eckit_cmd
                      INSTALL_HEADERS    LISTED

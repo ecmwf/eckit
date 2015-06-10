@@ -44,6 +44,8 @@ RemoteCommandUser.cc
 RemoteCommandUser.h
 SleepCmd.cc
 SleepCmd.h
+StartCmd.cc
+StartCmd.h
 StatusCmd.cc
 StatusCmd.h
 TermBuf.cc

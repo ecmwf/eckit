@@ -33,9 +33,9 @@ DataHandleFactory::~DataHandleFactory()
 
 string DataHandleFactory::prefix() const { return prefix_; }
 
-DataHandleFactory::storage_t &DataHandleFactory::factories()
+DataHandleFactory::Storage &DataHandleFactory::factories()
 {
-    static storage_t factories;
+    static Storage factories;
     return factories;
 }
 

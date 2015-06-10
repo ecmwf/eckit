@@ -26,7 +26,7 @@ class Length;
 
 class DataHandleFactory {
 public:  // Types
-    typedef std::map<std::string, DataHandleFactory*> storage_t;
+    typedef std::map<std::string, DataHandleFactory*> Storage;
 
 public:
     virtual ~DataHandleFactory();
@@ -48,7 +48,7 @@ protected:
 
 private:
     DataHandleFactory();
-    static storage_t& factories();
+    static Storage& factories();
 
     std::string prefix_;
 };

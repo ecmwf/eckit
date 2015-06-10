@@ -36,6 +36,8 @@ QuitCmd.cc
 QuitCmd.h
 RemoteCommand.cc
 RemoteCommand.h
+SleepCmd.cc
+SleepCmd.h
 StatusCmd.cc
 StatusCmd.h
 TermBuf.cc

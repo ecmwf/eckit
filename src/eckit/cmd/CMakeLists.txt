@@ -1,5 +1,7 @@
 list( APPEND eckit_cmd_srcs
 cmdlib.h
+AliasCmd.cc
+AliasCmd.h
 Arg.cc
 Arg.h
 CmdArg.cc

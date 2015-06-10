@@ -15,51 +15,52 @@
 #include "eckit/io/MultiHandle.h"
 #include "eckit/parser/StringTools.h"
 
-using namespace std;
 using namespace eckit;
 
-typedef StringTools S;
-
-map<string, DataHandleFactory*> DataHandleFactory::factories_ = map<string, DataHandleFactory*>();
-
-DataHandleFactory::DataHandleFactory(const string& prefix)
+DataHandleFactory::DataHandleFactory(const std::string& prefix)
 : prefix_(prefix)
 {
-    factories_[prefix] = this;
+    factories()[prefix] = this;
 }
 
 DataHandleFactory::~DataHandleFactory()
 {
-    factories_.erase(prefix_);
+    factories().erase(prefix_);
 }
 
-string DataHandleFactory::prefix() const { return prefix_; }
+std::string DataHandleFactory::prefix() const { return prefix_; }
 
-DataHandle* DataHandleFactory::makeHandle(const string& prefix, const string& descriptor)
+DataHandleFactory::Storage &DataHandleFactory::factories()
 {
-    if (factories_.find(prefix) == factories_.end())
-        throw UserError(string("No factory for '") + prefix + "://' data descriptors");
-
-    return factories_[prefix]->makeHandle(descriptor);
+    static Storage factories;
+    return factories;
 }
 
-pair<string,string> DataHandleFactory::splitPrefix(const string& handleDescriptor)
+DataHandle* DataHandleFactory::makeHandle(const std::string& prefix, const std::string& descriptor)
 {
-    const string delimiter("://");
+    if (factories().find(prefix) == factories().end())
+        throw UserError(std::string("No factory for '") + prefix + "://' data descriptors");
+
+    return factories()[prefix]->makeHandle(descriptor);
+}
+
+std::pair<std::string, std::string> DataHandleFactory::splitPrefix(const std::string& handleDescriptor)
+{
+    const std::string delimiter("://");
     size_t pos (handleDescriptor.find(delimiter));
     if (pos != std::string::npos)
         return make_pair(handleDescriptor.substr(0, pos), handleDescriptor.substr(pos + delimiter.size()));
     
-    if (S::startsWith(S::lower(S::trim(handleDescriptor)), "retrieve,")
-        || S::startsWith(S::lower(S::trim(handleDescriptor)), "archive,"))
-        return make_pair(string("mars"), handleDescriptor); 
+    if (StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "retrieve,")
+        || StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "archive,"))
+        return std::make_pair(std::string("mars"), handleDescriptor);
 
-    return make_pair(string("file"), handleDescriptor); 
+    return std::make_pair(std::string("file"), handleDescriptor);
 }
 
 void DataHandleFactory::buildMultiHandle(MultiHandle& mh, const std::vector<std::string>& dataDescriptors)
 {
-    vector<DataHandle*> handles;
+    std::vector<DataHandle*> handles;
     for (size_t i(0); i < dataDescriptors.size(); ++i)
     {
         std::pair<std::string,std::string> p (splitPrefix(dataDescriptors[i]));

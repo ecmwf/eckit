@@ -20,6 +20,8 @@ ExportCmd.cc
 ExportCmd.h
 JSONCmd.cc
 JSONCmd.h
+HistoryCmd.cc
+HistoryCmd.h
 MemoryCmd.cc
 MemoryCmd.h
 RemoteCommand.cc

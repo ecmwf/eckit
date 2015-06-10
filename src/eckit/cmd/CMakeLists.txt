@@ -16,6 +16,8 @@ DirCmd.cc
 DirCmd.h
 EnvironmentCmd.cc
 EnvironmentCmd.h
+ExportCmd.cc
+ExportCmd.h
 JSONCmd.cc
 JSONCmd.h
 MemoryCmd.cc

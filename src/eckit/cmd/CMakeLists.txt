@@ -12,6 +12,8 @@ CmdResource.cc
 CmdResource.h
 ConfigCmd.cc
 ConfigCmd.h
+DirCmd.cc
+DirCmd.h
 JSONCmd.cc
 JSONCmd.h
 MemoryCmd.cc

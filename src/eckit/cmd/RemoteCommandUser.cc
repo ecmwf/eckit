@@ -9,24 +9,27 @@
  */
 
 #include "eckit/cmd/CmdResource.h"
-#include "eckit/cmd/RemoteCommand.h"
+#include "eckit/cmd/RemoteCommandUser.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/config/Resource.h"
 #include "eckit/serialisation/Stream.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
-// =======================================================================
+//-----------------------------------------------------------------------------
 
 RemoteCommandUser::RemoteCommandUser(TCPSocket& protocol) : NetUser(protocol), from_(protocol_.remoteHost()) {
 }
 
+//-----------------------------------------------------------------------------
+
 RemoteCommandUser::~RemoteCommandUser() {
 }
 
-void RemoteCommandUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
+//-----------------------------------------------------------------------------
+
+void RemoteCommandUser::serve(Stream& s, std::istream& in, std::ostream& out) {
 
     Log::debug() << "Starting a remote command connection " << std::endl;
 
@@ -40,31 +43,6 @@ void RemoteCommandUser::serve(eckit::Stream& s, std::istream& in, std::ostream& 
     CmdResource::run(CmdResource::command, cmd, in, out);
 
     Log::debug() << "Exiting remote command ..." << std::endl;
-}
-
-// =======================================================================
-
-RemoteCommander::RemoteCommander(int p) : NetService(p) {
-    Monitor::instance().port(port());
-    std::string host = eckit::Resource<std::string>("localBindingAddr", "localHost");
-    Monitor::instance().host(host);
-}
-
-RemoteCommander::~RemoteCommander() {
-}
-
-NetUser* RemoteCommander::newUser(TCPSocket& protocol) {
-    return new RemoteCommandUser(protocol);
-}
-
-// =======================================================================
-
-RemoteCommandable::RemoteCommandable(int port) : commander_(new RemoteCommander(port)) {
-    commander_.start();
-}
-
-RemoteCommandable::~RemoteCommandable() {
-    commander_.stop();
 }
 
 //-----------------------------------------------------------------------------

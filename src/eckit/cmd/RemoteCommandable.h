@@ -12,50 +12,14 @@
 /// @author Manuel Fuentes
 /// @date   Jul 1996
 
-#ifndef eckit_cmd_RemoteCommand_H
-#define eckit_cmd_RemoteCommand_H
+#ifndef eckit_cmd_RemoteCommandable_H
+#define eckit_cmd_RemoteCommandable_H
 
-#include "eckit/net/NetService.h"
-#include "eckit/net/NetUser.h"
 #include "eckit/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
-
-//-----------------------------------------------------------------------------
-
-class RemoteCommandUser : public eckit::NetUser {
-public:
-    RemoteCommandUser(eckit::TCPSocket&);
-    virtual ~RemoteCommandUser();
-    static void terminate(RemoteCommandUser& other) { other.stop(); }
-
-private:
-    virtual void serve(eckit::Stream&, std::istream&, std::ostream&);
-    std::string from_;
-};
-
-//-----------------------------------------------------------------------------
-
-class RemoteCommander : public eckit::NetService {
-public:
-    // -- Contructors
-
-    RemoteCommander(int);
-
-    // -- Destructor
-
-    ~RemoteCommander();
-
-private:
-    // -- Overridden methods
-
-    // From NetService
-
-    virtual eckit::NetUser* newUser(eckit::TCPSocket&);
-    virtual std::string name() { return "monitor"; }
-};
 
 //-----------------------------------------------------------------------------
 

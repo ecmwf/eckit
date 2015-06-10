@@ -34,8 +34,12 @@ PsCmd.cc
 PsCmd.h
 QuitCmd.cc
 QuitCmd.h
-RemoteCommand.cc
-RemoteCommand.h
+RemoteCommandable.cc
+RemoteCommandable.h
+RemoteCommander.cc
+RemoteCommander.h
+RemoteCommandUser.cc
+RemoteCommandUser.h
 SleepCmd.cc
 SleepCmd.h
 StatusCmd.cc

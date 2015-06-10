@@ -24,6 +24,8 @@ HistoryCmd.cc
 HistoryCmd.h
 MemoryCmd.cc
 MemoryCmd.h
+QuitCmd.cc
+QuitCmd.h
 RemoteCommand.cc
 RemoteCommand.h
 StatusCmd.cc

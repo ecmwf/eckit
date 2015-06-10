@@ -18,8 +18,6 @@
 using namespace std;
 using namespace eckit;
 
-typedef StringTools S;
-
 DataHandleFactory::DataHandleFactory(const string& prefix)
 : prefix_(prefix)
 {
@@ -54,8 +52,8 @@ pair<string,string> DataHandleFactory::splitPrefix(const string& handleDescripto
     if (pos != std::string::npos)
         return make_pair(handleDescriptor.substr(0, pos), handleDescriptor.substr(pos + delimiter.size()));
     
-    if (S::startsWith(S::lower(S::trim(handleDescriptor)), "retrieve,")
-        || S::startsWith(S::lower(S::trim(handleDescriptor)), "archive,"))
+    if (StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "retrieve,")
+        || StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "archive,"))
         return make_pair(string("mars"), handleDescriptor); 
 
     return make_pair(string("file"), handleDescriptor); 

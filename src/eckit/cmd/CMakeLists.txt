@@ -22,6 +22,8 @@ JSONCmd.cc
 JSONCmd.h
 HistoryCmd.cc
 HistoryCmd.h
+ManCmd.cc
+ManCmd.h
 MemoryCmd.cc
 MemoryCmd.h
 QuitCmd.cc

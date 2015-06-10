@@ -30,6 +30,8 @@ ManCmd.cc
 ManCmd.h
 MemoryCmd.cc
 MemoryCmd.h
+PsCmd.cc
+PsCmd.h
 QuitCmd.cc
 QuitCmd.h
 RemoteCommand.cc

@@ -20,27 +20,31 @@ using namespace eckit;
 
 typedef StringTools S;
 
-DataHandleFactory::storage_t DataHandleFactory::factories_;
-
 DataHandleFactory::DataHandleFactory(const string& prefix)
 : prefix_(prefix)
 {
-    factories_[prefix] = this;
+    factories()[prefix] = this;
 }
 
 DataHandleFactory::~DataHandleFactory()
 {
-    factories_.erase(prefix_);
+    factories().erase(prefix_);
 }
 
 string DataHandleFactory::prefix() const { return prefix_; }
 
+DataHandleFactory::storage_t &DataHandleFactory::factories()
+{
+    static storage_t factories;
+    return factories;
+}
+
 DataHandle* DataHandleFactory::makeHandle(const string& prefix, const string& descriptor)
 {
-    if (factories_.find(prefix) == factories_.end())
+    if (factories().find(prefix) == factories().end())
         throw UserError(string("No factory for '") + prefix + "://' data descriptors");
 
-    return factories_[prefix]->makeHandle(descriptor);
+    return factories()[prefix]->makeHandle(descriptor);
 }
 
 pair<string,string> DataHandleFactory::splitPrefix(const string& handleDescriptor)

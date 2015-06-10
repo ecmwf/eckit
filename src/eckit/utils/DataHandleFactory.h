@@ -48,10 +48,9 @@ protected:
 
 private:
     DataHandleFactory();
+    static storage_t& factories();
 
     std::string prefix_;
-
-    static storage_t factories_;
 };
 
 } // namespace eckit

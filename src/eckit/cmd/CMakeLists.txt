@@ -48,6 +48,8 @@ StartCmd.cc
 StartCmd.h
 StatusCmd.cc
 StatusCmd.h
+StopCmd.cc
+StopCmd.h
 TermBuf.cc
 TermBuf.h
 term.c

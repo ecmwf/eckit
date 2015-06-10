@@ -14,6 +14,8 @@ ConfigCmd.cc
 ConfigCmd.h
 DirCmd.cc
 DirCmd.h
+EnvironmentCmd.cc
+EnvironmentCmd.h
 JSONCmd.cc
 JSONCmd.h
 MemoryCmd.cc

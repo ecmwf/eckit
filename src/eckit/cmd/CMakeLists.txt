@@ -55,6 +55,8 @@ TailCmd.h
 TermBuf.cc
 TermBuf.h
 term.c
+UpTimeCmd.cc
+UpTimeCmd.h
 )
 
 ecbuild_generate_yy( YYPREFIX eckit_cmd_

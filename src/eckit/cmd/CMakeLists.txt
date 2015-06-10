@@ -50,6 +50,8 @@ StatusCmd.cc
 StatusCmd.h
 StopCmd.cc
 StopCmd.h
+TailCmd.cc
+TailCmd.h
 TermBuf.cc
 TermBuf.h
 term.c

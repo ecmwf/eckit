@@ -15,10 +15,9 @@
 #include "eckit/io/MultiHandle.h"
 #include "eckit/parser/StringTools.h"
 
-using namespace std;
 using namespace eckit;
 
-DataHandleFactory::DataHandleFactory(const string& prefix)
+DataHandleFactory::DataHandleFactory(const std::string& prefix)
 : prefix_(prefix)
 {
     factories()[prefix] = this;
@@ -29,7 +28,7 @@ DataHandleFactory::~DataHandleFactory()
     factories().erase(prefix_);
 }
 
-string DataHandleFactory::prefix() const { return prefix_; }
+std::string DataHandleFactory::prefix() const { return prefix_; }
 
 DataHandleFactory::Storage &DataHandleFactory::factories()
 {
@@ -37,31 +36,31 @@ DataHandleFactory::Storage &DataHandleFactory::factories()
     return factories;
 }
 
-DataHandle* DataHandleFactory::makeHandle(const string& prefix, const string& descriptor)
+DataHandle* DataHandleFactory::makeHandle(const std::string& prefix, const std::string& descriptor)
 {
     if (factories().find(prefix) == factories().end())
-        throw UserError(string("No factory for '") + prefix + "://' data descriptors");
+        throw UserError(std::string("No factory for '") + prefix + "://' data descriptors");
 
     return factories()[prefix]->makeHandle(descriptor);
 }
 
-pair<string,string> DataHandleFactory::splitPrefix(const string& handleDescriptor)
+std::pair<std::string, std::string> DataHandleFactory::splitPrefix(const std::string& handleDescriptor)
 {
-    const string delimiter("://");
+    const std::string delimiter("://");
     size_t pos (handleDescriptor.find(delimiter));
     if (pos != std::string::npos)
         return make_pair(handleDescriptor.substr(0, pos), handleDescriptor.substr(pos + delimiter.size()));
     
     if (StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "retrieve,")
         || StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "archive,"))
-        return make_pair(string("mars"), handleDescriptor); 
+        return std::make_pair(std::string("mars"), handleDescriptor);
 
-    return make_pair(string("file"), handleDescriptor); 
+    return std::make_pair(std::string("file"), handleDescriptor);
 }
 
 void DataHandleFactory::buildMultiHandle(MultiHandle& mh, const std::vector<std::string>& dataDescriptors)
 {
-    vector<DataHandle*> handles;
+    std::vector<DataHandle*> handles;
     for (size_t i(0); i < dataDescriptors.size(); ++i)
     {
         std::pair<std::string,std::string> p (splitPrefix(dataDescriptors[i]));

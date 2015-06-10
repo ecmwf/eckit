@@ -14,6 +14,8 @@ ConfigCmd.cc
 ConfigCmd.h
 DirCmd.cc
 DirCmd.h
+EchoCmd.cc
+EchoCmd.h
 EnvironmentCmd.cc
 EnvironmentCmd.h
 ExportCmd.cc

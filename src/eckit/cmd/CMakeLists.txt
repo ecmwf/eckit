@@ -34,6 +34,8 @@ PsCmd.cc
 PsCmd.h
 QuitCmd.cc
 QuitCmd.h
+RemoteCmd.cc
+RemoteCmd.h
 RemoteCommandable.cc
 RemoteCommandable.h
 RemoteCommander.cc

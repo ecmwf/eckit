@@ -26,6 +26,8 @@ HistoryCmd.cc
 HistoryCmd.h
 KillCmd.cc
 KillCmd.h
+LockCmd.cc
+LockCmd.h
 ManCmd.cc
 ManCmd.h
 MemoryCmd.cc

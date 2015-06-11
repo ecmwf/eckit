@@ -112,6 +112,7 @@ static void get(int n, std::vector<int>& v) {
 //-----------------------------------------------------------------------------
 
 static std::string get(int n) {
+
     Monitor::TaskArray& info = Monitor::instance().tasks();
 
     if (info[n].parent() != -1) return get(info[n].parent());
@@ -122,7 +123,6 @@ static std::string get(int n) {
 //-----------------------------------------------------------------------------
 
 static bool sortTasks(int n1, int n2) {
-    Monitor::TaskArray& info = Monitor::instance().tasks();
 
     std::string s1 = get(n1);
     std::string s2 = get(n2);

@@ -27,9 +27,9 @@ Reanimator<MemoryHandle> MemoryHandle::reanimator_;
 MemoryHandle::MemoryHandle(const Buffer& buffer):
 	address_(const_cast<Buffer&>(buffer)),
     size_(buffer.size()),
-    read_(false),
     opened_(false),
     readOnly_(true),
+    read_(false),
     position_(0)
 {
 }
@@ -39,8 +39,8 @@ MemoryHandle::MemoryHandle(Buffer& buffer):
     address_(buffer),
     size_(buffer.size()),
     opened_(false),
-    read_(false),
     readOnly_(false),
+    read_(false),
     position_(0)
 {
 }
@@ -48,9 +48,9 @@ MemoryHandle::MemoryHandle(Buffer& buffer):
 MemoryHandle::MemoryHandle(const void* address,size_t size):
 	address_(const_cast<char*>(reinterpret_cast<const char*>(address))),
     size_(size),
-    read_(false),
     opened_(false),
     readOnly_(true),
+    read_(false),
     position_(0)
 {
 }
@@ -60,8 +60,8 @@ MemoryHandle::MemoryHandle(void* address,size_t size):
     address_(reinterpret_cast<char*>(address)),
     size_(size),
     opened_(false),
-    read_(false),
     readOnly_(false),
+    read_(false),
     position_(0)
 {
 }
@@ -100,9 +100,6 @@ void MemoryHandle::skip(const Length& len)
 long MemoryHandle::read(void* buffer,long length)
 {
     ASSERT(opened_);
-
-    char *buf = (char*)buffer;
-
     ASSERT(read_);
 
     size_t left = size_ - position_;
@@ -116,9 +113,6 @@ long MemoryHandle::read(void* buffer,long length)
 long MemoryHandle::write(const void* buffer,long length)
 {
     ASSERT(opened_);
-
-	char *buf = (char*)buffer;
-
     ASSERT(!read_);
 
     size_t left = size_ - position_;

@@ -111,7 +111,7 @@ private: // methods
 	void init();
 
     friend class ThreadSingleton<Monitor>;
-    friend class NewAlloc0<Monitor>;
+    friend struct NewAlloc0<Monitor>;
     
 };
 

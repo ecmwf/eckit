@@ -114,6 +114,7 @@ public:
     }
 
 private:
+
     PathName path_;
 
     KDMappedHeader header_;

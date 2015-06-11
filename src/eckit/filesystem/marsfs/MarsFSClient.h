@@ -24,7 +24,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class FileSystemSize;
+struct FileSystemSize;
 class MarsFSPath;
 
 class MarsFSClient : private NonCopyable {

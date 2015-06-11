@@ -59,8 +59,8 @@ public:
 private:
     Cell(Cell*); // cloning
 
-    std::string text_;
     std::string tag_;
+    std::string text_;
     Cell *value_;
     Cell *rest_;
 

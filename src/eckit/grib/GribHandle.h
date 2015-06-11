@@ -94,8 +94,9 @@ public: // methods
 
 private: // members
 
-   bool owns_handle_;
    grib_handle* handle_; ///< owned grib_handle
+
+   bool owns_handle_;
 
 };
 

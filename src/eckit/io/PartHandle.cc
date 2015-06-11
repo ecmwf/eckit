@@ -65,10 +65,10 @@ PartHandle::PartHandle(Stream& s):
 PartHandle::PartHandle(DataHandle& handle,
                        const OffsetList& offset,const LengthList& length):
     HandleHolder(handle),
-    offset_(offset),
-    length_(length),
     pos_ (0),
-    index_ (0)
+    index_ (0),
+    offset_(offset),
+    length_(length)
 {
     ASSERT(offset_.size() == length_.size());
 }
@@ -76,10 +76,10 @@ PartHandle::PartHandle(DataHandle& handle,
 PartHandle::PartHandle(DataHandle* handle,
                        const OffsetList& offset,const LengthList& length):
     HandleHolder(handle),
-    offset_(offset),
-    length_(length),
     pos_ (0),
-    index_ (0)
+    index_ (0),
+    offset_(offset),
+    length_(length)
 {
     ASSERT(offset_.size() == length_.size());
 }
@@ -87,10 +87,10 @@ PartHandle::PartHandle(DataHandle* handle,
 PartHandle::PartHandle(DataHandle& handle,
                        const Offset& offset,const Length& length):
     HandleHolder(handle),
-    offset_(1,offset),
-    length_(1,length),
     pos_ (0),
-    index_ (0)
+    index_ (0),
+    offset_(1,offset),
+    length_(1,length)
 {
     ASSERT(offset_.size() == length_.size());
 }
@@ -98,10 +98,10 @@ PartHandle::PartHandle(DataHandle& handle,
 PartHandle::PartHandle(DataHandle* handle,
                        const Offset& offset,const Length& length):
     HandleHolder(handle),
-    offset_(1,offset),
-    length_(1,length),
     pos_ (0),
-    index_ (0)
+    index_ (0),
+    offset_(1,offset),
+    length_(1,length)
 {
     ASSERT(offset_.size() == length_.size());
 }

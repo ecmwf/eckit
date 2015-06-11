@@ -94,8 +94,9 @@ private:
 
     size_t reads_;
     size_t seeks_;
-    size_t positions_;
+//    size_t positions_; // unused
     size_t writes_;
+
     unsigned long long bytesRead_;
     unsigned long long bytesWritten_;
 
@@ -104,11 +105,6 @@ private:
     double readTime_;
     double writeTime_;
     double seekTime_;
-
-
-    // -- Methods
-
-
 
 };
 

@@ -61,9 +61,9 @@ private:
 // -- Members
 	
     pthread_t   thread_;
-	Thread     *proc_;
-    bool        running_;
+    Thread*     proc_;
     size_t      stack_;
+    bool        running_;
 
 // -- Methods
 	

@@ -22,9 +22,9 @@ typedef void (*test_proc_t)();
 //=========================================
 
 class OneTest {
-    OneTest *next_;
     const char* n_;
     test_proc_t t_;
+    OneTest *next_;
 public:
     OneTest(const char* n, test_proc_t t);
     void test();

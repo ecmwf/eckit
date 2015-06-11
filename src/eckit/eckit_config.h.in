@@ -13,5 +13,6 @@
 #cmakedefine ECKIT_HAVE_LAPACK
 #cmakedefine ECKIT_HAVE_MPI
 #cmakedefine ECKIT_HAVE_MPISTUBS
+#cmakedefine ECKIT_HAVE_READLINE
 
 #endif // eckit_config_h

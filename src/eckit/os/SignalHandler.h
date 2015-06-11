@@ -55,7 +55,7 @@ private: // members
 
 	int         signal_;
 
-	sigjmp_buf       buf_;
+// unused // sigjmp_buf       buf_;
 	struct sigaction save_;
 
 	SignalHandler*        next_;

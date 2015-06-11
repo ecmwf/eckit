@@ -25,8 +25,8 @@ namespace eckit {
 
 TCPServer::TCPServer(int port,const std::string& addr):
     TCPSocket(),
-    listen_(-1),
     port_(port),
+    listen_(-1),
     addr_(addr),
     closeExec_(true)
 {

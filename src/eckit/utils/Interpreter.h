@@ -21,6 +21,9 @@ class ExecutionContext;
 
 class Interpreter {
 public:
+
+    virtual ~Interpreter();
+
     virtual Values eval(const Request, ExecutionContext&);
     virtual Request evalAttributes(const Request, ExecutionContext&);
     virtual Values evalList(const Request, ExecutionContext&);

@@ -53,9 +53,9 @@ TCPSocket::UnknownHost::UnknownHost(const std::string& host):
 
 
 TCPSocket::TCPSocket():
-    remotePort_(-1),
-    localPort_(-1),
     socket_(-1),
+    localPort_(-1),
+    remotePort_(-1),
     remoteAddr_(none),
     localAddr_(none),
     bufSize_(0)
@@ -65,10 +65,10 @@ TCPSocket::TCPSocket():
 // This contructor performs a cahnge of ownership of the socket
 TCPSocket::TCPSocket(TCPSocket& other):
     socket_(other.socket_),
-    remotePort_(other.remotePort_),
-    remoteAddr_(other.remoteAddr_),
-    remoteHost_(other.remoteHost_),
     localPort_(other.remotePort_),
+    remotePort_(other.remotePort_),
+    remoteHost_(other.remoteHost_),
+    remoteAddr_(other.remoteAddr_),
     localHost_(other.remoteHost_),
     localAddr_(other.remoteAddr_),
     bufSize_(0)

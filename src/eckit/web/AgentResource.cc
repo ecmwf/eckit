@@ -42,8 +42,8 @@ public:
 MemStream::MemStream(const char* p,long len):
 	in_(p,len),
 	out_(10240),
-	length_(0),
-	pos_(0)
+        pos_(0),
+        length_(0)
 {
 }
 

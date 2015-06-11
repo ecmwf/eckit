@@ -23,8 +23,8 @@ using namespace std;
 using namespace eckit;  // TODO: eckit/utils/Environment.h should be in namespace eckit I think
 
 Environment::Environment(Environment* parent, Request r)
-: parent_(parent),
-  dictionary_(r)
+: dictionary_(r),
+  parent_(parent)
 {}
 
 Environment::~Environment()

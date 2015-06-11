@@ -64,6 +64,8 @@ BOOST_AUTO_TEST_CASE( test_all_to_all )
 
   int success = all_to_all( mpi::Comm(), send, recv );
 
+  BOOST_CHECK( success == MPI_SUCCESS );
+
   // check results
   std::vector< std::vector<int> > expected(mpi::size());
   for( int j=0; j<mpi::size(); ++j )
@@ -81,6 +83,8 @@ BOOST_AUTO_TEST_CASE( test_all_gather___simple )
 
   int success = all_gather( mpi::Comm(), send, recv );
 
+  BOOST_CHECK( success == MPI_SUCCESS );
+
   // check results
   std::vector<int> expected(mpi::size());
   for( int j=0; j<mpi::size(); ++j )
@@ -97,6 +101,8 @@ BOOST_AUTO_TEST_CASE( test_all_gather___buffer )
   mpi::Buffer<int> recv;
 
   int success = all_gather( mpi::Comm(), send, recv );
+
+  BOOST_CHECK( success == MPI_SUCCESS );
 
   // check results
   std::vector<int> expected;

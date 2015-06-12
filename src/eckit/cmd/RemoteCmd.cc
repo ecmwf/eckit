@@ -44,7 +44,7 @@ void RemoteCmd::execute(std::istream& in, std::ostream& out, CmdArg& arg) {
 
     if (a.isString()) {
         std::string name = arg[1];
-        for (int j = 0; j < info.size(); j++) {
+        for (unsigned long j = 0; j < info.size(); j++) {
             if (info[j].busy(true) && info[j].application() == name && info[j].parent() == -1) {
                 taskid = j;
                 break;
@@ -54,7 +54,7 @@ void RemoteCmd::execute(std::istream& in, std::ostream& out, CmdArg& arg) {
 
     if (a.isNumber()) taskid = (long long)a;
 
-    if (taskid < 0 || taskid >= info.size()) {
+    if (taskid < 0 || (unsigned long)taskid >= info.size()) {
         if (a.isString()) out << a << ": task not found" << std::endl;
         if (a.isNumber()) out << taskid << ": task Id not found" << std::endl;
         return;

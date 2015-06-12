@@ -134,7 +134,7 @@ double Translator<std::string,double>::operator()(const std::string& s)
 //    DEBUG_VAR( pend - s.c_str() );
 //    DEBUG_VAR( errno );
 
-    if( s.empty() || s[0] == ' ' || (pend - s.c_str() != s.size()) || (errno != 0) )
+    if( s.empty() || s[0] == ' ' || ((size_t)(pend - s.c_str()) != s.size()) || (errno != 0) )
     {
         throw BadParameter( "Bad conversion from std::string '" + s + "' to double" , Here() );
     }
@@ -211,7 +211,7 @@ std::vector<long> Translator<std::string, std::vector<long> >::operator()(const 
 std::string Translator< std::vector<long>,std::string >::operator()(const std::vector<long>& v)
 {
     std::string result;
-    for(int i=0; i < v.size(); ++i)
+    for(size_t i=0; i < v.size(); ++i)
     {
         if(i) result += " ";
         result += Translator<long,std::string>()(v[i]);
@@ -222,7 +222,7 @@ std::string Translator< std::vector<long>,std::string >::operator()(const std::v
 std::string Translator<std::vector<std::string>, std::string>::operator()(const std::vector<std::string>& v)
 {
     std::string result;
-    for(int i=0; i < v.size(); ++i)
+    for(size_t i=0; i < v.size(); ++i)
     {
         if(i) result += ",";
 

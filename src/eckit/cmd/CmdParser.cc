@@ -56,7 +56,6 @@ typedef std::vector<std::string> History;
 static History history_;
 
 // For Lex
-static int unput_;
 static bool eckit_cmd_debug_;
 
 static long pos_ = 0;
@@ -241,7 +240,7 @@ void CmdParser::unAlias() {
 
         Log::debug() << "Expanding '" << tokens[0] << "' to '" << aliased << std::endl;
 
-        for (int i = 1; i < tokens.size(); ++i) aliased += " " + tokens[i];
+        for (size_t i = 1; i < tokens.size(); ++i) aliased += " " + tokens[i];
 
         theCmd_ = aliased;
 
@@ -253,7 +252,7 @@ void CmdParser::unAlias() {
 //-----------------------------------------------------------------------------
 
 int hIndex(const std::string& cmd, std::vector<std::string>& h, std::string& pre, std::string& post) {
-    int i = cmd.find('!');
+    std::string::size_type i = cmd.find('!');
     if (i != std::string::npos) {
         const char* p = (cmd.c_str() + i + 1);  // Skip '!'
         int size = h.size();
@@ -301,10 +300,10 @@ void CmdParser::repeat() {
     int which = hIndex(tokens[0], history_, pre, post);
 
     if (which >= 0) {
-        if (which < history_.size()) {
+        if ((size_t)which < history_.size()) {
             std::string newcmd = pre + history_[which];
             newcmd += post;
-            for (int i = 1; i < tokens.size(); ++i) newcmd += " " + tokens[i];
+            for (size_t i = 1; i < tokens.size(); ++i) newcmd += " " + tokens[i];
 
             theCmd_ = newcmd;
             Log::debug() << "New command '" << theCmd_ << "'" << std::endl;
@@ -386,13 +385,13 @@ void CmdParser::flag(const char flag, bool value) {
 void CmdParser::flags(const std::string& s) {
     std::string flags = "exntuv";
 
-    for (int j = 0; j < flags.length(); ++j) theFlags_[flags[j]] = false;
+    for (size_t j = 0; j < flags.length(); ++j) theFlags_[flags[j]] = false;
 
     Tokenizer tokenize(" ");
     std::vector<std::string> tokens;
     tokenize(s, tokens);
 
-    for (int i = 0; i < tokens.size(); ++i) {
+    for (size_t i = 0; i < tokens.size(); ++i) {
         if (tokens[i].length() == 2) {
             char begin = tokens[i][0];
             if (begin == '-') theFlags_[tokens[i][1]] = true;

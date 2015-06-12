@@ -29,7 +29,7 @@ Regex::Regex(const std::string& s,bool shell):
 		Buffer buffer(len);
 		char *re = buffer;
 
-		int i = 0;
+        std::string::size_type i = 0;
 		int j = 0;
 
         if(shell) { re[j++] = '^'; }

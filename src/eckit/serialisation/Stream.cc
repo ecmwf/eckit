@@ -551,7 +551,7 @@ Stream& Stream::operator>>(Buffer& x)
 {
     readTag(tag_blob);
     long size = getLong();;
-    ASSERT(size <= x.size());
+    ASSERT((size_t)size <= x.size());
     getBytes(x, size);
     T("r blob",x);
     return *this;
@@ -726,7 +726,7 @@ void Stream::dump(std::ostream& out,const char* p, size_t len)
     while(i < len)
     {
         if(p[i] < last_tag) {
-            out << "<" << tag_names[p[i]] << ">";
+            out << "<" << tag_names[(size_t)p[i]] << ">";
 
             StreamDecoder d(&p[i]);
 

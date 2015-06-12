@@ -70,7 +70,7 @@ long GribReader::readSome(Buffer& buffer)
             unsigned char *tmp = reinterpret_cast<unsigned char*>(b);
             size_t length = 0;
             long edition = 0;
-            int i = 0 ,j;
+            size_t i = 0 ,j;
 
             off_t here = ::ftello(file_) - 4;
 

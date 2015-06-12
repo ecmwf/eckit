@@ -196,7 +196,7 @@ void GribHandle::write( DataHandle& handle )
 	ASSERT( message );
 	ASSERT( length );
 
-	ASSERT( handle.write(message, length) == length );
+    ASSERT( (size_t)handle.write(message, length) == length );
 }
 
 size_t GribHandle::write( Buffer& buff )

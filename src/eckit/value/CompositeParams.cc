@@ -29,7 +29,7 @@ CompositeParams::CompositeParams( Stream& s )
 {
     Params::List::size_type len;
     s >> len;
-    for (int i = 0; i < len; ++i)
+    for (Params::List::size_type i = 0; i < len; ++i)
         push_back(Params::decode(s));
 }
 

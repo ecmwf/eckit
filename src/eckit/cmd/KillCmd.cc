@@ -44,7 +44,7 @@ void KillCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
 
         if (task.isNumber()) {
             // MarsId or Unix process ID
-            long marsid = (long long)task;
+            unsigned long marsid = (long long)task;
             if (marsid > info.size())
                 kill(marsid, out);
             else
@@ -54,7 +54,7 @@ void KillCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
         if (task.isString()) {
             // Name. Look for Unix process ID
             std::string name = task;
-            for (int i = 0; i < info.size(); ++i)
+            for (unsigned long i = 0; i < info.size(); ++i)
                 if (info[i].busy(true) && info[i].application() == name)
                     kill(info[i].pid(), out);
         }

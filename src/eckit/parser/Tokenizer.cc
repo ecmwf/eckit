@@ -55,7 +55,7 @@ Tokenizer::Tokenizer(char c)
 
 Tokenizer::Tokenizer(const std::string& separators)
 {
-	for(int i=0; i<separators.length(); i++)
+    for(std::string::size_type i=0; i<separators.length(); i++)
 		separator_.insert(separators[i]);
 }
 

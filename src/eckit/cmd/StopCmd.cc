@@ -34,7 +34,7 @@ void StopCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
     if (app == "all") all = true;
 
     Monitor::TaskArray& info = Monitor::instance().tasks();
-    for (int j = 0; j < info.size(); j++)
+    for (unsigned long j = 0; j < info.size(); j++)
         if (info[j].busy(true) && (all || app == info[j].application()))
             if (info[j].pid() != getpid()) info[j].stop();
 }

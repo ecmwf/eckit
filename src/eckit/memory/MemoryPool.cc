@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -164,7 +164,7 @@ MemBlk* MemBlk::find(size_t size)
 		p->right_ = m;
 
 	m->inUse(true);
-		
+
 	return m;
 }
 
@@ -172,7 +172,7 @@ MemBlk* MemBlk::find(size_t size)
 void MemBlk::dump(std::ostream& s,int depth)
 {
 	if(left_)  left_->dump(s,depth+1);
-	s << "size= " << size_ << " active= " << (check_?1:0) << 
+	s << "size= " << size_ << " active= " << (check_?1:0) <<
 	" reuse= " << reuse_ << " "<< Bytes(size_) << std::endl;
 	if(right_) right_->dump(s,depth+1);
 }
@@ -191,7 +191,7 @@ void* MemoryPool::largeAllocate(size_t size)
 
 	MemBlk *m  = 0;
 	void *addr = 0;
-	
+
 	get_lock();
 	MemBlk::allocateCount_++;
 	m = MemBlk::find(size>0?size:1);
@@ -223,14 +223,14 @@ void MemoryPool::largeDeallocate(void* addr)
 
 //-----------------------------------------------------------------------------
 
-const long WORD = sizeof(Align);
+const size_t WORD = sizeof(Align);
 
 struct memblk {
 	memblk *next_;
-	long    count_;
-	long    left_;
-	long    size_;
-	char    buffer_[WORD];
+    size_t count_;
+    size_t left_;
+    size_t size_;
+    char   buffer_[WORD];
 };
 
 const long HEADER_SIZE = (sizeof(memblk) - WORD);
@@ -271,7 +271,7 @@ void *MemoryPool::fastAllocate(size_t s,MemPool& pool)
 	{
 		static int page_size = getpagesize();
 
-		int size = page_size*pool.pages_;
+        size_t size = page_size*pool.pages_;
 
 		if(s > size - HEADER_SIZE)
 		{
@@ -315,7 +315,7 @@ void MemoryPool::fastDeallocate(void *p,MemPool& pool)
 
 	while(m)
 	{
-		if( ((char*)p >= (char*)&m->buffer_[0]) && 
+		if( ((char*)p >= (char*)&m->buffer_[0]) &&
 		    ((char*)p < (char*)&m->buffer_[m->size_]))
 		{
 			m->count_--;
@@ -341,7 +341,7 @@ void MemoryPool::fastDeallocate(void *p,MemPool& pool)
 
 inline size_t round(size_t n)
 {
-	const size_t rounding = WORD;	
+	const size_t rounding = WORD;
 	return ((n + (rounding-1))/rounding)*rounding;
 }
 
@@ -349,18 +349,18 @@ void MemoryPool::info(std::ostream& out)
 {
     {
         init();
-        
+
         get_lock();
-    
+
 #if 0
-    
+
         static struct mallinfo l = { 0,};
         struct mallinfo m = mallinfo();
-        out << "total " << m.arena 
+        out << "total " << m.arena
             <<  "  "  << m.arena - l.arena << std::endl;
-        out << "used  " << m.uordblks << " (" << int(double(m.uordblks)/double(m.arena)*100 + 0.5) << "%)" 
+        out << "used  " << m.uordblks << " (" << int(double(m.uordblks)/double(m.arena)*100 + 0.5) << "%)"
             <<  "  "  << m.uordblks - l.uordblks << std::endl;
-        out << "free  " << m.fordblks << " (" << int(double(m.fordblks)/double(m.arena)*100 + 0.5) << "%)" 
+        out << "free  " << m.fordblks << " (" << int(double(m.fordblks)/double(m.arena)*100 + 0.5) << "%)"
             <<  "  "  << m.fordblks - l.fordblks << std::endl;
         l = m;
         out << m.arena << " (total space in arena)" << std::endl;
@@ -405,7 +405,7 @@ void MemoryPool::info(std::ostream& out)
 
 	while(m)
 	{
-		out << "Size = " << m->size_ << " left = " << m->left_ 
+		out << "Size = " << m->size_ << " left = " << m->left_
 			 << " count = " << m->count_ << std::endl;
 		m = m->next_;
 	}

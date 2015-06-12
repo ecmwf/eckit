@@ -207,13 +207,13 @@ void LocalPathName::mkdir(short mode) const
 	{
 		char path[MAXNAMLEN+1];
 
-		long l = path_.length();
+        size_t l = path_.length();
 
 		ASSERT( sizeof(path) > l );
 
 		::strcpy( path, path_.c_str()  );
 
-		for(long i=1; i < l; i++)
+        for(size_t i=1; i < l; i++)
 		{
 			if(path[i] == '/')
 			{

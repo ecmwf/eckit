@@ -36,7 +36,7 @@ public: // methods
 
 private: // methods
 
-    friend Params::value_t get( const ScopeParams& p, const Params::key_t& key );
+    friend Params::value_t getValue( const ScopeParams& p, const Params::key_t& key );
     friend void print( const ScopeParams& p, std::ostream& s );
     friend void encode( const ScopeParams& p, Stream& s );
 

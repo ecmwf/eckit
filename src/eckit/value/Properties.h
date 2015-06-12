@@ -19,6 +19,7 @@
 #include <string>
 
 #include "eckit/value/Value.h"
+#include "eckit/config/Parametrisation.h"
 
 //------------------------------------------------------------------------------------------------------
 
@@ -26,7 +27,7 @@ namespace eckit {
 
 //------------------------------------------------------------------------------------------------------
 
-class Properties {
+class Properties: public eckit::Parametrisation {
 
 public: // types
 
@@ -40,7 +41,17 @@ public: // methods
     Properties(Stream&);
 
     /// @returns true is a property exists
-    bool has( const key_t& k ) const;
+    virtual bool has( const key_t& ) const;
+
+    virtual bool get(const std::string& name, std::string& value) const;
+    virtual bool get(const std::string& name, bool& value) const;
+    virtual bool get(const std::string& name, long& value) const;
+    virtual bool get(const std::string& name, size_t& value) const;
+    virtual bool get(const std::string& name, double& value) const;
+
+    virtual bool get(const std::string& name, std::vector<int>& value) const;
+    virtual bool get(const std::string& name, std::vector<long>& value) const;
+    virtual bool get(const std::string& name, std::vector<double>& value) const;
 
     /// @returns a property
     property_t get( const key_t& k ) const;
@@ -79,7 +90,7 @@ private: // methods
     friend std::ostream& operator<<(std::ostream& s, const Properties& v) { v.print(s);  return s; }
     friend Stream&  operator<<(Stream&  s, const Properties& v) { v.encode(s); return s; }
 
-    friend property_t get( const Properties& p, const key_t& key );
+    friend property_t getValue( const Properties& p, const key_t& key );
     friend void print( const Properties& p, std::ostream& s );
     friend void encode( const Properties& p, Stream& s );
 

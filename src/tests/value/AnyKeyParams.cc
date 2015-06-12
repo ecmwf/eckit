@@ -24,7 +24,7 @@ AnyKeyParams::AnyKeyParams(Stream& s) {
   s >> payload_;
 }
 
-Params::value_t get(const AnyKeyParams &, const Params::key_t &)
+Params::value_t getValue(const AnyKeyParams &, const Params::key_t &)
 {
   return Params::value_t("foo");
 }

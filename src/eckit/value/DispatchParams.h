@@ -34,7 +34,7 @@ public: // methods
     static const char* className() { return "eckit::DispatchParams"; }
 
     template < typename T >
-    friend Params::value_t get( const DispatchParams<T>& p, const Params::key_t& key );
+    friend Params::value_t getValue( const DispatchParams<T>& p, const Params::key_t& key );
     template < typename T >
     friend void print( const DispatchParams<T>&, std::ostream& );
     template < typename T >
@@ -49,7 +49,7 @@ protected: // members
 };
 
 template < class Derived >
-Params::value_t get( const DispatchParams<Derived>& p, const Params::key_t& key )
+Params::value_t getValue( const DispatchParams<Derived>& p, const Params::key_t& key )
 {
     typename DispatchParams<Derived>::store_t::const_iterator i = p.dispatch_.find(key);
     if( i != p.dispatch_.end() )

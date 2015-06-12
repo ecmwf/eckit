@@ -29,11 +29,11 @@ ScopeParams::ScopeParams( Stream & s ) : p_( Params::decode(s) )
     s >> scope_;
 }
 
-Params::value_t get( const ScopeParams& p, const Params::key_t& key )
+Params::value_t getValue( const ScopeParams& p, const Params::key_t& key )
 {
     if( StringTools::startsWith(key, p.scope_) )
     {
-        return get( p.p_, key.substr(p.scope_.length()) );
+        return getValue( p.p_, key.substr(p.scope_.length()) );
     }
     else
     {

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -42,17 +42,17 @@ struct NotManaged
 
 class ThreadedLock
 {
-    Mutex mutex_;
+    mutable Mutex mutex_;
 public:
-    void lock()   { mutex_.lock(); }
-    void unlock() { mutex_.unlock(); }
+    void lock() const    { mutex_.lock(); }
+    void unlock()  const { mutex_.unlock(); }
 };
 
 class NoLock
 {
 public:
-    void lock()   {}
-    void unlock() {}
+    void lock() const   {}
+    void unlock() const {}
 };
 
 } // detail
@@ -97,7 +97,7 @@ public: // methods
     unsigned long count() const { return count_; }
 
 //	void *operator new(size_t s)  { return MemoryPool::fastAllocate(s);}
-//	void operator delete(void* p) { MemoryPool::fastDeallocate(p);     } 
+//	void operator delete(void* p) { MemoryPool::fastDeallocate(p);     }
 
 private: // members
 

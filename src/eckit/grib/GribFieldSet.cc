@@ -115,7 +115,7 @@ void GribFieldSet::write(DataHandle& h) const {
 }
 
 
-GribFieldSet GribFieldSet::operator[](int i)  const {
+GribFieldSet GribFieldSet::operator[](size_t i)  const {
     ASSERT(i >= 0 && i < fields_.size());
     return GribFieldSet(willAdopt(i));
 }

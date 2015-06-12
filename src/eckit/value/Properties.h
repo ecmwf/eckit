@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -51,11 +51,11 @@ public: // methods
     /// Removes a property
     bool remove( const key_t& k );
 
-	/// @returns a property
-	property_t operator[]( const key_t& k ) const { return get(k); }
+    /// @returns a property
+    property_t operator[]( const key_t& k ) const { return get(k); }
 
-	/// @returns a bool, true if empty false otherwise
-	bool empty() const { return props_.empty(); }
+    /// @returns a bool, true if empty false otherwise
+    bool empty() const { return props_.empty(); }
 
     static const char* className() { return "eckit::Properties"; }
 

@@ -182,7 +182,7 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
             all = false;
             if (args[i].isNumber()) {
                 int id = args[i];
-                if (info.size() >= (unsigned long)id)
+                if (info.size() >= static_cast<unsigned long>(id))
                     taskids.push_back(id);
                 else
                     pids.push_back(id);

@@ -49,7 +49,7 @@ MemStream::MemStream(const char* p,long len):
 
 long MemStream::write(const void* buf,long len)
 {
-    if(out_.size() - length_ < (size_t)len)
+    if(out_.size() - length_ < static_cast<size_t>(len))
 		out_.resize(out_.size()*2);
 
 	::memcpy((char*)out_ + length_, buf , len);

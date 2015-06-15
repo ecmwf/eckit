@@ -134,7 +134,7 @@ double Translator<std::string,double>::operator()(const std::string& s)
 //    DEBUG_VAR( pend - s.c_str() );
 //    DEBUG_VAR( errno );
 
-    if( s.empty() || s[0] == ' ' || ((size_t)(pend - s.c_str()) != s.size()) || (errno != 0) )
+    if( s.empty() || s[0] == ' ' || static_cast<size_t>(pend - s.c_str()) != s.size() || (errno != 0) )
     {
         throw BadParameter( "Bad conversion from std::string '" + s + "' to double" , Here() );
     }

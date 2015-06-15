@@ -300,7 +300,7 @@ void CmdParser::repeat() {
     int which = hIndex(tokens[0], history_, pre, post);
 
     if (which >= 0) {
-        if ((size_t)which < history_.size()) {
+        if (static_cast<size_t>(which) < history_.size()) {
             std::string newcmd = pre + history_[which];
             newcmd += post;
             for (size_t i = 1; i < tokens.size(); ++i) newcmd += " " + tokens[i];

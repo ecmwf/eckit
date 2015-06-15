@@ -54,7 +54,7 @@ void RemoteCmd::execute(std::istream& in, std::ostream& out, CmdArg& arg) {
 
     if (a.isNumber()) taskid = (long long)a;
 
-    if (taskid < 0 || (unsigned long)taskid >= info.size()) {
+    if (taskid < 0 || static_cast<unsigned long>(taskid) >= info.size()) {
         if (a.isString()) out << a << ": task not found" << std::endl;
         if (a.isNumber()) out << taskid << ": task Id not found" << std::endl;
         return;

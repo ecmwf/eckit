@@ -247,7 +247,7 @@ public:
    {
       long nx = GribAccessor<long>("Nx")(gh);
       long ny = GribAccessor<long>("Ny")(gh);
-      ASSERT(no_of_data_points_ ==  (size_t)(nx*ny));
+      ASSERT(no_of_data_points_ ==  static_cast<size_t>(nx*ny));
       set( "Nx", nx );
       set( "Ny", ny );
 

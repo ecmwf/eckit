@@ -19,11 +19,18 @@ namespace eckit {
 class Environment;
 class Module;
 class Interpreter;
+class RequestHandler;
 
 class ExecutionContext {
 public:
     ExecutionContext();
     ~ExecutionContext();
+
+    void registerHandler(const char*, eckit::RequestHandler&);
+    void registerHandler(const std::string&, eckit::RequestHandler&);
+
+    void execute(const std::string&);
+    void executeScriptFile(const std::string&);
 
     void import(eckit::Module&);
 

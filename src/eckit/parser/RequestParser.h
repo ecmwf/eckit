@@ -12,8 +12,8 @@
 // Manuel Fuentes - ECMWF Jan 97
 // Piotr Kuchta - ECMWF April 2015
 
-#ifndef RequestParser_H
-#define RequestParser_H
+#ifndef eckit_parser_RequestParser_H
+#define eckit_parser_RequestParser_H
 
 #include "eckit/parser/Request.h"
 #include "eckit/memory/NonCopyable.h"

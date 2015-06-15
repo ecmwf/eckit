@@ -12,6 +12,8 @@
 #include "eckit/utils/Environment.h"
 #include "eckit/utils/Module.h"
 #include "eckit/utils/Interpreter.h"
+#include "eckit/utils/RequestHandler.h"
+#include "eckit/parser/RequestParser.h"
 #include "eckit/exception/Exceptions.h"
 
 using namespace std;
@@ -28,7 +30,31 @@ ExecutionContext::~ExecutionContext()
         delete e;
     delete interpreter_;
 }
+
 Environment& ExecutionContext::environment() { return *environment_; }
+
+void ExecutionContext::registerHandler(const char* name, eckit::RequestHandler& handler)
+{
+    registerHandler(string(name), handler);
+}
+
+void ExecutionContext::registerHandler(const std::string& name, eckit::RequestHandler& handler)
+{
+    environment().set(name, new Cell("_native", handler.name(), 0, 0));
+
+    // TODO: save pointer to handler in a map in the context so we don't have to protect lookup operation.
+    // ExecutionContext will not be shared between threads.
+}
+
+void ExecutionContext::executeScriptFile(const string& fileName)
+{
+    interpreter().eval(RequestParser::parseFile(fileName.c_str(), /*debug=*/ false), *this);
+}
+
+void ExecutionContext::execute(const string& source)
+{
+    interpreter().eval(RequestParser::parse(source, /*debug=*/ false), *this);
+}
 
 void ExecutionContext::import(Module& module)
 {

@@ -33,7 +33,7 @@ void KillCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
 
     Monitor::TaskArray& info = Monitor::instance().tasks();
 
-    for (int i = 1; i < arg.size(); ++i) {
+    for (size_t i = 1; i < arg.size(); ++i) {
 
         Value task(arg[i]);
 

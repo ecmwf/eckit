@@ -53,7 +53,7 @@ public:
     const eckit::Value& operator()(const std::string&, eckit::Value);
     const eckit::Value& operator()(const long, eckit::Value);
 
-    long size() const;
+    size_t size() const;
 
     void erase();
     void erase(long, long);

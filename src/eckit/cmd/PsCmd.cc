@@ -177,7 +177,7 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
         grep = std::string(args["grep"]);
     }
 
-    for (long i = 1; i < args.size(); ++i)
+    for (size_t i = 1; i < args.size(); ++i)
         if (args.exists(i)) {
             all = false;
             if (args[i].isNumber()) {

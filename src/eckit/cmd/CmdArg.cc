@@ -166,7 +166,7 @@ bool CmdArg::exists(long l) const {
     return (args_.find(key) != args_.end());
 }
 
-long CmdArg::size() const {
+size_t CmdArg::size() const {
     return args_.size();
 }
 

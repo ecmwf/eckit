@@ -28,7 +28,7 @@ EchoCmd::~EchoCmd() {
 
 void EchoCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
     std::string sep = "";
-    for (long i = 1; i < arg.size(); i++) {
+    for (size_t i = 1; i < arg.size(); i++) {
         Value var = arg[i];  // Otherwise is Accessor<>.print()
         out << sep << var;
         sep = " ";

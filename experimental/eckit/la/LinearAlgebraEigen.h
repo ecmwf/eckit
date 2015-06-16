@@ -31,8 +31,8 @@ class LinearAlgebraEigen : public LinearAlgebraBase {
 public:  // virtual methods
 
     virtual Scalar dot(const Vector&, const Vector&) const;
-    virtual Vector gemv(const Matrix&, const Vector&) const;
-    virtual Matrix gemm(const Matrix&, const Matrix&) const;
+    virtual void gemv(const Matrix&, const Vector&, Vector&) const;
+    virtual void gemm(const Matrix&, const Matrix&, Matrix&) const;
 };
 
 //-----------------------------------------------------------------------------

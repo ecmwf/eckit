@@ -71,12 +71,11 @@ Scalar LinearAlgebraCUDA::dot(const Vector& x, const Vector& y) const {
 
 //-----------------------------------------------------------------------------
 
-Vector LinearAlgebraCUDA::gemv(const Matrix& A, const Vector& x) const {
-    ASSERT( x.size() == A.cols() );
+void LinearAlgebraCUDA::gemv(const Matrix& A, const Vector& x, Vector& y) const {
+    ASSERT( x.size() == A.cols() && y.size() == A.rows() );
     const size_t sizeA = A.rows()*A.cols()*sizeof(Scalar);
     const size_t sizex = A.cols()*sizeof(Scalar);
     const size_t sizey = A.rows()*sizeof(Scalar);
-    Vector y(A.rows());
 
     Scalar* d_A; ///< device memory matrix A
     Scalar* d_x; ///< device memory vector x
@@ -104,18 +103,15 @@ Vector LinearAlgebraCUDA::gemv(const Matrix& A, const Vector& x) const {
     CALL_CUDA( cudaFree(d_A) );
     CALL_CUDA( cudaFree(d_x) );
     CALL_CUDA( cudaFree(d_y) );
-
-    return y;
 }
 
 //-----------------------------------------------------------------------------
 
-Matrix LinearAlgebraCUDA::gemm(const Matrix& A, const Matrix& B) const {
-    ASSERT( A.cols() == B.rows() );
+void LinearAlgebraCUDA::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
+    ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
     const size_t sizeA = A.rows()*A.cols()*sizeof(Scalar);
     const size_t sizeB = B.rows()*B.cols()*sizeof(Scalar);
     const size_t sizeC = A.rows()*B.cols()*sizeof(Scalar);
-    Matrix C(A.rows(), B.cols());
 
     Scalar* d_A; ///< device memory matrix A
     Scalar* d_B; ///< device memory matrix B
@@ -143,8 +139,6 @@ Matrix LinearAlgebraCUDA::gemm(const Matrix& A, const Matrix& B) const {
     CALL_CUDA( cudaFree(d_A) );
     CALL_CUDA( cudaFree(d_B) );
     CALL_CUDA( cudaFree(d_C) );
-
-    return C;
 }
 
 //-----------------------------------------------------------------------------

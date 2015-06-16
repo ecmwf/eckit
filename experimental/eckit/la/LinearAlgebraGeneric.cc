@@ -30,25 +30,21 @@ Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
 
 //-----------------------------------------------------------------------------
 
-Vector LinearAlgebraGeneric::gemv(const Matrix& A, const Vector& x) const {
-    ASSERT(x.size() == A.cols());
-    Vector y(A.rows());
+void LinearAlgebraGeneric::gemv(const Matrix& A, const Vector& x, Vector& y) const {
+    ASSERT( x.size() == A.cols() && y.size() == A.rows() );
     for (size_t r = 0; r < A.rows(); ++r) {
         y[r] = 0.;
         for (size_t c = 0; c < A.cols(); ++c) y[r] += A(r, c) * x[c];
     }
-    return y;
 }
 
 //-----------------------------------------------------------------------------
 
-Matrix LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B) const {
-    ASSERT(A.cols() == B.rows());
-    Matrix C(A.rows(), B.cols());
+void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
+    ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
     for (size_t c = 0; c < B.cols(); ++c)
         for (size_t r = 0; r < A.rows(); ++r)
             for (size_t k = 0; k < A.cols(); ++k) C(r, c) += A(r, k) * B(k, c);
-    return C;
 }
 
 //-----------------------------------------------------------------------------

@@ -27,8 +27,8 @@ class LinearAlgebraBase {
 public:  // virtual methods
 
     virtual Scalar dot(const Vector&, const Vector&) const = 0;
-    virtual Vector gemv(const Matrix&, const Vector&) const = 0;
-    virtual Matrix gemm(const Matrix&, const Matrix&) const = 0;
+    virtual void gemv(const Matrix&, const Vector&, Vector&) const = 0;
+    virtual void gemm(const Matrix&, const Matrix&, Matrix&) const = 0;
 };
 
 //-----------------------------------------------------------------------------

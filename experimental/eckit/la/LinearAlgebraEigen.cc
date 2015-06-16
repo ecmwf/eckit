@@ -28,6 +28,7 @@ namespace la {
 //-----------------------------------------------------------------------------
 
 Scalar LinearAlgebraEigen::dot(const Vector& x, const Vector& y) const {
+    ASSERT( x.size() == y.size() );
     // Eigen requires non-const pointers to the data
     Eigen::VectorXd::MapType xi = Eigen::VectorXd::Map( const_cast<Scalar*>(x.data()), x.size() );
     Eigen::VectorXd::MapType yi = Eigen::VectorXd::Map( const_cast<Scalar*>(y.data()), y.size() );
@@ -36,26 +37,24 @@ Scalar LinearAlgebraEigen::dot(const Vector& x, const Vector& y) const {
 
 //-----------------------------------------------------------------------------
 
-Vector LinearAlgebraEigen::gemv(const Matrix& A, const Vector& x) const {
-    Vector y(A.rows());
+void LinearAlgebraEigen::gemv(const Matrix& A, const Vector& x, Vector& y) const {
+    ASSERT( x.size() == A.cols() && y.size() == A.rows() );
     // Eigen requires non-const pointers to the data
     Eigen::MatrixXd::MapType Ai = Eigen::MatrixXd::Map( const_cast<Scalar*>(A.data()), A.rows(), A.cols() );
     Eigen::VectorXd::MapType xi = Eigen::VectorXd::Map( const_cast<Scalar*>(x.data()), x.size() );
     Eigen::VectorXd::MapType yi = Eigen::VectorXd::Map( y.data(), y.size() );
     yi = Ai*xi;
-    return y;
 }
 
 //-----------------------------------------------------------------------------
 
-Matrix LinearAlgebraEigen::gemm(const Matrix& A, const Matrix& B) const {
-    Matrix C(A.rows(), B.cols());
+void LinearAlgebraEigen::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
+    ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
     // Eigen requires non-const pointers to the data
     Eigen::MatrixXd::MapType Ai = Eigen::MatrixXd::Map( const_cast<Scalar*>(A.data()), A.rows(), A.cols() );
     Eigen::MatrixXd::MapType Bi = Eigen::MatrixXd::Map( const_cast<Scalar*>(B.data()), B.rows(), B.cols() );
     Eigen::MatrixXd::MapType Ci = Eigen::MatrixXd::Map( C.data(), C.rows(), C.cols() );
     Ci = Ai*Bi;
-    return C;
 }
 
 //-----------------------------------------------------------------------------

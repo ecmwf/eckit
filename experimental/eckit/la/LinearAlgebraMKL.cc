@@ -29,27 +29,26 @@ namespace la {
 //-----------------------------------------------------------------------------
 
 Scalar LinearAlgebraMKL::dot(const Vector& x, const Vector& y) const {
+    ASSERT( x.size() == y.size() );
     return cblas_ddot( x.size(), x.data(), 1, y.data(), 1 );
 }
 
 //-----------------------------------------------------------------------------
 
-Vector LinearAlgebraMKL::gemv(const Matrix& A, const Vector& x) const {
-    Vector rv(A.rows());
+void LinearAlgebraMKL::gemv(const Matrix& A, const Vector& x, Vector& y) const {
+    ASSERT( x.size() == A.cols() && y.size() == A.rows() );
     cblas_dgemv( CblasColMajor, CblasNoTrans,
                  A.rows(), A.cols(), 1.0, A.data(), A.rows(), x.data(), 1,
-                 0.0, rv.data(), 1 );
-    return rv;
+                 0.0, y.data(), 1 );
 }
 
 //-----------------------------------------------------------------------------
 
-Matrix LinearAlgebraMKL::gemm(const Matrix& A, const Matrix& B) const {
-    Matrix C(A.rows(), B.cols());
+void LinearAlgebraMKL::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
+    ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
     cblas_dgemm( CblasColMajor, CblasNoTrans, CblasNoTrans,
                  A.rows(), B.cols(), A.cols(), 1.0, A.data(), A.rows(),
-                 B.data(), B.rows(),0.0, C.data(), A.rows());
-  return C;
+                 B.data(), B.rows(), 0.0, C.data(), A.rows());
 }
 
 //-----------------------------------------------------------------------------

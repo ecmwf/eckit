@@ -1,6 +1,8 @@
 list( APPEND eckit_la_srcs
 types.h
 LinearAlgebraBase.h
+LinearAlgebraEigen.cc
+LinearAlgebraEigen.h
 LinearAlgebraGeneric.cc
 LinearAlgebraGeneric.h
 Matrix.h

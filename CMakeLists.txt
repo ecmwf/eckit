@@ -103,6 +103,15 @@ else() # Don't search for it on cc[abt] as it is already available as scilib
                       DESCRIPTION "Linear Algebra PACKage")
 endif()
 
+### CUDA
+
+ecbuild_add_option( FEATURE CUDA
+                    DEFAULT ON
+                    DESCRIPTION "CUDA support"
+                    REQUIRED_PACKAGES CUDA )
+
+set_package_properties( CUDA PROPERTIES TYPE RECOMMENDED PURPOSE "CUDA backend: GPU linear algebra operations" )
+
 ### MKL
 
 ecbuild_add_option( FEATURE MKL

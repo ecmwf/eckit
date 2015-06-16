@@ -335,7 +335,6 @@ void DispatchInfo<Traits>::run()
 
 template<class Traits>
 Dispatcher<Traits>::Dispatcher(const std::string& name, int numberOfThreads):
-	name_(name),
 	// Maximum number of threads defined on the command line or
 	// in config file or default to the argument value
 	numberOfThreads_(this,
@@ -343,9 +342,10 @@ Dispatcher<Traits>::Dispatcher(const std::string& name, int numberOfThreads):
                    numberOfThreads),
 	count_(0),
 	next_(0),
-	running_(0),
-	// Dynamically grow number of threads if set to 0
-	grow_(numberOfThreads_ == 0)
+    name_(name),
+    // Dynamically grow number of threads if set to 0
+    grow_(numberOfThreads_ == 0),
+    running_(0)
 {
 	// For some reason xlC require that
 	typedef class DispatchInfo<Traits> DI;

@@ -292,6 +292,7 @@ bool Cache<K,V>::Policy::expireLRU( typename Cache<K,V>::store_type& c, const si
 //        }
 //    }
 //    return found;
+    return false;
 }
 
 //-----------------------------------------------------------------------------

@@ -65,12 +65,15 @@ private: // members
 
     MutexCond ready_;
     MutexCond done_;
+
     int  count_;
     int  running_;
-    bool error_;
+
     std::string errorMessage_;
     std::string name_;
     std::list<ThreadPoolTask*> queue_;
+
+    bool error_;
 
 };
 

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2015 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation
  * nor does it submit to any jurisdiction.
  */
@@ -32,22 +32,30 @@ class Stream;
 
 class LocationPolicy {
 public:
+    virtual ~LocationPolicy();
+
     virtual void setup() = 0;
 };
 
 class LoggingPolicy {
 public:
+    virtual ~LoggingPolicy();
+
     virtual void setup() = 0;
 };
 
 class MonitoringPolicy {
 public:
+    virtual ~MonitoringPolicy();
+
     virtual void start() = 0;
     virtual void stop() = 0;
 };
 
 class SignallingPolicy {
 public:
+    virtual ~SignallingPolicy();
+
     virtual void regist() = 0;
     virtual void unregist() = 0;
 };
@@ -93,7 +101,7 @@ public:
 class StdSignalRegist : public SignallingPolicy {
 public:
     StdSignalRegist();
-    ~StdSignalRegist();
+    virtual ~StdSignalRegist();
 
     static void catch_terminate();
     static void catch_unexpected();

@@ -41,7 +41,7 @@ public: // methods
 
 private: // methods
 
-    friend Params::value_t get( const CompositeParams& p, const Params::key_t& key );
+    friend Params::value_t getValue( const CompositeParams& p, const Params::key_t& key );
     friend void print( const CompositeParams& p, std::ostream& s );
     friend void encode( const CompositeParams& p, Stream& s );
 

@@ -16,14 +16,65 @@ namespace eckit {
 
 //----------------------------------------------------------------------------
 
-bool Params::has(const Params::key_t &key) const
+bool Params::has(const std::string& key) const
 {
-    return !get(*this, key).isNil();
+  return !getValue(*this, key).isNil();
 }
 
+bool Params::get(const std::string& name, std::string& value) const
+{
+  if(!has(name)) return false;
+  value = std::string(operator[](name));
+  return true;
+}
+bool Params::get(const std::string& name, bool& value) const
+{
+  if(!has(name)) return false;
+  value = operator[](name);
+  return true;
+}
+bool Params::get(const std::string& name, long& value) const
+{
+  if(!has(name)) return false;
+  value = operator[](name);
+  return true;
+}
+bool Params::get(const std::string& name, size_t& value) const
+{
+  if(!has(name)) return false;
+  value = operator[](name);
+  return true;
+}
+bool Params::get(const std::string& name, double& value) const
+{
+  if(!has(name)) return false;
+  value = operator[](name);
+  return true;
+}
+bool Params::get(const std::string& name, std::vector<int>& value) const
+{
+  if(!has(name)) return false;
+  std::vector<eckit::Value> v = operator[](name);
+  value.assign(v.begin(),v.end());
+  return true;
+}
+bool Params::get(const std::string& name, std::vector<long>& value) const
+{
+  if(!has(name)) return false;
+  std::vector<eckit::Value> v = operator[](name);
+  value.assign(v.begin(),v.end());
+  return true;
+}
+bool Params::get(const std::string& name, std::vector<double>& value) const
+{
+  if(!has(name)) return false;
+  std::vector<eckit::Value> v = operator[](name);
+  value.assign(v.begin(),v.end());
+  return true;
+}
 Params::value_t Params::operator[]( const Params::key_t& key ) const
 {
-    value_t v = get(*this, key);
+    value_t v = getValue(*this, key);
     if( v.isNil() )
         throw BadParameter("Params does not contain key: " + key, Here());
     return v;
@@ -49,7 +100,7 @@ std::ostream& operator<<(std::ostream & s, const Params & p)
     return s;
 }
 
-Params::value_t get( const Params& p, const Params::key_t& key )
+Params::value_t getValue( const Params& p, const Params::key_t& key )
 {
     return p.self_->get_(key);
 }

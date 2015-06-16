@@ -29,7 +29,7 @@ CompositeParams::CompositeParams( Stream& s )
 {
     Params::List::size_type len;
     s >> len;
-    for (int i = 0; i < len; ++i)
+    for (Params::List::size_type i = 0; i < len; ++i)
         push_back(Params::decode(s));
 }
 
@@ -45,11 +45,11 @@ CompositeParams& CompositeParams::push_back(const Params& p)
     return *this;
 }
 
-Params::value_t get( const CompositeParams& p, const Params::key_t& key )
+Params::value_t getValue( const CompositeParams& p, const Params::key_t& key )
 {
     for( Params::List::const_iterator citr = p.plist_.begin(); citr != p.plist_.end(); ++citr )
     {
-        Value v = get(*citr, key);
+        Value v = getValue(*citr, key);
         if( !v.isNil() )
             return v;
     }

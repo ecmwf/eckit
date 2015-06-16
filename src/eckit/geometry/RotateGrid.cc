@@ -213,7 +213,7 @@ RotgridPy::RotgridPy(double south_pole_lat, double south_pole_lon,
    lonmin_(lonMin),
    lonmax_(lonMin + 360.0)
 {
-   double south_pole_lat_in_radians = south_pole_lat * degree_to_radian_ ;
+   double south_pole_lat_in_radians = south_pole_lat_ * degree_to_radian_ ;
    cossouth_pole_lat_ = cos(south_pole_lat_in_radians);
    sinsouth_pole_lat_ = sin(south_pole_lat_in_radians);
 

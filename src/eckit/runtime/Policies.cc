@@ -19,6 +19,14 @@
 
 namespace eckit {
 
+LocationPolicy::~LocationPolicy() {}
+
+LoggingPolicy::~LoggingPolicy() {}
+
+MonitoringPolicy::~MonitoringPolicy() {}
+
+SignallingPolicy::~SignallingPolicy() {}
+
 //-----------------------------------------------------------------------------
 
 static char* memoryReserve;

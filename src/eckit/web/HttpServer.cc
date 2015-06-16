@@ -19,8 +19,8 @@ namespace eckit {
 
 
 HttpServer::HttpServer(int port):
-	http_(new HttpService(port)),
-	HtmlResource("/")
+    HtmlResource("/"),
+    http_(new HttpService(port))
 {
 	http_.start();
 }

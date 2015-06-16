@@ -30,8 +30,8 @@ GribField::GribField(GribFile* file, const Offset& offset, const Length& length,
     headers_(0),
     last_(0),
     accesses_(0),
-    strategy_(0),
-    purges_(0)
+    purges_(0),
+    strategy_(0)
 {
     file_->attach();
 
@@ -49,8 +49,8 @@ GribField::GribField(GribField* headers, double* values, size_t count):
     headers_(headers),
     last_(0),
     accesses_(0),
-    strategy_(0),
-    purges_(0)
+    purges_(0),
+    strategy_(0)
 {
     headers_->attach();
 

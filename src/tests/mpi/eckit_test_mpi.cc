@@ -64,9 +64,11 @@ BOOST_AUTO_TEST_CASE( test_all_to_all )
 
   int success = all_to_all( mpi::Comm(), send, recv );
 
+  BOOST_CHECK( success == MPI_SUCCESS );
+
   // check results
   std::vector< std::vector<int> > expected(mpi::size());
-  for( int j=0; j<mpi::size(); ++j )
+  for(size_t j=0; j<mpi::size(); ++j)
     expected[j]=std::vector<int>(1,j);
 
   BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(),recv.end(),expected.begin(),expected.end());
@@ -81,9 +83,11 @@ BOOST_AUTO_TEST_CASE( test_all_gather___simple )
 
   int success = all_gather( mpi::Comm(), send, recv );
 
+  BOOST_CHECK( success == MPI_SUCCESS );
+
   // check results
   std::vector<int> expected(mpi::size());
-  for( int j=0; j<mpi::size(); ++j )
+  for(size_t j=0; j<mpi::size(); ++j)
     expected[j]=j;
 
   BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(),recv.end(),expected.begin(),expected.end());
@@ -98,11 +102,13 @@ BOOST_AUTO_TEST_CASE( test_all_gather___buffer )
 
   int success = all_gather( mpi::Comm(), send, recv );
 
+  BOOST_CHECK( success == MPI_SUCCESS );
+
   // check results
   std::vector<int> expected;
-  for( int j=0; j<mpi::size(); ++j )
+  for(size_t j=0; j<mpi::size(); ++j )
   {
-    for( int i=0; i<j; ++i )
+    for( size_t i=0; i<j; ++i )
       expected.push_back(j);
   }
 

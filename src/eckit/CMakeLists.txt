@@ -609,6 +609,8 @@ ecbuild_add_library(TARGET eckit
 
 ### sub-directories
 
+add_subdirectory( cmd )
+
 add_subdirectory( web )
 
 add_subdirectory( maths )

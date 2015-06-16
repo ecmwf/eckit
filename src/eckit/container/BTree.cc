@@ -507,7 +507,7 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, std:
 	//std::cout << " begin " << (*begin).key_ << std::endl;
 	if( p.count_ )
 	{
-		const LeafEntry *last   = begin + p.count_ -1;
+// unused		const LeafEntry *last   = begin + p.count_ -1;
 		//std::cout << " last "   << (*last).key_ << std::endl;
 	}
 

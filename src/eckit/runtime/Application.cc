@@ -28,11 +28,12 @@ Application::Application(int argc, char** argv,
                          MonitoringPolicy* monPolicy,
                          LocationPolicy* locPolicy,
                          SignallingPolicy* sigPolicy)
-    : running_(false),
-      loggingPolicy_(logPolicy),
+    : loggingPolicy_(logPolicy),
       monitoringPolicy_(monPolicy),
       locationPolicy_(locPolicy),
-      signallingPolicy_(sigPolicy) {
+      signallingPolicy_(sigPolicy),
+      running_(false)
+{
     locationPolicy_->setup();  // location policy first -- sets home()
 
     name_ = PathName(argv[0]).baseName(false);

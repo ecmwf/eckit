@@ -23,11 +23,11 @@ namespace mpi {
 
 bool broadcast_file( const PathName& p, std::ostream& out, const int root, const mpi::Comm& comm )
 {
-  ASSERT( root < comm.size() );
+  ASSERT( static_cast<size_t>(root) < comm.size() );
   char* buf;
   int buf_len(0);
 
-  if( comm.rank() == root )
+  if( comm.rank() == static_cast<size_t>(root) )
   {
     if( p.exists() )
     {

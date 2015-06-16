@@ -210,8 +210,8 @@ ProducerConsumerTask<PAYLOAD>::ProducerConsumerTask(Consumer<PAYLOAD>& consumer,
                                                     ProducerConsumer<PAYLOAD>& owner,
                                                     OnePayload<PAYLOAD>* payloads):
     Thread(false),
-    consumer_(consumer),
     owner_(owner),
+    consumer_(consumer),
     payloads_(payloads)
 {
 }

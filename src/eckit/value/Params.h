@@ -19,6 +19,7 @@
 
 #include "eckit/serialisation/Stream.h"
 #include "eckit/value/Value.h"
+#include "eckit/config/Parametrisation.h"
 
 //----------------------------------------------------------------------------
 
@@ -57,7 +58,7 @@ namespace eckit {
 ///
 /// In addition a `Params::Factory<MyParams>` needs to be initialised.
 
-class Params {
+class Params : public Parametrisation {
 
     struct Concept;
 
@@ -121,15 +122,24 @@ public: // methods
         return *this;
     }
 
-    bool has( const key_t& key ) const;
+    /* Overloaded functions of class eckit::Parametrisation */
+    virtual bool has(const std::string& key ) const;
+    virtual bool get(const std::string& name, std::string& value) const;
+    virtual bool get(const std::string& name, bool& value) const;
+    virtual bool get(const std::string& name, long& value) const;
+    virtual bool get(const std::string& name, size_t& value) const;
+    virtual bool get(const std::string& name, double& value) const;
+    virtual bool get(const std::string& name, std::vector<int>& value) const;
+    virtual bool get(const std::string& name, std::vector<long>& value) const;
+    virtual bool get(const std::string& name, std::vector<double>& value) const;
 
     value_t operator[] ( const key_t& key ) const;
-
-    friend value_t get( const Params& p, const key_t& key );
 
     friend void print( const Params& p, std::ostream& s );
 
     friend void encode( const Params& p, Stream& s );
+
+    friend value_t getValue( const Params& p, const key_t& key );
 
 private: // internal classes
 
@@ -157,7 +167,7 @@ private: // internal classes
         }
 
         virtual value_t get_( const key_t& key ) const {
-            return get( data_, key );
+            return getValue( data_, key );
         }
 
         virtual void print_( std::ostream& s ) const {

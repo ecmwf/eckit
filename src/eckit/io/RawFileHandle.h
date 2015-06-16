@@ -62,9 +62,9 @@ private:
 
     // -- Members
 
-    int fd_;
     std::string path_;
     bool overwrite_;
+    int fd_;
 
     // -- Class members
 

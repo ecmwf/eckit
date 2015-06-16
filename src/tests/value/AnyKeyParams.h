@@ -33,7 +33,7 @@ private:
     std::string payload_;
 };
 
-eckit::Params::value_t get( const AnyKeyParams&, const eckit::Params::key_t& );
+eckit::Params::value_t getValue( const AnyKeyParams&, const eckit::Params::key_t& );
 
 void print( const AnyKeyParams&, std::ostream& );
 void encode( const AnyKeyParams& p, eckit::Stream& s );

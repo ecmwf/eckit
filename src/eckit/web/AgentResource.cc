@@ -42,14 +42,14 @@ public:
 MemStream::MemStream(const char* p,long len):
 	in_(p,len),
 	out_(10240),
-	length_(0),
-	pos_(0)
+        pos_(0),
+        length_(0)
 {
 }
 
 long MemStream::write(const void* buf,long len)
 {
-	if(out_.size() - length_ < len)
+    if(out_.size() - length_ < static_cast<size_t>(len))
 		out_.resize(out_.size()*2);
 
 	::memcpy((char*)out_ + length_, buf , len);

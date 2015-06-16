@@ -20,6 +20,8 @@ using namespace std;
 
 namespace eckit {
 
+Interpreter::~Interpreter() {}
+
 Values Interpreter::evalList(const Request requests, ExecutionContext& context)
 {
     Values r(0);

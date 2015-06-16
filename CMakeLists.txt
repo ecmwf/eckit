@@ -103,6 +103,15 @@ else() # Don't search for it on cc[abt] as it is already available as scilib
                       DESCRIPTION "Linear Algebra PACKage")
 endif()
 
+### MKL
+
+ecbuild_add_option( FEATURE MKL
+                    DEFAULT ON
+                    DESCRIPTION "MKL support"
+                    REQUIRED_PACKAGES MKL )
+
+set_package_properties( MKL PROPERTIES TYPE RECOMMENDED PURPOSE "MKL backend: Accelerated linear algebra operations" )
+
 ### async io support
 
 find_package( AIO )

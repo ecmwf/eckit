@@ -27,7 +27,7 @@ namespace la {
 class Vector {
 public:  // types
     typedef std::vector<Scalar> Storage;
-    typedef Storage::size_type Index;
+    typedef Storage::size_type Size;
 
 public:  // methods
 
@@ -37,20 +37,20 @@ public:  // methods
     Vector() {}
 
     /// Construct vector of given size (allocates memory)
-    Vector(Index s) : v_(s) {}
+    Vector(Size s) : v_(s) {}
 
     /// Construct vector from existing data (creates a copy)
     Vector(const Storage& v) : v_(v) {}
 
     /// @returns size (rows * cols)
-    Index size() const { return v_.size(); }
+    Size size() const { return v_.size(); }
     /// @returns number of rows (i.e. size)
-    Index rows() const { return v_.size(); }
+    Size rows() const { return v_.size(); }
     /// @returns number of columns (always 1)
-    Index cols() const { return 1; }
+    Size cols() const { return 1; }
 
-    Scalar& operator[](Index i) { return v_[i]; }
-    const Scalar& operator[](Index i) const { return v_[i]; }
+    Scalar& operator[](Size i) { return v_[i]; }
+    const Scalar& operator[](Size i) const { return v_[i]; }
 
     /// @returns modifiable view of the data
     Scalar* data() { return v_.data(); }

@@ -29,7 +29,7 @@ namespace la {
 class Matrix {
 public:  // types
     typedef std::vector<Scalar> Storage;
-    typedef Storage::size_type Index;
+    typedef Storage::size_type Size;
 
 public:  // methods
 
@@ -39,17 +39,17 @@ public:  // methods
     Matrix() {}
 
     /// Construct matrix with given rows and columns (allocates memory)
-    Matrix(Index rows, Index cols) : v_(rows*cols), rows_(rows), cols_(cols) {}
+    Matrix(Size rows, Size cols) : v_(rows*cols), rows_(rows), cols_(cols) {}
 
     /// @returns size (rows * cols)
-    Index size() const { return v_.size(); }
+    Size size() const { return v_.size(); }
     /// @returns number of rows
-    Index rows() const { return rows_; }
+    Size rows() const { return rows_; }
     /// @returns number of columns
-    Index cols() const { return cols_; }
+    Size cols() const { return cols_; }
 
-    Scalar& operator()(Index row, Index col) { return v_[col*rows_ + row]; }
-    const Scalar& operator()(Index row, Index col) const { return v_[col*rows_ + row]; }
+    Scalar& operator()(Size row, Size col) { return v_[col*rows_ + row]; }
+    const Scalar& operator()(Size row, Size col) const { return v_[col*rows_ + row]; }
 
     /// @returns modifiable view of the data
     Scalar* data() { return v_.data(); }
@@ -58,8 +58,8 @@ public:  // methods
 
 protected:  // members
     Storage v_;
-    Index rows_;
-    Index cols_;
+    Size rows_;
+    Size cols_;
 };
 
 //-----------------------------------------------------------------------------

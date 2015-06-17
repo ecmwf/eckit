@@ -28,6 +28,9 @@ namespace la {
 
 class LinearAlgebraEigen : public LinearAlgebraBase {
 
+public:
+    LinearAlgebraEigen();
+
 public:  // virtual methods
 
     virtual Scalar dot(const Vector&, const Vector&) const;

@@ -17,6 +17,7 @@
 #include <Eigen/Core>
 
 #include "eckit/la/LinearAlgebraEigen.h"
+#include "eckit/la/LinearAlgebraFactory.h"
 #include "eckit/la/Matrix.h"
 #include "eckit/la/Vector.h"
 
@@ -24,6 +25,12 @@
 
 namespace eckit {
 namespace la {
+
+//-----------------------------------------------------------------------------
+
+LinearAlgebraEigen::LinearAlgebraEigen() {
+    LinearAlgebraFactory::regist("eigen", this);
+}
 
 //-----------------------------------------------------------------------------
 
@@ -68,6 +75,10 @@ void LinearAlgebraEigen::spmv(const SparseMatrix&, const Vector&, Vector&) const
 void LinearAlgebraEigen::spmm(const SparseMatrix&, const Matrix&, Matrix&) const {
     NOTIMP;
 }
+
+//-----------------------------------------------------------------------------
+
+static LinearAlgebraEigen linearAlgebraEigen;
 
 //-----------------------------------------------------------------------------
 

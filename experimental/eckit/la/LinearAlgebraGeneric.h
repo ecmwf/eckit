@@ -24,6 +24,9 @@ namespace la {
 
 class LinearAlgebraGeneric : public LinearAlgebraBase {
 
+public:
+    LinearAlgebraGeneric();
+
 public:  // virtual methods
 
     virtual Scalar dot(const Vector&, const Vector&) const;

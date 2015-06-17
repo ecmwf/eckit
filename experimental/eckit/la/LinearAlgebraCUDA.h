@@ -28,6 +28,9 @@ namespace la {
 
 class LinearAlgebraCUDA : public LinearAlgebraBase {
 
+public:
+    LinearAlgebraCUDA();
+
 public:  // virtual methods
 
     virtual Scalar dot(const Vector&, const Vector&) const;

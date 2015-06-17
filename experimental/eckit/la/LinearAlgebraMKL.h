@@ -28,6 +28,9 @@ namespace la {
 
 class LinearAlgebraMKL : public LinearAlgebraBase {
 
+public:
+    LinearAlgebraMKL();
+
 public:  // virtual methods
 
     virtual Scalar dot(const Vector&, const Vector&) const;

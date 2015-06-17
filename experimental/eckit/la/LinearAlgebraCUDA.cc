@@ -30,6 +30,7 @@
 //-----------------------------------------------------------------------------
 
 #include "eckit/la/LinearAlgebraCUDA.h"
+#include "eckit/la/LinearAlgebraFactory.h"
 #include "eckit/la/Matrix.h"
 #include "eckit/la/Vector.h"
 
@@ -39,6 +40,10 @@ namespace eckit {
 namespace la {
 
 //-----------------------------------------------------------------------------
+
+LinearAlgebraCUDA::LinearAlgebraCUDA() {
+    LinearAlgebraFactory::regist("cuda", this);
+}
 
 //-----------------------------------------------------------------------------
 
@@ -152,6 +157,10 @@ void LinearAlgebraCUDA::spmv(const SparseMatrix&, const Vector&, Vector&) const 
 void LinearAlgebraCUDA::spmm(const SparseMatrix&, const Matrix&, Matrix&) const {
     NOTIMP;
 }
+
+//-----------------------------------------------------------------------------
+
+static LinearAlgebraCUDA linearAlgebraCUDA;
 
 //-----------------------------------------------------------------------------
 

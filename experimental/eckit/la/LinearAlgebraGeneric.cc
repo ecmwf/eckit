@@ -10,6 +10,7 @@
 
 //-----------------------------------------------------------------------------
 
+#include "eckit/la/LinearAlgebraFactory.h"
 #include "eckit/la/LinearAlgebraGeneric.h"
 #include "eckit/la/Matrix.h"
 #include "eckit/la/Vector.h"
@@ -18,6 +19,12 @@
 
 namespace eckit {
 namespace la {
+
+//-----------------------------------------------------------------------------
+
+LinearAlgebraGeneric::LinearAlgebraGeneric() {
+    LinearAlgebraFactory::regist("generic", this);
+}
 
 //-----------------------------------------------------------------------------
 
@@ -58,6 +65,10 @@ void LinearAlgebraGeneric::spmv(const SparseMatrix&, const Vector&, Vector&) con
 void LinearAlgebraGeneric::spmm(const SparseMatrix&, const Matrix&, Matrix&) const {
     NOTIMP;
 }
+
+//-----------------------------------------------------------------------------
+
+static LinearAlgebraGeneric linearAlgebraGeneric;
 
 //-----------------------------------------------------------------------------
 

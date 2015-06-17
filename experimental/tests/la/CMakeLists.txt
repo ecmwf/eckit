@@ -6,5 +6,8 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-add_subdirectory( eckit )
-add_subdirectory( tests )
+ecbuild_add_test( TARGET   test_la_linalg
+                  ARGS     --log_level=message
+                  BOOST
+                  SOURCES  test_la_linalg.cc
+                  LIBS     eckit_la )

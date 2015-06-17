@@ -143,6 +143,18 @@ void LinearAlgebraCUDA::gemm(const Matrix& A, const Matrix& B, Matrix& C) const 
 
 //-----------------------------------------------------------------------------
 
+void LinearAlgebraCUDA::spmv(const SparseMatrix&, const Vector&, Vector&) const {
+    NOTIMP;
+}
+
+//-----------------------------------------------------------------------------
+
+void LinearAlgebraCUDA::spmm(const SparseMatrix&, const Matrix&, Matrix&) const {
+    NOTIMP;
+}
+
+//-----------------------------------------------------------------------------
+
 }  // namespace la
 }  // namespace eckit
 

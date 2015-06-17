@@ -49,5 +49,17 @@ void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) con
 
 //-----------------------------------------------------------------------------
 
+void LinearAlgebraGeneric::spmv(const SparseMatrix&, const Vector&, Vector&) const {
+    NOTIMP;
+}
+
+//-----------------------------------------------------------------------------
+
+void LinearAlgebraGeneric::spmm(const SparseMatrix&, const Matrix&, Matrix&) const {
+    NOTIMP;
+}
+
+//-----------------------------------------------------------------------------
+
 } // namespace la
 } // namespace eckit

@@ -53,6 +53,18 @@ void LinearAlgebraMKL::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
 
 //-----------------------------------------------------------------------------
 
+void LinearAlgebraMKL::spmv(const SparseMatrix&, const Vector&, Vector&) const {
+    NOTIMP;
+}
+
+//-----------------------------------------------------------------------------
+
+void LinearAlgebraMKL::spmm(const SparseMatrix&, const Matrix&, Matrix&) const {
+    NOTIMP;
+}
+
+//-----------------------------------------------------------------------------
+
 }  // namespace la
 }  // namespace eckit
 

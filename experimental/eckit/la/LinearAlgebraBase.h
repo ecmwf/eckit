@@ -29,6 +29,8 @@ public:  // virtual methods
     virtual Scalar dot(const Vector&, const Vector&) const = 0;
     virtual void gemv(const Matrix&, const Vector&, Vector&) const = 0;
     virtual void gemm(const Matrix&, const Matrix&, Matrix&) const = 0;
+    virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const = 0;
+    virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const = 0;
 };
 
 //-----------------------------------------------------------------------------

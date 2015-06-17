@@ -59,6 +59,18 @@ void LinearAlgebraEigen::gemm(const Matrix& A, const Matrix& B, Matrix& C) const
 
 //-----------------------------------------------------------------------------
 
+void LinearAlgebraEigen::spmv(const SparseMatrix&, const Vector&, Vector&) const {
+    NOTIMP;
+}
+
+//-----------------------------------------------------------------------------
+
+void LinearAlgebraEigen::spmm(const SparseMatrix&, const Matrix&, Matrix&) const {
+    NOTIMP;
+}
+
+//-----------------------------------------------------------------------------
+
 } // namespace la
 }  // namespace eckit
 

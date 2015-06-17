@@ -14,6 +14,9 @@
 
 #include <cstdarg>
 
+#include "eckit/runtime/Context.h"
+#include "eckit/config/Resource.h"
+
 #include "eckit/la/LinearAlgebraFactory.h"
 #include "eckit/la/Matrix.h"
 #include "eckit/la/Vector.h"
@@ -49,11 +52,23 @@ Matrix m(Matrix::Size rows, Matrix::Size cols, ...) {
 
 //-----------------------------------------------------------------------------
 
+// Required for Resources to be initialised
+struct Setup {
+    Setup() {
+        Context::instance().setup(boost::unit_test::framework::master_test_suite().argc,
+                                  boost::unit_test::framework::master_test_suite().argv);
+    }
+};
+
+BOOST_GLOBAL_FIXTURE(Setup);
+
+//-----------------------------------------------------------------------------
+
 struct Fixture {
 
     Fixture() : x(v(3, 1., 2., 4.)),
                 A(m(2, 2, 1., -2., -4., 2.)),
-                linalg(LinearAlgebraFactory::get()) {}
+                linalg(LinearAlgebraFactory::get(Resource<std::string>("--backend", "generic"))) {}
 
     Vector x;
     Matrix A;

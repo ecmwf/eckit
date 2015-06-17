@@ -11,3 +11,20 @@ ecbuild_add_test( TARGET   test_la_linalg
                   BOOST
                   SOURCES  test_la_linalg.cc
                   LIBS     eckit_la )
+
+# This test seems to have a system call exit with 1 even though tests pass.
+# Ignore system errors, see also http://stackoverflow.com/a/20360334/396967
+ecbuild_add_test( TARGET     test_la_linalg_cuda
+                  COMMAND    test_la_linalg
+                  CONDITION  ECKIT_HAVE_CUDA
+                  ARGS       --log_level=message --catch_system_errors=no --backend cuda )
+
+ecbuild_add_test( TARGET     test_la_linalg_eigen
+                  COMMAND    test_la_linalg
+                  CONDITION  ECKIT_HAVE_EIGEN
+                  ARGS       --log_level=message --backend eigen )
+
+ecbuild_add_test( TARGET     test_la_linalg_mkl
+                  COMMAND    test_la_linalg
+                  CONDITION  ECKIT_HAVE_MKL
+                  ARGS       --log_level=message --backend mkl )

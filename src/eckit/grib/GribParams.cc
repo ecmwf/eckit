@@ -126,10 +126,13 @@ GribParams::GribParams(GribHandle& gh)
 	   south_ = std::min(lat_1,lat_2);
 
 	   // check area
-	   ASSERT(north_ < 90.0  || FloatCompare::is_equal(north_,90.0,degreesEps_));
-	   ASSERT(south_ < 90.0  || FloatCompare::is_equal(south_,90.0,degreesEps_));
-	   ASSERT(north_ > -90.0 || FloatCompare::is_equal(north_,-90.0,degreesEps_));
-	   ASSERT(south_ > -90.0 || FloatCompare::is_equal(south_,-90.0,degreesEps_));
+
+		 FloatApproxCompare<double> cmp(degreesEps_);
+
+		 ASSERT(north_ < 90.0  || cmp(north_,90.0));
+		 ASSERT(south_ < 90.0  || cmp(south_,90.0));
+		 ASSERT(north_ > -90.0 || cmp(north_,-90.0));
+		 ASSERT(south_ > -90.0 || cmp(south_,-90.0));
 
       set("bbox_n", north_ );
       set("bbox_s", south_ );

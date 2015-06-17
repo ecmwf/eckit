@@ -17,11 +17,7 @@
 
 #include "eckit/cmd/CmdResource.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
-
-//-----------------------------------------------------------------------------
 
 class TaskInfo;
 
@@ -29,21 +25,12 @@ class TaskInfo;
 
 class PsCmd : public eckit::CmdResource {
 public:
-    // -- Contructors
 
     PsCmd();
 
-    // -- Destructor
+    virtual ~PsCmd();
 
-    ~PsCmd();
-
-private:
-    // No copy allowed
-
-    PsCmd(const PsCmd&);
-    PsCmd& operator=(const PsCmd&);
-
-    // -- Methods
+private: // methods
 
     void display(std::ostream&, eckit::TaskInfo&, long, const std::string&) const;
 

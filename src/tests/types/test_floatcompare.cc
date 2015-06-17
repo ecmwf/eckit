@@ -42,11 +42,11 @@ public:
     void test_comparisons_very_close_to_zero();
 
     bool is_equal(double a, double b, double epsilon) {
-       return FloatCompare::is_equal(a,b,epsilon);
+       return FloatCompare<double>::isApproxEqual(a,b,epsilon);
     }
 
     bool is_equal(double a, double b) {
-       return FloatCompare::is_equal(a,b,0.00001);
+       return FloatCompare<double>::isApproxEqual(a,b,0.00001);
     }
 };
 

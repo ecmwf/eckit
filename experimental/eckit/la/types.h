@@ -19,8 +19,10 @@ namespace eckit {
 namespace la {
 
 typedef double Scalar;
+typedef int Index;
 class Vector;
 class Matrix;
+class SparseMatrix;
 
 }  // namespace la
 }  // namespace eckit

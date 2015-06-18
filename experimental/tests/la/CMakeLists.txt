@@ -28,3 +28,9 @@ ecbuild_add_test( TARGET     test_la_linalg_mkl
                   COMMAND    test_la_linalg
                   CONDITION  ECKIT_HAVE_MKL
                   ARGS       --log_level=message --backend mkl )
+
+ecbuild_add_test( TARGET   test_la_sparse
+                  ARGS     --log_level=message
+                  BOOST
+                  SOURCES  test_la_sparse.cc
+                  LIBS     eckit_la )

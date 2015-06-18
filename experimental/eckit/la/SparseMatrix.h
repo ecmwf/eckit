@@ -57,6 +57,40 @@ public:  // methods
         ASSERT(v.size() == inner.size() && outer.size() == rows+1);
     }
 
+    /// Initialise matrix from vector of triplets
+    ///
+    /// Resets data and index vectors, requires row and column number to be set.
+    /// Assumes no order of triplets and allows duplicates, which are summed.
+    void setFromTriplets(const std::vector<Triplet>& triplets) {
+        ASSERT( rows_ > 0 && cols_ > 0 );
+
+        // Build sparsity pattern i.e. inner indices for each row
+        std::vector<std::set<Index> > nz(rows_);
+        for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it) {
+            ASSERT(it->row() >= 0 && it->row() < rows_ && it->col() >= 0 && it->col() < cols_);
+            nz[it->row()].insert(it->col());
+        }
+
+        // Build vector of outer indices
+        outer_.resize(rows_+1);
+        outer_[0] = 0;
+        for (Index i = 0; i < rows_; ++i)
+            outer_[i+1] = outer_[i] + nz[i].size();
+        Size nnz = outer_[rows_];
+
+        // Build vectors of inner indices and values
+        inner_.resize(nnz);
+        v_.assign(nnz, Scalar(0));
+        for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it) {
+            const Size row = it->row();
+            const Size col = it->col();
+            // Find the position in the current row
+            const Size pos = outer_[row] + std::distance(nz[row].begin(), nz[row].find(col));
+            inner_[pos] = col;
+            v_[pos] += it->value();
+        }
+    }
+
     /// @returns size (rows * cols)
     Size size() const { return rows_*cols_; }
     /// @returns number of rows

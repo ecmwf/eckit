@@ -12,11 +12,14 @@
 
 #include "ecbuild/boost_test_framework.h"
 
+#include <cstdarg>
+
 #include "eckit/runtime/Context.h"
 #include "eckit/config/Resource.h"
 
 #include "eckit/la/LinearAlgebraFactory.h"
 #include "eckit/la/SparseMatrix.h"
+#include "eckit/la/Vector.h"
 
 //-----------------------------------------------------------------------------
 
@@ -24,6 +27,17 @@ using namespace eckit::la;
 
 namespace eckit {
 namespace test {
+
+//-----------------------------------------------------------------------------
+
+Vector V(Vector::Size s, ...) {
+    Vector vec(s);
+    va_list args;
+    va_start(args, s);
+    for (Vector::Size i = 0; i < s; ++i) vec[i] = va_arg(args, Scalar);
+    va_end(args);
+    return vec;
+}
 
 //-----------------------------------------------------------------------------
 
@@ -81,6 +95,14 @@ BOOST_AUTO_TEST_CASE(test_create_sparse_from_triplets) {
     test(S.outer(), outer, 4);
     test(S.inner(), inner, 4);
     test(S.data(), data, 4);
+}
+
+BOOST_AUTO_TEST_CASE(test_spmv) {
+    Vector y(3);
+    linalg->spmv(S, V(3, 1., 2., 3.), y);
+    test(y, V(3, -7., 4., 6.));
+    BOOST_TEST_MESSAGE("spmv of sparse matrix and vector of nonmatching sizes should fail");
+    BOOST_CHECK_THROW(linalg->spmv(S, Vector(2), y), AssertionFailed);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

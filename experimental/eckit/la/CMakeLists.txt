@@ -12,6 +12,7 @@ LinearAlgebraGeneric.h
 LinearAlgebraMKL.cc
 LinearAlgebraMKL.h
 Matrix.h
+Triplet.h
 Vector.h
 )
 

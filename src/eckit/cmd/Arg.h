@@ -17,6 +17,8 @@
 
 #include "eckit/eckit.h"
 
+#include "eckit/memory/ScopedPtr.h"
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -60,7 +62,7 @@ private:
 
     // -- Members
 
-    std::auto_ptr<ArgContent> content_;
+    eckit::ScopedPtr<ArgContent> content_;
 
     // -- Friends
 

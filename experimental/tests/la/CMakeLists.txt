@@ -34,3 +34,8 @@ ecbuild_add_test( TARGET   test_la_sparse
                   BOOST
                   SOURCES  test_la_sparse.cc
                   LIBS     eckit_la )
+
+ecbuild_add_test( TARGET     test_la_sparse_eigen
+                  COMMAND    test_la_sparse
+                  CONDITION  ECKIT_HAVE_EIGEN
+                  ARGS       --log_level=message --backend eigen )

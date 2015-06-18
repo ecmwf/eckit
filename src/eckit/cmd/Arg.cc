@@ -82,7 +82,7 @@ public:
 };
 
 class ArgContentOptional : public ArgContent {
-    std::auto_ptr<ArgContent> content_;
+    eckit::ScopedPtr<ArgContent> content_;
 
     virtual void print(std::ostream& s, bool) const {
         s << "[";

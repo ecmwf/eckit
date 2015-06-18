@@ -105,8 +105,6 @@ template <> struct FPCompare<double> {
    static int_type diff(int_type a, int_type b) { return int64_abs(a - b); }
 };
 
-//------------------------------------------------------------------------------------------------------
-
 template < typename T >
 bool AlmostEqualUlps(T A, T B, int maxUlpsDiff)
 {
@@ -135,8 +133,6 @@ bool AlmostEqualUlps(T A, T B, int maxUlpsDiff)
 
     return false;
 }
-
-//------------------------------------------------------------------------------------------------------
 
 /// Compare 2 floats with an absolute epsilon check (values near zero), then based on ULPs
 ///
@@ -181,8 +177,6 @@ bool AlmostEqualUlpsAndAbs(T A, T B, T maxDiff, int maxUlpsDiff)
     return false;
 }
 
-//------------------------------------------------------------------------------------------------------
-
 template < typename T >
 bool AlmostEqualRelativeAndAbs(T A, T B, T maxDiff, T maxRelDiff)
 {
@@ -201,19 +195,15 @@ bool AlmostEqualRelativeAndAbs(T A, T B, T maxDiff, T maxRelDiff)
     return false;
 }
 
-//-----------------------------------------------------------------------------
-
-bool FloatCompare::is_equal(float a, float b, float epsilon,int maxUlpsDiff)
+template<>
+bool isApproxEqualUlps(float a, float b, float epsilon, int maxUlpsDiff)
 {
-//    return AlmostEqualUlps(a,b,10);
     return AlmostEqualUlpsAndAbs(a,b,epsilon,maxUlpsDiff);
 }
 
-//-----------------------------------------------------------------------------
-
-bool FloatCompare::is_equal(double a, double b, double epsilon,int maxUlpsDiff)
+template<>
+bool isApproxEqualUlps(double a, double b, double epsilon, int maxUlpsDiff)
 {
-//    return AlmostEqualUlps(a,b,10);
     return AlmostEqualUlpsAndAbs(a,b,epsilon,maxUlpsDiff);
 }
 

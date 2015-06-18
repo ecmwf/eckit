@@ -30,11 +30,11 @@ namespace test {
 
 //-----------------------------------------------------------------------------
 
-Vector v(Vector::Size s, ...) {
+Vector v(Size s, ...) {
     Vector vec(s);
     va_list args;
     va_start(args, s);
-    for (Vector::Size i = 0; i < s; ++i) vec[i] = va_arg(args, Scalar);
+    for (Size i = 0; i < s; ++i) vec[i] = va_arg(args, Scalar);
     va_end(args);
     return vec;
 }

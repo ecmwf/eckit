@@ -15,11 +15,14 @@
 #ifndef eckit_la_types_h
 #define eckit_la_types_h
 
+#include <cstddef>
+
 namespace eckit {
 namespace la {
 
 typedef double Scalar;
 typedef int Index;
+typedef size_t Size;
 class Vector;
 class Matrix;
 class SparseMatrix;

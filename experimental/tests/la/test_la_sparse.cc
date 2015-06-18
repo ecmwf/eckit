@@ -56,6 +56,7 @@ BOOST_GLOBAL_FIXTURE(Setup);
 struct Fixture {
 
     Fixture() : S(3, 3),
+                x(V(3, 1., 2., 3.)),
                 linalg(LinearAlgebraFactory::get(Resource<std::string>("--backend", "generic"))) {
         std::vector<Triplet> triplets;
         triplets.push_back(Triplet(0, 0, 2.));
@@ -66,6 +67,7 @@ struct Fixture {
     }
 
     SparseMatrix S;
+    Vector x;
     LinearAlgebraBase* linalg;
 };
 
@@ -73,7 +75,8 @@ struct Fixture {
 
 template <class T>
 void test(const T& v, const T& r) {
-    BOOST_CHECK_EQUAL_COLLECTIONS(v.data(), v.data() + v.size(), r.data(), r.data() + r.size());
+    const size_t s = std::min(v.size(), r.size());
+    BOOST_CHECK_EQUAL_COLLECTIONS(v.data(), v.data() + s, r.data(), r.data() + s);
 }
 
 template <typename T>
@@ -97,9 +100,28 @@ BOOST_AUTO_TEST_CASE(test_create_sparse_from_triplets) {
     test(S.data(), data, 4);
 }
 
+BOOST_AUTO_TEST_CASE(test_identity) {
+    Vector y1(3);
+    SparseMatrix A(3, 3);
+    A.setIdentity();
+    linalg->spmv(A, x, y1);
+    test(y1, x);
+    SparseMatrix B(6, 3);
+    B.setIdentity();
+    Vector y2(6);
+    linalg->spmv(B, x, y2);
+    test(y2, x);
+    test(y2.data()+3, V(3, 0., 0., 0.).data(), 3);
+    SparseMatrix C(2, 3);
+    C.setIdentity();
+    Vector y3(2);
+    linalg->spmv(C, x, y3);
+    test(y3, x);
+}
+
 BOOST_AUTO_TEST_CASE(test_spmv) {
     Vector y(3);
-    linalg->spmv(S, V(3, 1., 2., 3.), y);
+    linalg->spmv(S, x, y);
     test(y, V(3, -7., 4., 6.));
     BOOST_TEST_MESSAGE("spmv of sparse matrix and vector of nonmatching sizes should fail");
     BOOST_CHECK_THROW(linalg->spmv(S, Vector(2), y), AssertionFailed);

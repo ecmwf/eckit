@@ -20,6 +20,7 @@
 #include "eckit/la/LinearAlgebraFactory.h"
 #include "eckit/la/LinearAlgebraMKL.h"
 #include "eckit/la/Matrix.h"
+#include "eckit/la/SparseMatrix.h"
 #include "eckit/la/Vector.h"
 
 //-----------------------------------------------------------------------------
@@ -58,8 +59,14 @@ void LinearAlgebraMKL::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraMKL::spmv(const SparseMatrix&, const Vector&, Vector&) const {
-    NOTIMP;
+void LinearAlgebraMKL::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
+    ASSERT( x.size() == A.cols() && y.size() == A.rows() );
+    MKL_INT m = A.rows();
+    MKL_INT k = A.cols();
+    double alpha = 1.;
+    double beta = 0.;
+    mkl_dcsrmv ("N", &m, &k, &alpha, "G__C", A.data(), A.inner(),
+                A.outer(), A.outer()+1, x.data(), &beta, y.data());
 }
 
 //-----------------------------------------------------------------------------

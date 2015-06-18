@@ -119,6 +119,18 @@ BOOST_AUTO_TEST_CASE(test_identity) {
     test(y3, x);
 }
 
+BOOST_AUTO_TEST_CASE(test_prune) {
+    S.data()[1] = 0.;
+    S.prune();
+    BOOST_CHECK_EQUAL(S.nnz(), 3);
+    Index outer[4] = {0, 1, 2, 3};
+    Index inner[3] = {0, 1, 2};
+    Scalar data[3] = {2., 2., 2.};
+    test(S.outer(), outer, 4);
+    test(S.inner(), inner, 3);
+    test(S.data(), data, 3);
+}
+
 BOOST_AUTO_TEST_CASE(test_spmv) {
     Vector y(3);
     linalg->spmv(S, x, y);

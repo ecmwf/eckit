@@ -14,11 +14,12 @@
 
 #ifdef ECKIT_HAVE_EIGEN
 
-#include <Eigen/Core>
+#include "eckit/maths/Eigen.h"
 
 #include "eckit/la/LinearAlgebraEigen.h"
 #include "eckit/la/LinearAlgebraFactory.h"
 #include "eckit/la/Matrix.h"
+#include "eckit/la/SparseMatrix.h"
 #include "eckit/la/Vector.h"
 
 //-----------------------------------------------------------------------------
@@ -66,8 +67,16 @@ void LinearAlgebraEigen::gemm(const Matrix& A, const Matrix& B, Matrix& C) const
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraEigen::spmv(const SparseMatrix&, const Vector&, Vector&) const {
-    NOTIMP;
+void LinearAlgebraEigen::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
+    ASSERT( x.size() == A.cols() && y.size() == A.rows() );
+    // Eigen requires non-const pointers to the data
+    Eigen::MappedSparseMatrix<Scalar, Eigen::RowMajor, Index> Ai(A.rows(), A.cols(), A.nnz(),
+                                                                 const_cast<Index*>(A.outer()),
+                                                                 const_cast<Index*>(A.inner()),
+                                                                 const_cast<Scalar*>(A.data()));
+    Eigen::VectorXd::MapType xi = Eigen::VectorXd::Map( const_cast<Scalar*>(x.data()), x.size() );
+    Eigen::VectorXd::MapType yi = Eigen::VectorXd::Map( y.data(), y.size() );
+    yi = Ai*xi;
 }
 
 //-----------------------------------------------------------------------------

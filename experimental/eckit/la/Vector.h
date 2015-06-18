@@ -15,8 +15,9 @@
 #ifndef eckit_la_Vector_h
 #define eckit_la_Vector_h
 
-#include <vector>
+#include <cstring>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/la/types.h"
 
 namespace eckit {
@@ -24,28 +25,46 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
+// TODO: provide a const view
 class Vector {
-public:  // types
-    typedef std::vector<Scalar> Storage;
-    typedef Storage::size_type Size;
-
 public:  // methods
 
     // -- Constructors
 
-    /// Default constructor: empty vector
-    Vector() {}
+    /// Construct vector of given size initalised to 0 (allocates memory)
+    Vector(Size s) : v_(new Scalar[s]), size_(s), own_(true) {
+        memset(v_, 0, size_*sizeof(Scalar));
+    }
 
-    /// Construct vector of given size (allocates memory)
-    Vector(Size s) : v_(s) {}
+    /// Construct vector from existing data (does NOT take ownership)
+    Vector(Scalar* v, Size s)
+        : v_(v), size_(s), own_(false) {
+        ASSERT(v && size_ > 0);
+    }
 
-    /// Construct vector from existing data (creates a copy)
-    Vector(const Storage& v) : v_(v) {}
+    /// Copy constructor
+    Vector(const Vector& v)
+        : v_(new Scalar[v.size_]), size_(v.size_), own_(true) {
+        memcpy(v_, v.v_, size_*sizeof(Scalar));
+    }
+
+    // TODO: make virtual if used as base class
+    ~Vector() {
+        if (own_) delete [] v_;
+    }
+
+    Vector& operator=(const Vector& v) {
+        Vector nv(v);
+        std::swap(v_, nv.v_);
+        std::swap(size_, nv.size_);
+        std::swap(own_, nv.own_);
+        return *this;
+    }
 
     /// @returns size (rows * cols)
-    Size size() const { return v_.size(); }
+    Size size() const { return size_; }
     /// @returns number of rows (i.e. size)
-    Size rows() const { return v_.size(); }
+    Size rows() const { return size_; }
     /// @returns number of columns (always 1)
     Size cols() const { return 1; }
 
@@ -53,12 +72,14 @@ public:  // methods
     const Scalar& operator[](Size i) const { return v_[i]; }
 
     /// @returns modifiable view of the data
-    Scalar* data() { return v_.data(); }
+    Scalar* data() { return v_; }
     /// @returns read-only view of the data
-    const Scalar* data() const { return v_.data(); }
+    const Scalar* data() const { return v_; }
 
 protected:  // members
-    Storage v_;
+    Scalar* v_;
+    Size size_;
+    bool own_;
 };
 
 //-----------------------------------------------------------------------------

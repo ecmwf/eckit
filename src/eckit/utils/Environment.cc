@@ -68,10 +68,10 @@ vector<string> Environment::lookupList(const string& name, ExecutionContext& con
     vector<string> list;
     for (Request e (r); e; e = e->rest())
     {
-        ASSERT(r->tag() == "_list");
-        ASSERT(r->value()->tag() == "");
+        ASSERT(e->tag() == "_list");
+        ASSERT(e->value()->tag() == "");
 
-        list.push_back(r->value()->text());
+        list.push_back(e->value()->text());
     }
     return list;
 }

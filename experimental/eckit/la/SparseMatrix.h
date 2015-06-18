@@ -91,6 +91,20 @@ public:  // methods
         }
     }
 
+    /// Set matrix to the identity
+    void setIdentity() {
+        Index nnz = std::min(rows_, cols_);
+        outer_.resize(rows_+1);
+        inner_.resize(nnz);
+        for (Index i = 0; i < nnz; ++i) {
+            outer_[i] = i;
+            inner_[i] = i;
+        }
+        for (Index i = nnz; i <= rows_; ++i)
+            outer_[i] = nnz;
+        v_.assign(nnz, Scalar(1));
+    }
+
     /// @returns size (rows * cols)
     Size size() const { return rows_*cols_; }
     /// @returns number of rows

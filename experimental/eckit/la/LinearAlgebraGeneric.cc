@@ -13,6 +13,7 @@
 #include "eckit/la/LinearAlgebraFactory.h"
 #include "eckit/la/LinearAlgebraGeneric.h"
 #include "eckit/la/Matrix.h"
+#include "eckit/la/SparseMatrix.h"
 #include "eckit/la/Vector.h"
 
 //-----------------------------------------------------------------------------
@@ -56,8 +57,15 @@ void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) con
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraGeneric::spmv(const SparseMatrix&, const Vector&, Vector&) const {
-    NOTIMP;
+void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
+    ASSERT( x.size() == A.cols() && y.size() == A.rows() );
+    const Index* outer = A.outer();
+    const Index* inner = A.inner();
+    const Scalar* val = A.data();
+    for (size_t r = 0; r < A.rows(); ++r)
+        for (Index oi = outer[r]; oi < outer[r+1]; ++oi)
+            y[r] += val[oi] * x[inner[oi]];
+
 }
 
 //-----------------------------------------------------------------------------

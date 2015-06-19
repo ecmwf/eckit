@@ -57,10 +57,15 @@ public:  // methods
 
     Vector& operator=(const Vector& v) {
         Vector nv(v);
-        std::swap(v_, nv.v_);
-        std::swap(size_, nv.size_);
-        std::swap(own_, nv.own_);
+        swap(nv);
         return *this;
+    }
+
+    /// Swap this vector for another
+    void swap(Vector& v) {
+        std::swap(v_, v.v_);
+        std::swap(size_, v.size_);
+        std::swap(own_, v.own_);
     }
 
     /// @returns size (rows * cols)

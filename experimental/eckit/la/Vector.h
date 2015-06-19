@@ -31,6 +31,9 @@ public:  // methods
 
     // -- Constructors
 
+    /// Default constructor (empty vector)
+    Vector() : v_(0), size_(0), own_(false) {}
+
     /// Construct vector of given size (allocates memory, not initialised)
     Vector(Size s)
         : v_(new Scalar[s]), size_(s), own_(true) {}

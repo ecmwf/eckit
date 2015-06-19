@@ -224,6 +224,8 @@ config/Configurable.cc
 config/EtcTable.h
 config/EtcTable.cc
 config/Parametrisation.h
+config/DynamicParametrisation.h
+config/DynamicParametrisation.cc
 config/FileReadPolicy.h
 config/FileReadPolicy.cc
 config/ResourceBase.cc )
@@ -477,6 +479,8 @@ utils/Environment.h
 utils/Environment.cc
 utils/RequestHandler.h
 utils/RequestHandler.cc
+utils/ParameterizedRequestHandler.h
+utils/ParameterizedRequestHandler.cc
 utils/ExecutionContext.h
 utils/ExecutionContext.cc
 utils/SpecialFormHandler.h

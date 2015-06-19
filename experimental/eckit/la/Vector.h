@@ -99,6 +99,15 @@ public:  // methods
     /// @returns read-only view of the data
     const Scalar* data() const { return v_; }
 
+    /// @returns iterator to beginning of the data
+    Scalar* begin() { return v_; }
+    /// @returns const iterator to beginning of the data
+    const Scalar* begin() const { return v_; }
+    /// @returns iterator to end of the data
+    Scalar* end() { return v_ + size_; }
+    /// @returns const iterator to end of the data
+    const Scalar* end() const { return v_ + size_; }
+
 protected:  // members
     Scalar* v_;
     Size size_;

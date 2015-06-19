@@ -41,6 +41,13 @@ public:  // methods
     /// Construct matrix with given rows and columns (allocates memory)
     Matrix(Size rows, Size cols) : v_(rows*cols), rows_(rows), cols_(cols) {}
 
+    /// Resize matrix to given number of rows/columns (invalidates data)
+    void resize(Size rows, Size cols) {
+        v_.resize(rows*cols);
+        rows_ = rows;
+        cols_ = cols;
+    }
+
     /// @returns size (rows * cols)
     Size size() const { return v_.size(); }
     /// @returns number of rows

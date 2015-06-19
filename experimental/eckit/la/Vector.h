@@ -74,6 +74,11 @@ public:  // methods
         swap(v);
     }
 
+    /// Set data to zero
+    void setZero() {
+        memset(v_, 0, size_*sizeof(Scalar));
+    }
+
     /// @returns size (rows * cols)
     Size size() const { return size_; }
     /// @returns number of rows (i.e. size)

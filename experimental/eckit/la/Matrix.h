@@ -70,6 +70,15 @@ public:  // methods
     /// @returns read-only view of the data
     const Scalar* data() const { return v_.data(); }
 
+    /// @returns iterator to beginning of the data
+    Storage::iterator begin() { return v_.begin(); }
+    /// @returns const iterator to beginning of the data
+    Storage::const_iterator begin() const { return v_.begin(); }
+    /// @returns iterator to end of the data
+    Storage::iterator end() { return v_.end(); }
+    /// @returns const iterator to end of the data
+    Storage::const_iterator end() const { return v_.end(); }
+
 protected:  // members
     Storage v_;
     Size rows_;

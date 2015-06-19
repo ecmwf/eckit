@@ -70,7 +70,7 @@ void LinearAlgebraEigen::gemm(const Matrix& A, const Matrix& B, Matrix& C) const
 void LinearAlgebraEigen::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
     ASSERT( x.size() == A.cols() && y.size() == A.rows() );
     // Eigen requires non-const pointers to the data
-    Eigen::MappedSparseMatrix<Scalar, Eigen::RowMajor, Index> Ai(A.rows(), A.cols(), A.nnz(),
+    Eigen::MappedSparseMatrix<Scalar, Eigen::RowMajor, Index> Ai(A.rows(), A.cols(), A.nonZeros(),
                                                                  const_cast<Index*>(A.outer()),
                                                                  const_cast<Index*>(A.inner()),
                                                                  const_cast<Scalar*>(A.data()));

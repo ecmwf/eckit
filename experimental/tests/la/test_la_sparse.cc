@@ -91,7 +91,7 @@ void test(T* v, T* r, size_t s) {
 BOOST_FIXTURE_TEST_SUITE(test_eckit_la_sparse, Fixture)
 
 BOOST_AUTO_TEST_CASE(test_create_sparse_from_triplets) {
-    BOOST_CHECK_EQUAL(S.nnz(), 4);
+    BOOST_CHECK_EQUAL(S.nonZeros(), 4);
     Index outer[4] = {0, 2, 3, 4};
     Index inner[4] = {0, 2, 1, 2};
     Scalar data[4] = {2., -3., 2., 2.};
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(test_identity) {
 BOOST_AUTO_TEST_CASE(test_prune) {
     S.data()[1] = 0.;
     S.prune();
-    BOOST_CHECK_EQUAL(S.nnz(), 3);
+    BOOST_CHECK_EQUAL(S.nonZeros(), 3);
     Index outer[4] = {0, 1, 2, 3};
     Index inner[3] = {0, 1, 2};
     Scalar data[3] = {2., 2., 2.};

@@ -157,7 +157,7 @@ public:  // methods
     /// @returns outer size (number of rows)
     Size outerSize() const { return rows_; }
     /// @returns number of non-zeros
-    Size nnz() const { return v_.size(); }
+    Size nonZeros() const { return v_.size(); }
 
     /// @returns modifiable view of the data vector
     Scalar* data() { return v_.data(); }

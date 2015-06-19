@@ -155,8 +155,8 @@ public: // methods
 	const V& operator[] (const K& k ) const { return values_[ find(k)->idx() ]; }
 	V& operator[] (const K& k ) { return values_[ find(k)->idx() ]; }
 
-	const V& operator[] (const size_t& i ) const { ASSERT(i < keys_.size()); return values_[ keys_[i].idx() ]; }
-	V& operator[] (const size_t& i ) { ASSERT(i < keys_.size()); return values_[ keys_[i].idx() ]; }
+	const V& operator[] (const size_t& i ) const { ASSERT(i < values_.size()); return values_[ i ]; }
+	V& operator[] (const size_t& i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
 
 	iterator find( const K& k )
 	{

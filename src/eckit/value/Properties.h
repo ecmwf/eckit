@@ -19,6 +19,7 @@
 #include <string>
 
 #include "eckit/value/Value.h"
+#include "eckit/value/Params.h"
 #include "eckit/config/Parametrisation.h"
 
 //------------------------------------------------------------------------------------------------------
@@ -70,6 +71,8 @@ public: // methods
 
     static const char* className() { return "eckit::Properties"; }
 
+    operator eckit::Params() const { return eckit::Params(*this); }
+
 protected:
     void print(std::ostream& s) const;
 
@@ -81,7 +84,7 @@ private: // members
 
     PropertyMap  props_; //< storage of values
 
-private: // methods
+protected: // methods
 
     void json(JSON& s) const;
     void encode(Stream& s) const;

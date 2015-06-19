@@ -48,6 +48,13 @@ public:  // methods
         cols_ = cols;
     }
 
+    /// Swap this matrix with another
+    void swap(Matrix& o) {
+        v_.swap(o.v_);
+        std::swap(rows_, o.rows_);
+        std::swap(cols_, o.cols_);
+    }
+
     /// @returns size (rows * cols)
     Size size() const { return v_.size(); }
     /// @returns number of rows

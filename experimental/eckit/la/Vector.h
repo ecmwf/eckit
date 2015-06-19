@@ -79,6 +79,11 @@ public:  // methods
         memset(v_, 0, size_*sizeof(Scalar));
     }
 
+    /// Fill vector with given scalar
+    void fill(Scalar s) {
+        for (Size i = 0; i < size_; ++i) v_[i] = s;
+    }
+
     /// @returns size (rows * cols)
     Size size() const { return size_; }
     /// @returns number of rows (i.e. size)

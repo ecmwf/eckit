@@ -68,6 +68,12 @@ public:  // methods
         std::swap(own_, v.own_);
     }
 
+    /// Resize vector to given size (invalidates data)
+    void resize(Size s) {
+        Vector v(s);
+        swap(v);
+    }
+
     /// @returns size (rows * cols)
     Size size() const { return size_; }
     /// @returns number of rows (i.e. size)

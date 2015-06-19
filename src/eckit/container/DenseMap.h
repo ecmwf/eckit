@@ -81,22 +81,8 @@ public: // methods
 		sorted_ = false;
 	}
 
-	size_t erase( const key_type& k )
-	{
-		///< @todo this code needs to be reviewed
-		sort();
-		if( !empty() )
-		{
-			iterator it = std::lower_bound( begin(), end(), k, Compare());
-			if( it != end() && it->key() == k )
-			{
-				values_[it->idx()] = value_type();
-				keys_.erase(it);
-				sorted_ = false;
-			}
-		}
-		return end()->idx();
-	}
+    /// @TODO shoudl we implement this?
+    //	size_t erase( const key_type& k );
 
 	void replace( const K& k, const V& v )
 	{

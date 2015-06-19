@@ -65,6 +65,9 @@ public:  // methods
     Scalar& operator()(Size row, Size col) { return v_[col*rows_ + row]; }
     const Scalar& operator()(Size row, Size col) const { return v_[col*rows_ + row]; }
 
+    Scalar& operator[](Size i) { return v_[i]; }
+    const Scalar& operator[](Size i) const { return v_[i]; }
+
     /// @returns modifiable view of the data
     Scalar* data() { return v_.data(); }
     /// @returns read-only view of the data

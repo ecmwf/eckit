@@ -57,6 +57,15 @@ public:  // methods
         ASSERT(v.size() == inner.size() && outer.size() == rows+1);
     }
 
+    /// Resize sparse matrix (invalidates all data arrays)
+    void resize(Size rows, Size cols) {
+        v_.clear();
+        outer_.clear();
+        inner_.clear();
+        rows_ = rows;
+        cols_ = cols;
+    }
+
     /// Initialise matrix from vector of triplets
     ///
     /// Resets data and index vectors, requires row and column number to be set.

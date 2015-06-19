@@ -66,6 +66,15 @@ public:  // methods
         cols_ = cols;
     }
 
+    /// Swap sparse matrix with another
+    void swap(SparseMatrix& other) {
+        std::swap(v_, other.v_);
+        std::swap(outer_, other.outer_);
+        std::swap(inner_, other.inner_);
+        std::swap(rows_, other.rows_);
+        std::swap(cols_, other.cols_);
+    }
+
     /// Initialise matrix from vector of triplets
     ///
     /// Resets data and index vectors, requires row and column number to be set.

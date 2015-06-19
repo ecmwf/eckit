@@ -31,10 +31,9 @@ public:  // methods
 
     // -- Constructors
 
-    /// Construct vector of given size initalised to 0 (allocates memory)
-    Vector(Size s) : v_(new Scalar[s]), size_(s), own_(true) {
-        memset(v_, 0, size_*sizeof(Scalar));
-    }
+    /// Construct vector of given size (allocates memory, not initialised)
+    Vector(Size s)
+        : v_(new Scalar[s]), size_(s), own_(true) {}
 
     /// Construct vector from existing data (does NOT take ownership)
     Vector(Scalar* v, Size s)

@@ -11,6 +11,7 @@
 #include <cstring>
 
 #include "eckit/la/Vector.h"
+#include "eckit/serialisation/Stream.h"
 
 namespace eckit {
 namespace la {
@@ -27,6 +28,15 @@ Vector::Vector(Size s) : v_(new Scalar[s]), size_(s), own_(true) {}
 
 Vector::Vector(Scalar* v, Size s) : v_(v), size_(s), own_(false) {
     ASSERT(v && size_ > 0);
+}
+
+//-----------------------------------------------------------------------------
+
+Vector::Vector(Stream& s) : v_(0), size_(0), own_(false) {
+    Size size;
+    s >> size;
+    resize(size);
+    for (Size i = 0; i < size; ++i) s >> v_[i];
 }
 
 //-----------------------------------------------------------------------------
@@ -75,6 +85,20 @@ void Vector::setZero() {
 
 void Vector::fill(Scalar s) {
     for (Size i = 0; i < size_; ++i) v_[i] = s;
+}
+
+//-----------------------------------------------------------------------------
+
+void Vector::encode(Stream& s) const {
+  s << size_;
+  for (Size i = 0; i < size_; ++i) s << v_[i];
+}
+
+//-----------------------------------------------------------------------------
+
+Stream& operator<<(Stream& s, const Vector& v) {
+    v.encode(s);
+    return s;
 }
 
 //-----------------------------------------------------------------------------

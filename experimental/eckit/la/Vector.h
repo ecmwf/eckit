@@ -19,6 +19,9 @@
 #include "eckit/la/types.h"
 
 namespace eckit {
+
+class Stream;
+
 namespace la {
 
 //-----------------------------------------------------------------------------
@@ -37,6 +40,9 @@ public:  // methods
 
     /// Construct vector from existing data (does NOT take ownership)
     Vector(Scalar* v, Size s);
+
+    /// Constructor from Stream
+    Vector(Stream& v);
 
     /// Copy constructor
     Vector(const Vector& v);
@@ -59,6 +65,11 @@ public:  // methods
 
     /// Fill vector with given scalar
     void fill(Scalar s);
+
+    // -- Serialisation
+
+    /// Serialise to a Stream
+    void encode(Stream& s) const;
 
     // -- Accessors
 
@@ -91,6 +102,10 @@ protected:  // members
     Size size_;
     bool own_;
 };
+
+//-----------------------------------------------------------------------------
+
+Stream& operator<<(Stream&, const Vector&);
 
 //-----------------------------------------------------------------------------
 

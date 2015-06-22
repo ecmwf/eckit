@@ -16,6 +16,7 @@
 #include "eckit/serialisation/FileStream.h"
 
 #include "eckit/la/Matrix.h"
+#include "eckit/la/SparseMatrix.h"
 #include "eckit/la/Vector.h"
 #include "util.h"
 
@@ -28,6 +29,24 @@ namespace test {
 
 //-----------------------------------------------------------------------------
 
+template <typename T>
+void test(const T& v, const T& r) {
+    BOOST_CHECK_EQUAL(v.rows(), r.rows());
+    BOOST_CHECK_EQUAL(v.cols(), r.cols());
+    BOOST_CHECK_EQUAL(v.size(), r.size());
+    BOOST_CHECK_EQUAL_COLLECTIONS(v.begin(), v.end(), r.begin(), r.end());
+}
+
+void test(const SparseMatrix& v, const SparseMatrix& r) {
+    BOOST_CHECK_EQUAL(v.rows(), r.rows());
+    BOOST_CHECK_EQUAL(v.cols(), r.cols());
+    BOOST_CHECK_EQUAL(v.nonZeros(), r.nonZeros());
+    const Size nnz = v.nonZeros();
+    BOOST_CHECK_EQUAL_COLLECTIONS(v.outer(), v.outer()+v.rows()+1, r.outer(), r.outer()+r.rows()+1);
+    BOOST_CHECK_EQUAL_COLLECTIONS(v.inner(), v.inner()+nnz, r.inner(), r.inner()+nnz);
+    BOOST_CHECK_EQUAL_COLLECTIONS(v.data(), v.data()+nnz, r.data(), r.data()+nnz);
+}
+
 template<typename T>
 void stream_test(const T& t) {
     PathName filename = PathName::unique( "data" );
@@ -38,7 +57,7 @@ void stream_test(const T& t) {
     {
         FileStream sin( filename, "r" );
         T out(sin);
-        BOOST_CHECK_EQUAL_COLLECTIONS(t.begin(), t.end(), out.begin(), out.end());
+        test(t, out);
     }
     if (filename.exists()) filename.unlink();
 }
@@ -55,6 +74,17 @@ BOOST_AUTO_TEST_CASE(test_stream_vector) {
 
 BOOST_AUTO_TEST_CASE(test_stream_matrix) {
     stream_test(M(3, 3, 1., 2., 3., 4., 5., 6., 7., 8., 9.));
+}
+
+BOOST_AUTO_TEST_CASE(test_stream_sparsematrix) {
+    SparseMatrix S(3, 3);
+    std::vector<Triplet> triplets;
+    triplets.push_back(Triplet(0, 0, 2.));
+    triplets.push_back(Triplet(0, 2, -3.));
+    triplets.push_back(Triplet(1, 1, 2.));
+    triplets.push_back(Triplet(2, 2, 2.));
+    S.setFromTriplets(triplets);
+    stream_test(S);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

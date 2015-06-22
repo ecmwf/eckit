@@ -37,6 +37,7 @@ public: // types
 public: // methods
 
     Properties();
+    Properties(const property_t&);
 
     Properties(Stream&);
 
@@ -51,6 +52,9 @@ public: // methods
     /// Sets a property by inserting a new or overwrites an existing property
     Properties& set( const key_t& k, const property_t& v );
 
+    /// Sets a property by inserting a new or overwrites an existing property
+    Properties& set( const key_t& k, const Properties& p );
+
     /// Removes a property
     bool remove( const key_t& k );
 
@@ -61,8 +65,6 @@ public: // methods
     bool empty() const { return props_.empty(); }
 
     static const char* className() { return "eckit::Properties"; }
-
-    operator eckit::Params() const { return eckit::Params(*this); }
 
 protected:
     void print(std::ostream& s) const;

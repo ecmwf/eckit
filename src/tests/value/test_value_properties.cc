@@ -60,7 +60,13 @@ BOOST_AUTO_TEST_CASE( test_serialize )
     m.insert( std::make_pair("Length", Length(42)) );
     m.insert( std::make_pair("PathName", PathName("/var/tmp")) );
     m.insert( std::make_pair("Vector", ValueList(5, "string")) );
-    p.set("Map", m);
+    p.set("Map", Value(m) );
+
+    Properties pm;
+    pm.set("int",numeric_limits<int>::max());
+    pm.set("unsigned int", numeric_limits<unsigned int>::max());
+    p.set("Nested", pm );
+
     BOOST_TEST_MESSAGE("encoded Properties: " << p);
     {
         FileStream sout( filepath.c_str(), "w" );
@@ -86,6 +92,15 @@ BOOST_AUTO_TEST_CASE( test_serialize )
         BOOST_CHECK_EQUAL(p["Map"], p2["Map"]);
     }
     if (filename.exists()) filename.unlink();
+
+    Properties access_nested = p.get("Nested");
+
+    BOOST_TEST_MESSAGE("encoded Nested: " << access_nested);
+    {
+        FileStream sout( filepath.c_str(), "w" );
+        sout << p;
+    }
+
 }
 
 //-----------------------------------------------------------------------------

@@ -21,6 +21,16 @@ Properties::Properties()
 {
 }
 
+Properties::Properties(const property_t& value)
+{
+  ASSERT( value.isMap() );
+  ValueMap value_map = value;
+  for( ValueMap::const_iterator vit = value_map.begin(); vit != value_map.end(); ++vit )
+  {
+    props_[vit->first]=vit->second;
+  }
+}
+
 Properties::Properties(Stream &s)
 {
     s >> props_;
@@ -44,6 +54,17 @@ Properties& Properties::set(const key_t & k, const property_t& v)
 {
     props_[k] = v;
     return *this;
+}
+
+Properties& Properties::set( const key_t& k, const Properties& p )
+{
+  ValueMap pmap;
+  for( PropertyMap::const_iterator vit = p.props_.begin(); vit != p.props_.end(); ++vit )
+  {
+    pmap[vit->first]=vit->second;
+  }
+  props_[k] = Value::makeMap(pmap);
+  return *this;
 }
 
 bool Properties::remove(const key_t & k)

@@ -12,14 +12,13 @@
 
 #include "ecbuild/boost_test_framework.h"
 
-#include <cstdarg>
-
 #include "eckit/runtime/Context.h"
 #include "eckit/config/Resource.h"
 
 #include "eckit/la/LinearAlgebraFactory.h"
 #include "eckit/la/Matrix.h"
 #include "eckit/la/Vector.h"
+#include "util.h"
 
 //-----------------------------------------------------------------------------
 
@@ -27,28 +26,6 @@ using namespace eckit::la;
 
 namespace eckit {
 namespace test {
-
-//-----------------------------------------------------------------------------
-
-Vector v(Size s, ...) {
-    Vector vec(s);
-    va_list args;
-    va_start(args, s);
-    for (Size i = 0; i < s; ++i) vec[i] = va_arg(args, Scalar);
-    va_end(args);
-    return vec;
-}
-
-Matrix m(Matrix::Size rows, Matrix::Size cols, ...) {
-    Matrix mat(rows, cols);
-    va_list args;
-    va_start(args, cols);
-    for (Matrix::Size r = 0; r < rows; ++r)
-        for (Matrix::Size c = 0; c < cols; ++c)
-            mat(r, c) = va_arg(args, Scalar);
-    va_end(args);
-    return mat;
-}
 
 //-----------------------------------------------------------------------------
 
@@ -66,8 +43,8 @@ BOOST_GLOBAL_FIXTURE(Setup);
 
 struct Fixture {
 
-    Fixture() : x(v(3, 1., 2., 4.)),
-                A(m(2, 2, 1., -2., -4., 2.)),
+    Fixture() : x(V(3, 1., 2., 4.)),
+                A(M(2, 2, 1., -2., -4., 2.)),
                 linalg(LinearAlgebraFactory::get(Resource<std::string>("--backend", "generic"))) {}
 
     Vector x;
@@ -96,8 +73,8 @@ BOOST_AUTO_TEST_CASE(test_dot) {
 
 BOOST_AUTO_TEST_CASE(test_gemv) {
     Vector y(2);
-    linalg->gemv(A, v(2, -1., -2.), y);
-    test(y, v(2, 3., 0.));
+    linalg->gemv(A, V(2, -1., -2.), y);
+    test(y, V(2, 3., 0.));
     BOOST_TEST_MESSAGE("gemv of matrix and vector of nonmatching sizes should fail");
     BOOST_CHECK_THROW(linalg->gemv(A, x, y), AssertionFailed);
 }
@@ -105,7 +82,7 @@ BOOST_AUTO_TEST_CASE(test_gemv) {
 BOOST_AUTO_TEST_CASE(test_gemm) {
     Matrix B(2, 2);
     linalg->gemm(A, A, B);
-    test(B, m(2, 2, 9., -6., -12., 12.));
+    test(B, M(2, 2, 9., -6., -12., 12.));
     BOOST_TEST_MESSAGE("gemm of matrices of nonmatching sizes should fail");
     BOOST_CHECK_THROW(linalg->gemm(A, Matrix(1, 2), B), AssertionFailed);
 }

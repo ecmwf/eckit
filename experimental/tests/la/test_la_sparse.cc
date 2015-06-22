@@ -12,14 +12,13 @@
 
 #include "ecbuild/boost_test_framework.h"
 
-#include <cstdarg>
-
 #include "eckit/runtime/Context.h"
 #include "eckit/config/Resource.h"
 
 #include "eckit/la/LinearAlgebraFactory.h"
 #include "eckit/la/SparseMatrix.h"
 #include "eckit/la/Vector.h"
+#include "util.h"
 
 //-----------------------------------------------------------------------------
 
@@ -27,17 +26,6 @@ using namespace eckit::la;
 
 namespace eckit {
 namespace test {
-
-//-----------------------------------------------------------------------------
-
-Vector V(Size s, ...) {
-    Vector vec(s);
-    va_list args;
-    va_start(args, s);
-    for (Size i = 0; i < s; ++i) vec[i] = va_arg(args, Scalar);
-    va_end(args);
-    return vec;
-}
 
 //-----------------------------------------------------------------------------
 

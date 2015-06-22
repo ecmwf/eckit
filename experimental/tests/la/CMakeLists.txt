@@ -9,7 +9,7 @@
 ecbuild_add_test( TARGET   test_la_linalg
                   ARGS     --log_level=message
                   BOOST
-                  SOURCES  test_la_linalg.cc
+                  SOURCES  test_la_linalg.cc util.h
                   LIBS     eckit_la )
 
 # This test seems to have a system call exit with 1 even though tests pass.
@@ -32,7 +32,7 @@ ecbuild_add_test( TARGET     test_la_linalg_mkl
 ecbuild_add_test( TARGET   test_la_sparse
                   ARGS     --log_level=message
                   BOOST
-                  SOURCES  test_la_sparse.cc
+                  SOURCES  test_la_sparse.cc util.h
                   LIBS     eckit_la )
 
 ecbuild_add_test( TARGET     test_la_sparse_eigen
@@ -48,5 +48,5 @@ ecbuild_add_test( TARGET     test_la_sparse_mkl
 ecbuild_add_test( TARGET   test_la_streaming
                   ARGS     --log_level=message
                   BOOST
-                  SOURCES  test_la_streaming.cc
+                  SOURCES  test_la_streaming.cc util.h
                   LIBS     eckit_la )

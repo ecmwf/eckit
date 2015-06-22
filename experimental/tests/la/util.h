@@ -8,16 +8,13 @@
  * nor does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_la_streaming
+#ifndef eckit_test_la_util_h
+#define eckit_test_la_util_h
 
-#include "ecbuild/boost_test_framework.h"
-
-#include "eckit/filesystem/PathName.h"
-#include "eckit/serialisation/FileStream.h"
+#include <cstdarg>
 
 #include "eckit/la/Matrix.h"
 #include "eckit/la/Vector.h"
-#include "util.h"
 
 //-----------------------------------------------------------------------------
 
@@ -28,38 +25,31 @@ namespace test {
 
 //-----------------------------------------------------------------------------
 
-template<typename T>
-void stream_test(const T& t) {
-    PathName filename = PathName::unique( "data" );
-    {
-        FileStream sout( filename, "w" );
-        sout << t;
-    }
-    {
-        FileStream sin( filename, "r" );
-        T out(sin);
-        BOOST_CHECK_EQUAL_COLLECTIONS(t.begin(), t.end(), out.begin(), out.end());
-    }
-    if (filename.exists()) filename.unlink();
+Vector V(Size s, ...) {
+    Vector vec(s);
+    va_list args;
+    va_start(args, s);
+    for (Size i = 0; i < s; ++i) vec[i] = va_arg(args, Scalar);
+    va_end(args);
+    return vec;
 }
 
 //-----------------------------------------------------------------------------
 
-/// Test linear algebra interface
-
-BOOST_AUTO_TEST_SUITE(test_eckit_la_streaming)
-
-BOOST_AUTO_TEST_CASE(test_stream_vector) {
-    stream_test(V(5, 1., 2., 3., 4., 5.));
+Matrix M(Matrix::Size rows, Matrix::Size cols, ...) {
+    Matrix mat(rows, cols);
+    va_list args;
+    va_start(args, cols);
+    for (Matrix::Size r = 0; r < rows; ++r)
+        for (Matrix::Size c = 0; c < cols; ++c)
+            mat(r, c) = va_arg(args, Scalar);
+    va_end(args);
+    return mat;
 }
-
-BOOST_AUTO_TEST_CASE(test_stream_matrix) {
-    stream_test(M(3, 3, 1., 2., 3., 4., 5., 6., 7., 8., 9.));
-}
-
-BOOST_AUTO_TEST_SUITE_END()
 
 //-----------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit
+
+#endif

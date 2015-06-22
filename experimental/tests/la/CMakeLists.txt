@@ -44,3 +44,9 @@ ecbuild_add_test( TARGET     test_la_sparse_mkl
                   COMMAND    test_la_sparse
                   CONDITION  ECKIT_HAVE_MKL
                   ARGS       --log_level=message --backend mkl )
+
+ecbuild_add_test( TARGET   test_la_streaming
+                  ARGS     --log_level=message
+                  BOOST
+                  SOURCES  test_la_streaming.cc
+                  LIBS     eckit_la )

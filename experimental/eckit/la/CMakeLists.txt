@@ -13,6 +13,7 @@ LinearAlgebraMKL.cc
 LinearAlgebraMKL.h
 Matrix.cc
 Matrix.h
+SparseMatrix.cc
 SparseMatrix.h
 Triplet.h
 Vector.cc

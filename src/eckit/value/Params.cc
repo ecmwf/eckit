@@ -20,7 +20,7 @@ bool Params::has(const std::string& key) const
 {
   return !getValue(*this, key).isNil();
 }
-
+/*
 bool Params::get(const std::string& name, std::string& value) const
 {
   if(!has(name)) return false;
@@ -72,6 +72,7 @@ bool Params::get(const std::string& name, std::vector<double>& value) const
   value.assign(v.begin(),v.end());
   return true;
 }
+*/
 Params::value_t Params::operator[]( const Params::key_t& key ) const
 {
     value_t v = getValue(*this, key);

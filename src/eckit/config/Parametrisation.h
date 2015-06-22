@@ -49,8 +49,10 @@ class Parametrisation {
     virtual bool get(const std::string& name, size_t& value) const = 0;
     virtual bool get(const std::string& name, double& value) const = 0;
 
+    virtual bool get(const std::string& name, std::vector<int>& value) const;
     virtual bool get(const std::string& name, std::vector<long>& value) const = 0;
     virtual bool get(const std::string& name, std::vector<double>& value) const = 0;
+
 
 
 // -- Overridden methods
@@ -102,6 +104,18 @@ class Parametrisation {
 
 
 };
+
+inline bool Parametrisation::get(const std::string& name, std::vector<int>& value) const
+{
+  std::vector<long> v;
+  if( get(name,v) )
+  {
+    value.assign(v.begin(),v.end());
+    return true;
+  }
+  return false;
+}
+
 
 }  // namespace eckit
 #endif

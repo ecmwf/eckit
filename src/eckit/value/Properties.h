@@ -20,7 +20,6 @@
 
 #include "eckit/value/Value.h"
 #include "eckit/value/Params.h"
-#include "eckit/config/Parametrisation.h"
 
 //------------------------------------------------------------------------------------------------------
 
@@ -28,7 +27,7 @@ namespace eckit {
 
 //------------------------------------------------------------------------------------------------------
 
-class Properties: public eckit::Parametrisation {
+class Properties {
 
 public: // types
 
@@ -41,18 +40,10 @@ public: // methods
 
     Properties(Stream&);
 
+    virtual ~Properties() {}
+
     /// @returns true is a property exists
-    virtual bool has( const key_t& ) const;
-
-    virtual bool get(const std::string& name, std::string& value) const;
-    virtual bool get(const std::string& name, bool& value) const;
-    virtual bool get(const std::string& name, long& value) const;
-    virtual bool get(const std::string& name, size_t& value) const;
-    virtual bool get(const std::string& name, double& value) const;
-
-    virtual bool get(const std::string& name, std::vector<int>& value) const;
-    virtual bool get(const std::string& name, std::vector<long>& value) const;
-    virtual bool get(const std::string& name, std::vector<double>& value) const;
+    bool has( const key_t& ) const;
 
     /// @returns a property
     property_t get( const key_t& k ) const;

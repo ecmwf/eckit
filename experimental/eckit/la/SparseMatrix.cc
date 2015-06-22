@@ -52,6 +52,16 @@ void SparseMatrix::resize(SparseMatrix::Size rows, SparseMatrix::Size cols) {
 
 //-----------------------------------------------------------------------------
 
+void SparseMatrix::reserve(SparseMatrix::Size nnz) {
+    // Rows and columns must have been set before
+    ASSERT( rows_ > 0 && cols_ > 0 );
+    outer_.resize(rows_+1);
+    inner_.resize(nnz);
+    v_.resize(nnz);
+}
+
+//-----------------------------------------------------------------------------
+
 void SparseMatrix::swap(SparseMatrix& other) {
     std::swap(v_, other.v_);
     std::swap(outer_, other.outer_);

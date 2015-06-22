@@ -56,6 +56,9 @@ public:  // methods
     /// Resize sparse matrix (invalidates all data arrays)
     void resize(Size rows, Size cols);
 
+    /// Reserve memory for given number of non-zeros (invalidates all data arrays)
+    void reserve(Size nnz);
+
     /// Swap sparse matrix with another
     void swap(SparseMatrix& other);
 

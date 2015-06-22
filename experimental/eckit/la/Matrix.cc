@@ -9,6 +9,7 @@
  */
 
 #include "eckit/la/Matrix.h"
+#include "eckit/serialisation/Stream.h"
 
 namespace eckit {
 namespace la {
@@ -19,7 +20,18 @@ Matrix::Matrix() {}
 
 //-----------------------------------------------------------------------------
 
-Matrix::Matrix(Matrix::Size rows, Matrix::Size cols) : v_(rows*cols), rows_(rows), cols_(cols) {}
+Matrix::Matrix(Matrix::Size rows, Matrix::Size cols)
+  : v_(rows*cols), rows_(rows), cols_(cols) {}
+
+//-----------------------------------------------------------------------------
+
+Matrix::Matrix(Stream& s) {
+    Size rows, cols;
+    s >> rows;
+    s >> cols;
+    resize(rows, cols);
+    for (Size i = 0; i < size(); ++i) s >> v_[i];
+}
 
 //-----------------------------------------------------------------------------
 
@@ -35,6 +47,21 @@ void Matrix::swap(Matrix& o) {
     v_.swap(o.v_);
     std::swap(rows_, o.rows_);
     std::swap(cols_, o.cols_);
+}
+
+//-----------------------------------------------------------------------------
+
+void Matrix::encode(Stream& s) const {
+  s << rows_;
+  s << cols_;
+  for (Size i = 0; i < size(); ++i) s << v_[i];
+}
+
+//-----------------------------------------------------------------------------
+
+Stream& operator<<(Stream& s, const Matrix& v) {
+    v.encode(s);
+    return s;
 }
 
 //-----------------------------------------------------------------------------

@@ -20,6 +20,9 @@
 #include "eckit/la/types.h"
 
 namespace eckit {
+
+class Stream;
+
 namespace la {
 
 //-----------------------------------------------------------------------------
@@ -40,6 +43,9 @@ public:  // methods
     /// Construct matrix with given rows and columns (allocates memory)
     Matrix(Size rows, Size cols);
 
+    /// Constructor from Stream
+    Matrix(Stream& v);
+
     // -- Mutators
 
     /// Resize matrix to given number of rows/columns (invalidates data)
@@ -47,6 +53,11 @@ public:  // methods
 
     /// Swap this matrix with another
     void swap(Matrix& o);
+
+    // -- Serialisation
+
+    /// Serialise to a Stream
+    void encode(Stream& s) const;
 
     // -- Accessors
 
@@ -84,6 +95,10 @@ protected:  // members
     Size rows_;
     Size cols_;
 };
+
+//-----------------------------------------------------------------------------
+
+Stream& operator<<(Stream&, const Matrix&);
 
 //-----------------------------------------------------------------------------
 

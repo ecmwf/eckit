@@ -12,6 +12,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/la/SparseMatrix.h"
+#include "eckit/serialisation/Stream.h"
 
 namespace eckit {
 namespace la {
@@ -38,6 +39,19 @@ SparseMatrix::SparseMatrix(SparseMatrix::Size rows, SparseMatrix::Size cols,
                            const SparseMatrix::IndexStorage& inner)
   : v_(v), rows_(rows), cols_(cols) {
     ASSERT(v.size() == inner.size() && outer.size() == rows+1);
+}
+
+//-----------------------------------------------------------------------------
+
+SparseMatrix::SparseMatrix(Stream& s) {
+    s >> rows_;
+    s >> cols_;
+    Index nnz;
+    s >> nnz;
+    reserve(nnz);
+    for (Index i = 0; i < rows_+1; ++i) s >> outer_[i];
+    for (Index i = 0; i < nnz; ++i) s >> inner_[i];
+    for (Index i = 0; i < nnz; ++i) s >> v_[i];
 }
 
 //-----------------------------------------------------------------------------
@@ -138,6 +152,25 @@ void SparseMatrix::prune(SparseMatrix::Scalar val) {
     std::swap(v, v_);
     std::swap(outer, outer_);
     std::swap(inner, inner_);
+}
+
+//-----------------------------------------------------------------------------
+
+void SparseMatrix::encode(Stream& s) const {
+    const Index nnz = outer_[rows_];
+    s << rows_;
+    s << cols_;
+    s << nnz;
+    for (Index i = 0; i < rows_+1; ++i) s << outer_[i];
+    for (Index i = 0; i < nnz; ++i) s << inner_[i];
+    for (Index i = 0; i < nnz; ++i) s << v_[i];
+}
+
+//-----------------------------------------------------------------------------
+
+Stream& operator<<(Stream& s, const SparseMatrix& v) {
+    v.encode(s);
+    return s;
 }
 
 //-----------------------------------------------------------------------------

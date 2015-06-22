@@ -21,6 +21,9 @@
 #include "eckit/la/Triplet.h"
 
 namespace eckit {
+
+class Stream;
+
 namespace la {
 
 //-----------------------------------------------------------------------------
@@ -51,6 +54,9 @@ public:  // methods
     SparseMatrix(Size rows, Size cols,
                  const ScalarStorage& v, const IndexStorage& outer, const IndexStorage& inner);
 
+    /// Constructor from Stream
+    SparseMatrix(Stream& v);
+
     // -- Mutators
 
     /// Resize sparse matrix (invalidates all data arrays)
@@ -73,6 +79,11 @@ public:  // methods
 
     /// Prune entries with exactly the given value
     void prune(Scalar val = Scalar(0));
+
+    // -- Serialisation
+
+    /// Serialise to a Stream
+    void encode(Stream& s) const;
 
     /// Eigen-compatible iterator over nonzeros of a given row
     class InnerIterator {
@@ -129,6 +140,10 @@ protected:  // members
     Index rows_;          /// Number of rows
     Index cols_;          /// Number of columns
 };
+
+//-----------------------------------------------------------------------------
+
+Stream& operator<<(Stream&, const SparseMatrix&);
 
 //-----------------------------------------------------------------------------
 

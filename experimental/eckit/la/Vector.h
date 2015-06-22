@@ -15,8 +15,6 @@
 #ifndef eckit_la_Vector_h
 #define eckit_la_Vector_h
 
-#include <cstring>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/la/types.h"
 
@@ -32,57 +30,37 @@ public:  // methods
     // -- Constructors
 
     /// Default constructor (empty vector)
-    Vector() : v_(0), size_(0), own_(false) {}
+    Vector();
 
     /// Construct vector of given size (allocates memory, not initialised)
-    Vector(Size s)
-        : v_(new Scalar[s]), size_(s), own_(true) {}
+    Vector(Size s);
 
     /// Construct vector from existing data (does NOT take ownership)
-    Vector(Scalar* v, Size s)
-        : v_(v), size_(s), own_(false) {
-        ASSERT(v && size_ > 0);
-    }
+    Vector(Scalar* v, Size s);
 
     /// Copy constructor
-    Vector(const Vector& v)
-        : v_(new Scalar[v.size_]), size_(v.size_), own_(true) {
-        memcpy(v_, v.v_, size_*sizeof(Scalar));
-    }
+    Vector(const Vector& v);
 
     // TODO: make virtual if used as base class
-    ~Vector() {
-        if (own_) delete [] v_;
-    }
+    ~Vector();
 
-    Vector& operator=(const Vector& v) {
-        Vector nv(v);
-        swap(nv);
-        return *this;
-    }
+    // -- Mutators
+
+    Vector& operator=(const Vector& v);
 
     /// Swap this vector for another
-    void swap(Vector& v) {
-        std::swap(v_, v.v_);
-        std::swap(size_, v.size_);
-        std::swap(own_, v.own_);
-    }
+    void swap(Vector& v);
 
     /// Resize vector to given size (invalidates data)
-    void resize(Size s) {
-        Vector v(s);
-        swap(v);
-    }
+    void resize(Size s);
 
     /// Set data to zero
-    void setZero() {
-        memset(v_, 0, size_*sizeof(Scalar));
-    }
+    void setZero();
 
     /// Fill vector with given scalar
-    void fill(Scalar s) {
-        for (Size i = 0; i < size_; ++i) v_[i] = s;
-    }
+    void fill(Scalar s);
+
+    // -- Accessors
 
     /// @returns size (rows * cols)
     Size size() const { return size_; }

@@ -14,6 +14,7 @@ LinearAlgebraMKL.h
 Matrix.h
 SparseMatrix.h
 Triplet.h
+Vector.cc
 Vector.h
 )
 

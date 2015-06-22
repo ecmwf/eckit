@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "eckit/la/types.h"
-#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 namespace la {
@@ -36,24 +35,20 @@ public:  // methods
     // -- Constructors
 
     /// Default constructor (empty matrix)
-    Matrix() {}
+    Matrix();
 
     /// Construct matrix with given rows and columns (allocates memory)
-    Matrix(Size rows, Size cols) : v_(rows*cols), rows_(rows), cols_(cols) {}
+    Matrix(Size rows, Size cols);
+
+    // -- Mutators
 
     /// Resize matrix to given number of rows/columns (invalidates data)
-    void resize(Size rows, Size cols) {
-        v_.resize(rows*cols);
-        rows_ = rows;
-        cols_ = cols;
-    }
+    void resize(Size rows, Size cols);
 
     /// Swap this matrix with another
-    void swap(Matrix& o) {
-        v_.swap(o.v_);
-        std::swap(rows_, o.rows_);
-        std::swap(cols_, o.cols_);
-    }
+    void swap(Matrix& o);
+
+    // -- Accessors
 
     /// @returns size (rows * cols)
     Size size() const { return v_.size(); }
@@ -62,9 +57,11 @@ public:  // methods
     /// @returns number of columns
     Size cols() const { return cols_; }
 
+    /// Access by row and column
     Scalar& operator()(Size row, Size col) { return v_[col*rows_ + row]; }
     const Scalar& operator()(Size row, Size col) const { return v_[col*rows_ + row]; }
 
+    /// Access to linearised storage
     Scalar& operator[](Size i) { return v_[i]; }
     const Scalar& operator[](Size i) const { return v_[i]; }
 

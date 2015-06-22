@@ -11,6 +11,7 @@ LinearAlgebraGeneric.cc
 LinearAlgebraGeneric.h
 LinearAlgebraMKL.cc
 LinearAlgebraMKL.h
+Matrix.cc
 Matrix.h
 SparseMatrix.h
 Triplet.h

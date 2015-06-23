@@ -18,7 +18,7 @@ namespace la {
 //-----------------------------------------------------------------------------
 
 const LinearAlgebraBase* LinearAlgebraFactory::get() {
-    return get(Resource<std::string>("-linearAlgebraBackend;linearAlgebraBackend", "generic"));
+    return get(instance().backend_);
 }
 
 const LinearAlgebraBase* LinearAlgebraFactory::get(const std::string& name) {
@@ -32,7 +32,8 @@ void LinearAlgebraFactory::regist(const std::string& name, const LinearAlgebraBa
     instance().map_.insert(std::make_pair(name, backend));
 }
 
-LinearAlgebraFactory::LinearAlgebraFactory() {}
+LinearAlgebraFactory::LinearAlgebraFactory()
+    : backend_(this, "-linearAlgebraBackend;linearAlgebraBackend", "generic") {}
 
 LinearAlgebraFactory &LinearAlgebraFactory::instance() {
     static LinearAlgebraFactory factory;

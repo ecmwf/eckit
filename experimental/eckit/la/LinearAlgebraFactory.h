@@ -18,6 +18,8 @@
 #include <string>
 #include <map>
 
+#include "eckit/config/Configurable.h"
+#include "eckit/config/Resource.h"
 #include "eckit/memory/NonCopyable.h"
 
 #include "eckit/la/LinearAlgebraBase.h"
@@ -27,12 +29,17 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraFactory : private NonCopyable {
+class LinearAlgebraFactory : public Configurable, private NonCopyable {
 
 public:
     static const LinearAlgebraBase* get();
     static const LinearAlgebraBase* get(const std::string& name);
     static void regist(const std::string& name, const LinearAlgebraBase*);
+
+    // -- from Configurable
+    virtual std::string kind() const { return "LinearAlgebraFactory"; }
+    virtual std::string name() const { return "eckit"; }
+    virtual void reconfigure() {}
 
 private:
     LinearAlgebraFactory();
@@ -41,6 +48,7 @@ private:
 
     typedef std::map<std::string, const LinearAlgebraBase*> FactoryMap;
     FactoryMap map_;
+    Resource<std::string> backend_;
 };
 
 //-----------------------------------------------------------------------------

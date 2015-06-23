@@ -25,7 +25,7 @@ ecbuild_add_library( TARGET             eckit_la
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/la
                      SOURCES            ${eckit_la_srcs}
                      INCLUDES           ${MKL_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS}
-                     LIBS               eckit ${MKL_LIBRARIES} ${CUDA_LIBRARIES} )
+                     LIBS               eckit ${MKL_LIBRARIES} ${CUDA_LIBRARIES} ${CUDA_cusparse_LIBRARY} )
 
 if (CUDA_FOUND)
 cuda_add_cublas_to_target( eckit_la )

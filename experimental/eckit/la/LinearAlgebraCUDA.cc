@@ -14,6 +14,7 @@
 
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
+#include <cusparse.h>
 
 //-----------------------------------------------------------------------------
 
@@ -27,11 +28,17 @@
     if( ( error = e ) != CUBLAS_STATUS_SUCCESS ) printf("%s failed with error code %d @ %s +%d\n", #e, error, __FILE__, __LINE__), exit(EXIT_FAILURE); \
 }
 
+#define CALL_CUSPARSE(e) \
+{ cusparseStatus_t error; \
+    if( ( error = e ) != CUSPARSE_STATUS_SUCCESS ) printf("%s failed with error code %d @ %s +%d\n", #e, error, __FILE__, __LINE__), exit(EXIT_FAILURE); \
+}
+
 //-----------------------------------------------------------------------------
 
 #include "eckit/la/LinearAlgebraCUDA.h"
 #include "eckit/la/LinearAlgebraFactory.h"
 #include "eckit/la/Matrix.h"
+#include "eckit/la/SparseMatrix.h"
 #include "eckit/la/Vector.h"
 
 //-----------------------------------------------------------------------------
@@ -148,8 +155,54 @@ void LinearAlgebraCUDA::gemm(const Matrix& A, const Matrix& B, Matrix& C) const 
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraCUDA::spmv(const SparseMatrix&, const Vector&, Vector&) const {
-    NOTIMP;
+void LinearAlgebraCUDA::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
+    ASSERT( x.size() == A.cols() && y.size() == A.rows() );
+    const size_t sizeAnnz = A.nonZeros()*sizeof(Scalar);
+    const size_t sizeAptr = (A.rows()+1)*sizeof(Scalar);
+    const size_t sizex = A.cols()*sizeof(Scalar);
+    const size_t sizey = A.rows()*sizeof(Scalar);
+
+    Index* d_A_rowptr; ///< device memory matrix A row pointers
+    Index* d_A_colidx; ///< device memory matrix A col indices
+    Scalar* d_A_values; ///< device memory matrix A values
+    Scalar* d_x; ///< device memory vector x
+    Scalar* d_y; ///< device memory vector y
+    cusparseHandle_t handle;
+    cusparseMatDescr_t descr;
+
+    CALL_CUDA( cudaMalloc((void**) &d_A_rowptr, sizeAptr) );
+    CALL_CUDA( cudaMalloc((void**) &d_A_colidx, sizeAnnz) );
+    CALL_CUDA( cudaMalloc((void**) &d_A_values, sizeAnnz) );
+    CALL_CUDA( cudaMalloc((void**) &d_x, sizex) );
+    CALL_CUDA( cudaMalloc((void**) &d_y, sizey) );
+
+    CALL_CUSPARSE( cusparseCreate(&handle) );
+    CALL_CUSPARSE( cusparseCreateMatDescr(&descr) );
+    cusparseSetMatType(descr,CUSPARSE_MATRIX_TYPE_GENERAL);
+    cusparseSetMatIndexBase(descr,CUSPARSE_INDEX_BASE_ZERO);
+
+    CALL_CUDA( cudaMemcpy(d_A_rowptr, A.outer(), sizeAptr, cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_A_colidx, A.inner(), sizeAnnz, cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_A_values, A.data(),  sizeAnnz, cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_x,        x.data(),  sizex,    cudaMemcpyHostToDevice) );
+
+    const Scalar alpha = 1.0;
+    const Scalar beta  = 0.0;
+    CALL_CUSPARSE( cusparseDcsrmv(handle, CUSPARSE_OPERATION_NON_TRANSPOSE,
+                                  A.rows(), A.cols(), A.nonZeros(), &alpha,
+                                  descr, d_A_values, d_A_rowptr, d_A_colidx,
+                                  d_x, &beta, d_y) );
+
+    CALL_CUDA( cudaMemcpy(y.data(), d_y, sizey, cudaMemcpyDeviceToHost) );
+
+    CALL_CUSPARSE( cusparseDestroyMatDescr(descr) );
+    CALL_CUSPARSE( cusparseDestroy(handle) );
+
+    CALL_CUDA( cudaFree(d_A_rowptr) );
+    CALL_CUDA( cudaFree(d_A_colidx) );
+    CALL_CUDA( cudaFree(d_A_values) );
+    CALL_CUDA( cudaFree(d_x) );
+    CALL_CUDA( cudaFree(d_y) );
 }
 
 //-----------------------------------------------------------------------------

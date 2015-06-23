@@ -34,13 +34,6 @@ public:
 
     Point3( const BasePoint& p ): BasePoint(p) {}
 
-    Point3( double* p ): BasePoint()
-    {
-        x_[XX] = p[XX];
-        x_[YY] = p[YY];
-        x_[ZZ] = p[ZZ];
-    }
-
     Point3( double lat, double lon ): KPoint<3>()
     {
         eckit::geometry::latlon_to_3d( lat, lon, x_ );

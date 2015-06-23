@@ -35,6 +35,13 @@ ecbuild_add_test( TARGET   test_la_sparse
                   SOURCES  test_la_sparse.cc util.h
                   LIBS     eckit_la )
 
+# This test seems to have a system call exit with 1 even though tests pass.
+# Ignore system errors, see also http://stackoverflow.com/a/20360334/396967
+ecbuild_add_test( TARGET     test_la_sparse_cuda
+                  COMMAND    test_la_sparse
+                  CONDITION  ECKIT_HAVE_CUDA
+                  ARGS       --log_level=message --catch_system_errors=no -linearAlgebraBackend cuda )
+
 ecbuild_add_test( TARGET     test_la_sparse_eigen
                   COMMAND    test_la_sparse
                   CONDITION  ECKIT_HAVE_EIGEN

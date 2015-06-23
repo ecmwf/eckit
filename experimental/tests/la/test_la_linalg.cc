@@ -49,7 +49,7 @@ struct Fixture {
 
     Vector x;
     Matrix A;
-    LinearAlgebraBase* linalg;
+   const LinearAlgebraBase* linalg;
 };
 
 //-----------------------------------------------------------------------------

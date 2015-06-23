@@ -56,7 +56,7 @@ struct Fixture {
 
     SparseMatrix S;
     Vector x;
-    LinearAlgebraBase* linalg;
+    const LinearAlgebraBase* linalg;
 };
 
 //-----------------------------------------------------------------------------

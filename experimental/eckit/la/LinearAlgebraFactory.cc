@@ -16,14 +16,14 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-LinearAlgebraBase* LinearAlgebraFactory::get(const std::string& name) {
+const LinearAlgebraBase* LinearAlgebraFactory::get(const std::string& name) {
     FactoryMap::const_iterator it = instance().map_.find(name);
     if (it == instance().map_.end())
         throw BadParameter("Linear algebra backend " + name + " not available.", Here());
     return it->second;
 }
 
-void LinearAlgebraFactory::regist(const std::string& name, LinearAlgebraBase* backend) {
+void LinearAlgebraFactory::regist(const std::string& name, const LinearAlgebraBase* backend) {
     instance().map_.insert(std::make_pair(name, backend));
 }
 

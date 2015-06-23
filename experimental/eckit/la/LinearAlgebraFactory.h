@@ -30,14 +30,15 @@ namespace la {
 class LinearAlgebraFactory : private NonCopyable {
 
 public:  // virtual methods
-    static LinearAlgebraBase* get(const std::string& name = "generic");
-    static void regist(const std::string& name, LinearAlgebraBase*);
+    static const LinearAlgebraBase* get(const std::string& name = "generic");
+    static void regist(const std::string& name, const LinearAlgebraBase*);
 
 private:
     LinearAlgebraFactory();
 
     static LinearAlgebraFactory& instance();
-    typedef std::map<std::string, LinearAlgebraBase*> FactoryMap;
+
+    typedef std::map<std::string, const LinearAlgebraBase*> FactoryMap;
     FactoryMap map_;
 };
 

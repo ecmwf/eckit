@@ -29,8 +29,9 @@ namespace la {
 
 class LinearAlgebraFactory : private NonCopyable {
 
-public:  // virtual methods
-    static const LinearAlgebraBase* get(const std::string& name = "generic");
+public:
+    static const LinearAlgebraBase* get();
+    static const LinearAlgebraBase* get(const std::string& name);
     static void regist(const std::string& name, const LinearAlgebraBase*);
 
 private:

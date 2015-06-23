@@ -8,6 +8,7 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/la/LinearAlgebraFactory.h"
 
@@ -15,6 +16,10 @@ namespace eckit {
 namespace la {
 
 //-----------------------------------------------------------------------------
+
+const LinearAlgebraBase* LinearAlgebraFactory::get() {
+    return get(Resource<std::string>("-linearAlgebraBackend;linearAlgebraBackend", "generic"));
+}
 
 const LinearAlgebraBase* LinearAlgebraFactory::get(const std::string& name) {
     FactoryMap::const_iterator it = instance().map_.find(name);

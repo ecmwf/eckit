@@ -17,17 +17,17 @@ ecbuild_add_test( TARGET   test_la_linalg
 ecbuild_add_test( TARGET     test_la_linalg_cuda
                   COMMAND    test_la_linalg
                   CONDITION  ECKIT_HAVE_CUDA
-                  ARGS       --log_level=message --catch_system_errors=no --backend cuda )
+                  ARGS       --log_level=message --catch_system_errors=no -linearAlgebraBackend cuda )
 
 ecbuild_add_test( TARGET     test_la_linalg_eigen
                   COMMAND    test_la_linalg
                   CONDITION  ECKIT_HAVE_EIGEN
-                  ARGS       --log_level=message --backend eigen )
+                  ARGS       --log_level=message -linearAlgebraBackend eigen )
 
 ecbuild_add_test( TARGET     test_la_linalg_mkl
                   COMMAND    test_la_linalg
                   CONDITION  ECKIT_HAVE_MKL
-                  ARGS       --log_level=message --backend mkl )
+                  ARGS       --log_level=message -linearAlgebraBackend mkl )
 
 ecbuild_add_test( TARGET   test_la_sparse
                   ARGS     --log_level=message
@@ -38,12 +38,12 @@ ecbuild_add_test( TARGET   test_la_sparse
 ecbuild_add_test( TARGET     test_la_sparse_eigen
                   COMMAND    test_la_sparse
                   CONDITION  ECKIT_HAVE_EIGEN
-                  ARGS       --log_level=message --backend eigen )
+                  ARGS       --log_level=message -linearAlgebraBackend eigen )
 
 ecbuild_add_test( TARGET     test_la_sparse_mkl
                   COMMAND    test_la_sparse
                   CONDITION  ECKIT_HAVE_MKL
-                  ARGS       --log_level=message --backend mkl )
+                  ARGS       --log_level=message -linearAlgebraBackend mkl )
 
 ecbuild_add_test( TARGET   test_la_streaming
                   ARGS     --log_level=message

@@ -13,7 +13,6 @@
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/runtime/Context.h"
-#include "eckit/config/Resource.h"
 
 #include "eckit/la/LinearAlgebraFactory.h"
 #include "eckit/la/Matrix.h"
@@ -45,7 +44,7 @@ struct Fixture {
 
     Fixture() : x(V(3, 1., 2., 4.)),
                 A(M(2, 2, 1., -2., -4., 2.)),
-                linalg(LinearAlgebraFactory::get(Resource<std::string>("--backend", "generic"))) {}
+                linalg(LinearAlgebraFactory::get()) {}
 
     Vector x;
     Matrix A;

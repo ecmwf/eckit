@@ -13,7 +13,6 @@
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/runtime/Context.h"
-#include "eckit/config/Resource.h"
 
 #include "eckit/la/LinearAlgebraFactory.h"
 #include "eckit/la/SparseMatrix.h"
@@ -45,7 +44,7 @@ struct Fixture {
 
     Fixture() : S(3, 3),
                 x(V(3, 1., 2., 3.)),
-                linalg(LinearAlgebraFactory::get(Resource<std::string>("--backend", "generic"))) {
+                linalg(LinearAlgebraFactory::get()) {
         std::vector<Triplet> triplets;
         triplets.push_back(Triplet(0, 0, 2.));
         triplets.push_back(Triplet(0, 2, -3.));

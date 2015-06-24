@@ -71,8 +71,14 @@ public:  // methods
     /// Initialise matrix from vector of triplets
     ///
     /// Resets data and index vectors, requires row and column number to be set.
-    /// Assumes no order of triplets and allows duplicates, which are summed.
+    /// Assumes triplets are ordered and there are no duplicates.
     void setFromTriplets(const std::vector<Triplet>& triplets);
+
+    /// Initialise matrix from vector of triplets
+    ///
+    /// Resets data and index vectors, requires row and column number to be set.
+    /// Assumes no order of triplets and allows duplicates, which are summed.
+    void assembleFromTriplets(const std::vector<Triplet>& triplets);
 
     /// Set matrix to the identity
     void setIdentity();

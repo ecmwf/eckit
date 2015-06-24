@@ -87,6 +87,28 @@ void SparseMatrix::swap(SparseMatrix& other) {
 //-----------------------------------------------------------------------------
 
 void SparseMatrix::setFromTriplets(const std::vector<Triplet>& triplets) {
+    // Allocate memory (we are promised that there is 1 triplet per non-zero)
+    reserve(triplets.size());
+
+    Index pos = 0;
+    Index row = -1;
+    // Build vectors of inner indices and values, update outer index per row
+    for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it, ++pos) {
+        // We are promised rows and columns are in order
+        ASSERT( it->row() >= row && it->row() < rows_ && it->col() >= 0 && it->col() < cols_ );
+        ASSERT( pos == 0 || it->row() > row || it->col() > inner_[pos-1]);
+        // We start a new row
+        while (it->row() > row)
+            outer_[++row] = pos;
+        inner_[pos] = it->col();
+        v_[pos] = it->value();
+    }
+    outer_[rows_] = pos;
+}
+
+//-----------------------------------------------------------------------------
+
+void SparseMatrix::assembleFromTriplets(const std::vector<Triplet>& triplets) {
     // Rows and columns must have been set before
     ASSERT( rows_ > 0 && cols_ > 0 );
 

@@ -86,6 +86,12 @@ void test(T* v, T* r, size_t s) {
     BOOST_CHECK_EQUAL_COLLECTIONS(v, v + s, r, r + s);
 }
 
+void test(const SparseMatrix& A, const Index* outer, const Index* inner, const Scalar* data) {
+    test(A.outer(), outer, A.rows()+1);
+    test(A.inner(), inner, A.nonZeros());
+    test(A.data(), data, A.nonZeros());
+}
+
 //-----------------------------------------------------------------------------
 
 /// Test linear algebra interface
@@ -97,9 +103,7 @@ BOOST_AUTO_TEST_CASE(test_set_from_triplets) {
     Index outer[4] = {0, 2, 3, 4};
     Index inner[4] = {0, 2, 1, 2};
     Scalar data[4] = {2., -3., 2., 2.};
-    test(A.outer(), outer, 4);
-    test(A.inner(), inner, 4);
-    test(A.data(), data, 4);
+    test(A, outer, inner, data);
 }
 
 BOOST_AUTO_TEST_CASE(test_identity) {
@@ -128,9 +132,7 @@ BOOST_AUTO_TEST_CASE(test_prune) {
     Index outer[4] = {0, 1, 2, 3};
     Index inner[3] = {0, 1, 2};
     Scalar data[3] = {2., 2., 2.};
-    test(A.outer(), outer, 4);
-    test(A.inner(), inner, 3);
-    test(A.data(), data, 3);
+    test(A, outer, inner, data);
 }
 
 BOOST_AUTO_TEST_CASE(test_spmv) {

@@ -11,6 +11,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/la/LinearAlgebraFactory.h"
+#include "eckit/log/Log.h"
 
 namespace eckit {
 namespace la {
@@ -25,6 +26,7 @@ const LinearAlgebraBase* LinearAlgebraFactory::get(const std::string& name) {
     FactoryMap::const_iterator it = instance().map_.find(name);
     if (it == instance().map_.end())
         throw BadParameter("Linear algebra backend " + name + " not available.", Here());
+    Log::debug() << "LinearAlgebraFactory: using backend " << it->first << std::endl;
     return it->second;
 }
 

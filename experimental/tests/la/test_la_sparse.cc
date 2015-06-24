@@ -99,11 +99,24 @@ void test(const SparseMatrix& A, const Index* outer, const Index* inner, const S
 BOOST_FIXTURE_TEST_SUITE(test_eckit_la_sparse, Fixture)
 
 BOOST_AUTO_TEST_CASE(test_set_from_triplets) {
-    BOOST_CHECK_EQUAL(A.nonZeros(), 4);
-    Index outer[4] = {0, 2, 3, 4};
-    Index inner[4] = {0, 2, 1, 2};
-    Scalar data[4] = {2., -3., 2., 2.};
-    test(A, outer, inner, data);
+    {
+        BOOST_CHECK_EQUAL(A.nonZeros(), 4);
+        Index outer[4] = {0, 2, 3, 4};
+        Index inner[4] = {0, 2, 1, 2};
+        Scalar data[4] = {2., -3., 2., 2.};
+        test(A, outer, inner, data);
+    }
+    // Pathological case with empty rows
+    {
+        Index outer[5] = {0, 1, 1, 1, 2};
+        Index inner[2] = {0, 3};
+        Scalar data[2] = {1., 2.};
+        test(S(4, 4, 2, 0, 0, 1., 3, 3, 2.), outer, inner, data);
+    }
+    // Rows in wrong order
+    BOOST_CHECK_THROW(S(2, 2, 2, 1, 1, 1., 0, 0, 1.), AssertionFailed);
+    // Cols in wrong order
+    BOOST_CHECK_THROW(S(2, 2, 2, 0, 1, 1., 0, 0, 1.), AssertionFailed);
 }
 
 BOOST_AUTO_TEST_CASE(test_identity) {

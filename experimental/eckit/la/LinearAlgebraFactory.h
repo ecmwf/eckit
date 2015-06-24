@@ -20,7 +20,6 @@
 
 #include "eckit/config/Configurable.h"
 #include "eckit/config/Resource.h"
-#include "eckit/memory/NonCopyable.h"
 
 #include "eckit/la/LinearAlgebraBase.h"
 
@@ -29,7 +28,7 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraFactory : public Configurable, private NonCopyable {
+class LinearAlgebraFactory : public Configurable {
 
 public:
     static const LinearAlgebraBase* get();

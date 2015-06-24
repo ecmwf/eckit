@@ -38,7 +38,7 @@ public:
     // -- from Configurable
     virtual std::string kind() const { return "LinearAlgebraFactory"; }
     virtual std::string name() const { return "eckit"; }
-    virtual void reconfigure() {}
+    virtual void reconfigure();
 
 private:
     LinearAlgebraFactory();

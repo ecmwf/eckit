@@ -7,10 +7,12 @@
 
 // external packages
 
+#cmakedefine ECKIT_HAVE_ARMADILLO
+#cmakedefine ECKIT_HAVE_CUDA
 #cmakedefine ECKIT_HAVE_EIGEN
 #cmakedefine ECKIT_HAVE_GRIB
-#cmakedefine ECKIT_HAVE_ARMADILLO
 #cmakedefine ECKIT_HAVE_LAPACK
+#cmakedefine ECKIT_HAVE_MKL
 #cmakedefine ECKIT_HAVE_MPI
 #cmakedefine ECKIT_HAVE_MPISTUBS
 #cmakedefine ECKIT_HAVE_READLINE

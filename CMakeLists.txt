@@ -35,6 +35,12 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
+### Experimental features
+
+ecbuild_add_option( FEATURE EXPERIMENTAL
+                    DEFAULT OFF
+                    DESCRIPTION "Experimental features (not used in production)" )
+
 ### GRIB
 
 ecbuild_add_option( FEATURE GRIB
@@ -97,6 +103,24 @@ else() # Don't search for it on cc[abt] as it is already available as scilib
                       DESCRIPTION "Linear Algebra PACKage")
 endif()
 
+### CUDA
+
+ecbuild_add_option( FEATURE CUDA
+                    DEFAULT ON
+                    DESCRIPTION "CUDA support"
+                    REQUIRED_PACKAGES CUDA )
+
+set_package_properties( CUDA PROPERTIES TYPE RECOMMENDED PURPOSE "CUDA backend: GPU linear algebra operations" )
+
+### MKL
+
+ecbuild_add_option( FEATURE MKL
+                    DEFAULT ON
+                    DESCRIPTION "MKL support"
+                    REQUIRED_PACKAGES MKL )
+
+set_package_properties( MKL PROPERTIES TYPE RECOMMENDED PURPOSE "MKL backend: Accelerated linear algebra operations" )
+
 ### async io support
 
 find_package( AIO )
@@ -144,6 +168,11 @@ set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
 set( ECKIT_LIBRARIES      eckit eckit_geometry eckit_cmd eckit_maths eckit_web )
 
+if( HAVE_EXPERIMENTAL )
+  list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/experimental ${CMAKE_CURRENT_BINARY_DIR}/experimental )
+  list( APPEND ECKIT_LIBRARIES    eckit_la )
+endif()
+
 if( HAVE_GRIB )
   list( APPEND ECKIT_LIBRARIES eckit_grib )
   list( APPEND ECKIT_TPLS grib_api )
@@ -182,6 +211,9 @@ endif()
 add_subdirectory( bamboo )
 add_subdirectory( contrib )
 add_subdirectory( doc )
+if( HAVE_EXPERIMENTAL )
+  add_subdirectory( experimental )
+endif()
 add_subdirectory( src )
 
 ############################################################################################

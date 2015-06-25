@@ -115,8 +115,6 @@ BOOST_AUTO_TEST_CASE(test_set_from_triplets) {
     }
     // Rows in wrong order
     BOOST_CHECK_THROW(S(2, 2, 2, 1, 1, 1., 0, 0, 1.), AssertionFailed);
-    // Cols in wrong order
-    BOOST_CHECK_THROW(S(2, 2, 2, 0, 1, 1., 0, 0, 1.), AssertionFailed);
 }
 
 BOOST_AUTO_TEST_CASE(test_assemble_from_triplets) {

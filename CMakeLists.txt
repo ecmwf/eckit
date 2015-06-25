@@ -38,7 +38,7 @@ ecbuild_declare_project()
 ### Experimental features
 
 ecbuild_add_option( FEATURE EXPERIMENTAL
-                    DEFAULT OFF
+                    DEFAULT ON
                     DESCRIPTION "Experimental features (not used in production)" )
 
 ### GRIB

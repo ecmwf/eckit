@@ -94,9 +94,8 @@ void SparseMatrix::setFromTriplets(const std::vector<Triplet>& triplets) {
     Index row = -1;
     // Build vectors of inner indices and values, update outer index per row
     for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it, ++pos) {
-        // We are promised rows and columns are in order
+        // We are promised triplets are ordered by rows
         ASSERT( it->row() >= row && it->row() < rows_ && it->col() >= 0 && it->col() < cols_ );
-        ASSERT( pos == 0 || it->row() > row || it->col() > inner_[pos-1]);
         // We start a new row
         while (it->row() > row)
             outer_[++row] = pos;

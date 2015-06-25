@@ -71,7 +71,7 @@ public:  // methods
     /// Initialise matrix from vector of triplets
     ///
     /// Resets data and index vectors, requires row and column number to be set.
-    /// Assumes triplets are ordered and there are no duplicates.
+    /// Assumes triplets are ordered per row and there are no duplicates.
     void setFromTriplets(const std::vector<Triplet>& triplets);
 
     /// Initialise matrix from vector of triplets

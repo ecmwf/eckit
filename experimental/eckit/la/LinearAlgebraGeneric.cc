@@ -31,7 +31,7 @@ LinearAlgebraGeneric::LinearAlgebraGeneric() {
 
 Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
     ASSERT(x.size() == y.size());
-    Scalar r;
+    Scalar r = 0;
     for (size_t i = 0; i < x.size(); ++i) r += x[i] * y[i];
     return r;
 }

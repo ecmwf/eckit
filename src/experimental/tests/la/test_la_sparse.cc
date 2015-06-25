@@ -14,9 +14,9 @@
 
 #include "eckit/runtime/Context.h"
 
-#include "eckit/la/LinearAlgebraFactory.h"
-#include "eckit/la/SparseMatrix.h"
-#include "eckit/la/Vector.h"
+#include "experimental/eckit/la/LinearAlgebraFactory.h"
+#include "experimental/eckit/la/SparseMatrix.h"
+#include "experimental/eckit/la/Vector.h"
 #include "util.h"
 
 //-----------------------------------------------------------------------------

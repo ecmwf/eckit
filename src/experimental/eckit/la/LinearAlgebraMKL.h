@@ -8,34 +8,43 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   LinearAlgebraBase.h
+/// @file   LinearAlgebraMKL.h
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_la_LinearAlgebraBase_h
-#define eckit_la_LinearAlgebraBase_h
+#ifndef eckit_la_LinearAlgebraMKL_h
+#define eckit_la_LinearAlgebraMKL_h
 
-#include "eckit/la/types.h"
+#include "eckit/eckit_config.h"
+
+#ifdef ECKIT_HAVE_MKL
+
+#include "experimental/eckit/la/LinearAlgebraBase.h"
 
 namespace eckit {
 namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraBase {
+class LinearAlgebraMKL : public LinearAlgebraBase {
+
+public:
+    LinearAlgebraMKL();
 
 public:  // virtual methods
 
-    virtual Scalar dot(const Vector&, const Vector&) const = 0;
-    virtual void gemv(const Matrix&, const Vector&, Vector&) const = 0;
-    virtual void gemm(const Matrix&, const Matrix&, Matrix&) const = 0;
-    virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const = 0;
-    virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const = 0;
+    virtual Scalar dot(const Vector&, const Vector&) const;
+    virtual void gemv(const Matrix&, const Vector&, Vector&) const;
+    virtual void gemm(const Matrix&, const Matrix&, Matrix&) const;
+    virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const;
+    virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const;
 };
 
 //-----------------------------------------------------------------------------
 
 }  // namespace la
 }  // namespace eckit
+
+#endif // HAVE_MKL
 
 #endif

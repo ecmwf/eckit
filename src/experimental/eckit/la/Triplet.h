@@ -8,43 +8,42 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   LinearAlgebraEigen.h
+/// @file   Triplet.h
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_la_LinearAlgebraEigen_h
-#define eckit_la_LinearAlgebraEigen_h
+#ifndef eckit_la_Triplet_h
+#define eckit_la_Triplet_h
 
-#include "eckit/eckit_config.h"
-
-#ifdef ECKIT_HAVE_EIGEN
-
-#include "eckit/la/LinearAlgebraBase.h"
+#include "experimental/eckit/la/types.h"
 
 namespace eckit {
 namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraEigen : public LinearAlgebraBase {
-
+/// Triplet of values compatible to Eigen::Triplet
+class Triplet {
 public:
-    LinearAlgebraEigen();
+    Triplet() : row_(0), col_(0), val_(0) {}
 
-public:  // virtual methods
+    Triplet(const Index& i, const Index& j, const Scalar& v = Scalar(0))
+        : row_(i), col_(j), val_(v) {}
 
-    virtual Scalar dot(const Vector&, const Vector&) const;
-    virtual void gemv(const Matrix&, const Vector&, Vector&) const;
-    virtual void gemm(const Matrix&, const Matrix&, Matrix&) const;
-    virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const;
-    virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const;
+    const Index& row() const { return row_; }
+
+    const Index& col() const { return col_; }
+
+    const Scalar& value() const { return val_; }
+
+protected:
+    Index row_, col_;
+    Scalar val_;
 };
 
 //-----------------------------------------------------------------------------
 
 }  // namespace la
 }  // namespace eckit
-
-#endif  // ECKIT_HAVE_EIGEN
 
 #endif

@@ -16,7 +16,7 @@
 #define eckit_la_Vector_h
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/la/types.h"
+#include "experimental/eckit/la/types.h"
 
 namespace eckit {
 

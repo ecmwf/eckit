@@ -21,7 +21,7 @@
 #include "eckit/config/Configurable.h"
 #include "eckit/config/Resource.h"
 
-#include "eckit/la/LinearAlgebraBase.h"
+#include "experimental/eckit/la/LinearAlgebraBase.h"
 
 namespace eckit {
 namespace la {

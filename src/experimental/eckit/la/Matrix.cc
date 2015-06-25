@@ -8,7 +8,7 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "eckit/la/Matrix.h"
+#include "experimental/eckit/la/Matrix.h"
 #include "eckit/serialisation/Stream.h"
 
 namespace eckit {

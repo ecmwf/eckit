@@ -8,24 +8,28 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   LinearAlgebraGeneric.h
+/// @file   LinearAlgebraEigen.h
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_la_LinearAlgebraGeneric_h
-#define eckit_la_LinearAlgebraGeneric_h
+#ifndef eckit_la_LinearAlgebraEigen_h
+#define eckit_la_LinearAlgebraEigen_h
 
-#include "eckit/la/LinearAlgebraBase.h"
+#include "eckit/eckit_config.h"
+
+#ifdef ECKIT_HAVE_EIGEN
+
+#include "experimental/eckit/la/LinearAlgebraBase.h"
 
 namespace eckit {
 namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraGeneric : public LinearAlgebraBase {
+class LinearAlgebraEigen : public LinearAlgebraBase {
 
 public:
-    LinearAlgebraGeneric();
+    LinearAlgebraEigen();
 
 public:  // virtual methods
 
@@ -40,5 +44,7 @@ public:  // virtual methods
 
 }  // namespace la
 }  // namespace eckit
+
+#endif  // ECKIT_HAVE_EIGEN
 
 #endif

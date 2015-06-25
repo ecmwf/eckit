@@ -11,7 +11,7 @@
 #include <numeric>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/la/SparseMatrix.h"
+#include "experimental/eckit/la/SparseMatrix.h"
 #include "eckit/serialisation/Stream.h"
 
 namespace eckit {

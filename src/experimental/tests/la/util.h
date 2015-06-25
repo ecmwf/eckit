@@ -13,8 +13,8 @@
 
 #include <cstdarg>
 
-#include "eckit/la/Matrix.h"
-#include "eckit/la/Vector.h"
+#include "experimental/eckit/la/Matrix.h"
+#include "experimental/eckit/la/Vector.h"
 
 //-----------------------------------------------------------------------------
 

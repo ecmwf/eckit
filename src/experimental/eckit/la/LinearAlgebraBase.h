@@ -8,43 +8,34 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   LinearAlgebraCUDA.h
+/// @file   LinearAlgebraBase.h
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_la_LinearAlgebraCUDA_h
-#define eckit_la_LinearAlgebraCUDA_h
+#ifndef eckit_la_LinearAlgebraBase_h
+#define eckit_la_LinearAlgebraBase_h
 
-#include "eckit/eckit_config.h"
-
-#ifdef ECKIT_HAVE_CUDA
-
-#include "eckit/la/LinearAlgebraBase.h"
+#include "experimental/eckit/la/types.h"
 
 namespace eckit {
 namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraCUDA : public LinearAlgebraBase {
-
-public:
-    LinearAlgebraCUDA();
+class LinearAlgebraBase {
 
 public:  // virtual methods
 
-    virtual Scalar dot(const Vector&, const Vector&) const;
-    virtual void gemv(const Matrix&, const Vector&, Vector&) const;
-    virtual void gemm(const Matrix&, const Matrix&, Matrix&) const;
-    virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const;
-    virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const;
+    virtual Scalar dot(const Vector&, const Vector&) const = 0;
+    virtual void gemv(const Matrix&, const Vector&, Vector&) const = 0;
+    virtual void gemm(const Matrix&, const Matrix&, Matrix&) const = 0;
+    virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const = 0;
+    virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const = 0;
 };
 
 //-----------------------------------------------------------------------------
 
 }  // namespace la
 }  // namespace eckit
-
-#endif  // ECKIT_HAVE_CUDA
 
 #endif

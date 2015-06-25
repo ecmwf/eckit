@@ -10,6 +10,10 @@
 
 add_subdirectory( eckit  )
 
+if( HAVE_EXPERIMENTAL )
+  add_subdirectory( experimental )
+endif()
+
 add_subdirectory( apps )
 
 add_subdirectory( tests )

@@ -10,7 +10,7 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/la/LinearAlgebraFactory.h"
+#include "experimental/eckit/la/LinearAlgebraFactory.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {

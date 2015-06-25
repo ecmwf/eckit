@@ -8,28 +8,28 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   LinearAlgebraMKL.h
+/// @file   LinearAlgebraCUDA.h
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_la_LinearAlgebraMKL_h
-#define eckit_la_LinearAlgebraMKL_h
+#ifndef eckit_la_LinearAlgebraCUDA_h
+#define eckit_la_LinearAlgebraCUDA_h
 
 #include "eckit/eckit_config.h"
 
-#ifdef ECKIT_HAVE_MKL
+#ifdef ECKIT_HAVE_CUDA
 
-#include "eckit/la/LinearAlgebraBase.h"
+#include "experimental/eckit/la/LinearAlgebraBase.h"
 
 namespace eckit {
 namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraMKL : public LinearAlgebraBase {
+class LinearAlgebraCUDA : public LinearAlgebraBase {
 
 public:
-    LinearAlgebraMKL();
+    LinearAlgebraCUDA();
 
 public:  // virtual methods
 
@@ -45,6 +45,6 @@ public:  // virtual methods
 }  // namespace la
 }  // namespace eckit
 
-#endif // HAVE_MKL
+#endif  // ECKIT_HAVE_CUDA
 
 #endif

@@ -10,8 +10,10 @@
 
 #include <cstring>
 
-#include "experimental/eckit/la/Vector.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
+
+#include "experimental/eckit/la/Vector.h"
 
 namespace eckit {
 namespace la {
@@ -36,7 +38,8 @@ Vector::Vector(Stream& s) : v_(0), size_(0), own_(false) {
     Size size;
     s >> size;
     resize(size);
-    for (Size i = 0; i < size; ++i) s >> v_[i];
+    Buffer b(v_, size*sizeof(Scalar), /* dummy */ true);
+    s >> b;
 }
 
 //-----------------------------------------------------------------------------
@@ -91,7 +94,7 @@ void Vector::fill(Scalar s) {
 
 void Vector::encode(Stream& s) const {
   s << size_;
-  for (Size i = 0; i < size_; ++i) s << v_[i];
+  s << Buffer(v_, size_*sizeof(Scalar), /* dummy */ true);
 }
 
 //-----------------------------------------------------------------------------

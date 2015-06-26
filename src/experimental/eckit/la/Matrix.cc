@@ -8,8 +8,10 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "experimental/eckit/la/Matrix.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
+
+#include "experimental/eckit/la/Matrix.h"
 
 namespace eckit {
 namespace la {
@@ -30,7 +32,8 @@ Matrix::Matrix(Stream& s) {
     s >> rows;
     s >> cols;
     resize(rows, cols);
-    for (Size i = 0; i < size(); ++i) s >> v_[i];
+    Buffer b(v_.data(), rows*cols*sizeof(Scalar), /* dummy */ true);
+    s >> b;
 }
 
 //-----------------------------------------------------------------------------
@@ -54,7 +57,7 @@ void Matrix::swap(Matrix& o) {
 void Matrix::encode(Stream& s) const {
   s << rows_;
   s << cols_;
-  for (Size i = 0; i < size(); ++i) s << v_[i];
+  s << Buffer(const_cast<Scalar*>(v_.data()), rows_*cols_*sizeof(Scalar), /* dummy */ true);
 }
 
 //-----------------------------------------------------------------------------

@@ -8,12 +8,13 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "experimental/eckit/la/SparseMatrix.h"
-
 #include <numeric>
 
+#include "eckit/io/Buffer.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/Stream.h"
+
+#include "experimental/eckit/la/SparseMatrix.h"
 
 namespace eckit {
 namespace la {
@@ -50,9 +51,12 @@ SparseMatrix::SparseMatrix(Stream& s) {
     Index nnz;
     s >> nnz;
     reserve(nnz);
-    for (Index i = 0; i < rows_+1; ++i) s >> outer_[i];
-    for (Index i = 0; i < nnz; ++i) s >> inner_[i];
-    for (Index i = 0; i < nnz; ++i) s >> v_[i];
+    Buffer outer(const_cast<Index*>(outer_.data()), (rows_+1)*sizeof(Index), /* dummy */ true);
+    Buffer inner(const_cast<Index*>(inner_.data()), nnz*sizeof(Index), /* dummy */ true);
+    Buffer data(const_cast<Scalar*>(v_.data()), nnz*sizeof(Scalar), /* dummy */ true);
+    s >> outer;
+    s >> inner;
+    s >> data;
 }
 
 //-----------------------------------------------------------------------------
@@ -191,9 +195,9 @@ void SparseMatrix::encode(Stream& s) const {
     s << rows_;
     s << cols_;
     s << nnz;
-    for (Index i = 0; i < rows_+1; ++i) s << outer_[i];
-    for (Index i = 0; i < nnz; ++i) s << inner_[i];
-    for (Index i = 0; i < nnz; ++i) s << v_[i];
+    s << Buffer(const_cast<Index*>(outer_.data()), (rows_+1)*sizeof(Index), /* dummy */ true);
+    s << Buffer(const_cast<Index*>(inner_.data()), nnz*sizeof(Index), /* dummy */ true);
+    s << Buffer(const_cast<Scalar*>(v_.data()), nnz*sizeof(Scalar), /* dummy */ true);
 }
 
 //-----------------------------------------------------------------------------

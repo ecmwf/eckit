@@ -8,10 +8,11 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include "experimental/eckit/la/SparseMatrix.h"
+
 #include <numeric>
 
 #include "eckit/exception/Exceptions.h"
-#include "experimental/eckit/la/SparseMatrix.h"
 #include "eckit/serialisation/Stream.h"
 
 namespace eckit {
@@ -90,12 +91,19 @@ void SparseMatrix::setFromTriplets(const std::vector<Triplet>& triplets) {
     // Allocate memory (we are promised that there is 1 triplet per non-zero)
     reserve(triplets.size());
 
+    std::vector<Triplet> tmp(triplets);
+
+    std::sort(tmp.begin(), tmp.end());
+
     Index pos = 0;
     Index row = -1;
     // Build vectors of inner indices and values, update outer index per row
-    for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it, ++pos) {
+    for (std::vector<Triplet>::const_iterator it = tmp.begin(); it != tmp.end(); ++it, ++pos) {
         // We are promised triplets are ordered by rows
-        ASSERT( it->row() >= row && it->row() < rows_ && it->col() >= 0 && it->col() < cols_ );
+        ASSERT( it->row() >= row );
+        ASSERT( it->row() < rows_ );
+        ASSERT( it->col() >= 0 );
+        ASSERT( it->col() < cols_ );
         // We start a new row
         while (it->row() > row)
             outer_[++row] = pos;
@@ -192,6 +200,36 @@ void SparseMatrix::encode(Stream& s) const {
 Stream& operator<<(Stream& s, const SparseMatrix& v) {
     v.encode(s);
     return s;
+}
+
+SparseMatrix::InnerIterator::InnerIterator(SparseMatrix& m, SparseMatrix::Index outer)
+    : m_(m), outer_(outer), inner_(m_.outer_[outer])
+{
+    ASSERT(outer >= 0);
+    ASSERT(outer < m.rows_);
+    ASSERT(inner_ >= 0);
+    ASSERT(inner_ < m_.v_.size());
+}
+
+SparseMatrix::Scalar SparseMatrix::InnerIterator::operator*() const {
+    ASSERT(inner_ < m_.v_.size());
+    return m_.v_[inner_];
+}
+
+SparseMatrix::Scalar&SparseMatrix::InnerIterator::operator*() {
+    if(inner_ >= m_.v_.size())
+    {
+        Log::info()
+                << " rows " << m_.rows_
+                << " cols " << m_.cols_
+                << " inner " << inner_
+                << " outer " << outer_
+                << " m_.outer_[outer_+1] " <<  m_.outer_[outer_+1]
+                << " m_.v_.size() " << m_.v_.size()
+                << std::endl ;
+    }
+    ASSERT(inner_ < m_.v_.size());
+    return m_.v_[inner_];
 }
 
 //-----------------------------------------------------------------------------

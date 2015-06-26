@@ -94,8 +94,7 @@ public:  // methods
     /// Eigen-compatible iterator over nonzeros of a given row
     class InnerIterator {
     public:
-        InnerIterator(SparseMatrix& m, Index outer)
-            : m_(m), outer_(outer), inner_(m_.outer_[outer]) {}
+        InnerIterator(SparseMatrix& m, Index outer);
         Scalar& value() { return m_.v_[inner_]; }
         Scalar value() const { return m_.v_[inner_]; }
         Index row() const { return outer_; }
@@ -103,8 +102,8 @@ public:  // methods
         Index index() const { return m_.inner_[inner_]; }
         operator bool() const { return inner_ != m_.outer_[outer_+1]; }
         void operator++() { ++inner_; }
-        Scalar& operator*() { return m_.v_[inner_]; }
-        Scalar operator*() const { return m_.v_[inner_]; }
+        Scalar& operator*();
+        Scalar operator*() const;
     private:
         SparseMatrix& m_;
         Index outer_;

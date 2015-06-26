@@ -36,8 +36,18 @@ public:
 
     const Scalar& value() const { return val_; }
 
+    bool operator< (const Triplet& other) const
+    {
+        if(row_ == other.row_)
+        {
+            return col_ < other.col_;
+        }
+        return row_ < other.row_;
+    }
+
 protected:
-    Index row_, col_;
+    Index row_;
+    Index col_;
     Scalar val_;
 };
 

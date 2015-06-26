@@ -95,7 +95,7 @@ void SparseMatrix::setFromTriplets(const std::vector<Triplet>& triplets) {
 
     std::sort(tmp.begin(), tmp.end());
 
-    Index pos = 0;
+    Size pos = 0;
     Index row = -1;
     // Build vectors of inner indices and values, update outer index per row
     for (std::vector<Triplet>::const_iterator it = tmp.begin(); it != tmp.end(); ++it, ++pos) {
@@ -106,11 +106,12 @@ void SparseMatrix::setFromTriplets(const std::vector<Triplet>& triplets) {
         ASSERT( it->col() < cols_ );
         // We start a new row
         while (it->row() > row)
-            outer_[++row] = pos;
+            outer_[++row] = Index(pos);
         inner_[pos] = it->col();
         v_[pos] = it->value();
     }
-    outer_[rows_] = pos;
+    for (;row <= rows_; ++row)
+        outer_[row] = Index(pos);
 }
 
 //-----------------------------------------------------------------------------
@@ -208,7 +209,7 @@ SparseMatrix::InnerIterator::InnerIterator(SparseMatrix& m, SparseMatrix::Index 
     ASSERT(outer >= 0);
     ASSERT(outer < m.rows_);
     ASSERT(inner_ >= 0);
-    ASSERT(inner_ < m_.v_.size());
+    ASSERT(inner_ <= m_.v_.size());
 }
 
 SparseMatrix::Scalar SparseMatrix::InnerIterator::operator*() const {

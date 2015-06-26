@@ -110,8 +110,8 @@ void SparseMatrix::setFromTriplets(const std::vector<Triplet>& triplets) {
         inner_[pos] = it->col();
         v_[pos] = it->value();
     }
-    for (;row <= rows_; ++row)
-        outer_[row] = Index(pos);
+    while (row < rows_)
+        outer_[++row] = Index(pos);
 }
 
 //-----------------------------------------------------------------------------

@@ -108,13 +108,13 @@ BOOST_AUTO_TEST_CASE(test_set_from_triplets) {
     }
     // Pathological case with empty rows
     {
-        Index outer[5] = {0, 1, 1, 1, 2};
+        Index outer[7] = {0, 0, 1, 1, 2, 2, 2};
         Index inner[2] = {0, 3};
         Scalar data[2] = {1., 2.};
-        test(S(4, 4, 2, 0, 0, 1., 3, 3, 2.), outer, inner, data);
+        test(S(6, 6, 2, 1, 0, 1., 3, 3, 2.), outer, inner, data);
     }
-    // Rows in wrong order
-    BOOST_CHECK_THROW(S(2, 2, 2, 1, 1, 1., 0, 0, 1.), AssertionFailed);
+    // Rows in wrong order (not triggering right now since triplets are sorted)
+    //BOOST_CHECK_THROW(S(2, 2, 2, 1, 1, 1., 0, 0, 1.), AssertionFailed);
 }
 
 BOOST_AUTO_TEST_CASE(test_assemble_from_triplets) {

@@ -149,6 +149,8 @@ private:
     /// Serialise to a Stream
     void encode(Stream& s) const;
 
+    /// Deserialise from a Stream
+    void decode(Stream& s);
     /// Resize sparse matrix (invalidates all data arrays)
     void resize(Size rows, Size cols);
 

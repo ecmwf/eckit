@@ -19,6 +19,7 @@
 #include "eckit/serialisation/Stream.h"
 #include "eckit/io/BufferedHandle.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/serialisation/FileStream.h"
 
 #include "experimental/eckit/la/SparseMatrix.h"
 
@@ -42,43 +43,8 @@ SparseMatrix::SparseMatrix(SparseMatrix::Size rows, SparseMatrix::Size cols)
 
 //-----------------------------------------------------------------------------
 
-// SparseMatrix::SparseMatrix(SparseMatrix::Size rows, SparseMatrix::Size cols, SparseMatrix::Size nnz)
-//   : v_(nnz), outer_(rows+1), inner_(nnz), rows_(rows), cols_(cols) {}
-
-// //-----------------------------------------------------------------------------
-
-// SparseMatrix::SparseMatrix(SparseMatrix::Size rows, SparseMatrix::Size cols,
-//                            const SparseMatrix::ScalarStorage& v,
-//                            const SparseMatrix::IndexStorage& outer,
-//                            const SparseMatrix::IndexStorage& inner)
-//   : v_(v), rows_(rows), cols_(cols) {
-//     ASSERT(v.size() == inner.size() && outer.size() == rows+1);
-// }
-
-//-----------------------------------------------------------------------------
-
 SparseMatrix::SparseMatrix(Stream& s) {
-    s >> rows_;
-    s >> cols_;
-    Index nnz;
-    s >> nnz;
-    reserve(nnz);
-
-    bool little_endian;
-    s >> little_endian; ASSERT(littleEndian == little_endian);
-
-    size_t index_size;
-    s >> index_size; ASSERT(index_size == sizeof(Index));
-
-    size_t scalar_size;
-    s >> scalar_size; ASSERT(scalar_size == sizeof(Scalar));
-
-    Buffer outer(const_cast<Index*>(outer_.data()), (rows_+1)*sizeof(Index), /* dummy */ true);
-    Buffer inner(const_cast<Index*>(inner_.data()), nnz*sizeof(Index), /* dummy */ true);
-    Buffer data(const_cast<Scalar*>(v_.data()), nnz*sizeof(Scalar), /* dummy */ true);
-    s >> outer;
-    s >> inner;
-    s >> data;
+    decode(s);
 }
 
 //-----------------------------------------------------------------------------
@@ -194,6 +160,31 @@ void SparseMatrix::encode(Stream& s) const {
     s << Buffer(const_cast<Scalar*>(v_.data()), nnz*sizeof(Scalar), /* dummy */ true);
 }
 
+void SparseMatrix::decode(Stream& s) {
+
+    s >> rows_;
+    s >> cols_;
+    Index nnz;
+    s >> nnz;
+    reserve(nnz);
+
+    bool little_endian;
+    s >> little_endian; ASSERT(littleEndian == little_endian);
+
+    size_t index_size;
+    s >> index_size; ASSERT(index_size == sizeof(Index));
+
+    size_t scalar_size;
+    s >> scalar_size; ASSERT(scalar_size == sizeof(Scalar));
+
+    Buffer outer(const_cast<Index*>(outer_.data()), (rows_+1)*sizeof(Index), /* dummy */ true);
+    Buffer inner(const_cast<Index*>(inner_.data()), nnz*sizeof(Index), /* dummy */ true);
+    Buffer data(const_cast<Scalar*>(v_.data()), nnz*sizeof(Scalar), /* dummy */ true);
+    s >> outer;
+    s >> inner;
+    s >> data;
+}
+
 //-----------------------------------------------------------------------------
 
 Stream& operator<<(Stream& s, const SparseMatrix& v) {
@@ -223,92 +214,13 @@ SparseMatrix::Scalar& SparseMatrix::InnerIterator::operator*() {
 //-----------------------------------------------------------------------------
 
 void SparseMatrix::save(const eckit::PathName &path) const {
-    eckit::BufferedHandle f(path.fileHandle());
-
-    f.openForWrite(0);
-    eckit::AutoClose closer(f);
-
-    // write nominal size of matrix
-
-    Index iSize = innerSize();
-    Index oSize = outerSize();
-
-    f.write(&iSize, sizeof(iSize));
-    f.write(&oSize, sizeof(oSize));
-
-    // find all the non-zero values (aka triplets)
-
-    std::vector<Triplet > trips;
-    for (size_t i = 0; i < outerSize(); ++i) {
-        for (ConstInnerIterator it(*this, i); it; ++it) {
-            trips.push_back(Triplet(it.row(), it.col(), *it));
-        }
-    }
-
-    // save the number of triplets
-
-    Index ntrips = trips.size();
-    f.write(&ntrips, sizeof(ntrips));
-
-    // now save the triplets themselves
-
-    for (size_t i = 0; i < trips.size(); i++) {
-
-        Triplet &rt = trips[i];
-
-        Index x = rt.row();
-        Index y = rt.col();
-        double w = rt.value();
-
-        f.write(&x, sizeof(x));
-        f.write(&y, sizeof(y));
-        f.write(&w, sizeof(w));
-    }
+    FileStream s(path, "w");
+    s << *this;
 }
 
 void SparseMatrix::load(const eckit::PathName &path)  {
-
-    eckit::BufferedHandle f(path.fileHandle());
-
-    f.openForRead();
-    eckit::AutoClose closer(f);
-
-    // read inpts, outpts sizes of matrix
-
-    Index inner, outer;
-
-    f.read(&inner, sizeof(inner));
-    f.read(&outer, sizeof(outer));
-
-    Index npts;
-    f.read(&npts, sizeof(npts));
-
-    // read total sparse points of matrix (so we can reserve)
-
-    std::vector<Triplet > insertions;
-
-    insertions.reserve(npts);
-
-    // read the values
-
-    for (size_t i = 0; i < npts; i++) {
-        Index x, y;
-        double w;
-        f.read(&x, sizeof(x));
-        f.read(&y, sizeof(y));
-        f.read(&w, sizeof(w));
-        insertions.push_back(Triplet(x, y, w));
-    }
-
-    // check matrix is correctly sized
-    // note that Weigths::Matrix is row-major, so rows are outer size
-
-    ASSERT(rows() == outer);
-    ASSERT(cols() == inner);
-
-    // set the weights from the triplets
-
-    setFromTriplets(insertions);
+    FileStream s(path, "r");
+    decode(s);
 }
 
 //-----------------------------------------------------------------------------

@@ -34,7 +34,12 @@ class SparseMatrix {
 public:  // types
     typedef la::Index Index;
     typedef la::Scalar Scalar;
-
+    // -- Types
+private:
+    typedef std::vector<Scalar> ScalarStorage;
+    typedef std::vector<Index> IndexStorage;
+public:
+    typedef ScalarStorage::size_type Size;
 
 public:  // methods
 
@@ -123,11 +128,7 @@ public:
     };
 
 private:
-    // -- Types
 
-    typedef std::vector<Scalar> ScalarStorage;
-    typedef std::vector<Index> IndexStorage;
-    typedef ScalarStorage::size_type Size;
 
     // members
 

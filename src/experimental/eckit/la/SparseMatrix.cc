@@ -10,6 +10,10 @@
 
 #include <numeric>
 
+// For endianness
+#include "eckit/eckit.h"
+
+
 #include "eckit/io/Buffer.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/Stream.h"
@@ -20,6 +24,12 @@
 
 namespace eckit {
 namespace la {
+
+#ifdef EC_LITTLE_ENDIAN
+static const bool littleEndian = true;
+#else
+static const bool littleEndian = false;
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -53,6 +63,16 @@ SparseMatrix::SparseMatrix(Stream& s) {
     Index nnz;
     s >> nnz;
     reserve(nnz);
+
+    bool little_endian;
+    s >> little_endian; ASSERT(littleEndian == little_endian);
+
+    size_t index_size;
+    s >> index_size; ASSERT(index_size == sizeof(Index));
+
+    size_t scalar_size;
+    s >> scalar_size; ASSERT(scalar_size == sizeof(Scalar));
+
     Buffer outer(const_cast<Index*>(outer_.data()), (rows_+1)*sizeof(Index), /* dummy */ true);
     Buffer inner(const_cast<Index*>(inner_.data()), nnz*sizeof(Index), /* dummy */ true);
     Buffer data(const_cast<Scalar*>(v_.data()), nnz*sizeof(Scalar), /* dummy */ true);
@@ -164,6 +184,11 @@ void SparseMatrix::encode(Stream& s) const {
     s << rows_;
     s << cols_;
     s << nnz;
+
+    s << littleEndian;
+    s << sizeof(Index);
+    s << sizeof(Scalar);
+
     s << Buffer(const_cast<Index*>(outer_.data()), (rows_+1)*sizeof(Index), /* dummy */ true);
     s << Buffer(const_cast<Index*>(inner_.data()), nnz*sizeof(Index), /* dummy */ true);
     s << Buffer(const_cast<Scalar*>(v_.data()), nnz*sizeof(Scalar), /* dummy */ true);

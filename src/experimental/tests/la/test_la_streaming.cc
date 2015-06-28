@@ -28,7 +28,7 @@ namespace eckit {
 namespace test {
 
 //-----------------------------------------------------------------------------
-
+#if 0
 template <typename T>
 void test(const T& v, const T& r) {
     BOOST_CHECK_EQUAL(v.rows(), r.rows());
@@ -61,13 +61,13 @@ void stream_test(const T& t) {
     }
     if (filename.exists()) filename.unlink();
 }
-
+#endif
 //-----------------------------------------------------------------------------
 
 /// Test linear algebra interface
 
 BOOST_AUTO_TEST_SUITE(test_eckit_la_streaming)
-
+#if 0
 BOOST_AUTO_TEST_CASE(test_stream_vector) {
     stream_test(V(5, 1., 2., 3., 4., 5.));
 }
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(test_stream_sparsematrix) {
     S.setFromTriplets(triplets);
     stream_test(S);
 }
-
+#endif
 BOOST_AUTO_TEST_SUITE_END()
 
 //-----------------------------------------------------------------------------

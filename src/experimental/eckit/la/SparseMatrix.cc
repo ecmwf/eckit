@@ -13,6 +13,8 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/Stream.h"
+#include "eckit/io/BufferedHandle.h"
+#include "eckit/filesystem/PathName.h"
 
 #include "experimental/eckit/la/SparseMatrix.h"
 
@@ -30,18 +32,18 @@ SparseMatrix::SparseMatrix(SparseMatrix::Size rows, SparseMatrix::Size cols)
 
 //-----------------------------------------------------------------------------
 
-SparseMatrix::SparseMatrix(SparseMatrix::Size rows, SparseMatrix::Size cols, SparseMatrix::Size nnz)
-  : v_(nnz), outer_(rows+1), inner_(nnz), rows_(rows), cols_(cols) {}
+// SparseMatrix::SparseMatrix(SparseMatrix::Size rows, SparseMatrix::Size cols, SparseMatrix::Size nnz)
+//   : v_(nnz), outer_(rows+1), inner_(nnz), rows_(rows), cols_(cols) {}
 
-//-----------------------------------------------------------------------------
+// //-----------------------------------------------------------------------------
 
-SparseMatrix::SparseMatrix(SparseMatrix::Size rows, SparseMatrix::Size cols,
-                           const SparseMatrix::ScalarStorage& v,
-                           const SparseMatrix::IndexStorage& outer,
-                           const SparseMatrix::IndexStorage& inner)
-  : v_(v), rows_(rows), cols_(cols) {
-    ASSERT(v.size() == inner.size() && outer.size() == rows+1);
-}
+// SparseMatrix::SparseMatrix(SparseMatrix::Size rows, SparseMatrix::Size cols,
+//                            const SparseMatrix::ScalarStorage& v,
+//                            const SparseMatrix::IndexStorage& outer,
+//                            const SparseMatrix::IndexStorage& inner)
+//   : v_(v), rows_(rows), cols_(cols) {
+//     ASSERT(v.size() == inner.size() && outer.size() == rows+1);
+// }
 
 //-----------------------------------------------------------------------------
 
@@ -95,59 +97,25 @@ void SparseMatrix::setFromTriplets(const std::vector<Triplet>& triplets) {
     // Allocate memory (we are promised that there is 1 triplet per non-zero)
     reserve(triplets.size());
 
-    std::vector<Triplet> tmp(triplets);
-
-    std::sort(tmp.begin(), tmp.end());
-
     Size pos = 0;
     Index row = -1;
     // Build vectors of inner indices and values, update outer index per row
-    for (std::vector<Triplet>::const_iterator it = tmp.begin(); it != tmp.end(); ++it, ++pos) {
+    for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it, ++pos) {
         // We are promised triplets are ordered by rows
         ASSERT( it->row() >= row );
         ASSERT( it->row() < rows_ );
         ASSERT( it->col() >= 0 );
         ASSERT( it->col() < cols_ );
         // We start a new row
-        while (it->row() > row)
+        while (it->row() > row) {
             outer_[++row] = Index(pos);
+        }
         inner_[pos] = it->col();
         v_[pos] = it->value();
     }
-    while (row < rows_)
+
+    while (row < rows_) {
         outer_[++row] = Index(pos);
-}
-
-//-----------------------------------------------------------------------------
-
-void SparseMatrix::assembleFromTriplets(const std::vector<Triplet>& triplets) {
-    // Rows and columns must have been set before
-    ASSERT( rows_ > 0 && cols_ > 0 );
-
-    // Build sparsity pattern i.e. inner indices for each row
-    std::vector<std::set<Index> > nz(rows_);
-    for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it) {
-        ASSERT(it->row() >= 0 && it->row() < rows_ && it->col() >= 0 && it->col() < cols_);
-        nz[it->row()].insert(it->col());
-    }
-
-    // Build vector of outer indices
-    outer_.resize(rows_+1);
-    outer_[0] = 0;
-    for (Index i = 0; i < rows_; ++i)
-        outer_[i+1] = outer_[i] + nz[i].size();
-    Size nnz = outer_[rows_];
-
-    // Build vectors of inner indices and values
-    inner_.resize(nnz);
-    v_.assign(nnz, Scalar(0));
-    for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it) {
-        const Size row = it->row();
-        const Size col = it->col();
-        // Find the position in the current row
-        const Size pos = outer_[row] + std::distance(nz[row].begin(), nz[row].find(col));
-        inner_[pos] = col;
-        v_[pos] += it->value();
     }
 }
 
@@ -161,8 +129,9 @@ void SparseMatrix::setIdentity() {
         outer_[i] = i;
         inner_[i] = i;
     }
-    for (Index i = nnz; i <= rows_; ++i)
+    for (Index i = nnz; i <= rows_; ++i) {
         outer_[i] = nnz;
+    }
     v_.assign(nnz, Scalar(1));
 }
 
@@ -207,7 +176,7 @@ Stream& operator<<(Stream& s, const SparseMatrix& v) {
     return s;
 }
 
-SparseMatrix::InnerIterator::InnerIterator(SparseMatrix& m, SparseMatrix::Index outer)
+SparseMatrix::_InnerIterator::_InnerIterator(SparseMatrix& m, SparseMatrix::Index outer)
     : m_(m), outer_(outer), inner_(m_.outer_[outer])
 {
     ASSERT(outer >= 0);
@@ -216,25 +185,105 @@ SparseMatrix::InnerIterator::InnerIterator(SparseMatrix& m, SparseMatrix::Index 
     ASSERT(inner_ <= m_.v_.size());
 }
 
-SparseMatrix::Scalar SparseMatrix::InnerIterator::operator*() const {
+SparseMatrix::Scalar SparseMatrix::_InnerIterator::operator*() const {
     ASSERT(inner_ < m_.v_.size());
     return m_.v_[inner_];
 }
 
-SparseMatrix::Scalar&SparseMatrix::InnerIterator::operator*() {
-    if(inner_ >= m_.v_.size())
-    {
-        Log::info()
-                << " rows " << m_.rows_
-                << " cols " << m_.cols_
-                << " inner " << inner_
-                << " outer " << outer_
-                << " m_.outer_[outer_+1] " <<  m_.outer_[outer_+1]
-                << " m_.v_.size() " << m_.v_.size()
-                << std::endl ;
-    }
+SparseMatrix::Scalar& SparseMatrix::InnerIterator::operator*() {
     ASSERT(inner_ < m_.v_.size());
     return m_.v_[inner_];
+}
+
+//-----------------------------------------------------------------------------
+
+void SparseMatrix::save(const eckit::PathName &path) const {
+    eckit::BufferedHandle f(path.fileHandle());
+
+    f.openForWrite(0);
+    eckit::AutoClose closer(f);
+
+    // write nominal size of matrix
+
+    Index iSize = innerSize();
+    Index oSize = outerSize();
+
+    f.write(&iSize, sizeof(iSize));
+    f.write(&oSize, sizeof(oSize));
+
+    // find all the non-zero values (aka triplets)
+
+    std::vector<Triplet > trips;
+    for (size_t i = 0; i < outerSize(); ++i) {
+        for (ConstInnerIterator it(*this, i); it; ++it) {
+            trips.push_back(Triplet(it.row(), it.col(), *it));
+        }
+    }
+
+    // save the number of triplets
+
+    Index ntrips = trips.size();
+    f.write(&ntrips, sizeof(ntrips));
+
+    // now save the triplets themselves
+
+    for (size_t i = 0; i < trips.size(); i++) {
+
+        Triplet &rt = trips[i];
+
+        Index x = rt.row();
+        Index y = rt.col();
+        double w = rt.value();
+
+        f.write(&x, sizeof(x));
+        f.write(&y, sizeof(y));
+        f.write(&w, sizeof(w));
+    }
+}
+
+void SparseMatrix::load(const eckit::PathName &path)  {
+
+    eckit::BufferedHandle f(path.fileHandle());
+
+    f.openForRead();
+    eckit::AutoClose closer(f);
+
+    // read inpts, outpts sizes of matrix
+
+    Index inner, outer;
+
+    f.read(&inner, sizeof(inner));
+    f.read(&outer, sizeof(outer));
+
+    Index npts;
+    f.read(&npts, sizeof(npts));
+
+    // read total sparse points of matrix (so we can reserve)
+
+    std::vector<Triplet > insertions;
+
+    insertions.reserve(npts);
+
+    // read the values
+
+    for (size_t i = 0; i < npts; i++) {
+        Index x, y;
+        double w;
+        f.read(&x, sizeof(x));
+        f.read(&y, sizeof(y));
+        f.read(&w, sizeof(w));
+        insertions.push_back(Triplet(x, y, w));
+    }
+
+    // check matrix is correctly sized
+    // note that Weigths::Matrix is row-major, so rows are outer size
+
+    ASSERT(rows() == outer);
+    ASSERT(cols() == inner);
+
+    // set the weights from the triplets
+
+    setFromTriplets(insertions);
 }
 
 //-----------------------------------------------------------------------------

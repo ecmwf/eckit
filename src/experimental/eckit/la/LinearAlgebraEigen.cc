@@ -81,8 +81,16 @@ void LinearAlgebraEigen::spmv(const SparseMatrix& A, const Vector& x, Vector& y)
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraEigen::spmm(const SparseMatrix&, const Matrix&, Matrix&) const {
-    NOTIMP;
+void LinearAlgebraEigen::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
+    ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
+    // Eigen requires non-const pointers to the data
+    Eigen::MappedSparseMatrix<Scalar, Eigen::RowMajor, Index> Ai(A.rows(), A.cols(), A.nonZeros(),
+                                                                 const_cast<Index*>(A.outer()),
+                                                                 const_cast<Index*>(A.inner()),
+                                                                 const_cast<Scalar*>(A.data()));
+    Eigen::MatrixXd::MapType Bi = Eigen::MatrixXd::Map( const_cast<Scalar*>(B.data()), B.rows(), B.cols() );
+    Eigen::MatrixXd::MapType Ci = Eigen::MatrixXd::Map( C.data(), C.rows(), C.cols() );
+    Ci = Ai*Bi;
 }
 
 //-----------------------------------------------------------------------------

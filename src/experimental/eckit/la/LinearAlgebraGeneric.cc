@@ -71,8 +71,15 @@ void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& 
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraGeneric::spmm(const SparseMatrix&, const Matrix&, Matrix&) const {
-    NOTIMP;
+void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
+    ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
+    const Index* outer = A.outer();
+    const Index* inner = A.inner();
+    const Scalar* val = A.data();
+    for (size_t r = 0; r < A.rows(); ++r)
+        for (Index oi = outer[r]; oi < outer[r+1]; ++oi)
+            for (size_t c = 0; c < B.cols(); ++c)
+                C(r, c) += val[oi] * B(inner[oi], c);
 }
 
 //-----------------------------------------------------------------------------

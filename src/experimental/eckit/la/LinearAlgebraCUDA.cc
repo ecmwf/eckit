@@ -207,8 +207,56 @@ void LinearAlgebraCUDA::spmv(const SparseMatrix& A, const Vector& x, Vector& y) 
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraCUDA::spmm(const SparseMatrix&, const Matrix&, Matrix&) const {
-    NOTIMP;
+void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
+    ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
+    const size_t sizeAnnz = A.nonZeros()*sizeof(Scalar);
+    const size_t sizeAptr = (A.rows()+1)*sizeof(Scalar);
+    const size_t sizeB = B.rows()*B.cols()*sizeof(Scalar);
+    const size_t sizeC = A.rows()*B.cols()*sizeof(Scalar);
+
+    Index* d_A_rowptr; ///< device memory matrix A row pointers
+    Index* d_A_colidx; ///< device memory matrix A col indices
+    Scalar* d_A_values; ///< device memory matrix A values
+    Scalar* d_B; ///< device memory matrix B
+    Scalar* d_C; ///< device memory matrix C
+    cusparseHandle_t handle;
+    cusparseMatDescr_t descr;
+
+    CALL_CUDA( cudaMalloc((void**) &d_A_rowptr, sizeAptr) );
+    CALL_CUDA( cudaMalloc((void**) &d_A_colidx, sizeAnnz) );
+    CALL_CUDA( cudaMalloc((void**) &d_A_values, sizeAnnz) );
+    CALL_CUDA( cudaMalloc((void**) &d_B, sizeB) );
+    CALL_CUDA( cudaMalloc((void**) &d_C, sizeC) );
+
+    CALL_CUSPARSE( cusparseCreate(&handle) );
+    CALL_CUSPARSE( cusparseCreateMatDescr(&descr) );
+    cusparseSetMatType(descr,CUSPARSE_MATRIX_TYPE_GENERAL);
+    cusparseSetMatIndexBase(descr,CUSPARSE_INDEX_BASE_ZERO);
+
+    CALL_CUDA( cudaMemcpy(d_A_rowptr, A.outer(), sizeAptr, cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_A_colidx, A.inner(), sizeAnnz, cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_A_values, A.data(),  sizeAnnz, cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_B,        B.data(),  sizeB,    cudaMemcpyHostToDevice) );
+
+    // FIXME: Should we transpose B and use cusparseDcsrmm2 instread?
+    // http://docs.nvidia.com/cuda/cusparse/index.html#cusparse-lt-t-gt-csrmm2
+    const Scalar alpha = 1.0;
+    const Scalar beta  = 0.0;
+    CALL_CUSPARSE( cusparseDcsrmm(handle, CUSPARSE_OPERATION_NON_TRANSPOSE,
+                                  A.rows(), A.cols(), B.cols(), A.nonZeros(),
+                                  &alpha, descr, d_A_values, d_A_rowptr, d_A_colidx,
+                                  d_B, B.rows(), &beta, d_C, C.rows()) );
+
+    CALL_CUDA( cudaMemcpy(C.data(), d_C, sizeC, cudaMemcpyDeviceToHost) );
+
+    CALL_CUSPARSE( cusparseDestroyMatDescr(descr) );
+    CALL_CUSPARSE( cusparseDestroy(handle) );
+
+    CALL_CUDA( cudaFree(d_A_rowptr) );
+    CALL_CUDA( cudaFree(d_A_colidx) );
+    CALL_CUDA( cudaFree(d_A_values) );
+    CALL_CUDA( cudaFree(d_B) );
+    CALL_CUDA( cudaFree(d_C) );
 }
 
 //-----------------------------------------------------------------------------

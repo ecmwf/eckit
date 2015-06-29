@@ -139,12 +139,17 @@ BOOST_AUTO_TEST_CASE(test_identity) {
 }
 
 BOOST_AUTO_TEST_CASE(test_prune) {
-    A.data()[1] = 0.;
+    SparseMatrix A(S(3, 3, 5,
+                     0, 0, 0.,
+                     0, 2, 1.,
+                     1, 0, 0.,
+                     1, 1, 2.,
+                     2, 2, 0.));
     A.prune();
-    BOOST_CHECK_EQUAL(A.nonZeros(), 3);
-    Index outer[4] = {0, 1, 2, 3};
-    Index inner[3] = {0, 1, 2};
-    Scalar data[3] = {2., 2., 2.};
+    BOOST_CHECK_EQUAL(A.nonZeros(), 2);
+    Index outer[4] = {0, 1, 2, 2};
+    Index inner[2] = {2, 1};
+    Scalar data[2] = {1., 2.};
     test(A, outer, inner, data);
 }
 

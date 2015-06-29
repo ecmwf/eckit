@@ -84,9 +84,9 @@ public:
     // maybe make them private and make these classes friends
 
     /// @returns number of non-zeros
-    Size nonZeros() const { return v_.size(); }
+    Size nonZeros() const { return data_.size(); }
     /// @returns read-only view of the data vector
-    const Scalar* data() const { return v_.data(); }
+    const Scalar* data() const { return data_.data(); }
     /// @returns read-only view of the outer index vector
     const Index* outer() const { return outer_.data(); }
     /// @returns read-only view of the inner index vector
@@ -97,15 +97,15 @@ private:
     class _InnerIterator {
     public:
         _InnerIterator(SparseMatrix& m, Index outer);
-        Scalar value() const { return m_.v_[inner_]; }
+        Scalar value() const { return matrix_.data_[inner_]; }
         Index row() const { return outer_; }
-        Index col() const { return m_.inner_[inner_]; }
-        Index index() const { return m_.inner_[inner_]; }
-        operator bool() const { return inner_ != m_.outer_[outer_+1]; }
+        Index col() const { return matrix_.inner_[inner_]; }
+        Index index() const { return matrix_.inner_[inner_]; }
+        operator bool() const { return inner_ != matrix_.outer_[outer_+1]; }
         void operator++() { ++inner_; }
         Scalar operator*() const;
     protected:
-        SparseMatrix& m_;
+        SparseMatrix& matrix_;
         Index outer_;
         Index inner_;
     };
@@ -115,16 +115,16 @@ public:
 
     class InnerIterator : public _InnerIterator {
     public:
-        InnerIterator(SparseMatrix& m, Index outer):
-            _InnerIterator(m, outer) {}
-        Scalar& value() { return m_.v_[inner_]; }
+        InnerIterator(SparseMatrix& matrix, Index outer):
+            _InnerIterator(matrix, outer) {}
+        Scalar& value() { return matrix_.data_[inner_]; }
         Scalar& operator*();
     };
 
     class ConstInnerIterator : public _InnerIterator  {
     public:
-        ConstInnerIterator(const SparseMatrix& m, Index outer):
-            _InnerIterator(const_cast<SparseMatrix&>(m), outer) {}
+        ConstInnerIterator(const SparseMatrix& matrix, Index outer):
+            _InnerIterator(const_cast<SparseMatrix&>(matrix), outer) {}
     };
 
 private:
@@ -132,7 +132,7 @@ private:
 
     // members
 
-    ScalarStorage v_;     /// Data
+    ScalarStorage data_;     /// Data
     IndexStorage outer_;  /// Starts of rows
     IndexStorage inner_;  /// Column indices
     Index rows_;          /// Number of rows

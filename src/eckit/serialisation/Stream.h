@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -114,6 +114,12 @@ public:
     void startObject();
     void endObject();
 
+    void writeBlob(const void*, size_t);
+    void readBlob(void*, size_t);
+
+    void writeLargeBlob(const void*, size_t);
+    void readLargeBlob(void*, size_t);
+
     virtual void rewind()      { NOTIMP; }
     virtual void closeOutput() { NOTIMP; }
     virtual void closeInput()  { NOTIMP; }
@@ -130,7 +136,7 @@ public:
 
 
     static void dump(std::ostream&,const char*, size_t);
-    
+
 
 protected:
 
@@ -167,6 +173,7 @@ private:
         tag_start_rec,
         tag_end_rec,
         tag_eof,
+        tag_large_blob, // For blobs >= 2Gb
         last_tag
     };
 

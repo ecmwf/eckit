@@ -14,7 +14,6 @@
 #include "eckit/eckit.h"
 
 
-#include "eckit/io/Buffer.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/io/BufferedHandle.h"
@@ -39,18 +38,18 @@ SparseMatrix::SparseMatrix() {}
 //-----------------------------------------------------------------------------
 
 SparseMatrix::SparseMatrix(SparseMatrix::Size rows, SparseMatrix::Size cols)
-  : rows_(rows), cols_(cols) {}
+    : rows_(rows), cols_(cols) {}
 
 //-----------------------------------------------------------------------------
 
-SparseMatrix::SparseMatrix(Stream& s) {
+SparseMatrix::SparseMatrix(Stream &s) {
     decode(s);
 }
 
 //-----------------------------------------------------------------------------
 
 void SparseMatrix::resize(SparseMatrix::Size rows, SparseMatrix::Size cols) {
-    v_.clear();
+    data_.clear();
     outer_.clear();
     inner_.clear();
     rows_ = rows;
@@ -62,15 +61,15 @@ void SparseMatrix::resize(SparseMatrix::Size rows, SparseMatrix::Size cols) {
 void SparseMatrix::reserve(SparseMatrix::Size nnz) {
     // Rows and columns must have been set before
     ASSERT( rows_ > 0 && cols_ > 0 );
-    outer_.resize(rows_+1);
+    outer_.resize(rows_ + 1);
     inner_.resize(nnz);
-    v_.resize(nnz);
+    data_.resize(nnz);
 }
 
 //-----------------------------------------------------------------------------
 
-void SparseMatrix::swap(SparseMatrix& other) {
-    std::swap(v_, other.v_);
+void SparseMatrix::swap(SparseMatrix &other) {
+    std::swap(data_, other.data_);
     std::swap(outer_, other.outer_);
     std::swap(inner_, other.inner_);
     std::swap(rows_, other.rows_);
@@ -79,7 +78,7 @@ void SparseMatrix::swap(SparseMatrix& other) {
 
 //-----------------------------------------------------------------------------
 
-void SparseMatrix::setFromTriplets(const std::vector<Triplet>& triplets) {
+void SparseMatrix::setFromTriplets(const std::vector<Triplet> &triplets) {
     // Allocate memory (we are promised that there is 1 triplet per non-zero)
     reserve(triplets.size());
 
@@ -97,7 +96,7 @@ void SparseMatrix::setFromTriplets(const std::vector<Triplet>& triplets) {
             outer_[++row] = Index(pos);
         }
         inner_[pos] = it->col();
-        v_[pos] = it->value();
+        data_[pos] = it->value();
     }
 
     while (row < rows_) {
@@ -109,7 +108,7 @@ void SparseMatrix::setFromTriplets(const std::vector<Triplet>& triplets) {
 
 void SparseMatrix::setIdentity() {
     Index nnz = std::min(rows_, cols_);
-    outer_.resize(rows_+1);
+    outer_.resize(rows_ + 1);
     inner_.resize(nnz);
     for (Index i = 0; i < nnz; ++i) {
         outer_[i] = i;
@@ -118,7 +117,7 @@ void SparseMatrix::setIdentity() {
     for (Index i = nnz; i <= rows_; ++i) {
         outer_[i] = nnz;
     }
-    v_.assign(nnz, Scalar(1));
+    data_.assign(nnz, Scalar(1));
 }
 
 //-----------------------------------------------------------------------------
@@ -130,21 +129,21 @@ void SparseMatrix::prune(SparseMatrix::Scalar val) {
     for (Index r = 0; r < rows_; ++r) {
         const Index start = outer_[r];
         outer_[r] = nnz;
-        for (Index c = start; c < outer_[r+1]; ++c)
-            if (v_[c] != val) {
-                v.push_back(v_[c]);
+        for (Index c = start; c < outer_[r + 1]; ++c)
+            if (data_[c] != val) {
+                v.push_back(data_[c]);
                 inner.push_back(inner_[c]);
                 ++nnz;
             }
     }
     outer_[rows_] = nnz;
-    std::swap(v, v_);
+    std::swap(v, data_);
     std::swap(inner, inner_);
 }
 
 //-----------------------------------------------------------------------------
 
-void SparseMatrix::encode(Stream& s) const {
+void SparseMatrix::encode(Stream &s) const {
     const Index nnz = outer_[rows_];
     s << rows_;
     s << cols_;
@@ -154,12 +153,12 @@ void SparseMatrix::encode(Stream& s) const {
     s << sizeof(Index);
     s << sizeof(Scalar);
 
-    s << Buffer(const_cast<Index*>(outer_.data()), (rows_+1)*sizeof(Index), /* dummy */ true);
-    s << Buffer(const_cast<Index*>(inner_.data()), nnz*sizeof(Index), /* dummy */ true);
-    s << Buffer(const_cast<Scalar*>(v_.data()), nnz*sizeof(Scalar), /* dummy */ true);
+    s.writeLargeBlob(&outer_[0], outer_.size() * sizeof(Index));
+    s.writeLargeBlob(&inner_[0], inner_.size() * sizeof(Index));
+    s.writeLargeBlob(&data_[0], data_.size() * sizeof(Scalar));
 }
 
-void SparseMatrix::decode(Stream& s) {
+void SparseMatrix::decode(Stream &s) {
 
     s >> rows_;
     s >> cols_;
@@ -176,38 +175,35 @@ void SparseMatrix::decode(Stream& s) {
     size_t scalar_size;
     s >> scalar_size; ASSERT(scalar_size == sizeof(Scalar));
 
-    Buffer outer(const_cast<Index*>(outer_.data()), (rows_+1)*sizeof(Index), /* dummy */ true);
-    Buffer inner(const_cast<Index*>(inner_.data()), nnz*sizeof(Index), /* dummy */ true);
-    Buffer data(const_cast<Scalar*>(v_.data()), nnz*sizeof(Scalar), /* dummy */ true);
-    s >> outer;
-    s >> inner;
-    s >> data;
+    s.readLargeBlob(&outer_[0], outer_.size() * sizeof(Index));
+    s.readLargeBlob(&inner_[0], inner_.size() * sizeof(Index));
+    s.readLargeBlob(&data_[0], data_.size() * sizeof(Scalar));
+
 }
 
 //-----------------------------------------------------------------------------
 
-Stream& operator<<(Stream& s, const SparseMatrix& v) {
+Stream &operator<<(Stream &s, const SparseMatrix &v) {
     v.encode(s);
     return s;
 }
 
-SparseMatrix::_InnerIterator::_InnerIterator(SparseMatrix& m, SparseMatrix::Index outer)
-    : m_(m), outer_(outer), inner_(m_.outer_[outer])
-{
+SparseMatrix::_InnerIterator::_InnerIterator(SparseMatrix &m, SparseMatrix::Index outer)
+    : matrix_(m), outer_(outer), inner_(matrix_.outer_[outer]) {
     ASSERT(outer >= 0);
     ASSERT(outer < m.rows_);
     ASSERT(inner_ >= 0);
-    ASSERT(inner_ <= m_.v_.size());
+    ASSERT(inner_ <= matrix_.data_.size());
 }
 
 SparseMatrix::Scalar SparseMatrix::_InnerIterator::operator*() const {
-    ASSERT(inner_ < m_.v_.size());
-    return m_.v_[inner_];
+    ASSERT(inner_ < matrix_.data_.size());
+    return matrix_.data_[inner_];
 }
 
-SparseMatrix::Scalar& SparseMatrix::InnerIterator::operator*() {
-    ASSERT(inner_ < m_.v_.size());
-    return m_.v_[inner_];
+SparseMatrix::Scalar &SparseMatrix::InnerIterator::operator*() {
+    ASSERT(inner_ < matrix_.data_.size());
+    return matrix_.data_[inner_];
 }
 
 //-----------------------------------------------------------------------------

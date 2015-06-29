@@ -71,6 +71,10 @@ Scalar LinearAlgebraCUDA::dot(const Vector& x, const Vector& y) const {
     CALL_CUDA( cudaMemcpy(d_x, x.data(), size, cudaMemcpyHostToDevice) );
     CALL_CUDA( cudaMemcpy(d_y, y.data(), size, cudaMemcpyHostToDevice) );
 
+    // cublasStatus_t cublasDdot (cublasHandle_t handle, int n,
+    //                            const double *x, int incx,
+    //                            const double *y, int incy,
+    //                            double *result)
     CALL_CUBLAS( cublasDdot(handle, x.size(), d_x, 1, d_y, 1, &r) );
 
     CALL_CUBLAS( cublasDestroy(handle) );
@@ -105,8 +109,14 @@ void LinearAlgebraCUDA::gemv(const Matrix& A, const Vector& x, Vector& y) const 
 
     const Scalar alpha = 1.0;
     const Scalar beta  = 0.0;
-    CALL_CUBLAS( cublasDgemv(handle, CUBLAS_OP_N, A.rows(), A.cols(),
-                             &alpha, d_A, A.rows(), d_x, 1, &beta, d_y, 1) );
+    // cublasStatus_t cublasDgemv(cublasHandle_t handle, cublasOperation_t trans,
+    //                            int m, int n,
+    //                            const double *alpha, const double *A, int lda, const double *x, int incx,
+    //                            const double *beta, double *y, int incy)
+    CALL_CUBLAS( cublasDgemv(handle, CUBLAS_OP_N,
+                             A.rows(), A.cols(),
+                             &alpha, d_A, A.rows(), d_x, 1,
+                             &beta, d_y, 1) );
 
     CALL_CUDA( cudaMemcpy(y.data(), d_y, sizey, cudaMemcpyDeviceToHost) );
 
@@ -141,8 +151,14 @@ void LinearAlgebraCUDA::gemm(const Matrix& A, const Matrix& B, Matrix& C) const 
 
     const Scalar alpha = 1.0;
     const Scalar beta  = 0.0;
-    CALL_CUBLAS( cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, A.rows(), B.cols(), A.cols(),
-                             &alpha, d_A, A.rows(), d_B, B.rows(), &beta, d_C, A.rows()) );
+    // cublasStatus_t cublasDgemm(cublasHandle_t handle, cublasOperation_t transa, cublasOperation_t transb,
+    //                            int m, int n, int k,
+    //                            const double *alpha, const double *A, int lda, const double *B, int ldb,
+    //                            const double *beta, double *C, int ldc)
+    CALL_CUBLAS( cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
+                             A.rows(), B.cols(), A.cols(),
+                             &alpha, d_A, A.rows(), d_B, B.rows(),
+                             &beta, d_C, A.rows()) );
 
     CALL_CUDA( cudaMemcpy(C.data(), d_C, sizeC, cudaMemcpyDeviceToHost) );
 
@@ -188,9 +204,16 @@ void LinearAlgebraCUDA::spmv(const SparseMatrix& A, const Vector& x, Vector& y) 
 
     const Scalar alpha = 1.0;
     const Scalar beta  = 0.0;
+    // cusparseStatus_t
+    // cusparseDcsrmv(cusparseHandle_t handle, cusparseOperation_t transA,
+    //                int m, int n, int nnz,
+    //                const double *alpha, const cusparseMatDescr_t descrA,
+    //                const double *csrValA, const int *csrRowPtrA, const int *csrColIndA,
+    //                const double *x, const double *beta, double *y)
     CALL_CUSPARSE( cusparseDcsrmv(handle, CUSPARSE_OPERATION_NON_TRANSPOSE,
-                                  A.rows(), A.cols(), A.nonZeros(), &alpha,
-                                  descr, d_A_values, d_A_rowptr, d_A_colidx,
+                                  A.rows(), A.cols(), A.nonZeros(),
+                                  &alpha, descr,
+                                  d_A_values, d_A_rowptr, d_A_colidx,
                                   d_x, &beta, d_y) );
 
     CALL_CUDA( cudaMemcpy(y.data(), d_y, sizey, cudaMemcpyDeviceToHost) );
@@ -242,9 +265,16 @@ void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) 
     // http://docs.nvidia.com/cuda/cusparse/index.html#cusparse-lt-t-gt-csrmm2
     const Scalar alpha = 1.0;
     const Scalar beta  = 0.0;
+    // cusparseStatus_t
+    // cusparseDcsrmm(cusparseHandle_t handle, cusparseOperation_t transA,
+    //                int m, int n, int k, int nnz,
+    //                const double *alpha, const cusparseMatDescr_t descrA,
+    //                const double *csrValA, const int *csrRowPtrA, const int *csrColIndA,
+    //                const double *B, int ldb, const double *beta, double *C, int ldc)
     CALL_CUSPARSE( cusparseDcsrmm(handle, CUSPARSE_OPERATION_NON_TRANSPOSE,
                                   A.rows(), A.cols(), B.cols(), A.nonZeros(),
-                                  &alpha, descr, d_A_values, d_A_rowptr, d_A_colidx,
+                                  &alpha, descr,
+                                  d_A_values, d_A_rowptr, d_A_colidx,
                                   d_B, B.rows(), &beta, d_C, C.rows()) );
 
     CALL_CUDA( cudaMemcpy(C.data(), d_C, sizeC, cudaMemcpyDeviceToHost) );

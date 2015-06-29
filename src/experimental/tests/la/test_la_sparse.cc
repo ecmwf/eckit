@@ -87,18 +87,15 @@ void test(T* v, T* r, size_t s) {
 }
 
 void test(const SparseMatrix& A, const Index* outer, const Index* inner, const Scalar* data) {
-#if 0
     test(A.outer(), outer, A.rows()+1);
     test(A.inner(), inner, A.nonZeros());
     test(A.data(), data, A.nonZeros());
-#endif
 }
 
 //-----------------------------------------------------------------------------
 /// Test linear algebra interface
 
 BOOST_FIXTURE_TEST_SUITE(test_eckit_la_sparse, Fixture)
-#if 0
 
 BOOST_AUTO_TEST_CASE(test_set_from_triplets) {
     {
@@ -160,7 +157,6 @@ BOOST_AUTO_TEST_CASE(test_spmv) {
     BOOST_TEST_MESSAGE("spmv of sparse matrix and vector of nonmatching sizes should fail");
     BOOST_CHECK_THROW(linalg->spmv(A, Vector(2), y), AssertionFailed);
 }
-#endif
 
 BOOST_AUTO_TEST_SUITE_END()
 

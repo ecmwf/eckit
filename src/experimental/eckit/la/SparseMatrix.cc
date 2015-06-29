@@ -125,21 +125,20 @@ void SparseMatrix::setIdentity() {
 
 void SparseMatrix::prune(SparseMatrix::Scalar val) {
     ScalarStorage v;
-    IndexStorage outer;
     IndexStorage inner;
     Index nnz = 0;
     for (Index r = 0; r < rows_; ++r) {
-        outer.push_back(nnz);
-        for (Index c = outer_[r]; c < outer_[r+1]; ++c)
+        const Index start = outer_[r];
+        outer_[r] = nnz;
+        for (Index c = start; c < outer_[r+1]; ++c)
             if (v_[c] != val) {
                 v.push_back(v_[c]);
                 inner.push_back(inner_[c]);
                 ++nnz;
             }
     }
-    outer.push_back(nnz);
+    outer_[rows_] = nnz;
     std::swap(v, v_);
-    std::swap(outer, outer_);
     std::swap(inner, inner_);
 }
 

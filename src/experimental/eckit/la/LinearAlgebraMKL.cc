@@ -72,6 +72,8 @@ void LinearAlgebraMKL::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
 
 void LinearAlgebraMKL::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
     ASSERT( x.size() == A.cols() && y.size() == A.rows() );
+    // We expect indices to be 0-based
+    ASSERT( A.outer()[0] == 0 );
     MKL_INT m = A.rows();
     MKL_INT k = A.cols();
     double alpha = 1.;
@@ -90,6 +92,8 @@ void LinearAlgebraMKL::spmv(const SparseMatrix& A, const Vector& x, Vector& y) c
 
 void LinearAlgebraMKL::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
     ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
+    // We expect indices to be 0-based
+    ASSERT( A.outer()[0] == 0 );
     MKL_INT m = A.rows();
     MKL_INT n = C.cols();
     MKL_INT k = A.cols();

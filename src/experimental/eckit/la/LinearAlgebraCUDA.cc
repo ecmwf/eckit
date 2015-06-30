@@ -173,6 +173,8 @@ void LinearAlgebraCUDA::gemm(const Matrix& A, const Matrix& B, Matrix& C) const 
 
 void LinearAlgebraCUDA::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
     ASSERT( x.size() == A.cols() && y.size() == A.rows() );
+    // We expect indices to be 0-based
+    ASSERT( A.outer()[0] == 0 );
     const size_t sizeAnnz = A.nonZeros()*sizeof(Scalar);
     const size_t sizeAptr = (A.rows()+1)*sizeof(Scalar);
     const size_t sizex = A.cols()*sizeof(Scalar);
@@ -232,6 +234,8 @@ void LinearAlgebraCUDA::spmv(const SparseMatrix& A, const Vector& x, Vector& y) 
 
 void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
     ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
+    // We expect indices to be 0-based
+    ASSERT( A.outer()[0] == 0 );
     const size_t sizeAnnz = A.nonZeros()*sizeof(Scalar);
     const size_t sizeAptr = (A.rows()+1)*sizeof(Scalar);
     const size_t sizeB = B.rows()*B.cols()*sizeof(Scalar);

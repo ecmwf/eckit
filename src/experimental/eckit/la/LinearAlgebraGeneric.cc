@@ -59,6 +59,8 @@ void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) con
 
 void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
     ASSERT( x.size() == A.cols() && y.size() == A.rows() );
+    // We expect indices to be 0-based
+    ASSERT( A.outer()[0] == 0 );
     const Index* outer = A.outer();
     const Index* inner = A.inner();
     const Scalar* val = A.data();
@@ -73,6 +75,8 @@ void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& 
 
 void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
     ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
+    // We expect indices to be 0-based
+    ASSERT( A.outer()[0] == 0 );
     const Index* outer = A.outer();
     const Index* inner = A.inner();
     const Scalar* val = A.data();

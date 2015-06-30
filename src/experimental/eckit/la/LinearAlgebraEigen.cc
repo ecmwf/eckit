@@ -69,6 +69,8 @@ void LinearAlgebraEigen::gemm(const Matrix& A, const Matrix& B, Matrix& C) const
 
 void LinearAlgebraEigen::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
     ASSERT( x.size() == A.cols() && y.size() == A.rows() );
+    // We expect indices to be 0-based
+    ASSERT( A.outer()[0] == 0 );
     // Eigen requires non-const pointers to the data
     Eigen::MappedSparseMatrix<Scalar, Eigen::RowMajor, Index> Ai(A.rows(), A.cols(), A.nonZeros(),
                                                                  const_cast<Index*>(A.outer()),
@@ -81,8 +83,18 @@ void LinearAlgebraEigen::spmv(const SparseMatrix& A, const Vector& x, Vector& y)
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraEigen::spmm(const SparseMatrix&, const Matrix&, Matrix&) const {
-    NOTIMP;
+void LinearAlgebraEigen::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
+    ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
+    // We expect indices to be 0-based
+    ASSERT( A.outer()[0] == 0 );
+    // Eigen requires non-const pointers to the data
+    Eigen::MappedSparseMatrix<Scalar, Eigen::RowMajor, Index> Ai(A.rows(), A.cols(), A.nonZeros(),
+                                                                 const_cast<Index*>(A.outer()),
+                                                                 const_cast<Index*>(A.inner()),
+                                                                 const_cast<Scalar*>(A.data()));
+    Eigen::MatrixXd::MapType Bi = Eigen::MatrixXd::Map( const_cast<Scalar*>(B.data()), B.rows(), B.cols() );
+    Eigen::MatrixXd::MapType Ci = Eigen::MatrixXd::Map( C.data(), C.rows(), C.cols() );
+    Ci = Ai*Bi;
 }
 
 //-----------------------------------------------------------------------------

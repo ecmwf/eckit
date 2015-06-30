@@ -15,6 +15,7 @@
 #include "eckit/runtime/Context.h"
 
 #include "experimental/eckit/la/LinearAlgebraFactory.h"
+#include "experimental/eckit/la/Matrix.h"
 #include "experimental/eckit/la/SparseMatrix.h"
 #include "experimental/eckit/la/Vector.h"
 #include "util.h"
@@ -156,6 +157,14 @@ BOOST_AUTO_TEST_CASE(test_spmv) {
     test(y, V(3, -7., 4., 6.));
     BOOST_TEST_MESSAGE("spmv of sparse matrix and vector of nonmatching sizes should fail");
     BOOST_CHECK_THROW(linalg->spmv(A, Vector(2), y), AssertionFailed);
+}
+
+BOOST_AUTO_TEST_CASE(test_spmm) {
+    Matrix C(3, 2);
+    linalg->spmm(A, M(3, 2, 1., 2., 3., 4., 5., 6.), C);
+    test(C, M(3, 2, -13., -14., 6., 8., 10., 12.));
+    BOOST_TEST_MESSAGE("spmm of sparse matrix and matrix of nonmatching sizes should fail");
+    BOOST_CHECK_THROW(linalg->spmm(A, Matrix(2, 2), C), AssertionFailed);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -373,7 +373,7 @@ void Stream::writeLargeBlob(const void *buffer, size_t size) {
     unsigned long long len = size;
     ASSERT(size_t(len) == size);
 
-    std::cout << "Stream::writeLargeBlob " << size << std::endl;
+    // std::cout << "Stream::writeLargeBlob " << size << std::endl;
 
     putLong(len >> 32);
     putLong(len & 0xffffffff);
@@ -534,7 +534,7 @@ void Stream::readLargeBlob(void *buffer, size_t size) {
 
     ASSERT(size_t(len) == size);
 
-    std::cout << "Stream::readLargeBlob " << size << std::endl;
+    // std::cout << "Stream::readLargeBlob " << size << std::endl;
 
     long n = 0x80000000;
     char *p = static_cast< char *>(buffer);

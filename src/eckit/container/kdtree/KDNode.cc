@@ -39,7 +39,7 @@ template<class Traits>
 void KDNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth)
 {
     a.statsVisitNode();
-    
+
     bool left_visited = false;
     bool right_visited = false;
 
@@ -80,12 +80,16 @@ void KDNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, dou
 
         if(p.x(axis_) < this->value_.point().x(axis_))
         {
-            if(this->right_ && !right_visited) this->right(a)->nearestNeighbourX(a, p, best, max, depth+1);
+            if(this->right_ && !right_visited) {
+                this->right(a)->nearestNeighbourX(a, p, best, max, depth+1);
+            }
 
         }
         else {
 
-            if(this->left_ && !left_visited) this->left(a)->nearestNeighbourX(a, p, best, max, depth+1);
+            if(this->left_ && !left_visited) {
+                this->left(a)->nearestNeighbourX(a, p, best, max, depth+1);
+            }
         }
     }
 

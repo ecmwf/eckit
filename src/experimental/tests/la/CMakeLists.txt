@@ -12,6 +12,11 @@ ecbuild_add_test( TARGET   test_la_linalg
                   SOURCES  test_la_linalg.cc util.h
                   LIBS     eckit_la )
 
+ecbuild_add_test( TARGET     test_la_linalg_armadillo
+                  COMMAND    test_la_linalg
+                  CONDITION  ECKIT_HAVE_ARMADILLO
+                  ARGS       --log_level=message -linearAlgebraBackend armadillo )
+
 # This test seems to have a system call exit with 1 even though tests pass.
 # Ignore system errors, see also http://stackoverflow.com/a/20360334/396967
 ecbuild_add_test( TARGET     test_la_linalg_cuda

@@ -193,16 +193,16 @@ SparseMatrix::_InnerIterator::_InnerIterator(SparseMatrix &m, SparseMatrix::Inde
     ASSERT(outer >= 0);
     ASSERT(outer < m.rows_);
     ASSERT(inner_ >= 0);
-    ASSERT(inner_ <= matrix_.data_.size());
+    ASSERT(size_t(inner_) <= matrix_.data_.size());
 }
 
 SparseMatrix::Scalar SparseMatrix::_InnerIterator::operator*() const {
-    ASSERT(inner_ < matrix_.data_.size());
+    ASSERT(size_t(inner_) < matrix_.data_.size());
     return matrix_.data_[inner_];
 }
 
 SparseMatrix::Scalar &SparseMatrix::InnerIterator::operator*() {
-    ASSERT(inner_ < matrix_.data_.size());
+    ASSERT(size_t(inner_) < matrix_.data_.size());
     return matrix_.data_[inner_];
 }
 

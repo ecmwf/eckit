@@ -33,6 +33,7 @@ class LinearAlgebraFactory {
 public:
     static const LinearAlgebraBase* get();
     static const LinearAlgebraBase* get(const std::string& name);
+    static void set(const std::string& name);
     static void regist(const std::string& name, const LinearAlgebraBase*);
     static void list(std::ostream &);
 
@@ -40,16 +41,14 @@ private:
 
     class Config : public Configurable {
     public:
-        static const std::string& backend();
+        Config();
     protected:
         // -- from Configurable
         virtual std::string kind() const { return "Config"; }
         virtual std::string name() const { return "eckit"; }
         virtual void reconfigure();
     private:
-        Config();
         Resource<std::string> backend_;
-        std::string currentBackend_;
     };
 
     LinearAlgebraFactory();

@@ -16,10 +16,14 @@
 namespace eckit {
 namespace la {
 
+namespace {
+  static std::string currentBackend = "generic";
+}  // anonymous namespace
+
 //-----------------------------------------------------------------------------
 
 const LinearAlgebraBase* LinearAlgebraFactory::get() {
-    return get(Config::backend());
+    return get(currentBackend);
 }
 
 const LinearAlgebraBase* LinearAlgebraFactory::get(const std::string& name) {
@@ -28,6 +32,10 @@ const LinearAlgebraBase* LinearAlgebraFactory::get(const std::string& name) {
         throw BadParameter("Linear algebra backend " + name + " not available.", Here());
     Log::debug() << "LinearAlgebraFactory: using backend " << it->first << std::endl;
     return it->second;
+}
+
+void LinearAlgebraFactory::set(const std::string& name) {
+    currentBackend = name;
 }
 
 void LinearAlgebraFactory::regist(const std::string& name, const LinearAlgebraBase* backend) {
@@ -47,23 +55,18 @@ LinearAlgebraFactory::LinearAlgebraFactory() {}
 
 LinearAlgebraFactory &LinearAlgebraFactory::instance() {
     static LinearAlgebraFactory factory;
+    static LinearAlgebraFactory::Config config;
     return factory;
 }
 
 //-----------------------------------------------------------------------------
 
 LinearAlgebraFactory::Config::Config()
-    : backend_(this, "-linearAlgebraBackend;linearAlgebraBackend", "generic"),
-      currentBackend_(backend_.value()) {}
+    : backend_(this, "-linearAlgebraBackend;linearAlgebraBackend", "generic") {}
 
 void LinearAlgebraFactory::Config::reconfigure() {
-    currentBackend_ = backend_.value();
-    Log::info() << "Reconfiguring linear algebra backend to: " << currentBackend_ << std::endl;
-}
-
-const std::string& LinearAlgebraFactory::Config::backend() {
-    static LinearAlgebraFactory::Config config;
-    return config.currentBackend_;
+    currentBackend = backend_.value();
+    Log::info() << "Reconfiguring linear algebra backend to: " << currentBackend << std::endl;
 }
 
 //-----------------------------------------------------------------------------

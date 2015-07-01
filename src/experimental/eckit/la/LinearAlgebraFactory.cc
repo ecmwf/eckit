@@ -34,6 +34,15 @@ void LinearAlgebraFactory::regist(const std::string& name, const LinearAlgebraBa
     instance().map_.insert(std::make_pair(name, backend));
 }
 
+void LinearAlgebraFactory::list(std::ostream& out)
+{
+    const char* sep = "";
+    for (FactoryMap::const_iterator it = instance().map_.begin() ; it != instance().map_.end() ; ++it) {
+        out << sep << it->first;
+        sep = ", ";
+    }
+}
+
 void LinearAlgebraFactory::reconfigure() {
     Log::info() << "Reconfiguring linear algebra backend to: " << backend_.value() << std::endl;
 }

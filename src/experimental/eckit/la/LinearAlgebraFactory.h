@@ -39,18 +39,6 @@ public:
 
 private:
 
-    class Config : public Configurable {
-    public:
-        Config();
-    protected:
-        // -- from Configurable
-        virtual std::string kind() const { return "Config"; }
-        virtual std::string name() const { return "eckit"; }
-        virtual void reconfigure();
-    private:
-        Resource<std::string> backend_;
-    };
-
     LinearAlgebraFactory();
 
     static LinearAlgebraFactory& instance();

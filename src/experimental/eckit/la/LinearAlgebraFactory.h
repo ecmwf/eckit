@@ -28,7 +28,7 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraFactory : public Configurable {
+class LinearAlgebraFactory {
 
 public:
     static const LinearAlgebraBase* get();
@@ -36,19 +36,28 @@ public:
     static void regist(const std::string& name, const LinearAlgebraBase*);
     static void list(std::ostream &);
 
-    // -- from Configurable
-    virtual std::string kind() const { return "LinearAlgebraFactory"; }
-    virtual std::string name() const { return "eckit"; }
-    virtual void reconfigure();
-
 private:
+
+    class Config : public Configurable {
+    public:
+        static const std::string& backend();
+    protected:
+        // -- from Configurable
+        virtual std::string kind() const { return "Config"; }
+        virtual std::string name() const { return "eckit"; }
+        virtual void reconfigure();
+    private:
+        Config();
+        Resource<std::string> backend_;
+        std::string currentBackend_;
+    };
+
     LinearAlgebraFactory();
 
     static LinearAlgebraFactory& instance();
 
     typedef std::map<std::string, const LinearAlgebraBase*> FactoryMap;
     FactoryMap map_;
-    Resource<std::string> backend_;
 };
 
 //-----------------------------------------------------------------------------

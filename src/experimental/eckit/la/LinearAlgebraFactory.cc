@@ -19,7 +19,7 @@ namespace la {
 //-----------------------------------------------------------------------------
 
 const LinearAlgebraBase* LinearAlgebraFactory::get() {
-    return get(instance().backend_);
+    return get(Config::backend());
 }
 
 const LinearAlgebraBase* LinearAlgebraFactory::get(const std::string& name) {
@@ -43,16 +43,27 @@ void LinearAlgebraFactory::list(std::ostream& out)
     }
 }
 
-void LinearAlgebraFactory::reconfigure() {
-    Log::info() << "Reconfiguring linear algebra backend to: " << backend_.value() << std::endl;
-}
-
-LinearAlgebraFactory::LinearAlgebraFactory()
-    : backend_(this, "-linearAlgebraBackend;linearAlgebraBackend", "generic") {}
+LinearAlgebraFactory::LinearAlgebraFactory() {}
 
 LinearAlgebraFactory &LinearAlgebraFactory::instance() {
     static LinearAlgebraFactory factory;
     return factory;
+}
+
+//-----------------------------------------------------------------------------
+
+LinearAlgebraFactory::Config::Config()
+    : backend_(this, "-linearAlgebraBackend;linearAlgebraBackend", "generic"),
+      currentBackend_(backend_.value()) {}
+
+void LinearAlgebraFactory::Config::reconfigure() {
+    currentBackend_ = backend_.value();
+    Log::info() << "Reconfiguring linear algebra backend to: " << currentBackend_ << std::endl;
+}
+
+const std::string& LinearAlgebraFactory::Config::backend() {
+    static LinearAlgebraFactory::Config config;
+    return config.currentBackend_;
 }
 
 //-----------------------------------------------------------------------------

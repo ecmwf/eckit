@@ -381,7 +381,7 @@ void Stream::writeLargeBlob(const void *buffer, size_t size) {
     long n = 0x80000000;
     const char *p = static_cast<const char *>(buffer);
     while (size > 0) {
-        long l = size > n ? n : size;
+        long l = size > size_t(n) ? n : size;
         putBytes(p, l);
         p += l;
         size -= l;
@@ -392,9 +392,8 @@ void Stream::writeBlob(const void *buffer, size_t size) {
     T("w blob", x);
     writeTag(tag_blob);
 
-    ASSERT(long(size) == size);
-
     long len = size;
+    ASSERT(size_t(len) == size);
     ASSERT(len >= 0);
 
     putLong(len);
@@ -539,7 +538,7 @@ void Stream::readLargeBlob(void *buffer, size_t size) {
     long n = 0x80000000;
     char *p = static_cast< char *>(buffer);
     while (size > 0) {
-        long l = size > n ? n : size;
+        long l = size > size_t(n) ? n : size;
         getBytes(p, l);
         p += l;
         size -= l;

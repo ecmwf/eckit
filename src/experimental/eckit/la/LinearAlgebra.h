@@ -27,7 +27,7 @@ namespace la {
 class LinearAlgebra {
 
 public:  // static methods
-    static const LinearAlgebra* backend();
+    static const LinearAlgebra& backend();
     static void backend(const std::string& name);
     static void list(std::ostream &);
 

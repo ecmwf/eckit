@@ -52,24 +52,24 @@ BOOST_AUTO_TEST_CASE(test_list) {
 }
 
 BOOST_AUTO_TEST_CASE(test_backend) {
-    BOOST_CHECK(LinearAlgebra::backend());
+    LinearAlgebra::backend();
     LinearAlgebra::backend("generic");
-    BOOST_CHECK(LinearAlgebra::backend());
+    LinearAlgebra::backend();
 #ifdef ECKIT_HAVE_ARMADILLO
     LinearAlgebra::backend("armadillo");
-    BOOST_CHECK(LinearAlgebra::backend());
+    LinearAlgebra::backend();
 #endif
 #ifdef ECKIT_HAVE_CUDA
     LinearAlgebra::backend("cuda");
-    BOOST_CHECK(LinearAlgebra::backend());
+    LinearAlgebra::backend();
 #endif
 #ifdef ECKIT_HAVE_EIGEN
     LinearAlgebra::backend("eigen");
-    BOOST_CHECK(LinearAlgebra::backend());
+    LinearAlgebra::backend();
 #endif
 #ifdef ECKIT_HAVE_MKL
     LinearAlgebra::backend("mkl");
-    BOOST_CHECK(LinearAlgebra::backend());
+    LinearAlgebra::backend();
 #endif
     BOOST_CHECK_THROW(LinearAlgebra::backend("foo"), BadParameter);
 }

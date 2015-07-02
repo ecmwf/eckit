@@ -26,12 +26,12 @@ static std::string currentBackend = "generic";
 
 //-----------------------------------------------------------------------------
 
-const LinearAlgebra* LinearAlgebra::backend() {
+const LinearAlgebra& LinearAlgebra::backend() {
     BackendMap::const_iterator it = m.find(currentBackend);
     if (it == m.end())
         throw BadParameter("Linear algebra backend " + currentBackend + " not available.", Here());
     Log::debug() << "Using LinearAlgebra backend " << it->first << std::endl;
-    return it->second;
+    return *(it->second);
 }
 
 void LinearAlgebra::backend(const std::string& name) {

@@ -17,6 +17,8 @@
 
 #include <string>
 
+#include "eckit/memory/NonCopyable.h"
+
 #include "experimental/eckit/la/types.h"
 
 namespace eckit {
@@ -24,7 +26,7 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebra {
+class LinearAlgebra : private NonCopyable {
 
 public:  // static methods
     static const LinearAlgebra& backend();

@@ -12,7 +12,7 @@
 
 #include "ecbuild/boost_test_framework.h"
 
-#include "eckit/runtime/Context.h"
+#include "eckit/config/Resource.h"
 
 #include "experimental/eckit/la/LinearAlgebraFactory.h"
 #include "experimental/eckit/la/Matrix.h"
@@ -28,11 +28,10 @@ namespace test {
 
 //-----------------------------------------------------------------------------
 
-// Required for Resources to be initialised
+// Set linear algebra backend
 struct Setup {
     Setup() {
-        Context::instance().setup(boost::unit_test::framework::master_test_suite().argc,
-                                  boost::unit_test::framework::master_test_suite().argv);
+        LinearAlgebraFactory::set(Resource<std::string>("-linearAlgebraBackend", "generic"));
     }
 };
 

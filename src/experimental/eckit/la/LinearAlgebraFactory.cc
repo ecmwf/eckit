@@ -18,31 +18,6 @@ namespace la {
 
 namespace {
   static std::string currentBackend = "generic";
-
-  class Config : public Configurable {
-  public:
-      Config();
-  protected:
-      // -- from Configurable
-      virtual std::string kind() const { return "Config"; }
-      virtual std::string name() const { return "eckit"; }
-      virtual void reconfigure();
-  private:
-      Resource<std::string> backend_;
-  };
-
-  Config::Config()
-      : backend_(this, "-linearAlgebraBackend;linearAlgebraBackend", "generic") {
-      reconfigure();
-  }
-
-  void Config::reconfigure() {
-      currentBackend = backend_.value();
-      Log::info() << "Reconfiguring linear algebra backend to: " << currentBackend << std::endl;
-  }
-
-  static Config config;
-
 }  // anonymous namespace
 
 //-----------------------------------------------------------------------------
@@ -59,6 +34,7 @@ void LinearAlgebraFactory::set(const std::string& name) {
     FactoryMap::const_iterator it = instance().map_.find(name);
     if (it == instance().map_.end())
         throw BadParameter("Linear algebra backend " + name + " not available.", Here());
+    Log::info() << "LinearAlgebraFactory: setting backend to " << name << std::endl;
     currentBackend = name;
 }
 

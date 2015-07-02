@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(test_list) {
 #endif
 }
 
-BOOST_AUTO_TEST_CASE(test_get) {
+BOOST_AUTO_TEST_CASE(test_set) {
     BOOST_CHECK(LinearAlgebraFactory::get());
     LinearAlgebraFactory::set("generic");
     BOOST_CHECK(LinearAlgebraFactory::get());
@@ -69,8 +69,7 @@ BOOST_AUTO_TEST_CASE(test_get) {
     LinearAlgebraFactory::set("mkl");
     BOOST_CHECK(LinearAlgebraFactory::get());
 #endif
-    LinearAlgebraFactory::set("foo");
-    BOOST_CHECK_THROW(LinearAlgebraFactory::get(), BadParameter);
+    BOOST_CHECK_THROW(LinearAlgebraFactory::set("foo"), BadParameter);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -56,6 +56,9 @@ const LinearAlgebraBase* LinearAlgebraFactory::get() {
 }
 
 void LinearAlgebraFactory::set(const std::string& name) {
+    FactoryMap::const_iterator it = instance().map_.find(name);
+    if (it == instance().map_.end())
+        throw BadParameter("Linear algebra backend " + name + " not available.", Here());
     currentBackend = name;
 }
 

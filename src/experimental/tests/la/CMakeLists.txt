@@ -6,6 +6,12 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
+ecbuild_add_test( TARGET   test_la_factory
+                  ARGS     --log_level=message
+                  BOOST
+                  SOURCES  test_la_factory.cc
+                  LIBS     eckit_la )
+
 ecbuild_add_test( TARGET   test_la_linalg
                   ARGS     --log_level=message
                   BOOST

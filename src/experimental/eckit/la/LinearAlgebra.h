@@ -8,12 +8,16 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   LinearAlgebraBase.h
+/// @file   LinearAlgebra.h
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_la_LinearAlgebraBase_h
-#define eckit_la_LinearAlgebraBase_h
+#ifndef eckit_la_LinearAlgebra_h
+#define eckit_la_LinearAlgebra_h
+
+#include <string>
+
+#include "eckit/memory/NonCopyable.h"
 
 #include "experimental/eckit/la/types.h"
 
@@ -22,7 +26,12 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraBase {
+class LinearAlgebra : private NonCopyable {
+
+public:  // static methods
+    static const LinearAlgebra& backend();
+    static void backend(const std::string& name);
+    static void list(std::ostream &);
 
 public:  // virtual methods
 
@@ -31,6 +40,9 @@ public:  // virtual methods
     virtual void gemm(const Matrix&, const Matrix&, Matrix&) const = 0;
     virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const = 0;
     virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const = 0;
+
+protected:
+    LinearAlgebra(const std::string& name);
 };
 
 //-----------------------------------------------------------------------------

@@ -19,14 +19,14 @@
 
 #ifdef ECKIT_HAVE_MKL
 
-#include "experimental/eckit/la/LinearAlgebraBase.h"
+#include "experimental/eckit/la/LinearAlgebra.h"
 
 namespace eckit {
 namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraMKL : public LinearAlgebraBase {
+class LinearAlgebraMKL : public LinearAlgebra {
 
 public:
     LinearAlgebraMKL();

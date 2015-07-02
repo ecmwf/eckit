@@ -17,7 +17,6 @@
 
 //-----------------------------------------------------------------------------
 
-#include "experimental/eckit/la/LinearAlgebraFactory.h"
 #include "experimental/eckit/la/LinearAlgebraMKL.h"
 #include "experimental/eckit/la/Matrix.h"
 #include "experimental/eckit/la/SparseMatrix.h"
@@ -30,9 +29,7 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-LinearAlgebraMKL::LinearAlgebraMKL() {
-    LinearAlgebraFactory::regist("mkl", this);
-}
+LinearAlgebraMKL::LinearAlgebraMKL() : LinearAlgebra("mkl") {}
 
 Scalar LinearAlgebraMKL::dot(const Vector& x, const Vector& y) const {
     ASSERT( x.size() == y.size() );

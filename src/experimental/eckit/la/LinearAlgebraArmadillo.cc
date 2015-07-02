@@ -17,7 +17,6 @@
 #include <armadillo>
 
 #include "experimental/eckit/la/LinearAlgebraArmadillo.h"
-#include "experimental/eckit/la/LinearAlgebraFactory.h"
 #include "experimental/eckit/la/Matrix.h"
 #include "experimental/eckit/la/Vector.h"
 
@@ -28,9 +27,7 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-LinearAlgebraArmadillo::LinearAlgebraArmadillo() {
-    LinearAlgebraFactory::regist("armadillo", this);
-}
+LinearAlgebraArmadillo::LinearAlgebraArmadillo() : LinearAlgebra("armadillo") {}
 
 //-----------------------------------------------------------------------------
 

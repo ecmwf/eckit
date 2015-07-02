@@ -1,14 +1,13 @@
 list( APPEND eckit_la_srcs
 types.h
+LinearAlgebra.cc
+LinearAlgebra.h
 LinearAlgebraArmadillo.cc
 LinearAlgebraArmadillo.h
-LinearAlgebraBase.h
 LinearAlgebraCUDA.cc
 LinearAlgebraCUDA.h
 LinearAlgebraEigen.cc
 LinearAlgebraEigen.h
-LinearAlgebraFactory.cc
-LinearAlgebraFactory.h
 LinearAlgebraGeneric.cc
 LinearAlgebraGeneric.h
 LinearAlgebraMKL.cc

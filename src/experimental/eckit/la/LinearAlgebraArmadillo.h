@@ -19,14 +19,14 @@
 
 #ifdef ECKIT_HAVE_ARMADILLO
 
-#include "experimental/eckit/la/LinearAlgebraBase.h"
+#include "experimental/eckit/la/LinearAlgebra.h"
 
 namespace eckit {
 namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraArmadillo : public LinearAlgebraBase {
+class LinearAlgebraArmadillo : public LinearAlgebra {
 
 public:
     LinearAlgebraArmadillo();

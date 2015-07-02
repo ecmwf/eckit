@@ -9,51 +9,76 @@
  */
 
 #include "eckit/exception/Exceptions.h"
-#include "experimental/eckit/la/LinearAlgebra.h"
 #include "eckit/log/Log.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
+
+#include "experimental/eckit/la/LinearAlgebra.h"
 
 namespace eckit {
 namespace la {
 
 namespace {
 
-typedef std::map<std::string, const LinearAlgebra*> BackendMap;
-static BackendMap m;
+static pthread_once_t once = PTHREAD_ONCE_INIT;
 
-static std::string currentBackend = "generic";
+static Mutex *local_mutex = 0;
+
+typedef std::map<std::string, const LinearAlgebra*> BackendMap;
+static BackendMap* m = 0;
+
+static std::string* currentBackend = 0;
+
+static void init() {
+    local_mutex = new Mutex;
+    m = new BackendMap;
+    currentBackend = new std::string("generic");
+}
 
 }  // anonymous namespace
 
 //-----------------------------------------------------------------------------
 
 const LinearAlgebra& LinearAlgebra::backend() {
-    BackendMap::const_iterator it = m.find(currentBackend);
-    if (it == m.end())
-        throw BadParameter("Linear algebra backend " + currentBackend + " not available.", Here());
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(local_mutex);
+
+    BackendMap::const_iterator it = m->find(*currentBackend);
+    if (it == m->end())
+        throw BadParameter("Linear algebra backend " + *currentBackend + " not available.", Here());
     Log::debug() << "Using LinearAlgebra backend " << it->first << std::endl;
     return *(it->second);
 }
 
 void LinearAlgebra::backend(const std::string& name) {
-    BackendMap::const_iterator it = m.find(name);
-    if (it == m.end())
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(local_mutex);
+
+    BackendMap::const_iterator it = m->find(name);
+    if (it == m->end())
         throw BadParameter("Linear algebra backend " + name + " not available.", Here());
     Log::info() << "Setting LinearAlgebra backend to " << name << std::endl;
-    currentBackend = name;
+    *currentBackend = name;
 }
 
 void LinearAlgebra::list(std::ostream& out)
 {
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(local_mutex);
+
     const char* sep = "";
-    for (BackendMap::const_iterator it = m.begin() ; it != m.end() ; ++it) {
+    for (BackendMap::const_iterator it = m->begin() ; it != m->end() ; ++it) {
         out << sep << it->first;
         sep = ", ";
     }
 }
 
 LinearAlgebra::LinearAlgebra(const std::string& name) {
-    ASSERT(m.find(name) == m.end());
-    m[name] = this;
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(local_mutex);
+
+    ASSERT(m->find(name) == m->end());
+    (*m)[name] = this;
 }
 
 //-----------------------------------------------------------------------------

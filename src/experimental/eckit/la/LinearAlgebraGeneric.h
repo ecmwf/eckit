@@ -27,13 +27,17 @@ class LinearAlgebraGeneric : public LinearAlgebra {
 public:
     LinearAlgebraGeneric();
 
-public:  // virtual methods
+private:
+
+    // Overridden methods
 
     virtual Scalar dot(const Vector&, const Vector&) const;
     virtual void gemv(const Matrix&, const Vector&, Vector&) const;
     virtual void gemm(const Matrix&, const Matrix&, Matrix&) const;
     virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const;
     virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const;
+    virtual void print(std::ostream&) const;
+
 };
 
 //-----------------------------------------------------------------------------

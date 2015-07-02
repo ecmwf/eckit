@@ -26,6 +26,12 @@ LinearAlgebraGeneric::LinearAlgebraGeneric() : LinearAlgebra("generic") {}
 
 //-----------------------------------------------------------------------------
 
+void LinearAlgebraGeneric::print(std::ostream& out) const {
+    out << "LinearAlgebraGeneric[]";
+}
+
+//-----------------------------------------------------------------------------
+
 Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
     ASSERT(x.size() == y.size());
     Scalar r = 0;

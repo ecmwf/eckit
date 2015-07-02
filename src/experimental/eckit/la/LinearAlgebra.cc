@@ -24,10 +24,10 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 
 static Mutex *local_mutex = 0;
 
-typedef std::map<std::string, const LinearAlgebra*> BackendMap;
-static BackendMap* m = 0;
+typedef std::map<std::string, const LinearAlgebra *> BackendMap;
+static BackendMap *m = 0;
 
-static std::string* currentBackend = 0;
+static std::string *currentBackend = 0;
 
 static void init() {
     local_mutex = new Mutex;
@@ -39,41 +39,41 @@ static void init() {
 
 //-----------------------------------------------------------------------------
 
-const LinearAlgebra& LinearAlgebra::backend() {
+const LinearAlgebra &LinearAlgebra::backend() {
     pthread_once(&once, init);
     AutoLock<Mutex> lock(local_mutex);
 
     BackendMap::const_iterator it = m->find(*currentBackend);
-    if (it == m->end())
+    if (it == m->end()) {
+        eckit::Log::error() << "No Linear algebra backend named [" << *currentBackend << "]" << std::endl;
+        eckit::Log::error() << "Linear algebra backends are:" << std::endl;
+        for (it = m->begin() ; it != m->end() ; ++it)
+            eckit::Log::error() << "   " << (*it).first << std::endl;
         throw BadParameter("Linear algebra backend " + *currentBackend + " not available.", Here());
+    }
     Log::debug() << "Using LinearAlgebra backend " << it->first << std::endl;
     return *(it->second);
 }
 
-void LinearAlgebra::backend(const std::string& name) {
+void LinearAlgebra::backend(const std::string &name) {
     pthread_once(&once, init);
     AutoLock<Mutex> lock(local_mutex);
-
-    BackendMap::const_iterator it = m->find(name);
-    if (it == m->end())
-        throw BadParameter("Linear algebra backend " + name + " not available.", Here());
-    Log::info() << "Setting LinearAlgebra backend to " << name << std::endl;
     *currentBackend = name;
+    Log::info() << "Setting LinearAlgebra backend to " << backend() << std::endl;
 }
 
-void LinearAlgebra::list(std::ostream& out)
-{
+void LinearAlgebra::list(std::ostream &out) {
     pthread_once(&once, init);
     AutoLock<Mutex> lock(local_mutex);
 
-    const char* sep = "";
+    const char *sep = "";
     for (BackendMap::const_iterator it = m->begin() ; it != m->end() ; ++it) {
         out << sep << it->first;
         sep = ", ";
     }
 }
 
-LinearAlgebra::LinearAlgebra(const std::string& name) {
+LinearAlgebra::LinearAlgebra(const std::string &name) {
     pthread_once(&once, init);
     AutoLock<Mutex> lock(local_mutex);
 

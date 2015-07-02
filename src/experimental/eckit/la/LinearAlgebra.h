@@ -18,8 +18,8 @@
 #include <string>
 
 #include "eckit/memory/NonCopyable.h"
-
 #include "experimental/eckit/la/types.h"
+
 
 namespace eckit {
 namespace la {
@@ -43,6 +43,15 @@ public:  // virtual methods
 
 protected:
     LinearAlgebra(const std::string& name);
+
+    virtual void print(std::ostream&) const = 0;
+
+    // -- Friends
+
+    friend std::ostream &operator<<(std::ostream &s, const LinearAlgebra &p) {
+        p.print(s);
+        return s;
+    }
 };
 
 //-----------------------------------------------------------------------------

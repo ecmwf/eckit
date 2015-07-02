@@ -31,6 +31,12 @@ LinearAlgebraArmadillo::LinearAlgebraArmadillo() : LinearAlgebra("armadillo") {}
 
 //-----------------------------------------------------------------------------
 
+void LinearAlgebraArmadillo::print(std::ostream& out) const {
+    out << "LinearAlgebraArmadillo[]";
+}
+
+//-----------------------------------------------------------------------------
+
 Scalar LinearAlgebraArmadillo::dot(const Vector& x, const Vector& y) const {
     ASSERT( x.size() == y.size() );
     // Armadillo requires non-const pointers to the data for views without copy

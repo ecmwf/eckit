@@ -32,6 +32,12 @@ LinearAlgebraEigen::LinearAlgebraEigen() : LinearAlgebra("eigen") {}
 
 //-----------------------------------------------------------------------------
 
+void LinearAlgebraEigen::print(std::ostream& out) const {
+    out << "LinearAlgebraEigen[]";
+}
+
+//-----------------------------------------------------------------------------
+
 Scalar LinearAlgebraEigen::dot(const Vector& x, const Vector& y) const {
     ASSERT( x.size() == y.size() );
     // Eigen requires non-const pointers to the data

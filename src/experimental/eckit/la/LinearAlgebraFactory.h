@@ -21,7 +21,7 @@
 #include "eckit/config/Configurable.h"
 #include "eckit/config/Resource.h"
 
-#include "experimental/eckit/la/LinearAlgebraBase.h"
+#include "experimental/eckit/la/LinearAlgebra.h"
 
 namespace eckit {
 namespace la {
@@ -31,9 +31,9 @@ namespace la {
 class LinearAlgebraFactory {
 
 public:
-    static const LinearAlgebraBase* get();
+    static const LinearAlgebra* get();
     static void set(const std::string& name);
-    static void regist(const std::string& name, const LinearAlgebraBase*);
+    static void regist(const std::string& name, const LinearAlgebra*);
     static void list(std::ostream &);
 
 private:
@@ -42,7 +42,7 @@ private:
 
     static LinearAlgebraFactory& instance();
 
-    typedef std::map<std::string, const LinearAlgebraBase*> FactoryMap;
+    typedef std::map<std::string, const LinearAlgebra*> FactoryMap;
     FactoryMap map_;
 };
 

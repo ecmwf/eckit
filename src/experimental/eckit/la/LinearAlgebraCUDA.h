@@ -19,14 +19,14 @@
 
 #ifdef ECKIT_HAVE_CUDA
 
-#include "experimental/eckit/la/LinearAlgebraBase.h"
+#include "experimental/eckit/la/LinearAlgebra.h"
 
 namespace eckit {
 namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraCUDA : public LinearAlgebraBase {
+class LinearAlgebraCUDA : public LinearAlgebra {
 
 public:
     LinearAlgebraCUDA();

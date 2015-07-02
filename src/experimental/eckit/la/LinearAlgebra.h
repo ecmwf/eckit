@@ -8,12 +8,12 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   LinearAlgebraBase.h
+/// @file   LinearAlgebra.h
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_la_LinearAlgebraBase_h
-#define eckit_la_LinearAlgebraBase_h
+#ifndef eckit_la_LinearAlgebra_h
+#define eckit_la_LinearAlgebra_h
 
 #include "experimental/eckit/la/types.h"
 
@@ -22,7 +22,7 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraBase {
+class LinearAlgebra {
 
 public:  // virtual methods
 

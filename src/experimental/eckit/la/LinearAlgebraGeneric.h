@@ -15,14 +15,14 @@
 #ifndef eckit_la_LinearAlgebraGeneric_h
 #define eckit_la_LinearAlgebraGeneric_h
 
-#include "experimental/eckit/la/LinearAlgebraBase.h"
+#include "experimental/eckit/la/LinearAlgebra.h"
 
 namespace eckit {
 namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraGeneric : public LinearAlgebraBase {
+class LinearAlgebraGeneric : public LinearAlgebra {
 
 public:
     LinearAlgebraGeneric();

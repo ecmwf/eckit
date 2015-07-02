@@ -19,14 +19,14 @@
 
 #ifdef ECKIT_HAVE_EIGEN
 
-#include "experimental/eckit/la/LinearAlgebraBase.h"
+#include "experimental/eckit/la/LinearAlgebra.h"
 
 namespace eckit {
 namespace la {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraEigen : public LinearAlgebraBase {
+class LinearAlgebraEigen : public LinearAlgebra {
 
 public:
     LinearAlgebraEigen();

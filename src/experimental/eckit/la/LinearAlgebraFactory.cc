@@ -22,7 +22,7 @@ namespace {
 
 //-----------------------------------------------------------------------------
 
-const LinearAlgebraBase* LinearAlgebraFactory::get() {
+const LinearAlgebra* LinearAlgebraFactory::get() {
     FactoryMap::const_iterator it = instance().map_.find(currentBackend);
     if (it == instance().map_.end())
         throw BadParameter("Linear algebra backend " + currentBackend + " not available.", Here());
@@ -38,7 +38,7 @@ void LinearAlgebraFactory::set(const std::string& name) {
     currentBackend = name;
 }
 
-void LinearAlgebraFactory::regist(const std::string& name, const LinearAlgebraBase* backend) {
+void LinearAlgebraFactory::regist(const std::string& name, const LinearAlgebra* backend) {
     instance().map_.insert(std::make_pair(name, backend));
 }
 

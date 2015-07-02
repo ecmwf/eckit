@@ -116,6 +116,12 @@ void LinearAlgebraMKL::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) c
 
 //-----------------------------------------------------------------------------
 
+void LinearAlgebraMKL::print(std::ostream& out) const {
+    out << "LinearAlgebraMKL[]";
+}
+
+//-----------------------------------------------------------------------------
+
 static LinearAlgebraMKL linearAlgebraMKL;
 
 //-----------------------------------------------------------------------------

@@ -292,6 +292,12 @@ void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) 
 
 //-----------------------------------------------------------------------------
 
+void LinearAlgebraCUDA::print(std::ostream& out) const {
+    out << "LinearAlgebraCUDA[]";
+}
+
+//-----------------------------------------------------------------------------
+
 static LinearAlgebraCUDA linearAlgebraCUDA;
 
 //-----------------------------------------------------------------------------

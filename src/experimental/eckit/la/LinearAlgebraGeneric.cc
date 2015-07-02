@@ -10,7 +10,6 @@
 
 //-----------------------------------------------------------------------------
 
-#include "experimental/eckit/la/LinearAlgebraFactory.h"
 #include "experimental/eckit/la/LinearAlgebraGeneric.h"
 #include "experimental/eckit/la/Matrix.h"
 #include "experimental/eckit/la/SparseMatrix.h"

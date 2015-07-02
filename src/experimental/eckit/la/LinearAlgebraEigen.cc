@@ -17,7 +17,6 @@
 #include "eckit/maths/Eigen.h"
 
 #include "experimental/eckit/la/LinearAlgebraEigen.h"
-#include "experimental/eckit/la/LinearAlgebraFactory.h"
 #include "experimental/eckit/la/Matrix.h"
 #include "experimental/eckit/la/SparseMatrix.h"
 #include "experimental/eckit/la/Vector.h"

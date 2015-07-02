@@ -8,8 +8,6 @@ LinearAlgebraCUDA.cc
 LinearAlgebraCUDA.h
 LinearAlgebraEigen.cc
 LinearAlgebraEigen.h
-LinearAlgebraFactory.cc
-LinearAlgebraFactory.h
 LinearAlgebraGeneric.cc
 LinearAlgebraGeneric.h
 LinearAlgebraMKL.cc

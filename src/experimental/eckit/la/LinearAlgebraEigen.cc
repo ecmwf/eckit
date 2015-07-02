@@ -29,9 +29,7 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-LinearAlgebraEigen::LinearAlgebraEigen() {
-    LinearAlgebraFactory::regist("eigen", this);
-}
+LinearAlgebraEigen::LinearAlgebraEigen() : LinearAlgebra("eigen") {}
 
 //-----------------------------------------------------------------------------
 

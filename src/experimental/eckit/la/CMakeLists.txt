@@ -1,5 +1,6 @@
 list( APPEND eckit_la_srcs
 types.h
+LinearAlgebra.cc
 LinearAlgebra.h
 LinearAlgebraArmadillo.cc
 LinearAlgebraArmadillo.h

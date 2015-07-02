@@ -30,9 +30,7 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-LinearAlgebraMKL::LinearAlgebraMKL() {
-    LinearAlgebraFactory::regist("mkl", this);
-}
+LinearAlgebraMKL::LinearAlgebraMKL() : LinearAlgebra("mkl") {}
 
 Scalar LinearAlgebraMKL::dot(const Vector& x, const Vector& y) const {
     ASSERT( x.size() == y.size() );

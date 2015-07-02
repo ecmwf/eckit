@@ -50,7 +50,7 @@ SparseMatrix S(Size rows, Size cols, Size nnz, ...) {
 // Set linear algebra backend
 struct Setup {
     Setup() {
-        LinearAlgebraFactory::set(Resource<std::string>("-linearAlgebraBackend", "generic"));
+        LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
     }
 };
 
@@ -66,7 +66,7 @@ struct Fixture {
                     1, 1, 2.,
                     2, 2, 2.)),
                 x(V(3, 1., 2., 3.)),
-                linalg(LinearAlgebraFactory::get()) {}
+                linalg(LinearAlgebra::backend()) {}
 
     SparseMatrix A;
     Vector x;

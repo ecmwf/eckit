@@ -28,9 +28,7 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-LinearAlgebraArmadillo::LinearAlgebraArmadillo() {
-    LinearAlgebraFactory::regist("armadillo", this);
-}
+LinearAlgebraArmadillo::LinearAlgebraArmadillo() : LinearAlgebra("armadillo") {}
 
 //-----------------------------------------------------------------------------
 

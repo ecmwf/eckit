@@ -17,7 +17,9 @@
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/eckit_config.h"
-#include "experimental/eckit/la/LinearAlgebraFactory.h"
+#include "eckit/exception/Exceptions.h"
+
+#include "experimental/eckit/la/LinearAlgebra.h"
 
 //-----------------------------------------------------------------------------
 
@@ -32,7 +34,7 @@ BOOST_AUTO_TEST_SUITE(test_eckit_la_factory)
 
 BOOST_AUTO_TEST_CASE(test_list) {
     std::ostringstream oss;
-    LinearAlgebraFactory::list(oss);
+    LinearAlgebra::list(oss);
     BOOST_TEST_MESSAGE("Available linear algebra backends: " << oss.str());
     BOOST_CHECK_NE(oss.str().find("generic"), std::string::npos);
 #ifdef ECKIT_HAVE_ARMADILLO
@@ -49,27 +51,27 @@ BOOST_AUTO_TEST_CASE(test_list) {
 #endif
 }
 
-BOOST_AUTO_TEST_CASE(test_set) {
-    BOOST_CHECK(LinearAlgebraFactory::get());
-    LinearAlgebraFactory::set("generic");
-    BOOST_CHECK(LinearAlgebraFactory::get());
+BOOST_AUTO_TEST_CASE(test_backend) {
+    BOOST_CHECK(LinearAlgebra::backend());
+    LinearAlgebra::backend("generic");
+    BOOST_CHECK(LinearAlgebra::backend());
 #ifdef ECKIT_HAVE_ARMADILLO
-    LinearAlgebraFactory::set("armadillo");
-    BOOST_CHECK(LinearAlgebraFactory::get());
+    LinearAlgebra::backend("armadillo");
+    BOOST_CHECK(LinearAlgebra::backend());
 #endif
 #ifdef ECKIT_HAVE_CUDA
-    LinearAlgebraFactory::set("cuda");
-    BOOST_CHECK(LinearAlgebraFactory::get());
+    LinearAlgebra::backend("cuda");
+    BOOST_CHECK(LinearAlgebra::backend());
 #endif
 #ifdef ECKIT_HAVE_EIGEN
-    LinearAlgebraFactory::set("eigen");
-    BOOST_CHECK(LinearAlgebraFactory::get());
+    LinearAlgebra::backend("eigen");
+    BOOST_CHECK(LinearAlgebra::backend());
 #endif
 #ifdef ECKIT_HAVE_MKL
-    LinearAlgebraFactory::set("mkl");
-    BOOST_CHECK(LinearAlgebraFactory::get());
+    LinearAlgebra::backend("mkl");
+    BOOST_CHECK(LinearAlgebra::backend());
 #endif
-    BOOST_CHECK_THROW(LinearAlgebraFactory::set("foo"), BadParameter);
+    BOOST_CHECK_THROW(LinearAlgebra::backend("foo"), BadParameter);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

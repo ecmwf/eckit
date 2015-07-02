@@ -48,9 +48,7 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-LinearAlgebraCUDA::LinearAlgebraCUDA() {
-    LinearAlgebraFactory::regist("cuda", this);
-}
+LinearAlgebraCUDA::LinearAlgebraCUDA() : LinearAlgebra("cuda") {}
 
 //-----------------------------------------------------------------------------
 

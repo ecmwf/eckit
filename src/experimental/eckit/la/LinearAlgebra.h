@@ -15,6 +15,8 @@
 #ifndef eckit_la_LinearAlgebra_h
 #define eckit_la_LinearAlgebra_h
 
+#include <string>
+
 #include "experimental/eckit/la/types.h"
 
 namespace eckit {
@@ -24,6 +26,11 @@ namespace la {
 
 class LinearAlgebra {
 
+public:  // static methods
+    static const LinearAlgebra* backend();
+    static void backend(const std::string& name);
+    static void list(std::ostream &);
+
 public:  // virtual methods
 
     virtual Scalar dot(const Vector&, const Vector&) const = 0;
@@ -31,6 +38,9 @@ public:  // virtual methods
     virtual void gemm(const Matrix&, const Matrix&, Matrix&) const = 0;
     virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const = 0;
     virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const = 0;
+
+protected:
+    LinearAlgebra(const std::string& name);
 };
 
 //-----------------------------------------------------------------------------

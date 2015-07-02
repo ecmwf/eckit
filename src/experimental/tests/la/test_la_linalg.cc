@@ -31,7 +31,7 @@ namespace test {
 // Set linear algebra backend
 struct Setup {
     Setup() {
-        LinearAlgebraFactory::set(Resource<std::string>("-linearAlgebraBackend", "generic"));
+        LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
     }
 };
 
@@ -43,7 +43,7 @@ struct Fixture {
 
     Fixture() : x(V(3, 1., 2., 4.)),
                 A(M(2, 2, 1., -2., -4., 2.)),
-                linalg(LinearAlgebraFactory::get()) {}
+                linalg(LinearAlgebra::backend()) {}
 
     Vector x;
     Matrix A;

@@ -23,9 +23,7 @@ namespace la {
 
 //-----------------------------------------------------------------------------
 
-LinearAlgebraGeneric::LinearAlgebraGeneric() {
-    LinearAlgebraFactory::regist("generic", this);
-}
+LinearAlgebraGeneric::LinearAlgebraGeneric() : LinearAlgebra("generic") {}
 
 //-----------------------------------------------------------------------------
 

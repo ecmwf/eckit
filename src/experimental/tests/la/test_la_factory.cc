@@ -51,20 +51,26 @@ BOOST_AUTO_TEST_CASE(test_list) {
 
 BOOST_AUTO_TEST_CASE(test_get) {
     BOOST_CHECK(LinearAlgebraFactory::get());
-    BOOST_CHECK(LinearAlgebraFactory::get("generic"));
+    LinearAlgebraFactory::set("generic");
+    BOOST_CHECK(LinearAlgebraFactory::get());
 #ifdef ECKIT_HAVE_ARMADILLO
-    BOOST_CHECK(LinearAlgebraFactory::get("armadillo"));
+    LinearAlgebraFactory::set("armadillo");
+    BOOST_CHECK(LinearAlgebraFactory::get());
 #endif
 #ifdef ECKIT_HAVE_CUDA
-    BOOST_CHECK(LinearAlgebraFactory::get("cuda"));
+    LinearAlgebraFactory::set("cuda");
+    BOOST_CHECK(LinearAlgebraFactory::get());
 #endif
 #ifdef ECKIT_HAVE_EIGEN
-    BOOST_CHECK(LinearAlgebraFactory::get("eigen"));
+    LinearAlgebraFactory::set("eigen");
+    BOOST_CHECK(LinearAlgebraFactory::get());
 #endif
 #ifdef ECKIT_HAVE_MKL
-    BOOST_CHECK(LinearAlgebraFactory::get("mkl"));
+    LinearAlgebraFactory::set("mkl");
+    BOOST_CHECK(LinearAlgebraFactory::get());
 #endif
-    BOOST_CHECK_THROW(LinearAlgebraFactory::get("foo"), BadParameter);
+    LinearAlgebraFactory::set("foo");
+    BOOST_CHECK_THROW(LinearAlgebraFactory::get(), BadParameter);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

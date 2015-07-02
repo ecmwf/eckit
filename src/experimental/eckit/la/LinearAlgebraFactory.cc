@@ -48,13 +48,9 @@ namespace {
 //-----------------------------------------------------------------------------
 
 const LinearAlgebraBase* LinearAlgebraFactory::get() {
-    return get(currentBackend);
-}
-
-const LinearAlgebraBase* LinearAlgebraFactory::get(const std::string& name) {
-    FactoryMap::const_iterator it = instance().map_.find(name);
+    FactoryMap::const_iterator it = instance().map_.find(currentBackend);
     if (it == instance().map_.end())
-        throw BadParameter("Linear algebra backend " + name + " not available.", Here());
+        throw BadParameter("Linear algebra backend " + currentBackend + " not available.", Here());
     Log::debug() << "LinearAlgebraFactory: using backend " << it->first << std::endl;
     return it->second;
 }

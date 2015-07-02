@@ -32,7 +32,6 @@ class LinearAlgebraFactory {
 
 public:
     static const LinearAlgebraBase* get();
-    static const LinearAlgebraBase* get(const std::string& name);
     static void set(const std::string& name);
     static void regist(const std::string& name, const LinearAlgebraBase*);
     static void list(std::ostream &);

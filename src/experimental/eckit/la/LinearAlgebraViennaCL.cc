@@ -14,6 +14,7 @@
 
 #ifdef ECKIT_HAVE_VIENNACL
 
+#include <viennacl/compressed_matrix.hpp>
 #include <viennacl/matrix.hpp>
 #include <viennacl/vector.hpp>
 #include <viennacl/linalg/inner_prod.hpp>
@@ -31,6 +32,7 @@ namespace la {
 
 typedef viennacl::vector<Scalar> vec;
 typedef viennacl::matrix<Scalar, viennacl::column_major> mat;
+typedef viennacl::compressed_matrix<Scalar> spmat;
 
 //-----------------------------------------------------------------------------
 
@@ -78,14 +80,27 @@ void LinearAlgebraViennaCL::gemm(const Matrix& A, const Matrix& B, Matrix& C) co
 
 void LinearAlgebraViennaCL::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
     ASSERT( x.size() == A.cols() && y.size() == A.rows() );
-    NOTIMP;
+    spmat Ai;
+    // FIXME: this will always copy!
+    Ai.set(A.outer(), A.inner(), A.data(), A.rows(), A.cols(), A.nonZeros());
+    vec xi(const_cast<Scalar*>(x.data()), viennacl::MAIN_MEMORY, x.size());
+    vec yi(y.data(), viennacl::MAIN_MEMORY, y.size());
+    yi = viennacl::linalg::prod(Ai, xi);
 }
 
 //-----------------------------------------------------------------------------
 
 void LinearAlgebraViennaCL::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
     ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
-    NOTIMP;
+    spmat Ai;
+    // FIXME: this will always copy!
+    Ai.set(A.outer(), A.inner(), A.data(), A.rows(), A.cols(), A.nonZeros());
+    // Emulate spmm by looping over columns of B
+    for (Size col = 0; col < B.cols(); ++col) {
+        vec xi(const_cast<Scalar*>(B.data() + col*B.rows()), viennacl::MAIN_MEMORY, B.rows());
+        vec yi(C.data() + col*C.rows(), viennacl::MAIN_MEMORY, C.rows());
+        yi = viennacl::linalg::prod(Ai, xi);
+    }
 }
 
 //-----------------------------------------------------------------------------

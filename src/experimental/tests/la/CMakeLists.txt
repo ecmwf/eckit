@@ -68,6 +68,11 @@ ecbuild_add_test( TARGET     test_la_sparse_mkl
                   CONDITION  ECKIT_HAVE_MKL
                   ARGS       --log_level=message -linearAlgebraBackend mkl )
 
+ecbuild_add_test( TARGET     test_la_sparse_viennacl
+                  COMMAND    test_la_sparse
+                  CONDITION  ECKIT_HAVE_VIENNACL
+                  ARGS       --log_level=message -linearAlgebraBackend viennacl )
+
 ecbuild_add_test( TARGET   test_la_streaming
                   ARGS     --log_level=message
                   BOOST

@@ -121,6 +121,15 @@ ecbuild_add_option( FEATURE MKL
 
 set_package_properties( MKL PROPERTIES TYPE RECOMMENDED PURPOSE "MKL backend: Accelerated linear algebra operations" )
 
+### ViennaCL
+
+ecbuild_add_option( FEATURE VIENNACL
+                    DEFAULT ON
+                    DESCRIPTION "ViennaCL support"
+                    REQUIRED_PACKAGES ViennaCL )
+
+set_package_properties( VIENNACL PROPERTIES TYPE RECOMMENDED PURPOSE "ViennaCL backend: GPU-accelerated linear algebra library" )
+
 ### async io support
 
 find_package( AIO )

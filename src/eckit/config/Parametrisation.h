@@ -11,7 +11,6 @@
 /// @author Baudouin Raoult
 /// @date Apr 2015
 
-
 #ifndef eckit_config_Parametrisation_H
 #define eckit_config_Parametrisation_H
 
@@ -20,26 +19,12 @@
 
 namespace eckit {
 
-
 class Parametrisation {
-  public:
 
-// -- Exceptions
-    // None
+public: // methods
 
-// -- Contructors
-
-
-// -- Destructor
-
-// -- Convertors
-    // None
-
-// -- Operators
-    // None
-
-// -- Methods
-    // None
+    /// Destructor redundant but fixes sanity compiler warnings
+    virtual ~Parametrisation() {}
 
     virtual bool has(const std::string& name) const = 0;
 
@@ -52,57 +37,9 @@ class Parametrisation {
     virtual bool get(const std::string& name, std::vector<long>& value) const = 0;
     virtual bool get(const std::string& name, std::vector<double>& value) const = 0;
 
-
-// -- Overridden methods
-    // None
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
-
-  protected:
-
-// -- Members
-    // None
-
-// -- Methods
-
-
-// -- Overridden methods
-    // None
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
-
-  private:
-
-// No copy allowed
-
-// -- Members
-    // None
-
-// -- Methods
-    // None
-
-// -- Overridden methods
-    // None
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
-
-// -- Friends
-
-
 };
 
 }  // namespace eckit
+
 #endif
 

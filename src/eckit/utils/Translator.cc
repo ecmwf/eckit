@@ -128,11 +128,11 @@ double Translator<std::string,double>::operator()(const std::string& s)
 
     double d = ::strtod( s.c_str(), &pend );
 
-//    DEBUG_VAR( d );
-//    DEBUG_VAR( s );
-//    DEBUG_VAR( s.size() );
-//    DEBUG_VAR( pend - s.c_str() );
-//    DEBUG_VAR( errno );
+//    ECKIT_DEBUG_VAR( d );
+//    ECKIT_DEBUG_VAR( s );
+//    ECKIT_DEBUG_VAR( s.size() );
+//    ECKIT_DEBUG_VAR( pend - s.c_str() );
+//    ECKIT_DEBUG_VAR( errno );
 
     if( s.empty() || s[0] == ' ' || static_cast<size_t>(pend - s.c_str()) != s.size() || (errno != 0) )
     {

@@ -23,18 +23,22 @@ namespace la {
 //-----------------------------------------------------------------------------
 
 /// Triplet of values compatible to Eigen::Triplet
+
 class Triplet {
 public:
+
     Triplet() : row_(0), col_(0), val_(0) {}
 
     Triplet(const Index& i, const Index& j, const Scalar& v = Scalar(0))
-        : row_(i), col_(j), val_(v) {}
+        : row_(i), col_(j), val_(v)
+    {}
 
     const Index& row() const { return row_; }
 
     const Index& col() const { return col_; }
 
     const Scalar& value() const { return val_; }
+    Scalar& value() { return val_; }
 
     bool operator< (const Triplet& other) const
     {

@@ -136,6 +136,28 @@ BOOST_AUTO_TEST_CASE( test_basename )
    BOOST_CHECK_MESSAGE(p.baseName(true) == "file.ok","Expected 'file.ok'  but found " << p.baseName(true));
 }
 
+BOOST_AUTO_TEST_CASE( test_extension )
+{
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_extension");
+
+   LocalPathName p1;
+   BOOST_CHECK_MESSAGE(p1.extension() == "", "Expected empty string  but found " << p1.extension());
+
+   LocalPathName p2("fred");
+   BOOST_CHECK_MESSAGE(p2.extension() == "", "Expected empty string  but found " << p2.extension());
+   LocalPathName p3("/path/to/fred");
+   BOOST_CHECK_MESSAGE(p3.extension() == "", "Expected empty string  but found " << p3.extension());
+   LocalPathName p4("/path/with.dot/to/fred");
+   BOOST_CHECK_MESSAGE(p4.extension() == "", "Expected empty string  but found " << p4.extension());
+
+   LocalPathName p5("fred.");
+   BOOST_CHECK_MESSAGE(p5.extension() == ".", "Expected '.'  but found " << p5.extension());
+   LocalPathName p6("/path/to/fred.ext");
+   BOOST_CHECK_MESSAGE(p6.extension() == ".ext", "Expected '.ext'  but found " << p6.extension());
+   LocalPathName p7("/path/with.dot/to/fred.ext");
+   BOOST_CHECK_MESSAGE(p7.extension() == ".ext", "Expected '.ext'  but found " << p7.extension());
+}
+
 BOOST_AUTO_TEST_CASE( test_fileSystemSize )
 {
    BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_fileSystemSize");

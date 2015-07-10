@@ -64,13 +64,13 @@ public:
     static bool isGreaterEqual(const T& a,  const T& b) { return (a >= b); }
 
     /// Compare values inequality: "is greater or approximately equal to"
-    static bool isGreaterApproxEqual(const T& a,  const T& b) { return (a >= b) || isApproxEqual(a,b); }
+    static bool isApproximatelyGreaterOrEqual(const T& a,  const T& b) { return (a >= b) || isApproximatelyEqual(a,b); }
 
     /// Compare values equality, approximately
-    static bool isApproxEqual( T a,
-                               T b,
-                               T epsilon = std::numeric_limits<float>::epsilon(),
-                               int maxUlpsDiff = 10 ) { return isApproxEqualUlps(a,b,epsilon,maxUlpsDiff); }
+    static bool isApproximatelyEqual( T a,
+                                      T b,
+                                      T epsilon = std::numeric_limits<float>::epsilon(),
+                                      int maxUlpsDiff = 10 ) { return isApproxEqualUlps(a,b,epsilon,maxUlpsDiff); }
 
 };
 
@@ -89,7 +89,7 @@ public:
 		maxUlps_(maxUlps)
 	{}
 
-	bool operator() ( const T& a,  const T& b) { return FloatCompare<T>::isApproxEqual(a,b,eps_,maxUlps_); }
+        bool operator() ( const T& a,  const T& b) { return FloatCompare<T>::isApproximatelyEqual(a,b,eps_,maxUlps_); }
 
 };
 

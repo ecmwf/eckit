@@ -72,6 +72,7 @@ public:
     BasePathName* checkClusterNode() const;
 
     std::string clusterName() const;
+    std::string extension() const;
 
     bool exists() const;
     bool available() const;

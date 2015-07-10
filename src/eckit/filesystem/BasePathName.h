@@ -72,6 +72,7 @@ public:
     virtual BasePathName* orphanName() const = 0;
     virtual BasePathName* checkClusterNode() const = 0;
     virtual BasePathName* baseName(bool) const = 0;
+    virtual std::string extension() const = 0;
 
     virtual std::string clusterName() const = 0;
 

@@ -217,6 +217,11 @@ BasePathName* BasePathNameT<T>::baseName(bool ext) const
 }
 
 template<class T>
+std::string BasePathNameT<T>::extension() const {
+    return path_.extension();
+}
+
+template<class T>
 std::string BasePathNameT<T>::asString() const
 {
     return std::string(path_);

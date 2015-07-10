@@ -76,6 +76,14 @@ LocalPathName LocalPathName::baseName(bool ext) const
 
 }
 
+std::string LocalPathName::extension() const {
+    const std::string base = baseName();
+    const size_t lastDot = base.find_last_of('.');
+    // If no . was found return the empty string
+    if (lastDot == std::string::npos) return "";
+    return base.substr(lastDot);
+}
+
 LocalPathName LocalPathName::dirName() const
 {
 

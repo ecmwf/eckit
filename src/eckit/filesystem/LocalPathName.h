@@ -141,6 +141,10 @@ public:
     /// @return the name part of the path
     LocalPathName baseName(bool ext = true) const;
 
+    /// File extension
+    /// @return file extension (empty string if there is none)
+    std::string extension() const;
+
     /// Check if path exists
     /// @return true if the path exists
     bool exists() const;

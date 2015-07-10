@@ -107,16 +107,15 @@ BOOST_AUTO_TEST_CASE( test_exists )
    LocalPathName acwd = LocalPathName::cwd();
    BOOST_CHECK_MESSAGE(cwd.sameAs(acwd),"The directories must be the same");
 
-
-   //cout << "cwd " << cwd << "\n";
-   //cout << "cwd.mountPoint() " << cwd.mountPoint() << "\n";
-   //cout << "cwd.realName() " << cwd.realName() << "\n";
-   //cout << "cwd.node() " << cwd.node() << "\n";
-   //cout << "cwd.path() " << cwd.path() << "\n";
-   //cout << "size " << cwd.size() << "\n";
-   //cout << "lastAccess " << cwd.lastAccess() << "\n";
-   //cout << "lastModified " << cwd.lastModified() << "\n";
-   //cout << "created " << cwd.created() << "\n";
+   BOOST_TEST_MESSAGE("cwd " << cwd);
+   BOOST_TEST_MESSAGE("cwd.mountPoint() " << cwd.mountPoint());
+   BOOST_TEST_MESSAGE("cwd.realName() " << cwd.realName());
+   BOOST_TEST_MESSAGE("cwd.node() " << cwd.node());
+   BOOST_TEST_MESSAGE("cwd.path() " << cwd.path());
+   BOOST_TEST_MESSAGE("size " << cwd.size());
+   BOOST_TEST_MESSAGE("lastAccess " << cwd.lastAccess());
+   BOOST_TEST_MESSAGE("lastModified " << cwd.lastModified());
+   BOOST_TEST_MESSAGE("created " << cwd.created());
 }
 
 
@@ -145,9 +144,9 @@ BOOST_AUTO_TEST_CASE( test_fileSystemSize )
    FileSystemSize fs;
    cwd.fileSystemSize(fs);
 
-//   cout << "cwd " << cwd << "\n";
-//   cout << "fs.available " << fs.available << "\n";
-//   cout << "fs.total " << fs.total << "\n";
+   BOOST_TEST_MESSAGE("cwd " << cwd);
+   BOOST_TEST_MESSAGE("fs.available " << fs.available);
+   BOOST_TEST_MESSAGE("fs.total " << fs.total);
 
    BOOST_CHECK_MESSAGE(fs.available > 0,"Expected file system available  > 0 ");
    BOOST_CHECK_MESSAGE(fs.total > 0,"Expected file system total  > 0 ");
@@ -160,7 +159,6 @@ BOOST_AUTO_TEST_CASE( test_unique )
    LocalPathName unique = LocalPathName::unique(LocalPathName::cwd());
 
    unique.mkdir();
-   //cout << "size = " << unique.size() << "\n";
 
    BOOST_CHECK_MESSAGE(unique.exists(),"Expected '" << unique << "' to exist ");
 

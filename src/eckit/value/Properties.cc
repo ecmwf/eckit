@@ -67,6 +67,15 @@ Properties& Properties::set( const key_t& k, const Properties& p )
   return *this;
 }
 
+Properties& Properties::set( const Properties& p )
+{
+  for( PropertyMap::const_iterator vit = p.props_.begin(); vit != p.props_.end(); ++vit )
+  {
+    props_[vit->first]=vit->second;
+  }
+  return *this;
+}
+
 bool Properties::remove(const key_t & k)
 {
     return props_.erase(k);
@@ -86,6 +95,16 @@ void Properties::print( std::ostream& s ) const
 void Properties::encode( Stream& s ) const
 {
     s << props_;
+}
+
+Properties::operator property_t() const
+{
+  ValueMap vmap = Value::makeMap();
+  for( PropertyMap::const_iterator vit = props_.begin(); vit != props_.end(); ++vit )
+  {
+    vmap[vit->first]=vit->second;
+  }
+  return vmap;
 }
 
 //-----------------------------------------------------------------------------

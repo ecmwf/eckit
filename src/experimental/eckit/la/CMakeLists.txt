@@ -12,6 +12,8 @@ LinearAlgebraGeneric.cc
 LinearAlgebraGeneric.h
 LinearAlgebraMKL.cc
 LinearAlgebraMKL.h
+LinearAlgebraViennaCL.cc
+LinearAlgebraViennaCL.h
 Matrix.cc
 Matrix.h
 SparseMatrix.cc
@@ -28,6 +30,7 @@ ecbuild_add_library( TARGET             eckit_la
                      INCLUDES           "${ARMADILLO_INCLUDE_DIRS}"
                                         "${CUDA_INCLUDE_DIRS}"
                                         "${MKL_INCLUDE_DIRS}"
+                                        "${VIENNACL_INCLUDE_DIRS}"
                      LIBS               eckit
                                         "${ARMADILLO_LIBRARIES}"
                                         "${CUDA_LIBRARIES}" "${CUDA_cusparse_LIBRARY}"

@@ -231,6 +231,7 @@ config/ResourceBase.cc )
 list( APPEND eckit_runtime_srcs
 runtime/Task.h
 runtime/Task.cc
+runtime/TaskID.h
 runtime/Context.h
 runtime/Context.cc
 runtime/Application.h

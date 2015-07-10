@@ -86,7 +86,7 @@ void lonlat_to_3d( const double lonlat[], double xyz[], const double r, const do
 
 bool points_equal(const Point3 &a, const Point3 &b)
 {
-    return FloatCompare<double>::isApproxEqual( Point3::distance2(a,b), 0.0 );
+    return FloatCompare<double>::isApproximatelyEqual( Point3::distance2(a,b), 0.0 );
 }
 
 //------------------------------------------------------------------------------------------------------

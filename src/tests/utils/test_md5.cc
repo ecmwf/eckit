@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_constructor )
 
 	std::string res ("9e107d9d372bb6826bd81d3542a419d6");
 
-//	DEBUG_VAR( md5.digest() );
+//	ECKIT_DEBUG_VAR( md5.digest() );
 
 	BOOST_CHECK_EQUAL( res , md5.digest() );
 }

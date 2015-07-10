@@ -67,6 +67,11 @@ BOOST_AUTO_TEST_CASE( test_serialize )
     pm.set("unsigned int", numeric_limits<unsigned int>::max());
     p.set("Nested", pm );
 
+    std::vector<Properties> property_list(2);
+    property_list[0].set("int",numeric_limits<int>::max());
+    property_list[1].set("string","foo");
+    p.set("list", makeVectorValue(property_list) );
+
     BOOST_TEST_MESSAGE("encoded Properties: " << p);
     {
         FileStream sout( filepath.c_str(), "w" );
@@ -94,6 +99,10 @@ BOOST_AUTO_TEST_CASE( test_serialize )
     if (filename.exists()) filename.unlink();
 
     Properties access_nested = p.get("Nested");
+
+    eckit::ValueList access_list = p.get("list");
+    BOOST_TEST_MESSAGE("encoded list: " <<  access_list );
+    std::vector<eckit::Properties> access_property_list(access_list.begin(),access_list.end());
 
     BOOST_TEST_MESSAGE("encoded Nested: " << access_nested);
     {

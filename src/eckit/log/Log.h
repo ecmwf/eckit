@@ -20,17 +20,11 @@
 #include "eckit/log/Channel.h"
 #include "eckit/log/UserChannel.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-class LogObserver {
-
-};
-
-//-----------------------------------------------------------------------------
+class LogObserver {};
 
 /// Singleton holding global streams for logging
 ///
@@ -40,68 +34,64 @@ class LogObserver {
 
 class Log {
 
-public: // types
+public:  // types
+    /// Output formats
+    enum {
+        compactFormat = 0,
+        normalFormat = 1,
+        fullFormat = 2,
+        monitorFormat = 3,
+        applicationFormat = 4,  // Free to use for applications
+    };
 
-	/// Output formats
-	enum
-    {
-		compactFormat = 0,
-		normalFormat  = 1,
-		fullFormat    = 2,
-		monitorFormat = 3,
-        applicationFormat = 4, // Free to use for applications
-	};
-
-public: // methods
-
-    /// Channel for debug output
-	static	Channel& debug(int level = 1);
-	static	Channel& debug(const CodeLocation& where, int level = 1);
+public:  // methods
+         /// Channel for debug output
+    static Channel& debug(int level = 1);
+    static Channel& debug(const CodeLocation& where, int level = 1);
 
     /// Channel for informative messages
-	static	Channel& info();
-	static	Channel& info(const CodeLocation& where);
+    static Channel& info();
+    static Channel& info(const CodeLocation& where);
 
     /// Channel for warning messages
-    static	Channel& warning();
-	static	Channel& warning(const CodeLocation& where);
+    static Channel& warning();
+    static Channel& warning(const CodeLocation& where);
 
     /// Channel for error messages
-    static	Channel& error();
-	static	Channel& error(const CodeLocation& where);
+    static Channel& error();
+    static Channel& error(const CodeLocation& where);
 
     /// Channel for panic messages
-    static	std::ostream& panic();
-	static	std::ostream& panic(const CodeLocation& where);
+    static std::ostream& panic();
+    static std::ostream& panic(const CodeLocation& where);
 
-	/// Channel accessible through category index
-  static	Channel& channel(int cat, int level = 1);
-  static	Channel& channel(int cat, const CodeLocation& where, int level = 1);
+    /// Channel accessible through category index
+    static Channel& channel(int cat, int level = 1);
+    static Channel& channel(int cat, const CodeLocation& where, int level = 1);
 
     /// characters to identify origin of monitoring messages
-    enum { Unix = 'U', App  = 'X' };
+    enum { Unix = 'U', App = 'X' };
 
     /// Channel for application monitor
-	static  Channel& monitor(char,long);
+    static Channel& monitor(char, long);
     /// Channel for status messages to Application Monitor
-	static	Channel& status();
+    static Channel& status();
     /// Channel for status messages to Application Monitor
-    static	Channel& message();
+    static Channel& message();
 
     /// Get the channel for the user
-    static  UserChannel& user();
+    static UserChannel& user();
     /// Channel for informative messages tp remote user
-    static  Channel& userInfo();
+    static Channel& userInfo();
     /// Channel for warning messages to remote user
-    static  Channel& userWarning();
+    static Channel& userWarning();
     /// Channel for error messages to remote user
-    static  Channel& userError();
+    static Channel& userError();
     /// Send messages to remote user directly -- not using a channel
     static void notifyClient(const std::string&);
 
     /// manipulator that will print the last error message as in perror(2)
     static std::ostream& syserr(std::ostream&);
-
 
     /// @todo find a way to refactor this ...
     // This is for Magics
@@ -111,24 +101,18 @@ public: // methods
     static void broadcast();
 
 private:
-
-	Log();  ///< Private, non-instanciatable class
-	~Log(); ///< Private, non-instanciatable class
-
+    Log();   ///< Private, non-instanciatable class
+    ~Log();  ///< Private, non-instanciatable class
 };
 
-//-----------------------------------------------------------------------------
-
-std::ostream& setformat(std::ostream&,int);
+std::ostream& setformat(std::ostream&, int);
 int format(std::ostream&);
 
-//-----------------------------------------------------------------------------
+#define ECKIT_DEBUG_HERE std::cerr << " DEBUG () @ " << Here() << std::endl;
+#define ECKIT_DEBUG_VAR(x) std::cerr << " DEBUG (" << #x << ":" << x << ") @ " << Here() << std::endl;
 
-#define DEBUG_HERE     std::cerr << " DEBUG () @ " << Here() << std::endl;
-#define DEBUG_VAR(x)   std::cerr << " DEBUG (" << #x << ":" << x << ") @ " << Here() << std::endl;
+//----------------------------------------------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
+}  // namespace eckit
 
 #endif

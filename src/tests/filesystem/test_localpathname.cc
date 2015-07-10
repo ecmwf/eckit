@@ -11,7 +11,6 @@
 #define BOOST_TEST_MODULE test_eckit_filesystem
 
 #include <string>
-#include <iostream>
 
 #include "ecbuild/boost_test_framework.h"
 
@@ -27,7 +26,7 @@ BOOST_AUTO_TEST_SUITE( TestLocalPathName )
 
 BOOST_AUTO_TEST_CASE( test_constructors )
 {
-   cout << "\neckit::filesystem:: ...test_constructors\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_constructors");
 
    LocalPathName p;
    BOOST_CHECK_MESSAGE(p == "/","Expected '/'");
@@ -41,7 +40,7 @@ BOOST_AUTO_TEST_CASE( test_constructors )
 
 BOOST_AUTO_TEST_CASE( test_assignment )
 {
-   cout << "\neckit::filesystem:: ...test_assignment\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_assignment");
 
    LocalPathName p;
    LocalPathName pd;
@@ -64,7 +63,7 @@ BOOST_AUTO_TEST_CASE( test_assignment )
 
 BOOST_AUTO_TEST_CASE( test_operators )
 {
-   cout << "\neckit::filesystem:: ...test_operators\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_operators");
 
    LocalPathName p;
 
@@ -84,7 +83,7 @@ BOOST_AUTO_TEST_CASE( test_operators )
 
 BOOST_AUTO_TEST_CASE( test_dir_name )
 {
-   cout << "\neckit::filesystem:: ...test_dir_name\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_dir_name");
 
    LocalPathName p("/fred/bill");
    BOOST_CHECK_MESSAGE(p.dirName() == "/fred","Expected dirName to be '/fred' but found " << p.dirName());
@@ -98,7 +97,7 @@ BOOST_AUTO_TEST_CASE( test_dir_name )
 
 BOOST_AUTO_TEST_CASE( test_exists )
 {
-   cout << "\neckit::filesystem:: ...test_exists\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_exists");
 
    LocalPathName cwd = LocalPathName::cwd();
 
@@ -123,7 +122,7 @@ BOOST_AUTO_TEST_CASE( test_exists )
 
 BOOST_AUTO_TEST_CASE( test_basename )
 {
-   cout << "\neckit::filesystem:: ...test_basename\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_basename");
 
    LocalPathName p1;
    BOOST_CHECK_MESSAGE(p1.baseName(false) == "","Expected empty string  but found " << p1.baseName(false));
@@ -140,7 +139,7 @@ BOOST_AUTO_TEST_CASE( test_basename )
 
 BOOST_AUTO_TEST_CASE( test_fileSystemSize )
 {
-   cout << "\neckit::filesystem:: ...test_fileSystemSize\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_fileSystemSize");
 
    LocalPathName cwd = LocalPathName::cwd();
    FileSystemSize fs;
@@ -156,7 +155,7 @@ BOOST_AUTO_TEST_CASE( test_fileSystemSize )
 
 BOOST_AUTO_TEST_CASE( test_unique )
 {
-   cout << "\neckit::filesystem:: ...test_unique\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_unique");
 
    LocalPathName unique = LocalPathName::unique(LocalPathName::cwd());
 

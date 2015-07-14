@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -89,7 +89,7 @@ public:
     /// Directory part of the path
     /// @return directory part of the path
     PathName dirName() const;
-    
+
     /// Absolute path
     /// @return absolute path
     PathName fullName() const;
@@ -100,6 +100,10 @@ public:
     /// @param ext if false the extension is stripped
     /// @return the name part of the path
     PathName baseName(bool ext = true) const;
+
+    /// path extension
+    /// @return file extension (empty string if there is none)
+    std::string extension() const;
 
     /// Check if path exists
     /// @return true if the path exists

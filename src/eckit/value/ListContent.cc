@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -141,7 +141,7 @@ Content* ListContent::mod(const Content& other) const
 }
 
 
-void ListContent::value(long long& n) const 
+void ListContent::value(long long& n) const
 {
     if(value_.size() == 1) n = value_[0];
 	else Content::value(n);
@@ -159,28 +159,28 @@ void ListContent::value(double& n) const
     else Content::value(n);
 }
 
-void ListContent::value(std::string& n) const 
+void ListContent::value(std::string& n) const
 {
     if(value_.size() == 1) n = std::string(value_[0]);
-	else Content::value(n); 
+	else Content::value(n);
 }
 
-void ListContent::value(Date& n) const 
-{ 
+void ListContent::value(Date& n) const
+{
     if(value_.size() == 1) n = value_[0];
-	else Content::value(n); 
+	else Content::value(n);
 }
 
-void ListContent::value(Time& n) const 
-{ 
+void ListContent::value(Time& n) const
+{
     if(value_.size() == 1) n = value_[0];
-	else Content::value(n); 
+	else Content::value(n);
 }
 
-void ListContent::value(DateTime& n) const 
-{ 
+void ListContent::value(DateTime& n) const
+{
     if(value_.size() == 1) n = value_[0];
-	else Content::value(n); 
+	else Content::value(n);
 }
 
 Value& ListContent::element(const Value& v)
@@ -189,6 +189,12 @@ Value& ListContent::element(const Value& v)
     ASSERT( n >= 0 && (size_t) n < value_.size() );
     return value_.at(n);
 }
+
+bool ListContent::contains(const Value& v) const {
+    long long n = v;
+    return( n >= 0 && (size_t) n < value_.size() );
+}
+
 
 //-----------------------------------------------------------------------------
 

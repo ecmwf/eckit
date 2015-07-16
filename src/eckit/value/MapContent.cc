@@ -68,6 +68,11 @@ Value& MapContent::element(const Value& key)
     return value_[key];
 }
 
+bool MapContent::contains(const Value& key) const
+{
+    return value_.find(key) != value_.end();
+}
+
 void MapContent::value(ValueMap& v) const
 {
     v = value_;

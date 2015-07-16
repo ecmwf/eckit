@@ -137,6 +137,11 @@ public:
     Value operator[](const Value&) const;
     Value operator[](int) const;
 
+    bool contains(const char*) const;
+    bool contains(const std::string&) const;
+    bool contains(const Value&) const;
+    bool contains(int) const;
+
     // -- Methods
 
     int      compare(const Value& v) const { return content_->compare(*(v.content_)); }

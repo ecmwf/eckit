@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -19,20 +19,20 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class BadConversion:  public Exception { 
-	public: 
+class BadConversion:  public Exception {
+	public:
 		BadConversion(const std::string& w):
 			Exception(std::string("Bad Conversion: ") + w)   {  }
 };
 
-class BadComparison:  public Exception { 
-	public: 	
+class BadComparison:  public Exception {
+	public:
 		BadComparison(const std::string& w):
 			Exception(std::string("Bad Comparison: ") + w)   {  }
 };
 
-class BadOperator:  public Exception { 
-	public: 	
+class BadOperator:  public Exception {
+	public:
 		BadOperator(const std::string& w):
 			Exception(std::string("Bad operator: ") + w)   {  }
 };
@@ -82,16 +82,30 @@ void Content::badOperator(const std::string& op, const std::string& to) const
 
 Value& Content::element(const Value&)
 {
-    NOTIMP;
+    StrStream s;
+    s << *this << " (" << typeName() << ") method 'element' not implemented" << StrStream::ends;
+    std::string str(s);
+    throw BadOperator(str);
+}
+
+bool Content::contains(const Value&) const
+{
+    StrStream s;
+    s << *this << " (" << typeName() << ") method 'contains' not implemented" << StrStream::ends;
+    std::string str(s);
+    throw BadOperator(str);
 }
 
 Value Content::negate() const
 {
-    NOTIMP;
+     StrStream s;
+    s << *this << " (" << typeName() << ") method 'negate' not implemented" << StrStream::ends;
+    std::string str(s);
+    throw BadOperator(str);
 }
 
-void Content::value(long long&) const 
-{ 
+void Content::value(long long&) const
+{
 	badConvertion("long long");
 }
 
@@ -564,9 +578,9 @@ Content* Content::modDateTime(const DateTimeContent&) const
 
 #ifndef IBM
 template<>
-Streamable* Reanimator<Content>::ressucitate(Stream& s) const 
-{ 
-	return 0; 
+Streamable* Reanimator<Content>::ressucitate(Stream& s) const
+{
+	return 0;
 }
 #endif
 

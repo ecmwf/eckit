@@ -12,15 +12,8 @@
 /// @date Jul 2015
 
 #include "eckit/config/LocalConfiguration.h"
-
-
-// #include <iostream>
-// #include <limits>
-// #include "eckit/filesystem/PathName.h"
 #include "eckit/parser/JSONParser.h"
-// #include "mir/util/Parser.h"
 #include "eckit/parser/Tokenizer.h"
-
 
 namespace eckit {
 
@@ -38,11 +31,20 @@ static Value root(const eckit::PathName &path) {
 }
 
 
+LocalConfiguration::LocalConfiguration(char separator):
+    Configuration(Value::makeMap(), separator) {
+}
+
+LocalConfiguration::LocalConfiguration(const Configuration &other):
+    Configuration(other) {
+}
+
 LocalConfiguration::LocalConfiguration(const Configuration &other, const std::string &path):
     Configuration(other.lookUp(path), other.separator()) {
 }
 
-LocalConfiguration::~LocalConfiguration(){
+
+LocalConfiguration::~LocalConfiguration() {
 }
 
 void LocalConfiguration::print(std::ostream &out) const {

@@ -30,7 +30,7 @@ class LocalConfiguration : public Configuration {
 
     // -- Contructors
 
-    LocalConfiguration();
+    LocalConfiguration(char separator = '.');
     LocalConfiguration(const Configuration &other);
     LocalConfiguration(const Configuration &other, const std::string &path);
 

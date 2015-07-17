@@ -64,6 +64,7 @@ class Configuration : public Parametrisation {
 
   protected:
 
+    Configuration(const Configuration &);
     Configuration(const Value &root, char separator = '.');
     virtual ~Configuration();
 
@@ -93,7 +94,6 @@ class Configuration : public Parametrisation {
 
     // No copy allowed
 
-    Configuration(const Configuration &);
     Configuration &operator=(const Configuration &);
 
     // -- Members

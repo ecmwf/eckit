@@ -23,7 +23,17 @@ Configuration::Configuration(const Value &root, char separator):
     separator_(separator) {
 }
 
+Configuration::Configuration(const Configuration &other):
+    root_(other.root_),
+    separator_(other.separator_) {
+}
+
 Configuration::~Configuration() {
+}
+
+
+char Configuration::separator() const {
+    return separator_;
 }
 
 eckit::Value Configuration::lookUp(const std::string &s, bool &found) const {

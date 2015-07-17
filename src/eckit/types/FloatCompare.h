@@ -63,6 +63,12 @@ public:
     /// Compare values inequality: "is greater or equal to"
     static bool isGreaterEqual(const T& a,  const T& b) { return (a >= b); }
 
+    /// Compare values inequality: "is strictly greater than"
+    static bool isStrictlyGreater(const T& a,  const T& b)
+    {
+       return !isApproximatelyEqual(a, b) && a > b;
+    }
+
     /// Compare values inequality: "is greater or approximately equal to"
     static bool isApproximatelyGreaterOrEqual(const T& a,  const T& b) { return (a >= b) || isApproximatelyEqual(a,b); }
 

@@ -132,15 +132,23 @@ public:
     Value operator%(const Value&) const;
     Value& operator%=(const Value&);
 
-    Value operator[](const char*) const;
-    Value operator[](const std::string&) const;
-    Value operator[](const Value&) const;
-    Value operator[](int) const;
+    const Value& operator[](const char*) const;
+    const Value& operator[](const std::string&) const;
+    const Value& operator[](const Value&) const;
+    const Value& operator[](int) const;
 
+    Value& operator[](const char*);
+    Value& operator[](const std::string&);
+    Value& operator[](const Value&);
+    Value& operator[](int);
+
+public:
     bool contains(const char*) const;
     bool contains(const std::string&) const;
     bool contains(const Value&) const;
     bool contains(int) const;
+
+    Value& element(const std::string&);
 
     // -- Methods
 

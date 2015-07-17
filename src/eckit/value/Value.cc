@@ -286,22 +286,50 @@ Value::operator ValueMap() const
 	return v;
 }
 
-Value Value::operator[](const Value& key) const
+//=========================================================
+const Value& Value::operator[](const Value& key) const
 {
     return content_->element(key);
 }
 
-Value Value::operator[](const char* key) const
+const Value& Value::operator[](const char* key) const
 {
     return content_->element(Value(std::string(key)));
 }
 
-Value Value::operator[](const std::string& key) const
+const Value& Value::operator[](const std::string& key) const
 {
     return content_->element(Value(key));
 }
 
-Value Value::operator[](int key) const
+//=========================================================
+
+Value& Value::operator[](const Value& key)
+{
+    return content_->element(key);
+}
+
+Value& Value::operator[](const char* key)
+{
+    return content_->element(Value(std::string(key)));
+}
+
+Value& Value::operator[](const std::string& key)
+{
+    return content_->element(Value(key));
+}
+
+Value& Value::operator[](int key)
+{
+    return content_->element(Value(key));
+}
+//=========================================================
+
+Value& Value::element(const std::string& key) {
+    return content_->element(Value(key));
+}
+
+const Value& Value::operator[](int key) const
 {
     return content_->element(Value(key));
 }

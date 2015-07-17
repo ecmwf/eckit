@@ -12,8 +12,8 @@
 /// @date JUl 2015
 
 
-#ifndef eckit_JSONConfiguration_H
-#define eckit_JSONConfiguration_H
+#ifndef eckit_LocalConfiguration_H
+#define eckit_LocalConfiguration_H
 
 #include "eckit/config/Configuration.h"
 
@@ -22,7 +22,7 @@ namespace eckit {
 
 class PathName;
 
-class JSONConfiguration : public Configuration {
+class LocalConfiguration : public Configuration {
   public:
 
     // -- Exceptions
@@ -30,10 +30,11 @@ class JSONConfiguration : public Configuration {
 
     // -- Contructors
 
-    JSONConfiguration(const eckit::PathName &path, char separator = '.');
-    JSONConfiguration(std::istream &, char separator = '.');
+    LocalConfiguration();
+    LocalConfiguration(const Configuration &other);
+    LocalConfiguration(const Configuration &other, const std::string &path);
 
-    virtual ~JSONConfiguration(); // Change to virtual if base class
+    virtual ~LocalConfiguration(); // Change to virtual if base class
 
     // -- Convertors
     // None
@@ -43,6 +44,11 @@ class JSONConfiguration : public Configuration {
 
     // -- Methods
 
+    void set(const std::string &name, const std::string &value);
+    void set(const std::string &name, const char *value);
+    void set(const std::string &name, double value);
+    void set(const std::string &name, long value);
+    void set(const std::string &name, bool value);
 
     // -- Overridden methods
 
@@ -78,16 +84,17 @@ class JSONConfiguration : public Configuration {
 
     // No copy allowed
 
-    JSONConfiguration(const JSONConfiguration &);
-    JSONConfiguration &operator=(const JSONConfiguration &);
+    LocalConfiguration(const LocalConfiguration &);
+    LocalConfiguration &operator=(const LocalConfiguration &);
 
-    // Make private so no one modifies it
 
     // -- Members
 
 
     // -- Methods
 
+    void set(const std::vector<std::string> &path, size_t i, Value &root, const Value &value);
+    void set(const std::string &s, const Value &value);
 
     // -- Overridden methods
 
@@ -104,7 +111,7 @@ class JSONConfiguration : public Configuration {
 
     // -- Friends
 
-    //friend ostream& operator<<(ostream& s,const JSONConfiguration& p)
+    //friend ostream& operator<<(ostream& s,const LocalConfiguration& p)
     //  { p.print(s); return s; }
 
 };

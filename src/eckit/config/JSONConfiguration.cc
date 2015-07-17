@@ -55,26 +55,5 @@ void JSONConfiguration::print(std::ostream &out) const {
     out << "]";
 }
 
-void JSONConfiguration::set(const std::string &name, const std::string &value) {
-    NOTIMP;
-}
-
-void JSONConfiguration::set(const std::string &name, const char *value) {
-    NOTIMP;
-}
-
-void JSONConfiguration::set(const std::string &name, double value) {
-    NOTIMP;
-}
-
-void JSONConfiguration::set(const std::string &name, long value) {
-    NOTIMP;
-}
-
-void JSONConfiguration::set(const std::string &name, bool value) {
-    NOTIMP;
-}
-
-
 }  // namespace mir
 

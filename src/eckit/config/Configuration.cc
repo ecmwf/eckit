@@ -23,18 +23,7 @@ Configuration::Configuration(const Value &root, char separator):
     separator_(separator) {
 }
 
-Configuration::Configuration(const Configuration &other, const std::string &path):
-    root_(other.lookUp(path)),
-    separator_(other.separator_) {
-}
-
 Configuration::~Configuration() {
-}
-
-void Configuration::print(std::ostream &out) const {
-    out << "Configuration[root=";
-    out << root_;
-    out << "]";
 }
 
 eckit::Value Configuration::lookUp(const std::string &s, bool &found) const {
@@ -63,59 +52,6 @@ eckit::Value Configuration::lookUp(const std::string &s, bool &found) const {
     return result;
 }
 
-void Configuration::set(const std::vector<std::string> &path, size_t i, eckit::Value &root, const eckit::Value &value)  {
-    if (root.shared()) {
-        // std::cout << "Clone " << root << std::endl;
-        root = root.clone();
-    }
-
-    if (i + 1 == path.size()) {
-        // std::cout << i << " SET " << path[i] << " to " << value << std::endl;
-        root[path[i]] = value;
-        return;
-    }
-
-    if (!root.contains(path[i])) {
-        // std::cout << i << " NEW " << path[i]  << std::endl;
-        root[path[i]] = eckit::Value::makeMap();
-    }
-
-    eckit::Value &r = root.element(path[i]);
-    set(path, i + 1, r, value);
-}
-
-void Configuration::set(const std::string &s, const eckit::Value &value)  {
-
-    // std::cout << "---- " << s << " => " << value << std::endl;
-
-    eckit::Tokenizer parse(separator_);
-    std::vector<std::string> path;
-    parse(s, path);
-
-    set(path, 0, root_, value);
-}
-
-void Configuration::set(const std::string &s, long value)  {
-    set(s, eckit::Value(value));
-}
-
-
-void Configuration::set(const std::string &s, const char *value)  {
-    set(s, eckit::Value(value));
-}
-
-
-void Configuration::set(const std::string &s, const std::string &value)  {
-    set(s, eckit::Value(value));
-}
-
-void Configuration::set(const std::string &s, double value)  {
-    set(s, eckit::Value(value));
-}
-
-void Configuration::set(const std::string &s, bool value)  {
-    set(s, eckit::Value(value));
-}
 
 eckit::Value Configuration::lookUp(const std::string &name) const {
     bool found = false;

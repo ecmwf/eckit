@@ -228,6 +228,8 @@ config/Configuration.h
 config/Configuration.cc
 config/JSONConfiguration.h
 config/JSONConfiguration.cc
+config/LocalConfiguration.h
+config/LocalConfiguration.cc
 config/FileReadPolicy.h
 config/FileReadPolicy.cc
 config/ResourceBase.cc )

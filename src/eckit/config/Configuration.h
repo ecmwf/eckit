@@ -15,7 +15,6 @@
 #ifndef eckit_Configuration_H
 #define eckit_Configuration_H
 
-#include <string>
 
 #include "eckit/config/Parametrisation.h"
 #include "eckit/value/Value.h"
@@ -32,9 +31,6 @@ class Configuration : public Parametrisation {
 
     // -- Contructors
 
-    Configuration(const Configuration &other, const std::string &path);
-
-    virtual ~Configuration(); // Change to virtual if base class
 
     // -- Convertors
     // None
@@ -44,12 +40,8 @@ class Configuration : public Parametrisation {
 
     // -- Methods
 
-    virtual void set(const std::string &name, const std::string &value);
-    virtual void set(const std::string &name, const char *value);
-
-    virtual void set(const std::string &name, double value);
-    virtual void set(const std::string &name, long value);
-    virtual void set(const std::string &name, bool value);
+    Value lookUp(const std::string &) const;
+    char separator() const;
 
     // -- Overridden methods
 
@@ -73,6 +65,7 @@ class Configuration : public Parametrisation {
   protected:
 
     Configuration(const Value &root, char separator = '.');
+    virtual ~Configuration();
 
     // -- Destructor
 
@@ -82,6 +75,8 @@ class Configuration : public Parametrisation {
     char separator_;
 
     // -- Methods
+
+    Value lookUp(const std::string &, bool &) const;
 
     // void print(ostream&) const; // Change to virtual if base class
 
@@ -107,16 +102,11 @@ class Configuration : public Parametrisation {
 
     // -- Methods
 
-    Value lookUp(const std::string &, bool &) const;
-    Value lookUp(const std::string &) const;
-
-    void set(const std::vector<std::string> &path, size_t i, Value &root, const Value &value);
-    void set(const std::string &s, const Value &value);
 
     // -- Overridden methods
 
     // From MIRParametrisation
-    virtual void print(std::ostream &) const;
+    virtual void print(std::ostream &) const = 0;
 
 
 

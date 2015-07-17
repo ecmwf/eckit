@@ -39,20 +39,20 @@ static Value root(const eckit::PathName &path) {
 
 
 JSONConfiguration::JSONConfiguration(const eckit::PathName &path, char separator):
-    Configuration(root(path), separator) {
+    Configuration(root(path), separator),
+    path_(path) {
 }
 
 JSONConfiguration::JSONConfiguration(std::istream &in, char separator):
-    Configuration(root(in), separator) {
+    Configuration(root(in), separator),
+    path_("<istream>") {
 }
 
-JSONConfiguration::~JSONConfiguration(){
+JSONConfiguration::~JSONConfiguration() {
 }
 
 void JSONConfiguration::print(std::ostream &out) const {
-    out << "JSONConfiguration[root=";
-    out << root_;
-    out << "]";
+    out << "JSONConfiguration[path=" << path_ << ", root=" << root_ << "]";
 }
 
 }  // namespace mir

@@ -85,6 +85,8 @@ class JSONConfiguration : public Configuration {
 
     // -- Members
 
+    std::string path_;
+
 
     // -- Methods
 

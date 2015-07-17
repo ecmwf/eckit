@@ -135,6 +135,10 @@ Value Value::clone() const {
     return Value(content_->clone());
 }
 
+bool Value::shared() const {
+    return content_->count() > 1;
+}
+
 Value& Value::operator=(const Value& other)
 {
 	other.content_->attach();

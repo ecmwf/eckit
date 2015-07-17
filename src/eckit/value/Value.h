@@ -161,6 +161,7 @@ public:
     Value	 head() const;
 
     Value    clone() const;
+    bool     shared() const; // Ensure that value is not shared
 
 // -- Class Methods
 

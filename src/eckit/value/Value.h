@@ -160,6 +160,8 @@ public:
     Value	 tail() const;
     Value	 head() const;
 
+    Value    clone() const;
+
 // -- Class Methods
 
     static Value makeList();

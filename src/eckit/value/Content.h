@@ -169,6 +169,7 @@ protected:
 	virtual void   print(std::ostream&) const  = 0;
 	virtual std::string typeName()      const = 0;
     virtual void   json(JSON&)     const  = 0;
+    virtual Content* clone() const = 0;
 
     virtual bool   isNil()      const  { return false; }
     virtual bool   isNumber()   const  { return false; }

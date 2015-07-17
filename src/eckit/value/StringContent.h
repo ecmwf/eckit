@@ -76,6 +76,7 @@ protected:
     virtual void   json(JSON&)     const;
     virtual std::string  typeName() const      { return "String"; }
     virtual bool    isString() const      { return true; }
+    virtual Content* clone() const;
 
     // -- From Streamable
 

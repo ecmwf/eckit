@@ -46,6 +46,15 @@ ListContent::ListContent(Stream& s):
 
 }
 
+Content* ListContent::clone() const {
+    ValueList v;
+    v.reserve(value_.size());
+    for(size_t i = 0; i < value_.size(); ++i) {
+        v.push_back(value_[i].clone());
+    }
+    return new ListContent(v);
+}
+
 void ListContent::encode(Stream& s) const
 {
 	Content::encode(s);

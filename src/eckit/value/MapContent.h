@@ -81,6 +81,7 @@ protected:
     virtual std::string typeName() const       { return "Map"; }
 
     virtual bool   isMap() const         { return true; }
+    virtual Content* clone() const;
 
     // -- From Streamable
 

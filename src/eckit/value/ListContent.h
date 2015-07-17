@@ -80,6 +80,7 @@ protected:
 	virtual bool   isList() const         { return true; }
     virtual Value& element(const Value&);
     virtual bool contains(const Value& key) const;
+    virtual Content* clone() const;
 
     // -- From Streamable
 

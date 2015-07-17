@@ -131,6 +131,10 @@ Value::Value(const Value& other):
 	content_->attach();
 }
 
+Value Value::clone() const {
+    return Value(content_->clone());
+}
+
 Value& Value::operator=(const Value& other)
 {
 	other.content_->attach();

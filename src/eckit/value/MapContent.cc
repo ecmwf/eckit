@@ -117,6 +117,16 @@ void MapContent::json(JSON& s) const
     s.endObject();
 }
 
+
+Content* MapContent::clone() const {
+    ValueMap v;
+    for(ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
+        v[(*j).first.clone()] = (*j).second.clone();
+    }
+    return new MapContent(v);
+}
+
+
 Content* MapContent::add(const Content& other) const
 {
     return other.addMap(*this);

@@ -32,7 +32,7 @@ static Value root(std::istream &in) {
 }
 
 
-static Value root(const eckit::PathName &path) {
+static Value root(const std::string &path) {
     std::ifstream in(path);
     return root(in);
 }

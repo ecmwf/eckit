@@ -33,7 +33,7 @@ static Value root(std::istream &in) {
 
 
 static Value root(const std::string &path) {
-    std::ifstream in(path);
+    std::ifstream in(path.c_str());
     return root(in);
 }
 

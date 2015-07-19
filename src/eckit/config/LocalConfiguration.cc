@@ -17,19 +17,6 @@
 
 namespace eckit {
 
-static Value root(std::istream &in) {
-    eckit::JSONParser parser(in);
-    Value root = parser.parse();
-    ASSERT(!in.bad());
-    return root;
-}
-
-
-static Value root(const eckit::PathName &path) {
-    std::ifstream in(path);
-    return root(in);
-}
-
 
 LocalConfiguration::LocalConfiguration(char separator):
     Configuration(Value::makeMap(), separator) {

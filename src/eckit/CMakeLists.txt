@@ -226,6 +226,12 @@ config/EtcTable.cc
 config/Parametrisation.h
 config/DynamicParametrisation.h
 config/DynamicParametrisation.cc
+config/Configuration.h
+config/Configuration.cc
+config/JSONConfiguration.h
+config/JSONConfiguration.cc
+config/LocalConfiguration.h
+config/LocalConfiguration.cc
 config/FileReadPolicy.h
 config/FileReadPolicy.cc
 config/ResourceBase.cc )
@@ -233,6 +239,7 @@ config/ResourceBase.cc )
 list( APPEND eckit_runtime_srcs
 runtime/Task.h
 runtime/Task.cc
+runtime/TaskID.h
 runtime/Context.h
 runtime/Context.cc
 runtime/Application.h

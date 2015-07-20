@@ -11,7 +11,6 @@
 #define BOOST_TEST_MODULE test_eckit_filesystem
 
 #include <string>
-#include <iostream>
 
 #include "ecbuild/boost_test_framework.h"
 
@@ -27,7 +26,7 @@ BOOST_AUTO_TEST_SUITE( TestLocalPathName )
 
 BOOST_AUTO_TEST_CASE( test_constructors )
 {
-   cout << "\neckit::filesystem:: ...test_constructors\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_constructors");
 
    LocalPathName p;
    BOOST_CHECK_MESSAGE(p == "/","Expected '/'");
@@ -41,7 +40,7 @@ BOOST_AUTO_TEST_CASE( test_constructors )
 
 BOOST_AUTO_TEST_CASE( test_assignment )
 {
-   cout << "\neckit::filesystem:: ...test_assignment\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_assignment");
 
    LocalPathName p;
    LocalPathName pd;
@@ -64,7 +63,7 @@ BOOST_AUTO_TEST_CASE( test_assignment )
 
 BOOST_AUTO_TEST_CASE( test_operators )
 {
-   cout << "\neckit::filesystem:: ...test_operators\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_operators");
 
    LocalPathName p;
 
@@ -84,7 +83,7 @@ BOOST_AUTO_TEST_CASE( test_operators )
 
 BOOST_AUTO_TEST_CASE( test_dir_name )
 {
-   cout << "\neckit::filesystem:: ...test_dir_name\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_dir_name");
 
    LocalPathName p("/fred/bill");
    BOOST_CHECK_MESSAGE(p.dirName() == "/fred","Expected dirName to be '/fred' but found " << p.dirName());
@@ -98,7 +97,7 @@ BOOST_AUTO_TEST_CASE( test_dir_name )
 
 BOOST_AUTO_TEST_CASE( test_exists )
 {
-   cout << "\neckit::filesystem:: ...test_exists\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_exists");
 
    LocalPathName cwd = LocalPathName::cwd();
 
@@ -108,22 +107,21 @@ BOOST_AUTO_TEST_CASE( test_exists )
    LocalPathName acwd = LocalPathName::cwd();
    BOOST_CHECK_MESSAGE(cwd.sameAs(acwd),"The directories must be the same");
 
-
-   //cout << "cwd " << cwd << "\n";
-   //cout << "cwd.mountPoint() " << cwd.mountPoint() << "\n";
-   //cout << "cwd.realName() " << cwd.realName() << "\n";
-   //cout << "cwd.node() " << cwd.node() << "\n";
-   //cout << "cwd.path() " << cwd.path() << "\n";
-   //cout << "size " << cwd.size() << "\n";
-   //cout << "lastAccess " << cwd.lastAccess() << "\n";
-   //cout << "lastModified " << cwd.lastModified() << "\n";
-   //cout << "created " << cwd.created() << "\n";
+   BOOST_TEST_MESSAGE("cwd " << cwd);
+   BOOST_TEST_MESSAGE("cwd.mountPoint() " << cwd.mountPoint());
+   BOOST_TEST_MESSAGE("cwd.realName() " << cwd.realName());
+   BOOST_TEST_MESSAGE("cwd.node() " << cwd.node());
+   BOOST_TEST_MESSAGE("cwd.path() " << cwd.path());
+   BOOST_TEST_MESSAGE("size " << cwd.size());
+   BOOST_TEST_MESSAGE("lastAccess " << cwd.lastAccess());
+   BOOST_TEST_MESSAGE("lastModified " << cwd.lastModified());
+   BOOST_TEST_MESSAGE("created " << cwd.created());
 }
 
 
 BOOST_AUTO_TEST_CASE( test_basename )
 {
-   cout << "\neckit::filesystem:: ...test_basename\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_basename");
 
    LocalPathName p1;
    BOOST_CHECK_MESSAGE(p1.baseName(false) == "","Expected empty string  but found " << p1.baseName(false));
@@ -138,17 +136,39 @@ BOOST_AUTO_TEST_CASE( test_basename )
    BOOST_CHECK_MESSAGE(p.baseName(true) == "file.ok","Expected 'file.ok'  but found " << p.baseName(true));
 }
 
+BOOST_AUTO_TEST_CASE( test_extension )
+{
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_extension");
+
+   LocalPathName p1;
+   BOOST_CHECK_MESSAGE(p1.extension() == "", "Expected empty string  but found " << p1.extension());
+
+   LocalPathName p2("fred");
+   BOOST_CHECK_MESSAGE(p2.extension() == "", "Expected empty string  but found " << p2.extension());
+   LocalPathName p3("/path/to/fred");
+   BOOST_CHECK_MESSAGE(p3.extension() == "", "Expected empty string  but found " << p3.extension());
+   LocalPathName p4("/path/with.dot/to/fred");
+   BOOST_CHECK_MESSAGE(p4.extension() == "", "Expected empty string  but found " << p4.extension());
+
+   LocalPathName p5("fred.");
+   BOOST_CHECK_MESSAGE(p5.extension() == ".", "Expected '.'  but found " << p5.extension());
+   LocalPathName p6("/path/to/fred.ext");
+   BOOST_CHECK_MESSAGE(p6.extension() == ".ext", "Expected '.ext'  but found " << p6.extension());
+   LocalPathName p7("/path/with.dot/to/fred.ext");
+   BOOST_CHECK_MESSAGE(p7.extension() == ".ext", "Expected '.ext'  but found " << p7.extension());
+}
+
 BOOST_AUTO_TEST_CASE( test_fileSystemSize )
 {
-   cout << "\neckit::filesystem:: ...test_fileSystemSize\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_fileSystemSize");
 
    LocalPathName cwd = LocalPathName::cwd();
    FileSystemSize fs;
    cwd.fileSystemSize(fs);
 
-//   cout << "cwd " << cwd << "\n";
-//   cout << "fs.available " << fs.available << "\n";
-//   cout << "fs.total " << fs.total << "\n";
+   BOOST_TEST_MESSAGE("cwd " << cwd);
+   BOOST_TEST_MESSAGE("fs.available " << fs.available);
+   BOOST_TEST_MESSAGE("fs.total " << fs.total);
 
    BOOST_CHECK_MESSAGE(fs.available > 0,"Expected file system available  > 0 ");
    BOOST_CHECK_MESSAGE(fs.total > 0,"Expected file system total  > 0 ");
@@ -156,12 +176,11 @@ BOOST_AUTO_TEST_CASE( test_fileSystemSize )
 
 BOOST_AUTO_TEST_CASE( test_unique )
 {
-   cout << "\neckit::filesystem:: ...test_unique\n";
+   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_unique");
 
    LocalPathName unique = LocalPathName::unique(LocalPathName::cwd());
 
    unique.mkdir();
-   //cout << "size = " << unique.size() << "\n";
 
    BOOST_CHECK_MESSAGE(unique.exists(),"Expected '" << unique << "' to exist ");
 

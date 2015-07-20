@@ -33,6 +33,10 @@ NilContent::NilContent(Stream& s):
 {
 }
 
+Content* NilContent::clone() const {
+    return new NilContent();
+}
+
 void NilContent::encode(Stream& s) const
 {
     Content::encode(s);

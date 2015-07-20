@@ -258,6 +258,11 @@ PathName PathName::baseName(bool ext) const
 	return PathName(path_->baseName(ext));
 }
 
+std::string PathName::extension() const
+{
+  return path_->extension();
+}
+
 PathName PathName::fullName() const
 {
 	return PathName(path_->fullName());

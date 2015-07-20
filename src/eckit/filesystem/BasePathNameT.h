@@ -81,6 +81,7 @@ private:
     virtual BasePathName* orphanName() const;
     virtual BasePathName* checkClusterNode() const;
     virtual BasePathName* baseName(bool) const;
+    virtual std::string extension() const;
 
     virtual std::string clusterName() const;
     virtual void syncParentDirectory() const;

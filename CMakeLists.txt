@@ -35,6 +35,12 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
+### Experimental features
+
+ecbuild_add_option( FEATURE EXPERIMENTAL
+                    DEFAULT ON
+                    DESCRIPTION "Experimental features (not used in production)" )
+
 ### GRIB
 
 ecbuild_add_option( FEATURE GRIB
@@ -97,6 +103,33 @@ else() # Don't search for it on cc[abt] as it is already available as scilib
                       DESCRIPTION "Linear Algebra PACKage")
 endif()
 
+### CUDA
+
+ecbuild_add_option( FEATURE CUDA
+                    DEFAULT ON
+                    DESCRIPTION "CUDA support"
+                    REQUIRED_PACKAGES CUDA )
+
+set_package_properties( CUDA PROPERTIES TYPE RECOMMENDED PURPOSE "CUDA backend: GPU linear algebra operations" )
+
+### MKL
+
+ecbuild_add_option( FEATURE MKL
+                    DEFAULT ON
+                    DESCRIPTION "MKL support"
+                    REQUIRED_PACKAGES MKL )
+
+set_package_properties( MKL PROPERTIES TYPE RECOMMENDED PURPOSE "MKL backend: Accelerated linear algebra operations" )
+
+### ViennaCL
+
+ecbuild_add_option( FEATURE VIENNACL
+                    DEFAULT ON
+                    DESCRIPTION "ViennaCL support"
+                    REQUIRED_PACKAGES ViennaCL )
+
+set_package_properties( VIENNACL PROPERTIES TYPE RECOMMENDED PURPOSE "ViennaCL backend: GPU-accelerated linear algebra library" )
+
 ### async io support
 
 find_package( AIO )
@@ -143,6 +176,10 @@ endif()
 set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
 set( ECKIT_LIBRARIES      eckit eckit_geometry eckit_cmd eckit_maths eckit_web )
+
+if( HAVE_EXPERIMENTAL )
+  list( APPEND ECKIT_LIBRARIES    eckit_la )
+endif()
 
 if( HAVE_GRIB )
   list( APPEND ECKIT_LIBRARIES eckit_grib )

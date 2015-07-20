@@ -21,6 +21,16 @@ Properties::Properties()
 {
 }
 
+Properties::Properties(const property_t& value)
+{
+  ASSERT( value.isMap() );
+  ValueMap value_map = value;
+  for( ValueMap::const_iterator vit = value_map.begin(); vit != value_map.end(); ++vit )
+  {
+    props_[vit->first]=vit->second;
+  }
+}
+
 Properties::Properties(Stream &s)
 {
     s >> props_;
@@ -30,59 +40,6 @@ bool Properties::has(const key_t & k) const
 {
     return ( props_.find(k) != props_.end() );
 }
-
-bool Properties::get(const std::string& name, std::string& value) const
-{
-  if(!has(name)) return false;
-  value = std::string(operator[](name));
-  return true;
-}
-bool Properties::get(const std::string& name, bool& value) const
-{
-  if(!has(name)) return false;
-  value = operator[](name);
-  return true;
-}
-bool Properties::get(const std::string& name, long& value) const
-{
-  if(!has(name)) return false;
-  value = operator[](name);
-  return true;
-}
-bool Properties::get(const std::string& name, size_t& value) const
-{
-  if(!has(name)) return false;
-  value = operator[](name);
-  return true;
-}
-bool Properties::get(const std::string& name, double& value) const
-{
-  if(!has(name)) return false;
-  value = operator[](name);
-  return true;
-}
-bool Properties::get(const std::string& name, std::vector<int>& value) const
-{
-  if(!has(name)) return false;
-  std::vector<eckit::Value> v = operator[](name);
-  value.assign(v.begin(),v.end());
-  return true;
-}
-bool Properties::get(const std::string& name, std::vector<long>& value) const
-{
-  if(!has(name)) return false;
-  std::vector<eckit::Value> v = operator[](name);
-  value.assign(v.begin(),v.end());
-  return true;
-}
-bool Properties::get(const std::string& name, std::vector<double>& value) const
-{
-  if(!has(name)) return false;
-  std::vector<eckit::Value> v = operator[](name);
-  value.assign(v.begin(),v.end());
-  return true;
-}
-
 
 Properties::property_t Properties::get(const key_t & k) const
 {
@@ -97,6 +54,26 @@ Properties& Properties::set(const key_t & k, const property_t& v)
 {
     props_[k] = v;
     return *this;
+}
+
+Properties& Properties::set( const key_t& k, const Properties& p )
+{
+  ValueMap pmap;
+  for( PropertyMap::const_iterator vit = p.props_.begin(); vit != p.props_.end(); ++vit )
+  {
+    pmap[vit->first]=vit->second;
+  }
+  props_[k] = Value::makeMap(pmap);
+  return *this;
+}
+
+Properties& Properties::set( const Properties& p )
+{
+  for( PropertyMap::const_iterator vit = p.props_.begin(); vit != p.props_.end(); ++vit )
+  {
+    props_[vit->first]=vit->second;
+  }
+  return *this;
 }
 
 bool Properties::remove(const key_t & k)
@@ -118,6 +95,16 @@ void Properties::print( std::ostream& s ) const
 void Properties::encode( Stream& s ) const
 {
     s << props_;
+}
+
+Properties::operator property_t() const
+{
+  ValueMap vmap = Value::makeMap();
+  for( PropertyMap::const_iterator vit = props_.begin(); vit != props_.end(); ++vit )
+  {
+    vmap[vit->first]=vit->second;
+  }
+  return vmap;
 }
 
 //-----------------------------------------------------------------------------

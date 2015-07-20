@@ -32,7 +32,7 @@ public:
 
 	virtual ~GribParams();
 
-	static GribParams* create( GribHandle& );
+	static eckit::Properties* create( GribHandle& );
 
 protected: // members
 

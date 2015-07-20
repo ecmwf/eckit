@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -129,6 +129,14 @@ Value::Value(const Value& other):
 	content_(other.content_)
 {
 	content_->attach();
+}
+
+Value Value::clone() const {
+    return Value(content_->clone());
+}
+
+bool Value::shared() const {
+    return content_->count() > 1;
 }
 
 Value& Value::operator=(const Value& other)
@@ -264,34 +272,86 @@ Value Value::tail() const
 		return Value();
 }
 
-Value::operator ValueList() const 
-{ 
-	ValueList v; 
-	content_->value(v); 
-	return v; 
+Value::operator ValueList() const
+{
+	ValueList v;
+	content_->value(v);
+	return v;
 }
 
-Value::operator ValueMap() const 
-{ 
-	ValueMap v; 
-	content_->value(v); 
-	return v; 
+Value::operator ValueMap() const
+{
+	ValueMap v;
+	content_->value(v);
+	return v;
 }
 
-Value Value::operator[](const Value& key) const
+//=========================================================
+const Value& Value::operator[](const Value& key) const
 {
     return content_->element(key);
 }
 
-Value Value::operator[](const char* key) const
+const Value& Value::operator[](const char* key) const
 {
     return content_->element(Value(std::string(key)));
 }
 
-
-Value Value::operator[](int key) const
+const Value& Value::operator[](const std::string& key) const
 {
     return content_->element(Value(key));
+}
+
+//=========================================================
+
+Value& Value::operator[](const Value& key)
+{
+    return content_->element(key);
+}
+
+Value& Value::operator[](const char* key)
+{
+    return content_->element(Value(std::string(key)));
+}
+
+Value& Value::operator[](const std::string& key)
+{
+    return content_->element(Value(key));
+}
+
+Value& Value::operator[](int key)
+{
+    return content_->element(Value(key));
+}
+//=========================================================
+
+Value& Value::element(const std::string& key) {
+    return content_->element(Value(key));
+}
+
+const Value& Value::operator[](int key) const
+{
+    return content_->element(Value(key));
+}
+
+bool Value::contains(const Value& key) const
+{
+    return content_->contains(key);
+}
+
+bool Value::contains(const char* key) const
+{
+    return content_->contains(Value(std::string(key)));
+}
+
+bool Value::contains(const std::string& key) const
+{
+    return content_->contains(Value(key));
+}
+
+bool Value::contains(int key) const
+{
+    return content_->contains(Value(key));
 }
 
 Value Value::operator-() const

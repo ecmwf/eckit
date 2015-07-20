@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -36,112 +36,174 @@ class MarsFSPath;
 class PathName {
 public:
 
-	friend void operator<<(Stream&,const PathName&);
-	friend void operator>>(Stream&,PathName&);
-	
-	friend std::ostream& operator<<(std::ostream& s,const PathName& p)
-        { p.print(s); return s; }
+    friend void operator<<(Stream&,const PathName&);
+    friend void operator>>(Stream&,PathName&);
 
-// Contructors
+    friend std::ostream& operator<<(std::ostream& s,const PathName& p)
+    { p.print(s); return s; }
 
-	PathName(const char* p = "/");
+    // Contructors
+
+    PathName(const char* p = "/");
     PathName(const std::string& p);
-	PathName(const PathName& p);
+    PathName(const PathName& p);
     PathName(const LocalPathName&);
     PathName(const MarsFSPath&);
 
-// Destructor
+    // Destructor
     ~PathName();
 
-// Assignment
+    // Assignment
 
-	PathName& operator=(const PathName& p);
+    PathName& operator=(const PathName& p);
     PathName& operator=(const std::string& p);
-	PathName& operator=(const char* p);
+    PathName& operator=(const char* p);
 
-// Convertors
+    // Convertors
 
     std::string asString() const;
     operator std::string() const { return asString(); }
-	/* const char* c_str() const      { return path_.c_str(); } */
+    /* const char* c_str() const      { return path_.c_str(); } */
 
     const char* localPath() const;
 
-// Operators
+    // Operators
 
     PathName& operator+=(const std::string& s);
-	PathName& operator+=(const char* s);
-	PathName& operator+=(char s);
+    PathName& operator+=(const char* s);
+    PathName& operator+=(char s);
 
     PathName& operator/=(const std::string& s);
-	PathName& operator/=(const char* s);
-	PathName& operator/=(char s);
+    PathName& operator/=(const char* s);
+    PathName& operator/=(char s);
 
-	bool operator<(const PathName& other) const;
-	bool operator>(const PathName& other) const;
-	bool operator<=(const PathName& other) const;
-	bool operator>=(const PathName& other) const;
-	bool operator!=(const PathName& other) const;
-	bool operator==(const PathName& other) const;
+    bool operator<(const PathName& other) const;
+    bool operator>(const PathName& other) const;
+    bool operator<=(const PathName& other) const;
+    bool operator>=(const PathName& other) const;
+    bool operator!=(const PathName& other) const;
+    bool operator==(const PathName& other) const;
 
-// Methods
+    // Methods
 
-	/// @returns the directory part of the path
-	PathName dirName() const;
-    
-	PathName fullName() const;
-	PathName clusterName() const;
+    /// Directory part of the path
+    /// @return directory part of the path
+    PathName dirName() const;
 
-	/// @returns the name part of the path
+    /// Absolute path
+    /// @return absolute path
+    PathName fullName() const;
+
+    PathName clusterName() const;
+
+    /// Base name of the path
     /// @param ext if false the extension is stripped
-	PathName baseName(bool ext = true) const;
+    /// @return the name part of the path
+    PathName baseName(bool ext = true) const;
 
-	bool exists() const;
-	void touch() const;
-	void reserve(const Length&) const;
-	bool available() const;
+    /// path extension
+    /// @return file extension (empty string if there is none)
+    std::string extension() const;
 
-	Length size() const;
-	time_t lastAccess()   const;
-	time_t lastModified() const;
-	time_t created()      const;
+    /// Check if path exists
+    /// @return true if the path exists
+    bool exists() const;
 
-	bool isDir() const;
+    /// Check if path is available
+    /// @return true (local paths are always available)
+    bool available() const;
 
-	void empty() const;
-	void truncate(Length) const;
+    /// Touch the path. The path leading to it is created if it does not exist.
+    void touch() const;
 
-	void mkdir(short mode = 0777) const;
-	void chmod(short mode) const;
-	void unlink() const;
-	void rmdir() const;
+    /// Reserve a given number of Bytes (file must be of length 0 or not exist)
+    /// @param len number of Bytes to reserves
+    void reserve(const Length&) const;
+
+    /// File size
+    /// @return Size in Bytes
+    Length size() const;
+
+    /// Last access time
+    /// @return Time of last access
+    time_t lastAccess()   const;
+
+    /// Last modification time
+    /// @return Time of last modification
+    time_t lastModified() const;
+
+    /// Creation time
+    /// @return Time of creation
+    time_t created()      const;
+
+    /// Check if path is a directory
+    /// @return true if the path is a directory
+    bool isDir() const;
+
+    /// Clear the file
+    void empty() const;
+
+    /// Truncate the file to given number of Bytes.
+    /// @param len number of Bytes to truncat to
+    void truncate(Length) const;
+
+    /// Create the directory and all directories leading to it with given mode
+    /// @param mode file mode bits
+    void mkdir(short mode = 0777) const;
+
+    /// Change the file mode
+    /// @param mode file mode bits
+    void chmod(short mode) const;
+
+    /// Unlink the path
+    void unlink() const;
+
+    /// Remove the directory
+    void rmdir() const;
 
     void syncParentDirectory() const;
 
-	void backup() const;
-	void copy(const PathName&) const;
+    /// Create a copy with a unique path name
+    void backup() const;
 
-	bool sameAs(const PathName&) const;
-	PathName mountPoint() const;
-	PathName realName() const;
+    /// Create a copy with the given path name
+    void copy(const PathName&) const;
 
-	PathName orphanName() const;
-	PathName checkClusterNode() const;
+    /// Check if a given path points to the same inode as this path
+    /// @return true if the path points to the same inode as the given path
+    bool sameAs(const PathName&) const;
+
+    /// Mount point of the path
+    /// @return mount point of path
+    PathName mountPoint() const;
+
+    /// Real path (with symlinks resolved)
+    /// @return the real path (with symlinks resolved)
+    PathName realName() const;
+
+    PathName orphanName() const;
+    PathName checkClusterNode() const;
 
     const std::string& node() const;
+
+    /// String representation
+    /// @return string representation of path
     const std::string& path() const;
 
+    /// Get child files and directories
+    /// @param files vector to be filled with child files of path
+    /// @param directories vector to be filled with child diretories of path
     void children(std::vector<PathName>&, std::vector<PathName>&) const;
 
-	void fileSystemSize(FileSystemSize&) const;
+    void fileSystemSize(FileSystemSize&) const;
 
     DataHandle* fileHandle(bool overwrite = false) const;
     DataHandle* partHandle(const OffsetList&, const LengthList&) const;
     DataHandle* partHandle(const Offset&, const Length&) const;
 
-// Class methods
+    // Class methods
 
-	static PathName unique(const PathName&);
+    static PathName unique(const PathName&);
     static void match(const PathName&, std::vector<PathName>&,bool=false);
     static void link(const PathName& from, const PathName& to);
     static void rename(const PathName& from, const PathName& to);
@@ -151,28 +213,27 @@ public:
 
 private:
 
-	PathName(BasePathName*);
+    PathName(BasePathName*);
 
-// Members
+    // Members
 
 
     BasePathName* path_;
 
-// Methods
+    // Methods
 
-	PathName& tidy();
+    PathName& tidy();
     void print(std::ostream&) const;
 
-// friend
+    // friend
 
     friend PathName operator+(const PathName& p,const std::string& s);
-	friend PathName operator+(const PathName& p,const char* s);
-	friend PathName operator+(const PathName& p,char s);
+    friend PathName operator+(const PathName& p,const char* s);
+    friend PathName operator+(const PathName& p,char s);
 
     friend PathName operator/(const PathName& p,const std::string& s);
     friend PathName operator/(const PathName& p,const char* s);
-	friend PathName operator/(const PathName& p,char s);
-
+    friend PathName operator/(const PathName& p,char s);
 };
 
 //-----------------------------------------------------------------------------

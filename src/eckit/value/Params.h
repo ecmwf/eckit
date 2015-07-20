@@ -58,7 +58,7 @@ namespace eckit {
 ///
 /// In addition a `Params::Factory<MyParams>` needs to be initialised.
 
-class Params : public Parametrisation {
+class Params {
 
     struct Concept;
 
@@ -122,16 +122,7 @@ public: // methods
         return *this;
     }
 
-    /* Overloaded functions of class eckit::Parametrisation */
-    virtual bool has(const std::string& key ) const;
-    virtual bool get(const std::string& name, std::string& value) const;
-    virtual bool get(const std::string& name, bool& value) const;
-    virtual bool get(const std::string& name, long& value) const;
-    virtual bool get(const std::string& name, size_t& value) const;
-    virtual bool get(const std::string& name, double& value) const;
-    virtual bool get(const std::string& name, std::vector<int>& value) const;
-    virtual bool get(const std::string& name, std::vector<long>& value) const;
-    virtual bool get(const std::string& name, std::vector<double>& value) const;
+    bool has(const std::string& name ) const;
 
     value_t operator[] ( const key_t& key ) const;
 

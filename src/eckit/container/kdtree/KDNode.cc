@@ -40,13 +40,22 @@ void KDNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, dou
 {
     a.statsVisitNode();
 
+    bool left_visited = false;
+    bool right_visited = false;
+
     if(p.x(axis_) < this->value_.point().x(axis_))
     {
-        if(this->left_) this->left(a)->nearestNeighbourX(a, p, best, max, depth+1);
+        if(this->left_) {
+            this->left(a)->nearestNeighbourX(a, p, best, max, depth+1);
+            left_visited = true;
+        }
     }
     else
     {
-        if(this->right_) this->right(a)->nearestNeighbourX(a, p, best, max, depth+1);
+        if(this->right_) {
+            this->right(a)->nearestNeighbourX(a, p, best, max, depth+1);
+            right_visited = true;
+        }
     }
 
     double d   = Point::distance(p, this->value_.point());
@@ -61,8 +70,9 @@ void KDNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, dou
         a.statsNewCandidateMiss();
     }
 
+    d = Point::distance(p, this->value_.point(), axis_);
 
-    if(Point::distance(p, this->value_.point(), axis_) < max)
+    if(d < max)
     {
 
         // Visit other subtree...
@@ -70,12 +80,16 @@ void KDNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, dou
 
         if(p.x(axis_) < this->value_.point().x(axis_))
         {
-            if(this->right_) this->right(a)->nearestNeighbourX(a, p, best, max, depth+1);
+            if(this->right_ && !right_visited) {
+                this->right(a)->nearestNeighbourX(a, p, best, max, depth+1);
+            }
 
         }
         else {
 
-            if(this->left_) this->left(a)->nearestNeighbourX(a, p, best, max, depth+1);
+            if(this->left_ && !left_visited) {
+                this->left(a)->nearestNeighbourX(a, p, best, max, depth+1);
+            }
         }
     }
 

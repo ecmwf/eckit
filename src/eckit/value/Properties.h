@@ -19,7 +19,7 @@
 #include <string>
 
 #include "eckit/value/Value.h"
-#include "eckit/config/Parametrisation.h"
+#include "eckit/value/Params.h"
 
 //------------------------------------------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ namespace eckit {
 
 //------------------------------------------------------------------------------------------------------
 
-class Properties: public eckit::Parametrisation {
+class Properties {
 
 public: // types
 
@@ -37,27 +37,26 @@ public: // types
 public: // methods
 
     Properties();
+    Properties(const property_t&);
 
     Properties(Stream&);
 
+    virtual ~Properties() {}
+
     /// @returns true is a property exists
-    virtual bool has( const key_t& ) const;
-
-    virtual bool get(const std::string& name, std::string& value) const;
-    virtual bool get(const std::string& name, bool& value) const;
-    virtual bool get(const std::string& name, long& value) const;
-    virtual bool get(const std::string& name, size_t& value) const;
-    virtual bool get(const std::string& name, double& value) const;
-
-    virtual bool get(const std::string& name, std::vector<int>& value) const;
-    virtual bool get(const std::string& name, std::vector<long>& value) const;
-    virtual bool get(const std::string& name, std::vector<double>& value) const;
+    bool has( const key_t& ) const;
 
     /// @returns a property
     property_t get( const key_t& k ) const;
 
     /// Sets a property by inserting a new or overwrites an existing property
     Properties& set( const key_t& k, const property_t& v );
+
+    /// Sets a property by inserting a new or overwrites an existing property
+    Properties& set( const key_t& k, const Properties& p );
+
+    /// merge other properties
+    Properties& set( const Properties& p );
 
     /// Removes a property
     bool remove( const key_t& k );
@@ -70,6 +69,8 @@ public: // methods
 
     static const char* className() { return "eckit::Properties"; }
 
+    operator property_t() const;
+
 protected:
     void print(std::ostream& s) const;
 
@@ -81,7 +82,7 @@ private: // members
 
     PropertyMap  props_; //< storage of values
 
-private: // methods
+protected: // methods
 
     void json(JSON& s) const;
     void encode(Stream& s) const;

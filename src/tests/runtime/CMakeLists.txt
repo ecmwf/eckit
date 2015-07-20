@@ -6,13 +6,13 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-ecbuild_add_test(	TARGET  test_producer
-					SOURCES test_producer.cc
-					LIBS    eckit
+ecbuild_add_test( TARGET  eckit_test_producer
+                  SOURCES test_producer.cc
+                  LIBS    eckit
 )
 
-ecbuild_add_test(	TARGET  test_runtime
-					BOOST
-					SOURCES test_context.cc
-					LIBS    eckit
+ecbuild_add_test( TARGET  eckit_test_runtime
+                  BOOST
+                  SOURCES test_context.cc
+                  LIBS    eckit
 )

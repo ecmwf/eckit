@@ -35,6 +35,10 @@ DoubleContent::DoubleContent(Stream& s):
     s >> value_;
 }
 
+Content* DoubleContent::clone() const {
+    return new DoubleContent(value_);
+}
+
 void DoubleContent::encode(Stream& s) const
 {
     Content::encode(s);
@@ -82,12 +86,12 @@ int DoubleContent::compareNumber(const NumberContent& other) const
 }
 
 void DoubleContent::value(double& l) const
-{ 
+{
     l = value_;
 }
 
 void DoubleContent::value(std::string& s) const
-{ 
+{
     s = Translator<double,std::string>()(value_);
 }
 

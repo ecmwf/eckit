@@ -22,9 +22,11 @@ namespace grib {
 
 //------------------------------------------------------------------------------------------------------
 
-GribParams* GribParams::create( GribHandle& gh )
+eckit::Properties* GribParams::create( GribHandle& gh )
 {
-	return Factory<GribParams>::instance().get( gh.gridType() ).create(gh);
+  eckit::Properties* params = Factory<GribParams>::instance().get( gh.gridType() ).create(gh);
+  ASSERT(params);
+	return params;
 }
 
 GribParams::GribParams(GribHandle& gh)

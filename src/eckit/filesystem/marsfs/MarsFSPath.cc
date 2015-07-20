@@ -307,6 +307,10 @@ std::string MarsFSPath::clusterName() const
     return std::string(*this);
 }
 
+std::string MarsFSPath::extension() const {
+    NOTIMP;
+}
+
 BasePathName* MarsFSPath::checkClusterNode() const
 {
     try

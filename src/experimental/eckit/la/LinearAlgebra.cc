@@ -83,6 +83,11 @@ void LinearAlgebra::list(std::ostream &out) {
     }
 }
 
+void LinearAlgebra::dsptd(const Vector &, const SparseMatrix &, const Vector &, SparseMatrix &) const
+{
+    NOTIMP;
+}
+
 LinearAlgebra::LinearAlgebra(const std::string &name) {
     pthread_once(&once, init);
     AutoLock<Mutex> lock(local_mutex);

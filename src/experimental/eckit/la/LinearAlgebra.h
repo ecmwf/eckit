@@ -63,7 +63,7 @@ public:  // virtual methods
     /// Compute the product x A' y with x and y diagonal matrices stored as
     /// vectors and A a sparse matrix. The caller does NOT need to initialise
     /// the sparse output matrix C
-    virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const = 0;
+    virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const;
 
 protected:
 

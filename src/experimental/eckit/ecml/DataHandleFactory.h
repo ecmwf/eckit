@@ -16,7 +16,7 @@
 #include <map>
 
 #include "eckit/filesystem/PathName.h"
-#include "experimental/ecml/parser/Request.h"
+#include "experimental/eckit/ecml/parser/Request.h"
 
 namespace eckit { 
 

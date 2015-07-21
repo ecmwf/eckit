@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include "experimental/ecml/parser/Request.h"
-#include "experimental/ecml/ExecutionContext.h"
+#include "experimental/eckit/ecml/parser/Request.h"
+#include "experimental/eckit/ecml/ExecutionContext.h"
 
 #include "ParameterizedRequestHandler.h"
 

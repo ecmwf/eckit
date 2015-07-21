@@ -15,7 +15,7 @@
 #ifndef eckit_parser_RequestParser_H
 #define eckit_parser_RequestParser_H
 
-#include "experimental/ecml/parser/Request.h"
+#include "experimental/eckit/ecml/parser/Request.h"
 #include "eckit/memory/NonCopyable.h"
 
 namespace eckit {

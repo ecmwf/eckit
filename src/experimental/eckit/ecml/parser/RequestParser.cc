@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "experimental/ecml/parser/RequestParser.h"
+#include "experimental/eckit/ecml/parser/RequestParser.h"
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/log/Log.h"
@@ -97,7 +97,7 @@ namespace RequestYacc {
         void request_error(const char* msg);
     }
 
-#include "eckit/requesty.c"
+#include "experimental/eckit/ecml/requesty.c"
 
     extern "C" 
     {

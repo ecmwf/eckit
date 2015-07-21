@@ -19,7 +19,7 @@
 #include <map>
 #include <ostream>
 
-#include "experimental/ecml/parser/Cell.h"
+#include "experimental/eckit/ecml/parser/Cell.h"
 
 namespace eckit {
 

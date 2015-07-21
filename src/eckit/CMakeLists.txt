@@ -224,8 +224,6 @@ config/Configurable.cc
 config/EtcTable.h
 config/EtcTable.cc
 config/Parametrisation.h
-config/DynamicParametrisation.h
-config/DynamicParametrisation.cc
 config/Configuration.h
 config/Configuration.cc
 config/JSONConfiguration.h
@@ -356,14 +354,6 @@ types/VerifyingDate.cc
 )
 
 list( APPEND eckit_parser_srcs
-../experimental/ecml/parser/Request.h 
-../experimental/ecml/parser/Request.cc 
-../experimental/ecml/parser/Cell.h
-../experimental/ecml/parser/Cell.cc
-../experimental/ecml/parser/List.h
-../experimental/ecml/parser/List.cc
-../experimental/ecml/parser/RequestParser.h 
-../experimental/ecml/parser/RequestParser.cc 
 parser/StreamParser.h
 parser/StreamParser.cc
 parser/StringTools.h
@@ -374,13 +364,6 @@ parser/JSON.h
 parser/JSON.cc
 parser/JSONParser.h
 parser/JSONParser.cc )
-
-ecbuild_generate_yy( YYPREFIX    request_
-                     YACC        ../experimental/ecml/parser/requesty
-                     YACC_TARGET requesty
-                     LEX         ../experimental/ecml/parser/requestl
-                     LEX_TARGET  requestl
-                     DEPENDANT   ../experimental/ecml/parser/RequestParser.cc )
 
 list( APPEND eckit_value_srcs
 value/BoolContent.h
@@ -476,24 +459,6 @@ persist/DumpLoad.cc
 persist/Isa.cc )
 
 list( APPEND eckit_utils_srcs
-utils/DataHandleFactory.h
-utils/DataHandleFactory.cc
-utils/FileHandleFactory.h
-utils/FileHandleFactory.cc
-utils/ParameterizedRequestHandler.h
-utils/ParameterizedRequestHandler.cc
-../experimental/ecml/Interpreter.h
-../experimental/ecml/Interpreter.cc
-../experimental/ecml/Environment.h
-../experimental/ecml/Environment.cc
-../experimental/ecml/RequestHandler.h
-../experimental/ecml/RequestHandler.cc
-../experimental/ecml/ExecutionContext.h
-../experimental/ecml/ExecutionContext.cc
-../experimental/ecml/SpecialFormHandler.h
-../experimental/ecml/SpecialFormHandler.cc
-../experimental/ecml/Module.cc
-../experimental/ecml/Module.h
 utils/Translator.h
 utils/Translator.cc
 utils/MD5.h

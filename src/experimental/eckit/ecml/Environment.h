@@ -14,7 +14,7 @@
 #ifndef eckit_utils_Environment_H
 #define eckit_utils_Environment_H
 
-#include "experimental/ecml/parser/Request.h"
+#include "experimental/eckit/ecml/parser/Request.h"
 
 namespace eckit {
 

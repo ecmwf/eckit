@@ -11,9 +11,9 @@
 /// @author Piotr Kuchta
 /// @date June 2015
 
-#include "eckit/config/DynamicParametrisation.h"
-#include "experimental/ecml/ExecutionContext.h"
-#include "experimental/ecml/Environment.h"
+#include "experimental/eckit/ecml/DynamicParametrisation.h"
+#include "experimental/eckit/ecml/ExecutionContext.h"
+#include "experimental/eckit/ecml/Environment.h"
 
 #include "eckit/utils/Translator.h"
 

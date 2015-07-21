@@ -178,7 +178,7 @@ set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY
 set( ECKIT_LIBRARIES      eckit eckit_geometry eckit_cmd eckit_maths eckit_web )
 
 if( HAVE_EXPERIMENTAL )
-  list( APPEND ECKIT_LIBRARIES    eckit_la )
+  list( APPEND ECKIT_LIBRARIES eckit_ecml eckit_la )
 endif()
 
 if( HAVE_GRIB )

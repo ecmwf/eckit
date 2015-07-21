@@ -10,7 +10,7 @@
 
 #include <sstream>
 
-#include "eckit/utils/DataHandleFactory.h"
+#include "experimental/eckit/ecml/DataHandleFactory.h"
 
 #include "eckit/io/MultiHandle.h"
 #include "eckit/parser/StringTools.h"

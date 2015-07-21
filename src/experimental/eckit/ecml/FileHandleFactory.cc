@@ -8,25 +8,22 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Piotr Kuchta - ECMWF March 2015
+#include <sstream>
 
-#ifndef eckit_parser_Request_H
-#define eckit_parser_Request_H
+#include "experimental/eckit/ecml/FileHandleFactory.h"
+#include "eckit/io/FileHandle.h"
 
-#include <string>
-#include <list>
-#include <vector>
-#include <map>
-#include <ostream>
+using namespace eckit;
+using namespace std;
 
-#include "experimental/ecml/parser/Cell.h"
-#include "experimental/ecml/parser/List.h"
+FileHandleFactory::FileHandleFactory()
+: DataHandleFactory("file")
+{}
 
-namespace eckit {
+DataHandle* FileHandleFactory::makeHandle(const string& fileName) const
+{
+    return new FileHandle(fileName);
+}
 
-typedef Cell* Values;
-typedef Cell* Request;
+static FileHandleFactory fileHandleFactory;
 
-} // namespace eckit
-
-#endif

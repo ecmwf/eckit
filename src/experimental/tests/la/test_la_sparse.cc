@@ -67,6 +67,11 @@ struct Fixture {
                     0, 2, -3.,
                     1, 1, 2.,
                     2, 2, 2.)),
+                A2(S(2, 3, 4,
+                     0, 0, 1.,
+                     0, 2, 2.,
+                     1, 0, 3.,
+                     1, 1, 4.)),
                 x(V(3, 1., 2., 3.)),
                 linalg(LinearAlgebra::backend()) {}
 
@@ -74,6 +79,9 @@ struct Fixture {
     //     0 2  0
     //     0 0  2
     SparseMatrix A;
+    // A2 = 1. 0. 2.
+    //      3. 4. 0.
+    SparseMatrix A2;
     Vector x;
     const LinearAlgebra& linalg;
 };
@@ -156,24 +164,17 @@ BOOST_AUTO_TEST_CASE(test_prune) {
 }
 
 BOOST_AUTO_TEST_CASE(test_transpose_square) {
-    A.transpose();
     Index outer[4] = {0, 1, 2, 4};
     Index inner[4] = {0, 1, 0, 2};
     Scalar data[4] = {2., 2., -3., 2.};
-    test(A, outer, inner, data);
+    test(A.transpose(), outer, inner, data);
 }
 
 BOOST_AUTO_TEST_CASE(test_transpose_nonsquare) {
     Index outer[4] = {0, 2, 3, 4};
     Index inner[4] = {0, 1, 1, 0};
     Scalar data[4] = {1., 3., 4., 2.};
-    // A = 1. 0. 2.
-    //     3. 4. 0.
-    test(S(2, 3, 4,
-           0, 0, 1.,
-           0, 2, 2.,
-           1, 0, 3.,
-           1, 1, 4.).transpose(), outer, inner, data);
+    test(A2.transpose(), outer, inner, data);
 }
 
 BOOST_AUTO_TEST_CASE(test_spmv) {
@@ -192,8 +193,8 @@ BOOST_AUTO_TEST_CASE(test_spmm) {
     BOOST_CHECK_THROW(linalg.spmm(A, Matrix(2, 2), C), AssertionFailed);
 }
 
-BOOST_AUTO_TEST_CASE(test_dsptd) {
-    SparseMatrix B;
+BOOST_AUTO_TEST_CASE(test_dsptd_square) {
+    SparseMatrix B(A.cols(), A.rows(), A.nonZeros());
     if (backend == "generic") {
         linalg.dsptd(x, A, x, B);
         Index outer[4] = {0, 1, 2, 4};

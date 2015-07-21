@@ -71,6 +71,9 @@ public:
     /// Transpose matrix in-place
     SparseMatrix& transpose();
 
+    /// Reserve memory for given number of non-zeros (invalidates all data arrays)
+    void reserve(Size nnz);
+
     /// I/O
 
     void save(const eckit::PathName &path) const;
@@ -158,9 +161,6 @@ private:
     void decode(Stream& s);
     /// Resize sparse matrix (invalidates all data arrays)
     void resize(Size rows, Size cols);
-
-    /// Reserve memory for given number of non-zeros (invalidates all data arrays)
-    void reserve(Size nnz);
 
 
 

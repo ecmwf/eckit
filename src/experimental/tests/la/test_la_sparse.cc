@@ -68,6 +68,9 @@ struct Fixture {
                 x(V(3, 1., 2., 3.)),
                 linalg(LinearAlgebra::backend()) {}
 
+    // A = 2 0 -3
+    //     0 2  0
+    //     0 0  2
     SparseMatrix A;
     Vector x;
     const LinearAlgebra& linalg;
@@ -147,6 +150,14 @@ BOOST_AUTO_TEST_CASE(test_prune) {
     Index outer[4] = {0, 1, 2, 2};
     Index inner[2] = {2, 1};
     Scalar data[2] = {1., 2.};
+    test(A, outer, inner, data);
+}
+
+BOOST_AUTO_TEST_CASE(test_transpose) {
+    A.transpose();
+    Index outer[4] = {0, 1, 2, 4};
+    Index inner[4] = {0, 1, 0, 2};
+    Scalar data[4] = {2., 2., -3., 2.};
     test(A, outer, inner, data);
 }
 

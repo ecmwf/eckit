@@ -29,20 +29,45 @@ namespace la {
 class LinearAlgebra : private NonCopyable {
 
 public:  // static methods
+
+    /// Get the currently selected backend
     static const LinearAlgebra& backend();
+
+    /// Select the given backend as the default
     static void backend(const std::string& name);
+
+    /// List all available backends
     static void list(std::ostream &);
 
 public:  // virtual methods
 
+    /// Compute the inner product of vectors x and y
     virtual Scalar dot(const Vector&, const Vector&) const = 0;
+
+    /// Compute the product of a dense matrix A and vector x. The caller is
+    /// responsible for allocating a properly sized output vector y.
     virtual void gemv(const Matrix&, const Vector&, Vector&) const = 0;
+
+    /// Compute the product of dense matrices A and B. The caller is
+    /// responsible for allocating a properly sized output matrix C.
     virtual void gemm(const Matrix&, const Matrix&, Matrix&) const = 0;
+
+    /// Compute the product of a sparse matrix A and vector x. The caller is
+    /// responsible for allocating a properly sized output vector y.
     virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const = 0;
+
+    /// Compute the product of sparse matrix A and dense matrix B. The caller is
+    /// responsible for allocating a properly sized output matrix C.
     virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const = 0;
+
+    /// Compute the product x A' y with x and y diagonal matrices stored as
+    /// vectors and A a sparse matrix. The caller does NOT need to initialise
+    /// the sparse output matrix C
     virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const = 0;
 
 protected:
+
+    /// Get a backend by name
     static const LinearAlgebra& getBackend(const std::string& name);
 
     LinearAlgebra(const std::string& name);

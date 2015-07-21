@@ -206,6 +206,19 @@ BOOST_AUTO_TEST_CASE(test_dsptd_square) {
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_dsptd_nonsquare) {
+    SparseMatrix B(A2.cols(), A2.rows(), A2.nonZeros());
+    if (backend == "generic") {
+        linalg.dsptd(x, A2, V(2, 1., 2.), B);
+        Index outer[4] = {0, 2, 3, 4};
+        Index inner[4] = {0, 1, 1, 0};
+        Scalar data[4] = {1., 6., 16., 6.};
+        test(B, outer, inner, data);
+    } else {
+        BOOST_CHECK_THROW(linalg.dsptd(x, A, x, B), NotImplemented);
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 //-----------------------------------------------------------------------------

@@ -42,6 +42,13 @@ SparseMatrix::SparseMatrix(SparseMatrix::Size rows, SparseMatrix::Size cols)
 
 //-----------------------------------------------------------------------------
 
+SparseMatrix::SparseMatrix(SparseMatrix::Size rows, SparseMatrix::Size cols, SparseMatrix::Size nnz)
+    : rows_(rows), cols_(cols) {
+    reserve(nnz);
+}
+
+//-----------------------------------------------------------------------------
+
 SparseMatrix::SparseMatrix(Stream &s) {
     decode(s);
 }

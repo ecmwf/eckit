@@ -35,6 +35,20 @@ static void init() {
     currentBackend = new std::string("generic");
 }
 
+// Caller needs to lock!
+static const LinearAlgebra& findBackend(const std::string& name) {
+    BackendMap::const_iterator it = m->find(name);
+    if (it == m->end()) {
+        eckit::Log::error() << "No Linear algebra backend named [" << name << "]" << std::endl;
+        eckit::Log::error() << "Linear algebra backends are:" << std::endl;
+        for (it = m->begin() ; it != m->end() ; ++it)
+            eckit::Log::error() << "   " << (*it).first << std::endl;
+        throw BadParameter("Linear algebra backend " + name + " not available.", Here());
+    }
+    Log::debug() << "Using LinearAlgebra backend " << it->first << std::endl;
+    return *(it->second);
+}
+
 }  // anonymous namespace
 
 //-----------------------------------------------------------------------------
@@ -42,17 +56,13 @@ static void init() {
 const LinearAlgebra &LinearAlgebra::backend() {
     pthread_once(&once, init);
     AutoLock<Mutex> lock(local_mutex);
+    return findBackend(*currentBackend);
+}
 
-    BackendMap::const_iterator it = m->find(*currentBackend);
-    if (it == m->end()) {
-        eckit::Log::error() << "No Linear algebra backend named [" << *currentBackend << "]" << std::endl;
-        eckit::Log::error() << "Linear algebra backends are:" << std::endl;
-        for (it = m->begin() ; it != m->end() ; ++it)
-            eckit::Log::error() << "   " << (*it).first << std::endl;
-        throw BadParameter("Linear algebra backend " + *currentBackend + " not available.", Here());
-    }
-    Log::debug() << "Using LinearAlgebra backend " << it->first << std::endl;
-    return *(it->second);
+const LinearAlgebra &LinearAlgebra::getBackend(const std::string& name) {
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(local_mutex);
+    return findBackend(name);
 }
 
 void LinearAlgebra::backend(const std::string &name) {

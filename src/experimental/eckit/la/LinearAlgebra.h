@@ -43,6 +43,8 @@ public:  // virtual methods
     virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const = 0;
 
 protected:
+    static const LinearAlgebra& getBackend(const std::string& name);
+
     LinearAlgebra(const std::string& name);
 
     virtual void print(std::ostream&) const = 0;

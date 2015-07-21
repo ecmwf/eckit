@@ -1,0 +1,13 @@
+eckit
+=====
+
+Copyright 2014 ECMWF
+
+This product is developed by the
+
+  Development Section, European Centre for Medium-Range Weather Forecasts (ECMWF) - http://www.ecmwf.int
+
+Below is a list of software packages which are used inside eckit:
+
+- No external package in currently included
+

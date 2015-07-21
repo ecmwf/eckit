@@ -1,0 +1,10 @@
+TODO
+
+ - remove architecture dependent headers
+ - add control of behavior on Exception
+     - output on constructor
+     - backtrace on contructor
+     - abort on constructor
+     - abort on double exception
+
+ - Allow finer control on logging format ( eg [%time][%pid] message )

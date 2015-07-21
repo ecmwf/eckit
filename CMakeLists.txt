@@ -1,19 +1,8 @@
-############################################################################################
+########################################################################################################################
 #
 #   eckit - ECMWF C++ Toolkit
 #
-### TODO
-#
-#   * remove architecture dependent headers
-#
-#   * add control of behavior on Exception
-#       - output on constructor
-#       - backtrace on contructor
-#       - abort on constructor
-#       - abort on double exception
-#
-#   * new Logging
-#       - allow finer control on format ( eg [%time][%pid] message )
+########################################################################################################################
 
 cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )
 
@@ -220,6 +209,9 @@ add_subdirectory( bamboo )
 add_subdirectory( contrib )
 add_subdirectory( doc )
 add_subdirectory( src )
+
+ecbuild_add_resources( TARGET top_files SOURCES
+                       TODO AUTHORS README NOTICE LICENSE INSTALL ChangeLog COPYING )
 
 ############################################################################################
 # finalize

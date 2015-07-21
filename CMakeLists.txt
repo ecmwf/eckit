@@ -224,10 +224,14 @@ add_subdirectory( src )
 ############################################################################################
 # finalize
 
-ecbuild_pkgconfig( NAME ${PROJECT_NAME}
-                   DESCRIPTION "ECMWF C++ Toolkit"
-                   URL "https://software.ecmwf.int/wiki/display/ECKIT/ecKit"
-                   LIBRARIES eckit )
+foreach( _lib ${ECKIT_LIBRARIES} )
+  if( TARGET ${_lib} )
+    ecbuild_pkgconfig( NAME ${_lib}
+                       DESCRIPTION "ECMWF C++ Toolkit - ${_lib} library"
+                       URL "https://software.ecmwf.int/wiki/display/ECKIT/ecKit"
+                       LIBRARIES ${_lib} )
+  endif()
+endforeach()
 
 ecbuild_install_project( NAME ${PROJECT_NAME} )
 

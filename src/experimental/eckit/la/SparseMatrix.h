@@ -51,9 +51,6 @@ public:  // methods
     /// Constructor setting sizes, empty matrix
     SparseMatrix(Size rows, Size cols);
 
-    /// Constructor setting sizes and reserving memory for nnz non-zeros
-    SparseMatrix(Size rows, Size cols, Size nnz);
-
     /// Constructor from Stream
     SparseMatrix(Stream& v);
 

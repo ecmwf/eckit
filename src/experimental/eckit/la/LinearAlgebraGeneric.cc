@@ -105,11 +105,14 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraGeneric::dsptd(const Vector& D1, const SparseMatrix& A, const Vector& D2, SparseMatrix& B) const {
+void LinearAlgebraGeneric::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
+    ASSERT( x.size() == A.cols() && y.size() == A.rows() &&
+            B.rows() == A.cols() && B.cols() == A.rows() && B.nonZeros() == A.nonZeros());
+    // FIXME: this (re)allocates memory and copies
     B = A;
-    dsp(D2, B);
+    dsp(y, B);
     B.transpose();
-    dsp(D1, B);
+    dsp(x, B);
 }
 
 //-----------------------------------------------------------------------------

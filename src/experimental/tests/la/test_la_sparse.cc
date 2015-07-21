@@ -48,9 +48,11 @@ SparseMatrix S(Size rows, Size cols, Size nnz, ...) {
 //-----------------------------------------------------------------------------
 
 // Set linear algebra backend
+static std::string backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
+
 struct Setup {
     Setup() {
-        LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
+        LinearAlgebra::backend(backend);
     }
 };
 
@@ -175,6 +177,19 @@ BOOST_AUTO_TEST_CASE(test_spmm) {
     test(C, M(3, 2, -13., -14., 6., 8., 10., 12.));
     BOOST_TEST_MESSAGE("spmm of sparse matrix and matrix of nonmatching sizes should fail");
     BOOST_CHECK_THROW(linalg.spmm(A, Matrix(2, 2), C), AssertionFailed);
+}
+
+BOOST_AUTO_TEST_CASE(test_dsptd) {
+    SparseMatrix B;
+    if (backend == "generic") {
+        linalg.dsptd(x, A, x, B);
+        Index outer[4] = {0, 1, 2, 4};
+        Index inner[4] = {0, 1, 0, 2};
+        Scalar data[4] = {2., 8., -9., 18.};
+        test(B, outer, inner, data);
+    } else {
+        BOOST_CHECK_THROW(linalg.dsptd(x, A, x, B), NotImplemented);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

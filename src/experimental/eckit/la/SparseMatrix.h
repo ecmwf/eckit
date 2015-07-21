@@ -94,6 +94,9 @@ public:
     /// @returns read-only view of the inner index vector
     const Index* inner() const { return inner_.data(); }
 
+    /// Reserve memory for given number of non-zeros (invalidates all data arrays)
+    void reserve(Size nnz);
+
 private:
 // --- Iterator
     class _InnerIterator {
@@ -155,11 +158,6 @@ private:
     void decode(Stream& s);
     /// Resize sparse matrix (invalidates all data arrays)
     void resize(Size rows, Size cols);
-
-    /// Reserve memory for given number of non-zeros (invalidates all data arrays)
-    void reserve(Size nnz);
-
-
 
 // Friends:
     friend Stream& operator<<(Stream&, const SparseMatrix&);

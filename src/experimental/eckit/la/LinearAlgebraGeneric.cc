@@ -20,6 +20,20 @@
 namespace eckit {
 namespace la {
 
+namespace {
+
+/// Multiply A by the diagonal matrix d (in vector form)
+void dsp(const Vector& d, SparseMatrix& A) {
+    const Index* outer = A.outer();
+    // FIXME: better use InnerIterator
+    Scalar* data = const_cast<Scalar*>(A.data());
+    for (size_t r = 0; r < A.rows(); ++r)
+        for (Index oi = outer[r]; oi < outer[r+1]; ++oi)
+            data[oi] *= d[r];
+}
+
+}
+
 //-----------------------------------------------------------------------------
 
 LinearAlgebraGeneric::LinearAlgebraGeneric() : LinearAlgebra("generic") {}
@@ -91,8 +105,11 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraGeneric::dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const {
-    NOTIMP;
+void LinearAlgebraGeneric::dsptd(const Vector& D1, const SparseMatrix& A, const Vector& D2, SparseMatrix& B) const {
+    B = A;
+    dsp(D2, B);
+    B.transpose();
+    dsp(D1, B);
 }
 
 //-----------------------------------------------------------------------------

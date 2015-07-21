@@ -48,11 +48,9 @@ SparseMatrix S(Size rows, Size cols, Size nnz, ...) {
 //-----------------------------------------------------------------------------
 
 // Set linear algebra backend
-static std::string backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
-
 struct Setup {
     Setup() {
-        LinearAlgebra::backend(backend);
+        LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
     }
 };
 
@@ -195,28 +193,20 @@ BOOST_AUTO_TEST_CASE(test_spmm) {
 
 BOOST_AUTO_TEST_CASE(test_dsptd_square) {
     SparseMatrix B(A.cols(), A.rows(), A.nonZeros());
-    if (backend == "generic") {
-        linalg.dsptd(x, A, x, B);
-        Index outer[4] = {0, 1, 2, 4};
-        Index inner[4] = {0, 1, 0, 2};
-        Scalar data[4] = {2., 8., -9., 18.};
-        test(B, outer, inner, data);
-    } else {
-        BOOST_CHECK_THROW(linalg.dsptd(x, A, x, B), NotImplemented);
-    }
+    linalg.dsptd(x, A, x, B);
+    Index outer[4] = {0, 1, 2, 4};
+    Index inner[4] = {0, 1, 0, 2};
+    Scalar data[4] = {2., 8., -9., 18.};
+    test(B, outer, inner, data);
 }
 
 BOOST_AUTO_TEST_CASE(test_dsptd_nonsquare) {
     SparseMatrix B(A2.cols(), A2.rows(), A2.nonZeros());
-    if (backend == "generic") {
-        linalg.dsptd(x, A2, V(2, 1., 2.), B);
-        Index outer[4] = {0, 2, 3, 4};
-        Index inner[4] = {0, 1, 1, 0};
-        Scalar data[4] = {1., 6., 16., 6.};
-        test(B, outer, inner, data);
-    } else {
-        BOOST_CHECK_THROW(linalg.dsptd(x, A, x, B), NotImplemented);
-    }
+    linalg.dsptd(x, A2, V(2, 1., 2.), B);
+    Index outer[4] = {0, 2, 3, 4};
+    Index inner[4] = {0, 1, 1, 0};
+    Scalar data[4] = {1., 6., 16., 6.};
+    test(B, outer, inner, data);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

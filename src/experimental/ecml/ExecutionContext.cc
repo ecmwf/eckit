@@ -8,13 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/utils/ExecutionContext.h"
-#include "eckit/utils/Environment.h"
-#include "eckit/utils/Module.h"
-#include "eckit/utils/Interpreter.h"
-#include "eckit/utils/RequestHandler.h"
-#include "eckit/parser/RequestParser.h"
 #include "eckit/exception/Exceptions.h"
+
+#include "ExecutionContext.h"
+#include "Environment.h"
+#include "Module.h"
+#include "Interpreter.h"
+#include "RequestHandler.h"
+#include "parser/RequestParser.h"
 
 using namespace std;
 using namespace eckit;

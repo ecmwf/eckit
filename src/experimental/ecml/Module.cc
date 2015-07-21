@@ -8,25 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Piotr Kuchta - ECMWF March 2015
+// File Module.cc
+// Piotr Kuchta - (c) ECMWF May 2015
 
-#ifndef eckit_parser_Request_H
-#define eckit_parser_Request_H
+#include "Module.h"
 
-#include <string>
-#include <list>
-#include <vector>
-#include <map>
-#include <ostream>
+using namespace eckit;
 
-#include "eckit/parser/Cell.h"
-#include "eckit/parser/List.h"
+Module::~Module() {}
 
-namespace eckit {
-
-typedef Cell* Values;
-typedef Cell* Request;
-
-} // namespace eckit
-
-#endif

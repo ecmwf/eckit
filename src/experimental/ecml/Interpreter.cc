@@ -9,12 +9,13 @@
  */
 
 #include "eckit/log/Log.h"
-#include "eckit/parser/Request.h"
-#include "eckit/utils/SpecialFormHandler.h"
-#include "eckit/utils/RequestHandler.h"
-#include "eckit/utils/Interpreter.h"
-#include "eckit/utils/ExecutionContext.h"
-#include "eckit/utils/Environment.h"
+
+#include "parser/Request.h"
+#include "SpecialFormHandler.h"
+#include "RequestHandler.h"
+#include "Interpreter.h"
+#include "ExecutionContext.h"
+#include "Environment.h"
 
 using namespace std;
 

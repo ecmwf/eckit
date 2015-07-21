@@ -13,7 +13,7 @@
 #define eckit_utils_SpecialFormHandler_H
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/parser/Request.h"
+#include "parser/Request.h"
 
 namespace eckit { 
 

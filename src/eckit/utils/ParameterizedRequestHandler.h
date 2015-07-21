@@ -12,8 +12,9 @@
 #ifndef eckit_utils_ParameterizedRequestHandler_H
 #define eckit_utils_ParameterizedRequestHandler_H
 
-#include "eckit/parser/Request.h"
-#include "eckit/utils/RequestHandler.h"
+#include "experimental/ecml/parser/Request.h"
+#include "experimental/ecml/RequestHandler.h"
+
 #include "eckit/config/DynamicParametrisation.h"
 
 #include <string>

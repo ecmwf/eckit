@@ -11,8 +11,8 @@
 #include "eckit/types/Types.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/StringTools.h"
-#include "eckit/parser/Request.h"
 
+#include "parser/Request.h"
 #include "SpecialFormHandler.h"
 #include "ExecutionContext.h"
 #include "Environment.h"

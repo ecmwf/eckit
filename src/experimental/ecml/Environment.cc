@@ -15,9 +15,10 @@
 #include <map>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/utils/Environment.h"
-#include "eckit/utils/Interpreter.h"
-#include "eckit/utils/ExecutionContext.h"
+
+#include "Environment.h"
+#include "Interpreter.h"
+#include "ExecutionContext.h"
 
 using namespace std;
 using namespace eckit;  // TODO: eckit/utils/Environment.h should be in namespace eckit I think

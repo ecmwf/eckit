@@ -12,8 +12,9 @@
 #ifndef eckit_utils_Interpreter_H
 #define eckit_utils_Interpreter_H
 
-#include "eckit/parser/Request.h"
 #include <list>
+
+#include "parser/Request.h"
 
 namespace eckit {
 

@@ -155,12 +155,25 @@ BOOST_AUTO_TEST_CASE(test_prune) {
     test(A, outer, inner, data);
 }
 
-BOOST_AUTO_TEST_CASE(test_transpose) {
+BOOST_AUTO_TEST_CASE(test_transpose_square) {
     A.transpose();
     Index outer[4] = {0, 1, 2, 4};
     Index inner[4] = {0, 1, 0, 2};
     Scalar data[4] = {2., 2., -3., 2.};
     test(A, outer, inner, data);
+}
+
+BOOST_AUTO_TEST_CASE(test_transpose_nonsquare) {
+    Index outer[4] = {0, 2, 3, 4};
+    Index inner[4] = {0, 1, 1, 0};
+    Scalar data[4] = {1., 3., 4., 2.};
+    // A = 1. 0. 2.
+    //     3. 4. 0.
+    test(S(2, 3, 4,
+           0, 0, 1.,
+           0, 2, 2.,
+           1, 0, 3.,
+           1, 1, 4.).transpose(), outer, inner, data);
 }
 
 BOOST_AUTO_TEST_CASE(test_spmv) {

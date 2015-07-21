@@ -65,6 +65,8 @@ public:
     void prune(Scalar val = Scalar(0));
     /// Set matrix to the identity
     void setIdentity();
+    /// Transpose matrix in-place
+    void transpose();
 
     /// I/O
 

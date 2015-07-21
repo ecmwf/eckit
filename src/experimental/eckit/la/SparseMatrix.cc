@@ -122,6 +122,21 @@ void SparseMatrix::setIdentity() {
 
 //-----------------------------------------------------------------------------
 
+void SparseMatrix::transpose() {
+    // FIXME: can this be done more efficiently?
+    // Create vector of transposed triplets
+    std::vector<Triplet> triplets;
+    triplets.reserve(nonZeros());
+    for (Index r = 0; r < rows_; ++r)
+        for (Index c = outer_[r]; c < outer_[r + 1]; ++c)
+            triplets.push_back(Triplet(inner_[c], r, data_[c]));
+    // Need to sort since setFromTriplets expects triplets ordered by row
+    std::sort(triplets.begin(), triplets.end());
+    setFromTriplets(triplets);
+}
+
+//-----------------------------------------------------------------------------
+
 void SparseMatrix::prune(SparseMatrix::Scalar val) {
     ScalarStorage v;
     IndexStorage inner;

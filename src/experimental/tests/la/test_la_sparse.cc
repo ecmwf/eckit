@@ -198,6 +198,8 @@ BOOST_AUTO_TEST_CASE(test_dsptd_square) {
     Index inner[4] = {0, 1, 0, 2};
     Scalar data[4] = {2., 8., -9., 18.};
     test(B, outer, inner, data);
+    BOOST_TEST_MESSAGE("dsptd with vectors of nonmatching sizes should fail");
+    BOOST_CHECK_THROW(linalg.dsptd(x, A, Vector(2), B), AssertionFailed);
 }
 
 BOOST_AUTO_TEST_CASE(test_dsptd_nonsquare) {
@@ -207,6 +209,8 @@ BOOST_AUTO_TEST_CASE(test_dsptd_nonsquare) {
     Index inner[4] = {0, 1, 1, 0};
     Scalar data[4] = {1., 6., 16., 6.};
     test(B, outer, inner, data);
+    BOOST_TEST_MESSAGE("dsptd with vectors of nonmatching sizes should fail");
+    BOOST_CHECK_THROW(linalg.dsptd(x, A2, x, B), AssertionFailed);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

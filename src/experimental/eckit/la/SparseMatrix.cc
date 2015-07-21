@@ -134,6 +134,7 @@ SparseMatrix& SparseMatrix::transpose() {
             triplets.push_back(Triplet(inner_[c], r, data_[c]));
     // Need to sort since setFromTriplets expects triplets ordered by row
     std::sort(triplets.begin(), triplets.end());
+    std::swap(rows_, cols_);
     return setFromTriplets(triplets);
 }
 

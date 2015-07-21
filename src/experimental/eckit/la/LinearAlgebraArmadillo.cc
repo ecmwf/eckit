@@ -87,6 +87,12 @@ void LinearAlgebraArmadillo::spmm(const SparseMatrix&, const Matrix&, Matrix&) c
 
 //-----------------------------------------------------------------------------
 
+void LinearAlgebraArmadillo::dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const {
+    NOTIMP;
+}
+
+//-----------------------------------------------------------------------------
+
 static LinearAlgebraArmadillo LinearAlgebraArmadillo;
 
 //-----------------------------------------------------------------------------

@@ -40,6 +40,7 @@ public:  // virtual methods
     virtual void gemm(const Matrix&, const Matrix&, Matrix&) const = 0;
     virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const = 0;
     virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const = 0;
+    virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const = 0;
 
 protected:
     LinearAlgebra(const std::string& name);

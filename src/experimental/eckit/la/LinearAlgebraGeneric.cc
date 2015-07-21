@@ -91,6 +91,12 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
 
 //-----------------------------------------------------------------------------
 
+void LinearAlgebraGeneric::dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const {
+    NOTIMP;
+}
+
+//-----------------------------------------------------------------------------
+
 static LinearAlgebraGeneric linearAlgebraGeneric;
 
 //-----------------------------------------------------------------------------

@@ -292,6 +292,12 @@ void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) 
 
 //-----------------------------------------------------------------------------
 
+void LinearAlgebraCUDA::dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const {
+    NOTIMP;
+}
+
+//-----------------------------------------------------------------------------
+
 void LinearAlgebraCUDA::print(std::ostream& out) const {
     out << "LinearAlgebraCUDA[]";
 }

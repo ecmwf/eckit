@@ -102,6 +102,12 @@ void LinearAlgebraEigen::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C)
 
 //-----------------------------------------------------------------------------
 
+void LinearAlgebraEigen::dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const {
+    NOTIMP;
+}
+
+//-----------------------------------------------------------------------------
+
 static LinearAlgebraEigen linearAlgebraEigen;
 
 //-----------------------------------------------------------------------------

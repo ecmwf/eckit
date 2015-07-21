@@ -40,6 +40,7 @@ private:
     virtual void gemm(const Matrix&, const Matrix&, Matrix&) const;
     virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const;
     virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const;
+    virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const;
 
     virtual void print(std::ostream&) const;
 

@@ -116,8 +116,8 @@ void LinearAlgebraMKL::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) c
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraMKL::dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const {
-    NOTIMP;
+void LinearAlgebraMKL::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
+    LinearAlgebra::getBackend("generic").dsptd(x, A, y, B);
 }
 
 //-----------------------------------------------------------------------------

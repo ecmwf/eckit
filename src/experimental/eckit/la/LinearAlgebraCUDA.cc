@@ -292,8 +292,8 @@ void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) 
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraCUDA::dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const {
-    NOTIMP;
+void LinearAlgebraCUDA::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
+    LinearAlgebra::getBackend("generic").dsptd(x, A, y, B);
 }
 
 //-----------------------------------------------------------------------------

@@ -105,8 +105,8 @@ void LinearAlgebraViennaCL::spmm(const SparseMatrix& A, const Matrix& B, Matrix&
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraViennaCL::dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const {
-    NOTIMP;
+void LinearAlgebraViennaCL::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
+    LinearAlgebra::getBackend("generic").dsptd(x, A, y, B);
 }
 
 //-----------------------------------------------------------------------------

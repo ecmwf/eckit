@@ -78,7 +78,7 @@ void SparseMatrix::swap(SparseMatrix &other) {
 
 //-----------------------------------------------------------------------------
 
-void SparseMatrix::setFromTriplets(const std::vector<Triplet> &triplets) {
+SparseMatrix& SparseMatrix::setFromTriplets(const std::vector<Triplet> &triplets) {
     // Allocate memory (we are promised that there is 1 triplet per non-zero)
     reserve(triplets.size());
 
@@ -102,11 +102,12 @@ void SparseMatrix::setFromTriplets(const std::vector<Triplet> &triplets) {
     while (row < rows_) {
         outer_[++row] = Index(pos);
     }
+    return *this;
 }
 
 //-----------------------------------------------------------------------------
 
-void SparseMatrix::setIdentity() {
+SparseMatrix& SparseMatrix::setIdentity() {
     Index nnz = std::min(rows_, cols_);
     outer_.resize(rows_ + 1);
     inner_.resize(nnz);
@@ -118,11 +119,12 @@ void SparseMatrix::setIdentity() {
         outer_[i] = nnz;
     }
     data_.assign(nnz, Scalar(1));
+    return *this;
 }
 
 //-----------------------------------------------------------------------------
 
-void SparseMatrix::transpose() {
+SparseMatrix& SparseMatrix::transpose() {
     // FIXME: can this be done more efficiently?
     // Create vector of transposed triplets
     std::vector<Triplet> triplets;
@@ -132,12 +134,12 @@ void SparseMatrix::transpose() {
             triplets.push_back(Triplet(inner_[c], r, data_[c]));
     // Need to sort since setFromTriplets expects triplets ordered by row
     std::sort(triplets.begin(), triplets.end());
-    setFromTriplets(triplets);
+    return setFromTriplets(triplets);
 }
 
 //-----------------------------------------------------------------------------
 
-void SparseMatrix::prune(SparseMatrix::Scalar val) {
+SparseMatrix& SparseMatrix::prune(SparseMatrix::Scalar val) {
     ScalarStorage v;
     IndexStorage inner;
     Index nnz = 0;
@@ -154,6 +156,7 @@ void SparseMatrix::prune(SparseMatrix::Scalar val) {
     outer_[rows_] = nnz;
     std::swap(v, data_);
     std::swap(inner, inner_);
+    return *this;
 }
 
 //-----------------------------------------------------------------------------

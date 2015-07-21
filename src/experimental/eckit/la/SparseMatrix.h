@@ -60,13 +60,13 @@ public:
     ///
     /// Resets data and index vectors, requires row and column number to be set.
     /// Assumes triplets are ordered per row and there are no duplicates.
-    void setFromTriplets(const std::vector<Triplet>& triplets);
+    SparseMatrix& setFromTriplets(const std::vector<Triplet>& triplets);
     /// Prune entries with exactly the given value
-    void prune(Scalar val = Scalar(0));
+    SparseMatrix& prune(Scalar val = Scalar(0));
     /// Set matrix to the identity
-    void setIdentity();
+    SparseMatrix& setIdentity();
     /// Transpose matrix in-place
-    void transpose();
+    SparseMatrix& transpose();
 
     /// I/O
 

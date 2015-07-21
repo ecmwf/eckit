@@ -235,8 +235,8 @@ void DispatchTask<Traits>::status(std::ostream& s) const
 {
 	AutoLock<Mutex> lock(((DispatchTask<Traits>*)this)->mutex_);
 	s << "Picks for " <<  owner_.name() << " thread " << id_ << std::endl;
-	for(int i = 0; i < pick_.size(); i++)
-		if(pick_[i]) Handler::print(s,*pick_[i]);
+    for(size_t i = 0; i < pick_.size(); i++)
+        if(pick_[i]) Handler::print(s,*pick_[i]);
 }
 
 template<class Traits>
@@ -244,8 +244,8 @@ void DispatchTask<Traits>::json(JSON& s) const
 {
 	AutoLock<Mutex> lock(((DispatchTask<Traits>*)this)->mutex_);
     int n = 0;
-	for(int i = 0; i < pick_.size(); i++)
-		if(pick_[i]) n++;
+    for(size_t i = 0; i < pick_.size(); i++)
+        if(pick_[i]) n++;
 
     if(n) {
     s.startObject();
@@ -253,8 +253,8 @@ void DispatchTask<Traits>::json(JSON& s) const
     s <<  "id"   << id_ ;
     s << "picks";
     s.startList();
-	for(int i = 0; i < pick_.size(); i++)
-		if(pick_[i]) Handler::json(s,*pick_[i]);
+    for(size_t i = 0; i < pick_.size(); i++)
+        if(pick_[i]) Handler::json(s,*pick_[i]);
     s.endList();
     s.endObject();
     }

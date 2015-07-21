@@ -192,7 +192,7 @@ BOOST_AUTO_TEST_CASE(test_spmm) {
 }
 
 BOOST_AUTO_TEST_CASE(test_dsptd_square) {
-    SparseMatrix B(A.cols(), A.rows(), A.nonZeros());
+    SparseMatrix B;
     linalg.dsptd(x, A, x, B);
     Index outer[4] = {0, 1, 2, 4};
     Index inner[4] = {0, 1, 0, 2};
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(test_dsptd_square) {
 }
 
 BOOST_AUTO_TEST_CASE(test_dsptd_nonsquare) {
-    SparseMatrix B(A2.cols(), A2.rows(), A2.nonZeros());
+    SparseMatrix B;
     linalg.dsptd(x, A2, V(2, 1., 2.), B);
     Index outer[4] = {0, 2, 3, 4};
     Index inner[4] = {0, 1, 1, 0};

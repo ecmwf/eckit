@@ -51,6 +51,11 @@ ecbuild_add_test( TARGET   eckit_test_la_sparse
                   SOURCES  test_la_sparse.cc util.h
                   LIBS     eckit_la )
 
+ecbuild_add_test( TARGET     eckit_test_la_sparse_armadillo
+                  COMMAND    eckit_test_la_sparse
+                  CONDITION  ECKIT_HAVE_ARMADILLO
+                  ARGS       --log_level=message -linearAlgebraBackend armadillo )
+
 # This test seems to have a system call exit with 1 even though tests pass.
 # Ignore system errors, see also http://stackoverflow.com/a/20360334/396967
 ecbuild_add_test( TARGET     eckit_test_la_sparse_cuda

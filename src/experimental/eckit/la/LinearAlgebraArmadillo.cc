@@ -69,20 +69,20 @@ void LinearAlgebraArmadillo::gemm(const Matrix& A, const Matrix& B, Matrix& C) c
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraArmadillo::spmv(const SparseMatrix&, const Vector&, Vector&) const {
+void LinearAlgebraArmadillo::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
     // FIXME: Armadillo stores matrices in CSC format and does not provide
     // constructors from existing storage. A sparse matrix would have to be
     // copied from CSR to CSC format, which is probably not worth the cost
-    NOTIMP;
+    LinearAlgebra::getBackend("generic").spmv(A, x, y);
 }
 
 //-----------------------------------------------------------------------------
 
-void LinearAlgebraArmadillo::spmm(const SparseMatrix&, const Matrix&, Matrix&) const {
+void LinearAlgebraArmadillo::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
     // FIXME: Armadillo stores matrices in CSC format and does not provide
     // constructors from existing storage. A sparse matrix would have to be
     // copied from CSR to CSC format, which is probably not worth the cost
-    NOTIMP;
+    LinearAlgebra::getBackend("generic").spmm(A, B, C);
 }
 
 //-----------------------------------------------------------------------------

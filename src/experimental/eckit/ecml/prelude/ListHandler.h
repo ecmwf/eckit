@@ -7,23 +7,20 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
+/// @author Piotr Kuchta, May 2015
+
+#ifndef ListHandler_H
+#define ListHandler_H
 
 #include <sstream>
 
-#include "experimental/eckit/ecml/FileHandleFactory.h"
-#include "eckit/io/FileHandle.h"
+#include "experimental/eckit/ecml/parser/Request.h"
+#include "experimental/eckit/ecml/core/RequestHandler.h"
 
-using namespace eckit;
-using namespace std;
+class ListHandler : public eckit::RequestHandler {
+public:
+    ListHandler(const std::string&);
+    virtual eckit::Values handle(eckit::ExecutionContext&);
+};
 
-FileHandleFactory::FileHandleFactory()
-: DataHandleFactory("file")
-{}
-
-DataHandle* FileHandleFactory::makeHandle(const string& fileName) const
-{
-    return new FileHandle(fileName);
-}
-
-static FileHandleFactory fileHandleFactory;
-
+#endif

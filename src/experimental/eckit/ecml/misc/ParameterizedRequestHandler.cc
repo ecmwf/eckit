@@ -9,7 +9,7 @@
  */
 
 #include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/ExecutionContext.h"
+#include "experimental/eckit/ecml/core/ExecutionContext.h"
 
 #include "ParameterizedRequestHandler.h"
 

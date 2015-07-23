@@ -1,35 +1,52 @@
 list( APPEND eckit_ecml_srcs
-parser/Request.h
-parser/Request.cc
+# Parser
 parser/Cell.h
 parser/Cell.cc
 parser/List.h
 parser/List.cc
+parser/Request.h
+parser/Request.cc
 parser/RequestParser.h
 parser/RequestParser.cc
-# From utils
-DataHandleFactory.h
-DataHandleFactory.cc
-# From config
-DynamicParametrisation.h
-DynamicParametrisation.cc
-Environment.h
-Environment.cc
-ExecutionContext.h
-ExecutionContext.cc
-# From utils
-FileHandleFactory.h
-FileHandleFactory.cc
-Interpreter.h
-Interpreter.cc
-Module.cc
-Module.h
-ParameterizedRequestHandler.h
-ParameterizedRequestHandler.cc
-RequestHandler.h
-RequestHandler.cc
-SpecialFormHandler.h
-SpecialFormHandler.cc
+
+# Core language
+core/Environment.h
+core/Environment.cc
+core/ExecutionContext.h
+core/ExecutionContext.cc
+core/Interpreter.h
+core/Interpreter.cc
+core/Module.cc
+core/Module.h
+core/RequestHandler.h
+core/RequestHandler.cc
+core/SpecialFormHandler.h
+core/SpecialFormHandler.cc
+
+# Prelude
+prelude/DefineFunctionHandler.cc
+prelude/DefineFunctionHandler.h
+prelude/LetHandler.cc
+prelude/LetHandler.h
+prelude/ListHandler.cc
+prelude/ListHandler.h
+prelude/PrintHandler.cc
+prelude/PrintHandler.h
+prelude/VariableLookupHandler.cc
+prelude/VariableLookupHandler.h
+
+# Data types' support
+data/DataHandleFactory.h
+data/DataHandleFactory.cc
+data/FileHandleFactory.h
+data/FileHandleFactory.cc
+
+# Miscellaneous
+# Adapter for eckit::Parametrisation
+misc/DynamicParametrisation.h
+misc/DynamicParametrisation.cc
+misc/ParameterizedRequestHandler.h
+misc/ParameterizedRequestHandler.cc
 )
 
 ecbuild_generate_yy( YYPREFIX    request_

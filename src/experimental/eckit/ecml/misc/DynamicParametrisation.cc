@@ -11,13 +11,15 @@
 /// @author Piotr Kuchta
 /// @date June 2015
 
-#include "experimental/eckit/ecml/DynamicParametrisation.h"
-#include "experimental/eckit/ecml/ExecutionContext.h"
-#include "experimental/eckit/ecml/Environment.h"
+#include <vector>
 
 #include "eckit/utils/Translator.h"
 
-#include <vector>
+#include "experimental/eckit/ecml/core/ExecutionContext.h"
+#include "experimental/eckit/ecml/core/Environment.h"
+
+#include "experimental/eckit/ecml/misc/DynamicParametrisation.h"
+
 
 using namespace std;
 

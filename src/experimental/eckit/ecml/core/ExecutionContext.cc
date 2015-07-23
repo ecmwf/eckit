@@ -15,7 +15,7 @@
 #include "Module.h"
 #include "Interpreter.h"
 #include "RequestHandler.h"
-#include "parser/RequestParser.h"
+#include "experimental/eckit/ecml/parser/RequestParser.h"
 
 using namespace std;
 using namespace eckit;

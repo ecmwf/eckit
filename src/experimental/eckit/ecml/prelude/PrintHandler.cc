@@ -18,6 +18,8 @@
 using namespace std;
 using namespace eckit;
 
+namespace eckit {
+
 PrintHandler::PrintHandler(const string& name, const string& end)
 : RequestHandler(name),
   end_(end)
@@ -39,3 +41,4 @@ Values PrintHandler::handle(ExecutionContext& context)
     return r;
 }
 
+} // namespace eckit

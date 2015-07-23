@@ -24,6 +24,8 @@ core/SpecialFormHandler.h
 core/SpecialFormHandler.cc
 
 # Prelude
+prelude/Prelude.cc
+prelude/Prelude.h
 prelude/DefineFunctionHandler.cc
 prelude/DefineFunctionHandler.h
 prelude/LetHandler.cc

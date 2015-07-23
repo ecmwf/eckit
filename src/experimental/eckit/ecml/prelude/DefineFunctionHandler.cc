@@ -20,10 +20,8 @@
 #include "DefineFunctionHandler.h"
 
 using namespace std;
-using namespace eckit;
 
-namespace odb {
-namespace tool {
+namespace eckit {
 
 DefineFunctionHandler::DefineFunctionHandler(const string& name)
 : SpecialFormHandler(name)
@@ -57,5 +55,4 @@ Request DefineFunctionHandler::handle(const Request request, ExecutionContext& c
     return Cell::clone(function);
 }
 
-} // namespace tool
-} // namespace odb
+} // namespace eckit

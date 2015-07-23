@@ -16,6 +16,7 @@
 #include "Interpreter.h"
 #include "RequestHandler.h"
 #include "experimental/eckit/ecml/parser/RequestParser.h"
+#include "experimental/eckit/ecml/prelude/Prelude.h"
 
 using namespace std;
 using namespace eckit;
@@ -23,7 +24,9 @@ using namespace eckit;
 ExecutionContext::ExecutionContext()
 : environment_(new Environment(0, new Cell("_list", "", 0, 0))),
   interpreter_(new Interpreter())
-{}
+{
+    Prelude().importInto(*this);
+}
 
 ExecutionContext::~ExecutionContext()
 {

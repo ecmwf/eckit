@@ -17,10 +17,14 @@
 #include "experimental/eckit/ecml/parser/Request.h"
 #include "experimental/eckit/ecml/core/RequestHandler.h"
 
+namespace eckit {
+
 class VariableLookupHandler : public eckit::RequestHandler {
 public:
     VariableLookupHandler(const std::string&);
     virtual eckit::Values handle(eckit::ExecutionContext&);
 };
+
+} // namespace eckit
 
 #endif

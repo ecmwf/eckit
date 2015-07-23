@@ -18,8 +18,7 @@
 
 namespace eckit { class ExecutionContext; }
 
-namespace odb { 
-namespace tool {  
+namespace eckit {
 
 class LetHandler : public eckit::SpecialFormHandler {
 public:
@@ -28,7 +27,6 @@ public:
     virtual eckit::Request handle(const eckit::Request, eckit::ExecutionContext&);
 };
 
-} //namespace tool
-} // namespace odb
+} // namespace eckit
 
 #endif

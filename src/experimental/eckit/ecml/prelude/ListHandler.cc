@@ -14,10 +14,9 @@
 #include "experimental/eckit/ecml/core/ExecutionContext.h"
 #include "experimental/eckit/ecml/core/Environment.h"
 
-using namespace std;
-using namespace eckit;
+namespace eckit {
 
-ListHandler::ListHandler(const string& name) : RequestHandler(name) {}
+ListHandler::ListHandler(const std::string& name) : RequestHandler(name) {}
 
 Values ListHandler::handle(ExecutionContext& context)
 {
@@ -25,3 +24,4 @@ Values ListHandler::handle(ExecutionContext& context)
     return r;
 }
 
+} // namespace eckit

@@ -17,8 +17,7 @@
 #include "experimental/eckit/ecml/core/SpecialFormHandler.h"
 #include "experimental/eckit/ecml/core/ExecutionContext.h"
 
-namespace odb { 
-namespace tool {
+namespace eckit {
 
 class DefineFunctionHandler : public eckit::SpecialFormHandler {
 public:
@@ -26,8 +25,7 @@ public:
     virtual eckit::Request handle(const eckit::Request, eckit::ExecutionContext&);
 };
 
-} // namespace tool
+} // namespace eckit
 
-} //namespace odb
 
 #endif

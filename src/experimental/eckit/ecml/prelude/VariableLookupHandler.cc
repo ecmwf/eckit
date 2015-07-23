@@ -18,6 +18,8 @@
 using namespace std;
 using namespace eckit;
 
+namespace eckit {
+
 VariableLookupHandler::VariableLookupHandler(const string& name) : RequestHandler(name) {}
 
 Values VariableLookupHandler::handle(ExecutionContext& context)
@@ -33,3 +35,4 @@ Values VariableLookupHandler::handle(ExecutionContext& context)
     return r;
 }
 
+} // namespace eckit

@@ -23,8 +23,7 @@
 using namespace std;
 using namespace eckit;
 
-namespace odb {
-namespace tool {
+namespace eckit {
 
 LetHandler::LetHandler(const string& name)
 : SpecialFormHandler(name)
@@ -49,6 +48,5 @@ Request LetHandler::handle(const Request request, ExecutionContext& context)
     return Cell::clone(frame);
 }
 
-} // namespace tool
-} // namespace odb
+} // namespace eckit
 

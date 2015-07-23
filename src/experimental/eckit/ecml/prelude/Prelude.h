@@ -7,24 +7,23 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
-/// @author Piotr Kuchta, May 2015
 
-#ifndef PrintHandler_H
-#define PrintHandler_H
+// File Prelude.h
+// Piotr Kuchta - (c) ECMWF July 2015
 
-#include <sstream>
+#ifndef eckit_ecml_Prelude_H
+#define eckit_ecml_Prelude_H
 
-#include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/RequestHandler.h"
+#include "experimental/eckit/ecml/core/Module.h"
+#include "experimental/eckit/ecml/core/ExecutionContext.h"
 
 namespace eckit {
 
-class PrintHandler : public eckit::RequestHandler {
+class Prelude : public eckit::Module {
 public:
-    PrintHandler(const std::string&, const std::string&);
-    virtual eckit::Values handle(eckit::ExecutionContext&);
-private:
-    const std::string end_;
+    Prelude();
+    ~Prelude();
+    void importInto(eckit::ExecutionContext&);
 };
 
 } // namespace eckit

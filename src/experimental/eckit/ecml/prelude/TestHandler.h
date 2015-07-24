@@ -7,10 +7,10 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
-/// @author Piotr Kuchta, February 2015
+/// @author Piotr Kuchta, July 2015
 
-#ifndef LetHandler_H
-#define LetHandler_H
+#ifndef TestHandler_H
+#define TestHandler_H
 
 #include "eckit/filesystem/PathName.h"
 #include "experimental/eckit/ecml/parser/Request.h"
@@ -20,9 +20,9 @@ namespace eckit {
 
 class ExecutionContext;
 
-class LetHandler : public eckit::SpecialFormHandler {
+class TestHandler : public eckit::SpecialFormHandler {
 public:
-    LetHandler(const std::string&);
+    TestHandler(const std::string&);
 
     virtual eckit::Request handle(const eckit::Request, eckit::ExecutionContext&);
 };

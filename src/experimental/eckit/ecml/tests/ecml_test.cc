@@ -44,7 +44,7 @@ void TestECML::run()
 
 void TestECML::runScript(const string& pathName)
 {
-    Log::info() << "ecml_test: running " << pathName << endl;
+    Log::info() << endl << " ** ecml_test: running " << pathName << endl;
     ExecutionContext context;
     context.executeScriptFile(pathName);
 }

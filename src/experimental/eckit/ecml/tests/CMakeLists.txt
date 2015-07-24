@@ -1,5 +1,8 @@
 list( APPEND ecml_tests
 test_print.ecml
+test_let_and_value.ecml
+test_function.ecml
+test_one_letter_variables.ecml
 )
 
 # Get location of test runner executable

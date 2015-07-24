@@ -1,0 +1,11 @@
+test, label = define and call a function,
+    do = (
+            function,of = name,
+                greetings = (
+                    print, values = Hello / (value, of = name)
+                ) 
+            greetings, name = world
+         ),
+    expect = Hello / world
+
+    

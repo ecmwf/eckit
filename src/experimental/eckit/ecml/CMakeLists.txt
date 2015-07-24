@@ -26,16 +26,18 @@ core/SpecialFormHandler.cc
 # Prelude
 prelude/Prelude.cc
 prelude/Prelude.h
-prelude/DefineFunctionHandler.cc
-prelude/DefineFunctionHandler.h
 prelude/LetHandler.cc
 prelude/LetHandler.h
+prelude/VariableLookupHandler.cc
+prelude/VariableLookupHandler.h
+prelude/DefineFunctionHandler.cc
+prelude/DefineFunctionHandler.h
 prelude/ListHandler.cc
 prelude/ListHandler.h
 prelude/PrintHandler.cc
 prelude/PrintHandler.h
-prelude/VariableLookupHandler.cc
-prelude/VariableLookupHandler.h
+prelude/TestHandler.cc
+prelude/TestHandler.h
 
 # Data types' support
 data/DataHandleFactory.h
@@ -63,3 +65,10 @@ ecbuild_add_library( TARGET             eckit_ecml
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/experimental/eckit/ecml
                      SOURCES            ${eckit_ecml_srcs}
                      LIBS               eckit )
+
+ecbuild_add_executable( TARGET ecml_test
+                        SOURCES tests/ecml_test.cc
+                        LIBS eckit eckit_ecml )
+
+add_subdirectory( tests )
+

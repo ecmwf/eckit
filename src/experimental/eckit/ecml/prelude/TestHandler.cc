@@ -34,10 +34,23 @@ Request TestHandler::handle(const Request request, ExecutionContext& context)
 {
     ASSERT(request->tag() == "_verb" && request->text() == "test");
 
-    // TODO: read label
+    string label (request->valueAsString("label", "NO_LABEL"));
+    Request code (request->valueOrDefault("do", 0));
+    if (! code) throw UserError("No test code (keyword 'do') given for test '" + label + "'");
+    Request expect (request->valueOrDefault("expect", 0));
+    if (! expect) throw UserError("No expected value (keyword 'expect') given for test '" + label + "'");
 
+    Values values (context.interpreter().eval(code, context));
+    ASSERT(values);
 
-    return 0; // TODO
+    stringstream sv, se;
+    sv << values;
+    se << expect;
+
+    if (sv.str() != se.str())
+        throw UserError("ECML TEST '" + label + "' EXPECTED:[" + se.str() + "] GOT:[" + sv.str() + "]");
+
+    return new Cell("_list", "", 0, 0);
 }
 
 } // namespace eckit

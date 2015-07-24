@@ -26,6 +26,7 @@
 
 #include "LetHandler.h"
 #include "DefineFunctionHandler.h"
+#include "TestHandler.h"
 
 #include "Prelude.h"
 
@@ -47,10 +48,12 @@ void Prelude::importInto(ExecutionContext& context)
     static PrintHandler print("print", "");
     static LetHandler let("let");
     static VariableLookupHandler value("value");
+    static TestHandler test("test");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
     e.set("function", macro(function.name()));
+    e.set("test", macro(test.name()));
 
     context.registerHandler("list", list);
     context.registerHandler("value", value);

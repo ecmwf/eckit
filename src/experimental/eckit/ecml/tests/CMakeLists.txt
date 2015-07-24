@@ -1,4 +1,6 @@
-list( APPEND ecml_tests test_core.ecml )
+list( APPEND ecml_tests
+test_print.ecml
+)
 
 # Get location of test runner executable
 get_target_property ( ecml_test_runner_bin ecml_test LOCATION )

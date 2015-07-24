@@ -1,0 +1,5 @@
+test,
+    label = verb print returns values that it just printed,
+    do = ( print, values = Hello world),
+    expect = Hello world
+

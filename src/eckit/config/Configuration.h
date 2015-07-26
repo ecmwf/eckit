@@ -71,6 +71,8 @@ class Configuration : public Parametrisation {
 
     Configuration(const Configuration &);
     Configuration(const Value &root, char separator = '.');
+    Configuration &operator=(const Configuration &);
+
     virtual ~Configuration();
 
     // -- Destructor
@@ -99,7 +101,6 @@ class Configuration : public Parametrisation {
 
     // No copy allowed
 
-    Configuration &operator=(const Configuration &);
 
     // -- Members
 

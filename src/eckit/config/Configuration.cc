@@ -28,6 +28,13 @@ Configuration::Configuration(const Configuration &other):
     separator_(other.separator_) {
 }
 
+Configuration &Configuration::operator=(const Configuration &other)
+{
+    root_ = other.root_;
+    separator_ = other.separator_;
+    return *this;
+}
+
 Configuration::~Configuration() {
 }
 

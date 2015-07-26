@@ -23,6 +23,8 @@
 namespace eckit {
 
 
+class LocalConfiguration;
+
 class Configuration : public Parametrisation {
   public:
 
@@ -55,6 +57,9 @@ class Configuration : public Parametrisation {
     virtual bool get(const std::string &name, std::vector<long> &value) const;
     virtual bool get(const std::string &name, std::vector<double> &value) const;
     virtual bool get(const std::string &name, size_t &value) const;
+
+
+    bool get(const std::string &name, std::vector<LocalConfiguration>&) const;
 
     // -- Class members
     // None

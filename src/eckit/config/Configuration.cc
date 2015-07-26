@@ -13,7 +13,7 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/parser/Tokenizer.h"
-
+#include "LocalConfiguration.h"
 
 namespace eckit {
 
@@ -122,6 +122,22 @@ bool Configuration::get(const std::string &name, std::vector<long> &value) const
         int i = 0;
         while (v.contains(i)) {
             value.push_back(v[i]);
+            i++;
+        }
+    }
+    return found;
+}
+
+
+bool Configuration::get(const std::string &name, std::vector<LocalConfiguration> &value) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    if (found) {
+        ASSERT(v.isList());
+        value.clear();
+        int i = 0;
+        while (v.contains(i)) {
+            value.push_back(LocalConfiguration(v[i], separator_));
             i++;
         }
     }

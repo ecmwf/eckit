@@ -38,6 +38,12 @@ prelude/PrintHandler.cc
 prelude/PrintHandler.h
 prelude/TestHandler.cc
 prelude/TestHandler.h
+prelude/FirstHandler.cc
+prelude/FirstHandler.h
+prelude/RestHandler.cc
+prelude/RestHandler.h
+prelude/IfHandler.cc
+prelude/IfHandler.h
 
 # Data types' support
 data/DataHandleFactory.h

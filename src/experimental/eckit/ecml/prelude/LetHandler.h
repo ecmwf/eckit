@@ -9,8 +9,8 @@
  */
 /// @author Piotr Kuchta, February 2015
 
-#ifndef LetHandler_H
-#define LetHandler_H
+#ifndef eckit_ecml_LetHandler_H
+#define eckit_ecml_LetHandler_H
 
 #include "eckit/filesystem/PathName.h"
 #include "experimental/eckit/ecml/parser/Request.h"

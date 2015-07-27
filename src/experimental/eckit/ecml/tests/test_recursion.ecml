@@ -1,0 +1,18 @@
+function, of = names,
+hello = (
+    let, name = (first, of = (value, of = names))
+    if, condition = (value, of = name),
+    then=(
+        println, values = Hello / (value, of = name)
+        hello, names = (rest, of = (value, of = names))
+    ),
+    else=(
+       println, values = "Nice to see you, everybody!"
+    )
+)
+
+test, label = test recursive function,
+do = (
+      hello, names = foo / bar / 0 / baz
+     ),
+expect = "Nice to see you, everybody!"

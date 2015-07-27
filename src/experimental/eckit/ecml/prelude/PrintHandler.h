@@ -9,8 +9,8 @@
  */
 /// @author Piotr Kuchta, May 2015
 
-#ifndef PrintHandler_H
-#define PrintHandler_H
+#ifndef eckit_ecml_PrintHandler_H
+#define eckit_ecml_PrintHandler_H
 
 #include <sstream>
 

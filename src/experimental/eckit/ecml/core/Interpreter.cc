@@ -28,6 +28,9 @@ Values Interpreter::evalList(const Request requests, ExecutionContext& context)
     Values r(0);
     List list(r);
 
+    if (requests && requests->tag() == "_list" && requests->value() == 0 && requests->rest() == 0)
+        return Cell::clone(requests);
+
     for (Request elt(requests); elt; elt = elt->rest())
     {
         if (! elt->tag().size())
@@ -51,8 +54,7 @@ Values Interpreter::evalRequests(const Request requests, ExecutionContext& conte
     for (Request elt(requests); elt; elt = elt->rest())
     {
         Request request( elt->value() );
-        //TODO:
-        //delete r;
+        delete r;
         Log::debug() << "Evaluating request " << request << endl;
         r = eval(request, context);
     }
@@ -107,10 +109,6 @@ Values Interpreter::eval(const Request request, ExecutionContext& context)
     ASSERT("Currently we evaluate _verb or _macro only" && (request->tag() == "_verb" || request->tag() == "_macro")  && request->text().size());
 
     const string verb (request->text());
-
-    //if (verb == "let") return evalLet(request, context);
-    //else if (verb == "function") return defineFunction(request, context);
-
     Request object (context.environment().lookup(verb));
 
     const string tag (object->tag());

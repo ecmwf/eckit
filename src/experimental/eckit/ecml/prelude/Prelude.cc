@@ -23,10 +23,12 @@
 #include "ListHandler.h"
 #include "VariableLookupHandler.h"
 #include "PrintHandler.h"
-
 #include "LetHandler.h"
 #include "DefineFunctionHandler.h"
 #include "TestHandler.h"
+#include "FirstHandler.h"
+#include "RestHandler.h"
+#include "IfHandler.h"
 
 #include "Prelude.h"
 
@@ -49,16 +51,22 @@ void Prelude::importInto(ExecutionContext& context)
     static LetHandler let("let");
     static VariableLookupHandler value("value");
     static TestHandler test("test");
+    static FirstHandler first("first");
+    static RestHandler rest("rest");
+    static IfHandler _if("if");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
     e.set("function", macro(function.name()));
     e.set("test", macro(test.name()));
+    e.set("if", macro(_if.name()));
 
     context.registerHandler("list", list);
     context.registerHandler("value", value);
     context.registerHandler("print", print);
     context.registerHandler("println", println);
+    context.registerHandler("first", first);
+    context.registerHandler("rest", rest);
 }
 
 } // namespace eckit

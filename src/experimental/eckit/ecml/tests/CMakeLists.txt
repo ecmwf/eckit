@@ -3,6 +3,9 @@ test_print.ecml
 test_let_and_value.ecml
 test_function.ecml
 test_one_letter_variables.ecml
+test_first.ecml
+test_rest.ecml
+test_recursion.ecml
 )
 
 # Get location of test runner executable

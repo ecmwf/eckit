@@ -9,8 +9,8 @@
  */
 /// @author Piotr Kuchta, May 2015
 
-#ifndef eckit_ecml_VariableLookupHandler_H
-#define eckit_ecml_VariableLookupHandler_H
+#ifndef eckit_ecml_RestHandler_H
+#define eckit_ecml_RestHandler_H
 
 #include <sstream>
 
@@ -19,9 +19,9 @@
 
 namespace eckit {
 
-class VariableLookupHandler : public eckit::RequestHandler {
+class RestHandler : public eckit::RequestHandler {
 public:
-    VariableLookupHandler(const std::string&);
+    RestHandler(const std::string&);
     virtual eckit::Values handle(eckit::ExecutionContext&);
 };
 

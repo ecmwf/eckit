@@ -1,0 +1,6 @@
+test,label=Test verb first,
+do = (
+        let, l = foo / bar / baz
+        println, values = (rest, of = (value, of = l))
+     ),
+expect = bar / baz

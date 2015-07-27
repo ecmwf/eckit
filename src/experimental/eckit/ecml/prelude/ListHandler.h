@@ -9,8 +9,8 @@
  */
 /// @author Piotr Kuchta, May 2015
 
-#ifndef ListHandler_H
-#define ListHandler_H
+#ifndef eckit_ecml_ListHandler_H
+#define eckit_ecml_ListHandler_H
 
 #include <sstream>
 

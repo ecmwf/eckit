@@ -16,9 +16,6 @@
 #include "experimental/eckit/ecml/core/ExecutionContext.h"
 #include "eckit/runtime/Context.h"
 
-// Disable ODB support for now
-//#include "odb_api/tools/ODBModule.h"
-
 using namespace std;
 using namespace eckit;
 
@@ -55,13 +52,7 @@ int main(int argc,char **argv)
     //Context::instance().behavior( new odb::ODBBehavior() );
     // TODO: enable $DEBUG (Log::debug)
 
-
-    // TODO: No support for ODB verbs right now.
-    //odb::ODBModule odbModule;
-    //app.executionContext().import(odbModule);
-
     TestECML runner(argc, argv);
     runner.start();
-
     return 0;
 }

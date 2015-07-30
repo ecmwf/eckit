@@ -125,19 +125,15 @@ Values Interpreter::eval(const Request request, ExecutionContext& context)
 
     if (tag == "_list")
     {
-        Log::info() << "Interpreter::eval: Call to verb " << verb << " which is a list " << object << endl;
         // If this is a list than we assume the variable holds a reference to a callable.
         // It must be a one element list.
-        if (object->rest())
-            throw UserError("Variable holding reference to a callable must be a one element list. Variable '" + verb + "'");
-        ASSERT("At least one element on the list" && object->value());
-
-        Log::info() << "Interpreter::eval: env: " << context.environment() << endl;
+        if (! (object->value() && !object->rest()))
+            throw UserError("Variable holding reference to a function must be a one element list. Variable '" + verb + "'");
 
         verb = object->value()->text();
         object = context.environment().lookup(verb);
-
-        Log::info() << "Interpreter::eval: Dereferenced to " << verb << " which is:" << object << endl;
+        //tag == object->tag();
+        tag = "_verb";
     }
 
     Values r ( tag == ""          ? object

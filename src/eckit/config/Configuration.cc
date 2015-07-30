@@ -11,12 +11,24 @@
 /// @author Baudouin Raoult
 /// @date Jul 2015
 
+#include "LocalConfiguration.h"
+
 #include "eckit/config/Configuration.h"
 #include "eckit/parser/Tokenizer.h"
-
+#include "eckit/exception/Exceptions.h"
+#include "eckit/compat/StrStream.h"
 
 namespace eckit {
 
+class ConfigurationNotFound : public Exception {
+
+  public:
+    ConfigurationNotFound(const std::string& name) {
+        StrStream s;
+        s << "ConfigurationNotFound: [" << name << "]" << StrStream::ends;
+        reason(std::string(s));
+    }
+};
 
 Configuration::Configuration(const Value &root, char separator):
     root_(root),
@@ -26,6 +38,12 @@ Configuration::Configuration(const Value &root, char separator):
 Configuration::Configuration(const Configuration &other):
     root_(other.root_),
     separator_(other.separator_) {
+}
+
+Configuration &Configuration::operator=(const Configuration &other) {
+    root_ = other.root_;
+    separator_ = other.separator_;
+    return *this;
 }
 
 Configuration::~Configuration() {
@@ -66,7 +84,7 @@ eckit::Value Configuration::lookUp(const std::string &s, bool &found) const {
 eckit::Value Configuration::lookUp(const std::string &name) const {
     bool found = false;
     eckit::Value v = lookUp(name, found);
-    ASSERT(found);
+    if(!found) throw ConfigurationNotFound(name);
     return v;
 }
 
@@ -128,6 +146,22 @@ bool Configuration::get(const std::string &name, std::vector<long> &value) const
     return found;
 }
 
+
+bool Configuration::get(const std::string &name, std::vector<LocalConfiguration> &value) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    if (found) {
+        ASSERT(v.isList());
+        value.clear();
+        int i = 0;
+        while (v.contains(i)) {
+            value.push_back(LocalConfiguration(v[i], separator_));
+            i++;
+        }
+    }
+    return found;
+}
+
 bool Configuration::get(const std::string &name, std::vector<double> &value) const {
     bool found = false;
     eckit::Value v = lookUp(name, found);
@@ -151,6 +185,115 @@ bool Configuration::get(const std::string &name, size_t &value) const {
     }
     return found;
 }
+
+// ==================================
+
+template<class T>
+void Configuration::_get(const std::string &name, T& value) const {
+    if(!get(name, value)) {
+        throw ConfigurationNotFound(name);
+    }
+}
+
+bool Configuration::getBool(const std::string &name) const {
+    bool result;
+    _get(name, result);
+    return result;
+}
+
+int Configuration::getInt(const std::string &name) const {
+    long result;
+    _get(name, result);
+    ASSERT(int(result) == result);
+    return result;
+}
+
+long Configuration::getLong(const std::string &name) const {
+    long result;
+    _get(name, result);
+    return result;
+}
+
+size_t Configuration::getUnsigned(const std::string &name) const {
+    size_t result;
+    _get(name, result);
+    return result;
+}
+
+float Configuration::getFloat(const std::string &name) const {
+    double result;
+    _get(name, result);
+    ASSERT(float(result) == result);
+    return result;
+}
+
+double Configuration::getDouble(const std::string &name) const {
+    double result;
+    _get(name, result);
+    return result;
+}
+
+std::string Configuration::getString(const std::string &name) const {
+    std::string result;
+    _get(name, result);
+    return result;
+}
+
+
+std::vector<int> Configuration::getIntVector(const std::string &name) const {
+    std::vector<int> result;
+    std::vector<long> tmp;
+    _get(name, tmp);
+    result.reserve(tmp.size());
+    for(size_t i = 0; i < tmp.size(); i++) {
+        ASSERT(int(tmp[i]) == tmp[i]);
+        result.push_back(tmp[i]);
+    }
+    return result;
+}
+
+std::vector<long> Configuration::getLongVector(const std::string &name) const {
+    std::vector<long> result;
+    _get(name, result);
+    return result;
+}
+
+std::vector<size_t> Configuration::getUnsignedVector(const std::string &name) const {
+    std::vector<size_t> result;
+    std::vector<long> tmp;
+    _get(name, tmp);
+    result.reserve(tmp.size());
+    for(size_t i = 0; i < tmp.size(); i++) {
+        ASSERT(tmp[i] >= 0);
+        result.push_back(tmp[i]);
+    }
+    return result;
+}
+
+std::vector<float> Configuration::getFloatVector(const std::string &name) const {
+     std::vector<float> result;
+    std::vector<long> tmp;
+    _get(name, tmp);
+    result.reserve(tmp.size());
+    for(size_t i = 0; i < tmp.size(); i++) {
+        ASSERT(float(tmp[i]) == tmp[i]);
+        result.push_back(tmp[i]);
+    }
+    return result;
+}
+
+std::vector<double> Configuration::getDoubleVector(const std::string &name) const {
+    std::vector<double> result;
+    _get(name, result);
+    return result;
+}
+
+std::vector<LocalConfiguration> Configuration::getSubConfigurations(const std::string &name) const {
+    std::vector<LocalConfiguration> result;
+    _get(name, result);
+    return result;
+}
+
 
 }  // namespace eckit
 

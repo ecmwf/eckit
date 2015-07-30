@@ -23,6 +23,8 @@
 namespace eckit {
 
 
+class LocalConfiguration;
+
 class Configuration : public Parametrisation {
   public:
 
@@ -40,6 +42,26 @@ class Configuration : public Parametrisation {
 
     // -- Methods
 
+    // Fast access, will throw an exception
+
+    bool getBool(const std::string &name) const;
+    int getInt(const std::string &name) const;
+    long getLong(const std::string &name) const;
+    size_t getUnsigned(const std::string &name) const;
+    float getFloat(const std::string &name) const;
+    double getDouble(const std::string &name) const;
+    std::string getString(const std::string &name) const;
+
+    std::vector<int> getIntVector(const std::string &name) const;
+    std::vector<long> getLongVector(const std::string &name) const;
+    std::vector<size_t> getUnsignedVector(const std::string &name) const;
+    std::vector<float> getFloatVector(const std::string &name) const;
+    std::vector<double> getDoubleVector(const std::string &name) const;
+
+    std::vector<LocalConfiguration> getSubConfigurations(const std::string &name) const;
+
+    //
+
     Value lookUp(const std::string &) const;
     char separator() const;
 
@@ -56,6 +78,9 @@ class Configuration : public Parametrisation {
     virtual bool get(const std::string &name, std::vector<double> &value) const;
     virtual bool get(const std::string &name, size_t &value) const;
 
+
+    bool get(const std::string &name, std::vector<LocalConfiguration>&) const;
+
     // -- Class members
     // None
 
@@ -66,6 +91,8 @@ class Configuration : public Parametrisation {
 
     Configuration(const Configuration &);
     Configuration(const Value &root, char separator = '.');
+    Configuration &operator=(const Configuration &);
+
     virtual ~Configuration();
 
     // -- Destructor
@@ -94,13 +121,15 @@ class Configuration : public Parametrisation {
 
     // No copy allowed
 
-    Configuration &operator=(const Configuration &);
 
     // -- Members
 
 
 
     // -- Methods
+
+    template <class T>
+    void _get(const std::string&, T&) const;
 
 
     // -- Overridden methods

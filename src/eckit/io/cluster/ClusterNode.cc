@@ -40,7 +40,7 @@ void ClusterHeartBeat::run()
 {
     Monitor::instance().name("heartbeat");
     std::string host   = Resource<std::string>("clusterHost","localhost");
-    int port =  Port("cluster",9555);
+    int port =  Port("cluster", Resource<int>("clusterPort", 9555));
     std::string reply;
     NodeInfo remote;
 

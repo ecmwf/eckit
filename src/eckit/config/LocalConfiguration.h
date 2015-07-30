@@ -33,6 +33,7 @@ class LocalConfiguration : public Configuration {
     LocalConfiguration(char separator = '.');
     LocalConfiguration(const Configuration &other);
     LocalConfiguration(const Configuration &other, const std::string &path);
+    LocalConfiguration(const Value& root, char separator = '.');
 
     virtual ~LocalConfiguration(); // Change to virtual if base class
 
@@ -84,8 +85,8 @@ class LocalConfiguration : public Configuration {
 
     // No copy allowed
 
-    LocalConfiguration(const LocalConfiguration &);
-    LocalConfiguration &operator=(const LocalConfiguration &);
+    // LocalConfiguration(const LocalConfiguration &);
+    // LocalConfiguration &operator=(const LocalConfiguration &);
 
 
     // -- Members

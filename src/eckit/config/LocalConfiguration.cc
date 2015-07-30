@@ -22,6 +22,10 @@ LocalConfiguration::LocalConfiguration(char separator):
     Configuration(Value::makeMap(), separator) {
 }
 
+LocalConfiguration::LocalConfiguration(const Value& root, char separator):
+    Configuration(root, separator) {
+}
+
 LocalConfiguration::LocalConfiguration(const Configuration &other):
     Configuration(other) {
 }

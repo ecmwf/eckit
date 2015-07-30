@@ -30,21 +30,22 @@ Environment::Environment(Environment* parent, Request r)
 
 Environment::~Environment()
 {
-    // TODO
-    //for (map<string,Request>::iterator it(dictionary_.begin()); it != dictionary_.end(); ++it)
-    //    delete it->second;
-    //dictionary_.clear();
+    delete dictionary_;
 }
 
 void Environment::print(std::ostream& s) const
 {
-    // TODO
-    s << "{" << "Environment@" << this << "}";
+    s << dictionary_;
+    if (parent_)
+    {
+     s << "," << endl << "parent = (";
+     parent_->print(s);
+     s << ")";
+    }
 }
 
 void Environment::set(const std::string& name, Request request)
 {
-    //dictionary_[name] = request;
     dictionary_->value(name, request);
 }
 

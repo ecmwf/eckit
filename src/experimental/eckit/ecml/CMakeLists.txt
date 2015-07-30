@@ -76,5 +76,9 @@ ecbuild_add_executable( TARGET ecml_test
                         SOURCES tests/ecml_test.cc
                         LIBS eckit eckit_ecml )
 
+ecbuild_add_executable( TARGET ecml_unittests
+                        SOURCES tests/ecml_unittests.cc
+                        LIBS eckit eckit_ecml )
+
 add_subdirectory( tests )
 

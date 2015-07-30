@@ -34,12 +34,14 @@ public:
     Environment* parent();
     Request currentFrame();
 
-protected:
 	void print(std::ostream&) const; 	
 
 private:
     Cell* dictionary_;
     Environment* parent_;
+
+friend std::ostream& operator<<(std::ostream& o, const Environment& e) { e.print(o); return o; }
+
 };
 
 } // namespace eckit

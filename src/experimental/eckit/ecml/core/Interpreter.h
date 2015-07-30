@@ -33,6 +33,7 @@ protected:
     virtual Values evalRequests(const Request, ExecutionContext&);
     virtual Request evalMacro(const Request, const Request, ExecutionContext&);
     virtual Values evalFunction(const Request, const Request, ExecutionContext&);
+    virtual Values evalVerb(const Request, const Request, ExecutionContext&);
     virtual Values evalNative(const Request object, const Request request, ExecutionContext&);
 };
 

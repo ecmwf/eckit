@@ -8,8 +8,11 @@ test_rest.ecml
 test_recursion.ecml
 )
 
-# Get location of test runner executable
+# Get location of test runner executable (for the ECML tests)
 get_target_property ( ecml_test_runner_bin ecml_test LOCATION )
+
+# Get location of unit test runner executable (C++ tests)
+get_target_property ( ecml_unittests_bin ecml_unittests LOCATION )
 
 set( test_environment
   ECML_HOME=${PROJECT_SOURCE_DIR}
@@ -22,7 +25,11 @@ foreach( _test ${ecml_tests} )
                       COMMAND      ${ecml_test_runner_bin}
                       ARGS         ${PROJECT_SOURCE_DIR}/src/experimental/eckit/ecml/tests/${_test}
                       ENVIRONMENT  ${test_environment}
-                      TEST_DEPENDS ${_dependencies})
+                      TEST_DEPENDS ${_dependencies} )
 endforeach()
 
-
+# Add C++ unit tests
+ecbuild_add_test( TARGET       ecml_unittests
+                  COMMAND      ${ecml_unittests_bin}
+                  ENVIRONMENT  ${test_environment}
+                  TEST_DEPENDS ${_dependencies} )

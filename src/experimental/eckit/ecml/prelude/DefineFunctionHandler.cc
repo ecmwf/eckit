@@ -44,8 +44,6 @@ Request DefineFunctionHandler::handle(const Request request, ExecutionContext& c
     Request code (r->value()->value());
     ASSERT(code->tag() == "_requests");
 
-    Log::debug() << "Defining function " << name << "(" << params << "): " << code << endl; 
-
     Request function (new Cell("_function", name, params, code));
     Request frame (new Cell("_frame", "definition", 0, 0));
     frame->append(new Cell("", name, function, 0));

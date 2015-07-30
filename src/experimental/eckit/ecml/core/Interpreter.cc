@@ -82,6 +82,14 @@ Values Interpreter::evalMacro(const Request object, const Request request, Execu
     return h.handle(request, context);
 }
 
+Values Interpreter::evalVerb(const Request object, const Request request, ExecutionContext& context)
+{
+    ASSERT(object->tag() == "_verb");
+    const string verb (request->text());
+    Request o (context.environment().lookup(verb));
+    return eval(o, context);
+}
+
 Values Interpreter::evalFunction(const Request object, const Request request, ExecutionContext& context)
 {
     ASSERT(object->tag() == "_function");
@@ -104,18 +112,39 @@ Values Interpreter::eval(const Request request, ExecutionContext& context)
 {
     if (request->tag() == "_requests") return evalRequests(request, context);
     if (request->tag() == "_list") return evalList(request, context);
+
+    //if (request->tag() == "_function") return request;
     if (request->tag() == "") return request;
 
     ASSERT("Currently we evaluate _verb or _macro only" && (request->tag() == "_verb" || request->tag() == "_macro")  && request->text().size());
 
-    const string verb (request->text());
+    string verb (request->text());
     Request object (context.environment().lookup(verb));
 
-    const string tag (object->tag());
+    string tag (object->tag());
+
+    if (tag == "_list")
+    {
+        Log::info() << "Interpreter::eval: Call to verb " << verb << " which is a list " << object << endl;
+        // If this is a list than we assume the variable holds a reference to a callable.
+        // It must be a one element list.
+        if (object->rest())
+            throw UserError("Variable holding reference to a callable must be a one element list. Variable '" + verb + "'");
+        ASSERT("At least one element on the list" && object->value());
+
+        Log::info() << "Interpreter::eval: env: " << context.environment() << endl;
+
+        verb = object->value()->text();
+        object = context.environment().lookup(verb);
+
+        Log::info() << "Interpreter::eval: Dereferenced to " << verb << " which is:" << object << endl;
+    }
+
     Values r ( tag == ""          ? object
              : tag == "_native"   ? evalNative(object, request, context)
              : tag == "_macro"    ? evalMacro(object, request, context)
              : tag == "_function" ? evalFunction(object, request, context)
+             : tag == "_verb" ? evalFunction(object, request, context)
              : tag == "_requests" ? eval(object, context)
              : tag == "_request"  ? eval(object, context)
              : 0 );

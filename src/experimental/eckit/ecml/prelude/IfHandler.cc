@@ -35,26 +35,34 @@ Request IfHandler::handle(const Request request, ExecutionContext& context)
     ASSERT(request->tag() == "_verb" && request->text() == "if");
 
     Request condition (request->valueOrDefault("condition", 0));
-    if (! condition) throw UserError("No 'condition' passed to 'if'");
+    if (! condition)
+        throw UserError("No 'condition' passed to 'if'");
+
+    Request then (request->valueOrDefault("then", 0));
+    Request _else (request->valueOrDefault("else", 0));
+    if (!then && !_else)
+        throw UserError("Either 'then' or 'else' must be passed to 'if'");
 
     Values test (context.interpreter().eval(condition, context));
     Request r(0);
-    //cout << " *** IfHandler: evaluated condition: " << (test ? test->str() : "NULL") << endl;
+
     if (! test
         || (test->tag() == "_list" && !test->value())) // empty list
     {
-        Request _else (request->valueOrDefault("else", 0));
         if (_else) r = _else;
     }
     else
     {
-        Request then (request->valueOrDefault("then", 0));
         if (then) r = then;
     }
-    if (!r) throw UserError("Either 'then' or 'else' must be passed to 'if'");
 
-    r = context.interpreter().eval(r, context);
-    return Cell::clone(r);
+    if (r)
+    {
+        r = context.interpreter().eval(r, context);
+        return Cell::clone(r);
+    }
+
+    return new Cell("_list", "", 0, 0);
 }
 
 } // namespace eckit

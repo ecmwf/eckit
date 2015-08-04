@@ -9,6 +9,12 @@ parser/Request.cc
 parser/RequestParser.h
 parser/RequestParser.cc
 
+# AST
+ast/FunctionDefinition.h
+ast/FunctionDefinition.cc
+ast/Closure.cc
+ast/Closure.h
+
 # Core language
 core/Environment.h
 core/Environment.cc
@@ -32,6 +38,8 @@ prelude/VariableLookupHandler.cc
 prelude/VariableLookupHandler.h
 prelude/DefineFunctionHandler.cc
 prelude/DefineFunctionHandler.h
+prelude/ClosureHandler.h
+prelude/ClosureHandler.cc
 prelude/ListHandler.cc
 prelude/ListHandler.h
 prelude/PrintHandler.cc

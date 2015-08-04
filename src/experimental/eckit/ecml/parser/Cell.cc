@@ -386,5 +386,19 @@ void Cell::showGraph(const string& label, bool background, bool detailed, bool c
     system(cmd.str().c_str());
 }
 
+std::vector<std::string> Cell::valueAsListOfStrings() const
+{
+    std::vector<std::string> r;
+
+    for (const Cell* p(this->value()); p; p = p->rest())
+    {
+        // TODO: check it's just a string
+        if (p->value())
+            r.push_back(p->value()->text());
+    }
+
+    return r;
+}
+
 } // namespace eckit
 

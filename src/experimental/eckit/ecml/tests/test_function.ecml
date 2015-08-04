@@ -1,11 +1,16 @@
 test, label = define and call a function,
     do = (
-            function,of = name,
+            let, ending = my friend
+
+            function, of = name, capture = ending,
                 greetings = (
-                    print, values = Hello / (value, of = name)
+                    print, values = Hello / (value, of = name) / (value, of = ending)
                 ) 
+
+            let, ending = "!"
+
             greetings, name = world
          ),
-    expect = Hello / world
+    expect = Hello / world / my friend
 
     

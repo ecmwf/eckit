@@ -55,7 +55,7 @@ Values Interpreter::evalRequests(const Request requests, ExecutionContext& conte
     {
         Request request( elt->value() );
         delete r;
-        Log::debug() << "Evaluating request " << request << endl;
+
         r = eval(request, context);
     }
     return r;
@@ -64,7 +64,6 @@ Values Interpreter::evalRequests(const Request requests, ExecutionContext& conte
 Values Interpreter::evalNative(const Request object, const Request request, ExecutionContext& context)
 {
     RequestHandler& handler (RequestHandler::handler(object->text()));
-    Log::debug() << "Executing handler " << handler.name() << endl;
 
     Request evaluatedAttributes (evalAttributes(request, context));
     context.pushEnvironmentFrame(evaluatedAttributes);
@@ -72,7 +71,6 @@ Values Interpreter::evalNative(const Request object, const Request request, Exec
     Values r (handler.handle(context));
 
     context.popEnvironmentFrame(evaluatedAttributes);
-
     return r;
 }
 
@@ -84,69 +82,44 @@ Values Interpreter::evalMacro(const Request object, const Request request, Execu
 
 Values Interpreter::evalVerb(const Request object, const Request request, ExecutionContext& context)
 {
-    ASSERT(object->tag() == "_verb");
-    const string verb (request->text());
-    Request o (context.environment().lookup(verb));
-    return eval(o, context);
-}
+    Request evaluatedAttributes (evalAttributes(request, context));
 
-Values Interpreter::evalFunction(const Request object, const Request request, ExecutionContext& context)
-{
-    ASSERT(object->tag() == "_function");
-    Request body (object->rest());
-
-    Log::debug() << "Evaluating function " << object->text() << ": " << body << endl;
-
-    Request evaluatedRequest (evalAttributes(request, context));
-
-    context.pushEnvironmentFrame(evaluatedRequest);
-    Values r (eval(body, context));
-    context.popEnvironmentFrame(evaluatedRequest);
-
-    Log::debug() << "           function " << object->text() << " => " << r << endl;
-
+    context.pushEnvironmentFrame(evaluatedAttributes);
+    Cell *r (eval(object, context));
+    context.popEnvironmentFrame(evaluatedAttributes);
     return r;
 }
 
 Values Interpreter::eval(const Request request, ExecutionContext& context)
 {
+    if (request->tag() == "") return request;
     if (request->tag() == "_requests") return evalRequests(request, context);
     if (request->tag() == "_list") return evalList(request, context);
 
-    //if (request->tag() == "_function") return request;
-    if (request->tag() == "") return request;
-
-    ASSERT("Currently we evaluate _verb or _macro only" && (request->tag() == "_verb" || request->tag() == "_macro")  && request->text().size());
+    ASSERT((request->tag() == "_verb" || request->tag() == "_macro") && request->text().size());
 
     string verb (request->text());
     Request object (context.environment().lookup(verb));
-
     string tag (object->tag());
 
     if (tag == "_list")
     {
-        // If this is a list than we assume the variable holds a reference to a callable.
-        // It must be a one element list.
-        if (! (object->value() && !object->rest()))
-            throw UserError("Variable holding reference to a function must be a one element list. Variable '" + verb + "'");
-
-        verb = object->value()->text();
-        object = context.environment().lookup(verb);
-        //tag == object->tag();
+        // I know...
+        string fn (object->value()->value()->text());
+        // delete object;
+        object = context.environment().lookup(fn);
         tag = "_verb";
     }
 
     Values r ( tag == ""          ? object
              : tag == "_native"   ? evalNative(object, request, context)
+             : tag == "_verb"     ? evalVerb(object, request, context)
              : tag == "_macro"    ? evalMacro(object, request, context)
-             : tag == "_function" ? evalFunction(object, request, context)
-             : tag == "_verb" ? evalFunction(object, request, context)
              : tag == "_requests" ? eval(object, context)
              : tag == "_request"  ? eval(object, context)
              : 0 );
 
     ASSERT(r);
-
     return r;
 }
 

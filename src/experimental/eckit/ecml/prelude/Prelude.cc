@@ -25,6 +25,7 @@
 #include "PrintHandler.h"
 #include "LetHandler.h"
 #include "DefineFunctionHandler.h"
+#include "ClosureHandler.h"
 #include "TestHandler.h"
 #include "FirstHandler.h"
 #include "RestHandler.h"
@@ -45,6 +46,7 @@ static Request macro(const string& name) { return new Cell("_macro", name, 0, 0)
 void Prelude::importInto(ExecutionContext& context)
 {
     static DefineFunctionHandler function("function");
+    static ClosureHandler closure("closure");
     static ListHandler list("list");
     static PrintHandler println("println", "\n");
     static PrintHandler print("print", "");
@@ -58,6 +60,7 @@ void Prelude::importInto(ExecutionContext& context)
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
     e.set("function", macro(function.name()));
+    e.set("closure", macro(closure.name()));
     e.set("test", macro(test.name()));
     e.set("if", macro(_if.name()));
 

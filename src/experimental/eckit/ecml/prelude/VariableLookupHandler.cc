@@ -25,12 +25,11 @@ VariableLookupHandler::VariableLookupHandler(const string& name) : RequestHandle
 Values VariableLookupHandler::handle(ExecutionContext& context)
 {
     vector<string> vars (getValueAsList(context, "of"));
-    ASSERT("'value,of' expects one variable name currently" && vars.size() == 1);
+    if (vars.size() != 1)
+        throw UserError("'value,of' expects one variable name currently");
 
     string var (vars[0]);
-    Values r (context.interpreter().eval(context.environment().lookup(var), context));
-
-    Log::debug() << "value,of=" << var << " => " << r << endl;
+    Values r (context.environment().lookup(var));
 
     return r;
 }

@@ -18,6 +18,10 @@
 #include "experimental/eckit/ecml/core/ExecutionContext.h"
 #include "experimental/eckit/ecml/core/Module.h"
 #include "experimental/eckit/ecml/prelude/PrintHandler.h"
+#include "experimental/eckit/ecml/prelude/DefineFunctionHandler.h"
+#include "experimental/eckit/ecml/parser/RequestParser.h"
+#include "experimental/eckit/ecml/ast/FunctionDefinition.h"
+#include "experimental/eckit/ecml/ast/Closure.h"
 
 using namespace std;
 using namespace eckit;
@@ -72,7 +76,9 @@ void ECMLUnitTests::run() { runTests(); }
 
 void ECMLUnitTests::runTests()
 {
-    Log::info() << endl << " ** ecml_unittests **" << endl;
+    ostream& L (Log::info());
+
+    L << endl << " ** ecml_unittests **" << endl;
 
     ECMLTestModule tm;
     ExecutionContext context;
@@ -87,7 +93,41 @@ void ECMLUnitTests::runTests()
     ASSERT(tm.str() == "Hello world ");
     tm.clear();
     context.execute("print, values = Hello again");
-    ASSERT(tm.str() == "Hello again ");
+    ASSERT(tm.str() == "Hello again "); // not sure where the trailing space come from
+
+
+    // Closure
+    Cell* requests (RequestParser::parse("function,of=x,capture=a/b,f=(println,values=FOO)"));
+    Cell* parsedFunction (requests->value());
+    //L << "parsedFunction: " << parsedFunction << endl;
+
+    FunctionDefinition funDef(parsedFunction);
+    //L << "funDef.parameters().size(): " << funDef.parameters().size() << endl;
+
+    ASSERT(funDef.parameters().size() == 1);
+    ASSERT(funDef.parameters()[0] == "x");
+    ASSERT(funDef.capturedVariables().size() == 2);
+    ASSERT(funDef.capturedVariables()[0] == "a");
+    ASSERT(funDef.capturedVariables()[1] == "b");
+    ASSERT(funDef.code()->str() == "(println, values = \"FOO\")");
+
+    Cell* rs (RequestParser::parse("closure,name=f,parameters=x,captured=(environment,a=1,b=2),code=(println,values=FOO)"));
+    //L << "rs: " << rs << endl;
+    Cell* cc (rs->value());
+    //L << "cc: " << cc << endl;
+    Closure clos (cc);
+    //L << "clos:" << (Cell*) clos << endl;
+
+    DefineFunctionHandler df("function");
+    context.execute("let, a=1,b=2");
+    Cell* cclosure (df.handle(parsedFunction, context));
+    //L << "cclosure: " << cclosure << endl;
+    Closure closure (cclosure);
+    //L << "closure: " << (Cell*) closure << endl;
+    //((Cell*) closure)->graph();
+    ASSERT(cclosure->str() == ((Cell*) closure)->str());
+    context.execute("function,of=name,capture=a/b,greetings=(print,values=Hello /(value,of=name)/(value,of=a)/(value,of=b))");
+    context.execute("greetings, name=Piotr");
 }
 
 int main(int argc,char **argv)

@@ -37,6 +37,9 @@ public:
     Cell* value(Cell*);
     Cell* rest(Cell*);
 
+    // Will throw if it's not just list of strings but also has subexpressions to be evaluated
+    std::vector<std::string> valueAsListOfStrings() const;
+
     Cell* append(Cell*);
 
     // Set value pointed by a keyword

@@ -21,8 +21,6 @@ FirstHandler::FirstHandler(const std::string& name) : RequestHandler(name) {}
 Values FirstHandler::handle(ExecutionContext& context)
 {
     Values vs (context.environment().lookup("of"));
-    if (vs == 0)
-        return 0; // TODO
     return new Cell("_list", "", Cell::clone(vs->value()), 0);
 }
 

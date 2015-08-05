@@ -7,6 +7,7 @@ test_first.ecml
 test_rest.ecml
 test_recursion.ecml
 test_higher_order_functions.ecml
+test_lists.ecml
 )
 
 # Get location of test runner executable (for the ECML tests)

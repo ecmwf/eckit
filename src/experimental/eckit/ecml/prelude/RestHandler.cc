@@ -21,9 +21,11 @@ RestHandler::RestHandler(const std::string& name) : RequestHandler(name) {}
 Values RestHandler::handle(ExecutionContext& context)
 {
     Values vs (context.environment().lookup("of"));
-    if (vs == 0)
-        return 0; // TODO
-    return new Cell("_list", "", Cell::clone(vs->rest()), 0);
+
+    if (! vs->rest())
+        return new Cell("_list", "", 0, 0);
+
+    return Cell::clone(vs->rest());
 }
 
 } // namespace eckit

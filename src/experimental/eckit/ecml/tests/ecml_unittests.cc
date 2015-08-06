@@ -16,6 +16,7 @@
 #include "eckit/runtime/Context.h"
 
 #include "experimental/eckit/ecml/core/ExecutionContext.h"
+#include "experimental/eckit/ecml/core/Interpreter.h"
 #include "experimental/eckit/ecml/core/Module.h"
 #include "experimental/eckit/ecml/prelude/PrintHandler.h"
 #include "experimental/eckit/ecml/prelude/DefineFunctionHandler.h"
@@ -84,7 +85,7 @@ void ECMLUnitTests::runTests()
     ExecutionContext context;
     tm.importInto(context);
 
-    Cell* c (context.copy());
+    //Cell* c (context.copy());
     //stringstream ss;
     //ss << c << endl;
     //cout << ss.str();
@@ -121,6 +122,7 @@ void ECMLUnitTests::runTests()
     DefineFunctionHandler df("function");
     context.execute("let, a=1,b=2");
     Cell* cclosure (df.handle(parsedFunction, context));
+    cclosure = cclosure->value();
     //L << "cclosure: " << cclosure << endl;
     Closure closure (cclosure);
     //L << "closure: " << (Cell*) closure << endl;
@@ -128,6 +130,26 @@ void ECMLUnitTests::runTests()
     ASSERT(cclosure->str() == ((Cell*) closure)->str());
     context.execute("function,of=name,capture=a/b,greetings=(print,values=Hello /(value,of=name)/(value,of=a)/(value,of=b))");
     context.execute("greetings, name=Piotr");
+    context.execute(
+    "function, foo = ("
+    "    function, bar = ( println, values = BAR )"
+    "    value, of = bar"
+    ")"
+    );
+    //c = context.interpreter().eval(RequestParser::parse("foo"), context);
+    //c = context.interpreter().eval(RequestParser::parse("value, of = bar"), context);
+    Cell* c;
+    Cell* parsed ( RequestParser::parse("let, f = ( foo ) ") );
+
+    //parsed->graph("parsed 'let, f = ( foo )': " + parsed->str());
+
+    context.interpreter().debug(true);
+    c = context.interpreter().eval(parsed, context);
+
+    //c->graph("evaluated: 'let, f = ( foo )' " + c->str());
+
+    c = context.interpreter().eval(RequestParser::parse("f"), context);
+    //c->graph("evaluated 'f': " + c->str());
 }
 
 int main(int argc,char **argv)

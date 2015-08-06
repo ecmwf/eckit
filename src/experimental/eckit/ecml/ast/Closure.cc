@@ -64,7 +64,7 @@ Closure::Closure(Cell* request)
 Closure::Closure(const FunctionDefinition& fun, ExecutionContext& context)
 : name_(fun.name()),
   parameters_(fun.parameters()),
-  capturedEnvironment_(new Cell("_verb", "environment", 0, 0)),
+  capturedEnvironment_(new Cell("_verb", "let", 0, 0)),
   code_(Cell::clone(fun.code()))
 {
     std::vector<std::string> vs(fun.capturedVariables());
@@ -91,7 +91,8 @@ Closure::operator Cell*() const
         parameters.append(parameters_[i]);
 
     List captured;
-    captured.append(new Cell("_requests", "", Cell::clone(capturedEnvironment_), 0));
+    if (capturedEnvironment_->value() || capturedEnvironment_->rest())
+        captured.append(new Cell("_requests", "", Cell::clone(capturedEnvironment_), 0));
 
     List code;
     code.append(Cell::clone(code_));

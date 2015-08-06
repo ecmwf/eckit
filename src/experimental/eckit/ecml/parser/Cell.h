@@ -56,8 +56,10 @@ public:
 
     void showGraph(bool background, bool detailed, bool clever);
     void showGraph(const std::string&, bool background, bool detailed, bool clever);
+    void graph(const std::string&);
     void graph();
     void simpleGraph();
+    void simpleGraph(const std::string&);
 
 private:
     Cell(Cell*); // cloning

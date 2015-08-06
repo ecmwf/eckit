@@ -1,12 +1,18 @@
 test, label = Pass a function to another function and call it there,
 do = (
-    function, foo = (
-        println, values = FOO
-    )
-    function, of = fun, bar = (
-        fun
-    )
+    function, foo = ( println, values = FOO )
+    function, of = fun, bar = ( fun )
     bar, fun = (value, of = foo)
 ),
 expect = FOO
+
+test, label = return a function from another function and call it,
+do = (
+    function, foo = (
+        function, bar = ( println, values = BAR )
+    )
+    let, f = ( foo )
+    f
+),
+expect = BAR
 

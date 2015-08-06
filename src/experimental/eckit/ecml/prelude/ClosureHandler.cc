@@ -34,7 +34,7 @@ Request ClosureHandler::handle(const Request request, ExecutionContext& context)
     Closure closure (request);
     Cell* captured (closure.capturedEnvironment());
 
-    Cell* staticEnvironment (captured->value()->value());
+    Cell* staticEnvironment (captured->value() ? captured->value()->value() : 0);
 
     if (staticEnvironment)
         context.pushEnvironmentFrame(staticEnvironment);

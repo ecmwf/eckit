@@ -11,6 +11,7 @@
 #include "eckit/log/Log.h"
 
 #include "experimental/eckit/ecml/parser/Request.h"
+#include "experimental/eckit/ecml/ast/Closure.h"
 #include "SpecialFormHandler.h"
 #include "RequestHandler.h"
 #include "Interpreter.h"
@@ -21,31 +22,98 @@ using namespace std;
 
 namespace eckit {
 
+Interpreter::Interpreter()
+: debug_(0)
+{}
+
 Interpreter::~Interpreter() {}
+
+Values Interpreter::eval(const Request request, ExecutionContext& context)
+{
+    if (request->tag() == "") return request;
+    if (request->tag() == "_requests") return evalRequests(request, context);
+    if (request->tag() == "_list") return evalList(request, context);
+
+    ASSERT((request->tag() == "_verb" || request->tag() == "_macro") && request->text().size());
+
+    string verb (request->text());
+    Request object (context.environment().lookup(verb));
+    string tag (object->tag());
+
+    if (tag == "_list")
+    {
+        ASSERT(object->rest() == 0); // one element only
+
+        if (object->value()->tag() == "_requests")
+            return eval(object->value(), context);
+
+        else if (object->value()->tag() == "_verb" && object->value()->text() == "closure")
+            return evalVerb(object->value(), request, context);
+
+        else {
+            Log::info() << "Unexpected: tag = " << object->value()->tag() << " object->value() " << object->value()  << endl;
+            NOTIMP;
+        }
+    }
+
+    Values r ( tag == ""          ? object
+             : tag == "_native"   ? evalNative(object, request, context)
+             : tag == "_verb"     ? evalVerb(object, request, context)
+             : tag == "_macro"    ? evalMacro(object, request, context)
+             : tag == "_requests" ? eval(object, context)
+             : tag == "_request"  ? eval(object, context)
+             : 0 );
+    ASSERT(r);
+    return r;
+}
 
 Values Interpreter::evalList(const Request requests, ExecutionContext& context)
 {
-    Values r(0);
-    List list(r);
+    ASSERT(requests->tag() == "_list");
 
-    if (requests && requests->tag() == "_list" && requests->value() == 0 && requests->rest() == 0)
-        return Cell::clone(requests);
+    List list; 
 
     for (Request elt(requests); elt; elt = elt->rest())
     {
         if (! elt->tag().size())
-            list.append(elt);
-        else
         {
-            Values sublist (elt->value()->tag() == "_requests"  
-                            ? evalRequests(elt->value(), context)
-                            : evalList(elt->value(), context));
+            Log::info() << "elt->tag() == " << elt->tag() <<  " " << endl;
+            Log::info() << "elt == " << elt <<  " ABORTING..." << endl;
+            NOTIMP;
+            list.append(Cell::clone(elt->value()));
+        } 
+        if (elt->value()->tag() == "_requests")
+        {
+            Values sublist (evalRequests(elt->value(), context));
+            // Every request should return a list.
 
+            if (sublist->tag() != "_list")
+            {
+                Log::warning() << "**** evalRequests did not return a list" << endl;
+                Log::warning() << "**** tag:" << sublist->tag() << endl;
+                Log::warning() << "**** object: " << sublist << endl;
+            }
+
+            ASSERT(sublist->tag() == "_list");
             for (Request e(sublist); e; e = e->rest())
                 list.append(e->value());
         }
+        else if (elt->value()->tag() == "_list")
+        {
+            Values sublist (elt->value());
+            ASSERT(sublist->tag() == "_list");
+
+            for (Request e(sublist); e; e = e->rest())
+                list.append(e->value());
+        } else if (elt->value()->tag() == "")
+        {
+            list.append(elt->value());
+        } else {
+            NOTIMP;
+        }
     }
-    return r;
+
+    return list;
 }
 
 Values Interpreter::evalRequests(const Request requests, ExecutionContext& context)
@@ -90,39 +158,6 @@ Values Interpreter::evalVerb(const Request object, const Request request, Execut
     return r;
 }
 
-Values Interpreter::eval(const Request request, ExecutionContext& context)
-{
-    if (request->tag() == "") return request;
-    if (request->tag() == "_requests") return evalRequests(request, context);
-    if (request->tag() == "_list") return evalList(request, context);
-
-    ASSERT((request->tag() == "_verb" || request->tag() == "_macro") && request->text().size());
-
-    string verb (request->text());
-    Request object (context.environment().lookup(verb));
-    string tag (object->tag());
-
-    if (tag == "_list")
-    {
-        // I know...
-        string fn (object->value()->value()->text());
-        // delete object;
-        object = context.environment().lookup(fn);
-        tag = "_verb";
-    }
-
-    Values r ( tag == ""          ? object
-             : tag == "_native"   ? evalNative(object, request, context)
-             : tag == "_verb"     ? evalVerb(object, request, context)
-             : tag == "_macro"    ? evalMacro(object, request, context)
-             : tag == "_requests" ? eval(object, context)
-             : tag == "_request"  ? eval(object, context)
-             : 0 );
-
-    ASSERT(r);
-    return r;
-}
-
 Request Interpreter::evalAttributes(const Request request, ExecutionContext& context)
 {
     ASSERT(request->tag() == "_verb");
@@ -133,9 +168,13 @@ Request Interpreter::evalAttributes(const Request request, ExecutionContext& con
     for (Request e(request->rest()); e; e = e->rest())
     {
         ASSERT(e->tag() == "");
-        string name (e->text());
-        Values values (evalList(e->value(), context));
-        r->append(new Cell("", name, values, 0));
+
+        const string& attributeName (e->text());
+        Values unevaluatedValues (e->value());
+
+        Values values (evalList(unevaluatedValues, context));
+
+        r->append(new Cell("", attributeName, values, 0));
     }
     return r;
 }

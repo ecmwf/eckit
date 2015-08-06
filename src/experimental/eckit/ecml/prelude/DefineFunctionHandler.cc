@@ -33,9 +33,10 @@ Request DefineFunctionHandler::handle(const Request request, ExecutionContext& c
 {
     FunctionDefinition f (request);
     Closure closure (f, context);
-    context.pushEnvironmentFrame(new Cell("_verb", "environment", 0,
-                                        new Cell("", f.name(), closure, 0)));
-    return closure;
+    Cell* closureWrapped (new Cell("_list", "", closure, 0));
+    context.pushEnvironmentFrame(new Cell("_verb", "let", 0, 
+                                            new Cell("", f.name(), closureWrapped, 0)));
+    return Cell::clone(closureWrapped);
 }
 
 } // namespace eckit

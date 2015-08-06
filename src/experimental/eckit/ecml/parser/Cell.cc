@@ -224,9 +224,11 @@ std::ostream& Cell::print(std::ostream& s, size_t depth) const
         for (Cell* lst(rest()); lst; lst = lst->rest())
         {
             //ASSERT(lst->tag() == "_list");
-            s << " / ";
-            ASSERT(lst->value());
-            lst->value()->print(s, depth + 1);
+            if (lst->value())
+            {
+                s << " / ";
+                lst->value()->print(s, depth + 1);
+            }
         }
         return s;
     } 

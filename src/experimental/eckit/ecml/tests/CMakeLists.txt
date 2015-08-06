@@ -5,9 +5,10 @@ test_function.ecml
 test_one_letter_variables.ecml
 test_first.ecml
 test_rest.ecml
+test_lists.ecml
 test_recursion.ecml
 test_higher_order_functions.ecml
-test_lists.ecml
+test_map.ecml
 )
 
 # Get location of test runner executable (for the ECML tests)

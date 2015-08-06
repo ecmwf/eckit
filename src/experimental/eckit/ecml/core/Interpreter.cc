@@ -43,17 +43,8 @@ Values Interpreter::eval(const Request request, ExecutionContext& context)
     if (tag == "_list")
     {
         ASSERT(object->rest() == 0); // one element only
-
-        if (object->value()->tag() == "_requests")
-            return eval(object->value(), context);
-
-        else if (object->value()->tag() == "_verb" && object->value()->text() == "closure")
-            return evalVerb(object->value(), request, context);
-
-        else {
-            Log::info() << "Unexpected: tag = " << object->value()->tag() << " object->value() " << object->value()  << endl;
-            NOTIMP;
-        }
+        object = object->value();
+        tag = object->tag();
     }
 
     Values r ( tag == ""          ? object
@@ -85,18 +76,19 @@ Values Interpreter::evalList(const Request requests, ExecutionContext& context)
         if (elt->value()->tag() == "_requests")
         {
             Values sublist (evalRequests(elt->value(), context));
-            // Every request should return a list.
 
-            if (sublist->tag() != "_list")
+            if (sublist->tag() == "_list")
             {
-                Log::warning() << "**** evalRequests did not return a list" << endl;
-                Log::warning() << "**** tag:" << sublist->tag() << endl;
-                Log::warning() << "**** object: " << sublist << endl;
-            }
+                for (Request e(sublist); e; e = e->rest())
+                    list.append(e->value());
 
-            ASSERT(sublist->tag() == "_list");
-            for (Request e(sublist); e; e = e->rest())
-                list.append(e->value());
+            } else if (sublist->tag() == "_native" || sublist->tag() == "_macro")
+            {
+                list.append(sublist);
+            } else 
+            {
+                NOTIMP;
+            }
         }
         else if (elt->value()->tag() == "_list")
         {

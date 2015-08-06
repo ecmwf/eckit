@@ -78,6 +78,12 @@ MPI_Datatype datatype();
 template<typename DATA_TYPE>
 MPI_Datatype datatype(DATA_TYPE&);
 
+typedef MPI_Op Operation;
+inline Operation sum()  { return MPI_SUM;  }
+inline Operation prod() { return MPI_PROD; }
+inline Operation max()  { return MPI_MAX;  }
+inline Operation min()  { return MPI_MIN;  }
+
 } // namespace mpi
 } // namespace eckit
 

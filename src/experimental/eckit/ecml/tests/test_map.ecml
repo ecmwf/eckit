@@ -11,8 +11,9 @@ expect = 1 / 2 / 3
 
 test, label = pass a user defined function to a map function,
 do = ( 
-        function, of = values, foo = (
-            println, values = Hello / (value, of = values) 
+        let, greeting = Hello
+        function, of = values, capture = greeting, foo = (
+            println, values = (value, of = greeting ) / (value, of = values) 
         )
         map, f = (value, of = foo), values = 1 / 2 / 3
      ),

@@ -57,6 +57,65 @@ BOOST_AUTO_TEST_CASE( test_comm )
 
 //-------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_CASE( test_broadcast )
+{
+  size_t root = 0;
+
+  int d[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+  std::vector<int> data;
+  if( eckit::mpi::rank() == root )
+  {
+    data.assign(d,d+10);
+  }
+  bool resize = true;
+  int success = mpi::broadcast(data,root,resize);
+
+  BOOST_CHECK( success == MPI_SUCCESS );
+
+  // check results
+  BOOST_CHECK_EQUAL( data.size(), 10 );
+  BOOST_CHECK_EQUAL_COLLECTIONS(data.begin(),data.end(),d,d+10);
+}
+
+BOOST_AUTO_TEST_CASE( test_all_reduce )
+{
+  int success;
+  int d = eckit::mpi::rank()+1;
+  std::pair<double,int> v(-d,eckit::mpi::rank());
+
+  int sum;
+  int prod;
+  int max;
+  int min;
+  std::pair<double,int> maxloc;
+  std::pair<double,int> minloc;
+
+  success = mpi::all_reduce(d,sum,mpi::sum());   BOOST_CHECK( success == MPI_SUCCESS );
+  success = mpi::all_reduce(d,prod,mpi::prod()); BOOST_CHECK( success == MPI_SUCCESS );
+  success = mpi::all_reduce(d,max,mpi::max());   BOOST_CHECK( success == MPI_SUCCESS );
+  success = mpi::all_reduce(d,min,mpi::min());   BOOST_CHECK( success == MPI_SUCCESS );
+  success = mpi::all_reduce(v,maxloc,mpi::maxloc());   BOOST_CHECK( success == MPI_SUCCESS );
+  success = mpi::all_reduce(v,minloc,mpi::minloc());   BOOST_CHECK( success == MPI_SUCCESS );
+
+  // check results
+  int s=0;
+  int p=1;
+  for( size_t j=0; j<eckit::mpi::size(); ++j ) {
+    s += (j+1);
+    p *= (j+1);
+  }
+  BOOST_CHECK_EQUAL( sum, s );
+  BOOST_CHECK_EQUAL( prod, p );
+  BOOST_CHECK_EQUAL( min, 1 );
+  BOOST_CHECK_EQUAL( max, eckit::mpi::size() );
+  BOOST_CHECK_EQUAL( minloc.first, -double(eckit::mpi::size()) );
+  BOOST_CHECK_EQUAL( minloc.second, eckit::mpi::size()-1 );
+  BOOST_CHECK_EQUAL( maxloc.first, -double(1) );
+  BOOST_CHECK_EQUAL( maxloc.second, 0 );
+}
+
+
 BOOST_AUTO_TEST_CASE( test_all_to_all )
 {
   std::vector< std::vector<int> > send(mpi::size(), std::vector<int>(1,mpi::rank()));

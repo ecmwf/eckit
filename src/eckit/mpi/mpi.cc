@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <utility>
 #include "eckit/mpi/mpi.h"
 #include "eckit/mpi/Exceptions.h"
 #include "eckit/runtime/Context.h"
@@ -31,6 +32,19 @@ template<> MPI_Datatype datatype<unsigned long>(unsigned long&) { return datatyp
 template<> MPI_Datatype datatype<float>(float&)                 { return datatype<float>(); }
 template<> MPI_Datatype datatype<double>(double&)               { return datatype<double>(); }
 
+template<> MPI_Datatype datatype< std::pair<float,int> >()       { return MPI_FLOAT_INT; }
+template<> MPI_Datatype datatype< std::pair<long,int> >()        { return MPI_LONG_INT; }
+template<> MPI_Datatype datatype< std::pair<double,int> >()      { return MPI_DOUBLE_INT; }
+template<> MPI_Datatype datatype< std::pair<short,int> >()       { return MPI_SHORT_INT; }
+template<> MPI_Datatype datatype< std::pair<int,int> >()         { return MPI_2INT; }
+template<> MPI_Datatype datatype< std::pair<long double,int> >() { return MPI_LONG_DOUBLE_INT; }
+
+template<> MPI_Datatype datatype<float,int>()       { return MPI_FLOAT_INT; }
+template<> MPI_Datatype datatype<long,int>()        { return MPI_LONG_INT; }
+template<> MPI_Datatype datatype<double,int>()      { return MPI_DOUBLE_INT; }
+template<> MPI_Datatype datatype<short,int>()       { return MPI_SHORT_INT; }
+template<> MPI_Datatype datatype<int,int>()         { return MPI_2INT; }
+template<> MPI_Datatype datatype<long double,int>() { return MPI_LONG_DOUBLE_INT; }
 
 Environment::Environment()
 {

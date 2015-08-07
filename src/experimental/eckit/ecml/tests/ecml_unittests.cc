@@ -12,6 +12,7 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
+#include "eckit/io/PartFileHandle.h"
 
 #include "eckit/runtime/Context.h"
 
@@ -23,6 +24,8 @@
 #include "experimental/eckit/ecml/parser/RequestParser.h"
 #include "experimental/eckit/ecml/ast/FunctionDefinition.h"
 #include "experimental/eckit/ecml/ast/Closure.h"
+#include "experimental/eckit/ecml/data/DataHandleFactory.h"
+#include "experimental/eckit/ecml/data/PartFileHandleFactory.h"
 
 using namespace std;
 using namespace eckit;
@@ -150,6 +153,13 @@ void ECMLUnitTests::runTests()
 
     c = context.interpreter().eval(RequestParser::parse("f"), context);
     //c->graph("evaluated 'f': " + c->str());
+
+
+    string descriptor ("partfile:///tmp/build/bundle/debug/bin/2000010106.1.0.odb:0,100");
+    DataHandle* dh (DataHandleFactory::openForRead(descriptor));
+    Log::info () << "partfile: " << dh << endl;
+    PartFileHandle* pfh (dynamic_cast<PartFileHandle*>(dh));
+    ASSERT(pfh);
 }
 
 int main(int argc,char **argv)

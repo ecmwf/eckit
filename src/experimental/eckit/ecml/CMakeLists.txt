@@ -58,6 +58,8 @@ data/DataHandleFactory.h
 data/DataHandleFactory.cc
 data/FileHandleFactory.h
 data/FileHandleFactory.cc
+data/PartFileHandleFactory.h
+data/PartFileHandleFactory.cc
 
 # Miscellaneous
 # Adapter for eckit::Parametrisation

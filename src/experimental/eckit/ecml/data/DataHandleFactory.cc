@@ -50,7 +50,8 @@ std::pair<std::string, std::string> DataHandleFactory::splitPrefix(const std::st
     size_t pos (handleDescriptor.find(delimiter));
     if (pos != std::string::npos)
         return make_pair(handleDescriptor.substr(0, pos), handleDescriptor.substr(pos + delimiter.size()));
-    
+
+    // Sugar.
     if (StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "retrieve,")
         || StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "archive,"))
         return std::make_pair(std::string("mars"), handleDescriptor);

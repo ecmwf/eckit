@@ -26,14 +26,18 @@ namespace eckit {
 class List {
 public:
     List(Cell*&);
+    List();
 
     size_t size() const;
     List& append(Cell*);
     List& append(const std::string&);
 
+    operator Cell*() const { return cell_; }
+
     std::ostream& print(std::ostream&) const;
 
 private:
+    Cell* p_;
     Cell*& cell_;
 
     friend std::ostream& operator<<(std::ostream& s, const List& l) { return l.print(s); }

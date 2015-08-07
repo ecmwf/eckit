@@ -9,24 +9,40 @@
  */
 /// @author Piotr Kuchta, February 2015
 
-#ifndef eckit_ecml_LetHandler_H
-#define eckit_ecml_LetHandler_H
+#ifndef eckit_ecml_Closure_H
+#define eckit_ecml_Closure_H
+
+#include <vector>
+#include <string>
 
 #include "eckit/filesystem/PathName.h"
 #include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/SpecialFormHandler.h"
 
 namespace eckit {
 
+class FunctionDefinition;
 class ExecutionContext;
 
-class LetHandler : public eckit::SpecialFormHandler {
+// E.g.: closure,name=f,parameters=x,captured=(environment,a=1,b=2),code=(println,values=FOO)
+class Closure {
 public:
-    LetHandler(const std::string&);
+    Closure(Cell*);
+    Closure(const FunctionDefinition&, ExecutionContext&);
+    ~Closure();
 
-    virtual eckit::Request handle(const eckit::Request, eckit::ExecutionContext&);
+    Cell* capturedEnvironment() const; 
+    Cell* code() const;
+
+    operator Cell*() const;
+
+private:
+    std::string name_;
+    std::vector<std::string> parameters_;
+    Cell* capturedEnvironment_;
+    Cell* code_;
 };
 
 } // namespace eckit
+
 
 #endif

@@ -46,6 +46,8 @@ public:
     void interpreter(eckit::Interpreter*);
     eckit::Interpreter& interpreter() const;
 
+    Cell* copy() const;
+
 private:
     eckit::Environment* environment_;
     eckit::Interpreter* interpreter_;

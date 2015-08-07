@@ -105,3 +105,9 @@ Interpreter& ExecutionContext::interpreter() const
     return *interpreter_;
 }
 
+Cell* ExecutionContext::copy() const
+{
+    // TODO:
+    NOTIMP;
+    return 0;
+}

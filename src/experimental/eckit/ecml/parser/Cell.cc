@@ -184,14 +184,20 @@ std::ostream& Cell::printValues(std::ostream& s, size_t depth) const
         ASSERT(lst->tag() == "_list");
         if (many)
             s << " / ";
-        if (lst->value()->text().size())
-        {
-            s << "\"";
-            lst->value()->print(s, depth + 1);
-            s << "\"";
-        }
+
+        if (! lst->value())
+            s << " NULL ";
         else
-            lst->value()->print(s, depth + 1);
+        {
+            if (lst->value()->text().size())
+            {
+                s << "\"";
+                lst->value()->print(s, depth + 1);
+                s << "\"";
+            }
+            else
+                lst->value()->print(s, depth + 1);
+        }
     }
     return s;
 }
@@ -217,10 +223,12 @@ std::ostream& Cell::print(std::ostream& s, size_t depth) const
         else s << " NULL ";
         for (Cell* lst(rest()); lst; lst = lst->rest())
         {
-            ASSERT(lst->tag() == "_list");
-            s << " / ";
-            ASSERT(lst->value());
-            lst->value()->print(s, depth + 1);
+            //ASSERT(lst->tag() == "_list");
+            if (lst->value())
+            {
+                s << " / ";
+                lst->value()->print(s, depth + 1);
+            }
         }
         return s;
     } 
@@ -293,9 +301,9 @@ ostream& Cell::printDotVerb(ostream& s, bool detailed) const
 
     stringstream box, arrows;
 
-    box << "\"node" << (void*) this << "\" [ label=\"<f0>";
+    box << "\"node" << "\\\"" << (void*) this << "\\\" [ label=\"<f0>";
     if (detailed)
-        box << (void*) this;
+        box << "\\\"" << (void*) this << "\\\"";
     box << " " << quotedSnippet(text()) << ",";
 
     size_t i(1);
@@ -303,7 +311,7 @@ ostream& Cell::printDotVerb(ostream& s, bool detailed) const
     {
         box << " | <f" << i << "> ";
         if (detailed)
-            box << (void*) p;
+            box << "\\\"" << (void*) p << "\\\"";
 
         box << " " << p->text() << " = "; 
         if (oneElementList(p->value()))
@@ -343,7 +351,8 @@ ostream& Cell::printDotList(ostream& s, bool detailed) const
         else
         {
             arrows << "\"node" << (void*) this << "\":f" << i << " -> \"node" << (void*) p->value() << "\":f0;" << endl;
-            p->value()->printDot(s, detailed, true);
+            if (p->value())
+                p->value()->printDot(s, detailed, true);
         }
 
     }
@@ -362,7 +371,9 @@ ostream& Cell::dot(ostream& s, const string& label, bool detailed, bool clever) 
     return s;
 }
 
+void Cell::graph(const string& title) { return showGraph(title, true, true, /*clever*/ false); }
 void Cell::graph() { return showGraph(true, true, true); }
+void Cell::simpleGraph(const string& title) { return showGraph(title, true, true, false); }
 void Cell::simpleGraph() { return showGraph(true, true, false); }
 
 void Cell::showGraph(bool background, bool detailed, bool clever)
@@ -384,6 +395,20 @@ void Cell::showGraph(const string& label, bool background, bool detailed, bool c
     if (background)
         cmd << "&";
     system(cmd.str().c_str());
+}
+
+std::vector<std::string> Cell::valueAsListOfStrings() const
+{
+    std::vector<std::string> r;
+
+    for (const Cell* p(this->value()); p; p = p->rest())
+    {
+        // TODO: check it's just a string
+        if (p->value())
+            r.push_back(p->value()->text());
+    }
+
+    return r;
 }
 
 } // namespace eckit

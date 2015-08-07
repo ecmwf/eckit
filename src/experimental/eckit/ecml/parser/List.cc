@@ -20,7 +20,9 @@ namespace eckit {
 
 typedef StringTools S;
 
-List::List(Cell*& c) : cell_(c) {}
+List::List(Cell*& c) : p_(0), cell_(c) {}
+
+List::List(): p_(new Cell("_list", "", 0, 0)), cell_(p_) {}
 
 size_t List::size() const
 {
@@ -32,10 +34,16 @@ size_t List::size() const
 
 List& List::append(Cell* c)
 {
-    if (cell_ == 0)
+    if (! cell_)
         cell_ = new Cell("_list", "", c, 0); 
     else
-        cell_->append(new Cell("_list", "", c, 0));
+    {
+        if (! cell_->value())
+            cell_->value(c);
+        else
+            cell_->append(new Cell("_list", "", c, 0));
+
+    }
     return *this;
 }
 
@@ -46,7 +54,7 @@ List& List::append(const string& s)
 
 std::ostream& List::print(std::ostream& s) const
 {
-    return s;
+    return s << cell_;
 }
 
 } // namespace eckit

@@ -22,7 +22,8 @@ namespace eckit {
 
 PrintHandler::PrintHandler(const string& name, const string& end)
 : RequestHandler(name),
-  end_(end)
+  end_(end),
+  out_(&cout)
 {}
 
 Values PrintHandler::handle(ExecutionContext& context)
@@ -33,11 +34,11 @@ Values PrintHandler::handle(ExecutionContext& context)
     else
         for (Request e(r); e; e = e->rest())
             if (e->value())
-                cout << context.interpreter().eval(e->value(), context) << " ";
+                out() << context.interpreter().eval(e->value(), context) << " ";
             else
-                cout << "NULL" << " ";
+                out() << "NULL" << " ";
 
-    cout << end_;
+    out() << end_;
     return r;
 }
 

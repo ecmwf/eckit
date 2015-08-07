@@ -7,24 +7,21 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
-/// @author Piotr Kuchta, May 2015
 
-#ifndef eckit_ecml_VariableLookupHandler_H
-#define eckit_ecml_VariableLookupHandler_H
-
-#include <sstream>
+#include "FirstHandler.h"
 
 #include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/RequestHandler.h"
+#include "experimental/eckit/ecml/core/ExecutionContext.h"
+#include "experimental/eckit/ecml/core/Environment.h"
 
 namespace eckit {
 
-class VariableLookupHandler : public eckit::RequestHandler {
-public:
-    VariableLookupHandler(const std::string&);
-    virtual eckit::Values handle(eckit::ExecutionContext&);
-};
+FirstHandler::FirstHandler(const std::string& name) : RequestHandler(name) {}
+
+Values FirstHandler::handle(ExecutionContext& context)
+{
+    Values vs (context.environment().lookup("of"));
+    return new Cell("_list", "", Cell::clone(vs->value()), 0);
+}
 
 } // namespace eckit
-
-#endif

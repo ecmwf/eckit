@@ -37,6 +37,9 @@ public:
     Cell* value(Cell*);
     Cell* rest(Cell*);
 
+    // Will throw if it's not just list of strings but also has subexpressions to be evaluated
+    std::vector<std::string> valueAsListOfStrings() const;
+
     Cell* append(Cell*);
 
     // Set value pointed by a keyword
@@ -53,8 +56,10 @@ public:
 
     void showGraph(bool background, bool detailed, bool clever);
     void showGraph(const std::string&, bool background, bool detailed, bool clever);
+    void graph(const std::string&);
     void graph();
     void simpleGraph();
+    void simpleGraph(const std::string&);
 
 private:
     Cell(Cell*); // cloning

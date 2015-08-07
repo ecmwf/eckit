@@ -7,26 +7,35 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
-/// @author Piotr Kuchta, July 2015
+/// @author Piotr Kuchta, February 2015
 
-#ifndef eckit_ecml_TestHandler_H
-#define eckit_ecml_TestHandler_H
+#ifndef eckit_ecml_FunctionDefinition_H
+#define eckit_ecml_FunctionDefinition_H
+
+#include <vector>
+#include <string>
 
 #include "eckit/filesystem/PathName.h"
 #include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/SpecialFormHandler.h"
 
 namespace eckit {
 
-class ExecutionContext;
-
-class TestHandler : public eckit::SpecialFormHandler {
+class FunctionDefinition {
 public:
-    TestHandler(const std::string&);
+    FunctionDefinition(Cell*);
+    std::string name() const;
+    std::vector<std::string> parameters() const;
+    std::vector<std::string> capturedVariables() const;
+    Cell* code() const;
 
-    virtual eckit::Request handle(const eckit::Request, eckit::ExecutionContext&);
+private:
+    std::string name_;
+    std::vector<std::string> parameters_;
+    std::vector<std::string> capturedVariables_;
+    Cell* code_;
 };
 
 } // namespace eckit
+
 
 #endif

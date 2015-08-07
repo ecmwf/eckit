@@ -19,24 +19,32 @@
 
 #include "experimental/eckit/ecml/ast/FunctionDefinition.h"
 #include "experimental/eckit/ecml/ast/Closure.h"
-#include "experimental/eckit/ecml/prelude/DefineFunctionHandler.h"
+#include "experimental/eckit/ecml/prelude/ClosureHandler.h"
 
 using namespace std;
 
 namespace eckit {
 
-DefineFunctionHandler::DefineFunctionHandler(const string& name)
+ClosureHandler::ClosureHandler(const string& name)
 : SpecialFormHandler(name)
 {}
 
-Request DefineFunctionHandler::handle(const Request request, ExecutionContext& context)
+Request ClosureHandler::handle(const Request request, ExecutionContext& context)
 {
-    FunctionDefinition f (request);
-    Closure closure (f, context);
-    Cell* closureWrapped (new Cell("_list", "", closure, 0));
-    context.pushEnvironmentFrame(new Cell("_verb", "let", 0, 
-                                            new Cell("", f.name(), closureWrapped, 0)));
-    return Cell::clone(closureWrapped);
+    Closure closure (request);
+    Cell* captured (closure.capturedEnvironment());
+
+    Cell* staticEnvironment (captured->value() ? captured->value()->value() : 0);
+
+    if (staticEnvironment)
+        context.pushEnvironmentFrame(staticEnvironment);
+
+    Cell* r (context.interpreter().eval(closure.code(), context));
+
+    if (staticEnvironment)
+        context.popEnvironmentFrame(staticEnvironment);
+
+    return r;
 }
 
 } // namespace eckit

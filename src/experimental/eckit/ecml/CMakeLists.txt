@@ -9,6 +9,12 @@ parser/Request.cc
 parser/RequestParser.h
 parser/RequestParser.cc
 
+# AST
+ast/FunctionDefinition.h
+ast/FunctionDefinition.cc
+ast/Closure.cc
+ast/Closure.h
+
 # Core language
 core/Environment.h
 core/Environment.cc
@@ -32,12 +38,20 @@ prelude/VariableLookupHandler.cc
 prelude/VariableLookupHandler.h
 prelude/DefineFunctionHandler.cc
 prelude/DefineFunctionHandler.h
+prelude/ClosureHandler.h
+prelude/ClosureHandler.cc
 prelude/ListHandler.cc
 prelude/ListHandler.h
 prelude/PrintHandler.cc
 prelude/PrintHandler.h
 prelude/TestHandler.cc
 prelude/TestHandler.h
+prelude/FirstHandler.cc
+prelude/FirstHandler.h
+prelude/RestHandler.cc
+prelude/RestHandler.h
+prelude/IfHandler.cc
+prelude/IfHandler.h
 
 # Data types' support
 data/DataHandleFactory.h
@@ -68,6 +82,10 @@ ecbuild_add_library( TARGET             eckit_ecml
 
 ecbuild_add_executable( TARGET ecml_test
                         SOURCES tests/ecml_test.cc
+                        LIBS eckit eckit_ecml )
+
+ecbuild_add_executable( TARGET ecml_unittests
+                        SOURCES tests/ecml_unittests.cc
                         LIBS eckit eckit_ecml )
 
 add_subdirectory( tests )

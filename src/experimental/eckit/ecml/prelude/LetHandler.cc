@@ -34,15 +34,12 @@ Request LetHandler::handle(const Request request, ExecutionContext& context)
     ASSERT(request->tag() == "_verb" && request->text() == "let");
 
     Request evaluatedAttributes (context.interpreter().evalAttributes(request, context));
-    Request frame (new Cell("_frame", "let", 0, 0));
+
+    Request frame (new Cell("_verb", "let", 0, 0));
     for (Request e(evaluatedAttributes->rest()); e; e = e->rest())
     {
         ASSERT(e->tag() == "");
-
-        const string& name (e->text());
-        Values values (context.interpreter().evalList(e->value(), context));
-
-        frame->append(new Cell("", name, values, 0));
+        frame->append(new Cell("", e->text(), e->value(), 0));
     }
     context.pushEnvironmentFrame(frame);
     return Cell::clone(frame);

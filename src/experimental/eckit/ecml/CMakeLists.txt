@@ -52,6 +52,8 @@ prelude/RestHandler.cc
 prelude/RestHandler.h
 prelude/IfHandler.cc
 prelude/IfHandler.h
+prelude/TemporaryFileHandler.h
+prelude/TemporaryFileHandler.cc
 
 # Data types' support
 data/DataHandleFactory.h

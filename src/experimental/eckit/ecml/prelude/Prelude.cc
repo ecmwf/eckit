@@ -30,6 +30,7 @@
 #include "FirstHandler.h"
 #include "RestHandler.h"
 #include "IfHandler.h"
+#include "TemporaryFileHandler.h"
 
 #include "Prelude.h"
 
@@ -55,6 +56,7 @@ void Prelude::importInto(ExecutionContext& context)
     static TestHandler test("test");
     static FirstHandler first("first");
     static RestHandler rest("rest");
+    static TemporaryFileHandler temporary_file("temporary_file");
     static IfHandler _if("if");
 
     Environment& e(context.environment());
@@ -70,6 +72,7 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("println", println);
     context.registerHandler("first", first);
     context.registerHandler("rest", rest);
+    context.registerHandler("temporary_file", temporary_file);
 }
 
 } // namespace eckit

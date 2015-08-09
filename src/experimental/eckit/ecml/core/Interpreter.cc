@@ -73,6 +73,8 @@ Values Interpreter::evalList(const Request requests, ExecutionContext& context)
             NOTIMP;
             list.append(Cell::clone(elt->value()));
         } 
+        if (! elt->value())
+            continue; // empty list
         if (elt->value()->tag() == "_requests")
         {
             Values sublist (evalRequests(elt->value(), context));

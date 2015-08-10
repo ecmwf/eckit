@@ -30,7 +30,7 @@ Values SystemHandler::handle(ExecutionContext& context)
     stringstream ss;
     PrintHandler::printList(ss, vs, "");
 
-    Log::info() << "Executing system(\"" << ss.str() << ")\"" << endl;
+    Log::debug() << "Executing system(\"" << ss.str() << ")\"" << endl;
 
     int rc (system (ss.str().c_str()));
     stringstream rs;

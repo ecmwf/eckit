@@ -37,6 +37,15 @@ int broadcast( T& data,
                bool resize = true );
 
 template<typename T>
+int broadcast( const Comm& comm,
+               T data[], size_t size,
+               size_t root );
+
+template<typename T>
+int broadcast( T data[], size_t size,
+               size_t root );
+
+template<typename T>
 int all_reduce( const Comm& comm,
                 const T& send,
                       T& recv,
@@ -46,6 +55,29 @@ template<typename T>
 int all_reduce( const T& send,
                       T& recv,
                 const Operation& );
+
+// send buffer becomes recv buffer (in-place)
+template<typename T>
+int all_reduce( const Comm& comm,
+                T& sendrecv,
+                const Operation& );
+
+// send buffer becomes recv buffer (in-place)
+template<typename T>
+int all_reduce( T& sendrecv,
+                const Operation& );
+
+// send buffer becomes recv buffer (in-place)
+template<typename T>
+int all_reduce( const Comm& comm,
+                T sendrecv[], size_t size,
+                const Operation& );
+
+// send buffer becomes recv buffer (in-place)
+template<typename T>
+int all_reduce( T sendrecv[], size_t size,
+                const Operation& );
+
 
 template< typename DATA_TYPE >
 inline int all_to_all( const Comm& comm,

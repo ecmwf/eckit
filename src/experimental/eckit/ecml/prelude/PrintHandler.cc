@@ -20,6 +20,12 @@ using namespace eckit;
 
 namespace eckit {
 
+PrintHandler::PrintHandler(const string& name, const string& end, std::ostream& o)
+: RequestHandler(name),
+  end_(end),
+  out_(&o)
+{}
+
 PrintHandler::PrintHandler(const string& name, const string& end)
 : RequestHandler(name),
   end_(end),
@@ -28,18 +34,24 @@ PrintHandler::PrintHandler(const string& name, const string& end)
 
 Values PrintHandler::handle(ExecutionContext& context)
 {
+    // TODO: this is a leak I think
     Values r (Cell::clone(context.environment().lookupNoThrow("values")));
     if (!r )
         r = new Cell("_list", "", 0, 0);
     else
-        for (Request e(r); e; e = e->rest())
-            if (e->value())
-                out() << context.interpreter().eval(e->value(), context) << " ";
-            else
-                out() << "NULL" << " ";
+        printList(out(), r, end_);
 
     out() << end_;
     return r;
+}
+
+void PrintHandler::printList(ostream& out, Values values, const std::string& end)
+{
+    for (Cell* e(values); e; e = e->rest())
+        if (e->value())
+            out << e->value() << " ";
+        else
+            out << "(null)" << " ";
 }
 
 } // namespace eckit

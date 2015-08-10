@@ -9,8 +9,8 @@
  */
 /// @author Piotr Kuchta, May 2015
 
-#ifndef eckit_ecml_PrintHandler_H
-#define eckit_ecml_PrintHandler_H
+#ifndef eckit_ecml_SystemHandler_H
+#define eckit_ecml_SystemHandler_H
 
 #include <sstream>
 
@@ -19,21 +19,10 @@
 
 namespace eckit {
 
-class PrintHandler : public eckit::RequestHandler {
+class SystemHandler : public eckit::RequestHandler {
 public:
-    PrintHandler(const std::string&, const std::string&, std::ostream&);
-    PrintHandler(const std::string&, const std::string&);
+    SystemHandler(const std::string&);
     virtual eckit::Values handle(eckit::ExecutionContext&);
-
-    static void printList(std::ostream&, eckit::Values, const std::string& end);
-
-protected:
-    std::ostream& out() { return *out_; }
-    void out(std::ostream& o) { out_ = &o; }
-
-private:
-    const std::string end_;
-    std::ostream* out_;
 };
 
 } // namespace eckit

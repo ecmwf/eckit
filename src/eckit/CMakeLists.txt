@@ -487,7 +487,6 @@ memory/NonCopyable.cc
 memory/ScopedPtr.h )
 
 list( APPEND eckit_compat_srcs
-compat/StrStream.h
 compat/Inited.h )
 
 list( APPEND eckit_bases_srcs

@@ -30,9 +30,9 @@ int grib_call(int code, const char *msg)
 {
 	if(code)
 	{
-		StrStream os;
-		os << msg << ": " << grib_get_error_message(code) << StrStream::ends;
-		throw Exception(std::string(os));
+        std::ostringstream os;
+        os << msg << ": " << grib_get_error_message(code);
+        throw Exception(os.str());
 	}
 	return code;
 }
@@ -49,9 +49,9 @@ GribHandle::GribHandle(const PathName& path) :
 	grib_handle* h = grib_handle_new_from_file(0,f,&err);
 	if(err != 0)
 	{
-		StrStream os;
-		os << "GribHandle() failed to build from path " << path << StrStream::ends;
-		throw Exception(std::string(os), Here());
+        std::ostringstream os;
+        os << "GribHandle() failed to build from path " << path;
+        throw Exception(os.str(), Here());
 	}
 
 	ASSERT(h);

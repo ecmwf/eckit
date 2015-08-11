@@ -17,7 +17,6 @@
 #include <dirent.h>
 #include <sys/statvfs.h>
 
-#include "eckit/compat/StrStream.h"
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/io/FileHandle.h"
@@ -127,7 +126,7 @@ BasePathName* LocalPathName::checkClusterNode() const
 LocalPathName LocalPathName::orphanName() const
 {
 
-	StrStream os;
+    std::ostringstream os;
 	os << mountPoint()  << "/orphans/";
 
     const char *q = path_.c_str();
@@ -137,10 +136,7 @@ LocalPathName LocalPathName::orphanName() const
 		q++;
     }
 
-	os << StrStream::ends;
-
-    std::string s(os);
-    return s;
+    return os.str();
 
 }
 
@@ -171,19 +167,16 @@ LocalPathName LocalPathName::unique(const LocalPathName& path)
 
 	static unsigned long long n = (((unsigned long long)::getpid()) << 32);
 
-	std::string s;
-	StrStream os;
-	os << path << '.' << TimeStamp(format) << '.' << n++ << StrStream::ends;
-	s = std::string(os);
+    std::ostringstream os;
+    os << path << '.' << TimeStamp(format) << '.' << n++;
 
-	while(::access(s.c_str(),F_OK) == 0)
+    while(::access(os.str().c_str(),F_OK) == 0)
 	{
-		StrStream os;
-		os << path << '.' << TimeStamp(format) << '.' << n++ << StrStream::ends;
-		s = std::string(os);
+        std::ostringstream os;
+        os << path << '.' << TimeStamp(format) << '.' << n++;
 	}
 
-	LocalPathName result(s);
+    LocalPathName result(os.str());
 	result.dirName().mkdir();
 	return result;
 }
@@ -726,9 +719,9 @@ const std::string& LocalPathName::path() const
 
 std::string LocalPathName::clusterName() const
 {
-    StrStream os;
-    os << "marsfs://" << node() << fullName() << StrStream::ends;
-    return std::string(os);
+    std::ostringstream os;
+    os << "marsfs://" << node() << fullName();
+    return os.str();
 }
 
 //-----------------------------------------------------------------------------

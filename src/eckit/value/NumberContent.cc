@@ -12,7 +12,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/JSON.h"
 #include "eckit/value/NumberContent.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/utils/Translator.h"
 
 //-----------------------------------------------------------------------------

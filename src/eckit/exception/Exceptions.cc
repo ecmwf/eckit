@@ -12,7 +12,6 @@
 #include <signal.h>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/thread/ThreadSingleton.h"
 
 #include "eckit/os/BackTrace.h"
@@ -98,78 +97,78 @@ bool Exception::throwing()
 
 TooManyRetries::TooManyRetries( const int retries )
 {
-    StrStream s;
-    s << "Too many retries: " << retries << StrStream::ends;
-    reason(std::string(s));
+    std::ostringstream s;
+    s << "Too many retries: " << retries;
+    reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 TooManyRetries::TooManyRetries( const int retries, const std::string& msg )
 {
-    StrStream s;
-    s << "Too many retries: " << retries << " @ " << msg << StrStream::ends;
-    reason(std::string(s));
+    std::ostringstream s;
+    s << "Too many retries: " << retries << " @ " << msg;
+    reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 TimeOut::TimeOut(const std::string& msg, const unsigned long timeout)
 {
-    StrStream s;
-    s  << "Timeout expired: " << timeout << " (" << msg << ")" << StrStream::ends ;
-    reason(std::string(s));
+    std::ostringstream s;
+    s  << "Timeout expired: " << timeout << " (" << msg << ")";
+    reason(s.str());
 }
 
 
 FailedSystemCall::FailedSystemCall(const std::string& w)
 {
-    StrStream s;
-    s << "Failed system call: " << w << " " << Log::syserr << StrStream::ends;
-    reason(std::string(s));
+    std::ostringstream s;
+    s << "Failed system call: " << w << " " << Log::syserr;
+    reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 FailedSystemCall::FailedSystemCall(const std::string& msg, const CodeLocation& loc)
 {
-    StrStream s;
-    s << "Failed system call: " << msg << " " << " in " << loc << " " << Log::syserr << StrStream::ends;
-    reason(std::string(s));
+    std::ostringstream s;
+    s << "Failed system call: " << msg << " " << " in " << loc << " " << Log::syserr;
+    reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 FailedSystemCall::FailedSystemCall(const char* msg,const CodeLocation& loc,int err)
 {
-    StrStream s;
+    std::ostringstream s;
 
     errno = err;
-    s << "Failed system call: " << msg << " in " << loc << " " << Log::syserr << StrStream::ends;
+    s << "Failed system call: " << msg << " in " << loc << " " << Log::syserr;
 
-    reason(std::string(s));
+    reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, const CodeLocation& loc,int err)
 {
-    StrStream s;
+    std::ostringstream s;
 
     errno = err;
-    s << "Failed system call: " << msg << " in " << loc << " " << Log::syserr << " [" << ctx << "]" << StrStream::ends;
+    s << "Failed system call: " << msg << " in " << loc << " " << Log::syserr << " [" << ctx << "]";
 
-    reason(std::string(s));
+    reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 SeriousBug::SeriousBug(const std::string& msg,const CodeLocation& loc)
 {
-   StrStream s;
-   s << "SeriousBug: " << msg << " " << " in " << loc << " "  << StrStream::ends;
-   reason(std::string(s));
+   std::ostringstream s;
+   s << "SeriousBug: " << msg << " " << " in " << loc;
+   reason(s.str());
 }
 
 SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
 {
-   StrStream s;
-   s << "SeriousBug: " << msg << " " << " in " << loc << " "  << StrStream::ends;
-   reason(std::string(s));
+   std::ostringstream s;
+   s << "SeriousBug: " << msg << " " << " in " << loc;
+   reason(s.str());
 }
 
 
@@ -192,12 +191,12 @@ AssertionFailed::AssertionFailed(const std::string& w):
 
 AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc)
 {
-    StrStream s;
+    std::ostringstream s;
 
     s << "Assertion failed: " << msg << " in " << loc.func()
-        << ", line " << loc.line() << " of " << loc.file() << StrStream::ends;
+      << ", line " << loc.line() << " of " << loc.file();
 
-    reason(std::string(s));
+    reason(s.str());
     Log::monitor(Log::App,2) << what() << std::endl;
 
 #ifndef NDEBUG
@@ -212,12 +211,12 @@ AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc
 
 AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
 {
-    StrStream s;
+    std::ostringstream s;
 
     s << "Assertion failed: " << msg << " in " << loc.func()
-        << ", line " << loc.line() << " of " << loc.file() << StrStream::ends;
+      << ", line " << loc.line() << " of " << loc.file();
 
-    reason(std::string(s));
+    reason(s.str());
     Log::monitor(Log::App,2) << what() << std::endl;
 
 #ifndef NDEBUG
@@ -252,27 +251,23 @@ BadCast::BadCast(const std::string& w, const CodeLocation& loc):
 
 NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& loc)
 {
-	StrStream ss;
+    std::ostringstream ss;
 
-	ss << "Not implemented: " << s << " @ " << loc.func()
-	   << ", line " << loc.line()
-	   << " of " << loc.file()
-	   << StrStream::ends;
+    ss << "Not implemented: " << s << " @ " << loc.func()
+       << ", line " << loc.line() << " of " << loc.file();
 
-	reason(std::string(ss));
+    reason(ss.str());
 	Log::monitor(Log::App,2) << what() << std::endl;
 }
 
 NotImplemented::NotImplemented( const CodeLocation& loc )
 {
-	StrStream ss;
+    std::ostringstream ss;
 
-	ss << "Not implemented: " << loc.func()
-	   << ", line " << loc.line()
-	   << " of " << loc.file()
-	   << StrStream::ends;
+    ss << "Not implemented: " << loc.func()
+       << ", line " << loc.line() << " of " << loc.file();
 
-	reason(std::string(ss));
+    reason(ss.str());
     Log::monitor(Log::App,2) << what() << std::endl;
 }
 
@@ -313,18 +308,18 @@ Cancel::Cancel(const std::string& r):
 
 OutOfRange::OutOfRange(unsigned long long index, unsigned long long max)
 {
-    StrStream s;
+    std::ostringstream s;
     s << "Out of range accessing element " << index
-        << ", but maximum is " << max - 1 << StrStream::ends;
-    reason(std::string(s));
+      << ", but maximum is " << max - 1;
+    reason(s.str());
 }
 
 OutOfRange::OutOfRange(unsigned long long index, unsigned long long max,const CodeLocation& loc)
 {
-  StrStream s;
+  std::ostringstream s;
   s << "Out of range accessing element " << index
-      << ", but maximum is " << max - 1 << StrStream::ends;
-  Exception(std::string(s),loc);
+    << ", but maximum is " << max - 1;
+  Exception(s.str(), loc);
 }
 
 OutOfRange::OutOfRange(const std::string& w,const CodeLocation& loc):
@@ -335,41 +330,38 @@ OutOfRange::OutOfRange(const std::string& w,const CodeLocation& loc):
 
 FileError::FileError(const std::string& msg)
 {
-    StrStream s;
+    std::ostringstream s;
     s << msg <<  Log::syserr;
-    s << StrStream::ends;
-    reason(std::string(s));
+    reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 FileError::FileError(const std::string& msg, const CodeLocation& here )
 {
-    StrStream s;
+    std::ostringstream s;
     s << msg << " @ " << here <<  Log::syserr;
-    s << StrStream::ends;
-    reason(std::string(s));
+    reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 CantOpenFile::CantOpenFile(const std::string& file, bool retry):
     retry_(retry)
 {
-    StrStream s;
+    std::ostringstream s;
     s << "Cannot open " << file << " " << Log::syserr;
     if(retry) s << " (retry ok)";
-    s << StrStream::ends;
-    reason(std::string(s));
+    reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
 CantOpenFile::CantOpenFile(const std::string& file, const CodeLocation& loc, bool retry):
     retry_(retry)
 {
-    StrStream s;
+    std::ostringstream s;
     s << "Cannot open " << file << " " << Log::syserr;
     if(retry) s << " (retry ok)";
-    s << " @ " << loc << StrStream::ends;
-    reason(std::string(s));
+    s << " @ " << loc;
+    reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
@@ -440,10 +432,9 @@ void handle_panic(const char *msg)
 
 void handle_panic(const char* msg, const CodeLocation& location )
 {
-    StrStream s;
-    s << msg << " in " << location << StrStream::ends;
-    std::string t(s);
-    handle_panic(t.c_str());
+    std::ostringstream s;
+    s << msg << " in " << location;
+    handle_panic(s.str().c_str());
 }
 
 OutOfMemory::OutOfMemory():

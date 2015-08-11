@@ -11,11 +11,9 @@
 #include "eckit/eckit.h"
 
 #include "eckit/persist/DumpLoad.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/types/Time.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/utils/Translator.h"
-
 
 //-----------------------------------------------------------------------------
 
@@ -111,9 +109,9 @@ Time::Time(const std::string& s)
 
 Time::operator std::string() const
 {
-	StrStream os;
-	os << *this << StrStream::ends;
-	return std::string(os);
+    std::ostringstream os;
+    os << *this;
+    return os.str();
 }
 
 Time::Time(const Time& other):

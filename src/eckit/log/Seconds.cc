@@ -9,7 +9,6 @@
  */
 
 #include "eckit/log/Seconds.h"
-#include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------
 
@@ -64,9 +63,9 @@ std::ostream& operator<<(std::ostream& s,const Seconds&  sec)
 
 Seconds::operator std::string() const
 {
-	StrStream s;
-	s << *this << StrStream::ends;
-	return std::string(s);
+    std::ostringstream s;
+    s << *this;
+    return s.str();
 }
 
 //-----------------------------------------------------------------------------

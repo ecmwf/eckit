@@ -11,7 +11,6 @@
 #include "eckit/io/FileHandle.h"
 #include "eckit/log/Log.h"
 #include "eckit/io/MarsFSHandle.h"
-#include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------
 
@@ -188,9 +187,9 @@ void MarsFSHandle::cost(std::map<std::string,Length>& c, bool read) const
 
 std::string MarsFSHandle::title() const
 {
-	StrStream os;
-	os << "marsfs:/" << path_.node() << "/" << PathName::shorten(path_.path()) << StrStream::ends;
-	return std::string(os);
+    std::ostringstream os;
+    os << "marsfs:/" << path_.node() << "/" << PathName::shorten(path_.path());
+    return os.str();
 }
 
 //-----------------------------------------------------------------------------

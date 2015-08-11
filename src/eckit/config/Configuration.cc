@@ -16,7 +16,6 @@
 #include "eckit/config/Configuration.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/compat/StrStream.h"
 
 namespace eckit {
 
@@ -24,9 +23,9 @@ class ConfigurationNotFound : public Exception {
 
   public:
     ConfigurationNotFound(const std::string& name) {
-        StrStream s;
-        s << "ConfigurationNotFound: [" << name << "]" << StrStream::ends;
-        reason(std::string(s));
+        std::ostringstream s;
+        s << "ConfigurationNotFound: [" << name << "]";
+        reason(s.str());
     }
 };
 

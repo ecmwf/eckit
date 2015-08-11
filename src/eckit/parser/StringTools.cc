@@ -11,7 +11,6 @@
 #include <cstring>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/parser/StringTools.h"
 #include "eckit/parser/Tokenizer.h"
 
@@ -36,9 +35,9 @@ std::string StringTools::substitute(const std::string& s,const std::map<std::str
         {
             case '{':
                 if(var) {
-                    StrStream os;
-                    os << "StringTools::substitute: unexpected { found in " <<s << " at position " << i << StrStream::ends;
-                    throw UserError(std::string(os));
+                    std::ostringstream os;
+                    os << "StringTools::substitute: unexpected { found in " <<s << " at position " << i;
+                    throw UserError(os.str());
                 }
                 var = true;
                 word = "";
@@ -46,17 +45,17 @@ std::string StringTools::substitute(const std::string& s,const std::map<std::str
 
             case '}':
                 if(!var) {
-                    StrStream os;
-                    os << "StringTools::substitute: unexpected } found in " <<s << " at position " << i << StrStream::ends;
-                    throw UserError(std::string(os));
+                    std::ostringstream os;
+                    os << "StringTools::substitute: unexpected } found in " <<s << " at position " << i;
+                    throw UserError(os.str());
                 }
                 var = false;
 
                 j = m.find(word);
                 if(j == m.end()) {
-                    StrStream os;
-                    os << "StringTools::substitute: cannot find a value for '" << word << "' in " <<s << " at position " << i << StrStream::ends;
-                    throw UserError(std::string(os));
+                    std::ostringstream os;
+                    os << "StringTools::substitute: cannot find a value for '" << word << "' in " <<s << " at position " << i;
+                    throw UserError(os.str());
                 }
                 result += (*j).second;
                 break;
@@ -71,9 +70,9 @@ std::string StringTools::substitute(const std::string& s,const std::map<std::str
         }
     }
     if(var) {
-        StrStream os;
-        os << "StringTools::substitute: missing } in " <<s << StrStream::ends;
-        throw UserError(std::string(os));
+        std::ostringstream os;
+        os << "StringTools::substitute: missing } in " << s;
+        throw UserError(os.str());
     }
     return result;
 }
@@ -91,9 +90,9 @@ std::vector<std::string> StringTools::substituteVariables(const std::string & s)
         {
             case '{':
                 if(var) {
-                    StrStream os;
-                    os << "StringTools::substituteVariables: unexpected { found in " <<s << " at position " << i << StrStream::ends;
-                    throw UserError(std::string(os));
+                    std::ostringstream os;
+                    os << "StringTools::substituteVariables: unexpected { found in " <<s << " at position " << i;
+                    throw UserError(os.str());
                 }
                 var = true;
                 word = "";
@@ -101,9 +100,9 @@ std::vector<std::string> StringTools::substituteVariables(const std::string & s)
 
             case '}':
                 if(!var) {
-                    StrStream os;
-                    os << "StringTools::substituteVariables: unexpected } found in " <<s << " at position " << i << StrStream::ends;
-                    throw UserError(std::string(os));
+                    std::ostringstream os;
+                    os << "StringTools::substituteVariables: unexpected } found in " <<s << " at position " << i;
+                    throw UserError(os.str());
                 }
                 var = false;
                 result.push_back(word);
@@ -117,9 +116,9 @@ std::vector<std::string> StringTools::substituteVariables(const std::string & s)
         }
     }
     if(var) {
-        StrStream os;
-        os << "StringTools::substituteVariables: missing } in " << s << StrStream::ends;
-        throw UserError(std::string(os));
+        std::ostringstream os;
+        os << "StringTools::substituteVariables: missing } in " << s;
+        throw UserError(os.str());
     }
     return result;
 }

@@ -15,7 +15,6 @@
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/config/Resource.h"
-#include "eckit/compat/StrStream.h"
 
 #include "eckit/io/HandleHolder.h"
 #include "eckit/log/BigNum.h"

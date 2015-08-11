@@ -10,7 +10,6 @@
 
 #include "eckit/types/Date.h"
 #include "eckit/persist/DumpLoad.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/parser/Tokenizer.h"
 
 //-----------------------------------------------------------------------------
@@ -31,9 +30,9 @@ static void check(const Date& date,long value)
 
 	if(value != date.yyyymmdd())
 	{
-		StrStream os;
-		os << "Invalid date " << value << " becomes " << date << StrStream::ends;
-		throw BadDate(std::string(os));
+        std::ostringstream os;
+        os << "Invalid date " << value << " becomes " << date;
+        throw BadDate(os.str());
 	}
 }
 
@@ -170,9 +169,9 @@ Date::Date(const std::string& s)
 
 Date::operator std::string() const
 {
-	StrStream os;
-	os << *this << StrStream::ends;
-	return std::string(os);
+    std::ostringstream os;
+    os << *this;
+    return os.str();
 }
 
 // Returns a date in the format yyyymmdd from a julian number

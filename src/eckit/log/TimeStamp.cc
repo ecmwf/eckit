@@ -8,10 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-
-#include "eckit/compat/StrStream.h"
 #include "eckit/log/TimeStamp.h"
-
 
 //-----------------------------------------------------------------------------
 
@@ -50,9 +47,9 @@ std::ostream& operator<<(std::ostream& s,const TimeStamp&  x)
 
 TimeStamp::operator std::string() const
 {
-	StrStream s;
-	s << *this << StrStream::ends;
-	return std::string(s);
+    std::ostringstream s;
+    s << *this;
+    return s.str();
 }
 
 //-----------------------------------------------------------------------------

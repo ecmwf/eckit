@@ -13,7 +13,6 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/serialisation/Stream.h"
 
 
@@ -133,13 +132,13 @@ std::ostream &operator<<(std::ostream &s, Stream::tag t) {
 }
 
 void Stream::badTag(Stream::tag need, Stream::tag got) {
-    StrStream os;
+    std::ostringstream os;
 
     os << "Bad tag found in stream ";
     os << name();
-    os << ". Expecting a " << need << ", got a " << got << StrStream::ends;
+    os << ". Expecting a " << need << ", got a " << got;
 
-    Log::error() << std::string(os) << std::endl;
+    Log::error() << os.str() << std::endl;
 
     if (got == tag_string) {
         long length = getLong();
@@ -149,7 +148,7 @@ void Stream::badTag(Stream::tag need, Stream::tag got) {
         Log::error() << "String is " << s << std::endl;
     }
 
-    throw BadTag(std::string(os));
+    throw BadTag(os.str());
 }
 
 Stream::tag Stream::nextTag() {

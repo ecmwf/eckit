@@ -13,7 +13,6 @@
 #include "eckit/eckit.h"
 
 #include "eckit/types/DateTime.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/parser/Tokenizer.h"
 
 //-----------------------------------------------------------------------------
@@ -124,9 +123,9 @@ void DateTime::print(std::ostream& s) const
 
 DateTime::operator std::string() const
 {
-	StrStream os;
-	os << *this << StrStream::ends;
-	return std::string(os);
+    std::ostringstream os;
+    os << *this;
+    return os.str();
 }
 
 DateTime& DateTime::operator=(const DateTime& other)

@@ -186,7 +186,7 @@ std::ostream& Cell::printValues(std::ostream& s, size_t depth) const
             s << " / ";
 
         if (! lst->value())
-            s << " NULL ";
+            s << "(null)";
         else
         {
             if (lst->value()->text().size())
@@ -220,7 +220,7 @@ std::ostream& Cell::print(std::ostream& s, size_t depth) const
     if (tag_ == "_list")
     {
         if (value()) value()->print(s, depth + 1);
-        else s << " NULL ";
+        else s << "(null)";
         for (Cell* lst(rest()); lst; lst = lst->rest())
         {
             //ASSERT(lst->tag() == "_list");
@@ -301,7 +301,7 @@ ostream& Cell::printDotVerb(ostream& s, bool detailed) const
 
     stringstream box, arrows;
 
-    box << "\"node" << "\\\"" << (void*) this << "\\\" [ label=\"<f0>";
+    box << "\"node" << "" << (void*) this << "\" [ label=\"<f0>";
     if (detailed)
         box << "\\\"" << (void*) this << "\\\"";
     box << " " << quotedSnippet(text()) << ",";

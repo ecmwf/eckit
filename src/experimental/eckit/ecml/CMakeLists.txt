@@ -56,6 +56,8 @@ prelude/TemporaryFileHandler.h
 prelude/TemporaryFileHandler.cc
 prelude/SystemHandler.h
 prelude/SystemHandler.cc
+prelude/ParallelMapHandler.h
+prelude/ParallelMapHandler.cc
 
 # Data types' support
 data/DataHandleFactory.h

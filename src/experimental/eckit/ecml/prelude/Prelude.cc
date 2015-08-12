@@ -32,6 +32,7 @@
 #include "IfHandler.h"
 #include "TemporaryFileHandler.h"
 #include "SystemHandler.h"
+#include "ParallelMapHandler.h"
 
 #include "Prelude.h"
 
@@ -60,6 +61,7 @@ void Prelude::importInto(ExecutionContext& context)
     static TemporaryFileHandler temporary_file("temporary_file");
     static IfHandler _if("if");
     static SystemHandler _system("system");
+    static ParallelMapHandler _map("map");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
@@ -76,6 +78,7 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("rest", rest);
     context.registerHandler("temporary_file", temporary_file);
     context.registerHandler("system", _system);
+    context.registerHandler("map", _map);
 }
 
 } // namespace eckit

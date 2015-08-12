@@ -34,16 +34,19 @@ Request ClosureHandler::handle(const Request request, ExecutionContext& context)
     Closure closure (request);
     Cell* captured (closure.capturedEnvironment());
 
+    //Log::info() << "ClosureHandler: captured: '" << captured->str() << "' tag: " << captured->tag() << " value: " << captured->value() << endl;
+
     Cell* staticEnvironment (captured->value() ? captured->value()->value() : 0);
 
-    if (staticEnvironment)
+    if (staticEnvironment) {
+        //Log::info() << "ClosureHandler: static env: " << staticEnvironment << endl;
+        //staticEnvironment->graph();
         context.pushEnvironmentFrame(staticEnvironment);
+    }
 
     Cell* r (context.interpreter().eval(closure.code(), context));
-
-    if (staticEnvironment)
-        context.popEnvironmentFrame(staticEnvironment);
-
+    //Log::info() << "ClosureHandler: eval => " << r << endl;
+    if (staticEnvironment) context.popEnvironmentFrame(staticEnvironment);
     return r;
 }
 

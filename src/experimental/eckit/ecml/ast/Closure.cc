@@ -52,7 +52,7 @@ Closure::Closure(Cell* request)
     {
         capturedEnvironment_ = Cell::clone(r->value());
         r = r->rest();
-    }
+    } else capturedEnvironment_ = new Cell("_verb", "let", 0, 0);
 
     if (r && r->text() == "code")
     {
@@ -102,10 +102,13 @@ Closure::operator Cell*() const
                     new Cell("", "parameters", parameters,
                     new Cell("", "captured", captured,
                     new Cell("", "code", code, 0))))));
+
+    Log::info() << "Closure::operator Cell*() => " << r << endl;
     return r;
 }
 
 Cell* Closure::capturedEnvironment() const { return capturedEnvironment_; }
+
 Cell* Closure::code() const { return code_; }
 
 } // namespace eckit

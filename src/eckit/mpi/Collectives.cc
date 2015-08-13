@@ -43,7 +43,7 @@ int broadcast_vector( const Comm& comm,
   if( resize )
   {
     int size = data.size();
-    broadcast(size,root);
+    broadcast_pod(comm,size,root);
     if( comm.rank() != root ) data.resize(size);
   }
   ECKIT_MPI_CHECK_RESULT( MPI_Bcast(data.data(),int(data.size()),eckit::mpi::datatype<DATA_TYPE>(),int(root),comm) );

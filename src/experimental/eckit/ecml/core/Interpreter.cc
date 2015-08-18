@@ -84,7 +84,9 @@ Values Interpreter::evalList(const Request requests, ExecutionContext& context)
                 for (Request e(sublist); e; e = e->rest())
                     list.append(e->value());
 
-            } else if (sublist->tag() == "_native" || sublist->tag() == "_macro")
+            } else if (sublist->tag() == "_native"
+                       || sublist->tag() == "_macro"
+                       || sublist->tag() == "_verb")
             {
                 list.append(sublist);
             } else 
@@ -102,6 +104,11 @@ Values Interpreter::evalList(const Request requests, ExecutionContext& context)
         } else if (elt->value()->tag() == "")
         {
             list.append(elt->value());
+        } else if (elt->value()->tag() == "_verb"
+                    || elt->value()->tag() == "_macro")
+        {
+            Values sublist (elt->value());
+            list.append(sublist);
         } else {
             NOTIMP;
         }
@@ -144,10 +151,21 @@ Values Interpreter::evalMacro(const Request object, const Request request, Execu
 
 Values Interpreter::evalVerb(const Request object, const Request request, ExecutionContext& context)
 {
+    ASSERT(object->text() == "closure");
+
+    Closure closure (object);
+
     Request evaluatedAttributes (evalAttributes(request, context));
 
+    Cell* captured (closure.capturedEnvironment());
+    Cell* staticEnvironment (captured ? (captured->value() ? captured->value()->value() : 0) : 0);
+
     context.pushEnvironmentFrame(evaluatedAttributes);
-    Cell *r (eval(object, context));
+    if (staticEnvironment) context.pushEnvironmentFrame(staticEnvironment);
+
+    Cell *r (eval(closure.code(), context));
+
+    if (staticEnvironment) context.popEnvironmentFrame(staticEnvironment);
     context.popEnvironmentFrame(evaluatedAttributes);
     return r;
 }

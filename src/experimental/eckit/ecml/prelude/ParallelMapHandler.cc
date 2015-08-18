@@ -29,49 +29,43 @@ Values ParallelMapHandler::handle(ExecutionContext& context)
     List r;
 
     Values values (context.environment().lookup("values"));
-    Values f (context.environment().lookup("f"));
-    f = f->value();
+    Values closure (context.environment().lookup("closure"));
 
-    //Log::info() << "map: f = " << f << endl;
-    //Log::info() << "map: values = " << values << endl;
-
-    for (Cell* l(values); l; l = l->rest())
+    for (Cell* p(values); p; p = p->rest())
     {
-        List values;
-        values.append(l->value());
+        Cell* v (p->value());
 
-        //Log::info() << "map: values = " << (Cell*) values << endl;
+        // wrap it in a list
+        List vs;
+        vs.append(v);
 
-        Closure closure (f);
-
-        //Log::info() << "map: closure = " << (Cell*) values << endl;
-
-        Cell* env (closure.capturedEnvironment());
-        ASSERT(env->tag() == "_list");
-        env = env->value();
-
-        //Log::info() << "env->tag(): " << env->tag() << endl;
-        //ASSERT(env->tag() == "_requests"); // _list
-        env = env->value();
-        //Log::info() << "env->tag(): " << env->tag() << endl;
-        ASSERT(env->tag() == "_verb"); // _list
-       
-
-        //Log::info() << "map: capturedEnvironment = " << env << endl;
-
-        env->append(new Cell("", "values", values, 0));
-
-        //Log::info() << "map: EXTENDED capturedEnvironment = " << env << endl;
-
-        Cell* cc (closure);
-
-        //Log::info() << "cc: " << cc << endl;
-
-        Cell* evaluated (context.interpreter().eval(cc, context));
-        //Log::info() << "evaluated: " << evaluated << endl;
+        Values result (apply(context, closure, vs));
+        r.append(result);
     }
 
     return r;
+}
+
+Values ParallelMapHandler::apply(ExecutionContext& context, Cell* closure, Cell* values)
+{
+    Cell* wrappedClosure (new Cell("_verb", "function", 0,
+                            new Cell(
+                                "",
+                                "_",
+                                new Cell(
+                                    "_list",
+                                    "",
+                                    new Cell("_requests", "", Cell::clone(closure), 0),
+                                    0),
+                                0)));
+
+    Request appl (new Cell("_verb", "apply", 0,
+                        new Cell("", "closure", new Cell("_list", "", new Cell("_requests", "", wrappedClosure, 0), 0),
+                        new Cell("", "values", Cell::clone(values), 0))));
+
+    Request requests (new Cell("_list", "", new Cell("_requests", "", appl, 0), 0));
+
+    return context.interpreter().eval(requests, context);
 }
 
 } // namespace eckit

@@ -1,0 +1,36 @@
+test, label = "Apply closure",
+do = (
+    apply, closure = (function, _ = (println, values = FOO))
+), 
+expect = FOO
+
+test, label = "Apply closure to parameters",
+do = (
+    apply,
+        closure = (function,
+                            _ = (println,
+                                        values = (value, of = param))),
+        param = FOO
+), 
+expect = FOO
+
+test, label = apply closure to parameters,
+do = (
+    apply,
+        closure = (function, 
+                    _ = (closure,
+                            name = "_",
+                            parameters = "things", 
+                            captured = (null), 
+                            code = (println,
+                                        values = "value is" / (value, of = "things")))),
+        things = "1"
+
+),
+expect = value is / 1
+
+test, label = "Apply a function referenced by a function name (string) to parameters",
+do = (
+    println, values = TODO
+), 
+expect = TODO

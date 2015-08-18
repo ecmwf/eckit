@@ -38,6 +38,8 @@ prelude/VariableLookupHandler.cc
 prelude/VariableLookupHandler.h
 prelude/DefineFunctionHandler.cc
 prelude/DefineFunctionHandler.h
+prelude/ApplyHandler.cc
+prelude/ApplyHandler.h
 prelude/ClosureHandler.h
 prelude/ClosureHandler.cc
 prelude/ListHandler.cc
@@ -56,6 +58,8 @@ prelude/TemporaryFileHandler.h
 prelude/TemporaryFileHandler.cc
 prelude/SystemHandler.h
 prelude/SystemHandler.cc
+prelude/GetenvHandler.h
+prelude/GetenvHandler.cc
 prelude/ParallelMapHandler.h
 prelude/ParallelMapHandler.cc
 

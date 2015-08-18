@@ -74,15 +74,21 @@ void barrier();
 template<typename DATA_TYPE>
 MPI_Datatype datatype();
 
+/// @brief Return MPI data-type for given DATA_TYPE
+template<typename DATA_TYPE_1,typename DATA_TYPE_2>
+MPI_Datatype datatype();
+
 /// @brief Return MPI data-type of given argument
 template<typename DATA_TYPE>
 MPI_Datatype datatype(DATA_TYPE&);
 
 typedef MPI_Op Operation;
-inline Operation sum()  { return MPI_SUM;  }
-inline Operation prod() { return MPI_PROD; }
-inline Operation max()  { return MPI_MAX;  }
-inline Operation min()  { return MPI_MIN;  }
+inline Operation sum()    { return MPI_SUM;    }
+inline Operation prod()   { return MPI_PROD;   }
+inline Operation max()    { return MPI_MAX;    }
+inline Operation min()    { return MPI_MIN;    }
+inline Operation maxloc() { return MPI_MAXLOC; }
+inline Operation minloc() { return MPI_MINLOC; }
 
 } // namespace mpi
 } // namespace eckit

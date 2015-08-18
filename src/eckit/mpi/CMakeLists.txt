@@ -3,6 +3,7 @@ list( APPEND eckit_mpi_srcs
 mpi.h
 mpi.cc
 Collectives.h
+Collectives.cc
 Comm.h
 Comm.cc
 Exceptions.h

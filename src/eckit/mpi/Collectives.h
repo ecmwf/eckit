@@ -25,45 +25,59 @@ template <typename DATA_TYPE> struct Buffer;
 
 // ----------------------------------------------------------------------------------
 
-template<typename DATA_TYPE>
-inline int broadcast( const Comm& comm,
-                      DATA_TYPE& data,
-                      size_t root );
+template<typename T>
+int broadcast( const Comm& comm,
+               T& data,
+               size_t root,
+               bool resize = true );
 
-template<typename DATA_TYPE>
-inline int broadcast( DATA_TYPE& data,
-                      size_t root );
+template<typename T>
+int broadcast( T& data,
+               size_t root,
+               bool resize = true );
 
-template<typename DATA_TYPE>
-inline int broadcast( const Comm& comm,
-                      std::vector<DATA_TYPE>& data,
-                      size_t root );
+template<typename T>
+int broadcast( const Comm& comm,
+               T data[], size_t size,
+               size_t root );
 
-template<typename DATA_TYPE>
-inline int broadcast( std::vector<DATA_TYPE>& data,
-                      size_t root );
+template<typename T>
+int broadcast( T data[], size_t size,
+               size_t root );
 
-template<typename DATA_TYPE>
-inline int all_reduce( const Comm& comm,
-                       const DATA_TYPE& send,
-                             DATA_TYPE& recv,
-                       const Operation& );
+template<typename T>
+int all_reduce( const Comm& comm,
+                const T& send,
+                      T& recv,
+                const Operation& );
 
-template<typename DATA_TYPE>
-inline int all_reduce( const DATA_TYPE& send,
-                             DATA_TYPE& recv,
-                       const Operation& );
+template<typename T>
+int all_reduce( const T& send,
+                      T& recv,
+                const Operation& );
 
-template<typename DATA_TYPE>
-inline int all_reduce( const Comm& comm,
-                       const std::vector<DATA_TYPE>& send,
-                             std::vector<DATA_TYPE>& recv,
-                       const Operation& );
+// send buffer becomes recv buffer (in-place)
+template<typename T>
+int all_reduce( const Comm& comm,
+                T& sendrecv,
+                const Operation& );
 
-template<typename DATA_TYPE>
-inline int all_reduce( const std::vector<DATA_TYPE>& send,
-                             std::vector<DATA_TYPE>& recv,
-                       const Operation& );
+// send buffer becomes recv buffer (in-place)
+template<typename T>
+int all_reduce( T& sendrecv,
+                const Operation& );
+
+// send buffer becomes recv buffer (in-place)
+template<typename T>
+int all_reduce( const Comm& comm,
+                T sendrecv[], size_t size,
+                const Operation& );
+
+// send buffer becomes recv buffer (in-place)
+template<typename T>
+int all_reduce( T sendrecv[], size_t size,
+                const Operation& );
+
 
 template< typename DATA_TYPE >
 inline int all_to_all( const Comm& comm,
@@ -122,75 +136,6 @@ struct Buffer
 };
 
 // ----------------------------------------------------------------------------------
-
-template<typename DATA_TYPE>
-inline int broadcast( const Comm& comm,
-                      DATA_TYPE& data,
-                      size_t root )
-{
-  ECKIT_MPI_CHECK_RESULT( MPI_Bcast(&data,1,eckit::mpi::datatype<DATA_TYPE>(),int(root),comm) );
-  return MPI_SUCCESS;
-}
-
-template<typename DATA_TYPE>
-inline int broadcast( DATA_TYPE& data,
-                      size_t root )
-{
-  return broadcast(comm(),data,root);
-}
-
-template<typename DATA_TYPE>
-inline int broadcast( const Comm& comm,
-                      std::vector<DATA_TYPE>& data,
-                      size_t root )
-{
-  ECKIT_MPI_CHECK_RESULT( MPI_Bcast(data.data(),int(data.size()),eckit::mpi::datatype<DATA_TYPE>(),int(root),comm) );
-  return MPI_SUCCESS;
-}
-
-template<typename DATA_TYPE>
-inline int broadcast( std::vector<DATA_TYPE>& data,
-                      size_t root )
-{
-  return broadcast(comm(),data,root);
-}
-
-template<typename DATA_TYPE>
-inline int all_reduce( const Comm& comm,
-                       const DATA_TYPE& send,
-                             DATA_TYPE& recv,
-                       const Operation& mpi_op )
-{
-  ECKIT_MPI_CHECK_RESULT( MPI_Allreduce(&const_cast<DATA_TYPE&>(send),&recv,1,datatype<DATA_TYPE>(),mpi_op,comm) );
-  return MPI_SUCCESS;
-}
-
-template<typename DATA_TYPE>
-inline int all_reduce( const DATA_TYPE& send,
-                             DATA_TYPE& recv,
-                       const Operation& mpi_op )
-{
-  return all_reduce(comm(),send,recv,mpi_op);
-}
-
-template<typename DATA_TYPE>
-inline int all_reduce( const Comm& comm,
-                       const std::vector<DATA_TYPE>& send,
-                             std::vector<DATA_TYPE>& recv,
-                       const Operation& mpi_op )
-{
-  recv.resize(send.size());
-  ECKIT_MPI_CHECK_RESULT( MPI_Allreduce(const_cast<DATA_TYPE*>(send.data()),recv.data(),send.size(),datatype<DATA_TYPE>(),mpi_op,comm) );
-  return MPI_SUCCESS;
-}
-
-template<typename DATA_TYPE>
-inline int all_reduce( const std::vector<DATA_TYPE>& send,
-                             std::vector<DATA_TYPE>& recv,
-                       const Operation& mpi_op )
-{
-  return all_reduce(comm(),send,recv,mpi_op);
-}
 
 template< typename DATA_TYPE >
 inline int all_to_all( const Comm& comm,

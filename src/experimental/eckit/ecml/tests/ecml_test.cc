@@ -35,7 +35,11 @@ public:
     virtual void run();
 
     void repl(ExecutionContext& context);
+
     std::string readLine();
+    void writeHistory();
+    void readHistory();
+    string historyFile();
 
 protected:
     virtual void runScript(const std::string& pathName);
@@ -62,10 +66,36 @@ void TestECML::runScript(const string& pathName)
     context.executeScriptFile(pathName);
 }
 
+string TestECML::historyFile()
+{
+    return string (getenv("HOME")) + "/.ecml_history";
+}
+
+void TestECML::readHistory()
+{
+#ifdef ECKIT_HAVE_READLINE
+    int rc (read_history(historyFile().c_str()));
+    if (rc)
+        Log::warning() << "read_history => " << rc << endl;
+#endif
+}
+
+
+void TestECML::writeHistory()
+{
+#ifdef ECKIT_HAVE_READLINE
+    int rc (write_history(historyFile().c_str()));
+    if (rc)
+        Log::warning() << "write_history => " << rc << endl;
+#endif
+}
+
 string TestECML::readLine()
 {
 #ifdef ECKIT_HAVE_READLINE
     char* p (readline("ecml> "));
+    if (! p)
+        return "bye";
     add_history(p);
     string r (p);
     free(p);
@@ -80,6 +110,7 @@ string TestECML::readLine()
 
 void TestECML::repl(ExecutionContext& context)
 {
+    readHistory();
     while (true)
     {
         string cmd (readLine());
@@ -88,9 +119,12 @@ void TestECML::repl(ExecutionContext& context)
             || cmd == "quit"
             || cmd == "bye")
         {
-            cout << endl << "Bye." << endl;
+            writeHistory();
+            cout << "Bye." << endl;
             break;
         }
+
+        if (! cmd.size()) continue;
 
         try {
             Values r (context.execute(cmd));

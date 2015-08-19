@@ -31,6 +31,7 @@ private:
 
 static void reset_parser(FILE*,bool);
 static void do_parse_request();
+static void do_parse_request_in_string(const char *);
 
 class RequestParseError : public eckit::Exception
 {
@@ -42,12 +43,18 @@ struct RequestParserResult { static Cell* result_; };
 
 Request RequestParser::parse(const std::string& s, bool debug)
 {
-    eckit::TmpFile tempFile;
-    std::ofstream stream(std::string(tempFile).c_str());
-    stream << s;
-    stream.close();
+    RequestParserMutex mutex;
+    std::stringstream ss;
+    // two zeroes are required by yy_scan_buffer (request__scan_buffer)
+    // I add this extra '\0' here in case we move to yy_scan_buffer at a point.
+    ss << s << "\0"; 
 
-    return parseFile(tempFile.localPath(), debug);
+    do_parse_request_in_string(ss.str().c_str()); 
+
+    Request result (RequestParserResult::result_);
+    RequestParserResult::result_ = 0;
+
+    return result;
 }
 
 Request RequestParser::parseFile(const char* path, bool debug)
@@ -121,6 +128,21 @@ void reset_parser(FILE* in, bool debug)
 void do_parse_request()
 {
     RequestYacc::request_parse();
+}
+
+void do_parse_request_in_string(const char *s)
+{
+    RequestYacc::YY_BUFFER_STATE buffer;
+    try { 
+        buffer = RequestYacc::request__scan_string(s);
+        RequestYacc::request_parse();
+    }
+    catch (RequestParseError e)
+    {
+        RequestYacc::request__delete_buffer(buffer);
+        throw UserError(e.what());
+    }
+    request__delete_buffer(buffer);
 }
 
 } // namespace eckit 

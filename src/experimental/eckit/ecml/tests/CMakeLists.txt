@@ -36,7 +36,7 @@ foreach( _test ${ecml_tests} )
 endforeach()
 
 # Add C++ unit tests
-ecbuild_add_test( TARGET       ecml_unittests
-                  COMMAND      ${ecml_unittests_bin}
-                  ENVIRONMENT  ${test_environment}
-                  TEST_DEPENDS ${_dependencies} )
+#ecbuild_add_test( TARGET       ecml_unittests
+#                  COMMAND      ${ecml_unittests_bin}
+#                  ENVIRONMENT  ${test_environment}
+#                  TEST_DEPENDS ${_dependencies} )

@@ -94,11 +94,12 @@ ecbuild_add_library( TARGET             eckit_ecml
 
 ecbuild_add_executable( TARGET ecml_test
                         SOURCES tests/ecml_test.cc
-                        LIBS eckit eckit_ecml )
+                        INCLUDES ${CURSES_INCLUDE_DIR} ${READLINE_INCLUDE_DIR} 
+                        LIBS eckit eckit_ecml ${CURSES_LIBRARIES} ${READLINE_LIBRARIES} )
 
 ecbuild_add_executable( TARGET ecml_unittests
                         SOURCES tests/ecml_unittests.cc
-                        LIBS eckit eckit_ecml )
+                        LIBS eckit eckit_ecml)
 
 add_subdirectory( tests )
 

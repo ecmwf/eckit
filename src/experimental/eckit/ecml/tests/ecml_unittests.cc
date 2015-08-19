@@ -155,7 +155,7 @@ void ECMLUnitTests::runTests()
     //c->graph("evaluated 'f': " + c->str());
 
 
-    string descriptor ("partfile:///tmp/build/bundle/debug/bin/2000010106.1.0.odb:0,100");
+    string descriptor ("partfile://2000010106.1.0.odb:0,100");
     DataHandle* dh (DataHandleFactory::openForRead(descriptor));
     Log::info () << "partfile: " << dh << endl;
     PartFileHandle* pfh (dynamic_cast<PartFileHandle*>(dh));

@@ -103,7 +103,6 @@ Closure::operator Cell*() const
                     new Cell("", "captured", captured,
                     new Cell("", "code", code, 0))))));
 
-    Log::info() << "Closure::operator Cell*() => " << r << endl;
     return r;
 }
 

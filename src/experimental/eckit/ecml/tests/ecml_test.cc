@@ -22,6 +22,7 @@
 #include "eckit/runtime/Tool.h"
 
 #include "experimental/eckit/ecml/core/ExecutionContext.h"
+#include "experimental/eckit/ecml/core/Environment.h"
 #include "eckit/runtime/Context.h"
 
 using namespace std;
@@ -43,6 +44,7 @@ public:
 
 protected:
     virtual void runScript(const std::string& pathName);
+    bool showResultGraph(ExecutionContext& context) const;
 };
 
 void TestECML::run()
@@ -108,14 +110,26 @@ string TestECML::readLine()
 #endif
 }
 
+bool TestECML::showResultGraph(ExecutionContext& context) const
+{
+    if (! context.environment().lookupNoThrow("show_dot"))
+        return false;
+    else
+    {
+        vector<string> vs (context.environment().lookupList("show_dot", context));
+        return vs.size() == 1 && vs[0] == "true";
+    }
+}
+
 void TestECML::repl(ExecutionContext& context)
 {
     readHistory();
+    string cmd; 
     while (true)
     {
-        string cmd (readLine());
+        cmd += readLine();
 
-        if (cin.eof() // Not sure this is working when readline enabled 
+        if (cin.eof()
             || cmd == "quit"
             || cmd == "bye")
         {
@@ -126,15 +140,25 @@ void TestECML::repl(ExecutionContext& context)
 
         if (! cmd.size()) continue;
 
+        if (cmd.rfind("\\") == cmd.size() - 1)
+        {
+            cmd.erase(cmd.size() - 1);
+            cmd += '\n';
+            continue;
+        }
+
         try {
             Values r (context.execute(cmd));
             cout << " => " << r << endl;
+            if (showResultGraph(context))
+                r->graph();
+            delete r;
         } catch (Exception e) {
             // error message is already printed by Exception ctr
             //cout << "*** error: " << e.what() << endl;
         }
+        cmd = "";
     }
-
 }
 
 int main(int argc,char **argv)

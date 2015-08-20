@@ -13,7 +13,6 @@
 #include "experimental/eckit/ecml/parser/Request.h"
 #include "experimental/eckit/ecml/core/ExecutionContext.h"
 #include "experimental/eckit/ecml/core/Environment.h"
-#include "experimental/eckit/ecml/prelude/PrintHandler.h"
 
 using namespace std;
 using namespace eckit;

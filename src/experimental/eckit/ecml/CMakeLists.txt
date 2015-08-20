@@ -62,6 +62,8 @@ prelude/GetenvHandler.h
 prelude/GetenvHandler.cc
 prelude/ParallelMapHandler.h
 prelude/ParallelMapHandler.cc
+prelude/JoinStringsHandler.h
+prelude/JoinStringsHandler.cc
 
 # Data types' support
 data/DataHandleFactory.h

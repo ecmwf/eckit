@@ -36,6 +36,7 @@
 #include "ParallelMapHandler.h"
 #include "ApplyHandler.h"
 #include "Prelude.h"
+#include "JoinStringsHandler.h"
 
 namespace eckit {
 
@@ -65,6 +66,7 @@ void Prelude::importInto(ExecutionContext& context)
     static SystemHandler _system("system");
     static GetenvHandler _getenv("getenv");
     static ParallelMapHandler _map("map");
+    static JoinStringsHandler join_strings("join_strings");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
@@ -84,6 +86,7 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("system", _system);
     context.registerHandler("getenv", _getenv);
     context.registerHandler("map", _map);
+    context.registerHandler("join_strings", join_strings);
 }
 
 } // namespace eckit

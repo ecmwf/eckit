@@ -206,14 +206,16 @@ std::ostream& Cell::print(std::ostream& s, size_t depth) const
 {
     if (tag_ == "_requests")
     {
-        value()->print(s, depth + 1);
+        s << "(";
+        value()->print(s, 0);
         for (Cell* lst(rest()); lst; lst = lst->rest())
         {
             ASSERT(lst->tag() == "_requests");
-            s << "  ";
+            s << "\n";
             ASSERT(lst->value());
-            lst->value()->print(s, depth + 1);
+            lst->value()->print(s, 0);
         }
+        s << ")";
         return s;
     } 
 

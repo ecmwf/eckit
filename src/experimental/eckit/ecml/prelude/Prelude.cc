@@ -37,6 +37,7 @@
 #include "ApplyHandler.h"
 #include "Prelude.h"
 #include "JoinStringsHandler.h"
+#include "QuoteHandler.h"
 
 namespace eckit {
 
@@ -67,6 +68,7 @@ void Prelude::importInto(ExecutionContext& context)
     static GetenvHandler _getenv("getenv");
     static ParallelMapHandler _map("map");
     static JoinStringsHandler join_strings("join_strings");
+    static QuoteHandler quote("quote");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
@@ -75,6 +77,7 @@ void Prelude::importInto(ExecutionContext& context)
     e.set("closure", macro(closure.name()));
     e.set("test", macro(test.name()));
     e.set("if", macro(_if.name()));
+    e.set("quote", macro(quote.name()));
 
     context.registerHandler("list", list);
     context.registerHandler("value", value);

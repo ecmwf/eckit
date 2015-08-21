@@ -189,7 +189,8 @@ std::ostream& Cell::printValues(std::ostream& s, size_t depth) const
             s << "(null)";
         else
         {
-            if (lst->value()->text().size())
+            //if (lst->value()->text().size())
+            if (! lst->value()->tag().size())
             {
                 s << "\"";
                 lst->value()->print(s, depth + 1);

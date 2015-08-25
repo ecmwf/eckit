@@ -69,9 +69,7 @@ private:
     Cell *value_;
     Cell *rest_;
 
-    std::ostream& print(std::ostream&, size_t depth=0) const;
-    std::ostream& printAttributes(std::ostream&, size_t depth=0) const;
-    std::ostream& printValues(std::ostream&, size_t depth=0) const;
+    std::ostream& print(std::ostream&) const;
 
     std::ostream& printDot(std::ostream&, bool, bool) const;
     std::ostream& printDotList(std::ostream&, bool) const;

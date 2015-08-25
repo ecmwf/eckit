@@ -2,6 +2,8 @@ list( APPEND eckit_ecml_srcs
 # Parser
 parser/Cell.h
 parser/Cell.cc
+parser/CellPrinter.h
+parser/CellPrinter.cc
 parser/List.h
 parser/List.cc
 parser/Request.h

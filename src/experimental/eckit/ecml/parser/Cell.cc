@@ -8,10 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include "Cell.h"
 #include "eckit/parser/StringTools.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/parser/StringTools.h"
+#include "Cell.h"
+#include "CellPrinter.h"
 
 using namespace std;
 using namespace eckit;
@@ -117,136 +118,10 @@ std::string Cell::valueAsString(const string& keyword, const std::string& defaul
     return r;
 }
 
-string snippet(const string& s, size_t maxCharacters, size_t maxLines) 
+std::ostream& Cell::print(std::ostream& s) const
 {
-    stringstream ss;
-
-    size_t i(0), nl(0);
-    for ( ;  i < s.size() && i < maxCharacters && nl < maxLines; ++i)
-    {
-        if (s[i] == '\n')
-            ++nl;
-        ss << s[i];
-    }
-
-    return ss.str() + (i < s.size() ? "..." : "");
+    return CellPrinter::print(s, this, 0);
 }
-
-string quote(const string& s) 
-{
-    stringstream ss;
-
-    for (size_t i(0); i < s.size(); ++i)
-        switch (s[i]) {
-            case '"':
-                ss << "\\\"";
-                break;
-            case '{': 
-            case '}': 
-                ss << "\\" << s[i];
-                break;
-            case '\n':
-                ss << "\\n";
-                break;
-            default: 
-                ss << s[i];
-                break;
-        }
-
-    return ss.str();
-}
-
-string quotedSnippet(const string& s) { return quote(snippet(s, 500, 3)); }
-
-vector<string> quote(const vector<string>& v)
-{
-    vector<string> r;
-    for (size_t i(0); i < v.size(); ++i)
-        r.push_back("\"" + v[i] + "\"");
-    return r;
-}
-
-std::ostream& Cell::printAttributes(std::ostream& s, size_t depth) const
-{
-    for (Cell* r(rest()); r; r = r->rest())
-    {
-        s << ", " << r->text() << " = ";
-        r->printValues(s, depth + 1);
-    }
-    return s;
-}
-
-std::ostream& Cell::printValues(std::ostream& s, size_t depth) const
-{
-    bool many (false);
-    for (Cell* lst(value()); lst; lst = lst->rest(), many = true)
-    {
-        ASSERT(lst->tag() == "_list");
-        if (many)
-            s << " / ";
-
-        if (! lst->value())
-            s << "(null)";
-        else
-        {
-            //if (lst->value()->text().size())
-            if (! lst->value()->tag().size())
-            {
-                s << "\"";
-                lst->value()->print(s, depth + 1);
-                s << "\"";
-            }
-            else
-                lst->value()->print(s, depth + 1);
-        }
-    }
-    return s;
-}
-
-std::ostream& Cell::print(std::ostream& s, size_t depth) const
-{
-    if (tag_ == "_requests")
-    {
-        s << "(";
-        value()->print(s, 0);
-        for (Cell* lst(rest()); lst; lst = lst->rest())
-        {
-            ASSERT(lst->tag() == "_requests");
-            s << "\n";
-            ASSERT(lst->value());
-            lst->value()->print(s, 0);
-        }
-        s << ")";
-        return s;
-    } 
-
-    if (tag_ == "_list")
-    {
-        if (value()) value()->print(s, depth + 1);
-        else s << "(null)";
-        for (Cell* lst(rest()); lst; lst = lst->rest())
-        {
-            //ASSERT(lst->tag() == "_list");
-            if (lst->value())
-            {
-                s << " / ";
-                lst->value()->print(s, depth + 1);
-            }
-        }
-        return s;
-    } 
-
-    if (tag_ == "_verb")
-    {
-        s << (depth ? "(" : "") << text_;
-        printAttributes(s, depth+ 1);
-        s << (depth ? ")" : "");
-        return s;
-    }
-
-    return s << text();
-}
-
 
 std::string Cell::str() const
 {
@@ -265,7 +140,7 @@ ostream& Cell::printDot(ostream& s, bool detailed, bool clever) const
 
     s << "\"node" << (void*) this << "\" [ label=\"<f0>";
     if (detailed) s << (void*) this;
-    s << " " << quotedSnippet(text()) << " | <f1>value_ | <f2>rest_\" shape = \"record\" ];" << endl;
+    s << " " << CellPrinter::quotedSnippet(text()) << " | <f1>value_ | <f2>rest_\" shape = \"record\" ];" << endl;
     if (value())
     {
         s << "\"node" << (void*) this << "\":f1 -> \"node" << (void*) value() << "\":f0;" << endl;
@@ -307,7 +182,7 @@ ostream& Cell::printDotVerb(ostream& s, bool detailed) const
     box << "\"node" << "" << (void*) this << "\" [ label=\"<f0>";
     if (detailed)
         box << "\\\"" << (void*) this << "\\\"";
-    box << " " << quotedSnippet(text()) << ",";
+    box << " " << CellPrinter::quotedSnippet(text()) << ",";
 
     size_t i(1);
     for (const Cell* p(rest()); p; ++i, p = p->rest())
@@ -318,7 +193,7 @@ ostream& Cell::printDotVerb(ostream& s, bool detailed) const
 
         box << " " << p->text() << " = "; 
         if (oneElementList(p->value()))
-            box << quotedSnippet(p->value()->value()->text());
+            box << CellPrinter::quotedSnippet(p->value()->value()->text());
         else
         {
             arrows << "\"node" << (void*) this << "\":f" << i << " -> \"node" << (void*) p->value() << "\":f0;" << endl;
@@ -350,7 +225,7 @@ ostream& Cell::printDotList(ostream& s, bool detailed) const
             box << (void*) p;
 
         if (textElement(p->value()))
-            box << "  " << quotedSnippet(p->value()->text());
+            box << "  " << CellPrinter::quotedSnippet(p->value()->text());
         else
         {
             arrows << "\"node" << (void*) this << "\":f" << i << " -> \"node" << (void*) p->value() << "\":f0;" << endl;
@@ -366,7 +241,7 @@ ostream& Cell::printDotList(ostream& s, bool detailed) const
 ostream& Cell::dot(ostream& s, const string& label, bool detailed, bool clever) const
 {
     s << "digraph g  {\n"
-        "graph [ rankdir = \"LR\" label=\"" << quotedSnippet(label) << "\"];\n"
+        "graph [ rankdir = \"LR\" label=\"" << CellPrinter::quotedSnippet(label) << "\"];\n"
         "node [ fontsize = \"16\" shape = \"ellipse\" ];\n"
         "edge [ ];\n";
     printDot(s, detailed, clever);

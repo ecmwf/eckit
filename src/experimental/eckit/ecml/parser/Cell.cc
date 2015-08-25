@@ -27,14 +27,14 @@ Cell::Cell(const std::string& tag, const std::string& text, Cell* value, Cell* r
   rest_(rest)
 {}
 
-Cell::Cell(Cell* o)
+Cell::Cell(const Cell* o)
 : tag_(o->tag_),
   text_(o->text_),
   value_(o->value_ ? new Cell(o->value_) : 0),
   rest_(o->rest_ ? new Cell(o->rest_) : 0)
 {}
 
-Cell* Cell::clone(Cell* c) { return c ? new Cell(c) : 0; }
+Cell* Cell::clone(const Cell* c) { return c ? new Cell(c) : 0; }
 
 const std::string& Cell::tag() const { return tag_; }
 const std::string& Cell::text() const { return text_; }

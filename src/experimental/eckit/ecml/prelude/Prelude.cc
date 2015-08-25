@@ -38,6 +38,8 @@
 #include "Prelude.h"
 #include "JoinStringsHandler.h"
 #include "QuoteHandler.h"
+#include "NullHandler.h"
+#include "RunHandler.h"
 
 namespace eckit {
 
@@ -59,6 +61,7 @@ void Prelude::importInto(ExecutionContext& context)
     static LetHandler let("let");
     static ApplyHandler apply("apply");
     static VariableLookupHandler value("value");
+    static VariableLookupHandler dollar("$");
     static TestHandler test("test");
     static FirstHandler first("first");
     static RestHandler rest("rest");
@@ -69,6 +72,8 @@ void Prelude::importInto(ExecutionContext& context)
     static ParallelMapHandler _map("map");
     static JoinStringsHandler join_strings("join_strings");
     static QuoteHandler quote("quote");
+    static NullHandler null("null");
+    static RunHandler run("run");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
@@ -78,9 +83,11 @@ void Prelude::importInto(ExecutionContext& context)
     e.set("test", macro(test.name()));
     e.set("if", macro(_if.name()));
     e.set("quote", macro(quote.name()));
+    e.set("run", macro(run.name()));
 
     context.registerHandler("list", list);
     context.registerHandler("value", value);
+    context.registerHandler("$", dollar);
     context.registerHandler("print", print);
     context.registerHandler("println", println);
     context.registerHandler("first", first);
@@ -90,6 +97,7 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("getenv", _getenv);
     context.registerHandler("map", _map);
     context.registerHandler("join_strings", join_strings);
+    context.registerHandler("null", null);
 }
 
 } // namespace eckit

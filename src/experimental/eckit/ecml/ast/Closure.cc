@@ -28,6 +28,7 @@ namespace eckit {
 Closure::Closure(Cell* request)
 : name_("anonymous")
 {
+    //Log::info() << "Closure::Closure: request: " << request << endl;
     ASSERT(request->tag() == "_verb" && request->text() == "closure");
 
     Request r (request->rest());

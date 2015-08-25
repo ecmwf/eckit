@@ -66,6 +66,10 @@ prelude/JoinStringsHandler.h
 prelude/JoinStringsHandler.cc
 prelude/QuoteHandler.h
 prelude/QuoteHandler.cc
+prelude/NullHandler.h
+prelude/NullHandler.cc
+prelude/RunHandler.h
+prelude/RunHandler.cc
 
 # Data types' support
 data/DataHandleFactory.h

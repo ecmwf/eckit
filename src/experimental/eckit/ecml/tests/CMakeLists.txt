@@ -12,7 +12,7 @@ test_map.ecml
 test_system.ecml
 test_getenv.ecml
 test_apply.ecml
-test_parallel_map.ecml
+#test_parallel_map.ecml
 )
 
 # Get location of test runner executable (for the ECML tests)
@@ -35,8 +35,10 @@ foreach( _test ${ecml_tests} )
                       TEST_DEPENDS ${_dependencies} )
 endforeach()
 
+#ecbuild_get_test_multidata( TARGET get_ecml_unit_test_data DIRNAME odb_api/tests NAMES 2000010106.1.0.odb )
+
 # Add C++ unit tests
-#ecbuild_add_test( TARGET       ecml_unittests
-#                  COMMAND      ${ecml_unittests_bin}
-#                  ENVIRONMENT  ${test_environment}
-#                  TEST_DEPENDS ${_dependencies} )
+ecbuild_add_test( TARGET       ecml_unittests
+                  COMMAND      ${ecml_unittests_bin}
+                  ENVIRONMENT  ${test_environment}
+                  TEST_DEPENDS ${_dependencies} ) #get_ecml_unit_test_data )

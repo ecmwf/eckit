@@ -17,6 +17,7 @@
 #include "experimental/eckit/ecml/core/Environment.h"
 #include "experimental/eckit/ecml/core/Interpreter.h"
 #include "experimental/eckit/ecml/core/SpecialFormHandler.h"
+#include "experimental/eckit/ecml/ast/Closure.h"
 
 #include "ApplyHandler.h"
 
@@ -33,7 +34,11 @@ Request ApplyHandler::handle(const Request request, ExecutionContext& context)
 {
     ASSERT(request->tag() == "_verb" && request->text() == "apply");
 
+    Log::info() << "ApplyHandler::handle: request: " << request << endl;
+
     Request evaluatedAttributes (context.interpreter().evalAttributes(request, context));
+
+    Log::info() << "ApplyHandler::handle: evaluatedAttributes: " << evaluatedAttributes << endl;
 
     Cell* p (evaluatedAttributes->rest());
 
@@ -45,19 +50,37 @@ Request ApplyHandler::handle(const Request request, ExecutionContext& context)
 
     ASSERT("apply handles closures only now" && p->text() == "closure");
 
+    Log::info() << "ApplyHandler::handle: closure: " << p->value() << endl;
+
     Cell* closure (p->value()); // it should be a list with one closure
 
-    Request frame (new Cell("_verb", "let", 0, 0));
+    Request paramsFrame (new Cell("_verb", "let", 0, 0));
     for (Request e(p->rest()); e; e = e->rest())
     {
         ASSERT(e->tag() == "");
-        frame->append(new Cell("", e->text(), e->value(), 0));
+        paramsFrame->append(new Cell("", e->text(), e->value(), 0));
     }
-    context.pushEnvironmentFrame(frame);
     // closure is a list here. it should contain just one closure object.
+    Log::info() << "  *** ApplyHandler::handle: closure: " << closure << endl;
     ASSERT(closure->rest() == 0);
-    Cell *r (context.interpreter().eval(closure->value(), context));
-    context.popEnvironmentFrame(frame);
+
+    //Cell *r (context.interpreter().eval(closure->value(), context));
+    Closure c (closure->value());
+
+    Cell* captured (c.capturedEnvironment());
+    Cell* staticEnvironment (captured ? (captured->value() ? captured->value()->value() : 0) : 0);
+
+    if (staticEnvironment)
+        context.pushEnvironmentFrame(staticEnvironment);
+
+    context.pushEnvironmentFrame(paramsFrame);
+
+    Cell* r (context.interpreter().eval(c.code(), context));
+
+    context.popEnvironmentFrame(paramsFrame);
+
+    if (staticEnvironment)
+        context.popEnvironmentFrame(staticEnvironment);
 
     return r;
 }

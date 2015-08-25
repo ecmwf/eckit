@@ -7,27 +7,22 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
+/// @author Piotr Kuchta, August 2015
 
-// File RequestParser.h
-// Manuel Fuentes - ECMWF Jan 97
-// Piotr Kuchta - ECMWF April 2015
+#ifndef eckit_ecml_RunHandler_H
+#define eckit_ecml_RunHandler_H
 
-#ifndef eckit_parser_RequestParser_H
-#define eckit_parser_RequestParser_H
+#include <sstream>
 
 #include "experimental/eckit/ecml/parser/Request.h"
-#include "eckit/memory/NonCopyable.h"
-#include "eckit/filesystem/PathName.h"
+#include "experimental/eckit/ecml/core/SpecialFormHandler.h"
 
 namespace eckit {
 
-class RequestParser : private eckit::NonCopyable
-{
+class RunHandler : public eckit::SpecialFormHandler {
 public:
-    static Request parse(const std::string&, bool debug=false);
-    static Request parseFile(const char*, bool debug=false);
-
-    static std::string readFile(const PathName& fileName, bool logging);
+    RunHandler(const std::string&);
+    virtual eckit::Values handle(const eckit::Request, eckit::ExecutionContext&);
 };
 
 } // namespace eckit

@@ -16,6 +16,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/TmpFile.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/FileHandle.h"
 
 #include <fstream>
 #include <stdexcept> 
@@ -30,7 +31,6 @@ private:
 };
 
 static void reset_parser(FILE*,bool);
-static void do_parse_request();
 static void do_parse_request_in_string(const char *);
 
 class RequestParseError : public eckit::Exception
@@ -57,35 +57,38 @@ Request RequestParser::parse(const std::string& s, bool debug)
     return result;
 }
 
+std::string RequestParser::readFile(const PathName& fileName, bool logging)
+{
+	const size_t CHUNK_SIZE = 1024;
+	char buffer[CHUNK_SIZE]; 
+
+	FileHandle f(fileName);
+	Length estimated = f.openForRead();
+	
+	std::string ret;
+	size_t read, totalRead = 0;
+
+	while ( (read = f.read(buffer, sizeof(buffer) / sizeof(char))) > 0 )
+	{
+		totalRead += read;
+		ret.append(std::string(static_cast<char*>(buffer), read));
+	}
+
+	if (logging)
+		Log::info()  << "Read " << totalRead << " bytes from file " << fileName << "[" << ret << "]" << std::endl;
+
+	f.close();
+	return ret;
+}
+
 Request RequestParser::parseFile(const char* path, bool debug)
 {
     RequestParserMutex mutex;
-    return parseFileUnprotected(path, debug);
+    std::string source (readFile(path, debug));
+    return parse(source, debug);
 }
 
 typedef RequestParser ClientRequestParser;
-
-Request RequestParser::parseFileUnprotected(const char* path, bool debug)
-{
-    RequestParserResult::result_ = 0;
-
-    FILE* in (::fopen(path, "r"));
-    if(!in) throw eckit::CantOpenFile(path);
-
-    reset_parser(in, debug);
-    try { do_parse_request(); }
-    catch (RequestParseError e) {
-        fclose(in);
-        throw eckit::UserError(e.what());
-    }
-    fclose(in);
-
-    Request result (RequestParserResult::result_);
-    RequestParserResult::result_ = 0;
-
-    //result->showGraph("AST");
-    return result;
-}
 
 Request RequestParserResult::result_ = 0;
 
@@ -123,11 +126,6 @@ void reset_parser(FILE* in, bool debug)
     RequestYacc::request_lineno = 0;
     RequestYacc::request_in     = in;
     RequestYacc::request_debug  = debug;
-}
-
-void do_parse_request()
-{
-    RequestYacc::request_parse();
 }
 
 void do_parse_request_in_string(const char *s)

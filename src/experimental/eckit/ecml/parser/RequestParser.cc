@@ -16,6 +16,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/TmpFile.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/FileHandle.h"
 
 #include <fstream>
 #include <stdexcept> 
@@ -30,7 +31,7 @@ private:
 };
 
 static void reset_parser(FILE*,bool);
-static void do_parse_request();
+static void do_parse_request_in_string(const char *);
 
 class RequestParseError : public eckit::Exception
 {
@@ -42,43 +43,52 @@ struct RequestParserResult { static Cell* result_; };
 
 Request RequestParser::parse(const std::string& s, bool debug)
 {
-    eckit::TmpFile tempFile;
-    std::ofstream stream(std::string(tempFile).c_str());
-    stream << s;
-    stream.close();
+    RequestParserMutex mutex;
+    std::stringstream ss;
+    // two zeroes are required by yy_scan_buffer (request__scan_buffer)
+    // I add this extra '\0' here in case we move to yy_scan_buffer at a point.
+    ss << s << "\0"; 
 
-    return parseFile(tempFile.localPath(), debug);
+    do_parse_request_in_string(ss.str().c_str()); 
+
+    Request result (RequestParserResult::result_);
+    RequestParserResult::result_ = 0;
+
+    return result;
+}
+
+std::string RequestParser::readFile(const PathName& fileName, bool logging)
+{
+	const size_t CHUNK_SIZE = 1024;
+	char buffer[CHUNK_SIZE]; 
+
+	FileHandle f(fileName);
+	Length estimated = f.openForRead();
+	
+	std::string ret;
+	size_t read, totalRead = 0;
+
+	while ( (read = f.read(buffer, sizeof(buffer) / sizeof(char))) > 0 )
+	{
+		totalRead += read;
+		ret.append(std::string(static_cast<char*>(buffer), read));
+	}
+
+	if (logging)
+		Log::info()  << "Read " << totalRead << " bytes from file " << fileName << "[" << ret << "]" << std::endl;
+
+	f.close();
+	return ret;
 }
 
 Request RequestParser::parseFile(const char* path, bool debug)
 {
     RequestParserMutex mutex;
-    return parseFileUnprotected(path, debug);
+    std::string source (readFile(path, debug));
+    return parse(source, debug);
 }
 
 typedef RequestParser ClientRequestParser;
-
-Request RequestParser::parseFileUnprotected(const char* path, bool debug)
-{
-    RequestParserResult::result_ = 0;
-
-    FILE* in (::fopen(path, "r"));
-    if(!in) throw eckit::CantOpenFile(path);
-
-    reset_parser(in, debug);
-    try { do_parse_request(); }
-    catch (RequestParseError e) {
-        fclose(in);
-        throw eckit::UserError(e.what());
-    }
-    fclose(in);
-
-    Request result (RequestParserResult::result_);
-    RequestParserResult::result_ = 0;
-
-    //result->showGraph("AST");
-    return result;
-}
 
 Request RequestParserResult::result_ = 0;
 
@@ -118,9 +128,19 @@ void reset_parser(FILE* in, bool debug)
     RequestYacc::request_debug  = debug;
 }
 
-void do_parse_request()
+void do_parse_request_in_string(const char *s)
 {
-    RequestYacc::request_parse();
+    RequestYacc::YY_BUFFER_STATE buffer;
+    try { 
+        buffer = RequestYacc::request__scan_string(s);
+        RequestYacc::request_parse();
+    }
+    catch (RequestParseError e)
+    {
+        RequestYacc::request__delete_buffer(buffer);
+        throw UserError(e.what());
+    }
+    request__delete_buffer(buffer);
 }
 
 } // namespace eckit 

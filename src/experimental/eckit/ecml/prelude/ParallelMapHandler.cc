@@ -11,6 +11,7 @@
 #include "ParallelMapHandler.h"
 
 #include "experimental/eckit/ecml/parser/Request.h"
+#include "experimental/eckit/ecml/parser/RequestParser.h"
 #include "experimental/eckit/ecml/core/ExecutionContext.h"
 #include "experimental/eckit/ecml/core/Environment.h"
 #include "experimental/eckit/ecml/prelude/PrintHandler.h"
@@ -31,6 +32,9 @@ Values ParallelMapHandler::handle(ExecutionContext& context)
     Values values (context.environment().lookup("values"));
     Values closure (context.environment().lookup("closure"));
 
+    if (! closure->value())
+        throw UserError("parameter closure is empty");
+
     for (Cell* p(values); p; p = p->rest())
     {
         Cell* v (p->value());
@@ -39,7 +43,10 @@ Values ParallelMapHandler::handle(ExecutionContext& context)
         List vs;
         vs.append(v);
 
-        Values result (apply(context, closure, vs));
+        Values result (apply(context, closure->value(), vs));
+
+        Log::info() << "==== ParallelMapHandler::handle: result => " << result << endl;
+
         r.append(result);
     }
 
@@ -48,6 +55,11 @@ Values ParallelMapHandler::handle(ExecutionContext& context)
 
 Values ParallelMapHandler::apply(ExecutionContext& context, Cell* closure, Cell* values)
 {
+    /*
+    Request appl (new Cell("_verb", "apply", 0,
+                        new Cell("", "closure", new Cell("_list", "", new Cell("_requests", "", Cell::clone(closure), 0), 0),
+                        new Cell("", "values", Cell::clone(values), 0))));
+
     Cell* wrappedClosure (new Cell("_verb", "function", 0,
                             new Cell(
                                 "",
@@ -59,13 +71,26 @@ Values ParallelMapHandler::apply(ExecutionContext& context, Cell* closure, Cell*
                                     0),
                                 0)));
 
-    Request appl (new Cell("_verb", "apply", 0,
-                        new Cell("", "closure", new Cell("_list", "", new Cell("_requests", "", wrappedClosure, 0), 0),
-                        new Cell("", "values", Cell::clone(values), 0))));
 
-    Request requests (new Cell("_list", "", new Cell("_requests", "", appl, 0), 0));
+    string a (appl->str());
 
-    return context.interpreter().eval(requests, context);
+    Log::info() << "parallel map: apply: [" << a << "]" << endl;
+
+    Log::info() << "parsed: " << RequestParser::parse(a) << endl;
+    */
+
+    string a (string("apply,closure=(") + closure->str() + "),values=" + values->str());
+
+    Log::info() << "ParallelMapHandler:  [" << a << "]" << endl;
+
+    Cell* r (context.execute(a));
+
+    Log::info() << "parallel map: apply => " << r << endl;
+
+    //Request requests (new Cell("_list", "", new Cell("_requests", "", appl, 0), 0));
+
+    //return context.interpreter().eval(appl, context);
+    return r;
 }
 
 } // namespace eckit

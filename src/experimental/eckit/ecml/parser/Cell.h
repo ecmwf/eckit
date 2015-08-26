@@ -25,7 +25,7 @@ class Cell {
 public:
     Cell(const std::string&, const std::string&, Cell*, Cell*);
 
-    static Cell* clone(Cell*);
+    static Cell* clone(const Cell*);
 
     const std::string& tag() const;
     const std::string& text() const;
@@ -62,16 +62,14 @@ public:
     void simpleGraph(const std::string&);
 
 private:
-    Cell(Cell*); // cloning
+    Cell(const Cell*); // cloning
 
     std::string tag_;
     std::string text_;
     Cell *value_;
     Cell *rest_;
 
-    std::ostream& print(std::ostream&, size_t depth=0) const;
-    std::ostream& printAttributes(std::ostream&, size_t depth=0) const;
-    std::ostream& printValues(std::ostream&, size_t depth=0) const;
+    std::ostream& print(std::ostream&) const;
 
     std::ostream& printDot(std::ostream&, bool, bool) const;
     std::ostream& printDotList(std::ostream&, bool) const;

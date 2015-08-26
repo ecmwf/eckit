@@ -8,31 +8,32 @@
  * does it submit to any jurisdiction.
  */
 
-#include "GetenvHandler.h"
-
+#include "eckit/types/Types.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/parser/StringTools.h"
 #include "experimental/eckit/ecml/parser/Request.h"
+
 #include "experimental/eckit/ecml/core/ExecutionContext.h"
 #include "experimental/eckit/ecml/core/Environment.h"
+#include "experimental/eckit/ecml/core/Interpreter.h"
+
+#include "experimental/eckit/ecml/ast/FunctionDefinition.h"
+#include "experimental/eckit/ecml/ast/Closure.h"
+#include "experimental/eckit/ecml/prelude/QuoteHandler.h"
 
 using namespace std;
-using namespace eckit;
 
 namespace eckit {
 
-GetenvHandler::GetenvHandler(const std::string& name) : RequestHandler(name) {}
+QuoteHandler::QuoteHandler(const string& name)
+: SpecialFormHandler(name)
+{}
 
-Values GetenvHandler::handle(ExecutionContext& context)
+Request QuoteHandler::handle(const Request request, ExecutionContext& context)
 {
-    List r;
-
-    vector<string> vars (getValueAsList(context, "values"));
-    for (size_t i (0); i < vars.size(); ++i)
-    {
-        char *s (getenv(vars[i].c_str()));
-        r.append(! s ? string("") : string(getenv(vars[i].c_str())));
-    }
-
-    return r;
+    Cell* c(request->valueOrDefault("_", 0));
+    if (! c) UserError("quote: _ not set");
+    return Cell::clone(c);
 }
 
 } // namespace eckit

@@ -2,6 +2,10 @@ list( APPEND eckit_ecml_srcs
 # Parser
 parser/Cell.h
 parser/Cell.cc
+parser/CellPrinter.h
+parser/CellPrinter.cc
+parser/CellDotPrinter.h
+parser/CellDotPrinter.cc
 parser/List.h
 parser/List.cc
 parser/Request.h
@@ -62,6 +66,17 @@ prelude/GetenvHandler.h
 prelude/GetenvHandler.cc
 prelude/ParallelMapHandler.h
 prelude/ParallelMapHandler.cc
+prelude/JoinStringsHandler.h
+prelude/JoinStringsHandler.cc
+prelude/QuoteHandler.h
+prelude/QuoteHandler.cc
+prelude/NullHandler.h
+prelude/NullHandler.cc
+prelude/RunHandler.h
+prelude/RunHandler.cc
+prelude/REPLHandler.h
+prelude/REPLHandler.cc
+
 
 # Data types' support
 data/DataHandleFactory.h
@@ -90,7 +105,8 @@ ecbuild_add_library( TARGET             eckit_ecml
                      INSTALL_HEADERS    ALL
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/experimental/eckit/ecml
                      SOURCES            ${eckit_ecml_srcs}
-                     LIBS               eckit )
+                     INCLUDES           ${CURSES_INCLUDE_DIR} ${READLINE_INCLUDE_DIR} 
+                     LIBS               eckit ${CURSES_LIBRARIES} ${READLINE_LIBRARIES} )
 
 ecbuild_add_executable( TARGET ecml_test
                         SOURCES tests/ecml_test.cc
@@ -98,7 +114,7 @@ ecbuild_add_executable( TARGET ecml_test
 
 ecbuild_add_executable( TARGET ecml_unittests
                         SOURCES tests/ecml_unittests.cc
-                        LIBS eckit eckit_ecml )
+                        LIBS eckit eckit_ecml)
 
 add_subdirectory( tests )
 

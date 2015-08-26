@@ -12,9 +12,11 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
+#include "eckit/runtime/Context.h"
 
 #include "experimental/eckit/ecml/core/ExecutionContext.h"
-#include "eckit/runtime/Context.h"
+#include "experimental/eckit/ecml/core/Environment.h"
+#include "experimental/eckit/ecml/prelude/REPLHandler.h"
 
 using namespace std;
 using namespace eckit;
@@ -25,15 +27,20 @@ public:
     ~TestECML() {}
     
     virtual void run();
+
 protected:
-    virtual void runScript(const string& pathName);
+    virtual void runScript(const std::string& pathName);
 };
 
 void TestECML::run()
 {
     int argc (Context::instance().argc());
     if (argc < 2)
-        throw UserError("Command line required (name(s) of file(s) with ECML script");
+    {
+        //throw UserError("Command line required (name(s) of file(s) with ECML script");
+        ExecutionContext context;
+        REPLHandler::repl(context);
+    }
 
     for (size_t i(1); i < Context::instance().argc(); ++i)
         runScript(Context::instance().argv(i));

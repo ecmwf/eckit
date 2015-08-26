@@ -28,7 +28,7 @@ Values SystemHandler::handle(ExecutionContext& context)
 
     Values vs (context.environment().lookup("values"));
     stringstream ss;
-    PrintHandler::printList(ss, vs, "");
+    PrintHandler::printList(ss, vs, " ", "");
 
     Log::debug() << "Executing system(\"" << ss.str() << ")\"" << endl;
 

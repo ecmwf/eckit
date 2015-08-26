@@ -29,8 +29,8 @@ public:
     void registerHandler(const char*, eckit::RequestHandler&);
     void registerHandler(const std::string&, eckit::RequestHandler&);
 
-    void execute(const std::string&);
-    void executeScriptFile(const std::string&);
+    eckit::Values execute(const std::string&);
+    eckit::Values executeScriptFile(const std::string&);
 
     void import(eckit::Module&);
 

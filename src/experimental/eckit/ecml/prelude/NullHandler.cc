@@ -8,20 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/prelude/ClosureHandler.h"
+#include "NullHandler.h"
 
-using namespace std;
+#include "experimental/eckit/ecml/parser/Request.h"
 
 namespace eckit {
 
-ClosureHandler::ClosureHandler(const string& name)
-: SpecialFormHandler(name)
-{}
+NullHandler::NullHandler(const std::string& name) : RequestHandler(name) {}
 
-Request ClosureHandler::handle(const Request request, ExecutionContext&)
+Values NullHandler::handle(ExecutionContext&)
 {
-    return Cell::clone(request);
+    return new Cell("_list", "", 0, 0);
 }
 
 } // namespace eckit

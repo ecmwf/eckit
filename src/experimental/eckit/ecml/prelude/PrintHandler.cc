@@ -34,24 +34,42 @@ PrintHandler::PrintHandler(const string& name, const string& end)
 
 Values PrintHandler::handle(ExecutionContext& context)
 {
+    string separator (" ");
+    if (context.environment().lookupNoThrow("separator"))
+    {
+        vector<string> separators (getValueAsList(context, "separator"));
+        if (separators.size() > 1)
+            throw UserError("join_strings: separator must be a single string");
+
+        if (separators.size() == 1)
+            separator = separators[0];
+    }
+
     // TODO: this is a leak I think
     Values r (Cell::clone(context.environment().lookupNoThrow("values")));
     if (!r )
         r = new Cell("_list", "", 0, 0);
     else
-        printList(out(), r, end_);
+        printList(out(), r, separator, end_);
 
     out() << end_;
     return r;
 }
 
-void PrintHandler::printList(ostream& out, Values values, const std::string& end)
+void PrintHandler::printList(ostream& out, Values values, const std::string& separator, const std::string& end)
 {
     for (Cell* e(values); e; e = e->rest())
+    {
         if (e->value())
-            out << e->value() << " ";
+            out << e->value();
         else
-            out << "(null)" << " ";
+            out << "(null)";
+
+        if (e->rest())
+            out << separator;
+        else
+            out << end;
+    }
 }
 
 } // namespace eckit

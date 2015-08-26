@@ -50,14 +50,14 @@ void ExecutionContext::registerHandler(const std::string& name, eckit::RequestHa
     // ExecutionContext will not be shared between threads.
 }
 
-void ExecutionContext::executeScriptFile(const string& fileName)
+Values ExecutionContext::executeScriptFile(const string& fileName)
 {
-    interpreter().eval(RequestParser::parseFile(fileName.c_str(), /*debug=*/ false), *this);
+    return interpreter().eval(RequestParser::parseFile(fileName.c_str(), /*debug=*/ false), *this);
 }
 
-void ExecutionContext::execute(const string& source)
+Values ExecutionContext::execute(const string& source)
 {
-    interpreter().eval(RequestParser::parse(source, /*debug=*/ false), *this);
+    return interpreter().eval(RequestParser::parse(source, /*debug=*/ false), *this);
 }
 
 void ExecutionContext::import(Module& module)

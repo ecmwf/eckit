@@ -4,6 +4,8 @@ parser/Cell.h
 parser/Cell.cc
 parser/CellPrinter.h
 parser/CellPrinter.cc
+parser/CellDotPrinter.h
+parser/CellDotPrinter.cc
 parser/List.h
 parser/List.cc
 parser/Request.h

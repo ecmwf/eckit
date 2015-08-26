@@ -13,6 +13,7 @@
 #include "eckit/parser/StringTools.h"
 #include "Cell.h"
 #include "CellPrinter.h"
+#include "CellDotPrinter.h"
 
 using namespace std;
 using namespace eckit;
@@ -123,130 +124,16 @@ std::ostream& Cell::print(std::ostream& s) const
     return CellPrinter::print(s, this, 0);
 }
 
+ostream& Cell::dot(ostream& s, const string& label, bool detailed, bool clever) const
+{
+    return CellDotPrinter::dot(s, this, label, detailed, clever);
+}
+
 std::string Cell::str() const
 {
     stringstream ss;
     ss << this;
     return ss.str();
-}
-
-ostream& Cell::printDot(ostream& s, bool detailed, bool clever) const
-{
-    if (clever)
-    {
-        if (tag() == "_list" || tag() == "_requests") return printDotList(s, detailed);
-        if (tag() == "_verb") return printDotVerb(s, detailed);
-    }
-
-    s << "\"node" << (void*) this << "\" [ label=\"<f0>";
-    if (detailed) s << (void*) this;
-    s << " " << CellPrinter::quotedSnippet(text()) << " | <f1>value_ | <f2>rest_\" shape = \"record\" ];" << endl;
-    if (value())
-    {
-        s << "\"node" << (void*) this << "\":f1 -> \"node" << (void*) value() << "\":f0;" << endl;
-        value()->printDot(s, detailed, clever);
-    }
-    if (rest())
-    {
-        s << "\"node" << (void*) this << "\":f2 -> \"node" << (void*) rest() << "\":f0;" << endl;
-        rest()->printDot(s, detailed, clever);
-    }
-    return s;
-}
-
-bool oneElementList(Cell* p)
-{
-    return p->tag() == "_list"
-         && p->value() 
-         && ! p->rest()
-         && ! (p->value()->tag().size())
-           ;
-}
-
-bool textElement(Cell* p)
-{
-    return p
-        && p->text().size()
-        //&& ! p->tag().size()
-        && ! p->value()
-        && ! p->rest()
-        ;
-}
-
-ostream& Cell::printDotVerb(ostream& s, bool detailed) const
-{
-    ASSERT(tag() == "_verb");
-
-    stringstream box, arrows;
-
-    box << "\"node" << "" << (void*) this << "\" [ label=\"<f0>";
-    if (detailed)
-        box << "\\\"" << (void*) this << "\\\"";
-    box << " " << CellPrinter::quotedSnippet(text()) << ",";
-
-    size_t i(1);
-    for (const Cell* p(rest()); p; ++i, p = p->rest())
-    {
-        box << " | <f" << i << "> ";
-        if (detailed)
-            box << "\\\"" << (void*) p << "\\\"";
-
-        box << " " << p->text() << " = "; 
-        if (oneElementList(p->value()))
-            box << CellPrinter::quotedSnippet(p->value()->value()->text());
-        else
-        {
-            arrows << "\"node" << (void*) this << "\":f" << i << " -> \"node" << (void*) p->value() << "\":f0;" << endl;
-            p->value()->printDot(s, detailed, true);
-        }
-
-    }
-    box << "\" shape=\"record\" ]; ";
-    return s << box.str() << endl << arrows.str();
-}
-
-ostream& Cell::printDotList(ostream& s, bool detailed) const
-{
-    ASSERT(tag() == "_list" || tag() == "_requests");
-
-    stringstream box, arrows;
-
-    box << "\"node" << (void*) this << "\" [ label=\"<f0> [" << tag() << "] ";
-
-    size_t i(0);
-    for (const Cell* p(this); p; ++i, p = p->rest())
-    {
-        ASSERT(p->tag() == "_list" || p->tag() == "_requests");
-
-        if (i) 
-            box << " | <f" << i << "> ";
- 
-        if (detailed)
-            box << (void*) p;
-
-        if (textElement(p->value()))
-            box << "  " << CellPrinter::quotedSnippet(p->value()->text());
-        else
-        {
-            arrows << "\"node" << (void*) this << "\":f" << i << " -> \"node" << (void*) p->value() << "\":f0;" << endl;
-            if (p->value())
-                p->value()->printDot(s, detailed, true);
-        }
-
-    }
-    box << "\" shape=\"record\" ]; ";
-    return s << box.str() << endl << arrows.str();
-}
-
-ostream& Cell::dot(ostream& s, const string& label, bool detailed, bool clever) const
-{
-    s << "digraph g  {\n"
-        "graph [ rankdir = \"LR\" label=\"" << CellPrinter::quotedSnippet(label) << "\"];\n"
-        "node [ fontsize = \"16\" shape = \"ellipse\" ];\n"
-        "edge [ ];\n";
-    printDot(s, detailed, clever);
-    s << "}\n";
-    return s;
 }
 
 void Cell::graph(const string& title) { return showGraph(title, true, true, /*clever*/ false); }

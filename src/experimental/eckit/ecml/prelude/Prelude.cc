@@ -40,6 +40,7 @@
 #include "QuoteHandler.h"
 #include "NullHandler.h"
 #include "RunHandler.h"
+#include "REPLHandler.h"
 
 namespace eckit {
 
@@ -74,6 +75,7 @@ void Prelude::importInto(ExecutionContext& context)
     static QuoteHandler quote("quote");
     static NullHandler null("null");
     static RunHandler run("run");
+    static REPLHandler repl("repl");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
@@ -84,6 +86,7 @@ void Prelude::importInto(ExecutionContext& context)
     e.set("if", macro(_if.name()));
     e.set("quote", macro(quote.name()));
     e.set("run", macro(run.name()));
+    e.set("repl", macro(repl.name()));
 
     context.registerHandler("list", list);
     context.registerHandler("value", value);

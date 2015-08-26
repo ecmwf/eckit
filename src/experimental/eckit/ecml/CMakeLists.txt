@@ -74,6 +74,9 @@ prelude/NullHandler.h
 prelude/NullHandler.cc
 prelude/RunHandler.h
 prelude/RunHandler.cc
+prelude/REPLHandler.h
+prelude/REPLHandler.cc
+
 
 # Data types' support
 data/DataHandleFactory.h
@@ -102,12 +105,12 @@ ecbuild_add_library( TARGET             eckit_ecml
                      INSTALL_HEADERS    ALL
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/experimental/eckit/ecml
                      SOURCES            ${eckit_ecml_srcs}
-                     LIBS               eckit )
+                     INCLUDES           ${CURSES_INCLUDE_DIR} ${READLINE_INCLUDE_DIR} 
+                     LIBS               eckit ${CURSES_LIBRARIES} ${READLINE_LIBRARIES} )
 
 ecbuild_add_executable( TARGET ecml_test
                         SOURCES tests/ecml_test.cc
-                        INCLUDES ${CURSES_INCLUDE_DIR} ${READLINE_INCLUDE_DIR} 
-                        LIBS eckit eckit_ecml ${CURSES_LIBRARIES} ${READLINE_LIBRARIES} )
+                        LIBS eckit eckit_ecml )
 
 ecbuild_add_executable( TARGET ecml_unittests
                         SOURCES tests/ecml_unittests.cc

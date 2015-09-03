@@ -171,15 +171,11 @@ endif()
 
 if( HAVE_GRIB )
   list( APPEND ECKIT_LIBRARIES eckit_grib )
-  list( APPEND ECKIT_TPLS grib_api )
 endif()
 
 if( HAVE_EIGEN )
     if( ECKIT_CONTRIB_EIGEN )
         list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
-    else()
-        list( APPEND ECKIT_TPLS Eigen3 )
-
     endif()
 endif()
 
@@ -189,7 +185,6 @@ endif()
 
 if( HAVE_ECKIT_MPISTUBS )
   list( APPEND ECKIT_LIBRARIES eckit_mpistubs )
-  list( APPEND ECKIT_TPLS mpistubs )
 endif()
 
 get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )

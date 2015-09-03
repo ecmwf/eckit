@@ -162,7 +162,6 @@ endif()
 ############################################################################################
 # export package info
 
-set( ECKIT_TPLS           "" )
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
 set( ECKIT_LIBRARIES      eckit eckit_geometry eckit_cmd eckit_maths eckit_web )
 

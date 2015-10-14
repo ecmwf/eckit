@@ -95,7 +95,8 @@ MappedArray<T>::MappedArray(const PathName& path, unsigned long size):
 	map_ = ::mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0);
     if(map_ == MAP_FAILED)
     {
-        Log::error() << "mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0)"
+        Log::error() << "MappedArray path=" << path << " size=" << size
+                     << " fails to mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0)"
                      << Log::syserr << std::endl;
         throw FailedSystemCall("mmap",Here());
     }

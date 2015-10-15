@@ -103,6 +103,9 @@ Context::Context() : argc_(saved_argc), argv_(saved_argv), taskID_(0), home_("/"
   char* h = getenv("HOME");
   if (h) home_ = h;
 
+  char* th = getenv("_TEST_ECKIT_HOME");
+  if (th) home_ = th;
+
   behavior_.reset(new StandardBehavior());
 }
 

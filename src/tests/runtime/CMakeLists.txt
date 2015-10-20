@@ -8,7 +8,7 @@
 
 ecbuild_add_test( TARGET  eckit_test_producer
                   SOURCES test_producer.cc
-                  ENVIRONMENT _TEST_ECKIT_HOME=/tmp
+                  ENVIRONMENT _TEST_ECKIT_HOME=/tmp/$ENV{USER}
                   LIBS    eckit
 )
 

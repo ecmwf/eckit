@@ -7,24 +7,20 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
-/// @author Piotr Kuchta, May 2015
+/// @author Piotr Kuchta, October 2015
 
-#ifndef eckit_ecml_VariableLookupHandler_H
-#define eckit_ecml_VariableLookupHandler_H
-
-#include <sstream>
+#ifndef eckit_ecml_DictionaryHandler_H
+#define eckit_ecml_DictionaryHandler_H
 
 #include "experimental/eckit/ecml/parser/Request.h"
 #include "experimental/eckit/ecml/core/RequestHandler.h"
 
 namespace eckit {
 
-class VariableLookupHandler : public eckit::RequestHandler {
+class DictionaryHandler : public eckit::RequestHandler {
 public:
-    VariableLookupHandler(const std::string&, const std::string&);
+    DictionaryHandler(const std::string&);
     virtual eckit::Values handle(eckit::ExecutionContext&);
-private:
-    const std::string of_;
 };
 
 } // namespace eckit

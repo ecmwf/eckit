@@ -34,11 +34,11 @@ Request ApplyHandler::handle(const Request request, ExecutionContext& context)
 {
     ASSERT(request->tag() == "_verb" && request->text() == "apply");
 
-    Log::info() << "ApplyHandler::handle: request: " << request << endl;
+    //Log::info() << "ApplyHandler::handle: request: " << request << endl;
 
     Request evaluatedAttributes (context.interpreter().evalAttributes(request, context));
 
-    Log::info() << "ApplyHandler::handle: evaluatedAttributes: " << evaluatedAttributes << endl;
+    //Log::info() << "ApplyHandler::handle: evaluatedAttributes: " << evaluatedAttributes << endl;
 
     Cell* p (evaluatedAttributes->rest());
 
@@ -50,7 +50,7 @@ Request ApplyHandler::handle(const Request request, ExecutionContext& context)
 
     ASSERT("apply handles closures only now" && p->text() == "closure");
 
-    Log::info() << "ApplyHandler::handle: closure: " << p->value() << endl;
+    //Log::info() << "ApplyHandler::handle: closure: " << p->value() << endl;
 
     Cell* closure (p->value()); // it should be a list with one closure
 
@@ -61,7 +61,7 @@ Request ApplyHandler::handle(const Request request, ExecutionContext& context)
         paramsFrame->append(new Cell("", e->text(), e->value(), 0));
     }
     // closure is a list here. it should contain just one closure object.
-    Log::info() << "  *** ApplyHandler::handle: closure: " << closure << endl;
+    //Log::info() << "  *** ApplyHandler::handle: closure: " << closure << endl;
     ASSERT(closure->rest() == 0);
 
     //Cell *r (context.interpreter().eval(closure->value(), context));

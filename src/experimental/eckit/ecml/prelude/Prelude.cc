@@ -41,6 +41,7 @@
 #include "NullHandler.h"
 #include "RunHandler.h"
 #include "REPLHandler.h"
+#include "DictionaryHandler.h"
 
 namespace eckit {
 
@@ -61,8 +62,8 @@ void Prelude::importInto(ExecutionContext& context)
     static PrintHandler print("print", "");
     static LetHandler let("let");
     static ApplyHandler apply("apply");
-    static VariableLookupHandler value("value");
-    static VariableLookupHandler dollar("$");
+    static VariableLookupHandler value("value", "of");
+    static VariableLookupHandler dollar("$", "_");
     static TestHandler test("test");
     static FirstHandler first("first");
     static RestHandler rest("rest");
@@ -76,6 +77,7 @@ void Prelude::importInto(ExecutionContext& context)
     static NullHandler null("null");
     static RunHandler run("run");
     static REPLHandler repl("repl");
+    static DictionaryHandler dictionary("dictionary");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
@@ -101,6 +103,7 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("map", _map);
     context.registerHandler("join_strings", join_strings);
     context.registerHandler("null", null);
+    context.registerHandler("dictionary", dictionary);
 }
 
 } // namespace eckit

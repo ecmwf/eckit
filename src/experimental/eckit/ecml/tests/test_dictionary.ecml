@@ -1,0 +1,27 @@
+test, label = check verb dictionary is there,
+do = (
+        println,values = (dictionary, a = 1, b = 2, c = 3, d = 1/2/3/4)
+),
+expect = (dictionary, a = 1, b = 2, c = 3, d = 1/2/3/4)
+
+
+test, label = check verb value can extract values from a dictionary,
+do = (
+        let, d = (dictionary, a = 1, b = 2, c = 3)
+        $, _ = d / a
+),
+expect = 1
+
+
+test, label = 'check path syntax of verb value (also known as $ (dollar))',
+do = (
+        let, d = (dictionary, 
+                             a = 1, 
+                             b = 2, 
+                             c = (dictionary,
+                                              k1 = 1,
+                                              k2 = 1 / 2,
+                                              k3 = 1 / 2 / 3))
+        $, _ = d/c/k3
+),
+expect = 1 / 2 / 3

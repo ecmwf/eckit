@@ -12,6 +12,7 @@ test_map.ecml
 test_system.ecml
 test_getenv.ecml
 test_apply.ecml
+test_dictionary.ecml
 #test_parallel_map.ecml
 )
 

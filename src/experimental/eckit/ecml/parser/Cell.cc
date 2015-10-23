@@ -96,7 +96,7 @@ Cell* Cell::valueOrDefault(const string& keyword, Cell* defaultValue) const
     if (p == 0)
         return defaultValue;
 
-    return p->value();
+    return Cell::clone(p->value());
 }
 
 std::string Cell::valueAsString(const string& keyword, const std::string& defaultValue) const

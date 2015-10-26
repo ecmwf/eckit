@@ -1,6 +1,6 @@
-test, label = lists produced by expressions embedded in a list are concatenated together,
+test, label = sequences produced by expressions embedded in a sequence are concatenated together,
 do = (
         let, x = 1 / 2 
-        println,values = (value,of = x) / (value,of = x)
+        println,values = ($,_ = x) / ($,_ = x)
 ),
 expect = 1 / 2 / 1 / 2

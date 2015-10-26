@@ -48,6 +48,8 @@ prelude/ClosureHandler.h
 prelude/ClosureHandler.cc
 prelude/ListHandler.cc
 prelude/ListHandler.h
+prelude/SequenceHandler.cc
+prelude/SequenceHandler.h
 prelude/PrintHandler.cc
 prelude/PrintHandler.h
 prelude/TestHandler.cc

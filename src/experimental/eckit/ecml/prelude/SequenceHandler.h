@@ -7,22 +7,24 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
+/// @author Piotr Kuchta, May 2015
 
-#include "ListHandler.h"
+#ifndef eckit_ecml_SequenceHandler_H
+#define eckit_ecml_SequenceHandler_H
+
+#include <sstream>
 
 #include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/ExecutionContext.h"
-#include "experimental/eckit/ecml/core/Environment.h"
+#include "experimental/eckit/ecml/core/RequestHandler.h"
 
 namespace eckit {
 
-ListHandler::ListHandler(const std::string& name) : RequestHandler(name) {}
-
-Values ListHandler::handle(ExecutionContext& context)
-{
-    NOTIMP;
-    Values r (Cell::clone(context.environment().lookup("values")));
-    return r;
-}
+class SequenceHandler : public eckit::RequestHandler {
+public:
+    SequenceHandler(const std::string&);
+    virtual eckit::Values handle(eckit::ExecutionContext&);
+};
 
 } // namespace eckit
+
+#endif

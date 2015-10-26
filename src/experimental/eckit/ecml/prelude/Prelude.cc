@@ -21,6 +21,7 @@
 #include "experimental/eckit/ecml/core/SpecialFormHandler.h"
 
 #include "ListHandler.h"
+#include "SequenceHandler.h"
 #include "VariableLookupHandler.h"
 #include "PrintHandler.h"
 #include "LetHandler.h"
@@ -58,6 +59,7 @@ void Prelude::importInto(ExecutionContext& context)
     static DefineFunctionHandler function("function");
     static ClosureHandler closure("closure");
     static ListHandler list("list");
+    static SequenceHandler sequence("sequence");
     static PrintHandler println("println", "\n");
     static PrintHandler print("print", "");
     static LetHandler let("let");
@@ -91,6 +93,7 @@ void Prelude::importInto(ExecutionContext& context)
     e.set("repl", macro(repl.name()));
 
     context.registerHandler("list", list);
+    context.registerHandler("sequence", sequence);
     context.registerHandler("value", value);
     context.registerHandler("$", dollar);
     context.registerHandler("print", print);

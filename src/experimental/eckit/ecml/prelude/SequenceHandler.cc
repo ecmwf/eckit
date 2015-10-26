@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "ListHandler.h"
+#include "SequenceHandler.h"
 
 #include "experimental/eckit/ecml/parser/Request.h"
 #include "experimental/eckit/ecml/core/ExecutionContext.h"
@@ -16,11 +16,10 @@
 
 namespace eckit {
 
-ListHandler::ListHandler(const std::string& name) : RequestHandler(name) {}
+SequenceHandler::SequenceHandler(const std::string& name) : RequestHandler(name) {}
 
-Values ListHandler::handle(ExecutionContext& context)
+Values SequenceHandler::handle(ExecutionContext& context)
 {
-    NOTIMP;
     Values r (Cell::clone(context.environment().lookup("values")));
     return r;
 }

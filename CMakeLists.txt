@@ -87,8 +87,12 @@ if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
   ecbuild_add_option( FEATURE LAPACK
                       DESCRIPTION "Linear Algebra PACKage"
                       REQUIRED_PACKAGES LAPACK )
-else() # Don't search for it on cc[abt] as it is already available as scilib
+# Don't search for LAPACK on cc[abt] as it is provided by the cray-libsci module
+# which is loaded by default
+else()
+  set( _cray_libsci_loaded $ENV{CRAY_LIBSCI_DIR} )
   ecbuild_add_option( FEATURE LAPACK
+                      CONDITION _cray_libsci_loaded
                       DESCRIPTION "Linear Algebra PACKage")
 endif()
 

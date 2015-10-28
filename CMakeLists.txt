@@ -86,7 +86,7 @@ set_package_properties( Armadillo PROPERTIES TYPE RECOMMENDED PURPOSE "Dense mat
 if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
   ecbuild_add_option( FEATURE LAPACK
                       DESCRIPTION "Linear Algebra PACKage"
-                      REQUIRED_PACKAGES LAPACK )
+                      REQUIRED_PACKAGES "PROJECT LAPACK" )
 # Don't search for LAPACK on cc[abt] as it is provided by the cray-libsci module
 # which is loaded by default
 else()

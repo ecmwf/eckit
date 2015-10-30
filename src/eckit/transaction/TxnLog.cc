@@ -13,7 +13,6 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Seconds.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 #include "eckit/log/TimeStamp.h"
@@ -63,9 +62,9 @@ TxnLog<T>::~TxnLog()
 template<class T>
 PathName TxnLog<T>::name(T& event)
 {
-	StrStream s;
-	s << std::setfill('0') << std::setw(10) << event.transactionID() << StrStream::ends;
-	return path_ + "/" + std::string(s);
+    std::ostringstream s;
+    s << std::setfill('0') << std::setw(10) << event.transactionID();
+    return path_ + "/" + s.str();
 }
 
 
@@ -93,13 +92,12 @@ void TxnLog<T>::end(T& event,bool backup)
 
 	if(backup)
 	{
-		StrStream s;
-		s << path.dirName() << "/done/" << TimeStamp(time(0),"%Y%m%d") << StrStream::ends;
+        std::ostringstream s;
+        s << path.dirName() << "/done/" << TimeStamp(time(0),"%Y%m%d");
 
 		// Append to current day's backup
 
-		std::string t(s);
-		FileStream log(t,"a");
+        FileStream log(s.str(), "a");
 		log << event;
 	}
 

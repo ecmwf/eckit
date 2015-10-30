@@ -9,7 +9,6 @@
  */
 
 #include "eckit/io/MultiHandle.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
@@ -400,12 +399,12 @@ bool MultiHandle::moveable() const
 
 std::string MultiHandle::title() const
 {
-    StrStream os;
+    std::ostringstream os;
     os << "[";
     if(datahandles_.size()>0) os << datahandles_[0]->title();
     if(datahandles_.size()>1) os << ",...{" << datahandles_.size() << "}";
-    os << "]" << StrStream::ends;
-    return std::string(os);
+    os << "]";
+    return os.str();
 }
 
 //-----------------------------------------------------------------------------

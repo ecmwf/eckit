@@ -9,7 +9,6 @@
  */
 
 #include "eckit/types/DayOfYear.h"
-#include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------
 
@@ -45,9 +44,9 @@ DayOfYear::DayOfYear(const std::string& s):
 
 DayOfYear::operator std::string() const
 {
-	StrStream os;
-	os << *this << StrStream::ends;
-	return std::string(os);
+    std::ostringstream os;
+    os << *this;
+    return os.str();
 }
 
 void DayOfYear::print(std::ostream& s) const

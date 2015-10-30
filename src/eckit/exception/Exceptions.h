@@ -19,7 +19,6 @@
 #include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/SavedStatus.h"
-#include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------
 
@@ -233,9 +232,9 @@ inline void SysCall(long long code,const char *msg,const T& ctx,const CodeLocati
 {
     if(code<0)
     {
-        StrStream os;
-        os << ctx << StrStream::ends;
-        throw FailedSystemCall(std::string(os),msg,loc,errno);
+        std::ostringstream os;
+        os << ctx;
+        throw FailedSystemCall(os.str(), msg, loc, errno);
     }
 }
 

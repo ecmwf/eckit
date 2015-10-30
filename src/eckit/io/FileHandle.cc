@@ -335,8 +335,6 @@ void FileHandle::cost(std::map<std::string,Length>& c, bool read) const
 
 std::string FileHandle::title() const
 {
-    //StrStream os;
-    //os << "Client[" << host_ << ":" << port_ << "]" << StrStream::ends;
     return PathName::shorten(name_);
 }
 

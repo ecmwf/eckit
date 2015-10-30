@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/compat/StrStream.h"
 #include "eckit/net/TCPStream.h"
 
 //-----------------------------------------------------------------------------
@@ -35,13 +34,11 @@ void TCPStream::closeOutput()
 //
 std::string TCPStreamBase::nonConstName()
 {
-	StrStream r;
+    std::ostringstream r;
 
-	r << "TCP stream from " << socket().localHost() << 
-		" at " << socket().localPort();
-	r << " to " << socket().remoteHost() << 
-		" at " << socket().remotePort() << StrStream::ends;
-	return std::string(r);
+    r << "TCP stream from " << socket().localHost() << " at " << socket().localPort()
+      << " to " << socket().remoteHost() << " at " << socket().remotePort();
+    return r.str();
 }
 
 std::string TCPStreamBase::name() const

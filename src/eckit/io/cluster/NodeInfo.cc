@@ -17,7 +17,6 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/config/Resource.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
@@ -147,9 +146,9 @@ NodeInfo NodeInfo::acceptLogin(Stream& s)
 	}
 	else
 	{
-		StrStream os;
-		os << "User mismatch: " << here << " " << remote << StrStream::ends;
-		s << Exception(std::string(os));
+        std::ostringstream os;
+        os << "User mismatch: " << here << " " << remote;
+        s << Exception(os.str());
 	}
 
 	Log::info() << "Connection established " << here << " <=> " << remote << std::endl;
@@ -166,9 +165,9 @@ NodeInfo NodeInfo::sendLogin(Stream& s)
 
 	if(here.user() != remote.user())
 	{
-		StrStream os;
-		os << "User mismatch: " << here << " " << remote << StrStream::ends;
-		s << Exception(std::string(os));
+        std::ostringstream os;
+        os << "User mismatch: " << here << " " << remote;
+        s << Exception(os.str());
 	}
 
 	Log::info() << "Connection established " << here << " <=> " << remote << std::endl;

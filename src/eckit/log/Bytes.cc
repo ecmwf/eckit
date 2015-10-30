@@ -9,7 +9,6 @@
  */
 
 #include "eckit/log/Bytes.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/log/Timer.h"
 
 //-----------------------------------------------------------------------------
@@ -65,9 +64,9 @@ std::ostream& operator<<(std::ostream& s, const Bytes& b)
 
 Bytes::operator std::string() const
 {
-	StrStream s;
-	s << *this << StrStream::ends;
-	return std::string(s);
+    std::ostringstream s;
+    s << *this;
+    return s.str();
 }
 
 //-----------------------------------------------------------------------------

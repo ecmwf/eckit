@@ -9,7 +9,6 @@
  */
 
 #include "eckit/types/Month.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/parser/Tokenizer.h"
 
 //-----------------------------------------------------------------------------
@@ -94,9 +93,9 @@ Month::Month(const std::string& s):
 
 Month::operator std::string() const
 {
-	StrStream os;
-	os << *this << StrStream::ends;
-	return std::string(os);
+    std::ostringstream os;
+    os << *this;
+    return os.str();
 }
 
 void Month::print(std::ostream& s) const

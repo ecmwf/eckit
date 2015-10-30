@@ -10,7 +10,6 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/parser/JSONParser.h"
 #include "eckit/web/Html.h"
@@ -280,9 +279,9 @@ const std::string& Url::operator[](int n) const
 
 std::string Url::str() const
 {
-	StrStream s;
-	s << *this << StrStream::ends;
-	return std::string(s);
+    std::ostringstream s;
+    s << *this;
+    return s.str();
 }
 
 int Url::size() const

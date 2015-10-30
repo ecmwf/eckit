@@ -37,9 +37,9 @@ class Error : public eckit::Exception {
 public:
   Error(const std::string& msg, const eckit::CodeLocation& loc)
   {
-    eckit::StrStream s;
-    s << "MPI Error: " << msg << " " << " in " << loc << " "  << eckit::StrStream::ends;
-    reason(std::string(s));
+    std::ostringstream s;
+    s << "MPI Error: " << msg << " " << " in " << loc;
+    reason(s.str());
   }
 };
 

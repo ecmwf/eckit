@@ -12,7 +12,6 @@
 #include "eckit/types/Grid.h"
 #include "eckit/log/Log.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/parser/Tokenizer.h"
 
 //-----------------------------------------------------------------------------
@@ -143,9 +142,9 @@ double Grid::distance(const Grid& p) const
 
 Grid::operator std::string() const
 {
-	StrStream os;
-	os << *this << StrStream::ends;
-	return std::string(os);
+    std::ostringstream os;
+    os << *this;
+    return os.str();
 }
 
 void Grid::print(std::ostream& s) const

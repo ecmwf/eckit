@@ -10,7 +10,6 @@
 
 
 #include "eckit/value/Content.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/value/Value.h"
 
 //-----------------------------------------------------------------------------
@@ -58,50 +57,44 @@ Content::~Content()
 
 void Content::badConvertion(const std::string& to) const
 {
-	StrStream s;
-	s << "Cannot convert " << *this << " (" << typeName() << ") to " << to << StrStream::ends;
-	std::string str(s);
-	throw BadConversion(str);
+    std::ostringstream s;
+    s << "Cannot convert " << *this << " (" << typeName() << ") to " << to;
+    throw BadConversion(s.str());
 }
 
 void Content::badComparison(const std::string& to) const
 {
-	StrStream s;
-	s << "Cannot compare " << *this << " (" << typeName() << ") with " << to << StrStream::ends;
-	std::string str(s);
-	throw BadComparison(str);
+    std::ostringstream s;
+    s << "Cannot compare " << *this << " (" << typeName() << ") with " << to;
+    throw BadComparison(s.str());
 }
 
 void Content::badOperator(const std::string& op, const std::string& to) const
 {
-	StrStream s;
-	s << *this << " (" << typeName() << ") " << op << " " << to << StrStream::ends;
-	std::string str(s);
-	throw BadOperator(str);
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") " << op << " " << to;
+    throw BadOperator(s.str());
 }
 
 Value& Content::element(const Value&)
 {
-    StrStream s;
-    s << *this << " (" << typeName() << ") method 'element' not implemented" << StrStream::ends;
-    std::string str(s);
-    throw BadOperator(str);
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") method 'element' not implemented";
+    throw BadOperator(s.str());
 }
 
 bool Content::contains(const Value&) const
 {
-    StrStream s;
-    s << *this << " (" << typeName() << ") method 'contains' not implemented" << StrStream::ends;
-    std::string str(s);
-    throw BadOperator(str);
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") method 'contains' not implemented";
+    throw BadOperator(s.str());
 }
 
 Value Content::negate() const
 {
-     StrStream s;
-    s << *this << " (" << typeName() << ") method 'negate' not implemented" << StrStream::ends;
-    std::string str(s);
-    throw BadOperator(str);
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") method 'negate' not implemented";
+    throw BadOperator(s.str());
 }
 
 void Content::value(long long&) const

@@ -16,6 +16,8 @@
 
 #include "eckit/eckit.h"
 
+#include "eckit/runtime/TaskID.h" // to be removed
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------

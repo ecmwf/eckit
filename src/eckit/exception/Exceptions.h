@@ -20,6 +20,8 @@
 #include "eckit/log/Log.h"
 #include "eckit/log/SavedStatus.h"
 
+#include "eckit/compat/StrStream.h"
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {

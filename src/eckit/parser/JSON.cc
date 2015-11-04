@@ -156,6 +156,14 @@ JSON& JSON::operator<<(int n)
     return *this;
 }
 
+JSON& JSON::operator<<(unsigned int n)
+{
+    null_ = false;
+    sep();
+    out_ << n;
+    return *this;
+}
+
 JSON& JSON::operator<<(char n)
 {
     null_ = false;

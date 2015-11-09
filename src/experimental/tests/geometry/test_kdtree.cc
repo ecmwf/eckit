@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_constructor )
     std::cout << "testPoint perturb " << testPoint.x(0) << ", " << testPoint.x(1) << std::endl;
 
     Point nr = kd.nearestNeighbour(testPoint).point();
-    
+
     // we should find the same point
     for (unsigned int i = 0; i < Point::dimensions(); i++)
         BOOST_CHECK_EQUAL(nr.x(i) , refPoint.x(i));

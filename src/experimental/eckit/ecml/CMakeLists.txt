@@ -103,16 +103,16 @@ ecbuild_generate_yy( YYPREFIX    request_
 
 ecbuild_add_library( TARGET             eckit_ecml
                      INSTALL_HEADERS    ALL
-                     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/experimental/eckit/ecml
+                     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/ecml
                      SOURCES            ${eckit_ecml_srcs}
-                     INCLUDES           ${CURSES_INCLUDE_DIR} ${READLINE_INCLUDE_DIR} 
+                     INCLUDES           ${CURSES_INCLUDE_DIR} ${READLINE_INCLUDE_DIR}
                      LIBS               eckit ${CURSES_LIBRARIES} ${READLINE_LIBRARIES} )
 
-ecbuild_add_executable( TARGET ecml_test
+ecbuild_add_executable( TARGET eckit_ecml_test
                         SOURCES tests/ecml_test.cc
                         LIBS eckit eckit_ecml )
 
-ecbuild_add_executable( TARGET ecml_unittests
+ecbuild_add_executable( TARGET eckit_ecml_unittests
                         SOURCES tests/ecml_unittests.cc
                         LIBS eckit eckit_ecml)
 

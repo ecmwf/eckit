@@ -33,7 +33,7 @@ ecbuild_add_option( FEATURE EXPERIMENTAL
 ### GRIB
 
 ecbuild_add_option( FEATURE GRIB
-                    DEFAULT ON
+                    CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "C++ interface to GRIB format"
                     REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.12.3" )
 
@@ -42,10 +42,12 @@ set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encod
 ### eckit::mpi
 
 ecbuild_add_option( FEATURE MPI
+                    CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
 
 ecbuild_add_option( FEATURE MPISTUBS
+                    CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "PROJECT mpistubs VERSION 1.0.0" )
 
@@ -60,7 +62,7 @@ ecbuild_add_option( FEATURE ECKIT_MPISTUBS
 ### Eigen
 
 ecbuild_add_option( FEATURE EIGEN
-                    DEFAULT ON
+                    CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "Eigen support"
                     REQUIRED_PACKAGES Eigen3 )
 
@@ -75,7 +77,7 @@ endif()
 ### Armadillo
 
 ecbuild_add_option( FEATURE ARMADILLO
-                    DEFAULT ON
+                    CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "Armadillo support"
                     REQUIRED_PACKAGES Armadillo )
 
@@ -85,6 +87,7 @@ set_package_properties( Armadillo PROPERTIES TYPE RECOMMENDED PURPOSE "Dense mat
 
 if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
   ecbuild_add_option( FEATURE LAPACK
+                      CONDITION HAVE_EXPERIMENTAL
                       DESCRIPTION "Linear Algebra PACKage"
                       REQUIRED_PACKAGES "PROJECT LAPACK" )
 # Don't search for LAPACK on cc[abt] as it is provided by the cray-libsci module
@@ -92,14 +95,14 @@ if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
 else()
   set( _cray_libsci_loaded $ENV{CRAY_LIBSCI_DIR} )
   ecbuild_add_option( FEATURE LAPACK
-                      CONDITION _cray_libsci_loaded
+                      CONDITION HAVE_EXPERIMENTAL AND _cray_libsci_loaded
                       DESCRIPTION "Linear Algebra PACKage")
 endif()
 
 ### CUDA
 
 ecbuild_add_option( FEATURE CUDA
-                    DEFAULT ON
+                    CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "CUDA support"
                     REQUIRED_PACKAGES CUDA )
 
@@ -108,7 +111,7 @@ set_package_properties( CUDA PROPERTIES TYPE RECOMMENDED PURPOSE "CUDA backend: 
 ### MKL
 
 ecbuild_add_option( FEATURE MKL
-                    DEFAULT ON
+                    CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "MKL support"
                     REQUIRED_PACKAGES MKL )
 
@@ -117,7 +120,7 @@ set_package_properties( MKL PROPERTIES TYPE RECOMMENDED PURPOSE "MKL backend: Ac
 ### ViennaCL
 
 ecbuild_add_option( FEATURE VIENNACL
-                    DEFAULT ON
+                    CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "ViennaCL support"
                     REQUIRED_PACKAGES ViennaCL )
 
@@ -167,28 +170,32 @@ endif()
 # export package info
 
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
-set( ECKIT_LIBRARIES      eckit eckit_geometry eckit_cmd eckit_maths eckit_web )
+set( ECKIT_LIBRARIES      eckit eckit_cmd eckit_web )
 
 if( HAVE_EXPERIMENTAL )
-  list( APPEND ECKIT_LIBRARIES eckit_ecml eckit_la )
-endif()
 
-if( HAVE_GRIB )
-  list( APPEND ECKIT_LIBRARIES eckit_grib )
-endif()
+  list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
 
-if( HAVE_EIGEN )
-    if( ECKIT_CONTRIB_EIGEN )
-        list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
-    endif()
-endif()
+  list( APPEND ECKIT_LIBRARIES eckit_ecml eckit_la eckit_geometry eckit_maths )
 
-if( HAVE_ECKIT_MPI )
-  list( APPEND ECKIT_LIBRARIES eckit_mpi )
-endif()
+  if( HAVE_GRIB )
+    list( APPEND ECKIT_LIBRARIES eckit_grib )
+  endif()
 
-if( HAVE_ECKIT_MPISTUBS )
-  list( APPEND ECKIT_LIBRARIES eckit_mpistubs )
+  if( HAVE_EIGEN )
+      if( ECKIT_CONTRIB_EIGEN )
+          list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
+      endif()
+  endif()
+
+  if( HAVE_ECKIT_MPI )
+    list( APPEND ECKIT_LIBRARIES eckit_mpi )
+  endif()
+
+  if( HAVE_ECKIT_MPISTUBS )
+    list( APPEND ECKIT_LIBRARIES eckit_mpistubs )
+  endif()
+
 endif()
 
 get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )

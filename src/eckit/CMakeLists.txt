@@ -35,7 +35,7 @@ container/KDTree.h
 container/BSPTree.h
 
 container/MappedArray.h
-container/MappedArray.cc 
+container/MappedArray.cc
 container/SimpleMappedArray.cc
 container/SimpleMappedArray.h
 
@@ -303,7 +303,7 @@ log/Colour.cc
 log/ETA.h
 log/ETA.cc
 log/Seconds.h
-log/Seconds.cc 
+log/Seconds.cc
 log/Plural.h
 log/Progress.h
 log/Progress.cc
@@ -501,10 +501,6 @@ transaction/TxnLog.cc
 transaction/TxnEvent.h
 transaction/TxnEvent.cc )
 
-list( APPEND eckit_testing_srcs
-testing/UnitTest.h
-testing/UnitTest.cc)
-
 list( APPEND eckit_dirs
 	bases
 	compat
@@ -587,12 +583,4 @@ ecbuild_add_library(TARGET eckit
 add_subdirectory( cmd )
 
 add_subdirectory( web )
-
-add_subdirectory( maths )
-
-add_subdirectory( geometry )
-
-add_subdirectory( grib )
-
-add_subdirectory( mpi )
 

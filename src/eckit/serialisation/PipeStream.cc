@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2013 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -52,7 +52,7 @@ PipeStream::~PipeStream()
 void PipeStream::parentProcess()
 {
     /// @todo change this to sigaction
-    
+
 	::signal(SIGPIPE,SIG_IGN);
 
 	in_  = toParent_[0];
@@ -91,14 +91,53 @@ void PipeStream::childProcess()
 
 }
 
-long PipeStream::write(const void *buf, long len)
+long PipeStream::write(const void *buf, long length)
 {
-	return ::write(out_,buf,len);
+    long sent     = 0;
+    const char *p = (const char*)buf;
+
+    while(length > 0)
+    {
+        long len = ::write(out_, p, length);
+
+        if(len <  0) {
+            Log::error() << "PipeStream::write " << Log::syserr << std::endl;
+            return len;
+        }
+
+        if(len == 0) return sent;
+
+        sent   += len;
+        length -= len;
+        p      += len;
+
+    }
+
+    return sent;
 }
 
-long PipeStream::read(void *buf, long len)
+long PipeStream::read(void *buf, long length)
 {
-	return ::read(in_,buf,len);
+	long received = 0;
+    char *p = (char*)buf;
+
+    while(length > 0)
+    {
+		long len = ::read(out_, p, length);
+
+		if(len <  0) {
+			Log::error() << "PipeStream::read " << Log::syserr << std::endl;
+			return len;
+		}
+
+		if(len == 0) return received;
+
+		received  += len;
+		length    -= len;
+		p         += len;
+    }
+
+    return received;
 }
 
 //-----------------------------------------------------------------------------

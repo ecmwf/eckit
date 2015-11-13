@@ -44,6 +44,7 @@
 #include "RunHandler.h"
 #include "REPLHandler.h"
 #include "DictionaryHandler.h"
+#include "RangeHandler.h"
 
 namespace eckit {
 
@@ -82,6 +83,7 @@ void Prelude::importInto(ExecutionContext& context)
     static RunHandler run("run");
     static REPLHandler repl("repl");
     static DictionaryHandler dictionary("dictionary");
+    static RangeHandler range("range");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
@@ -110,6 +112,12 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("join_strings", join_strings);
     context.registerHandler("null", null);
     context.registerHandler("dictionary", dictionary);
+    context.registerHandler("range", range);
+    context.execute("function, of = f / values, map = ( \n"
+                    "    if, condition = (first, of = ($,_ = values)), \n"
+                    "        then = (sequence, values = (f, values = (first, of = ($,_ = values)))\n"
+                    "                                 / (map, f = ($,_ = f),\n"
+                    "                                         values = (rest, of = ($,_ = values)))))\n");
 }
 
 } // namespace eckit

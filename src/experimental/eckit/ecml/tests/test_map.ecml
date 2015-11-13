@@ -1,8 +1,8 @@
 function, of = f / values, map = (
     if, condition = (first, of = ($,_ = values)),
         then = ( sequence, values = (f, values = (first, of = ($,_ = values))) 
-                               / (map, f = ($,_ = f),
-                                       values = (rest, of = ($,_ = values))))
+                                    / (map, f = ($,_ = f),
+                                            values = (rest, of = ($,_ = values))))
 )
 
 test, label = pass a native function to a map function,
@@ -15,6 +15,7 @@ do = (
         function, of = values, capture = greeting, foo = (
             println, values = ($,_ = greeting ) / ($,_ = values) 
         )
+        let, greeting = Hi
         map, f = ($,_ = foo), values = 1 / 2 / 3
      ),
 expect = Hello / 1 / Hello / 2 / Hello / 3

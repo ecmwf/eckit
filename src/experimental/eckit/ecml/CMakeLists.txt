@@ -82,6 +82,8 @@ prelude/REPLHandler.h
 prelude/REPLHandler.cc
 prelude/DictionaryHandler.h
 prelude/DictionaryHandler.cc
+prelude/RangeHandler.h
+prelude/RangeHandler.cc
 
 # Data types' support
 data/DataHandleFactory.h

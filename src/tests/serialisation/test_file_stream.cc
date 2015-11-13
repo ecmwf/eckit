@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_SUITE( TestFileStream )
 BOOST_AUTO_TEST_CASE( write_data )
 {
     BOOST_TEST_MESSAGE("Write to FileStream");
-    FileStream sout( F::filename.asString().c_str(), "w" );
+    FileStream sout( F::filename, "w" );
 
     sout << i_char
          << i_uchar
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE( write_data )
 BOOST_AUTO_TEST_CASE( read_data )
 {
     BOOST_TEST_MESSAGE("Read from FileStream");
-    FileStream sin( F::filename.asString().c_str(), "r" );
+    FileStream sin( F::filename, "r" );
 
     sin
         >> v_char
@@ -138,6 +138,30 @@ BOOST_AUTO_TEST_CASE( check_data )
     BOOST_CHECK_EQUAL( v_double,    i_double );
     BOOST_CHECK_EQUAL( v_string,    i_string );
     BOOST_CHECK_EQUAL( v_charp,     i_charp );
+}
+
+BOOST_AUTO_TEST_CASE( stream_object ) {
+    BOOST_TEST_MESSAGE("Stream an object");
+    const std::string k("key");
+    const std::string v("value");
+    {
+        FileStream sout( F::filename, "w" );
+        sout.startObject();
+        sout << k;
+        sout << v;
+        sout.endObject();
+    }
+    {
+        FileStream sin( F::filename, "r" );
+        BOOST_CHECK( sin.next() );
+        std::string s;
+        sin >> s;
+        BOOST_CHECK_EQUAL( s, k );
+        sin >> s;
+        BOOST_CHECK_EQUAL( s, v );
+        BOOST_CHECK( sin.endObjectFound() );
+        BOOST_CHECK( !sin.next() );
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

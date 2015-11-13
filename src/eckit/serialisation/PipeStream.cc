@@ -118,12 +118,12 @@ long PipeStream::write(const void *buf, long length)
 
 long PipeStream::read(void *buf, long length)
 {
-	long received = 0;
+    long received = 0;
     char *p = (char*)buf;
 
     while(length > 0)
     {
-		long len = ::read(out_, p, length);
+        long len = ::read(in_, p, length);
 
 		if(len <  0) {
 			Log::error() << "PipeStream::read " << Log::syserr << std::endl;

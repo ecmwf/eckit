@@ -36,10 +36,7 @@ static void handle_strerror_r(std::ostream& s, int e, char es[], int hs )
 
 static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 {
-    if( p != 0 )
-        s << " (" << p << ") " ;
-    else
-        s << " (errno = " << e << ") ";
+    s << " (" << (p ? p : "?") << ", errno = " << e << ") ";
 }
 
 #endif
@@ -92,7 +89,7 @@ Channel& Log::info(const CodeLocation& where)
 }
 
 Channel& Log::error()
-{
+{    
     return Context::instance().errorChannel();
 }
 
@@ -204,10 +201,10 @@ void Log::notifyClient(const std::string& msg)
 
 std::ostream& Log::syserr(std::ostream& s)
 {
-        int e = errno;
-        char estr [256];
-        handle_strerror_r(s, e, estr, strerror_r( e, estr, sizeof(estr) ) );
-        return s;
+    int e = errno;
+    char estr [256];
+    handle_strerror_r(s, e, estr, strerror_r( e, estr, sizeof(estr) ) );
+    return s;
 }
 
 static int xindex = std::ios::xalloc();

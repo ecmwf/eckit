@@ -96,9 +96,10 @@ T& ThreadSingleton<T,A>::instance()
 	if(!value)
 	{
         value = alloc_();
-		THRCALL(::pthread_setspecific(key_,value));
+        THRCALL(::pthread_setspecific(key_,value));
 	}
-	return *value;
+
+    return *value;
 }
 
 template< typename T, typename A>

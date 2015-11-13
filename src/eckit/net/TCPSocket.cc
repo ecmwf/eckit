@@ -316,11 +316,10 @@ TCPSocket& TCPClient::connect(const std::string& remote,int port,int retries, in
 
         if (status < 0)
         {
-            Log::error() << "connect to "
-                << host << " " << port << Log::syserr << std::endl;
+            Log::error() << "connect to " << host << " " << port << Log::syserr << std::endl;
 
-            Log::status() << "Connect: " << host << ":" << port << Log::syserr <<
-                " " << tries << '/' << retries << std::endl;
+            Log::status() << "Connect: " << host << ":" << port << Log::syserr << " "
+                          << tries << '/' << retries << std::endl;
 
             int save_errno = errno;
             ::close(socket_);
@@ -361,9 +360,9 @@ TCPSocket& TCPClient::connect(const std::string& remote,int port,int retries, in
                 case EAGAIN:
 #endif
                 default:
-                    Log::status() << "Waiting for network "
-                        << host << ":" << port
-                        << Log::syserr << std::endl;
+
+                    Log::status() << "Waiting for network " << host << ":" << port << Log::syserr << std::endl;
+
 #if 0
                     if(++tries >= retries)
                         if(retries != 0)

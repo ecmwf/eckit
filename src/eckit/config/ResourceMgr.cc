@@ -97,8 +97,10 @@ bool ResourceMgr::lookUp( Configurable* owner,
 
     ResourcePolicy p = Context::instance().behavior().resourcePolicy();
 
-    if(!inited_)
-      configure( p , script_ );
+    if(!inited_) {
+        configure( p , script_ );
+        inited_ = true;
+    }
 
     StringDict resmap;
 

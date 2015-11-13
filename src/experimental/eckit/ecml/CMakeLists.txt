@@ -38,6 +38,8 @@ prelude/Prelude.cc
 prelude/Prelude.h
 prelude/LetHandler.cc
 prelude/LetHandler.h
+prelude/UpdateHandler.h
+prelude/UpdateHandler.cc
 prelude/VariableLookupHandler.cc
 prelude/VariableLookupHandler.h
 prelude/DefineFunctionHandler.cc

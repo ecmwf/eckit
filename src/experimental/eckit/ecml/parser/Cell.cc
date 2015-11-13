@@ -69,8 +69,8 @@ Cell* Cell::value(const std::string& keyword, const std::string& value)
 Cell* Cell::value(const std::string& keyword, Cell* v) 
 {
     //showGraph(string("value: request = ") + str() + ", keyword = " + keyword + ", v = " + v->str());
+    const std::string k (StringTools::lower(keyword));
 
-    std::string k (StringTools::lower(keyword));
     for (Cell* r (this); r; r = r->rest())
     {
         if (StringTools::lower(r->text()) == k)
@@ -82,6 +82,30 @@ Cell* Cell::value(const std::string& keyword, Cell* v)
 
     ASSERT("Should not reach here" && 0);
     return 0;
+}
+
+void Cell::update(const std::string& keyword, Cell* v) 
+{
+    const std::string k (StringTools::lower(keyword));
+
+    Cell* lastMatch (0);
+    Cell* lastCell (this); 
+
+    for (Cell* r (this); r; r = r->rest())
+    {
+        if (StringTools::lower(r->text()) == k)
+            lastMatch = r;
+
+        lastCell = r;
+    }
+
+    if (! lastMatch) 
+        lastCell->rest(new Cell("", keyword, v, 0));
+    else
+    {
+        delete lastMatch->value();
+        lastMatch->value(v);
+    } 
 }
 
 Cell* Cell::valueOrDefault(const string& keyword, Cell* defaultValue) const

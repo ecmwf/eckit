@@ -34,11 +34,7 @@ Request ApplyHandler::handle(const Request request, ExecutionContext& context)
 {
     ASSERT(request->tag() == "_verb" && request->text() == "apply");
 
-    //Log::info() << "ApplyHandler::handle: request: " << request << endl;
-
     Request evaluatedAttributes (context.interpreter().evalAttributes(request, context));
-
-    //Log::info() << "ApplyHandler::handle: evaluatedAttributes: " << evaluatedAttributes << endl;
 
     Cell* p (evaluatedAttributes->rest());
 
@@ -48,39 +44,28 @@ Request ApplyHandler::handle(const Request request, ExecutionContext& context)
     if (p->text() != "function" && p->text() != "closure")
         throw UserError("First parameter of apply should be 'function' or 'closure'");
 
-    ASSERT("apply handles closures only now" && p->text() == "closure");
-
-    //Log::info() << "ApplyHandler::handle: closure: " << p->value() << endl;
-
     Cell* closure (p->value()); // it should be a list with one closure
 
-    Request paramsFrame (new Cell("_verb", "let", 0, 0));
-    for (Request e(p->rest()); e; e = e->rest())
-    {
-        ASSERT(e->tag() == "");
-        paramsFrame->append(new Cell("", e->text(), e->value(), 0));
-    }
-    // closure is a list here. it should contain just one closure object.
-    //Log::info() << "  *** ApplyHandler::handle: closure: " << closure << endl;
+    if (! p->rest() || p->rest()->text() != "args" || !p->rest()->value())
+        throw UserError("apply: parameter 'args' is required");
+
+    Request paramsFrame (p->rest()->value()->value());
     ASSERT(closure->rest() == 0);
 
-    //Cell *r (context.interpreter().eval(closure->value(), context));
-    Closure c (closure->value());
-
-    Cell* captured (c.capturedEnvironment());
-    Cell* staticEnvironment (captured ? (captured->value() ? captured->value()->value() : 0) : 0);
-
-    if (staticEnvironment)
-        context.pushEnvironmentFrame(staticEnvironment);
+    Cell* r (0);
 
     context.pushEnvironmentFrame(paramsFrame);
 
-    Cell* r (context.interpreter().eval(c.code(), context));
+    if (closure->value()->tag() == "_verb" && closure->value()->text() == "closure")
+    {
+        r = context.interpreter().evalVerb(closure->value(), paramsFrame, context);
+    }
+    else if (closure->value()->tag() == "_native")
+        r = context.interpreter().evalNative(closure->value(), paramsFrame, context);
+    else
+        r = context.interpreter().eval(closure->value(), context);
 
     context.popEnvironmentFrame(paramsFrame);
-
-    if (staticEnvironment)
-        context.popEnvironmentFrame(staticEnvironment);
 
     return r;
 }

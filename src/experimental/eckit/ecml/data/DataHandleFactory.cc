@@ -53,6 +53,8 @@ std::pair<std::string, std::string> DataHandleFactory::splitPrefix(const std::st
 
     // Sugar.
     if (StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "retrieve,")
+        || StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "stage,")
+        || StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "list,")
         || StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "archive,"))
         return std::make_pair(std::string("mars"), handleDescriptor);
 

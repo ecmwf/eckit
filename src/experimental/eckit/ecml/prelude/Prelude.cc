@@ -25,6 +25,7 @@
 #include "VariableLookupHandler.h"
 #include "PrintHandler.h"
 #include "LetHandler.h"
+#include "UpdateHandler.h"
 #include "DefineFunctionHandler.h"
 #include "ClosureHandler.h"
 #include "TestHandler.h"
@@ -63,6 +64,7 @@ void Prelude::importInto(ExecutionContext& context)
     static PrintHandler println("println", "\n");
     static PrintHandler print("print", "");
     static LetHandler let("let");
+    static UpdateHandler update("update");
     static ApplyHandler apply("apply");
     static VariableLookupHandler value("value", "of");
     static VariableLookupHandler dollar("$", "_");
@@ -83,6 +85,7 @@ void Prelude::importInto(ExecutionContext& context)
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
+    e.set("update", macro(update.name()));
     e.set("function", macro(function.name()));
     e.set("apply", macro(apply.name()));
     e.set("closure", macro(closure.name()));

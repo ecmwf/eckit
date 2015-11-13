@@ -30,7 +30,10 @@ public:
 
 // -- Contructors
 
-	NetService(int);
+    /// @param[in]  port     TCP port to listen on
+    /// @param[in]  visible  Make the thread this service is running in visible
+    ///                      on the Monitor (defaults to false)
+    NetService(int port, bool visible = false);
 
 // -- Destructor
 
@@ -51,6 +54,8 @@ private:
 // -- Members
 
 	TCPServer server_;
+    /// Visible on the Monitor?
+    bool visible_;
 
 // -- Methods
 

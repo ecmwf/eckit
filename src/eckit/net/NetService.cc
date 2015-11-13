@@ -21,8 +21,9 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-NetService::NetService(int port):
-	server_(port)
+NetService::NetService(int port, bool visible):
+    server_(port),
+    visible_(visible)
 {
 }
 
@@ -33,13 +34,12 @@ NetService::~NetService()
 void NetService::run()
 {
 
-	Monitor::instance().show(false);
+    Monitor::instance().show(visible_);
 	Monitor::instance().name(name());
 	Monitor::instance().kind(name());
 
 	while(!stopped())
 	{
-		//Log::info() << "Wait for " << name() << " connection on port "<< port() << std::endl;
 		ThreadControler t(newUser(server_.accept()));
 		t.start();
 	}

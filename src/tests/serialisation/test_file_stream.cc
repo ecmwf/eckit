@@ -164,6 +164,21 @@ BOOST_AUTO_TEST_CASE( stream_object ) {
     }
 }
 
+BOOST_AUTO_TEST_CASE( stream_string ) {
+    BOOST_TEST_MESSAGE("Stream a string");
+    {
+        FileStream sout( F::filename, "w" );
+        sout << i_string;
+    }
+    {
+        FileStream sin( F::filename, "r" );
+        std::string s;
+        BOOST_CHECK( sin.next(s) );
+        BOOST_CHECK_EQUAL( s, i_string );
+        BOOST_CHECK( !sin.next() );
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 } // namespace test

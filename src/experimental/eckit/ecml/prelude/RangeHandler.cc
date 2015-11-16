@@ -24,14 +24,18 @@ RangeHandler::RangeHandler(const std::string& name) : RequestHandler(name) {}
 
 Values RangeHandler::handle(ExecutionContext& context)
 {
-    vector<string> from (context.environment().lookupList("from", context));
-    vector<string> to (context.environment().lookupList("to", context));
+    const string from (context.environment().lookup("from", "", context));
+    const string to (context.environment().lookup("to", "", context));
+    const string below (context.environment().lookup("below", "", context));
 
-    if (from.size() != 1 || to.size() != 1)
-        throw UserError("range: one value of 'from' and one value of 'to' must be given");
+    if (! from.size() || (to.size() == 0 && below.size() == 0) 
+                      || (to.size() != 0 && below.size() != 0)) 
+        throw UserError("range: one value of 'from' and one value of 'to' or 'below' must be given");
 
-    long lf (atol(from[0].c_str()));
-    long lt (atol(to[0].c_str()));
+    long lf (atol(from.c_str()));
+    long lt (to.size() 
+             ? atol(to.c_str())
+             : atol(below.c_str()) - 1);
 
     List r;
 

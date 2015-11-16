@@ -14,9 +14,9 @@
 #include "eckit/runtime/Tool.h"
 #include "eckit/runtime/Context.h"
 
-#include "experimental/eckit/ecml/core/ExecutionContext.h"
-#include "experimental/eckit/ecml/core/Environment.h"
-#include "experimental/eckit/ecml/prelude/REPLHandler.h"
+#include "eckit/ecml/core/ExecutionContext.h"
+#include "eckit/ecml/core/Environment.h"
+#include "eckit/ecml/prelude/REPLHandler.h"
 
 using namespace std;
 using namespace eckit;

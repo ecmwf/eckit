@@ -10,10 +10,10 @@
 
 #include "PrintHandler.h"
 
-#include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/ExecutionContext.h"
-#include "experimental/eckit/ecml/core/Environment.h"
-#include "experimental/eckit/ecml/core/Interpreter.h"
+#include "eckit/ecml/parser/Request.h"
+#include "eckit/ecml/core/ExecutionContext.h"
+#include "eckit/ecml/core/Environment.h"
+#include "eckit/ecml/core/Interpreter.h"
 
 using namespace std;
 using namespace eckit;

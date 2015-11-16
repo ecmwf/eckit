@@ -16,16 +16,16 @@
 
 #include "eckit/runtime/Context.h"
 
-#include "experimental/eckit/ecml/core/ExecutionContext.h"
-#include "experimental/eckit/ecml/core/Interpreter.h"
-#include "experimental/eckit/ecml/core/Module.h"
-#include "experimental/eckit/ecml/prelude/PrintHandler.h"
-#include "experimental/eckit/ecml/prelude/DefineFunctionHandler.h"
-#include "experimental/eckit/ecml/parser/RequestParser.h"
-#include "experimental/eckit/ecml/ast/FunctionDefinition.h"
-#include "experimental/eckit/ecml/ast/Closure.h"
-#include "experimental/eckit/ecml/data/DataHandleFactory.h"
-#include "experimental/eckit/ecml/data/PartFileHandleFactory.h"
+#include "eckit/ecml/core/ExecutionContext.h"
+#include "eckit/ecml/core/Interpreter.h"
+#include "eckit/ecml/core/Module.h"
+#include "eckit/ecml/prelude/PrintHandler.h"
+#include "eckit/ecml/prelude/DefineFunctionHandler.h"
+#include "eckit/ecml/parser/RequestParser.h"
+#include "eckit/ecml/ast/FunctionDefinition.h"
+#include "eckit/ecml/ast/Closure.h"
+#include "eckit/ecml/data/DataHandleFactory.h"
+#include "eckit/ecml/data/PartFileHandleFactory.h"
 
 using namespace std;
 using namespace eckit;

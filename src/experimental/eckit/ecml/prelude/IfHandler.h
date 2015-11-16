@@ -13,8 +13,8 @@
 #define eckit_ecml_IfHandler_H
 
 #include "eckit/filesystem/PathName.h"
-#include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/SpecialFormHandler.h"
+#include "eckit/ecml/parser/Request.h"
+#include "eckit/ecml/core/SpecialFormHandler.h"
 
 namespace eckit {
 

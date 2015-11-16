@@ -19,8 +19,8 @@
 #include <map>
 #include <ostream>
 
-#include "experimental/eckit/ecml/parser/Cell.h"
-#include "experimental/eckit/ecml/parser/List.h"
+#include "eckit/ecml/parser/Cell.h"
+#include "eckit/ecml/parser/List.h"
 
 namespace eckit {
 

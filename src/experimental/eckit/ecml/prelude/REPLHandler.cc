@@ -11,15 +11,15 @@
 #include "eckit/types/Types.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/StringTools.h"
-#include "experimental/eckit/ecml/parser/Request.h"
+#include "eckit/ecml/parser/Request.h"
 
-#include "experimental/eckit/ecml/core/ExecutionContext.h"
-#include "experimental/eckit/ecml/core/Environment.h"
-#include "experimental/eckit/ecml/core/Interpreter.h"
+#include "eckit/ecml/core/ExecutionContext.h"
+#include "eckit/ecml/core/Environment.h"
+#include "eckit/ecml/core/Interpreter.h"
 
-#include "experimental/eckit/ecml/ast/FunctionDefinition.h"
-#include "experimental/eckit/ecml/ast/Closure.h"
-#include "experimental/eckit/ecml/prelude/REPLHandler.h"
+#include "eckit/ecml/ast/FunctionDefinition.h"
+#include "eckit/ecml/ast/Closure.h"
+#include "eckit/ecml/prelude/REPLHandler.h"
 
 using namespace std;
 

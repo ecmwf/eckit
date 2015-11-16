@@ -15,10 +15,10 @@
 
 #include "eckit/utils/Translator.h"
 
-#include "experimental/eckit/ecml/core/ExecutionContext.h"
-#include "experimental/eckit/ecml/core/Environment.h"
+#include "eckit/ecml/core/ExecutionContext.h"
+#include "eckit/ecml/core/Environment.h"
 
-#include "experimental/eckit/ecml/misc/DynamicParametrisation.h"
+#include "eckit/ecml/misc/DynamicParametrisation.h"
 
 
 using namespace std;

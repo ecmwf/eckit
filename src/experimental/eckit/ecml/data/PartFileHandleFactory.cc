@@ -10,7 +10,7 @@
 
 #include <sstream>
 
-#include "experimental/eckit/ecml/data/PartFileHandleFactory.h"
+#include "eckit/ecml/data/PartFileHandleFactory.h"
 #include "eckit/io/PartFileHandle.h"
 #include "eckit/parser/StringTools.h"
 

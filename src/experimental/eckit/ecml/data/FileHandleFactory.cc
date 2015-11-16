@@ -10,7 +10,7 @@
 
 #include <sstream>
 
-#include "experimental/eckit/ecml/data/FileHandleFactory.h"
+#include "eckit/ecml/data/FileHandleFactory.h"
 #include "eckit/io/FileHandle.h"
 
 using namespace eckit;

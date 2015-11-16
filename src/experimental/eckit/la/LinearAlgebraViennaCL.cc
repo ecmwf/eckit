@@ -20,10 +20,10 @@
 #include <viennacl/linalg/inner_prod.hpp>
 #include <viennacl/linalg/prod.hpp>
 
-#include "experimental/eckit/la/LinearAlgebraViennaCL.h"
-#include "experimental/eckit/la/SparseMatrix.h"
-#include "experimental/eckit/la/Matrix.h"
-#include "experimental/eckit/la/Vector.h"
+#include "eckit/la/LinearAlgebraViennaCL.h"
+#include "eckit/la/SparseMatrix.h"
+#include "eckit/la/Matrix.h"
+#include "eckit/la/Vector.h"
 
 //-----------------------------------------------------------------------------
 

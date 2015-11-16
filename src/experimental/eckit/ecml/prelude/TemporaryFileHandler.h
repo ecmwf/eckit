@@ -14,8 +14,8 @@
 
 #include <sstream>
 
-#include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/RequestHandler.h"
+#include "eckit/ecml/parser/Request.h"
+#include "eckit/ecml/core/RequestHandler.h"
 
 namespace eckit {
 

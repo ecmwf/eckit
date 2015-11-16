@@ -19,7 +19,7 @@
 #include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 
-#include "experimental/eckit/la/LinearAlgebra.h"
+#include "eckit/la/LinearAlgebra.h"
 
 //-----------------------------------------------------------------------------
 

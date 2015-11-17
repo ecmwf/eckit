@@ -8,10 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
+// File StrStream.h
+// Baudouin Raoult - ECMWF Mar 97
 
-#include "eckit/net/Telnet.h"
-#include "eckit/net/Telnetable.h"
+#ifndef eckit_StrStream_h
+#define eckit_StrStream_h
 
+#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 
@@ -19,19 +22,16 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-Telnetable::Telnetable(int port):
-	telnet_(new Telnet(port))
-{
-	if(port != 0)
-		telnet_.start();
-}
 
-Telnetable::~Telnetable()
-{
-	telnet_.stop();
-}
+class StrStream : public std::ostringstream {
+public:
+    operator std::string() { return str(); }
+    static std::ostream&  ends(std::ostream& os)  { return os; }
+};
+
 
 //-----------------------------------------------------------------------------
 
 } // namespace eckit
 
+#endif

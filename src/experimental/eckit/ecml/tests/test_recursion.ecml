@@ -1,0 +1,18 @@
+test, label = test recursive function,
+do = (
+        function, of = names,
+            hello = (
+                if, condition = (rest, of = (value, of = names)), # if more then one element
+                then = (
+                    println, values = Hello / (first, of = (value, of = names))
+
+                    hello, names = (rest, of = (value, of = names))
+                ),
+                else = (
+                    println, values = Bye / (first, of = (value, of = names))
+                )
+            )
+
+          hello, names = foo / bar / 0 / baz
+     ),
+expect = Bye / baz

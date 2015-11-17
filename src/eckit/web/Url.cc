@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -10,7 +10,6 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/parser/JSONParser.h"
 #include "eckit/web/Html.h"
@@ -280,9 +279,9 @@ const std::string& Url::operator[](int n) const
 
 std::string Url::str() const
 {
-	StrStream s;
-	s << *this << StrStream::ends;
-	return std::string(s);
+    std::ostringstream s;
+    s << *this;
+    return s.str();
 }
 
 int Url::size() const

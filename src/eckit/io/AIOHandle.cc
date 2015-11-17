@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -111,9 +111,9 @@ long AIOHandle::write(const void* buffer,long length)
                 ssize_t len = aio_return(&aio_[n]);
                 if (len != len_[n]) {
                     // TODO: retry when filesystems are full
-                    StrStream os;
-                    os << "AIOHandle: only " << len << " bytes written instead of " << len_[n] << StrStream::ends;
-                    throw WriteError(std::string(os));
+                    std::ostringstream os;
+                    os << "AIOHandle: only " << len << " bytes written instead of " << len_[n];
+                    throw WriteError(os.str());
                 }
                 ok = true;
                 break;
@@ -201,9 +201,9 @@ void AIOHandle::flush()
                 ssize_t len = aio_return(&aio_[n]);
                 if (len != len_[n]) {
                     // TODO: retry when filesystems are full
-                    StrStream os;
-                    os << "AIOHandle: only " << len << " bytes written instead of " << len_[n] << StrStream::ends;
-                    throw WriteError(std::string(os));
+                    std::ostringstream os;
+                    os << "AIOHandle: only " << len << " bytes written instead of " << len_[n];
+                    throw WriteError(os.str());
                 }
                 break;
             }

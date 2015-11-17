@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -22,7 +22,7 @@ namespace eckit {
 ClassSpec DateContent::classSpec_ = {&Content::classSpec(),"DateContent",};
 Reanimator<DateContent> DateContent::reanimator_;
 
-DateContent::DateContent(const Date& d): 
+DateContent::DateContent(const Date& d):
     value_(d)
 {
 }
@@ -44,6 +44,10 @@ void DateContent::encode(Stream& s) const
 
 DateContent::~DateContent()
 {
+}
+
+Content* DateContent::clone() const {
+    return new DateContent(value_);
 }
 
 void DateContent::print(std::ostream& s) const
@@ -71,8 +75,8 @@ int DateContent::compareDate(const DateContent& other) const
 	return 0;
 }
 
-void DateContent::value(Date& d) const 
-{ 
+void DateContent::value(Date& d) const
+{
     d = value_;
 }
 

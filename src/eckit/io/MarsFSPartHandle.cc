@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -10,7 +10,6 @@
 
 
 #include "eckit/log/Log.h"
-#include "eckit/compat/StrStream.h"
 
 #include "eckit/io/MarsFSPartHandle.h"
 #include "eckit/io/PartFileHandle.h"
@@ -131,9 +130,9 @@ long MarsFSPartHandle::read1(char *buffer,long length)
 
     if(n != size)
     {
-        StrStream s;
-        s << path_ << ": cannot read " << size << ", got only " << n << StrStream::ends;
-        throw ReadError(std::string(s));
+        std::ostringstream s;
+        s << path_ << ": cannot read " << size << ", got only " << n;
+        throw ReadError(s.str());
     }
 
     pos_ += n;
@@ -277,10 +276,10 @@ void MarsFSPartHandle::cost(std::map<std::string,Length>& c, bool read) const
 
 std::string MarsFSPartHandle::title() const
 {
-    StrStream os;
+    std::ostringstream os;
     os << "marsfs:/" << path_.node() << "/" << PathName::shorten(path_.path())
-        << " (" << length_.size() << ")" << StrStream::ends;
-    return std::string(os);
+       << " (" << length_.size() << ")";
+    return os.str();
 }
 
 //-----------------------------------------------------------------------------

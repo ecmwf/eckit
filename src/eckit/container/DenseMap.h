@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -27,24 +27,33 @@ namespace eckit {
 
 template < typename K, typename V >
 class DenseMap {
+private: // types
+  typedef size_t index_t;   ///< index type
 
 public: // types
 
 	typedef K key_type;     ///< key type
 	typedef V value_type;   ///< value type
 
-private: // types
+	class kidx_t {
+	public:
 
-	typedef size_t index_t;   ///< index type
+		/// \brief Key that is used for lookup
+		key_type key() const { return key_; };
 
-	struct kidx_t
-	{
-		kidx_t(key_type k, index_t i) : idx(i), key(k)  {}
-		index_t idx;
-		key_type   key;
+		/// \brief Index in values storage
+		index_t idx() const { return idx_; };
+		friend class DenseMap;
+
+	private:
+		kidx_t(key_type k, index_t i) : idx_(i), key_(k)  {}
+		index_t idx_;
+		key_type key_;
 	};
 
-	typedef std::vector< kidx_t >   key_store_t;
+private: // types
+
+	typedef std::vector< kidx_t >      key_store_t;
 	typedef std::vector< value_type >  value_store_t;
 
 public: // methods
@@ -72,30 +81,15 @@ public: // methods
 		sorted_ = false;
 	}
 
-	size_t erase( const key_type& k )
-	{
-		NOTIMP;
-		///< @todo this code needs to be reviewed
-		sort();
-		if( !empty() )
-		{
-			iterator it = std::lower_bound( begin(), end(), k, Compare());
-			if( it != end() && it->key == k )
-			{
-				values_[it->idx] = value_type();
-				keys_.erase(it);
-				sorted_ = false;
-			}
-		}
-		return end();
-	}
+    /// @TODO shoudl we implement this?
+    //	size_t erase( const key_type& k );
 
 	void replace( const K& k, const V& v )
 	{
 		iterator it = find(k);
 		if( it != end() )
 		{
-			values_[ it->idx ] = v;
+			values_[ it->idx() ] = v;
 		}
 		else
 		{
@@ -132,22 +126,22 @@ public: // methods
 
 	bool has( const K& k ) const { return find(k) != cend(); }
 
-	const V& get( iterator it ) const { return values_[ it->idx ]; }
-	V& get( iterator it ) { return values_[ it->idx ]; }
+	const V& get( iterator it ) const { return values_[ it->idx() ]; }
+	V& get( iterator it ) { return values_[ it->idx() ]; }
 
-	const V& get( const_iterator it ) const { return values_[ it->idx ]; }
-	V& get( const_iterator it ) { return values_[ it->idx ]; }
+	const V& get( const_iterator it ) const { return values_[ it->idx() ]; }
+	V& get( const_iterator it ) { return values_[ it->idx() ]; }
 
-	const V& get( const K& k ) const { return values_[ find(k)->idx ]; }
-	V& get( const K& k ) { return values_[ find(k)->idx ]; }
+	const V& get( const K& k ) const { return values_[ find(k)->idx() ]; }
+	V& get( const K& k ) { return values_[ find(k)->idx() ]; }
 
-	const V& at( const size_t i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
+	const V& at( const size_t i ) const { ASSERT(i < keys_.size()); return values_[ keys_[i].idx() ]; }
 	V& at( const size_t i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
 
-	const V& operator[] (const K& k ) const { return values_[ find(k)->idx ]; }
-	V& operator[] (const K& k ) { return values_[ find(k)->idx ]; }
+	const V& operator[] (const K& k ) const { return values_[ find(k)->idx() ]; }
+	V& operator[] (const K& k ) { return values_[ find(k)->idx() ]; }
 
-	const V& operator[] (const size_t& i ) const { ASSERT(i < keys_.size()); return values_[ i ]; }
+	const V& operator[] (const size_t& i ) const { ASSERT(i < values_.size()); return values_[ i ]; }
 	V& operator[] (const size_t& i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
 
 	iterator find( const K& k )
@@ -156,7 +150,7 @@ public: // methods
 		{
 			ASSERT(sorted());
 			iterator it = std::lower_bound( begin(), end(), k, Compare());
-			if( it != end() && it->key == k )
+			if( it != end() && it->key() == k )
 				return it;
 		}
 		return end();
@@ -168,7 +162,7 @@ public: // methods
 		{
 			ASSERT(sorted());
 			const_iterator it = std::lower_bound( cbegin(), cend(), k, Compare());
-			if( it != cend() && it->key == k )
+			if( it != cend() && it->key() == k )
 				return it;
 		}
 		return cend();
@@ -178,7 +172,7 @@ public: // methods
 	{
 		const_iterator it = cbegin();
 		for( ; it != cend(); ++it )
-			s << it->key << " " << values_[ it->idx ] << std::endl;
+			s << it->key() << " " << values_[ it->idx() ] << std::endl;
 	}
 
 	friend std::ostream& operator<<(std::ostream& s, const DenseMap& m) { m.print(s);  return s; }
@@ -189,7 +183,7 @@ private: // types
 	public:
 		bool operator() (const kidx_t& e1, const kidx_t& e2) const
 		{
-			return (e1.key < e2.key) ? true : false;
+			return (e1.key() < e2.key()) ? true : false;
 		}
 	};
 
@@ -197,11 +191,11 @@ private: // types
 	public:
 		bool operator() (const kidx_t& e, const K& k) const
 		{
-			return (e.key < k) ? true : false;
+			return (e.key() < k) ? true : false;
 		}
 		bool operator() (const K& k, const kidx_t& e) const
 		{
-			return (e.key > k) ? true : false;
+			return (e.key() > k) ? true : false;
 		}
 	};
 

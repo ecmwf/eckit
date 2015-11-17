@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/os/Password.h"
 #include "eckit/web/JavaAgent.h"
 
+#include "eckit/memory/ScopedPtr.h"
+#include "eckit/os/Password.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -50,7 +50,7 @@ void JavaAgent::endObject()
 
 void JavaAgent::serve(eckit::Stream& s,std::istream& in,std::ostream& out)
 {
-    std::auto_ptr<JavaAgent> a(Reanimator<JavaAgent>::reanimate(s));
+    eckit::ScopedPtr<JavaAgent> a(Reanimator<JavaAgent>::reanimate(s));
 	ASSERT(a.get());
 
 	Log::info() << *a << std::endl;

@@ -1,3 +1,4 @@
+.tags*
 CMakeLists.txt.user*
 *.autosave
 doc/html

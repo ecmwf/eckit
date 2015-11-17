@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -41,7 +41,7 @@ public:
 
 // -- Destructor
 
-	~MarsFSPath(); 
+	~MarsFSPath();
 
 // -- Operators
 
@@ -64,7 +64,7 @@ public:
 
     operator  std::string() const;
     const char* localPath() const;
-    
+
     MarsFSPath baseName(bool = true) const;
     MarsFSPath dirName() const;
     MarsFSPath fullName() const;
@@ -72,6 +72,7 @@ public:
     BasePathName* checkClusterNode() const;
 
     std::string clusterName() const;
+    std::string extension() const;
 
     bool exists() const;
     bool available() const;
@@ -84,7 +85,7 @@ public:
     time_t created()      const;
 
     bool isDir() const;
-    
+
     void mkdir(short mode = 0777) const;
     void unlink() const;
     void rmdir() const;
@@ -93,6 +94,7 @@ public:
 
     bool sameAs(const MarsFSPath&) const;
     MarsFSPath mountPoint() const;
+    MarsFSPath realName() const;
 
     void children(std::vector<MarsFSPath>&,std::vector<MarsFSPath>&) const;
 
@@ -111,8 +113,8 @@ public:
 protected:
 
 // -- Methods
-	
-	void print(std::ostream&) const; 	
+
+	void print(std::ostream&) const;
 
 private:
 

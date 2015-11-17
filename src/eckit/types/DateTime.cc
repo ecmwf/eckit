@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -13,7 +13,6 @@
 #include "eckit/eckit.h"
 
 #include "eckit/types/DateTime.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/parser/Tokenizer.h"
 
 //-----------------------------------------------------------------------------
@@ -124,9 +123,9 @@ void DateTime::print(std::ostream& s) const
 
 DateTime::operator std::string() const
 {
-	StrStream os;
-	os << *this << StrStream::ends;
-	return std::string(os);
+    std::ostringstream os;
+    os << *this;
+    return os.str();
 }
 
 DateTime& DateTime::operator=(const DateTime& other)

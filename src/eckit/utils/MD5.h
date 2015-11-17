@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2014 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -13,7 +13,6 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-
 #include <string>
 
 #include "eckit/memory/NonCopyable.h"
@@ -22,55 +21,96 @@ namespace eckit {
 
 class MD5 : private eckit::NonCopyable {
 
-public:
+public:  // types
 
-	MD5();
+  typedef std::string digest_t;
 
-	MD5( const std::string& );
+public:  // types
 
-	MD5( const void* data, size_t len );
+  MD5();
 
-	~MD5();
+  explicit MD5(const digest_t&);
 
-	void add(const void*, long);
-	
-	operator std::string();
+  MD5(const void* data, size_t len);
 
-	std::string digest();
+  ~MD5();
 
-private:
+  void add(const void*, long);
 
-	struct State
-	{
-		uint64_t size;
+  void add(char x){ add(&x, sizeof(x)); }
+  void add(unsigned char x){ add(&x, sizeof(x)); }
 
-		unsigned long words[64];
-		unsigned long word_count;
+  void add(bool x){ add(&x, sizeof(x)); }
 
-		unsigned char bytes[4];
-		unsigned long byte_count;
+  void add(int x){ add(&x, sizeof(x)); }
+  void add(unsigned int x){ add(&x, sizeof(x)); }
 
-		unsigned long h0;
-		unsigned long h1;
-		unsigned long h2;
-		unsigned long h3;
-	};
+  void add(short x){ add(&x, sizeof(x)); }
+  void add(unsigned short x){ add(&x, sizeof(x)); }
 
-protected:
+  void add(long x){ add(&x, sizeof(x)); }
+  void add(unsigned long x){ add(&x, sizeof(x)); }
 
-	void md5_init(State* s);
-	void md5_add(State* s,const void* data,size_t len);
-	void md5_end(State* s, char *digest);
-	void md5_flush(State* s);
+  void add(long long x){ add(&x, sizeof(x)); }
+  void add(unsigned long long x){ add(&x, sizeof(x)); }
 
-private:
+  void add(float x){ add(&x, sizeof(x)); }
+  void add(double x){ add(&x, sizeof(x)); }
 
-	State s_;
+  void add(const std::string& x)  { add(x.c_str(),x.size()); }
+  void add(const char* x) { add(std::string(x)); }
+  
+  /// for generic objects
+  template <class T>
+  void add(const T& x) { x.hash(*this); }
 
-	std::string digest_; ///< cached digest
+  template<class T>
+  MD5& operator<<(const T& x) { add(x); return *this; }
+
+  operator std::string();
+
+  digest_t digest() const;
+
+private:  // types
+
+  // Make sure this is not called with a pointer
+  template<class T>
+  void add(const T* x);
+  void add(const void*);
+
+  /// Double hashing
+  void add(const MD5& md5) { add(md5.digest()); }
+
+  struct State {
+
+    uint64_t size;
+
+    unsigned long words[64];
+    unsigned long word_count;
+
+    unsigned char bytes[4];
+    unsigned long byte_count;
+
+    unsigned long h0;
+    unsigned long h1;
+    unsigned long h2;
+    unsigned long h3;
+  };
+
+protected:  // methods
+
+  static void md5_init(State* s);
+  static void md5_add(State* s, const void* data, size_t len);
+  static void md5_end(State* s, char* digest);
+  static void md5_flush(State* s);
+
+private: // members
+
+  mutable State s_;
+  mutable digest_t digest_;  ///< cached digest
 
 };
 
-} // end namespace eckit
+}  // end namespace eckit
 
 #endif

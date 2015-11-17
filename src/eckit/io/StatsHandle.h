@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -94,8 +94,9 @@ private:
 
     size_t reads_;
     size_t seeks_;
-    size_t positions_;
+//    size_t positions_; // unused
     size_t writes_;
+
     unsigned long long bytesRead_;
     unsigned long long bytesWritten_;
 
@@ -104,11 +105,6 @@ private:
     double readTime_;
     double writeTime_;
     double seekTime_;
-
-
-    // -- Methods
-
-
 
 };
 

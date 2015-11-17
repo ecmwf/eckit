@@ -21,6 +21,8 @@ list( APPEND eckit_container_srcs
 container/BTree.h
 container/BTree.cc
 container/Cache.h
+container/CacheManager.h
+container/CacheManager.cc
 container/DenseMap.h
 container/StatCollector.h
 container/Recycler.h
@@ -33,7 +35,7 @@ container/KDTree.h
 container/BSPTree.h
 
 container/MappedArray.h
-container/MappedArray.cc 
+container/MappedArray.cc
 container/SimpleMappedArray.cc
 container/SimpleMappedArray.h
 
@@ -98,6 +100,8 @@ io/AIOHandle.h
 io/AIOHandle.cc
 io/BufferedHandle.h
 io/BufferedHandle.cc
+io/MemoryHandle.h
+io/MemoryHandle.cc
 io/EmptyHandle.h
 io/EmptyHandle.cc
 io/FTPHandle.h
@@ -219,6 +223,13 @@ config/Configurable.h
 config/Configurable.cc
 config/EtcTable.h
 config/EtcTable.cc
+config/Parametrisation.h
+config/Configuration.h
+config/Configuration.cc
+config/JSONConfiguration.h
+config/JSONConfiguration.cc
+config/LocalConfiguration.h
+config/LocalConfiguration.cc
 config/FileReadPolicy.h
 config/FileReadPolicy.cc
 config/ResourceBase.cc )
@@ -226,6 +237,7 @@ config/ResourceBase.cc )
 list( APPEND eckit_runtime_srcs
 runtime/Task.h
 runtime/Task.cc
+runtime/TaskID.h
 runtime/Context.h
 runtime/Context.cc
 runtime/Application.h
@@ -247,8 +259,11 @@ runtime/StandardBehavior.cc
 runtime/ContextBehavior.h
 runtime/ContextBehavior.cc
 runtime/PipeApplication.h
+runtime/PipeApplication.cc
 runtime/PipeHandler.h
 runtime/PipeHandler.cc
+runtime/Policies.h
+runtime/Policies.cc
 runtime/ProcessControler.h
 runtime/ProcessControler.cc
 runtime/Dispatcher.h
@@ -288,7 +303,7 @@ log/Colour.cc
 log/ETA.h
 log/ETA.cc
 log/Seconds.h
-log/Seconds.cc 
+log/Seconds.cc
 log/Plural.h
 log/Progress.h
 log/Progress.cc
@@ -353,29 +368,34 @@ parser/JSONParser.cc )
 list( APPEND eckit_value_srcs
 value/BoolContent.h
 value/BoolContent.cc
+value/CompositeParams.cc
+value/CompositeParams.h
 value/Content.h
 value/Content.cc
 value/DateContent.h
 value/DateContent.cc
+value/DispatchParams.h
 value/DoubleContent.h
 value/DoubleContent.cc
 value/Expression.h
 value/ListContent.h
 value/ListContent.cc
 value/MapContent.h
-value/MapContent.cc 
+value/MapContent.cc
 value/NilContent.h
 value/NilContent.cc
 value/NumberContent.h
 value/NumberContent.cc
 value/Params.cc
-value/Params.h 
+value/Params.h
 value/Properties.h
 value/Properties.cc
+value/ScopeParams.cc
+value/ScopeParams.h
 value/StringContent.h
 value/StringContent.cc
 value/Value.h
-value/Value.cc ) 
+value/Value.cc )
 
 list( APPEND eckit_os_srcs
 os/Stat.h
@@ -467,8 +487,9 @@ memory/NonCopyable.cc
 memory/ScopedPtr.h )
 
 list( APPEND eckit_compat_srcs
+compat/Inited.h
 compat/StrStream.h
-compat/Inited.h )
+)
 
 list( APPEND eckit_bases_srcs
 bases/Watcher.h
@@ -481,10 +502,6 @@ transaction/TxnLog.h
 transaction/TxnLog.cc
 transaction/TxnEvent.h
 transaction/TxnEvent.cc )
-
-list( APPEND eckit_testing_srcs
-testing/UnitTest.h
-testing/UnitTest.cc)
 
 list( APPEND eckit_dirs
 	bases
@@ -563,17 +580,9 @@ ecbuild_add_library(TARGET eckit
 					LIBS
 						${CMAKE_THREAD_LIBS_INIT} ${AIO_LIBRARIES} )
 
-### sub-driectories
+### sub-directories
+
+add_subdirectory( cmd )
 
 add_subdirectory( web )
-
-add_subdirectory( maths )
-
-add_subdirectory( xpr )
-
-add_subdirectory( geometry )
-
-add_subdirectory( grib )
-
-add_subdirectory( mpi )
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -19,7 +19,6 @@
 #include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/SavedStatus.h"
-#include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------
 
@@ -83,7 +82,7 @@ private: // members
 
 class SeriousBug : public Exception {
 public:
-    SeriousBug(const std::string& w) : Exception(std::string("Serious Bug:") + w) {}
+    SeriousBug(const std::string& w) : Exception(std::string("Serious Bug: ") + w) {}
     SeriousBug(const std::string&,const CodeLocation&);
     SeriousBug(const char*,const CodeLocation&);
 };
@@ -233,9 +232,9 @@ inline void SysCall(long long code,const char *msg,const T& ctx,const CodeLocati
 {
     if(code<0)
     {
-        StrStream os;
-        os << ctx << StrStream::ends;
-        throw FailedSystemCall(std::string(os),msg,loc,errno);
+        std::ostringstream os;
+        os << ctx;
+        throw FailedSystemCall(os.str(), msg, loc, errno);
     }
 }
 

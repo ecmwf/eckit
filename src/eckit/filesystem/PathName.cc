@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -28,7 +28,7 @@ namespace eckit {
 
 static BasePathName* make(const std::string& p) {
 
-    if(p.find("marsfs:") == 0) 
+    if(p.find("marsfs:") == 0)
         return new BasePathNameT<MarsFSPath>(p);
 
     /*
@@ -258,6 +258,11 @@ PathName PathName::baseName(bool ext) const
 	return PathName(path_->baseName(ext));
 }
 
+std::string PathName::extension() const
+{
+  return path_->extension();
+}
+
 PathName PathName::fullName() const
 {
 	return PathName(path_->fullName());
@@ -276,6 +281,10 @@ void PathName::fileSystemSize(FileSystemSize& fs) const
 PathName PathName::mountPoint() const
 {
 	return PathName(path_->mountPoint());
+}
+
+PathName PathName::realName() const {
+    return PathName(path_->realName());
 }
 
 bool PathName::sameAs(const PathName& other) const

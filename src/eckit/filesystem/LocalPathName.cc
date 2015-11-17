@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -17,7 +17,6 @@
 #include <dirent.h>
 #include <sys/statvfs.h>
 
-#include "eckit/compat/StrStream.h"
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/io/FileHandle.h"
@@ -76,6 +75,14 @@ LocalPathName LocalPathName::baseName(bool ext) const
 
 }
 
+std::string LocalPathName::extension() const {
+    const std::string base = baseName();
+    const size_t lastDot = base.find_last_of('.');
+    // If no . was found return the empty string
+    if (lastDot == std::string::npos) return "";
+    return base.substr(lastDot);
+}
+
 LocalPathName LocalPathName::dirName() const
 {
 
@@ -119,7 +126,7 @@ BasePathName* LocalPathName::checkClusterNode() const
 LocalPathName LocalPathName::orphanName() const
 {
 
-	StrStream os;
+    std::ostringstream os;
 	os << mountPoint()  << "/orphans/";
 
     const char *q = path_.c_str();
@@ -129,10 +136,7 @@ LocalPathName LocalPathName::orphanName() const
 		q++;
     }
 
-	os << StrStream::ends;
-
-    std::string s(os);
-    return s;
+    return os.str();
 
 }
 
@@ -163,19 +167,16 @@ LocalPathName LocalPathName::unique(const LocalPathName& path)
 
 	static unsigned long long n = (((unsigned long long)::getpid()) << 32);
 
-	std::string s;
-	StrStream os;
-	os << path << '.' << TimeStamp(format) << '.' << n++ << StrStream::ends;
-	s = std::string(os);
+    std::ostringstream os;
+    os << path << '.' << TimeStamp(format) << '.' << n++;
 
-	while(::access(s.c_str(),F_OK) == 0)
+    while(::access(os.str().c_str(),F_OK) == 0)
 	{
-		StrStream os;
-		os << path << '.' << TimeStamp(format) << '.' << n++ << StrStream::ends;
-		s = std::string(os);
+        std::ostringstream os;
+        os << path << '.' << TimeStamp(format) << '.' << n++;
 	}
 
-	LocalPathName result(s);
+    LocalPathName result(os.str());
 	result.dirName().mkdir();
 	return result;
 }
@@ -190,7 +191,10 @@ static void mkdir_if_not_exists( const char* path, short mode )
 		{
 			if(::mkdir(path,mode) < 0)
 			{
-				throw FailedSystemCall(std::string("mkdir ") + path);
+                /* don't throw error if it was created meanwhile by another process */
+                if( errno != EEXIST ) {
+                    throw FailedSystemCall(std::string("mkdir ") + path);
+                }
 			}
 		}
 		else // stat fails for unknown reason
@@ -207,13 +211,13 @@ void LocalPathName::mkdir(short mode) const
 	{
 		char path[MAXNAMLEN+1];
 
-		long l = path_.length();
-	
+        size_t l = path_.length();
+
 		ASSERT( sizeof(path) > l );
 
 		::strcpy( path, path_.c_str()  );
 
-		for(long i=1; i < l; i++)
+        for(size_t i=1; i < l; i++)
 		{
 			if(path[i] == '/')
 			{
@@ -299,7 +303,22 @@ LocalPathName& LocalPathName::tidy()
 
 	if(path_[0] == '~')
 	{
-        path_ =  Context::instance().home() + "/" + path_.substr(1);
+        if(path_.length() > 1) {
+            if(path_[1] != '/') {
+                std::string s;
+                size_t j = 1;
+                while(j < path_.length() && path_[j] != '/') {
+                    s += path_[j];
+                    j++;
+                }
+                path_ =  Context::instance().configHome(s) + "/" + path_.substr(j);
+            } else {
+                path_ =  Context::instance().home() + "/" + path_.substr(1);
+            }
+        }
+        else {
+            path_ =  Context::instance().home() + "/" + path_.substr(1);
+        }
 	}
 
 
@@ -703,9 +722,9 @@ const std::string& LocalPathName::path() const
 
 std::string LocalPathName::clusterName() const
 {
-    StrStream os;
-    os << "marsfs://" << node() << fullName() << StrStream::ends;
-    return std::string(os);
+    std::ostringstream os;
+    os << "marsfs://" << node() << fullName();
+    return os.str();
 }
 
 //-----------------------------------------------------------------------------

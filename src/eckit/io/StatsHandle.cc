@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -15,7 +15,6 @@
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/config/Resource.h"
-#include "eckit/compat/StrStream.h"
 
 #include "eckit/io/StatsHandle.h"
 #include "eckit/log/BigNum.h"
@@ -34,9 +33,9 @@ StatsHandle::StatsHandle(DataHandle &handle):
     HandleHolder(handle),
     reads_(0),
     seeks_(0),
-    positions_(0),
-    bytesRead_(0),
     writes_(0),
+//    positions_(0),
+    bytesRead_(0),
     bytesWritten_(0),
     timer_(),
     readTime_(0),
@@ -50,9 +49,9 @@ StatsHandle::StatsHandle(DataHandle *handle):
     HandleHolder(handle),
     reads_(0),
     seeks_(0),
-    positions_(0),
-    bytesRead_(0),
     writes_(0),
+//    positions_(0),
+    bytesRead_(0),
     bytesWritten_(0),
     timer_(),
     readTime_(0),

@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2014 ECMWF.
+# (C) Copyright 1996-2015 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -10,8 +10,10 @@
 
 add_subdirectory( eckit  )
 
+if( HAVE_EXPERIMENTAL )
+  add_subdirectory( experimental )
+endif()
+
 add_subdirectory( apps )
 
 add_subdirectory( tests )
-
-add_subdirectory( sandbox )

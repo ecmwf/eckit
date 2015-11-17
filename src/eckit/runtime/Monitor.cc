@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -11,7 +11,6 @@
 #include <pthread.h>
 #include <signal.h>
 
-#include "eckit/compat/StrStream.h"
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/runtime/Context.h"
@@ -274,7 +273,7 @@ void Monitor::parent(long p)
 
 std::string Monitor::statusTree()
 {
-    StrStream os;
+    std::ostringstream os;
     os << status();
     int n = self();
 
@@ -286,9 +285,7 @@ std::string Monitor::statusTree()
             os << "|" << p[j].status();
 		}
 
-    os << StrStream::ends;
-
-    return std::string(os);
+    return os.str();
 }
 
 void Monitor::start(const std::string& app)

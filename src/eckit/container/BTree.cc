@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -507,7 +507,7 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, std:
 	//std::cout << " begin " << (*begin).key_ << std::endl;
 	if( p.count_ )
 	{
-		const LeafEntry *last   = begin + p.count_ -1;
+// unused		const LeafEntry *last   = begin + p.count_ -1;
 		//std::cout << " last "   << (*last).key_ << std::endl;
 	}
 

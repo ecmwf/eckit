@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -40,8 +40,8 @@ public:
 protected:
 
 // -- Methods
-	
-	void print(std::ostream&) const; 
+
+	void print(std::ostream&) const;
 
 private:
 
@@ -57,13 +57,14 @@ private:
     virtual time_t lastAccess() const;
     virtual time_t lastModified() const;
     virtual time_t created() const;
-    
-    virtual bool isDir() const;    
+
+    virtual bool isDir() const;
 
     virtual void rename(const BasePathName&) const;
     virtual void link(const BasePathName&) const;
     virtual bool sameAs(const BasePathName&) const;
     virtual BasePathName* mountPoint() const;
+    virtual BasePathName* realName() const;
     virtual bool exists() const;
     virtual bool available() const;
     virtual void mkdir(short) const;
@@ -80,6 +81,7 @@ private:
     virtual BasePathName* orphanName() const;
     virtual BasePathName* checkClusterNode() const;
     virtual BasePathName* baseName(bool) const;
+    virtual std::string extension() const;
 
     virtual std::string clusterName() const;
     virtual void syncParentDirectory() const;

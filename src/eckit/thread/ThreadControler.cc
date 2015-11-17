@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -26,11 +26,11 @@ namespace eckit {
 
 
 ThreadControler::ThreadControler(Thread* proc,bool detached,size_t stack):
+    detached_(detached),
     thread_(0),
     proc_(proc),
-    running_(false),
     stack_(stack),
-    detached_(detached)
+    running_(false)
 {
     //cout << "ThreadControler::ThreadControler(" << this << ")" << " " << hex << pthread_self() << std::endl;
 }
@@ -103,11 +103,9 @@ void ThreadControler::execute()
     try {
         proc->run();
     }
-    catch(std::exception& e){
-        Log::error() << "** " << e.what() << " Caught in "
-                     << Here() << std::endl;
-        Log::error() << "** Exception is terminates thread "
-                     << pthread_self() << std::endl;
+    catch(std::exception& e) {
+        Log::error() << "** " << e.what() << " Caught in "   << Here() << std::endl;
+        Log::error() << "** Exception is terminates thread " << pthread_self() << std::endl;
     }
 
     if(proc->autodel_)

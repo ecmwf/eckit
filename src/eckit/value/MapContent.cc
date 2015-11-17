@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -26,7 +26,7 @@ MapContent::MapContent()
 {
 }
 
-MapContent::MapContent(const std::map<Value,Value>& v)
+MapContent::MapContent(const ValueMap& v)
 {
     value_ = v;
 }
@@ -50,7 +50,7 @@ MapContent::MapContent(Stream& s):
 void MapContent::encode(Stream& s) const
 {
     Content::encode(s);
-    for(std::map<Value,Value>::const_iterator j = value_.begin(); j != value_.end(); ++j)
+    for(ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j)
     {
         s << true;
         s << (*j).first;
@@ -68,7 +68,12 @@ Value& MapContent::element(const Value& key)
     return value_[key];
 }
 
-void MapContent::value(std::map<Value,Value>& v) const
+bool MapContent::contains(const Value& key) const
+{
+    return value_.find(key) != value_.end();
+}
+
+void MapContent::value(ValueMap& v) const
 {
     v = value_;
 }
@@ -91,7 +96,7 @@ int MapContent::compareMap(const MapContent& other) const
 void MapContent::print(std::ostream& s) const
 {
     s << '{';
-    for(std::map<Value,Value>::const_iterator j = value_.begin(); j != value_.end(); ++j)
+    for(ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j)
     {
         if(j != value_.begin()) s << " , ";
         s << (*j).first;
@@ -104,13 +109,23 @@ void MapContent::print(std::ostream& s) const
 void MapContent::json(JSON& s) const
 {
     s.startObject();
-    for(std::map<Value,Value>::const_iterator j = value_.begin(); j != value_.end(); ++j)
+    for(ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j)
     {
         s << (*j).first;
         s << (*j).second;
     }
     s.endObject();
 }
+
+
+Content* MapContent::clone() const {
+    ValueMap v;
+    for(ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
+        v[(*j).first.clone()] = (*j).second.clone();
+    }
+    return new MapContent(v);
+}
+
 
 Content* MapContent::add(const Content& other) const
 {

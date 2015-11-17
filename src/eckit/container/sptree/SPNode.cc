@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -33,8 +33,8 @@ SPNode<Traits,NodeType>::SPNode(const Value& value):
 template<class Traits, class NodeType>
 SPNodeInfo<Traits,NodeType> SPNode<Traits,NodeType>::nearestNeighbour(Alloc& a,const Point& p)
 {
-    double max = std::numeric_limits<double>::max();
-    Node* best = 0;
+    double max = Point::distance(p,value_.point());
+    Node* best = this->asNode();
     nearestNeighbourX(a, p, best, max, 0);
     return NodeInfo(best, a.convert(best), max);
 }
@@ -45,8 +45,8 @@ SPNodeInfo<Traits,NodeType> SPNode<Traits,NodeType>::nearestNeighbour(Alloc& a,c
 template<class Traits, class NodeType>
 SPNodeInfo<Traits,NodeType> SPNode<Traits,NodeType>::nearestNeighbourBruteForce(Alloc& a,const Point& p)
 {
-    double max = std::numeric_limits<double>::max();
-    Node* best = 0;
+    double max = Point::distance(p,value_.point());
+    Node* best = this->asNode();
     nearestNeighbourBruteForceX(a, p, best, max, 0);
     return NodeInfo(best, a.convert(best), max);
 }

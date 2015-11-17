@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -26,10 +26,10 @@ class MapContent : public Content {
 
 protected:
 
-// -- Constructor 
+// -- Constructor
 
     MapContent();
-    MapContent(const std::map<Value,Value>&);
+    MapContent(const ValueMap&);
     //MapContent(const Value&);
 
     MapContent(Stream&);
@@ -44,15 +44,15 @@ protected:
 
     virtual int compare(const Content& other) const;
 
-    virtual void value(bool& n)                 const { Content::value(n); }
-    virtual void value(long long& n)            const { Content::value(n); }
-    virtual void value(double& n)               const { Content::value(n); }
-    virtual void value(std::string& n)               const { Content::value(n); }
-    virtual void value(Date& n)                 const { Content::value(n); }
-    virtual void value(Time& n)                 const { Content::value(n); }
-    virtual void value(DateTime& n)             const { Content::value(n); }
-    virtual void value(std::vector<Value>& n)        const { Content::value(n); }
-    virtual void value(std::map<Value,Value>& n)     const;
+    virtual void value(bool& n)        const { Content::value(n); }
+    virtual void value(long long& n)   const { Content::value(n); }
+    virtual void value(double& n)      const { Content::value(n); }
+    virtual void value(std::string& n) const { Content::value(n); }
+    virtual void value(Date& n)        const { Content::value(n); }
+    virtual void value(Time& n)        const { Content::value(n); }
+    virtual void value(DateTime& n)    const { Content::value(n); }
+    virtual void value(ValueList& n)   const { Content::value(n); }
+    virtual void value(ValueMap& n)    const;
 
     virtual int  compareBool(const BoolContent&)            const {return -1; }
     virtual int  compareNumber(const NumberContent&)        const {return -1; }
@@ -72,6 +72,7 @@ protected:
     virtual Content* mod(const Content&) const;
 
     virtual Value&   element(const Value&);
+    virtual bool contains(const Value& key) const;
 
 //    virtual Content* addMap(const MapContent&) const;
 
@@ -80,6 +81,7 @@ protected:
     virtual std::string typeName() const       { return "Map"; }
 
     virtual bool   isMap() const         { return true; }
+    virtual Content* clone() const;
 
     // -- From Streamable
 
@@ -97,7 +99,7 @@ private:
 
 // -- Members
 
-    std::map<Value,Value> value_;
+    ValueMap value_;
 
 // -- Class Members
 

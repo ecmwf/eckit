@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -21,10 +21,7 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 template<class T>
-FileBase<T>::FileBase(const PathName& path):
-	path_(path),
-	fd_(-1),
-	pos_(0)
+FileBase<T>::FileBase(const PathName& path) : fd_(-1), path_(path), pos_(0)
 {
 	SYSCALL(fd_ = ::open(path.localPath(),O_RDWR|O_CREAT,0777));
 }

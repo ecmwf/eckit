@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -31,6 +31,10 @@ BoolContent::BoolContent(Stream& s):
 	value_(false)
 {
     s >> value_;
+}
+
+Content* BoolContent::clone() const {
+    return new BoolContent(value_);
 }
 
 void BoolContent::encode(Stream& s) const
@@ -69,22 +73,22 @@ int BoolContent::compareBool(const BoolContent& other) const
 }
 
 void BoolContent::value(bool& l) const
-{ 
+{
     l = value_;
 }
 
 void BoolContent::value(std::string& s) const
-{ 
+{
     s = value_ ? "true" : "false";
 }
 
 void BoolContent::value(long long& l) const
-{ 
+{
     l = value_;
 }
 
 void BoolContent::value(double& d) const
-{ 
+{
     d = value_;
 }
 

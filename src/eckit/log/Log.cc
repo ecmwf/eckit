@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -18,11 +18,30 @@
 
 #include "eckit/thread/ThreadSingleton.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+#ifndef _GNU_SOURCE
+
+static void handle_strerror_r(std::ostream& s, int e, char es[], int hs )
+{
+    if( hs == 0 )
+        s << " (" << es << ") " ;
+    else
+        s << " (errno = " << e << ") ";
+}
+
+#else // GNU implementation is not XSI compliant and returns char* instead of int
+
+static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
+{
+    s << " (" << (p ? p : "?") << ", errno = " << e << ") ";
+}
+
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------
 
 struct CreateMonitorChannel
 {
@@ -37,8 +56,6 @@ Channel& Log::monitor(char type,long mode)
     return y;
 }
 
-//-----------------------------------------------------------------------------
-
 struct CreateMonitorStatusChannel
 {
     MonitorChannel* operator()() { return new MonitorChannel( MonitorChannel::STATUS ); }
@@ -49,8 +66,6 @@ Channel& Log::status()
     static ThreadSingleton<MonitorChannel,CreateMonitorStatusChannel> x;
     return x.instance();
 }
-
-//-----------------------------------------------------------------------------
 
 struct CreateMonitorMessageChannel
 {
@@ -63,8 +78,6 @@ Channel& Log::message()
     return x.instance();
 }
 
-//-----------------------------------------------------------------------------
-
 Channel& Log::info()
 {
     return Context::instance().infoChannel();
@@ -75,10 +88,8 @@ Channel& Log::info(const CodeLocation& where)
     return Context::instance().infoChannel().source(where);
 }
 
-//-----------------------------------------------------------------------------
-
 Channel& Log::error()
-{
+{    
     return Context::instance().errorChannel();
 }
 
@@ -86,8 +97,6 @@ Channel& Log::error(const CodeLocation& where)
 {
     return Context::instance().infoChannel().source(where);
 }
-
-//-----------------------------------------------------------------------------
 
 std::ostream& Log::panic()
 {
@@ -114,8 +123,6 @@ std::ostream& Log::panic(const CodeLocation& where)
     }
 }
 
-//-----------------------------------------------------------------------------
-
 Channel& Log::warning()
 {
     return Context::instance().warnChannel();
@@ -125,8 +132,6 @@ Channel& Log::warning(const CodeLocation& where)
 {
     return Context::instance().warnChannel().source(where);
 }
-
-//-----------------------------------------------------------------------------
 
 Channel& Log::debug(int level)
 {
@@ -146,8 +151,6 @@ Channel& Log::debug(const CodeLocation& where, int level)
         return Context::instance().debugChannel().source(where);
 }
 
-//-----------------------------------------------------------------------------
-
 Channel& Log::channel(int cat, int level)
 {
 	// Note: level usage not yet implemented
@@ -159,8 +162,6 @@ Channel& Log::channel(int cat, const CodeLocation& where, int level)
 	// Note: level usage not yet implemented
 	return Context::instance().channel(cat).source(where);
 }
-
-//-----------------------------------------------------------------------------
 
 UserChannel& Log::user()
 {
@@ -196,41 +197,15 @@ void Log::notifyClient(const std::string& msg)
     if(um) um->notifyClient(msg);
 }
 
-//-----------------------------------------------------------------------------
-
-#ifndef _GNU_SOURCE
-
-static void handle_strerror_r(std::ostream& s, int e, char es[], int hs )
-{
-    if( hs == 0 )
-        s << " (" << es << ") " ;
-    else
-        s << " (errno = " << e << ") ";
-}
-
-#else // GNU implementation is not XSI compliant and returns char* instead of int
-
-static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
-{
-    if( p != 0 )
-        s << " (" << p << ") " ;
-    else
-        s << " (errno = " << e << ") ";
-}
-
-#endif
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 std::ostream& Log::syserr(std::ostream& s)
 {
-        int e = errno;
-        char estr [256];
-        handle_strerror_r(s, e, estr, strerror_r( e, estr, sizeof(estr) ) );
-        return s;
+    int e = errno;
+    char estr [256];
+    handle_strerror_r(s, e, estr, strerror_r( e, estr, sizeof(estr) ) );
+    return s;
 }
-
-//-----------------------------------------------------------------------------
 
 static int xindex = std::ios::xalloc();
 
@@ -245,10 +220,8 @@ std::ostream& setformat(std::ostream& s,int n)
         return s;
 }
 
-//-----------------------------------------------------------------------------
-
 template class ThreadSingleton<UserChannel>;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

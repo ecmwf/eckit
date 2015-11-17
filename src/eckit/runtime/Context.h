@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -24,6 +24,8 @@ namespace eckit {
 class ContextBehavior;
 
 class LogStream;
+
+class PathName;
 
 class Context : public Configurable {
 
@@ -60,13 +62,13 @@ public: // methods
     long self() const;
     void self( long );
 
-    std::string runName() const;
+    const std::string& runName() const;
     void runName( const std::string& name );
 
-    std::string displayName() const;
+    const std::string& displayName() const;
     void displayName( const std::string& name );
 
-    std::string home() const;
+    const std::string& home() const;
     void home( const std::string& h );
 
     Channel& infoChannel();
@@ -74,6 +76,12 @@ public: // methods
     Channel& errorChannel();
     Channel& debugChannel();
     Channel& channel(int cat);
+
+    //
+
+    PathName commandPath() const; // Full path to current command
+    PathName configHome(const std::string& name) const;
+
 
     // From Configurable
 
@@ -92,6 +100,12 @@ private: // methods
 
 	virtual std::string kind() const  { return "Context"; }
 
+    PathName configHome(bool&,
+                       const char* install_bin_dir,
+                       const char* developer_bin_dir,
+                       const char* install_config_dir,
+                       const char* developer_config_dir) const;
+
 protected:
 
     // -- Members
@@ -109,6 +123,22 @@ protected:
 
 };
 
+class RegisterConfigHome {
+    friend class Context;
+    RegisterConfigHome* next_;
+    bool first_;
+    const char* name_;
+    const char* install_bin_dir_;
+    const char* developer_bin_dir_;
+    const char* install_config_dir_;
+    const char* developer_config_dir_;
+public:
+    RegisterConfigHome(const char* name, // APPNAME
+                      const char* install_bin_dir,  // From ecbuild : APPNAME_INSTALL_BIN_DIR
+                      const char* developer_bin_dir, // From ecbuild : APPNAME_DEVELOPER_BIN_DIR
+                      const char* install_config_dir, // From ecbuild : APPNAME_INSTALL_DATA_DIR
+                      const char* developer_config_dir); // From ecbuild: APPNAME_DEVELOPER_BIN_DIR
+};
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

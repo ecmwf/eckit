@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2012 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -18,6 +18,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/value/Properties.h"
 
 using namespace std;
 using namespace eckit;
@@ -228,7 +229,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_memory_factory_1 )
 	BOOST_CHECK_EQUAL( Factory<Base1>::instance().get( "eckit_test.A1" ).name() , "eckit_test.A1" );
 	BOOST_CHECK_EQUAL( Factory<Base1>::instance().get( "eckit_test.B1" ).name() , "eckit_test.B1" );
 
-	ValueParams p;
+	Properties p;
 	p.set("mystr","lolo");
 
 	Base1::Ptr p1 ( Factory<Base1>::instance().get( "eckit_test.A1" ).create(Params(p)) );

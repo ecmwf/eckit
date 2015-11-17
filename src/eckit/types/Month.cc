@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -9,7 +9,6 @@
  */
 
 #include "eckit/types/Month.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/parser/Tokenizer.h"
 
 //-----------------------------------------------------------------------------
@@ -94,9 +93,9 @@ Month::Month(const std::string& s):
 
 Month::operator std::string() const
 {
-	StrStream os;
-	os << *this << StrStream::ends;
-	return std::string(os);
+    std::ostringstream os;
+    os << *this;
+    return os.str();
 }
 
 void Month::print(std::ostream& s) const

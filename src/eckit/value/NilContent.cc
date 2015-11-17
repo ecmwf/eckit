@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -33,6 +33,10 @@ NilContent::NilContent(Stream& s):
 {
 }
 
+Content* NilContent::clone() const {
+    return new NilContent();
+}
+
 void NilContent::encode(Stream& s) const
 {
     Content::encode(s);
@@ -42,9 +46,9 @@ NilContent::~NilContent()
 {
 }
 
-void NilContent::value(std::vector<Value>& v) const
+void NilContent::value(ValueList & v) const
 {
-    v = std::vector<Value>();
+    v = ValueList();
 }
 
 void NilContent::print(std::ostream& out) const

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -95,7 +95,8 @@ MappedArray<T>::MappedArray(const PathName& path, unsigned long size):
 	map_ = ::mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0);
     if(map_ == MAP_FAILED)
     {
-        Log::error() << "mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0)"
+        Log::error() << "MappedArray path=" << path << " size=" << size
+                     << " fails to mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0)"
                      << Log::syserr << std::endl;
         throw FailedSystemCall("mmap",Here());
     }

@@ -5,39 +5,17 @@
 
 #include "eckit/eckit_version.h"
 
-// C++11 support
-
-#cmakedefine HAS_CXX11___FUNC__
-#cmakedefine HAS_CXX11_AUTO
-#cmakedefine HAS_CXX11_CONSTEXPR
-#cmakedefine HAS_CXX11_CONSTRUCTOR_DELEGATE
-#cmakedefine HAS_CXX11_CSTDINT
-#cmakedefine HAS_CXX11_DECLTYPE
-#cmakedefine HAS_CXX11_DELETED_CONSTRUCTOR
-#cmakedefine HAS_CXX11_ENABLE_IF
-#cmakedefine HAS_CXX11_EXPLICIT_CAST
-#cmakedefine HAS_CXX11_INITIALIZATION
-#cmakedefine HAS_CXX11_LAMBDA
-#cmakedefine HAS_CXX11_LONG_DOUBLE
-#cmakedefine HAS_CXX11_LONG_LONG
-#cmakedefine HAS_CXX11_NOEXCEPT
-#cmakedefine HAS_CXX11_NULLPTR
-#cmakedefine HAS_CXX11_OVERRIDE
-#cmakedefine HAS_CXX11_RANDOM_DEVICE
-#cmakedefine HAS_CXX11_RVALUE_REFERENCES
-#cmakedefine HAS_CXX11_SHARED_PTR
-#cmakedefine HAS_CXX11_SIZEOF_MEMBER
-#cmakedefine HAS_CXX11_STATIC_ASSERT
-#cmakedefine HAS_CXX11_TEMPLATE_ALIAS
-#cmakedefine HAS_CXX11_TRIVIAL_TYPE_TRAITS
-#cmakedefine HAS_CXX11_TYPE_TRAITS
-#cmakedefine HAS_CXX11_UNIQUE_PTR
-
 // external packages
 
-#cmakedefine HAVE_EIGEN
-#cmakedefine HAVE_LAPACK
+#cmakedefine ECKIT_HAVE_ARMADILLO
+#cmakedefine ECKIT_HAVE_CUDA
+#cmakedefine ECKIT_HAVE_EIGEN
+#cmakedefine ECKIT_HAVE_GRIB
+#cmakedefine ECKIT_HAVE_LAPACK
+#cmakedefine ECKIT_HAVE_MKL
 #cmakedefine ECKIT_HAVE_MPI
 #cmakedefine ECKIT_HAVE_MPISTUBS
+#cmakedefine ECKIT_HAVE_READLINE
+#cmakedefine ECKIT_HAVE_VIENNACL
 
 #endif // eckit_config_h

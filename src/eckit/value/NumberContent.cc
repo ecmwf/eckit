@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -12,7 +12,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/JSON.h"
 #include "eckit/value/NumberContent.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/utils/Translator.h"
 
 //-----------------------------------------------------------------------------
@@ -22,8 +21,8 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 
-class BadBoolConversion:  public Exception { 
-	public: 
+class BadBoolConversion:  public Exception {
+	public:
 		BadBoolConversion(const std::string& w):
 			Exception(std::string("Bad Bool Conversion: ") + w)   {  }
 };
@@ -33,7 +32,7 @@ class BadBoolConversion:  public Exception {
 ClassSpec NumberContent::classSpec_ = {&Content::classSpec(),"NumberContent",};
 Reanimator<NumberContent> NumberContent::reanimator_;
 
-NumberContent::NumberContent(long long l): 
+NumberContent::NumberContent(long long l):
     value_(l)
 {
 }
@@ -43,6 +42,10 @@ NumberContent::NumberContent(Stream& s):
 	value_(0)
 {
     s >> value_;
+}
+
+Content* NumberContent::clone() const {
+    return new NumberContent(value_);
 }
 
 void NumberContent::encode(Stream& s) const
@@ -91,16 +94,16 @@ int NumberContent::compareDouble(const DoubleContent& other) const
     return 1;
 }
 
-void NumberContent::value(bool& b) const 
-{ 
+void NumberContent::value(bool& b) const
+{
     if( value_ == 0 )
         b = false;
     else
         b = true;
 }
 
-void NumberContent::value(long long& l) const 
-{ 
+void NumberContent::value(long long& l) const
+{
     l = value_;
 }
 
@@ -109,8 +112,8 @@ void NumberContent::value(double& l) const
     l = value_;
 }
 
-void NumberContent::value(std::string& s) const 
-{ 
+void NumberContent::value(std::string& s) const
+{
     s = Translator<long long,std::string>()(value_);
 }
 

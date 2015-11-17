@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -53,9 +53,9 @@ TCPSocket::UnknownHost::UnknownHost(const std::string& host):
 
 
 TCPSocket::TCPSocket():
-    remotePort_(-1),
-    localPort_(-1),
     socket_(-1),
+    localPort_(-1),
+    remotePort_(-1),
     remoteAddr_(none),
     localAddr_(none),
     bufSize_(0)
@@ -65,10 +65,10 @@ TCPSocket::TCPSocket():
 // This contructor performs a cahnge of ownership of the socket
 TCPSocket::TCPSocket(TCPSocket& other):
     socket_(other.socket_),
-    remotePort_(other.remotePort_),
-    remoteAddr_(other.remoteAddr_),
-    remoteHost_(other.remoteHost_),
     localPort_(other.remotePort_),
+    remotePort_(other.remotePort_),
+    remoteHost_(other.remoteHost_),
+    remoteAddr_(other.remoteAddr_),
     localHost_(other.remoteHost_),
     localAddr_(other.remoteAddr_),
     bufSize_(0)
@@ -316,11 +316,10 @@ TCPSocket& TCPClient::connect(const std::string& remote,int port,int retries, in
 
         if (status < 0)
         {
-            Log::error() << "connect to "
-                << host << " " << port << Log::syserr << std::endl;
+            Log::error() << "connect to " << host << " " << port << Log::syserr << std::endl;
 
-            Log::status() << "Connect: " << host << ":" << port << Log::syserr <<
-                " " << tries << '/' << retries << std::endl;
+            Log::status() << "Connect: " << host << ":" << port << Log::syserr << " "
+                          << tries << '/' << retries << std::endl;
 
             int save_errno = errno;
             ::close(socket_);
@@ -361,9 +360,9 @@ TCPSocket& TCPClient::connect(const std::string& remote,int port,int retries, in
                 case EAGAIN:
 #endif
                 default:
-                    Log::status() << "Waiting for network "
-                        << host << ":" << port
-                        << Log::syserr << std::endl;
+
+                    Log::status() << "Waiting for network " << host << ":" << port << Log::syserr << std::endl;
+
 #if 0
                     if(++tries >= retries)
                         if(retries != 0)

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -11,7 +11,6 @@
 #include <cstdlib>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
@@ -47,9 +46,9 @@ static unsigned long long multiplier(const char* p) {
 
 std::string Translator<bool,std::string>::operator()(bool value)
 {
-    StrStream s;
-    s << value << StrStream::ends;
-    return std::string(s);
+    std::ostringstream s;
+    s << value;
+    return s.str();
 }
 
 bool Translator<std::string,bool>::operator()(const std::string& s)
@@ -64,16 +63,16 @@ bool Translator<std::string,bool>::operator()(const std::string& s)
 
 std::string Translator<int,std::string>::operator()(int value)
 {
-    StrStream s;
-    s << value << StrStream::ends;
-    return std::string(s);
+    std::ostringstream s;
+    s << value;
+    return s.str();
 }
 
 std::string Translator<unsigned int,std::string>::operator()(unsigned int value)
 {
-    StrStream s;
-    s << value << StrStream::ends;
-    return std::string(s);
+    std::ostringstream s;
+    s << value;
+    return s.str();
 }
 
 int Translator<std::string,int>::operator()(const std::string& s)
@@ -102,9 +101,9 @@ unsigned int Translator<std::string,unsigned int>::operator()(const std::string&
 
 std::string Translator<long,std::string>::operator()(long value)
 {
-    StrStream s;
-    s << value << StrStream::ends;
-    return std::string(s);
+    std::ostringstream s;
+    s << value;
+    return s.str();
 }
 
 long Translator<std::string,long>::operator()(const std::string& s)
@@ -116,9 +115,9 @@ long Translator<std::string,long>::operator()(const std::string& s)
 
 std::string Translator<double,std::string>::operator()(double value)
 {
-    StrStream s;
-    s << value << StrStream::ends;
-    return std::string(s);
+    std::ostringstream s;
+    s << value;
+    return s.str();
 }
 
 double Translator<std::string,double>::operator()(const std::string& s)
@@ -128,13 +127,13 @@ double Translator<std::string,double>::operator()(const std::string& s)
 
     double d = ::strtod( s.c_str(), &pend );
 
-//    DEBUG_VAR( d );
-//    DEBUG_VAR( s );
-//    DEBUG_VAR( s.size() );
-//    DEBUG_VAR( pend - s.c_str() );
-//    DEBUG_VAR( errno );
+//    ECKIT_DEBUG_VAR( d );
+//    ECKIT_DEBUG_VAR( s );
+//    ECKIT_DEBUG_VAR( s.size() );
+//    ECKIT_DEBUG_VAR( pend - s.c_str() );
+//    ECKIT_DEBUG_VAR( errno );
 
-    if( s.empty() || s[0] == ' ' || (pend - s.c_str() != s.size()) || (errno != 0) )
+    if( s.empty() || s[0] == ' ' || static_cast<size_t>(pend - s.c_str()) != s.size() || (errno != 0) )
     {
         throw BadParameter( "Bad conversion from std::string '" + s + "' to double" , Here() );
     }
@@ -153,9 +152,9 @@ unsigned long Translator<std::string,unsigned long>::operator()(const std::strin
 
 std::string Translator<unsigned long,std::string>::operator()(unsigned long value)
 {
-    StrStream s;
-    s << value << StrStream::ends;
-    return std::string(s);
+    std::ostringstream s;
+    s << value;
+    return s.str();
 }
 
 unsigned long long Translator<std::string,unsigned long long>::operator()(const std::string& s)
@@ -167,9 +166,9 @@ unsigned long long Translator<std::string,unsigned long long>::operator()(const 
 
 std::string Translator<unsigned long long,std::string>::operator()(unsigned long long value)
 {
-    StrStream s;
-    s << value << StrStream::ends;
-    return std::string(s);
+    std::ostringstream s;
+    s << value;
+    return s.str();
 }
 
 long long Translator<std::string,long long>::operator()(const std::string& s)
@@ -181,9 +180,9 @@ long long Translator<std::string,long long>::operator()(const std::string& s)
 
 std::string Translator<long long,std::string>::operator()(long long value)
 {
-    StrStream s;
-    s << value << StrStream::ends;
-    return std::string(s);
+    std::ostringstream s;
+    s << value;
+    return s.str();
 }
 
 std::vector<std::string> Translator<std::string, std::vector<std::string> >::operator()(const std::string& s)
@@ -211,7 +210,7 @@ std::vector<long> Translator<std::string, std::vector<long> >::operator()(const 
 std::string Translator< std::vector<long>,std::string >::operator()(const std::vector<long>& v)
 {
     std::string result;
-    for(int i=0; i < v.size(); ++i)
+    for(size_t i=0; i < v.size(); ++i)
     {
         if(i) result += " ";
         result += Translator<long,std::string>()(v[i]);
@@ -222,7 +221,7 @@ std::string Translator< std::vector<long>,std::string >::operator()(const std::v
 std::string Translator<std::vector<std::string>, std::string>::operator()(const std::vector<std::string>& v)
 {
     std::string result;
-    for(int i=0; i < v.size(); ++i)
+    for(size_t i=0; i < v.size(); ++i)
     {
         if(i) result += ",";
 

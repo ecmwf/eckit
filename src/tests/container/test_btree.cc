@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_int_int )
 
 	BTree<int,int, 128> btree("foo");
 
-	for(int i = 0; i < test.size();  i++)
+    for(std::string::size_type i = 0; i < test.size();  i++)
 	{
 //		std::cout << "[" << test[i] << "," << -int(i) << "]" << std::endl;
 		int k = int(test[i]);
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_int_int )
 //	btree.dump() ;
 //	std::cout << std::endl;
 
-	for(int i = 0; i < test.size(); i++)
+    for(std::string::size_type i = 0; i < test.size(); i++)
 	{
 		int k;
 		BOOST_CHECK( btree.get(test[i],k) );
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_random_char_udf )
 
 		BTree< char, UDF, 6*UDF::SZ > btree("foo");
 
-		for(int i = 0; i < test.size();  i++)
+        for(std::string::size_type i = 0; i < test.size();  i++)
 		{
 			// std::cout << "[" << test[i] << "," << test[i] << "]" << std::endl;
 			btree.set( test[i], test[i] );
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_random_char_udf )
 		btree.dump() ;
 		std::cout << std::endl;
 
-		for(int i = 0; i < test.size(); i++)
+        for(std::string::size_type i = 0; i < test.size(); i++)
 		{
 			UDF k;
 			BOOST_CHECK( btree.get(test[i],k) );
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_random_char_fixedstring )
 
 		BTree< char, FixedString<16>, 156 > btree("foo");
 
-		for(int i = 0; i < test.size();  i++)
+        for(std::string::size_type i = 0; i < test.size();  i++)
 		{
 			// std::cout << "[" << test[i] << "," << test[i] << "]" << std::endl;
 			std::string s ("foo"); s +=test[i];
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_random_char_fixedstring )
 		btree.dump() ;
 		std::cout << std::endl;
 
-		for(int i = 0; i < test.size(); i++)
+        for(std::string::size_type i = 0; i < test.size(); i++)
 		{
 			FixedString<16> v;
 			BOOST_CHECK( btree.get(test[i],v) );
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_random_char_int )
 
 		BTree<char,int, 128> btree("foo");
 
-		for(int i = 0; i < test.size();  i++)
+        for(std::string::size_type i = 0; i < test.size();  i++)
 		{
 			// std::cout << "[" << test[i] << "," << -int(i) << "]" << std::endl;
 			btree.set(test[i],-int(i));
@@ -204,7 +204,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_random_char_int )
 //		btree.dump() ;
 //		std::cout << std::endl;
 
-		for(int i = 0; i < test.size(); i++)
+        for(std::string::size_type i = 0; i < test.size(); i++)
 		{
 			int k;
 			BOOST_CHECK( btree.get(test[i],k) );
@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_btree_fixedsttring_int )
 	btree.set("zoulou", 484);
 	btree.set("ZOULOU", 484);
 
-	for(int i = 0; i < test.size(); ++i)
+    for(std::string::size_type i = 0; i < test.size(); ++i)
 	{
 		string s;
 		s += test[i];
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_fixedsttring_fixedsttring )
 
 	BTree< FixedString<80>, FixedString<256>, 2048 > btree("bar");
 
-	for(int i = 0; i < test.size(); ++i)
+    for(std::string::size_type i = 0; i < test.size(); ++i)
 	{
 		string s;
 		s += test[i];
@@ -268,7 +268,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_fixedsttring_fixedsttring )
 	string f("foo");
 	btree.set(f,f);
 
-	for(int i = 0; i < test.size(); ++i)
+    for(std::string::size_type i = 0; i < test.size(); ++i)
 	{
 		string s;
 		s += test[i];

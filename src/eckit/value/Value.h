@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -35,9 +35,6 @@ class Length;
 class PathName;
 class JSON;
 
-typedef std::vector<Value>     ValueList;
-typedef std::map<Value,Value>  ValueMap;
-
 class Value {
 public:
 
@@ -65,6 +62,7 @@ public:
 
     Value(Stream&);
     Value(const ValueList&);
+    Value(const ValueMap&);
 
 // -- Copy
 
@@ -134,10 +132,23 @@ public:
     Value operator%(const Value&) const;
     Value& operator%=(const Value&);
 
-    Value operator[](const char*) const;
-    Value operator[](const std::string&) const;
-    Value operator[](const Value&) const;
-    Value operator[](int) const;
+    const Value& operator[](const char*) const;
+    const Value& operator[](const std::string&) const;
+    const Value& operator[](const Value&) const;
+    const Value& operator[](int) const;
+
+    Value& operator[](const char*);
+    Value& operator[](const std::string&);
+    Value& operator[](const Value&);
+    Value& operator[](int);
+
+public:
+    bool contains(const char*) const;
+    bool contains(const std::string&) const;
+    bool contains(const Value&) const;
+    bool contains(int) const;
+
+    Value& element(const std::string&);
 
     // -- Methods
 
@@ -157,14 +168,17 @@ public:
     Value	 tail() const;
     Value	 head() const;
 
+    Value    clone() const;
+    bool     shared() const; // Ensure that value is not shared
+
 // -- Class Methods
 
     static Value makeList();
     static Value makeList(const Value&);
-    static Value makeList(const std::vector<Value>&);
+    static Value makeList(const ValueList&);
 
     static Value makeMap();
-    static Value makeMap(const std::map<Value,Value>&);
+    static Value makeMap(const ValueMap&);
 
 protected:
 
@@ -174,7 +188,7 @@ protected:
 private:
 
 // -- Members
-	
+
 	Content* content_;
 
 // -- Methods
@@ -194,9 +208,9 @@ private:
 //-----------------------------------------------------------------------------
 
 template < typename T >
-Value makeVectorValue( std::vector<T>& v )
+Value makeVectorValue( const std::vector<T>& v )
 {
-	std::vector<Value> r;
+	ValueList r;
 	r.reserve(v.size());
 	for( size_t i = 0; i < v.size(); ++i )
 		r.push_back( Value(v[i]) );

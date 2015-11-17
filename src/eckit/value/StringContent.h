@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -43,15 +43,15 @@ protected:
 
     virtual int compare(const Content& other) const;
 
-    virtual void value(bool& n)                 const;
-	virtual void value(long long& n)            const;
-    virtual void value(double& n)               const;
-	virtual void value(std::string& n)          const;
-    virtual void value(Date& n)                 const { Content::value(n); }
-    virtual void value(Time& n)                 const { Content::value(n); }
-    virtual void value(DateTime& n)             const { Content::value(n); }
-    virtual void value(std::vector<Value>& n)        const { Content::value(n); }
-    virtual void value(std::map<Value,Value>& n)     const { Content::value(n); }
+    virtual void value(bool& n)        const;
+	virtual void value(long long& n)   const;
+    virtual void value(double& n)      const;
+	virtual void value(std::string& n) const;
+    virtual void value(Date& n)        const { Content::value(n); }
+    virtual void value(Time& n)        const { Content::value(n); }
+    virtual void value(DateTime& n)    const { Content::value(n); }
+    virtual void value(ValueList& n)   const { Content::value(n); }
+    virtual void value(ValueMap& n)    const { Content::value(n); }
 
     virtual int  compareBool(const BoolContent&)            const {return -1; }
     virtual int  compareNumber(const NumberContent&)        const {return -1; }
@@ -76,6 +76,7 @@ protected:
     virtual void   json(JSON&)     const;
     virtual std::string  typeName() const      { return "String"; }
     virtual bool    isString() const      { return true; }
+    virtual Content* clone() const;
 
     // -- From Streamable
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -15,7 +15,6 @@
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/config/Resource.h"
-#include "eckit/compat/StrStream.h"
 
 #include "eckit/io/MarsFSPartHandle.h"
 #include "eckit/io/PartHandle.h"
@@ -65,10 +64,10 @@ PartHandle::PartHandle(Stream& s):
 PartHandle::PartHandle(DataHandle& handle,
                        const OffsetList& offset,const LengthList& length):
     HandleHolder(handle),
-    offset_(offset),
-    length_(length),
     pos_ (0),
-    index_ (0)
+    index_ (0),
+    offset_(offset),
+    length_(length)
 {
     ASSERT(offset_.size() == length_.size());
 }
@@ -76,10 +75,10 @@ PartHandle::PartHandle(DataHandle& handle,
 PartHandle::PartHandle(DataHandle* handle,
                        const OffsetList& offset,const LengthList& length):
     HandleHolder(handle),
-    offset_(offset),
-    length_(length),
     pos_ (0),
-    index_ (0)
+    index_ (0),
+    offset_(offset),
+    length_(length)
 {
     ASSERT(offset_.size() == length_.size());
 }
@@ -87,10 +86,10 @@ PartHandle::PartHandle(DataHandle* handle,
 PartHandle::PartHandle(DataHandle& handle,
                        const Offset& offset,const Length& length):
     HandleHolder(handle),
-    offset_(1,offset),
-    length_(1,length),
     pos_ (0),
-    index_ (0)
+    index_ (0),
+    offset_(1,offset),
+    length_(1,length)
 {
     ASSERT(offset_.size() == length_.size());
 }
@@ -98,10 +97,10 @@ PartHandle::PartHandle(DataHandle& handle,
 PartHandle::PartHandle(DataHandle* handle,
                        const Offset& offset,const Length& length):
     HandleHolder(handle),
-    offset_(1,offset),
-    length_(1,length),
     pos_ (0),
-    index_ (0)
+    index_ (0),
+    offset_(1,offset),
+    length_(1,length)
 {
     ASSERT(offset_.size() == length_.size());
 }
@@ -155,9 +154,9 @@ long PartHandle::read1(char *buffer,long length)
 
     if(n != size)
     {
-        StrStream s;
-        s << handle() << ": cannot read " << size << ", got only " << n << StrStream::ends;
-        throw ReadError(std::string(s));
+        std::ostringstream s;
+        s << handle() << ": cannot read " << size << ", got only " << n;
+        throw ReadError(s.str());
     }
 
     pos_ += n;

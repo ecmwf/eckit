@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -26,7 +26,7 @@ ListContent::ListContent()
 {
 }
 
-ListContent::ListContent(const std::vector<Value>& v)
+ListContent::ListContent(const ValueList & v)
 {
     std::copy(v.begin(),v.end(), std::back_inserter(value_));
 }
@@ -46,6 +46,15 @@ ListContent::ListContent(Stream& s):
 
 }
 
+Content* ListContent::clone() const {
+    ValueList v;
+    v.reserve(value_.size());
+    for(size_t i = 0; i < value_.size(); ++i) {
+        v.push_back(value_[i].clone());
+    }
+    return new ListContent(v);
+}
+
 void ListContent::encode(Stream& s) const
 {
 	Content::encode(s);
@@ -60,7 +69,7 @@ ListContent::~ListContent()
 {
 }
 
-void ListContent::value(std::vector<Value>& v) const
+void ListContent::value(ValueList& v) const
 {
     v = value_;
 }
@@ -114,7 +123,7 @@ Content* ListContent::add(const Content& other) const
 
 Content* ListContent::addList(const ListContent& other) const
 {
-    std::vector<Value> tmp;
+    ValueList tmp;
     std::copy(other.value_.begin(), other.value_.end(), std::back_inserter(tmp));
     std::copy(value_.begin(), value_.end(), std::back_inserter(tmp));
 	return new ListContent(tmp);
@@ -141,7 +150,7 @@ Content* ListContent::mod(const Content& other) const
 }
 
 
-void ListContent::value(long long& n) const 
+void ListContent::value(long long& n) const
 {
     if(value_.size() == 1) n = value_[0];
 	else Content::value(n);
@@ -159,28 +168,28 @@ void ListContent::value(double& n) const
     else Content::value(n);
 }
 
-void ListContent::value(std::string& n) const 
+void ListContent::value(std::string& n) const
 {
     if(value_.size() == 1) n = std::string(value_[0]);
-	else Content::value(n); 
+	else Content::value(n);
 }
 
-void ListContent::value(Date& n) const 
-{ 
+void ListContent::value(Date& n) const
+{
     if(value_.size() == 1) n = value_[0];
-	else Content::value(n); 
+	else Content::value(n);
 }
 
-void ListContent::value(Time& n) const 
-{ 
+void ListContent::value(Time& n) const
+{
     if(value_.size() == 1) n = value_[0];
-	else Content::value(n); 
+	else Content::value(n);
 }
 
-void ListContent::value(DateTime& n) const 
-{ 
+void ListContent::value(DateTime& n) const
+{
     if(value_.size() == 1) n = value_[0];
-	else Content::value(n); 
+	else Content::value(n);
 }
 
 Value& ListContent::element(const Value& v)
@@ -189,6 +198,12 @@ Value& ListContent::element(const Value& v)
     ASSERT( n >= 0 && (size_t) n < value_.size() );
     return value_.at(n);
 }
+
+bool ListContent::contains(const Value& v) const {
+    long long n = v;
+    return( n >= 0 && (size_t) n < value_.size() );
+}
+
 
 //-----------------------------------------------------------------------------
 

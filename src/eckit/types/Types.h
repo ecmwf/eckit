@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -16,11 +16,11 @@
 
 #include "eckit/eckit.h"
 
-//-----------------------------------------------------------------------------
+#include "eckit/runtime/TaskID.h" // to be removed
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 typedef unsigned long Ordinal;  ///< for counting
 
@@ -30,7 +30,7 @@ typedef std::vector<std::string>            StringList;
 typedef std::set<std::string>               StringSet;
 typedef std::map<std::string,std::string>   StringDict;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template<class T>
 class output_list {
@@ -62,7 +62,7 @@ public:
     output_list_iterator<T>& operator++(int) { return *this; }
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template<class T>
 inline std::ostream& __print_list(std::ostream& s,const T& t)
@@ -75,11 +75,20 @@ inline std::ostream& __print_list(std::ostream& s,const T& t)
 
 inline std::ostream& __print_list(std::ostream& s,const std::vector<std::string>& t)
 {
-	s << '[';
-	for(Ordinal i = 0; i < t.size(); i++)
-		if(i) s << ',' << t[i]; else s << t[i];
-	s << ']';
-    return s;    
+        s << '[';
+        for(Ordinal i = 0; i < t.size(); i++)
+                if(i) s << ',' << t[i]; else s << t[i];
+        s << ']';
+    return s;
+}
+
+inline std::ostream& __print_list(std::ostream& s,const std::vector<double>& t)
+{
+        s << '[';
+        for(Ordinal i = 0; i < t.size(); i++)
+                if(i) s << ',' << t[i]; else s << t[i];
+        s << ']';
+    return s;
 }
 
 template<class T>
@@ -88,7 +97,7 @@ inline std::ostream& operator<<(std::ostream& s,const std::vector<T>& v)
 	return __print_list(s,v);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template<typename K, typename V>
 inline std::ostream& __print_container(std::ostream& s, const std::map<K,V>& m)
@@ -123,10 +132,10 @@ inline std::ostream& __print_container(std::ostream& s, const std::set<T>& m)
 template< typename T >
 inline std::ostream& operator<<(std::ostream& s, const std::set<T>& m)
 {
-    return __print_container(s,m);
+    return eckit::__print_container(s,m);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Stream; // forward
 
@@ -139,11 +148,7 @@ template<class T> void operator>>(Stream&,std::vector<T>&);
 template<class K, class V> void operator<<(Stream&,const std::map<K,V>&);
 template<class K, class V> void operator>>(Stream&,std::map<K,V>&);
 
-//-----------------------------------------------------------------------------
-
-typedef unsigned long long TaskID;
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

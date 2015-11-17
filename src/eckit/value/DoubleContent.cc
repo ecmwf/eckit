@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -33,6 +33,10 @@ DoubleContent::DoubleContent(Stream& s):
     value_(0)
 {
     s >> value_;
+}
+
+Content* DoubleContent::clone() const {
+    return new DoubleContent(value_);
 }
 
 void DoubleContent::encode(Stream& s) const
@@ -82,12 +86,12 @@ int DoubleContent::compareNumber(const NumberContent& other) const
 }
 
 void DoubleContent::value(double& l) const
-{ 
+{
     l = value_;
 }
 
 void DoubleContent::value(std::string& s) const
-{ 
+{
     s = Translator<double,std::string>()(value_);
 }
 

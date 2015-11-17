@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -78,12 +78,11 @@ void ThreadPoolThread::run()
 }
 
 ThreadPool::ThreadPool(const std::string& name,int count, size_t stack):
-    name_(name),
     count_(count),
     running_(0),
+    name_(name),
     error_(false)
 {
-
     //Log::info() << "ThreadPool::ThreadPool " << name_ << " " << count << std::endl;
 
     for(int i = 0; i < count ; i++)

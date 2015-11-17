@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -102,13 +102,13 @@ public:
 	void awake();
 
 	// Get the queue size
-	int  size();
+	int  size() const;
 
 	// Increment the running state by given delta
 	void running(long);
 
 	// Get the running state
-	long running();
+	long running() const;
 
 	// Serialise requests in queue as JSON array
 	void json(JSON&) const;
@@ -131,7 +131,7 @@ protected:
 	// Counter for thread ids
 	long              next_;
 	// Mutex protecting queue_
-	MutexCond         ready_;
+	mutable MutexCond ready_;
 	// Mutex for thread sleep/wake handling
 	MutexCond         wait_;
 	// Dispatcher name
@@ -141,7 +141,7 @@ protected:
 	// Number of active threads (i.e. processing work)
 	long              running_;
 
-	Mutex             lock_;
+	mutable Mutex     lock_;
 
 private:
 
@@ -235,8 +235,8 @@ void DispatchTask<Traits>::status(std::ostream& s) const
 {
 	AutoLock<Mutex> lock(((DispatchTask<Traits>*)this)->mutex_);
 	s << "Picks for " <<  owner_.name() << " thread " << id_ << std::endl;
-	for(int i = 0; i < pick_.size(); i++)
-		if(pick_[i]) Handler::print(s,*pick_[i]);
+    for(size_t i = 0; i < pick_.size(); i++)
+        if(pick_[i]) Handler::print(s,*pick_[i]);
 }
 
 template<class Traits>
@@ -244,8 +244,8 @@ void DispatchTask<Traits>::json(JSON& s) const
 {
 	AutoLock<Mutex> lock(((DispatchTask<Traits>*)this)->mutex_);
     int n = 0;
-	for(int i = 0; i < pick_.size(); i++)
-		if(pick_[i]) n++;
+    for(size_t i = 0; i < pick_.size(); i++)
+        if(pick_[i]) n++;
 
     if(n) {
     s.startObject();
@@ -253,8 +253,8 @@ void DispatchTask<Traits>::json(JSON& s) const
     s <<  "id"   << id_ ;
     s << "picks";
     s.startList();
-	for(int i = 0; i < pick_.size(); i++)
-		if(pick_[i]) Handler::json(s,*pick_[i]);
+    for(size_t i = 0; i < pick_.size(); i++)
+        if(pick_[i]) Handler::json(s,*pick_[i]);
     s.endList();
     s.endObject();
     }
@@ -335,7 +335,6 @@ void DispatchInfo<Traits>::run()
 
 template<class Traits>
 Dispatcher<Traits>::Dispatcher(const std::string& name, int numberOfThreads):
-	name_(name),
 	// Maximum number of threads defined on the command line or
 	// in config file or default to the argument value
 	numberOfThreads_(this,
@@ -343,9 +342,10 @@ Dispatcher<Traits>::Dispatcher(const std::string& name, int numberOfThreads):
                    numberOfThreads),
 	count_(0),
 	next_(0),
-	running_(0),
-	// Dynamically grow number of threads if set to 0
-	grow_(numberOfThreads_ == 0)
+    name_(name),
+    // Dynamically grow number of threads if set to 0
+    grow_(numberOfThreads_ == 0),
+    running_(0)
 {
 	// For some reason xlC require that
 	typedef class DispatchInfo<Traits> DI;
@@ -364,7 +364,7 @@ Dispatcher<Traits>::~Dispatcher()
 }
 
 template<class Traits>
-long Dispatcher<Traits>::running()
+long Dispatcher<Traits>::running() const
 {
 	if(grow_) {
 		AutoLock<Mutex> lock(lock_);
@@ -434,7 +434,7 @@ void Dispatcher<Traits>::awake()
 }
 
 template<class Traits>
-int Dispatcher<Traits>::size()
+int Dispatcher<Traits>::size() const
 {
 	AutoLock<MutexCond> lock(ready_);
 	return queue_.size();
@@ -443,7 +443,7 @@ int Dispatcher<Traits>::size()
 template<class Traits>
 void Dispatcher<Traits>::print(std::ostream& s) const
 {
-	AutoLock<MutexCond> lock(const_cast<Dispatcher<Traits>*>(this)->ready_);
+	AutoLock<MutexCond> lock(ready_);
     for(typename std::list<Request*>::const_iterator i = queue_.begin() ;
 		i != queue_.end(); ++i)
 			if(*i)
@@ -453,7 +453,7 @@ void Dispatcher<Traits>::print(std::ostream& s) const
 template<class Traits>
 void Dispatcher<Traits>::json(JSON& s) const
 {
-	AutoLock<MutexCond> lock(const_cast<Dispatcher<Traits>*>(this)->ready_);
+	AutoLock<MutexCond> lock(ready_);
     s.startList();
     for(typename std::list<Request*>::const_iterator i = queue_.begin() ;
 		i != queue_.end(); ++i)

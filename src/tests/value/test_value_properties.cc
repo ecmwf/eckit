@@ -49,6 +49,29 @@ BOOST_AUTO_TEST_CASE( test_serialize )
     // p.set("Time", Time(11, 59, 59));  <-- not implemented
     // p.set("DateTime", DateTime(Date(1, 2, 2015), Time(11, 59, 59)));  <-- not implemented
     p.set("PathName", PathName("/var/tmp"));
+    p.set("Vector", ValueList(5, "string"));
+    ValueMap m;
+    m.insert( std::make_pair("int", numeric_limits<int>::max()) );
+    m.insert( std::make_pair("unsigned int", numeric_limits<unsigned int>::max()) );
+    m.insert( std::make_pair("long long", numeric_limits<long long>::max()) );
+    m.insert( std::make_pair("unsigned long long", numeric_limits<unsigned long long>::max()) );
+    m.insert( std::make_pair("double", numeric_limits<double>::max()) );
+    m.insert( std::make_pair("string", "foo") );
+    m.insert( std::make_pair("Length", Length(42)) );
+    m.insert( std::make_pair("PathName", PathName("/var/tmp")) );
+    m.insert( std::make_pair("Vector", ValueList(5, "string")) );
+    p.set("Map", Value(m) );
+
+    Properties pm;
+    pm.set("int",numeric_limits<int>::max());
+    pm.set("unsigned int", numeric_limits<unsigned int>::max());
+    p.set("Nested", pm );
+
+    std::vector<Properties> property_list(2);
+    property_list[0].set("int",numeric_limits<int>::max());
+    property_list[1].set("string","foo");
+    p.set("list", makeVectorValue(property_list) );
+
     BOOST_TEST_MESSAGE("encoded Properties: " << p);
     {
         FileStream sout( filepath.c_str(), "w" );
@@ -70,8 +93,23 @@ BOOST_AUTO_TEST_CASE( test_serialize )
         // BOOST_CHECK_EQUAL(p["Time"], p2["Time"]);  <-- not implemented
         // BOOST_CHECK_EQUAL(p["DateTime"], p2["DateTime"]); <-- not implemented
         BOOST_CHECK_EQUAL(p["PathName"], p2["PathName"]);
+        BOOST_CHECK_EQUAL(p["Vector"], p2["Vector"]);
+        BOOST_CHECK_EQUAL(p["Map"], p2["Map"]);
     }
     if (filename.exists()) filename.unlink();
+
+    Properties access_nested = p.get("Nested");
+
+    eckit::ValueList access_list = p.get("list");
+    BOOST_TEST_MESSAGE("encoded list: " <<  access_list );
+    std::vector<eckit::Properties> access_property_list(access_list.begin(),access_list.end());
+
+    BOOST_TEST_MESSAGE("encoded Nested: " << access_nested);
+    {
+        FileStream sout( filepath.c_str(), "w" );
+        sout << p;
+    }
+
 }
 
 //-----------------------------------------------------------------------------

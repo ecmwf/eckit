@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -18,7 +18,6 @@
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------
 
@@ -95,7 +94,7 @@ void MarsFSPath::print(std::ostream& s) const
     s << "marsfs://" << node_ << path_;
 }
 
-void operator<<(Stream& s, MarsFSPath const& path) 
+void operator<<(Stream& s, MarsFSPath const& path)
 {
     s << path.node_;
     s << path.path_;
@@ -114,7 +113,7 @@ MarsFSPath::operator std::string() const
 
 
 MarsFSPath MarsFSPath::dirName() const
-{ 
+{
     return MarsFSPath(node(),MarsFSClient(*this).dirName(path_));
 }
 
@@ -124,39 +123,39 @@ MarsFSPath MarsFSPath::fullName() const
 }
 
 MarsFSPath MarsFSPath::baseName(bool ext) const
-{ 
+{
     return MarsFSPath(node(),MarsFSClient(*this).baseName(path_, ext));
 }
 
 void MarsFSPath::touch() const
-{ 
+{
     MarsFSClient(*this).touch(path_);
 }
 
 Length MarsFSPath::size() const
-{ 
+{
     return MarsFSClient(*this).size(path_);
 }
 
 bool MarsFSPath::sameAs(const MarsFSPath& other) const
-{ 
+{
     if(node() != other.node())
         return false;
     return MarsFSClient(*this).sameAs(path_, other.path_);
 }
 
 MarsFSPath MarsFSPath::unique(const MarsFSPath& path)
-{ 
+{
     return MarsFSPath(path.node(),MarsFSClient(path).unique(path.path_));
 }
 
 void MarsFSPath::reserve(const Length&) const
-{ 
-    NOTIMP; 
+{
+    NOTIMP;
 }
 
 void MarsFSPath::mkdir(short mode) const
-{ 
+{
     MarsFSClient(*this).mkdir(path_, mode);
 }
 
@@ -275,10 +274,17 @@ MarsFSPath MarsFSPath::mountPoint() const
     return MarsFSPath(node_, MarsFSClient(*this).mountPoint(path_));
 }
 
+
+MarsFSPath MarsFSPath::realName() const
+{
+    NOTIMP;
+    // return MarsFSPath(node_, MarsFSClient(*this).realName(path_));
+}
+
 MarsFSPath MarsFSPath::orphanName() const
 {
 
-    StrStream os;
+    std::ostringstream os;
     os << mountPoint()  << "/orphans/";
 
     const char *q = path_.c_str();
@@ -288,10 +294,7 @@ MarsFSPath MarsFSPath::orphanName() const
         q++;
     }
 
-    os << StrStream::ends;
-
-    std::string s(os);
-    return s;
+    return os.str();
 
 }
 
@@ -300,9 +303,13 @@ std::string MarsFSPath::clusterName() const
     return std::string(*this);
 }
 
+std::string MarsFSPath::extension() const {
+    NOTIMP;
+}
+
 BasePathName* MarsFSPath::checkClusterNode() const
 {
-    try 
+    try
     {
         std::string n = ClusterDisks::node(path_);
         ASSERT(n != NodeInfo::thisNode().node()); // TODO: code mo, if a remote file becomes local

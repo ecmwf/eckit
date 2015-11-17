@@ -1,16 +1,15 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
 
 
 #include "eckit/value/Content.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/value/Value.h"
 
 //-----------------------------------------------------------------------------
@@ -19,20 +18,20 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class BadConversion:  public Exception { 
-	public: 
+class BadConversion:  public Exception {
+	public:
 		BadConversion(const std::string& w):
 			Exception(std::string("Bad Conversion: ") + w)   {  }
 };
 
-class BadComparison:  public Exception { 
-	public: 	
+class BadComparison:  public Exception {
+	public:
 		BadComparison(const std::string& w):
 			Exception(std::string("Bad Comparison: ") + w)   {  }
 };
 
-class BadOperator:  public Exception { 
-	public: 	
+class BadOperator:  public Exception {
+	public:
 		BadOperator(const std::string& w):
 			Exception(std::string("Bad operator: ") + w)   {  }
 };
@@ -58,40 +57,48 @@ Content::~Content()
 
 void Content::badConvertion(const std::string& to) const
 {
-	StrStream s;
-	s << "Cannot convert " << *this << " (" << typeName() << ") to " << to << StrStream::ends;
-	std::string str(s);
-	throw BadConversion(str);
+    std::ostringstream s;
+    s << "Cannot convert " << *this << " (" << typeName() << ") to " << to;
+    throw BadConversion(s.str());
 }
 
 void Content::badComparison(const std::string& to) const
 {
-	StrStream s;
-	s << "Cannot compare " << *this << " (" << typeName() << ") with " << to << StrStream::ends;
-	std::string str(s);
-	throw BadComparison(str);
+    std::ostringstream s;
+    s << "Cannot compare " << *this << " (" << typeName() << ") with " << to;
+    throw BadComparison(s.str());
 }
 
 void Content::badOperator(const std::string& op, const std::string& to) const
 {
-	StrStream s;
-	s << *this << " (" << typeName() << ") " << op << " " << to << StrStream::ends;
-	std::string str(s);
-	throw BadOperator(str);
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") " << op << " " << to;
+    throw BadOperator(s.str());
 }
 
 Value& Content::element(const Value&)
 {
-    NOTIMP;
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") method 'element' not implemented";
+    throw BadOperator(s.str());
+}
+
+bool Content::contains(const Value&) const
+{
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") method 'contains' not implemented";
+    throw BadOperator(s.str());
 }
 
 Value Content::negate() const
 {
-    NOTIMP;
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") method 'negate' not implemented";
+    throw BadOperator(s.str());
 }
 
-void Content::value(long long&) const 
-{ 
+void Content::value(long long&) const
+{
 	badConvertion("long long");
 }
 
@@ -125,13 +132,13 @@ void Content::value(DateTime&) const
 	badConvertion("DateTime");
 }
 
-void Content::value(std::map<Value,Value>& v) const
+void Content::value(ValueMap & v) const
 {
     badConvertion("Map");
 }
 
 
-void Content::value(std::vector<Value>& v) const
+void Content::value(ValueList & v) const
 {
 	// Cast away constness, so the Contnt can be attached by the value
 	v.push_back(Value((Content*)this));
@@ -564,9 +571,9 @@ Content* Content::modDateTime(const DateTimeContent&) const
 
 #ifndef IBM
 template<>
-Streamable* Reanimator<Content>::ressucitate(Stream& s) const 
-{ 
-	return 0; 
+Streamable* Reanimator<Content>::ressucitate(Stream& s) const
+{
+	return 0;
 }
 #endif
 

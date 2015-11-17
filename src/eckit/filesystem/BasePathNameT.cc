@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -94,6 +94,12 @@ template<class T>
 BasePathName* BasePathNameT<T>::mountPoint() const
 {
     return new BasePathNameT<T>(path_.mountPoint());
+}
+
+template<class T>
+BasePathName* BasePathNameT<T>::realName() const
+{
+    return new BasePathNameT<T>(path_.realName());
 }
 
 template<class T>
@@ -208,6 +214,11 @@ template<class T>
 BasePathName* BasePathNameT<T>::baseName(bool ext) const
 {
     return new BasePathNameT<T>(path_.baseName(ext));
+}
+
+template<class T>
+std::string BasePathNameT<T>::extension() const {
+    return path_.extension();
 }
 
 template<class T>

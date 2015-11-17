@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -22,24 +22,24 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 ResizableBuffer::ResizableBuffer(size_t size):
-        size_(size),
-        fd_(-1),
-        buffer_(0)
+    buffer_(0),
+    size_(size),
+    fd_(-1)
 {
         create();
 }
 
 ResizableBuffer::ResizableBuffer(const char* p,size_t size):
-        size_(size),
-        buffer_(0)
+    buffer_(0),
+    size_(size)
 {
         create();
         ::memcpy(buffer_,p,size);
 }
 
 ResizableBuffer::ResizableBuffer(const std::string& s):
-        size_(s.length()+1),
-        buffer_(0)
+    buffer_(0),
+    size_(s.length()+1)
 {
         create();
         ::strcpy((char*)buffer_,s.c_str());

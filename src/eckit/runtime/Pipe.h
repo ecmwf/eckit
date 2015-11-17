@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -120,14 +120,14 @@ public:
 
 template<class PAYLOAD>
 Pipe<PAYLOAD>::Pipe(long count):
-    controler_(0),
-    payloads_(0),
     count_(count),
-    error_(false),
-    done_(false),
-    wi_(0),
     ri_(0),
-    pi_(-1)
+    wi_(0),
+    pi_(-1),
+    done_(false),
+    error_(false),
+    payloads_(0),
+    controler_(0)
 {
 
 }
@@ -192,8 +192,8 @@ PipeTask<PAYLOAD>::PipeTask(Proc &consumer,
                             Pipe<PAYLOAD>& owner,
                             OnePayload<PAYLOAD>* payloads):
     Thread(false),
-    consumer_(consumer),
     owner_(owner),
+    consumer_(consumer),
     payloads_(payloads)
 {
 }

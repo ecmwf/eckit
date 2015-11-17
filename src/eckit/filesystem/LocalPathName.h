@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -122,49 +122,112 @@ public:
 
 // Methods
 
-    // dirName() return the directory part of the path
-
+    /// Directory part of the path
+    /// @return directory part of the path
     LocalPathName dirName() const;
+
+    /// Absolute path
+    /// @return absolute path
     LocalPathName fullName() const;
+
     LocalPathName orphanName() const;
+
     BasePathName* checkClusterNode() const;
 
     std::string clusterName() const;
 
-    // baseName() returns the name part of the path. If ext if false
-    // the extension is stipped
-
+    /// Base name of the path
+    /// @param ext if false the extension is stripped
+    /// @return the name part of the path
     LocalPathName baseName(bool ext = true) const;
 
+    /// File extension
+    /// @return file extension (empty string if there is none)
+    std::string extension() const;
+
+    /// Check if path exists
+    /// @return true if the path exists
     bool exists() const;
+
+    /// Check if path is available
+    /// @return true (local paths are always available)
     bool available() const;
+
+    /// Touch the path. The path leading to it is created if it does not exist.
     void touch() const;
+
+    /// Reserve a given number of Bytes (file must be of length 0 or not exist)
+    /// @param len number of Bytes to reserves
     void reserve(const Length&) const;
 
+    /// File size
+    /// @return Size in Bytes
     Length size() const;
+
+    /// Last access time
+    /// @return Time of last access
     time_t lastAccess()   const;
+
+    /// Last modification time
+    /// @return Time of last modification
     time_t lastModified() const;
+
+    /// Creation time
+    /// @return Time of creation
     time_t created()      const;
 
+    /// Check if path is a directory
+    /// @return true if the path is a directory
     bool isDir() const;
 
+    /// Clear the file
     void empty() const;
+
+    /// Truncate the file to given number of Bytes.
+    /// @param len number of Bytes to truncat to
     void truncate(Length) const;
 
+    /// Create the directory and all directories leading to it with given mode
+    /// @param mode file mode bits
     void mkdir(short mode = 0777) const;
+
+    /// Change the file mode
+    /// @param mode file mode bits
     void chmod(short mode) const;
+
+    /// Unlink the path
     void unlink() const;
+
+    /// Remove the directory
     void rmdir() const;
 
+    /// Create a copy with a unique path name
     void backup() const;
+
+    /// Create a copy with the given path name
     void copy(const LocalPathName&) const;
 
+    /// Check if a given path points to the same inode as this path
+    /// @return true if the path points to the same inode as the given path
     bool sameAs(const LocalPathName&) const;
+
+    /// Mount point of the path
+    /// @return mount point of path
     LocalPathName mountPoint() const;
+
+    /// Real path (with symlinks resolved)
+    /// @return the real path (with symlinks resolved)
     LocalPathName realName() const;
 
+    /// Get child files and directories
+    /// @param files vector to be filled with child files of path
+    /// @param directories vector to be filled with child diretories of path
     void children(std::vector<LocalPathName>&,std::vector<LocalPathName>&) const;
+
     const std::string& node() const;
+
+    /// String representation
+    /// @return string representation of path
     const std::string& path() const;
 
     void fileSystemSize(FileSystemSize&) const;

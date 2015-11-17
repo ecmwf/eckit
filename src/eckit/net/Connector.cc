@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -14,7 +14,6 @@
 
 #include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/net/Connector.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/config/Resource.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPStream.h"
@@ -82,9 +81,9 @@ TCPSocket& Connector::socket()
 
 	      offLine(host_, port_);
 
-	      StrStream os;
-	      os << name() << ": " << e.what() << StrStream::ends;
-	      throw ConnectorException(std::string(os));
+          std::ostringstream os;
+          os << name() << ": " << e.what();
+          throw ConnectorException(os.str());
 	   }
 	}
 	return socket_;
@@ -190,9 +189,9 @@ public:
 
 		if (!ok)
 		{
-			StrStream os;
-			os << "Cannot get node info for " << name << "@" << node << StrStream::ends;
-			throw ConnectorException(std::string(os));
+            std::ostringstream os;
+            os << "Cannot get node info for " << name << "@" << node;
+            throw ConnectorException(os.str());
 		}
 
 		s >> cache_[p];
@@ -294,9 +293,9 @@ void Connector::reset()
 
 std::string Connector::name() const
 {
-	StrStream os;
-	os << "Connector[" << host_ << ":" << port_ << "]" << StrStream::ends;
-	return std::string(os);
+    std::ostringstream os;
+    os << "Connector[" << host_ << ":" << port_ << "]";
+    return os.str();
 }
 
 template<class T, class F>
@@ -309,10 +308,10 @@ long Connector::socketIo(F proc, T buf, long len, const char* msg)
 		reset();
 		cache.instance().reset();
 		infos.instance().reset();
-		StrStream os;
-		os << "Connector::socketIo(" << name() << ") only " << l << " byte(s) " << msg << " intead of " << len << Log::syserr << StrStream::ends;
+        std::ostringstream os;
+        os << "Connector::socketIo(" << name() << ") only " << l << " byte(s) " << msg << " intead of " << len << Log::syserr;
 		//throw ConnectorException(std::string(os));
-		throw Retry(std::string(os));
+        throw Retry(os.str());
 	}
 	return l;
 }
@@ -347,18 +346,18 @@ long Connector::read(void *buf, long len)
 			bool useCache = false;
 			if (j != cache_.end())
 			{
-				//cout << "MEMOIZE IN CACHE " << (*j).first << std::endl;
-				if ((::time(0) - (*j).second.updated()) > life_)
-				{
-					//cout << "  CACHE IS STALE" << (*j).first << std::endl;
-				} else
-				{
+                // cout << "MEMOIZE IN CACHE " << (*j).first << std::endl;
+                // if ((::time(0) - (*j).second.updated()) > life_)
+                // {
+                //	cout << "  CACHE IS STALE" << (*j).first << std::endl;
+                // } else
+                // {
 					useCache = true;
 					cached_.buffer_ = (const char*) (*j).second.buffer();
 					cached_.size_ = (*j).second.count();
 					cached_.pos_ = 0;
 					sent_ = true;
-				}
+                // }
 			}
 
 			if (!useCache)
@@ -385,10 +384,10 @@ long Connector::read(void *buf, long len)
 
 			if (l != len)
 			{
-				StrStream os;
-				os << "Connector::socketIo(" << name() << ") only " << l << " byte(s) memoized intead of " << len << Log::syserr << StrStream::ends;
+                std::ostringstream os;
+                os << "Connector::socketIo(" << name() << ") only " << l << " byte(s) memoized intead of " << len << Log::syserr;
 				reset();
-				throw ConnectorException(std::string(os));
+                throw ConnectorException(os.str());
 			}
 
 			::memcpy(buf, cached_.buffer_ + cached_.pos_, len);

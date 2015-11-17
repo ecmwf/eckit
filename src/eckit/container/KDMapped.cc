@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -25,8 +25,9 @@ namespace eckit {
 
 KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size_t metadataSize):
     path_(path),
-    count_(0),
     header_(itemCount, itemSize, metadataSize),
+    count_(0),
+    size_(0),
     base_(0),
     root_(0),
     addr_(0),
@@ -107,13 +108,13 @@ KDMapped::~KDMapped()
 // Warning, takes ownership of maps
 KDMapped::KDMapped(const KDMapped& other):
     path_(other.path_),
+    header_(other.header_),
     count_(other.count_),
     size_(other.size_),
-    addr_(other.addr_),
-    fd_(other.fd_),
     base_(other.base_),
     root_(other.root_),
-    header_(other.header_)
+    addr_(other.addr_),
+    fd_(other.fd_)
 {
     const_cast<KDMapped&>(other).addr_ = 0;
     const_cast<KDMapped&>(other).fd_ = -1;

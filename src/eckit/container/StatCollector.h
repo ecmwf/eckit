@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -54,12 +54,12 @@ struct StatCollector {
             s << *this << std::endl;
         }
         else {
-            s << "   calls: " << calls_ << std::endl;
-            s << "   miss: "  << newCandidateMiss_ << std::endl;
-            s << "   hit: "   << newCandidateOK_ << std::endl;
-            s << "   nodes: " << nodes_ << std::endl;
-            s << "   depth: " << depth_  << std::endl;
-            s << "   crossovers: " << crossOvers_  << std::endl;
+            s << "   calls: " << BigNum(calls_) << std::endl;
+            s << "   miss: "  << BigNum(newCandidateMiss_) << std::endl;
+            s << "   hit: "   << BigNum(newCandidateOK_) << std::endl;
+            s << "   nodes: " << BigNum(nodes_) << std::endl;
+            s << "   depth: " << BigNum(depth_)  << std::endl;
+            s << "   crossovers: " << BigNum(crossOvers_)  << std::endl;
         }
     }
 

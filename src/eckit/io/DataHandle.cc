@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -17,7 +17,6 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Progress.h"
 #include "eckit/config/Resource.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/log/Timer.h"
 
 //-----------------------------------------------------------------------------
@@ -186,9 +185,9 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
 
         if(estimate != 0 && estimate != total)
         {
-            StrStream os;
-            os << "DataHandle::saveInto got " << total << " bytes out of " << estimate << StrStream::ends;
-            throw ReadError(name() + " into " + other.name() + " " + std::string(os));
+            std::ostringstream os;
+            os << "DataHandle::saveInto got " << total << " bytes out of " << estimate;
+            throw ReadError(name() + " into " + other.name() + " " + os.str());
         }
 
         return total;
@@ -203,9 +202,9 @@ Length DataHandle::saveInto(const PathName& path,TransferWatcher& w)
 
 std::string DataHandle::name() const
 { 
-    StrStream s;
-    s << *this << StrStream::ends;
-    return std::string(s);
+    std::ostringstream s;
+    s << *this;
+    return s.str();
 }
 
 std::string DataHandle::title() const
@@ -284,9 +283,9 @@ Offset DataHandle::position() {
 
 void DataHandle::rewind() {
     Log::error() << *this << std::endl;
-	StrStream os;
-	os << "NOT IMPLEMENTED DataHandle::rewind(" << *this << ")" << StrStream::ends;
-    throw SeriousBug(std::string(os));
+    std::ostringstream os;
+    os << "NOT IMPLEMENTED DataHandle::rewind(" << *this << ")";
+    throw SeriousBug(os.str());
     //NOTIMP;
 }
 

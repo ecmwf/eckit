@@ -1,23 +1,34 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
 
 #include "eckit/parser/JSON.h"
 #include "eckit/types/Types.h"
+#include "eckit/value/Params.h"
 #include "eckit/value/Properties.h"
 
 namespace eckit {
 
-//------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 Properties::Properties()
 {
+}
+
+Properties::Properties(const property_t& value)
+{
+  ASSERT( value.isMap() );
+  ValueMap value_map = value;
+  for( ValueMap::const_iterator vit = value_map.begin(); vit != value_map.end(); ++vit )
+  {
+    props_[vit->first]=vit->second;
+  }
 }
 
 Properties::Properties(Stream &s)
@@ -25,12 +36,12 @@ Properties::Properties(Stream &s)
     s >> props_;
 }
 
-bool Properties::has(const std::string &k) const
+bool Properties::has(const key_t & k) const
 {
     return ( props_.find(k) != props_.end() );
 }
 
-Properties::property_t Properties::get(const std::string& k) const
+Properties::property_t Properties::get(const key_t & k) const
 {
     PropertyMap::const_iterator vit = props_.find(k);
     if( vit != props_.end() )
@@ -39,12 +50,33 @@ Properties::property_t Properties::get(const std::string& k) const
         return property_t(); // return Nil Value...
 }
 
-void Properties::set(const std::string& k, const property_t& v)
+Properties& Properties::set(const key_t & k, const property_t& v)
 {
     props_[k] = v;
+    return *this;
 }
 
-bool Properties::remove(const std::string& k)
+Properties& Properties::set( const key_t& k, const Properties& p )
+{
+  ValueMap pmap;
+  for( PropertyMap::const_iterator vit = p.props_.begin(); vit != p.props_.end(); ++vit )
+  {
+    pmap[vit->first]=vit->second;
+  }
+  props_[k] = Value::makeMap(pmap);
+  return *this;
+}
+
+Properties& Properties::set( const Properties& p )
+{
+  for( PropertyMap::const_iterator vit = p.props_.begin(); vit != p.props_.end(); ++vit )
+  {
+    props_[vit->first]=vit->second;
+  }
+  return *this;
+}
+
+bool Properties::remove(const key_t & k)
 {
     return props_.erase(k);
 }
@@ -65,7 +97,38 @@ void Properties::encode( Stream& s ) const
     s << props_;
 }
 
-//------------------------------------------------------------------------------------------------------
+Properties::operator property_t() const
+{
+  ValueMap vmap = Value::makeMap();
+  for( PropertyMap::const_iterator vit = props_.begin(); vit != props_.end(); ++vit )
+  {
+    vmap[vit->first]=vit->second;
+  }
+  return vmap;
+}
+
+//-----------------------------------------------------------------------------
+
+Properties::property_t getValue( const Properties& p, const Properties::key_t& key )
+{
+    return p.get(key);
+}
+
+void print( const Properties& p, std::ostream& s )
+{
+    s << p;
+}
+
+void encode( const Properties& p, Stream& s )
+{
+    s << p;
+}
+
+//-----------------------------------------------------------------------------
+
+Params::Factory<Properties> propertiesFactory;
+
+//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

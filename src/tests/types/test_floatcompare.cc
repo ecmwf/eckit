@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2012 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -42,11 +42,11 @@ public:
     void test_comparisons_very_close_to_zero();
 
     bool is_equal(double a, double b, double epsilon) {
-       return FloatCompare::is_equal(a,b,epsilon);
+       return FloatCompare<double>::isApproximatelyEqual(a,b,epsilon);
     }
 
     bool is_equal(double a, double b) {
-       return FloatCompare::is_equal(a,b,0.00001);
+       return FloatCompare<double>::isApproximatelyEqual(a,b,0.00001);
     }
 };
 

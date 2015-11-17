@@ -1,0 +1,30 @@
+test, label = "Execute apply with a closure, no parameters",
+do = (
+    apply, closure = (function, _ = (println, values = FOO))
+), 
+expect = FOO
+
+test, label = Apply parameters to closure,
+do = (
+    apply,
+        closure = (function, of = param,
+                             _ = (println,
+                                          values = (value, of = param))),
+        param = FOO
+), 
+expect = FOO
+
+test, label = Apply parameters to a deserialized closure,
+do = (
+    apply,
+        closure = (closure,
+                        name = "_",
+                        parameters = "things", 
+                        captured = (null), 
+                        code = (println,
+                                    values = "value is" / (value, of = "things"))),
+        things = 1
+
+),
+expect = value is / 1
+

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -14,14 +14,13 @@
 #ifndef eckit_NodeInfo_h
 #define eckit_NodeInfo_h
 
-#include "eckit/eckit.h"
 #include "eckit/types/Types.h"
+#include "eckit/runtime/TaskID.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class NodeInfo {
 public:
@@ -104,8 +103,7 @@ private:
 
 inline unsigned long version(NodeInfo*) { return 1; }
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

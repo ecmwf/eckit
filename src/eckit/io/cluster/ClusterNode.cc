@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -40,7 +40,7 @@ void ClusterHeartBeat::run()
 {
     Monitor::instance().name("heartbeat");
     std::string host   = Resource<std::string>("clusterHost","localhost");
-    int port =  Port("cluster",9555);
+    int port =  Port("cluster", Resource<int>("clusterPort", 9555));
     std::string reply;
     NodeInfo remote;
 

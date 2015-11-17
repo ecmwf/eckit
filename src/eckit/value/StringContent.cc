@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -23,14 +23,14 @@ ClassSpec StringContent::classSpec_ = {&Content::classSpec(),"StringContent",};
 Reanimator<StringContent> StringContent::reanimator_;
 
 
-StringContent::StringContent(const std::string& s): 
-	value_(s) 
-{ 
+StringContent::StringContent(const std::string& s):
+	value_(s)
+{
 }
 
-StringContent::StringContent(const char* s): 
+StringContent::StringContent(const char* s):
 	value_(s)
-{ 
+{
 }
 
 StringContent::StringContent(Stream& s):
@@ -38,6 +38,11 @@ StringContent::StringContent(Stream& s):
 {
 	s >> value_;
 }
+
+Content* StringContent::clone() const {
+    return new StringContent(value_);
+}
+
 
 void StringContent::encode(Stream& s) const
 {
@@ -69,9 +74,9 @@ int StringContent::compareString(const StringContent& other) const
 	return ::strcmp(value_.c_str(),other.value_.c_str());
 }
 
-void StringContent::value(std::string& s) const 
-{ 
-	s = value_; 
+void StringContent::value(std::string& s) const
+{
+	s = value_;
 }
 
 void StringContent::value(bool& b) const

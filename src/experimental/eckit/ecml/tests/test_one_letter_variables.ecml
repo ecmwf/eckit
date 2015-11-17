@@ -1,0 +1,9 @@
+test, label = variable name can be one letter long,
+    do = (
+            let, l = lexer
+            let, p = parser
+            println, values = (value,of=l) / and / (value,of=p)
+            value, of = l
+         ),
+    expect = lexer
+

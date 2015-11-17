@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_constructor )
 
 	std::string res ("9e107d9d372bb6826bd81d3542a419d6");
 
-//	DEBUG_VAR( md5.digest() );
+//	ECKIT_DEBUG_VAR( md5.digest() );
 
 	BOOST_CHECK_EQUAL( res , md5.digest() );
 }

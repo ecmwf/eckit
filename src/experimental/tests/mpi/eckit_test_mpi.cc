@@ -42,7 +42,7 @@ struct MPIFixture {
     ~MPIFixture() { eckit::mpi::finalize(); }
 };
 
-BOOST_GLOBAL_FIXTURE( MPIFixture )
+BOOST_GLOBAL_FIXTURE( MPIFixture );
 
 //-------------------------------------------------------------------------
 
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
 
   int d[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-  BOOST_CHECKPOINT("Test value");
+  BOOST_TEST_CHECKPOINT("Test value");
   {
     float val;
     if( eckit::mpi::rank() == root )
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
     BOOST_CHECK_CLOSE( val, 3.14, 0.0001 );
   }
 
-  BOOST_CHECKPOINT("Test vector");
+  BOOST_TEST_CHECKPOINT("Test vector");
   {
     std::vector<int> data;
     if( eckit::mpi::rank() == root )
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
     BOOST_CHECK_EQUAL_COLLECTIONS(data.begin(),data.end(),d,d+10);
   }
 
-  BOOST_CHECKPOINT("Test raw data");
+  BOOST_TEST_CHECKPOINT("Test raw data");
   {
     std::vector<int> data(10);
     if( eckit::mpi::rank() == root )
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
   std::pair<double,int> v(-d,eckit::mpi::rank());
   std::vector<float> arr(5,eckit::mpi::rank()+1);
 
-  BOOST_CHECKPOINT("Testing all_reduce");
+  BOOST_TEST_CHECKPOINT("Testing all_reduce");
   {
     int sum;
     int prod;
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
     BOOST_CHECK_EQUAL( maxloc.second, 0 );
   }
 
-  BOOST_CHECKPOINT("Testing all_reduce inplace");
+  BOOST_TEST_CHECKPOINT("Testing all_reduce inplace");
   {
     int sum = d;
     int prod = d;

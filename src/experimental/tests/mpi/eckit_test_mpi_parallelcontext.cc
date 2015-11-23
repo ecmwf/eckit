@@ -37,7 +37,7 @@ struct MPIFixture {
 
 };
 
-BOOST_GLOBAL_FIXTURE( MPIFixture )
+BOOST_GLOBAL_FIXTURE( MPIFixture );
 
 //-------------------------------------------------------------------------
 

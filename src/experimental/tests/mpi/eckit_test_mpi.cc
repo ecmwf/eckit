@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-
 #define BOOST_TEST_MODULE eckit_test_mpi
 #include "ecbuild/boost_test_framework.h"
 
@@ -202,11 +201,7 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
     prodvec = arr;
     success = mpi::all_reduce(prodvec,mpi::prod()); BOOST_CHECK( success == MPI_SUCCESS );
     BOOST_CHECK_EQUAL_COLLECTIONS(prodvec.begin(),prodvec.end(),expected.begin(),expected.end());
-
   }
-
-
-
 }
 
 
@@ -224,7 +219,10 @@ BOOST_AUTO_TEST_CASE( test_all_to_all )
   for(size_t j=0; j<mpi::size(); ++j)
     expected[j]=std::vector<int>(1,j);
 
-  BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(),recv.end(),expected.begin(),expected.end());
+  BOOST_CHECK_EQUAL(recv.size(), expected.size());
+  for (size_t i = 0; i < mpi::size(); ++i)
+      BOOST_CHECK_EQUAL_COLLECTIONS(recv[i].begin(), recv[i].end(),
+                                    expected[i].begin(), expected[i].end());
 }
 
 //-------------------------------------------------------------------------
@@ -269,5 +267,3 @@ BOOST_AUTO_TEST_CASE( test_all_gather___buffer )
 }
 
 //-------------------------------------------------------------------------
-
-

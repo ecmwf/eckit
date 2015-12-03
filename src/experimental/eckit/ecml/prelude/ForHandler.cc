@@ -17,8 +17,6 @@
 #include "experimental/eckit/ecml/core/Environment.h"
 #include "experimental/eckit/ecml/core/Interpreter.h"
 
-#include "experimental/eckit/ecml/ast/FunctionDefinition.h"
-#include "experimental/eckit/ecml/ast/Closure.h"
 #include "experimental/eckit/ecml/prelude/ForHandler.h"
 
 using namespace std;
@@ -62,21 +60,34 @@ Request ForHandler::handle(const Request r, ExecutionContext& context)
     Cell* loopBodyCode (loopBody->value()->value());
     ASSERT(loopBodyCode->tag() == "_requests");
 
-    List result;
+    vector<Cell*> vvalues;
+    vector<Cell*> vresult;
 
     for (Cell* v (values); v; v = v->rest())
     {
-        Cell* value (v->value());
-
-        Request frame (new Cell("_verb", "let", 0, 0));
-        frame->append(new Cell("", var, value, 0));
-        context.pushEnvironmentFrame(frame);
-
-        Cell* r (context.interpreter().evalRequests(loopBodyCode, context));
-
-        result.append(r);
+        Cell* value (Cell::clone(v->value()));
+        vvalues.push_back(value);
+        vresult.push_back(0);
     }
 
+    #pragma omp parallel
+    {
+        #pragma omp for
+        for (size_t i(0); i < vvalues.size(); ++i)
+        {
+            ExecutionContext ctx (context);
+
+            Request frame (new Cell("_verb", "let", 0, 0));
+            frame->append(new Cell("", var, Cell::clone(vvalues[i]), 0));
+            ctx.pushEnvironmentFrame(frame);
+
+            vresult[i] = ctx.interpreter().evalRequests(loopBodyCode, ctx);
+        }
+    }
+
+    List result;
+    for (size_t i(0); i < vresult.size(); ++i)
+        result.append(vresult[i]);
     return result;
 }
 

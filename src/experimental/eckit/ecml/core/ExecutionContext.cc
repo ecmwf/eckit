@@ -23,14 +23,22 @@ using namespace eckit;
 
 ExecutionContext::ExecutionContext()
 : environment_(new Environment(0, new Cell("_list", "", 0, 0))),
+  otherEnvironment_(0),
   interpreter_(new Interpreter())
 {
     Prelude().importInto(*this);
 }
 
+ExecutionContext::ExecutionContext(const ExecutionContext& other)
+: environment_(other.environment_),
+  otherEnvironment_(other.environment_),
+  interpreter_(new Interpreter())
+{
+}
+
 ExecutionContext::~ExecutionContext()
 {
-    for (Environment* e(environment_); e; e = e->parent())
+    for (Environment* e(environment_); e && e != otherEnvironment_; e = e->parent())
         delete e;
     delete interpreter_;
 }

@@ -24,6 +24,7 @@ class RequestHandler;
 class ExecutionContext {
 public:
     ExecutionContext();
+    ExecutionContext(const ExecutionContext&);
     ~ExecutionContext();
 
     void registerHandler(const char*, eckit::RequestHandler&);
@@ -50,6 +51,7 @@ public:
 
 private:
     eckit::Environment* environment_;
+    eckit::Environment* otherEnvironment_;
     eckit::Interpreter* interpreter_;
 };
 

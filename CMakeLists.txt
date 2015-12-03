@@ -30,6 +30,10 @@ ecbuild_add_option( FEATURE EXPERIMENTAL
                     DEFAULT ON
                     DESCRIPTION "Experimental features (not used in production)" )
 
+ecbuild_add_option( FEATURE SANDBOX
+                    DEFAULT OFF
+                    DESCRIPTION "Sandbox" )
+
 ### GRIB
 
 ecbuild_add_option( FEATURE GRIB

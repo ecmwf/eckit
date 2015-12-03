@@ -68,8 +68,6 @@ prelude/SystemHandler.h
 prelude/SystemHandler.cc
 prelude/GetenvHandler.h
 prelude/GetenvHandler.cc
-prelude/ParallelMapHandler.h
-prelude/ParallelMapHandler.cc
 prelude/JoinStringsHandler.h
 prelude/JoinStringsHandler.cc
 prelude/QuoteHandler.h
@@ -84,6 +82,8 @@ prelude/DictionaryHandler.h
 prelude/DictionaryHandler.cc
 prelude/RangeHandler.h
 prelude/RangeHandler.cc
+prelude/ForHandler.cc
+prelude/ForHandler.h
 
 # Data types' support
 data/DataHandleFactory.h

@@ -86,7 +86,8 @@ Values Interpreter::evalList(const Request requests, ExecutionContext& context)
 
             } else if (sublist->tag() == "_native"
                        || sublist->tag() == "_macro"
-                       || sublist->tag() == "_verb")
+                       || sublist->tag() == "_verb"
+                       || !sublist->tag().size())
             {
                 list.append(sublist);
             } else 

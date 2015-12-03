@@ -1,0 +1,21 @@
+test, label = Check verb for works,
+do = (
+    for, x = 1/2/3,
+    do = (
+        println,values = ($,_=x) / ($,_=x)
+    )
+),
+expect = 1/1/2/2/3/3
+
+test, label = Check nested for,
+do = (
+    for, x = 1/2/3,
+    do = (
+        for, y = (sequence,values = a/b/c),
+        do = (
+            println,values = ($,_=x) / ($,_=y)
+        )
+    )
+),
+expect = 1 / a / 1 / b / 1 / c / 2 / a / 2 / b / 2 / c / 3 / a / 3 / b / 3 / c
+

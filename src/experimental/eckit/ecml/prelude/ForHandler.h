@@ -7,27 +7,28 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
-/// @author Piotr Kuchta, August 2015
+/// @author Piotr Kuchta, December 2015
 
-#ifndef eckit_ecml_ParallelMapHandler_H
-#define eckit_ecml_ParallelMapHandler_H
+#ifndef eckit_ecml_ForHandler_H
+#define eckit_ecml_ForHandler_H
 
-#include <sstream>
+#include "eckit/eckit_config.h"
 
 #include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/RequestHandler.h"
+#include "experimental/eckit/ecml/core/SpecialFormHandler.h"
+#include "experimental/eckit/ecml/core/ExecutionContext.h"
 
 namespace eckit {
 
-class ParallelMapHandler : public eckit::RequestHandler {
+class ForHandler : public eckit::SpecialFormHandler {
 public:
-    ParallelMapHandler(const std::string&);
-    virtual eckit::Values handle(eckit::ExecutionContext&);
+    ForHandler(const std::string&);
+    virtual eckit::Request handle(const eckit::Request, eckit::ExecutionContext&);
 
-private:
-    eckit::Values apply(eckit::ExecutionContext&, eckit::Cell* closure, eckit::Cell* values);
+    static void repl(ExecutionContext&);
 };
 
 } // namespace eckit
+
 
 #endif

@@ -35,7 +35,6 @@
 #include "TemporaryFileHandler.h"
 #include "SystemHandler.h"
 #include "GetenvHandler.h"
-#include "ParallelMapHandler.h"
 #include "ApplyHandler.h"
 #include "Prelude.h"
 #include "JoinStringsHandler.h"
@@ -45,6 +44,7 @@
 #include "REPLHandler.h"
 #include "DictionaryHandler.h"
 #include "RangeHandler.h"
+#include "ForHandler.h"
 
 namespace eckit {
 
@@ -76,7 +76,6 @@ void Prelude::importInto(ExecutionContext& context)
     static IfHandler _if("if");
     static SystemHandler _system("system");
     static GetenvHandler _getenv("getenv");
-    static ParallelMapHandler _map("map");
     static JoinStringsHandler join_strings("join_strings");
     static QuoteHandler quote("quote");
     static NullHandler null("null");
@@ -84,6 +83,7 @@ void Prelude::importInto(ExecutionContext& context)
     static REPLHandler repl("repl");
     static DictionaryHandler dictionary("dictionary");
     static RangeHandler range("range");
+    static ForHandler _for("for");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
@@ -96,6 +96,7 @@ void Prelude::importInto(ExecutionContext& context)
     e.set("quote", macro(quote.name()));
     e.set("run", macro(run.name()));
     e.set("repl", macro(repl.name()));
+    e.set("for", macro(_for.name()));
 
     context.registerHandler("list", list);
     context.registerHandler("sequence", sequence);
@@ -108,7 +109,6 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("temporary_file", temporary_file);
     context.registerHandler("system", _system);
     context.registerHandler("getenv", _getenv);
-    context.registerHandler("map", _map);
     context.registerHandler("join_strings", join_strings);
     context.registerHandler("null", null);
     context.registerHandler("dictionary", dictionary);

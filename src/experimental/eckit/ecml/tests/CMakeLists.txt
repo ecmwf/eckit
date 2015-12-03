@@ -13,7 +13,7 @@ test_system.ecml
 test_getenv.ecml
 test_apply.ecml
 test_dictionary.ecml
-#test_parallel_map.ecml
+test_for.ecml
 )
 
 # Get location of test runner executable (for the ECML tests)

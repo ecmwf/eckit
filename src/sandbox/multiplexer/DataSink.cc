@@ -31,13 +31,6 @@ static void init() {
     m = new std::map<std::string, DataSinkFactory*>();
 }
 
-
-DataSink::DataSink() {}
-
-
-DataSink::~DataSink() {}
-
-
 DataSinkFactory::DataSinkFactory(const std::string &name) :
     name_(name) {
 
@@ -89,6 +82,14 @@ DataSink* DataSinkFactory::build(const std::string &name) {
 
     return (*j).second->make();
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+DataSink::DataSink() {}
+
+
+DataSink::~DataSink() {}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

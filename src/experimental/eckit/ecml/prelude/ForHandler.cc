@@ -19,6 +19,10 @@
 
 #include "experimental/eckit/ecml/prelude/ForHandler.h"
 
+#ifdef _OPENMP
+# include <omp.h>
+#endif
+
 using namespace std;
 
 namespace eckit {
@@ -72,8 +76,11 @@ Request ForHandler::handle(const Request r, ExecutionContext& context)
 
     #pragma omp parallel
     {
+#ifdef _OPENMP
+        Log::debug() << "omp_get_thread_num: " << omp_get_thread_num() << endl;
+#endif
         #pragma omp for
-        for (size_t i(0); i < vvalues.size(); ++i)
+        for (size_t i=0; i < vvalues.size(); ++i)
         {
             ExecutionContext ctx (context);
 

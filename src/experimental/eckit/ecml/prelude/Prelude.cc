@@ -45,6 +45,7 @@
 #include "DictionaryHandler.h"
 #include "RangeHandler.h"
 #include "ForHandler.h"
+#include "GlobHandler.h"
 
 namespace eckit {
 
@@ -84,6 +85,7 @@ void Prelude::importInto(ExecutionContext& context)
     static DictionaryHandler dictionary("dictionary");
     static RangeHandler range("range");
     static ForHandler _for("for");
+    static GlobHandler _glob("glob");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
@@ -113,6 +115,7 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("null", null);
     context.registerHandler("dictionary", dictionary);
     context.registerHandler("range", range);
+    context.registerHandler("glob", _glob);
     context.execute("function, of = f / values, map = ( \n"
                     "    if, condition = (first, of = ($,_ = values)), \n"
                     "        then = (sequence, values = (f, values = (first, of = ($,_ = values)))\n"

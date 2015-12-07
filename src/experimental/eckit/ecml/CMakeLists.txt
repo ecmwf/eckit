@@ -90,6 +90,8 @@ prelude/RangeHandler.h
 prelude/RangeHandler.cc
 prelude/ForHandler.cc
 prelude/ForHandler.h
+prelude/GlobHandler.cc
+prelude/GlobHandler.h
 
 # Data types' support
 data/DataHandleFactory.h

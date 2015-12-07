@@ -23,6 +23,12 @@
 using namespace std;
 using namespace eckit;  // TODO: eckit/utils/Environment.h should be in namespace eckit I think
 
+Environment::Environment(const Environment& other)
+: dictionary_(Cell::clone(other.dictionary_)),
+  parent_(other.parent_)
+{
+}
+
 Environment::Environment(Environment* parent, Request r)
 : dictionary_(r),
   parent_(parent)

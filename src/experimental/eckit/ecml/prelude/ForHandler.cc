@@ -92,9 +92,13 @@ Request ForHandler::handle(const Request r, ExecutionContext& context)
         }
     }
 
-    List result;
-    for (size_t i(0); i < vresult.size(); ++i)
-        result.append(vresult[i]);
+    Cell* result (0);
+    while (! vresult.empty())
+    {
+        result = new Cell("_list", "", vresult.back(), result);
+        vresult.pop_back();
+    }
+
     return result;
 }
 

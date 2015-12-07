@@ -46,6 +46,7 @@
 #include "RangeHandler.h"
 #include "ForHandler.h"
 #include "GlobHandler.h"
+#include "ReadTextFileHandler.h"
 
 namespace eckit {
 
@@ -86,6 +87,7 @@ void Prelude::importInto(ExecutionContext& context)
     static RangeHandler range("range");
     static ForHandler _for("for");
     static GlobHandler _glob("glob");
+    static ReadTextFileHandler read_text_file("read_text_file");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
@@ -116,6 +118,7 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("dictionary", dictionary);
     context.registerHandler("range", range);
     context.registerHandler("glob", _glob);
+    context.registerHandler("read_text_file", read_text_file);
     context.execute("function, of = f / values, map = ( \n"
                     "    if, condition = (first, of = ($,_ = values)), \n"
                     "        then = (sequence, values = (f, values = (first, of = ($,_ = values)))\n"

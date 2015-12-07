@@ -69,15 +69,15 @@ DataSink* DataSinkFactory::build(const std::string &name) {
 
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    eckit::Log::info() << "Looking for MethodFactory [" << name << "]" << std::endl;
+    eckit::Log::info() << "Looking for DataSinkFactory [" << name << "]" << std::endl;
 
     std::map<std::string, DataSinkFactory *>::const_iterator j = m->find(name);
     if (j == m->end()) {
-        eckit::Log::error() << "No MethodFactory for [" << name << "]" << std::endl;
-        eckit::Log::error() << "MethodFactories are:" << std::endl;
+        eckit::Log::error() << "No DataSinkFactory for [" << name << "]" << std::endl;
+        eckit::Log::error() << "DataSinkFactories are:" << std::endl;
         for (j = m->begin() ; j != m->end() ; ++j)
             eckit::Log::error() << "   " << (*j).first << std::endl;
-        throw eckit::SeriousBug(std::string("No MethodFactory called ") + name);
+        throw eckit::SeriousBug(std::string("No DataSinkFactory called ") + name);
     }
 
     return (*j).second->make();

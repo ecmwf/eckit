@@ -13,6 +13,7 @@
 /// @date Dec 2015
 
 #include <iosfwd>
+#include <fstream>
 
 #include "sandbox/multiplexer/DummySink.h"
 #include "sandbox/multiplexer/DataSink.h"
@@ -35,19 +36,31 @@ DataSinkBuilder<DummySink> DummySinkFactorySingleton(std::string("foo"));
 DummySink::DummySink() {}
 
 
-DummySink::~DummySink() {}
+DummySink::~DummySink() {
+    close();
+}
 
 void DummySink::open(const std::string& key) {
     key_ = key;
     eckit::Log::info() << "[" << *this << "]: open" << std::endl;
+
+    file_.open(key_.c_str(), std::ios_base::trunc | std::ios_base::out);
 }
 
 void DummySink::write(const void* buffer, const Length& length) {
     eckit::Log::info() << "[" << *this << "]: write (" << length << ")" << std::endl;
+
+    if (!file_.is_open())
+        throw eckit::SeriousBug(std::string("DummySink: Cannot write without opening"));
+
+    file_.write(reinterpret_cast<const char*>(buffer), length);
 }
 
 void DummySink::close() {
     eckit::Log::info() << "[" << *this << "]: close" << std::endl;
+
+    file_.close();
+    key_ = "";
 }
 
 void DummySink::print(std::ostream& os) const {

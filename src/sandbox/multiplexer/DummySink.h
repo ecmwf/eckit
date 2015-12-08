@@ -50,6 +50,7 @@ protected:
 private:
 
     std::string key_;
+    std::ofstream file_;
 
 };
 

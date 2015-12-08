@@ -41,6 +41,9 @@ DummySink::~DummySink() {
 }
 
 void DummySink::open(const std::string& key) {
+
+    eckit::AutoLock<eckit::Mutex> lock(file_mutex_);
+
     key_ = key;
     eckit::Log::info() << "[" << *this << "]: open" << std::endl;
 
@@ -50,6 +53,8 @@ void DummySink::open(const std::string& key) {
 void DummySink::write(const void* buffer, const Length& length) {
     eckit::Log::info() << "[" << *this << "]: write (" << length << ")" << std::endl;
 
+    eckit::AutoLock<eckit::Mutex> lock(file_mutex_);
+
     if (!file_.is_open())
         throw eckit::SeriousBug(std::string("DummySink: Cannot write without opening"));
 
@@ -58,6 +63,8 @@ void DummySink::write(const void* buffer, const Length& length) {
 
 void DummySink::close() {
     eckit::Log::info() << "[" << *this << "]: close" << std::endl;
+
+    eckit::AutoLock<eckit::Mutex> lock(file_mutex_);
 
     file_.close();
     key_ = "";

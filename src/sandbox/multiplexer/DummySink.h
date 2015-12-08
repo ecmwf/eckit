@@ -22,6 +22,7 @@
 
 #include "eckit/io/Length.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/thread/Mutex.h"
 #include "sandbox/multiplexer/DataSink.h"
 
 namespace eckit {
@@ -51,6 +52,7 @@ private:
 
     std::string key_;
     std::ofstream file_;
+    eckit::Mutex file_mutex_;
 
 };
 

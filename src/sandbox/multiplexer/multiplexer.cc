@@ -35,7 +35,9 @@ public:
 void Multiplexer::run()
 {
     DummySource source("foo", "twiddle.tmp");
-    source.generate_field();
+    for (int i = 0; i < 10; i++) {
+        source.generate_field();
+    }
 
     eckit::ScopedPtr<DataSink> ptr( DataSinkFactory::build("foo") );
 

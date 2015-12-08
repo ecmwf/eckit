@@ -15,6 +15,7 @@
 #include "eckit/io/Buffer.h"
 
 #include "sandbox/multiplexer/DataSink.h"
+#include "sandbox/multiplexer/DummySource.h"
 
 namespace eckit {
 namespace multiplexer {
@@ -33,6 +34,9 @@ public:
 
 void Multiplexer::run()
 {
+    DummySource source("foo");
+    source.generate_field();
+
     eckit::ScopedPtr<DataSink> ptr( DataSinkFactory::build("foo") );
 
     Buffer buffer(1024);

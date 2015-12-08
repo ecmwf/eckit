@@ -38,7 +38,7 @@ public:
 
     virtual void open(const std::string& key) = 0;
 
-    virtual void write(void* buffer, const Length& length) = 0;
+    virtual void write(const void* buffer, const Length& length) = 0;
 
     virtual void close() = 0;
 

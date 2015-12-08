@@ -21,6 +21,8 @@
 namespace eckit {
 namespace multiplexer {
 
+// --------------------------------------------------------------------------------------------------
+
 class DummySource : private eckit::NonCopyable {
 
 public:
@@ -29,12 +31,15 @@ public:
 
     ~DummySource();
 
+    void generate_field();
+
 private:
 
     ScopedPtr<DataSink> dataSink_;
 
 };
 
+// --------------------------------------------------------------------------------------------------
 
 } // multiplexer
 } // eckit

@@ -42,7 +42,7 @@ void DummySink::open(const std::string& key) {
     eckit::Log::info() << "[" << *this << "]: open" << std::endl;
 }
 
-void DummySink::write(void* buffer, const Length& length) {
+void DummySink::write(const void* buffer, const Length& length) {
     eckit::Log::info() << "[" << *this << "]: write (" << length << ")" << std::endl;
 }
 

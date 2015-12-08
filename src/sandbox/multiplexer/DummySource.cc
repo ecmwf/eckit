@@ -46,10 +46,12 @@ int grib_call(int code, const char *msg)
 
 //-------------------------------------------------------------------------------------------------
 
-DummySource::DummySource(const std::string& sink_key)
+DummySource::DummySource(const std::string& sink_key, const std::string& sink_open_key)
 : dataSink_(DataSinkFactory::build(sink_key)) {
 
     eckit::Log::info() << "DummySource constructor" << std::endl;
+
+    dataSink_->open(sink_open_key);
 }
 
 DummySource::~DummySource() {

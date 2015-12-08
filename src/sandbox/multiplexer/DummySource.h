@@ -27,7 +27,7 @@ class DummySource : private eckit::NonCopyable {
 
 public:
 
-    DummySource(const std::string& sink_key);
+    DummySource(const std::string& sink_key, const std::string& sink_open_key);
 
     ~DummySource();
 

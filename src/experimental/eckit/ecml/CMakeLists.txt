@@ -94,6 +94,8 @@ prelude/GlobHandler.cc
 prelude/GlobHandler.h
 prelude/ReadTextFileHandler.h
 prelude/ReadTextFileHandler.cc
+prelude/TryHandler.h
+prelude/TryHandler.cc
 
 # Data types' support
 data/DataHandleFactory.h

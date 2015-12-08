@@ -47,6 +47,7 @@
 #include "ForHandler.h"
 #include "GlobHandler.h"
 #include "ReadTextFileHandler.h"
+#include "TryHandler.h"
 
 namespace eckit {
 
@@ -88,6 +89,7 @@ void Prelude::importInto(ExecutionContext& context)
     static ForHandler _for("for");
     static GlobHandler _glob("glob");
     static ReadTextFileHandler read_text_file("read_text_file");
+    static TryHandler _try("try");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
@@ -101,6 +103,7 @@ void Prelude::importInto(ExecutionContext& context)
     e.set("run", macro(run.name()));
     e.set("repl", macro(repl.name()));
     e.set("for", macro(_for.name()));
+    e.set("try", macro(_try.name()));
 
     context.registerHandler("list", list);
     context.registerHandler("sequence", sequence);
@@ -119,11 +122,11 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("range", range);
     context.registerHandler("glob", _glob);
     context.registerHandler("read_text_file", read_text_file);
-    context.execute("function, of = f / values, map = ( \n"
-                    "    if, condition = (first, of = ($,_ = values)), \n"
-                    "        then = (sequence, values = (f, values = (first, of = ($,_ = values)))\n"
-                    "                                 / (map, f = ($,_ = f),\n"
-                    "                                         values = (rest, of = ($,_ = values)))))\n");
+    //context.execute("function, of = f / values, map = ( \n"
+    //                "    if, condition = (first, of = ($,_ = values)), \n"
+    //                "        then = (sequence, values = (f, values = (first, of = ($,_ = values)))\n"
+    //                "                                 / (map, f = ($,_ = f),\n"
+    //               "                                         values = (rest, of = ($,_ = values)))))\n");
 }
 
 } // namespace eckit

@@ -41,12 +41,11 @@ DummySink::~DummySink() {
 }
 
 void DummySink::open(const std::string& key) {
+    eckit::Log::info() << "[" << *this << "]: open" << std::endl;
 
     eckit::AutoLock<eckit::Mutex> lock(file_mutex_);
 
     key_ = key;
-    eckit::Log::info() << "[" << *this << "]: open" << std::endl;
-
     file_.open(key_.c_str(), std::ios_base::trunc | std::ios_base::out);
 }
 

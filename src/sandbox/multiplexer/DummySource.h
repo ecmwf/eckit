@@ -27,7 +27,7 @@ class DummySource : private eckit::NonCopyable {
 
 public:
 
-    DummySource(const std::string& sink_key, const std::string& sink_open_key);
+    DummySource(DataSink& sink, const std::string& sink_open_key);
 
     ~DummySource();
 
@@ -35,7 +35,7 @@ public:
 
 private:
 
-    ScopedPtr<DataSink> dataSink_;
+    DataSink& dataSink_;
 
 };
 

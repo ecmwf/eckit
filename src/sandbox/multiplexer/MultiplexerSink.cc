@@ -20,7 +20,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Length.h"
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
@@ -34,12 +33,15 @@ DataSinkBuilder<MultiplexerSink> MultiplexerSinkFactorySingleton(std::string("mu
 
 // ------------------------------------------------------------------------------------------------
 
-
 MultiplexerSink::MultiplexerSink()
+: is_open_(false) {}
+
+
+MultiplexerSink::MultiplexerSink(sink_list_t& sink_list)
 : is_open_(false) {
-    // TODO: Configuration of what gets multiplexed!
-    // n.b. If we go to c++11 we should be storing a scoped_ptr
-    sinks_.push_back(DataSinkFactory::build("foo"));
+
+    // This will be nicer using move semantics in c++11!
+    sinks_.swap(sink_list);
 }
 
 

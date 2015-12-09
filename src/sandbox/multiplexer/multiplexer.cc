@@ -16,6 +16,7 @@
 
 #include "sandbox/multiplexer/DataSink.h"
 #include "sandbox/multiplexer/DummySource.h"
+#include "sandbox/multiplexer/MultiplexerSink.h"
 
 namespace eckit {
 namespace multiplexer {
@@ -34,7 +35,15 @@ public:
 
 void Multiplexer::run()
 {
-    DummySource source("multiplexer", "twiddle.tmp");
+
+    MultiplexerSink::sink_list_t sink_list;
+    sink_list.push_back(DataSinkFactory::build("foo"));
+
+    MultiplexerSink mplx_sink(sink_list);
+    ASSERT(sink_list.empty());
+
+    DummySource source(mplx_sink, "twiddle.tmp");
+
     //for (int i = 0; i < 10; i++) {
         source.generate_field();
     //}

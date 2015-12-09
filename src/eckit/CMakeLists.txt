@@ -582,7 +582,9 @@ ecbuild_add_library(TARGET eckit
 
 ### sub-directories
 
-add_subdirectory( cmd )
+if( HAVE_ECKIT_CMD )
+  add_subdirectory( cmd )
+endif()
 
 add_subdirectory( web )
 

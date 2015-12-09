@@ -63,6 +63,18 @@ ecbuild_add_option( FEATURE ECKIT_MPISTUBS
                     DESCRIPTION "eckit C++ wrapper for mpi using mpistubs"
                     CONDITION HAVE_MPISTUBS )
 
+### eckit::cmd
+
+ecbuild_add_option( FEATURE ECKIT_CMD
+                    DESCRIPTION "Missing description"
+                    REQUIRED_PACKAGES "LEXYACC" )
+
+### eckit::ecml
+
+ecbuild_add_option( FEATURE ECKIT_ECML
+                    DESCRIPTION "Missing description"
+                    REQUIRED_PACKAGES "LEXYACC" )
+
 ### Eigen
 
 ecbuild_add_option( FEATURE EIGEN
@@ -174,13 +186,17 @@ endif()
 # export package info
 
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
-set( ECKIT_LIBRARIES      eckit eckit_cmd eckit_web )
+set( ECKIT_LIBRARIES      eckit eckit_web )
+
+if( HAVE_ECKIT_CMD)
+  list( APPEND ECKIT_LIBRARIES eckit_cmd )
+endif()
 
 if( HAVE_EXPERIMENTAL )
 
   list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
 
-  list( APPEND ECKIT_LIBRARIES eckit_ecml eckit_la eckit_geometry eckit_maths )
+  list( APPEND ECKIT_LIBRARIES eckit_la eckit_geometry eckit_maths )
 
   if( HAVE_GRIB )
     list( APPEND ECKIT_LIBRARIES eckit_grib )
@@ -198,6 +214,10 @@ if( HAVE_EXPERIMENTAL )
 
   if( HAVE_ECKIT_MPISTUBS )
     list( APPEND ECKIT_LIBRARIES eckit_mpistubs )
+  endif()
+
+  if( HAVE_ECKIT_ECML )
+    list( APPEND ECKIT_LIBRARIES eckit_ecml )
   endif()
 
 endif()

@@ -6,6 +6,8 @@ list( APPEND eckit_multiplexer_srcs
     DummySink.h
     DummySource.cc
     DummySource.h
+    MultiplexerSink.cc
+    MultiplexerSink.h
 )
 
 

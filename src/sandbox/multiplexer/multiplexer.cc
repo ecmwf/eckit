@@ -34,18 +34,18 @@ public:
 
 void Multiplexer::run()
 {
-    DummySource source("foo", "twiddle.tmp");
-    for (int i = 0; i < 10; i++) {
+    DummySource source("multiplexer", "twiddle.tmp");
+    //for (int i = 0; i < 10; i++) {
         source.generate_field();
-    }
+    //}
 
-    eckit::ScopedPtr<DataSink> ptr( DataSinkFactory::build("foo") );
-
-    Buffer buffer(1024);
-
-    ptr->open("lolo.txt");
-    ptr->write(buffer, buffer.size());
-    ptr->close();
+//    eckit::ScopedPtr<DataSink> ptr( DataSinkFactory::build("foo") );
+//
+ //   Buffer buffer(1024);
+//
+ //   ptr->open("lolo.txt");
+  //  ptr->write(buffer, buffer.size());
+   // ptr->close();
 }
 
 } // namespace multiplexer

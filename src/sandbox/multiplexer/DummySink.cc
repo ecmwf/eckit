@@ -37,13 +37,17 @@ DummySink::DummySink() {}
 
 
 DummySink::~DummySink() {
-    close();
+    if (is_open())
+        close();
 }
 
 void DummySink::open(const std::string& key) {
     eckit::Log::info() << "[" << *this << "]: open" << std::endl;
 
     eckit::AutoLock<eckit::Mutex> lock(file_mutex_);
+
+    if (is_open())
+        throw eckit::SeriousBug("DummySink: Cannot open multiple times");
 
     key_ = key;
     file_.open(key_.c_str(), std::ios_base::trunc | std::ios_base::out);
@@ -54,7 +58,7 @@ void DummySink::write(const void* buffer, const Length& length) {
 
     eckit::AutoLock<eckit::Mutex> lock(file_mutex_);
 
-    if (!file_.is_open())
+    if (!is_open())
         throw eckit::SeriousBug(std::string("DummySink: Cannot write without opening"));
 
     file_.write(reinterpret_cast<const char*>(buffer), length);
@@ -67,6 +71,10 @@ void DummySink::close() {
 
     file_.close();
     key_ = "";
+}
+
+bool DummySink::is_open() const {
+    return file_.is_open();
 }
 
 void DummySink::print(std::ostream& os) const {

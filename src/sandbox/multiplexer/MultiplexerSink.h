@@ -13,8 +13,8 @@
 /// @date Dec 2015
 
 
-#ifndef eckit_multiplexer_DummySink_H
-#define eckit_multiplexer_DummySink_H
+#ifndef eckit_multiplexer_MultiplexerSink_H
+#define eckit_multiplexer_MultiplexerSink_H
 
 #include <iosfwd>
 #include <string>
@@ -22,6 +22,7 @@
 
 #include "eckit/io/Length.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/memory/ScopedPtr.h"
 #include "eckit/thread/Mutex.h"
 #include "sandbox/multiplexer/DataSink.h"
 
@@ -30,13 +31,13 @@ namespace multiplexer {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class DummySink : public DataSink {
+class MultiplexerSink : public DataSink {
 
 public:
 
-    DummySink();
+    MultiplexerSink();
 
-    virtual ~DummySink();
+    virtual ~MultiplexerSink();
 
     virtual void open(const std::string& key);
 
@@ -52,9 +53,13 @@ protected:
 
 private:
 
-    std::string key_;
-    std::ofstream file_;
-    eckit::Mutex file_mutex_;
+    // We would like to put this is a ScopedPtr, but it does not support
+    // move or copy semantics. We could use a SharedPtr but reference
+    // counting seems wasteful here.
+    typedef std::list<DataSink*> sink_list_t;
+    sink_list_t sinks_;
+
+    bool is_open_;
 
 };
 
@@ -63,5 +68,5 @@ private:
 }  // namespace multiplexer
 }  // namespace eckit
 
-#endif // eckit_multiplexer_DummySink_H
+#endif // eckit_multiplexer_MultiplexerSink_H
 

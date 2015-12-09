@@ -88,7 +88,8 @@ DataSink* DataSinkFactory::build(const std::string &name) {
 DataSink::DataSink() {}
 
 
-DataSink::~DataSink() {}
+DataSink::~DataSink() {
+}
 
 
 //----------------------------------------------------------------------------------------------------------------------

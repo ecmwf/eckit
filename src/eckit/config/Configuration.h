@@ -60,6 +60,9 @@ class Configuration : public Parametrisation {
 
     std::vector<LocalConfiguration> getSubConfigurations(const std::string &name) const;
 
+    // Returns an empty LocalConfiguration if element not found
+    LocalConfiguration getSubConfiguration(const std::string &name) const;
+
     //
 
     Value lookUp(const std::string &) const;
@@ -80,6 +83,7 @@ class Configuration : public Parametrisation {
 
 
     bool get(const std::string &name, std::vector<LocalConfiguration>&) const;
+    bool get(const std::string &name, LocalConfiguration&) const;
 
     // -- Class members
     // None

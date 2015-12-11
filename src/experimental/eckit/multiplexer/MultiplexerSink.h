@@ -56,11 +56,11 @@ public:
 
     virtual void close();
 
-    virtual bool is_open() const;
-
 protected:
 
     virtual void print(std::ostream&) const;
+
+    bool is_open() const;
 
 private:
 

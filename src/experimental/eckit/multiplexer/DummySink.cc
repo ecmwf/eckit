@@ -15,8 +15,8 @@
 #include <iosfwd>
 #include <fstream>
 
-#include "sandbox/multiplexer/DummySink.h"
-#include "sandbox/multiplexer/DataSink.h"
+#include "eckit/multiplexer/DummySink.h"
+#include "eckit/multiplexer/DataSink.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Length.h"

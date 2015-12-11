@@ -14,9 +14,9 @@
 #include "eckit/memory/ScopedPtr.h"
 #include "eckit/io/Buffer.h"
 
-#include "sandbox/multiplexer/DataSink.h"
-#include "sandbox/multiplexer/DummySource.h"
-#include "sandbox/multiplexer/MultiplexerSink.h"
+#include "eckit/multiplexer/DataSink.h"
+#include "eckit/multiplexer/DummySource.h"
+#include "eckit/multiplexer/MultiplexerSink.h"
 
 namespace eckit {
 namespace multiplexer {

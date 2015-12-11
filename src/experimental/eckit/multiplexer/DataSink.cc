@@ -12,7 +12,7 @@
 /// @author Simon Smart
 /// @date Dec 2015
 
-#include "sandbox/multiplexer/DataSink.h"
+#include "eckit/multiplexer/DataSink.h"
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"

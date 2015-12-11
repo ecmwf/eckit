@@ -24,7 +24,7 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/memory/ScopedPtr.h"
 #include "eckit/thread/Mutex.h"
-#include "sandbox/multiplexer/DataSink.h"
+#include "eckit/multiplexer/DataSink.h"
 
 namespace eckit {
 namespace multiplexer {

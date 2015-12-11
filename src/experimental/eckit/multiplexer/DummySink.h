@@ -23,7 +23,7 @@
 #include "eckit/io/Length.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
-#include "sandbox/multiplexer/DataSink.h"
+#include "eckit/multiplexer/DataSink.h"
 
 namespace eckit {
 namespace multiplexer {

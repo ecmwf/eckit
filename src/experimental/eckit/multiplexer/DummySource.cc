@@ -15,8 +15,8 @@
 #include "grib_api.h"
 
 #include "eckit/io/Length.h"
-#include "sandbox/multiplexer/DataSink.h"
-#include "sandbox/multiplexer/DummySource.h"
+#include "eckit/multiplexer/DataSink.h"
+#include "eckit/multiplexer/DummySource.h"
 
 namespace eckit {
 namespace multiplexer {

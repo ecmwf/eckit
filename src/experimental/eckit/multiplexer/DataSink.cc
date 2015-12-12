@@ -63,7 +63,7 @@ void DataSinkFactory::list(std::ostream& out) {
 }
 
 
-DataSink* DataSinkFactory::build(const std::string &name) {
+DataSink* DataSinkFactory::build(const std::string &name, const Configuration& config) {
 
     pthread_once(&once, init);
 
@@ -80,7 +80,7 @@ DataSink* DataSinkFactory::build(const std::string &name) {
         throw eckit::SeriousBug(std::string("No DataSinkFactory called ") + name);
     }
 
-    return (*j).second->make();
+    return (*j).second->make(config);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -90,7 +90,6 @@ DataSink::DataSink() {}
 
 DataSink::~DataSink() {
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -34,7 +34,7 @@ class DummySink : public DataSink {
 
 public:
 
-    DummySink();
+    DummySink(const Configuration& config);
 
     virtual ~DummySink();
 

@@ -18,6 +18,7 @@
 #include "eckit/multiplexer/MultiplexerSink.h"
 #include "eckit/multiplexer/DataSink.h"
 
+#include "eckit/config/LocalConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Length.h"
 #include "eckit/thread/AutoLock.h"
@@ -26,84 +27,66 @@
 namespace eckit {
 namespace multiplexer {
 
-//
-// Create the global (singleton) object so it can be found by the DataSinkFactory
-DataSinkBuilder<MultiplexerSink> MultiplexerSinkFactorySingleton(std::string("multiplexer"));
-
 
 // ------------------------------------------------------------------------------------------------
 
-MultiplexerSink::MultiplexerSink()
-: is_open_(false) {}
+MultiplexerSink::MultiplexerSink(const Configuration& config)
+{
+    const std::vector<LocalConfiguration> configs = config.getSubConfigurations("sinks");
 
-
-MultiplexerSink::MultiplexerSink(sink_list_t& sink_list)
-: is_open_(false) {
-
-    // This will be nicer using move semantics in c++11!
-    sinks_.swap(sink_list);
+    for(std::vector<LocalConfiguration>::const_iterator c = configs.begin(); c != configs.end(); ++c) {
+        sinks_.push_back( DataSinkFactory::build(c->getString("sinkName"),*c) );
+    }
 }
 
-
 MultiplexerSink::~MultiplexerSink() {
-    if (is_open())
-        close();
 
-    // Note that we manually clean up the allocated DataSinks in the list,
-    // as they are _not_ stored in scoped pointers (due to the lack of
-    // move semantics).
-    for (sink_list_t::iterator it = sinks_.begin(); it != sinks_.end(); ++it) {
+    close();
+
+    for(sink_store_t::iterator it = sinks_.begin(); it != sinks_.end(); ++it) {
         delete (*it);
     }
-
 }
 
 
 void MultiplexerSink::open(const std::string& key) {
+
     eckit::Log::info() << "[" << *this << "]: open" << std::endl;
 
-    if (is_open())
-        throw eckit::SeriousBug("MultiplexerSink: Cannot open multiple times");
-
-    for (sink_list_t::iterator it = sinks_.begin(); it != sinks_.end(); ++it) {
+    for(sink_store_t::iterator it = sinks_.begin(); it != sinks_.end(); ++it) {
         (*it)->open(key);
     }
-    is_open_ = true;
 }
 
 
 void MultiplexerSink::write(const void* buffer, const Length& length) {
+
     eckit::Log::info() << "[" << *this << "]: write (" << length << ")" << std::endl;
 
-    if (!is_open())
-        throw eckit::SeriousBug(std::string("MultiplexerSink: Cannot write without opening"));
-
-    for (sink_list_t::iterator it = sinks_.begin(); it != sinks_.end(); ++it) {
+    for(sink_store_t::iterator it = sinks_.begin(); it != sinks_.end(); ++it) {
         (*it)->write(buffer, length);
     }
 }
 
 
 void MultiplexerSink::close() {
+
     eckit::Log::info() << "[" << *this << "]: close" << std::endl;
 
-    for (sink_list_t::iterator it = sinks_.begin(); it != sinks_.end(); ++it) {
+    for(sink_store_t::iterator it = sinks_.begin(); it != sinks_.end(); ++it) {
         (*it)->close();
     }
-    is_open_ = false;
 }
-
-
-bool MultiplexerSink::is_open() const {
-    return is_open_;
-}
-
 
 void MultiplexerSink::print(std::ostream& os) const {
-    os << "DataSink (MultiplexerSink)";
+    os << "MultiplexerSink(";
+    for(sink_store_t::const_iterator it = sinks_.begin(); it != sinks_.end(); ++it) {
+        os << (*it);
+    }
+    os << ")";
 }
 
-
+DataSinkBuilder<MultiplexerSink> MultiplexerSinkBuilder("multiplexer");
 
 // ------------------------------------------------------------------------------------------------
 

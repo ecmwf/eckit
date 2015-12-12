@@ -9,7 +9,7 @@
  */
 
 /// @author Baudouin Raoult
-/// @date JUl 2015
+/// @date July 2015
 
 
 #ifndef eckit_Configuration_H
@@ -22,6 +22,7 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
 
 class LocalConfiguration;
 
@@ -134,10 +135,7 @@ class Configuration : public Parametrisation {
 
     // -- Overridden methods
 
-    // From MIRParametrisation
     virtual void print(std::ostream &) const = 0;
-
-
 
     // -- Class members
     // None
@@ -152,7 +150,9 @@ class Configuration : public Parametrisation {
 
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
+
 #endif
 

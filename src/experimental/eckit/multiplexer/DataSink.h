@@ -20,8 +20,10 @@
 #include <string>
 #include <vector>
 
+#include "eckit/config/Configuration.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/Buffer.h"
 
 namespace eckit {
 namespace multiplexer {
@@ -60,7 +62,7 @@ private:
 class DataSinkFactory {
 
     std::string name_;
-    virtual DataSink *make() = 0;
+    virtual DataSink* make(const Configuration& config) = 0;
 
 protected:
 
@@ -70,15 +72,15 @@ protected:
 public:
 
     static void list(std::ostream &);
-    static DataSink *build(const std::string&);
+    static DataSink* build(const std::string&, const Configuration& config);
 
 };
 
 template< class T>
 class DataSinkBuilder : public DataSinkFactory {
 
-    virtual DataSink *make() {
-        return new T();
+    virtual DataSink* make(const Configuration& config) {
+        return new T(config);
     }
 
 public:

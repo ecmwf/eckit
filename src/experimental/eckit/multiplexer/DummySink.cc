@@ -26,14 +26,10 @@
 namespace eckit {
 namespace multiplexer {
 
-//
-// Create the global (singleton) object so it can be found by the DataSinkFactory
-DataSinkBuilder<DummySink> DummySinkFactorySingleton(std::string("foo"));
-
 //----------------------------------------------------------------------------------------------------------------------
 
 
-DummySink::DummySink() {}
+DummySink::DummySink(const Configuration& config) : DataSink() {}
 
 
 DummySink::~DummySink() {
@@ -81,7 +77,7 @@ void DummySink::print(std::ostream& os) const {
     os << "DataSink (DummySink): " << key_;
 }
 
-
+DataSinkBuilder<DummySink> DummySinkFactorySingleton("foo");
 
 //----------------------------------------------------------------------------------------------------------------------
 

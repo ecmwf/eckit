@@ -33,20 +33,13 @@ namespace multiplexer {
 
 class MultiplexerSink : public DataSink {
 
-public:
+public: // types
 
-    // DATATYPES
+    typedef std::vector<DataSink*> sink_store_t;
 
-    // We would like to put this is a ScopedPtr, but it does not support
-    // move or copy semantics. We could use a SharedPtr but reference
-    // counting seems wasteful here.
-    typedef std::list<DataSink*> sink_list_t;
+public: // methods
 
-public:
-
-    // We could use boost::optional<> or similar to avoid having 2 constructors.
-    MultiplexerSink(sink_list_t& sink_list);
-    MultiplexerSink();
+    MultiplexerSink(const Configuration& config);
 
     virtual ~MultiplexerSink();
 
@@ -56,17 +49,13 @@ public:
 
     virtual void close();
 
-protected:
+protected: // methods
 
     virtual void print(std::ostream&) const;
 
-    bool is_open() const;
+private: // members
 
-private:
-
-    sink_list_t sinks_;
-
-    bool is_open_;
+    sink_store_t sinks_;
 
 };
 

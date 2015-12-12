@@ -14,6 +14,7 @@
 #include "eckit/memory/ScopedPtr.h"
 #include "eckit/io/Buffer.h"
 
+#include "eckit/config/LocalConfiguration.h"
 #include "eckit/multiplexer/DataSink.h"
 #include "eckit/multiplexer/DummySource.h"
 #include "eckit/multiplexer/MultiplexerSink.h"
@@ -35,14 +36,13 @@ public:
 
 void Multiplexer::run()
 {
+    LocalConfiguration config;
 
-    MultiplexerSink::sink_list_t sink_list;
-    sink_list.push_back(DataSinkFactory::build("foo"));
+    /// @TODO populate config
 
-    MultiplexerSink mplx_sink(sink_list);
-    ASSERT(sink_list.empty());
+    MultiplexerSink sink(config);
 
-    DummySource source(mplx_sink, "twiddle.tmp");
+    DummySource source(sink, "twiddle.tmp");
 
     //for (int i = 0; i < 10; i++) {
         source.generate_field();

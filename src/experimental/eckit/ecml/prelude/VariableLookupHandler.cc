@@ -37,7 +37,7 @@ Values VariableLookupHandler::handle(ExecutionContext& context)
 
         // r is (possibly) a list, let's assume it has only one element for now
         // TODO: handle case where there is more elements 
-        Cell * v (r->value());
+        Cell * v ( r->tag() == "_list" ? r->value() : r);
 
         Cell * values (v->valueOrDefault(key, 0));
 

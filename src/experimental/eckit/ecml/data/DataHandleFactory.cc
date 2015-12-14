@@ -9,6 +9,7 @@
  */
 
 #include <sstream>
+#include <memory>
 
 #include "experimental/eckit/ecml/data/DataHandleFactory.h"
 
@@ -74,16 +75,16 @@ void DataHandleFactory::buildMultiHandle(MultiHandle& mh, const std::vector<std:
 DataHandle* DataHandleFactory::openForRead(const std::string& s)
 {
     std::pair<std::string,std::string> p (splitPrefix(s));
-    DataHandle* d (makeHandle(p.first, p.second));
+    std::auto_ptr<DataHandle> d (makeHandle(p.first, p.second));
     d->openForRead();
-    return d;
+    return d.release();
 }
 
 DataHandle* DataHandleFactory::openForWrite(const std::string& s, const eckit::Length& length)
 {
     std::pair<std::string,std::string> p (splitPrefix(s));
-    DataHandle* d (makeHandle(p.first, p.second));
+    std::auto_ptr<DataHandle> d (makeHandle(p.first, p.second));
     d->openForWrite(length);
-    return d;
+    return d.release();
 }
 

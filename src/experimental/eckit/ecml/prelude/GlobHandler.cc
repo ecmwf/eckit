@@ -10,6 +10,7 @@
 
 #include "experimental/eckit/ecml/core/ExecutionContext.h"
 #include "experimental/eckit/ecml/core/Environment.h"
+#include "eckit/parser/StringTools.h"
 
 #include "GlobHandler.h"
 
@@ -53,7 +54,7 @@ Values GlobHandler::handle(ExecutionContext& context)
 
     List r;
     for (size_t i(0); i < globbuf.gl_pathc; ++i)
-        r.append(string(globbuf.gl_pathv[i]));
+        r.append(StringTools::trim(string(globbuf.gl_pathv[i])));
 
     globfree(&globbuf);
 

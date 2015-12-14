@@ -7,14 +7,14 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
-#define BOOST_TEST_MODULE test_eckit_sandbox_multiplexer
+#define BOOST_TEST_MODULE test_eckit_multiplexer
 
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/io/Length.h"
 #include "eckit/memory/ScopedPtr.h"
-#include "sandbox/multiplexer/DataSink.h"
-#include "sandbox/multiplexer/DummySink.h"
+#include "eckit/multiplexer/DataSink.h"
+#include "eckit/multiplexer/DummySink.h"
 
 using namespace std;
 using namespace eckit;
@@ -44,7 +44,7 @@ DataSinkBuilder<TestDummySink> testDummyBuilder("test-dummy");
 
 // --------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE(test_eckit_sandbox_multiplexer)
+BOOST_AUTO_TEST_SUITE(test_eckit_multiplexer)
 
 BOOST_AUTO_TEST_CASE(test_multiplexer_factory)
 {

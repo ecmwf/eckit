@@ -6,5 +6,8 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
+include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
+
 add_subdirectory( eckit )
 add_subdirectory( tests )

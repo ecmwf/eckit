@@ -16,10 +16,10 @@
 
 #include "eckit/maths/Eigen.h"
 
-#include "experimental/eckit/la/LinearAlgebraEigen.h"
-#include "experimental/eckit/la/Matrix.h"
-#include "experimental/eckit/la/SparseMatrix.h"
-#include "experimental/eckit/la/Vector.h"
+#include "eckit/la/LinearAlgebraEigen.h"
+#include "eckit/la/Matrix.h"
+#include "eckit/la/SparseMatrix.h"
+#include "eckit/la/Vector.h"
 
 //-----------------------------------------------------------------------------
 

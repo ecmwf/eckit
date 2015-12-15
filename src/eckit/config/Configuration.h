@@ -9,7 +9,7 @@
  */
 
 /// @author Baudouin Raoult
-/// @date JUl 2015
+/// @date July 2015
 
 
 #ifndef eckit_Configuration_H
@@ -22,6 +22,7 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
 
 class LocalConfiguration;
 
@@ -51,6 +52,14 @@ class Configuration : public Parametrisation {
     float getFloat(const std::string &name) const;
     double getDouble(const std::string &name) const;
     std::string getString(const std::string &name) const;
+
+    bool getBool(const std::string &name, const bool& defaultVal) const;
+    int getInt(const std::string &name, const int& defaultVal) const;
+    long getLong(const std::string &name, const long& defaultVal) const;
+    size_t getUnsigned(const std::string &name, const size_t& defaultVal) const;
+    float getFloat(const std::string &name, const float& defaultVal) const;
+    double getDouble(const std::string &name, const double& defaultVal) const;
+    std::string getString(const std::string &name, const std::string& defaultVal) const;
 
     std::vector<int> getIntVector(const std::string &name) const;
     std::vector<long> getLongVector(const std::string &name) const;
@@ -125,23 +134,19 @@ class Configuration : public Parametrisation {
 
     // No copy allowed
 
-
     // -- Members
-
-
 
     // -- Methods
 
     template <class T>
     void _get(const std::string&, T&) const;
 
+    template <class T>
+    void _getWithDefault(const std::string &name, T& value, const T& defaultVal) const;
 
     // -- Overridden methods
 
-    // From MIRParametrisation
     virtual void print(std::ostream &) const = 0;
-
-
 
     // -- Class members
     // None
@@ -156,7 +161,9 @@ class Configuration : public Parametrisation {
 
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
+
 #endif
 

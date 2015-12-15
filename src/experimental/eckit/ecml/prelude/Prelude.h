@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -14,8 +14,8 @@
 #ifndef eckit_ecml_Prelude_H
 #define eckit_ecml_Prelude_H
 
-#include "experimental/eckit/ecml/core/Module.h"
-#include "experimental/eckit/ecml/core/ExecutionContext.h"
+#include "eckit/ecml/core/Module.h"
+#include "eckit/ecml/core/ExecutionContext.h"
 
 namespace eckit {
 

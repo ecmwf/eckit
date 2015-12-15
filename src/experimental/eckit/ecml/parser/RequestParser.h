@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -15,7 +15,7 @@
 #ifndef eckit_parser_RequestParser_H
 #define eckit_parser_RequestParser_H
 
-#include "experimental/eckit/ecml/parser/Request.h"
+#include "eckit/ecml/parser/Request.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/filesystem/PathName.h"
 

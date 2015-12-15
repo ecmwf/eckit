@@ -6,5 +6,14 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-add_subdirectory( ecml )
+add_subdirectory( geometry )
+add_subdirectory( grib )
+add_subdirectory( maths )
+add_subdirectory( mpi )
+
+if( HAVE_ECKIT_ECML )
+  add_subdirectory( ecml )
+endif()
+
 add_subdirectory( la )
+add_subdirectory( testing )

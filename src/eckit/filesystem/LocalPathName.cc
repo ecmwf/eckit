@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -191,7 +191,10 @@ static void mkdir_if_not_exists( const char* path, short mode )
 		{
 			if(::mkdir(path,mode) < 0)
 			{
-				throw FailedSystemCall(std::string("mkdir ") + path);
+                /* don't throw error if it was created meanwhile by another process */
+                if( errno != EEXIST ) {
+                    throw FailedSystemCall(std::string("mkdir ") + path);
+                }
 			}
 		}
 		else // stat fails for unknown reason

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -97,8 +97,10 @@ bool ResourceMgr::lookUp( Configurable* owner,
 
     ResourcePolicy p = Context::instance().behavior().resourcePolicy();
 
-    if(!inited_)
-      configure( p , script_ );
+    if(!inited_) {
+        configure( p , script_ );
+        inited_ = true;
+    }
 
     StringDict resmap;
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -157,7 +157,7 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
                     watcher.watch(buffer,length);
                     lastRead = timer.elapsed();
 
-                    char c1,c2;
+                    char c1 = 0, c2 = 0;
                     //			Log::message() << rate(length/r,c1)  << c1 << " " << rate(length/w,c2) << c2 << std::endl;
                     Log::message() << rate(total/readTime,c1)  << c1 << " " << rate(total/writeTime,c2) << c2 << std::endl;
                 }

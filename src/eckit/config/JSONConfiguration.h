@@ -96,8 +96,6 @@ class JSONConfiguration : public Configuration {
     // From MIRParametrisation
     virtual void print(std::ostream &) const;
 
-
-
     // -- Class members
     // None
 

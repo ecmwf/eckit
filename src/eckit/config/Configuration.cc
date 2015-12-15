@@ -130,6 +130,15 @@ bool Configuration::get(const std::string &name, double &value) const {
     return found;
 }
 
+bool Configuration::get(const std::string &name, LocalConfiguration &value) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    if (found) {
+        value = LocalConfiguration(v);
+    }
+    return found;
+}
+
 bool Configuration::get(const std::string &name, std::vector<long> &value) const {
     bool found = false;
     eckit::Value v = lookUp(name, found);
@@ -293,6 +302,12 @@ std::vector<LocalConfiguration> Configuration::getSubConfigurations(const std::s
     return result;
 }
 
+LocalConfiguration Configuration::getSubConfiguration(const std::string &name) const {
+    LocalConfiguration result;
+    if (has(name)) _get(name, result);
+    return result;
+}
+
 template<class T>
 void Configuration::_getWithDefault(const std::string &name, T& value, const T& defaultVal) const {
     if(!get(name, value)) {
@@ -343,7 +358,6 @@ std::string Configuration::getString(const std::string &name, const std::string&
     _getWithDefault(name, result, defaultVal);
     return result;
 }
-
 
 }  // namespace eckit
 

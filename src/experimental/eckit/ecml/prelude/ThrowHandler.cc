@@ -25,12 +25,10 @@ ThrowHandler::ThrowHandler(const std::string& name) : RequestHandler(name) {}
 
 Values ThrowHandler::handle(ExecutionContext& context)
 {
-    vector<string> what (getValueAsList(context, "what"));
-
     string message;
 
-    if (what.size())
-        message = StringTools::join("/", what);
+    if (context.environment().lookupNoThrow("what"))
+        message = StringTools::join("/", getValueAsList(context, "what"));
     else
     {
         const string currentException (context.environment().lookup("current_exception", "", context));

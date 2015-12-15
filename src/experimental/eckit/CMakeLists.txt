@@ -17,5 +17,3 @@ endif()
 
 add_subdirectory( la )
 add_subdirectory( testing )
-
-add_subdirectory( multiplexer )

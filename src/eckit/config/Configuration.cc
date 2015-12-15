@@ -293,6 +293,57 @@ std::vector<LocalConfiguration> Configuration::getSubConfigurations(const std::s
     return result;
 }
 
+template<class T>
+void Configuration::_getWithDefault(const std::string &name, T& value, const T& defaultVal) const {
+    if(!get(name, value)) {
+        value = defaultVal;
+    }
+}
+
+bool Configuration::getBool(const std::string &name, const bool& defaultVal) const {
+    bool result;
+    _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
+int Configuration::getInt (const std::string &name, const int& defaultVal) const {
+    long result;
+    _getWithDefault(name, result, long(defaultVal));
+    ASSERT(int(result) == result);
+    return result;
+}
+
+long Configuration::getLong(const std::string &name, const long& defaultVal) const {
+    long result;
+    _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
+size_t Configuration::getUnsigned(const std::string &name, const size_t& defaultVal) const {
+    size_t result;
+    _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
+float Configuration::getFloat(const std::string &name, const float& defaultVal) const {
+    double result;
+    _getWithDefault(name, result, double(defaultVal));
+    ASSERT(float(result) == result);
+    return result;
+}
+
+double Configuration::getDouble(const std::string &name, const double& defaultVal) const {
+    double result;
+    _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
+std::string Configuration::getString(const std::string &name, const std::string& defaultVal) const {
+    std::string result;
+    _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
 
 }  // namespace eckit
 

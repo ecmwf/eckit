@@ -36,46 +36,53 @@ TryHandler::TryHandler(const string& name)
 //       finally = (println,values=bye)
 Request TryHandler::handle(const Request request, ExecutionContext& context)
 {
-    Request body (request->valueOrDefault("do", 0));
-    Request _catch (request->valueOrDefault("catch", 0));
-    Request finally (request->valueOrDefault("finally", 0));
+    auto_ptr<Cell> body (request->valueOrDefault("do", 0));
+    auto_ptr<Cell> _catch (request->valueOrDefault("catch", 0));
+    auto_ptr<Cell> finally (request->valueOrDefault("finally", 0));
 
-    if (! body) throw UserError("No 'do' passed to 'try'");
+    if (! body.get()) throw UserError("No 'do' passed to 'try'");
 
-    Values value (0);
-    try {
-        value = context.interpreter().eval(body, context);
+    bool exceptionThrown (false);
+    string what;
 
-        if (finally) context.interpreter().eval(finally, context);
+    auto_ptr<Cell> value (0);
+    if (! _catch.get() && ! finally.get())
+        value.reset(context.interpreter().eval(body.get(), context));
+    else
+    try 
+    {
+        value.reset(context.interpreter().eval(body.get(), context));
+        if (finally.get()) 
+            context.interpreter().eval(finally.get(), context);
 
     } catch (eckit::Exception e) 
     {
-        Log::info() << "catch: '" << e.what() << "'" << endl;
+        exceptionThrown = true;
+        what = e.what(); // TODO: save type of the exception as a prefix
+    }
 
-        if (! _catch && ! finally)
-            throw e;
-        else
-        {
-            List w;
-            w.append(e.what());
-            context.pushEnvironmentFrame(new Cell("_verb", "let", 0, new Cell("", "current_exception", w, 0)));
-        }
+    if (exceptionThrown)
+    {
+        List w;
+        w.append(what);
+        context.pushEnvironmentFrame(new Cell("_verb", "let", 0, new Cell("", "current_exception", w, 0)));
 
-        if (_catch) 
+        if (_catch.get()) 
             try {
-                value = context.interpreter().eval(_catch, context);
+                value.reset(context.interpreter().eval(_catch.get(), context));
             } catch (eckit::Exception ec)
             {
-                if (finally) context.interpreter().eval(finally, context);
+                if (finally.get()) 
+                    context.interpreter().eval(finally.get(), context);
                 throw ec;
             } 
-        if (finally) 
-            context.interpreter().eval(finally, context);
+        if (finally.get()) 
+            context.interpreter().eval(finally.get(), context);
     }
     
-    if (! value)
+    if (! value.get())
         return new Cell("_list", "", 0, 0);
-    return value;
+    return value.release();
 }
 
 } // namespace eckit

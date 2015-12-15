@@ -96,6 +96,8 @@ prelude/ReadTextFileHandler.h
 prelude/ReadTextFileHandler.cc
 prelude/TryHandler.h
 prelude/TryHandler.cc
+prelude/ThrowHandler.h
+prelude/ThrowHandler.cc
 
 # Data types' support
 data/DataHandleFactory.h

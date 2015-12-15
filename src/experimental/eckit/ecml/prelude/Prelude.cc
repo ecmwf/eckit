@@ -48,6 +48,7 @@
 #include "GlobHandler.h"
 #include "ReadTextFileHandler.h"
 #include "TryHandler.h"
+#include "ThrowHandler.h"
 
 namespace eckit {
 
@@ -90,6 +91,7 @@ void Prelude::importInto(ExecutionContext& context)
     static GlobHandler _glob("glob");
     static ReadTextFileHandler read_text_file("read_text_file");
     static TryHandler _try("try");
+    static ThrowHandler _throw("throw");
 
     Environment& e(context.environment());
     e.set("let", macro(let.name()));
@@ -122,11 +124,7 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("range", range);
     context.registerHandler("glob", _glob);
     context.registerHandler("read_text_file", read_text_file);
-    //context.execute("function, of = f / values, map = ( \n"
-    //                "    if, condition = (first, of = ($,_ = values)), \n"
-    //                "        then = (sequence, values = (f, values = (first, of = ($,_ = values)))\n"
-    //                "                                 / (map, f = ($,_ = f),\n"
-    //               "                                         values = (rest, of = ($,_ = values)))))\n");
+    context.registerHandler("throw", _throw);
 }
 
 } // namespace eckit

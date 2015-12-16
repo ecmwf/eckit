@@ -24,6 +24,7 @@ container/BTree.cc
 
 container/Cache.h
 container/CacheLRU.h
+container/CacheLRU.cc
 
 container/CacheManager.h
 container/CacheManager.cc
@@ -536,6 +537,7 @@ foreach( dir ${eckit_dirs} )
 endforeach()
 
 list( APPEND eckit_templates
+					container/CacheLRU.cc
 					container/BTree.cc
 					container/MappedArray.cc
 					container/SimpleMappedArray.cc

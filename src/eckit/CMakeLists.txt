@@ -18,9 +18,13 @@ configure_file( eckit_version.cc.in  eckit_version.cc )
 list( APPEND eckit_srcs eckit.h eckit_version.cc )
 
 list( APPEND eckit_container_srcs
+
 container/BTree.h
 container/BTree.cc
+
 container/Cache.h
+container/CacheLRU.h
+
 container/CacheManager.h
 container/CacheManager.cc
 container/DenseMap.h

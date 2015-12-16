@@ -27,21 +27,8 @@ namespace eckit {
 class LocalConfiguration;
 
 class Configuration : public Parametrisation {
-  public:
 
-    // -- Exceptions
-    // None
-
-    // -- Contructors
-
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
+public: // methods
 
     // Fast access, will throw an exception
 
@@ -52,6 +39,8 @@ class Configuration : public Parametrisation {
     float getFloat(const std::string &name) const;
     double getDouble(const std::string &name) const;
     std::string getString(const std::string &name) const;
+
+    // Access with default in case of falure
 
     bool getBool(const std::string &name, const bool& defaultVal) const;
     int getInt(const std::string &name, const int& defaultVal) const;
@@ -67,14 +56,14 @@ class Configuration : public Parametrisation {
     std::vector<float> getFloatVector(const std::string &name) const;
     std::vector<double> getDoubleVector(const std::string &name) const;
 
+    // Access to LocalConfiguration
+
     std::vector<LocalConfiguration> getSubConfigurations(const std::string &name) const;
 
-    // Returns an empty LocalConfiguration if element not found
     LocalConfiguration getSubConfiguration(const std::string &name) const;
 
-    //
-
     Value lookUp(const std::string &) const;
+
     char separator() const;
 
     // -- Overridden methods
@@ -94,13 +83,7 @@ class Configuration : public Parametrisation {
     bool get(const std::string &name, std::vector<LocalConfiguration>&) const;
     bool get(const std::string &name, LocalConfiguration&) const;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-
-
-  protected:
+protected: // methods
 
     Configuration(const Configuration &);
     Configuration(const Value &root, char separator = '.');
@@ -108,9 +91,7 @@ class Configuration : public Parametrisation {
 
     virtual ~Configuration();
 
-    // -- Destructor
-
-    // -- Members
+protected: // members
 
     Value root_;
     char separator_;
@@ -130,13 +111,7 @@ class Configuration : public Parametrisation {
     // -- Class methods
     // None
 
-  private:
-
-    // No copy allowed
-
-    // -- Members
-
-    // -- Methods
+private: // methods
 
     template <class T>
     void _get(const std::string&, T&) const;
@@ -144,20 +119,9 @@ class Configuration : public Parametrisation {
     template <class T>
     void _getWithDefault(const std::string &name, T& value, const T& defaultVal) const;
 
-    // -- Overridden methods
-
     virtual void print(std::ostream &) const = 0;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-
-    friend std::ostream& operator<<(std::ostream& s,const Configuration& p)
-     { p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s,const Configuration& p) { p.print(s); return s; }
 
 };
 

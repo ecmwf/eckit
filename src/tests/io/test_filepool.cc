@@ -32,21 +32,33 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
 
     FilePool pool(1);
 
-    BOOST_CHECK_EQUAL( pool.capacity(), 1 );
+    // pool sized 1
 
-    BOOST_CHECK_NO_THROW( pool.resize(3); );
+    BOOST_CHECK_EQUAL( pool.capacity(), 1 );
+    BOOST_CHECK_EQUAL( pool.size(),     0 );
+
+    pool.resize(3);
+
+    // pool is larger
 
     BOOST_CHECK_EQUAL( pool.capacity(), 3 );
+    BOOST_CHECK_EQUAL( pool.size(),     0 );
 
     DataHandle& foo = pool.checkout("foo.data");
     foo.write(buffer, buffer.size());
 
-    BOOST_CHECK_EQUAL( pool.inUseSize(), 1 );
+    // foo is in use
+
+    BOOST_CHECK_EQUAL( pool.usage(), 1 );
+    BOOST_CHECK_EQUAL( pool.size(),  0 );
 
     DataHandle& bar = pool.checkout("bar.data");
     bar.write(buffer, buffer.size());
 
-    BOOST_CHECK_EQUAL( pool.inUseSize(), 2 );
+    // foo + bar are in use
+
+    BOOST_CHECK_EQUAL( pool.usage(), 2 );
+    BOOST_CHECK_EQUAL( pool.size(),  0 );
 
     std::cout << pool << std::endl;
 
@@ -55,22 +67,85 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
 
     std::cout << pool << std::endl;
 
-    BOOST_CHECK_EQUAL( pool.inUseSize(), 0 );
+    // foo + bar are in pool, none in use
+
+    BOOST_CHECK_EQUAL( pool.usage(), 0 );
+    BOOST_CHECK_EQUAL( pool.size(),  2 );
 
     DataHandle& foo2 = pool.checkout("foo.data");
     foo2.write(buffer, buffer.size());
 
-    BOOST_CHECK_EQUAL( pool.inUseSize(), 1 );
+    // foo in use again, bar in pool
+
+    BOOST_CHECK_EQUAL( pool.usage(), 1 );
+    BOOST_CHECK_EQUAL( pool.size(),  1 );
 
     pool.checkin(foo);
 
-    BOOST_CHECK_EQUAL( pool.inUseSize(), 0 );
+    // foo + bar are again in pool, none in use
+
+    BOOST_CHECK_EQUAL( pool.usage(), 0 );
+    BOOST_CHECK_EQUAL( pool.size(),  2 );
 
     DataHandle& baz = pool.checkout("baz.data");
     baz.write(buffer, buffer.size());
 
-    BOOST_CHECK_EQUAL( pool.inUseSize(), 1 );
+    // foo + bar in pool, baz in use
 
+    BOOST_CHECK_EQUAL( pool.usage(), 1 );
+    BOOST_CHECK_EQUAL( pool.size(),  2 );
+
+    pool.checkin(baz);
+
+    // baz + foo + bar in pool, none in use
+
+    BOOST_CHECK_EQUAL( pool.usage(), 0 );
+    BOOST_CHECK_EQUAL( pool.size(),  3 );
+
+    DataHandle& marco = pool.checkout("marco.data");
+    marco.write(buffer, buffer.size());
+
+    // baz + foo + bar in pool, marco in use
+
+    BOOST_CHECK_EQUAL( pool.usage(), 1 );
+    BOOST_CHECK_EQUAL( pool.size(),  3 );
+
+    pool.checkin(marco);
+
+    // marco + foo + baz in pool, none in use, bar was purged (closed)
+
+    BOOST_CHECK_EQUAL( pool.usage(), 0 );
+    BOOST_CHECK_EQUAL( pool.size(),  3 );
+
+    std::cout << pool << std::endl;
+
+    pool.resize(1);
+
+    // marco in pool, none in use, foo + baz were purged (closed) due to reduced capacity
+
+    BOOST_CHECK_EQUAL( pool.usage(), 0 );
+    BOOST_CHECK_EQUAL( pool.size(),  1 );
+
+    std::cout << pool << std::endl;
+
+    DataHandle& polo = pool.checkout("polo.data");
+    polo.write(buffer, buffer.size());
+
+    // marco in pool, polo is in use
+
+    BOOST_CHECK_EQUAL( pool.usage(), 1 );
+    BOOST_CHECK_EQUAL( pool.size(),  1 );
+
+    std::cout << pool << std::endl;
+
+    pool.checkin(polo);
+
+    // polo pushes marco out and remains alone in pool
+
+    BOOST_CHECK_EQUAL( pool.usage(), 0 );
+    BOOST_CHECK_EQUAL( pool.size(),  1 );
+
+    std::cout << pool << std::endl;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

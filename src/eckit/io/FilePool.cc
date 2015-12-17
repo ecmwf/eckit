@@ -107,11 +107,15 @@ std::pair<PathName, DataHandle*> FilePool::removeFromInUse(DataHandle* dh) {
     throw eckit::SeriousBug("Should have found a DataHandle in pool use", Here());
 }
 
+size_t FilePool::size() const {
+    return cache_.size();
+}
+
 size_t FilePool::capacity() const {
     return cache_.capacity();
 }
 
-size_t FilePool::inUseSize() const {
+size_t FilePool::usage() const {
     return inUse_.size();
 }
 

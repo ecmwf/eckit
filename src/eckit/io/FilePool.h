@@ -28,6 +28,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// Pool of a maximum number of open files.
+/// Open files manipulated via DataHandle interface.
+/// Handles are kept open as long as possible following LRU algorithm
+/// Handles must be checked-out before usage, should be checked back in once writing finished.
+/// No limit to number of checked out handles.
+/// Handles are closed when purged from pool due to LRU or when pool is destroyed.
+
 class FilePool : private eckit::NonCopyable {
 
 public:
@@ -45,11 +52,14 @@ public:
     /// Resize the max size of pool
     void resize( size_t size );
 
+    /// Current size of pool
+    size_t size() const;
+
     /// Returns max size of pool
     size_t capacity() const;
 
-    ///  Returns currently inUse_
-    size_t inUseSize() const;
+    /// Returns number of checked-out DataHandles
+    size_t usage() const;
 
     /// Lists the contents of the Pool both in use and cached DataHandle's
     void print(std::ostream& os) const;

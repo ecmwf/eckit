@@ -8,19 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-// File FileLocker.h
-// Baudouin Raoult - ECMWF Feb 02
+/// @author Baudouin Raoult
+/// @date Feb 2002
 
 #ifndef eckit_FileLocker_h
 #define eckit_FileLocker_h
 
 #include "eckit/eckit.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class FileLocker {
 public:
@@ -34,7 +32,7 @@ public:
 
 // -- Destructor
 
-	~FileLocker(); 
+	~FileLocker();
 
 // -- Convertors
 	// None
@@ -65,7 +63,7 @@ protected:
 
 // -- Methods
 
-	// void print(std::ostream&) const; 
+	// void print(std::ostream&) const;
 
 // -- Overridden methods
 	// None
@@ -108,8 +106,7 @@ private:
 
 };
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -13,8 +13,9 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template< typename K, typename V>
-CacheLRU<K,V>::CacheLRU(const size_t& maxSize) :
-    maxSize_( maxSize )
+CacheLRU<K,V>::CacheLRU(size_t capacity, purge_handler_type purge) :
+    capacity_( capacity ),
+    purge_(purge)
 {
 }
 
@@ -34,7 +35,7 @@ bool CacheLRU<K,V>::insert(const key_type& key, const value_type& value)
     {
         existed = true;
 
-        // remove the key from where it is
+        // erase the key from where it is
         // we'll reinsert it again so it comes on top
 
         erase(itr);
@@ -49,7 +50,7 @@ bool CacheLRU<K,V>::insert(const key_type& key, const value_type& value)
 }
 
 template< typename K, typename V>
-const V& CacheLRU<K,V>::access(const key_type& key)
+V CacheLRU<K,V>::access(const key_type& key)
 {
     // check first the front() since it is the most popular/recent entry
 
@@ -65,12 +66,26 @@ const V& CacheLRU<K,V>::access(const key_type& key)
 
         moveToFront(itr);
 
-        return itr->second->value_;
+        return valueFrom(itr);
     }
     else
     {
         throw eckit::OutOfRange( "key not present in CacheLRU", Here() );
     }
+}
+
+template< typename K, typename V>
+V CacheLRU<K,V>::extract(const key_type& key)
+{
+    typename map_type::iterator itr = map_.find(key);
+    if( itr == map_.end() ) {
+        throw OutOfRange("key not in CacheLRU", Here());
+    }
+
+    value_type result = valueFrom(itr);
+    erase(itr);
+
+    return result;
 }
 
 template< typename K, typename V>
@@ -82,6 +97,7 @@ bool CacheLRU<K,V>::remove(const key_type& key)
     if( itr != map_.end() )
     {
         existed = true;
+        purge(key,valueFrom(itr));
         erase(itr);
     }
 
@@ -97,6 +113,10 @@ bool CacheLRU<K,V>::exists(const key_type& key)
 template< typename K, typename V>
 void CacheLRU<K,V>::clear()
 {
+    for(storage_iterator itr = storage_.begin(); itr != storage_.end(); ++itr) {
+        purge(itr->key_,itr->value_);
+    }
+
     storage_.clear();
     map_.clear();
 }
@@ -104,14 +124,14 @@ void CacheLRU<K,V>::clear()
 template< typename K, typename V>
 void CacheLRU<K,V>::erase(typename map_type::iterator itr)
 {
-        storage_.erase( itr->second );
-        map_.erase( itr );
+    storage_.erase( itr->second );
+    map_.erase( itr );
 }
 
 template< typename K, typename V>
 void CacheLRU<K,V>::trim()
 {
-    while(map_.size() > maxSize_) {
+    while(map_.size() > capacity_) {
         map_.erase( storage_.back().key_ );
         storage_.pop_back();
     }
@@ -121,6 +141,33 @@ template< typename K, typename V>
 void CacheLRU<K,V>::moveToFront(typename map_type::iterator itr)
 {
     storage_.splice( storage_.begin(), storage_, itr->second );
+}
+
+template< typename K, typename V>
+void CacheLRU<K,V>::purge(key_type& key, value_type& value) const
+{
+    if(purge_)
+        purge_(key,value);
+}
+
+template< typename K, typename V>
+void CacheLRU<K,V>::resize(size_t size)
+{
+    capacity_ = size;
+    trim();
+}
+
+template< typename K, typename V>
+void CacheLRU<K,V>::print(std::ostream& os) const
+{
+    os << "CacheLRU(capacity=" << capacity_
+        << ",size=" << storage_.size()
+        << ",storage={";
+    for(typename storage_type::const_iterator itr = storage_.begin(); itr != storage_.end(); ++itr) {
+        os << *itr << ",";
+    }
+
+    os << "})";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

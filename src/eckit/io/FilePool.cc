@@ -11,42 +11,111 @@
 /// @author Tiago Quintino
 /// @date Dec 2015
 
-#include "hermes/FilePool.h"
+#include "eckit/io/FilePool.h"
 
+#include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/exception/Exceptions.h"
+#include "eckit/types/Types.h"
 
-namespace hermes {
+namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static FilePool& FilePool::instance()
+static void closeDataHandle(PathName& path, DataHandle*& handle)
 {
-    static FilePool theInstance;
-    return theInstance;
+    if(handle) {
+        handle->close();
+        delete handle;
+        handle = 0;
+    }
 }
 
-FilePool::FilePool() :
-    filePoolSize( eckit::Resource<size_t>("filePoolSize", 64) ) {
+//----------------------------------------------------------------------------------------------------------------------
+
+FilePool::FilePool(size_t size) :
+    cache_(size, &closeDataHandle) {
 }
 
 FilePool::~FilePool() {
 }
 
-DataHandle& FilePool::open(const PathName& path) {
+DataHandle& FilePool::checkout(const PathName& path) {
 
-    DataHandle* dh = path.fileHandle();
+    AutoLock<Mutex> lock(mutex_);
+
+    ASSERT( ! inUse(path) );
+
+    DataHandle* dh;
+
+    if( cache_.exists(path) ) {
+        dh = cache_.extract(path);
+    }
+    else {
+        dh = path.fileHandle(false); // append mode (no overwrite)
+        dh->openForAppend(0);
+    }
+
+    ASSERT(dh);
+
+    addToInUse(path,dh);
+
+    return *dh;
 }
 
+void FilePool::checkin(DataHandle& handle)
+{
+    AutoLock<Mutex> lock(mutex_);
 
+    std::pair<PathName, DataHandle*> entry = removeFromInUse(&handle);
 
-    void close(const PathName& path);
+    cache_.insert(entry.first, entry.second);
+}
 
-    void list(std::ostream& os);
+void FilePool::resize( size_t size ) {
+    AutoLock<Mutex> lock(mutex_);
+    cache_.resize(size);
+}
 
+void FilePool::print(std::ostream& os) const
+{
+    AutoLock<Mutex> lock(const_cast<FilePool&>(*this).mutex_);
+    os << "FilePool("
+       << "inUse=" << inUse_ << ", "
+       << "cache=" << cache_ << ")";
+}
+
+bool FilePool::inUse(const PathName& path) {
+    return inUse_.find(path) != inUse_.end();
+}
+
+void FilePool::addToInUse(const PathName& path, DataHandle* dh) {
+    inUse_[path] = dh;
+}
+
+std::pair<PathName, DataHandle*> FilePool::removeFromInUse(DataHandle* dh) {
+    typedef std::map<PathName,DataHandle*>::iterator iterator_type;
+    for(iterator_type itr = inUse_.begin(); itr != inUse_.end(); ++itr) {
+        if( itr->second == dh ) {
+            std::pair<PathName, DataHandle*> result = std::make_pair(itr->first, itr->second);
+            inUse_.erase(itr);
+            return result;
+        }
+    }
+    throw eckit::SeriousBug("Should have found a DataHandle in pool use", Here());
+}
+
+size_t FilePool::capacity() const {
+    return cache_.capacity();
+}
+
+size_t FilePool::inUseSize() const {
+    return inUse_.size();
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace hermes
+}  // namespace eckit
 

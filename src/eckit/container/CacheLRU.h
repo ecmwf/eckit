@@ -40,6 +40,11 @@ public: // types
         value_type value_;
 
         Entry(const key_type& k, const value_type& v) : key_(k), value_(v) {}
+
+        friend std::ostream& operator<<(std::ostream& s,const Entry& e) {
+            s << "key=" << e.key_;
+            return s;
+        }
     };
 
     typedef Entry entry_type;
@@ -48,9 +53,11 @@ public: // types
     typedef typename storage_type::iterator storage_iterator;
     typedef std::map<key_type,storage_iterator> map_type;
 
+    typedef void (*purge_handler_type)(key_type&, value_type&);
+
 public: // methods
 
-    CacheLRU(const size_t& maxSize);
+    CacheLRU(size_t capacity, purge_handler_type purge = 0);
 
     ~CacheLRU();
 
@@ -60,10 +67,16 @@ public: // methods
 
     /// Accesses a key that must already exist
     /// @throws NotFound exception is key not present
-    const value_type& access(const key_type& key);
+    value_type access(const key_type& key);
+
+    /// Extracts the key from the cache without purging
+    /// @pre Key must exist in cache
+    /// @throws if key not in cache
+    value_type extract(const key_type& key);
 
     /// Remove a key-value pair from the cache
     /// No effect if key is not present
+    ///
     /// @return true if removed
     bool remove(const key_type& key);
 
@@ -73,10 +86,16 @@ public: // methods
     /// Clears all entries in the cache
     void clear();
 
-    /// @returns the size of the cache
+    /// @returns the maximum size of the cache
+    size_t capacity() const { return capacity_; }
+
+    /// @returns the current (usaed) size of the cache
     size_t size() const { return storage_.size(); }
 
-    void print(std::ostream& os) const { os << "CacheLRU(maxSize=" << maxSize_ << ")"; }
+    /// resizes the cache
+    void resize( size_t size );
+
+    void print(std::ostream& os) const;
 
     friend std::ostream& operator<<(std::ostream& s,const CacheLRU& p) { p.print(s); return s; }
 
@@ -88,13 +107,19 @@ private: // methods
 
     void moveToFront(typename map_type::iterator itr);
 
+    value_type& valueFrom(typename map_type::iterator itr) const { return itr->second->value_; }
+
+    void purge(key_type& key, value_type& value) const;
+
 private: // members
 
     storage_type      storage_;
 
     map_type        map_;
 
-    size_t          maxSize_;
+    size_t          capacity_;
+
+    purge_handler_type purge_;
 
 };
 

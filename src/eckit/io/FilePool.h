@@ -12,67 +12,70 @@
 /// @date Dec 2015
 
 
-#ifndef hermes_FilePool_h
-#define hermes_FilePool_h
+#ifndef eckit_io_FilePool_h
+#define eckit_io_FilePool_h
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/container/CacheLRU.h"
 
-namespace eckit { class DataHandle; }
+namespace eckit {
+    class DataHandle;
+    class PathName;
+}
 
-namespace hermes {
+namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-/// Takes ownership of the data handle
-/// @invariant DataHandle is assumed opened
-
-class DH {
-
-    DataHandle* handle_;
-
-public:
-
-    DH(DataHandle* handle) : handle_(handle) {}
-
-    ~DH() {
-        handle->close();
-        delete handle_;
-    }
-};
 
 class FilePool : private eckit::NonCopyable {
 
 public:
 
-    static FilePool& instance();
-
-    DataHandle& open(const PathName& path);
-
-    void close(const PathName& path);
-
-    void list(std::ostream& os);
-
-    friend std::ostream &operator<<(std::ostream &s, const FilePool& p) { p.list(s); return s; }
-
-private:
-
-    FilePool();
+    FilePool(size_t capacity);
 
     ~FilePool();
 
+    /// Checkout a DataHandle for use
+    DataHandle& checkout(const PathName& path);
+
+    /// Return a DataHandle after use
+    void checkin(DataHandle& handle);
+
+    /// Resize the max size of pool
+    void resize( size_t size );
+
+    /// Returns max size of pool
+    size_t capacity() const;
+
+    ///  Returns currently inUse_
+    size_t inUseSize() const;
+
+    /// Lists the contents of the Pool both in use and cached DataHandle's
+    void print(std::ostream& os) const;
+
+    friend std::ostream& operator<<(std::ostream& s, const FilePool& p) { p.print(s); return s; }
+
 private:
 
+    bool inUse(const PathName& path);
+
+    void addToInUse(const PathName& path, DataHandle*);
+
+    std::pair<PathName, DataHandle*> removeFromInUse(DataHandle*);
+
+private:
+
+    std::map< PathName, DataHandle* > inUse_;
+
+    eckit::CacheLRU< PathName, DataHandle* > cache_;
+
     eckit::Mutex mutex_;
-
-    eckit::CacheLRU< PathName, DH > pool_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace hermes
+}  // namespace eckit
 
 #endif
 

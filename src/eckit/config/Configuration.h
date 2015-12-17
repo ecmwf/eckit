@@ -66,6 +66,9 @@ public: // methods
 
     char separator() const;
 
+    const Value& get() const { return root_; }
+    operator Value() const { return root_; }
+
     // -- Overridden methods
 
     virtual bool has(const std::string &name) const;

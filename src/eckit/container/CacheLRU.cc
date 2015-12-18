@@ -151,7 +151,7 @@ void CacheLRU<K,V>::purge(key_type& key, value_type& value) const
 }
 
 template< typename K, typename V>
-void CacheLRU<K,V>::resize(size_t size)
+void CacheLRU<K,V>::capacity(size_t size)
 {
     capacity_ = size;
     trim();

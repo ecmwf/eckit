@@ -42,7 +42,7 @@ FilePool::FilePool(size_t size) :
 FilePool::~FilePool() {
 }
 
-DataHandle& FilePool::checkout(const PathName& path) {
+DataHandle *const FilePool::checkout(const PathName& path) {
 
     AutoLock<Mutex> lock(mutex_);
 
@@ -62,21 +62,16 @@ DataHandle& FilePool::checkout(const PathName& path) {
 
     addToInUse(path,dh);
 
-    return *dh;
+    return dh;
 }
 
-void FilePool::checkin(DataHandle& handle)
+void FilePool::checkin(DataHandle *const handle)
 {
     AutoLock<Mutex> lock(mutex_);
 
-    std::pair<PathName, DataHandle*> entry = removeFromInUse(&handle);
+    std::pair<PathName, DataHandle*> entry = removeFromInUse(handle);
 
     cache_.insert(entry.first, entry.second);
-}
-
-void FilePool::resize( size_t size ) {
-    AutoLock<Mutex> lock(mutex_);
-    cache_.resize(size);
 }
 
 void FilePool::print(std::ostream& os) const
@@ -109,6 +104,11 @@ std::pair<PathName, DataHandle*> FilePool::removeFromInUse(DataHandle* dh) {
 
 size_t FilePool::size() const {
     return cache_.size();
+}
+
+void FilePool::capacity( size_t size ) {
+    AutoLock<Mutex> lock(mutex_);
+    cache_.capacity(size);
 }
 
 size_t FilePool::capacity() const {

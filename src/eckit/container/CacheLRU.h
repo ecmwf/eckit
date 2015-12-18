@@ -92,8 +92,8 @@ public: // methods
     /// @returns the current (usaed) size of the cache
     size_t size() const { return storage_.size(); }
 
-    /// resizes the cache
-    void resize( size_t size );
+    /// resizes the cache capacity
+    void capacity( size_t size );
 
     void print(std::ostream& os) const;
 

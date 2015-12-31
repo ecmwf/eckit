@@ -15,11 +15,9 @@
 #include "eckit/net/NetUser.h"
 #include "eckit/thread/ThreadControler.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 NetService::NetService(int port, bool visible):
     server_(port),
@@ -31,9 +29,16 @@ NetService::~NetService()
 {
 }
 
+std::string NetService::hostname() const {
+    return server_.localHost();
+}
+
+int NetService::port() const {
+    return server_.localPort();
+}
+
 void NetService::run()
 {
-
     Monitor::instance().show(visible_);
 	Monitor::instance().name(name());
 	Monitor::instance().kind(name());
@@ -46,7 +51,7 @@ void NetService::run()
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

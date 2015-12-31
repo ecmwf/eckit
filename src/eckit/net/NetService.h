@@ -26,6 +26,7 @@ namespace eckit {
 class NetUser;
 
 class NetService : public Thread {
+
 public:
 
 // -- Contructors
@@ -41,7 +42,10 @@ public:
 
 // -- Methods
 
-	int port() const { return server_.localPort(); }
+    /// @returns hostname to which this server is answering
+    std::string hostname() const;
+    /// @returns port to which this server is answering
+    int port() const;
 
 // -- Overriden methods
 
@@ -54,8 +58,8 @@ private:
 // -- Members
 
 	TCPServer server_;
-    /// Visible on the Monitor?
-    bool visible_;
+
+    bool visible_; ///< Visible on the Monitor?
 
 // -- Methods
 

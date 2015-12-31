@@ -19,6 +19,8 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class Parametrisation {
 
 public: // methods
@@ -38,6 +40,8 @@ public: // methods
     virtual bool get(const std::string& name, std::vector<double>& value) const = 0;
 
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
 

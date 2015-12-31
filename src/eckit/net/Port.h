@@ -8,22 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-// File Port.h
-// Baudouin Raoult - ECMWF Jul 96
+/// @file   Port.h
+/// @author Baudouin Raoult
+/// @date   Jul 96
 
 #ifndef eckit_Port_h
 #define eckit_Port_h
 
 #include "eckit/eckit.h"
 
-
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
-
+//----------------------------------------------------------------------------------------------------------------------
 
 class Port {
 public:
@@ -34,8 +30,7 @@ public:
 
 // -- Operators
 
-	operator int() const
-        { return port_; }
+    operator int() const { return port_; }
 
 private:
 
@@ -44,11 +39,9 @@ private:
 // -- Members
 
 	int   port_;
-
 };
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

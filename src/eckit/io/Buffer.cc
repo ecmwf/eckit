@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2015 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -16,16 +16,16 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 Buffer::Buffer(size_t size):
-	size_(size),
-        buffer_(0),
-        owned_(true)
+    buffer_(0),
+    size_(size),
+    owned_(true)
 {
 	create();
 }
 
 Buffer::Buffer(const char* p, size_t size):
-    size_(size),
     buffer_(0),
+    size_(size),
     owned_(true)
 {
     create();
@@ -33,15 +33,15 @@ Buffer::Buffer(const char* p, size_t size):
 }
 
 Buffer::Buffer(void* p, size_t size, bool dummy):
-    size_(size),
     buffer_(p),
+    size_(size),
     owned_(false)
 {
 }
 
 Buffer::Buffer(const std::string& s):
-    size_(s.length()+1),
     buffer_(0),
+    size_(s.length()+1),
     owned_(true)
 {
     create();
@@ -50,7 +50,7 @@ Buffer::Buffer(const std::string& s):
 
 
 Buffer::~Buffer()
-{ 
+{
     if (owned_) {
         destroy();
     }

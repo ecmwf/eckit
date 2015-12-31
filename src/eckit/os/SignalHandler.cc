@@ -40,7 +40,7 @@ SignalHandler::SignalHandler(void (*handler)(int),
     sigaction(signal_,&a,&save_);
     //else {
     //Log::warning() << "Got signal " << sigtype << std::endl;
-    //throw Abort("Signal recieved");
+    //throw Abort("Signal received");
     //}
 }
 

@@ -84,7 +84,7 @@ void ThreadControler::execute()
 
     //=============
 
-    // We don't want to recieve reconfigure events
+    // We don't want to receive reconfigure events
 
     sigset_t set,old_set;
 

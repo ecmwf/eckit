@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_eof )
     istringstream in("");
     JSONParser p(in);
 
-    BOOST_CHECK_THROW(p.next(), StreamParser::Error)
+    BOOST_CHECK_THROW(p.next(), StreamParser::Error);
 }
 
 //-----------------------------------------------------------------------------

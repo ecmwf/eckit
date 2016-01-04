@@ -110,6 +110,6 @@ Stream& operator<<(Stream&, const Vector&);
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit
 
 #endif

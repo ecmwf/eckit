@@ -133,6 +133,6 @@ static LinearAlgebraMKL linearAlgebraMKL;
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit
 
 #endif  // ECKIT_HAVE_MKL

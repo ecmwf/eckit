@@ -77,4 +77,4 @@ BOOST_AUTO_TEST_CASE(test_backend) {
 BOOST_AUTO_TEST_SUITE_END()
 
 }  // namespace test
-}  // namespace eckit
+} // namespace eckit

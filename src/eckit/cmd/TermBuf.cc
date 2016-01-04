@@ -85,4 +85,4 @@ void TermBuf::clearEOS() {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

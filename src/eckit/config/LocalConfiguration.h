@@ -114,7 +114,7 @@ class LocalConfiguration : public Configuration {
 
 };
 
-}  // namespace eckit
+} // namespace eckit
 
 #endif
 

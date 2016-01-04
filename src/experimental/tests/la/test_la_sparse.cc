@@ -218,4 +218,4 @@ BOOST_AUTO_TEST_SUITE_END()
 //-----------------------------------------------------------------------------
 
 }  // namespace test
-}  // namespace eckittest
+} // namespace eckittest

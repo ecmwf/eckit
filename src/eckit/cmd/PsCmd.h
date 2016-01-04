@@ -46,6 +46,6 @@ private: // methods
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit
 
 #endif

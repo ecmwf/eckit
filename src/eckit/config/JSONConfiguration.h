@@ -112,6 +112,6 @@ class JSONConfiguration : public Configuration {
 };
 
 
-}  // namespace eckit
+} // namespace eckit
 #endif
 

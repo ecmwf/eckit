@@ -240,4 +240,4 @@ void SparseMatrix::load(const eckit::PathName &path)  {
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit

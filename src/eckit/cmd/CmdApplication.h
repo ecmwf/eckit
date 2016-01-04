@@ -292,6 +292,6 @@ void CmdApplication<App>::run() {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit
 
 #endif

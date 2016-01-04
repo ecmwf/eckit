@@ -102,5 +102,5 @@ bool DynamicParametrisation::get(const std::string& name, std::vector<double>& v
     return r;
 }
 
-}  // namespace eckit
+} // namespace eckit
 

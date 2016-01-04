@@ -479,4 +479,4 @@ void CmdParser::prompt(bool p) {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

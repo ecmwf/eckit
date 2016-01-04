@@ -74,4 +74,4 @@ void CacheManager::print(std::ostream& s) const { s << "CacheManager[name=" << n
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

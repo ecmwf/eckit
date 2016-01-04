@@ -51,4 +51,4 @@ Arg QuitCmd::usage(const std::string& cmd) const {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

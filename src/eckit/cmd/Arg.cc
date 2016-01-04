@@ -252,4 +252,4 @@ std::vector<std::string> Arg::completion(std::vector<std::string>& s) {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

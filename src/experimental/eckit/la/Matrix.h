@@ -103,6 +103,6 @@ Stream& operator<<(Stream&, const Matrix&);
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit
 
 #endif

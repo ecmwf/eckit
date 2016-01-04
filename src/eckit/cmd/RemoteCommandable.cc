@@ -29,4 +29,4 @@ RemoteCommandable::~RemoteCommandable() {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

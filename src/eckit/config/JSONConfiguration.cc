@@ -67,5 +67,5 @@ void JSONConfiguration::print(std::ostream &out) const {
     out << "JSONConfiguration[path=" << path_ << ", root=" << root_ << "]";
 }
 
-}  // namespace mir
+} // namespace eckit
 

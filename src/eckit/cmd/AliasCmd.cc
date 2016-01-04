@@ -53,4 +53,4 @@ static AliasCmd aliasCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

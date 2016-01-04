@@ -53,4 +53,4 @@ static EchoCmd echoCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

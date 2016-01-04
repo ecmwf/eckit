@@ -40,4 +40,4 @@ static JSONCmd jsonCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

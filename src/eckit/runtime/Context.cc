@@ -307,4 +307,4 @@ PathName Context::configHome(const std::string& name) const {
 }
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

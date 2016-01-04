@@ -38,4 +38,4 @@ static MemoryCmd MemoryCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

@@ -114,10 +114,10 @@ Value::Value(const Date& d):
 }
 
 Value::Value(Stream& s):
-	content_(Reanimator<Content>::reanimate(s))
+    content_(Reanimator<Content>::reanimate(s))
 {
     ASSERT(content_);
-	content_->attach();
+    content_->attach();
 }
 
 Value::~Value()

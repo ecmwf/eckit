@@ -106,4 +106,4 @@ static RemoteCmd remoteCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

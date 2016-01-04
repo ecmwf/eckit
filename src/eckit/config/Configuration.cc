@@ -359,5 +359,5 @@ std::string Configuration::getString(const std::string &name, const std::string&
     return result;
 }
 
-}  // namespace eckit
+} // namespace eckit
 

@@ -47,4 +47,4 @@ void RemoteCommandUser::serve(Stream& s, std::istream& in, std::ostream& out) {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

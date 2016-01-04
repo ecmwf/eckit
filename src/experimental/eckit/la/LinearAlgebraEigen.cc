@@ -113,6 +113,6 @@ static LinearAlgebraEigen linearAlgebraEigen;
 //-----------------------------------------------------------------------------
 
 } // namespace la
-}  // namespace eckit
+} // namespace eckit
 
 #endif  // ECKIT_HAVE_EIGEN

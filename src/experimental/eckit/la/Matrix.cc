@@ -70,4 +70,4 @@ Stream& operator<<(Stream& s, const Matrix& v) {
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit

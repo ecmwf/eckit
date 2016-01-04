@@ -44,4 +44,4 @@ static ConfigCmd configCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

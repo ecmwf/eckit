@@ -51,4 +51,4 @@ static SleepCmd sleepCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

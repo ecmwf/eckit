@@ -65,4 +65,4 @@ static DirCmd dirCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

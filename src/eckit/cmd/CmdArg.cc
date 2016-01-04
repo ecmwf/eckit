@@ -186,4 +186,4 @@ const Value& CmdArg::operator()(const long lkey, Value defaultval) {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

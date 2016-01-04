@@ -72,4 +72,4 @@ static LockCmd lockCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

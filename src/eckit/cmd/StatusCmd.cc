@@ -40,4 +40,4 @@ static StatusCmd statusCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

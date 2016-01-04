@@ -58,6 +58,6 @@ protected:
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit
 
 #endif

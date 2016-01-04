@@ -50,6 +50,6 @@ Matrix M(Matrix::Size rows, Matrix::Size cols, ...) {
 //-----------------------------------------------------------------------------
 
 }  // namespace test
-}  // namespace eckit
+} // namespace eckit
 
 #endif

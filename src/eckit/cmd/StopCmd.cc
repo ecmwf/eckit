@@ -56,4 +56,4 @@ static StopCmd stopCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

@@ -11,6 +11,8 @@ add_subdirectory( grib )
 add_subdirectory( maths )
 add_subdirectory( mpi )
 
+add_subdirectory( option )
+
 if( HAVE_ECKIT_ECML )
   add_subdirectory( ecml )
 endif()

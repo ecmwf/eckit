@@ -44,7 +44,7 @@ private:
     eckit::ExecutionContext& context_;
 };
 
-}  // namespace eckit
+} // namespace eckit
 
 #endif
 

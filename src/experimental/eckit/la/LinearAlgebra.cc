@@ -99,4 +99,4 @@ LinearAlgebra::LinearAlgebra(const std::string &name) {
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit

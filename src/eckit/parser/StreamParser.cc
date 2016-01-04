@@ -54,9 +54,9 @@ char StreamParser::next(bool spaces)
     char c;
     for(;;)
     {
+        in_.get(c);
         if(in_.eof())
             throw StreamParser::Error(std::string("StreamParser::next reached eof"));
-        in_.get(c);
         if(spaces || !isspace(c))
         {
 //            std::cout << "next(" << c << ")" << std::endl;

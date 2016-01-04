@@ -94,4 +94,14 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_map )
 
 //-----------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_CASE( test_eckit_parser_eof )
+{
+    istringstream in("");
+    JSONParser p(in);
+
+    BOOST_CHECK_THROW(p.next(), StreamParser::Error)
+}
+
+//-----------------------------------------------------------------------------
+
 BOOST_AUTO_TEST_SUITE_END()

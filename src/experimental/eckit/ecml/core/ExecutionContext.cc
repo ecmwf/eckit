@@ -119,3 +119,19 @@ Cell* ExecutionContext::copy() const
     NOTIMP;
     return 0;
 }
+
+std::vector<std::string> ExecutionContext::getValueAsList(const std::string& keyword)
+{
+    std::vector<std::string> r;
+
+    Request v (environment().lookup(keyword));
+    ASSERT(v->tag() == "_list");
+
+    Request evaluated (interpreter().eval(v, *this));
+    for (Request p(evaluated); p; p = p->rest())
+    {
+        r.push_back(p->value()->text());
+    }
+
+    return r;
+}

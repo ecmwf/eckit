@@ -40,22 +40,6 @@ RequestHandler& RequestHandler::handler(const std::string& name)
 
 std::string RequestHandler::name() const { return name_; }
 
-std::vector<std::string> RequestHandler::getValueAsList(ExecutionContext& context, const std::string& keyword)
-{
-    std::vector<std::string> r;
-
-    Request v (context.environment().lookup(keyword));
-    ASSERT(v->tag() == "_list");
-
-    Request evaluated (context.interpreter().eval(v, context));
-    for (Request p(evaluated); p; p = p->rest())
-    {
-        r.push_back(p->value()->text());
-    }
-
-    return r;
-}
-
 string RequestHandler::database(ExecutionContext& context) 
 {
     string r (context.environment().lookup("database", "", context));

@@ -25,9 +25,14 @@ VariableLookupHandler::VariableLookupHandler(const string& name, const string& p
   of_(parameterName)
 {}
 
+// TODO: this needs to be a SpecialFormHandler so this works properly:
+// ecml> let,_='A'
+//  => let, _ = "A"
+//  ecml> $,_=_
+//   => _
 Values VariableLookupHandler::handle(ExecutionContext& context)
 {
-    vector<string> vars (getValueAsList(context, of_));
+    vector<string> vars (context.getValueAsList(of_));
     string var (vars[0]);
     Values r (context.environment().lookup(var));
 

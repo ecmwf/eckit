@@ -62,6 +62,13 @@ std::pair<std::string, std::string> DataHandleFactory::splitPrefix(const std::st
     return std::make_pair(std::string("file"), handleDescriptor);
 }
 
+void DataHandleFactory::buildMultiHandle(MultiHandle& mh, const std::string& dataDescriptor)
+{
+    std::vector<std::string> ds;
+    ds.push_back(dataDescriptor);
+    buildMultiHandle(mh, ds);
+}
+
 void DataHandleFactory::buildMultiHandle(MultiHandle& mh, const std::vector<std::string>& dataDescriptors)
 {
     std::vector<DataHandle*> handles;

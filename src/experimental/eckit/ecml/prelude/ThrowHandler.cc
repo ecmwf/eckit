@@ -28,7 +28,7 @@ Values ThrowHandler::handle(ExecutionContext& context)
     string message;
 
     if (context.environment().lookupNoThrow("what"))
-        message = StringTools::join("/", getValueAsList(context, "what"));
+        message = StringTools::join("/", context.getValueAsList("what"));
     else
     {
         const string currentException (context.environment().lookup("current_exception", "", context));

@@ -37,7 +37,7 @@ Values PrintHandler::handle(ExecutionContext& context)
     string separator (" ");
     if (context.environment().lookupNoThrow("separator"))
     {
-        vector<string> separators (getValueAsList(context, "separator"));
+        vector<string> separators (context.getValueAsList("separator"));
         if (separators.size() > 1)
             throw UserError("join_strings: separator must be a single string");
 

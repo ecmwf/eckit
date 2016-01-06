@@ -36,7 +36,6 @@ public:
 protected:
     RequestHandler(const std::string&);
 
-    static std::vector<std::string> getValueAsList(ExecutionContext&, const std::string& keyword);
     static std::vector<std::string> pathNamesToStrings(const std::vector<eckit::PathName>&);
 
     std::string name_;

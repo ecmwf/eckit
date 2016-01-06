@@ -25,7 +25,7 @@ Values GetenvHandler::handle(ExecutionContext& context)
 {
     List r;
 
-    vector<string> vars (getValueAsList(context, "values"));
+    vector<string> vars (context.getValueAsList("values"));
     for (size_t i (0); i < vars.size(); ++i)
     {
         char *s (getenv(vars[i].c_str()));

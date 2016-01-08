@@ -177,8 +177,7 @@ void TestStringTools::test_back_trim()
 
 int main(int argc,char **argv)
 {
-    eckit_test::TestStringTools mytest(argc,argv);
-    mytest.start();
-    return 0;
+    eckit_test::TestStringTools app(argc,argv);
+    return app.execute();
 }
 

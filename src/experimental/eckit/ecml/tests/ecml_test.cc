@@ -60,6 +60,5 @@ int main(int argc,char **argv)
     // TODO: enable $DEBUG (Log::debug)
 
     TestECML runner(argc, argv);
-    runner.start();
-    return 0;
+    return runner.execute();
 }

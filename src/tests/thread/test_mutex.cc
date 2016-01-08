@@ -63,8 +63,7 @@ void TestMutex::run()
 
 int main(int argc,char **argv)
 {
-    eckit_test::TestMutex mytest(argc,argv);
-    mytest.start();
-    return 0;
+    eckit_test::TestMutex app(argc,argv);
+    return app.execute();
 }
 

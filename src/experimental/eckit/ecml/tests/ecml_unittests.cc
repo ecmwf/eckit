@@ -171,5 +171,5 @@ int main(int argc,char **argv)
     // TODO: enable $DEBUG (Log::debug)
 
     ECMLUnitTests runner(argc, argv);
-    return runner.execute();
+    return runner.start();
 }

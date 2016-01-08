@@ -219,5 +219,5 @@ void TestCache::run()
 int main(int argc,char **argv)
 {
     eckit_test::TestCache app(argc,argv);
-    return app.execute();
+    return app.start();
 }

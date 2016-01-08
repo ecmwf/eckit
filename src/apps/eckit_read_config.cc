@@ -112,6 +112,6 @@ using namespace eckit;
 int main(int argc,char **argv)
 {
     ReadConfig app(argc,argv);
-    return app.execute();
+    return app.start();
 }
 

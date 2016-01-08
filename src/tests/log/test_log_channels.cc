@@ -218,6 +218,6 @@ int main(int argc,char **argv)
     signal(SIGSEGV, on_signal_dumpbacktrace );
     
     eckit_test::TestApp app(argc,argv);
-    return app.execute();
+    return app.start();
 }
 

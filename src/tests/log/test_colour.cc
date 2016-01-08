@@ -54,5 +54,5 @@ void TestColour::run()
 int main(int argc,char **argv)
 {
     eckit_test::TestColour app(argc,argv);
-    return app.execute();
+    return app.start();
 }

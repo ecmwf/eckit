@@ -140,6 +140,6 @@ void TestAIOHandle::run()
 int main(int argc,char **argv)
 {
     eckit_test::TestAIOHandle app(argc,argv);
-    return app.execute();
+    return app.start();
 }
 

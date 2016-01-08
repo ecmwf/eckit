@@ -178,6 +178,6 @@ void TestStringTools::test_back_trim()
 int main(int argc,char **argv)
 {
     eckit_test::TestStringTools app(argc,argv);
-    return app.execute();
+    return app.start();
 }
 

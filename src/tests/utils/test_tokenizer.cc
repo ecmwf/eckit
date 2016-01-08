@@ -115,6 +115,6 @@ void TestTokenizer::run()
 int main(int argc,char **argv)
 {
     eckit_test::TestTokenizer app(argc,argv);
-    return app.execute();
+    return app.start();
 }
 

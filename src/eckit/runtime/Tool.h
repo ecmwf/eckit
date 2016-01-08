@@ -34,7 +34,7 @@ public: // methods
 
 	virtual ~Tool();
 	
-    int execute();
+    int start();
     
 	virtual void run() = 0;
     

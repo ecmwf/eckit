@@ -53,7 +53,7 @@ void Tool::reconfigure()
     Context::instance().reconfigure();     
 }
 
-int Tool::execute()
+int Tool::start()
 {
 	int status = 0;
 

@@ -282,7 +282,6 @@ void TestFloatCompare::run()
 
 int main(int argc,char **argv)
 {
-    eckit_test::TestFloatCompare mytest(argc,argv);
-    mytest.start();
-    return 0;
+    eckit_test::TestFloatCompare app(argc,argv);
+    return app.start();
 }

@@ -217,8 +217,7 @@ int main(int argc,char **argv)
 {
     signal(SIGSEGV, on_signal_dumpbacktrace );
     
-    eckit_test::TestApp mytest(argc,argv);
-    mytest.start();
-    return 0;
+    eckit_test::TestApp app(argc,argv);
+    return app.start();
 }
 

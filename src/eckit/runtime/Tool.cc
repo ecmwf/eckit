@@ -53,7 +53,7 @@ void Tool::reconfigure()
     Context::instance().reconfigure();     
 }
 
-void Tool::start()
+int Tool::start()
 {
 	int status = 0;
 
@@ -81,7 +81,7 @@ void Tool::start()
 		Log::error() << "** Exception is terminates " << name() << std::endl;
 	}
 
-	::exit(status);
+    return status;
 }
 
 //-----------------------------------------------------------------------------

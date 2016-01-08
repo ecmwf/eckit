@@ -76,6 +76,5 @@ namespace eckit_test {
 int main(int argc,char **argv)
 {
     eckit_test::TestProducer app(argc,argv);
-    app.start();
-    return 0;
+    return app.start();
 }

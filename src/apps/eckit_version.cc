@@ -66,7 +66,6 @@ using namespace eckit;
 int main(int argc,char **argv)
 {
     Version app(argc,argv);
-    app.start();
-    return 0;
+    return app.start();
 }
 

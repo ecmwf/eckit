@@ -91,8 +91,7 @@ void TestLog::run()
 
 int main(int argc,char **argv)
 {
-    eckit_test::TestLog mytest(argc,argv);
-    mytest.start();
-    return 0;
+    eckit_test::TestLog app(argc,argv);
+    return app.start();
 }
 

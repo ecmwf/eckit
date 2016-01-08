@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -9,7 +9,6 @@
  */
 
 #include "eckit/io/MultiHandle.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
@@ -400,12 +399,12 @@ bool MultiHandle::moveable() const
 
 std::string MultiHandle::title() const
 {
-    StrStream os;
+    std::ostringstream os;
     os << "[";
     if(datahandles_.size()>0) os << datahandles_[0]->title();
     if(datahandles_.size()>1) os << ",...{" << datahandles_.size() << "}";
-    os << "]" << StrStream::ends;
-    return std::string(os);
+    os << "]";
+    return os.str();
 }
 
 //-----------------------------------------------------------------------------

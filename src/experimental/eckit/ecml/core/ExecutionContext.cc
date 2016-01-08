@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -15,8 +15,8 @@
 #include "Module.h"
 #include "Interpreter.h"
 #include "RequestHandler.h"
-#include "experimental/eckit/ecml/parser/RequestParser.h"
-#include "experimental/eckit/ecml/prelude/Prelude.h"
+#include "eckit/ecml/parser/RequestParser.h"
+#include "eckit/ecml/prelude/Prelude.h"
 
 using namespace std;
 using namespace eckit;

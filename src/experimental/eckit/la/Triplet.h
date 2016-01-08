@@ -15,7 +15,7 @@
 #ifndef eckit_la_Triplet_h
 #define eckit_la_Triplet_h
 
-#include "experimental/eckit/la/types.h"
+#include "eckit/la/types.h"
 
 namespace eckit {
 namespace la {
@@ -58,6 +58,6 @@ protected:
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -54,9 +54,9 @@ char StreamParser::next(bool spaces)
     char c;
     for(;;)
     {
+        in_.get(c);
         if(in_.eof())
             throw StreamParser::Error(std::string("StreamParser::next reached eof"));
-        in_.get(c);
         if(spaces || !isspace(c))
         {
 //            std::cout << "next(" << c << ")" << std::endl;

@@ -67,6 +67,6 @@ class CacheManager : private NonCopyable {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit
 
 #endif

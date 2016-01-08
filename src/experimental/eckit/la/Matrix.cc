@@ -11,7 +11,7 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
 
-#include "experimental/eckit/la/Matrix.h"
+#include "eckit/la/Matrix.h"
 
 namespace eckit {
 namespace la {
@@ -70,4 +70,4 @@ Stream& operator<<(Stream& s, const Matrix& v) {
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit

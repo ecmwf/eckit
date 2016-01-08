@@ -50,6 +50,6 @@ inline void destroy(LockCmd**) {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit
 
 #endif  // LockCmd_H

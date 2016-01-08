@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -8,15 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eckit/net/Port.h"
 #include "eckit/config/Resource.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 Port::Port(const std::string& name, int port):
     port_(port)
@@ -25,7 +22,7 @@ Port::Port(const std::string& name, int port):
     port_ = Resource<int>(name + "Port", port) + offset;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

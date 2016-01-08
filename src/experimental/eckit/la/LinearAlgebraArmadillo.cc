@@ -16,9 +16,9 @@
 
 #include <armadillo>
 
-#include "experimental/eckit/la/LinearAlgebraArmadillo.h"
-#include "experimental/eckit/la/Matrix.h"
-#include "experimental/eckit/la/Vector.h"
+#include "eckit/la/LinearAlgebraArmadillo.h"
+#include "eckit/la/Matrix.h"
+#include "eckit/la/Vector.h"
 
 //-----------------------------------------------------------------------------
 
@@ -98,6 +98,6 @@ static LinearAlgebraArmadillo LinearAlgebraArmadillo;
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit
 
 #endif  // ECKIT_HAVE_ARMDILLO

@@ -48,4 +48,4 @@ static EnvironmentCmd environmentCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

@@ -121,4 +121,4 @@ void StdSignalRegist::unregist() {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

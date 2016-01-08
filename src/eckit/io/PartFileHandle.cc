@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -15,7 +15,6 @@
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/config/Resource.h"
-#include "eckit/compat/StrStream.h"
 
 #include "eckit/io/MarsFSPartHandle.h"
 #include "eckit/io/PartFileHandle.h"
@@ -70,8 +69,8 @@ static std::string linkName(const std::string& name)
     {
         if(errno != EEXIST)
             throw FailedSystemCall(std::string("link ") + name + " " + path);
-        StrStream os;
-        os << name + ".part." << n++ << StrStream::ends;
+        std::ostringstream os;
+        os << name + ".part." << n++;
         path = std::string(os);
     }
     return path;
@@ -206,9 +205,9 @@ long PartFileHandle::read1(char *buffer,long length)
 
     if(fseeko(file_,pos ,SEEK_SET) != 0)
     {
-        StrStream s;
-        s << name_ << ": cannot seek to " << pos << " (file=" << fileno(file_) << ")" << StrStream::ends;
-        throw ReadError(std::string(s));
+        std::ostringstream s;
+        s << name_ << ": cannot seek to " << pos << " (file=" << fileno(file_) << ")";
+        throw ReadError(s.str());
     }
 
     ASSERT(::ftello(file_) == pos);
@@ -223,9 +222,9 @@ long PartFileHandle::read1(char *buffer,long length)
 
     if(n != size)
     {
-        StrStream s;
-        s << name_ << ": cannot read " << size << ", got only " << n << StrStream::ends;
-        throw ReadError(std::string(s));
+        std::ostringstream s;
+        s << name_ << ": cannot read " << size << ", got only " << n;
+        throw ReadError(s.str());
     }
 
     pos_ += n;
@@ -359,9 +358,9 @@ void PartFileHandle::cost(std::map<std::string,Length>& c, bool read) const
 
 std::string PartFileHandle::title() const
 {
-    StrStream os;
-    os << PathName::shorten(name_) << " (" << length_.size() << ")" << StrStream::ends;
-    return std::string(os);
+    std::ostringstream os;
+    os << PathName::shorten(name_) << " (" << length_.size() << ")";
+    return os.str();
 }
 
 //-----------------------------------------------------------------------------

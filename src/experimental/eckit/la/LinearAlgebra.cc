@@ -13,7 +13,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
-#include "experimental/eckit/la/LinearAlgebra.h"
+#include "eckit/la/LinearAlgebra.h"
 
 namespace eckit {
 namespace la {
@@ -99,4 +99,4 @@ LinearAlgebra::LinearAlgebra(const std::string &name) {
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit

@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
- * 
+ * (C) Copyright 1996-2015 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -14,11 +14,9 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/FileLocker.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 FileLocker::FileLocker(int fd):
 	fd_(fd)
@@ -42,11 +40,10 @@ void FileLocker::lockShared(off_t off,off_t len)
 void FileLocker::unlock(off_t off,off_t len)
 {
 	lockRange(off,len,F_SETLK,F_UNLCK);
-}    
+}
 
 void FileLocker::lockRange(off_t start,off_t len,int cmd,int type)
 {
-
 	struct flock lock;
 
     lock.l_type   = type;

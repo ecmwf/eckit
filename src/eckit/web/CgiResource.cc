@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -10,7 +10,6 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/StdPipe.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/web/CgiResource.h"
 #include "eckit/web/HttpBuf.h"
 #include "eckit/web/Url.h"
@@ -33,7 +32,7 @@ CgiResource::~CgiResource()
 void CgiResource::html(std::ostream& s,Url& url)
 {
 	eckit::PathName path("~/http/" + url.name());
-	StrStream cmd;
+    std::ostringstream cmd;
 
 	std::string mode = url["parameter"];
 
@@ -41,17 +40,15 @@ void CgiResource::html(std::ostream& s,Url& url)
 	{
 		cmd << "env ";
 		url.cgiParam(cmd,' ');
-		cmd << " " << path << StrStream::ends;
+        cmd << " " << path;
 	}
 	else
 	{
 		cmd << path << ' ';
-		url.cgiParam(cmd,' ');
-		cmd << StrStream::ends;
+        url.cgiParam(cmd,' ');
 	}
 
-	std::string c = std::string(cmd);
-	StdPipe pipe(c,"r");
+    StdPipe pipe(cmd.str(),"r");
 	char line[1024];
 
 	s << HttpBuf::dontEncode;

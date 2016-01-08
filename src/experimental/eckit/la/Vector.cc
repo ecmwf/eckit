@@ -13,7 +13,7 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
 
-#include "experimental/eckit/la/Vector.h"
+#include "eckit/la/Vector.h"
 
 namespace eckit {
 namespace la {
@@ -107,4 +107,4 @@ Stream& operator<<(Stream& s, const Vector& v) {
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit

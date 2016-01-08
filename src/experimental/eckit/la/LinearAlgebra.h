@@ -18,7 +18,7 @@
 #include <string>
 
 #include "eckit/memory/NonCopyable.h"
-#include "experimental/eckit/la/types.h"
+#include "eckit/la/types.h"
 
 
 namespace eckit {
@@ -85,6 +85,6 @@ protected:
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit
 
 #endif

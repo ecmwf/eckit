@@ -68,4 +68,4 @@ static StartCmd startCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

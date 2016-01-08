@@ -76,6 +76,6 @@ private:  // friends
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit
 
 #endif

@@ -17,10 +17,10 @@
 
 //-----------------------------------------------------------------------------
 
-#include "experimental/eckit/la/LinearAlgebraMKL.h"
-#include "experimental/eckit/la/Matrix.h"
-#include "experimental/eckit/la/SparseMatrix.h"
-#include "experimental/eckit/la/Vector.h"
+#include "eckit/la/LinearAlgebraMKL.h"
+#include "eckit/la/Matrix.h"
+#include "eckit/la/SparseMatrix.h"
+#include "eckit/la/Vector.h"
 
 //-----------------------------------------------------------------------------
 
@@ -133,6 +133,6 @@ static LinearAlgebraMKL linearAlgebraMKL;
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit
 
 #endif  // ECKIT_HAVE_MKL

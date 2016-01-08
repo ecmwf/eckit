@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,19 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-// File FileLocker.h
-// Baudouin Raoult - ECMWF Feb 02
+/// @author Baudouin Raoult
+/// @date Feb 2002
 
 #ifndef eckit_FileLocker_h
 #define eckit_FileLocker_h
 
 #include "eckit/eckit.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class FileLocker {
 public:
@@ -34,7 +32,7 @@ public:
 
 // -- Destructor
 
-	~FileLocker(); 
+	~FileLocker();
 
 // -- Convertors
 	// None
@@ -65,7 +63,7 @@ protected:
 
 // -- Methods
 
-	// void print(std::ostream&) const; 
+	// void print(std::ostream&) const;
 
 // -- Overridden methods
 	// None
@@ -108,8 +106,7 @@ private:
 
 };
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

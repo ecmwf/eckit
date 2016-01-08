@@ -19,7 +19,7 @@
 #include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 
-#include "experimental/eckit/la/LinearAlgebra.h"
+#include "eckit/la/LinearAlgebra.h"
 
 //-----------------------------------------------------------------------------
 
@@ -77,4 +77,4 @@ BOOST_AUTO_TEST_CASE(test_backend) {
 BOOST_AUTO_TEST_SUITE_END()
 
 }  // namespace test
-}  // namespace eckit
+} // namespace eckit

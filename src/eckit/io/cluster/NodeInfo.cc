@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -17,7 +17,6 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/config/Resource.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/thread/ThreadSingleton.h"
 
 //-----------------------------------------------------------------------------
@@ -147,9 +146,9 @@ NodeInfo NodeInfo::acceptLogin(Stream& s)
 	}
 	else
 	{
-		StrStream os;
-		os << "User mismatch: " << here << " " << remote << StrStream::ends;
-		s << Exception(std::string(os));
+        std::ostringstream os;
+        os << "User mismatch: " << here << " " << remote;
+        s << Exception(os.str());
 	}
 
 	Log::info() << "Connection established " << here << " <=> " << remote << std::endl;
@@ -166,9 +165,9 @@ NodeInfo NodeInfo::sendLogin(Stream& s)
 
 	if(here.user() != remote.user())
 	{
-		StrStream os;
-		os << "User mismatch: " << here << " " << remote << StrStream::ends;
-		s << Exception(std::string(os));
+        std::ostringstream os;
+        os << "User mismatch: " << here << " " << remote;
+        s << Exception(os.str());
 	}
 
 	Log::info() << "Connection established " << here << " <=> " << remote << std::endl;

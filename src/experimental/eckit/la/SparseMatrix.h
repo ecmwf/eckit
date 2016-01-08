@@ -17,8 +17,8 @@
 
 #include <vector>
 
-#include "experimental/eckit/la/types.h"
-#include "experimental/eckit/la/Triplet.h"
+#include "eckit/la/types.h"
+#include "eckit/la/Triplet.h"
 
 namespace eckit {
 
@@ -171,6 +171,6 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit
 
 #endif

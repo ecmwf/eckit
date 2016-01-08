@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -26,11 +26,15 @@ namespace eckit {
 class NetUser;
 
 class NetService : public Thread {
+
 public:
 
 // -- Contructors
 
-	NetService(int);
+    /// @param[in]  port     TCP port to listen on
+    /// @param[in]  visible  Make the thread this service is running in visible
+    ///                      on the Monitor (defaults to false)
+    NetService(int port, bool visible = false);
 
 // -- Destructor
 
@@ -38,7 +42,10 @@ public:
 
 // -- Methods
 
-	int port() const { return server_.localPort(); }
+    /// @returns hostname to which this server is answering
+    std::string hostname() const;
+    /// @returns port to which this server is answering
+    int port() const;
 
 // -- Overriden methods
 
@@ -51,6 +58,8 @@ private:
 // -- Members
 
 	TCPServer server_;
+
+    bool visible_; ///< Visible on the Monitor?
 
 // -- Methods
 

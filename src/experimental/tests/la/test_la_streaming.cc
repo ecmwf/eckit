@@ -15,9 +15,9 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/FileStream.h"
 
-#include "experimental/eckit/la/Matrix.h"
-#include "experimental/eckit/la/SparseMatrix.h"
-#include "experimental/eckit/la/Vector.h"
+#include "eckit/la/Matrix.h"
+#include "eckit/la/SparseMatrix.h"
+#include "eckit/la/Vector.h"
 #include "util.h"
 
 //-----------------------------------------------------------------------------
@@ -88,4 +88,4 @@ BOOST_AUTO_TEST_SUITE_END()
 //-----------------------------------------------------------------------------
 
 }  // namespace test
-}  // namespace eckit
+} // namespace eckit

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/compat/StrStream.h"
 #include "eckit/net/TCPStream.h"
 
 //-----------------------------------------------------------------------------
@@ -35,13 +34,11 @@ void TCPStream::closeOutput()
 //
 std::string TCPStreamBase::nonConstName()
 {
-	StrStream r;
+    std::ostringstream r;
 
-	r << "TCP stream from " << socket().localHost() << 
-		" at " << socket().localPort();
-	r << " to " << socket().remoteHost() << 
-		" at " << socket().remotePort() << StrStream::ends;
-	return std::string(r);
+    r << "TCP stream from " << socket().localHost() << " at " << socket().localPort()
+      << " to " << socket().remoteHost() << " at " << socket().remotePort();
+    return r.str();
 }
 
 std::string TCPStreamBase::name() const

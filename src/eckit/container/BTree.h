@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -26,11 +26,9 @@
 #include "eckit/os/Stat.h"
 #include "eckit/thread/AutoLock.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// B+Tree index
 ///
@@ -53,7 +51,7 @@ public:
 
     // -- Destructor
 
-    ~BTree(); 
+    ~BTree();
 
     // -- Convertors
     // None
@@ -248,8 +246,8 @@ private:
         const LeafPage& leafPage() const {
             return *(reinterpret_cast<const LeafPage*>(this));
         }
-        
-        
+
+
         void print(std::ostream& s) const ;
 
         friend std::ostream& operator<<(std::ostream& s,const Page& p)
@@ -265,11 +263,11 @@ private:
     PathName path_;
 
     int fd_;
-    
+
     bool cacheReads_;
     bool cacheWrites_;
     bool readOnly_;
-    
+
     struct _PageInfo {
         Page* page_;
         unsigned long long count_;
@@ -319,7 +317,7 @@ private:
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

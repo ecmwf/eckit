@@ -15,7 +15,7 @@
 #ifndef eckit_la_LinearAlgebraGeneric_h
 #define eckit_la_LinearAlgebraGeneric_h
 
-#include "experimental/eckit/la/LinearAlgebra.h"
+#include "eckit/la/LinearAlgebra.h"
 
 namespace eckit {
 namespace la {
@@ -45,6 +45,6 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit
 
 #endif

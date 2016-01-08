@@ -92,4 +92,4 @@ static KillCmd killCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

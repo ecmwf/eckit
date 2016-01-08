@@ -98,5 +98,5 @@ void LocalConfiguration::set(const std::string &s, bool value)  {
     set(s, eckit::Value(value));
 }
 
-}  // namespace mir
+} // namespace eckit
 

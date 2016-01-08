@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/compat/StrStream.h"
 #include "eckit/io/TCPHandle.h"
 
 //-----------------------------------------------------------------------------
@@ -89,9 +88,9 @@ void TCPHandle::rewind()
 
 std::string TCPHandle::title() const
 {
-	StrStream os;
-	os << "TCP[" << host_ << ":" << port_ << "]" << StrStream::ends;
-	return std::string(os);
+    std::ostringstream os;
+    os << "TCP[" << host_ << ":" << port_ << "]";
+    return os.str();
 }
 
 //-----------------------------------------------------------------------------

@@ -48,4 +48,4 @@ static ExportCmd exportCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -18,7 +18,6 @@
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------
 
@@ -285,7 +284,7 @@ MarsFSPath MarsFSPath::realName() const
 MarsFSPath MarsFSPath::orphanName() const
 {
 
-    StrStream os;
+    std::ostringstream os;
     os << mountPoint()  << "/orphans/";
 
     const char *q = path_.c_str();
@@ -295,10 +294,7 @@ MarsFSPath MarsFSPath::orphanName() const
         q++;
     }
 
-    os << StrStream::ends;
-
-    std::string s(os);
-    return s;
+    return os.str();
 
 }
 

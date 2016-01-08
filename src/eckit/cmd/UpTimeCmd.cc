@@ -56,4 +56,4 @@ static UpTimeCmd uptimeCmd;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

@@ -13,10 +13,11 @@
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/config/Resource.h"
+#include "eckit/runtime/Context.h"
 
-#include "experimental/eckit/la/LinearAlgebra.h"
-#include "experimental/eckit/la/Matrix.h"
-#include "experimental/eckit/la/Vector.h"
+#include "eckit/la/LinearAlgebra.h"
+#include "eckit/la/Matrix.h"
+#include "eckit/la/Vector.h"
 #include "util.h"
 
 //-----------------------------------------------------------------------------
@@ -31,6 +32,8 @@ namespace test {
 // Set linear algebra backend
 struct Setup {
     Setup() {
+        Context::instance().setup(boost::unit_test::framework::master_test_suite().argc,
+                                  boost::unit_test::framework::master_test_suite().argv);
         LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
     }
 };
@@ -90,4 +93,4 @@ BOOST_AUTO_TEST_SUITE_END()
 //-----------------------------------------------------------------------------
 
 }  // namespace test
-}  // namespace eckittest
+} // namespace eckittest

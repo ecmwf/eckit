@@ -1,5 +1,5 @@
   /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -102,6 +102,9 @@ static Once<Mutex> local_mutex;
 Context::Context() : argc_(saved_argc), argv_(saved_argv), taskID_(0), home_("/"), runName_("undef"), displayName_() {
   char* h = getenv("HOME");
   if (h) home_ = h;
+
+  char* th = getenv("_TEST_ECKIT_HOME");
+  if (th) home_ = th;
 
   behavior_.reset(new StandardBehavior());
 }
@@ -304,4 +307,4 @@ PathName Context::configHome(const std::string& name) const {
 }
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

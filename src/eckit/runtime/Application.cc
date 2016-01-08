@@ -174,4 +174,4 @@ Application* Application::instance_;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

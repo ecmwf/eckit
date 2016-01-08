@@ -17,7 +17,7 @@
 
 #include <vector>
 
-#include "experimental/eckit/la/types.h"
+#include "eckit/la/types.h"
 
 namespace eckit {
 
@@ -103,6 +103,6 @@ Stream& operator<<(Stream&, const Matrix&);
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit
 
 #endif

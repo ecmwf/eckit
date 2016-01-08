@@ -18,9 +18,14 @@ configure_file( eckit_version.cc.in  eckit_version.cc )
 list( APPEND eckit_srcs eckit.h eckit_version.cc )
 
 list( APPEND eckit_container_srcs
+
 container/BTree.h
 container/BTree.cc
+
 container/Cache.h
+container/CacheLRU.h
+container/CacheLRU.cc
+
 container/CacheManager.h
 container/CacheManager.cc
 container/DenseMap.h
@@ -35,7 +40,7 @@ container/KDTree.h
 container/BSPTree.h
 
 container/MappedArray.h
-container/MappedArray.cc 
+container/MappedArray.cc
 container/SimpleMappedArray.cc
 container/SimpleMappedArray.h
 
@@ -76,6 +81,8 @@ io/BufferCache.h
 io/BufferCache.cc
 io/FileLocker.h
 io/FileLocker.cc
+io/FilePool.h
+io/FilePool.cc
 io/ResizableBuffer.h
 io/ResizableBuffer.cc
 io/DblBuffer.h
@@ -303,7 +310,7 @@ log/Colour.cc
 log/ETA.h
 log/ETA.cc
 log/Seconds.h
-log/Seconds.cc 
+log/Seconds.cc
 log/Plural.h
 log/Progress.h
 log/Progress.cc
@@ -487,8 +494,9 @@ memory/NonCopyable.cc
 memory/ScopedPtr.h )
 
 list( APPEND eckit_compat_srcs
+compat/Inited.h
 compat/StrStream.h
-compat/Inited.h )
+)
 
 list( APPEND eckit_bases_srcs
 bases/Watcher.h
@@ -501,10 +509,6 @@ transaction/TxnLog.h
 transaction/TxnLog.cc
 transaction/TxnEvent.h
 transaction/TxnEvent.cc )
-
-list( APPEND eckit_testing_srcs
-testing/UnitTest.h
-testing/UnitTest.cc)
 
 list( APPEND eckit_dirs
 	bases
@@ -535,6 +539,7 @@ foreach( dir ${eckit_dirs} )
 endforeach()
 
 list( APPEND eckit_templates
+					container/CacheLRU.cc
 					container/BTree.cc
 					container/MappedArray.cc
 					container/SimpleMappedArray.cc
@@ -585,15 +590,9 @@ ecbuild_add_library(TARGET eckit
 
 ### sub-directories
 
-add_subdirectory( cmd )
+if( HAVE_ECKIT_CMD )
+  add_subdirectory( cmd )
+endif()
 
 add_subdirectory( web )
-
-add_subdirectory( maths )
-
-add_subdirectory( geometry )
-
-add_subdirectory( grib )
-
-add_subdirectory( mpi )
 

@@ -12,6 +12,7 @@ ecbuild_add_test( TARGET      eckit_test_log_callback
 
 ecbuild_add_test( TARGET      eckit_test_log_threads
                   SOURCES     test_log_threads.cc
+                  ENVIRONMENT _TEST_ECKIT_HOME=/tmp/$ENV{USER}
                   LIBS        eckit )
 
 ecbuild_add_test( TARGET      eckit_test_colour

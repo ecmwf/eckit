@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -25,11 +25,9 @@
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Length;
 class PathName;
@@ -184,14 +182,11 @@ protected:
 
 	Value(Content*);
 
-
-private:
-
-// -- Members
+private: // members
 
 	Content* content_;
 
-// -- Methods
+private: // methods
 
     void json(JSON& s) const        { s << *content_; }
     void print(std::ostream& s) const    { s << *content_; }
@@ -205,19 +200,30 @@ private:
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template < typename T >
 Value makeVectorValue( const std::vector<T>& v )
 {
-	ValueList r;
-	r.reserve(v.size());
-	for( size_t i = 0; i < v.size(); ++i )
-		r.push_back( Value(v[i]) );
-	return Value::makeList(r);
+    ValueList r;
+    r.reserve(v.size());
+    for( size_t i = 0; i < v.size(); ++i )
+        r.push_back( Value(v[i]) );
+    return Value::makeList(r);
 }
 
-//-----------------------------------------------------------------------------
+template < typename T >
+Value makeVectorValue( const std::list<T>& l )
+{
+    ValueList r;
+    r.reserve(l.size());
+    for(typename std::list<T>::const_iterator j = l.begin(); j != l.end(); ++j) {
+        r.push_back( Value( *j ) );
+    }
+    return Value::makeList(r);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -38,4 +38,4 @@ NetUser* RemoteCommander::newUser(TCPSocket& protocol) {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

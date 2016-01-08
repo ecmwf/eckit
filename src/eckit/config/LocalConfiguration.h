@@ -99,10 +99,7 @@ class LocalConfiguration : public Configuration {
 
     // -- Overridden methods
 
-    // From MIRParametrisation
     virtual void print(std::ostream &) const;
-
-
 
     // -- Class members
     // None
@@ -117,7 +114,7 @@ class LocalConfiguration : public Configuration {
 
 };
 
+} // namespace eckit
 
-}  // namespace eckit
 #endif
 

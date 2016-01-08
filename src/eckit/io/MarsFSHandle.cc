@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -11,7 +11,6 @@
 #include "eckit/io/FileHandle.h"
 #include "eckit/log/Log.h"
 #include "eckit/io/MarsFSHandle.h"
-#include "eckit/compat/StrStream.h"
 
 //-----------------------------------------------------------------------------
 
@@ -188,9 +187,9 @@ void MarsFSHandle::cost(std::map<std::string,Length>& c, bool read) const
 
 std::string MarsFSHandle::title() const
 {
-	StrStream os;
-	os << "marsfs:/" << path_.node() << "/" << PathName::shorten(path_.path()) << StrStream::ends;
-	return std::string(os);
+    std::ostringstream os;
+    os << "marsfs:/" << path_.node() << "/" << PathName::shorten(path_.path());
+    return os.str();
 }
 
 //-----------------------------------------------------------------------------

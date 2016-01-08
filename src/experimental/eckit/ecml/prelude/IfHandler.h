@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -13,8 +13,8 @@
 #define eckit_ecml_IfHandler_H
 
 #include "eckit/filesystem/PathName.h"
-#include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/SpecialFormHandler.h"
+#include "eckit/ecml/parser/Request.h"
+#include "eckit/ecml/core/SpecialFormHandler.h"
 
 namespace eckit {
 

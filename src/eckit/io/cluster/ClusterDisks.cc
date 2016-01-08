@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2013 ECMWF.
+ * (C) Copyright 1996-2015 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -19,7 +19,6 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/container/MappedArray.h"
 #include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/compat/StrStream.h"
 #include "eckit/parser/Tokenizer.h"
 
 //-----------------------------------------------------------------------------
@@ -318,13 +317,12 @@ std::string ClusterDisks::node(const std::string& path)
 		{
 			if(j != clusterDisks->end())
 			{
-				StrStream os;
+                std::ostringstream os;
 				os << "Two nodes found for [" << path << "] "
-				<< "marsfs://" << (*j).node() << "/" << (*j).path() << "and "
-				<< "marsfs://" << (*k).node() << "/" << (*k).path()
-				<< StrStream::ends;
+                   << "marsfs://" << (*j).node() << "/" << (*j).path() << "and "
+                   << "marsfs://" << (*k).node() << "/" << (*k).path();
 
-				throw SeriousBug(std::string(os));
+                throw SeriousBug(os.str());
 			}
 			j = k;
 		}
@@ -371,9 +369,9 @@ std::string ClusterDisks::node(const std::string& path)
         }
 
     
-		StrStream os;
-		os << "No node found for [" << path << "]" << StrStream::ends;
-		throw SeriousBug(std::string(os));
+        std::ostringstream os;
+        os << "No node found for [" << path << "]";
+        throw SeriousBug(os.str());
 	}
 
 	return (*j).node();

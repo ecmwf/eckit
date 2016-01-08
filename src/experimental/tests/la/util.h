@@ -13,8 +13,8 @@
 
 #include <cstdarg>
 
-#include "experimental/eckit/la/Matrix.h"
-#include "experimental/eckit/la/Vector.h"
+#include "eckit/la/Matrix.h"
+#include "eckit/la/Vector.h"
 
 //-----------------------------------------------------------------------------
 
@@ -50,6 +50,6 @@ Matrix M(Matrix::Size rows, Matrix::Size cols, ...) {
 //-----------------------------------------------------------------------------
 
 }  // namespace test
-}  // namespace eckit
+} // namespace eckit
 
 #endif

@@ -226,4 +226,4 @@ void CmdResource::pipe(CmdResource* cmd, CmdArg& args, std::istream& in, std::os
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

@@ -20,7 +20,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/FileStream.h"
 
-#include "experimental/eckit/la/SparseMatrix.h"
+#include "eckit/la/SparseMatrix.h"
 
 namespace eckit {
 namespace la {
@@ -240,4 +240,4 @@ void SparseMatrix::load(const eckit::PathName &path)  {
 //-----------------------------------------------------------------------------
 
 }  // namespace la
-}  // namespace eckit
+} // namespace eckit

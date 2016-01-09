@@ -30,15 +30,6 @@ ecbuild_add_option( FEATURE EXPERIMENTAL
                     DEFAULT ON
                     DESCRIPTION "Experimental features (not used in production)" )
 
-### GRIB
-
-ecbuild_add_option( FEATURE GRIB
-                    CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "C++ interface to GRIB format"
-                    REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.12.3" )
-
-set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
-
 ### eckit::mpi
 
 ecbuild_add_option( FEATURE MPI
@@ -193,10 +184,6 @@ if( HAVE_EXPERIMENTAL )
   list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
 
   list( APPEND ECKIT_LIBRARIES eckit_la eckit_geometry eckit_maths )
-
-  if( HAVE_GRIB )
-    list( APPEND ECKIT_LIBRARIES eckit_grib )
-  endif()
 
   if( HAVE_EIGEN )
       if( ECKIT_CONTRIB_EIGEN )

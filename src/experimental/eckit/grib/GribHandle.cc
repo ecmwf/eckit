@@ -31,7 +31,7 @@ int grib_call(int code, const char *msg)
 	if(code)
 	{
         std::ostringstream os;
-        os << msg << ": " << grib_get_error_message(code);
+        os << msg << " : " << grib_get_error_message(code);
         throw Exception(os.str());
 	}
 	return code;

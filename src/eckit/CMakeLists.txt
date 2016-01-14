@@ -346,6 +346,8 @@ types/DayOfYear.h
 types/DayOfYear.cc
 types/Grid.h
 types/Grid.cc
+types/Metadata.h
+types/Metadata.cc
 types/Month.h
 types/Month.cc
 types/TimeInterval.h

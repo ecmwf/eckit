@@ -42,12 +42,17 @@ Values Interpreter::eval(const Request request, ExecutionContext& context)
 
     if (tag == "_list")
     {
-        ASSERT(object->rest() == 0); // one element only
-        object = object->value();
-        tag = object->tag();
+        if (object->rest() == 0)
+        {
+            object = object->value();
+            tag = object->tag();
+        } else
+        {
+        }
     }
 
     Values r ( tag == ""          ? object
+             : tag == "_list"   ? object
              : tag == "_native"   ? evalNative(object, request, context)
              : tag == "_verb"     ? evalVerb(object, request, context)
              : tag == "_macro"    ? evalMacro(object, request, context)

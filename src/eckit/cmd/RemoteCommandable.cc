@@ -17,7 +17,8 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-RemoteCommandable::RemoteCommandable(int port) : commander_(new RemoteCommander(port)) {
+RemoteCommandable::RemoteCommandable(int port) :
+    commander_(new RemoteCommander(port), false) {
     commander_.start();
 }
 

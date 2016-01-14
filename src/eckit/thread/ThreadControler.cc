@@ -60,9 +60,9 @@ void ThreadControler::execute()
 {
     // Make a copy, because "this" will desappear
     Thread* proc = proc_;
-    proc_ = 0;
+    if (detached_)
+        proc_ = 0;
 
-    //cout << "ThreadControler::execute(" << this << ")" <<  " " << hex << pthread_self() << std::endl;
     //=================
     // Make sure the logs are created...
 
@@ -156,6 +156,7 @@ void ThreadControler::kill()
 
 void ThreadControler::stop()
 {
+    ASSERT(!detached_);
     proc_->stop();
 }
 

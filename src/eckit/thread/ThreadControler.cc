@@ -63,6 +63,7 @@ void ThreadControler::execute()
     if (detached_)
         proc_ = 0;
 
+    //cout << "ThreadControler::execute(" << this << ")" <<  " " << hex << pthread_self() << std::endl;
     //=================
     // Make sure the logs are created...
 

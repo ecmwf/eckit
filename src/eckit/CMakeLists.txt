@@ -75,6 +75,9 @@ io/CommandStream.h
 io/CommandStream.cc
 io/Offset.h
 io/Offset.cc
+io/DataBlob.h
+io/DataBlob.cc
+io/Buffer.cc
 io/Buffer.h
 io/Buffer.cc
 io/BufferCache.h

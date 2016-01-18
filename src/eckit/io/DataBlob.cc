@@ -26,7 +26,11 @@ DataBlob::DataBlob(const void* data, size_t length) :
 DataBlob::~DataBlob() {
 }
 
-const Buffer &DataBlob::buffer() const {
+const Buffer& DataBlob::buffer() const {
+    return buffer_;
+}
+
+Buffer& DataBlob::buffer() {
     return buffer_;
 }
 

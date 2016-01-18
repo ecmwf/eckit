@@ -19,6 +19,7 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/memory/Owned.h"
+#include "eckit/memory/SharedPtr.h"
 
 namespace eckit {
 
@@ -32,10 +33,17 @@ class DataBlob : public eckit::OwnedLock {
 
 public: // methods
 
+    /// Constructor creates empty buffer
+    DataBlob(size_t length);
+
     /// Constructor copies the data
     DataBlob(const void* data, size_t length);
 
     virtual ~DataBlob();
+
+    Buffer& buffer();
+    const Buffer& buffer() const;
+    size_t length() const;
 
     virtual const eckit::Metadata& metadata() const = 0;
 
@@ -53,6 +61,8 @@ protected: // members
     eckit::Buffer buffer_;
 
 };
+
+typedef eckit::SharedPtr<eckit::DataBlob> DataBlobPtr;
 
 //----------------------------------------------------------------------------------------------------------------------
 

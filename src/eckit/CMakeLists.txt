@@ -75,6 +75,9 @@ io/CommandStream.h
 io/CommandStream.cc
 io/Offset.h
 io/Offset.cc
+io/DataBlob.h
+io/DataBlob.cc
+io/Buffer.cc
 io/Buffer.h
 io/Buffer.cc
 io/BufferCache.h
@@ -346,6 +349,8 @@ types/DayOfYear.h
 types/DayOfYear.cc
 types/Grid.h
 types/Grid.cc
+types/Metadata.h
+types/Metadata.cc
 types/Month.h
 types/Month.cc
 types/TimeInterval.h

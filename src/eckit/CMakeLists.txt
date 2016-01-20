@@ -375,7 +375,11 @@ parser/Tokenizer.cc
 parser/JSON.h
 parser/JSON.cc
 parser/JSONParser.h
-parser/JSONParser.cc )
+parser/JSONParser.cc
+parser/JSONDataBlob.h
+parser/JSONDataBlob.cc
+parser/JSONMetadata.h
+parser/JSONMetadata.cc )
 
 list( APPEND eckit_value_srcs
 value/BoolContent.h

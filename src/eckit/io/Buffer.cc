@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/memory/MemoryPool.h"
 
@@ -54,6 +55,18 @@ Buffer::~Buffer()
     if (owned_) {
         destroy();
     }
+}
+
+void * Buffer::release()
+{
+    ASSERT(owned_);
+
+    void * p = buffer_;
+
+    owned_ =false;
+    buffer_ = NULL;
+    size_ = 0;
+    return p;
 }
 
 void Buffer::create()

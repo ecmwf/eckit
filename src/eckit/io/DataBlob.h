@@ -10,6 +10,7 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Simon Smart
 /// @date   Jan 2016
 
 #ifndef eckit_DataBlob_h
@@ -64,7 +65,47 @@ protected: // members
 
 typedef eckit::SharedPtr<eckit::DataBlob> DataBlobPtr;
 
-//----------------------------------------------------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
+class DataBlobFactory {
+
+    /*
+     * A (self-registering) factory for producing DataBlob instances.
+     */
+
+    std::string name_;
+    virtual DataBlob* make(const void* data, size_t length) = 0;
+
+protected:
+
+    DataBlobFactory(const std::string&);
+    virtual ~DataBlobFactory();
+
+public:
+
+    static void list(std::ostream &);
+    static DataBlob* build(const std::string&, const void* data, size_t length);
+
+};
+
+template< class T>
+class DataBlobBuilder : public DataBlobFactory {
+
+    /*
+     * Templated specialisation of the self-registering factory, that does the
+     * self-registration, and the construction of each object.
+     */
+
+    virtual DataBlob* make(const void* data, size_t length) {
+        return new T(data, length);
+    }
+
+public:
+    DataBlobBuilder(const std::string &name) : DataBlobFactory(name) {}
+};
+// -------------------------------------------------------------------------------------------------
+
 
 } // namespace eckit
 

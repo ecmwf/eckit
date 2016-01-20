@@ -12,6 +12,7 @@
 /// @date Dec 2015
 
 #include "eckit/parser/JSONMetadata.h"
+#include "eckit/exception/Exceptions.h"
 
 #include <iostream>;
 
@@ -26,20 +27,25 @@ JSONMetadata::JSONMetadata() {}
 JSONMetadata::~JSONMetadata() {}
 
 std::vector<std::string> JSONMetadata::parameters() const {
+    NOTIMP;
     return std::vector<std::string>();
 }
 
 bool JSONMetadata::has(const std::string& key) const {
+    NOTIMP;
     return false;
 }
 
 void JSONMetadata::get(const std::string& name, std::string& value) const {
+    NOTIMP;
 }
 
 void JSONMetadata::get(const std::string& name, long& value) const {
+    NOTIMP;
 }
 
 void JSONMetadata::get(const std::string& name, double& value) const {
+    NOTIMP;
 }
 
 void JSONMetadata::print(std::ostream& os) const {

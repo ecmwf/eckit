@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cmath>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
@@ -61,8 +62,15 @@ static const char *b="KMGPH";
 
 static double rate(double x,char& c)
 {
-    const char* p = b;
     c = ' ';
+
+    // If there is a divide by zero (time period shorter than resolution of clock
+    // ticker) then we risk a segfault unless we proactively test!
+    if (std::isinf(x)) {
+        return 0.0;
+    }
+
+    const char* p = b;
     while(x > 100)
     {
         x /= 1024;	

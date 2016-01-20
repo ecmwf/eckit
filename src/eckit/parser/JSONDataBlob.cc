@@ -20,7 +20,7 @@ namespace eckit {
 // Construct JSONDataBlob builder object, to self-register this type with the
 // DataBlobFactory
 namespace {
-    DataBlobBuilder<JSONDataBlob> gribBlobBuilder("json");
+    DataBlobBuilder<JSONDataBlob> jsonBlobBuilder("json");
 }
 
 // -------------------------------------------------------------------------------------------------

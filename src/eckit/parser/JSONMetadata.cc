@@ -14,7 +14,7 @@
 #include "eckit/parser/JSONMetadata.h"
 #include "eckit/exception/Exceptions.h"
 
-#include <iostream>;
+#include <iostream>
 
 using namespace eckit;
 

@@ -32,6 +32,15 @@ JSONDataBlob::JSONDataBlob(const void * data, size_t length) :
     Log::info() << "[" << *this << "] constructor" << std::endl;
 }
 
+
+JSONDataBlob::JSONDataBlob(DataHandle& dh, size_t length) :
+    DataBlob(dh, length),
+    metadata_() {
+
+    Log::info() << "[" << *this << "] constructor" << std::endl;
+}
+
+
 JSONDataBlob::~JSONDataBlob() {}
 
 const eckit::Metadata& JSONDataBlob::metadata() const {

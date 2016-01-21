@@ -9,6 +9,7 @@
  */
 
 #include "eckit/io/DataBlob.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/memory/MemoryPool.h"
 #include "eckit/thread/AutoLock.h"
 
@@ -62,7 +63,8 @@ void DataBlobFactory::list(std::ostream& out) {
     }
 }
 
-DataBlob* DataBlobFactory::build(const std::string &name, const void* data, size_t length) {
+
+const DataBlobFactory& DataBlobFactory::findFactory(const std::string& name) {
 
     pthread_once(&once, init);
 
@@ -79,9 +81,24 @@ DataBlob* DataBlobFactory::build(const std::string &name, const void* data, size
         throw SeriousBug(std::string("No DataBlobFactory called ") + name);
     }
 
-    return (*j).second->make(data, length);
+    return *(*j).second;
 }
 
+
+DataBlob* DataBlobFactory::build(const std::string &name, const void* data, size_t length) {
+
+    const DataBlobFactory& factory(findFactory(name));
+
+    return factory.make(data, length);
+}
+
+
+DataBlob* DataBlobFactory::build(const std::string &name, DataHandle& dh, size_t length) {
+
+    const DataBlobFactory& factory(findFactory(name));
+
+    return factory.make(dh, length);
+}
 
 // -------------------------------------------------------------------------------------------------
 
@@ -91,6 +108,12 @@ DataBlob::DataBlob(size_t length) :
 
 DataBlob::DataBlob(const void* data, size_t length) :
     buffer_((const char*)data, length) {
+}
+
+DataBlob::DataBlob(DataHandle& dh, size_t length) :
+    buffer_(length) {
+
+    dh.read(buffer_, length);
 }
 
 DataBlob::~DataBlob() {

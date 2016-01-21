@@ -25,6 +25,7 @@
 namespace eckit {
 
     class Metadata;
+    class DataHandle;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -39,6 +40,9 @@ public: // methods
 
     /// Constructor copies the data
     DataBlob(const void* data, size_t length);
+
+    /// Construct data from a DataHandle
+    DataBlob(DataHandle& dh, size_t length);
 
     virtual ~DataBlob();
 
@@ -75,7 +79,8 @@ class DataBlobFactory {
      */
 
     std::string name_;
-    virtual DataBlob* make(const void* data, size_t length) = 0;
+    virtual DataBlob* make(const void* data, size_t length) const = 0 ;
+    virtual DataBlob* make(DataHandle& dh, size_t length) const = 0 ;
 
 protected:
 
@@ -86,7 +91,11 @@ public:
 
     static void list(std::ostream &);
     static DataBlob* build(const std::string&, const void* data, size_t length);
+    static DataBlob* build(const std::string&, DataHandle& dh, size_t length);
 
+private: // methods
+
+    static const DataBlobFactory& findFactory(const std::string&);
 };
 
 template< class T>
@@ -97,8 +106,11 @@ class DataBlobBuilder : public DataBlobFactory {
      * self-registration, and the construction of each object.
      */
 
-    virtual DataBlob* make(const void* data, size_t length) {
+    virtual DataBlob* make(const void* data, size_t length) const {
         return new T(data, length);
+    }
+    virtual DataBlob* make(DataHandle& dh, size_t length) const {
+        return new T(dh, length);
     }
 
 public:

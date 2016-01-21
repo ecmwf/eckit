@@ -26,6 +26,7 @@ class JSONDataBlob : public eckit::DataBlob {
 public: // methods
 
     JSONDataBlob(const void* data, size_t length);
+    JSONDataBlob(DataHandle& dh, size_t length);
 
     virtual ~JSONDataBlob();
 

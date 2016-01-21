@@ -60,7 +60,8 @@ void ThreadControler::execute()
 {
     // Make a copy, because "this" will desappear
     Thread* proc = proc_;
-    proc_ = 0;
+    if (detached_)
+        proc_ = 0;
 
     //cout << "ThreadControler::execute(" << this << ")" <<  " " << hex << pthread_self() << std::endl;
     //=================
@@ -156,7 +157,11 @@ void ThreadControler::kill()
 
 void ThreadControler::stop()
 {
-    proc_->stop();
+    // Due to legacy code, this stop routine may be called on detached threads. Don't
+    // stress about it!
+    if (!detached_ && proc_ != NULL) {
+        proc_->stop();
+    }
 }
 
 void ThreadControler::wait()

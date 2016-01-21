@@ -157,8 +157,11 @@ void ThreadControler::kill()
 
 void ThreadControler::stop()
 {
-    ASSERT(!detached_);
-    proc_->stop();
+    // Due to legacy code, this stop routine may be called on detached threads. Don't
+    // stress about it!
+    if (!detached_ && proc_ != NULL) {
+        proc_->stop();
+    }
 }
 
 void ThreadControler::wait()

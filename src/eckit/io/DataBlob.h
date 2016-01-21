@@ -10,6 +10,7 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Simon Smart
 /// @date   Jan 2016
 
 #ifndef eckit_DataBlob_h
@@ -24,6 +25,7 @@
 namespace eckit {
 
     class Metadata;
+    class DataHandle;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -38,6 +40,9 @@ public: // methods
 
     /// Constructor copies the data
     DataBlob(const void* data, size_t length);
+
+    /// Construct data from a DataHandle
+    DataBlob(DataHandle& dh, size_t length);
 
     virtual ~DataBlob();
 
@@ -64,7 +69,55 @@ protected: // members
 
 typedef eckit::SharedPtr<eckit::DataBlob> DataBlobPtr;
 
-//----------------------------------------------------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
+class DataBlobFactory {
+
+    /*
+     * A (self-registering) factory for producing DataBlob instances.
+     */
+
+    std::string name_;
+    virtual DataBlob* make(const void* data, size_t length) const = 0 ;
+    virtual DataBlob* make(DataHandle& dh, size_t length) const = 0 ;
+
+protected:
+
+    DataBlobFactory(const std::string&);
+    virtual ~DataBlobFactory();
+
+public:
+
+    static void list(std::ostream &);
+    static DataBlob* build(const std::string&, const void* data, size_t length);
+    static DataBlob* build(const std::string&, DataHandle& dh, size_t length);
+
+private: // methods
+
+    static const DataBlobFactory& findFactory(const std::string&);
+};
+
+template< class T>
+class DataBlobBuilder : public DataBlobFactory {
+
+    /*
+     * Templated specialisation of the self-registering factory, that does the
+     * self-registration, and the construction of each object.
+     */
+
+    virtual DataBlob* make(const void* data, size_t length) const {
+        return new T(data, length);
+    }
+    virtual DataBlob* make(DataHandle& dh, size_t length) const {
+        return new T(dh, length);
+    }
+
+public:
+    DataBlobBuilder(const std::string &name) : DataBlobFactory(name) {}
+};
+// -------------------------------------------------------------------------------------------------
+
 
 } // namespace eckit
 

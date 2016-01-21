@@ -39,8 +39,6 @@ public: // methods
 
     ~Buffer();
 
-    void * release();
-
     operator char*()                 { return (char*)buffer_; }
     operator const char*() const     { return (char*)buffer_; }
 

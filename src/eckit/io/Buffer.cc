@@ -57,18 +57,6 @@ Buffer::~Buffer()
     }
 }
 
-void * Buffer::release()
-{
-    ASSERT(owned_);
-
-    void * p = buffer_;
-
-    owned_ =false;
-    buffer_ = NULL;
-    size_ = 0;
-    return p;
-}
-
 void Buffer::create()
 {
     buffer_ = MemoryPool::largeAllocate(size_);

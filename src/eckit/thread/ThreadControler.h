@@ -33,7 +33,7 @@ public:
 // -- Contructors
 	
 	/// @note ThreadControler takes ownership of Thread
-    ThreadControler(Thread*,bool detached = true, size_t stack = 0);
+    ThreadControler(Thread*, bool detached = true, size_t stack = 0);
 
 // -- Destructor
 	

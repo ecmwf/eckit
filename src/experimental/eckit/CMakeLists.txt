@@ -7,7 +7,6 @@
 # nor does it submit to any jurisdiction.
 
 add_subdirectory( geometry )
-add_subdirectory( grib )
 add_subdirectory( maths )
 add_subdirectory( mpi )
 

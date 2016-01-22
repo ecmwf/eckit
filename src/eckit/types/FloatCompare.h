@@ -34,16 +34,10 @@ namespace eckit {
 ///              between A and B.
 ///
 /// Assumptions:
-///   o These functions *ignores* NAN, assumes we have enabled illegal operation exceptions,
+///   * These functions *ignores* NAN, assumes we have enabled illegal operation exceptions,
 ///     i.e so that you find out when you generate them.
-///   o Ignores infinities and overflow exceptions.
+///   * Ignores infinities and overflow exceptions.
 ///
-/// Grib
-///   In grib files latitudes and longitudes, are angles stored as doubles
-///   However we need to carefully choose the right epsilon.
-///     Grib1: epsilon  0.001
-///     Grib2: precision is user defined, but generally we can rely on using epsilon = 1e-6  ?
-
 
 /// This function only has specializations for double and float
 /// So it restricts the use of FloatCompare

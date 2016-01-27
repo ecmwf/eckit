@@ -92,11 +92,42 @@ Request ForHandler::handle(const Request r, ExecutionContext& context)
         }
     }
 
-    Cell* result (0);
-    while (! vresult.empty())
+    List result;
+    for (size_t i(0); i < vresult.size(); ++i)
     {
-        result = new Cell("_list", "", vresult.back(), result);
-        vresult.pop_back();
+        Cell* elt (vresult[i]);
+
+        //Log::info() << " elt[" << i << "] = " << elt->str() << endl;
+
+        if (! elt->value())
+        {
+            result.append(elt);
+            continue;
+        }
+
+        if (elt->tag() != "_list")
+            result.append(elt);
+        else
+        {
+            for (Values l (elt); l; l = l->rest())
+            {
+                Values sublist (l->value());
+                if (sublist == 0) continue;
+
+                if (sublist->tag() == "")
+                    result.append(sublist);
+                else if (sublist->tag() == "_list")
+                {
+                    for (Request e(sublist); e; e = e->rest())
+                    {
+                        ASSERT(e->tag() == "_list");
+                        result.append(e->value());
+                    }
+                } else {
+                    NOTIMP;
+                }
+            }
+        }
     }
 
     return result;

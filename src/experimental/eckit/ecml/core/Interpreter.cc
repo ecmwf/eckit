@@ -52,7 +52,7 @@ Values Interpreter::eval(const Request request, ExecutionContext& context)
     }
 
     Values r ( tag == ""          ? object
-             : tag == "_list"   ? object
+             : tag == "_list"     ? object
              : tag == "_native"   ? evalNative(object, request, context)
              : tag == "_verb"     ? evalVerb(object, request, context)
              : tag == "_macro"    ? evalMacro(object, request, context)

@@ -1,4 +1,13 @@
-test, label = Check verb for works,
+test, label = Check verb for works 1,
+do = (
+    for, x = 1/2/3,
+    do = (
+        println,values = (x)
+    )
+),
+expect = 1/2/3
+
+test, label = Check verb for works 2,
 do = (
     for, x = 1/2/3,
     do = (
@@ -19,3 +28,9 @@ do = (
 ),
 expect = 1 / a / 1 / b / 1 / c / 2 / a / 2 / b / 2 / c / 3 / a / 3 / b / 3 / c
 
+test, label = Check nested for again,
+do = (
+    for, x = (for, y = a/b/c, do = (y)),
+    do = (sequence,values=(x) / (x))
+),
+expect = a / a / b / b / c / c

@@ -96,7 +96,6 @@ Request ForHandler::handle(const Request r, ExecutionContext& context)
     for (size_t i(0); i < vresult.size(); ++i)
     {
         Cell* elt (vresult[i]);
-
         //Log::info() << " elt[" << i << "] = " << elt->str() << endl;
 
         if (! elt->value())
@@ -114,18 +113,14 @@ Request ForHandler::handle(const Request r, ExecutionContext& context)
                 Values sublist (l->value());
                 if (sublist == 0) continue;
 
-                if (sublist->tag() == "")
+                if (sublist->tag() != "_list")
                     result.append(sublist);
-                else if (sublist->tag() == "_list")
-                {
+                else
                     for (Request e(sublist); e; e = e->rest())
                     {
                         ASSERT(e->tag() == "_list");
                         result.append(e->value());
                     }
-                } else {
-                    NOTIMP;
-                }
             }
         }
     }

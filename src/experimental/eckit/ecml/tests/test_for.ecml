@@ -34,3 +34,18 @@ do = (
     do = (sequence,values=(x) / (x))
 ),
 expect = a / a / b / b / c / c
+
+test, label = Check nested for producing dicts,
+do = (
+    let, records = (
+        for, x = 1/2/3,
+        do = (
+            for, y = (sequence,values = a/b/c),
+            do = (let, number = (x),
+                       character = (y))
+        )
+    )
+
+    for, rec = (records), do = ($,_ = rec/number)
+),
+expect = 1/1/1 / 2/2/2 / 3/3/3

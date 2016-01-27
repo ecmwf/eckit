@@ -28,38 +28,45 @@ ecbuild_declare_project()
 
 ecbuild_add_option( FEATURE EXPERIMENTAL
                     DEFAULT ON
-                    DESCRIPTION "Experimental features (not used in production)" )
+                    DESCRIPTION "Experimental features (not used in production)"
+                    PURPOSE "Enables MPI, MPISTUBS, ECKIT_MPI, ECKIT_MPISTUBS" )
 
 ### eckit::mpi
 
 ecbuild_add_option( FEATURE MPI
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "Support for MPI distributed parallelism"
+                    DESCRIPTION "Use system MPI libraries"
+                    PURPOSE "Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
 
 ecbuild_add_option( FEATURE MPISTUBS
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "Support for MPI distributed parallelism"
+                    DESCRIPTION "Use MPI stubs (no system MPI required)"
+                    PURPOSE "Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "PROJECT mpistubs VERSION 1.0.0" )
 
 ecbuild_add_option( FEATURE ECKIT_MPI
-                    DESCRIPTION "eckit C++ wrapper for mpi"
+                    DESCRIPTION "eckit C++ wrapper for MPI"
+                    PURPOSE "Build eckit_mpi library"
                     CONDITION HAVE_MPI )
 
 ecbuild_add_option( FEATURE ECKIT_MPISTUBS
-                    DESCRIPTION "eckit C++ wrapper for mpi using mpistubs"
+                    DESCRIPTION "eckit C++ wrapper for MPI using mpistubs"
+                    PURPOSE "Build eckit_mpistubs library"
                     CONDITION HAVE_MPISTUBS )
 
 ### eckit::cmd
 
 ecbuild_add_option( FEATURE ECKIT_CMD
-                    DESCRIPTION "Missing description"
+                    DESCRIPTION "Utilities for administration tools"
+                    PURPOSE "Build eckit_cmd library"
                     REQUIRED_PACKAGES "LEXYACC" )
 
 ### eckit::ecml
 
 ecbuild_add_option( FEATURE ECKIT_ECML
-                    DESCRIPTION "Missing description"
+                    DESCRIPTION "ECML utilities"
+                    PURPOSE "Build eckit_ecml library"
                     REQUIRED_PACKAGES "LEXYACC" )
 
 ### Eigen

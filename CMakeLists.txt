@@ -74,9 +74,14 @@ ecbuild_add_option( FEATURE ECKIT_ECML
 ecbuild_add_option( FEATURE EIGEN
                     CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "Eigen support"
+                    TYPE RECOMMENDED
+                    PURPOSE "Eigen backend: accelerated dense and sparse matrix operations"
                     REQUIRED_PACKAGES Eigen3 )
 
-set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Dense matrix operations" )
+set_package_properties( Eigen3 PROPERTIES
+                        TYPE RECOMMENDED
+                        DESCRIPTION "C++ template library for linear algebra"
+                        PURPOSE "Dense and sparse matrix operations" )
 
 if( ENABLE_EIGEN )
     # TODO: we should add here a test that we can compile Eigen without problems
@@ -88,10 +93,15 @@ endif()
 
 ecbuild_add_option( FEATURE ARMADILLO
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "Armadillo support"
+                    DESCRIPTION "Armadillo linear algebra library"
+                    TYPE RECOMMENDED
+                    PURPOSE "Armadillo backend: accelerated dense matrix operations"
                     REQUIRED_PACKAGES Armadillo )
 
-set_package_properties( Armadillo PROPERTIES TYPE RECOMMENDED PURPOSE "Dense matrix operations" )
+set_package_properties( Armadillo PROPERTIES
+                        DESCRIPTION "C++ linear algebra"
+                        TYPE RECOMMENDED
+                        PURPOSE "Dense matrix operations" )
 
 ### LAPACK
 
@@ -113,28 +123,33 @@ endif()
 
 ecbuild_add_option( FEATURE CUDA
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "CUDA support"
+                    DESCRIPTION "CUDA GPU support"
+                    TYPE RECOMMENDED
+                    PURPOSE "CUDA backend: GPU linear algebra operations"
                     REQUIRED_PACKAGES CUDA )
-
-set_package_properties( CUDA PROPERTIES TYPE RECOMMENDED PURPOSE "CUDA backend: GPU linear algebra operations" )
 
 ### MKL
 
 ecbuild_add_option( FEATURE MKL
                     CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "MKL support"
+                    TYPE RECOMMENDED
+                    PURPOSE "MKL backend: Accelerated linear algebra operations"
                     REQUIRED_PACKAGES MKL )
-
-set_package_properties( MKL PROPERTIES TYPE RECOMMENDED PURPOSE "MKL backend: Accelerated linear algebra operations" )
 
 ### ViennaCL
 
 ecbuild_add_option( FEATURE VIENNACL
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "ViennaCL support"
+                    DESCRIPTION "ViennaCL support for OpenCL"
+                    TYPE RECOMMENDED
+                    PURPOSE "ViennaCL backend: many-core linear algebra library"
                     REQUIRED_PACKAGES ViennaCL )
 
-set_package_properties( VIENNACL PROPERTIES TYPE RECOMMENDED PURPOSE "ViennaCL backend: GPU-accelerated linear algebra library" )
+set_package_properties( ViennaCL PROPERTIES
+                        DESCRIPTION "linear algebra library for computations on many-core architectures"
+                        TYPE RECOMMENDED
+                        PURPOSE "Dense and sparse matrix operations on OpenCL devices" )
 
 ### async io support
 

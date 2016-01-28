@@ -31,7 +31,7 @@ TryHandler::TryHandler(const string& name)
 {}
 
 /// try,
-//       do = (do_sth,foo=bar), 
+//       do = (throw,what=problem), 
 //       catch = (println,values=exception caught)
 //       finally = (println,values=bye)
 Request TryHandler::handle(const Request request, ExecutionContext& context)
@@ -68,6 +68,7 @@ Request TryHandler::handle(const Request request, ExecutionContext& context)
         context.pushEnvironmentFrame(new Cell("_verb", "let", 0, new Cell("", "current_exception", w, 0)));
 
         if (_catch.get()) 
+        {
             try {
                 value.reset(context.interpreter().eval(_catch.get(), context));
             } catch (eckit::Exception ec)
@@ -76,8 +77,13 @@ Request TryHandler::handle(const Request request, ExecutionContext& context)
                     context.interpreter().eval(finally.get(), context);
                 throw ec;
             } 
-        if (finally.get()) 
+            if (finally.get()) 
+                context.interpreter().eval(finally.get(), context);
+        } else if (finally.get()) 
+        {
             context.interpreter().eval(finally.get(), context);
+            throw eckit::Exception(what); // TODO: add info about type of exception
+        }
     }
     
     if (! value.get())

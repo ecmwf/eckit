@@ -32,7 +32,7 @@ public: // methods
 
     virtual const eckit::Metadata& metadata() const;
 
-private: // members
+private: // methods
 
     virtual void print(std::ostream&) const;
 

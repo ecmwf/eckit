@@ -11,10 +11,13 @@
 /// @author Tiago Quintino
 /// @date Dec 2015
 
-#include "eckit/parser/JSONMetadata.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/parser/JSONMetadata.h"
+#include "eckit/parser/JSONParser.h"
 
 #include <iostream>
+#include <sstream>
 
 using namespace eckit;
 
@@ -22,7 +25,16 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-JSONMetadata::JSONMetadata() {}
+JSONMetadata::JSONMetadata(const Buffer& buffer) {
+
+    // JSON data is a string, rather than an anonymous blob of bytes...
+    std::string json_str(buffer, buffer.size());
+    std::istringstream iss(json_str);
+
+    // Parse the data, as a value
+    JSONParser parser(iss);
+    root_ = parser.parse();
+}
 
 JSONMetadata::~JSONMetadata() {}
 

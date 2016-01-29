@@ -38,9 +38,17 @@ JSONMetadata::JSONMetadata(const Buffer& buffer) {
 
 JSONMetadata::~JSONMetadata() {}
 
+
 std::vector<std::string> JSONMetadata::parameters() const {
-    NOTIMP;
-    return std::vector<std::string>();
+
+    std::vector<std::string> params;
+    if (root_.isMap()) {
+        ValueMap vmap(root_);
+        for (ValueMap::const_iterator it = vmap.begin(); it != vmap.end(); ++it) {
+            params.push_back(std::string(it->first));
+        }
+    }
+    return params;
 }
 
 bool JSONMetadata::has(const std::string& key) const {

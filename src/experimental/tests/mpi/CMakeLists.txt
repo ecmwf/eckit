@@ -14,6 +14,7 @@ ecbuild_add_test(
     TARGET      eckit_test_mpistubs
     SOURCES     eckit_test_mpi.cc
     CONDITION   HAVE_ECKIT_MPISTUBS
+    INCLUDES    ${MPISTUBS_INCLUDE_DIRS}
     LIBS eckit_mpistubs
     DEFINITIONS ECKIT_USE_MPISTUBS
     BOOST
@@ -37,6 +38,7 @@ ecbuild_add_test(
     TARGET      eckit_test_mpistubs_parallelcontext
     SOURCES     eckit_test_mpi_parallelcontext.cc
     CONDITION   HAVE_ECKIT_MPISTUBS
+    INCLUDES    ${MPISTUBS_INCLUDE_DIRS}
     LIBS eckit_mpistubs
     DEFINITIONS ECKIT_USE_MPISTUBS
     BOOST

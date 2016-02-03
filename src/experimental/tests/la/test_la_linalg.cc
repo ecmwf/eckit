@@ -15,9 +15,9 @@
 #include "eckit/config/Resource.h"
 #include "eckit/runtime/Context.h"
 
-#include "experimental/eckit/la/LinearAlgebra.h"
-#include "experimental/eckit/la/Matrix.h"
-#include "experimental/eckit/la/Vector.h"
+#include "eckit/la/LinearAlgebra.h"
+#include "eckit/la/Matrix.h"
+#include "eckit/la/Vector.h"
 #include "util.h"
 
 //-----------------------------------------------------------------------------

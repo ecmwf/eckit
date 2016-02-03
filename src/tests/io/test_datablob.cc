@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_datablob_factory_list )
     std::stringstream ss;
     DataBlobFactory::list(ss);
 
-    // Extract the seperate components from the string stream int o avector
+    // Extract the seperate components from the string stream into a vector
     std::vector<std::string> bits;
     Tokenizer(" ,")(ss.str(), bits);
 

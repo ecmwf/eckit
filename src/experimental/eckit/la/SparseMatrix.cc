@@ -207,7 +207,7 @@ Stream &operator<<(Stream &s, const SparseMatrix &v) {
     return s;
 }
 
-SparseMatrix::_InnerIterator::_InnerIterator(SparseMatrix &m, SparseMatrix::Index outer)
+SparseMatrix::_InnerIterator::_InnerIterator(SparseMatrix &m, Index outer)
     : matrix_(m), outer_(outer), inner_(matrix_.outer_[outer]) {
     ASSERT(outer >= 0);
     ASSERT(outer < m.rows_);
@@ -215,12 +215,12 @@ SparseMatrix::_InnerIterator::_InnerIterator(SparseMatrix &m, SparseMatrix::Inde
     ASSERT(size_t(inner_) <= matrix_.data_.size());
 }
 
-SparseMatrix::Scalar SparseMatrix::_InnerIterator::operator*() const {
+Scalar SparseMatrix::_InnerIterator::operator*() const {
     ASSERT(size_t(inner_) < matrix_.data_.size());
     return matrix_.data_[inner_];
 }
 
-SparseMatrix::Scalar &SparseMatrix::InnerIterator::operator*() {
+Scalar &SparseMatrix::InnerIterator::operator*() {
     ASSERT(size_t(inner_) < matrix_.data_.size());
     return matrix_.data_[inner_];
 }

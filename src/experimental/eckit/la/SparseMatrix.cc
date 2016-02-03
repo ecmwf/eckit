@@ -140,7 +140,7 @@ SparseMatrix& SparseMatrix::transpose() {
 
 //-----------------------------------------------------------------------------
 
-SparseMatrix& SparseMatrix::prune(SparseMatrix::Scalar val) {
+SparseMatrix& SparseMatrix::prune(la::Scalar val) {
     ScalarStorage v;
     IndexStorage inner;
     Index nnz = 0;

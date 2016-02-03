@@ -31,14 +31,14 @@ namespace la {
 
 /// Sparse matrix in CRS (compressed row storage) format
 class SparseMatrix {
-public:  // types
-    typedef la::Index Index;
-    typedef la::Scalar Scalar;
-    // -- Types
-private:
+
+private: // types
+
     typedef std::vector<Scalar> ScalarStorage;
     typedef std::vector<Index> IndexStorage;
-public:
+
+public: // types
+
     typedef ScalarStorage::size_type Size;
 
 public:  // methods

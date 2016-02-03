@@ -19,6 +19,7 @@
 #include "eckit/io/DataBlob.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/memory/ScopedPtr.h"
+#include "eckit/parser/Tokenizer.h"
 #include "eckit/types/Metadata.h"
 
 using namespace std;
@@ -91,21 +92,13 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_datablob_factory_list )
     std::stringstream ss;
     DataBlobFactory::list(ss);
 
-    // Copy the string, as strtok is destructive, and then split it into a vector.
-    std::string list_str = ss.str();
-    ScopedPtr<char> cstr(new char[list_str.length()+1]);
-    std::strcpy(cstr.get(), list_str.c_str());
-
-    std::vector<std::string> strings;
-    char * p = std::strtok(cstr.get(), ", ");
-    while (NULL != p) {
-        strings.push_back(std::string(p));
-        p = std::strtok(NULL, ", ");
-    }
+    // Extract the seperate components from the string stream int o avector
+    std::vector<std::string> bits;
+    Tokenizer(" ,")(ss.str(), bits);
 
     // We expect the file and MultIO factories to be in there too...
-    BOOST_CHECK(std::find(strings.begin(), strings.end(), "json") != strings.end());
-    BOOST_CHECK(std::find(strings.begin(), strings.end(), "test") != strings.end());
+    BOOST_CHECK(std::find(bits.begin(), bits.end(), "json") != bits.end());
+    BOOST_CHECK(std::find(bits.begin(), bits.end(), "test") != bits.end());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

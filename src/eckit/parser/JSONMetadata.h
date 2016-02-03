@@ -20,16 +20,20 @@
 #include <vector>
 
 #include "eckit/types/Metadata.h"
+#include "eckit/value/Value.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class Buffer;
+
+
 class JSONMetadata : public Metadata {
 
 public: // methods
 
-    JSONMetadata();
+    JSONMetadata(const Buffer& buffer);
     virtual ~JSONMetadata();
 
     virtual std::vector<std::string> parameters() const;
@@ -48,6 +52,10 @@ public: // methods
 protected: // methods
 
     virtual void print(std::ostream&) const;
+
+private: // members
+
+    Value root_;
 
 };
 

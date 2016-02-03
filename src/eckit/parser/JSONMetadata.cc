@@ -11,10 +11,13 @@
 /// @author Tiago Quintino
 /// @date Dec 2015
 
-#include "eckit/parser/JSONMetadata.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/parser/JSONMetadata.h"
+#include "eckit/parser/JSONParser.h"
 
 #include <iostream>
+#include <sstream>
 
 using namespace eckit;
 
@@ -22,30 +25,80 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-JSONMetadata::JSONMetadata() {}
+JSONMetadata::JSONMetadata(const Buffer& buffer) {
+
+    // JSON data is a string, rather than an anonymous blob of bytes...
+    std::string json_str(buffer, buffer.size());
+    std::istringstream iss(json_str);
+
+    // Parse the data, as a value
+    JSONParser parser(iss);
+    root_ = parser.parse();
+}
 
 JSONMetadata::~JSONMetadata() {}
 
+
 std::vector<std::string> JSONMetadata::parameters() const {
-    NOTIMP;
-    return std::vector<std::string>();
+
+    std::vector<std::string> params;
+    if (root_.isMap()) {
+        ValueMap vmap(root_);
+        for (ValueMap::const_iterator it = vmap.begin(); it != vmap.end(); ++it) {
+            params.push_back(std::string(it->first));
+        }
+    }
+    return params;
 }
 
 bool JSONMetadata::has(const std::string& key) const {
-    NOTIMP;
-    return false;
+    return root_.isMap() && root_.contains(key);
 }
 
-void JSONMetadata::get(const std::string& name, std::string& value) const {
-    NOTIMP;
+// If Value had a templated isType<T>() method, we could make this beautifully
+// DRY and templated...
+
+void JSONMetadata::get(const std::string& key, std::string& value) const {
+    ASSERT(root_.isMap());
+
+    if (!has(key))
+        throw OutOfRange(std::string("Element \"") + key + "\" not present in JSON", Here());
+
+    const Value& val(root_[key]);
+    if (!val.isString())
+        throw BadCast(std::string("Element \"") + key + "\" is not a std::string", Here());
+
+    value = std::string(val);
 }
 
-void JSONMetadata::get(const std::string& name, long& value) const {
-    NOTIMP;
+void JSONMetadata::get(const std::string& key, long& value) const {
+    ASSERT(root_.isMap());
+
+    if (!has(key))
+        throw OutOfRange(std::string("Element \"") + key + "\" not present in JSON", Here());
+
+    const Value& val(root_[key]);
+    if (!val.isNumber())
+        throw BadCast(std::string("Element \"") + key + "\" is not a long", Here());
+
+    value = (long)(val);
 }
 
-void JSONMetadata::get(const std::string& name, double& value) const {
-    NOTIMP;
+void JSONMetadata::get(const std::string& key, double& value) const {
+    ASSERT(root_.isMap());
+
+    if (!has(key))
+        throw OutOfRange(std::string("Element \"") + key + "\" not present in JSON", Here());
+
+    const Value& val(root_[key]);
+    if (val.isDouble()) {
+        value = double(val);
+    } else if (val.isNumber()) {
+        long long tmp_long  = (long long)(val);
+        value = tmp_long;
+    } else {
+        throw BadCast(std::string("Element \"") + key + "\" is not a double", Here());
+    }
 }
 
 void JSONMetadata::print(std::ostream& os) const {

@@ -27,7 +27,7 @@ namespace {
 
 JSONDataBlob::JSONDataBlob(const void * data, size_t length) :
     DataBlob(data, length),
-    metadata_() {
+    metadata_(buffer_) {
 
     Log::info() << "[" << *this << "] constructor" << std::endl;
 }
@@ -35,7 +35,7 @@ JSONDataBlob::JSONDataBlob(const void * data, size_t length) :
 
 JSONDataBlob::JSONDataBlob(DataHandle& dh, size_t length) :
     DataBlob(dh, length),
-    metadata_() {
+    metadata_(buffer_) {
 
     Log::info() << "[" << *this << "] constructor" << std::endl;
 }

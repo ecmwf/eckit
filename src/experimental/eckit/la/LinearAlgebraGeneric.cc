@@ -10,10 +10,10 @@
 
 //-----------------------------------------------------------------------------
 
-#include "experimental/eckit/la/LinearAlgebraGeneric.h"
-#include "experimental/eckit/la/Matrix.h"
-#include "experimental/eckit/la/SparseMatrix.h"
-#include "experimental/eckit/la/Vector.h"
+#include "eckit/la/LinearAlgebraGeneric.h"
+#include "eckit/la/Matrix.h"
+#include "eckit/la/SparseMatrix.h"
+#include "eckit/la/Vector.h"
 
 //-----------------------------------------------------------------------------
 

@@ -19,7 +19,7 @@
 
 #ifdef ECKIT_HAVE_MKL
 
-#include "experimental/eckit/la/LinearAlgebra.h"
+#include "eckit/la/LinearAlgebra.h"
 
 namespace eckit {
 namespace la {

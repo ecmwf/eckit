@@ -55,6 +55,7 @@ public: // methods
     std::vector<size_t> getUnsignedVector(const std::string &name) const;
     std::vector<float> getFloatVector(const std::string &name) const;
     std::vector<double> getDoubleVector(const std::string &name) const;
+    std::vector<std::string> getStringVector(const std::string &name) const;
 
     // Access to LocalConfiguration
 
@@ -80,6 +81,7 @@ public: // methods
 
     virtual bool get(const std::string &name, std::vector<long> &value) const;
     virtual bool get(const std::string &name, std::vector<double> &value) const;
+    virtual bool get(const std::string &name, std::vector<std::string> &value) const;
     virtual bool get(const std::string &name, size_t &value) const;
 
 

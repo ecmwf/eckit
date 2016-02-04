@@ -185,6 +185,21 @@ bool Configuration::get(const std::string &name, std::vector<double> &value) con
     return found;
 }
 
+bool Configuration::get(const std::string &name, std::vector<std::string> &value) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    if (found) {
+        ASSERT(v.isList());
+        value.clear();
+        int i = 0;
+        while (v.contains(i)) {
+            value.push_back(v[i]);
+            i++;
+        }
+    }
+    return found;
+}
+
 bool Configuration::get(const std::string &name, size_t &value) const {
     bool found = false;
     eckit::Value v = lookUp(name, found);
@@ -292,6 +307,12 @@ std::vector<float> Configuration::getFloatVector(const std::string &name) const 
 
 std::vector<double> Configuration::getDoubleVector(const std::string &name) const {
     std::vector<double> result;
+    _get(name, result);
+    return result;
+}
+
+std::vector<std::string> Configuration::getStringVector(const std::string &name) const {
+    std::vector<std::string> result;
     _get(name, result);
     return result;
 }

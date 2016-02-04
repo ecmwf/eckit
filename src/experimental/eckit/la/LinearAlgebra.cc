@@ -8,6 +8,8 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include "eckit/eckit_config.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
@@ -32,7 +34,11 @@ static std::string *currentBackend = 0;
 static void init() {
     local_mutex = new Mutex;
     m = new BackendMap;
+#ifdef ECKIT_HAVE_EIGEN
+    currentBackend = new std::string("eigen");
+#else
     currentBackend = new std::string("generic");
+#endif
 }
 
 // Caller needs to lock!

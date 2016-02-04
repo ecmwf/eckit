@@ -9,7 +9,8 @@
  */
 
 /// @author Baudouin Raoult
-/// @date JUl 2015
+/// @author Tiago Quintino
+/// @date   Jul 2015
 
 
 #ifndef eckit_LocalConfiguration_H

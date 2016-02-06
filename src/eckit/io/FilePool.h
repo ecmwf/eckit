@@ -72,8 +72,6 @@ public:
 
 private:
 
-    bool inUse(const PathName& path);
-
     void addToInUse(const PathName& path, DataHandle*);
 
     std::pair<PathName, DataHandle*> removeFromInUse(DataHandle*);
@@ -84,7 +82,7 @@ private:
 
     eckit::CacheLRU< PathName, DataHandle* > cache_;
 
-    eckit::Mutex mutex_;
+    mutable eckit::Mutex mutex_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

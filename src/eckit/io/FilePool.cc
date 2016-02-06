@@ -33,6 +33,10 @@ static void closeDataHandle(PathName& path, DataHandle*& handle)
     }
 }
 
+static bool inUse(const std::map<PathName,DataHandle*> store, const PathName& path) {
+    return store.find(path) != store.end();
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 FilePool::FilePool(size_t size) :
@@ -46,7 +50,7 @@ DataHandle *const FilePool::checkout(const PathName& path) {
 
     AutoLock<Mutex> lock(mutex_);
 
-    ASSERT( ! inUse(path) );
+    ASSERT( ! inUse(inUse_, path) );
 
     DataHandle* dh;
 
@@ -82,11 +86,8 @@ void FilePool::print(std::ostream& os) const
        << "cache=" << cache_ << ")";
 }
 
-bool FilePool::inUse(const PathName& path) {
-    return inUse_.find(path) != inUse_.end();
-}
-
 void FilePool::addToInUse(const PathName& path, DataHandle* dh) {
+    AutoLock<Mutex> lock(mutex_);
     inUse_[path] = dh;
 }
 
@@ -103,6 +104,7 @@ std::pair<PathName, DataHandle*> FilePool::removeFromInUse(DataHandle* dh) {
 }
 
 size_t FilePool::size() const {
+    AutoLock<Mutex> lock(mutex_);
     return cache_.size();
 }
 
@@ -112,10 +114,12 @@ void FilePool::capacity( size_t size ) {
 }
 
 size_t FilePool::capacity() const {
+    AutoLock<Mutex> lock(mutex_);
     return cache_.capacity();
 }
 
 size_t FilePool::usage() const {
+    AutoLock<Mutex> lock(mutex_);
     return inUse_.size();
 }
 

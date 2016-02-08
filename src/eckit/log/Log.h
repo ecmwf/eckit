@@ -112,6 +112,11 @@ public:  // methods
         return null();
     }
 
+    template<typename T>
+    static bool tracing(int level = 0, const T* = 0) {
+        return T::trace(level);
+    }
+
 private:
     Log();   ///< Private, non-instanciatable class
     ~Log();  ///< Private, non-instanciatable class

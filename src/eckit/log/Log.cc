@@ -133,7 +133,7 @@ Channel& Log::warning(const CodeLocation& where)
     return Context::instance().warnChannel().source(where);
 }
 
-static std::ostream& null() {
+std::ostream& Log::null() {
     static MultiChannel no_output;
     return no_output;
 }

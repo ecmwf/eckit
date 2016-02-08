@@ -99,6 +99,18 @@ public:  // methods
     static void unregisterObserver(LogObserver*);
     static std::ostream& dev() { return std::cout; }
     static void broadcast();
+    static std::ostream& null();
+
+    // Per application loggin
+    // trace(const T* = 0) can be replace by trace<T>() with c++14
+    template<typename T>
+    static std::ostream& trace(int level = 0, const T* = 0) {
+        if(T::trace(level)) {
+            dev() << ">>> TRACE-" << T::name() << " ";
+            return dev();
+        }
+        return null();
+    }
 
 private:
     Log();   ///< Private, non-instanciatable class

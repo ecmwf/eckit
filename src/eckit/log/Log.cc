@@ -89,7 +89,7 @@ Channel& Log::info(const CodeLocation& where)
 }
 
 Channel& Log::error()
-{    
+{
     return Context::instance().errorChannel();
 }
 
@@ -131,6 +131,11 @@ Channel& Log::warning()
 Channel& Log::warning(const CodeLocation& where)
 {
     return Context::instance().warnChannel().source(where);
+}
+
+static std::ostream& null() {
+    static MultiChannel no_output;
+    return no_output;
 }
 
 Channel& Log::debug(int level)

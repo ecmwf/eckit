@@ -94,12 +94,17 @@ void LinearAlgebra::dsptd(const Vector &, const SparseMatrix &, const Vector &, 
     NOTIMP;
 }
 
-LinearAlgebra::LinearAlgebra(const std::string &name) {
+LinearAlgebra::LinearAlgebra(const std::string &name):
+    name_(name) {
     pthread_once(&once, init);
     AutoLock<Mutex> lock(local_mutex);
 
     ASSERT(m->find(name) == m->end());
     (*m)[name] = this;
+}
+
+const std::string& LinearAlgebra::name() const {
+    return name_;
 }
 
 //-----------------------------------------------------------------------------

@@ -28,7 +28,11 @@ namespace la {
 
 class LinearAlgebra : private NonCopyable {
 
-public:  // static methods
+public:
+
+    const std::string& name() const;
+
+    // static methods
 
     /// Get the currently selected backend
     static const LinearAlgebra& backend();
@@ -67,10 +71,14 @@ public:  // virtual methods
 
 protected:
 
+    LinearAlgebra(const std::string& name);
+
     /// Get a backend by name
     static const LinearAlgebra& getBackend(const std::string& name);
 
-    LinearAlgebra(const std::string& name);
+private:
+
+    std::string name_;
 
     virtual void print(std::ostream&) const = 0;
 

@@ -26,80 +26,14 @@
 #include "eckit/thread/ThreadSingleton.h"
 #include "eckit/parser/Tokenizer.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-static int saved_argc = 0;
-static char** saved_argv = 0;
-static char** saved_envp = 0;
-
-#ifdef EC_HAVE_ATTRIBUTE_CONSTRUCTOR
-__attribute__((__constructor__))
-#endif
-static void before_main(int argc, char* argv[], char* envp[]) {
-
-  saved_argc = argc;
-  saved_argv = argv;
-  saved_envp = envp;
-
-#if !defined(EC_ATTRIBUTE_CONSTRUCTOR_INITS_ARGV) && defined(EC_HAVE_PROCFS)
-
- FILE* f = fopen("/proc/self/cmdline", "r");
-  int max = 0;
-
-  if(f) {
-        saved_argc = 0;
-        saved_argc = 0;
-        saved_envp = 0;
-
-        int c = 0;
-        int n = 0;
-
-        while( (c = fgetc(f)) != -1) {
-            if(c == 0) {
-                n = 0;
-                saved_argc++;
-            }
-            else {
-                n++;
-                if(n > max) {
-                    max = n;
-                }
-            }
-    }
-    fclose(f);
-  }
-
-  f = fopen("/proc/self/cmdline", "r");
-  if(f) {
-        int c = 0;
-        int i = 0;
-        char *p = 0;
-        saved_argv = (char**)malloc(saved_argc * sizeof(char*));
-        p = saved_argv[i] = (char*)malloc(max + 1);
-
-        while( (c = fgetc(f)) != -1) {
-            *p++ = c;
-            if(c == 0) {
-                 i++;
-                 if(i < saved_argc) {
-                    p = saved_argv[i] = (char*)malloc(max + 1);
-                }
-            }
-    }
-    fclose(f);
-  }
-
-#endif
-
-}
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static Once<Mutex> local_mutex;
 
-Context::Context() : argc_(saved_argc), argv_(saved_argv), taskID_(0), home_("/"), runName_("undef"), displayName_() {
+Context::Context() : argc_(0), argv_(0), taskID_(0), home_("/"), runName_("undef"), displayName_() {
+
   char* h = getenv("HOME");
   if (h) home_ = h;
 
@@ -305,6 +239,7 @@ PathName Context::configHome(const std::string& name) const {
 
   throw SeriousBug("Not registered HOME for ~" + name);
 }
-//-----------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

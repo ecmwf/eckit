@@ -29,20 +29,21 @@ static Mutex *local_mutex = 0;
 typedef std::map<std::string, const LinearAlgebra *> BackendMap;
 static BackendMap *m = 0;
 
-static std::string *currentBackend = 0;
+static std::string currentBackend("generic");
 
 static void init() {
     local_mutex = new Mutex;
     m = new BackendMap;
 #ifdef ECKIT_HAVE_EIGEN
-    currentBackend = new std::string("eigen");
-#else
-    currentBackend = new std::string("generic");
+    currentBackend = "eigen";
 #endif
 }
 
 // Caller needs to lock!
 static const LinearAlgebra& findBackend(const std::string& name) {
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(local_mutex);
+
     BackendMap::const_iterator it = m->find(name);
     if (it == m->end()) {
         eckit::Log::error() << "No Linear algebra backend named [" << name << "]" << std::endl;
@@ -61,24 +62,25 @@ static const LinearAlgebra& findBackend(const std::string& name) {
 
 const LinearAlgebra &LinearAlgebra::backend() {
     pthread_once(&once, init);
-    AutoLock<Mutex> lock(local_mutex);
-    return findBackend(*currentBackend);
+    return findBackend(currentBackend);
 }
 
 const LinearAlgebra &LinearAlgebra::getBackend(const std::string& name) {
     pthread_once(&once, init);
-    AutoLock<Mutex> lock(local_mutex);
     return findBackend(name);
 }
 
 void LinearAlgebra::backend(const std::string &name) {
+
     pthread_once(&once, init);
     AutoLock<Mutex> lock(local_mutex);
-    *currentBackend = name;
+
+    currentBackend = name;
     Log::info() << "Setting LinearAlgebra backend to " << backend() << std::endl;
 }
 
 void LinearAlgebra::list(std::ostream &out) {
+
     pthread_once(&once, init);
     AutoLock<Mutex> lock(local_mutex);
 

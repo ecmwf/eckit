@@ -14,9 +14,9 @@
 
 #include "eckit/eckit_config.h"
 
-#include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/SpecialFormHandler.h"
-#include "experimental/eckit/ecml/core/ExecutionContext.h"
+#include "eckit/ecml/parser/Request.h"
+#include "eckit/ecml/core/SpecialFormHandler.h"
+#include "eckit/ecml/core/ExecutionContext.h"
 
 namespace eckit {
 

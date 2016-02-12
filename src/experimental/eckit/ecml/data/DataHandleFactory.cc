@@ -15,6 +15,7 @@
 
 #include "eckit/io/MultiHandle.h"
 #include "eckit/parser/StringTools.h"
+#include "eckit/memory/ScopedPtr.h"
 
 using namespace eckit;
 
@@ -82,7 +83,7 @@ void DataHandleFactory::buildMultiHandle(MultiHandle& mh, const std::vector<std:
 DataHandle* DataHandleFactory::openForRead(const std::string& s)
 {
     std::pair<std::string,std::string> p (splitPrefix(s));
-    std::auto_ptr<DataHandle> d (makeHandle(p.first, p.second));
+    eckit::ScopedPtr<DataHandle> d (makeHandle(p.first, p.second));
     d->openForRead();
     return d.release();
 }
@@ -90,7 +91,7 @@ DataHandle* DataHandleFactory::openForRead(const std::string& s)
 DataHandle* DataHandleFactory::openForWrite(const std::string& s, const eckit::Length& length)
 {
     std::pair<std::string,std::string> p (splitPrefix(s));
-    std::auto_ptr<DataHandle> d (makeHandle(p.first, p.second));
+    eckit::ScopedPtr<DataHandle> d (makeHandle(p.first, p.second));
     d->openForWrite(length);
     return d.release();
 }

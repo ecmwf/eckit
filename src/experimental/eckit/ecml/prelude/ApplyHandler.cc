@@ -57,9 +57,7 @@ Request ApplyHandler::handle(const Request request, ExecutionContext& context)
     context.pushEnvironmentFrame(paramsFrame);
 
     if (closure->value()->tag() == "_verb" && closure->value()->text() == "closure")
-    {
-        r = context.interpreter().evalVerb(closure->value(), paramsFrame, context);
-    }
+        r = context.interpreter().evalClosure(closure->value(), paramsFrame, context);
     else if (closure->value()->tag() == "_native")
         r = context.interpreter().evalNative(closure->value(), paramsFrame, context);
     else

@@ -11,13 +11,13 @@
 #include "eckit/types/Types.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/StringTools.h"
-#include "experimental/eckit/ecml/parser/Request.h"
+#include "eckit/ecml/parser/Request.h"
 
-#include "experimental/eckit/ecml/core/ExecutionContext.h"
-#include "experimental/eckit/ecml/core/Environment.h"
-#include "experimental/eckit/ecml/core/Interpreter.h"
+#include "eckit/ecml/core/ExecutionContext.h"
+#include "eckit/ecml/core/Environment.h"
+#include "eckit/ecml/core/Interpreter.h"
 
-#include "experimental/eckit/ecml/prelude/ForHandler.h"
+#include "eckit/ecml/prelude/ForHandler.h"
 
 #ifdef _OPENMP
 # include <omp.h>

@@ -22,38 +22,82 @@ namespace la {
 
 namespace {
 
+
+#ifdef ECKIT_HAVE_EIGEN
+    static const char* defaultBackend = "eigen";
+#else
+    static const char* defaultBackend = "generic";
+#endif
+
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 
-static Mutex *local_mutex = 0;
+class BackendRegistry {
 
-typedef std::map<std::string, const LinearAlgebra *> BackendMap;
-static BackendMap *m = 0;
+public:
+    typedef std::map<std::string, const LinearAlgebra *> Map;
 
-static std::string currentBackend("generic");
+    BackendRegistry() : default_(defaultBackend) {}
+
+    void backend(const std::string& name);
+
+    // Caller needs to lock!
+    const LinearAlgebra& find() const;
+    const LinearAlgebra& find(const std::string& name) const;
+
+    void list(std::ostream &out) const;
+
+    void add(const std::string& name, LinearAlgebra* backend);
+
+private: // members
+
+    Map map_;
+    std::string default_;
+    mutable Mutex mutex_;
+};
+
+static BackendRegistry* backends = 0;
 
 static void init() {
-    local_mutex = new Mutex;
-    m = new BackendMap;
-#ifdef ECKIT_HAVE_EIGEN
-    currentBackend = "eigen";
-#endif
+    backends = new BackendRegistry();
 }
 
-// Caller needs to lock!
-static const LinearAlgebra& findBackend(const std::string& name) {
-    pthread_once(&once, init);
-    AutoLock<Mutex> lock(local_mutex);
+void BackendRegistry::backend(const std::string& name) {
+    AutoLock<Mutex> lock(mutex_);
+    default_ = name;
+}
 
-    BackendMap::const_iterator it = m->find(name);
-    if (it == m->end()) {
+const LinearAlgebra&BackendRegistry::find() const {
+    return find(default_);
+}
+
+const LinearAlgebra&BackendRegistry::find(const std::string& name) const {
+    AutoLock<Mutex> lock(mutex_);
+
+    BackendRegistry::Map::const_iterator it = map_.find(name);
+    if (it == map_.end()) {
         eckit::Log::error() << "No Linear algebra backend named [" << name << "]" << std::endl;
         eckit::Log::error() << "Linear algebra backends are:" << std::endl;
-        for (it = m->begin() ; it != m->end() ; ++it)
+        for (it = map_.begin() ; it != map_.end() ; ++it)
             eckit::Log::error() << "   " << (*it).first << std::endl;
         throw BadParameter("Linear algebra backend " + name + " not available.", Here());
     }
     Log::debug() << "Using LinearAlgebra backend " << it->first << std::endl;
     return *(it->second);
+}
+
+void BackendRegistry::list(std::ostream& out) const {
+    AutoLock<Mutex> lock(mutex_);
+    const char *sep = "";
+    for (Map::const_iterator it = map_.begin() ; it != map_.end() ; ++it) {
+        out << sep << it->first;
+        sep = ", ";
+    }
+}
+
+void BackendRegistry::add(const std::string& name, LinearAlgebra* backend) {
+    AutoLock<Mutex> lock(mutex_);
+    ASSERT(map_.find(name) == map_.end());
+    map_[name] = backend;
 }
 
 }  // anonymous namespace
@@ -62,33 +106,23 @@ static const LinearAlgebra& findBackend(const std::string& name) {
 
 const LinearAlgebra &LinearAlgebra::backend() {
     pthread_once(&once, init);
-    return findBackend(currentBackend);
+    return backends->find(defaultBackend);
 }
 
 const LinearAlgebra &LinearAlgebra::getBackend(const std::string& name) {
     pthread_once(&once, init);
-    return findBackend(name);
+    return backends->find(name);
 }
 
 void LinearAlgebra::backend(const std::string &name) {
-
     pthread_once(&once, init);
-    AutoLock<Mutex> lock(local_mutex);
-
-    currentBackend = name;
-    Log::info() << "Setting LinearAlgebra backend to " << backend() << std::endl;
+    backends->backend(name);
+    Log::info() << "Setting LinearAlgebra backend to " << name << std::endl;
 }
 
 void LinearAlgebra::list(std::ostream &out) {
-
     pthread_once(&once, init);
-    AutoLock<Mutex> lock(local_mutex);
-
-    const char *sep = "";
-    for (BackendMap::const_iterator it = m->begin() ; it != m->end() ; ++it) {
-        out << sep << it->first;
-        sep = ", ";
-    }
+    backends->list(out);
 }
 
 void LinearAlgebra::dsptd(const Vector &, const SparseMatrix &, const Vector &, SparseMatrix &) const
@@ -99,10 +133,7 @@ void LinearAlgebra::dsptd(const Vector &, const SparseMatrix &, const Vector &, 
 LinearAlgebra::LinearAlgebra(const std::string &name):
     name_(name) {
     pthread_once(&once, init);
-    AutoLock<Mutex> lock(local_mutex);
-
-    ASSERT(m->find(name) == m->end());
-    (*m)[name] = this;
+    backends->add(name, this);
 }
 
 const std::string& LinearAlgebra::name() const {

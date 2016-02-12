@@ -1,3 +1,9 @@
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
 list( APPEND eckit_ecml_srcs
 # Parser
 parser/Cell.h
@@ -38,6 +44,8 @@ prelude/Prelude.cc
 prelude/Prelude.h
 prelude/LetHandler.cc
 prelude/LetHandler.h
+prelude/UpdateHandler.h
+prelude/UpdateHandler.cc
 prelude/VariableLookupHandler.cc
 prelude/VariableLookupHandler.h
 prelude/DefineFunctionHandler.cc
@@ -48,6 +56,8 @@ prelude/ClosureHandler.h
 prelude/ClosureHandler.cc
 prelude/ListHandler.cc
 prelude/ListHandler.h
+prelude/SequenceHandler.cc
+prelude/SequenceHandler.h
 prelude/PrintHandler.cc
 prelude/PrintHandler.h
 prelude/TestHandler.cc
@@ -64,8 +74,6 @@ prelude/SystemHandler.h
 prelude/SystemHandler.cc
 prelude/GetenvHandler.h
 prelude/GetenvHandler.cc
-prelude/ParallelMapHandler.h
-prelude/ParallelMapHandler.cc
 prelude/JoinStringsHandler.h
 prelude/JoinStringsHandler.cc
 prelude/QuoteHandler.h
@@ -76,7 +84,20 @@ prelude/RunHandler.h
 prelude/RunHandler.cc
 prelude/REPLHandler.h
 prelude/REPLHandler.cc
-
+prelude/DictionaryHandler.h
+prelude/DictionaryHandler.cc
+prelude/RangeHandler.h
+prelude/RangeHandler.cc
+prelude/ForHandler.cc
+prelude/ForHandler.h
+prelude/GlobHandler.cc
+prelude/GlobHandler.h
+prelude/ReadTextFileHandler.h
+prelude/ReadTextFileHandler.cc
+prelude/TryHandler.h
+prelude/TryHandler.cc
+prelude/ThrowHandler.h
+prelude/ThrowHandler.cc
 
 # Data types' support
 data/DataHandleFactory.h

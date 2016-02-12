@@ -20,18 +20,40 @@ using namespace eckit;
 
 namespace eckit {
 
-VariableLookupHandler::VariableLookupHandler(const string& name) : RequestHandler(name) {}
+VariableLookupHandler::VariableLookupHandler(const string& name, const string& parameterName) 
+: RequestHandler(name),
+  of_(parameterName)
+{}
 
+// TODO: this needs to be a SpecialFormHandler so this works properly:
+// ecml> let,_='A'
+//  => let, _ = "A"
+//  ecml> $,_=_
+//   => _
 Values VariableLookupHandler::handle(ExecutionContext& context)
 {
-    vector<string> vars (getValueAsList(context, "of"));
-    if (vars.size() != 1)
-        throw UserError("'value,of' expects one variable name currently");
-
+    vector<string> vars (context.getValueAsList(of_));
     string var (vars[0]);
     Values r (context.environment().lookup(var));
 
-    return r;
+    for (size_t i (1); i < vars.size(); ++i)
+    {
+        const string& key (vars[i]);
+
+        // r is (possibly) a list, let's assume it has only one element for now
+        // TODO: handle case where there is more elements 
+        Cell * v ( r->tag() == "_list" ? r->value() : r);
+
+        Cell * values (v->valueOrDefault(key, 0));
+
+        if (! values)
+            throw UserError(string("No '") + key + "' in " + r->str());
+
+        delete r;
+        r = values;
+    }
+
+    return Cell::clone(r);
 }
 
 } // namespace eckit

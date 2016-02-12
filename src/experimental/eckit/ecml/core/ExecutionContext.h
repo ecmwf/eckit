@@ -24,7 +24,10 @@ class RequestHandler;
 class ExecutionContext {
 public:
     ExecutionContext();
+    ExecutionContext(const ExecutionContext&);
     ~ExecutionContext();
+
+    std::vector<std::string> getValueAsList(const std::string& keyword);
 
     void registerHandler(const char*, eckit::RequestHandler&);
     void registerHandler(const std::string&, eckit::RequestHandler&);
@@ -50,6 +53,7 @@ public:
 
 private:
     eckit::Environment* environment_;
+    eckit::Environment* otherEnvironment_;
     eckit::Interpreter* interpreter_;
 };
 

@@ -23,14 +23,22 @@ using namespace eckit;
 
 ExecutionContext::ExecutionContext()
 : environment_(new Environment(0, new Cell("_list", "", 0, 0))),
+  otherEnvironment_(0),
   interpreter_(new Interpreter())
 {
     Prelude().importInto(*this);
 }
 
+ExecutionContext::ExecutionContext(const ExecutionContext& other)
+: environment_(other.environment_),
+  otherEnvironment_(other.environment_),
+  interpreter_(new Interpreter())
+{
+}
+
 ExecutionContext::~ExecutionContext()
 {
-    for (Environment* e(environment_); e; e = e->parent())
+    for (Environment* e(environment_); e && e != otherEnvironment_; e = e->parent())
         delete e;
     delete interpreter_;
 }
@@ -110,4 +118,20 @@ Cell* ExecutionContext::copy() const
     // TODO:
     NOTIMP;
     return 0;
+}
+
+std::vector<std::string> ExecutionContext::getValueAsList(const std::string& keyword)
+{
+    std::vector<std::string> r;
+
+    Request v (environment().lookup(keyword));
+    ASSERT(v->tag() == "_list");
+
+    Request evaluated (interpreter().eval(v, *this));
+    for (Request p(evaluated); p; p = p->rest())
+    {
+        r.push_back(p->value()->text());
+    }
+
+    return r;
 }

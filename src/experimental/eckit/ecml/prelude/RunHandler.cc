@@ -31,8 +31,6 @@ RunHandler::RunHandler(const std::string& name) : SpecialFormHandler(name) {}
 
 Values RunHandler::handle(const Request request, ExecutionContext& context)
 {
-    Log::info() << "RunHandler: request:" << request << endl;
-
     Cell* r(0); 
 
     Request evaluatedAttributes (context.interpreter().evalAttributes(request, context));

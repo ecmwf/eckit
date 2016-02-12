@@ -46,6 +46,8 @@ public:
     Cell* value(const std::string& keyword, Cell* value); 
     Cell* value(const std::string& keyword, const std::string& value); 
 
+    void update(const std::string& keyword, Cell*); 
+
     // Get value pointed by a keyword
     Cell* valueOrDefault(const std::string& keyword, Cell* defaultValue) const;
     std::string valueAsString(const std::string& keyword, const std::string& defaultValue) const;

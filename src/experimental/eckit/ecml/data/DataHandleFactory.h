@@ -35,6 +35,7 @@ public:
     static DataHandle* openForWrite(const std::string&, const Length& = Length(0));
 
     static void buildMultiHandle(MultiHandle&, const std::vector<std::string>&);
+    static void buildMultiHandle(MultiHandle&, const std::string&);
 
 protected:
     DataHandleFactory(const std::string&);

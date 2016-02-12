@@ -1,0 +1,51 @@
+test, label = Check verb for works 1,
+do = (
+    for, x = 1/2/3,
+    do = (
+        println,values = (x)
+    )
+),
+expect = 1/2/3
+
+test, label = Check verb for works 2,
+do = (
+    for, x = 1/2/3,
+    do = (
+        println,values = ($,_=x) / ($,_=x)
+    )
+),
+expect = 1/1/2/2/3/3
+
+test, label = Check nested for,
+do = (
+    for, x = 1/2/3,
+    do = (
+        for, y = (sequence,values = a/b/c),
+        do = (
+            println,values = ($,_=x) / ($,_=y)
+        )
+    )
+),
+expect = 1 / a / 1 / b / 1 / c / 2 / a / 2 / b / 2 / c / 3 / a / 3 / b / 3 / c
+
+test, label = Check nested for again,
+do = (
+    for, x = (for, y = a/b/c, do = (y)),
+    do = (sequence,values=(x) / (x))
+),
+expect = a / a / b / b / c / c
+
+test, label = Check nested for producing dicts,
+do = (
+    let, records = (
+        for, x = 1/2/3,
+        do = (
+            for, y = (sequence,values = a/b/c),
+            do = (let, number = (x),
+                       character = (y))
+        )
+    )
+
+    for, rec = (records), do = ($,_ = rec/number)
+),
+expect = 1/1/1 / 2/2/2 / 3/3/3

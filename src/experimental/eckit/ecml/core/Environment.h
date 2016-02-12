@@ -22,8 +22,9 @@ class ExecutionContext;
 
 class Environment {
 public:
-	Environment(Environment*, Request);
-	~Environment(); 
+    Environment(const Environment&);
+    Environment(Environment*, Request);
+    ~Environment(); 
 
     void set(const std::string&, Request);
     Request lookup(const std::string&);
@@ -34,7 +35,7 @@ public:
     Environment* parent();
     Request currentFrame();
 
-	void print(std::ostream&) const; 	
+    void print(std::ostream&) const; 	
 
 private:
     Cell* dictionary_;

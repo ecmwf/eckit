@@ -9,11 +9,13 @@
  */
 
 #include <sstream>
+#include <memory>
 
 #include "eckit/ecml/data/DataHandleFactory.h"
 
 #include "eckit/io/MultiHandle.h"
 #include "eckit/parser/StringTools.h"
+#include "eckit/memory/ScopedPtr.h"
 
 using namespace eckit;
 
@@ -53,10 +55,19 @@ std::pair<std::string, std::string> DataHandleFactory::splitPrefix(const std::st
 
     // Sugar.
     if (StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "retrieve,")
+        || StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "stage,")
+        || StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "list,")
         || StringTools::startsWith(StringTools::lower(StringTools::trim(handleDescriptor)), "archive,"))
         return std::make_pair(std::string("mars"), handleDescriptor);
 
     return std::make_pair(std::string("file"), handleDescriptor);
+}
+
+void DataHandleFactory::buildMultiHandle(MultiHandle& mh, const std::string& dataDescriptor)
+{
+    std::vector<std::string> ds;
+    ds.push_back(dataDescriptor);
+    buildMultiHandle(mh, ds);
 }
 
 void DataHandleFactory::buildMultiHandle(MultiHandle& mh, const std::vector<std::string>& dataDescriptors)
@@ -72,16 +83,16 @@ void DataHandleFactory::buildMultiHandle(MultiHandle& mh, const std::vector<std:
 DataHandle* DataHandleFactory::openForRead(const std::string& s)
 {
     std::pair<std::string,std::string> p (splitPrefix(s));
-    DataHandle* d (makeHandle(p.first, p.second));
+    eckit::ScopedPtr<DataHandle> d (makeHandle(p.first, p.second));
     d->openForRead();
-    return d;
+    return d.release();
 }
 
 DataHandle* DataHandleFactory::openForWrite(const std::string& s, const eckit::Length& length)
 {
     std::pair<std::string,std::string> p (splitPrefix(s));
-    DataHandle* d (makeHandle(p.first, p.second));
+    eckit::ScopedPtr<DataHandle> d (makeHandle(p.first, p.second));
     d->openForWrite(length);
-    return d;
+    return d.release();
 }
 

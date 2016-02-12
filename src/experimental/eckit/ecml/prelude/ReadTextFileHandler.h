@@ -7,10 +7,10 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
-/// @author Piotr Kuchta, May 2015
+/// @author Piotr Kuchta, December 2015
 
-#ifndef eckit_ecml_VariableLookupHandler_H
-#define eckit_ecml_VariableLookupHandler_H
+#ifndef eckit_ecml_ReadTextFileHandler_H
+#define eckit_ecml_ReadTextFileHandler_H
 
 #include <sstream>
 
@@ -19,12 +19,12 @@
 
 namespace eckit {
 
-class VariableLookupHandler : public eckit::RequestHandler {
+class ReadTextFileHandler : public eckit::RequestHandler {
 public:
-    VariableLookupHandler(const std::string&, const std::string&);
+    ReadTextFileHandler(const std::string&);
     virtual eckit::Values handle(eckit::ExecutionContext&);
 private:
-    const std::string of_;
+    std::string readFile(const eckit::PathName&);
 };
 
 } // namespace eckit

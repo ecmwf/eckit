@@ -63,6 +63,8 @@ static void init() {
 
 void BackendRegistry::backend(const std::string& name) {
     AutoLock<Mutex> lock(mutex_);
+    if (map_.find(name) == map_.end())
+        throw BadParameter("Invalid backend " + name, Here());
     default_ = name;
 }
 

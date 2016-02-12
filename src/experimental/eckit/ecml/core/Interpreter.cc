@@ -54,7 +54,9 @@ Values Interpreter::eval(const Request request, ExecutionContext& context)
     Values r ( tag == ""          ? object
              : tag == "_list"     ? object
              : tag == "_native"   ? evalNative(object, request, context)
-             : tag == "_verb"     ? evalVerb(object, request, context)
+             : tag == "_verb" 
+               && object->text() == "let" ? object
+             : tag == "_verb"     ? evalClosure(object, request, context)
              : tag == "_macro"    ? evalMacro(object, request, context)
              : tag == "_requests" ? eval(object, context)
              : tag == "_request"  ? eval(object, context)
@@ -155,7 +157,7 @@ Values Interpreter::evalMacro(const Request object, const Request request, Execu
     return h.handle(request, context);
 }
 
-Values Interpreter::evalVerb(const Request object, const Request request, ExecutionContext& context)
+Values Interpreter::evalClosure(const Request object, const Request request, ExecutionContext& context)
 {
     ASSERT(object->text() == "closure");
 

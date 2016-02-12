@@ -31,7 +31,7 @@ public:
     void debug(bool d) { debug_ = d; }
 
     virtual Values evalRequests(const Request, ExecutionContext&);
-    virtual Values evalVerb(const Request object, const Request request, ExecutionContext&);
+    virtual Values evalClosure(const Request object, const Request request, ExecutionContext&);
     virtual Values evalNative(const Request object, const Request request, ExecutionContext&);
 protected:
     virtual Values evalList(const Request, ExecutionContext&);

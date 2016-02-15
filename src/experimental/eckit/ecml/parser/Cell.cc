@@ -80,7 +80,7 @@ Cell* Cell::value(const std::string& keyword, Cell* v)
             return r->rest(new Cell("", keyword, v, 0))->value();
     }
 
-    ASSERT("Should not reach here" && 0);
+    throw AssertionFailed("Should not reach here");
     return 0;
 }
 

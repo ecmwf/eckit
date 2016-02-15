@@ -156,13 +156,13 @@ BOOST_AUTO_TEST_CASE( test_reanimate_##TYPE##_##SUFFIX ) \
 
 BOOST_AUTO_TEST_SUITE( TestStreamable )
 
-test_decode(char, numeric_limits<char>::max(), max)
-test_decode(char, numeric_limits<char>::min(), min)
-test_reanimate(char, numeric_limits<char>::max(), max)
-test_reanimate(char, numeric_limits<char>::min(), min)
+test_decode(char, 'A', max)
+test_decode(char, 'z', min)
+test_reanimate(char, 'A', max)
+test_reanimate(char, 'z', min)
 
-test_decode(uchar, numeric_limits<uchar>::max(), max)
-test_reanimate(uchar, numeric_limits<uchar>::max(), max)
+test_decode(uchar, 'A', max)
+test_reanimate(uchar, 'A', max)
 
 test_decode(bool, true, true)
 test_reanimate(bool, true, true)

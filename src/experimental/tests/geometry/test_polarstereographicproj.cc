@@ -79,8 +79,8 @@ BOOST_AUTO_TEST_CASE( test_global_north_polar_stereographic_projection )
 
    PolarStereoGraphicProj ps(false/*southPoleOnProjectionPlane*/,false/*earth_is_oblate*/,0);
 
-   for(size_t lat = -90; lat < 90; lat++) {
-      for(size_t lon = 0; lon < 360; lon++) {
+   for(long lat = -90; lat < 90; lat++) {
+      for(long lon = 0; lon < 360; lon++) {
 
          eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lat) );
          eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
@@ -98,8 +98,8 @@ BOOST_AUTO_TEST_CASE( test_global_south_polar_stereographic_projection )
 
    PolarStereoGraphicProj ps(true/*southPoleOnProjectionPlane*/,false/*earth_is_oblate*/,0);
 
-   for(size_t lat = -90; lat < 90; lat++) {
-      for(size_t lon = 0; lon < 360; lon++) {
+   for(long lat = -90; lat < 90; lat++) {
+      for(long lon = 0; lon < 360; lon++) {
 
          eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lon) );
          eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
@@ -139,8 +139,8 @@ BOOST_AUTO_TEST_CASE( test_global_north_ellipsoid_polar_stereographic_projection
 
    PolarStereoGraphicProj ps(false/*southPoleOnProjectionPlane*/,true/*earth_is_oblate*/,0);
 
-   for(size_t lat = -90; lat < 90; lat++) {
-      for(size_t lon = 0; lon < 360; lon++) {
+   for(long lat = -90; lat < 90; lat++) {
+      for(long lon = 0; lon < 360; lon++) {
 
          eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lat,lon) );
          eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );
@@ -158,8 +158,8 @@ BOOST_AUTO_TEST_CASE( test_global_south_ellipsoid_polar_stereographic_projection
 
    PolarStereoGraphicProj ps(true/*southPoleOnProjectionPlane*/,true/*earth_is_oblate*/,0);
 
-   for(size_t lat = -90; lat < 90; lat++) {
-      for(size_t lon = 0; lon < 360; lon++) {
+   for(long lat = -90; lat < 90; lat++) {
+      for(long lon = 0; lon < 360; lon++) {
 
          eckit::geometry::Point2 pt_on_plane = ps.map_to_plane( eckit::geometry::LLPoint2(lon,lat) );
          eckit::geometry::LLPoint2 pt_on_sphere = ps.map_to_spherical( pt_on_plane[LON],  pt_on_plane[LAT] );

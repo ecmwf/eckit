@@ -10,6 +10,8 @@
 
 #include <list>
 
+#define BOOST_TEST_MODULE test_eckit_geometry
+
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/container/KDTree.h"

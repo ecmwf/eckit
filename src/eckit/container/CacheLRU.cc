@@ -132,7 +132,9 @@ template< typename K, typename V>
 void CacheLRU<K,V>::trim()
 {
     while(map_.size() > capacity_) {
-        map_.erase( storage_.back().key_ );
+        entry_type entry = storage_.back();
+        purge( entry.key_, entry.value_ );
+        map_.erase( entry.key_ );
         storage_.pop_back();
     }
 }

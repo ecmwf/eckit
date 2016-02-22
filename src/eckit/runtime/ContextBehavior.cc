@@ -59,6 +59,10 @@ FileReadPolicy ContextBehavior::fileReadPolicy()
   return DirectReadPolicy();
 }
 
+void ContextBehavior::configChannel(Channel& ,std::string)
+{
+}
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

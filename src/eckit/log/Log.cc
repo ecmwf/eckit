@@ -10,6 +10,7 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/log/Channel.h"
+#include "eckit/log/ChannelBuffer.h"
 #include "eckit/log/MultiChannel.h"
 #include "eckit/log/MonitorChannel.h"
 #include "eckit/log/UserChannel.h"
@@ -17,9 +18,33 @@
 #include "eckit/runtime/Context.h"
 
 #include "eckit/thread/ThreadSingleton.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
+
+#include <map>
 
 namespace eckit {
 
+namespace {
+	static eckit::Mutex* local_mutex = 0;
+	static pthread_once_t once = PTHREAD_ONCE_INIT;
+	typedef std::map<std::string,Channel*> logMap;
+	static logMap* log_ = 0;
+
+	static void init() {
+	    local_mutex = new eckit::Mutex();
+	    log_ = new logMap();
+	}
+
+    struct createChannel
+	{
+		Channel* operator()()
+		{
+			MultiChannel* mc = new MultiChannel();
+			return mc;
+		}
+	};
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 #ifndef _GNU_SOURCE
@@ -47,6 +72,44 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
+
+void Log::regstr(std::string key)
+{
+    pthread_once(&once, init);
+    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+
+    if(log_->find(key) == log_->end())
+	{
+		log_->insert(std::make_pair<std::string,Channel*>(key, createChannel()()));
+	}
+}
+
+void Log::remove(std::string key)
+{
+    pthread_once(&once, init);
+    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+
+    if(log_->find(key) == log_->end())
+	{
+		//channel is not registered
+	} else {
+		log_->erase (key);
+	}
+}
+
+Channel& Log::get(std::string key)
+{
+    pthread_once(&once, init);
+    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+
+    if(log_->find(key) == log_->end()) {
+        //requested channel not found
+        Log::error() << "requested channel not found, switching to error channel" << std::endl;
+        return Log::error();
+    } else {
+		return  *((*log_)[key]);
+    }
+}
 
 struct CreateMonitorChannel
 {

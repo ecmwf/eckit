@@ -57,6 +57,8 @@ public: // interface methods
     virtual ResourcePolicy resourcePolicy();
     virtual FileReadPolicy fileReadPolicy();
 
+    virtual void configChannel(Channel& ,std::string);
+
 public :
 
   enum ChannelCategory { ERROR=0, WARN=1, INFO=2, DEBUG=3 };

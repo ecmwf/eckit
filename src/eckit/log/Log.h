@@ -45,7 +45,13 @@ public:  // types
     };
 
 public:  // methods
-         /// Channel for debug output
+
+    /// Register channels
+    static void regstr(std::string);
+    static void remove(std::string);
+    static Channel& get(std::string);
+
+    /// Channel for debug output
     static Channel& debug(int level = 1);
     static Channel& debug(const CodeLocation& where, int level = 1);
 

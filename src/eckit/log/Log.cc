@@ -67,7 +67,7 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Log::regstr(const std::string key, Channel* channel)
+void Log::registerChannel(const std::string key, Channel* channel)
 {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
@@ -80,7 +80,7 @@ void Log::regstr(const std::string key, Channel* channel)
 	}
 }
 
-void Log::remove(const std::string key)
+void Log::removeChannel(const std::string key)
 {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);

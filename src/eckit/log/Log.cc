@@ -31,12 +31,12 @@ namespace eckit {
 namespace {
 	static eckit::Mutex* local_mutex = 0;
 	static pthread_once_t once = PTHREAD_ONCE_INIT;
-	typedef std::map<std::string,Channel*> logMap;
-	static logMap* log_ = 0;
+	typedef std::map<std::string,Channel*> LogMap;
+	static LogMap* logMap = 0;
 
 	static void init() {
 	    local_mutex = new eckit::Mutex();
-	    log_ = new logMap();
+	    logMap = new LogMap();
 	}
 
     struct createChannel
@@ -76,45 +76,45 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Log::regstr(std::string key, std::string prefix)
+void Log::regstr(const std::string key, const std::string prefix)
 {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    if(log_->find(key) == log_->end())
+    if(logMap->find(key) == logMap->end())
 	{
-		log_->insert(std::make_pair<std::string,Channel*>(key, createChannel()()));
-		Context::instance().behavior().configChannel(*((*log_)[key]), prefix);
+		logMap->insert(std::make_pair<std::string,Channel*>(key, createChannel()()));
+		Context::instance().behavior().configChannel(*((*logMap)[key]), prefix);
 	} else {
 		throw BadParameter( "Channel '" + key + "' is already registered ", Here());
 	}
 }
 
-void Log::remove(std::string key)
+void Log::remove(const std::string key)
 {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    if(log_->find(key) == log_->end())
+    if(logMap->find(key) == logMap->end())
 	{
 		//channel is not registered
 		throw BadParameter( "Channel '" + key + "' does not exist ", Here());
 	} else {
-		log_->erase (key);
+		logMap->erase (key);
 	}
 }
 
-Channel& Log::channel(std::string key)
+Channel& Log::channel(const std::string key)
 {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    if(log_->find(key) == log_->end()) {
+    if(logMap->find(key) == logMap->end()) {
         //requested channel not found
         Log::info() << "requested channel not found, switching to info channel" << std::endl;
         return Log::info();
     } else {
-		return  *((*log_)[key]);
+		return  *((*logMap)[key]);
     }
 }
 

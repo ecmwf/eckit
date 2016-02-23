@@ -47,9 +47,9 @@ public:  // types
 public:  // methods
 
     /// Register channels
-    static void regstr(std::string key, std::string prefix);
-    static void remove(std::string key);
-    static Channel& channel(std::string key);
+    static void regstr(const std::string key, const std::string prefix);
+    static void remove(const std::string key);
+    static Channel& channel(const std::string key);
 
     /// Channel for debug output
     static Channel& debug(int level = 1);

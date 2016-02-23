@@ -57,7 +57,7 @@ public: // interface methods
     virtual ResourcePolicy resourcePolicy();
     virtual FileReadPolicy fileReadPolicy();
 
-    virtual void configChannel(Channel& ,std::string);
+    virtual void configChannel(Channel& channel,const std::string& prefix);
 
 public :
 

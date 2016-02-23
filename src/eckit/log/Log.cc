@@ -15,7 +15,10 @@
 #include "eckit/log/MonitorChannel.h"
 #include "eckit/log/UserChannel.h"
 
+#include "eckit/runtime/ContextBehavior.h"
 #include "eckit/runtime/Context.h"
+
+#include "eckit/exception/Exceptions.h"
 
 #include "eckit/thread/ThreadSingleton.h"
 #include "eckit/thread/AutoLock.h"
@@ -73,7 +76,7 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Log::regstr(std::string key)
+void Log::regstr(std::string key, std::string prefix)
 {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
@@ -81,6 +84,9 @@ void Log::regstr(std::string key)
     if(log_->find(key) == log_->end())
 	{
 		log_->insert(std::make_pair<std::string,Channel*>(key, createChannel()()));
+		Context::instance().behavior().configChannel(*((*log_)[key]), prefix);
+	} else {
+		throw BadParameter( "Channel '" + key + "' is already registered ", Here());
 	}
 }
 
@@ -92,20 +98,21 @@ void Log::remove(std::string key)
     if(log_->find(key) == log_->end())
 	{
 		//channel is not registered
+		throw BadParameter( "Channel '" + key + "' does not exist ", Here());
 	} else {
 		log_->erase (key);
 	}
 }
 
-Channel& Log::get(std::string key)
+Channel& Log::channel(std::string key)
 {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     if(log_->find(key) == log_->end()) {
         //requested channel not found
-        Log::error() << "requested channel not found, switching to error channel" << std::endl;
-        return Log::error();
+        Log::info() << "requested channel not found, switching to info channel" << std::endl;
+        return Log::info();
     } else {
 		return  *((*log_)[key]);
     }

@@ -47,7 +47,7 @@ public:  // types
 public:  // methods
 
     /// Register channels
-    static void regstr(const std::string key, const std::string prefix);
+    static void regstr(const std::string key, Channel* channel);
     static void remove(const std::string key);
     static Channel& channel(const std::string key);
 

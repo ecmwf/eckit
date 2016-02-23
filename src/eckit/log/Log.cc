@@ -15,7 +15,6 @@
 #include "eckit/log/MonitorChannel.h"
 #include "eckit/log/UserChannel.h"
 
-#include "eckit/runtime/ContextBehavior.h"
 #include "eckit/runtime/Context.h"
 
 #include "eckit/exception/Exceptions.h"
@@ -38,16 +37,8 @@ namespace {
 	    local_mutex = new eckit::Mutex();
 	    logMap = new LogMap();
 	}
-
-    struct createChannel
-	{
-		Channel* operator()()
-		{
-			MultiChannel* mc = new MultiChannel();
-			return mc;
-		}
-	};
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 
 #ifndef _GNU_SOURCE
@@ -76,15 +67,14 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Log::regstr(const std::string key, const std::string prefix)
+void Log::regstr(const std::string key, Channel* channel)
 {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     if(logMap->find(key) == logMap->end())
 	{
-		logMap->insert(std::make_pair<std::string,Channel*>(key, createChannel()()));
-		Context::instance().behavior().configChannel(*((*logMap)[key]), prefix);
+		logMap->insert(std::make_pair<std::string,Channel*>(key, channel));
 	} else {
 		throw BadParameter( "Channel '" + key + "' is already registered ", Here());
 	}
@@ -111,8 +101,7 @@ Channel& Log::channel(const std::string key)
 
     if(logMap->find(key) == logMap->end()) {
         //requested channel not found
-        Log::info() << "requested channel not found, switching to info channel" << std::endl;
-        return Log::info();
+		throw BadParameter( "Channel '" + key + "' not found ", Here());
     } else {
 		return  *((*logMap)[key]);
     }

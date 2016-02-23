@@ -57,24 +57,24 @@ protected: // methods
 private: // members
 
     Configurable*       owner_;
-	
+
     bool                inited_;
     bool                converted_;
-    
+
     std::string         name_;        // In the config file
 	std::string         environment_; // In the environment variables
 	std::string         options_;     // For the command line options
     std::string         valueStr_;    // keeps the value in std::string form
 
 private: // methods
-    
+
     virtual void setValue(const std::string&) = 0;
     virtual std::string getValue() const      = 0;
 
 };
 
 
-template<class T> 
+template<class T>
 class Resource : public ResourceBase {
 
 public: // methods
@@ -85,6 +85,9 @@ public: // methods
     Resource(const std::string& str,const T& value, const StringDict& args ):
 		ResourceBase(str,args),     value_(value) {}
 
+    Resource(const std::string& str,const std::string& value, bool):
+        ResourceBase(0,str),     value_(eckit::Translator<std::string,T>()(value)) {}
+
 	// Part of a configurable
 
     Resource(Configurable* owner,const std::string& str,const T& value):
@@ -92,7 +95,7 @@ public: // methods
 
     /// @returns a copy of the resource value
     T value() { init(); convert(); return value_; }
-    
+
     operator T&() { init(); convert(); return value_; }
 
 private: // members
@@ -108,13 +111,13 @@ private: // overridden methods
 
 //-----------------------------------------------------------------------------
 
-template<class T> 
+template<class T>
 void Resource<T>::setValue(const std::string& s)
 {
     value_ = Translator<std::string, T>()(s);
 }
 
-template<class T> 
+template<class T>
 std::string Resource<T>::getValue() const
 {
     return Translator<T, std::string>()(value_);

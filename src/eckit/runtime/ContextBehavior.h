@@ -39,6 +39,11 @@ public:
 
 public: // interface methods
 
+    // Register channels
+    virtual void registerChannel(const std::string& key, Channel* channel) = 0;
+    virtual void removeChannel(const std::string& key) = 0;
+    virtual Channel& channel(const std::string& key);
+
     virtual Channel& infoChannel()  = 0;
     virtual Channel& warnChannel()  = 0;
     virtual Channel& errorChannel() = 0;

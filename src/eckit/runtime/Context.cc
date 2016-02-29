@@ -131,6 +131,18 @@ Channel& Context::debugChannel() { return behavior_->debugChannel(); }
 
 Channel& Context::channel(int cat) { return behavior_->channel(cat); }
 
+Channel& Context::channel(const std::string& key) { return behavior_->channel(key); }
+
+void Context::registerChannel(const std::string& key, Channel* channel)
+{
+    behavior_->registerChannel(key, channel);
+}
+
+void Context::removeChannel(const std::string& key)
+{
+	behavior_->removeChannel(key);
+}
+
 static PathName proc_path(const std::string& name) {
   ASSERT(name.size() > 0);
   if (name[0] == '/') {

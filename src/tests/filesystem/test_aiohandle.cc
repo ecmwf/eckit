@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/AIOHandle.h"
 #include "eckit/io/Buffer.h"
@@ -110,7 +111,8 @@ void TestAIOHandle::test_append()
 
 void TestAIOHandle::setup()
 {
-    path_ = PathName::unique( PathName( "lolo" ) );
+    std::string base = Resource<std::string>("$TMPDIR", "/tmp");
+    path_ = PathName::unique( base + "/lolo" );
     path_ += ".dat";
 }
 

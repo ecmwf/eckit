@@ -37,6 +37,7 @@ bool broadcast_file( const PathName& p, std::ostream& out, const int root, const
       if (!in)
       {
         buf_len = ERROR_CANT_OPEN_FILE;
+        MPI_Bcast(&buf_len,1,eckit::mpi::datatype<int >(),root,comm);
       }
       else
       {
@@ -46,12 +47,12 @@ bool broadcast_file( const PathName& p, std::ostream& out, const int root, const
         std::string str = stream.str();
         buf = const_cast<char*>(str.c_str());
         buf_len = str.size();
-      }
-      MPI_Bcast(&buf_len,1,eckit::mpi::datatype<int >(),root,comm);
-      if (buf_len > 0)
-      {
-        MPI_Bcast(buf,buf_len,eckit::mpi::datatype<char>(),root,comm);
-        out.write(buf,buf_len);
+        MPI_Bcast(&buf_len,1,eckit::mpi::datatype<int >(),root,comm);
+        if (buf_len > 0)
+        {
+          MPI_Bcast(buf,buf_len,eckit::mpi::datatype<char>(),root,comm);
+          out.write(buf,buf_len);
+        }
       }
     }
     else

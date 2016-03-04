@@ -103,11 +103,14 @@ inline std::ostream& __print_list(std::ostream& s,const std::vector<double>& t)
 }
 
 template<typename S, typename T>
-inline std::ostream& __print_list(std::ostream& s, const std::vector<std::pair<S,T> >& t)
-{
+inline std::ostream& __print_list(std::ostream& s, const std::vector<std::pair<S,T> >& t) {
+
     s << '[';
-    for(Ordinal i = 0; i < t.size(); i++)
-        if(i) s << ',' << t[i]; else s << t[i];
+    for(Ordinal i = 0; i < t.size(); i++) {
+        if (i != 0)
+            s << ',';
+        s << t[i];
+    }
     s << ']';
     return s;
 }

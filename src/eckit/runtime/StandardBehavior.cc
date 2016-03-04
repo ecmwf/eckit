@@ -112,6 +112,11 @@ Channel& StandardBehavior::channel(const std::string& key)
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
+    if       ( key == "Error" )  { return errorChannel(); }
+    else if  ( key == "Warn"  )  { return warnChannel(); }
+    else if  ( key == "Info"  )  { return infoChannel(); }
+    else if  ( key == "Debug" )  { return debugChannel(); }
+
     if(logMap->find(key) == logMap->end()) {
         //requested channel not found
         throw BadParameter( "Channel '" + key + "' not found ", Here());

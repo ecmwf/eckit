@@ -18,6 +18,8 @@
 
 #include "eckit/runtime/TaskID.h" // to be removed
 
+#include <utility>
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -29,6 +31,15 @@ typedef std::vector<Ordinal>                OrdinalList;
 typedef std::vector<std::string>            StringList;
 typedef std::set<std::string>               StringSet;
 typedef std::map<std::string,std::string>   StringDict;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+template<typename S, typename T>
+inline std::ostream& operator<<(std::ostream& s, const std::pair<S, T>& p)
+{
+    s << "<" << p.first << ", " << p.second << ">";
+    return s;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -91,6 +102,16 @@ inline std::ostream& __print_list(std::ostream& s,const std::vector<double>& t)
     return s;
 }
 
+template<typename S, typename T>
+inline std::ostream& __print_list(std::ostream& s, const std::vector<std::pair<S,T> >& t)
+{
+    s << '[';
+    for(Ordinal i = 0; i < t.size(); i++)
+        if(i) s << ',' << t[i]; else s << t[i];
+    s << ']';
+    return s;
+}
+
 template<class T>
 inline std::ostream& operator<<(std::ostream& s,const std::vector<T>& v)
 {
@@ -133,25 +154,6 @@ template< typename T >
 inline std::ostream& operator<<(std::ostream& s, const std::set<T>& m)
 {
     return eckit::__print_container(s,m);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-template<typename S, typename T>
-inline std::ostream& operator<<(std::ostream& s, const std::pair<S, T>& p)
-{
-    s << "<" << p.first << ", " << p.second << ">";
-    return s;
-}
-
-template<typename S, typename T>
-inline std::ostream& __print_list(std::ostream& s, const std::vector<std::pair<S,T> >& t)
-{
-    s << '[';
-    for(Ordinal i = 0; i < t.size(); i++)
-        if(i) s << ',' << t[i]; else s << t[i];
-    s << ']';
-    return s;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

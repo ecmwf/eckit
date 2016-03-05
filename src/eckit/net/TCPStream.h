@@ -76,6 +76,10 @@ public:
 
 	~TCPStream();
 
+    // From TCPStreamBase
+
+    virtual TCPSocket& socket() { return socket_; }
+
 protected:
 
 // -- Members
@@ -91,11 +95,7 @@ private:
 	
 	// From Stream
 	
-	virtual void closeOutput();
-
-	// From TCPStream
-
-	virtual TCPSocket& socket() { return socket_; }
+    virtual void closeOutput();
 };
 
 class InstantTCPStream : public TCPStreamBase {
@@ -108,19 +108,19 @@ public:
 	InstantTCPStream(TCPSocket& socket):
 		socket_(socket) {}
 
+    // -- Overridden methods
+
+    // From TCPStream
+
+    virtual TCPSocket& socket() { return socket_; }
+
 private:
 
 	InstantTCPStream(TCPServer&);
 
 // -- Members
 
-	TCPSocket& socket_;
-
-// -- Overridden methods
-
-	// From TCPStream
-
-	virtual TCPSocket& socket() { return socket_; }
+    TCPSocket& socket_;
 };
 
 class SharedTCPStream : public TCPStream, public Counted {

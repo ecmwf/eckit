@@ -10,3 +10,8 @@ ecbuild_add_test( TARGET      eckit_test_eckit_types
                   BOOST
                   SOURCES     test_uuid.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_print_vector
+                  BOOST
+                  SOURCES     test_print_vector.cc
+                  LIBS        eckit )

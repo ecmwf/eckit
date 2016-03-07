@@ -37,7 +37,7 @@ typedef std::map<std::string,std::string>   StringDict;
 template<typename S, typename T>
 inline std::ostream& operator<<(std::ostream& s, const std::pair<S, T>& p)
 {
-    s << "<" << p.first << ", " << p.second << ">";
+    s << "<" << p.first << "," << p.second << ">";
     return s;
 }
 

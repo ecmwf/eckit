@@ -15,7 +15,6 @@
 #include "eckit/config/FileReadPolicy.h"
 #include "eckit/utils/Translator.h"
 
-#include <map>
 //-----------------------------------------------------------------------------
 
 namespace eckit {

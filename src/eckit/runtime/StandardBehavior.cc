@@ -19,18 +19,6 @@
 
 namespace eckit {
 
-namespace {
-    static eckit::Mutex* local_mutex = 0;
-    static pthread_once_t once = PTHREAD_ONCE_INIT;
-    typedef std::map<std::string,Channel*> LogMap;
-    static LogMap* logMap = 0;
-
-    static void init() {
-        local_mutex = new eckit::Mutex();
-        logMap = new LogMap();
-    }
-}
-
 //-----------------------------------------------------------------------------
 
 StandardBehavior::StandardBehavior()

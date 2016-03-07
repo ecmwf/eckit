@@ -75,8 +75,20 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
+class VectorPrintSimple{};
+class VectorPrintContracted{};
+
+template <typename T>
+struct VectorPrintSelector { typedef VectorPrintContracted selector; };
+
+template <> struct VectorPrintSelector<std::string> { typedef VectorPrintSimple selector; };
+template <> struct VectorPrintSelector<double> { typedef VectorPrintSimple selector; };
+template <typename K, typename V> struct VectorPrintSelector<std::pair<K,V> > { typedef VectorPrintSimple selector; };
+
+
 template<class T>
-inline std::ostream& __print_list(std::ostream& s,const T& t)
+inline std::ostream& __print_list(std::ostream& s, const T& t, VectorPrintContracted)
 {
 	output_list<typename T::value_type> l(s);
 	output_list_iterator<typename T::value_type> os(&l);
@@ -84,26 +96,8 @@ inline std::ostream& __print_list(std::ostream& s,const T& t)
     return s;
 }
 
-inline std::ostream& __print_list(std::ostream& s,const std::vector<std::string>& t)
-{
-        s << '[';
-        for(Ordinal i = 0; i < t.size(); i++)
-                if(i) s << ',' << t[i]; else s << t[i];
-        s << ']';
-    return s;
-}
-
-inline std::ostream& __print_list(std::ostream& s,const std::vector<double>& t)
-{
-        s << '[';
-        for(Ordinal i = 0; i < t.size(); i++)
-                if(i) s << ',' << t[i]; else s << t[i];
-        s << ']';
-    return s;
-}
-
-template<typename S, typename T>
-inline std::ostream& __print_list(std::ostream& s, const std::vector<std::pair<S,T> >& t) {
+template <typename T>
+inline std::ostream& __print_list(std::ostream& s, const std::vector<T>& t, VectorPrintSimple) {
 
     s << '[';
     for(Ordinal i = 0; i < t.size(); i++) {
@@ -118,7 +112,7 @@ inline std::ostream& __print_list(std::ostream& s, const std::vector<std::pair<S
 template<class T>
 inline std::ostream& operator<<(std::ostream& s,const std::vector<T>& v)
 {
-	return __print_list(s,v);
+    return __print_list(s, v, typename VectorPrintSelector<T>::selector());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

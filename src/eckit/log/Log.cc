@@ -20,10 +20,6 @@
 #include "eckit/exception/Exceptions.h"
 
 #include "eckit/thread/ThreadSingleton.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
-
-#include <map>
 
 namespace eckit {
 

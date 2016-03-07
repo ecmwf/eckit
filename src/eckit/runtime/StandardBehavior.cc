@@ -80,51 +80,6 @@ Channel& StandardBehavior::debugChannel()
     return x.instance();
 }
 
-void StandardBehavior::registerChannel(const std::string& key, Channel* channel)
-{
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-
-    if(logMap->find(key) == logMap->end())
-    {
-        logMap->insert(std::make_pair<std::string,Channel*>(key, channel));
-    } else {
-        throw BadParameter( "Channel '" + key + "' is already registered ", Here());
-    }
-}
-
-void StandardBehavior::removeChannel(const std::string& key)
-{
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-
-    if(logMap->find(key) == logMap->end())
-    {
-        //channel is not registered
-        throw BadParameter( "Channel '" + key + "' does not exist ", Here());
-    } else {
-        logMap->erase (key);
-    }
-}
-
-Channel& StandardBehavior::channel(const std::string& key)
-{
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-
-    if       ( key == "Error" )  { return errorChannel(); }
-    else if  ( key == "Warn"  )  { return warnChannel(); }
-    else if  ( key == "Info"  )  { return infoChannel(); }
-    else if  ( key == "Debug" )  { return debugChannel(); }
-
-    if(logMap->find(key) == logMap->end()) {
-        //requested channel not found
-        throw BadParameter( "Channel '" + key + "' not found ", Here());
-    } else {
-        return  *((*logMap)[key]);
-    }
-}
-
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

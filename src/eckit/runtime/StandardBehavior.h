@@ -32,11 +32,6 @@ public:
 
 public: // methods
 
-    // Register channels
-    virtual void registerChannel(const std::string& key, Channel* channel);
-    virtual void removeChannel(const std::string& key);
-    virtual Channel& channel(const std::string& key);
-
     virtual Channel& infoChannel();
     virtual Channel& warnChannel();
     virtual Channel& errorChannel();

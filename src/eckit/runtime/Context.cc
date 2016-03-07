@@ -23,7 +23,18 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static Once<Mutex> local_mutex;
+namespace {
+    static pthread_once_t once = PTHREAD_ONCE_INIT;
+    typedef std::map<std::string,Channel*> LogMap;
+    static LogMap* logMap = 0;
+
+    static void init() {
+        logMap = new LogMap();
+    }
+
+	static Once<Mutex> local_mutex; // can't the same be done for logMap?
+}
+
 
 Context::Context() : argc_(0), argv_(0), taskID_(0), home_("/"), runName_("undef"), displayName_() {
 
@@ -131,16 +142,50 @@ Channel& Context::debugChannel() { return behavior_->debugChannel(); }
 
 Channel& Context::channel(int cat) { return behavior_->channel(cat); }
 
-Channel& Context::channel(const std::string& key) { return behavior_->channel(key); }
+Channel& Context::channel(const std::string& key)
+{
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(local_mutex);
+
+    if       ( key == "Error" )  { return errorChannel(); }
+    else if  ( key == "Warn"  )  { return warnChannel(); }
+    else if  ( key == "Info"  )  { return infoChannel(); }
+    else if  ( key == "Debug" )  { return debugChannel(); }
+
+    if(logMap->find(key) == logMap->end()) {
+        //requested channel not found
+        throw BadParameter( "Channel '" + key + "' not found ", Here());
+    } else {
+        return  *((*logMap)[key]);
+    }
+}
 
 void Context::registerChannel(const std::string& key, Channel* channel)
 {
-    behavior_->registerChannel(key, channel);
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(local_mutex);
+
+    if(logMap->find(key) == logMap->end())
+    {
+        logMap->insert(std::make_pair<std::string,Channel*>(key, channel));
+    } else {
+        //channel already registered
+        throw BadParameter( "Channel '" + key + "' is already registered ", Here());
+    }
 }
 
 void Context::removeChannel(const std::string& key)
 {
-	behavior_->removeChannel(key);
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(local_mutex);
+
+    if(logMap->find(key) == logMap->end())
+    {
+        //channel is not registered
+        throw BadParameter( "Channel '" + key + "' does not exist ", Here());
+    } else {
+        logMap->erase (key);
+    }
 }
 
 static PathName proc_path(const std::string& name) {

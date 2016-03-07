@@ -60,17 +60,6 @@ FileReadPolicy ContextBehavior::fileReadPolicy()
   return DirectReadPolicy();
 }
 
-Channel& ContextBehavior::channel(const std::string& key)
-{
-	if       ( key == "error" )  { return errorChannel(); }
-	else if  ( key == "warn"  )  { return warnChannel(); }
-	else if  ( key == "info"  )  { return infoChannel(); }
-	else if  ( key == "debug" )  { return debugChannel(); }
-
-	throw BadParameter("Logging channel "+key+" not known.",Here());
-
-	return infoChannel();
-}
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

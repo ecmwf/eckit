@@ -109,13 +109,29 @@ inline std::ostream& __print_list(std::ostream& s, const std::vector<T>& t, Vect
     return s;
 }
 
-template<class T>
-inline std::ostream& operator<<(std::ostream& s,const std::vector<T>& v)
-{
-    return __print_list(s, v, typename VectorPrintSelector<T>::selector());
+} // namespace eckit
+
+namespace std {
+
+    // n.b. This overload needs to go either in the namespace std:: (which contains
+    //      ostream, vector), the global namespace, or the namespace containing T.
+    //      Otherwise it will not be found when doing lookups.
+    //
+    //  --> Probably best to put it in std::. It is acceptable to add "template
+    //      specializations for any standard library template" if the "declaration
+    //      depends on user-defined types".
+
+    template<class T>
+    inline std::ostream& operator<<(std::ostream& s,const std::vector<T>& v)
+    {
+        return eckit::__print_list(s, v, typename eckit::VectorPrintSelector<T>::selector());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+
+namespace eckit {
 
 template<typename K, typename V>
 inline std::ostream& __print_container(std::ostream& s, const std::map<K,V>& m)

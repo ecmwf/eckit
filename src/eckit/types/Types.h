@@ -14,11 +14,11 @@
 #ifndef eckit_Types_h
 #define eckit_Types_h
 
+#include <utility>
+
 #include "eckit/eckit.h"
 
 #include "eckit/runtime/TaskID.h" // to be removed
-
-#include <utility>
 
 namespace eckit {
 

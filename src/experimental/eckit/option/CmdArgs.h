@@ -39,12 +39,12 @@ public: // types
 
 public: // methods
 
-    CmdArgs(usage_proc usage, int args_count = -1);
+    CmdArgs(usage_proc usage, int args_count = -1, bool throw_on_error = false);
 
     /// Initialise argument parser with a list of options
     /// @note Will take ownership of the contents of the vector, and delete them in destructor
     /// TODO: This should probably have some form of smart pointer.
-    CmdArgs(usage_proc usage, int args_count, std::vector<Option*>& options);
+    CmdArgs(usage_proc usage, int args_count, std::vector<Option*>& options, bool throw_on_error = false);
 
     ~CmdArgs();
 
@@ -76,7 +76,9 @@ private:
     std::vector<std::string> args_;
     std::vector<Option*> options_;
 
-    void init(usage_proc usage, int args_count);
+    bool throwOnError_;
+
+    void init(usage_proc usage, int args_count, bool throw_on_errror);
 
     // From eckit::Parameterisation
     virtual void print(std::ostream&) const;

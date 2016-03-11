@@ -10,5 +10,6 @@ add_subdirectory( geometry )
 add_subdirectory( la )
 add_subdirectory( maths )
 add_subdirectory( mpi )
+add_subdirectory( option )
 
 add_subdirectory( singleton )

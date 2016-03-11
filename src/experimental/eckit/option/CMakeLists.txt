@@ -15,6 +15,8 @@ ecbuild_add_library(
         SimpleOption.h
         VectorOption.cc
         VectorOption.h
+        CmdArgs.cc
+        CmdArgs.h
 
     TEMPLATES
         FactoryOption.cc

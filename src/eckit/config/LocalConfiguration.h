@@ -74,7 +74,8 @@ class LocalConfiguration : public Configuration {
     // void print(ostream&) const; // Change to virtual if base class
 
     // -- Overridden methods
-    // None
+
+    virtual void print(std::ostream &) const;
 
     // -- Class members
     // None
@@ -99,8 +100,7 @@ class LocalConfiguration : public Configuration {
     void set(const std::string &s, const Value &value);
 
     // -- Overridden methods
-
-    virtual void print(std::ostream &) const;
+    // None
 
     // -- Class members
     // None

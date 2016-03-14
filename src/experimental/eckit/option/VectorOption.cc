@@ -19,6 +19,7 @@
 #include "eckit/option/VectorOption.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/types/Types.h"
 
 
 namespace eckit {
@@ -51,7 +52,7 @@ void VectorOption<T>::set(const std::string &value, LocalConfiguration &parametr
     }
 
     if (values.size() != size_)
-        throw UserError(std::string("Size of supplied vector \"") + name_ + "\" incorrect");
+        throw UserError(std::string("Size of supplied vector \"") + name_ + "\" incorrect", Here());
 
     parametrisation.set(name_, values);
 }

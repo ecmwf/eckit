@@ -88,6 +88,10 @@ public: // methods
     bool get(const std::string &name, std::vector<LocalConfiguration>&) const;
     bool get(const std::string &name, LocalConfiguration&) const;
 
+    size_t size() const;
+
+    void json(eckit::JSON&) const;
+
 protected: // methods
 
     Configuration(const Configuration &);

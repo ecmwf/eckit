@@ -169,6 +169,8 @@ public:
     Value    clone() const;
     bool     shared() const; // Ensure that value is not shared
 
+    size_t   size() const; // How many elements are contained (in list or map)
+
 // -- Class Methods
 
     static Value makeList();

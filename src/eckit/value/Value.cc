@@ -139,6 +139,10 @@ bool Value::shared() const {
     return content_->count() > 1;
 }
 
+size_t Value::size() const {
+    return content_->size();
+}
+
 Value& Value::operator=(const Value& other)
 {
 	other.content_->attach();

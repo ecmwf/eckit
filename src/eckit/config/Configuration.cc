@@ -53,6 +53,17 @@ char Configuration::separator() const {
     return separator_;
 }
 
+size_t Configuration::size() const {
+    return root_.size();
+}
+
+void Configuration::json(eckit::JSON& js) const {
+
+    ASSERT(root_.isMap());
+    js << root_;
+}
+
+
 eckit::Value Configuration::lookUp(const std::string &s, bool &found) const {
 
     eckit::Tokenizer parse(separator_);

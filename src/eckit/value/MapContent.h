@@ -82,6 +82,7 @@ protected:
 
     virtual bool   isMap() const         { return true; }
     virtual Content* clone() const;
+    virtual size_t size() const { return value_.size(); }
 
     // -- From Streamable
 

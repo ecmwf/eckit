@@ -182,6 +182,7 @@ protected:
     virtual bool   isTime()     const  { return false; }
     virtual bool   isDateTime() const  { return false; }
 
+    virtual size_t size() const { return 0; }
 
     virtual bool contains(const Value&) const;
     virtual Value& element(const Value&);

@@ -47,7 +47,9 @@ void VectorOption<T>::set(const std::string &value, LocalConfiguration &parametr
         values.push_back(t(v[i]));
     }
 
-    ASSERT(values.size() == size_);
+    if (values.size() != size_)
+        throw UserError(std::string("Size of supplied vector \"") + name_ + "\" incorrect");
+
     parametrisation.set(name_, values);
 }
 

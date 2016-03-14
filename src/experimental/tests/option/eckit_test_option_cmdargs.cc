@@ -185,6 +185,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_integer_vector_argument ) {
     BOOST_CHECK_EQUAL(tmpv[0], -12345);
     BOOST_CHECK_EQUAL(tmpv[1], 678);
     BOOST_CHECK_EQUAL(tmpv[2], -123);
+
+    // Check equality directly to avoid exciting operator<< gubbins within BOOST_CHECK_EQUAL.
+    BOOST_CHECK(tmpv == args.getLongVector("arg"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

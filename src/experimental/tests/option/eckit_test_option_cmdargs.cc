@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_integer_vector_argument ) {
     std::vector<Option*> options;
     options.push_back(new VectorOption<long>("arg", "", 3));
 
-    const char* input[] = {"exe", "--arg2=-12345/678/-123"};
+    const char* input[] = {"exe", "--arg=-12345/678/-123"};
     Context::instance().setup(2, const_cast<char**>(input));
 
     CmdArgs args(&usage, 0, options, true);

@@ -16,6 +16,8 @@
 #ifndef eckit_LocalConfiguration_H
 #define eckit_LocalConfiguration_H
 
+#include <vector>
+
 #include "eckit/config/Configuration.h"
 
 
@@ -51,6 +53,9 @@ class LocalConfiguration : public Configuration {
     void set(const std::string &name, double value);
     void set(const std::string &name, long value);
     void set(const std::string &name, bool value);
+
+    void set(const std::string& name, const std::vector<long>& value);
+    void set(const std::string& name, const std::vector<double>& value);
 
     // -- Overridden methods
 

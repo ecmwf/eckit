@@ -190,6 +190,32 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_integer_vector_argument ) {
     BOOST_CHECK(tmpv == args.getLongVector("arg"));
 }
 
+
+BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_double_vector_argument ) {
+
+    // Set up the parser to accept two named arguments, one integer and one string
+    // n.b. Option* are deleted inside CmdArgs.
+    std::vector<Option*> options;
+    options.push_back(new VectorOption<double>("arg", "", 4));
+
+    const char* input[] = {"exe", "--arg=-123.45/67.8/90/-123.0"};
+    Context::instance().setup(2, const_cast<char**>(input));
+
+    CmdArgs args(&usage, 0, options, true);
+    BOOST_CHECK(args.has("arg"));
+
+    std::vector<double> tmpv;
+    args.get("arg", tmpv);
+    BOOST_CHECK_EQUAL(tmpv.size(), 4);
+    BOOST_CHECK_CLOSE(tmpv[0], -123.45, 1.0e-8);
+    BOOST_CHECK_CLOSE(tmpv[1], 67.8, 1.0e-8);
+    BOOST_CHECK_CLOSE(tmpv[2], 90, 1.0e-8);
+    BOOST_CHECK_CLOSE(tmpv[3], -123, 1.0e-8);
+
+    // Check equality directly to avoid exciting operator<< gubbins within BOOST_CHECK_EQUAL.
+    BOOST_CHECK(tmpv == args.getDoubleVector("arg"));
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

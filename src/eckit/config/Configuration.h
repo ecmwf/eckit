@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -9,7 +9,7 @@
  */
 
 /// @author Baudouin Raoult
-/// @date JUl 2015
+/// @date July 2015
 
 
 #ifndef eckit_Configuration_H
@@ -22,25 +22,13 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
 
 class LocalConfiguration;
 
 class Configuration : public Parametrisation {
-  public:
 
-    // -- Exceptions
-    // None
-
-    // -- Contructors
-
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
+public: // methods
 
     // Fast access, will throw an exception
 
@@ -52,18 +40,35 @@ class Configuration : public Parametrisation {
     double getDouble(const std::string &name) const;
     std::string getString(const std::string &name) const;
 
+    // Access with default in case of falure
+
+    bool getBool(const std::string &name, const bool& defaultVal) const;
+    int getInt(const std::string &name, const int& defaultVal) const;
+    long getLong(const std::string &name, const long& defaultVal) const;
+    size_t getUnsigned(const std::string &name, const size_t& defaultVal) const;
+    float getFloat(const std::string &name, const float& defaultVal) const;
+    double getDouble(const std::string &name, const double& defaultVal) const;
+    std::string getString(const std::string &name, const std::string& defaultVal) const;
+
     std::vector<int> getIntVector(const std::string &name) const;
     std::vector<long> getLongVector(const std::string &name) const;
     std::vector<size_t> getUnsignedVector(const std::string &name) const;
     std::vector<float> getFloatVector(const std::string &name) const;
     std::vector<double> getDoubleVector(const std::string &name) const;
+    std::vector<std::string> getStringVector(const std::string &name) const;
+
+    // Access to LocalConfiguration
 
     std::vector<LocalConfiguration> getSubConfigurations(const std::string &name) const;
 
-    //
+    LocalConfiguration getSubConfiguration(const std::string &name) const;
 
     Value lookUp(const std::string &) const;
+
     char separator() const;
+
+    const Value& get() const { return root_; }
+    operator Value() const { return root_; }
 
     // -- Overridden methods
 
@@ -76,18 +81,14 @@ class Configuration : public Parametrisation {
 
     virtual bool get(const std::string &name, std::vector<long> &value) const;
     virtual bool get(const std::string &name, std::vector<double> &value) const;
+    virtual bool get(const std::string &name, std::vector<std::string> &value) const;
     virtual bool get(const std::string &name, size_t &value) const;
 
 
     bool get(const std::string &name, std::vector<LocalConfiguration>&) const;
+    bool get(const std::string &name, LocalConfiguration&) const;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-
-
-  protected:
+protected: // methods
 
     Configuration(const Configuration &);
     Configuration(const Value &root, char separator = '.');
@@ -95,9 +96,7 @@ class Configuration : public Parametrisation {
 
     virtual ~Configuration();
 
-    // -- Destructor
-
-    // -- Members
+protected: // members
 
     Value root_;
     char separator_;
@@ -117,42 +116,23 @@ class Configuration : public Parametrisation {
     // -- Class methods
     // None
 
-  private:
-
-    // No copy allowed
-
-
-    // -- Members
-
-
-
-    // -- Methods
+private: // methods
 
     template <class T>
     void _get(const std::string&, T&) const;
 
+    template <class T>
+    void _getWithDefault(const std::string &name, T& value, const T& defaultVal) const;
 
-    // -- Overridden methods
-
-    // From MIRParametrisation
     virtual void print(std::ostream &) const = 0;
 
-
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-
-    friend std::ostream& operator<<(std::ostream& s,const Configuration& p)
-     { p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s,const Configuration& p) { p.print(s); return s; }
 
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit
+
 #endif
 

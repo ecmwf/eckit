@@ -39,7 +39,7 @@ if( HAVE_ECKIT_MPISTUBS)
                         ${INSTALL_INCLUDE_DIR}/eckit/mpi
                       SOURCES
                         ${eckit_mpi_srcs}
-                      INCLUDES
+                      PRIVATE_INCLUDES
                         ${MPISTUBS_INCLUDE_DIRS}
                       LIBS
                           eckit mpistubs

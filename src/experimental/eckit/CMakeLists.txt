@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -7,9 +7,14 @@
 # nor does it submit to any jurisdiction.
 
 add_subdirectory( geometry )
-add_subdirectory( grib )
 add_subdirectory( maths )
 add_subdirectory( mpi )
-add_subdirectory( ecml )
+
+add_subdirectory( option )
+
+if( HAVE_ECKIT_ECML )
+  add_subdirectory( ecml )
+endif()
+
 add_subdirectory( la )
 add_subdirectory( testing )

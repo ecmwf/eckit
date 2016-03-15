@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -9,7 +9,8 @@
  */
 
 /// @author Baudouin Raoult
-/// @date JUl 2015
+/// @author Tiago Quintino
+/// @date   Jul 2015
 
 
 #ifndef eckit_LocalConfiguration_H
@@ -99,10 +100,7 @@ class LocalConfiguration : public Configuration {
 
     // -- Overridden methods
 
-    // From MIRParametrisation
     virtual void print(std::ostream &) const;
-
-
 
     // -- Class members
     // None
@@ -117,7 +115,7 @@ class LocalConfiguration : public Configuration {
 
 };
 
+} // namespace eckit
 
-}  // namespace eckit
 #endif
 

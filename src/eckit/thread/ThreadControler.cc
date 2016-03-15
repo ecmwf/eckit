@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -60,7 +60,8 @@ void ThreadControler::execute()
 {
     // Make a copy, because "this" will desappear
     Thread* proc = proc_;
-    proc_ = 0;
+    if (detached_)
+        proc_ = 0;
 
     //cout << "ThreadControler::execute(" << this << ")" <<  " " << hex << pthread_self() << std::endl;
     //=================
@@ -84,7 +85,7 @@ void ThreadControler::execute()
 
     //=============
 
-    // We don't want to recieve reconfigure events
+    // We don't want to receive reconfigure events
 
     sigset_t set,old_set;
 
@@ -156,7 +157,11 @@ void ThreadControler::kill()
 
 void ThreadControler::stop()
 {
-    proc_->stop();
+    // Due to legacy code, this stop routine may be called on detached threads. Don't
+    // stress about it!
+    if (!detached_ && proc_ != NULL) {
+        proc_->stop();
+    }
 }
 
 void ThreadControler::wait()

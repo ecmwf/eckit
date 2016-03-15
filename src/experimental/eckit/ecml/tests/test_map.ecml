@@ -1,21 +1,22 @@
 function, of = f / values, map = (
-    if, condition = (first, of = (value, of = values)),
-        then = ( list, values = (f, values = (first, of = (value, of = values))) 
-                               / (map, f = (value, of = f),
-                                       values = (rest, of = (value, of = values))))
+    if, condition = (first, of = ($,_ = values)),
+        then = ( sequence, values = (f, values = (first, of = ($,_ = values))) 
+                                    / (map, f = ($,_ = f),
+                                            values = (rest, of = ($,_ = values))))
 )
 
 test, label = pass a native function to a map function,
-do = ( map, f = (value, of = println), values = 1 / 2 / 3 ),
+do = ( map, f = ($,_ = println), values = 1 / 2 / 3 ),
 expect = 1 / 2 / 3
 
 test, label = pass a user defined function to a map function,
 do = ( 
         let, greeting = Hello
         function, of = values, capture = greeting, foo = (
-            println, values = (value, of = greeting ) / (value, of = values) 
+            println, values = ($,_ = greeting ) / ($,_ = values) 
         )
-        map, f = (value, of = foo), values = 1 / 2 / 3
+        let, greeting = Hi
+        map, f = ($,_ = foo), values = 1 / 2 / 3
      ),
 expect = Hello / 1 / Hello / 2 / Hello / 3
 

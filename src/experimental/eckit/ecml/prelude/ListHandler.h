@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -14,8 +14,8 @@
 
 #include <sstream>
 
-#include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/RequestHandler.h"
+#include "eckit/ecml/parser/Request.h"
+#include "eckit/ecml/core/RequestHandler.h"
 
 namespace eckit {
 

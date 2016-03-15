@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -15,22 +15,30 @@
 #include "Module.h"
 #include "Interpreter.h"
 #include "RequestHandler.h"
-#include "experimental/eckit/ecml/parser/RequestParser.h"
-#include "experimental/eckit/ecml/prelude/Prelude.h"
+#include "eckit/ecml/parser/RequestParser.h"
+#include "eckit/ecml/prelude/Prelude.h"
 
 using namespace std;
 using namespace eckit;
 
 ExecutionContext::ExecutionContext()
 : environment_(new Environment(0, new Cell("_list", "", 0, 0))),
+  otherEnvironment_(0),
   interpreter_(new Interpreter())
 {
     Prelude().importInto(*this);
 }
 
+ExecutionContext::ExecutionContext(const ExecutionContext& other)
+: environment_(other.environment_),
+  otherEnvironment_(other.environment_),
+  interpreter_(new Interpreter())
+{
+}
+
 ExecutionContext::~ExecutionContext()
 {
-    for (Environment* e(environment_); e; e = e->parent())
+    for (Environment* e(environment_); e && e != otherEnvironment_; e = e->parent())
         delete e;
     delete interpreter_;
 }
@@ -110,4 +118,20 @@ Cell* ExecutionContext::copy() const
     // TODO:
     NOTIMP;
     return 0;
+}
+
+std::vector<std::string> ExecutionContext::getValueAsList(const std::string& keyword)
+{
+    std::vector<std::string> r;
+
+    Request v (environment().lookup(keyword));
+    ASSERT(v->tag() == "_list");
+
+    Request evaluated (interpreter().eval(v, *this));
+    for (Request p(evaluated); p; p = p->rest())
+    {
+        r.push_back(p->value()->text());
+    }
+
+    return r;
 }

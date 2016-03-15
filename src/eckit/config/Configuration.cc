@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -130,6 +130,15 @@ bool Configuration::get(const std::string &name, double &value) const {
     return found;
 }
 
+bool Configuration::get(const std::string &name, LocalConfiguration &value) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    if (found) {
+        value = LocalConfiguration(v);
+    }
+    return found;
+}
+
 bool Configuration::get(const std::string &name, std::vector<long> &value) const {
     bool found = false;
     eckit::Value v = lookUp(name, found);
@@ -162,6 +171,21 @@ bool Configuration::get(const std::string &name, std::vector<LocalConfiguration>
 }
 
 bool Configuration::get(const std::string &name, std::vector<double> &value) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    if (found) {
+        ASSERT(v.isList());
+        value.clear();
+        int i = 0;
+        while (v.contains(i)) {
+            value.push_back(v[i]);
+            i++;
+        }
+    }
+    return found;
+}
+
+bool Configuration::get(const std::string &name, std::vector<std::string> &value) const {
     bool found = false;
     eckit::Value v = lookUp(name, found);
     if (found) {
@@ -287,12 +311,74 @@ std::vector<double> Configuration::getDoubleVector(const std::string &name) cons
     return result;
 }
 
+std::vector<std::string> Configuration::getStringVector(const std::string &name) const {
+    std::vector<std::string> result;
+    _get(name, result);
+    return result;
+}
+
 std::vector<LocalConfiguration> Configuration::getSubConfigurations(const std::string &name) const {
     std::vector<LocalConfiguration> result;
     _get(name, result);
     return result;
 }
 
+LocalConfiguration Configuration::getSubConfiguration(const std::string &name) const {
+    LocalConfiguration result;
+    if (has(name)) _get(name, result);
+    return result;
+}
 
-}  // namespace eckit
+template<class T>
+void Configuration::_getWithDefault(const std::string &name, T& value, const T& defaultVal) const {
+    if(!get(name, value)) {
+        value = defaultVal;
+    }
+}
+
+bool Configuration::getBool(const std::string &name, const bool& defaultVal) const {
+    bool result;
+    _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
+int Configuration::getInt (const std::string &name, const int& defaultVal) const {
+    long result;
+    _getWithDefault(name, result, long(defaultVal));
+    ASSERT(int(result) == result);
+    return result;
+}
+
+long Configuration::getLong(const std::string &name, const long& defaultVal) const {
+    long result;
+    _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
+size_t Configuration::getUnsigned(const std::string &name, const size_t& defaultVal) const {
+    size_t result;
+    _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
+float Configuration::getFloat(const std::string &name, const float& defaultVal) const {
+    double result;
+    _getWithDefault(name, result, double(defaultVal));
+    ASSERT(float(result) == result);
+    return result;
+}
+
+double Configuration::getDouble(const std::string &name, const double& defaultVal) const {
+    double result;
+    _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
+std::string Configuration::getString(const std::string &name, const std::string& defaultVal) const {
+    std::string result;
+    _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
+} // namespace eckit
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -69,8 +69,8 @@ Cell* Cell::value(const std::string& keyword, const std::string& value)
 Cell* Cell::value(const std::string& keyword, Cell* v) 
 {
     //showGraph(string("value: request = ") + str() + ", keyword = " + keyword + ", v = " + v->str());
+    const std::string k (StringTools::lower(keyword));
 
-    std::string k (StringTools::lower(keyword));
     for (Cell* r (this); r; r = r->rest())
     {
         if (StringTools::lower(r->text()) == k)
@@ -80,8 +80,32 @@ Cell* Cell::value(const std::string& keyword, Cell* v)
             return r->rest(new Cell("", keyword, v, 0))->value();
     }
 
-    ASSERT("Should not reach here" && 0);
+    throw AssertionFailed("Should not reach here");
     return 0;
+}
+
+void Cell::update(const std::string& keyword, Cell* v) 
+{
+    const std::string k (StringTools::lower(keyword));
+
+    Cell* lastMatch (0);
+    Cell* lastCell (this); 
+
+    for (Cell* r (this); r; r = r->rest())
+    {
+        if (StringTools::lower(r->text()) == k)
+            lastMatch = r;
+
+        lastCell = r;
+    }
+
+    if (! lastMatch) 
+        lastCell->rest(new Cell("", keyword, v, 0));
+    else
+    {
+        delete lastMatch->value();
+        lastMatch->value(v);
+    } 
 }
 
 Cell* Cell::valueOrDefault(const string& keyword, Cell* defaultValue) const
@@ -96,7 +120,7 @@ Cell* Cell::valueOrDefault(const string& keyword, Cell* defaultValue) const
     if (p == 0)
         return defaultValue;
 
-    return p->value();
+    return Cell::clone(p->value());
 }
 
 std::string Cell::valueAsString(const string& keyword, const std::string& defaultValue) const

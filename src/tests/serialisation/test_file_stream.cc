@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -22,6 +22,42 @@ using namespace eckit;
 namespace eckit {
 namespace test {
 
+namespace {
+
+const char               i_char('a');
+const unsigned char      i_uchar('b');
+const bool               i_bool(true);
+const int                i_int(-20000000);
+const unsigned int       i_uint(30000000);
+const short              i_short(-4000);
+const unsigned short     i_ushort(5000);
+const long               i_long(-60000000);
+const unsigned long      i_ulong(70000000);
+const long long          i_longlong(-80000000);
+const unsigned long long i_ulonglong(90000000);
+//const float              i_float(300000);
+const double             i_double(100000000);
+const string             i_string("abcdefghijklmnopqrstuvwx");
+const char*              i_charp("cdefghijklmnopqrstuvwxyz");
+
+char               v_char;
+unsigned char      v_uchar;
+bool               v_bool;
+int                v_int;
+unsigned int       v_uint;
+short              v_short;
+unsigned short     v_ushort;
+long               v_long;
+unsigned long      v_ulong;
+long long          v_longlong;
+unsigned long long v_ulonglong;
+//float              v_float;
+double             v_double;
+string             v_string;
+string             v_charp;
+
+}  // anonymous namespace
+
 struct F {
     ~F()
     {
@@ -33,70 +69,38 @@ struct F {
 
 PathName F::filename = PathName::unique( "data" );
 
-struct TestFixture {
-
-    TestFixture() : v_char(0),
-                    v_uchar(0),
-                    v_bool(0),
-                    v_int(0),
-                    v_uint(0),
-                    v_short(0),
-                    v_ushort(0),
-                    v_long(0),
-                    v_ulong(0),
-                    v_longlong(0),
-                    v_ulonglong(0),
-                    v_double(0) {}
-
-    char               v_char;
-    unsigned char      v_uchar;
-    bool               v_bool;
-    int                v_int;
-    unsigned int       v_uint;
-    short              v_short;
-    unsigned short     v_ushort;
-    long               v_long;
-    unsigned long      v_ulong;
-    long long          v_longlong;
-    unsigned long long v_ulonglong;
-//  float              v_float;
-    double             v_double;
-    string             v_string;
-    string             v_charp;
-};
 
 BOOST_GLOBAL_FIXTURE( F );
 
-BOOST_FIXTURE_TEST_SUITE( TestFileStream, TestFixture )
+BOOST_AUTO_TEST_SUITE( TestFileStream )
 
 BOOST_AUTO_TEST_CASE( write_data )
 {
     BOOST_TEST_MESSAGE("Write to FileStream");
-    FileStream sout( F::filename.asString().c_str(), "w" );
+    FileStream sout( F::filename, "w" );
 
-    sout
-      << char('a')
-      << (unsigned char)('b')
-      << bool(true)
-      << int(-20000000)
-      << (unsigned int)(30000000)
-      << short(-4000)
-      << (unsigned short)(5000)
-      << long(60000000)
-      << (unsigned long)(70000000)
-      << (long long)(80000000)
-      << (unsigned long long)(90000000)
-//    << float(3)
-      << double(100000000)
-      << std::string("abcdefghijklmnopqrstuvwyxz")
-      << "abcdefghijklmnopqrstuvwyxz"
+    sout << i_char
+         << i_uchar
+         << i_bool
+         << i_int
+         << i_uint
+         << i_short
+         << i_ushort
+         << i_long
+         << i_ulong
+         << i_longlong
+         << i_ulonglong
+//         << i_float
+         << i_double
+         << i_string
+         << i_charp
     ;
 }
 
 BOOST_AUTO_TEST_CASE( read_data )
 {
     BOOST_TEST_MESSAGE("Read from FileStream");
-    FileStream sin( F::filename.asString().c_str(), "r" );
+    FileStream sin( F::filename, "r" );
 
     sin
         >> v_char
@@ -119,22 +123,60 @@ BOOST_AUTO_TEST_CASE( read_data )
 
 BOOST_AUTO_TEST_CASE( check_data )
 {
-    BOOST_TEST_MESSAGE("Data read:");
-    BOOST_TEST_MESSAGE( v_char );
-    BOOST_TEST_MESSAGE( v_uchar );
-    BOOST_TEST_MESSAGE( v_bool );
-    BOOST_TEST_MESSAGE( v_int );
-    BOOST_TEST_MESSAGE( v_uint );
-    BOOST_TEST_MESSAGE( v_short );
-    BOOST_TEST_MESSAGE( v_ushort );
-    BOOST_TEST_MESSAGE( v_long );
-    BOOST_TEST_MESSAGE( v_ulong );
-    BOOST_TEST_MESSAGE( v_longlong );
-    BOOST_TEST_MESSAGE( v_ulonglong );
-//  BOOST_TEST_MESSAGE( v_float );
-    BOOST_TEST_MESSAGE( v_double );
-    BOOST_TEST_MESSAGE( v_string );
-    BOOST_TEST_MESSAGE( v_charp );
+    BOOST_CHECK_EQUAL( v_char,      i_char );
+    BOOST_CHECK_EQUAL( v_uchar,     i_uchar );
+    BOOST_CHECK_EQUAL( v_bool,      i_bool );
+    BOOST_CHECK_EQUAL( v_int,       i_int );
+    BOOST_CHECK_EQUAL( v_uint,      i_uint );
+    BOOST_CHECK_EQUAL( v_short,     i_short );
+    BOOST_CHECK_EQUAL( v_ushort,    i_ushort );
+    BOOST_CHECK_EQUAL( v_long,      i_long );
+    BOOST_CHECK_EQUAL( v_ulong,     i_ulong );
+    BOOST_CHECK_EQUAL( v_longlong,  i_longlong );
+    BOOST_CHECK_EQUAL( v_ulonglong, i_ulonglong );
+//  BOOST_CHECK_EQUAL( v_float,     i_float );
+    BOOST_CHECK_EQUAL( v_double,    i_double );
+    BOOST_CHECK_EQUAL( v_string,    i_string );
+    BOOST_CHECK_EQUAL( v_charp,     i_charp );
+}
+
+BOOST_AUTO_TEST_CASE( stream_object ) {
+    BOOST_TEST_MESSAGE("Stream an object");
+    const std::string k("key");
+    const std::string v("value");
+    {
+        FileStream sout( F::filename, "w" );
+        sout.startObject();
+        sout << k;
+        sout << v;
+        sout.endObject();
+    }
+    {
+        FileStream sin( F::filename, "r" );
+        BOOST_CHECK( sin.next() );
+        std::string s;
+        sin >> s;
+        BOOST_CHECK_EQUAL( s, k );
+        sin >> s;
+        BOOST_CHECK_EQUAL( s, v );
+        BOOST_CHECK( sin.endObjectFound() );
+        BOOST_CHECK( !sin.next() );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( stream_string ) {
+    BOOST_TEST_MESSAGE("Stream a string");
+    {
+        FileStream sout( F::filename, "w" );
+        sout << i_string;
+    }
+    {
+        FileStream sin( F::filename, "r" );
+        std::string s;
+        BOOST_CHECK( sin.next(s) );
+        BOOST_CHECK_EQUAL( s, i_string );
+        BOOST_CHECK( !sin.next() );
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

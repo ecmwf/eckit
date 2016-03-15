@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -38,6 +38,14 @@ static Value root(const std::string &path) {
 }
 
 
+static Value root(Stream& in) {
+    std::string val;
+    in.next(val);
+    std::istringstream iss(val);
+    return root(iss);
+}
+
+
 JSONConfiguration::JSONConfiguration(const eckit::PathName &path, char separator):
     Configuration(root(path), separator),
     path_(path) {
@@ -48,6 +56,10 @@ JSONConfiguration::JSONConfiguration(std::istream &in, char separator):
     path_("<istream>") {
 }
 
+JSONConfiguration::JSONConfiguration(Stream& in, char separator)
+    : Configuration(root(in), separator),
+      path_("<Stream>") {}
+
 JSONConfiguration::~JSONConfiguration() {
 }
 
@@ -55,5 +67,5 @@ void JSONConfiguration::print(std::ostream &out) const {
     out << "JSONConfiguration[path=" << path_ << ", root=" << root_ << "]";
 }
 
-}  // namespace mir
+} // namespace eckit
 

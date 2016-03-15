@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -8,22 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-// File Port.h
-// Baudouin Raoult - ECMWF Jul 96
+/// @file   Port.h
+/// @author Baudouin Raoult
+/// @date   Jul 96
 
 #ifndef eckit_Port_h
 #define eckit_Port_h
 
 #include "eckit/eckit.h"
 
-
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
-
+//----------------------------------------------------------------------------------------------------------------------
 
 class Port {
 public:
@@ -34,8 +30,7 @@ public:
 
 // -- Operators
 
-	operator int() const
-        { return port_; }
+    operator int() const { return port_; }
 
 private:
 
@@ -44,11 +39,9 @@ private:
 // -- Members
 
 	int   port_;
-
 };
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

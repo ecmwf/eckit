@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "experimental/eckit/ecml/parser/RequestParser.h"
+#include "eckit/ecml/parser/RequestParser.h"
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/log/Log.h"
@@ -107,7 +107,7 @@ namespace RequestYacc {
         void request_error(const char* msg);
     }
 
-#include "experimental/eckit/ecml/requesty.c"
+#include "eckit/ecml/requesty.c"
 
     extern "C" 
     {
@@ -135,7 +135,7 @@ void do_parse_request_in_string(const char *s)
         buffer = RequestYacc::request__scan_string(s);
         RequestYacc::request_parse();
     }
-    catch (RequestParseError e)
+    catch (RequestParseError& e)
     {
         RequestYacc::request__delete_buffer(buffer);
         throw UserError(e.what());

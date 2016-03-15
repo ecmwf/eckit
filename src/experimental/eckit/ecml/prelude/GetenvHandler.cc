@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -10,9 +10,9 @@
 
 #include "GetenvHandler.h"
 
-#include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/ExecutionContext.h"
-#include "experimental/eckit/ecml/core/Environment.h"
+#include "eckit/ecml/parser/Request.h"
+#include "eckit/ecml/core/ExecutionContext.h"
+#include "eckit/ecml/core/Environment.h"
 
 using namespace std;
 using namespace eckit;
@@ -25,7 +25,7 @@ Values GetenvHandler::handle(ExecutionContext& context)
 {
     List r;
 
-    vector<string> vars (getValueAsList(context, "values"));
+    vector<string> vars (context.getValueAsList("values"));
     for (size_t i (0); i < vars.size(); ++i)
     {
         char *s (getenv(vars[i].c_str()));

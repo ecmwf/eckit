@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -231,7 +231,7 @@ static void catch_alarm(int sig)
 // This should be in the TCPClient.cc, but I want to reuse the Mutex
 // to lock any call to NIS with the same one
 
-TCPSocket& TCPClient::connect(const std::string& remote,int port,int retries, int timeout)
+TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, int timeout)
 {
     std::string host = hostName(remote);
 

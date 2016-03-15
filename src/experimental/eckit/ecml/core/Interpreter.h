@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -14,7 +14,7 @@
 
 #include <list>
 
-#include "experimental/eckit/ecml/parser/Request.h"
+#include "eckit/ecml/parser/Request.h"
 
 namespace eckit {
 
@@ -31,11 +31,11 @@ public:
     void debug(bool d) { debug_ = d; }
 
     virtual Values evalRequests(const Request, ExecutionContext&);
-    virtual Values evalVerb(const Request object, const Request request, ExecutionContext&);
+    virtual Values evalClosure(const Request object, const Request request, ExecutionContext&);
+    virtual Values evalNative(const Request object, const Request request, ExecutionContext&);
 protected:
     virtual Values evalList(const Request, ExecutionContext&);
     virtual Request evalMacro(const Request, const Request, ExecutionContext&);
-    virtual Values evalNative(const Request object, const Request request, ExecutionContext&);
 
 private:
     bool debug_;

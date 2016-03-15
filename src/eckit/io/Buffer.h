@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File Buffer.h
-// Baudouin Raoult - ECMWF Jul 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date July 1996
 
 #ifndef eckit_Buffer_h
 #define eckit_Buffer_h
@@ -18,11 +19,10 @@
 
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // A simple class to implement buffers
 
@@ -30,20 +30,22 @@ class Buffer : private NonCopyable {
 
 public: // methods
 
-	Buffer(size_t size);
+    Buffer(size_t size);
     Buffer(const std::string& s);
     Buffer(const char*, size_t size);
+
+    /// Constructor that does not take ownership of the data
     Buffer(void*, size_t size, bool dummy);
 
-	~Buffer();
+    ~Buffer();
 
-	operator char*()                 { return (char*)buffer_; }
-	operator const char*() const     { return (char*)buffer_; }
+    operator char*()                 { return (char*)buffer_; }
+    operator const char*() const     { return (char*)buffer_; }
 
-	operator void*()                 { return buffer_; }
-	operator const void*() const     { return buffer_; }
+    operator void*()                 { return buffer_; }
+    operator const void*() const     { return buffer_; }
 
-	size_t size() const		 { return size_; }
+    size_t size() const		 { return size_; }
 
 protected: // methods
 
@@ -55,15 +57,15 @@ protected: // methods
 
 private: // members
 
-    bool   owned_;
+    void*  buffer_;
     size_t size_;
-	void*  buffer_;
+
+    bool   owned_;
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
-
 
 #endif

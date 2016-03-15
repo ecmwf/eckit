@@ -1,30 +1,34 @@
 test, label = "Execute apply with a closure, no parameters",
 do = (
-    apply, closure = (function, _ = (println, values = FOO))
+    apply, closure = (function, _ = (println, values = FOO)),
+           args = (let)
 ), 
-expect = FOO
+EXPECT = FOO
 
 test, label = Apply parameters to closure,
 do = (
     apply,
-        closure = (function, of = param,
-                             _ = (println,
-                                          values = (value, of = param))),
-        param = FOO
+        closure = (function, of = param, _ = (println, values = ($, _ = param))),
+        args = (let, param = FOO)
 ), 
 expect = FOO
 
 test, label = Apply parameters to a deserialized closure,
 do = (
+    let, x = "some value of x in the dynamic environment"
     apply,
         closure = (closure,
-                        name = "_",
-                        parameters = "things", 
-                        captured = (null), 
-                        code = (println,
-                                    values = "value is" / (value, of = "things"))),
-        things = 1
+                        name = _,
+                        parameters = things / ideas, 
+                        captured = (let, x = "the captured value"), 
+                        code = (
+                                    println, values = "things: " / ($, _ = things) / " ideas: " / ($, _ = ideas) / " captured: " / ($,_ = x)
+                                )),
+        args    = (let, 
+                    things = 1 / 2, 
+                    ideas  = foo / bar)
 
 ),
-expect = value is / 1
+expect = "things: " / 1 / 2 /  " ideas: " / foo / bar /  " captured: " / "the captured value"
+
 

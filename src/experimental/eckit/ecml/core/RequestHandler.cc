@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -12,7 +12,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/StringTools.h"
 
-#include "experimental/eckit/ecml/parser/Request.h"
+#include "eckit/ecml/parser/Request.h"
 
 #include "RequestHandler.h"
 #include "ExecutionContext.h"
@@ -39,22 +39,6 @@ RequestHandler& RequestHandler::handler(const std::string& name)
 }
 
 std::string RequestHandler::name() const { return name_; }
-
-std::vector<std::string> RequestHandler::getValueAsList(ExecutionContext& context, const std::string& keyword)
-{
-    std::vector<std::string> r;
-
-    Request v (context.environment().lookup(keyword));
-    ASSERT(v->tag() == "_list");
-
-    Request evaluated (context.interpreter().eval(v, context));
-    for (Request p(evaluated); p; p = p->rest())
-    {
-        r.push_back(p->value()->text());
-    }
-
-    return r;
-}
 
 string RequestHandler::database(ExecutionContext& context) 
 {

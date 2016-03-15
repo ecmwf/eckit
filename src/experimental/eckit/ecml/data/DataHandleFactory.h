@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -16,7 +16,7 @@
 #include <map>
 
 #include "eckit/filesystem/PathName.h"
-#include "experimental/eckit/ecml/parser/Request.h"
+#include "eckit/ecml/parser/Request.h"
 
 namespace eckit { 
 
@@ -35,6 +35,7 @@ public:
     static DataHandle* openForWrite(const std::string&, const Length& = Length(0));
 
     static void buildMultiHandle(MultiHandle&, const std::vector<std::string>&);
+    static void buildMultiHandle(MultiHandle&, const std::string&);
 
 protected:
     DataHandleFactory(const std::string&);

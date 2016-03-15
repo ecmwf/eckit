@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -89,7 +89,7 @@ Channel& Log::info(const CodeLocation& where)
 }
 
 Channel& Log::error()
-{    
+{
     return Context::instance().errorChannel();
 }
 
@@ -131,6 +131,11 @@ Channel& Log::warning()
 Channel& Log::warning(const CodeLocation& where)
 {
     return Context::instance().warnChannel().source(where);
+}
+
+std::ostream& Log::null() {
+    static MultiChannel no_output;
+    return no_output;
 }
 
 Channel& Log::debug(int level)

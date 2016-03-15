@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -22,6 +22,12 @@
 
 using namespace std;
 using namespace eckit;  // TODO: eckit/utils/Environment.h should be in namespace eckit I think
+
+Environment::Environment(const Environment& other)
+: dictionary_(Cell::clone(other.dictionary_)),
+  parent_(other.parent_)
+{
+}
 
 Environment::Environment(Environment* parent, Request r)
 : dictionary_(r),

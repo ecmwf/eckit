@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -11,13 +11,13 @@
 #include "eckit/types/Types.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/StringTools.h"
-#include "experimental/eckit/ecml/parser/Request.h"
+#include "eckit/ecml/parser/Request.h"
 
-#include "experimental/eckit/ecml/core/ExecutionContext.h"
-#include "experimental/eckit/ecml/core/Environment.h"
-#include "experimental/eckit/ecml/core/Interpreter.h"
-#include "experimental/eckit/ecml/core/SpecialFormHandler.h"
-#include "experimental/eckit/ecml/ast/Closure.h"
+#include "eckit/ecml/core/ExecutionContext.h"
+#include "eckit/ecml/core/Environment.h"
+#include "eckit/ecml/core/Interpreter.h"
+#include "eckit/ecml/core/SpecialFormHandler.h"
+#include "eckit/ecml/ast/Closure.h"
 
 #include "ApplyHandler.h"
 
@@ -34,11 +34,7 @@ Request ApplyHandler::handle(const Request request, ExecutionContext& context)
 {
     ASSERT(request->tag() == "_verb" && request->text() == "apply");
 
-    Log::info() << "ApplyHandler::handle: request: " << request << endl;
-
     Request evaluatedAttributes (context.interpreter().evalAttributes(request, context));
-
-    Log::info() << "ApplyHandler::handle: evaluatedAttributes: " << evaluatedAttributes << endl;
 
     Cell* p (evaluatedAttributes->rest());
 
@@ -48,39 +44,26 @@ Request ApplyHandler::handle(const Request request, ExecutionContext& context)
     if (p->text() != "function" && p->text() != "closure")
         throw UserError("First parameter of apply should be 'function' or 'closure'");
 
-    ASSERT("apply handles closures only now" && p->text() == "closure");
-
-    Log::info() << "ApplyHandler::handle: closure: " << p->value() << endl;
-
     Cell* closure (p->value()); // it should be a list with one closure
 
-    Request paramsFrame (new Cell("_verb", "let", 0, 0));
-    for (Request e(p->rest()); e; e = e->rest())
-    {
-        ASSERT(e->tag() == "");
-        paramsFrame->append(new Cell("", e->text(), e->value(), 0));
-    }
-    // closure is a list here. it should contain just one closure object.
-    Log::info() << "  *** ApplyHandler::handle: closure: " << closure << endl;
+    if (! p->rest() || p->rest()->text() != "args" || !p->rest()->value())
+        throw UserError("apply: parameter 'args' is required");
+
+    Request paramsFrame (p->rest()->value()->value());
     ASSERT(closure->rest() == 0);
 
-    //Cell *r (context.interpreter().eval(closure->value(), context));
-    Closure c (closure->value());
-
-    Cell* captured (c.capturedEnvironment());
-    Cell* staticEnvironment (captured ? (captured->value() ? captured->value()->value() : 0) : 0);
-
-    if (staticEnvironment)
-        context.pushEnvironmentFrame(staticEnvironment);
+    Cell* r (0);
 
     context.pushEnvironmentFrame(paramsFrame);
 
-    Cell* r (context.interpreter().eval(c.code(), context));
+    if (closure->value()->tag() == "_verb" && closure->value()->text() == "closure")
+        r = context.interpreter().evalClosure(closure->value(), paramsFrame, context);
+    else if (closure->value()->tag() == "_native")
+        r = context.interpreter().evalNative(closure->value(), paramsFrame, context);
+    else
+        r = context.interpreter().eval(closure->value(), context);
 
     context.popEnvironmentFrame(paramsFrame);
-
-    if (staticEnvironment)
-        context.popEnvironmentFrame(staticEnvironment);
 
     return r;
 }

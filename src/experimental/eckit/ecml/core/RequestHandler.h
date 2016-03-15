@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -13,7 +13,7 @@
 #define eckit_utils_RequestHandler_H
 
 #include "eckit/filesystem/PathName.h"
-#include "experimental/eckit/ecml/parser/Request.h"
+#include "eckit/ecml/parser/Request.h"
 
 namespace eckit { 
 
@@ -36,7 +36,6 @@ public:
 protected:
     RequestHandler(const std::string&);
 
-    static std::vector<std::string> getValueAsList(ExecutionContext&, const std::string& keyword);
     static std::vector<std::string> pathNamesToStrings(const std::vector<eckit::PathName>&);
 
     std::string name_;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cmath>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
@@ -61,8 +62,15 @@ static const char *b="KMGPH";
 
 static double rate(double x,char& c)
 {
-    const char* p = b;
     c = ' ';
+
+    // If there is a divide by zero (time period shorter than resolution of clock
+    // ticker) then we risk a segfault unless we proactively test!
+    if (std::isinf(x)) {
+        return 0.0;
+    }
+
+    const char* p = b;
     while(x > 100)
     {
         x /= 1024;	
@@ -157,7 +165,7 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
                     watcher.watch(buffer,length);
                     lastRead = timer.elapsed();
 
-                    char c1,c2;
+                    char c1 = 0, c2 = 0;
                     //			Log::message() << rate(length/r,c1)  << c1 << " " << rate(length/w,c2) << c2 << std::endl;
                     Log::message() << rate(total/readTime,c1)  << c1 << " " << rate(total/writeTime,c2) << c2 << std::endl;
                 }

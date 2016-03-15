@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -12,7 +12,7 @@
 #ifndef eckit_utils_ExecutionContext_H
 #define eckit_utils_ExecutionContext_H
 
-#include "experimental/eckit/ecml/parser/Request.h"
+#include "eckit/ecml/parser/Request.h"
 
 namespace eckit {
 
@@ -24,7 +24,10 @@ class RequestHandler;
 class ExecutionContext {
 public:
     ExecutionContext();
+    ExecutionContext(const ExecutionContext&);
     ~ExecutionContext();
+
+    std::vector<std::string> getValueAsList(const std::string& keyword);
 
     void registerHandler(const char*, eckit::RequestHandler&);
     void registerHandler(const std::string&, eckit::RequestHandler&);
@@ -50,6 +53,7 @@ public:
 
 private:
     eckit::Environment* environment_;
+    eckit::Environment* otherEnvironment_;
     eckit::Interpreter* interpreter_;
 };
 

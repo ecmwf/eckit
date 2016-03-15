@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. In applying
@@ -156,13 +156,13 @@ BOOST_AUTO_TEST_CASE( test_reanimate_##TYPE##_##SUFFIX ) \
 
 BOOST_AUTO_TEST_SUITE( TestStreamable )
 
-test_decode(char, numeric_limits<char>::max(), max)
-test_decode(char, numeric_limits<char>::min(), min)
-test_reanimate(char, numeric_limits<char>::max(), max)
-test_reanimate(char, numeric_limits<char>::min(), min)
+test_decode(char, 'A', max)
+test_decode(char, 'z', min)
+test_reanimate(char, 'A', max)
+test_reanimate(char, 'z', min)
 
-test_decode(uchar, numeric_limits<uchar>::max(), max)
-test_reanimate(uchar, numeric_limits<uchar>::max(), max)
+test_decode(uchar, 'A', max)
+test_reanimate(uchar, 'A', max)
 
 test_decode(bool, true, true)
 test_reanimate(bool, true, true)

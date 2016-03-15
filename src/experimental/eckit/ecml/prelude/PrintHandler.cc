@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -10,10 +10,10 @@
 
 #include "PrintHandler.h"
 
-#include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/core/ExecutionContext.h"
-#include "experimental/eckit/ecml/core/Environment.h"
-#include "experimental/eckit/ecml/core/Interpreter.h"
+#include "eckit/ecml/parser/Request.h"
+#include "eckit/ecml/core/ExecutionContext.h"
+#include "eckit/ecml/core/Environment.h"
+#include "eckit/ecml/core/Interpreter.h"
 
 using namespace std;
 using namespace eckit;
@@ -37,7 +37,7 @@ Values PrintHandler::handle(ExecutionContext& context)
     string separator (" ");
     if (context.environment().lookupNoThrow("separator"))
     {
-        vector<string> separators (getValueAsList(context, "separator"));
+        vector<string> separators (context.getValueAsList("separator"));
         if (separators.size() > 1)
             throw UserError("join_strings: separator must be a single string");
 

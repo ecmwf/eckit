@@ -18,9 +18,14 @@ configure_file( eckit_version.cc.in  eckit_version.cc )
 list( APPEND eckit_srcs eckit.h eckit_version.cc )
 
 list( APPEND eckit_container_srcs
+
 container/BTree.h
 container/BTree.cc
+
 container/Cache.h
+container/CacheLRU.h
+container/CacheLRU.cc
+
 container/CacheManager.h
 container/CacheManager.cc
 container/DenseMap.h
@@ -70,12 +75,17 @@ io/CommandStream.h
 io/CommandStream.cc
 io/Offset.h
 io/Offset.cc
+io/DataBlob.h
+io/DataBlob.cc
+io/Buffer.cc
 io/Buffer.h
 io/Buffer.cc
 io/BufferCache.h
 io/BufferCache.cc
 io/FileLocker.h
 io/FileLocker.cc
+io/FilePool.h
+io/FilePool.cc
 io/ResizableBuffer.h
 io/ResizableBuffer.cc
 io/DblBuffer.h
@@ -271,50 +281,53 @@ runtime/Pipe.h
 runtime/ProducerConsumer.h )
 
 list( APPEND eckit_log_srcs
-log/Channel.h
-log/Channel.cc
-log/ChannelBuffer.h
-log/ChannelBuffer.cc
-log/CallbackChannel.h
-log/CallbackChannel.cc
-log/FileChannel.h
-log/FileChannel.cc
-log/FormatChannel.h
-log/FormatChannel.cc
-log/FormatBuffer.h
-log/FormatBuffer.cc
-log/ColorizeFormat.h
-log/ColorizeFormat.cc
-log/MonitorChannel.h
-log/MonitorChannel.cc
-log/MultiChannel.h
-log/MultiChannel.cc
-log/UserChannel.h
-log/UserChannel.cc
-log/OStreamHandle.h
-log/Log.h
-log/Log.cc
 log/BigNum.h
 log/BigNum.cc
 log/Bytes.h
 log/Bytes.cc
+log/CallbackChannel.h
+log/CallbackChannel.cc
+log/Channel.h
+log/Channel.cc
+log/ChannelBuffer.h
+log/ChannelBuffer.cc
+log/CodeLocation.h
+log/CodeLocation.cc
+log/ColorizeFormat.h
+log/ColorizeFormat.cc
 log/Colour.h
 log/Colour.cc
 log/ETA.h
 log/ETA.cc
-log/Seconds.h
-log/Seconds.cc
+log/FileChannel.h
+log/FileChannel.cc
+log/FormatBuffer.h
+log/FormatBuffer.cc
+log/FormatChannel.h
+log/FormatChannel.cc
+log/Log.h
+log/Log.cc
+log/MonitorChannel.h
+log/MonitorChannel.cc
+log/MultiChannel.h
+log/MultiChannel.cc
+log/OStreamHandle.h
 log/Plural.h
 log/Progress.h
 log/Progress.cc
+log/RotBuffer.h
+log/RotBuffer.cc
 log/SavedStatus.h
 log/SavedStatus.cc
+log/Seconds.h
+log/Seconds.cc
 log/Timer.h
 log/Timer.cc
 log/TimeStamp.h
 log/TimeStamp.cc
-log/CodeLocation.h
-log/CodeLocation.cc )
+log/UserChannel.h
+log/UserChannel.cc
+)
 
 list( APPEND eckit_exception_srcs
 exception/BadValue.h
@@ -339,6 +352,8 @@ types/DayOfYear.h
 types/DayOfYear.cc
 types/Grid.h
 types/Grid.cc
+types/Metadata.h
+types/Metadata.cc
 types/Month.h
 types/Month.cc
 types/TimeInterval.h
@@ -363,7 +378,11 @@ parser/Tokenizer.cc
 parser/JSON.h
 parser/JSON.cc
 parser/JSONParser.h
-parser/JSONParser.cc )
+parser/JSONParser.cc
+parser/JSONDataBlob.h
+parser/JSONDataBlob.cc
+parser/JSONMetadata.h
+parser/JSONMetadata.cc )
 
 list( APPEND eckit_value_srcs
 value/BoolContent.h
@@ -532,6 +551,7 @@ foreach( dir ${eckit_dirs} )
 endforeach()
 
 list( APPEND eckit_templates
+					container/CacheLRU.cc
 					container/BTree.cc
 					container/MappedArray.cc
 					container/SimpleMappedArray.cc
@@ -582,7 +602,9 @@ ecbuild_add_library(TARGET eckit
 
 ### sub-directories
 
-add_subdirectory( cmd )
+if( HAVE_ECKIT_CMD )
+  add_subdirectory( cmd )
+endif()
 
 add_subdirectory( web )
 

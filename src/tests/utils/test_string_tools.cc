@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -177,8 +177,7 @@ void TestStringTools::test_back_trim()
 
 int main(int argc,char **argv)
 {
-    eckit_test::TestStringTools mytest(argc,argv);
-    mytest.start();
-    return 0;
+    eckit_test::TestStringTools app(argc,argv);
+    return app.start();
 }
 

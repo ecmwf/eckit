@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -45,6 +45,8 @@ public:
     // Set value pointed by a keyword
     Cell* value(const std::string& keyword, Cell* value); 
     Cell* value(const std::string& keyword, const std::string& value); 
+
+    void update(const std::string& keyword, Cell*); 
 
     // Get value pointed by a keyword
     Cell* valueOrDefault(const std::string& keyword, Cell* defaultValue) const;

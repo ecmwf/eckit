@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -7,6 +7,7 @@
 # nor does it submit to any jurisdiction.
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
+include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
 add_subdirectory( eckit )
 add_subdirectory( tests )

@@ -1,1 +1,2 @@
 SET( ENABLE_MPI OFF CACHE BOOL "Enable MPI" )
+SET( ENABLE_EXPERIMENTAL ON CACHE BOOL "Enable experimental features" )

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -7,7 +7,6 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
-
 
 #define BOOST_TEST_MODULE eckit_test_mpi
 #include "ecbuild/boost_test_framework.h"
@@ -42,7 +41,7 @@ struct MPIFixture {
     ~MPIFixture() { eckit::mpi::finalize(); }
 };
 
-BOOST_GLOBAL_FIXTURE( MPIFixture )
+BOOST_GLOBAL_FIXTURE( MPIFixture );
 
 //-------------------------------------------------------------------------
 
@@ -63,7 +62,7 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
 
   int d[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-  BOOST_CHECKPOINT("Test value");
+  BOOST_TEST_CHECKPOINT("Test value");
   {
     float val;
     if( eckit::mpi::rank() == root )
@@ -76,7 +75,7 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
     BOOST_CHECK_CLOSE( val, 3.14, 0.0001 );
   }
 
-  BOOST_CHECKPOINT("Test vector");
+  BOOST_TEST_CHECKPOINT("Test vector");
   {
     std::vector<int> data;
     if( eckit::mpi::rank() == root )
@@ -91,7 +90,7 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
     BOOST_CHECK_EQUAL_COLLECTIONS(data.begin(),data.end(),d,d+10);
   }
 
-  BOOST_CHECKPOINT("Test raw data");
+  BOOST_TEST_CHECKPOINT("Test raw data");
   {
     std::vector<int> data(10);
     if( eckit::mpi::rank() == root )
@@ -112,7 +111,7 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
   std::pair<double,int> v(-d,eckit::mpi::rank());
   std::vector<float> arr(5,eckit::mpi::rank()+1);
 
-  BOOST_CHECKPOINT("Testing all_reduce");
+  BOOST_TEST_CHECKPOINT("Testing all_reduce");
   {
     int sum;
     int prod;
@@ -145,7 +144,7 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
     BOOST_CHECK_EQUAL( maxloc.second, 0 );
   }
 
-  BOOST_CHECKPOINT("Testing all_reduce inplace");
+  BOOST_TEST_CHECKPOINT("Testing all_reduce inplace");
   {
     int sum = d;
     int prod = d;
@@ -202,11 +201,7 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
     prodvec = arr;
     success = mpi::all_reduce(prodvec,mpi::prod()); BOOST_CHECK( success == MPI_SUCCESS );
     BOOST_CHECK_EQUAL_COLLECTIONS(prodvec.begin(),prodvec.end(),expected.begin(),expected.end());
-
   }
-
-
-
 }
 
 
@@ -224,7 +219,10 @@ BOOST_AUTO_TEST_CASE( test_all_to_all )
   for(size_t j=0; j<mpi::size(); ++j)
     expected[j]=std::vector<int>(1,j);
 
-  BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(),recv.end(),expected.begin(),expected.end());
+  BOOST_CHECK_EQUAL(recv.size(), expected.size());
+  for (size_t i = 0; i < mpi::size(); ++i)
+      BOOST_CHECK_EQUAL_COLLECTIONS(recv[i].begin(), recv[i].end(),
+                                    expected[i].begin(), expected[i].end());
 }
 
 //-------------------------------------------------------------------------
@@ -269,5 +267,3 @@ BOOST_AUTO_TEST_CASE( test_all_gather___buffer )
 }
 
 //-------------------------------------------------------------------------
-
-

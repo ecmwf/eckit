@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -99,6 +99,23 @@ public:  // methods
     static void unregisterObserver(LogObserver*);
     static std::ostream& dev() { return std::cout; }
     static void broadcast();
+    static std::ostream& null();
+
+    // Per application loggin
+    // trace(const T* = 0) can be replace by trace<T>() with c++14
+    template<typename T>
+    static std::ostream& trace(int level = 0, const T* = 0) {
+        if(T::trace(level)) {
+            dev() << ">>> TRACE-" << T::name() << " ";
+            return dev();
+        }
+        return null();
+    }
+
+    template<typename T>
+    static bool tracing(int level = 0, const T* = 0) {
+        return T::trace(level);
+    }
 
 private:
     Log();   ///< Private, non-instanciatable class
@@ -113,6 +130,6 @@ int format(std::ostream&);
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit
 
 #endif

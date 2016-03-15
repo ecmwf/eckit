@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -17,7 +17,8 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-RemoteCommandable::RemoteCommandable(int port) : commander_(new RemoteCommander(port)) {
+RemoteCommandable::RemoteCommandable(int port) :
+    commander_(new RemoteCommander(port)) {
     commander_.start();
 }
 
@@ -29,4 +30,4 @@ RemoteCommandable::~RemoteCommandable() {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit

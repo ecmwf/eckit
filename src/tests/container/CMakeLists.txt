@@ -1,6 +1,6 @@
 ecbuild_add_test(   TARGET      eckit_test_container
 					BOOST
-					SOURCES     test_btree.cc test_densemap.cc
+					SOURCES     test_btree.cc test_densemap.cc test_cache_lru.cc
 					LIBS        eckit )
 
 ecbuild_add_test(   TARGET      eckit_test_benchmark_densemap

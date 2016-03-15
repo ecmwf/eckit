@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -15,10 +15,10 @@
 
 #include "eckit/utils/Translator.h"
 
-#include "experimental/eckit/ecml/core/ExecutionContext.h"
-#include "experimental/eckit/ecml/core/Environment.h"
+#include "eckit/ecml/core/ExecutionContext.h"
+#include "eckit/ecml/core/Environment.h"
 
-#include "experimental/eckit/ecml/misc/DynamicParametrisation.h"
+#include "eckit/ecml/misc/DynamicParametrisation.h"
 
 
 using namespace std;
@@ -102,5 +102,5 @@ bool DynamicParametrisation::get(const std::string& name, std::vector<double>& v
     return r;
 }
 
-}  // namespace eckit
+} // namespace eckit
 

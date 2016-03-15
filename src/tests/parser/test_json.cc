@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -90,6 +90,16 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_map )
 
     BOOST_CHECK( v["d"].isString() );
     BOOST_CHECK_EQUAL( v["d"].as<string>(), "" );
+}
+
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_parser_eof )
+{
+    istringstream in("");
+    JSONParser p(in);
+
+    BOOST_CHECK_THROW(p.next(), StreamParser::Error);
 }
 
 //-----------------------------------------------------------------------------

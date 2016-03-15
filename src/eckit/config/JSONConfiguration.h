@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -21,6 +21,7 @@
 namespace eckit {
 
 class PathName;
+class Stream;
 
 class JSONConfiguration : public Configuration {
   public:
@@ -32,6 +33,7 @@ class JSONConfiguration : public Configuration {
 
     JSONConfiguration(const eckit::PathName &path, char separator = '.');
     JSONConfiguration(std::istream &, char separator = '.');
+    JSONConfiguration(Stream&, char separator = '.');
 
     virtual ~JSONConfiguration(); // Change to virtual if base class
 
@@ -96,8 +98,6 @@ class JSONConfiguration : public Configuration {
     // From MIRParametrisation
     virtual void print(std::ostream &) const;
 
-
-
     // -- Class members
     // None
 
@@ -112,6 +112,6 @@ class JSONConfiguration : public Configuration {
 };
 
 
-}  // namespace eckit
+} // namespace eckit
 #endif
 

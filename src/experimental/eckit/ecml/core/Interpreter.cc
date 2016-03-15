@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -10,8 +10,8 @@
 
 #include "eckit/log/Log.h"
 
-#include "experimental/eckit/ecml/parser/Request.h"
-#include "experimental/eckit/ecml/ast/Closure.h"
+#include "eckit/ecml/parser/Request.h"
+#include "eckit/ecml/ast/Closure.h"
 #include "SpecialFormHandler.h"
 #include "RequestHandler.h"
 #include "Interpreter.h"
@@ -42,14 +42,21 @@ Values Interpreter::eval(const Request request, ExecutionContext& context)
 
     if (tag == "_list")
     {
-        ASSERT(object->rest() == 0); // one element only
-        object = object->value();
-        tag = object->tag();
+        if (object->rest() == 0)
+        {
+            object = object->value();
+            tag = object->tag();
+        } else
+        {
+        }
     }
 
     Values r ( tag == ""          ? object
+             : tag == "_list"     ? object
              : tag == "_native"   ? evalNative(object, request, context)
-             : tag == "_verb"     ? evalVerb(object, request, context)
+             : tag == "_verb" 
+               && object->text() == "let" ? object
+             : tag == "_verb"     ? evalClosure(object, request, context)
              : tag == "_macro"    ? evalMacro(object, request, context)
              : tag == "_requests" ? eval(object, context)
              : tag == "_request"  ? eval(object, context)
@@ -86,7 +93,8 @@ Values Interpreter::evalList(const Request requests, ExecutionContext& context)
 
             } else if (sublist->tag() == "_native"
                        || sublist->tag() == "_macro"
-                       || sublist->tag() == "_verb")
+                       || sublist->tag() == "_verb"
+                       || !sublist->tag().size())
             {
                 list.append(sublist);
             } else 
@@ -149,7 +157,7 @@ Values Interpreter::evalMacro(const Request object, const Request request, Execu
     return h.handle(request, context);
 }
 
-Values Interpreter::evalVerb(const Request object, const Request request, ExecutionContext& context)
+Values Interpreter::evalClosure(const Request object, const Request request, ExecutionContext& context)
 {
     ASSERT(object->text() == "closure");
 

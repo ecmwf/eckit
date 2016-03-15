@@ -28,45 +28,60 @@ ecbuild_declare_project()
 
 ecbuild_add_option( FEATURE EXPERIMENTAL
                     DEFAULT ON
-                    DESCRIPTION "Experimental features (not used in production)" )
-
-### GRIB
-
-ecbuild_add_option( FEATURE GRIB
-                    CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "C++ interface to GRIB format"
-                    REQUIRED_PACKAGES "PROJECT grib_api VERSION 1.12.3" )
-
-set_package_properties( grib_api PROPERTIES TYPE RECOMMENDED PURPOSE "GRIB encoding and decoding" )
+                    DESCRIPTION "Experimental features (not used in production)"
+                    PURPOSE "Enables MPI, MPISTUBS, ECKIT_MPI, ECKIT_MPISTUBS" )
 
 ### eckit::mpi
 
 ecbuild_add_option( FEATURE MPI
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "Support for MPI distributed parallelism"
+                    DESCRIPTION "Use system MPI libraries"
+                    PURPOSE "Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
 
 ecbuild_add_option( FEATURE MPISTUBS
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "Support for MPI distributed parallelism"
+                    DESCRIPTION "Use MPI stubs (no system MPI required)"
+                    PURPOSE "Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "PROJECT mpistubs VERSION 1.0.0" )
 
 ecbuild_add_option( FEATURE ECKIT_MPI
-                    DESCRIPTION "eckit C++ wrapper for mpi"
+                    DESCRIPTION "eckit C++ wrapper for MPI"
+                    PURPOSE "Build eckit_mpi library"
                     CONDITION HAVE_MPI )
 
 ecbuild_add_option( FEATURE ECKIT_MPISTUBS
-                    DESCRIPTION "eckit C++ wrapper for mpi using mpistubs"
+                    DESCRIPTION "eckit C++ wrapper for MPI using mpistubs"
+                    PURPOSE "Build eckit_mpistubs library"
                     CONDITION HAVE_MPISTUBS )
+
+### eckit::cmd
+
+ecbuild_add_option( FEATURE ECKIT_CMD
+                    DESCRIPTION "Utilities for administration tools"
+                    PURPOSE "Build eckit_cmd library"
+                    REQUIRED_PACKAGES "LEXYACC" )
+
+### eckit::ecml
+
+ecbuild_add_option( FEATURE ECKIT_ECML
+                    DESCRIPTION "ECML utilities"
+                    PURPOSE "Build eckit_ecml library"
+                    REQUIRED_PACKAGES "LEXYACC" )
 
 ### Eigen
 
 ecbuild_add_option( FEATURE EIGEN
                     CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "Eigen support"
+                    TYPE RECOMMENDED
+                    PURPOSE "Eigen backend: accelerated dense and sparse matrix operations"
                     REQUIRED_PACKAGES Eigen3 )
 
-set_package_properties( Eigen3 PROPERTIES TYPE RECOMMENDED PURPOSE "Dense matrix operations" )
+set_package_properties( Eigen3 PROPERTIES
+                        TYPE RECOMMENDED
+                        DESCRIPTION "C++ template library for linear algebra"
+                        PURPOSE "Dense and sparse matrix operations" )
 
 if( ENABLE_EIGEN )
     # TODO: we should add here a test that we can compile Eigen without problems
@@ -78,10 +93,15 @@ endif()
 
 ecbuild_add_option( FEATURE ARMADILLO
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "Armadillo support"
+                    DESCRIPTION "Armadillo linear algebra library"
+                    TYPE RECOMMENDED
+                    PURPOSE "Armadillo backend: accelerated dense matrix operations"
                     REQUIRED_PACKAGES Armadillo )
 
-set_package_properties( Armadillo PROPERTIES TYPE RECOMMENDED PURPOSE "Dense matrix operations" )
+set_package_properties( Armadillo PROPERTIES
+                        DESCRIPTION "C++ linear algebra"
+                        TYPE RECOMMENDED
+                        PURPOSE "Dense matrix operations" )
 
 ### LAPACK
 
@@ -103,28 +123,33 @@ endif()
 
 ecbuild_add_option( FEATURE CUDA
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "CUDA support"
+                    DESCRIPTION "CUDA GPU support"
+                    TYPE RECOMMENDED
+                    PURPOSE "CUDA backend: GPU linear algebra operations"
                     REQUIRED_PACKAGES CUDA )
-
-set_package_properties( CUDA PROPERTIES TYPE RECOMMENDED PURPOSE "CUDA backend: GPU linear algebra operations" )
 
 ### MKL
 
 ecbuild_add_option( FEATURE MKL
                     CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "MKL support"
+                    TYPE RECOMMENDED
+                    PURPOSE "MKL backend: Accelerated linear algebra operations"
                     REQUIRED_PACKAGES MKL )
-
-set_package_properties( MKL PROPERTIES TYPE RECOMMENDED PURPOSE "MKL backend: Accelerated linear algebra operations" )
 
 ### ViennaCL
 
 ecbuild_add_option( FEATURE VIENNACL
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "ViennaCL support"
+                    DESCRIPTION "ViennaCL support for OpenCL"
+                    TYPE RECOMMENDED
+                    PURPOSE "ViennaCL backend: many-core linear algebra library"
                     REQUIRED_PACKAGES ViennaCL )
 
-set_package_properties( VIENNACL PROPERTIES TYPE RECOMMENDED PURPOSE "ViennaCL backend: GPU-accelerated linear algebra library" )
+set_package_properties( ViennaCL PROPERTIES
+                        DESCRIPTION "linear algebra library for computations on many-core architectures"
+                        TYPE RECOMMENDED
+                        PURPOSE "Dense and sparse matrix operations on OpenCL devices" )
 
 ### async io support
 
@@ -170,17 +195,17 @@ endif()
 # export package info
 
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
-set( ECKIT_LIBRARIES      eckit eckit_cmd eckit_web )
+set( ECKIT_LIBRARIES      eckit eckit_web )
+
+if( HAVE_ECKIT_CMD)
+  list( APPEND ECKIT_LIBRARIES eckit_cmd )
+endif()
 
 if( HAVE_EXPERIMENTAL )
 
   list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
 
-  list( APPEND ECKIT_LIBRARIES eckit_ecml eckit_la eckit_geometry eckit_maths )
-
-  if( HAVE_GRIB )
-    list( APPEND ECKIT_LIBRARIES eckit_grib )
-  endif()
+  list( APPEND ECKIT_LIBRARIES eckit_la eckit_geometry eckit_maths )
 
   if( HAVE_EIGEN )
       if( ECKIT_CONTRIB_EIGEN )
@@ -194,6 +219,10 @@ if( HAVE_EXPERIMENTAL )
 
   if( HAVE_ECKIT_MPISTUBS )
     list( APPEND ECKIT_LIBRARIES eckit_mpistubs )
+  endif()
+
+  if( HAVE_ECKIT_ECML )
+    list( APPEND ECKIT_LIBRARIES eckit_ecml )
   endif()
 
 endif()

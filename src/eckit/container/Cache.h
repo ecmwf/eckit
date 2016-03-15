@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File Cache.h
-// Tiago Quintino - (c) ECMWF Oct 12
+/// @author Tiago Quintino
+/// @date   Oct 2012
 
-#ifndef eckit_Cache_h
-#define eckit_Cache_h
+#ifndef eckit_container_Cache_h
+#define eckit_container_Cache_h
 
 #include <stdint.h>
 #include <sys/time.h>
@@ -33,7 +33,7 @@ namespace eckit {
 
 template< typename K, typename V >
 class Cache : private NonCopyable {
-    
+
 public: // types
 
     struct Entry {
@@ -45,7 +45,7 @@ public: // types
             gettimeofday(&age_,0);
             last_ = age_;
         }
-    
+
         void reset( const V& v )
         {
             v_ = v;
@@ -54,40 +54,40 @@ public: // types
             gettimeofday(&age_,0);
             last_ = age_;
         }
-    
+
         V& access()
         {
             gettimeofday(&last_,0);
             ++hits_;
             return v_;
         }
-    
+
         V               v_;
         bool            expired_;
         uint64_t        hits_;
         struct timeval  age_;
         struct timeval  last_;
     };
-    
+
     typedef K key_type;
     typedef V value_type;
     typedef Entry entry_type;
 
     typedef std::map<key_type,entry_type> store_type;
-    
+
     class Policy
     {
         /// Expires the Least Recently Used (LRU) entries
         /// @returns true if any entries were expired
-        static bool expireLRU( store_type& c, const size_t& maxSize);    
+        static bool expireLRU( store_type& c, const size_t& maxSize);
         /// Expires the Least Frequently Used (LFU) entries
         /// @returns true if any entries were expired
-        static bool expireLFU( store_type& c, const size_t& maxSize);    
+        static bool expireLFU( store_type& c, const size_t& maxSize);
         /// Expires the entries older than a certain age
         /// @returns true if any entries were expired
         static bool expireAge( store_type& c, struct timeval& maxAge);
     };
-    
+
 public: // methods
 
     Cache();
@@ -137,7 +137,7 @@ private: // methods
     /// marks an object as expired
     /// @returns true if object was present and is marked as expired
     void expire( typename store_type::iterator i );
-    
+
 private: // members
 
     store_type      storage_;
@@ -163,7 +163,7 @@ bool Cache<K,V>::insert(const K& k, const V& v)
 {
     typename store_type::iterator i = storage_.find(k);
     if( i != storage_.end() )
-    {   
+    {
         Entry& e = i->second;
 
         if( !e.expired_ ) return false;
@@ -172,7 +172,7 @@ bool Cache<K,V>::insert(const K& k, const V& v)
     }
     else
         storage_.insert( std::make_pair(k,Entry(v)) );
-    
+
     return true;
 }
 
@@ -181,7 +181,7 @@ bool Cache<K,V>::update(const K& k, const V& v)
 {
     typename store_type::iterator i = storage_.find(k);
     if( i != storage_.end() )
-    {   
+    {
         Entry& e = i->second;
         e.reset(v);
         return true;

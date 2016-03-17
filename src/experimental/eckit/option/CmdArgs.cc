@@ -51,6 +51,7 @@ void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
         if ((*j)->active()) {
             ASSERT(opts.find((*j)->name()) == opts.end());
             opts[(*j)->name()] = *j;
+            keys_.insert((*j)->name());
         }
     }
 

@@ -65,9 +65,11 @@ void LocalConfiguration::set(const std::vector<std::string> &path, size_t i, eck
     set(path, i + 1, r, value);
 }
 
-void LocalConfiguration::set(const std::string &s, const eckit::Value &value)  {
+void LocalConfiguration::set(const std::string &s, const eckit::Value &value, const void* disambiguator)  {
 
     // std::cout << "---- " << s << " => " << value << std::endl;
+
+    (void)disambiguator;
 
     eckit::Tokenizer parse(separator_);
     std::vector<std::string> path;
@@ -95,6 +97,10 @@ void LocalConfiguration::set(const std::string &s, double value)  {
 }
 
 void LocalConfiguration::set(const std::string &s, bool value)  {
+    set(s, eckit::Value(value));
+}
+
+void LocalConfiguration::set(const std::string &s, size_t value)  {
     set(s, eckit::Value(value));
 }
 

@@ -53,11 +53,10 @@ class LocalConfiguration : public Configuration {
     void set(const std::string &name, double value);
     void set(const std::string &name, long value);
     void set(const std::string &name, bool value);
+    void set(const std::string& name, size_t value);
 
     void set(const std::string& name, const std::vector<long>& value);
     void set(const std::string& name, const std::vector<double>& value);
-
-    void set(const std::string &s, const Value &value);
 
     // -- Overridden methods
 
@@ -104,6 +103,8 @@ class LocalConfiguration : public Configuration {
     // -- Methods
 
     void set(const std::vector<std::string> &path, size_t i, Value &root, const Value &value);
+    void set(const std::string &s, const Value &value, const void* disambiguator=0);
+
 
     // -- Overridden methods
     // None

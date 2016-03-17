@@ -54,17 +54,7 @@ public: // methods
     const std::vector<std::string>& args() const;
     const std::string& args(size_t) const;
 
-
-    // Overridden methods
-
-    virtual bool has(const std::string& name) const;
-
-    virtual bool get(const std::string& name, std::string& value) const;
-    virtual bool get(const std::string& name, bool& value) const;
-    virtual bool get(const std::string& name, long& value) const;
-    virtual bool get(const std::string& name, double& value) const;
-    virtual bool get(const std::string& name, std::vector<long>& value) const;
-    virtual bool get(const std::string& name, std::vector<double>& value) const;
+    // has, get and set methods are inherited from LocalConfiguration in their entirety
 
 private:
 

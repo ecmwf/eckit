@@ -135,34 +135,6 @@ const std::string &CmdArgs::args(size_t i) const {
     return args_[i];
 }
 
-bool CmdArgs::has(const std::string &name) const {
-    return LocalConfiguration::has(name);
-}
-
-bool CmdArgs::get(const std::string &name, std::string &value) const {
-    return LocalConfiguration::get(name, value);
-}
-
-bool CmdArgs::get(const std::string &name, bool &value) const {
-    return LocalConfiguration::get(name, value);
-}
-
-bool CmdArgs::get(const std::string &name, long &value) const {
-    return LocalConfiguration::get(name, value);
-}
-
-bool CmdArgs::get(const std::string &name, double &value) const {
-    return LocalConfiguration::get(name, value);
-}
-
-bool CmdArgs::get(const std::string &name, std::vector<long> &value) const {
-    return LocalConfiguration::get(name, value);
-}
-
-bool CmdArgs::get(const std::string &name, std::vector<double> &value) const {
-    return LocalConfiguration::get(name, value);
-}
-
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace option

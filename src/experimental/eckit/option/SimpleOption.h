@@ -19,7 +19,6 @@
 #include <iosfwd>
 
 #include "eckit/option/Option.h"
-#include "eckit/filesystem/PathName.h"
 
 
 namespace eckit {

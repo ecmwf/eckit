@@ -4,3 +4,10 @@ ecbuild_add_test(
     LIBS        eckit_option
     BOOST
 )
+
+ecbuild_add_test(
+    TARGET      eckit_test_option_factory
+    SOURCES     eckit_test_option_factory.cc
+    LIBS        eckit_option
+    BOOST
+)

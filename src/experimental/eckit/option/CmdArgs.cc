@@ -34,7 +34,7 @@ CmdArgs::CmdArgs(usage_proc usage, int args_count, bool throw_on_error) {
     init(usage, args_count, throw_on_error);
 }
 
-CmdArgs::CmdArgs(usage_proc usage, int args_count,  std::vector< option::Option *> &options, bool throw_on_error) {
+CmdArgs::CmdArgs(usage_proc usage, int args_count,  std::vector< option::Option *>& options, bool throw_on_error) {
     std::swap(options_, options); // Take ownership so it can be destroyed
     init(usage, args_count, throw_on_error);
 }
@@ -116,17 +116,17 @@ CmdArgs::~CmdArgs() {
 }
 
 
-void CmdArgs::print(std::ostream &out) const {
+void CmdArgs::print(std::ostream& out) const {
     out << "CmdArgs[";
     LocalConfiguration::print(out);
     out << "]";
 }
 
-const std::set<std::string> &CmdArgs::keys() const {
+const std::set<std::string>& CmdArgs::keys() const {
     return keys_;
 }
 
-const std::vector<std::string> &CmdArgs::args() const {
+const std::vector<std::string>& CmdArgs::args() const {
     return args_;
 }
 

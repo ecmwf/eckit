@@ -40,7 +40,7 @@ CmdArgs::CmdArgs(usage_proc usage, int args_count,  std::vector< option::Option 
 }
 
 void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
-    eckit::Context &ctx = eckit::Context::instance();
+    Context &ctx = Context::instance();
     const std::string &tool = ctx.runName();
     size_t argc = ctx.argc();
     bool error = false;
@@ -55,7 +55,7 @@ void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
         }
     }
 
-    eckit::Tokenizer parse("=");
+    Tokenizer parse("=");
     for (size_t i = 1; i < argc; i++) {
 
         std::string a = ctx.argv(i);
@@ -72,7 +72,7 @@ void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
                     (*j).second->set(v[1], *this);
                 }
             } else {
-                eckit::Log::info() << "Invalid option --" << v[0] << std::endl;
+                Log::info() << "Invalid option --" << v[0] << std::endl;
                 error = true;
             }
         } else {
@@ -83,7 +83,7 @@ void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
 
     if (args_count >= 0) {
         if (args_.size() != size_t(args_count)) {
-            eckit::Log::info() << "Invalid argument count: expected " << args_count << ", got: " << args_.size() << std::endl;
+            Log::info() << "Invalid argument count: expected " << args_count << ", got: " << args_.size() << std::endl;
             error = true;
         }
     }
@@ -91,13 +91,13 @@ void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
     if (error) {
         usage(tool);
         if (options_.size()) {
-            eckit::Log::info() << std::endl;
-            eckit::Log::info() << "Options are:" << std::endl;
-            eckit::Log::info() << "===========:" << std::endl ;
+            Log::info() << std::endl;
+            Log::info() << "Options are:" << std::endl;
+            Log::info() << "===========:" << std::endl ;
             for (std::vector<option::Option *>::const_iterator j = options_.begin(); j != options_.end(); ++j) {
-                eckit::Log::info() << *(*j) << std::endl << std::endl;
+                Log::info() << *(*j) << std::endl << std::endl;
             }
-            eckit::Log::info() << std::endl;
+            Log::info() << std::endl;
         }
 
         if (throw_on_error)

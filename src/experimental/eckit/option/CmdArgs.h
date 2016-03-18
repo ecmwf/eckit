@@ -18,6 +18,7 @@
 #define eckit_option_CmdArgs_H
 
 #include "eckit/config/LocalConfiguration.h"
+#include "eckit/memory/NonCopyable.h"
 
 #include <set>
 #include <vector>
@@ -30,7 +31,7 @@ namespace option {
 class Option;
 
 
-class CmdArgs : public LocalConfiguration {
+class CmdArgs : public LocalConfiguration, private NonCopyable {
 
 public: // types
 
@@ -56,23 +57,21 @@ public: // methods
 
     // has, get and set methods are inherited from LocalConfiguration in their entirety
 
-private:
+private: // methods
 
-    // Non-copyable. Implementations don't exist.
-    CmdArgs(const CmdArgs&);
-    CmdArgs& operator=(const CmdArgs&);
+    void init(usage_proc usage, int args_count, bool throw_on_errror);
+
+
+    // From eckit::Parameterisation
+    virtual void print(std::ostream&) const;
+
+private: // members
 
     std::set<std::string> keys_;
     std::vector<std::string> args_;
     std::vector<Option*> options_;
 
     bool throwOnError_;
-
-    void init(usage_proc usage, int args_count, bool throw_on_errror);
-
-    // From eckit::Parameterisation
-    virtual void print(std::ostream&) const;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

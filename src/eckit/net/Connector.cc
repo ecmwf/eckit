@@ -349,7 +349,7 @@ long Connector::read(void *buf, long len)
 //               cout << "MEMOIZE IN CACHE " << (*j).first << std::endl;
                  if( (::time(0) - (*j).second.updated()) > life_ )
                  {
-                     cout << "  CACHE IS STALE" << (*j).first << std::endl;
+//                     cout << "  CACHE IS STALE" << (*j).first << std::endl;
                  }
                  else
                  {

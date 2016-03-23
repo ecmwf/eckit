@@ -44,39 +44,19 @@ string REPLHandler::historyFile()
 
 void REPLHandler::readHistory()
 {
-#ifdef ECKIT_HAVE_READLINE
-    int rc (read_history(historyFile().c_str()));
-    if (rc)
-        Log::warning() << "read_history => " << rc << endl;
-#endif
 }
 
 
 void REPLHandler::writeHistory()
 {
-#ifdef ECKIT_HAVE_READLINE
-    int rc (write_history(historyFile().c_str()));
-    if (rc)
-        Log::warning() << "write_history => " << rc << endl;
-#endif
 }
 
 string REPLHandler::readLine()
 {
-#ifdef ECKIT_HAVE_READLINE
-    char* p (readline("ecml> "));
-    if (! p)
-        return "bye";
-    add_history(p);
-    string r (p);
-    free(p);
-    return r;
-#else
     string r;
     cout << "ecml> ";
     getline (cin, r);
     return r;
-#endif
 }
 
 void REPLHandler::repl(ExecutionContext& context)

@@ -60,6 +60,8 @@ TermBuf.h
 term.c
 UpTimeCmd.cc
 UpTimeCmd.h
+UserInput.h
+UserInput.cc
 )
 
 ecbuild_generate_yy( YYPREFIX eckit_cmd_

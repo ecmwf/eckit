@@ -14,11 +14,6 @@
 
 #include "eckit/eckit_config.h"
 
-#ifdef ECKIT_HAVE_READLINE
-# include <readline/readline.h>
-# include <readline/history.h>
-#endif
-
 #include "eckit/filesystem/PathName.h"
 #include "experimental/eckit/ecml/parser/Request.h"
 #include "experimental/eckit/ecml/core/SpecialFormHandler.h"

@@ -134,19 +134,11 @@ set_package_properties( AIO PROPERTIES TYPE RECOMMENDED PURPOSE "support for asy
 ### thread library ( preferably pthreads )
 
 set( CMAKE_THREAD_PREFER_PTHREAD 1 )
-find_package(Threads REQUIRED)
+find_package( Threads REQUIRED )
 
-### Curses and Readline (for CmdApplication)
+### Curses (for CmdApplication)
 
-# Don't accept the EditLine wrapper
-set( READLINE_WRAPPER_OK FALSE )
-
-ecbuild_add_option( FEATURE READLINE
-                    DEFAULT ON
-                    DESCRIPTION "GNU Readline library (for CmdApplication)"
-                    REQUIRED_PACKAGES "READLINE" )
-
-find_package( Curses  REQUIRED )
+find_package( Curses REQUIRED )
 
 ###############################################################################
 # checks

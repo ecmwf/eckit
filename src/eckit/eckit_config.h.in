@@ -15,7 +15,6 @@
 #cmakedefine ECKIT_HAVE_MKL
 #cmakedefine ECKIT_HAVE_MPI
 #cmakedefine ECKIT_HAVE_MPISTUBS
-#cmakedefine ECKIT_HAVE_READLINE
 #cmakedefine ECKIT_HAVE_VIENNACL
 
 #endif // eckit_config_h

@@ -71,5 +71,5 @@ ecbuild_add_library( TARGET             eckit_cmd
                      INSTALL_HEADERS    LISTED
                      SOURCES            ${eckit_cmd_srcs}
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/cmd
-                     INCLUDES           ${CURSES_INCLUDE_DIR} ${READLINE_INCLUDE_DIR}
-                     LIBS               eckit ${CURSES_LIBRARIES} ${READLINE_LIBRARIES} )
+                     INCLUDES           ${CURSES_INCLUDE_DIR}
+                     LIBS               eckit ${CURSES_LIBRARIES} )

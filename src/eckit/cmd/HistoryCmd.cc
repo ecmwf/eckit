@@ -12,12 +12,7 @@
 
 #include "eckit/cmd/HistoryCmd.h"
 
-#ifdef READLINE_FOUND
-#include <readline/readline.h>
-#include <readline/history.h>
-#else
 #include "eckit/cmd/CmdParser.h"
-#endif
 
 //-----------------------------------------------------------------------------
 
@@ -42,19 +37,7 @@ HistoryCmd::~HistoryCmd() {
 void HistoryCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
     long long lines = 0;
     if (args.exists(1)) lines = args[1];
-#ifdef READLINE_FOUND
-    HIST_ENTRY* h;
-    int n = history_base;
-    if (lines) {
-        n += history_length - lines;
-    }
-    while ((h = history_get(n)) != 0) {
-        std::cout << std::setw(4) << std::setfill(' ') << n << " " << h->line << std::endl;
-        n++;
-    }
-#else
     CmdParser::history(lines, out);
-#endif
 }
 
 //-----------------------------------------------------------------------------

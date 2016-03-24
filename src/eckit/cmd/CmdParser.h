@@ -69,7 +69,6 @@ public:
     static void historize();
 
     static void prompt(bool);
-    static void prompt(const std::string& prompt);
 
     // On startup
     static void flags(const std::string&);

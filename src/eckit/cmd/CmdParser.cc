@@ -43,6 +43,7 @@ static long param_;
 static std::string theCmd_;
 static std::list<int> buffer_;
 static bool prompt_ = true;
+static std::string promptStr_;
 
 typedef std::map<char, bool, std::less<char> > FlagMap;
 static FlagMap theFlags_;
@@ -178,9 +179,10 @@ void CmdParser::eckit_cmd_error(char* msg)
 //-----------------------------------------------------------------------------
 
 void CmdParser::prompt() {
-    static PathName lock("~/locks/admin/cron");
+
     if (prompt_)
-        (*out_) << (lock.exists() ? "hermesadm (LOCKED)%" : "hermesadm%") << history_.size() + 1 << "> " << std::flush;
+        (*out_) << promptStr_ << "%" << history_.size() + 1 << "> " << std::flush;
+
     Log::status() << "Idle..." << std::endl;
 }
 
@@ -475,6 +477,10 @@ void CmdParser::var(const std::string& s, const Value& v) {
 
 void CmdParser::prompt(bool p) {
     prompt_ = p;
+}
+
+void CmdParser::prompt(const std::string& prompt) {
+    promptStr_ = prompt;
 }
 
 //-----------------------------------------------------------------------------

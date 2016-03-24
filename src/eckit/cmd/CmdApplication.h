@@ -37,7 +37,10 @@ private:
     CmdApplication(const CmdApplication&);
     CmdApplication& operator=(const CmdApplication&);
 
+    virtual std::string prompt() const;
+
     virtual void run();
+
     void startup(std::ostream&);
 
     void serveMode(long);
@@ -55,6 +58,10 @@ template <class App>
 CmdApplication<App>::~CmdApplication() {
 }
 
+template <class App>
+std::string CmdApplication<App>::prompt() {
+    return this->App::appName();
+}
 
 template <class App>
 void CmdApplication<App>::startup(std::ostream& out) {
@@ -112,6 +119,7 @@ void CmdApplication<App>::userMode() {
         Log::info() << App::name() << " home is " << home << std::endl;
 
         while (std::cin) {
+            CmdParser::prompt( prompt() );
             try {
                 CmdParser::parse(std::cin, std::cout);
             } catch (std::exception& e) {

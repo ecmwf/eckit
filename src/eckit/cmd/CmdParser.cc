@@ -128,7 +128,20 @@ void CmdParser::parse(std::istream& in, std::ostream& out, const Prompter& promp
     prompt(prompter);
     reset();
 
-    while (in.getline(l, sizeof(l))) {
+    while (true) {
+        if(console_) {
+            const char* p = UserInput::getUserInput(prompter.prompt().c_str());
+            if(!p) {
+                break;
+            }
+            strncpy(l,p,sizeof(l));
+        }
+        else
+        {
+            if(!in.getline(l, sizeof(l))) {
+                break;
+            }
+        }
         char* p = l;
         while (p && *p == ' ') ++p;
 

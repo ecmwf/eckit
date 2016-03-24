@@ -123,6 +123,7 @@ void CmdApplication<App>::userMode() {
         while (std::cin) {
             try {
                 CmdParser::parse(std::cin, std::cout, *this);
+                break;
             } catch (std::exception& e) {
                 if (fail) throw e;
 

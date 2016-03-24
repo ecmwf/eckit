@@ -59,7 +59,7 @@ CmdApplication<App>::~CmdApplication() {
 }
 
 template <class App>
-std::string CmdApplication<App>::prompt() {
+std::string CmdApplication<App>::prompt() const {
     return this->App::appName();
 }
 

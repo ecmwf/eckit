@@ -43,6 +43,7 @@ static long param_;
 static std::string theCmd_;
 static std::list<int> buffer_;
 static bool prompt_ = true;
+static bool console_ = false;
 
 typedef std::map<char, bool, std::less<char> > FlagMap;
 static FlagMap theFlags_;
@@ -476,6 +477,10 @@ void CmdParser::var(const std::string& s, const Value& v) {
 
 void CmdParser::prompt(bool p) {
     prompt_ = p;
+}
+
+void CmdParser::console(bool c) {
+    console_ = c;
 }
 
 //-----------------------------------------------------------------------------

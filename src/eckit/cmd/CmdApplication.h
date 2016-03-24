@@ -112,14 +112,13 @@ void CmdApplication<App>::userMode() {
     CmdParser::prompt(interactive);
     if (file.exists()) {
         std::ifstream in(file.localPath());
-        CmdParser::parse(in, std::cout);
+        CmdParser::parse(in, std::cout, *this);
     } else {
 
         PathName home("~");
         Log::info() << App::name() << " home is " << home << std::endl;
 
         while (std::cin) {
-            CmdParser::prompt( prompt() );
             try {
                 CmdParser::parse(std::cin, std::cout, *this);
             } catch (std::exception& e) {

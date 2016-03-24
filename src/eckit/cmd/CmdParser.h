@@ -18,11 +18,9 @@
 #include <iostream>
 #include <vector>
 
-//-----------------------------------------------------------------------------
+#include "eckit/cmd/UserInput.h"
 
 namespace eckit {
-
-//-----------------------------------------------------------------------------
 
 class CmdArg;
 class CmdResource;

@@ -118,6 +118,8 @@ void CmdApplication<App>::userMode() {
         PathName home("~");
         Log::info() << App::name() << " home is " << home << std::endl;
 
+        CmdParser::console(interactive && ::isatty(0) && ::isatty(1));
+
         while (std::cin) {
             try {
                 CmdParser::parse(std::cin, std::cout, *this);

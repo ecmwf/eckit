@@ -118,14 +118,14 @@ void CmdParser::parse(const std::string& line, std::ostream& out) {
 
 //-----------------------------------------------------------------------------
 
-void CmdParser::parse(std::istream& in, std::ostream& out) {
+void CmdParser::parse(std::istream& in, std::ostream& out, const Prompter& prompter) {
     char l[102400];
     CmdYacc::eckit_cmd_debug = eckit_cmd_debug_;
 
     out_ = &out;
     in.tie(out_);
 
-    prompt();
+    prompt(prompter);
     reset();
 
     while (in.getline(l, sizeof(l))) {
@@ -160,7 +160,7 @@ void CmdParser::parse(std::istream& in, std::ostream& out) {
             }
         }
 
-        prompt();
+        prompt(prompter);
         reset();
     }
 }
@@ -178,10 +178,10 @@ void CmdParser::eckit_cmd_error(char* msg)
 
 //-----------------------------------------------------------------------------
 
-void CmdParser::prompt() {
+void CmdParser::prompt(const Prompter& prompter) {
 
     if (prompt_)
-        (*out_) << promptStr_ << "%" << history_.size() + 1 << "> " << std::flush;
+        (*out_) << prompter.prompt() << "%" << history_.size() + 1 << "> " << std::flush;
 
     Log::status() << "Idle..." << std::endl;
 }

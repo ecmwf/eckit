@@ -28,7 +28,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class App>
-class CmdApplication : public App {
+class CmdApplication : public App, public Prompter {
 public:
     CmdApplication(int argc, char** argv);
     ~CmdApplication();
@@ -75,7 +75,7 @@ void CmdApplication<App>::startup(std::ostream& out) {
         if (path.exists()) {
             Log::info() << "Startup " << path << std::endl;
             std::ifstream in(path.localPath());
-            CmdParser::parse(in, out);
+            CmdParser::parse(in, out, *this);
         }
     }
 }
@@ -121,7 +121,7 @@ void CmdApplication<App>::userMode() {
         while (std::cin) {
             CmdParser::prompt( prompt() );
             try {
-                CmdParser::parse(std::cin, std::cout);
+                CmdParser::parse(std::cin, std::cout, *this);
             } catch (std::exception& e) {
                 if (fail) throw e;
 

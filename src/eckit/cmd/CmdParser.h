@@ -31,11 +31,16 @@ class Value;
 
 //-----------------------------------------------------------------------------
 
+class Prompter {
+public:
+    virtual std::string prompt() const = 0;
+};
+
 class CmdParser {
 public:
     // -- Methods
 
-    static void parse(std::istream&, std::ostream&);
+    static void parse(std::istream&, std::ostream&, const Prompter& prompter);
     static void parse(const std::string&, std::ostream&);
     static void parse(const eckit::PathName&, std::ostream&);
 
@@ -57,7 +62,7 @@ public:
     static void output(int);
 
     // On commad line
-    static void prompt();
+    static void prompt(const Prompter&);
     static void reset();
     static void addCmd(const char* s);
     static void addCmd(const char c);

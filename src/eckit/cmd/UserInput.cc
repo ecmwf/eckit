@@ -89,6 +89,7 @@ typedef struct context {
     entry *curr;
     int pos;
     int overwrite;
+    bool eof;
 } context;
 
 static int processCode(int c, context *s);
@@ -199,6 +200,7 @@ static int processCode(int c, context *s) {
     case 0:
     case CONTROL_D:
         s->curr->line[0] = 0;
+        s->eof = true;
         return 1;
 
     case BACKSPACE:
@@ -433,7 +435,7 @@ const char * UserInput::getUserInput(const char *prompt) {
         return "";
     }
 
-    return s.curr->line;
+    return s.eof ? NULL : s.curr->line;
 }
 
 } // namespace eckit

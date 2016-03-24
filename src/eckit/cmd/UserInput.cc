@@ -11,7 +11,7 @@
 namespace eckit {
 
 struct termios save;
-static int inited = 0;
+static bool inited = false;
 
 
 enum {
@@ -67,7 +67,7 @@ static void enterRaw() {
 
     if (!inited) {
         atexit(&exitRaw);
-        inited = 1;
+        inited = true;
     }
 
     if (tcsetattr(0, TCSAFLUSH, &raw) < 0) {
@@ -88,11 +88,13 @@ typedef struct context {
     const char *prompt;
     entry *curr;
     int pos;
-    int overwrite;
+    bool overwrite;
     bool eof;
+    bool tab;
+    UserInput::completion_proc completion;
 } context;
 
-static int processCode(int c, context *s);
+static bool processCode(int c, context *s);
 
 static void output(const context *s) {
     char *buffer = (char *)malloc(strlen(s->prompt) + strlen(s->curr->line) + 20);
@@ -194,14 +196,19 @@ static void esc(context *s) {
     }
 }
 
-static int processCode(int c, context *s) {
+static bool processCode(int c, context *s) {
+
+    if(c != TAB) {
+        s->tab = false;
+    }
+
     switch (c) {
 
     case 0:
     case CONTROL_D:
         s->curr->line[0] = 0;
         s->eof = true;
-        return 1;
+        return true;
 
     case BACKSPACE:
         del(s);
@@ -213,6 +220,33 @@ static int processCode(int c, context *s) {
         break;
 
     case TAB:
+        if(s->completion) {
+            char insert[10240];
+            char *p = insert;
+            memset(insert, 0, sizeof(insert));
+
+            if(s->completion(s->curr->line, s->pos, insert, sizeof(insert)-1)) {
+                while(*p) {
+                    ins(s, *p);
+                    p++;
+                }
+                if(insert[0] && (s->pos == strlen(s->curr->line))) {
+                    ins(s, ' ');
+                }
+            }
+            else {
+                if(s->tab) { // Second TAB
+                    write(1, "\r\n", 2);
+                    write(1, insert, strlen(insert));
+                    write(1, "\r\n", 2);
+                    s->tab = false;
+                }
+                else {
+                    s->tab = true;
+                }
+            }
+
+        }
         break;
 
     case CONTROL_U:
@@ -274,12 +308,12 @@ static int processCode(int c, context *s) {
         break;
 
     case INSERT:
-        s->overwrite = 1 - s->overwrite;
+        s->overwrite = !s->overwrite;
         break;
 
     case CR:
         write(1, "\r\n", 2);
-        return 1;
+        return true;
         break;
 
     default:
@@ -287,7 +321,7 @@ static int processCode(int c, context *s) {
         break;
 
     }
-    return 0;
+    return false;
 }
 
 void UserInput::printHistory(int max) {
@@ -384,9 +418,9 @@ void UserInput::loadHistory(const char *path) {
 
 }
 
-const char * UserInput::getUserInput(const char *prompt) {
+const char * UserInput::getUserInput(const char *prompt, completion_proc completion) {
 
-    int done = 0;
+    bool done = false;
     context s;
     entry *h = (entry *)calloc(sizeof(entry), 1);
     h->len = 80;
@@ -402,6 +436,7 @@ const char * UserInput::getUserInput(const char *prompt) {
     memset(&s, 0 , sizeof(s));
     s.prompt = prompt;
     s.curr = h;
+    s.completion = completion;
 
     enterRaw();
 
@@ -432,7 +467,7 @@ const char * UserInput::getUserInput(const char *prompt) {
 
         free(s.curr->line);
         free(s.curr);
-        return "";
+        return s.eof ? NULL: "";
     }
 
     return s.eof ? NULL : s.curr->line;

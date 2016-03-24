@@ -130,7 +130,7 @@ void CmdParser::parse(std::istream& in, std::ostream& out, const Prompter& promp
 
     while (true) {
         if(console_) {
-            const char* p = UserInput::getUserInput(prompter.prompt().c_str());
+            const char* p = UserInput::getUserInput(prompter.prompt().c_str(), &CmdResource::completion);
             if(!p) {
                 break;
             }

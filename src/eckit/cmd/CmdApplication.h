@@ -148,7 +148,7 @@ void CmdApplication<App>::serveMode(long port) {
 
         out << "Welcome " << p.remoteHost() << std::endl;
 
-        CmdParser::parse(in, out);
+        CmdParser::parse(in, out, *this);
     }
 }
 

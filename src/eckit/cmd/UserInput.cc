@@ -19,7 +19,10 @@ enum {
     BACKSPACE = 0x7f,
     TAB = 9,
     CR = 13,
+    CONTROL_A = 0x1,
     CONTROL_D = 0x4,
+    CONTROL_E = 0x5,
+    CONTROL_K = 0xB,
     CONTROL_U = 0x15,
     // Virtual codes
     UP_ARROW = 1000,
@@ -92,7 +95,7 @@ static int processCode(int c, context *s);
 
 static void output(const context *s) {
     char *buffer = (char *)malloc(strlen(s->prompt) + strlen(s->curr->line) + 20);
-    sprintf(buffer, "\r%s%s\033[0K\r\033[%dC", s->prompt, s->curr->line, strlen(s->prompt) + s->pos);
+    sprintf(buffer, "\r%s%s\033[0K\r\033[%luC", s->prompt, s->curr->line, strlen(s->prompt) + s->pos);
     write(1, buffer, strlen(buffer));
     free(buffer);
 }
@@ -248,11 +251,16 @@ static int processCode(int c, context *s) {
         }
         break;
 
+    case CONTROL_K:
+        s->curr->line[s->pos] = 0;
+        break;
 
+    case CONTROL_A:
     case HOME:
         s->pos = 0;
         break;
 
+    case CONTROL_E:
     case END:
         s->pos = strlen(s->curr->line);
         break;

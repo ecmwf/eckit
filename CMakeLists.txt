@@ -110,6 +110,13 @@ if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
                       CONDITION HAVE_EXPERIMENTAL
                       DESCRIPTION "Linear Algebra PACKage"
                       REQUIRED_PACKAGES "PROJECT LAPACK" )
+  if( HAVE_LAPACK )
+    if( TARGET lapack )
+      ecbuild_debug( "LAPACK found as CMake target lapack" )
+      set( LAPACK_LIBRARIES lapack )
+    endif()
+  endif()
+  ecbuild_debug_var( LAPACK_LIBRARIES )
 # Don't search for LAPACK on cc[abt] as it is provided by the cray-libsci module
 # which is loaded by default
 else()
@@ -117,6 +124,9 @@ else()
   ecbuild_add_option( FEATURE LAPACK
                       CONDITION HAVE_EXPERIMENTAL AND _cray_libsci_loaded
                       DESCRIPTION "Linear Algebra PACKage")
+  if( HAVE_LAPACK )
+    ecbuild_debug( "LAPACK found, already loaded as part of Cray's libsci" )
+  endif()
 endif()
 
 ### CUDA

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -34,14 +34,14 @@ class ECMLUnitTests : public Tool {
 public:
     ECMLUnitTests (int argc, char **argv) : Tool(argc, argv) {}
     ~ECMLUnitTests() {}
-    
+
     virtual void run();
 protected:
     virtual void runTests();
 };
 
 class TestPrintHandler : public PrintHandler
-{ 
+{
 public:
     TestPrintHandler(ostream& o, const string& name, const string& end)
     : PrintHandler(name, end)
@@ -139,19 +139,25 @@ void ECMLUnitTests::runTests()
     "    value, of = bar"
     ")"
     );
+
+    // Cell* c;
+
     //c = context.interpreter().eval(RequestParser::parse("foo"), context);
     //c = context.interpreter().eval(RequestParser::parse("value, of = bar"), context);
-    Cell* c;
+
     Cell* parsed ( RequestParser::parse("let, f = ( foo ) ") );
 
     //parsed->graph("parsed 'let, f = ( foo )': " + parsed->str());
 
     context.interpreter().debug(true);
-    c = context.interpreter().eval(parsed, context);
 
+    // c =
+    context.interpreter().eval(parsed, context);
     //c->graph("evaluated: 'let, f = ( foo )' " + c->str());
 
-    c = context.interpreter().eval(RequestParser::parse("f"), context);
+    // c =
+    context.interpreter().eval(RequestParser::parse("f"), context);
+
     //c->graph("evaluated 'f': " + c->str());
 
 

@@ -32,7 +32,7 @@ public: // methods
     
     Value parse();
     
-    static void toStrDict(Value&, StringDict& );
+    static void toStrDict(const Value&, StringDict& );
 
 private: // methods
 

@@ -304,7 +304,7 @@ Value JSONParser::parse()
     
 }
 
-void JSONParser::toStrDict( Value& json, StringDict& dict )
+void JSONParser::toStrDict( const Value& json, StringDict& dict )
 {
     if( json.isMap() )
     {

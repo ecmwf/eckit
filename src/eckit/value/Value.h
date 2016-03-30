@@ -29,6 +29,52 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// Known issues
+/// ============
+///
+/// 1. Value(const Time&) and Value(const DateTime&) are unimplemented, even though exposed in the header.
+///
+/// 2. Length(val) or (Length)val fail due to an ambiguity in the Length constructor, which doesn't know whether to
+///    cast via Length or long long. The explicit ::as<Length>() cast doesn't exist
+///
+///    The definition of operator= differs from the constructors, so that it is possible to do:
+///
+///    Length len = val;
+///
+/// 3. Value(bool) happily converts to a double, even explicitly with ::as<double>(). See BoolContent.cc/h
+///
+/// 4. Length() and Offset() are supposed to define a well-defined algebra (which avoids errors such as adding two
+///    offsets). Within a Value they are stored as raw long long types, and no checking is performed when casting. Any
+///    numeric value (including negative values) may be used silently as Length/Offsets.
+///
+/// 5. unsigned long long values are stored in signed long longs, resulting in integer overflows at (potentially) half
+///    the anticipated value.
+///
+/// 6. Cannot initialise (copy) one ValueList with another using the implicit casts. ValueList is a std::vector, and
+///    there are two ambiguous constructors with appropriate overloads provided by Value
+///
+///    std::vector<Value>( std::vector<Value>& rhs );
+///    std::vector<Value>( size_type n );
+///
+///    Either:
+///
+///      - Assign using operator=
+///      - Explicitly cast using ::as<ValueList>()
+///
+/// 7. Operators ==, >, <, >=, <= act on the memory address of the allocated internal Content object, and have nothing
+///    to do with the content of the value. The compare() method should be used instead.
+///
+///    Value(true) != Value(true)
+///
+/// 8. Value(bool)::compare() has inverted sense to the other compare methods
+///
+///    - It will return 0 if the Values are different
+///    - It will return -1 if the values are true
+///    - It will return 1 if the values are false
+///
+
+//----------------------------------------------------------------------------------------------------------------------
+
 class Length;
 class PathName;
 class JSON;
@@ -73,6 +119,8 @@ public:
 
 // -- Operators
 
+    /// Explicitly cast value to the given type. For list of supported types, see the definitions of the
+    /// member function value() in eckit/value/Content.h
 	template< typename T > T as() { T r; content_->value(r); return r; }
 
     operator short() const              { long long l;  content_->value(l); return l; }

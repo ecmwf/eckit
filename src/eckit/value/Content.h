@@ -23,6 +23,26 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+class BadConversion:  public Exception {
+    public:
+        BadConversion(const std::string& w):
+            Exception(std::string("Bad Conversion: ") + w)   {  }
+};
+
+class BadComparison:  public Exception {
+    public:
+        BadComparison(const std::string& w):
+            Exception(std::string("Bad Comparison: ") + w)   {  }
+};
+
+class BadOperator:  public Exception {
+    public:
+        BadOperator(const std::string& w):
+            Exception(std::string("Bad operator: ") + w)   {  }
+};
+
+//-----------------------------------------------------------------------------
+
 // List here all the Content's
 
 class DoubleContent;

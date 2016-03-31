@@ -33,7 +33,8 @@ using namespace eckit;
 
 namespace {
 
-    // Helper functions, so that we can put operator expressions inside
+    // Helper functions, so that we can put operator expressions inside callables that can be passed into
+    // BOOST_CHECK_THROW
 
     Value ValueAdd(const Value& lhs, const Value& rhs) { return lhs + rhs; }
     Value ValueSub(const Value& lhs, const Value& rhs) { return lhs - rhs; }
@@ -53,7 +54,6 @@ namespace {
 
 // TODO:
 // - Tests for Stream
-// - Test arithmetic operators
 // - Test Date type
 // - Test makeList, makeMap
 // - Test json, print, encode

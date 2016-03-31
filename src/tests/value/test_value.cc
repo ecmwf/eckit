@@ -385,6 +385,113 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_comparisons )
     BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
     BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//
+// Test the behaviour of doubles
+//
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_cast )
+{
+    // Note that _all_ the integer types are stored as a signed long long
+    // --> There are constraints on the size that can be stored
+    Value val_zero(0.0);
+    Value val_double(99999999999999999999999999999.9);
+
+    // Double conversions
+
+    BOOST_CHECK_CLOSE(val_zero.as<double>(), 0.0, 1.0e-10);
+    BOOST_CHECK_CLOSE(val_double.as<double>(), 99999999999999999999999999999.9, 1.0e-10);
+
+    BOOST_CHECK_CLOSE(double(val_zero), 0.0, 1.0e-10);
+    BOOST_CHECK_CLOSE(double(val_double), 99999999999999999999999999999.9, 1.0e-10);
+
+    // Check pretty printing
+    /// @note rounding of values for pretty printing
+
+    BOOST_CHECK_EQUAL(std::string(val_zero), "0");
+    BOOST_CHECK_EQUAL(std::string(val_double), "1e+29");
+    BOOST_CHECK_EQUAL(val_zero.as<std::string>(), "0");
+    BOOST_CHECK_EQUAL(val_double.as<std::string>(), "1e+29");
+
+    // ValueList is a bit of an odd one --> it just puts the value in a list of one element...
+
+    ValueList vl(val_double.as<ValueList>());
+    BOOST_CHECK_EQUAL(vl.size(), 1);
+    BOOST_CHECK_CLOSE(vl[0].as<double>(), 99999999999999999999999999999.9, 1.0e-10);
+
+    BOOST_CHECK_THROW(val_double.as<bool>(), BadConversion);
+    BOOST_CHECK_THROW(val_double.as<long long>(), BadConversion);
+    BOOST_CHECK_THROW(val_double.as<Time>(), BadConversion);
+    BOOST_CHECK_THROW(val_double.as<Date>(), BadConversion);
+    BOOST_CHECK_THROW(val_double.as<DateTime>(), BadConversion);
+    BOOST_CHECK_THROW(val_double.as<ValueMap>(), BadConversion);
+
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_type )
+{
+    Value val_double(99999999999999999999999999999.9);
+
+    BOOST_CHECK(val_double.isDouble());
+
+    BOOST_CHECK(!val_double.isNil());
+    BOOST_CHECK(!val_double.isBool());
+    BOOST_CHECK(!val_double.isNumber());
+    BOOST_CHECK(!val_double.isString());
+    BOOST_CHECK(!val_double.isList());
+    BOOST_CHECK(!val_double.isMap());
+    BOOST_CHECK(!val_double.isDate());
+    BOOST_CHECK(!val_double.isTime());
+    BOOST_CHECK(!val_double.isDateTime());
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_comparisons )
+{
+    Value val1(1234.0);
+    Value val2(1234.0);
+    Value val3(4321.0);
+
+    // n.b. These comparisons are designed to define a well defined order between different data types
+    // bool [false < true] > number > string > nil > list > map > Date > Time > DateTime
+
+    // Check comparisons with same type of data
+
+    BOOST_CHECK(val1.compare(val1) == 0);
+    BOOST_CHECK(val1.compare(val2) == 0);
+    BOOST_CHECK(val2.compare(val1) == 0);
+
+    BOOST_CHECK(val1.compare(val3) == -1);
+    BOOST_CHECK(val3.compare(val1) == 1);
+
+    // Check comparisons with integer values ... these get checked by value
+    Value val_i1(1234);
+    Value val_i2(2222);
+
+    BOOST_CHECK(val_i1.compare(val1) == 0);
+    BOOST_CHECK(val1.compare(val_i1) == 0);
+
+    BOOST_CHECK(val1.compare(val_i2) == -1);
+    BOOST_CHECK(val3.compare(val_i2) == 1);
+    BOOST_CHECK(val_i2.compare(val1) == 1);
+    BOOST_CHECK(val_i2.compare(val3) == -1);
+
+    // Check comparisons with other types of data.
+
+    BOOST_CHECK(val1.compare(Value(true)) < 0);
+    BOOST_CHECK(val1.compare(Value("test str")) > 0);
+    BOOST_CHECK(val1.compare(Value(std::string("testing string"))) > 0);
+    BOOST_CHECK(val1.compare(Value(Date(2016, 3, 30))) > 0);
+    BOOST_CHECK(val1.compare(ValueList()) > 0);
+
+    BOOST_CHECK(Value(true).compare(val1) > 0);
+    BOOST_CHECK(Value("test str").compare(val1) < 0);
+    BOOST_CHECK(Value(std::string("testing string")).compare(val1) < 0);
+    BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
+    BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

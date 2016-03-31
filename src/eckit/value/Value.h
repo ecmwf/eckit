@@ -106,6 +106,14 @@ namespace eckit {
 ///
 /// 17. Value(ValueList)::contains() should probably return false, rather than an exception, if indexed with bools,
 ///     floats, ...
+///
+/// 18. Although they are otherwise freely interconvertible, the arithmetic operators don't work between Number and
+///     Double types.
+///
+/// 19. Although the mod() function is implemented on NumberContent, the corresponding modNumber() routine is not, and
+///     so BadOperator is returned incorrectly.
+///
+///     More generally, the modulus functionality does not seem to be implemented for ANY of the Value() types.
 
 //----------------------------------------------------------------------------------------------------------------------
 

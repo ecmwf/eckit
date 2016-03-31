@@ -1227,6 +1227,153 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_index_operator )
     BOOST_CHECK_THROW(val_str.contains(Value(123)), BadOperator);
 }
 
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_add_operator )
+{
+    Value val("test string");
+
+    BOOST_CHECK_THROW(ValueAdd(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(val, 66.6), BadOperator);
+    BOOST_CHECK_EQUAL(ValueAdd(val, "hi").as<std::string>(), "test stringhi");
+    BOOST_CHECK_THROW(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(val, ValueMap()), BadOperator);
+
+    BOOST_CHECK_THROW(ValueAdd(true, val), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(1234, val), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(66.6, val), BadOperator);
+    BOOST_CHECK_EQUAL(ValueAdd("hi", val), "hitest string");
+    BOOST_CHECK_THROW(ValueAdd(Date(2016, 3, 31), val), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(ValueList(), val), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(ValueMap(), val), BadOperator);
+
+    BOOST_CHECK_THROW(ValueAddSelf(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueAddSelf(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueAddSelf(val, 66.6), BadOperator);
+    BOOST_CHECK_EQUAL(ValueAddSelf(val, "hi").as<std::string>(), "test stringhi");
+    val = Value("test string");
+    BOOST_CHECK_THROW(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueAddSelf(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_subtract_operator )
+{
+    Value val("test string");
+
+    BOOST_CHECK_THROW(ValueSub(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(val, ValueMap()), BadOperator);
+
+    BOOST_CHECK_THROW(ValueSub(true, val), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(1234, val), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(66.6, val), BadOperator);
+    BOOST_CHECK_THROW(ValueSub("hi", val), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(Date(2016, 3, 31), val), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(ValueList(), val), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(ValueMap(), val), BadOperator);
+
+    BOOST_CHECK_THROW(ValueSubSelf(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueSubSelf(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueSubSelf(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueSubSelf(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueSubSelf(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueSubSelf(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_multiply_operator )
+{
+    Value val("test string");
+
+    BOOST_CHECK_THROW(ValueMul(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(val, ValueMap()), BadOperator);
+
+    BOOST_CHECK_THROW(ValueMul(true, val), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(1234, val), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(66.6, val), BadOperator);
+    BOOST_CHECK_THROW(ValueMul("hi", val), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(Date(2016, 3, 31), val), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(ValueList(), val), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(ValueMap(), val), BadOperator);
+
+    BOOST_CHECK_THROW(ValueMulSelf(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueMulSelf(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueMulSelf(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueMulSelf(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueMulSelf(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_divide_operator )
+{
+    Value val("test string");
+
+    BOOST_CHECK_THROW(ValueDiv(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(val, ValueMap()), BadOperator);
+
+    BOOST_CHECK_THROW(ValueDiv(true, val), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(1234, val), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(66.6, val), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv("hi", val), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(Date(2016, 3, 31), val), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(ValueList(), val), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(ValueMap(), val), BadOperator);
+
+    BOOST_CHECK_THROW(ValueDivSelf(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueDivSelf(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueDivSelf(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueDivSelf(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueDivSelf(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_modulo_operator )
+{
+    Value val("test string");
+
+    BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(val, ValueMap()), BadOperator);
+
+    BOOST_CHECK_THROW(ValueMod(true, val), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(1234, val), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(66.6, val), BadOperator);
+    BOOST_CHECK_THROW(ValueMod("hi", val), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(Date(2016, 3, 31), val), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(ValueList(), val), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(ValueMap(), val), BadOperator);
+
+    BOOST_CHECK_THROW(ValueModSelf(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueModSelf(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueModSelf(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueModSelf(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueModSelf(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------
 
 //

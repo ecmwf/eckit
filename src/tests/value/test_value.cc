@@ -187,6 +187,18 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_index_operator )
     BOOST_CHECK_THROW(val_false[std::string("idx")], BadOperator);
     BOOST_CHECK_THROW(val_false[123], BadOperator);
     BOOST_CHECK_THROW(val_false[Value(123)], BadOperator);
+
+    // Test the matching contains() function too
+
+    BOOST_CHECK_THROW(val_true.contains("idx"), BadOperator);
+    BOOST_CHECK_THROW(val_true.contains(std::string("idx")), BadOperator);
+    BOOST_CHECK_THROW(val_true.contains(123), BadOperator);
+    BOOST_CHECK_THROW(val_true.contains(Value(123)), BadOperator);
+
+    BOOST_CHECK_THROW(val_false.contains("idx"), BadOperator);
+    BOOST_CHECK_THROW(val_false.contains(std::string("idx")), BadOperator);
+    BOOST_CHECK_THROW(val_false.contains(123), BadOperator);
+    BOOST_CHECK_THROW(val_false.contains(Value(123)), BadOperator);
 }
 
 
@@ -295,7 +307,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_cast )
     BOOST_CHECK_THROW(val_int.as<Date>(), BadConversion);
     BOOST_CHECK_THROW(val_int.as<DateTime>(), BadConversion);
     BOOST_CHECK_THROW(val_int.as<ValueMap>(), BadConversion);
-
 }
 
 BOOST_AUTO_TEST_CASE( test_eckit_value_integer_unsigned_overflow )
@@ -408,6 +419,13 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_index_operator )
     BOOST_CHECK_THROW(val[std::string("idx")], BadOperator);
     BOOST_CHECK_THROW(val[123], BadOperator);
     BOOST_CHECK_THROW(val[Value(123)], BadOperator);
+
+    // Test the matching contains() function too
+
+    BOOST_CHECK_THROW(val.contains("idx"), BadOperator);
+    BOOST_CHECK_THROW(val.contains(std::string("idx")), BadOperator);
+    BOOST_CHECK_THROW(val.contains(123), BadOperator);
+    BOOST_CHECK_THROW(val.contains(Value(123)), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -524,6 +542,13 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_index_operator )
     BOOST_CHECK_THROW(val[std::string("idx")], BadOperator);
     BOOST_CHECK_THROW(val[123], BadOperator);
     BOOST_CHECK_THROW(val[Value(123)], BadOperator);
+
+    // Test the matching contains() function too
+
+    BOOST_CHECK_THROW(val.contains("idx"), BadOperator);
+    BOOST_CHECK_THROW(val.contains(std::string("idx")), BadOperator);
+    BOOST_CHECK_THROW(val.contains(123), BadOperator);
+    BOOST_CHECK_THROW(val.contains(Value(123)), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -723,6 +748,18 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_index_operator )
     BOOST_CHECK_THROW(val_str[std::string("idx")], BadOperator);
     BOOST_CHECK_THROW(val_str[123], BadOperator);
     BOOST_CHECK_THROW(val_str[Value(123)], BadOperator);
+
+    // Test the matching contains() function too
+
+    BOOST_CHECK_THROW(val_char.contains("idx"), BadOperator);
+    BOOST_CHECK_THROW(val_char.contains(std::string("idx")), BadOperator);
+    BOOST_CHECK_THROW(val_char.contains(123), BadOperator);
+    BOOST_CHECK_THROW(val_char.contains(Value(123)), BadOperator);
+
+    BOOST_CHECK_THROW(val_str.contains("idx"), BadOperator);
+    BOOST_CHECK_THROW(val_str.contains(std::string("idx")), BadOperator);
+    BOOST_CHECK_THROW(val_str.contains(123), BadOperator);
+    BOOST_CHECK_THROW(val_str.contains(Value(123)), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

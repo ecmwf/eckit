@@ -761,7 +761,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_index_operator )
 
 BOOST_AUTO_TEST_CASE( test_eckit_value_map_cast )
 {
-    // A ValueMap is just a std::map<Value(), Value()>. No point in testing the functionality of stl. Just test what
+    // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueMap vm;
     vm[123] = 123;
@@ -797,7 +797,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_cast )
 
 BOOST_AUTO_TEST_CASE( test_eckit_value_map_type )
 {
-    // A ValueMap is just a std::map<Value(), Value()>. No point in testing the functionality of stl. Just test what
+    // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueMap vm;
     vm[123] = 123;
@@ -822,7 +822,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_type )
 
 BOOST_AUTO_TEST_CASE( test_eckit_value_map_comparisons )
 {
-    // A ValueMap is just a std::map<Value(), Value()>. No point in testing the functionality of stl. Just test what
+    // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueMap vm;
     vm[123] = 123;
@@ -868,7 +868,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_comparisons )
 
 BOOST_AUTO_TEST_CASE( test_eckit_value_map_index_operator )
 {
-    // A ValueMap is just a std::map<Value(), Value()>. No point in testing the functionality of stl. Just test what
+    // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueMap vm;
     vm[123] = 456;
@@ -912,6 +912,187 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_index_operator )
     BOOST_CHECK(val.contains(std::string("abc")));
     BOOST_CHECK(val.contains(Value(123.45)));
     /// BOOST_CHECK(val.contains(Value(true)));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//
+// Test the behaviour of ValueMaps
+//
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_cast )
+{
+    // A ValueMap is just a std::list<Value>. No point in testing the functionality of stl. Just test what
+    // it does when wrapped.
+    ValueList vl;
+    vl.push_back(123);
+    vl.push_back("abc");
+    vl.push_back(1234.56);
+    vl.push_back(false);
+
+    Value val(vl);
+
+    // Extract the ValueList
+    // n.b. We cannot compare eqality of ValueLists, as the internal Values have been copied, and as a result the
+    //      operator== will return false, as it depends only on the memory address of the internal Content.
+
+    ValueList casted_vl = val;
+    BOOST_CHECK_EQUAL(casted_vl[0].as<long long>(), 123);
+    BOOST_CHECK_EQUAL(val.as<ValueList>()[0].as<long long>(), 123);
+
+    // And the invalid conversions
+
+    BOOST_CHECK_THROW(val.as<bool>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<long long>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<double>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<std::string>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<Time>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<Date>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<DateTime>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<ValueMap>(), BadConversion);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_type )
+{
+    // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
+    // it does when wrapped.
+    ValueList vl;
+    vl.push_back(123);
+    vl.push_back("abc");
+    vl.push_back(1234.56);
+    vl.push_back(false);
+
+    Value val(vl);
+
+    BOOST_CHECK(val.isList());
+
+    BOOST_CHECK(!val.isNil());
+    BOOST_CHECK(!val.isBool());
+    BOOST_CHECK(!val.isNumber());
+    BOOST_CHECK(!val.isDouble());
+    BOOST_CHECK(!val.isString());
+    BOOST_CHECK(!val.isMap());
+    BOOST_CHECK(!val.isDate());
+    BOOST_CHECK(!val.isTime());
+    BOOST_CHECK(!val.isDateTime());
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_comparisons )
+{
+    // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
+    // it does when wrapped.
+    ValueList vl;
+    vl.push_back(123);
+
+    ValueList vl2;
+    vl2.push_back(321);
+
+    Value val1(vl);
+    Value val2(vl);
+    Value val3(vl2);
+
+    // n.b. These comparisons are designed to define a well defined order between different data types
+    // bool [false < true] > number > string > nil > list > map > Date > Time > DateTime
+
+    // Check comparisons with same type of data
+    // Comparison makes use of strcmp
+
+    BOOST_CHECK(val1.compare(val1) == 0);
+    BOOST_CHECK(val1.compare(val2) == 0);
+    BOOST_CHECK(val2.compare(val1) == 0);
+
+    BOOST_CHECK(val1.compare(val3) == -1);
+    BOOST_CHECK(val3.compare(val1) == 1);
+
+    // Check comparisons with other types of data.
+
+    BOOST_CHECK(val1.compare(Value(true)) < 0);
+    BOOST_CHECK(val1.compare(Value(123)) < 0);
+    BOOST_CHECK(val1.compare(Value(123.45)) < 0);
+    BOOST_CHECK(val1.compare(Value(std::string("test string"))) < 0);
+    BOOST_CHECK(val1.compare(ValueMap()) > 0);
+    BOOST_CHECK(val1.compare(Value(Date(2016, 3, 30))) > 0);
+
+    BOOST_CHECK(Value(true).compare(val1) > 0);
+    BOOST_CHECK(Value(123).compare(val1) > 0);
+    BOOST_CHECK(Value(123.45).compare(val1) > 0);
+    BOOST_CHECK(Value(std::string("test string")).compare(val1) > 0);
+    BOOST_CHECK(Value(ValueMap()).compare(val1) < 0);
+
+    /// This is currently correct in MapContent.h
+    /// BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_index_operator )
+{
+    // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
+    // it does when wrapped.
+    ValueList vl;
+    vl.push_back(123);
+    vl.push_back("abc");
+    vl.push_back(1234.56);
+    vl.push_back(false);
+
+    Value val(vl);
+
+    // Check with existent keys of the various types
+
+    BOOST_CHECK_EQUAL(val[0].as<long long>(), 123);
+    BOOST_CHECK_EQUAL(val[1].as<std::string>(), "abc");
+    BOOST_CHECK_CLOSE(val[2].as<double>(), 1234.56, 1.0e-10);
+    BOOST_CHECK_EQUAL(val[3].as<bool>(), false);
+
+    BOOST_CHECK_EQUAL(int(val[Value(0)]), 123);
+    BOOST_CHECK_EQUAL(std::string(val[Value(1)]), "abc");
+    BOOST_CHECK_CLOSE(double(val[Value(2)]), 1234.56, 1.0e-10);
+    BOOST_CHECK_EQUAL(bool(val[Value(3)]), false);
+
+    // And with values that don't exist
+
+    BOOST_CHECK_THROW(val[-1], AssertionFailed);
+    BOOST_CHECK_THROW(val[4], AssertionFailed);
+    BOOST_CHECK_THROW(val[Value(-1)], AssertionFailed);
+    BOOST_CHECK_THROW(val[Value(4)], AssertionFailed);
+
+    /// Value(std::string) silently casts to 0, which means this returns val[0] spuriously
+    /// BOOST_CHECK_THROW(val["hello"], AssertionFailed);
+    /// BOOST_CHECK_THROW(val[std::string("hello")], AssertionFailed);
+    /// BOOST_CHECK_THROW(val[Value("hello")], AssertionFailed);
+
+    // Value(bool) automagically converts to a long, so these return elements 1, 0 respectively...
+    // BOOST_CHECK_THROW(val[Value(true)], BadConversion);
+    // BOOST_CHECK_THROW(val[Value(false)], BadConversion);
+
+    BOOST_CHECK_THROW(val[Value(666.66)], BadConversion);
+    BOOST_CHECK_THROW(val[Value(ValueList())], BadConversion);
+    BOOST_CHECK_THROW(val[Value(ValueMap())], BadConversion);
+    BOOST_CHECK_THROW(val[Value(Date(2016, 3, 31))], BadConversion);
+
+    // Test the matching contains() function too
+
+    BOOST_CHECK(!val.contains(-1));
+    BOOST_CHECK(val.contains(0));
+    BOOST_CHECK(val.contains(1));
+    BOOST_CHECK(val.contains(2));
+    BOOST_CHECK(val.contains(3));
+    BOOST_CHECK(!val.contains(4));
+
+    BOOST_CHECK(!val.contains(Value(-1)));
+    BOOST_CHECK(val.contains(Value(0)));
+    BOOST_CHECK(val.contains(Value(1)));
+    BOOST_CHECK(val.contains(Value(2)));
+    BOOST_CHECK(val.contains(Value(3)));
+    BOOST_CHECK(!val.contains(Value(4)));
+
+    /// Same oddities as above...
+    /// BOOST_CHECK(!val.contains("hello"));
+    /// BOOST_CHECK(!val.contains(std::string("hello")));
+    /// BOOST_CHECK(!val.contains(Value("hello")));
+
+    BOOST_CHECK_THROW(val.contains(Value(666.66)), BadConversion);
+    BOOST_CHECK_THROW(val.contains(Value(ValueList())), BadConversion);
+    BOOST_CHECK_THROW(val.contains(Value(ValueMap())), BadConversion);
+    BOOST_CHECK_THROW(val.contains(Value(Date(2016, 3, 31))), BadConversion);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

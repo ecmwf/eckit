@@ -91,6 +91,21 @@ namespace eckit {
 ///         Log::info() << cv; // This gives {10 => (nil)}
 ///
 /// 14. Indexing ValueMaps with Value(bool) doesn't work. I suspect this is due to point (8).
+///
+/// 15. Indexing Value(ValueList) with std::string, or Value(std::string) spuriously returns element zero, rather than
+///     hitting an assertion or throwing another exception. This is a result of Value(std::string) silently casting any
+///     string to zero if used as an integer.
+///
+///     ValueList vl;
+///     vl.push_back(123);
+///     Value val(vl);
+///
+///     Log::info() << val["hello"]; // This prints "123".
+///
+/// 16. Similarly, Value(ValueList)[Value(bool)] returns element zero or one depending on the content type.
+///
+/// 17. Value(ValueList)::contains() should probably return false, rather than an exception, if indexed with bools,
+///     floats, ...
 
 //----------------------------------------------------------------------------------------------------------------------
 

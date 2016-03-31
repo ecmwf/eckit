@@ -178,11 +178,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_assignment )
 
     // TODO: Move all these types to other sections of tests...
 
-    Value val_double(99999999999999999999999999999.9);
-
-    Value val_str(std::string("test string"));
-    Value val_str2("test string2");
-
     Value val_len(Length(9999));
     Value val_date(Date(2016, 3, 30));
 
@@ -394,8 +389,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_comparisons )
 
 BOOST_AUTO_TEST_CASE( test_eckit_value_double_cast )
 {
-    // Note that _all_ the integer types are stored as a signed long long
-    // --> There are constraints on the size that can be stored
     Value val_zero(0.0);
     Value val_double(99999999999999999999999999999.9);
 
@@ -432,7 +425,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_cast )
 
 BOOST_AUTO_TEST_CASE( test_eckit_value_double_type )
 {
-    Value val_double(99999999999999999999999999999.9);
+    Value val_double(-99999999999999999999999999999.9);
 
     BOOST_CHECK(val_double.isDouble());
 
@@ -488,6 +481,187 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_comparisons )
     BOOST_CHECK(Value(true).compare(val1) > 0);
     BOOST_CHECK(Value("test str").compare(val1) < 0);
     BOOST_CHECK(Value(std::string("testing string")).compare(val1) < 0);
+    BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
+    BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//
+// Test the behaviour of strings
+//
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_cast )
+{
+    Value val_null("");
+    Value val_char("test string");
+    Value val_str(std::string("test string 2"));
+
+    // String conversion
+
+    BOOST_CHECK_EQUAL(std::string(val_null), "");
+    BOOST_CHECK_EQUAL(std::string(val_char), "test string");
+    BOOST_CHECK_EQUAL(std::string(val_str), "test string 2");
+
+    BOOST_CHECK_EQUAL(val_null.as<std::string>(), "");
+    BOOST_CHECK_EQUAL(val_char.as<std::string>(), "test string");
+    BOOST_CHECK_EQUAL(val_str.as<std::string>(), "test string 2");
+
+    // ValueList is a bit of an odd one --> it just puts the value in a list of one element...
+
+    ValueList vl(val_str.as<ValueList>());
+    BOOST_CHECK_EQUAL(vl.size(), 1);
+    BOOST_CHECK_EQUAL(vl[0].as<std::string>(), "test string 2");
+
+    // And the invalid conversions
+
+    BOOST_CHECK_THROW(val_str.as<bool>(), BadConversion);
+    /// BOOST_CHECK_THROW(val_str.as<long long>(), BadConversion); // This will return zero, not throw
+    BOOST_CHECK_THROW(val_str.as<double>(), BadParameter); // n.b. BadParameter, not BadConversion
+    BOOST_CHECK_THROW(val_str.as<Time>(), BadConversion);
+    BOOST_CHECK_THROW(val_str.as<Date>(), BadConversion);
+    BOOST_CHECK_THROW(val_str.as<DateTime>(), BadConversion);
+    BOOST_CHECK_THROW(val_str.as<ValueMap>(), BadConversion);
+
+    BOOST_CHECK_THROW(val_null.as<bool>(), BadConversion);
+    /// BOOST_CHECK_THROW(val_null.as<long long>(), BadConversion); // This will return zero, not throw
+    BOOST_CHECK_THROW(val_null.as<double>(), BadParameter); // n.b. BadParameter, not BadConversion`
+    BOOST_CHECK_THROW(val_null.as<Time>(), BadConversion);
+    BOOST_CHECK_THROW(val_null.as<Date>(), BadConversion);
+    BOOST_CHECK_THROW(val_null.as<DateTime>(), BadConversion);
+    BOOST_CHECK_THROW(val_null.as<ValueMap>(), BadConversion);
+
+}
+
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_cast_bool )
+{
+    // Boolean casting for Value(StringContent) types is a bit complicated, as it allows strings to be used to
+    // represent truthy values, but nothing else
+
+    Value val_true1("true");
+    Value val_true2("on");
+    Value val_true3("yes");
+    Value val_true4("1");
+
+    BOOST_CHECK(bool(val_true1));
+    BOOST_CHECK(bool(val_true2));
+    BOOST_CHECK(bool(val_true3));
+    BOOST_CHECK(bool(val_true4));
+
+    BOOST_CHECK(val_true1.as<bool>());
+    BOOST_CHECK(val_true2.as<bool>());
+    BOOST_CHECK(val_true3.as<bool>());
+    BOOST_CHECK(val_true4.as<bool>());
+
+    Value val_false1("false");
+    Value val_false2("off");
+    Value val_false3("no");
+    Value val_false4("0");
+
+    BOOST_CHECK(!bool(val_false1));
+    BOOST_CHECK(!bool(val_false2));
+    BOOST_CHECK(!bool(val_false3));
+    BOOST_CHECK(!bool(val_false4));
+
+    BOOST_CHECK(!val_false1.as<bool>());
+    BOOST_CHECK(!val_false2.as<bool>());
+    BOOST_CHECK(!val_false3.as<bool>());
+    BOOST_CHECK(!val_false4.as<bool>());
+
+    Value val_other("other");
+
+    BOOST_CHECK_THROW(val_other.as<bool>(), BadConversion);
+}
+
+
+BOOST_AUTO_TEST_CASE( test_eckit_vaule_string_cast_numbers )
+{
+    Value val_double("123.45");
+    Value val_int("12345");
+    Value val_other("string");
+
+    // Test conversions to integers
+
+    BOOST_CHECK_EQUAL((int)(val_double), 123);
+    BOOST_CHECK_EQUAL((int)(val_int), 12345);
+
+    BOOST_CHECK_EQUAL(val_double.as<long long>(), 123);
+    BOOST_CHECK_EQUAL(val_int.as<long long>(), 12345);
+
+    /// Integer conversion returns zero, rather than throwing, on no matching input
+    /// BOOST_CHECK_THROW(val_other.as<long long>(), std::exception);
+    BOOST_CHECK_EQUAL(val_other.as<long long>(), 0);
+
+    // Test conversions to doubles
+
+    BOOST_CHECK_CLOSE((double)(val_double), 123.45, 1.0e-10);
+    BOOST_CHECK_CLOSE((double)(val_int), 12345.0, 1.0e-10);
+
+    BOOST_CHECK_CLOSE(val_double.as<double>(), 123.45, 1.0e-10);
+    BOOST_CHECK_CLOSE(val_int.as<double>(), 12345.0, 1.0e-10);
+    BOOST_CHECK_THROW(val_other.as<double>(), BadParameter);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_type )
+{
+    Value val_null("");
+    Value val_str("This is a test string");
+
+    BOOST_CHECK(val_null.isString());
+    BOOST_CHECK(val_str.isString());
+
+    BOOST_CHECK(!val_null.isNil());
+    BOOST_CHECK(!val_null.isBool());
+    BOOST_CHECK(!val_null.isNumber());
+    BOOST_CHECK(!val_null.isDouble());
+    BOOST_CHECK(!val_null.isList());
+    BOOST_CHECK(!val_null.isMap());
+    BOOST_CHECK(!val_null.isDate());
+    BOOST_CHECK(!val_null.isTime());
+    BOOST_CHECK(!val_null.isDateTime());
+
+    BOOST_CHECK(!val_str.isNil());
+    BOOST_CHECK(!val_str.isBool());
+    BOOST_CHECK(!val_str.isNumber());
+    BOOST_CHECK(!val_str.isDouble());
+    BOOST_CHECK(!val_str.isList());
+    BOOST_CHECK(!val_str.isMap());
+    BOOST_CHECK(!val_str.isDate());
+    BOOST_CHECK(!val_str.isTime());
+    BOOST_CHECK(!val_str.isDateTime());
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_comparisons )
+{
+    Value val1("a");
+    Value val2("a");
+    Value val3("b");
+
+    // n.b. These comparisons are designed to define a well defined order between different data types
+    // bool [false < true] > number > string > nil > list > map > Date > Time > DateTime
+
+    // Check comparisons with same type of data
+    // Comparison makes use of strcmp
+
+    BOOST_CHECK(val1.compare(val1) == 0);
+    BOOST_CHECK(val1.compare(val2) == 0);
+    BOOST_CHECK(val2.compare(val1) == 0);
+
+    BOOST_CHECK(val1.compare(val3) == -1);
+    BOOST_CHECK(val3.compare(val1) == 1);
+
+    // Check comparisons with other types of data.
+
+    BOOST_CHECK(val1.compare(Value(true)) < 0);
+    BOOST_CHECK(val1.compare(Value(123)) < 0);
+    BOOST_CHECK(val1.compare(Value(123.45)) < 0);
+    BOOST_CHECK(val1.compare(Value(Date(2016, 3, 30))) > 0);
+    BOOST_CHECK(val1.compare(ValueList()) > 0);
+
+    BOOST_CHECK(Value(true).compare(val1) > 0);
+    BOOST_CHECK(Value(123).compare(val1) > 0);
+    BOOST_CHECK(Value(123.45).compare(val1) > 0);
     BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
     BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
 }

@@ -72,6 +72,11 @@ namespace eckit {
 ///    - It will return -1 if the values are true
 ///    - It will return 1 if the values are false
 ///
+/// 9. On conversion falure Value(std::string> --> long long, zero is returned rather than an exception being thrown.
+///
+/// 10. On conversion failure Value(std::string) --> double, a BadParameter exception is thrown, rather than a
+///     BadConversion exception as for all other conversion failures (except the integer case noted above).
+///
 
 //----------------------------------------------------------------------------------------------------------------------
 

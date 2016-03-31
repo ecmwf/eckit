@@ -34,9 +34,7 @@ using namespace eckit;
 // TODO:
 // - Tests for ValueList, ValueMap
 // - Tests for Stream
-// - Test copy
 // - Test arithmetic operators
-// - Test indexing operators
 // - Test makeList, makeMap
 // - Test json, print, encode
 
@@ -170,6 +168,25 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_comparisons )
     BOOST_CHECK(Value(std::string("testing string")).compare(val_false1) < 0);
     BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val_false1) < 0);
     BOOST_CHECK(Value(ValueList()).compare(val_false1) < 0);
+}
+
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_bool_index_operator )
+{
+    // No indexing operations should work on a bool...
+
+    Value val_true(true);
+    Value val_false(false);
+
+    BOOST_CHECK_THROW(val_true["idx"], BadOperator);
+    BOOST_CHECK_THROW(val_true[std::string("idx")], BadOperator);
+    BOOST_CHECK_THROW(val_true[123], BadOperator);
+    BOOST_CHECK_THROW(val_true[Value(123)], BadOperator);
+
+    BOOST_CHECK_THROW(val_false["idx"], BadOperator);
+    BOOST_CHECK_THROW(val_false[std::string("idx")], BadOperator);
+    BOOST_CHECK_THROW(val_false[123], BadOperator);
+    BOOST_CHECK_THROW(val_false[Value(123)], BadOperator);
 }
 
 
@@ -381,6 +398,18 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_comparisons )
     BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
 }
 
+BOOST_AUTO_TEST_CASE( test_eckit_value_integer_index_operator )
+{
+    // No indexing operations should work on a bool...
+
+    Value val(1234);
+
+    BOOST_CHECK_THROW(val["idx"], BadOperator);
+    BOOST_CHECK_THROW(val[std::string("idx")], BadOperator);
+    BOOST_CHECK_THROW(val[123], BadOperator);
+    BOOST_CHECK_THROW(val[Value(123)], BadOperator);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 //
@@ -483,6 +512,18 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_comparisons )
     BOOST_CHECK(Value(std::string("testing string")).compare(val1) < 0);
     BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
     BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_index_operator )
+{
+    // No indexing operations should work on a bool...
+
+    Value val(1234.45);
+
+    BOOST_CHECK_THROW(val["idx"], BadOperator);
+    BOOST_CHECK_THROW(val[std::string("idx")], BadOperator);
+    BOOST_CHECK_THROW(val[123], BadOperator);
+    BOOST_CHECK_THROW(val[Value(123)], BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -664,6 +705,24 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_comparisons )
     BOOST_CHECK(Value(123.45).compare(val1) > 0);
     BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
     BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_index_operator )
+{
+    // No indexing operations should work on a bool...
+
+    Value val_char("test string 1");
+    Value val_str(std::string("test string 2"));
+
+    BOOST_CHECK_THROW(val_char["idx"], BadOperator);
+    BOOST_CHECK_THROW(val_char[std::string("idx")], BadOperator);
+    BOOST_CHECK_THROW(val_char[123], BadOperator);
+    BOOST_CHECK_THROW(val_char[Value(123)], BadOperator);
+
+    BOOST_CHECK_THROW(val_str["idx"], BadOperator);
+    BOOST_CHECK_THROW(val_str[std::string("idx")], BadOperator);
+    BOOST_CHECK_THROW(val_str[123], BadOperator);
+    BOOST_CHECK_THROW(val_str[Value(123)], BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

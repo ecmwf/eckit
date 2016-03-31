@@ -159,6 +159,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_comparisons )
     BOOST_CHECK(val_true1.compare(Value(1234.5)) > 0);
     BOOST_CHECK(val_true1.compare(Value("test str")) > 0);
     BOOST_CHECK(val_true1.compare(Value(std::string("testing string"))) > 0);
+    BOOST_CHECK(val_true1.compare(Value(ValueMap())) > 0);
     BOOST_CHECK(val_true1.compare(Value(Date(2016, 3, 30))) > 0);
     BOOST_CHECK(val_true1.compare(ValueList()) > 0);
 
@@ -166,6 +167,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_comparisons )
     BOOST_CHECK(Value(1234.5).compare(val_false1) < 0);
     BOOST_CHECK(Value("test str").compare(val_false1) < 0);
     BOOST_CHECK(Value(std::string("testing string")).compare(val_false1) < 0);
+    BOOST_CHECK(Value(ValueMap()).compare(val_false1) < 0);
     BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val_false1) < 0);
     BOOST_CHECK(Value(ValueList()).compare(val_false1) < 0);
 }
@@ -399,19 +401,21 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_comparisons )
     BOOST_CHECK(val1.compare(Value(true)) < 0);
     BOOST_CHECK(val1.compare(Value("test str")) > 0);
     BOOST_CHECK(val1.compare(Value(std::string("testing string"))) > 0);
+    BOOST_CHECK(val1.compare(Value(ValueMap())) > 0);
     BOOST_CHECK(val1.compare(Value(Date(2016, 3, 30))) > 0);
     BOOST_CHECK(val1.compare(ValueList()) > 0);
 
     BOOST_CHECK(Value(true).compare(val1) > 0);
     BOOST_CHECK(Value("test str").compare(val1) < 0);
     BOOST_CHECK(Value(std::string("testing string")).compare(val1) < 0);
+    BOOST_CHECK(Value(ValueMap()).compare(val1) < 0);
     BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
     BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
 }
 
 BOOST_AUTO_TEST_CASE( test_eckit_value_integer_index_operator )
 {
-    // No indexing operations should work on a bool...
+    // No indexing operations should work on an integer...
 
     Value val(1234);
 
@@ -522,19 +526,21 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_comparisons )
     BOOST_CHECK(val1.compare(Value(true)) < 0);
     BOOST_CHECK(val1.compare(Value("test str")) > 0);
     BOOST_CHECK(val1.compare(Value(std::string("testing string"))) > 0);
+    BOOST_CHECK(val1.compare(Value(ValueMap())) > 0);
     BOOST_CHECK(val1.compare(Value(Date(2016, 3, 30))) > 0);
     BOOST_CHECK(val1.compare(ValueList()) > 0);
 
     BOOST_CHECK(Value(true).compare(val1) > 0);
     BOOST_CHECK(Value("test str").compare(val1) < 0);
     BOOST_CHECK(Value(std::string("testing string")).compare(val1) < 0);
+    BOOST_CHECK(Value(ValueMap()).compare(val1) < 0);
     BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
     BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
 }
 
 BOOST_AUTO_TEST_CASE( test_eckit_value_double_index_operator )
 {
-    // No indexing operations should work on a bool...
+    // No indexing operations should work on a double...
 
     Value val(1234.45);
 
@@ -722,19 +728,21 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_comparisons )
     BOOST_CHECK(val1.compare(Value(true)) < 0);
     BOOST_CHECK(val1.compare(Value(123)) < 0);
     BOOST_CHECK(val1.compare(Value(123.45)) < 0);
+    BOOST_CHECK(val1.compare(Value(ValueMap())) > 0);
     BOOST_CHECK(val1.compare(Value(Date(2016, 3, 30))) > 0);
     BOOST_CHECK(val1.compare(ValueList()) > 0);
 
     BOOST_CHECK(Value(true).compare(val1) > 0);
     BOOST_CHECK(Value(123).compare(val1) > 0);
     BOOST_CHECK(Value(123.45).compare(val1) > 0);
+    BOOST_CHECK(Value(ValueMap()).compare(val1) < 0);
     BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
     BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
 }
 
 BOOST_AUTO_TEST_CASE( test_eckit_value_string_index_operator )
 {
-    // No indexing operations should work on a bool...
+    // No indexing operations should work on a string...
 
     Value val_char("test string 1");
     Value val_str(std::string("test string 2"));
@@ -760,6 +768,167 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_index_operator )
     BOOST_CHECK_THROW(val_str.contains(std::string("idx")), BadOperator);
     BOOST_CHECK_THROW(val_str.contains(123), BadOperator);
     BOOST_CHECK_THROW(val_str.contains(Value(123)), BadOperator);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//
+// Test the behaviour of ValueMaps
+//
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_cast )
+{
+    // A ValueMap is just a std::map<Value(), Value()>. No point in testing the functionality of stl. Just test what
+    // it does when wrapped.
+    ValueMap vm;
+    vm[123] = 123;
+    vm["abc"] = "abc";
+    vm[Value(123.45)] = 123.45;
+    vm[Value(true)] = false;
+
+    Value val(vm);
+
+    // Extract the ValueMap
+    // n.b. We cannot compare eqality of ValueMaps, as the internal Values have been copied, and as a result the
+    //      operator== will return false, as it depends only on the memory address of the internal Content.
+
+    BOOST_CHECK_EQUAL(((ValueMap)val)[123].as<long long>(), 123);
+    BOOST_CHECK_EQUAL(val.as<ValueMap>()[123].as<long long>(), 123);
+
+    // ValueList is a bit of an odd one --> it just puts the value in a list of one element...
+
+    ValueList vl(val.as<ValueList>());
+    BOOST_CHECK_EQUAL(vl.size(), 1);
+    BOOST_CHECK_EQUAL(vl[0].as<ValueMap>()[123].as<long long>(), 123);
+
+    // And the invalid conversions
+
+    BOOST_CHECK_THROW(val.as<bool>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<long long>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<double>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<std::string>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<Time>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<Date>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<DateTime>(), BadConversion);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_type )
+{
+    // A ValueMap is just a std::map<Value(), Value()>. No point in testing the functionality of stl. Just test what
+    // it does when wrapped.
+    ValueMap vm;
+    vm[123] = 123;
+    vm["abc"] = "abc";
+    vm[Value(123.45)] = 123.45;
+    vm[Value(true)] = false;
+
+    Value val(vm);
+
+    BOOST_CHECK(val.isMap());
+
+    BOOST_CHECK(!val.isNil());
+    BOOST_CHECK(!val.isBool());
+    BOOST_CHECK(!val.isNumber());
+    BOOST_CHECK(!val.isDouble());
+    BOOST_CHECK(!val.isString());
+    BOOST_CHECK(!val.isList());
+    BOOST_CHECK(!val.isDate());
+    BOOST_CHECK(!val.isTime());
+    BOOST_CHECK(!val.isDateTime());
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_comparisons )
+{
+    // A ValueMap is just a std::map<Value(), Value()>. No point in testing the functionality of stl. Just test what
+    // it does when wrapped.
+    ValueMap vm;
+    vm[123] = 123;
+
+    ValueMap vm2;
+    vm2["abc"] = "abc";
+
+    Value val1(vm);
+    Value val2(vm);
+    Value val3(vm2);
+
+    // n.b. These comparisons are designed to define a well defined order between different data types
+    // bool [false < true] > number > string > nil > list > map > Date > Time > DateTime
+
+    // Check comparisons with same type of data
+    // Comparison makes use of strcmp
+
+    BOOST_CHECK(val1.compare(val1) == 0);
+    BOOST_CHECK(val1.compare(val2) == 0);
+    BOOST_CHECK(val2.compare(val1) == 0);
+
+    BOOST_CHECK(val1.compare(val3) == 1);
+    BOOST_CHECK(val3.compare(val1) == -1);
+
+    // Check comparisons with other types of data.
+
+    BOOST_CHECK(val1.compare(Value(true)) < 0);
+    BOOST_CHECK(val1.compare(Value(123)) < 0);
+    BOOST_CHECK(val1.compare(Value(123.45)) < 0);
+    BOOST_CHECK(val1.compare(Value(std::string("test string"))) < 0);
+    BOOST_CHECK(val1.compare(ValueList()) < 0);
+    BOOST_CHECK(val1.compare(Value(Date(2016, 3, 30))) > 0);
+
+    BOOST_CHECK(Value(true).compare(val1) > 0);
+    BOOST_CHECK(Value(123).compare(val1) > 0);
+    BOOST_CHECK(Value(123.45).compare(val1) > 0);
+    BOOST_CHECK(Value(std::string("test string")).compare(val1) > 0);
+    BOOST_CHECK(Value(ValueList()).compare(val1) > 0);
+
+    /// This is currently correct in MapContent.h
+    /// BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_index_operator )
+{
+    // A ValueMap is just a std::map<Value(), Value()>. No point in testing the functionality of stl. Just test what
+    // it does when wrapped.
+    ValueMap vm;
+    vm[123] = 456;
+    vm["abc"] = "def";
+    vm[Value(123.45)] = 543.21;
+    vm[Value(true)] = false;
+
+    Value val(vm);
+
+    // Check with existent keys of the various types
+
+    BOOST_CHECK_EQUAL(val[123].as<long long>(), 456);
+    BOOST_CHECK_EQUAL(val["abc"].as<std::string>(), "def");
+    BOOST_CHECK_EQUAL(val[std::string("abc")].as<std::string>(), "def");
+
+    /// None of these seem to work with boolean indices
+    /// BOOST_CHECK_EQUAL(val[true].as<bool>(), false);
+
+    BOOST_CHECK_EQUAL(val[Value(123)].as<long long>(), 456);
+    BOOST_CHECK_EQUAL(val[Value("abc")].as<std::string>(), "def");
+    BOOST_CHECK_EQUAL(val[Value(std::string("abc"))].as<std::string>(), "def");
+    BOOST_CHECK_CLOSE(val[Value(123.45)].as<double>(), 543.21, 1.0e-10);
+
+    /// Indexing by Value(bool) doesn't seem to work
+    /// BOOST_CHECK_EQUAL(val[Value(true)].as<bool>(), false);
+
+    // And with values that don't exist
+
+    /// This code should not work!!! const has gone screwey
+    ValueMap vm2;
+    const Value cv(vm2);
+    cv[10];
+    Log::info() << cv << std::endl;
+
+    /// BOOST_CHECK(!cv.contains(10));
+
+    // Test the matching contains() function too
+
+    BOOST_CHECK(val.contains(123));
+    BOOST_CHECK(val.contains("abc"));
+    BOOST_CHECK(val.contains(std::string("abc")));
+    BOOST_CHECK(val.contains(Value(123.45)));
+    /// BOOST_CHECK(val.contains(Value(true)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

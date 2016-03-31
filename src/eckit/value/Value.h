@@ -77,6 +77,20 @@ namespace eckit {
 /// 10. On conversion failure Value(std::string) --> double, a BadParameter exception is thrown, rather than a
 ///     BadConversion exception as for all other conversion failures (except the integer case noted above).
 ///
+/// 11. Comparison operators for Value(Date), Value(Time), Value(DateTime) have the wrong sign in MapContent.h:66-68
+///
+/// 12. Equality testing for ValueMaps gives unintuitive results, as the maps contain copies of Values, and these will
+///     have differing memory addresses (see (7)).
+///
+/// 13. operator[] discards constness of ValueMaps:
+///
+///         ValueMap vm;
+///         const Value cv(vm);
+///         cv[10];
+///
+///         Log::info() << cv; // This gives {10 => (nil)}
+///
+/// 14. Indexing ValueMaps with Value(bool) doesn't work. I suspect this is due to point (8).
 
 //----------------------------------------------------------------------------------------------------------------------
 

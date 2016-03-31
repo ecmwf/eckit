@@ -203,23 +203,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_index_operator )
     BOOST_CHECK_THROW(val_false.contains(Value(123)), BadOperator);
 }
 
-
-BOOST_AUTO_TEST_CASE( test_eckit_value_assignment )
-{
-
-    // TODO: Move all these types to other sections of tests...
-
-    Value val_len(Length(9999));
-    Value val_date(Date(2016, 3, 30));
-
-    /// TODO: These seem to be missing...
-    /// Value val_time(Time(12, 34, 56));
-    /// Value val_datetime(DateTime(Date(2016, 3, 30), Time(12, 34, 56)));
-
-    Value val_pathname(PathName("/usr/bin"));
-
-}
-
 //----------------------------------------------------------------------------------------------------------------------
 
 //
@@ -932,5 +915,69 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_index_operator )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_wrapper_types )
+{
+    // There are some constructors that have been added for easy conversion, that aren't actually part of the
+    // internal interface
+
+    // Length type
+
+    Value val_length(Length(12345));
+
+    BOOST_CHECK(val_length.isNumber());
+
+    BOOST_CHECK(!val_length.isNil());
+    BOOST_CHECK(!val_length.isBool());
+    BOOST_CHECK(!val_length.isDouble());
+    BOOST_CHECK(!val_length.isString());
+    BOOST_CHECK(!val_length.isList());
+    BOOST_CHECK(!val_length.isMap());
+    BOOST_CHECK(!val_length.isDate());
+    BOOST_CHECK(!val_length.isTime());
+    BOOST_CHECK(!val_length.isDateTime());
+
+    BOOST_CHECK_EQUAL(int(val_length), 12345);
+    BOOST_CHECK_EQUAL(val_length.as<long long>(), 12345);
+
+    // Offset type
+
+    Value val_offset(Offset(54321));
+
+    BOOST_CHECK(val_offset.isNumber());
+
+    BOOST_CHECK(!val_offset.isNil());
+    BOOST_CHECK(!val_offset.isBool());
+    BOOST_CHECK(!val_offset.isDouble());
+    BOOST_CHECK(!val_offset.isString());
+    BOOST_CHECK(!val_offset.isList());
+    BOOST_CHECK(!val_offset.isMap());
+    BOOST_CHECK(!val_offset.isDate());
+    BOOST_CHECK(!val_offset.isTime());
+    BOOST_CHECK(!val_offset.isDateTime());
+
+    BOOST_CHECK_EQUAL(int(val_offset), 54321);
+    BOOST_CHECK_EQUAL(val_offset.as<long long>(), 54321);
+
+    // PathName type
+
+    Value val_pathname(PathName("/usr/bin"));
+
+    BOOST_CHECK(val_pathname.isString());
+
+    BOOST_CHECK(!val_pathname.isNil());
+    BOOST_CHECK(!val_pathname.isBool());
+    BOOST_CHECK(!val_pathname.isDouble());
+    BOOST_CHECK(!val_pathname.isNumber());
+    BOOST_CHECK(!val_pathname.isList());
+    BOOST_CHECK(!val_pathname.isMap());
+    BOOST_CHECK(!val_pathname.isDate());
+    BOOST_CHECK(!val_pathname.isTime());
+    BOOST_CHECK(!val_pathname.isDateTime());
+
+    BOOST_CHECK_EQUAL(std::string(val_pathname), "/usr/bin");
+    BOOST_CHECK_EQUAL(val_pathname.as<std::string>(), "/usr/bin");
+
+}
 
 BOOST_AUTO_TEST_SUITE_END()

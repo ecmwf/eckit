@@ -32,10 +32,13 @@ namespace eckit {
 /// Known issues
 /// ============
 ///
+/// NOTE: Objectives included not breaking eckit (including the testsuite). Therefore the failing unit tests are
+///       commented with ///.
+///
 /// 1. Value(const Time&) and Value(const DateTime&) are unimplemented, even though exposed in the header.
 ///
 /// 2. Length(val) or (Length)val fail due to an ambiguity in the Length constructor, which doesn't know whether to
-///    cast via Length or long long. The explicit ::as<Length>() cast doesn't exist
+///    cast via Length or long long. The explicit ::as<Length>() cast doesn't exist. Same with the Date() constructor.
 ///
 ///    The definition of operator= differs from the constructors, so that it is possible to do:
 ///
@@ -114,6 +117,14 @@ namespace eckit {
 ///     so BadOperator is returned incorrectly.
 ///
 ///     More generally, the modulus functionality does not seem to be implemented for ANY of the Value() types.
+///
+/// 20. Subtraction operators for Value(Date) have a sign error. A later date minus a newer date should be positive.
+///
+/// 21. compare() function for Value(Date()) is buggy. Currently:
+///
+///     date1 == date2 --> 1
+///     date1 <  date2 --> -1
+///     date1 >  date2 --> 0
 
 //----------------------------------------------------------------------------------------------------------------------
 

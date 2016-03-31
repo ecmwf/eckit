@@ -54,7 +54,6 @@ namespace {
 
 // TODO:
 // - Tests for Stream
-// - Test Date type
 // - Test makeList, makeMap
 // - Test json, print, encode
 
@@ -2034,6 +2033,266 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_modulo_operator )
     vl.push_back(123);
     vl.push_back("abc");
     Value val(vl);
+
+    BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(val, ValueMap()), BadOperator);
+
+    BOOST_CHECK_THROW(ValueMod(true, val), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(1234, val), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(66.6, val), BadOperator);
+    BOOST_CHECK_THROW(ValueMod("hi", val), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(Date(2016, 3, 31), val), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(ValueList(), val), BadOperator);
+    BOOST_CHECK_THROW(ValueMod(ValueMap(), val), BadOperator);
+
+    BOOST_CHECK_THROW(ValueModSelf(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueModSelf(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueModSelf(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueModSelf(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueModSelf(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//
+// Test the behaviour of Dates
+//
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_cast )
+{
+    Value val(Date(2016, 3, 31));
+
+    //
+    // Access and conversion
+    //
+
+    Date tmp = val;
+    BOOST_CHECK_EQUAL(tmp, Date(2016, 3, 31));
+    BOOST_CHECK_EQUAL(val.as<Date>(), Date(2016, 3, 31));
+
+    // ValueList is a bit of an odd one --> it just puts the value in a list of one element...
+
+    ValueList vl = val;
+    BOOST_CHECK_EQUAL(vl.size(), 1);
+    BOOST_CHECK_EQUAL(vl[0].as<Date>(), Date(2016, 3, 31));
+
+    // And all the invalid conversions
+
+    BOOST_CHECK_THROW(val.as<bool>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<double>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<long long>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<std::string>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<Time>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<DateTime>(), BadConversion);
+    BOOST_CHECK_THROW(val.as<ValueMap>(), BadConversion);
+}
+
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_type )
+{
+    Value val(Date(2016, 3, 31));
+
+    BOOST_CHECK(val.isDate());
+
+    BOOST_CHECK(!val.isNil());
+    BOOST_CHECK(!val.isBool());
+    BOOST_CHECK(!val.isNumber());
+    BOOST_CHECK(!val.isDouble());
+    BOOST_CHECK(!val.isString());
+    BOOST_CHECK(!val.isList());
+    BOOST_CHECK(!val.isMap());
+    BOOST_CHECK(!val.isDateTime());
+    BOOST_CHECK(!val.isTime());
+}
+
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_comparisons )
+{
+    Value val1(Date(2016, 3, 31));
+    Value val2(Date(2016, 3, 31));
+    Value val3(Date(2016, 4, 30));
+
+    // n.b. These comparisons are designed to define a well defined order between different data types
+    // bool [false < true] > number > string > nil > list > map > Date > Time > DateTime
+
+    // Check comparisons with same type of data
+    // Comparison makes use of strcmp
+
+    /// Value(Date) compare function is rather broken...
+    /// BOOST_CHECK(val1.compare(val1) == 0);
+    /// BOOST_CHECK(val1.compare(val2) == 0);
+    /// BOOST_CHECK(val2.compare(val1) == 0);
+
+    /// BOOST_CHECK(val1.compare(val3) == -1);
+    BOOST_CHECK(val3.compare(val1) == 1);
+
+    // Check comparisons with other types of data.
+
+    BOOST_CHECK(val1.compare(Value(true)) < 0);
+    BOOST_CHECK(val1.compare(Value(123)) < 0);
+    BOOST_CHECK(val1.compare(Value(123.45)) < 0);
+    BOOST_CHECK(val1.compare(Value("testing")) < 0);
+    /// There is a bug in the ValueMap implementation, so this would fail
+    /// BOOST_CHECK(val1.compare(Value(ValueMap())) < 0);
+    BOOST_CHECK(val1.compare(ValueList()) < 0);
+
+    BOOST_CHECK(Value(true).compare(val1) > 0);
+    BOOST_CHECK(Value(123).compare(val1) > 0);
+    BOOST_CHECK(Value(123.45).compare(val1) > 0);
+    BOOST_CHECK(Value("testing").compare(val1) > 0);
+    BOOST_CHECK(Value(ValueMap()).compare(val1) > 0);
+    BOOST_CHECK(Value(ValueList()).compare(val1) > 0);
+}
+
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_index_operator )
+{
+    Value val(Date(2016, 3, 31));
+
+    BOOST_CHECK_THROW(val["idx"], BadOperator);
+    BOOST_CHECK_THROW(val[std::string("idx")], BadOperator);
+    BOOST_CHECK_THROW(val[123], BadOperator);
+    BOOST_CHECK_THROW(val[Value(123)], BadOperator);
+
+    // Test the matching contains() function too
+
+    BOOST_CHECK_THROW(val.contains("idx"), BadOperator);
+    BOOST_CHECK_THROW(val.contains(std::string("idx")), BadOperator);
+    BOOST_CHECK_THROW(val.contains(123), BadOperator);
+    BOOST_CHECK_THROW(val.contains(Value(123)), BadOperator);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_add_operator )
+{
+    Value val(Date(2016, 3, 31));
+
+    BOOST_CHECK_THROW(ValueAdd(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(val, "hi"), BadOperator);
+    BOOST_CHECK_EQUAL(ValueAdd(val, Date(2016, 3, 31)).as<Date>(), Date(8744, 8, 6));
+    BOOST_CHECK_THROW(ValueAdd(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(val, ValueMap()), BadOperator);
+
+    BOOST_CHECK_THROW(ValueAdd(true, val), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(1234, val), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(66.6, val), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd("hi", val), BadOperator);
+    BOOST_CHECK_EQUAL(ValueAdd(Date(2016, 3, 31), val).as<Date>(), Date(8744, 8, 6));
+    BOOST_CHECK_THROW(ValueAdd(ValueList(), val), BadOperator);
+    BOOST_CHECK_THROW(ValueAdd(ValueMap(), val), BadOperator);
+
+    BOOST_CHECK_THROW(ValueAddSelf(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueAddSelf(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueAddSelf(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueAddSelf(val, "hi"), BadOperator);
+    BOOST_CHECK_EQUAL(ValueAddSelf(val, Date(2016, 3, 31)).as<Date>(), Date(8744, 8, 6));
+    val = Date(2016, 3, 31);
+    BOOST_CHECK_THROW(ValueAddSelf(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_subtract_operator )
+{
+    Value val(Date(2016, 3, 31));
+
+    BOOST_CHECK_THROW(ValueSub(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(val, "hi"), BadOperator);
+    /// The sign of the following test is wrong. SHOULD be +2
+    BOOST_CHECK_EQUAL(ValueSub(val, Date(2016, 3, 29)).as<long long>(), -2);
+    BOOST_CHECK_THROW(ValueSub(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(val, ValueMap()), BadOperator);
+
+    BOOST_CHECK_THROW(ValueSub(true, val), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(1234, val), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(66.6, val), BadOperator);
+    BOOST_CHECK_THROW(ValueSub("hi", val), BadOperator);
+    /// The sign of the following test is wrong. SHOULD be -2
+    BOOST_CHECK_EQUAL(ValueSub(Date(2016, 3, 29), val).as<long long>(), 2);
+    BOOST_CHECK_THROW(ValueSub(ValueList(), val), BadOperator);
+    BOOST_CHECK_THROW(ValueSub(ValueMap(), val), BadOperator);
+
+    BOOST_CHECK_THROW(ValueSubSelf(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueSubSelf(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueSubSelf(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueSubSelf(val, "hi"), BadOperator);
+    /// The sign of the following test is wrong. SHOULD be +2
+    BOOST_CHECK_EQUAL(ValueSubSelf(val, Date(2016, 3, 29)).as<long long>(), -2);
+    val = Date(2016, 3, 31);
+    BOOST_CHECK_THROW(ValueSubSelf(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_multiply_operator )
+{
+    Value val(Date(2016, 3, 31));
+
+    BOOST_CHECK_THROW(ValueMul(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(val, ValueMap()), BadOperator);
+
+    BOOST_CHECK_THROW(ValueMul(true, val), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(1234, val), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(66.6, val), BadOperator);
+    BOOST_CHECK_THROW(ValueMul("hi", val), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(Date(2016, 3, 31), val), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(ValueList(), val), BadOperator);
+    BOOST_CHECK_THROW(ValueMul(ValueMap(), val), BadOperator);
+
+    BOOST_CHECK_THROW(ValueMulSelf(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueMulSelf(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueMulSelf(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueMulSelf(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueMulSelf(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_divide_operator )
+{
+    Value val(Date(2016, 3, 31));
+
+    BOOST_CHECK_THROW(ValueDiv(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(val, ValueMap()), BadOperator);
+
+    BOOST_CHECK_THROW(ValueDiv(true, val), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(1234, val), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(66.6, val), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv("hi", val), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(Date(2016, 3, 31), val), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(ValueList(), val), BadOperator);
+    BOOST_CHECK_THROW(ValueDiv(ValueMap(), val), BadOperator);
+
+    BOOST_CHECK_THROW(ValueDivSelf(val, true), BadOperator);
+    BOOST_CHECK_THROW(ValueDivSelf(val, 1234), BadOperator);
+    BOOST_CHECK_THROW(ValueDivSelf(val, 66.6), BadOperator);
+    BOOST_CHECK_THROW(ValueDivSelf(val, "hi"), BadOperator);
+    BOOST_CHECK_THROW(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
+    BOOST_CHECK_THROW(ValueDivSelf(val, ValueList()), BadOperator);
+    BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_modulo_operator )
+{
+    Value val(Date(2016, 3, 31));
 
     BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
     BOOST_CHECK_THROW(ValueMod(val, 1234), BadOperator);

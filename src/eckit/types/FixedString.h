@@ -98,7 +98,7 @@ FixedString<SIZE>:: FixedString(const FixedString& other)
 
 template<int SIZE>
 FixedString<SIZE>::FixedString(const char* s) {
-	ASSERT(sizeof(char) == 1 && strlen(s) <= SIZE);
+    ASSERT(sizeof(char) == 1 && s && strlen(s) <= SIZE);
 	zero(data_);
 	memcpy(data_, s, strlen(s));
 }

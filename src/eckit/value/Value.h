@@ -132,6 +132,16 @@ namespace eckit {
 ///
 ///       -- This seems crazy.
 ///       -- Accessing the first element of a list shouldn't be O[N] in cpu and memory...
+///
+/// 23. The head() and tail() methods are clearly intended to be used on Value(ValueList) types, but if called on any
+///     other Value(X), it will create a single element list, and then return the first (and only) element.
+///
+/// 24. The tail() method returns the entire list, excluding the first element (or an empty Value(), not an empty list,
+///     if there are no remaining elements).
+///
+///     -- This is inconsistent with the naming, and the behaviour of head()
+///     -- It is closer to the car/cdr or first/rest functionality in lisp
+///     -- It should certainly at least return an empty list, not a nil value
 
 //----------------------------------------------------------------------------------------------------------------------
 

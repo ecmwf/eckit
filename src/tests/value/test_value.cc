@@ -376,6 +376,14 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
+BOOST_AUTO_TEST_CASE( test_eckit_value_bool_head_tail )
+{
+    Value val(true);
+
+    /// BOOST_CHECK_THROW(val.head(), AssertationError);
+    /// BOOST_CHECK_THROW(val.tail(), AssertationError);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 //
@@ -737,6 +745,14 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
+BOOST_AUTO_TEST_CASE( test_eckit_value_integer_head_tail )
+{
+    Value val(12345);
+
+    /// BOOST_CHECK_THROW(val.head(), AssertationError);
+    /// BOOST_CHECK_THROW(val.tail(), AssertationError);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 //
@@ -1009,6 +1025,14 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
     BOOST_CHECK_THROW(ValueModSelf(val, ValueList()), BadOperator);
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_head_tail )
+{
+    Value val(123.45);
+
+    /// BOOST_CHECK_THROW(val.head(), AssertationError);
+    /// BOOST_CHECK_THROW(val.tail(), AssertationError);
 }
 
 
@@ -1371,6 +1395,13 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_head_tail )
+{
+    Value val("this is a test string");
+
+    /// BOOST_CHECK_THROW(val.head(), AssertationError);
+    /// BOOST_CHECK_THROW(val.tail(), AssertationError);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -1691,6 +1722,17 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
     BOOST_CHECK_THROW(ValueModSelf(val, ValueList()), BadOperator);
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_head_tail )
+{
+    ValueMap vm;
+    vm[123] = 456;
+
+    Value val(vm);
+
+    /// BOOST_CHECK_THROW(val.head(), AssertationError);
+    /// BOOST_CHECK_THROW(val.tail(), AssertationError);
 }
 
 
@@ -2058,6 +2100,22 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_head_tail )
+{
+    ValueList vl;
+    vl.push_back(123);
+    vl.push_back(666.66);
+    vl.push_back(true);
+    vl.push_back("test str");
+
+    Value val(vl);
+
+    Log::info() << "H" << val << " - " << val.head() << std::endl;
+    BOOST_CHECK_EQUAL(val.head().as<long long>(), 123);
+    Log::info() << "T" << val << " - " << val.tail() << std::endl;
+    /// BOOST_CHECK_EQUAL(val.tail().as<std::string>(), "test str");
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 //
@@ -2316,6 +2374,14 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
     BOOST_CHECK_THROW(ValueModSelf(val, ValueList()), BadOperator);
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_head_tail )
+{
+    Value val(Date(2016, 3, 31));
+
+    /// BOOST_CHECK_THROW(val.head(), AssertationError);
+    /// BOOST_CHECK_THROW(val.tail(), AssertationError);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

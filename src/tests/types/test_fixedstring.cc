@@ -302,4 +302,61 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_assignment_fixedstring )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+//
+// Test comparison operators
+//
+
+/// @note Comparisons between different FixedString<N>, FixedString<M> not permitted at compile time.
+
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_operators )
+{
+    FixedString<8> fs1("12345678");
+    FixedString<8> fs2("12345678");
+    FixedString<8> fs3("abcdefgh");
+
+    // ==
+
+    BOOST_CHECK(fs1 == fs1);
+    BOOST_CHECK(fs1 == fs2);
+    BOOST_CHECK(!(fs1 == fs3));
+
+    // !=
+
+    BOOST_CHECK(!(fs1 != fs1));
+    BOOST_CHECK(!(fs1 != fs2));
+    BOOST_CHECK(fs1 != fs3);
+
+    // <
+
+    BOOST_CHECK(!(fs1 < fs1));
+    BOOST_CHECK(!(fs1 < fs2));
+    BOOST_CHECK(fs1 < fs3);
+    BOOST_CHECK(!(fs3 < fs1));
+
+    // >
+
+    BOOST_CHECK(!(fs1 > fs1));
+    BOOST_CHECK(!(fs1 > fs2));
+    BOOST_CHECK(!(fs1 > fs3));
+    BOOST_CHECK(fs3 > fs1);
+
+    // <=
+
+    BOOST_CHECK(fs1 <= fs1);
+    BOOST_CHECK(fs1 <= fs2);
+    BOOST_CHECK(fs1 <= fs3);
+    BOOST_CHECK(!(fs3 <= fs1));
+
+    // >=
+
+    BOOST_CHECK(fs1 >= fs1);
+    BOOST_CHECK(fs1 >= fs2);
+    BOOST_CHECK(!(fs1 >= fs3));
+    BOOST_CHECK(fs3 >= fs1);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_operators_zero )
+{
+}
+
 BOOST_AUTO_TEST_SUITE_END()

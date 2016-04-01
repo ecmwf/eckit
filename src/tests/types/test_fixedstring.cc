@@ -451,8 +451,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_data_access )
     BOOST_CHECK_EQUAL(fs.length(), 6);
 }
 
-
-
 //----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -357,6 +357,38 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_operators )
 
 BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_operators_zero )
 {
+    FixedString<0> fs1;
+    FixedString<0> fs2;
+
+    // ==
+
+    BOOST_CHECK(fs1 == fs1);
+    BOOST_CHECK(fs1 == fs2);
+
+    // !=
+
+    BOOST_CHECK(!(fs1 != fs1));
+    BOOST_CHECK(!(fs1 != fs2));
+
+    // <
+
+    BOOST_CHECK(!(fs1 < fs1));
+    BOOST_CHECK(!(fs1 < fs2));
+
+    // >
+
+    BOOST_CHECK(!(fs1 > fs1));
+    BOOST_CHECK(!(fs1 > fs2));
+
+    // <=
+
+    BOOST_CHECK(fs1 <= fs1);
+    BOOST_CHECK(fs1 <= fs2);
+
+    // >=
+
+    BOOST_CHECK(fs1 >= fs1);
+    BOOST_CHECK(fs1 >= fs2);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

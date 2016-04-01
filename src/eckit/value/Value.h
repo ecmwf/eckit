@@ -125,6 +125,13 @@ namespace eckit {
 ///     date1 == date2 --> 1
 ///     date1 <  date2 --> -1
 ///     date1 >  date2 --> 0
+///
+/// 22. The Value::head() and Value::tail() members make an entire copy of the contained ValueList before selecting
+///     and returning the head/tail element (which is copied). This will involve head allocations (and then
+///     deallocations during cleanup) for every contained element.
+///
+///       -- This seems crazy.
+///       -- Accessing the first element of a list shouldn't be O[N] in cpu and memory...
 
 //----------------------------------------------------------------------------------------------------------------------
 

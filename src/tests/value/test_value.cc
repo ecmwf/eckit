@@ -54,7 +54,6 @@ namespace {
 
 // TODO:
 // - Tests for Stream
-// - Test makeList, makeMap
 // - Test json, print, encode
 
 
@@ -2317,6 +2316,117 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
     BOOST_CHECK_THROW(ValueModSelf(val, ValueList()), BadOperator);
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//
+// Test list/map helper functions
+//
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_makelist )
+{
+    // Test the trivial version
+
+    Value val1 = Value::makeList();
+
+    BOOST_CHECK(val1.isList());
+    BOOST_CHECK_EQUAL(val1.as<ValueList>().size(), 0);
+
+    // Can we wrap an arbitrary ValueList?
+
+    ValueList vl;
+    vl.push_back(123);
+    vl.push_back("abc");
+    vl.push_back(1234.56);
+    vl.push_back(false);
+
+    Value val2 = Value::makeList(vl);
+
+    BOOST_CHECK(val2.isList());
+
+    BOOST_CHECK_EQUAL(val2.as<ValueList>().size(), 4);
+    BOOST_CHECK_EQUAL(val2[0].as<long long>(), 123);
+    BOOST_CHECK_EQUAL(val2[1].as<std::string>(), "abc");
+    BOOST_CHECK_CLOSE(val2[2].as<double>(), 1234.56, 1.0e-10);
+    BOOST_CHECK_EQUAL(val2[3].as<bool>(), false);
+
+    // Applied to a value, it puts the element in first
+
+    Value val3 = Value::makeList(val2);
+
+    BOOST_CHECK(val3.isList());
+
+    BOOST_CHECK_EQUAL(val3.as<ValueList>().size(), 1);
+    BOOST_CHECK(val3[0].isList());
+    BOOST_CHECK_EQUAL(val3[0].as<ValueList>()[0].as<long long>(), 123);
+
+    // This should work with all the things that can cast into values
+
+    Value val4 = Value::makeList(1234);
+
+    BOOST_CHECK(val4.isList());
+    BOOST_CHECK_EQUAL(val4.as<ValueList>().size(), 1);
+    BOOST_CHECK_EQUAL(val4[0].as<long long>(), 1234);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_makemap )
+{
+    // Test the trivial version
+
+    Value val1 = Value::makeMap();
+
+    BOOST_CHECK(val1.isMap());
+    BOOST_CHECK_EQUAL(val1.as<ValueMap>().size(), 0);
+
+    // Can we wrap an arbitrary ValueMap?
+
+    ValueMap vm;
+    vm[123] = 456;
+    vm["abc"] = "def";
+    vm[1234.56] = 666.66;
+    vm[true] = false;
+
+    Value val2 = Value::makeMap(vm);
+
+    BOOST_CHECK(val2.isMap());
+
+    BOOST_CHECK_EQUAL(val2.as<ValueMap>().size(), 4);
+    BOOST_CHECK_EQUAL(val2[123].as<long long>(), 456);
+    BOOST_CHECK_EQUAL(val2["abc"].as<std::string>(), "def");
+    BOOST_CHECK_CLOSE(val2[Value(1234.56)].as<double>(), 666.66, 1.0e-10);
+    /// Cannot index using bools
+    /// BOOST_CHECK_EQUAL(val2[3].as<bool>(), false);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_vector )
+{
+    // n.b. This is templated, so will work for a std::vector<T> for any T for which a Value can be constructed.
+
+    std::vector<int> vint;
+    for (int i = 99; i > 0; i -= 11)
+        vint.push_back(i);
+
+    Value val = makeVectorValue(vint);
+
+    BOOST_CHECK(val.isList());
+    BOOST_CHECK_EQUAL(val.as<ValueList>().size(), 9);
+    BOOST_CHECK_EQUAL(val[4].as<long long>(), 55);
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_list )
+{
+    // n.b. This is templated, so will work for a std::list<T> for any T for which a Value can be constructed.
+
+    std::list<int> lint;
+    for (int i = 99; i > 0; i -= 11)
+        lint.push_back(i);
+
+    Value val = makeVectorValue(lint);
+
+    BOOST_CHECK(val.isList());
+    BOOST_CHECK_EQUAL(val.as<ValueList>().size(), 9);
+    BOOST_CHECK_EQUAL(val[4].as<long long>(), 55);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

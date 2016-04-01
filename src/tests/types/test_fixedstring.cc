@@ -390,5 +390,69 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_operators_zero )
     BOOST_CHECK(fs1 >= fs1);
     BOOST_CHECK(fs1 >= fs2);
 }
+//----------------------------------------------------------------------------------------------------------------------
+
+//
+// Test extraneous bits
+//
+
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_byte_size )
+{
+    FixedString<0> fs0;
+    FixedString<1> fs1;
+    FixedString<4> fs4;
+    FixedString<8> fs8;
+
+    BOOST_CHECK_EQUAL(sizeof(fs0), 0);
+    BOOST_CHECK_EQUAL(sizeof(fs1), 1);
+    BOOST_CHECK_EQUAL(sizeof(fs4), 4);
+    BOOST_CHECK_EQUAL(sizeof(fs8), 8);
+
+    BOOST_CHECK_EQUAL(sizeof(FixedString<0>), 0);
+    BOOST_CHECK_EQUAL(sizeof(FixedString<1>), 1);
+    BOOST_CHECK_EQUAL(sizeof(FixedString<4>), 4);
+    BOOST_CHECK_EQUAL(sizeof(FixedString<8>), 8);
+
+    BOOST_CHECK_EQUAL(fs0.size(), 0);
+    BOOST_CHECK_EQUAL(fs1.size(), 1);
+    BOOST_CHECK_EQUAL(fs4.size(), 4);
+    BOOST_CHECK_EQUAL(fs8.size(), 8);
+
+    BOOST_CHECK_EQUAL(FixedString<0>::static_size(), 0);
+    BOOST_CHECK_EQUAL(FixedString<1>::static_size(), 1);
+    BOOST_CHECK_EQUAL(FixedString<4>::static_size(), 4);
+    BOOST_CHECK_EQUAL(FixedString<8>::static_size(), 8);
+}
+
+
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_data_access )
+{
+    FixedString<8> fs("12345678");
+
+    // Check that const and non-const pointers give access to same data...
+
+    char* d = fs.data();
+    const char* cd = fs.data();
+
+    BOOST_CHECK_EQUAL(d, cd);
+
+    // Check that if we insert a \0 character appropriately, the accessible strings and lengths adjust correctly
+
+    BOOST_CHECK_EQUAL(std::string(fs), "12345678");
+    BOOST_CHECK_EQUAL(fs.length(), 8);
+
+    d[4] = '\0';
+    BOOST_CHECK_EQUAL(std::string(fs), "1234");
+    BOOST_CHECK_EQUAL(fs.length(), 4);
+
+    d[6] = '\0';
+    d[4] = 'F';
+    BOOST_CHECK_EQUAL(std::string(fs), "1234F6");
+    BOOST_CHECK_EQUAL(fs.length(), 6);
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

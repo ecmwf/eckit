@@ -21,9 +21,13 @@ using namespace eckit;
 
 BOOST_AUTO_TEST_SUITE( test_eckit_types_fixedstring )
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_boom )
+BOOST_AUTO_TEST_CASE( test_eckit_types_allocate_null )
 {
-    BOOST_CHECK(true);
+    FixedString<8> fs;
+
+    BOOST_CHECK_EQUAL(fs.length(), 0);
+    BOOST_CHECK_EQUAL(fs.asString(), "");
+    BOOST_CHECK_EQUAL(std::string(fs), "");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

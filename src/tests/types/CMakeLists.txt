@@ -15,3 +15,8 @@ ecbuild_add_test( TARGET      eckit_test_print_vector
                   BOOST
                   SOURCES     test_print_vector.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_fixedstring
+                  BOOST
+                  SOURCES     test_fixedstring.cc
+                  LIBS        eckit )

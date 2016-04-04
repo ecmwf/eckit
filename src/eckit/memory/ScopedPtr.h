@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -14,11 +14,9 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// A smart pointer that deletes the pointee object when going out of scope.
 /// This should have a very similar interface to boost scoped_ptr or std unique_ptr
@@ -79,7 +77,7 @@ public: // methods
     /// However, get makes it possible to explicitly test whether the stored point is NULL.
     /// The function never throws. get is typically used when calling functions
     /// that require a raw pointer.
-    /// Note: previously this asserted ptr_ was not null, however this is in-consistent
+    /// Note: previously this asserted ptr_ was not null, however this is inconsistent
     ///       with the standard boost scoped_ptr or std unique_ptr
     pointer_type get() const { return ptr_; }
 
@@ -113,7 +111,7 @@ void swap( ScopedPtr<T>& a, ScopedPtr<T>& b )
     a.swap(b);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

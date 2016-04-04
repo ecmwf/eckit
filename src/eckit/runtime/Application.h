@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -63,8 +63,8 @@ public:
     virtual void wait() {}
     virtual bool active() { return true; }
 
-    std::string appName() { return name_; }
-    bool running() { return running_; }
+    std::string appName() const { return name_; }
+    bool running() const { return running_; }
 
     time_t uptime();
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -30,7 +30,7 @@ using namespace eckit;
 namespace eckit_test {
 
 template<class T>
-void ck( const T* v1, T v2 ) { BOOST_CHECK( *v1 == v2 ); }
+void ck( const T* v1, T v2 ) { BOOST_CHECK_EQUAL( *v1, v2 ); }
 
 namespace {
    static int UDT_use_count = 0;  // independent of pointer maintained counts
@@ -60,7 +60,7 @@ public:
 
 class Incomplete;
 
-Incomplete * check_incomplete( eckit::ScopedPtr<Incomplete>& incomplete )
+Incomplete * check_incomplete( ScopedPtr<Incomplete>& incomplete )
 {
    return incomplete.get();
 }
@@ -82,11 +82,11 @@ BOOST_AUTO_TEST_SUITE( test_eckit_memory_scope_ptr )
 
 BOOST_AUTO_TEST_CASE( test_scoped_ptr_empty_constructor )
 {
-  eckit::ScopedPtr<long> sp;
+  ScopedPtr<long> sp;
 
-  BOOST_CHECK( sp.get() == 0 );
+  BOOST_CHECK_EQUAL( sp.get(), ScopedPtr<long>::pointer_type(0) );
 
-  BOOST_CHECK( sp.release() == 0 );
+  BOOST_CHECK_EQUAL( sp.release(), ScopedPtr<long>::pointer_type(0) );
 
   BOOST_CHECK( !sp );
 
@@ -98,35 +98,35 @@ BOOST_AUTO_TEST_CASE( test_scoped_ptr )
 //   std::cout << "test ScopedPtr with a built-in type\n";
    {
       long * lp = new long;
-      eckit::ScopedPtr<long> sp ( lp );
+      ScopedPtr<long> sp ( lp );
       BOOST_CHECK( sp );
-      BOOST_CHECK( sp.get() == lp );
-      BOOST_CHECK( lp == sp.get() );
-      BOOST_CHECK( &*sp == lp );
+      BOOST_CHECK_EQUAL( sp.get(), lp );
+      BOOST_CHECK_EQUAL( lp, sp.get() );
+      BOOST_CHECK_EQUAL( &*sp, lp );
 
       *sp = 1234568901L;
-      BOOST_CHECK( *sp == 1234568901L );
-      BOOST_CHECK( *lp == 1234568901L );
+      BOOST_CHECK_EQUAL( *sp, 1234568901L );
+      BOOST_CHECK_EQUAL( *lp, 1234568901L );
       ck( static_cast<long*>(sp.get()), 1234568901L );
       ck( lp, *sp );
 
       sp.reset();
 
-      BOOST_CHECK( sp.get() == 0 );
+      BOOST_CHECK_EQUAL( sp.get(), ScopedPtr<long>::pointer_type(0) );
    }
 
 //   std::cout << "test ScopedPtr with a user defined type\n";
    {
-      eckit::ScopedPtr<UDT> udt_sp ( new UDT( 999888777 ) );
-      BOOST_CHECK( udt_sp->value() == 999888777 );
+      ScopedPtr<UDT> udt_sp ( new UDT( 999888777 ) );
+      BOOST_CHECK_EQUAL( udt_sp->value(), 999888777 );
       udt_sp.reset();
       udt_sp.reset( new UDT( 111222333 ) );
-      BOOST_CHECK( udt_sp->value() == 111222333 );
+      BOOST_CHECK_EQUAL( udt_sp->value(), 111222333 );
       udt_sp.reset( new UDT( 333222111 ) );
-      BOOST_CHECK( udt_sp->value() == 333222111 );
+      BOOST_CHECK_EQUAL( udt_sp->value(), 333222111 );
 
       udt_sp.reset();
-      BOOST_CHECK( udt_sp.get() == 0 );
+      BOOST_CHECK_EQUAL( udt_sp.get(), ScopedPtr<UDT>::pointer_type(0) );
    }
 }
 

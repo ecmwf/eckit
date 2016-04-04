@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -49,6 +49,7 @@ public:
 
     static std::vector<std::string> completion(const std::string&);
     static std::vector<std::string> completion(const std::vector<std::string>&);
+    static bool completion(const char*, int pos, char*, int);
 
 protected:  // methods
     virtual void execute(std::istream&, std::ostream&, CmdArg&) = 0;

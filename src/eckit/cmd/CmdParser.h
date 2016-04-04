@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -18,11 +18,9 @@
 #include <iostream>
 #include <vector>
 
-//-----------------------------------------------------------------------------
+#include "eckit/cmd/UserInput.h"
 
 namespace eckit {
-
-//-----------------------------------------------------------------------------
 
 class CmdArg;
 class CmdResource;
@@ -31,11 +29,16 @@ class Value;
 
 //-----------------------------------------------------------------------------
 
+class Prompter {
+public:
+    virtual std::string prompt() const = 0;
+};
+
 class CmdParser {
 public:
     // -- Methods
 
-    static void parse(std::istream&, std::ostream&);
+    static void parse(std::istream&, std::ostream&, const Prompter& prompter);
     static void parse(const std::string&, std::ostream&);
     static void parse(const eckit::PathName&, std::ostream&);
 
@@ -57,13 +60,14 @@ public:
     static void output(int);
 
     // On commad line
-    static void prompt();
+    static void prompt(const Prompter&);
     static void reset();
     static void addCmd(const char* s);
     static void addCmd(const char c);
     static void historize();
 
     static void prompt(bool);
+    static void console(bool);
 
     // On startup
     static void flags(const std::string&);

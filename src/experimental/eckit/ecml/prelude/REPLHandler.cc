@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -44,39 +44,19 @@ string REPLHandler::historyFile()
 
 void REPLHandler::readHistory()
 {
-#ifdef ECKIT_HAVE_READLINE
-    int rc (read_history(historyFile().c_str()));
-    if (rc)
-        Log::warning() << "read_history => " << rc << endl;
-#endif
 }
 
 
 void REPLHandler::writeHistory()
 {
-#ifdef ECKIT_HAVE_READLINE
-    int rc (write_history(historyFile().c_str()));
-    if (rc)
-        Log::warning() << "write_history => " << rc << endl;
-#endif
 }
 
 string REPLHandler::readLine()
 {
-#ifdef ECKIT_HAVE_READLINE
-    char* p (readline("ecml> "));
-    if (! p)
-        return "bye";
-    add_history(p);
-    string r (p);
-    free(p);
-    return r;
-#else
     string r;
     cout << "ecml> ";
     getline (cin, r);
     return r;
-#endif
 }
 
 void REPLHandler::repl(ExecutionContext& context)

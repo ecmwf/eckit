@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -113,6 +113,69 @@ std::vector<std::string> CmdResource::completion(const std::vector<std::string>&
     }
 
     return result;
+}
+
+// Called by UserInput
+bool CmdResource::completion(const char* line, int pos, char* insert, int insertmax) {
+
+    std::vector<std::string> c;
+    const char *p = line;
+    int n = 0;
+
+    c.push_back("");
+    while(true) {
+
+        if(n == pos) {
+            std::vector<std::string> v;
+            if(c.size() == 1) {
+                v = completion(c[0]);
+            }
+            else {
+                v = completion(c);
+            }
+
+
+            if(v.size() == 1) {
+                for(int i = c.back().length(); i < v[0].length() && i < insertmax; i++) {
+                    *insert++ = v[0][i];
+                }
+                *insert = 0;
+                return true;
+            }
+
+            // Copy matches
+
+            int k = 0;
+            for(int i = 0; i < v.size() ; i++) {
+
+                if(i && k < insertmax) {
+                    *insert++ = ' ';
+                    k++;
+                }
+
+                for(int j = 0; j < v[i].length() && k < insertmax; j++, k++) {
+                    *insert++ = v[i][j];
+                }
+                *insert = 0;
+            }
+            return false;
+        }
+
+        if(*p == 0) {
+            break;
+        }
+
+        if(*p == ' ') {
+            c.push_back("");
+        }
+        else {
+            c.back().push_back(*p);
+        }
+        p++;
+        n++;
+    }
+
+    return false; // silence compiler warning
 }
 
 void CmdResource::help(std::ostream& out, const std::string& cmdname) {

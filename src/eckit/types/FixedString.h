@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -24,9 +24,23 @@ namespace eckit {
 
 // To be used as a key or value in BTree or other file-based classed
 
+/// FixedString<SIZE> manages a SIZE-byte char array as a relatively thin utility wrapper.
+///
+/// - Strings <= the given SIZE may be stored
+/// - Strings shorter than the given SIZE are null-character terminated
+/// - All relevant overflow and termination safety is handled internally inside the class when interacting with C
+///   library functions.
+///
+/// @note length() returns the length of the stored string, and size() returns the number of bytes taken by the array
+///       such that length() <= size().
+
 template< int SIZE >
 class FixedString {
 public:
+
+    /// Constructors
+    /// @note that constructing FixedStrings initialised from another FixedString of a different SIZE actually
+    ///       routes through the const std::string& constructor, via the provided implicit cast to std::string below.
 
     FixedString();
     FixedString(const std::string&);
@@ -48,6 +62,8 @@ public:
 
 	bool operator<=(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) <= 0; }
 
+    /// The number of characters in the stored string, excluding the termination character if the string is shorter
+    /// than SIZE.
 	size_t length() const;
 
     std::string asString() const;
@@ -57,6 +73,7 @@ public:
 	char* data() { return data_; }
 	const char* data() const { return data_; }
 
+    /// The number of bytes in the managed array (always equal to SIZE).
 	size_t size() { return SIZE; }
 
 	static size_t static_size() { return SIZE; }
@@ -98,7 +115,7 @@ FixedString<SIZE>:: FixedString(const FixedString& other)
 
 template<int SIZE>
 FixedString<SIZE>::FixedString(const char* s) {
-	ASSERT(sizeof(char) == 1 && strlen(s) <= SIZE);
+    ASSERT(sizeof(char) == 1 && s && strlen(s) <= SIZE);
 	zero(data_);
 	memcpy(data_, s, strlen(s));
 }

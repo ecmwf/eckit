@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -23,78 +23,12 @@
 #include "eckit/config/Resource.h"
 #include "eckit/net/TCPServer.h"
 
-//-----------------------------------------------------------------------------
-
-#ifdef ECKIT_HAVE_READLINE
-
-#include <readline/readline.h>
-#include <readline/history.h>
-
-#include "eckit/cmd/CmdResource.h"
-#include "eckit/parser/Tokenizer.h"
-
-static std::vector<std::string> completion;
-static size_t n = 0;
-static int st, en;
-
-static char* get_next_match(const char* text, int state) {
-    if (state == 0) {
-        completion = eckit::CmdResource::completion(text);
-        eckit::CmdParser::aliasCompletion(text, completion);
-        n = 0;
-    }
-
-    if (n < completion.size()) {
-        return strdup(completion[n++].c_str());
-    }
-
-    return 0;
-}
-
-static char* get_next_arg(const char* text, int state) {
-    if (state == 0) {
-
-        eckit::Tokenizer parse(" ");
-        char* t = rl_copy_text(0, en);
-        std::vector<std::string> s;
-        parse(t, s);
-        ::free(t);
-
-        completion = eckit::CmdResource::completion(s);
-
-        n = 0;
-    }
-
-    if (n < completion.size()) {
-        return strdup(completion[n++].c_str());
-    }
-
-    return 0;
-}
-
-static char** cmd_application_completion(const char* text, int start, int end) {
-    char** matches = 0;
-    st = start;
-    en = end;
-
-    if (start == 0) {
-        matches = rl_completion_matches(text, get_next_match);
-    } else {
-        matches = rl_completion_matches(text, get_next_arg);
-    }
-    return matches;
-}
-
-#endif  // ECKIT_HAVE_READLINE
-
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template <class App>
-class CmdApplication : public App {
+class CmdApplication : public App, public Prompter {
 public:
     CmdApplication(int argc, char** argv);
     ~CmdApplication();
@@ -103,26 +37,31 @@ private:
     CmdApplication(const CmdApplication&);
     CmdApplication& operator=(const CmdApplication&);
 
+    virtual std::string prompt() const;
+
     virtual void run();
+
     void startup(std::ostream&);
 
     void serveMode(long);
     void userMode();
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template <class App>
 CmdApplication<App>::CmdApplication(int argc, char** argv) : App(argc, argv) {
 }
 
-//-----------------------------------------------------------------------------
 
 template <class App>
 CmdApplication<App>::~CmdApplication() {
 }
 
-//-----------------------------------------------------------------------------
+template <class App>
+std::string CmdApplication<App>::prompt() const {
+    return this->App::appName();
+}
 
 template <class App>
 void CmdApplication<App>::startup(std::ostream& out) {
@@ -136,12 +75,11 @@ void CmdApplication<App>::startup(std::ostream& out) {
         if (path.exists()) {
             Log::info() << "Startup " << path << std::endl;
             std::ifstream in(path.localPath());
-            CmdParser::parse(in, out);
+            CmdParser::parse(in, out, *this);
         }
     }
 }
 
-//-----------------------------------------------------------------------------
 
 template <class App>
 void CmdApplication<App>::userMode() {
@@ -174,79 +112,18 @@ void CmdApplication<App>::userMode() {
     CmdParser::prompt(interactive);
     if (file.exists()) {
         std::ifstream in(file.localPath());
-        CmdParser::parse(in, std::cout);
+        CmdParser::parse(in, std::cout, *this);
     } else {
+
         PathName home("~");
         Log::info() << App::name() << " home is " << home << std::endl;
 
-#ifdef ECKIT_HAVE_READLINE
+        CmdParser::console(interactive && ::isatty(0) && ::isatty(1));
 
-        PathName lock("~/locks/admin/cron");
-        rl_readline_name = App::name().c_str();
-        rl_attempted_completion_function = cmd_application_completion;
-
-        using_history();
-
-        if (interactive) {
-            PathName history("~/." + App::name() + "_history");
-            long size = eckit::Resource<long>("historySize", 100);
-            if (history.exists()) {
-                if (read_history(history.localPath())) Log::error() << history << ": " << Log::syserr << std::endl;
-            }
-
-            stifle_history(size);
-
-            char* p;
-            std::string last;
-            Log::status() << "Idle..." << std::endl;
-            const std::string prompt = App::name() + "> ";
-            const std::string locked_prompt = App::name() + " (LOCKED)> ";
-            while ((p = readline((lock.exists() ? locked_prompt : prompt).c_str())) != 0) {
-                char* q = 0;
-                switch (history_expand(p, &q)) {
-                    case 0:
-                        break;
-
-                    case 1:
-                        ::free(p);
-                        p = strdup(q);
-                        std::cout << p << std::endl;
-                        break;
-
-                    case 2:
-                        std::cout << q << std::endl;
-                        *p = 0;
-                        break;
-
-                    case -1:
-                        Log::warning() << q << std::endl;
-                        break;
-                }
-
-                std::string line(p);
-                if (*p && last != line) {
-                    last = line;
-                    add_history(p);
-                    if (write_history(history.localPath())) Log::error() << history << ": " << Log::syserr << std::endl;
-                }
-                ::free(p);
-
-                try {
-                    CmdParser::parse(line, std::cout);
-                } catch (std::exception& e) {
-                    if (fail) throw e;
-
-                    Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-                    Log::error() << "** Exception is ignored" << std::endl;
-                }
-                Log::status() << "Idle..." << std::endl;
-            }
-
-        } else
-#endif  // ECKIT_HAVE_READLINE
         while (std::cin) {
             try {
-                CmdParser::parse(std::cin, std::cout);
+                CmdParser::parse(std::cin, std::cout, *this);
+                break;
             } catch (std::exception& e) {
                 if (fail) throw e;
 
@@ -257,7 +134,6 @@ void CmdApplication<App>::userMode() {
     }
 }
 
-//-----------------------------------------------------------------------------
 
 template <class App>
 void CmdApplication<App>::serveMode(long port) {
@@ -275,11 +151,10 @@ void CmdApplication<App>::serveMode(long port) {
 
         out << "Welcome " << p.remoteHost() << std::endl;
 
-        CmdParser::parse(in, out);
+        CmdParser::parse(in, out, *this);
     }
 }
 
-//-----------------------------------------------------------------------------
 
 template <class App>
 void CmdApplication<App>::run() {
@@ -290,7 +165,7 @@ void CmdApplication<App>::run() {
         userMode();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

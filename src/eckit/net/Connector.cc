@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -346,19 +346,20 @@ long Connector::read(void *buf, long len)
 			bool useCache = false;
 			if (j != cache_.end())
 			{
-                // cout << "MEMOIZE IN CACHE " << (*j).first << std::endl;
-                // if ((::time(0) - (*j).second.updated()) > life_)
-                // {
-                //	cout << "  CACHE IS STALE" << (*j).first << std::endl;
-                // } else
-                // {
+//               cout << "MEMOIZE IN CACHE " << (*j).first << std::endl;
+                 if( (::time(0) - (*j).second.updated()) > life_ )
+                 {
+                     // cout << "  CACHE IS STALE" << (*j).first << std::endl;
+                 }
+                 else
+                 {
 					useCache = true;
 					cached_.buffer_ = (const char*) (*j).second.buffer();
 					cached_.size_ = (*j).second.count();
 					cached_.pos_ = 0;
 					sent_ = true;
-                // }
-			}
+                 }
+            }
 
 			if (!useCache)
 			{

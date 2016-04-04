@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -13,11 +13,6 @@
 #define eckit_ecml_REPLHandler_H
 
 #include "eckit/eckit_config.h"
-
-#ifdef ECKIT_HAVE_READLINE
-# include <readline/readline.h>
-# include <readline/history.h>
-#endif
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/ecml/parser/Request.h"

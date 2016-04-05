@@ -81,8 +81,10 @@ bool ResourceMgr::appendConfig(const PathName& path)
   AutoLock<Mutex> lock(local_mutex);
   FileReadPolicy p = Context::instance().behavior().fileReadPolicy();
 
+  Log::debug() << "Appending config " << path << std::endl;
+
   std::stringstream s;
-  if( !read(p,path,s) )  return false;
+  if( !read(p, path, s) )  return false;
 
   script_.readStream(s);
   return true;

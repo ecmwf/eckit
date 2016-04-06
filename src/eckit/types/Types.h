@@ -14,6 +14,8 @@
 #ifndef eckit_Types_h
 #define eckit_Types_h
 
+#include <utility>
+
 #include "eckit/eckit.h"
 
 #include "eckit/runtime/TaskID.h" // to be removed
@@ -29,6 +31,15 @@ typedef std::vector<Ordinal>                OrdinalList;
 typedef std::vector<std::string>            StringList;
 typedef std::set<std::string>               StringSet;
 typedef std::map<std::string,std::string>   StringDict;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+template<typename S, typename T>
+inline std::ostream& operator<<(std::ostream& s, const std::pair<S, T>& p)
+{
+    s << "<" << p.first << "," << p.second << ">";
+    return s;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -64,8 +75,20 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
+class VectorPrintSimple{};
+class VectorPrintContracted{};
+
+template <typename T>
+struct VectorPrintSelector { typedef VectorPrintContracted selector; };
+
+template <> struct VectorPrintSelector<std::string> { typedef VectorPrintSimple selector; };
+template <> struct VectorPrintSelector<double> { typedef VectorPrintSimple selector; };
+template <typename K, typename V> struct VectorPrintSelector<std::pair<K,V> > { typedef VectorPrintSimple selector; };
+
+
 template<class T>
-inline std::ostream& __print_list(std::ostream& s,const T& t)
+inline std::ostream& __print_list(std::ostream& s, const T& t, VectorPrintContracted)
 {
 	output_list<typename T::value_type> l(s);
 	output_list_iterator<typename T::value_type> os(&l);
@@ -73,31 +96,42 @@ inline std::ostream& __print_list(std::ostream& s,const T& t)
     return s;
 }
 
-inline std::ostream& __print_list(std::ostream& s,const std::vector<std::string>& t)
-{
-        s << '[';
-        for(Ordinal i = 0; i < t.size(); i++)
-                if(i) s << ',' << t[i]; else s << t[i];
-        s << ']';
+template <typename T>
+inline std::ostream& __print_list(std::ostream& s, const std::vector<T>& t, VectorPrintSimple) {
+
+    s << '[';
+    for(Ordinal i = 0; i < t.size(); i++) {
+        if (i != 0)
+            s << ',';
+        s << t[i];
+    }
+    s << ']';
     return s;
 }
 
-inline std::ostream& __print_list(std::ostream& s,const std::vector<double>& t)
-{
-        s << '[';
-        for(Ordinal i = 0; i < t.size(); i++)
-                if(i) s << ',' << t[i]; else s << t[i];
-        s << ']';
-    return s;
-}
+} // namespace eckit
 
-template<class T>
-inline std::ostream& operator<<(std::ostream& s,const std::vector<T>& v)
-{
-	return __print_list(s,v);
+namespace std {
+
+    // n.b. This overload needs to go either in the namespace std:: (which contains
+    //      ostream, vector), the global namespace, or the namespace containing T.
+    //      Otherwise it will not be found when doing lookups.
+    //
+    //  --> Probably best to put it in std::. It is acceptable to add "template
+    //      specializations for any standard library template" if the "declaration
+    //      depends on user-defined types".
+
+    template<class T>
+    inline std::ostream& operator<<(std::ostream& s,const std::vector<T>& v)
+    {
+        return eckit::__print_list(s, v, typename eckit::VectorPrintSelector<T>::selector());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+
+namespace eckit {
 
 template<typename K, typename V>
 inline std::ostream& __print_container(std::ostream& s, const std::map<K,V>& m)

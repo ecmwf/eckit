@@ -17,31 +17,33 @@
 #include "eckit/memory/Counted.h"
 #include "eckit/serialisation/Streamable.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+// Within eckit, these exceptions are only used internally to Content.cc. However, they are declared in the
+// header so that they are visible to the unit tests.
 
 class BadConversion:  public Exception {
-    public:
-        BadConversion(const std::string& w):
-            Exception(std::string("Bad Conversion: ") + w)   {  }
+public:
+    BadConversion(const std::string& w) :
+        Exception(std::string("Bad Conversion: ") + w) {}
 };
 
 class BadComparison:  public Exception {
-    public:
-        BadComparison(const std::string& w):
-            Exception(std::string("Bad Comparison: ") + w)   {  }
+public:
+    BadComparison(const std::string& w) :
+        Exception(std::string("Bad Comparison: ") + w) {}
 };
 
 class BadOperator:  public Exception {
-    public:
-        BadOperator(const std::string& w):
-            Exception(std::string("Bad operator: ") + w)   {  }
+public:
+    BadOperator(const std::string& w) :
+        Exception(std::string("Bad operator: ") + w) {}
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // List here all the Content's
 
@@ -64,7 +66,7 @@ class JSON;
 typedef std::vector<Value>     ValueList;
 typedef std::map<Value,Value>  ValueMap;
 
-//=============================================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 // Assuptions for comparisons:
 // Nil < Number < String < List
@@ -257,9 +259,8 @@ Streamable* Reanimator<Content>::ressucitate(Stream& s) const
 ;
 #endif
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 
-#endif
+#endif // eckit_Content_h

@@ -8,14 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
+#include <string>
+#include <cstdarg>
+#include <sys/param.h>
+
 #include "Context.h"
 
-#include <sys/param.h>
-#include <string>
-#include <vector>
-
 #include "eckit/eckit_config.h"
-
 #include "eckit/log/Log.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/ContextBehavior.h"
@@ -170,69 +169,88 @@ PathName Context::commandPath() const { return proc_path(argv(0)); }
 
 static RegisterConfigHome* config_dirs = 0;
 
-RegisterConfigHome::RegisterConfigHome(const char* name, const char* install_bin_dir, const char* developer_bin_dir,
-                                       const char* install_config_dir, const char* developer_config_dir)
+RegisterConfigHome::RegisterConfigHome(const char* name, size_t ndirs, const char* dir, ...)
     : next_(config_dirs),
       first_(true),
       name_(name),
-      install_bin_dir_(install_bin_dir),
-      developer_bin_dir_(developer_bin_dir),
-      install_config_dir_(install_config_dir),
-      developer_config_dir_(developer_config_dir) {
-  config_dirs = this;
+      dirs_(ndirs) {
+
+    ASSERT(ndirs>0);
+    va_list dirs;
+    va_start(dirs, ndirs);
+    dirs_[0] = dir;
+    for (unsigned i=1; i<ndirs; ++i) {
+        dirs_[i] = va_arg(dirs, const char*);
+    }
+    va_end(dirs);
+
+    config_dirs = this;
 }
 
-PathName Context::configHome(bool& first,
-                             const char* install_bin_dir,               // From ecbuild : APPNAME_INSTALL_BIN_DIR
-                             const char* developer_bin_dir,             // From ecbuild : APPNAME_DEVELOPER_BIN_DIR
-                             const char* install_config_dir,            // From ecbuild : APPNAME_INSTALL_DATA_DIR
-                             const char* developer_config_dir) const {  // From ecbuild : APPNAME_DEVELOPER_BIN_DIR
+PathName Context::configHome(bool& first, const std::vector< const char* >& dirs) const {
 
-  if (argc_ == 0) {   // Context was not initialised
+    // Determine run-time command realpath
+    // (catches PathName::RealName possible exception)
+    std::string command_path;
+    try {
+        const std::string command_realpath = commandPath().realName().asString();
+        command_path = command_realpath;
+    }
+    catch (FailedSystemCall&) {
+        throw SeriousBug("No available home: run-time command path not found");
+    }
+    ASSERT(command_path.length());
+
+    // Determine the available directories
+    // (catches PathName::RealName possible exception)
+    std::vector< std::string > available_dirs;
+    for (std::vector< const char* >::const_iterator p=dirs.begin(); p!=dirs.end(); ++p) {
+        try {
+            PathName path = PathName(*p).realName();
+            available_dirs.push_back(path.asString());
+        }
+        catch (FailedSystemCall&) {
+        }
+    }
+    if (!available_dirs.size()) {
+        throw SeriousBug("No available home: no available directories available");
+    }
+    ASSERT(available_dirs.size());
+
+    // Home path selection, in order:
+    // 1. if Context::setup(argc,argv) not called, first available path
+    // 2. first available directory containing run-time command path
+    // 3. first available directory
+    std::string home(argc_==0? available_dirs.front():"");
+
+    for (std::vector< std::string >::const_iterator p=available_dirs.begin(); p!=available_dirs.end() && !home.length(); ++p) {
+        if (command_path.find(*p) == 0) {
+            home = *p;
+        }
+    }
+
+    if (!home.length()) {
+        home = available_dirs.front();
+    }
+    ASSERT(home.length());
 
     if (first) {
-      Log::warning() << "Context::setup(argc, argv) was not called, assuming running from " << install_bin_dir
-                     << std::endl;
-      Log::warning() << "Using development configuration path " << install_config_dir << std::endl;
-      first = false;
+        Log::warning()
+                << "Context::configHome selected: \"" << home << "\"\n"
+                << "  commandPath:      \"" << command_path << "\"\n"
+                << "  setup(argc,argv)? " << (argc_==0? "not called":"called")
+                << std::endl;
+        first = false;
     }
-    return install_config_dir;
-  }
 
-  std::string path = eckit::PathName(commandPath()).realName().asString();
-  std::string install_bin_dir_path = eckit::PathName(install_bin_dir).realName().asString();
-
-  if (path.find(install_bin_dir_path) == 0) {
-    return install_config_dir;
-  }
-
-  std::string developer_bin_dir_path = eckit::PathName(developer_bin_dir).realName().asString();
-
-  if (path.find(developer_bin_dir_path) == 0) {
-    if (first) {
-      Log::warning() << "Current command is from " << developer_bin_dir << std::endl;
-      Log::warning() << "Using development configuration path " << developer_config_dir << std::endl;
-      first = false;
-    }
-    return developer_config_dir;
-  }
-
-  if (first) {
-    Log::warning() << "Current command is " << path << ", and is neither in " << install_bin_dir << " or "
-                   << developer_config_dir << std::endl;
-    Log::warning() << "Assuming configuration files are in " << install_config_dir << std::endl;
-    first = false;
-  }
-
-  return install_config_dir;
+    return home;
 }
 
 PathName Context::configHome(const std::string& name) const {
   RegisterConfigHome* d = config_dirs;
   while (d) {
     if (name == d->name_) {
-      return configHome(d->first_, d->install_bin_dir_, d->developer_bin_dir_, d->install_config_dir_,
-                        d->developer_config_dir_);
+      return configHome(d->first_, d->dirs_);
     }
     d = d->next_;
   }

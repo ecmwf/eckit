@@ -75,7 +75,6 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-
 class VectorPrintSimple{};
 class VectorPrintContracted{};
 
@@ -111,6 +110,8 @@ inline std::ostream& __print_list(std::ostream& s, const std::vector<T>& t, Vect
 
 } // namespace eckit
 
+//----------------------------------------------------------------------------------------------------------------------
+
 namespace std {
 
     // n.b. This overload needs to go either in the namespace std:: (which contains
@@ -129,7 +130,6 @@ namespace std {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 namespace eckit {
 

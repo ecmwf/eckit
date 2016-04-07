@@ -213,7 +213,7 @@ PathName Context::configHome(bool& first, const std::vector< const char* >& dirs
         }
     }
     if (!available_dirs.size()) {
-        throw SeriousBug("No available home: no available directories available");
+        throw SeriousBug("No available home: no configured directories available");
     }
     ASSERT(available_dirs.size());
 

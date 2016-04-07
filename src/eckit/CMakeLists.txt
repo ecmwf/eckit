@@ -330,7 +330,6 @@ log/UserChannel.cc
 )
 
 list( APPEND eckit_exception_srcs
-exception/BadValue.h
 exception/Exceptions.h
 exception/Exceptions.cc )
 

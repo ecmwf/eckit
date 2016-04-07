@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/exception/BadValue.h"
+#include "eckit/exception/Exceptions.h"
 
 #include "eckit/config/Condition.h"
 

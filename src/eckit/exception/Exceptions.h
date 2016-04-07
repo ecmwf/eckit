@@ -128,6 +128,7 @@ public:
 class BadValue: public Exception {
 public:
     BadValue(const std::string& s);
+    BadValue(const std::string&, const CodeLocation&);
 };
 
 class NotImplemented : public Exception {

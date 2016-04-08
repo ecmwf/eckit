@@ -13,6 +13,7 @@
 /// @author Tiago Quintino
 /// @date   Jun 2012
 
+#include "eckit/value/Value.h"
 #include "eckit/parser/JSONParser.h"
 #include "eckit/utils/Translator.h"
 
@@ -309,9 +310,21 @@ void JSONParser::toStrDict( const Value& json, StringDict& dict )
     if( json.isMap() )
     {
         ValueMap m ( json );
-        
+
         for( ValueMap::iterator i = m.begin(); i != m.end(); ++i ) {
             dict[ i->first ] = std::string(i->second);
+        }
+    }
+}
+
+void JSONParser::toStrSet( const Value& json, StringSet& s )
+{
+    if( json.isList() )
+    {
+        ValueList v = json.as<ValueList>();
+
+        for( ValueList::iterator i = v.begin(); i != v.end(); ++i ) {
+            s.insert( std::string(*i) );
         }
     }
 }
@@ -323,7 +336,9 @@ void JSONParser::toDictStrSet(const Value& json, std::map<std::string, StringSet
         ValueMap m ( json );
 
         for( ValueMap::iterator i = m.begin(); i != m.end(); ++i ) {
-            dict[ i->first ].insert( std::string(i->second) );
+            std::string k( i->first );
+            Value lst = i->second;
+            toStrSet(lst, dict[k]);
         }
     }
 }

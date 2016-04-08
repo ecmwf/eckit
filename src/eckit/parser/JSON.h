@@ -8,8 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-// File JSON.h
-// Baudouin Raoult - (c) ECMWF Aug 11
+/// @file   JSON.h
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Aug 2011
 
 #ifndef eckit_JSON_h
 #define eckit_JSON_h
@@ -18,11 +20,9 @@
 
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class JSON : private NonCopyable {
 
@@ -51,6 +51,10 @@ public: // methods
 
     template < typename T >
     JSON& operator<<(const std::vector<T>&);
+
+    template < typename T >
+    JSON& operator<<(const std::set<T>&);
+
     template < typename T >
     JSON& operator<<(const std::map<std::string, T>&);
 
@@ -80,7 +84,7 @@ private: // methods
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template < typename T >
 JSON& JSON::operator<<(const std::vector<T> &v)
@@ -88,6 +92,17 @@ JSON& JSON::operator<<(const std::vector<T> &v)
     startList();
     for( size_t i = 0; i < v.size(); ++i ) {
         *this << v[i];
+    }
+    endList();
+    return *this;
+}
+
+template < typename T >
+JSON& JSON::operator<<(const std::set<T>& s)
+{
+    startList();
+    for(typename std::set<T>::const_iterator i = s.begin(); i != s.end(); ++i ) {
+        *this << *i;
     }
     endList();
     return *this;
@@ -104,6 +119,8 @@ JSON& JSON::operator<<(const std::map<std::string, T> &m)
     endObject();
     return *this;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

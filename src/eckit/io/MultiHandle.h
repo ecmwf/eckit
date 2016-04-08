@@ -81,10 +81,6 @@ public:
 
     static  const ClassSpec&  classSpec()        { return classSpec_;}
 
-public: // methods
-
-    size_t count() const;
-
 private:
 
 // -- Members

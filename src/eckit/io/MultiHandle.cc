@@ -60,11 +60,6 @@ void MultiHandle::encode(Stream& s) const
     s << length_;
 }
 
-size_t MultiHandle::count() const
-{
-    return datahandles_.size();
-}
-
 MultiHandle::~MultiHandle()
 {
     for(size_t i=0; i < datahandles_.size(); i++)

@@ -33,6 +33,7 @@ public: // methods
     Value parse();
     
     static void toStrDict(const Value&, StringDict& );
+    static void toDictStrSet(const Value&, std::map<std::string, eckit::StringSet>& );
 
 private: // methods
 

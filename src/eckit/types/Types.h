@@ -91,7 +91,7 @@ inline std::ostream& __print_list(std::ostream& s, const T& t, VectorPrintContra
 {
 	output_list<typename T::value_type> l(s);
 	output_list_iterator<typename T::value_type> os(&l);
-	copy(t.begin(),t.end(),os);
+    std::copy(t.begin(), t.end(), os);
     return s;
 }
 
@@ -105,6 +105,30 @@ inline std::ostream& __print_list(std::ostream& s, const std::vector<T>& t, Vect
         s << t[i];
     }
     s << ']';
+    return s;
+}
+
+template<typename K, typename V>
+inline std::ostream& __print_container(std::ostream& s, const std::map<K,V>& m)
+{
+    s << "{";
+    for (typename std::map<K,V>::const_iterator it = m.begin(); it != m.end(); ++it)
+    {
+        s << it->first << " : " << it->second << ", ";
+    }
+    s << "}";
+    return s;
+}
+
+template<typename T>
+inline std::ostream& __print_container(std::ostream& s, const std::set<T>& m)
+{
+    s << "{";
+    for (typename std::set<T>::const_iterator it = m.begin(); it != m.end(); ++it )
+    {
+        s << *it << ", ";
+    }
+    s << "}";
     return s;
 }
 
@@ -127,47 +151,23 @@ namespace std {
     {
         return eckit::__print_list(s, v, typename eckit::VectorPrintSelector<T>::selector());
     }
+
+    template<typename K, typename V>
+    inline std::ostream& operator<<(std::ostream& s, const std::map<K,V>& m)
+    {
+        return eckit::__print_container(s,m);
+    }
+
+    template< typename T >
+    inline std::ostream& operator<<(std::ostream& s, const std::set<T>& m)
+    {
+        return eckit::__print_container(s,m);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
-
-template<typename K, typename V>
-inline std::ostream& __print_container(std::ostream& s, const std::map<K,V>& m)
-{
-    s << "{";
-    for (typename std::map<K,V>::const_iterator it = m.begin(); it != m.end(); ++it)
-	{
-		s << it->first << " : " << it->second << ", ";
-	}
-	s << "}";
-    return s;    
-}
-
-template<typename K, typename V>
-inline std::ostream& operator<<(std::ostream& s, const std::map<K,V>& m)
-{
-    return __print_container(s,m);
-}
-
-template<typename T>
-inline std::ostream& __print_container(std::ostream& s, const std::set<T>& m)
-{
-    s << "{";
-    for (typename std::set<T>::const_iterator it = m.begin(); it != m.end(); ++it )
-	{
-		s << *it << ", ";
-	}
-	s << "}";
-    return s;
-}
-
-template< typename T >
-inline std::ostream& operator<<(std::ostream& s, const std::set<T>& m)
-{
-    return eckit::__print_container(s,m);
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 

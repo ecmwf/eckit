@@ -14,3 +14,9 @@ ecbuild_add_test( TARGET   eckit_test_value_properties
                   BOOST
                   SOURCES  test_value_properties.cc
                   LIBS     eckit )
+
+ecbuild_add_test( TARGET   eckit_test_value
+                  ARGS     --log_level=message
+                  BOOST
+                  SOURCES  test_value.cc
+                  LIBS     eckit )

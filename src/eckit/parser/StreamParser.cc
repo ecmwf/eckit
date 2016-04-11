@@ -39,11 +39,11 @@ char StreamParser::peek(bool spaces)
             return 0;
         if(spaces || !isspace(c))
         {
-            //cout << "peek(" << c << ")" << std::endl;
+//            std::cout << "peek(" << c << ")" << std::endl;
             return c;
         }
         else {
-            //cout << "skip(" << c << ")" << std::endl;
+//            std::cout << "skip(" << c << ")" << std::endl;
             in_.get(c);
         }
     }

@@ -12,6 +12,7 @@
 
 #include "ecbuild/boost_test_framework.h"
 
+//#include "eckit/log/Log.h"
 #include "eckit/parser/JSONParser.h"
 #include "eckit/parser/JSON.h"
 
@@ -28,6 +29,8 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value )
     JSONParser p(in);
 
     Value v = p.parse();
+
+//    Log::info() << "json " << v << std::endl;
 
     BOOST_TEST_MESSAGE( v );
     BOOST_TEST_MESSAGE( v["a"] );
@@ -65,11 +68,41 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value )
 
 //-----------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_set )
+{    
+    istringstream in("[ \"a\" , \"b\", \"c\" ]" );
+    JSONParser p(in);
+    Value v = p.parse();
+
+//    Log::info() << "json " << v << std::endl;
+
+    StringSet s;
+    JSONParser::toStrSet(v, s);
+
+    BOOST_TEST_MESSAGE( v );
+
+    BOOST_CHECK( v.isList() );
+    BOOST_CHECK_EQUAL( v.as<ValueList>().size(), 3 );
+
+    BOOST_CHECK( v[0].isString() );
+    BOOST_CHECK_EQUAL( v[0].as<string>(), "a" );
+
+    BOOST_CHECK( v[1].isString() );
+    BOOST_CHECK_EQUAL( v[1].as<string>(), "b" );
+
+    BOOST_CHECK( v[2].isString() );
+    BOOST_CHECK_EQUAL( v[2].as<string>(), "c" );
+}
+
+//-----------------------------------------------------------------------------
+
 BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_map )
 {
     istringstream in("{ \"a\" : \"AAA\", \"b\" : 0.0 , \"c\" : \"null\", \"d\" : \"\"}" );
     JSONParser p(in);
     Value v = p.parse();
+
+//    Log::info() << "json " << v << std::endl;
 
     StringDict d;
     JSONParser::toStrDict(v,d);

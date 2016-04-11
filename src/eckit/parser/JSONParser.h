@@ -18,11 +18,9 @@
 #include "eckit/types/Types.h"
 #include "eckit/value/Value.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class JSONParser : public StreamParser {
 
@@ -33,6 +31,8 @@ public: // methods
     Value parse();
     
     static void toStrDict(const Value&, StringDict& );
+    static void toStrSet(const Value&, eckit::StringSet& );
+    static void toDictStrSet(const Value&, std::map<std::string, eckit::StringSet>& );
 
 private: // methods
 
@@ -49,7 +49,7 @@ private: // methods
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

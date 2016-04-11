@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -25,7 +25,7 @@ class TestECML : public Tool {
 public:
     TestECML (int argc, char **argv) : Tool(argc, argv) {}
     ~TestECML() {}
-    
+
     virtual void run();
 
 protected:
@@ -34,7 +34,7 @@ protected:
 
 void TestECML::run()
 {
-    int argc (Context::instance().argc());
+    int argc = Context::instance().argc();
     if (argc < 2)
     {
         //throw UserError("Command line required (name(s) of file(s) with ECML script");
@@ -42,8 +42,9 @@ void TestECML::run()
         REPLHandler::repl(context);
     }
 
-    for (size_t i(1); i < Context::instance().argc(); ++i)
+    for (int  i = 1; i < argc; ++i) {
         runScript(Context::instance().argv(i));
+    }
 }
 
 void TestECML::runScript(const string& pathName)

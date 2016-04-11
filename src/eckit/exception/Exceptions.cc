@@ -249,6 +249,12 @@ BadCast::BadCast(const std::string& w, const CodeLocation& loc):
 {
 }
 
+BadValue::BadValue(const std::string& s)
+    : Exception(std::string("BadValue: ") + s) {}
+
+BadValue::BadValue(const std::string& s, const CodeLocation& loc)
+    : Exception(std::string("BadValue: ") + s, loc) {}
+
 NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& loc)
 {
     std::ostringstream ss;

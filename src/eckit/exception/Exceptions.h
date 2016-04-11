@@ -125,6 +125,12 @@ public:
     BadCast(const std::string&, const CodeLocation&);
 };
 
+class BadValue: public Exception {
+public:
+    BadValue(const std::string& s);
+    BadValue(const std::string&, const CodeLocation&);
+};
+
 class NotImplemented : public Exception {
 public:
 	NotImplemented( const std::string& s, const CodeLocation& );

@@ -8,17 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-// File JSON.h
-// Baudouin Raoult - (c) ECMWF Jun 12
+/// @file   JSONParser.h
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Jun 2012
 
+#include "eckit/value/Value.h"
 #include "eckit/parser/JSONParser.h"
 #include "eckit/utils/Translator.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class JSONTokenizerError : public std::exception {
     std::string what_;
@@ -31,7 +32,7 @@ public:
     virtual ~JSONTokenizerError() throw() {}
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 Value JSONParser::parseTrue()
 {
@@ -309,12 +310,39 @@ void JSONParser::toStrDict( const Value& json, StringDict& dict )
     if( json.isMap() )
     {
         ValueMap m ( json );
-        
-        for( ValueMap::iterator i = m.begin(); i != m.end(); ++i )
+
+        for( ValueMap::iterator i = m.begin(); i != m.end(); ++i ) {
             dict[ i->first ] = std::string(i->second);
+        }
     }
 }
 
-//-----------------------------------------------------------------------------
+void JSONParser::toStrSet( const Value& json, StringSet& s )
+{
+    if( json.isList() )
+    {
+        ValueList v = json.as<ValueList>();
+
+        for( ValueList::iterator i = v.begin(); i != v.end(); ++i ) {
+            s.insert( std::string(*i) );
+        }
+    }
+}
+
+void JSONParser::toDictStrSet(const Value& json, std::map<std::string, StringSet>& dict)
+{
+    if( json.isMap() )
+    {
+        ValueMap m ( json );
+
+        for( ValueMap::iterator i = m.begin(); i != m.end(); ++i ) {
+            std::string k( i->first );
+            Value lst = i->second;
+            toStrSet(lst, dict[k]);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

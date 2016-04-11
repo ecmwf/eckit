@@ -191,7 +191,7 @@ public:
 
     /// Explicitly cast value to the given type. For list of supported types, see the definitions of the
     /// member function value() in eckit/value/Content.h
-	template< typename T > T as() { T r; content_->value(r); return r; }
+    template< typename T > T as() const { T r; content_->value(r); return r; }
 
     operator short() const              { long long l;  content_->value(l); return l; }
     operator unsigned short() const     { long long l;  content_->value(l); return l; }

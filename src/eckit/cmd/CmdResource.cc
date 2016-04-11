@@ -174,6 +174,8 @@ bool CmdResource::completion(const char* line, int pos, char* insert, int insert
         p++;
         n++;
     }
+
+    return false; // silence compiler warning
 }
 
 void CmdResource::help(std::ostream& out, const std::string& cmdname) {

@@ -111,10 +111,12 @@ inline std::ostream& __print_list(std::ostream& s, const std::vector<T>& t, Vect
 template<typename K, typename V>
 inline std::ostream& __print_container(std::ostream& s, const std::map<K,V>& m)
 {
+    const char* sep = "";
     s << "{";
     for (typename std::map<K,V>::const_iterator it = m.begin(); it != m.end(); ++it)
     {
-        s << it->first << " : " << it->second << ", ";
+        s << sep << it->first << "=" << it->second;
+        sep = ",";
     }
     s << "}";
     return s;
@@ -123,10 +125,12 @@ inline std::ostream& __print_container(std::ostream& s, const std::map<K,V>& m)
 template<typename T>
 inline std::ostream& __print_container(std::ostream& s, const std::set<T>& m)
 {
+    const char *sep = "";
     s << "{";
     for (typename std::set<T>::const_iterator it = m.begin(); it != m.end(); ++it )
     {
-        s << *it << ", ";
+        s << sep << *it;
+        sep = ",";
     }
     s << "}";
     return s;

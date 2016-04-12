@@ -21,6 +21,7 @@ bool read(const DirectReadPolicy&, const PathName& path, std::stringstream& s )
     bool r = false;
     if( path.exists() )
     {
+          // Log::debug() << "Direct reading file " << path << std::endl;
           std::ifstream in;
           in.open ( path.asString().c_str() );
           if ( !in )
@@ -29,6 +30,10 @@ bool read(const DirectReadPolicy&, const PathName& path, std::stringstream& s )
           s << in.rdbuf();
           r = true;
     }
+    else {
+        Log::debug() << "Failed to read file " << path << std::endl;
+    }
+
     return r;
 }
 

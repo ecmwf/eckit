@@ -235,26 +235,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_double_vector ) {
 }
 
 
-//BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_mismatched_vector ) {
-
-//    // Functor needed to test constructor inside BOOST_CHECK_THROW
-//    // Oh, wouldn't lambda functions be a glorious thing!
-//    struct functor {
-//        void operator() () {
-
-//            std::vector<Option*> options;
-//            options.push_back(new VectorOption<long>("arg", "", 3));
-
-//            const char* input[] = {"exe", "--arg=1/2.3/4"};
-//            Context::instance().setup(2, const_cast<char**>(input));
-//            CmdArgs args(&usage, 0, options, true);
-//        }
-//    };
-
-//    BOOST_CHECK_THROW(functor()(), UserError);
-//}
-
-
 BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_vector_size_check ) {
 
     // Functor needed to test constructor inside BOOST_CHECK_THROW

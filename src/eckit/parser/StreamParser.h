@@ -40,7 +40,7 @@ public: // types
     
 public: // methods
     
-    StreamParser(std::istream& in);
+    StreamParser(std::istream& in, bool comments = false);
 
     char peek(bool spaces = false);
     char next(bool spaces = false);
@@ -53,6 +53,8 @@ public: // methods
 private: // members
 
     std::istream& in_;
+
+    bool comments_;
 
 };
 

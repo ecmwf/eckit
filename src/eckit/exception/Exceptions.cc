@@ -157,7 +157,14 @@ FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, cons
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
-SeriousBug::SeriousBug(const std::string& msg,const CodeLocation& loc)
+SeriousBug::SeriousBug(const std::string& w) : Exception(std::string("Serious Bug: ") + w)
+{
+    std::cout << "Serious Bug exception triggered -- dumping backtrace:"
+              << BackTrace::dump()
+              << std::endl;
+}
+
+SeriousBug::SeriousBug(const std::string& msg, const CodeLocation& loc)
 {
    std::ostringstream s;
    s << "SeriousBug: " << msg << " " << " in " << loc;
@@ -170,7 +177,6 @@ SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
    s << "SeriousBug: " << msg << " " << " in " << loc;
    reason(s.str());
 }
-
 
 
 AssertionFailed::AssertionFailed(const std::string& w):

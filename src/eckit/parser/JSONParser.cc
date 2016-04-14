@@ -21,19 +21,6 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class JSONTokenizerError : public std::exception {
-    std::string what_;
-    virtual const char* what() const  throw()
-    {
-        return what_.c_str();
-    }
-public:
-    JSONTokenizerError(const std::string& what) : what_(what) {}
-    virtual ~JSONTokenizerError() throw() {}
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
 Value JSONParser::parseTrue()
 {
     consume("true");
@@ -79,7 +66,7 @@ Value JSONParser::parseNumber()
         }
         break;
     default:
-        throw JSONTokenizerError(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
+        throw StreamParser::Error(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
         break;
     }
 
@@ -88,7 +75,7 @@ Value JSONParser::parseNumber()
         s += next();
         c = next();
         if(!isdigit(c))
-            throw JSONTokenizerError(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
+            throw StreamParser::Error(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
         s += c;
         while(isdigit(peek())) {
             s += next();
@@ -109,7 +96,7 @@ Value JSONParser::parseNumber()
         }
 
         if(!isdigit(c))
-            throw JSONTokenizerError(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
+            throw StreamParser::Error(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
         s += c;
         while(isdigit(peek())) {
             s += next();
@@ -173,10 +160,10 @@ Value JSONParser::parseString()
                 break;
 
             case 'u':
-                throw JSONTokenizerError(std::string("JSONTokenizer::parseString \\uXXXX format not supported"));
+                throw StreamParser::Error(std::string("JSONTokenizer::parseString \\uXXXX format not supported"));
                 break;
             default:
-                throw JSONTokenizerError(std::string("JSONTokenizer::parseString invalid \\ char '") + c + "'");
+                throw StreamParser::Error(std::string("JSONTokenizer::parseString invalid \\ char '") + c + "'");
                 break;
             }
         }
@@ -286,7 +273,7 @@ Value JSONParser::parseValue()
     case '9': return parseNumber(); break;
 
     default:
-        throw JSONTokenizerError(std::string("JSONTokenizer::parseValue unexpected char '") + c + "'");
+        throw StreamParser::Error(std::string("JSONTokenizer::parseValue unexpected char '") + c + "'");
         break;
     }
 }
@@ -300,7 +287,7 @@ Value JSONParser::parse()
     Value v = parseValue();
     char c = peek();
     if(c != 0)
-        throw JSONTokenizerError(std::string("JSONTokenizer::parse extra char '") + c + "'");
+        throw StreamParser::Error(std::string("JSONTokenizer::parse extra char '") + c + "'");
     return v;
     
 }

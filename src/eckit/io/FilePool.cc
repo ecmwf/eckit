@@ -46,7 +46,7 @@ FilePool::FilePool(size_t size) :
 FilePool::~FilePool() {
 }
 
-DataHandle *const FilePool::checkout(const PathName& path) {
+DataHandle* FilePool::checkout(const PathName& path) {
 
     AutoLock<Mutex> lock(mutex_);
 
@@ -69,7 +69,7 @@ DataHandle *const FilePool::checkout(const PathName& path) {
     return dh;
 }
 
-void FilePool::checkin(DataHandle *const handle)
+void FilePool::checkin(DataHandle* handle)
 {
     AutoLock<Mutex> lock(mutex_);
 

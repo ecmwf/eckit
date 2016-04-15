@@ -14,11 +14,12 @@
 
 #include <iostream>
 
-#include "eckit/option/SimpleOption.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/utils/Translator.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/config/LocalConfiguration.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/option/SimpleOption.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit {
 
@@ -82,6 +83,12 @@ template<>
 void SimpleOption<bool>::set(LocalConfiguration &parametrisation) const {
     parametrisation.set(name_, true);
 }
+
+template <>
+void SimpleOption<eckit::PathName>::set(const std::string& value, LocalConfiguration& parametrisation) const {
+    parametrisation.set(name_, value);
+}
+
 
 template<class T>
 void SimpleOption<T>::print(std::ostream &out) const {

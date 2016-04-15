@@ -65,7 +65,7 @@ void LocalConfiguration::set(const std::vector<std::string> &path, size_t i, eck
     set(path, i + 1, r, value);
 }
 
-void LocalConfiguration::set(const std::string &s, const eckit::Value &value)  {
+void LocalConfiguration::set(const std::string &s, const eckit::Value &value) {
 
     // std::cout << "---- " << s << " => " << value << std::endl;
 
@@ -96,6 +96,26 @@ void LocalConfiguration::set(const std::string &s, double value)  {
 
 void LocalConfiguration::set(const std::string &s, bool value)  {
     set(s, eckit::Value(value));
+}
+
+void LocalConfiguration::set(const std::string &s, size_t value)  {
+    set(s, eckit::Value(value));
+}
+
+void LocalConfiguration::set(const std::string& s, const std::vector<long>& value) {
+    ValueList values;
+    for (std::vector<long>::const_iterator v = value.begin(); v != value.end(); ++v) {
+        values.push_back(eckit::Value(*v));
+    }
+    set(s, values);
+}
+
+void LocalConfiguration::set(const std::string& s, const std::vector<double>& value) {
+    ValueList values;
+    for (std::vector<double>::const_iterator v = value.begin(); v != value.end(); ++v) {
+        values.push_back(eckit::Value(*v));
+    }
+    set(s, values);
 }
 
 } // namespace eckit

@@ -16,6 +16,8 @@
 #ifndef eckit_LocalConfiguration_H
 #define eckit_LocalConfiguration_H
 
+#include <vector>
+
 #include "eckit/config/Configuration.h"
 
 
@@ -51,6 +53,10 @@ class LocalConfiguration : public Configuration {
     void set(const std::string &name, double value);
     void set(const std::string &name, long value);
     void set(const std::string &name, bool value);
+    void set(const std::string& name, size_t value);
+
+    void set(const std::string& name, const std::vector<long>& value);
+    void set(const std::string& name, const std::vector<double>& value);
 
     // -- Overridden methods
 
@@ -74,7 +80,8 @@ class LocalConfiguration : public Configuration {
     // void print(ostream&) const; // Change to virtual if base class
 
     // -- Overridden methods
-    // None
+
+    virtual void print(std::ostream &) const;
 
     // -- Class members
     // None
@@ -98,9 +105,9 @@ class LocalConfiguration : public Configuration {
     void set(const std::vector<std::string> &path, size_t i, Value &root, const Value &value);
     void set(const std::string &s, const Value &value);
 
-    // -- Overridden methods
 
-    virtual void print(std::ostream &) const;
+    // -- Overridden methods
+    // None
 
     // -- Class members
     // None

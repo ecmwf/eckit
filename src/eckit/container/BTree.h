@@ -53,12 +53,6 @@ public:
 
     ~BTree();
 
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
     // -- Methods
 
     bool get(const K&, V&);
@@ -68,7 +62,6 @@ public:
     bool remove(const K&);
 
     void dump(std::ostream& s = std::cout) const;
-    void dump(std::ostream&, unsigned long page, int depth) const;
 
 	/// Counts the entries in the whole tree
 	/// This is not an efficient call since it visits the whole tree. Use with care.
@@ -83,9 +76,9 @@ public:
 
     void flush();
 
-protected:
+private: // methods
 
-    // -- Methods
+    void dump(std::ostream&, unsigned long page, int depth) const;
 
 	void print(std::ostream& o) const { dump(o); }
 

@@ -112,7 +112,7 @@ typedef struct context {
     char *clipboard;
     entry *curr;
     int pos;
-    int last_pos;
+    int mark;
     bool overwrite;
     bool eof;
     bool tab;
@@ -223,6 +223,8 @@ static void esc(context *s) {
 
 static bool processCode(int c, context *s) {
 
+    char *p, *q, *r;
+
     if (c != TAB) {
         s->tab = false;
     }
@@ -280,9 +282,9 @@ static bool processCode(int c, context *s) {
         }
         break;
 
-    case CONTROL_U: {
-        char *p = s->curr->line + s->pos;
-        char *q = s->curr->line;
+    case CONTROL_U:
+        p = s->curr->line + s->pos;
+        q = s->curr->line;
 
         if (s->clipboard) {
             free(s->clipboard);
@@ -295,10 +297,8 @@ static bool processCode(int c, context *s) {
             *q++ = *p++;
         }
         *q = 0;
-    }
-    s->pos = 0;
-        // s->curr->line[0] = 0;
-    break;
+        s->pos = 0;
+        break;
 
     case ESC:
         esc(s);
@@ -369,6 +369,7 @@ static bool processCode(int c, context *s) {
         s->overwrite = !s->overwrite;
         break;
 
+    case CONTROL_J:
     case CR:
         write(1, "\r\n", 2);
         return true;
@@ -383,9 +384,6 @@ static bool processCode(int c, context *s) {
     case CONTROL_G:
         break;
 
-    case CONTROL_J:
-        break;
-
     case CONTROL_O:
         break;
 
@@ -393,9 +391,11 @@ static bool processCode(int c, context *s) {
         break;
 
     case CONTROL_R:
+        // TODO: backward search history
         break;
 
     case CONTROL_S:
+        // TODO: foreward search history
         break;
 
     case CONTROL_T:
@@ -414,14 +414,25 @@ static bool processCode(int c, context *s) {
         break;
 
     case CONTROL_V:
+        // TODO: escape next control char
         break;
 
     case CONTROL_W:
+        // TODO: delete word before
         break;
 
     case CONTROL_X:
-        if (nextChar() == 'x') {
-            // @todo
+        switch (nextChar()) {
+        case CONTROL_X: {
+            int tmp = s->pos;
+            s->pos = s->mark;
+            s->mark = tmp;
+
+            if (s->pos > strlen(s->curr->line)) {
+                s->pos = strlen(s->curr->line);
+            }
+        }
+        break;
         }
         break;
 
@@ -577,6 +588,10 @@ const char *UserInput::getUserInput(const char *prompt, completion_proc completi
     }
 
     exitRaw();
+
+    if(s.clipboard) {
+        free(s.clipboard);
+    }
 
     if (strlen(s.curr->line) == 0) {
         // Remove from history

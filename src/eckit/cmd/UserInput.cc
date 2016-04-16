@@ -102,6 +102,7 @@ typedef struct entry {
     struct entry *next;
     struct entry *prev;
     char *line;
+    char *edit;
     int len;
 } entry;
 
@@ -122,16 +123,24 @@ typedef struct context {
 static bool processCode(int c, context *s);
 
 static void output(const context *s) {
-    char *buffer = (char *)malloc(strlen(s->prompt) + strlen(s->curr->line) + 20);
-    sprintf(buffer, "\r%s%s\033[0K\r\033[%luC", s->prompt, s->curr->line, strlen(s->prompt) + s->pos);
+    char *buffer = (char *)malloc(strlen(s->prompt) + strlen(s->curr->edit) + 20);
+    sprintf(buffer, "\r%s%s\033[0K\r\033[%luC", s->prompt, s->curr->edit, strlen(s->prompt) + s->pos);
     write(1, buffer, strlen(buffer));
     free(buffer);
+}
+
+static entry *current(entry *e) {
+    if (!e->edit) {
+        e->edit = (char *)malloc(e->len);
+        strcpy(e->edit, e->line);
+    }
+    return e;
 }
 
 static void del(context *s) {
     if (s->pos > 0) {
         int i;
-        char *line = s->curr->line;
+        char *line = s->curr->edit;
         int len = strlen(line);
         for (i = s->pos - 1; i < len; i++) {
             line[i] = line[i + 1];
@@ -142,16 +151,16 @@ static void del(context *s) {
 }
 
 static void ins(context *s, char c) {
-    char *line = s->curr->line;
+    char *line = s->curr->edit;
     int len = strlen(line);
 
     if (len + 2 <= s->curr->len ) {
-        char *old = s->curr->line;
+        char *old = s->curr->edit;
         s->curr->len += 80;
-        s->curr->line = (char *)calloc(s->curr->len, 1);
-        strcpy(s->curr->line, old);
+        s->curr->edit = (char *)calloc(s->curr->len, 1);
+        strcpy(s->curr->edit, old);
         free(old);
-        line = s->curr->line;
+        line = s->curr->edit;
     }
 
     if (!s->overwrite) {
@@ -232,12 +241,12 @@ static bool processCode(int c, context *s) {
     switch (c) {
 
     case 0:
-        s->curr->line[0] = 0;
+        s->curr->edit[0] = 0;
         s->eof = true;
         return true;
 
     case CONTROL_D:
-        if (strlen(s->curr->line)) {
+        if (strlen(s->curr->edit)) {
             return processCode(BACKSPACE, s);
         } else {
             return processCode(0, s);
@@ -260,12 +269,12 @@ static bool processCode(int c, context *s) {
             char *p = insert;
             memset(insert, 0, sizeof(insert));
 
-            if (s->completion(s->curr->line, s->pos, insert, sizeof(insert) - 1)) {
+            if (s->completion(s->curr->edit, s->pos, insert, sizeof(insert) - 1)) {
                 while (*p) {
                     ins(s, *p);
                     p++;
                 }
-                if (insert[0] && (s->pos == strlen(s->curr->line))) {
+                if (insert[0] && (s->pos == strlen(s->curr->edit))) {
                     ins(s, ' ');
                 }
             } else {
@@ -283,14 +292,14 @@ static bool processCode(int c, context *s) {
         break;
 
     case CONTROL_U:
-        p = s->curr->line + s->pos;
-        q = s->curr->line;
+        p = s->curr->edit + s->pos;
+        q = s->curr->edit;
 
         if (s->clipboard) {
             free(s->clipboard);
         }
-        s->clipboard = strdup(s->curr->line);
-        strncpy(s->clipboard, s->curr->line, s->pos);
+        s->clipboard = strdup(s->curr->edit);
+        strncpy(s->clipboard, s->curr->edit, s->pos);
         s->clipboard[s->pos] = 0;
 
         while (*p) {
@@ -311,24 +320,24 @@ static bool processCode(int c, context *s) {
     case UP_ARROW:
     case CONTROL_P:
         if (s->curr->prev) {
-            s->curr = s->curr->prev;
-            s->pos = strlen(s->curr->line);
+            s->curr = current(s->curr->prev);
+            s->pos = strlen(s->curr->edit);
         }
         break;
 
     case DOWN_ARROW:
     case CONTROL_N:
         if (s->curr->next) {
-            s->curr = s->curr->next;
-            s->pos = strlen(s->curr->line);
+            s->curr = current(s->curr->next);
+            s->pos = strlen(s->curr->edit);
         }
         break;
 
     case RIGHT_ARROW:
     case CONTROL_F:
         s->pos++;
-        if (s->pos > strlen(s->curr->line)) {
-            s->pos = strlen(s->curr->line);
+        if (s->pos > strlen(s->curr->edit)) {
+            s->pos = strlen(s->curr->edit);
         }
         break;
 
@@ -344,9 +353,9 @@ static bool processCode(int c, context *s) {
         if (s->clipboard) {
             free(s->clipboard);
         }
-        s->clipboard = strdup(s->curr->line);
-        strcpy(s->clipboard, s->curr->line + s->pos);
-        s->curr->line[s->pos] = 0;
+        s->clipboard = strdup(s->curr->edit);
+        strcpy(s->clipboard, s->curr->edit + s->pos);
+        s->curr->edit[s->pos] = 0;
         break;
 
     case CONTROL_A:
@@ -356,7 +365,7 @@ static bool processCode(int c, context *s) {
 
     case CONTROL_E:
     case END:
-        s->pos = strlen(s->curr->line);
+        s->pos = strlen(s->curr->edit);
         break;
 
     case PAGE_UP:
@@ -378,7 +387,7 @@ static bool processCode(int c, context *s) {
     case CONTROL_C:
         write(1, "\r\n", 2);
         s->pos = 0;
-        s->curr->line[0] = 0;
+        s->curr->edit[0] = 0;
         break;
 
     case CONTROL_G:
@@ -399,15 +408,15 @@ static bool processCode(int c, context *s) {
         break;
 
     case CONTROL_T:
-        if (strlen(s->curr->line) > 1) {
+        if (strlen(s->curr->edit) > 1) {
             int n = s->pos;
-            if (s->pos == strlen(s->curr->line)) {
+            if (s->pos == strlen(s->curr->edit)) {
                 n--;
             }
             if (n >= 1) {
-                char c = s->curr->line[n];
-                s->curr->line[n] = s->curr->line[n - 1];
-                s->curr->line[n - 1] = c;
+                char c = s->curr->edit[n];
+                s->curr->edit[n] = s->curr->edit[n - 1];
+                s->curr->edit[n - 1] = c;
             }
 
         }
@@ -428,8 +437,8 @@ static bool processCode(int c, context *s) {
             s->pos = s->mark;
             s->mark = tmp;
 
-            if (s->pos > strlen(s->curr->line)) {
-                s->pos = strlen(s->curr->line);
+            if (s->pos > strlen(s->curr->edit)) {
+                s->pos = strlen(s->curr->edit);
             }
         }
         break;
@@ -555,6 +564,48 @@ void UserInput::loadHistory(const char *path) {
 
 }
 
+static void cleanup_history() {
+    entry *h = history;
+    entry *p = NULL;
+    entry *n = NULL;
+
+    char *prev = strdup("");
+
+    while (h) {
+        n = h->prev;
+        if (h->edit) {
+            free(h->edit);
+            h->edit = NULL;
+        }
+
+        if (strlen(h->line) == 0 /*|| strcmp(h->line, prev) == 0*/) {
+            free(h->line);
+
+            if (history == h) {
+                history = h->prev;
+            }
+
+            if (h->next) {
+                h->next->prev = h->prev;
+            }
+
+            if (h->prev) {
+                h->prev->next = h->next;
+            }
+
+            free(h);
+        }
+        else {
+            free(prev);
+            prev = strdup(h->line);
+        }
+
+        h = n;
+    }
+
+    free(prev);
+}
+
 const char *UserInput::getUserInput(const char *prompt, completion_proc completion) {
 
     bool done = false;
@@ -572,7 +623,7 @@ const char *UserInput::getUserInput(const char *prompt, completion_proc completi
 
     memset(&s, 0 , sizeof(s));
     s.prompt = prompt;
-    s.curr = h;
+    s.curr = current(h);
     s.completion = completion;
 
     enterRaw();
@@ -589,29 +640,22 @@ const char *UserInput::getUserInput(const char *prompt, completion_proc completi
 
     exitRaw();
 
-    if(s.clipboard) {
+    if (s.clipboard) {
         free(s.clipboard);
     }
 
-    if (strlen(s.curr->line) == 0) {
-        // Remove from history
-        if (s.curr->prev) {
-            s.curr->prev->next = s.curr->next;
-        }
-        if (s.curr->next) {
-            s.curr->next->prev = s.curr->prev;
-        }
+    history->len = s.curr->len;
+    free(history->line);
+    history->line = strdup(s.curr->edit);
 
-        if (history == s.curr) {
-            history = s.curr->next;
-        }
-
-        free(s.curr->line);
-        free(s.curr);
+    if( strlen(history->line) == 0) {
+        cleanup_history();
         return s.eof ? NULL : "";
     }
 
-    return s.eof ? NULL : s.curr->line;
+    cleanup_history();
+
+    return s.eof ? NULL : (history ? history->line : "");
 }
 
 } // namespace eckit

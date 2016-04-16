@@ -28,7 +28,8 @@ namespace eckit {
 
 StreamParser::StreamParser(std::istream &in, bool comments) :
     in_(in),
-    comments_(comments)
+    comments_(comments),
+    line_(0)
 {
 }
 
@@ -45,6 +46,7 @@ char StreamParser::peek(bool spaces)
         {
             while(c != '\n' && !in_.eof()) {
                 in_.get(c);
+                if(c == '\n') { line_++; }
             }
             if(in_.eof()) {
                 return 0;
@@ -60,6 +62,7 @@ char StreamParser::peek(bool spaces)
         else {
 //            std::cout << "skip(" << c << ")" << std::endl;
             in_.get(c);
+            if(c == '\n') { line_++; }
         }
     }
 }
@@ -73,10 +76,13 @@ char StreamParser::next(bool spaces)
         if(in_.eof())
             throw StreamParser::Error(std::string("StreamParser::next reached eof"));
 
+        if(c == '\n') { line_++; }
+
         if(comments_ && c == '#')
         {
             while(c != '\n' && !in_.eof()) {
                 in_.get(c);
+                if(c == '\n') { line_++; }
             }
             if(in_.eof()) {
                 throw StreamParser::Error(std::string("StreamParser::next reached eof"));
@@ -97,7 +103,7 @@ void StreamParser::consume(char c)
 {
     char n = next();
     if(c != n)
-        throw StreamParser::Error(std::string("StreamParser::consume expecting '") + c + "', got '" + n + "'");
+        throw StreamParser::Error(std::string("StreamParser::consume expecting '") + c + "', got '" + n + "'", line_ + 1);
 }
 
 void StreamParser::consume(const char* p)
@@ -106,10 +112,13 @@ void StreamParser::consume(const char* p)
 }
 
 
-StreamParser::Error::Error(const std::string &what) : what_(what) 
+StreamParser::Error::Error(const std::string &what, size_t line) : Exception(what) 
 {
-    Log::info() << "=== StreamParser::Error -- Backtrace ===" << std::endl;    
-    Log::info() << BackTrace::dump() << std::endl;    
+    if(line) {
+        std::ostringstream oss;
+        oss << "Line: " << line << " " << what;
+        reason(oss.str());
+    }
 }
 
 //-----------------------------------------------------------------------------

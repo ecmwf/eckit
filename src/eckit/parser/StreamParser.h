@@ -18,6 +18,7 @@
 #include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/exception/Exceptions.h"
 
 
 //-----------------------------------------------------------------------------
@@ -30,12 +31,9 @@ class StreamParser : private NonCopyable  {
 
 public: // types
     
-    class Error : public std::exception {
-        std::string what_;
-        virtual const char* what() const  throw() { return what_.c_str(); }
+    class Error : public Exception {
     public:
-        Error(const std::string& what);
-        virtual ~Error() throw() {}
+        Error(const std::string& what, size_t line = 0);
     };
     
 public: // methods
@@ -49,6 +47,9 @@ public: // methods
     void consume(const char*);
 
     void expect(const char*);
+
+protected:
+    size_t line_;
 
 private: // members
 

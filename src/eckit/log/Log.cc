@@ -36,7 +36,12 @@ static void handle_strerror_r(std::ostream& s, int e, char es[], int hs )
 
 static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 {
-    s << " (" << (p ? p : "?") << ", errno = " << e << ") ";
+    if(p) {
+        s << " (" << p << ")";
+    }
+    else {
+        s << " (errno = " << e << ") ";
+    }
 }
 
 #endif

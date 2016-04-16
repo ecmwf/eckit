@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <signal.h>
 
 #include "eckit/cmd/UserInput.h"
 
@@ -82,7 +83,7 @@ static void enterRaw() {
 
     // Re-enable ^C and ^Z
 
-    raw.c_lflag |= ISIG;
+    // raw.c_lflag |= ISIG;
 
     raw.c_cc[VMIN] = 1; // On char at a time
     raw.c_cc[VTIME] = 0;
@@ -108,8 +109,10 @@ static entry *history = NULL;
 
 typedef struct context {
     const char *prompt;
+    char *clipboard;
     entry *curr;
     int pos;
+    int last_pos;
     bool overwrite;
     bool eof;
     bool tab;
@@ -280,6 +283,14 @@ static bool processCode(int c, context *s) {
     case CONTROL_U: {
         char *p = s->curr->line + s->pos;
         char *q = s->curr->line;
+
+        if (s->clipboard) {
+            free(s->clipboard);
+        }
+        s->clipboard = strdup(s->curr->line);
+        strncpy(s->clipboard, s->curr->line, s->pos);
+        s->clipboard[s->pos] = 0;
+
         while (*p) {
             *q++ = *p++;
         }
@@ -330,6 +341,11 @@ static bool processCode(int c, context *s) {
         break;
 
     case CONTROL_K:
+        if (s->clipboard) {
+            free(s->clipboard);
+        }
+        s->clipboard = strdup(s->curr->line);
+        strcpy(s->clipboard, s->curr->line + s->pos);
         s->curr->line[s->pos] = 0;
         break;
 
@@ -359,11 +375,13 @@ static bool processCode(int c, context *s) {
         break;
 
     case CONTROL_C:
+        write(1, "\r\n", 2);
+        s->pos = 0;
+        s->curr->line[0] = 0;
         break;
 
     case CONTROL_G:
         break;
-
 
     case CONTROL_J:
         break;
@@ -381,6 +399,18 @@ static bool processCode(int c, context *s) {
         break;
 
     case CONTROL_T:
+        if (strlen(s->curr->line) > 1) {
+            int n = s->pos;
+            if (s->pos == strlen(s->curr->line)) {
+                n--;
+            }
+            if (n >= 1) {
+                char c = s->curr->line[n];
+                s->curr->line[n] = s->curr->line[n - 1];
+                s->curr->line[n - 1] = c;
+            }
+
+        }
         break;
 
     case CONTROL_V:
@@ -390,16 +420,30 @@ static bool processCode(int c, context *s) {
         break;
 
     case CONTROL_X:
+        if (nextChar() == 'x') {
+            // @todo
+        }
         break;
 
     case CONTROL_Y:
+        if (s->clipboard) {
+            char *p = s->clipboard;
+            while (*p) {
+                ins(s, *p++);
+            }
+        }
         break;
 
     case CONTROL_Z:
+        exitRaw();
+        kill(0, SIGTSTP);
+        enterRaw();
         break;
 
     default:
-        ins(s, c);
+        if (isprint(c)) {
+            ins(s, c);
+        }
         break;
 
     }

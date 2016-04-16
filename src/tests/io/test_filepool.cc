@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
     BOOST_CHECK_EQUAL( pool.capacity(), 3 );
     BOOST_CHECK_EQUAL( pool.size(),     0 );
 
-    DataHandle *const foo = pool.checkout("foo.data");
+    DataHandle* foo = pool.checkout("foo.data");
     foo->write(buffer, buffer.size());
 
     // foo is in use
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
     BOOST_CHECK_EQUAL( pool.usage(), 1 );
     BOOST_CHECK_EQUAL( pool.size(),  0 );
 
-    DataHandle *const bar = pool.checkout("bar.data");
+    DataHandle* bar = pool.checkout("bar.data");
     bar->write(buffer, buffer.size());
 
     // foo + bar are in use
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
     BOOST_CHECK_EQUAL( pool.usage(), 0 );
     BOOST_CHECK_EQUAL( pool.size(),  2 );
 
-    DataHandle *const foo2 = pool.checkout("foo.data");
+    DataHandle* foo2 = pool.checkout("foo.data");
     foo2->write(buffer, buffer.size());
 
     // foo in use again, bar in pool
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
     BOOST_CHECK_EQUAL( pool.usage(), 0 );
     BOOST_CHECK_EQUAL( pool.size(),  2 );
 
-    DataHandle *const baz = pool.checkout("baz.data");
+    DataHandle* baz = pool.checkout("baz.data");
     baz->write(buffer, buffer.size());
 
     // foo + bar in pool, baz in use
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
     BOOST_CHECK_EQUAL( pool.usage(), 0 );
     BOOST_CHECK_EQUAL( pool.size(),  3 );
 
-    DataHandle *const marco = pool.checkout("marco.data");
+    DataHandle* marco = pool.checkout("marco.data");
     marco->write(buffer, buffer.size());
 
     // baz + foo + bar in pool, marco in use
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
 
     std::cout << pool << std::endl;
 
-    DataHandle *const polo = pool.checkout("polo.data");
+    DataHandle* polo = pool.checkout("polo.data");
     polo->write(buffer, buffer.size());
 
     // marco in pool, polo is in use

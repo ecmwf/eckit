@@ -15,15 +15,37 @@ static bool inited = false;
 
 
 enum {
-    ESC = 0x1b,
-    BACKSPACE = 0x7f,
-    TAB = 9,
-    CR = 13,
+    ESC = 0x1B,
+    BACKSPACE = 0x7F,
+    TAB = 0x9,
+    CR = 0XD,
     CONTROL_A = 0x1,
+    CONTROL_B = 0x2,
+    CONTROL_C = 0x3,
     CONTROL_D = 0x4,
     CONTROL_E = 0x5,
+    CONTROL_F = 0x6,
+    CONTROL_G = 0x7,
+    CONTROL_H = 0x8,
+    CONTROL_I = 0x9,
+    CONTROL_J = 0xA,
     CONTROL_K = 0xB,
+    CONTROL_L = 0xC,
+    CONTROL_M = 0xD,
+    CONTROL_N = 0xE,
+    CONTROL_O = 0xF,
+    CONTROL_P = 0x10,
+    CONTROL_Q = 0x11,
+    CONTROL_R = 0x12,
+    CONTROL_S = 0x13,
+    CONTROL_T = 0x14,
     CONTROL_U = 0x15,
+    CONTROL_V = 0x16,
+    CONTROL_W = 0x17,
+    CONTROL_X = 0x18,
+    CONTROL_Y = 0x19,
+    CONTROL_Z = 0x1A,
+
     // Virtual codes
     UP_ARROW = 1000,
     DOWN_ARROW = 1001,
@@ -198,19 +220,27 @@ static void esc(context *s) {
 
 static bool processCode(int c, context *s) {
 
-    if(c != TAB) {
+    if (c != TAB) {
         s->tab = false;
     }
 
     switch (c) {
 
     case 0:
-    case CONTROL_D:
         s->curr->line[0] = 0;
         s->eof = true;
         return true;
 
+    case CONTROL_D:
+        if (strlen(s->curr->line)) {
+            return processCode(BACKSPACE, s);
+        } else {
+            return processCode(0, s);
+        }
+        break;
+
     case BACKSPACE:
+    case CONTROL_H:
         del(s);
         break;
 
@@ -220,28 +250,26 @@ static bool processCode(int c, context *s) {
         break;
 
     case TAB:
-        if(s->completion) {
+        if (s->completion) {
             char insert[10240];
             char *p = insert;
             memset(insert, 0, sizeof(insert));
 
-            if(s->completion(s->curr->line, s->pos, insert, sizeof(insert)-1)) {
-                while(*p) {
+            if (s->completion(s->curr->line, s->pos, insert, sizeof(insert) - 1)) {
+                while (*p) {
                     ins(s, *p);
                     p++;
                 }
-                if(insert[0] && (s->pos == strlen(s->curr->line))) {
+                if (insert[0] && (s->pos == strlen(s->curr->line))) {
                     ins(s, ' ');
                 }
-            }
-            else {
-                if(s->tab) { // Second TAB
+            } else {
+                if (s->tab) { // Second TAB
                     write(1, "\r\n", 2);
                     write(1, insert, strlen(insert));
                     write(1, "\r\n", 2);
                     s->tab = false;
-                }
-                else {
+                } else {
                     s->tab = true;
                 }
             }
@@ -249,16 +277,28 @@ static bool processCode(int c, context *s) {
         }
         break;
 
-    case CONTROL_U:
-        s->pos = 0;
-        s->curr->line[0] = 0;
-        break;
+    case CONTROL_U: {
+        char *p = s->curr->line + s->pos;
+        char *q = s->curr->line;
+        while (*p) {
+            *q++ = *p++;
+        }
+        *q = 0;
+    }
+    s->pos = 0;
+        // s->curr->line[0] = 0;
+    break;
 
     case ESC:
         esc(s);
         break;
 
+    case CONTROL_L:
+        write(1, "\033[2J\033[H", 7);
+        break;
+
     case UP_ARROW:
+    case CONTROL_P:
         if (s->curr->prev) {
             s->curr = s->curr->prev;
             s->pos = strlen(s->curr->line);
@@ -266,7 +306,7 @@ static bool processCode(int c, context *s) {
         break;
 
     case DOWN_ARROW:
-
+    case CONTROL_N:
         if (s->curr->next) {
             s->curr = s->curr->next;
             s->pos = strlen(s->curr->line);
@@ -274,6 +314,7 @@ static bool processCode(int c, context *s) {
         break;
 
     case RIGHT_ARROW:
+    case CONTROL_F:
         s->pos++;
         if (s->pos > strlen(s->curr->line)) {
             s->pos = strlen(s->curr->line);
@@ -281,6 +322,7 @@ static bool processCode(int c, context *s) {
         break;
 
     case LEFT_ARROW:
+    case CONTROL_B:
         s->pos--;
         if (s->pos < 0) {
             s->pos = 0;
@@ -316,6 +358,46 @@ static bool processCode(int c, context *s) {
         return true;
         break;
 
+    case CONTROL_C:
+        break;
+
+    case CONTROL_G:
+        break;
+
+
+    case CONTROL_J:
+        break;
+
+    case CONTROL_O:
+        break;
+
+    case CONTROL_Q:
+        break;
+
+    case CONTROL_R:
+        break;
+
+    case CONTROL_S:
+        break;
+
+    case CONTROL_T:
+        break;
+
+    case CONTROL_V:
+        break;
+
+    case CONTROL_W:
+        break;
+
+    case CONTROL_X:
+        break;
+
+    case CONTROL_Y:
+        break;
+
+    case CONTROL_Z:
+        break;
+
     default:
         ins(s, c);
         break;
@@ -328,7 +410,7 @@ void UserInput::printHistory(int max) {
     entry *last = NULL;
     entry *e;
 
-     if (max == 0) {
+    if (max == 0) {
         max = INT_MAX;
     }
 
@@ -418,7 +500,7 @@ void UserInput::loadHistory(const char *path) {
 
 }
 
-const char * UserInput::getUserInput(const char *prompt, completion_proc completion) {
+const char *UserInput::getUserInput(const char *prompt, completion_proc completion) {
 
     bool done = false;
     context s;
@@ -452,22 +534,22 @@ const char * UserInput::getUserInput(const char *prompt, completion_proc complet
 
     exitRaw();
 
-    if(strlen(s.curr->line) == 0) {
+    if (strlen(s.curr->line) == 0) {
         // Remove from history
-        if(s.curr->prev) {
+        if (s.curr->prev) {
             s.curr->prev->next = s.curr->next;
         }
-        if(s.curr->next) {
+        if (s.curr->next) {
             s.curr->next->prev = s.curr->prev;
         }
 
-        if(history == s.curr) {
+        if (history == s.curr) {
             history = s.curr->next;
         }
 
         free(s.curr->line);
         free(s.curr);
-        return s.eof ? NULL: "";
+        return s.eof ? NULL : "";
     }
 
     return s.eof ? NULL : s.curr->line;

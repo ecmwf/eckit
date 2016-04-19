@@ -12,6 +12,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/StringTools.h"
 #include "eckit/ecml/parser/Request.h"
+#include "eckit/cmd/UserInput.h"
 
 #include "eckit/ecml/core/ExecutionContext.h"
 #include "eckit/ecml/core/Environment.h"
@@ -44,19 +45,18 @@ string REPLHandler::historyFile()
 
 void REPLHandler::readHistory()
 {
+    eckit::UserInput::loadHistory(historyFile().c_str());
 }
 
 
 void REPLHandler::writeHistory()
 {
+    eckit::UserInput::saveHistory(historyFile().c_str());
 }
 
 string REPLHandler::readLine()
 {
-    string r;
-    cout << "ecml> ";
-    getline (cin, r);
-    return r;
+    return eckit::UserInput::getUserInput("ecml> ");
 }
 
 void REPLHandler::repl(ExecutionContext& context)

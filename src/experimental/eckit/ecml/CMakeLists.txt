@@ -126,7 +126,9 @@ ecbuild_add_library( TARGET             eckit_ecml
                      INSTALL_HEADERS    ALL
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/ecml
                      SOURCES            ${eckit_ecml_srcs}
-                     LIBS               eckit )
+                     LIBS               eckit 
+                                        eckit_cmd # for UserInput
+                                        )
 
 ecbuild_add_executable( TARGET eckit_ecml_test
                         SOURCES tests/ecml_test.cc

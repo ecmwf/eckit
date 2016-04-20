@@ -52,6 +52,9 @@ public:
     Cell* valueOrDefault(const std::string& keyword, Cell* defaultValue) const;
     std::string valueAsString(const std::string& keyword, const std::string& defaultValue) const;
 
+    // Find names of variables matching regular expression
+    void lookupVariables(const std::string&, std::vector<std::string>& );
+
     std::ostream& dot(std::ostream&, const std::string&, bool, bool) const;
 
     std::string str() const;

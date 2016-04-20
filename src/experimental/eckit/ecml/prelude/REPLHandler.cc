@@ -26,6 +26,8 @@ using namespace std;
 
 namespace eckit {
 
+ExecutionContext* REPLHandler::context_ (0);
+
 REPLHandler::REPLHandler(const string& name)
 : SpecialFormHandler(name)
 {}
@@ -54,9 +56,63 @@ void REPLHandler::writeHistory()
     eckit::UserInput::saveHistory(historyFile().c_str());
 }
 
-string REPLHandler::readLine()
+bool notInWord(char p)
 {
-    return eckit::UserInput::getUserInput("ecml> ");
+    return p == ' '
+        || p == '\t'
+        || p == ','
+        || p == '('
+        || p == ')'
+        || p == '/'
+        ;
+}
+
+bool REPLHandler::completion(const char* line, int pos, char* insert, int insertmax)
+{
+    char *p (const_cast<char*>(line) + pos);
+    while (p != line && !notInWord(*(p - 1)))
+        --p;
+    const string prefix (p);
+
+    ASSERT(REPLHandler::context_);
+
+    const vector<string> matchedVars (REPLHandler::context_->environment().lookupVariables("^" + prefix));
+    const set<string> matched (matchedVars.begin(), matchedVars.end());
+
+    if (matched.empty())
+        return true;
+
+    if (matched.size() == 1)
+    {
+        const string& ins (*matched.begin());
+        for (size_t i(prefix.size()), ii(0); ii < insertmax && i < ins.size(); ++i)
+            insert[ii++] = ins[i];
+
+        return true;
+    }
+
+    size_t i(0);
+    for (set<string>::const_iterator it (matched.begin()); it != matched.end(); ++it)
+    {
+        const string& ins (*it);
+        for (size_t j(0); i < insertmax && j < ins.size(); ++j)
+            insert[i++] = ins[j];
+
+        if (i < insertmax)
+            insert[i++] = ' ';
+    }
+
+    return false;
+}
+
+string REPLHandler::readLine(ExecutionContext& context)
+{
+    // It would be nicer to pass it as a third param to getUserInput
+    REPLHandler::context_ = &context; 
+    const char* line (eckit::UserInput::getUserInput("ecml> ", eckit::UserInput::completion_proc (&REPLHandler::completion)));
+    if (line == 0)
+        return "quit";
+    return line;
 }
 
 void REPLHandler::repl(ExecutionContext& context)
@@ -65,7 +121,7 @@ void REPLHandler::repl(ExecutionContext& context)
     string cmd; 
     while (true)
     {
-        cmd += readLine();
+        cmd += readLine(context);
 
         if (cin.eof()
             || cmd == "quit"

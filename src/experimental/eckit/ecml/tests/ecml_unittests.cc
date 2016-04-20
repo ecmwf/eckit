@@ -17,6 +17,7 @@
 #include "eckit/runtime/Context.h"
 
 #include "eckit/ecml/core/ExecutionContext.h"
+#include "eckit/ecml/core/Environment.h"
 #include "eckit/ecml/core/Interpreter.h"
 #include "eckit/ecml/core/Module.h"
 #include "eckit/ecml/prelude/PrintHandler.h"
@@ -168,6 +169,20 @@ void ECMLUnitTests::runTests()
     PartFileHandle* pfh (dynamic_cast<PartFileHandle*>(dh));
     ASSERT(pfh);
     context.execute("system, values = 'rm -f test_data_for_ecml_part_file_testing.txt'");
+
+
+    context.execute("let,big_foobar=0/0/0");
+
+    context.execute("let,a=1");
+    context.execute("let,b=2");
+    context.execute("let,ab=12");
+    context.execute("let,abba=12221");
+
+    vector<string> vars (context.environment().lookupVariables("a"));
+    ASSERT(vars.size() >= 3); // we have variables from the prelude and possibly other libs in the environment
+    ASSERT(vars[0] == "abba");
+    ASSERT(vars[1] == "ab");
+    ASSERT(vars[2] == "a");
 }
 
 int main(int argc,char **argv)

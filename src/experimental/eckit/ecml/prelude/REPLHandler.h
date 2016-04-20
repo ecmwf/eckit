@@ -29,12 +29,15 @@ public:
     static void repl(ExecutionContext&);
 
 private:
-    static std::string readLine();
+    static std::string readLine(ExecutionContext&);
     static void readHistory();
     static std::string historyFile();
     static void writeHistory();
+    static bool completion(const char*, int, char*, int);
 
     static bool showResultGraph(ExecutionContext&);
+
+    static ExecutionContext* context_;
 };
 
 } // namespace eckit

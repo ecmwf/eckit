@@ -302,24 +302,9 @@ LocalPathName& LocalPathName::tidy()
 	if(path_.length() == 0) return *this;
 
 	if(path_[0] == '~')
-	{
-        if(path_.length() > 1) {
-            if(path_[1] != '/') {
-                std::string s;
-                size_t j = 1;
-                while(j < path_.length() && path_[j] != '/') {
-                    s += path_[j];
-                    j++;
-                }
-                path_ =  Context::instance().configHome(s) + "/" + path_.substr(j);
-            } else {
-                path_ =  Context::instance().home() + "/" + path_.substr(1);
-            }
-        }
-        else {
-            path_ =  Context::instance().home() + "/" + path_.substr(1);
-        }
-	}
+    {
+        path_ =  Context::instance().home() + "/" + path_.substr(1);
+    }
 
 
 	bool more = true;

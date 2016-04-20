@@ -78,7 +78,6 @@ public: // methods
     //
 
     PathName commandPath() const; // Full path to current command
-    PathName configHome(const std::string& name) const;
 
 
     // From Configurable
@@ -97,7 +96,6 @@ private: // methods
     // From Configurable
 
 	virtual std::string kind() const  { return "Context"; }
-    PathName configHome(bool&, const std::vector<const char*>& dirs) const;
 
 protected:
 
@@ -114,16 +112,6 @@ protected:
     std::string  runName_;      ///< name of running application
     std::string  displayName_;  ///< name to be displayed of running application
 
-};
-
-class RegisterConfigHome {
-    friend class Context;
-    RegisterConfigHome* next_;
-    bool first_;
-    const char* name_;
-    std::vector< const char* > dirs_;
-public:
-    RegisterConfigHome(const char* name, size_t ndirs, const char* dir, ...);  // APPNAME, #DIRS, DIR1, ...
 };
 
 //----------------------------------------------------------------------------------------------------------------------

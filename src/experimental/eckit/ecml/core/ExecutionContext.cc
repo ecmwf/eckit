@@ -129,9 +129,8 @@ std::vector<std::string> ExecutionContext::getValueAsList(const std::string& key
 
     Request evaluated (interpreter().eval(v, *this));
     for (Request p(evaluated); p; p = p->rest())
-    {
-        r.push_back(p->value()->text());
-    }
+        if (p->value())
+            r.push_back(p->value()->text());
 
     return r;
 }

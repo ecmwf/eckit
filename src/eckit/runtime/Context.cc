@@ -8,22 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <string>
-#include <cstdarg>
 #include <sys/param.h>
+#include <unistd.h>
 
 #include "Context.h"
 
-#include "eckit/eckit_config.h"
-#include "eckit/log/Log.h"
-#include "eckit/os/BackTrace.h"
+#include "eckit/parser/Tokenizer.h"
 #include "eckit/runtime/ContextBehavior.h"
 #include "eckit/runtime/StandardBehavior.h"
-#include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"
-#include "eckit/thread/ThreadSingleton.h"
-#include "eckit/parser/Tokenizer.h"
 
 namespace eckit {
 

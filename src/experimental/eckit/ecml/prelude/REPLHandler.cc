@@ -8,6 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <termios.h>
+#include <unistd.h>
+#include <limits.h>
+
 #include "eckit/types/Types.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/StringTools.h"
@@ -67,8 +73,22 @@ bool notInWord(char p)
         ;
 }
 
+void REPLHandler::describe(std::ostream& out, const string& v, Cell* o)
+{
+    stringstream ss;
+    ss << v << ": " << (o ? o->str() : "NULL");
+
+    const string description (ss.str());
+
+    ::write(1, "\r\n", 2);
+    ::write(1, description.c_str(), description.size());
+    ::write(1, "\r\n", 2);
+}
+
 bool REPLHandler::completion(const char* line, int pos, char* insert, int insertmax)
 {
+    ExecutionContext& context (*REPLHandler::context_); // it would be nice to have it passed as a parameter here
+
     char *p (const_cast<char*>(line) + pos);
     while (p != line && !notInWord(*(p - 1)))
         --p;
@@ -76,7 +96,7 @@ bool REPLHandler::completion(const char* line, int pos, char* insert, int insert
 
     ASSERT(REPLHandler::context_);
 
-    const vector<string> matchedVars (REPLHandler::context_->environment().lookupVariables("^" + prefix));
+    const vector<string> matchedVars (context.environment().lookupVariables("^" + prefix));
     const set<string> matched (matchedVars.begin(), matchedVars.end());
 
     if (matched.empty())
@@ -84,9 +104,11 @@ bool REPLHandler::completion(const char* line, int pos, char* insert, int insert
 
     if (matched.size() == 1)
     {
-        const string& ins (*matched.begin());
-        for (size_t i(prefix.size()), ii(0); ii < insertmax && i < ins.size(); ++i)
-            insert[ii++] = ins[i];
+        const string& match (*matched.begin());
+        describe(cout, match, context.environment().lookupNoThrow(match)); 
+
+        for (size_t i(prefix.size()), ii(0); ii < insertmax && i < match.size(); ++i)
+            insert[ii++] = match[i];
 
         return true;
     }

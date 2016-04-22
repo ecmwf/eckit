@@ -34,6 +34,7 @@ private:
     static std::string historyFile();
     static void writeHistory();
     static bool completion(const char*, int, char*, int);
+    static void describe(std::ostream&, const std::string&, eckit::Cell*);
 
     static bool showResultGraph(ExecutionContext&);
 

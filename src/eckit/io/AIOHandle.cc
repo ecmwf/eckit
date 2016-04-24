@@ -205,7 +205,6 @@ void AIOHandle::flush()
                     os << "AIOHandle: only " << len << " bytes written instead of " << len_[n];
                     throw WriteError(os.str());
                 }
-                break;
             }
             else
             {

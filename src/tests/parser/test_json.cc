@@ -69,15 +69,13 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value )
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_set )
-{    
+{
     istringstream in("[ \"a\" , \"b\", \"c\" ]" );
     JSONParser p(in);
     Value v = p.parse();
 
 //    Log::info() << "json " << v << std::endl;
 
-    StringSet s;
-    JSONParser::toStrSet(v, s);
 
     BOOST_TEST_MESSAGE( v );
 
@@ -104,8 +102,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_map )
 
 //    Log::info() << "json " << v << std::endl;
 
-    StringDict d;
-    JSONParser::toStrDict(v,d);
 
     BOOST_TEST_MESSAGE( v );
 

@@ -27,12 +27,8 @@ class JSONParser : public StreamParser {
 public: // methods
 
     JSONParser(std::istream& in);
-    
+
     Value parse();
-    
-    static void toStrDict(const Value&, StringDict& );
-    static void toStrSet(const Value&, eckit::StringSet& );
-    static void toDictStrSet(const Value&, std::map<std::string, eckit::StringSet>& );
 
 private: // methods
 
@@ -44,7 +40,7 @@ private: // methods
     Value parseArray();
     Value parseString();
     Value parseNumber();
-    
+
     void parseKeyValue(std::map<Value, Value> &);
 
 };

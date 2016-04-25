@@ -388,6 +388,8 @@ void LocalPathName::match(const LocalPathName& root,std::vector<LocalPathName>& 
 	LocalPathName dir   = root.dirName();
 	std::string   base  = root.baseName();
 
+//    Log::info() << "dir  = " << dir << std::endl;
+//    Log::info() << "base = " << base << std::endl;
 
 	// all those call should be members of LocalPathName
 
@@ -425,8 +427,12 @@ void LocalPathName::match(const LocalPathName& root,std::vector<LocalPathName>& 
 		if(e == 0)
 			break;
 
+//        Log::info() << "e->d_name = " << e->d_name << std::endl;
+
 		if(re.match(e->d_name))
 		{
+//            Log::info() << "match !!! ---> " << e->d_name << std::endl;
+
 			LocalPathName path = std::string(dir) + std::string("/") + std::string(e->d_name);
 			result.push_back(path);
 		}

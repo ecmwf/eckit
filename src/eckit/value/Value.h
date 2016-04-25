@@ -343,6 +343,8 @@ Value makeVectorValue( const std::list<T>& l )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+template <> struct VectorPrintSelector<Value> { typedef VectorPrintSimple selector; };
+
 } // namespace eckit
 
 #endif

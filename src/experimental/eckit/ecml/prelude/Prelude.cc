@@ -42,7 +42,6 @@
 #include "NullHandler.h"
 #include "RunHandler.h"
 #include "REPLHandler.h"
-#include "DictionaryHandler.h"
 #include "RangeHandler.h"
 #include "ForHandler.h"
 #include "GlobHandler.h"
@@ -85,7 +84,6 @@ void Prelude::importInto(ExecutionContext& context)
     static NullHandler null("null");
     static RunHandler run("run");
     static REPLHandler repl("repl");
-    static DictionaryHandler dictionary("dictionary");
     static RangeHandler range("range");
     static ForHandler _for("for");
     static GlobHandler _glob("glob");
@@ -120,7 +118,6 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("getenv", _getenv);
     context.registerHandler("join_strings", join_strings);
     context.registerHandler("null", null);
-    context.registerHandler("dictionary", dictionary);
     context.registerHandler("range", range);
     context.registerHandler("glob", _glob);
     context.registerHandler("read_text_file", read_text_file);

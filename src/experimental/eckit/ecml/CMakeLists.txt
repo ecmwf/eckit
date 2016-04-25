@@ -84,8 +84,6 @@ prelude/RunHandler.h
 prelude/RunHandler.cc
 prelude/REPLHandler.h
 prelude/REPLHandler.cc
-prelude/DictionaryHandler.h
-prelude/DictionaryHandler.cc
 prelude/RangeHandler.h
 prelude/RangeHandler.cc
 prelude/ForHandler.cc

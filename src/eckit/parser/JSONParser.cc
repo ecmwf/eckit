@@ -289,45 +289,7 @@ Value JSONParser::parse()
     if(c != 0)
         throw StreamParser::Error(std::string("JSONTokenizer::parse extra char '") + c + "'");
     return v;
-    
-}
 
-void JSONParser::toStrDict( const Value& json, StringDict& dict )
-{
-    if( json.isMap() )
-    {
-        ValueMap m ( json );
-
-        for( ValueMap::iterator i = m.begin(); i != m.end(); ++i ) {
-            dict[ i->first ] = std::string(i->second);
-        }
-    }
-}
-
-void JSONParser::toStrSet( const Value& json, StringSet& s )
-{
-    if( json.isList() )
-    {
-        ValueList v = json.as<ValueList>();
-
-        for( ValueList::iterator i = v.begin(); i != v.end(); ++i ) {
-            s.insert( std::string(*i) );
-        }
-    }
-}
-
-void JSONParser::toDictStrSet(const Value& json, std::map<std::string, StringSet>& dict)
-{
-    if( json.isMap() )
-    {
-        ValueMap m ( json );
-
-        for( ValueMap::iterator i = m.begin(); i != m.end(); ++i ) {
-            std::string k( i->first );
-            Value lst = i->second;
-            toStrSet(lst, dict[k]);
-        }
-    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

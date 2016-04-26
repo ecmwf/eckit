@@ -138,3 +138,8 @@ ecbuild_add_executable( TARGET eckit_ecml_unittests
 
 add_subdirectory( tests )
 
+configure_file( prelude/prelude.ecml ${CMAKE_BINARY_DIR}/include/prelude.ecml COPYONLY)
+
+install(FILES       ${CMAKE_CURRENT_SOURCE_DIR}/prelude/prelude.ecml
+        DESTINATION ${INSTALL_INCLUDE_DIR} )
+

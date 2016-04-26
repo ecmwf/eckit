@@ -8,28 +8,24 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   LinearAlgebraMKL.h
+/// @file   LinearAlgebraGeneric.h
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_la_LinearAlgebraMKL_h
-#define eckit_la_LinearAlgebraMKL_h
+#ifndef eckit_la_LinearAlgebraGeneric_h
+#define eckit_la_LinearAlgebraGeneric_h
 
-#include "eckit/eckit_config.h"
-
-#ifdef ECKIT_HAVE_MKL
-
-#include "eckit/la/LinearAlgebra.h"
+#include "eckit/linalg/LinearAlgebra.h"
 
 namespace eckit {
-namespace la {
+namespace linalg {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraMKL : public LinearAlgebra {
+class LinearAlgebraGeneric : public LinearAlgebra {
 
 public:
-    LinearAlgebraMKL();
+    LinearAlgebraGeneric();
 
 private:
 
@@ -48,9 +44,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-}  // namespace la
+}  // namespace linalg
 } // namespace eckit
-
-#endif // HAVE_MKL
 
 #endif

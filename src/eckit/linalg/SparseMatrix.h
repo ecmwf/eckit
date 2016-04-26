@@ -17,15 +17,15 @@
 
 #include <vector>
 
-#include "eckit/la/types.h"
-#include "eckit/la/Triplet.h"
+#include "eckit/linalg/types.h"
+#include "eckit/linalg/Triplet.h"
 
 namespace eckit {
 
 class Stream;
 class PathName;
 
-namespace la {
+namespace linalg {
 
 //-----------------------------------------------------------------------------
 
@@ -170,7 +170,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-}  // namespace la
+}  // namespace linalg
 } // namespace eckit
 
 #endif

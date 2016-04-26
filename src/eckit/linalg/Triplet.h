@@ -15,10 +15,10 @@
 #ifndef eckit_la_Triplet_h
 #define eckit_la_Triplet_h
 
-#include "eckit/la/types.h"
+#include "eckit/linalg/types.h"
 
 namespace eckit {
-namespace la {
+namespace linalg {
 
 //-----------------------------------------------------------------------------
 
@@ -57,7 +57,7 @@ protected:
 
 //-----------------------------------------------------------------------------
 
-}  // namespace la
+}  // namespace linalg
 } // namespace eckit
 
 #endif

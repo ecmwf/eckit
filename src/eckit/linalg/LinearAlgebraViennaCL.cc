@@ -20,15 +20,15 @@
 #include <viennacl/linalg/inner_prod.hpp>
 #include <viennacl/linalg/prod.hpp>
 
-#include "eckit/la/LinearAlgebraViennaCL.h"
-#include "eckit/la/SparseMatrix.h"
-#include "eckit/la/Matrix.h"
-#include "eckit/la/Vector.h"
+#include "eckit/linalg/LinearAlgebraViennaCL.h"
+#include "eckit/linalg/SparseMatrix.h"
+#include "eckit/linalg/Matrix.h"
+#include "eckit/linalg/Vector.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
-namespace la {
+namespace linalg {
 
 typedef viennacl::vector<Scalar> vec;
 typedef viennacl::matrix<Scalar, viennacl::column_major> mat;
@@ -115,7 +115,7 @@ static LinearAlgebraViennaCL LinearAlgebraViennaCL;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace la
+}  // namespace linalg
 } // namespace eckit
 
 #endif  // ECKIT_HAVE_VIENNACL

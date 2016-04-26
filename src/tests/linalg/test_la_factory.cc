@@ -19,11 +19,11 @@
 #include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 
-#include "eckit/la/LinearAlgebra.h"
+#include "eckit/linalg/LinearAlgebra.h"
 
 //-----------------------------------------------------------------------------
 
-using namespace eckit::la;
+using namespace eckit::linalg;
 
 namespace eckit {
 namespace test {

@@ -18,11 +18,11 @@
 #include <string>
 
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/la/types.h"
+#include "eckit/linalg/types.h"
 
 
 namespace eckit {
-namespace la {
+namespace linalg {
 
 //-----------------------------------------------------------------------------
 
@@ -92,7 +92,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-}  // namespace la
+}  // namespace linalg
 } // namespace eckit
 
 #endif

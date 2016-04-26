@@ -10,15 +10,15 @@
 
 //-----------------------------------------------------------------------------
 
-#include "eckit/la/LinearAlgebraGeneric.h"
-#include "eckit/la/Matrix.h"
-#include "eckit/la/SparseMatrix.h"
-#include "eckit/la/Vector.h"
+#include "eckit/linalg/LinearAlgebraGeneric.h"
+#include "eckit/linalg/Matrix.h"
+#include "eckit/linalg/SparseMatrix.h"
+#include "eckit/linalg/Vector.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
-namespace la {
+namespace linalg {
 
 namespace {
 
@@ -119,5 +119,5 @@ static LinearAlgebraGeneric linearAlgebraGeneric;
 
 //-----------------------------------------------------------------------------
 
-} // namespace la
+} // namespace linalg
 } // namespace eckit

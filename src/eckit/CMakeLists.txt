@@ -605,5 +605,5 @@ if( HAVE_ECKIT_CMD )
   add_subdirectory( cmd )
 endif()
 
+add_subdirectory( linalg )
 add_subdirectory( web )
-

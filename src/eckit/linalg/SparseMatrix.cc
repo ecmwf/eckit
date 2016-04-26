@@ -20,10 +20,10 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/FileStream.h"
 
-#include "eckit/la/SparseMatrix.h"
+#include "eckit/linalg/SparseMatrix.h"
 
 namespace eckit {
-namespace la {
+namespace linalg {
 
 #ifdef EC_LITTLE_ENDIAN
 static const bool littleEndian = true;
@@ -140,7 +140,7 @@ SparseMatrix& SparseMatrix::transpose() {
 
 //-----------------------------------------------------------------------------
 
-SparseMatrix& SparseMatrix::prune(la::Scalar val) {
+SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
     ScalarStorage v;
     IndexStorage inner;
     Index nnz = 0;
@@ -239,5 +239,5 @@ void SparseMatrix::load(const eckit::PathName &path)  {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace la
+}  // namespace linalg
 } // namespace eckit

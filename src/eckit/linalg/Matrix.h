@@ -17,13 +17,13 @@
 
 #include <vector>
 
-#include "eckit/la/types.h"
+#include "eckit/linalg/types.h"
 
 namespace eckit {
 
 class Stream;
 
-namespace la {
+namespace linalg {
 
 //-----------------------------------------------------------------------------
 
@@ -102,7 +102,7 @@ Stream& operator<<(Stream&, const Matrix&);
 
 //-----------------------------------------------------------------------------
 
-}  // namespace la
+}  // namespace linalg
 } // namespace eckit
 
 #endif

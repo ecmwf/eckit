@@ -8,28 +8,28 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   LinearAlgebraEigen.h
+/// @file   LinearAlgebraViennaCL.h
 /// @author Florian Rathgeber
-/// @date   June 2015
+/// @date   July 2015
 
-#ifndef eckit_la_LinearAlgebraEigen_h
-#define eckit_la_LinearAlgebraEigen_h
+#ifndef eckit_la_LinearAlgebraViennaCL_h
+#define eckit_la_LinearAlgebraViennaCL_h
 
 #include "eckit/eckit_config.h"
 
-#ifdef ECKIT_HAVE_EIGEN
+#ifdef ECKIT_HAVE_VIENNACL
 
-#include "eckit/la/LinearAlgebra.h"
+#include "eckit/linalg/LinearAlgebra.h"
 
 namespace eckit {
-namespace la {
+namespace linalg {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraEigen : public LinearAlgebra {
+class LinearAlgebraViennaCL : public LinearAlgebra {
 
 public:
-    LinearAlgebraEigen();
+    LinearAlgebraViennaCL();
 
 private:
 
@@ -43,14 +43,13 @@ private:
     virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const;
 
     virtual void print(std::ostream&) const;
-
 };
 
 //-----------------------------------------------------------------------------
 
-}  // namespace la
+}  // namespace linalg
 } // namespace eckit
 
-#endif  // ECKIT_HAVE_EIGEN
+#endif  // ECKIT_HAVE_VIENNACL
 
 #endif

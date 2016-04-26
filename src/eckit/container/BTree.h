@@ -57,7 +57,9 @@ public:
 
     bool get(const K&, V&);
     bool set(const K&, const V&);
-    void range(const K& key1, const K& key2, std::vector< result_type >& result);
+
+    template<class T>
+    void range(const K& key1, const K& key2, T& result);
 
     bool remove(const K&);
 
@@ -279,7 +281,9 @@ private:
 
     void lockRange(off_t start,off_t len,int cmd,int type);
     bool search(unsigned long page, const K&, V&) const;
-    void search(unsigned long page, const K& key1, const K& key2, std::vector< result_type >& result);
+
+    template<class T>
+    void search(unsigned long page, const K& key1, const K& key2, T& result);
 
 
     void splitRoot();

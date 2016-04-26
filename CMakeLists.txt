@@ -207,7 +207,7 @@ if( HAVE_EXPERIMENTAL )
 
   list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
 
-  list( APPEND ECKIT_LIBRARIES eckit_la eckit_geometry eckit_maths )
+  list( APPEND ECKIT_LIBRARIES eckit_linalg eckit_geometry eckit_maths )
 
   if( HAVE_EIGEN )
       if( ECKIT_CONTRIB_EIGEN )

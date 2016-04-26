@@ -10,13 +10,13 @@ ecbuild_add_test( TARGET   eckit_test_la_factory
                   ARGS     --log_level=message
                   BOOST
                   SOURCES  test_la_factory.cc
-                  LIBS     eckit_la )
+                  LIBS     eckit_linalg )
 
 ecbuild_add_test( TARGET   eckit_test_la_linalg
                   ARGS     --log_level=message
                   BOOST
                   SOURCES  test_la_linalg.cc util.h
-                  LIBS     eckit_la )
+                  LIBS     eckit_linalg )
 
 ecbuild_add_test( TARGET     eckit_test_la_linalg_armadillo
                   BOOST
@@ -54,7 +54,7 @@ ecbuild_add_test( TARGET   eckit_test_la_sparse
                   ARGS     --log_level=message
                   BOOST
                   SOURCES  test_la_sparse.cc util.h
-                  LIBS     eckit_la )
+                  LIBS     eckit_linalg )
 
 ecbuild_add_test( TARGET     eckit_test_la_sparse_armadillo
                   BOOST
@@ -92,4 +92,4 @@ ecbuild_add_test( TARGET   eckit_test_la_streaming
                   ARGS     --log_level=message
                   BOOST
                   SOURCES  test_la_streaming.cc util.h
-                  LIBS     eckit_la )
+                  LIBS     eckit_linalg )

@@ -23,7 +23,7 @@ Vector.cc
 Vector.h
 )
 
-ecbuild_add_library( TARGET             eckit_la
+ecbuild_add_library( TARGET             eckit_linalg
                      INSTALL_HEADERS    ALL
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/linalg
                      SOURCES            ${eckit_la_srcs}
@@ -37,5 +37,5 @@ ecbuild_add_library( TARGET             eckit_la
                                         "${MKL_LIBRARIES}" )
 
 if (CUDA_FOUND)
-cuda_add_cublas_to_target( eckit_la )
+cuda_add_cublas_to_target( eckit_linalg )
 endif()

@@ -11,10 +11,10 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
 
-#include "eckit/la/Matrix.h"
+#include "eckit/linalg/Matrix.h"
 
 namespace eckit {
-namespace la {
+namespace linalg {
 
 //-----------------------------------------------------------------------------
 
@@ -69,5 +69,5 @@ Stream& operator<<(Stream& s, const Matrix& v) {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace la
+}  // namespace linalg
 } // namespace eckit

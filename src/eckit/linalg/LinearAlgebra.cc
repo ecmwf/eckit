@@ -15,10 +15,10 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
-#include "eckit/la/LinearAlgebra.h"
+#include "eckit/linalg/LinearAlgebra.h"
 
 namespace eckit {
-namespace la {
+namespace linalg {
 
 namespace {
 
@@ -144,5 +144,5 @@ const std::string& LinearAlgebra::name() const {
 
 //-----------------------------------------------------------------------------
 
-}  // namespace la
+}  // namespace linalg
 } // namespace eckit

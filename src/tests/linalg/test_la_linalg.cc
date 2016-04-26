@@ -15,14 +15,14 @@
 #include "eckit/config/Resource.h"
 #include "eckit/runtime/Context.h"
 
-#include "eckit/la/LinearAlgebra.h"
-#include "eckit/la/Matrix.h"
-#include "eckit/la/Vector.h"
+#include "eckit/linalg/LinearAlgebra.h"
+#include "eckit/linalg/Matrix.h"
+#include "eckit/linalg/Vector.h"
 #include "util.h"
 
 //-----------------------------------------------------------------------------
 
-using namespace eckit::la;
+using namespace eckit::linalg;
 
 namespace eckit {
 namespace test {

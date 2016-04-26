@@ -13,12 +13,12 @@
 
 #include <cstdarg>
 
-#include "eckit/la/Matrix.h"
-#include "eckit/la/Vector.h"
+#include "eckit/linalg/Matrix.h"
+#include "eckit/linalg/Vector.h"
 
 //-----------------------------------------------------------------------------
 
-using namespace eckit::la;
+using namespace eckit::linalg;
 
 namespace eckit {
 namespace test {

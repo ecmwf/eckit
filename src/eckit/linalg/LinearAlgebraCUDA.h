@@ -19,10 +19,10 @@
 
 #ifdef ECKIT_HAVE_CUDA
 
-#include "eckit/la/LinearAlgebra.h"
+#include "eckit/linalg/LinearAlgebra.h"
 
 namespace eckit {
-namespace la {
+namespace linalg {
 
 //-----------------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-}  // namespace la
+}  // namespace linalg
 } // namespace eckit
 
 #endif  // ECKIT_HAVE_CUDA

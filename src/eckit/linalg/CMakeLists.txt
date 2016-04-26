@@ -25,7 +25,7 @@ Vector.h
 
 ecbuild_add_library( TARGET             eckit_la
                      INSTALL_HEADERS    ALL
-                     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/la
+                     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/linalg
                      SOURCES            ${eckit_la_srcs}
                      INCLUDES           "${ARMADILLO_INCLUDE_DIRS}"
                                         "${CUDA_INCLUDE_DIRS}"

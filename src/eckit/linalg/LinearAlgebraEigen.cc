@@ -16,15 +16,15 @@
 
 #include "eckit/maths/Eigen.h"
 
-#include "eckit/la/LinearAlgebraEigen.h"
-#include "eckit/la/Matrix.h"
-#include "eckit/la/SparseMatrix.h"
-#include "eckit/la/Vector.h"
+#include "eckit/linalg/LinearAlgebraEigen.h"
+#include "eckit/linalg/Matrix.h"
+#include "eckit/linalg/SparseMatrix.h"
+#include "eckit/linalg/Vector.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
-namespace la {
+namespace linalg {
 
 //-----------------------------------------------------------------------------
 
@@ -112,7 +112,7 @@ static LinearAlgebraEigen linearAlgebraEigen;
 
 //-----------------------------------------------------------------------------
 
-} // namespace la
+} // namespace linalg
 } // namespace eckit
 
 #endif  // ECKIT_HAVE_EIGEN

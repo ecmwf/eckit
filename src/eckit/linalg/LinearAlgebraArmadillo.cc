@@ -16,14 +16,14 @@
 
 #include <armadillo>
 
-#include "eckit/la/LinearAlgebraArmadillo.h"
-#include "eckit/la/Matrix.h"
-#include "eckit/la/Vector.h"
+#include "eckit/linalg/LinearAlgebraArmadillo.h"
+#include "eckit/linalg/Matrix.h"
+#include "eckit/linalg/Vector.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
-namespace la {
+namespace linalg {
 
 //-----------------------------------------------------------------------------
 
@@ -97,7 +97,7 @@ static LinearAlgebraArmadillo LinearAlgebraArmadillo;
 
 //-----------------------------------------------------------------------------
 
-}  // namespace la
+}  // namespace linalg
 } // namespace eckit
 
 #endif  // ECKIT_HAVE_ARMDILLO

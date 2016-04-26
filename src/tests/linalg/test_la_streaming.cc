@@ -15,14 +15,14 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/FileStream.h"
 
-#include "eckit/la/Matrix.h"
-#include "eckit/la/SparseMatrix.h"
-#include "eckit/la/Vector.h"
+#include "eckit/linalg/Matrix.h"
+#include "eckit/linalg/SparseMatrix.h"
+#include "eckit/linalg/Vector.h"
 #include "util.h"
 
 //-----------------------------------------------------------------------------
 
-using namespace eckit::la;
+using namespace eckit::linalg;
 
 namespace eckit {
 namespace test {

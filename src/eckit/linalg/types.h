@@ -18,7 +18,7 @@
 #include <cstddef>
 
 namespace eckit {
-namespace la {
+namespace linalg {
 
 typedef double  Scalar;
 typedef int     Index;
@@ -28,7 +28,7 @@ class Vector;
 class Matrix;
 class SparseMatrix;
 
-}  // namespace la
+}  // namespace linalg
 } // namespace eckit
 
 #endif

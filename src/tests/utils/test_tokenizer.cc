@@ -31,6 +31,9 @@ public:
 
     template< class Container >  void test_single();
     template< class Container >  void test_multi();
+
+    void test_keep_empty_list();
+    void test_keep_empty_set();
 };
 
 //-----------------------------------------------------------------------------
@@ -59,7 +62,7 @@ void TestTokenizer::test_single()
 
 //-----------------------------------------------------------------------------
 
-template< class Container >  
+template< class Container >
 void TestTokenizer::test_multi()
 {
     Container  target;
@@ -96,14 +99,48 @@ void TestTokenizer::test_multi()
 }
 
 //-----------------------------------------------------------------------------
+
+void TestTokenizer::test_keep_empty_list()
+{
+    StringList  target;
+
+    Tokenizer parse(":",true);
+
+    std::string source1 (":4i:2100:::01:::::.");
+    parse(source1,target);
+
+    Log::info() << target << std::endl;
+
+    ASSERT( target.size() == 11 );
+}
+
+//-----------------------------------------------------------------------------
+
+void TestTokenizer::test_keep_empty_set()
+{
+    StringSet  target;
+
+    Tokenizer parse(":",true);
+
+    std::string source1 (":4i:2100:::01:::::.");
+    parse(source1,target);
+
+    Log::info() << target << std::endl;
+
+    ASSERT( target.size() == 5 ); // 5 uniqe elments
+}
+
+//-----------------------------------------------------------------------------
             
 void TestTokenizer::run()
 {
     test_single< StringList >();
     test_multi < StringList >();
+    test_keep_empty_list();
 
     test_single< StringSet >();
     test_multi < StringSet >();
+    test_keep_empty_set();
 }
 
 //-----------------------------------------------------------------------------

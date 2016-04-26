@@ -20,6 +20,9 @@
 #include "eckit/ecml/core/Environment.h"
 #include "eckit/ecml/core/SpecialFormHandler.h"
 
+#include "eckit/runtime/Context.cc"
+#include "eckit/parser/StringTools.h"
+
 #include "ListHandler.h"
 #include "SequenceHandler.h"
 #include "VariableLookupHandler.h"
@@ -58,6 +61,36 @@ Prelude::~Prelude() {}
 
 static Request native(const string& name) { return new Cell("_native", name, 0, 0); }
 static Request macro(const string& name) { return new Cell("_macro", name, 0, 0); }
+
+std::string Prelude::preludePath()
+{
+    std::string exe (eckit::Context::instance().argv(0));
+
+    if (exe.size() && exe[0] != '/')
+    {
+        vector<string> ps (StringTools::split(":", getenv("PATH")));
+        for (size_t i(0); i < ps.size(); ++i)
+            if (PathName(ps[i] + "/" + exe).exists())
+            {
+                exe = ps[i] + "/" + exe;
+                break;
+            }
+    }
+
+    PathName p (exe.substr(0, exe.size() - strlen(PathName(exe).baseName().localPath())) + "../include/prelude.ecml" );
+
+    Log::info() << "preludePath: " << p << endl;
+
+    if (! p.exists()) 
+        Log::warning() << "ecml: cannot find prelude.ecml" << std::endl;
+
+    return p;
+}
+
+void Prelude::executePrelude(ExecutionContext& context)
+{
+    context.executeScriptFile(preludePath());
+}
 
 void Prelude::importInto(ExecutionContext& context)
 {
@@ -122,6 +155,8 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("glob", _glob);
     context.registerHandler("read_text_file", read_text_file);
     context.registerHandler("throw", _throw);
+
+    executePrelude(context);
 }
 
 } // namespace eckit

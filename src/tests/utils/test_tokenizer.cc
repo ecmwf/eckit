@@ -41,7 +41,7 @@ public:
 template< class Container >
 void TestTokenizer::test_single()
 {
-    std::string source (":lolo1:lolo2:lolo3");
+    std::string source (":lolo1:lolo2::lolo3");
     Container  target;
 
     Tokenizer parse(":");
@@ -69,7 +69,7 @@ void TestTokenizer::test_multi()
 
     Tokenizer parse("-:;");
 
-    std::string source1 ("-lolo0-lolo1-lolo2;lolo3:lolo4-");
+    std::string source1 ("-lolo0-lolo1-lolo2;lolo3:-lolo4-");
     parse(source1,target);
 
     ASSERT( target.size() == 5 );

@@ -96,6 +96,30 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
+template<class T, class U>
+class TraceAutoLock : private NonCopyable {
+public:
+
+    // -- Constructors
+
+    TraceAutoLock(T& resource, const std::string& message, int level=0)
+        : resource_(resource), timer_(message + " (release)", level) {
+        resource_.lock();
+        timer_.report(message + " (acquire)");
+    }
+
+    // -- Destructor
+
+    ~TraceAutoLock() { resource_.unlock(); }
+
+private: // members
+
+    T& resource_;
+    TraceTimer<U> timer_;
+};
+
+//-----------------------------------------------------------------------------
+
 } // namespace eckit
 
 #endif

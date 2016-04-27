@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
+
 #include "eckit/log/Colour.h"
 #include "eckit/config/Resource.h"
 
@@ -28,7 +30,7 @@ enum { BLACK = 0, RED     =  1, GREEN = 2,  YELLOW    = 3, BLUE = 4, MAGENTA = 5
 
 static std::ostream& put(std::ostream& out, int fg, int bg, int attr)
 {
-    static bool colourOutput = Resource<bool>("$ECKIT_COLOUR_OUTPUT;-colour;colourOutput", false);
+    static bool colourOutput = Resource<bool>("$ECKIT_COLOUR_OUTPUT;-colour;colourOutput", ::isatty(1));
     
 	if (colourOutput && out.iword(xindex) == 0)
     {

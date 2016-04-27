@@ -147,17 +147,17 @@ Channel& Context::channel(const std::string& key)
     pthread_once(&once, init);
     AutoLock<Mutex> lock(local_mutex);
 
+    LogMap::iterator itr = logMap->find(key);
+
+    if(itr != logMap->end()) { return *itr->second; }
+
     if       ( key == "Error" )  { return errorChannel(); }
     else if  ( key == "Warn"  )  { return warnChannel(); }
     else if  ( key == "Info"  )  { return infoChannel(); }
     else if  ( key == "Debug" )  { return debugChannel(); }
 
-    if(logMap->find(key) == logMap->end()) {
-        //requested channel not found
-        throw BadParameter( "Channel '" + key + "' not found ", Here());
-    } else {
-        return  *((*logMap)[key]);
-    }
+    // requested channel not found
+    throw BadParameter( "Channel '" + key + "' not found ", Here());
 }
 
 void Context::registerChannel(const std::string& key, Channel* channel)

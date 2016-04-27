@@ -347,7 +347,7 @@ long Connector::read(void *buf, long len)
 			if (j != cache_.end())
 			{
 //               cout << "MEMOIZE IN CACHE " << (*j).first << std::endl;
-                 if( (::time(0) - (*j).second.updated()) > life_ )
+                 if( (::time(0) - (*j).second.updated()) > long(life_) )
                  {
                      // cout << "  CACHE IS STALE" << (*j).first << std::endl;
                  }

@@ -24,8 +24,6 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class LogObserver {};
-
 /// Singleton holding global streams for logging
 ///
 /// @warning these streams are thread safe. A lock is
@@ -34,7 +32,8 @@ class LogObserver {};
 
 class Log {
 
-public:  // types
+public: // types
+
     /// Output formats
     enum {
         compactFormat = 0,
@@ -44,7 +43,7 @@ public:  // types
         applicationFormat = 4,  // Free to use for applications
     };
 
-public:  // methods
+public: // methods
 
     static void registerChannel(const std::string& key, Channel* channel);
     static void removeChannel(const std::string& key);
@@ -98,12 +97,7 @@ public:  // methods
     /// manipulator that will print the last error message as in perror(2)
     static std::ostream& syserr(std::ostream&);
 
-    /// @todo find a way to refactor this ...
-    // This is for Magics
-    static void registerObserver(LogObserver*);
-    static void unregisterObserver(LogObserver*);
     static std::ostream& dev() { return std::cout; }
-    static void broadcast();
     static std::ostream& null();
 
     // Per application loggin
@@ -122,10 +116,13 @@ public:  // methods
         return T::trace(level);
     }
 
-private:
+private: // methods
+
     Log();   ///< Private, non-instanciatable class
     ~Log();  ///< Private, non-instanciatable class
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 std::ostream& setformat(std::ostream&, int);
 int format(std::ostream&);

@@ -59,7 +59,8 @@ using namespace std;
 Prelude::Prelude() {}
 Prelude::~Prelude() {}
 
-static Request native(const string& name) { return new Cell("_native", name, 0, 0); }
+// unused // static Request native(const string& name) { return new Cell("_native", name, 0, 0); }
+
 static Request macro(const string& name) { return new Cell("_macro", name, 0, 0); }
 
 std::string Prelude::preludePath()

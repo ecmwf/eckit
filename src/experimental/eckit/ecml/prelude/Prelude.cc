@@ -156,7 +156,7 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("read_text_file", read_text_file);
     context.registerHandler("throw", _throw);
 
-    executePrelude(context);
+    //executePrelude(context);
 }
 
 } // namespace eckit

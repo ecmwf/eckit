@@ -51,6 +51,8 @@ public:
 
     bool running() const { return !stopped_; }
 
+    void report();
+
 protected: // methods
 
     void takeTime();

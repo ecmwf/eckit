@@ -64,7 +64,7 @@ BTree<K,V,S>::BTree( const PathName& path, bool readOnly ):
     cacheWrites_(true),
     readOnly_(readOnly)
 {
-    SYSCALL( fd_ = ::open(path.localPath(), readOnly_ ? O_RDONLY : (O_RDWR|O_CREAT),0777) );
+    SYSCALL2( fd_ = ::open(path.localPath(), readOnly_ ? O_RDONLY : (O_RDWR|O_CREAT),0777), path );
 
     AutoLock<BTree<K,V,S> > lock(this);
     Stat::Struct s;

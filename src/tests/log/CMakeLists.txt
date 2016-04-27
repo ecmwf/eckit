@@ -19,3 +19,8 @@ ecbuild_add_test( TARGET      eckit_test_colour
                   SOURCES     test_colour.cc
                   LIBS        eckit )
 
+
+ecbuild_add_test( TARGET      eckit_test_log_user_channels
+                  BOOST
+                  SOURCES     test_log_user_channels.cc
+                  LIBS        eckit )

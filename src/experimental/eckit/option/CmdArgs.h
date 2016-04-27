@@ -55,6 +55,8 @@ public: // methods
     const std::vector<std::string>& args() const;
     const std::string& args(size_t) const;
 
+    size_t count() const;
+
     // has, get and set methods are inherited from LocalConfiguration in their entirety
 
 private: // methods

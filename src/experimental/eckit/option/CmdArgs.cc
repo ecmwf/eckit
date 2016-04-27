@@ -135,6 +135,11 @@ const std::string &CmdArgs::args(size_t i) const {
     return args_[i];
 }
 
+size_t CmdArgs::count() const
+{
+    return args_.size();
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace option

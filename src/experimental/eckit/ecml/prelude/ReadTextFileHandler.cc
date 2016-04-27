@@ -40,7 +40,9 @@ std::string ReadTextFileHandler::readFile(const PathName& fileName)
 	char buffer[CHUNK_SIZE]; 
 
 	FileHandle f(fileName);
-	Length estimated = f.openForRead();
+
+    // unused // Length estimated =
+    f.openForRead();
 	
 	std::string ret;
 	size_t read, totalRead = 0;

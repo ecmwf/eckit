@@ -13,15 +13,15 @@
 
 #include <string>
 
-#include "eckit/ecml/parser/Request.h"
+#include "eckit/eckit_version.h"
+#include "eckit/runtime/Context.cc"
+#include "eckit/parser/StringTools.h"
 
+#include "eckit/ecml/parser/Request.h"
 #include "eckit/ecml/core/RequestHandler.h"
 #include "eckit/ecml/core/ExecutionContext.h"
 #include "eckit/ecml/core/Environment.h"
 #include "eckit/ecml/core/SpecialFormHandler.h"
-
-#include "eckit/runtime/Context.cc"
-#include "eckit/parser/StringTools.h"
 
 #include "ListHandler.h"
 #include "SequenceHandler.h"
@@ -64,26 +64,19 @@ static Request macro(const string& name) { return new Cell("_macro", name, 0, 0)
 
 std::string Prelude::preludePath()
 {
-    std::string exe (eckit::Context::instance().argv(0));
+    const std::string installPrefix (ECKIT_INSTALL_PREFIX),
+                      buildDir (ECKIT_BUILD_DIR);
 
-    if (exe.size() && exe[0] != '/')
-    {
-        vector<string> ps (StringTools::split(":", getenv("PATH")));
-        for (size_t i(0); i < ps.size(); ++i)
-            if (PathName(ps[i] + "/" + exe).exists())
-            {
-                exe = ps[i] + "/" + exe;
-                break;
-            }
-    }
+    std::string p (installPrefix + "/include/prelude.ecml" );
 
-    PathName p (exe.substr(0, exe.size() - strlen(PathName(exe).baseName().localPath())) + "../include/prelude.ecml" );
+    if (! PathName(p).exists())
+        p = buildDir + "/include/prelude.ecml";
 
-    Log::info() << "preludePath: " << p << endl;
+    Log::debug() << "preludePath: " << p << endl;
 
-    if (! p.exists()) 
-        Log::warning() << "ecml: cannot find prelude.ecml" << std::endl;
-
+    if (! PathName(p).exists()) 
+        Log::warning() << "ecml: cannot find prelude.ecml in either " 
+                       << installPrefix << " or " << buildDir << std::endl;
     return p;
 }
 
@@ -156,7 +149,7 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("read_text_file", read_text_file);
     context.registerHandler("throw", _throw);
 
-    //executePrelude(context);
+    executePrelude(context);
 }
 
 } // namespace eckit

@@ -16,4 +16,7 @@
 #cmakedefine ECKIT_HAVE_MPISTUBS
 #cmakedefine ECKIT_HAVE_VIENNACL
 
+#define ECKIT_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
+#define ECKIT_BUILD_DIR      "@CMAKE_BINARY_DIR@"
+
 #endif // eckit_config_h

@@ -10,11 +10,14 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/log/Channel.h"
+#include "eckit/log/ChannelBuffer.h"
 #include "eckit/log/MultiChannel.h"
 #include "eckit/log/MonitorChannel.h"
 #include "eckit/log/UserChannel.h"
 
 #include "eckit/runtime/Context.h"
+
+#include "eckit/exception/Exceptions.h"
 
 #include "eckit/thread/ThreadSingleton.h"
 
@@ -47,6 +50,21 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
+
+void Log::registerChannel(const std::string& key, Channel* channel)
+{
+    Context::instance().registerChannel(key, channel);
+}
+
+void Log::removeChannel(const std::string& key)
+{
+    Context::instance().removeChannel(key);
+}
+
+Channel& Log::channel(const std::string& key)
+{
+    return Context::instance().channel(key);
+}
 
 struct CreateMonitorChannel
 {

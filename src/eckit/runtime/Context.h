@@ -74,6 +74,9 @@ public: // methods
     Channel& errorChannel();
     Channel& debugChannel();
     Channel& channel(int cat);
+    Channel& channel(const std::string& key);
+    void registerChannel(const std::string& key, Channel* channel);
+    void removeChannel(const std::string& key);
 
     //
 

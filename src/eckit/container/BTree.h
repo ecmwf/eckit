@@ -78,6 +78,8 @@ public:
 
     void flush();
 
+    const PathName& path() const { return path_; }
+
 private: // methods
 
     void dump(std::ostream&, unsigned long page, int depth) const;

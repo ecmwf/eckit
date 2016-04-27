@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_params )
 
     JSONMetadata md(buf);
 
-    std::vector<std::string> params(md.parameters());
+    std::vector<std::string> params(md.keywords());
 
     BOOST_CHECK_EQUAL(params.size(), 3);
     BOOST_CHECK(std::find(params.begin(), params.end(), "key1") != params.end());
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_params_nondict )
 
     JSONMetadata md(buf);
 
-    std::vector<std::string> params(md.parameters());
+    std::vector<std::string> params(md.keywords());
 
     BOOST_CHECK_EQUAL(params.size(), 0);
 }

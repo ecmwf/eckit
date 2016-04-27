@@ -39,7 +39,7 @@ JSONMetadata::JSONMetadata(const Buffer& buffer) {
 JSONMetadata::~JSONMetadata() {}
 
 
-std::vector<std::string> JSONMetadata::parameters() const {
+std::vector<std::string> JSONMetadata::keywords() const {
 
     std::vector<std::string> params;
     if (root_.isMap()) {

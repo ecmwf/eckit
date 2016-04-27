@@ -36,7 +36,7 @@ public: // methods
     JSONMetadata(const Buffer& buffer);
     virtual ~JSONMetadata();
 
-    virtual std::vector<std::string> parameters() const;
+    virtual std::vector<std::string> keywords() const;
 
     virtual bool has(const std::string& name) const;
 

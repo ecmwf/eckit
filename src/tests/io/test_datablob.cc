@@ -34,7 +34,7 @@ namespace {
     public: // methods
         TestMetadata() {}
         virtual ~TestMetadata() {}
-        virtual std::vector<std::string> parameters() const { NOTIMP; };
+        virtual std::vector<std::string> keywords() const { NOTIMP; };
         virtual bool has(const std::string& name) const { NOTIMP; }
         virtual void get(const std::string& name, std::string& value) const { NOTIMP; }
         virtual void get(const std::string& name, long& value) const { NOTIMP; }

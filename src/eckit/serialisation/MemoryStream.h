@@ -43,6 +43,7 @@ public:
 	virtual long read(void*,long);
 	virtual long write(const void*,long);
 	virtual void rewind();
+	virtual std::string name() const;
 
 
 // -- Overridden methods

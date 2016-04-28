@@ -87,6 +87,10 @@ void MemoryStream::rewind()
 	position_ = 0;
 }
 
+std::string MemoryStream::name() const {
+	return "MemoryStream";
+}
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

@@ -73,6 +73,14 @@ bool notInWord(char p)
         ;
 }
 
+std::string suffix(const char* line, int pos)
+{
+    char *p (const_cast<char*>(line) + pos);
+    while (p != line && !notInWord(*(p - 1)))
+        --p;
+    return p;
+}
+
 void REPLHandler::describe(std::ostream& out, const string& v, Cell* o)
 {
     stringstream ss;
@@ -89,10 +97,7 @@ bool REPLHandler::completion(const char* line, int pos, char* insert, int insert
 {
     ExecutionContext& context (*REPLHandler::context_); // it would be nice to have it passed as a parameter here
 
-    char *p (const_cast<char*>(line) + pos);
-    while (p != line && !notInWord(*(p - 1)))
-        --p;
-    const string prefix (p);
+    const string prefix (suffix(line, pos));
 
     ASSERT(REPLHandler::context_);
 

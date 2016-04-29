@@ -51,7 +51,7 @@ public:
 
     bool running() const { return !stopped_; }
 
-    void report();
+    void report(const std::string& message = "");
 
 protected: // methods
 

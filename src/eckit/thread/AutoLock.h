@@ -81,11 +81,7 @@ public:
     TimedAutoLock(T& resource, const std::string& message)
         : resource_(resource), timer_(message + " (release)") {
         resource_.lock();
-        const double  s   = timer_.elapsed();
-        const double  cpu = timer_.elapsed_cpu();
-        Log::info() << message << " (acquire): "
-                    << Seconds(s) << " elapsed, "
-                    << Seconds(cpu) << " cpu" << std::endl;
+        timer_.report(message + " (acquire)");
     }
 
     // -- Destructor

@@ -97,11 +97,11 @@ double Timer::elapsed_cpu()
     return double(cpuStop_ - cpuStart_) / CLOCKS_PER_SEC;
 }
 
-void Timer::report() {
+void Timer::report(const std::string& message) {
     const double  s   = elapsed();
     const double  cpu = elapsed_cpu();
 
-    out_ << name_ << ": "
+    out_ << (message.size() ? message : name_) << ": "
          << Seconds(s) << " elapsed, "
          << Seconds(cpu) << " cpu"
          << std::endl;

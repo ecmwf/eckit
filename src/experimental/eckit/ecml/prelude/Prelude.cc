@@ -14,7 +14,7 @@
 #include <string>
 
 #include "eckit/eckit_version.h"
-#include "eckit/runtime/Context.cc"
+#include "eckit/runtime/Context.h"
 #include "eckit/parser/StringTools.h"
 
 #include "eckit/ecml/parser/Request.h"

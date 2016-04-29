@@ -73,8 +73,10 @@ public: // methods
     Channel& warnChannel();
     Channel& errorChannel();
     Channel& debugChannel();
+
     Channel& channel(int cat);
     Channel& channel(const std::string& key);
+
     void registerChannel(const std::string& key, Channel* channel);
     void removeChannel(const std::string& key);
 
@@ -90,19 +92,17 @@ public: // methods
 
 private: // methods
 
-	/// Singleton class with private constructor
-	Context();
+    Context(); 	///< Singleton class with private constructor
 
-	/// Singleton class with private destructor
-	virtual ~Context();
+    virtual ~Context(); ///< Singleton class with private destructor
+
+    static void init(); ///< initialize the singleton on first access
 
     // From Configurable
 
 	virtual std::string kind() const  { return "Context"; }
 
-protected:
-
-    // -- Members
+private: // members
 
 	eckit::ScopedPtr<ContextBehavior> behavior_;
 
@@ -114,6 +114,10 @@ protected:
     std::string  home_;         ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
     std::string  runName_;      ///< name of running application
     std::string  displayName_;  ///< name to be displayed of running application
+
+    typedef std::map<std::string,Channel*> ChannelRegistry;
+
+    ChannelRegistry channels_;
 
 };
 

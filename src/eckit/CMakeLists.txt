@@ -330,7 +330,6 @@ log/UserChannel.cc
 )
 
 list( APPEND eckit_exception_srcs
-exception/BadValue.h
 exception/Exceptions.h
 exception/Exceptions.cc )
 
@@ -606,5 +605,5 @@ if( HAVE_ECKIT_CMD )
   add_subdirectory( cmd )
 endif()
 
+add_subdirectory( linalg )
 add_subdirectory( web )
-

@@ -10,7 +10,6 @@
 
 #include "eckit/io/DataBlob.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/memory/MemoryPool.h"
 #include "eckit/thread/AutoLock.h"
 
 #include <string>
@@ -18,7 +17,7 @@
 
 namespace eckit {
 
-// -------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace {
     Mutex* local_mutex = 0;
@@ -30,10 +29,9 @@ namespace {
     }
 }
 
-/*
- * When a concrete instance of a DataBlobFactory is instantiated (in practice
- * a DataBlobBuilder<>) add it to the list of available factories.
- */
+/// When a concrete instance of a DataBlobFactory is instantiated (in practice
+/// a DataBlobBuilder<>) add it to the list of available factories.
+
 DataBlobFactory::DataBlobFactory(const std::string& name) :
     name_(name) {
 
@@ -100,7 +98,7 @@ DataBlob* DataBlobFactory::build(const std::string &name, DataHandle& dh, size_t
     return factory.make(dh, length);
 }
 
-// -------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 DataBlob::DataBlob(size_t length) :
     buffer_(length) {

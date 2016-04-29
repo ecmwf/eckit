@@ -44,14 +44,14 @@ public:
     ~FilePool();
 
     /// Checkout a DataHandle for use
-    /// Owenership remains with FilePool
+    /// Owenership is passed out of FilePool
     /// @post DataHandle is marked in use and should not be closed by client
-    DataHandle *const checkout(const PathName& path);
+    DataHandle * checkout(const PathName& path);
 
     /// Return a DataHandle after use
-    /// Owenership remains with FilePool
+    /// Owenership is passed into FilePool
     /// @post DataHandle is marked out of use and may now be closed by FilePool
-    void checkin(DataHandle *const handle);
+    void checkin(DataHandle* handle);
 
     /// Current size of pool
     size_t size() const;

@@ -49,6 +49,7 @@ public:
 
     static std::vector<std::string> completion(const std::string&);
     static std::vector<std::string> completion(const std::vector<std::string>&);
+    static bool completion(const char*, int pos, char*, int);
 
 protected:  // methods
     virtual void execute(std::istream&, std::ostream&, CmdArg&) = 0;

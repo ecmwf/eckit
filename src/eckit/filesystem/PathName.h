@@ -18,6 +18,7 @@
 #include "eckit/io/Offset.h"
 #include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/serialisation/Stream.h"
+#include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
 
@@ -235,6 +236,8 @@ private:
     friend PathName operator/(const PathName& p,const char* s);
     friend PathName operator/(const PathName& p,char s);
 };
+
+template <> struct VectorPrintSelector<PathName> { typedef VectorPrintSimple selector; };
 
 //-----------------------------------------------------------------------------
 

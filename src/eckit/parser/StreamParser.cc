@@ -26,7 +26,10 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 
-StreamParser::StreamParser(std::istream &in) : in_(in)
+StreamParser::StreamParser(std::istream &in, bool comments) :
+    in_(in),
+    comments_(comments),
+    line_(0)
 {
 }
 
@@ -35,16 +38,31 @@ char StreamParser::peek(bool spaces)
     for(;;)
     {
         char c = in_.peek();
+
         if(in_.eof())
             return 0;
+
+        if(comments_ && c == '#')
+        {
+            while(c != '\n' && !in_.eof()) {
+                in_.get(c);
+                if(c == '\n') { line_++; }
+            }
+            if(in_.eof()) {
+                return 0;
+            }
+            return peek(spaces);
+        }
+
         if(spaces || !isspace(c))
         {
-            //cout << "peek(" << c << ")" << std::endl;
+//            std::cout << "peek(" << c << ")" << std::endl;
             return c;
         }
         else {
-            //cout << "skip(" << c << ")" << std::endl;
+//            std::cout << "skip(" << c << ")" << std::endl;
             in_.get(c);
+            if(c == '\n') { line_++; }
         }
     }
 }
@@ -57,6 +75,21 @@ char StreamParser::next(bool spaces)
         in_.get(c);
         if(in_.eof())
             throw StreamParser::Error(std::string("StreamParser::next reached eof"));
+
+        if(c == '\n') { line_++; }
+
+        if(comments_ && c == '#')
+        {
+            while(c != '\n' && !in_.eof()) {
+                in_.get(c);
+                if(c == '\n') { line_++; }
+            }
+            if(in_.eof()) {
+                throw StreamParser::Error(std::string("StreamParser::next reached eof"));
+            }
+            return next(spaces);
+        }
+
         if(spaces || !isspace(c))
         {
 //            std::cout << "next(" << c << ")" << std::endl;
@@ -70,7 +103,7 @@ void StreamParser::consume(char c)
 {
     char n = next();
     if(c != n)
-        throw StreamParser::Error(std::string("StreamParser::consume expecting '") + c + "', got '" + n + "'");
+        throw StreamParser::Error(std::string("StreamParser::consume expecting '") + c + "', got '" + n + "'", line_ + 1);
 }
 
 void StreamParser::consume(const char* p)
@@ -79,10 +112,13 @@ void StreamParser::consume(const char* p)
 }
 
 
-StreamParser::Error::Error(const std::string &what) : what_(what) 
+StreamParser::Error::Error(const std::string &what, size_t line) : Exception(what) 
 {
-    Log::info() << "=== StreamParser::Error -- Backtrace ===" << std::endl;    
-    Log::info() << BackTrace::dump() << std::endl;    
+    if(line) {
+        std::ostringstream oss;
+        oss << "Line: " << line << " " << what;
+        reason(oss.str());
+    }
 }
 
 //-----------------------------------------------------------------------------

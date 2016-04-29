@@ -42,6 +42,7 @@ void NetService::run()
     Monitor::instance().show(visible_);
 	Monitor::instance().name(name());
 	Monitor::instance().kind(name());
+    Log::message() << hostname() << ":" << port() << std::endl;
 
 	while(!stopped())
 	{

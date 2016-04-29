@@ -2,7 +2,9 @@ ecbuild_add_library(
 
     TARGET eckit_option
 
-	INSTALL_HEADERS ALL
+    INSTALL_HEADERS LISTED
+
+    HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/option
 
 	SOURCES
         FactoryOption.cc
@@ -15,13 +17,13 @@ ecbuild_add_library(
         SimpleOption.h
         VectorOption.cc
         VectorOption.h
+        CmdArgs.cc
+        CmdArgs.h
 
     TEMPLATES
         FactoryOption.cc
         VectorOption.cc
         SimpleOption.cc
-
-	HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/option
 
     LIBS eckit )
 

@@ -139,7 +139,7 @@ std::string StringTools::lower(const std::string& v)
 
 std::string StringTools::trim(const std::string& str)
 {
-    return trim(str," \t");
+    return trim(str," \t\n");
 }
 
 std::string StringTools::trim(const std::string& str, const std::string& chars)

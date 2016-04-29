@@ -7,35 +7,9 @@
 
 using namespace std;
 
-// ===================================================================
-// int32_abs                   Like abs but for int32_t
-// int64_abs                   Like abs but for int64_t
-//
-#if defined(SIZEOF_INT) && SIZEOF_INT == 4 && defined(HAVE_ABS)
-#  define int32_abs abs
-#elif defined(SIZEOF_LONG) && SIZEOF_LONG == 4
-#  define int32_abs labs
-#else
-#  define int32_abs(x) ((int32_t)(((x) >= 0) ? (x) : -(x)))
-#endif
-
-#if defined(_WIN64)
-#  define int64_abs _abs64
-#elif defined(SIZEOF_INT) && SIZEOF_INT == 8 && defined(HAVE_ABS)
-#  define int64_abs abs
-#elif defined(SIZEOF_LONG) && SIZEOF_LONG == 8
-#  define int64_abs labs
-#elif defined(SIZEOF_LONG_LONG) && SIZEOF_LONG_LONG == 8 && defined(HAVE_LLABS)
-#  define int64_abs llabs
-#else
-#  define int64_abs(x) ((int64_t)(((x) >= 0) ? (x) : -(x)))
-#endif
-
-//------------------------------------------------------------------------------------------------------
-
 namespace eckit {
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 // See:
 // * http://randomascii.wordpress.com/2012/01/11/tricks-with-the-floating-point-format
 // * http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition
@@ -63,46 +37,45 @@ namespace eckit {
 
 // Used for accessing the integer representation of floating-point numbers
 // (aliasing through unions works on most platforms).
-union Float_t
+union FloatType
 {
-    Float_t(float num = 0.0f) : f(num) { assert( sizeof(i) == sizeof(f) ); }
+    FloatType(float number = 0.0f) : f_(number) { assert( sizeof(i_) == sizeof(f_) ); }
 
-    // Portable extraction of components.
-    bool Negative() const { return (i >> 31) != 0; }
-    int32_t RawMantissa() const { return i & ((1 << 23) - 1); }
-    int32_t RawExponent() const { return (i >> 23) & 0xFF; }
+    bool    negative()    const { return (i_ >> 31) != 0; }
+    int32_t rawMantissa() const { return i_ & ((1 << 23) - 1); }
+    int32_t rawExponent() const { return (i_ >> 23) & 0xFF; }
 
-    int32_t i;
-    float f;
+    int32_t i_;
+    float   f_;
 };
 
 // Used for accessing the integer representation of floating-point numbers
 // (aliasing through unions works on most platforms).
-union Double_t
+union Double
 {
-    Double_t(double num = 0.0) : f(num) { assert( sizeof(i) == sizeof(f) ); }
-    // Portable extraction of components.
-    bool Negative() const { return (i >> 63) != 0; }
-    int64_t RawMantissa() const { return i & ((1LL << 52) - 1); }
-    int64_t RawExponent() const { return (i >> 52) & 0x7FF; }
+    Double(double number = 0.0) : f_(number) { assert( sizeof(i_) == sizeof(f_) ); }
 
-    int64_t i;
-    double f;
+    bool    negative()    const { return (i_ >> 63) != 0; }
+    int64_t rawMantissa() const { return i_ & ((1LL << 52) - 1); }
+    int64_t rawExponent() const { return (i_ >> 52) & 0x7FF; }
+
+    int64_t i_;
+    double  f_;
 };
 
 //// Allow a common algorithm to compare floats and doubles, by using templates
 template < class T > struct FPCompare;
 
 template <> struct FPCompare<float>  {
-   typedef Float_t  FP_t;
+   typedef FloatType  FP_t;
    typedef int32_t int_type;
-   static int_type diff(int_type a, int_type b) { return int32_abs(a - b); }
+   static int_type diff(int_type a, int_type b) { int_type x = a - b; return ((int_type)(((x) >= 0) ? (x) : -(x))); }
 };
 
 template <> struct FPCompare<double> {
-   typedef Double_t FP_t;
+   typedef Double FP_t;
    typedef int64_t int_type;
-   static int_type diff(int_type a, int_type b) { return int64_abs(a - b); }
+   static int_type diff(int_type a, int_type b) { int_type x = a - b; return ((int_type)(((x) >= 0) ? (x) : -(x))); }
 };
 
 template < typename T >
@@ -118,7 +91,7 @@ bool AlmostEqualUlps(T A, T B, int maxUlpsDiff)
 
     // Different signs means they do not match.
     // ULP comparison does not make sense when signs are different
-    if (uA.Negative() != uB.Negative())
+    if (uA.negative() != uB.negative())
     {
         // Check for equality to make sure +0==-0
         if (A == B)
@@ -146,8 +119,8 @@ bool AlmostEqualUlps(T A, T B, int maxUlpsDiff)
 ///
 /// If two numbers are identical except for a one-bit difference in the last digit of their mantissa
 /// then this function will calculate ulpsDiff as one.
-/// If one number is the maximum number for a particular exponent – perhaps 1.99999988 –
-/// and the other number is the smallest number for the next exponent – 2.0 –
+/// If one number is the maximum number for a particular exponent, perhaps 1.99999988,
+/// and the other number is the smallest number for the next exponent, say 2.0,
 /// then this function will again calculate ulpsDiff as one.
 /// In both cases the two numbers are the closest floats there are.
 ///
@@ -166,11 +139,11 @@ bool AlmostEqualUlpsAndAbs(T A, T B, T maxDiff, int maxUlpsDiff)
 
     // Different signs means they do not match.
     // ULP comparison does not make sense when sign are different
-    if (uA.Negative() != uB.Negative())
+    if (uA.negative() != uB.negative())
         return false;
 
     // Find the difference in ULPs, taking note to use correct int_type for the difference, to avoid overflow
-    typename FPCompare<T>::int_type ulpsDiff = FPCompare<T>::diff(uA.i, uB.i);
+    typename FPCompare<T>::int_type ulpsDiff = FPCompare<T>::diff(uA.i_, uB.i_);
     if ( ulpsDiff <= maxUlpsDiff)
        return true;
 
@@ -207,6 +180,6 @@ bool isApproxEqualUlps(double a, double b, double epsilon, int maxUlpsDiff)
     return AlmostEqualUlpsAndAbs(a,b,epsilon,maxUlpsDiff);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

@@ -29,6 +29,8 @@ public:
     void set(const std::string&, Request);
     Request lookup(const std::string&);
     Request lookupNoThrow(const std::string&);
+    std::vector<std::string> lookupVariables(const std::string&);
+
     std::string lookup(const std::string&, const std::string&, ExecutionContext&);
     std::vector<std::string> lookupList(const std::string&, ExecutionContext&);
 
@@ -38,6 +40,8 @@ public:
     void print(std::ostream&) const; 	
 
 private:
+    void lookupVariablesRec(const std::string&, std::vector<std::string>& );
+
     Cell* dictionary_;
     Environment* parent_;
 

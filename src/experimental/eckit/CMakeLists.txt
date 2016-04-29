@@ -16,5 +16,4 @@ if( HAVE_ECKIT_ECML )
   add_subdirectory( ecml )
 endif()
 
-add_subdirectory( la )
 add_subdirectory( testing )

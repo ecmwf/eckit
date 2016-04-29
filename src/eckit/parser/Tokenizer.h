@@ -31,8 +31,8 @@ public: // methods
 
     /// Contructor
 
-	Tokenizer(char);
-	Tokenizer(const std::string&);
+    Tokenizer(char, bool keepEmpty = false);
+    Tokenizer(const std::string&, bool keepEmpty = false);
 
     /// Destructor
 
@@ -47,6 +47,8 @@ public: // methods
 private: // members
 
     std::set<char,std::less<char> > separator_;     // To make searching faster
+
+    bool keepEmpty_;
 
 private: // methods
     

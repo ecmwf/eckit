@@ -157,7 +157,16 @@ FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, cons
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
 
-SeriousBug::SeriousBug(const std::string& msg,const CodeLocation& loc)
+SeriousBug::SeriousBug(const std::string& w) : Exception(std::string("Serious Bug: ") + w)
+{
+#if 0
+    std::cout << "Serious Bug exception triggered -- dumping backtrace:"
+              << BackTrace::dump()
+              << std::endl;
+#endif
+}
+
+SeriousBug::SeriousBug(const std::string& msg, const CodeLocation& loc)
 {
    std::ostringstream s;
    s << "SeriousBug: " << msg << " " << " in " << loc;
@@ -170,7 +179,6 @@ SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
    s << "SeriousBug: " << msg << " " << " in " << loc;
    reason(s.str());
 }
-
 
 
 AssertionFailed::AssertionFailed(const std::string& w):
@@ -248,6 +256,12 @@ BadCast::BadCast(const std::string& w, const CodeLocation& loc):
     Exception(std::string("Bad cast: ") + w, loc)
 {
 }
+
+BadValue::BadValue(const std::string& s)
+    : Exception(std::string("BadValue: ") + s) {}
+
+BadValue::BadValue(const std::string& s, const CodeLocation& loc)
+    : Exception(std::string("BadValue: ") + s, loc) {}
 
 NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& loc)
 {

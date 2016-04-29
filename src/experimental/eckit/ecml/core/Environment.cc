@@ -104,6 +104,19 @@ Request Environment::lookup(const string& name)
     return r;
 }
 
+void Environment::lookupVariablesRec(const string& pattern, vector<string>& r)
+{
+    dictionary_->lookupVariables(pattern, r);
+    if (parent_)
+        parent_->lookupVariablesRec(pattern, r);
+}
+
+vector<string> Environment::lookupVariables(const string& pattern)
+{
+    vector<string> r;
+    lookupVariablesRec (pattern, r);
+    return r;
+}
 
 Environment* Environment::parent() { return parent_; }
 

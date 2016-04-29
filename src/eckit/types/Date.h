@@ -14,7 +14,7 @@
 #ifndef eckit_Date_h
 #define eckit_Date_h
 
-#include "eckit/exception/BadValue.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 

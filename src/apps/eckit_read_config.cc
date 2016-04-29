@@ -11,7 +11,7 @@
 #include "eckit/config/Compiler.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/Script.h"
-#include "eckit/exception/BadValue.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/log/Log.h"

@@ -302,24 +302,9 @@ LocalPathName& LocalPathName::tidy()
 	if(path_.length() == 0) return *this;
 
 	if(path_[0] == '~')
-	{
-        if(path_.length() > 1) {
-            if(path_[1] != '/') {
-                std::string s;
-                size_t j = 1;
-                while(j < path_.length() && path_[j] != '/') {
-                    s += path_[j];
-                    j++;
-                }
-                path_ =  Context::instance().configHome(s) + "/" + path_.substr(j);
-            } else {
-                path_ =  Context::instance().home() + "/" + path_.substr(1);
-            }
-        }
-        else {
-            path_ =  Context::instance().home() + "/" + path_.substr(1);
-        }
-	}
+    {
+        path_ =  Context::instance().home() + "/" + path_.substr(1);
+    }
 
 
 	bool more = true;
@@ -403,6 +388,8 @@ void LocalPathName::match(const LocalPathName& root,std::vector<LocalPathName>& 
 	LocalPathName dir   = root.dirName();
 	std::string   base  = root.baseName();
 
+//    Log::info() << "dir  = " << dir << std::endl;
+//    Log::info() << "base = " << base << std::endl;
 
 	// all those call should be members of LocalPathName
 
@@ -440,8 +427,12 @@ void LocalPathName::match(const LocalPathName& root,std::vector<LocalPathName>& 
 		if(e == 0)
 			break;
 
+//        Log::info() << "e->d_name = " << e->d_name << std::endl;
+
 		if(re.match(e->d_name))
 		{
+//            Log::info() << "match !!! ---> " << e->d_name << std::endl;
+
 			LocalPathName path = std::string(dir) + std::string("/") + std::string(e->d_name);
 			result.push_back(path);
 		}

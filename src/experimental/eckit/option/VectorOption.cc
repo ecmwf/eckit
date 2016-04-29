@@ -10,19 +10,23 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date Apr 2015
-
-
-#include "eckit/option/VectorOption.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/utils/Translator.h"
-#include "eckit/parser/Tokenizer.h"
+/// @author Simon Smart
+/// @date March 2016
 
 #include <iostream>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/option/VectorOption.h"
+#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Translator.h"
+#include "eckit/types/Types.h"
+
 
 namespace eckit {
 
 namespace option {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 
 template<class T>
@@ -47,7 +51,9 @@ void VectorOption<T>::set(const std::string &value, LocalConfiguration &parametr
         values.push_back(t(v[i]));
     }
 
-    ASSERT(values.size() == size_);
+    if (values.size() != size_)
+        throw UserError(std::string("Size of supplied vector \"") + name_ + "\" incorrect", Here());
+
     parametrisation.set(name_, values);
 }
 
@@ -63,6 +69,10 @@ void VectorOption<T>::print(std::ostream &out) const {
 
     out << " (" << description_ << ")";
 }
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 } // namespace option
 

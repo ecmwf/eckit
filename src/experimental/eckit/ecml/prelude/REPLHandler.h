@@ -14,11 +14,6 @@
 
 #include "eckit/eckit_config.h"
 
-#ifdef ECKIT_HAVE_READLINE
-# include <readline/readline.h>
-# include <readline/history.h>
-#endif
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/ecml/parser/Request.h"
 #include "eckit/ecml/core/SpecialFormHandler.h"
@@ -34,12 +29,16 @@ public:
     static void repl(ExecutionContext&);
 
 private:
-    static std::string readLine();
+    static std::string readLine(ExecutionContext&);
     static void readHistory();
     static std::string historyFile();
     static void writeHistory();
+    static bool completion(const char*, int, char*, int);
+    static void describe(std::ostream&, const std::string&, eckit::Cell*);
 
     static bool showResultGraph(ExecutionContext&);
+
+    static ExecutionContext* context_;
 };
 
 } // namespace eckit

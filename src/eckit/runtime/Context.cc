@@ -8,29 +8,33 @@
  * does it submit to any jurisdiction.
  */
 
+#include <sys/param.h>
+#include <unistd.h>
+
 #include "Context.h"
 
-#include <sys/param.h>
-#include <string>
-#include <vector>
-
-#include "eckit/eckit_config.h"
-
-#include "eckit/log/Log.h"
-#include "eckit/os/BackTrace.h"
+#include "eckit/parser/Tokenizer.h"
 #include "eckit/runtime/ContextBehavior.h"
 #include "eckit/runtime/StandardBehavior.h"
-#include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"
-#include "eckit/thread/ThreadSingleton.h"
-#include "eckit/parser/Tokenizer.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static Once<Mutex> local_mutex;
+namespace {
+    static pthread_once_t once = PTHREAD_ONCE_INIT;
+    typedef std::map<std::string,Channel*> LogMap;
+    static LogMap* logMap = 0;
+
+    static void init() {
+        logMap = new LogMap();
+    }
+
+	static Once<Mutex> local_mutex; // can't the same be done for logMap?
+}
+
 
 Context::Context() : argc_(0), argv_(0), taskID_(0), home_("/"), runName_("undef"), displayName_() {
 
@@ -138,6 +142,52 @@ Channel& Context::debugChannel() { return behavior_->debugChannel(); }
 
 Channel& Context::channel(int cat) { return behavior_->channel(cat); }
 
+Channel& Context::channel(const std::string& key)
+{
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(local_mutex);
+
+    LogMap::iterator itr = logMap->find(key);
+
+    if(itr != logMap->end()) { return *itr->second; }
+
+    if       ( key == "Error" )  { return errorChannel(); }
+    else if  ( key == "Warn"  )  { return warnChannel(); }
+    else if  ( key == "Info"  )  { return infoChannel(); }
+    else if  ( key == "Debug" )  { return debugChannel(); }
+
+    // requested channel not found
+    throw BadParameter( "Channel '" + key + "' not found ", Here());
+}
+
+void Context::registerChannel(const std::string& key, Channel* channel)
+{
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(local_mutex);
+
+    if(logMap->find(key) == logMap->end())
+    {
+        logMap->insert(std::make_pair<std::string,Channel*>(key, channel));
+    } else {
+        //channel already registered
+        throw BadParameter( "Channel '" + key + "' is already registered ", Here());
+    }
+}
+
+void Context::removeChannel(const std::string& key)
+{
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(local_mutex);
+
+    if(logMap->find(key) == logMap->end())
+    {
+        //channel is not registered
+        throw BadParameter( "Channel '" + key + "' does not exist ", Here());
+    } else {
+        logMap->erase (key);
+    }
+}
+
 static PathName proc_path(const std::string& name) {
   ASSERT(name.size() > 0);
   if (name[0] == '/') {
@@ -167,78 +217,6 @@ static PathName proc_path(const std::string& name) {
 }
 
 PathName Context::commandPath() const { return proc_path(argv(0)); }
-
-static RegisterConfigHome* config_dirs = 0;
-
-RegisterConfigHome::RegisterConfigHome(const char* name, const char* install_bin_dir, const char* developer_bin_dir,
-                                       const char* install_config_dir, const char* developer_config_dir)
-    : next_(config_dirs),
-      first_(true),
-      name_(name),
-      install_bin_dir_(install_bin_dir),
-      developer_bin_dir_(developer_bin_dir),
-      install_config_dir_(install_config_dir),
-      developer_config_dir_(developer_config_dir) {
-  config_dirs = this;
-}
-
-PathName Context::configHome(bool& first,
-                             const char* install_bin_dir,               // From ecbuild : APPNAME_INSTALL_BIN_DIR
-                             const char* developer_bin_dir,             // From ecbuild : APPNAME_DEVELOPER_BIN_DIR
-                             const char* install_config_dir,            // From ecbuild : APPNAME_INSTALL_DATA_DIR
-                             const char* developer_config_dir) const {  // From ecbuild : APPNAME_DEVELOPER_BIN_DIR
-
-  if (argc_ == 0) {   // Context was not initialised
-
-    if (first) {
-      Log::warning() << "Context::setup(argc, argv) was not called, assuming running from " << install_bin_dir
-                     << std::endl;
-      Log::warning() << "Using development configuration path " << install_config_dir << std::endl;
-      first = false;
-    }
-    return install_config_dir;
-  }
-
-  std::string path = eckit::PathName(commandPath()).realName().asString();
-  std::string install_bin_dir_path = eckit::PathName(install_bin_dir).realName().asString();
-
-  if (path.find(install_bin_dir_path) == 0) {
-    return install_config_dir;
-  }
-
-  std::string developer_bin_dir_path = eckit::PathName(developer_bin_dir).realName().asString();
-
-  if (path.find(developer_bin_dir_path) == 0) {
-    if (first) {
-      Log::warning() << "Current command is from " << developer_bin_dir << std::endl;
-      Log::warning() << "Using development configuration path " << developer_config_dir << std::endl;
-      first = false;
-    }
-    return developer_config_dir;
-  }
-
-  if (first) {
-    Log::warning() << "Current command is " << path << ", and is neither in " << install_bin_dir << " or "
-                   << developer_config_dir << std::endl;
-    Log::warning() << "Assuming configuration files are in " << install_config_dir << std::endl;
-    first = false;
-  }
-
-  return install_config_dir;
-}
-
-PathName Context::configHome(const std::string& name) const {
-  RegisterConfigHome* d = config_dirs;
-  while (d) {
-    if (name == d->name_) {
-      return configHome(d->first_, d->install_bin_dir_, d->developer_bin_dir_, d->install_config_dir_,
-                        d->developer_config_dir_);
-    }
-    d = d->next_;
-  }
-
-  throw SeriousBug("Not registered HOME for ~" + name);
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 

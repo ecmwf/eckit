@@ -16,6 +16,7 @@
 
 #include "eckit/ecml/core/Module.h"
 #include "eckit/ecml/core/ExecutionContext.h"
+#include "eckit/filesystem/PathName.h"
 
 namespace eckit {
 
@@ -24,6 +25,10 @@ public:
     Prelude();
     ~Prelude();
     void importInto(eckit::ExecutionContext&);
+
+    static std::string preludePath();
+private:
+    void executePrelude(eckit::ExecutionContext&);
 };
 
 } // namespace eckit

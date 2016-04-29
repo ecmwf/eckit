@@ -108,7 +108,7 @@ bool MarsFSPath::isLocal() const
 MarsFSPath::operator std::string() const
 {
     return std::string("marsfs://") + node_ + path_;
-    //§return path_;
+    // return path_;
 }
 
 

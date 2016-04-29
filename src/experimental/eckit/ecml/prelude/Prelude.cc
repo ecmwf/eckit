@@ -13,8 +13,11 @@
 
 #include <string>
 
-#include "eckit/ecml/parser/Request.h"
+#include "eckit/eckit_version.h"
+#include "eckit/runtime/Context.cc"
+#include "eckit/parser/StringTools.h"
 
+#include "eckit/ecml/parser/Request.h"
 #include "eckit/ecml/core/RequestHandler.h"
 #include "eckit/ecml/core/ExecutionContext.h"
 #include "eckit/ecml/core/Environment.h"
@@ -42,7 +45,6 @@
 #include "NullHandler.h"
 #include "RunHandler.h"
 #include "REPLHandler.h"
-#include "DictionaryHandler.h"
 #include "RangeHandler.h"
 #include "ForHandler.h"
 #include "GlobHandler.h"
@@ -57,8 +59,32 @@ using namespace std;
 Prelude::Prelude() {}
 Prelude::~Prelude() {}
 
-static Request native(const string& name) { return new Cell("_native", name, 0, 0); }
+// unused // static Request native(const string& name) { return new Cell("_native", name, 0, 0); }
+
 static Request macro(const string& name) { return new Cell("_macro", name, 0, 0); }
+
+std::string Prelude::preludePath()
+{
+    const std::string installPrefix (ECKIT_INSTALL_PREFIX),
+                      buildDir (ECKIT_BUILD_DIR);
+
+    std::string p (installPrefix + "/include/prelude.ecml" );
+
+    if (! PathName(p).exists())
+        p = buildDir + "/include/prelude.ecml";
+
+    Log::debug() << "preludePath: " << p << endl;
+
+    if (! PathName(p).exists()) 
+        Log::warning() << "ecml: cannot find prelude.ecml in either " 
+                       << installPrefix << " or " << buildDir << std::endl;
+    return p;
+}
+
+void Prelude::executePrelude(ExecutionContext& context)
+{
+    context.executeScriptFile(preludePath());
+}
 
 void Prelude::importInto(ExecutionContext& context)
 {
@@ -85,7 +111,6 @@ void Prelude::importInto(ExecutionContext& context)
     static NullHandler null("null");
     static RunHandler run("run");
     static REPLHandler repl("repl");
-    static DictionaryHandler dictionary("dictionary");
     static RangeHandler range("range");
     static ForHandler _for("for");
     static GlobHandler _glob("glob");
@@ -120,11 +145,12 @@ void Prelude::importInto(ExecutionContext& context)
     context.registerHandler("getenv", _getenv);
     context.registerHandler("join_strings", join_strings);
     context.registerHandler("null", null);
-    context.registerHandler("dictionary", dictionary);
     context.registerHandler("range", range);
     context.registerHandler("glob", _glob);
     context.registerHandler("read_text_file", read_text_file);
     context.registerHandler("throw", _throw);
+
+    executePrelude(context);
 }
 
 } // namespace eckit

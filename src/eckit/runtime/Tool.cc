@@ -25,7 +25,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-Tool::Tool(int argc,char **argv) : 
+Tool::Tool(int argc, char **argv, const char* homeenv, const char* homepath) :
     name_("undefined")
 {
 	name_ = PathName(argv[0]).baseName(false);
@@ -33,6 +33,15 @@ Tool::Tool(int argc,char **argv) :
     Context::instance().setup( argc, argv );
     Context::instance().behavior( new ToolBehavior() );
     Context::instance().runName( name_ );
+
+    // Read home path from environment if set (takes precedence)
+    const char* home = homeenv ? ::getenv(homeenv) : 0;
+
+    if(home) {
+        eckit::Context::instance().home(home);
+    } else if(homepath) {
+        eckit::Context::instance().home(homepath);
+    }
 
     Loader::callAll(&Loader::execute);
 }

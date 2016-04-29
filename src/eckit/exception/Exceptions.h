@@ -82,7 +82,7 @@ private: // members
 
 class SeriousBug : public Exception {
 public:
-    SeriousBug(const std::string& w) : Exception(std::string("Serious Bug: ") + w) {}
+    SeriousBug(const std::string& w);
     SeriousBug(const std::string&,const CodeLocation&);
     SeriousBug(const char*,const CodeLocation&);
 };
@@ -123,6 +123,12 @@ class BadCast : public Exception {
 public:
     BadCast(const std::string& s);
     BadCast(const std::string&, const CodeLocation&);
+};
+
+class BadValue: public Exception {
+public:
+    BadValue(const std::string& s);
+    BadValue(const std::string&, const CodeLocation&);
 };
 
 class NotImplemented : public Exception {

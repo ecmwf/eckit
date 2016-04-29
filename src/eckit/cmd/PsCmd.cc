@@ -59,12 +59,14 @@ void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::s
 
     for (int i = 0; i < info.depth(); i++) out << "   ";
 
+    // name column
     std::string app = info.name();
     out << app;
 
     int n = info.depth() * 3 + app.length();
     for (int i = 0; i < 16 - n; i++) out << ' ';
 
+    // Idle column
     long age = ::time(0) - info.last();
 
     long s = age % 60;
@@ -82,13 +84,20 @@ void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::s
     else
         out << std::setw(6) << s;
 
+    // State flag
     out << ' ' << info.state();
+    // Pid column
     out << std::setw(9) << info.pid();
+    // Task column
     out << "   " << std::setfill('0') << std::setw(3) << tasknb << std::setfill(' ');
+    // ID column
     out << std::setw(11) << info.taskID();
+    // Info column
     out << std::setw(14) << info.message();
+    // Request column
     out << "  " << info.status();
 
+    // Progress indicator
     if (info.max() != info.min()) {
         double x = (info.val() - info.min()) * 100.0 / (info.max() - info.min());
         out << ' ' << x << '%';

@@ -110,7 +110,7 @@ class SimpleOption : public Option {
 };
 
 
-}
+} // namespace option
 
 } // namespace eckit
 

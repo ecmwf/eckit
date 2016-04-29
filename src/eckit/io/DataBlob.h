@@ -70,13 +70,11 @@ protected: // members
 typedef eckit::SharedPtr<eckit::DataBlob> DataBlobPtr;
 
 
-// -------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+/// A self-registering factory for producing DataBlob instances.
 
 class DataBlobFactory {
-
-    /*
-     * A (self-registering) factory for producing DataBlob instances.
-     */
 
     std::string name_;
     virtual DataBlob* make(const void* data, size_t length) const = 0 ;
@@ -98,13 +96,11 @@ private: // methods
     static const DataBlobFactory& findFactory(const std::string&);
 };
 
+/// Templated specialisation of the self-registering factory,
+/// that does the self-registration, and the construction of each object.
+
 template< class T>
 class DataBlobBuilder : public DataBlobFactory {
-
-    /*
-     * Templated specialisation of the self-registering factory, that does the
-     * self-registration, and the construction of each object.
-     */
 
     virtual DataBlob* make(const void* data, size_t length) const {
         return new T(data, length);
@@ -116,8 +112,8 @@ class DataBlobBuilder : public DataBlobFactory {
 public:
     DataBlobBuilder(const std::string &name) : DataBlobFactory(name) {}
 };
-// -------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

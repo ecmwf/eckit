@@ -11,6 +11,8 @@
 #ifndef eckit_Context_h
 #define eckit_Context_h
 
+#include <vector>
+
 #include "eckit/config/Configurable.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/ScopedPtr.h"
@@ -20,9 +22,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class ContextBehavior;
-
 class LogStream;
-
 class PathName;
 
 class Context : public Configurable {
@@ -74,16 +74,18 @@ public: // methods
     Channel& errorChannel();
     Channel& debugChannel();
     Channel& channel(int cat);
+    Channel& channel(const std::string& key);
+    void registerChannel(const std::string& key, Channel* channel);
+    void removeChannel(const std::string& key);
 
     //
 
     PathName commandPath() const; // Full path to current command
-    PathName configHome(const std::string& name) const;
 
 
     // From Configurable
 
-	virtual void   reconfigure();
+    virtual void reconfigure();
     virtual std::string name() const   { return "Context"; }
 
 private: // methods
@@ -97,12 +99,6 @@ private: // methods
     // From Configurable
 
 	virtual std::string kind() const  { return "Context"; }
-
-    PathName configHome(bool&,
-                       const char* install_bin_dir,
-                       const char* developer_bin_dir,
-                       const char* install_config_dir,
-                       const char* developer_config_dir) const;
 
 protected:
 
@@ -119,23 +115,6 @@ protected:
     std::string  runName_;      ///< name of running application
     std::string  displayName_;  ///< name to be displayed of running application
 
-};
-
-class RegisterConfigHome {
-    friend class Context;
-    RegisterConfigHome* next_;
-    bool first_;
-    const char* name_;
-    const char* install_bin_dir_;
-    const char* developer_bin_dir_;
-    const char* install_config_dir_;
-    const char* developer_config_dir_;
-public:
-    RegisterConfigHome(const char* name, // APPNAME
-                      const char* install_bin_dir,  // From ecbuild : APPNAME_INSTALL_BIN_DIR
-                      const char* developer_bin_dir, // From ecbuild : APPNAME_DEVELOPER_BIN_DIR
-                      const char* install_config_dir, // From ecbuild : APPNAME_INSTALL_DATA_DIR
-                      const char* developer_config_dir); // From ecbuild: APPNAME_DEVELOPER_BIN_DIR
 };
 
 //----------------------------------------------------------------------------------------------------------------------

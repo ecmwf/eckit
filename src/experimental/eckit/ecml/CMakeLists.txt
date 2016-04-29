@@ -84,8 +84,6 @@ prelude/RunHandler.h
 prelude/RunHandler.cc
 prelude/REPLHandler.h
 prelude/REPLHandler.cc
-prelude/DictionaryHandler.h
-prelude/DictionaryHandler.cc
 prelude/RangeHandler.h
 prelude/RangeHandler.cc
 prelude/ForHandler.cc
@@ -126,8 +124,9 @@ ecbuild_add_library( TARGET             eckit_ecml
                      INSTALL_HEADERS    ALL
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/ecml
                      SOURCES            ${eckit_ecml_srcs}
-                     INCLUDES           ${CURSES_INCLUDE_DIR} ${READLINE_INCLUDE_DIR}
-                     LIBS               eckit ${CURSES_LIBRARIES} ${READLINE_LIBRARIES} )
+                     LIBS               eckit 
+                                        eckit_cmd # for UserInput
+                                        )
 
 ecbuild_add_executable( TARGET eckit_ecml_test
                         SOURCES tests/ecml_test.cc
@@ -138,4 +137,9 @@ ecbuild_add_executable( TARGET eckit_ecml_unittests
                         LIBS eckit eckit_ecml)
 
 add_subdirectory( tests )
+
+configure_file( prelude/prelude.ecml ${CMAKE_BINARY_DIR}/include/prelude.ecml COPYONLY)
+
+install(FILES       ${CMAKE_CURRENT_SOURCE_DIR}/prelude/prelude.ecml
+        DESTINATION ${INSTALL_INCLUDE_DIR} )
 

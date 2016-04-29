@@ -169,19 +169,11 @@ set_package_properties( AIO PROPERTIES TYPE RECOMMENDED PURPOSE "support for asy
 ### thread library ( preferably pthreads )
 
 set( CMAKE_THREAD_PREFER_PTHREAD 1 )
-find_package(Threads REQUIRED)
+find_package( Threads REQUIRED )
 
-### Curses and Readline (for CmdApplication)
+### Curses (for CmdApplication)
 
-# Don't accept the EditLine wrapper
-set( READLINE_WRAPPER_OK FALSE )
-
-ecbuild_add_option( FEATURE READLINE
-                    DEFAULT ON
-                    DESCRIPTION "GNU Readline library (for CmdApplication)"
-                    REQUIRED_PACKAGES "READLINE" )
-
-find_package( Curses  REQUIRED )
+find_package( Curses REQUIRED )
 
 ###############################################################################
 # checks
@@ -215,7 +207,7 @@ if( HAVE_EXPERIMENTAL )
 
   list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
 
-  list( APPEND ECKIT_LIBRARIES eckit_la eckit_geometry eckit_maths )
+  list( APPEND ECKIT_LIBRARIES eckit_linalg eckit_geometry eckit_maths )
 
   if( HAVE_EIGEN )
       if( ECKIT_CONTRIB_EIGEN )

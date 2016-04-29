@@ -43,6 +43,7 @@ static long param_;
 static std::string theCmd_;
 static std::list<int> buffer_;
 static bool prompt_ = true;
+static bool console_ = false;
 
 typedef std::map<char, bool, std::less<char> > FlagMap;
 static FlagMap theFlags_;
@@ -117,17 +118,30 @@ void CmdParser::parse(const std::string& line, std::ostream& out) {
 
 //-----------------------------------------------------------------------------
 
-void CmdParser::parse(std::istream& in, std::ostream& out) {
+void CmdParser::parse(std::istream& in, std::ostream& out, const Prompter& prompter) {
     char l[102400];
     CmdYacc::eckit_cmd_debug = eckit_cmd_debug_;
 
     out_ = &out;
     in.tie(out_);
 
-    prompt();
+    prompt(prompter);
     reset();
 
-    while (in.getline(l, sizeof(l))) {
+    while (true) {
+        if(console_) {
+            const char* p = UserInput::getUserInput(prompter.prompt().c_str(), &CmdResource::completion);
+            if(!p) {
+                break;
+            }
+            strncpy(l,p,sizeof(l));
+        }
+        else
+        {
+            if(!in.getline(l, sizeof(l))) {
+                break;
+            }
+        }
         char* p = l;
         while (p && *p == ' ') ++p;
 
@@ -159,7 +173,7 @@ void CmdParser::parse(std::istream& in, std::ostream& out) {
             }
         }
 
-        prompt();
+        prompt(prompter);
         reset();
     }
 }
@@ -177,10 +191,11 @@ void CmdParser::eckit_cmd_error(char* msg)
 
 //-----------------------------------------------------------------------------
 
-void CmdParser::prompt() {
-    static PathName lock("~/locks/admin/cron");
+void CmdParser::prompt(const Prompter& prompter) {
+
     if (prompt_)
-        (*out_) << (lock.exists() ? "hermesadm (LOCKED)%" : "hermesadm%") << history_.size() + 1 << "> " << std::flush;
+        (*out_) << prompter.prompt() << "%" << history_.size() + 1 << "> " << std::flush;
+
     Log::status() << "Idle..." << std::endl;
 }
 
@@ -475,6 +490,10 @@ void CmdParser::var(const std::string& s, const Value& v) {
 
 void CmdParser::prompt(bool p) {
     prompt_ = p;
+}
+
+void CmdParser::console(bool c) {
+    console_ = c;
 }
 
 //-----------------------------------------------------------------------------

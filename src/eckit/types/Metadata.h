@@ -31,7 +31,7 @@ public: // methods
 
     virtual ~Metadata();
 
-    virtual std::vector<std::string> parameters() const = 0;
+    virtual std::vector<std::string> keywords() const = 0;
 
     virtual bool has(const std::string& name) const = 0;
 
@@ -39,12 +39,13 @@ public: // methods
     virtual void get(const std::string& name, long& value) const = 0;
     virtual void get(const std::string& name, double& value) const = 0;
 
+protected: // methods
+
     friend std::ostream& operator<<(std::ostream& s, const Metadata& p) {
         p.print(s);
         return s;
     }
 
-protected: // methods
 
     virtual void print(std::ostream&) const = 0;
 

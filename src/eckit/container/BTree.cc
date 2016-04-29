@@ -64,7 +64,7 @@ BTree<K,V,S>::BTree( const PathName& path, bool readOnly ):
     cacheWrites_(true),
     readOnly_(readOnly)
 {
-    SYSCALL( fd_ = ::open(path.localPath(), readOnly_ ? O_RDONLY : (O_RDWR|O_CREAT),0777) );
+    SYSCALL2( fd_ = ::open(path.localPath(), readOnly_ ? O_RDONLY : (O_RDWR|O_CREAT),0777), path );
 
     AutoLock<BTree<K,V,S> > lock(this);
     Stat::Struct s;
@@ -463,7 +463,8 @@ bool BTree<K,V,S>::search(unsigned long page, const K& key, V& result) const
 }
 
 template<class K, class V, int S>
-void BTree<K,V,S>::range(const K& key1, const K& key2, std::vector< result_type >& result)
+template<class T>
+void BTree<K,V,S>::range(const K& key1, const K& key2, T& result)
 {
     AutoSharedLock<BTree<K,V,S> > lock(this);
     result.clear();
@@ -477,7 +478,8 @@ bool BTree<K,V,S>::remove(const K &)
 }
 
 template<class K, class V, int S>
-void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, std::vector< result_type >& result)
+template<class T>
+void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, T& result)
 {
     Page p;
     loadPage(page, p);

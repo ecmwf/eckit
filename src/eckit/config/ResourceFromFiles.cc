@@ -38,6 +38,8 @@ void ResourceFromFiles::appendConfig( const PathName& path, config::Script& scri
 
   std::stringstream s;
 
+  Log::debug() << "Appending config " << path << std::endl;
+
   if( read( p, path, s ) )
     script.readStream(s);
 }

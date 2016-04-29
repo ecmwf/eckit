@@ -53,22 +53,17 @@ public:
 
     ~BTree();
 
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
     // -- Methods
 
     bool get(const K&, V&);
     bool set(const K&, const V&);
-    void range(const K& key1, const K& key2, std::vector< result_type >& result);
+
+    template<class T>
+    void range(const K& key1, const K& key2, T& result);
 
     bool remove(const K&);
 
     void dump(std::ostream& s = std::cout) const;
-    void dump(std::ostream&, unsigned long page, int depth) const;
 
 	/// Counts the entries in the whole tree
 	/// This is not an efficient call since it visits the whole tree. Use with care.
@@ -83,9 +78,11 @@ public:
 
     void flush();
 
-protected:
+    const PathName& path() const { return path_; }
 
-    // -- Methods
+private: // methods
+
+    void dump(std::ostream&, unsigned long page, int depth) const;
 
 	void print(std::ostream& o) const { dump(o); }
 
@@ -286,7 +283,9 @@ private:
 
     void lockRange(off_t start,off_t len,int cmd,int type);
     bool search(unsigned long page, const K&, V&) const;
-    void search(unsigned long page, const K& key1, const K& key2, std::vector< result_type >& result);
+
+    template<class T>
+    void search(unsigned long page, const K& key1, const K& key2, T& result);
 
 
     void splitRoot();

@@ -11,9 +11,12 @@
 #include "eckit/parser/StringTools.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/parser/StringTools.h"
+#include "eckit/utils/Regex.h"
+
 #include "Cell.h"
 #include "CellPrinter.h"
 #include "CellDotPrinter.h"
+
 
 using namespace std;
 using namespace eckit;
@@ -121,6 +124,15 @@ Cell* Cell::valueOrDefault(const string& keyword, Cell* defaultValue) const
         return defaultValue;
 
     return Cell::clone(p->value());
+}
+
+void Cell::lookupVariables(const std::string& pattern, std::vector<std::string>& ret)
+{
+    Regex re (StringTools::lower(pattern));
+
+    for (const Cell* r (this); r; r = r->rest())
+        if (re.match(StringTools::lower(r->text())))
+            ret.push_back(r->text());
 }
 
 std::string Cell::valueAsString(const string& keyword, const std::string& defaultValue) const

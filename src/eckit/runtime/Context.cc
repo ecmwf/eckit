@@ -23,21 +23,25 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace {
-    static pthread_once_t once = PTHREAD_ONCE_INIT;
-    typedef std::map<std::string,Channel*> LogMap;
-    static LogMap* logMap = 0;
+static Context* context = 0;
+static pthread_once_t once = PTHREAD_ONCE_INIT;
 
-    static void init() {
-        logMap = new LogMap();
-    }
+static Once<Mutex> local_mutex;
 
-	static Once<Mutex> local_mutex; // can't the same be done for logMap?
+void Context::init() {
+    context = new Context();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-Context::Context() : argc_(0), argv_(0), taskID_(0), home_("/"), runName_("undef"), displayName_() {
-
+Context::Context() :
+    argc_(0),
+    argv_(0),
+    taskID_(0),
+    home_("/"),
+    runName_("undef"),
+    displayName_()
+{
   char* h = getenv("HOME");
   if (h) home_ = h;
 
@@ -50,22 +54,22 @@ Context::Context() : argc_(0), argv_(0), taskID_(0), home_("/"), runName_("undef
 Context::~Context() {}
 
 Context& Context::instance() {
-  AutoLock<Mutex> lock(local_mutex);
-  static Context ctxt;
-  return ctxt;
+  pthread_once(&once, Context::init);
+  return *context;
 }
 
 void Context::setup(int argc, char** argv) {
-  if (argc <= 0 || argv == 0)
-    throw SeriousBug("Context setup with bad command line arguments");
+    AutoLock<Mutex> lock(local_mutex);
 
-  argc_ = argc;
-  argv_ = argv;
+    if(argc <= 0 || argv == 0) { throw SeriousBug("Context setup with bad command line arguments"); }
+
+    argc_ = argc;
+    argv_ = argv;
 }
 
 void Context::behavior(ContextBehavior* b) {
   AutoLock<Mutex> lock(local_mutex);
-  if (!b) throw SeriousBug("Context setup with bad context behavior");
+  if(!b) { throw SeriousBug("Context setup with bad context behavior"); }
   behavior_.reset(b);
 }
 
@@ -74,9 +78,15 @@ ContextBehavior& Context::behavior() const {
   return *behavior_.get();
 }
 
-int Context::debug() const { return behavior_->debug(); }
+int Context::debug() const {
+    AutoLock<Mutex> lock(local_mutex);
+    return behavior_->debug();
+}
 
-void Context::debug(const int d) { behavior_->debug(d); }
+void Context::debug(const int d) {
+    AutoLock<Mutex> lock(local_mutex);
+    behavior_->debug(d);
+}
 
 int Context::argc() const {
   AutoLock<Mutex> lock(local_mutex);
@@ -91,9 +101,15 @@ std::string Context::argv(int n) const {
   return argv_[n] ? argv_[n] : "<undefined>";
 }
 
-char** Context::argvs() const { return argv_; }
+char** Context::argvs() const {
+    AutoLock<Mutex> lock(local_mutex);
+    return argv_;
+}
 
-void Context::reconfigure() { behavior_->reconfigure(); }
+void Context::reconfigure() {
+    AutoLock<Mutex> lock(local_mutex);
+    behavior_->reconfigure();
+}
 
 const std::string& Context::home() const {
   AutoLock<Mutex> lock(local_mutex);
@@ -144,12 +160,11 @@ Channel& Context::channel(int cat) { return behavior_->channel(cat); }
 
 Channel& Context::channel(const std::string& key)
 {
-    pthread_once(&once, init);
     AutoLock<Mutex> lock(local_mutex);
 
-    LogMap::iterator itr = logMap->find(key);
+    ChannelRegistry::iterator itr = channels_.find(key);
 
-    if(itr != logMap->end()) { return *itr->second; }
+    if(itr != channels_.end()) { return *itr->second; }
 
     if       ( key == "Error" )  { return errorChannel(); }
     else if  ( key == "Warn"  )  { return warnChannel(); }
@@ -162,29 +177,25 @@ Channel& Context::channel(const std::string& key)
 
 void Context::registerChannel(const std::string& key, Channel* channel)
 {
-    pthread_once(&once, init);
     AutoLock<Mutex> lock(local_mutex);
 
-    if(logMap->find(key) == logMap->end())
-    {
-        logMap->insert(std::make_pair<std::string,Channel*>(key, channel));
-    } else {
-        //channel already registered
+    if(channels_.find(key) == channels_.end()) {
+        channels_.insert(std::make_pair<std::string,Channel*>(key, channel));
+    }
+    else {
         throw BadParameter( "Channel '" + key + "' is already registered ", Here());
     }
 }
 
 void Context::removeChannel(const std::string& key)
 {
-    pthread_once(&once, init);
     AutoLock<Mutex> lock(local_mutex);
 
-    if(logMap->find(key) == logMap->end())
-    {
-        //channel is not registered
+    if(channels_.find(key) == channels_.end()) {
         throw BadParameter( "Channel '" + key + "' does not exist ", Here());
-    } else {
-        logMap->erase (key);
+    }
+    else {
+        channels_.erase(key);
     }
 }
 

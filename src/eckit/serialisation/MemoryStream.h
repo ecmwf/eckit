@@ -45,6 +45,8 @@ public:
 	virtual void rewind();
 	virtual std::string name() const;
 
+    size_t position() const;
+
 
 // -- Overridden methods
 

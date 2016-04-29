@@ -91,6 +91,9 @@ std::string MemoryStream::name() const {
 	return "MemoryStream";
 }
 
+size_t MemoryStream::position() const {
+    return position_;
+}
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

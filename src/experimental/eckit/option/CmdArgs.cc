@@ -142,6 +142,9 @@ size_t CmdArgs::count() const
     return args_.size();
 }
 
+const std::string& CmdArg::tool() const {
+    return tool_;
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace option

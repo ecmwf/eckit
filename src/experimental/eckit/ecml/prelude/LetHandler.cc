@@ -31,9 +31,13 @@ LetHandler::LetHandler(const string& name)
 
 Request LetHandler::handle(const Request request, ExecutionContext& context)
 {
-    ASSERT(request->tag() == "_verb" && request->text() == "let");
+    //ASSERT(request->tag() == "_verb" && request->text() == "let");
 
+    // TODO: try .. catch ... handle exceptions
+    Request marker (new Cell("_verb", "_let_marker", 0, 0));
+    context.pushEnvironmentFrame(marker);
     Request evaluatedAttributes (context.interpreter().evalAttributes(request, context));
+    context.popEnvironmentFrame(marker);
 
     Request frame (new Cell("_verb", "let", 0, 0));
     for (Request e(evaluatedAttributes->rest()); e; e = e->rest())

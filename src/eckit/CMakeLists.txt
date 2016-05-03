@@ -462,6 +462,8 @@ serialisation/Streamable.h
 serialisation/Streamable.cc
 serialisation/FileStream.h
 serialisation/FileStream.cc
+serialisation/MemoryStream.h
+serialisation/MemoryStream.cc
 serialisation/HandleStream.h
 serialisation/PipeStream.h
 serialisation/PipeStream.cc

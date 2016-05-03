@@ -47,7 +47,7 @@ public:
 
     // -- Contructors
 
-    BTree( const PathName&, bool readOnly = false );
+    BTree( const PathName&, bool readOnly = false, off_t offset = 0);
 
     // -- Destructor
 
@@ -264,6 +264,7 @@ private:
     bool cacheReads_;
     bool cacheWrites_;
     bool readOnly_;
+    off_t offset_;
 
     struct _PageInfo {
         Page* page_;

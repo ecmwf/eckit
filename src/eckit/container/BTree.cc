@@ -57,20 +57,27 @@ void BTree<K, V, S>::_NodePage::print(std::ostream& s) const
 
 
 template<class K,class V, int S>
-BTree<K,V,S>::BTree( const PathName& path, bool readOnly ):
+BTree<K,V,S>::BTree( const PathName& path, bool readOnly, off_t offset ):
     path_(path),
     fd_(-1),
     cacheReads_(true),
     cacheWrites_(true),
-    readOnly_(readOnly)
+    readOnly_(readOnly),
+    offset_(offset)
 {
     SYSCALL2( fd_ = ::open(path.localPath(), readOnly_ ? O_RDONLY : (O_RDWR|O_CREAT),0777), path );
 
     AutoLock<BTree<K,V,S> > lock(this);
-    Stat::Struct s;
-    SYSCALL(Stat::fstat(fd_, &s));
 
-    if (s.st_size == 0) {
+    off_t here = ::lseek(fd_,0,SEEK_END);
+    if(here == off_t(-1))
+        throw FailedSystemCall("lseek");
+
+    if (here <= offset_) {
+
+        here = ::lseek(fd_,offset_,SEEK_SET);
+        if(here == off_t(-1))
+            throw FailedSystemCall("lseek");
 
         // Add root page
         Page root;
@@ -538,7 +545,7 @@ template<class K, class V, int S>
 off_t BTree<K,V,S>::pageOffset(unsigned long page) const
 {
 	ASSERT(page > 0); // Root page is 1. 0 is leaf marker
-    return sizeof(Page) * off_t(page-1);
+    return sizeof(Page) * off_t(page-1) + offset_;
 }
 
 
@@ -632,10 +639,11 @@ void BTree<K,V,S>::_newPage(Page& p)
 {
     ASSERT(!readOnly_);
 
-    off_t here;
-    SYSCALL(here = ::lseek(fd_,0,SEEK_END));
+    off_t here = ::lseek(fd_,0,SEEK_END);
+    if(here == off_t(-1))
+        throw FailedSystemCall("lseek");
 
-    unsigned long long page = here/sizeof(Page) + 1;
+    unsigned long long page = (here - offset_)/sizeof(Page) + 1;
 
 	// std::cout << "NEWPAGE " << page << std::endl;
 

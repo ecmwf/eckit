@@ -30,34 +30,22 @@ template<class T> struct Title {
 };
 
 template<>
-const char *Title<size_t>::operator()() const {
-    return "ordinal";
-}
+const char *Title<size_t>::operator()() const;
 
 template<>
-const char *Title<long>::operator()() const {
-    return "interger";
-}
+const char *Title<long>::operator()() const ;
 
 template<>
-const char *Title<double>::operator()() const {
-    return "real";
-}
+const char *Title<double>::operator()() const;
 
 template<>
-const char *Title<bool>::operator()() const {
-    return "0/1";
-}
+const char *Title<bool>::operator()() const ;
 
 template<>
-const char *Title<std::string>::operator()() const {
-    return "string";
-}
+const char *Title<std::string>::operator()() const;
 
 template<>
-const char *Title<eckit::PathName>::operator()() const {
-    return "path";
-}
+const char *Title<eckit::PathName>::operator()() const;
 
 template<class T>
 SimpleOption<T>::SimpleOption(const std::string &name, const std::string &description):
@@ -79,21 +67,17 @@ void SimpleOption<T>::set(LocalConfiguration &parametrisation) const {
     Option::set(parametrisation);
 }
 
-template<>
-void SimpleOption<bool>::set(LocalConfiguration &parametrisation) const {
-    parametrisation.set(name_, true);
-}
 
 template <>
-void SimpleOption<eckit::PathName>::set(const std::string& value, LocalConfiguration& parametrisation) const {
-    parametrisation.set(name_, value);
-}
-
+void SimpleOption<eckit::PathName>::set(const std::string& value, LocalConfiguration& parametrisation) const;
 
 template<class T>
 void SimpleOption<T>::print(std::ostream &out) const {
     out << "   --" << name_ << "=" << Title<T>()() << " (" << description_ << ")";
 }
+
+template<>
+void SimpleOption<bool>::set(LocalConfiguration &parametrisation) const;
 
 } // namespace option
 

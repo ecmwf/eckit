@@ -419,8 +419,8 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_cast )
     // compiler will assume that everything is fine, and just do a bitwise check...
     BOOST_CHECK_EQUAL(int(val_long), -2147483647);
     BOOST_CHECK_EQUAL((unsigned int)(val_long), -2147483647);
-    BOOST_CHECK(short(val_long) != -2147483647);             // Change in bit size
-    BOOST_CHECK((unsigned short)(val_long) != -2147483647);  // Change in bit size
+//    BOOST_CHECK(short(val_long) != -2147483647);             // a short ranges [−32767, +32767] so this is always true
+//    BOOST_CHECK((unsigned short)(val_long) != -2147483647);  // unsigned is always positive
     BOOST_CHECK_EQUAL(long(val_long), -2147483647);
     BOOST_CHECK_EQUAL((unsigned long)(val_long), -2147483647);
     BOOST_CHECK_EQUAL((long long)(val_long), -2147483647);

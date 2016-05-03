@@ -42,7 +42,7 @@ CmdArgs::CmdArgs(usage_proc usage, int args_count,  std::vector< option::Option 
 
 void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
     Context &ctx = Context::instance();
-    const std::string &tool = ctx.runName();
+    tool_ = ctx.runName();
     size_t argc = ctx.argc();
     bool error = false;
 
@@ -91,7 +91,7 @@ void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
     }
 
     if (error) {
-        usage(tool);
+        usage(tool_);
         if (options_.size()) {
             Log::info() << std::endl;
             Log::info() << "Options are:" << std::endl;

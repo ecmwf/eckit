@@ -53,6 +53,7 @@ public: // methods
     const std::set<std::string>& keys() const;
     const std::vector<std::string>& args() const;
     const std::string& args(size_t) const;
+    const std::string& tool() const;
 
     size_t count() const;
 
@@ -69,6 +70,8 @@ private: // members
     std::set<std::string> keys_;
     std::vector<std::string> args_;
     std::vector<Option*> options_;
+
+    std::string tool_;
 
     bool throwOnError_;
 };

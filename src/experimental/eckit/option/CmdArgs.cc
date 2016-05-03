@@ -20,6 +20,7 @@
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/Option.h"
 #include "eckit/parser/Tokenizer.h"
+#include "eckit/parser/StringTools.h"
 #include "eckit/runtime/Context.h"
 
 
@@ -62,14 +63,15 @@ void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
         if (a.size() > 2 && a[0] == '-' && a[1] == '-') {
             std::vector<std::string> v;
             parse(a.substr(2), v);
-            ASSERT(v.size() <= 2);
 
             std::map<std::string, const option::Option *>::const_iterator j = opts.find(v[0]);
             if (j != opts.end()) {
                 if (v.size() == 1) {
                     (*j).second->set(*this);
                 } else {
-                    (*j).second->set(v[1], *this);
+                    std::vector<std::string>::const_iterator b = v.begin();
+                    ++b;
+                    (*j).second->set(StringTools::join("=", b, v.end()), *this);
                 }
             } else {
                 Log::info() << "Invalid option --" << v[0] << std::endl;

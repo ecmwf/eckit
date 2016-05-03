@@ -142,7 +142,7 @@ size_t CmdArgs::count() const
     return args_.size();
 }
 
-const std::string& CmdArg::tool() const {
+const std::string& CmdArgs::tool() const {
     return tool_;
 }
 //----------------------------------------------------------------------------------------------------------------------

@@ -137,6 +137,11 @@ const std::string &CmdArgs::args(size_t i) const {
     return args_[i];
 }
 
+const std::string &CmdArgs::operator()(size_t i) const {
+    ASSERT(i < args_.size());
+    return args_[i];
+}
+
 size_t CmdArgs::count() const
 {
     return args_.size();

@@ -55,17 +55,7 @@ Timer::~Timer()
 {
     stop();
 
-    if(outputAtExit_) {
-
-        double  s   = elapsed();
-        double  cpu = elapsed_cpu();
-
-        out_ << name_ << ": "
-             << Seconds(s) << " elapsed, "
-             << Seconds(cpu) << " cpu"
-             << std::endl;
-    }
-
+    if(outputAtExit_) report();
 }
 
 
@@ -105,6 +95,16 @@ double Timer::elapsed_cpu()
     if( running() ) takeTime();
 
     return double(cpuStop_ - cpuStart_) / CLOCKS_PER_SEC;
+}
+
+void Timer::report(const std::string& message) {
+    const double  s   = elapsed();
+    const double  cpu = elapsed_cpu();
+
+    out_ << (message.size() ? message : name_) << ": "
+         << Seconds(s) << " elapsed, "
+         << Seconds(cpu) << " cpu"
+         << std::endl;
 }
 
 void Timer::takeTime()

@@ -39,12 +39,12 @@ public: // types
 
 public: // methods
 
-    CmdArgs(usage_proc usage, int args_count = -1, bool throw_on_error = false);
+    CmdArgs(usage_proc usage, int args_count = -1, int minimum_args = 0, bool throw_on_error = false);
 
     /// Initialise argument parser with a list of options
     /// @note Will take ownership of the contents of the vector, and delete them in destructor
     /// @todo This should probably have some form of smart pointer.
-    CmdArgs(usage_proc usage, int args_count, std::vector<Option*>& options, bool throw_on_error = false);
+    CmdArgs(usage_proc usage, std::vector<Option*>& options, int args_count = -1, int minimum_args = 0, bool throw_on_error = false);
 
     ~CmdArgs();
 
@@ -62,7 +62,7 @@ public: // methods
 
 private: // methods
 
-    void init(usage_proc usage, int args_count, bool throw_on_errror);
+    void init(usage_proc usage, int args_count, int minumum_args, bool throw_on_errror);
 
     virtual void print(std::ostream&) const;
 

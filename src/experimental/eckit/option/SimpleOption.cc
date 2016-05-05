@@ -71,6 +71,9 @@ void SimpleOption<T>::set(LocalConfiguration &parametrisation) const {
 template <>
 void SimpleOption<eckit::PathName>::set(const std::string& value, LocalConfiguration& parametrisation) const;
 
+template<>
+void SimpleOption<bool>::print(std::ostream &out) const;
+
 template<class T>
 void SimpleOption<T>::print(std::ostream &out) const {
     out << "   --" << name_ << "=" << Title<T>()() << " (" << description_ << ")";

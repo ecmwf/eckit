@@ -11,6 +11,8 @@
 #ifndef eckit_AutoLock_h
 #define eckit_AutoLock_h
 
+#include "eckit/log/Seconds.h"
+#include "eckit/log/Timer.h"
 #include "eckit/thread/AutoLocker.h"
 #include "eckit/memory/NonCopyable.h"
 
@@ -66,6 +68,54 @@ private: // members
 	
     T& resource_;
 
+};
+
+//-----------------------------------------------------------------------------
+
+template<class T>
+class TimedAutoLock : private NonCopyable {
+public:
+
+    // -- Constructors
+
+    TimedAutoLock(T& resource, const std::string& message)
+        : resource_(resource), timer_(message + " (release)") {
+        resource_.lock();
+        timer_.report(message + " (acquire)");
+    }
+
+    // -- Destructor
+
+    ~TimedAutoLock() { resource_.unlock(); }
+
+private: // members
+
+    T& resource_;
+    Timer timer_;
+};
+
+//-----------------------------------------------------------------------------
+
+template<class T, class U>
+class TraceAutoLock : private NonCopyable {
+public:
+
+    // -- Constructors
+
+    TraceAutoLock(T& resource, const std::string& message, int level=0)
+        : resource_(resource), timer_(message + " (release)", level) {
+        resource_.lock();
+        timer_.report(message + " (acquire)");
+    }
+
+    // -- Destructor
+
+    ~TraceAutoLock() { resource_.unlock(); }
+
+private: // members
+
+    T& resource_;
+    TraceTimer<U> timer_;
 };
 
 //-----------------------------------------------------------------------------

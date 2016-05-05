@@ -88,6 +88,12 @@ void SimpleOption<eckit::PathName>::set(const std::string& value, LocalConfigura
     parametrisation.set(name_, value);
 }
 
+template<>
+void SimpleOption<bool>::print(std::ostream &out) const {
+    out << "   --" << name_ << " (" << description_ << ")";
+}
+
+
 } // namespace option
 
 } // namespace eckit

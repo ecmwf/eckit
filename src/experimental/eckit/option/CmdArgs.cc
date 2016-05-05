@@ -31,16 +31,16 @@ namespace option {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-CmdArgs::CmdArgs(usage_proc usage, int args_count, bool throw_on_error) {
-    init(usage, args_count, throw_on_error);
+CmdArgs::CmdArgs(usage_proc usage, int args_count, int minimum_args, bool throw_on_error) {
+    init(usage, args_count, minimum_args, throw_on_error);
 }
 
-CmdArgs::CmdArgs(usage_proc usage, int args_count,  std::vector< option::Option *>& options, bool throw_on_error) {
+CmdArgs::CmdArgs(usage_proc usage, std::vector<Option*>& options, int args_count, int minimum_args, bool throw_on_error) {
     std::swap(options_, options); // Take ownership so it can be destroyed
-    init(usage, args_count, throw_on_error);
+    init(usage, args_count, minimum_args, throw_on_error);
 }
 
-void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
+void CmdArgs::init(usage_proc usage, int args_count, int minimum_args, bool throw_on_error)  {
     Context &ctx = Context::instance();
     tool_ = ctx.runName();
     size_t argc = ctx.argc();
@@ -85,7 +85,16 @@ void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
 
     if (args_count >= 0) {
         if (args_.size() != size_t(args_count)) {
-            Log::info() << "Invalid argument count: expected " << args_count << ", got: " << args_.size() << std::endl;
+            Log::info() << tool_ << ": invalid argument count: expected " << args_count
+                        << ", got: " << args_.size() << "." << std::endl;
+            error = true;
+        }
+    }
+
+    if (minimum_args >= 0) {
+        if (args_.size() < minimum_args) {
+            Log::info() << tool_ << ": invalid argument count: expected at least " << minimum_args
+                        << ", got: " << args_.size() << std::endl;
             error = true;
         }
     }
@@ -95,7 +104,7 @@ void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
         if (options_.size()) {
             Log::info() << std::endl;
             Log::info() << "Options are:" << std::endl;
-            Log::info() << "===========:" << std::endl ;
+            Log::info() << "===========:" << std::endl << std::endl;
             for (std::vector<option::Option *>::const_iterator j = options_.begin(); j != options_.end(); ++j) {
                 Log::info() << *(*j) << std::endl << std::endl;
             }
@@ -124,18 +133,13 @@ void CmdArgs::print(std::ostream& out) const {
     out << "]";
 }
 
-const std::set<std::string>& CmdArgs::keys() const {
-    return keys_;
-}
+// const std::set<std::string>& CmdArgs::keys() const {
+//     return keys_;
+// }
 
-const std::vector<std::string>& CmdArgs::args() const {
-    return args_;
-}
-
-const std::string &CmdArgs::args(size_t i) const {
-    ASSERT(i < args_.size());
-    return args_[i];
-}
+// const std::vector<std::string>& CmdArgs::args() const {
+//     return args_;
+// }
 
 const std::string &CmdArgs::operator()(size_t i) const {
     ASSERT(i < args_.size());

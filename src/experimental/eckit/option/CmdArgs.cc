@@ -133,18 +133,13 @@ void CmdArgs::print(std::ostream& out) const {
     out << "]";
 }
 
-const std::set<std::string>& CmdArgs::keys() const {
-    return keys_;
-}
+// const std::set<std::string>& CmdArgs::keys() const {
+//     return keys_;
+// }
 
-const std::vector<std::string>& CmdArgs::args() const {
-    return args_;
-}
-
-const std::string &CmdArgs::args(size_t i) const {
-    ASSERT(i < args_.size());
-    return args_[i];
-}
+// const std::vector<std::string>& CmdArgs::args() const {
+//     return args_;
+// }
 
 const std::string &CmdArgs::operator()(size_t i) const {
     ASSERT(i < args_.size());

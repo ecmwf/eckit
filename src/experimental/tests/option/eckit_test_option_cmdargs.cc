@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required )
             Context::instance().setup(nargs, const_cast<char**>(global_args));
             CmdArgs args(&usage, 1, true);
 
-            BOOST_CHECK_EQUAL(args.args()[0], std::string("a1"));
+            BOOST_CHECK_EQUAL(args(0), std::string("a1"));
         }
     };
 
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required_with_opti
             Context::instance().setup(nargs, const_cast<char**>(global_args));
             CmdArgs args(&usage, options, 1, 0, true);
 
-            BOOST_CHECK_EQUAL(args.args()[0], std::string("a1"));
+            BOOST_CHECK_EQUAL(args(0), std::string("a1"));
         }
     };
 
@@ -102,22 +102,22 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required_with_opti
 }
 
 
-BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_keys )
-{
-    std::vector<Option*> options;
-    options.push_back(new SimpleOption<std::string>("arg1", ""));
-    options.push_back(new SimpleOption<long>("arg2", ""));
+// BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_keys )
+// {
+//     std::vector<Option*> options;
+//     options.push_back(new SimpleOption<std::string>("arg1", ""));
+//     options.push_back(new SimpleOption<long>("arg2", ""));
 
-    const char* input[] = {"exe", "--arg1=testing"};
-    Context::instance().setup(2, const_cast<char**>(input));
+//     const char* input[] = {"exe", "--arg1=testing"};
+//     Context::instance().setup(2, const_cast<char**>(input));
 
-    CmdArgs args(&usage, options, 0, 0, true);
+//     CmdArgs args(&usage, options, 0, 0, true);
 
-    std::set<std::string> keys = args.keys();
+//     std::set<std::string> keys = args.keys();
 
-    ASSERT(keys.find("arg1") != keys.end());
-    ASSERT(keys.find("arg2") != keys.end());
-}
+//     ASSERT(keys.find("arg1") != keys.end());
+//     ASSERT(keys.find("arg2") != keys.end());
+// }
 
 
 BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_string ) {

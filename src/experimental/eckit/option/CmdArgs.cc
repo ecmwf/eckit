@@ -92,7 +92,7 @@ void CmdArgs::init(usage_proc usage, int args_count, int minimum_args, bool thro
     }
 
     if (minimum_args >= 0) {
-        if (args_.size() < minimum_args) {
+        if (args_.size() < size_t(minimum_args)) {
             Log::info() << tool_ << ": invalid argument count: expected at least " << minimum_args
                         << ", got: " << args_.size() << std::endl;
             error = true;

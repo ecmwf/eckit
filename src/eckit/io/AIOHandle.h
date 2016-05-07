@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -54,43 +54,29 @@ public: // methods
 	virtual Length estimate();
 	virtual Offset position();
 
-    // From Streamable
 
-#if 0
-    virtual void encode(Stream&) const;
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
-#endif
-
-// -- Class methods
-
-#if 0
-    static  const ClassSpec&  classSpec()        { return classSpec_;}
-#endif
 
 private: // members
 
-	PathName                path_;
-	std::vector<Buffer*>         buffers_;
-    std::vector<const aiocb*>   aiop_;
-    std::vector<aiocb>           aio_;
-	std::vector<long>			len_;
-	
-	size_t                  used_;
-	size_t                  count_;
-	
-	int                     fd_;
-	off_t                 pos_;
-	bool                    fsync_;
-	
+	PathName                   path_;
+	std::vector<Buffer*>       buffers_;
+    std::vector<const aiocb*>  aiop_;
+    std::vector<aiocb>         aio_;
+	std::vector<long>		   len_;
+	std::vector<bool>          active_;
+
+	size_t                     used_;
+	size_t                     count_;
+
+	int                        fd_;
+	off_t                      pos_;
+	bool                       fsync_;
+
 
     virtual std::string title() const;
 
 // -- Class members
 
-#if 0
-	static  ClassSpec                 classSpec_;
-    static  Reanimator<AIOHandle>  reanimator_;
-#endif
 
 };
 

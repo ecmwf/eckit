@@ -35,17 +35,20 @@ AIOHandle::AIOHandle(const PathName& path, size_t count,size_t size,bool fsync):
     aiop_(count),
     aio_(count),
     len_(count),
+    active_(count),
     used_(0),
     count_(count),
     fd_(-1),
     pos_(0),
     fsync_(fsync)
 {
+    ASSERT(count_ < AIO_LISTIO_MAX);
     for (size_t i = 0; i < count_ ; i++)
     {
         buffers_[i] = 0;
         zero(aio_[i]);
         aiop_[i] = &aio_[i];
+        active_[i] = false;
     }
 }
 
@@ -106,6 +109,9 @@ long AIOHandle::write(const void* buffer,long length)
         {
             int e = aio_error(&aio_[n]);
             if (e == EINPROGRESS) continue;
+
+            active_[n] = false;
+
             if (e == 0)
             {
                 ssize_t len = aio_return(&aio_[n]);
@@ -131,7 +137,7 @@ long AIOHandle::write(const void* buffer,long length)
     {
         delete buffers_[n];
         buffers_[n] = new Buffer(eckit::round(length,64*1024));
-        
+
         ASSERT(buffers_[n]);
     }
 
@@ -152,6 +158,8 @@ long AIOHandle::write(const void* buffer,long length)
 
     SYSCALL(aio_write(aio));
 
+    active_[n] = true;
+
     return length;
 
 }
@@ -159,7 +167,7 @@ long AIOHandle::write(const void* buffer,long length)
 void AIOHandle::close()
 {
     flush(); // this should wait for the async requests to finish
-    
+
     SYSCALL( ::close(fd_) );
 }
 
@@ -178,12 +186,17 @@ void AIOHandle::flush()
     }
 
     bool more = true;
-    while (more) 
+    while (more)
     {
         more = false;
 
         for( size_t n = 0 ; n < used_ ; ++n )
         {
+
+            if(!active_[n]) {
+                continue;
+            }
+
             /* wait */
             while (aio_suspend(&aiop_[n], 1, NULL) < 0)
             {
@@ -196,6 +209,9 @@ void AIOHandle::flush()
                 more = true;
                 continue;
             }
+
+            active_[n] = false;
+
             if (e == 0)
             {
                 ssize_t len = aio_return(&aio_[n]);

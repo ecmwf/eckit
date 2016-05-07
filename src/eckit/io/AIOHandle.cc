@@ -36,7 +36,11 @@ AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync
     fd_(-1),
     pos_(0),
     fsync_(fsync) {
+
+#ifdef AIO_LISTIO_MAX
     ASSERT(count_ < AIO_LISTIO_MAX);
+#endif
+
     for (size_t i = 0; i < count_ ; i++) {
         buffers_[i] = 0;
         zero(aio_[i]);

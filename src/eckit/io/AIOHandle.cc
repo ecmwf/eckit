@@ -10,7 +10,7 @@
 
 #include <fcntl.h>
 #include <unistd.h>
-
+#include <limits.h>
 #include "eckit/io/AIOHandle.h"
 
 //-----------------------------------------------------------------------------
@@ -38,7 +38,11 @@ AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync
     fsync_(fsync) {
 
 #ifdef AIO_LISTIO_MAX
-    ASSERT(count_ < AIO_LISTIO_MAX);
+    ASSERT(count_ <= AIO_LISTIO_MAX );
+#endif
+
+#ifdef AIO_MAX
+    ASSERT(count_ <= AIO_MAX );
 #endif
 
     for (size_t i = 0; i < count_ ; i++) {

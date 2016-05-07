@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -40,10 +40,10 @@ public:
 
 // -- Copy
 
-	Date(const Date& other): 
+	Date(const Date& other):
 		julian_(other.julian_) {}
 
-	Date& operator=(const Date& other) 
+	Date& operator=(const Date& other)
 		{ julian_ = other.julian_; return *this; }
 
 // -- Destructor
@@ -51,7 +51,7 @@ public:
 	~Date() {}
 
 // -- Convertors
-	
+
 	operator std::string() const;
 
 // -- Operators
@@ -126,7 +126,7 @@ protected:
 private:
 
 // -- Members
-	
+
 	long julian_;
 
 // -- Methods
@@ -152,9 +152,6 @@ private:
 
 	friend Date operator+(const long n, const Date& d1)
 		{ return d1+n; }
-
-	friend Date operator+(const Date& d1, const Date& d2)
-		{ return Date::julianToDate(d1.julian_ + d2.julian_); }
 
 
 	friend class DateTime;

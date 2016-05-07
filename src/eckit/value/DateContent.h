@@ -69,7 +69,6 @@ protected:
 	virtual Content* div(const Content&) const;
     virtual Content* mod(const Content&) const;
 
-	virtual Content* addDate(const DateContent&) const;
 	virtual Content* subDate(const DateContent&) const;
 
 	virtual void    print(std::ostream&) const;

@@ -51,6 +51,8 @@ public:
 
     bool running() const { return !stopped_; }
 
+    void report(const std::string& message = "");
+
 protected: // methods
 
     void takeTime();

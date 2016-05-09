@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -21,7 +21,7 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 
-std::string StringTools::substitute(const std::string& s,const std::map<std::string,std::string>& m) 
+std::string StringTools::substitute(const std::string& s,const std::map<std::string,std::string>& m)
 {
     std::string result;
     size_t len = s.length();
@@ -191,27 +191,35 @@ std::vector<std::string> StringTools::split(const std::string &delim, const std:
 	return ss;
 }
 
-std::string StringTools::join(const std::string &delimiter, const std::vector<std::string>& words)
-{
+std::string StringTools::join(const std::string &delimiter,
+                             std::vector<std::string>::const_iterator begin,
+                             std::vector<std::string>::const_iterator end) {
 	std::string r;
-	for (size_t i = 0; i < words.size(); ++i)
+    std::vector<std::string>::const_iterator j = begin;
+    size_t i = 0;
+	for (; j != end; ++j, ++i)
 	{
 		if (i > 0)
 			r += delimiter;
-		r += words[i];
+		r += *j;
 	}
     return r;
+}
+
+std::string StringTools::join(const std::string &delimiter, const std::vector<std::string>& words)
+{
+    return join(delimiter, words.begin(), words.end());
 }
 
 bool StringTools::startsWith(const std::string& str, const std::string& substr)
 {
     if( ! substr.size() || str.size() < substr.size() )
         return false;
-    
+
     for( std::string::size_type i = 0; i < substr.size();  ++i )
         if( substr[i] != str[i] )
             return false;
-    
+
     return true;
 }
 

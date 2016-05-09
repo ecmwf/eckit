@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -34,7 +34,7 @@ public:
 
 	static std::string upper(const std::string &);
 	static std::string lower(const std::string &);
-    
+
     static std::string trim(const std::string &);
     static std::string trim(const std::string &, const std::string &);
 
@@ -46,13 +46,15 @@ public:
 
     static std::vector<std::string> split(const std::string& delim, const std::string& text);
 	static std::string join(const std::string &, const std::vector<std::string>&);
+    static std::string join(const std::string &, std::vector<std::string>::const_iterator begin,
+                                                 std::vector<std::string>::const_iterator end);
 
     static bool startsWith( const std::string& str, const std::string& substr );
-    
+
 private:
-    
+
     StringTools(); // Non instantiable
-    
+
 };
 
 

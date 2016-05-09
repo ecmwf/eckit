@@ -14,6 +14,8 @@
 
 
 #include "eckit/option/Option.h"
+#include "eckit/option/SimpleOption.h"
+
 #include "eckit/exception/Exceptions.h"
 
 namespace eckit {
@@ -44,6 +46,53 @@ void Option::set(LocalConfiguration &) const {
     os << "Option::set() not implemented for " << *this;
     throw eckit::SeriousBug(os.str());
 }
+
+
+template<>
+const char *Title<size_t>::operator()() const {
+    return "ordinal";
+}
+
+template<>
+const char *Title<long>::operator()() const {
+    return "integer";
+}
+
+template<>
+const char *Title<double>::operator()() const {
+    return "real";
+}
+
+template<>
+const char *Title<bool>::operator()() const {
+    return "0/1";
+}
+
+template<>
+const char *Title<std::string>::operator()() const {
+    return "string";
+}
+
+template<>
+const char *Title<eckit::PathName>::operator()() const {
+    return "path";
+}
+
+template<>
+void SimpleOption<bool>::set(LocalConfiguration &parametrisation) const {
+    parametrisation.set(name_, true);
+}
+
+template <>
+void SimpleOption<eckit::PathName>::set(const std::string& value, LocalConfiguration& parametrisation) const {
+    parametrisation.set(name_, value);
+}
+
+template<>
+void SimpleOption<bool>::print(std::ostream &out) const {
+    out << "   --" << name_ << " (" << description_ << ")";
+}
+
 
 } // namespace option
 

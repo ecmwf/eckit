@@ -2234,7 +2234,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_add_operator )
     BOOST_CHECK_THROW(ValueAdd(val, 1234), BadOperator);
     BOOST_CHECK_THROW(ValueAdd(val, 66.6), BadOperator);
     BOOST_CHECK_THROW(ValueAdd(val, "hi"), BadOperator);
-    BOOST_CHECK_EQUAL(ValueAdd(val, Date(2016, 3, 31)).as<Date>(), Date(8744, 8, 6));
+    BOOST_CHECK_THROW(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
     BOOST_CHECK_THROW(ValueAdd(val, ValueList()), BadOperator);
     BOOST_CHECK_THROW(ValueAdd(val, ValueMap()), BadOperator);
 
@@ -2242,7 +2242,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_add_operator )
     BOOST_CHECK_THROW(ValueAdd(1234, val), BadOperator);
     BOOST_CHECK_THROW(ValueAdd(66.6, val), BadOperator);
     BOOST_CHECK_THROW(ValueAdd("hi", val), BadOperator);
-    BOOST_CHECK_EQUAL(ValueAdd(Date(2016, 3, 31), val).as<Date>(), Date(8744, 8, 6));
+    BOOST_CHECK_THROW(ValueAdd(Date(2016, 3, 31), val), BadOperator);
     BOOST_CHECK_THROW(ValueAdd(ValueList(), val), BadOperator);
     BOOST_CHECK_THROW(ValueAdd(ValueMap(), val), BadOperator);
 
@@ -2250,7 +2250,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_add_operator )
     BOOST_CHECK_THROW(ValueAddSelf(val, 1234), BadOperator);
     BOOST_CHECK_THROW(ValueAddSelf(val, 66.6), BadOperator);
     BOOST_CHECK_THROW(ValueAddSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_EQUAL(ValueAddSelf(val, Date(2016, 3, 31)).as<Date>(), Date(8744, 8, 6));
+    BOOST_CHECK_THROW(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
     val = Date(2016, 3, 31);
     BOOST_CHECK_THROW(ValueAddSelf(val, ValueList()), BadOperator);
     BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);

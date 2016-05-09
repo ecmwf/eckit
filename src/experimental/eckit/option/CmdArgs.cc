@@ -20,6 +20,7 @@
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/Option.h"
 #include "eckit/parser/Tokenizer.h"
+#include "eckit/parser/StringTools.h"
 #include "eckit/runtime/Context.h"
 
 
@@ -30,18 +31,18 @@ namespace option {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-CmdArgs::CmdArgs(usage_proc usage, int args_count, bool throw_on_error) {
-    init(usage, args_count, throw_on_error);
+CmdArgs::CmdArgs(usage_proc usage, int args_count, int minimum_args, bool throw_on_error) {
+    init(usage, args_count, minimum_args, throw_on_error);
 }
 
-CmdArgs::CmdArgs(usage_proc usage, int args_count,  std::vector< option::Option *>& options, bool throw_on_error) {
+CmdArgs::CmdArgs(usage_proc usage, std::vector<Option*>& options, int args_count, int minimum_args, bool throw_on_error) {
     std::swap(options_, options); // Take ownership so it can be destroyed
-    init(usage, args_count, throw_on_error);
+    init(usage, args_count, minimum_args, throw_on_error);
 }
 
-void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
+void CmdArgs::init(usage_proc usage, int args_count, int minimum_args, bool throw_on_error)  {
     Context &ctx = Context::instance();
-    const std::string &tool = ctx.runName();
+    tool_ = ctx.runName();
     size_t argc = ctx.argc();
     bool error = false;
 
@@ -62,14 +63,15 @@ void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
         if (a.size() > 2 && a[0] == '-' && a[1] == '-') {
             std::vector<std::string> v;
             parse(a.substr(2), v);
-            ASSERT(v.size() <= 2);
 
             std::map<std::string, const option::Option *>::const_iterator j = opts.find(v[0]);
             if (j != opts.end()) {
                 if (v.size() == 1) {
                     (*j).second->set(*this);
                 } else {
-                    (*j).second->set(v[1], *this);
+                    std::vector<std::string>::const_iterator b = v.begin();
+                    ++b;
+                    (*j).second->set(StringTools::join("=", b, v.end()), *this);
                 }
             } else {
                 Log::info() << "Invalid option --" << v[0] << std::endl;
@@ -83,17 +85,26 @@ void CmdArgs::init(usage_proc usage, int args_count, bool throw_on_error)  {
 
     if (args_count >= 0) {
         if (args_.size() != size_t(args_count)) {
-            Log::info() << "Invalid argument count: expected " << args_count << ", got: " << args_.size() << std::endl;
+            Log::info() << tool_ << ": invalid argument count: expected " << args_count
+                        << ", got: " << args_.size() << "." << std::endl;
+            error = true;
+        }
+    }
+
+    if (minimum_args >= 0) {
+        if (args_.size() < size_t(minimum_args)) {
+            Log::info() << tool_ << ": invalid argument count: expected at least " << minimum_args
+                        << ", got: " << args_.size() << std::endl;
             error = true;
         }
     }
 
     if (error) {
-        usage(tool);
+        usage(tool_);
         if (options_.size()) {
             Log::info() << std::endl;
             Log::info() << "Options are:" << std::endl;
-            Log::info() << "===========:" << std::endl ;
+            Log::info() << "===========:" << std::endl << std::endl;
             for (std::vector<option::Option *>::const_iterator j = options_.begin(); j != options_.end(); ++j) {
                 Log::info() << *(*j) << std::endl << std::endl;
             }
@@ -122,15 +133,15 @@ void CmdArgs::print(std::ostream& out) const {
     out << "]";
 }
 
-const std::set<std::string>& CmdArgs::keys() const {
-    return keys_;
-}
+// const std::set<std::string>& CmdArgs::keys() const {
+//     return keys_;
+// }
 
-const std::vector<std::string>& CmdArgs::args() const {
-    return args_;
-}
+// const std::vector<std::string>& CmdArgs::args() const {
+//     return args_;
+// }
 
-const std::string &CmdArgs::args(size_t i) const {
+const std::string &CmdArgs::operator()(size_t i) const {
     ASSERT(i < args_.size());
     return args_[i];
 }
@@ -140,6 +151,9 @@ size_t CmdArgs::count() const
     return args_.size();
 }
 
+const std::string& CmdArgs::tool() const {
+    return tool_;
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace option

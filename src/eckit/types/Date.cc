@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -18,7 +18,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-static const char* months[] = 
+static const char* months[] =
 { "jan","feb","mar","apr","may","jun",
   "jul","aug","sep","oct","nov","dec"
 };
@@ -40,7 +40,7 @@ static void check(const Date& date,long value)
 Date::Date(long date):
 	julian_(dateToJulian(date))
 {
-	if(date) check(*this,date);
+	if(date>0) check(*this,date);
 }
 
 Date::Date(long year,long month,long day):
@@ -59,7 +59,7 @@ Date::Date(long year,long dayOfYear)
 
 long Date::parse(const std::string& s)
 {
-	
+
 	Tokenizer parse("-");
 	std::vector<std::string> result;
 
@@ -112,7 +112,7 @@ long Date::parse(const std::string& s)
 			}
 			else
 			{
-			
+
 				// Dates as yyyy-ddd
 
 				if(result[0].length() != 2 && result[0].length() != 4) err = true;
@@ -282,7 +282,7 @@ void Date::print(std::ostream& s) const
 	day = ddate;
 
 	char oldfill = s.fill();
-	s << year << '-' << std::setw(2) << std::setfill('0') << month 
+	s << year << '-' << std::setw(2) << std::setfill('0') << month
 		<< '-' << std::setw(2) << std::setfill('0') << day << std::setfill(oldfill);
 }
 

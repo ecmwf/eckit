@@ -441,7 +441,7 @@ void LocalPathName::match(const LocalPathName& root,std::vector<LocalPathName>& 
 		{
 			LocalPathName full = dir + "/" + e->d_name;
             Stat::Struct info;
-            SYSCALL(Stat::stat(full.c_str(),&info));
+            SYSCALL(Stat::lstat(full.c_str(),&info));
 			if(S_ISDIR(info.st_mode))
 				match(full+"/"+base,result,true);
 		}

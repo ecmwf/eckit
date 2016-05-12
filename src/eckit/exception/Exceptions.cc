@@ -81,7 +81,12 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
     callStack_ = BackTrace::dump();
 
     first() = this;
-	Log::status() << "** " << w << " @ " << location_ << std::endl;
+    if(location_) {
+        Log::status() << "** " << w << " @ " << location_ << std::endl;
+    }
+    else {
+        Log::status() << "** " << w << std::endl;
+    }
 }
 
 void Exception::reason(const std::string& w)

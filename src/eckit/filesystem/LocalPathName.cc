@@ -569,6 +569,13 @@ bool LocalPathName::isDir() const
 	return S_ISDIR(info.st_mode);
 }
 
+bool LocalPathName::isLink() const
+{
+    Stat::Struct info;
+    SYSCALL(Stat::lstat(path_.c_str(),&info));
+    return S_ISLNK(info.st_mode);
+}
+
 bool LocalPathName::sameAs(const LocalPathName& other) const
 {
 	if(!exists() || !other.exists())

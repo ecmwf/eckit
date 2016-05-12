@@ -136,6 +136,11 @@ bool PathName::isDir() const
     return path_->isDir();
 }
 
+bool PathName::isLink() const
+{
+    return path_->isLink();
+}
+
 bool PathName::exists() const
 {
 	return path_->exists();

@@ -290,6 +290,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 
     do
     {
+        int save_errno = 0;
 
         bind();
 
@@ -300,6 +301,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
                 void (*old)(int) = signal(SIGALRM,catch_alarm);
                 alarm(timeout);
                 status = ::connect(socket_,reinterpret_cast<sockaddr*>(&sin),sizeof(sin));
+                save_errno = errno;
                 alarm(0);
                 /// @todo change this to sigaction
                 signal(SIGALRM,old);
@@ -312,16 +314,17 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
         else
         {
             status = ::connect(socket_,reinterpret_cast<sockaddr*>(&sin),sizeof(sin));
+            save_errno = errno;
         }
 
         if (status < 0)
         {
+            errno = save_errno;
             Log::error() << "connect to " << host << " " << port << Log::syserr << std::endl;
 
             Log::status() << "Connect: " << host << ":" << port << Log::syserr << " "
                           << tries << '/' << retries << std::endl;
 
-            int save_errno = errno;
             ::close(socket_);
             socket_ = -1;
             errno = save_errno;

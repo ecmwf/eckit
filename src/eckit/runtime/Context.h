@@ -76,6 +76,8 @@ public: // methods
     /// Executes the abort_handler
     void abort();
 
+    void assertAborts(bool);
+    bool assertAborts();
 
     Channel& infoChannel();
     Channel& warnChannel();
@@ -115,7 +117,7 @@ private: // members
 	eckit::ScopedPtr<ContextBehavior> behavior_;
 
     int     argc_;
-	char**  argv_;
+    char**  argv_;
 
     long taskID_;
 
@@ -128,6 +130,8 @@ private: // members
     ChannelRegistry channels_;
 
     abort_handler_t abortHandler_;
+
+    bool assertAborts_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

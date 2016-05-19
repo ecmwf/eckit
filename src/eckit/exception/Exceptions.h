@@ -57,6 +57,7 @@ public: // methods
 protected: // methods
 
     void reason(const std::string&);
+
     Exception();
 
     virtual void print(std::ostream&) const;

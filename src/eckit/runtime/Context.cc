@@ -48,6 +48,8 @@ Context::Context() :
   char* th = getenv("_TEST_ECKIT_HOME");
   if (th) home_ = th;
 
+  abortHandler_ = &(::abort);
+
   behavior_.reset(new StandardBehavior());
 }
 
@@ -119,6 +121,15 @@ const std::string& Context::home() const {
 void Context::home(const std::string& h) {
   AutoLock<Mutex> lock(local_mutex);
   home_ = h;
+}
+
+void Context::abortHandler(abort_handler_t h) {
+    abortHandler_ = h;
+}
+
+void Context::abort()
+{
+    abortHandler_();
 }
 
 long Context::self() const { return taskID_; }

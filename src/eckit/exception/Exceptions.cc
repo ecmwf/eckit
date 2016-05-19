@@ -13,6 +13,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/ThreadSingleton.h"
+#include "eckit/runtime/Context.h"
 
 #include "eckit/os/BackTrace.h"
 
@@ -191,7 +192,7 @@ AssertionFailed::AssertionFailed(const std::string& w):
     {
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
-        ::abort();
+        Context::instance().abort();
     }
 #endif
 
@@ -212,7 +213,7 @@ AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc
     {
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
-        ::abort();
+        Context::instance().abort();
     }
 #endif
 }
@@ -232,7 +233,7 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
     {
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
-        ::abort();
+        Context::instance().abort();
     }
 #endif
 }

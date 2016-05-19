@@ -45,6 +45,7 @@ ParallelContextBehavior::ParallelContextBehavior() :
   mpi::Environment::instance();
 
   eckit::Context::instance().abortHandler(&parallel_abort);
+  eckit::Context::instance().assertAborts(true);
 }
 
 FileReadPolicy ParallelContextBehavior::fileReadPolicy()

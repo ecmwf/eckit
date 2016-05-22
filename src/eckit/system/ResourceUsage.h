@@ -17,6 +17,8 @@
 #ifndef eckit_system_ResourceUsage_H
 #define eckit_system_ResourceUsage_H
 
+#include <sys/resource.h>
+
 namespace eckit {
 namespace system {
 
@@ -28,7 +30,9 @@ public: // methods
 
     ResourceUsage();
 
-    size_t maxrss() const;
+    size_t maxResidentSetSize() const;
+    double cpuTime() const;
+    size_t numberOfSwaps() const;
 
 protected: // methods
 
@@ -38,7 +42,9 @@ protected: // methods
 
 private: // members
 
-    size_t maxrss_; ///< the maximum resident set size utilized (in bytes).
+    size_t factor_;
+    struct rusage usage_;
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

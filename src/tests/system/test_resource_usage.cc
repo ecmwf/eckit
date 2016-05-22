@@ -32,8 +32,8 @@ BOOST_AUTO_TEST_CASE( test_eckit_resource_usage_0 )
         void *m = ::malloc(chunk);
         ::memset(m,0,chunk);
         system::ResourceUsage ru;
-        BOOST_REQUIRE( ru.maxrss() >= chunk*i );
-        std::cout << "Memory usage " << ru.maxrss() << std::endl;
+        BOOST_REQUIRE( ru.maxResidentSetSize() >= chunk*i );
+        std::cout << "Memory usage " << ru.maxResidentSetSize() << std::endl;
     }
 }
 

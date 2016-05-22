@@ -511,6 +511,11 @@ compat/Inited.h
 compat/StrStream.h
 )
 
+list( APPEND eckit_system_srcs
+system/ResourceUsage.h
+system/ResourceUsage.cc
+)
+
 list( APPEND eckit_bases_srcs
 bases/Watcher.h
 bases/Watcher.cc
@@ -545,6 +550,7 @@ list( APPEND eckit_dirs
 	types
 	utils
 	value
+    system
 )
 
 foreach( dir ${eckit_dirs} )

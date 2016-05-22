@@ -39,7 +39,7 @@ ResourceUsage::ResourceUsage()
 }
 
 void ResourceUsage::print(std::ostream &out) const {
-    out << "ResourceUsage()";
+    out << "ResourceUsage(maxrss=" << maxrss() << ")";
 }
 
 size_t ResourceUsage::maxrss() const

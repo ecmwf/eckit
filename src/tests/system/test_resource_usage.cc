@@ -27,13 +27,13 @@ BOOST_AUTO_TEST_SUITE( test_eckit_resource_usage )
 
 BOOST_AUTO_TEST_CASE( test_eckit_resource_usage_0 )
 {
+    size_t chunk = 20*1024*1024;
     for(size_t i = 1; i < 5; ++i) {
-        size_t chunk = 20*1024*1024;
         void *m = ::malloc(chunk);
         ::memset(m,0,chunk);
         system::ResourceUsage ru;
-        BOOST_REQUIRE( ru.maxResidentSetSize() >= chunk*i );
         std::cout << "Memory usage " << ru.maxResidentSetSize() << std::endl;
+        BOOST_REQUIRE( ru.maxResidentSetSize() >= chunk*i );
     }
 }
 

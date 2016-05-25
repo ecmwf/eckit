@@ -62,13 +62,6 @@ ecbuild_add_option( FEATURE ECKIT_CMD
                     PURPOSE "Build eckit_cmd library"
                     REQUIRED_PACKAGES "LEXYACC" )
 
-### eckit::ecml
-
-ecbuild_add_option( FEATURE ECKIT_ECML
-                    DESCRIPTION "ECML utilities"
-                    PURPOSE "Build eckit_ecml library"
-                    REQUIRED_PACKAGES "LEXYACC" )
-
 ### Eigen
 
 ecbuild_add_option( FEATURE EIGEN
@@ -221,10 +214,6 @@ if( HAVE_EXPERIMENTAL )
 
   if( HAVE_ECKIT_MPISTUBS )
     list( APPEND ECKIT_LIBRARIES eckit_mpistubs )
-  endif()
-
-  if( HAVE_ECKIT_ECML )
-    list( APPEND ECKIT_LIBRARIES eckit_ecml )
   endif()
 
 endif()

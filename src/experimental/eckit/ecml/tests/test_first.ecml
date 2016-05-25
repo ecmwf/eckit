@@ -1,6 +1,0 @@
-test,label=Test verb first,
-do = (
-        let, l = foo / bar / baz
-        println, values = (first, of = (value, of = l))
-     ),
-expect = foo

@@ -49,6 +49,7 @@ public:
     virtual time_t created() const = 0;
 
     virtual bool isDir() const = 0;
+    virtual bool isLink() const = 0;
 
     virtual void rename(const BasePathName&) const = 0;
     virtual void link(const BasePathName&) const = 0;

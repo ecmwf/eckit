@@ -37,20 +37,20 @@ typedef std::stack<CmdArg, std::vector<CmdArg> > CmdArgStack;
 static std::ostream* out_ = &std::cout;
 
 // On command line
-static CmdArg theArg_;
-static CmdArg theVars_;
+static CmdArg arg_;
+static CmdArg variables_;
 static long param_;
-static std::string theCmd_;
+static std::string command_;
 static std::list<int> buffer_;
 static bool prompt_ = true;
 static bool console_ = false;
 
 typedef std::map<char, bool, std::less<char> > FlagMap;
-static FlagMap theFlags_;
+static FlagMap flags_;
 
 // Alias are shared for every parser
 static CmdArg theAlias_;
-static CmdArg theEnvironment_;
+static CmdArg environment_;
 
 // The history
 typedef std::vector<std::string> History;
@@ -74,7 +74,7 @@ int eckit_cmd_wrap(void) {
 
 void eckit_cmd_error(const char* msg) {
     Log::error() << msg << " line " << eckit_cmd_lineno << std::endl;
-    if (theFlags_['e']) {
+    if (flags_['e']) {
         Application::instance().terminate();
     }
 }
@@ -88,22 +88,22 @@ void eckit_cmd_error(const char* msg) {
 //-----------------------------------------------------------------------------
 
 void CmdParser::parse(const std::string& line, std::ostream& out) {
-    theCmd_ = line;
+    command_ = line;
     pos_ = 0;
     out_ = &out;
 
-    if (theCmd_.size() > 0) {
+    if (command_.size() > 0) {
         // Prepare for parse
         try {
             repeat();
             substitute();
             unAlias();
 
-            buffer_.resize(theCmd_.size());
-            std::copy(theCmd_.begin(), theCmd_.end(), buffer_.begin());
+            buffer_.resize(command_.size());
+            std::copy(command_.begin(), command_.end(), buffer_.begin());
             buffer_.push_back(0);
 
-            // std::cout << theCmd_ << std::endl;
+            // std::cout << command_ << std::endl;
 
             CmdYacc::eckit_cmd_parse();
 
@@ -145,10 +145,10 @@ void CmdParser::parse(std::istream& in, std::ostream& out, const Prompter& promp
         char* p = l;
         while (p && *p == ' ') ++p;
 
-        theCmd_ = p;
+        command_ = p;
         pos_ = 0;
 
-        if (theCmd_.size() > 0) {
+        if (command_.size() > 0) {
             // Prepare for parse
             try {
                 repeat();
@@ -156,10 +156,10 @@ void CmdParser::parse(std::istream& in, std::ostream& out, const Prompter& promp
                 unAlias();
 
                 // Print command if different from input
-                if (theCmd_ != l) (*out_) << theCmd_ << std::endl;
+                if (command_ != l) (*out_) << command_ << std::endl;
 
-                buffer_.resize(theCmd_.size());
-                std::copy(theCmd_.begin(), theCmd_.end(), buffer_.begin());
+                buffer_.resize(command_.size());
+                std::copy(command_.begin(), command_.end(), buffer_.begin());
                 buffer_.push_back(0);
 
                 if (prompt_) historize();
@@ -180,11 +180,11 @@ void CmdParser::parse(std::istream& in, std::ostream& out, const Prompter& promp
 
 #if 0
 void CmdParser::eckit_cmd_error(char* msg)
-{ 
+{
     Log::error() << msg << " line " << eckit_cmd_lineno << std::endl;
-	if(theFlags_['e'])
+	if(flags_['e'])
 	{
-		Application::terminate();	
+		Application::terminate();
 	}
 }
 #endif
@@ -204,11 +204,11 @@ void CmdParser::prompt(const Prompter& prompter) {
 void CmdParser::historize() {
     Tokenizer tokenize(" \t\n");
     std::vector<std::string> tokens;
-    tokenize(theCmd_, tokens);
+    tokenize(command_, tokens);
 
     if (tokens.size() > 0) {
-        history_.push_back(theCmd_);
-        Log::debug() << "History: " << theCmd_ << std::endl;
+        history_.push_back(command_);
+        Log::debug() << "History: " << command_ << std::endl;
     }
 }
 
@@ -234,13 +234,13 @@ void CmdParser::history(const long n, std::ostream& out) {
 //-----------------------------------------------------------------------------
 
 void CmdParser::environment(std::ostream& out) {
-    out << theEnvironment_;
+    out << environment_;
 }
 
 //-----------------------------------------------------------------------------
 
 void CmdParser::environment(const std::string& lhs, const std::string& rhs) {
-    theEnvironment_[lhs] = rhs;
+    environment_[lhs] = rhs;
 }
 
 //-----------------------------------------------------------------------------
@@ -248,7 +248,7 @@ void CmdParser::environment(const std::string& lhs, const std::string& rhs) {
 void CmdParser::unAlias() {
     Tokenizer tokenize(" \t\n");
     std::vector<std::string> tokens;
-    tokenize(theCmd_, tokens);
+    tokenize(command_, tokens);
 
     if (theAlias_.exists(tokens[0])) {
         std::string aliased = theAlias_[tokens[0]];
@@ -257,9 +257,9 @@ void CmdParser::unAlias() {
 
         for (size_t i = 1; i < tokens.size(); ++i) aliased += " " + tokens[i];
 
-        theCmd_ = aliased;
+        command_ = aliased;
 
-        Log::debug() << "New command '" << theCmd_ << "'" << std::endl;
+        Log::debug() << "New command '" << command_ << "'" << std::endl;
         unAlias();
     }
 }
@@ -307,7 +307,7 @@ int hIndex(const std::string& cmd, std::vector<std::string>& h, std::string& pre
 void CmdParser::repeat() {
     Tokenizer tokenize(" \t\n");
     std::vector<std::string> tokens;
-    tokenize(theCmd_, tokens);
+    tokenize(command_, tokens);
 
     if (!tokens.size()) return;
 
@@ -320,8 +320,8 @@ void CmdParser::repeat() {
             newcmd += post;
             for (size_t i = 1; i < tokens.size(); ++i) newcmd += " " + tokens[i];
 
-            theCmd_ = newcmd;
-            Log::debug() << "New command '" << theCmd_ << "'" << std::endl;
+            command_ = newcmd;
+            Log::debug() << "New command '" << command_ << "'" << std::endl;
         } else {
             throw EventNotFound(tokens[0]);
         }
@@ -331,16 +331,16 @@ void CmdParser::repeat() {
 //-----------------------------------------------------------------------------
 
 void CmdParser::substitute() {
-    if (theCmd_[0] == '^') {
+    if (command_[0] == '^') {
         Tokenizer tokenize("^");
         std::vector<std::string> tokens;
-        tokenize(theCmd_, tokens);
+        tokenize(command_, tokens);
 
         if (tokens.size() == 2) {
             std::string lastcmd = history_[history_.size() - 1];
             int i = lastcmd.find(tokens[0]);
 
-            theCmd_ = lastcmd.substr(0, i) + tokens[1] + lastcmd.substr(i + tokens[0].size());
+            command_ = lastcmd.substr(0, i) + tokens[1] + lastcmd.substr(i + tokens[0].size());
         }
     }
 }
@@ -348,13 +348,13 @@ void CmdParser::substitute() {
 //-----------------------------------------------------------------------------
 
 void CmdParser::run(void (*proc)(CmdResource*, CmdArg&, std::istream&, std::ostream&)) {
-    Log::debug() << "Executing " << std::endl << theArg_ << std::endl;
+    Log::debug() << "Executing " << std::endl << arg_ << std::endl;
 
-    if (theFlags_['x']) Log::info() << theCmd_ << std::flush;
+    if (flags_['x']) Log::info() << command_ << std::flush;
 
-    if (!theFlags_['n'])
-        if (!CmdResource::run(proc, theArg_, std::cin, *out_))
-            if (theFlags_['e']) Application::instance().terminate();
+    if (!flags_['n'])
+        if (!CmdResource::run(proc, arg_, std::cin, *out_))
+            if (flags_['e']) Application::instance().terminate();
 }
 
 //-----------------------------------------------------------------------------
@@ -392,7 +392,7 @@ void CmdParser::function(const std::string& lines) {
 
 void CmdParser::flag(const char flag, bool value) {
     Log::debug() << "Setting flag " << flag << " to " << value << std::endl;
-    theFlags_[flag] = value;
+    flags_[flag] = value;
 }
 
 //-----------------------------------------------------------------------------
@@ -400,7 +400,7 @@ void CmdParser::flag(const char flag, bool value) {
 void CmdParser::flags(const std::string& s) {
     std::string flags = "exntuv";
 
-    for (size_t j = 0; j < flags.length(); ++j) theFlags_[flags[j]] = false;
+    for (size_t j = 0; j < flags.length(); ++j) flags_[flags[j]] = false;
 
     Tokenizer tokenize(" ");
     std::vector<std::string> tokens;
@@ -409,8 +409,8 @@ void CmdParser::flags(const std::string& s) {
     for (size_t i = 0; i < tokens.size(); ++i) {
         if (tokens[i].length() == 2) {
             char begin = tokens[i][0];
-            if (begin == '-') theFlags_[tokens[i][1]] = true;
-            if (begin == '+') theFlags_[tokens[i][1]] = false;
+            if (begin == '-') flags_[tokens[i][1]] = true;
+            if (begin == '+') flags_[tokens[i][1]] = false;
         }
     }
 }
@@ -419,19 +419,19 @@ void CmdParser::flags(const std::string& s) {
 
 void CmdParser::reset() {
     param_ = 0;
-    theArg_.erase();
+    arg_.erase();
 }
 
 //-----------------------------------------------------------------------------
 
 void CmdParser::addCmd(const char* s) {
-    theCmd_ += s;
+    command_ += s;
 }
 
 //-----------------------------------------------------------------------------
 
 void CmdParser::addCmd(const char c) {
-    theCmd_ += c;
+    command_ += c;
 }
 
 //-----------------------------------------------------------------------------
@@ -459,31 +459,31 @@ void CmdParser::output(int n) {
 //-----------------------------------------------------------------------------
 
 void CmdParser::arg(long n, const Value& v) {
-    theArg_[n] = v;
+    arg_[n] = v;
 }
 
 //-----------------------------------------------------------------------------
 
 void CmdParser::arg(const std::string& s, const Value& v) {
-    theArg_[s] = v;
+    arg_[s] = v;
 }
 
 //-----------------------------------------------------------------------------
 
 void CmdParser::arg(const Value& v) {
-    theArg_[++param_] = v;
+    arg_[++param_] = v;
 }
 
 //-----------------------------------------------------------------------------
 
 void CmdParser::var(const std::string& s) {
-    theArg_[++param_] = theVars_.exists(s) ? std::string(theVars_[s]) : std::string(theEnvironment_[s]);
+    arg_[++param_] = variables_.exists(s) ? std::string(variables_[s]) : std::string(environment_[s]);
 }
 
 //-----------------------------------------------------------------------------
 
 void CmdParser::var(const std::string& s, const Value& v) {
-    theVars_[s] = v;
+    variables_[s] = v;
 }
 
 //-----------------------------------------------------------------------------

@@ -11,6 +11,7 @@
 #include "eckit/cmd/CmdArg.h"
 #include "eckit/cmd/CmdResource.h"
 #include "eckit/cmd/TermBuf.h"
+#include "eckit/cmd/CmdParser.h"
 
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
@@ -96,6 +97,10 @@ std::vector<std::string> CmdResource::completion(const std::string& c) {
             result.push_back(cmd);
         }
     }
+
+    CmdParser::aliasCompletion(c, result);
+
+    std::sort(result.begin(), result.end());
 
     return result;
 }

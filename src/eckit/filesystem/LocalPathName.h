@@ -180,6 +180,10 @@ public:
     /// @return true if the path is a directory
     bool isDir() const;
 
+    /// Check if path is a symlink
+    /// @return true if the path is a symlink
+    bool isLink() const;
+
     /// Clear the file
     void empty() const;
 
@@ -244,7 +248,7 @@ public:
     static void link(const LocalPathName& from,const LocalPathName& to);
     static void rename(const LocalPathName& from,const LocalPathName& to);
     static void rename(const LocalPathName& from,const std::string& newBase);
-    
+
     static LocalPathName cwd();
 
 private:

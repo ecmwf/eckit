@@ -59,6 +59,7 @@ private:
     virtual time_t created() const;
 
     virtual bool isDir() const;
+    virtual bool isLink() const;
 
     virtual void rename(const BasePathName&) const;
     virtual void link(const BasePathName&) const;

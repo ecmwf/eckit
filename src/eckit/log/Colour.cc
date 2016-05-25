@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -28,10 +28,17 @@ enum { BLACK = 0, RED     =  1, GREEN = 2,  YELLOW    = 3, BLUE = 4, MAGENTA = 5
 //#define X(a) out << (a)
 #define X(a) out << char(a)
 
+static bool connected_to_console() {
+    int save_errno = errno;
+    bool result = ::isatty(1); // This may change errno
+    errno = save_errno;
+    return result;
+}
+
 static std::ostream& put(std::ostream& out, int fg, int bg, int attr)
 {
-    static bool colourOutput = Resource<bool>("$ECKIT_COLOUR_OUTPUT;-colour;colourOutput", ::isatty(1));
-    
+    static bool colourOutput = Resource<bool>("$ECKIT_COLOUR_OUTPUT;-colour;colourOutput", connected_to_console());
+
 	if (colourOutput && out.iword(xindex) == 0)
     {
         int n = 0;

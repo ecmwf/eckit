@@ -35,31 +35,43 @@ static void release_lock()
 	pthread_mutex_unlock(&the_lock);
 }
 
+static void release_lock_parent()
+{
+    //cout << pthread_self() << " release_lock" << std::endl;
+	pthread_mutex_unlock(&the_lock);
+}
+
+static void release_lock_child()
+{
+	// see ECKIT-140
+
+	pthread_mutexattr_t attr;
+	pthread_mutexattr_init(&attr);
+	pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE);
+
+	pthread_mutex_init(&the_lock,&attr);
+
+    //cout << pthread_self() << " release_lock" << std::endl;
+}
+
 // Don't use STL , Mutex, or Log to avoid re-entrance problems...
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 
 static void _init(void)
 {
-
     //cout << pthread_self() << " init" << std::endl;
 
-#if defined(__GNUC__) && __GNUC__ < 3
-#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
-#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP { PTHREAD_MUTEX_RECURSIVE_NP }
-#endif
-	pthread_mutexattr_t attr = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-#else
 	pthread_mutexattr_t attr;
 	pthread_mutexattr_init(&attr);
 	pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE);
-#endif
 
 	pthread_mutex_init(&the_lock,&attr);
 
+	// see ECKIT-140
 	pthread_atfork(get_lock,
-				   release_lock,
-				   release_lock);
+				   release_lock_parent,
+				   release_lock_child);
 }
 
 static void init()

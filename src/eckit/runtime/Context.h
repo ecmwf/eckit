@@ -25,6 +25,8 @@ class ContextBehavior;
 class LogStream;
 class PathName;
 
+typedef void (*abort_handler_t)();
+
 class Context : public Configurable {
 
 public: // types
@@ -69,6 +71,14 @@ public: // methods
     const std::string& home() const;
     void home( const std::string& h );
 
+    /// Registers a new abort handler
+    void abortHandler(abort_handler_t h);
+    /// Executes the abort_handler
+    void abort();
+
+    void assertAborts(bool);
+    bool assertAborts();
+
     Channel& infoChannel();
     Channel& warnChannel();
     Channel& errorChannel();
@@ -107,7 +117,7 @@ private: // members
 	eckit::ScopedPtr<ContextBehavior> behavior_;
 
     int     argc_;
-	char**  argv_;
+    char**  argv_;
 
     long taskID_;
 
@@ -119,6 +129,9 @@ private: // members
 
     ChannelRegistry channels_;
 
+    abort_handler_t abortHandler_;
+
+    bool assertAborts_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

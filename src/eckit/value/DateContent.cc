@@ -85,11 +85,6 @@ Content* DateContent::add(const Content& other) const
 	return other.addDate(*this);
 }
 
-Content* DateContent::addDate(const DateContent& other) const
-{
-    return new DateContent(value_ + other.value_);
-}
-
 Content* DateContent::sub(const Content& other) const
 {
 	return other.subDate(*this);

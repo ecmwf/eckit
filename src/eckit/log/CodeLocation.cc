@@ -31,11 +31,10 @@ CodeLocation::operator bool() const {
 
 void CodeLocation::print(std::ostream& os) const {
     if ( file_ ) {
-        os << file_ << " +" << line_;
+        os << " @(" << file_ << " +" << line_;
         if ( strlen(func_) )
-            os << " (" << func_ << ")";
-    } else {
-        os << "(unknown location)";
+            os << " " << func_;
+        os << ")";
     }
 }
 

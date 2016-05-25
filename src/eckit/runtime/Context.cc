@@ -40,13 +40,16 @@ Context::Context() :
     taskID_(0),
     home_("/"),
     runName_("undef"),
-    displayName_()
+    displayName_(),
+    assertAborts_(false)
 {
   char* h = getenv("HOME");
   if (h) home_ = h;
 
   char* th = getenv("_TEST_ECKIT_HOME");
   if (th) home_ = th;
+
+  abortHandler_ = &(::abort);
 
   behavior_.reset(new StandardBehavior());
 }
@@ -119,6 +122,26 @@ const std::string& Context::home() const {
 void Context::home(const std::string& h) {
   AutoLock<Mutex> lock(local_mutex);
   home_ = h;
+}
+
+void Context::abortHandler(abort_handler_t h) {
+    AutoLock<Mutex> lock(local_mutex);
+    abortHandler_ = h;
+}
+
+void Context::abort()
+{
+    abortHandler_();
+}
+
+void Context::assertAborts(bool assertAborts) {
+    AutoLock<Mutex> lock(local_mutex);
+    assertAborts_ = assertAborts;
+}
+
+bool Context::assertAborts() {
+    AutoLock<Mutex> lock(local_mutex);
+    return assertAborts_;
 }
 
 long Context::self() const { return taskID_; }

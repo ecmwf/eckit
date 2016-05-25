@@ -74,7 +74,7 @@ public:
 	const char* data() const { return data_; }
 
     /// The number of bytes in the managed array (always equal to SIZE).
-	size_t size() { return SIZE; }
+    size_t size() const { return SIZE; }
 
 	static size_t static_size() { return SIZE; }
 

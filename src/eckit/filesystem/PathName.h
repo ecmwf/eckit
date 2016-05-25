@@ -141,6 +141,10 @@ public:
     /// @return true if the path is a directory
     bool isDir() const;
 
+    /// Check if path is a symlink
+    /// @return true if the path is a symlink
+    bool isLink() const;
+
     /// Clear the file
     void empty() const;
 

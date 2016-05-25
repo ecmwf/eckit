@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -38,12 +38,12 @@ DataHandle::DataHandle(Stream& s):
 {
 }
 
-AutoClose::~AutoClose() 
-{ 
+AutoClose::~AutoClose()
+{
     bool fail = !Exception::throwing();
 
     try {
-        handle_.close(); 
+        handle_.close();
     }
     catch(std::exception& e)
     {
@@ -73,7 +73,7 @@ static double rate(double x,char& c)
     const char* p = b;
     while(x > 100)
     {
-        x /= 1024;	
+        x /= 1024;
         c = *p++;
     }
     if(x>=10)
@@ -95,7 +95,7 @@ void DataHandle::flush()
 
 Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
 {
-    static bool moverTransfer = Resource<bool>("-mover;moverTransfer",0);
+    static const bool moverTransfer = Resource<bool>("-mover;moverTransfer",0);
 
 
     compress();
@@ -110,12 +110,12 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
     }
 
 
-    static bool doubleBuffer = Resource<bool>("doubleBuffer",0);
+    static const bool doubleBuffer = Resource<bool>("doubleBuffer",0);
 
     if(doubleBuffer)
     {
-        long bufsize = Resource<long>("doubleBufferSize",10*1024*1024/20);
-        long count   = Resource<long>("doubleBufferCount",20);
+        static const long bufsize = Resource<long>("doubleBufferSize",10*1024*1024/20);
+        static const long count   = Resource<long>("doubleBufferCount",20);
 
         DblBuffer buf(count,bufsize,watcher);
         return buf.copy(*this,other);
@@ -123,7 +123,7 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
     else
     {
 
-        long bufsize = Resource<long>("bufferSize",64*1024*1024);
+        static const long bufsize = Resource<long>("bufferSize",64*1024*1024);
 
         Buffer buffer(bufsize);
         //ResizableBuffer buffer(bufsize);
@@ -155,7 +155,7 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
                     readTime += r;
                     lastWrite = timer.elapsed();
 
-                    if(other.write((const char*)buffer,length) != length) 
+                    if(other.write((const char*)buffer,length) != length)
                         throw WriteError(name() + " into " + other.name());
 
                     double w = timer.elapsed() - lastWrite;
@@ -208,8 +208,42 @@ Length DataHandle::saveInto(const PathName& path,TransferWatcher& w)
     return saveInto(*file,w);
 }
 
+Length DataHandle::copyTo(DataHandle& other) {
+    static const long bufsize = Resource<long>("bufferSize",64*1024*1024);
+
+    Buffer buffer(bufsize);
+
+    Length estimate = openForRead(); AutoClose closer1(*this);
+    other.openForWrite(estimate);    AutoClose closer2(other);
+
+    Length total = 0;
+    long length = -1;
+
+    while( (length = read(buffer,buffer.size())) > 0)
+    {
+
+        if(other.write((const char*)buffer,length) != length)
+            throw WriteError(name() + " into " + other.name());
+
+        total += length;
+    }
+
+    if(length < 0)
+        throw ReadError(name() + " into " + other.name());
+
+    if(estimate != 0 && estimate != total)
+    {
+        std::ostringstream os;
+        os << "DataHandle::saveInto got " << total << " bytes out of " << estimate;
+        throw ReadError(name() + " into " + other.name() + " " + os.str());
+    }
+
+    return total;
+}
+
+
 std::string DataHandle::name() const
-{ 
+{
     std::ostringstream s;
     s << *this;
     return s.str();
@@ -222,9 +256,9 @@ std::string DataHandle::title() const
 
 #ifndef IBM
 template<>
-Streamable* Reanimator<DataHandle>::ressucitate(Stream& s) const 
-{ 
-    return 0; 
+Streamable* Reanimator<DataHandle>::ressucitate(Stream& s) const
+{
+    return 0;
 }
 #endif
 
@@ -264,7 +298,7 @@ bool DataHandle::compare(DataHandle& other)
             return false;
         }
 
-        if(len1 <= 0 && len2 <= 0) 
+        if(len1 <= 0 && len2 <= 0)
         {
             Log::info() << "DataHandle::compare(" << self << "," << other <<") is successful" << std::endl;
             return true;
@@ -331,7 +365,7 @@ DataHandle* DataHandle::toLocal()
     return this;
 }
 
-void DataHandle::toRemote(Stream& s) const 
+void DataHandle::toRemote(Stream& s) const
 {
     s << *this;
 }

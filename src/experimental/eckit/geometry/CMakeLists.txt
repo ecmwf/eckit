@@ -1,11 +1,9 @@
 list( APPEND eckit_geometry_srcs
-  KPoint.h
-  Point2.cc
-  Point2.h
-  Point3.cc
-  Point3.h
-  RotateGrid.cc
-  RotateGrid.h
+KPoint.h
+Point2.cc
+Point2.h
+Point3.cc
+Point3.h
 )
 
 ecbuild_add_library(

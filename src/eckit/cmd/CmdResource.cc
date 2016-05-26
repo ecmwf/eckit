@@ -141,7 +141,7 @@ bool CmdResource::completion(const char* line, int pos, char* insert, int insert
 
 
             if(v.size() == 1) {
-                for(int i = c.back().length(); i < v[0].length() && i < insertmax; i++) {
+                for(size_t i = c.back().length(); i < v[0].length() && i < size_t(insertmax); i++) {
                     *insert++ = v[0][i];
                 }
                 *insert = 0;
@@ -151,14 +151,14 @@ bool CmdResource::completion(const char* line, int pos, char* insert, int insert
             // Copy matches
 
             int k = 0;
-            for(int i = 0; i < v.size() ; i++) {
+            for(size_t i = 0; i < v.size() ; i++) {
 
                 if(i && k < insertmax) {
                     *insert++ = ' ';
                     k++;
                 }
 
-                for(int j = 0; j < v[i].length() && k < insertmax; j++, k++) {
+                for(size_t j = 0; j < v[i].length() && k < insertmax; j++, k++) {
                     *insert++ = v[i][j];
                 }
                 *insert = 0;

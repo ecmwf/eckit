@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/LocalPathName.h
-// B.Raoult - ECMWF May 96
+/// @author Baudouin Raoult
+/// @date   May 96
+
 #ifndef eckit_filesystem_LocalPathName_h
 #define eckit_filesystem_LocalPathName_h
 
@@ -17,11 +18,9 @@
 #include "eckit/io/Offset.h"
 #include "eckit/serialisation/Stream.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Length;
 struct FileSystemSize;
@@ -259,7 +258,7 @@ private:
 
 // Methods
 
-    LocalPathName& tidy();
+    LocalPathName& tidy(bool expandLibraryPath = true);
 
 // friend
 
@@ -282,7 +281,7 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

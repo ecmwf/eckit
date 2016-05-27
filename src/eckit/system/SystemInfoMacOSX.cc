@@ -19,6 +19,7 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/LocalPathName.h"
 
 namespace eckit {
 namespace system {
@@ -28,7 +29,7 @@ namespace system {
 SystemInfoMacOSX::~SystemInfoMacOSX() {
 }
 
-PathName SystemInfoMacOSX::executablePath() const
+LocalPathName SystemInfoMacOSX::executablePath() const
 {
     Buffer buffer(MAXPATHLEN);
 
@@ -49,7 +50,7 @@ PathName SystemInfoMacOSX::executablePath() const
 
     Log::debug() << "Executable path is [" << path << "]" << std::endl;
 
-    return PathName(path).realName();
+    return LocalPathName(path).realName();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

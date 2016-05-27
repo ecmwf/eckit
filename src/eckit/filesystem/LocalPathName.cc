@@ -33,6 +33,7 @@
 #include "eckit/os/Stat.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/runtime/Context.h"
+#include "eckit/system/SystemInfo.h"
 #include "eckit/types/Types.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -377,9 +378,16 @@ LocalPathName& LocalPathName::tidy(bool expandLibraryPath)
                 path_ =  prefix.tidy(false) + "/" + path_.substr(j);
             }
             else {
+
                 std::ostringstream oss;
                 oss << "Missing library path configuration for \'" << s << "\'; available are " << pathsTable;
-                throw BadParameter(oss.str(), Here());
+                eckit::Log::warning() << oss.str() << std::endl;
+
+                /// @note fallback is to use the executable path name
+                ///       we assume here that binaries are installed in <prefix>/<bindir>
+
+                LocalPathName execpath = eckit::system::SystemInfo::instance().executablePath() + "/../..";
+                path_ = execpath.realName();
             }
         }
         else {

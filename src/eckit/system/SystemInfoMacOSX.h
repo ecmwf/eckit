@@ -30,7 +30,7 @@ public: // methods
 
     virtual ~SystemInfoMacOSX();
 
-    virtual eckit::PathName executablePath() const;
+    virtual eckit::LocalPathName executablePath() const;
 
 protected: // methods
 

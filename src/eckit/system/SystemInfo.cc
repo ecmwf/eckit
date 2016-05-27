@@ -17,31 +17,20 @@
 #include "eckit/eckit_ecbuild_config.h"
 #include "eckit/parser/StringTools.h"
 
+#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/ScopedPtr.h"
 
+#if defined(__APPLE__) && defined(__MACH__)
+#include "eckit/system/SystemInfoMacOSX.h"
+#endif
+
+#if defined(__linux__)
+#include "eckit/system/SystemInfoLinux.h"
+#endif
+
 namespace eckit {
 namespace system {
-
-//----------------------------------------------------------------------------------------------------------------------
-
-class SystemInfoMacOSX : public SystemInfo {
-
-    virtual eckit::PathName executablePath() const {
-        NOTIMP;
-    }
-
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-class SystemInfoLinux : public SystemInfo {
-
-    virtual eckit::PathName executablePath() const {
-        NOTIMP;
-    }
-
-};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -49,13 +38,17 @@ SystemInfo* makeSystemInfo(const std::string& system)
 {
     ///< @todo add a factory?
 
-    if (StringTools::startsWith(ECKIT_OS_NAME, "Darwin")) {
+#if defined(__APPLE__) && defined(__MACH__)
+    if (StringTools::startsWith(ECKIT_OS_NAME, "Darwin")) { // double check with ecbuild name
         return new SystemInfoMacOSX();
     }
+#endif
 
+#if defined(__linux__)
     if (StringTools::startsWith(ECKIT_OS_NAME, "Linux")) {
         return new SystemInfoLinux();
     }
+#endif
 
     NOTIMP;
 }

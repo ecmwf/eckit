@@ -33,7 +33,7 @@ public: // methods
 
     static const SystemInfo& instance();
 
-    virtual eckit::PathName executablePath() const = 0;
+    virtual eckit::LocalPathName executablePath() const = 0;
 
 protected: // methods
 

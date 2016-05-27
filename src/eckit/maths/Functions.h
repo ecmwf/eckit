@@ -12,44 +12,24 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_system_ResourceUsage_H
-#define eckit_system_ResourceUsage_H
+#ifndef eckit_Functions_h
+#define eckit_Functions_h
 
-#include <iosfwd>
-#include <sys/resource.h>
+#include <cctype>
+
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
-namespace system {
+namespace maths {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class ResourceUsage {
-
-public: // methods
-
-    ResourceUsage();
-
-    size_t maxResidentSetSize() const;
-    double cpuTime() const;
-    size_t numberOfSwaps() const;
-
-protected: // methods
-
-    void print(std::ostream&) const;
-
-    friend std::ostream& operator<<(std::ostream& s, const ResourceUsage& p) { p.print(s); return s; }
-
-private: // members
-
-    size_t factor_;
-    struct rusage usage_;
-
-};
+/// @returns rounds x to multiple of n
+size_t roundToMultiple(size_t x, size_t n);
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace system
+} // namespace maths
 } // namespace eckit
 
 #endif
-

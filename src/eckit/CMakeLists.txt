@@ -511,10 +511,26 @@ compat/Inited.h
 compat/StrStream.h
 )
 
+list( APPEND eckit_maths_srcs
+maths/Functions.h
+maths/Functions.cc
+)
+
+
 list( APPEND eckit_system_srcs
+system/SystemInfo.h
+system/SystemInfo.cc
 system/ResourceUsage.h
 system/ResourceUsage.cc
 )
+
+if( EC_OS_NAME STREQUAL "linux" )
+    list( APPEND eckit_system_srcs system/SystemInfoLinux.h system/SystemInfoLinux.cc )
+elseif( EC_OS_NAME STREQUAL "macosx" )
+    list( APPEND eckit_system_srcs system/SystemInfoMacOSX.h system/SystemInfoMacOSX.cc )
+else()
+    ecbuild_log_warning("eckit does not support SystemInfo for OS '${EC_OS_NAME}'")
+endif()
 
 list( APPEND eckit_bases_srcs
 bases/Watcher.h
@@ -537,6 +553,7 @@ list( APPEND eckit_dirs
 	filesystem
 	io
 	log
+    maths
 	memory
 	net
 	os

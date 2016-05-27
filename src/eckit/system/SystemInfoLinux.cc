@@ -12,44 +12,34 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_system_ResourceUsage_H
-#define eckit_system_ResourceUsage_H
+#include <unistd.h>
 
-#include <iosfwd>
-#include <sys/resource.h>
+#include <climits>
+#include <cstdlib>
+
+#include "eckit/system/SystemInfoLinux.h"
+
+#include "eckit/io/Buffer.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class ResourceUsage {
+SystemInfoLinux::~SystemInfoLinux() {
+}
 
-public: // methods
-
-    ResourceUsage();
-
-    size_t maxResidentSetSize() const;
-    double cpuTime() const;
-    size_t numberOfSwaps() const;
-
-protected: // methods
-
-    void print(std::ostream&) const;
-
-    friend std::ostream& operator<<(std::ostream& s, const ResourceUsage& p) { p.print(s); return s; }
-
-private: // members
-
-    size_t factor_;
-    struct rusage usage_;
-
-};
+PathName SystemInfoLinux::executablePath() const
+{
+    Buffer buffer(MAXPATHLEN);
+	ssize_t size = SYSCALL(::readlink("/proc/self/exe", buffer, buffer.size()));
+    std::string path(buffer, size);
+    return PathName(path).realName();
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace system
 } // namespace eckit
-
-#endif
 

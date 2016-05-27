@@ -12,37 +12,36 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_system_ResourceUsage_H
-#define eckit_system_ResourceUsage_H
+#ifndef eckit_system_SystemInfo_H
+#define eckit_system_SystemInfo_H
 
 #include <iosfwd>
-#include <sys/resource.h>
+
+#include "eckit/filesystem/PathName.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class ResourceUsage {
+class SystemInfo : private eckit::NonCopyable {
 
 public: // methods
 
-    ResourceUsage();
+    virtual ~SystemInfo();
 
-    size_t maxResidentSetSize() const;
-    double cpuTime() const;
-    size_t numberOfSwaps() const;
+    static const SystemInfo& instance();
+
+    virtual eckit::PathName executablePath() const = 0;
 
 protected: // methods
 
     void print(std::ostream&) const;
 
-    friend std::ostream& operator<<(std::ostream& s, const ResourceUsage& p) { p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const SystemInfo& p) { p.print(s); return s; }
 
 private: // members
-
-    size_t factor_;
-    struct rusage usage_;
 
 };
 

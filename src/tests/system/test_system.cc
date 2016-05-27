@@ -47,7 +47,11 @@ BOOST_AUTO_TEST_CASE( test_eckit_resource_usage_0 )
 
 BOOST_AUTO_TEST_CASE( test_eckit_system_info )
 {
-    BOOST_CHECK_NO_THROW( eckit::PathName execPath = eckit::system::SystemInfo::instance().executablePath() );
+    eckit::PathName execPath;
+    BOOST_CHECK_NO_THROW( execPath = eckit::system::SystemInfo::instance().executablePath() );
+    BOOST_CHECK( execPath.asString().size() );
+
+    eckit::Log::info() << "execPath is " << execPath << std::endl;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

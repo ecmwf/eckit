@@ -21,6 +21,7 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/LocalPathName.h"
 
 namespace eckit {
 namespace system {
@@ -30,12 +31,12 @@ namespace system {
 SystemInfoLinux::~SystemInfoLinux() {
 }
 
-PathName SystemInfoLinux::executablePath() const
+LocalPathName SystemInfoLinux::executablePath() const
 {
     Buffer buffer(PATH_MAX);
 	ssize_t size = SYSCALL(::readlink("/proc/self/exe", buffer, buffer.size()));
     std::string path(buffer, size);
-    return PathName(path).realName();
+    return LocalPathName(path).realName();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -32,7 +32,7 @@ SystemInfoLinux::~SystemInfoLinux() {
 
 PathName SystemInfoLinux::executablePath() const
 {
-    Buffer buffer(MAXPATHLEN);
+    Buffer buffer(PATH_MAX);
 	ssize_t size = SYSCALL(::readlink("/proc/self/exe", buffer, buffer.size()));
     std::string path(buffer, size);
     return PathName(path).realName();

@@ -16,6 +16,7 @@
 #define eckit_Functions_h
 
 #include <cctype>
+#include <cstdlib>
 
 #include "eckit/memory/NonCopyable.h"
 

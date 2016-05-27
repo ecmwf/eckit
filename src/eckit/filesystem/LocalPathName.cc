@@ -382,13 +382,13 @@ LocalPathName& LocalPathName::tidy(bool expandLibraryPath)
                 /// @note fallback is to use the executable path name
                 ///       we assume here that binaries are installed in <prefix>/<bindir>
 
-                LocalPathName execpath = eckit::system::SystemInfo::instance().executablePath() + "/../..";
-                path_ = execpath.realName();
+                LocalPathName execpath = eckit::system::SystemInfo::instance().executablePath().dirName().dirName();
+                path_ = execpath + "/" + path_.substr(j);
 
-                std::ostringstream oss;
-                oss << "Missing library path configuration for \'" << s << "\'; available are " << pathsTable;
-                oss << "; falling back to path relative to executable " << path_;
-                eckit::Log::warning() << oss.str() << std::endl;
+//                std::ostringstream oss;
+//                oss << "Missing library path configuration for \'" << s << "\'; available are " << pathsTable;
+//                oss << "; falling back to path relative to executable " << path_;
+//                eckit::Log::warning() << oss.str() << std::endl;
             }
         }
         else {

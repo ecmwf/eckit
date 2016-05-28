@@ -187,12 +187,12 @@ AssertionFailed::AssertionFailed(const std::string& w):
 {
     Log::monitor(Log::App,1) << what() << std::endl;
 
-    if(Context::instance().assertAborts())
-    {
-        std::cout << what() << std::endl;
-        std::cout << BackTrace::dump() << std::endl;
-        Context::instance().abort();
-    }
+    // if(Context::instance().assertAborts())
+    // {
+    //     std::cout << what() << std::endl;
+    //     std::cout << BackTrace::dump() << std::endl;
+    //     Context::instance().abort();
+    // }
 }
 
 AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc)
@@ -205,12 +205,12 @@ AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc
     reason(s.str());
     Log::monitor(Log::App,2) << what() << std::endl;
 
-    if(Context::instance().assertAborts())
-    {
-        std::cout << what() << std::endl;
-        std::cout << BackTrace::dump() << std::endl;
-        Context::instance().abort();
-    }
+    // if(Context::instance().assertAborts())
+    // {
+    //     std::cout << what() << std::endl;
+    //     std::cout << BackTrace::dump() << std::endl;
+    //     Context::instance().abort();
+    // }
 }
 
 AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)

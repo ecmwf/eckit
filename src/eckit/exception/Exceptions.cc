@@ -223,12 +223,12 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
     reason(s.str());
     Log::monitor(Log::App,2) << what() << std::endl;
 
-    if(Context::instance().assertAborts())
-    {
-        std::cout << what() << std::endl;
-        std::cout << BackTrace::dump() << std::endl;
-        Context::instance().abort();
-    }
+    //if(Context::instance().assertAborts())
+    //{
+        //std::cout << what() << std::endl;
+        //std::cout << BackTrace::dump() << std::endl;
+        //Context::instance().abort();
+    //}
 }
 
 BadParameter::BadParameter(const std::string& w):

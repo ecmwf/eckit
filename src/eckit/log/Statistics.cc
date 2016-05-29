@@ -29,8 +29,8 @@ void Statistics::reportBytes(std::ostream& out, const char* title, eckit::Length
 
 }
 
-void Statistics::reportTime(std::ostream& out, const char* title, double value, const char* indent) {
-    out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::Seconds(value) << " (" << eckit::Bytes(value) << ")" << std::endl;
+void Statistics::reportTime(std::ostream& out, const char* title, const Timing& value, const char* indent) {
+    out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::Seconds(value.elapsed_) << " (" << eckit::Seconds(value.cpu_) << " CPU)" << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

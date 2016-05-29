@@ -321,6 +321,8 @@ log/SavedStatus.h
 log/SavedStatus.cc
 log/Seconds.h
 log/Seconds.cc
+log/Statistics.h
+log/Statistics.cc
 log/Timer.h
 log/Timer.cc
 log/TimeStamp.h

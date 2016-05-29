@@ -28,9 +28,11 @@ class Stream;
 struct Timing {
     double elapsed_;
     double cpu_;
-    Timing(): elapsed_(0), cpu_(0) {}
-    Timing(double elapsed, double cpu): elapsed_(elapsed), cpu_(cpu) {}
-    Timing(Timer& timer): elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()) {}
+    size_t updates_;
+
+    Timing(): elapsed_(0), cpu_(0), updates_(0) {}
+    Timing(double elapsed, double cpu, size_t updates): elapsed_(elapsed), cpu_(cpu), updates_(updates) {}
+    Timing(Timer& timer): elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()), updates_(1) {}
     Timing& operator+=(const Timing&);
     Timing operator-(const Timing&);
 };
@@ -59,6 +61,7 @@ class Statistics {
     static void reportCount(std::ostream& out, const char* title, size_t value, const char* indent = "");
     static void reportBytes(std::ostream& out, const char* title, eckit::Length value, const char* indent = "");
     static void reportTime(std::ostream& out, const char* title, const Timing& value, const char* indent = "");
+    static Timer timer_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

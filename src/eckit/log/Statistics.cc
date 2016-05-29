@@ -19,6 +19,7 @@ namespace eckit {
 
 const size_t WIDTH = 32;
 
+Timer Statistics::timer_;
 //----------------------------------------------------------------------------------------------------------------------
 void Statistics::reportCount(std::ostream &out, const char *title, size_t value, const char *indent) {
     out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::BigNum(value) << std::endl;
@@ -31,7 +32,9 @@ void Statistics::reportBytes(std::ostream &out, const char *title, eckit::Length
 }
 
 void Statistics::reportTime(std::ostream &out, const char *title, const Timing &value, const char *indent) {
-    out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::Seconds(value.elapsed_) << " (" << eckit::Seconds(value.cpu_) << " CPU)" << std::endl;
+    out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::Seconds(value.elapsed_) << " (" << eckit::Seconds(value.cpu_) << " CPU). Updates: "
+        << eckit::BigNum(value.updates_)
+        << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -39,22 +42,25 @@ void Statistics::reportTime(std::ostream &out, const char *title, const Timing &
 Timing &Timing::operator+=(const Timing &other) {
     elapsed_ += other.elapsed_;
     cpu_ += other.cpu_;
+    updates_ += other.updates_;
     return *this;
 }
 
 Timing Timing::operator-(const Timing &other) {
-    return Timing(elapsed_ - other.elapsed_, cpu_ - other.cpu_);
+    return Timing(elapsed_ - other.elapsed_, cpu_ - other.cpu_, updates_ + other.updates_);
 }
 
 Stream &operator<<(Stream &s, const Timing& t) {
     s << t.elapsed_;
     s << t.cpu_;
+    s << t.updates_;
     return s;
 }
 
 Stream &operator>>(Stream &s, Timing &t) {
     s >> t.elapsed_;
     s >> t.cpu_;
+    s >> t.updates_;
     return s;
 }
 

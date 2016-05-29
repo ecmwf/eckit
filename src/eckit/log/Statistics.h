@@ -59,8 +59,6 @@ class Statistics {
     static void reportCount(std::ostream& out, const char* title, size_t value, const char* indent = "");
     static void reportBytes(std::ostream& out, const char* title, eckit::Length value, const char* indent = "");
     static void reportTime(std::ostream& out, const char* title, const Timing& value, const char* indent = "");
-
-    mutable eckit::Timer timer_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

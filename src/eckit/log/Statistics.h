@@ -23,12 +23,19 @@
 
 namespace eckit {
 
+class Stream;
+
 struct Timing {
     double elapsed_;
     double cpu_;
     Timing(): elapsed_(0), cpu_(0) {}
     Timing(Timer& timer): elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()) {}
+    Timing& operator+=(const Timing&);
 };
+
+Stream& operator>>(Stream&, Timing&);
+Stream& operator<<(Stream&, const Timing&);
+
 
 class AutoTiming {
     Timer& timer_;

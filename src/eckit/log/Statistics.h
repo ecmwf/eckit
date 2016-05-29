@@ -29,8 +29,10 @@ struct Timing {
     double elapsed_;
     double cpu_;
     Timing(): elapsed_(0), cpu_(0) {}
+    Timing(double elapsed, double cpu): elapsed_(elapsed), cpu_(cpu) {}
     Timing(Timer& timer): elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()) {}
     Timing& operator+=(const Timing&);
+    Timing operator-(const Timing&);
 };
 
 Stream& operator>>(Stream&, Timing&);
@@ -41,24 +43,24 @@ class AutoTiming {
     Timer& timer_;
     Timing start_;
     Timing& timing_;
-public:
+  public:
     AutoTiming(Timer& timer, Timing& timing):
         timer_(timer), start_(timer), timing_(timing) {}
 
     ~AutoTiming() {
-        timing_.elapsed_ = timer_.elapsed() - start_.elapsed_;
-        timing_.cpu_ = timer_.elapsed_cpu() - start_.cpu_;
+        timing_ += Timing(timer_) - start_;
     }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class Statistics {
-public:
+  public:
     static void reportCount(std::ostream& out, const char* title, size_t value, const char* indent = "");
     static void reportBytes(std::ostream& out, const char* title, eckit::Length value, const char* indent = "");
     static void reportTime(std::ostream& out, const char* title, const Timing& value, const char* indent = "");
 
+    mutable eckit::Timer timer_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

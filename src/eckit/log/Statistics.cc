@@ -35,6 +35,16 @@ void Statistics::reportTime(std::ostream& out, const char* title, const Timing& 
 
 //----------------------------------------------------------------------------------------------------------------------
 
+Timing& Timing::operator+=(const Timing& other) {
+    elapsed_ += other.elapsed_;
+    cpu_ += other.cpu_;
+    return *this;
+}
+
+Timing Timing::operator-(const Timing& other) {
+    return Timing(elapsed_ - other.elapsed_, cpu_ - other.cpu_);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

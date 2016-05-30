@@ -34,7 +34,7 @@ struct Timing {
     Timing(Timer& timer): elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()), updates_(1) {}
     Timing& operator+=(const Timing&);
     Timing operator-(const Timing&);
-    Timing operator/(size_t);
+    Timing& operator/=(size_t);
 };
 
 Stream& operator>>(Stream&, Timing&);

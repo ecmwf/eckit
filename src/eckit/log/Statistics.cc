@@ -46,13 +46,18 @@ Timing &Timing::operator+=(const Timing &other) {
     return *this;
 }
 
+
+Timing &Timing::operator/=(size_t n) {
+    elapsed_ /= n;
+    cpu_ /= n;
+    updates_ /= n;
+    return *this;
+}
+
 Timing Timing::operator-(const Timing &other) {
     return Timing(elapsed_ - other.elapsed_, cpu_ - other.cpu_, updates_ + other.updates_);
 }
 
-Timing Timing::operator/(size_t n) {
-    return Timing(elapsed_ / n, cpu_ / n, updates_ / n);
-}
 
 Stream &operator<<(Stream &s, const Timing& t) {
     s << t.elapsed_;

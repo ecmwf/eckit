@@ -17,7 +17,6 @@
 
 #include <iosfwd>
 
-#include "eckit/io/Length.h"
 #include "eckit/log/Timer.h"
 
 
@@ -35,6 +34,7 @@ struct Timing {
     Timing(Timer& timer): elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()), updates_(1) {}
     Timing& operator+=(const Timing&);
     Timing operator-(const Timing&);
+    Timing operator/(size_t);
 };
 
 Stream& operator>>(Stream&, Timing&);
@@ -59,7 +59,7 @@ class AutoTiming {
 class Statistics {
   public:
     static void reportCount(std::ostream& out, const char* title, size_t value, const char* indent = "");
-    static void reportBytes(std::ostream& out, const char* title, eckit::Length value, const char* indent = "");
+    static void reportBytes(std::ostream& out, const char* title, unsigned long long value, const char* indent = "");
     static void reportTime(std::ostream& out, const char* title, const Timing& value, const char* indent = "");
     static Timer timer_;
 };

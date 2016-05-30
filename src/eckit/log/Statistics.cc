@@ -26,7 +26,7 @@ void Statistics::reportCount(std::ostream &out, const char *title, size_t value,
 
 }
 
-void Statistics::reportBytes(std::ostream &out, const char *title, eckit::Length value, const char *indent) {
+void Statistics::reportBytes(std::ostream &out, const char *title, unsigned long long value, const char *indent) {
     out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::BigNum(value) << " (" << eckit::Bytes(value) << ")" << std::endl;
 
 }
@@ -48,6 +48,10 @@ Timing &Timing::operator+=(const Timing &other) {
 
 Timing Timing::operator-(const Timing &other) {
     return Timing(elapsed_ - other.elapsed_, cpu_ - other.cpu_, updates_ + other.updates_);
+}
+
+Timing Timing::operator/(size_t n) {
+    return Timing(elapsed_ / n, cpu_ / n, updates_ / n);
 }
 
 Stream &operator<<(Stream &s, const Timing& t) {

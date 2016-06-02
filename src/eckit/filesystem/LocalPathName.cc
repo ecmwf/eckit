@@ -52,7 +52,7 @@ static void readPathsTable() {
     eckit::PathName path("~/etc/paths");
     std::ifstream in(path.localPath());
 
-    eckit::Log::info() << "Loading library paths from " << path << std::endl;
+    // eckit::Log::info() << "Loading library paths from " << path << std::endl;
 
     if (in.bad()) {
         eckit::Log::error() << path << eckit::Log::syserr << std::endl;

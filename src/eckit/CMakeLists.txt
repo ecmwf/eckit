@@ -223,6 +223,8 @@ config/Condition.h
 config/Condition.cc
 config/Function.h
 config/Function.cc
+config/Configured.h
+config/Configured.cc
 config/Scope.h
 config/Scope.cc
 config/Script.h

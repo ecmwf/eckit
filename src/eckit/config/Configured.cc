@@ -13,37 +13,22 @@
 /// @date Apr 2015
 
 
-#include "eckit/option/Separator.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/utils/Translator.h"
+#include "eckit/config/Configured.h"
 
-#include <iostream>
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
 namespace option {
 
 
-Separator::Separator(const std::string &description):
-    Option("", description) {
+Configured::Configured() {
 }
 
 
-Separator::~Separator() {
+Configured::~Configured() {
 }
 
-
-void Separator::set(const std::string &value, Configured& parametrisation) const {
-    NOTIMP;
-}
-
-bool Separator::active() const {
-    return false;
-}
-
-void Separator::print(std::ostream &out) const {
-    out << std::endl << description_ << ":" << std::endl;
-}
 
 } // namespace option
 

@@ -29,6 +29,7 @@ namespace option {
 //----------------------------------------------------------------------------------------------------------------------
 
 class Option;
+class Configured;
 
 
 class CmdArgs : public LocalConfiguration, private NonCopyable {
@@ -58,6 +59,9 @@ public: // methods
     const std::string& tool() const;
 
     size_t count() const;
+
+
+    void configure(Configured&) const;
 
     // has, get and set methods are inherited from LocalConfiguration in their entirety
 

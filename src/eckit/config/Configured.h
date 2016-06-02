@@ -13,20 +13,19 @@
 /// @date Apr 2015
 
 
-#ifndef Option_H
-#define Option_H
+#ifndef eckit_Configured_H
+#define eckit_Configured_H
 
 #include <iosfwd>
 #include <string>
+#include <vector>
 
 
 namespace eckit {
-
 namespace option {
 
-class Configured;
 
-class Option {
+class Configured {
   public:
 
 // -- Exceptions
@@ -34,11 +33,11 @@ class Option {
 
 // -- Contructors
 
-    Option(const std::string& name, const std::string& description);
+    Configured();
 
 // -- Destructor
 
-    virtual ~Option(); // Change to virtual if base class
+    virtual ~Configured(); // Change to virtual if base class
 
 // -- Convertors
     // None
@@ -47,14 +46,16 @@ class Option {
     // None
 
 // -- Methods
-    // None
 
-    const std::string& name() const;
+    virtual Configured& set(const std::string &name, const std::string &value) = 0;
+    virtual Configured& set(const std::string &name, const char *value) = 0;
+    virtual Configured& set(const std::string &name, double value) = 0;
+    virtual Configured& set(const std::string &name, long value) = 0;
+    virtual Configured& set(const std::string &name, bool value) = 0;
+    virtual Configured& set(const std::string& name, size_t value) = 0;
 
-    virtual bool active() const;
-
-    virtual void set(Configured&) const;
-    virtual void set(const std::string& value, Configured&) const = 0;
+    virtual Configured& set(const std::string& name, const std::vector<long>& value) = 0;
+    virtual Configured& set(const std::string& name, const std::vector<double>& value) = 0;
 
 // -- Overridden methods
     // None
@@ -69,12 +70,8 @@ class Option {
 
 // -- Members
 
-    std::string name_;
-    std::string description_;
-
 // -- Methods
 
-    virtual void print(std::ostream&) const = 0; // Change to virtual if base class
 
 // -- Overridden methods
     // None
@@ -89,8 +86,6 @@ class Option {
 
 // No copy allowed
 
-    Option(const Option&);
-    Option& operator=(const Option&);
 
 // -- Members
     // None
@@ -109,10 +104,7 @@ class Option {
 
 // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& s, const Option& p) {
-        p.print(s);
-        return s;
-    }
+
 
 };
 

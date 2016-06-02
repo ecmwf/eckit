@@ -96,8 +96,7 @@ class VectorOption : public Option {
 
 // -- Overridden methods
 
-    virtual void set(const std::string& value, LocalConfiguration&) const;
-
+    virtual void set(const std::string& value, Configured&) const;
 
 // -- Class members
     // None

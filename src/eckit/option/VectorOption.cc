@@ -39,7 +39,7 @@ VectorOption<T>::~VectorOption() {
 }
 
 template<class T>
-void VectorOption<T>::set(const std::string &value, LocalConfiguration &parametrisation) const {
+void VectorOption<T>::set(const std::string &value, Configured &parametrisation) const {
     eckit::Translator<std::string, T> t;
 
     eckit::Tokenizer parse("/");

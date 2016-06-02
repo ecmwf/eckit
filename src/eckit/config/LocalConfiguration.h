@@ -19,13 +19,14 @@
 #include <vector>
 
 #include "eckit/config/Configuration.h"
+#include "eckit/config/Configured.h"
 
 
 namespace eckit {
 
 class PathName;
 
-class LocalConfiguration : public Configuration {
+class LocalConfiguration : public Configuration, public option::Configured {
   public:
 
     // -- Exceptions
@@ -48,15 +49,15 @@ class LocalConfiguration : public Configuration {
 
     // -- Methods
 
-    void set(const std::string &name, const std::string &value);
-    void set(const std::string &name, const char *value);
-    void set(const std::string &name, double value);
-    void set(const std::string &name, long value);
-    void set(const std::string &name, bool value);
-    void set(const std::string& name, size_t value);
+    LocalConfiguration& set(const std::string &name, const std::string &value);
+    LocalConfiguration& set(const std::string &name, const char *value);
+    LocalConfiguration& set(const std::string &name, double value);
+    LocalConfiguration& set(const std::string &name, long value);
+    LocalConfiguration& set(const std::string &name, bool value);
+    LocalConfiguration& set(const std::string& name, size_t value);
 
-    void set(const std::string& name, const std::vector<long>& value);
-    void set(const std::string& name, const std::vector<double>& value);
+    LocalConfiguration& set(const std::string& name, const std::vector<long>& value);
+    LocalConfiguration& set(const std::string& name, const std::vector<double>& value);
 
     // -- Overridden methods
 

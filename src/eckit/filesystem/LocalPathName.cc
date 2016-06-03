@@ -54,7 +54,7 @@ static void readPathsTable() {
 
     // eckit::Log::info() << "Loading library paths from " << path << std::endl;
 
-    if (in.bad()) {
+    if (!in) {
         eckit::Log::error() << path << eckit::Log::syserr << std::endl;
         return;
     }

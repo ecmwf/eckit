@@ -22,9 +22,12 @@
 
 namespace eckit {
 
+class Configuration;
+class Configured;
+
+
 namespace option {
 
-class Configured;
 
 class Option {
   public:
@@ -55,6 +58,7 @@ class Option {
 
     virtual void set(Configured&) const;
     virtual void set(const std::string& value, Configured&) const = 0;
+    virtual void copy(const Configuration& from, Configured& to) const = 0;
 
 // -- Overridden methods
     // None

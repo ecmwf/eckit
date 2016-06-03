@@ -15,6 +15,8 @@
 #include <iostream>
 
 #include "eckit/config/Configured.h"
+#include "eckit/config/Configuration.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathName.h"
@@ -67,6 +69,15 @@ void SimpleOption<T>::set(Configured &parametrisation) const {
     Option::set(parametrisation);
 }
 
+
+template<class T>
+void SimpleOption<T>::copy(const Configuration &from, Configured &to) const {
+    T v;
+    if(!from.get(name_, v)) {
+        throw eckit::SeriousBug("Cannot get value for " + name_);
+    }
+    to.set(name_, v);
+}
 
 template <>
 void SimpleOption<eckit::PathName>::set(const std::string& value, Configured& parametrisation) const;

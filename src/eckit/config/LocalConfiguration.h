@@ -26,7 +26,7 @@ class PathName;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class LocalConfiguration : public Configuration, public option::Configured {
+class LocalConfiguration : public Configuration, public Configured {
 
     /// @note Do NOT expose eckit::Value in the interface of configuration
     ///       eckit::Value should remain an internal detail of configuration objects

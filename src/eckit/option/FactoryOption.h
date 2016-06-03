@@ -98,6 +98,7 @@ class FactoryOption : public Option {
 // -- Overridden methods
 
     virtual void set(const std::string& value, Configured&) const;
+    virtual void copy(const Configuration& from, Configured& to) const;
 
 
 // -- Class members

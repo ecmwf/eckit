@@ -71,6 +71,16 @@ void VectorOption<T>::print(std::ostream &out) const {
 }
 
 
+template<class T>
+void VectorOption<T>::copy(const Configuration &from, Configured &to) const {
+    std::vector<T> v;
+    if(!from.get(name_, v)) {
+        throw eckit::SeriousBug("Cannot get value for " + name_);
+    }
+    to.set(name_, v);
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------
 
 

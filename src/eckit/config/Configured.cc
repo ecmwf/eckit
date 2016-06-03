@@ -19,8 +19,6 @@
 
 namespace eckit {
 
-namespace option {
-
 
 Configured::Configured() {
 }
@@ -28,9 +26,6 @@ Configured::Configured() {
 
 Configured::~Configured() {
 }
-
-
-} // namespace option
 
 } // namespace eckit
 

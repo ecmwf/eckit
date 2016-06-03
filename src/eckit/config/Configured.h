@@ -22,7 +22,6 @@
 
 
 namespace eckit {
-namespace option {
 
 
 class Configured {
@@ -107,8 +106,6 @@ class Configured {
 
 
 };
-
-} // namespace option
 
 } // namespace eckit
 #endif

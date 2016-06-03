@@ -96,6 +96,7 @@ class SimpleOption : public Option {
 
     virtual void set(Configured&) const;
     virtual void set(const std::string& value, Configured&) const;
+    virtual void copy(const Configuration& from, Configured& to) const;
 
 // -- Class members
     // None

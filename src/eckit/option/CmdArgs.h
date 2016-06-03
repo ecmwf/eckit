@@ -29,7 +29,6 @@ namespace option {
 //----------------------------------------------------------------------------------------------------------------------
 
 class Option;
-class Configured;
 
 
 class CmdArgs : public LocalConfiguration, private NonCopyable {

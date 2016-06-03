@@ -66,7 +66,7 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
     next_(first()),
     location_(location)
 {
-    Log::error() << "Exception: " << w << " @ " << location_ << std::endl;
+    Log::error() << "Exception: " << w << location_ << std::endl;
 
 #if 0
     if(next_) {
@@ -81,7 +81,7 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
     callStack_ = BackTrace::dump();
 
     first() = this;
-	Log::status() << "** " << w << " @ " << location_ << std::endl;
+    Log::status() << "** " << w << location_ << std::endl;
 }
 
 void Exception::reason(const std::string& w)
@@ -267,8 +267,7 @@ NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& 
 {
     std::ostringstream ss;
 
-    ss << "Not implemented: " << s << " @ " << loc.func()
-       << ", line " << loc.line() << " of " << loc.file();
+    ss << "Not implemented: " << s << loc;
 
     reason(ss.str());
 	Log::monitor(Log::App,2) << what() << std::endl;
@@ -353,7 +352,7 @@ FileError::FileError(const std::string& msg)
 FileError::FileError(const std::string& msg, const CodeLocation& here )
 {
     std::ostringstream s;
-    s << msg << " @ " << here <<  Log::syserr;
+    s << msg << here <<  Log::syserr;
     reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
@@ -374,7 +373,7 @@ CantOpenFile::CantOpenFile(const std::string& file, const CodeLocation& loc, boo
     std::ostringstream s;
     s << "Cannot open " << file << " " << Log::syserr;
     if(retry) s << " (retry ok)";
-    s << " @ " << loc;
+    s << loc;
     reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }

@@ -17,30 +17,81 @@
 #include <dirent.h>
 #include <sys/statvfs.h>
 
+#include "eckit/filesystem/LocalPathName.h"
+
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/BasePathNameT.h"
-#include "eckit/io/FileHandle.h"
-#include "eckit/filesystem/LocalPathName.h"
-#include "eckit/io/PartFileHandle.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
+#include "eckit/io/FileHandle.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/PartFileHandle.h"
 #include "eckit/io/StdFile.h"
 #include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/TimeStamp.h"
 #include "eckit/os/Stat.h"
+#include "eckit/parser/Tokenizer.h"
 #include "eckit/runtime/Context.h"
+#include "eckit/types/Types.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Once.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/thread/Once.h"
 #include "eckit/utils/Regex.h"
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+static pthread_once_t once = PTHREAD_ONCE_INIT;
+static StringDict pathsTable;
+
+static void readPathsTable() {
+
+    eckit::PathName path("~/etc/config/libraryPaths");
+    std::ifstream in(path.localPath());
+
+    eckit::Log::info() << "Loading library paths from " << path << std::endl;
+
+    if (in.bad()) {
+        eckit::Log::error() << path << eckit::Log::syserr << std::endl;
+        return;
+    }
+
+    eckit::Tokenizer parse(" ");
+
+    char line[1024];
+    while(in.getline(line, sizeof(line))) {
+        std::vector<std::string> s;
+        parse(line, s);
+
+        size_t i = 0;
+        while (i < s.size()) {
+            if (s[i].length() == 0) {
+                s.erase(s.begin() + i);
+            } else {
+                i++;
+            }
+        }
+
+        if (s.size() == 0 || s[0][0] == '#') {
+            continue;
+        }
+
+        switch (s.size()) {
+        case 2:
+            pathsTable[s[0]] = s[1];
+            break;
+
+        default:
+            eckit::Log::warning() << "Library Paths: Invalid line ignored: " << line << std::endl;
+            break;
+
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static Once<Mutex> local_mutex;
 
@@ -297,15 +348,44 @@ LocalPathName LocalPathName::fullName() const
 }
 
 
-LocalPathName& LocalPathName::tidy()
+LocalPathName& LocalPathName::tidy(bool expandLibraryPath)
 {
 	if(path_.length() == 0) return *this;
 
-	if(path_[0] == '~')
+    if(path_[0] == '~')
     {
-        path_ =  Context::instance().home() + "/" + path_.substr(1);
-    }
+        if(path_.length() > 1 && path_[1] != '/') {
 
+            std::string s;
+            size_t j = 1;
+            while(j < path_.length() && path_[j] != '/') {
+                s += path_[j];
+                j++;
+            }
+
+            if(!expandLibraryPath) {
+                std::ostringstream oss;
+                oss << "Cannot expand library path to another library path \'" << s << "\'";
+                throw BadParameter(oss.str(), Here());
+            }
+
+            pthread_once(&once, readPathsTable);
+            StringDict::const_iterator itr = pathsTable.find(s);
+
+            if(itr != pathsTable.end()) {
+                LocalPathName prefix(itr->second);
+                path_ =  prefix.tidy(false) + "/" + path_.substr(j);
+            }
+            else {
+                std::ostringstream oss;
+                oss << "Missing library path configuration for \'" << s << "\'; available are " << pathsTable;
+                throw BadParameter(oss.str(), Here());
+            }
+        }
+        else {
+            path_ =  Context::instance().home() + "/" + path_.substr(1);
+        }
+    }
 
 	bool more = true;
 	bool last = (path_[path_.length()-1] == '/');
@@ -441,7 +521,7 @@ void LocalPathName::match(const LocalPathName& root,std::vector<LocalPathName>& 
 		{
 			LocalPathName full = dir + "/" + e->d_name;
             Stat::Struct info;
-            SYSCALL(Stat::stat(full.c_str(),&info));
+            SYSCALL(Stat::lstat(full.c_str(),&info));
 			if(S_ISDIR(info.st_mode))
 				match(full+"/"+base,result,true);
 		}
@@ -567,6 +647,13 @@ bool LocalPathName::isDir() const
     Stat::Struct info;
     SYSCALL(Stat::stat(path_.c_str(),&info));
 	return S_ISDIR(info.st_mode);
+}
+
+bool LocalPathName::isLink() const
+{
+    Stat::Struct info;
+    SYSCALL(Stat::lstat(path_.c_str(),&info));
+    return S_ISLNK(info.st_mode);
 }
 
 bool LocalPathName::sameAs(const LocalPathName& other) const

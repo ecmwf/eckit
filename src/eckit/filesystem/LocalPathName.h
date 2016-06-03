@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/LocalPathName.h
-// B.Raoult - ECMWF May 96
+/// @author Baudouin Raoult
+/// @date   May 96
+
 #ifndef eckit_filesystem_LocalPathName_h
 #define eckit_filesystem_LocalPathName_h
 
@@ -17,11 +18,9 @@
 #include "eckit/io/Offset.h"
 #include "eckit/serialisation/Stream.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Length;
 struct FileSystemSize;
@@ -180,6 +179,10 @@ public:
     /// @return true if the path is a directory
     bool isDir() const;
 
+    /// Check if path is a symlink
+    /// @return true if the path is a symlink
+    bool isLink() const;
+
     /// Clear the file
     void empty() const;
 
@@ -244,7 +247,7 @@ public:
     static void link(const LocalPathName& from,const LocalPathName& to);
     static void rename(const LocalPathName& from,const LocalPathName& to);
     static void rename(const LocalPathName& from,const std::string& newBase);
-    
+
     static LocalPathName cwd();
 
 private:
@@ -255,7 +258,7 @@ private:
 
 // Methods
 
-    LocalPathName& tidy();
+    LocalPathName& tidy(bool expandLibraryPath = true);
 
 // friend
 
@@ -278,7 +281,7 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

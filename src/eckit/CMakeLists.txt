@@ -609,3 +609,5 @@ endif()
 
 add_subdirectory( linalg )
 add_subdirectory( web )
+add_subdirectory( option )
+

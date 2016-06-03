@@ -82,6 +82,9 @@ void SimpleOption<T>::copy(const Configuration &from, Configured &to) const {
 template <>
 void SimpleOption<eckit::PathName>::set(const std::string& value, Configured& parametrisation) const;
 
+template <>
+void SimpleOption<eckit::PathName>::copy(const Configuration &from, Configured &to) const;
+
 template<>
 void SimpleOption<bool>::print(std::ostream &out) const;
 

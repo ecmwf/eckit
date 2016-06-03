@@ -17,6 +17,7 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
 
 LocalConfiguration::LocalConfiguration(char separator):
     Configuration(Value::makeMap(), separator) {
@@ -31,9 +32,8 @@ LocalConfiguration::LocalConfiguration(const Configuration &other):
 }
 
 LocalConfiguration::LocalConfiguration(const Configuration &other, const std::string &path):
-    Configuration(other.lookUp(path), other.separator()) {
+    Configuration(other, path) {
 }
-
 
 LocalConfiguration::~LocalConfiguration() {
 }
@@ -125,6 +125,8 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vec
     set(s, values);
     return *this;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

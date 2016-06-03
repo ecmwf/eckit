@@ -10,8 +10,7 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date   Jul 2015
-
+/// @date   July 2015
 
 #ifndef eckit_LocalConfiguration_H
 #define eckit_LocalConfiguration_H
@@ -21,33 +20,24 @@
 #include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
 
-
 namespace eckit {
 
 class PathName;
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class LocalConfiguration : public Configuration, public option::Configured {
-  public:
 
-    // -- Exceptions
-    // None
+    /// @note Do NOT expose eckit::Value in the interface of configuration
+    ///       eckit::Value should remain an internal detail of configuration objects
 
-    // -- Contructors
+public: // methods
 
     LocalConfiguration(char separator = '.');
     LocalConfiguration(const Configuration &other);
     LocalConfiguration(const Configuration &other, const std::string &path);
-    LocalConfiguration(const Value& root, char separator = '.');
 
-    virtual ~LocalConfiguration(); // Change to virtual if base class
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
+    virtual ~LocalConfiguration();
 
     LocalConfiguration& set(const std::string &name, const std::string &value);
     LocalConfiguration& set(const std::string &name, const char *value);
@@ -59,69 +49,23 @@ class LocalConfiguration : public Configuration, public option::Configured {
     LocalConfiguration& set(const std::string& name, const std::vector<long>& value);
     LocalConfiguration& set(const std::string& name, const std::vector<double>& value);
 
-    // -- Overridden methods
+protected:
 
+    friend class Configuration;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-
-
-  protected:
-
-
-    // -- Destructor
-
-    // -- Members
-    // None
-
-    // -- Methods
-
-    // void print(ostream&) const; // Change to virtual if base class
-
-    // -- Overridden methods
+    /// to be used only by class Configuration
+    LocalConfiguration(const eckit::Value&, char separator = '.');
 
     virtual void print(std::ostream &) const;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-  private:
-
-    // No copy allowed
-
-    // LocalConfiguration(const LocalConfiguration &);
-    // LocalConfiguration &operator=(const LocalConfiguration &);
-
-
-    // -- Members
-
-
-    // -- Methods
+private:
 
     void set(const std::vector<std::string> &path, size_t i, Value &root, const Value &value);
     void set(const std::string &s, const Value &value);
 
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-
-    //friend ostream& operator<<(ostream& s,const LocalConfiguration& p)
-    //  { p.print(s); return s; }
-
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

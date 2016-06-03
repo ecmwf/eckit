@@ -91,10 +91,9 @@ void SimpleOption<eckit::PathName>::set(const std::string& value, Configured& pa
 template <>
 void SimpleOption<eckit::PathName>::copy(const Configuration &from, Configured &to) const {
     std::string v;
-    if(!from.get(name_, v)) {
-        throw eckit::SeriousBug("Cannot get value for " + name_);
+    if(from.get(name_, v)) {
+       to.set(name_, v);
     }
-    to.set(name_, v);
 }
 
 template<>

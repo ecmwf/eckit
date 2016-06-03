@@ -73,10 +73,9 @@ void SimpleOption<T>::set(Configured &parametrisation) const {
 template<class T>
 void SimpleOption<T>::copy(const Configuration &from, Configured &to) const {
     T v;
-    if(!from.get(name_, v)) {
-        throw eckit::SeriousBug("Cannot get value for " + name_);
+    if(from.get(name_, v)) {
+        to.set(name_, v);
     }
-    to.set(name_, v);
 }
 
 template <>

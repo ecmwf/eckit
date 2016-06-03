@@ -42,10 +42,9 @@ void FactoryOption<T>::set(const std::string &value, Configured &parametrisation
 template<class T>
 void FactoryOption<T>::copy(const Configuration &from, Configured &to) const {
     std::string v;
-    if(!from.get(name_, v)) {
-        throw eckit::SeriousBug("Cannot get value for " + name_);
+    if(from.get(name_, v)) {
+        to.set(name_, v);
     }
-    to.set(name_, v);
 }
 
 template<class T>

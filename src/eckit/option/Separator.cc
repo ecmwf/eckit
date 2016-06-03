@@ -34,7 +34,6 @@ Separator::~Separator() {
 
 
 void Separator::set(const std::string &value, Configured& parametrisation) const {
-    NOTIMP;
 }
 
 bool Separator::active() const {

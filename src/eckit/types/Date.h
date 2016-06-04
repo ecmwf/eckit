@@ -28,6 +28,8 @@ class Bless;
 class Date {
 public:
 
+	enum { MONDAY = 0, TUESDAY=1, WEDNESDAY=2, THURSDAY=3, FRIDAY=4, SATURDAY=5, SUNDAY=6};
+
 // -- Contructors
 
 	Date() : julian_(0) { }
@@ -91,6 +93,7 @@ public:
 	long julian() const { return julian_;                  }
 	Date round(int n)   { return Date((julian_/n)*n,true); }
 	std::string monthName() const;
+	long dayOfWeek() const { return julian_ % 7; }
 
 	void dump(DumpLoad&) const;
 	void load(DumpLoad&);

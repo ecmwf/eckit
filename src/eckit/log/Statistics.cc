@@ -26,6 +26,16 @@ void Statistics::reportCount(std::ostream &out, const char *title, size_t value,
 
 }
 
+void Statistics::reportUnit(std::ostream &out, const char *title, const char* unit, double value, const char *indent) {
+    out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << value << " " << unit << std::endl;
+}
+
+
+void Statistics::reportRate(std::ostream &out, const char *title, unsigned long long value, const char *indent) {
+    out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::BigNum(value) << " bytes/s (" << eckit::Bytes(value) << "/s )" << std::endl;
+
+}
+
 void Statistics::reportBytes(std::ostream &out, const char *title, unsigned long long value, const char *indent) {
     out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::BigNum(value) << " (" << eckit::Bytes(value) << ")" << std::endl;
 

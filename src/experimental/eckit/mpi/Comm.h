@@ -48,6 +48,9 @@ public:
   /// @brief Synchronize all mpi tasks
   void barrier() const;
 
+  /// @brief Abort all mpi tasks
+  void abort() const;
+
 private:
   MPI_Comm comm_;
 };

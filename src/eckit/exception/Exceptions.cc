@@ -189,8 +189,8 @@ AssertionFailed::AssertionFailed(const std::string& w):
 
     // if(Context::instance().assertAborts())
     // {
-    //     std::cout << what() << std::endl;
-    //     std::cout << BackTrace::dump() << std::endl;
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
     //     Context::instance().abort();
     // }
 }
@@ -207,8 +207,8 @@ AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc
 
     // if(Context::instance().assertAborts())
     // {
-    //     std::cout << what() << std::endl;
-    //     std::cout << BackTrace::dump() << std::endl;
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
     //     Context::instance().abort();
     // }
 }
@@ -225,8 +225,8 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
 
     //if(Context::instance().assertAborts())
     //{
-        //std::cout << what() << std::endl;
-        //std::cout << BackTrace::dump() << std::endl;
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
         //Context::instance().abort();
     //}
 }

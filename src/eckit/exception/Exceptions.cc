@@ -172,6 +172,8 @@ SeriousBug::SeriousBug(const std::string& msg, const CodeLocation& loc)
    std::ostringstream s;
    s << "SeriousBug: " << msg << " " << " in " << loc;
    reason(s.str());
+   std::cout << what() << std::endl;
+   std::cout << BackTrace::dump() << std::endl;
 }
 
 SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
@@ -179,6 +181,8 @@ SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
    std::ostringstream s;
    s << "SeriousBug: " << msg << " " << " in " << loc;
    reason(s.str());
+   std::cout << what() << std::endl;
+   std::cout << BackTrace::dump() << std::endl;
 }
 
 

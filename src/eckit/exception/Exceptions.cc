@@ -160,11 +160,8 @@ FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, cons
 
 SeriousBug::SeriousBug(const std::string& w) : Exception(std::string("Serious Bug: ") + w)
 {
-#if 0
-    std::cout << "Serious Bug exception triggered -- dumping backtrace:"
-              << BackTrace::dump()
-              << std::endl;
-#endif
+   std::cout << what() << std::endl;
+   std::cout << BackTrace::dump() << std::endl;
 }
 
 SeriousBug::SeriousBug(const std::string& msg, const CodeLocation& loc)

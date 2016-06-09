@@ -258,6 +258,9 @@ public:
     Value& operator[](const Value&);
     Value& operator[](int);
 
+    Value keys() const;
+    size_t size() const;
+
 public:
     bool contains(const char*) const;
     bool contains(const std::string&) const;

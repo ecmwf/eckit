@@ -69,6 +69,10 @@ ListContent::~ListContent()
 {
 }
 
+size_t ListContent::size() const {
+    return value_.size();
+}
+
 void ListContent::value(ValueList& v) const
 {
     v = value_;

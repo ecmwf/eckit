@@ -63,6 +63,21 @@ Value& Content::element(const Value&)
     throw BadOperator(s.str());
 }
 
+Value Content::keys() const
+{
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") method 'keys' not implemented";
+    throw BadOperator(s.str());
+}
+
+size_t Content::size() const
+{
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") method 'size' not implemented";
+    throw BadOperator(s.str());
+}
+
+
 bool Content::contains(const Value&) const
 {
     std::ostringstream s;

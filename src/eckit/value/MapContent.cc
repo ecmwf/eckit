@@ -93,6 +93,14 @@ int MapContent::compareMap(const MapContent& other) const
 
 }
 
+Value MapContent::keys() const {
+    ValueList list;
+    for(ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
+        list.push_back((*j).first);
+    }
+    return Value::makeList(list);
+}
+
 void MapContent::print(std::ostream& s) const
 {
     s << '{';

@@ -32,7 +32,7 @@ void Statistics::reportUnit(std::ostream &out, const char *title, const char* un
 
 
 void Statistics::reportRate(std::ostream &out, const char *title, unsigned long long value, const char *indent) {
-    out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::BigNum(value) << " bytes/s (" << eckit::Bytes(value) << "/s )" << std::endl;
+    out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::BigNum(value) << " bytes/s (" << eckit::Bytes(value) << "/s)" << std::endl;
 
 }
 
@@ -64,7 +64,7 @@ Timing &Timing::operator/=(size_t n) {
     return *this;
 }
 
-Timing Timing::operator-(const Timing &other) {
+Timing Timing::operator-(const Timing &other) const {
     return Timing(elapsed_ - other.elapsed_, cpu_ - other.cpu_, updates_ + other.updates_);
 }
 

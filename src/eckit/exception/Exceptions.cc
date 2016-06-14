@@ -266,6 +266,9 @@ NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& 
 
     reason(ss.str());
 	Log::monitor(Log::App,2) << what() << std::endl;
+
+    std::cout << what() << std::endl;
+    std::cout << BackTrace::dump() << std::endl;
 }
 
 NotImplemented::NotImplemented( const CodeLocation& loc )
@@ -277,6 +280,9 @@ NotImplemented::NotImplemented( const CodeLocation& loc )
 
     reason(ss.str());
     Log::monitor(Log::App,2) << what() << std::endl;
+
+    std::cout << what() << std::endl;
+    std::cout << BackTrace::dump() << std::endl;
 }
 
 UserError::UserError(const std::string& r, const CodeLocation& loc):

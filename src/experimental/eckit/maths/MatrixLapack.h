@@ -64,6 +64,7 @@ private:
 public:
 
 	typedef Matrix<Scalar> Proxy;
+  typedef Matrix<const Scalar> ConstProxy;
 
 	Matrix()
 	{
@@ -116,7 +117,6 @@ public:
 			{
 				if( data_ )
 				{
-					std::cout << "DELETE" << std::endl;
 					delete[] data_;
 				}
 				data_ = new Scalar[nr*nc];
@@ -148,6 +148,12 @@ public:
 	Index rows() const { return nr_; }
 
 	Index cols() const { return nc_; }
+
+	template<typename T>
+	Scalar& operator[](const T& i)
+	{
+		return data_[i];
+	}
 
 	template<typename T>
 	Scalar& operator()(const T& i)

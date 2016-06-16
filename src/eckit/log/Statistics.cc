@@ -76,7 +76,7 @@ void Statistics::reportTime(std::ostream &out, const char *title, const Timing &
             << title
             << std::setw(WIDTH - strlen(title))
             << " : "
-            << eckit::Seconds(value.elapsed_) << " (" << eckit::Seconds(value.cpu_) << " CPU). Updates}: "
+            << eckit::Seconds(value.elapsed_) << " (" << eckit::Seconds(value.cpu_) << " CPU). Updates: "
             << eckit::BigNum(value.updates_)
             << std::endl;
     }

@@ -676,7 +676,6 @@ void BTree<K,V,S>::newPage(Page& p)
 template<class K, class V, int S>
 void BTree<K,V,S>::lockRange(off_t start,off_t len,int cmd,int type)
 {
-
     struct flock lock;
 
     lock.l_type   = type;
@@ -684,7 +683,7 @@ void BTree<K,V,S>::lockRange(off_t start,off_t len,int cmd,int type)
     lock.l_start  = start;
     lock.l_len    = len;
 
-    SYSCALL(::fcntl(fd_, cmd, &lock));
+    // SYSCALL(::fcntl(fd_, cmd, &lock));
 }
 
 

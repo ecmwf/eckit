@@ -55,7 +55,7 @@ namespace detail
 template <typename Scalar, typename Index = std::ptrdiff_t>
 class Matrix {
 
-private:
+protected:
 
 	Scalar* data_;
 	Index nr_, nc_;
@@ -64,7 +64,7 @@ private:
 public:
 
 	typedef Matrix<Scalar> Proxy;
-  typedef Matrix<const Scalar> ConstProxy;
+	typedef Matrix<const Scalar> ConstProxy;
 
 	Matrix()
 	{
@@ -151,6 +151,12 @@ public:
 
 	template<typename T>
 	Scalar& operator[](const T& i)
+	{
+		return data_[i];
+	}
+
+	template<typename T>
+	const Scalar& operator[](const T& i) const
 	{
 		return data_[i];
 	}
@@ -376,6 +382,10 @@ class RowVector : public Matrix<Scalar, Index>
 	typedef Matrix<Scalar, Index> Base;
 
 public:
+	typedef RowVector<Scalar> Proxy;
+	typedef RowVector<const Scalar> ConstProxy;
+
+public:
 
 	RowVector() : Base() { }
 
@@ -400,12 +410,26 @@ public:
 		memcpy( this->data(), other.data(), sizeof(Scalar)*this->cols() );
 		return *this;
 	}
+
+	// RowVector ColVector multiply
+	Scalar operator * (const ColVector<Scalar,Index> &c) const
+	{
+		Scalar s(0);
+		for( Index j=0; j<Base::nr_; ++j)
+			s += Base::data_[j] * c[j];
+		return s;
+	}
+
 };
 
 template< typename Scalar, typename Index = std::ptrdiff_t >
 class ColVector : public Matrix<Scalar, Index>
 {
 	typedef Matrix<Scalar, Index> Base;
+
+public:
+	typedef ColVector<Scalar> Proxy;
+	typedef ColVector<const Scalar> ConstProxy;
 
 public:
 
@@ -432,6 +456,19 @@ public:
 		memcpy( this->data(), other.data(), sizeof(Scalar)*this->cols() );
 		return *this;
 	}
+
+	// ColVector RowVector multiply
+	Matrix<Scalar,Index> operator * (const RowVector<Scalar,Index> &r) const
+	{
+		Matrix<Scalar,Index> m(Base::nc_,r.nr_);
+		for(Index i=0; i<m.nr_; ++i ) {
+			for(Index j=0; j<m.nc_; ++j ) {
+				m(i,j) = Base::data_[i] * r[j];
+            }
+		}
+		return m;
+	}
+
 };
 
 

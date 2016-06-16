@@ -12,11 +12,10 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#include <iosfwd>
-
 #ifndef eckit_system_ResourceUsage_H
 #define eckit_system_ResourceUsage_H
 
+#include <iosfwd>
 #include <sys/resource.h>
 
 namespace eckit {

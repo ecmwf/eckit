@@ -17,30 +17,82 @@
 #include <dirent.h>
 #include <sys/statvfs.h>
 
+#include "eckit/filesystem/LocalPathName.h"
+
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/BasePathNameT.h"
-#include "eckit/io/FileHandle.h"
-#include "eckit/filesystem/LocalPathName.h"
-#include "eckit/io/PartFileHandle.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
+#include "eckit/io/FileHandle.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/PartFileHandle.h"
 #include "eckit/io/StdFile.h"
 #include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/TimeStamp.h"
 #include "eckit/os/Stat.h"
+#include "eckit/parser/Tokenizer.h"
 #include "eckit/runtime/Context.h"
+#include "eckit/system/SystemInfo.h"
+#include "eckit/types/Types.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Once.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/thread/Once.h"
 #include "eckit/utils/Regex.h"
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+static pthread_once_t once = PTHREAD_ONCE_INIT;
+static std::vector<std::pair<std::string, std::string> > pathsTable;
+
+static void readPathsTable() {
+
+    eckit::PathName path("~/etc/paths");
+    std::ifstream in(path.localPath());
+
+    // eckit::Log::info() << "Loading library paths from " << path << std::endl;
+
+    if (!in) {
+        eckit::Log::error() << path << eckit::Log::syserr << std::endl;
+        return;
+    }
+
+    eckit::Tokenizer parse(" ");
+
+    char line[1024];
+    while(in.getline(line, sizeof(line))) {
+        std::vector<std::string> s;
+        parse(line, s);
+
+        size_t i = 0;
+        while (i < s.size()) {
+            if (s[i].length() == 0) {
+                s.erase(s.begin() + i);
+            } else {
+                i++;
+            }
+        }
+
+        if (s.size() == 0 || s[0][0] == '#') {
+            continue;
+        }
+
+        switch (s.size()) {
+        case 2:
+            pathsTable.push_back(std::make_pair(s[0] + "/", s[1]));
+            break;
+
+        default:
+            eckit::Log::warning() << "Library Paths: Invalid line ignored: " << line << std::endl;
+            break;
+
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static Once<Mutex> local_mutex;
 
@@ -301,11 +353,46 @@ LocalPathName& LocalPathName::tidy()
 {
 	if(path_.length() == 0) return *this;
 
-	if(path_[0] == '~')
+    if(path_[0] == '~')
     {
-        path_ =  Context::instance().home() + "/" + path_.substr(1);
-    }
+        if(path_.length() > 1 && path_[1] != '/') {
 
+            std::string s;
+            size_t j = 1;
+            while(j < path_.length() && path_[j] != '/') {
+                s += path_[j];
+                j++;
+            }
+
+
+            pthread_once(&once, readPathsTable);
+            std::vector<std::pair<std::string, std::string> >::const_iterator best = pathsTable.end();
+            size_t match = 0;
+
+            for(std::vector<std::pair<std::string, std::string> >::const_iterator k = pathsTable.begin(); k != pathsTable.end(); ++k) {
+                const std::string& prefix = (*k).first;
+                size_t m = prefix.length();
+
+                if(path_.substr(0, m) == prefix) {
+                    if(m > match) {
+                        match = m;
+                        best = k;
+                    }
+                }
+            }
+
+            if(match) {
+                path_ = (*best).second + "/" + path_.substr(match);
+            }
+            else {
+                path_ = Context::instance().home() + "/" + path_.substr(j);
+            }
+
+        }
+        else {
+            path_ =  Context::instance().home() + "/" + path_.substr(1);
+        }
+    }
 
 	bool more = true;
 	bool last = (path_[path_.length()-1] == '/');

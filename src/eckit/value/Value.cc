@@ -359,6 +359,16 @@ Value Value::operator-() const
     return content_->negate();
 }
 
+
+Value Value::keys() const
+{
+    return content_->keys();
+}
+
+size_t Value::size() const
+{
+    return content_->size();
+}
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

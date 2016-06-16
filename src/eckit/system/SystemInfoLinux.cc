@@ -10,55 +10,37 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date Sep 2012
+/// @date   May 2016
 
-#ifndef eckit_StreamParser_h
-#define eckit_StreamParser_h
+#include <unistd.h>
 
-#include "eckit/eckit.h"
+#include <climits>
+#include <cstdlib>
 
-#include "eckit/memory/NonCopyable.h"
+#include "eckit/system/SystemInfoLinux.h"
+
+#include "eckit/io/Buffer.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/LocalPathName.h"
 
 namespace eckit {
+namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class StreamParser : private NonCopyable  {
+SystemInfoLinux::~SystemInfoLinux() {
+}
 
-public: // types
-    
-    class Error : public Exception {
-    public:
-        Error(const std::string& what, size_t line = 0);
-    };
-    
-public: // methods
-    
-    StreamParser(std::istream& in, bool comments = false);
-
-    char peek(bool spaces = false);
-    char next(bool spaces = false);
-
-    void consume(char);
-    void consume(const char*);
-
-    void expect(const char*);
-
-protected: // members
-
-    size_t line_;
-
-private: // members
-
-    std::istream& in_;
-
-    bool comments_;
-
-};
+LocalPathName SystemInfoLinux::executablePath() const
+{
+    Buffer buffer(PATH_MAX);
+	ssize_t size = SYSCALL(::readlink("/proc/self/exe", buffer, buffer.size()));
+    std::string path(buffer, size);
+    return LocalPathName(path).realName();
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
+} // namespace system
 } // namespace eckit
 
-#endif

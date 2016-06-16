@@ -160,11 +160,8 @@ FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, cons
 
 SeriousBug::SeriousBug(const std::string& w) : Exception(std::string("Serious Bug: ") + w)
 {
-#if 0
-    std::cout << "Serious Bug exception triggered -- dumping backtrace:"
-              << BackTrace::dump()
-              << std::endl;
-#endif
+   std::cout << what() << std::endl;
+   std::cout << BackTrace::dump() << std::endl;
 }
 
 SeriousBug::SeriousBug(const std::string& msg, const CodeLocation& loc)
@@ -172,6 +169,8 @@ SeriousBug::SeriousBug(const std::string& msg, const CodeLocation& loc)
    std::ostringstream s;
    s << "SeriousBug: " << msg << " " << " in " << loc;
    reason(s.str());
+   std::cout << what() << std::endl;
+   std::cout << BackTrace::dump() << std::endl;
 }
 
 SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
@@ -179,6 +178,8 @@ SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
    std::ostringstream s;
    s << "SeriousBug: " << msg << " " << " in " << loc;
    reason(s.str());
+   std::cout << what() << std::endl;
+   std::cout << BackTrace::dump() << std::endl;
 }
 
 
@@ -187,12 +188,12 @@ AssertionFailed::AssertionFailed(const std::string& w):
 {
     Log::monitor(Log::App,1) << what() << std::endl;
 
-    if(Context::instance().assertAborts())
-    {
+    // if(Context::instance().assertAborts())
+    // {
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
-        Context::instance().abort();
-    }
+    //     Context::instance().abort();
+    // }
 }
 
 AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc)
@@ -205,12 +206,12 @@ AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc
     reason(s.str());
     Log::monitor(Log::App,2) << what() << std::endl;
 
-    if(Context::instance().assertAborts())
-    {
+    // if(Context::instance().assertAborts())
+    // {
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
-        Context::instance().abort();
-    }
+    //     Context::instance().abort();
+    // }
 }
 
 AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
@@ -223,12 +224,12 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
     reason(s.str());
     Log::monitor(Log::App,2) << what() << std::endl;
 
-    if(Context::instance().assertAborts())
-    {
+    //if(Context::instance().assertAborts())
+    //{
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
-        Context::instance().abort();
-    }
+        //Context::instance().abort();
+    //}
 }
 
 BadParameter::BadParameter(const std::string& w):
@@ -265,6 +266,9 @@ NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& 
 
     reason(ss.str());
 	Log::monitor(Log::App,2) << what() << std::endl;
+
+    std::cout << what() << std::endl;
+    std::cout << BackTrace::dump() << std::endl;
 }
 
 NotImplemented::NotImplemented( const CodeLocation& loc )
@@ -276,6 +280,9 @@ NotImplemented::NotImplemented( const CodeLocation& loc )
 
     reason(ss.str());
     Log::monitor(Log::App,2) << what() << std::endl;
+
+    std::cout << what() << std::endl;
+    std::cout << BackTrace::dump() << std::endl;
 }
 
 UserError::UserError(const std::string& r, const CodeLocation& loc):

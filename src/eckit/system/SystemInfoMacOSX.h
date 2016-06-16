@@ -10,55 +10,38 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date Sep 2012
+/// @date   May 2016
 
-#ifndef eckit_StreamParser_h
-#define eckit_StreamParser_h
+#ifndef eckit_system_SystemInfoMacOSX_H
+#define eckit_system_SystemInfoMacOSX_H
 
-#include "eckit/eckit.h"
+#include <iosfwd>
 
-#include "eckit/memory/NonCopyable.h"
-#include "eckit/exception/Exceptions.h"
+#include "eckit/system/SystemInfo.h"
 
 namespace eckit {
+namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class StreamParser : private NonCopyable  {
+class SystemInfoMacOSX : public SystemInfo {
 
-public: // types
-    
-    class Error : public Exception {
-    public:
-        Error(const std::string& what, size_t line = 0);
-    };
-    
 public: // methods
-    
-    StreamParser(std::istream& in, bool comments = false);
 
-    char peek(bool spaces = false);
-    char next(bool spaces = false);
+    virtual ~SystemInfoMacOSX();
 
-    void consume(char);
-    void consume(const char*);
+    virtual eckit::LocalPathName executablePath() const;
 
-    void expect(const char*);
-
-protected: // members
-
-    size_t line_;
+protected: // methods
 
 private: // members
-
-    std::istream& in_;
-
-    bool comments_;
 
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
+} // namespace system
 } // namespace eckit
 
 #endif
+

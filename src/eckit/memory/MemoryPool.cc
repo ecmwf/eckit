@@ -349,13 +349,7 @@ void MemoryPool::fastDeallocate(void *p,MemPool& pool)
 	abort();
 }
 
-//-----------------------------------------------------------------------------
-
-inline size_t round(size_t n)
-{
-	const size_t rounding = WORD;
-	return ((n + (rounding-1))/rounding)*rounding;
-}
+//----------------------------------------------------------------------------------------------------------------------
 
 void MemoryPool::info(std::ostream& out)
 {

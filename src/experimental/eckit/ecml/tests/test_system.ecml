@@ -1,9 +1,0 @@
-test, label = check verb system works,
-do = (
-    print, values = Today is
-    system, values = date
-
-    print, values = Current working directory is
-    system, values = pwd
-),
-expect = 0

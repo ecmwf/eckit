@@ -9,9 +9,4 @@
 add_subdirectory( geometry )
 add_subdirectory( maths )
 add_subdirectory( mpi )
-
-if( HAVE_ECKIT_ECML )
-  add_subdirectory( ecml )
-endif()
-
 add_subdirectory( testing )

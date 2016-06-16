@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -38,13 +38,13 @@ EtcTable::~EtcTable()
 const std::vector<std::string>& EtcTable::lookUp(const std::string& name)
 {
     AutoLock<Mutex> lock(mutex_);
-    if(last_ == 0) 
+    if(last_ == 0)
         load();
-    
+
     for(std::vector<std::vector<std::string> >::const_iterator j = lines_.begin(); j != lines_.end() ; ++j)
     {
         const std::vector<std::string>& line = *j;
-        if(match(name, line)) 
+        if(match(name, line))
             return line;
     }
 
@@ -55,11 +55,11 @@ const std::vector<std::string>& EtcTable::lookUp(const std::string& name)
 std::vector<std::string> EtcTable::keys()
 {
     AutoLock<Mutex> lock(mutex_);
-    if(last_ == 0) 
+    if(last_ == 0)
         load();
 
     std::vector<std::string> v;
-    
+
     for(std::vector<std::vector<std::string> >::const_iterator j = lines_.begin(); j != lines_.end() ; ++j)
     {
         const std::vector<std::string>& line = *j;
@@ -83,7 +83,7 @@ void EtcTable::load()
 
 	//Log::info() << "Loading table " << path << std::endl;
 
-	if(in.bad())
+	if(!in)
 	{
 		Log::error() << path << Log::syserr << std::endl;
 		return;

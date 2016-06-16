@@ -59,6 +59,9 @@ public: // methods
 
     size_t count() const;
 
+
+    void configure(Configured&) const;
+
     // has, get and set methods are inherited from LocalConfiguration in their entirety
 
 private: // methods

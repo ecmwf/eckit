@@ -13,22 +13,18 @@
 /// @date Apr 2015
 
 
-#ifndef VectorOption_H
-#define VectorOption_H
+#ifndef eckit_Configured_H
+#define eckit_Configured_H
 
 #include <iosfwd>
-
-#include "eckit/option/Option.h"
-#include "eckit/option/SimpleOption.h"
+#include <string>
+#include <vector>
 
 
 namespace eckit {
 
-namespace option {
 
-
-template<class T>
-class VectorOption : public Option {
+class Configured {
   public:
 
 // -- Exceptions
@@ -36,11 +32,11 @@ class VectorOption : public Option {
 
 // -- Contructors
 
-    VectorOption(const std::string& name, const std::string& description, size_t size);
+    Configured();
 
 // -- Destructor
 
-    virtual ~VectorOption(); // Change to virtual if base class
+    virtual ~Configured(); // Change to virtual if base class
 
 // -- Convertors
     // None
@@ -49,10 +45,16 @@ class VectorOption : public Option {
     // None
 
 // -- Methods
-    // None
 
+    virtual Configured& set(const std::string &name, const std::string &value) = 0;
+    virtual Configured& set(const std::string &name, const char *value) = 0;
+    virtual Configured& set(const std::string &name, double value) = 0;
+    virtual Configured& set(const std::string &name, long value) = 0;
+    virtual Configured& set(const std::string &name, bool value) = 0;
+    virtual Configured& set(const std::string& name, size_t value) = 0;
 
-
+    virtual Configured& set(const std::string& name, const std::vector<long>& value) = 0;
+    virtual Configured& set(const std::string& name, const std::vector<double>& value) = 0;
 
 // -- Overridden methods
     // None
@@ -69,7 +71,6 @@ class VectorOption : public Option {
 
 // -- Methods
 
-    virtual void print(std::ostream&) const; // Change to virtual if base class
 
 // -- Overridden methods
     // None
@@ -84,20 +85,15 @@ class VectorOption : public Option {
 
 // No copy allowed
 
-    VectorOption(const VectorOption&);
-    VectorOption& operator=(const VectorOption&);
 
 // -- Members
-
-    size_t size_;
+    // None
 
 // -- Methods
     // None
 
 // -- Overridden methods
-
-    virtual void set(const std::string& value, Configured&) const;
-    virtual void copy(const Configuration& from, Configured& to) const;
+    // None
 
 // -- Class members
     // None
@@ -108,14 +104,9 @@ class VectorOption : public Option {
 // -- Friends
 
 
+
 };
 
-
-}
-
 } // namespace eckit
-
-#include "eckit/option/VectorOption.cc"
-
 #endif
 

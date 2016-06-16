@@ -33,7 +33,8 @@ static const bool littleEndian = false;
 
 //-----------------------------------------------------------------------------
 
-SparseMatrix::SparseMatrix() {}
+SparseMatrix::SparseMatrix():
+    rows_(0), cols_(0) {}
 
 //-----------------------------------------------------------------------------
 

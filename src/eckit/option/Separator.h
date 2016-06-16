@@ -93,8 +93,9 @@ class Separator : public Option {
 // -- Overridden methods
 
     using Option::set;
-    virtual void set(const std::string& value, LocalConfiguration&) const;
+    virtual void set(const std::string& value, Configured&) const;
     virtual bool active() const;
+    virtual void copy(const Configuration& from, Configured& to) const;
 
 
 // -- Class members

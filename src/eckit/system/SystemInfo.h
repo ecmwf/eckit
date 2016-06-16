@@ -10,55 +10,45 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date Sep 2012
+/// @date   May 2016
 
-#ifndef eckit_StreamParser_h
-#define eckit_StreamParser_h
+#ifndef eckit_system_SystemInfo_H
+#define eckit_system_SystemInfo_H
 
-#include "eckit/eckit.h"
+#include <iosfwd>
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
+namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class StreamParser : private NonCopyable  {
+class SystemInfo : private eckit::NonCopyable {
 
-public: // types
-    
-    class Error : public Exception {
-    public:
-        Error(const std::string& what, size_t line = 0);
-    };
-    
 public: // methods
-    
-    StreamParser(std::istream& in, bool comments = false);
 
-    char peek(bool spaces = false);
-    char next(bool spaces = false);
+    virtual ~SystemInfo();
 
-    void consume(char);
-    void consume(const char*);
+    static const SystemInfo& instance();
 
-    void expect(const char*);
+    virtual eckit::LocalPathName executablePath() const = 0;
 
-protected: // members
+protected: // methods
 
-    size_t line_;
+    void print(std::ostream&) const;
+
+    friend std::ostream& operator<<(std::ostream& s, const SystemInfo& p) { p.print(s); return s; }
 
 private: // members
-
-    std::istream& in_;
-
-    bool comments_;
 
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
+} // namespace system
 } // namespace eckit
 
 #endif
+

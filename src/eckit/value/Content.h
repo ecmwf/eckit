@@ -207,7 +207,10 @@ protected:
 
     virtual bool contains(const Value&) const;
     virtual Value& element(const Value&);
+    virtual Value keys() const;
     virtual Value negate() const;
+    virtual size_t size() const;
+
 
 // -- Overridden methods
 

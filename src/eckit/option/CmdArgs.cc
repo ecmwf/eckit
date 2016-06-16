@@ -127,6 +127,13 @@ CmdArgs::~CmdArgs() {
 }
 
 
+void CmdArgs::configure(Configured& c) const {
+    for (std::vector<option::Option*>::const_iterator j = options_.begin(); j  != options_.end(); ++j) {
+        (*j)->copy(*this, c);
+    }
+}
+
+
 void CmdArgs::print(std::ostream& out) const {
     out << "CmdArgs[";
     LocalConfiguration::print(out);

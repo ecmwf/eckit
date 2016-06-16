@@ -22,7 +22,9 @@
 
 namespace eckit {
 
-class LocalConfiguration;
+class Configuration;
+class Configured;
+
 
 namespace option {
 
@@ -54,9 +56,9 @@ class Option {
 
     virtual bool active() const;
 
-    virtual void set(LocalConfiguration&) const;
-    virtual void set(const std::string& value, LocalConfiguration&) const = 0;
-
+    virtual void set(Configured&) const;
+    virtual void set(const std::string& value, Configured&) const = 0;
+    virtual void copy(const Configuration& from, Configured& to) const = 0;
 
 // -- Overridden methods
     // None

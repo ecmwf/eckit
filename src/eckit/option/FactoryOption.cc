@@ -14,7 +14,9 @@
 
 #include <iostream>
 
-#include "eckit/config/LocalConfiguration.h"
+#include "eckit/config/Configured.h"
+#include "eckit/config/Configuration.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/option/FactoryOption.h"
 #include "eckit/utils/Translator.h"
@@ -33,8 +35,16 @@ FactoryOption<T>::~FactoryOption() {
 }
 
 template<class T>
-void FactoryOption<T>::set(const std::string &value, LocalConfiguration &parametrisation) const {
+void FactoryOption<T>::set(const std::string &value, Configured &parametrisation) const {
     parametrisation.set(name_, value);
+}
+
+template<class T>
+void FactoryOption<T>::copy(const Configuration &from, Configured &to) const {
+    std::string v;
+    if(from.get(name_, v)) {
+        to.set(name_, v);
+    }
 }
 
 template<class T>

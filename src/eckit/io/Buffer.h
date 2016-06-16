@@ -47,6 +47,8 @@ public: // methods
 
     size_t size() const		 { return size_; }
 
+    void resize(size_t size);
+
 protected: // methods
 
     void create();

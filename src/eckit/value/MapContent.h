@@ -71,6 +71,7 @@ protected:
 	virtual Content* div(const Content&) const;
     virtual Content* mod(const Content&) const;
 
+    virtual Value   keys() const;
     virtual Value&   element(const Value&);
     virtual bool contains(const Value& key) const;
 

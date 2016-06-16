@@ -41,7 +41,7 @@ bool Option::active() const {
     return true;
 }
 
-void Option::set(LocalConfiguration &) const {
+void Option::set(Configured &) const {
     std::ostringstream os;
     os << "Option::set() not implemented for " << *this;
     throw eckit::SeriousBug(os.str());
@@ -79,13 +79,21 @@ const char *Title<eckit::PathName>::operator()() const {
 }
 
 template<>
-void SimpleOption<bool>::set(LocalConfiguration &parametrisation) const {
+void SimpleOption<bool>::set(Configured &parametrisation) const {
     parametrisation.set(name_, true);
 }
 
 template <>
-void SimpleOption<eckit::PathName>::set(const std::string& value, LocalConfiguration& parametrisation) const {
+void SimpleOption<eckit::PathName>::set(const std::string& value, Configured& parametrisation) const {
     parametrisation.set(name_, value);
+}
+
+template <>
+void SimpleOption<eckit::PathName>::copy(const Configuration &from, Configured &to) const {
+    std::string v;
+    if(from.get(name_, v)) {
+       to.set(name_, v);
+    }
 }
 
 template<>

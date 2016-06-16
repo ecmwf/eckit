@@ -10,8 +10,9 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date Apr 2016
+/// @date   May 2016
 
+#include "eckit/system/ResourceUsage.h"
 
 #include "eckit/eckit_ecbuild_config.h"
 #include "eckit/parser/StringTools.h"
@@ -20,7 +21,6 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 
-#include "eckit/system/ResourceUsage.h"
 #include "eckit/exception/Exceptions.h"
 
 namespace eckit {
@@ -39,7 +39,7 @@ ResourceUsage::ResourceUsage() {
 }
 
 void ResourceUsage::print(std::ostream &out) const {
-    out << ", CPU: " << cpuTime() << " ("
+    out << "CPU: " << cpuTime() << " ("
         << eckit::Seconds(cpuTime())
         << "), memory: "
         << maxResidentSetSize()

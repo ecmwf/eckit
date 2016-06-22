@@ -174,6 +174,8 @@ filesystem/FileName.h
 filesystem/FileName.cc
 filesystem/FileSpace.h
 filesystem/FileSpace.cc
+filesystem/FileSpaceStrategies.h
+filesystem/FileSpaceStrategies.cc
 filesystem/FileSystem.h
 filesystem/FileSystem.cc
 filesystem/TempFile.h

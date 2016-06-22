@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file   FileSpace.h
+/// @file   FileSpaceStrategies.h
 /// @date   Mar 1998
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_FileSpace_h
-#define eckit_FileSpace_h
+#ifndef eckit_FileSpaceStrategies_h
+#define eckit_FileSpaceStrategies_h
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
@@ -23,45 +23,17 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class FileSpace : private NonCopyable {
+class FileSpaceStrategies : private NonCopyable {
 public:
 
-// -- Methods
+    static const PathName& selectFileSystem(const std::vector<PathName>& fileSystems, const std::string& s);
 
-	const PathName& sameFileSystem(const PathName&) const;
-	const std::vector<PathName>& fileSystems() const { return fileSystems_; }
-
-	bool owns(const PathName&) const;
-	
-	const PathName& selectFileSystem(const std::string&) const;
-	const PathName& selectFileSystem()              const;
-
-    const std::string& name() const { return name_; }
-
-// -- Class methods
-
-	static bool exists(const std::string&);
-	static const FileSpace& lookUp(const std::string&);
-
-private:
-
-	FileSpace(const std::string&);
-	~FileSpace(); 
-
-// -- Methods
-
-	void load() const;
-	const PathName& find(const PathName&,bool&) const;
-	
-
-// -- Members
-	
-	std::string           name_;
-	time_t			 last_;
-	std::vector<PathName> fileSystems_;
+    static const PathName& leastUsed(const std::vector<PathName>& fileSystems);
+    static const PathName& roundRobin(const std::vector<PathName>& fileSystems);
+    static const PathName& pureRandom(const std::vector<PathName>& fileSystems);
+    static const PathName& weightedRandom(const std::vector<PathName>& fileSystems);
 
 };
-
 
 //----------------------------------------------------------------------------------------------------------------------
 

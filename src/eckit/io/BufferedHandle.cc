@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -47,7 +47,7 @@ BufferedHandle::BufferedHandle(DataHandle& h, size_t size):
 {
 }
 
-BufferedHandle::~BufferedHandle() 
+BufferedHandle::~BufferedHandle()
 {
 }
 
@@ -95,7 +95,7 @@ long BufferedHandle::read(void* buffer,long length)
     char *buf = (char*)buffer;
 
     ASSERT(read_);
-        
+
     if(eof_)
         return -1;
 
@@ -107,7 +107,7 @@ long BufferedHandle::read(void* buffer,long length)
         {
             used_   = handle().read(buffer_,size_);
             pos_    = 0;
-            if(used_ <= 0) 
+            if(used_ <= 0)
             {
                 eof_ = true;
                 len = len ? len : used_;
@@ -136,6 +136,7 @@ long BufferedHandle::write(const void* buffer,long length)
 	ASSERT(left >= 0);
 
     ASSERT(!read_);
+    position_ += length;
 
 	if(length > left)
 	{
@@ -157,7 +158,7 @@ long BufferedHandle::write(const void* buffer,long length)
 
 void BufferedHandle::close()
 {
-	if(!read_) 
+	if(!read_)
         bufferFlush();
     handle().close();
 }
@@ -170,6 +171,7 @@ void BufferedHandle::flush()
 
 void BufferedHandle::rewind()
 {
+    position_ = 0;
 	used_ = pos_ = 0;
     eof_  = false;
     handle().rewind();
@@ -198,7 +200,7 @@ Length BufferedHandle::estimate()
 
 Offset BufferedHandle::position()
 {
-    ASSERT(read_);
+    // ASSERT(read_);
     return position_;
 }
 

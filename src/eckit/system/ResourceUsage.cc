@@ -39,7 +39,7 @@ ResourceUsage::ResourceUsage() {
 }
 
 void ResourceUsage::print(std::ostream &out) const {
-    out << ", CPU: " << cpuTime() << " ("
+    out << "CPU: " << cpuTime() << " ("
         << eckit::Seconds(cpuTime())
         << "), memory: "
         << maxResidentSetSize()

@@ -18,15 +18,15 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 #if 0
-ClassSpec BufferedHandle::classSpec_ = {&DataHandle::classSpec(),"BufferedHandle",};
+ClassSpec BufferedHandle::classSpec_ = {&DataHandle::classSpec(), "BufferedHandle",};
 Reanimator<BufferedHandle> BufferedHandle::reanimator_;
 #endif
 
 
 BufferedHandle::BufferedHandle(DataHandle* h, size_t size):
     HandleHolder(h),
-	buffer_(size),
-	pos_(0),
+    buffer_(size),
+    pos_(0),
     size_(size),
     used_(0),
     eof_(false),
@@ -37,8 +37,8 @@ BufferedHandle::BufferedHandle(DataHandle* h, size_t size):
 
 BufferedHandle::BufferedHandle(DataHandle& h, size_t size):
     HandleHolder(h),
-	buffer_(size),
-	pos_(0),
+    buffer_(size),
+    pos_(0),
     size_(size),
     used_(0),
     eof_(false),
@@ -54,7 +54,7 @@ BufferedHandle::~BufferedHandle()
 Length BufferedHandle::openForRead()
 {
     read_ = true;
-	used_ = pos_ = 0;
+    used_ = pos_ = 0;
     eof_ = false;
     position_ = 0;
     return handle().openForRead();
@@ -63,14 +63,14 @@ Length BufferedHandle::openForRead()
 void BufferedHandle::openForWrite(const Length& length)
 {
     read_ = false;
-	pos_ = 0;
+    pos_ = 0;
     position_ = 0;
     handle().openForWrite(length);
 }
 
 void BufferedHandle::openForAppend(const Length& )
 {
-	NOTIMP;
+    NOTIMP;
 }
 
 void BufferedHandle::skip(const Length& len)
@@ -79,7 +79,7 @@ void BufferedHandle::skip(const Length& len)
     unsigned long long left = used_ - pos_;
     unsigned long long n    = len;
 
-    if(n < left) {
+    if (n < left) {
         position_ += n;
         pos_ += n;
         return;
@@ -88,7 +88,7 @@ void BufferedHandle::skip(const Length& len)
     seek(position() + len);
 }
 
-long BufferedHandle::read(void* buffer,long length)
+long BufferedHandle::read(void* buffer, long length)
 {
     long len  = 0;
     long size = length;
@@ -96,69 +96,75 @@ long BufferedHandle::read(void* buffer,long length)
 
     ASSERT(read_);
 
-    if(eof_)
+    if (eof_)
         return -1;
 
-    while(len < length && !eof_) {
+    while (len < length && !eof_) {
         long left = used_ - pos_;
-        ASSERT(left>=0);
+        ASSERT(left >= 0);
 
-        if(left == 0 && !eof_ )
+        if (left == 0 && !eof_ )
         {
-            used_   = handle().read(buffer_,size_);
+            used_   = handle().read(buffer_, size_);
             pos_    = 0;
-            if(used_ <= 0)
+            if (used_ <= 0)
             {
                 eof_ = true;
                 len = len ? len : used_;
-                if(len > 0) position_ += len;
-				if(len == 0) return -1;
+                if (len > 0) position_ += len;
+                if (len == 0) return -1;
                 return len;
             }
             left = used_;
         }
 
-		char* p = buffer_;
+        char* p = buffer_;
         long s = size < left ? size : left;
-		::memcpy(buf + len, p + pos_, s);
+        ::memcpy(buf + len, p + pos_, s);
         len  += s; ASSERT(len <= length);
         pos_ += s; ASSERT(pos_ <= used_);
         size -= s; ASSERT(size >= 0);
     }
 
-    if(len > 0) position_ += len;
-	return len;
+    if (len > 0) position_ += len;
+    return len;
 }
 
-long BufferedHandle::write(const void* buffer,long length)
+long BufferedHandle::write(const void* buffer, long length)
 {
-	long left = size_ - pos_;
-	ASSERT(left >= 0);
+    long written = 0;
 
     ASSERT(!read_);
-    position_ += length;
 
-	if(length > left)
-	{
-		bufferFlush();
-		left = size_;
-	}
+    while (length >= 0) {
+        long left = size_ - pos_;
+        ASSERT(left > 0);
 
-	if(length <= left)
-	{
-		char* p = buffer_;
-		::memcpy(p + pos_, buffer,length);
-		pos_ += length; ASSERT(pos_ <= size_);
-		return length;
-	}
+        size_t len = std::min(left, length);
+        ASSERT(len > 0);
 
-    ASSERT(pos_ == 0);
-    return handle().write(buffer,length);
+        char* p = buffer_;
+        const char *q = static_cast<const char*>(buffer);
+        ::memcpy(p + pos_, q + written, len);
+        pos_ += len;
+        written += len;
+        length -= len;
+
+        ASSERT(length >= 0);
+
+        ASSERT(pos_ <= size_);
+        if (pos_ == size_) {
+            bufferFlush();
+        }
+
+    }
+    position_ += written;
+    return written;
 }
 
 void BufferedHandle::close()
 {
-	if(!read_)
+    if (!read_)
         bufferFlush();
     handle().close();
 }
@@ -172,7 +178,7 @@ void BufferedHandle::flush()
 void BufferedHandle::rewind()
 {
     position_ = 0;
-	used_ = pos_ = 0;
+    used_ = pos_ = 0;
     eof_  = false;
     handle().rewind();
 }
@@ -188,9 +194,9 @@ Offset BufferedHandle::seek(const Offset& off)
 
 void BufferedHandle::print(std::ostream& s) const
 {
-	s << "BufferedHandle[";
+    s << "BufferedHandle[";
     handle().print(s);
-	s << ']';
+    s << ']';
 }
 
 Length BufferedHandle::estimate()
@@ -206,12 +212,12 @@ Offset BufferedHandle::position()
 
 void BufferedHandle::bufferFlush()
 {
-	if(pos_)
-	{
-        long len = handle().write(buffer_,pos_);
-		ASSERT( (size_t) len == pos_ );
-		pos_ = 0;
-	}
+    if (pos_)
+    {
+        long len = handle().write(buffer_, pos_);
+        ASSERT( (size_t) len == pos_ );
+        pos_ = 0;
+    }
 }
 
 std::string BufferedHandle::title() const {

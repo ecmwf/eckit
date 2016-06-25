@@ -136,7 +136,7 @@ long BufferedHandle::write(const void* buffer, long length)
 
     ASSERT(!read_);
 
-    while (length >= 0) {
+    while (length > 0) {
         long left = size_ - pos_;
         ASSERT(left > 0);
 

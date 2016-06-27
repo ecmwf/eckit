@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fenv.h>
 #include <cmath>
 
 #define BOOST_TEST_MODULE test_eckit_types
@@ -138,6 +137,20 @@ BOOST_AUTO_TEST_CASE( test_comparisons_involving_zero )
    BOOST_CHECK(! is_equal(0.0, -1e-40, 1e-41));
 }
 
+BOOST_AUTO_TEST_CASE( test_comparisons_involving_infinity )
+{
+   BOOST_TEST_MESSAGE( "test_comparisons_involving_infinity" );
+
+   if (std::numeric_limits<double>::has_infinity) {
+
+      BOOST_CHECK(is_equal(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity()));
+      BOOST_CHECK(is_equal(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity()));
+   }
+   else {
+      BOOST_TEST_MESSAGE( "test_comparisons_involving_infinity NOT VALID on this platform" );
+   }
+}
+
 BOOST_AUTO_TEST_CASE( test_comparisons_involving_nan )
 {
 //    BOOST_TEST_MESSAGE( "test_comparisons_involving_nan" );
@@ -224,21 +237,6 @@ BOOST_AUTO_TEST_CASE( test_comparisons_very_close_to_zero )
    BOOST_CHECK(! is_equal(0.000000001, std::numeric_limits<double>::min(),   1e-10));
    BOOST_CHECK(! is_equal(std::numeric_limits<double>::min(), 0.000000001,   1e-10));
    BOOST_CHECK(! is_equal(-std::numeric_limits<double>::min(), 0.000000001,  1e-10));
-}
-
-BOOST_AUTO_TEST_CASE( test_comparisons_involving_infinity )
-{
-   BOOST_TEST_MESSAGE( "test_comparisons_involving_infinity" );
-
-   if (std::numeric_limits<double>::has_infinity) {
-      // Disable all floating point exception trapping
-      fedisableexcept(FE_ALL_EXCEPT);
-      BOOST_CHECK(is_equal(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity()));
-      BOOST_CHECK(is_equal(-std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity()));
-   }
-   else {
-      BOOST_TEST_MESSAGE( "test_comparisons_involving_infinity NOT VALID on this platform" );
-   }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

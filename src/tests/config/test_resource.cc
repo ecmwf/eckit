@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE( test_config_file )
 
 	BOOST_CHECK_EQUAL( bar , std::string("bar") );
 
-    long buffer = Resource<long>("buffer",0);
+    unsigned long long buffer = Resource<unsigned long long>("buffer",0);
     
 	BOOST_CHECK_EQUAL( buffer , Bytes::MiB(60) );
 }

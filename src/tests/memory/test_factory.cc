@@ -10,6 +10,8 @@
 
 #include <cmath>
 
+#define BOOST_TEST_MODULE test_eckit_memory_factory
+
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/memory/Owned.h"

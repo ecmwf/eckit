@@ -34,7 +34,7 @@ void BTree<K,V,S,L>::_LeafPage::print(std::ostream& s) const
 
     // For some strange reason "this" is required...
     s << "(";
-    for (int i = 0; i < this->count_; i++)
+    for (unsigned long i = 0; i < this->count_; i++)
     {
         s << lentries_[i].key_ << ":" << lentries_[i].value_ << ",";
     }
@@ -48,7 +48,7 @@ void BTree<K,V,S,L>::_NodePage::print(std::ostream& s) const
 {
     // For some strange reason "this" is required...
     s << "{" << this->left_ << "!";
-    for (int i = 0; i < this->count_; i++)
+    for (unsigned long i = 0; i < this->count_; i++)
     {
         s << nentries_[i].key_ << "@" << nentries_[i].page_ << ",";
     }
@@ -136,7 +136,7 @@ void BTree<K,V,S,L>::dump(std::ostream& s, unsigned long page, int depth) const
     if (p.node_)
     {
         dump(s, p.left_, depth+1);
-        for (int i = 0; i < p.count_ ; i ++ )
+        for (unsigned long i = 0; i < p.count_ ; i ++ )
             dump(s, p.nodePage().nentries_[i].page_, depth+1);
     }
 }
@@ -351,7 +351,7 @@ void BTree<K,V,S,L>::splitRoot()
     newPage(pright);
 
 	// std::cout << "SPLIT ROOT " << p << std::endl;
-    int middle = p.count_ / 2;
+    unsigned long middle = p.count_ / 2;
 
     K key;
 
@@ -364,7 +364,7 @@ void BTree<K,V,S,L>::splitRoot()
 
 
         pleft.left_ = p.left_;
-        for (int i = 0; i < middle ; i ++ ) {
+        for (unsigned long i = 0; i < middle ; i ++ ) {
             pleft.nodePage().nentries_[pleft.count_++] = p.nodePage().nentries_[i];
         }
 
@@ -380,7 +380,7 @@ void BTree<K,V,S,L>::splitRoot()
 		pleft.node_  = false;
 		pright.node_ = false;
 
-		for (int i = 0; i < middle ; ++i )
+        for (unsigned long i = 0; i < middle ; ++i )
 		{
 			//		DEBUG_VAR( pleft.count_ );
 			pleft.leafPage().lentries_[pleft.count_++] = p.leafPage().lentries_[i];
@@ -691,7 +691,7 @@ size_t BTree<K,V,S,L>::count(unsigned long page) const
 	if( p.node_ )
 	{
 		c += this->count( p.left_ );
-		for (int i = 0; i < p.count_ ; i ++ )
+        for (unsigned long i = 0; i < p.count_ ; i ++ )
 			c += count( p.nodePage().nentries_[i].page_ );
 	}
 	else // leaf

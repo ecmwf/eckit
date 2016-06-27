@@ -217,7 +217,19 @@ LocalPathName LocalPathName::unique(const LocalPathName& path)
 
 	static std::string format = "%Y%m%d.%H%M%S";
 
-	static unsigned long long n = (((unsigned long long)::getpid()) << 32);
+    static unsigned long long n = 0;
+
+    if(n == 0) {
+        char hostname[256];
+        SYSCALL(::gethostname(hostname, sizeof(hostname)));
+        size_t hash = 0;
+        const char* p = hostname;
+        while(*p) {
+            hash = (*p - 'a') + (hash << 5);
+            p++;
+        }
+        n = (((unsigned long long)::getpid()) << 32) | hash;
+    }
 
     std::ostringstream os;
     os << path << '.' << TimeStamp(format) << '.' << n++;

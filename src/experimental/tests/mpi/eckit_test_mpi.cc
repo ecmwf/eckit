@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
     BOOST_CHECK( mpi::broadcast(data,root,resize) == MPI_SUCCESS );
 
     // check results
-    BOOST_CHECK_EQUAL( data.size(), 10 );
+    BOOST_CHECK_EQUAL( data.size(), 10u );
     BOOST_CHECK_EQUAL_COLLECTIONS(data.begin(),data.end(),d,d+10);
   }
 
@@ -137,9 +137,9 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
     BOOST_CHECK_EQUAL( sum, s );
     BOOST_CHECK_EQUAL( prod, p );
     BOOST_CHECK_EQUAL( min, 1 );
-    BOOST_CHECK_EQUAL( max, eckit::mpi::size() );
+    BOOST_CHECK_EQUAL( size_t(max), eckit::mpi::size() );
     BOOST_CHECK_EQUAL( minloc.first, -double(eckit::mpi::size()) );
-    BOOST_CHECK_EQUAL( minloc.second, eckit::mpi::size()-1 );
+    BOOST_CHECK_EQUAL( size_t(minloc.second), eckit::mpi::size()-1 );
     BOOST_CHECK_EQUAL( maxloc.first, -double(1) );
     BOOST_CHECK_EQUAL( maxloc.second, 0 );
   }
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
     BOOST_CHECK_EQUAL( sum, s );
     BOOST_CHECK_EQUAL( prod, p );
     BOOST_CHECK_EQUAL( min, 1 );
-    BOOST_CHECK_EQUAL( max, eckit::mpi::size() );
+    BOOST_CHECK_EQUAL( size_t(max), eckit::mpi::size() );
 
     std::vector<float> expected;
 

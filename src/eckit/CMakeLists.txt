@@ -638,6 +638,6 @@ endif()
 
 add_subdirectory( geometry )
 add_subdirectory( linalg )
-add_subdirectory( web )
+add_subdirectory( maths )
 add_subdirectory( option )
-
+add_subdirectory( web )

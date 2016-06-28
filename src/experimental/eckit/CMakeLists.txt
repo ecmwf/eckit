@@ -6,6 +6,5 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-add_subdirectory( maths )
 add_subdirectory( mpi )
 add_subdirectory( testing )

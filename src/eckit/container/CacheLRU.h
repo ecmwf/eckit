@@ -81,7 +81,7 @@ public: // methods
     bool remove(const key_type& key);
 
     /// @returns true if the key exists in the cache
-    bool exists(const key_type& key);
+    bool exists(const key_type& key) const;
 
     /// Clears all entries in the cache
     void clear();

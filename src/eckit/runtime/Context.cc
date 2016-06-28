@@ -203,7 +203,7 @@ void Context::registerChannel(const std::string& key, Channel* channel)
     AutoLock<Mutex> lock(local_mutex);
 
     if(channels_.find(key) == channels_.end()) {
-        channels_.insert(std::make_pair<std::string,Channel*>(key, channel));
+        channels_.insert(std::make_pair(key, channel));
     }
     else {
         throw BadParameter( "Channel '" + key + "' is already registered ", Here());

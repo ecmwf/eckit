@@ -65,7 +65,6 @@ ecbuild_add_option( FEATURE ECKIT_CMD
 ### Eigen
 
 ecbuild_add_option( FEATURE EIGEN
-                    CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "Eigen support"
                     TYPE RECOMMENDED
                     PURPOSE "Eigen backend: accelerated dense and sparse matrix operations"
@@ -196,17 +195,15 @@ if( HAVE_ECKIT_CMD)
   list( APPEND ECKIT_LIBRARIES eckit_cmd )
 endif()
 
+if( HAVE_EIGEN AND ECKIT_CONTRIB_EIGEN )
+  list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
+endif()
+
 if( HAVE_EXPERIMENTAL )
 
   list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
 
   list( APPEND ECKIT_LIBRARIES eckit_linalg eckit_geometry eckit_maths )
-
-  if( HAVE_EIGEN )
-      if( ECKIT_CONTRIB_EIGEN )
-          list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
-      endif()
-  endif()
 
   if( HAVE_ECKIT_MPI )
     list( APPEND ECKIT_LIBRARIES eckit_mpi )

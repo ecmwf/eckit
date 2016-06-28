@@ -636,6 +636,7 @@ if( HAVE_ECKIT_CMD )
   add_subdirectory( cmd )
 endif()
 
+add_subdirectory( geometry )
 add_subdirectory( linalg )
 add_subdirectory( web )
 add_subdirectory( option )

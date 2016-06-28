@@ -1,6 +1,7 @@
 add_subdirectory( config   )
 add_subdirectory( container )
 add_subdirectory( filesystem )
+add_subdirectory( geometry )
 add_subdirectory( io )
 add_subdirectory( large_file )
 add_subdirectory( linalg )

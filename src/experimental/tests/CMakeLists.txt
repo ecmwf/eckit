@@ -7,6 +7,4 @@
 # nor does it submit to any jurisdiction.
 
 add_subdirectory( mpi )
-add_subdirectory( option )
-
 add_subdirectory( singleton )

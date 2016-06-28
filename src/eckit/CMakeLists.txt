@@ -615,8 +615,6 @@ list( APPEND eckit_persistent
 
 ### eckit library
 
-list(APPEND DL_LIBRARIES "dl")
-
 ecbuild_add_library(TARGET eckit
 					INSTALL_HEADERS LISTED
 					HEADER_DESTINATION
@@ -632,7 +630,7 @@ ecbuild_add_library(TARGET eckit
 					INCLUDES
 						${AIO_INCLUDE_DIRS}
 					LIBS
-						${CMAKE_THREAD_LIBS_INIT} ${AIO_LIBRARIES} ${DL_LIBRARIES})
+                        ${AIO_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS} )
 
 ### sub-directories
 

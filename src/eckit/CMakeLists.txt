@@ -423,6 +423,8 @@ value/Value.cc )
 
 list( APPEND eckit_os_srcs
 os/Stat.h
+os/System.h
+os/System.cc
 os/Semaphore.h
 os/Semaphore.cc
 os/SignalHandler.h

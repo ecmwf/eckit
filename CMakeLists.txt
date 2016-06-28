@@ -99,7 +99,6 @@ set_package_properties( Armadillo PROPERTIES
 
 if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
   ecbuild_add_option( FEATURE LAPACK
-                      CONDITION HAVE_EXPERIMENTAL
                       DESCRIPTION "Linear Algebra PACKage"
                       REQUIRED_PACKAGES "PROJECT LAPACK" )
   if( HAVE_LAPACK )
@@ -114,7 +113,7 @@ if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
 else()
   set( _cray_libsci_loaded $ENV{CRAY_LIBSCI_DIR} )
   ecbuild_add_option( FEATURE LAPACK
-                      CONDITION HAVE_EXPERIMENTAL AND _cray_libsci_loaded
+                      CONDITION _cray_libsci_loaded
                       DESCRIPTION "Linear Algebra PACKage")
   if( HAVE_LAPACK )
     ecbuild_debug( "LAPACK found, already loaded as part of Cray's libsci" )

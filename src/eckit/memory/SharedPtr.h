@@ -17,11 +17,10 @@
 
 #include "eckit/exception/Exceptions.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// @brief Deletes a pointer and makes sure it is set to 0 afterwards
 /// Do not use this function with data allocate with new [].
@@ -31,11 +30,8 @@ namespace eckit {
 template <class T>
 void delete_ptr(T*& p)
 {
-  if( p != 0 )
-  {
     delete p;
     p = 0;
-  }
 }
 
 /// @brief Deletes a pointer and makes sure it is set to 0 afterwards
@@ -46,14 +42,11 @@ void delete_ptr(T*& p)
 template <class T>
 void delete_ptr_array(T*& p)
 {
-  if( p != 0 )
-  {
     delete [] p;
     p = 0;
-  }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
 struct NewDealloc
@@ -67,7 +60,7 @@ struct NewArrayDealloc
     static void deallocate( T*& p ) { delete_ptr_array(p); }
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// A smart pointer that allows to share resources that have derived from Owned
 /// @see Owned
@@ -112,19 +105,26 @@ public: // methods
     {
         if( ! null() )
         {
-            ptr_->detach();
+            ptr_->lock();
+            ptr_->detach(); /* lock/unlock in detach() isn't sufficient, else there is race condition on owners() */
 
-            if( ptr_->owners() == 0 )
-                ALLOC::deallocate( ptr_ );
-
+            if( ptr_->owners() == 0 ) {
+                ptr_->unlock();
+                ALLOC::deallocate( ptr_ ); // also zeros ptr_
+                return;
+            }
+            ptr_->unlock();
             ptr_ = 0;
         }
     }
+
 
     /// Reset the ptr
     /// @post ptr_ = other
     void reset(T* other)
     {
+        if(other == ptr_) return;
+
         release();
 
         ptr_ = other;
@@ -236,10 +236,8 @@ private: // members
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
-
-//-----------------------------------------------------------------------------
 
 #endif // eckit_memory_SharedPtr_h

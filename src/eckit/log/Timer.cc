@@ -22,7 +22,7 @@ Timer::Timer():
     outputAtExit_(false),
     cpuStart_(0),
     cpuStop_(0),
-    out_( Log::info() )
+    out_( std::cout )
 {
     this->start();
 }

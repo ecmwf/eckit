@@ -67,7 +67,7 @@ public:
 template < typename LOCK, typename MEMORY >
 class CountedT :
     private NonCopyable,
-    public LOCK {
+    private LOCK {
 
 public: // methods
 
@@ -95,7 +95,27 @@ public: // methods
         }
     }
 
-    unsigned long count() const { return count_; }
+    void attach() const
+    {
+        LOCK::lock();
+        count_++;
+        LOCK::unlock();
+    }
+
+    void detach() const
+    {
+        LOCK::lock();
+        try {
+            ASSERT(count_ > 1);
+            --count_;
+        } catch (...) {
+            LOCK::unlock();
+            throw;
+        }
+        LOCK::unlock();
+    }
+
+    size_t count() const { return count_; }
 
     void lock() const {
         LOCK::lock();
@@ -110,7 +130,7 @@ public: // methods
 
 private: // members
 
-    unsigned long count_;
+    mutable size_t count_;
 
 };
 

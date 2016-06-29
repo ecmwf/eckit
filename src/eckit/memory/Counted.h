@@ -18,6 +18,7 @@
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 

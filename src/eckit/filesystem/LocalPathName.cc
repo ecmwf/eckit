@@ -215,29 +215,19 @@ LocalPathName LocalPathName::unique(const LocalPathName& path)
 {
     AutoLock<Mutex> lock(local_mutex);
 
-	static std::string format = "%Y%m%d.%H%M%S";
+    char hostname[256];
+    SYSCALL(::gethostname(hostname, sizeof(hostname)));
 
-    static unsigned long long n = 0;
+    static unsigned long long n = (((unsigned long long)::getpid()) << 32);
 
-    if(n == 0) {
-        char hostname[256];
-        SYSCALL(::gethostname(hostname, sizeof(hostname)));
-        size_t hash = 0;
-        const char* p = hostname;
-        while(*p) {
-            hash = (*p - 'a') + (hash << 5);
-            p++;
-        }
-        n = (((unsigned long long)::getpid()) << 32) | hash;
-    }
-
+    static std::string format = "%Y%m%d.%H%M%S";
     std::ostringstream os;
-    os << path << '.' << TimeStamp(format) << '.' << n++;
+    os << path << '.' << TimeStamp(format) << '.' << hostname << '.' << n++;
 
     while(::access(os.str().c_str(),F_OK) == 0)
 	{
         std::ostringstream os;
-        os << path << '.' << TimeStamp(format) << '.' << n++;
+        os << path << '.' << TimeStamp(format) << '.' << hostname << '.' << n++;
 	}
 
     LocalPathName result(os.str());

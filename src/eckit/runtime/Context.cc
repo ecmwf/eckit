@@ -37,7 +37,7 @@ void Context::init() {
 Context::Context() :
     argc_(0),
     argv_(0),
-    taskID_(0),
+    taskID_(-1),
     home_("/"),
     runName_("undef"),
     displayName_(),

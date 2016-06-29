@@ -72,18 +72,15 @@ class CountedT :
 
 public: // methods
 
-    CountedT() : count_(0) {}
 
-    virtual ~CountedT() {}
-
-    void attach()
+    void attach() const
     {
         LOCK::lock();
         count_++;
         LOCK::unlock();
     }
 
-    void detach()
+    void detach() const
     {
         LOCK::lock();
         if ( --count_ == 0 )
@@ -96,26 +93,6 @@ public: // methods
         }
     }
 
-    void attach() const
-    {
-        LOCK::lock();
-        count_++;
-        LOCK::unlock();
-    }
-
-    void detach() const
-    {
-        LOCK::lock();
-        try {
-            ASSERT(count_ > 1);
-            --count_;
-        } catch (...) {
-            LOCK::unlock();
-            throw;
-        }
-        LOCK::unlock();
-    }
-
     size_t count() const { return count_; }
 
     void lock() const {
@@ -125,6 +102,12 @@ public: // methods
     void unlock() const {
         LOCK::unlock();
     }
+
+public:
+
+    CountedT() : count_(0) {}
+
+    virtual ~CountedT() {}
 
 //  void *operator new(size_t s)  { return MemoryPool::fastAllocate(s);}
 //  void operator delete(void* p) { MemoryPool::fastDeallocate(p);     }

@@ -201,7 +201,6 @@ static struct {
 
 static void esc(context *s) {
     int len = sizeof(escapes) / sizeof(escapes[0]);
-    char c;
     int i = 0;
     int j = 0;
     char buf[80];
@@ -232,7 +231,7 @@ static void esc(context *s) {
 
 static bool processCode(int c, context *s) {
 
-    char *p, *q, *r;
+    char *p, *q;
 
     if (c != TAB) {
         s->tab = false;
@@ -274,7 +273,7 @@ static bool processCode(int c, context *s) {
                     ins(s, *p);
                     p++;
                 }
-                if (insert[0] && (s->pos == strlen(s->curr->edit))) {
+                if (insert[0] && (size_t(s->pos) == strlen(s->curr->edit))) {
                     ins(s, ' ');
                 }
             } else {
@@ -336,7 +335,7 @@ static bool processCode(int c, context *s) {
     case RIGHT_ARROW:
     case CONTROL_F:
         s->pos++;
-        if (s->pos > strlen(s->curr->edit)) {
+        if (size_t(s->pos) > strlen(s->curr->edit)) {
             s->pos = strlen(s->curr->edit);
         }
         break;
@@ -410,7 +409,7 @@ static bool processCode(int c, context *s) {
     case CONTROL_T:
         if (strlen(s->curr->edit) > 1) {
             int n = s->pos;
-            if (s->pos == strlen(s->curr->edit)) {
+            if (size_t(s->pos) == strlen(s->curr->edit)) {
                 n--;
             }
             if (n >= 1) {
@@ -437,7 +436,7 @@ static bool processCode(int c, context *s) {
             s->pos = s->mark;
             s->mark = tmp;
 
-            if (s->pos > strlen(s->curr->edit)) {
+            if (size_t(s->pos) > strlen(s->curr->edit)) {
                 s->pos = strlen(s->curr->edit);
             }
         }
@@ -566,7 +565,6 @@ void UserInput::loadHistory(const char *path) {
 
 static void cleanup_history() {
     entry *h = history;
-    entry *p = NULL;
     entry *n = NULL;
 
     char *prev = strdup("");

@@ -33,6 +33,7 @@
 #include "eckit/os/Stat.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/runtime/Context.h"
+#include "eckit/system/SystemInfo.h"
 #include "eckit/types/Types.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -44,16 +45,16 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
-static StringDict pathsTable;
+static std::vector<std::pair<std::string, std::string> > pathsTable;
 
 static void readPathsTable() {
 
-    eckit::PathName path("~/etc/config/libraryPaths");
+    eckit::PathName path("~/etc/paths");
     std::ifstream in(path.localPath());
 
-    eckit::Log::info() << "Loading library paths from " << path << std::endl;
+    // eckit::Log::info() << "Loading library paths from " << path << std::endl;
 
-    if (in.bad()) {
+    if (!in) {
         eckit::Log::error() << path << eckit::Log::syserr << std::endl;
         return;
     }
@@ -80,7 +81,7 @@ static void readPathsTable() {
 
         switch (s.size()) {
         case 2:
-            pathsTable[s[0]] = s[1];
+            pathsTable.push_back(std::make_pair(s[0] + "/", s[1]));
             break;
 
         default:
@@ -216,7 +217,19 @@ LocalPathName LocalPathName::unique(const LocalPathName& path)
 
 	static std::string format = "%Y%m%d.%H%M%S";
 
-	static unsigned long long n = (((unsigned long long)::getpid()) << 32);
+    static unsigned long long n = 0;
+
+    if(n == 0) {
+        char hostname[256];
+        SYSCALL(::gethostname(hostname, sizeof(hostname)));
+        size_t hash = 0;
+        const char* p = hostname;
+        while(*p) {
+            hash = (*p - 'a') + (hash << 5);
+            p++;
+        }
+        n = (((unsigned long long)::getpid()) << 32) | hash;
+    }
 
     std::ostringstream os;
     os << path << '.' << TimeStamp(format) << '.' << n++;
@@ -348,7 +361,7 @@ LocalPathName LocalPathName::fullName() const
 }
 
 
-LocalPathName& LocalPathName::tidy(bool expandLibraryPath)
+LocalPathName& LocalPathName::tidy()
 {
 	if(path_.length() == 0) return *this;
 
@@ -363,24 +376,30 @@ LocalPathName& LocalPathName::tidy(bool expandLibraryPath)
                 j++;
             }
 
-            if(!expandLibraryPath) {
-                std::ostringstream oss;
-                oss << "Cannot expand library path to another library path \'" << s << "\'";
-                throw BadParameter(oss.str(), Here());
-            }
 
             pthread_once(&once, readPathsTable);
-            StringDict::const_iterator itr = pathsTable.find(s);
+            std::vector<std::pair<std::string, std::string> >::const_iterator best = pathsTable.end();
+            size_t match = 0;
 
-            if(itr != pathsTable.end()) {
-                LocalPathName prefix(itr->second);
-                path_ =  prefix.tidy(false) + "/" + path_.substr(j);
+            for(std::vector<std::pair<std::string, std::string> >::const_iterator k = pathsTable.begin(); k != pathsTable.end(); ++k) {
+                const std::string& prefix = (*k).first;
+                size_t m = prefix.length();
+
+                if(path_.substr(0, m) == prefix) {
+                    if(m > match) {
+                        match = m;
+                        best = k;
+                    }
+                }
+            }
+
+            if(match) {
+                path_ = (*best).second + "/" + path_.substr(match);
             }
             else {
-                std::ostringstream oss;
-                oss << "Missing library path configuration for \'" << s << "\'; available are " << pathsTable;
-                throw BadParameter(oss.str(), Here());
+                path_ = Context::instance().home() + "/" + path_.substr(j);
             }
+
         }
         else {
             path_ =  Context::instance().home() + "/" + path_.substr(1);

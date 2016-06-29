@@ -9,15 +9,18 @@
  */
 
 /// @author Baudouin Raoult
-/// @date Jul 2015
+/// @author Tiago Quintino
+/// @date   July 2015
 
-#include "LocalConfiguration.h"
+#include "eckit/config/LocalConfiguration.h"
 
 #include "eckit/config/Configuration.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/exception/Exceptions.h"
 
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class ConfigurationNotFound : public Exception {
 
@@ -29,9 +32,15 @@ class ConfigurationNotFound : public Exception {
     }
 };
 
-Configuration::Configuration(const Value &root, char separator):
-    root_(root),
-    separator_(separator) {
+//----------------------------------------------------------------------------------------------------------------------
+
+Configuration::Configuration(const Configuration& other, const std::string& path) :
+    root_(other.root_),
+    separator_(other.separator_) {
+
+    bool found = false;
+    root_ = lookUp(path, found);
+    if(!found) throw ConfigurationNotFound(path);
 }
 
 Configuration::Configuration(const Configuration &other):
@@ -39,7 +48,12 @@ Configuration::Configuration(const Configuration &other):
     separator_(other.separator_) {
 }
 
-Configuration &Configuration::operator=(const Configuration &other) {
+Configuration::Configuration(const eckit::Value& root, char separator) :
+    root_(root),
+    separator_(separator) {
+}
+
+Configuration& Configuration::operator=(const Configuration &other) {
     root_ = other.root_;
     separator_ = other.separator_;
     return *this;
@@ -130,11 +144,10 @@ bool Configuration::get(const std::string &name, double &value) const {
     return found;
 }
 
-bool Configuration::get(const std::string &name, LocalConfiguration &value) const {
-    bool found = false;
-    eckit::Value v = lookUp(name, found);
-    if (found) {
-        value = LocalConfiguration(v);
+bool Configuration::get(const std::string &name, LocalConfiguration& value) const {
+    bool found = has(name);
+    if(found) {
+        value = LocalConfiguration(*this, name);
     }
     return found;
 }
@@ -209,7 +222,7 @@ bool Configuration::get(const std::string &name, size_t &value) const {
     return found;
 }
 
-// ==================================
+//----------------------------------------------------------------------------------------------------------------------
 
 template<class T>
 void Configuration::_get(const std::string &name, T& value) const {
@@ -379,6 +392,8 @@ std::string Configuration::getString(const std::string &name, const std::string&
     _getWithDefault(name, result, defaultVal);
     return result;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

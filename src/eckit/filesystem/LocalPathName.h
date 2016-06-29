@@ -258,7 +258,7 @@ private:
 
 // Methods
 
-    LocalPathName& tidy(bool expandLibraryPath = true);
+    LocalPathName& tidy();
 
 // friend
 

@@ -94,9 +94,9 @@ class SimpleOption : public Option {
 
 // -- Overridden methods
 
-    virtual void set(LocalConfiguration&) const;
-    virtual void set(const std::string& value, LocalConfiguration&) const;
-
+    virtual void set(Configured&) const;
+    virtual void set(const std::string& value, Configured&) const;
+    virtual void copy(const Configuration& from, Configured& to) const;
 
 // -- Class members
     // None

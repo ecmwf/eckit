@@ -9,7 +9,8 @@
  */
 
 /// @author Baudouin Raoult
-/// @date July 2015
+/// @author Tiago Quintino
+/// @date   July 2015
 
 
 #ifndef eckit_Configuration_H
@@ -27,6 +28,10 @@ namespace eckit {
 class LocalConfiguration;
 
 class Configuration : public Parametrisation {
+
+    /// @note Do NOT expose eckit::Value in the interface of configuration
+    ///       eckit::Value should remain an internal detail of configuration objects
+    ///       Clients should use typed configuration parameters
 
 public: // methods
 
@@ -63,12 +68,7 @@ public: // methods
 
     LocalConfiguration getSubConfiguration(const std::string &name) const;
 
-    Value lookUp(const std::string &) const;
-
     char separator() const;
-
-    const Value& get() const { return root_; }
-    operator Value() const { return root_; }
 
     // -- Overridden methods
 
@@ -84,37 +84,33 @@ public: // methods
     virtual bool get(const std::string &name, std::vector<std::string> &value) const;
     virtual bool get(const std::string &name, size_t &value) const;
 
-
     bool get(const std::string &name, std::vector<LocalConfiguration>&) const;
     bool get(const std::string &name, LocalConfiguration&) const;
 
+    /// @todo This method should be protected. As per note above,
+    ///       we don't wnat to expose eckit::Value out of Configuration.
+    const Value& get() const { return root_; }
+
 protected: // methods
 
-    Configuration(const Configuration &);
-    Configuration(const Value &root, char separator = '.');
+    Configuration(const eckit::Value&, char separator = '.');
+
+    Configuration(const Configuration&);
+    Configuration(const Configuration&, const std::string& path); ///< sub-select a subconfiguration
+
     Configuration &operator=(const Configuration &);
 
     virtual ~Configuration();
+
+    Value lookUp(const std::string&) const;
+    Value lookUp(const std::string &, bool &) const;
+
+    operator Value() const { return root_; }
 
 protected: // members
 
     Value root_;
     char separator_;
-
-    // -- Methods
-
-    Value lookUp(const std::string &, bool &) const;
-
-    // void print(ostream&) const; // Change to virtual if base class
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
 private: // methods
 

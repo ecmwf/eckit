@@ -71,6 +71,11 @@ void Comm::barrier() const
   ECKIT_MPI_CHECK_RESULT( MPI_Barrier(*this) );
 }
 
+void Comm::abort() const
+{
+  ECKIT_MPI_CHECK_RESULT( MPI_Abort(*this, -1) );
+}
+
 Comm& DefaultComm::instance()
 {
   static DefaultComm comm_instance;

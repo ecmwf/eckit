@@ -14,7 +14,9 @@
 
 #include <iostream>
 
-#include "eckit/config/LocalConfiguration.h"
+#include "eckit/config/Configured.h"
+#include "eckit/config/Configuration.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathName.h"
@@ -57,19 +59,30 @@ SimpleOption<T>::~SimpleOption() {
 }
 
 template<class T>
-void SimpleOption<T>::set(const std::string &value, LocalConfiguration &parametrisation) const {
+void SimpleOption<T>::set(const std::string &value, Configured &parametrisation) const {
     T v = eckit::Translator<std::string, T>()(value);
     parametrisation.set(name_, v);
 }
 
 template<class T>
-void SimpleOption<T>::set(LocalConfiguration &parametrisation) const {
+void SimpleOption<T>::set(Configured &parametrisation) const {
     Option::set(parametrisation);
 }
 
 
+template<class T>
+void SimpleOption<T>::copy(const Configuration &from, Configured &to) const {
+    T v;
+    if(from.get(name_, v)) {
+        to.set(name_, v);
+    }
+}
+
 template <>
-void SimpleOption<eckit::PathName>::set(const std::string& value, LocalConfiguration& parametrisation) const;
+void SimpleOption<eckit::PathName>::set(const std::string& value, Configured& parametrisation) const;
+
+template <>
+void SimpleOption<eckit::PathName>::copy(const Configuration &from, Configured &to) const;
 
 template<>
 void SimpleOption<bool>::print(std::ostream &out) const;
@@ -80,7 +93,7 @@ void SimpleOption<T>::print(std::ostream &out) const {
 }
 
 template<>
-void SimpleOption<bool>::set(LocalConfiguration &parametrisation) const;
+void SimpleOption<bool>::set(Configured &parametrisation) const;
 
 } // namespace option
 

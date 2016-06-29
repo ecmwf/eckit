@@ -15,16 +15,11 @@
 
 #include "eckit/io/AIOHandle.h"
 
-//-----------------------------------------------------------------------------
+#include "eckit/maths/Functions.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
-
-inline size_t round(size_t x, size_t n) {
-    return ((x + n - 1) / n) * n;
-}
+//----------------------------------------------------------------------------------------------------------------------
 
 AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync):
     path_(path),
@@ -56,6 +51,7 @@ AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync
 }
 
 AIOHandle::~AIOHandle() {
+    close();
     for (size_t i = 0; i < count_ ; i++) {
         delete buffers_[i];
     }
@@ -123,7 +119,7 @@ long AIOHandle::write(const void* buffer, long length) {
 
     if ( buffers_[n] == 0 || buffers_[n]->size() < (size_t) length ) {
         delete buffers_[n];
-        buffers_[n] = new Buffer(eckit::round(length, 64 * 1024));
+        buffers_[n] = new Buffer(eckit::maths::roundToMultiple(length, 64 * 1024));
 
         ASSERT(buffers_[n]);
     }
@@ -152,9 +148,12 @@ long AIOHandle::write(const void* buffer, long length) {
 }
 
 void AIOHandle::close() {
-    flush(); // this should wait for the async requests to finish
+    if (fd_ != -1) {
+        flush(); // this should wait for the async requests to finish
 
-    SYSCALL( ::close(fd_) );
+        SYSCALL( ::close(fd_) );
+        fd_ = -1;
+    }
 }
 
 void AIOHandle::flush() {
@@ -253,6 +252,6 @@ std::string AIOHandle::title() const {
     return std::string("AIO[") + PathName::shorten(path_) + "]";
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

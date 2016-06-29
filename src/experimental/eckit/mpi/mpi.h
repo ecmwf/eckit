@@ -70,6 +70,10 @@ size_t size();
 /// Equivalent to comm().barrier()
 void barrier();
 
+/// @brief MPI abort for default communicator
+/// Equivalent to comm().abort()
+void abort();
+
 /// @brief Return MPI data-type for given DATA_TYPE
 template<typename DATA_TYPE>
 MPI_Datatype datatype();

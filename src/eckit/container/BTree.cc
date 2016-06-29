@@ -12,8 +12,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<class K,class V, int S>
-void BTree<K, V, S>::Page::print(std::ostream& s) const
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::Page::print(std::ostream& s) const
 {
     s << ((this->node_) ? "NODE" : "LEAF" )
       <<  "_PAGE[id=" << this->id_ << ",count=" << this->count_ << "]";
@@ -28,13 +28,13 @@ void BTree<K, V, S>::Page::print(std::ostream& s) const
     }
 }
 
-template<class K,class V, int S>
-void BTree<K, V, S>::_LeafPage::print(std::ostream& s) const
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::_LeafPage::print(std::ostream& s) const
 {
 
     // For some strange reason "this" is required...
     s << "(";
-    for (int i = 0; i < this->count_; i++)
+    for (unsigned long i = 0; i < this->count_; i++)
     {
         s << lentries_[i].key_ << ":" << lentries_[i].value_ << ",";
     }
@@ -43,12 +43,12 @@ void BTree<K, V, S>::_LeafPage::print(std::ostream& s) const
 
 }
 
-template<class K,class V, int S>
-void BTree<K, V, S>::_NodePage::print(std::ostream& s) const
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::_NodePage::print(std::ostream& s) const
 {
     // For some strange reason "this" is required...
     s << "{" << this->left_ << "!";
-    for (int i = 0; i < this->count_; i++)
+    for (unsigned long i = 0; i < this->count_; i++)
     {
         s << nentries_[i].key_ << "@" << nentries_[i].page_ << ",";
     }
@@ -56,8 +56,8 @@ void BTree<K, V, S>::_NodePage::print(std::ostream& s) const
 }
 
 
-template<class K,class V, int S>
-BTree<K,V,S>::BTree( const PathName& path, bool readOnly, off_t offset ):
+template<class K, class V, int S, class L>
+BTree<K,V,S,L>::BTree( const PathName& path, bool readOnly, off_t offset ):
     path_(path),
     fd_(-1),
     cacheReads_(true),
@@ -67,7 +67,7 @@ BTree<K,V,S>::BTree( const PathName& path, bool readOnly, off_t offset ):
 {
     SYSCALL2( fd_ = ::open(path.localPath(), readOnly_ ? O_RDONLY : (O_RDWR|O_CREAT),0777), path );
 
-    AutoLock<BTree<K,V,S> > lock(this);
+    AutoLock< BTree<K,V,S,L> > lock(this);
 
     off_t here = ::lseek(fd_,0,SEEK_END);
     if(here == off_t(-1))
@@ -99,8 +99,8 @@ BTree<K,V,S>::BTree( const PathName& path, bool readOnly, off_t offset ):
 }
 
 
-template<class K, class V, int S>
-BTree<K,V,S>::~BTree()
+template<class K, class V, int S, class L>
+BTree<K,V,S,L>::~BTree()
 {
     if (fd_>=0) {
         flush();
@@ -111,12 +111,12 @@ BTree<K,V,S>::~BTree()
         delete (*j).second.page_;
 }
 
-template<class K, class V, int S>
-void BTree<K,V,S>::flush()
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::flush()
 {
     for(typename Cache::iterator j = cache_.begin(); j != cache_.end(); ++j)
     {
-        //Log::info() << "BTree<K,V,S>::flush() " << path_ << " " << (*j).first << ", " << (*j).second.dirty_ << std::endl;
+        //Log::info() << "BTree<K,V,S,L>::flush() " << path_ << " " << (*j).first << ", " << (*j).second.dirty_ << std::endl;
         if((*j).second.dirty_)
         {
             _savePage(*(*j).second.page_);
@@ -125,8 +125,8 @@ void BTree<K,V,S>::flush()
     }
 }
 
-template<class K, class V, int S>
-void BTree<K,V,S>::dump(std::ostream& s, unsigned long page, int depth) const
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::dump(std::ostream& s, unsigned long page, int depth) const
 {
     Page p;
     loadPage(page, p);
@@ -136,33 +136,33 @@ void BTree<K,V,S>::dump(std::ostream& s, unsigned long page, int depth) const
     if (p.node_)
     {
         dump(s, p.left_, depth+1);
-        for (int i = 0; i < p.count_ ; i ++ )
+        for (unsigned long i = 0; i < p.count_ ; i ++ )
             dump(s, p.nodePage().nentries_[i].page_, depth+1);
     }
 }
 
 
-template<class K, class V, int S>
-void BTree<K,V,S>::dump(std::ostream& s) const
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::dump(std::ostream& s) const
 {
-    AutoSharedLock<BTree<K,V,S> > lock(const_cast<BTree*>(this));
+    AutoSharedLock<BTree<K,V,S,L> > lock(const_cast<BTree*>(this));
     s << "::BTree : maxLeafEntries_=" << maxLeafEntries_ << ", maxNodeEntries_=" << maxNodeEntries_ << std::endl;
     dump(s,1,0);
 }
 
 
-template<class K, class V, int S>
-bool BTree<K,V,S>::set(const K& key, const V& value)
+template<class K, class V, int S, class L>
+bool BTree<K,V,S,L>::set(const K& key, const V& value)
 {
-    AutoLock<BTree<K,V,S> > lock(this);
+    AutoLock<BTree<K,V,S,L> > lock(this);
 	// std::cout << "Set " << key << " -> " << value << std::endl;
     std::vector<unsigned long> path;
     return insert(1,key,value,path);
 }
 
 
-template<class K, class V, int S>
-unsigned long BTree<K,V,S>::next(const K& key, const Page& p) const
+template<class K, class V, int S, class L>
+unsigned long BTree<K,V,S,L>::next(const K& key, const Page& p) const
 {
     ASSERT(p.node_);
 
@@ -189,8 +189,8 @@ unsigned long BTree<K,V,S>::next(const K& key, const Page& p) const
 }
 
 
-template<class K, class V, int S>
-bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, std::vector<unsigned long>& path)
+template<class K, class V, int S, class L>
+bool BTree<K,V,S,L>::insert(unsigned long page, const K& key, const V& value, std::vector<unsigned long>& path)
 {
 
     Page p;
@@ -338,8 +338,8 @@ bool BTree<K,V,S>::insert(unsigned long page, const K& key, const V& value, std:
 }
 
 
-template<class K, class V, int S>
-void BTree<K,V,S>::splitRoot()
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::splitRoot()
 {
     Page p;
     loadPage(1,p);
@@ -351,7 +351,7 @@ void BTree<K,V,S>::splitRoot()
     newPage(pright);
 
 	// std::cout << "SPLIT ROOT " << p << std::endl;
-    int middle = p.count_ / 2;
+    unsigned long middle = p.count_ / 2;
 
     K key;
 
@@ -364,7 +364,7 @@ void BTree<K,V,S>::splitRoot()
 
 
         pleft.left_ = p.left_;
-        for (int i = 0; i < middle ; i ++ ) {
+        for (unsigned long i = 0; i < middle ; i ++ ) {
             pleft.nodePage().nentries_[pleft.count_++] = p.nodePage().nentries_[i];
         }
 
@@ -380,7 +380,7 @@ void BTree<K,V,S>::splitRoot()
 		pleft.node_  = false;
 		pright.node_ = false;
 
-		for (int i = 0; i < middle ; ++i )
+        for (unsigned long i = 0; i < middle ; ++i )
 		{
 			//		DEBUG_VAR( pleft.count_ );
 			pleft.leafPage().lentries_[pleft.count_++] = p.leafPage().lentries_[i];
@@ -424,10 +424,10 @@ void BTree<K,V,S>::splitRoot()
 }
 
 
-template<class K, class V, int S>
-bool BTree<K,V,S>::get(const K& key, V& value)
+template<class K, class V, int S, class L>
+bool BTree<K,V,S,L>::get(const K& key, V& value)
 {
-    AutoSharedLock<BTree<K,V,S> > lock(this);
+    AutoSharedLock<BTree<K,V,S,L> > lock(this);
 
     V result;
 
@@ -443,8 +443,8 @@ bool BTree<K,V,S>::get(const K& key, V& value)
 }
 
 
-template<class K, class V, int S>
-bool BTree<K,V,S>::search(unsigned long page, const K& key, V& result) const
+template<class K, class V, int S, class L>
+bool BTree<K,V,S,L>::search(unsigned long page, const K& key, V& result) const
 {
     Page p;
     loadPage(page, p);
@@ -469,24 +469,24 @@ bool BTree<K,V,S>::search(unsigned long page, const K& key, V& result) const
     return false;
 }
 
-template<class K, class V, int S>
+template<class K, class V, int S, class L>
 template<class T>
-void BTree<K,V,S>::range(const K& key1, const K& key2, T& result)
+void BTree<K,V,S,L>::range(const K& key1, const K& key2, T& result)
 {
-    AutoSharedLock<BTree<K,V,S> > lock(this);
+    AutoSharedLock<BTree<K,V,S,L> > lock(this);
     result.clear();
     search(1, key1, key2, result);
 }
 
-template<class K, class V, int S>
-bool BTree<K,V,S>::remove(const K &)
+template<class K, class V, int S, class L>
+bool BTree<K,V,S,L>::remove(const K &)
 {
     NOTIMP;
 }
 
-template<class K, class V, int S>
+template<class K, class V, int S, class L>
 template<class T>
-void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, T& result)
+void BTree<K,V,S,L>::search(unsigned long page, const K& key1, const K& key2, T& result)
 {
     Page p;
     loadPage(page, p);
@@ -541,16 +541,16 @@ void BTree<K,V,S>::search(unsigned long page, const K& key1, const K& key2, T& r
 }
 
 
-template<class K, class V, int S>
-off_t BTree<K,V,S>::pageOffset(unsigned long page) const
+template<class K, class V, int S, class L>
+off_t BTree<K,V,S,L>::pageOffset(unsigned long page) const
 {
 	ASSERT(page > 0); // Root page is 1. 0 is leaf marker
     return sizeof(Page) * off_t(page-1) + offset_;
 }
 
 
-template<class K, class V, int S>
-void BTree<K,V,S>::_loadPage(unsigned long page, Page& p) const
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::_loadPage(unsigned long page, Page& p) const
 {
 	// std::cout << "Load " << page << std::endl;
 
@@ -565,10 +565,10 @@ void BTree<K,V,S>::_loadPage(unsigned long page, Page& p) const
     ASSERT(page == p.id_);
 }
 
-template<class K, class V, int S>
-void BTree<K,V,S>::loadPage(unsigned long page, Page& p) const
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::loadPage(unsigned long page, Page& p) const
 {
-    BTree<K,V,S>* self = const_cast<BTree<K,V,S>*>(this);
+    BTree<K,V,S,L>* self = const_cast<BTree<K,V,S,L>*>(this);
 
     typename Cache::iterator j = self->cache_.find(page);
     if(j != self->cache_.end())
@@ -590,8 +590,8 @@ void BTree<K,V,S>::loadPage(unsigned long page, Page& p) const
 
 }
 
-template<class K, class V, int S>
-void BTree<K,V,S>::_savePage(const Page& p)
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::_savePage(const Page& p)
 {
     ASSERT(!readOnly_);
 	// std::cout << "Save " << p << std::endl;
@@ -606,10 +606,10 @@ void BTree<K,V,S>::_savePage(const Page& p)
     ASSERT(len == sizeof(p));
 }
 
-template<class K, class V, int S>
-void BTree<K,V,S>::savePage(const Page& p)
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::savePage(const Page& p)
 {
-    BTree<K,V,S>* self = const_cast<BTree<K,V,S>*>(this);
+    BTree<K,V,S,L>* self = const_cast<BTree<K,V,S,L>*>(this);
     typename Cache::iterator j = self->cache_.find(p.id_);
     if(j != self->cache_.end())
     {
@@ -634,8 +634,8 @@ void BTree<K,V,S>::savePage(const Page& p)
     _savePage(p);
 }
 
-template<class K, class V,int S>
-void BTree<K,V,S>::_newPage(Page& p)
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::_newPage(Page& p)
 {
     ASSERT(!readOnly_);
 
@@ -659,8 +659,8 @@ void BTree<K,V,S>::_newPage(Page& p)
     //return p.id_;
 }
 
-template<class K, class V,int S>
-void BTree<K,V,S>::newPage(Page& p)
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::newPage(Page& p)
 {
     _newPage(p);
 
@@ -672,52 +672,16 @@ void BTree<K,V,S>::newPage(Page& p)
     }
 }
 
-
-template<class K, class V, int S>
-void BTree<K,V,S>::lockRange(off_t start,off_t len,int cmd,int type)
-{
-
-    struct flock lock;
-
-    lock.l_type   = type;
-    lock.l_whence = SEEK_SET;
-    lock.l_start  = start;
-    lock.l_len    = len;
-
-    SYSCALL(::fcntl(fd_, cmd, &lock));
-}
-
-
-template<class K, class V,int S>
-void BTree<K,V,S>::lockShared()
-{
-    lockRange(0,0,F_SETLKW,F_RDLCK);
-}
-
-
-template<class K, class V,int S>
-void BTree<K,V,S>::lock()
-{
-    lockRange(0,0,F_SETLKW, readOnly_ ? F_RDLCK : F_WRLCK);
-}
-
-
-template<class K, class V,int S>
-void BTree<K,V,S>::unlock()
-{
-	lockRange(0,0,F_SETLK,F_UNLCK);
-}
-
-template<class K, class V,int S>
-size_t BTree<K,V,S>::count() const
+template<class K, class V, int S, class L>
+size_t BTree<K,V,S,L>::count() const
 {
 	return count(1);
 }
 
-template<class K, class V, int S>
-size_t BTree<K,V,S>::count(unsigned long page) const
+template<class K, class V, int S, class L>
+size_t BTree<K,V,S,L>::count(unsigned long page) const
 {
-	AutoSharedLock<BTree<K,V,S> > lock(const_cast<BTree*>(this));
+	AutoSharedLock<BTree<K,V,S,L> > lock(const_cast<BTree*>(this));
 
 	Page p;
 	loadPage(page, p);
@@ -727,7 +691,7 @@ size_t BTree<K,V,S>::count(unsigned long page) const
 	if( p.node_ )
 	{
 		c += this->count( p.left_ );
-		for (int i = 0; i < p.count_ ; i ++ )
+        for (unsigned long i = 0; i < p.count_ ; i ++ )
 			c += count( p.nodePage().nentries_[i].page_ );
 	}
 	else // leaf
@@ -736,6 +700,26 @@ size_t BTree<K,V,S>::count(unsigned long page) const
 	}
 
 	return c;
+}
+
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::lockShared()
+{
+    L::lockRange(fd_,0,0,F_SETLKW,F_RDLCK);
+}
+
+
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::lock()
+{
+    L::lockRange(fd_,0,0,F_SETLKW, readOnly_ ? F_RDLCK : F_WRLCK);
+}
+
+
+template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::unlock()
+{
+    L::lockRange(fd_,0,0,F_SETLK,F_UNLCK);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

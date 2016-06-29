@@ -174,6 +174,8 @@ filesystem/FileName.h
 filesystem/FileName.cc
 filesystem/FileSpace.h
 filesystem/FileSpace.cc
+filesystem/FileSpaceStrategies.h
+filesystem/FileSpaceStrategies.cc
 filesystem/FileSystem.h
 filesystem/FileSystem.cc
 filesystem/TempFile.h
@@ -223,6 +225,8 @@ config/Condition.h
 config/Condition.cc
 config/Function.h
 config/Function.cc
+config/Configured.h
+config/Configured.cc
 config/Scope.h
 config/Scope.cc
 config/Script.h
@@ -321,6 +325,8 @@ log/SavedStatus.h
 log/SavedStatus.cc
 log/Seconds.h
 log/Seconds.cc
+log/Statistics.h
+log/Statistics.cc
 log/Timer.h
 log/Timer.cc
 log/TimeStamp.h
@@ -511,6 +517,27 @@ compat/Inited.h
 compat/StrStream.h
 )
 
+list( APPEND eckit_maths_srcs
+maths/Functions.h
+maths/Functions.cc
+)
+
+
+list( APPEND eckit_system_srcs
+system/SystemInfo.h
+system/SystemInfo.cc
+system/ResourceUsage.h
+system/ResourceUsage.cc
+)
+
+if( EC_OS_NAME STREQUAL "linux" )
+    list( APPEND eckit_system_srcs system/SystemInfoLinux.h system/SystemInfoLinux.cc )
+elseif( EC_OS_NAME STREQUAL "macosx" )
+    list( APPEND eckit_system_srcs system/SystemInfoMacOSX.h system/SystemInfoMacOSX.cc )
+else()
+    ecbuild_log_warning("eckit does not support SystemInfo for OS '${EC_OS_NAME}'")
+endif()
+
 list( APPEND eckit_bases_srcs
 bases/Watcher.h
 bases/Watcher.cc
@@ -532,6 +559,7 @@ list( APPEND eckit_dirs
 	filesystem
 	io
 	log
+    maths
 	memory
 	net
 	os
@@ -545,6 +573,7 @@ list( APPEND eckit_dirs
 	types
 	utils
 	value
+    system
 )
 
 foreach( dir ${eckit_dirs} )
@@ -607,7 +636,8 @@ if( HAVE_ECKIT_CMD )
   add_subdirectory( cmd )
 endif()
 
+add_subdirectory( geometry )
 add_subdirectory( linalg )
-add_subdirectory( web )
+add_subdirectory( maths )
 add_subdirectory( option )
-
+add_subdirectory( web )

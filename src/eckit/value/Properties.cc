@@ -12,10 +12,11 @@
 #include "eckit/types/Types.h"
 #include "eckit/value/Params.h"
 #include "eckit/value/Properties.h"
+#include "eckit/utils/MD5.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 Properties::Properties()
 {
@@ -81,6 +82,15 @@ bool Properties::remove(const key_t & k)
     return props_.erase(k);
 }
 
+void Properties::hash(MD5& md5) const
+{
+    for( PropertyMap::const_iterator vit = props_.begin(); vit != props_.end(); ++vit ) {
+        md5.add((*vit).first);
+        /// @note below, we assume all Values translate to std::string, this needs more verification
+        md5.add((*vit).second.as<std::string>());
+    }
+}
+
 void Properties::json( JSON& s ) const
 {
     s << props_;
@@ -107,7 +117,7 @@ Properties::operator property_t() const
   return vmap;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 Properties::property_t getValue( const Properties& p, const Properties::key_t& key )
 {
@@ -124,11 +134,9 @@ void encode( const Properties& p, Stream& s )
     s << p;
 }
 
-//-----------------------------------------------------------------------------
-
 Params::Factory<Properties> propertiesFactory;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

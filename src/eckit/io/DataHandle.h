@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -38,7 +38,7 @@ public:
 class DataHandle : public Streamable {
 public:
 
-	friend std::ostream& operator<<(std::ostream& s,const DataHandle& handle) 
+	friend std::ostream& operator<<(std::ostream& s,const DataHandle& handle)
 		{ handle.print(s); return s;}
 
 // -- Contructors
@@ -76,21 +76,24 @@ public:
 
 	// Save into an other datahandle
 
-	virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy());   
+	virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy());
 
 	Length saveInto(const PathName&, TransferWatcher& = TransferWatcher::dummy()); // Save into a file
 
+    /// Quiet version of saveInto. Does not support progess, restart and double buffering
+    Length copyTo(DataHandle&);
+
     /// Save into an other datahandle
-	Length appendTo(DataHandle&);   
-	
+	Length appendTo(DataHandle&);
+
     /// Save into a file
-    Length appendTo(const PathName&); 
+    Length appendTo(const PathName&);
 
     virtual std::string name() const;
 
 
     /// Compare bytes
-	bool compare(DataHandle&); 
+	bool compare(DataHandle&);
 
 	// Merge-in an other datahandle
 
@@ -100,7 +103,7 @@ public:
 
 
     // For remote data movers
-    
+
     virtual bool moveable() const { return false; }
     virtual void toLocal(Stream& s) const;
 
@@ -118,7 +121,7 @@ public:
 	virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
 // -- Class methods
-    
+
     static  const ClassSpec&  classSpec()        { return classSpec_;}
 
 private:

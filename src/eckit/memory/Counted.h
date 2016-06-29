@@ -66,8 +66,8 @@ public:
 
 template < typename LOCK, typename MEMORY >
 class CountedT :
-        private NonCopyable,
-        public LOCK {
+    private NonCopyable,
+    public LOCK {
 
 public: // methods
 
@@ -85,23 +85,32 @@ public: // methods
     void detach()
     {
         LOCK::lock();
-        if( --count_ == 0 )
+        if ( --count_ == 0 )
         {
             LOCK::unlock();
             MEMORY::deallocate( this );
         }
-        else
+        else {
             LOCK::unlock();
+        }
     }
 
     unsigned long count() const { return count_; }
 
-//	void *operator new(size_t s)  { return MemoryPool::fastAllocate(s);}
-//	void operator delete(void* p) { MemoryPool::fastDeallocate(p);     }
+    void lock() const {
+        LOCK::lock();
+    }
+
+    void unlock() const {
+        LOCK::unlock();
+    }
+
+//  void *operator new(size_t s)  { return MemoryPool::fastAllocate(s);}
+//  void operator delete(void* p) { MemoryPool::fastDeallocate(p);     }
 
 private: // members
 
-	unsigned long count_;
+    unsigned long count_;
 
 };
 

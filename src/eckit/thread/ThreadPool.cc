@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -26,12 +26,12 @@ namespace eckit {
 class ThreadPoolThread : public Thread {
     ThreadPool& owner_;
     void run();
-    public:
-    ThreadPoolThread(ThreadPool& owner): 
+public:
+    ThreadPoolThread(ThreadPool& owner):
         owner_(owner) {}
 };
 
-void ThreadPoolThread::run() 
+void ThreadPoolThread::run()
 {
     owner_.notifyStart();
 
@@ -40,20 +40,21 @@ void ThreadPoolThread::run()
     //Log::info() << "Start of ThreadPoolThread " << std::endl;
 
 
-    for(;;)
+    for (;;)
     {
         Monitor::instance().show(false);
         Log::status() << "-" << std::endl;
         ThreadPoolTask* r = owner_.next();
-        if(!r) break;
+        if (!r) break;
         Monitor::instance().show(true);
 
         r->pool_ = &owner_;
 
+
         try {
             r->execute();
         }
-        catch(std::exception& e)
+        catch (std::exception& e)
         {
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is reported" << std::endl;
@@ -63,29 +64,33 @@ void ThreadPoolThread::run()
         try {
             delete r;
         }
-        catch(std::exception& e)
+        catch (std::exception& e)
         {
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is reported" << std::endl;
             owner_.error(e.what());
         }
+
+        owner_.endTask();
+
     }
 
 
-    Log::info() << "End of ThreadPoolThread " << std::endl;
+    // Log::info() << "End of ThreadPoolThread " << std::endl;
 
     owner_.notifyEnd();
 }
 
-ThreadPool::ThreadPool(const std::string& name,int count, size_t stack):
+ThreadPool::ThreadPool(const std::string& name, int count, size_t stack):
     count_(count),
     running_(0),
+    tasks_(0),
     name_(name),
     error_(false)
 {
     //Log::info() << "ThreadPool::ThreadPool " << name_ << " " << count << std::endl;
 
-    for(int i = 0; i < count ; i++)
+    for (int i = 0; i < count ; i++)
     {
         ThreadControler c(new ThreadPoolThread(*this), true, stack);
         c.start();
@@ -99,8 +104,8 @@ ThreadPool::~ThreadPool()
     try {
         waitForThreads();
     }
-    catch(std::exception& e)
-    {       
+    catch (std::exception& e)
+    {
         Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
         Log::error() << "** Exception is ignored" << std::endl;
     }
@@ -109,19 +114,19 @@ ThreadPool::~ThreadPool()
 void ThreadPool::waitForThreads()
 {
 
-    for(int i = 0; i < count_ ; i++)
+    for (int i = 0; i < count_ ; i++)
         push(0);
 
 
     AutoLock<MutexCond> lock(done_);
     //Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << std::endl;
-    while(running_)
-	{	
+    while (running_)
+    {
         //Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << std::endl;
         done_.wait();
-	}
+    }
 
-    if(error_)
+    if (error_)
     {
         error_ = false;
         throw SeriousBug(std::string("ThreadPool::waitForThreads: ") + errorMessage_);
@@ -133,7 +138,7 @@ void ThreadPool::notifyStart()
     AutoLock<MutexCond> lock(done_);
     running_++;
     done_.signal();
-//Log::info() << "ThreadPool::notifyStart " << name_ << " running: " << running_ << std::endl;
+    // Log::info() << "ThreadPool::notifyStart " << name_ << " running: " << running_ << std::endl;
 }
 
 void ThreadPool::notifyEnd()
@@ -141,13 +146,30 @@ void ThreadPool::notifyEnd()
     AutoLock<MutexCond> lock(done_);
     running_--;
     done_.signal();
-//Log::info() << "ThreadPool::notifyEnd " << name_ << " running: " << running_ << std::endl;
+    // Log::info() << "ThreadPool::notifyEnd " << name_ << " running: " << running_ << std::endl;
+}
+
+
+void ThreadPool::startTask()
+{
+    AutoLock<MutexCond> lock(active_);
+    tasks_++;
+    active_.signal();
+    // Log::info() << "ThreadPool::notifyStart " << name_ << " running: " << running_ << std::endl;
+}
+
+void ThreadPool::endTask()
+{
+    AutoLock<MutexCond> lock(active_);
+    tasks_--;
+    active_.signal();
+    // Log::info() << "ThreadPool::notifyStart " << name_ << " running: " << running_ << std::endl;
 }
 
 void ThreadPool::error(const std::string& msg)
 {
     AutoLock<MutexCond> lock(done_);
-    if(error_) errorMessage_ += " | ";
+    if (error_) errorMessage_ += " | ";
     error_ = true;
     errorMessage_ += msg;
 
@@ -155,6 +177,10 @@ void ThreadPool::error(const std::string& msg)
 
 void ThreadPool::push(ThreadPoolTask* r)
 {
+    if (r) {
+        startTask();
+    }
+
     AutoLock<MutexCond> lock(ready_);
     queue_.push_back(r);
     ready_.signal();
@@ -164,29 +190,35 @@ void ThreadPool::push(std::list<ThreadPoolTask*>& l)
 {
     AutoLock<MutexCond> lock(ready_);
 
-    for(std::list<ThreadPoolTask*>::iterator j = l.begin(); j != l.end(); ++j)
+    for (std::list<ThreadPoolTask*>::iterator j = l.begin(); j != l.end(); ++j)
         queue_.push_back((*j));
 
     l.clear();
     ready_.signal();
 }
 
-ThreadPoolTask* ThreadPool::next() 
+ThreadPoolTask* ThreadPool::next()
 {
     AutoLock<MutexCond> lock(ready_);
-    while(queue_.empty())
+    while (queue_.empty())
         ready_.wait();
 
     ThreadPoolTask* r = queue_.front();
     queue_.pop_front();
 
-    if(!queue_.empty())
+    if (!queue_.empty())
         ready_.signal();
 
     return r;
 }
 
+void ThreadPool::wait() {
+    AutoLock<MutexCond> lock(active_);
 
+    while (tasks_) {
+        active_.wait();
+    }
+}
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

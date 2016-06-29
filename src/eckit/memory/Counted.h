@@ -20,37 +20,23 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/exception/Exceptions.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace memory {
 namespace detail {
 
-struct SelfManaged
-{
-    template < typename T >
-    static void deallocate( T* p ) { delete p; }
-};
-
-struct NotManaged
-{
-    template < typename T >
-    static void deallocate( T* p ) {}
-};
-
-class ThreadedLock
-{
-    mutable Mutex mutex_;
+class ThreadedLock {
 public:
     void lock() const    { mutex_.lock(); }
     void unlock()  const { mutex_.unlock(); }
+
+    mutable Mutex mutex_;
 };
 
-class NoLock
-{
+class NoLock {
 public:
     void lock() const   {}
     void unlock() const {}
@@ -59,55 +45,54 @@ public:
 } // detail
 } // memory
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Reference counting objects
 /// Subclass from this class if you want reference counting object.
 /// @note Remember to use 'virtual' inheritance in case of multiple inheritance
 
-template < typename LOCK, typename MEMORY >
-class CountedT :
+class Counted :
     private NonCopyable,
-    private LOCK {
+    private memory::detail::ThreadedLock {
 
-public: // methods
+public: // methodsO
 
 
     void attach() const
     {
-        LOCK::lock();
+        lock();
         count_++;
-        LOCK::unlock();
+        unlock();
     }
 
     void detach() const
     {
-        LOCK::lock();
+        lock();
         if ( --count_ == 0 )
         {
-            LOCK::unlock();
-            MEMORY::deallocate( this );
+            unlock();
+            delete this;
         }
         else {
-            LOCK::unlock();
+            unlock();
         }
     }
 
     size_t count() const { return count_; }
 
     void lock() const {
-        LOCK::lock();
+        memory::detail::ThreadedLock::lock();
     }
 
     void unlock() const {
-        LOCK::unlock();
+        memory::detail::ThreadedLock::unlock();
     }
 
 public:
 
-    CountedT() : count_(0) {}
+    Counted() : count_(0) {}
 
-    virtual ~CountedT() {}
+    virtual ~Counted() {}
 
 //  void *operator new(size_t s)  { return MemoryPool::fastAllocate(s);}
 //  void operator delete(void* p) { MemoryPool::fastDeallocate(p);     }
@@ -118,19 +103,7 @@ private: // members
 
 };
 
-//-----------------------------------------------------------------------------
-
-/// Counted object, with self-managed memory and thread lockable resource
-typedef CountedT< memory::detail::ThreadedLock, memory::detail::SelfManaged >  CountedLock;
-
-/// Counted object, with self-managed memory and not thread lockable resource
-typedef CountedT< memory::detail::NoLock, memory::detail::SelfManaged >  CountedNoLock;
-
-/// Default Counted type for backward compatibility
-/// Same as CountedLock
-typedef CountedLock  Counted;
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

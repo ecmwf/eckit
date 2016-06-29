@@ -81,20 +81,17 @@ void ThreadPoolThread::run()
     owner_.notifyEnd();
 }
 
-ThreadPool::ThreadPool(const std::string& name, int count, size_t stack):
-    count_(count),
+ThreadPool::ThreadPool(const std::string& name, size_t count, size_t stack):
+    count_(0),
+    stack_(stack),
     running_(0),
     tasks_(0),
     name_(name),
     error_(false)
 {
-    //Log::info() << "ThreadPool::ThreadPool " << name_ << " " << count << std::endl;
+    //Log::info() << "ThreadPool::ThreadPool " << nme_ << " " << count << std::endl;
+    resize(count);
 
-    for (int i = 0; i < count ; i++)
-    {
-        ThreadControler c(new ThreadPoolThread(*this), true, stack);
-        c.start();
-    }
 }
 
 ThreadPool::~ThreadPool()
@@ -114,8 +111,9 @@ ThreadPool::~ThreadPool()
 void ThreadPool::waitForThreads()
 {
 
-    for (int i = 0; i < count_ ; i++)
+    for (size_t i = 0; i < count_ ; i++) {
         push(0);
+    }
 
 
     AutoLock<MutexCond> lock(done_);
@@ -217,6 +215,20 @@ void ThreadPool::wait() {
 
     while (tasks_) {
         active_.wait();
+    }
+}
+
+void ThreadPool::resize(size_t size) {
+
+    while (count_ > size) {
+        push(0);
+        count_--;
+    }
+
+    while (count_ < size) {
+        ThreadControler c(new ThreadPoolThread(*this), true, stack_);
+        c.start();
+        count_++;
     }
 }
 //-----------------------------------------------------------------------------

@@ -48,7 +48,7 @@ class ThreadPool : private NonCopyable {
 
 public: // methods
 
-    ThreadPool(const std::string& name, int count, size_t stack = 0);
+    ThreadPool(const std::string& name, size_t count, size_t stack = 0);
 
 	~ThreadPool();
 
@@ -62,6 +62,7 @@ public: // methods
     void error(const std::string&);
 
     void wait();
+    void resize(size_t);
 
     void startTask();
     void endTask();
@@ -72,9 +73,10 @@ private: // members
     MutexCond done_;
     MutexCond active_;
 
-    int  count_;
-    int  running_;
-    int  tasks_;
+    size_t  count_;
+    size_t  stack_;
+    size_t  running_;
+    size_t  tasks_;
 
     std::string errorMessage_;
     std::string name_;

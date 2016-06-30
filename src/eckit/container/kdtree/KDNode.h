@@ -38,16 +38,16 @@ private:
 
 public:
     KDNode(const Value& value, size_t axis);
-    virtual ~KDNode() {}
+    ~KDNode() {}
 
     template<typename ITER>
     static KDNode* build(Alloc& a,const ITER& begin, const ITER& end, int depth = 0);
 
 
-private:
-    virtual void nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth);
-    virtual void findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth) ;
-    virtual void kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth) ;
+public:
+    void nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth);
+    void findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth) ;
+    void kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth) ;
 
     //==========================
 

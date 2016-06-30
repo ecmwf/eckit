@@ -35,7 +35,7 @@ SPNodeInfo<Traits,NodeType> SPNode<Traits,NodeType>::nearestNeighbour(Alloc& a,c
 {
     double max = Point::distance(p,value_.point());
     Node* best = this->asNode();
-    nearestNeighbourX(a, p, best, max, 0);
+    asNode()->nearestNeighbourX(a, p, best, max, 0);
     return NodeInfo(best, a.convert(best), max);
 }
 
@@ -47,7 +47,7 @@ SPNodeInfo<Traits,NodeType> SPNode<Traits,NodeType>::nearestNeighbourBruteForce(
 {
     double max = Point::distance(p,value_.point());
     Node* best = this->asNode();
-    nearestNeighbourBruteForceX(a, p, best, max, 0);
+    asNode()->nearestNeighbourBruteForceX(a, p, best, max, 0);
     return NodeInfo(best, a.convert(best), max);
 }
 
@@ -75,7 +75,7 @@ typename SPNode<Traits,NodeType>::NodeList SPNode<Traits,NodeType>::kNearestNeig
 {
     NodeQueue queue(k);
     NodeList result;
-    kNearestNeighboursX(a,p,k,queue,0);
+    asNode()->kNearestNeighboursX(a,p,k,queue,0);
     queue.fill(result);
     return result;
 }

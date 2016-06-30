@@ -8,8 +8,27 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_AutoLocker_h
-#define eckit_AutoLocker_h
+
+#include "eckit/eckit.h"
+
+#include "eckit/os/System.h"
+#include "eckit/types/Types.h"
+
+// #ifdef LINUX
+// #define _GNU_SOURCE
+// #endif
+
+#include <dlfcn.h>
+
+// #ifdef LINUX
+
+// typedef struct {
+//         const char *dli_fname;
+//         void       *dli_fbase;
+//         const char *dli_sname;
+//         void       *dli_saddr;
+// } Dl_info;
+// #endif
 
 //-----------------------------------------------------------------------------
 
@@ -17,16 +36,18 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class AutoLocker {
-public:
-	static void want(const void*);
-	static void got(const void*);
-	static void release(const void*);
-	static void analyse(const void*);
-};
+
+// extern "C" int dladdr(const void*, Dl_info*);
+
+
+std::string System::addrToPath(const void *addr) {
+    Dl_info info;
+    info.dli_fname = "/UNKNOWN";
+    dladdr(addr, &info);
+    return std::string(info.dli_fname);
+}
 
 //-----------------------------------------------------------------------------
 
 } // namespace eckit
 
-#endif

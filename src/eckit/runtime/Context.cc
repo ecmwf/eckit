@@ -37,7 +37,7 @@ void Context::init() {
 Context::Context() :
     argc_(0),
     argv_(0),
-    taskID_(0),
+    taskID_(-1),
     home_("/"),
     runName_("undef"),
     displayName_(),
@@ -203,7 +203,7 @@ void Context::registerChannel(const std::string& key, Channel* channel)
     AutoLock<Mutex> lock(local_mutex);
 
     if(channels_.find(key) == channels_.end()) {
-        channels_.insert(std::make_pair<std::string,Channel*>(key, channel));
+        channels_.insert(std::make_pair(key, channel));
     }
     else {
         throw BadParameter( "Channel '" + key + "' is already registered ", Here());

@@ -8,24 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_AutoLocker_h
-#define eckit_AutoLocker_h
+#ifndef eckit_System_h
+#define eckit_System_h
 
-//-----------------------------------------------------------------------------
+#include <string>
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-class AutoLocker {
+class System {
 public:
-	static void want(const void*);
-	static void got(const void*);
-	static void release(const void*);
-	static void analyse(const void*);
+
+    static std::string addrToPath(const void *addr);
+
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

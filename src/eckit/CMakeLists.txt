@@ -174,6 +174,8 @@ filesystem/FileName.h
 filesystem/FileName.cc
 filesystem/FileSpace.h
 filesystem/FileSpace.cc
+filesystem/FileSpaceStrategies.h
+filesystem/FileSpaceStrategies.cc
 filesystem/FileSystem.h
 filesystem/FileSystem.cc
 filesystem/TempFile.h
@@ -421,6 +423,8 @@ value/Value.cc )
 
 list( APPEND eckit_os_srcs
 os/Stat.h
+os/System.h
+os/System.cc
 os/Semaphore.h
 os/Semaphore.cc
 os/SignalHandler.h
@@ -626,7 +630,7 @@ ecbuild_add_library(TARGET eckit
 					INCLUDES
 						${AIO_INCLUDE_DIRS}
 					LIBS
-						${CMAKE_THREAD_LIBS_INIT} ${AIO_LIBRARIES} )
+                        ${AIO_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS} )
 
 ### sub-directories
 
@@ -634,7 +638,8 @@ if( HAVE_ECKIT_CMD )
   add_subdirectory( cmd )
 endif()
 
+add_subdirectory( geometry )
 add_subdirectory( linalg )
-add_subdirectory( web )
+add_subdirectory( maths )
 add_subdirectory( option )
-
+add_subdirectory( web )

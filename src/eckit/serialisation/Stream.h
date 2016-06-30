@@ -149,6 +149,8 @@ protected:
     virtual std::string name() const 			= 0;
     virtual void print(std::ostream& s) const  	{ s << name();  }
 
+    size_t blobSize();
+
 private:
 
     enum tag {

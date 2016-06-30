@@ -32,11 +32,11 @@ public: // methods
 
     /// Contructor
 
-	AIOHandle(const PathName& path,size_t count = 64, size_t = 1024*1024,bool fsync = false);
+    AIOHandle(const PathName& path, size_t count = 64, size_t = 1024 * 1024, bool fsync = false);
 
     /// Destructor
 
-	virtual ~AIOHandle();
+    virtual ~AIOHandle();
 
     // From DataHandle
 
@@ -44,33 +44,33 @@ public: // methods
     virtual void openForWrite(const Length&);
     virtual void openForAppend(const Length&);
 
-    virtual long read(void*,long);
-    virtual long write(const void*,long);
+    virtual long read(void*, long);
+    virtual long write(const void*, long);
     virtual void close();
     virtual void flush();
     virtual void rewind();
     virtual void print(std::ostream&) const;
 
-	virtual Length estimate();
-	virtual Offset position();
+    virtual Length estimate();
+    virtual Offset position();
 
 
 
 private: // members
 
-	PathName                   path_;
-	std::vector<Buffer*>       buffers_;
+    PathName                   path_;
+    std::vector<Buffer*>       buffers_;
     std::vector<const aiocb*>  aiop_;
     std::vector<aiocb>         aio_;
-	std::vector<long>		   len_;
-	std::vector<bool>          active_;
+    std::vector<long>          len_;
+    std::vector<bool>          active_;
 
-	size_t                     used_;
-	size_t                     count_;
+    size_t                     used_;
+    size_t                     count_;
 
-	int                        fd_;
-	off_t                      pos_;
-	bool                       fsync_;
+    int                        fd_;
+    off_t                      pos_;
+    bool                       fsync_;
 
 
     virtual std::string title() const;

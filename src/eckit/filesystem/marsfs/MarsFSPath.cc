@@ -175,6 +175,11 @@ bool MarsFSPath::isDir() const
     throw NotImplemented(Here());
 }
 
+bool MarsFSPath::isLink() const
+{
+    throw NotImplemented(Here());
+}
+
 time_t MarsFSPath::lastAccess() const
 {
     return MarsFSClient(*this).lastAccess(path_);

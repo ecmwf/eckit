@@ -19,11 +19,9 @@
 #include "eckit/runtime/Tool.h"
 #include "eckit/runtime/ToolBehavior.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 Tool::Tool(int argc, char **argv, const char* homeenv, const char* homepath) :
     name_("undefined")
@@ -81,19 +79,18 @@ int Tool::start()
     catch( Exception& e ){
         status = 1;
         Log::error() << "** " << e.what() << " Caught in "  << Here() << std::endl;
-        Log::error() << "** Exception is terminates " << name() << std::endl;
-        Exception::exceptionStack( Log::error(), true );
+        Log::error() << "** Exception terminates " << name() << std::endl;
     }
     catch( std::exception& e ){
 		status = 1;
 		Log::error() << "** " << e.what() << " Caught in "  << Here() << std::endl;
-		Log::error() << "** Exception is terminates " << name() << std::endl;
+        Log::error() << "** Exception terminates " << name() << std::endl;
 	}
 
     return status;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

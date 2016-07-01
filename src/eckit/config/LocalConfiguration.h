@@ -10,8 +10,7 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date   Jul 2015
-
+/// @date   July 2015
 
 #ifndef eckit_LocalConfiguration_H
 #define eckit_LocalConfiguration_H
@@ -19,108 +18,54 @@
 #include <vector>
 
 #include "eckit/config/Configuration.h"
-
+#include "eckit/config/Configured.h"
 
 namespace eckit {
 
 class PathName;
 
-class LocalConfiguration : public Configuration {
-  public:
+//----------------------------------------------------------------------------------------------------------------------
 
-    // -- Exceptions
-    // None
+class LocalConfiguration : public Configuration, public Configured {
 
-    // -- Contructors
+    /// @note Do NOT expose eckit::Value in the interface of configuration
+    ///       eckit::Value should remain an internal detail of configuration objects
+
+public: // methods
 
     LocalConfiguration(char separator = '.');
     LocalConfiguration(const Configuration &other);
     LocalConfiguration(const Configuration &other, const std::string &path);
-    LocalConfiguration(const Value& root, char separator = '.');
 
-    virtual ~LocalConfiguration(); // Change to virtual if base class
+    virtual ~LocalConfiguration();
 
-    // -- Convertors
-    // None
+    LocalConfiguration& set(const std::string &name, const std::string &value);
+    LocalConfiguration& set(const std::string &name, const char *value);
+    LocalConfiguration& set(const std::string &name, double value);
+    LocalConfiguration& set(const std::string &name, long value);
+    LocalConfiguration& set(const std::string &name, bool value);
+    LocalConfiguration& set(const std::string& name, size_t value);
 
-    // -- Operators
-    // None
+    LocalConfiguration& set(const std::string& name, const std::vector<long>& value);
+    LocalConfiguration& set(const std::string& name, const std::vector<double>& value);
 
-    // -- Methods
+protected:
 
-    void set(const std::string &name, const std::string &value);
-    void set(const std::string &name, const char *value);
-    void set(const std::string &name, double value);
-    void set(const std::string &name, long value);
-    void set(const std::string &name, bool value);
-    void set(const std::string& name, size_t value);
+    friend class Configuration;
 
-    void set(const std::string& name, const std::vector<long>& value);
-    void set(const std::string& name, const std::vector<double>& value);
-
-    // -- Overridden methods
-
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-
-
-  protected:
-
-
-    // -- Destructor
-
-    // -- Members
-    // None
-
-    // -- Methods
-
-    // void print(ostream&) const; // Change to virtual if base class
-
-    // -- Overridden methods
+    /// to be used only by class Configuration
+    LocalConfiguration(const eckit::Value&, char separator = '.');
 
     virtual void print(std::ostream &) const;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-  private:
-
-    // No copy allowed
-
-    // LocalConfiguration(const LocalConfiguration &);
-    // LocalConfiguration &operator=(const LocalConfiguration &);
-
-
-    // -- Members
-
-
-    // -- Methods
+private:
 
     void set(const std::vector<std::string> &path, size_t i, Value &root, const Value &value);
     void set(const std::string &s, const Value &value);
 
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-
-    //friend ostream& operator<<(ostream& s,const LocalConfiguration& p)
-    //  { p.print(s); return s; }
-
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

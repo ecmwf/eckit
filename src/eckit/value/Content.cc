@@ -39,42 +39,57 @@ void Content::badConvertion(const std::string& to) const
 {
     std::ostringstream s;
     s << "Cannot convert " << *this << " (" << typeName() << ") to " << to;
-    throw BadConversion(s.str());
+    throw BadConversion(s.str(), Here());
 }
 
 void Content::badComparison(const std::string& to) const
 {
     std::ostringstream s;
     s << "Cannot compare " << *this << " (" << typeName() << ") with " << to;
-    throw BadComparison(s.str());
+    throw BadComparison(s.str(), Here());
 }
 
 void Content::badOperator(const std::string& op, const std::string& to) const
 {
     std::ostringstream s;
     s << *this << " (" << typeName() << ") " << op << " " << to;
-    throw BadOperator(s.str());
+    throw BadOperator(s.str(), Here());
 }
 
 Value& Content::element(const Value&)
 {
     std::ostringstream s;
     s << *this << " (" << typeName() << ") method 'element' not implemented";
-    throw BadOperator(s.str());
+    throw BadOperator(s.str(), Here());
 }
+
+Value Content::keys() const
+{
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") method 'keys' not implemented";
+    throw BadOperator(s.str(), Here());
+}
+
+size_t Content::size() const
+{
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") method 'size' not implemented";
+    throw BadOperator(s.str(), Here());
+}
+
 
 bool Content::contains(const Value&) const
 {
     std::ostringstream s;
     s << *this << " (" << typeName() << ") method 'contains' not implemented";
-    throw BadOperator(s.str());
+    throw BadOperator(s.str(), Here());
 }
 
 Value Content::negate() const
 {
     std::ostringstream s;
     s << *this << " (" << typeName() << ") method 'negate' not implemented";
-    throw BadOperator(s.str());
+    throw BadOperator(s.str(), Here());
 }
 
 void Content::value(long long&) const

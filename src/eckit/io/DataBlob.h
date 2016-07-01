@@ -35,9 +35,6 @@ class DataBlob : public eckit::OwnedLock {
 
 public: // methods
 
-    /// Constructor creates empty buffer
-//    DataBlob(size_t length);
-
     /// Constructor copies the data
     DataBlob(const void* data, size_t length);
 
@@ -46,7 +43,6 @@ public: // methods
 
     virtual ~DataBlob();
 
-//    Buffer& buffer();
     const Buffer& buffer() const;
     size_t length() const;
 

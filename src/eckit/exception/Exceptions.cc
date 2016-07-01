@@ -13,6 +13,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/ThreadSingleton.h"
+#include "eckit/runtime/Context.h"
 
 #include "eckit/os/BackTrace.h"
 
@@ -66,7 +67,7 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
     next_(first()),
     location_(location)
 {
-    Log::error() << "Exception: " << w << " @ " << location_ << std::endl;
+    Log::error() << "Exception: " << w << location_ << std::endl;
 
 #if 0
     if(next_) {
@@ -81,7 +82,7 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
     callStack_ = BackTrace::dump();
 
     first() = this;
-	Log::status() << "** " << w << " @ " << location_ << std::endl;
+    Log::status() << "** " << w << location_ << std::endl;
 }
 
 void Exception::reason(const std::string& w)
@@ -159,11 +160,8 @@ FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, cons
 
 SeriousBug::SeriousBug(const std::string& w) : Exception(std::string("Serious Bug: ") + w)
 {
-#if 0
-    std::cout << "Serious Bug exception triggered -- dumping backtrace:"
-              << BackTrace::dump()
-              << std::endl;
-#endif
+   std::cout << what() << std::endl;
+   std::cout << BackTrace::dump() << std::endl;
 }
 
 SeriousBug::SeriousBug(const std::string& msg, const CodeLocation& loc)
@@ -171,6 +169,8 @@ SeriousBug::SeriousBug(const std::string& msg, const CodeLocation& loc)
    std::ostringstream s;
    s << "SeriousBug: " << msg << " " << " in " << loc;
    reason(s.str());
+   std::cout << what() << std::endl;
+   std::cout << BackTrace::dump() << std::endl;
 }
 
 SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
@@ -178,6 +178,8 @@ SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
    std::ostringstream s;
    s << "SeriousBug: " << msg << " " << " in " << loc;
    reason(s.str());
+   std::cout << what() << std::endl;
+   std::cout << BackTrace::dump() << std::endl;
 }
 
 
@@ -186,15 +188,12 @@ AssertionFailed::AssertionFailed(const std::string& w):
 {
     Log::monitor(Log::App,1) << what() << std::endl;
 
-#ifndef NDEBUG
-    if( ::getenv("ECKIT_ASSERT_FAILS_AND_ABORTS") )
-    {
+    // if(Context::instance().assertAborts())
+    // {
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
-        ::abort();
-    }
-#endif
-
+    //     Context::instance().abort();
+    // }
 }
 
 AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc)
@@ -207,14 +206,12 @@ AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc
     reason(s.str());
     Log::monitor(Log::App,2) << what() << std::endl;
 
-#ifndef NDEBUG
-    if( ::getenv("ECKIT_ASSERT_FAILS_AND_ABORTS") )
-    {
+    // if(Context::instance().assertAborts())
+    // {
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
-        ::abort();
-    }
-#endif
+    //     Context::instance().abort();
+    // }
 }
 
 AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
@@ -227,14 +224,12 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
     reason(s.str());
     Log::monitor(Log::App,2) << what() << std::endl;
 
-#ifndef NDEBUG
-    if( ::getenv("ECKIT_ASSERT_FAILS_AND_ABORTS") )
-    {
+    //if(Context::instance().assertAborts())
+    //{
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
-        ::abort();
-    }
-#endif
+        //Context::instance().abort();
+    //}
 }
 
 BadParameter::BadParameter(const std::string& w):
@@ -267,11 +262,13 @@ NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& 
 {
     std::ostringstream ss;
 
-    ss << "Not implemented: " << s << " @ " << loc.func()
-       << ", line " << loc.line() << " of " << loc.file();
+    ss << "Not implemented: " << s << loc;
 
     reason(ss.str());
 	Log::monitor(Log::App,2) << what() << std::endl;
+
+    std::cout << what() << std::endl;
+    std::cout << BackTrace::dump() << std::endl;
 }
 
 NotImplemented::NotImplemented( const CodeLocation& loc )
@@ -283,6 +280,9 @@ NotImplemented::NotImplemented( const CodeLocation& loc )
 
     reason(ss.str());
     Log::monitor(Log::App,2) << what() << std::endl;
+
+    std::cout << what() << std::endl;
+    std::cout << BackTrace::dump() << std::endl;
 }
 
 UserError::UserError(const std::string& r, const CodeLocation& loc):
@@ -353,7 +353,7 @@ FileError::FileError(const std::string& msg)
 FileError::FileError(const std::string& msg, const CodeLocation& here )
 {
     std::ostringstream s;
-    s << msg << " @ " << here <<  Log::syserr;
+    s << msg << here <<  Log::syserr;
     reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }
@@ -374,7 +374,7 @@ CantOpenFile::CantOpenFile(const std::string& file, const CodeLocation& loc, boo
     std::ostringstream s;
     s << "Cannot open " << file << " " << Log::syserr;
     if(retry) s << " (retry ok)";
-    s << " @ " << loc;
+    s << loc;
     reason(s.str());
     Log::monitor(Log::Unix,errno) << what() << std::endl;
 }

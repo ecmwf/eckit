@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/runtime/Context.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/config/ResourceFromFiles.h"
@@ -34,10 +35,17 @@ struct ParallelReadPolicy
 
 //-----------------------------------------------------------------------------
 
+static void parallel_abort() {
+    MPI_Abort(eckit::mpi::world(), -1);
+}
+
 ParallelContextBehavior::ParallelContextBehavior() :
   StandardBehavior()
 {
   mpi::Environment::instance();
+
+  eckit::Context::instance().abortHandler(&parallel_abort);
+  eckit::Context::instance().assertAborts(true);
 }
 
 FileReadPolicy ParallelContextBehavior::fileReadPolicy()

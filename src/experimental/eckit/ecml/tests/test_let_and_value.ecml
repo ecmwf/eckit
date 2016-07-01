@@ -1,8 +1,0 @@
-test,
-    label = let defines a variable that we can lookup value of,
-    do = (
-            let, name = world
-            print, values = Hello / (value, of = name)
-         ),
-    expect = Hello / world
-

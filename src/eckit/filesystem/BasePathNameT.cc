@@ -69,6 +69,12 @@ bool BasePathNameT<T>::isDir() const
 }
 
 template<class T>
+bool BasePathNameT<T>::isLink() const
+{
+    return path_.isLink();
+}
+
+template<class T>
 void BasePathNameT<T>::rename(const BasePathName& other) const
 {
     const BasePathNameT<T>& o = dynamic_cast<const BasePathNameT<T>&>(other);

@@ -85,6 +85,7 @@ public:
     time_t created()      const;
 
     bool isDir() const;
+    bool isLink() const;
 
     void mkdir(short mode = 0777) const;
     void unlink() const;

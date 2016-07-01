@@ -1,7 +1,0 @@
-test, label = Check getenv,
-do = (
-    println, values = Hello / (getenv, values = USER)
-    println, values = "Nice to meet you!"
-    
-),
-expect = "Nice to meet you!"

@@ -1,6 +1,0 @@
-test, label = sequences produced by expressions embedded in a sequence are concatenated together,
-do = (
-        let, x = 1 / 2 
-        println,values = ($,_ = x) / ($,_ = x)
-),
-expect = 1 / 2 / 1 / 2

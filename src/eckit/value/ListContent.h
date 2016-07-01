@@ -81,6 +81,7 @@ protected:
     virtual Value& element(const Value&);
     virtual bool contains(const Value& key) const;
     virtual Content* clone() const;
+    virtual size_t size() const;
 
     // -- From Streamable
 

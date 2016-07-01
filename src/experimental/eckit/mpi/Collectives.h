@@ -144,8 +144,8 @@ inline int all_to_all( const Comm& comm,
 {
   int cnt;
   int mpi_size = comm.size();
-  ASSERT( sendvec.size() == mpi_size );
-  ASSERT( recvvec.size() == mpi_size );
+  ASSERT( sendvec.size() == size_t(mpi_size) );
+  ASSERT( recvvec.size() == size_t(mpi_size) );
   // Get send-information
   std::vector<int> sendcounts(mpi_size);
   std::vector<int> senddispls(mpi_size);

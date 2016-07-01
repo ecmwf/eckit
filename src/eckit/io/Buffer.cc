@@ -77,6 +77,14 @@ void Buffer::copy(const char *p, size_t size)
     ::memcpy(buffer_,p,size);
 }
 
+void eckit::Buffer::resize(size_t size)
+{
+    ASSERT(owned_);
+    destroy();
+    size_ = size;
+    create();
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

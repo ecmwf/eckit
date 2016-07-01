@@ -101,7 +101,12 @@ size_t size()
 
 void barrier()
 {
-  return comm().barrier();
+   comm().barrier();
+}
+
+void abort()
+{
+   comm().abort();
 }
 
 Comm& comm()

@@ -27,20 +27,20 @@ namespace eckit {
 
 class BadConversion:  public Exception {
 public:
-    BadConversion(const std::string& w) :
-        Exception(std::string("Bad Conversion: ") + w) {}
+    BadConversion(const std::string& w, const CodeLocation& loc) :
+        Exception(std::string("Bad Conversion: ") + w, loc) {}
 };
 
 class BadComparison:  public Exception {
 public:
-    BadComparison(const std::string& w) :
-        Exception(std::string("Bad Comparison: ") + w) {}
+    BadComparison(const std::string& w, const CodeLocation& loc) :
+        Exception(std::string("Bad Comparison: ") + w, loc) {}
 };
 
 class BadOperator:  public Exception {
 public:
-    BadOperator(const std::string& w) :
-        Exception(std::string("Bad operator: ") + w) {}
+    BadOperator(const std::string& w, const CodeLocation& loc) :
+        Exception(std::string("Bad operator: ") + w, loc) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -207,7 +207,10 @@ protected:
 
     virtual bool contains(const Value&) const;
     virtual Value& element(const Value&);
+    virtual Value keys() const;
     virtual Value negate() const;
+    virtual size_t size() const;
+
 
 // -- Overridden methods
 

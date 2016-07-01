@@ -8,8 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-// File FileSpace.h
-// Baudouin Raoult - ECMWF Mar 98
+/// @file   FileSpace.h
+/// @date   Mar 1998
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
 
 #ifndef eckit_FileSpace_h
 #define eckit_FileSpace_h
@@ -17,11 +19,9 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class FileSpace : private NonCopyable {
 public:
@@ -63,7 +63,7 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

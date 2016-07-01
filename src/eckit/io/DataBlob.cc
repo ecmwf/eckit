@@ -100,12 +100,6 @@ DataBlob* DataBlobFactory::build(const std::string &name, DataHandle& dh, size_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-//DataBlob::DataBlob(size_t length) :
-//    buffer_(length),
-//    actualLength_(0)
-//{
-//}
-
 DataBlob::DataBlob(const void* data, size_t length) :
     buffer_((const char*)data, length),
     actualLength_(length)
@@ -125,10 +119,6 @@ DataBlob::~DataBlob() {
 const Buffer& DataBlob::buffer() const {
     return buffer_;
 }
-
-//Buffer& DataBlob::buffer() {
-//    return buffer_;
-//}
 
 size_t DataBlob::length() const { return actualLength_; }
 

@@ -11,16 +11,14 @@
 #include "eckit/maths/Functions.h"
 
 namespace eckit {
-namespace maths {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-size_t roundToMultiple(size_t x, size_t n) {
+size_t round(size_t x, size_t n) {
     return ((x + n - 1) / n) * n;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace maths
 } // namespace eckit
 

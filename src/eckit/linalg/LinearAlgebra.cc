@@ -42,6 +42,7 @@ public:
         if(envBackend) {
             default_ = envBackend;
         }
+        std::cout << "Default Linear Algebra backend: " << default_ << std::endl;
     }
 
     void backend(const std::string& name);

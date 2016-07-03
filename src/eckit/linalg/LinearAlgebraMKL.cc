@@ -79,6 +79,7 @@ void LinearAlgebraMKL::spmv(const SparseMatrix& A, const Vector& x, Vector& y) c
     //                  double *alpha, char *matdescra,
     //                  double *val, MKL_INT *indx, MKL_INT *pntrb, MKL_INT *pntre,
     //                  double *x, double *beta, double *y);
+    std::cout << "Calling MKL::spmv()" << std::endl;
     mkl_dcsrmv ("N", &m, &k,
                 &alpha, "G__C",
                 A.data(), A.inner(), A.outer(), A.outer()+1,

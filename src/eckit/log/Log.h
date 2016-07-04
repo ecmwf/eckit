@@ -130,6 +130,12 @@ int format(std::ostream&);
 #define ECKIT_DEBUG_HERE std::cerr << " DEBUG () @ " << Here() << std::endl;
 #define ECKIT_DEBUG_VAR(x) std::cerr << " DEBUG (" << #x << ":" << x << ") @ " << Here() << std::endl;
 
+
+// Non-flushing version of std::endl
+inline std::ostream& newl(std::ostream& out) {
+    return out << '\n';
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

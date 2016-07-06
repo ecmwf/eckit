@@ -87,6 +87,19 @@ void Statistics::reportTime(std::ostream &out, const char *title, const Timing &
     }
 }
 
+void Statistics::reportTime(std::ostream &out, const char *title, double value, const char *indent) {
+    if (value)
+    {
+        out << indent
+            << title
+            << std::setw(WIDTH - strlen(title))
+            << " : "
+            << eckit::Seconds(value)
+            << std::endl;
+    }
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------
 
 Timing &Timing::operator+=(const Timing & other) {

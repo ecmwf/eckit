@@ -78,6 +78,14 @@ void FilePool::checkin(DataHandle* handle)
     cache_.insert(entry.first, entry.second);
 }
 
+bool FilePool::remove(const PathName& path) {
+    AutoLock<Mutex> lock(mutex_);
+
+    ASSERT( ! inUse(inUse_, path) );
+
+    return cache_.remove(path);
+}
+
 void FilePool::print(std::ostream& os) const
 {
     AutoLock<Mutex> lock(const_cast<FilePool&>(*this).mutex_);

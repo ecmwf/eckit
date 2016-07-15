@@ -17,15 +17,14 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
+#include "eckit/thread/MutexCond.h"
 #include "eckit/types/Types.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void closeDataHandle(PathName& path, DataHandle*& handle)
-{
+static void closeDataHandle(PathName& path, DataHandle*& handle) {
     if(handle) {
         handle->close();
         delete handle;
@@ -43,14 +42,13 @@ FilePool::FilePool(size_t size) :
     cache_(size, &closeDataHandle) {
 }
 
-FilePool::~FilePool() {
-}
+FilePool::~FilePool() {}
 
 DataHandle* FilePool::checkout(const PathName& path) {
+    AutoLock<MutexCond> lock(mutex_);
 
-    AutoLock<Mutex> lock(mutex_);
-
-    ASSERT( ! inUse(inUse_, path) );
+    while(inUse(inUse_, path))
+        mutex_.wait();
 
     DataHandle* dh;
 
@@ -69,33 +67,33 @@ DataHandle* FilePool::checkout(const PathName& path) {
     return dh;
 }
 
-void FilePool::checkin(DataHandle* handle)
-{
-    AutoLock<Mutex> lock(mutex_);
+void FilePool::checkin(DataHandle* handle) {
+    AutoLock<MutexCond> lock(mutex_);
 
     std::pair<PathName, DataHandle*> entry = removeFromInUse(handle);
 
     cache_.insert(entry.first, entry.second);
+    mutex_.signal();
 }
 
 bool FilePool::remove(const PathName& path) {
-    AutoLock<Mutex> lock(mutex_);
+    AutoLock<MutexCond> lock(mutex_);
 
-    ASSERT( ! inUse(inUse_, path) );
+    while(inUse(inUse_, path))
+        mutex_.wait();
 
     return cache_.remove(path);
 }
 
-void FilePool::print(std::ostream& os) const
-{
-    AutoLock<Mutex> lock(const_cast<FilePool&>(*this).mutex_);
+void FilePool::print(std::ostream& os) const {
+    AutoLock<MutexCond> lock(const_cast<FilePool&>(*this).mutex_);
     os << "FilePool("
        << "inUse=" << inUse_ << ", "
        << "cache=" << cache_ << ")";
 }
 
 void FilePool::addToInUse(const PathName& path, DataHandle* dh) {
-    AutoLock<Mutex> lock(mutex_);
+    AutoLock<MutexCond> lock(mutex_);
     inUse_[path] = dh;
 }
 
@@ -112,22 +110,22 @@ std::pair<PathName, DataHandle*> FilePool::removeFromInUse(DataHandle* dh) {
 }
 
 size_t FilePool::size() const {
-    AutoLock<Mutex> lock(mutex_);
+    AutoLock<MutexCond> lock(mutex_);
     return cache_.size();
 }
 
 void FilePool::capacity( size_t size ) {
-    AutoLock<Mutex> lock(mutex_);
+    AutoLock<MutexCond> lock(mutex_);
     cache_.capacity(size);
 }
 
 size_t FilePool::capacity() const {
-    AutoLock<Mutex> lock(mutex_);
+    AutoLock<MutexCond> lock(mutex_);
     return cache_.capacity();
 }
 
 size_t FilePool::usage() const {
-    AutoLock<Mutex> lock(mutex_);
+    AutoLock<MutexCond> lock(mutex_);
     return inUse_.size();
 }
 

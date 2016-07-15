@@ -16,7 +16,7 @@
 #define eckit_io_FilePool_h
 
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/thread/Mutex.h"
+#include "eckit/thread/MutexCond.h"
 #include "eckit/container/CacheLRU.h"
 
 namespace eckit {
@@ -85,7 +85,7 @@ private:
 
     eckit::CacheLRU< PathName, DataHandle* > cache_;
 
-    mutable eckit::Mutex mutex_;
+    mutable eckit::MutexCond mutex_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

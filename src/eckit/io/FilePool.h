@@ -75,10 +75,6 @@ public:
 
 private:
 
-    std::pair<PathName, DataHandle*> removeFromInUse(DataHandle*);
-
-private:
-
     std::map< PathName, DataHandle* > inUse_;
 
     eckit::CacheLRU< PathName, DataHandle* > cache_;

@@ -70,10 +70,17 @@ DataHandle* FilePool::checkout(const PathName& path) {
 void FilePool::checkin(DataHandle* handle) {
     AutoLock<MutexCond> lock(mutex_);
 
-    std::pair<PathName, DataHandle*> entry = removeFromInUse(handle);
+    typedef std::map<PathName,DataHandle*>::iterator iterator_type;
+    for(iterator_type itr = inUse_.begin(); itr != inUse_.end(); ++itr) {
+        if( itr->second == handle ) {
+            cache_.insert(itr->first, itr->second);
+            inUse_.erase(itr);
+            mutex_.signal();
+            return;
+        }
+    }
+    throw eckit::SeriousBug("Should have found a DataHandle in pool use", Here());
 
-    cache_.insert(entry.first, entry.second);
-    mutex_.signal();
 }
 
 bool FilePool::remove(const PathName& path) {
@@ -90,18 +97,6 @@ void FilePool::print(std::ostream& os) const {
     os << "FilePool("
        << "inUse=" << inUse_ << ", "
        << "cache=" << cache_ << ")";
-}
-
-std::pair<PathName, DataHandle*> FilePool::removeFromInUse(DataHandle* dh) {
-    typedef std::map<PathName,DataHandle*>::iterator iterator_type;
-    for(iterator_type itr = inUse_.begin(); itr != inUse_.end(); ++itr) {
-        if( itr->second == dh ) {
-            std::pair<PathName, DataHandle*> result = std::make_pair(itr->first, itr->second);
-            inUse_.erase(itr);
-            return result;
-        }
-    }
-    throw eckit::SeriousBug("Should have found a DataHandle in pool use", Here());
 }
 
 size_t FilePool::size() const {

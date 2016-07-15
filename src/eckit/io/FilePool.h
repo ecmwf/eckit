@@ -75,8 +75,6 @@ public:
 
 private:
 
-    void addToInUse(const PathName& path, DataHandle*);
-
     std::pair<PathName, DataHandle*> removeFromInUse(DataHandle*);
 
 private:

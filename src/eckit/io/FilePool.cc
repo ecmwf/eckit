@@ -62,7 +62,7 @@ DataHandle* FilePool::checkout(const PathName& path) {
 
     ASSERT(dh);
 
-    addToInUse(path,dh);
+    inUse_[path] = dh;
 
     return dh;
 }
@@ -90,11 +90,6 @@ void FilePool::print(std::ostream& os) const {
     os << "FilePool("
        << "inUse=" << inUse_ << ", "
        << "cache=" << cache_ << ")";
-}
-
-void FilePool::addToInUse(const PathName& path, DataHandle* dh) {
-    AutoLock<MutexCond> lock(mutex_);
-    inUse_[path] = dh;
 }
 
 std::pair<PathName, DataHandle*> FilePool::removeFromInUse(DataHandle* dh) {

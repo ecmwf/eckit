@@ -84,7 +84,7 @@ bool Select::ready(long sec)
 
 	int size = last_ + 1;
 
-	timeval timeout;
+	::timeval timeout;
 	timeout.tv_sec  = sec;
 	timeout.tv_usec = 0;
 

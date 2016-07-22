@@ -14,6 +14,9 @@
 #ifndef eckit_Seconds_h
 #define eckit_Seconds_h
 
+#include <time.h>
+#include <sys/time.h>
+
 #include "eckit/eckit.h"
 
 
@@ -31,7 +34,7 @@ public:
 // -- Contructors
 
 	Seconds(double);
-	Seconds(const struct timeval&);
+	Seconds(const struct ::timeval&);
 
 //#include "eckit/types/Seconds.b"
 

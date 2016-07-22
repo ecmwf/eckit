@@ -85,7 +85,7 @@ double Timer::elapsed()
 {
     if( running() ) takeTime();
 
-    timeval diff = timeStop_ - timeStart_;
+    ::timeval diff = timeStop_ - timeStart_;
     return (double)diff.tv_sec + ((double)diff.tv_usec / 1000000.);
 }
 
@@ -114,9 +114,9 @@ void Timer::takeTime()
 
 //----------------------------------------------------------------------------------------------------------------------
 
-timeval operator-(const timeval& a,const timeval& b)
+::timeval operator-(const ::timeval& a,const ::timeval& b)
 {
-    timeval diff;
+    ::timeval diff;
 
     diff.tv_sec  = a.tv_sec  - b.tv_sec;
     diff.tv_usec = a.tv_usec - b.tv_usec;

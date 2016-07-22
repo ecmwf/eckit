@@ -147,10 +147,10 @@ void TaskInfo::start(unsigned long long min, unsigned long long max)
 
 void TaskInfo::progress(unsigned long long val)
 {
-    timeval now;
+    ::timeval now;
     gettimeofday(&now, 0);
 
-    timeval diff = now - progress_.last_;
+    ::timeval diff = now - progress_.last_;
 
     progress_.rate_ = (val - progress_.val_) /
                       ((double)diff.tv_sec + ((double)diff.tv_usec / 1000000.));

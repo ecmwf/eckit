@@ -669,7 +669,7 @@ bool TCPSocket::stillConnected() const
     FD_ZERO(&e); FD_SET(socket_, &e);
     FD_ZERO(&w); FD_SET(socket_, &w);
 
-    timeval tv = { 0, 0};
+    ::timeval tv = { 0, 0};
 
     if(::select(socket_+1,&r, &w, &e, &tv) >= 0)
     {

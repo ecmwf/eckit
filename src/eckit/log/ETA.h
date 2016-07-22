@@ -28,7 +28,7 @@ public:
 // -- Contructors
 
 	ETA(double);
-	ETA(const struct timeval&);
+	ETA(const struct ::timeval&);
 
 // -- Operators
 

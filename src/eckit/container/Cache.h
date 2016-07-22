@@ -65,8 +65,8 @@ public: // types
         V               v_;
         bool            expired_;
         uint64_t        hits_;
-        struct timeval  age_;
-        struct timeval  last_;
+        struct ::timeval  age_;
+        struct ::timeval  last_;
     };
 
     typedef K key_type;
@@ -85,7 +85,7 @@ public: // types
         static bool expireLFU( store_type& c, const size_t& maxSize);
         /// Expires the entries older than a certain age
         /// @returns true if any entries were expired
-        static bool expireAge( store_type& c, struct timeval& maxAge);
+        static bool expireAge( store_type& c, struct ::timeval& maxAge);
     };
 
 public: // methods

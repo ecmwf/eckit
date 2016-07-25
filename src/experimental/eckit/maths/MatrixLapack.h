@@ -284,6 +284,27 @@ public:
 		return transposed;
 	}
 
+	Scalar determinant() const
+	{
+		switch( nr_ ) {
+		case 1: {
+			return at(0,0);
+		}
+		case 2: {
+			return (at(0,0) * at(1,1) - at(0,1) * at(1,0));
+		}
+		case 3: {
+			return (
+					at(0,0)*at(1,1)*at(2,2) + at(1,0)*at(2,1)*at(0,2) + at(2,0)*at(0,1)*at(1,2)
+				   -at(0,0)*at(2,1)*at(1,2) - at(2,0)*at(1,1)*at(0,2) - at(1,0)*at(0,1)*at(2,2) );
+		}
+		default: {
+			throw eckit::Exception("Invert for specified matrix not implemented (Compile with Eigen)", Here() );
+		}
+	    }
+		return 0.;
+	}
+
 	template<typename S, typename I>
 	friend std::ostream& operator<<( std::ostream& os, const Matrix<S, I>& v);
 

@@ -10,6 +10,7 @@
 
 #include <netinet/in.h>
 #include <assert.h>
+#include <sys/types.h>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"

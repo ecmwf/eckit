@@ -2,6 +2,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <limits>
+#include <sys/types.h>
 
 #include "eckit/types/FloatCompare.h"
 

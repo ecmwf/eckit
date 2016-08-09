@@ -264,7 +264,7 @@ void LocalPathName::mkdir(short mode) const
 {
 	try
 	{
-		char path[MAXNAMLEN+1];
+		char path[NAME_MAX+1];
 
         size_t l = path_.length();
 

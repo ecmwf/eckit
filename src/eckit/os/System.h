@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_System_h
-#define eckit_System_h
+#ifndef eckit_os_System_h
+#define eckit_os_System_h
 
 #include <string>
 

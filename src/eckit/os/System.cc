@@ -14,40 +14,38 @@
 #include "eckit/os/System.h"
 #include "eckit/types/Types.h"
 
-// #ifdef LINUX
-// #define _GNU_SOURCE
-// #endif
+#if defined(EC_HAVE_DLFCN_H) && defined(EC_HAVE_DLADDR)
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 
 #include <dlfcn.h>
 
-// #ifdef LINUX
+#define ECKIT_ADDRTOPATH_WITH_DLADDR
 
-// typedef struct {
-//         const char *dli_fname;
-//         void       *dli_fbase;
-//         const char *dli_sname;
-//         void       *dli_saddr;
-// } Dl_info;
-// #endif
-
-//-----------------------------------------------------------------------------
+#endif
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
-
-// extern "C" int dladdr(const void*, Dl_info*);
+//----------------------------------------------------------------------------------------------------------------------
 
 
 std::string System::addrToPath(const void *addr) {
+
+    std::string result = "/UNKNOWN";
+
+#ifdef ECKIT_ADDRTOPATH_WITH_DLADDR
     Dl_info info;
-    info.dli_fname = "/UNKNOWN";
+    info.dli_fname = result.c_str();
     dladdr(addr, &info);
-    return std::string(info.dli_fname);
+    result = info.dli_fname;
+#endif
+
+    return result;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

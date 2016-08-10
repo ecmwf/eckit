@@ -526,10 +526,12 @@ maths/Functions.cc
 
 
 list( APPEND eckit_system_srcs
-system/SystemInfo.h
-system/SystemInfo.cc
-system/ResourceUsage.h
-system/ResourceUsage.cc
+    system/Library.cc
+    system/Library.h
+    system/ResourceUsage.cc
+    system/ResourceUsage.h
+    system/SystemInfo.cc
+    system/SystemInfo.h
 )
 
 if( EC_OS_NAME STREQUAL "linux" )

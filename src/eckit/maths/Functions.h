@@ -18,19 +18,15 @@
 #include <cctype>
 #include <cstdlib>
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
-namespace maths {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// @returns rounds x to multiple of n
-size_t roundToMultiple(size_t x, size_t n);
+size_t round(size_t x, size_t n);
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace maths
 } // namespace eckit
 
 #endif

@@ -26,7 +26,7 @@ public: // methods
 
     /// Contructors
 
-    Tool(int argc, char **argv, const char* homeenv = 0, const char* homepath = 0);
+    Tool(int argc, char **argv, const char* homeenv = 0);
 
     /// Destructor
 

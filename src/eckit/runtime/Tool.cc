@@ -10,20 +10,22 @@
 
 #include <stdlib.h>
 
-#include "eckit/runtime/Context.h"
-#include "eckit/bases/Loader.h"
-#include "eckit/log/Log.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/config/Resource.h"
-
 #include "eckit/runtime/Tool.h"
+
+#include "eckit/bases/Loader.h"
+#include "eckit/config/Resource.h"
+#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/log/Log.h"
+#include "eckit/runtime/Context.h"
 #include "eckit/runtime/ToolBehavior.h"
+#include "eckit/system/SystemInfo.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Tool::Tool(int argc, char **argv, const char* homeenv, const char* homepath) :
+Tool::Tool(int argc, char **argv, const char* homeenv) :
     name_("undefined")
 {
 	name_ = PathName(argv[0]).baseName(false);
@@ -37,8 +39,9 @@ Tool::Tool(int argc, char **argv, const char* homeenv, const char* homepath) :
 
     if(home) {
         eckit::Context::instance().home(home);
-    } else if(homepath) {
-        eckit::Context::instance().home(homepath);
+    } else {
+        std::string execHome = eckit::system::SystemInfo::instance().executablePath();
+        eckit::Context::instance().home(execHome);
     }
 
     Loader::callAll(&Loader::execute);

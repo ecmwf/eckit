@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_system_library )
 
     std::vector<std::string> libs = Library::list();
 
-    std::string location;
+    std::string libpath;
 
     for(std::vector<std::string>::const_iterator libname = libs.begin(); libname != libs.end(); ++libname ) {
 
@@ -70,9 +70,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_system_library )
 
         const Library& lib = Library::get(*libname);
 
-        BOOST_CHECK_NO_THROW( location = lib.location() );
+        BOOST_CHECK_NO_THROW( libpath = lib.libPath() );
 
-        eckit::Log::info() << "Library " << lib.name() << " @ " << location << std::endl;
+        eckit::Log::info() << "Library " << lib.name() << " @ " << libpath << std::endl;
     }
 }
 

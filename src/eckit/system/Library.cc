@@ -67,6 +67,16 @@ void Library::list(std::ostream& out) {
     }
 }
 
+bool Library::exists(const std::string& name) {
+
+    pthread_once(&once, init);
+
+    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+    LibraryMap::const_iterator j = m->find(name);
+
+    return (j != m->end());
+}
+
 const Library& Library::get(const std::string& name) {
 
     pthread_once(&once, init);
@@ -102,20 +112,32 @@ Library::Library(const std::string& name) :
 Library::~Library() {
 }
 
-std::string Library::name() const
-{
+std::string Library::name() const {
     return name_;
 }
 
-std::string Library::location() const
-{
-    return eckit::System::addrToPath(addr());
+LocalPathName Library::path() const {
+    return libPath().dirName().dirName();
 }
 
-LocalPathName Library::path() const
-{
-    std::string loc = location();
-    return LocalPathName(loc).realName();
+std::string Library::location() const {
+    if(location_.empty()) {
+        location_ = eckit::System::addrToPath(addr());
+    }
+    return location_;
+}
+
+LocalPathName Library::libPath() const {
+    return LocalPathName(location()).realName();
+}
+
+std::string Library::expandPath(const std::string& p) const {
+
+    std::string s = "~" + name_;
+
+    std::string result = path() + "/" + p.substr(s.size());
+
+    return result;
 }
 
 void Library::print(std::ostream &out) const {

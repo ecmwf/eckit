@@ -117,18 +117,15 @@ std::string Library::name() const {
 }
 
 LocalPathName Library::path() const {
-    return libPath().dirName().dirName();
+    return LocalPathName(libraryPath()).dirName().dirName();
 }
 
-std::string Library::location() const {
-    if(location_.empty()) {
-        location_ = eckit::System::addrToPath(addr());
+std::string Library::libraryPath() const {
+    if(libraryPath_.empty()) {
+        std::string p = eckit::System::addrToPath(addr());
+        libraryPath_ = LocalPathName(p).realName();
     }
-    return location_;
-}
-
-LocalPathName Library::libPath() const {
-    return LocalPathName(location()).realName();
+    return libraryPath_;
 }
 
 std::string Library::expandPath(const std::string& p) const {
@@ -143,7 +140,7 @@ std::string Library::expandPath(const std::string& p) const {
 void Library::print(std::ostream &out) const {
     out << "Library("
         << "name=" << name_
-        << "location=" << this->location()
+        << "path=" << libraryPath()
         << ")";
 }
 

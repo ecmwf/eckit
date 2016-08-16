@@ -44,9 +44,15 @@ public: // methods
     std::string name() const;
 
     virtual LocalPathName path() const;
-    virtual LocalPathName libPath() const;
 
     virtual std::string expandPath(const std::string& libPath) const;
+
+//    virtual LocalPathName bin() const;
+//    virtual LocalPathName lib() const;
+//    virtual LocalPathName share() const;
+//    virtual LocalPathName etc() const;
+
+    std::string libraryPath() const;
 
 protected: // methods
 
@@ -63,7 +69,8 @@ private: // methods
 private: // members
 
     std::string name_;
-    mutable std::string location_;
+
+    mutable std::string libraryPath_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

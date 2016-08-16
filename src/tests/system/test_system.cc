@@ -70,9 +70,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_system_library )
 
         const Library& lib = Library::get(*libname);
 
-        BOOST_CHECK_NO_THROW( libpath = lib.libPath() );
+        BOOST_CHECK_NO_THROW( lib.path() );
 
-        eckit::Log::info() << "Library " << lib.name() << " @ " << libpath << std::endl;
+        eckit::Log::info() << "Library " << lib.name() << " @ " << lib.path() << std::endl;
     }
 }
 

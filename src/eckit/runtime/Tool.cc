@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -29,7 +29,7 @@ Tool::Tool(int argc, char **argv, const char* homeenv) :
     name_("undefined")
 {
 	name_ = PathName(argv[0]).baseName(false);
-    
+
     Context::instance().setup( argc, argv );
     Context::instance().behavior( new ToolBehavior() );
     Context::instance().runName( name_ );
@@ -40,7 +40,7 @@ Tool::Tool(int argc, char **argv, const char* homeenv) :
     if(home) {
         eckit::Context::instance().home(home);
     } else {
-        std::string execHome = eckit::system::SystemInfo::instance().executablePath();
+        std::string execHome = eckit::system::SystemInfo::instance().executablePath().realName().dirName().dirName();
         eckit::Context::instance().home(execHome);
     }
 
@@ -54,13 +54,13 @@ Tool::~Tool()
 void Tool::reconfigure()
 {
     Log::info() << "Tool::reconfigure" << std::endl;
-    
+
     int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
-    
+
     Context::instance().debug( debug );
 
     // forward to context
-    Context::instance().reconfigure();     
+    Context::instance().reconfigure();
 }
 
 int Tool::start()
@@ -68,14 +68,14 @@ int Tool::start()
 	int status = 0;
 
     int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
-    
+
     Context::instance().debug( debug );
 
     std::string displayName = Resource<std::string>("-name",name_);
-    
+
     Context::instance().displayName( displayName );
-    
-	try 
+
+	try
     {
         run();
 	}

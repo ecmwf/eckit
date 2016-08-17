@@ -34,6 +34,7 @@ public: // methods
     static std::vector<std::string> list();
     static void list(std::ostream&);
 
+    static bool exists(const std::string& name);
     static const Library& get(const std::string& name);
 
     Library(const std::string& name);
@@ -42,9 +43,16 @@ public: // methods
 
     std::string name() const;
 
-    std::string location() const;
+    virtual LocalPathName path() const;
 
-    LocalPathName path() const;
+    virtual std::string expandPath(const std::string& libPath) const;
+
+//    virtual LocalPathName bin() const;
+//    virtual LocalPathName lib() const;
+//    virtual LocalPathName share() const;
+//    virtual LocalPathName etc() const;
+
+    std::string libraryPath() const;
 
 protected: // methods
 
@@ -54,10 +62,15 @@ protected: // methods
 
     friend std::ostream& operator<<(std::ostream& s, const Library& p) { p.print(s); return s; }
 
+private: // methods
+
+    std::string location() const;
+
 private: // members
 
     std::string name_;
 
+    mutable std::string libraryPath_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

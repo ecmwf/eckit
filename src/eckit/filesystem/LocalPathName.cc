@@ -34,6 +34,7 @@
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/runtime/Context.h"
 #include "eckit/system/SystemInfo.h"
+#include "eckit/system/Library.h"
 #include "eckit/types/Types.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -351,23 +352,23 @@ LocalPathName LocalPathName::fullName() const
 }
 
 
-LocalPathName& LocalPathName::tidy()
+static void expandTilde(std::string& path)
 {
-	if(path_.length() == 0) return *this;
-
-    if(path_[0] == '~')
+    if(path[0] == '~')
     {
-        if(path_.length() > 1 && path_[1] != '/') {
+        if(path.length() > 1 && path[1] != '/') {
 
             std::string s;
             size_t j = 1;
-            while(j < path_.length() && path_[j] != '/') {
-                s += path_[j];
+            while(j < path.length() && path[j] != '/') {
+                s += path[j];
                 j++;
             }
 
+            // 1. match against a path defined in application / tool home ~/etc/paths
 
             pthread_once(&once, readPathsTable);
+
             std::vector<std::pair<std::string, std::string> >::const_iterator best = pathsTable.end();
             size_t match = 0;
 
@@ -375,7 +376,7 @@ LocalPathName& LocalPathName::tidy()
                 const std::string& prefix = (*k).first;
                 size_t m = prefix.length();
 
-                if(path_.substr(0, m) == prefix) {
+                if(path.substr(0, m) == prefix) { // longest match is selected
                     if(m > match) {
                         match = m;
                         best = k;
@@ -384,17 +385,29 @@ LocalPathName& LocalPathName::tidy()
             }
 
             if(match) {
-                path_ = (*best).second + "/" + path_.substr(match);
-            }
-            else {
-                path_ = Context::instance().home() + "/" + path_.substr(j);
+                path = (*best).second + "/" + path.substr(match);
+                return;
             }
 
+            // 2. if it has the form ~libname/, then delegate to the matching library to expand the path
+
+            if(eckit::system::Library::exists(s)) {
+                path = eckit::system::Library::get(s).expandPath(path);
+                return;
+            }
         }
-        else {
-            path_ =  Context::instance().home() + "/" + path_.substr(1);
-        }
+
+        // 3. expand ~/ with registered home
+
+        path =  Context::instance().home() + "/" + path.substr(1);
     }
+}
+
+LocalPathName& LocalPathName::tidy()
+{
+	if(path_.length() == 0) return *this;
+
+    expandTilde(path_);
 
 	bool more = true;
 	bool last = (path_[path_.length()-1] == '/');

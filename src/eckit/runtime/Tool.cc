@@ -40,7 +40,7 @@ Tool::Tool(int argc, char **argv, const char* homeenv) :
     if(home) {
         eckit::Context::instance().home(home);
     } else {
-        std::string execHome = eckit::system::SystemInfo::instance().executablePath().realName().dirName().dirName();
+        std::string execHome = eckit::system::SystemInfo::instance().executablePath().dirName().dirName();
         eckit::Context::instance().home(execHome);
     }
 

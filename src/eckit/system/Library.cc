@@ -146,17 +146,6 @@ void Library::print(std::ostream &out) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class LibEcKit : public eckit::system::Library {
-public:
-    LibEcKit() : Library("eckit") {}
-protected:
-    const void* addr() const { return this; }
-};
-
-static LibEcKit libeckit;
-
-//----------------------------------------------------------------------------------------------------------------------
-
 } // namespace system
 } // namespace eckit
 

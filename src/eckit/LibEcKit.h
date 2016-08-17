@@ -8,46 +8,30 @@
  * does it submit to any jurisdiction.
  */
 
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   August 2016
 
-#include "eckit/eckit.h"
-
-#include "eckit/os/System.h"
-#include "eckit/types/Types.h"
-
-#if defined(EC_HAVE_DLFCN_H) && defined(EC_HAVE_DLADDR)
-
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-
-#include <dlfcn.h>
-
-#define ECKIT_ADDRTOPATH_WITH_DLADDR
-
-#endif
+#include "eckit/system/Library.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class LibEcKit : public eckit::system::Library {
+public:
 
-std::string System::addrToPath(const void *addr) {
+    LibEcKit();
 
-    std::string result = "/UNKNOWN";
+protected:
 
-#ifdef ECKIT_ADDRTOPATH_WITH_DLADDR
-    Dl_info info;
-    info.dli_fname = result.c_str();
-    dladdr(addr, &info);
-    result = info.dli_fname;
-#endif
+    const void* addr() const;
 
-    /// @todo: what do we do with archives (.a)
-    ///  * maybe we rely on env variable set?
-    ///  * or rely on etc/path
+    virtual std::string version() const;
 
-    return result;
-}
+    virtual std::string gitsha1(unsigned int count) const;
+
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -45,7 +45,7 @@ public: // methods
 
     virtual LocalPathName path() const;
 
-    virtual std::string expandPath(const std::string& libPath) const;
+    virtual std::string expandPath(const std::string& p) const;
 
 //    virtual LocalPathName bin() const;
 //    virtual LocalPathName lib() const;
@@ -53,6 +53,9 @@ public: // methods
 //    virtual LocalPathName etc() const;
 
     std::string libraryPath() const;
+
+    virtual std::string version() const = 0;
+    virtual std::string gitsha1(unsigned int count = 40) const = 0;
 
 protected: // methods
 

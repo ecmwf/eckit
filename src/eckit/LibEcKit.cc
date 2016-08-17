@@ -8,46 +8,37 @@
  * does it submit to any jurisdiction.
  */
 
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   August 2016
 
-#include "eckit/eckit.h"
+#include <algorithm>
+#include <string>
 
-#include "eckit/os/System.h"
-#include "eckit/types/Types.h"
+#include "eckit/LibEcKit.h"
 
-#if defined(EC_HAVE_DLFCN_H) && defined(EC_HAVE_DLADDR)
-
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-
-#include <dlfcn.h>
-
-#define ECKIT_ADDRTOPATH_WITH_DLADDR
-
-#endif
+#include "eckit/eckit_version.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+LibEcKit::LibEcKit() : Library("eckit") {}
 
-std::string System::addrToPath(const void *addr) {
+const void* LibEcKit::addr() const { return this; }
 
-    std::string result = "/UNKNOWN";
+std::string LibEcKit::version() const { return eckit_version_str(); }
 
-#ifdef ECKIT_ADDRTOPATH_WITH_DLADDR
-    Dl_info info;
-    info.dli_fname = result.c_str();
-    dladdr(addr, &info);
-    result = info.dli_fname;
-#endif
+std::string LibEcKit::gitsha1(unsigned int count) const {
+    std::string sha1(eckit_git_sha1());
+    if(sha1.empty()) {
+        return "not available";
+    }
 
-    /// @todo: what do we do with archives (.a)
-    ///  * maybe we rely on env variable set?
-    ///  * or rely on etc/path
-
-    return result;
+    return sha1.substr(0,std::min(count,40u));
 }
+
+static LibEcKit libeckit;
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -34,26 +34,10 @@ ecbuild_add_option( FEATURE EXPERIMENTAL
 ### eckit::mpi
 
 ecbuild_add_option( FEATURE MPI
-                    CONDITION HAVE_EXPERIMENTAL
+                    DEFAULT ON
                     DESCRIPTION "Use system MPI libraries"
                     PURPOSE "Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
-
-ecbuild_add_option( FEATURE MPISTUBS
-                    CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "Use MPI stubs (no system MPI required)"
-                    PURPOSE "Support for MPI distributed parallelism"
-                    REQUIRED_PACKAGES "PROJECT mpistubs VERSION 1.0.0" )
-
-ecbuild_add_option( FEATURE ECKIT_MPI
-                    DESCRIPTION "eckit C++ wrapper for MPI"
-                    PURPOSE "Build eckit_mpi library"
-                    CONDITION HAVE_MPI )
-
-ecbuild_add_option( FEATURE ECKIT_MPISTUBS
-                    DESCRIPTION "eckit C++ wrapper for MPI using mpistubs"
-                    PURPOSE "Build eckit_mpistubs library"
-                    CONDITION HAVE_MPISTUBS )
 
 ### eckit::cmd
 

@@ -33,11 +33,16 @@ ecbuild_add_option( FEATURE EXPERIMENTAL
 
 ### eckit::mpi
 
+debug_var(ENABLE_MPI)
+
 ecbuild_add_option( FEATURE MPI
                     DEFAULT ON
                     DESCRIPTION "Use system MPI libraries"
                     PURPOSE "Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
+
+                debug_var(HAVE_MPI)
+                debug_var(HAVE_ECKIT_MPI)
 
 ### eckit::cmd
 
@@ -178,6 +183,10 @@ if( HAVE_ECKIT_CMD)
   list( APPEND ECKIT_LIBRARIES eckit_cmd )
 endif()
 
+if( HAVE_ECKIT_MPI )
+  list( APPEND ECKIT_LIBRARIES eckit_mpi )
+endif()
+
 if( HAVE_EIGEN AND ECKIT_CONTRIB_EIGEN )
   list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
 endif()
@@ -185,14 +194,6 @@ endif()
 if( HAVE_EXPERIMENTAL )
 
   list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
-
-  if( HAVE_ECKIT_MPI )
-    list( APPEND ECKIT_LIBRARIES eckit_mpi )
-  endif()
-
-  if( HAVE_ECKIT_MPISTUBS )
-    list( APPEND ECKIT_LIBRARIES eckit_mpistubs )
-  endif()
 
 endif()
 

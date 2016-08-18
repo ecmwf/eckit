@@ -8,44 +8,34 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_Environment_h
-#define eckit_mpi_Environment_h
+#ifndef eckit_mpi_Serial_h
+#define eckit_mpi_Serial_h
 
-#include <string>
+#include "eckit/mpi/Environment.h"
 
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Comm;
-
-class Environment {
+class Serial : public eckit::mpi::Environment {
 
 public:  // methods
 
-  /// @returns the default communicator
-  static Comm& comm();
+    /// @brief Initialize MPI
+    virtual void initialize();
 
-  /// @returns the communicator registered with associated name
-  static Comm& comm(const std::string& name);
-
-  /// @brief Initialize MPI
-  virtual void initialize() = 0;
-
-  /// @brief Finalze MPI
-  virtual void finalize() = 0;
+    /// @brief Finalze MPI
+    virtual void finalize();
 
 protected:
 
-  /// @brief is MPI initialized?
-  virtual bool initialized() = 0;
+    /// @brief is MPI initialized
+    virtual bool initialized();
 
-protected:
+    Serial();
 
-  Environment();
-
-  virtual ~Environment();
+    virtual ~Serial();
 
 };
 

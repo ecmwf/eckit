@@ -16,18 +16,22 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+Comm&Environment::comm()
+{
+    NOTIMP;
+}
+
+Comm&Environment::comm(const std::string& name)
+{
+    NOTIMP;
+}
+
 Environment::Environment()
 {
 }
 
 Environment::~Environment()
 {
-}
-
-Environment& Environment::instance()
-{
-  static Environment env;
-  return env;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

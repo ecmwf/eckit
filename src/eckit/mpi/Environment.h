@@ -24,19 +24,19 @@ class Environment {
 
 public:  // methods
 
-  /// @returns the default communicator
-  static Comm& comm();
-
   /// @returns the communicator registered with associated name
-  static Comm& comm(const std::string& name);
+  static Comm& comm(const char* name = 0);
+
+  static void initialize();
+
+
+protected:
 
   /// @brief Initialize MPI
   virtual void initialize() = 0;
 
   /// @brief Finalze MPI
   virtual void finalize() = 0;
-
-protected:
 
   /// @brief is MPI initialized?
   virtual bool initialized() = 0;

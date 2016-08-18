@@ -10,12 +10,44 @@
 
 #include "eckit/mpi/Parallel.h"
 
+#include <strstream>
+
 #include <mpi.h>
 
 #include "eckit/runtime/Context.h"
 
+#include "eckit/exception/Exceptions.h"
+
+//----------------------------------------------------------------------------------------------------------------------
+
+#define ECKIT_MPI_CHECK_RESULT( MPI_CALL )\
+do { \
+  int ierr = MPI_CALL; \
+  if (ierr != MPI_SUCCESS) { \
+    char errstr [MPI_MAX_ERROR_STRING]; \
+    int errsize = 0; \
+    MPI_Error_string(ierr,errstr,&errsize); \
+    std::string mpistr( errstr, errsize ); \
+    throw eckit::mpi::Error( std::string("MPI call: ") + \
+      std::string(#MPI_CALL) + \
+      std::string(" did not return MPI_SUCCESS:\n")+mpistr, Here() ); \
+  } \
+} while(0)
+
 namespace eckit {
 namespace mpi {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class Error : public eckit::Exception {
+public:
+  Error(const std::string& msg, const eckit::CodeLocation& loc)
+  {
+    std::ostringstream s;
+    s << "MPI Error: " << msg << " " << " in " << loc;
+    reason(s.str());
+  }
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -25,13 +57,18 @@ Parallel::Parallel() {
 Parallel::~Parallel() {
 }
 
-void Parallel::initialize() {
+bool Parallel::initialized() {
     int initialized;
     ECKIT_MPI_CHECK_RESULT( MPI_Initialized( &initialized ) );
-    return initialized;}
+    return initialized;
+}
+
+void Parallel::initialize() {
+    NOTIMP;
+}
 
 void Parallel::finalize() {
-    return;
+    NOTIMP;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

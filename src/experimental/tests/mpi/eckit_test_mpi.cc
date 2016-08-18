@@ -30,15 +30,15 @@ inline boost::wrap_stringstream& operator<<(boost::wrap_stringstream& wrapped, s
 
 // --------------------------------------------------------------
 
-#include "eckit/mpi/mpi.h"
-#include "eckit/mpi/Collectives.h"
+#include "eckit/mpi/Environment.h"
+#include "eckit/mpi/Comm.h"
 
 using namespace eckit;
 using namespace eckit::mpi;
 
 struct MPIFixture {
-    MPIFixture()  { eckit::mpi::init(); }
-    ~MPIFixture() { eckit::mpi::finalize(); }
+    MPIFixture()  { mpi::Environment::initialize(); }
+    ~MPIFixture() { mpi::Environment::finalize(); }
 };
 
 BOOST_GLOBAL_FIXTURE( MPIFixture );
@@ -47,11 +47,7 @@ BOOST_GLOBAL_FIXTURE( MPIFixture );
 
 BOOST_AUTO_TEST_CASE( test_comm )
 {
-  BOOST_CHECK_EQUAL( DefaultComm::instance() , mpi::Comm() );
-  BOOST_CHECK_EQUAL( CommWorld::instance() , mpi::world() );
-  BOOST_CHECK_EQUAL( mpi::Comm() , mpi::world() );
-  BOOST_CHECK_EQUAL( mpi::size() , mpi::Comm().size() );
-  BOOST_CHECK_EQUAL( mpi::rank() , mpi::Comm().rank() );
+  BOOST_CHECK_EQUAL( mpi::Environment::initialized() , true );
 }
 
 //-------------------------------------------------------------------------
@@ -65,11 +61,11 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
   BOOST_TEST_CHECKPOINT("Test value");
   {
     float val;
-    if( eckit::mpi::rank() == root )
+    if( mpi::comm().rank() == root )
     {
       val = 3.14;
     }
-    BOOST_CHECK( mpi::broadcast(val,root) == MPI_SUCCESS );
+    BOOST_CHECK( mpi::comm().broadcast(val,root) == MPI_SUCCESS );
 
     // check results
     BOOST_CHECK_CLOSE( val, 3.14, 0.0001 );
@@ -78,12 +74,12 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
   BOOST_TEST_CHECKPOINT("Test vector");
   {
     std::vector<int> data;
-    if( eckit::mpi::rank() == root )
+    if( mpi::comm().rank() == root )
     {
       data.assign(d,d+10);
     }
     bool resize = true;
-    BOOST_CHECK( mpi::broadcast(data,root,resize) == MPI_SUCCESS );
+    BOOST_CHECK( mpi::comm().broadcast(data,root,resize) == MPI_SUCCESS );
 
     // check results
     BOOST_CHECK_EQUAL( data.size(), 10u );
@@ -93,11 +89,11 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
   BOOST_TEST_CHECKPOINT("Test raw data");
   {
     std::vector<int> data(10);
-    if( eckit::mpi::rank() == root )
+    if( mpi::comm().rank() == root )
     {
       data.assign(d,d+10);
     }
-    BOOST_CHECK( mpi::broadcast(data.data(),data.size(),root) == MPI_SUCCESS );
+    BOOST_CHECK( mpi::comm().broadcast(data.data(),data.size(),root) == MPI_SUCCESS );
 
     // check results
     BOOST_CHECK_EQUAL_COLLECTIONS(data.begin(),data.end(),d,d+10);
@@ -107,9 +103,9 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
 BOOST_AUTO_TEST_CASE( test_all_reduce )
 {
   int success;
-  int d = eckit::mpi::rank()+1;
-  std::pair<double,int> v(-d,eckit::mpi::rank());
-  std::vector<float> arr(5,eckit::mpi::rank()+1);
+  int d = mpi::comm().rank()+1;
+  std::pair<double,int> v(-d,mpi::rank());
+  std::vector<float> arr(5,mpi::rank()+1);
 
   BOOST_TEST_CHECKPOINT("Testing all_reduce");
   {
@@ -130,16 +126,16 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
     // check results
     int s=0;
     int p=1;
-    for( size_t j=0; j<eckit::mpi::size(); ++j ) {
+    for( size_t j=0; j<mpi::size(); ++j ) {
       s += (j+1);
       p *= (j+1);
     }
     BOOST_CHECK_EQUAL( sum, s );
     BOOST_CHECK_EQUAL( prod, p );
     BOOST_CHECK_EQUAL( min, 1 );
-    BOOST_CHECK_EQUAL( size_t(max), eckit::mpi::size() );
-    BOOST_CHECK_EQUAL( minloc.first, -double(eckit::mpi::size()) );
-    BOOST_CHECK_EQUAL( size_t(minloc.second), eckit::mpi::size()-1 );
+    BOOST_CHECK_EQUAL( size_t(max), mpi::size() );
+    BOOST_CHECK_EQUAL( minloc.first, -double(mpi::size()) );
+    BOOST_CHECK_EQUAL( size_t(minloc.second), mpi::size()-1 );
     BOOST_CHECK_EQUAL( maxloc.first, -double(1) );
     BOOST_CHECK_EQUAL( maxloc.second, 0 );
   }
@@ -159,18 +155,18 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
     // check results
     int s=0;
     int p=1;
-    for( size_t j=0; j<eckit::mpi::size(); ++j ) {
+    for( size_t j=0; j<mpi::size(); ++j ) {
       s += (j+1);
       p *= (j+1);
     }
     BOOST_CHECK_EQUAL( sum, s );
     BOOST_CHECK_EQUAL( prod, p );
     BOOST_CHECK_EQUAL( min, 1 );
-    BOOST_CHECK_EQUAL( size_t(max), eckit::mpi::size() );
+    BOOST_CHECK_EQUAL( size_t(max), mpi::size() );
 
     std::vector<float> expected;
 
-    expected = std::vector<float>(5,eckit::mpi::size());
+    expected = std::vector<float>(5,mpi::size());
     std::vector<float> maxvec = arr;
     success = mpi::all_reduce(maxvec.data(),maxvec.size(),mpi::max()); BOOST_CHECK( success == MPI_SUCCESS );
     BOOST_CHECK_EQUAL_COLLECTIONS(maxvec.begin(),maxvec.end(),expected.begin(),expected.end());
@@ -210,7 +206,7 @@ BOOST_AUTO_TEST_CASE( test_all_to_all )
   std::vector< std::vector<int> > send(mpi::size(), std::vector<int>(1,mpi::rank()));
   std::vector< std::vector<int> > recv(mpi::size());
 
-  int success = all_to_all( mpi::Comm(), send, recv );
+  int success = all_to_all( mpi::comm(), send, recv );
 
   BOOST_CHECK( success == MPI_SUCCESS );
 
@@ -232,7 +228,7 @@ BOOST_AUTO_TEST_CASE( test_all_gather___simple )
   int send = mpi::rank();
   std::vector<int> recv;
 
-  int success = all_gather( mpi::Comm(), send, recv );
+  int success = all_gather( mpi::comm(), send, recv );
 
   BOOST_CHECK( success == MPI_SUCCESS );
 
@@ -251,7 +247,7 @@ BOOST_AUTO_TEST_CASE( test_all_gather___buffer )
   std::vector<int> send(mpi::rank(),mpi::rank());
   mpi::Buffer<int> recv;
 
-  int success = all_gather( mpi::Comm(), send, recv );
+  int success = all_gather( mpi::comm(), send, recv );
 
   BOOST_CHECK( success == MPI_SUCCESS );
 

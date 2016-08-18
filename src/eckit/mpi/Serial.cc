@@ -9,7 +9,6 @@
  */
 
 #include "eckit/mpi/Serial.h"
-#include "eckit/runtime/Context.h"
 
 namespace eckit {
 namespace mpi {

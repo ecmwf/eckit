@@ -41,7 +41,8 @@ public: // methods
 
     virtual ~Library();
 
-    std::string name() const;
+    const std::string& name() const;
+    const std::string& prefix() const;
 
     virtual LocalPathName path() const;
 
@@ -72,6 +73,7 @@ private: // methods
 private: // members
 
     std::string name_;
+    std::string prefix_;
 
     mutable std::string libraryPath_;
 };

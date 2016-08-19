@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/LibEcKit.h"
+#include "eckit/config/LibEcKit.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/ChannelBuffer.h"

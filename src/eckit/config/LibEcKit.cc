@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <string>
 
-#include "eckit/LibEcKit.h"
+#include "eckit/config/LibEcKit.h"
 
 #include "eckit/eckit_version.h"
 

@@ -52,13 +52,14 @@ public: // types
 
 public: // methods
 
+    static const Logger& defaultLogger();
+
     static void registerChannel(const std::string& key, Channel* channel);
     static void removeChannel(const std::string& key);
     static Channel& channel(const std::string& key);
 
     /// Channel for debug output
-    static Channel& debug(const Logger&);
-    static Channel& debug(int level = 1);
+    static Channel& debug(const Logger& = defaultLogger());
     static Channel& debug(const CodeLocation& where, int level = 1);
 
     /// Channel for informative messages
@@ -111,7 +112,7 @@ public: // methods
     // Per library loggin
     // trace(const T* = 0) can be replace by trace<T>() with c++14
     template<typename T>
-    static Channel& trace(int level = 0, const T* = 0) {
+    static Channel& debug(const T* = 0) {
         const Logger& log = T::instance();
         return log.debug();
     }

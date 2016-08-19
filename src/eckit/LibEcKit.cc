@@ -23,7 +23,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static LibEcKit libeckit;
+
 LibEcKit::LibEcKit() : Library("eckit") {}
+
+const LibEcKit& LibEcKit::instance()
+{
+    return libeckit;
+}
 
 const void* LibEcKit::addr() const { return this; }
 
@@ -37,8 +44,6 @@ std::string LibEcKit::gitsha1(unsigned int count) const {
 
     return sha1.substr(0,std::min(count,40u));
 }
-
-static LibEcKit libeckit;
 
 //----------------------------------------------------------------------------------------------------------------------
 

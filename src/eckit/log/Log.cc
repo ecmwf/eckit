@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/LibEcKit.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/ChannelBuffer.h"
@@ -50,6 +51,11 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
+
+const Logger& Log::defaultLogger()
+{
+    return LibEcKit::instance();
+}
 
 void Log::registerChannel(const std::string& key, Channel* channel)
 {
@@ -164,15 +170,6 @@ Channel& Log::warning(const CodeLocation& where)
 Channel& Log::null() {
     static MultiChannel no_output;
     return no_output;
-}
-
-Channel& Log::debug(int level)
-{
-    static MultiChannel no_output;
-    if(level > Context::instance().debug())
-        return no_output;
-    else
-        return Context::instance().debugChannel();
 }
 
 Channel& Log::debug(const CodeLocation& where, int level)

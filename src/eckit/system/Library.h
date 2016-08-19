@@ -34,11 +34,6 @@ class Library : private eckit::NonCopyable,
 
 public: // methods
 
-    static std::vector<std::string> list();
-    static void list(std::ostream&);
-
-    static bool exists(const std::string& name);
-    static const Library& get(const std::string& name);
 
     Library(const std::string& name);
 
@@ -48,7 +43,7 @@ public: // methods
 
     virtual LocalPathName path() const;
 
-    virtual std::string expandPath(const std::string& p) const;
+    virtual std::string expandPath(const std::string& path) const;
 
 //    virtual LocalPathName bin() const;
 //    virtual LocalPathName lib() const;
@@ -60,11 +55,19 @@ public: // methods
     virtual std::string version() const = 0;
     virtual std::string gitsha1(unsigned int count = 40) const = 0;
 
-    virtual bool tracing() const;
+    virtual bool debug() const;
+
+// Class methods
+
+    static std::vector<std::string> list();
+    static void list(std::ostream&);
+
+    static bool exists(const std::string& name);
+    static const Library& lookup(const std::string& name);
 
 protected: // methods
 
-    virtual Channel& debug() const;
+    virtual Channel& debugChannel() const;
 
     virtual const void* addr() const = 0;
 
@@ -80,13 +83,13 @@ private: // members
 
     std::string name_;
     std::string prefix_;
+    bool debug_;
 
     mutable eckit::Mutex mutex_;
 
     mutable std::string libraryPath_;
-    mutable eckit::ScopedPtr<eckit::Channel> debug_;
+    mutable eckit::ScopedPtr<eckit::Channel> debugChannel_;
 
-    bool tracing_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

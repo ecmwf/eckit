@@ -54,7 +54,7 @@ std::vector<std::string> Library::list() {
 
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    for(LibraryMap::const_iterator j = m->begin() ; j != m->end() ; ++j) {
+    for (LibraryMap::const_iterator j = m->begin() ; j != m->end() ; ++j) {
         result.push_back(j->first);
     }
     return result;
@@ -67,7 +67,7 @@ void Library::list(std::ostream& out) {
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     const char* sep = "";
-    for(LibraryMap::const_iterator j = m->begin() ; j != m->end() ; ++j) {
+    for (LibraryMap::const_iterator j = m->begin() ; j != m->end() ; ++j) {
         out << sep << (*j).first;
         sep = ", ";
     }
@@ -83,7 +83,7 @@ bool Library::exists(const std::string& name) {
     return (j != m->end());
 }
 
-const Library& Library::get(const std::string& name) {
+const Library& Library::lookup(const std::string& name) {
 
     pthread_once(&once, init);
 
@@ -108,7 +108,7 @@ const Library& Library::get(const std::string& name) {
 Library::Library(const std::string& name) :
     name_(name),
     prefix_(name),
-    tracing_(false) {
+    debug_(false) {
 
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
@@ -118,10 +118,11 @@ Library::Library(const std::string& name) :
 
     std::transform(prefix_.begin(), prefix_.end(), prefix_.begin(), ::toupper);
 
-    std::string s = prefix_ + "_TRACE";
+    std::string s = prefix_ + "_DEBUG";
     const char* e = ::getenv(s.c_str());
-    if(e)
-        tracing_ = eckit::Translator<std::string,bool>()(e);
+    if (e) {
+        debug_ = eckit::Translator<std::string, bool>()(e);
+    }
 }
 
 Library::~Library() {
@@ -136,39 +137,34 @@ LocalPathName Library::path() const {
 }
 
 std::string Library::libraryPath() const {
-    if(libraryPath_.empty()) {
+    if (libraryPath_.empty()) {
         std::string p = eckit::System::addrToPath(addr());
         libraryPath_ = LocalPathName(p).realName();
     }
     return libraryPath_;
 }
 
-bool Library::tracing() const
+bool Library::debug() const
 {
-    return tracing_;
+    return debug_;
 }
 
-Channel& Library::debug() const
+Channel& Library::debugChannel() const
 {
     eckit::AutoLock<Mutex> lock(mutex_);
 
-    if(debug_) { return *debug_; }
+    if (debugChannel_) { return *debugChannel_; }
 
     std::string s = prefix_ + "_DEBUG";
 
-    const char* e = ::getenv(s.c_str());
-    if(e) {
-        bool on = eckit::Translator<std::string,bool>()(e);
-        if(on) {
-//            debug_.reset(new DebugChannel(prefix_));
-            debug_.reset(new Channel( new ChannelBuffer( std::cout )));
-
-            return *debug_;
-        }
+    if (debug_) {
+        debugChannel_.reset(new Channel( new ChannelBuffer( std::cout )));
     }
+    else {
 
-    debug_.reset(new MultiChannel());
-    return *debug_;
+        debugChannel_.reset(new MultiChannel());
+    }
+    return *debugChannel_;
 }
 
 std::string Library::expandPath(const std::string& p) const {

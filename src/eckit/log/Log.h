@@ -26,8 +26,8 @@ namespace eckit {
 
 class Logger {
 public: // methods
-    virtual Channel& debug() const = 0;
-    virtual bool tracing() const = 0;
+    virtual Channel& debugChannel() const = 0;
+    virtual bool debug() const = 0;
 };
 
 

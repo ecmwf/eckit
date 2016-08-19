@@ -19,7 +19,9 @@
 #include <string>
 #include <vector>
 
+#include "eckit/log/Log.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/memory/ScopedPtr.h"
 #include "eckit/filesystem/LocalPathName.h"
 
 namespace eckit {
@@ -27,7 +29,8 @@ namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Library : private eckit::NonCopyable {
+class Library : private eckit::NonCopyable,
+                public Logger {
 
 public: // methods
 
@@ -57,7 +60,11 @@ public: // methods
     virtual std::string version() const = 0;
     virtual std::string gitsha1(unsigned int count = 40) const = 0;
 
+    virtual bool tracing() const;
+
 protected: // methods
+
+    virtual Channel& debug() const;
 
     virtual const void* addr() const = 0;
 
@@ -72,8 +79,14 @@ private: // methods
 private: // members
 
     std::string name_;
+    std::string prefix_;
+
+    mutable eckit::Mutex mutex_;
 
     mutable std::string libraryPath_;
+    mutable eckit::ScopedPtr<eckit::Channel> debug_;
+
+    bool tracing_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

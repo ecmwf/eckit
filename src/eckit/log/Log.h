@@ -24,6 +24,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class Logger {
+public: // methods
+    virtual Channel& debug() const = 0;
+    virtual bool tracing() const = 0;
+};
+
+
 /// Singleton holding global streams for logging
 ///
 /// @warning these streams are thread safe. A lock is
@@ -50,6 +57,7 @@ public: // methods
     static Channel& channel(const std::string& key);
 
     /// Channel for debug output
+    static Channel& debug(const Logger&);
     static Channel& debug(int level = 1);
     static Channel& debug(const CodeLocation& where, int level = 1);
 
@@ -98,23 +106,20 @@ public: // methods
     static std::ostream& syserr(std::ostream&);
 
     static std::ostream& dev() { return std::cout; }
-    static std::ostream& null();
+    static Channel& null();
 
-    // Per application loggin
+    // Per library loggin
     // trace(const T* = 0) can be replace by trace<T>() with c++14
     template<typename T>
-    static std::ostream& trace(int level = 0, const T* = 0) {
-        if(T::trace(level)) {
-            dev() << ">>> TRACE-" << T::name() << " ";
-            return dev();
-        }
-        return null();
+    static Channel& trace(int level = 0, const T* = 0) {
+        const Logger& log = T::instance();
+        return log.debug();
     }
 
-    template<typename T>
-    static bool tracing(int level = 0, const T* = 0) {
-        return T::trace(level);
-    }
+//    template<typename T>
+//    static bool tracing(int level = 0, const T* = 0) {
+//        return T::trace(level);
+//    }
 
 private: // methods
 

@@ -13,12 +13,18 @@
 /// @date   August 2016
 
 #include <map>
+#include <algorithm>
+#include <cctype>
 
 #include "eckit/system/Library.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/ChannelBuffer.h"
+#include "eckit/log/MultiChannel.h"
 #include "eckit/os/System.h"
+#include "eckit/utils/Translator.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
@@ -100,13 +106,22 @@ const Library& Library::get(const std::string& name) {
 }
 
 Library::Library(const std::string& name) :
-    name_(name) {
+    name_(name),
+    prefix_(name),
+    tracing_(false) {
 
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     ASSERT(m->find(name) == m->end());
     (*m)[name] = this;
+
+    std::transform(prefix_.begin(), prefix_.end(), prefix_.begin(), ::toupper);
+
+    std::string s = prefix_ + "_TRACE";
+    const char* e = ::getenv(s.c_str());
+    if(e)
+        tracing_ = eckit::Translator<std::string,bool>()(e);
 }
 
 Library::~Library() {
@@ -126,6 +141,34 @@ std::string Library::libraryPath() const {
         libraryPath_ = LocalPathName(p).realName();
     }
     return libraryPath_;
+}
+
+bool Library::tracing() const
+{
+    return tracing_;
+}
+
+Channel& Library::debug() const
+{
+    eckit::AutoLock<Mutex> lock(mutex_);
+
+    if(debug_) { return *debug_; }
+
+    std::string s = prefix_ + "_DEBUG";
+
+    const char* e = ::getenv(s.c_str());
+    if(e) {
+        bool on = eckit::Translator<std::string,bool>()(e);
+        if(on) {
+//            debug_.reset(new DebugChannel(prefix_));
+            debug_.reset(new Channel( new ChannelBuffer( std::cout )));
+
+            return *debug_;
+        }
+    }
+
+    debug_.reset(new MultiChannel());
+    return *debug_;
 }
 
 std::string Library::expandPath(const std::string& p) const {

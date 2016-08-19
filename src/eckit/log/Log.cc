@@ -66,6 +66,11 @@ Channel& Log::channel(const std::string& key)
     return Context::instance().channel(key);
 }
 
+Channel&Log::debug(const Logger& logger)
+{
+    return logger.debug();
+}
+
 struct CreateMonitorChannel
 {
     MonitorChannel* operator()() { return new MonitorChannel( MonitorChannel::NONE ); }
@@ -156,7 +161,7 @@ Channel& Log::warning(const CodeLocation& where)
     return Context::instance().warnChannel().source(where);
 }
 
-std::ostream& Log::null() {
+Channel& Log::null() {
     static MultiChannel no_output;
     return no_output;
 }

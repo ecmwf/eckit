@@ -114,7 +114,7 @@ public: // methods
     template<typename T>
     static Channel& debug(const T* = 0) {
         const Logger& log = T::instance();
-        return log.debug();
+        return log.debugChannel();
     }
 
 //    template<typename T>

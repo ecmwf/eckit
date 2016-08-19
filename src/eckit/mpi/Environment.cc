@@ -16,12 +16,18 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Comm&Environment::comm()
+Comm& comm(const char* name)
 {
+    return Environment::instance().comm(name);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+Comm& Environment::comm(const char* name) const {
     NOTIMP;
 }
 
-Comm&Environment::comm(const std::string& name)
+Environment& Environment::instance()
 {
     NOTIMP;
 }
@@ -32,6 +38,32 @@ Environment::Environment()
 
 Environment::~Environment()
 {
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+Operation sum() {
+    return Environment::instance().sum();
+}
+
+Operation prod() {
+    return Environment::instance().prod();
+}
+
+Operation max() {
+    return Environment::instance().max();
+}
+
+Operation min() {
+    return Environment::instance().min();
+}
+
+Operation maxloc() {
+    return Environment::instance().maxloc();
+}
+
+Operation minloc() {
+    return Environment::instance().minloc();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

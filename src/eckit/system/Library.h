@@ -40,7 +40,6 @@ public: // methods
     virtual ~Library();
 
     const std::string& name() const;
-    const std::string& prefix() const;
 
     virtual LocalPathName path() const;
 

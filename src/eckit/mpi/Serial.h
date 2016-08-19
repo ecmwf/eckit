@@ -20,15 +20,13 @@ namespace mpi {
 
 class Serial : public eckit::mpi::Environment {
 
-public:  // methods
+protected:  // methods
 
     /// @brief Initialize MPI
     virtual void initialize();
 
     /// @brief Finalze MPI
     virtual void finalize();
-
-protected:
 
     /// @brief is MPI initialized
     virtual bool initialized();

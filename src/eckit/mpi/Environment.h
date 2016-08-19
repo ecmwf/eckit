@@ -12,6 +12,7 @@
 #define eckit_mpi_Environment_h
 
 #include <string>
+#include <vector>
 
 namespace eckit {
 namespace mpi {
@@ -20,17 +21,49 @@ namespace mpi {
 
 class Comm;
 
+/// @returns the communicator registered with associated name, or default communicator when NULL is passed
+Comm& comm(const char* name = 0);
+
+typedef int Operation;
+
+Operation sum();
+Operation prod();
+Operation max();
+Operation min();
+Operation maxloc();
+Operation minloc();
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Buffer handles colleciton of vector pieces into a larger vector
+
+template <typename DATA_TYPE>
+struct Buffer
+{
+  typedef DATA_TYPE value_type;
+  typedef typename std::vector<DATA_TYPE>::iterator iterator;
+  int                    cnt;
+  std::vector<int>       counts;
+  std::vector<int>       displs;
+  std::vector<DATA_TYPE> buf;
+
+  Buffer(size_t size)
+  {
+    counts.resize( size );
+    displs.resize( size );
+  }
+
+  iterator begin() { return buf.begin(); }
+  iterator end()   { return buf.end();   }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 class Environment {
 
 public:  // methods
 
-  /// @returns the communicator registered with associated name
-  static Comm& comm(const char* name = 0);
-
-  static void initialize();
-
-
-protected:
+  static Environment& instance();
 
   /// @brief Initialize MPI
   virtual void initialize() = 0;
@@ -40,6 +73,16 @@ protected:
 
   /// @brief is MPI initialized?
   virtual bool initialized() = 0;
+
+  /// @returns the communicator registered with associated name, or default communicator when NULL is passed
+  virtual Comm& comm(const char* name = 0) const = 0;
+
+  virtual Operation sum()  const = 0;
+  virtual Operation prod() const = 0;
+  virtual Operation max()  const = 0;
+  virtual Operation min()  const = 0;
+  virtual Operation maxloc() const = 0;
+  virtual Operation minloc() const = 0;
 
 protected:
 

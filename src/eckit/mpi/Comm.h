@@ -16,12 +16,12 @@
 
 #include "eckit/memory/NonCopyable.h"
 
+#include "eckit/mpi/Environment.h"
+
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-typedef int Operation;
 
 class Comm : private eckit::NonCopyable {
 
@@ -43,20 +43,20 @@ public:  // methods
   /// Equivalent to comm().abort()
   virtual void abort() const = 0;
 
-  virtual int broadcast( int    &data, size_t root, bool resize ) const = 0;
-  virtual int broadcast( float  &data, size_t root, bool resize ) const = 0;
-  virtual int broadcast( double &data, size_t root, bool resize ) const = 0;
-  virtual int broadcast( long   &data, size_t root, bool resize ) const = 0;
+  virtual int broadcast( int    &data, size_t root, bool resize = true ) const = 0;
+  virtual int broadcast( float  &data, size_t root, bool resize = true ) const = 0;
+  virtual int broadcast( double &data, size_t root, bool resize = true ) const = 0;
+  virtual int broadcast( long   &data, size_t root, bool resize = true ) const = 0;
 
   virtual int broadcast( int    data[], size_t size, size_t root ) const = 0;
   virtual int broadcast( float  data[], size_t size, size_t root ) const = 0;
   virtual int broadcast( double data[], size_t size, size_t root ) const = 0;
   virtual int broadcast( long   data[], size_t size, size_t root ) const = 0;
 
-  virtual int broadcast( std::vector<int>    &data, size_t root, bool resize ) const = 0;
-  virtual int broadcast( std::vector<float>  &data, size_t root, bool resize ) const = 0;
-  virtual int broadcast( std::vector<double> &data, size_t root, bool resize ) const = 0;
-  virtual int broadcast( std::vector<long>   &data, size_t root, bool resize ) const = 0;
+  virtual int broadcast( std::vector<int>    &data, size_t root, bool resize = true ) const = 0;
+  virtual int broadcast( std::vector<float>  &data, size_t root, bool resize = true ) const = 0;
+  virtual int broadcast( std::vector<double> &data, size_t root, bool resize = true ) const = 0;
+  virtual int broadcast( std::vector<long>   &data, size_t root, bool resize = true ) const = 0;
 
   virtual int all_reduce( const int    &send, int    &recv, const Operation& op) const = 0;
   virtual int all_reduce( const float  &send, float  &recv, const Operation& op) const = 0;
@@ -83,22 +83,35 @@ public:  // methods
   virtual int all_reduce( std::vector<double> &sendrecv, const Operation& op) const = 0;
   virtual int all_reduce( std::vector<long>   &sendrecv, const Operation& op) const = 0;
 
-  // virtual int all_reduce( const std::pair<int,int>    &send, std::pair<int,int>    &recv, const Operation& op) { return all_reduce_pair(comm(),send,recv,op); }
-  // virtual int all_reduce( const std::pair<long,int>   &send, std::pair<long,int>   &recv, const Operation& op) { return all_reduce_pair(comm(),send,recv,op); }
-  // virtual int all_reduce( const std::pair<float,int>  &send, std::pair<float,int>  &recv, const Operation& op) { return all_reduce_pair(comm(),send,recv,op); }
-  // virtual int all_reduce( const std::pair<double,int> &send, std::pair<double,int> &recv, const Operation& op) { return all_reduce_pair(comm(),send,recv,op); }
+  virtual int all_reduce( const std::pair<int,int>    &send, std::pair<int,int>    &recv, const Operation& op) const = 0;
+  virtual int all_reduce( const std::pair<long,int>   &send, std::pair<long,int>   &recv, const Operation& op) const = 0;
+  virtual int all_reduce( const std::pair<float,int>  &send, std::pair<float,int>  &recv, const Operation& op) const = 0;
+  virtual int all_reduce( const std::pair<double,int> &send, std::pair<double,int> &recv, const Operation& op) const = 0;
 
-  // virtual int all_reduce( const std::vector< std::pair<int,int> >    &send, std::vector< std::pair<int,int> >    &recv, const Operation& op) { return all_reduce_vector_pair(comm(),send,recv,op); }
-  // virtual int all_reduce( const std::vector< std::pair<long,int> >   &send, std::vector< std::pair<long,int> >   &recv, const Operation& op) { return all_reduce_vector_pair(comm(),send,recv,op); }
-  // virtual int all_reduce( const std::vector< std::pair<float,int> >  &send, std::vector< std::pair<float,int> >  &recv, const Operation& op) { return all_reduce_vector_pair(comm(),send,recv,op); }
-  // virtual int all_reduce( const std::vector< std::pair<double,int> > &send, std::vector< std::pair<double,int> > &recv, const Operation& op) { return all_reduce_vector_pair(comm(),send,recv,op); }
+  virtual int all_reduce( const std::vector< std::pair<int,int> >    &send, std::vector< std::pair<int,int> >    &recv, const Operation& op) const = 0;
+  virtual int all_reduce( const std::vector< std::pair<long,int> >   &send, std::vector< std::pair<long,int> >   &recv, const Operation& op) const = 0;
+  virtual int all_reduce( const std::vector< std::pair<float,int> >  &send, std::vector< std::pair<float,int> >  &recv, const Operation& op) const = 0;
+  virtual int all_reduce( const std::vector< std::pair<double,int> > &send, std::vector< std::pair<double,int> > &recv, const Operation& op) const = 0;
 
-  virtual Operation sum()  const = 0;
-  virtual Operation prod() const = 0;
-  virtual Operation max()  const = 0;
-  virtual Operation min()  const = 0;
-  virtual Operation maxloc() const = 0;
-  virtual Operation minloc() const = 0;
+  virtual int all_to_all( const std::vector< std::vector<int> >&    sendvec, std::vector< std::vector<int> >&    recvvec ) const = 0;
+  virtual int all_to_all( const std::vector< std::vector<long> >&   sendvec, std::vector< std::vector<long> >&   recvvec ) const = 0;
+  virtual int all_to_all( const std::vector< std::vector<float> >&  sendvec, std::vector< std::vector<float> >&  recvvec ) const = 0;
+  virtual int all_to_all( const std::vector< std::vector<double> >& sendvec, std::vector< std::vector<double> >& recvvec ) const = 0;
+
+    virtual int all_gather( const int    send, std::vector<int>&    recv ) const = 0;
+    virtual int all_gather( const long   send, std::vector<long>&   recv ) const = 0;
+    virtual int all_gather( const float  send, std::vector<float>&  recv ) const = 0;
+    virtual int all_gather( const double send, std::vector<double>& recv ) const = 0;
+
+    virtual int all_gather( const int    send[], int sendcnt, mpi::Buffer<int>&    recv ) const = 0;
+    virtual int all_gather( const long   send[], int sendcnt, mpi::Buffer<long>&   recv ) const = 0;
+    virtual int all_gather( const float  send[], int sendcnt, mpi::Buffer<float>&  recv ) const = 0;
+    virtual int all_gather( const double send[], int sendcnt, mpi::Buffer<double>& recv ) const = 0;
+
+    virtual int all_gather( const std::vector<int>&    send, mpi::Buffer<int>&    recv ) const = 0;
+    virtual int all_gather( const std::vector<long>&   send, mpi::Buffer<long>&   recv ) const = 0;
+    virtual int all_gather( const std::vector<float>&  send, mpi::Buffer<float>&  recv ) const = 0;
+    virtual int all_gather( const std::vector<double>& send, mpi::Buffer<double>& recv ) const = 0;
 
 protected:
 

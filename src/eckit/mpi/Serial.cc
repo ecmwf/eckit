@@ -10,6 +10,8 @@
 
 #include "eckit/mpi/Serial.h"
 
+#include "eckit/exception/Exceptions.h"
+
 namespace eckit {
 namespace mpi {
 
@@ -27,6 +29,11 @@ void Serial::initialize() {
 
 void Serial::finalize() {
     return;
+}
+
+bool Serial::initialized() {
+    NOTIMP;
+    return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

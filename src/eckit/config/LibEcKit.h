@@ -23,6 +23,8 @@ public:
 
     LibEcKit();
 
+    static const LibEcKit& instance();
+
 protected:
 
     const void* addr() const;

@@ -15,7 +15,7 @@ configure_file( eckit_version.cc.in  eckit_version.cc )
 
 ### eckit sources
 
-list( APPEND eckit_srcs eckit.h eckit_version.cc LibEcKit.h LibEcKit.cc )
+list( APPEND eckit_srcs eckit.h eckit_version.cc )
 
 list( APPEND eckit_container_srcs
 
@@ -207,46 +207,49 @@ thread/ThreadSingleton.h
 thread/Once.h )
 
 list( APPEND eckit_config_srcs
-config/Resource.h
-config/ResourceFromFiles.h
-config/ResourceFromFiles.cc
-config/ResourcePolicy.h
-config/ResourceMgr.h
-config/ResourceMgr.cc
-config/Assignment.h
 config/Assignment.cc
-config/Block.h
+config/Assignment.h
 config/Block.cc
-config/Branch.h
+config/Block.h
 config/Branch.cc
-config/Compiler.h
+config/Branch.h
 config/Compiler.cc
-config/Condition.h
+config/Compiler.h
 config/Condition.cc
-config/Function.h
-config/Function.cc
-config/Configured.h
-config/Configured.cc
-config/Scope.h
-config/Scope.cc
-config/Script.h
-config/Script.cc
-config/Statement.h
-config/Statement.cc
-config/Configurable.h
+config/Condition.h
 config/Configurable.cc
-config/EtcTable.h
-config/EtcTable.cc
-config/Parametrisation.h
-config/Configuration.h
+config/Configurable.h
 config/Configuration.cc
-config/JSONConfiguration.h
-config/JSONConfiguration.cc
-config/LocalConfiguration.h
-config/LocalConfiguration.cc
-config/FileReadPolicy.h
+config/Configuration.h
+config/Configured.cc
+config/Configured.h
+config/EtcTable.cc
+config/EtcTable.h
 config/FileReadPolicy.cc
-config/ResourceBase.cc )
+config/FileReadPolicy.h
+config/Function.cc
+config/Function.h
+config/JSONConfiguration.cc
+config/JSONConfiguration.h
+config/LibEcKit.cc
+config/LibEcKit.h
+config/LocalConfiguration.cc
+config/LocalConfiguration.h
+config/Parametrisation.h
+config/Resource.h
+config/ResourceBase.cc
+config/ResourceFromFiles.cc
+config/ResourceFromFiles.h
+config/ResourceMgr.cc
+config/ResourceMgr.h
+config/ResourcePolicy.h
+config/Scope.cc
+config/Scope.h
+config/Script.cc
+config/Script.h
+config/Statement.cc
+config/Statement.h
+)
 
 list( APPEND eckit_runtime_srcs
 runtime/Task.h

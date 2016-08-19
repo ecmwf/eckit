@@ -66,9 +66,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_system_library )
 
     for(std::vector<std::string>::const_iterator libname = libs.begin(); libname != libs.end(); ++libname ) {
 
-        BOOST_CHECK_NO_THROW( Library::get(*libname) );
+        BOOST_CHECK_NO_THROW( Library::lookup(*libname) );
 
-        const Library& lib = Library::get(*libname);
+        const Library& lib = Library::lookup(*libname);
 
         BOOST_CHECK_NO_THROW( lib.path() );
 

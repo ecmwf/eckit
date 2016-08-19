@@ -392,7 +392,7 @@ static void expandTilde(std::string& path)
             // 2. if it has the form ~libname/, then delegate to the matching library to expand the path
 
             if(eckit::system::Library::exists(s)) {
-                path = eckit::system::Library::get(s).expandPath(path);
+                path = eckit::system::Library::lookup(s).expandPath(path);
                 return;
             }
         }

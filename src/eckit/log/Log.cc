@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/ChannelBuffer.h"
@@ -29,7 +30,7 @@ namespace eckit {
 
 static void handle_strerror_r(std::ostream& s, int e, char es[], int hs )
 {
-    if( hs == 0 )
+    if ( hs == 0 )
         s << " (" << es << ") " ;
     else
         s << " (errno = " << e << ") ";
@@ -39,7 +40,7 @@ static void handle_strerror_r(std::ostream& s, int e, char es[], int hs )
 
 static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 {
-    if(p) {
+    if (p) {
         s << " (" << p << ")";
     }
     else {
@@ -50,6 +51,11 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
+
+const Logger& Log::defaultLogger()
+{
+    return LibEcKit::instance();
+}
 
 void Log::registerChannel(const std::string& key, Channel* channel)
 {
@@ -66,16 +72,21 @@ Channel& Log::channel(const std::string& key)
     return Context::instance().channel(key);
 }
 
+Channel& Log::debug(const Logger& logger)
+{
+    return logger.debugChannel();
+}
+
 struct CreateMonitorChannel
 {
     MonitorChannel* operator()() { return new MonitorChannel( MonitorChannel::NONE ); }
 };
 
-Channel& Log::monitor(char type,long mode)
+Channel& Log::monitor(char type, long mode)
 {
-    static ThreadSingleton<MonitorChannel,CreateMonitorChannel> x;
+    static ThreadSingleton<MonitorChannel, CreateMonitorChannel> x;
     MonitorChannel& y = x.instance();
-    y.flags(type,mode);
+    y.flags(type, mode);
     return y;
 }
 
@@ -86,7 +97,7 @@ struct CreateMonitorStatusChannel
 
 Channel& Log::status()
 {
-    static ThreadSingleton<MonitorChannel,CreateMonitorStatusChannel> x;
+    static ThreadSingleton<MonitorChannel, CreateMonitorStatusChannel> x;
     return x.instance();
 }
 
@@ -97,7 +108,7 @@ struct CreateMonitorMessageChannel
 
 Channel& Log::message()
 {
-    static ThreadSingleton<MonitorChannel,CreateMonitorMessageChannel> x;
+    static ThreadSingleton<MonitorChannel, CreateMonitorMessageChannel> x;
     return x.instance();
 }
 
@@ -127,7 +138,7 @@ std::ostream& Log::panic()
     {
         return Log::error();
     }
-    catch(std::exception&)
+    catch (std::exception&)
     {
         return  std::cerr;
     }
@@ -139,7 +150,7 @@ std::ostream& Log::panic(const CodeLocation& where)
     {
         return Log::error(where);
     }
-    catch(std::exception&)
+    catch (std::exception&)
     {
         std::cerr << "[" << where << "]";
         return  std::cerr;
@@ -156,24 +167,15 @@ Channel& Log::warning(const CodeLocation& where)
     return Context::instance().warnChannel().source(where);
 }
 
-std::ostream& Log::null() {
+Channel& Log::null() {
     static MultiChannel no_output;
     return no_output;
-}
-
-Channel& Log::debug(int level)
-{
-    static MultiChannel no_output;
-    if(level > Context::instance().debug())
-        return no_output;
-    else
-        return Context::instance().debugChannel();
 }
 
 Channel& Log::debug(const CodeLocation& where, int level)
 {
     static MultiChannel no_output;
-    if(level > Context::instance().debug())
+    if (level > Context::instance().debug())
         return no_output;
     else
         return Context::instance().debugChannel().source(where);
@@ -181,14 +183,14 @@ Channel& Log::debug(const CodeLocation& where, int level)
 
 Channel& Log::channel(int cat, int level)
 {
-	// Note: level usage not yet implemented
-	return Context::instance().channel(cat);
+    // Note: level usage not yet implemented
+    return Context::instance().channel(cat);
 }
 
 Channel& Log::channel(int cat, const CodeLocation& where, int level)
 {
-	// Note: level usage not yet implemented
-	return Context::instance().channel(cat).source(where);
+    // Note: level usage not yet implemented
+    return Context::instance().channel(cat).source(where);
 }
 
 UserChannel& Log::user()
@@ -222,7 +224,7 @@ void Log::notifyClient(const std::string& msg)
 {
     UserChannel& u = user();
     UserMsg* um = u.userMsg();
-    if(um) um->notifyClient(msg);
+    if (um) um->notifyClient(msg);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -239,13 +241,13 @@ static int xindex = std::ios::xalloc();
 
 int format(std::ostream& s)
 {
-        return s.iword(xindex);
+    return s.iword(xindex);
 }
 
-std::ostream& setformat(std::ostream& s,int n)
+std::ostream& setformat(std::ostream& s, int n)
 {
-        s.iword(xindex) = n;
-        return s;
+    s.iword(xindex) = n;
+    return s;
 }
 
 template class ThreadSingleton<UserChannel>;

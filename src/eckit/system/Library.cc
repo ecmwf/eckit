@@ -13,12 +13,18 @@
 /// @date   August 2016
 
 #include <map>
+#include <algorithm>
+#include <cctype>
 
 #include "eckit/system/Library.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/ChannelBuffer.h"
+#include "eckit/log/MultiChannel.h"
 #include "eckit/os/System.h"
+#include "eckit/utils/Translator.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
@@ -48,7 +54,7 @@ std::vector<std::string> Library::list() {
 
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    for(LibraryMap::const_iterator j = m->begin() ; j != m->end() ; ++j) {
+    for (LibraryMap::const_iterator j = m->begin() ; j != m->end() ; ++j) {
         result.push_back(j->first);
     }
     return result;
@@ -61,7 +67,7 @@ void Library::list(std::ostream& out) {
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     const char* sep = "";
-    for(LibraryMap::const_iterator j = m->begin() ; j != m->end() ; ++j) {
+    for (LibraryMap::const_iterator j = m->begin() ; j != m->end() ; ++j) {
         out << sep << (*j).first;
         sep = ", ";
     }
@@ -77,7 +83,7 @@ bool Library::exists(const std::string& name) {
     return (j != m->end());
 }
 
-const Library& Library::get(const std::string& name) {
+const Library& Library::lookup(const std::string& name) {
 
     pthread_once(&once, init);
 
@@ -100,13 +106,23 @@ const Library& Library::get(const std::string& name) {
 }
 
 Library::Library(const std::string& name) :
-    name_(name) {
+    name_(name),
+    prefix_(name),
+    debug_(false) {
 
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     ASSERT(m->find(name) == m->end());
     (*m)[name] = this;
+
+    std::transform(prefix_.begin(), prefix_.end(), prefix_.begin(), ::toupper);
+
+    std::string s = prefix_ + "_DEBUG";
+    const char* e = ::getenv(s.c_str());
+    if (e) {
+        debug_ = eckit::Translator<std::string, bool>()(e);
+    }
 }
 
 Library::~Library() {
@@ -121,11 +137,34 @@ LocalPathName Library::path() const {
 }
 
 std::string Library::libraryPath() const {
-    if(libraryPath_.empty()) {
+    if (libraryPath_.empty()) {
         std::string p = eckit::System::addrToPath(addr());
         libraryPath_ = LocalPathName(p).realName();
     }
     return libraryPath_;
+}
+
+bool Library::debug() const
+{
+    return debug_;
+}
+
+Channel& Library::debugChannel() const
+{
+    eckit::AutoLock<Mutex> lock(mutex_);
+
+    if (debugChannel_) { return *debugChannel_; }
+
+    std::string s = prefix_ + "_DEBUG";
+
+    if (debug_) {
+        debugChannel_.reset(new Channel( new ChannelBuffer( std::cout )));
+    }
+    else {
+
+        debugChannel_.reset(new MultiChannel());
+    }
+    return *debugChannel_;
 }
 
 std::string Library::expandPath(const std::string& p) const {

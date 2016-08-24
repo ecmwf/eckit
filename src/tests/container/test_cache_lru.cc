@@ -114,16 +114,23 @@ BOOST_AUTO_TEST_CASE( test_cache_lru_basic )
     BOOST_CHECK_EQUAL( cache.access("ddd") , 40 );
     BOOST_CHECK_EQUAL( cache.access("eee") , 50 );
 
+    // Remove item
+
+    BOOST_CHECK( !cache.remove("ccc") );
+    BOOST_CHECK( cache.remove("ddd") );
+    BOOST_CHECK_EQUAL( cache.size() , 1 );
+
+    BOOST_CHECK( !cache.exists("ddd") );
+    BOOST_CHECK_THROW( cache.access("ddd"), eckit::OutOfRange );
+
     // Clear the cache
 
     BOOST_CHECK_NO_THROW( cache.clear() );
     BOOST_CHECK_EQUAL( cache.size() , 0 );
     BOOST_CHECK_EQUAL( cache.capacity() , 3 );
 
-    BOOST_CHECK( !cache.exists("ddd") );
     BOOST_CHECK( !cache.exists("eee") );
 
-    BOOST_CHECK_THROW( cache.access("ddd"), eckit::OutOfRange );
     BOOST_CHECK_THROW( cache.access("eee"), eckit::OutOfRange );
 }
 

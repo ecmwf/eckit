@@ -53,7 +53,7 @@ public:
     /// @post DataHandle is marked out of use and may now be closed by FilePool
     void checkin(DataHandle* handle);
 
-    /// Remove a DataHandle from the pool (must not be in use)
+    /// Remove a DataHandle from the pool
     bool remove(const PathName& path);
 
     /// Current size of pool

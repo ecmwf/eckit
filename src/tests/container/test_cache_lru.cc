@@ -17,10 +17,16 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static size_t purgeCalls = 0;
+
+static void purge(std::string& key, size_t& value) {
+    BOOST_TEST_MESSAGE( "Purged key " << key << " with value " << value );
+    ++purgeCalls;
+}
+
 BOOST_AUTO_TEST_SUITE( test_cache_lru )
 
-BOOST_AUTO_TEST_CASE( test_cache_lru_basic )
-{
+BOOST_AUTO_TEST_CASE( test_cache_lru_basic ) {
     eckit::CacheLRU<std::string,size_t> cache(3);
 
     BOOST_CHECK_EQUAL( cache.size() , 0 );
@@ -132,6 +138,38 @@ BOOST_AUTO_TEST_CASE( test_cache_lru_basic )
     BOOST_CHECK( !cache.exists("eee") );
 
     BOOST_CHECK_THROW( cache.access("eee"), eckit::OutOfRange );
+}
+
+BOOST_AUTO_TEST_CASE( test_cache_lru_purge ) {
+    eckit::CacheLRU<std::string,size_t> cache(4, purge);
+    BOOST_CHECK_EQUAL( purgeCalls , 0 );
+
+    BOOST_CHECK( !cache.insert("aaa", 10) );
+    BOOST_CHECK( !cache.insert("bbb", 20) );
+    BOOST_CHECK( !cache.insert("ccc", 30) );
+    BOOST_CHECK( !cache.insert("ddd", 40) );
+
+    BOOST_CHECK_EQUAL( purgeCalls , 0 );
+
+    // Reducing capacity purges
+
+    cache.capacity(3);
+    BOOST_CHECK_EQUAL( purgeCalls , 1 );
+
+    // Extract does not purge
+
+    BOOST_CHECK_EQUAL( cache.extract("bbb"), 20 );
+    BOOST_CHECK_EQUAL( purgeCalls , 1 );
+
+    // Remove purges
+
+    BOOST_CHECK( cache.remove("ccc") );
+    BOOST_CHECK_EQUAL( purgeCalls , 2 );
+
+    // Clear purges
+
+    BOOST_CHECK_NO_THROW( cache.clear() );
+    BOOST_CHECK_EQUAL( purgeCalls , 3 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

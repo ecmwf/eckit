@@ -97,7 +97,7 @@ bool CacheLRU<K,V>::remove(const key_type& key)
     if( itr != map_.end() )
     {
         existed = true;
-        purge(key,valueFrom(itr));
+        purge(itr->second->key_, valueFrom(itr));
         erase(itr);
     }
 

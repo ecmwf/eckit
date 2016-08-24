@@ -10,6 +10,8 @@
 
 #include <string>
 
+#define BOOST_TEST_MODULE eckit_test_cache_lru
+
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/container/CacheLRU.h"

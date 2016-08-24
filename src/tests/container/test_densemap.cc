@@ -10,7 +10,7 @@
 
 #include <cmath>
 
-#define BOOST_TEST_MODULE test_eckit_container
+#define BOOST_TEST_MODULE eckit_test_densemap
 
 #include "ecbuild/boost_test_framework.h"
 

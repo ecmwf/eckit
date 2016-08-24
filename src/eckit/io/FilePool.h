@@ -34,7 +34,9 @@ namespace eckit {
 /// Handles must be checked-out before usage, should be checked back in once writing finished.
 /// No limit to number of checked out handles.
 /// Handles are closed when purged from pool due to LRU or when pool is destroyed.
-
+///
+/// @note this class is thread-safe
+///
 class FilePool : private eckit::NonCopyable {
 
 public:
@@ -44,16 +46,18 @@ public:
     ~FilePool();
 
     /// Checkout a DataHandle for use
-    /// Owenership is passed out of FilePool
+    /// Ownership is passed from FilePool to the client
     /// @post DataHandle is marked in use and should not be closed by client
+    /// @invariant If handle is in use, it assumes is from another thread and it will wait() for a checkin()
     DataHandle * checkout(const PathName& path);
 
     /// Return a DataHandle after use
-    /// Owenership is passed into FilePool
+    /// Ownership is passed back from the client to FilePool
     /// @post DataHandle is marked out of use and may now be closed by FilePool
     void checkin(DataHandle* handle);
 
     /// Remove a DataHandle from the pool
+    /// @invariant If handle is in use, it assumes is from another thread and it will wait() for a checkin()
     bool remove(const PathName& path);
 
     /// Current size of pool

@@ -24,7 +24,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void closeDataHandle(PathName& path, DataHandle*& handle) {
+static void closeDataHandle(PathName&, DataHandle*& handle) {
     if(handle) {
         handle->close();
         delete handle;
@@ -42,13 +42,15 @@ FilePool::FilePool(size_t size) :
     cache_(size, &closeDataHandle) {
 }
 
-FilePool::~FilePool() {}
+FilePool::~FilePool() {
+}
 
 DataHandle* FilePool::checkout(const PathName& path) {
-    AutoLock<MutexCond> lock(mutex_);
+    AutoLock<MutexCond> lock(cond_);
 
-    while(inUse(inUse_, path))
-        mutex_.wait();
+    while(inUse(inUse_, path)) {
+        cond_.wait();
+    }
 
     DataHandle* dh;
 
@@ -68,14 +70,14 @@ DataHandle* FilePool::checkout(const PathName& path) {
 }
 
 void FilePool::checkin(DataHandle* handle) {
-    AutoLock<MutexCond> lock(mutex_);
+    AutoLock<MutexCond> lock(cond_);
 
     typedef std::map<PathName,DataHandle*>::iterator iterator_type;
     for(iterator_type itr = inUse_.begin(); itr != inUse_.end(); ++itr) {
         if( itr->second == handle ) {
             cache_.insert(itr->first, itr->second);
             inUse_.erase(itr);
-            mutex_.signal();
+            cond_.signal();
             return;
         }
     }
@@ -84,38 +86,39 @@ void FilePool::checkin(DataHandle* handle) {
 }
 
 bool FilePool::remove(const PathName& path) {
-    AutoLock<MutexCond> lock(mutex_);
+    AutoLock<MutexCond> lock(cond_);
 
-    while(inUse(inUse_, path))
-        mutex_.wait();
+    while(inUse(inUse_, path)) {
+        cond_.wait();
+    }
 
     return cache_.remove(path);
 }
 
 void FilePool::print(std::ostream& os) const {
-    AutoLock<MutexCond> lock(const_cast<FilePool&>(*this).mutex_);
+    AutoLock<MutexCond> lock(const_cast<FilePool&>(*this).cond_);
     os << "FilePool("
        << "inUse=" << inUse_ << ", "
        << "cache=" << cache_ << ")";
 }
 
 size_t FilePool::size() const {
-    AutoLock<MutexCond> lock(mutex_);
+    AutoLock<MutexCond> lock(cond_);
     return cache_.size();
 }
 
 void FilePool::capacity( size_t size ) {
-    AutoLock<MutexCond> lock(mutex_);
+    AutoLock<MutexCond> lock(cond_);
     cache_.capacity(size);
 }
 
 size_t FilePool::capacity() const {
-    AutoLock<MutexCond> lock(mutex_);
+    AutoLock<MutexCond> lock(cond_);
     return cache_.capacity();
 }
 
 size_t FilePool::usage() const {
-    AutoLock<MutexCond> lock(mutex_);
+    AutoLock<MutexCond> lock(cond_);
     return inUse_.size();
 }
 

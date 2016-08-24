@@ -79,7 +79,7 @@ private:
 
     eckit::CacheLRU< PathName, DataHandle* > cache_;
 
-    mutable eckit::MutexCond mutex_;
+    mutable eckit::MutexCond cond_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

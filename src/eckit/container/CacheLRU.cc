@@ -70,7 +70,7 @@ V CacheLRU<K,V>::access(const key_type& key)
     }
     else
     {
-        throw eckit::OutOfRange( "key not present in CacheLRU", Here() );
+        throw eckit::OutOfRange( "key not in CacheLRU", Here() );
     }
 }
 

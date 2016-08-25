@@ -15,9 +15,10 @@
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/FilePool.h"
-#include "eckit/io/DataHandle.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
+#include "eckit/io/FileHandle.h"
+#include "eckit/io/FilePool.h"
 
 using namespace std;
 using namespace eckit;
@@ -153,6 +154,10 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 ) {
 
     BOOST_CHECK_EQUAL( pool.usage(), 0 );
     BOOST_CHECK_EQUAL( pool.size(),  0 );
+
+    // checking in a never checked out DataHandle throws
+
+    BOOST_CHECK_THROW( pool.checkin(new FileHandle("foo.data")), eckit::SeriousBug );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

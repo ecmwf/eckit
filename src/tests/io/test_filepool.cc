@@ -145,6 +145,14 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 ) {
     BOOST_CHECK_EQUAL( pool.size(),  1 );
 
     BOOST_TEST_MESSAGE( pool );
+
+    // remove polo and marco (latter has no effect but is legal)
+
+    BOOST_CHECK( pool.remove("polo.data") );
+    BOOST_CHECK( !pool.remove("marco.data") );
+
+    BOOST_CHECK_EQUAL( pool.usage(), 0 );
+    BOOST_CHECK_EQUAL( pool.size(),  0 );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

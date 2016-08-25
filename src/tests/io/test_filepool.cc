@@ -10,7 +10,7 @@
 
 #include <cmath>
 
-#define BOOST_TEST_MODULE test_eckit_io
+#define BOOST_TEST_MODULE eckit_test_filepool
 
 #include "ecbuild/boost_test_framework.h"
 

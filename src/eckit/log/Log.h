@@ -60,7 +60,7 @@ public: // methods
 
     /// Channel for debug output
     static Channel& debug(const Logger& = defaultLogger());
-    static Channel& debug(const CodeLocation& where, int level = 1);
+    static Channel& debug(const CodeLocation& where);
 
     /// Channel for informative messages
     static Channel& info();
@@ -79,8 +79,8 @@ public: // methods
     static std::ostream& panic(const CodeLocation& where);
 
     /// Channel accessible through category index
-    static Channel& channel(int cat, int level = 1);
-    static Channel& channel(int cat, const CodeLocation& where, int level = 1);
+    static Channel& channel(int cat);
+    static Channel& channel(int cat, const CodeLocation& where);
 
     /// characters to identify origin of monitoring messages
     enum { Unix = 'U', App = 'X' };

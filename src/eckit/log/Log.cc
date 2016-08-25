@@ -172,25 +172,19 @@ Channel& Log::null() {
     return no_output;
 }
 
-Channel& Log::debug(const CodeLocation& where, int level)
+Channel& Log::debug(const CodeLocation& where)
 {
-    static MultiChannel no_output;
-    if (level > Context::instance().debug())
-        return no_output;
-    else
-        return Context::instance().debugChannel().source(where);
+    return Context::instance().debugChannel().source(where);
 }
 
-Channel& Log::channel(int cat, int level)
+Channel& Log::channel(int cat)
 {
-    // Note: level usage not yet implemented
     return Context::instance().channel(cat);
 }
 
-Channel& Log::channel(int cat, const CodeLocation& where, int level)
+Channel& Log::channel(int cat, const CodeLocation& where)
 {
-    // Note: level usage not yet implemented
-    return Context::instance().channel(cat).source(where);
+   return Context::instance().channel(cat).source(where);
 }
 
 UserChannel& Log::user()

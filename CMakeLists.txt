@@ -42,7 +42,7 @@ ecbuild_add_option( FEATURE MPI
                     REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
 
                 debug_var(HAVE_MPI)
-                debug_var(HAVE_ECKIT_MPI)
+                debug_var(ECKIT_HAVE_MPI)
 
 ### eckit::cmd
 

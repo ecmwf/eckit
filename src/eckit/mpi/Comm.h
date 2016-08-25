@@ -113,7 +113,15 @@ public:  // methods
     virtual int all_gather( const std::vector<float>&  send, mpi::Buffer<float>&  recv ) const = 0;
     virtual int all_gather( const std::vector<double>& send, mpi::Buffer<double>& recv ) const = 0;
 
-protected:
+private: // methods
+
+    virtual void print(std::ostream&) const = 0;
+
+    friend std::ostream& operator<<(std::ostream& s, const Comm& o) {
+        o.print(s); return s;
+    }
+
+protected: // methods
 
   Comm();
 

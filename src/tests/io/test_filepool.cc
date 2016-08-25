@@ -26,8 +26,7 @@ using namespace eckit;
 
 BOOST_AUTO_TEST_SUITE( test_eckit_io_filepool )
 
-BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 ) {
     Buffer buffer(50*1024);
 
     FilePool pool(1);
@@ -60,12 +59,12 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
     BOOST_CHECK_EQUAL( pool.usage(), 2 );
     BOOST_CHECK_EQUAL( pool.size(),  0 );
 
-    std::cout << pool << std::endl;
+    BOOST_TEST_MESSAGE( pool );
 
     pool.checkin(foo);
     pool.checkin(bar);
 
-    std::cout << pool << std::endl;
+    BOOST_TEST_MESSAGE( pool );
 
     // foo + bar are in pool, none in use
 
@@ -117,7 +116,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
     BOOST_CHECK_EQUAL( pool.usage(), 0 );
     BOOST_CHECK_EQUAL( pool.size(),  3 );
 
-    std::cout << pool << std::endl;
+    BOOST_TEST_MESSAGE( pool );
 
     pool.capacity(1);
 
@@ -126,7 +125,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
     BOOST_CHECK_EQUAL( pool.usage(), 0 );
     BOOST_CHECK_EQUAL( pool.size(),  1 );
 
-    std::cout << pool << std::endl;
+    BOOST_TEST_MESSAGE( pool );
 
     DataHandle* polo = pool.checkout("polo.data");
     polo->write(buffer, buffer.size());
@@ -136,7 +135,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
     BOOST_CHECK_EQUAL( pool.usage(), 1 );
     BOOST_CHECK_EQUAL( pool.size(),  1 );
 
-    std::cout << pool << std::endl;
+    BOOST_TEST_MESSAGE( pool );
 
     pool.checkin(polo);
 
@@ -145,8 +144,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
     BOOST_CHECK_EQUAL( pool.usage(), 0 );
     BOOST_CHECK_EQUAL( pool.size(),  1 );
 
-    std::cout << pool << std::endl;
+    BOOST_TEST_MESSAGE( pool );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

@@ -3,6 +3,8 @@ Comm.h
 Comm.cc
 Environment.h
 Environment.cc
+Request.h
+Request.cc
 Serial.h
 Serial.cc
 )

@@ -67,7 +67,10 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
     {
       val = 3.14;
     }
-    BOOST_CHECK( mpi::comm().broadcast(val,root) == MPI_SUCCESS );
+
+    float* pval = &val;
+    BOOST_CHECK( mpi::comm().broadcast(&val, 1, root) == MPI_SUCCESS );
+    BOOST_CHECK( mpi::comm().broadcast(pval, pval+1, root) == MPI_SUCCESS );
 
     // check results
     BOOST_CHECK_CLOSE( val, 3.14, 0.0001 );
@@ -81,7 +84,7 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
       data.assign(d,d+10);
     }
     bool resize = true;
-    BOOST_CHECK( mpi::comm().broadcast(data,root,resize) == MPI_SUCCESS );
+    BOOST_CHECK( mpi::comm().broadcast(data, root, resize) == MPI_SUCCESS );
 
     // check results
     BOOST_CHECK_EQUAL( data.size(), 10u );
@@ -95,17 +98,17 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
     {
       data.assign(d,d+10);
     }
-    BOOST_CHECK( mpi::comm().broadcast(data.data(),data.size(),root) == MPI_SUCCESS );
+    BOOST_CHECK( mpi::comm().broadcast(data.begin(), data.end(), root) == MPI_SUCCESS );
 
     // check results
-    BOOST_CHECK_EQUAL_COLLECTIONS(data.begin(),data.end(),d,d+10);
+    BOOST_CHECK_EQUAL_COLLECTIONS(data.begin(), data.end(), d, d+10);
   }
 }
 
 BOOST_AUTO_TEST_CASE( test_all_reduce )
 {
   int success;
-  int d = mpi::comm().rank()+1;
+  int d = int(mpi::comm().rank()) + 1;
   std::pair<double,int> v(-d, mpi::comm().rank());
   std::vector<float> arr(5, mpi::comm().rank()+1);
 
@@ -230,7 +233,7 @@ BOOST_AUTO_TEST_CASE( test_all_gather___simple )
   int send = mpi::comm().rank();
   std::vector<int> recv;
 
-  int success = mpi::comm().all_gather( send, recv );
+  int success = mpi::comm().all_gather( &send, 1, recv );
 
   BOOST_CHECK( success == MPI_SUCCESS );
 

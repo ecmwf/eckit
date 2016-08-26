@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+#include "eckit/mpi/Request.h"
+
 namespace eckit {
 namespace mpi {
 
@@ -83,6 +85,12 @@ public:  // methods
   virtual Operation min()  const = 0;
   virtual Operation maxloc() const = 0;
   virtual Operation minloc() const = 0;
+
+  /// @brief Builds a request
+  virtual mpi::Request::Ptr makeRequest() const = 0;
+
+  /// @brief Builds a vector of requests
+  virtual std::vector< mpi::Request::Ptr > makeRequestVector() const = 0;
 
 protected:
 

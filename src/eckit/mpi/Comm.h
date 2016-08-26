@@ -113,6 +113,21 @@ public:  // methods
     virtual int all_gather( const std::vector<float>&  send, mpi::Buffer<float>&  recv ) const = 0;
     virtual int all_gather( const std::vector<double>& send, mpi::Buffer<double>& recv ) const = 0;
 
+    virtual int gather(const std::vector<int>&    send, mpi::Buffer<int>&     recv, size_t root ) const = 0;
+    virtual int gather(const std::vector<long>&   send, mpi::Buffer<long>&    recv, size_t root ) const = 0;
+    virtual int gather(const std::vector<float>&  send, mpi::Buffer<float>&   recv, size_t root ) const = 0;
+    virtual int gather(const std::vector<double>& send, mpi::Buffer<double>&  recv, size_t root ) const = 0;
+
+    virtual int gatherv(const std::vector<int>&    send, mpi::Buffer<int>&    recv, const std::vector<int>& displs, size_t root ) const = 0;
+    virtual int gatherv(const std::vector<long>&   send, mpi::Buffer<long>&   recv, const std::vector<int>& displs, size_t root ) const = 0;
+    virtual int gatherv(const std::vector<float>&  send, mpi::Buffer<float>&  recv, const std::vector<int>& displs, size_t root ) const = 0;
+    virtual int gatherv(const std::vector<double>& send, mpi::Buffer<double>& recv, const std::vector<int>& displs, size_t root ) const = 0;
+
+    virtual int all_gatherv(const std::vector<int>&    send, mpi::Buffer<int>&    recv, const std::vector<int>& displs) const = 0;
+    virtual int all_gatherv(const std::vector<long>&   send, mpi::Buffer<long>&   recv, const std::vector<int>& displs) const = 0;
+    virtual int all_gatherv(const std::vector<float>&  send, mpi::Buffer<float>&  recv, const std::vector<int>& displs) const = 0;
+    virtual int all_gatherv(const std::vector<double>& send, mpi::Buffer<double>& recv, const std::vector<int>& displs) const = 0;
+
 private: // methods
 
     virtual void print(std::ostream&) const = 0;

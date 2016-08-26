@@ -7,8 +7,6 @@ Collectives.cc
 Comm.h
 Comm.cc
 Exceptions.h
-ParallelContextBehavior.h
-ParallelContextBehavior.cc
 BroadcastFile.h
 BroadcastFile.cc
 )

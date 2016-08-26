@@ -10,10 +10,9 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/log/Log.h"
+
 #include "eckit/log/Channel.h"
-#include "eckit/log/ChannelBuffer.h"
-#include "eckit/log/MultiChannel.h"
-#include "eckit/log/MonitorChannel.h"
+
 #include "eckit/log/UserChannel.h"
 #include "eckit/log/StatusTarget.h"
 #include "eckit/log/MessageTarget.h"

@@ -41,7 +41,7 @@ Application::Application(int argc, char** argv,
     Context& ctxt = Context::instance();
     ctxt.setup(argc, argv);
     ctxt.runName(name_);
-    ctxt.debug(Resource<int>(this, "debug;$DEBUG;-debug", 0));
+    // ctxt.debug(Resource<int>(this, "debug;$DEBUG;-debug", 0));
 
     loggingPolicy_->setup();
 
@@ -82,7 +82,7 @@ void Application::reconfigure() {
 
     int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
 
-    Context::instance().debug(debug);
+    // Context::instance().debug(debug);
 
     Context::instance().reconfigure();  // forward to context
 }

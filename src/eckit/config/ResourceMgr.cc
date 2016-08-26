@@ -15,7 +15,6 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Context.h"
-#include "eckit/runtime/ContextBehavior.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"
@@ -44,7 +43,7 @@ ResourceMgr& ResourceMgr::instance()
 
     static ResourceMgr* obj = 0;
 
-    if( !obj )
+    if ( !obj )
         obj = new ResourceMgr();
 
     return *obj;
@@ -58,7 +57,7 @@ void ResourceMgr::reset()
     script_.clear();
 }
 
-void ResourceMgr::set(const std::string& name,const std::string& value)
+void ResourceMgr::set(const std::string& name, const std::string& value)
 {
     AutoLock<Mutex> lock(local_mutex);
 
@@ -72,22 +71,20 @@ void ResourceMgr::set(const std::string& name,const std::string& value)
 
 void ResourceMgr::appendConfig(std::istream& in)
 {
-  AutoLock<Mutex> lock(local_mutex);
-  script_.readStream(in);
+    AutoLock<Mutex> lock(local_mutex);
+    script_.readStream(in);
 }
 
 bool ResourceMgr::appendConfig(const PathName& path)
 {
-  AutoLock<Mutex> lock(local_mutex);
-  FileReadPolicy p = Context::instance().behavior().fileReadPolicy();
+    AutoLock<Mutex> lock(local_mutex);
+    std::ifstream in;
+    in.open ( path.asString().c_str() );
+    if ( !in )
+        return false;
 
-  Log::debug() << "Appending config " << path << std::endl;
-
-  std::stringstream s;
-  if( !read(p, path, s) )  return false;
-
-  script_.readStream(s);
-  return true;
+    script_.readStream(in);
+    return true;
 }
 
 bool ResourceMgr::lookUp( Configurable* owner,
@@ -97,16 +94,14 @@ bool ResourceMgr::lookUp( Configurable* owner,
 {
     AutoLock<Mutex> lock(local_mutex);
 
-    ResourcePolicy p = Context::instance().behavior().resourcePolicy();
-
-    if(!inited_) {
-        configure( p , script_ );
+    if (!inited_) {
+        // configure(script_ );
         inited_ = true;
     }
 
     StringDict resmap;
 
-    if(args)
+    if (args)
         script_.execute( *args, resmap );
     else
     {
@@ -114,37 +109,37 @@ bool ResourceMgr::lookUp( Configurable* owner,
     }
 
 #if 0 // DEBUG
-    Log::error() << "name [" << name << "] looking in " << (args?"args ":"StringDict()") << std::endl;
-    if(args)  { Log::error() << "args [" ; __print_container(Log::error(),*args); Log::error() << "]" << std::endl; }
-    Log::error() << "resmap [" ; __print_container(Log::error(),resmap); Log::error() << "]" << std::endl;
+    Log::error() << "name [" << name << "] looking in " << (args ? "args " : "StringDict()") << std::endl;
+    if (args)  { Log::error() << "args [" ; __print_container(Log::error(), *args); Log::error() << "]" << std::endl; }
+    Log::error() << "resmap [" ; __print_container(Log::error(), resmap); Log::error() << "]" << std::endl;
     script_.print( Log::error() );
 #endif
 
     StringDict::iterator i;
 
-    if( owner )
+    if ( owner )
     {
         std::string kind  = owner->kind();
         std::string owner_name = owner->name();
 
         i = resmap.find( std::string( kind + "." + owner_name + "." + name ) );
 
-        if(i != resmap.end())
+        if (i != resmap.end())
         {
             result = (*i).second;
 #if 0 // DEBUG
-    Log::error() << "result : "<< result << " " << Here() << std::endl;
+            Log::error() << "result : " << result << " " << Here() << std::endl;
 #endif
             return true;
         }
 
         i = resmap.find( std::string( owner_name + "." + name ) );
 
-        if(i != resmap.end())
+        if (i != resmap.end())
         {
             result = (*i).second;
 #if 0 // DEBUG
-    Log::error() << "result : "<< result << " " << Here() << std::endl;
+            Log::error() << "result : " << result << " " << Here() << std::endl;
 #endif
             return true;
         }
@@ -152,11 +147,11 @@ bool ResourceMgr::lookUp( Configurable* owner,
 
     i = resmap.find( name );
 
-    if( i != resmap.end() )
+    if ( i != resmap.end() )
     {
         result = (*i).second;
 #if 0 // DEBUG
-    Log::error() << "result : "<< result << " " << Here() << std::endl;
+        Log::error() << "result : " << result << " " << Here() << std::endl;
 #endif
         return true;
     }
@@ -169,7 +164,7 @@ bool ResourceMgr::lookUp( Configurable* owner,
 
 void ResourceMgr::printScript( std::ostream& out )
 {
-  script_.print(out);
+    script_.print(out);
 }
 
 //-----------------------------------------------------------------------------

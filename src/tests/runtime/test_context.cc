@@ -14,7 +14,6 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Context.h"
-#include "eckit/runtime/ToolBehavior.h"
 
 using namespace std;
 using namespace eckit;
@@ -31,7 +30,6 @@ BOOST_AUTO_TEST_CASE( test_default )
 
     /* setting context another time */
 
-    Context::instance().behavior( new ToolBehavior() );
 
     Log::info()   << "logging after resetting behavior" << std::endl;
     Log::debug()  << "logging after resetting behavior" << std::endl;

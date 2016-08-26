@@ -21,13 +21,6 @@
 #include "eckit/filesystem/LocalPathName.h"
 
 #include "eckit/log/Channel.h"
-#include "eckit/log/MultiChannel.h"
-#include "eckit/log/CallbackChannel.h"
-#include "eckit/log/FileChannel.h"
-#include "eckit/log/FormatChannel.h"
-#include "eckit/log/FormatBuffer.h"
-#include "eckit/log/ColorizeFormat.h"
-#include "eckit/log/ChannelBuffer.h"
 
 using namespace std;
 using namespace eckit;
@@ -36,6 +29,7 @@ using namespace eckit;
 
 namespace eckit_test {
 
+#if 0
 //-----------------------------------------------------------------------------
 
 /// Example of a third-party buffer
@@ -143,6 +137,7 @@ BOOST_AUTO_TEST_CASE(test_eckit_user_log_channel_registration) {
     Log::channel("multi_channel") << "TEST OF MULTI-CHANNEL" << std::endl;
 }
 
+#endif
 // --------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

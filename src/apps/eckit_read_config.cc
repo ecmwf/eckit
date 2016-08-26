@@ -17,7 +17,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/runtime/Context.h"
-#include "eckit/runtime/ContextBehavior.h"
+
 #include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"
 
@@ -38,69 +38,67 @@ public:
 void ReadConfig::run()
 {
     // get values
-    
+
     std::string valueStr  = Resource<std::string>("-values","");
     StringList values;
-    
+
     Tokenizer parse(":,");
     parse( valueStr, values );
-    
+
     if( values.size() % 2 != 0 )
     {
         Log::error() << "missing value -- values must be supplied in colon or comma separated key:value pairs" << std::endl;
         return;
     }
-    
+
     // convert values to dictionary
-    
+
     StringDict din;
     for( size_t i = 0; i < values.size(); ++i, ++i )
         din[ values[i] ] = values[i+1];
-            
+
     // get file
-    
+
     std::string filename = Resource<std::string>("-file","");
-    
+
     if( filename.empty() )
     {
         Log::error() << "missing config filename. use -file to specify filename" << std::endl;
         return;
     }
-    
+
     PathName filepath(filename);
-    
+
     if( ! filepath.exists() )
         throw BadValue( "file does not exist -- " + filename );
-    
+
     config::Script s;
 
-    std::stringstream stream;
+    std::ifstream in(filepath);
 
-    FileReadPolicy p = Context::instance().behavior().fileReadPolicy();
+    ASSERT(in);
 
-    read(p,filepath,stream);
-    
-    s.readStream(stream);
+    s.readStream(in);
 
     // print ???
-    
-    bool print = Resource<bool>("-print",false);    
-   
+
+    bool print = Resource<bool>("-print",false);
+
     if(print)
         s.print( std::cout );
 
     // evaluate the configuration
-    
+
     StringDict dout;
-    
+
     s.execute(din,dout);
-    
-//    std::cout << "in :" << din << std::endl;    
-//    std::cout << "out:" << dout << std::endl;  
+
+//    std::cout << "in :" << din << std::endl;
+//    std::cout << "out:" << dout << std::endl;
 
     for( StringDict::const_iterator i = dout.begin(); i != dout.end(); ++i )
-        std::cout << i->first << " : " << i->second << std::endl;    
-    
+        std::cout << i->first << " : " << i->second << std::endl;
+
 }
 
 } // namespace eckit

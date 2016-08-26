@@ -8,32 +8,35 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file MonitorChannel.h
+/// @file FileTarget.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_MonitorChannel_h
-#define eckit_log_MonitorChannel_h
+#ifndef eckit_log_FileTarget_h
+#define eckit_log_FileTarget_h
 
-#include "eckit/log/Channel.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/log/LogTarget.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
+class DataHandle;
+
 //-----------------------------------------------------------------------------
 
-/// Channel for Monitor messages
-class MonitorChannel : public Channel {
+class FileTarget : public LogTarget {
+public:
+    FileTarget( const PathName& path );
+    ~FileTarget();
+private:
 
-public: // methods
-    
-    enum Out { NONE, STATUS, MESSAGE };
-    
-    /// constructor
-    MonitorChannel( MonitorChannel::Out );
-    
-    void flags(char type,long code);
-        
+    virtual void write(const char* start, const char* end);
+    virtual void flush();
+
+private:
+
+    DataHandle* handle_;
 };
 
 //-----------------------------------------------------------------------------

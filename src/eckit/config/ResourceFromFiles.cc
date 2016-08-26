@@ -11,9 +11,7 @@
 #include "eckit/thread/Once.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/config/ResourceFromFiles.h"
-#include "eckit/config/FileReadPolicy.h"
 #include "eckit/runtime/Context.h"
-#include "eckit/runtime/ContextBehavior.h"
 
 //-----------------------------------------------------------------------------
 
@@ -25,7 +23,7 @@ static Once<Mutex> local_mutex;
 
 void configure(ResourceFromFiles& p, config::Script& script)
 {
-  p.readConfigFiles(script);
+    p.readConfigFiles(script);
 }
 
 ResourceFromFiles::ResourceFromFiles()
@@ -34,14 +32,13 @@ ResourceFromFiles::ResourceFromFiles()
 
 void ResourceFromFiles::appendConfig( const PathName& path, config::Script& script )
 {
-  FileReadPolicy p = Context::instance().behavior().fileReadPolicy();
 
-  std::stringstream s;
+    std::ifstream in;
+    in.open ( path.asString().c_str() );
+    if ( !in )
+        throw CantOpenFile( path);
 
-  Log::debug() << "Appending config " << path << std::endl;
-
-  if( read( p, path, s ) )
-    script.readStream(s);
+    script.readStream(in);
 }
 
 void ResourceFromFiles::readConfigFiles(config::Script& script)

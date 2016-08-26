@@ -55,7 +55,7 @@ void Tool::reconfigure()
 
     int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
 
-    Context::instance().debug( debug );
+    // Context::instance().debug( debug );
 
     // forward to context
     Context::instance().reconfigure();
@@ -67,7 +67,7 @@ int Tool::start()
 
     int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
 
-    Context::instance().debug( debug );
+    // Context::instance().debug( debug );
 
     std::string displayName = Resource<std::string>("-name",name_);
 

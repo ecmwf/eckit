@@ -17,7 +17,6 @@
 #include "eckit/os/BackTrace.h"
 
 #include "eckit/runtime/Context.h"
-#include "eckit/runtime/LibBehavior.h"
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -34,12 +33,12 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-static Once<Mutex> local_mutex; 
+static Once<Mutex> local_mutex;
 
 static void callback_logger( void* ctxt, const char* msg )
 {
     AutoLock<Mutex> lock(local_mutex); ///< usually global resources like this need to be protected by local_mutex
-    
+
     std::cout << "[TEST] -- " << msg ;
 }
 
@@ -57,18 +56,20 @@ template< int N >
 class TLog : public Thread
 {
     void run()
-    {   
-        // this shows how you can change the callback per thread 
+    {
+        // this shows how you can change the callback per thread
+#if 0
         if( N == 2 )
             dynamic_cast<CallbackChannel&>(Log::info()).register_callback(&callback_special);
-        
+#endif
+
         for( int i = 0; i < LOOPS*N; ++i )
         {
            ::usleep(N*WAIT);
 
            Log::info() << "thread [" << N << "] -- " << i << std::endl;
         }
-        
+
         Log::info() << "thread [" << N << "] -- done !" << std::endl;
     }
 };
@@ -84,12 +85,10 @@ using namespace eckit_test;
 
 int main(int argc,char **argv)
 {
-    LibBehavior* b = new LibBehavior();
-    Context::instance().behavior( b );
-    b->default_callback( &callback_logger ); // establish the default callback for all threads
-            
-    Log::info() << ">>> starting ... " << std::endl;    
-    
+   // b->default_callback( &callback_logger ); // establish the default callback for all threads
+
+    Log::info() << ">>> starting ... " << std::endl;
+
     ThreadControler t1( new TLog<1>(), false );
     ThreadControler t2( new TLog<2>(), false );
     ThreadControler t3( new TLog<3>(), false );
@@ -97,12 +96,12 @@ int main(int argc,char **argv)
     t1.start();
     t2.start();
     t3.start();
-    
+
     t1.wait();
     t2.wait();
     t3.wait();
 
-    Log::info() << ">>> finished!" << std::endl;    
-    
+    Log::info() << ">>> finished!" << std::endl;
+
     return 0;
 }

@@ -226,8 +226,6 @@ config/Configured.cc
 config/Configured.h
 config/EtcTable.cc
 config/EtcTable.h
-config/FileReadPolicy.cc
-config/FileReadPolicy.h
 config/Function.cc
 config/Function.h
 config/JSONConfiguration.cc
@@ -293,8 +291,8 @@ log/BigNum.h
 log/BigNum.cc
 log/Bytes.h
 log/Bytes.cc
-# log/CallbackChannel.h
-# log/CallbackChannel.cc
+log/CallbackTarget.h
+log/CallbackTarget.cc
 log/Channel.h
 log/Channel.cc
 log/OStreamChannel.h
@@ -317,8 +315,8 @@ log/Colour.h
 log/Colour.cc
 log/ETA.h
 log/ETA.cc
-# log/FileChannel.h
-# log/FileChannel.cc
+log/FileTarget.h
+log/FileTarget.cc
 # log/FormatBuffer.h
 # log/FormatBuffer.cc
 # log/FormatChannel.h

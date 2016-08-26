@@ -8,31 +8,27 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_ParallelContextBehavior_h
-#define eckit_mpi_ParallelContextBehavior_h
 
-#include "eckit/runtime/StandardBehavior.h"
+#include "eckit/log/CallbackTarget.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
-namespace mpi {
 
 //-----------------------------------------------------------------------------
 
-class ParallelContextBehavior : public StandardBehavior {
-public:
 
-  ParallelContextBehavior();
+CallbackTarget::CallbackTarget(callback_t callback, void *context):
+    callback_(callback),
+    context_(context)
+{
+}
 
-  virtual FileReadPolicy fileReadPolicy();
-
-};
+void CallbackTarget::line(const char* line) {
+    callback_(context_, line);
+}
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace mpi
 } // namespace eckit
-
-#endif // eckit_mpi_ParallelContextBehavior_h

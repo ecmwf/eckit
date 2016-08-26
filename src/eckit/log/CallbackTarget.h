@@ -8,7 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/config/FileReadPolicy.h"
+/// @file CallbackTarget.h
+/// @author Tiago Quintino
+
+#ifndef eckit_log_CallbackTarget_h
+#define eckit_log_CallbackTarget_h
+
+#include <utility>
+
+#include "eckit/log/LineBasedTarget.h"
 
 //-----------------------------------------------------------------------------
 
@@ -16,28 +24,24 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-bool read(const DirectReadPolicy&, const PathName& path, std::stringstream& s )
-{
-    bool r = false;
-    if( path.exists() )
-    {
-          // Log::debug() << "Direct reading file " << path << std::endl;
-          std::ifstream in;
-          in.open ( path.asString().c_str() );
-          if ( !in )
-             throw CantOpenFile( path.asString(), Here() );
+class CallbackTarget : public LineBasedTarget {
+public:
 
-          s << in.rdbuf();
-          r = true;
-    }
-    else {
-        Log::debug() << "Failed to read file " << path << std::endl;
-    }
+    typedef void (*callback_t) (void* ctxt, const char* msg);
 
-    return r;
-}
+    CallbackTarget(callback_t callback, void* context = 0);
+
+private:
+
+    virtual void line(const char* line);
+
+private:
+    callback_t callback_;
+    void* context_;
+};
 
 //-----------------------------------------------------------------------------
 
 } // namespace eckit
 
+#endif

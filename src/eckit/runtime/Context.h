@@ -11,17 +11,15 @@
 #ifndef eckit_Context_h
 #define eckit_Context_h
 
-#include <vector>
+#include <map>
 
 #include "eckit/config/Configurable.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/memory/ScopedPtr.h"
+#include "eckit/log/Channel.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class ContextBehavior;
 class LogStream;
 class PathName;
 
@@ -46,16 +44,9 @@ public: // methods
 
     void setup( int argc, char **argv );
 
-    void behavior( ContextBehavior* b );
-
-    ContextBehavior& behavior() const;
-
     int argc() const;
     std::string argv(int n) const;
     char** argvs() const;
-
-    int  debug() const;
-    void debug( const int );
 
     /// @returns Process task ID in the Monitor, same for all threads.
     ///          Threads may have different returned by Monitor::self()
@@ -82,9 +73,7 @@ public: // methods
     Channel& infoChannel();
     Channel& warnChannel();
     Channel& errorChannel();
-    Channel& debugChannel();
 
-    Channel& channel(int cat);
     Channel& channel(const std::string& key);
 
     void registerChannel(const std::string& key, Channel* channel);
@@ -114,12 +103,14 @@ private: // methods
 
 private: // members
 
-	eckit::ScopedPtr<ContextBehavior> behavior_;
-
     int     argc_;
     char**  argv_;
 
     long taskID_;
+
+    Channel info_;
+    Channel warning_;
+    Channel error_;
 
     std::string  home_;         ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
     std::string  runName_;      ///< name of running application

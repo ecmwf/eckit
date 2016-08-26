@@ -18,8 +18,6 @@
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/runtime/Context.h"
-#include "eckit/mpi/ParallelContextBehavior.h"
-#include "eckit/runtime/StandardBehavior.h"
 #include "eckit/mpi/mpi.h"
 #include "eckit/log/Log.h"
 
@@ -32,7 +30,6 @@ struct MPIFixture {
 
   MPIFixture()
   {
-    Context::instance().behavior( new ParallelContextBehavior() );
   }
 
 };

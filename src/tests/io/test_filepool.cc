@@ -14,21 +14,57 @@
 
 #include "ecbuild/boost_test_framework.h"
 
+#include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/FilePool.h"
+#include "eckit/thread/ThreadPool.h"
 
-using namespace std;
 using namespace eckit;
+
+//-----------------------------------------------------------------------------
+
+const size_t BUF_SIZE = 50*1024;
+
+class FilePoolUser : public ThreadPoolTask {
+public:
+    FilePoolUser(FilePool& pool) : pool_(pool) {}
+private:
+    virtual void execute() {
+        Buffer buffer(BUF_SIZE);
+        DataHandle* foo = pool_.checkout("foo.data");
+        foo->write(buffer, buffer.size());
+        pool_.checkin(foo);
+    }
+
+    FilePool& pool_;
+};
 
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE( test_eckit_io_filepool )
 
+BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_threads ) {
+    const size_t nThreads = Resource<size_t>("$ECKIT_TEST_THREADS", 8);
+
+    ThreadPool threads("filepool", nThreads);
+    FilePool pool(1);
+    for (size_t i = 0; i < nThreads; ++i) {
+        threads.push(new FilePoolUser(pool));
+    }
+    threads.waitForThreads();
+
+    DataHandle* foo = pool.checkout("foo.data");
+    BOOST_CHECK_GE( foo->estimate(), nThreads * BUF_SIZE );
+    pool.checkin(foo);
+    BOOST_CHECK_EQUAL( pool.usage(), 0 );
+    BOOST_CHECK_EQUAL( pool.size(),  1 );
+}
+
 BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 ) {
-    Buffer buffer(50*1024);
+    Buffer buffer(BUF_SIZE);
 
     FilePool pool(1);
 

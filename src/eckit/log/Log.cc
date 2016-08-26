@@ -15,6 +15,8 @@
 #include "eckit/log/MultiChannel.h"
 #include "eckit/log/MonitorChannel.h"
 #include "eckit/log/UserChannel.h"
+#include "eckit/log/StatusTarget.h"
+#include "eckit/log/MessageTarget.h"
 
 #include "eckit/runtime/Context.h"
 
@@ -77,38 +79,31 @@ Channel& Log::debug(const Logger& logger)
     return logger.debugChannel();
 }
 
-struct CreateMonitorChannel
-{
-    MonitorChannel* operator()() { return new MonitorChannel( MonitorChannel::NONE ); }
+struct CreateStatusChannel {
+    Channel* operator()() {
+        Channel* channel = new Channel();
+        channel->setLogTarget(new StatusTarget());
+        return channel;
+    }
 };
 
-Channel& Log::monitor(char type, long mode)
+std::ostream& Log::status()
 {
-    static ThreadSingleton<MonitorChannel, CreateMonitorChannel> x;
-    MonitorChannel& y = x.instance();
-    y.flags(type, mode);
-    return y;
-}
-
-struct CreateMonitorStatusChannel
-{
-    MonitorChannel* operator()() { return new MonitorChannel( MonitorChannel::STATUS ); }
-};
-
-Channel& Log::status()
-{
-    static ThreadSingleton<MonitorChannel, CreateMonitorStatusChannel> x;
+    static ThreadSingleton<Channel, CreateStatusChannel> x;
     return x.instance();
 }
 
-struct CreateMonitorMessageChannel
-{
-    MonitorChannel* operator()() { return new MonitorChannel( MonitorChannel::MESSAGE ); }
+struct CreateMessageChannel {
+    Channel* operator()() {
+        Channel* channel = new Channel();
+        channel->setLogTarget(new MessageTarget());
+        return channel;
+    }
 };
 
-Channel& Log::message()
+std::ostream& Log::message()
 {
-    static ThreadSingleton<MonitorChannel, CreateMonitorMessageChannel> x;
+    static ThreadSingleton<Channel, CreateMessageChannel> x;
     return x.instance();
 }
 
@@ -117,42 +112,17 @@ Channel& Log::info()
     return Context::instance().infoChannel();
 }
 
-Channel& Log::info(const CodeLocation& where)
-{
-    return Context::instance().infoChannel().source(where);
-}
-
 Channel& Log::error()
 {
     return Context::instance().errorChannel();
 }
 
-Channel& Log::error(const CodeLocation& where)
-{
-    return Context::instance().infoChannel().source(where);
-}
-
 std::ostream& Log::panic()
 {
-    try
-    {
+    try {
         return Log::error();
     }
-    catch (std::exception&)
-    {
-        return  std::cerr;
-    }
-}
-
-std::ostream& Log::panic(const CodeLocation& where)
-{
-    try
-    {
-        return Log::error(where);
-    }
-    catch (std::exception&)
-    {
-        std::cerr << "[" << where << "]";
+    catch (std::exception&) {
         return  std::cerr;
     }
 }
@@ -162,30 +132,6 @@ Channel& Log::warning()
     return Context::instance().warnChannel();
 }
 
-Channel& Log::warning(const CodeLocation& where)
-{
-    return Context::instance().warnChannel().source(where);
-}
-
-Channel& Log::null() {
-    static MultiChannel no_output;
-    return no_output;
-}
-
-Channel& Log::debug(const CodeLocation& where)
-{
-    return Context::instance().debugChannel().source(where);
-}
-
-Channel& Log::channel(int cat)
-{
-    return Context::instance().channel(cat);
-}
-
-Channel& Log::channel(int cat, const CodeLocation& where)
-{
-   return Context::instance().channel(cat).source(where);
-}
 
 UserChannel& Log::user()
 {
@@ -193,21 +139,21 @@ UserChannel& Log::user()
     return x.instance();
 }
 
-Channel& Log::userInfo()
+std::ostream& Log::userInfo()
 {
     UserChannel& u = user();
     u.msgType(UserChannel::INFO);
     return u;
 }
 
-Channel& Log::userError()
+std::ostream& Log::userError()
 {
     UserChannel& u = user();
     u.msgType(UserChannel::ERROR);
     return u;
 }
 
-Channel& Log::userWarning()
+std::ostream& Log::userWarning()
 {
     UserChannel& u = user();
     u.msgType(UserChannel::WARN);

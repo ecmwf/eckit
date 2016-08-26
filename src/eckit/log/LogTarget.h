@@ -24,14 +24,17 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class LogTarget : public std::ostream,  private NonCopyable {
+class LogTarget : private NonCopyable {
 
 public: // methods
 
     LogTarget();
 
     virtual ~LogTarget();
-    
+
+    virtual void write(const char* start, const char* end) = 0;
+    virtual void flush() = 0;
+
 private:
 
 };

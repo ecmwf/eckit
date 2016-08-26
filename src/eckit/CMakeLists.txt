@@ -262,20 +262,20 @@ runtime/Application.h
 runtime/Application.cc
 runtime/Tool.h
 runtime/Tool.cc
-runtime/ToolBehavior.h
-runtime/ToolBehavior.cc
+# runtime/ToolBehavior.h
+# runtime/ToolBehavior.cc
 runtime/Monitor.h
 runtime/Monitor.cc
 runtime/Monitorable.h
 runtime/Monitorable.cc
 runtime/TaskInfo.h
 runtime/TaskInfo.cc
-runtime/LibBehavior.h
-runtime/LibBehavior.cc
-runtime/StandardBehavior.h
-runtime/StandardBehavior.cc
-runtime/ContextBehavior.h
-runtime/ContextBehavior.cc
+# runtime/LibBehavior.h
+# runtime/LibBehavior.cc
+# runtime/StandardBehavior.h
+# runtime/StandardBehavior.cc
+# runtime/ContextBehavior.h
+# runtime/ContextBehavior.cc
 runtime/PipeApplication.h
 runtime/PipeApplication.cc
 runtime/PipeHandler.h
@@ -293,32 +293,42 @@ log/BigNum.h
 log/BigNum.cc
 log/Bytes.h
 log/Bytes.cc
-log/CallbackChannel.h
-log/CallbackChannel.cc
+# log/CallbackChannel.h
+# log/CallbackChannel.cc
 log/Channel.h
 log/Channel.cc
+log/OStreamChannel.h
+log/OStreamChannel.cc
+log/OStreamTarget.h
+log/OStreamTarget.cc
+log/LineBasedTarget.h
+log/LineBasedTarget.cc
+log/StatusTarget.h
+log/StatusTarget.cc
+log/MessageTarget.h
+log/MessageTarget.cc
 log/ChannelBuffer.h
 log/ChannelBuffer.cc
 log/CodeLocation.h
 log/CodeLocation.cc
-log/ColorizeFormat.h
-log/ColorizeFormat.cc
+#log/ColorizeFormat.h
+#log/ColorizeFormat.cc
 log/Colour.h
 log/Colour.cc
 log/ETA.h
 log/ETA.cc
-log/FileChannel.h
-log/FileChannel.cc
-log/FormatBuffer.h
-log/FormatBuffer.cc
-log/FormatChannel.h
-log/FormatChannel.cc
+# log/FileChannel.h
+# log/FileChannel.cc
+# log/FormatBuffer.h
+# log/FormatBuffer.cc
+# log/FormatChannel.h
+# log/FormatChannel.cc
 log/Log.h
 log/Log.cc
-log/MonitorChannel.h
-log/MonitorChannel.cc
-log/MultiChannel.h
-log/MultiChannel.cc
+# log/MonitorChannel.h
+# log/MonitorChannel.cc
+# log/MultiChannel.h
+# log/MultiChannel.cc
 log/OStreamHandle.h
 log/Plural.h
 log/Progress.h

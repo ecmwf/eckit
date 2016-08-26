@@ -18,7 +18,6 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Context.h"
-#include "eckit/runtime/ToolBehavior.h"
 #include "eckit/system/SystemInfo.h"
 
 namespace eckit {
@@ -31,7 +30,6 @@ Tool::Tool(int argc, char **argv, const char* homeenv) :
 	name_ = PathName(argv[0]).baseName(false);
 
     Context::instance().setup( argc, argv );
-    Context::instance().behavior( new ToolBehavior() );
     Context::instance().runName( name_ );
 
     // Read home path from environment if set (takes precedence)

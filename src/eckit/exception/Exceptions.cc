@@ -101,7 +101,7 @@ TooManyRetries::TooManyRetries( const int retries )
     std::ostringstream s;
     s << "Too many retries: " << retries;
     reason(s.str());
-    Log::monitor(Log::Unix,errno) << what() << std::endl;
+    Log::status() << what() << std::endl;
 }
 
 TooManyRetries::TooManyRetries( const int retries, const std::string& msg )
@@ -109,7 +109,7 @@ TooManyRetries::TooManyRetries( const int retries, const std::string& msg )
     std::ostringstream s;
     s << "Too many retries: " << retries << " @ " << msg;
     reason(s.str());
-    Log::monitor(Log::Unix,errno) << what() << std::endl;
+    Log::status() << what() << std::endl;
 }
 
 TimeOut::TimeOut(const std::string& msg, const unsigned long timeout)
@@ -125,7 +125,7 @@ FailedSystemCall::FailedSystemCall(const std::string& w)
     std::ostringstream s;
     s << "Failed system call: " << w << " " << Log::syserr;
     reason(s.str());
-    Log::monitor(Log::Unix,errno) << what() << std::endl;
+    Log::status() << what() << std::endl;
 }
 
 FailedSystemCall::FailedSystemCall(const std::string& msg, const CodeLocation& loc)
@@ -133,7 +133,7 @@ FailedSystemCall::FailedSystemCall(const std::string& msg, const CodeLocation& l
     std::ostringstream s;
     s << "Failed system call: " << msg << " " << " in " << loc << " " << Log::syserr;
     reason(s.str());
-    Log::monitor(Log::Unix,errno) << what() << std::endl;
+    Log::status() << what() << std::endl;
 }
 
 FailedSystemCall::FailedSystemCall(const char* msg,const CodeLocation& loc,int err)
@@ -144,7 +144,7 @@ FailedSystemCall::FailedSystemCall(const char* msg,const CodeLocation& loc,int e
     s << "Failed system call: " << msg << " in " << loc << " " << Log::syserr;
 
     reason(s.str());
-    Log::monitor(Log::Unix,errno) << what() << std::endl;
+    Log::status() << what() << std::endl;
 }
 
 FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, const CodeLocation& loc,int err)
@@ -155,7 +155,7 @@ FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, cons
     s << "Failed system call: " << msg << " in " << loc << " " << Log::syserr << " [" << ctx << "]";
 
     reason(s.str());
-    Log::monitor(Log::Unix,errno) << what() << std::endl;
+    Log::status() << what() << std::endl;
 }
 
 SeriousBug::SeriousBug(const std::string& w) : Exception(std::string("Serious Bug: ") + w)
@@ -186,7 +186,7 @@ SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
 AssertionFailed::AssertionFailed(const std::string& w):
     Exception(std::string("Assertion failed: ") + w)
 {
-    Log::monitor(Log::App,1) << what() << std::endl;
+    Log::status() << what() << std::endl;
 
     // if(Context::instance().assertAborts())
     // {
@@ -204,7 +204,7 @@ AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc
       << ", line " << loc.line() << " of " << loc.file();
 
     reason(s.str());
-    Log::monitor(Log::App,2) << what() << std::endl;
+    Log::status() << what() << std::endl;
 
     // if(Context::instance().assertAborts())
     // {
@@ -222,7 +222,7 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
       << ", line " << loc.line() << " of " << loc.file();
 
     reason(s.str());
-    Log::monitor(Log::App,2) << what() << std::endl;
+    Log::status() << what() << std::endl;
 
     //if(Context::instance().assertAborts())
     //{
@@ -265,7 +265,7 @@ NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& 
     ss << "Not implemented: " << s << loc;
 
     reason(ss.str());
-	Log::monitor(Log::App,2) << what() << std::endl;
+	Log::status() << what() << std::endl;
 
     std::cout << what() << std::endl;
     std::cout << BackTrace::dump() << std::endl;
@@ -279,7 +279,7 @@ NotImplemented::NotImplemented( const CodeLocation& loc )
        << ", line " << loc.line() << " of " << loc.file();
 
     reason(ss.str());
-    Log::monitor(Log::App,2) << what() << std::endl;
+    Log::status() << what() << std::endl;
 
     std::cout << what() << std::endl;
     std::cout << BackTrace::dump() << std::endl;
@@ -347,7 +347,7 @@ FileError::FileError(const std::string& msg)
     std::ostringstream s;
     s << msg <<  Log::syserr;
     reason(s.str());
-    Log::monitor(Log::Unix,errno) << what() << std::endl;
+    Log::status() << what() << std::endl;
 }
 
 FileError::FileError(const std::string& msg, const CodeLocation& here )
@@ -355,7 +355,7 @@ FileError::FileError(const std::string& msg, const CodeLocation& here )
     std::ostringstream s;
     s << msg << here <<  Log::syserr;
     reason(s.str());
-    Log::monitor(Log::Unix,errno) << what() << std::endl;
+    Log::status() << what() << std::endl;
 }
 
 CantOpenFile::CantOpenFile(const std::string& file, bool retry):
@@ -365,7 +365,7 @@ CantOpenFile::CantOpenFile(const std::string& file, bool retry):
     s << "Cannot open " << file << " " << Log::syserr;
     if(retry) s << " (retry ok)";
     reason(s.str());
-    Log::monitor(Log::Unix,errno) << what() << std::endl;
+    Log::status() << what() << std::endl;
 }
 
 CantOpenFile::CantOpenFile(const std::string& file, const CodeLocation& loc, bool retry):
@@ -376,7 +376,7 @@ CantOpenFile::CantOpenFile(const std::string& file, const CodeLocation& loc, boo
     if(retry) s << " (retry ok)";
     s << loc;
     reason(s.str());
-    Log::monitor(Log::Unix,errno) << what() << std::endl;
+    Log::status() << what() << std::endl;
 }
 
 MethodNotYetImplemented::MethodNotYetImplemented(const std::string &msg):
@@ -421,7 +421,7 @@ void handle_panic(const char *msg)
     std::cout << "PANIC: " << msg << std::endl;
     std::cerr << "PANIC: " << msg << std::endl;
 
-    Log::monitor(Log::App,9999) << msg << std::endl;
+    Log::status() << msg << std::endl;
 
     Log::panic() << "PANIC IS CALLED!!!" << std::endl;
     Log::panic() << msg << std::endl;

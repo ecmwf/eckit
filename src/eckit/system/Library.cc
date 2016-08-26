@@ -20,9 +20,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
-#include "eckit/log/Channel.h"
-#include "eckit/log/ChannelBuffer.h"
-#include "eckit/log/MultiChannel.h"
+#include "eckit/log/OStreamChannel.h"
 #include "eckit/os/System.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/thread/AutoLock.h"
@@ -158,11 +156,10 @@ Channel& Library::debugChannel() const
     std::string s = prefix_ + "_DEBUG";
 
     if (debug_) {
-        debugChannel_.reset(new Channel( new ChannelBuffer( std::cout )));
+        debugChannel_.reset(new OStreamChannel(std::cout));
     }
     else {
-
-        debugChannel_.reset(new MultiChannel());
+        debugChannel_.reset(new Channel());
     }
     return *debugChannel_;
 }

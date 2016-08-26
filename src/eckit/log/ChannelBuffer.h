@@ -32,21 +32,24 @@ class ChannelBuffer : public std::streambuf,
                       private NonCopyable {
 
 public: // methods
-    
+
     /// constructor, taking ownership of stream
     ChannelBuffer( std::size_t size = 1024 );
-    
+
     /// destructor, deallocates stream if has ownership
     virtual ~ChannelBuffer();
 
-    size_t targets() const { return targets_.size(); }
-            
+    size_t numberOfTargets() const { return targets_.size(); }
+
+    void addLogTarget(LogTarget* target);
+    void setLogTarget(LogTarget* target);
+
 protected: // methods
 
     /// override this to change buffer behavior
     /// @returns true if no error occured
     virtual bool dumpBuffer();
-    
+
     /// typically you don't need to override this
     /// @see dumpBuffer
     virtual int_type overflow(int_type ch);
@@ -54,14 +57,16 @@ protected: // methods
     /// typically you don't need to override this
     /// @see dumpBuffer
     virtual int_type sync();
-    
-protected: // members
 
-    typedef std::vector<LogTarget*> targets_t;
+protected: // members
 
     std::vector<LogTarget*> targets_;
 
     std::vector<char> buffer_;
+
+private:
+
+    void clear();
 
 };
 

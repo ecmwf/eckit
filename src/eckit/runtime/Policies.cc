@@ -43,7 +43,7 @@ static void end(const char* msg) {
 
     delete[] memoryReserve;
     memoryReserve = 0;
-    Log::monitor(Log::App, 9998) << msg << std::endl;
+    Log::status() << msg << std::endl;
 
     try {
         throw;

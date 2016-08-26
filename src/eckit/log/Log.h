@@ -72,34 +72,26 @@ public: // methods
     static std::ostream& panic();
 
     /// Channel accessible through category index
-    static Channel& channel(int cat);
+    // static Channel& channel(int cat);
 
-    /// characters to identify origin of monitoring messages
-    enum { Unix = 'U', App = 'X' };
-
-    /// Channel for application monitor
-    static Channel& monitor(char, long);
     /// Channel for status messages to Application Monitor
-    static Channel& status();
+    static std::ostream& status();
     /// Channel for status messages to Application Monitor
-    static Channel& message();
+    static std::ostream& message();
 
-    /// Get the channel for the user
-    static UserChannel& user();
     /// Channel for informative messages tp remote user
-    static Channel& userInfo();
+    static std::ostream& userInfo();
     /// Channel for warning messages to remote user
-    static Channel& userWarning();
+    static std::ostream& userWarning();
     /// Channel for error messages to remote user
-    static Channel& userError();
+    static std::ostream& userError();
     /// Send messages to remote user directly -- not using a channel
     static void notifyClient(const std::string&);
 
     /// manipulator that will print the last error message as in perror(2)
     static std::ostream& syserr(std::ostream&);
 
-    static std::ostream& dev() { return std::cout; }
-    static Channel& null();
+    // static Channel& null();
 
     // Per library loggin
     // trace(const T* = 0) can be replace by trace<T>() with c++14
@@ -118,6 +110,10 @@ private: // methods
 
     Log();   ///< Private, non-instanciatable class
     ~Log();  ///< Private, non-instanciatable class
+
+
+    /// Get the channel for the user
+    static UserChannel& user();
 };
 
 //----------------------------------------------------------------------------------------------------------------------

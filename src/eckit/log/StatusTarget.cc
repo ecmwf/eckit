@@ -8,46 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Channel.h
-/// @author Tiago Quintino
-
-#ifndef eckit_log_Channel_h
-#define eckit_log_Channel_h
-
-#include <ostream>
-
-#include "eckit/memory/NonCopyable.h"
+#include "eckit/log/StatusTarget.h"
+#include "eckit/runtime/Monitor.h"
 
 namespace eckit {
 
-class ChannelBuffer;
-class LogTarget;
-
 //----------------------------------------------------------------------------------------------------------------------
 
-/// Output channel that is an std::ostream but more functional
-/// @todo consider merging Channel with MultiChannel
-class Channel : public std::ostream, private NonCopyable {
+StatusTarget::StatusTarget() {
+}
 
-public: // methods
-
-     Channel();
-    ~Channel();
-
-    bool operator !() const;
-    operator bool() const;
-
-    void setLogTarget(LogTarget*);
-    void addLogTarget(LogTarget*);
-
-private:
-
-    ChannelBuffer* buffer_;
-
-};
+void StatusTarget::line(const char* line) {
+    Monitor::instance().status(line);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
-
-#endif

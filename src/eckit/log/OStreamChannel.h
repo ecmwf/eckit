@@ -8,21 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/exception/Exceptions.h"
+/// @file OStreamChannel.h
+/// @author Tiago Quintino
 
-#include "eckit/log/LogTarget.h"
+#ifndef eckit_log_OStreamChannel_h
+#define eckit_log_OStreamChannel_h
+
+#include "eckit/log/Channel.h"
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
-
-LogTarget::LogTarget() {
-}
-
-LogTarget::~LogTarget() {
-}
-
+class OStreamChannel : public Channel {
+public: // methods
+    OStreamChannel(std::ostream&);
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
+
+#endif

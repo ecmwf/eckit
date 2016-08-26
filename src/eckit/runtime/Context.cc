@@ -15,7 +15,6 @@
 
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/runtime/ContextBehavior.h"
-#include "eckit/runtime/StandardBehavior.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"
 
@@ -51,7 +50,6 @@ Context::Context() :
 
   abortHandler_ = &(::abort);
 
-  behavior_.reset(new StandardBehavior());
 }
 
 Context::~Context() {}

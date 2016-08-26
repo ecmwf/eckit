@@ -36,11 +36,6 @@ VectorOption<T>::VectorOption(const std::string &name, const std::string &descri
 
 
 template<class T>
-VectorOption<T>::VectorOption(const std::string &name, const std::string &description, const char* separator):
-    Option(name, description), size_(0), separator_(separator) {
-}
-
-template<class T>
 VectorOption<T>::~VectorOption() {
 }
 
@@ -70,7 +65,7 @@ void VectorOption<T>::print(std::ostream &out) const {
     out << "   --" << name_;
 
     const char *sep = "=";
-    for (size_t i = 0; i < size_ ? size_ : 2; i++) {
+    for (size_t i = 0; i < (size_ ? size_ : 2); i++) {
         out << sep  << Title<T>()();
         sep = separator_;
     }

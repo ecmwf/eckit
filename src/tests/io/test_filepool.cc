@@ -28,6 +28,8 @@ using namespace eckit;
 
 const size_t BUF_SIZE = 50*1024;
 
+const char* files[] = {"foo.data", "bar.data", "baz.data", "marco.data", "polo.data"};
+
 class FilePoolUser : public ThreadPoolTask {
 public:
     FilePoolUser(FilePool& pool) : pool_(pool) {}
@@ -44,6 +46,17 @@ private:
 
 //-----------------------------------------------------------------------------
 
+struct F {
+    ~F() {
+        for (size_t i = 0; i < 5; ++i) {
+            PathName path(files[i]);
+            if (path.exists()) path.unlink();
+        }
+    }
+};
+
+BOOST_GLOBAL_FIXTURE( F );
+
 BOOST_AUTO_TEST_SUITE( test_eckit_io_filepool )
 
 BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_threads ) {
@@ -57,7 +70,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_threads ) {
     threads.waitForThreads();
 
     DataHandle* foo = pool.checkout("foo.data");
-    BOOST_CHECK_GE( foo->estimate(), nThreads * BUF_SIZE );
+    BOOST_CHECK_EQUAL( foo->estimate(), Length(nThreads * BUF_SIZE) );
     pool.checkin(foo);
     BOOST_CHECK_EQUAL( pool.usage(), 0 );
     BOOST_CHECK_EQUAL( pool.size(),  1 );

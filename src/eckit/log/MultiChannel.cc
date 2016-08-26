@@ -12,11 +12,9 @@
 #include "eckit/log/Log.h"
 #include "eckit/log/MultiChannel.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class MultiplexBuffer: public std::streambuf {
 public:
@@ -27,7 +25,7 @@ public:
         std::streambuf(),
         buffer_( size + 1 ) // + 1 so we can always write the '\0'
     {
-        assert( size );
+        ASSERT( size );
         char *base = &buffer_.front();
         setp( base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
         setg(0, 0, 0);
@@ -75,13 +73,13 @@ protected:
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 MultiChannel::MultiChannel() :
     Channel( new MultiplexBuffer() ),
     buff_( dynamic_cast<MultiplexBuffer*>( rdbuf() ) )
 {
-    assert( buff_ );
+    ASSERT( buff_ );
 }
 
 MultiChannel::~MultiChannel()
@@ -151,6 +149,10 @@ MultiChannel::iterator MultiChannel::end()
   return buff_->streams_.end();
 }
 
-//-----------------------------------------------------------------------------
+bool MultiChannel::active() const {
+    return !buff_->streams_.empty();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

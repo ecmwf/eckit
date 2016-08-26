@@ -68,6 +68,9 @@ protected:
 
     MultiplexBuffer* buff_; ///< storage of output streams
 
+private:
+
+    virtual bool active() const;
 };
 
 //-----------------------------------------------------------------------------

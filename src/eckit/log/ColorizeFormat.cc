@@ -29,12 +29,12 @@ ColorizeFormat::ColorizeFormat(std::size_t size)
 
 void ColorizeFormat::beginLine()
 {
-    *target() << begin_ << prefix_;
+//    *target() << begin_ << prefix_;
 }
 
 void ColorizeFormat::endLine()
 {
-    *target() << end_;
+//    *target() << end_;
 }
 
 std::string ColorizeFormat::prefix() const

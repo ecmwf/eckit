@@ -196,7 +196,8 @@ thread/MutexCond.h
 thread/MutexCond.cc
 thread/AutoLock.h
 thread/AutoLocker.h
-thread/AutoLocker.cc
+thread/AutoLocker.cc#include "eckit/log/Channel.h"
+
 thread/Thread.h
 thread/Thread.cc
 thread/ThreadControler.h
@@ -330,6 +331,8 @@ log/Seconds.h
 log/Seconds.cc
 log/Statistics.h
 log/Statistics.cc
+log/LogTarget.h
+log/LogTarget.cc
 log/Timer.h
 log/Timer.cc
 log/TimeStamp.h

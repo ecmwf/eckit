@@ -16,7 +16,6 @@
 #ifndef eckit_log_Log_h
 #define eckit_log_Log_h
 
-#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/UserChannel.h"
 
@@ -29,7 +28,6 @@ public: // methods
     virtual Channel& debugChannel() const = 0;
     virtual bool debug() const = 0;
 };
-
 
 /// Singleton holding global streams for logging
 ///
@@ -60,27 +58,21 @@ public: // methods
 
     /// Channel for debug output
     static Channel& debug(const Logger& = defaultLogger());
-    static Channel& debug(const CodeLocation& where);
 
     /// Channel for informative messages
     static Channel& info();
-    static Channel& info(const CodeLocation& where);
 
     /// Channel for warning messages
     static Channel& warning();
-    static Channel& warning(const CodeLocation& where);
 
     /// Channel for error messages
     static Channel& error();
-    static Channel& error(const CodeLocation& where);
 
     /// Channel for panic messages
     static std::ostream& panic();
-    static std::ostream& panic(const CodeLocation& where);
 
     /// Channel accessible through category index
     static Channel& channel(int cat);
-    static Channel& channel(int cat, const CodeLocation& where);
 
     /// characters to identify origin of monitoring messages
     enum { Unix = 'U', App = 'X' };

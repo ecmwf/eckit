@@ -11,57 +11,43 @@
 #include <ostream>
 
 #include "eckit/log/ChannelBuffer.h"
-
-//-----------------------------------------------------------------------------
+#include "eckit/log/LogTarget.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-ChannelBuffer::ChannelBuffer( std::ostream* os, std::size_t size ) : 
+ChannelBuffer::ChannelBuffer( std::size_t size ) :
     std::streambuf(), 
-    os_(os),
-    hasLoc_(false),
     buffer_( size + 1 ) // + 1 so we can always write the '\0'        
 {
-    assert( size );
-    char *base = &buffer_.front();
-    setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
-}
-
-ChannelBuffer::ChannelBuffer( std::ostream& os, std::size_t size ) : 
-    std::streambuf(), 
-    os_(os),
-    hasLoc_(false),
-    buffer_( size + 1 ) // + 1 so we can always write the '\0'        
-{
-    assert( size );
+    ASSERT( size );
     char *base = &buffer_.front();
     setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
 }
 
 ChannelBuffer::~ChannelBuffer() 
 { 
-    sync(); 
-}
-
-void ChannelBuffer::location(const CodeLocation& where)
-{
-    hasLoc_ = true;
-    where_ = where;    
+    sync();
+    for(targets_t::iterator i = targets_.begin(); i != targets_.end(); ++i) {
+        delete *i;
+    }
 }
 
 bool ChannelBuffer::dumpBuffer()
 {
-    if( has_target() )
-        target()->write(pbase(),pptr() - pbase());
+    for(targets_t::iterator i = targets_.begin(); i != targets_.end(); ++i) {
+        std::ostream& os = **i;
+        os.write(pbase(),pptr() - pbase());
+    }
     setp(pbase(), epptr());
     return true;
 }
 
+
 std::streambuf::int_type ChannelBuffer::overflow(std::streambuf::int_type ch)
 {
-    /* AutoLock<Mutex> lock(local_mutex); */
     if (ch == traits_type::eof() ) { return sync(); }
     dumpBuffer();
     sputc(ch);
@@ -72,12 +58,14 @@ std::streambuf::int_type ChannelBuffer::sync()
 {
     if( dumpBuffer() )
     {
-        if( target() ) target()->flush();
+        for(targets_t::iterator i = targets_.begin(); i != targets_.end(); ++i) {
+            (*i)->flush();
+        }
         return 0;
     }
     else return -1;
-}    
+}
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

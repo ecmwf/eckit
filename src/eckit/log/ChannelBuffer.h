@@ -21,11 +21,11 @@
 #include "eckit/log/CodeLocation.h"
 #include "eckit/log/OStreamHandle.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+class LogTarget;
 
 /// Generic base for buffers
 class ChannelBuffer : public std::streambuf,
@@ -34,30 +34,13 @@ class ChannelBuffer : public std::streambuf,
 public: // methods
     
     /// constructor, taking ownership of stream
-    ChannelBuffer( std::ostream* os = 0, std::size_t size = 1024 );
+    ChannelBuffer( std::size_t size = 1024 );
     
-    /// constructor, not taking ownership of stream
-    ChannelBuffer( std::ostream& os, std::size_t size = 1024 );
-
     /// destructor, deallocates stream if has ownership
-    ~ChannelBuffer();
-    
-    /// access the target stream
-    /// may return null pointer so always check before dereferencing
-    std::ostream* target() const  { return os_.get(); }    
+    virtual ~ChannelBuffer();
 
-    /// access the target stream
-    /// @returns if there is a target stream set for this buffer
-    bool has_target() const  { return os_.get(); }
-    
-    /// sets the target stream, passing ownership
-    void target(std::ostream* os) { os_.reset(os); }
-    /// sets the target stream, not passing ownership
-    void target(std::ostream& os) { os_.reset(os); }    
-    
-    /// sets the current location of the code outputing
-    void location( const CodeLocation& );
-    
+    size_t targets() const { return targets_.size(); }
+            
 protected: // methods
 
     /// override this to change buffer behavior
@@ -74,10 +57,12 @@ protected: // methods
     
 protected: // members
 
-    ostream_handle os_;
-    bool hasLoc_;
-    CodeLocation where_;
+    typedef std::vector<LogTarget*> targets_t;
+
+    std::vector<LogTarget*> targets_;
+
     std::vector<char> buffer_;
+
 };
 
 //-----------------------------------------------------------------------------

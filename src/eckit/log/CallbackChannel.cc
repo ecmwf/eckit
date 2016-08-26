@@ -12,6 +12,7 @@
 #include <cassert>
 
 #include "eckit/log/CallbackChannel.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
@@ -27,7 +28,7 @@ public:
       ctxt_(ctxt),
       buffer_( size + 1 ) // + 1 so we can always write the '\0'
     {
-        assert( size );
+        ASSERT( size );
         char *base = &buffer_.front();
         setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
         

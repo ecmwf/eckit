@@ -22,7 +22,7 @@ namespace eckit {
 FormatChannel::FormatChannel(std::ostream *os, FormatBuffer *buff) :
       Channel( buff )
 {
-    assert(os);
+    ASSERT(os);
     buff->target(os);
 }
 

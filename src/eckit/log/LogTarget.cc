@@ -10,25 +10,25 @@
 
 #include "eckit/exception/Exceptions.h"
 
-#include "eckit/log/Channel.h"
+#include "eckit/log/LogTarget.h"
+#include "eckit/log/LogTarget.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Channel::Channel() {
+LogTarget::LogTarget() {
 }
 
-Channel::~Channel() {
+LogTarget::~LogTarget() {
 }
 
-bool Channel::operator !() const {
-    bool b = *this;
-    return  !b;
+bool LogTarget::operator !() const {
+    return outputters_.empty();
 }
 
-Channel::operator bool() const {
-    return buffer_.targets();
+LogTarget::operator bool() const {
+    return !outputters_.empty();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

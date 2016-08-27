@@ -17,8 +17,9 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 LineBasedTarget::LineBasedTarget():
-    size_(1024),
-    buffer_(new char[size_]) {
+    size_(4096),
+    buffer_(new char[size_]),
+    position_(0) {
     ASSERT(buffer_);
 }
 
@@ -26,7 +27,35 @@ LineBasedTarget::~LineBasedTarget() {
     delete[] buffer_;
 }
 
+static inline size_t round(size_t x, size_t n) {
+    return ((x + n - 1) / n) * n;
+}
+
+void LineBasedTarget::reserve(size_t size) {
+    if (size_ < size) {
+        delete[] buffer_;
+        size_ = round(size, 1024 * 1024);
+        buffer_ = new char[size_];
+        ASSERT(buffer_);
+    }
+}
+
 void LineBasedTarget::write(const char* start, const char* end) {
+
+    reserve(position_ + (end - start) + 1);
+
+    while (start != end) {
+        if (*start == '\n') {
+            buffer_[position_] = 0;
+            line(buffer_);
+            position_ = 0;
+            start++;
+        }
+        else {
+            buffer_[position_ ++ ] = *start++;
+        }
+    }
+
 }
 
 void LineBasedTarget::flush() {

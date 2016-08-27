@@ -33,8 +33,12 @@ private:
     virtual void flush();
     virtual void line(const char* line) = 0;
 
+    void reserve(size_t size);
+
+
     size_t size_;
     char* buffer_;
+    size_t position_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

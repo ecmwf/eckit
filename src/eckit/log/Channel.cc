@@ -41,10 +41,12 @@ Channel::operator bool() const {
 }
 
 void Channel::setLogTarget(LogTarget* target) {
+    ASSERT(target);
     buffer_->setLogTarget(target);
 }
 
 void Channel::addLogTarget(LogTarget* target) {
+    ASSERT(target);
     buffer_->addLogTarget(target);
 }
 //----------------------------------------------------------------------------------------------------------------------

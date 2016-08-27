@@ -24,7 +24,7 @@ namespace eckit {
 class WrapperTarget : public LogTarget {
 protected: // methods
 
-    WrapperTarget(LogTarget* target);
+    WrapperTarget(LogTarget* target = 0);
     ~WrapperTarget();
 
 protected:

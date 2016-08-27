@@ -20,11 +20,11 @@ namespace eckit {
 
 ChannelBuffer::ChannelBuffer( std::size_t size ) :
     std::streambuf(),
-    buffer_( size + 1 ) // + 1 so we can always write the '\0'
+    buffer_( size  )
 {
     ASSERT( size );
     char *base = &buffer_.front();
-    setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
+    setp(base, base + buffer_.size() );
 }
 
 ChannelBuffer::~ChannelBuffer()
@@ -37,6 +37,7 @@ void ChannelBuffer::clear() {
     for(std::vector<LogTarget*>::iterator i = targets_.begin(); i != targets_.end(); ++i) {
         delete *i;
     }
+    targets_.clear();
 }
 
 void ChannelBuffer::setLogTarget(LogTarget* target) {

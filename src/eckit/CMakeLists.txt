@@ -274,6 +274,8 @@ log/Bytes.h
 log/Bytes.cc
 log/CallbackTarget.h
 log/CallbackTarget.cc
+log/TimeStampTarget.h
+log/TimeStampTarget.cc
 log/PrefixTarget.h
 log/PrefixTarget.cc
 log/WrapperTarget.h

@@ -11,6 +11,7 @@
 #include "eckit/exception/Exceptions.h"
 
 #include "eckit/log/WrapperTarget.h"
+#include "eckit/log/OStreamTarget.h"
 
 namespace eckit {
 
@@ -19,7 +20,11 @@ namespace eckit {
 WrapperTarget::WrapperTarget(LogTarget* target):
     target_(target),
     prefix_(true) {
-    ASSERT(target);
+
+    if(!target_) {
+        target_ = new OStreamTarget(std::cout);
+    }
+
 }
 
 WrapperTarget::~WrapperTarget() {

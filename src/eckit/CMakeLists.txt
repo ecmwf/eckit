@@ -274,6 +274,10 @@ log/Bytes.h
 log/Bytes.cc
 log/CallbackTarget.h
 log/CallbackTarget.cc
+log/PrefixTarget.h
+log/PrefixTarget.cc
+log/WrapperTarget.h
+log/WrapperTarget.cc
 log/Channel.h
 log/Channel.cc
 log/OStreamChannel.h

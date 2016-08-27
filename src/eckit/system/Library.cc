@@ -20,7 +20,8 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
-#include "eckit/log/OStreamChannel.h"
+#include "eckit/log/OStreamTarget.h"
+#include "eckit/log/PrefixTarget.h"
 #include "eckit/os/System.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/thread/AutoLock.h"
@@ -155,12 +156,12 @@ Channel& Library::debugChannel() const
 
     std::string s = prefix_ + "_DEBUG";
 
+    debugChannel_.reset(new Channel());
+
     if (debug_) {
-        debugChannel_.reset(new OStreamChannel(std::cout));
+        debugChannel_->setLogTarget(new PrefixTarget(s, new OStreamTarget(std::cout)));
     }
-    else {
-        debugChannel_.reset(new Channel());
-    }
+
     return *debugChannel_;
 }
 

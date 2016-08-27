@@ -41,7 +41,8 @@ Context::Context() :
     home_("/"),
     runName_("undef"),
     displayName_(),
-    assertAborts_(false) {
+    assertAborts_(false),
+    debugLevel_(0) {
     char* h = getenv("HOME");
     if (h) home_ = h;
 
@@ -130,6 +131,11 @@ bool Context::assertAborts() {
 long Context::self() const { return taskID_; }
 
 void Context::self(long id) { taskID_ = id; }
+
+int Context::debugLevel() const { return debugLevel_; }
+
+void Context::debugLevel(int level) { debugLevel_ = level;}
+
 
 const std::string& Context::runName() const {
     AutoLock<Mutex> lock(local_mutex);

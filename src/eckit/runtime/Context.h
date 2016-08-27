@@ -53,6 +53,9 @@ public: // methods
     long self() const;
     void self( long );
 
+    int debugLevel() const;
+    void debugLevel(int);
+
     const std::string& runName() const;
     void runName( const std::string& name );
 
@@ -91,7 +94,7 @@ public: // methods
 
 private: // methods
 
-    Context(); 	///< Singleton class with private constructor
+    Context();  ///< Singleton class with private constructor
 
     virtual ~Context(); ///< Singleton class with private destructor
 
@@ -99,7 +102,7 @@ private: // methods
 
     // From Configurable
 
-	virtual std::string kind() const  { return "Context"; }
+    virtual std::string kind() const  { return "Context"; }
 
 private: // members
 
@@ -112,17 +115,21 @@ private: // members
     Channel warning_;
     Channel error_;
 
+
     std::string  home_;         ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
     std::string  runName_;      ///< name of running application
     std::string  displayName_;  ///< name to be displayed of running application
 
-    typedef std::map<std::string,Channel*> ChannelRegistry;
+    typedef std::map<std::string, Channel*> ChannelRegistry;
 
     ChannelRegistry channels_;
 
     abort_handler_t abortHandler_;
 
     bool assertAborts_;
+
+    int debugLevel_;
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

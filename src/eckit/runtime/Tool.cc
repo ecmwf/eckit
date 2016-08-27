@@ -27,7 +27,7 @@ namespace eckit {
 Tool::Tool(int argc, char **argv, const char* homeenv) :
     name_("undefined")
 {
-	name_ = PathName(argv[0]).baseName(false);
+    name_ = PathName(argv[0]).baseName(false);
 
     Context::instance().setup( argc, argv );
     Context::instance().runName( name_ );
@@ -35,7 +35,7 @@ Tool::Tool(int argc, char **argv, const char* homeenv) :
     // Read home path from environment if set (takes precedence)
     const char* home = homeenv ? ::getenv(homeenv) : 0;
 
-    if(home) {
+    if (home) {
         eckit::Context::instance().home(home);
     } else {
         std::string execHome = eckit::system::SystemInfo::instance().executablePath().dirName().dirName();
@@ -53,9 +53,9 @@ void Tool::reconfigure()
 {
     Log::info() << "Tool::reconfigure" << std::endl;
 
-    int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
+    int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
 
-    // Context::instance().debug( debug );
+    Context::instance().debugLevel( debug );
 
     // forward to context
     Context::instance().reconfigure();
@@ -63,30 +63,30 @@ void Tool::reconfigure()
 
 int Tool::start()
 {
-	int status = 0;
+    int status = 0;
 
-    int debug = Resource<int>(this,"debug;$DEBUG;-debug",0);
+    int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
 
-    // Context::instance().debug( debug );
+    Context::instance().debugLevel( debug );
 
-    std::string displayName = Resource<std::string>("-name",name_);
+    std::string displayName = Resource<std::string>("-name", name_);
 
     Context::instance().displayName( displayName );
 
-	try
+    try
     {
         run();
-	}
-    catch( Exception& e ){
+    }
+    catch ( Exception& e ) {
         status = 1;
         Log::error() << "** " << e.what() << " Caught in "  << Here() << std::endl;
         Log::error() << "** Exception terminates " << name() << std::endl;
     }
-    catch( std::exception& e ){
-		status = 1;
-		Log::error() << "** " << e.what() << " Caught in "  << Here() << std::endl;
+    catch ( std::exception& e ) {
+        status = 1;
+        Log::error() << "** " << e.what() << " Caught in "  << Here() << std::endl;
         Log::error() << "** Exception terminates " << name() << std::endl;
-	}
+    }
 
     return status;
 }

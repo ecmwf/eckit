@@ -23,9 +23,17 @@ public:
 
 // -- Class methods
 
-    static void reset();
     static bool lookUp(const std::string&, const std::string&, const std::string&, std::string&);
+
+private:
+
+    // Only for my friends
+    // You should never call these, resources have a read-only semantics
+    static void reset();
     static void set(const std::string&, const std::string&);
+
+    friend class ConfigCmd;
+    friend class ResourceBase;
 
 private:
 

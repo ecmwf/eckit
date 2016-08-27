@@ -280,8 +280,6 @@ log/WrapperTarget.h
 log/WrapperTarget.cc
 log/Channel.h
 log/Channel.cc
-log/OStreamChannel.h
-log/OStreamChannel.cc
 log/OStreamTarget.h
 log/OStreamTarget.cc
 log/LineBasedTarget.h

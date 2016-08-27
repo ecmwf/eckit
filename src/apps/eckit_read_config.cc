@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/config/Compiler.h"
 #include "eckit/config/Resource.h"
-#include "eckit/config/Script.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
@@ -67,37 +65,37 @@ void ReadConfig::run()
         return;
     }
 
-    PathName filepath(filename);
+    // PathName filepath(filename);
 
-    if( ! filepath.exists() )
-        throw BadValue( "file does not exist -- " + filename );
+    // if( ! filepath.exists() )
+    //     throw BadValue( "file does not exist -- " + filename );
 
-    config::Script s;
+    // config::Script s;
 
-    std::ifstream in(filepath);
+    // std::ifstream in(filepath);
 
-    ASSERT(in);
+    // ASSERT(in);
 
-    s.readStream(in);
+    // s.readStream(in);
 
     // print ???
 
-    bool print = Resource<bool>("-print",false);
+    // bool print = Resource<bool>("-print",false);
 
-    if(print)
-        s.print( std::cout );
+    // if(print)
+    //     s.print( std::cout );
 
     // evaluate the configuration
 
-    StringDict dout;
+//     StringDict dout;
 
-    s.execute(din,dout);
+//     s.execute(din,dout);
 
-//    std::cout << "in :" << din << std::endl;
-//    std::cout << "out:" << dout << std::endl;
+// //    std::cout << "in :" << din << std::endl;
+// //    std::cout << "out:" << dout << std::endl;
 
-    for( StringDict::const_iterator i = dout.begin(); i != dout.end(); ++i )
-        std::cout << i->first << " : " << i->second << std::endl;
+//     for( StringDict::const_iterator i = dout.begin(); i != dout.end(); ++i )
+//         std::cout << i->first << " : " << i->second << std::endl;
 
 }
 

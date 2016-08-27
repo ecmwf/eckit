@@ -8,65 +8,59 @@
  * does it submit to any jurisdiction.
  */
 
-// File Resource.h
-// Baudouin Raoult - ECMWF May 96
+/// @file Log.h
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date May 1996
 
-#ifndef eckit_Resource_h
-#define eckit_Resource_h
+#ifndef eckit_config_Resource_h
+#define eckit_config_Resource_h
 
-#include "eckit/eckit.h"
+#include <string>
 
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/utils/Translator.h"
-#include "eckit/types/Types.h"
-
-class Url;
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
 class Configurable;
+class Url;
 
 class ResourceBase : private NonCopyable {
+public:
 
-public: // methods
+// -- Contructors
 
-    /// Contructor
-    ResourceBase(Configurable* owner, const std::string& str );
+    ResourceBase(Configurable* owner, const std::string& str);
 
-    /// Contructor for temporary resources that may depend on a input dictionary
-    ResourceBase(const std::string& str, const StringDict& args );
+// -- Destructor
 
-    /// Destructor
-	virtual ~ResourceBase();
+    virtual ~ResourceBase();
 
-	void reset() { inited_ = false; converted_ = false;  }
-	void dump(std::ostream&) const;
-    void html(std::ostream&,Url&);
+// -- Methods
 
-	std::string name() const;
+    void reset()            { inited_ = false;   }
+    void dump(std::ostream&) const;
+    void html(std::ostream&, Url&);
 
-protected: // methods
+    std::string name() const;
 
-    void init( const StringDict* args = 0 );
-    void convert();
+protected:
 
-private: // members
+// -- Methods
 
-    Configurable*       owner_;
+    void init();
 
-    bool                inited_;
-    bool                converted_;
+private:
 
+// -- Members
+
+    bool           inited_;
+    Configurable*  owner_;
     std::string         name_;        // In the config file
-	std::string         environment_; // In the environment variables
-	std::string         options_;     // For the command line options
-    std::string         valueStr_;    // keeps the value in std::string form
+    std::string         environment_; // In the environment variables
+    std::string         options_;     // For the command line options
 
-private: // methods
+// -- Methods
 
     virtual void setValue(const std::string&) = 0;
     virtual std::string getValue() const      = 0;
@@ -74,57 +68,44 @@ private: // methods
 };
 
 
-template<class T>
-class Resource : public ResourceBase {
 
-public: // methods
 
-    Resource(const std::string& str,const T& value):
-		ResourceBase(0,str),     value_(value) {}
+template<class T> class Resource : public ResourceBase {
+public:
 
-    Resource(const std::string& str,const T& value, const StringDict& args ):
-		ResourceBase(str,args),     value_(value) {}
+// -- Contructors
 
-    Resource(const std::string& str,const std::string& value, bool):
-        ResourceBase(0,str),     value_(eckit::Translator<std::string,T>()(value)) {}
+    // Standalone
 
-	// Part of a configurable
+    Resource(const std::string& str, const T& value):
+        ResourceBase(0, str),     value_(value) {}
 
-    Resource(Configurable* owner,const std::string& str,const T& value):
-		ResourceBase(owner,str), value_(value) {}
+    // Part of a configurable
 
-    /// @returns a copy of the resource value
-    T value() { init(); convert(); return value_; }
+    Resource(Configurable* owner, const std::string& str, const T& value):
+        ResourceBase(owner, str), value_(value) {}
 
-    operator T&() { init(); convert(); return value_; }
+// -- Convertors
 
-private: // members
+    operator T&()                { init(); return value_;        }
 
-	T value_;
+private:
 
-private: // overridden methods
+// -- Members
+
+    T value_;
+
+// -- Overridden methods
+
+    // From ResourceBase
 
     virtual void setValue(const std::string&);
     virtual std::string getValue() const;
 
 };
 
-//-----------------------------------------------------------------------------
-
-template<class T>
-void Resource<T>::setValue(const std::string& s)
-{
-    value_ = Translator<std::string, T>()(s);
 }
 
-template<class T>
-std::string Resource<T>::getValue() const
-{
-    return Translator<T, std::string>()(value_);
-}
-
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
+#include "eckit/config/Resource.cc"
 
 #endif

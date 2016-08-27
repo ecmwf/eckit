@@ -208,16 +208,6 @@ thread/ThreadSingleton.h
 thread/Once.h )
 
 list( APPEND eckit_config_srcs
-config/Assignment.cc
-config/Assignment.h
-config/Block.cc
-config/Block.h
-config/Branch.cc
-config/Branch.h
-config/Compiler.cc
-config/Compiler.h
-config/Condition.cc
-config/Condition.h
 config/Configurable.cc
 config/Configurable.h
 config/Configuration.cc
@@ -226,8 +216,6 @@ config/Configured.cc
 config/Configured.h
 config/EtcTable.cc
 config/EtcTable.h
-config/Function.cc
-config/Function.h
 config/JSONConfiguration.cc
 config/JSONConfiguration.h
 config/LibEcKit.cc
@@ -236,18 +224,11 @@ config/LocalConfiguration.cc
 config/LocalConfiguration.h
 config/Parametrisation.h
 config/Resource.h
+config/Resource.cc
 config/ResourceBase.cc
-config/ResourceFromFiles.cc
-config/ResourceFromFiles.h
 config/ResourceMgr.cc
 config/ResourceMgr.h
 config/ResourcePolicy.h
-config/Scope.cc
-config/Scope.h
-config/Script.cc
-config/Script.h
-config/Statement.cc
-config/Statement.h
 )
 
 list( APPEND eckit_runtime_srcs
@@ -608,6 +589,7 @@ list( APPEND eckit_templates
 					container/sptree/SPNode.cc
 					filesystem/BasePathNameT.cc
 					io/FileBase.cc
+					config/Resource.cc
 					runtime/PipeHandler.cc
 					serialisation/Reanimator.cc
 					transaction/TxnLog.cc

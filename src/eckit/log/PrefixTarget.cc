@@ -18,15 +18,20 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 
-PrefixTarget::PrefixTarget(const std::string& prefix, LogTarget* target):
+PrefixTarget::PrefixTarget(const std::string& prefix, LogTarget* target, const char* space):
     WrapperTarget(target),
-    prefix_(prefix + " ")
+    prefix_(prefix),
+    space_(space),
+    prefixLength_(prefix.size()),
+    spaceLength_(::strlen(space))
 {
+
 }
 
 void PrefixTarget::writePrefix() {
     const char* p = prefix_.c_str();
-    target_->write(p, p + prefix_.size());
+    target_->write(p, p + prefixLength_);
+    target_->write(space_, space_ + spaceLength_);
 }
 
 

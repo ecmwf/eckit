@@ -27,7 +27,7 @@ namespace eckit {
 class PrefixTarget : public WrapperTarget {
 public:
 
-    PrefixTarget(const std::string& prefix, LogTarget* target);
+    PrefixTarget(const std::string& prefix, LogTarget* target, const char* space = " ");
 
 private:
 
@@ -36,6 +36,9 @@ private:
 
 private:
     std::string prefix_;
+    const char* space_;
+    size_t prefixLength_;
+    size_t spaceLength_;
 };
 
 //-----------------------------------------------------------------------------

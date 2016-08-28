@@ -228,7 +228,6 @@ config/Resource.cc
 config/ResourceBase.cc
 config/ResourceMgr.cc
 config/ResourceMgr.h
-config/ResourcePolicy.h
 )
 
 list( APPEND eckit_runtime_srcs

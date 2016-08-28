@@ -79,6 +79,8 @@ public: // methods
     /// Channel for status messages to Application Monitor
     static std::ostream& message();
 
+    /// Get the channel for the user
+    static UserChannel& user();
     /// Channel for informative messages tp remote user
     static std::ostream& userInfo();
     /// Channel for warning messages to remote user
@@ -112,8 +114,7 @@ private: // methods
     ~Log();  ///< Private, non-instanciatable class
 
 
-    /// Get the channel for the user
-    static UserChannel& user();
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

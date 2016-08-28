@@ -11,6 +11,7 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/parser/Tokenizer.h"
 
 namespace eckit {
 template<class T> void Resource<T>::setValue(const std::string& s)
@@ -23,4 +24,17 @@ template<class T> std::string Resource<T>::getValue() const
     return Translator<T, std::string>()(value_);
 }
 
+
+template<class T>
+Resource<T>::Resource(const std::string& str, const std::string& value, bool tokenize) {
+    std::vector<std::string> v;
+    Tokenizer parse(",");
+
+    parse(value, v);
+
+    for (std::vector<std::string>::const_iterator j = v.begin(); j != v.end(); ++j) {
+        value_.push_back(Translator<std::string, T>()(*j));
+    }
 }
+
+} // namespace

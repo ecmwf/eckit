@@ -36,21 +36,11 @@ Main::Main(int argc, char** argv, const char* homeenv) :
     argc_(argc),
     argv_(argv),
     taskID_(-1),
-    home_("/"),
-    assertAborts_(false),
-    debugLevel_(0) {
+    home_("/"){
 
     ::srand(::getpid() + ::time(0));
 
     name_ = displayName_ = PathName(argv[0]).baseName(false);
-
-    abortHandler_ = &(::abort);
-
-
-    info_.setLogTarget(new OStreamTarget(std::cout));
-    warning_.setLogTarget(new OStreamTarget(std::cout));
-    error_.setLogTarget(new OStreamTarget(std::cout));
-
 
     const char* home = homeenv ? ::getenv(homeenv) : 0;
 
@@ -94,25 +84,6 @@ const std::string& Main::home() const {
     return home_;
 }
 
-void Main::abortHandler(abort_handler_t h) {
-    AutoLock<Mutex> lock(local_mutex);
-    abortHandler_ = h;
-}
-
-void Main::abort()
-{
-    abortHandler_();
-}
-
-void Main::assertAborts(bool assertAborts) {
-    AutoLock<Mutex> lock(local_mutex);
-    assertAborts_ = assertAborts;
-}
-
-bool Main::assertAborts() {
-    AutoLock<Mutex> lock(local_mutex);
-    return assertAborts_;
-}
 
 long Main::taskID() const {
     return taskID_;
@@ -122,111 +93,21 @@ void Main::taskID(long id) {
     taskID_ = id;
 }
 
-int Main::debugLevel() const { return debugLevel_; }
-
-void Main::debugLevel(int level) { debugLevel_ = level;}
-
-
-
-const std::string& Main::displayName() const {
-    return displayName_;
-}
-
-
 std::string Main::name() const {
     return name_;
 }
 
-
-Channel& Main::infoChannel() { return info_; }
-
-Channel& Main::warnChannel() { return warning_; }
-
-Channel& Main::errorChannel() { return error_; }
-
-
 void Main::reconfigure()
 {
-    Log::info() << "Tool::reconfigure" << std::endl;
+    // Log::info() << "Tool::reconfigure" << std::endl;
 
-    int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
+    // int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
 
-    Main::instance().debugLevel( debug );
+    // Main::instance().debugLevel( debug );
 
-    // forward to context
-    Main::instance().reconfigure();
+    // // forward to context
+    // Main::instance().reconfigure();
 }
-
-Channel& Main::channel(const std::string& key)
-{
-    AutoLock<Mutex> lock(local_mutex);
-
-    ChannelRegistry::iterator itr = channels_.find(key);
-
-    if (itr != channels_.end()) { return *itr->second; }
-
-    if       ( key == "Error" )  { return errorChannel(); }
-    else if  ( key == "Warn"  )  { return warnChannel(); }
-    else if  ( key == "Info"  )  { return infoChannel(); }
-
-    // requested channel not found
-    throw BadParameter( "Channel '" + key + "' not found ", Here());
-}
-
-void Main::registerChannel(const std::string& key, Channel* channel)
-{
-    AutoLock<Mutex> lock(local_mutex);
-
-    if (channels_.find(key) == channels_.end()) {
-        channels_.insert(std::make_pair(key, channel));
-    }
-    else {
-        throw BadParameter( "Channel '" + key + "' is already registered ", Here());
-    }
-}
-
-void Main::removeChannel(const std::string& key)
-{
-    AutoLock<Mutex> lock(local_mutex);
-
-    if (channels_.find(key) == channels_.end()) {
-        throw BadParameter( "Channel '" + key + "' does not exist ", Here());
-    }
-    else {
-        channels_.erase(key);
-    }
-}
-
-static PathName proc_path(const std::string& name) {
-    ASSERT(name.size() > 0);
-    if (name[0] == '/') {
-        return PathName(name);
-    }
-
-    if (name[0] == '.') {
-        char buf[MAXPATHLEN];
-        ASSERT(getcwd(buf, sizeof(buf)));
-        return PathName(std::string(buf) + "/" + name);
-    }
-
-    char* path = getenv("PATH");
-    ASSERT(path);
-
-    Tokenizer parse(":");
-    std::vector<std::string> v;
-
-    parse(path, v);
-    for (size_t i = 0; i < v.size(); i++) {
-        PathName p(v[i] + "/" + name);
-        if (p.exists()) {
-            return proc_path(p);
-        }
-    }
-    throw SeriousBug("Cannot find " + name + " in PATH");
-}
-
-PathName Main::commandPath() const { return proc_path(argv(0)); }
-
 
 
 void Main::terminate() {

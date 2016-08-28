@@ -36,6 +36,7 @@ public: // methods
     static Main& instance();
 
     int argc() const;
+    char** argv() const;
     std::string argv(int n) const;
 
     const std::string& home() const;
@@ -43,7 +44,7 @@ public: // methods
 
     virtual void terminate();
 
-  // From Configurable
+    // From Configurable
 
     virtual void reconfigure();
 
@@ -51,53 +52,9 @@ public: // methods
     long taskID() const;
     void taskID( long );
 
-    char** argv() const;
-
-private:
-
-
-
-    /// @returns Process task ID in the Monitor, same for all threads.
-    ///          Threads may have different returned by Monitor::self()
-
-    int debugLevel() const;
-    void debugLevel(int);
-
-
-    const std::string& displayName() const;
-
-
-    /// Registers a new abort handler
-    void abortHandler(abort_handler_t h);
-    /// Executes the abort_handler
-    void abort();
-
-    void assertAborts(bool);
-    bool assertAborts();
-
-    Channel& infoChannel();
-    Channel& warnChannel();
-    Channel& errorChannel();
-
-    Channel& channel(const std::string& key);
-
-    void registerChannel(const std::string& key, Channel* channel);
-    void removeChannel(const std::string& key);
-
-    //
-
-    PathName commandPath() const; // Full path to current command
-
-
-
-
-public:
-
-        // From Configurable
+    // From Configurable
 
     virtual std::string name() const;
-
-
 
     /// Ensure that there exits a Main object. This is to be used
     /// For unit tests and fortran bindinds only
@@ -115,23 +72,7 @@ private: // members
     int     argc_;
     char**  argv_;
 
-
-    Channel info_;
-    Channel warning_;
-    Channel error_;
-
-
     std::string  home_;         ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
-
-    typedef std::map<std::string, Channel*> ChannelRegistry;
-
-    ChannelRegistry channels_;
-
-    abort_handler_t abortHandler_;
-
-    bool assertAborts_;
-
-    int debugLevel_;
 
 };
 

@@ -18,8 +18,6 @@
 #define eckit_Application_h
 
 #include "eckit/runtime/Main.h"
-#include "eckit/memory/ScopedPtr.h"
-#include "eckit/runtime/Policies.h"
 #include "eckit/runtime/Task.h"
 
 //-----------------------------------------------------------------------------
@@ -28,17 +26,12 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class Application : public Task,
-    public Main {
+class Application : public Task, public Main {
 public:
 
     // -- Contructors
 
-    Application(int argc, char **argv, const char* homeenv,
-                LoggingPolicy* logPolicy = new DefaultLogging(),
-                MonitoringPolicy* monPolicy = new NoMonitor(),
-                LocationPolicy* locPolicy = new DefaultLocations(),
-                SignallingPolicy* sigPolicy = new NoSignalRegist());
+    Application(int argc, char **argv, const char* homeenv);
 
     // -- Destructor
 
@@ -76,10 +69,6 @@ protected: // methods
 
 private: // members
 
-    ScopedPtr<LoggingPolicy> loggingPolicy_;
-    ScopedPtr<MonitoringPolicy> monitoringPolicy_;
-    ScopedPtr<LocationPolicy> locationPolicy_;
-    ScopedPtr<SignallingPolicy> signallingPolicy_;
 
     bool   running_;
 

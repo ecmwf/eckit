@@ -251,8 +251,6 @@ runtime/PipeApplication.h
 runtime/PipeApplication.cc
 runtime/PipeHandler.h
 runtime/PipeHandler.cc
-runtime/Policies.h
-runtime/Policies.cc
 runtime/ProcessControler.h
 runtime/ProcessControler.cc
 runtime/Dispatcher.h

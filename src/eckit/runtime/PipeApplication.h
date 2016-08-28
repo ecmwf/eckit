@@ -30,11 +30,7 @@ class PipeApplication : public Application {
 
 public: // methods
 
-    PipeApplication(int argc, char **argv, const char* homeenv,
-                    LoggingPolicy* logPolicy = new DefaultLogging(),
-                    MonitoringPolicy* monPolicy = new NoMonitor(),
-                    LocationPolicy* locPolicy = new DefaultLocations(),
-                    SignallingPolicy* sigPolicy = new NoSignalRegist());
+    PipeApplication(int argc, char **argv, const char* homeenv);
 
     virtual ~PipeApplication();
 

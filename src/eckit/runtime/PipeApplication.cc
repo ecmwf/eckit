@@ -26,12 +26,8 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-PipeApplication::PipeApplication(int argc, char** argv,const char* homeenv,
-                                 LoggingPolicy* logPolicy,
-                                 MonitoringPolicy* monPolicy,
-                                 LocationPolicy* locPolicy,
-                                 SignallingPolicy* sigPolicy)
-    : Application(argc, argv, homeenv, logPolicy, monPolicy, locPolicy, sigPolicy),
+PipeApplication::PipeApplication(int argc, char** argv,const char* homeenv)
+    : Application(argc, argv, homeenv),
       in_(this,"-in",-1),
       out_(this,"-out",-1) {
     // Establish relationship with 'parent' thread for the monitoring

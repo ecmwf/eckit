@@ -50,7 +50,6 @@ public: // methods
 
     // Thread ID where the main is running
     long taskID() const;
-    void taskID( long );
 
     // From Configurable
 

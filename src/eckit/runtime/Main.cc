@@ -84,14 +84,10 @@ const std::string& Main::home() const {
     return home_;
 }
 
-
 long Main::taskID() const {
     return taskID_;
 }
 
-void Main::taskID(long id) {
-    taskID_ = id;
-}
 
 std::string Main::name() const {
     return name_;

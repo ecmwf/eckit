@@ -8,40 +8,71 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <iostream>
+#include <unistd.h>
+
 #include "eckit/bases/Loader.h"
 #include "eckit/config/Resource.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/log/Log.h"
-#include "eckit/os/Semaphore.h"
 #include "eckit/runtime/Application.h"
-#include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
+static char* reserve_ = 0;
+
+static void end(const char* msg) {
+    static bool in_end = false;
+
+    if (in_end) {
+        std::cout << "terminate called twice" << std::endl;
+        _exit(1);
+    }
+
+    in_end = true;
+
+    delete[] reserve_;
+    reserve_ = 0;
+
+    try {
+        throw;
+    } catch (std::exception& e) {
+        std::cout << "!!!!!!!!!!!!!!!!!! ";
+        std::cout << msg << " with the exception:" << std::endl;
+        std::cout << e.what() << std::endl;
+    }
+    _exit(1);
+}
+
+static void catch_terminate() {
+    end("Terminate was called");
+}
+
+static void catch_unexpected() {
+    end("Unexpected was called");
+}
+
+static void catch_new_handler() {
+    delete[] reserve_;
+    reserve_ = 0;
+    throw OutOfMemory();
+}
+
+
 //-----------------------------------------------------------------------------
 
-Application::Application(int argc, char** argv, const char* homeenv,
-                         LoggingPolicy* logPolicy,
-                         MonitoringPolicy* monPolicy,
-                         LocationPolicy* locPolicy,
-                         SignallingPolicy* sigPolicy):
+Application::Application(int argc, char** argv, const char* homeenv):
     Main(argc, argv, homeenv),
-    loggingPolicy_(logPolicy),
-    monitoringPolicy_(monPolicy),
-    locationPolicy_(locPolicy),
-    signallingPolicy_(sigPolicy),
     running_(false)
 {
-    locationPolicy_->setup();  // location policy first -- sets home()
+    reserve_ = new char[20 * 1024]; // In case we runout of memeort
+    std::set_new_handler(&catch_new_handler);
+    std::set_terminate(&catch_terminate);
+    std::set_unexpected(&catch_unexpected);
 
-    loggingPolicy_->setup();
-
-    monitoringPolicy_->start();
-
-    signallingPolicy_->regist();
+    Monitor::active(true);
+    Monitor::instance().startup();
+    taskID_ = Monitor::instance().self();
 
     Loader::callAll(&Loader::execute);
 }
@@ -49,10 +80,8 @@ Application::Application(int argc, char** argv, const char* homeenv,
 //-----------------------------------------------------------------------------
 
 Application::~Application() {
-    signallingPolicy_->unregist();
-    monitoringPolicy_->stop();
+    Monitor::instance().shutdown();
 }
-
 
 //-----------------------------------------------------------------------------
 
@@ -73,9 +102,7 @@ void Application::start() {
 
     displayName_ = Resource<std::string>("-name", name_);
 
-    Monitor::instance().name(displayName_);
-
-    Log::info() << "** Start of " << name() << " ** pid is " << getpid() << std::endl;
+    Log::info() << "** Start of " << displayName_ << " ** pid is " << getpid() << std::endl;
 
     try {
         Log::status() << "Running" << std::endl;
@@ -85,10 +112,10 @@ void Application::start() {
     } catch (std::exception& e) {
         status = 1;
         Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception is terminates " << name() << std::endl;
+        Log::error() << "** Exception is terminates " << displayName_ << std::endl;
     }
 
-    Log::info() << "** End of " << name() << " (" << Main::instance().argv(0) << ")  **" << std::endl;
+    Log::info() << "** End of " <<displayName_ << " (" << argv(0) << ")  **" << std::endl;
 
     ::exit(status);
 }

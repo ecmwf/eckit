@@ -64,7 +64,7 @@ void DoMonitor::start() {
     {
         Monitor::active(true);
         Monitor::instance().startup();
-        Main::instance().self(Monitor::instance().self());
+        Main::instance().taskID(Monitor::instance().self());
     } catch (std::exception& e) {
         Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
         Log::error() << "** Exception is re-thrown" << std::endl;

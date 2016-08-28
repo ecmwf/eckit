@@ -50,14 +50,14 @@ public: // types
 
 public: // methods
 
-    static const Logger& defaultLogger();
-
     static void registerChannel(const std::string& key, Channel* channel);
     static void removeChannel(const std::string& key);
     static Channel& channel(const std::string& key);
 
     /// Channel for debug output
-    static Channel& debug(const Logger& = defaultLogger());
+
+    static Channel& debug();
+    static Channel& debug(const Logger&);
 
     /// Channel for informative messages
     static Channel& info();

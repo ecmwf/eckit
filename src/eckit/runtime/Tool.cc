@@ -8,17 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include <stdlib.h>
+// #include <stdlib.h>
 
 #include "eckit/runtime/Tool.h"
-
-#include "eckit/bases/Loader.h"
-#include "eckit/config/Resource.h"
-#include "eckit/filesystem/LocalPathName.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/log/Log.h"
-#include "eckit/runtime/Main.h"
-#include "eckit/system/SystemInfo.h"
 
 namespace eckit {
 

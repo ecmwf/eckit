@@ -35,19 +35,30 @@ public: // methods
 
     static Main& instance();
 
-    virtual void terminate();
-
-
-
-
     int argc() const;
     std::string argv(int n) const;
-    char** argvs() const;
+
+    const std::string& home() const;
+
+
+    virtual void terminate();
+
+  // From Configurable
+
+    virtual void reconfigure();
+
+    // Thread ID where the main is running
+    long taskID() const;
+    void taskID( long );
+
+    char** argv() const;
+
+private:
+
+
 
     /// @returns Process task ID in the Monitor, same for all threads.
     ///          Threads may have different returned by Monitor::self()
-    long self() const;
-    void self( long );
 
     int debugLevel() const;
     void debugLevel(int);
@@ -55,7 +66,6 @@ public: // methods
 
     const std::string& displayName() const;
 
-    const std::string& home() const;
 
     /// Registers a new abort handler
     void abortHandler(abort_handler_t h);
@@ -79,9 +89,12 @@ public: // methods
     PathName commandPath() const; // Full path to current command
 
 
-    // From Configurable
 
-    virtual void reconfigure();
+
+public:
+
+        // From Configurable
+
     virtual std::string name() const;
 
 
@@ -95,13 +108,13 @@ protected:
 
     std::string name_;
     std::string displayName_;  ///< name to be displayed of running application
+    long taskID_;
 
 private: // members
 
     int     argc_;
     char**  argv_;
 
-    long taskID_;
 
     Channel info_;
     Channel warning_;

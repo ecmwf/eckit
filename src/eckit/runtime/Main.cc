@@ -11,8 +11,6 @@
 #include <sys/param.h>
 #include <unistd.h>
 
-#include "Main.h"
-
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"
@@ -45,8 +43,6 @@ Main::Main(int argc, char** argv, const char* homeenv) :
     ::srand(::getpid() + ::time(0));
 
     name_ = displayName_ = PathName(argv[0]).baseName(false);
-
-
 
     abortHandler_ = &(::abort);
 
@@ -90,14 +86,13 @@ std::string Main::argv(int n) const {
     return argv_[n] ? argv_[n] : "<undefined>";
 }
 
-char** Main::argvs() const {
+char** Main::argv() const {
     return argv_;
 }
 
 const std::string& Main::home() const {
     return home_;
 }
-
 
 void Main::abortHandler(abort_handler_t h) {
     AutoLock<Mutex> lock(local_mutex);
@@ -119,9 +114,13 @@ bool Main::assertAborts() {
     return assertAborts_;
 }
 
-long Main::self() const { return taskID_; }
+long Main::taskID() const {
+    return taskID_;
+}
 
-void Main::self(long id) { taskID_ = id; }
+void Main::taskID(long id) {
+    taskID_ = id;
+}
 
 int Main::debugLevel() const { return debugLevel_; }
 

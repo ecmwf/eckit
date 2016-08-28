@@ -114,7 +114,7 @@ void Application::terminate() {
 //-----------------------------------------------------------------------------
 
 void Application::unique() {
-    PathName lockFile("~/locks/" + name());
+    PathName lockFile("~/locks/" + name_);
 
     if (!lockFile.exists()) lockFile.touch();
 
@@ -124,7 +124,7 @@ void Application::unique() {
         std::ifstream os(lockFile.localPath());
         std::string s;
         os >> s;
-        throw SeriousBug("Application " + name() + " is already running as pid " + s);
+        throw SeriousBug("Application " + name_ + " is already running as pid " + s);
     }
 
     sem->lock();  // OS should reset the semaphore
@@ -136,10 +136,9 @@ void Application::unique() {
 //-----------------------------------------------------------------------------
 
 time_t Application::uptime() {
-    long taskId = Main::instance().self();
 
     Monitor::TaskArray& info = Monitor::instance().tasks();
-    time_t uptime = info[taskId].start();
+    time_t uptime = info[taskID_].start();
     time_t now = ::time(0);
 
     return now - uptime;

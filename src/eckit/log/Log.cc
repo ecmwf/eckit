@@ -16,6 +16,7 @@
 #include "eckit/log/UserChannel.h"
 #include "eckit/log/StatusTarget.h"
 #include "eckit/log/MessageTarget.h"
+#include "eckit/log/OStreamTarget.h"
 
 #include "eckit/runtime/Main.h"
 
@@ -53,11 +54,8 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-const Logger& Log::defaultLogger()
-{
-    return LibEcKit::instance();
-}
 
+/*
 void Log::registerChannel(const std::string& key, Channel* channel)
 {
     Main::instance().registerChannel(key, channel);
@@ -77,6 +75,7 @@ Channel& Log::debug(const Logger& logger)
 {
     return logger.debugChannel();
 }
+*/
 
 struct CreateStatusChannel {
     Channel* operator()() {
@@ -106,15 +105,39 @@ std::ostream& Log::message()
     return x.instance();
 }
 
+
+struct CreateLogChannel {
+    Channel* operator()() {
+        Channel* channel = new Channel();
+        channel->setLogTarget(new OStreamTarget(std::cout));
+        return channel;
+    }
+};
+
 Channel& Log::info()
 {
-    return Main::instance().infoChannel();
+    static ThreadSingleton<Channel, CreateLogChannel> x;
+    return x.instance();
 }
 
 Channel& Log::error()
 {
-    return Main::instance().errorChannel();
+    static ThreadSingleton<Channel, CreateLogChannel> x;
+    return x.instance();
 }
+
+Channel& Log::warning()
+{
+    static ThreadSingleton<Channel, CreateLogChannel> x;
+    return x.instance();
+}
+
+Channel& Log::debug()
+{
+    static ThreadSingleton<Channel, CreateLogChannel> x;
+    return x.instance();
+}
+
 
 std::ostream& Log::panic()
 {
@@ -124,11 +147,6 @@ std::ostream& Log::panic()
     catch (std::exception&) {
         return  std::cerr;
     }
-}
-
-Channel& Log::warning()
-{
-    return Main::instance().warnChannel();
 }
 
 

@@ -48,7 +48,7 @@ template<> MPI_Datatype datatype<long double,int>() { return MPI_LONG_DOUBLE_INT
 
 Environment::Environment()
 {
-  eckit::mpi::init( Main::instance().argc(), Main::instance().argvs() );
+  eckit::mpi::init( Main::instance().argc(), Main::instance().argv() );
 }
 
 Environment::~Environment()

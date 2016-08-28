@@ -13,7 +13,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/ThreadSingleton.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 
 #include "eckit/os/BackTrace.h"
 
@@ -188,11 +188,11 @@ AssertionFailed::AssertionFailed(const std::string& w):
 {
     Log::status() << what() << std::endl;
 
-    // if(Context::instance().assertAborts())
+    // if(Main::instance().assertAborts())
     // {
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
-    //     Context::instance().abort();
+    //     Main::instance().abort();
     // }
 }
 
@@ -206,11 +206,11 @@ AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc
     reason(s.str());
     Log::status() << what() << std::endl;
 
-    // if(Context::instance().assertAborts())
+    // if(Main::instance().assertAborts())
     // {
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
-    //     Context::instance().abort();
+    //     Main::instance().abort();
     // }
 }
 
@@ -224,11 +224,11 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
     reason(s.str());
     Log::status() << what() << std::endl;
 
-    //if(Context::instance().assertAborts())
+    //if(Main::instance().assertAborts())
     //{
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
-        //Context::instance().abort();
+        //Main::instance().abort();
     //}
 }
 

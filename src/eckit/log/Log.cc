@@ -17,7 +17,7 @@
 #include "eckit/log/StatusTarget.h"
 #include "eckit/log/MessageTarget.h"
 
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 
 #include "eckit/exception/Exceptions.h"
 
@@ -60,17 +60,17 @@ const Logger& Log::defaultLogger()
 
 void Log::registerChannel(const std::string& key, Channel* channel)
 {
-    Context::instance().registerChannel(key, channel);
+    Main::instance().registerChannel(key, channel);
 }
 
 void Log::removeChannel(const std::string& key)
 {
-    Context::instance().removeChannel(key);
+    Main::instance().removeChannel(key);
 }
 
 Channel& Log::channel(const std::string& key)
 {
-    return Context::instance().channel(key);
+    return Main::instance().channel(key);
 }
 
 Channel& Log::debug(const Logger& logger)
@@ -108,12 +108,12 @@ std::ostream& Log::message()
 
 Channel& Log::info()
 {
-    return Context::instance().infoChannel();
+    return Main::instance().infoChannel();
 }
 
 Channel& Log::error()
 {
-    return Context::instance().errorChannel();
+    return Main::instance().errorChannel();
 }
 
 std::ostream& Log::panic()
@@ -128,7 +128,7 @@ std::ostream& Log::panic()
 
 Channel& Log::warning()
 {
-    return Context::instance().warnChannel();
+    return Main::instance().warnChannel();
 }
 
 

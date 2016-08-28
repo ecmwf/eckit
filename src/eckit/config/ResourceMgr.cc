@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
@@ -133,9 +133,9 @@ bool ResourceMgr::lookUp(const std::string& kind, const std::string& owner,
         readConfigFile("~/etc/config/general");
         readConfigFile("~/etc/config/local");
         readConfigFile(std::string("~/etc/config/")
-                       + Context::instance().runName());
+                       + Main::instance().name());
         readConfigFile(std::string("~/etc/config/")
-                       + Context::instance().runName() + ".local");
+                       + Main::instance().name() + ".local");
     }
 
     ResMap::iterator i = resmap.find(ResourceQualifier(kind, owner, name));

@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_Context_h
-#define eckit_Context_h
+#ifndef eckit_Main_h
+#define eckit_Main_h
 
 #include <map>
 
@@ -19,30 +19,26 @@
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+typedef void (*abort_handler_t)();
 
 class LogStream;
 class PathName;
 
-typedef void (*abort_handler_t)();
+class Main : public Configurable {
+protected:
 
-class Context : public Configurable {
 
-public: // types
-
-    class InitError : public std::exception {
-    public:
-        InitError(const std::string& what) : what_(what) {}
-        virtual ~InitError()  throw() {}
-        const char* what() const throw() {  return what_.c_str(); }
-    private:
-        std::string what_;
-    };
+    Main(int argc, char** argv, const char* homeenv = 0);
+    ~Main();
 
 public: // methods
 
-    static Context& instance();
+    static Main& instance();
 
-    void setup( int argc, char **argv );
+    virtual void terminate();
+
+
+
 
     int argc() const;
     std::string argv(int n) const;
@@ -56,14 +52,10 @@ public: // methods
     int debugLevel() const;
     void debugLevel(int);
 
-    const std::string& runName() const;
-    void runName( const std::string& name );
 
     const std::string& displayName() const;
-    void displayName( const std::string& name );
 
     const std::string& home() const;
-    void home( const std::string& h );
 
     /// Registers a new abort handler
     void abortHandler(abort_handler_t h);
@@ -90,19 +82,19 @@ public: // methods
     // From Configurable
 
     virtual void reconfigure();
-    virtual std::string name() const   { return "Context"; }
+    virtual std::string name() const;
 
-private: // methods
 
-    Context();  ///< Singleton class with private constructor
 
-    virtual ~Context(); ///< Singleton class with private destructor
+    /// Ensure that there exits a Main object. This is to be used
+    /// For unit tests and fortran bindinds only
+    static void initialise(int argc, char** argv, const char* homeenv = 0);
 
-    static void init(); ///< initialize the singleton on first access
 
-    // From Configurable
+protected:
 
-    virtual std::string kind() const  { return "Context"; }
+    std::string name_;
+    std::string displayName_;  ///< name to be displayed of running application
 
 private: // members
 
@@ -117,8 +109,6 @@ private: // members
 
 
     std::string  home_;         ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
-    std::string  runName_;      ///< name of running application
-    std::string  displayName_;  ///< name to be displayed of running application
 
     typedef std::map<std::string, Channel*> ChannelRegistry;
 
@@ -136,4 +126,4 @@ private: // members
 
 } // namespace eckit
 
-#endif // eckit_Context_h
+#endif // eckit_Main_h

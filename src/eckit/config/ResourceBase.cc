@@ -9,7 +9,7 @@
  */
 
 
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/config/Configurable.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
@@ -17,7 +17,7 @@
 namespace eckit {
 
 ResourceBase::ResourceBase(Configurable* owner, const std::string& str):
-    owner_( owner ? owner : & Context::instance() ),
+    owner_( owner ? owner : & Main::instance() ),
     inited_(false)
 {
     if (owner_) owner_->add(this);
@@ -65,13 +65,13 @@ void ResourceBase::init()
 
     if (options_ != "")
     {
-        for (int i = 1; i < Context::instance().argc(); i++)
-            if (options_ == Context::instance().argv(i))
+        for (int i = 1; i < Main::instance().argc(); i++)
+            if (options_ == Main::instance().argv(i))
             {
-                if ( i + 1 == Context::instance().argc() || Context::instance().argv(i + 1)[0] == '-' )
+                if ( i + 1 == Main::instance().argc() || Main::instance().argv(i + 1)[0] == '-' )
                     setValue("true");
                 else
-                    setValue(Context::instance().argv(i + 1));
+                    setValue(Main::instance().argv(i + 1));
                 inited_ = true;
                 return;
             }

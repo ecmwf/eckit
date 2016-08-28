@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -13,7 +13,7 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/thread/AutoLock.h"
@@ -63,7 +63,7 @@ Monitor::Monitor():
    slot_(0),
 	ready_(false),
 	check_(false)
-{ 
+{
 }
 
 void Monitor::init()
@@ -96,7 +96,7 @@ void Monitor::init()
 		}
 	}
 
-    if(!found) 
+    if(!found)
     {
         std::cout << "No free monitor slots" << std::endl;
         std::cerr << "No free monitor slots" << std::endl;
@@ -110,8 +110,8 @@ void Monitor::init()
 	ready_ = true;
 }
 
-Monitor::~Monitor() 
-{ 
+Monitor::~Monitor()
+{
 	if(ready_ && active_) {
 		TaskArray& a = tasks();
 		AutoLock<TaskArray> lock(a);
@@ -126,7 +126,7 @@ bool Monitor::active()
     return active_;
 }
 
-void Monitor::active( bool a ) 
+void Monitor::active( bool a )
 {
     active_ = a;
 }
@@ -174,43 +174,43 @@ long Monitor::self()
 {
 	if(!active_) return 0;
 	if(!ready_)  return -1;
-	return slot_;	
+	return slot_;
 }
 
 void Monitor::out(char* from,char *to)
 {
-    if(!ready_) return;    
+    if(!ready_) return;
     task()->out(from,to);
 }
 
-void Monitor::name(const std::string& s) 
+void Monitor::name(const std::string& s)
 {
-    if(!ready_) return;    
+    if(!ready_) return;
 	task()->name(s);
 }
 
-void Monitor::kind(const std::string& s) 
+void Monitor::kind(const std::string& s)
 {
-    if(!ready_) return;    
+    if(!ready_) return;
 	task()->kind(s);
 }
 
 void Monitor::progress(const std::string& name, unsigned long long min,unsigned long long max)
 {
-    if(!ready_) return;    
+    if(!ready_) return;
 	task()->progressName(name);
 	task()->start(min,max);
 }
 
 void Monitor::progress(unsigned long long value)
 {
-    if(!ready_) return;    
+    if(!ready_) return;
 	task()->progress(value);
 }
 
 void Monitor::progress()
 {
-    if(!ready_) return;    
+    if(!ready_) return;
 	task()->done();
 }
 
@@ -295,10 +295,10 @@ void Monitor::start(const std::string& app)
 	TaskArray& p = tasks();
 
 	for( size_t j = 0 ; j < p.size(); ++j )
-		if(p[j].busy(true) && app == p[j].application() && 
+		if(p[j].busy(true) && app == p[j].application() &&
 			p[j].depth() == 0)
 		{
-			Log::warning() << app << " is already running with a pid of " 
+			Log::warning() << app << " is already running with a pid of "
 				<< p[j].pid() << std::endl;
 			Log::warning() << "Please stop it first" << std::endl;
 			return;
@@ -319,7 +319,7 @@ void Monitor::port(int p)
 	task()->port(p);
 }
 
-int Monitor::port() 
+int Monitor::port()
 {
 	return task()->port();
 }
@@ -329,7 +329,7 @@ void Monitor::host(const std::string& h)
 	task()->host(h);
 }
 
-std::string Monitor::host() 
+std::string Monitor::host()
 {
 	return task()->host();
 }
@@ -339,7 +339,7 @@ void Monitor::taskID(const TaskID& id)
 	task()->taskID(id);
 }
 
-TaskID Monitor::taskID() 
+TaskID Monitor::taskID()
 {
 	return task()->taskID();
 }
@@ -368,7 +368,7 @@ int Monitor::kill(const std::string& name, int sig)
 			else
 			{
 				if(::kill(pid,sig))
-					Log::info() << Log::syserr << std::endl; 
+					Log::info() << Log::syserr << std::endl;
 				else
 				{
 					Log::info() << pid << ": Killed" << std::endl;

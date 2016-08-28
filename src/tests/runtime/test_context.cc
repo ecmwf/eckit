@@ -13,7 +13,7 @@
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/log/Log.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 
 using namespace std;
 using namespace eckit;

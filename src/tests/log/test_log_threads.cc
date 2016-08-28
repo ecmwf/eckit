@@ -16,7 +16,7 @@
 
 #include "eckit/os/BackTrace.h"
 
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"

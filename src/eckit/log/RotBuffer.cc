@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation
  * nor does it submit to any jurisdiction.
  */
@@ -12,7 +12,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/RotBuffer.h"
 #include "eckit/log/TimeStamp.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
@@ -41,7 +41,7 @@ RotBuffer::~RotBuffer() {
 
 static std::ostream& rotout() {
     time_t now = ::time(0) / 86400;
-    
+
     if(now != lastTime || last == 0) {
         static std::string logfileFormat = Resource<std::string>("logfileFormat","~/log/%Y-%m-%d/out");
 
@@ -50,7 +50,7 @@ static std::ostream& rotout() {
         path.mkdir(0777);
 
         std::ostringstream os;
-        os << path  << "/" << Context::instance().runName();
+        os << path  << "/" << Main::instance().name();
 
         delete last;
 
@@ -66,16 +66,16 @@ static std::ostream& rotout() {
 bool RotBuffer::dumpBuffer() {
     /// @note protects data-race from multiple threads logging
     ///       since it is the only function that accesses the resource
-    AutoLock<Mutex> lock(local_mutex); 
-    
+    AutoLock<Mutex> lock(local_mutex);
+
     std::ostream& out = rotout();
-    
+
     out.write(pbase(),pptr() - pbase());
-    
+
     setp(pbase(), epptr());
-    
+
     out.flush(); // flush here so sync() does not need to use rotout()
-    
+
     return true;
 }
 

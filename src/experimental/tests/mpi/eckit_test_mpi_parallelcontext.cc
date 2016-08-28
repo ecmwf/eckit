@@ -17,7 +17,7 @@
 #include "eckit/config/ResourceMgr.h"
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/LocalPathName.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/mpi/mpi.h"
 #include "eckit/log/Log.h"
 

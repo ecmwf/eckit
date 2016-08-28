@@ -11,7 +11,7 @@
 #include "eckit/thread/Once.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/config/ResourceFromFiles.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 
 //-----------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ void ResourceFromFiles::readConfigFiles(config::Script& script)
 {
     AutoLock<Mutex> lock(local_mutex);
 
-    std::string appName = Context::instance().runName();
+    std::string appName = Main::instance().name();
 
     PathName general ("~/etc/config/general");
     PathName local ("~/etc/config/local");

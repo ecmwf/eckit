@@ -14,7 +14,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/os/Semaphore.h"
 #include "eckit/runtime/Application.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
 
 //-----------------------------------------------------------------------------
@@ -23,37 +23,23 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-Application::Application(int argc, char** argv,
+Application::Application(int argc, char** argv, const char* homeenv,
                          LoggingPolicy* logPolicy,
                          MonitoringPolicy* monPolicy,
                          LocationPolicy* locPolicy,
-                         SignallingPolicy* sigPolicy)
-    : loggingPolicy_(logPolicy),
-      monitoringPolicy_(monPolicy),
-      locationPolicy_(locPolicy),
-      signallingPolicy_(sigPolicy),
-      running_(false)
+                         SignallingPolicy* sigPolicy):
+    Main(argc, argv, homeenv),
+    loggingPolicy_(logPolicy),
+    monitoringPolicy_(monPolicy),
+    locationPolicy_(locPolicy),
+    signallingPolicy_(sigPolicy),
+    running_(false)
 {
     locationPolicy_->setup();  // location policy first -- sets home()
-
-    name_ = PathName(argv[0]).baseName(false);
-
-    Context& ctxt = Context::instance();
-    ctxt.setup(argc, argv);
-    ctxt.runName(name_);
-    // ctxt.debug(Resource<int>(this, "debug;$DEBUG;-debug", 0));
 
     loggingPolicy_->setup();
 
     monitoringPolicy_->start();
-
-    ::srand(::getpid() + ::time(0));
-
-    // ensure is uniqe instance of this application
-    {
-        if (instance_) throw SeriousBug("An instance of application already exists");
-        instance_ = this;
-    }
 
     signallingPolicy_->regist();
 
@@ -65,15 +51,8 @@ Application::Application(int argc, char** argv,
 Application::~Application() {
     signallingPolicy_->unregist();
     monitoringPolicy_->stop();
-    instance_ = 0;
 }
 
-//-----------------------------------------------------------------------------
-
-Application& Application::instance() {
-    PANIC(instance_ == 0);
-    return *instance_;
-}
 
 //-----------------------------------------------------------------------------
 
@@ -82,9 +61,9 @@ void Application::reconfigure() {
 
     int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
 
-    // Context::instance().debug(debug);
+    // Main::instance().debug(debug);
 
-    Context::instance().reconfigure();  // forward to context
+    Main::instance().reconfigure();  // forward to context
 }
 
 //-----------------------------------------------------------------------------
@@ -92,11 +71,9 @@ void Application::reconfigure() {
 void Application::start() {
     int status = 0;
 
-    std::string displayName = Resource<std::string>("-name", name_);
+    displayName_ = Resource<std::string>("-name", name_);
 
-    Context::instance().displayName(displayName);
-
-    Monitor::instance().name(displayName);
+    Monitor::instance().name(displayName_);
 
     Log::info() << "** Start of " << name() << " ** pid is " << getpid() << std::endl;
 
@@ -111,7 +88,7 @@ void Application::start() {
         Log::error() << "** Exception is terminates " << name() << std::endl;
     }
 
-    Log::info() << "** End of " << name() << " (" << Context::instance().argv(0) << ")  **" << std::endl;
+    Log::info() << "** End of " << name() << " (" << Main::instance().argv(0) << ")  **" << std::endl;
 
     ::exit(status);
 }
@@ -159,7 +136,7 @@ void Application::unique() {
 //-----------------------------------------------------------------------------
 
 time_t Application::uptime() {
-    long taskId = Context::instance().self();
+    long taskId = Main::instance().self();
 
     Monitor::TaskArray& info = Monitor::instance().tasks();
     time_t uptime = info[taskId].start();
@@ -169,8 +146,6 @@ time_t Application::uptime() {
 }
 
 //-----------------------------------------------------------------------------
-
-Application* Application::instance_;
 
 //-----------------------------------------------------------------------------
 

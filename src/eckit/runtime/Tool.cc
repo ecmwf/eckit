@@ -17,7 +17,7 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/system/SystemInfo.h"
 
 namespace eckit {
@@ -25,53 +25,22 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 Tool::Tool(int argc, char **argv, const char* homeenv) :
-    name_("undefined")
+    Main(argc, argv, homeenv)
 {
-    name_ = PathName(argv[0]).baseName(false);
-
-    Context::instance().setup( argc, argv );
-    Context::instance().runName( name_ );
-
-    // Read home path from environment if set (takes precedence)
-    const char* home = homeenv ? ::getenv(homeenv) : 0;
-
-    if (home) {
-        eckit::Context::instance().home(home);
-    } else {
-        std::string execHome = eckit::system::SystemInfo::instance().executablePath().dirName().dirName();
-        eckit::Context::instance().home(execHome);
-    }
-
-    Loader::callAll(&Loader::execute);
 }
 
 Tool::~Tool()
 {
 }
 
-void Tool::reconfigure()
-{
-    Log::info() << "Tool::reconfigure" << std::endl;
-
-    int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
-
-    Context::instance().debugLevel( debug );
-
-    // forward to context
-    Context::instance().reconfigure();
-}
-
 int Tool::start()
 {
     int status = 0;
 
-    int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
+    // int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
 
-    Context::instance().debugLevel( debug );
+    // Main::instance().debugLevel( debug );
 
-    std::string displayName = Resource<std::string>("-name", name_);
-
-    Context::instance().displayName( displayName );
 
     try
     {

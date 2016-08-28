@@ -11,7 +11,7 @@
 #include <signal.h>
 
 #include "eckit/thread/AutoLock.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/log/Log.h"
 #include "eckit/memory/MemoryPool.h"
 #include "eckit/runtime/Monitor.h"
@@ -68,7 +68,7 @@ void ThreadControler::execute()
     // Make sure the logs are created...
 
     Monitor::instance().startup();
-    Monitor::instance().parent(Context::instance().self());
+    Monitor::instance().parent(Main::instance().self());
 
     //============
 

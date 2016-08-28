@@ -14,7 +14,7 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/Tokenizer.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 
 #include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"

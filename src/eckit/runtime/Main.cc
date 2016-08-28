@@ -11,7 +11,7 @@
 #include <sys/param.h>
 #include <unistd.h>
 
-#include "Context.h"
+#include "Main.h"
 
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/thread/Mutex.h"
@@ -19,35 +19,34 @@
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/filesystem/PathName.h"
 
+#include "eckit/bases/Loader.h"
+#include "eckit/config/Resource.h"
+#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/log/Log.h"
+#include "eckit/runtime/Main.h"
+#include "eckit/system/SystemInfo.h"
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-static Context* context = 0;
-static pthread_once_t once = PTHREAD_ONCE_INIT;
-
 static Once<Mutex> local_mutex;
-
-void Context::init() {
-    context = new Context();
-}
-
+static Main* instance_ = 0;
 //----------------------------------------------------------------------------------------------------------------------
 
-Context::Context() :
-    argc_(0),
-    argv_(0),
+Main::Main(int argc, char** argv, const char* homeenv) :
+    argc_(argc),
+    argv_(argv),
     taskID_(-1),
     home_("/"),
-    runName_("undef"),
-    displayName_(),
     assertAborts_(false),
     debugLevel_(0) {
-    char* h = getenv("HOME");
-    if (h) home_ = h;
 
-    char* th = getenv("_TEST_ECKIT_HOME");
-    if (th) home_ = th;
+    ::srand(::getpid() + ::time(0));
+
+    name_ = displayName_ = PathName(argv[0]).baseName(false);
+
+
 
     abortHandler_ = &(::abort);
 
@@ -56,119 +55,110 @@ Context::Context() :
     warning_.setLogTarget(new OStreamTarget(std::cout));
     error_.setLogTarget(new OStreamTarget(std::cout));
 
+
+    const char* home = homeenv ? ::getenv(homeenv) : 0;
+
+    if (home) {
+        home_ = home;
+    } else {
+        std::string execHome = eckit::system::SystemInfo::instance().executablePath().dirName().dirName();
+        home_ = execHome;
+    }
+
+    Loader::callAll(&Loader::execute);
+
 }
 
-Context::~Context() {}
-
-Context& Context::instance() {
-    pthread_once(&once, Context::init);
-    return *context;
+Main::~Main() {
+    instance_ = 0;
 }
 
-void Context::setup(int argc, char** argv) {
-    AutoLock<Mutex> lock(local_mutex);
-
-    if (argc <= 0 || argv == 0) { throw SeriousBug("Context setup with bad command line arguments"); }
-
-    argc_ = argc;
-    argv_ = argv;
+Main& Main::instance() {
+    PANIC(instance_ == 0);
+    return *instance_;
 }
 
 
-int Context::argc() const {
-    AutoLock<Mutex> lock(local_mutex);
+int Main::argc() const {
     return argc_;
 }
 
-std::string Context::argv(int n) const {
-    AutoLock<Mutex> lock(local_mutex);
+std::string Main::argv(int n) const {
     ASSERT(argc_ != 0 && argv_ != 0);  // check initialized
     ASSERT(n < argc_ && n >= 0);       // check bounds
     // ASSERT(argv_[n] != 0);             // check initialized??
     return argv_[n] ? argv_[n] : "<undefined>";
 }
 
-char** Context::argvs() const {
-    AutoLock<Mutex> lock(local_mutex);
+char** Main::argvs() const {
     return argv_;
 }
 
-void Context::reconfigure() {
-    AutoLock<Mutex> lock(local_mutex);
-    // behavior_->reconfigure();
-}
-
-const std::string& Context::home() const {
-    AutoLock<Mutex> lock(local_mutex);
+const std::string& Main::home() const {
     return home_;
 }
 
-void Context::home(const std::string& h) {
-    AutoLock<Mutex> lock(local_mutex);
-    home_ = h;
-}
 
-void Context::abortHandler(abort_handler_t h) {
+void Main::abortHandler(abort_handler_t h) {
     AutoLock<Mutex> lock(local_mutex);
     abortHandler_ = h;
 }
 
-void Context::abort()
+void Main::abort()
 {
     abortHandler_();
 }
 
-void Context::assertAborts(bool assertAborts) {
+void Main::assertAborts(bool assertAborts) {
     AutoLock<Mutex> lock(local_mutex);
     assertAborts_ = assertAborts;
 }
 
-bool Context::assertAborts() {
+bool Main::assertAborts() {
     AutoLock<Mutex> lock(local_mutex);
     return assertAborts_;
 }
 
-long Context::self() const { return taskID_; }
+long Main::self() const { return taskID_; }
 
-void Context::self(long id) { taskID_ = id; }
+void Main::self(long id) { taskID_ = id; }
 
-int Context::debugLevel() const { return debugLevel_; }
+int Main::debugLevel() const { return debugLevel_; }
 
-void Context::debugLevel(int level) { debugLevel_ = level;}
+void Main::debugLevel(int level) { debugLevel_ = level;}
 
 
-const std::string& Context::runName() const {
-    AutoLock<Mutex> lock(local_mutex);
-    return runName_;
+
+const std::string& Main::displayName() const {
+    return displayName_;
 }
 
-void Context::runName(const std::string& name) {
-    AutoLock<Mutex> lock(local_mutex);
-    runName_ = name;
+
+std::string Main::name() const {
+    return name_;
 }
 
-const std::string& Context::displayName() const {
-    AutoLock<Mutex> lock(local_mutex);
-    if (displayName_.empty())
-        return runName();
-    else
-        return displayName_;
+
+Channel& Main::infoChannel() { return info_; }
+
+Channel& Main::warnChannel() { return warning_; }
+
+Channel& Main::errorChannel() { return error_; }
+
+
+void Main::reconfigure()
+{
+    Log::info() << "Tool::reconfigure" << std::endl;
+
+    int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
+
+    Main::instance().debugLevel( debug );
+
+    // forward to context
+    Main::instance().reconfigure();
 }
 
-void Context::displayName(const std::string& name) {
-    AutoLock<Mutex> lock(local_mutex);
-    displayName_ = name;
-}
-
-Channel& Context::infoChannel() { return info_; }
-
-Channel& Context::warnChannel() { return warning_; }
-
-Channel& Context::errorChannel() { return error_; }
-
-
-
-Channel& Context::channel(const std::string& key)
+Channel& Main::channel(const std::string& key)
 {
     AutoLock<Mutex> lock(local_mutex);
 
@@ -184,7 +174,7 @@ Channel& Context::channel(const std::string& key)
     throw BadParameter( "Channel '" + key + "' not found ", Here());
 }
 
-void Context::registerChannel(const std::string& key, Channel* channel)
+void Main::registerChannel(const std::string& key, Channel* channel)
 {
     AutoLock<Mutex> lock(local_mutex);
 
@@ -196,7 +186,7 @@ void Context::registerChannel(const std::string& key, Channel* channel)
     }
 }
 
-void Context::removeChannel(const std::string& key)
+void Main::removeChannel(const std::string& key)
 {
     AutoLock<Mutex> lock(local_mutex);
 
@@ -236,7 +226,22 @@ static PathName proc_path(const std::string& name) {
     throw SeriousBug("Cannot find " + name + " in PATH");
 }
 
-PathName Context::commandPath() const { return proc_path(argv(0)); }
+PathName Main::commandPath() const { return proc_path(argv(0)); }
+
+
+
+void Main::terminate() {
+    ::exit(0);
+}
+
+
+void Main::initialise(int argc, char** argv, const char* homeenv) {
+    AutoLock<Mutex> lock(local_mutex);
+    if (instance_ == 0) {
+        new Main(argc, argv, homeenv);
+    }
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

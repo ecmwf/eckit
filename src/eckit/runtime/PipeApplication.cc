@@ -14,7 +14,6 @@
 #include "eckit/io/Select.h"
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Bytes.h"
-#include "eckit/runtime/Context.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/PipeApplication.h"
 #include "eckit/serialisation/PipeStream.h"
@@ -27,12 +26,12 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-PipeApplication::PipeApplication(int argc, char** argv,
+PipeApplication::PipeApplication(int argc, char** argv,const char* homeenv,
                                  LoggingPolicy* logPolicy,
                                  MonitoringPolicy* monPolicy,
                                  LocationPolicy* locPolicy,
                                  SignallingPolicy* sigPolicy)
-    : Application(argc, argv, logPolicy, monPolicy, locPolicy, sigPolicy),
+    : Application(argc, argv, homeenv, logPolicy, monPolicy, locPolicy, sigPolicy),
       in_(this,"-in",-1),
       out_(this,"-out",-1) {
     // Establish relationship with 'parent' thread for the monitoring
@@ -56,7 +55,7 @@ void PipeApplication::run()
 
     if(getenv("PIPE_DEBUG")) {
         debug = true;
-        std::cout << "PIPE_DEBUG[" << Context::instance().runName() << "]" << std::endl;
+        std::cout << "PIPE_DEBUG[" << name_ << "]" << std::endl;
         if( Application::name() == getenv("PIPE_DEBUG") ) {
             std::cout << "debug me " << getpid() << std::endl;
             ::sleep(10);

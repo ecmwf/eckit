@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "eckit/log/Log.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/Policies.h"
 
@@ -64,7 +64,7 @@ void DoMonitor::start() {
     {
         Monitor::active(true);
         Monitor::instance().startup();
-        Context::instance().self(Monitor::instance().self());
+        Main::instance().self(Monitor::instance().self());
     } catch (std::exception& e) {
         Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
         Log::error() << "** Exception is re-thrown" << std::endl;

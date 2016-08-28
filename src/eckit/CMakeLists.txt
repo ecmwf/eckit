@@ -235,26 +235,18 @@ list( APPEND eckit_runtime_srcs
 runtime/Task.h
 runtime/Task.cc
 runtime/TaskID.h
-runtime/Context.h
-runtime/Context.cc
+runtime/Main.h
+runtime/Main.cc
 runtime/Application.h
 runtime/Application.cc
 runtime/Tool.h
 runtime/Tool.cc
-# runtime/ToolBehavior.h
-# runtime/ToolBehavior.cc
 runtime/Monitor.h
 runtime/Monitor.cc
 runtime/Monitorable.h
 runtime/Monitorable.cc
 runtime/TaskInfo.h
 runtime/TaskInfo.cc
-# runtime/LibBehavior.h
-# runtime/LibBehavior.cc
-# runtime/StandardBehavior.h
-# runtime/StandardBehavior.cc
-# runtime/ContextBehavior.h
-# runtime/ContextBehavior.cc
 runtime/PipeApplication.h
 runtime/PipeApplication.cc
 runtime/PipeHandler.h

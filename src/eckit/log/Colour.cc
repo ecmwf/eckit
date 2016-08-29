@@ -9,6 +9,7 @@
  */
 
 #include <unistd.h>
+#include <errno.h>
 
 #include "eckit/log/Colour.h"
 #include "eckit/config/Resource.h"

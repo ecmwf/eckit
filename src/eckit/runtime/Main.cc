@@ -126,6 +126,10 @@ std::string Main::name() const {
     return name_;
 }
 
+bool Main::ready() {
+    return instance_ != 0;
+}
+
 // bool Main::debug() const {
 //     return debug_;
 // }

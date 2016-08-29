@@ -158,6 +158,10 @@ struct CreateDebugChannel : public CreateLogChannel {
 
 Channel& Log::debug()
 {
+    if(!Main::ready()) {
+        static Channel empty;
+        return empty;
+    }
     static ThreadSingleton<Channel, CreateDebugChannel> x;
     return x.instance();
 }

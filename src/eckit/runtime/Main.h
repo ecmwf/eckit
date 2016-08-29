@@ -57,6 +57,9 @@ public: // methods
     /// For unit tests and fortran bindinds only
     static void initialise(int argc, char** argv, const char* homeenv = 0);
 
+    // To be used before main() to check if the instance is ready
+    static bool ready();
+
 
     /// Channel handling
     virtual Channel* createInfoChannel() const;

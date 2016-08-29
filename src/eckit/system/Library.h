@@ -19,18 +19,19 @@
 #include <string>
 #include <vector>
 
-#include "eckit/log/Log.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/memory/ScopedPtr.h"
 #include "eckit/filesystem/LocalPathName.h"
 
 namespace eckit {
+
+class Channel;
+
 namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Library : private eckit::NonCopyable,
-                public Logger {
+class Library : private eckit::NonCopyable {
 
 public: // methods
 
@@ -54,8 +55,6 @@ public: // methods
 
     virtual std::string version() const = 0;
     virtual std::string gitsha1(unsigned int count = 40) const = 0;
-
-    virtual bool debug() const;
 
 // Class methods
 

@@ -26,7 +26,6 @@ namespace eckit {
 class Logger {
 public: // methods
     virtual Channel& debugChannel() const = 0;
-    virtual bool debug() const = 0;
 };
 
 /// Singleton holding global streams for logging
@@ -57,7 +56,6 @@ public: // methods
     /// Channel for debug output
 
     static Channel& debug();
-    static Channel& debug(const Logger&);
 
     /// Channel for informative messages
     static Channel& info();
@@ -99,8 +97,7 @@ public: // methods
     // trace(const T* = 0) can be replace by trace<T>() with c++14
     template<typename T>
     static Channel& debug(const T* = 0) {
-        const Logger& log = T::instance();
-        return log.debugChannel();
+        return T::instance().debugChannel();
     }
 
 //    template<typename T>

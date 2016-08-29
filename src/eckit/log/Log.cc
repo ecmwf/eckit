@@ -128,8 +128,9 @@ struct CreateInfoChannel : public CreateLogChannel {
 };
 
 Channel& Log::info()
-{   if (!Main::ready()) {
-        static Channel empty(new PrefixTarget("PRE-MAIN", new OStreamTarget(std::cout)));
+{
+    if (!Main::ready()) {
+        static Channel empty(new PrefixTarget("PRE-MAIN-INFO", new OStreamTarget(std::cout)));
         return empty;
     }
     static ThreadSingleton<Channel, CreateInfoChannel> x;
@@ -141,8 +142,9 @@ struct CreateErrorChannel : public CreateLogChannel {
 };
 
 Channel& Log::error()
-{   if (!Main::ready()) {
-        static Channel empty(new PrefixTarget("PRE-MAIN", new OStreamTarget(std::cout)));
+{
+    if (!Main::ready()) {
+        static Channel empty(new PrefixTarget("PRE-MAIN-ERROR", new OStreamTarget(std::cout)));
         return empty;
     }
     static ThreadSingleton<Channel, CreateErrorChannel> x;
@@ -154,8 +156,9 @@ struct CreateWarningChannel : public CreateLogChannel {
 };
 
 Channel& Log::warning()
-{   if (!Main::ready()) {
-        static Channel empty(new PrefixTarget("PRE-MAIN", new OStreamTarget(std::cout)));
+{
+    if (!Main::ready()) {
+        static Channel empty(new PrefixTarget("PRE-MAIN-WARNING", new OStreamTarget(std::cout)));
         return empty;
     }
     static ThreadSingleton<Channel, CreateWarningChannel> x;
@@ -169,7 +172,7 @@ struct CreateDebugChannel : public CreateLogChannel {
 Channel& Log::debug()
 {
     if (!Main::ready()) {
-        static Channel empty(new PrefixTarget("PRE-MAIN", new OStreamTarget(std::cout)));
+        static Channel empty(new PrefixTarget("PRE-MAIN-DEBUG", new OStreamTarget(std::cout)));
         return empty;
     }
     static ThreadSingleton<Channel, CreateDebugChannel> x;

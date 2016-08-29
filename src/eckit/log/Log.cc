@@ -115,7 +115,7 @@ struct CreateLogChannel {
         try {
             return createChannel();
         }
-        catch(std::exception& e) {
+        catch (std::exception& e) {
             std::cerr << "Exception caught when creating channel: " << e.what() << std::endl;
             return new Channel(new OStreamTarget(std::cout));
         }
@@ -127,7 +127,10 @@ struct CreateInfoChannel : public CreateLogChannel {
 };
 
 Channel& Log::info()
-{
+{   if (!Main::ready()) {
+        static Channel empty;
+        return empty;
+    }
     static ThreadSingleton<Channel, CreateInfoChannel> x;
     return x.instance();
 }
@@ -137,7 +140,10 @@ struct CreateErrorChannel : public CreateLogChannel {
 };
 
 Channel& Log::error()
-{
+{   if (!Main::ready()) {
+        static Channel empty;
+        return empty;
+    }
     static ThreadSingleton<Channel, CreateErrorChannel> x;
     return x.instance();
 }
@@ -147,7 +153,10 @@ struct CreateWarningChannel : public CreateLogChannel {
 };
 
 Channel& Log::warning()
-{
+{   if (!Main::ready()) {
+        static Channel empty;
+        return empty;
+    }
     static ThreadSingleton<Channel, CreateWarningChannel> x;
     return x.instance();
 }
@@ -158,7 +167,7 @@ struct CreateDebugChannel : public CreateLogChannel {
 
 Channel& Log::debug()
 {
-    if(!Main::ready()) {
+    if (!Main::ready()) {
         static Channel empty;
         return empty;
     }

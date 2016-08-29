@@ -8,23 +8,19 @@
 * does it submit to any jurisdiction.
 */
 
-#include <sys/param.h>
 #include <unistd.h>
 
-#include "eckit/parser/Tokenizer.h"
-#include "eckit/thread/Mutex.h"
-#include "eckit/thread/Once.h"
-#include "eckit/log/OStreamTarget.h"
-#include "eckit/filesystem/PathName.h"
-
 #include "eckit/bases/Loader.h"
-#include "eckit/config/Resource.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/log/Log.h"
+#include "eckit/os/BackTrace.h"
+#include "eckit/runtime/Library.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/system/SystemInfo.h"
-#include "eckit/runtime/Library.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
+#include "eckit/thread/Once.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit {
 
@@ -37,7 +33,40 @@ Main::Main(int argc, char** argv, const char* homeenv) :
     argc_(argc),
     argv_(argv),
     taskID_(-1),
-    home_("/") {
+    home_("/"),
+    debug_(false) {
+
+    if (instance_) {
+        std::cerr << "Attempting to create a new instance of Main()" << std::endl;
+        std::cerr << BackTrace::dump() << std::endl;
+        _exit(1);
+    }
+
+    instance_ = this;
+
+    if (::getenv("DEBUG")) {
+        debug_ = eckit::Translator<std::string, bool>()(::getenv("DEBUG"));
+    }
+
+    for (size_t i = 1; i < argc; i++) {
+        // Old style
+
+        if (::strcmp(argv[i], "-debug")) {
+            debug_ = true;
+
+        }
+
+        // New style
+        if (::strcmp(argv[i], "--debug")) {
+            debug_ = true;
+
+        }
+
+        if (::strncmp(argv[i], "--debug=", 8)) {
+            debug_ = eckit::Translator<std::string, bool>()(argv[i] + 8);
+        }
+
+    }
 
     ::srand(::getpid() + ::time(0));
 
@@ -61,7 +90,11 @@ Main::~Main() {
 }
 
 Main& Main::instance() {
-    PANIC(instance_ == 0);
+    if (!instance_) {
+        std::cerr << "Attempting to access a non-existent instance of Main()" << std::endl;
+        std::cerr << BackTrace::dump() << std::endl;
+        _exit(1);
+    }
     return *instance_;
 }
 
@@ -93,6 +126,10 @@ std::string Main::name() const {
     return name_;
 }
 
+// bool Main::debug() const {
+//     return debug_;
+// }
+
 void Main::terminate() {
     ::exit(0);
 }
@@ -118,7 +155,7 @@ Channel* Main::createErrorChannel() const {
 }
 
 Channel* Main::createDebugChannel() const {
-    return createChannel();
+    return debug_ ? createChannel() : new Channel();
 }
 
 

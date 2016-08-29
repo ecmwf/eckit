@@ -41,8 +41,9 @@ public: // methods
 
     const std::string& home() const;
 
-
     virtual void terminate();
+
+    // bool debug() const;
 
 
     // Thread ID where the main is running
@@ -58,7 +59,6 @@ public: // methods
 
 
     /// Channel handling
-    virtual Channel* createChannel() const = 0;
     virtual Channel* createInfoChannel() const;
     virtual Channel* createWarningChannel() const;
     virtual Channel* createErrorChannel() const;
@@ -70,13 +70,17 @@ protected:
     std::string displayName_;  ///< name to be displayed of running application
     long taskID_;
 
+    // To overrride
+
+    virtual Channel* createChannel() const = 0;
+
 private: // members
 
     int     argc_;
     char**  argv_;
 
     std::string  home_;         ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
-
+    bool debug_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

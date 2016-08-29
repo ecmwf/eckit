@@ -60,15 +60,15 @@ CmdApplication<App>::~CmdApplication() {
 
 template <class App>
 std::string CmdApplication<App>::prompt() const {
-    return this->App::appName();
+    return this->App::name();
 }
 
 template <class App>
 void CmdApplication<App>::startup(std::ostream& out) {
     StringList rc;
 
-    rc.push_back("~/." + App::instance().appName() + "rc");
-    rc.push_back("~/etc/" + App::instance().appName() + "rc");
+    rc.push_back("~/." + App::instance().name() + "rc");
+    rc.push_back("~/etc/" + App::instance().name() + "rc");
 
     for (StringList::const_iterator it = rc.begin(); it != rc.end(); ++it) {
         PathName path(*it);

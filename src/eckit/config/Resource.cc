@@ -26,7 +26,8 @@ template<class T> std::string Resource<T>::getValue() const
 
 
 template<class T>
-Resource<T>::Resource(const std::string& str, const std::string& value, bool tokenize) {
+Resource<T>::Resource(const std::string& str, const std::string& value, bool tokenize):
+    ResourceBase(0, str) {
     std::vector<std::string> v;
     Tokenizer parse(",");
 

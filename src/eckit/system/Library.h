@@ -55,6 +55,7 @@ public: // methods
 
     virtual std::string version() const = 0;
     virtual std::string gitsha1(unsigned int count = 40) const = 0;
+    virtual Channel& debugChannel() const;
 
 // Class methods
 
@@ -66,7 +67,6 @@ public: // methods
 
 protected: // methods
 
-    virtual Channel& debugChannel() const;
 
     virtual const void* addr() const = 0;
 

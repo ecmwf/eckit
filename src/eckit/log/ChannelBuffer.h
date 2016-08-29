@@ -31,7 +31,7 @@ class LogTarget;
 class ChannelBuffer : public std::streambuf,
                       private NonCopyable {
 
-public: // methods
+private: // methods
 
     /// constructor, taking ownership of stream
     ChannelBuffer( std::size_t size = 1024 );
@@ -43,6 +43,9 @@ public: // methods
 
     void addLogTarget(LogTarget* target);
     void setLogTarget(LogTarget* target);
+
+    void indent(const char* space = "   ");
+    void unindent();
 
 protected: // methods
 
@@ -67,6 +70,8 @@ protected: // members
 private:
 
     void clear();
+
+    friend class Channel;
 
 };
 

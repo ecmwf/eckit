@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file PrefixTarget.h
+/// @file IndentTarget.h
 /// @author Baudouin Raoult
 
-#ifndef eckit_log_PrefixTarget_h
-#define eckit_log_PrefixTarget_h
+#ifndef eckit_log_IndentTarget_h
+#define eckit_log_IndentTarget_h
 
 #include <utility>
 
-#include "eckit/log/WrapperTarget.h"
+#include "eckit/log/PrefixTarget.h"
 
 //-----------------------------------------------------------------------------
 
@@ -24,21 +24,10 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class PrefixTarget : public WrapperTarget {
+class IndentTarget : public PrefixTarget {
 public:
 
-    PrefixTarget(const std::string& prefix, LogTarget* target, const char* space = " ");
-
-private:
-
-    virtual void writePrefix();
-    virtual void writeSuffix();
-
-private:
-    std::string prefix_;
-    const char* space_;
-    size_t prefixLength_;
-    size_t spaceLength_;
+    IndentTarget(const std::string& prefix, LogTarget* target, const char* space = " ");
 };
 
 //-----------------------------------------------------------------------------

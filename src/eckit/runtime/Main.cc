@@ -42,7 +42,6 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         _exit(1);
     }
 
-    instance_ = this;
 
     if (::getenv("DEBUG")) {
         debug_ = eckit::Translator<std::string, bool>()(::getenv("DEBUG"));
@@ -80,6 +79,7 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         std::string execHome = eckit::system::SystemInfo::instance().executablePath().dirName().dirName();
         home_ = execHome;
     }
+    instance_ = this;
 
     Loader::callAll(&Loader::execute);
 

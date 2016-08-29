@@ -39,11 +39,23 @@ public: // methods
 
     void setLogTarget(LogTarget*);
     void addLogTarget(LogTarget*);
+    void clearLogTargets();
+
+    void indent(const char* prefix = "");
+    void unindent();
 
 private:
 
     ChannelBuffer* buffer_;
 
+};
+
+
+class AutoIndent {
+    Channel& channel_;
+public:
+    AutoIndent(Channel& channel, const char* prefix = "") : channel_(channel) { channel_.indent(prefix); }
+    ~AutoIndent() { channel_.unindent(); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

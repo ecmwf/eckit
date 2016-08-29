@@ -18,24 +18,25 @@
 #include <vector>
 
 #include "eckit/log/CodeLocation.h"
-#include "eckit/memory/NonCopyable.h"
+#include "eckit/memory/Counted.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class LogTarget : private NonCopyable {
+class LogTarget : public Counted {
 
 public: // methods
 
     LogTarget();
 
-    virtual ~LogTarget();
 
     virtual void write(const char* start, const char* end) = 0;
     virtual void flush() = 0;
 
-private:
+protected:
+
+    virtual ~LogTarget();
 
 };
 

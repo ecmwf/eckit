@@ -21,7 +21,7 @@ Channel::Channel(LogTarget* target):
     std::ostream(new ChannelBuffer()),
     buffer_(dynamic_cast<ChannelBuffer*>(rdbuf())) {
     ASSERT( buffer_ );
-    if(target) {
+    if (target) {
         buffer_->setLogTarget(target);
     }
 }
@@ -37,7 +37,7 @@ bool Channel::operator !() const {
 }
 
 Channel::operator bool() const {
-    return buffer_->numberOfTargets();
+    return buffer_->numberOfTargets() > 0;
 }
 
 void Channel::setLogTarget(LogTarget* target) {
@@ -49,6 +49,19 @@ void Channel::addLogTarget(LogTarget* target) {
     ASSERT(target);
     buffer_->addLogTarget(target);
 }
+
+void Channel::clearLogTargets() {
+    buffer_->clear();
+}
+
+void Channel::indent(const char* space) {
+    buffer_->indent(space);
+}
+
+void Channel::unindent() {
+    buffer_->unindent();
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

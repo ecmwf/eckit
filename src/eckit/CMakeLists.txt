@@ -271,6 +271,8 @@ log/PrefixTarget.h
 log/PrefixTarget.cc
 log/WrapperTarget.h
 log/WrapperTarget.cc
+log/IndentTarget.h
+log/IndentTarget.cc
 log/Channel.h
 log/Channel.cc
 log/OStreamTarget.h
@@ -307,8 +309,8 @@ log/OStreamHandle.h
 log/Plural.h
 log/Progress.h
 log/Progress.cc
-log/RotBuffer.h
-log/RotBuffer.cc
+#log/RotBuffer.h
+#log/RotBuffer.cc
 log/SavedStatus.h
 log/SavedStatus.cc
 log/Seconds.h

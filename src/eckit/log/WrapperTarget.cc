@@ -25,10 +25,12 @@ WrapperTarget::WrapperTarget(LogTarget* target):
         target_ = new OStreamTarget(std::cout);
     }
 
+    target_->attach();
+
 }
 
 WrapperTarget::~WrapperTarget() {
-    delete target_;
+    target_->detach();
 }
 
 void WrapperTarget::write(const char* start, const char* end) {

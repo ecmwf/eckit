@@ -13,6 +13,7 @@
 #include "eckit/log/ChannelBuffer.h"
 #include "eckit/log/LogTarget.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/IndentTarget.h"
 
 namespace eckit {
 
@@ -35,7 +36,7 @@ ChannelBuffer::~ChannelBuffer()
 void ChannelBuffer::clear() {
     sync();
     for(std::vector<LogTarget*>::iterator i = targets_.begin(); i != targets_.end(); ++i) {
-        delete *i;
+         (*i)->detach();
     }
     targets_.clear();
 }
@@ -46,6 +47,8 @@ void ChannelBuffer::setLogTarget(LogTarget* target) {
 }
 
 void ChannelBuffer::addLogTarget(LogTarget* target) {
+    ASSERT(target);
+    target->attach();
     targets_.push_back(target);
 }
 
@@ -58,6 +61,29 @@ bool ChannelBuffer::dumpBuffer()
     return true;
 }
 
+void ChannelBuffer::indent(const char* space) {
+    for(size_t i = 0; i < targets_.size(); i++) {
+        LogTarget* indent = new IndentTarget(space, targets_[i]);
+        targets_[i]->detach();
+        targets_[i] = indent;
+        targets_[i]->attach();
+    }
+}
+
+void ChannelBuffer::unindent() {
+    for(size_t i = 0; i < targets_.size(); i++) {
+        IndentTarget*  indent = dynamic_cast<IndentTarget*>(targets_[i]);
+        if(indent == 0) {
+            throw SeriousBug("Attempt to unindent a Channel that is not indented");
+        }
+
+        LogTarget* target = indent->target_;
+        target->attach();
+        targets_[i]->detach();
+        targets_[i] = target;
+    }
+
+}
 
 std::streambuf::int_type ChannelBuffer::overflow(std::streambuf::int_type ch)
 {

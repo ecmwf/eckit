@@ -24,18 +24,4 @@ template<class T> std::string Resource<T>::getValue() const
     return Translator<T, std::string>()(value_);
 }
 
-
-template<class T>
-Resource<T>::Resource(const std::string& str, const std::string& value, bool tokenize):
-    ResourceBase(0, str) {
-    std::vector<std::string> v;
-    Tokenizer parse(",");
-
-    parse(value, v);
-
-    for (std::vector<std::string>::const_iterator j = v.begin(); j != v.end(); ++j) {
-        value_.push_back(Translator<std::string, T>()(*j));
-    }
-}
-
 } // namespace

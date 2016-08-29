@@ -80,8 +80,6 @@ public:
     Resource(const std::string& str, const T& value):
         ResourceBase(0, str),     value_(value) {}
 
-    Resource(const std::string& str, const std::string& value, bool tokenize);
-
     // Part of a configurable
 
     Resource(Configurable* owner, const std::string& str, const T& value):

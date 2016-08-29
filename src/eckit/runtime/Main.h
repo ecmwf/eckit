@@ -13,8 +13,8 @@
 
 #include <map>
 
-#include "eckit/config/Configurable.h"
 #include "eckit/log/Channel.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -24,12 +24,12 @@ typedef void (*abort_handler_t)();
 class LogStream;
 class PathName;
 
-class Main : public Configurable {
+class Main  : private NonCopyable {
 protected:
 
 
     Main(int argc, char** argv, const char* homeenv = 0);
-    ~Main();
+    virtual ~Main();
 
 public: // methods
 
@@ -44,9 +44,6 @@ public: // methods
 
     virtual void terminate();
 
-    // From Configurable
-
-    virtual void reconfigure();
 
     // Thread ID where the main is running
     long taskID() const;

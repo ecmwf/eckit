@@ -54,18 +54,10 @@ public:
     virtual void wait() {}
     virtual bool active() { return true; }
 
-    std::string appName() const { return name_; }
     bool running() const { return running_; }
 
     time_t uptime();
 
-
-protected: // methods
-
-    // From Configurable
-
-    virtual void   reconfigure();
-    virtual std::string name() const   { return name_; }
 
 private: // members
 

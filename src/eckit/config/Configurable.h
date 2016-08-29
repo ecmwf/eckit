@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -30,19 +30,14 @@ class Configurable : public ClassExtent<Configurable> {
 public:
 
 // -- Contructors
-	
+
 	Configurable();
 
 // -- Destructor
 
 	virtual ~Configurable();
-
-// -- Methods
-	
-	virtual void reconfigure() = 0;
-
 // -- Class methods
-	
+
 	static void reconfigureAll();  // Config file as changed, update
 	static void dumpAllResources(std::ostream&); // Dump the configuration to a file
     static void htmlAllResources(std::ostream&,Url&);
@@ -51,6 +46,13 @@ public:
     virtual std::string kind() const  { return "Configurable"; }
     /// @returns the name of the instance
     virtual std::string name() const  { return "Unknown"; }
+
+protected:
+
+// -- Methods
+
+    virtual void reconfigure() = 0;
+
 
 private:
 

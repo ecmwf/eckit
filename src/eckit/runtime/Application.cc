@@ -85,15 +85,6 @@ Application::~Application() {
 
 //-----------------------------------------------------------------------------
 
-void Application::reconfigure() {
-    Log::info() << "Application::reconfigure" << std::endl;
-
-    int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
-
-    // Main::instance().debug(debug);
-
-    Main::instance().reconfigure();  // forward to context
-}
 
 //-----------------------------------------------------------------------------
 

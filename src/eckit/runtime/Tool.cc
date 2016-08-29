@@ -11,6 +11,7 @@
 // #include <stdlib.h>
 
 #include "eckit/runtime/Tool.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
@@ -29,13 +30,7 @@ int Tool::start()
 {
     int status = 0;
 
-    // int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
-
-    // Main::instance().debugLevel( debug );
-
-
-    try
-    {
+    try {
         run();
     }
     catch ( Exception& e ) {

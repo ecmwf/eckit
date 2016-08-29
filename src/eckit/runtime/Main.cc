@@ -88,28 +88,13 @@ long Main::taskID() const {
     return taskID_;
 }
 
-
 std::string Main::name() const {
     return name_;
 }
 
-void Main::reconfigure()
-{
-    // Log::info() << "Tool::reconfigure" << std::endl;
-
-    // int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
-
-    // Main::instance().debugLevel( debug );
-
-    // // forward to context
-    // Main::instance().reconfigure();
-}
-
-
 void Main::terminate() {
     ::exit(0);
 }
-
 
 void Main::initialise(int argc, char** argv, const char* homeenv) {
     AutoLock<Mutex> lock(local_mutex);

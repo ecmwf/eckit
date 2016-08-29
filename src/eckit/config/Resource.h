@@ -19,6 +19,7 @@
 #include <string>
 
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit {
 
@@ -84,6 +85,9 @@ public:
 
     Resource(Configurable* owner, const std::string& str, const T& value):
         ResourceBase(owner, str), value_(value) {}
+
+    Resource(const std::string& str,const std::string& value, bool):
+        ResourceBase(0,str),     value_(eckit::Translator<std::string,T>()(value)) {}
 
 // -- Convertors
 

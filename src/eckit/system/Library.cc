@@ -143,11 +143,6 @@ std::string Library::libraryPath() const {
     return libraryPath_;
 }
 
-bool Library::debug() const
-{
-    return debug_;
-}
-
 Channel& Library::debugChannel() const
 {
     eckit::AutoLock<Mutex> lock(mutex_);

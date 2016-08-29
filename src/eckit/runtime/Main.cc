@@ -24,6 +24,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/system/SystemInfo.h"
+#include "eckit/runtime/Library.h"
 
 namespace eckit {
 
@@ -36,7 +37,7 @@ Main::Main(int argc, char** argv, const char* homeenv) :
     argc_(argc),
     argv_(argv),
     taskID_(-1),
-    home_("/"){
+    home_("/") {
 
     ::srand(::getpid() + ::time(0));
 
@@ -99,8 +100,25 @@ void Main::terminate() {
 void Main::initialise(int argc, char** argv, const char* homeenv) {
     AutoLock<Mutex> lock(local_mutex);
     if (instance_ == 0) {
-        new Main(argc, argv, homeenv);
+        new Library(argc, argv, homeenv);
     }
+}
+
+
+Channel* Main::createInfoChannel() const {
+    return createChannel();
+}
+
+Channel* Main::createWarningChannel() const {
+    return createChannel();
+}
+
+Channel* Main::createErrorChannel() const {
+    return createChannel();
+}
+
+Channel* Main::createDebugChannel() const {
+    return createChannel();
 }
 
 

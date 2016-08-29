@@ -1,4 +1,3 @@
-
 /*
  * (C) Copyright 1996-2016 ECMWF.
  *
@@ -12,8 +11,8 @@
 /// @author Tiago Quintino
 /// @date Sep 2012
 
-#ifndef eckit_Tool_h
-#define eckit_Tool_h
+#ifndef eckit_Library_h
+#define eckit_Library_h
 
 #include "eckit/runtime/Main.h"
 
@@ -21,21 +20,17 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Tool : public Main {
+class Library : public Main {
 
 public: // methods
 
     /// Contructors
 
-    Tool(int argc, char **argv, const char* homeenv = 0);
+    Library(int argc, char **argv, const char* homeenv = 0);
 
     /// Destructor
 
-	virtual ~Tool();
-
-    int start();
-
-	virtual void run() = 0;
+	virtual ~Library();
 
 protected:
 

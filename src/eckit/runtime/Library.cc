@@ -10,48 +10,28 @@
 
 // #include <stdlib.h>
 
-#include "eckit/runtime/Tool.h"
+#include "eckit/runtime/Library.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/OStreamTarget.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Tool::Tool(int argc, char **argv, const char* homeenv) :
+Library::Library(int argc, char **argv, const char* homeenv) :
     Main(argc, argv, homeenv)
 {
 }
 
-Tool::~Tool()
+Library::~Library()
 {
 }
 
-int Tool::start()
-{
-    int status = 0;
-
-    try {
-        run();
-    }
-    catch ( Exception& e ) {
-        status = 1;
-        Log::error() << "** " << e.what() << " Caught in "  << Here() << std::endl;
-        Log::error() << "** Exception terminates " << name() << std::endl;
-    }
-    catch ( std::exception& e ) {
-        status = 1;
-        Log::error() << "** " << e.what() << " Caught in "  << Here() << std::endl;
-        Log::error() << "** Exception terminates " << name() << std::endl;
-    }
-
-    return status;
-}
-
-
-Channel* Tool::createChannel() const  {
+Channel* Library::createChannel() const  {
     return new Channel(new OStreamTarget(std::cout));
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

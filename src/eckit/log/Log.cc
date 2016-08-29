@@ -106,35 +106,59 @@ std::ostream& Log::message()
 }
 
 
+
 struct CreateLogChannel {
+
+    virtual Channel* createChannel() = 0;
+
     Channel* operator()() {
-        Channel* channel = new Channel();
-        channel->setLogTarget(new OStreamTarget(std::cout));
-        return channel;
+        try {
+            return createChannel();
+        }
+        catch(std::exception& e) {
+            std::cerr << "Exception caught when creating channel: " << e.what() << std::endl;
+            return new Channel(new OStreamTarget(std::cout));
+        }
     }
+};
+
+struct CreateInfoChannel : public CreateLogChannel {
+    virtual Channel* createChannel() { return Main::instance().createInfoChannel(); }
 };
 
 Channel& Log::info()
 {
-    static ThreadSingleton<Channel, CreateLogChannel> x;
+    static ThreadSingleton<Channel, CreateInfoChannel> x;
     return x.instance();
 }
+
+struct CreateErrorChannel : public CreateLogChannel {
+    virtual Channel* createChannel() { return Main::instance().createErrorChannel(); }
+};
 
 Channel& Log::error()
 {
-    static ThreadSingleton<Channel, CreateLogChannel> x;
+    static ThreadSingleton<Channel, CreateErrorChannel> x;
     return x.instance();
 }
+
+struct CreateWarningChannel : public CreateLogChannel {
+    virtual Channel* createChannel() { return Main::instance().createWarningChannel(); }
+};
 
 Channel& Log::warning()
 {
-    static ThreadSingleton<Channel, CreateLogChannel> x;
+    static ThreadSingleton<Channel, CreateWarningChannel> x;
     return x.instance();
 }
 
+struct CreateDebugChannel : public CreateLogChannel {
+    virtual Channel* createChannel() { return Main::instance().createDebugChannel(); }
+};
+
 Channel& Log::debug()
 {
-    static ThreadSingleton<Channel, CreateLogChannel> x;
+    static ThreadSingleton<Channel, CreateDebugChannel> x;
     return x.instance();
 }
 

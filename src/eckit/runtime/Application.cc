@@ -15,6 +15,8 @@
 #include "eckit/config/Resource.h"
 #include "eckit/runtime/Application.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/log/OStreamTarget.h"
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -163,6 +165,12 @@ time_t Application::uptime() {
 }
 
 //-----------------------------------------------------------------------------
+
+
+Channel* Application::createChannel() const  {
+    return new Channel(new OStreamTarget(std::cout));
+}
+
 
 //-----------------------------------------------------------------------------
 

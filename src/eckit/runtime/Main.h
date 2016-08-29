@@ -57,6 +57,13 @@ public: // methods
     static void initialise(int argc, char** argv, const char* homeenv = 0);
 
 
+    /// Channel handling
+    virtual Channel* createChannel() const = 0;
+    virtual Channel* createInfoChannel() const;
+    virtual Channel* createWarningChannel() const;
+    virtual Channel* createErrorChannel() const;
+    virtual Channel* createDebugChannel() const;
+
 protected:
 
     std::string name_;

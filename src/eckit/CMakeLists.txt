@@ -240,6 +240,8 @@ runtime/Application.h
 runtime/Application.cc
 runtime/Tool.h
 runtime/Tool.cc
+runtime/Library.h
+runtime/Library.cc
 runtime/Monitor.h
 runtime/Monitor.cc
 runtime/Monitorable.h

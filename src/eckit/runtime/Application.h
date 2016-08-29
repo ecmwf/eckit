@@ -66,7 +66,7 @@ private: // members
 
     /// From Main
     virtual void terminate();
-
+    virtual Channel* createChannel() const;
     /// overriden from Configurable
 
     virtual std::string kind() const  { return "Application"; }

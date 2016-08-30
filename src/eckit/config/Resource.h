@@ -91,7 +91,7 @@ public:
 
 // -- Convertors
 
-    operator T&()                { init(); return value_;        }
+    operator const T&()  const { const_cast<Resource<T>*>(this)->init(); return value_;        }
 
 private:
 
@@ -107,6 +107,12 @@ private:
     virtual std::string getValue() const;
 
 };
+
+template<class T>
+std::ostream& operator<<(std::ostream& os, const Resource<T>& r) {
+    os << static_cast<const T&>(r);
+    return os;
+}
 
 }
 

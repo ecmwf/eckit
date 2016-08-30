@@ -20,6 +20,8 @@
 #include "eckit/linalg/Vector.h"
 #include "util.h"
 
+#include "eckit/testing/Setup.h"
+
 //-----------------------------------------------------------------------------
 
 using namespace eckit::linalg;
@@ -30,15 +32,11 @@ namespace test {
 //-----------------------------------------------------------------------------
 
 // Set linear algebra backend
-struct Setup {
-    Setup() {
-        Main::instance().initialise(boost::unit_test::framework::master_test_suite().argc,
-                                  boost::unit_test::framework::master_test_suite().argv);
+struct Setup : testing::Setup {
+    Setup() : testing::Setup() {
         LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
     }
 };
-
-BOOST_GLOBAL_FIXTURE(Setup);
 
 //-----------------------------------------------------------------------------
 
@@ -63,6 +61,8 @@ void test(const T& v, const T& r) {
 //-----------------------------------------------------------------------------
 
 /// Test linear algebra interface
+
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_FIXTURE_TEST_SUITE(test_eckit_la_linalg, Fixture)
 

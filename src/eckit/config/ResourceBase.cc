@@ -17,8 +17,8 @@
 namespace eckit {
 
 ResourceBase::ResourceBase(Configurable* owner, const std::string& str):
-    owner_( owner ),
-    inited_(false)
+    inited_(false),
+    owner_(owner)
 {
     if (owner_) owner_->add(this);
 

@@ -7,7 +7,7 @@ ecbuild_add_test( TARGET      eckit_test_floatcompare
                   SOURCES     test_floatcompare.cc
                   LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_eckit_types
+ecbuild_add_test( TARGET      eckit_test_types
                   BOOST
                   SOURCES     test_uuid.cc
                   LIBS        eckit )

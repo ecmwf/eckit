@@ -12,7 +12,6 @@
 
 #include "eckit/runtime/Tool.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/log/OStreamTarget.h"
 
 namespace eckit {
 
@@ -46,11 +45,6 @@ int Tool::start()
     }
 
     return status;
-}
-
-
-Channel* Tool::createChannel() const  {
-    return new Channel(new OStreamTarget(std::cout));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

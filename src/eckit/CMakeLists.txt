@@ -536,6 +536,13 @@ bases/Watcher.cc
 bases/Loader.h
 bases/Loader.cc )
 
+list( APPEND eckit_transaction_srcs
+    transaction/TxnEvent.h
+    transaction/TxnEvent.cc
+    transaction/TxnLog.h
+    transaction/TxnLog.cc
+)
+
 list( APPEND eckit_testing_srcs
 testing/Setup.h
 )

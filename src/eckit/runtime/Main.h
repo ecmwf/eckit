@@ -72,7 +72,7 @@ protected:
 
     // To overrride
 
-    virtual Channel* createChannel() const = 0;
+   virtual Channel* createChannel() const;
 
 private: // members
 

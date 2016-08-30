@@ -182,9 +182,6 @@ time_t Application::uptime() {
     return now - uptime;
 }
 
-Channel* Application::createChannel() const  {
-    return new Channel(new OStreamTarget(std::cout));
-}
 
 //-----------------------------------------------------------------------------
 

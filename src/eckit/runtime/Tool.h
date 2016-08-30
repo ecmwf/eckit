@@ -37,10 +37,6 @@ public: // methods
 
 	virtual void run() = 0;
 
-protected:
-
-    virtual Channel* createChannel() const;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

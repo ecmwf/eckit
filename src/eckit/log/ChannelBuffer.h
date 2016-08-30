@@ -39,11 +39,10 @@ private: // methods
     /// destructor, deallocates stream if has ownership
     virtual ~ChannelBuffer();
 
-    size_t numberOfTargets() const { return targets_.size(); }
+    bool active() const { return target_ != 0; }
 
-    void clearAllTargets();
-    void addLogTarget(LogTarget* target);
-    void setLogTarget(LogTarget* target);
+    void clearTarget();
+    void setTarget(LogTarget* target);
 
     void indent(const char* space = "   ");
     void unindent();
@@ -64,13 +63,12 @@ protected: // methods
 
 protected: // members
 
-    std::vector<LogTarget*> targets_;
+    LogTarget* target_;
 
     std::vector<char> buffer_;
 
 private:
 
-    void clear();
 
     friend class Channel;
 

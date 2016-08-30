@@ -22,7 +22,7 @@ Channel::Channel(LogTarget* target):
     buffer_(dynamic_cast<ChannelBuffer*>(rdbuf())) {
     ASSERT( buffer_ );
     if (target) {
-        buffer_->setLogTarget(target);
+        buffer_->setTarget(target);
     }
 }
 
@@ -37,21 +37,16 @@ bool Channel::operator !() const {
 }
 
 Channel::operator bool() const {
-    return buffer_->numberOfTargets() > 0;
+    return buffer_->active();
 }
 
-void Channel::setLogTarget(LogTarget* target) {
+void Channel::setTarget(LogTarget* target) {
     ASSERT(target);
-    buffer_->setLogTarget(target);
+    buffer_->setTarget(target);
 }
 
-void Channel::addLogTarget(LogTarget* target) {
-    ASSERT(target);
-    buffer_->addLogTarget(target);
-}
-
-void Channel::clearLogTargets() {
-    buffer_->clear();
+void Channel::clearTarget() {
+    buffer_->clearTarget();
 }
 
 void Channel::indent(const char* space) {

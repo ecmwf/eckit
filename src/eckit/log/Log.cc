@@ -104,9 +104,7 @@ Channel& Log::channel(const std::string& key) {
 
 struct CreateStatusChannel {
     Channel* operator()() {
-        Channel* channel = new Channel();
-        channel->setLogTarget(new StatusTarget());
-        return channel;
+        return new Channel(new StatusTarget());
     }
 };
 
@@ -118,9 +116,7 @@ std::ostream& Log::status()
 
 struct CreateMessageChannel {
     Channel* operator()() {
-        Channel* channel = new Channel();
-        channel->setLogTarget(new MessageTarget());
-        return channel;
+        return new Channel(new MessageTarget());
     }
 };
 

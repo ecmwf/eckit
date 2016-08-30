@@ -30,62 +30,54 @@ ChannelBuffer::ChannelBuffer( std::size_t size ) :
 
 ChannelBuffer::~ChannelBuffer()
 {
-    clear();
+    clearTarget();
 }
 
-void ChannelBuffer::clear() {
-    sync();
-    for(std::vector<LogTarget*>::iterator i = targets_.begin(); i != targets_.end(); ++i) {
-         (*i)->detach();
-    }
-    targets_.clear();
-}
 
-void ChannelBuffer::clearAllTargets() {
-    clear();
-}
-
-void ChannelBuffer::setLogTarget(LogTarget* target) {
-    clear();
-    addLogTarget(target);
-}
-
-void ChannelBuffer::addLogTarget(LogTarget* target) {
+void ChannelBuffer::setTarget(LogTarget* target) {
     ASSERT(target);
+
+    sync();
+
     target->attach();
-    targets_.push_back(target);
+
+    if(target_) {
+        target_->detach();
+    }
+
+    target_ = target;
+
+}
+
+void ChannelBuffer::clearTarget() {
+    sync();
+    if (target_) {
+        target_->detach();
+        target_ = 0;
+    }
 }
 
 bool ChannelBuffer::dumpBuffer()
 {
-    for(std::vector<LogTarget*>::iterator i = targets_.begin(); i != targets_.end(); ++i) {
-        (*i)->write(pbase(), pptr());
+    if (target_) {
+        target_->write(pbase(), pptr());
     }
     setp(pbase(), epptr());
     return true;
 }
 
 void ChannelBuffer::indent(const char* space) {
-    for(size_t i = 0; i < targets_.size(); i++) {
-        LogTarget* indent = new IndentTarget(space, targets_[i]);
-        targets_[i]->detach();
-        targets_[i] = indent;
-        targets_[i]->attach();
+    if (target_) {
+        setTarget(new IndentTarget(space, target_));
     }
 }
 
 void ChannelBuffer::unindent() {
-    for(size_t i = 0; i < targets_.size(); i++) {
-        IndentTarget*  indent = dynamic_cast<IndentTarget*>(targets_[i]);
-        if(indent == 0) {
-            throw SeriousBug("Attempt to unindent a Channel that is not indented");
-        }
-
-        LogTarget* target = indent->target_;
-        target->attach();
-        targets_[i]->detach();
-        targets_[i] = target;
+    IndentTarget*  indent = dynamic_cast<IndentTarget*>(target_);
+    if (indent == 0) {
+        throw SeriousBug("Attempt to unindent a Channel that is not indented");
     }
+    setTarget(indent->target_);
 
 }
 
@@ -99,10 +91,10 @@ std::streambuf::int_type ChannelBuffer::overflow(std::streambuf::int_type ch)
 
 std::streambuf::int_type ChannelBuffer::sync()
 {
-    if( dumpBuffer() )
+    if ( dumpBuffer() )
     {
-        for(std::vector<LogTarget*>::iterator i = targets_.begin(); i != targets_.end(); ++i) {
-            (*i)->flush();
+        if (target_) {
+            target_->flush();
         }
         return 0;
     }

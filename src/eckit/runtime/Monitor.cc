@@ -172,7 +172,9 @@ TaskInfo* Monitor::task()
 
 long Monitor::self()
 {
-	if(!active_) return 0;
+	if(!active_) {
+        return Main::instance().taskID();
+    }
 	if(!ready_)  return -1;
 	return slot_;
 }

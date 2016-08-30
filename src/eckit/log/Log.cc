@@ -197,12 +197,11 @@ Channel& Log::debug()
         const char* e = getenv("DEBUG");
 
         if (e && bool(Translator<std::string, bool>()(e))) {
-            static Channel empty;
+            static Channel empty(new PrefixTarget("PRE-MAIN-DEBUG", new OStreamTarget(std::cout)));
             return empty;
         }
         else {
-
-            static Channel empty(new PrefixTarget("PRE-MAIN-DEBUG", new OStreamTarget(std::cout)));
+            static Channel empty;
             return empty;
         }
     }

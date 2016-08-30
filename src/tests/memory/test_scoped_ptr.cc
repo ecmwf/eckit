@@ -11,6 +11,8 @@
 #include <cmath>
 #include <iostream>
 
+#define BOOST_TEST_MODULE test_eckit_memory_scoped_ptr
+
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/memory/Owned.h"

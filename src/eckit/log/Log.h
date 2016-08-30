@@ -24,6 +24,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class Logger {
+public: // methods
+    virtual Channel& debugChannel() const = 0;
+    virtual bool debug() const = 0;
+};
+
+
 /// Singleton holding global streams for logging
 ///
 /// @warning these streams are thread safe. A lock is
@@ -45,13 +52,15 @@ public: // types
 
 public: // methods
 
+    static const Logger& defaultLogger();
+
     static void registerChannel(const std::string& key, Channel* channel);
     static void removeChannel(const std::string& key);
     static Channel& channel(const std::string& key);
 
     /// Channel for debug output
-    static Channel& debug(int level = 1);
-    static Channel& debug(const CodeLocation& where, int level = 1);
+    static Channel& debug(const Logger& = defaultLogger());
+    static Channel& debug(const CodeLocation& where);
 
     /// Channel for informative messages
     static Channel& info();
@@ -70,8 +79,8 @@ public: // methods
     static std::ostream& panic(const CodeLocation& where);
 
     /// Channel accessible through category index
-    static Channel& channel(int cat, int level = 1);
-    static Channel& channel(int cat, const CodeLocation& where, int level = 1);
+    static Channel& channel(int cat);
+    static Channel& channel(int cat, const CodeLocation& where);
 
     /// characters to identify origin of monitoring messages
     enum { Unix = 'U', App = 'X' };
@@ -98,23 +107,20 @@ public: // methods
     static std::ostream& syserr(std::ostream&);
 
     static std::ostream& dev() { return std::cout; }
-    static std::ostream& null();
+    static Channel& null();
 
-    // Per application loggin
+    // Per library loggin
     // trace(const T* = 0) can be replace by trace<T>() with c++14
     template<typename T>
-    static std::ostream& trace(int level = 0, const T* = 0) {
-        if(T::trace(level)) {
-            dev() << ">>> TRACE-" << T::name() << " ";
-            return dev();
-        }
-        return null();
+    static Channel& debug(const T* = 0) {
+        const Logger& log = T::instance();
+        return log.debugChannel();
     }
 
-    template<typename T>
-    static bool tracing(int level = 0, const T* = 0) {
-        return T::trace(level);
-    }
+//    template<typename T>
+//    static bool tracing(int level = 0, const T* = 0) {
+//        return T::trace(level);
+//    }
 
 private: // methods
 
@@ -129,6 +135,12 @@ int format(std::ostream&);
 
 #define ECKIT_DEBUG_HERE std::cerr << " DEBUG () @ " << Here() << std::endl;
 #define ECKIT_DEBUG_VAR(x) std::cerr << " DEBUG (" << #x << ":" << x << ") @ " << Here() << std::endl;
+
+
+// Non-flushing version of std::endl
+inline std::ostream& newl(std::ostream& out) {
+    return out << '\n';
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

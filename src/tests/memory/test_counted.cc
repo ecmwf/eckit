@@ -12,7 +12,7 @@
 
 #include "eckit/eckit_config.h"
 
-#define BOOST_TEST_MODULE test_eckit_memory
+#define BOOST_TEST_MODULE test_eckit_memory_counted
 
 #include "ecbuild/boost_test_framework.h"
 

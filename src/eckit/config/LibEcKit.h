@@ -8,15 +8,32 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/Functions.h"
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   August 2016
+
+#include "eckit/system/Library.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-size_t round(size_t x, size_t n) {
-    return ((x + n - 1) / n) * n;
-}
+class LibEcKit : public eckit::system::Library {
+public:
+
+    LibEcKit();
+
+    static const LibEcKit& instance();
+
+protected:
+
+    const void* addr() const;
+
+    virtual std::string version() const;
+
+    virtual std::string gitsha1(unsigned int count) const;
+
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 

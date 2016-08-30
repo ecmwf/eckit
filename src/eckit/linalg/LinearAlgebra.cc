@@ -20,8 +20,9 @@
 namespace eckit {
 namespace linalg {
 
-namespace {
+//----------------------------------------------------------------------------------------------------------------------
 
+namespace {
 
 #ifdef ECKIT_HAVE_EIGEN
     static const char* defaultBackend = "eigen";
@@ -36,11 +37,16 @@ class BackendRegistry {
 public:
     typedef std::map<std::string, const LinearAlgebra *> Map;
 
-    BackendRegistry() : default_(defaultBackend) {}
+    BackendRegistry() : default_(defaultBackend) {
+        char* envBackend = ::getenv("ECKIT_LINEAR_ALGEBRA_BACKEND");
+        if(envBackend) {
+            default_ = envBackend;
+        }
+        // std::cout << "Default Linear Algebra backend: " << default_ << std::endl;
+    }
 
     void backend(const std::string& name);
 
-    // Caller needs to lock!
     const LinearAlgebra& find() const;
     const LinearAlgebra& find(const std::string& name) const;
 
@@ -63,8 +69,9 @@ static void init() {
 
 void BackendRegistry::backend(const std::string& name) {
     AutoLock<Mutex> lock(mutex_);
-    if (map_.find(name) == map_.end())
+    if (map_.find(name) == map_.end()) {
         throw BadParameter("Invalid backend " + name, Here());
+    }
     default_ = name;
 }
 
@@ -104,14 +111,14 @@ void BackendRegistry::add(const std::string& name, LinearAlgebra* backend) {
 
 }  // anonymous namespace
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-const LinearAlgebra &LinearAlgebra::backend() {
+const LinearAlgebra& LinearAlgebra::backend() {
     pthread_once(&once, init);
-    return backends->find(defaultBackend);
+    return backends->find();
 }
 
-const LinearAlgebra &LinearAlgebra::getBackend(const std::string& name) {
+const LinearAlgebra& LinearAlgebra::getBackend(const std::string& name) {
     pthread_once(&once, init);
     return backends->find(name);
 }
@@ -142,7 +149,7 @@ const std::string& LinearAlgebra::name() const {
     return name_;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace linalg
 } // namespace eckit

@@ -83,11 +83,11 @@ template<class T>
 class TraceTimer : public Timer {
 public:
 
-    explicit TraceTimer( const char* name, int level=0):
-        Timer(name, eckit::Log::trace<T>(level)) {}
+    explicit TraceTimer( const char* name):
+        Timer(name, eckit::Log::debug<T>()) {}
 
-    explicit TraceTimer( const std::string& name, int level=0):
-        Timer(name, eckit::Log::trace<T>(level)) {}
+    explicit TraceTimer( const std::string& name):
+        Timer(name, eckit::Log::debug<T>()) {}
 };
 
 } // namespace eckit

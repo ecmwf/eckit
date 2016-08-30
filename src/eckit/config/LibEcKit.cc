@@ -8,14 +8,41 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/Functions.h"
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   August 2016
+
+#include <algorithm>
+#include <string>
+
+#include "eckit/config/LibEcKit.h"
+
+#include "eckit/eckit_version.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-size_t round(size_t x, size_t n) {
-    return ((x + n - 1) / n) * n;
+static LibEcKit libeckit;
+
+LibEcKit::LibEcKit() : Library("eckit") {}
+
+const LibEcKit& LibEcKit::instance()
+{
+    return libeckit;
+}
+
+const void* LibEcKit::addr() const { return this; }
+
+std::string LibEcKit::version() const { return eckit_version_str(); }
+
+std::string LibEcKit::gitsha1(unsigned int count) const {
+    std::string sha1(eckit_git_sha1());
+    if(sha1.empty()) {
+        return "not available";
+    }
+
+    return sha1.substr(0,std::min(count,40u));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

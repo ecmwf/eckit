@@ -8,17 +8,24 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths/Functions.h"
+#ifndef eckit_os_System_h
+#define eckit_os_System_h
+
+#include <string>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-size_t round(size_t x, size_t n) {
-    return ((x + n - 1) / n) * n;
-}
+class System {
+public:
+
+    static std::string addrToPath(const void *addr);
+
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 
+#endif

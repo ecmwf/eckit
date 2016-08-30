@@ -30,8 +30,14 @@ namespace option {
 
 
 template<class T>
-VectorOption<T>::VectorOption(const std::string &name, const std::string &description, size_t size):
-    Option(name, description), size_(size) {
+VectorOption<T>::VectorOption(const std::string &name, const std::string &description, size_t size, const char* separator):
+    Option(name, description), size_(size), separator_(separator) {
+}
+
+
+template<class T>
+VectorOption<T>::VectorOption(const std::string &name, const std::string &description, const char* separator):
+    Option(name, description), size_(0), separator_(separator) {
 }
 
 template<class T>
@@ -42,17 +48,19 @@ template<class T>
 void VectorOption<T>::set(const std::string &value, Configured &parametrisation) const {
     eckit::Translator<std::string, T> t;
 
-    eckit::Tokenizer parse("/");
+    eckit::Tokenizer parse(separator_);
     std::vector<std::string> v;
     parse(value, v);
 
     std::vector<T> values;
-    for(size_t i = 0; i < v.size(); i++) {
+    for (size_t i = 0; i < v.size(); i++) {
         values.push_back(t(v[i]));
     }
 
-    if (values.size() != size_)
-        throw UserError(std::string("Size of supplied vector \"") + name_ + "\" incorrect", Here());
+    if (size_) {
+        if (values.size() != size_)
+            throw UserError(std::string("Size of supplied vector \"") + name_ + "\" incorrect", Here());
+    }
 
     parametrisation.set(name_, values);
 }
@@ -62,9 +70,13 @@ void VectorOption<T>::print(std::ostream &out) const {
     out << "   --" << name_;
 
     const char *sep = "=";
-    for(size_t i = 0; i < size_; i++) {
+    for (size_t i = 0; i < size_ ? size_ : 2; i++) {
         out << sep  << Title<T>()();
-        sep = "/";
+        sep = separator_;
+    }
+
+    if(size_ == 0) {
+        out << sep << "...";
     }
 
     out << " (" << description_ << ")";
@@ -74,7 +86,7 @@ void VectorOption<T>::print(std::ostream &out) const {
 template<class T>
 void VectorOption<T>::copy(const Configuration &from, Configured &to) const {
     std::vector<T> v;
-    if(from.get(name_, v)) {
+    if (from.get(name_, v)) {
         to.set(name_, v);
     }
 }

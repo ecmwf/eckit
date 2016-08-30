@@ -17,39 +17,92 @@
 
 namespace eckit {
 
-const size_t WIDTH = 32;
+const size_t WIDTH = 34;
 
 Timer Statistics::timer_;
 //----------------------------------------------------------------------------------------------------------------------
 void Statistics::reportCount(std::ostream &out, const char *title, size_t value, const char *indent) {
-    out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::BigNum(value) << std::endl;
-
+    if (value)
+    {
+        out << indent
+            << title
+            << std::setw(WIDTH - strlen(title))
+            << " : "
+            << eckit::BigNum(value)
+            << std::endl;
+    }
 }
 
 void Statistics::reportUnit(std::ostream &out, const char *title, const char* unit, double value, const char *indent) {
-    out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << value << " " << unit << std::endl;
+    if (value)
+    {
+        out << indent
+            << title
+            << std::setw(WIDTH - strlen(title))
+            << " : "
+            << value
+            << " "
+            << unit
+            << std::endl;
+    }
 }
 
 
 void Statistics::reportRate(std::ostream &out, const char *title, unsigned long long value, const char *indent) {
-    out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::BigNum(value) << " bytes/s (" << eckit::Bytes(value) << "/s)" << std::endl;
-
+    if (value)
+    {
+        out << indent
+            << title
+            << std::setw(WIDTH - strlen(title))
+            << " : "
+            << eckit::BigNum(value)
+            << " bytes/s (" << eckit::Bytes(value) << "/s)"
+            << std::endl;
+    }
 }
 
 void Statistics::reportBytes(std::ostream &out, const char *title, unsigned long long value, const char *indent) {
-    out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::BigNum(value) << " (" << eckit::Bytes(value) << ")" << std::endl;
-
+    if (value)
+    {
+        out << indent
+            << title
+            << std::setw(WIDTH - strlen(title))
+            << " : "
+            << eckit::BigNum(value)
+            << " (" << eckit::Bytes(value)
+            << ")" << std::endl;
+    }
 }
 
 void Statistics::reportTime(std::ostream &out, const char *title, const Timing &value, const char *indent) {
-    out << indent << title << std::setw(WIDTH - strlen(title)) << " : "  << eckit::Seconds(value.elapsed_) << " (" << eckit::Seconds(value.cpu_) << " CPU). Updates: "
-        << eckit::BigNum(value.updates_)
-        << std::endl;
+    if (value.updates_)
+    {
+        out << indent
+            << title
+            << std::setw(WIDTH - strlen(title))
+            << " : "
+            << eckit::Seconds(value.elapsed_) << " (" << eckit::Seconds(value.cpu_) << " CPU). Updates: "
+            << eckit::BigNum(value.updates_)
+            << std::endl;
+    }
 }
+
+void Statistics::reportTime(std::ostream &out, const char *title, double value, const char *indent) {
+    if (value)
+    {
+        out << indent
+            << title
+            << std::setw(WIDTH - strlen(title))
+            << " : "
+            << eckit::Seconds(value)
+            << std::endl;
+    }
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Timing &Timing::operator+=(const Timing &other) {
+Timing &Timing::operator+=(const Timing & other) {
     elapsed_ += other.elapsed_;
     cpu_ += other.cpu_;
     updates_ += other.updates_;
@@ -60,23 +113,28 @@ Timing &Timing::operator+=(const Timing &other) {
 Timing &Timing::operator/=(size_t n) {
     elapsed_ /= n;
     cpu_ /= n;
-    updates_ /= n;
+    if (updates_) {
+        updates_ /= n;
+        if (!updates_) {
+            updates_ = 1;
+        }
+    }
     return *this;
 }
 
-Timing Timing::operator-(const Timing &other) const {
+Timing Timing::operator-(const Timing & other) const {
     return Timing(elapsed_ - other.elapsed_, cpu_ - other.cpu_, updates_ + other.updates_);
 }
 
 
-Stream &operator<<(Stream &s, const Timing& t) {
+Stream &operator<<(Stream & s, const Timing & t) {
     s << t.elapsed_;
     s << t.cpu_;
     s << t.updates_;
     return s;
 }
 
-Stream &operator>>(Stream &s, Timing &t) {
+Stream &operator>>(Stream & s, Timing & t) {
     s >> t.elapsed_;
     s >> t.cpu_;
     s >> t.updates_;

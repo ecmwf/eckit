@@ -30,14 +30,38 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class BTreeLock {
+public:
+    static void lockRange(int fd, off_t start, off_t len, int cmd, int type) {
+
+        struct flock lock;
+
+        lock.l_type   = type;
+        lock.l_whence = SEEK_SET;
+        lock.l_start  = start;
+        lock.l_len    = len;
+
+        SYSCALL(::fcntl(fd, cmd, &lock));
+    }
+};
+
+class BTreeNoLock {
+public:
+    static void lockRange(int fd, off_t start, off_t len, int cmd, int type) {
+    }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /// B+Tree index
 ///
 /// @todo Deletion
 /// @todo Cache pages
 /// @invariant K and V needs to be PODs
 /// @invariant S is the page size padding
+/// @invariant L implements locking policy
 ///
-template<class K,class V, int S>
+template<class K, class V, int S, class L = BTreeNoLock>
 class BTree : private NonCopyable {
 public:
 
@@ -313,8 +337,6 @@ private:
         p.print(s);
         return s;
     }
-
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

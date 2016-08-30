@@ -97,7 +97,7 @@ bool CacheLRU<K,V>::remove(const key_type& key)
     if( itr != map_.end() )
     {
         existed = true;
-        purge(key,valueFrom(itr));
+        purge(itr->second->key_, valueFrom(itr));
         erase(itr);
     }
 
@@ -105,7 +105,7 @@ bool CacheLRU<K,V>::remove(const key_type& key)
 }
 
 template< typename K, typename V>
-bool CacheLRU<K,V>::exists(const key_type& key)
+bool CacheLRU<K,V>::exists(const key_type& key) const
 {
     return ( map_.find(key) != map_.end() );
 }

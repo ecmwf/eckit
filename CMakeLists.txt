@@ -12,7 +12,7 @@ set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} 
 
 include( ecbuild_system NO_POLICY_SCOPE )
 
-ecbuild_requires_macro_version( 2.0 )
+ecbuild_requires_macro_version( 2.4 )
 
 set( PERSISTENT_NAMESPACE eckit CACHE INTERNAL "" )
 
@@ -65,7 +65,6 @@ ecbuild_add_option( FEATURE ECKIT_CMD
 ### Eigen
 
 ecbuild_add_option( FEATURE EIGEN
-                    CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "Eigen support"
                     TYPE RECOMMENDED
                     PURPOSE "Eigen backend: accelerated dense and sparse matrix operations"
@@ -100,7 +99,6 @@ set_package_properties( Armadillo PROPERTIES
 
 if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
   ecbuild_add_option( FEATURE LAPACK
-                      CONDITION HAVE_EXPERIMENTAL
                       DESCRIPTION "Linear Algebra PACKage"
                       REQUIRED_PACKAGES "PROJECT LAPACK" )
   if( HAVE_LAPACK )
@@ -115,7 +113,7 @@ if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
 else()
   set( _cray_libsci_loaded $ENV{CRAY_LIBSCI_DIR} )
   ecbuild_add_option( FEATURE LAPACK
-                      CONDITION HAVE_EXPERIMENTAL AND _cray_libsci_loaded
+                      CONDITION _cray_libsci_loaded
                       DESCRIPTION "Linear Algebra PACKage")
   if( HAVE_LAPACK )
     ecbuild_debug( "LAPACK found, already loaded as part of Cray's libsci" )
@@ -190,23 +188,19 @@ endif()
 # export package info
 
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
-set( ECKIT_LIBRARIES      eckit eckit_web )
+set( ECKIT_LIBRARIES      eckit eckit_geometry eckit_linalg eckit_maths eckit_web )
 
 if( HAVE_ECKIT_CMD)
   list( APPEND ECKIT_LIBRARIES eckit_cmd )
 endif()
 
+if( HAVE_EIGEN AND ECKIT_CONTRIB_EIGEN )
+  list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
+endif()
+
 if( HAVE_EXPERIMENTAL )
 
   list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
-
-  list( APPEND ECKIT_LIBRARIES eckit_linalg eckit_geometry eckit_maths )
-
-  if( HAVE_EIGEN )
-      if( ECKIT_CONTRIB_EIGEN )
-          list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
-      endif()
-  endif()
 
   if( HAVE_ECKIT_MPI )
     list( APPEND ECKIT_LIBRARIES eckit_mpi )

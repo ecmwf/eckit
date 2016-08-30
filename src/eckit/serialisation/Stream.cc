@@ -553,6 +553,14 @@ void Stream::readBlob(void *buffer, size_t size) {
     T("r blob", x);
 }
 
+
+size_t Stream::blobSize() {
+    readTag(tag_blob);
+    long len = getLong();
+    ASSERT(len >= 0);
+    return len;
+}
+
 Stream &Stream::operator>>(Buffer &x) {
     readBlob(x, x.size());
     return *this;

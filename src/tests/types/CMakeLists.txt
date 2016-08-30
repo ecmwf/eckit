@@ -3,6 +3,7 @@ ecbuild_add_test( TARGET      eckit_test_cache
                   LIBS        eckit )
 
 ecbuild_add_test( TARGET      eckit_test_floatcompare
+                  BOOST
                   SOURCES     test_floatcompare.cc
                   LIBS        eckit )
 

@@ -8,42 +8,30 @@
  * does it submit to any jurisdiction.
  */
 
+/// @file   FileSpaceStrategies.h
+/// @date   Mar 1998
+/// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date Sep 2012
 
-#ifndef eckit_Tool_h
-#define eckit_Tool_h
+#ifndef eckit_FileSpaceStrategies_h
+#define eckit_FileSpaceStrategies_h
 
-#include "eckit/config/Configurable.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Tool : public Configurable {
+class FileSpaceStrategies : private NonCopyable {
+public:
 
-public: // methods
+    static const PathName& selectFileSystem(const std::vector<PathName>& fileSystems, const std::string& s);
 
-    /// Contructors
-
-    Tool(int argc, char **argv, const char* homeenv = 0);
-
-    /// Destructor
-
-	virtual ~Tool();
-	
-    int start();
-    
-	virtual void run() = 0;
-    
-protected: // methods
-
-	virtual void   reconfigure();
-	virtual std::string name() const   { return name_; }
-
-private: // members
-
-    std::string name_;
+    static const PathName& leastUsed(const std::vector<PathName>& fileSystems);
+    static const PathName& roundRobin(const std::vector<PathName>& fileSystems);
+    static const PathName& pureRandom(const std::vector<PathName>& fileSystems);
+    static const PathName& weightedRandom(const std::vector<PathName>& fileSystems);
 
 };
 

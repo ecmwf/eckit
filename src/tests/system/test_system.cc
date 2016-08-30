@@ -19,6 +19,7 @@
 
 #include "eckit/system/ResourceUsage.h"
 #include "eckit/system/SystemInfo.h"
+#include "eckit/system/Library.h"
 #include "eckit/filesystem/LocalPathName.h"
 
 using namespace std;
@@ -53,6 +54,26 @@ BOOST_AUTO_TEST_CASE( test_eckit_system_info )
     BOOST_CHECK( std::string(execPath).size() );
 
     eckit::Log::info() << "execPath is " << execPath << std::endl;
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_system_library )
+{
+    using eckit::system::Library;
+
+    std::vector<std::string> libs = Library::list();
+
+    std::string libpath;
+
+    for(std::vector<std::string>::const_iterator libname = libs.begin(); libname != libs.end(); ++libname ) {
+
+        BOOST_CHECK_NO_THROW( Library::lookup(*libname) );
+
+        const Library& lib = Library::lookup(*libname);
+
+        BOOST_CHECK_NO_THROW( lib.path() );
+
+        eckit::Log::info() << "Library " << lib.name() << " @ " << lib.path() << std::endl;
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

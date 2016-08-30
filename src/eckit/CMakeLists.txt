@@ -536,11 +536,9 @@ bases/Watcher.cc
 bases/Loader.h
 bases/Loader.cc )
 
-list( APPEND eckit_transaction_srcs
-transaction/TxnLog.h
-transaction/TxnLog.cc
-transaction/TxnEvent.h
-transaction/TxnEvent.cc )
+list( APPEND eckit_testing_srcs
+testing/Setup.h
+)
 
 list( APPEND eckit_dirs
 	bases
@@ -562,8 +560,9 @@ list( APPEND eckit_dirs
 	testing
 	thread
 	transaction
-	types
-	utils
+    types
+    testing
+    utils
 	value
     system
 )

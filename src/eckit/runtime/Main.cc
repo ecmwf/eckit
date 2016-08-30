@@ -164,7 +164,6 @@ Channel* Main::createDebugChannel() const {
     return debug_ ? createChannel() : new Channel();
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

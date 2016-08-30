@@ -20,15 +20,11 @@
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/runtime/Main.h"
 
+#include "eckit/testing/Setup.h"
+
 using namespace std;
 using namespace eckit;
-
-struct Setup {
-    Setup() {
-        Main::initialise(boost::unit_test::framework::master_test_suite().argc,
-                         boost::unit_test::framework::master_test_suite().argv);
-    }
-};
+using namespace eckit::testing;
 
 BOOST_GLOBAL_FIXTURE(Setup);
 

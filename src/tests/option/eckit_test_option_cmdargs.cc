@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required )
         /// Set up argument parser to accept one unnamed argument.
         void operator() (size_t nargs, const char* global_args[]) {
 
-            Main::instance().initialise(nargs, const_cast<char**>(global_args));
+            Main::initialise(nargs, const_cast<char**>(global_args));
             CmdArgs args(&usage, 1, 0, true);
 
             BOOST_CHECK_EQUAL(args(0), std::string("a1"));
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required_with_opti
             std::vector<Option*> options;
             options.push_back(new SimpleOption<std::string>("arg1", ""));
 
-            Main::instance().initialise(nargs, const_cast<char**>(global_args));
+            Main::initialise(nargs, const_cast<char**>(global_args));
             CmdArgs args(&usage, options, 1, 0, true);
 
             BOOST_CHECK_EQUAL(args(0), std::string("a1"));
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_string ) {
     options.push_back(new SimpleOption<long>("arg2", ""));
 
     const char* input[] = {"exe", "--arg1=testing"};
-    Main::instance().initialise(2, const_cast<char**>(input));
+    Main::initialise(2, const_cast<char**>(input));
 
     CmdArgs args(&usage, options, 0, 0, true);
     BOOST_CHECK(args.has("arg1"));
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_integer ) {
     options.push_back(new SimpleOption<long>("arg2", ""));
 
     const char* input[] = {"exe", "--arg2=12345"};
-    Main::instance().initialise(2, const_cast<char**>(input));
+    Main::initialise(2, const_cast<char**>(input));
 
     CmdArgs args(&usage, options, 0, 0, true);
     BOOST_CHECK(args.has("arg2"));
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_missing ) {
             options.push_back(new SimpleOption<long>("arg2", ""));
 
             const char* input[] = {"exe", "--arg3=12345"};
-            Main::instance().initialise(2, const_cast<char**>(input));
+            Main::initialise(2, const_cast<char**>(input));
             CmdArgs args(&usage, options, 0, 0, true);
         }
     };
@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_integer_vector ) {
     options.push_back(new VectorOption<long>("arg", "", 3));
 
     const char* input[] = {"exe", "--arg=-12345/678/-123"};
-    Main::instance().initialise(2, const_cast<char**>(input));
+    Main::initialise(2, const_cast<char**>(input));
 
     CmdArgs args(&usage, options, 0, 0, true);
     BOOST_CHECK(args.has("arg"));
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_double_vector ) {
     options.push_back(new VectorOption<double>("arg", "", 4));
 
     const char* input[] = {"exe", "--arg=-123.45/67.8/90/-123.0"};
-    Main::instance().initialise(2, const_cast<char**>(input));
+    Main::initialise(2, const_cast<char**>(input));
 
     CmdArgs args(&usage, options, 0, 0, true);
     BOOST_CHECK(args.has("arg"));
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_vector_size_check ) {
             options.push_back(new VectorOption<long>("arg", "", 4));
 
             const char* input[] = {"exe", "--arg=1/2/3"};
-            Main::instance().initialise(2, const_cast<char**>(input));
+            Main::initialise(2, const_cast<char**>(input));
             CmdArgs args(&usage, options, 0, 0, true);
         }
     };

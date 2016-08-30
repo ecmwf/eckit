@@ -122,6 +122,13 @@ Library::Library(const std::string& name) :
     if (e) {
         debug_ = eckit::Translator<std::string, bool>()(e);
     }
+
+    if (!debug_) {
+        e = ::getenv("DEBUG");
+        if (e) {
+            debug_ = eckit::Translator<std::string, bool>()(e);
+        }
+    }
 }
 
 Library::~Library() {
@@ -151,10 +158,12 @@ Channel& Library::debugChannel() const
 
     std::string s = prefix_ + "_DEBUG";
 
-    debugChannel_.reset(new Channel());
 
     if (debug_) {
-        debugChannel_->setLogTarget(new PrefixTarget(s, new OStreamTarget(std::cout)));
+        debugChannel_.reset(new Channel(new PrefixTarget(s)));
+    }
+    else {
+        debugChannel_.reset(new Channel());
     }
 
     return *debugChannel_;

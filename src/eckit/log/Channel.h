@@ -37,9 +37,6 @@ public: // methods
     bool operator !() const;
     operator bool() const;
 
-    void setLogTarget(LogTarget*);
-    void addLogTarget(LogTarget*);
-    void clearLogTargets();
 
     void indent(const char* prefix = "");
     void unindent();
@@ -48,6 +45,9 @@ private:
 
     ChannelBuffer* buffer_;
 
+
+    void setTarget(LogTarget*);
+    void clearTarget();
 };
 
 

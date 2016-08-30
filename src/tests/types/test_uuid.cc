@@ -14,69 +14,69 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/UUID.h"
-#include "eckit/log/Log.h"
+
+#include "eckit/testing/Setup.h"
 
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
-//-----------------------------------------------------------------------------
-
-namespace eckit_test {};
-
-//-----------------------------------------------------------------------------
-
-using namespace eckit_test;
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( test_eckit_types_uuid )
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_uuid_default_constructor )
-{
-	UUID uuid;
+//----------------------------------------------------------------------------------------------------------------------
 
-	BOOST_CHECK_EQUAL( uuid.size() , 16 );
+BOOST_AUTO_TEST_CASE( test_eckit_types_uuid_default_constructor ) {
+    UUID uuid;
 
-	BOOST_CHECK( uuid.isNil() );
+    BOOST_CHECK_EQUAL( uuid.size() , 16 );
 
-	std::string res ("00000000000000000000000000000000");
+    BOOST_CHECK( uuid.isNil() );
 
-	BOOST_CHECK_EQUAL( res , uuid.asString() );
+    std::string res ("00000000000000000000000000000000");
+
+    BOOST_CHECK_EQUAL( res , uuid.asString() );
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_uuid_constructor_string )
-{
-	std::string s ("4b4053dc93e0b52a6f028cb36649d229");
+//----------------------------------------------------------------------------------------------------------------------
 
-	UUID uuid( s );
+BOOST_AUTO_TEST_CASE( test_eckit_types_uuid_constructor_string ) {
+    std::string s ("4b4053dc93e0b52a6f028cb36649d229");
 
-	BOOST_CHECK_EQUAL( uuid.size() , 16 );
+    UUID uuid( s );
 
-	BOOST_CHECK( ! uuid.isNil() );
+    BOOST_CHECK_EQUAL( uuid.size() , 16 );
 
-	BOOST_CHECK_EQUAL( s, uuid.asString() );
+    BOOST_CHECK( ! uuid.isNil() );
+
+    BOOST_CHECK_EQUAL( s, uuid.asString() );
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_uuid_fromstring )
-{
-	std::string s ("4b4053dc93e0b52a6f028cb36649d229");
+//----------------------------------------------------------------------------------------------------------------------
 
-	UUID uuid;
+BOOST_AUTO_TEST_CASE( test_eckit_types_uuid_fromstring ) {
+    std::string s ("4b4053dc93e0b52a6f028cb36649d229");
 
-	BOOST_CHECK( uuid.isNil() );
+    UUID uuid;
 
-	BOOST_CHECK_NO_THROW( uuid.fromString(s) );
+    BOOST_CHECK( uuid.isNil() );
 
-	BOOST_CHECK( ! uuid.isNil() );
+    BOOST_CHECK_NO_THROW( uuid.fromString(s) );
 
-	BOOST_CHECK_EQUAL( s, uuid.asString() );
+    BOOST_CHECK( ! uuid.isNil() );
+
+    BOOST_CHECK_EQUAL( s, uuid.asString() );
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_uuid_constructor_string_trow )
-{
-	std::string s ("4b405");
+//----------------------------------------------------------------------------------------------------------------------
 
-	BOOST_CHECK_THROW( UUID uuid( s ), eckit::AssertionFailed );
+BOOST_AUTO_TEST_CASE( test_eckit_types_uuid_constructor_string_trow ) {
+    std::string s ("4b405");
+
+    BOOST_CHECK_THROW( UUID uuid( s ), eckit::AssertionFailed );
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

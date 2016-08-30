@@ -15,9 +15,15 @@
 #include "eckit/container/CacheLRU.h"
 #include "eckit/exception/Exceptions.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+#include "eckit/testing/Setup.h"
+
+using namespace eckit::testing;
+
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( test_cache_lru )
+
+//----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE( test_cache_lru_basic )
 {

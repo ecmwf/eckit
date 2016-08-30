@@ -20,8 +20,9 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 
-TimeStampTarget::TimeStampTarget(LogTarget* target):
-    WrapperTarget(target)
+TimeStampTarget::TimeStampTarget(const char* tag, LogTarget* target):
+    WrapperTarget(target),
+    tag_(tag)
 {
 
 }
@@ -35,6 +36,9 @@ void TimeStampTarget::writePrefix() {
         << std::setfill(' ') << ' '
         << TimeStamp() << ' ';
 
+    if(tag_ && *tag_) {
+        oss << tag_ << ' ';
+    }
 
     std::string s = oss.str();
     const char* p = s.c_str();

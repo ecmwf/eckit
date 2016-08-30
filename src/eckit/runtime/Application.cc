@@ -15,7 +15,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/runtime/Application.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/log/OStreamTarget.h"
+#include "eckit/log/TimeStampTarget.h"
 
 //-----------------------------------------------------------------------------
 
@@ -87,6 +87,22 @@ Application::~Application() {
 
 //-----------------------------------------------------------------------------
 
+
+Channel* Application::createInfoChannel() const {
+    return new Channel(new TimeStampTarget("(I)"));
+}
+
+Channel* Application::createWarningChannel() const {
+    return new Channel(new TimeStampTarget("(W)"));
+}
+
+Channel* Application::createErrorChannel() const {
+    return new Channel(new TimeStampTarget("(E)"));
+}
+
+Channel* Application::createDebugChannel() const {
+    return new Channel(new TimeStampTarget("(D)"));
+}
 
 //-----------------------------------------------------------------------------
 
@@ -165,12 +181,6 @@ time_t Application::uptime() {
 }
 
 //-----------------------------------------------------------------------------
-
-
-Channel* Application::createChannel() const  {
-    return new Channel(new OStreamTarget(std::cout));
-}
-
 
 //-----------------------------------------------------------------------------
 

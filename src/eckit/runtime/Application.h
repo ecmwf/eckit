@@ -66,7 +66,12 @@ private: // members
 
     /// From Main
     virtual void terminate();
-    virtual Channel* createChannel() const;
+
+    virtual eckit::Channel* createInfoChannel() const;
+    virtual eckit::Channel* createWarningChannel() const;
+    virtual eckit::Channel* createErrorChannel() const;
+    virtual eckit::Channel* createDebugChannel() const;
+
     /// overriden from Configurable
 
     virtual std::string kind() const  { return "Application"; }

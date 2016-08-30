@@ -27,7 +27,7 @@ namespace eckit {
 class TimeStampTarget : public WrapperTarget {
 public:
 
-    TimeStampTarget(LogTarget* target = 0);
+    TimeStampTarget(const char* tag = "", LogTarget* target = 0);
 
 private:
 
@@ -35,6 +35,8 @@ private:
     virtual void writeSuffix();
 
 private:
+
+    const char* tag_;
 
 };
 

@@ -32,9 +32,9 @@ static Main* instance_ = 0;
 //----------------------------------------------------------------------------------------------------------------------
 
 Main::Main(int argc, char** argv, const char* homeenv) :
+    taskID_(-1),
     argc_(argc),
     argv_(argv),
-    taskID_(-1),
     home_("/"),
     debug_(false) {
 
@@ -49,9 +49,9 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         debug_ = eckit::Translator<std::string, bool>()(::getenv("DEBUG"));
     }
 
-    for (size_t i = 1; i < argc; i++) {
-        // Old style
+    for (size_t i = 1; i < size_t(argc); ++i) {
 
+        // Old style
         if (::strcmp(argv[i], "-debug")) {
             debug_ = true;
 

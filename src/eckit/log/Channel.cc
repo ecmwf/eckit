@@ -45,8 +45,8 @@ void Channel::setTarget(LogTarget* target) {
     buffer_->setTarget(target);
 }
 
-void Channel::clearTarget() {
-    buffer_->clearTarget();
+void Channel::clear() {
+    buffer_->clear();
 }
 
 void Channel::indent(const char* space) {

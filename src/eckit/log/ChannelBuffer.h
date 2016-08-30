@@ -41,7 +41,7 @@ private: // methods
 
     bool active() const { return target_ != 0; }
 
-    void clearTarget();
+    void clear();
     void setTarget(LogTarget* target);
 
     void indent(const char* space = "   ");

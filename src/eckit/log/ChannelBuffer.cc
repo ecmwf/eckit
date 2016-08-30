@@ -31,7 +31,7 @@ ChannelBuffer::ChannelBuffer( std::size_t size ) :
 
 ChannelBuffer::~ChannelBuffer()
 {
-    clearTarget();
+    clear();
 }
 
 
@@ -50,7 +50,7 @@ void ChannelBuffer::setTarget(LogTarget* target) {
 
 }
 
-void ChannelBuffer::clearTarget() {
+void ChannelBuffer::clear() {
     sync();
     if (target_) {
         target_->detach();

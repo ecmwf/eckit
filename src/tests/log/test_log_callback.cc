@@ -42,7 +42,7 @@ static void output_callback_withctxt( void* ctxt, const char* msg )
 /// tests without callback
 void test_callback_none()
 {
-    Log::info().clearLogTargets();
+    Log::info().clear();
 
     Log::info()          << "info message 1" << std::endl;
 
@@ -64,7 +64,7 @@ void test_callback_noctxt()
 
     Log::error()         << "error message 1" << std::endl;
 
-    Log::info().clearLogTargets();
+    Log::info().clear();
 }
 
 
@@ -82,7 +82,7 @@ void test_callback_withctxt()
 
     Log::error()         << "error message 1" << std::endl;
 
-    Log::info().clearLogTargets();
+    Log::info().clear();
 }
 
 } // namespace eckit_test

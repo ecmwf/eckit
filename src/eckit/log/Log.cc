@@ -19,6 +19,7 @@
 #include "eckit/log/MessageTarget.h"
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
+#include "eckit/utils/Translator.h"
 
 #include "eckit/runtime/Main.h"
 
@@ -72,7 +73,7 @@ void Log::registerChannel(const std::string& key, Channel* channel) {
 
     ASSERT(channel);
     ChannelRegister::iterator itr = channelsRegister->find(key);
-    if(itr == channelsRegister->end()) {
+    if (itr == channelsRegister->end()) {
         channelsRegister->insert(std::make_pair(key, channel));
     }
     else {
@@ -87,7 +88,7 @@ void Log::removeChannel(const std::string& key) {
     AutoLock<Mutex> lock(*local_mutex);
 
     ChannelRegister::iterator itr = channelsRegister->find(key);
-    if(itr != channelsRegister->end()) {
+    if (itr != channelsRegister->end()) {
         delete itr->second;
         channelsRegister->erase(itr);
     }
@@ -192,8 +193,18 @@ struct CreateDebugChannel : public CreateLogChannel {
 Channel& Log::debug()
 {
     if (!Main::ready()) {
-        static Channel empty(new PrefixTarget("PRE-MAIN-DEBUG", new OStreamTarget(std::cout)));
-        return empty;
+
+        const char* e = getenv("DEBUG");
+
+        if (e && bool(Translator<std::string, bool>()(e))) {
+            static Channel empty;
+            return empty;
+        }
+        else {
+
+            static Channel empty(new PrefixTarget("PRE-MAIN-DEBUG", new OStreamTarget(std::cout)));
+            return empty;
+        }
     }
     static ThreadSingleton<Channel, CreateDebugChannel> x;
     return x.instance();

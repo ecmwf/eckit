@@ -21,6 +21,7 @@ namespace eckit {
 
 ChannelBuffer::ChannelBuffer( std::size_t size ) :
     std::streambuf(),
+    target_(0),
     buffer_( size  )
 {
     ASSERT( size );

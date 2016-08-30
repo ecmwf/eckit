@@ -13,10 +13,12 @@
 #include "eckit/filesystem/LocalPathName.h"
 
 #include "eckit/log/Log.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CallbackTarget.h"
 
 #include "eckit/os/BackTrace.h"
 
-#include "eckit/runtime/Main.h"
+#include "eckit/runtime/Tool.h"
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -27,11 +29,10 @@
 using namespace std;
 using namespace eckit;
 
-//-----------------------------------------------------------------------------
 
 namespace eckit_test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static Once<Mutex> local_mutex;
 
@@ -47,7 +48,7 @@ static void callback_special( void* ctxt, const char* msg )
     std::cout << ">>> " << msg ;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 #define LOOPS 3
 #define WAIT  10000
@@ -58,10 +59,9 @@ class TLog : public Thread
     void run()
     {
         // this shows how you can change the callback per thread
-#if 0
-        if( N == 2 )
-            dynamic_cast<CallbackChannel&>(Log::info()).register_callback(&callback_special);
-#endif
+        if( N == 2 ) {
+            Log::info().setLogTarget(new CallbackTarget(&callback_special));
+        }
 
         for( int i = 0; i < LOOPS*N; ++i )
         {
@@ -75,33 +75,44 @@ class TLog : public Thread
 };
 
 
-//-----------------------------------------------------------------------------
+class TestApp : public eckit::Tool {
+public:
+
+    TestApp(int argc,char **argv) : Tool(argc,argv) {}
+
+    virtual ~TestApp() {}
+
+    virtual void run()
+    {
+        Log::info().setLogTarget(new CallbackTarget(&callback_logger));
+
+        Log::info() << ">>> starting ... " << std::endl;
+
+        ThreadControler t1( new TLog<1>(), false );
+        ThreadControler t2( new TLog<2>(), false );
+        ThreadControler t3( new TLog<3>(), false );
+
+        t1.start();
+        t2.start();
+        t3.start();
+
+        t1.wait();
+        t2.wait();
+        t3.wait();
+
+        Log::info() << ">>> finished!" << std::endl;
+
+    }
+};
 
 } // namespace eckit_test
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 using namespace eckit_test;
 
 int main(int argc,char **argv)
 {
-   // b->default_callback( &callback_logger ); // establish the default callback for all threads
-
-    Log::info() << ">>> starting ... " << std::endl;
-
-    ThreadControler t1( new TLog<1>(), false );
-    ThreadControler t2( new TLog<2>(), false );
-    ThreadControler t3( new TLog<3>(), false );
-
-    t1.start();
-    t2.start();
-    t3.start();
-
-    t1.wait();
-    t2.wait();
-    t3.wait();
-
-    Log::info() << ">>> finished!" << std::endl;
-
-    return 0;
+    eckit_test::TestApp app(argc,argv);
+    return app.start();
 }

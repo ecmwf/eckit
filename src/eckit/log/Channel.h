@@ -31,7 +31,7 @@ class Channel : public std::ostream, private NonCopyable {
 
 public: // methods
 
-     Channel(LogTarget* = 0);
+    Channel(LogTarget* = 0);
     ~Channel();
 
     bool operator !() const;

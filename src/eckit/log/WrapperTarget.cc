@@ -26,7 +26,6 @@ WrapperTarget::WrapperTarget(LogTarget* target):
     }
 
     target_->attach();
-
 }
 
 WrapperTarget::~WrapperTarget() {

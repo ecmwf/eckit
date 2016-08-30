@@ -8,24 +8,42 @@
  * does it submit to any jurisdiction.
  */
 
+/// @file ColouringTarget.h
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   August 2016
 
-#include "eckit/log/CallbackTarget.h"
+#ifndef eckit_log_ColouringTarget_h
+#define eckit_log_ColouringTarget_h
+
+#include <string>
+
+#include "eckit/log/Colour.h"
+#include "eckit/log/WrapperTarget.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class ColouringTarget : public WrapperTarget {
+public:
 
-CallbackTarget::CallbackTarget(callback_t callback, void *context):
-    callback_(callback),
-    context_(context)
-{
-}
+    typedef std::ostream& (*colourproc)(std::ostream&);
 
-void CallbackTarget::line(const char* line) {
-    callback_(context_, line);
-}
+    ColouringTarget(LogTarget* target, colourproc begin, colourproc end = &Colour::reset);
+
+private:
+
+    virtual void writePrefix();
+    virtual void writeSuffix();
+
+    std::string begin_;
+    std::string end_;
+
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
+
+#endif

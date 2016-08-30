@@ -11,8 +11,9 @@
 #include "eckit/config/LibEcKit.h"
 #include "eckit/log/Log.h"
 
-#include "eckit/log/Channel.h"
+#include "eckit/thread/AutoLock.h"
 
+#include "eckit/log/Channel.h"
 #include "eckit/log/UserChannel.h"
 #include "eckit/log/StatusTarget.h"
 #include "eckit/log/MessageTarget.h"
@@ -55,28 +56,51 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static Mutex* local_mutex;
+static pthread_once_t once = PTHREAD_ONCE_INIT;
+typedef std::map<std::string, Channel*> ChannelRegister;
+static ChannelRegister* channelsRegister;
 
-/*
-void Log::registerChannel(const std::string& key, Channel* channel)
-{
-    Main::instance().registerChannel(key, channel);
+static void init() {
+    channelsRegister = new ChannelRegister();
+    local_mutex = new Mutex();
 }
 
-void Log::removeChannel(const std::string& key)
-{
-    Main::instance().removeChannel(key);
+void Log::registerChannel(const std::string& key, Channel* channel) {
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(*local_mutex);
+
+    ASSERT(channel);
+    ChannelRegister::iterator itr = channelsRegister->find(key);
+    if(itr == channelsRegister->end()) {
+        channelsRegister->insert(std::make_pair(key, channel));
+    }
+    else {
+        std::ostringstream msg;
+        msg << "Channel with name " << key << " already registered";
+        throw SeriousBug(msg.str());
+    }
 }
 
-Channel& Log::channel(const std::string& key)
-{
-    return Main::instance().channel(key);
+void Log::removeChannel(const std::string& key) {
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(*local_mutex);
+
+    ChannelRegister::iterator itr = channelsRegister->find(key);
+    if(itr != channelsRegister->end()) {
+        delete itr->second;
+        channelsRegister->erase(itr);
+    }
 }
 
-Channel& Log::debug(const Logger& logger)
-{
-    return logger.debugChannel();
+Channel& Log::channel(const std::string& key) {
+    pthread_once(&once, init);
+    AutoLock<Mutex> lock(*local_mutex);
+
+    ChannelRegister::iterator itr = channelsRegister->find(key);
+    ASSERT(itr != channelsRegister->end());
+    return *(itr->second);
 }
-*/
 
 struct CreateStatusChannel {
     Channel* operator()() {

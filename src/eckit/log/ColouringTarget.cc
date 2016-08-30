@@ -8,22 +8,32 @@
  * does it submit to any jurisdiction.
  */
 
+#include <ostream>
 
-#include "eckit/log/CallbackTarget.h"
+#include "eckit/log/ColouringTarget.h"
+
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+ColouringTarget::ColouringTarget(LogTarget* target, ColouringTarget::colourproc begin, ColouringTarget::colourproc end) {
 
-CallbackTarget::CallbackTarget(callback_t callback, void *context):
-    callback_(callback),
-    context_(context)
-{
+    std::ostringstream beginss;
+    beginss << *begin;
+    begin_ = beginss.str();
+
+    std::ostringstream endss;
+    endss << *end;
+    end_ = endss.str();
 }
 
-void CallbackTarget::line(const char* line) {
-    callback_(context_, line);
+void ColouringTarget::writePrefix() {
+    target_->write(begin_.c_str(), begin_.c_str() + begin_.size());
+}
+
+void ColouringTarget::writeSuffix() {
+    target_->write(end_.c_str(), end_.c_str() + end_.size());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

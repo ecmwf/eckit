@@ -9,7 +9,9 @@
  */
 
 /// @file ChannelBuffer.h
+/// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @date   August 2016
 
 #ifndef eckit_log_ChannelBuffer_h
 #define eckit_log_ChannelBuffer_h
@@ -18,8 +20,6 @@
 #include <streambuf>
 
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/log/CodeLocation.h"
-#include "eckit/log/OStreamHandle.h"
 
 namespace eckit {
 
@@ -41,6 +41,7 @@ private: // methods
 
     size_t numberOfTargets() const { return targets_.size(); }
 
+    void clearAllTargets();
     void addLogTarget(LogTarget* target);
     void setLogTarget(LogTarget* target);
 
@@ -75,7 +76,7 @@ private:
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -10,10 +10,10 @@
 
 #include <ostream>
 
-#include "eckit/log/ChannelBuffer.h"
-#include "eckit/log/LogTarget.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/ChannelBuffer.h"
 #include "eckit/log/IndentTarget.h"
+#include "eckit/log/LogTarget.h"
 
 namespace eckit {
 
@@ -39,6 +39,10 @@ void ChannelBuffer::clear() {
          (*i)->detach();
     }
     targets_.clear();
+}
+
+void ChannelBuffer::clearAllTargets() {
+    clear();
 }
 
 void ChannelBuffer::setLogTarget(LogTarget* target) {

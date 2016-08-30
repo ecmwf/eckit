@@ -9,7 +9,9 @@
  */
 
 /// @file WrapperTarget.h
+/// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @date   August 2016
 
 #ifndef eckit_log_WrapperTarget_h
 #define eckit_log_WrapperTarget_h
@@ -22,12 +24,15 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class WrapperTarget : public LogTarget {
+
 protected: // methods
 
     WrapperTarget(LogTarget* target = 0);
-    ~WrapperTarget();
 
-protected:
+    virtual ~WrapperTarget();
+
+protected: // members
+
     LogTarget* target_;
 
 private:
@@ -37,6 +42,8 @@ private:
 
     virtual void writePrefix() = 0;
     virtual void writeSuffix() = 0;
+
+protected:
 
     bool prefix_;
 

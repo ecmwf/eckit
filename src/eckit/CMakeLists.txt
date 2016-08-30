@@ -287,18 +287,14 @@ log/ChannelBuffer.h
 log/ChannelBuffer.cc
 log/CodeLocation.h
 log/CodeLocation.cc
-#log/ColorizeFormat.h
-#log/ColorizeFormat.cc
+log/ColouringTarget.h
+log/ColouringTarget.cc
 log/Colour.h
 log/Colour.cc
 log/ETA.h
 log/ETA.cc
 log/FileTarget.h
 log/FileTarget.cc
-# log/FormatBuffer.h
-# log/FormatBuffer.cc
-# log/FormatChannel.h
-# log/FormatChannel.cc
 log/Log.h
 log/Log.cc
 # log/MonitorChannel.h

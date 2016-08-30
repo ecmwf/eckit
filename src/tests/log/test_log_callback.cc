@@ -8,23 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/log/CallbackTarget.h"
+#include "eckit/log/Log.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Main.h"
-#include "eckit/filesystem/LocalPathName.h"
-#include "eckit/log/Log.h"
 
 using namespace std;
 using namespace eckit;
 
-//-----------------------------------------------------------------------------
-
 namespace eckit_test {
-
-//-----------------------------------------------------------------------------
 
 struct CTxt { std::string name_; };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
 
 static void output_callback_noctxt( void* ctxt, const char* msg )
 {
@@ -32,18 +30,19 @@ static void output_callback_noctxt( void* ctxt, const char* msg )
     std::cout << "[FORWARD OUT] -- " << msg ;
 }
 
+
 static void output_callback_withctxt( void* ctxt, const char* msg )
 {
 //    std::cout << "[DEBUG] -- " << Here() << "\n" << BackTrace::dump() << "\n" << std::endl;
     std::cout << "[FORWARD OUT] -- CTXT [" << static_cast<CTxt*>(ctxt)->name_ << "] -- " << msg ;
 }
 
-//-----------------------------------------------------------------------------
+
 
 /// tests without callback
 void test_callback_none()
 {
-    // dynamic_cast<CallbackChannel&>(Log::info()).register_callback( 0 );
+    Log::info().clearLogTargets();
 
     Log::info()          << "info message 1" << std::endl;
 
@@ -52,12 +51,12 @@ void test_callback_none()
     Log::error()         << "error message 1" << std::endl;
 }
 
-//-----------------------------------------------------------------------------
+
 
 /// tests with null context
 void test_callback_noctxt()
 {
-    // dynamic_cast<CallbackChannel&>(Log::info()).register_callback( &output_callback_noctxt );
+    Log::info().setLogTarget( new CallbackTarget(&output_callback_noctxt) );
 
     Log::info()          << "info message 1" << std::endl;
 
@@ -65,10 +64,9 @@ void test_callback_noctxt()
 
     Log::error()         << "error message 1" << std::endl;
 
-    // dynamic_cast<CallbackChannel&>(Log::info()).register_callback( 0 );
+    Log::info().clearLogTargets();
 }
 
-//-----------------------------------------------------------------------------
 
 /// tests with context
 void test_callback_withctxt()
@@ -76,7 +74,7 @@ void test_callback_withctxt()
     CTxt ctxt;
     ctxt.name_ = "MyTest";
 
-    // dynamic_cast<CallbackChannel&>(Log::info()).register_callback( &output_callback_withctxt, &ctxt );
+    Log::info().setLogTarget( new CallbackTarget( &output_callback_withctxt, &ctxt ) );
 
     Log::info()          << "info message 1" << std::endl;
 
@@ -84,14 +82,12 @@ void test_callback_withctxt()
 
     Log::error()         << "error message 1" << std::endl;
 
-    // dynamic_cast<CallbackChannel&>(Log::info()).register_callback( 0 );
+    Log::info().clearLogTargets();
 }
-
-//-----------------------------------------------------------------------------
 
 } // namespace eckit_test
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 using namespace eckit_test;
 

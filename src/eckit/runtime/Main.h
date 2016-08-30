@@ -27,7 +27,6 @@ class PathName;
 class Main  : private NonCopyable {
 protected:
 
-
     Main(int argc, char** argv, const char* homeenv = 0);
     virtual ~Main();
 

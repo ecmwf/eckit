@@ -18,9 +18,19 @@
 #include "eckit/log/Channel.h"
 #include "eckit/log/ColouringTarget.h"
 #include "eckit/log/OStreamTarget.h"
+#include "eckit/runtime/Main.h"
 
 using namespace std;
 using namespace eckit;
+
+struct Setup {
+    Setup() {
+        Main::initialise(boost::unit_test::framework::master_test_suite().argc,
+                         boost::unit_test::framework::master_test_suite().argv);
+    }
+};
+
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE(test_eckit_user_log_channels)
 

@@ -20,18 +20,18 @@
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Task.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Application : public Task, public Main {
 public:
 
+    static Application& instance();
+
     // -- Contructors
 
-    Application(int argc, char **argv, const char* homeenv);
+    Application(int argc, char **argv, const char* homeenv = 0);
 
     // -- Destructor
 
@@ -56,8 +56,9 @@ public:
 
     bool running() const { return running_; }
 
-    time_t uptime();
+    virtual void terminate();
 
+    time_t uptime();
 
 private: // members
 
@@ -65,12 +66,12 @@ private: // members
     bool   running_;
 
     /// From Main
-    virtual void terminate();
 
     virtual eckit::Channel* createInfoChannel() const;
     virtual eckit::Channel* createWarningChannel() const;
     virtual eckit::Channel* createErrorChannel() const;
     virtual eckit::Channel* createDebugChannel() const;
+
 
     /// overriden from Configurable
 
@@ -78,7 +79,7 @@ private: // members
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -1,4 +1,3 @@
-
 /*
  * (C) Copyright 1996-2016 ECMWF.
  *
@@ -9,38 +8,33 @@
  * does it submit to any jurisdiction.
  */
 
+/// @file   Setup.h
+/// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date Sep 2012
+/// @date   Aug 2016
 
-#ifndef eckit_Tool_h
-#define eckit_Tool_h
+#ifndef eckit_testing_Setup_h
+#define eckit_testing_Setup_h
 
 #include "eckit/runtime/Main.h"
 
 namespace eckit {
+namespace testing {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Tool : public Main {
+/// @note Temporary class until we phase out boost::unit_test
 
-public: // methods
-
-    /// Contructors
-
-    Tool(int argc, char **argv, const char* homeenv = 0);
-
-    /// Destructor
-
-	virtual ~Tool();
-
-    int start();
-
-	virtual void run() = 0;
-
+struct Setup {
+    Setup() {
+        eckit::Main::initialise(boost::unit_test::framework::master_test_suite().argc,
+                                boost::unit_test::framework::master_test_suite().argv);
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
+} // namespace testing
 } // namespace eckit
 
 #endif

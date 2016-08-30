@@ -13,6 +13,7 @@
 #include "eckit/bases/Loader.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/log/OStreamTarget.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Library.h"
 #include "eckit/runtime/Main.h"
@@ -169,6 +170,9 @@ Channel* Main::createDebugChannel() const {
     return debug_ ? createChannel() : new Channel();
 }
 
+Channel* Main::createChannel() const  {
+    return new Channel(new OStreamTarget(std::cout));
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

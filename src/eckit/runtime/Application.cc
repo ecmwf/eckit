@@ -17,7 +17,7 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/log/TimeStampTarget.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -60,8 +60,12 @@ static void catch_new_handler() {
     throw OutOfMemory();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+Application& Application::instance()
+{
+    return static_cast<Application&>(Main::instance());
+}
 
 Application::Application(int argc, char** argv, const char* homeenv):
     Main(argc, argv, homeenv),
@@ -79,7 +83,6 @@ Application::Application(int argc, char** argv, const char* homeenv):
     Loader::callAll(&Loader::execute);
 }
 
-//-----------------------------------------------------------------------------
 
 Application::~Application() {
     Monitor::instance().shutdown();
@@ -129,25 +132,25 @@ void Application::start() {
     ::exit(status);
 }
 
-//-----------------------------------------------------------------------------
+
 
 void Application::stop() {
     ::exit(0);  // or: throw Stop();
 }
 
-//-----------------------------------------------------------------------------
+
 
 void Application::kill() {
     ::exit(1);
 }
 
-//-----------------------------------------------------------------------------
+
 
 void Application::terminate() {
     stop();
 }
 
-//-----------------------------------------------------------------------------
+
 
 void Application::unique() {
     PathName lockFile("~/locks/" + name_);
@@ -169,7 +172,6 @@ void Application::unique() {
     os << getpid();
 }
 
-//-----------------------------------------------------------------------------
 
 time_t Application::uptime() {
 
@@ -180,7 +182,6 @@ time_t Application::uptime() {
     return now - uptime;
 }
 
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 

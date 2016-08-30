@@ -44,7 +44,6 @@ public: // methods
 
     // bool debug() const;
 
-
     // Thread ID where the main is running
     long taskID() const;
     void taskID(long);
@@ -60,7 +59,6 @@ public: // methods
     // To be used before main() to check if the instance is ready
     static bool ready();
 
-
     /// Channel handling
     virtual Channel* createInfoChannel() const;
     virtual Channel* createWarningChannel() const;
@@ -75,7 +73,7 @@ protected:
 
     // To overrride
 
-    virtual Channel* createChannel() const = 0;
+   virtual Channel* createChannel() const;
 
 private: // members
 

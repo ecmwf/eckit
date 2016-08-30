@@ -19,15 +19,19 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Buffer.h"
 
+#include "eckit/testing/Setup.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
-//-----------------------------------------------------------------------------
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( test_eckit_io_filepool )
 
-BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 ) {
     Buffer buffer(50*1024);
 
     FilePool pool(1);
@@ -148,5 +152,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 )
     std::cout << pool << std::endl;
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+//----------------------------------------------------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_SUITE_END()

@@ -14,15 +14,19 @@
 
 #include "eckit/parser/StreamParser.h"
 
+#include "eckit/testing/Setup.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
-//----------------------------------------------------------------------------------------------------------------------
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( test_eckit_parser_stream )
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_next )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_next ) {
     std::stringstream ss;
     ss << "1234567890abcdefgh";
 
@@ -35,9 +39,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_next )
     BOOST_CHECK_EQUAL(parser.next(), 'h');
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_next_spaces )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_next_spaces ) {
     std::stringstream ss;
     ss << "1 3  6    ab def h";
 
@@ -52,9 +56,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_next_spaces )
     BOOST_CHECK_EQUAL(parser.next(false), 'a');
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_next_eof )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_next_eof ) {
     // cf. commit: 7224cc431
 
     std::stringstream ss;
@@ -67,12 +71,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_next_eof )
     BOOST_CHECK_THROW(parser.next(), StreamParser::Error);
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 
-
-BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_peek )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_peek ) {
     std::stringstream ss;
     ss << " 2   5";
 
@@ -90,9 +91,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_peek )
     BOOST_CHECK_EQUAL(parser.peek(), 0);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_consume_char )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_consume_char ) {
     std::stringstream ss;
     ss << " 2  567 ";
 
@@ -110,9 +111,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_consume_char )
     BOOST_CHECK_THROW(parser.consume('8'), StreamParser::Error);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_consume_string )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_consume_string ) {
     std::stringstream ss;
     ss << " 234  789 0a";
 
@@ -127,7 +128,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_stream_consume_string )
     // Check that it throws on eof
     BOOST_CHECK_THROW(parser.consume("0ab"), StreamParser::Error);
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 

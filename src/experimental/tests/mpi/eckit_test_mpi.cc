@@ -33,8 +33,6 @@ inline boost::wrap_stringstream& operator<<(boost::wrap_stringstream& wrapped, s
 #include "eckit/mpi/Environment.h"
 #include "eckit/mpi/Comm.h"
 
-#define MPI_SUCCESS 0
-
 using namespace eckit;
 using namespace eckit::mpi;
 
@@ -63,28 +61,25 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
   BOOST_TEST_CHECKPOINT("Test value");
   {
     float val;
-    if( mpi::comm().rank() == root )
-    {
-      val = 3.14;
+    if( mpi::comm().rank() == root ) {
+      val = 3.14f;
     }
 
     float* pval = &val;
-    BOOST_CHECK( mpi::comm().broadcast(&val, 1, root) == MPI_SUCCESS );
-    BOOST_CHECK( mpi::comm().broadcast(pval, pval+1, root) == MPI_SUCCESS );
+    BOOST_CHECK_NO_THROW( mpi::comm().broadcast(val, root) );
+    BOOST_CHECK_NO_THROW( mpi::comm().broadcast(pval, pval+1, root) );
 
     // check results
-    BOOST_CHECK_CLOSE( val, 3.14, 0.0001 );
+    BOOST_CHECK_CLOSE( val, 3.14f, 0.0001 );
   }
 
   BOOST_TEST_CHECKPOINT("Test vector");
   {
-    std::vector<int> data;
-    if( mpi::comm().rank() == root )
-    {
+    std::vector<int> data(10);
+    if(mpi::comm().rank() == root) {
       data.assign(d,d+10);
     }
-    bool resize = true;
-    BOOST_CHECK( mpi::comm().broadcast(data, root, resize) == MPI_SUCCESS );
+    BOOST_CHECK_NO_THROW( mpi::comm().broadcast(data, root) );
 
     // check results
     BOOST_CHECK_EQUAL( data.size(), 10u );
@@ -98,7 +93,8 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
     {
       data.assign(d,d+10);
     }
-    BOOST_CHECK( mpi::comm().broadcast(data.begin(), data.end(), root) == MPI_SUCCESS );
+
+    BOOST_CHECK_NO_THROW( mpi::comm().broadcast(data.begin(), data.end(), root) );
 
     // check results
     BOOST_CHECK_EQUAL_COLLECTIONS(data.begin(), data.end(), d, d+10);
@@ -107,7 +103,6 @@ BOOST_AUTO_TEST_CASE( test_broadcast )
 
 BOOST_AUTO_TEST_CASE( test_all_reduce )
 {
-  int success;
   int d = int(mpi::comm().rank()) + 1;
   std::pair<double,int> v(-d, mpi::comm().rank());
   std::vector<float> arr(5, mpi::comm().rank()+1);
@@ -121,12 +116,12 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
     std::pair<double,int> maxloc;
     std::pair<double,int> minloc;
 
-    success = mpi::comm().all_reduce(d,sum, mpi::sum());   BOOST_CHECK( success == MPI_SUCCESS );
-    success = mpi::comm().all_reduce(d,prod, mpi::prod()); BOOST_CHECK( success == MPI_SUCCESS );
-    success = mpi::comm().all_reduce(d,max, mpi::max());   BOOST_CHECK( success == MPI_SUCCESS );
-    success = mpi::comm().all_reduce(d,min, mpi::min());   BOOST_CHECK( success == MPI_SUCCESS );
-    success = mpi::comm().all_reduce(v,maxloc, mpi::maxloc());   BOOST_CHECK( success == MPI_SUCCESS );
-    success = mpi::comm().all_reduce(v,minloc, mpi::minloc());   BOOST_CHECK( success == MPI_SUCCESS );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(d,sum, mpi::sum())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(d,prod, mpi::prod()) );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(d,max, mpi::max())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(d,min, mpi::min())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(v,maxloc, mpi::maxloc())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(v,minloc, mpi::minloc())   );
 
     // check results
     int s=0;
@@ -152,10 +147,10 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
     int max = d;
     int min = d;
 
-    success = mpi::comm().all_reduce(sum, mpi::sum());   BOOST_CHECK( success == MPI_SUCCESS );
-    success = mpi::comm().all_reduce(prod, mpi::prod()); BOOST_CHECK( success == MPI_SUCCESS );
-    success = mpi::comm().all_reduce(max, mpi::max());   BOOST_CHECK( success == MPI_SUCCESS );
-    success = mpi::comm().all_reduce(min, mpi::min());   BOOST_CHECK( success == MPI_SUCCESS );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(sum, mpi::sum())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(prod, mpi::prod()) );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(max, mpi::max())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(min, mpi::min())   );
 
     // check results
     int s=0;
@@ -173,34 +168,34 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
 
     expected = std::vector<float>(5, mpi::comm().size());
     std::vector<float> maxvec = arr;
-    success = mpi::comm().all_reduce(maxvec.data(),maxvec.size(), mpi::max()); BOOST_CHECK( success == MPI_SUCCESS );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(maxvec.data(),maxvec.size(), mpi::max()) );
     BOOST_CHECK_EQUAL_COLLECTIONS(maxvec.begin(),maxvec.end(),expected.begin(),expected.end());
     maxvec = arr;
-    success = mpi::comm().all_reduce(maxvec, mpi::max()); BOOST_CHECK( success == MPI_SUCCESS );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(maxvec, mpi::max()) );
     BOOST_CHECK_EQUAL_COLLECTIONS(maxvec.begin(),maxvec.end(),expected.begin(),expected.end());
 
     expected = std::vector<float>(5,1);
     std::vector<float> minvec = arr;
-    success = mpi::comm().all_reduce(minvec.data(),minvec.size(), mpi::min()); BOOST_CHECK( success == MPI_SUCCESS );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(minvec.data(),minvec.size(), mpi::min()) );
     BOOST_CHECK_EQUAL_COLLECTIONS(minvec.begin(),minvec.end(),expected.begin(),expected.end());
     minvec = arr;
-    success = mpi::comm().all_reduce(minvec, mpi::min()); BOOST_CHECK( success == MPI_SUCCESS );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(minvec, mpi::min()) );
     BOOST_CHECK_EQUAL_COLLECTIONS(minvec.begin(),minvec.end(),expected.begin(),expected.end());
 
     expected = std::vector<float>(5,s);
     std::vector<float> sumvec = arr;
-    success = mpi::comm().all_reduce(sumvec.data(),sumvec.size(), mpi::sum()); BOOST_CHECK( success == MPI_SUCCESS );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(sumvec.data(),sumvec.size(), mpi::sum()) );
     BOOST_CHECK_EQUAL_COLLECTIONS(sumvec.begin(),sumvec.end(),expected.begin(),expected.end());
     sumvec = arr;
-    success = mpi::comm().all_reduce(sumvec, mpi::sum()); BOOST_CHECK( success == MPI_SUCCESS );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(sumvec, mpi::sum()) );
     BOOST_CHECK_EQUAL_COLLECTIONS(sumvec.begin(),sumvec.end(),expected.begin(),expected.end());
 
     expected = std::vector<float>(5,p);
     std::vector<float> prodvec = arr;
-    success = mpi::comm().all_reduce(prodvec.data(),prodvec.size(), mpi::prod()); BOOST_CHECK( success == MPI_SUCCESS );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(prodvec.data(),prodvec.size(), mpi::prod()) );
     BOOST_CHECK_EQUAL_COLLECTIONS(prodvec.begin(),prodvec.end(),expected.begin(),expected.end());
     prodvec = arr;
-    success = mpi::comm().all_reduce(prodvec, mpi::prod()); BOOST_CHECK( success == MPI_SUCCESS );
+    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(prodvec, mpi::prod()) );
     BOOST_CHECK_EQUAL_COLLECTIONS(prodvec.begin(),prodvec.end(),expected.begin(),expected.end());
   }
 }
@@ -211,9 +206,7 @@ BOOST_AUTO_TEST_CASE( test_all_to_all )
   std::vector< std::vector<int> > send(mpi::comm().size(), std::vector<int>(1, mpi::comm().rank()));
   std::vector< std::vector<int> > recv(mpi::comm().size());
 
-  int success = mpi::comm().all_to_all( send, recv );
-
-  BOOST_CHECK( success == MPI_SUCCESS );
+  BOOST_CHECK_NO_THROW( mpi::comm().all_to_all( send, recv ) );
 
   // check results
   std::vector< std::vector<int> > expected(mpi::comm().size());
@@ -233,9 +226,7 @@ BOOST_AUTO_TEST_CASE( test_all_gather___simple )
   int send = mpi::comm().rank();
   std::vector<int> recv;
 
-  int success = mpi::comm().all_gather( &send, 1, recv );
-
-  BOOST_CHECK( success == MPI_SUCCESS );
+  BOOST_CHECK_NO_THROW( mpi::comm().all_gather( &send, 1, recv ) );
 
   // check results
   std::vector<int> expected(mpi::comm().size());
@@ -252,9 +243,7 @@ BOOST_AUTO_TEST_CASE( test_all_gather___buffer )
   std::vector<int> send(mpi::comm().rank(), mpi::comm().rank());
   mpi::Buffer<int> recv(mpi::comm().size());
 
-  int success = mpi::comm().all_gather( send, recv );
-
-  BOOST_CHECK( success == MPI_SUCCESS );
+  BOOST_CHECK_NO_THROW( mpi::comm().all_gather( send, recv ) );
 
   // check results
   std::vector<int> expected;

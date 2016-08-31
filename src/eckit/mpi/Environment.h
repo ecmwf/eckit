@@ -42,21 +42,24 @@ Operation minloc();
 template <typename DATA_TYPE>
 struct Buffer
 {
-  typedef DATA_TYPE value_type;
-  typedef typename std::vector<DATA_TYPE>::iterator iterator;
-  int                    cnt;
-  std::vector<int>       counts;
-  std::vector<int>       displs;
-  std::vector<DATA_TYPE> buf;
+    typedef DATA_TYPE value_type;
+    typedef typename std::vector<DATA_TYPE>::iterator iterator;
 
-  Buffer(size_t size)
-  {
-    counts.resize( size );
-    displs.resize( size );
-  }
+    int cnt;
 
-  iterator begin() { return buf.begin(); }
-  iterator end()   { return buf.end();   }
+    std::vector<int>       counts;
+    std::vector<int>       displs;
+    std::vector<DATA_TYPE> buffer;
+
+    Buffer(size_t size)
+    {
+        counts.resize( size );
+        displs.resize( size );
+    }
+
+    iterator begin() { return buffer.begin(); }
+    iterator end()   { return buffer.end();   }
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

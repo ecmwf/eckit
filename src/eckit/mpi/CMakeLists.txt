@@ -1,12 +1,14 @@
 list( APPEND eckit_mpi_srcs
-Comm.h
 Comm.cc
-Environment.h
+Comm.h
+DataType.cc
+DataType.h
 Environment.cc
-Request.h
+Environment.h
 Request.cc
-Serial.h
+Request.h
 Serial.cc
+Serial.h
 )
 
 if( HAVE_MPI )

@@ -1,11 +1,11 @@
 /*
- * (C) Copyright 1996-2015 ECMWF.
+ * (C) Copyright 1996-2016 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation
+ * nor does it submit to any jurisdiction.
  */
 
 #define BOOST_TEST_MODULE test_eckit_option
@@ -28,81 +28,83 @@ using namespace eckit::option;
 /// Test the options parser
 /// @note The options parser normall calls ::exit(1) if an error occurs. All the constructors accept an additional
 ///       option to turn this behaviour off, and throw a UserError instead.
-
+/// @note Main can only be initialised once, so we need to generate a binary per test case via ifdefs
 
 namespace {
 
     /// A local function to satisfy the CmdArg details
-    void usage(const std::string& tool) {
+    void usage(const std::string&) {
         // Empty
+    }
+
+    void init(int nargs, const char* global_args[]) {
+        Main::initialise(nargs, const_cast<char**>(global_args));
+        CmdArgs(&usage, 1, 0, true);
+    }
+
+    void init(int nargs, const char* global_args[], std::vector<Option*>& options, int args_count = 0) {
+        Main::initialise(nargs, const_cast<char**>(global_args));
+        CmdArgs(&usage, options, args_count, 0, true);
     }
 }
 
-
 BOOST_AUTO_TEST_SUITE( test_eckit_option_cmdargs )
 
-BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required )
-{
-    // Functor needed to test constructor inside BOOST_CHECK_THROW
-    struct functor {
-        /// Set up argument parser to accept one unnamed argument.
-        void operator() (size_t nargs, const char* global_args[]) {
+//----------------------------------------------------------------------------------------------------------------------
 
-            Main::initialise(nargs, const_cast<char**>(global_args));
-            CmdArgs args(&usage, 1, 0, true);
+#if TESTCASE >= 1 and TESTCASE <= 3
+BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required ) {
+    // Argument parser will succeed when passed exactly one unnamed argument.
+    // Note that argument 0 is always the executable name.
 
-            BOOST_CHECK_EQUAL(args(0), std::string("a1"));
-        }
-    };
-
+#if TESTCASE == 1
     const char* args1[] = {"exe"};
+    BOOST_CHECK_THROW(init(1, args1), UserError);
+#endif
+
+#if TESTCASE == 2
     const char* args2[] = {"exe", "a1"};
+    BOOST_CHECK_NO_THROW(init(2, args2));
+#endif
+
+#if TESTCASE == 3
     const char* args3[] = {"exe", "a1", "a2"};
+    BOOST_CHECK_THROW(init(3, args3), UserError);
+#endif
+}
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------
+
+#if TESTCASE >= 4 and TESTCASE <= 6
+BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required_with_options ) {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<std::string>("arg1", ""));
 
     // Argument parser will succeed when passed exactly one unnamed argument.
     // Note that argument 0 is always the executable name.
 
-    BOOST_CHECK_THROW(functor()(1, args1), UserError);
-
-    functor()(2, args2);
-
-    BOOST_CHECK_THROW(functor()(3, args3), UserError);
-}
-
-
-BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required_with_options )
-{
-    // Functor needed to test constructor inside BOOST_CHECK_THROW
-    struct functor {
-        /// Set up argument parser to accept one unnamed argument.
-        void operator() (size_t nargs, const char* global_args[]) {
-
-            std::vector<Option*> options;
-            options.push_back(new SimpleOption<std::string>("arg1", ""));
-
-            Main::initialise(nargs, const_cast<char**>(global_args));
-            CmdArgs args(&usage, options, 1, 0, true);
-
-            BOOST_CHECK_EQUAL(args(0), std::string("a1"));
-        }
-    };
-
+#if TESTCASE == 4
     const char* args1[] = {"exe"};
+    BOOST_CHECK_THROW(init(1, args1, options, 1), UserError);
+#endif
+
+#if TESTCASE == 5
     const char* args2[] = {"exe", "a1"};
+    BOOST_CHECK_NO_THROW(init(2, args2, options, 1));
+#endif
+
+#if TESTCASE == 6
     const char* args3[] = {"exe", "a1", "a2"};
-
-    // Argument parser will succeed when passed exactly one unnamed argument.
-    // Note that argument 0 is always the executable name.
-
-    BOOST_CHECK_THROW(functor()(1, args1), UserError);
-
-    functor()(2, args2);
-
-    BOOST_CHECK_THROW(functor()(3, args3), UserError);
+    BOOST_CHECK_THROW(init(3, args3, options, 1), UserError);
+#endif
 }
+#endif
 
+//----------------------------------------------------------------------------------------------------------------------
+
+#if TESTCASE == 7
 BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_string ) {
-
     // Set up he parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
     std::vector<Option*> options;
@@ -121,10 +123,12 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_string ) {
     BOOST_CHECK_EQUAL(tmpstr, "testing");
     BOOST_CHECK_EQUAL(args.getString("arg1"), "testing");
 }
+#endif
 
+//----------------------------------------------------------------------------------------------------------------------
 
+#if TESTCASE == 8
 BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_integer ) {
-
     // Set up the parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
     std::vector<Option*> options;
@@ -143,30 +147,25 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_integer ) {
     BOOST_CHECK_EQUAL(tmpi, 12345);
     BOOST_CHECK_EQUAL(args.getLong("arg2"), 12345);
 }
+#endif
 
+//----------------------------------------------------------------------------------------------------------------------
+
+#if TESTCASE == 9
 BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_missing ) {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<std::string>("arg1", ""));
+    options.push_back(new SimpleOption<long>("arg2", ""));
 
-    // Functor needed to test constructor inside BOOST_CHECK_THROW
-    // Oh, wouldn't lambda functions be a glorious thing!
-    struct functor {
-        void operator() () {
-
-            std::vector<Option*> options;
-            options.push_back(new SimpleOption<std::string>("arg1", ""));
-            options.push_back(new SimpleOption<long>("arg2", ""));
-
-            const char* input[] = {"exe", "--arg3=12345"};
-            Main::initialise(2, const_cast<char**>(input));
-            CmdArgs args(&usage, options, 0, 0, true);
-        }
-    };
-
-    BOOST_CHECK_THROW(functor()(), UserError);
+    const char* input[] = {"exe", "--arg3=12345"};
+    BOOST_CHECK_THROW(init(2, input, options), UserError);
 }
+#endif
 
+//----------------------------------------------------------------------------------------------------------------------
 
+#if TESTCASE == 10
 BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_integer_vector ) {
-
     // Set up the parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
     std::vector<Option*> options;
@@ -188,10 +187,12 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_integer_vector ) {
     // Check equality directly to avoid exciting operator<< gubbins within BOOST_CHECK_EQUAL.
     BOOST_CHECK(tmpv == args.getLongVector("arg"));
 }
+#endif
 
+//----------------------------------------------------------------------------------------------------------------------
 
+#if TESTCASE == 11
 BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_double_vector ) {
-
     // Set up the parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
     std::vector<Option*> options;
@@ -214,26 +215,19 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_double_vector ) {
     // Check equality directly to avoid exciting operator<< gubbins within BOOST_CHECK_EQUAL.
     BOOST_CHECK(tmpv == args.getDoubleVector("arg"));
 }
+#endif
 
+//----------------------------------------------------------------------------------------------------------------------
 
+#if TESTCASE == 12
 BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_vector_size_check ) {
+    std::vector<Option*> options;
+    options.push_back(new VectorOption<long>("arg", "", 4));
 
-    // Functor needed to test constructor inside BOOST_CHECK_THROW
-    // Oh, wouldn't lambda functions be a glorious thing!
-    struct functor {
-        void operator() () {
-
-            std::vector<Option*> options;
-            options.push_back(new VectorOption<long>("arg", "", 4));
-
-            const char* input[] = {"exe", "--arg=1/2/3"};
-            Main::initialise(2, const_cast<char**>(input));
-            CmdArgs args(&usage, options, 0, 0, true);
-        }
-    };
-
-    BOOST_CHECK_THROW(functor()(), UserError);
+    const char* input[] = {"exe", "--arg=1/2/3"};
+    BOOST_CHECK_THROW(init(2, input, options), UserError);
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 

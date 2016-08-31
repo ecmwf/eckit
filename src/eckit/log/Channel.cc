@@ -53,8 +53,26 @@ void Channel::setTarget(LogTarget* target) {
     buffer_->setTarget(target);
 }
 
-void Channel::clear() {
-    buffer_->clear();
+
+void Channel::setStream(std::ostream& out) {
+    buffer_->setStream(out);
+}
+
+void Channel::addStream(std::ostream& out) {
+    buffer_->addStream(out);
+}
+
+
+void Channel::setFile(const std::string& path) {
+    buffer_->setFile(path);
+}
+
+void Channel::addFile(const std::string& path) {
+    buffer_->addFile(path);
+}
+
+void Channel::reset() {
+    buffer_->reset();
 }
 
 void Channel::indent(const char* space) {

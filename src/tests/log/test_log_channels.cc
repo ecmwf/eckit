@@ -103,7 +103,6 @@ public:
     }
 
     void test_multi_targets() {
-#if 0
         std::cout << "---> test_multi_targets()" << std::endl;
 
         int t = 0;
@@ -112,39 +111,38 @@ public:
 
         mychannel << "testing [" << t++ << "]" << std::endl;
 
-        mychannel.addLogTarget(new FileTarget(PathName("test.txt")));
+        mychannel.addFile("test.txt");
 
         mychannel << "testing [" << t++ << "]" << std::endl;
 
         std::ofstream of ("test.txt.2");
-        mychannel.addLogTarget(new OStreamTarget(of));
+        mychannel.addStream(of);
 
         mychannel << "testing [" << t++ << "]" << std::endl;
 
-        mychannel.addLogTarget(new OStreamTarget(std::cout));
+        mychannel.addStream(std::cout);
 
         mychannel << "testing [" << t++ << "]" << std::endl;
 
-        mychannel.addLogTarget(new OStreamTarget(std::cerr));
+        mychannel.addStream(std::cerr);
 
         mychannel << "testing [" << t++ << "]" << std::endl;
 
         std::ostringstream oss;
-        mychannel.addLogTarget(new OStreamTarget(oss));
+        mychannel.addStream(oss);
 
         mychannel << "testing [" << t++ << "]" << std::endl;
 
-        mychannel.addLogTarget(new CallbackTarget(&callback_noctxt,0));
-        mychannel.addLogTarget(new CallbackTarget(&callback_ctxt, &t));
+        mychannel.addCallback(&callback_noctxt,0);
+        mychannel.addCallback(&callback_ctxt, &t);
 
         mychannel << "testing [" << t++ << "]" << std::endl;
 
-        mychannel.addLogTarget(new CapitalizerTarget(new FileTarget(PathName("capitals.txt"))));
+        // mychannel.addLogTarget(new CapitalizerTarget(new FileTarget(PathName("capitals.txt"))));
 
         mychannel << "testing [" << t++ << "]" << std::endl;
 
         mychannel << "Final test" << std::endl;
-#endif
     }
 
     void test_multi_colouring() {

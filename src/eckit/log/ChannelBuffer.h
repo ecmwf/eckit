@@ -42,11 +42,17 @@ private: // methods
 
     bool active() const { return target_ != 0; }
 
-    void clear();
+    void reset();
     void setTarget(LogTarget* target);
 
     void indent(const char* space = "   ");
     void unindent();
+
+    void setStream(std::ostream& out);
+    void addStream(std::ostream& out);
+
+    void setFile(const std::string& path);
+    void addFile(const std::string& path);
 
     void setCallback(channel_callback_t cb, void* data = 0);
     void addCallback(channel_callback_t cb, void* data = 0);

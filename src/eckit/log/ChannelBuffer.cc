@@ -16,6 +16,8 @@
 #include "eckit/log/LogTarget.h"
 #include "eckit/log/TeeTarget.h"
 #include "eckit/log/CallbackTarget.h"
+#include "eckit/log/FileTarget.h"
+#include "eckit/log/OStreamTarget.h"
 
 namespace eckit {
 
@@ -33,7 +35,7 @@ ChannelBuffer::ChannelBuffer( std::size_t size ) :
 
 ChannelBuffer::~ChannelBuffer()
 {
-    clear();
+    reset();
 }
 
 
@@ -52,7 +54,7 @@ void ChannelBuffer::setTarget(LogTarget* target) {
 
 }
 
-void ChannelBuffer::clear() {
+void ChannelBuffer::reset() {
     sync();
     if (target_) {
         target_->detach();
@@ -90,6 +92,22 @@ void ChannelBuffer::addCallback(channel_callback_t cb, void* data) {
 
 void ChannelBuffer::setCallback(channel_callback_t cb, void* data) {
     setTarget(new CallbackTarget(cb, data));
+}
+
+void ChannelBuffer::addStream(std::ostream& out) {
+    setTarget(new TeeTarget(target_, new OStreamTarget(out)));
+}
+
+void ChannelBuffer::setStream(std::ostream& out) {
+    setTarget(new OStreamTarget(out));
+}
+
+void ChannelBuffer::addFile(const std::string& path) {
+    setTarget(new TeeTarget(target_, new FileTarget(path)));
+}
+
+void ChannelBuffer::setFile(const std::string& path) {
+    setTarget(new FileTarget(path));
 }
 
 std::streambuf::int_type ChannelBuffer::overflow(std::streambuf::int_type ch)

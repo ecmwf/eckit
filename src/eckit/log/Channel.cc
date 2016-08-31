@@ -40,6 +40,14 @@ Channel::operator bool() const {
     return buffer_->active();
 }
 
+void Channel::setCallback(channel_callback_t cb, void* data) {
+    buffer_->setCallback(cb, data);
+}
+
+void Channel::addCallback(channel_callback_t cb, void* data) {
+    buffer_->addCallback(cb, data);
+}
+
 void Channel::setTarget(LogTarget* target) {
     ASSERT(target);
     buffer_->setTarget(target);

@@ -103,7 +103,7 @@ public:
     }
 
     void test_multi_targets() {
-
+#if 0
         std::cout << "---> test_multi_targets()" << std::endl;
 
         int t = 0;
@@ -144,10 +144,11 @@ public:
         mychannel << "testing [" << t++ << "]" << std::endl;
 
         mychannel << "Final test" << std::endl;
+#endif
     }
 
     void test_multi_colouring() {
-
+#if 0
         Log::info().setLogTarget(    new ColouringTarget(new OStreamTarget(std::cout), &Colour::green));
         Log::warning().setLogTarget( new ColouringTarget(new OStreamTarget(std::cerr), &Colour::yellow));
         Log::error().setLogTarget(   new ColouringTarget(new OStreamTarget(std::cerr), &Colour::red));
@@ -155,7 +156,7 @@ public:
         Log::info()    << "Log::info() is green"     << std::endl;
         Log::warning() << "Log::warning() is yellow" << std::endl;
         Log::error()   << "Log::error() is red"      << std::endl;
-
+#endif
     }
 };
 

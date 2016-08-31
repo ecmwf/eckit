@@ -43,7 +43,8 @@ public: // methods
     void indent(const char* prefix = "");
     void unindent();
 
-    // void addCallback(channel_callback_t cb, void* data = 0);
+    void setCallback(channel_callback_t cb, void* data = 0);
+    void addCallback(channel_callback_t cb, void* data = 0);
     void clear();
 
 private:

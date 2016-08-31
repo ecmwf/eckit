@@ -60,7 +60,7 @@ class TLog : public Thread
     {
         // this shows how you can change the callback per thread
         if( N == 2 ) {
-            Log::info().setLogTarget(new CallbackTarget(&callback_special));
+            Log::info().setCallback(&callback_special);
         }
 
         for( int i = 0; i < LOOPS*N; ++i )
@@ -84,7 +84,7 @@ public:
 
     virtual void run()
     {
-        Log::info().setLogTarget(new CallbackTarget(&callback_logger));
+        Log::info().setCallback(&callback_logger);
 
         Log::info() << ">>> starting ... " << std::endl;
 

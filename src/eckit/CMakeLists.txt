@@ -279,6 +279,8 @@ log/OStreamTarget.h
 log/OStreamTarget.cc
 log/LineBasedTarget.h
 log/LineBasedTarget.cc
+log/TeeTarget.h
+log/TeeTarget.cc
 log/StatusTarget.h
 log/StatusTarget.cc
 log/MessageTarget.h

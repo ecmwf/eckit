@@ -9,7 +9,6 @@
  */
 
 #include "eckit/filesystem/LocalPathName.h"
-#include "eckit/log/CallbackTarget.h"
 #include "eckit/log/Log.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Main.h"
@@ -56,7 +55,7 @@ void test_callback_none()
 /// tests with null context
 void test_callback_noctxt()
 {
-    Log::info().setLogTarget( new CallbackTarget(&output_callback_noctxt) );
+    Log::info().setCallback(&output_callback_noctxt);
 
     Log::info()          << "info message 1" << std::endl;
 
@@ -74,7 +73,7 @@ void test_callback_withctxt()
     CTxt ctxt;
     ctxt.name_ = "MyTest";
 
-    Log::info().setLogTarget( new CallbackTarget( &output_callback_withctxt, &ctxt ) );
+    Log::info().setCallback(&output_callback_withctxt, &ctxt);
 
     Log::info()          << "info message 1" << std::endl;
 
@@ -91,7 +90,7 @@ void test_callback_withctxt()
 
 using namespace eckit_test;
 
-int main(int argc,char **argv)
+int main(int argc, char **argv)
 {
 
 

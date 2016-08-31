@@ -14,6 +14,8 @@
 #include "eckit/log/ChannelBuffer.h"
 #include "eckit/log/IndentTarget.h"
 #include "eckit/log/LogTarget.h"
+#include "eckit/log/TeeTarget.h"
+#include "eckit/log/CallbackTarget.h"
 
 namespace eckit {
 
@@ -80,6 +82,14 @@ void ChannelBuffer::unindent() {
     }
     setTarget(indent->target_);
 
+}
+
+void ChannelBuffer::addCallback(channel_callback_t cb, void* data) {
+    setTarget(new TeeTarget(target_, new CallbackTarget(cb, data)));
+}
+
+void ChannelBuffer::setCallback(channel_callback_t cb, void* data) {
+    setTarget(new CallbackTarget(cb, data));
 }
 
 std::streambuf::int_type ChannelBuffer::overflow(std::streambuf::int_type ch)

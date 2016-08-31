@@ -20,6 +20,7 @@
 #include <streambuf>
 
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/log/Channel.h"
 
 namespace eckit {
 
@@ -29,7 +30,7 @@ class LogTarget;
 
 /// Generic base for buffers
 class ChannelBuffer : public std::streambuf,
-                      private NonCopyable {
+    private NonCopyable {
 
 private: // methods
 
@@ -46,6 +47,9 @@ private: // methods
 
     void indent(const char* space = "   ");
     void unindent();
+
+    void setCallback(channel_callback_t cb, void* data = 0);
+    void addCallback(channel_callback_t cb, void* data = 0);
 
 protected: // methods
 

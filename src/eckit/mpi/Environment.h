@@ -26,14 +26,24 @@ class Comm;
 /// @returns the communicator registered with associated name, or default communicator when NULL is passed
 Comm& comm(const char* name = 0);
 
-typedef int Operation;
+struct Operation {
 
-Operation sum();
-Operation prod();
-Operation max();
-Operation min();
-Operation maxloc();
-Operation minloc();
+    enum Code {
+        SUM,
+        PROD,
+        MAX,
+        MIN,
+        MAXLOC,
+        MINLOC,
+    };
+};
+
+Operation::Code sum();
+Operation::Code prod();
+Operation::Code max();
+Operation::Code min();
+Operation::Code maxloc();
+Operation::Code minloc();
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -81,19 +91,6 @@ public:  // methods
 
   /// @returns the communicator registered with associated name, or default communicator when NULL is passed
   virtual Comm& comm(const char* name = 0) const = 0;
-
-  virtual Operation sum()  const = 0;
-  virtual Operation prod() const = 0;
-  virtual Operation max()  const = 0;
-  virtual Operation min()  const = 0;
-  virtual Operation maxloc() const = 0;
-  virtual Operation minloc() const = 0;
-
-  /// @brief Builds a request
-  virtual mpi::Request::Ptr makeRequest() const = 0;
-
-  /// @brief Builds a vector of requests
-  virtual std::vector< mpi::Request::Ptr > makeRequestVector() const = 0;
 
 protected:
 

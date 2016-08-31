@@ -40,31 +40,17 @@ Environment::~Environment()
 {
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+Operation::Code sum()   { return Operation::SUM; }
 
-Operation sum() {
-    return Environment::instance().sum();
-}
+Operation::Code prod()  { return Operation::PROD; }
 
-Operation prod() {
-    return Environment::instance().prod();
-}
+Operation::Code max()   { return Operation::MAX; }
 
-Operation max() {
-    return Environment::instance().max();
-}
+Operation::Code min()   { return Operation::MIN; }
 
-Operation min() {
-    return Environment::instance().min();
-}
+Operation::Code maxloc(){ return Operation::MAXLOC; }
 
-Operation maxloc() {
-    return Environment::instance().maxloc();
-}
-
-Operation minloc() {
-    return Environment::instance().minloc();
-}
+Operation::Code minloc(){ return Operation::MINLOC; }
 
 //----------------------------------------------------------------------------------------------------------------------
 

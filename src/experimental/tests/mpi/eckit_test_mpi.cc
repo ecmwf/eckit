@@ -116,12 +116,12 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
     std::pair<double,int> maxloc;
     std::pair<double,int> minloc;
 
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(d,sum, mpi::sum())   );
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(d,prod, mpi::prod()) );
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(d,max, mpi::max())   );
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(d,min, mpi::min())   );
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(v,maxloc, mpi::maxloc())   );
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(v,minloc, mpi::minloc())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduce(d, sum,    mpi::sum())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduce(d, prod,   mpi::prod()) );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduce(d, max,    mpi::max())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduce(d, min,    mpi::min())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduce(v, maxloc, mpi::maxloc())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduce(v, minloc, mpi::minloc())   );
 
     // check results
     int s=0;
@@ -147,10 +147,10 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
     int max = d;
     int min = d;
 
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(sum, mpi::sum())   );
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(prod, mpi::prod()) );
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(max, mpi::max())   );
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(min, mpi::min())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(sum, mpi::sum())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(prod, mpi::prod()) );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(max, mpi::max())   );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(min, mpi::min())   );
 
     // check results
     int s=0;
@@ -168,34 +168,22 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
 
     expected = std::vector<float>(5, mpi::comm().size());
     std::vector<float> maxvec = arr;
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(maxvec.data(),maxvec.size(), mpi::max()) );
-    BOOST_CHECK_EQUAL_COLLECTIONS(maxvec.begin(),maxvec.end(),expected.begin(),expected.end());
-    maxvec = arr;
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(maxvec, mpi::max()) );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(maxvec.begin(), maxvec.end(), mpi::max()) );
     BOOST_CHECK_EQUAL_COLLECTIONS(maxvec.begin(),maxvec.end(),expected.begin(),expected.end());
 
     expected = std::vector<float>(5,1);
     std::vector<float> minvec = arr;
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(minvec.data(),minvec.size(), mpi::min()) );
-    BOOST_CHECK_EQUAL_COLLECTIONS(minvec.begin(),minvec.end(),expected.begin(),expected.end());
-    minvec = arr;
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(minvec, mpi::min()) );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(minvec.begin(),minvec.end(), mpi::min()) );
     BOOST_CHECK_EQUAL_COLLECTIONS(minvec.begin(),minvec.end(),expected.begin(),expected.end());
 
     expected = std::vector<float>(5,s);
     std::vector<float> sumvec = arr;
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(sumvec.data(),sumvec.size(), mpi::sum()) );
-    BOOST_CHECK_EQUAL_COLLECTIONS(sumvec.begin(),sumvec.end(),expected.begin(),expected.end());
-    sumvec = arr;
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(sumvec, mpi::sum()) );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(sumvec.begin(),sumvec.end(), mpi::sum()) );
     BOOST_CHECK_EQUAL_COLLECTIONS(sumvec.begin(),sumvec.end(),expected.begin(),expected.end());
 
     expected = std::vector<float>(5,p);
     std::vector<float> prodvec = arr;
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(prodvec.data(),prodvec.size(), mpi::prod()) );
-    BOOST_CHECK_EQUAL_COLLECTIONS(prodvec.begin(),prodvec.end(),expected.begin(),expected.end());
-    prodvec = arr;
-    BOOST_CHECK_NO_THROW( mpi::comm().all_reduce(prodvec, mpi::prod()) );
+    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(prodvec.begin(),prodvec.end(), mpi::prod()) );
     BOOST_CHECK_EQUAL_COLLECTIONS(prodvec.begin(),prodvec.end(),expected.begin(),expected.end());
   }
 }
@@ -224,9 +212,9 @@ BOOST_AUTO_TEST_CASE( test_all_to_all )
 BOOST_AUTO_TEST_CASE( test_all_gather___simple )
 {
   int send = mpi::comm().rank();
-  std::vector<int> recv;
+  std::vector<int> recv(mpi::comm().size());
 
-  BOOST_CHECK_NO_THROW( mpi::comm().all_gather( &send, 1, recv ) );
+  BOOST_CHECK_NO_THROW( mpi::comm().allGather(send, recv.begin(), recv.end()) );
 
   // check results
   std::vector<int> expected(mpi::comm().size());
@@ -243,7 +231,7 @@ BOOST_AUTO_TEST_CASE( test_all_gather___buffer )
   std::vector<int> send(mpi::comm().rank(), mpi::comm().rank());
   mpi::Buffer<int> recv(mpi::comm().size());
 
-  BOOST_CHECK_NO_THROW( mpi::comm().all_gather( send, recv ) );
+  BOOST_CHECK_NO_THROW( mpi::comm().allGatherv(send.begin(), send.end(), recv) );
 
   // check results
   std::vector<int> expected;
@@ -253,7 +241,7 @@ BOOST_AUTO_TEST_CASE( test_all_gather___buffer )
       expected.push_back(j);
   }
 
-  BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(),recv.end(),expected.begin(),expected.end());
+  BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
 }
 
 //-------------------------------------------------------------------------

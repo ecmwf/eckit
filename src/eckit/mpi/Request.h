@@ -21,25 +21,27 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Request : public eckit::Owned {
+class RequestContent;
 
-public: // types
-
-    typedef eckit::SharedPtr<Request> Ptr;
-    typedef std::vector<Request::Ptr> Vector;
+class Request {
 
 public: // methods
 
-    virtual ~Request();
+    Request();
+
+    ~Request();
 
 private: // methods
 
-    virtual void print(std::ostream&) const = 0;
+    void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Request& o) {
         o.print(s); return s;
     }
 
+private: // members
+
+    RequestContent* pimpl_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

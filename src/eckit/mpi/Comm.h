@@ -25,7 +25,19 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+struct Status {
+  int count;
+  int cancelled;
+  int source;
+  int tag;
+  int error;
+};
+
 class Comm : private eckit::NonCopyable {
+
+public:
+
+    static Comm& create(const char* name);
 
 protected: // methods
 
@@ -38,6 +50,29 @@ protected: // methods
     virtual void gatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[], const int displs[], Data::Code datatype, size_t root) const = 0;
 
     virtual void scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf, size_t recvcount, Data::Code datatype, size_t root) const = 0;
+
+    virtual void allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code datatype) const = 0;
+
+    virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code datatype, Operation::Code op) const = 0;
+
+    virtual void allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code datatype, Operation::Code op) const = 0;
+
+    virtual void allGather(const void *sendbuf, size_t sendcount, void *recvbuf, size_t recvcount, Data::Code datatype) const = 0;
+
+    virtual void allGatherv(const void *sendbuf, size_t sendcount,
+                            void *recvbuf, const int recvcounts[], const int displs[], Data::Code datatype) const = 0;
+
+    virtual void allToAllv(const void *sendbuf, const int sendcounts[], const int sdispls[],
+                           void *recvbuf, const int recvcounts[], const int rdispls[],
+                           Data::Code datatype) const = 0;
+
+    virtual Status receive(void* recv, size_t count, Data::Code datatype, int source, int tag) const = 0;
+
+    virtual Status send(const void* send, size_t count, Data::Code datatype, int dest, int tag) const = 0;
+
+    virtual Request iReceive(void* recv, size_t count, Data::Code datatype, int source, int tag) const = 0;
+
+    virtual Request iSend(const void* send, size_t count, Data::Code datatype, int dest, int tag) const = 0;
 
 public:  // methods
 
@@ -60,28 +95,36 @@ public:  // methods
     /// @brief Wait for Request to be completed, ignoring the return status
     virtual void wait(Request&) const = 0;
 
+    /// @brief Probe for incomming messages
+    virtual Status probe(int source, int tag) const = 0;
+
     ///
     /// Broadcast, pointer to data (also covers scalars)
     ///
 
-    template<class T>
-    void broadcast(T& value, size_t root) {
+    template <typename T>
+    void broadcast(T& value, size_t root) const {
         T* p = &value;
         broadcast(p, p+1, root);
     }
 
-    template<class T>
-    void broadcast(T* first, T* last, size_t root) {
+    template <typename T>
+    void broadcast(T* first, T* last, size_t root) const {
         broadcast(first, (last-first), Data::Type<T>::code(), root);
     }
 
-    template<class T>
-    void broadcast(typename std::vector<T>& v, size_t root) {
+    template <typename T>
+    void broadcast(T buffer[], size_t count, size_t root) const {
+        broadcast(buffer, count, Data::Type<T>::code(), root);
+    }
+
+    template <typename T>
+    void broadcast(typename std::vector<T>& v, size_t root) const {
         broadcast(v.begin(), v.end(), root);
     }
 
     template<class Iter>
-    void broadcast(Iter first, Iter last, size_t root) {
+    void broadcast(Iter first, Iter last, size_t root) const {
         typename std::iterator_traits<Iter>::difference_type n = std::distance(first, last);
         Data::Code type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
         broadcast(&(*first), n, type, root);
@@ -92,7 +135,7 @@ public:  // methods
     ///
 
     template<class CIter, class Iter>
-    void gather(CIter first, CIter last, Iter recv, size_t root) {
+    void gather(CIter first, CIter last, Iter recv, size_t root) const {
         typename std::iterator_traits<CIter>::difference_type n = std::distance(first, last);
         Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
         Data::Code  type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
@@ -100,25 +143,25 @@ public:  // methods
         gather(&(*first), n, &(*recv), n, type, root);
     }
 
-    template <class T>
+    template <typename T>
     void gather(const T* first, const T* last, T* result, size_t root ) const {
         size_t n = std::distance(first, last);
         gather(first, n, result, n, Data::Type<T>::code(), root);
     }
 
-    template <class T>
+    template <typename T>
     void gather(const T send[], size_t sendcnt, T recv[], size_t recvcnt, size_t root ) const {
         if(root == rank()) { ASSERT(recvcnt >= sendcnt); }
         gather(send, sendcnt, recv, sendcnt, Data::Type<T>::code(), root);
     }
 
-    template <class T>
+    template <typename T>
     void gather(const T send[], size_t sendcnt, std::vector<T>& recv, size_t root ) const {
         if(root == rank()) { ASSERT(recv.size() >= sendcnt); }
         gather(&send[0], sendcnt, &recv[0], sendcnt, Data::Type<T>::code(), root);
     }
 
-    template <class T>
+    template <typename T>
     void gather(const std::vector<T>& send, std::vector<T>& recv, size_t root ) const {
         if(root == rank()) { ASSERT(recv.size() >= send.size()); }
         gather(send.begin(), send.end(), recv.begin(), root);
@@ -129,7 +172,7 @@ public:  // methods
     ///
 
     template<class CIter, class Iter>
-    void gatherv(CIter first, CIter last, Iter recvbuf, const int recvcounts[], const int displs[], size_t root) {
+    void gatherv(CIter first, CIter last, Iter recvbuf, const int recvcounts[], const int displs[], size_t root) const {
         typename std::iterator_traits<CIter>::difference_type n = std::distance(first, last);
         Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
         Data::Code  type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
@@ -138,11 +181,11 @@ public:  // methods
     }
 
     template<class CIter, class Iter>
-    void gatherv(CIter first, CIter last, Iter recv, const std::vector<int>& recvcounts, const std::vector<int>& displs, size_t root) {
+    void gatherv(CIter first, CIter last, Iter recv, const std::vector<int>& recvcounts, const std::vector<int>& displs, size_t root) const {
         gatherv(first, last, recv, recvcounts.data(), displs.data(), root);
     }
 
-    template <class T>
+    template <typename T>
     void gatherv(const std::vector<T>& send, std::vector<T>& recv, const std::vector<int>& recvcounts, const std::vector<int>& displs, size_t root ) const {
         ASSERT(recvcounts.size() == displs.size());
         gatherv(send.begin(), send.end(), recv.begin(), recvcounts.data(), displs.data(), root);
@@ -154,67 +197,76 @@ public:  // methods
 
 
     template<class CIter, class Iter>
-    void scatterv(CIter first, const int sendcounts[], const int displs[], Iter recv, Iter recvend, size_t root) {
+    void scatterv(CIter first, const int sendcounts[], const int displs[], Iter recv, Iter recvend, size_t root) const {
         typename std::iterator_traits<Iter>::difference_type recvcounts = std::distance(recv, recvend);
         Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
         Data::Code  type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
         ASSERT(ctype == type);
-        gatherv(&(*first), sendcounts, displs, &(*recv), recvcounts, type, root);
+        scatterv(&(*first), sendcounts, displs, &(*recv), recvcounts, type, root);
     }
 
     template<class CIter, class Iter>
-    void scatterv(CIter first, const std::vector<int>& sendcounts, const std::vector<int>& displs, Iter recv, Iter recvend, size_t root) {
+    void scatterv(CIter first, const std::vector<int>& sendcounts, const std::vector<int>& displs, Iter recv, Iter recvend, size_t root) const {
         scatterv(first, sendcounts.data(), displs.data(), recv, recvend, root);
     }
 
     ///
+    /// All to all methods, fixed data size
+    ///
 
-    virtual int all_reduce( const int    &send, int    &recv, const Operation& op) const = 0;
-    virtual int all_reduce( const long   &send, long   &recv, const Operation& op) const = 0;
-    virtual int all_reduce( const float  &send, float  &recv, const Operation& op) const = 0;
-    virtual int all_reduce( const double &send, double &recv, const Operation& op) const = 0;
+    template <typename T>
+    void allToAll(const T* sendbuf, size_t sendcount, T* recvbuf, size_t recvcount) const {
+        allToAll(sendbuf, sendcount, recvbuf, recvcount, Data::Type<T>::code());
+    }
+
+    ///
+    /// All reduce operations, separate buffers
+    ///
+
+    template <typename T>
+    void allReduce(const T* sendbuf, T* recvbuf, size_t count, Operation::Code op) const {
+        allReduce(sendbuf, recvbuf, count, Data::Type<T>::code(), op);
+    }
+
+    template <typename T>
+    void allReduce(T send, T& recv, Operation::Code op) const {
+        allReduce(&send, &recv, 1, Data::Type<T>::code(), op);
+    }
+
+    ///
+    /// All reduce operations, in place buffer
+    ///
+
+    template <typename T>
+    void allReduceInPlace(T* sendrecvbuf, size_t count, Operation::Code op) const {
+        allReduceInPlace(sendrecvbuf, count, Data::Type<T>::code(), op);
+    }
+
+    template <typename T>
+    void allReduceInPlace(T& sendrecvbuf, Operation::Code op) const {
+        allReduceInPlace(&sendrecvbuf, 1, Data::Type<T>::code(), op);
+    }
+
+    template<class Iter>
+    void allReduceInPlace(Iter first, Iter last, Operation::Code op) const {
+        typename std::iterator_traits<Iter>::difference_type count = std::distance(first, last);
+        Data::Code  type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
+        allReduceInPlace(&(*first), count, type, op);
+    }
 
     ///
 
-    virtual int all_reduce( const std::vector<int>    &send, std::vector<int>    &recv, const Operation& op) const = 0;
-    virtual int all_reduce( const std::vector<long>   &send, std::vector<long>   &recv, const Operation& op) const = 0;
-    virtual int all_reduce( const std::vector<float>  &send, std::vector<float>  &recv, const Operation& op) const = 0;
-    virtual int all_reduce( const std::vector<double> &send, std::vector<double> &recv, const Operation& op) const = 0;
+    virtual void allReduce( const std::pair<int,int>    &send, std::pair<int,int>    &recv, Operation::Code op) const = 0;
+    virtual void allReduce( const std::pair<long,int>   &send, std::pair<long,int>   &recv, Operation::Code op) const = 0;
+    virtual void allReduce( const std::pair<float,int>  &send, std::pair<float,int>  &recv, Operation::Code op) const = 0;
+    virtual void allReduce( const std::pair<double,int> &send, std::pair<double,int> &recv, Operation::Code op) const = 0;
 
     ///
 
-    virtual int all_reduce( int    &sendrecv, const Operation& op) const = 0;
-    virtual int all_reduce( long   &sendrecv, const Operation& op) const = 0;
-    virtual int all_reduce( float  &sendrecv, const Operation& op) const = 0;
-    virtual int all_reduce( double &sendrecv, const Operation& op) const = 0;
-
-    ///
-
-    virtual int all_reduce( int    sendrecv[], size_t size, const Operation& op) const = 0;
-    virtual int all_reduce( long   sendrecv[], size_t size, const Operation& op) const = 0;
-    virtual int all_reduce( float  sendrecv[], size_t size, const Operation& op) const = 0;
-    virtual int all_reduce( double sendrecv[], size_t size, const Operation& op) const = 0;
-
-    ///
-
-    virtual int all_reduce( std::vector<int>    &sendrecv, const Operation& op) const = 0;
-    virtual int all_reduce( std::vector<long>   &sendrecv, const Operation& op) const = 0;
-    virtual int all_reduce( std::vector<float>  &sendrecv, const Operation& op) const = 0;
-    virtual int all_reduce( std::vector<double> &sendrecv, const Operation& op) const = 0;
-
-    ///
-
-    virtual int all_reduce( const std::pair<int,int>    &send, std::pair<int,int>    &recv, const Operation& op) const = 0;
-    virtual int all_reduce( const std::pair<long,int>   &send, std::pair<long,int>   &recv, const Operation& op) const = 0;
-    virtual int all_reduce( const std::pair<float,int>  &send, std::pair<float,int>  &recv, const Operation& op) const = 0;
-    virtual int all_reduce( const std::pair<double,int> &send, std::pair<double,int> &recv, const Operation& op) const = 0;
-
-    ///
-
-    virtual int all_reduce( const std::vector< std::pair<int,int> >    &send, std::vector< std::pair<int,int> >    &recv, const Operation& op) const = 0;
-    virtual int all_reduce( const std::vector< std::pair<long,int> >   &send, std::vector< std::pair<long,int> >   &recv, const Operation& op) const = 0;
-    virtual int all_reduce( const std::vector< std::pair<float,int> >  &send, std::vector< std::pair<float,int> >  &recv, const Operation& op) const = 0;
-    virtual int all_reduce( const std::vector< std::pair<double,int> > &send, std::vector< std::pair<double,int> > &recv, const Operation& op) const = 0;
+    virtual void allReduce( const std::vector< std::pair<int,int> >    &send, std::vector< std::pair<int,int> >    &recv, Operation::Code op) const = 0;
+    virtual void allReduce( const std::vector< std::pair<long,int> >   &send, std::vector< std::pair<long,int> >   &recv, Operation::Code op) const = 0;
+    virtual void allReduce( const std::vector< std::pair<float,int> >  &send, std::vector< std::pair<float,int> >  &recv, Operation::Code op) const = 0;
+    virtual void allReduce( const std::vector< std::pair<double,int> > &send, std::vector< std::pair<double,int> > &recv, Operation::Code op) const = 0;
 
     ///
 
@@ -223,48 +275,113 @@ public:  // methods
     virtual int all_to_all( const std::vector< std::vector<float> >&  sendvec, std::vector< std::vector<float> >&  recvvec ) const = 0;
     virtual int all_to_all( const std::vector< std::vector<double> >& sendvec, std::vector< std::vector<double> >& recvvec ) const = 0;
 
-    /// Gather methods from all, equal data sizes per rank, pointer to data (also covers scalar case)
-
-    virtual int all_gather( const int    send[], int sendcnt, std::vector<int>&    recv ) const = 0;
-    virtual int all_gather( const long   send[], int sendcnt, std::vector<long>&   recv ) const = 0;
-    virtual int all_gather( const float  send[], int sendcnt, std::vector<float>&  recv ) const = 0;
-    virtual int all_gather( const double send[], int sendcnt, std::vector<double>& recv ) const = 0;
-    virtual int all_gather( const size_t send[], int sendcnt, std::vector<size_t>& recv ) const = 0;
-
-    /// Gather methods from all, variable data sizes, std::vector of data
-
-    virtual int all_gather( const int    send[], int sendcnt, mpi::Buffer<int>&    recv ) const = 0;
-    virtual int all_gather( const long   send[], int sendcnt, mpi::Buffer<long>&   recv ) const = 0;
-    virtual int all_gather( const float  send[], int sendcnt, mpi::Buffer<float>&  recv ) const = 0;
-    virtual int all_gather( const double send[], int sendcnt, mpi::Buffer<double>& recv ) const = 0;
-
+    ///
+    /// Gather methods from all, equal data sizes per rank
     ///
 
-    virtual int all_gather( const std::vector<int>&    send, mpi::Buffer<int>&    recv ) const = 0;
-    virtual int all_gather( const std::vector<long>&   send, mpi::Buffer<long>&   recv ) const = 0;
-    virtual int all_gather( const std::vector<float>&  send, mpi::Buffer<float>&  recv ) const = 0;
-    virtual int all_gather( const std::vector<double>& send, mpi::Buffer<double>& recv ) const = 0;
+    template <typename T>
+    void allGather(const T* sendbuf, size_t sendcount, T* recvbuf, size_t recvcount) const {
+        ASSERT(recvcount >= size());
+        allGather(sendbuf, sendcount, recvbuf, recvcount, Data::Type<T>::code());
+    }
+
+    template <typename T, typename Iter>
+    void allGather(T sendval, Iter first, Iter last) const {
+        typename std::iterator_traits<Iter>::difference_type recvcount = std::distance(first, last);
+        ASSERT(recvcount >= size());
+        Data::Code ctype = Data::Type<T>::code();
+        Data::Code  type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
+        ASSERT(ctype == type);
+        allGather(&sendval, 1, &(*first), recvcount, type);
+    }
 
     ///
+    /// Gather methods from all, variable data sizes per rank
+    ///
 
-    virtual int all_gatherv(const std::vector<int>&    send, std::vector<int>&    recv, const std::vector<int>& displs) const = 0;
-    virtual int all_gatherv(const std::vector<long>&   send, std::vector<long>&   recv, const std::vector<int>& displs) const = 0;
-    virtual int all_gatherv(const std::vector<float>&  send, std::vector<float>&  recv, const std::vector<int>& displs) const = 0;
-    virtual int all_gatherv(const std::vector<double>& send, std::vector<double>& recv, const std::vector<int>& displs) const = 0;
+    template <typename CIter, typename Iter>
+    void allGatherv(CIter first, CIter last, Iter recvbuf, const int recvcounts[], const int displs[]) const {
 
-    /// Non-blocking receive, pointer to data (also covers scalar case)
-    virtual int receive(int    recv[], int count, int source, int tag, Request& req) const = 0;
-    virtual int receive(long   recv[], int count, int source, int tag, Request& req) const = 0;
-    virtual int receive(float  recv[], int count, int source, int tag, Request& req) const = 0;
-    virtual int receive(double recv[], int count, int source, int tag, Request& req) const = 0;
-    virtual int receive(size_t recv[], int count, int source, int tag, Request& req) const = 0;
+        typename std::iterator_traits<CIter>::difference_type sendcount = std::distance(first, last);
+        Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
+        Data::Code  type = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
+        ASSERT(ctype == type);
+        allGatherv(&(*first), sendcount, &(*recvbuf), recvcounts, displs, type);
+    }
 
-    /// Non-blocking send, pointer to data (also covers scalar case)
-    virtual int send(const int    send[], int count, int dest, int tag, Request& req) const = 0;
-    virtual int send(const long   send[], int count, int dest, int tag, Request& req) const = 0;
-    virtual int send(const float  send[], int count, int dest, int tag, Request& req) const = 0;
-    virtual int send(const double send[], int count, int dest, int tag, Request& req) const = 0;
-    virtual int send(const size_t send[], int count, int dest, int tag, Request& req) const = 0;
+    template <typename T, typename CIter>
+    void allGatherv(CIter first, CIter last, mpi::Buffer<T>& recv) const {
+
+        NOTIMP; /* take from Collectives.h -- needs to resize recv.buffer */
+
+        allGatherv(first, last, recv.buffer.data(), recv.counts.data(), recv.displs.data());
+    }
+
+    ///
+    /// All to All, variable data size
+    ///
+
+    template <typename T>
+    void allToAllv(const T* sendbuf, const int sendcounts[], const int sdispls[],
+                         T* recvbuf, const int recvcounts[], const int rdispls[]) const {
+        allToAllv(sendbuf, sendcounts, sdispls, recvbuf, recvcounts, rdispls, Data::Type<T>::code());
+    }
+
+    ///
+    ///  Non-blocking receive
+    ///
+
+    template <typename T>
+    Request iReceive(T* recv, size_t count, int source, int tag) const {
+        return iReceive(recv, count, Data::Type<T>::code(), source, tag);
+    }
+
+    template <typename T>
+    Request iReceive(T& recv, int source, int tag) const {
+        return iReceive(&recv, 1, Data::Type<T>::code(), source, tag);
+    }
+
+    ///
+    ///  Blocking receive
+    ///
+
+    template <typename T>
+    Status receive(T* recv, size_t count, int source, int tag) const {
+        return receive(recv, count, Data::Type<T>::code(), source, tag);
+    }
+
+    template <typename T>
+    Status receive(T& recv, int source, int tag) const {
+        return receive(&recv, 1, Data::Type<T>::code(), source, tag);
+    }
+
+    ///
+    /// Blocking send
+    ///
+
+    template <typename T>
+    Status send(T* sendbuf, size_t count, int dest, int tag) const {
+        return send(sendbuf, count, Data::Type<T>::code(), dest, tag);
+    }
+
+    template <typename T>
+    Status send(T sendbuf, int dest, int tag) const {
+        return send(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
+    }
+
+    ///
+    /// Non-blocking send
+    ///
+
+    template <typename T>
+    Request iSend(T* sendbuf, size_t count, int dest, int tag) const {
+        return iSend(sendbuf, count, Data::Type<T>::code(), dest, tag);
+    }
+
+    template <typename T>
+    Request iSend(T sendbuf, int dest, int tag) const {
+        return iSend(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
+    }
 
 private: // methods
 

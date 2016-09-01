@@ -68,6 +68,86 @@ void Parallel::finalize() {
     NOTIMP;
 }
 
+size_t Parallel::getCount(Status& status, Data::Code datatype) const
+{
+    NOTIMP;
+}
+
+void Parallel::broadcast(void* buffer, size_t count, Data::Code datatype, size_t root) const
+{
+    NOTIMP;
+}
+
+void Parallel::gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code datatype, size_t root) const
+{
+    NOTIMP;
+}
+
+void Parallel::scatter(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code datatype, size_t root) const
+{
+    NOTIMP;
+}
+
+void Parallel::gatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[], const int displs[], Data::Code datatype, size_t root) const
+{
+    NOTIMP;
+}
+
+void Parallel::scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf, size_t recvcount, Data::Code datatype, size_t root) const
+{
+    NOTIMP;
+}
+
+void Parallel::allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code datatype, Operation::Code op) const
+{
+    NOTIMP;
+}
+
+void Parallel::allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code datatype, Operation::Code op) const
+{
+    NOTIMP;
+}
+
+void Parallel::allGather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code datatype) const
+{
+    NOTIMP;
+}
+
+void Parallel::allGatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[], const int displs[], Data::Code datatype) const
+{
+    NOTIMP;
+}
+
+void Parallel::allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code datatype) const
+{
+    NOTIMP;
+}
+
+void Parallel::allToAllv(const void* sendbuf, const int sendcounts[], const int sdispls[], void* recvbuf, const int recvcounts[], const int rdispls[], Data::Code datatype) const
+{
+    NOTIMP;
+}
+
+Status Parallel::receive(void* recv, size_t count, Data::Code datatype, int source, int tag) const
+{
+    NOTIMP;
+}
+
+Status Parallel::send(const void* send, size_t count, Data::Code datatype, int dest, int tag) const
+{
+    NOTIMP;
+}
+
+Request Parallel::iReceive(void* recv, size_t count, Data::Code datatype, int source, int tag) const
+{
+    NOTIMP;
+}
+
+Request Parallel::iSend(const void* send, size_t count, Data::Code datatype, int dest, int tag) const
+{
+    NOTIMP;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace mpi

@@ -21,7 +21,7 @@ namespace mpi {
 template <typename T>
 class Collectives {
 
-    friend Comm;
+    friend class Comm;
 
 private: // methods
 

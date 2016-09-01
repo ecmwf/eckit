@@ -25,7 +25,7 @@ class Comm;
 
 class Data {
 
-    friend class Comm;
+public:
 
     enum Code {
         CHAR,
@@ -54,8 +54,6 @@ class Data {
         DOUBLE_INT,
         LONG_DOUBLE_INT,
     };
-
-public:
 
     template <class T>
     struct Type {

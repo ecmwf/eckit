@@ -55,10 +55,8 @@ private: // class methods
 
 protected: // methods
 
-    /// @brief Initialize MPI
     virtual void initialize() = 0;
 
-    /// @brief Finalze MPI
     virtual void finalize() = 0;
 
     virtual size_t getCount(Status& status, Data::Code datatype) const = 0;
@@ -428,7 +426,7 @@ protected: // methods
 
 class CommFactory {
 
-    friend Comm;
+    friend class eckit::mpi::Comm;
 
     std::string name_;
     virtual Comm* make() = 0;

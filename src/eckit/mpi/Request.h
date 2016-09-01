@@ -11,10 +11,7 @@
 #ifndef eckit_mpi_Request_h
 #define eckit_mpi_Request_h
 
-#include <vector>
-
-#include "eckit/memory/Owned.h"
-#include "eckit/memory/SharedPtr.h"
+#include <iosfwd>
 
 namespace eckit {
 namespace mpi {

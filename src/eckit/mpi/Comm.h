@@ -14,34 +14,52 @@
 #include <cstddef>
 #include <iterator>
 #include <vector>
+#include <string>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/memory/NonCopyable.h"
 
-#include "eckit/mpi/Environment.h"
+#include "eckit/mpi/Buffer.h"
 #include "eckit/mpi/DataType.h"
+#include "eckit/mpi/Operation.h"
+#include "eckit/mpi/Request.h"
+#include "eckit/mpi/Status.h"
 
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template <typename T> class Collectives;
+/// @returns the communicator registered with associated name, or default communicator when NULL is passed
+Comm& comm(const char* name = 0);
 
-struct Status {
-  int count;
-  int cancelled;
-  int source;
-  int tag;
-  int error;
-};
+bool isRunning();
+
+//----------------------------------------------------------------------------------------------------------------------
+
+template <typename T> class Collectives;
 
 class Comm : private eckit::NonCopyable {
 
-public:
+public: // class methods
+
+    static Comm& comm(const char* name = 0);
 
     static Comm& create(const char* name);
 
+    static bool areMPIVarsSet();
+
+private: // class methods
+
+    static void initDefaultComm();
+
 protected: // methods
+
+    /// @brief Initialize MPI
+    virtual void initialize() = 0;
+
+    /// @brief Finalze MPI
+    virtual void finalize() = 0;
 
     virtual size_t getCount(Status& status, Data::Code datatype) const = 0;
 
@@ -404,6 +422,33 @@ protected: // methods
 
     virtual ~Comm();
 
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class CommFactory {
+
+    friend Comm;
+
+    std::string name_;
+    virtual Comm* make() = 0;
+
+  protected:
+
+    CommFactory(const std::string &);
+    virtual ~CommFactory();
+
+    static void list(std::ostream &);
+    static Comm* build(const std::string&);
+};
+
+template< class T>
+class CommBuilder : public CommFactory {
+    virtual Comm* make() {
+        return new T();
+    }
+  public:
+    CommBuilder(const std::string &name) : CommFactory(name) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------

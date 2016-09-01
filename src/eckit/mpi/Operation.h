@@ -8,25 +8,32 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_Serial_h
-#define eckit_mpi_Serial_h
-
-#include "eckit/mpi/Comm.h"
+#ifndef eckit_mpi_Operation_h
+#define eckit_mpi_Operation_h
 
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Serial : public eckit::mpi::Comm {
+struct Operation {
 
-protected:  // methods
-
-    Serial();
-
-    virtual ~Serial();
-
+    enum Code {
+        SUM,
+        PROD,
+        MAX,
+        MIN,
+        MAXLOC,
+        MINLOC,
+    };
 };
+
+Operation::Code sum();
+Operation::Code prod();
+Operation::Code max();
+Operation::Code min();
+Operation::Code maxloc();
+Operation::Code minloc();
 
 //----------------------------------------------------------------------------------------------------------------------
 

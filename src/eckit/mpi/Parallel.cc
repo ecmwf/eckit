@@ -20,51 +20,37 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#define ECKIT_MPI_CHECK_RESULT( MPI_CALL )\
-do { \
-  int ierr = MPI_CALL; \
-  if (ierr != MPI_SUCCESS) { \
-    char errstr [MPI_MAX_ERROR_STRING]; \
-    int errsize = 0; \
-    MPI_Error_string(ierr,errstr,&errsize); \
-    std::string mpistr( errstr, errsize ); \
-    throw eckit::mpi::Error( std::string("MPI call: ") + \
-      std::string(#MPI_CALL) + \
-      std::string(" did not return MPI_SUCCESS:\n")+mpistr, Here() ); \
-  } \
-} while(0)
+class MPIError : public eckit::Exception {
+public:
+  MPIError(const std::string& msg, const eckit::CodeLocation& loc) : eckit::Exception(msg, loc)
+  {
+    std::ostringstream s;
+    s << "MPI Error: " << msg << " in " << loc;
+    reason(s.str());
+  }
+};
 
-static inline void MpiCall(int code, const char *msg, const eckit::CodeLocation& loc )
+//----------------------------------------------------------------------------------------------------------------------
+
+static inline void MPICall(int code, const char *msg, const eckit::CodeLocation& loc)
 {
     if (code != MPI_SUCCESS) {
-        std::ostringstream oss;
 
         char error[10240];
         int len = sizeof(error) - 1;
         MPI_Error_string(code, error, &len);
         error[len] = 0;
 
-        oss << "MPI Call failed: " << error << " " << msg << " " << loc;
-        throw eckit::SeriousBug(msg, loc);
+        std::ostringstream oss;
+        oss << "MPI Call failed with error '" << error << "' -- " << msg;
+        throw MPIError(oss.str(), loc);
     }
 }
 
-#define MPI_CALL(a)    MpiCall(a,#a,Here())
+#define MPI_CALL(a) MPICall(a,#a,Here())
 
 namespace eckit {
 namespace mpi {
-
-//----------------------------------------------------------------------------------------------------------------------
-
-class Error : public eckit::Exception {
-public:
-  Error(const std::string& msg, const eckit::CodeLocation& loc)
-  {
-    std::ostringstream s;
-    s << "MPI Error: " << msg << " " << " in " << loc;
-    reason(s.str());
-  }
-};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -72,12 +58,6 @@ Parallel::Parallel() {
 }
 
 Parallel::~Parallel() {
-}
-
-bool Parallel::initialized() {
-    int initialized;
-    ECKIT_MPI_CHECK_RESULT( MPI_Initialized( &initialized ) );
-    return initialized;
 }
 
 void Parallel::initialize() {

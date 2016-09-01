@@ -8,24 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_Serial_h
-#define eckit_mpi_Serial_h
-
-#include "eckit/mpi/Comm.h"
+#ifndef eckit_mpi_Status_h
+#define eckit_mpi_Status_h
 
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Serial : public eckit::mpi::Comm {
-
-protected:  // methods
-
-    Serial();
-
-    virtual ~Serial();
-
+struct Status {
+  int count;
+  int cancelled;
+  int source;
+  int tag;
+  int error;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

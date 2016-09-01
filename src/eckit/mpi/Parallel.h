@@ -11,27 +11,22 @@
 #ifndef eckit_mpi_Parallel_h
 #define eckit_mpi_Parallel_h
 
-#include "eckit/mpi/Environment.h"
+#include "eckit/mpi/Comm.h"
 
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Parallel : public eckit::mpi::Environment {
+class Parallel : public eckit::mpi::Comm {
 
-public:  // methods
+protected:  // methods
 
     /// @brief Initialize MPI
     virtual void initialize();
 
     /// @brief Finalze MPI
     virtual void finalize();
-
-protected:
-
-    /// @brief Initialize MPI
-    virtual bool initialized();
 
     Parallel();
 

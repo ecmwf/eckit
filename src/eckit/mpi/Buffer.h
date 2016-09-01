@@ -8,42 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_Environment_h
-#define eckit_mpi_Environment_h
+#ifndef eckit_mpi_Buffer_h
+#define eckit_mpi_Buffer_h
 
-#include <string>
 #include <vector>
-
-#include "eckit/mpi/Request.h"
 
 namespace eckit {
 namespace mpi {
-
-//----------------------------------------------------------------------------------------------------------------------
-
-class Comm;
-
-/// @returns the communicator registered with associated name, or default communicator when NULL is passed
-Comm& comm(const char* name = 0);
-
-struct Operation {
-
-    enum Code {
-        SUM,
-        PROD,
-        MAX,
-        MIN,
-        MAXLOC,
-        MINLOC,
-    };
-};
-
-Operation::Code sum();
-Operation::Code prod();
-Operation::Code max();
-Operation::Code min();
-Operation::Code maxloc();
-Operation::Code minloc();
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -69,34 +40,6 @@ struct Buffer
 
     iterator begin() { return buffer.begin(); }
     iterator end()   { return buffer.end();   }
-
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-class Environment {
-
-public:  // methods
-
-  static Environment& instance();
-
-  /// @brief Initialize MPI
-  virtual void initialize() = 0;
-
-  /// @brief Finalze MPI
-  virtual void finalize() = 0;
-
-  /// @brief is MPI initialized?
-  virtual bool initialized() = 0;
-
-  /// @returns the communicator registered with associated name, or default communicator when NULL is passed
-  virtual Comm& comm(const char* name = 0) const = 0;
-
-protected:
-
-  Environment();
-
-  virtual ~Environment();
 
 };
 

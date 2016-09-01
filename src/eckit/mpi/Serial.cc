@@ -23,19 +23,6 @@ Serial::Serial() {
 Serial::~Serial() {
 }
 
-void Serial::initialize() {
-    return;
-}
-
-void Serial::finalize() {
-    return;
-}
-
-bool Serial::initialized() {
-    NOTIMP;
-    return true;
-}
-
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace mpi

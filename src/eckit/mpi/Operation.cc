@@ -8,37 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/mpi/Environment.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/mpi/Operation.h"
 
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-Comm& comm(const char* name)
-{
-    return Environment::instance().comm(name);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-Comm& Environment::comm(const char* name) const {
-    NOTIMP;
-}
-
-Environment& Environment::instance()
-{
-    NOTIMP;
-}
-
-Environment::Environment()
-{
-}
-
-Environment::~Environment()
-{
-}
 
 Operation::Code sum()   { return Operation::SUM; }
 

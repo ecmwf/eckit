@@ -10,6 +10,8 @@
 
 #include "eckit/mpi/Request.h"
 
+#include "eckit/exception/Exceptions.h"
+
 namespace eckit {
 namespace mpi {
 

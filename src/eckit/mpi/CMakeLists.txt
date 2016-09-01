@@ -1,4 +1,5 @@
 list( APPEND eckit_mpi_srcs
+Collectives.h
 Comm.cc
 Comm.h
 DataType.cc

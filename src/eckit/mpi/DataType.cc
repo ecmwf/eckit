@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <utility>
+
 #include "eckit/mpi/DataType.h"
 
 namespace eckit {
@@ -16,22 +18,39 @@ namespace mpi {
 //----------------------------------------------------------------------------------------------------------------------
 
 template<> const char* Data::Type<void>::name() { return "byte"; }
-template<> Data::Code Data::Type<void>::code() { return Data::BYTE; }
+template<> Data::Code  Data::Type<void>::code() { return Data::BYTE; }
+
+template<> const char* Data::Type<char>::name() { return "char"; }
+template<> Data::Code  Data::Type<char>::code() { return Data::CHAR; }
 
 template<> const char* Data::Type<int>::name() { return "int"; }
-template<> Data::Code Data::Type<int>::code() { return Data::INT; }
+template<> Data::Code  Data::Type<int>::code() { return Data::INT; }
 
 template<> const char* Data::Type<long>::name() { return "long"; }
-template<> Data::Code Data::Type<long>::code() { return Data::LONG; }
+template<> Data::Code  Data::Type<long>::code() { return Data::LONG; }
 
 template<> const char* Data::Type<float>::name() { return "float"; }
-template<> Data::Code Data::Type<float>::code() { return Data::FLOAT; }
+template<> Data::Code  Data::Type<float>::code() { return Data::FLOAT; }
 
 template<> const char* Data::Type<double>::name() { return "double"; }
-template<> Data::Code Data::Type<double>::code() { return Data::DOUBLE; }
+template<> Data::Code  Data::Type<double>::code() { return Data::DOUBLE; }
 
 template<> const char* Data::Type<size_t>::name() { return "size_t"; }
-template<> Data::Code Data::Type<size_t>::code() { return Data::UNSIGNED_LONG; }
+template<> Data::Code  Data::Type<size_t>::code() { return Data::UNSIGNED_LONG; }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+template<> const char* Data::Type< std::pair<int, int> >::name() { return "<int,int>"; }
+template<> Data::Code  Data::Type< std::pair<int, int> >::code() { return Data::INT_INT; }
+
+template<> const char* Data::Type< std::pair<long, int> >::name() { return "<long,int>"; }
+template<> Data::Code  Data::Type< std::pair<long, int> >::code() { return Data::LONG_INT; }
+
+template<> const char* Data::Type< std::pair<float, int> >::name() { return "<float,int>"; }
+template<> Data::Code  Data::Type< std::pair<float, int> >::code() { return Data::FLOAT_INT; }
+
+template<> const char* Data::Type< std::pair<double, int> >::name() { return "<double,int>"; }
+template<> Data::Code  Data::Type< std::pair<double, int> >::code() { return Data::DOUBLE_INT; }
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -11,7 +11,7 @@
 #define BOOST_TEST_MODULE eckit_test_mpi
 #include "ecbuild/boost_test_framework.h"
 
-// --------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // Teach boost how to write a std::vector<T>
 namespace boost {
@@ -19,35 +19,35 @@ namespace boost {
 template <typename T>
 inline boost::wrap_stringstream& operator<<(boost::wrap_stringstream& wrapped, std::vector<T> const& v)
 {
-  wrapped << '[';
-  for (int j=0; j<v.size(); ++j) {
-      wrapped << (j!=0 ? "," : "") << v[j];
-  }
-  return wrapped << ']';
+    wrapped << '[';
+    for (int j=0; j<v.size(); ++j) {
+        wrapped << (j!=0 ? "," : "") << v[j];
+    }
+    return wrapped << ']';
 }
 
 }
 
-// --------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-#include "eckit/mpi/Environment.h"
 #include "eckit/mpi/Comm.h"
 
 using namespace eckit;
-using namespace eckit::mpi;
 
-struct MPIFixture {
-    MPIFixture()  { mpi::Environment::instance().initialize(); }
-    ~MPIFixture() { mpi::Environment::instance().finalize(); }
-};
-
-BOOST_GLOBAL_FIXTURE( MPIFixture );
+// Environment is initialised on first call from comm()
+//struct MPIFixture {
+//    MPIFixture()  { mpi::Environment::instance().initialize(); }
+//    ~MPIFixture() { mpi::Environment::instance().finalize(); }
+//};
+//
+//BOOST_GLOBAL_FIXTURE( MPIFixture );
 
 //-------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_comm )
+BOOST_AUTO_TEST_CASE( test_rank_size )
 {
-  BOOST_CHECK_EQUAL( mpi::Environment::instance().initialized() , true );
+    BOOST_CHECK_NO_THROW( mpi::comm().size() );
+    BOOST_CHECK_NO_THROW( mpi::comm().rank() );
 }
 
 //-------------------------------------------------------------------------
@@ -194,17 +194,19 @@ BOOST_AUTO_TEST_CASE( test_all_to_all )
   std::vector< std::vector<int> > send(mpi::comm().size(), std::vector<int>(1, mpi::comm().rank()));
   std::vector< std::vector<int> > recv(mpi::comm().size());
 
-  BOOST_CHECK_NO_THROW( mpi::comm().all_to_all( send, recv ) );
+  BOOST_CHECK_NO_THROW( mpi::comm().allToAll(send, recv) );
 
   // check results
   std::vector< std::vector<int> > expected(mpi::comm().size());
-  for(size_t j=0; j<mpi::comm().size(); ++j)
-    expected[j]=std::vector<int>(1,j);
+  for(size_t j=0; j<mpi::comm().size(); ++j) {
+    expected[j] = std::vector<int>(1,int(j));
+  }
 
   BOOST_CHECK_EQUAL(recv.size(), expected.size());
-  for (size_t i = 0; i < mpi::comm().size(); ++i)
+  for (size_t i = 0; i < mpi::comm().size(); ++i) {
       BOOST_CHECK_EQUAL_COLLECTIONS(recv[i].begin(), recv[i].end(),
                                     expected[i].begin(), expected[i].end());
+  }
 }
 
 //-------------------------------------------------------------------------

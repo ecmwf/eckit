@@ -46,7 +46,13 @@ class Data {
         DOUBLE_COMPLEX,
         LONG_DOUBLE_COMPLEX,
         BYTE,
-        PACKED
+        PACKED,
+        SHORT_INT,
+        INT_INT,
+        LONG_INT,
+        FLOAT_INT,
+        DOUBLE_INT,
+        LONG_DOUBLE_INT,
     };
 
 public:

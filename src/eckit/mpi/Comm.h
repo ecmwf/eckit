@@ -25,6 +25,8 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+template <typename T> class Collectives;
+
 struct Status {
   int count;
   int cancelled;
@@ -51,8 +53,6 @@ protected: // methods
 
     virtual void scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf, size_t recvcount, Data::Code datatype, size_t root) const = 0;
 
-    virtual void allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code datatype) const = 0;
-
     virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code datatype, Operation::Code op) const = 0;
 
     virtual void allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code datatype, Operation::Code op) const = 0;
@@ -61,6 +61,8 @@ protected: // methods
 
     virtual void allGatherv(const void *sendbuf, size_t sendcount,
                             void *recvbuf, const int recvcounts[], const int displs[], Data::Code datatype) const = 0;
+
+    virtual void allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code datatype) const = 0;
 
     virtual void allToAllv(const void *sendbuf, const int sendcounts[], const int sdispls[],
                            void *recvbuf, const int recvcounts[], const int rdispls[],
@@ -75,6 +77,9 @@ protected: // methods
     virtual Request iSend(const void* send, size_t count, Data::Code datatype, int dest, int tag) const = 0;
 
 public:  // methods
+
+    /// @brief Returns name of processor according to MPI
+    virtual std::string processorName() const = 0;
 
     /// @brief MPI rank of default communicator
     /// Equivalent to comm().rank()
@@ -195,7 +200,6 @@ public:  // methods
     /// Scatter methods from one root, variable data sizes per rank, pointer to data (also covers scalar case)
     ///
 
-
     template<class CIter, class Iter>
     void scatterv(CIter first, const int sendcounts[], const int displs[], Iter recv, Iter recvend, size_t root) const {
         typename std::iterator_traits<Iter>::difference_type recvcounts = std::distance(recv, recvend);
@@ -211,15 +215,6 @@ public:  // methods
     }
 
     ///
-    /// All to all methods, fixed data size
-    ///
-
-    template <typename T>
-    void allToAll(const T* sendbuf, size_t sendcount, T* recvbuf, size_t recvcount) const {
-        allToAll(sendbuf, sendcount, recvbuf, recvcount, Data::Type<T>::code());
-    }
-
-    ///
     /// All reduce operations, separate buffers
     ///
 
@@ -231,6 +226,12 @@ public:  // methods
     template <typename T>
     void allReduce(T send, T& recv, Operation::Code op) const {
         allReduce(&send, &recv, 1, Data::Type<T>::code(), op);
+    }
+
+    template <typename T>
+    void allReduce(const std::vector<T>& send, std::vector<T>& recv, Operation::Code op) const {
+        ASSERT(send.size() == recv.size());
+        allReduce(send.data(), recv.data(), send.size(), Data::Type<T>::code(), op);
     }
 
     ///
@@ -253,27 +254,6 @@ public:  // methods
         Data::Code  type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
         allReduceInPlace(&(*first), count, type, op);
     }
-
-    ///
-    ///
-    ///
-
-    template <typename T>
-    void allReduce(const std::pair<T,int>& send, std::pair<T,int>& recv, Operation::Code op) const;
-
-    ///
-    ///
-    ///
-
-    template <typename T>
-    void allReduce(const std::vector< std::pair<T,int> >& send, std::vector< std::pair<T,int> >& recv, Operation::Code op) const;
-
-    ///
-    ///
-    ///
-
-    template <typename T>
-    void allToAll(const std::vector< std::vector<T> >& sendvec, std::vector< std::vector<T> >& recvvec) const;
 
     ///
     /// Gather methods from all, equal data sizes per rank
@@ -315,6 +295,15 @@ public:  // methods
         NOTIMP; /* take from Collectives.h -- needs to resize recv.buffer */
 
         allGatherv(first, last, recv.buffer.data(), recv.counts.data(), recv.displs.data());
+    }
+
+    ///
+    /// All to all methods, fixed data size
+    ///
+
+    template <typename T>
+    void allToAll(const T* sendbuf, size_t sendcount, T* recvbuf, size_t recvcount) const {
+        allToAll(sendbuf, sendcount, recvbuf, recvcount, Data::Type<T>::code());
     }
 
     ///
@@ -383,6 +372,14 @@ public:  // methods
         return iSend(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
     }
 
+    ///
+    ///
+    ///
+    template <typename T>
+    void allToAll(const std::vector< std::vector<T> >& sendvec, std::vector< std::vector<T> >& recvvec) const {
+        eckit::mpi::Collectives<T>::allToAll(*this, sendvec, recvvec);
+    }
+
 private: // methods
 
     virtual void print(std::ostream&) const = 0;
@@ -401,73 +398,13 @@ protected: // methods
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<typename T>
-void Comm::allToAll(const std::vector< std::vector<T> >& sendvec, std::vector< std::vector<T> >& recvvec) const
-{
-  int cnt;
-  int mpi_size = size();
-  ASSERT( sendvec.size() == size_t(mpi_size) );
-  ASSERT( recvvec.size() == size_t(mpi_size) );
-  // Get send-information
-  std::vector<int> sendcounts(mpi_size);
-  std::vector<int> senddispls(mpi_size);
-  int sendcnt;
-  senddispls[0] = 0;
-  sendcounts[0] = sendvec[0].size();
-  sendcnt = sendcounts[0];
-  for( int jproc=1; jproc<mpi_size; ++jproc )
-  {
-    senddispls[jproc] = senddispls[jproc-1] + sendcounts[jproc-1];
-    sendcounts[jproc] = sendvec[jproc].size();
-    sendcnt += sendcounts[jproc];
-  }
-
-
-  // Get recv-information
-  std::vector<int> recvcounts(mpi_size);
-  std::vector<int> recvdispls(mpi_size);
-  int recvcnt;
-
-  eckit::mpi::comm().allToAll(sendcounts.data(), 1, recvcounts.data(), 1, Data::Type<int>::code());
-
-  recvdispls[0] = 0;
-  recvcnt = recvcounts[0];
-  for( int jproc=1; jproc<mpi_size; ++jproc )
-  {
-    recvdispls[jproc] = recvdispls[jproc-1] + recvcounts[jproc-1];
-    recvcnt += recvcounts[jproc];
-  }
-
-  // Communicate
-  std::vector<T> sendbuf(sendcnt);
-  std::vector<T> recvbuf(recvcnt);
-  cnt = 0;
-  for( int jproc=0; jproc<mpi_size; ++jproc )
-  {
-    for( int i=0; i<sendcounts[jproc]; ++i )
-    {
-      sendbuf[cnt++] = sendvec[jproc][i];
-    }
-  }
-
-  eckit::mpi::comm().allToAllv(
-                      sendbuf.data(), sendcounts.data(), senddispls.data(),
-                      recvbuf.data(), recvcounts.data(), recvdispls.data(), Data::Type<T>::code());
-
-  cnt=0;
-  for( int jproc=0; jproc<mpi_size; ++jproc )
-  {
-    recvvec[jproc].resize(recvcounts[jproc]);
-    for( int i=0; i<recvcounts[jproc]; ++i )
-    {
-      recvvec[jproc][i] = recvbuf[cnt++];
-    }
-  }
-}
+}  // namespace mpi
+}  // namespace eckit
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+#include "eckit/mpi/Collectives.h"
+
+//----------------------------------------------------------------------------------------------------------------------
 
 #endif

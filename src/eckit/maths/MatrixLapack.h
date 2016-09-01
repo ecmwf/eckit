@@ -117,6 +117,8 @@ public:
 		memcpy( data_, other.data(), sizeof(Scalar)*nr_*nc_ );
 	}
 
+  Matrix& noalias() { return *this; }
+
 	void resize(Index nr, Index nc)
 	{
 		if( is_proxy_ )

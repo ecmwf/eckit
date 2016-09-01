@@ -53,13 +53,13 @@ void WrapperTarget::write(const char* start, const char* end) {
         start++;
     }
 
-    if (begin != end) {
-        if (prefix_) {
-            writePrefix();
-            prefix_ = false;
-        }
-        target_->write(begin, end);
-    }
+    // if (begin != end) {
+    //     if (prefix_) {
+    //         writePrefix();
+    //         prefix_ = false;
+    //     }
+    //     target_->write(begin, end);
+    // }
 
 }
 

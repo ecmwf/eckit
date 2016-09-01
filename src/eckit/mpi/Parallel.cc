@@ -34,6 +34,23 @@ do { \
   } \
 } while(0)
 
+static inline void MpiCall(int code, const char *msg, const eckit::CodeLocation& loc )
+{
+    if (code != MPI_SUCCESS) {
+        std::ostringstream oss;
+
+        char error[10240];
+        int len = sizeof(error) - 1;
+        MPI_Error_string(code, error, &len);
+        error[len] = 0;
+
+        oss << "MPI Call failed: " << error << " " << msg << " " << loc;
+        throw eckit::SeriousBug(msg, loc);
+    }
+}
+
+#define MPI_CALL(a)    MpiCall(a,#a,Here())
+
 namespace eckit {
 namespace mpi {
 

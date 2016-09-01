@@ -255,25 +255,25 @@ public:  // methods
     }
 
     ///
-
-    virtual void allReduce( const std::pair<int,int>    &send, std::pair<int,int>    &recv, Operation::Code op) const = 0;
-    virtual void allReduce( const std::pair<long,int>   &send, std::pair<long,int>   &recv, Operation::Code op) const = 0;
-    virtual void allReduce( const std::pair<float,int>  &send, std::pair<float,int>  &recv, Operation::Code op) const = 0;
-    virtual void allReduce( const std::pair<double,int> &send, std::pair<double,int> &recv, Operation::Code op) const = 0;
-
+    ///
     ///
 
-    virtual void allReduce( const std::vector< std::pair<int,int> >    &send, std::vector< std::pair<int,int> >    &recv, Operation::Code op) const = 0;
-    virtual void allReduce( const std::vector< std::pair<long,int> >   &send, std::vector< std::pair<long,int> >   &recv, Operation::Code op) const = 0;
-    virtual void allReduce( const std::vector< std::pair<float,int> >  &send, std::vector< std::pair<float,int> >  &recv, Operation::Code op) const = 0;
-    virtual void allReduce( const std::vector< std::pair<double,int> > &send, std::vector< std::pair<double,int> > &recv, Operation::Code op) const = 0;
+    template <typename T>
+    void allReduce(const std::pair<T,int>& send, std::pair<T,int>& recv, Operation::Code op) const;
 
     ///
+    ///
+    ///
 
-    virtual int all_to_all( const std::vector< std::vector<int> >&    sendvec, std::vector< std::vector<int> >&    recvvec ) const = 0;
-    virtual int all_to_all( const std::vector< std::vector<long> >&   sendvec, std::vector< std::vector<long> >&   recvvec ) const = 0;
-    virtual int all_to_all( const std::vector< std::vector<float> >&  sendvec, std::vector< std::vector<float> >&  recvvec ) const = 0;
-    virtual int all_to_all( const std::vector< std::vector<double> >& sendvec, std::vector< std::vector<double> >& recvvec ) const = 0;
+    template <typename T>
+    void allReduce(const std::vector< std::pair<T,int> >& send, std::vector< std::pair<T,int> >& recv, Operation::Code op) const;
+
+    ///
+    ///
+    ///
+
+    template <typename T>
+    void allToAll(const std::vector< std::vector<T> >& sendvec, std::vector< std::vector<T> >& recvvec) const;
 
     ///
     /// Gather methods from all, equal data sizes per rank
@@ -398,6 +398,72 @@ protected: // methods
     virtual ~Comm();
 
 };
+
+//----------------------------------------------------------------------------------------------------------------------
+
+template<typename T>
+void Comm::allToAll(const std::vector< std::vector<T> >& sendvec, std::vector< std::vector<T> >& recvvec) const
+{
+  int cnt;
+  int mpi_size = size();
+  ASSERT( sendvec.size() == size_t(mpi_size) );
+  ASSERT( recvvec.size() == size_t(mpi_size) );
+  // Get send-information
+  std::vector<int> sendcounts(mpi_size);
+  std::vector<int> senddispls(mpi_size);
+  int sendcnt;
+  senddispls[0] = 0;
+  sendcounts[0] = sendvec[0].size();
+  sendcnt = sendcounts[0];
+  for( int jproc=1; jproc<mpi_size; ++jproc )
+  {
+    senddispls[jproc] = senddispls[jproc-1] + sendcounts[jproc-1];
+    sendcounts[jproc] = sendvec[jproc].size();
+    sendcnt += sendcounts[jproc];
+  }
+
+
+  // Get recv-information
+  std::vector<int> recvcounts(mpi_size);
+  std::vector<int> recvdispls(mpi_size);
+  int recvcnt;
+
+  eckit::mpi::comm().allToAll(sendcounts.data(), 1, recvcounts.data(), 1, Data::Type<int>::code());
+
+  recvdispls[0] = 0;
+  recvcnt = recvcounts[0];
+  for( int jproc=1; jproc<mpi_size; ++jproc )
+  {
+    recvdispls[jproc] = recvdispls[jproc-1] + recvcounts[jproc-1];
+    recvcnt += recvcounts[jproc];
+  }
+
+  // Communicate
+  std::vector<T> sendbuf(sendcnt);
+  std::vector<T> recvbuf(recvcnt);
+  cnt = 0;
+  for( int jproc=0; jproc<mpi_size; ++jproc )
+  {
+    for( int i=0; i<sendcounts[jproc]; ++i )
+    {
+      sendbuf[cnt++] = sendvec[jproc][i];
+    }
+  }
+
+  eckit::mpi::comm().allToAllv(
+                      sendbuf.data(), sendcounts.data(), senddispls.data(),
+                      recvbuf.data(), recvcounts.data(), recvdispls.data(), Data::Type<T>::code());
+
+  cnt=0;
+  for( int jproc=0; jproc<mpi_size; ++jproc )
+  {
+    recvvec[jproc].resize(recvcounts[jproc]);
+    for( int i=0; i<recvcounts[jproc]; ++i )
+    {
+      recvvec[jproc][i] = recvbuf[cnt++];
+    }
+  }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

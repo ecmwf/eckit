@@ -21,7 +21,7 @@ WrapperTarget::WrapperTarget(LogTarget* target):
     target_(target),
     prefix_(true) {
 
-    if(!target_) {
+    if (!target_) {
         target_ = new OStreamTarget(std::cout);
     }
 
@@ -51,6 +51,14 @@ void WrapperTarget::write(const char* start, const char* end) {
             }
         }
         start++;
+    }
+
+    if (begin != end) {
+        if (prefix_) {
+            writePrefix();
+            prefix_ = false;
+        }
+        target_->write(begin, end);
     }
 
 }

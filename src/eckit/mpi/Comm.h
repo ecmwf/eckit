@@ -43,6 +43,8 @@ public:
 
 protected: // methods
 
+    virtual size_t getCount(Status& status, Data::Code datatype) const = 0;
+
     virtual void broadcast(void* buffer, size_t count, Data::Code datatype, size_t root) const = 0;
 
     virtual void gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code datatype, size_t root) const = 0;
@@ -102,6 +104,14 @@ public:  // methods
 
     /// @brief Probe for incomming messages
     virtual Status probe(int source, int tag) const = 0;
+
+    virtual int anySource() const = 0;
+    virtual int anyTag() const = 0;
+
+    template<typename T>
+    size_t getCount(Status& status) const {
+        return getCount(status, Data::Type<T>::code());
+    }
 
     ///
     /// Broadcast, pointer to data (also covers scalars)

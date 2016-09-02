@@ -26,22 +26,23 @@ using namespace eckit;
 
 //-----------------------------------------------------------------------------
 
-const size_t BUF_SIZE = 50*1024;
+const size_t BUF_SIZE = 1024;
 
 const char* files[] = {"foo.data", "bar.data", "baz.data", "marco.data", "polo.data"};
 
 class FilePoolUser : public ThreadPoolTask {
 public:
-    FilePoolUser(FilePool& pool) : pool_(pool) {}
+    FilePoolUser(FilePool& pool, int id) : pool_(pool), id_(id) {}
 private:
     virtual void execute() {
-        Buffer buffer(BUF_SIZE);
+        std::vector<char> buffer(BUF_SIZE, id_);
         DataHandle* foo = pool_.checkout("foo.data");
-        foo->write(buffer, buffer.size());
+        foo->write(&buffer[0], buffer.size());
         pool_.checkin(foo);
     }
 
     FilePool& pool_;
+    int id_;
 };
 
 //-----------------------------------------------------------------------------
@@ -60,17 +61,34 @@ BOOST_GLOBAL_FIXTURE( F );
 BOOST_AUTO_TEST_SUITE( test_eckit_io_filepool )
 
 BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_threads ) {
-    const size_t nThreads = Resource<size_t>("$ECKIT_TEST_THREADS", 8);
+    const size_t nThreads = Resource<size_t>("$ECKIT_TEST_THREADS", 16);
 
     ThreadPool threads("filepool", nThreads);
     FilePool pool(1);
     for (size_t i = 0; i < nThreads; ++i) {
-        threads.push(new FilePoolUser(pool));
+        threads.push(new FilePoolUser(pool, i + 1));
     }
     threads.waitForThreads();
 
     DataHandle* foo = pool.checkout("foo.data");
-    BOOST_CHECK_EQUAL( foo->estimate(), Length(nThreads * BUF_SIZE) );
+    BOOST_CHECK_GE( foo->openForRead(), Length(nThreads * BUF_SIZE) );
+
+    // Check we have nThreads blocks of BUF_SIZE with Bytes 1 to nThreads
+    std::vector<bool> found(nThreads);
+    for (size_t i = 0; i < nThreads; ++i) {
+        char buffer[BUF_SIZE];
+        foo->read(buffer, BUF_SIZE);
+        const char c = buffer[0];
+        BOOST_CHECK_GT( c, 0 );
+        BOOST_CHECK( !found[c-1] );
+        std::vector<char> expect(BUF_SIZE, c);
+        BOOST_CHECK_EQUAL_COLLECTIONS( buffer, buffer + BUF_SIZE, expect.begin(), expect.end() );
+        found[c-1] = true;
+    }
+    for (size_t i = 0; i < nThreads; ++i) {
+        BOOST_CHECK( found[i] );
+    }
+
     pool.checkin(foo);
     BOOST_CHECK_EQUAL( pool.usage(), 0 );
     BOOST_CHECK_EQUAL( pool.size(),  1 );

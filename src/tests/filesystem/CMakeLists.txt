@@ -1,6 +1,6 @@
 # aio system calls are know to fail on the Cray
 # see https://sourceware.org/bugzilla/show_bug.cgi?id=11787
-ecbuild_add_test( TARGET      eckit_test_filesystem
+ecbuild_add_test( TARGET      eckit_test_aiohandle
                   CONDITION   NOT DEFINED ENV{CRAYOS_VERSION}
                   SOURCES     test_aiohandle.cc
                   LIBS        eckit )

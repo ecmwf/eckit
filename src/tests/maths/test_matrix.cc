@@ -37,11 +37,10 @@ BOOST_AUTO_TEST_CASE( test_determinant )
   m(3,0) =  1.;  m(3,1) =  5.; m(3,2) =  5.; m(3,3) =  3.; m(3,4) =  2.;
   m(4,0) =  1.;  m(4,1) =  3.; m(4,2) =  6.; m(4,3) =  8.; m(4,4) = 10.;
 
-  BOOST_CHECK_EQUAL( m.determinant(), 1124 );
+  BOOST_CHECK_CLOSE( m.determinant(), 1124, 1.e-10 );
 }
 
 //-----------------------------------------------------------------------------
-
 BOOST_AUTO_TEST_CASE( test_inverse )
 {
   typedef eckit::maths::Matrix<double> Matrix;
@@ -64,7 +63,7 @@ BOOST_AUTO_TEST_CASE( test_inverse )
 
   // Compute inverse
   Matrix mi(5,5);
-  mi = m.inverse();
+  mi.noalias() = m.inverse();
 
   // Compute identity matrix
   Matrix I(5,5);

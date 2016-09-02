@@ -4,10 +4,9 @@ ecbuild_add_test( TARGET      eckit_test_eigen
                   CONDITION   HAVE_EIGEN
                   LIBS        eckit_maths eckit
 )
-ecbuild_add_test( TARGET      eckit_test_matrix_lapack
+ecbuild_add_test( TARGET      eckit_test_matrix
                   BOOST
                   SOURCES     test_matrix.cc
-                  CONDITION   HAVE_LAPACK AND NOT HAVE_EIGEN
                   LIBS        eckit_maths eckit
 )
 

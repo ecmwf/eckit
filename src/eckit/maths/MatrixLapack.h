@@ -37,6 +37,7 @@
 #ifndef eckit_maths_MatrixLapack_h
 #define eckit_maths_MatrixLapack_h
 
+#include <cmath>
 #include "eckit/exception/Exceptions.h"
 #include "eckit/maths/Lapack.h"
 
@@ -52,7 +53,13 @@ namespace detail
 {
 	namespace ColMajor_4x4
 	{
-		template< typename Scalar > inline void invert(Scalar m[16], Scalar inv[16]);
+		template<typename T> struct remove_const          { typedef T type; };
+		template<typename T> struct remove_const<T const> { typedef T type; };
+
+		template< typename Scalar > inline void invert(
+			Scalar m[16],
+			typename remove_const<Scalar>::type inv[16]
+		);
 		template< typename Scalar > inline Scalar det(Scalar m[16]);
 	}
 }
@@ -109,6 +116,8 @@ public:
 		resize(other.nr_,other.nc_);
 		memcpy( data_, other.data(), sizeof(Scalar)*nr_*nc_ );
 	}
+
+  Matrix& noalias() { return *this; }
 
 	void resize(Index nr, Index nc)
 	{
@@ -208,7 +217,7 @@ public:
 		return c;
 	}
 
-	Matrix inverse()
+	Matrix inverse() const
 	{
 		Matrix inv(nr_,nc_);
 		switch( nr_ ) {
@@ -274,7 +283,82 @@ public:
 				throw eckit::Exception(stream.str(), Here() );
 			}
 #else
-			throw eckit::Exception("Invert for specified matrix not possible (Compile with LAPACK or Eigen)", Here() );
+			// This algorithm inverts a matrix based on the Gauss Jordan method.
+			int n = nr_;
+			Scalar det, pivot, factor;
+			Matrix work(n,n);
+			det = 1;
+
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					inv(i,j) = 0;
+					work(i,j) = at(i,j);
+				}
+				inv(i,i) = 1.;
+			}
+			// The current pivot row is jpass.
+			// For each pass, first find the maximum element in the pivot column.
+			for (int jpass = 0; jpass < n; jpass++)
+			{
+				int imx = jpass;
+				for (int jrow = jpass; jrow < n; jrow++)
+				{
+					if (std::abs(work(jrow,jpass)) > std::abs(work(imx,jpass)))
+							imx = jrow;
+				}
+				// Interchange the elements of row jpass and row imx in both A and AInverse.
+				if (imx != jpass)
+				{
+					for (int jcol = 0; jcol < n; jcol++)
+					{
+						Scalar temp = inv(jpass,jcol);
+						inv(jpass,jcol) = inv(imx,jcol);
+						inv(imx,jcol) = temp;
+
+						if (jcol >= jpass)
+						{
+							temp = work(jpass,jcol);
+							work(jpass,jcol) = work(imx,jcol);
+							work(imx,jcol) = temp;
+						}
+					}
+				}
+
+				// The current pivot is now A[jpass][jpass].
+				// The determinant is the product of the pivot elements.
+				pivot = work(jpass,jpass);
+				det *= pivot;
+				if (det == 0)
+				{
+					throw eckit::SeriousBug("Cannot invert zero determinant matrix",Here());
+				}
+
+				for (int jcol = 0; jcol < n; jcol++)
+				{
+					// Normalize the pivot row by dividing by the pivot element.
+					inv(jpass,jcol) = inv(jpass,jcol) / pivot;
+					if (jcol >= jpass)
+						work(jpass,jcol) = work(jpass,jcol) / pivot;
+				}
+
+				for (int jrow = 0; jrow < n; jrow++)
+				// Add a multiple of the pivot row to each row.	The multiple factor
+				// is chosen so that the element of A on the pivot column is 0.
+				{
+					if (jrow != jpass)
+						factor = work(jrow,jpass);
+					for (int jcol = 0; jcol < n; jcol++)
+					{
+						if (jrow != jpass)
+						{
+							inv(jrow,jcol)  -= factor * inv(jpass,jcol);
+							work(jrow,jcol) -= factor * work(jpass,jcol);
+						}
+					}
+				}
+			}
 #endif
 		} }
 		return inv;
@@ -328,7 +412,7 @@ public:
 	{ \
 		for (Index i=0; i<size(); ++i) \
 			data_[i] OP scal; \
-	  return *this; \
+		return *this; \
 	}
 	UNARY_OPERATOR_Scalar(+=)
 	UNARY_OPERATOR_Scalar(-=)
@@ -555,7 +639,9 @@ namespace ColMajor_4x4
 {
 
 template< typename Scalar >
-inline void invert(Scalar m[16], Scalar inv[16])
+inline void invert(
+	Scalar m[16],
+	typename remove_const<Scalar>::type inv[16] )
 {
 
 	inv[ 0] =  m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10];
@@ -575,7 +661,7 @@ inline void invert(Scalar m[16], Scalar inv[16])
 	inv[11] = -m[0] * m[ 5] * m[11] + m[0] * m[ 7] * m[ 9] + m[4] * m[1] * m[11] - m[4] * m[3] * m[ 9] - m[ 8] * m[1] * m[ 7] + m[ 8] * m[3] * m[ 5];
 	inv[15] =  m[0] * m[ 5] * m[10] - m[0] * m[ 6] * m[ 9] - m[4] * m[1] * m[10] + m[4] * m[2] * m[ 9] + m[ 8] * m[1] * m[ 6] - m[ 8] * m[2] * m[ 5];
 
-	Scalar det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
+	typename remove_const<Scalar>::type det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
 
 	if(det == 0)
 	{

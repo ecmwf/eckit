@@ -70,7 +70,7 @@ void VectorOption<T>::print(std::ostream &out) const {
     out << "   --" << name_;
 
     const char *sep = "=";
-    for (size_t i = 0; i < size_ ? size_ : 2; i++) {
+    for (size_t i = 0; i < (size_ ? size_ : 2); i++) {
         out << sep  << Title<T>()();
         sep = separator_;
     }

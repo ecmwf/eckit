@@ -12,7 +12,7 @@ ecbuild_add_test( TARGET  eckit_test_producer
                   LIBS    eckit
 )
 
-ecbuild_add_test( TARGET  eckit_test_runtime
+ecbuild_add_test( TARGET  eckit_test_context
                   BOOST
                   SOURCES test_context.cc
                   LIBS    eckit

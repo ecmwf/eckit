@@ -104,7 +104,7 @@ Channel* Application::createErrorChannel() const {
 }
 
 Channel* Application::createDebugChannel() const {
-    return new Channel(new TimeStampTarget("(D)"));
+        return new Channel(new TimeStampTarget("(D)"));
 }
 
 //-----------------------------------------------------------------------------
@@ -127,7 +127,7 @@ void Application::start() {
         Log::error() << "** Exception is terminates " << displayName_ << std::endl;
     }
 
-    Log::info() << "** End of " <<displayName_ << " (" << argv(0) << ")  **" << std::endl;
+    Log::info() << "** End of " << displayName_ << " (" << argv(0) << ")  **" << std::endl;
 
     ::exit(status);
 }

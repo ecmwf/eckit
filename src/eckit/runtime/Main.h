@@ -60,6 +60,7 @@ public: // methods
     static bool ready();
 
     /// Channel handling
+
     virtual Channel* createInfoChannel() const;
     virtual Channel* createWarningChannel() const;
     virtual Channel* createErrorChannel() const;
@@ -70,11 +71,10 @@ protected:
     std::string name_;
     std::string displayName_;  ///< name to be displayed of running application
     long taskID_;
-    bool debug_;
 
     // To overrride
 
-   virtual Channel* createChannel() const;
+    virtual Channel* createChannel() const;
 
 private: // members
 
@@ -82,6 +82,10 @@ private: // members
     char**  argv_;
 
     std::string  home_;         ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
+
+    friend struct  CreateDebugChannel;
+    bool debug_;
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

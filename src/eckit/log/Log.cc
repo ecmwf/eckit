@@ -187,12 +187,20 @@ Channel& Log::warning()
 }
 
 struct CreateDebugChannel : public CreateLogChannel {
-    virtual Channel* createChannel() { return Main::instance().createDebugChannel(); }
+    virtual Channel* createChannel() {
+        if (Main::instance().debug_) {
+            return Main::instance().createDebugChannel();
+        }
+        else {
+            return new Channel();
+        }
+    }
 };
 
 Channel& Log::debug()
 {
     if (!Main::ready()) {
+
 
         const char* e = getenv("DEBUG");
 

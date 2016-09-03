@@ -16,23 +16,21 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 FileTarget::FileTarget(const PathName &path):
-    handle_( path.fileHandle() )
+    out_( path.asString().c_str() )
 {
-    ASSERT(handle_);
-    handle_->openForWrite(0);
+    ASSERT(out_);
 }
 
 FileTarget::~FileTarget() {
-    handle_->close();
-    delete handle_;
+
 }
 
 void FileTarget::write(const char* start, const char* end) {
-    handle_->write(start, end - start);
+    out_.write(start, end - start);
 }
 
 void FileTarget::flush() {
-    // Ignored
+    out_.flush();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

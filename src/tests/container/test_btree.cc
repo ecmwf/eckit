@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#define BOOST_TEST_MODULE eckit_test_btree
+
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/types/Types.h"

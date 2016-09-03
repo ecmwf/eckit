@@ -70,6 +70,7 @@ protected:
     std::string name_;
     std::string displayName_;  ///< name to be displayed of running application
     long taskID_;
+    bool debug_;
 
     // To overrride
 
@@ -81,7 +82,6 @@ private: // members
     char**  argv_;
 
     std::string  home_;         ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
-    bool debug_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

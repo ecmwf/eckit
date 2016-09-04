@@ -21,18 +21,12 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
+typedef void (*channel_callback_t) (void* data, const char* msg);
 
-class Logger {
-public: // methods
-    virtual Channel& debugChannel() const = 0;
-};
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Singleton holding global streams for logging
 ///
-/// @warning these streams are thread safe. A lock is
-///          set when one of the stream is return, and is reset
-///          on end of line. Don't forget to call endl.
 
 class Log {
 
@@ -91,19 +85,25 @@ public: // methods
     /// manipulator that will print the last error message as in perror(2)
     static std::ostream& syserr(std::ostream&);
 
-    // static Channel& null();
+    static Channel& null();
 
-    // Per library loggin
-    // trace(const T* = 0) can be replace by trace<T>() with c++14
     template<typename T>
     static Channel& debug(const T* = 0) {
         return T::instance().debugChannel();
     }
 
-//    template<typename T>
-//    static bool tracing(int level = 0, const T* = 0) {
-//        return T::trace(level);
-//    }
+
+    static void setStream(std::ostream& out);
+    static void addStream(std::ostream& out);
+
+    static void setFile(const std::string& path);
+    static void addFile(const std::string& path);
+
+    static void setCallback(channel_callback_t cb, void* data = 0);
+    static void addCallback(channel_callback_t cb, void* data = 0);
+
+    static void reset();
+
 
 private: // methods
 

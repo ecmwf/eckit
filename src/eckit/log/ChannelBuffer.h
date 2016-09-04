@@ -40,10 +40,11 @@ private: // methods
     /// destructor, deallocates stream if has ownership
     virtual ~ChannelBuffer();
 
-    bool active() const { return target_ != 0; }
+    bool active() const;
 
     void reset();
     void setTarget(LogTarget* target);
+    void addTarget(LogTarget* target);
 
     void indent(const char* space = "   ");
     void unindent();

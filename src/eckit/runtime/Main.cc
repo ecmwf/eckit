@@ -152,25 +152,24 @@ void Main::initialise(int argc, char** argv, const char* homeenv) {
     }
 }
 
-
-Channel* Main::createInfoChannel() const {
-    return createChannel();
+LogTarget* Main::createInfoLogTarget() const {
+    return createDefaultLogTarget();
 }
 
-Channel* Main::createWarningChannel() const {
-    return createChannel();
+LogTarget* Main::createWarningLogTarget() const {
+    return createDefaultLogTarget();
 }
 
-Channel* Main::createErrorChannel() const {
-    return createChannel();
+LogTarget* Main::createErrorLogTarget() const {
+    return createDefaultLogTarget();
 }
 
-Channel* Main::createDebugChannel() const {
-    return debug_ ? createChannel() : new Channel();
+LogTarget* Main::createDebugLogTarget() const {
+    return createDefaultLogTarget();
 }
 
-Channel* Main::createChannel() const  {
-    return new Channel(new OStreamTarget(std::cout));
+LogTarget* Main::createDefaultLogTarget() const  {
+    return new OStreamTarget(std::cout);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

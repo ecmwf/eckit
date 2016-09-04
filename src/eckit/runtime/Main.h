@@ -61,10 +61,10 @@ public: // methods
 
     /// Channel handling
 
-    virtual Channel* createInfoChannel() const;
-    virtual Channel* createWarningChannel() const;
-    virtual Channel* createErrorChannel() const;
-    virtual Channel* createDebugChannel() const;
+    virtual LogTarget* createInfoLogTarget() const;
+    virtual LogTarget* createWarningLogTarget() const;
+    virtual LogTarget* createErrorLogTarget() const;
+    virtual LogTarget* createDebugLogTarget() const;
 
 protected:
 
@@ -74,7 +74,7 @@ protected:
 
     // To overrride
 
-    virtual Channel* createChannel() const;
+    virtual LogTarget* createDefaultLogTarget() const;
 
 private: // members
 
@@ -83,7 +83,7 @@ private: // members
 
     std::string  home_;         ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
 
-    friend struct  CreateDebugChannel;
+    friend class Log;
     bool debug_;
 
 };

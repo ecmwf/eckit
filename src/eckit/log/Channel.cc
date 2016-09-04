@@ -41,10 +41,12 @@ Channel::operator bool() const {
 }
 
 void Channel::setCallback(channel_callback_t cb, void* data) {
+    ASSERT(cb);
     buffer_->setCallback(cb, data);
 }
 
 void Channel::addCallback(channel_callback_t cb, void* data) {
+    ASSERT(cb);
     buffer_->addCallback(cb, data);
 }
 
@@ -53,6 +55,10 @@ void Channel::setTarget(LogTarget* target) {
     buffer_->setTarget(target);
 }
 
+void Channel::addTarget(LogTarget* target) {
+    ASSERT(target);
+    buffer_->addTarget(target);
+}
 
 void Channel::setStream(std::ostream& out) {
     buffer_->setStream(out);

@@ -91,20 +91,20 @@ Application::~Application() {
 //-----------------------------------------------------------------------------
 
 
-Channel* Application::createInfoChannel() const {
-    return new Channel(new TimeStampTarget("(I)"));
+LogTarget* Application::createInfoLogTarget() const {
+    return new TimeStampTarget("(I)");
 }
 
-Channel* Application::createWarningChannel() const {
-    return new Channel(new TimeStampTarget("(W)"));
+LogTarget* Application::createWarningLogTarget() const {
+    return new TimeStampTarget("(W)");
 }
 
-Channel* Application::createErrorChannel() const {
-    return new Channel(new TimeStampTarget("(E)"));
+LogTarget* Application::createErrorLogTarget() const {
+    return new TimeStampTarget("(E)");
 }
 
-Channel* Application::createDebugChannel() const {
-        return new Channel(new TimeStampTarget("(D)"));
+LogTarget* Application::createDebugLogTarget() const {
+    return new TimeStampTarget("(D)");
 }
 
 //-----------------------------------------------------------------------------

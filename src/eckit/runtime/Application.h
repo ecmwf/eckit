@@ -67,10 +67,10 @@ private: // members
 
     /// From Main
 
-    virtual eckit::Channel* createInfoChannel() const;
-    virtual eckit::Channel* createWarningChannel() const;
-    virtual eckit::Channel* createErrorChannel() const;
-    virtual eckit::Channel* createDebugChannel() const;
+    virtual LogTarget* createInfoLogTarget() const;
+    virtual LogTarget* createWarningLogTarget() const;
+    virtual LogTarget* createErrorLogTarget() const;
+    virtual LogTarget* createDebugLogTarget() const;
 
 
     /// overriden from Configurable

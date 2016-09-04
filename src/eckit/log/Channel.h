@@ -58,8 +58,10 @@ private:
 
     ChannelBuffer* buffer_;
 
-
     void setTarget(LogTarget*);
+    void addTarget(LogTarget*);
+
+    friend class Log;
 };
 
 

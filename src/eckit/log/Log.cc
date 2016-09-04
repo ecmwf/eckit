@@ -20,6 +20,7 @@
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/log/FileTarget.h"
 
 #include "eckit/runtime/Main.h"
 
@@ -145,7 +146,7 @@ struct CreateLogChannel {
 };
 
 struct CreateInfoChannel : public CreateLogChannel {
-    virtual Channel* createChannel() { return Main::instance().createInfoChannel(); }
+    virtual Channel* createChannel() { return new Channel(Main::instance().createInfoLogTarget()); }
 };
 
 Channel& Log::info()
@@ -159,7 +160,7 @@ Channel& Log::info()
 }
 
 struct CreateErrorChannel : public CreateLogChannel {
-    virtual Channel* createChannel() { return Main::instance().createErrorChannel(); }
+    virtual Channel* createChannel() { return new Channel(Main::instance().createErrorLogTarget()); }
 };
 
 Channel& Log::error()
@@ -173,7 +174,7 @@ Channel& Log::error()
 }
 
 struct CreateWarningChannel : public CreateLogChannel {
-    virtual Channel* createChannel() { return Main::instance().createWarningChannel(); }
+    virtual Channel* createChannel() { return new Channel(Main::instance().createWarningLogTarget()); }
 };
 
 Channel& Log::warning()
@@ -188,12 +189,7 @@ Channel& Log::warning()
 
 struct CreateDebugChannel : public CreateLogChannel {
     virtual Channel* createChannel() {
-        if (Main::instance().debug_) {
-            return Main::instance().createDebugChannel();
-        }
-        else {
-            return new Channel();
-        }
+        return new Channel(Main::instance().createDebugLogTarget());
     }
 };
 
@@ -213,6 +209,13 @@ Channel& Log::debug()
             return empty;
         }
     }
+
+    if (!Main::instance().debug_) {
+        static Channel empty;
+        return empty;
+    }
+
+
     static ThreadSingleton<Channel, CreateDebugChannel> x;
     return x.instance();
 }
@@ -224,7 +227,7 @@ std::ostream& Log::panic()
         return Log::error();
     }
     catch (std::exception&) {
-        return  std::cerr;
+        return std::cerr;
     }
 }
 
@@ -261,6 +264,71 @@ void Log::notifyClient(const std::string& msg)
     UserChannel& u = user();
     UserMsg* um = u.userMsg();
     if (um) um->notifyClient(msg);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void Log::setStream(std::ostream& out) {
+    info().setStream(out);
+    warning().setStream(out);
+    error().setStream(out);
+    if (debug()) {
+        debug().setStream(out);
+    }
+}
+void Log::addStream(std::ostream& out) {
+    info().addStream(out);
+    warning().addStream(out);
+    error().addStream(out);
+    if (debug()) {
+        debug().addStream(out);
+    }
+}
+
+void Log::setFile(const std::string& path) {
+    LogTarget* file = new FileTarget(path);
+
+    info().setTarget(file);
+    warning().setTarget(file);
+    error().setTarget(file);
+    if (debug()) {
+        debug().setTarget(file);
+    }
+}
+void Log::addFile(const std::string& path) {
+    LogTarget* file = new FileTarget(path);
+
+    info().addTarget(file);
+    warning().addTarget(file);
+    error().addTarget(file);
+    if (debug()) {
+        debug().addTarget(file);
+    }
+}
+
+void Log::setCallback(channel_callback_t cb, void* data) {
+    info().setCallback(cb, data);
+    warning().setCallback(cb, data);
+    error().setCallback(cb, data);
+    if (debug()) {
+        debug().setCallback(cb, data);
+    }
+}
+
+void Log::addCallback(channel_callback_t cb, void* data) {
+    info().addCallback(cb, data);
+    warning().addCallback(cb, data);
+    error().addCallback(cb, data);
+    if (debug()) {
+        debug().addCallback(cb, data);
+    }
+}
+
+void Log::reset() {
+    info().reset();
+    warning().reset();
+    error().reset();
+    debug().reset();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

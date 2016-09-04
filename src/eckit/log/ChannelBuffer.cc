@@ -38,6 +38,10 @@ ChannelBuffer::~ChannelBuffer()
     reset();
 }
 
+bool ChannelBuffer::active() const {
+    return target_ != 0;
+}
+
 
 void ChannelBuffer::setTarget(LogTarget* target) {
     ASSERT(target);
@@ -46,12 +50,18 @@ void ChannelBuffer::setTarget(LogTarget* target) {
 
     target->attach();
 
-    if(target_) {
+    if (target_) {
         target_->detach();
     }
 
     target_ = target;
 
+}
+
+
+void ChannelBuffer::addTarget(LogTarget* target) {
+    ASSERT(target);
+    setTarget(new TeeTarget(target_, target));
 }
 
 void ChannelBuffer::reset() {

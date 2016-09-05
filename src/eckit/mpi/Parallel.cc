@@ -10,12 +10,10 @@
 
 #include "eckit/mpi/Parallel.h"
 
-#include <strstream>
-
-#include "eckit/runtime/Context.h"
+#include <limits>
+#include <sstream>
 
 #include "eckit/exception/Exceptions.h"
-
 
 namespace eckit {
 namespace mpi {
@@ -52,6 +50,10 @@ int datacode [Data::MAX_CODE_VALUE] = {
 #endif
 
 static MPI_Datatype toType(Data::Code code) {
+    NOTIMP;
+}
+
+static MPI_Op toOp(Operation::Code code) {
     NOTIMP;
 }
 
@@ -106,56 +108,96 @@ size_t Parallel::getCount(Status& status, Data::Code type) const
 {
     int count = 0;
     MPI_Status st;
+
     NOTIMP; /// @todo implement Status to MPI_Status conversion
-    MPI_CALL( MPI_Get_count(&st, toType(type), &count) );
+
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_CALL( MPI_Get_count(&st, mpitype, &count) );
+
     ASSERT(count >= 0);
     return size_t(count);
 }
 
 void Parallel::broadcast(void* buffer, size_t count, Data::Code type, size_t root) const
 {
-    int iroot(root);
-    int icount(count);
+    ASSERT(root  < size_t(std::numeric_limits<int>::max()));
+    ASSERT(count < size_t(std::numeric_limits<int>::max()));
 
-    ASSERT(iroot>0);
-    ASSERT(icount>0);
+    MPI_Datatype mpitype = toType(type);
 
-    MPI_CALL( MPI_Bcast(buffer, icount, toType(type), iroot, comm_) );
+    MPI_CALL( MPI_Bcast(buffer, int(count), mpitype, int(root), comm_) );
 }
 
 void Parallel::gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type, size_t root) const
 {
-    NOTIMP;
+    ASSERT(sendcount  < size_t(std::numeric_limits<int>::max()));
+    ASSERT(recvcount  < size_t(std::numeric_limits<int>::max()));
+    ASSERT(root       < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_CALL( MPI_Gather(const_cast<void*>(sendbuf), int(sendcount), mpitype, recvbuf, int(recvcount), mpitype, int(root), comm_) );
 }
 
 void Parallel::scatter(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type, size_t root) const
 {
-    NOTIMP;
+    ASSERT(sendcount  < size_t(std::numeric_limits<int>::max()));
+    ASSERT(recvcount  < size_t(std::numeric_limits<int>::max()));
+    ASSERT(root       < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_CALL( MPI_Scatter(const_cast<void*>(sendbuf), int(sendcount), mpitype, recvbuf, int(recvcount), mpitype, int(root), comm_) );
 }
 
 void Parallel::gatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[], const int displs[], Data::Code type, size_t root) const
 {
-    NOTIMP;
+    ASSERT(sendcount  < size_t(std::numeric_limits<int>::max()));
+    ASSERT(root       < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_CALL( MPI_Gatherv(const_cast<void*>(sendbuf), int(sendcount), mpitype, recvbuf, const_cast<int*>(recvcounts), const_cast<int*>(displs), mpitype, int(root), comm_) );
 }
 
 void Parallel::scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf, size_t recvcount, Data::Code type, size_t root) const
 {
-    NOTIMP;
+    ASSERT(recvcount  < size_t(std::numeric_limits<int>::max()));
+    ASSERT(root       < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_CALL( MPI_Scatterv(const_cast<void*>(sendbuf), const_cast<int*>(sendcounts), const_cast<int*>(displs), mpitype, recvbuf, int(recvcount), mpitype, int(root), comm_) );
 }
 
 void Parallel::allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op) const
 {
-    NOTIMP;
+    ASSERT(count  < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+    MPI_Op       mpiop   = toOp(op);
+
+    MPI_CALL( MPI_Allreduce(const_cast<void*>(sendbuf), recvbuf, int(count), mpitype, mpiop, comm_) );
 }
 
 void Parallel::allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code type, Operation::Code op) const
 {
-    NOTIMP;
+    ASSERT(count  < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+    MPI_Op       mpiop   = toOp(op);
+
+    MPI_CALL( MPI_Allreduce(MPI_IN_PLACE, sendrecvbuf, int(count), mpitype, mpiop, comm_) );
 }
 
 void Parallel::allGather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type) const
 {
-    NOTIMP;
+    ASSERT(sendcount  < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_CALL( MPI_Allgather(const_cast<void*>(sendbuf), int(sendcount), mpitype, recvbuf, int(recvcount), mpitype, comm_) );
 }
 
 void Parallel::allGatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[], const int displs[], Data::Code type) const

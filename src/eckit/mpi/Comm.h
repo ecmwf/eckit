@@ -88,7 +88,7 @@ protected: // methods
 
     virtual Status receive(void* recv, size_t count, Data::Code datatype, int source, int tag) const = 0;
 
-    virtual Status send(const void* send, size_t count, Data::Code datatype, int dest, int tag) const = 0;
+    virtual void send(const void* send, size_t count, Data::Code datatype, int dest, int tag) const = 0;
 
     virtual Request iReceive(void* recv, size_t count, Data::Code datatype, int source, int tag) const = 0;
 
@@ -375,13 +375,13 @@ public:  // methods
     ///
 
     template <typename T>
-    Status send(T* sendbuf, size_t count, int dest, int tag) const {
-        return send(sendbuf, count, Data::Type<T>::code(), dest, tag);
+    void send(T* sendbuf, size_t count, int dest, int tag) const {
+        send(sendbuf, count, Data::Type<T>::code(), dest, tag);
     }
 
     template <typename T>
-    Status send(T sendbuf, int dest, int tag) const {
-        return send(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
+    void send(T sendbuf, int dest, int tag) const {
+        send(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
     }
 
     ///

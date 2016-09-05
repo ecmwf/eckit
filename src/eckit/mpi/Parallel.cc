@@ -202,27 +202,49 @@ void Parallel::allGather(const void* sendbuf, size_t sendcount, void* recvbuf, s
 
 void Parallel::allGatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[], const int displs[], Data::Code type) const
 {
-    NOTIMP;
+    ASSERT(sendcount  < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_CALL( MPI_Allgatherv(const_cast<void*>(sendbuf), int(sendcount), mpitype, recvbuf, const_cast<int*>(recvcounts), const_cast<int*>(displs), mpitype, comm_) );
 }
 
 void Parallel::allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type) const
 {
-    NOTIMP;
+    ASSERT(sendcount  < size_t(std::numeric_limits<int>::max()));
+    ASSERT(recvcount  < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_CALL( MPI_Alltoall(const_cast<void*>(sendbuf), int(sendcount), mpitype, recvbuf, int(recvcount), mpitype, comm_) );
 }
 
 void Parallel::allToAllv(const void* sendbuf, const int sendcounts[], const int sdispls[], void* recvbuf, const int recvcounts[], const int rdispls[], Data::Code type) const
 {
-    NOTIMP;
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_CALL( MPI_Alltoallv(const_cast<void*>(sendbuf), const_cast<int*>(sendcounts), const_cast<int*>(sdispls), mpitype,
+                                               recvbuf, const_cast<int*>(recvcounts), const_cast<int*>(rdispls), mpitype, comm_) );
 }
 
 Status Parallel::receive(void* recv, size_t count, Data::Code type, int source, int tag) const
 {
-    NOTIMP;
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_Status status;
+
+    MPI_CALL( MPI_Recv(recv, int(count), mpitype, source, tag, comm_, &status) );
+
+    NOTIMP; /// @todo implement Status to MPI_Status conversion
+
+    return eckit::mpi::Status();
 }
 
-Status Parallel::send(const void* send, size_t count, Data::Code type, int dest, int tag) const
+void Parallel::send(const void* send, size_t count, Data::Code type, int dest, int tag) const
 {
-    NOTIMP;
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_CALL( MPI_Send(send, int(count), mpitype, dest, tag, comm_) );
 }
 
 Request Parallel::iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const

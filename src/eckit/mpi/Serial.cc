@@ -88,7 +88,7 @@ Status Serial::receive(void* recv, size_t count, Data::Code type, int source, in
     NOTIMP;
 }
 
-Status Serial::send(const void* send, size_t count, Data::Code type, int dest, int tag) const
+void Serial::send(const void* send, size_t count, Data::Code type, int dest, int tag) const
 {
     NOTIMP;
 }

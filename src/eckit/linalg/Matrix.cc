@@ -11,6 +11,7 @@
 #include "eckit/linalg/Matrix.h"
 
 #include <cstring>
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
 
@@ -19,69 +20,70 @@ namespace linalg {
 
 //-----------------------------------------------------------------------------
 
-Matrix::Matrix() : m_(0),
+Matrix::Matrix() :
+    array_(0),
     rows_(0),
     cols_(0),
-    own_(false) {}
-
-//-----------------------------------------------------------------------------
-
-Matrix::Matrix(Size rows, Size cols) :
-    m_(new Scalar[rows*cols]),
-    rows_(rows),
-    cols_(cols),
-    own_(true) {
-    ASSERT(size()>0);
-    ASSERT(m_);
+    own_(false) {
 }
 
 //-----------------------------------------------------------------------------
 
-Matrix::Matrix(Scalar* m, Size rows, Size cols) :
-    m_(m),
+Matrix::Matrix(Size rows, Size cols) :
+    array_(new Scalar[rows*cols]),
+    rows_(rows),
+    cols_(cols),
+    own_(true) {
+    ASSERT(size()>0);
+    ASSERT(array_);
+}
+
+//-----------------------------------------------------------------------------
+
+Matrix::Matrix(Scalar* array, Size rows, Size cols) :
+    array_(array),
     rows_(rows),
     cols_(cols),
     own_(false) {
     ASSERT(size()>0);
-    ASSERT(m_);
+    ASSERT(array_);
 }
 
 //-----------------------------------------------------------------------------
 
 Matrix::Matrix(Stream& stream) :
-    m_(0),
+    array_(0),
     rows_(0),
     cols_(0),
     own_(false) {
     Size rows, cols;
+    stream >> rows;
+    stream >> cols;
     resize(rows, cols);
 
     ASSERT(size()>0);
-    ASSERT(m_);
-    Buffer b(m_, (rows*cols)*sizeof(Scalar), /* dummy */ true);
-
-    stream >> rows;
-    stream >> cols;
+    ASSERT(array_);
+    Buffer b(array_, (rows*cols)*sizeof(Scalar), /* dummy */ true);
     stream >> b;
 }
 
 //-----------------------------------------------------------------------------
 
 Matrix::Matrix(const Matrix& other) :
-    m_(new Scalar[other.size()]),
+    array_(new Scalar[other.size()]),
     rows_(other.rows_),
     cols_(other.cols_),
     own_(true) {
     ASSERT(size()>0);
-    ASSERT(m_);
-    ::memcpy(m_, other.m_, size() * sizeof(Scalar));
+    ASSERT(array_);
+    ::memcpy(array_, other.array_, size() * sizeof(Scalar));
 }
 
 //-----------------------------------------------------------------------------
 
 Matrix::~Matrix() {
     if (own_) {
-        delete [] m_;
+        delete [] array_;
     }
 }
 
@@ -90,18 +92,18 @@ Matrix::~Matrix() {
 Matrix& Matrix::operator=(const Matrix& other) {
     // do not optimize for if size()==other.size(), as using copy constructor
     // consistently retains ownership (no surprises in ownership behaviour)
-    Matrix m(other);
-    swap(m);
+    Matrix copy(other);
+    swap(copy);
     return *this;
 }
 
 //-----------------------------------------------------------------------------
 
 void Matrix::swap(Matrix& other) {
-    std::swap(m_,    other.m_);
-    std::swap(rows_, other.rows_);
-    std::swap(cols_, other.cols_);
-    std::swap(own_,  other.own_);
+    std::swap(array_, other.array_);
+    std::swap(rows_,  other.rows_);
+    std::swap(cols_,  other.cols_);
+    std::swap(own_,   other.own_);
 }
 
 //-----------------------------------------------------------------------------
@@ -120,22 +122,22 @@ void Matrix::resize(Size rows, Size cols) {
 
 void Matrix::setZero() {
     ASSERT(size()>0);
-    ASSERT(m_);
-    ::memset(m_, 0, size()*sizeof(Scalar));
+    ASSERT(array_);
+    ::memset(array_, 0, size()*sizeof(Scalar));
 }
 
 //-----------------------------------------------------------------------------
 
 void Matrix::fill(Scalar value) {
     for (Size i = 0; i < size(); ++i) {
-        m_[i] = value;
+        array_[i] = value;
     }
 }
 
 //-----------------------------------------------------------------------------
 
 void Matrix::encode(Stream& stream) const {
-  Buffer b(const_cast<Scalar*>(m_), rows_*cols_*sizeof(Scalar), /* dummy */ true);
+  Buffer b(const_cast<Scalar*>(array_), rows_*cols_*sizeof(Scalar), /* dummy */ true);
 
   stream << rows_;
   stream << cols_;

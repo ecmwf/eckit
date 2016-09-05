@@ -15,7 +15,6 @@
 #ifndef eckit_linalg_Matrix_h
 #define eckit_linalg_Matrix_h
 
-#include <vector>
 #include "eckit/linalg/types.h"
 
 namespace eckit {
@@ -39,11 +38,11 @@ public:  // methods
     /// Default constructor (empty matrix)
     Matrix();
 
-    /// Construct matrix with given rows and columns (allocates memory)
+    /// Construct matrix with given rows and columns (allocates memory, not initialised)
     Matrix(Size rows, Size cols);
 
     /// Construct matrix from existing data (does NOT take ownership)
-    Matrix(Scalar* m, Size rows, Size cols);
+    Matrix(Scalar* array, Size rows, Size cols);
 
     /// Constructor from Stream
     Matrix(Stream&);
@@ -69,6 +68,7 @@ public:  // methods
 
     /// Fill vector with given scalar
     void fill(Scalar);
+
     // -- Serialisation
 
     /// Serialise to a Stream
@@ -85,31 +85,31 @@ public:  // methods
 
     /// Access by row and column
     /// @note implements column-major (Fortran-style) ordering
-    Scalar& operator()(Size row, Size col) { return m_[col*rows_ + row]; }
-    const Scalar& operator()(Size row, Size col) const { return m_[col*rows_ + row]; }
+    Scalar& operator()(Size row, Size col) { return array_[col*rows_ + row]; }
+    const Scalar& operator()(Size row, Size col) const { return array_[col*rows_ + row]; }
 
     /// Access to linearised storage
-    Scalar& operator[](Size i) { return m_[i]; }
-    const Scalar& operator[](Size i) const { return m_[i]; }
+    Scalar& operator[](Size i) { return array_[i]; }
+    const Scalar& operator[](Size i) const { return array_[i]; }
 
     /// @returns modifiable view of the data
-    Scalar* data() { return m_; }
+    Scalar* data() { return array_; }
     /// @returns read-only view of the data
-    const Scalar* data() const { return m_; }
+    const Scalar* data() const { return array_; }
 
     /// @returns iterator to beginning of the data
-    Scalar* begin() { return m_; }
+    Scalar* begin() { return array_; }
     /// @returns const iterator to beginning of the data
-    const Scalar* begin() const { return m_; }
+    const Scalar* begin() const { return array_; }
     /// @returns iterator to end of the data
-    Scalar* end() { return m_ + size(); }
+    Scalar* end() { return array_ + size(); }
     /// @returns const iterator to end of the data
-    const Scalar* end() const { return m_ + size(); }
+    const Scalar* end() const { return array_ + size(); }
 
 protected:  // member variables
 
     /// Container
-    Scalar* m_;
+    Scalar* array_;
 
     /// Number of rows
     Size rows_;

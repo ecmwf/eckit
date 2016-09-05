@@ -11,6 +11,7 @@
 #include "eckit/linalg/Vector.h"
 
 #include <cstring>
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
 
@@ -20,102 +21,103 @@ namespace linalg {
 //-----------------------------------------------------------------------------
 
 Vector::Vector() :
-    v_(0),
-    size_(0),
+    array_(0),
+    length_(0),
     own_(false) {
 }
 
 //-----------------------------------------------------------------------------
 
-Vector::Vector(Size s) :
-    v_(new Scalar[s]),
-    size_(s),
+Vector::Vector(Size length) :
+    array_(new Scalar[length]),
+    length_(length),
     own_(true) {
 }
 
 //-----------------------------------------------------------------------------
 
-Vector::Vector(Scalar* v, Size s) :
-    v_(v),
-    size_(s),
+Vector::Vector(Scalar* array, Size length) :
+    array_(&array[0]),
+    length_(length),
     own_(false) {
-    ASSERT(v && size_ > 0);
+    ASSERT(array_ && length_ > 0);
 }
 
 //-----------------------------------------------------------------------------
 
 Vector::Vector(Stream& stream) :
-    v_(0),
-    size_(0),
+    array_(0),
+    length_(0),
     own_(false) {
-    Size size;
-    resize(size);
-    Buffer b(v_, size*sizeof(Scalar), /* dummy */ true);
+    Size length;
+    stream >> length;
+    resize(length);
 
-    stream >> size;
+    ASSERT(length_ > 0);
+    Buffer b(array_, length*sizeof(Scalar), /* dummy */ true);
     stream >> b;
 }
 
 //-----------------------------------------------------------------------------
 
 Vector::Vector(const Vector& other) :
-    v_(new Scalar[other.size_]),
-    size_(other.size_),
+    array_(new Scalar[other.length_]),
+    length_(other.length_),
     own_(true) {
-    ::memcpy(v_, other.v_, size_ * sizeof(Scalar));
+    ::memcpy(array_, other.array_, length_ * sizeof(Scalar));
 }
 
 //-----------------------------------------------------------------------------
 
 Vector::~Vector() {
     if (own_) {
-        delete [] v_;
+        delete [] array_;
     }
 }
 
 //-----------------------------------------------------------------------------
 
 Vector&Vector::operator=(const Vector& other) {
-    Vector v(other);
-    swap(v);
+    Vector copy(other);
+    swap(copy);
     return *this;
 }
 
 //-----------------------------------------------------------------------------
 
 void Vector::swap(Vector& other) {
-    std::swap(v_,    other.v_);
-    std::swap(size_, other.size_);
-    std::swap(own_,  other.own_);
+    std::swap(array_,  other.array_);
+    std::swap(length_, other.length_);
+    std::swap(own_,    other.own_);
 }
 
 //-----------------------------------------------------------------------------
 
-void Vector::resize(Size s) {
-    Vector v(s);
+void Vector::resize(Size length) {
+    Vector v(length);
     swap(v);
 }
 
 //-----------------------------------------------------------------------------
 
 void Vector::setZero() {
-    ::memset(v_, 0, size_*sizeof(Scalar));
+    ::memset(array_, 0, length_*sizeof(Scalar));
 }
 
 //-----------------------------------------------------------------------------
 
 void Vector::fill(Scalar value) {
-    for (Size i = 0; i < size_; ++i) {
-        v_[i] = value;
+    for (Size i = 0; i < length_; ++i) {
+        array_[i] = value;
     }
 }
 
 //-----------------------------------------------------------------------------
 
 void Vector::encode(Stream& stream) const {
-  Buffer b(v_, size_*sizeof(Scalar), /* dummy */ true);
+  Buffer b(array_, length_*sizeof(Scalar), /* dummy */ true);
 
-  stream << size_;
+  stream << length_;
   stream << b;
 }
 
@@ -129,4 +131,4 @@ Stream& operator<<(Stream& stream, const Vector& vector) {
 //-----------------------------------------------------------------------------
 
 }  // namespace linalg
-} // namespace eckit
+}  // namespace eckit

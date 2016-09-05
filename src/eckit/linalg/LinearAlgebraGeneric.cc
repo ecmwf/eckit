@@ -69,9 +69,11 @@ void LinearAlgebraGeneric::gemv(const Matrix& A, const Vector& x, Vector& y) con
 
 void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
     ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
+    C.setZero();
     for (size_t c = 0; c < B.cols(); ++c)
         for (size_t r = 0; r < A.rows(); ++r)
-            for (size_t k = 0; k < A.cols(); ++k) C(r, c) += A(r, k) * B(k, c);
+            for (size_t k = 0; k < A.cols(); ++k)
+                C(r, c) += A(r, k) * B(k, c);
 }
 
 //-----------------------------------------------------------------------------
@@ -95,6 +97,7 @@ void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& 
 
 void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
     ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
+    C.setZero();
     // We expect indices to be 0-based
     ASSERT( A.outer()[0] == 0 );
     const Index* outer = A.outer();

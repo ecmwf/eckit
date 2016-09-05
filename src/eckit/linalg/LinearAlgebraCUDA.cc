@@ -12,6 +12,8 @@
 
 #ifdef ECKIT_HAVE_CUDA
 
+#include "eckit/linalg/LinearAlgebraCUDA.h"
+
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
 #include <cusparse.h>
@@ -35,7 +37,7 @@
 
 //-----------------------------------------------------------------------------
 
-#include "eckit/linalg/LinearAlgebraCUDA.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"

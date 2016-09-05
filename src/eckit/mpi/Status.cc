@@ -8,46 +8,36 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_Status_h
-#define eckit_mpi_Status_h
+#include "eckit/mpi/Status.h"
 
-#include <iosfwd>
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class StatusContent;
+Status::Status() {
+    NOTIMP;
+}
 
-class Status {
+Status::~Status() {
+    NOTIMP;
+}
 
-public: // methods
+int Status::source() const {
+    NOTIMP;
+}
 
-    Status();
+int Status::tag() const {
+    NOTIMP;
+}
 
-    ~Status();
-
-    int source() const;
-    int tag() const;
-    int error() const;
-
-private: // methods
-
-    void print(std::ostream&) const;
-
-    friend std::ostream& operator<<(std::ostream& s, const Status& o) {
-        o.print(s); return s;
-    }
-
-private: // members
-
-    StatusContent* pimpl_;
-};
+int Status::error() const {
+    NOTIMP;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
-
-#endif
+} // namespace mpi
+} // namepsace eckit

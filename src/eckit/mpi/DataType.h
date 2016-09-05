@@ -53,7 +53,7 @@ public:
         FLOAT_INT,
         DOUBLE_INT,
         LONG_DOUBLE_INT,
-        MAX_CODE_VALUE
+        MAX_DATA_CODE
     };
 
     template <class T>

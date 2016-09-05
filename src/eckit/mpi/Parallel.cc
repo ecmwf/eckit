@@ -20,41 +20,50 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if 0
-int datacode [Data::MAX_CODE_VALUE] = {
-    [Data::CHAR]                 = MPI_CHAR,
-    [Data::WCHAR]                = MPI_WCHAR,
-    [Data::SHORT]                = MPI_SHORT,
-    [Data::INT]                  = MPI_INT,
-    [Data::LONG]                 = MPI_LONG,
-    [Data::SIGNED_CHAR]          = MPI_SIGNED_CHAR,
-    [Data::UNSIGNED_SHORT]       = MPI_UNSIGNED_SHORT,
-    [Data::UNSIGNED]             = MPI_UNSIGNED,
-    [Data::UNSIGNED_LONG]        = MPI_UNSIGNED_LONG,
-    [Data::FLOAT]                = MPI_FLOAT,
-    [Data::DOUBLE]               = MPI_DOUBLE,
-    [Data::LONG_DOUBLE]          = MPI_LONG_DOUBLE,
-//    [Data::BOOL]                 = MPI_BOOL,
-    [Data::COMPLEX]              = MPI_COMPLEX,
-    [Data::DOUBLE_COMPLEX]       = MPI_DOUBLE_COMPLEX,
-//    [Data::LONG_DOUBLE_COMPLEX]  = MPI_LONG_DOUBLE_COMPLEX,
-    [Data::BYTE]                 = MPI_BYTE,
-    [Data::PACKED]               = MPI_PACKED,
-    [Data::SHORT_INT]            = MPI_SHORT_INT,
-    [Data::INT_INT]              = MPI_2INT,
-    [Data::LONG_INT]             = MPI_LONG_INT,
-    [Data::FLOAT_INT]            = MPI_FLOAT_INT,
-    [Data::DOUBLE_INT]           = MPI_DOUBLE_INT,
-    [Data::LONG_DOUBLE_INT]      = MPI_LONG_DOUBLE_INT
+static MPI_Datatype mpi_datacode [Data::MAX_DATA_CODE] = {
+    /*[Data::CHAR]                 = */ MPI_CHAR,
+    /*[Data::WCHAR]                = */ MPI_WCHAR,
+    /*[Data::SHORT]                = */ MPI_SHORT,
+    /*[Data::INT]                  = */ MPI_INT,
+    /*[Data::LONG]                 = */ MPI_LONG,
+    /*[Data::SIGNED_CHAR]          = */ MPI_SIGNED_CHAR,
+    /*[Data::UNSIGNED_SHORT]       = */ MPI_UNSIGNED_SHORT,
+    /*[Data::UNSIGNED]             = */ MPI_UNSIGNED,
+    /*[Data::UNSIGNED_LONG]        = */ MPI_UNSIGNED_LONG,
+    /*[Data::FLOAT]                = */ MPI_FLOAT,
+    /*[Data::DOUBLE]               = */ MPI_DOUBLE,
+    /*[Data::LONG_DOUBLE]          = */ MPI_LONG_DOUBLE,
+//  /*[Data::BOOL]                 = */ MPI_BOOL,
+    /*[Data::COMPLEX]              = */ MPI_COMPLEX,
+    /*[Data::DOUBLE_COMPLEX]       = */ MPI_DOUBLE_COMPLEX,
+//  /*[Data::LONG_DOUBLE_COMPLEX]  = */ MPI_LONG_DOUBLE_COMPLEX,
+    /*[Data::BYTE]                 = */ MPI_BYTE,
+    /*[Data::PACKED]               = */ MPI_PACKED,
+    /*[Data::SHORT_INT]            = */ MPI_SHORT_INT,
+    /*[Data::INT_INT]              = */ MPI_2INT,
+    /*[Data::LONG_INT]             = */ MPI_LONG_INT,
+    /*[Data::FLOAT_INT]            = */ MPI_FLOAT_INT,
+    /*[Data::DOUBLE_INT]           = */ MPI_DOUBLE_INT,
+    /*[Data::LONG_DOUBLE_INT]      = */ MPI_LONG_DOUBLE_INT
 };
-#endif
 
 static MPI_Datatype toType(Data::Code code) {
-    NOTIMP;
+    return mpi_datacode[code];
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+static MPI_Op mpi_opcode[Operation::MAX_OPERATION_CODE] = {
+    /*[Data::SUM]       = */ MPI_SUM,
+    /*[Data::PROD]      = */ MPI_PROD,
+    /*[Data::MAX]       = */ MPI_MAX,
+    /*[Data::MIN]       = */ MPI_MIN,
+    /*[Data::MAXLOC]    = */ MPI_MAXLOC,
+    /*[Data::MINLOC]    = */ MPI_MINLOC
+};
+
 static MPI_Op toOp(Operation::Code code) {
-    NOTIMP;
+    return mpi_opcode[code];
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -106,6 +115,51 @@ void Parallel::initialize() {
 
 void Parallel::finalize() {
     MPI_CALL( MPI_Finalize() );
+}
+
+std::string Parallel::processorName() const
+{
+    NOTIMP; /// @todo implement
+}
+
+size_t Parallel::rank() const
+{
+    NOTIMP; /// @todo implement
+}
+
+size_t Parallel::size() const
+{
+    NOTIMP; /// @todo implement
+}
+
+void Parallel::barrier() const
+{
+    NOTIMP; /// @todo implement
+}
+
+void Parallel::abort(int errorcode) const
+{
+    NOTIMP; /// @todo implement
+}
+
+void Parallel::wait(Request&) const
+{
+    NOTIMP; /// @todo implement
+}
+
+Status Parallel::probe(int source, int tag) const
+{
+    NOTIMP; /// @todo implement
+}
+
+int Parallel::anySource() const
+{
+    NOTIMP; /// @todo implement
+}
+
+int Parallel::anyTag() const
+{
+    NOTIMP; /// @todo implement
 }
 
 size_t Parallel::getCount(Status& status, Data::Code type) const
@@ -228,7 +282,7 @@ void Parallel::allToAllv(const void* sendbuf, const int sendcounts[], const int 
     MPI_Datatype mpitype = toType(type);
 
     MPI_CALL( MPI_Alltoallv(const_cast<void*>(sendbuf), const_cast<int*>(sendcounts), const_cast<int*>(sdispls), mpitype,
-                                               recvbuf, const_cast<int*>(recvcounts), const_cast<int*>(rdispls), mpitype, comm_) );
+                            recvbuf, const_cast<int*>(recvcounts), const_cast<int*>(rdispls), mpitype, comm_) );
 }
 
 Status Parallel::receive(void* recv, size_t count, Data::Code type, int source, int tag) const
@@ -286,6 +340,13 @@ Request Parallel::iSend(const void* send, size_t count, Data::Code type, int des
 
     return request;
 }
+
+void Parallel::print(std::ostream& os) const {
+    os << "Parallel()";
+    /// @note maybe add information about the MPI backend: opem-mpi? mpich? etc...
+}
+
+CommBuilder<Parallel> ParallelBuilder("parallel");
 
 //----------------------------------------------------------------------------------------------------------------------
 

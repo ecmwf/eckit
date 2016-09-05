@@ -24,6 +24,8 @@ class Parallel : public eckit::mpi::Comm {
 
 protected:  // methods
 
+    template< class T> friend class CommBuilder;
+
     Parallel();
 
     virtual ~Parallel();
@@ -31,6 +33,24 @@ protected:  // methods
     virtual void initialize();
 
     virtual void finalize();
+
+    virtual std::string processorName() const;
+
+    virtual size_t rank() const;
+
+    virtual size_t size() const;
+
+    virtual void barrier() const;
+
+    virtual void abort(int errorcode = -1) const;
+
+    virtual void wait(Request&) const;
+
+    virtual Status probe(int source, int tag) const;
+
+    virtual int anySource() const;
+
+    virtual int anyTag() const;
 
     virtual size_t getCount(Status& status, Data::Code type) const;
 
@@ -66,6 +86,8 @@ protected:  // methods
     virtual Request iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const;
 
     virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const;
+
+    virtual void print(std::ostream&) const;
 
 private: // members
 

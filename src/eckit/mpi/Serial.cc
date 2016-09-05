@@ -10,6 +10,8 @@
 
 #include "eckit/mpi/Serial.h"
 
+#include <unistd.h>
+
 #include "eckit/exception/Exceptions.h"
 
 namespace eckit {
@@ -23,9 +25,58 @@ Serial::Serial() {
 Serial::~Serial() {
 }
 
+void Serial::initialize() {
+}
+
+void Serial::finalize() {
+}
+
+std::string Serial::processorName() const {
+    char hostname[256];
+    SYSCALL(::gethostname(hostname, sizeof(hostname)));
+    return hostname;
+}
+
+size_t Serial::rank() const {
+    return 0;
+}
+
+size_t Serial::size() const {
+    return 1;
+}
+
+void Serial::barrier() const {
+    return;
+}
+
+void Serial::abort(int) const
+{
+    throw Abort("MPI Abort called");
+}
+
+void Serial::wait(Request&) const
+{
+    NOTIMP; /// @todo implement
+}
+
+Status Serial::probe(int source, int tag) const
+{
+    NOTIMP; /// @todo implement
+}
+
+int Serial::anySource() const
+{
+    NOTIMP; /// @todo implement
+}
+
+int Serial::anyTag() const
+{
+    NOTIMP; /// @todo implement
+}
+
 size_t Serial::getCount(Status& status, Data::Code type) const
 {
-    return status.count;
+    NOTIMP;
 }
 
 void Serial::broadcast(void* buffer, size_t count, Data::Code type, size_t root) const
@@ -102,6 +153,12 @@ Request Serial::iSend(const void* send, size_t count, Data::Code type, int dest,
 {
     NOTIMP;
 }
+
+void Serial::print(std::ostream& os) const {
+    os << "Serial()";
+}
+
+CommBuilder<Serial> SerialBuilder("serial");
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -25,6 +25,7 @@ struct Operation {
         MIN,
         MAXLOC,
         MINLOC,
+        MAX_OPERATION_CODE,
     };
 };
 

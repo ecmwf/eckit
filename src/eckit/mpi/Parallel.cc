@@ -12,8 +12,6 @@
 
 #include <strstream>
 
-#include <mpi.h>
-
 #include "eckit/runtime/Context.h"
 
 #include "eckit/exception/Exceptions.h"
@@ -116,7 +114,13 @@ size_t Parallel::getCount(Status& status, Data::Code type) const
 
 void Parallel::broadcast(void* buffer, size_t count, Data::Code type, size_t root) const
 {
-    NOTIMP;
+    int iroot(root);
+    int icount(count);
+
+    ASSERT(iroot>0);
+    ASSERT(icount>0);
+
+    MPI_CALL( MPI_Bcast(buffer, icount, toType(type), iroot, comm_) );
 }
 
 void Parallel::gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type, size_t root) const

@@ -11,6 +11,8 @@
 #ifndef eckit_mpi_Parallel_h
 #define eckit_mpi_Parallel_h
 
+#include <mpi.h>
+
 #include "eckit/mpi/Comm.h"
 
 namespace eckit {
@@ -64,6 +66,10 @@ protected:  // methods
     virtual Request iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const;
 
     virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const;
+
+private: // members
+
+    MPI_Comm comm_;
 
 };
 

@@ -11,6 +11,8 @@
 //-----------------------------------------------------------------------------
 
 #include "eckit/linalg/LinearAlgebraGeneric.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"

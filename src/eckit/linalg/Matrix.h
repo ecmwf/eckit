@@ -16,13 +16,13 @@
 #define eckit_la_Matrix_h
 
 #include <vector>
-
 #include "eckit/linalg/types.h"
 
 namespace eckit {
-
 class Stream;
+}
 
+namespace eckit {
 namespace linalg {
 
 //-----------------------------------------------------------------------------
@@ -30,8 +30,7 @@ namespace linalg {
 /// Dense matrix in column major storage order
 class Matrix {
 public:  // types
-    typedef std::vector<Scalar> Storage;
-    typedef Storage::size_type Size;
+    typedef eckit::linalg::Size Size;
 
 public:  // methods
 
@@ -43,57 +42,76 @@ public:  // methods
     /// Construct matrix with given rows and columns (allocates memory)
     Matrix(Size rows, Size cols);
 
+    /// Construct matrix from existing data (does NOT take ownership)
+    Matrix(Scalar* m, Size rows, Size cols);
+
     /// Constructor from Stream
-    Matrix(Stream& v);
+    Matrix(Stream&);
+
+    /// Copy constructor
+    Matrix(const Matrix&);
+
+    // TODO: make virtual if used as base class
+    ~Matrix();
 
     // -- Mutators
+
+    Matrix& operator=(const Matrix&);
+
+    /// Swap this matrix with another
+    void swap(Matrix&);
 
     /// Resize matrix to given number of rows/columns (invalidates data)
     void resize(Size rows, Size cols);
 
-    /// Swap this matrix with another
-    void swap(Matrix& o);
+    /// Set data to zero
+    void setZero();
 
+    /// Fill vector with given scalar
+    void fill(Scalar);
     // -- Serialisation
 
     /// Serialise to a Stream
-    void encode(Stream& s) const;
+    void encode(Stream&) const;
 
     // -- Accessors
 
     /// @returns size (rows * cols)
-    Size size() const { return v_.size(); }
+    inline Size size() const { return rows_*cols_; }
     /// @returns number of rows
     Size rows() const { return rows_; }
     /// @returns number of columns
     Size cols() const { return cols_; }
 
     /// Access by row and column
-    Scalar& operator()(Size row, Size col) { return v_[col*rows_ + row]; }
-    const Scalar& operator()(Size row, Size col) const { return v_[col*rows_ + row]; }
+    /// @note implements column-major (Fortran-style) ordering
+    Scalar& operator()(Size row, Size col) { return m_[col*rows_ + row]; }
+    const Scalar& operator()(Size row, Size col) const { return m_[col*rows_ + row]; }
 
     /// Access to linearised storage
-    Scalar& operator[](Size i) { return v_[i]; }
-    const Scalar& operator[](Size i) const { return v_[i]; }
+    Scalar& operator[](Size i) { return m_[i]; }
+    const Scalar& operator[](Size i) const { return m_[i]; }
 
     /// @returns modifiable view of the data
-    Scalar* data() { return v_.data(); }
+    Scalar* data() { return m_; }
     /// @returns read-only view of the data
-    const Scalar* data() const { return v_.data(); }
+    const Scalar* data() const { return m_; }
 
     /// @returns iterator to beginning of the data
-    Storage::iterator begin() { return v_.begin(); }
+    Scalar* begin() { return m_; }
     /// @returns const iterator to beginning of the data
-    Storage::const_iterator begin() const { return v_.begin(); }
+    const Scalar* begin() const { return m_; }
     /// @returns iterator to end of the data
-    Storage::iterator end() { return v_.end(); }
+    Scalar* end() { return m_ + size(); }
     /// @returns const iterator to end of the data
-    Storage::const_iterator end() const { return v_.end(); }
+    const Scalar* end() const { return m_ + size(); }
 
-protected:  // members
-    Storage v_;
+protected:  // member variables
+
+    Scalar* m_;
     Size rows_;
     Size cols_;
+    bool own_;
 };
 
 //-----------------------------------------------------------------------------

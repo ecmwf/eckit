@@ -12,8 +12,8 @@
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_la_Matrix_h
-#define eckit_la_Matrix_h
+#ifndef eckit_linalg_Matrix_h
+#define eckit_linalg_Matrix_h
 
 #include <vector>
 #include "eckit/linalg/types.h"
@@ -108,10 +108,18 @@ public:  // methods
 
 protected:  // member variables
 
+    /// Container
     Scalar* m_;
+
+    /// Number of rows
     Size rows_;
+
+    /// Number of columns
     Size cols_;
+
+    /// Indicate ownership
     bool own_;
+
 };
 
 //-----------------------------------------------------------------------------

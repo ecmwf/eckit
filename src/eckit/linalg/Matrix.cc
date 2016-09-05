@@ -19,12 +19,18 @@ namespace linalg {
 
 //-----------------------------------------------------------------------------
 
-Matrix::Matrix() : m_(0), rows_(0), cols_(0), own_(false) {}
+Matrix::Matrix() : m_(0),
+    rows_(0),
+    cols_(0),
+    own_(false) {}
 
 //-----------------------------------------------------------------------------
 
 Matrix::Matrix(Size rows, Size cols) :
-    m_(new Scalar[rows*cols]), rows_(rows), cols_(cols), own_(true) {
+    m_(new Scalar[rows*cols]),
+    rows_(rows),
+    cols_(cols),
+    own_(true) {
     ASSERT(size()>0);
     ASSERT(m_);
 }
@@ -32,7 +38,10 @@ Matrix::Matrix(Size rows, Size cols) :
 //-----------------------------------------------------------------------------
 
 Matrix::Matrix(Scalar* m, Size rows, Size cols) :
-    m_(m), rows_(rows), cols_(cols), own_(false) {
+    m_(m),
+    rows_(rows),
+    cols_(cols),
+    own_(false) {
     ASSERT(size()>0);
     ASSERT(m_);
 }
@@ -40,21 +49,29 @@ Matrix::Matrix(Scalar* m, Size rows, Size cols) :
 //-----------------------------------------------------------------------------
 
 Matrix::Matrix(Stream& stream) :
-    m_(0), rows_(0), cols_(0), own_(false) {
+    m_(0),
+    rows_(0),
+    cols_(0),
+    own_(false) {
     Size rows, cols;
-    stream >> rows >> cols;
     resize(rows, cols);
 
     ASSERT(size()>0);
     ASSERT(m_);
     Buffer b(m_, (rows*cols)*sizeof(Scalar), /* dummy */ true);
+
+    stream >> rows;
+    stream >> cols;
     stream >> b;
 }
 
 //-----------------------------------------------------------------------------
 
 Matrix::Matrix(const Matrix& other) :
-    m_(new Scalar[other.size()]), rows_(other.rows_), cols_(other.cols_), own_(true) {
+    m_(new Scalar[other.size()]),
+    rows_(other.rows_),
+    cols_(other.cols_),
+    own_(true) {
     ASSERT(size()>0);
     ASSERT(m_);
     ::memcpy(m_, other.m_, size() * sizeof(Scalar));
@@ -109,17 +126,20 @@ void Matrix::setZero() {
 
 //-----------------------------------------------------------------------------
 
-void Matrix::fill(Scalar s) {
+void Matrix::fill(Scalar value) {
     for (Size i = 0; i < size(); ++i) {
-        m_[i] = s;
+        m_[i] = value;
     }
 }
 
 //-----------------------------------------------------------------------------
 
-void Matrix::encode(Stream& s) const {
-  s << rows_ << cols_;
-  s << Buffer(const_cast<Scalar*>(m_), rows_*cols_*sizeof(Scalar), /* dummy */ true);
+void Matrix::encode(Stream& stream) const {
+  Buffer b(const_cast<Scalar*>(m_), rows_*cols_*sizeof(Scalar), /* dummy */ true);
+
+  stream << rows_;
+  stream << cols_;
+  stream << b;
 }
 
 //-----------------------------------------------------------------------------

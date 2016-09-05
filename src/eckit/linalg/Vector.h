@@ -12,16 +12,17 @@
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_la_Vector_h
-#define eckit_la_Vector_h
+#ifndef eckit_linalg_Vector_h
+#define eckit_linalg_Vector_h
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/types.h"
 
 namespace eckit {
-
 class Stream;
+}
 
+namespace eckit {
 namespace linalg {
 
 //-----------------------------------------------------------------------------
@@ -42,17 +43,17 @@ public:  // methods
     Vector(Scalar* v, Size s);
 
     /// Constructor from Stream
-    Vector(Stream& v);
+    Vector(Stream&);
 
     /// Copy constructor
-    Vector(const Vector& v);
+    Vector(const Vector&);
 
     // TODO: make virtual if used as base class
     ~Vector();
 
     // -- Mutators
 
-    Vector& operator=(const Vector& v);
+    Vector& operator=(const Vector&);
 
     /// Swap this vector for another
     void swap(Vector& v);
@@ -64,12 +65,12 @@ public:  // methods
     void setZero();
 
     /// Fill vector with given scalar
-    void fill(Scalar s);
+    void fill(Scalar);
 
     // -- Serialisation
 
     /// Serialise to a Stream
-    void encode(Stream& s) const;
+    void encode(Stream&) const;
 
     // -- Accessors
 
@@ -98,9 +99,16 @@ public:  // methods
     const Scalar* end() const { return v_ + size_; }
 
 protected:  // members
+
+    /// Container
     Scalar* v_;
+
+    /// Vector length/size
     Size size_;
+
+    /// Indicate ownership
     bool own_;
+
 };
 
 //-----------------------------------------------------------------------------

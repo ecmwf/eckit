@@ -252,7 +252,7 @@ void Parallel::send(const void* send, size_t count, Data::Code type, int dest, i
 
     MPI_Datatype mpitype = toType(type);
 
-    MPI_CALL( MPI_Send(send, int(count), mpitype, dest, tag, comm_) );
+    MPI_CALL( MPI_Send(const_cast<void*>(send), int(count), mpitype, dest, tag, comm_) );
 }
 
 Request Parallel::iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const

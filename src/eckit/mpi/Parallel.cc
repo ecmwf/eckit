@@ -97,11 +97,15 @@ Parallel::~Parallel() {
 }
 
 void Parallel::initialize() {
-    NOTIMP;
+
+    int argc;    NOTIMP; /// @todo get from Main once merge branch feature/new-logging
+    char **argv; NOTIMP; /// @todo get from Main once merge branch feature/new-logging
+
+    MPI_CALL( MPI_Init(&argc, &argv) );
 }
 
 void Parallel::finalize() {
-    NOTIMP;
+    MPI_CALL( MPI_Finalize() );
 }
 
 size_t Parallel::getCount(Status& status, Data::Code type) const
@@ -229,6 +233,8 @@ void Parallel::allToAllv(const void* sendbuf, const int sendcounts[], const int 
 
 Status Parallel::receive(void* recv, size_t count, Data::Code type, int source, int tag) const
 {
+    ASSERT(count  < size_t(std::numeric_limits<int>::max()));
+
     MPI_Datatype mpitype = toType(type);
 
     MPI_Status status;
@@ -242,6 +248,8 @@ Status Parallel::receive(void* recv, size_t count, Data::Code type, int source, 
 
 void Parallel::send(const void* send, size_t count, Data::Code type, int dest, int tag) const
 {
+    ASSERT(count  < size_t(std::numeric_limits<int>::max()));
+
     MPI_Datatype mpitype = toType(type);
 
     MPI_CALL( MPI_Send(send, int(count), mpitype, dest, tag, comm_) );
@@ -249,12 +257,34 @@ void Parallel::send(const void* send, size_t count, Data::Code type, int dest, i
 
 Request Parallel::iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const
 {
-    NOTIMP;
+    ASSERT(count  < size_t(std::numeric_limits<int>::max()));
+
+    Request request;
+    NOTIMP; /// @todo implement Request to MPI_Request conversion
+
+    MPI_Request mpireq;
+
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_CALL( MPI_Irecv(recv, int(count), mpitype, source, tag, comm_, &mpireq) );
+
+    return request;
 }
 
 Request Parallel::iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const
 {
-    NOTIMP;
+    ASSERT(count  < size_t(std::numeric_limits<int>::max()));
+
+    Request request;
+    NOTIMP; /// @todo implement Request to MPI_Request conversion
+
+    MPI_Request mpireq;
+
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_CALL( MPI_Isend(const_cast<void*>(send), int(count), mpitype, dest, tag, comm_, &mpireq) );
+
+    return request;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

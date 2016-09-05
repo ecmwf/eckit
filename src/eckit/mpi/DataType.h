@@ -28,7 +28,7 @@ class Data {
 public:
 
     enum Code {
-        CHAR,
+        CHAR = 0,
         WCHAR,
         SHORT,
         INT,
@@ -41,10 +41,10 @@ public:
         FLOAT,
         DOUBLE,
         LONG_DOUBLE,
-        BOOL,
+//        BOOL,
         COMPLEX,
         DOUBLE_COMPLEX,
-        LONG_DOUBLE_COMPLEX,
+//        LONG_DOUBLE_COMPLEX,
         BYTE,
         PACKED,
         SHORT_INT,
@@ -53,6 +53,7 @@ public:
         FLOAT_INT,
         DOUBLE_INT,
         LONG_DOUBLE_INT,
+        MAX_CODE_VALUE
     };
 
     template <class T>

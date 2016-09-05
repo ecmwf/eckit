@@ -30,40 +30,40 @@ protected:  // methods
 
     virtual void finalize();
 
-    virtual size_t getCount(Status& status, Data::Code datatype) const;
+    virtual size_t getCount(Status& status, Data::Code type) const;
 
-    virtual void broadcast(void* buffer, size_t count, Data::Code datatype, size_t root) const;
+    virtual void broadcast(void* buffer, size_t count, Data::Code type, size_t root) const;
 
-    virtual void gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code datatype, size_t root) const;
+    virtual void gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type, size_t root) const;
 
-    virtual void scatter(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code datatype, size_t root) const;
+    virtual void scatter(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type, size_t root) const;
 
-    virtual void gatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[], const int displs[], Data::Code datatype, size_t root) const;
+    virtual void gatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[], const int displs[], Data::Code type, size_t root) const;
 
-    virtual void scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf, size_t recvcount, Data::Code datatype, size_t root) const;
+    virtual void scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf, size_t recvcount, Data::Code type, size_t root) const;
 
-    virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code datatype, Operation::Code op) const;
+    virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op) const;
 
-    virtual void allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code datatype, Operation::Code op) const;
+    virtual void allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code type, Operation::Code op) const;
 
-    virtual void allGather(const void *sendbuf, size_t sendcount, void *recvbuf, size_t recvcount, Data::Code datatype) const;
+    virtual void allGather(const void *sendbuf, size_t sendcount, void *recvbuf, size_t recvcount, Data::Code type) const;
 
     virtual void allGatherv(const void *sendbuf, size_t sendcount,
-                            void *recvbuf, const int recvcounts[], const int displs[], Data::Code datatype) const;
+                            void *recvbuf, const int recvcounts[], const int displs[], Data::Code type) const;
 
-    virtual void allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code datatype) const;
+    virtual void allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type) const;
 
     virtual void allToAllv(const void *sendbuf, const int sendcounts[], const int sdispls[],
                            void *recvbuf, const int recvcounts[], const int rdispls[],
-                           Data::Code datatype) const;
+                           Data::Code type) const;
 
-    virtual Status receive(void* recv, size_t count, Data::Code datatype, int source, int tag) const;
+    virtual Status receive(void* recv, size_t count, Data::Code type, int source, int tag) const;
 
-    virtual Status send(const void* send, size_t count, Data::Code datatype, int dest, int tag) const;
+    virtual Status send(const void* send, size_t count, Data::Code type, int dest, int tag) const;
 
-    virtual Request iReceive(void* recv, size_t count, Data::Code datatype, int source, int tag) const;
+    virtual Request iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const;
 
-    virtual Request iSend(const void* send, size_t count, Data::Code datatype, int dest, int tag) const;
+    virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const;
 
 };
 

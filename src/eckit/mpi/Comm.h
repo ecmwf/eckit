@@ -45,7 +45,7 @@ public: // class methods
 
     static Comm& comm(const char* name = 0);
 
-    static Comm& create(const char* name);
+//    static Comm& create(const char* name);
 
     static bool areMPIVarsSet();
 
@@ -315,10 +315,23 @@ public:  // methods
         allGatherv(&(*first), sendcount, &(*recvbuf), recvcounts, displs, type);
     }
 
+
     template <typename T, typename CIter>
     void allGatherv(CIter first, CIter last, mpi::Buffer<T>& recv) const {
 
-        NOTIMP; /* take from Collectives.h -- needs to resize recv.buffer */
+        int sendcnt = int(std::distance(first, last));
+
+        allGather(&sendcnt, 1, recv.counts.data(), 1);
+
+        recv.displs[0] = 0;
+        recv.cnt = recv.counts[0];
+        size_t mpiSize = size();
+        for(size_t jpart = 1; jpart < mpiSize; ++jpart) {
+            recv.displs[jpart] = recv.displs[jpart-1] + recv.counts[jpart-1];
+            recv.cnt += recv.counts[jpart];
+        }
+
+        recv.buffer.resize(recv.cnt);
 
         allGatherv(first, last, recv.buffer.data(), recv.counts.data(), recv.displs.data());
     }

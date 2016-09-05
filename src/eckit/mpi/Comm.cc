@@ -148,14 +148,14 @@ void Comm::initDefaultComm()
     (*communicators)["world"] = defaultComm;
 }
 
+#if 0
 Comm& Comm::create(const char* name)
 {
-    Comm* comm;
-
-    NOTIMP;
-
+    Comm* comm;    
+    ///
     (*communicators)[name] = comm;
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 

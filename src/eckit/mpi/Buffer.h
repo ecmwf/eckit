@@ -12,6 +12,7 @@
 #define eckit_mpi_Buffer_h
 
 #include <vector>
+#include <cstddef>
 
 namespace eckit {
 namespace mpi {

@@ -54,7 +54,7 @@ void Serial::abort(int) const
     throw Abort("MPI Abort called");
 }
 
-void Serial::wait(Request&) const
+Status Serial::wait(Request&) const
 {
     NOTIMP; /// @todo implement
 }

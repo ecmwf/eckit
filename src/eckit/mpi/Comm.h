@@ -116,7 +116,7 @@ public:  // methods
     virtual void abort(int errorcode = -1) const = 0;
 
     /// @brief Wait for Request to be completed, ignoring the return status
-    virtual void wait(Request&) const = 0;
+    virtual Status wait(Request&) const = 0;
 
     /// @brief Probe for incomming messages
     virtual Status probe(int source, int tag) const = 0;

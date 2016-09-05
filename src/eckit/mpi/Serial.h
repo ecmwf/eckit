@@ -42,7 +42,7 @@ protected:  // methods
 
     virtual void abort(int errorcode = -1) const;
 
-    virtual void wait(Request&) const;
+    virtual Status wait(Request&) const;
 
     virtual Status probe(int source, int tag) const;
 

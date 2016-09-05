@@ -119,47 +119,63 @@ void Parallel::finalize() {
 
 std::string Parallel::processorName() const
 {
-    NOTIMP; /// @todo implement
+    char hostname[256];
+    int size = sizeof(hostname);
+    MPI_CALL( MPI_Get_processor_name(hostname, &size) );
+    return hostname;
 }
 
 size_t Parallel::rank() const
 {
-    NOTIMP; /// @todo implement
+    int rank;
+    MPI_CALL( MPI_Comm_rank(comm_, &rank) );
+    return size_t(rank);
 }
 
 size_t Parallel::size() const
 {
-    NOTIMP; /// @todo implement
+    int size;
+    MPI_CALL( MPI_Comm_size(comm_, &size) );
+    return size_t(size);
 }
 
 void Parallel::barrier() const
 {
-    NOTIMP; /// @todo implement
+    MPI_CALL( MPI_Barrier(comm_) );
 }
 
 void Parallel::abort(int errorcode) const
 {
-    NOTIMP; /// @todo implement
+    MPI_CALL( MPI_Abort(comm_, errorcode) );
 }
 
-void Parallel::wait(Request&) const
+Status Parallel::wait(Request&) const
 {
-    NOTIMP; /// @todo implement
+    MPI_Status st;
+    MPI_Request req;
+
+    NOTIMP; /// @todo implement Status to MPI_Status conversion
+
+    MPI_CALL( MPI_Wait(&req, &st) );
 }
 
 Status Parallel::probe(int source, int tag) const
 {
-    NOTIMP; /// @todo implement
+    MPI_Status st;
+
+    NOTIMP; /// @todo implement Status to MPI_Status conversion
+
+    MPI_CALL( MPI_Probe(source, tag, comm_, &st) );
 }
 
 int Parallel::anySource() const
 {
-    NOTIMP; /// @todo implement
+    return MPI_ANY_SOURCE;
 }
 
 int Parallel::anyTag() const
 {
-    NOTIMP; /// @todo implement
+    return MPI_ANY_TAG;
 }
 
 size_t Parallel::getCount(Status& status, Data::Code type) const

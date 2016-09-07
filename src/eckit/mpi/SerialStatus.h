@@ -8,42 +8,43 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/mpi/Request.h"
+#ifndef eckit_mpi_SerialStatus_h
+#define eckit_mpi_SerialStatus_h
 
-#include "eckit/mpi/Comm.h"
+#include <mpi.h>
+
+#include "eckit/mpi/Status.h"
 
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Request::Request() {
-    *this = eckit::mpi::comm().request();
-}
+class Serial;
 
-Request::Request(RequestContent* p) :
-    content_(p) {
-    content_->attach();
-}
+class SerialStatus : StatusContent {
 
-Request::~Request() {
-   content_->detach();
-}
+private: // methods
 
-Request::Request(const Request& s) : content_(s.content_) {
-    content_->attach();
-}
+    virtual int source() const { return source_; }
+    virtual int tag() const    { return tag_; }
+    virtual int error() const  { return error_; }
 
-Request& Request::operator=(const Request& s) {
-    content_ = s.content_;
-    content_->attach();
-    return *this;
-}
+    virtual void print(std::ostream&) const;
 
-RequestContent::~RequestContent() {
-}
+private: // members
+
+    friend class Serial;
+
+    int source_;
+    int tag_;
+    int error_;
+
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace mpi
-} // namepsace eckit
+}  // namespace mpi
+}  // namespace eckit
+
+#endif

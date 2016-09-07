@@ -13,24 +13,48 @@
 
 #include <iosfwd>
 
+#include "eckit/memory/Counted.h"
+
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class StatusContent;
+class StatusContent : public Counted {
+public:
+
+    virtual ~StatusContent();
+
+    virtual int source() const = 0;
+    virtual int tag() const = 0;
+    virtual int error() const = 0;
+
+    virtual void print(std::ostream&) const = 0;
+
+};
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class Status {
 
 public: // methods
 
-    Status();
+    Status(StatusContent*);
 
     ~Status();
 
-    int source() const;
-    int tag() const;
-    int error() const;
+    Status(const Status&);
+
+    Status& operator=(const Status&);
+
+    int source() const { return content_->source(); }
+    int tag() const    { return content_->tag(); }
+    int error() const  { return content_->error(); }
+
+    template <class T>
+    T& as() {
+        return dynamic_cast<T&>(*content_);
+    }
 
 private: // methods
 
@@ -42,7 +66,7 @@ private: // methods
 
 private: // members
 
-    StatusContent* pimpl_;
+    StatusContent* content_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

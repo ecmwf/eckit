@@ -5,18 +5,29 @@ Comm.cc
 Comm.h
 DataType.cc
 DataType.h
-Operation.h
 Operation.cc
+Operation.h
 Request.cc
 Request.h
 Serial.cc
 Serial.h
+SerialStatus.cc
+SerialStatus.h
 Status.cc
 Status.h
 )
 
 if( HAVE_MPI )
-    list( APPEND eckit_mpi_srcs  Parallel.h Parallel.cc )
+
+    list( APPEND eckit_mpi_srcs
+        Parallel.cc
+        Parallel.h
+        ParallelStatus.cc
+        ParallelStatus.h
+        ParallelRequest.cc
+        ParallelRequest.h
+        )
+
     set(eckit_mpi_defs ${MPI_CXX_DEFINITIONS} )
     set(eckit_mpi_incs ${MPI_CXX_INCLUDE_PATH} )
     set(eckit_mpi_libs ${MPI_CXX_LIBRARIES} )

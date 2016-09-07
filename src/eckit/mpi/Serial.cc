@@ -154,6 +154,16 @@ Request Serial::iSend(const void* send, size_t count, Data::Code type, int dest,
     NOTIMP;
 }
 
+Status Serial::createStatus()
+{
+    NOTIMP;
+}
+
+Request Serial::createRequest()
+{
+    NOTIMP;
+}
+
 void Serial::print(std::ostream& os) const {
     os << "Serial()";
 }

@@ -124,6 +124,9 @@ public:  // methods
     virtual int anySource() const = 0;
     virtual int anyTag() const = 0;
 
+    virtual Status status() const = 0;
+    virtual Request request() const = 0;
+
     template<typename T>
     size_t getCount(Status& status) const {
         return getCount(status, Data::Type<T>::code());

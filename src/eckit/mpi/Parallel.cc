@@ -15,6 +15,9 @@
 
 #include "eckit/exception/Exceptions.h"
 
+#include "eckit/mpi/ParallelStatus.h"
+#include "eckit/mpi/ParallelRequest.h"
+
 namespace eckit {
 namespace mpi {
 
@@ -149,23 +152,22 @@ void Parallel::abort(int errorcode) const
     MPI_CALL( MPI_Abort(comm_, errorcode) );
 }
 
-Status Parallel::wait(Request&) const
+Status Parallel::wait(Request& req) const
 {
-    MPI_Status st;
-    MPI_Request req;
+    Status st   = createStatus();
 
-    NOTIMP; /// @todo implement Status to MPI_Status conversion
+    MPI_CALL( MPI_Wait(toRequest(req), toStatus(st)) );
 
-    MPI_CALL( MPI_Wait(&req, &st) );
+    return st;
 }
 
 Status Parallel::probe(int source, int tag) const
 {
-    MPI_Status st;
+    Status st = createStatus();
 
-    NOTIMP; /// @todo implement Status to MPI_Status conversion
+    MPI_CALL( MPI_Probe(source, tag, comm_, toStatus(st)) );
 
-    MPI_CALL( MPI_Probe(source, tag, comm_, &st) );
+    return st;
 }
 
 int Parallel::anySource() const
@@ -178,16 +180,13 @@ int Parallel::anyTag() const
     return MPI_ANY_TAG;
 }
 
-size_t Parallel::getCount(Status& status, Data::Code type) const
+size_t Parallel::getCount(Status& st, Data::Code type) const
 {
     int count = 0;
-    MPI_Status st;
-
-    NOTIMP; /// @todo implement Status to MPI_Status conversion
 
     MPI_Datatype mpitype = toType(type);
 
-    MPI_CALL( MPI_Get_count(&st, mpitype, &count) );
+    MPI_CALL( MPI_Get_count(toStatus(st), mpitype, &count) );
 
     ASSERT(count >= 0);
     return size_t(count);
@@ -307,13 +306,11 @@ Status Parallel::receive(void* recv, size_t count, Data::Code type, int source, 
 
     MPI_Datatype mpitype = toType(type);
 
-    MPI_Status status;
+    Status status = createStatus();
 
-    MPI_CALL( MPI_Recv(recv, int(count), mpitype, source, tag, comm_, &status) );
+    MPI_CALL( MPI_Recv(recv, int(count), mpitype, source, tag, comm_, toStatus(status)) );
 
-    NOTIMP; /// @todo implement Status to MPI_Status conversion
-
-    return eckit::mpi::Status();
+    return status;
 }
 
 void Parallel::send(const void* send, size_t count, Data::Code type, int dest, int tag) const
@@ -329,37 +326,47 @@ Request Parallel::iReceive(void* recv, size_t count, Data::Code type, int source
 {
     ASSERT(count  < size_t(std::numeric_limits<int>::max()));
 
-    Request request;
-    NOTIMP; /// @todo implement Request to MPI_Request conversion
-
-    MPI_Request mpireq;
+    Request req = createRequest();
 
     MPI_Datatype mpitype = toType(type);
 
-    MPI_CALL( MPI_Irecv(recv, int(count), mpitype, source, tag, comm_, &mpireq) );
+    MPI_CALL( MPI_Irecv(recv, int(count), mpitype, source, tag, comm_, toRequest(req)) );
 
-    return request;
+    return req;
 }
 
 Request Parallel::iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const
 {
     ASSERT(count  < size_t(std::numeric_limits<int>::max()));
 
-    Request request;
-    NOTIMP; /// @todo implement Request to MPI_Request conversion
-
-    MPI_Request mpireq;
+    Request req = createRequest();
 
     MPI_Datatype mpitype = toType(type);
 
-    MPI_CALL( MPI_Isend(const_cast<void*>(send), int(count), mpitype, dest, tag, comm_, &mpireq) );
+    MPI_CALL( MPI_Isend(const_cast<void*>(send), int(count), mpitype, dest, tag, comm_, toRequest(req)) );
 
-    return request;
+    return req;
 }
 
 void Parallel::print(std::ostream& os) const {
     os << "Parallel()";
     /// @note maybe add information about the MPI backend: opem-mpi? mpich? etc...
+}
+
+MPI_Status* Parallel::toStatus(Status& st) {
+    return &(st.as<ParallelStatus>().status_);
+}
+
+Status Parallel::createStatus() {
+    return Status(new ParallelStatus());
+}
+
+Request Parallel::createRequest() {
+    return Request(new ParallelRequest());
+}
+
+MPI_Request* Parallel::toRequest(Request& req) {
+    return &(req.as<ParallelRequest>().request_);
 }
 
 CommBuilder<Parallel> ParallelBuilder("parallel");

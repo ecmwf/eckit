@@ -8,42 +8,36 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/mpi/Request.h"
+#ifndef eckit_mpi_ParallelRequest_h
+#define eckit_mpi_ParallelRequest_h
 
-#include "eckit/mpi/Comm.h"
+#include <mpi.h>
+
+#include "eckit/mpi/Request.h"
 
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Request::Request() {
-    *this = eckit::mpi::comm().request();
-}
+class Parallel;
 
-Request::Request(RequestContent* p) :
-    content_(p) {
-    content_->attach();
-}
+class ParallelRequest : public RequestContent {
 
-Request::~Request() {
-   content_->detach();
-}
+private: // methods
 
-Request::Request(const Request& s) : content_(s.content_) {
-    content_->attach();
-}
+    virtual void print(std::ostream&) const;
 
-Request& Request::operator=(const Request& s) {
-    content_ = s.content_;
-    content_->attach();
-    return *this;
-}
+private: // members
 
-RequestContent::~RequestContent() {
-}
+    friend class Parallel;
+
+    MPI_Request request_;
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace mpi
-} // namepsace eckit
+}  // namespace mpi
+}  // namespace eckit
+
+#endif

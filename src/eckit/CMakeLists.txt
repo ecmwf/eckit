@@ -504,6 +504,7 @@ utils/RLE.cc )
 list( APPEND eckit_memory_srcs
 memory/Builder.h
 memory/Builder.cc
+memory/Counted.cc
 memory/Counted.h
 memory/Factory.h
 memory/Owned.h

@@ -87,6 +87,12 @@ protected:  // methods
 
     virtual void print(std::ostream&) const;
 
+    virtual Status status() const    { return createStatus(); }
+    virtual Request request() const  { return createRequest(); }
+
+    static Status  createStatus();
+    static Request createRequest();
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

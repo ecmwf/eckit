@@ -55,7 +55,7 @@ class Counted :
     private NonCopyable,
     private memory::detail::ThreadedLock {
 
-public: // methodsO
+public: // methods
 
 
     void attach() const
@@ -92,7 +92,7 @@ public:
 
     Counted() : count_(0) {}
 
-    virtual ~Counted() {}
+    virtual ~Counted();
 
 //  void *operator new(size_t s)  { return MemoryPool::fastAllocate(s);}
 //  void operator delete(void* p) { MemoryPool::fastDeallocate(p);     }

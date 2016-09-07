@@ -52,7 +52,7 @@ protected:  // methods
 
     virtual int anyTag() const;
 
-    virtual size_t getCount(Status& status, Data::Code type) const;
+    virtual size_t getCount(Status& st, Data::Code type) const;
 
     virtual void broadcast(void* buffer, size_t count, Data::Code type, size_t root) const;
 
@@ -88,6 +88,17 @@ protected:  // methods
     virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const;
 
     virtual void print(std::ostream&) const;
+
+    virtual Status status() const    { return createStatus(); }
+    virtual Request request() const  { return createRequest(); }
+
+    static Status  createStatus();
+
+    static MPI_Status* toStatus(Status&);
+
+    static Request createRequest();
+
+    static MPI_Request* toRequest(Request&);
 
 private: // members
 

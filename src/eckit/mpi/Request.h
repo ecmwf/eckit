@@ -13,20 +13,41 @@
 
 #include <iosfwd>
 
+#include "eckit/memory/Counted.h"
+
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class RequestContent;
+class RequestContent : public Counted {
+public:
+
+    virtual ~RequestContent();
+
+    virtual void print(std::ostream&) const = 0;
+
+};
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class Request {
 
 public: // methods
 
     Request();
+    Request(RequestContent*);
 
     ~Request();
+
+    Request(const Request&);
+
+    Request& operator=(const Request&);
+
+    template <class T>
+    T& as() {
+        return dynamic_cast<T&>(*content_);
+    }
 
 private: // methods
 
@@ -38,7 +59,7 @@ private: // methods
 
 private: // members
 
-    RequestContent* pimpl_;
+    RequestContent* content_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -17,24 +17,26 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Status::Status() {
-    NOTIMP;
+Status::Status(StatusContent* p) :
+    content_(p) {
+    content_->attach();
 }
 
 Status::~Status() {
-    NOTIMP;
+   content_->detach();
 }
 
-int Status::source() const {
-    NOTIMP;
+Status::Status(const Status& s) : content_(s.content_) {
+    content_->attach();
 }
 
-int Status::tag() const {
-    NOTIMP;
+Status& Status::operator=(const Status& s) {
+    content_ = s.content_;
+    content_->attach();
+    return *this;
 }
 
-int Status::error() const {
-    NOTIMP;
+StatusContent::~StatusContent() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------

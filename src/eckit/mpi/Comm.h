@@ -320,24 +320,7 @@ public:  // methods
 
 
     template <typename T, typename CIter>
-    void allGatherv(CIter first, CIter last, mpi::Buffer<T>& recv) const {
-
-        int sendcnt = int(std::distance(first, last));
-
-        allGather(&sendcnt, 1, recv.counts.data(), 1);
-
-        recv.displs[0] = 0;
-        recv.cnt = recv.counts[0];
-        size_t mpiSize = size();
-        for(size_t jpart = 1; jpart < mpiSize; ++jpart) {
-            recv.displs[jpart] = recv.displs[jpart-1] + recv.counts[jpart-1];
-            recv.cnt += recv.counts[jpart];
-        }
-
-        recv.buffer.resize(recv.cnt);
-
-        allGatherv(first, last, recv.buffer.data(), recv.counts.data(), recv.displs.data());
-    }
+    void allGatherv(CIter first, CIter last, mpi::Buffer<T>& recv) const;
 
     ///
     /// All to all methods, fixed data size
@@ -470,25 +453,25 @@ class CommBuilder : public CommFactory {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if 0
+template <typename T, typename CIter>
+void eckit::mpi::Comm::allGatherv(CIter first, CIter last, mpi::Buffer<T>& recv) const {
 
-///
-/// All reduce a pair
-///
+    int sendcnt = int(std::distance(first, last));
 
-static void allReduce(const eckit::mpi::Comm& comm, const std::pair<T,int>& send, std::pair<T,int>& recv, Operation::Code op)  {
-    NOTIMP;
+    allGather(&sendcnt, 1, recv.counts.data(), 1);
+
+    recv.displs[0] = 0;
+    recv.cnt = recv.counts[0];
+    size_t mpiSize = size();
+    for(size_t jpart = 1; jpart < mpiSize; ++jpart) {
+        recv.displs[jpart] = recv.displs[jpart-1] + recv.counts[jpart-1];
+        recv.cnt += recv.counts[jpart];
+    }
+
+    recv.buffer.resize(recv.cnt);
+
+    allGatherv(first, last, recv.buffer.data(), recv.counts.data(), recv.displs.data());
 }
-
-///
-/// All reduce a vector of pairs
-///
-
-static void allReduce(const eckit::mpi::Comm& comm, const std::vector< std::pair<T,int> >& send, std::vector< std::pair<T,int> >& recv, Operation::Code op)  {
-    NOTIMP;
-}
-
-#endif
 
 template <typename T>
 void eckit::mpi::Comm::allToAll(const std::vector< std::vector<T> >& sendvec, std::vector< std::vector<T> >& recvvec) const {

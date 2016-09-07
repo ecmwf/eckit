@@ -1,6 +1,5 @@
 list( APPEND eckit_mpi_srcs
 Buffer.h
-Collectives.h
 Comm.cc
 Comm.h
 DataType.cc

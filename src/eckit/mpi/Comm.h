@@ -181,25 +181,25 @@ public:  // methods
     }
 
     template <typename T>
-    void gather(const T* first, const T* last, T* result, size_t root ) const {
+    void gather(const T* first, const T* last, T* result, size_t root) const {
         size_t n = std::distance(first, last);
         gather(first, n, result, n, Data::Type<T>::code(), root);
     }
 
     template <typename T>
-    void gather(const T send[], size_t sendcnt, T recv[], size_t recvcnt, size_t root ) const {
+    void gather(const T send[], size_t sendcnt, T recv[], size_t recvcnt, size_t root) const {
         if(root == rank()) { ASSERT(recvcnt >= sendcnt); }
         gather(send, sendcnt, recv, sendcnt, Data::Type<T>::code(), root);
     }
 
     template <typename T>
-    void gather(const T send[], size_t sendcnt, std::vector<T>& recv, size_t root ) const {
+    void gather(const T send[], size_t sendcnt, std::vector<T>& recv, size_t root) const {
         if(root == rank()) { ASSERT(recv.size() >= sendcnt); }
         gather(&send[0], sendcnt, &recv[0], sendcnt, Data::Type<T>::code(), root);
     }
 
     template <typename T>
-    void gather(const std::vector<T>& send, std::vector<T>& recv, size_t root ) const {
+    void gather(const std::vector<T>& send, std::vector<T>& recv, size_t root) const {
         if(root == rank()) { ASSERT(recv.size() >= send.size()); }
         gather(send.begin(), send.end(), recv.begin(), root);
     }
@@ -226,6 +226,15 @@ public:  // methods
     void gatherv(const std::vector<T>& send, std::vector<T>& recv, const std::vector<int>& recvcounts, const std::vector<int>& displs, size_t root ) const {
         ASSERT(recvcounts.size() == displs.size());
         gatherv(send.begin(), send.end(), recv.begin(), recvcounts.data(), displs.data(), root);
+    }
+
+    ///
+    /// Scatter methods from one root
+    ///
+
+    template<class T>
+    void scatter(const T send[], size_t sendcnt, T recv[], size_t recvcnt, size_t root ) {
+        scatter(send, sendcnt, recv, recvcnt, Data::Type<T>::code(), root);
     }
 
     ///

@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE( test_all_to_all )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if 0 /* doesnt work -- allGather has some bug */
+#if 0
 
 BOOST_AUTO_TEST_CASE( test_all_gather___simple )
 {
@@ -245,11 +245,7 @@ BOOST_AUTO_TEST_CASE( test_all_gather___simple )
   BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
 }
 
-#endif
-
 //----------------------------------------------------------------------------------------------------------------------
-
-#if 0 /* doesnt work -- allGather (used internally) has some bug */
 
 BOOST_AUTO_TEST_CASE( test_all_gather___buffer )
 {
@@ -294,8 +290,6 @@ BOOST_AUTO_TEST_CASE( test_scatter_scalar )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if 0
-
 BOOST_AUTO_TEST_CASE( test_scatter_nscalars )
 {
     size_t N = 2;
@@ -304,11 +298,11 @@ BOOST_AUTO_TEST_CASE( test_scatter_nscalars )
     std::vector<long> send(size*N);
     for(size_t j = 0; j < send.size() / N; ++j) {
         for(size_t n = 0; n < N; ++n) {
-            send[j] = long(j*j) - n;
+            send[j*N+n] = long(j*j - n);
         }
     }
 
-    std::vector<long> recv (N, -999);
+    std::vector<long> recv(N);
 
     size_t root = 0; /* master */
 
@@ -319,10 +313,8 @@ BOOST_AUTO_TEST_CASE( test_scatter_nscalars )
     // check results
     std::vector<long> expected (N);
     for(size_t n = 0; n < N; ++n) {
-        expected[n] = rank*rank - n;
+        expected[n] = long(rank*rank - n);
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
 }
-
-#endif

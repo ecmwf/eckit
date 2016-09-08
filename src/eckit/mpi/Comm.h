@@ -200,7 +200,6 @@ public:  // methods
 
     template <typename T>
     void gather(const std::vector<T>& send, std::vector<T>& recv, size_t root) const {
-        if(root == rank()) { ASSERT(recv.size() >= send.size()); }
         gather(send.begin(), send.end(), recv.begin(), root);
     }
 

@@ -227,9 +227,7 @@ BOOST_AUTO_TEST_CASE( test_all_to_all )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if 0
-
-BOOST_AUTO_TEST_CASE( test_all_gather___simple )
+BOOST_AUTO_TEST_CASE( test_all_gather_scalar )
 {
   int send = mpi::comm().rank();
   std::vector<int> recv(mpi::comm().size());
@@ -247,7 +245,7 @@ BOOST_AUTO_TEST_CASE( test_all_gather___simple )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_all_gather___buffer )
+BOOST_AUTO_TEST_CASE( test_all_gather_buffer )
 {
   std::vector<int> send(mpi::comm().rank(), mpi::comm().rank());
   mpi::Buffer<int> recv(mpi::comm().size());
@@ -264,8 +262,6 @@ BOOST_AUTO_TEST_CASE( test_all_gather___buffer )
 
   BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
 }
-
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -292,29 +288,30 @@ BOOST_AUTO_TEST_CASE( test_scatter_scalar )
 
 BOOST_AUTO_TEST_CASE( test_scatter_nscalars )
 {
-    size_t N = 2;
+    for(size_t N = 1; N < 4; ++N) {
 
-    size_t size = mpi::comm().size();
-    std::vector<long> send(size*N);
-    for(size_t j = 0; j < send.size() / N; ++j) {
-        for(size_t n = 0; n < N; ++n) {
-            send[j*N+n] = long(j*j - n);
+        size_t size = mpi::comm().size();
+        std::vector<long> send(size*N);
+        for(size_t j = 0; j < send.size() / N; ++j) {
+            for(size_t n = 0; n < N; ++n) {
+                send[j*N+n] = long(j*j - n);
+            }
         }
+
+        std::vector<long> recv(N);
+
+        size_t root = 0; /* master */
+
+        BOOST_CHECK_NO_THROW( mpi::comm().scatter(send.data(), send.size() / size, recv.data(), recv.size(), root) );
+
+        size_t rank = mpi::comm().rank();
+
+        // check results
+        std::vector<long> expected (N);
+        for(size_t n = 0; n < N; ++n) {
+            expected[n] = long(rank*rank - n);
+        }
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
     }
-
-    std::vector<long> recv(N);
-
-    size_t root = 0; /* master */
-
-    BOOST_CHECK_NO_THROW( mpi::comm().scatter(send.data(), send.size() / size, recv.data(), recv.size(), root) );
-
-    size_t rank = mpi::comm().rank();
-
-    // check results
-    std::vector<long> expected (N);
-    for(size_t n = 0; n < N; ++n) {
-        expected[n] = long(rank*rank - n);
-    }
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
 }

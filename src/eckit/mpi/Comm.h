@@ -172,35 +172,38 @@ public:  // methods
     ///
 
     template<class CIter, class Iter>
-    void gather(CIter first, CIter last, Iter recv, size_t root) const {
-        typename std::iterator_traits<CIter>::difference_type n = std::distance(first, last);
+    void gather(CIter first, CIter last, Iter rfirst, Iter rlast, size_t root) const {
+        typename std::iterator_traits<CIter>::difference_type sendcount = std::distance(first, last);
+        typename std::iterator_traits<CIter>::difference_type rsize = std::distance(rfirst, rlast);
+        ASSERT(rsize % size() == 0); /* receiving size is multiple of comm().size() */
+        size_t recvcount = rsize / size();
+        ASSERT(sendcount == recvcount);
         Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
         Data::Code  type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
         ASSERT(ctype == type);
-        gather(&(*first), n, &(*recv), n, type, root);
+        gather(&(*first), sendcount, &(*rfirst), recvcount, type, root);
     }
 
     template <typename T>
-    void gather(const T* first, const T* last, T* result, size_t root) const {
-        size_t n = std::distance(first, last);
-        gather(first, n, result, n, Data::Type<T>::code(), root);
+    void gather(const T send[], size_t sendcount, T recv[], size_t recvcount, size_t root) const {
+        ASSERT(sendcount == recvcount);
+        gather(send, sendcount, recv, recvcount, Data::Type<T>::code(), root);
     }
 
     template <typename T>
-    void gather(const T send[], size_t sendcnt, T recv[], size_t recvcnt, size_t root) const {
-        if(root == rank()) { ASSERT(recvcnt >= sendcnt); }
-        gather(send, sendcnt, recv, sendcnt, Data::Type<T>::code(), root);
-    }
-
-    template <typename T>
-    void gather(const T send[], size_t sendcnt, std::vector<T>& recv, size_t root) const {
-        if(root == rank()) { ASSERT(recv.size() >= sendcnt); }
-        gather(&send[0], sendcnt, &recv[0], sendcnt, Data::Type<T>::code(), root);
+    void gather(const T send[], size_t sendcount, std::vector<T>& recv, size_t root) const {
+        ASSERT(recv.size() % size() == 0); /* receiving size is multiple of comm().size() */
+        size_t recvcount = recv.size() / size();
+        ASSERT(sendcount == recvcount);
+        gather(&send[0], sendcount, &recv[0], recvcount, Data::Type<T>::code(), root);
     }
 
     template <typename T>
     void gather(const std::vector<T>& send, std::vector<T>& recv, size_t root) const {
-        gather(send.begin(), send.end(), recv.begin(), root);
+        ASSERT(recv.size() % size() == 0); /* receiving size is multiple of comm().size() */
+        size_t recvcount = recv.size() / size();
+        ASSERT(send.size() == recvcount);
+        gather(send.data(), send.size(), recv.data(), recvcount, Data::Type<T>::code(), root);
     }
 
     ///
@@ -299,43 +302,25 @@ public:  // methods
     /// Gather methods from all, equal data sizes per rank
     ///
 
-    template <typename T>
-    void allGather(const T* sendbuf, size_t sendcount, T* recvbuf, size_t recvcount) const {
-        ASSERT(recvcount >= size());
-        allGather(sendbuf, sendcount, recvbuf, recvcount, Data::Type<T>::code());
-    }
+//    template <typename T>
+//    void allGather(const T* sendbuf, size_t sendcount, T* recvbuf, size_t recvcount) const {
+//        ASSERT(rsize % size() == 0);
+//        allGather(sendbuf, sendcount, recvbuf, recvcount, Data::Type<T>::code());
+//    }
 
     template <typename T, typename Iter>
-    void allGather(T sendval, Iter first, Iter last) const {
-        typename std::iterator_traits<Iter>::difference_type recvcount = std::distance(first, last);
+    void allGather(T sendval, Iter rfirst, Iter rlast) const {
 
-//        if(rank() == 0) {
-//            std::cout << "recvcount = " << recvcount << std::endl;
-//            const char* sep = "";
-//            std::cout << "recv ";
-//            for(Iter j = first; j != last; ++j, sep = ",") {
-//                std::cout << sep << *j;
-//            }
-//            std::cout << std::endl << std::flush;
-//        }
-//        barrier();
-
-        ASSERT(recvcount >= size());
         Data::Code ctype = Data::Type<T>::code();
         Data::Code  type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
         ASSERT(ctype == type);
-        allGather(&sendval, 1, &(*first), recvcount, type);
 
-//        if(rank() == 0) {
-//            std::cout << "recvcount = " << recvcount << std::endl;
-//            const char* sep = "";
-//            std::cout << "recv ";
-//            for(Iter j = first; j != last; ++j, sep = ",") {
-//                std::cout << sep << *j;
-//            }
-//            std::cout << std::endl << std::flush;
-//        }
-//        barrier();
+        typename std::iterator_traits<Iter>::difference_type rsize = std::distance(rfirst, rlast);
+        ASSERT(rsize % size() == 0);
+        size_t recvcount = rsize / size();
+        ASSERT(recvcount == 1);
+
+        allGather(&sendval, 1, &(*rfirst), recvcount, type);
     }
 
     ///
@@ -491,7 +476,7 @@ void eckit::mpi::Comm::allGatherv(CIter first, CIter last, mpi::Buffer<T>& recv)
 
     int sendcnt = int(std::distance(first, last));
 
-    allGather(&sendcnt, 1, recv.counts.data(), 1);
+    allGather(sendcnt, recv.counts.begin(), recv.counts.end());
 
     recv.displs[0] = 0;
     recv.cnt = recv.counts[0];

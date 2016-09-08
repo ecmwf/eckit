@@ -81,8 +81,6 @@ public:
 
         std::map<std::string, CommFactory *>::const_iterator j = factories.find(name);
 
-//        eckit::Log::debug<LibEcKit>() << "Looking for CommFactory [" << name << "]" << std::endl;
-
         if (j != factories.end()) { return *(j->second); }
 
         eckit::Log::error() << "No CommFactory for [" << name << "]" << std::endl;
@@ -167,13 +165,6 @@ Comm::~Comm() {
 Comm& comm(const char* name) {
     return Environment::instance().getComm(name);
 }
-
-//void initialize() {
-//    comm().initialize();
-//}
-//void finalize() {
-//    comm().initialize();
-//}
 
 bool isRunning() {
     return mpi::Environment::areMPIVarsSet();

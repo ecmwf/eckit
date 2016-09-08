@@ -35,9 +35,6 @@ class Environment;
 /// @returns the communicator registered with associated name, or default communicator when NULL is passed
 Comm& comm(const char* name = 0);
 
-//void initialize();
-//void finalize();
-
 bool isRunning();
 
 //----------------------------------------------------------------------------------------------------------------------

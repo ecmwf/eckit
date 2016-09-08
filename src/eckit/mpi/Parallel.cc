@@ -274,20 +274,7 @@ void Parallel::allGather(const void* sendbuf, size_t sendcount, void* recvbuf, s
 
     MPI_Datatype mpitype = toType(type);
 
-//    std::cout << "Parallel::allGather()"
-//              << " value = " << *reinterpret_cast<const int*>(sendbuf)
-//              << " sendcount = " << sendcount
-//              << " recvcount = " << recvcount
-//              << " type = " << type
-//              << " mpitype = " << mpitype
-//              << std::endl;
-
     MPI_CALL( MPI_Allgather(const_cast<void*>(sendbuf), int(sendcount), mpitype, recvbuf, int(recvcount), mpitype, comm_) );
-
-//    const int* r = reinterpret_cast<const int*>(recvbuf);
-//    for(size_t i = 0; i < recvcount; ++i, ++r) {
-//        std::cout << "recvbuf[" << i << "] = " << *reinterpret_cast<const int*>(r) << std::endl;
-//    }
 }
 
 void Parallel::allGatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[], const int displs[], Data::Code type) const

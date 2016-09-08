@@ -182,24 +182,21 @@ public:  // methods
     }
 
     template <typename T>
-    void gather(const T send[], size_t sendcount, T recv[], size_t recvcount, size_t root) const {
-        ASSERT(sendcount == recvcount);
-        gather(send, sendcount, recv, recvcount, Data::Type<T>::code(), root);
-    }
-
-    template <typename T>
-    void gather(const T send[], size_t sendcount, std::vector<T>& recv, size_t root) const {
+    void gather(const T send, std::vector<T>& recv, size_t root) const {
         ASSERT(recv.size() % size() == 0); /* receiving size is multiple of comm().size() */
         size_t recvcount = recv.size() / size();
-        ASSERT(sendcount == recvcount);
-        gather(&send[0], sendcount, &recv[0], recvcount, Data::Type<T>::code(), root);
+        size_t sendcount = 1;
+        ASSERT(recvcount == sendcount);
+        gather(&send, sendcount, recv.data(), recvcount, Data::Type<T>::code(), root);
     }
 
     template <typename T>
     void gather(const std::vector<T>& send, std::vector<T>& recv, size_t root) const {
+
         ASSERT(recv.size() % size() == 0); /* receiving size is multiple of comm().size() */
         size_t recvcount = recv.size() / size();
         ASSERT(send.size() == recvcount);
+
         gather(send.data(), send.size(), recv.data(), recvcount, Data::Type<T>::code(), root);
     }
 

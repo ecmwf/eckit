@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE( test_all_reduce )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_all_to_all )
+BOOST_AUTO_TEST_CASE( test_allToAll )
 {
   std::vector< std::vector<int> > send(mpi::comm().size(), std::vector<int>(1, mpi::comm().rank()));
   std::vector< std::vector<int> > recv(mpi::comm().size());
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE( test_all_to_all )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_all_gather_scalar )
+BOOST_AUTO_TEST_CASE( test_allGather_scalar )
 {
   int send = mpi::comm().rank();
   std::vector<int> recv(mpi::comm().size());
@@ -263,6 +263,71 @@ BOOST_AUTO_TEST_CASE( test_all_gather_buffer )
   BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_gather_scalar )
+{
+    size_t size = mpi::comm().size();
+    size_t rank = mpi::comm().rank();
+
+    std::vector<size_t> recv(size);
+
+    size_t send = 777 + rank;
+
+    size_t root = 0; /* master */
+
+    BOOST_CHECK_NO_THROW( mpi::comm().gather(send, recv, root) );
+
+    if(rank == root) {
+        std::vector<size_t> expected(size);
+        for(size_t j = 0; j < recv.size(); ++j) {
+            expected[j] = 777 + j;
+        }
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_gather_nscalars )
+{
+    for(size_t N = 1; N < 10; ++N) {
+
+        size_t size = mpi::comm().size();
+        size_t rank = mpi::comm().rank();
+
+        std::vector<long> recv(size*N);
+
+        std::vector<long> send(N);
+        for(size_t n = 0; n < N; ++n) {
+            send[n] = long(rank*2 + n + 1);
+        }
+
+        std::vector<long> expected(size*N);
+        for(size_t j = 0; j < size; ++j) {
+            for(size_t n = 0; n < N; ++n) {
+                expected[j*N+n] = long(j*2 + n + 1);
+            }
+        }
+
+        size_t root = 0; /* master */
+
+        BOOST_CHECK_NO_THROW( mpi::comm().gather(send, recv, root) );
+
+        if(rank == root) {
+            BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
+        }
+
+        std::vector<long> recv2(size*N);
+
+        BOOST_CHECK_NO_THROW( mpi::comm().gather(send.begin(), send.end(), recv2.begin(), recv2.end(), root) );
+
+        if(rank == root) {
+            BOOST_CHECK_EQUAL_COLLECTIONS(recv2.begin(), recv2.end(), expected.begin(), expected.end());
+        }
+    }
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE( test_scatter_scalar )

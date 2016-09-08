@@ -30,24 +30,27 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class Environment;
+
 /// @returns the communicator registered with associated name, or default communicator when NULL is passed
 Comm& comm(const char* name = 0);
+
+//void initialize();
+//void finalize();
 
 bool isRunning();
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template <typename T> class Collectives;
-
 class Comm : private eckit::NonCopyable {
+
+    friend class Environment;
 
 public: // class methods
 
     static Comm& comm(const char* name = 0);
 
 //    static Comm& create(const char* name);
-
-    static bool areMPIVarsSet();
 
 private: // class methods
 
@@ -297,11 +300,34 @@ public:  // methods
     template <typename T, typename Iter>
     void allGather(T sendval, Iter first, Iter last) const {
         typename std::iterator_traits<Iter>::difference_type recvcount = std::distance(first, last);
+
+//        if(rank() == 0) {
+//            std::cout << "recvcount = " << recvcount << std::endl;
+//            const char* sep = "";
+//            std::cout << "recv ";
+//            for(Iter j = first; j != last; ++j, sep = ",") {
+//                std::cout << sep << *j;
+//            }
+//            std::cout << std::endl << std::flush;
+//        }
+//        barrier();
+
         ASSERT(recvcount >= size());
         Data::Code ctype = Data::Type<T>::code();
         Data::Code  type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
         ASSERT(ctype == type);
         allGather(&sendval, 1, &(*first), recvcount, type);
+
+//        if(rank() == 0) {
+//            std::cout << "recvcount = " << recvcount << std::endl;
+//            const char* sep = "";
+//            std::cout << "recv ";
+//            for(Iter j = first; j != last; ++j, sep = ",") {
+//                std::cout << sep << *j;
+//            }
+//            std::cout << std::endl << std::flush;
+//        }
+//        barrier();
     }
 
     ///
@@ -423,7 +449,7 @@ protected: // methods
 
 class CommFactory {
 
-    friend class eckit::mpi::Comm;
+    friend class eckit::mpi::Environment;
 
     std::string name_;
     virtual Comm* make() = 0;
@@ -433,7 +459,6 @@ class CommFactory {
     CommFactory(const std::string &);
     virtual ~CommFactory();
 
-    static void list(std::ostream &);
     static Comm* build(const std::string&);
 };
 

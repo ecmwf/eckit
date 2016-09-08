@@ -14,6 +14,7 @@
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/runtime/Context.h"
 
 #include "eckit/mpi/ParallelStatus.h"
 #include "eckit/mpi/ParallelRequest.h"
@@ -30,6 +31,7 @@ static MPI_Datatype mpi_datacode [Data::MAX_DATA_CODE] = {
     /*[Data::INT]                  = */ MPI_INT,
     /*[Data::LONG]                 = */ MPI_LONG,
     /*[Data::SIGNED_CHAR]          = */ MPI_SIGNED_CHAR,
+    /*[Data::SIGNED_CHAR]          = */ MPI_UNSIGNED_CHAR,
     /*[Data::UNSIGNED_SHORT]       = */ MPI_UNSIGNED_SHORT,
     /*[Data::UNSIGNED]             = */ MPI_UNSIGNED,
     /*[Data::UNSIGNED_LONG]        = */ MPI_UNSIGNED_LONG,
@@ -103,6 +105,7 @@ static inline void MPICall(int code, const char* mpifunc, const eckit::CodeLocat
 //----------------------------------------------------------------------------------------------------------------------
 
 Parallel::Parallel() {
+    comm_ = MPI_COMM_WORLD; /* don't use member initialisation */
 }
 
 Parallel::~Parallel() {
@@ -110,8 +113,8 @@ Parallel::~Parallel() {
 
 void Parallel::initialize() {
 
-    int argc;    NOTIMP; /// @todo get from Main once merge branch feature/new-logging
-    char **argv; NOTIMP; /// @todo get from Main once merge branch feature/new-logging
+    int argc = eckit::Context::instance().argc();     /// @todo get from Main once merge branch feature/new-logging
+    char **argv = eckit::Context::instance().argvs(); /// @todo get from Main once merge branch feature/new-logging
 
     MPI_CALL( MPI_Init(&argc, &argv) );
 }
@@ -249,7 +252,7 @@ void Parallel::allReduce(const void* sendbuf, void* recvbuf, size_t count, Data:
     ASSERT(count  < size_t(std::numeric_limits<int>::max()));
 
     MPI_Datatype mpitype = toType(type);
-    MPI_Op       mpiop   = toOp(op);
+    MPI_Op       mpiop   = toOp(op);;
 
     MPI_CALL( MPI_Allreduce(const_cast<void*>(sendbuf), recvbuf, int(count), mpitype, mpiop, comm_) );
 }
@@ -267,10 +270,24 @@ void Parallel::allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code type
 void Parallel::allGather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type) const
 {
     ASSERT(sendcount  < size_t(std::numeric_limits<int>::max()));
+    ASSERT(recvcount  < size_t(std::numeric_limits<int>::max()));
 
     MPI_Datatype mpitype = toType(type);
 
+//    std::cout << "Parallel::allGather()"
+//              << " value = " << *reinterpret_cast<const int*>(sendbuf)
+//              << " sendcount = " << sendcount
+//              << " recvcount = " << recvcount
+//              << " type = " << type
+//              << " mpitype = " << mpitype
+//              << std::endl;
+
     MPI_CALL( MPI_Allgather(const_cast<void*>(sendbuf), int(sendcount), mpitype, recvbuf, int(recvcount), mpitype, comm_) );
+
+//    const int* r = reinterpret_cast<const int*>(recvbuf);
+//    for(size_t i = 0; i < recvcount; ++i, ++r) {
+//        std::cout << "recvbuf[" << i << "] = " << *reinterpret_cast<const int*>(r) << std::endl;
+//    }
 }
 
 void Parallel::allGatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[], const int displs[], Data::Code type) const

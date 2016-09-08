@@ -19,7 +19,7 @@ namespace mpi {
 struct Operation {
 
     enum Code {
-        SUM,
+        SUM = 0,
         PROD,
         MAX,
         MIN,

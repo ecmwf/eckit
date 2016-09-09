@@ -171,7 +171,26 @@ BOOST_AUTO_TEST_CASE( test_gather_nscalars )
 
 BOOST_AUTO_TEST_CASE( test_gatherv )
 {
-     /// TODO
+    size_t stride = 100;
+
+    std::vector<long> send(stride);
+
+    size_t size = mpi::comm().size();
+
+    size_t root = 0;
+
+    std::vector<long> recv(size * stride);
+
+    std::vector<int> displs(size);
+    std::vector<int> recvcounts(size);
+
+    for(size_t i = 0; i < size; ++i) {
+        displs[i] = long(i*stride);
+        recvcounts[i] = 100;
+    }
+
+    BOOST_CHECK_NO_THROW( mpi::comm().gatherv(send, recv, recvcounts, displs, root) );
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

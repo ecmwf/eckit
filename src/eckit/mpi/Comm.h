@@ -205,23 +205,29 @@ public:  // methods
     ///
 
     template<class CIter, class Iter>
-    void gatherv(CIter first, CIter last, Iter recvbuf, const int recvcounts[], const int displs[], size_t root) const {
-        typename std::iterator_traits<CIter>::difference_type n = std::distance(first, last);
+    void gatherv(CIter first, CIter last, Iter rfirst, Iter rlast, const int recvcounts[], const int displs[], size_t root) const {
+        typename std::iterator_traits<CIter>::difference_type sendcount = std::distance(first, last);
+        typename std::iterator_traits<CIter>::difference_type recvsize  = std::distance(rfirst, rlast);
         Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
         Data::Code  type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
         ASSERT(ctype == type);
-        gatherv(&(*first), n, &(*recvbuf), recvcounts, displs, type, root);
+        gatherv(&(*first), sendcount, &(*rfirst), recvcounts, displs, type, root);
     }
 
     template<class CIter, class Iter>
-    void gatherv(CIter first, CIter last, Iter recv, const std::vector<int>& recvcounts, const std::vector<int>& displs, size_t root) const {
-        gatherv(first, last, recv, recvcounts.data(), displs.data(), root);
+    void gatherv(CIter first, CIter last, Iter rfirst, Iter rlast, const std::vector<int>& recvcounts, const std::vector<int>& displs, size_t root) const {
+        size_t commsize = size();
+        ASSERT(recvcounts.size() == commsize);
+        ASSERT(displs.size() == commsize);
+        gatherv(first, last, rfirst, rlast, recvcounts.data(), displs.data(), root);
     }
 
     template <typename T>
     void gatherv(const std::vector<T>& send, std::vector<T>& recv, const std::vector<int>& recvcounts, const std::vector<int>& displs, size_t root ) const {
-        ASSERT(recvcounts.size() == displs.size());
-        gatherv(send.begin(), send.end(), recv.begin(), recvcounts.data(), displs.data(), root);
+        size_t commsize = size();
+        ASSERT(recvcounts.size() == commsize);
+        ASSERT(displs.size() == commsize);
+        gatherv(send.begin(), send.end(), recv.begin(), recv.end(), recvcounts.data(), displs.data(), root);
     }
 
     ///

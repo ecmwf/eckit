@@ -228,9 +228,26 @@ public:  // methods
     /// Scatter methods from one root
     ///
 
-    template<class T>
-    void scatter(const T send[], size_t sendcnt, T recv[], size_t recvcnt, size_t root ) {
-        scatter(send, sendcnt, recv, recvcnt, Data::Type<T>::code(), root);
+    template <typename T>
+    void scatter(const std::vector<T>& send, T& recv, size_t root) const {
+
+        ASSERT(send.size() % size() == 0);
+        size_t sendcount = send.size() / size();
+        size_t recvcount = 1;
+        ASSERT(recvcount == sendcount);
+
+        scatter(send.data(), sendcount, &recv, recvcount, Data::Type<T>::code(), root);
+    }
+
+    template <typename T>
+    void scatter(const std::vector<T>& send, std::vector<T>& recv, size_t root) const {
+
+        ASSERT(send.size() % size() == 0);
+        size_t sendcount = send.size() / size();
+        size_t recvcount = recv.size();
+        ASSERT(recvcount == sendcount);
+
+        scatter(send.data(), sendcount, recv.data(), recvcount, Data::Type<T>::code(), root);
     }
 
     ///

@@ -169,15 +169,19 @@ BOOST_AUTO_TEST_CASE( test_gather_nscalars )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_gatherv )
+BOOST_AUTO_TEST_CASE( test_gatherv_equal_stride )
 {
+    size_t root = 0;
+    size_t size = mpi::comm().size();
+    size_t rank = mpi::comm().rank();
+
     size_t stride = 100;
 
     std::vector<long> send(stride);
 
-    size_t size = mpi::comm().size();
-
-    size_t root = 0;
+    for(size_t i = 0; i < stride; ++i) {
+        send[i] = long(rank * i);
+    }
 
     std::vector<long> recv(size * stride);
 
@@ -185,12 +189,65 @@ BOOST_AUTO_TEST_CASE( test_gatherv )
     std::vector<int> recvcounts(size);
 
     for(size_t i = 0; i < size; ++i) {
-        displs[i] = long(i*stride);
-        recvcounts[i] = 100;
+        displs[i]     = int(i*stride);
+        recvcounts[i] = int(stride);
     }
 
     BOOST_CHECK_NO_THROW( mpi::comm().gatherv(send, recv, recvcounts, displs, root) );
 
+    std::vector<long> expected(size * stride);
+    for(size_t i = 0; i < size; ++i) {
+        for(size_t j = 0; j < stride; ++j) {
+            expected[i*stride + j] = long(i*j);
+        }
+    }
+
+    if(rank == root) {
+        BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_gatherv_unequal_stride )
+{
+    size_t root = 0;
+    size_t size = mpi::comm().size();
+    size_t rank = mpi::comm().rank();
+
+    size_t stride = 10 * rank;
+
+    std::vector<long> send(stride);
+
+    for(size_t i = 0; i < stride; ++i) {
+        send[i] = long(rank * i);
+    }
+
+    std::vector<int> displs(size);
+    std::vector<int> recvcounts(size);
+
+    for(size_t i = 0; i < size; ++i) {
+        displs[i]     = int( i ? displs[i-1] + stride : 0 );
+        recvcounts[i] = int(stride);
+    }
+
+    size_t recvsize = size_t( std::accumulate(recvcounts.begin(), recvcounts.end(), 0) );
+
+    std::vector<long> recv(recvsize);
+
+    BOOST_CHECK_NO_THROW( mpi::comm().gatherv(send, recv, recvcounts, displs, root) );
+
+    size_t e = 0;
+    std::vector<long> expected(recvsize);
+    for(size_t i = 0; i < size; ++i) {
+        for(size_t j = 0; j < stride; ++j, ++e) {
+            expected[e] = long(i*j);
+        }
+    }
+
+    if(rank == root) {
+        BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

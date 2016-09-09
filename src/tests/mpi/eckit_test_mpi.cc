@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE( test_scatter_scalar )
 
     size_t root = 0; /* master */
 
-    BOOST_CHECK_NO_THROW( mpi::comm().scatter(send.data(), send.size() / size, &recv, 1, root) );
+    BOOST_CHECK_NO_THROW( mpi::comm().scatter(send, recv, root) );
 
     size_t rank = mpi::comm().rank();
 
@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE( test_scatter_nscalars )
 
         size_t root = 0; /* master */
 
-        BOOST_CHECK_NO_THROW( mpi::comm().scatter(send.data(), send.size() / size, recv.data(), recv.size(), root) );
+        BOOST_CHECK_NO_THROW( mpi::comm().scatter(send, recv, root) );
 
         size_t rank = mpi::comm().rank();
 

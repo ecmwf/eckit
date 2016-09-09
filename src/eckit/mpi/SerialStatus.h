@@ -11,8 +11,6 @@
 #ifndef eckit_mpi_SerialStatus_h
 #define eckit_mpi_SerialStatus_h
 
-#include <mpi.h>
-
 #include "eckit/mpi/Status.h"
 
 namespace eckit {

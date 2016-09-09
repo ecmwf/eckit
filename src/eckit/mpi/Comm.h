@@ -138,29 +138,51 @@ public:  // methods
 
     template <typename T>
     void broadcast(T& value, size_t root) const {
+
+        size_t commsize = size();
+        ASSERT(root < commsize);
+
         T* p = &value;
+
         broadcast(p, p+1, root);
     }
 
     template <typename T>
     void broadcast(T* first, T* last, size_t root) const {
+
+        size_t commsize = size();
+        ASSERT(root < commsize);
+
         broadcast(first, (last-first), Data::Type<T>::code(), root);
     }
 
     template <typename T>
     void broadcast(T buffer[], size_t count, size_t root) const {
+
+        size_t commsize = size();
+        ASSERT(root < commsize);
+
         broadcast(buffer, count, Data::Type<T>::code(), root);
     }
 
     template <typename T>
     void broadcast(typename std::vector<T>& v, size_t root) const {
+
+        size_t commsize = size();
+        ASSERT(root < commsize);
+
         broadcast(v.begin(), v.end(), root);
     }
 
     template<class Iter>
     void broadcast(Iter first, Iter last, size_t root) const {
+
+        size_t commsize = size();
+        ASSERT(root < commsize);
+
         typename std::iterator_traits<Iter>::difference_type n = std::distance(first, last);
         Data::Code type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
+
         broadcast(&(*first), n, type, root);
     }
 
@@ -170,31 +192,43 @@ public:  // methods
 
     template<class CIter, class Iter>
     void gather(CIter first, CIter last, Iter rfirst, Iter rlast, size_t root) const {
+
+        size_t commsize = size();
+        ASSERT(root < commsize);
+
         typename std::iterator_traits<CIter>::difference_type sendcount = std::distance(first, last);
         typename std::iterator_traits<CIter>::difference_type rsize = std::distance(rfirst, rlast);
-        ASSERT(rsize % size() == 0); /* receiving size is multiple of comm().size() */
-        size_t recvcount = rsize / size();
+        ASSERT(rsize % commsize == 0); /* receiving size is multiple of comm().size() */
+        size_t recvcount = rsize / commsize;
         ASSERT(sendcount == recvcount);
+
         Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
         Data::Code  type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
         ASSERT(ctype == type);
+
         gather(&(*first), sendcount, &(*rfirst), recvcount, type, root);
     }
 
     template <typename T>
     void gather(const T send, std::vector<T>& recv, size_t root) const {
-        ASSERT(recv.size() % size() == 0); /* receiving size is multiple of comm().size() */
-        size_t recvcount = recv.size() / size();
+
+        size_t commsize = size();
+        ASSERT(root < commsize);
+        ASSERT(recv.size() % commsize == 0); /* receiving size is multiple of comm().size() */
+        size_t recvcount = recv.size() / commsize;
         size_t sendcount = 1;
         ASSERT(recvcount == sendcount);
+
         gather(&send, sendcount, recv.data(), recvcount, Data::Type<T>::code(), root);
     }
 
     template <typename T>
     void gather(const std::vector<T>& send, std::vector<T>& recv, size_t root) const {
 
-        ASSERT(recv.size() % size() == 0); /* receiving size is multiple of comm().size() */
-        size_t recvcount = recv.size() / size();
+        size_t commsize = size();
+        ASSERT(root < commsize);
+        ASSERT(recv.size() % commsize == 0); /* receiving size is multiple of comm().size() */
+        size_t recvcount = recv.size() / commsize;
         ASSERT(send.size() == recvcount);
 
         gather(send.data(), send.size(), recv.data(), recvcount, Data::Type<T>::code(), root);
@@ -206,27 +240,35 @@ public:  // methods
 
     template<class CIter, class Iter>
     void gatherv(CIter first, CIter last, Iter rfirst, Iter rlast, const int recvcounts[], const int displs[], size_t root) const {
+
         typename std::iterator_traits<CIter>::difference_type sendcount = std::distance(first, last);
-        typename std::iterator_traits<CIter>::difference_type recvsize  = std::distance(rfirst, rlast);
+        // typename std::iterator_traits<CIter>::difference_type recvsize  = std::distance(rfirst, rlast);
         Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
         Data::Code  type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
         ASSERT(ctype == type);
+
         gatherv(&(*first), sendcount, &(*rfirst), recvcounts, displs, type, root);
     }
 
     template<class CIter, class Iter>
     void gatherv(CIter first, CIter last, Iter rfirst, Iter rlast, const std::vector<int>& recvcounts, const std::vector<int>& displs, size_t root) const {
+
         size_t commsize = size();
+        ASSERT(root < commsize);
         ASSERT(recvcounts.size() == commsize);
         ASSERT(displs.size() == commsize);
+
         gatherv(first, last, rfirst, rlast, recvcounts.data(), displs.data(), root);
     }
 
     template <typename T>
     void gatherv(const std::vector<T>& send, std::vector<T>& recv, const std::vector<int>& recvcounts, const std::vector<int>& displs, size_t root ) const {
+
         size_t commsize = size();
+        ASSERT(root < commsize);
         ASSERT(recvcounts.size() == commsize);
         ASSERT(displs.size() == commsize);
+
         gatherv(send.begin(), send.end(), recv.begin(), recv.end(), recvcounts.data(), displs.data(), root);
     }
 
@@ -237,8 +279,10 @@ public:  // methods
     template <typename T>
     void scatter(const std::vector<T>& send, T& recv, size_t root) const {
 
-        ASSERT(send.size() % size() == 0);
-        size_t sendcount = send.size() / size();
+        size_t commsize = size();
+        ASSERT(root < commsize);
+        ASSERT(send.size() % commsize == 0);
+        size_t sendcount = send.size() / commsize;
         size_t recvcount = 1;
         ASSERT(recvcount == sendcount);
 
@@ -248,8 +292,10 @@ public:  // methods
     template <typename T>
     void scatter(const std::vector<T>& send, std::vector<T>& recv, size_t root) const {
 
-        ASSERT(send.size() % size() == 0);
-        size_t sendcount = send.size() / size();
+        size_t commsize = size();
+        ASSERT(root < commsize);
+        ASSERT(send.size() % commsize == 0);
+        size_t sendcount = send.size() / commsize;
         size_t recvcount = recv.size();
         ASSERT(recvcount == sendcount);
 
@@ -261,27 +307,34 @@ public:  // methods
     ///
 
     template<class CIter, class Iter>
-    void scatterv(CIter first, const int sendcounts[], const int displs[], Iter recv, Iter recvend, size_t root) const {
-        typename std::iterator_traits<Iter>::difference_type recvcounts = std::distance(recv, recvend);
+    void scatterv(CIter first, CIter last, const int sendcounts[], const int displs[], Iter rfirst, Iter rlast, size_t root) const {
+
+        size_t commsize = size();
+        ASSERT(root < commsize);
+
+        typename std::iterator_traits<Iter>::difference_type recvcounts = std::distance(rfirst, rlast);
+        // typename std::iterator_traits<Iter>::difference_type sendsize   = std::distance(first, last);
         Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
         Data::Code  type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
         ASSERT(ctype == type);
-        scatterv(&(*first), sendcounts, displs, &(*recv), recvcounts, type, root);
+
+        scatterv(&(*first), sendcounts, displs, &(*rfirst), recvcounts, type, root);
     }
 
     template<class CIter, class Iter>
-    void scatterv(CIter first, const std::vector<int>& sendcounts, const std::vector<int>& displs, Iter recv, Iter recvend, size_t root) const {
-        scatterv(first, sendcounts.data(), displs.data(), recv, recvend, root);
+    void scatterv(CIter first, CIter last, const std::vector<int>& sendcounts, const std::vector<int>& displs, Iter rfirst, Iter rlast, size_t root) const {
+
+        size_t commsize = size();
+        ASSERT(root < commsize);
+        ASSERT(sendcounts.size() == commsize);
+        ASSERT(displs.size() == commsize);
+
+        scatterv(first, last, sendcounts.data(), displs.data(), rfirst, rlast, root);
     }
 
     ///
     /// All reduce operations, separate buffers
     ///
-
-    template <typename T>
-    void allReduce(const T* sendbuf, T* recvbuf, size_t count, Operation::Code op) const {
-        allReduce(sendbuf, recvbuf, count, Data::Type<T>::code(), op);
-    }
 
     template <typename T>
     void allReduce(T send, T& recv, Operation::Code op) const {
@@ -318,12 +371,6 @@ public:  // methods
     ///
     /// Gather methods from all, equal data sizes per rank
     ///
-
-//    template <typename T>
-//    void allGather(const T* sendbuf, size_t sendcount, T* recvbuf, size_t recvcount) const {
-//        ASSERT(rsize % size() == 0);
-//        allGather(sendbuf, sendcount, recvbuf, recvcount, Data::Type<T>::code());
-//    }
 
     template <typename T, typename Iter>
     void allGather(T sendval, Iter rfirst, Iter rlast) const {
@@ -363,8 +410,16 @@ public:  // methods
     ///
 
     template <typename T>
-    void allToAll(const T* sendbuf, size_t sendcount, T* recvbuf, size_t recvcount) const {
-        allToAll(sendbuf, sendcount, recvbuf, recvcount, Data::Type<T>::code());
+    void allToAll(const std::vector<T>& send, std::vector<T>& recv) const {
+
+        size_t commsize = size();
+        ASSERT(send.size() % commsize == 0);
+        ASSERT(recv.size() % commsize == 0);
+
+        size_t sendcount = send.size() / commsize;
+        size_t recvcount = recv.size() / commsize;
+
+        allToAll(send.data(), sendcount, recv.data(), recvcount, Data::Type<T>::code());
     }
 
     ///
@@ -511,20 +566,20 @@ void eckit::mpi::Comm::allGatherv(CIter first, CIter last, mpi::Buffer<T>& recv)
 template <typename T>
 void eckit::mpi::Comm::allToAll(const std::vector< std::vector<T> >& sendvec, std::vector< std::vector<T> >& recvvec) const {
 
-    size_t mpi_size = size();
+    size_t commsize = size();
 
-    ASSERT( sendvec.size() == mpi_size );
-    ASSERT( recvvec.size() == mpi_size );
+    ASSERT( sendvec.size() == commsize );
+    ASSERT( recvvec.size() == commsize );
 
     // Get send-information
-    std::vector<int> sendcounts(mpi_size);
-    std::vector<int> senddispls(mpi_size);
+    std::vector<int> sendcounts(commsize);
+    std::vector<int> senddispls(commsize);
     int sendcnt;
     senddispls[0] = 0;
     sendcounts[0] = sendvec[0].size();
     sendcnt = sendcounts[0];
 
-    for(size_t jproc = 1; jproc < mpi_size; ++jproc)
+    for(size_t jproc = 1; jproc < commsize; ++jproc)
     {
         senddispls[jproc] = senddispls[jproc-1] + sendcounts[jproc-1];
         sendcounts[jproc] = sendvec[jproc].size();
@@ -533,15 +588,15 @@ void eckit::mpi::Comm::allToAll(const std::vector< std::vector<T> >& sendvec, st
 
 
     // Get recv-information
-    std::vector<int> recvcounts(mpi_size);
-    std::vector<int> recvdispls(mpi_size);
+    std::vector<int> recvcounts(commsize);
+    std::vector<int> recvdispls(commsize);
     int recvcnt;
 
-    allToAll(sendcounts.data(), 1, recvcounts.data(), 1);
+    allToAll(sendcounts, recvcounts);
 
     recvdispls[0] = 0;
     recvcnt = recvcounts[0];
-    for(size_t jproc = 1; jproc < mpi_size; ++jproc)
+    for(size_t jproc = 1; jproc < commsize; ++jproc)
     {
         recvdispls[jproc] = recvdispls[jproc-1] + recvcounts[jproc-1];
         recvcnt += recvcounts[jproc];
@@ -551,7 +606,7 @@ void eckit::mpi::Comm::allToAll(const std::vector< std::vector<T> >& sendvec, st
     std::vector<T> sendbuf(sendcnt);
     std::vector<T> recvbuf(recvcnt);
     int cnt = 0;
-    for(size_t jproc = 0; jproc < mpi_size; ++jproc)
+    for(size_t jproc = 0; jproc < commsize; ++jproc)
     {
         for(int i = 0; i < sendcounts[jproc]; ++i)
         {
@@ -563,7 +618,7 @@ void eckit::mpi::Comm::allToAll(const std::vector< std::vector<T> >& sendvec, st
                recvbuf.data(), recvcounts.data(), recvdispls.data());
 
     cnt=0;
-    for(size_t jproc = 0; jproc < mpi_size; ++jproc)
+    for(size_t jproc = 0; jproc < commsize; ++jproc)
     {
         recvvec[jproc].resize(recvcounts[jproc]);
         for(int i = 0; i < recvcounts[jproc]; ++i)

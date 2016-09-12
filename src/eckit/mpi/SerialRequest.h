@@ -11,8 +11,6 @@
 #ifndef eckit_mpi_SerialRequest_h
 #define eckit_mpi_SerialRequest_h
 
-#include <mpi.h>
-
 #include "eckit/mpi/Request.h"
 #include "eckit/mpi/DataType.h"
 

@@ -123,6 +123,7 @@ Status Serial::wait(Request& request) const
 Status Serial::probe(int source, int tag) const
 {
    ASSERT(source == 0);
+
    return status();
 }
 

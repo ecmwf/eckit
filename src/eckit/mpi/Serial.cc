@@ -141,9 +141,9 @@ size_t Serial::getCount(Status& st, Data::Code) const
     return st.as<SerialStatus>().count_;
 }
 
-void Serial::broadcast(void* buffer, size_t count, Data::Code type, size_t root) const
+void Serial::broadcast(void*, size_t, Data::Code, size_t) const
 {
-    NOTIMP;
+    return;
 }
 
 void Serial::gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t, Data::Code type, size_t) const

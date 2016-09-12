@@ -60,6 +60,7 @@ public:
     struct Type {
         static const char* name();
         static Code code();
+        static size_t size();
     };
 };
 

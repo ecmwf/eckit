@@ -11,13 +11,62 @@
 #include "eckit/mpi/Serial.h"
 
 #include <unistd.h>
+#include <limits>
+#include <complex>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/mpi/SerialRequest.h"
+#include "eckit/mpi/SerialStatus.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
+#include "eckit/maths/Functions.h"
 
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+static size_t dataSize [Data::MAX_DATA_CODE] = {
+    /*[Data::CHAR]                 = */ sizeof(char),
+    /*[Data::WCHAR]                = */ sizeof(wchar_t),
+    /*[Data::SHORT]                = */ sizeof(short),
+    /*[Data::INT]                  = */ sizeof(int),
+    /*[Data::LONG]                 = */ sizeof(long),
+    /*[Data::SIGNED_CHAR]          = */ sizeof(signed char),
+    /*[Data::UNSIGNED_CHAR]        = */ sizeof(unsigned char),
+    /*[Data::UNSIGNED_SHORT]       = */ sizeof(unsigned short),
+    /*[Data::UNSIGNED]             = */ sizeof(unsigned int),
+    /*[Data::UNSIGNED_LONG]        = */ sizeof(unsigned long),
+    /*[Data::FLOAT]                = */ sizeof(float),
+    /*[Data::DOUBLE]               = */ sizeof(double),
+    /*[Data::LONG_DOUBLE]          = */ sizeof(long double),
+//    /*[Data::BOOL]                 = */ sizeof(bool),
+    /*[Data::COMPLEX]              = */ sizeof(std::complex<float>),
+    /*[Data::DOUBLE_COMPLEX]       = */ sizeof(std::complex<double>),
+//    /*[Data::LONG_DOUBLE_COMPLEX]  = */ sizeof(std::complex<long double>),
+    /*[Data::BYTE]                 = */ sizeof(char),
+    /*[Data::PACKED]               = */ sizeof(char),
+    /*[Data::SHORT_INT]            = */ sizeof(std::pair<short,int>),
+    /*[Data::INT_INT]              = */ sizeof(std::pair<int,int>),
+    /*[Data::LONG_INT]             = */ sizeof(std::pair<long,int>),
+    /*[Data::FLOAT_INT]            = */ sizeof(std::pair<float,int>),
+    /*[Data::DOUBLE_INT]           = */ sizeof(std::pair<double,int>),
+    /*[Data::LONG_DOUBLE_INT]      = */ sizeof(std::pair<long double,int>),
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static pthread_once_t once = PTHREAD_ONCE_INIT;
+static eckit::Mutex *localMutex = 0;
+static std::vector<Request>* requests;
+
+static void init() {
+    localMutex = new eckit::Mutex();
+    requests = new std::vector<Request>(10);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 Serial::Serial() {
 }
@@ -54,29 +103,42 @@ void Serial::abort(int) const
     throw Abort("MPI Abort called");
 }
 
-Status Serial::wait(Request&) const
+Status Serial::wait(Request& request) const
 {
-    NOTIMP; /// @todo implement
+    int tag = request.as<SerialRequest>().tag_;
+
+    SerialRequest& req = (*requests)[tag].as<SerialRequest>();
+
+    memcpy( req.recvbuf_, req.sendbuf_, req.count_ * dataSize[req.type_] );
+
+    SerialStatus* st = new SerialStatus();
+
+    (*st).count_  = req.count_;
+    (*st).source_ = 0;
+    (*st).error_  = 0;
+
+    return Status(st);
 }
 
 Status Serial::probe(int source, int tag) const
 {
-    NOTIMP; /// @todo implement
+   ASSERT(source == 0);
+   return status();
 }
 
 int Serial::anySource() const
 {
-    NOTIMP; /// @todo implement
+    return 0;
 }
 
 int Serial::anyTag() const
 {
-    NOTIMP; /// @todo implement
+    return std::numeric_limits<int>::max();
 }
 
-size_t Serial::getCount(Status& status, Data::Code type) const
+size_t Serial::getCount(Status& st, Data::Code) const
 {
-    NOTIMP;
+    return st.as<SerialStatus>().count_;
 }
 
 void Serial::broadcast(void* buffer, size_t count, Data::Code type, size_t root) const
@@ -84,54 +146,53 @@ void Serial::broadcast(void* buffer, size_t count, Data::Code type, size_t root)
     NOTIMP;
 }
 
-void Serial::gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type, size_t root) const
+void Serial::gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t, Data::Code type, size_t) const
 {
-    NOTIMP;
+    memcpy( recvbuf, sendbuf, sendcount * dataSize[type] );
 }
 
-void Serial::scatter(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type, size_t root) const
+void Serial::scatter(const void* sendbuf, size_t, void* recvbuf, size_t recvcount, Data::Code type, size_t) const
 {
-    NOTIMP;
+    memcpy( recvbuf, sendbuf, recvcount * dataSize[type] );
 }
 
-void Serial::gatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[], const int displs[], Data::Code type, size_t root) const
+void Serial::gatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int [], const int [], Data::Code type, size_t) const
 {
-    NOTIMP;
+    memcpy( recvbuf, sendbuf, sendcount * dataSize[type] );
 }
 
-void Serial::scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf, size_t recvcount, Data::Code type, size_t root) const
+void Serial::scatterv(const void* sendbuf, const int[], const int[], void* recvbuf, size_t recvcount, Data::Code type, size_t) const
 {
-    NOTIMP;
+    memcpy( recvbuf, sendbuf, recvcount * dataSize[type] );
 }
 
-void Serial::allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op) const
+void Serial::allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code) const
 {
-    NOTIMP;
+    memcpy( recvbuf, sendbuf, count * dataSize[type] );
 }
 
-void Serial::allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code type, Operation::Code op) const
-{
-    NOTIMP;
+void Serial::allReduceInPlace(void*, size_t, Data::Code, Operation::Code) const {
+    return;
 }
 
-void Serial::allGather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type) const
+void Serial::allGather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t, Data::Code type) const
 {
-    NOTIMP;
+    memcpy( recvbuf, sendbuf, sendcount * dataSize[type] );
 }
 
-void Serial::allGatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[], const int displs[], Data::Code type) const
+void Serial::allGatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int [], const int [], Data::Code type) const
 {
-    NOTIMP;
+    memcpy( recvbuf, sendbuf, sendcount * dataSize[type] );
 }
 
-void Serial::allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type) const
+void Serial::allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t, Data::Code type) const
 {
-    NOTIMP;
+    memcpy( recvbuf, sendbuf, sendcount * dataSize[type] );
 }
 
-void Serial::allToAllv(const void* sendbuf, const int sendcounts[], const int sdispls[], void* recvbuf, const int recvcounts[], const int rdispls[], Data::Code type) const
+void Serial::allToAllv(const void* sendbuf, const int sendcounts[], const int[], void* recvbuf, const int[], const int[], Data::Code type) const
 {
-    NOTIMP;
+    memcpy( recvbuf, sendbuf, sendcounts[0] * dataSize[type] );
 }
 
 Status Serial::receive(void* recv, size_t count, Data::Code type, int source, int tag) const
@@ -146,22 +207,46 @@ void Serial::send(const void* send, size_t count, Data::Code type, int dest, int
 
 Request Serial::iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const
 {
-    NOTIMP;
+    pthread_once(&once, init);
+    eckit::AutoLock<eckit::Mutex> lock(localMutex);
+    if(tag >= requests->size()) { requests->resize( eckit::round(tag+1,10) ); }
+
+    (*requests)[tag] = createRequest();
+
+    SerialRequest& req = (*requests)[tag].as<SerialRequest>();
+
+    req.recvbuf_ = recv;
+    req.count_   = count;
+    req.tag_     = tag;
+    req.type_    = type;
+
+    return (*requests)[tag];
 }
 
 Request Serial::iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const
 {
-    NOTIMP;
+    pthread_once(&once, init);
+    eckit::AutoLock<eckit::Mutex> lock(localMutex);
+    if(tag >= requests->size()) { requests->resize( eckit::round(tag+1,10) ); }
+
+    (*requests)[tag] = createRequest();
+
+    SerialRequest& req = (*requests)[tag].as<SerialRequest>();
+
+    req.sendbuf_ = const_cast<void*>(send);
+    req.count_   = count;
+    req.tag_     = tag;
+    req.type_    = type;
+
+    return (*requests)[tag];
 }
 
-Status Serial::createStatus()
-{
-    NOTIMP;
+Status Serial::createStatus() {
+    return Status(new SerialStatus());
 }
 
-Request Serial::createRequest()
-{
-    NOTIMP;
+Request Serial::createRequest() {
+    return Request(new SerialRequest());
 }
 
 void Serial::print(std::ostream& os) const {

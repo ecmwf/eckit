@@ -20,9 +20,13 @@ namespace mpi {
 
 class Serial;
 
-class SerialStatus : StatusContent {
+class SerialStatus : public StatusContent {
+
+    SerialStatus();
 
 private: // methods
+
+    friend class Serial;
 
     virtual int source() const { return source_; }
     virtual int tag() const    { return tag_; }
@@ -32,12 +36,11 @@ private: // methods
 
 private: // members
 
-    friend class Serial;
-
     int source_;
     int tag_;
     int error_;
 
+    size_t count_; ///< counts number of elements transfered in comm
 };
 
 //----------------------------------------------------------------------------------------------------------------------

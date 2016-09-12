@@ -18,6 +18,8 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class SerialStatus;
+
 class Serial : public eckit::mpi::Comm {
 
 protected:  // methods
@@ -50,7 +52,7 @@ protected:  // methods
 
     virtual int anyTag() const;
 
-    virtual size_t getCount(Status& status, Data::Code type) const;
+    virtual size_t getCount(Status& st, Data::Code type) const;
 
     virtual void broadcast(void* buffer, size_t count, Data::Code type, size_t root) const;
 

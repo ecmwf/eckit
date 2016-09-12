@@ -12,6 +12,8 @@ Serial.cc
 Serial.h
 SerialStatus.cc
 SerialStatus.h
+SerialRequest.cc
+SerialRequest.h
 Status.cc
 Status.h
 )

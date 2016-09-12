@@ -8,29 +8,45 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/mpi/SerialStatus.h"
+#ifndef eckit_mpi_SerialRequest_h
+#define eckit_mpi_SerialRequest_h
+
+#include <mpi.h>
+
+#include "eckit/mpi/Request.h"
+#include "eckit/mpi/DataType.h"
 
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SerialStatus::SerialStatus() :
-    source_(0),
-    tag_(0),
-    error_(0)
-{
-}
+class Serial;
 
-void SerialStatus::print(std::ostream& os) const {
-    os << "SerialStatus("
-       << "source=" << source()
-       << ",tag=" << tag()
-       << ",error=" << error()
-       << ")";
-}
+class SerialRequest : public RequestContent {
+
+public: // methods
+
+    SerialRequest();
+
+private: // methods
+
+    virtual void print(std::ostream&) const;
+
+private: // members
+
+    friend class Serial;
+
+    void* recvbuf_;
+    void* sendbuf_;
+    size_t count_;
+    int tag_;
+    Data::Code type_;
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace mpi
-} // namepsace eckit
+}  // namespace mpi
+}  // namespace eckit
+
+#endif

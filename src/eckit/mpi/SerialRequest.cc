@@ -8,25 +8,24 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/mpi/SerialStatus.h"
+#include "eckit/mpi/SerialRequest.h"
 
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SerialStatus::SerialStatus() :
-    source_(0),
+SerialRequest::SerialRequest() :
+    recvbuf_(NULL),
+    sendbuf_(NULL),
+    count_(0),
     tag_(0),
-    error_(0)
+    type_(Data::MAX_DATA_CODE)
 {
 }
 
-void SerialStatus::print(std::ostream& os) const {
-    os << "SerialStatus("
-       << "source=" << source()
-       << ",tag=" << tag()
-       << ",error=" << error()
+void SerialRequest::print(std::ostream& os) const {
+    os << "SerialRequest("
        << ")";
 }
 

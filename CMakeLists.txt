@@ -33,16 +33,11 @@ ecbuild_add_option( FEATURE EXPERIMENTAL
 
 ### eckit::mpi
 
-debug_var(ENABLE_MPI)
-
 ecbuild_add_option( FEATURE MPI
                     DEFAULT ON
                     DESCRIPTION "Use system MPI libraries"
                     PURPOSE "Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
-
-                debug_var(HAVE_MPI)
-                debug_var(ECKIT_HAVE_MPI)
 
 ### eckit::cmd
 

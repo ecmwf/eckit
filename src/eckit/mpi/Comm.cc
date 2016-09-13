@@ -50,6 +50,23 @@ public:
         communicators["world"] = default_;
     }
 
+    void setDefaut(const char* name = 0) {
+
+        AutoLock<Mutex> lock(mutex_);
+
+        std::map<std::string, Comm*>::iterator itr = communicators.find(name);
+        if(itr != communicators.end()) {
+            default_ = itr->second;
+            return;
+        }
+
+        eckit::Log::error() << "Cannot set default communicator to '" << name << "', no communicator with that name was found" << std::endl;
+        eckit::Log::error() << "Current communicators are:" << std::endl;
+        for(itr = communicators.begin() ; itr != communicators.end() ; ++itr)
+            eckit::Log::error() << "   " << (*itr).first << std::endl;
+        throw eckit::SeriousBug(std::string("No communicator called ") + name);
+    }
+
     Comm& getComm(const char* name = 0) {
 
         AutoLock<Mutex> lock(mutex_);
@@ -73,6 +90,30 @@ public:
         for(itr = communicators.begin() ; itr != communicators.end() ; ++itr)
             eckit::Log::error() << "   " << (*itr).first << std::endl;
         throw eckit::SeriousBug(std::string("No communicator called ") + name);
+    }
+
+    void addComm(const char* name, int comm) {
+
+        AutoLock<Mutex> lock(mutex_);
+
+        std::map<std::string, Comm*>::iterator itr = communicators.find(name);
+        if(itr != communicators.end()) {
+            eckit::Log::error() << "Cannot create communicator '" << name << "', communicator with that name already exists" << std::endl;
+            eckit::Log::error() << "Current communicators are:" << std::endl;
+            for(itr = communicators.begin() ; itr != communicators.end() ; ++itr)
+                eckit::Log::error() << "   " << (*itr).first << std::endl;
+            throw eckit::SeriousBug(std::string("Communicator alredy exists: ") + name);
+        }
+
+        Comm* pComm = 0;
+        if(areMPIVarsSet()) {
+            pComm = CommFactory::build("parallel", comm);
+        }
+        else {
+            pComm = CommFactory::build("serial", comm);
+        }
+
+        communicators[name] = pComm;
     }
 
     CommFactory& getFactory(const std::string& name) {
@@ -140,16 +181,10 @@ Comm* CommFactory::build(const std::string& name) {
     return Environment::instance().getFactory(name).make();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-#if 0
-Comm& Comm::create(const char* name)
+Comm*CommFactory::build(const std::string& name, int comm)
 {
-    Comm* comm;    
-    ///
-    (*communicators)[name] = comm;
+    return Environment::instance().getFactory(name).make(comm);
 }
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -165,8 +200,14 @@ Comm& comm(const char* name) {
     return Environment::instance().getComm(name);
 }
 
-bool isRunning() {
-    return mpi::Environment::areMPIVarsSet();
+void setCommDefault(const char* name)
+{
+    Environment::instance().setDefaut(name);
+}
+
+void addComm(const char* name, int comm)
+{
+    Environment::instance().addComm(name, comm);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

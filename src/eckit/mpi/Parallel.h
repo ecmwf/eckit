@@ -27,6 +27,7 @@ protected:  // methods
     template< class T> friend class CommBuilder;
 
     Parallel();
+    Parallel(int comm);
 
     virtual ~Parallel();
 
@@ -104,6 +105,8 @@ private: // methods
     static void finalize();
 
     static bool initialized();
+
+    static bool finalized();
 
 private: // members
 

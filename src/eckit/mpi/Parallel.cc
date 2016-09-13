@@ -128,6 +128,18 @@ Parallel::Parallel() /* don't use member initialisation list */ {
     initCounter++;
 }
 
+Parallel::Parallel(int comm) {
+
+    comm_ = MPI_Comm_f2c(comm);
+
+    pthread_once(&once, init);
+    eckit::AutoLock<eckit::Mutex> lock(localMutex);
+
+    if(initCounter == 0) { initialize(); }
+
+    initCounter++;
+}
+
 Parallel::~Parallel() {
 
     pthread_once(&once, init);
@@ -150,14 +162,22 @@ void Parallel::initialize() {
 }
 
 void Parallel::finalize() {
-    if(initialized()) {
+    if(not finalized()) {
         MPI_CALL( MPI_Finalize() );
     }
 }
 
 bool Parallel::initialized() {
+
     int result = 1;
     MPI_CALL( MPI_Initialized(&result) );
+    return bool(result);
+}
+
+bool Parallel::finalized() {
+
+    int result = 1;
+    MPI_CALL( MPI_Finalized(&result) );
     return bool(result);
 }
 

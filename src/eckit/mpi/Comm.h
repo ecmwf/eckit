@@ -35,7 +35,11 @@ class Environment;
 /// @returns the communicator registered with associated name, or default communicator when NULL is passed
 Comm& comm(const char* name = 0);
 
-bool isRunning();
+/// Set a communicator as default
+void setCommDefault(const char* name);
+
+/// Register a communicator comming from Fortran code
+void addComm(const char* name, int comm);
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -514,6 +518,7 @@ class CommFactory {
 
     std::string name_;
     virtual Comm* make() = 0;
+    virtual Comm* make(int) = 0;
 
   protected:
 
@@ -521,12 +526,16 @@ class CommFactory {
     virtual ~CommFactory();
 
     static Comm* build(const std::string&);
+    static Comm* build(const std::string&, int);
 };
 
 template< class T>
 class CommBuilder : public CommFactory {
     virtual Comm* make() {
         return new T();
+    }
+    virtual Comm* make(int comm) {
+        return new T(comm);
     }
   public:
     CommBuilder(const std::string &name) : CommFactory(name) {}

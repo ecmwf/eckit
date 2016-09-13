@@ -71,6 +71,9 @@ static void init() {
 Serial::Serial() {
 }
 
+Serial::Serial(int) {
+}
+
 Serial::~Serial() {
 }
 

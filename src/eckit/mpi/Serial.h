@@ -30,10 +30,6 @@ protected:  // methods
 
     virtual ~Serial();
 
-    virtual void initialize();
-
-    virtual void finalize();
-
     virtual std::string processorName() const;
 
     virtual size_t rank() const;

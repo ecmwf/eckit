@@ -48,8 +48,6 @@ public:
         }
 
         communicators["world"] = default_;
-
-        default_->initialize();
     }
 
     Comm& getComm(const char* name = 0) {
@@ -114,7 +112,6 @@ public:
             for(std::map<std::string,Comm*>::iterator itr = communicators.begin() ; itr != communicators.end() ; ++itr) {
                 delete itr->second;
             }
-            default_->finalize();
             default_ = 0;
         }
     }

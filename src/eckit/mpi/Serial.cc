@@ -74,12 +74,6 @@ Serial::Serial() {
 Serial::~Serial() {
 }
 
-void Serial::initialize() {
-}
-
-void Serial::finalize() {
-}
-
 std::string Serial::processorName() const {
     char hostname[256];
     SYSCALL(::gethostname(hostname, sizeof(hostname)));
@@ -228,6 +222,7 @@ Request Serial::iSend(const void* send, size_t count, Data::Code type, int dest,
 {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(localMutex);
+
     if(tag >= requests->size()) { requests->resize( eckit::round(tag+1,10) ); }
 
     (*requests)[tag] = createRequest();

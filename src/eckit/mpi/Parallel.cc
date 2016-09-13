@@ -18,10 +18,22 @@
 
 #include "eckit/mpi/ParallelStatus.h"
 #include "eckit/mpi/ParallelRequest.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 namespace mpi {
 
+//----------------------------------------------------------------------------------------------------------------------
+
+static pthread_once_t once = PTHREAD_ONCE_INIT;
+static eckit::Mutex *localMutex = 0;
+static size_t initCounter;
+
+static void init() {
+    localMutex = new eckit::Mutex();
+    initCounter = 0;
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 static MPI_Datatype mpi_datacode [Data::MAX_DATA_CODE] = {
@@ -104,11 +116,26 @@ static inline void MPICall(int code, const char* mpifunc, const eckit::CodeLocat
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Parallel::Parallel() {
-    comm_ = MPI_COMM_WORLD; /* don't use member initialisation */
+Parallel::Parallel() /* don't use member initialisation list */ {
+
+    comm_ = MPI_COMM_WORLD; /* initialise by assignment instead */
+
+    pthread_once(&once, init);
+    eckit::AutoLock<eckit::Mutex> lock(localMutex);
+
+    if(initCounter == 0) { initialize(); }
+
+    initCounter++;
 }
 
 Parallel::~Parallel() {
+
+    pthread_once(&once, init);
+    eckit::AutoLock<eckit::Mutex> lock(localMutex);
+
+    initCounter--;
+
+    if(initCounter == 0) { finalize(); }
 }
 
 void Parallel::initialize() {

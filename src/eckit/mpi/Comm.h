@@ -55,12 +55,6 @@ private: // class methods
 
 protected: // methods
 
-    ///< May be called multiple times
-    virtual void initialize() = 0;
-
-    ///< May be called multiple times
-    virtual void finalize() = 0;
-
     virtual size_t getCount(Status& status, Data::Code datatype) const = 0;
 
     virtual void broadcast(void* buffer, size_t count, Data::Code datatype, size_t root) const = 0;

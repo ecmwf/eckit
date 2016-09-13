@@ -30,12 +30,6 @@ protected:  // methods
 
     virtual ~Parallel();
 
-    virtual void initialize();
-
-    virtual void finalize();
-
-    bool initialized();
-
     virtual std::string processorName() const;
 
     virtual size_t rank() const;
@@ -102,6 +96,14 @@ protected:  // methods
     static Request createRequest();
 
     static MPI_Request* toRequest(Request&);
+
+private: // methods
+
+    static void initialize();
+
+    static void finalize();
+
+    static bool initialized();
 
 private: // members
 

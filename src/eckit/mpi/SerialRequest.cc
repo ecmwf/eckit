@@ -20,7 +20,8 @@ SerialRequest::SerialRequest() :
     sendbuf_(NULL),
     count_(0),
     tag_(0),
-    type_(Data::MAX_DATA_CODE)
+    type_(Data::MAX_DATA_CODE),
+    is_receive_(false)
 {
 }
 

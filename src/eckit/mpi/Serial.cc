@@ -102,6 +102,8 @@ void Serial::abort(int) const
 
 Status Serial::wait(Request& req) const
 {
+  if( req.as<SerialRequest>().is_receive_ ) {
+
     SerialRequest& recvReq = req.as<SerialRequest>();
 
     int tag = recvReq.tag_;
@@ -117,6 +119,16 @@ Status Serial::wait(Request& req) const
     (*st).error_  = 0;
 
     return Status(st);
+
+  } else {
+
+    SerialStatus* st = new SerialStatus();
+
+    (*st).error_ = 0;
+
+    return Status(st);
+  }
+
 }
 
 Status Serial::probe(int source, int tag) const
@@ -219,6 +231,7 @@ Request Serial::iReceive(void* recv, size_t count, Data::Code type, int source, 
     req.count_   = count;
     req.tag_     = tag;
     req.type_    = type;
+    req.is_receive_ = true;
 
     return (*requests)[tag];
 }
@@ -238,6 +251,7 @@ Request Serial::iSend(const void* send, size_t count, Data::Code type, int dest,
     req.count_   = count;
     req.tag_     = tag;
     req.type_    = type;
+    req.is_receive_ = false;
 
     return (*requests)[tag];
 }

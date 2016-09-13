@@ -118,26 +118,24 @@ static inline void MPICall(int code, const char* mpifunc, const eckit::CodeLocat
 
 Parallel::Parallel() /* don't use member initialisation list */ {
 
-    comm_ = MPI_COMM_WORLD; /* initialise by assignment instead */
-
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(localMutex);
 
     if(initCounter == 0) { initialize(); }
-
     initCounter++;
+
+    comm_ = MPI_COMM_WORLD;
 }
 
 Parallel::Parallel(int comm) {
 
-    comm_ = MPI_Comm_f2c(comm);
-
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(localMutex);
 
-    if(initCounter == 0) { initialize(); }
-
+    if( initCounter == 0 ) { initialize(); }
     initCounter++;
+
+    comm_ = MPI_Comm_f2c(comm);
 }
 
 Parallel::~Parallel() {

@@ -100,17 +100,19 @@ void Serial::abort(int) const
     throw Abort("MPI Abort called");
 }
 
-Status Serial::wait(Request& request) const
+Status Serial::wait(Request& req) const
 {
-    int tag = request.as<SerialRequest>().tag_;
+    SerialRequest& recvReq = req.as<SerialRequest>();
 
-    SerialRequest& req = (*requests)[tag].as<SerialRequest>();
+    int tag = recvReq.tag_;
 
-    memcpy( req.recvbuf_, req.sendbuf_, req.count_ * dataSize[req.type_] );
+    SerialRequest& sendReq = (*requests)[tag].as<SerialRequest>();
+
+    memcpy( recvReq.recvbuf_, sendReq.sendbuf_, sendReq.count_ * dataSize[sendReq.type_] );
 
     SerialStatus* st = new SerialStatus();
 
-    (*st).count_  = req.count_;
+    (*st).count_  = sendReq.count_;
     (*st).source_ = 0;
     (*st).error_  = 0;
 

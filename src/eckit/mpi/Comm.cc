@@ -36,6 +36,8 @@ public:
 
     void initDefault() {
 
+        AutoLock<Mutex> lock(mutex_);
+
         ASSERT(!default_);
 
         if(areMPIVarsSet()) {
@@ -106,14 +108,14 @@ public:
 
     ~Environment() {
 
+        AutoLock<Mutex> lock(mutex_);
+
         if(default_) {
+            for(std::map<std::string,Comm*>::iterator itr = communicators.begin() ; itr != communicators.end() ; ++itr) {
+                delete itr->second;
+            }
             default_->finalize();
-        }
-
-        default_ = 0;
-
-        for(std::map<std::string,Comm*>::iterator itr = communicators.begin() ; itr != communicators.end() ; ++itr) {
-            delete itr->second;
+            default_ = 0;
         }
     }
 

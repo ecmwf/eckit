@@ -34,6 +34,8 @@ protected:  // methods
 
     virtual void finalize();
 
+    bool initialized();
+
     virtual std::string processorName() const;
 
     virtual size_t rank() const;
@@ -90,6 +92,7 @@ protected:  // methods
     virtual void print(std::ostream&) const;
 
     virtual Status status() const    { return createStatus(); }
+
     virtual Request request() const  { return createRequest(); }
 
     static Status  createStatus();

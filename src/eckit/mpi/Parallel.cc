@@ -113,14 +113,25 @@ Parallel::~Parallel() {
 
 void Parallel::initialize() {
 
-    int argc = eckit::Context::instance().argc();     /// @todo get from Main once merge branch feature/new-logging
-    char **argv = eckit::Context::instance().argvs(); /// @todo get from Main once merge branch feature/new-logging
+    if(!initialized()) {
 
-    MPI_CALL( MPI_Init(&argc, &argv) );
+        int argc = eckit::Context::instance().argc();     /// @todo get from Main once merge branch feature/new-logging
+        char **argv = eckit::Context::instance().argvs(); /// @todo get from Main once merge branch feature/new-logging
+
+        MPI_CALL( MPI_Init(&argc, &argv) );
+    }
 }
 
 void Parallel::finalize() {
-    MPI_CALL( MPI_Finalize() );
+    if(initialized()) {
+        MPI_CALL( MPI_Finalize() );
+    }
+}
+
+bool Parallel::initialized() {
+    int result = 1;
+    MPI_CALL( MPI_Initialized(&result) );
+    return bool(result);
 }
 
 std::string Parallel::processorName() const

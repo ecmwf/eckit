@@ -14,12 +14,13 @@
 
 #ifdef ECKIT_HAVE_EIGEN
 
-#include "eckit/maths/Eigen.h"
-
 #include "eckit/linalg/LinearAlgebraEigen.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
+#include "eckit/maths/Eigen.h"
 
 //-----------------------------------------------------------------------------
 

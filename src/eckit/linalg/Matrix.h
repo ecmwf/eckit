@@ -77,7 +77,7 @@ public:  // methods
     // -- Accessors
 
     /// @returns size (rows * cols)
-    inline Size size() const { return rows_*cols_; }
+    Size size() const { return rows_*cols_; }
     /// @returns number of rows
     Size rows() const { return rows_; }
     /// @returns number of columns

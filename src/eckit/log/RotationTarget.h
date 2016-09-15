@@ -8,46 +8,32 @@
  * does it submit to any jurisdiction.
  */
 
+/// @file RotationTarget.h
+/// @author Tiago Quintino
 
-#include "eckit/log/TimeStampTarget.h"
-#include "eckit/runtime/Monitor.h"
-#include "eckit/log/TimeStamp.h"
+#ifndef eckit_log_RotationTarget_h
+#define eckit_log_RotationTarget_h
 
+
+#include "eckit/log/LogTarget.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class RotationTarget : public LogTarget {
 
-TimeStampTarget::TimeStampTarget(const char* tag, LogTarget* target):
-    WrapperTarget(target),
-    tag_(tag)
-{
+public: // methods
 
-}
+    RotationTarget();
 
-void TimeStampTarget::writePrefix() {
+    virtual void write(const char* start, const char* end);
+    virtual void flush();
 
-    std::ostringstream oss;
-    oss << std::setw(3)
-        << std::setfill('0')
-        << Monitor::instance().self()
-        << std::setfill(' ') << ' '
-        << TimeStamp() << ' ';
-
-    if(tag_ && *tag_) {
-        oss << tag_ << ' ';
-    }
-
-    std::string s = oss.str();
-    const char* p = s.c_str();
-    target_->write(p, p + s.size());
-}
-
-
-void TimeStampTarget::writeSuffix() {
-}
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
+
+#endif

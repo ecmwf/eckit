@@ -307,8 +307,8 @@ log/OStreamHandle.h
 log/Plural.h
 log/Progress.h
 log/Progress.cc
-#log/RotBuffer.h
-#log/RotBuffer.cc
+log/RotationTarget.h
+log/RotationTarget.cc
 log/SavedStatus.h
 log/SavedStatus.cc
 log/Seconds.h

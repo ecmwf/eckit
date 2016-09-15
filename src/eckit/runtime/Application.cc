@@ -90,7 +90,6 @@ Application::~Application() {
 
 //-----------------------------------------------------------------------------
 
-
 LogTarget* Application::createInfoLogTarget() const {
     return new TimeStampTarget("(I)");
 }

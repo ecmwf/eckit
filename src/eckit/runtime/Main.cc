@@ -89,6 +89,11 @@ Main::Main(int argc, char** argv, const char* homeenv) :
 }
 
 Main::~Main() {
+    if (instance_ == 0) {
+        std::cerr << "Attempting to delete a non-existent instance of Main()" << std::endl;
+        std::cerr << BackTrace::dump() << std::endl;
+        _exit(1);
+    }
     instance_ = 0;
 }
 

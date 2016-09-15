@@ -71,7 +71,7 @@ Application::Application(int argc, char** argv, const char* homeenv):
     Main(argc, argv, homeenv),
     running_(false)
 {
-    reserve_ = new char[20 * 1024]; // In case we runout of memeort
+    reserve_ = new char[20 * 1024]; // In case we runout of memeory
     std::set_new_handler(&catch_new_handler);
     std::set_terminate(&catch_terminate);
     std::set_unexpected(&catch_unexpected);

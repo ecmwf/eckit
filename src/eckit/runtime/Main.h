@@ -19,6 +19,7 @@
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+
 typedef void (*abort_handler_t)();
 
 class LogStream;
@@ -81,7 +82,7 @@ private: // members
     int     argc_;
     char**  argv_;
 
-    std::string  home_;         ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
+    std::string  home_; ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
 
     friend class Log;
     bool debug_;

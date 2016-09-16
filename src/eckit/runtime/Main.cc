@@ -142,10 +142,6 @@ bool Main::ready() {
     return instance_ != 0;
 }
 
-// bool Main::debug() const {
-//     return debug_;
-// }
-
 void Main::terminate() {
     ::exit(0);
 }

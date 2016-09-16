@@ -20,6 +20,9 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
+namespace eckit {
+namespace test {
+
 BOOST_GLOBAL_FIXTURE(Setup);
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2613,6 +2616,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_wrapper_types ) {
     BOOST_CHECK_EQUAL(val_pathname.as<std::string>(), "/usr/bin");
 }
 
+BOOST_AUTO_TEST_SUITE_END()
+
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+} // namespace test
+} // namespace eckit

@@ -22,9 +22,16 @@
 #include "eckit/io/FilePool.h"
 #include "eckit/thread/ThreadPool.h"
 
-using namespace eckit;
+#include "eckit/testing/Setup.h"
 
-//-----------------------------------------------------------------------------
+using namespace eckit;
+using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
+
+
+//----------------------------------------------------------------------------------------------------------------------
 
 const size_t BUF_SIZE = 1024;
 
@@ -45,10 +52,8 @@ private:
     int id_;
 };
 
-//-----------------------------------------------------------------------------
-
-struct F {
-    ~F() {
+struct Setup : public testing::Setup {
+    ~Setup() {
         for (size_t i = 0; i < 5; ++i) {
             PathName path(files[i]);
             if (path.exists()) path.unlink();
@@ -56,7 +61,9 @@ struct F {
     }
 };
 
-BOOST_GLOBAL_FIXTURE( F );
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_GLOBAL_FIXTURE( Setup );
 
 BOOST_AUTO_TEST_SUITE( test_eckit_io_filepool )
 
@@ -228,3 +235,8 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 ) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+//----------------------------------------------------------------------------------------------------------------------
+
+} // namespace test
+} // namespace eckittest

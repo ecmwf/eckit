@@ -23,14 +23,10 @@
 
 #include "eckit/testing/Setup.h"
 
-//-----------------------------------------------------------------------------
-
 using namespace eckit::linalg;
 
 namespace eckit {
 namespace test {
-
-//-----------------------------------------------------------------------------
 
 // Set linear algebra backend
 struct Setup : testing::Setup {
@@ -38,8 +34,6 @@ struct Setup : testing::Setup {
         LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
     }
 };
-
-//-----------------------------------------------------------------------------
 
 struct Fixture {
 
@@ -52,14 +46,13 @@ struct Fixture {
    const LinearAlgebra& linalg;
 };
 
-//-----------------------------------------------------------------------------
 
 template <class T>
 void test(const T& v, const T& r) {
     BOOST_CHECK_EQUAL_COLLECTIONS(v.data(), v.data() + v.size(), r.data(), r.data() + r.size());
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Test linear algebra interface
 
@@ -91,7 +84,7 @@ BOOST_AUTO_TEST_CASE(test_gemm) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
+} // namespace test
 } // namespace eckittest

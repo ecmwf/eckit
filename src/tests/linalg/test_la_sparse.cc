@@ -13,11 +13,12 @@
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/config/Resource.h"
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/LinearAlgebra.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
+
 #include "util.h"
 
 #include "eckit/testing/Setup.h"

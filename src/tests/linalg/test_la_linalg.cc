@@ -13,6 +13,7 @@
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/runtime/Main.h"
 
 #include "eckit/linalg/LinearAlgebra.h"

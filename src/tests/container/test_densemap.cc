@@ -17,15 +17,19 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/container/DenseMap.h"
 
+#include "eckit/testing/Setup.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
-//-----------------------------------------------------------------------------
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( test_eckit_container_densemap )
 
-BOOST_AUTO_TEST_CASE( test_eckit_container_densemap_0 )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_container_densemap_0 ) {
 
    DenseMap<std::string,int> m;
 
@@ -34,11 +38,11 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_densemap_0 )
    BOOST_CHECK_NO_THROW( m.insert( "nine", 9 ) );
 
    BOOST_CHECK_EQUAL( m.size(), 3 );
-
 }
 
-BOOST_AUTO_TEST_CASE( test_map_string_int )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_map_string_int ) {
     DenseMap<std::string,int> m;
 
     //
@@ -110,8 +114,9 @@ BOOST_AUTO_TEST_CASE( test_map_string_int )
 
 }
 
-BOOST_AUTO_TEST_CASE( test_map_int_string )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_map_int_string ) {
     DenseMap<unsigned,std::string> m;
 
     //
@@ -181,5 +186,6 @@ BOOST_AUTO_TEST_CASE( test_map_int_string )
     // std::cout << m << std::endl;
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+//----------------------------------------------------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_SUITE_END()

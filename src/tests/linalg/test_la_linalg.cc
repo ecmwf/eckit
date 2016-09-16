@@ -13,12 +13,14 @@
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/config/Resource.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 
 #include "eckit/linalg/LinearAlgebra.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"
 #include "util.h"
+
+#include "eckit/testing/Setup.h"
 
 //-----------------------------------------------------------------------------
 
@@ -30,15 +32,11 @@ namespace test {
 //-----------------------------------------------------------------------------
 
 // Set linear algebra backend
-struct Setup {
-    Setup() {
-        Context::instance().setup(boost::unit_test::framework::master_test_suite().argc,
-                                  boost::unit_test::framework::master_test_suite().argv);
+struct Setup : testing::Setup {
+    Setup() : testing::Setup() {
         LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
     }
 };
-
-BOOST_GLOBAL_FIXTURE(Setup);
 
 //-----------------------------------------------------------------------------
 
@@ -63,6 +61,8 @@ void test(const T& v, const T& r) {
 //-----------------------------------------------------------------------------
 
 /// Test linear algebra interface
+
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_FIXTURE_TEST_SUITE(test_eckit_la_linalg, Fixture)
 

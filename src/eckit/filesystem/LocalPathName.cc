@@ -32,7 +32,7 @@
 #include "eckit/log/TimeStamp.h"
 #include "eckit/os/Stat.h"
 #include "eckit/parser/Tokenizer.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/system/Library.h"
 #include "eckit/types/Types.h"
@@ -399,7 +399,7 @@ static void expandTilde(std::string& path)
 
         // 3. expand ~/ with registered home
 
-        path =  Context::instance().home() + "/" + path.substr(1);
+        path =  Main::instance().home() + "/" + path.substr(1);
     }
 }
 

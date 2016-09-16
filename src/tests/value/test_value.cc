@@ -14,8 +14,13 @@
 
 #include "eckit/value/Value.h"
 
+#include "eckit/testing/Setup.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
+
+BOOST_GLOBAL_FIXTURE(Setup);
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -60,13 +65,12 @@ namespace {
 BOOST_AUTO_TEST_SUITE( test_eckit_value )
 
 //----------------------------------------------------------------------------------------------------------------------
-
 //
 // Test the behaviour of bools first
 //
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_cast )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_bool_cast ) {
     Value val_true(true);
     Value val_false(false);
 
@@ -116,9 +120,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_cast )
     BOOST_CHECK_THROW(val_false.as<ValueMap>(), BadConversion);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_type )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_bool_type ) {
     Value val_true(true);
     Value val_false(false);
 
@@ -146,9 +150,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_type )
     BOOST_CHECK(!val_false.isDateTime());
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_comparisons )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_bool_comparisons ) {
     Value val_true1(true);
     Value val_true2(true);
     Value val_false1(false);
@@ -190,9 +194,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_comparisons )
     BOOST_CHECK(Value(ValueList()).compare(val_false1) < 0);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_index_operator )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_bool_index_operator ) {
     // No indexing operations should work on a bool...
 
     Value val_true(true);
@@ -221,8 +225,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_index_operator )
     BOOST_CHECK_THROW(val_false.contains(Value(123)), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_add_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_bool_add_operator ) {
     // There are no valid boolean addition operations.
 
     Value val(true);
@@ -252,8 +257,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_add_operator )
     BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_subtract_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_bool_subtract_operator ) {
     // There are no valid boolean subtraction operations.
 
     Value val(true);
@@ -283,8 +289,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_subtract_operator )
     BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_multiply_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_bool_multiply_operator ) {
     // There are no valid boolean multiplication operations.
 
     Value val(true);
@@ -314,8 +321,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_multiply_operator )
     BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_divide_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_bool_divide_operator ) {
     // There are no valid boolean division operations.
 
     Value val(true);
@@ -345,8 +353,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_divide_operator )
     BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_modulo_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_bool_modulo_operator ) {
     // There are no valid boolean modulo operations.
 
     Value val(true);
@@ -376,8 +385,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_head_tail )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_bool_head_tail ) {
     Value val(true);
 
     /// BOOST_CHECK_THROW(val.head(), AssertationError);
@@ -385,13 +395,12 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_head_tail )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
 //
 // Test the behaviour of integers next. Note that all integral types are treated identically.
 //
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_cast )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_integer_cast ) {
     // Note that _all_ the integer types are stored as a signed long long
     // --> There are constraints on the size that can be stored
     Value val_zero(0U);
@@ -475,8 +484,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_cast )
     BOOST_CHECK_THROW(val_int.as<ValueMap>(), BadConversion);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_unsigned_overflow )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_integer_unsigned_overflow ) {
     // Internally a Value(unsigned long long) is stored as a long long, as with all the other integer types. This should
     // give very predictable overflow behaviour
 
@@ -489,8 +499,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_unsigned_overflow )
     BOOST_CHECK((unsigned long long)(val_min) != 9223372036854775808U);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_type )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_integer_type ) {
     Value val_int(12345);
     Value val_long(2147483647);
     Value val_longlong(-9223372036854775807);
@@ -530,8 +541,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_type )
     BOOST_CHECK(!val_longlong.isDateTime());
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_comparisons )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_integer_comparisons ) {
     Value val1(1234);
     Value val2(1234);
     Value val3(4321);
@@ -577,8 +589,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_comparisons )
     BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_index_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_integer_index_operator ) {
     // No indexing operations should work on an integer...
 
     Value val(1234);
@@ -596,8 +609,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_index_operator )
     BOOST_CHECK_THROW(val.contains(Value(123)), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_add_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_integer_add_operator ) {
     Value val(123);
 
     BOOST_CHECK_THROW(ValueAdd(val, true), BadOperator);
@@ -626,8 +640,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_add_operator )
     BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_subtract_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_integer_subtract_operator ) {
     Value val(123);
 
     BOOST_CHECK_THROW(ValueSub(val, true), BadOperator);
@@ -656,8 +671,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_subtract_operator )
     BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_multiply_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_integer_multiply_operator ) {
     Value val(123);
 
     BOOST_CHECK_THROW(ValueMul(val, true), BadOperator);
@@ -686,8 +702,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_multiply_operator )
     BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_divide_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_integer_divide_operator ) {
     Value val(1476);
 
     BOOST_CHECK_THROW(ValueDiv(val, true), BadOperator);
@@ -716,8 +733,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_divide_operator )
     BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_modulo_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_integer_modulo_operator ) {
     Value val(123);
 
     BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
@@ -745,8 +763,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_head_tail )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_integer_head_tail ) {
     Value val(12345);
 
     /// BOOST_CHECK_THROW(val.head(), AssertationError);
@@ -754,13 +773,12 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_head_tail )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
 //
 // Test the behaviour of doubles
 //
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_cast )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_cast ) {
     Value val_zero(0.0);
     Value val_double(99999999999999999999999999999.9);
 
@@ -792,11 +810,11 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_cast )
     BOOST_CHECK_THROW(val_double.as<Date>(), BadConversion);
     BOOST_CHECK_THROW(val_double.as<DateTime>(), BadConversion);
     BOOST_CHECK_THROW(val_double.as<ValueMap>(), BadConversion);
-
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_type )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_type ) {
     Value val_double(-99999999999999999999999999999.9);
 
     BOOST_CHECK(val_double.isDouble());
@@ -812,8 +830,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_type )
     BOOST_CHECK(!val_double.isDateTime());
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_comparisons )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_comparisons ) {
     Value val1(1234.0);
     Value val2(1234.0);
     Value val3(4321.0);
@@ -859,8 +878,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_comparisons )
     BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_index_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_index_operator ) {
     // No indexing operations should work on a double...
 
     Value val(1234.45);
@@ -878,8 +898,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_index_operator )
     BOOST_CHECK_THROW(val.contains(Value(123)), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_add_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_add_operator ) {
     Value val(123.45);
 
     BOOST_CHECK_THROW(ValueAdd(val, true), BadOperator);
@@ -908,8 +929,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_add_operator )
     BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_subtract_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_subtract_operator ) {
     Value val(123.45);
 
     BOOST_CHECK_THROW(ValueSub(val, true), BadOperator);
@@ -938,8 +960,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_subtract_operator )
     BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_multiply_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_multiply_operator ) {
     Value val(123.45);
 
     BOOST_CHECK_THROW(ValueMul(val, true), BadOperator);
@@ -968,8 +991,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_multiply_operator )
     BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_divide_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_divide_operator ) {
     Value val(123.45);
 
     BOOST_CHECK_THROW(ValueDiv(val, true), BadOperator);
@@ -998,8 +1022,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_divide_operator )
     BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_modulo_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_modulo_operator ) {
     Value val(123.45);
 
     BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
@@ -1027,23 +1052,22 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_head_tail )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_double_head_tail ) {
     Value val(123.45);
 
     /// BOOST_CHECK_THROW(val.head(), AssertationError);
     /// BOOST_CHECK_THROW(val.tail(), AssertationError);
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
-
 //
 // Test the behaviour of strings
 //
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_cast )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_cast ) {
     Value val_null("");
     Value val_char("test string");
     Value val_str(std::string("test string 2"));
@@ -1081,12 +1105,11 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_cast )
     BOOST_CHECK_THROW(val_null.as<Date>(), BadConversion);
     BOOST_CHECK_THROW(val_null.as<DateTime>(), BadConversion);
     BOOST_CHECK_THROW(val_null.as<ValueMap>(), BadConversion);
-
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_cast_bool )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_cast_bool ) {
     // Boolean casting for Value(StringContent) types is a bit complicated, as it allows strings to be used to
     // represent truthy values, but nothing else
 
@@ -1125,9 +1148,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_cast_bool )
     BOOST_CHECK_THROW(val_other.as<bool>(), BadConversion);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_vaule_string_cast_numbers )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_vaule_string_cast_numbers ) {
     Value val_double("123.45");
     Value val_int("12345");
     Value val_other("string");
@@ -1154,8 +1177,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_vaule_string_cast_numbers )
     BOOST_CHECK_THROW(val_other.as<double>(), BadParameter);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_type )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_type ) {
     Value val_null("");
     Value val_str("This is a test string");
 
@@ -1183,8 +1207,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_type )
     BOOST_CHECK(!val_str.isDateTime());
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_comparisons )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_comparisons ) {
     Value val1("a");
     Value val2("a");
     Value val3("b");
@@ -1219,8 +1244,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_comparisons )
     BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_index_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_index_operator ) {
     // No indexing operations should work on a string...
 
     Value val_char("test string 1");
@@ -1249,8 +1275,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_index_operator )
     BOOST_CHECK_THROW(val_str.contains(Value(123)), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_add_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_add_operator ) {
     Value val("test string");
 
     BOOST_CHECK_THROW(ValueAdd(val, true), BadOperator);
@@ -1279,8 +1306,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_add_operator )
     BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_subtract_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_subtract_operator ) {
     Value val("test string");
 
     BOOST_CHECK_THROW(ValueSub(val, true), BadOperator);
@@ -1308,8 +1336,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_subtract_operator )
     BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_multiply_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_multiply_operator ) {
     Value val("test string");
 
     BOOST_CHECK_THROW(ValueMul(val, true), BadOperator);
@@ -1337,8 +1366,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_multiply_operator )
     BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_divide_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_divide_operator ) {
     Value val("test string");
 
     BOOST_CHECK_THROW(ValueDiv(val, true), BadOperator);
@@ -1366,8 +1396,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_divide_operator )
     BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_modulo_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_modulo_operator ) {
     Value val("test string");
 
     BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
@@ -1395,8 +1426,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_head_tail )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_string_head_tail ) {
     Value val("this is a test string");
 
     /// BOOST_CHECK_THROW(val.head(), AssertationError);
@@ -1404,13 +1436,12 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_head_tail )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
 //
 // Test the behaviour of ValueMaps
 //
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_cast )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_cast ) {
     // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueMap vm;
@@ -1445,8 +1476,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_cast )
     BOOST_CHECK_THROW(val.as<DateTime>(), BadConversion);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_type )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_type ) {
     // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueMap vm;
@@ -1470,8 +1502,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_type )
     BOOST_CHECK(!val.isDateTime());
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_comparisons )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_comparisons ) {
     // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueMap vm;
@@ -1516,8 +1549,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_comparisons )
     /// BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_index_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_index_operator ) {
     // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueMap vm;
@@ -1564,8 +1598,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_index_operator )
     /// BOOST_CHECK(val.contains(Value(true)));
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_add_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_add_operator ) {
     // There are no valid ValueMap addition operations.
 
     ValueMap vm;
@@ -1596,8 +1631,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_add_operator )
     BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_subtract_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_subtract_operator ) {
     // There are no valid ValueMap subtraction operations.
 
     ValueMap vm;
@@ -1628,8 +1664,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_subtract_operator )
     BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_multiply_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_multiply_operator ) {
     // There are no valid ValueMap multiplication operations.
 
     ValueMap vm;
@@ -1660,8 +1697,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_multiply_operator )
     BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_divide_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_divide_operator ) {
     // There are no valid ValueMap division operations.
 
     ValueMap vm;
@@ -1692,8 +1730,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_divide_operator )
     BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_modulo_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_modulo_operator ) {
     // There are no valid ValueMap modulo operations.
 
     ValueMap vm;
@@ -1724,8 +1763,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_head_tail )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_map_head_tail ) {
     ValueMap vm;
     vm[123] = 456;
 
@@ -1735,15 +1775,13 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_head_tail )
     /// BOOST_CHECK_THROW(val.tail(), AssertationError);
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
-
 //
 // Test the behaviour of ValueMaps
 //
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_cast )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_cast ) {
     // A ValueMap is just a std::list<Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueList vl;
@@ -1774,8 +1812,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_cast )
     BOOST_CHECK_THROW(val.as<ValueMap>(), BadConversion);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_type )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_type ) {
     // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueList vl;
@@ -1799,8 +1838,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_type )
     BOOST_CHECK(!val.isDateTime());
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_comparisons )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_comparisons ) {
     // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueList vl;
@@ -1845,8 +1885,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_comparisons )
     /// BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_index_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_index_operator ) {
     // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueList vl;
@@ -1917,8 +1958,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_index_operator )
     BOOST_CHECK_THROW(val.contains(Value(Date(2016, 3, 31))), BadConversion);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_add_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_add_operator ) {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -1972,8 +2014,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_add_operator )
     BOOST_CHECK_EQUAL(val[3].as<Date>(), Date(2016, 3, 31));
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_subtract_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_subtract_operator ) {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -2004,8 +2047,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_subtract_operator )
     BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_multiply_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_multiply_operator ) {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -2036,8 +2080,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_multiply_operator )
     BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_divide_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_divide_operator ) {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -2068,8 +2113,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_divide_operator )
     BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_modulo_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_modulo_operator ) {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -2100,8 +2146,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_head_tail )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_list_head_tail ) {
     ValueList vl;
     vl.push_back(123);
     vl.push_back(666.66);
@@ -2117,13 +2164,12 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_head_tail )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
 //
 // Test the behaviour of Dates
 //
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_cast )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_cast ) {
     Value val(Date(2016, 3, 31));
 
     //
@@ -2151,9 +2197,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_cast )
     BOOST_CHECK_THROW(val.as<ValueMap>(), BadConversion);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_type )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_type ) {
     Value val(Date(2016, 3, 31));
 
     BOOST_CHECK(val.isDate());
@@ -2169,9 +2215,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_type )
     BOOST_CHECK(!val.isTime());
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_comparisons )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_comparisons ) {
     Value val1(Date(2016, 3, 31));
     Value val2(Date(2016, 3, 31));
     Value val3(Date(2016, 4, 30));
@@ -2208,9 +2254,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_comparisons )
     BOOST_CHECK(Value(ValueList()).compare(val1) > 0);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_index_operator )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_index_operator ) {
     Value val(Date(2016, 3, 31));
 
     BOOST_CHECK_THROW(val["idx"], BadOperator);
@@ -2226,8 +2272,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_index_operator )
     BOOST_CHECK_THROW(val.contains(Value(123)), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_add_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_add_operator ) {
     Value val(Date(2016, 3, 31));
 
     BOOST_CHECK_THROW(ValueAdd(val, true), BadOperator);
@@ -2256,8 +2303,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_add_operator )
     BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_subtract_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_subtract_operator ) {
     Value val(Date(2016, 3, 31));
 
     BOOST_CHECK_THROW(ValueSub(val, true), BadOperator);
@@ -2289,8 +2337,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_subtract_operator )
     BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_multiply_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_multiply_operator ) {
     Value val(Date(2016, 3, 31));
 
     BOOST_CHECK_THROW(ValueMul(val, true), BadOperator);
@@ -2318,8 +2367,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_multiply_operator )
     BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_divide_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_divide_operator ) {
     Value val(Date(2016, 3, 31));
 
     BOOST_CHECK_THROW(ValueDiv(val, true), BadOperator);
@@ -2347,8 +2397,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_divide_operator )
     BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_modulo_operator )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_modulo_operator ) {
     Value val(Date(2016, 3, 31));
 
     BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
@@ -2376,8 +2427,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_modulo_operator )
     BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_head_tail )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_date_head_tail ) {
     Value val(Date(2016, 3, 31));
 
     /// BOOST_CHECK_THROW(val.head(), AssertationError);
@@ -2385,13 +2437,12 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_head_tail )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
 //
 // Test list/map helper functions
 //
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_makelist )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_makelist ) {
     // Test the trivial version
 
     Value val1 = Value::makeList();
@@ -2436,8 +2487,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_makelist )
     BOOST_CHECK_EQUAL(val4[0].as<long long>(), 1234);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_makemap )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_makemap ) {
     // Test the trivial version
 
     Value val1 = Value::makeMap();
@@ -2465,8 +2517,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_makemap )
     /// BOOST_CHECK_EQUAL(val2[3].as<bool>(), false);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_vector )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_vector ) {
     // n.b. This is templated, so will work for a std::vector<T> for any T for which a Value can be constructed.
 
     std::vector<int> vint;
@@ -2480,8 +2533,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_vector )
     BOOST_CHECK_EQUAL(val[4].as<long long>(), 55);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_list )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_list ) {
     // n.b. This is templated, so will work for a std::list<T> for any T for which a Value can be constructed.
 
     std::list<int> lint;
@@ -2497,8 +2551,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_list )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_wrapper_types )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_value_wrapper_types ) {
     // There are some constructors that have been added for easy conversion, that aren't actually part of the
     // internal interface
 
@@ -2558,7 +2611,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_wrapper_types )
 
     BOOST_CHECK_EQUAL(std::string(val_pathname), "/usr/bin");
     BOOST_CHECK_EQUAL(val_pathname.as<std::string>(), "/usr/bin");
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------

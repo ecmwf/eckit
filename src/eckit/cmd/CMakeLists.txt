@@ -4,6 +4,7 @@ AliasCmd.cc
 AliasCmd.h
 Arg.cc
 Arg.h
+CmdApplication.cc
 CmdApplication.h
 CmdArg.cc
 CmdArg.h

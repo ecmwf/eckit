@@ -20,6 +20,8 @@
 #include "eckit/linalg/Vector.h"
 #include "util.h"
 
+#include "eckit/testing/Setup.h"
+
 //-----------------------------------------------------------------------------
 
 using namespace eckit::linalg;
@@ -48,8 +50,8 @@ SparseMatrix S(Size rows, Size cols, Size nnz, ...) {
 //-----------------------------------------------------------------------------
 
 // Set linear algebra backend
-struct Setup {
-    Setup() {
+struct Setup : testing::Setup {
+    Setup() : testing::Setup() {
         LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
     }
 };

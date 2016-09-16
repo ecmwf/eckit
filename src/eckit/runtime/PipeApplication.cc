@@ -14,7 +14,6 @@
 #include "eckit/io/Select.h"
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Bytes.h"
-#include "eckit/runtime/Context.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/PipeApplication.h"
 #include "eckit/serialisation/PipeStream.h"
@@ -27,22 +26,18 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-PipeApplication::PipeApplication(int argc, char** argv,
-                                 LoggingPolicy* logPolicy,
-                                 MonitoringPolicy* monPolicy,
-                                 LocationPolicy* locPolicy,
-                                 SignallingPolicy* sigPolicy)
-    : Application(argc, argv, logPolicy, monPolicy, locPolicy, sigPolicy),
-      in_(this,"-in",-1),
-      out_(this,"-out",-1) {
+PipeApplication::PipeApplication(int argc, char** argv, const char* homeenv):
+    Application(argc, argv, homeenv),
+    in_("-in", -1),
+    out_("-out", -1) {
     // Establish relationship with 'parent' thread for the monitoring
 
-    long parent = Resource<long>("-parent",0);
+    long parent = Resource<long>("-parent", 0);
     Monitor::instance().parent(parent);
 
     // If we fork, avoid childs having the pipe open
-    SYSCALL(fcntl(in_,F_SETFD,FD_CLOEXEC));
-    SYSCALL(fcntl(out_,F_SETFD,FD_CLOEXEC));
+    SYSCALL(fcntl(in_, F_SETFD, FD_CLOEXEC));
+    SYSCALL(fcntl(out_, F_SETFD, FD_CLOEXEC));
 }
 
 PipeApplication::~PipeApplication() {
@@ -50,14 +45,14 @@ PipeApplication::~PipeApplication() {
 
 void PipeApplication::run()
 {
-    long timeout = Resource<long>("selectTimeout",10*60); // 10 Minutes
+    long timeout = Resource<long>("selectTimeout", 10 * 60); // 10 Minutes
 
     bool debug = false;
 
-    if(getenv("PIPE_DEBUG")) {
+    if (getenv("PIPE_DEBUG")) {
         debug = true;
-        std::cout << "PIPE_DEBUG[" << Context::instance().runName() << "]" << std::endl;
-        if( Application::name() == getenv("PIPE_DEBUG") ) {
+        std::cout << "PIPE_DEBUG[" << name_ << "]" << std::endl;
+        if ( Application::name() == getenv("PIPE_DEBUG") ) {
             std::cout << "debug me " << getpid() << std::endl;
             ::sleep(10);
 
@@ -65,27 +60,27 @@ void PipeApplication::run()
         }
     }
 
-    long maxRequests = Resource<long>("maxRequests",0);
-    long maxCpu      = Resource<long>("maxCpu",0);
-    long maxUptime   = Resource<long>("maxUptime",0);
-    long maxMemory   = Resource<long>("maxMemory",0); // Given in MB
-    long maxSwaps    = Resource<long>("maxSwaps",0);
+    long maxRequests = Resource<long>("maxRequests", 0);
+    long maxCpu      = Resource<long>("maxCpu", 0);
+    long maxUptime   = Resource<long>("maxUptime", 0);
+    long maxMemory   = Resource<long>("maxMemory", 0); // Given in MB
+    long maxSwaps    = Resource<long>("maxSwaps", 0);
 
-    PipeStream pipe(in_,out_);
+    PipeStream pipe(in_, out_);
 
     init(pipe);
 
     int count = 0;
 
-    for(;;) {
+    for (;;) {
         count++;
 
         waiting();
 
         Select select(in_);
 
-        if(!select.ready(timeout)) {
-            if(!debug) {
+        if (!select.ready(timeout)) {
+            if (!debug) {
                 Log::warning() << "Timeout, exiting" << std::endl;
                 return;
             }
@@ -94,23 +89,23 @@ void PipeApplication::run()
         try {
             bool end_;
             pipe >> end_; // End of batch marker
-            if(end_)
+            if (end_)
                 endBatch();
             else
                 process(pipe);
-        } catch(std::exception& e) {
+        } catch (std::exception& e) {
             Log::error() << "** " << e.what() << " Caught in " <<
-                            Here() << std::endl;
+                         Here() << std::endl;
             Log::error() << "** Exception is re-thrown" << std::endl;
             pipe << e;
             throw;
         }
 
-        if(debug)
+        if (debug)
             continue;
 
         struct rusage usage;
-        getrusage(RUSAGE_SELF,&usage);
+        getrusage(RUSAGE_SELF, &usage);
 
         time_t uptime = Application::uptime();
 
@@ -118,41 +113,41 @@ void PipeApplication::run()
                     << ", PID: "         << ::getpid()
                     << ", Uptime: "      << Seconds(uptime)
                     << ", CPU: "         << Seconds(usage.ru_utime.tv_sec + usage.ru_utime.tv_sec)
-                    << ", Memory: "      << Bytes(usage.ru_maxrss*1024)
+                    << ", Memory: "      << Bytes(usage.ru_maxrss * 1024)
                     << ", Swaps: "       << BigNum(usage.ru_nswap)
                     << std::endl;
 
-        if(maxRequests && (count >= maxRequests)) {
+        if (maxRequests && (count >= maxRequests)) {
             Log::info() << "Maximum number of requests reached ("
                         << BigNum(maxRequests)
                         << "), exiting" << std::endl;
             return;
         }
 
-        if(maxUptime && (uptime >= maxUptime)) {
+        if (maxUptime && (uptime >= maxUptime)) {
             Log::info() << "Maximum uptime reached ("
                         << Seconds(maxUptime)
                         << "), exiting" << std::endl;
             return;
         }
 
-        if(maxCpu && (usage.ru_utime.tv_sec + usage.ru_utime.tv_sec >= maxCpu)) {
+        if (maxCpu && (usage.ru_utime.tv_sec + usage.ru_utime.tv_sec >= maxCpu)) {
             Log::info() << "Maximum CPU usage reached ("
                         << Seconds(maxCpu)
                         << "), exiting" << std::endl;
             return;
         }
 
-        if(maxMemory && (usage.ru_maxrss >= (maxMemory*1024))) {
+        if (maxMemory && (usage.ru_maxrss >= (maxMemory * 1024))) {
             Log::info() << "Maximum memory usage reached ("
-                        << Bytes(usage.ru_maxrss*1024)
+                        << Bytes(usage.ru_maxrss * 1024)
                         << " > "
-                        << Bytes(maxMemory * 1024 *1024)
+                        << Bytes(maxMemory * 1024 * 1024)
                         << "), exiting" << std::endl;
             return;
         }
 
-        if(maxSwaps && (usage.ru_nswap >= maxSwaps)) {
+        if (maxSwaps && (usage.ru_nswap >= maxSwaps)) {
             Log::info() << "Maximum memory usage reached ("
                         << BigNum(maxSwaps)
                         << "), exiting" << std::endl;
@@ -189,9 +184,9 @@ void PipeApplication::init(Stream&) {
 }
 
 void PipeApplication::launch(const std::string& name, int input, int output) {
-    char in [20]; snprintf(in,20,"%d", input);
-    char out[20]; snprintf(out,20,"%d",output);
-    char par[20]; snprintf(par,20,"%ld",Monitor::instance().self());
+    char in [20]; snprintf(in, 20, "%d", input);
+    char out[20]; snprintf(out, 20, "%d", output);
+    char par[20]; snprintf(par, 20, "%ld", Monitor::instance().self());
 
     PathName cmd = std::string("~/bin/") + name;
 
@@ -202,28 +197,28 @@ void PipeApplication::launch(const std::string& name, int input, int output) {
                  << "-parent," << par << ")" << std::endl;
 
 #if 0
-    if(getenv("PIPE_DEBUG")) {
-        ::execlp(getenv("PIPE_DEBUG"),getenv("PIPE_DEBUG"),
-                 cmd.c_str(), "-in",in, "-out",out, "-parent",par, 0);
+    if (getenv("PIPE_DEBUG")) {
+        ::execlp(getenv("PIPE_DEBUG"), getenv("PIPE_DEBUG"),
+                 cmd.c_str(), "-in", in, "-out", out, "-parent", par, 0);
 
         std::cerr << "Exec failed " << getenv("PIPE_DEBUG") << Log::syserr  << std::endl;
-        ::kill(getpid(),SIGTERM);
+        ::kill(getpid(), SIGTERM);
     }
     else
 #endif
 
-    char command[1024];
+        char command[1024];
     char basename[1024];
 
-    ASSERT(sizeof(command)-1 > std::string(cmd).length());
+    ASSERT(sizeof(command) - 1 > std::string(cmd).length());
 
-    snprintf(command,1024,"%s", cmd.localPath());
-    snprintf(basename,1024,"%s", cmd.baseName().localPath());
+    snprintf(command, 1024, "%s", cmd.localPath());
+    snprintf(basename, 1024, "%s", cmd.baseName().localPath());
 
     ::execlp(command, basename,
-             "-in",in,
-             "-out",out,
-             "-parent",par,
+             "-in", in,
+             "-out", out,
+             "-parent", par,
              (void*)0);
 
     std::cerr << "Exec failed " << cmd << Log::syserr << std::endl;

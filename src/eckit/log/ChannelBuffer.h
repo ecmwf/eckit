@@ -9,7 +9,9 @@
  */
 
 /// @file ChannelBuffer.h
+/// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @date   August 2016
 
 #ifndef eckit_log_ChannelBuffer_h
 #define eckit_log_ChannelBuffer_h
@@ -18,52 +20,50 @@
 #include <streambuf>
 
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/log/CodeLocation.h"
-#include "eckit/log/OStreamHandle.h"
-
-//-----------------------------------------------------------------------------
+#include "eckit/log/Channel.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+class LogTarget;
 
 /// Generic base for buffers
 class ChannelBuffer : public std::streambuf,
-                      private NonCopyable {
+    private NonCopyable {
 
-public: // methods
-    
+private: // methods
+
     /// constructor, taking ownership of stream
-    ChannelBuffer( std::ostream* os = 0, std::size_t size = 1024 );
-    
-    /// constructor, not taking ownership of stream
-    ChannelBuffer( std::ostream& os, std::size_t size = 1024 );
+    ChannelBuffer( std::size_t size = 1024 );
 
     /// destructor, deallocates stream if has ownership
-    ~ChannelBuffer();
-    
-    /// access the target stream
-    /// may return null pointer so always check before dereferencing
-    std::ostream* target() const  { return os_.get(); }    
+    virtual ~ChannelBuffer();
 
-    /// access the target stream
-    /// @returns if there is a target stream set for this buffer
-    bool has_target() const  { return os_.get(); }
-    
-    /// sets the target stream, passing ownership
-    void target(std::ostream* os) { os_.reset(os); }
-    /// sets the target stream, not passing ownership
-    void target(std::ostream& os) { os_.reset(os); }    
-    
-    /// sets the current location of the code outputing
-    void location( const CodeLocation& );
-    
+    bool active() const;
+
+    void reset();
+    void setTarget(LogTarget* target);
+    void addTarget(LogTarget* target);
+
+    void indent(const char* space = "   ");
+    void unindent();
+
+    void setStream(std::ostream& out);
+    void addStream(std::ostream& out);
+
+    void setFile(const std::string& path);
+    void addFile(const std::string& path);
+
+    void setCallback(channel_callback_t cb, void* data = 0);
+    void addCallback(channel_callback_t cb, void* data = 0);
+
 protected: // methods
 
     /// override this to change buffer behavior
     /// @returns true if no error occured
     virtual bool dumpBuffer();
-    
+
     /// typically you don't need to override this
     /// @see dumpBuffer
     virtual int_type overflow(int_type ch);
@@ -71,16 +71,21 @@ protected: // methods
     /// typically you don't need to override this
     /// @see dumpBuffer
     virtual int_type sync();
-    
+
 protected: // members
 
-    ostream_handle os_;
-    bool hasLoc_;
-    CodeLocation where_;
+    LogTarget* target_;
+
     std::vector<char> buffer_;
+
+private:
+
+
+    friend class Channel;
+
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

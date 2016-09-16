@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2012 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,66 +8,71 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_ResourceMgr_h
-#define eckit_ResourceMgr_h
+// File ResourceMgr.h
+// Baudouin Raoult - ECMWF May 96
 
-#include "eckit/config/Script.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
-#include "eckit/types/Types.h"
-
-//-----------------------------------------------------------------------------
+#ifndef eckit_config_ResourceMgr_H
+#define eckit_config_ResourceMgr_H
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+class LocalPathName;
 
-class Configurable;
+class ResourceMgr {
+public:
 
-namespace config { class Script; }
+// -- Class methods
 
-/// ResourceMgr is a singleton class
-class ResourceMgr : private NonCopyable {
+    static bool lookUp(const std::string&, const std::string&, const std::string&, std::string&);
 
-public: // methods
+private:
 
-    /// destructor for singleton
-    ~ResourceMgr();
+    // Only for my friends
+    // You should never call these, resources have a read-only semantics
+    static void reset();
+    static void set(const std::string&, const std::string&);
 
-    /// @returns the singleton instance of this class
-    static ResourceMgr& instance();
+    friend class ConfigCmd;
+    friend class ResourceBase;
 
-    /// @brief Clear all stored Resources
-    void reset();
+private:
 
-    /// @brief Lookup Resource value
-    bool lookUp( Configurable*, const std::string&, const StringDict* args, std::string&);
-
-    /// @brief Set a Resource
-    void set(const std::string&,const std::string&);
-
-    /// prints the consolidated script
-    /// @param out stream where to print
-    void printScript( std::ostream& out );
-
-    void appendConfig(std::istream& in);
-
-    bool appendConfig( const PathName& path );
-
-private: // methods
-
-    /// private contructor for singleton
     ResourceMgr();
 
-private: // members
+// No copy allowed
 
-    bool inited_;
+    ResourceMgr(const ResourceMgr&);
+    ResourceMgr& operator=(const ResourceMgr&);
 
-    eckit::config::Script script_;
+// -- Members
+
+    static bool inited_;
+
+// -- Methods
+
+    static void readConfigFile(const LocalPathName&);
+    static bool parse(const char*);
+
 };
 
-//-----------------------------------------------------------------------------
+// A resource specifier
 
-} // namespace eckit
+class ResourceQualifier {
 
+    std::string kind_;  // Kind,  e.g. "Application"
+    std::string owner_; // Owner, e.g. "mars"
+    std::string name_;  // Name,  e.g. "debug"
+
+public:
+
+    ResourceQualifier();
+    ResourceQualifier(const std::string&, const std::string&, const std::string&);
+
+    ResourceQualifier(const ResourceQualifier&);
+    ResourceQualifier& operator=(const ResourceQualifier&);
+
+    int operator<(const ResourceQualifier&) const;
+
+};
+}
 #endif

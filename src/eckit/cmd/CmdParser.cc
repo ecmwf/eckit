@@ -13,7 +13,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/parser/Tokenizer.h"
-#include "eckit/runtime/Application.h"
+#include "eckit/runtime/Main.h"
 
 #define YY_INPUT(buf, result, max_size)                  \
     {                                                    \
@@ -75,7 +75,7 @@ int eckit_cmd_wrap(void) {
 void eckit_cmd_error(const char* msg) {
     Log::error() << msg << " line " << eckit_cmd_lineno << std::endl;
     if (flags_['e']) {
-        Application::instance().terminate();
+        Main::instance().terminate();
     }
 }
 
@@ -354,7 +354,7 @@ void CmdParser::run(void (*proc)(CmdResource*, CmdArg&, std::istream&, std::ostr
 
     if (!flags_['n'])
         if (!CmdResource::run(proc, arg_, std::cin, *out_))
-            if (flags_['e']) Application::instance().terminate();
+            if (flags_['e']) Main::instance().terminate();
 }
 
 //-----------------------------------------------------------------------------

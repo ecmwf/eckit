@@ -1,67 +1,127 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
 
 #include <ostream>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/ChannelBuffer.h"
-
-//-----------------------------------------------------------------------------
+#include "eckit/log/IndentTarget.h"
+#include "eckit/log/LogTarget.h"
+#include "eckit/log/TeeTarget.h"
+#include "eckit/log/CallbackTarget.h"
+#include "eckit/log/FileTarget.h"
+#include "eckit/log/OStreamTarget.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-ChannelBuffer::ChannelBuffer( std::ostream* os, std::size_t size ) : 
-    std::streambuf(), 
-    os_(os),
-    hasLoc_(false),
-    buffer_( size + 1 ) // + 1 so we can always write the '\0'        
+ChannelBuffer::ChannelBuffer( std::size_t size ) :
+    std::streambuf(),
+    target_(0),
+    buffer_( size  )
 {
-    assert( size );
+    ASSERT( size );
     char *base = &buffer_.front();
-    setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
+    setp(base, base + buffer_.size() );
 }
 
-ChannelBuffer::ChannelBuffer( std::ostream& os, std::size_t size ) : 
-    std::streambuf(), 
-    os_(os),
-    hasLoc_(false),
-    buffer_( size + 1 ) // + 1 so we can always write the '\0'        
+ChannelBuffer::~ChannelBuffer()
 {
-    assert( size );
-    char *base = &buffer_.front();
-    setp(base, base + buffer_.size() - 1 ); // don't consider the space for '\0'
+    reset();
 }
 
-ChannelBuffer::~ChannelBuffer() 
-{ 
-    sync(); 
+bool ChannelBuffer::active() const {
+    return target_ != 0;
 }
 
-void ChannelBuffer::location(const CodeLocation& where)
-{
-    hasLoc_ = true;
-    where_ = where;    
+
+void ChannelBuffer::setTarget(LogTarget* target) {
+    ASSERT(target);
+
+    sync();
+
+    target->attach();
+
+    if (target_) {
+        target_->detach();
+    }
+
+    target_ = target;
+
+}
+
+
+void ChannelBuffer::addTarget(LogTarget* target) {
+    ASSERT(target);
+    setTarget(new TeeTarget(target_, target));
+}
+
+void ChannelBuffer::reset() {
+    sync();
+    if (target_) {
+        target_->detach();
+        target_ = 0;
+    }
 }
 
 bool ChannelBuffer::dumpBuffer()
 {
-    if( has_target() )
-        target()->write(pbase(),pptr() - pbase());
+    if (target_) {
+        target_->write(pbase(), pptr());
+    }
     setp(pbase(), epptr());
     return true;
 }
 
+void ChannelBuffer::indent(const char* space) {
+    if (target_) {
+        setTarget(new IndentTarget(space, target_));
+    }
+}
+
+void ChannelBuffer::unindent() {
+    IndentTarget*  indent = dynamic_cast<IndentTarget*>(target_);
+    if (indent == 0) {
+        throw SeriousBug("Attempt to unindent a Channel that is not indented");
+    }
+    setTarget(indent->target_);
+
+}
+
+void ChannelBuffer::addCallback(channel_callback_t cb, void* data) {
+    setTarget(new TeeTarget(target_, new CallbackTarget(cb, data)));
+}
+
+void ChannelBuffer::setCallback(channel_callback_t cb, void* data) {
+    setTarget(new CallbackTarget(cb, data));
+}
+
+void ChannelBuffer::addStream(std::ostream& out) {
+    setTarget(new TeeTarget(target_, new OStreamTarget(out)));
+}
+
+void ChannelBuffer::setStream(std::ostream& out) {
+    setTarget(new OStreamTarget(out));
+}
+
+void ChannelBuffer::addFile(const std::string& path) {
+    setTarget(new TeeTarget(target_, new FileTarget(path)));
+}
+
+void ChannelBuffer::setFile(const std::string& path) {
+    setTarget(new FileTarget(path));
+}
+
 std::streambuf::int_type ChannelBuffer::overflow(std::streambuf::int_type ch)
 {
-    /* AutoLock<Mutex> lock(local_mutex); */
     if (ch == traits_type::eof() ) { return sync(); }
     dumpBuffer();
     sputc(ch);
@@ -70,14 +130,16 @@ std::streambuf::int_type ChannelBuffer::overflow(std::streambuf::int_type ch)
 
 std::streambuf::int_type ChannelBuffer::sync()
 {
-    if( dumpBuffer() )
+    if ( dumpBuffer() )
     {
-        if( target() ) target()->flush();
+        if (target_) {
+            target_->flush();
+        }
         return 0;
     }
     else return -1;
-}    
+}
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -25,8 +25,8 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-void Configurable::htmlAllResources(std::ostream& s,Url& url) 
-{ 
+void Configurable::htmlAllResources(std::ostream& s,Url& url)
+{
 	callAll(&Configurable::htmlResources,s,url);
 }
 
@@ -49,7 +49,7 @@ void ResourceBase::html(std::ostream& s,Url& url)
 	{
 		std::string v = url[n];
 		Log::info() << "New value for " << n << ": " << v << std::endl;
-		ResourceMgr::instance().set(n,v);
+		ResourceMgr::set(n,v);
 		Configurable::reconfigureAll();
 	}
 
@@ -69,9 +69,9 @@ void ResourceBase::html(std::ostream& s,Url& url)
 
 class ConfigResource : public HtmlResource {
 	virtual bool restricted() { return true; }
-	virtual void html(std::ostream&,Url&);	
+	virtual void html(std::ostream&,Url&);
 public:
-	ConfigResource() : HtmlResource("/config") {}	
+	ConfigResource() : HtmlResource("/config") {}
 };
 
 void ConfigResource::html(std::ostream& s,Url& url)

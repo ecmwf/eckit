@@ -11,7 +11,7 @@
 #include <utility>
 #include "eckit/mpi/mpi.h"
 #include "eckit/mpi/Exceptions.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 
 namespace eckit {
 namespace mpi {
@@ -48,7 +48,8 @@ template<> MPI_Datatype datatype<long double,int>() { return MPI_LONG_DOUBLE_INT
 
 Environment::Environment()
 {
-  eckit::mpi::init( Context::instance().argc(), Context::instance().argvs() );
+  eckit::mpi::init( Main::instance().argc(), Main::instance().argv() );
+  Main::instance().taskID(rank());
 }
 
 Environment::~Environment()

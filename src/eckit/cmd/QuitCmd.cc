@@ -10,7 +10,7 @@
 
 #include "eckit/cmd/QuitCmd.h"
 #include "eckit/runtime/Application.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 
 //-----------------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ void QuitCmd::execute(std::istream&, std::ostream& out, CmdArg&) {
 //-----------------------------------------------------------------------------
 
 void QuitCmd::help(std::ostream& out) const {
-    out << "quits the '" << Context::instance().runName() << "'";
+    out << "quits the '" << Main::instance().name() << "'";
 }
 
 //-----------------------------------------------------------------------------

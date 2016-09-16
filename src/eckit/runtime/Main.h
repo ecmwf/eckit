@@ -43,8 +43,6 @@ public: // methods
 
     virtual void terminate();
 
-    // bool debug() const;
-
     // Thread ID where the main is running
     long taskID() const;
     void taskID(long);

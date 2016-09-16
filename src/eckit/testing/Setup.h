@@ -23,8 +23,6 @@ namespace testing {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// @note Temporary class until we phase out boost::unit_test
-
 struct Setup {
     Setup() {
         eckit::Main::initialise(boost::unit_test::framework::master_test_suite().argc,

@@ -23,6 +23,7 @@
 
 #include "eckit/testing/Setup.h"
 
+using namespace eckit::testing;
 using namespace eckit::linalg;
 
 namespace eckit {

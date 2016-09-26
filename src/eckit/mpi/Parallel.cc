@@ -14,10 +14,10 @@
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/runtime/Context.h"
 
-#include "eckit/mpi/ParallelStatus.h"
 #include "eckit/mpi/ParallelRequest.h"
+#include "eckit/mpi/ParallelStatus.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
@@ -152,8 +152,8 @@ void Parallel::initialize() {
 
     if(!initialized()) {
 
-        int argc = eckit::Context::instance().argc();     /// @todo get from Main once merge branch feature/new-logging
-        char **argv = eckit::Context::instance().argvs(); /// @todo get from Main once merge branch feature/new-logging
+        int    argc = eckit::Main::instance().argc();
+        char **argv = eckit::Main::instance().argv();
 
         MPI_CALL( MPI_Init(&argc, &argv) );
     }

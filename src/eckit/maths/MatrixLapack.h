@@ -37,8 +37,13 @@
 #ifndef eckit_maths_MatrixLapack_h
 #define eckit_maths_MatrixLapack_h
 
+#include <cmath>
 #include "eckit/exception/Exceptions.h"
 #include "eckit/maths/Lapack.h"
+
+#ifdef minor
+#undef minor
+#endif
 
 namespace eckit {
 
@@ -48,14 +53,21 @@ namespace detail
 {
 	namespace ColMajor_4x4
 	{
-		template< typename Scalar > inline void invert(Scalar m[16], Scalar inv[16]);
+		template<typename T> struct remove_const          { typedef T type; };
+		template<typename T> struct remove_const<T const> { typedef T type; };
+
+		template< typename Scalar > inline void invert(
+			Scalar m[16],
+			typename remove_const<Scalar>::type inv[16]
+		);
+		template< typename Scalar > inline Scalar det(Scalar m[16]);
 	}
 }
 
 template <typename Scalar, typename Index = std::ptrdiff_t>
 class Matrix {
 
-private:
+protected:
 
 	Scalar* data_;
 	Index nr_, nc_;
@@ -64,6 +76,7 @@ private:
 public:
 
 	typedef Matrix<Scalar> Proxy;
+	typedef Matrix<const Scalar> ConstProxy;
 
 	Matrix()
 	{
@@ -104,6 +117,8 @@ public:
 		memcpy( data_, other.data(), sizeof(Scalar)*nr_*nc_ );
 	}
 
+  Matrix& noalias() { return *this; }
+
 	void resize(Index nr, Index nc)
 	{
 		if( is_proxy_ )
@@ -116,7 +131,6 @@ public:
 			{
 				if( data_ )
 				{
-					std::cout << "DELETE" << std::endl;
 					delete[] data_;
 				}
 				data_ = new Scalar[nr*nc];
@@ -148,6 +162,18 @@ public:
 	Index rows() const { return nr_; }
 
 	Index cols() const { return nc_; }
+
+	template<typename T>
+	Scalar& operator[](const T& i)
+	{
+		return data_[i];
+	}
+
+	template<typename T>
+	const Scalar& operator[](const T& i) const
+	{
+		return data_[i];
+	}
 
 	template<typename T>
 	Scalar& operator()(const T& i)
@@ -191,7 +217,7 @@ public:
 		return c;
 	}
 
-	Matrix inverse()
+	Matrix inverse() const
 	{
 		Matrix inv(nr_,nc_);
 		switch( nr_ ) {
@@ -257,7 +283,82 @@ public:
 				throw eckit::Exception(stream.str(), Here() );
 			}
 #else
-			throw eckit::Exception("Invert for specified matrix not possible (Compile with LAPACK or Eigen)", Here() );
+			// This algorithm inverts a matrix based on the Gauss Jordan method.
+			int n = nr_;
+			Scalar det, pivot, factor;
+			Matrix work(n,n);
+			det = 1;
+
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					inv(i,j) = 0;
+					work(i,j) = at(i,j);
+				}
+				inv(i,i) = 1.;
+			}
+			// The current pivot row is jpass.
+			// For each pass, first find the maximum element in the pivot column.
+			for (int jpass = 0; jpass < n; jpass++)
+			{
+				int imx = jpass;
+				for (int jrow = jpass; jrow < n; jrow++)
+				{
+					if (std::abs(work(jrow,jpass)) > std::abs(work(imx,jpass)))
+							imx = jrow;
+				}
+				// Interchange the elements of row jpass and row imx in both A and AInverse.
+				if (imx != jpass)
+				{
+					for (int jcol = 0; jcol < n; jcol++)
+					{
+						Scalar temp = inv(jpass,jcol);
+						inv(jpass,jcol) = inv(imx,jcol);
+						inv(imx,jcol) = temp;
+
+						if (jcol >= jpass)
+						{
+							temp = work(jpass,jcol);
+							work(jpass,jcol) = work(imx,jcol);
+							work(imx,jcol) = temp;
+						}
+					}
+				}
+
+				// The current pivot is now A[jpass][jpass].
+				// The determinant is the product of the pivot elements.
+				pivot = work(jpass,jpass);
+				det *= pivot;
+				if (det == 0)
+				{
+					throw eckit::SeriousBug("Cannot invert zero determinant matrix",Here());
+				}
+
+				for (int jcol = 0; jcol < n; jcol++)
+				{
+					// Normalize the pivot row by dividing by the pivot element.
+					inv(jpass,jcol) = inv(jpass,jcol) / pivot;
+					if (jcol >= jpass)
+						work(jpass,jcol) = work(jpass,jcol) / pivot;
+				}
+
+				for (int jrow = 0; jrow < n; jrow++)
+				// Add a multiple of the pivot row to each row.	The multiple factor
+				// is chosen so that the element of A on the pivot column is 0.
+				{
+					if (jrow != jpass)
+						factor = work(jrow,jpass);
+					for (int jcol = 0; jcol < n; jcol++)
+					{
+						if (jrow != jpass)
+						{
+							inv(jrow,jcol)  -= factor * inv(jpass,jcol);
+							work(jrow,jcol) -= factor * work(jpass,jcol);
+						}
+					}
+				}
+			}
 #endif
 		} }
 		return inv;
@@ -272,6 +373,37 @@ public:
 		return transposed;
 	}
 
+	Scalar determinant() const
+	{
+		switch( nr_ ) {
+		case 1: {
+			return at(0,0);
+		}
+		case 2: {
+			return (at(0,0) * at(1,1) - at(0,1) * at(1,0));
+		}
+		case 3: {
+			return (
+					at(0,0)*at(1,1)*at(2,2) + at(1,0)*at(2,1)*at(0,2) + at(2,0)*at(0,1)*at(1,2)
+					-at(0,0)*at(2,1)*at(1,2) - at(2,0)*at(1,1)*at(0,2) - at(1,0)*at(0,1)*at(2,2) );
+		}
+		case 4: {
+			return detail::ColMajor_4x4::det(data());
+		}
+		default: {
+			Scalar d = 0;    // value of the determinant
+			// this is a matrix of 5x5 or larger
+			for (int c = 0; c < cols(); c++)
+			{
+				Matrix M = minor(0, c);
+				d += (2*((c+1)%2) - 1) * at(0, c) * M.determinant();
+			}
+			return d;
+		}
+		}
+		return 0.;
+	}
+
 	template<typename S, typename I>
 	friend std::ostream& operator<<( std::ostream& os, const Matrix<S, I>& v);
 
@@ -280,7 +412,7 @@ public:
 	{ \
 		for (Index i=0; i<size(); ++i) \
 			data_[i] OP scal; \
-	  return *this; \
+		return *this; \
 	}
 	UNARY_OPERATOR_Scalar(+=)
 	UNARY_OPERATOR_Scalar(-=)
@@ -362,12 +494,39 @@ private:
 		return data_[i+nr_*j];
 	}
 
+	template<typename T0, typename T1>
+	Matrix minor(const T0& row, const T1& col) const
+	{
+		Matrix m(rows()-1,cols()-1);
+
+		Index mr(0);
+		for( Index r=0; r<rows(); ++mr)
+		{
+			if( r==row ) ++r;
+			if( r==rows() ) break;
+			Index mc(0);
+			for( Index c=0; c<(cols()); ++mc)
+			{
+				if( c==col ) ++c;
+				if( c==cols() ) break;
+				m(mr,mc) = at(r,c);
+				++c;
+			}
+			++r;
+		}
+		return m;
+	}
+
 };
 
 template< typename Scalar, typename Index = std::ptrdiff_t >
 class RowVector : public Matrix<Scalar, Index>
 {
 	typedef Matrix<Scalar, Index> Base;
+
+public:
+	typedef RowVector<Scalar> Proxy;
+	typedef RowVector<const Scalar> ConstProxy;
 
 public:
 
@@ -390,16 +549,36 @@ public:
 
 	RowVector& operator= (const Base& other)
 	{
-		resize(1,other.cols());
+		resize(other.cols());
 		memcpy( this->data(), other.data(), sizeof(Scalar)*this->cols() );
 		return *this;
 	}
+
+	// RowVector ColVector multiply
+	Scalar operator * (const ColVector<Scalar,Index> &c) const
+	{
+		Scalar s(0);
+		for( Index j=0; j<Base::nc_; ++j)
+			s += Base::data_[j] * c[j];
+		return s;
+	}
+
+	// RowVector Matrix multiply
+	Base operator * (const Base &m) const
+	{
+		return Base::operator *(m);
+	}
+
 };
 
 template< typename Scalar, typename Index = std::ptrdiff_t >
 class ColVector : public Matrix<Scalar, Index>
 {
 	typedef Matrix<Scalar, Index> Base;
+
+public:
+	typedef ColVector<Scalar> Proxy;
+	typedef ColVector<const Scalar> ConstProxy;
 
 public:
 
@@ -426,6 +605,19 @@ public:
 		memcpy( this->data(), other.data(), sizeof(Scalar)*this->cols() );
 		return *this;
 	}
+
+	// ColVector RowVector multiply
+	Matrix<Scalar,Index> operator * (const RowVector<Scalar,Index> &r) const
+	{
+		Matrix<Scalar,Index> m(Base::nc_,r.nr_);
+		for(Index i=0; i<m.nr_; ++i ) {
+			for(Index j=0; j<m.nc_; ++j ) {
+				m(i,j) = Base::data_[i] * r[j];
+			}
+		}
+		return m;
+	}
+
 };
 
 
@@ -447,7 +639,9 @@ namespace ColMajor_4x4
 {
 
 template< typename Scalar >
-inline void invert(Scalar m[16], Scalar inv[16])
+inline void invert(
+	Scalar m[16],
+	typename remove_const<Scalar>::type inv[16] )
 {
 
 	inv[ 0] =  m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10];
@@ -467,11 +661,14 @@ inline void invert(Scalar m[16], Scalar inv[16])
 	inv[11] = -m[0] * m[ 5] * m[11] + m[0] * m[ 7] * m[ 9] + m[4] * m[1] * m[11] - m[4] * m[3] * m[ 9] - m[ 8] * m[1] * m[ 7] + m[ 8] * m[3] * m[ 5];
 	inv[15] =  m[0] * m[ 5] * m[10] - m[0] * m[ 6] * m[ 9] - m[4] * m[1] * m[10] + m[4] * m[2] * m[ 9] + m[ 8] * m[1] * m[ 6] - m[ 8] * m[2] * m[ 5];
 
-	Scalar det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
+	typename remove_const<Scalar>::type det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
 
 	if(det == 0)
 	{
-		throw eckit::Exception("Trying to invert matrix with zero determinant", Here() );
+		Matrix<Scalar> mat(m,4,4);
+		std::stringstream msg;
+		msg << "Trying to invert 4x4 matrix with zero determinant.\nMatrix = \n" << mat;
+		throw eckit::Exception(msg.str(), Here() );
 	}
 
 	det = 1. / det;
@@ -479,6 +676,19 @@ inline void invert(Scalar m[16], Scalar inv[16])
 	for(int i = 0; i < 16; i++)
 			inv[i] *= det;
 }
+
+template< typename Scalar >
+Scalar det(Scalar m[16])
+{
+	Scalar inv[4] = {
+		 m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10],
+		-m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] - m[8] * m[7] * m[14] - m[12] * m[6] * m[11] + m[12] * m[7] * m[10],
+		 m[4] * m[ 9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] + m[8] * m[7] * m[13] + m[12] * m[5] * m[11] - m[12] * m[7] * m[ 9],
+		-m[4] * m[ 9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] - m[8] * m[6] * m[13] - m[12] * m[5] * m[10] + m[12] * m[6] * m[ 9],
+	};
+	return m[0] * inv[0] + m[1] * inv[1] + m[2] * inv[2] + m[3] * inv[3];
+}
+
 } // namespace ColMajor_4x4
 
 namespace RowMajor_4x4 {
@@ -520,6 +730,7 @@ inline void invert(Scalar m[16], Scalar inv[16])
 }
 
 } // namespace RowMajor_4x4
+
 
 } // namespace detail
 

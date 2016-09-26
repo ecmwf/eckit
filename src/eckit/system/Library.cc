@@ -20,9 +20,8 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
-#include "eckit/log/Channel.h"
-#include "eckit/log/ChannelBuffer.h"
-#include "eckit/log/MultiChannel.h"
+#include "eckit/log/OStreamTarget.h"
+#include "eckit/log/PrefixTarget.h"
 #include "eckit/os/System.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/thread/AutoLock.h"
@@ -123,6 +122,13 @@ Library::Library(const std::string& name) :
     if (e) {
         debug_ = eckit::Translator<std::string, bool>()(e);
     }
+
+    if (!debug_) {
+        e = ::getenv("DEBUG");
+        if (e) {
+            debug_ = eckit::Translator<std::string, bool>()(e);
+        }
+    }
 }
 
 Library::~Library() {
@@ -144,11 +150,6 @@ std::string Library::libraryPath() const {
     return libraryPath_;
 }
 
-bool Library::debug() const
-{
-    return debug_;
-}
-
 Channel& Library::debugChannel() const
 {
     eckit::AutoLock<Mutex> lock(mutex_);
@@ -157,13 +158,14 @@ Channel& Library::debugChannel() const
 
     std::string s = prefix_ + "_DEBUG";
 
+
     if (debug_) {
-        debugChannel_.reset(new Channel( new ChannelBuffer( std::cout )));
+        debugChannel_.reset(new Channel(new PrefixTarget(s)));
     }
     else {
-
-        debugChannel_.reset(new MultiChannel());
+        debugChannel_.reset(new Channel());
     }
+
     return *debugChannel_;
 }
 

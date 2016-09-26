@@ -8,66 +8,150 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include "eckit/linalg/Matrix.h"
+
+#include <cstring>
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
-
-#include "eckit/linalg/Matrix.h"
 
 namespace eckit {
 namespace linalg {
 
 //-----------------------------------------------------------------------------
 
-Matrix::Matrix() {}
-
-//-----------------------------------------------------------------------------
-
-Matrix::Matrix(Matrix::Size rows, Matrix::Size cols)
-  : v_(rows*cols), rows_(rows), cols_(cols) {}
-
-//-----------------------------------------------------------------------------
-
-Matrix::Matrix(Stream& s) {
-    Size rows, cols;
-    s >> rows;
-    s >> cols;
-    resize(rows, cols);
-    Buffer b(v_.data(), rows*cols*sizeof(Scalar), /* dummy */ true);
-    s >> b;
+Matrix::Matrix() :
+    array_(0),
+    rows_(0),
+    cols_(0),
+    own_(false) {
 }
 
 //-----------------------------------------------------------------------------
 
-void Matrix::resize(Matrix::Size rows, Matrix::Size cols) {
-    v_.resize(rows*cols);
+Matrix::Matrix(Size rows, Size cols) :
+    array_(new Scalar[rows*cols]),
+    rows_(rows),
+    cols_(cols),
+    own_(true) {
+    ASSERT(size()>0);
+    ASSERT(array_);
+}
+
+//-----------------------------------------------------------------------------
+
+Matrix::Matrix(Scalar* array, Size rows, Size cols) :
+    array_(array),
+    rows_(rows),
+    cols_(cols),
+    own_(false) {
+    ASSERT(size()>0);
+    ASSERT(array_);
+}
+
+//-----------------------------------------------------------------------------
+
+Matrix::Matrix(Stream& stream) :
+    array_(0),
+    rows_(0),
+    cols_(0),
+    own_(false) {
+    Size rows, cols;
+    stream >> rows;
+    stream >> cols;
+    resize(rows, cols);
+
+    ASSERT(size()>0);
+    ASSERT(array_);
+    Buffer b(array_, (rows*cols)*sizeof(Scalar), /* dummy */ true);
+    stream >> b;
+}
+
+//-----------------------------------------------------------------------------
+
+Matrix::Matrix(const Matrix& other) :
+    array_(new Scalar[other.size()]),
+    rows_(other.rows_),
+    cols_(other.cols_),
+    own_(true) {
+    ASSERT(size()>0);
+    ASSERT(array_);
+    ::memcpy(array_, other.array_, size() * sizeof(Scalar));
+}
+
+//-----------------------------------------------------------------------------
+
+Matrix::~Matrix() {
+    if (own_) {
+        delete [] array_;
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+Matrix& Matrix::operator=(const Matrix& other) {
+    // do not optimize for if size()==other.size(), as using copy constructor
+    // consistently retains ownership (no surprises in ownership behaviour)
+    Matrix copy(other);
+    swap(copy);
+    return *this;
+}
+
+//-----------------------------------------------------------------------------
+
+void Matrix::swap(Matrix& other) {
+    std::swap(array_, other.array_);
+    std::swap(rows_,  other.rows_);
+    std::swap(cols_,  other.cols_);
+    std::swap(own_,   other.own_);
+}
+
+//-----------------------------------------------------------------------------
+
+void Matrix::resize(Size rows, Size cols) {
+    // avoid reallocation if memory is the same
+    if (size() != rows*cols) {
+        Matrix m(rows, cols);
+        swap(m);
+    }
     rows_ = rows;
     cols_ = cols;
 }
 
 //-----------------------------------------------------------------------------
 
-void Matrix::swap(Matrix& o) {
-    v_.swap(o.v_);
-    std::swap(rows_, o.rows_);
-    std::swap(cols_, o.cols_);
+void Matrix::setZero() {
+    ASSERT(size()>0);
+    ASSERT(array_);
+    ::memset(array_, 0, size()*sizeof(Scalar));
 }
 
 //-----------------------------------------------------------------------------
 
-void Matrix::encode(Stream& s) const {
-  s << rows_;
-  s << cols_;
-  s << Buffer(const_cast<Scalar*>(v_.data()), rows_*cols_*sizeof(Scalar), /* dummy */ true);
+void Matrix::fill(Scalar value) {
+    for (Size i = 0; i < size(); ++i) {
+        array_[i] = value;
+    }
 }
 
 //-----------------------------------------------------------------------------
 
-Stream& operator<<(Stream& s, const Matrix& v) {
-    v.encode(s);
-    return s;
+void Matrix::encode(Stream& stream) const {
+  Buffer b(const_cast<Scalar*>(array_), rows_*cols_*sizeof(Scalar), /* dummy */ true);
+
+  stream << rows_;
+  stream << cols_;
+  stream << b;
+}
+
+//-----------------------------------------------------------------------------
+
+Stream& operator<<(Stream& stream, const Matrix& matrix) {
+    matrix.encode(stream);
+    return stream;
 }
 
 //-----------------------------------------------------------------------------
 
 }  // namespace linalg
-} // namespace eckit
+}  // namespace eckit

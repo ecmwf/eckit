@@ -15,11 +15,9 @@
 using namespace std;
 using namespace eckit;
 
-//-----------------------------------------------------------------------------
-
 namespace eckit_test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class TestLog : public Tool {
 public:
@@ -40,31 +38,26 @@ public:
 void TestLog::test_debug()
 {
     Log::debug()         << "debug message 1" << std::endl;
-    Log::debug( Here() ) << "debug message 2" << std::endl;
 }
 
 void TestLog::test_info()
 {
     Log::info()         << "info message 1" << std::endl;
-    Log::info( Here() ) << "info message 2" << std::endl;
 }
 
 void TestLog::test_warning()
 {
     Log::warning()         << "warning message 1" << std::endl;
-    Log::warning( Here() ) << "warning message 2" << std::endl;
 }
 
 void TestLog::test_error()
 {
     Log::error()         << "error message 1" << std::endl;
-    Log::error( Here() ) << "error message 2" << std::endl;
 }
 
 void TestLog::test_panic()
 {
     Log::panic()         << "panic message 1" << std::endl;
-    Log::panic( Here() ) << "panic message 2" << std::endl;
 }
 
 void TestLog::test_strerr()
@@ -83,11 +76,10 @@ void TestLog::run()
     test_strerr();
 }
 
-//-----------------------------------------------------------------------------
 
 } // namespace eckit_test
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 int main(int argc,char **argv)
 {

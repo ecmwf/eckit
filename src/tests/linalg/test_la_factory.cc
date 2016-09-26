@@ -21,16 +21,21 @@
 
 #include "eckit/linalg/LinearAlgebra.h"
 
-//-----------------------------------------------------------------------------
+#include "eckit/testing/Setup.h"
 
 using namespace eckit::linalg;
+using namespace eckit::testing;
 
 namespace eckit {
 namespace test {
 
 /// Test linear algebra factory
 
+BOOST_GLOBAL_FIXTURE(Setup);
+
 BOOST_AUTO_TEST_SUITE(test_eckit_la_factory)
+
+//-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE(test_list) {
     std::ostringstream oss;
@@ -50,6 +55,8 @@ BOOST_AUTO_TEST_CASE(test_list) {
     BOOST_CHECK_NE(oss.str().find("mkl"), std::string::npos);
 #endif
 }
+
+//-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE(test_backend) {
     LinearAlgebra::backend();
@@ -73,6 +80,8 @@ BOOST_AUTO_TEST_CASE(test_backend) {
 #endif
     BOOST_CHECK_THROW(LinearAlgebra::backend("foo"), BadParameter);
 }
+
+//-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
 

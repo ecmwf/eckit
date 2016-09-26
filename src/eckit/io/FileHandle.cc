@@ -165,7 +165,7 @@ void FileHandle::flush()
         if (!read_)
         {
             if (::fflush(file_))
-                throw WriteError(std::string("FileHandle::~FileHandle(fflush(") + name_ + "))");
+                throw WriteError(std::string("fflush(") + name_ + ")", Here());
 
             int ret = fsync(fileno(file_));
 

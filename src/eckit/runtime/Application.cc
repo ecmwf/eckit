@@ -8,83 +8,102 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <iostream>
+#include <unistd.h>
+
 #include "eckit/bases/Loader.h"
 #include "eckit/config/Resource.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/log/Log.h"
-#include "eckit/os/Semaphore.h"
 #include "eckit/runtime/Application.h"
-#include "eckit/runtime/Context.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/log/TimeStampTarget.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+static char* reserve_ = 0;
 
-Application::Application(int argc, char** argv,
-                         LoggingPolicy* logPolicy,
-                         MonitoringPolicy* monPolicy,
-                         LocationPolicy* locPolicy,
-                         SignallingPolicy* sigPolicy)
-    : loggingPolicy_(logPolicy),
-      monitoringPolicy_(monPolicy),
-      locationPolicy_(locPolicy),
-      signallingPolicy_(sigPolicy),
-      running_(false)
-{
-    locationPolicy_->setup();  // location policy first -- sets home()
+static void end(const char* msg) {
+    static bool in_end = false;
 
-    name_ = PathName(argv[0]).baseName(false);
-
-    Context& ctxt = Context::instance();
-    ctxt.setup(argc, argv);
-    ctxt.runName(name_);
-    ctxt.debug(Resource<int>(this, "debug;$DEBUG;-debug", 0));
-
-    loggingPolicy_->setup();
-
-    monitoringPolicy_->start();
-
-    ::srand(::getpid() + ::time(0));
-
-    // ensure is uniqe instance of this application
-    {
-        if (instance_) throw SeriousBug("An instance of application already exists");
-        instance_ = this;
+    if (in_end) {
+        std::cout << "terminate called twice" << std::endl;
+        _exit(1);
     }
 
-    signallingPolicy_->regist();
+    in_end = true;
+
+    delete[] reserve_;
+    reserve_ = 0;
+
+    try {
+        throw;
+    } catch (std::exception& e) {
+        std::cout << "!!!!!!!!!!!!!!!!!! ";
+        std::cout << msg << " with the exception:" << std::endl;
+        std::cout << e.what() << std::endl;
+    }
+    _exit(1);
+}
+
+static void catch_terminate() {
+    end("Terminate was called");
+}
+
+static void catch_unexpected() {
+    end("Unexpected was called");
+}
+
+static void catch_new_handler() {
+    delete[] reserve_;
+    reserve_ = 0;
+    throw OutOfMemory();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+Application& Application::instance()
+{
+    return static_cast<Application&>(Main::instance());
+}
+
+Application::Application(int argc, char** argv, const char* homeenv):
+    Main(argc, argv, homeenv),
+    running_(false)
+{
+    reserve_ = new char[20 * 1024]; // In case we runout of memeory
+    std::set_new_handler(&catch_new_handler);
+    std::set_terminate(&catch_terminate);
+    std::set_unexpected(&catch_unexpected);
+
+    Monitor::active(true);
+    Monitor::instance().startup();
+    taskID_ = Monitor::instance().self();
 
     Loader::callAll(&Loader::execute);
 }
 
-//-----------------------------------------------------------------------------
 
 Application::~Application() {
-    signallingPolicy_->unregist();
-    monitoringPolicy_->stop();
-    instance_ = 0;
+    Monitor::instance().shutdown();
 }
 
 //-----------------------------------------------------------------------------
 
-Application& Application::instance() {
-    PANIC(instance_ == 0);
-    return *instance_;
+LogTarget* Application::createInfoLogTarget() const {
+    return new TimeStampTarget("(I)");
 }
 
-//-----------------------------------------------------------------------------
+LogTarget* Application::createWarningLogTarget() const {
+    return new TimeStampTarget("(W)");
+}
 
-void Application::reconfigure() {
-    Log::info() << "Application::reconfigure" << std::endl;
+LogTarget* Application::createErrorLogTarget() const {
+    return new TimeStampTarget("(E)");
+}
 
-    int debug = Resource<int>(this, "debug;$DEBUG;-debug", 0);
-
-    Context::instance().debug(debug);
-
-    Context::instance().reconfigure();  // forward to context
+LogTarget* Application::createDebugLogTarget() const {
+    return new TimeStampTarget("(D)");
 }
 
 //-----------------------------------------------------------------------------
@@ -92,13 +111,9 @@ void Application::reconfigure() {
 void Application::start() {
     int status = 0;
 
-    std::string displayName = Resource<std::string>("-name", name_);
+    displayName_ = Resource<std::string>("-name", name_);
 
-    Context::instance().displayName(displayName);
-
-    Monitor::instance().name(displayName);
-
-    Log::info() << "** Start of " << name() << " ** pid is " << getpid() << std::endl;
+    Log::info() << "** Start of " << displayName_ << " ** pid is " << getpid() << std::endl;
 
     try {
         Log::status() << "Running" << std::endl;
@@ -108,36 +123,36 @@ void Application::start() {
     } catch (std::exception& e) {
         status = 1;
         Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception is terminates " << name() << std::endl;
+        Log::error() << "** Exception is terminates " << displayName_ << std::endl;
     }
 
-    Log::info() << "** End of " << name() << " (" << Context::instance().argv(0) << ")  **" << std::endl;
+    Log::info() << "** End of " << displayName_ << " (" << argv(0) << ")  **" << std::endl;
 
     ::exit(status);
 }
 
-//-----------------------------------------------------------------------------
+
 
 void Application::stop() {
     ::exit(0);  // or: throw Stop();
 }
 
-//-----------------------------------------------------------------------------
+
 
 void Application::kill() {
     ::exit(1);
 }
 
-//-----------------------------------------------------------------------------
+
 
 void Application::terminate() {
     stop();
 }
 
-//-----------------------------------------------------------------------------
+
 
 void Application::unique() {
-    PathName lockFile("~/locks/" + name());
+    PathName lockFile("~/locks/" + name_);
 
     if (!lockFile.exists()) lockFile.touch();
 
@@ -147,7 +162,7 @@ void Application::unique() {
         std::ifstream os(lockFile.localPath());
         std::string s;
         os >> s;
-        throw SeriousBug("Application " + name() + " is already running as pid " + s);
+        throw SeriousBug("Application " + name_ + " is already running as pid " + s);
     }
 
     sem->lock();  // OS should reset the semaphore
@@ -156,21 +171,16 @@ void Application::unique() {
     os << getpid();
 }
 
-//-----------------------------------------------------------------------------
 
 time_t Application::uptime() {
-    long taskId = Context::instance().self();
 
     Monitor::TaskArray& info = Monitor::instance().tasks();
-    time_t uptime = info[taskId].start();
+    time_t uptime = info[taskID_].start();
     time_t now = ::time(0);
 
     return now - uptime;
 }
 
-//-----------------------------------------------------------------------------
-
-Application* Application::instance_;
 
 //-----------------------------------------------------------------------------
 

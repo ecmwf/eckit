@@ -36,6 +36,11 @@ class Bless;
 #endif
 
 class Offset {
+
+public: // types
+
+    typedef long long value_t;
+
 public:
 
 	friend std::ostream& operator<<(std::ostream& s,const Offset& x)
@@ -48,7 +53,7 @@ public:
 		{ s >> x.value_; return s;}
 
 	//Offset(fpos_t); <- To implement
-	Offset(long long l = 0) : value_(l) {}
+    Offset(value_t l = 0) : value_(l) {}
 	Offset(const Offset& other) : value_(other.value_) {}
 
 #include "eckit/io/Offset.b"
@@ -87,7 +92,7 @@ public:
 		{ return value_ - other.value_;}
 
 	
-	operator long long() const { return value_; }		
+    operator value_t() const { return value_; }
 
 	void dump(DumpLoad&) const;
 	void load(DumpLoad&);
@@ -96,7 +101,7 @@ private:
     
 // -- Members
 
-	long long value_;
+    value_t value_;
 
 	friend class Length;
 };

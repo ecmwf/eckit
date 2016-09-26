@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -12,6 +12,7 @@
 
 #include "eckit/runtime/Tool.h"
 #include "eckit/log/Colour.h"
+#include "eckit/log/Log.h"
 
 using namespace std;
 using namespace eckit;
@@ -25,24 +26,24 @@ namespace eckit_test {
 class TestColour : public Tool {
 public:
 
-    TestColour(int argc,char **argv): Tool(argc,argv) {}
+    TestColour(int argc, char **argv): Tool(argc, argv) {}
 
     virtual void run();
 };
 
 void TestColour::run()
 {
-  
-  Log::info() << "Hello, worlds" << std::endl;
 
-  std::cout << Colour::red << "Red" << Colour::reset << std::endl;
-  std::cout << Colour::off;
-  std::cout << Colour::red << "Red" << Colour::reset << std::endl;
-  std::cout << Colour::on;
-  std::cout << Colour::blue << "Red" << Colour::reset << std::endl;
-  std::cout << Colour::red << Colour::bold << "Red" << Colour::reset << std::endl;
-  std::cout << Colour::yellow << Colour::underline << "Red" << Colour::reset << std::endl;
-	
+    Log::info() << "Hello, worlds" << std::endl;
+
+    std::cout << Colour::red << "Red" << Colour::reset << std::endl;
+    std::cout << Colour::off;
+    std::cout << Colour::red << "Red" << Colour::reset << std::endl;
+    std::cout << Colour::on;
+    std::cout << Colour::blue << "Red" << Colour::reset << std::endl;
+    std::cout << Colour::red << Colour::bold << "Red" << Colour::reset << std::endl;
+    std::cout << Colour::yellow << Colour::underline << "Red" << Colour::reset << std::endl;
+
 }
 
 //-----------------------------------------------------------------------------
@@ -51,8 +52,8 @@ void TestColour::run()
 
 //-----------------------------------------------------------------------------
 
-int main(int argc,char **argv)
+int main(int argc, char **argv)
 {
-    eckit_test::TestColour app(argc,argv);
+    eckit_test::TestColour app(argc, argv);
     return app.start();
 }

@@ -18,6 +18,8 @@
 //-----------------------------------------------------------------------------
 
 #include "eckit/linalg/LinearAlgebraMKL.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"

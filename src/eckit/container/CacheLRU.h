@@ -61,17 +61,17 @@ public: // methods
 
     ~CacheLRU();
 
-    /// Inserts an entry to the cache, overwrites if already exists
-    /// @returns true if a key aklready existed
+    /// Inserts an entry into the cache, overwrites if already exists
+    /// @returns true if a key already existed
     bool insert(const key_type& key, const value_type& value);
 
     /// Accesses a key that must already exist
-    /// @throws NotFound exception is key not present
+    /// @throws OutOfRange exception is key not in cache
     value_type access(const key_type& key);
 
     /// Extracts the key from the cache without purging
     /// @pre Key must exist in cache
-    /// @throws if key not in cache
+    /// @throws OutOfRange exception if key not in cache
     value_type extract(const key_type& key);
 
     /// Remove a key-value pair from the cache
@@ -89,7 +89,7 @@ public: // methods
     /// @returns the maximum size of the cache
     size_t capacity() const { return capacity_; }
 
-    /// @returns the current (usaed) size of the cache
+    /// @returns the current (used) size of the cache
     size_t size() const { return storage_.size(); }
 
     /// resizes the cache capacity

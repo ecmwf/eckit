@@ -16,15 +16,20 @@
 #include "eckit/parser/JSONParser.h"
 #include "eckit/parser/JSON.h"
 
+#include "eckit/testing/Setup.h"
+
 using namespace std;
 using namespace eckit;
 
-//-----------------------------------------------------------------------------
+using namespace eckit::testing;
+
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( test_eckit_parser_json )
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value ) {
     std::istringstream in("{ \"a\" : [true, false, 3], \"b\" : 42.3 , \"c\" : null, \"d\" : \"y\n\tr\rh\", \"e\" : \"867017db84f4bc2b5078ca56ffd3b9b9\"}");
     JSONParser p(in);
 
@@ -66,10 +71,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value )
     BOOST_CHECK_EQUAL( v["e"].as<string>(), "867017db84f4bc2b5078ca56ffd3b9b9" );
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_set )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_set ) {
     istringstream in("[ \"a\" , \"b\", \"c\" ]" );
     JSONParser p(in);
     Value v = p.parse();
@@ -92,10 +96,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_set )
     BOOST_CHECK_EQUAL( v[2].as<string>(), "c" );
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_map )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_map ) {
     istringstream in("{ \"a\" : \"AAA\", \"b\" : 0.0 , \"c\" : \"null\", \"d\" : \"\"}" );
     JSONParser p(in);
     Value v = p.parse();
@@ -121,16 +124,15 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_map )
     BOOST_CHECK_EQUAL( v["d"].as<string>(), "" );
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_eof )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_parser_eof ) {
     istringstream in("");
     JSONParser p(in);
 
     BOOST_CHECK_THROW(p.next(), StreamParser::Error);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

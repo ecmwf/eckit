@@ -8,103 +8,127 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <cstring>
+#include "eckit/linalg/Vector.h"
 
+#include <cstring>
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
-
-#include "eckit/linalg/Vector.h"
 
 namespace eckit {
 namespace linalg {
 
 //-----------------------------------------------------------------------------
 
-Vector::Vector() : v_(0), size_(0), own_(false) {}
-
-//-----------------------------------------------------------------------------
-
-Vector::Vector(Size s) : v_(new Scalar[s]), size_(s), own_(true) {}
-
-//-----------------------------------------------------------------------------
-
-Vector::Vector(Scalar* v, Size s) : v_(v), size_(s), own_(false) {
-    ASSERT(v && size_ > 0);
+Vector::Vector() :
+    array_(0),
+    length_(0),
+    own_(false) {
 }
 
 //-----------------------------------------------------------------------------
 
-Vector::Vector(Stream& s) : v_(0), size_(0), own_(false) {
-    Size size;
-    s >> size;
-    resize(size);
-    Buffer b(v_, size*sizeof(Scalar), /* dummy */ true);
-    s >> b;
+Vector::Vector(Size length) :
+    array_(new Scalar[length]),
+    length_(length),
+    own_(true) {
 }
 
 //-----------------------------------------------------------------------------
 
-Vector::Vector(const Vector& v)
-  : v_(new Scalar[v.size_]), size_(v.size_), own_(true) {
-    ::memcpy(v_, v.v_, size_ * sizeof(Scalar));
+Vector::Vector(Scalar* array, Size length) :
+    array_(&array[0]),
+    length_(length),
+    own_(false) {
+    ASSERT(array_ && length_ > 0);
+}
+
+//-----------------------------------------------------------------------------
+
+Vector::Vector(Stream& stream) :
+    array_(0),
+    length_(0),
+    own_(false) {
+    Size length;
+    stream >> length;
+    resize(length);
+
+    ASSERT(length_ > 0);
+    Buffer b(array_, length*sizeof(Scalar), /* dummy */ true);
+    stream >> b;
+}
+
+//-----------------------------------------------------------------------------
+
+Vector::Vector(const Vector& other) :
+    array_(new Scalar[other.length_]),
+    length_(other.length_),
+    own_(true) {
+    ::memcpy(array_, other.array_, length_ * sizeof(Scalar));
 }
 
 //-----------------------------------------------------------------------------
 
 Vector::~Vector() {
-    if (own_) delete [] v_;
+    if (own_) {
+        delete [] array_;
+    }
 }
 
 //-----------------------------------------------------------------------------
 
-Vector&Vector::operator=(const Vector& v) {
-    Vector nv(v);
-    swap(nv);
+Vector&Vector::operator=(const Vector& other) {
+    Vector copy(other);
+    swap(copy);
     return *this;
 }
 
 //-----------------------------------------------------------------------------
 
-void Vector::swap(Vector& v) {
-    std::swap(v_, v.v_);
-    std::swap(size_, v.size_);
-    std::swap(own_, v.own_);
+void Vector::swap(Vector& other) {
+    std::swap(array_,  other.array_);
+    std::swap(length_, other.length_);
+    std::swap(own_,    other.own_);
 }
 
 //-----------------------------------------------------------------------------
 
-void Vector::resize(Size s) {
-    Vector v(s);
+void Vector::resize(Size length) {
+    Vector v(length);
     swap(v);
 }
 
 //-----------------------------------------------------------------------------
 
 void Vector::setZero() {
-    ::memset(v_, 0, size_*sizeof(Scalar));
+    ::memset(array_, 0, length_*sizeof(Scalar));
 }
 
 //-----------------------------------------------------------------------------
 
-void Vector::fill(Scalar s) {
-    for (Size i = 0; i < size_; ++i) v_[i] = s;
+void Vector::fill(Scalar value) {
+    for (Size i = 0; i < length_; ++i) {
+        array_[i] = value;
+    }
 }
 
 //-----------------------------------------------------------------------------
 
-void Vector::encode(Stream& s) const {
-  s << size_;
-  s << Buffer(v_, size_*sizeof(Scalar), /* dummy */ true);
+void Vector::encode(Stream& stream) const {
+  Buffer b(array_, length_*sizeof(Scalar), /* dummy */ true);
+
+  stream << length_;
+  stream << b;
 }
 
 //-----------------------------------------------------------------------------
 
-Stream& operator<<(Stream& s, const Vector& v) {
-    v.encode(s);
-    return s;
+Stream& operator<<(Stream& stream, const Vector& vector) {
+    vector.encode(stream);
+    return stream;
 }
 
 //-----------------------------------------------------------------------------
 
 }  // namespace linalg
-} // namespace eckit
+}  // namespace eckit

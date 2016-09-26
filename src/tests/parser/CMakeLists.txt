@@ -1,4 +1,4 @@
-ecbuild_add_test( TARGET   eckit_test_parser
+ecbuild_add_test( TARGET   eckit_test_json
                   BOOST
                   SOURCES  test_json.cc
                   LIBS     eckit )

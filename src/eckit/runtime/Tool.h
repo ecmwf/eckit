@@ -1,9 +1,10 @@
+
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -14,13 +15,13 @@
 #ifndef eckit_Tool_h
 #define eckit_Tool_h
 
-#include "eckit/config/Configurable.h"
+#include "eckit/runtime/Main.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Tool : public Configurable {
+class Tool : public Main {
 
 public: // methods
 
@@ -31,19 +32,10 @@ public: // methods
     /// Destructor
 
 	virtual ~Tool();
-	
+
     int start();
-    
+
 	virtual void run() = 0;
-    
-protected: // methods
-
-	virtual void   reconfigure();
-	virtual std::string name() const   { return name_; }
-
-private: // members
-
-    std::string name_;
 
 };
 

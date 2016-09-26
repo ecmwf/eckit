@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -36,13 +36,13 @@ public: // methods
 
     /// Destructor
 
-	~Tokenizer(); 
-    
-    void operator()(const std::string&, std::vector<std::string>&);
-    void operator()(std::istream&, std::vector<std::string>&);
+	~Tokenizer();
 
-    void operator()(const std::string&, std::set<std::string>&);
-    void operator()(std::istream&, std::set<std::string>&);
+    void operator()(const std::string&, std::vector<std::string>&) const;
+    void operator()(std::istream&, std::vector<std::string>&) const;
+
+    void operator()(const std::string&, std::set<std::string>&) const;
+    void operator()(std::istream&, std::set<std::string>&) const;
 
 private: // members
 
@@ -51,7 +51,7 @@ private: // members
     bool keepEmpty_;
 
 private: // methods
-    
+
 	void print(std::ostream&) const;
 
 	friend std::ostream& operator<<(std::ostream& s,const Tokenizer& p) { p.print(s); return s; }

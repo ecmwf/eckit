@@ -134,7 +134,7 @@ Library::Library(const std::string& name) :
 Library::~Library() {
 }
 
-std::string Library::name() const {
+const std::string& Library::name() const {
     return name_;
 }
 

@@ -40,7 +40,7 @@ public: // methods
 
     virtual ~Library();
 
-    std::string name() const;
+    const std::string& name() const;
 
     virtual LocalPathName path() const;
 
@@ -82,6 +82,7 @@ private: // members
 
     std::string name_;
     std::string prefix_;
+
     bool debug_;
 
     mutable eckit::Mutex mutex_;

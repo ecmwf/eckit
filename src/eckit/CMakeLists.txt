@@ -491,6 +491,7 @@ utils/RLE.cc )
 list( APPEND eckit_memory_srcs
 memory/Builder.h
 memory/Builder.cc
+memory/Counted.cc
 memory/Counted.h
 memory/Factory.h
 memory/Owned.h
@@ -640,5 +641,6 @@ endif()
 add_subdirectory( geometry )
 add_subdirectory( linalg )
 add_subdirectory( maths )
+add_subdirectory( mpi )
 add_subdirectory( option )
 add_subdirectory( web )

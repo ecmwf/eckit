@@ -10,16 +10,12 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/types/Types.h"
+#include "eckit/mpi/Comm.h"
 
 #define BOOST_TEST_MODULE eckit_test_mpi
 #include "ecbuild/boost_test_framework.h"
 
-//struct MPIFixture {
-//    MPIFixture()  { mpi::Environment::instance().initialize(); }
-//    ~MPIFixture() { mpi::Environment::instance().finalize(); }
-//};
-//BOOST_GLOBAL_FIXTURE( MPIFixture );
-
+#include "eckit/testing/Setup.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -40,9 +36,10 @@ inline boost::wrap_stringstream& operator<<(boost::wrap_stringstream& wrapped, s
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#include "eckit/mpi/Comm.h"
-
 using namespace eckit;
+using namespace eckit::testing;
+
+BOOST_GLOBAL_FIXTURE( Setup )
 
 BOOST_AUTO_TEST_CASE( test_rank_size )
 {

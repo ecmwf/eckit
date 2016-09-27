@@ -39,7 +39,7 @@ inline boost::wrap_stringstream& operator<<(boost::wrap_stringstream& wrapped, s
 using namespace eckit;
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE( Setup )
+BOOST_GLOBAL_FIXTURE( Setup );
 
 BOOST_AUTO_TEST_CASE( test_rank_size )
 {

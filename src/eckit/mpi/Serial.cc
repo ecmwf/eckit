@@ -77,6 +77,11 @@ Serial::Serial(int) {
 Serial::~Serial() {
 }
 
+Comm* Serial::self() const
+{
+    return new Serial();
+}
+
 std::string Serial::processorName() const {
     char hostname[256];
     SYSCALL(::gethostname(hostname, sizeof(hostname)));

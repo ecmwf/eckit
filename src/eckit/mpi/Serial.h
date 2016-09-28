@@ -31,6 +31,8 @@ protected:  // methods
 
     virtual ~Serial();
 
+    virtual eckit::mpi::Comm* self() const;
+
     virtual std::string processorName() const;
 
     virtual size_t rank() const;

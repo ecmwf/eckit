@@ -127,6 +127,17 @@ Parallel::Parallel() /* don't use member initialisation list */ {
     comm_ = MPI_COMM_WORLD;
 }
 
+Parallel::Parallel(MPI_Comm comm) /* don't use member initialisation list */ {
+
+    pthread_once(&once, init);
+    eckit::AutoLock<eckit::Mutex> lock(localMutex);
+
+    if(initCounter == 0) { initialize(); }
+    initCounter++;
+
+    comm_ = comm;
+}
+
 Parallel::Parallel(int comm) {
 
     pthread_once(&once, init);
@@ -146,6 +157,11 @@ Parallel::~Parallel() {
     initCounter--;
 
     if(initCounter == 0) { finalize(); }
+}
+
+Comm* Parallel::self() const
+{
+    return new Parallel(MPI_COMM_SELF);
 }
 
 void Parallel::initialize() {

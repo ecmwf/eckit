@@ -96,6 +96,9 @@ protected: // methods
 
 public:  // methods
 
+    /// @brief Creates a communicator to self
+    virtual eckit::mpi::Comm* self() const = 0;
+
     /// @brief Returns name of processor according to MPI
     virtual std::string processorName() const = 0;
 

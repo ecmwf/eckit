@@ -40,17 +40,22 @@ public:
 
         ASSERT(!default_);
 
+        Comm* world;
+
         if(areMPIVarsSet()) {
-            default_ = CommFactory::build("parallel");
+            world = CommFactory::build("parallel");
         }
         else {
-            default_ = CommFactory::build("serial");
+            world = CommFactory::build("serial");
         }
 
-        communicators["world"] = default_;
+        communicators["world"] = world;
+        communicators["self"]  = world->self();
+
+        default_ = world;
     }
 
-    void setDefaut(const char* name = 0) {
+    void setDefaut(const char* name) {
 
         AutoLock<Mutex> lock(mutex_);
 

@@ -27,7 +27,7 @@ protected:  // methods
     template< class T> friend class CommBuilder;
 
     Parallel();
-    Parallel(MPI_Comm comm);
+    Parallel(MPI_Comm comm, bool);
     Parallel(int comm);
 
     virtual ~Parallel();

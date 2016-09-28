@@ -127,7 +127,7 @@ Parallel::Parallel() /* don't use member initialisation list */ {
     comm_ = MPI_COMM_WORLD;
 }
 
-Parallel::Parallel(MPI_Comm comm) /* don't use member initialisation list */ {
+Parallel::Parallel(MPI_Comm comm, bool) /* don't use member initialisation list */ {
 
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(localMutex);
@@ -161,7 +161,7 @@ Parallel::~Parallel() {
 
 Comm* Parallel::self() const
 {
-    return new Parallel(MPI_COMM_SELF);
+    return new Parallel(MPI_COMM_SELF, true);
 }
 
 void Parallel::initialize() {

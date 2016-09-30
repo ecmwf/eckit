@@ -35,7 +35,7 @@ public: // methods
 
 public: // methods
 
-    explicit CacheManager(const std::string& name, const PathName& root);
+    explicit CacheManager(const std::string& name, const PathName& root, bool throwOnCacheMiss);
 
     virtual bool get(const key_t& k, PathName& v) const;
 
@@ -67,6 +67,8 @@ private: // members
     std::string name_;
 
     PathName root_;
+
+    bool throwOnCacheMiss_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

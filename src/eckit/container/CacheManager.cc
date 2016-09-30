@@ -21,40 +21,48 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class AutoUmask {
-  mode_t umask_;
+    mode_t umask_;
 
- public:
-  explicit AutoUmask(mode_t u = 0) : umask_(::umask(u)) {}
-  ~AutoUmask() { ::umask(umask_); }
+public:
+    explicit AutoUmask(mode_t u = 0) : umask_(::umask(u)) {}
+    ~AutoUmask() { ::umask(umask_); }
 };
 
-CacheManager::CacheManager(const std::string& name, const PathName& root) :
-  name_(name),
-  root_(root) {
+CacheManager::CacheManager(const std::string& name, const PathName& root, bool throwOnCacheMiss) :
+    name_(name),
+    root_(root),
+    throwOnCacheMiss_(throwOnCacheMiss) {
 }
 
 bool CacheManager::get(const key_t& k, PathName& v) const {
-  PathName p = entry(k);
-  if (p.exists()) {
-    v = p;
-    return true;
-  }
-  return false;
+    PathName p = entry(k);
+    if (p.exists()) {
+        v = p;
+        return true;
+    }
+
+    if(throwOnCacheMiss_) {
+        std::ostringstream oss;
+        oss << "CacheManager cache miss: key=" << k << ", path=" << p;
+        throw UserError(oss.str());
+    }
+
+    return false;
 }
 
 PathName CacheManager::entry(const key_t &key) const {
-  return root() / name() / version() / key + extension();
+    return root() / name() / version() / key + extension();
 }
 
 PathName CacheManager::stage(const key_t& k) const {
 
-  PathName p = entry(k);
-  AutoUmask umask(0);
-  // FIXME: mask does not seem to affect first level directory
-  p.dirName().mkdir(0777);  // ensure directory exists
-  Log::info() << "CacheManager creating file " << p << std::endl;
-  // unique file name avoids race conditions on the file from multiple processes
-  return PathName::unique(p);
+    PathName p = entry(k);
+    AutoUmask umask(0);
+    // FIXME: mask does not seem to affect first level directory
+    p.dirName().mkdir(0777);  // ensure directory exists
+    Log::info() << "CacheManager creating file " << p << std::endl;
+    // unique file name avoids race conditions on the file from multiple processes
+    return PathName::unique(p);
 }
 
 bool CacheManager::commit(const key_t& k, const PathName& tmpfile) const
@@ -63,7 +71,7 @@ bool CacheManager::commit(const key_t& k, const PathName& tmpfile) const
     try {
         SYSCALL(::chmod(tmpfile.asString().c_str(), 0444));
         PathName::rename( tmpfile, file );
-    } catch( FailedSystemCall& e ) { // ignore failed system call -- another process nay have created the file meanwhile
+    } catch ( FailedSystemCall& e ) { // ignore failed system call -- another process nay have created the file meanwhile
         Log::debug() << "Failed rename of cache file -- " << e.what() << std::endl;
         return false;
     }

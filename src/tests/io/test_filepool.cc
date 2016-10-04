@@ -103,6 +103,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_threads ) {
 
 BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 ) {
     Buffer buffer(BUF_SIZE);
+    ::memset(buffer, 0, buffer.size());
 
     FilePool pool(1);
 

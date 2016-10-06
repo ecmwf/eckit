@@ -168,8 +168,13 @@ void Parallel::initialize() {
 
     if(!initialized()) {
 
-        int    argc = eckit::Main::instance().argc();
-        char **argv = eckit::Main::instance().argv();
+        int argc(0);
+        char **argv(0);
+
+        if( eckit::Main::ready() ) {
+            argc = eckit::Main::instance().argc();
+            argv = eckit::Main::instance().argv();
+        }
 
         MPI_CALL( MPI_Init(&argc, &argv) );
     }

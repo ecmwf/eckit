@@ -41,6 +41,9 @@ void setCommDefault(const char* name);
 /// Register a communicator comming from Fortran code
 void addComm(const char* name, int comm);
 
+/// Check if a communicator is registered
+bool hasComm(const char* name);
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class Comm : private eckit::NonCopyable {

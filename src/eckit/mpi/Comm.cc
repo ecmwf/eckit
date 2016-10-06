@@ -72,6 +72,15 @@ public:
         throw eckit::SeriousBug(std::string("No communicator called ") + name);
     }
 
+    bool hasComm(const char* name) {
+        AutoLock<Mutex> lock(mutex_);
+        std::map<std::string, Comm*>::iterator itr = communicators.find(name);
+        if(itr != communicators.end()) {
+            return true;
+        }
+        return false;
+    }
+
     Comm& getComm(const char* name = 0) {
 
         AutoLock<Mutex> lock(mutex_);
@@ -213,6 +222,10 @@ void setCommDefault(const char* name)
 void addComm(const char* name, int comm)
 {
     Environment::instance().addComm(name, comm);
+}
+
+bool hasComm(const char* name) {
+    return Environment::instance().hasComm(name);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

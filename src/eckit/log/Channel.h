@@ -52,14 +52,14 @@ public: // methods
     void setCallback(channel_callback_t cb, void* data = 0);
     void addCallback(channel_callback_t cb, void* data = 0);
 
+    void setTarget(LogTarget*);
+    void addTarget(LogTarget*);
+
     void reset();
 
 private:
 
     ChannelBuffer* buffer_;
-
-    void setTarget(LogTarget*);
-    void addTarget(LogTarget*);
 
     friend class Log;
 };

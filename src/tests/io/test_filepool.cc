@@ -33,9 +33,9 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-const size_t BUF_SIZE = 1024;
+static const size_t BUF_SIZE = 1024;
 
-const char* files[] = {"foo.data", "bar.data", "baz.data", "marco.data", "polo.data"};
+static const char* files[] = {"foo.data", "bar.data", "baz.data", "marco.data", "polo.data"};
 
 class FilePoolUser : public ThreadPoolTask {
 public:

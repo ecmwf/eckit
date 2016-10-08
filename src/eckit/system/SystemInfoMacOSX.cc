@@ -48,8 +48,6 @@ LocalPathName SystemInfoMacOSX::executablePath() const
 
     std::string path(buffer);
 
-    Log::debug() << "Executable path is [" << path << "]" << std::endl;
-
     return LocalPathName(path).realName();
 }
 

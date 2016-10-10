@@ -1,0 +1,1 @@
+export ECKIT_TEST_THREADS=8

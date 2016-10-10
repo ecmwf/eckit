@@ -33,9 +33,9 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-const size_t BUF_SIZE = 1024;
+static const size_t BUF_SIZE = 1024;
 
-const char* files[] = {"foo.data", "bar.data", "baz.data", "marco.data", "polo.data"};
+static const char* files[] = {"foo.data", "bar.data", "baz.data", "marco.data", "polo.data"};
 
 class FilePoolUser : public ThreadPoolTask {
 public:
@@ -103,6 +103,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_threads ) {
 
 BOOST_AUTO_TEST_CASE( test_eckit_io_filepool_0 ) {
     Buffer buffer(BUF_SIZE);
+    ::memset(buffer, 0, buffer.size());
 
     FilePool pool(1);
 

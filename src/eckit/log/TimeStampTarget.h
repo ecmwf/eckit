@@ -11,8 +11,8 @@
 /// @file TimeStampTarget.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_PrefixTarget_h
-#define eckit_log_PrefixTarget_h
+#ifndef eckit_log_TimeStampTarget_h
+#define eckit_log_TimeStampTarget_h
 
 #include <utility>
 

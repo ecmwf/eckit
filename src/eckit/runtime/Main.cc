@@ -53,17 +53,16 @@ Main::Main(int argc, char** argv, const char* homeenv) :
     for (size_t i = 1; i < size_t(argc); ++i) {
 
         // Old style
-        if (::strcmp(argv[i], "-debug")) {
+        if (::strcmp(argv[i], "-debug")==0) {
             debug_ = true;
-
         }
 
         // New style
-        if (::strcmp(argv[i], "--debug")) {
+        if (::strcmp(argv[i], "--debug")==0) {
             debug_ = true;
-
         }
 
+        // New style with variable
         if (::strncmp(argv[i], "--debug=", 8)==0) {
             debug_ = eckit::Translator<std::string, bool>()(argv[i] + 8);
         }

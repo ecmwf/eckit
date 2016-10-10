@@ -64,7 +64,7 @@ Main::Main(int argc, char** argv, const char* homeenv) :
 
         }
 
-        if (::strncmp(argv[i], "--debug=", 8)) {
+        if (::strncmp(argv[i], "--debug=", 8)==0) {
             debug_ = eckit::Translator<std::string, bool>()(argv[i] + 8);
         }
 

@@ -395,6 +395,8 @@ static void expandTilde(std::string& path)
                 path = eckit::system::Library::lookup(s).expandPath(path);
                 return;
             }
+
+            Log::warning() << "Could not expand tilde in path " << path << std::endl;
         }
 
         // 3. expand ~/ with registered home

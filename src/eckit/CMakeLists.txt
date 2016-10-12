@@ -84,6 +84,8 @@ io/BufferCache.h
 io/BufferCache.cc
 io/FileLocker.h
 io/FileLocker.cc
+io/FileLock.h
+io/FileLock.cc
 io/FilePool.h
 io/FilePool.cc
 io/ResizableBuffer.h

@@ -77,6 +77,11 @@ void SparseMatrix::swap(SparseMatrix &other) {
     std::swap(cols_, other.cols_);
 }
 
+size_t SparseMatrix::footprint() const {
+    return sizeof(*this) + data_.capacity() * sizeof(Scalar)
+           + inner_.capacity() * sizeof(Index)
+           + outer_.capacity() * sizeof(Index);
+}
 //-----------------------------------------------------------------------------
 
 SparseMatrix& SparseMatrix::setFromTriplets(const std::vector<Triplet> &triplets) {

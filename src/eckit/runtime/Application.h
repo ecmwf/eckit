@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation
  * nor does it submit to any jurisdiction.
  */
@@ -17,34 +17,25 @@
 #ifndef eckit_Application_h
 #define eckit_Application_h
 
-#include "eckit/config/Configurable.h"
-#include "eckit/memory/ScopedPtr.h"
-#include "eckit/runtime/Policies.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/runtime/Task.h"
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-class Application : public Task, 
-                    public Configurable {
+class Application : public Task, public Main {
 public:
+
+    static Application& instance();
 
     // -- Contructors
 
-    Application(int argc, char **argv,
-                LoggingPolicy* logPolicy = new DefaultLogging(),
-                MonitoringPolicy* monPolicy = new NoMonitor(),
-                LocationPolicy* locPolicy = new DefaultLocations(),
-                SignallingPolicy* sigPolicy = new NoSignalRegist());
+    Application(int argc, char **argv, const char* homeenv = 0);
 
     // -- Destructor
 
     virtual ~Application();
-
-    static Application& instance();
 
     // -- Methods
 
@@ -63,40 +54,32 @@ public:
     virtual void wait() {}
     virtual bool active() { return true; }
 
-    std::string appName() const { return name_; }
     bool running() const { return running_; }
+
+    virtual void terminate();
 
     time_t uptime();
 
-    void terminate();
-
-protected: // methods
-
-    // From Configurable
-
-    virtual void   reconfigure();
-    virtual std::string name() const   { return name_; }
-
 private: // members
 
-    ScopedPtr<LoggingPolicy> loggingPolicy_;
-    ScopedPtr<MonitoringPolicy> monitoringPolicy_;
-    ScopedPtr<LocationPolicy> locationPolicy_;
-    ScopedPtr<SignallingPolicy> signallingPolicy_;
 
-    std::string name_;
     bool   running_;
 
-    static Application* instance_;
+    /// From Main
+
+    virtual LogTarget* createInfoLogTarget() const;
+    virtual LogTarget* createWarningLogTarget() const;
+    virtual LogTarget* createErrorLogTarget() const;
+    virtual LogTarget* createDebugLogTarget() const;
+
 
     /// overriden from Configurable
+
     virtual std::string kind() const  { return "Application"; }
 
-    friend class AppCommand;    ///< in order to call reconfigure
-    friend class ResourceBase;
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

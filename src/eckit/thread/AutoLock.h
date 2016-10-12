@@ -102,8 +102,8 @@ public:
 
     // -- Constructors
 
-    TraceAutoLock(T& resource, const std::string& message, int level=0)
-        : resource_(resource), timer_(message + " (release)", level) {
+    TraceAutoLock(T& resource, const std::string& message)
+        : resource_(resource), timer_(message + " (release)") {
         resource_.lock();
         timer_.report(message + " (acquire)");
     }

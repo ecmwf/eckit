@@ -1,186 +1,146 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
- * 
+ * (C) Copyright 1996-2012 ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/runtime/Context.h"
+
+#include "eckit/runtime/Main.h"
 #include "eckit/config/Configurable.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
 
-
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
-static void parse_name( const std::string& str, std::string& name, std::string& environment, std::string& options )
+ResourceBase::ResourceBase(Configurable* owner, const std::string& str):
+    inited_(false),
+    owner_(owner)
 {
+    if (owner_) owner_->add(this);
+
     const char *p = str.c_str();
 
-	while(*p)
-	{
-		std::string *s = &name;
-		char   x  = *p;
-		int len   = 0;
+    while (*p)
+    {
+        std::string *s = &name_;
+        char   x  = *p;
+        int len   = 0;
 
-		switch(x)
-		{
-			case '$': s = &environment; break;
-			case '-': s = &options;     break;
-		}
+        switch (x)
+        {
+        case '$': s = &environment_; break;
+        case '-': s = &options_;     break;
+        }
 
-		*s = p;
+        *s = p;
 
-		while(*p && *p != ';')
-		{
-			len++;
-			p++;
-		}
+        while (*p && *p != ';')
+        {
+            len++;
+            p++;
+        }
 
-		s->resize(len);
+        s->resize(len);
 
-		if(*p) p++; 
-	}
-}
+        if (*p) p++;
 
-ResourceBase::ResourceBase(Configurable* owner,const std::string& str) :
-    owner_( owner ? owner : &Context::instance() ),
-	inited_(false),
-    converted_(true) // initial value is already set
-{
-	if(owner_) owner_->add(this);	
-    parse_name(str,name_,environment_,options_);
-}
-
-ResourceBase::ResourceBase(const std::string& str, const StringDict& args):
-			owner_( &Context::instance() ),
-			inited_(false),
-            converted_(true) // initial value is already set
-{
-	if(owner_) owner_->add(this);	
-    parse_name(str,name_,environment_,options_);
-    init(&args);
+    }
 }
 
 ResourceBase::~ResourceBase()
 {
-	if(owner_) owner_->remove(this);
+    if (owner_) owner_->remove(this);
 }
 
-void ResourceBase::init(const StringDict* args)
+void ResourceBase::init()
 {
-	if(inited_) return;
+    if (inited_) return;
 
-    inited_ = true;
+    // First look in config file
+    // First look for an option on the command line
 
-    // (1) first look for an option on the command line
-
-    if( !options_.empty() )
-	{
-		for(int i = 1; i < Context::instance().argc(); i++)
-			if(options_ == Context::instance().argv(i))
-			{
-                if( i+1 == Context::instance().argc() || Context::instance().argv(i+1)[0] == '-' )
-                    valueStr_ = "true";
-				else
-                    valueStr_ = Context::instance().argv(i+1);
-
-                converted_ = false;
+    if (options_ != "")
+    {
+        for (int i = 1; i < Main::instance().argc(); i++)
+            if (options_ == Main::instance().argv(i))
+            {
+                if ( i + 1 == Main::instance().argc() || Main::instance().argv(i + 1)[0] == '-' )
+                    setValue("true");
+                else
+                    setValue(Main::instance().argv(i + 1));
+                inited_ = true;
                 return;
-			}
-	}
+            }
+    }
 
-    // (2) then look for an environment variable
+    // Then look for an environment variable
 
-    if( !environment_.empty() )
-	{
-		const char *p = ::getenv(environment_.c_str()+1);
-        if( p )
-        {
-			valueStr_ = p;
-            converted_ = false;
-            return;
-		}
-	}
-
-    // (3) otherwise look in the config file
-
-    if( !name_.empty() )
-	{
-        if( ResourceMgr::instance().lookUp(owner_,name_,args,valueStr_) )
-        {
-            converted_ = false;
+    if (environment_ != "")
+    {
+        const char *p = ::getenv(environment_.c_str() + 1);
+        if (p) {
+            setValue(p);
+            inited_ = true;
             return;
         }
     }
 
-    // (4) else use default
-    converted_ = true;
-}
+    // Otherwise look in the config file
 
-void ResourceBase::convert()
-{
-    if(!converted_)
+    if (name_ != "")
     {
-        setValue(valueStr_);
-        converted_ = true;
+        bool found = false;
+        std::string s;
+
+        if (owner_)
+            found = ResourceMgr::lookUp(owner_->kind(), owner_->name(), name_, s);
+        else
+            found = ResourceMgr::lookUp("", "", name_, s);
+
+        if (found) setValue(s);
+
+        inited_ = true;
+        return;
     }
+
+    // Else use default. This is done in Resource
+
+    inited_ = true;
 }
 
 std::string ResourceBase::name() const
 {
-	if(owner_)
-		return owner_->kind() + '.' + owner_->name() + '.' + name_;
-	else 
-		return name_;
+    if (owner_)
+        return owner_->kind() + '.' + owner_->name() + '.' + name_;
+    else
+        return name_;
 }
 
 void ResourceBase::dump(std::ostream& s) const
 {
 
-	// need const_cast here
-	((ResourceBase*)this)->init();
+    // need const_cast here
+    ((ResourceBase*)this)->init();
 
-	s << "# " << name_ <<":" << std::endl;
+    s << "# " << name_ << ":" << std::endl;
 
-	if(options_ != "")     s << "#   command line option  " << options_     << std::endl;
-	if(environment_ != "") 
-	{
-		s << "#   environment variable " << environment_ << " ";
-		const char *p = getenv(environment_.c_str()+1);
-		if(p) s << "(defined as " << p << ")";
-		else  s << "(undefined)";
-		s << std::endl;
-	}
-    if( !name_.empty() )
-	{
-		std::string tmpStr;
-        if( ResourceMgr::instance().lookUp(owner_,name_,0,tmpStr) )
-        {
-	   		s << "#   config file : "<< name_ << " (defined as " << tmpStr << ")" << std::endl;
-	   	}
-	}     
+    if (options_ != "")     s << "#   command line option  " << options_     << std::endl;
+    if (environment_ != "")
+    {
+        s << "#   environment variable " << environment_ << " ";
+        const char *p = getenv(environment_.c_str() + 1);
+        if (p) s << "(defined as " << p << ")";
+        else  s << "(undefined)";
+        s << std::endl;
+    }
 
-	s << name() << " : " << getValue();
+    s << name() << " : " << getValue();
 
-	s << std::endl;
+    s << std::endl;
 }
 
-#ifdef _AIX
-// force template instantiation
-#pragma define(Resource<bool>)
-#pragma define(Resource<long>)
-#pragma define(Resource<std::string>)
-#endif
-
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
-
+}

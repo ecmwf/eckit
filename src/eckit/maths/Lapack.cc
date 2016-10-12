@@ -1,6 +1,3 @@
-#ifndef eckit_maths_lapack_h
-#define eckit_maths_lapack_h
-
 #include "eckit/log/Log.h"
 #include "eckit/maths/Lapack.h"
 #include "eckit/exception/Exceptions.h"
@@ -8,10 +5,6 @@
 namespace eckit {
 namespace maths {
 namespace lapack {
-
-//////////////////////////////////////////////////////////////////////////////////////
-// Template specialisations
-//////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef ECKIT_HAVE_LAPACK
 
@@ -69,5 +62,3 @@ void getri(int* M, float* data, int* lda, int* ipiv, float* work, int* lwork, in
 } // namespace lapack
 } // namespace maths
 } // namespace eckit
-
-#endif

@@ -14,20 +14,23 @@
 
 #include "eckit/types/FixedString.h"
 
+#include "eckit/testing/Setup.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
-//----------------------------------------------------------------------------------------------------------------------
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( test_eckit_types_fixedstring )
 
+//----------------------------------------------------------------------------------------------------------------------
 //
 // Start by testing the constructors
 //
+//----------------------------------------------------------------------------------------------------------------------
 
-
-BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_zero )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_zero ) {
     // What happens if we create a length-zero FixedString?
 
     FixedString<0> fs;
@@ -44,8 +47,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_zero )
     BOOST_CHECK_EQUAL(std::string(fs2), "");
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_default )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_default ) {
     FixedString<8> fs;
 
     BOOST_CHECK_EQUAL(fs.length(), 0);
@@ -53,9 +57,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_default )
     BOOST_CHECK_EQUAL(std::string(fs), "");
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_string )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_string ) {
     // Construct with a string of the correct length
 
     std::string str1("12345678");
@@ -98,9 +102,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_string )
     BOOST_CHECK_EQUAL(std::string(fs4), "");
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_char )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_char ) {
     // Construct with a string of the correct length
 
     FixedString<8> fs1("12345678");
@@ -148,8 +152,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_char )
     BOOST_CHECK_THROW(fs5_allocate()(), AssertionFailed);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_fixedstring )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_fixedstring ) {
     // Construct with a string of the correct length
 
     /// @note for all of these assignments, except for the <8> --> <8> the std::string constructor is used. It might
@@ -200,8 +205,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_constructor_fixedstring )
     BOOST_CHECK_EQUAL(std::string(fs4a), "");
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_assignment_string )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_assignment_string ) {
     // Construct with a string of the correct length
 
     FixedString<8> fs1 = std::string("12345678");
@@ -241,8 +247,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_assignment_string )
     BOOST_CHECK_EQUAL(std::string(fs4), "");
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_assignment_fixedstring )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_assignment_fixedstring ) {
     // Construct with a string of the correct length
 
     /// @note for all of these assignments, except for the <8> --> <8> the std::string constructor is used. It might
@@ -301,15 +308,14 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_assignment_fixedstring )
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
 //
 // Test comparison operators
 //
+//----------------------------------------------------------------------------------------------------------------------
 
 /// @note Comparisons between different FixedString<N>, FixedString<M> not permitted at compile time.
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_operators )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_operators ) {
     FixedString<8> fs1("12345678");
     FixedString<8> fs2("12345678");
     FixedString<8> fs3("abcdefgh");
@@ -355,8 +361,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_operators )
     BOOST_CHECK(fs3 >= fs1);
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_operators_zero )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_operators_zero ) {
     FixedString<0> fs1;
     FixedString<0> fs2;
 
@@ -390,14 +397,14 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_operators_zero )
     BOOST_CHECK(fs1 >= fs1);
     BOOST_CHECK(fs1 >= fs2);
 }
-//----------------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------------
 //
 // Test extraneous bits
 //
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_byte_size )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_byte_size ) {
     FixedString<0> fs0;
     FixedString<1> fs1;
     FixedString<4> fs4;
@@ -424,9 +431,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_byte_size )
     BOOST_CHECK_EQUAL(FixedString<8>::static_size(), 8);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_data_access )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_data_access ) {
     FixedString<8> fs("12345678");
 
     // Check that const and non-const pointers give access to same data...

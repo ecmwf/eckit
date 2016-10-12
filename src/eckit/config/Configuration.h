@@ -47,13 +47,14 @@ public: // methods
 
     // Access with default in case of falure
 
-    bool getBool(const std::string &name, const bool& defaultVal) const;
-    int getInt(const std::string &name, const int& defaultVal) const;
-    long getLong(const std::string &name, const long& defaultVal) const;
-    size_t getUnsigned(const std::string &name, const size_t& defaultVal) const;
-    float getFloat(const std::string &name, const float& defaultVal) const;
-    double getDouble(const std::string &name, const double& defaultVal) const;
-    std::string getString(const std::string &name, const std::string& defaultVal) const;
+    bool getBool(const std::string &name, const bool& defaultValue) const;
+    int getInt(const std::string &name, const int& defaultValue) const;
+    long getLong(const std::string &name, const long& defaultValue) const;
+    size_t getUnsigned(const std::string &name, const size_t& defaultValue) const;
+    float getFloat(const std::string &name, const float& defaultValue) const;
+    double getDouble(const std::string &name, const double& defaultValue) const;
+    std::string getString(const std::string &name, const std::string& defaultValue) const;
+
 
     std::vector<int> getIntVector(const std::string &name) const;
     std::vector<long> getLongVector(const std::string &name) const;

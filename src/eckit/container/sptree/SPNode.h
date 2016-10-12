@@ -48,7 +48,7 @@ protected:
 
 public:
     SPNode(const Value& value);
-    virtual ~SPNode() {}
+    ~SPNode() {}
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);
     NodeList findInSphere(Alloc& a,const Point& p, double radius);
@@ -75,16 +75,16 @@ public:
     // ---------
     void linkNodes(Alloc& a, Node*& prev = 0);
 
-    const Node* asNode() const { return dynamic_cast<const Node*>(this); }
-    Node* asNode() { return dynamic_cast<Node*>(this); }
+    const Node* asNode() const { return static_cast<const Node*>(this); }
+    Node* asNode() { return static_cast<Node*>(this); }
 
 public: // because of a clang bug. Should be protected
-    virtual void nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth) = 0;
-    virtual void nearestNeighbourBruteForceX(Alloc& a,const Point& p, Node*& best,double& max, int depth);
-    virtual void findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth) = 0;
-    virtual void findInSphereBruteForceX(Alloc& a,const Point& p, double radius, NodeList& result, int depth) ;
-    virtual void kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth) = 0;
-    virtual void kNearestNeighboursBruteForceX(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth) ;
+    // void nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth) = 0;
+    void nearestNeighbourBruteForceX(Alloc& a,const Point& p, Node*& best,double& max, int depth);
+    // void findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth) = 0;
+    void findInSphereBruteForceX(Alloc& a,const Point& p, double radius, NodeList& result, int depth) ;
+    // void kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth) = 0;
+    void kNearestNeighboursBruteForceX(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth) ;
 
     //==========================
 protected:

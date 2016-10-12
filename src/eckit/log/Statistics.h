@@ -63,6 +63,7 @@ class Statistics {
     static void reportCount(std::ostream& out, const char* title, size_t value, const char* indent = "");
     static void reportBytes(std::ostream& out, const char* title, unsigned long long value, const char* indent = "");
     static void reportTime(std::ostream& out, const char* title, const Timing& value, const char* indent = "");
+    static void reportTime(std::ostream& out, const char* title, double value, const char* indent = "");
     static Timer timer_;
 };
 

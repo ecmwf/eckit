@@ -20,12 +20,17 @@
 #include "eckit/value/Properties.h"
 #include "eckit/value/ScopeParams.h"
 
+#include "eckit/testing/Setup.h"
+
 #include "AnyKeyParams.h"
 
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
-//-----------------------------------------------------------------------------
+BOOST_GLOBAL_FIXTURE(Setup);
+
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit_test {
 
@@ -35,7 +40,7 @@ const long long llmax = numeric_limits<long long>::max();
 const unsigned long long ullmax = numeric_limits<unsigned long long>::max();
 const double dmax = numeric_limits<double>::max();
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class TestParams : public DispatchParams<TestParams> {
 public:
@@ -64,7 +69,7 @@ void encode( const TestParams& p, Stream& s )
 
 Params::Factory<TestParams> testParamsFactory;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 struct PropertiesFixture
 {
@@ -163,7 +168,7 @@ struct AnyKeyParamsFixture
     Params p;
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void test_keys(const Params& p)
 {
@@ -227,7 +232,7 @@ void test_custom(const Params& p)
     BOOST_CHECK_EQUAL( p["bar"], "foo" );
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 Params stream_to_from_file(const Params& p)
 {
@@ -243,20 +248,22 @@ Params stream_to_from_file(const Params& p)
     }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE( test_eckit_value_params )
 
-BOOST_FIXTURE_TEST_CASE( test_properties_params, PropertiesFixture )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE( test_properties_params, PropertiesFixture ) {
     BOOST_TEST_MESSAGE("Initialize Properties");
     BOOST_TEST_MESSAGE("Params: " << p);
     test_keys(p);
     test_vals(p);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_properties_params_streaming, PropertiesFixture )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE( test_properties_params_streaming, PropertiesFixture ) {
     BOOST_TEST_MESSAGE("Stream Properties");
     BOOST_TEST_MESSAGE("original: " << p);
     Params params = stream_to_from_file(p);
@@ -265,17 +272,18 @@ BOOST_FIXTURE_TEST_CASE( test_properties_params_streaming, PropertiesFixture )
     test_vals(params);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_composite_params, CompositeParamsFixture )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE( test_composite_params, CompositeParamsFixture ) {
     BOOST_TEST_MESSAGE("Initialize CompositeParams from Properties");
     BOOST_TEST_MESSAGE("Params: " << p);
     test_keys(p);
     test_vals(p);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE( test_composite_params_streaming, CompositeParamsFixture )
-{
+BOOST_FIXTURE_TEST_CASE( test_composite_params_streaming, CompositeParamsFixture ) {
     BOOST_TEST_MESSAGE("Stream CompositeParams initialised from Properties");
     BOOST_TEST_MESSAGE("original: " << p);
     Params params = stream_to_from_file(p);
@@ -284,16 +292,18 @@ BOOST_FIXTURE_TEST_CASE( test_composite_params_streaming, CompositeParamsFixture
     test_vals(params);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_composite_params_list, ListParamsFixture )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE( test_composite_params_list, ListParamsFixture ) {
     BOOST_TEST_MESSAGE("Initialize CompositeParams from list of Properties");
     BOOST_TEST_MESSAGE("Params: " << p);
     test_keys(p);
     test_vals(p);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_composite_params_list_streaming, ListParamsFixture )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE( test_composite_params_list_streaming, ListParamsFixture ) {
     BOOST_TEST_MESSAGE("Stream CompositeParams initialised from list of Properties");
     BOOST_TEST_MESSAGE("original: " << p);
     Params params = stream_to_from_file(p);
@@ -302,15 +312,17 @@ BOOST_FIXTURE_TEST_CASE( test_composite_params_list_streaming, ListParamsFixture
     test_vals(params);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_scope_params, ScopedParamsFixture )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE( test_scope_params, ScopedParamsFixture ) {
     BOOST_TEST_MESSAGE("Initialize ScopedParams");
     BOOST_TEST_MESSAGE("Params: " << p);
     test_scope(p);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_scope_params_streaming, ScopedParamsFixture )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE( test_scope_params_streaming, ScopedParamsFixture ) {
     BOOST_TEST_MESSAGE("Stream ScopedParams");
     BOOST_TEST_MESSAGE("original: " << p);
     Params params = stream_to_from_file(p);
@@ -318,15 +330,17 @@ BOOST_FIXTURE_TEST_CASE( test_scope_params_streaming, ScopedParamsFixture )
     test_scope(params);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_composite_scope_params, CompositeScopedParamsFixture )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE( test_composite_scope_params, CompositeScopedParamsFixture ) {
     BOOST_TEST_MESSAGE("Initialize CompositeParams from ScopedParams");
     BOOST_TEST_MESSAGE("Params: " << p);
     test_composite_scope(p);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_composite_scope_params_streaming, CompositeScopedParamsFixture )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE( test_composite_scope_params_streaming, CompositeScopedParamsFixture ) {
     BOOST_TEST_MESSAGE("Stream CompositeParams initialised from ScopedParams");
     BOOST_TEST_MESSAGE("original: " << p);
     Params params = stream_to_from_file(p);
@@ -334,33 +348,37 @@ BOOST_FIXTURE_TEST_CASE( test_composite_scope_params_streaming, CompositeScopedP
     test_composite_scope(params);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_dispatch_params, DispatchParamsFixture )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE( test_dispatch_params, DispatchParamsFixture ) {
     BOOST_TEST_MESSAGE("Initialize DispatchParams");
     test_dispatch(p);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_dispatch_params_streaming, DispatchParamsFixture )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE( test_dispatch_params_streaming, DispatchParamsFixture ) {
     BOOST_TEST_MESSAGE("Stream DispatchParams");
     Params params = stream_to_from_file(p);
     test_dispatch(params);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_custom_params, AnyKeyParamsFixture )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE( test_custom_params, AnyKeyParamsFixture ) {
     BOOST_TEST_MESSAGE("Initialize custom AnyKeyParams");
     test_custom(p);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_custom_params_streaming, AnyKeyParamsFixture )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_CASE( test_custom_params_streaming, AnyKeyParamsFixture ) {
     BOOST_TEST_MESSAGE("Stream custom AnyKeyParams");
     Params params = stream_to_from_file(p);
     test_custom(params);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
 

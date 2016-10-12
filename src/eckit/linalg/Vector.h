@@ -12,16 +12,16 @@
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_la_Vector_h
-#define eckit_la_Vector_h
+#ifndef eckit_linalg_Vector_h
+#define eckit_linalg_Vector_h
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/types.h"
 
 namespace eckit {
-
 class Stream;
+}
 
+namespace eckit {
 namespace linalg {
 
 //-----------------------------------------------------------------------------
@@ -36,71 +36,78 @@ public:  // methods
     Vector();
 
     /// Construct vector of given size (allocates memory, not initialised)
-    Vector(Size s);
+    Vector(Size length);
 
     /// Construct vector from existing data (does NOT take ownership)
-    Vector(Scalar* v, Size s);
+    Vector(Scalar* array, Size length);
 
     /// Constructor from Stream
-    Vector(Stream& v);
+    Vector(Stream&);
 
     /// Copy constructor
-    Vector(const Vector& v);
+    Vector(const Vector&);
 
     // TODO: make virtual if used as base class
     ~Vector();
 
     // -- Mutators
 
-    Vector& operator=(const Vector& v);
+    Vector& operator=(const Vector&);
 
     /// Swap this vector for another
-    void swap(Vector& v);
+    void swap(Vector&);
 
     /// Resize vector to given size (invalidates data)
-    void resize(Size s);
+    void resize(Size length);
 
     /// Set data to zero
     void setZero();
 
     /// Fill vector with given scalar
-    void fill(Scalar s);
+    void fill(Scalar);
 
     // -- Serialisation
 
     /// Serialise to a Stream
-    void encode(Stream& s) const;
+    void encode(Stream&) const;
 
     // -- Accessors
 
     /// @returns size (rows * cols)
-    Size size() const { return size_; }
+    Size size() const { return length_; }
     /// @returns number of rows (i.e. size)
-    Size rows() const { return size_; }
+    Size rows() const { return length_; }
     /// @returns number of columns (always 1)
     Size cols() const { return 1; }
 
-    Scalar& operator[](Size i) { return v_[i]; }
-    const Scalar& operator[](Size i) const { return v_[i]; }
+    Scalar& operator[](Size i) { return array_[i]; }
+    const Scalar& operator[](Size i) const { return array_[i]; }
 
     /// @returns modifiable view of the data
-    Scalar* data() { return v_; }
+    Scalar* data() { return array_; }
     /// @returns read-only view of the data
-    const Scalar* data() const { return v_; }
+    const Scalar* data() const { return array_; }
 
     /// @returns iterator to beginning of the data
-    Scalar* begin() { return v_; }
+    Scalar* begin() { return array_; }
     /// @returns const iterator to beginning of the data
-    const Scalar* begin() const { return v_; }
+    const Scalar* begin() const { return array_; }
     /// @returns iterator to end of the data
-    Scalar* end() { return v_ + size_; }
+    Scalar* end() { return array_ + length_; }
     /// @returns const iterator to end of the data
-    const Scalar* end() const { return v_ + size_; }
+    const Scalar* end() const { return array_ + length_; }
 
-protected:  // members
-    Scalar* v_;
-    Size size_;
+protected:  // member variables
+
+    /// Container
+    Scalar* array_;
+
+    /// Vector length/size
+    Size length_;
+
+    /// Indicate ownership
     bool own_;
+
 };
 
 //-----------------------------------------------------------------------------

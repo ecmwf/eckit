@@ -21,7 +21,7 @@
 #include "eckit/option/Option.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/parser/StringTools.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/runtime/Main.h"
 
 
 namespace eckit {
@@ -41,8 +41,8 @@ CmdArgs::CmdArgs(usage_proc usage, std::vector<Option*>& options, int args_count
 }
 
 void CmdArgs::init(usage_proc usage, int args_count, int minimum_args, bool throw_on_error)  {
-    Context &ctx = Context::instance();
-    tool_ = ctx.runName();
+    Main &ctx = Main::instance();
+    tool_ = ctx.name();
     size_t argc = ctx.argc();
     bool error = false;
 

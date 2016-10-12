@@ -36,7 +36,7 @@ struct TestFactory::PImpl {
         Store::iterator itr = register_.find(name);
         if(itr == register_.end())
             throw std::bad_alloc();
-        assert( itr->second );
+        ASSERT( itr->second );
         return *(itr->second);
     }
 };

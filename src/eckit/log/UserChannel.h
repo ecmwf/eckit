@@ -14,8 +14,10 @@
 #ifndef eckit_log_UserChannel_h
 #define eckit_log_UserChannel_h
 
-#include "eckit/log/Channel.h"
 
+#include <ostream>
+
+#include "eckit/memory/NonCopyable.h"
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -35,28 +37,28 @@ public:
 
 class UserBuffer;
 
-class UserChannel : public Channel {
+class UserChannel : public std::ostream, private NonCopyable {
 public: // types
-    
+
     enum MsgType { NONE, INFO, ERROR, WARN };
-    
+
 public: // methods
-    
+
     /// Constructor
     UserChannel();
-    
+
     /// Destructor
     ~UserChannel();
-    
+
     /// type for next message
     void msgType( MsgType t );
-    
+
     void userMsg( UserMsg* );
     UserMsg* userMsg() const;
 
 protected:
 
-    UserBuffer* buffer_;    
+    UserBuffer* buffer_;
 };
 
 //-----------------------------------------------------------------------------

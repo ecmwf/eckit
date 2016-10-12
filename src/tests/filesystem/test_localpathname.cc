@@ -17,8 +17,14 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/FileSystemSize.h"
 
+#include "eckit/testing/Setup.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
+
+BOOST_GLOBAL_FIXTURE(Setup);
+
 
 //-----------------------------------------------------------------------------
 

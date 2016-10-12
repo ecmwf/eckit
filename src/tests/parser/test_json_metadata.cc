@@ -15,16 +15,19 @@
 #include "eckit/parser/JSONMetadata.h"
 #include "eckit/io/Buffer.h"
 
+#include "eckit/testing/Setup.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( test_eckit_json_metadata )
 
-// --------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_params )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_params ) {
     std::string json_str = "{\"key1\": 1, \"key2\": 99.5, \"key3\": []}";
     Buffer buf(json_str.c_str(), json_str.length());
 
@@ -38,10 +41,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_params )
     BOOST_CHECK(std::find(params.begin(), params.end(), "key3") != params.end());
 }
 
-// --------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_params_nondict )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_params_nondict ) {
     // If a valid json is supplied that is not an object/dict, there should be no
     // internal parameters to find
 
@@ -55,10 +57,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_params_nondict )
     BOOST_CHECK_EQUAL(params.size(), 0);
 }
 
-// --------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_has )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_has ) {
     std::string json_str = "{\"key1\": 1, \"key2\": 99.5, \"key3\": []}";
     Buffer buf(json_str.c_str(), json_str.length());
 
@@ -70,10 +71,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_has )
     BOOST_CHECK(!md.has("keyunused"));
 }
 
-// --------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_has_nondict )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_has_nondict ) {
     // If a valid json is supplied that is not an object/dict, there should be no
     // internal parameters to find
 
@@ -85,10 +85,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_has_nondict )
     BOOST_CHECK(!md.has("key1"));
 }
 
-// --------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_get_string )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_get_string ) {
     std::string json_str = "{\"key1\": 1, \"key2\": \"testing string\", \"key3\": []}";
     Buffer buf(json_str.c_str(), json_str.length());
 
@@ -114,10 +113,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_get_string )
     BOOST_CHECK_THROW(md2.get("key1", str_tmp), AssertionFailed);
 }
 
-// --------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_get_double )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_get_double ) {
     std::string json_str = "{\"key1\": 123.45, \"key2\": \"testing string\", \"key3\": [], \"key4\": 123}";
     Buffer buf(json_str.c_str(), json_str.length());
 
@@ -145,10 +143,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_get_double )
     BOOST_CHECK_THROW(md2.get("key1", dbl_tmp), AssertionFailed);
 }
 
-// --------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_get_long )
-{
+BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_get_long ) {
     std::string json_str = "{\"key1\": 123.45, \"key2\": \"testing string\", \"key3\": [], \"key4\": 123}";
     Buffer buf(json_str.c_str(), json_str.length());
 
@@ -172,6 +169,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_json_metadata_get_long )
     BOOST_CHECK_THROW(md2.get("key1", long_tmp), AssertionFailed);
 }
 
-// --------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -17,17 +17,22 @@
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
 #include "eckit/parser/StringTools.h"
 #include "eckit/utils/Translator.h"
 
+#include "eckit/testing/Setup.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
+
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( TestTranslator )
 
-BOOST_AUTO_TEST_CASE( test_translator_string_double )
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_translator_string_double ) {
     double half = 0.5;
     double zero = 0.0;
     double hund = 100.0;
@@ -98,5 +103,7 @@ BOOST_AUTO_TEST_CASE( test_translator_string_double )
     BOOST_CHECK_THROW( t( "foobar"  ), BadParameter );
     BOOST_CHECK_THROW( t( "foo555bar" ), BadParameter );
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

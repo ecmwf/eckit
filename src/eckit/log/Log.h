@@ -16,19 +16,17 @@
 #ifndef eckit_log_Log_h
 #define eckit_log_Log_h
 
-#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/UserChannel.h"
 
 namespace eckit {
 
+typedef void (*channel_callback_t) (void* data, const char* msg);
+
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Singleton holding global streams for logging
 ///
-/// @warning these streams are thread safe. A lock is
-///          set when one of the stream is return, and is reset
-///          on end of line. Don't forget to call endl.
 
 class Log {
 
@@ -50,76 +48,70 @@ public: // methods
     static Channel& channel(const std::string& key);
 
     /// Channel for debug output
-    static Channel& debug(int level = 1);
-    static Channel& debug(const CodeLocation& where, int level = 1);
+
+    static Channel& debug();
 
     /// Channel for informative messages
     static Channel& info();
-    static Channel& info(const CodeLocation& where);
 
     /// Channel for warning messages
     static Channel& warning();
-    static Channel& warning(const CodeLocation& where);
 
     /// Channel for error messages
     static Channel& error();
-    static Channel& error(const CodeLocation& where);
 
     /// Channel for panic messages
     static std::ostream& panic();
-    static std::ostream& panic(const CodeLocation& where);
 
     /// Channel accessible through category index
-    static Channel& channel(int cat, int level = 1);
-    static Channel& channel(int cat, const CodeLocation& where, int level = 1);
+    // static Channel& channel(int cat);
 
-    /// characters to identify origin of monitoring messages
-    enum { Unix = 'U', App = 'X' };
-
-    /// Channel for application monitor
-    static Channel& monitor(char, long);
     /// Channel for status messages to Application Monitor
-    static Channel& status();
+    static std::ostream& status();
     /// Channel for status messages to Application Monitor
-    static Channel& message();
+    static std::ostream& message();
 
     /// Get the channel for the user
     static UserChannel& user();
     /// Channel for informative messages tp remote user
-    static Channel& userInfo();
+    static std::ostream& userInfo();
     /// Channel for warning messages to remote user
-    static Channel& userWarning();
+    static std::ostream& userWarning();
     /// Channel for error messages to remote user
-    static Channel& userError();
+    static std::ostream& userError();
     /// Send messages to remote user directly -- not using a channel
     static void notifyClient(const std::string&);
 
     /// manipulator that will print the last error message as in perror(2)
     static std::ostream& syserr(std::ostream&);
 
-    static std::ostream& dev() { return std::cout; }
-    static std::ostream& null();
-
-    // Per application loggin
-    // trace(const T* = 0) can be replace by trace<T>() with c++14
-    template<typename T>
-    static std::ostream& trace(int level = 0, const T* = 0) {
-        if(T::trace(level)) {
-            dev() << ">>> TRACE-" << T::name() << " ";
-            return dev();
-        }
-        return null();
-    }
+    static Channel& null();
 
     template<typename T>
-    static bool tracing(int level = 0, const T* = 0) {
-        return T::trace(level);
+    static Channel& debug(const T* = 0) {
+        return T::instance().debugChannel();
     }
+
+
+    static void setStream(std::ostream& out);
+    static void addStream(std::ostream& out);
+
+    static void setFile(const std::string& path);
+    static void addFile(const std::string& path);
+
+    static void setCallback(channel_callback_t cb, void* data = 0);
+    static void addCallback(channel_callback_t cb, void* data = 0);
+
+    static void reset();
+
 
 private: // methods
 
     Log();   ///< Private, non-instanciatable class
     ~Log();  ///< Private, non-instanciatable class
+
+
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -129,6 +121,12 @@ int format(std::ostream&);
 
 #define ECKIT_DEBUG_HERE std::cerr << " DEBUG () @ " << Here() << std::endl;
 #define ECKIT_DEBUG_VAR(x) std::cerr << " DEBUG (" << #x << ":" << x << ") @ " << Here() << std::endl;
+
+
+// Non-flushing version of std::endl
+inline std::ostream& newl(std::ostream& out) {
+    return out << '\n';
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -17,12 +17,13 @@
 
 namespace eckit {
 
-const size_t WIDTH = 32;
+const size_t WIDTH = 34;
 
 Timer Statistics::timer_;
 //----------------------------------------------------------------------------------------------------------------------
 void Statistics::reportCount(std::ostream &out, const char *title, size_t value, const char *indent) {
-    if (value) {
+    if (value)
+    {
         out << indent
             << title
             << std::setw(WIDTH - strlen(title))
@@ -33,7 +34,8 @@ void Statistics::reportCount(std::ostream &out, const char *title, size_t value,
 }
 
 void Statistics::reportUnit(std::ostream &out, const char *title, const char* unit, double value, const char *indent) {
-    if (value) {
+    if (value)
+    {
         out << indent
             << title
             << std::setw(WIDTH - strlen(title))
@@ -47,7 +49,8 @@ void Statistics::reportUnit(std::ostream &out, const char *title, const char* un
 
 
 void Statistics::reportRate(std::ostream &out, const char *title, unsigned long long value, const char *indent) {
-    if (value) {
+    if (value)
+    {
         out << indent
             << title
             << std::setw(WIDTH - strlen(title))
@@ -59,7 +62,8 @@ void Statistics::reportRate(std::ostream &out, const char *title, unsigned long 
 }
 
 void Statistics::reportBytes(std::ostream &out, const char *title, unsigned long long value, const char *indent) {
-    if (value) {
+    if (value)
+    {
         out << indent
             << title
             << std::setw(WIDTH - strlen(title))
@@ -71,7 +75,8 @@ void Statistics::reportBytes(std::ostream &out, const char *title, unsigned long
 }
 
 void Statistics::reportTime(std::ostream &out, const char *title, const Timing &value, const char *indent) {
-    if (value.updates_) {
+    if (value.updates_)
+    {
         out << indent
             << title
             << std::setw(WIDTH - strlen(title))
@@ -81,6 +86,19 @@ void Statistics::reportTime(std::ostream &out, const char *title, const Timing &
             << std::endl;
     }
 }
+
+void Statistics::reportTime(std::ostream &out, const char *title, double value, const char *indent) {
+    if (value)
+    {
+        out << indent
+            << title
+            << std::setw(WIDTH - strlen(title))
+            << " : "
+            << eckit::Seconds(value)
+            << std::endl;
+    }
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -95,7 +113,12 @@ Timing &Timing::operator+=(const Timing & other) {
 Timing &Timing::operator/=(size_t n) {
     elapsed_ /= n;
     cpu_ /= n;
-    updates_ /= n;
+    if (updates_) {
+        updates_ /= n;
+        if (!updates_) {
+            updates_ = 1;
+        }
+    }
     return *this;
 }
 

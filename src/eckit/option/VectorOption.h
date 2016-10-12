@@ -36,7 +36,7 @@ class VectorOption : public Option {
 
 // -- Contructors
 
-    VectorOption(const std::string& name, const std::string& description, size_t size);
+    VectorOption(const std::string& name, const std::string& description, size_t size, const char* separator="/");
 
 // -- Destructor
 
@@ -90,6 +90,7 @@ class VectorOption : public Option {
 // -- Members
 
     size_t size_;
+    const char* separator_;
 
 // -- Methods
     // None

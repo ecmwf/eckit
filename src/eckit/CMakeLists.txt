@@ -196,7 +196,8 @@ thread/MutexCond.h
 thread/MutexCond.cc
 thread/AutoLock.h
 thread/AutoLocker.h
-thread/AutoLocker.cc
+thread/AutoLocker.cc#include "eckit/log/Channel.h"
+
 thread/Thread.h
 thread/Thread.cc
 thread/ThreadControler.h
@@ -207,77 +208,50 @@ thread/ThreadSingleton.h
 thread/Once.h )
 
 list( APPEND eckit_config_srcs
-config/Resource.h
-config/ResourceFromFiles.h
-config/ResourceFromFiles.cc
-config/ResourcePolicy.h
-config/ResourceMgr.h
-config/ResourceMgr.cc
-config/Assignment.h
-config/Assignment.cc
-config/Block.h
-config/Block.cc
-config/Branch.h
-config/Branch.cc
-config/Compiler.h
-config/Compiler.cc
-config/Condition.h
-config/Condition.cc
-config/Function.h
-config/Function.cc
-config/Configured.h
-config/Configured.cc
-config/Scope.h
-config/Scope.cc
-config/Script.h
-config/Script.cc
-config/Statement.h
-config/Statement.cc
-config/Configurable.h
 config/Configurable.cc
-config/EtcTable.h
-config/EtcTable.cc
-config/Parametrisation.h
-config/Configuration.h
+config/Configurable.h
 config/Configuration.cc
-config/JSONConfiguration.h
+config/Configuration.h
+config/Configured.cc
+config/Configured.h
+config/EtcTable.cc
+config/EtcTable.h
 config/JSONConfiguration.cc
-config/LocalConfiguration.h
+config/JSONConfiguration.h
+config/LibEcKit.cc
+config/LibEcKit.h
 config/LocalConfiguration.cc
-config/FileReadPolicy.h
-config/FileReadPolicy.cc
-config/ResourceBase.cc )
+config/LocalConfiguration.h
+config/Parametrisation.h
+config/Resource.h
+config/Resource.cc
+config/ResourceBase.cc
+config/ResourceMgr.cc
+config/ResourceMgr.h
+)
 
 list( APPEND eckit_runtime_srcs
 runtime/Task.h
 runtime/Task.cc
 runtime/TaskID.h
-runtime/Context.h
-runtime/Context.cc
+runtime/Main.h
+runtime/Main.cc
 runtime/Application.h
 runtime/Application.cc
 runtime/Tool.h
 runtime/Tool.cc
-runtime/ToolBehavior.h
-runtime/ToolBehavior.cc
+runtime/Library.h
+runtime/Library.cc
 runtime/Monitor.h
 runtime/Monitor.cc
 runtime/Monitorable.h
 runtime/Monitorable.cc
 runtime/TaskInfo.h
 runtime/TaskInfo.cc
-runtime/LibBehavior.h
-runtime/LibBehavior.cc
-runtime/StandardBehavior.h
-runtime/StandardBehavior.cc
-runtime/ContextBehavior.h
-runtime/ContextBehavior.cc
 runtime/PipeApplication.h
 runtime/PipeApplication.cc
 runtime/PipeHandler.h
 runtime/PipeHandler.cc
-runtime/Policies.h
-runtime/Policies.cc
 runtime/ProcessControler.h
 runtime/ProcessControler.cc
 runtime/Dispatcher.h
@@ -289,44 +263,60 @@ log/BigNum.h
 log/BigNum.cc
 log/Bytes.h
 log/Bytes.cc
-log/CallbackChannel.h
-log/CallbackChannel.cc
+log/CallbackTarget.h
+log/CallbackTarget.cc
+log/TimeStampTarget.h
+log/TimeStampTarget.cc
+log/PrefixTarget.h
+log/PrefixTarget.cc
+log/WrapperTarget.h
+log/WrapperTarget.cc
+log/IndentTarget.h
+log/IndentTarget.cc
 log/Channel.h
 log/Channel.cc
+log/OStreamTarget.h
+log/OStreamTarget.cc
+log/LineBasedTarget.h
+log/LineBasedTarget.cc
+log/TeeTarget.h
+log/TeeTarget.cc
+log/StatusTarget.h
+log/StatusTarget.cc
+log/MessageTarget.h
+log/MessageTarget.cc
 log/ChannelBuffer.h
 log/ChannelBuffer.cc
 log/CodeLocation.h
 log/CodeLocation.cc
-log/ColorizeFormat.h
-log/ColorizeFormat.cc
+log/ColouringTarget.h
+log/ColouringTarget.cc
 log/Colour.h
 log/Colour.cc
 log/ETA.h
 log/ETA.cc
-log/FileChannel.h
-log/FileChannel.cc
-log/FormatBuffer.h
-log/FormatBuffer.cc
-log/FormatChannel.h
-log/FormatChannel.cc
+log/FileTarget.h
+log/FileTarget.cc
 log/Log.h
 log/Log.cc
-log/MonitorChannel.h
-log/MonitorChannel.cc
-log/MultiChannel.h
-log/MultiChannel.cc
+# log/MonitorChannel.h
+# log/MonitorChannel.cc
+# log/MultiChannel.h
+# log/MultiChannel.cc
 log/OStreamHandle.h
 log/Plural.h
 log/Progress.h
 log/Progress.cc
-log/RotBuffer.h
-log/RotBuffer.cc
+log/RotationTarget.h
+log/RotationTarget.cc
 log/SavedStatus.h
 log/SavedStatus.cc
 log/Seconds.h
 log/Seconds.cc
 log/Statistics.h
 log/Statistics.cc
+log/LogTarget.h
+log/LogTarget.cc
 log/Timer.h
 log/Timer.cc
 log/TimeStamp.h
@@ -423,6 +413,8 @@ value/Value.cc )
 
 list( APPEND eckit_os_srcs
 os/Stat.h
+os/System.h
+os/System.cc
 os/Semaphore.h
 os/Semaphore.cc
 os/SignalHandler.h
@@ -499,6 +491,7 @@ utils/RLE.cc )
 list( APPEND eckit_memory_srcs
 memory/Builder.h
 memory/Builder.cc
+memory/Counted.cc
 memory/Counted.h
 memory/Factory.h
 memory/Owned.h
@@ -524,10 +517,12 @@ maths/Functions.cc
 
 
 list( APPEND eckit_system_srcs
-system/SystemInfo.h
-system/SystemInfo.cc
-system/ResourceUsage.h
-system/ResourceUsage.cc
+    system/Library.cc
+    system/Library.h
+    system/ResourceUsage.cc
+    system/ResourceUsage.h
+    system/SystemInfo.cc
+    system/SystemInfo.h
 )
 
 if( EC_OS_NAME STREQUAL "linux" )
@@ -545,10 +540,15 @@ bases/Loader.h
 bases/Loader.cc )
 
 list( APPEND eckit_transaction_srcs
-transaction/TxnLog.h
-transaction/TxnLog.cc
-transaction/TxnEvent.h
-transaction/TxnEvent.cc )
+    transaction/TxnEvent.h
+    transaction/TxnEvent.cc
+    transaction/TxnLog.h
+    transaction/TxnLog.cc
+)
+
+list( APPEND eckit_testing_srcs
+testing/Setup.h
+)
 
 list( APPEND eckit_dirs
 	bases
@@ -570,8 +570,9 @@ list( APPEND eckit_dirs
 	testing
 	thread
 	transaction
-	types
-	utils
+    types
+    testing
+    utils
 	value
     system
 )
@@ -590,6 +591,7 @@ list( APPEND eckit_templates
 					container/sptree/SPNode.cc
 					filesystem/BasePathNameT.cc
 					io/FileBase.cc
+					config/Resource.cc
 					runtime/PipeHandler.cc
 					serialisation/Reanimator.cc
 					transaction/TxnLog.cc
@@ -628,7 +630,7 @@ ecbuild_add_library(TARGET eckit
 					INCLUDES
 						${AIO_INCLUDE_DIRS}
 					LIBS
-						${CMAKE_THREAD_LIBS_INIT} ${AIO_LIBRARIES} )
+                        ${AIO_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS} )
 
 ### sub-directories
 
@@ -639,5 +641,6 @@ endif()
 add_subdirectory( geometry )
 add_subdirectory( linalg )
 add_subdirectory( maths )
+add_subdirectory( mpi )
 add_subdirectory( option )
 add_subdirectory( web )

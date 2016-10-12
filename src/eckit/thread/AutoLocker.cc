@@ -1,15 +1,15 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
 
-/* #define CHECK_DEAD_LOCKS */
-
+// #define CHECK_DEAD_LOCKS
+#include <unistd.h>
 #include "eckit/thread/AutoLocker.h"
 #include "eckit/thread/Mutex.h"
 
@@ -21,8 +21,8 @@ namespace eckit {
 
 #ifdef CHECK_DEAD_LOCKS
 
-typedef std::map<void*,pthread_t,std::less<void*> > GotMap;
-typedef std::map<pthread_t,void*,std::less<pthread_t> > WantMap;
+typedef std::map<const void*,pthread_t,std::less<const void*> > GotMap;
+typedef std::map<pthread_t,const void*,std::less<pthread_t> > WantMap;
 static WantMap*   wantMap = 0;
 static GotMap*   gotMap = 0;
 static Mutex* local_mutex = 0;
@@ -48,12 +48,12 @@ static void init(void)
 	pthread_atfork(lock,unlock,unlock);
 }
 
-void AutoLocker::want(void* resource)
+void AutoLocker::want(const void* resource)
 {
 	pthread_once(&once,init);
 	local_mutex->lock();
 
-	cerr << "AutoLocker " << pthread_self() << " want " << resource << std::endl;
+	std::cerr << "AutoLocker " << pthread_self() << " want " << resource << std::endl;
 
 	GotMap::iterator i = gotMap->find(resource);
 
@@ -69,24 +69,24 @@ void AutoLocker::want(void* resource)
 	local_mutex->unlock();
 }
 
-void AutoLocker::got(void* resource)
+void AutoLocker::got(const void* resource)
 {
 	local_mutex->lock();
-	cerr << "AutoLocker " << pthread_self() << " got " << resource << std::endl;
+	std::cerr << "AutoLocker " << pthread_self() << " got " << resource << std::endl;
 	(*gotMap)[resource] = pthread_self();
 	wantMap->erase(pthread_self());
 	local_mutex->unlock();
 }
 
-void AutoLocker::release(void* resource)
+void AutoLocker::release(const void* resource)
 {
 	local_mutex->lock();
-	cerr << "AutoLocker " << pthread_self() << " release " << resource << std::endl;
+	std::cerr << "AutoLocker " << pthread_self() << " release " << resource << std::endl;
 	gotMap->erase(resource);
 	local_mutex->unlock();
 }
 
-static void visit(pthread_t p, Set& s,void *resource)
+static void visit(pthread_t p, Set& s, const void *resource)
 {
 	if(s.find(p) != s.end())
 	{
@@ -94,9 +94,9 @@ static void visit(pthread_t p, Set& s,void *resource)
 		::pause();
 
 	}
-	
+
 	s.insert(p);
-	
+
 	GotMap::iterator i = gotMap->find(resource);
 	pthread_t q = (*i).second; // The one with the resource
 
@@ -107,7 +107,7 @@ static void visit(pthread_t p, Set& s,void *resource)
 	s.erase(p);
 }
 
-void AutoLocker::analyse(void *resource)
+void AutoLocker::analyse(const void *resource)
 {
 	Set set;
 	visit(pthread_self(),set,resource);
@@ -115,19 +115,19 @@ void AutoLocker::analyse(void *resource)
 
 #else
 
-void AutoLocker::want(void* resource)
+void AutoLocker::want(const void* resource)
 {
 }
 
-void AutoLocker::got(void* resource)
+void AutoLocker::got(const void* resource)
 {
 }
 
-void AutoLocker::release(void* resource)
+void AutoLocker::release(const void* resource)
 {
 }
 
-void AutoLocker::analyse(void* resource)
+void AutoLocker::analyse(const void* resource)
 {
 }
 

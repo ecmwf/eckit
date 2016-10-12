@@ -97,6 +97,8 @@ public:
     /// Reserve memory for given number of non-zeros (invalidates all data arrays)
     void reserve(Size nnz);
 
+    size_t footprint() const;
+
 private:
 // --- Iterator
     class _InnerIterator {

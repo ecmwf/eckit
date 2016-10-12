@@ -13,34 +13,28 @@
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/config/Resource.h"
-#include "eckit/runtime/Context.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/runtime/Main.h"
 
 #include "eckit/linalg/LinearAlgebra.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"
 #include "util.h"
 
-//-----------------------------------------------------------------------------
+#include "eckit/testing/Setup.h"
 
+using namespace eckit::testing;
 using namespace eckit::linalg;
 
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
-
 // Set linear algebra backend
-struct Setup {
-    Setup() {
-        Context::instance().setup(boost::unit_test::framework::master_test_suite().argc,
-                                  boost::unit_test::framework::master_test_suite().argv);
+struct Setup : testing::Setup {
+    Setup() : testing::Setup() {
         LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
     }
 };
-
-BOOST_GLOBAL_FIXTURE(Setup);
-
-//-----------------------------------------------------------------------------
 
 struct Fixture {
 
@@ -53,16 +47,17 @@ struct Fixture {
    const LinearAlgebra& linalg;
 };
 
-//-----------------------------------------------------------------------------
 
 template <class T>
 void test(const T& v, const T& r) {
     BOOST_CHECK_EQUAL_COLLECTIONS(v.data(), v.data() + v.size(), r.data(), r.data() + r.size());
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Test linear algebra interface
+
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_FIXTURE_TEST_SUITE(test_eckit_la_linalg, Fixture)
 
@@ -90,7 +85,7 @@ BOOST_AUTO_TEST_CASE(test_gemm) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
+} // namespace test
 } // namespace eckittest

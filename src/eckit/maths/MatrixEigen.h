@@ -34,6 +34,8 @@ class Matrix : public Eigen::Matrix<scalar,Eigen::Dynamic,Eigen::Dynamic,Eigen::
 	typedef Eigen::Matrix<scalar,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> Base;
 public:
 	typedef typename Base::MapType Proxy;
+	typedef typename Base::ConstMapType ConstProxy;
+
 public:
 
 	// Default constructor

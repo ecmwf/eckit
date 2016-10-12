@@ -12,7 +12,7 @@ set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} 
 
 include( ecbuild_system NO_POLICY_SCOPE )
 
-ecbuild_requires_macro_version( 2.0 )
+ecbuild_requires_macro_version( 2.4 )
 
 set( PERSISTENT_NAMESPACE eckit CACHE INTERNAL "" )
 
@@ -34,26 +34,10 @@ ecbuild_add_option( FEATURE EXPERIMENTAL
 ### eckit::mpi
 
 ecbuild_add_option( FEATURE MPI
-                    CONDITION HAVE_EXPERIMENTAL
+                    DEFAULT ON
                     DESCRIPTION "Use system MPI libraries"
                     PURPOSE "Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
-
-ecbuild_add_option( FEATURE MPISTUBS
-                    CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "Use MPI stubs (no system MPI required)"
-                    PURPOSE "Support for MPI distributed parallelism"
-                    REQUIRED_PACKAGES "PROJECT mpistubs VERSION 1.0.0" )
-
-ecbuild_add_option( FEATURE ECKIT_MPI
-                    DESCRIPTION "eckit C++ wrapper for MPI"
-                    PURPOSE "Build eckit_mpi library"
-                    CONDITION HAVE_MPI )
-
-ecbuild_add_option( FEATURE ECKIT_MPISTUBS
-                    DESCRIPTION "eckit C++ wrapper for MPI using mpistubs"
-                    PURPOSE "Build eckit_mpistubs library"
-                    CONDITION HAVE_MPISTUBS )
 
 ### eckit::cmd
 
@@ -194,6 +178,10 @@ if( HAVE_ECKIT_CMD)
   list( APPEND ECKIT_LIBRARIES eckit_cmd )
 endif()
 
+if( HAVE_ECKIT_MPI )
+  list( APPEND ECKIT_LIBRARIES eckit_mpi )
+endif()
+
 if( HAVE_EIGEN AND ECKIT_CONTRIB_EIGEN )
   list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
 endif()
@@ -201,14 +189,6 @@ endif()
 if( HAVE_EXPERIMENTAL )
 
   list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
-
-  if( HAVE_ECKIT_MPI )
-    list( APPEND ECKIT_LIBRARIES eckit_mpi )
-  endif()
-
-  if( HAVE_ECKIT_MPISTUBS )
-    list( APPEND ECKIT_LIBRARIES eckit_mpistubs )
-  endif()
 
 endif()
 

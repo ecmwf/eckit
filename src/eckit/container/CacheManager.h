@@ -18,8 +18,8 @@
 #include <string>
 
 #include "eckit/eckit.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -29,44 +29,50 @@ namespace eckit {
 
 class CacheManager : private NonCopyable {
 
-  std::string name_;
-  PathName root_path_;
+public: // methods
 
- public:
-  typedef std::string key_t;
+    typedef std::string key_t;
 
- public:
-  explicit CacheManager(const std::string& name);
+public: // methods
 
-  virtual bool get(const key_t& k, PathName& v) const;
+    explicit CacheManager(const std::string& name, const PathName& root, bool throwOnCacheMiss);
 
-  virtual PathName stage(const key_t& k) const;
+    virtual bool get(const key_t& k, PathName& v) const;
 
-  virtual bool commit(const key_t& k, const PathName& v) const;
+    virtual PathName stage(const key_t& k) const;
 
- protected:
+    virtual bool commit(const key_t& k, const PathName& v) const;
 
-  const std::string& name() const { return name_; }
-  const PathName& root_path() const { return root_path_; }
+protected: // methods
 
-  virtual const char* version() const = 0;
-  virtual const char* extension() const = 0;
+    const std::string& name() const { return name_; }
+    const PathName& root() const { return root_; }
 
-  virtual PathName entry(const key_t& k) const;
+    virtual const char* version() const = 0;
+    virtual const char* extension() const = 0;
 
-  virtual void print(std::ostream& s) const;
+    virtual PathName entry(const key_t& k) const;
 
- private:
+    virtual void print(std::ostream& s) const;
 
-  friend std::ostream& operator<<(std::ostream& s, const CacheManager& p) {
-    p.print(s);
-    return s;
-  }
+private: // methods
 
+    friend std::ostream& operator<<(std::ostream& s, const CacheManager& p) {
+        p.print(s);
+        return s;
+    }
+
+private: // members
+
+    std::string name_;
+
+    PathName root_;
+
+    bool throwOnCacheMiss_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

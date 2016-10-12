@@ -21,6 +21,8 @@
 #include <viennacl/linalg/prod.hpp>
 
 #include "eckit/linalg/LinearAlgebraViennaCL.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"

@@ -12,17 +12,16 @@
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_la_Matrix_h
-#define eckit_la_Matrix_h
-
-#include <vector>
+#ifndef eckit_linalg_Matrix_h
+#define eckit_linalg_Matrix_h
 
 #include "eckit/linalg/types.h"
 
 namespace eckit {
-
 class Stream;
+}
 
+namespace eckit {
 namespace linalg {
 
 //-----------------------------------------------------------------------------
@@ -30,8 +29,7 @@ namespace linalg {
 /// Dense matrix in column major storage order
 class Matrix {
 public:  // types
-    typedef std::vector<Scalar> Storage;
-    typedef Storage::size_type Size;
+    typedef eckit::linalg::Size Size;
 
 public:  // methods
 
@@ -40,60 +38,88 @@ public:  // methods
     /// Default constructor (empty matrix)
     Matrix();
 
-    /// Construct matrix with given rows and columns (allocates memory)
+    /// Construct matrix with given rows and columns (allocates memory, not initialised)
     Matrix(Size rows, Size cols);
 
+    /// Construct matrix from existing data (does NOT take ownership)
+    Matrix(Scalar* array, Size rows, Size cols);
+
     /// Constructor from Stream
-    Matrix(Stream& v);
+    Matrix(Stream&);
+
+    /// Copy constructor
+    Matrix(const Matrix&);
+
+    // TODO: make virtual if used as base class
+    ~Matrix();
 
     // -- Mutators
+
+    Matrix& operator=(const Matrix&);
+
+    /// Swap this matrix with another
+    void swap(Matrix&);
 
     /// Resize matrix to given number of rows/columns (invalidates data)
     void resize(Size rows, Size cols);
 
-    /// Swap this matrix with another
-    void swap(Matrix& o);
+    /// Set data to zero
+    void setZero();
+
+    /// Fill vector with given scalar
+    void fill(Scalar);
 
     // -- Serialisation
 
     /// Serialise to a Stream
-    void encode(Stream& s) const;
+    void encode(Stream&) const;
 
     // -- Accessors
 
     /// @returns size (rows * cols)
-    Size size() const { return v_.size(); }
+    Size size() const { return rows_*cols_; }
     /// @returns number of rows
     Size rows() const { return rows_; }
     /// @returns number of columns
     Size cols() const { return cols_; }
 
     /// Access by row and column
-    Scalar& operator()(Size row, Size col) { return v_[col*rows_ + row]; }
-    const Scalar& operator()(Size row, Size col) const { return v_[col*rows_ + row]; }
+    /// @note implements column-major (Fortran-style) ordering
+    Scalar& operator()(Size row, Size col) { return array_[col*rows_ + row]; }
+    const Scalar& operator()(Size row, Size col) const { return array_[col*rows_ + row]; }
 
     /// Access to linearised storage
-    Scalar& operator[](Size i) { return v_[i]; }
-    const Scalar& operator[](Size i) const { return v_[i]; }
+    Scalar& operator[](Size i) { return array_[i]; }
+    const Scalar& operator[](Size i) const { return array_[i]; }
 
     /// @returns modifiable view of the data
-    Scalar* data() { return v_.data(); }
+    Scalar* data() { return array_; }
     /// @returns read-only view of the data
-    const Scalar* data() const { return v_.data(); }
+    const Scalar* data() const { return array_; }
 
     /// @returns iterator to beginning of the data
-    Storage::iterator begin() { return v_.begin(); }
+    Scalar* begin() { return array_; }
     /// @returns const iterator to beginning of the data
-    Storage::const_iterator begin() const { return v_.begin(); }
+    const Scalar* begin() const { return array_; }
     /// @returns iterator to end of the data
-    Storage::iterator end() { return v_.end(); }
+    Scalar* end() { return array_ + size(); }
     /// @returns const iterator to end of the data
-    Storage::const_iterator end() const { return v_.end(); }
+    const Scalar* end() const { return array_ + size(); }
 
-protected:  // members
-    Storage v_;
+protected:  // member variables
+
+    /// Container
+    Scalar* array_;
+
+    /// Number of rows
     Size rows_;
+
+    /// Number of columns
     Size cols_;
+
+    /// Indicate ownership
+    bool own_;
+
 };
 
 //-----------------------------------------------------------------------------

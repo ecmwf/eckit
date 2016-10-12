@@ -82,10 +82,14 @@ void LinearAlgebraMKL::spmv(const SparseMatrix& A, const Vector& x, Vector& y) c
     //                  double *val, MKL_INT *indx, MKL_INT *pntrb, MKL_INT *pntre,
     //                  double *x, double *beta, double *y);
     // std::cout << "Calling MKL::spmv()" << std::endl;
+    double* matrix = const_cast<double*>(A.data());
+    MKL_INT* inner = const_cast<MKL_INT*>(A.inner());
+    MKL_INT* outer = const_cast<MKL_INT*>(A.outer());
+    double* vector = const_cast<double*>(x.data());
     mkl_dcsrmv ("N", &m, &k,
                 &alpha, "G__C",
-                A.data(), A.inner(), A.outer(), A.outer()+1,
-                x.data(), &beta, y.data());
+                matrix, inner, outer, outer+1,
+                vector, &beta, y.data());
 }
 
 //-----------------------------------------------------------------------------
@@ -111,10 +115,12 @@ void LinearAlgebraMKL::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) c
     //                  double *alpha, char *matdescra,
     //                  double *val, MKL_INT *indx, MKL_INT *pntrb, MKL_INT *pntre,
     //                  double *b, MKL_INT *ldb, double *beta, double *c, MKL_INT *ldc);
+    double* a = const_cast<double*>(A.data());
+    double* b = const_cast<double*>(B.data());
     mkl_dcsrmm( "N", &m, &n, &k,
                 &alpha, "G__F",
-                A.data(), inner.data(), outer.data(), outer.data()+1,
-                B.data(), &k, &beta, C.data(), &k);
+                a, inner.data(), outer.data(), outer.data()+1,
+                b, &k, &beta, C.data(), &k);
 }
 
 //-----------------------------------------------------------------------------

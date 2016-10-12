@@ -417,6 +417,7 @@ list( APPEND eckit_os_srcs
 os/Stat.h
 os/System.h
 os/System.cc
+os/AutoUmask.h
 os/Semaphore.h
 os/Semaphore.cc
 os/SignalHandler.h

@@ -43,6 +43,8 @@ public: // methods
 
     virtual bool commit(const key_t& k, const PathName& v) const;
 
+    virtual PathName entry(const key_t& k) const;
+
 protected: // methods
 
     const std::string& name() const { return name_; }
@@ -51,7 +53,6 @@ protected: // methods
     virtual const char* version() const = 0;
     virtual const char* extension() const = 0;
 
-    virtual PathName entry(const key_t& k) const;
 
     virtual void print(std::ostream& s) const;
 

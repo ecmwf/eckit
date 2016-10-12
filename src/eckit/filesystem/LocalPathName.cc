@@ -396,7 +396,10 @@ static void expandTilde(std::string& path)
                 return;
             }
 
-            Log::warning() << "Could not expand tilde in path " << path << std::endl;
+            std::ostringstream oss;
+            oss << "Could not expand tilde in path " << path << std::endl;
+
+            throw SeriousBug(oss.str());
         }
 
         // 3. expand ~/ with registered home

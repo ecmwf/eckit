@@ -28,7 +28,7 @@ static int openLock(const PathName& lockFile) {
     AutoUmask mask(0);
     int fd;
     lockFile.dirName().mkdir(0777);
-    SYSCALL2(fd = ::open(lockFile.asString().c_str(), O_CREAT, 0777), lockFile);
+    SYSCALL2(fd = ::open(lockFile.asString().c_str(), O_CREAT|O_RDWR, 0777), lockFile);
     return fd;
 }
 

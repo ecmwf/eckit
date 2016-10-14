@@ -30,7 +30,7 @@ size_t Malloc::allocated() {
 #ifdef __APPLE__
     return mstats().bytes_used;
 #else
-    return mallinfo().arena;
+    return mallinfo().uordblks;
 #endif
 }
 

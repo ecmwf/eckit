@@ -426,6 +426,8 @@ os/Password.h
 os/Password.cc
 os/BackTrace.h
 os/BackTrace.cc
+os/Malloc.h
+os/Malloc.cc
 os/AutoAlarm.h
 os/AutoAlarm.cc
 os/SharedInt.h

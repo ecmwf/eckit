@@ -29,7 +29,7 @@ static unsigned long long to_bytes() {
     return usage.ru_maxrss / ticks;
 }
 #else
-static unsigned long long  to_bytes(size_t size) {
+static unsigned long long  to_bytes() {
     struct rusage usage;
     SYSCALL(getrusage(RUSAGE_SELF, &usage));
     return usage.ru_maxrss * 1024;

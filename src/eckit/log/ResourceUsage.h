@@ -43,13 +43,14 @@ public:
 
 protected: // methods
 
-    void takeTime();
+    void init();
 
 private: // members
 
     std::string    name_;
     std::ostream&  out_;
-    unsigned long long usage_;
+    long long rss_;
+    long long malloc_;
 
 
 };

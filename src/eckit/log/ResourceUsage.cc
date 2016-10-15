@@ -14,29 +14,47 @@
 #include "eckit/log/ResourceUsage.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/os/Malloc.h"
 
-static unsigned long long  to_bytes() {
+struct mem {
+    size_t resident_size_;
+    size_t virtual_size_;
+    mem(size_t resident_size, size_t virtual_size):
+        resident_size_(resident_size),
+        virtual_size_(virtual_size) {}
+};
 
-    struct rusage usage;
-    SYSCALL(getrusage(RUSAGE_SELF, &usage));
 
 // TODO: move logic to ecbuild
 #ifdef __APPLE__
+#include <mach/mach.h>
 
-    double clock_ticks = sysconf(_SC_CLK_TCK);
+static mem get_mem() {
 
-    double utime = (double)usage.ru_utime.tv_sec + ((double)usage.ru_utime.tv_usec / 1000000.);
-    double stime = (double)usage.ru_stime.tv_sec + ((double)usage.ru_stime.tv_usec / 1000000.);
+    struct task_basic_info info;
+    mach_msg_type_number_t size = sizeof(info);
 
-    double ticks = (utime + stime) * clock_ticks;
-    return usage.ru_maxrss / ticks;
+    kern_return_t err = task_info(mach_task_self(),
+                                  TASK_BASIC_INFO,
+                                  (task_info_t)&info,
+                                  &size);
 
-#else
-    return usage.ru_maxrss * 1024;
+    if ( err != KERN_SUCCESS ) {
+        throw eckit::FailedSystemCall(mach_error_string(err), Here());
+    }
 
-#endif
+    return mem(info.resident_size, info.virtual_size);
 
 }
+
+#else
+static mem get_mem() {
+    struct rusage usage;
+    SYSCALL(getrusage(RUSAGE_SELF, &usage));
+    return mem(usage.ru_maxrss * 1024, 0) ;
+}
+#endif
+
 
 namespace eckit {
 
@@ -46,42 +64,61 @@ ResourceUsage::ResourceUsage():
     name_("unnamed"),
     out_( std::cout )
 {
-    usage_ = to_bytes();
+    init();
 }
 
 ResourceUsage::ResourceUsage(const std::string& name, std::ostream& o ):
     name_(name),
     out_(o)
 {
-    usage_ = to_bytes();
+    init();
 }
 
 ResourceUsage::ResourceUsage(const char* name, std::ostream& o ):
     name_(name),
     out_(o)
 {
-
-    usage_ = to_bytes();
+    init();
 }
 
+void ResourceUsage::init() {
+    rss_ = get_mem().resident_size_;
+    malloc_ = Malloc::allocated();
+
+    out_ << name_ << " => resident size: "
+         << eckit::Bytes(rss_);
+    out_ << ", allocated: "
+         << eckit::Bytes(malloc_);
+    out_ << std::endl;
+}
 
 ResourceUsage::~ResourceUsage()
 {
 
-    unsigned long long current = to_bytes();
+    unsigned long long rss = get_mem().resident_size_;
+    unsigned long long malloc = Malloc::allocated();
 
-    out_ << name_ << " resident size "
-         << eckit::Bytes(current);
+    out_ << name_ << " <= resident size: "
+         << eckit::Bytes(rss);
 
-    if ( current >  usage_) {
-
-        out_  << ", increase: " << eckit::Bytes(current -  usage_);
+    if ( rss > rss_) {
+        out_ << " (+" << eckit::Bytes(rss - rss_) << ")";
     }
 
-    if ( current <  usage_) {
-        out_  << ", decrease: " << eckit::Bytes(usage_ -  current);
+    if ( rss < rss_) {
+        out_ << " (-" << eckit::Bytes(rss_ - rss) << ")";
     }
 
+    out_ << ", allocated: "
+         << eckit::Bytes(malloc);
+
+    if ( malloc > malloc_) {
+        out_ << " (+" << eckit::Bytes(malloc - malloc_) << ")";
+    }
+
+    if ( malloc < malloc_) {
+        out_ << " (-" << eckit::Bytes(malloc_ - malloc) << ")";
+    }
     out_ << std::endl;
 }
 

@@ -15,26 +15,28 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
 
+static unsigned long long  to_bytes() {
+
+    struct rusage usage;
+    SYSCALL(getrusage(RUSAGE_SELF, &usage));
 
 // TODO: move logic to ecbuild
 #ifdef __APPLE__
-static unsigned long long to_bytes() {
+
     double clock_ticks = sysconf(_SC_CLK_TCK);
-    struct rusage usage;
-    SYSCALL(getrusage(RUSAGE_SELF, &usage));
+
     double utime = (double)usage.ru_utime.tv_sec + ((double)usage.ru_utime.tv_usec / 1000000.);
     double stime = (double)usage.ru_stime.tv_sec + ((double)usage.ru_stime.tv_usec / 1000000.);
 
     double ticks = (utime + stime) * clock_ticks;
     return usage.ru_maxrss / ticks;
-}
+
 #else
-static unsigned long long  to_bytes() {
-    struct rusage usage;
-    SYSCALL(getrusage(RUSAGE_SELF, &usage));
     return usage.ru_maxrss * 1024;
-}
+
 #endif
+
+}
 
 namespace eckit {
 

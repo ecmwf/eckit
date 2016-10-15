@@ -49,7 +49,9 @@ private: // members
 
     std::string    name_;
     std::ostream&  out_;
-    struct rusage  usage_;
+    unsigned long long usage_;
+
+
 };
 
 

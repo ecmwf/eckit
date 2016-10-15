@@ -8,11 +8,33 @@
  * does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
+
 #include "eckit/log/Seconds.h"
 #include "eckit/log/ResourceUsage.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
 
+
+// TODO: move logic to ecbuild
+#ifdef __APPLE__
+static unsigned long long to_bytes() {
+    double clock_ticks = sysconf(_SC_CLK_TCK);
+    struct rusage usage;
+    SYSCALL(getrusage(RUSAGE_SELF, &usage));
+    double utime = (double)usage.ru_utime.tv_sec + ((double)usage.ru_utime.tv_usec / 1000000.);
+    double stime = (double)usage.ru_stime.tv_sec + ((double)usage.ru_stime.tv_usec / 1000000.);
+
+    double ticks = (utime + stime) * clock_ticks;
+    return usage.ru_maxrss / ticks;
+}
+#else
+static unsigned long long  to_bytes(size_t size) {
+    struct rusage usage;
+    SYSCALL(getrusage(RUSAGE_SELF, &usage));
+    return usage.ru_maxrss * 1024;
+}
+#endif
 
 namespace eckit {
 
@@ -22,39 +44,40 @@ ResourceUsage::ResourceUsage():
     name_("unnamed"),
     out_( std::cout )
 {
-    SYSCALL(getrusage(RUSAGE_SELF, &usage_));
+    usage_ = to_bytes();
 }
 
 ResourceUsage::ResourceUsage(const std::string& name, std::ostream& o ):
     name_(name),
     out_(o)
 {
-    SYSCALL(getrusage(RUSAGE_SELF, &usage_));
+    usage_ = to_bytes();
 }
 
 ResourceUsage::ResourceUsage(const char* name, std::ostream& o ):
     name_(name),
     out_(o)
 {
-    SYSCALL(getrusage(RUSAGE_SELF, &usage_));
+
+    usage_ = to_bytes();
 }
 
 
 ResourceUsage::~ResourceUsage()
 {
-    struct rusage  usage;
-    SYSCALL(getrusage(RUSAGE_SELF, &usage));
+
+    unsigned long long current = to_bytes();
 
     out_ << name_ << " resident size "
-         << eckit::Bytes(usage.ru_maxrss * 1024);
+         << eckit::Bytes(current);
 
-    if ( usage.ru_maxrss >  usage_.ru_maxrss) {
+    if ( current >  usage_) {
 
-        out_  << ", increase: " << eckit::Bytes((usage.ru_maxrss -  usage_.ru_maxrss) * 1024);
+        out_  << ", increase: " << eckit::Bytes(current -  usage_);
     }
 
-    if ( usage.ru_maxrss <  usage_.ru_maxrss) {
-        out_  << ", decrease: " << eckit::Bytes((usage_.ru_maxrss -  usage.ru_maxrss) * 1024);
+    if ( current <  usage_) {
+        out_  << ", decrease: " << eckit::Bytes(usage_ -  current);
     }
 
     out_ << std::endl;

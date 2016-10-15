@@ -321,6 +321,8 @@ log/LogTarget.h
 log/LogTarget.cc
 log/Timer.h
 log/Timer.cc
+log/ResourceUsage.h
+log/ResourceUsage.cc
 log/TimeStamp.h
 log/TimeStamp.cc
 log/UserChannel.h

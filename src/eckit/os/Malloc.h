@@ -20,7 +20,7 @@ namespace eckit {
 class Malloc {
 public:
 
-    static size_t allocated();
+    static unsigned long long allocated();
 
 };
 

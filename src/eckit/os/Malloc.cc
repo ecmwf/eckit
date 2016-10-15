@@ -26,7 +26,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-size_t Malloc::allocated() {
+unsigned long long Malloc::allocated() {
 #ifdef __APPLE__
     return mstats().bytes_used;
 #else

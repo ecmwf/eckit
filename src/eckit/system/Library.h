@@ -21,7 +21,7 @@
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/memory/ScopedPtr.h"
-#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
@@ -42,7 +42,7 @@ public: // methods
 
     const std::string& name() const;
 
-    virtual LocalPathName path() const;
+    virtual std::string etcDirectory() const;
 
     virtual std::string expandPath(const std::string& path) const;
 
@@ -88,6 +88,8 @@ private: // members
     mutable eckit::Mutex mutex_;
 
     mutable std::string libraryPath_;
+    mutable std::string etcDirectory_;
+
     mutable eckit::ScopedPtr<eckit::Channel> debugChannel_;
 
 };

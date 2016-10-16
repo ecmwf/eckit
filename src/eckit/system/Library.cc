@@ -26,6 +26,7 @@
 #include "eckit/utils/Translator.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/filesystem/LocalPathName.h"
 
 namespace eckit {
 namespace system {
@@ -138,11 +139,19 @@ const std::string& Library::name() const {
     return name_;
 }
 
-LocalPathName Library::path() const {
-    return LocalPathName(libraryPath()).dirName().dirName();
+std::string Library::etcDirectory() const {
+    eckit::AutoLock<Mutex> lock(mutex_);
+
+    if (etcDirectory_.empty()) {
+        etcDirectory_ = LocalPathName(libraryPath()).dirName().dirName().realName();
+    }
+
+    return etcDirectory_;
 }
 
 std::string Library::libraryPath() const {
+    eckit::AutoLock<Mutex> lock(mutex_);
+
     if (libraryPath_.empty()) {
         std::string p = eckit::System::addrToPath(addr());
         libraryPath_ = LocalPathName(p).realName();
@@ -172,8 +181,10 @@ Channel& Library::debugChannel() const
 std::string Library::expandPath(const std::string& p) const {
 
     std::string s = "~" + name_;
+    ASSERT( p.substr(0, s.size()) == s);
+    ASSERT(p.size() == s.size() || p[p.size()] == '/');
 
-    std::string result = path() + "/" + p.substr(s.size());
+    std::string result = etcDirectory() + "/" + p.substr(s.size());
 
     return result;
 }

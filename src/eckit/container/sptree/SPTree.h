@@ -52,7 +52,7 @@ public:
 
     ~SPTree()
     {
-        // TODO: alloc_.deleteNode(root_,(Node*)0);
+        alloc_.deleteNode(root_,(Node*)0);
     }
 
     void setMetadata(const Point& offset, const Point& scale) {

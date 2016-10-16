@@ -87,7 +87,7 @@ public: // because of a clang bug. Should be protected
     void kNearestNeighboursBruteForceX(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth) ;
 
     //==========================
-protected:
+public:
     Node* left(Alloc& a)  const { return a.convert(left_,  (Node*)0);   }
     Node* right(Alloc& a) const { return a.convert(right_, (Node*)0);  }
     Node* next(Alloc& a)  const { return a.convert(next_,  (Node*)0);   }

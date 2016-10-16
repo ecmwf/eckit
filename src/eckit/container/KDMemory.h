@@ -49,8 +49,8 @@ struct KDMemory : public StatCollector {
     void deleteNode(Ptr p, const Node*) {
         Node* n = static_cast<Node*>(p);
         if(n) {
-            deleteNode(n->left_,n);
-            deleteNode(n->right_,n);
+            deleteNode(n->left(*this),n);
+            deleteNode(n->right(*this),n);
             delete n;
         }
     }

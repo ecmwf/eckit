@@ -182,7 +182,7 @@ std::string Library::expandPath(const std::string& p) const {
 
     std::string s = "~" + name_;
     ASSERT( p.substr(0, s.size()) == s);
-    ASSERT(p.size() == s.size() || p[p.size()] == '/');
+    ASSERT(p.size() == s.size() || p[s.size()] == '/');
 
     std::string result = etcDirectory() + "/" + p.substr(s.size());
 

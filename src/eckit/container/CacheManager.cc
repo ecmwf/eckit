@@ -135,12 +135,12 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
 
         ASSERT(get(key, path));
 
-        if (lockFile.exists()) {
-            try {
-                lockFile.unlink();
-            } catch (...) {
-            }
-        }
+        // if (lockFile.exists()) {
+        //     try {
+        //         lockFile.unlink();
+        //     } catch (...) {
+        //     }
+        // }
 
     }
 

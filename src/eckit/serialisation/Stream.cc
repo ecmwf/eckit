@@ -135,7 +135,7 @@ void Stream::badTag(Stream::tag need, Stream::tag got) {
     std::ostringstream os;
 
     os << "Bad tag found in stream ";
-    os << name();
+    os << *this;
     os << ". Expecting a " << need << ", got a " << got;
 
     Log::error() << os.str() << std::endl;

@@ -211,6 +211,12 @@ private:
     friend class BufferedWriter<Stream>;
     friend class BufferedReader<Stream>;
     friend class IOBuffer<Stream>;
+
+    friend std::ostream& operator<<(std::ostream& out, const Stream& s) {
+        s.print(out);
+        return out;
+    }
+
 };
 
 

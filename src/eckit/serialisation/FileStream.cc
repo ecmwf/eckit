@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -22,12 +22,12 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-FileStream::FileStream(const PathName& name,const char *mode):
-    file_(::fopen(name.localPath(),mode)),
+FileStream::FileStream(const PathName& name, const char *mode):
+    file_(::fopen(name.localPath(), mode)),
     read_(std::string(mode) == "r"),
     name_(name)
 {
-    if(file_ == 0)
+    if (file_ == 0)
         throw CantOpenFile(name);
     //setbuf(file_,0);
 }
@@ -35,8 +35,8 @@ FileStream::FileStream(const PathName& name,const char *mode):
 FileStream::~FileStream()
 {
     ASSERT(file_);
-    
-    if(!read_)
+
+    if (!read_)
     {
         if (::fflush(file_))
             throw WriteError(std::string("FileStream::~FileStream(fflush(") + name_ + "))");
@@ -49,10 +49,10 @@ FileStream::~FileStream()
 
         int ret = fsync(fileno(file_));
 
-        while(ret < 0 && errno == EINTR)
+        while (ret < 0 && errno == EINTR)
             ret = fsync(fileno(file_));
-        if(ret < 0) {
-            Log::error() << "Cannot fsync(" << name_ << ") " <<fileno(file_) <<  Log::syserr << std::endl;
+        if (ret < 0) {
+            Log::error() << "Cannot fsync(" << name_ << ") " << fileno(file_) <<  Log::syserr << std::endl;
         }
         //if(ret<0)
         //throw FailedSystemCall(std::string("fsync(") + name_ + ")");
@@ -62,16 +62,16 @@ FileStream::~FileStream()
 #ifdef EC_HAVE_DIRFD
         PathName directory = PathName(name_).dirName();
         DIR *d = ::opendir(directory.localPath());
-        if(!d) SYSCALL(-1);
+        if (!d) SYSCALL(-1);
 
         int dir;
         SYSCALL( dir = dirfd(d)  );
         ret = ::fsync(dir);
 
-        while(ret < 0 && errno == EINTR)
+        while (ret < 0 && errno == EINTR)
             ret = fsync(dir);
 
-        if(ret < 0) {
+        if (ret < 0) {
             Log::error() << "Cannot fsync(" << directory << ")" << Log::syserr << std::endl;
         }
         ::closedir(d);
@@ -84,17 +84,17 @@ FileStream::~FileStream()
     file_ = 0;
 }
 
-long FileStream::read(void* buf,long length)
+long FileStream::read(void* buf, long length)
 {
-    long n = fread(buf,1,length,file_);
+    long n = fread(buf, 1, length, file_);
     ASSERT(n >= 0);
 
     return n;
 }
 
-long FileStream::write(const void* buf,long length)
+long FileStream::write(const void* buf, long length)
 {
-    return fwrite(buf,1,length,file_);
+    return fwrite(buf, 1, length, file_);
 }
 
 std::string FileStream::name() const
@@ -105,8 +105,12 @@ std::string FileStream::name() const
 void FileStream::rewind()
 {
     ::fflush(file_);
-    fseeko(file_,0,SEEK_SET);
+    fseeko(file_, 0, SEEK_SET);
     resetBytesWritten();
+}
+
+void FileStream::print(std::ostream& s) const {
+    s << "FileStream[path=" << name_ << "]";
 }
 
 //-----------------------------------------------------------------------------

@@ -131,16 +131,17 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                                << entry(key)
                                << " created by another process"
                                << std::endl;
+            Traits::load(value, path);
         }
 
         ASSERT(get(key, path));
 
-        // if (lockFile.exists()) {
-        //     try {
-        //         lockFile.unlink();
-        //     } catch (...) {
-        //     }
-        // }
+        if (lockFile.exists()) {
+            try {
+                lockFile.unlink();
+            } catch (...) {
+            }
+        }
 
     }
 

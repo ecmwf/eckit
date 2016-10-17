@@ -24,66 +24,55 @@
 
 namespace eckit {
 
-class CacheContentCreator {
-public:
-    virtual void create(const PathName& path) = 0;
-};
-
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Filesystem Cache Manager
 
+template <class Traits>
 class CacheManager : private NonCopyable {
 
 public: // methods
+
+    typedef typename Traits::value_type value_type;
+
+    class CacheContentCreator {
+    public:
+        virtual void create(const PathName&, value_type& value) = 0;
+    };
 
     typedef std::string key_t;
 
 public: // methods
 
-    explicit CacheManager(const std::string& name, const PathName& root, bool throwOnCacheMiss);
+    explicit CacheManager(const PathName& root, bool throwOnCacheMiss);
 
-    virtual bool get(const key_t& k, PathName& v) const;
-
-    virtual PathName stage(const key_t& k) const;
-
-    virtual bool commit(const key_t& k, const PathName& v) const;
-
-    virtual PathName entry(const key_t& k) const;
-
-
-    virtual PathName getOrCreate(const key_t& key, CacheContentCreator& creator) const;
-
-
-protected: // methods
-
-    const std::string& name() const { return name_; }
-    const PathName& root() const { return root_; }
-
-    virtual const char* version() const = 0;
-    virtual const char* extension() const = 0;
-
-
-    virtual void print(std::ostream& s) const;
+    PathName getOrCreate(const key_t& key,
+        CacheContentCreator& creator,
+        value_type& value) const;
 
 private: // methods
 
-    friend std::ostream& operator<<(std::ostream& s, const CacheManager& p) {
-        p.print(s);
-        return s;
-    }
+
+     bool get(const key_t& key, PathName& path) const;
+
+     PathName stage(const key_t& key) const;
+
+     bool commit(const key_t& key, const PathName& path) const;
+
+     PathName entry(const key_t& key) const;
+
 
 private: // members
 
-    std::string name_;
-
     PathName root_;
-
     bool throwOnCacheMiss_;
 };
+
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
 
+#include "eckit/container/CacheManager.cc"
 #endif

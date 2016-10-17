@@ -8,8 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <functional>
-#include "CacheManager.h"
+#include "eckit/container/CacheManager.h"
 
 #include <sys/stat.h>
 
@@ -24,14 +23,15 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CacheManager::CacheManager(const std::string& name, const PathName& root, bool throwOnCacheMiss) :
-    name_(name),
+template<class Traits>
+CacheManager<Traits>::CacheManager(const PathName& root, bool throwOnCacheMiss) :
     root_(root),
     throwOnCacheMiss_(throwOnCacheMiss) {
 }
 
-bool CacheManager::get(const key_t& k, PathName& v) const {
-    PathName p = entry(k);
+template<class Traits>
+bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
+    PathName p = entry(key);
     if (p.exists()) {
         v = p;
         return true;
@@ -39,20 +39,31 @@ bool CacheManager::get(const key_t& k, PathName& v) const {
 
     if (throwOnCacheMiss_) {
         std::ostringstream oss;
-        oss << "CacheManager cache miss: key=" << k << ", path=" << p;
+        oss << "CacheManager cache miss: key=" << key << ", path=" << p;
         throw UserError(oss.str());
     }
 
     return false;
 }
 
-PathName CacheManager::entry(const key_t &key) const {
-    return root() / name() / version() / key + extension();
+template<class Traits>
+PathName CacheManager<Traits>::entry(const key_t &key) const {
+    std::ostringstream oss;
+    oss <<  root_
+        << "/"
+        << Traits::name()
+        << "/"
+        << Traits::version()
+        << "/"
+        << key
+        << Traits::extension();
+    return PathName(oss.str());
 }
 
-PathName CacheManager::stage(const key_t& k) const {
+template<class Traits>
+PathName CacheManager<Traits>::stage(const key_t& key) const {
 
-    PathName p = entry(k);
+    PathName p = entry(key);
     AutoUmask umask(0);
     // FIXME: mask does not seem to affect first level directory
     p.dirName().mkdir(0777);  // ensure directory exists
@@ -61,9 +72,10 @@ PathName CacheManager::stage(const key_t& k) const {
     return PathName::unique(p);
 }
 
-bool CacheManager::commit(const key_t& k, const PathName& tmpfile) const
+template<class Traits>
+bool CacheManager<Traits>::commit(const key_t& key, const PathName& tmpfile) const
 {
-    PathName file = entry(k);
+    PathName file = entry(key);
     try {
         SYSCALL(::chmod(tmpfile.asString().c_str(), 0444));
         PathName::rename( tmpfile, file );
@@ -74,11 +86,17 @@ bool CacheManager::commit(const key_t& k, const PathName& tmpfile) const
     return true;
 }
 
-void CacheManager::print(std::ostream& s) const { s << "CacheManager[name=" << name() << "]"; }
+template<class Traits>
+PathName CacheManager<Traits>::getOrCreate(const key_t& key,
+        CacheContentCreator& creator,
+        value_type& value) const {
 
-PathName CacheManager::getOrCreate(const key_t& key, CacheContentCreator& creator) const {
     PathName path;
-    if (!get(key, path)) {
+
+    if (get(key, path)) {
+        Traits::load(value, path);
+    }
+    else {
 
         eckit::Log::info() << "Cache file "
                            << entry(key)
@@ -103,7 +121,8 @@ PathName CacheManager::getOrCreate(const key_t& key, CacheContentCreator& creato
                                << std::endl;
 
             eckit::PathName tmp = stage(key);
-            creator.create(tmp);
+            creator.create(tmp, value);
+            Traits::save(value, tmp);
             ASSERT(commit(key, tmp));
             // createCoefficients(cache, key, truncation, grid, ctx);
         }
@@ -116,9 +135,19 @@ PathName CacheManager::getOrCreate(const key_t& key, CacheContentCreator& creato
 
         ASSERT(get(key, path));
 
+        if (lockFile.exists()) {
+            try {
+                lockFile.unlink();
+            } catch (...) {
+            }
+        }
+
     }
+
     return path;
 }
+
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -14,7 +14,6 @@
 #include "eckit/log/ResourceUsage.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
-#include "eckit/os/Malloc.h"
 
 struct mem {
     size_t resident_size_;
@@ -28,6 +27,11 @@ struct mem {
 // TODO: move logic to ecbuild
 #ifdef __APPLE__
 #include <mach/mach.h>
+#include <malloc/malloc.h>
+
+static size_t allocated() {
+    return mstats().bytes_used;
+}
 
 static mem get_mem() {
 
@@ -48,11 +52,20 @@ static mem get_mem() {
 }
 
 #else
+#include <malloc.h>
+
+
+static size_t allocated() {
+    return mallinfo().uordblks;
+}
+
 static mem get_mem() {
     struct rusage usage;
     SYSCALL(getrusage(RUSAGE_SELF, &usage));
     return mem(usage.ru_maxrss * 1024, 0) ;
 }
+
+
 #endif
 
 
@@ -83,7 +96,7 @@ ResourceUsage::ResourceUsage(const char* name, std::ostream& o ):
 
 void ResourceUsage::init() {
     rss_ = get_mem().resident_size_;
-    malloc_ = Malloc::allocated();
+    malloc_ = allocated();
 
     out_ << name_ << " => resident size: "
          << eckit::Bytes(rss_);
@@ -96,7 +109,7 @@ ResourceUsage::~ResourceUsage()
 {
 
     unsigned long long rss = get_mem().resident_size_;
-    unsigned long long malloc = Malloc::allocated();
+    unsigned long long malloc = allocated();
 
     out_ << name_ << " <= resident size: "
          << eckit::Bytes(rss);

@@ -16,12 +16,18 @@
 #define eckit_container_CacheManager_h
 
 #include <string>
+#include <functional>
 
 #include "eckit/eckit.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
+
+class CacheContentCreator {
+public:
+    virtual void create(const PathName& path) = 0;
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -44,6 +50,10 @@ public: // methods
     virtual bool commit(const key_t& k, const PathName& v) const;
 
     virtual PathName entry(const key_t& k) const;
+
+
+    virtual PathName getOrCreate(const key_t& key, CacheContentCreator& creator) const;
+
 
 protected: // methods
 

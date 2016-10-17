@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <functional>
 #include "CacheManager.h"
 
 #include <sys/stat.h>
@@ -16,6 +17,8 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/os/AutoUmask.h"
+#include "eckit/io/FileLock.h"
+#include "eckit/thread/AutoLock.h"
 
 namespace eckit {
 
@@ -34,7 +37,7 @@ bool CacheManager::get(const key_t& k, PathName& v) const {
         return true;
     }
 
-    if(throwOnCacheMiss_) {
+    if (throwOnCacheMiss_) {
         std::ostringstream oss;
         oss << "CacheManager cache miss: key=" << k << ", path=" << p;
         throw UserError(oss.str());
@@ -72,6 +75,50 @@ bool CacheManager::commit(const key_t& k, const PathName& tmpfile) const
 }
 
 void CacheManager::print(std::ostream& s) const { s << "CacheManager[name=" << name() << "]"; }
+
+PathName CacheManager::getOrCreate(const key_t& key, CacheContentCreator& creator) const {
+    PathName path;
+    if (!get(key, path)) {
+
+        eckit::Log::info() << "Cache file "
+                           << entry(key)
+                           << " does not exist"
+                           << std::endl;
+
+
+        std::ostringstream oss;
+        oss << entry(key) << ".lock";
+
+        eckit::PathName lockFile(oss.str());
+
+        eckit::FileLock locker(lockFile);
+
+        eckit::AutoLock<eckit::FileLock> lock(locker);
+
+        // Some
+        if (!get(key, path)) {
+
+            eckit::Log::info() << "Creating coefficient cache file "
+                               << entry(key)
+                               << std::endl;
+
+            eckit::PathName tmp = stage(key);
+            creator.create(tmp);
+            ASSERT(commit(key, tmp));
+            // createCoefficients(cache, key, truncation, grid, ctx);
+        }
+        else {
+            eckit::Log::info() << "Coefficient cache file "
+                               << entry(key)
+                               << " created by another process"
+                               << std::endl;
+        }
+
+        ASSERT(get(key, path));
+
+    }
+    return path;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

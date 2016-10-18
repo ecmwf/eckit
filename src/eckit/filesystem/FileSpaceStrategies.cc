@@ -151,13 +151,13 @@ const PathName& FileSpaceStrategies::pureRandom(const std::vector<PathName>& fil
 
 	long value = random() % fileSystems.size();
 
-	for(Ordinal j = 0; j < fileSystems.size(); j++)
+    for(Ordinal j = 0; j < fileSystems.size(); j++) {
 
-	{
-		Ordinal i = (j + value) % fileSystems.size();
-		if(fileSystems[i].available())
-		{
-			FileSystemSize fs;
+        Ordinal i = (j + value) % fileSystems.size();
+
+        if(fileSystems[i].available()) {
+
+            FileSystemSize fs;
 
 			try
 			{
@@ -196,13 +196,12 @@ const PathName& FileSpaceStrategies::weightedRandom(const std::vector<PathName>&
 
 	ASSERT(fileSystems.size() != 0);
 
-	std::map<long, long long> scores;
-	long long free_space = 0;
-	long long scale = 1;
+    std::map<size_t, unsigned long long> scores;
+    double free_space = 0;
 
-	for(Ordinal i = 0; i < fileSystems.size(); i++)
-		if(fileSystems[i].available())
-		{
+    for(size_t i = 0; i < fileSystems.size(); ++i) {
+
+        if(fileSystems[i].available()) {
 
 			FileSystemSize fs;
 
@@ -221,38 +220,39 @@ const PathName& FileSpaceStrategies::weightedRandom(const std::vector<PathName>&
 			if(fs.total == 0)
 				return leastUsed(fileSystems);
 
-			long percent = long(((double) (fs.total - fs.available) / fs.total * 100) + 0.5);
+            long percent = long( ( (double(fs.total) - double(fs.available)) / fs.total * 100) + 0.5);
 
 			if(percent <= candidate)
 			{
 				scores[i] = fs.available;
-				free_space += fs.available;
+                free_space += double(fs.available);
 			}
 
 		}
+    }
 
-	if(scores.empty())
-		return leastUsed(fileSystems);
+    if(scores.empty()) { return leastUsed(fileSystems); }
 
-	while(free_space > 0x7fffffff)
-	{
-		free_space /= 2;
-		scale *= 2;
-	}
+    double choice = double(random()) / double(RAND_MAX);
 
-	long choice = random() % free_space;
-	long value = (*scores.begin()).first;
-	long last = 0;
+    choice *= free_space;
 
-	for(std::map<long, long long>::iterator j = scores.begin(); j != scores.end(); ++j)
-	{
-		long s = (*j).second / scale;
-#if 0
-		Log::info() << "Choice " << choice << " free_space = " << free_space << " last = " << last << " s = " << s << " scale = " << scale << std::endl;
-#endif
-		if(choice >= last && choice < last + s)
+    size_t value = (*scores.begin()).first;
+
+    double lower = 0.;
+    double upper = 0.;
+
+    for(std::map<size_t, unsigned long long>::iterator j = scores.begin(); j != scores.end(); ++j) {
+
+        upper += double((*scores.begin()).second);
+
+//      Log::info() << "Choice " << choice << " free_space = " << free_space << " lower = " << lower << " upper = " << upper << std::endl;
+
+        if(choice >= lower && choice < upper) {
 			value = (*j).first;
-		last += s;
+        }
+
+        lower = upper;
 	}
 
 	Log::info() << "Weighted random file system: " << fileSystems[value] << " " << Bytes(scores[value]) << " available" << std::endl;

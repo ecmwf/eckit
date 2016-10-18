@@ -149,45 +149,49 @@ const PathName& FileSpaceStrategies::pureRandom(const std::vector<PathName>& fil
 
 	ASSERT(fileSystems.size() != 0);
 
-	long value = random() % fileSystems.size();
+    std::vector<size_t> candidates;
 
-    for(Ordinal j = 0; j < fileSystems.size(); j++) {
+    for(size_t j = 0; j < fileSystems.size(); j++) {
 
-        Ordinal i = (j + value) % fileSystems.size();
-
-        if(fileSystems[i].available()) {
+        if(fileSystems[j].available()) {
 
             FileSystemSize fs;
 
 			try
 			{
-				fileSystems[i].fileSystemSize(fs);
+                fileSystems[j].fileSystemSize(fs);
 			}
 			catch(std::exception& e)
 			{
 				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
 				Log::error() << "** Exception is ignored" << std::endl;
-				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
+                Log::error() << "Cannot stat " << fileSystems[j] << Log::syserr << std::endl;
 				continue;
 			}
 
 			if(fs.total == 0)
 				return leastUsed(fileSystems);
 
-			long percent = long(((double) (fs.total - fs.available) / fs.total * 100) + 0.5);
+            long percent = long( ( (double(fs.total) - double(fs.available)) / fs.total * 100) + 0.5);
 
-			if(percent <= candidate)
-			{
-				value = i;
-				Log::info() << "Pure random file system: " << fileSystems[value] << " " << Bytes(fs.available) << " available" << std::endl;
-				return fileSystems[value];
+//            Log::info() << "FS " << fileSystems[j] << " fs.total = " << fs.total << " fs.available = " << fs.available << " % = " << percent << std::endl;
+
+            if(percent <= candidate) {
+                candidates.push_back(j);
 			}
-
 		}
 	}
 
-	return leastUsed(fileSystems);
+    if(candidates.empty())
+        return leastUsed(fileSystems);
 
+    double choice = double(random()) / double(RAND_MAX);
+
+    size_t select = size_t(choice * candidates.size()) % candidates.size();
+
+//    Log::info() << "choice = " << choice << " candidates.size() = " <<  candidates.size() << " select = " << select << std::endl;
+
+    return fileSystems[ candidates[select] ];
 }
 
 const PathName& FileSpaceStrategies::weightedRandom(const std::vector<PathName>& fileSystems)

@@ -27,7 +27,7 @@ container/CacheLRU.h
 container/CacheLRU.cc
 
 container/CacheManager.h
-#container/CacheManager.cc
+container/CacheManager.cc
 container/DenseMap.h
 container/StatCollector.h
 container/Recycler.h
@@ -198,8 +198,7 @@ thread/MutexCond.h
 thread/MutexCond.cc
 thread/AutoLock.h
 thread/AutoLocker.h
-thread/AutoLocker.cc#include "eckit/log/Channel.h"
-
+thread/AutoLocker.cc
 thread/Thread.h
 thread/Thread.cc
 thread/ThreadControler.h
@@ -301,10 +300,6 @@ log/FileTarget.h
 log/FileTarget.cc
 log/Log.h
 log/Log.cc
-# log/MonitorChannel.h
-# log/MonitorChannel.cc
-# log/MultiChannel.h
-# log/MultiChannel.cc
 log/OStreamHandle.h
 log/Plural.h
 log/Progress.h
@@ -588,7 +583,8 @@ endforeach()
 
 list( APPEND eckit_templates
 					container/CacheLRU.cc
-					container/BTree.cc
+                    container/CacheManager.cc
+                    container/BTree.cc
 					container/MappedArray.cc
 					container/SimpleMappedArray.cc
 					container/bsptree/BSPNode.cc

@@ -29,9 +29,11 @@ public:
     static const PathName& selectFileSystem(const std::vector<PathName>& fileSystems, const std::string& s);
 
     static const PathName& leastUsed(const std::vector<PathName>& fileSystems);
+    static const PathName& leastUsedPercent(const std::vector<PathName>& fileSystems);
     static const PathName& roundRobin(const std::vector<PathName>& fileSystems);
     static const PathName& pureRandom(const std::vector<PathName>& fileSystems);
     static const PathName& weightedRandom(const std::vector<PathName>& fileSystems);
+    static const PathName& weightedRandomPercent(const std::vector<PathName>& fileSystems);
 
 };
 

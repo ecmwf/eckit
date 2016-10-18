@@ -18,16 +18,46 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-const PathName&FileSpaceStrategies::selectFileSystem(const std::vector<PathName>& fileSystems, const std::string& s)
+struct Candidate {
+
+    const PathName* path_;
+    FileSystemSize size_;
+
+    Candidate(const PathName* path) : path_(path) {}
+    Candidate(const Candidate& other) : path_(other.path_), size_(other.size_) {}
+
+    Candidate& operator=(const Candidate& other) {
+        path_ = other.path_;
+        size_ = other.size_;
+        return *this;
+    }
+
+    const PathName& path() const { return *path_; }
+    long percent() const { return long( ( (double(size_.total) - double(size_.available)) / size_.total * 100) + 0.5); }
+    unsigned long long total() const { return size_.total; }
+    unsigned long long available() const { return size_.available; }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+const PathName& FileSpaceStrategies::selectFileSystem(const std::vector<PathName>& fileSystems, const std::string& s)
 {
     Log::info() << "FileSpace::selectFileSystem is " << s << std::endl;
 
     if(s == "roundRobin")
         return FileSpaceStrategies::roundRobin(fileSystems);
+
     if(s == "weightedRandom")
         return FileSpaceStrategies::weightedRandom(fileSystems);
+
     if(s == "pureRandom")
         return FileSpaceStrategies::pureRandom(fileSystems);
+
+    if(s == "weightedRandomPercent")
+        return FileSpaceStrategies::weightedRandomPercent(fileSystems);
+
+    if(s == "leastUsedPercent")
+        return FileSpaceStrategies::leastUsedPercent(fileSystems);
 
     return FileSpaceStrategies::leastUsed(fileSystems);
 }
@@ -77,110 +107,111 @@ const PathName& FileSpaceStrategies::leastUsed(const std::vector<PathName>& file
 	return fileSystems[best];
 }
 
+const PathName& FileSpaceStrategies::leastUsedPercent(const std::vector<PathName>& fileSystems)
+{
+    long percent = 0;
+    size_t best = 0;
+
+    ASSERT(fileSystems.size() != 0);
+
+    for(size_t i = 0; i < fileSystems.size(); ++i)
+    {
+        Candidate candidate(&fileSystems[i]);
+
+        Log::info() << "leastUsedPercent: " << fileSystems[i] << " " << fileSystems[i].available() << std::endl;
+        if(fileSystems[i].available())
+        {
+            FileSystemSize fs;
+
+            try
+            {
+                fileSystems[i].fileSystemSize(candidate.size_);
+            }
+            catch(std::exception& e)
+            {
+                Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+                Log::error() << "** Exception is ignored" << std::endl;
+                Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
+                continue;
+            }
+
+            if(candidate.percent() >= percent)
+            {
+                percent = candidate.percent();
+                best = i;
+            }
+        }
+    }
+
+    Log::info() << "Least used (percent) file system: " << fileSystems[best] << " " << percent << "% available" << std::endl;
+
+    return fileSystems[best];
+}
+
+static std::vector<Candidate> findCandidates(const std::vector<PathName>& fileSystems) {
+
+    ASSERT(fileSystems.size() != 0);
+
+    static Resource<long> candidateFileSystemPercent("candidateFileSystem", 99);
+
+    std::vector<Candidate> result;
+
+    for(size_t i = 0; i < fileSystems.size(); ++i) {
+
+        Candidate candidate(&fileSystems[i]);
+
+        if(fileSystems[i].available()) {
+
+            try
+            {
+                fileSystems[i].fileSystemSize(candidate.size_);
+            }
+            catch(std::exception& e)
+            {
+                Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+                Log::error() << "** Exception is ignored" << std::endl;
+                Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
+                continue;
+            }
+
+            if(candidate.total() == 0) {
+                Log::warning() << "Cannot get total size of " << fileSystems[i] << std::endl;
+                return std::vector<Candidate>();
+            }
+
+            if(candidate.percent() <= candidateFileSystemPercent) {
+                Log::info() << "Candidate filesystem " << fileSystems[i] << " total = " << candidate.total() << " free = " << candidate.available() << std::endl;
+                result.push_back(candidate);
+            }
+        }
+    }
+
+    return result;
+}
+
 const PathName& FileSpaceStrategies::roundRobin(const std::vector<PathName>& fileSystems)
 {
-	static long value = -1;
-	static Resource<long> candidate("candidateFileSystem", 99);
+    std::vector<Candidate> candidates = findCandidates(fileSystems);
 
-	ASSERT(fileSystems.size() != 0);
+    if(candidates.empty())
+        return leastUsed(fileSystems);
+
+    static long value = -1;
 
 	if(value < 0)
 		value = ::getpid();
 
 	value++;
-	value %= fileSystems.size();
+    value %= candidates.size();
 
-	Log::info() << "roundRobin selection " << value << " out of " << fileSystems.size() << std::endl;
+    Log::info() << "roundRobin selection " << value << " out of " << candidates.size() << std::endl;
 
-	for(Ordinal j = 0; j < fileSystems.size(); j++)
-	{
-		Ordinal i = (j + value) % fileSystems.size();
-		if(fileSystems[j].available())
-		{
-			FileSystemSize fs;
-
-			try
-			{
-				fileSystems[i].fileSystemSize(fs);
-			}
-			catch(std::exception& e)
-			{
-				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-				Log::error() << "** Exception is ignored" << std::endl;
-				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
-				continue;
-			}
-
-			if(fs.total == 0)
-			{
-				Log::info() << "roundRobin: cannot get total size of " << fileSystems[i] << std::endl;
-				return leastUsed(fileSystems);
-			}
-
-			long percent = long(((double) (fs.total - fs.available) / fs.total * 100) + 0.5);
-
-#if 0
-			Log::info() << "roundRobin: percent=" << percent << " candidate=" << candidate <<
-			" total="<< total << " " << Bytes(total) <<
-			" size="<< size <<
-			endl;
-#endif
-
-			if(percent <= candidate)
-			{
-				value = i;
-				Log::info() << "Round robin file system: " << fileSystems[value] << " " << Bytes(fs.available) << " available" << std::endl;
-				return fileSystems[value];
-
-			}
-
-		}
-	}
-
-	Log::info() << "roundRobin reverting to leastUsed" << std::endl;
-
-	return leastUsed(fileSystems);
-
+    return candidates[value].path();
 }
 
 const PathName& FileSpaceStrategies::pureRandom(const std::vector<PathName>& fileSystems)
 {
-	static Resource<long> candidate("candidateFileSystem", 99);
-
-	ASSERT(fileSystems.size() != 0);
-
-    std::vector<size_t> candidates;
-
-    for(size_t j = 0; j < fileSystems.size(); j++) {
-
-        if(fileSystems[j].available()) {
-
-            FileSystemSize fs;
-
-			try
-			{
-                fileSystems[j].fileSystemSize(fs);
-			}
-			catch(std::exception& e)
-			{
-				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-				Log::error() << "** Exception is ignored" << std::endl;
-                Log::error() << "Cannot stat " << fileSystems[j] << Log::syserr << std::endl;
-				continue;
-			}
-
-			if(fs.total == 0)
-				return leastUsed(fileSystems);
-
-            long percent = long( ( (double(fs.total) - double(fs.available)) / fs.total * 100) + 0.5);
-
-//            Log::info() << "FS " << fileSystems[j] << " fs.total = " << fs.total << " fs.available = " << fs.available << " % = " << percent << std::endl;
-
-            if(percent <= candidate) {
-                candidates.push_back(j);
-			}
-		}
-	}
+    std::vector<Candidate> candidates = findCandidates(fileSystems);
 
     if(candidates.empty())
         return leastUsed(fileSystems);
@@ -189,79 +220,88 @@ const PathName& FileSpaceStrategies::pureRandom(const std::vector<PathName>& fil
 
     size_t select = size_t(choice * candidates.size()) % candidates.size();
 
-//    Log::info() << "choice = " << choice << " candidates.size() = " <<  candidates.size() << " select = " << select << std::endl;
+    Log::info() << "choice = " << choice << " candidates.size() = " <<  candidates.size() << " select = " << select << std::endl;
 
-    return fileSystems[ candidates[select] ];
+    return candidates[select].path();
 }
 
 const PathName& FileSpaceStrategies::weightedRandom(const std::vector<PathName>& fileSystems)
 {
-	static Resource<long> candidate("candidateFileSystem", 99);
+    const std::vector<Candidate> candidates = findCandidates(fileSystems);
 
-	ASSERT(fileSystems.size() != 0);
+    if(candidates.empty())
+        return leastUsed(fileSystems);
 
-    std::map<size_t, unsigned long long> scores;
-    double free_space = 0;
-
-    for(size_t i = 0; i < fileSystems.size(); ++i) {
-
-        if(fileSystems[i].available()) {
-
-			FileSystemSize fs;
-
-			try
-			{
-				fileSystems[i].fileSystemSize(fs);
-			}
-			catch(std::exception& e)
-			{
-				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-				Log::error() << "** Exception is ignored" << std::endl;
-				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
-				continue;
-			}
-
-			if(fs.total == 0)
-				return leastUsed(fileSystems);
-
-            long percent = long( ( (double(fs.total) - double(fs.available)) / fs.total * 100) + 0.5);
-
-			if(percent <= candidate)
-			{
-				scores[i] = fs.available;
-                free_space += double(fs.available);
-			}
-
-		}
+    size_t free_space = 0;
+    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
+        free_space += i->available();
     }
-
-    if(scores.empty()) { return leastUsed(fileSystems); }
 
     double choice = double(random()) / double(RAND_MAX);
 
     choice *= free_space;
 
-    size_t value = (*scores.begin()).first;
+    std::vector<Candidate>::const_iterator select = candidates.begin();
 
     double lower = 0.;
     double upper = 0.;
 
-    for(std::map<size_t, unsigned long long>::iterator j = scores.begin(); j != scores.end(); ++j) {
 
-        upper += double((*scores.begin()).second);
+    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
+
+        upper += double(i->available());
 
 //      Log::info() << "Choice " << choice << " free_space = " << free_space << " lower = " << lower << " upper = " << upper << std::endl;
 
         if(choice >= lower && choice < upper) {
-			value = (*j).first;
+            select = i;
         }
 
         lower = upper;
-	}
+    }
 
-	Log::info() << "Weighted random file system: " << fileSystems[value] << " " << Bytes(scores[value]) << " available" << std::endl;
+    Log::info() << "Weighted random file system: " <<  select->path() << " " << Bytes(select->available()) << " available" << std::endl;
 
-	return fileSystems[value];
+    return select->path();
+}
+
+const PathName& FileSpaceStrategies::weightedRandomPercent(const std::vector<PathName>& fileSystems)
+{
+    const std::vector<Candidate> candidates = findCandidates(fileSystems);
+
+    if(candidates.empty())
+        return leastUsed(fileSystems);
+
+    long free_percent = 0;
+    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
+        free_percent += i->percent();
+    }
+
+    double choice = double(random()) / double(RAND_MAX);
+
+    choice *= free_percent;
+
+    std::vector<Candidate>::const_iterator select = candidates.begin();
+
+    double lower = 0.;
+    double upper = 0.;
+
+    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
+
+        upper += double(i->percent());
+
+//      Log::info() << "Choice " << choice << " free_percent = " << free_percent << " lower = " << lower << " upper = " << upper << std::endl;
+
+        if(choice >= lower && choice < upper) {
+            select = i;
+        }
+
+        lower = upper;
+    }
+
+    Log::info() << "Weighted random (percent) file system: " <<  select->path() << " " << select->percent() << "% available" << std::endl;
+
+    return select->path();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

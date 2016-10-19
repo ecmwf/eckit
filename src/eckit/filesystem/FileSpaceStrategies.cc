@@ -10,6 +10,9 @@
 
 #include <unistd.h>
 
+#include <iostream>
+#include <cmath>
+
 #include "eckit/filesystem/FileSpaceStrategies.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/config/Resource.h"
@@ -21,20 +24,33 @@ namespace eckit {
 struct Candidate {
 
     const PathName* path_;
+
     FileSystemSize size_;
 
-    Candidate(const PathName* path) : path_(path) {}
-    Candidate(const Candidate& other) : path_(other.path_), size_(other.size_) {}
+    double probability_;
 
-    Candidate& operator=(const Candidate& other) {
-        path_ = other.path_;
-        size_ = other.size_;
-        return *this;
+    Candidate(const PathName* path) : path_(path) {}
+
+    void print(std::ostream& s) const {
+        s << "Candidate(path=" << path_->asString()
+          << ",total=" << total()
+          << ",available=" << available()
+          << ",percent=" << percent()
+          << ",probability=" << probability_
+          << ")";
     }
 
+    friend std::ostream& operator<<(std::ostream& s, const Candidate& v) { v.print(s);  return s; }
+
     const PathName& path() const { return *path_; }
+
+    double probability() const { return probability_; }
+    void   probability(double p) { probability_ = p; }
+
     long percent() const { return long( ( (double(size_.total) - double(size_.available)) / size_.total * 100) + 0.5); }
+
     unsigned long long total() const { return size_.total; }
+
     unsigned long long available() const { return size_.available; }
 };
 
@@ -102,7 +118,7 @@ const PathName& FileSpaceStrategies::leastUsed(const std::vector<PathName>& file
 	if(!checked)
         throw Retry(std::string("No available filesystem (") + fileSystems[0] + ")");
 
-	Log::info() << "Least used file system: " << fileSystems[best] << " " << Bytes(free) << " available" << std::endl;
+    Log::info() << "Filespace strategy leastUsed selected " << fileSystems[best] << " " << Bytes(free) << " available" << std::endl;
 
 	return fileSystems[best];
 }
@@ -143,12 +159,30 @@ const PathName& FileSpaceStrategies::leastUsedPercent(const std::vector<PathName
         }
     }
 
-    Log::info() << "Least used (percent) file system: " << fileSystems[best] << " " << percent << "% available" << std::endl;
+    Log::info() << "Filespace strategy leastUsedPercent selected " << fileSystems[best] << " " << percent << "% available" << std::endl;
 
     return fileSystems[best];
 }
 
-static std::vector<Candidate> findCandidates(const std::vector<PathName>& fileSystems) {
+typedef void (*compute_probability_t)(Candidate&);
+
+static void computePercent(Candidate& c) {
+    c.probability_ = double(c.percent());
+}
+
+static void computeAvailable(Candidate& c) {
+    c.probability_ = double(c.available());
+}
+
+static void computeIdentity(Candidate& c) {
+    c.probability_ = 1;
+}
+
+static void computeNull(Candidate& c) {
+    c.probability_ = 0;
+}
+
+static std::vector<Candidate> findCandidates(const std::vector<PathName>& fileSystems, compute_probability_t probability) {
 
     ASSERT(fileSystems.size() != 0);
 
@@ -180,7 +214,11 @@ static std::vector<Candidate> findCandidates(const std::vector<PathName>& fileSy
             }
 
             if(candidate.percent() <= candidateFileSystemPercent) {
-                Log::info() << "Candidate filesystem " << fileSystems[i] << " total = " << candidate.total() << " free = " << candidate.available() << std::endl;
+
+                probability(candidate);
+
+                Log::info() << candidate << std::endl;
+
                 result.push_back(candidate);
             }
         }
@@ -191,7 +229,7 @@ static std::vector<Candidate> findCandidates(const std::vector<PathName>& fileSy
 
 const PathName& FileSpaceStrategies::roundRobin(const std::vector<PathName>& fileSystems)
 {
-    std::vector<Candidate> candidates = findCandidates(fileSystems);
+    std::vector<Candidate> candidates = findCandidates(fileSystems, &computeNull);
 
     if(candidates.empty())
         return leastUsed(fileSystems);
@@ -204,104 +242,126 @@ const PathName& FileSpaceStrategies::roundRobin(const std::vector<PathName>& fil
 	value++;
     value %= candidates.size();
 
-    Log::info() << "roundRobin selection " << value << " out of " << candidates.size() << std::endl;
+    Log::info() << "Filespace strategy roundRobin selected " << candidates[value].path() << " " << value << " out of " << candidates.size() << std::endl;
 
     return candidates[value].path();
 }
 
+static void attenuateProbabilities(std::vector<Candidate>& candidates) {
+
+    ASSERT(!candidates.empty());
+
+    static Resource<bool> attenuateFileSpacePeakProbability("attenuateFileSpacePeakProbability", false);
+
+    Log::info() << " ------> attenuateFileSpacePeakProbability " << attenuateFileSpacePeakProbability << std::endl;
+
+    if(!attenuateFileSpacePeakProbability) return;
+
+    // compute mean
+
+    double mean = 0.;
+    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
+        mean += i->probability();
+    }
+
+    mean /= candidates.size();
+
+    // compute variance
+
+    double variance = 0.;
+    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
+        double diff = (i->probability() - mean);
+        variance += diff*diff;
+    }
+
+    variance /= candidates.size();
+
+    // compute stddev
+
+    double stddev = std::sqrt(variance);
+
+    // attenuate the peaks that exceed the stddev to the stddev value
+
+    double max = mean + stddev;
+    for(std::vector<Candidate>::iterator i = candidates.begin(); i != candidates.end(); ++i) {
+        if(i->probability() > max) {
+            i->probability(max);
+        }
+    }
+}
+
+
+static const PathName& chooseByProbabylity(const char* strategy, const std::vector<Candidate>& candidates) {
+
+    double total = 0;
+    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
+        Log::info() << "probability " << i->probability() << std::endl;
+        total += i->probability();
+    }
+
+    double choice = (double(random()) / double(RAND_MAX));
+
+    Log::info() << "choice " << choice << std::endl;
+
+    choice *= total;
+
+    std::vector<Candidate>::const_iterator select = candidates.begin();
+
+    double lower = 0;
+    double upper = 0;
+    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
+
+        upper += i->probability();
+
+        Log::info() << "Choice " << choice << " total = " << total << " lower = " << lower << " upper = " << upper << std::endl;
+
+        if(choice >= lower && choice < upper) {
+            select = i;
+            break;
+        }
+
+        lower = upper;
+    }
+
+    Log::info() << "Filespace strategy " << strategy << " selected " <<  select->path() << " " << Bytes(select->available()) << " available" << std::endl;
+
+    return select->path();
+}
+
 const PathName& FileSpaceStrategies::pureRandom(const std::vector<PathName>& fileSystems)
 {
-    std::vector<Candidate> candidates = findCandidates(fileSystems);
+    std::vector<Candidate> candidates = findCandidates(fileSystems, &computeIdentity);
 
     if(candidates.empty())
         return leastUsed(fileSystems);
 
-    double choice = double(random()) / double(RAND_MAX);
+    attenuateProbabilities(candidates);
 
-    size_t select = size_t(choice * candidates.size()) % candidates.size();
-
-    Log::info() << "choice = " << choice << " candidates.size() = " <<  candidates.size() << " select = " << select << std::endl;
-
-    return candidates[select].path();
+    return chooseByProbabylity("pureRandom", candidates);
 }
 
 const PathName& FileSpaceStrategies::weightedRandom(const std::vector<PathName>& fileSystems)
 {
-    const std::vector<Candidate> candidates = findCandidates(fileSystems);
+    std::vector<Candidate> candidates = findCandidates(fileSystems, &computeAvailable);
 
     if(candidates.empty())
         return leastUsed(fileSystems);
 
-    size_t free_space = 0;
-    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
-        free_space += i->available();
-    }
+    attenuateProbabilities(candidates);
 
-    double choice = double(random()) / double(RAND_MAX);
-
-    choice *= free_space;
-
-    std::vector<Candidate>::const_iterator select = candidates.begin();
-
-    double lower = 0.;
-    double upper = 0.;
-
-
-    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
-
-        upper += double(i->available());
-
-//      Log::info() << "Choice " << choice << " free_space = " << free_space << " lower = " << lower << " upper = " << upper << std::endl;
-
-        if(choice >= lower && choice < upper) {
-            select = i;
-        }
-
-        lower = upper;
-    }
-
-    Log::info() << "Weighted random file system: " <<  select->path() << " " << Bytes(select->available()) << " available" << std::endl;
-
-    return select->path();
+    return chooseByProbabylity("weightedRandom",candidates);
 }
 
 const PathName& FileSpaceStrategies::weightedRandomPercent(const std::vector<PathName>& fileSystems)
 {
-    const std::vector<Candidate> candidates = findCandidates(fileSystems);
+    std::vector<Candidate> candidates = findCandidates(fileSystems, &computePercent);
 
     if(candidates.empty())
         return leastUsed(fileSystems);
 
-    long free_percent = 0;
-    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
-        free_percent += i->percent();
-    }
+    attenuateProbabilities(candidates);
 
-    double choice = double(random()) / double(RAND_MAX);
-
-    choice *= free_percent;
-
-    std::vector<Candidate>::const_iterator select = candidates.begin();
-
-    double lower = 0.;
-    double upper = 0.;
-
-    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
-
-        upper += double(i->percent());
-
-//      Log::info() << "Choice " << choice << " free_percent = " << free_percent << " lower = " << lower << " upper = " << upper << std::endl;
-
-        if(choice >= lower && choice < upper) {
-            select = i;
-        }
-
-        lower = upper;
-    }
-
-    Log::info() << "Weighted random (percent) file system: " <<  select->path() << " " << select->percent() << "% available" << std::endl;
-
-    return select->path();
+    return chooseByProbabylity("weightedRandomPercent", candidates);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -217,7 +217,7 @@ static std::vector<Candidate> findCandidates(const std::vector<PathName>& fileSy
 
                 probability(candidate);
 
-                Log::info() << candidate << std::endl;
+//                Log::info() << candidate << std::endl;
 
                 result.push_back(candidate);
             }
@@ -252,8 +252,6 @@ static void attenuateProbabilities(std::vector<Candidate>& candidates) {
     ASSERT(!candidates.empty());
 
     static Resource<bool> attenuateFileSpacePeakProbability("attenuateFileSpacePeakProbability", false);
-
-    Log::info() << " ------> attenuateFileSpacePeakProbability " << attenuateFileSpacePeakProbability << std::endl;
 
     if(!attenuateFileSpacePeakProbability) return;
 
@@ -295,13 +293,13 @@ static const PathName& chooseByProbabylity(const char* strategy, const std::vect
 
     double total = 0;
     for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
-        Log::info() << "probability " << i->probability() << std::endl;
+//        Log::info() << "probability " << i->probability() << std::endl;
         total += i->probability();
     }
 
     double choice = (double(random()) / double(RAND_MAX));
 
-    Log::info() << "choice " << choice << std::endl;
+//    Log::info() << "choice " << choice << std::endl;
 
     choice *= total;
 
@@ -313,7 +311,7 @@ static const PathName& chooseByProbabylity(const char* strategy, const std::vect
 
         upper += i->probability();
 
-        Log::info() << "Choice " << choice << " total = " << total << " lower = " << lower << " upper = " << upper << std::endl;
+//        Log::info() << "Choice " << choice << " total = " << total << " lower = " << lower << " upper = " << upper << std::endl;
 
         if(choice >= lower && choice < upper) {
             select = i;
@@ -335,7 +333,7 @@ const PathName& FileSpaceStrategies::pureRandom(const std::vector<PathName>& fil
     if(candidates.empty())
         return leastUsed(fileSystems);
 
-    attenuateProbabilities(candidates);
+    attenuateProbabilities(candidates); /* has no effect */
 
     return chooseByProbabylity("pureRandom", candidates);
 }

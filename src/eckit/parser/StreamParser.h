@@ -27,15 +27,15 @@ namespace eckit {
 class StreamParser : private NonCopyable  {
 
 public: // types
-    
+
     class Error : public Exception {
     public:
         Error(const std::string& what, size_t line = 0);
     };
-    
+
 public: // methods
-    
-    StreamParser(std::istream& in, bool comments = false);
+
+    StreamParser(std::istream& in, bool comments = false, char comment_ = '#');
 
     char peek(bool spaces = false);
     char next(bool spaces = false);
@@ -54,6 +54,7 @@ private: // members
     std::istream& in_;
 
     bool comments_;
+    char comment_;
 
 };
 

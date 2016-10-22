@@ -35,7 +35,7 @@ public: // types
 
 public: // methods
 
-    StreamParser(std::istream& in, bool comments = false, char comment_ = '#');
+    StreamParser(std::istream& in, bool comments = false, const char* comment = "#");
 
     char peek(bool spaces = false);
     char next(bool spaces = false);
@@ -54,7 +54,7 @@ private: // members
     std::istream& in_;
 
     bool comments_;
-    char comment_;
+    std::set<char> comment_;
 
 };
 

@@ -23,12 +23,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-StreamParser::StreamParser(std::istream &in, bool comments, char comment) :
+StreamParser::StreamParser(std::istream &in, bool comments, const char* comment) :
     line_(0),
     in_(in),
-    comments_(comments),
-    comment_(comment)
+    comments_(comments)
 {
+    while(*comment) {
+        comment_.insert(*comment++);
+    }
 }
 
 char StreamParser::peek(bool spaces)
@@ -40,7 +42,7 @@ char StreamParser::peek(bool spaces)
         if(in_.eof())
             return 0;
 
-        if(comments_ && c == comment_)
+        if(comments_ && comment_.find(c) != comment_.end())
         {
             while(c != '\n' && !in_.eof()) {
                 in_.get(c);
@@ -76,7 +78,7 @@ char StreamParser::next(bool spaces)
 
         if(c == '\n') { line_++; }
 
-        if(comments_ && c == comment_)
+        if(comments_ && comment_.find(c) != comment_.end())
         {
             while(c != '\n' && !in_.eof()) {
                 in_.get(c);

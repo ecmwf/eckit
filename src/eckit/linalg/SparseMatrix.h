@@ -89,6 +89,9 @@ public:
     /// @returns number of non-zeros
     Size nonZeros() const { return size_; }
 
+    /// @returns true if this matrix does not contain non-zero entries
+    bool empty() const { return !nonZeros(); }
+
     /// @returns read-only view of the data vector
     const Scalar* data() const { return data_; }
     /// @returns read-only view of the outer index vector
@@ -143,11 +146,14 @@ private: // methods
     /// Resets the matrix to a deallocated state
     void reset();
 
-    /// @returns inner size (number of columns)
-//    Size innerSize() const { return cols_; }
+    /// data size is the number of non-zeros
+    Size dataSize() const { return nonZeros(); }
 
-    /// @returns outer size (number of rows)
-//    Size outerSize() const { return rows_; }
+    /// inner size is the number of non-zeros
+    Size innerSize() const { return nonZeros(); }
+
+    /// @returns outer size is number of rows + 1
+    Size outerSize() const { return rows_ + 1; }
 
     /// Serialise to a Stream
     void encode(Stream& s) const;

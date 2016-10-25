@@ -104,11 +104,14 @@ SparseMatrix::SparseMatrix(const SparseMatrix& other) {
 
     zero(*this);
 
-    reserve(other.rows(), other.cols(), other.nonZeros());
+    if(!other.empty()) { // in case we copy an other that was constructed empty
 
-    ::memcpy(data_,  other.data_,  nonZeros() * sizeof(Scalar));
-    ::memcpy(outer_, other.outer_, (rows_ + 1) * sizeof(Index));
-    ::memcpy(inner_, other.inner_, nonZeros() * sizeof(Index));
+        reserve(other.rows(), other.cols(), other.nonZeros());
+
+        ::memcpy(data_,  other.data_,  dataSize()  * sizeof(Scalar));
+        ::memcpy(outer_, other.outer_, outerSize() * sizeof(Index));
+        ::memcpy(inner_, other.inner_, innerSize() * sizeof(Index));
+    }
 }
 
 SparseMatrix& SparseMatrix::operator=(const SparseMatrix& other)
@@ -149,9 +152,9 @@ void SparseMatrix::reserve(Index rows, Index cols, Size nnz) {
     cols_ = cols;
     size_ = nnz;
 
-    data_  = new Scalar[nnz];
-    outer_ = new Index[rows_ + 1];
-    inner_ = new Index[nnz];
+    data_  = new Scalar[dataSize()];
+    outer_ = new Index[outerSize()];
+    inner_ = new Index[innerSize()];
 
     own_  = true;
 }
@@ -170,9 +173,9 @@ void SparseMatrix::swap(SparseMatrix &other) {
 
 size_t SparseMatrix::footprint() const {
     return sizeof(*this)
-            + size_ * sizeof(Scalar)       //
-            + size_ * sizeof(Index)        // inner_ is same size as data_
-            + (rows_ + 1) * sizeof(Index); // outer_ is sized rows_ + 1
+            + dataSize()  * sizeof(Scalar)
+            + innerSize() * sizeof(Index)
+            + outerSize() * sizeof(Index);
 }
 
 
@@ -247,7 +250,7 @@ SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
     tmp.reserve(rows_, cols_, nnz);
 
     ::memcpy(tmp.data_,  v.data(),  nnz * sizeof(Scalar));
-    ::memcpy(tmp.outer_, outer_, (rows_ + 1) * sizeof(Index));
+    ::memcpy(tmp.outer_, outer_, outerSize() * sizeof(Index));
     ::memcpy(tmp.inner_, inner.data(), nnz * sizeof(Index));
 
     swap(tmp);
@@ -268,9 +271,9 @@ void SparseMatrix::encode(Stream &s) const {
     s << sizeof(Scalar);
     s << sizeof(Size);
 
-    s.writeLargeBlob(outer_, (rows_ + 1) * sizeof(Index));
-    s.writeLargeBlob(inner_, size_ * sizeof(Index));
-    s.writeLargeBlob(data_,  size_ * sizeof(Scalar));
+    s.writeLargeBlob(outer_, outerSize() * sizeof(Index));
+    s.writeLargeBlob(inner_, innerSize() * sizeof(Index));
+    s.writeLargeBlob(data_,  dataSize()  * sizeof(Scalar));
 }
 
 void SparseMatrix::decode(Stream &s) {
@@ -297,9 +300,9 @@ void SparseMatrix::decode(Stream &s) {
 
     reserve(rows, cols, nnz);
 
-    s.readLargeBlob(outer_, (rows_ + 1) * sizeof(Index));
-    s.readLargeBlob(inner_, size_ * sizeof(Index));
-    s.readLargeBlob(data_,  size_ * sizeof(Scalar));
+    s.readLargeBlob(outer_, outerSize() * sizeof(Index));
+    s.readLargeBlob(inner_, innerSize() * sizeof(Index));
+    s.readLargeBlob(data_,  dataSize()  * sizeof(Scalar));
 }
 
 

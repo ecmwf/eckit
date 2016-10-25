@@ -143,37 +143,36 @@ BOOST_AUTO_TEST_CASE(test_set_from_triplets) {
 
 BOOST_AUTO_TEST_CASE(test_identity) {
 
-    Vector y1(3);
+    {
+        Vector y1(3);
 
-    SparseMatrix B(3, 3);
+        SparseMatrix B;
+        B.setIdentity(3, 3);
 
-    ECKIT_DEBUG_VAR(B.nonZeros());
+        linalg.spmv(B, x, y1);
+        test(y1, x);
+    }
 
-    linalg.spmv(B, x, y1);
-    test(y1, x);
+    {
+        SparseMatrix C;
+        C.setIdentity(6, 3);
 
-    SparseMatrix C(6, 3);
+        Vector y2(6);
+        linalg.spmv(C, x, y2);
+        test(y2, x);
+        test(y2.data()+3, V(3, 0., 0., 0.).data(), 3);
+    }
 
-    ECKIT_DEBUG_VAR(C.nonZeros());
+    {
+        SparseMatrix D;
+        D.setIdentity(2, 3);
 
-    Vector y2(6);
-    linalg.spmv(C, x, y2);
-    test(y2, x);
-    test(y2.data()+3, V(3, 0., 0., 0.).data(), 3);
+        Vector y3(2);
 
-    SparseMatrix D(2, 3);
-
-    ECKIT_DEBUG_VAR(D.nonZeros());
-
-    Vector y3(2);
-
-    linalg.spmv(D, x, y3);
-    test(y3, x);
-
-    ECKIT_DEBUG_VAR(D.nonZeros());
+        linalg.spmv(D, x, y3);
+        test(y3, x);
+    }
 }
-
-#if 0
 
 BOOST_AUTO_TEST_CASE(test_prune) {
 
@@ -192,16 +191,13 @@ BOOST_AUTO_TEST_CASE(test_prune) {
     test(A, outer, inner, data);
 }
 
-#endif
-
-#if 0
-
 BOOST_AUTO_TEST_CASE(test_transpose_square) {
     Index outer[4] = {0, 1, 2, 4};
     Index inner[4] = {0, 1, 0, 2};
     Scalar data[4] = {2., 2., -3., 2.};
     test(A.transpose(), outer, inner, data);
 }
+
 
 BOOST_AUTO_TEST_CASE(test_transpose_nonsquare) {
     Index outer[4] = {0, 2, 3, 4};
@@ -248,11 +244,9 @@ BOOST_AUTO_TEST_CASE(test_dsptd_nonsquare) {
     BOOST_CHECK_THROW(linalg.dsptd(x, A2, x, B), AssertionFailed);
 }
 
-#endif
-
 BOOST_AUTO_TEST_SUITE_END()
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-} // namespace eckittest
+} // namespace test
+} // namespace eckit

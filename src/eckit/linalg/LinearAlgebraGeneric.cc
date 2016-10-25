@@ -94,7 +94,7 @@ void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& 
 
     const Index* outer = A.outer();
     const Index* inner = A.inner();
-    const Scalar* val = A.data();
+    const Scalar* val  = A.data();
 
     for (size_t r = 0; r < A.rows(); ++r) {
         y[r] = 0.;

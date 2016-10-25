@@ -33,7 +33,7 @@ namespace linalg {
 
 /// Sparse matrix in CRS (compressed row storage) format
 ///
-class SparseMatrix : public eckit::NonCopyable {
+class SparseMatrix {
 
 public:  // methods
 
@@ -42,7 +42,7 @@ public:  // methods
     /// Default constructor, empty matrix
     SparseMatrix();
 
-    /// Constructor an identity matrix with provided dimensions
+    /// Constructs an identity matrix with provided dimensions
     SparseMatrix(Size rows, Size cols);
 
     /// Constructor from triplets
@@ -55,6 +55,12 @@ public:  // methods
     SparseMatrix(Stream& v);
 
     ~SparseMatrix();
+
+    /// Copy constructor
+    SparseMatrix(const SparseMatrix&);
+
+    /// Assignment operator (allocates and copies data)
+    SparseMatrix& operator=(const SparseMatrix&);
 
 public:
 
@@ -79,9 +85,6 @@ public:
 
     /// @returns number of columns
     Size cols() const { return cols_; }
-
-    // Below only used by LinearAlgebraEigen and LinearAlgebraGeneric
-    // maybe make them private and make these classes friends
 
     /// @returns number of non-zeros
     Size nonZeros() const { return size_; }
@@ -141,10 +144,10 @@ private: // methods
     void reset();
 
     /// @returns inner size (number of columns)
-    Size innerSize() const { return cols_; }
+//    Size innerSize() const { return cols_; }
 
     /// @returns outer size (number of rows)
-    Size outerSize() const { return rows_; }
+//    Size outerSize() const { return rows_; }
 
     /// Serialise to a Stream
     void encode(Stream& s) const;

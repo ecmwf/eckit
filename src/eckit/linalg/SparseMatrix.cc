@@ -45,7 +45,7 @@ SparseMatrix::SparseMatrix() :
 
 SparseMatrix::SparseMatrix(Size rows, Size cols) {
     zero(*this);
-    setIdentity(rows, cols);
+    reserve(rows, cols, 1);
 }
 
 SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets) {
@@ -100,6 +100,24 @@ SparseMatrix::~SparseMatrix() {
     reset();
 }
 
+SparseMatrix::SparseMatrix(const SparseMatrix& other) {
+
+    zero(*this);
+
+    reserve(other.rows(), other.cols(), other.nonZeros());
+
+    ::memcpy(data_,  other.data_,  nonZeros() * sizeof(Scalar));
+    ::memcpy(outer_, other.outer_, (rows_ + 1) * sizeof(Index));
+    ::memcpy(inner_, other.inner_, nonZeros() * sizeof(Index));
+}
+
+SparseMatrix& SparseMatrix::operator=(const SparseMatrix& other)
+{
+    SparseMatrix copy(other);
+    swap(copy);
+    return *this;
+}
+
 void SparseMatrix::reset() {
 
     if(own_) {
@@ -121,12 +139,12 @@ void SparseMatrix::reset() {
 // variables into this method must be by value
 void SparseMatrix::reserve(Index rows, Index cols, Size nnz) {
 
-    ASSERT( nnz <= rows * cols );
+    ASSERT( nnz );
+    ASSERT( nnz <= Size(rows * cols) );
     ASSERT( rows > 0 && cols > 0 ); /* rows and columns must have some size */
 
     reset();
 
-    own_  = true;
     rows_ = rows;
     cols_ = cols;
     size_ = nnz;
@@ -134,6 +152,8 @@ void SparseMatrix::reserve(Index rows, Index cols, Size nnz) {
     data_  = new Scalar[nnz];
     outer_ = new Index[rows_ + 1];
     inner_ = new Index[nnz];
+
+    own_  = true;
 }
 
 
@@ -176,7 +196,7 @@ SparseMatrix& SparseMatrix::setIdentity(Size rows, Size cols) {
         outer_[i] = nnz;
     }
 
-    for(Size i = 0; i <= size_; ++i) {
+    for(Size i = 0; i < size_; ++i) {
         data_[i] = Scalar(1);
     }
 
@@ -198,51 +218,55 @@ SparseMatrix& SparseMatrix::transpose() {
 
     std::sort(triplets.begin(), triplets.end()); // triplets must be sorted by row
 
-    SparseMatrix t(cols_, rows_, triplets);
+    SparseMatrix tmp(cols_, rows_, triplets);
 
-    swap(t);
+    swap(tmp);
 
     return *this;
 }
 
 SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
 
-    NOTIMP;
+    std::vector<Scalar> v;
+    std::vector<Index> inner;
 
-#if 0
-    Scalar* v = new Scalar[];
-    IndexStorage inner;
     Index nnz = 0;
-    for (Index r = 0; r < rows_; ++r) {
+    for(Index r = 0; r < rows_; ++r) {
         const Index start = outer_[r];
         outer_[r] = nnz;
-        for (Index c = start; c < outer_[r + 1]; ++c)
-            if (data_[c] != val) {
+        for(Index c = start; c < outer_[r + 1]; ++c)
+            if(data_[c] != val) {
                 v.push_back(data_[c]);
                 inner.push_back(inner_[c]);
                 ++nnz;
             }
     }
     outer_[rows_] = nnz;
-    std::swap(v, data_);
-    std::swap(inner, inner_);
+
+    SparseMatrix tmp;
+    tmp.reserve(rows_, cols_, nnz);
+
+    ::memcpy(tmp.data_,  v.data(),  nnz * sizeof(Scalar));
+    ::memcpy(tmp.outer_, outer_, (rows_ + 1) * sizeof(Index));
+    ::memcpy(tmp.inner_, inner.data(), nnz * sizeof(Index));
+
+    swap(tmp);
+
     return *this;
-#endif
 }
 
 
 
 void SparseMatrix::encode(Stream &s) const {
 
-    const Index nnz = outer_[rows_];
-
     s << rows_;
     s << cols_;
-    s << nnz;
+    s << size_;
 
     s << littleEndian;
     s << sizeof(Index);
     s << sizeof(Scalar);
+    s << sizeof(Size);
 
     s.writeLargeBlob(outer_, (rows_ + 1) * sizeof(Index));
     s.writeLargeBlob(inner_, size_ * sizeof(Index));
@@ -259,8 +283,6 @@ void SparseMatrix::decode(Stream &s) {
     s >> cols;
     s >> nnz;
 
-    reserve(rows, cols, nnz);
-
     bool little_endian;
     s >> little_endian; ASSERT(littleEndian == little_endian);
 
@@ -269,6 +291,11 @@ void SparseMatrix::decode(Stream &s) {
 
     size_t scalar_size;
     s >> scalar_size; ASSERT(scalar_size == sizeof(Scalar));
+
+    size_t size_size;
+    s >> size_size; ASSERT(size_size == sizeof(Size));
+
+    reserve(rows, cols, nnz);
 
     s.readLargeBlob(outer_, (rows_ + 1) * sizeof(Index));
     s.readLargeBlob(inner_, size_ * sizeof(Index));

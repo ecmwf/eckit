@@ -20,6 +20,7 @@
 
 #include "eckit/linalg/types.h"
 #include "eckit/linalg/Triplet.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -32,7 +33,7 @@ namespace linalg {
 
 /// Sparse matrix in CRS (compressed row storage) format
 ///
-class SparseMatrix {
+class SparseMatrix : public eckit::NonCopyable {
 
 public:  // methods
 

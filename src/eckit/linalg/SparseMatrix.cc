@@ -52,7 +52,7 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
 
     zero(*this);
 
-    reserve(rows, cols, triplets.size()); // Allocate memory (we are promised that there is 1 triplet per non-zero)
+    reserve(rows, cols, triplets.size()); // Allocate memory 1 triplet per non-zero
 
     Size pos = 0;
     Index row = -1;

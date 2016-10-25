@@ -39,10 +39,15 @@ void ResourceMgr::reset()
 
 // This has to be redone
 
+static void skip_spaces(const char* p) {
+    while (*p && isspace(*p)) p++;
+}
+
 bool ResourceMgr::parse(const char* p)
 {
-    while (*p && isspace(*p)) p++;
-    if (*p == 0 || *p == '#') return true;
+    skip_spaces(p);
+
+    if (*p == 0 || *p == '#') return true; // skip comments
 
     std::string s[3];
     int n = 0;
@@ -51,11 +56,11 @@ bool ResourceMgr::parse(const char* p)
     {
         const char *q = p;
 
-        while (*p && isspace(*p)) p++;
+        skip_spaces(p);
         while (*p && *p != ':' && *p != '.' && !isspace(*p) ) p++;
 
         int len = p - q;
-        while (*p && isspace(*p)) p++;
+        skip_spaces(p);
 
         s[n] = q; s[n].resize(len); n++;
 
@@ -74,8 +79,7 @@ bool ResourceMgr::parse(const char* p)
         }
 
         p++;
-        // skip blanks
-        while (*p && isspace(*p)) p++;
+        skip_spaces(p);
 
         // Remove trailing blanks
         int l = strlen(p) - 1;

@@ -10,6 +10,7 @@
 
 /// @file   types.h
 /// @author Florian Rathgeber
+/// @author Tiago Quintino
 /// @date   June 2015
 
 #ifndef eckit_la_types_h

@@ -31,76 +31,46 @@ static const bool littleEndian = true;
 static const bool littleEndian = false;
 #endif
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-SparseMatrix::SparseMatrix():
-    rows_(0), cols_(0) {}
-
-//-----------------------------------------------------------------------------
-
-SparseMatrix::SparseMatrix(SparseMatrix::Size rows, SparseMatrix::Size cols)
-    : rows_(rows), cols_(cols) {}
-
-//-----------------------------------------------------------------------------
-
-SparseMatrix::SparseMatrix(Stream &s) {
-    decode(s);
+SparseMatrix::SparseMatrix() :
+    data_(0),
+    size_(0),
+    outer_(0),
+    inner_(0),
+    rows_(0),
+    cols_(0),
+    own_(false) {
 }
 
-//-----------------------------------------------------------------------------
-
-void SparseMatrix::resize(SparseMatrix::Size rows, SparseMatrix::Size cols) {
-    data_.clear();
-    outer_.clear();
-    inner_.clear();
-    rows_ = rows;
-    cols_ = cols;
+SparseMatrix::SparseMatrix(Size rows, Size cols) {
+    zero(*this);
+    setIdentity(rows, cols);
 }
 
-//-----------------------------------------------------------------------------
+SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets) {
 
-void SparseMatrix::reserve(SparseMatrix::Size nnz) {
-    // Rows and columns must have been set before
-    ASSERT( rows_ > 0 && cols_ > 0 );
-    outer_.resize(rows_ + 1);
-    inner_.resize(nnz);
-    data_.resize(nnz);
-}
+    zero(*this);
 
-//-----------------------------------------------------------------------------
-
-void SparseMatrix::swap(SparseMatrix &other) {
-    std::swap(data_, other.data_);
-    std::swap(outer_, other.outer_);
-    std::swap(inner_, other.inner_);
-    std::swap(rows_, other.rows_);
-    std::swap(cols_, other.cols_);
-}
-
-size_t SparseMatrix::footprint() const {
-    return sizeof(*this) + data_.capacity() * sizeof(Scalar)
-           + inner_.capacity() * sizeof(Index)
-           + outer_.capacity() * sizeof(Index);
-}
-//-----------------------------------------------------------------------------
-
-SparseMatrix& SparseMatrix::setFromTriplets(const std::vector<Triplet> &triplets) {
-    // Allocate memory (we are promised that there is 1 triplet per non-zero)
-    reserve(triplets.size());
+    reserve(rows, cols, triplets.size()); // Allocate memory (we are promised that there is 1 triplet per non-zero)
 
     Size pos = 0;
     Index row = -1;
+
     // Build vectors of inner indices and values, update outer index per row
     for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it, ++pos) {
-        // We are promised triplets are ordered by rows
+
+        // triplets are ordered by rows
         ASSERT( it->row() >= row );
         ASSERT( it->row() < rows_ );
         ASSERT( it->col() >= 0 );
         ASSERT( it->col() < cols_ );
-        // We start a new row
+
+        // start a new row
         while (it->row() > row) {
             outer_[++row] = Index(pos);
         }
+
         inner_[pos] = it->col();
         data_[pos] = it->value();
     }
@@ -108,46 +78,139 @@ SparseMatrix& SparseMatrix::setFromTriplets(const std::vector<Triplet> &triplets
     while (row < rows_) {
         outer_[++row] = Index(pos);
     }
-    return *this;
 }
 
-//-----------------------------------------------------------------------------
 
-SparseMatrix& SparseMatrix::setIdentity() {
+SparseMatrix::SparseMatrix(Stream &s) {
+    zero(*this);
+    decode(s);
+}
+
+SparseMatrix::SparseMatrix(Scalar* values, Size size, Index rows, Index cols, Index* outer, Index* inner)  :
+    data_(values),
+    size_(size),
+    outer_(outer),
+    inner_(inner),
+    rows_(rows),
+    cols_(cols),
+    own_(false) {
+}
+
+SparseMatrix::~SparseMatrix() {
+    reset();
+}
+
+void SparseMatrix::reset() {
+
+    if(own_) {
+        delete [] inner_;
+        delete [] outer_;
+        delete [] data_;
+    }
+
+    own_  = false;
+    rows_ = 0;
+    cols_ = 0;
+    size_ = 0;
+
+    data_ = 0;
+    outer_ = 0;
+    inner_ = 0;
+}
+
+// variables into this method must be by value
+void SparseMatrix::reserve(Index rows, Index cols, Size nnz) {
+
+    ASSERT( nnz <= rows * cols );
+    ASSERT( rows > 0 && cols > 0 ); /* rows and columns must have some size */
+
+    reset();
+
+    own_  = true;
+    rows_ = rows;
+    cols_ = cols;
+    size_ = nnz;
+
+    data_  = new Scalar[nnz];
+    outer_ = new Index[rows_ + 1];
+    inner_ = new Index[nnz];
+}
+
+
+
+void SparseMatrix::swap(SparseMatrix &other) {
+    std::swap(data_, other.data_);
+    std::swap(size_, other.size_);
+    std::swap(outer_, other.outer_);
+    std::swap(inner_, other.inner_);
+    std::swap(rows_, other.rows_);
+    std::swap(cols_, other.cols_);
+    std::swap(own_, other.own_);
+}
+
+size_t SparseMatrix::footprint() const {
+    return sizeof(*this)
+            + size_ * sizeof(Scalar)       //
+            + size_ * sizeof(Index)        // inner_ is same size as data_
+            + (rows_ + 1) * sizeof(Index); // outer_ is sized rows_ + 1
+}
+
+
+SparseMatrix& SparseMatrix::setIdentity(Size rows, Size cols) {
+
+    ASSERT( rows > 0 && cols > 0 );
+
+    rows_ = rows;
+    cols_ = cols;
+
     Index nnz = std::min(rows_, cols_);
-    outer_.resize(rows_ + 1);
-    inner_.resize(nnz);
-    for (Index i = 0; i < nnz; ++i) {
+
+    reserve(rows_, cols_, nnz);
+
+    for(Index i = 0; i < nnz; ++i) {
         outer_[i] = i;
         inner_[i] = i;
     }
-    for (Index i = nnz; i <= rows_; ++i) {
+
+    for(Index i = nnz; i <= rows_; ++i) {
         outer_[i] = nnz;
     }
-    data_.assign(nnz, Scalar(1));
+
+    for(Size i = 0; i <= size_; ++i) {
+        data_[i] = Scalar(1);
+    }
+
     return *this;
 }
 
-//-----------------------------------------------------------------------------
+
 
 SparseMatrix& SparseMatrix::transpose() {
-    // FIXME: can this be done more efficiently?
-    // Create vector of transposed triplets
+
+    /// @note Can SparseMatrix::transpose() be done more efficiently?
+    ///       We are building another matrix and then swapping
+
     std::vector<Triplet> triplets;
     triplets.reserve(nonZeros());
     for (Index r = 0; r < rows_; ++r)
         for (Index c = outer_[r]; c < outer_[r + 1]; ++c)
             triplets.push_back(Triplet(inner_[c], r, data_[c]));
-    // Need to sort since setFromTriplets expects triplets ordered by row
-    std::sort(triplets.begin(), triplets.end());
-    std::swap(rows_, cols_);
-    return setFromTriplets(triplets);
+
+    std::sort(triplets.begin(), triplets.end()); // triplets must be sorted by row
+
+    SparseMatrix t(cols_, rows_, triplets);
+
+    swap(t);
+
+    return *this;
 }
 
-//-----------------------------------------------------------------------------
-
 SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
-    ScalarStorage v;
+
+    NOTIMP;
+
+#if 0
+    Scalar* v = new Scalar[];
     IndexStorage inner;
     Index nnz = 0;
     for (Index r = 0; r < rows_; ++r) {
@@ -164,12 +227,15 @@ SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
     std::swap(v, data_);
     std::swap(inner, inner_);
     return *this;
+#endif
 }
 
-//-----------------------------------------------------------------------------
+
 
 void SparseMatrix::encode(Stream &s) const {
+
     const Index nnz = outer_[rows_];
+
     s << rows_;
     s << cols_;
     s << nnz;
@@ -178,18 +244,22 @@ void SparseMatrix::encode(Stream &s) const {
     s << sizeof(Index);
     s << sizeof(Scalar);
 
-    s.writeLargeBlob(&outer_[0], outer_.size() * sizeof(Index));
-    s.writeLargeBlob(&inner_[0], inner_.size() * sizeof(Index));
-    s.writeLargeBlob(&data_[0], data_.size() * sizeof(Scalar));
+    s.writeLargeBlob(outer_, (rows_ + 1) * sizeof(Index));
+    s.writeLargeBlob(inner_, size_ * sizeof(Index));
+    s.writeLargeBlob(data_,  size_ * sizeof(Scalar));
 }
 
 void SparseMatrix::decode(Stream &s) {
 
-    s >> rows_;
-    s >> cols_;
-    Index nnz;
+    Index rows;
+    Index cols;
+    Size nnz;
+
+    s >> rows;
+    s >> cols;
     s >> nnz;
-    reserve(nnz);
+
+    reserve(rows, cols, nnz);
 
     bool little_endian;
     s >> little_endian; ASSERT(littleEndian == little_endian);
@@ -200,13 +270,12 @@ void SparseMatrix::decode(Stream &s) {
     size_t scalar_size;
     s >> scalar_size; ASSERT(scalar_size == sizeof(Scalar));
 
-    s.readLargeBlob(&outer_[0], outer_.size() * sizeof(Index));
-    s.readLargeBlob(&inner_[0], inner_.size() * sizeof(Index));
-    s.readLargeBlob(&data_[0], data_.size() * sizeof(Scalar));
-
+    s.readLargeBlob(outer_, (rows_ + 1) * sizeof(Index));
+    s.readLargeBlob(inner_, size_ * sizeof(Index));
+    s.readLargeBlob(data_,  size_ * sizeof(Scalar));
 }
 
-//-----------------------------------------------------------------------------
+
 
 Stream &operator<<(Stream &s, const SparseMatrix &v) {
     v.encode(s);
@@ -218,20 +287,20 @@ SparseMatrix::_InnerIterator::_InnerIterator(SparseMatrix &m, Index outer)
     ASSERT(outer >= 0);
     ASSERT(outer < m.rows_);
     ASSERT(inner_ >= 0);
-    ASSERT(size_t(inner_) <= matrix_.data_.size());
+    ASSERT(size_t(inner_) <= matrix_.nonZeros());
 }
 
 Scalar SparseMatrix::_InnerIterator::operator*() const {
-    ASSERT(size_t(inner_) < matrix_.data_.size());
+    ASSERT(size_t(inner_) < matrix_.nonZeros());
     return matrix_.data_[inner_];
 }
 
 Scalar &SparseMatrix::InnerIterator::operator*() {
-    ASSERT(size_t(inner_) < matrix_.data_.size());
+    ASSERT(size_t(inner_) < matrix_.nonZeros());
     return matrix_.data_[inner_];
 }
 
-//-----------------------------------------------------------------------------
+
 
 void SparseMatrix::save(const eckit::PathName &path) const {
     FileStream s(path, "w");
@@ -243,7 +312,7 @@ void SparseMatrix::load(const eckit::PathName &path)  {
     decode(s);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace linalg
 } // namespace eckit

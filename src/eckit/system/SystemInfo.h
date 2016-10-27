@@ -25,6 +25,14 @@ namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+struct Mem {
+    size_t resident_size_;
+    size_t virtual_size_;
+    Mem(size_t resident_size, size_t virtual_size):
+        resident_size_(resident_size),
+        virtual_size_(virtual_size) {}
+};
+
 class SystemInfo : private eckit::NonCopyable {
 
 public: // methods
@@ -34,6 +42,9 @@ public: // methods
     static const SystemInfo& instance();
 
     virtual eckit::LocalPathName executablePath() const = 0;
+
+    virtual size_t memoryAllocated() const = 0;
+    virtual Mem memoryUsage() const = 0;
 
 protected: // methods
 

@@ -15,59 +15,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
 
-struct mem {
-    size_t resident_size_;
-    size_t virtual_size_;
-    mem(size_t resident_size, size_t virtual_size):
-        resident_size_(resident_size),
-        virtual_size_(virtual_size) {}
-};
-
-
-// TODO: move logic to ecbuild
-#ifdef __APPLE__
-#include <mach/mach.h>
-#include <malloc/malloc.h>
-
-static size_t allocated() {
-    return mstats().bytes_used;
-}
-
-static mem get_mem() {
-
-    struct task_basic_info info;
-    mach_msg_type_number_t size = sizeof(info);
-
-    kern_return_t err = task_info(mach_task_self(),
-                                  TASK_BASIC_INFO,
-                                  (task_info_t)&info,
-                                  &size);
-
-    if ( err != KERN_SUCCESS ) {
-        throw eckit::FailedSystemCall(mach_error_string(err), Here());
-    }
-
-    return mem(info.resident_size, info.virtual_size);
-
-}
-
-#else
-#include <malloc.h>
-
-
-static size_t allocated() {
-    return mallinfo().uordblks;
-}
-
-static mem get_mem() {
-    struct rusage usage;
-    SYSCALL(getrusage(RUSAGE_SELF, &usage));
-    return mem(usage.ru_maxrss * 1024, 0) ;
-}
-
-
-#endif
-
+#include "eckit/system/SystemInfo.h"
 
 namespace eckit {
 
@@ -95,8 +43,12 @@ ResourceUsage::ResourceUsage(const char* name, std::ostream& o ):
 }
 
 void ResourceUsage::init() {
-    rss_ = get_mem().resident_size_;
-    malloc_ = allocated();
+
+    using namespace eckit::system;
+    const SystemInfo& sysinfo = SystemInfo::instance();
+
+    rss_ = sysinfo.memoryUsage().resident_size_;
+    malloc_ = sysinfo.memoryAllocated();
 
     out_ << name_ << " => resident size: "
          << eckit::Bytes(rss_);
@@ -107,9 +59,11 @@ void ResourceUsage::init() {
 
 ResourceUsage::~ResourceUsage()
 {
+    using namespace eckit::system;
+    const SystemInfo& sysinfo = SystemInfo::instance();
 
-    unsigned long long rss = get_mem().resident_size_;
-    unsigned long long malloc = allocated();
+    size_t rss = sysinfo.memoryUsage().resident_size_;
+    size_t malloc = sysinfo.memoryAllocated();
 
     out_ << name_ << " <= resident size: "
          << eckit::Bytes(rss);

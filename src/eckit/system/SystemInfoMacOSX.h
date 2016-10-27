@@ -32,6 +32,9 @@ public: // methods
 
     virtual eckit::LocalPathName executablePath() const;
 
+    virtual size_t memoryAllocated() const;
+    virtual Mem memoryUsage() const;
+
 protected: // methods
 
 private: // members

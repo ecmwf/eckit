@@ -49,10 +49,9 @@ private: // members
 
     std::string    name_;
     std::ostream&  out_;
-    long long rss_;
-    long long malloc_;
 
-
+    size_t rss_;
+    size_t malloc_;
 };
 
 

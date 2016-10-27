@@ -19,7 +19,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-ClassSpec NilContent::classSpec_ = {&Content::classSpec(),"NilContent",};
+ClassSpec NilContent::classSpec_ = {&Content::classSpec(), "NilContent",};
 Reanimator<NilContent> NilContent::reanimator_;
 
 
@@ -114,6 +114,10 @@ Content* NilContent::divNil(const NilContent&) const
 Content* NilContent::mod(const Content& other) const
 {
     return other.divNil(*this);
+}
+
+bool NilContent::contains(const Value&) const {
+    return false;
 }
 
 //-----------------------------------------------------------------------------

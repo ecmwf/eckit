@@ -105,40 +105,36 @@ public:
     /// Returns the footprint of the matrix in memory
     size_t footprint() const;
 
-private: // iterators
-
-    class _InnerIterator {
-    public:
-        _InnerIterator(SparseMatrix& m, Index outer);
-        Scalar value() const { return matrix_.data_[inner_]; }
-        Index row() const { return outer_; }
-        Index col() const { return matrix_.inner_[inner_]; }
-        Index index() const { return matrix_.inner_[inner_]; }
-        operator bool() const { return inner_ != matrix_.outer_[outer_+1]; }
-        void operator++() { ++inner_; }
-        Scalar operator*() const;
-    protected:
-        SparseMatrix& matrix_;
-        Index outer_;
-        Index inner_;
-    };
-
 public: // iterators
 
-    /// @todo Rename Vector iterators so they look like STL iterators
+    struct const_iterator {
+        const_iterator(const SparseMatrix& matrix) :
+            matrix_(const_cast< SparseMatrix& >(matrix)),
+            row_(0),
+            index_(0) {
+        }
 
-    class InnerIterator : public _InnerIterator {
-    public:
-        InnerIterator(SparseMatrix& matrix, Index outer):
-            _InnerIterator(matrix, outer) {}
-        Scalar& value() { return matrix_.data_[inner_]; }
-        Scalar& operator*();
+        Index col() const { return matrix_.inner_[index_]; }
+        Index row() const { return row_; }
+        void row(const Index&);
+
+        operator bool() const { return index_ < Index(matrix_.size_); }
+        const_iterator& operator++();
+        const_iterator operator++(int);
+
+        const Scalar& value() const { return matrix_.data_[index_]; }
+        const Scalar& operator*() const;
+
+    protected:
+        SparseMatrix& matrix_;
+        Index row_;
+        Index index_;
     };
 
-    class ConstInnerIterator : public _InnerIterator  {
-    public:
-        ConstInnerIterator(const SparseMatrix& matrix, Index outer):
-            _InnerIterator(const_cast<SparseMatrix&>(matrix), outer) {}
+    struct iterator : const_iterator {
+        iterator(SparseMatrix& matrix) : const_iterator(matrix) {}
+        Scalar& value() { return matrix_.data_[index_]; }
+        Scalar& operator*();
     };
 
 private: // methods
@@ -153,7 +149,7 @@ private: // methods
     Size innerSize() const { return nonZeros(); }
 
     /// @returns outer size is number of rows + 1
-    Size outerSize() const { return rows_ + 1; }
+    Size outerSize() const { return Size(rows_ + 1); }
 
     /// Serialise to a Stream
     void encode(Stream& s) const;

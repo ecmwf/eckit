@@ -160,16 +160,28 @@ void SparseMatrix::reserve(Index rows, Index cols, Size nnz) {
 }
 
 
+void SparseMatrix::save(const eckit::PathName &path) const {
+    FileStream s(path, "w");
+    s << *this;
+}
+
+
+void SparseMatrix::load(const eckit::PathName &path)  {
+    FileStream s(path, "r");
+    decode(s);
+}
+
 
 void SparseMatrix::swap(SparseMatrix &other) {
-    std::swap(data_, other.data_);
-    std::swap(size_, other.size_);
+    std::swap(data_,  other.data_);
+    std::swap(size_,  other.size_);
     std::swap(outer_, other.outer_);
     std::swap(inner_, other.inner_);
-    std::swap(rows_, other.rows_);
-    std::swap(cols_, other.cols_);
-    std::swap(own_, other.own_);
+    std::swap(rows_,  other.rows_);
+    std::swap(cols_,  other.cols_);
+    std::swap(own_,   other.own_);
 }
+
 
 size_t SparseMatrix::footprint() const {
     return sizeof(*this)
@@ -306,41 +318,60 @@ void SparseMatrix::decode(Stream &s) {
 }
 
 
-
-Stream &operator<<(Stream &s, const SparseMatrix &v) {
+Stream& operator<<(Stream& s, const SparseMatrix& v) {
     v.encode(s);
     return s;
 }
 
-SparseMatrix::_InnerIterator::_InnerIterator(SparseMatrix &m, Index outer)
-    : matrix_(m), outer_(outer), inner_(matrix_.outer_[outer]) {
-    ASSERT(outer >= 0);
-    ASSERT(outer < m.rows_);
-    ASSERT(inner_ >= 0);
-    ASSERT(size_t(inner_) <= matrix_.nonZeros());
-}
 
-Scalar SparseMatrix::_InnerIterator::operator*() const {
-    ASSERT(size_t(inner_) < matrix_.nonZeros());
-    return matrix_.data_[inner_];
-}
+void SparseMatrix::const_iterator::row(const Index& rowIndex) {
+    ASSERT(rowIndex < matrix_.rows_);
+    row_ = rowIndex;
+    index_ = matrix_.outer_[row_];
 
-Scalar &SparseMatrix::InnerIterator::operator*() {
-    ASSERT(size_t(inner_) < matrix_.nonZeros());
-    return matrix_.data_[inner_];
+    while (index_ >= matrix_.outer_[row_+1]) {
+        ++row_;
+        if (row_ >= matrix_.rows_) {
+            break;
+        }
+    }
+    index_ = matrix_.outer_[row_];
 }
 
 
-
-void SparseMatrix::save(const eckit::PathName &path) const {
-    FileStream s(path, "w");
-    s << *this;
+SparseMatrix::const_iterator SparseMatrix::const_iterator::operator++(int) {
+    const_iterator it = *this;
+    ++(*this);
+    return it;
 }
 
-void SparseMatrix::load(const eckit::PathName &path)  {
-    FileStream s(path, "r");
-    decode(s);
+
+SparseMatrix::const_iterator& SparseMatrix::const_iterator::operator++() {
+    ASSERT(*this);
+
+    ++index_;
+    while (index_ >= matrix_.outer_[row_+1]) {
+        ++row_;
+        if (row_ >= matrix_.rows_) {
+            break;
+        }
+    }
+
+    return *this;
 }
+
+
+const Scalar& SparseMatrix::const_iterator::operator*() const {
+    ASSERT(size_t(index_) < matrix_.nonZeros());
+    return matrix_.data_[index_];
+}
+
+
+Scalar& SparseMatrix::iterator::operator*() {
+    ASSERT(size_t(index_) < matrix_.nonZeros());
+    return matrix_.data_[index_];
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

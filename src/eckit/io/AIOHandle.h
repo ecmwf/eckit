@@ -55,10 +55,12 @@ public: // methods
     virtual Offset position();
 
 
+protected: // members
+
+    PathName                   path_;
 
 private: // members
 
-    PathName                   path_;
     std::vector<Buffer*>       buffers_;
     std::vector<const aiocb*>  aiop_;
     std::vector<aiocb>         aio_;

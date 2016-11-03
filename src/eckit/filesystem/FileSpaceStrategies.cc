@@ -10,6 +10,9 @@
 
 #include <unistd.h>
 
+#include <iostream>
+#include <cmath>
+
 #include "eckit/filesystem/FileSpaceStrategies.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/config/Resource.h"
@@ -18,16 +21,59 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-const PathName&FileSpaceStrategies::selectFileSystem(const std::vector<PathName>& fileSystems, const std::string& s)
+struct Candidate {
+
+    const PathName* path_;
+
+    FileSystemSize size_;
+
+    double probability_;
+
+    Candidate(const PathName* path) : path_(path) {}
+
+    void print(std::ostream& s) const {
+        s << "Candidate(path=" << path_->asString()
+          << ",total=" << total()
+          << ",available=" << available()
+          << ",percent=" << percent()
+          << ",probability=" << probability_
+          << ")";
+    }
+
+    friend std::ostream& operator<<(std::ostream& s, const Candidate& v) { v.print(s);  return s; }
+
+    const PathName& path() const { return *path_; }
+
+    double probability() const { return probability_; }
+    void   probability(double p) { probability_ = p; }
+
+    long percent() const { return long( ( (double(size_.total) - double(size_.available)) / size_.total * 100) + 0.5); }
+
+    unsigned long long total() const { return size_.total; }
+
+    unsigned long long available() const { return size_.available; }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+const PathName& FileSpaceStrategies::selectFileSystem(const std::vector<PathName>& fileSystems, const std::string& s)
 {
     Log::info() << "FileSpace::selectFileSystem is " << s << std::endl;
 
     if(s == "roundRobin")
         return FileSpaceStrategies::roundRobin(fileSystems);
+
     if(s == "weightedRandom")
         return FileSpaceStrategies::weightedRandom(fileSystems);
+
     if(s == "pureRandom")
         return FileSpaceStrategies::pureRandom(fileSystems);
+
+    if(s == "weightedRandomPercent")
+        return FileSpaceStrategies::weightedRandomPercent(fileSystems);
+
+    if(s == "leastUsedPercent")
+        return FileSpaceStrategies::leastUsedPercent(fileSystems);
 
     return FileSpaceStrategies::leastUsed(fileSystems);
 }
@@ -72,192 +118,248 @@ const PathName& FileSpaceStrategies::leastUsed(const std::vector<PathName>& file
 	if(!checked)
         throw Retry(std::string("No available filesystem (") + fileSystems[0] + ")");
 
-	Log::info() << "Least used file system: " << fileSystems[best] << " " << Bytes(free) << " available" << std::endl;
+    Log::info() << "Filespace strategy leastUsed selected " << fileSystems[best] << " " << Bytes(free) << " available" << std::endl;
 
 	return fileSystems[best];
 }
 
+const PathName& FileSpaceStrategies::leastUsedPercent(const std::vector<PathName>& fileSystems)
+{
+    long percent = 0;
+    size_t best = 0;
+
+    ASSERT(fileSystems.size() != 0);
+
+    for(size_t i = 0; i < fileSystems.size(); ++i)
+    {
+        Candidate candidate(&fileSystems[i]);
+
+        Log::info() << "leastUsedPercent: " << fileSystems[i] << " " << fileSystems[i].available() << std::endl;
+        if(fileSystems[i].available())
+        {
+            FileSystemSize fs;
+
+            try
+            {
+                fileSystems[i].fileSystemSize(candidate.size_);
+            }
+            catch(std::exception& e)
+            {
+                Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+                Log::error() << "** Exception is ignored" << std::endl;
+                Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
+                continue;
+            }
+
+            if(candidate.percent() >= percent)
+            {
+                percent = candidate.percent();
+                best = i;
+            }
+        }
+    }
+
+    Log::info() << "Filespace strategy leastUsedPercent selected " << fileSystems[best] << " " << percent << "% available" << std::endl;
+
+    return fileSystems[best];
+}
+
+typedef void (*compute_probability_t)(Candidate&);
+
+static void computePercent(Candidate& c) {
+    c.probability_ = double(c.percent());
+}
+
+static void computeAvailable(Candidate& c) {
+    c.probability_ = double(c.available());
+}
+
+static void computeIdentity(Candidate& c) {
+    c.probability_ = 1;
+}
+
+static void computeNull(Candidate& c) {
+    c.probability_ = 0;
+}
+
+static std::vector<Candidate> findCandidates(const std::vector<PathName>& fileSystems, compute_probability_t probability) {
+
+    ASSERT(fileSystems.size() != 0);
+
+    static Resource<long> candidateFileSystemPercent("candidateFileSystem", 99);
+
+    std::vector<Candidate> result;
+
+    for(size_t i = 0; i < fileSystems.size(); ++i) {
+
+        Candidate candidate(&fileSystems[i]);
+
+        if(fileSystems[i].available()) {
+
+            try
+            {
+                fileSystems[i].fileSystemSize(candidate.size_);
+            }
+            catch(std::exception& e)
+            {
+                Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+                Log::error() << "** Exception is ignored" << std::endl;
+                Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
+                continue;
+            }
+
+            if(candidate.total() == 0) {
+                Log::warning() << "Cannot get total size of " << fileSystems[i] << std::endl;
+                return std::vector<Candidate>();
+            }
+
+            if(candidate.percent() <= candidateFileSystemPercent) {
+
+                probability(candidate);
+
+//                Log::info() << candidate << std::endl;
+
+                result.push_back(candidate);
+            }
+        }
+    }
+
+    return result;
+}
+
 const PathName& FileSpaceStrategies::roundRobin(const std::vector<PathName>& fileSystems)
 {
-	static long value = -1;
-	static Resource<long> candidate("candidateFileSystem", 99);
+    std::vector<Candidate> candidates = findCandidates(fileSystems, &computeNull);
 
-	ASSERT(fileSystems.size() != 0);
+    if(candidates.empty())
+        return leastUsed(fileSystems);
+
+    static long value = -1;
 
 	if(value < 0)
 		value = ::getpid();
 
 	value++;
-	value %= fileSystems.size();
+    value %= candidates.size();
 
-	Log::info() << "roundRobin selection " << value << " out of " << fileSystems.size() << std::endl;
+    Log::info() << "Filespace strategy roundRobin selected " << candidates[value].path() << " " << value << " out of " << candidates.size() << std::endl;
 
-	for(Ordinal j = 0; j < fileSystems.size(); j++)
-	{
-		Ordinal i = (j + value) % fileSystems.size();
-		if(fileSystems[j].available())
-		{
-			FileSystemSize fs;
+    return candidates[value].path();
+}
 
-			try
-			{
-				fileSystems[i].fileSystemSize(fs);
-			}
-			catch(std::exception& e)
-			{
-				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-				Log::error() << "** Exception is ignored" << std::endl;
-				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
-				continue;
-			}
+static void attenuateProbabilities(std::vector<Candidate>& candidates) {
 
-			if(fs.total == 0)
-			{
-				Log::info() << "roundRobin: cannot get total size of " << fileSystems[i] << std::endl;
-				return leastUsed(fileSystems);
-			}
+    ASSERT(!candidates.empty());
 
-			long percent = long(((double) (fs.total - fs.available) / fs.total * 100) + 0.5);
+    static Resource<bool> attenuateFileSpacePeakProbability("attenuateFileSpacePeakProbability", false);
 
-#if 0
-			Log::info() << "roundRobin: percent=" << percent << " candidate=" << candidate <<
-			" total="<< total << " " << Bytes(total) <<
-			" size="<< size <<
-			endl;
-#endif
+    if(!attenuateFileSpacePeakProbability) return;
 
-			if(percent <= candidate)
-			{
-				value = i;
-				Log::info() << "Round robin file system: " << fileSystems[value] << " " << Bytes(fs.available) << " available" << std::endl;
-				return fileSystems[value];
+    // compute mean
 
-			}
+    double mean = 0.;
+    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
+        mean += i->probability();
+    }
 
-		}
-	}
+    mean /= candidates.size();
 
-	Log::info() << "roundRobin reverting to leastUsed" << std::endl;
+    // compute variance
 
-	return leastUsed(fileSystems);
+    double variance = 0.;
+    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
+        double diff = (i->probability() - mean);
+        variance += diff*diff;
+    }
 
+    variance /= candidates.size();
+
+    // compute stddev
+
+    double stddev = std::sqrt(variance);
+
+    // attenuate the peaks that exceed the stddev to the stddev value
+
+    double max = mean + stddev;
+    for(std::vector<Candidate>::iterator i = candidates.begin(); i != candidates.end(); ++i) {
+        if(i->probability() > max) {
+            i->probability(max);
+        }
+    }
+}
+
+
+static const PathName& chooseByProbabylity(const char* strategy, const std::vector<Candidate>& candidates) {
+
+    double total = 0;
+    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
+//        Log::info() << "probability " << i->probability() << std::endl;
+        total += i->probability();
+    }
+
+    double choice = (double(random()) / double(RAND_MAX));
+
+//    Log::info() << "choice " << choice << std::endl;
+
+    choice *= total;
+
+    std::vector<Candidate>::const_iterator select = candidates.begin();
+
+    double lower = 0;
+    double upper = 0;
+    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
+
+        upper += i->probability();
+
+//        Log::info() << "Choice " << choice << " total = " << total << " lower = " << lower << " upper = " << upper << std::endl;
+
+        if(choice >= lower && choice < upper) {
+            select = i;
+            break;
+        }
+
+        lower = upper;
+    }
+
+    Log::info() << "Filespace strategy " << strategy << " selected " <<  select->path() << " " << Bytes(select->available()) << " available" << std::endl;
+
+    return select->path();
 }
 
 const PathName& FileSpaceStrategies::pureRandom(const std::vector<PathName>& fileSystems)
 {
-	static Resource<long> candidate("candidateFileSystem", 99);
+    std::vector<Candidate> candidates = findCandidates(fileSystems, &computeIdentity);
 
-	ASSERT(fileSystems.size() != 0);
+    if(candidates.empty())
+        return leastUsed(fileSystems);
 
-	long value = random() % fileSystems.size();
+    attenuateProbabilities(candidates); /* has no effect */
 
-	for(Ordinal j = 0; j < fileSystems.size(); j++)
-
-	{
-		Ordinal i = (j + value) % fileSystems.size();
-		if(fileSystems[i].available())
-		{
-			FileSystemSize fs;
-
-			try
-			{
-				fileSystems[i].fileSystemSize(fs);
-			}
-			catch(std::exception& e)
-			{
-				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-				Log::error() << "** Exception is ignored" << std::endl;
-				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
-				continue;
-			}
-
-			if(fs.total == 0)
-				return leastUsed(fileSystems);
-
-			long percent = long(((double) (fs.total - fs.available) / fs.total * 100) + 0.5);
-
-			if(percent <= candidate)
-			{
-				value = i;
-				Log::info() << "Pure random file system: " << fileSystems[value] << " " << Bytes(fs.available) << " available" << std::endl;
-				return fileSystems[value];
-			}
-
-		}
-	}
-
-	return leastUsed(fileSystems);
-
+    return chooseByProbabylity("pureRandom", candidates);
 }
 
 const PathName& FileSpaceStrategies::weightedRandom(const std::vector<PathName>& fileSystems)
 {
-	static Resource<long> candidate("candidateFileSystem", 99);
+    std::vector<Candidate> candidates = findCandidates(fileSystems, &computeAvailable);
 
-	ASSERT(fileSystems.size() != 0);
+    if(candidates.empty())
+        return leastUsed(fileSystems);
 
-	std::map<long, long long> scores;
-	long long free_space = 0;
-	long long scale = 1;
+    attenuateProbabilities(candidates);
 
-	for(Ordinal i = 0; i < fileSystems.size(); i++)
-		if(fileSystems[i].available())
-		{
+    return chooseByProbabylity("weightedRandom",candidates);
+}
 
-			FileSystemSize fs;
+const PathName& FileSpaceStrategies::weightedRandomPercent(const std::vector<PathName>& fileSystems)
+{
+    std::vector<Candidate> candidates = findCandidates(fileSystems, &computePercent);
 
-			try
-			{
-				fileSystems[i].fileSystemSize(fs);
-			}
-			catch(std::exception& e)
-			{
-				Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-				Log::error() << "** Exception is ignored" << std::endl;
-				Log::error() << "Cannot stat " << fileSystems[i] << Log::syserr << std::endl;
-				continue;
-			}
+    if(candidates.empty())
+        return leastUsed(fileSystems);
 
-			if(fs.total == 0)
-				return leastUsed(fileSystems);
+    attenuateProbabilities(candidates);
 
-			long percent = long(((double) (fs.total - fs.available) / fs.total * 100) + 0.5);
-
-			if(percent <= candidate)
-			{
-				scores[i] = fs.available;
-				free_space += fs.available;
-			}
-
-		}
-
-	if(scores.empty())
-		return leastUsed(fileSystems);
-
-	while(free_space > 0x7fffffff)
-	{
-		free_space /= 2;
-		scale *= 2;
-	}
-
-	long choice = random() % free_space;
-	long value = (*scores.begin()).first;
-	long last = 0;
-
-	for(std::map<long, long long>::iterator j = scores.begin(); j != scores.end(); ++j)
-	{
-		long s = (*j).second / scale;
-#if 0
-		Log::info() << "Choice " << choice << " free_space = " << free_space << " last = " << last << " s = " << s << " scale = " << scale << std::endl;
-#endif
-		if(choice >= last && choice < last + s)
-			value = (*j).first;
-		last += s;
-	}
-
-	Log::info() << "Weighted random file system: " << fileSystems[value] << " " << Bytes(scores[value]) << " available" << std::endl;
-
-	return fileSystems[value];
+    return chooseByProbabylity("weightedRandomPercent", candidates);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

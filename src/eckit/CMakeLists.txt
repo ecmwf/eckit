@@ -84,6 +84,8 @@ io/BufferCache.h
 io/BufferCache.cc
 io/FileLocker.h
 io/FileLocker.cc
+io/FileLock.h
+io/FileLock.cc
 io/FilePool.h
 io/FilePool.cc
 io/ResizableBuffer.h
@@ -415,6 +417,7 @@ list( APPEND eckit_os_srcs
 os/Stat.h
 os/System.h
 os/System.cc
+os/AutoUmask.h
 os/Semaphore.h
 os/Semaphore.cc
 os/SignalHandler.h

@@ -10,31 +10,39 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date   August 2016
+///
+/// @date   Oct 2016
 
-#ifndef eckit_system_LibEcKit_H
-#define eckit_system_LibEcKit_H
+#ifndef eckit_io_FileLock_h
+#define eckit_io_FileLock_h
 
-#include "eckit/system/Library.h"
+#include "eckit/memory/NonCopyable.h"
+#include "eckit/io/FileLocker.h"
 
 namespace eckit {
 
+class PathName;
+
 //----------------------------------------------------------------------------------------------------------------------
 
-class LibEcKit : public eckit::system::Library {
+class FileLock : public NonCopyable {
+
 public:
 
-    LibEcKit();
+    /// Constructor
+    /// creates the lock file if needed
+	FileLock(const PathName& lockFile);
 
-    static const LibEcKit& instance();
+	~FileLock();
 
-protected:
+	void lock();
+	void unlock();
 
-    const void* addr() const;
+private:
 
-    virtual std::string version() const;
+	int fd_;
 
-    virtual std::string gitsha1(unsigned int count) const;
+    FileLocker locker_;
 
 };
 

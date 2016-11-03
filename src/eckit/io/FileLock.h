@@ -9,11 +9,14 @@
  */
 
 /// @author Baudouin Raoult
-/// @date Oct 2016
+/// @author Tiago Quintino
+///
+/// @date   Oct 2016
 
-#ifndef eckit_FileLock_h
-#define eckit_FileLock_h
+#ifndef eckit_io_FileLock_h
+#define eckit_io_FileLock_h
 
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/io/FileLocker.h"
 
 namespace eckit {
@@ -22,89 +25,24 @@ class PathName;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class FileLock {
+class FileLock : public NonCopyable {
+
 public:
 
-// -- Exceptions
-	// None
-
-// -- Contructors
-
-	// Will create the lock file if needed
+    /// Constructor
+    /// creates the lock file if needed
 	FileLock(const PathName& lockFile);
 
-// -- Destructor
-
 	~FileLock();
-
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
-// -- Methods
 
 	void lock();
 	void unlock();
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-
-	// void print(std::ostream&) const;
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
 private:
 
-// No copy allowed
-
-	FileLock(const FileLock&);
-	FileLock& operator=(const FileLock&);
-
-// -- Members
-
 	int fd_;
-	FileLocker locker_;
 
-// -- Methods
-	// None
-
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
-
-	//friend std::ostream& operator<<(std::ostream& s,const FileLock& p)
-	//	{ p.print(s); return s; }
+    FileLocker locker_;
 
 };
 

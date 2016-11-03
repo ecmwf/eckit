@@ -50,7 +50,8 @@ static std::vector<std::pair<std::string, std::string> > pathsTable;
 
 static void readPathsTable() {
 
-    eckit::PathName path("~/etc/paths");
+    static PathName path = eckit::Resource<PathName>("libraryConfigPaths,$LIBRARY_CONFIG_PATHS", "~/etc/paths");
+
     std::ifstream in(path.localPath());
 
     // eckit::Log::info() << "Loading library paths from " << path << std::endl;

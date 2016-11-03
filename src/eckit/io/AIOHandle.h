@@ -55,7 +55,7 @@ public: // methods
     virtual Offset position();
 
 
-protected:
+protected: // members
 
     PathName                   path_;
 

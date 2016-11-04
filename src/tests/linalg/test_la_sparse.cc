@@ -195,9 +195,9 @@ BOOST_AUTO_TEST_CASE(test_iterator) {
 
     SparseMatrix A(S(3, 3, 5,
                      0, 0, 0.,
-                     0, 2, 1.,
                      1, 0, 0.,
                      1, 1, 0.,
+                     1, 2, 1.,
                      2, 2, 2.));
 
     A.prune();
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(test_iterator) {
     SparseMatrix::const_iterator it(A);
 
     // check entry #1
-    BOOST_CHECK_EQUAL(it.row(), 0);
+    BOOST_CHECK_EQUAL(it.row(), 1);
     BOOST_CHECK_EQUAL(it.col(), 2);
     BOOST_CHECK(*it == 1.);
 
@@ -220,14 +220,14 @@ BOOST_AUTO_TEST_CASE(test_iterator) {
     ++it;
     BOOST_CHECK(!it);
 
-    // go back and re-check entry #2
-    // (row 1 is empty, should relocate to row 2)
-    it.row(1);
+    // go back and re-check entry #1
+    // (row 0 is empty, should relocate to row 1)
+    it.row(0);
     BOOST_CHECK(it);
 
-    BOOST_CHECK_EQUAL(it.row(), 2);
+    BOOST_CHECK_EQUAL(it.row(), 1);
     BOOST_CHECK_EQUAL(it.col(), 2);
-    BOOST_CHECK(*it == 2.);
+    BOOST_CHECK(*it == 1.);
 }
 
 BOOST_AUTO_TEST_CASE(test_transpose_square) {

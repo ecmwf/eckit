@@ -109,9 +109,8 @@ public: // iterators
 
     struct const_iterator {
         const_iterator(const SparseMatrix& matrix) :
-            matrix_(const_cast< SparseMatrix& >(matrix)),
-            row_(0),
-            index_(0) {
+            matrix_(const_cast< SparseMatrix& >(matrix)) {
+            row(0);
         }
 
         Index col() const { return matrix_.inner_[index_]; }

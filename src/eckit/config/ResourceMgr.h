@@ -74,5 +74,7 @@ public:
     int operator<(const ResourceQualifier&) const;
 
 };
+
 }
+
 #endif

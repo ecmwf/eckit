@@ -58,6 +58,8 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+#if 0 // if we bring this back, then we need to implemenmt the mutex with direct pthread_mutex_t
+
 static Mutex* local_mutex;
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 typedef std::map<std::string, Channel*> ChannelRegister;
@@ -103,6 +105,8 @@ Channel& Log::channel(const std::string& key) {
     ASSERT(itr != channelsRegister->end());
     return *(itr->second);
 }
+
+#endif
 
 struct CreateStatusChannel {
     Channel* operator()() {

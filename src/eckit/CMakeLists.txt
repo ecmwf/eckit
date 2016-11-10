@@ -192,21 +192,22 @@ filesystem/marsfs/MarsFSClient.h
 filesystem/marsfs/MarsFSClient.cc )
 
 list( APPEND eckit_thread_srcs
-thread/Mutex.h
-thread/Mutex.cc
-thread/MutexCond.h
-thread/MutexCond.cc
-thread/AutoLock.h
-thread/AutoLocker.h
-thread/AutoLocker.cc
-thread/Thread.h
-thread/Thread.cc
-thread/ThreadControler.h
-thread/ThreadControler.cc
-thread/ThreadPool.h
-thread/ThreadPool.cc
-thread/ThreadSingleton.h
-thread/Once.h )
+    thread/AutoLock.h
+    thread/Mutex.cc
+    thread/Mutex.h
+    thread/MutexCond.cc
+    thread/MutexCond.h
+    thread/Once.h
+    thread/StaticMutex.cc
+    thread/StaticMutex.h
+    thread/Thread.cc
+    thread/Thread.h
+    thread/ThreadControler.cc
+    thread/ThreadControler.h
+    thread/ThreadPool.cc
+    thread/ThreadPool.h
+    thread/ThreadSingleton.h
+)
 
 list( APPEND eckit_config_srcs
 config/Configurable.cc

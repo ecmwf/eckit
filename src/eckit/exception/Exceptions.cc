@@ -358,6 +358,10 @@ FileError::FileError(const std::string& msg, const CodeLocation& here )
     Log::status() << what() << std::endl;
 }
 
+FileError::FileError()
+{
+}
+
 CantOpenFile::CantOpenFile(const std::string& file, bool retry):
     retry_(retry)
 {
@@ -414,6 +418,12 @@ RemoteException::RemoteException(const std::string& msg, const std::string& from
 {
 }
 
+UnexpectedState::UnexpectedState(const std::string& msg) : Exception(msg)
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 void handle_panic(const char *msg)
 {
     msg = msg ? msg : "(null message)";
@@ -451,11 +461,20 @@ void handle_panic(const char* msg, const CodeLocation& location )
     handle_panic(s.str().c_str());
 }
 
+void handle_panic_no_log(const char* msg, const CodeLocation& location )
+{
+    std::cout << "PANIC: " << msg << " in " << location << std::endl;
+    std::cerr << "PANIC: " << msg << " in " << location << std::endl;
+
+    ::kill(::getpid(), SIGABRT);
+    ::pause();
+}
+
 OutOfMemory::OutOfMemory():
     Exception("out of memory")
 {
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

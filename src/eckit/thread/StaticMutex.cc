@@ -91,41 +91,49 @@ StaticMutexRegister::StaticMutexRegister() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-StaticMutex::StaticMutex() :
-    exists_(false)
+StaticMutex::StaticMutex()
+// note the absence of the initializer list
+// this class is for static only objects, which are default initialized by the OS to zero
+// we use that fact in case lock() / unlock() are called before the constructor
 {
-    init_mutex_attr(&mutex_);
-    exists_ = true;
-
-    StaticMutexRegister::instance().add(&mutex_);
+    init();
 }
 
 StaticMutex::~StaticMutex()
 {
-    StaticMutexRegister::instance().remove(&mutex_);
-    CHECK_CALL_NOLOG(::pthread_mutex_destroy(&mutex_));
+    if(exists_) {
+        StaticMutexRegister::instance().remove(&mutex_);
+        CHECK_CALL_NOLOG(::pthread_mutex_destroy(&mutex_));
+    }
 }
 
+// if lock() is called before the constructor, we run init() which ensures the construction
 void StaticMutex::lock()
 {
-	if(!exists_)
-	{
-        std::cerr << "StaticMutex used before being constructed" << std::endl;
-        ::abort();
-	}
-
+    init();
     CHECK_CALL_NOLOG(::pthread_mutex_lock(&mutex_));
 }
 
 void StaticMutex::unlock()
 {
-	if(!exists_)
-	{
-        std::cerr << "StaticMutex used before being constructed" << std::endl;
+    if(!exists_)
+    {
+        std::cerr << "StaticMutex::unlock() called before being constructed or locked" << std::endl;
         ::abort();
-	}
+    }
 
     CHECK_CALL_NOLOG(::pthread_mutex_unlock(&mutex_));
+}
+
+void StaticMutex::init()
+{
+    if(!exists_)
+    {
+        init_mutex_attr(&mutex_);
+        exists_ = true;
+
+        StaticMutexRegister::instance().add(&mutex_);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

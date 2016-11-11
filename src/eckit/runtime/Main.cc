@@ -20,14 +20,14 @@
 #include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/thread/Once.h"
+#include "eckit/thread/StaticMutex.h"
 #include "eckit/utils/Translator.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static Once<Mutex> local_mutex;
+static StaticMutex local_mutex;
 static Main* instance_ = 0;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ void Main::terminate() {
 }
 
 void Main::initialise(int argc, char** argv, const char* homeenv) {
-    AutoLock<Mutex> lock(local_mutex);
+    AutoLock<StaticMutex> lock(local_mutex);
     if (instance_ == 0) {
         new Library(argc, argv, homeenv);
     }

@@ -27,7 +27,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// Class meant to be used only for static mutexs protecting local resources inside a single compilation unit
+/// Class meant to be used only for static mutexes protecting local resources inside a single compilation unit
 
 class StaticMutex : private NonCopyable {
 
@@ -42,7 +42,11 @@ public: // methods
 
 protected: // members
 
-	pthread_mutex_t mutex_;
+    void init();
+
+    /// since this will be static memory, it should be initialized to zero by the system
+
+    pthread_mutex_t mutex_;
     bool            exists_;
 
 };

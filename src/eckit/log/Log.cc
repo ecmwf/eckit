@@ -60,19 +60,12 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 
 #if 0 // if we bring this back, then we need to implemenmt the mutex with direct pthread_mutex_t
 
-static Mutex* local_mutex;
-static pthread_once_t once = PTHREAD_ONCE_INIT;
 typedef std::map<std::string, Channel*> ChannelRegister;
-static ChannelRegister* channelsRegister;
-
-static void init() {
-    channelsRegister = new ChannelRegister();
-    local_mutex = new Mutex();
-}
+static Once<ChannelRegister> channelsRegister; // needs Once<> to have a lock/unlock semantic
 
 void Log::registerChannel(const std::string& key, Channel* channel) {
     pthread_once(&once, init);
-    AutoLock<Mutex> lock(*local_mutex);
+    AutoLock<Mutex> lock(channelsRegister);
 
     ASSERT(channel);
     ChannelRegister::iterator itr = channelsRegister->find(key);

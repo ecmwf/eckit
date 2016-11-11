@@ -15,11 +15,10 @@
 
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template<class T> class Once : private NonCopyable {
 public:
@@ -53,7 +52,7 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template<class T> pthread_once_t Once<T>::once_ = PTHREAD_ONCE_INIT;
 template<class T> pthread_mutex_t Once<T>::mutex_;
@@ -85,14 +84,14 @@ template<class T> void Once<T>::init()
 {
 	pthread_mutexattr_t attr;
 
-  ::pthread_mutexattr_init(&attr);
+    ::pthread_mutexattr_init(&attr);
 
 	//::pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE);
 
 	pthread_mutex_init(&mutex_,&attr);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

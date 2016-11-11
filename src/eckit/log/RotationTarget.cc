@@ -15,13 +15,13 @@
 #include "eckit/log/TimeStamp.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
+#include "eckit/thread/StaticMutex.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static Mutex local_mutex;
+static StaticMutex local_mutex;
 
 static std::ofstream* last      = 0;
 static time_t         lastTime  = 0;
@@ -60,11 +60,11 @@ RotationTarget::RotationTarget() {
 }
 
 void RotationTarget::write(const char* start, const char* end) {
-    AutoLock<Mutex> lock(local_mutex);
+    AutoLock<StaticMutex> lock(local_mutex);
     rotout().write(start, end - start);
 }
 void RotationTarget::flush() {
-    AutoLock<Mutex> lock(local_mutex);
+    AutoLock<StaticMutex> lock(local_mutex);
     rotout().flush();
 }
 

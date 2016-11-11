@@ -8,11 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-// File Mutex.h
-// Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_Mutex_h
-#define eckit_Mutex_h
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Nov 2016
+
+
+#ifndef eckit_StaticMutex_h
+#define eckit_StaticMutex_h
 
 #include <pthread.h>
 
@@ -24,29 +27,27 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Mutex : private NonCopyable {
+/// Class meant to be used only for static mutexes protecting local resources inside a single compilation unit
+
+class StaticMutex : private NonCopyable {
 
 public: // methods
 
-// -- Contructors
+    StaticMutex();
 
-	Mutex(char tag = ' ');
-
-// -- Destructor
-
-	~Mutex();
-
-// -- Methods
+	~StaticMutex();
 
 	void lock();
 	void unlock();
-	char tag() const { return tag_; }
 
 protected: // members
 
-	pthread_mutex_t mutex_;
-	bool            exists_;
-	char            tag_;
+    void init();
+
+    /// since this will be static memory, it should be initialized to zero by the system
+
+    pthread_mutex_t mutex_;
+    bool            exists_;
 
 };
 

@@ -43,9 +43,13 @@ public: // types
 
 public: // methods
 
+#if 0
+
     static void registerChannel(const std::string& key, Channel* channel);
     static void removeChannel(const std::string& key);
     static Channel& channel(const std::string& key);
+
+#endif
 
     /// Channel for debug output
 

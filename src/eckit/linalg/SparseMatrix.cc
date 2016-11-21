@@ -55,7 +55,9 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
     reserve(rows, cols, triplets.size()); // Allocate memory 1 triplet per non-zero
 
     Size pos = 0;
-    Index row = -1;
+    Size row = 0;
+
+    outer_[0] = 0; /* first entry is always zero */
 
     // Build vectors of inner indices and values, update outer index per row
     for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it, ++pos) {
@@ -71,13 +73,15 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
             outer_[++row] = Index(pos);
         }
 
-        inner_[pos] = it->col();
+        inner_[pos] = Index(it->col());
         data_[pos] = it->value();
     }
 
     while (row < rows_) {
         outer_[++row] = Index(pos);
     }
+
+    ASSERT(Size(outer_[ outerSize() - 1 ]) == nonZeros()); /* last entry is always the nnz */
 }
 
 
@@ -86,7 +90,7 @@ SparseMatrix::SparseMatrix(Stream &s) {
     decode(s);
 }
 
-SparseMatrix::SparseMatrix(Scalar* values, Size size, Index rows, Index cols, Index* outer, Index* inner)  :
+SparseMatrix::SparseMatrix(Scalar* values, Size size, Size rows, Size cols, Index* outer, Index* inner)  :
     data_(values),
     size_(size),
     outer_(outer),
@@ -140,10 +144,10 @@ void SparseMatrix::reset() {
 }
 
 // variables into this method must be by value
-void SparseMatrix::reserve(Index rows, Index cols, Size nnz) {
+void SparseMatrix::reserve(Size rows, Size cols, Size nnz) {
 
     ASSERT( nnz );
-    ASSERT( nnz <= Size(rows * cols) );
+    ASSERT( nnz <= rows * cols );
     ASSERT( rows > 0 && cols > 0 ); /* rows and columns must have some size */
 
     reset();
@@ -198,17 +202,17 @@ SparseMatrix& SparseMatrix::setIdentity(Size rows, Size cols) {
     rows_ = rows;
     cols_ = cols;
 
-    Index nnz = std::min(rows_, cols_);
+    Size nnz = std::min(rows_, cols_);
 
     reserve(rows_, cols_, nnz);
 
-    for(Index i = 0; i < nnz; ++i) {
-        outer_[i] = i;
-        inner_[i] = i;
+    for(Size i = 0; i < nnz; ++i) {
+        outer_[i] = Index(i);
+        inner_[i] = Index(i);
     }
 
-    for(Index i = nnz; i <= rows_; ++i) {
-        outer_[i] = nnz;
+    for(Size i = nnz; i <= rows_; ++i) {
+        outer_[i] = Index(nnz);
     }
 
     for(Size i = 0; i < size_; ++i) {
@@ -227,9 +231,12 @@ SparseMatrix& SparseMatrix::transpose() {
 
     std::vector<Triplet> triplets;
     triplets.reserve(nonZeros());
-    for (Index r = 0; r < rows_; ++r)
-        for (Index c = outer_[r]; c < outer_[r + 1]; ++c)
-            triplets.push_back(Triplet(inner_[c], r, data_[c]));
+    for (Size r = 0; r < rows_; ++r) {
+        for (Index c = outer_[r]; c < outer_[r + 1]; ++c) {
+            ASSERT(inner_[c] >= 0);
+            triplets.push_back(Triplet(Size(inner_[c]), r, data_[c]));
+        }
+    }
 
     std::sort(triplets.begin(), triplets.end()); // triplets must be sorted by row
 
@@ -245,10 +252,10 @@ SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
     std::vector<Scalar> v;
     std::vector<Index> inner;
 
-    Index nnz = 0;
-    for(Index r = 0; r < rows_; ++r) {
+    Size nnz = 0;
+    for(Size r = 0; r < rows_; ++r) {
         const Index start = outer_[r];
-        outer_[r] = nnz;
+        outer_[r] = Index(nnz);
         for(Index c = start; c < outer_[r + 1]; ++c)
             if(data_[c] != val) {
                 v.push_back(data_[c]);
@@ -256,7 +263,7 @@ SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
                 ++nnz;
             }
     }
-    outer_[rows_] = nnz;
+    outer_[rows_] = Index(nnz);
 
     SparseMatrix tmp;
     tmp.reserve(rows_, cols_, nnz);
@@ -290,8 +297,8 @@ void SparseMatrix::encode(Stream &s) const {
 
 void SparseMatrix::decode(Stream &s) {
 
-    Index rows;
-    Index cols;
+    Size rows;
+    Size cols;
     Size nnz;
 
     s >> rows;
@@ -323,19 +330,15 @@ Stream& operator<<(Stream& s, const SparseMatrix& v) {
     return s;
 }
 
+SparseMatrix::iterator SparseMatrix::row(const Size& row) {
+    NOTIMP;
+}
 
-void SparseMatrix::const_iterator::row(const Index& rowIndex) {
-    ASSERT(rowIndex < matrix_.rows_);
-    row_ = rowIndex;
-    index_ = matrix_.outer_[row_];
+SparseMatrix::const_iterator SparseMatrix::row(const Size& row) const {
 
-    while (index_ >= matrix_.outer_[row_+1]) {
-        ++row_;
-        if (row_ >= matrix_.rows_) {
-            break;
-        }
-    }
-    index_ = matrix_.outer_[row_];
+    ASSERT(row < rows_);
+
+    return const_iterator(*this, row);
 }
 
 
@@ -347,15 +350,16 @@ SparseMatrix::const_iterator SparseMatrix::const_iterator::operator++(int) {
 
 
 SparseMatrix::const_iterator& SparseMatrix::const_iterator::operator++() {
-    ASSERT(*this);
 
-    ++index_;
-    while (index_ >= matrix_.outer_[row_+1]) {
-        ++row_;
-        if (row_ >= matrix_.rows_) {
-            break;
-        }
-    }
+    NOTIMP;
+
+//    ++index_;
+//    while (index_ >= matrix_.outer_[row_+1]) {
+//        ++row_;
+//        if (row_ >= matrix_.rows_) {
+//            break;
+//        }
+//    }
 
     return *this;
 }
@@ -364,6 +368,11 @@ SparseMatrix::const_iterator& SparseMatrix::const_iterator::operator++() {
 const Scalar& SparseMatrix::const_iterator::operator*() const {
     ASSERT(size_t(index_) < matrix_.nonZeros());
     return matrix_.data_[index_];
+}
+
+void SparseMatrix::const_iterator::positionToRow(Size row)
+{
+    NOTIMP;
 }
 
 
@@ -375,5 +384,5 @@ Scalar& SparseMatrix::iterator::operator*() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace linalg
+} // namespace linalg
 } // namespace eckit

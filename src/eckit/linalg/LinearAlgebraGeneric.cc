@@ -31,7 +31,7 @@ static void dsp(const Vector& d, SparseMatrix& A) {
     const Index* outer = A.outer();
     // FIXME: better use InnerIterator
     Scalar* data = const_cast<Scalar*>(A.data());
-    for (size_t r = 0; r < A.rows(); ++r)
+    for (Size r = 0; r < A.rows(); ++r)
         for (Index oi = outer[r]; oi < outer[r+1]; ++oi)
             data[oi] *= d[r];
 }
@@ -67,7 +67,7 @@ void LinearAlgebraGeneric::gemv(const Matrix& A, const Vector& x, Vector& y) con
 
     for (size_t r = 0; r < A.rows(); ++r) {
         y[r] = 0.;
-        for (size_t c = 0; c < A.cols(); ++c) y[r] += A(r, c) * x[c];
+        for (Size c = 0; c < A.cols(); ++c) y[r] += A(r, c) * x[c];
     }
 }
 

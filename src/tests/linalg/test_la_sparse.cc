@@ -37,8 +37,8 @@ SparseMatrix S(Size rows, Size cols, Size nnz, ...) {
     va_start(args, nnz);
     std::vector<Triplet> triplets;
     for (Size n = 0; n < nnz; ++n) {
-        Index row = va_arg(args, Index);
-        Index col = va_arg(args, Index);
+        Size row = Size( va_arg(args, int) );
+        Size col = Size( va_arg(args, int) );
         Scalar v = va_arg(args, Scalar);
         triplets.push_back(Triplet(row, col, v));
     }
@@ -137,6 +137,7 @@ BOOST_AUTO_TEST_CASE(test_set_from_triplets) {
         Scalar data[2] = {1., 2.};
         test(S(6, 6, 2, 1, 0, 1., 3, 3, 2.), outer, inner, data);
     }
+
     // Rows in wrong order (not triggering right now since triplets are sorted)
     //BOOST_CHECK_THROW(S(2, 2, 2, 1, 1, 1., 0, 0, 1.), AssertionFailed);
 }
@@ -222,7 +223,10 @@ BOOST_AUTO_TEST_CASE(test_iterator) {
 
     // go back and re-check entry #1
     // (row 0 is empty, should relocate to row 1)
-    it.row(0);
+
+
+//    it =  A.row(0);
+
     BOOST_CHECK(it);
 
     BOOST_CHECK_EQUAL(it.row(), 1);

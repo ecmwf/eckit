@@ -27,6 +27,8 @@ struct Setup {
     Setup() {
         eckit::Main::initialise(boost::unit_test::framework::master_test_suite().argc,
                                 boost::unit_test::framework::master_test_suite().argv);
+
+//        eckit::Main::instance().assertDumps(false);
     }
 };
 

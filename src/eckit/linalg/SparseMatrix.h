@@ -21,6 +21,7 @@
 #include "eckit/linalg/types.h"
 #include "eckit/linalg/Triplet.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
@@ -49,7 +50,7 @@ public:  // methods
     SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets);
 
     /// Construct vector from existing data (does NOT take ownership)
-    SparseMatrix(Scalar* values, Size size, Index rows, Index cols, Index* outer, Index* inner);
+    SparseMatrix(Scalar* values, Size size, Size rows, Size cols, Index* outer, Index* inner);
 
     /// Constructor from Stream
     SparseMatrix(Stream& v);
@@ -100,7 +101,7 @@ public:
     const Index* inner() const { return inner_; }
 
     /// Reserve memory for given number of non-zeros (invalidates all data arrays)
-    void reserve(Index rows, Index cols, Size nnz);
+    void reserve(Size rows, Size cols, Size nnz);
 
     /// Returns the footprint of the matrix in memory
     size_t footprint() const;
@@ -108,26 +109,36 @@ public:
 public: // iterators
 
     struct const_iterator {
-        const_iterator(const SparseMatrix& matrix) :
-            matrix_(const_cast< SparseMatrix& >(matrix)) {
-            row(0);
+        const_iterator(const SparseMatrix& matrix, Size row = 0) :
+            matrix_(const_cast< SparseMatrix& >(matrix)),
+            index_(0)
+        {
+            positionToRow(row);
         }
 
-        Index col() const { return matrix_.inner_[index_]; }
-        Index row() const { return row_; }
-        void row(const Index&);
+        Size col() const { return Size(matrix_.inner_[index_]); }
+        Size row() const { NOTIMP; }
 
-        operator bool() const { return index_ < Index(matrix_.size_); }
+        operator bool() const { return index_ < matrix_.size_; }
         const_iterator& operator++();
         const_iterator operator++(int);
+
+        bool operator==(const const_iterator& other) const {
+            return     &other.matrix_ == &matrix_
+                    && other.index_ == index_;
+        }
+
+        bool operator!=(const const_iterator& other) const { return operator==(other); }
 
         const Scalar& value() const { return matrix_.data_[index_]; }
         const Scalar& operator*() const;
 
     protected:
+
+        void positionToRow(Size row);
+
         SparseMatrix& matrix_;
-        Index row_;
-        Index index_;
+        Size index_;
     };
 
     struct iterator : const_iterator {
@@ -135,6 +146,9 @@ public: // iterators
         Scalar& value() { return matrix_.data_[index_]; }
         Scalar& operator*();
     };
+
+    const_iterator row(const Size& row) const;
+    iterator row(const Size& row);
 
 private: // methods
 
@@ -168,8 +182,8 @@ private: // members
     Index*       outer_;  ///< Starts of rows
     Index*       inner_;  ///< Column indices
 
-    Index        rows_;   ///< Number of rows
-    Index        cols_;   ///< Number of columns
+    Size         rows_;   ///< Number of rows
+    Size         cols_;   ///< Number of columns
 
     bool own_;   ///< do we own the memory allocated in the containers ?
 

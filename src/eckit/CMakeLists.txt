@@ -188,6 +188,8 @@ filesystem/marsfs/MarsFSClient.h
 filesystem/marsfs/MarsFSClient.cc )
 
 list( APPEND eckit_thread_srcs
+thread/StaticMutex.h
+thread/StaticMutex.cc
 thread/Mutex.h
 thread/Mutex.cc
 thread/MutexCond.h

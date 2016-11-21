@@ -21,7 +21,6 @@
 #include "eckit/linalg/types.h"
 #include "eckit/linalg/Triplet.h"
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
@@ -109,46 +108,39 @@ public:
 public: // iterators
 
     struct const_iterator {
-        const_iterator(const SparseMatrix& matrix, Size row = 0) :
+        const_iterator(const SparseMatrix& matrix, Size rowIndex = 0) :
             matrix_(const_cast< SparseMatrix& >(matrix)),
-            index_(0)
-        {
-            positionToRow(row);
+            index_(0) {
+            positionToRow(rowIndex);
         }
 
-        Size col() const { return Size(matrix_.inner_[index_]); }
-        Size row() const { NOTIMP; }
+        Size col() const;
+        Size row() const;
 
         operator bool() const { return index_ < matrix_.size_; }
         const_iterator& operator++();
         const_iterator operator++(int);
 
-        bool operator==(const const_iterator& other) const {
-            return     &other.matrix_ == &matrix_
-                    && other.index_ == index_;
-        }
+        bool operator==(const const_iterator& other) const { return &other.matrix_ == &matrix_ && other.index_ == index_; }
+        bool operator!=(const const_iterator& other) const { return !operator==(other); }
 
-        bool operator!=(const const_iterator& other) const { return operator==(other); }
-
-        const Scalar& value() const { return matrix_.data_[index_]; }
         const Scalar& operator*() const;
 
     protected:
 
-        void positionToRow(Size row);
+        void positionToRow(Size rowIndex);
 
         SparseMatrix& matrix_;
         Size index_;
     };
 
     struct iterator : const_iterator {
-        iterator(SparseMatrix& matrix) : const_iterator(matrix) {}
-        Scalar& value() { return matrix_.data_[index_]; }
+        iterator(SparseMatrix& matrix, Size rowIndex = 0) : const_iterator(matrix, rowIndex) {}
         Scalar& operator*();
     };
 
-    const_iterator row(const Size& row) const;
-    iterator row(const Size& row);
+    const_iterator row(Size rowIndex) const;
+    iterator row(Size rowIndex);
 
 private: // methods
 

@@ -8,19 +8,22 @@
  * nor does it submit to any jurisdiction.
  */
 
+
+#include "eckit/linalg/SparseMatrix.h"
+
+#include <algorithm>
+#include <iterator>
 #include <numeric>
 
 // For endianness
 #include "eckit/eckit.h"
 
-
 #include "eckit/exception/Exceptions.h"
-#include "eckit/serialisation/Stream.h"
-#include "eckit/io/BufferedHandle.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/io/BufferedHandle.h"
 #include "eckit/serialisation/FileStream.h"
+#include "eckit/serialisation/Stream.h"
 
-#include "eckit/linalg/SparseMatrix.h"
 
 namespace eckit {
 namespace linalg {
@@ -195,6 +198,18 @@ size_t SparseMatrix::footprint() const {
 }
 
 
+SparseMatrix::const_iterator SparseMatrix::row(Size rowIndex) const {
+    ASSERT(rowIndex < rows_);
+    return const_iterator(*this, rowIndex);
+}
+
+
+SparseMatrix::iterator SparseMatrix::row(Size rowIndex) {
+    ASSERT(rowIndex < rows_);
+    return iterator(*this, rowIndex);
+}
+
+
 SparseMatrix& SparseMatrix::setIdentity(Size rows, Size cols) {
 
     ASSERT( rows > 0 && cols > 0 );
@@ -330,16 +345,10 @@ Stream& operator<<(Stream& s, const SparseMatrix& v) {
     return s;
 }
 
-SparseMatrix::iterator SparseMatrix::row(const Size& row) {
-    NOTIMP;
-}
 
-SparseMatrix::const_iterator SparseMatrix::row(const Size& row) const {
 
-    ASSERT(row < rows_);
 
-    return const_iterator(*this, row);
-}
+
 
 
 SparseMatrix::const_iterator SparseMatrix::const_iterator::operator++(int) {
@@ -349,35 +358,49 @@ SparseMatrix::const_iterator SparseMatrix::const_iterator::operator++(int) {
 }
 
 
+Size SparseMatrix::const_iterator::col() const {
+    // ensure valid iterator via 'operator bool()'
+    ASSERT(*this);
+    return Size(matrix_.inner_[index_]);
+}
+
+Size SparseMatrix::const_iterator::row() const {
+    // ensure valid iterator via 'operator bool()'
+    ASSERT(*this);
+
+    // binary search for the row
+    Index* it = std::upper_bound(&(matrix_.outer_[0]), &(matrix_.outer_[matrix_.rows_]), Index(index_));
+    Size rowInFront = Size(std::distance(&(matrix_.outer_[0]), it));
+    ASSERT(rowInFront > 0);
+    ASSERT(rowInFront <= matrix_.rows());
+
+    return rowInFront - 1;
+}
+
 SparseMatrix::const_iterator& SparseMatrix::const_iterator::operator++() {
-
-    NOTIMP;
-
-//    ++index_;
-//    while (index_ >= matrix_.outer_[row_+1]) {
-//        ++row_;
-//        if (row_ >= matrix_.rows_) {
-//            break;
-//        }
-//    }
-
+    ++index_;
     return *this;
 }
 
 
 const Scalar& SparseMatrix::const_iterator::operator*() const {
-    ASSERT(size_t(index_) < matrix_.nonZeros());
+    ASSERT(index_ < matrix_.nonZeros());
     return matrix_.data_[index_];
 }
 
-void SparseMatrix::const_iterator::positionToRow(Size row)
-{
-    NOTIMP;
+
+void SparseMatrix::const_iterator::positionToRow(Size rowIndex) {
+    while ((rowIndex < matrix_.rows_) &&
+           (matrix_.outer_[rowIndex] >= matrix_.outer_[rowIndex+1])) {
+        ++rowIndex;
+    }
+    index_ = (rowIndex <= matrix_.rows_)? Size(matrix_.outer_[rowIndex])
+                                        : matrix_.nonZeros();
 }
 
 
 Scalar& SparseMatrix::iterator::operator*() {
-    ASSERT(size_t(index_) < matrix_.nonZeros());
+    ASSERT(index_ < matrix_.nonZeros());
     return matrix_.data_[index_];
 }
 

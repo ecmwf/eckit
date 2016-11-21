@@ -369,12 +369,14 @@ Size SparseMatrix::const_iterator::row() const {
     ASSERT(*this);
 
     // binary search for the row
-    Index* it = std::upper_bound(&(matrix_.outer_[0]), &(matrix_.outer_[matrix_.rows_]), Index(index_));
-    Size rowInFront = Size(std::distance(&(matrix_.outer_[0]), it));
-    ASSERT(rowInFront > 0);
-    ASSERT(rowInFront <= matrix_.rows());
+    Index* first = &(matrix_.outer_[0]);
+    Index* found = std::lower_bound(first, &(matrix_.outer_[matrix_.rows_]), Index(index_));
 
-    return rowInFront - 1;
+    Size rowIndex = Size(std::distance(first, found));
+    ASSERT(rowIndex > 0);
+    ASSERT(rowIndex < matrix_.rows());
+
+    return rowIndex;
 }
 
 SparseMatrix::const_iterator& SparseMatrix::const_iterator::operator++() {

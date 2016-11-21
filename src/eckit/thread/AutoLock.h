@@ -13,33 +13,36 @@
 
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
-#include "eckit/thread/AutoLocker.h"
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // The class AutoLock is used to AutoLock a mutex in a multi-threaded
 // environment. AutoLocks are exception safe.
 
 template<class T> 
-class AutoLock : public AutoLocker,
-                 private NonCopyable {
+class AutoLock : private NonCopyable {
+
 public:
 
 // -- Contructors
 	
-    AutoLock(T& resource) : resource_(resource) 
-							{ want(&resource); resource_.lock(); got(&resource);}
-    AutoLock(T* resource) : resource_(*resource)
-							{ want(resource); resource_.lock(); got(resource);}
+    AutoLock(T& resource) :
+        resource_(resource) {
+        resource_.lock();
+    }
+
+    AutoLock(T* resource) :
+        resource_(*resource) {
+        resource_.lock();
+    }
 
 // -- Destructor
 
-    ~AutoLock() { release(&resource_); resource_.unlock(); }
+    ~AutoLock() { resource_.unlock(); }
 
 private: // members
 	
@@ -47,7 +50,7 @@ private: // members
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template<class T> 
 class AutoSharedLock : private NonCopyable {
@@ -70,7 +73,7 @@ private: // members
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template<class T>
 class TimedAutoLock : private NonCopyable {
@@ -94,7 +97,7 @@ private: // members
     Timer timer_;
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template<class T, class U>
 class TraceAutoLock : private NonCopyable {
@@ -118,7 +121,7 @@ private: // members
     TraceTimer<U> timer_;
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

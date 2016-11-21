@@ -12,6 +12,9 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
+#ifndef eckit_system_LibEcKit_H
+#define eckit_system_LibEcKit_H
+
 #include "eckit/system/Library.h"
 
 namespace eckit {
@@ -39,3 +42,4 @@ protected:
 
 } // namespace eckit
 
+#endif

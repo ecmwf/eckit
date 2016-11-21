@@ -38,7 +38,7 @@
 #include "eckit/types/Types.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/thread/Once.h"
+#include "eckit/thread/StaticMutex.h"
 #include "eckit/utils/Regex.h"
 
 namespace eckit {
@@ -50,13 +50,14 @@ static std::vector<std::pair<std::string, std::string> > pathsTable;
 
 static void readPathsTable() {
 
-    eckit::PathName path("~/etc/paths");
+    static PathName path = eckit::Resource<PathName>("libraryConfigPaths,$LIBRARY_CONFIG_PATHS", "~/etc/paths");
+
     std::ifstream in(path.localPath());
 
     // eckit::Log::info() << "Loading library paths from " << path << std::endl;
 
     if (!in) {
-        eckit::Log::error() << path << eckit::Log::syserr << std::endl;
+        // eckit::Log::error() << path << eckit::Log::syserr << std::endl;
         return;
     }
 
@@ -95,7 +96,7 @@ static void readPathsTable() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static Once<Mutex> local_mutex;
+static StaticMutex local_mutex;
 
 // I need to come back here when we have a proper std::string class
 
@@ -205,7 +206,7 @@ bool LocalPathName::available() const
 
 LocalPathName LocalPathName::cwd()
 {
-    AutoLock<Mutex> lock(local_mutex);
+    AutoLock<StaticMutex> lock(local_mutex);
     char buf [PATH_MAX+1];
 	if(!getcwd(buf, sizeof(buf)))
 		throw FailedSystemCall("getcwd");
@@ -214,7 +215,7 @@ LocalPathName LocalPathName::cwd()
 
 LocalPathName LocalPathName::unique(const LocalPathName& path)
 {
-    AutoLock<Mutex> lock(local_mutex);
+    AutoLock<StaticMutex> lock(local_mutex);
 
     char hostname[256];
     SYSCALL(::gethostname(hostname, sizeof(hostname)));

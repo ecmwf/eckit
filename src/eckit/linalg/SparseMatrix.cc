@@ -121,12 +121,12 @@ SparseMatrix::SparseMatrix(const SparseMatrix& other) {
     }
 }
 
-SparseMatrix& SparseMatrix::operator=(const SparseMatrix& other)
-{
+SparseMatrix& SparseMatrix::operator=(const SparseMatrix& other) {
     SparseMatrix copy(other);
     swap(copy);
     return *this;
 }
+
 
 void SparseMatrix::reset() {
 
@@ -146,8 +146,9 @@ void SparseMatrix::reset() {
     inner_ = 0;
 }
 
-// variables into this method must be by value
+
 void SparseMatrix::reserve(Size rows, Size cols, Size nnz) {
+    // variables into this method must be by value
 
     ASSERT( nnz );
     ASSERT( nnz <= rows * cols );
@@ -198,18 +199,6 @@ size_t SparseMatrix::footprint() const {
 }
 
 
-SparseMatrix::const_iterator SparseMatrix::row(Size rowIndex) const {
-    ASSERT(rowIndex < rows_);
-    return const_iterator(*this, rowIndex);
-}
-
-
-SparseMatrix::iterator SparseMatrix::row(Size rowIndex) {
-    ASSERT(rowIndex < rows_);
-    return iterator(*this, rowIndex);
-}
-
-
 SparseMatrix& SparseMatrix::setIdentity(Size rows, Size cols) {
 
     ASSERT( rows > 0 && cols > 0 );
@@ -238,7 +227,6 @@ SparseMatrix& SparseMatrix::setIdentity(Size rows, Size cols) {
 }
 
 
-
 SparseMatrix& SparseMatrix::transpose() {
 
     /// @note Can SparseMatrix::transpose() be done more efficiently?
@@ -261,6 +249,7 @@ SparseMatrix& SparseMatrix::transpose() {
 
     return *this;
 }
+
 
 SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
 
@@ -293,7 +282,6 @@ SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
 }
 
 
-
 void SparseMatrix::encode(Stream &s) const {
 
     s << rows_;
@@ -309,6 +297,7 @@ void SparseMatrix::encode(Stream &s) const {
     s.writeLargeBlob(inner_, innerSize() * sizeof(Index));
     s.writeLargeBlob(data_,  dataSize()  * sizeof(Scalar));
 }
+
 
 void SparseMatrix::decode(Stream &s) {
 
@@ -346,15 +335,17 @@ Stream& operator<<(Stream& s, const SparseMatrix& v) {
 }
 
 
-
-
-
-
-
 SparseMatrix::const_iterator SparseMatrix::const_iterator::operator++(int) {
     const_iterator it = *this;
     ++(*this);
     return it;
+}
+
+
+SparseMatrix::const_iterator& SparseMatrix::const_iterator::operator=(const SparseMatrix::const_iterator& other) {
+    ASSERT(&matrix_ == &other.matrix_);
+    index_ = other.index_;
+    return *this;
 }
 
 
@@ -364,20 +355,25 @@ Size SparseMatrix::const_iterator::col() const {
     return Size(matrix_.inner_[index_]);
 }
 
+
 Size SparseMatrix::const_iterator::row() const {
     // ensure valid iterator via 'operator bool()'
     ASSERT(*this);
 
     // binary search for the row
-    Index* first = &(matrix_.outer_[0]);
-    Index* found = std::lower_bound(first, &(matrix_.outer_[matrix_.rows_]), Index(index_));
+    // note: actually finds the row's end (or, the beggining of next row)
+    const Index* first = matrix_.outer_;
+    const Index* last  = first + matrix_.outerSize();
+    const Index* found = std::upper_bound(first, last, Index(index_));
+    ASSERT(found != last);
+    ASSERT(found > first);  // should hold even if index_ == 0
 
-    Size rowIndex = Size(std::distance(first, found));
-    ASSERT(rowIndex > 0);
+    Size rowIndex = Size(std::distance(first, found) - 1);
     ASSERT(rowIndex < matrix_.rows());
 
     return rowIndex;
 }
+
 
 SparseMatrix::const_iterator& SparseMatrix::const_iterator::operator++() {
     ++index_;
@@ -386,18 +382,20 @@ SparseMatrix::const_iterator& SparseMatrix::const_iterator::operator++() {
 
 
 const Scalar& SparseMatrix::const_iterator::operator*() const {
+    if (index_ >= matrix_.nonZeros()) {
+        int idex_ = 42;
+    }
     ASSERT(index_ < matrix_.nonZeros());
     return matrix_.data_[index_];
 }
 
 
-void SparseMatrix::const_iterator::positionToRow(Size rowIndex) {
-    while ((rowIndex < matrix_.rows_) &&
-           (matrix_.outer_[rowIndex] >= matrix_.outer_[rowIndex+1])) {
+SparseMatrix::const_iterator& SparseMatrix::const_iterator::begin(Size rowIndex) {
+    while ((rowIndex < matrix_.rows_) && (matrix_.outer_[rowIndex] >= matrix_.outer_[rowIndex+1])) {
         ++rowIndex;
     }
-    index_ = (rowIndex <= matrix_.rows_)? Size(matrix_.outer_[rowIndex])
-                                        : matrix_.nonZeros();
+    index_ = (rowIndex < matrix_.rows_)? Size(matrix_.outer_[rowIndex]) : matrix_.nonZeros();
+    return *this;
 }
 
 

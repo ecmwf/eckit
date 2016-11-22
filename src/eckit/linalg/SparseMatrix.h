@@ -111,8 +111,10 @@ public: // iterators
         const_iterator(const SparseMatrix& matrix, Size rowIndex = 0) :
             matrix_(const_cast< SparseMatrix& >(matrix)),
             index_(0) {
-            positionToRow(rowIndex);
+            begin(rowIndex);
         }
+
+        const_iterator& begin(Size rowIndex = 0);
 
         Size col() const;
         Size row() const;
@@ -120,15 +122,14 @@ public: // iterators
         operator bool() const { return index_ < matrix_.size_; }
         const_iterator& operator++();
         const_iterator operator++(int);
+        const_iterator& operator=(const const_iterator& other);
 
-        bool operator==(const const_iterator& other) const { return &other.matrix_ == &matrix_ && other.index_ == index_; }
         bool operator!=(const const_iterator& other) const { return !operator==(other); }
+        bool operator==(const const_iterator& other) const { return &other.matrix_ == &matrix_ && other.index_ == index_; }
 
         const Scalar& operator*() const;
 
     protected:
-
-        void positionToRow(Size rowIndex);
 
         SparseMatrix& matrix_;
         Size index_;
@@ -139,8 +140,13 @@ public: // iterators
         Scalar& operator*();
     };
 
-    const_iterator row(Size rowIndex) const;
-    iterator row(Size rowIndex);
+    const_iterator begin(Size rowIndex=0) const { return const_iterator(*this, rowIndex); }
+    const_iterator end(Size rowIndex)     const { return const_iterator(*this, rowIndex+1); }
+    const_iterator end()                  const { return const_iterator(*this, rows_); }
+
+    iterator       begin(Size rowIndex=0) { return iterator(*this, rowIndex); }
+    iterator       end(Size rowIndex)     { return iterator(*this, rowIndex+1); }
+    iterator       end()                  { return iterator(*this, rows_); }
 
 private: // methods
 

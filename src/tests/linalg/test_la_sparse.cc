@@ -218,20 +218,23 @@ BOOST_AUTO_TEST_CASE(test_iterator) {
     BOOST_CHECK(*it == 2.);
 
     // go past the end
+    BOOST_CHECK(it != A.end());
     ++it;
+    BOOST_CHECK(it == A.end());
     BOOST_CHECK(!it);
 
     // go back and re-check entry #1
     // (row 0 is empty, should relocate to row 1)
-
-
-//    it =  A.row(0);
-
+    it = A.begin();
     BOOST_CHECK(it);
 
     BOOST_CHECK_EQUAL(it.row(), 1);
     BOOST_CHECK_EQUAL(it.col(), 2);
     BOOST_CHECK(*it == 1.);
+
+    // go way past the end
+    it = A.begin(42);
+    BOOST_CHECK(!it);
 }
 
 BOOST_AUTO_TEST_CASE(test_transpose_square) {

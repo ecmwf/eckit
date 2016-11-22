@@ -109,29 +109,35 @@ public: // iterators
 
     struct const_iterator {
         const_iterator(const SparseMatrix& matrix, Size rowIndex = 0) :
-            matrix_(const_cast< SparseMatrix& >(matrix)),
+            matrix_(const_cast<SparseMatrix*>(&matrix)),
             index_(0) {
-            begin(rowIndex);
+            position(rowIndex);
         }
 
-        const_iterator& begin(Size rowIndex = 0);
+        const_iterator(const const_iterator& other) {
+            *this = other;
+        }
 
         Size col() const;
         Size row() const;
 
-        operator bool() const { return index_ < matrix_.size_; }
+        operator bool() const { return matrix_ && ( index_ < matrix_->size_ ); }
+
         const_iterator& operator++();
-        const_iterator operator++(int);
+        const_iterator  operator++(int);
         const_iterator& operator=(const const_iterator& other);
 
         bool operator!=(const const_iterator& other) const { return !operator==(other); }
-        bool operator==(const const_iterator& other) const { return &other.matrix_ == &matrix_ && other.index_ == index_; }
+        bool operator==(const const_iterator& other) const { return other.matrix_ == matrix_ && other.index_ == index_; }
 
         const Scalar& operator*() const;
 
     protected:
 
-        SparseMatrix& matrix_;
+        /// advances the iterator to the begining of a given row
+        const_iterator& position(Size rowIndex = 0);
+
+        SparseMatrix* matrix_;
         Size index_;
     };
 

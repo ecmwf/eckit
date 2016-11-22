@@ -204,7 +204,7 @@ BOOST_AUTO_TEST_CASE(test_iterator) {
     A.prune();
     BOOST_CHECK_EQUAL(A.nonZeros(), 2);
 
-    SparseMatrix::const_iterator it(A);
+    SparseMatrix::const_iterator it = A.begin();
 
     // check entry #1
     BOOST_CHECK_EQUAL(it.row(), 1);

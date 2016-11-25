@@ -29,7 +29,7 @@ public:
         return (
            ::getenv("OMPI_COMM_WORLD_SIZE") || // OpenMPI
            ::getenv("ALPS_APP_PE")          || // Cray
-           ::getenv("I_MPI_ROOT")           || // Intel
+           ::getenv("PMI_SIZE")             || // Intel
            ::getenv("ECKIT_USE_MPI")        ); // If all else fails
     }
 

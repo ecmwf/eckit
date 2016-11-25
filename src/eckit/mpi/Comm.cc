@@ -26,7 +26,11 @@ class Environment {
 public:
 
     static bool areMPIVarsSet() {
-        return (::getenv("OMPI_COMM_WORLD_SIZE") || ::getenv("ALPS_APP_PE"));
+        return (
+           ::getenv("OMPI_COMM_WORLD_SIZE") || // OpenMPI
+           ::getenv("ALPS_APP_PE")          || // Cray
+           ::getenv("I_MPI_CMD")            || // Intel
+           ::getenv("ECKIT_USE_MPI"         ); // If all else fails
     }
 
     static Environment& instance() {

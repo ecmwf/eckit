@@ -19,7 +19,7 @@ MessageTarget::MessageTarget() {
 }
 
 void MessageTarget::line(const char* line) {
-    Monitor::instance().status(line);
+    Monitor::instance().message(line);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

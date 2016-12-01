@@ -58,49 +58,6 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if 0 // if we bring this back, then we need to implemenmt the mutex with direct pthread_mutex_t
-
-typedef std::map<std::string, Channel*> ChannelRegister;
-static Once<ChannelRegister> channelsRegister; // needs Once<> to have a lock/unlock semantic
-
-void Log::registerChannel(const std::string& key, Channel* channel) {
-    pthread_once(&once, init);
-    AutoLock<Mutex> lock(channelsRegister);
-
-    ASSERT(channel);
-    ChannelRegister::iterator itr = channelsRegister->find(key);
-    if (itr == channelsRegister->end()) {
-        channelsRegister->insert(std::make_pair(key, channel));
-    }
-    else {
-        std::ostringstream msg;
-        msg << "Channel with name " << key << " already registered";
-        throw SeriousBug(msg.str());
-    }
-}
-
-void Log::removeChannel(const std::string& key) {
-    pthread_once(&once, init);
-    AutoLock<Mutex> lock(*local_mutex);
-
-    ChannelRegister::iterator itr = channelsRegister->find(key);
-    if (itr != channelsRegister->end()) {
-        delete itr->second;
-        channelsRegister->erase(itr);
-    }
-}
-
-Channel& Log::channel(const std::string& key) {
-    pthread_once(&once, init);
-    AutoLock<Mutex> lock(*local_mutex);
-
-    ChannelRegister::iterator itr = channelsRegister->find(key);
-    ASSERT(itr != channelsRegister->end());
-    return *(itr->second);
-}
-
-#endif
-
 struct CreateStatusChannel {
     Channel* operator()() {
         return new Channel(new StatusTarget());

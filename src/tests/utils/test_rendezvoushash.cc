@@ -70,6 +70,8 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_distribution )
     params.push_back( "2t" );
     params.push_back( "2d" );
     params.push_back( "z" );
+    params.push_back( "u" );
+    params.push_back( "v" );
     params.push_back( "130.128" );
     params.push_back( "138.128" );
 
@@ -80,6 +82,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_distribution )
     nodes.insert("node02");
     nodes.insert("node03");
     nodes.insert("node04");
+    nodes.insert("node05");
+    nodes.insert("node06");
+    nodes.insert("node07");
 
     eckit::RendezvousHash rendezvous(nodes, &md5_hasher);
 

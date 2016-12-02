@@ -49,6 +49,8 @@ public: // methods
 
     void resize(size_t size);
 
+    void swap(Buffer& rhs);
+
 protected: // methods
 
     void create();

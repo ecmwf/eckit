@@ -77,6 +77,15 @@ void Buffer::copy(const char *p, size_t size)
     ::memcpy(buffer_,p,size);
 }
 
+void Buffer::swap(Buffer& rhs) {
+
+    ASSERT(owned_);
+    ASSERT(rhs.owned_);
+
+    std::swap(size_, rhs.size_);
+    std::swap(buffer_, rhs.buffer_);
+}
+
 void eckit::Buffer::resize(size_t size)
 {
     ASSERT(owned_);

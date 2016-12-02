@@ -15,3 +15,8 @@ ecbuild_add_test( TARGET      eckit_test_md5
                   BOOST
                   SOURCES     test_md5.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_rendezvoushash
+                  BOOST
+                  SOURCES     test_rendezvoushash.cc
+                  LIBS        eckit )

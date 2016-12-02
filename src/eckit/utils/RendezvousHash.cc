@@ -27,7 +27,6 @@ RendezvousHash::RendezvousHash(const std::set<RendezvousHash::Node>& nodes, cons
 
 RendezvousHash::~RendezvousHash()
 {
-    AutoLock<Mutex> lock(mutex_);
 }
 
 bool RendezvousHash::addNode(const RendezvousHash::Node& node)

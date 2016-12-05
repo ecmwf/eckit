@@ -484,6 +484,8 @@ utils/MD5.h
 utils/MD5.cc
 utils/Regex.h
 utils/Regex.cc
+utils/RendezvousHash.h
+utils/RendezvousHash.cc
 utils/HyperCube.h
 utils/HyperCube.cc
 utils/RLE.h

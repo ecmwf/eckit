@@ -14,7 +14,7 @@ include( ecbuild_system NO_POLICY_SCOPE )
 
 ecbuild_requires_macro_version( 2.4 )
 
-set( PERSISTENT_NAMESPACE eckit CACHE INTERNAL "" )
+set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
 ###############################################################################
 # local project

@@ -460,4 +460,25 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_data_access ) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_reassign_shorter_string ) {
+
+    ///< @see ECKIT-182
+
+    FixedString<64> fs;
+
+    fs = std::string("calvin");
+
+    BOOST_CHECK_EQUAL(fs, std::string("calvin")); /* this worked */
+
+    fs = std::string("calvin & hobbes");
+
+    BOOST_CHECK_EQUAL(fs, std::string("calvin & hobbes")); /* assinging longer string also worked */
+
+    fs = std::string("susie");
+
+    BOOST_CHECK_EQUAL(fs, std::string("susie")); /* but then assigning shorter did not, resulted "susien & hobbes" */
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 BOOST_AUTO_TEST_SUITE_END()

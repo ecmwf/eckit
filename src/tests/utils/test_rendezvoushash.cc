@@ -167,6 +167,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_add_node )
     params.push_back( "2t" );
     params.push_back( "2d" );
     params.push_back( "z" );
+    params.push_back( "w" );
 
     std::map<std::string, std::string> dict;
     dict["class"]  = "od";
@@ -179,17 +180,21 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_add_node )
     rendezvous.addNode("node02");
 
 
+    const size_t nsteps  = 25;
+    const size_t nlevels = 100;
+
+
     std::map<std::string, size_t> counts;
 
     for(std::vector<std::string>::iterator param = params.begin(); param != params.end(); ++param ) {
 
         dict["param"] = *param;
 
-        for(size_t step = 0; step < 3; ++step) {
+        for(size_t step = 0; step < nsteps; ++step) {
 
             dict["step"]  = toStr(step);
 
-            for( size_t level = 0; level < 10; ++level ) {
+            for( size_t level = 0; level < nlevels; ++level ) {
 
                 dict["level"]  = toStr(level);
 
@@ -210,11 +215,11 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_add_node )
 
         dict["param"] = *param;
 
-        for(size_t step = 0; step < 3; ++step) {
+        for(size_t step = 0; step < nsteps; ++step) {
 
             dict["step"]  = toStr(step);
 
-            for( size_t level = 0; level < 10; ++level ) {
+            for( size_t level = 0; level < nlevels; ++level ) {
 
                 dict["level"]  = toStr(level);
 

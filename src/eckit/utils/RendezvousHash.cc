@@ -13,6 +13,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/types/Types.h"
+#include "eckit/config/LibEcKit.h"
 
 namespace eckit {
 
@@ -64,7 +65,7 @@ RendezvousHash::Node RendezvousHash::selectNode(const RendezvousHash::Key& key)
         std::string toHash = skey + "+" + *itr;
         std::string h = hash_(toHash);
 
-        eckit::Log::info() << "node=" << *itr << ", str=" << toHash << ", hash = " << h << std::endl;
+        Log::debug<LibEcKit>() << "node=" << *itr << ", str=" << toHash << ", hash = " << h << std::endl;
 
         if(h > hashest) {
             hashest = h;
@@ -76,7 +77,7 @@ RendezvousHash::Node RendezvousHash::selectNode(const RendezvousHash::Key& key)
 
     std::sort(vs.begin(), vs.end());
 
-    eckit::Log::info() << vs << std::endl;
+    Log::debug<LibEcKit>() << vs << std::endl;
 
     if(highest == nodes_.end()) {
         std::ostringstream oss;
@@ -84,7 +85,7 @@ RendezvousHash::Node RendezvousHash::selectNode(const RendezvousHash::Key& key)
         throw eckit::BadParameter(oss.str(), Here());
     }
 
-    eckit::Log::info() << "highest=" << *highest << ", hashest=" << hashest << std::endl;
+    Log::debug<LibEcKit>() << "highest=" << *highest << ", hashest=" << hashest << std::endl;
 
     return *highest;
 }

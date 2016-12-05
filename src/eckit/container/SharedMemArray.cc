@@ -8,28 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit.h"
-
 #include <unistd.h>
 #include <stdint.h>
 #include <fcntl.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-#include "eckit/thread/AutoLock.h"
-#include "eckit/container/MappedArray.h"
-#include "eckit/memory/Padded.h"
-
-#include "eckit/os/Stat.h"
-
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-inline unsigned long version(unsigned long long*) { return 1; }
+template<class T>
+unsigned long shared_mem_array_version(T*) { return 1; }
 
 template<class T>
 struct Header {
@@ -42,7 +34,7 @@ struct Header {
 
 template<class T>
 Header<T>::Header():
-    version_(version((T*)0)),
+    version_(shared_mem_array_version((T*)0)),
 	headerSize_(sizeof(Header<T>)),
 	elemSize_(sizeof(T))
 {
@@ -51,30 +43,41 @@ Header<T>::Header():
 template<class T>
 void Header<T>::validate()
 {
-    ASSERT(version_    == version((T*)0));
+    ASSERT(version_    == shared_mem_array_version((T*)0));
 	ASSERT(headerSize_ == sizeof(Header<T>));
 	ASSERT(elemSize_   == sizeof(T));
 }
 
+int tounderscore(int p) {
+    return p == '/' ? '_' : p;
+}
+
 template<class T>
-MappedArray<T>::MappedArray(const PathName& path, unsigned long size):
+SharedMemArray<T>::SharedMemArray(const PathName& path, size_t size):
 	sem_(path),
     size_(size)    
 {
+    eckit::Log::info() << "SharedMemArray path=" << path << ", size=" << size << std::endl;
 
 	AutoLock<Semaphore> lock(sem_);
 
 	typedef Padded<Header<T>,4096> PaddedHeader;
 
-	fd_ = ::open(path.localPath(),O_RDWR | O_CREAT, 0777);
+    std::string r = path.asString();
+    std::transform(r.begin(), r.end(), r.begin(), static_cast < int(*)(int) > (tounderscore));
+
+    eckit::Log::info() << "SharedMemArray realpath=" << r << std::endl;
+
+
+    fd_ = ::shm_open(r.c_str(), O_RDWR | O_CREAT, 0777);
 	if(fd_ < 0)
 	{
-        Log::error() << "open(" << path << ')' << Log::syserr << std::endl;
+        Log::error() << "shm_open(" << r << ')' << Log::syserr << std::endl;
         throw FailedSystemCall("open",Here());
 	}
 
     Stat::Struct s;
-    SYSCALL(Stat::stat(path.localPath(),&s));
+    SYSCALL(Stat::fstat(fd_, &s));
 
     bool initHeader = s.st_size < static_cast<long int>( sizeof(PaddedHeader) );
 
@@ -92,10 +95,10 @@ MappedArray<T>::MappedArray(const PathName& path, unsigned long size):
 			SYSCALL(write(fd_,buf2,sizeof(buf2)));
 	}
 
-	map_ = ::mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0);
+    map_ = ::mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd_, 0);
     if(map_ == MAP_FAILED)
     {
-        Log::error() << "MappedArray path=" << path << " size=" << size
+        Log::error() << "SharedMemArray path=/dev/shm/" << path << " size=" << size
                      << " fails to mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0)"
                      << Log::syserr << std::endl;
         throw FailedSystemCall("mmap",Here());
@@ -113,20 +116,20 @@ MappedArray<T>::MappedArray(const PathName& path, unsigned long size):
 }
 
 template<class T>
-MappedArray<T>::~MappedArray()
+SharedMemArray<T>::~SharedMemArray()
 {
 	// Unmap here...
 }
 
 template<class T>
-void MappedArray<T>::sync()
+void SharedMemArray<T>::sync()
 {
-	int ret = fsync(fd_);
-	while(ret < 0 && errno == EINTR)
-		ret = fsync(fd_);
+//	int ret = fsync(fd_);
+//	while(ret < 0 && errno == EINTR)
+//		ret = fsync(fd_);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

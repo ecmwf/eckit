@@ -42,6 +42,9 @@ container/BSPTree.h
 container/MappedArray.h
 container/MappedArray.cc
 
+container/SharedMemArray.h
+container/SharedMemArray.cc
+
 container/sptree/SPIterator.h
 container/sptree/SPNode.h
 
@@ -586,8 +589,9 @@ list( APPEND eckit_templates
 					container/CacheLRU.cc
                     container/CacheManager.cc
                     container/BTree.cc
-					container/MappedArray.cc
-					container/bsptree/BSPNode.cc
+                    container/MappedArray.cc
+                    container/SharedMemArray.cc
+                    container/bsptree/BSPNode.cc
 					container/kdtree/KDNode.cc
 					container/sptree/SPNode.cc
 					filesystem/BasePathNameT.cc

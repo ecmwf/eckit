@@ -29,7 +29,7 @@ namespace eckit {
 
 class RendezvousHash : private eckit::NonCopyable {
 
-public: // types-
+public: // types
 
     typedef std::string Node;
 
@@ -43,9 +43,11 @@ private: // types
 
 public: // methods
 
-  RendezvousHash(const hash_func_ptr hash);
+    static std::string md5(const std::string& str);
 
-  RendezvousHash(const hash_func_ptr hash, const std::set<Node>& nodes);
+  RendezvousHash(const hash_func_ptr hash = &md5);
+
+  RendezvousHash(const std::set<Node>& nodes, const hash_func_ptr hash = &md5);
 
   ~RendezvousHash();
 

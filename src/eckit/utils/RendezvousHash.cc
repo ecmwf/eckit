@@ -10,21 +10,27 @@
 
 #include "eckit/utils/RendezvousHash.h"
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/types/Types.h"
-#include "eckit/config/LibEcKit.h"
+#include "eckit/utils/MD5.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+std::string RendezvousHash::md5(const std::string& str) {
+    eckit::MD5 md5(str.c_str(), str.size());
+    return md5.digest();
+}
 
 RendezvousHash::RendezvousHash(const RendezvousHash::hash_func_ptr hash) :
     hash_(hash)
 {
 }
 
-RendezvousHash::RendezvousHash(const RendezvousHash::hash_func_ptr hash, const std::set<RendezvousHash::Node>& nodes) :
+RendezvousHash::RendezvousHash(const std::set<RendezvousHash::Node>& nodes, const RendezvousHash::hash_func_ptr hash) :
     hash_(hash),
     nodes_(nodes)
 {

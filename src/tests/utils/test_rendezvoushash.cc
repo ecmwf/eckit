@@ -12,10 +12,9 @@
 
 #include "ecbuild/boost_test_framework.h"
 
-#include "eckit/utils/RendezvousHash.h"
-#include "eckit/utils/MD5.h"
 #include "eckit/log/Log.h"
 #include "eckit/types/Types.h"
+#include "eckit/utils/RendezvousHash.h"
 #include "eckit/utils/Translator.h"
 
 #include "eckit/testing/Setup.h"
@@ -33,12 +32,6 @@ BOOST_GLOBAL_FIXTURE( Setup );
 
 BOOST_AUTO_TEST_SUITE( test_eckit_rendezvous_hash )
 
-static  std::string md5_hasher(const std::string& str) {
-    eckit::MD5 md5(str.c_str(), str.size());
-    return md5.digest();
-}
-
-
 BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_constructor )
 {
     Log::info() << Here() << std::endl;
@@ -50,7 +43,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_constructor )
     nodes.insert("node03");
     nodes.insert("node04");
 
-    eckit::RendezvousHash rendezvous(&md5_hasher, nodes);
+    eckit::RendezvousHash rendezvous(nodes, &RendezvousHash::md5);
 
     std::map<std::string, std::string> dict;
 
@@ -93,7 +86,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_distribution )
     nodes.insert("node06");
     nodes.insert("node07");
 
-    eckit::RendezvousHash rendezvous(&md5_hasher, nodes);
+    eckit::RendezvousHash rendezvous(nodes);
 
     std::map<std::string, std::string> dict;
     dict["class"]  = "od";
@@ -131,7 +124,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_empty_dict )
 
     std::map<std::string, std::string> dict;
 
-    eckit::RendezvousHash rendezvous(&md5_hasher);
+    eckit::RendezvousHash rendezvous;
     rendezvous.addNode("node01");
     rendezvous.addNode("node02");
 
@@ -144,7 +137,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_throws_empty_node_list )
 
     std::map<std::string, std::string> dict;
 
-    eckit::RendezvousHash rendezvous(&md5_hasher);
+    eckit::RendezvousHash rendezvous(&RendezvousHash::md5);
     dict["class"]  = "od";
     dict["stream"] = "oper";
     dict["type"]   = "fc";
@@ -174,7 +167,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_add_node )
     dict["stream"] = "oper";
     dict["type"]   = "fc";
 
-    eckit::RendezvousHash rendezvous(&md5_hasher);
+    eckit::RendezvousHash rendezvous;
 
     rendezvous.addNode("node01");
     rendezvous.addNode("node02");

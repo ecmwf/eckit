@@ -8,6 +8,8 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
+
 #include "eckit/cmd/StopCmd.h"
 #include "eckit/runtime/Monitor.h"
 

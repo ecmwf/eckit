@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 #include "eckit/bases/Loader.h"
+#include "eckit/os/Semaphore.h"
 #include "eckit/config/Resource.h"
 #include "eckit/runtime/Application.h"
 #include "eckit/runtime/Monitor.h"

@@ -8,6 +8,8 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
+
 #include "eckit/cmd/TailCmd.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/config/Resource.h"
@@ -95,7 +97,7 @@ void TailCmd::execute(std::istream&, std::ostream& out, CmdArg& args) {
             }
             last = info[pid].last();
         } else
-            usleep(1000);
+            ::usleep(1000);
     }
 }
 

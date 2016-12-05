@@ -12,6 +12,8 @@
 /// @author Florian Rathgeber
 /// @date   June 2015
 
+#include <unistd.h>
+
 #include "eckit/cmd/CmdApplication.h"
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"

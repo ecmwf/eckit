@@ -23,38 +23,10 @@
 
 #include "eckit/os/Stat.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
-inline unsigned long version(unsigned long long*) { return 1; }
-
-template<class T>
-struct Header {
-	uint32_t version_;
-	uint32_t headerSize_;
-	uint32_t elemSize_;
-	Header();
-	void validate();
-};
-
-template<class T>
-Header<T>::Header():
-    version_(version((T*)0)),
-	headerSize_(sizeof(Header<T>)),
-	elemSize_(sizeof(T))
-{
-}
-
-template<class T>
-void Header<T>::validate()
-{
-    ASSERT(version_    == version((T*)0));
-	ASSERT(headerSize_ == sizeof(Header<T>));
-	ASSERT(elemSize_   == sizeof(T));
-}
+//----------------------------------------------------------------------------------------------------------------------
 
 template<class T>
 MappedArray<T>::MappedArray(const PathName& path, unsigned long size):
@@ -64,7 +36,7 @@ MappedArray<T>::MappedArray(const PathName& path, unsigned long size):
 
 	AutoLock<Semaphore> lock(sem_);
 
-	typedef Padded<Header<T>,4096> PaddedHeader;
+    typedef Padded<MappedArray<T>::Header,4096> PaddedHeader;
 
 	fd_ = ::open(path.localPath(),O_RDWR | O_CREAT, 0777);
 	if(fd_ < 0)
@@ -126,7 +98,7 @@ void MappedArray<T>::sync()
 		ret = fsync(fd_);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

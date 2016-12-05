@@ -18,10 +18,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-
-RendezvousHash::RendezvousHash(const std::set<RendezvousHash::Node>& nodes, const RendezvousHash::hash_func_ptr hash) :
-    nodes_(nodes),
+RendezvousHash::RendezvousHash(const RendezvousHash::hash_func_ptr hash) :
     hash_(hash)
+{
+}
+
+RendezvousHash::RendezvousHash(const RendezvousHash::hash_func_ptr hash, const std::set<RendezvousHash::Node>& nodes) :
+    hash_(hash),
+    nodes_(nodes)
 {
 }
 
@@ -74,7 +78,11 @@ RendezvousHash::Node RendezvousHash::selectNode(const RendezvousHash::Key& key)
 
     eckit::Log::info() << vs << std::endl;
 
-    ASSERT(highest != nodes_.end());
+    if(highest == nodes_.end()) {
+        std::ostringstream oss;
+        oss << "Couldn't find highest rendezvous hash, node list is likely empty. Nodes: " << nodes_;
+        throw eckit::BadParameter(oss.str(), Here());
+    }
 
     eckit::Log::info() << "highest=" << *highest << ", hashest=" << hashest << std::endl;
 

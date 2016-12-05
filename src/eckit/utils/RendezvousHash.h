@@ -43,7 +43,9 @@ private: // types
 
 public: // methods
 
-  RendezvousHash(const std::set<Node>& nodes, const hash_func_ptr hash);
+  RendezvousHash(const hash_func_ptr hash);
+
+  RendezvousHash(const hash_func_ptr hash, const std::set<Node>& nodes);
 
   ~RendezvousHash();
 
@@ -67,9 +69,9 @@ private:  // types
 
   eckit::Mutex mutex_;   //< protects addition and removal of nodes
 
-  std::set<Node> nodes_;
-
   hash_func_ptr hash_;
+
+  std::set<Node> nodes_;
 
 };
 

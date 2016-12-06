@@ -10,6 +10,7 @@
 
 /// @date Aug 2016
 
+
 #include "mir/stats/ScalarCentralMoments.h"
 
 #include <sstream>
@@ -30,8 +31,8 @@ void ScalarCentralMoments::operator+=(const ScalarCentralMoments& other) {
 }
 
 
-void ScalarCentralMoments::calculate(const data::MIRField& field, Results& results) const {
-    results.reset();
+Results ScalarCentralMoments::calculate(const data::MIRField& field) const {
+    Results results;
 
     util::compare::IsMissingFn isMissing( field.hasMissing()?
                                               field.missingValue() :
@@ -73,6 +74,8 @@ void ScalarCentralMoments::calculate(const data::MIRField& field, Results& resul
 
         results.set(head + " missing", missing);
     }
+
+    return results;
 }
 
 

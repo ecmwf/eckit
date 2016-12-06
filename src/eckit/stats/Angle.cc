@@ -65,8 +65,8 @@ void Angle::operator+=(const Angle& other) {
 }
 
 
-void Angle::calculate(const data::MIRField& field, Results& results) const {
-    results.reset();
+Results Angle::calculate(const data::MIRField& field) const {
+    Results results;
 
     // set statistics calculation based on decomposition
     const method::decompose::DecomposeToCartesian& decomp = method::decompose::DecomposeToCartesianChooser::lookup(decomposition_);
@@ -99,6 +99,8 @@ void Angle::calculate(const data::MIRField& field, Results& results) const {
         results.set(head + "missing", stats.countMissing());
 
     }
+
+    return results;
 }
 
 

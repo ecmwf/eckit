@@ -37,8 +37,8 @@ SimplePackingEntropy::SimplePackingEntropy(const param::MIRParametrisation& para
 }
 
 
-void SimplePackingEntropy::calculate(const data::MIRField& field, Results& results) const {
-    results.reset();
+Results SimplePackingEntropy::calculate(const data::MIRField& field) const {
+    Results results;
 
     // set buckets
     ASSERT(bucketCount_ > 0);
@@ -103,6 +103,8 @@ void SimplePackingEntropy::calculate(const data::MIRField& field, Results& resul
         results.set(head + "missing", stats.countMissing());
 
     }
+
+    return results;
 }
 
 

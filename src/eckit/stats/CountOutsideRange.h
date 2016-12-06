@@ -72,7 +72,7 @@ protected:
     // -- Overridden methods
 
     /// Calculate statistics
-    void calculate(const data::MIRField&, Results&) const;
+    Results calculate(const data::MIRField&) const;
 
     // -- Class members
     // None

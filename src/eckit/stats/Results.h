@@ -8,25 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Oct 2016
 
+#ifndef mir_stats_Results_h
+#define mir_stats_Results_h
 
-#ifndef mir_stats_SimplePackingEntropy_h
-#define mir_stats_SimplePackingEntropy_h
-
-#include "eckit/exception/Exceptions.h"
-#include "mir/data/MIRField.h"
-#include "mir/stats/Statistics.h"
+#include "mir/param/SimpleParametrisation.h"
 
 
 namespace mir {
 namespace stats {
 
 
-/**
- * @brief Calculate entropy statistics on a MIRField
- */
-class SimplePackingEntropy : public Statistics {
+class Results : public param::SimpleParametrisation {
 public:
 
     // -- Exceptions
@@ -34,11 +27,12 @@ public:
 
     // -- Constructors
 
-    SimplePackingEntropy(const param::MIRParametrisation&);
+    Results() : SimpleParametrisation() {}
+    Results(const Results&) {}
 
     // -- Destructor
 
-    ~SimplePackingEntropy() {}
+    virtual ~Results() {}
 
     // -- Convertors
     // None
@@ -58,22 +52,33 @@ public:
     // -- Class methods
     // None
 
-private:
+protected:
 
     // -- Members
-
-    size_t bucketCount_;
+    // None
 
     // -- Methods
     // None
 
     // -- Overridden methods
+    // None
 
-    /// Calculate statistics
-    Results calculate(const data::MIRField&) const;
+    // -- Class members
+    // None
 
-    void print(std::ostream&) const;
+    // -- Class methods
+    // None
 
+private:
+
+    // -- Members
+    // None
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
 
     // -- Class members
     // None

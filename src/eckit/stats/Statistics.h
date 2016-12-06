@@ -16,13 +16,10 @@
 
 #include <iosfwd>
 #include "eckit/exception/Exceptions.h"
-#include "mir/param/SimpleParametrisation.h"
+#include "mir/stats/Results.h"
 
 
 namespace mir {
-namespace context {
-class Context;
-}
 namespace data {
 class MIRField;
 }
@@ -40,9 +37,7 @@ class Statistics {
 public:
 
     // -- Types
-
-    /// Results type
-    typedef param::SimpleParametrisation Results;
+    // None
 
     // -- Exceptions
     // None
@@ -64,7 +59,7 @@ public:
     // -- Methods
 
     /// Calculate statistics
-    virtual void calculate(const data::MIRField&, Results&) const = 0;
+    virtual Results calculate(const data::MIRField&) const = 0;
 
     // -- Overridden methods
     // None
@@ -147,4 +142,3 @@ public:
 
 
 #endif
-

@@ -31,8 +31,8 @@ void Scalar::operator+=(const Scalar& other) {
 }
 
 
-void Scalar::calculate(const data::MIRField& field, Results& results) const {
-    results.reset();
+Results Scalar::calculate(const data::MIRField& field) const {
+    Results results;
 
     for (size_t w = 0; w < field.dimensions(); ++w) {
         const std::vector<double>& values = field.values(w);
@@ -70,6 +70,8 @@ void Scalar::calculate(const data::MIRField& field, Results& results) const {
         results.set(head + "missing", stats_.countMissing());
 
     }
+
+    return results;
 }
 
 

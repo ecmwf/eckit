@@ -32,8 +32,8 @@ void CountOutsideRange::operator+=(const CountOutsideRange& other) {
 }
 
 
-void CountOutsideRange::calculate(const data::MIRField& field, Results& results) const {
-    results.reset();
+Results CountOutsideRange::calculate(const data::MIRField& field) const {
+    Results results;
 
     util::compare::IsMissingFn isMissing( field.hasMissing()?
                                               field.missingValue() :
@@ -65,6 +65,8 @@ void CountOutsideRange::calculate(const data::MIRField& field, Results& results)
         results.set(head + "missing", missing);
 
     }
+
+    return results;
 }
 
 

@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+/// @date Dec 2016
+
 
 #include "mir/stats/Statistics.h"
 
@@ -18,9 +20,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"
-#include "mir/action/context/Context.h"
 #include "mir/config/LibMir.h"
-#include "mir/input/MIRInput.h"
 
 
 namespace mir {

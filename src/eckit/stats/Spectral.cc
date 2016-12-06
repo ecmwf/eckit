@@ -27,9 +27,9 @@ Spectral::Spectral(const param::MIRParametrisation& parametrisation) :
 }
 
 
-void Spectral::calculate(const data::MIRField& field, Results& results) const {
-    results.reset();
+Results Spectral::calculate(const data::MIRField& field) const {
     ASSERT(!field.hasMissing());
+    Results results;
 
     for (size_t w = 0; w < field.dimensions(); ++w) {
         const std::vector<double>& values = field.values(w);
@@ -73,6 +73,8 @@ void Spectral::calculate(const data::MIRField& field, Results& results) const {
         results.set(head + "enorm",             enorm);
 
     }
+
+    return results;
 }
 
 

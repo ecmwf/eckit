@@ -32,8 +32,8 @@ void PNorms::operator+=(const PNorms& other) {
 }
 
 
-void PNorms::calculate(const data::MIRField& field, Results& results) const {
-    results.reset();
+Results PNorms::calculate(const data::MIRField& field) const {
+    Results results;
 
     util::compare::IsMissingFn isMissing( field.hasMissing()?
                                               field.missingValue() :
@@ -66,12 +66,14 @@ void PNorms::calculate(const data::MIRField& field, Results& results) const {
         results.set(head + " normLinfinity", stats_.normLinfinity());
         results.set(head + " missing", missing);
     }
+
+    return results;
 }
 
 
 namespace {
 // Name (non-)capitalized according to: https://en.wikipedia.org/wiki/Lp_space
-static StatisticsBuilder<PNorms> __stats("scalar-p-norms");
+static StatisticsBuilder<PNorms> __stats("p-norms");
 }
 
 

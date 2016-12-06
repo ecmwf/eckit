@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include "eckit/exception/Exceptions.h"
+#include "mir/config/LibMir.h"
 
 
 namespace mir {
@@ -32,7 +33,61 @@ void pretty_print_map(std::ostream& out, const char* sep, T& m) {
 }
 
 
+bool compare_absolute_quantities(const map_quantity_t& a, const map_quantity_t& b, double tolerance) {
+    return true;
+}
+
+
+bool compare_relative_quantities(const map_quantity_t& a, const map_quantity_t& b, double tolerance) {
+    return true;
+}
+
+
+bool compare_counters(const map_counter_t& a, const map_counter_t& b, double relativeTolerance, size_t referenceCounter) {
+    return true;
+}
+
+
+bool compare_integers(const map_integer_t& a, const map_integer_t& b) {
+    return true;
+}
+
+
 }  // (anonymous namespace)
+
+
+bool Results::compare(
+        const Results& other,
+        double absoluteTolerance,
+        double relativeTolerance,
+        double counterTolerance,
+        size_t referenceCounter ) const {
+
+    bool ret = (size() == other.size());
+
+    for (size_t i = 0; i < size() && i < other.size(); ++i) {
+
+        bool cmp_abs  = compare_absolute_quantities(operator[](i).absoluteQuantities_,        other[i].absoluteQuantities_,        absoluteTolerance);
+        bool cmp_abs2 = compare_absolute_quantities(operator[](i).absoluteSquaredQuantities_, other[i].absoluteSquaredQuantities_, absoluteTolerance*absoluteTolerance);
+        bool cmp_rel  = compare_relative_quantities(operator[](i).relativeQuantities_,        other[i].relativeQuantities_,        relativeTolerance);
+        bool cmp_cnt  = compare_counters(operator[](i).counters_, other[i].counters_, counterTolerance, referenceCounter);
+        bool cmp_int  = compare_integers(operator[](i).integers_, other[i].integers_);
+
+        bool cmp = cmp_abs && cmp_abs2 && cmp_rel && cmp_cnt && cmp_int;
+        ret = ret && cmp;
+
+        eckit::Log::debug<LibMir>() << "Results::compare " << (i+1) << "/" << size() << ": "
+                                    << cmp << " = ("
+                                       "(abs="  << cmp_abs  << ") ∧"
+                                       "(abs2=" << cmp_abs2 << ") ∧"
+                                       "(rel="  << cmp_rel  << ") ∧"
+                                       "(cnt="  << cmp_cnt  << ") ∧"
+                                       "(int="  << cmp_int  << ")"
+                                       ")" << std::endl;
+
+    }
+    return ret;
+}
 
 
 size_t& Results::counter(const std::string& name, size_t which) {
@@ -61,7 +116,7 @@ double& Results::relativeQuantity(const std::string& name, size_t which) {
 
 int& Results::integerQuantity(const std::string& name, size_t which) {
     ASSERT(which < size());
-    return operator[](which).integerQuantities_[name];
+    return operator[](which).integers_[name];
 }
 
 
@@ -81,7 +136,7 @@ void Results::print(std::ostream& out) const {
         pretty_print_map(out, sep, operator[](i).absoluteQuantities_);
         pretty_print_map(out, sep, operator[](i).absoluteSquaredQuantities_);
         pretty_print_map(out, sep, operator[](i).relativeQuantities_);
-        pretty_print_map(out, sep, operator[](i).integerQuantities_);
+        pretty_print_map(out, sep, operator[](i).integers_);
         pretty_print_map(out, sep, operator[](i).uncomparableQuantities_);
 
         out << "\n\t]\n";

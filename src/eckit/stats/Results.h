@@ -22,13 +22,17 @@ namespace mir {
 namespace stats {
 
 
+typedef std::map< std::string, double > map_quantity_t;
+typedef std::map< std::string, size_t > map_counter_t;
+typedef std::map< std::string, int >    map_integer_t;
+
 struct results_entry_t {
-    std::map< std::string, size_t > counters_;
-    std::map< std::string, double > absoluteQuantities_;
-    std::map< std::string, double > absoluteSquaredQuantities_;
-    std::map< std::string, double > relativeQuantities_;
-    std::map< std::string, int >    integerQuantities_;
-    std::map< std::string, double > uncomparableQuantities_;
+    map_quantity_t absoluteQuantities_;
+    map_quantity_t absoluteSquaredQuantities_;
+    map_quantity_t relativeQuantities_;
+    map_quantity_t uncomparableQuantities_;
+    map_counter_t  counters_;
+    map_integer_t  integers_;
 };
 
 
@@ -58,6 +62,13 @@ public:
     // None
 
     // -- Methods
+
+    bool compare(
+            const Results& other,
+            double absoluteTolerance=0,
+            double relativeTolerance=0,
+            double counterTolerance=0,
+            size_t referenceCounter=1 ) const;
 
     using std::vector< results_entry_t >::size;
     using std::vector< results_entry_t >::resize;

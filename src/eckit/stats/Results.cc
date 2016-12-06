@@ -49,7 +49,36 @@ bool compare_counters(const map_counter_t& a, const map_counter_t& b, double rel
 
 
 bool compare_integers(const map_integer_t& a, const map_integer_t& b) {
-    return true;
+    bool cmp = true;
+
+    // check for matching a keys in b, in which case compare the values (exactly)
+    for (map_integer_t::const_iterator i = a.begin(); i != a.end(); ++i) {
+        map_integer_t::const_iterator j = b.find(i->first);
+
+        if (j == b.end()) {
+            cmp = false;
+            continue;
+        }
+
+        int a_value = i->second;
+        int b_value = j->second;
+        if (a_value != b_value) {
+            cmp = false;
+        }
+    }
+
+    // check for matching b keys in a
+    for (map_integer_t::const_iterator j = b.begin(); j != b.end(); ++j) {
+
+        map_integer_t::const_iterator i = a.find(j->first);
+        if (i == a.end()) {
+            cmp = false;
+            continue;
+        }
+
+    }
+
+    return cmp;
 }
 
 

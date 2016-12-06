@@ -14,6 +14,7 @@
 #include "mir/stats/Results.h"
 
 #include <iostream>
+#include "eckit/exception/Exceptions.h"
 
 
 namespace mir {
@@ -32,6 +33,42 @@ void pretty_print_map(std::ostream& out, const char* sep, T& m) {
 
 
 }  // (anonymous namespace)
+
+
+size_t& Results::counter(const std::string& name, size_t which) {
+    ASSERT(which < size());
+    return operator[](which).counters_[name];
+}
+
+
+double& Results::absoluteQuantity(const std::string& name, size_t which) {
+    ASSERT(which < size());
+    return operator[](which).absoluteQuantities_[name];
+}
+
+
+double& Results::absoluteQuantity2(const std::string& name, size_t which) {
+    ASSERT(which < size());
+    return operator[](which).absoluteSquaredQuantities_[name];
+}
+
+
+double& Results::relativeQuantity(const std::string& name, size_t which) {
+    ASSERT(which < size());
+    return operator[](which).relativeQuantities_[name];
+}
+
+
+int& Results::integerQuantity(const std::string& name, size_t which) {
+    ASSERT(which < size());
+    return operator[](which).integerQuantities_[name];
+}
+
+
+double& Results::uncomparableQuantity(const std::string& name, size_t which) {
+    ASSERT(which < size());
+    return operator[](which).uncomparableQuantities_[name];
+}
 
 
 void Results::print(std::ostream& out) const {

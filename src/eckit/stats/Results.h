@@ -12,10 +12,10 @@
 #ifndef mir_stats_Results_h
 #define mir_stats_Results_h
 
+#include <iosfwd>
 #include <map>
 #include <string>
 #include <vector>
-#include "eckit/exception/Exceptions.h"
 
 
 namespace mir {
@@ -62,35 +62,12 @@ public:
     using std::vector< results_entry_t >::size;
     using std::vector< results_entry_t >::resize;
 
-    size_t& counter(const std::string& name, size_t which=0) {
-        ASSERT(which < size());
-        return operator[](which).counters_[name];
-    }
-
-    double& absoluteQuantity(const std::string& name, size_t which=0) {
-        ASSERT(which < size());
-        return operator[](which).absoluteQuantities_[name];
-    }
-
-    double& absoluteQuantity2(const std::string& name, size_t which=0) {
-        ASSERT(which < size());
-        return operator[](which).absoluteSquaredQuantities_[name];
-    }
-
-    double& relativeQuantity(const std::string& name, size_t which=0) {
-        ASSERT(which < size());
-        return operator[](which).relativeQuantities_[name];
-    }
-
-    int& integerQuantity(const std::string& name, size_t which=0) {
-        ASSERT(which < size());
-        return operator[](which).integerQuantities_[name];
-    }
-
-    double& uncomparableQuantity(const std::string& name, size_t which=0) {
-        ASSERT(which < size());
-        return operator[](which).uncomparableQuantities_[name];
-    }
+    size_t& counter              (const std::string& name, size_t which=0);
+    double& absoluteQuantity     (const std::string& name, size_t which=0);
+    double& absoluteQuantity2    (const std::string& name, size_t which=0);
+    double& relativeQuantity     (const std::string& name, size_t which=0);
+    int&    integerQuantity      (const std::string& name, size_t which=0);
+    double& uncomparableQuantity (const std::string& name, size_t which=0);
 
     // -- Overridden methods
     // None

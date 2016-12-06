@@ -27,21 +27,23 @@ namespace detail {
 template< typename T >
 struct CountOutsideRangeFn {
 protected:
-    const T lowerLimit_;
-    const T upperLimit_;
+    T lowerLimit_;
+    T upperLimit_;
     size_t count_;
 
 public:
 
     CountOutsideRangeFn(
             const T& lowerLimit=std::numeric_limits<T>::quiet_NaN(),
-            const T& upperLimit=std::numeric_limits<T>::quiet_NaN() ) :
-        lowerLimit_(lowerLimit),
-        upperLimit_(upperLimit) {
-        reset();
+            const T& upperLimit=std::numeric_limits<T>::quiet_NaN() ) {
+        reset(lowerLimit, upperLimit);
     }
 
-    void reset() {
+    void reset(
+            const T& lowerLimit=std::numeric_limits<T>::quiet_NaN(),
+            const T& upperLimit=std::numeric_limits<T>::quiet_NaN() ) {
+        lowerLimit_ = lowerLimit;
+        upperLimit_ = upperLimit;
         count_ = 0;
     }
 

@@ -33,7 +33,7 @@ void PNorms::operator+=(const PNorms& other) {
 
 
 Results PNorms::calculate(const data::MIRField& field) const {
-    Results results;
+    Results results(field.dimensions());
 
     util::compare::IsMissingFn isMissing( field.hasMissing()?
                                               field.missingValue() :
@@ -54,17 +54,12 @@ Results PNorms::calculate(const data::MIRField& field) const {
             }
         }
 
-        std::string head;
-        if (field.dimensions()>1) {
-            std::ostringstream s;
-            s << '#' << (w+1) << ' ';
-            head = s.str();
-        }
+        results.absoluteQuantity  ("normL1", w) = stats_.normL1();
+        results.absoluteQuantity2 ("normL2", w) = stats_.normL2();
+        results.absoluteQuantity  ("normLi", w) = stats_.normLinfinity();
 
-        results.set(head + " normL1", stats_.normL1());
-        results.set(head + " normL2", stats_.normL2());
-        results.set(head + " normLinfinity", stats_.normLinfinity());
-        results.set(head + " missing", missing);
+        results.counter("count-non-missing", w) = values.size() - missing;
+        results.counter("count-missing",     w) = missing;
     }
 
     return results;

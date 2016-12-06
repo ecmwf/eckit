@@ -33,7 +33,7 @@ void CountOutsideRange::operator+=(const CountOutsideRange& other) {
 
 
 Results CountOutsideRange::calculate(const data::MIRField& field) const {
-    Results results;
+    Results results(field.dimensions());
 
     util::compare::IsMissingFn isMissing( field.hasMissing()?
                                               field.missingValue() :
@@ -44,7 +44,15 @@ Results CountOutsideRange::calculate(const data::MIRField& field) const {
         const std::vector<double>& values = field.values(w);
         size_t missing = 0;
 
-        stats_.reset();
+
+        double lowerLimit = std::numeric_limits<double>::quiet_NaN();
+        double upperLimit = std::numeric_limits<double>::quiet_NaN();
+        parametrisation_.get("lower-limit", lowerLimit);
+        parametrisation_.get("upper-limit", upperLimit);
+
+        stats_.reset(lowerLimit, upperLimit);
+
+
         for (size_t i = 0; i < values.size(); ++ i) {
 
             if (isMissing(values[i])) {
@@ -54,15 +62,9 @@ Results CountOutsideRange::calculate(const data::MIRField& field) const {
             }
         }
 
-        std::string head;
-        if (field.dimensions()>1) {
-            std::ostringstream s;
-            s << '#' << (w+1) << ' ';
-            head = s.str();
-        }
-
-        results.set(head + "count", stats_.count());
-        results.set(head + "missing", missing);
+        results.counter("count-outside-range", w) = stats_.count();
+        results.counter("count-non-missing",   w) = values.size() - missing;
+        results.counter("count-missing",       w) = missing;
 
     }
 

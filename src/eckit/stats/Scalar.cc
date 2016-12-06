@@ -32,7 +32,7 @@ void Scalar::operator+=(const Scalar& other) {
 
 
 Results Scalar::calculate(const data::MIRField& field) const {
-    Results results;
+    Results results(field.dimensions());
 
     for (size_t w = 0; w < field.dimensions(); ++w) {
         const std::vector<double>& values = field.values(w);
@@ -44,30 +44,23 @@ Results Scalar::calculate(const data::MIRField& field) const {
             stats_(values[i]);
         }
 
-        std::string head;
-        if (field.dimensions()>1) {
-            std::ostringstream s;
-            s << '#' << (w+1) << ' ';
-            head = s.str();
-        }
+        results.absoluteQuantity  ("min",      w) = stats_.min();
+        results.absoluteQuantity  ("max",      w) = stats_.max();
+        results.integerQuantity   ("minIndex", w) = int(stats_.minIndex());
+        results.integerQuantity   ("maxIndex", w) = int(stats_.maxIndex());
 
-        results.set(head + "min",               stats_.min());
-        results.set(head + "max",               stats_.max());
-        results.set(head + "minIndex",          stats_.minIndex());
-        results.set(head + "maxIndex",          stats_.maxIndex());
+        results.absoluteQuantity     ("mean",     w) = stats_.mean();
+        results.absoluteQuantity2    ("variance", w) = stats_.variance();
+        results.absoluteQuantity     ("stddev",   w) = stats_.standardDeviation();
+        results.uncomparableQuantity ("skewness", w) = stats_.skewness();
+        results.uncomparableQuantity ("kurtosis", w) = stats_.kurtosis();
 
-        results.set(head + "mean",              stats_.mean());
-        results.set(head + "variance",          stats_.variance());
-        results.set(head + "skewness",          stats_.skewness());
-        results.set(head + "kurtosis",          stats_.kurtosis());
-        results.set(head + "standardDeviation", stats_.standardDeviation());
+        results.absoluteQuantity  ("normL1", w) = stats_.normL1();
+        results.absoluteQuantity2 ("normL2", w) = stats_.normL2();
+        results.absoluteQuantity  ("normLi", w) = stats_.normLinfinity();
 
-        results.set(head + "normL1",            stats_.normL1());
-        results.set(head + "normL2",            stats_.normL2());
-        results.set(head + "normLinfinity",     stats_.normLinfinity());
-
-        results.set(head + "count",   stats_.countNonMissing());
-        results.set(head + "missing", stats_.countMissing());
+        results.counter("count-non-missing", w) = stats_.countNonMissing();
+        results.counter("count-missing",     w) = stats_.countMissing();
 
     }
 

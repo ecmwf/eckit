@@ -42,7 +42,8 @@ struct Translator< std::complex<double>, std::string > {
 namespace {
 static eckit::Translator< std::complex<double>, std::string > pretty_complex;
 }  // (anonymous namespace)
-#else
+#endif
+#if 0
 namespace {
 std::string pretty_complex(const std::complex<double>& complex) {
     std::ostringstream o;
@@ -66,7 +67,7 @@ void Angle::operator+=(const Angle& other) {
 
 
 Results Angle::calculate(const data::MIRField& field) const {
-    Results results;
+    Results results(field.dimensions());
 
     // set statistics calculation based on decomposition
     const method::decompose::DecomposeToCartesian& decomp = method::decompose::DecomposeToCartesianChooser::lookup(decomposition_);
@@ -82,21 +83,22 @@ Results Angle::calculate(const data::MIRField& field) const {
             stats(values[i]);
         }
 
-        std::string head;
-        if (field.dimensions()>1) {
-            std::ostringstream s;
-            s << '#' << (w+1) << ' ';
-            head = s.str();
-        }
+        results.absoluteQuantity  ("mean",     w) = stats.mean();
+        results.absoluteQuantity2 ("variance", w) = stats.variance();
+        results.absoluteQuantity  ("stddev",   w) = stats.standardDeviation();
 
-        results.set(head + "mean",              stats.mean());
-        results.set(head + "standardDeviation", stats.standardDeviation());
-        results.set(head + "variance",          stats.variance());
-        results.set(head + "skewness",          pretty_complex(stats.skewness()));
-        results.set(head + "kurtosis",          pretty_complex(stats.kurtosis()));
+#if 0
+        const std::complex<double> skew = stats.skewness();
+        const std::complex<double> kurt = stats.kurtosis();
 
-        results.set(head + "count",   stats.countNonMissing());
-        results.set(head + "missing", stats.countMissing());
+        results.uncomparableQuantity("skewness-real", w) = skew.real();
+        results.uncomparableQuantity("skewness-imag", w) = skew.imag();
+        results.uncomparableQuantity("kurtosis-real", w) = kurt.real();
+        results.uncomparableQuantity("kurtosis-imag", w) = kurt.imag();
+#endif
+
+        results.counter("count-non-missing", w) = stats.countNonMissing();
+        results.counter("count-missing",     w) = stats.countMissing();
 
     }
 

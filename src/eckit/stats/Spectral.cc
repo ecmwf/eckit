@@ -28,20 +28,13 @@ Spectral::Spectral(const param::MIRParametrisation& parametrisation) :
 
 
 Results Spectral::calculate(const data::MIRField& field) const {
+    Results results(field.dimensions());
+
     ASSERT(!field.hasMissing());
-    Results results;
 
     for (size_t w = 0; w < field.dimensions(); ++w) {
         const std::vector<double>& values = field.values(w);
         ASSERT(values.size());
-
-        std::string head;
-        if (field.dimensions()>1) {
-            std::ostringstream s;
-            s << '#' << (w+1) << ' ';
-            head = s.str();
-        }
-
 
         // set truncation
         // Note: assumes triangular truncation (from GribInput.cc)
@@ -67,10 +60,10 @@ Results Spectral::calculate(const data::MIRField& field) const {
 
 
         // set statistics results
-        results.set(head + "mean",              mean);
-        results.set(head + "variance",          var);
-        results.set(head + "standardDeviation", std::sqrt(var));
-        results.set(head + "enorm",             enorm);
+        results.absoluteQuantity  ("mean",     w) = mean;
+        results.absoluteQuantity2 ("variance", w) = var;
+        results.absoluteQuantity  ("stddev",   w) = std::sqrt(var);
+        results.absoluteQuantity  ("enorm",    w) = enorm;
 
     }
 

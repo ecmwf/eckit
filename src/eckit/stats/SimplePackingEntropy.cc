@@ -38,7 +38,7 @@ SimplePackingEntropy::SimplePackingEntropy(const param::MIRParametrisation& para
 
 
 Results SimplePackingEntropy::calculate(const data::MIRField& field) const {
-    Results results;
+    Results results(field.dimensions());
 
     // set buckets
     ASSERT(bucketCount_ > 0);
@@ -52,14 +52,6 @@ Results SimplePackingEntropy::calculate(const data::MIRField& field) const {
     for (size_t w = 0; w < field.dimensions(); ++w) {
         const std::vector<double>& values = field.values(w);
         ASSERT(values.size());
-
-        std::string head;
-        if (field.dimensions()>1) {
-            std::ostringstream s;
-            s << '#' << (w+1) << ' ';
-            head = s.str();
-        }
-
 
         for (size_t i = 0; i < values.size(); ++i) {
             stats(values[i]);
@@ -95,12 +87,12 @@ Results SimplePackingEntropy::calculate(const data::MIRField& field) const {
 
 
         // set statistics results
-        results.set(head + "entropy", entropy);
-        results.set(head + "scale",   scale);
-        results.set(head + "min",     stats.min());
-        results.set(head + "max",     stats.max());
-        results.set(head + "count",   stats.count());
-        results.set(head + "missing", stats.countMissing());
+        results.uncomparableQuantity("entropy", w) = entropy;
+        results.uncomparableQuantity("scale",   w) = scale;
+        results.absoluteQuantity("min", w) = stats.min();
+        results.absoluteQuantity("max", w) = stats.max();
+        results.counter("count-non-missing", w) = stats.count();
+        results.counter("count-missing",     w) = stats.countMissing();
 
     }
 

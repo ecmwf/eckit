@@ -16,6 +16,7 @@
 
 #include <iosfwd>
 #include "eckit/exception/Exceptions.h"
+#include "mir/param/MIRParametrisation.h"
 #include "mir/stats/Results.h"
 
 

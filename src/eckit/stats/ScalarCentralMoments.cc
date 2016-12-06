@@ -32,7 +32,7 @@ void ScalarCentralMoments::operator+=(const ScalarCentralMoments& other) {
 
 
 Results ScalarCentralMoments::calculate(const data::MIRField& field) const {
-    Results results;
+    Results results(field.dimensions());
 
     util::compare::IsMissingFn isMissing( field.hasMissing()?
                                               field.missingValue() :
@@ -53,26 +53,19 @@ Results ScalarCentralMoments::calculate(const data::MIRField& field) const {
             }
         }
 
-        std::string head;
-        if (field.dimensions()>1) {
-            std::ostringstream s;
-            s << '#' << (w+1) << ' ';
-            head = s.str();
-        }
+        results.uncomparableQuantity("centralMoment1", w) = stats_.centralMoment1();
+        results.uncomparableQuantity("centralMoment2", w) = stats_.centralMoment2();
+        results.uncomparableQuantity("centralMoment3", w) = stats_.centralMoment3();
+        results.uncomparableQuantity("centralMoment4", w) = stats_.centralMoment4();
 
-        results.set(head + " centralMoment1",     stats_.centralMoment1());
-        results.set(head + " centralMoment2",     stats_.centralMoment2());
-        results.set(head + " centralMoment3",     stats_.centralMoment3());
-        results.set(head + " centralMoment4",     stats_.centralMoment4());
+        results.absoluteQuantity     ("mean",     w) = stats_.mean();
+        results.absoluteQuantity2    ("variance", w) = stats_.variance();
+        results.absoluteQuantity     ("stddev",   w) = stats_.standardDeviation();
+        results.uncomparableQuantity ("skewness", w) = stats_.skewness();
+        results.uncomparableQuantity ("kurtosis", w) = stats_.kurtosis();
 
-        results.set(head + " mean",               stats_.mean());
-        results.set(head + " variance",           stats_.variance());
-        results.set(head + " skewness",           stats_.skewness());
-        results.set(head + " kurtosis",           stats_.kurtosis());
-        results.set(head + " standardDeviation",  stats_.standardDeviation());
-        results.set(head + " count",              stats_.count());
-
-        results.set(head + " missing", missing);
+        results.counter("count-non-missing", w) = stats_.count();
+        results.counter("count-missing",     w) = missing;
     }
 
     return results;

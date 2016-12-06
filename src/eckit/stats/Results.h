@@ -12,14 +12,28 @@
 #ifndef mir_stats_Results_h
 #define mir_stats_Results_h
 
-#include "mir/param/SimpleParametrisation.h"
+#include <map>
+#include <string>
+#include <vector>
+#include "eckit/exception/Exceptions.h"
 
 
 namespace mir {
 namespace stats {
 
 
-class Results : public param::SimpleParametrisation {
+struct results_entry_t {
+    std::map< std::string, size_t > counters_;
+    std::map< std::string, double > absoluteQuantities_;
+    std::map< std::string, double > absoluteSquaredQuantities_;
+    std::map< std::string, double > relativeQuantities_;
+    std::map< std::string, int >    integerQuantities_;
+    std::map< std::string, double > uncomparableQuantities_;
+};
+
+
+
+class Results : protected std::vector< results_entry_t > {
 public:
 
     // -- Exceptions
@@ -27,8 +41,11 @@ public:
 
     // -- Constructors
 
-    Results() : SimpleParametrisation() {}
-    Results(const Results&) {}
+    Results(size_t dimensions=1) {
+        if (dimensions) {
+            resize(dimensions);
+        }
+    }
 
     // -- Destructor
 
@@ -41,24 +58,39 @@ public:
     // None
 
     // -- Methods
-    // None
 
-    // -- Overridden methods
-    // None
+    using std::vector< results_entry_t >::size;
+    using std::vector< results_entry_t >::resize;
 
-    // -- Class members
-    // None
+    size_t& counter(const std::string& name, size_t which=0) {
+        ASSERT(which < size());
+        return operator[](which).counters_[name];
+    }
 
-    // -- Class methods
-    // None
+    double& absoluteQuantity(const std::string& name, size_t which=0) {
+        ASSERT(which < size());
+        return operator[](which).absoluteQuantities_[name];
+    }
 
-protected:
+    double& absoluteQuantity2(const std::string& name, size_t which=0) {
+        ASSERT(which < size());
+        return operator[](which).absoluteSquaredQuantities_[name];
+    }
 
-    // -- Members
-    // None
+    double& relativeQuantity(const std::string& name, size_t which=0) {
+        ASSERT(which < size());
+        return operator[](which).relativeQuantities_[name];
+    }
 
-    // -- Methods
-    // None
+    int& integerQuantity(const std::string& name, size_t which=0) {
+        ASSERT(which < size());
+        return operator[](which).integerQuantities_[name];
+    }
+
+    double& uncomparableQuantity(const std::string& name, size_t which=0) {
+        ASSERT(which < size());
+        return operator[](which).uncomparableQuantities_[name];
+    }
 
     // -- Overridden methods
     // None
@@ -75,7 +107,8 @@ private:
     // None
 
     // -- Methods
-    // None
+
+    virtual void print(std::ostream&) const;
 
     // -- Overridden methods
     // None
@@ -87,7 +120,11 @@ private:
     // None
 
     // -- Friends
-    // None
+
+    friend std::ostream& operator<<(std::ostream& out, const Results& r) {
+        r.print(out);
+        return out;
+    }
 
 };
 

@@ -72,9 +72,9 @@ class SharedMemoryTaskArray : public Monitor::TaskArray {
 
 public:
 
-    SharedMemoryTaskArray(const PathName& path, unsigned long size) :
+    SharedMemoryTaskArray(const PathName& path, const std::string& name, unsigned long size) :
         TaskArray(),
-        map_(path, size)
+        map_(path, name, size)
     {}
 };
 
@@ -95,7 +95,7 @@ static void taskarray_init(void)
     if(monitorArrayType == "MemoryMapped")
         mapArray = new MemoryMappedTaskArray(monitor, size);
     else if(monitorArrayType == "SharedMemory")
-        mapArray = new SharedMemoryTaskArray(monitor, size);
+        mapArray = new SharedMemoryTaskArray(monitor, "/etc-monitor", size);
     else {
         std::ostringstream oss;
         oss << "Invalid monitorArrayType : " << monitorArrayType << ", valid types are 'MemoryMapped' and 'SharedMemory'" << std::endl;

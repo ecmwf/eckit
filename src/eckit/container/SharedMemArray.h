@@ -39,7 +39,7 @@ public: // types
 
 public: // methods
 
-    SharedMemArray(const PathName&, size_t);
+    SharedMemArray(const PathName&, const std::string& shmName, size_t);
 
 	~SharedMemArray(); 
 
@@ -64,6 +64,8 @@ private: // members
 
 	T*            array_;
     size_t        size_;
+
+    std::string shmName_;
 
     static unsigned long shared_mem_array_version() { return 1; }
 

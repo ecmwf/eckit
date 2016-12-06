@@ -46,7 +46,7 @@ struct Host {
 
 BOOST_AUTO_TEST_CASE( test_eckit_sharedmemarray_construction )
 {
-    eckit::SharedMemArray<Host> hosts("~/etc/myapp/hosts", 1024);
+    eckit::SharedMemArray<Host> hosts("~/etc/baz/hosts", "/baz_hosts", 128);
 
     hosts[0].hostname_   = std::string("calvin");
     hosts[0].connetions_ = 1;
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_sharedmemarray_construction )
 
 BOOST_AUTO_TEST_CASE( test_eckit_sharedmemarray_checkvalues )
 {
-    eckit::SharedMemArray<Host> hosts("~/etc/myapp/hosts", 1024);
+    eckit::SharedMemArray<Host> hosts("~/etc/baz/hosts", "/baz_hosts", 128);
 
     BOOST_CHECK_EQUAL( hosts[0].hostname_ , std::string("calvin"));
     BOOST_CHECK_EQUAL( hosts[0].connetions_ , 1);
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_sharedmemarray_checkvalues )
 
 BOOST_AUTO_TEST_CASE( test_eckit_sharedmemarray_add_more )
 {
-    eckit::SharedMemArray<Host> hosts("~/etc/myapp/hosts", 1024);
+    eckit::SharedMemArray<Host> hosts("~/etc/baz/hosts", "/baz_hosts", 128);
 
     BOOST_CHECK_EQUAL( hosts[1].hostname_ , std::string("hobbes"));
     BOOST_CHECK_EQUAL( hosts[1].connetions_ , 3);
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_sharedmemarray_add_more )
 
 BOOST_AUTO_TEST_CASE( test_eckit_sharedmemarray_checkvalues_2 )
 {
-    eckit::SharedMemArray<Host> hosts("~/etc/myapp/hosts", 1024);
+    eckit::SharedMemArray<Host> hosts("~/etc/baz/hosts", "/baz_hosts", 128);
     eckit::Translator<size_t,std::string> toStr;
 
     for(size_t i = 0; i < hosts.size(); ++i) {

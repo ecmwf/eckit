@@ -25,63 +25,56 @@ int tounderscore(int p) {
 }
 
 template<class T>
-SharedMemArray<T>::SharedMemArray(const PathName& path, size_t size):
+SharedMemArray<T>::SharedMemArray(const PathName& path, const std::string& shmName, size_t size):
 	sem_(path),
-    size_(size)    
+    size_(size),
+    shmName_(shmName)
 {
-    eckit::Log::info() << "SharedMemArray path=" << path << ", size=" << size << std::endl;
+    eckit::Log::info() << "SharedMemArray semaphore path=" << path << ", size=" << size << ", shmName=" << shmName << std::endl;
 
 	AutoLock<Semaphore> lock(sem_);
 
     typedef Padded<SharedMemArray<T>::Header,4096> PaddedHeader;
 
-    std::string r = path.asString();
-    std::transform(r.begin(), r.end(), r.begin(), static_cast < int(*)(int) > (tounderscore));
-
-    eckit::Log::info() << "SharedMemArray realpath=" << r << std::endl;
-
-
-    fd_ = ::shm_open(r.c_str(), O_RDWR | O_CREAT, 0777);
+    fd_ = ::shm_open(shmName_.c_str(), O_RDWR | O_CREAT, 0777);
 	if(fd_ < 0)
 	{
-        Log::error() << "shm_open(" << r << ')' << Log::syserr << std::endl;
-        throw FailedSystemCall("open",Here());
+        Log::error() << "shm_open(" << shmName_ << ')' << Log::syserr << std::endl;
+        throw FailedSystemCall("shm_open",Here());
 	}
 
     Stat::Struct s;
     SYSCALL(Stat::fstat(fd_, &s));
 
-    bool initHeader = s.st_size < static_cast<long int>( sizeof(PaddedHeader) );
-
 	off_t length = size_ * sizeof(T) + sizeof(PaddedHeader);
+
+    eckit::Log::info() << "SharedMemArray fd_=" << fd_ << ", s.st_size=" << s.st_size << ", length=" << length << std::endl;
 
 	// Resize if needed
 
-	if(s.st_size != length)
+    bool zero = false;
+    if(length > s.st_size )
 	{
         SYSCALL(::ftruncate(fd_,length));
-		char buf1[sizeof(PaddedHeader)]; memset(buf1,0,sizeof(buf1));
-		char buf2[sizeof(T)];            memset(buf2,0,sizeof(buf2));
-	    SYSCALL(write(fd_,buf1,sizeof(buf1)));
-        for(size_t i = 0; i < size_ ; i++)
-			SYSCALL(write(fd_,buf2,sizeof(buf2)));
+        zero = true;
 	}
 
     map_ = ::mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd_, 0);
     if(map_ == MAP_FAILED)
     {
-        Log::error() << "SharedMemArray path=/dev/shm/" << path << " size=" << size
+        Log::error() << "SharedMemArray name=" << shmName_ << " size=" << size
                      << " fails to mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0)"
                      << Log::syserr << std::endl;
         throw FailedSystemCall("mmap",Here());
     }
 
-	// If first time in, init header
-
-	if(initHeader)
-		new(map_) PaddedHeader();
-	else
+    if(zero) {
+        ::memset(map_, 0, sizeof(PaddedHeader) + size_*sizeof(T));
+        new(map_) PaddedHeader();
+    }
+    else {
 		((PaddedHeader*)map_)->validate();
+    }
 
 	array_ = (T*)(((char*)map_) + sizeof(PaddedHeader));
 

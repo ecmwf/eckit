@@ -50,8 +50,7 @@ public:
     // None
 
     // -- Overridden methods
-
-    bool sameAs(const Statistics&) const;
+    // None
 
     // -- Class members
     // None

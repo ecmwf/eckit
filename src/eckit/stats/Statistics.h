@@ -67,10 +67,7 @@ public:
     virtual void calculate(const data::MIRField&, Results&) const = 0;
 
     // -- Overridden methods
-
-    void execute(context::Context&, Results& results) const;
-
-    virtual bool sameAs(const Statistics&) const = 0;
+    // None
 
     // -- Class members
     // None
@@ -86,9 +83,10 @@ protected:
 
     // -- Methods
 
-    // -- Overridden methods
-
     virtual void print(std::ostream&) const;
+
+    // -- Overridden methods
+    // None
 
     // -- Class members
     // None

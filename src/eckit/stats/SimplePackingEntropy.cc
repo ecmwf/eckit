@@ -37,12 +37,6 @@ SimplePackingEntropy::SimplePackingEntropy(const param::MIRParametrisation& para
 }
 
 
-bool SimplePackingEntropy::sameAs(const Statistics& other) const {
-    const SimplePackingEntropy* o = dynamic_cast<const SimplePackingEntropy*>(&other);
-    return o; //(o && options_ == o->options_);
-}
-
-
 void SimplePackingEntropy::calculate(const data::MIRField& field, Results& results) const {
     results.reset();
 

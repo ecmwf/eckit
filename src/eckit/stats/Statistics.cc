@@ -49,14 +49,6 @@ Statistics::Statistics(const param::MIRParametrisation& parametrisation) :
 }
 
 
-void Statistics::execute(context::Context& ctx, Results& results) const {
-
-    // update internal results
-    calculate(ctx.field(), results);
-
-}
-
-
 void Statistics::print(std::ostream& out) const {
     out << "Statistics["
 //        <<  "me[" << too << "]"

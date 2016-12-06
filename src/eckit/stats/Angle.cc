@@ -65,12 +65,6 @@ void Angle::operator+=(const Angle& other) {
 }
 
 
-bool Angle::sameAs(const Statistics& other) const {
-    const Angle* o = dynamic_cast<const Angle*>(&other);
-    return o; //(o && options_ == o->options_);
-}
-
-
 void Angle::calculate(const data::MIRField& field, Results& results) const {
     results.reset();
 

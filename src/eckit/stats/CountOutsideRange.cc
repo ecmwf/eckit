@@ -32,12 +32,6 @@ void CountOutsideRange::operator+=(const CountOutsideRange& other) {
 }
 
 
-bool CountOutsideRange::sameAs(const Statistics& other) const {
-    const CountOutsideRange* o = dynamic_cast<const CountOutsideRange*>(&other);
-    return o; //(o && options_ == o->options_);
-}
-
-
 void CountOutsideRange::calculate(const data::MIRField& field, Results& results) const {
     results.reset();
 

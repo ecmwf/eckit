@@ -51,8 +51,7 @@ public:
     void operator+=(const Angle&);
 
     // -- Overridden methods
-
-    bool sameAs(const Statistics&) const;
+    // None
 
     // -- Class members
     // None

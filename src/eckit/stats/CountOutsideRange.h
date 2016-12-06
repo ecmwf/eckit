@@ -53,8 +53,7 @@ public:
     void operator+=(const CountOutsideRange&);
 
     // -- Overridden methods
-
-    bool sameAs(const Statistics&) const;
+    // None
 
     // -- Class members
     // None

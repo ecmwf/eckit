@@ -31,12 +31,6 @@ void Scalar::operator+=(const Scalar& other) {
 }
 
 
-bool Scalar::sameAs(const Statistics& other) const {
-    const Scalar* o = dynamic_cast<const Scalar*>(&other);
-    return o; //(o && options_ == o->options_);
-}
-
-
 void Scalar::calculate(const data::MIRField& field, Results& results) const {
     results.reset();
 

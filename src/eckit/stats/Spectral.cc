@@ -27,12 +27,6 @@ Spectral::Spectral(const param::MIRParametrisation& parametrisation) :
 }
 
 
-bool Spectral::sameAs(const Statistics& other) const {
-    const Spectral* o = dynamic_cast<const Spectral*>(&other);
-    return o; //(o && options_ == o->options_);
-}
-
-
 void Spectral::calculate(const data::MIRField& field, Results& results) const {
     results.reset();
     ASSERT(!field.hasMissing());

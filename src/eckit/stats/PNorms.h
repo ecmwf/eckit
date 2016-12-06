@@ -53,8 +53,7 @@ public:
     void operator+=(const PNorms&);
 
     // -- Overridden methods
-
-    bool sameAs(const Statistics&) const;
+    // None
 
     // -- Class members
     // None

@@ -57,8 +57,7 @@ public:
     void operator+=(const ScalarCentralMoments&);
 
     // -- Overridden methods
-
-    bool sameAs(const Statistics&) const;
+    // None
 
     // -- Class members
     // None

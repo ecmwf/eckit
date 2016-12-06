@@ -30,12 +30,6 @@ void ScalarCentralMoments::operator+=(const ScalarCentralMoments& other) {
 }
 
 
-bool ScalarCentralMoments::sameAs(const Statistics& other) const {
-    const ScalarCentralMoments* o = dynamic_cast<const ScalarCentralMoments*>(&other);
-    return o; //(o && options_ == o->options_);
-}
-
-
 void ScalarCentralMoments::calculate(const data::MIRField& field, Results& results) const {
     results.reset();
 

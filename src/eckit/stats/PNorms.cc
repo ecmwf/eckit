@@ -32,12 +32,6 @@ void PNorms::operator+=(const PNorms& other) {
 }
 
 
-bool PNorms::sameAs(const Statistics& other) const {
-    const PNorms* o = dynamic_cast<const PNorms*>(&other);
-    return o; //(o && options_ == o->options_);
-}
-
-
 void PNorms::calculate(const data::MIRField& field, Results& results) const {
     results.reset();
 

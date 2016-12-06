@@ -24,12 +24,14 @@
 #include "eckit/memory/Padded.h"
 
 #include "eckit/os/Stat.h"
+#include "eckit/log/Log.h"
+#include "eckit/config/LibEcKit.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-///
+/// Maps an array to shared memory
 
 template<class T>
 class SharedMemArray : private NonCopyable {

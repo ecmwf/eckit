@@ -30,7 +30,7 @@ SharedMemArray<T>::SharedMemArray(const PathName& path, const std::string& shmNa
     size_(size),
     shmName_(shmName)
 {
-    eckit::Log::info() << "SharedMemArray semaphore path=" << path << ", size=" << size << ", shmName=" << shmName << std::endl;
+    eckit::Log::debug<LibEcKit>() << "SharedMemArray semaphore path=" << path << ", size=" << size << ", shmName=" << shmName << std::endl;
 
 	AutoLock<Semaphore> lock(sem_);
 
@@ -48,7 +48,7 @@ SharedMemArray<T>::SharedMemArray(const PathName& path, const std::string& shmNa
 
 	off_t length = size_ * sizeof(T) + sizeof(PaddedHeader);
 
-    eckit::Log::info() << "SharedMemArray fd_=" << fd_ << ", s.st_size=" << s.st_size << ", length=" << length << std::endl;
+    eckit::Log::debug<LibEcKit>() << "SharedMemArray fd_=" << fd_ << ", s.st_size=" << s.st_size << ", length=" << length << std::endl;
 
 	// Resize if needed
 

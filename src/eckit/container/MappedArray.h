@@ -14,6 +14,8 @@
 #ifndef eckit_MappedArray_h
 #define eckit_MappedArray_h
 
+#include <stdint.h>
+
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/os/Semaphore.h"

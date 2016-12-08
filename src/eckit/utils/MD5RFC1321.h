@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_MD5_H
-#define eckit_utils_MD5_H
+#ifndef eckit_utils_MD5RFC1321_H
+#define eckit_utils_MD5RFC1321_H
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -19,7 +19,7 @@
 
 namespace eckit {
 
-class MD5 : private eckit::NonCopyable {
+class MD5RFC1321 : private eckit::NonCopyable {
 
 public:  // types
 
@@ -27,13 +27,13 @@ public:  // types
 
 public:  // types
 
-  MD5();
+  MD5RFC1321();
 
-  explicit MD5(const digest_t&);
+  explicit MD5RFC1321(const digest_t&);
 
-  MD5(const void* data, size_t len);
+  MD5RFC1321(const void* data, size_t len);
 
-  ~MD5();
+  ~MD5RFC1321();
 
   void add(const void*, long);
 
@@ -65,7 +65,7 @@ public:  // types
   void add(const T& x) { x.hash(*this); }
 
   template<class T>
-  MD5& operator<<(const T& x) { add(x); return *this; }
+  MD5RFC1321& operator<<(const T& x) { add(x); return *this; }
 
   operator std::string();
 
@@ -79,7 +79,7 @@ private:  // types
   void add(const void*);
 
   /// Double hashing
-  void add(const MD5& md5) { add(md5.digest()); }
+  void add(const MD5RFC1321& md5) { add(md5.digest()); }
 
 private: // members
 

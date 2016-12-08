@@ -27,10 +27,11 @@ public:
 
     static bool areMPIVarsSet() {
         return (
-           ::getenv("OMPI_COMM_WORLD_SIZE")   ||  // OpenMPI
-           ::getenv("ALPS_APP_PE")            ||  // Cray PE
-           ::getenv("PMI_SIZE")               ||  // Intel
-           ::getenv("ECKIT_MPI_FORCE_PARALLEL")); // If all else fails
+          !::getenv("ECKIT_MPI_FORCE_SERIAL") &&   // force serial communicator
+          (::getenv("OMPI_COMM_WORLD_SIZE")   ||   // OpenMPI
+           ::getenv("ALPS_APP_PE")            ||   // Cray PE
+           ::getenv("PMI_SIZE")               ||   // Intel
+           ::getenv("ECKIT_MPI_FORCE_PARALLEL"))); // If all else fails
     }
 
     static Environment& instance() {

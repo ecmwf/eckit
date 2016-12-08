@@ -483,6 +483,8 @@ utils/Translator.h
 utils/Translator.cc
 utils/MD5.h
 utils/MD5.cc
+utils/MD5RFC1321.h
+utils/MD5RFC1321.cc
 utils/Regex.h
 utils/Regex.cc
 utils/RendezvousHash.h

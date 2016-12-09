@@ -25,13 +25,19 @@ namespace mpi {
 class Environment {
 public:
 
-    static bool areMPIVarsSet() {
-        return (
-          !::getenv("ECKIT_MPI_FORCE_SERIAL") &&   // force serial communicator
-          (::getenv("OMPI_COMM_WORLD_SIZE")   ||   // OpenMPI
-           ::getenv("ALPS_APP_PE")            ||   // Cray PE
-           ::getenv("PMI_SIZE")               ||   // Intel
-           ::getenv("ECKIT_MPI_FORCE_PARALLEL"))); // If all else fails
+    static const char* getDefaultComm() {
+        // Force a given communicator (only required if e.g. running serial applications with MPI)
+        if (const char* forcedComm = ::getenv("ECKIT_MPI_FORCE")) {
+            return forcedComm;
+        // Use parallel communicator if in an MPI environment
+        } else if (::getenv("OMPI_COMM_WORLD_SIZE") || // OpenMPI
+                   ::getenv("ALPS_APP_PE")          || // Cray PE
+                   ::getenv("PMI_SIZE")) {             // Intel
+            return "parallel";
+        // Use serial communicator otherwise
+        } else {
+            return "serial";
+        }
     }
 
     static Environment& instance() {
@@ -45,14 +51,7 @@ public:
 
         ASSERT(!default_);
 
-        Comm* world;
-
-        if(areMPIVarsSet()) {
-            world = CommFactory::build("parallel");
-        }
-        else {
-            world = CommFactory::build("serial");
-        }
+        Comm* world = CommFactory::build(getDefaultComm());
 
         communicators["world"] = world;
         communicators["self"]  = world->self();
@@ -124,14 +123,7 @@ public:
             throw eckit::SeriousBug(std::string("Communicator alredy exists: ") + name);
         }
 
-        Comm* pComm = 0;
-        if(areMPIVarsSet()) {
-            pComm = CommFactory::build("parallel", comm);
-        }
-        else {
-            pComm = CommFactory::build("serial", comm);
-        }
-
+        Comm* pComm = CommFactory::build(getDefaultComm(), comm);
         communicators[name] = pComm;
     }
 

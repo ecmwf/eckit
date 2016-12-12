@@ -87,7 +87,6 @@ public: // methods
         return T::instance().debugChannel();
     }
 
-
     static void setStream(std::ostream& out);
     static void addStream(std::ostream& out);
 
@@ -104,9 +103,6 @@ private: // methods
 
     Log();   ///< Private, non-instanciatable class
     ~Log();  ///< Private, non-instanciatable class
-
-
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

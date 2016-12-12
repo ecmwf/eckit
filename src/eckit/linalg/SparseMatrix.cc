@@ -345,59 +345,66 @@ SparseMatrix::const_iterator SparseMatrix::const_iterator::operator++(int) {
 SparseMatrix::const_iterator& SparseMatrix::const_iterator::operator=(const SparseMatrix::const_iterator& other) {
     matrix_ = other.matrix_;
     index_  = other.index_;
+    row_    = other.row_;
     return *this;
 }
 
-
-Size SparseMatrix::const_iterator::col() const {
-    ASSERT(*this); //< ensure valid iterator via 'operator bool()'
-    return Size(matrix_->inner_[index_]);
+bool SparseMatrix::const_iterator::operator==(const SparseMatrix::const_iterator& other) const {
+    ASSERT(other.matrix_ == matrix_);
+    return other.index_ == index_;
 }
 
 
+SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix) :
+    matrix_(const_cast<SparseMatrix*>(&matrix)),
+    index_(0),
+    row_(0)
+{
+    const Index* outer = matrix_->outer();
+    while(outer[row_+1] == 0) {
+        ++row_;
+    }
+}
+
+SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix, Size row) :
+    matrix_(const_cast<SparseMatrix*>(&matrix)),
+    row_(row) {
+    const Size rows = matrix_->rows_;
+    if(row_ > rows) { row_ = rows; }
+    index_ = Size(matrix_->outer_[row_]);
+}
+
+Size SparseMatrix::const_iterator::col() const {
+    assert(matrix_ && index_ < matrix_->nonZeros());
+    return Size(matrix_->inner_[index_]);
+}
+
 Size SparseMatrix::const_iterator::row() const {
-
-    ASSERT(*this); //< ensure valid iterator via 'operator bool()'
-
-    // binary search for the row
-    // note: actually finds the row's end (or, the beggining of next row)
-    const Index* first = matrix_->outer_;
-    const Index* last  = first + matrix_->outerSize();
-    const Index* found = std::upper_bound(first, last, Index(index_));
-    ASSERT(found != last);
-    ASSERT(found > first);  // should hold even if index_ == 0
-
-    Size rowIndex = Size(std::distance(first, found) - 1);
-    ASSERT(rowIndex < matrix_->rows());
-
-    return rowIndex;
+    return row_;
 }
 
 
 SparseMatrix::const_iterator& SparseMatrix::const_iterator::operator++() {
-    ++index_;
+    if(lastOfRow()) {
+        row_++;
+    }
+    index_++;
     return *this;
 }
 
 
 const Scalar& SparseMatrix::const_iterator::operator*() const {
-    ASSERT(matrix_ && index_ < matrix_->nonZeros());
+    assert(matrix_ && index_ < matrix_->nonZeros());
     return matrix_->data_[index_];
 }
 
-
-SparseMatrix::const_iterator& SparseMatrix::const_iterator::position(Size rowIndex) {
-    ASSERT(matrix_);
-    while ((rowIndex < matrix_->rows_) && (matrix_->outer_[rowIndex] >= matrix_->outer_[rowIndex+1])) {
-        ++rowIndex;
-    }
-    index_ = (rowIndex < matrix_->rows_)? Size(matrix_->outer_[rowIndex]) : matrix_->nonZeros();
-    return *this;
+void eckit::linalg::SparseMatrix::const_iterator::print(std::ostream& os) const {
+    os << "SparseMatrix::iterator(row=" << row_ << ", index=" << index_ << ")" << std::endl;
 }
 
 
 Scalar& SparseMatrix::iterator::operator*() {
-    ASSERT(matrix_ && index_ < matrix_->nonZeros());
+    assert(matrix_ && index_ < matrix_->nonZeros());
     return matrix_->data_[index_];
 }
 

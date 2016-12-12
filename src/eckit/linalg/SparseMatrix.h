@@ -17,6 +17,7 @@
 #define eckit_la_SparseMatrix_h
 
 #include <cassert>
+#include <iosfwd>
 #include <vector>
 
 #include "eckit/linalg/types.h"

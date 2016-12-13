@@ -25,11 +25,36 @@ namespace stats {
 namespace {
 
 
-template< typename T >
-void pretty_print_map(std::ostream& out, const char* sep, T& m) {
-    for (typename T::const_iterator j = m.begin(); j != m.end(); ++j) {
+template< typename MAP >
+void pretty_print_map(std::ostream& out, const char* sep, MAP& m) {
+    for (typename MAP::const_iterator j = m.begin(); j != m.end(); ++j) {
         out << sep << j->first << ":\t" << j->second;
     }
+}
+
+
+template< typename MAP >
+bool compare_map_keys(MAP& a, MAP& b) {
+    bool cmp = true;
+
+    // check for matching a keys in b, in which case compare the values (exactly)
+    for (typename MAP::const_iterator i = a.begin(); i != a.end(); ++i) {
+        typename MAP::const_iterator j = b.find(i->first);
+        if (j == b.end()) {
+            eckit::Log::debug<LibMir>() << "Results::compare: key not found: '" << i->first << "'" << std::endl;
+            cmp = false;
+        }
+    }
+
+    // check for matching b keys in a
+    for (typename MAP::const_iterator j = b.begin(); j != b.end(); ++j) {
+        typename MAP::const_iterator i = a.find(j->first);
+        if (i == a.end()) {
+            cmp = false;
+        }
+
+    }
+    return cmp;
 }
 
 
@@ -49,33 +74,17 @@ bool compare_counters(const map_counter_t& a, const map_counter_t& b, double rel
 
 
 bool compare_integers(const map_integer_t& a, const map_integer_t& b) {
-    bool cmp = true;
 
-    // check for matching a keys in b, in which case compare the values (exactly)
-    for (map_integer_t::const_iterator i = a.begin(); i != a.end(); ++i) {
-        map_integer_t::const_iterator j = b.find(i->first);
+    // check for matching a keys in b
+    bool cmp = compare_map_keys(a, b);
 
-        if (j == b.end()) {
-            cmp = false;
-            continue;
+    // compare the maps values (exactly)
+    for (map_integer_t::const_iterator i = a.begin(), j; i != a.end(); ++i) {
+        if ((j = b.find(i->first)) != b.end()) {
+            int a_value = i->second;
+            int b_value = j->second;
+            cmp = cmp && (a_value == b_value);
         }
-
-        int a_value = i->second;
-        int b_value = j->second;
-        if (a_value != b_value) {
-            cmp = false;
-        }
-    }
-
-    // check for matching b keys in a
-    for (map_integer_t::const_iterator j = b.begin(); j != b.end(); ++j) {
-
-        map_integer_t::const_iterator i = a.find(j->first);
-        if (i == a.end()) {
-            cmp = false;
-            continue;
-        }
-
     }
 
     return cmp;

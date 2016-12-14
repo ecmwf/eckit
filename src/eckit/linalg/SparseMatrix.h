@@ -16,6 +16,7 @@
 #ifndef eckit_la_SparseMatrix_h
 #define eckit_la_SparseMatrix_h
 
+#include <iosfwd>
 #include <cassert>
 #include <iosfwd>
 #include <vector>
@@ -23,6 +24,8 @@
 #include "eckit/linalg/types.h"
 #include "eckit/linalg/Triplet.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/MemoryHandle.h"
 
 namespace eckit {
 
@@ -53,6 +56,9 @@ public:  // methods
     /// Construct vector from existing data (does NOT take ownership)
     SparseMatrix(Scalar* values, Size size, Size rows, Size cols, Index* outer, Index* inner);
 
+    /// Construct vector from existing data (does NOT take ownership)
+    SparseMatrix(const eckit::Buffer& buffer);
+
     /// Constructor from Stream
     SparseMatrix(Stream& v);
 
@@ -77,8 +83,10 @@ public:
 
     // I/O
 
-    void save(const eckit::PathName &path) const;
-    void load(const eckit::PathName &path);
+    void save(const eckit::PathName& path) const;
+    void load(const eckit::PathName& path);
+
+    void dump(eckit::Buffer& buffer) const;
 
     void swap(SparseMatrix& other);
 
@@ -96,16 +104,34 @@ public:
 
     /// @returns read-only view of the data vector
     const Scalar* data() const { return data_; }
+
     /// @returns read-only view of the outer index vector
     const Index* outer() const { return outer_; }
+
     /// @returns read-only view of the inner index vector
     const Index* inner() const { return inner_; }
 
+    /// data size is the number of non-zeros
+    Size dataSize() const { return nonZeros(); }
+
+    /// inner size is the number of non-zeros
+    Size innerSize() const { return nonZeros(); }
+
+    /// @returns outer size is number of rows + 1
+    Size outerSize() const { return Size(rows_ + 1); }
+
     /// Reserve memory for given number of non-zeros (invalidates all data arrays)
+    /// @note variables into this method must be by value
     void reserve(Size rows, Size cols, Size nnz);
 
     /// Returns the footprint of the matrix in memory
     size_t footprint() const;
+
+    void dump(std::ostream& os) const;
+
+    void print(std::ostream& os) const;
+
+    friend std::ostream& operator<<(std::ostream& os, const SparseMatrix& m) { m.print(os); return os; }
 
 public: // iterators
 
@@ -169,17 +195,12 @@ public: // iterators
 
 private: // methods
 
+    size_t sizeofData() const  { return dataSize()  * sizeof(Scalar); }
+    size_t sizeofOuter() const { return outerSize() * sizeof(Index);  }
+    size_t sizeofInner() const { return innerSize() * sizeof(Index);  }
+
     /// Resets the matrix to a deallocated state
     void reset();
-
-    /// data size is the number of non-zeros
-    Size dataSize() const { return nonZeros(); }
-
-    /// inner size is the number of non-zeros
-    Size innerSize() const { return nonZeros(); }
-
-    /// @returns outer size is number of rows + 1
-    Size outerSize() const { return Size(rows_ + 1); }
 
     /// Serialise to a Stream
     void encode(Stream& s) const;

@@ -23,6 +23,7 @@
 #include "eckit/io/BufferedHandle.h"
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/Stream.h"
+#include "eckit/io/MemoryHandle.h"
 
 
 namespace eckit {
@@ -103,6 +104,53 @@ SparseMatrix::SparseMatrix(Scalar* values, Size size, Size rows, Size cols, Inde
     own_(false) {
 }
 
+
+struct SPMInfo {
+    Size         size_;   ///< non-zeros
+    Size         rows_;   ///< rows
+    Size         cols_;   ///< columns
+    ptrdiff_t    data_;
+    ptrdiff_t    outer_;
+    ptrdiff_t    inner_;
+};
+
+SparseMatrix::SparseMatrix(const eckit::Buffer& buffer)
+{
+    size_t buffsize = buffer.size();
+
+    const char* b = buffer;
+    char* addr = const_cast<char*>(b);
+
+    eckit::MemoryHandle mh(buffer);
+    mh.openForRead();
+
+    struct SPMInfo info;
+    mh.read(&info, sizeof(SPMInfo));
+
+    ASSERT(info.size_ && info.rows_ && info.cols_);
+    ASSERT(info.data_ > 0 && info.outer_ > 0 && info.inner_ > 0);
+
+    own_  = false;
+    size_ = info.size_;
+    rows_ = info.rows_;
+    cols_ = info.cols_;
+
+    ASSERT(buffer.size() >= sizeof(SPMInfo) +
+                           + sizeofData()
+                           + sizeofOuter()
+                           + sizeofInner() );
+
+    data_  = reinterpret_cast<Scalar*>(addr + info.data_);
+    outer_ = reinterpret_cast<Index*>(addr + info.outer_);
+    inner_ = reinterpret_cast<Index*>(addr + info.inner_);
+
+    // check offsets don't segfault
+
+    ASSERT(info.data_  + sizeofData()  <= buffsize);
+    ASSERT(info.outer_ + sizeofOuter() <= buffsize);
+    ASSERT(info.inner_ + sizeofInner() <= buffsize);
+}
+
 SparseMatrix::~SparseMatrix() {
     reset();
 }
@@ -115,9 +163,9 @@ SparseMatrix::SparseMatrix(const SparseMatrix& other) {
 
         reserve(other.rows(), other.cols(), other.nonZeros());
 
-        ::memcpy(data_,  other.data_,  dataSize()  * sizeof(Scalar));
-        ::memcpy(outer_, other.outer_, outerSize() * sizeof(Index));
-        ::memcpy(inner_, other.inner_, innerSize() * sizeof(Index));
+        ::memcpy(data_,  other.data_,  sizeofData());
+        ::memcpy(outer_, other.outer_, sizeofOuter());
+        ::memcpy(inner_, other.inner_, sizeofInner());
     }
 }
 
@@ -147,8 +195,8 @@ void SparseMatrix::reset() {
 }
 
 
+// variables into this method must be by value
 void SparseMatrix::reserve(Size rows, Size cols, Size nnz) {
-    // variables into this method must be by value
 
     ASSERT( nnz );
     ASSERT( nnz <= rows * cols );
@@ -179,6 +227,32 @@ void SparseMatrix::load(const eckit::PathName &path)  {
     decode(s);
 }
 
+void SparseMatrix::dump(Buffer& buffer) const {
+
+    Length minimum = sizeof(SPMInfo) + sizeofData() + sizeofOuter() + sizeofInner();
+    ASSERT( buffer.size() >= minimum);
+
+    MemoryHandle mh(buffer);
+    mh.openForWrite(buffer.size());
+
+    SPMInfo info;
+
+    info.size_  = nonZeros();
+    info.rows_  = rows();
+    info.cols_  = cols();
+
+    info.data_  = sizeof(SPMInfo);
+    info.outer_ = info.data_  + sizeofData();
+    info.inner_ = info.outer_ + sizeofOuter();
+
+    /// @todo we should try to get these memory aligned (to say 64 bytes)
+
+    mh.write(&info, sizeof(SPMInfo));
+
+    ASSERT(mh.write(data_,  sizeofData())  == sizeofData());
+    ASSERT(mh.write(outer_, sizeofOuter()) == sizeofOuter());
+    ASSERT(mh.write(inner_, sizeofInner()) == sizeofInner());
+}
 
 void SparseMatrix::swap(SparseMatrix &other) {
     std::swap(data_,  other.data_);
@@ -193,11 +267,35 @@ void SparseMatrix::swap(SparseMatrix &other) {
 
 size_t SparseMatrix::footprint() const {
     return sizeof(*this)
-            + dataSize()  * sizeof(Scalar)
-            + innerSize() * sizeof(Index)
-            + outerSize() * sizeof(Index);
+            + sizeofData()
+            + sizeofOuter()
+            + sizeofInner();
 }
 
+void SparseMatrix::dump(std::ostream& os) const
+{
+    for(Size i = 0; i < rows(); ++i) {
+
+        const_iterator itr = begin(i);
+        const_iterator iend = end(i);
+
+        if(itr == iend) continue;
+        os << itr.row();
+
+        for(; itr != iend; ++itr) {
+            os << " " << itr.col() << " " << *itr;
+        }
+        os << std::endl;
+    }
+}
+
+void SparseMatrix::print(std::ostream& os) const
+{
+    os << "SparseMatrix["
+       << "nnz="  << size_ << ","
+       << "rows=" << rows_ << ","
+       << "cols=" << cols_ << "]";
+}
 
 SparseMatrix& SparseMatrix::setIdentity(Size rows, Size cols) {
 

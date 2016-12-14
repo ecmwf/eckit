@@ -11,13 +11,12 @@
 /// @author Baudouin Raoult
 /// @date   May 1996
 
-#ifndef eckit_Semaphore_h
-#define eckit_Semaphore_h
+#ifndef eckit_os_Semaphore_h
+#define eckit_os_Semaphore_h
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/filesystem/PathName.h"
-
 
 
 namespace eckit {
@@ -28,11 +27,7 @@ class Semaphore : private NonCopyable {
 
 public: // methods
 
-    /// Contructors
-
     Semaphore(const PathName& name,int count = 1);
-
-    /// Destructor
 
     ~Semaphore();
 

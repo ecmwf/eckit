@@ -10,7 +10,6 @@
 
 #include <cstdio>
 #include <errno.h>
-
 #include <sys/sem.h>
 
 #include "eckit/os/Semaphore.h"
@@ -46,8 +45,8 @@ Semaphore::Semaphore(const PathName& name,int count):
 	if(key == key_t(-1))
 		throw FailedSystemCall(std::string("ftok(") + name + std::string(")"));
 
-    /// @note cannot use Log::debug() of SYSCALL here, because Log is not yet initialized
-	// std::cout << "Creating semaphore path=" << name << ", count=" << count << ", key=" << hex << key << dec << std::endl; 
+    /// @note cannot use Log::debug() of SYSCALL here, because Log may not yet be initialized
+    // std::cout << "Creating semaphore path=" << name << ", count=" << count << ", key=" << hex << key << dec << std::endl;
 	if( (semaphore_ = semget(key, count_, 0666 | IPC_CREAT)) < 0 )
         perror("semget failed"), throw FailedSystemCall("semget");
 }

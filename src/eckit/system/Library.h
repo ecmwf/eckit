@@ -55,9 +55,10 @@ public: // methods
 
     virtual std::string version() const = 0;
     virtual std::string gitsha1(unsigned int count = 40) const = 0;
+
     virtual Channel& debugChannel() const;
 
-// Class methods
+public: // class methods
 
     static std::vector<std::string> list();
     static void list(std::ostream&);

@@ -417,6 +417,8 @@ os/Stat.h
 os/System.h
 os/System.cc
 os/AutoUmask.h
+os/SemLocker.h
+os/SemLocker.cc
 os/Semaphore.h
 os/Semaphore.cc
 os/SignalHandler.h

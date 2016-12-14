@@ -28,8 +28,11 @@ namespace eckit {
 
 /// Filesystem Cache Manager
 
+class CacheManagerBase : private NonCopyable {
+};
+
 template <class Traits>
-class CacheManager : private NonCopyable {
+class CacheManager : public CacheManagerBase {
 
 public: // methods
 
@@ -75,4 +78,5 @@ private: // members
 }  // namespace eckit
 
 #include "eckit/container/CacheManager.cc"
+
 #endif

@@ -8,8 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/container/CacheManager.h"
-
 #include <sys/stat.h>
 
 #include <string>
@@ -94,7 +92,7 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
     PathName path;
 
     if (get(key, path)) {
-        Traits::load(value, path);
+        Traits::load(*this, value, path);
     }
     else {
 
@@ -122,16 +120,15 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
 
             eckit::PathName tmp = stage(key);
             creator.create(tmp, value);
-            Traits::save(value, tmp);
+            Traits::save(*this, value, tmp);
             ASSERT(commit(key, tmp));
-            // createCoefficients(cache, key, truncation, grid, ctx);
         }
         else {
             eckit::Log::info() << "Coefficient cache file "
                                << entry(key)
                                << " created by another process"
                                << std::endl;
-            Traits::load(value, path);
+            Traits::load(*this, value, path);
         }
 
         ASSERT(get(key, path));

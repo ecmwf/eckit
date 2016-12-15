@@ -589,7 +589,6 @@ endforeach()
 
 list( APPEND eckit_templates
 					container/CacheLRU.cc
-                    container/CacheManager.cc
                     container/BTree.cc
                     container/MappedArray.cc
                     container/SharedMemArray.cc

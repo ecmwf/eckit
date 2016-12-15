@@ -207,7 +207,7 @@ public:
         return q;
     }
 
-    static KPoint components_min(const KPoint& p1, const KPoint& p2)
+    static KPoint componentsMin(const KPoint& p1, const KPoint& p2)
     {
         KPoint q;
         for(size_t i = 0; i < dimensions(); i++)
@@ -217,7 +217,7 @@ public:
         return q;
     }
 
-    static KPoint components_max(const KPoint& p1, const KPoint& p2)
+    static KPoint componentsMax(const KPoint& p1, const KPoint& p2)
     {
         KPoint q;
         for(size_t i = 0; i < dimensions(); i++)

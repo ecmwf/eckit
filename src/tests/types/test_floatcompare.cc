@@ -158,53 +158,53 @@ BOOST_AUTO_TEST_CASE( test_comparisons_involving_infinity )
 
 BOOST_AUTO_TEST_CASE( test_comparisons_involving_nan )
 {
-//    BOOST_TEST_MESSAGE( "test_comparisons_involving_nan" );
-//
-//    // The value NaN (Not a Number) is used to represent a value that does not represent a real number.
-//    // NaN's are represented by a bit pattern with an exponent of all 1s and a non-zero fraction. T
-//    // there are two categories of NaN: QNaN (Quiet NaN) and SNaN (Signalling NaN).
-//    //
-//    // A QNaN is a NaN with the most significant fraction bit set.
-//    // QNaN's propagate freely through most arithmetic operations.
-//    // These values pop out of an operation when the result is not mathematically defined.
-//
-//    // An SNaN is a NaN with the most significant fraction bit clear.
-//    // It is used to signal an exception when used in operations.
-//    // SNaN's can be handy to assign to uninitialized variables to trap premature usage.
-//
-//    // Semantically, QNaN's denote indeterminate operations, while SNaN's denote invalid operations.
-//
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), 0.0));
-//    BOOST_CHECK(! is_equal(-0.0, std::numeric_limits<double>::quiet_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), -0.0));
-//    BOOST_CHECK(! is_equal(0.0, std::numeric_limits<double>::quiet_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::infinity()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::quiet_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::max()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::max(), std::numeric_limits<double>::quiet_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), -std::numeric_limits<double>::max()));
-//    BOOST_CHECK(! is_equal(-std::numeric_limits<double>::max(), std::numeric_limits<double>::quiet_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::min()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::min(), std::numeric_limits<double>::quiet_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), -std::numeric_limits<double>::min()));
-//    BOOST_CHECK(! is_equal(-std::numeric_limits<double>::min(), std::numeric_limits<double>::quiet_NaN()));
-//
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), std::numeric_limits<double>::signaling_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), 0.0));
-//    BOOST_CHECK(! is_equal(-0.0, std::numeric_limits<double>::signaling_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), -0.0));
-//    BOOST_CHECK(! is_equal(0.0, std::numeric_limits<double>::signaling_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), std::numeric_limits<double>::infinity()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::signaling_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), std::numeric_limits<double>::max()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::max(), std::numeric_limits<double>::signaling_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), -std::numeric_limits<double>::max()));
-//    BOOST_CHECK(! is_equal(-std::numeric_limits<double>::max(), std::numeric_limits<double>::signaling_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), std::numeric_limits<double>::min()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::min(), std::numeric_limits<double>::signaling_NaN()));
-//    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), -std::numeric_limits<double>::min()));
-//    BOOST_CHECK(! is_equal(-std::numeric_limits<double>::min(), std::numeric_limits<double>::signaling_NaN()));
+    BOOST_TEST_MESSAGE( "test_comparisons_involving_nan" );
+
+    // The value NaN (Not a Number) is used to represent a value that does not represent a real number.
+    // NaN's are represented by a bit pattern with an exponent of all 1s and a non-zero fraction. T
+    // there are two categories of NaN: QNaN (Quiet NaN) and SNaN (Signalling NaN).
+    //
+    // A QNaN is a NaN with the most significant fraction bit set.
+    // QNaN's propagate freely through most arithmetic operations.
+    // These values pop out of an operation when the result is not mathematically defined.
+
+    // An SNaN is a NaN with the most significant fraction bit clear.
+    // It is used to signal an exception when used in operations.
+    // SNaN's can be handy to assign to uninitialized variables to trap premature usage.
+
+    // Semantically, QNaN's denote indeterminate operations, while SNaN's denote invalid operations.
+
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), 0.0));
+    BOOST_CHECK(! is_equal(-0.0, std::numeric_limits<double>::quiet_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), -0.0));
+    BOOST_CHECK(! is_equal(0.0, std::numeric_limits<double>::quiet_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::infinity()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::quiet_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::max()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::max(), std::numeric_limits<double>::quiet_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), -std::numeric_limits<double>::max()));
+    BOOST_CHECK(! is_equal(-std::numeric_limits<double>::max(), std::numeric_limits<double>::quiet_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::min()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::min(), std::numeric_limits<double>::quiet_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::quiet_NaN(), -std::numeric_limits<double>::min()));
+    BOOST_CHECK(! is_equal(-std::numeric_limits<double>::min(), std::numeric_limits<double>::quiet_NaN()));
+
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), std::numeric_limits<double>::signaling_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), 0.0));
+    BOOST_CHECK(! is_equal(-0.0, std::numeric_limits<double>::signaling_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), -0.0));
+    BOOST_CHECK(! is_equal(0.0, std::numeric_limits<double>::signaling_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), std::numeric_limits<double>::infinity()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::signaling_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), std::numeric_limits<double>::max()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::max(), std::numeric_limits<double>::signaling_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), -std::numeric_limits<double>::max()));
+    BOOST_CHECK(! is_equal(-std::numeric_limits<double>::max(), std::numeric_limits<double>::signaling_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), std::numeric_limits<double>::min()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::min(), std::numeric_limits<double>::signaling_NaN()));
+    BOOST_CHECK(! is_equal(std::numeric_limits<double>::signaling_NaN(), -std::numeric_limits<double>::min()));
+    BOOST_CHECK(! is_equal(-std::numeric_limits<double>::min(), std::numeric_limits<double>::signaling_NaN()));
 }
 
 BOOST_AUTO_TEST_CASE( test_comparisons_opposite_side_of_zero )

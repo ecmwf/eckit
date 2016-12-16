@@ -474,6 +474,82 @@ BOOST_AUTO_TEST_CASE( test_allToAll )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_CASE( test_nonblocking_send_receive )
+{
+  mpi::Comm& comm = mpi::comm("world");
+  int tag = 99;
+  mpi::Request sendreq;
+  mpi::Request recvreq;
+  double send;
+  double recv = 1.;
+
+  // Post a receive request
+  if( comm.rank() == comm.size()-1 ) {
+    recvreq = comm.iReceive(recv,0,99);
+  }
+
+  // Post a send request
+  if( comm.rank() == 0 ) {
+    send = 0.5;
+    sendreq = comm.iSend(send,comm.size()-1,99);
+  }
+
+  // Wait for receiving to finish
+  if( comm.rank() == comm.size()-1 ) {
+    mpi::Status recvstatus = comm.wait(recvreq);
+    BOOST_CHECK_CLOSE(recv,0.5,1.e-9);
+  }
+  else {
+    BOOST_CHECK_CLOSE(recv,1.,1.e-9);
+  }
+
+  // Wait for sending to finish
+  if( comm.rank() == 0 ) {
+    mpi::Status sendstatus = comm.wait(sendreq);
+  }
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_blocking_send_receive )
+{
+  mpi::Comm& comm = mpi::comm("world");
+  int tag = 99;
+  double send1, send2;
+  double recv1 = 1.;
+  double recv2 = 1.;
+
+  // Send1
+  if( comm.rank() == 0 ) {
+    send1 = 0.1;
+    comm.send(send1,comm.size()-1,99);
+    send1 = 0.; // should not matter, as send() copies to internal mpi buffer
+  }
+
+  // Send2
+  if( comm.rank() == 0 ) {
+    send2 = 0.2;
+    comm.send(send2,comm.size()-1,99);
+  }
+
+  // Receive1
+  if( comm.rank() == comm.size()-1 ) {
+    mpi::Status status = comm.receive(recv1,0,99);
+    BOOST_CHECK_CLOSE(recv1,0.1,1.e-9);
+  }
+
+  // Receive2
+  if( comm.rank() == comm.size()-1 ) {
+    mpi::Status status = comm.receive(recv2,0,99);
+    BOOST_CHECK_CLOSE(recv2,0.2,1.e-9);
+  }
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
 BOOST_AUTO_TEST_CASE( test_allToAllv )
 {
     // TODO

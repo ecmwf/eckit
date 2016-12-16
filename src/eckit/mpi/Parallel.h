@@ -91,13 +91,13 @@ protected:  // methods
 
     virtual Status status() const    { return createStatus(); }
 
-    virtual Request request() const  { return createRequest(); }
+    virtual Request request(int) const;
+
+    virtual int communicator() const;
 
     static Status  createStatus();
 
     static MPI_Status* toStatus(Status&);
-
-    static Request createRequest();
 
     static MPI_Request* toRequest(Request&);
 

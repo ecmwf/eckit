@@ -39,6 +39,8 @@ class Status {
 
 public: // methods
 
+    Status();
+
     Status(StatusContent*);
 
     ~Status();

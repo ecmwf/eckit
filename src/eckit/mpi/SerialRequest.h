@@ -17,9 +17,9 @@
 namespace eckit {
 namespace mpi {
 
-//----------------------------------------------------------------------------------------------------------------------
+  class SerialRequestPool;
 
-class Serial;
+//----------------------------------------------------------------------------------------------------------------------
 
 class SerialRequest : public RequestContent {
 
@@ -27,20 +27,75 @@ public: // methods
 
     SerialRequest();
 
+    virtual ~SerialRequest();
+
+    virtual int request() const;
+
+    virtual int tag() const = 0;
+
+    virtual bool isReceive() const = 0;
+
 private: // methods
 
     virtual void print(std::ostream&) const;
 
 private: // members
 
-    friend class Serial;
+    friend class SerialRequestPool;
+    int request_;
+};
 
-    void* recvbuf_;
-    void* sendbuf_;
+//----------------------------------------------------------------------------------------------------------------------
+
+class SendRequest : public SerialRequest {
+
+public: // methods
+
+    SendRequest(const void* buf, size_t count, Data::Code type, int tag);
+    virtual ~SendRequest();
+
+    virtual bool isReceive() const { return false; }
+
+    const void* buffer() const { return buf_; }
+
+    size_t count() const { return count_; }
+
+    virtual int tag() const { return tag_; }
+
+    Data::Code type() const { return type_; }
+
+private:
+
+    void* buf_;
     size_t count_;
     int tag_;
     Data::Code type_;
-    bool is_receive_;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class ReceiveRequest : public SerialRequest {
+
+public: // methods
+
+    ReceiveRequest(void* buf, size_t count, Data::Code type, int tag);
+
+    virtual bool isReceive() const { return true; }
+
+    void* buffer() const { return buf_; }
+
+    size_t count() const { return count_; }
+
+    virtual int tag() const { return tag_; }
+
+    Data::Code type() const { return type_; }
+
+private:
+
+    void* buf_;
+    size_t count_;
+    int tag_;
+    Data::Code type_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

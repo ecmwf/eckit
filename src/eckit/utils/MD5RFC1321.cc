@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <limits>
+
 #include "eckit/exception/Exceptions.h"
 
 #include "eckit/utils/MD5RFC1321.h"
@@ -20,8 +22,6 @@ namespace eckit {
 #if _CRAYC
     #pragma _CRI noopt
 #endif
-
-/// Code taken from RFC-1321
 
 /* Constants for MD5Transform routine. */
 
@@ -48,19 +48,17 @@ static unsigned char PADDING[64] = {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-/* F, G, H and I are basic MD5 functions.
- */
+/* F, G, H and I are basic MD5 functions. */
 #define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
 #define G(x, y, z) (((x) & (z)) | ((y) & (~z)))
 #define H(x, y, z) ((x) ^ (y) ^ (z))
 #define I(x, y, z) ((y) ^ ((x) | (~z)))
 
-/* ROTATE_LEFT rotates x left n bits.
- */
+/* ROTATE_LEFT rotates x left n bits. */
 #define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
 /* FF, GG, HH, and II transformations for rounds 1, 2, 3, and 4.
-Rotation is separate from addition to prevent recomputation.
+   Rotation is separate from addition to prevent recomputation.
  */
 #define FF(a, b, c, d, x, s, ac) { \
     (a) += F ((b), (c), (d)) + (x) + (UINT4)(ac); \
@@ -83,8 +81,7 @@ Rotation is separate from addition to prevent recomputation.
     (a) += (b); \
 }
 
-/* MD5 initialization. Begins an MD5 operation, writing a new context.
- */
+/* MD5 initialization. Begins an MD5 operation, writing a new context. */
 void MD5RFC1321::Init (MD5_CTX *context)
 {
   context->count[0] = context->count[1] = 0;
@@ -96,8 +93,8 @@ void MD5RFC1321::Init (MD5_CTX *context)
 }
 
 /* MD5 block update operation. Continues an MD5 message-digest
-  operation, processing another message block, and updating the
-  context.
+   operation, processing another message block, and updating the
+   context.
  */
 void MD5RFC1321::Update (MD5_CTX *context, unsigned char *input, unsigned int inputLen)
 {
@@ -251,7 +248,7 @@ void MD5RFC1321::Transform (UINT4 state[4], unsigned char block[64])
 }
 
 /* Encodes input (UINT4) into output (unsigned char). Assumes len is
-  a multiple of 4.
+   a multiple of 4.
  */
 void MD5RFC1321::Encode (unsigned char *output, UINT4 *input, unsigned int len)
 {
@@ -266,7 +263,7 @@ void MD5RFC1321::Encode (unsigned char *output, UINT4 *input, unsigned int len)
 }
 
 /* Decodes input (unsigned char) into output (UINT4). Assumes len is
-  a multiple of 4.
+   a multiple of 4.
  */
 void MD5RFC1321::Decode(UINT4 *output, unsigned char *input, unsigned int len)
 {
@@ -322,11 +319,13 @@ MD5RFC1321::digest_t MD5RFC1321::digest() const {
         unsigned char digest[16];
         MD5RFC1321::Final(digest, &s_);
 
-        digest_.resize(33, 0);
+        char tmp[33] = {0};
 
         for(int i = 0; i < 16; i++) {
-            sprintf(&digest_[2*i], "%02x", digest[i]);
+            sprintf(&tmp[2*i], "%02x", digest[i]);
         }
+
+        digest_ = std::string(tmp);
     }
 
     return digest_;

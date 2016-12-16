@@ -88,11 +88,8 @@ private: // members
   /* POINTER defines a generic pointer type */
   typedef unsigned char *POINTER;
 
-  /* UINT2 defines a two byte word */
-  typedef unsigned short int UINT2;
-
   /* UINT4 defines a four byte word */
-  typedef unsigned long int UINT4;
+  typedef u_int32_t UINT4;
 
   /* MD5 context. */
   typedef struct {

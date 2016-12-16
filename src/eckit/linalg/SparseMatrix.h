@@ -16,11 +16,16 @@
 #ifndef eckit_la_SparseMatrix_h
 #define eckit_la_SparseMatrix_h
 
+#include <iosfwd>
+#include <cassert>
+#include <iosfwd>
 #include <vector>
 
 #include "eckit/linalg/types.h"
 #include "eckit/linalg/Triplet.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/MemoryHandle.h"
 
 namespace eckit {
 
@@ -51,6 +56,9 @@ public:  // methods
     /// Construct vector from existing data (does NOT take ownership)
     SparseMatrix(Scalar* values, Size size, Size rows, Size cols, Index* outer, Index* inner);
 
+    /// Construct vector from existing data (does NOT take ownership)
+    SparseMatrix(const eckit::Buffer& buffer);
+
     /// Constructor from Stream
     SparseMatrix(Stream& v);
 
@@ -75,8 +83,10 @@ public:
 
     // I/O
 
-    void save(const eckit::PathName &path) const;
-    void load(const eckit::PathName &path);
+    void save(const eckit::PathName& path) const;
+    void load(const eckit::PathName& path);
+
+    void dump(eckit::Buffer& buffer) const;
 
     void swap(SparseMatrix& other);
 
@@ -94,70 +104,12 @@ public:
 
     /// @returns read-only view of the data vector
     const Scalar* data() const { return data_; }
+
     /// @returns read-only view of the outer index vector
     const Index* outer() const { return outer_; }
+
     /// @returns read-only view of the inner index vector
     const Index* inner() const { return inner_; }
-
-    /// Reserve memory for given number of non-zeros (invalidates all data arrays)
-    void reserve(Size rows, Size cols, Size nnz);
-
-    /// Returns the footprint of the matrix in memory
-    size_t footprint() const;
-
-public: // iterators
-
-    struct const_iterator {
-        const_iterator(const SparseMatrix& matrix, Size rowIndex = 0) :
-            matrix_(const_cast<SparseMatrix*>(&matrix)),
-            index_(0) {
-            position(rowIndex);
-        }
-
-        const_iterator(const const_iterator& other) {
-            *this = other;
-        }
-
-        Size col() const;
-        Size row() const;
-
-        operator bool() const { return matrix_ && ( index_ < matrix_->size_ ); }
-
-        const_iterator& operator++();
-        const_iterator  operator++(int);
-        const_iterator& operator=(const const_iterator& other);
-
-        bool operator!=(const const_iterator& other) const { return !operator==(other); }
-        bool operator==(const const_iterator& other) const { return other.matrix_ == matrix_ && other.index_ == index_; }
-
-        const Scalar& operator*() const;
-
-    protected:
-
-        /// advances the iterator to the begining of a given row
-        const_iterator& position(Size rowIndex = 0);
-
-        SparseMatrix* matrix_;
-        Size index_;
-    };
-
-    struct iterator : const_iterator {
-        iterator(SparseMatrix& matrix, Size rowIndex = 0) : const_iterator(matrix, rowIndex) {}
-        Scalar& operator*();
-    };
-
-    const_iterator begin(Size rowIndex=0) const { return const_iterator(*this, rowIndex); }
-    const_iterator end(Size rowIndex)     const { return const_iterator(*this, rowIndex+1); }
-    const_iterator end()                  const { return const_iterator(*this, rows_); }
-
-    iterator       begin(Size rowIndex=0) { return iterator(*this, rowIndex); }
-    iterator       end(Size rowIndex)     { return iterator(*this, rowIndex+1); }
-    iterator       end()                  { return iterator(*this, rows_); }
-
-private: // methods
-
-    /// Resets the matrix to a deallocated state
-    void reset();
 
     /// data size is the number of non-zeros
     Size dataSize() const { return nonZeros(); }
@@ -167,6 +119,88 @@ private: // methods
 
     /// @returns outer size is number of rows + 1
     Size outerSize() const { return Size(rows_ + 1); }
+
+    /// Reserve memory for given number of non-zeros (invalidates all data arrays)
+    /// @note variables into this method must be by value
+    void reserve(Size rows, Size cols, Size nnz);
+
+    /// Returns the footprint of the matrix in memory
+    size_t footprint() const;
+
+    void dump(std::ostream& os) const;
+
+    void print(std::ostream& os) const;
+
+    friend std::ostream& operator<<(std::ostream& os, const SparseMatrix& m) { m.print(os); return os; }
+
+public: // iterators
+
+    struct const_iterator {
+
+        const_iterator(const SparseMatrix& matrix);
+        const_iterator(const SparseMatrix& matrix, Size row);
+
+        const_iterator(const const_iterator& other) {
+            *this = other;
+        }
+
+        Size col() const;
+        Size row() const;
+
+        operator bool() const { return matrix_ && ( index_ < matrix_->nonZeros() ); }
+
+        const_iterator& operator++();
+        const_iterator  operator++(int);
+        const_iterator& operator=(const const_iterator& other);
+
+        bool operator!=(const const_iterator& other) const { return !operator==(other); }
+        bool operator==(const const_iterator& other) const;
+
+        const Scalar& operator*() const;
+
+        void print(std::ostream& os) const;
+
+    protected:
+
+        /// checks if index is last of row
+        bool lastOfRow() const { return ((index_ + 1) == Size(matrix_->outer_[row_ + 1])); }
+
+        SparseMatrix* matrix_;
+        Size index_;
+        Size row_;
+
+    };
+
+    struct iterator : const_iterator {
+        iterator(SparseMatrix& matrix) : const_iterator(matrix) {}
+        iterator(SparseMatrix& matrix, Size row) : const_iterator(matrix, row) {}
+        Scalar& operator*();
+    };
+
+    /// const iterators to being/end of row
+    const_iterator begin(Size row)   const { return const_iterator(*this, row); }
+    const_iterator end(Size row)     const { return const_iterator(*this, row+1); }
+
+    /// const iterators to being/end of matrix
+    const_iterator begin()           const { return const_iterator(*this); }
+    const_iterator end()             const { return const_iterator(*this, rows_); }
+
+    /// iterators to being/end of row
+    iterator       begin(Size row)   { return iterator(*this, row); }
+    iterator       end(Size row)     { return iterator(*this, row+1); }
+
+    /// const iterators to being/end of matrix
+    iterator       begin()           { return iterator(*this); }
+    iterator       end()             { return iterator(*this, rows_); }
+
+private: // methods
+
+    size_t sizeofData() const  { return dataSize()  * sizeof(Scalar); }
+    size_t sizeofOuter() const { return outerSize() * sizeof(Index);  }
+    size_t sizeofInner() const { return innerSize() * sizeof(Index);  }
+
+    /// Resets the matrix to a deallocated state
+    void reset();
 
     /// Serialise to a Stream
     void encode(Stream& s) const;

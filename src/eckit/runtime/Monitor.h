@@ -16,24 +16,42 @@
 
 #include "eckit/eckit.h"
 
-#include "eckit/container/MappedArray.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/ThreadSingleton.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Monitor : private NonCopyable {
 
 public: // types
 
-	typedef MappedArray<TaskInfo> TaskArray;
-    
+    class TaskArray : private eckit::NonCopyable {
+
+    public:
+
+        typedef TaskInfo*       iterator;
+        typedef const TaskInfo* const_iterator;
+
+        virtual ~TaskArray();
+
+        virtual void sync() = 0;
+        virtual void lock() = 0;
+        virtual void unlock() = 0;
+
+        virtual iterator begin() = 0;
+        virtual iterator end() = 0;
+        virtual const_iterator begin() const = 0;
+        virtual const_iterator end()   const = 0;
+
+        virtual unsigned long size() = 0;
+        virtual TaskInfo& operator[](unsigned long n) = 0;
+    };
+
 public: // methods
     
     static Monitor& instance();    

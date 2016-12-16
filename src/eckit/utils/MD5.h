@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_MD5_H
-#define eckit_utils_MD5_H
+#ifndef eckit_utils_MD5RFC1321_H
+#define eckit_utils_MD5RFC1321_H
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -81,33 +81,31 @@ private:  // types
   /// Double hashing
   void add(const MD5& md5) { add(md5.digest()); }
 
-  struct State {
-
-    uint64_t size;
-
-    unsigned long words[64];
-    unsigned long word_count;
-
-    unsigned char bytes[4];
-    unsigned long byte_count;
-
-    unsigned long h0;
-    unsigned long h1;
-    unsigned long h2;
-    unsigned long h3;
-  };
-
-protected:  // methods
-
-  static void md5_init(State* s);
-  static void md5_add(State* s, const void* data, size_t len);
-  static void md5_end(State* s, char* digest);
-  static void md5_flush(State* s);
-
 private: // members
 
-  mutable State s_;
   mutable digest_t digest_;  ///< cached digest
+
+  /* POINTER defines a generic pointer type */
+  typedef unsigned char *POINTER;
+
+  /* UINT4 defines a four byte word */
+  typedef u_int32_t UINT4;
+
+  /* MD5 context. */
+  typedef struct {
+    UINT4 state[4];                                   /* state (ABCD) */
+    UINT4 count[2];        /* number of bits, modulo 2^64 (lsb first) */
+    unsigned char buffer[64];                         /* input buffer */
+  } MD5_CTX;
+
+  mutable MD5_CTX s_;
+
+  static void Init    (MD5_CTX *);
+  static void Update  (MD5_CTX *, unsigned char *, unsigned int);
+  static void Final   (unsigned char [16], MD5_CTX *);
+  static void Transform (UINT4 [4], unsigned char [64]);
+  static void Encode (unsigned char *, UINT4 *, unsigned int);
+  static void Decode (UINT4 *, unsigned char *, unsigned int);
 
 };
 

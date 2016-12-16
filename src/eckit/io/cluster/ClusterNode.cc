@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
 
 #include "eckit/io/cluster/ClusterNode.h"
 #include "eckit/io/cluster/ClusterNodes.h"

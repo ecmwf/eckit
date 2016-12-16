@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
 #include <pwd.h>
 
 #include "eckit/thread/AutoLock.h"

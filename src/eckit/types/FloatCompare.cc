@@ -1,183 +1,176 @@
-#include <cassert>
-#include <cmath>
-#include <cstdlib>
+#include <math.h>
 #include <limits>
+#include <sstream>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
-
-using namespace std;
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-// See:
-// * http://randomascii.wordpress.com/2012/01/11/tricks-with-the-floating-point-format
-// * http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition
-//   for the potential portability problems with the union and bit-fields below.
+// The following code is adapted from http://www.boost.org/doc/libs/1_62_0/boost/math/special_functions/next.hpp
 //
-// Format of IEEE floating-point:
-//
-//   The most-significant bit being the leftmost, an IEEE
-//   floating-point looks like
-//
-//     sign_bit exponent_bits fraction_bits
-//
-//   Here, sign_bit is a single bit that designates the sign of the
-//   number.
-//
-//   For float, there are 8 exponent bits and 23 fraction bits.
-//
-//   For double, there are 11 exponent bits and 52 fraction bits.
-//
-//   More details can be found at
-//   http://en.wikipedia.org/wiki/IEEE_floating-point_standard.
+//  (C) Copyright John Maddock 2008.
+//  Use, modification and distribution are subject to the
+//  Boost Software License, Version 1.0. (See accompanying file
+//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//----------------------------------------------------------------------------------------------------------------------
 
+namespace {
 
-/// @TODO check in BIGENDIAN archs...
+template <class T>
+inline int sign(const T& z) {
+   return (z == 0) ? 0 : signbit(z) ? -1 : 1;
+}
 
-// Used for accessing the integer representation of floating-point numbers
-// (aliasing through unions works on most platforms).
-union FloatType
-{
-    FloatType(float number = 0.0f) : f_(number) { assert( sizeof(i_) == sizeof(f_) ); }
+template <class T>
+inline int digits() {
+    return std::numeric_limits<T>::radix == 2
+            ? std::numeric_limits<T>::digits
+            : ((std::numeric_limits<T>::digits + 1) * 1000L) / 301L;
+}
 
-    bool    negative()    const { return (i_ >> 31) != 0; }
-    int32_t rawMantissa() const { return i_ & ((1 << 23) - 1); }
-    int32_t rawExponent() const { return (i_ >> 23) & 0xFF; }
-
-    int32_t i_;
-    float   f_;
-};
-
-// Used for accessing the integer representation of floating-point numbers
-// (aliasing through unions works on most platforms).
-union Double
-{
-    Double(double number = 0.0) : f_(number) { assert( sizeof(i_) == sizeof(f_) ); }
-
-    bool    negative()    const { return (i_ >> 63) != 0; }
-    int64_t rawMantissa() const { return i_ & ((1LL << 52) - 1); }
-    int64_t rawExponent() const { return (i_ >> 52) & 0x7FF; }
-
-    int64_t i_;
-    double  f_;
-};
-
-//// Allow a common algorithm to compare floats and doubles, by using templates
-template < class T > struct FPCompare;
-
-template <> struct FPCompare<float>  {
-   typedef FloatType  FP_t;
-   typedef int32_t int_type;
-   static int_type diff(int_type a, int_type b) { int_type x = a - b; return ((int_type)(((x) >= 0) ? (x) : -(x))); }
-};
-
-template <> struct FPCompare<double> {
-   typedef Double FP_t;
-   typedef int64_t int_type;
-   static int_type diff(int_type a, int_type b) { int_type x = a - b; return ((int_type)(((x) >= 0) ? (x) : -(x))); }
-};
-
-template < typename T >
-bool AlmostEqualUlps(T A, T B, int maxUlpsDiff)
-{
-    // Ensure that either A or B are not close to zero.
-    // ULP based equality breaks down, near zero
-    assert( (fabs(A) > 5 * std::numeric_limits<T>::epsilon()) || (fabs(B) > 5 * std::numeric_limits<T>::epsilon()) );
-
-    // Initialise unions with floats
-    typename FPCompare<T>::FP_t uA(A);
-    typename FPCompare<T>::FP_t uB(B);
-
-    // Different signs means they do not match.
-    // ULP comparison does not make sense when signs are different
-    if (uA.negative() != uB.negative())
-    {
-        // Check for equality to make sure +0==-0
-        if (A == B)
-            return true;
-        return false;
+template <class T>
+T float_distance(const T& a, const T& b) {
+    //
+    // Error handling:
+    //
+    if (!isfinite(a)) {
+        std::ostringstream s;
+        s << "First argument must be finite, but got " << a << std::endl;
+        throw BadParameter(s.str(), Here());
+    }
+    if (!isfinite(b)) {
+        std::ostringstream s;
+        s << "Second argument must be finite, but got " << b << std::endl;
+        throw BadParameter(s.str(), Here());
     }
 
-    // Find the difference in ULPs.
-    typename FPCompare<T>::int_type ulpsDiff = FPCompare<T>::diff(uA.i, uB.i);
-    if ( ulpsDiff  <= maxUlpsDiff)
-       return true;
+    //
+    // Special cases:
+    //
+    if(a > b)
+        return -float_distance(b, a);
+    if(a == b)
+        return T(0);
+    if(a == 0)
+        return 1 + fabs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b));
+    if(b == 0)
+        return 1 + fabs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
+    if(sign(a) != sign(b))
+        return 2 + fabs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b))
+                + fabs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
+    //
+    // By the time we get here, both a and b must have the same sign, we want
+    // b > a and both postive for the following logic:
+    //
+    if(a < 0)
+        return float_distance(static_cast<T>(-b), static_cast<T>(-a));
 
-    return false;
+    ASSERT(a >= 0);
+    ASSERT(b >= a);
+
+    int expon;
+    //
+    // Note that if a is a denorm then the usual formula fails
+    // because we actually have fewer than digits<T>()
+    // significant bits in the representation:
+    //
+    frexp((fpclassify(a) == FP_SUBNORMAL) ? std::numeric_limits<T>::min() : a, &expon);
+    T upper = ldexp(T(1), expon);
+    T result = T(0);
+    expon = digits<T>() - expon;
+    //
+    // If b is greater than upper, then we *must* split the calculation
+    // as the size of the ULP changes with each order of magnitude change:
+    //
+    if(b > upper) {
+        result = float_distance(upper, b);
+    }
+    //
+    // Use compensated double-double addition to avoid rounding
+    // errors in the subtraction:
+    //
+    T mb, x, y, z;
+    if((fpclassify(a) == FP_SUBNORMAL) || (b - a < std::numeric_limits<T>::min())) {
+        //
+        // Special case - either one end of the range is a denormal, or else the difference is.
+        // The regular code will fail if we're using the SSE2 registers on Intel and either
+        // the FTZ or DAZ flags are set.
+        //
+        T a2 = ldexp(a, digits<T>());
+        T b2 = ldexp(b, digits<T>());
+        mb = -std::min(T(ldexp(upper, digits<T>())), b2);
+        x = a2 + mb;
+        z = x - a2;
+        y = (a2 - (x - z)) + (mb - z);
+
+        expon -= digits<T>();
+    } else {
+        mb = -std::min(upper, b);
+        x = a + mb;
+        z = x - a;
+        y = (a - (x - z)) + (mb - z);
+    }
+    if(x < 0)
+    {
+        x = -x;
+        y = -y;
+    }
+    result += ldexp(x, expon) + ldexp(y, expon);
+    //
+    // Result must be an integer:
+    //
+    ASSERT(result == floor(result));
+    return result;
 }
+
+}  // anonymous namespace
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Compare 2 floats with an absolute epsilon check (values near zero), then based on ULPs
 ///
-/// A, B       : two floating-point numbers (single/double precision) to compare.
-/// maxDiff    : epsilon for floating-point absolute epsilon check (should be some
+/// a, b       : two floating-point numbers (single/double precision) to compare.
+/// epsilon    : epsilon for floating-point absolute epsilon check (should be some
 ///              small multiple of std::numeric_limits<T>::epsilon().
 /// maxUlpsDiff: unit in the last place or unit of least precision.
 ///              maxUlpsDiff can also be interpreted in terms of how many representable floats we are
-///              willing to accept between A and B. This function will allow maxUlpsDiff-1 floats
-///              between A and B.
+///              willing to accept between a and b. This function will allow maxUlpsDiff-1 floats
+///              between a and b.
 ///
 /// If two numbers are identical except for a one-bit difference in the last digit of their mantissa
 /// then this function will calculate ulpsDiff as one.
-/// If one number is the maximum number for a particular exponent, perhaps 1.99999988,
+/// If one number is the maximum number for a particular exponent, say 1.99999988,
 /// and the other number is the smallest number for the next exponent, say 2.0,
 /// then this function will again calculate ulpsDiff as one.
 /// In both cases the two numbers are the closest floats there are.
 ///
-template < typename T >
-bool AlmostEqualUlpsAndAbs(T A, T B, T maxDiff, int maxUlpsDiff)
-{
+template< typename T >
+bool almostEqualUlps(T a, T b, T epsilon, int maxUlpsDiff) {
+    // Bit identical is equal for any epsilon
+    if (a == b) return true;
+    // NaNs are always different
+    if (isnan(a) || isnan(b)) return false;
+
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.
-    T absDiff = fabs(A - B);
-    if (absDiff <= maxDiff)
-        return true;
+    T absDiff = fabs(a - b);
+    if (absDiff <= epsilon) return true;
 
-    // Initialise unions with floats
-    typename FPCompare<T>::FP_t uA(A);
-    typename FPCompare<T>::FP_t uB(B);
-
-    // Different signs means they do not match.
-    // ULP comparison does not make sense when sign are different
-    if (uA.negative() != uB.negative())
-        return false;
-
-    // Find the difference in ULPs, taking note to use correct int_type for the difference, to avoid overflow
-    typename FPCompare<T>::int_type ulpsDiff = FPCompare<T>::diff(uA.i_, uB.i_);
-    if ( ulpsDiff <= maxUlpsDiff)
-       return true;
-
-    return false;
-}
-
-template < typename T >
-bool AlmostEqualRelativeAndAbs(T A, T B, T maxDiff, T maxRelDiff)
-{
-    // Check if the numbers are really close -- needed
-    // when comparing numbers near zero.
-    T diff = fabs(A - B);
-    if (diff <= maxDiff)
-        return true;
-
-    A = fabs(A);
-    B = fabs(B);
-    T largest = (B > A) ? B : A;
-
-    if (diff <= largest * maxRelDiff)
-        return true;
-    return false;
+    // Find the difference in ULPs
+    T ulpsDiff = fabs(float_distance(a, b));
+    return ulpsDiff <= maxUlpsDiff;
 }
 
 template<>
-bool isApproxEqualUlps(float a, float b, float epsilon, int maxUlpsDiff)
-{
-    return AlmostEqualUlpsAndAbs(a,b,epsilon,maxUlpsDiff);
+bool isApproxEqualUlps(float a, float b, float epsilon, int maxUlpsDiff) {
+    return almostEqualUlps(a, b, epsilon, maxUlpsDiff);
 }
 
 template<>
-bool isApproxEqualUlps(double a, double b, double epsilon, int maxUlpsDiff)
-{
-    return AlmostEqualUlpsAndAbs(a,b,epsilon,maxUlpsDiff);
+bool isApproxEqualUlps(double a, double b, double epsilon, int maxUlpsDiff) {
+    return almostEqualUlps(a, b, epsilon, maxUlpsDiff);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

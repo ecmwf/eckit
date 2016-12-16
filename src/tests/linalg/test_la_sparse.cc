@@ -204,6 +204,15 @@ BOOST_AUTO_TEST_CASE(test_iterator) {
     A.prune();
     BOOST_CHECK_EQUAL(A.nonZeros(), 2);
 
+    //  data    [ 1 2 ]
+    //  outer   [ 0 0 1 2 ]
+    //  inner   [ 2 2 ]
+
+    Scalar data[2] = {1., 2.};
+    Index outer[4] = {0, 0, 1, 2};
+    Index inner[2] = {2, 2};
+    test(A, outer, inner, data);
+
     SparseMatrix::const_iterator it = A.begin();
 
     // check entry #1
@@ -213,13 +222,16 @@ BOOST_AUTO_TEST_CASE(test_iterator) {
 
     // check entry #2
     ++it;
+
     BOOST_CHECK_EQUAL(it.row(), 2);
     BOOST_CHECK_EQUAL(it.col(), 2);
     BOOST_CHECK(*it == 2.);
 
     // go past the end
     BOOST_CHECK(it != A.end());
+
     ++it;
+
     BOOST_CHECK(it == A.end());
     BOOST_CHECK(!it);
 
@@ -235,7 +247,9 @@ BOOST_AUTO_TEST_CASE(test_iterator) {
     // go way past the end
     it = A.begin(42);
     BOOST_CHECK(!it);
+
 }
+
 
 BOOST_AUTO_TEST_CASE(test_transpose_square) {
     Index outer[4] = {0, 1, 2, 4};

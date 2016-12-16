@@ -1,3 +1,8 @@
+ecbuild_add_test( TARGET   eckit_test_sharedmemarray
+                  BOOST
+                  SOURCES  test_sharedmemarray.cc
+                  LIBS     eckit )
+
 ecbuild_add_test( TARGET   eckit_test_btree
                   BOOST
                   SOURCES  test_btree.cc

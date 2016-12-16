@@ -14,7 +14,7 @@ include( ecbuild_system NO_POLICY_SCOPE )
 
 ecbuild_requires_macro_version( 2.4 )
 
-set( PERSISTENT_NAMESPACE eckit CACHE INTERNAL "" )
+set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
 ###############################################################################
 # local project
@@ -81,28 +81,9 @@ set_package_properties( Armadillo PROPERTIES
 
 ### LAPACK
 
-if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
-  ecbuild_add_option( FEATURE LAPACK
-                      DESCRIPTION "Linear Algebra PACKage"
-                      REQUIRED_PACKAGES "PROJECT LAPACK" )
-  if( HAVE_LAPACK )
-    if( TARGET lapack )
-      ecbuild_debug( "LAPACK found as CMake target lapack" )
-      set( LAPACK_LIBRARIES lapack )
-    endif()
-  endif()
-  ecbuild_debug_var( LAPACK_LIBRARIES )
-# Don't search for LAPACK on cc[abt] as it is provided by the cray-libsci module
-# which is loaded by default
-else()
-  set( _cray_libsci_loaded $ENV{CRAY_LIBSCI_DIR} )
-  ecbuild_add_option( FEATURE LAPACK
-                      CONDITION _cray_libsci_loaded
-                      DESCRIPTION "Linear Algebra PACKage")
-  if( HAVE_LAPACK )
-    ecbuild_debug( "LAPACK found, already loaded as part of Cray's libsci" )
-  endif()
-endif()
+ecbuild_add_option( FEATURE LAPACK
+                    DESCRIPTION "Linear Algebra PACKage"
+                    REQUIRED_PACKAGES "LAPACK" )
 
 ### CUDA
 

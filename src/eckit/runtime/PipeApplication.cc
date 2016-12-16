@@ -8,6 +8,8 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <fcntl.h>
+#include <unistd.h>
 #include <sys/resource.h>
 
 #include "eckit/config/Resource.h"
@@ -36,7 +38,7 @@ PipeApplication::PipeApplication(int argc, char** argv, const char* homeenv):
     Monitor::instance().parent(parent);
 
     // If we fork, avoid childs having the pipe open
-    SYSCALL(fcntl(in_, F_SETFD, FD_CLOEXEC));
+    SYSCALL(fcntl(in_,  F_SETFD, FD_CLOEXEC));
     SYSCALL(fcntl(out_, F_SETFD, FD_CLOEXEC));
 }
 

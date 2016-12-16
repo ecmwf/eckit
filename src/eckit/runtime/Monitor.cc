@@ -17,15 +17,68 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/AutoLock.h"
 
 #include "eckit/os/BackTrace.h"
-
-//-----------------------------------------------------------------------------
+#include "eckit/container/MappedArray.h"
+#include "eckit/container/SharedMemArray.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+Monitor::TaskArray::~TaskArray() {}
+
+class MemoryMappedTaskArray : public Monitor::TaskArray {
+
+    virtual void sync() { map_.sync(); }
+    virtual void lock() { map_.lock(); }
+    virtual void unlock()  { map_.unlock(); }
+
+    virtual iterator begin()  { return map_.begin(); }
+    virtual iterator end()    { return map_.end(); }
+
+    virtual const_iterator begin() const   { return map_.begin(); }
+    virtual const_iterator end()   const   { return map_.end(); }
+
+    virtual unsigned long size()   { return map_.size(); }
+    virtual TaskInfo& operator[](unsigned long n) { return map_[n]; }
+
+    MappedArray<TaskInfo> map_;
+
+public:
+
+    MemoryMappedTaskArray(const PathName& path, unsigned long size) :
+        TaskArray(),
+        map_(path, size)
+    {}
+};
+
+class SharedMemoryTaskArray : public Monitor::TaskArray {
+
+    virtual void sync() { map_.sync(); }
+    virtual void lock() { map_.lock(); }
+    virtual void unlock()  { map_.unlock(); }
+
+    virtual iterator begin()  { return map_.begin(); }
+    virtual iterator end()    { return map_.end(); }
+
+    virtual const_iterator begin() const   { return map_.begin(); }
+    virtual const_iterator end()   const   { return map_.end(); }
+
+    virtual unsigned long size()   { return map_.size(); }
+    virtual TaskInfo& operator[](unsigned long n) { return map_[n]; }
+
+    SharedMemArray<TaskInfo> map_;
+
+public:
+
+    SharedMemoryTaskArray(const PathName& path, const std::string& name, unsigned long size) :
+        TaskArray(),
+        map_(path, name, size)
+    {}
+};
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static bool active_ = false;
 
@@ -35,8 +88,19 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 static void taskarray_init(void)
 {
     std::string  monitor = Resource<std::string>("monitorPath","~/etc/monitor");
-	long    size    = Resource<long>("monitorSize",1000);
-    mapArray = new Monitor::TaskArray(monitor,size);
+    long         size    = Resource<long>("monitorSize",1000);
+
+    std::string monitorArrayType = Resource<std::string>("monitorArrayType","MemoryMapped");
+
+    if(monitorArrayType == "MemoryMapped")
+        mapArray = new MemoryMappedTaskArray(monitor, size);
+    else if(monitorArrayType == "SharedMemory")
+        mapArray = new SharedMemoryTaskArray(monitor, "/etc-monitor", size);
+    else {
+        std::ostringstream oss;
+        oss << "Invalid monitorArrayType : " << monitorArrayType << ", valid types are 'MemoryMapped' and 'SharedMemory'" << std::endl;
+        throw eckit::BadParameter(oss.str(), Here());
+    }
 }
 
 Monitor::TaskArray& Monitor::tasks()
@@ -45,7 +109,7 @@ Monitor::TaskArray& Monitor::tasks()
 	return *mapArray;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template class ThreadSingleton<Monitor>;
 
@@ -57,7 +121,7 @@ Monitor& Monitor::instance()
 	return m;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 Monitor::Monitor():
    slot_(0),
@@ -119,7 +183,6 @@ Monitor::~Monitor()
     }
 }
 
-//-----------------------------------------------------------------------------
 
 bool Monitor::active()
 {
@@ -382,7 +445,7 @@ int Monitor::kill(const std::string& name, int sig)
 	return n;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

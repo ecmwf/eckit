@@ -23,6 +23,7 @@
 #include "eckit/io/BufferedHandle.h"
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/Stream.h"
+#include "eckit/io/MemoryHandle.h"
 
 
 namespace eckit {
@@ -103,6 +104,53 @@ SparseMatrix::SparseMatrix(Scalar* values, Size size, Size rows, Size cols, Inde
     own_(false) {
 }
 
+
+struct SPMInfo {
+    Size         size_;   ///< non-zeros
+    Size         rows_;   ///< rows
+    Size         cols_;   ///< columns
+    ptrdiff_t    data_;
+    ptrdiff_t    outer_;
+    ptrdiff_t    inner_;
+};
+
+SparseMatrix::SparseMatrix(const eckit::Buffer& buffer)
+{
+    size_t buffsize = buffer.size();
+
+    const char* b = buffer;
+    char* addr = const_cast<char*>(b);
+
+    eckit::MemoryHandle mh(buffer);
+    mh.openForRead();
+
+    struct SPMInfo info;
+    mh.read(&info, sizeof(SPMInfo));
+
+    ASSERT(info.size_ && info.rows_ && info.cols_);
+    ASSERT(info.data_ > 0 && info.outer_ > 0 && info.inner_ > 0);
+
+    own_  = false;
+    size_ = info.size_;
+    rows_ = info.rows_;
+    cols_ = info.cols_;
+
+    ASSERT(buffer.size() >= sizeof(SPMInfo) +
+                           + sizeofData()
+                           + sizeofOuter()
+                           + sizeofInner() );
+
+    data_  = reinterpret_cast<Scalar*>(addr + info.data_);
+    outer_ = reinterpret_cast<Index*>(addr + info.outer_);
+    inner_ = reinterpret_cast<Index*>(addr + info.inner_);
+
+    // check offsets don't segfault
+
+    ASSERT(info.data_  + sizeofData()  <= buffsize);
+    ASSERT(info.outer_ + sizeofOuter() <= buffsize);
+    ASSERT(info.inner_ + sizeofInner() <= buffsize);
+}
+
 SparseMatrix::~SparseMatrix() {
     reset();
 }
@@ -115,9 +163,9 @@ SparseMatrix::SparseMatrix(const SparseMatrix& other) {
 
         reserve(other.rows(), other.cols(), other.nonZeros());
 
-        ::memcpy(data_,  other.data_,  dataSize()  * sizeof(Scalar));
-        ::memcpy(outer_, other.outer_, outerSize() * sizeof(Index));
-        ::memcpy(inner_, other.inner_, innerSize() * sizeof(Index));
+        ::memcpy(data_,  other.data_,  sizeofData());
+        ::memcpy(outer_, other.outer_, sizeofOuter());
+        ::memcpy(inner_, other.inner_, sizeofInner());
     }
 }
 
@@ -147,8 +195,8 @@ void SparseMatrix::reset() {
 }
 
 
+// variables into this method must be by value
 void SparseMatrix::reserve(Size rows, Size cols, Size nnz) {
-    // variables into this method must be by value
 
     ASSERT( nnz );
     ASSERT( nnz <= rows * cols );
@@ -179,6 +227,32 @@ void SparseMatrix::load(const eckit::PathName &path)  {
     decode(s);
 }
 
+void SparseMatrix::dump(Buffer& buffer) const {
+
+    Length minimum = sizeof(SPMInfo) + sizeofData() + sizeofOuter() + sizeofInner();
+    ASSERT( buffer.size() >= minimum);
+
+    MemoryHandle mh(buffer);
+    mh.openForWrite(buffer.size());
+
+    SPMInfo info;
+
+    info.size_  = nonZeros();
+    info.rows_  = rows();
+    info.cols_  = cols();
+
+    info.data_  = sizeof(SPMInfo);
+    info.outer_ = info.data_  + sizeofData();
+    info.inner_ = info.outer_ + sizeofOuter();
+
+    /// @todo we should try to get these memory aligned (to say 64 bytes)
+
+    mh.write(&info, sizeof(SPMInfo));
+
+    ASSERT(mh.write(data_,  sizeofData())  == sizeofData());
+    ASSERT(mh.write(outer_, sizeofOuter()) == sizeofOuter());
+    ASSERT(mh.write(inner_, sizeofInner()) == sizeofInner());
+}
 
 void SparseMatrix::swap(SparseMatrix &other) {
     std::swap(data_,  other.data_);
@@ -193,11 +267,35 @@ void SparseMatrix::swap(SparseMatrix &other) {
 
 size_t SparseMatrix::footprint() const {
     return sizeof(*this)
-            + dataSize()  * sizeof(Scalar)
-            + innerSize() * sizeof(Index)
-            + outerSize() * sizeof(Index);
+            + sizeofData()
+            + sizeofOuter()
+            + sizeofInner();
 }
 
+void SparseMatrix::dump(std::ostream& os) const
+{
+    for(Size i = 0; i < rows(); ++i) {
+
+        const_iterator itr = begin(i);
+        const_iterator iend = end(i);
+
+        if(itr == iend) continue;
+        os << itr.row();
+
+        for(; itr != iend; ++itr) {
+            os << " " << itr.col() << " " << *itr;
+        }
+        os << std::endl;
+    }
+}
+
+void SparseMatrix::print(std::ostream& os) const
+{
+    os << "SparseMatrix["
+       << "nnz="  << size_ << ","
+       << "rows=" << rows_ << ","
+       << "cols=" << cols_ << "]";
+}
 
 SparseMatrix& SparseMatrix::setIdentity(Size rows, Size cols) {
 
@@ -345,59 +443,66 @@ SparseMatrix::const_iterator SparseMatrix::const_iterator::operator++(int) {
 SparseMatrix::const_iterator& SparseMatrix::const_iterator::operator=(const SparseMatrix::const_iterator& other) {
     matrix_ = other.matrix_;
     index_  = other.index_;
+    row_    = other.row_;
     return *this;
 }
 
-
-Size SparseMatrix::const_iterator::col() const {
-    ASSERT(*this); //< ensure valid iterator via 'operator bool()'
-    return Size(matrix_->inner_[index_]);
+bool SparseMatrix::const_iterator::operator==(const SparseMatrix::const_iterator& other) const {
+    ASSERT(other.matrix_ == matrix_);
+    return other.index_ == index_;
 }
 
 
+SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix) :
+    matrix_(const_cast<SparseMatrix*>(&matrix)),
+    index_(0),
+    row_(0)
+{
+    const Index* outer = matrix_->outer();
+    while(outer[row_+1] == 0) {
+        ++row_;
+    }
+}
+
+SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix, Size row) :
+    matrix_(const_cast<SparseMatrix*>(&matrix)),
+    row_(row) {
+    const Size rows = matrix_->rows_;
+    if(row_ > rows) { row_ = rows; }
+    index_ = Size(matrix_->outer_[row_]);
+}
+
+Size SparseMatrix::const_iterator::col() const {
+    assert(matrix_ && index_ < matrix_->nonZeros());
+    return Size(matrix_->inner_[index_]);
+}
+
 Size SparseMatrix::const_iterator::row() const {
-
-    ASSERT(*this); //< ensure valid iterator via 'operator bool()'
-
-    // binary search for the row
-    // note: actually finds the row's end (or, the beggining of next row)
-    const Index* first = matrix_->outer_;
-    const Index* last  = first + matrix_->outerSize();
-    const Index* found = std::upper_bound(first, last, Index(index_));
-    ASSERT(found != last);
-    ASSERT(found > first);  // should hold even if index_ == 0
-
-    Size rowIndex = Size(std::distance(first, found) - 1);
-    ASSERT(rowIndex < matrix_->rows());
-
-    return rowIndex;
+    return row_;
 }
 
 
 SparseMatrix::const_iterator& SparseMatrix::const_iterator::operator++() {
-    ++index_;
+    if(lastOfRow()) {
+        row_++;
+    }
+    index_++;
     return *this;
 }
 
 
 const Scalar& SparseMatrix::const_iterator::operator*() const {
-    ASSERT(matrix_ && index_ < matrix_->nonZeros());
+    assert(matrix_ && index_ < matrix_->nonZeros());
     return matrix_->data_[index_];
 }
 
-
-SparseMatrix::const_iterator& SparseMatrix::const_iterator::position(Size rowIndex) {
-    ASSERT(matrix_);
-    while ((rowIndex < matrix_->rows_) && (matrix_->outer_[rowIndex] >= matrix_->outer_[rowIndex+1])) {
-        ++rowIndex;
-    }
-    index_ = (rowIndex < matrix_->rows_)? Size(matrix_->outer_[rowIndex]) : matrix_->nonZeros();
-    return *this;
+void eckit::linalg::SparseMatrix::const_iterator::print(std::ostream& os) const {
+    os << "SparseMatrix::iterator(row=" << row_ << ", index=" << index_ << ")" << std::endl;
 }
 
 
 Scalar& SparseMatrix::iterator::operator*() {
-    ASSERT(matrix_ && index_ < matrix_->nonZeros());
+    assert(matrix_ && index_ < matrix_->nonZeros());
     return matrix_->data_[index_];
 }
 

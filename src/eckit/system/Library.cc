@@ -167,7 +167,6 @@ Channel& Library::debugChannel() const
 
     std::string s = prefix_ + "_DEBUG";
 
-
     if (debug_) {
         debugChannel_.reset(new Channel(new PrefixTarget(s)));
     }

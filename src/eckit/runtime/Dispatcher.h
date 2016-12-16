@@ -14,6 +14,8 @@
 #ifndef eckit_Dispatcher_h
 #define eckit_Dispatcher_h
 
+#include <unistd.h>
+
 #include "eckit/eckit.h"
 
 #include "eckit/config/Configurable.h"

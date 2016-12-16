@@ -16,7 +16,10 @@
 
 #include "eckit/types/FloatCompare.h"
 
+#include "eckit/testing/Setup.h"
+
 using namespace eckit;
+using namespace eckit::testing;
 
 namespace {
 
@@ -31,6 +34,8 @@ bool is_equal(double a, double b) {
 };
 
 //-----------------------------------------------------------------------------
+
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( test_eckit_floatcompare )
 

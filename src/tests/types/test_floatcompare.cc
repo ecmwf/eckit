@@ -23,6 +23,10 @@ using namespace eckit::testing;
 
 namespace {
 
+bool is_equal(double a, double b, double epsilon, int maxUlps) {
+    return FloatCompare<double>::isApproximatelyEqual(a, b, epsilon, maxUlps);
+}
+
 bool is_equal(double a, double b, double epsilon) {
     return FloatCompare<double>::isApproximatelyEqual(a, b, epsilon);
 }
@@ -256,6 +260,25 @@ BOOST_AUTO_TEST_CASE( test_comparisons_very_close_to_zero )
    BOOST_CHECK(! is_equal( 0.000000001,  dMin,        1e-10));
    BOOST_CHECK(! is_equal( dMin,         0.000000001, 1e-10));
    BOOST_CHECK(! is_equal(-dMin,         0.000000001, 1e-10));
+}
+
+BOOST_AUTO_TEST_CASE( test_comparisons_ulps )
+{
+   BOOST_TEST_MESSAGE( "test_comparisons_ulps" );
+
+   BOOST_CHECK(  is_equal( dMin, -dMin, 0, 2));
+   BOOST_CHECK(  is_equal(-dMin,  dMin, 0, 2));
+   BOOST_CHECK(  is_equal( dMin,  0   , 0, 1));
+   BOOST_CHECK(  is_equal( 0,     dMin, 0, 1));
+   BOOST_CHECK(  is_equal(-dMin,  0   , 0, 1));
+   BOOST_CHECK(  is_equal( 0,    -dMin, 0, 1));
+
+   BOOST_CHECK(! is_equal( dMin, -dMin, 0, 1));
+   BOOST_CHECK(! is_equal(-dMin,  dMin, 0, 1));
+   BOOST_CHECK(! is_equal( dMin,  0   , 0, 0));
+   BOOST_CHECK(! is_equal( 0,     dMin, 0, 0));
+   BOOST_CHECK(! is_equal(-dMin,  0   , 0, 0));
+   BOOST_CHECK(! is_equal( 0,    -dMin, 0, 0));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

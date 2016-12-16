@@ -8,7 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/mpi/SerialData.h"
 #include "eckit/mpi/SerialRequest.h"
+#include "eckit/log/Log.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 namespace mpi {
@@ -16,18 +19,44 @@ namespace mpi {
 //----------------------------------------------------------------------------------------------------------------------
 
 SerialRequest::SerialRequest() :
-    recvbuf_(NULL),
-    sendbuf_(NULL),
-    count_(0),
-    tag_(0),
-    type_(Data::MAX_DATA_CODE),
-    is_receive_(false)
-{
+    request_(-1) {
 }
+
+SerialRequest::~SerialRequest() {
+}
+
 
 void SerialRequest::print(std::ostream& os) const {
     os << "SerialRequest("
        << ")";
+}
+
+int SerialRequest::request() const {
+    return request_;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+SendRequest::SendRequest(const void* buf, size_t count, Data::Code type, int tag) :
+    buf_(0),
+    count_(count),
+    tag_(tag),
+    type_(type) {
+    buf_ = ::operator new( count * dataSize[type] );
+    memcpy( buf_, buf, count * dataSize[type] );
+}
+
+SendRequest::~SendRequest() {
+    ::operator delete(buf_);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+ReceiveRequest::ReceiveRequest(void* buf, size_t count, Data::Code type, int tag) :
+    buf_(buf),
+    count_(count),
+    tag_(tag),
+    type_(type) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------

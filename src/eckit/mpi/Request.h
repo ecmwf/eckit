@@ -27,6 +27,8 @@ public:
 
     virtual void print(std::ostream&) const = 0;
 
+    virtual int request() const = 0;
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -36,6 +38,7 @@ class Request {
 public: // methods
 
     Request();
+    Request(int);
     Request(RequestContent*);
 
     ~Request();
@@ -48,6 +51,8 @@ public: // methods
     T& as() {
         return dynamic_cast<T&>(*content_);
     }
+
+    int request() const;
 
 private: // methods
 

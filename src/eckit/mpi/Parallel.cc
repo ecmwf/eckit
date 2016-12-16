@@ -407,7 +407,7 @@ Request Parallel::iReceive(void* recv, size_t count, Data::Code type, int source
 {
     ASSERT(count  < size_t(std::numeric_limits<int>::max()));
 
-    Request req = createRequest();
+    Request req( new ParallelRequest() );
 
     MPI_Datatype mpitype = toType(type);
 
@@ -420,7 +420,7 @@ Request Parallel::iSend(const void* send, size_t count, Data::Code type, int des
 {
     ASSERT(count  < size_t(std::numeric_limits<int>::max()));
 
-    Request req = createRequest();
+    Request req( new ParallelRequest() );
 
     MPI_Datatype mpitype = toType(type);
 
@@ -442,12 +442,16 @@ Status Parallel::createStatus() {
     return Status(new ParallelStatus());
 }
 
-Request Parallel::createRequest() {
-    return Request(new ParallelRequest());
+Request Parallel::request(int request) const {
+    return Request(new ParallelRequest(MPI_Request_f2c(request)));
 }
 
 MPI_Request* Parallel::toRequest(Request& req) {
     return &(req.as<ParallelRequest>().request_);
+}
+
+int Parallel::communicator() const {
+    return MPI_Comm_c2f(comm_);
 }
 
 CommBuilder<Parallel> ParallelBuilder("parallel");

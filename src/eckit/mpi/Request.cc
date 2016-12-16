@@ -17,8 +17,13 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Request::Request() {
-    *this = eckit::mpi::comm().request();
+Request::Request() :
+    content_(0) {
+}
+
+Request::Request(int request) :
+    content_(0) {
+    *this = eckit::mpi::comm().request(request);
 }
 
 Request::Request(RequestContent* p) :
@@ -27,7 +32,7 @@ Request::Request(RequestContent* p) :
 }
 
 Request::~Request() {
-   content_->detach();
+    if( content_ ) content_->detach();
 }
 
 Request::Request(const Request& s) : content_(s.content_) {
@@ -35,15 +40,24 @@ Request::Request(const Request& s) : content_(s.content_) {
 }
 
 Request& Request::operator=(const Request& s) {
+    if( content_ ) {
+        content_->detach();
+        content_ = 0;
+    }
     content_ = s.content_;
     content_->attach();
     return *this;
+}
+
+int Request::request() const {
+  return content_->request();
 }
 
 RequestContent::~RequestContent() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
 
 } // namespace mpi
 } // namepsace eckit

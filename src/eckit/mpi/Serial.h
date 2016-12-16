@@ -18,8 +18,6 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class SerialStatus;
-
 class Serial : public eckit::mpi::Comm {
 
 protected:  // methods
@@ -89,10 +87,12 @@ protected:  // methods
     virtual void print(std::ostream&) const;
 
     virtual Status status() const    { return createStatus(); }
-    virtual Request request() const  { return createRequest(); }
+
+    virtual Request request(int tag) const;
 
     static Status  createStatus();
-    static Request createRequest();
+
+    virtual int communicator() const;
 
 };
 

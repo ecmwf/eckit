@@ -12,7 +12,7 @@
 
 #include "eckit/exception/Exceptions.h"
 
-#include "eckit/utils/MD5RFC1321.h"
+#include "eckit/utils/MD5.h"
 
 namespace eckit {
 
@@ -82,7 +82,7 @@ static unsigned char PADDING[64] = {
 }
 
 /* MD5 initialization. Begins an MD5 operation, writing a new context. */
-void MD5RFC1321::Init (MD5_CTX *context)
+void MD5::Init (MD5_CTX *context)
 {
   context->count[0] = context->count[1] = 0;
   /* Load magic initialization constants.*/
@@ -96,7 +96,7 @@ void MD5RFC1321::Init (MD5_CTX *context)
    operation, processing another message block, and updating the
    context.
  */
-void MD5RFC1321::Update (MD5_CTX *context, unsigned char *input, unsigned int inputLen)
+void MD5::Update (MD5_CTX *context, unsigned char *input, unsigned int inputLen)
 {
     unsigned int i, index, partLen;
 
@@ -113,10 +113,10 @@ void MD5RFC1321::Update (MD5_CTX *context, unsigned char *input, unsigned int in
     /* Transform as many times as possible. */
     if (inputLen >= partLen) {
         ::memcpy((POINTER)&context->buffer[index], (POINTER)input, partLen);
-        MD5RFC1321::Transform (context->state, context->buffer);
+        MD5::Transform (context->state, context->buffer);
 
         for (i = partLen; i + 63 < inputLen; i += 64)
-            MD5RFC1321::Transform (context->state, &input[i]);
+            MD5::Transform (context->state, &input[i]);
 
         index = 0;
     }
@@ -129,7 +129,7 @@ void MD5RFC1321::Update (MD5_CTX *context, unsigned char *input, unsigned int in
 
 /* MD5 finalization. Ends an MD5 message-digest operation, writing the the message digest and zeroizing the context.
  */
-void MD5RFC1321::Final (unsigned char digest[16], MD5_CTX *context)
+void MD5::Final (unsigned char digest[16], MD5_CTX *context)
 {
   unsigned char bits[8];
   unsigned int index, padLen;
@@ -140,10 +140,10 @@ void MD5RFC1321::Final (unsigned char digest[16], MD5_CTX *context)
   /* Pad out to 56 mod 64. */
   index = (unsigned int)((context->count[0] >> 3) & 0x3f);
   padLen = (index < 56) ? (56 - index) : (120 - index);
-  MD5RFC1321::Update (context, PADDING, padLen);
+  MD5::Update (context, PADDING, padLen);
 
   /* Append length (before padding) */
-  MD5RFC1321::Update (context, bits, 8);
+  MD5::Update (context, bits, 8);
 
   /* Store state in digest */
   Encode (digest, context->state, 16);
@@ -154,7 +154,7 @@ void MD5RFC1321::Final (unsigned char digest[16], MD5_CTX *context)
 
 /* MD5 basic transformation. Transforms state based on block.
  */
-void MD5RFC1321::Transform (UINT4 state[4], unsigned char block[64])
+void MD5::Transform (UINT4 state[4], unsigned char block[64])
 {
   UINT4 a = state[0];
   UINT4 b = state[1];
@@ -250,7 +250,7 @@ void MD5RFC1321::Transform (UINT4 state[4], unsigned char block[64])
 /* Encodes input (UINT4) into output (unsigned char). Assumes len is
    a multiple of 4.
  */
-void MD5RFC1321::Encode (unsigned char *output, UINT4 *input, unsigned int len)
+void MD5::Encode (unsigned char *output, UINT4 *input, unsigned int len)
 {
     unsigned int i, j;
 
@@ -265,7 +265,7 @@ void MD5RFC1321::Encode (unsigned char *output, UINT4 *input, unsigned int len)
 /* Decodes input (unsigned char) into output (UINT4). Assumes len is
    a multiple of 4.
  */
-void MD5RFC1321::Decode(UINT4 *output, unsigned char *input, unsigned int len)
+void MD5::Decode(UINT4 *output, unsigned char *input, unsigned int len)
 {
   unsigned int i, j;
 
@@ -278,23 +278,23 @@ void MD5RFC1321::Decode(UINT4 *output, unsigned char *input, unsigned int len)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MD5RFC1321::MD5RFC1321() {
+MD5::MD5() {
     Init(&s_);
 }
 
-MD5RFC1321::MD5RFC1321(const digest_t& s) {
+MD5::MD5(const digest_t& s) {
     Init(&s_);
     add( s.c_str(), s.size() );
 }
 
-MD5RFC1321::MD5RFC1321(const void* data, size_t len) {
+MD5::MD5(const void* data, size_t len) {
     Init(&s_);
     add( data, len );
 }
 
-MD5RFC1321::~MD5RFC1321() {}
+MD5::~MD5() {}
 
-void MD5RFC1321::add(const void* buffer, long length) {
+void MD5::add(const void* buffer, long length) {
 
     if(length > std::numeric_limits<unsigned int>::max()) {
         throw BadParameter("Buffer length too large for MD5 algorithm", Here());
@@ -302,22 +302,22 @@ void MD5RFC1321::add(const void* buffer, long length) {
 
     if (length > 0) {
         void* b = const_cast<void*>(buffer);
-        MD5RFC1321::Update(&s_, static_cast<unsigned char*>(b), length);
+        MD5::Update(&s_, static_cast<unsigned char*>(b), length);
         if(!digest_.empty())
             digest_ = digest_t(); // reset the digest
     }
 }
 
-MD5RFC1321::operator std::string() {
+MD5::operator std::string() {
   return digest();
 }
 
-MD5RFC1321::digest_t MD5RFC1321::digest() const {
+MD5::digest_t MD5::digest() const {
 
     // recompute the digest
     if (digest_.empty()) {
         unsigned char digest[16];
-        MD5RFC1321::Final(digest, &s_);
+        MD5::Final(digest, &s_);
 
         char tmp[33] = {0};
 

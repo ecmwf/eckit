@@ -1,4 +1,4 @@
-#include <cmath>
+#include <math.h>
 #include <limits>
 #include <sstream>
 
@@ -20,7 +20,7 @@ namespace {
 
 template <class T>
 inline int sign(const T& z) {
-   return (z == 0) ? 0 : std::signbit(z) ? -1 : 1;
+   return (z == 0) ? 0 : signbit(z) ? -1 : 1;
 }
 
 template <class T>
@@ -35,12 +35,12 @@ T float_distance(const T& a, const T& b) {
     //
     // Error handling:
     //
-    if (!std::isfinite(a)) {
+    if (!isfinite(a)) {
         std::ostringstream s;
         s << "First argument must be finite, but got " << a << std::endl;
         throw BadParameter(s.str(), Here());
     }
-    if (!std::isfinite(b)) {
+    if (!isfinite(b)) {
         std::ostringstream s;
         s << "Second argument must be finite, but got " << b << std::endl;
         throw BadParameter(s.str(), Here());
@@ -54,12 +54,12 @@ T float_distance(const T& a, const T& b) {
     if(a == b)
         return T(0);
     if(a == 0)
-        return 1 + std::fabs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b));
+        return 1 + fabs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b));
     if(b == 0)
-        return 1 + std::fabs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
+        return 1 + fabs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
     if(sign(a) != sign(b))
-        return 2 + std::fabs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b))
-                + std::fabs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
+        return 2 + fabs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b))
+                + fabs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
     //
     // By the time we get here, both a and b must have the same sign, we want
     // b > a and both postive for the following logic:
@@ -76,8 +76,8 @@ T float_distance(const T& a, const T& b) {
     // because we actually have fewer than digits<T>()
     // significant bits in the representation:
     //
-    std::frexp((std::fpclassify(a) == FP_SUBNORMAL) ? std::numeric_limits<T>::min() : a, &expon);
-    T upper = std::ldexp(T(1), expon);
+    frexp((fpclassify(a) == FP_SUBNORMAL) ? std::numeric_limits<T>::min() : a, &expon);
+    T upper = ldexp(T(1), expon);
     T result = T(0);
     expon = digits<T>() - expon;
     //
@@ -92,15 +92,15 @@ T float_distance(const T& a, const T& b) {
     // errors in the subtraction:
     //
     T mb, x, y, z;
-    if((std::fpclassify(a) == FP_SUBNORMAL) || (b - a < std::numeric_limits<T>::min())) {
+    if((fpclassify(a) == FP_SUBNORMAL) || (b - a < std::numeric_limits<T>::min())) {
         //
         // Special case - either one end of the range is a denormal, or else the difference is.
         // The regular code will fail if we're using the SSE2 registers on Intel and either
         // the FTZ or DAZ flags are set.
         //
-        T a2 = std::ldexp(a, digits<T>());
-        T b2 = std::ldexp(b, digits<T>());
-        mb = -std::min(T(std::ldexp(upper, digits<T>())), b2);
+        T a2 = ldexp(a, digits<T>());
+        T b2 = ldexp(b, digits<T>());
+        mb = -std::min(T(ldexp(upper, digits<T>())), b2);
         x = a2 + mb;
         z = x - a2;
         y = (a2 - (x - z)) + (mb - z);
@@ -117,11 +117,11 @@ T float_distance(const T& a, const T& b) {
         x = -x;
         y = -y;
     }
-    result += std::ldexp(x, expon) + std::ldexp(y, expon);
+    result += ldexp(x, expon) + ldexp(y, expon);
     //
     // Result must be an integer:
     //
-    ASSERT(result == std::floor(result));
+    ASSERT(result == floor(result));
     return result;
 }
 
@@ -151,15 +151,15 @@ bool almostEqualUlps(T a, T b, T epsilon, int maxUlpsDiff) {
     // Bit identical is equal for any epsilon
     if (a == b) return true;
     // NaNs are always different
-    if (std::isnan(a) || std::isnan(b)) return false;
+    if (isnan(a) || isnan(b)) return false;
 
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.
-    T absDiff = std::fabs(a - b);
+    T absDiff = fabs(a - b);
     if (absDiff <= epsilon) return true;
 
     // Find the difference in ULPs
-    T ulpsDiff = std::fabs(float_distance(a, b));
+    T ulpsDiff = fabs(float_distance(a, b));
     return ulpsDiff <= maxUlpsDiff;
 }
 

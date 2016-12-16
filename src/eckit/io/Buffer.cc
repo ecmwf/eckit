@@ -33,7 +33,7 @@ Buffer::Buffer(const char* p, size_t size):
     copy(p,size);
 }
 
-Buffer::Buffer(void* p, size_t size, bool dummy):
+Buffer::Buffer(void* p, size_t size, bool):
     buffer_(p),
     size_(size),
     owned_(false)

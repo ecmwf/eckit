@@ -95,26 +95,33 @@ void LinearAlgebraMKL::spmv(const SparseMatrix& A, const Vector& x, Vector& y) c
 //-----------------------------------------------------------------------------
 
 void LinearAlgebraMKL::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
+
     ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
     // We expect indices to be 0-based
     ASSERT( A.outer()[0] == 0 );
     MKL_INT m = A.rows();
     MKL_INT n = C.cols();
     MKL_INT k = A.cols();
+
     double alpha = 1.;
-    double beta = 0.;
+    double beta  = 0.;
+
     // FIXME: with 0-based indexing, MKL assumes row-major ordering for B and C
     // We need to use 1-based indexing i.e. offset outer and inner indices by 1
+
     std::vector<MKL_INT> outer(m+1, 1);
     for (size_t i = 0; i < A.rows()+1; ++i)
         outer[i] += A.outer()[i];
+
     std::vector<MKL_INT> inner(A.nonZeros(), 1);
     for (size_t i = 0; i < A.nonZeros(); ++i)
         inner[i] += A.inner()[i];
+
     // void mkl_dcsrmm (char *transa, MKL_INT *m, MKL_INT *n, MKL_INT *k,
     //                  double *alpha, char *matdescra,
     //                  double *val, MKL_INT *indx, MKL_INT *pntrb, MKL_INT *pntre,
     //                  double *b, MKL_INT *ldb, double *beta, double *c, MKL_INT *ldc);
+
     double* a = const_cast<double*>(A.data());
     double* b = const_cast<double*>(B.data());
     mkl_dcsrmm( "N", &m, &n, &k,

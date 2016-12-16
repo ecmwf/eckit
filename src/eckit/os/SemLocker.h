@@ -9,13 +9,13 @@
  */
 
 /// @author Baudouin Raoult
-/// @date   May 1996
+/// @author Tiago Quintino
+/// @date   Dec 2016
 
-#ifndef eckit_os_Semaphore_h
-#define eckit_os_Semaphore_h
+#ifndef eckit_os_SemLocker_h
+#define eckit_os_SemLocker_h
 
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/thread/Mutex.h"
 #include "eckit/filesystem/PathName.h"
 
 
@@ -23,33 +23,20 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Semaphore : private NonCopyable {
+class SemLocker : private NonCopyable {
 
-public: // methods
+    static const int SLEEP = 1;
 
-    Semaphore(const PathName& name,int count = 1);
+    int sem_;
+    int maxWaitLock_;
 
-    ~Semaphore();
+    eckit::PathName path_;
 
-    void lock(void);
-    void unlock(void);
-    bool test(unsigned short n = 0);
+public:
 
-    int  get(int n = 0) const;
-    void set(int, int n = 0);
+    SemLocker(int sem, const eckit::PathName& path, int maxWaitLock = 60);
 
-    void raise(unsigned short n = 0);
-    void lower(unsigned short n = 0);
-
-    pid_t getpid()  const;
-
-protected: // members
-
-    int semaphore_;
-    int count_;
-    int level_;
-
-    Mutex mutex_;
+    ~SemLocker();
 
 };
 

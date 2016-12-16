@@ -417,6 +417,8 @@ os/Stat.h
 os/System.h
 os/System.cc
 os/AutoUmask.h
+os/SemLocker.h
+os/SemLocker.cc
 os/Semaphore.h
 os/Semaphore.cc
 os/SignalHandler.h
@@ -589,7 +591,6 @@ endforeach()
 
 list( APPEND eckit_templates
 					container/CacheLRU.cc
-                    container/CacheManager.cc
                     container/BTree.cc
                     container/MappedArray.cc
                     container/SharedMemArray.cc

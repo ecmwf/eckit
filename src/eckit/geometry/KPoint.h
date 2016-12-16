@@ -11,9 +11,10 @@
 #ifndef KPoint_H
 #define KPoint_H
 
+#include <algorithm>
 #include <cassert>
-#include <limits>
 #include <cmath>
+#include <limits>
 
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
@@ -62,6 +63,10 @@ public:
     {
         std::copy(c.begin(), c.end(), x_);
     }
+
+    const KPoint& point() const { return *this; }
+
+    KPoint& point() { return *this; }
 
     double * data() { return x_; }
     const double* data() const { return x_; }
@@ -198,6 +203,26 @@ public:
         for(size_t i = 0; i < dimensions(); i++)
         {
             q.x_[i] /= m;
+        }
+        return q;
+    }
+
+    static KPoint componentsMin(const KPoint& p1, const KPoint& p2)
+    {
+        KPoint q;
+        for(size_t i = 0; i < dimensions(); i++)
+        {
+            q.x_[i] = std::min(p1.x_[i], p2.x_[i]);
+        }
+        return q;
+    }
+
+    static KPoint componentsMax(const KPoint& p1, const KPoint& p2)
+    {
+        KPoint q;
+        for(size_t i = 0; i < dimensions(); i++)
+        {
+            q.x_[i] = std::max(p1.x_[i], p2.x_[i]);
         }
         return q;
     }

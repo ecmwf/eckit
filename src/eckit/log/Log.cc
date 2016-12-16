@@ -23,6 +23,7 @@
 #include "eckit/log/FileTarget.h"
 
 #include "eckit/runtime/Main.h"
+#include "eckit/system/Library.h"
 
 #include "eckit/exception/Exceptions.h"
 
@@ -229,6 +230,10 @@ void Log::setStream(std::ostream& out) {
     if (debug()) {
         debug().setStream(out);
     }
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().setStream(out);
+    }
 }
 void Log::addStream(std::ostream& out) {
     info().addStream(out);
@@ -236,6 +241,10 @@ void Log::addStream(std::ostream& out) {
     error().addStream(out);
     if (debug()) {
         debug().addStream(out);
+    }
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().addStream(out);
     }
 }
 
@@ -248,7 +257,12 @@ void Log::setFile(const std::string& path) {
     if (debug()) {
         debug().setTarget(file);
     }
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().setTarget(file);
+    }
 }
+
 void Log::addFile(const std::string& path) {
     LogTarget* file = new FileTarget(path);
 
@@ -257,6 +271,10 @@ void Log::addFile(const std::string& path) {
     error().addTarget(file);
     if (debug()) {
         debug().addTarget(file);
+    }
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().addTarget(file);
     }
 }
 
@@ -267,6 +285,10 @@ void Log::setCallback(channel_callback_t cb, void* data) {
     if (debug()) {
         debug().setCallback(cb, data);
     }
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().setCallback(cb, data);
+    }
 }
 
 void Log::addCallback(channel_callback_t cb, void* data) {
@@ -276,6 +298,10 @@ void Log::addCallback(channel_callback_t cb, void* data) {
     if (debug()) {
         debug().addCallback(cb, data);
     }
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().addCallback(cb, data);
+    }
 }
 
 void Log::reset() {
@@ -283,6 +309,10 @@ void Log::reset() {
     warning().reset();
     error().reset();
     debug().reset();
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().reset();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

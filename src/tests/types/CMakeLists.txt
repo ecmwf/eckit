@@ -2,6 +2,11 @@ ecbuild_add_test( TARGET      eckit_test_cache
                   SOURCES     test_cache.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_doublecompare
+                  BOOST
+                  SOURCES     test_doublecompare.cc
+                  LIBS        eckit )
+
 ecbuild_add_test( TARGET      eckit_test_floatcompare
                   BOOST
                   SOURCES     test_floatcompare.cc

@@ -16,7 +16,7 @@ namespace eckit {
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace {
+namespace detail {
 
 template <class T>
 inline int sign(const T& z) {
@@ -38,12 +38,12 @@ T float_distance(const T& a, const T& b) {
     if (!isfinite(a)) {
         std::ostringstream s;
         s << "First argument must be finite, but got " << a << std::endl;
-        throw BadParameter(s.str(), Here());
+        throw BadParameter(s.str()); // for efficiency don't use CodeLocation Here()
     }
     if (!isfinite(b)) {
         std::ostringstream s;
         s << "Second argument must be finite, but got " << b << std::endl;
-        throw BadParameter(s.str(), Here());
+        throw BadParameter(s.str()); // for efficiency don't use CodeLocation Here()
     }
 
     //
@@ -59,7 +59,7 @@ T float_distance(const T& a, const T& b) {
         return 1 + fabs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
     if(sign(a) != sign(b))
         return 2 + fabs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b))
-                + fabs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
+                 + fabs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
     //
     // By the time we get here, both a and b must have the same sign, we want
     // b > a and both postive for the following logic:
@@ -67,8 +67,7 @@ T float_distance(const T& a, const T& b) {
     if(a < 0)
         return float_distance(static_cast<T>(-b), static_cast<T>(-a));
 
-    ASSERT(a >= 0);
-    ASSERT(b >= a);
+//    ASSERT(a >= 0 && b >= a); // don't assert here -- this code is very efficiency sensitive
 
     int expon;
     //
@@ -118,10 +117,13 @@ T float_distance(const T& a, const T& b) {
         y = -y;
     }
     result += ldexp(x, expon) + ldexp(y, expon);
+
     //
     // Result must be an integer:
     //
-    ASSERT(result == floor(result));
+
+    // ASSERT(result == floor(result)); // don't assert here -- this code is very efficiency sensitive
+
     return result;
 }
 
@@ -159,7 +161,7 @@ bool almostEqualUlps(T a, T b, T epsilon, int maxUlpsDiff) {
     if (absDiff <= epsilon) return true;
 
     // Find the difference in ULPs
-    T ulpsDiff = fabs(float_distance(a, b));
+    T ulpsDiff = fabs(detail::float_distance(a, b));
     return ulpsDiff <= maxUlpsDiff;
 }
 

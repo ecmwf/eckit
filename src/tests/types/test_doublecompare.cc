@@ -188,8 +188,11 @@ BOOST_AUTO_TEST_CASE( test_comparisons_involving_infinity )
 
       BOOST_CHECK(is_equal( dInf,  dInf));
       BOOST_CHECK(is_equal(-dInf, -dInf));
-   }
-   else {
+      BOOST_CHECK(! is_equal( dInf,  dMax));
+      BOOST_CHECK(! is_equal( dMax,  dInf));
+      BOOST_CHECK(! is_equal(-dInf, -dMax));
+      BOOST_CHECK(! is_equal(-dMax, -dInf));
+   } else {
       BOOST_TEST_MESSAGE( "test_comparisons_involving_infinity NOT VALID on this platform" );
    }
 }

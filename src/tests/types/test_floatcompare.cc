@@ -37,6 +37,7 @@ bool is_equal(float a, float b) {
 
 const float dEps = std::numeric_limits<float>::epsilon();
 const float dInf = std::numeric_limits<float>::infinity();
+const float sMin = std::numeric_limits<float>::denorm_min();
 const float dMin = std::numeric_limits<float>::min();
 const float dMax = std::numeric_limits<float>::max();
 const float qNaN = std::numeric_limits<float>::quiet_NaN();
@@ -264,12 +265,12 @@ BOOST_AUTO_TEST_CASE( test_comparisons_very_close_to_zero )
 {
    BOOST_TEST_MESSAGE( "test_comparisons_very_close_to_zero" );
 
-   BOOST_CHECK(  is_equal( dMin, -dMin));
-   BOOST_CHECK(  is_equal(-dMin,  dMin));
-   BOOST_CHECK(  is_equal( dMin,  0   ));
-   BOOST_CHECK(  is_equal( 0,     dMin));
-   BOOST_CHECK(  is_equal(-dMin,  0   ));
-   BOOST_CHECK(  is_equal( 0,    -dMin));
+   BOOST_CHECK(  is_equal( dMin, -dMin, dEps));
+   BOOST_CHECK(  is_equal(-dMin,  dMin, dEps));
+   BOOST_CHECK(  is_equal( dMin,  0   , dEps));
+   BOOST_CHECK(  is_equal( 0,     dMin, dEps));
+   BOOST_CHECK(  is_equal(-dMin,  0   , dEps));
+   BOOST_CHECK(  is_equal( 0,    -dMin, dEps));
 
 
    BOOST_CHECK(  is_equal( 0.000000001, -dMin       ));
@@ -282,6 +283,26 @@ BOOST_AUTO_TEST_CASE( test_comparisons_very_close_to_zero )
    BOOST_CHECK(! is_equal( 0.000000001,  dMin,        1e-10));
    BOOST_CHECK(! is_equal( dMin,         0.000000001, 1e-10));
    BOOST_CHECK(! is_equal(-dMin,         0.000000001, 1e-10));
+}
+
+BOOST_AUTO_TEST_CASE( test_comparisons_with_denormal_numbers )
+{
+   BOOST_TEST_MESSAGE( "test_comparisons_with_denormal_numbers" );
+
+   BOOST_CHECK(  is_equal( sMin, -sMin, dEps));
+   BOOST_CHECK(  is_equal(-sMin,  sMin, dEps));
+   BOOST_CHECK(  is_equal( sMin,  0   , dEps));
+   BOOST_CHECK(  is_equal( 0,     sMin, dEps));
+   BOOST_CHECK(  is_equal(-sMin,  0   , dEps));
+   BOOST_CHECK(  is_equal( 0,    -sMin, dEps));
+
+   const float lMin = dMin - sMin;  // largest denormal number
+   BOOST_CHECK(  is_equal( lMin, -lMin, dEps));
+   BOOST_CHECK(  is_equal(-lMin,  lMin, dEps));
+   BOOST_CHECK(  is_equal( lMin,  0   , dEps));
+   BOOST_CHECK(  is_equal( 0,     lMin, dEps));
+   BOOST_CHECK(  is_equal(-lMin,  0   , dEps));
+   BOOST_CHECK(  is_equal( 0,    -lMin, dEps));
 }
 
 BOOST_AUTO_TEST_CASE( test_comparisons_ulps )

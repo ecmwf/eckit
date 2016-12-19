@@ -7,28 +7,7 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
-// The following code is adapted from http://www.boost.org/doc/libs/1_62_0/boost/math/special_functions/next.hpp
-//
-//  (C) Copyright John Maddock 2008.
-//  Use, modification and distribution are subject to the
-//  Boost Software License, Version 1.0. (See accompanying file
-//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//----------------------------------------------------------------------------------------------------------------------
-
 namespace detail {
-
-template <class T>
-inline int sign(const T& z) {
-   return (z == 0) ? 0 : signbit(z) ? -1 : 1;
-}
-
-template <class T>
-inline int digits() {
-    return std::numeric_limits<T>::radix == 2
-            ? std::numeric_limits<T>::digits
-            : ((std::numeric_limits<T>::digits + 1) * 1000L) / 301L;
-}
 
 template <class T>
 inline T abs(T);
@@ -38,125 +17,6 @@ double abs(double x) { return fabs(x); }
 
 template<>
 float abs(float x) { return fabsf(x); }
-
-template <class T>
-inline T frExp(T, int*);
-
-template<>
-double frExp(double x, int* e) { return frexp(x, e); }
-
-template<>
-float frExp(float x, int* e) { return frexpf(x, e); }
-
-template <class T>
-inline T ldExp(T, int);
-
-template<>
-double ldExp(double x, int e) { return ldexp(x, e); }
-
-template<>
-float ldExp(float x, int e) { return ldexpf(x, e); }
-
-template <class T>
-T float_distance(const T& a, const T& b) {
-    //
-    // Error handling:
-    //
-    if (!isfinite(a)) {
-        std::ostringstream s;
-        s << "First argument must be finite, but got " << a << std::endl;
-        throw BadParameter(s.str()); // for efficiency don't use CodeLocation Here()
-    }
-    if (!isfinite(b)) {
-        std::ostringstream s;
-        s << "Second argument must be finite, but got " << b << std::endl;
-        throw BadParameter(s.str()); // for efficiency don't use CodeLocation Here()
-    }
-
-    //
-    // Special cases:
-    //
-    if(a > b)
-        return -float_distance(b, a);
-    if(a == b)
-        return T(0);
-    if(a == 0)
-        return 1 + abs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b));
-    if(b == 0)
-        return 1 + abs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
-    if(sign(a) != sign(b))
-        return 2 + abs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b))
-                 + abs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
-    //
-    // By the time we get here, both a and b must have the same sign, we want
-    // b > a and both postive for the following logic:
-    //
-    if(a < 0)
-        return float_distance(static_cast<T>(-b), static_cast<T>(-a));
-
-//    ASSERT(a >= 0 && b >= a); // don't assert here -- this code is very efficiency sensitive
-
-    int expon;
-    //
-    // Note that if a is a denorm then the usual formula fails
-    // because we actually have fewer than digits<T>()
-    // significant bits in the representation:
-    //
-    frExp((fpclassify(a) == FP_SUBNORMAL) ? std::numeric_limits<T>::min() : a, &expon);
-    T upper = ldExp(T(1), expon);
-    T result = T(0);
-    expon = digits<T>() - expon;
-    //
-    // If b is greater than upper, then we *must* split the calculation
-    // as the size of the ULP changes with each order of magnitude change:
-    //
-    if(b > upper) {
-        result = float_distance(upper, b);
-    }
-    //
-    // Use compensated double-double addition to avoid rounding
-    // errors in the subtraction:
-    //
-    T mb, x, y, z;
-    if((fpclassify(a) == FP_SUBNORMAL) || (b - a < std::numeric_limits<T>::min())) {
-        //
-        // Special case - either one end of the range is a denormal, or else the difference is.
-        // The regular code will fail if we're using the SSE2 registers on Intel and either
-        // the FTZ or DAZ flags are set.
-        //
-        T a2 = ldExp(a, digits<T>());
-        T b2 = ldExp(b, digits<T>());
-        mb = -std::min(ldExp(upper, digits<T>()), b2);
-        x = a2 + mb;
-        z = x - a2;
-        y = (a2 - (x - z)) + (mb - z);
-
-        expon -= digits<T>();
-    } else {
-        mb = -std::min(upper, b);
-        x = a + mb;
-        z = x - a;
-        y = (a - (x - z)) + (mb - z);
-    }
-    if(x < 0)
-    {
-        x = -x;
-        y = -y;
-    }
-    result += ldExp(x, expon) + ldExp(y, expon);
-
-    //
-    // Result must be an integer:
-    //
-
-    // ASSERT(result == floor(result)); // don't assert here -- this code is very efficiency sensitive
-
-    return result;
-}
-
-}  // namespace detail
-
-namespace fast {
 
 union Double {
     typedef double float_t;
@@ -188,7 +48,7 @@ Float::int_t float_distance(float x, float y) {
     return dist >= 0 ? dist : -dist;
 }
 
-}  // namespace fast
+}  // namespace detail
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -228,17 +88,17 @@ bool almostEqualUlps(T a, T b, T epsilon, int maxUlpsDiff) {
 
     // If either is zero, compare the absolute value of the other to the minimum normal number
     if (a == 0) {
-        return (1 + fast::float_distance(detail::abs(b), std::numeric_limits<T>::min())) <= maxUlpsDiff;
+        return (1 + detail::float_distance(detail::abs(b), std::numeric_limits<T>::min())) <= maxUlpsDiff;
     }
     if (b == 0) {
-        return (1 + fast::float_distance(detail::abs(a), std::numeric_limits<T>::min())) <= maxUlpsDiff;
+        return (1 + detail::float_distance(detail::abs(a), std::numeric_limits<T>::min())) <= maxUlpsDiff;
     }
 
-    if (signbit(a) == signbit(b)) return fast::float_distance(a, b) <= maxUlpsDiff;
+    if (signbit(a) == signbit(b)) return detail::float_distance(a, b) <= maxUlpsDiff;
 
     // If signs are different, add ULP distances from minimum normal number on both sides of 0
-    return (2 + fast::float_distance(a > 0 ? a : b, std::numeric_limits<T>::min())
-              + fast::float_distance(a < 0 ? a : b, -std::numeric_limits<T>::min())) <= maxUlpsDiff;
+    return (2 + detail::float_distance(a > 0 ? a : b, std::numeric_limits<T>::min())
+              + detail::float_distance(a < 0 ? a : b, -std::numeric_limits<T>::min())) <= maxUlpsDiff;
 }
 
 template<>

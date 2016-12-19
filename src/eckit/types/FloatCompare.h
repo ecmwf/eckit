@@ -10,6 +10,7 @@
 
 /// @author Tiago Quintino
 /// @author Pedro Maciel
+/// @author Florian Rathgeber
 /// @date Jun 2015
 
 #ifndef eckit_FloatCompare_h
@@ -24,7 +25,7 @@ namespace eckit {
 /// Compare 2 floats with an absolute epsilon check (values near zero), then based on ULPs
 ///
 /// epsilon    : epsilon for floating-point absolute epsilon check (should be some
-///              small multiple of std::numeric_limits<T>::epsilon().
+///              small multiple of std::numeric_limits<T>::epsilon()).
 ///              Used to check values near zero
 /// maxUlpsDiff: maximum spacing between the floating-point numbers A and B
 ///              unit in the last place or unit of least precision. defaults to 10.
@@ -33,10 +34,13 @@ namespace eckit {
 ///              between A and B.
 ///
 /// Assumptions:
-///   * These functions *ignores* NAN, assumes we have enabled illegal operation exceptions,
-///     i.e so that you find out when you generate them.
-///   * Ignores infinities and overflow exceptions.
-///
+///   * Bit identical numbers are equal for any epsilon.
+///   * A NaN is different from any number (even another NaN).
+///   * Infinity is different from any number but infinity (with the same sign).
+///   * Subnormal numbers are treated as equal to 0
+///   * +/-std::numeric_limits<T>::min() has ULP distance 1 from 0
+///   * -std::numeric_limits<T>::min() has ULP distance 2 from std::numeric_limits<T>::min()
+///   * ULP distance from 0 is 1 + ULP distance from std::numeric_limits<T>::min() (for positive numbers)
 
 /// This function only has specializations for double and float
 /// So it restricts the use of FloatCompare
@@ -92,10 +96,8 @@ public:
 
 };
 
-
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 
 #endif
-

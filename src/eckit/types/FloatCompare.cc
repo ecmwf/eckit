@@ -9,6 +9,13 @@ namespace eckit {
 
 namespace detail {
 
+// FIXME: The following functions are available in std:: as of C++11:
+// * fpclassify
+// * isinf
+// * isnan
+// * signbit
+// For the moment we have to use the (non namespaced) versions from math.h
+
 template <class T>
 inline T abs(T);
 
@@ -18,6 +25,8 @@ double abs(double x) { return fabs(x); }
 template<>
 float abs(float x) { return fabsf(x); }
 
+// Used for accessing the integer representation of floating-point numbers
+// (aliasing through unions works on most platforms).
 union Double {
     typedef double float_t;
     typedef int64_t int_t;
@@ -28,6 +37,8 @@ union Double {
     Double(double x) : f_(x) {}
 };
 
+// Used for accessing the integer representation of floating-point numbers
+// (aliasing through unions works on most platforms).
 union Float {
     typedef float float_t;
     typedef int32_t int_t;
@@ -37,6 +48,11 @@ union Float {
 
     Float(float x) : f_(x) {}
 };
+
+// The difference between the bit representations of two floating point
+// numbers of the same sign interpreted as a signed integer is equal to their
+// distance from each other i.e. how many representable floating point numbers
+// they are "apart". This is a very fast way to compute this difference.
 
 Double::int_t float_distance(double x, double y) {
     const Double::int_t dist = Double(x).i_ - Double(y).i_;
@@ -68,6 +84,15 @@ Float::int_t float_distance(float x, float y) {
 /// and the other number is the smallest number for the next exponent, say 2.0,
 /// then this function will again calculate ulpsDiff as one.
 /// In both cases the two numbers are the closest floats there are.
+///
+/// Assumptions:
+///   * Bit identical numbers are equal for any epsilon.
+///   * A NaN is different from any number (even another NaN).
+///   * Infinity is different from any number but infinity (with the same sign).
+///   * Subnormal numbers are treated as equal to 0
+///   * +/-std::numeric_limits<T>::min() has ULP distance 1 from 0
+///   * -std::numeric_limits<T>::min() has ULP distance 2 from std::numeric_limits<T>::min()
+///   * ULP distance from 0 is 1 + ULP distance from std::numeric_limits<T>::min() (for positive numbers)
 ///
 template< typename T >
 bool almostEqualUlps(T a, T b, T epsilon, int maxUlpsDiff) {

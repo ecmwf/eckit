@@ -31,6 +31,33 @@ inline int digits() {
 }
 
 template <class T>
+inline T abs(T);
+
+template<>
+double abs(double x) { return fabs(x); }
+
+template<>
+float abs(float x) { return fabsf(x); }
+
+template <class T>
+inline T frExp(T, int*);
+
+template<>
+double frExp(double x, int* e) { return frexp(x, e); }
+
+template<>
+float frExp(float x, int* e) { return frexpf(x, e); }
+
+template <class T>
+inline T ldExp(T, int);
+
+template<>
+double ldExp(double x, int e) { return ldexp(x, e); }
+
+template<>
+float ldExp(float x, int e) { return ldexpf(x, e); }
+
+template <class T>
 T float_distance(const T& a, const T& b) {
     //
     // Error handling:
@@ -54,12 +81,12 @@ T float_distance(const T& a, const T& b) {
     if(a == b)
         return T(0);
     if(a == 0)
-        return 1 + fabs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b));
+        return 1 + abs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b));
     if(b == 0)
-        return 1 + fabs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
+        return 1 + abs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
     if(sign(a) != sign(b))
-        return 2 + fabs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b))
-                 + fabs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
+        return 2 + abs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b))
+                 + abs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
     //
     // By the time we get here, both a and b must have the same sign, we want
     // b > a and both postive for the following logic:
@@ -75,8 +102,8 @@ T float_distance(const T& a, const T& b) {
     // because we actually have fewer than digits<T>()
     // significant bits in the representation:
     //
-    frexp((fpclassify(a) == FP_SUBNORMAL) ? std::numeric_limits<T>::min() : a, &expon);
-    T upper = ldexp(T(1), expon);
+    frExp((fpclassify(a) == FP_SUBNORMAL) ? std::numeric_limits<T>::min() : a, &expon);
+    T upper = ldExp(T(1), expon);
     T result = T(0);
     expon = digits<T>() - expon;
     //
@@ -97,9 +124,9 @@ T float_distance(const T& a, const T& b) {
         // The regular code will fail if we're using the SSE2 registers on Intel and either
         // the FTZ or DAZ flags are set.
         //
-        T a2 = ldexp(a, digits<T>());
-        T b2 = ldexp(b, digits<T>());
-        mb = -std::min(T(ldexp(upper, digits<T>())), b2);
+        T a2 = ldExp(a, digits<T>());
+        T b2 = ldExp(b, digits<T>());
+        mb = -std::min(ldExp(upper, digits<T>()), b2);
         x = a2 + mb;
         z = x - a2;
         y = (a2 - (x - z)) + (mb - z);
@@ -116,7 +143,7 @@ T float_distance(const T& a, const T& b) {
         x = -x;
         y = -y;
     }
-    result += ldexp(x, expon) + ldexp(y, expon);
+    result += ldExp(x, expon) + ldExp(y, expon);
 
     //
     // Result must be an integer:
@@ -157,11 +184,11 @@ bool almostEqualUlps(T a, T b, T epsilon, int maxUlpsDiff) {
 
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.
-    T absDiff = fabs(a - b);
+    T absDiff = detail::abs(a - b);
     if (absDiff <= epsilon) return true;
 
     // Find the difference in ULPs
-    T ulpsDiff = fabs(detail::float_distance(a, b));
+    T ulpsDiff = detail::abs(detail::float_distance(a, b));
     return ulpsDiff <= maxUlpsDiff;
 }
 

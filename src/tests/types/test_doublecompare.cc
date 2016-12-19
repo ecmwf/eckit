@@ -88,6 +88,26 @@ BOOST_AUTO_TEST_CASE( test_negative_large_numbers )
    BOOST_CHECK(is_equal(-dMin, -dMin, dEps));
 }
 
+BOOST_AUTO_TEST_CASE( test_ulp_around_one )
+{
+   BOOST_TEST_MESSAGE( "test_ulp_around_one" );
+
+   // ULP distances up to 10 are equal
+   // Going right from 1 by eps increases distance by 1
+   // Going left from 1 by eps increases distance by 2
+   for (int i = 0; i <= 10; ++i) {
+       BOOST_CHECK(is_equal(1.0 + i * dEps,   1.0,              dEps));
+       BOOST_CHECK(is_equal(1.0,              1.0 + i * dEps,   dEps));
+       BOOST_CHECK(is_equal(1.0 - i * dEps/2, 1.0,              dEps));
+       BOOST_CHECK(is_equal(1.0,              1.0 - i * dEps/2, dEps));
+   }
+   // ULP distances greater 10 are not equal
+   BOOST_CHECK(! is_equal(1.0 + 11 * dEps,   1.0,               dEps));
+   BOOST_CHECK(! is_equal(1.0,               1.0 + 11 * dEps,   dEps));
+   BOOST_CHECK(! is_equal(1.0 - 11 * dEps/2, 1.0,               dEps));
+   BOOST_CHECK(! is_equal(1.0,               1.0 - 11 * dEps/2, dEps));
+}
+
 BOOST_AUTO_TEST_CASE( test_numbers_around_one )
 {
    BOOST_TEST_MESSAGE( "test_numbers_around_one" );

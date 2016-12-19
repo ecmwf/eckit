@@ -68,7 +68,7 @@ public:
     /// Compare values equality, approximately
     static bool isApproximatelyEqual( T a,
                                       T b,
-                                      T epsilon = std::numeric_limits<float>::epsilon(),
+                                      T epsilon = std::numeric_limits<T>::epsilon(),
                                       int maxUlpsDiff = 10 ) { return isApproxEqualUlps(a,b,epsilon,maxUlpsDiff); }
 
 };
@@ -88,7 +88,7 @@ public:
 		maxUlps_(maxUlps)
 	{}
 
-        bool operator() ( const T& a,  const T& b) { return FloatCompare<T>::isApproximatelyEqual(a,b,eps_,maxUlps_); }
+    bool operator() (const T& a, const T& b) { return FloatCompare<T>::isApproximatelyEqual(a, b, eps_, maxUlps_); }
 
 };
 

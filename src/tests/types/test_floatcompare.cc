@@ -149,15 +149,15 @@ BOOST_AUTO_TEST_CASE( test_comparisons_involving_zero )
    BOOST_CHECK(! is_equal(-0.0001, 0.0   ));
    BOOST_CHECK(! is_equal(0.0,    -0.0001));
 
-   BOOST_CHECK(  is_equal(0.0,     1e-40, 0.01 ));
-   BOOST_CHECK(  is_equal(1e-40,   0.0,   0.01 ));
-   BOOST_CHECK(! is_equal(1e-40,   0.0,   1e-41));
-   BOOST_CHECK(! is_equal(0.0,     1e-40, 1e-41));
+   BOOST_CHECK(  is_equal(0.0,     1e-30, 0.01 ));
+   BOOST_CHECK(  is_equal(1e-30,   0.0,   0.01 ));
+   BOOST_CHECK(! is_equal(1e-30,   0.0,   1e-31));
+   BOOST_CHECK(! is_equal(0.0,     1e-30, 1e-31));
 
-   BOOST_CHECK(  is_equal(0.0,    -1e-40, 0.1  ));
-   BOOST_CHECK(  is_equal(-1e-40,  0.0,   0.1  ));
-   BOOST_CHECK(! is_equal(-1e-40,  0.0,   1e-41));
-   BOOST_CHECK(! is_equal(0.0,    -1e-40, 1e-41));
+   BOOST_CHECK(  is_equal(0.0,    -1e-30, 0.1  ));
+   BOOST_CHECK(  is_equal(-1e-30,  0.0,   0.1  ));
+   BOOST_CHECK(! is_equal(-1e-30,  0.0,   1e-31));
+   BOOST_CHECK(! is_equal(0.0,    -1e-30, 1e-31));
 }
 
 BOOST_AUTO_TEST_CASE( test_comparisons_involving_infinity )

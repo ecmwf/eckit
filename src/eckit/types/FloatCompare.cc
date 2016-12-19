@@ -154,6 +154,40 @@ T float_distance(const T& a, const T& b) {
     return result;
 }
 
+}  // namespace detail
+
+namespace fast {
+
+union Double {
+    typedef double float_t;
+    typedef int64_t int_t;
+
+    float_t f_;
+    int_t i_;
+
+    Double(double x) : f_(x) {}
+};
+
+union Float {
+    typedef float float_t;
+    typedef int32_t int_t;
+
+    float_t f_;
+    int_t i_;
+
+    Float(float x) : f_(x) {}
+};
+
+Double::int_t float_distance(double x, double y) {
+    const Double::int_t dist = Double(x).i_ - Double(y).i_;
+    return dist >= 0 ? dist : -dist;
+}
+
+Float::int_t float_distance(float x, float y) {
+    const Float::int_t dist = Float(x).i_ - Float(y).i_;
+    return dist >= 0 ? dist : -dist;
+}
+
 }  // anonymous namespace
 
 //----------------------------------------------------------------------------------------------------------------------

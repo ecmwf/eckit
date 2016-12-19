@@ -177,10 +177,16 @@ T float_distance(const T& a, const T& b) {
 ///
 template< typename T >
 bool almostEqualUlps(T a, T b, T epsilon, int maxUlpsDiff) {
+
     // Bit identical is equal for any epsilon
     if (a == b) return true;
+
     // NaNs are always different
     if (isnan(a) || isnan(b)) return false;
+
+    // Subnormal numbers are treated as 0
+    if (fpclassify(a) == FP_SUBNORMAL) a = 0;
+    if (fpclassify(b) == FP_SUBNORMAL) b = 0;
 
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.

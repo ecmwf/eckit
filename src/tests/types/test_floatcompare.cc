@@ -229,10 +229,10 @@ BOOST_AUTO_TEST_CASE( test_comparisons_opposite_side_of_zero )
 {
    BOOST_TEST_MESSAGE( "test_comparisons_opposite_side_of_zero" );
 
-   BOOST_CHECK(! is_equal(1.000000001, -1.0        ));
-   BOOST_CHECK(! is_equal(-1.0,         1.000000001));
-   BOOST_CHECK(! is_equal(-1.000000001, 1.0        ));
-   BOOST_CHECK(! is_equal(1.0,         -1.000000001));
+   BOOST_CHECK(! is_equal( 1.0000001, -1.0      ));
+   BOOST_CHECK(! is_equal(-1.0,        1.0000001));
+   BOOST_CHECK(! is_equal(-1.0000001,  1.0      ));
+   BOOST_CHECK(! is_equal( 1.0,       -1.0000001));
 
    BOOST_CHECK(  is_equal(   10.0 * dMin,    10.0 * -dMin));
    BOOST_CHECK(  is_equal(10000   * dMin, 10000   * -dMin));

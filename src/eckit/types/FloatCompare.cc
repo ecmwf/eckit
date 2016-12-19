@@ -215,8 +215,8 @@ bool almostEqualUlps(T a, T b, T epsilon, int maxUlpsDiff) {
     // Bit identical is equal for any epsilon
     if (a == b) return true;
 
-    // NaNs are always different
-    if (isnan(a) || isnan(b)) return false;
+    // NaNs and infinity are always different
+    if (isnan(a) || isnan(b) || isinf(a) || isinf(b)) return false;
 
     // Subnormal numbers are treated as 0
     if (fpclassify(a) == FP_SUBNORMAL) a = 0;

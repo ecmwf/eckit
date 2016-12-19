@@ -188,7 +188,7 @@ Float::int_t float_distance(float x, float y) {
     return dist >= 0 ? dist : -dist;
 }
 
-}  // anonymous namespace
+}  // namespace fast
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -224,12 +224,21 @@ bool almostEqualUlps(T a, T b, T epsilon, int maxUlpsDiff) {
 
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.
-    T absDiff = detail::abs(a - b);
-    if (absDiff <= epsilon) return true;
+    if (detail::abs(a - b) <= epsilon) return true;
 
-    // Find the difference in ULPs
-    T ulpsDiff = detail::abs(detail::float_distance(a, b));
-    return ulpsDiff <= maxUlpsDiff;
+    // If either is zero, compare the absolute value of the other to the minimum normal number
+    if (a == 0) {
+        return (1 + fast::float_distance(detail::abs(b), std::numeric_limits<T>::min())) <= maxUlpsDiff;
+    }
+    if (b == 0) {
+        return (1 + fast::float_distance(detail::abs(a), std::numeric_limits<T>::min())) <= maxUlpsDiff;
+    }
+
+    if (signbit(a) == signbit(b)) return fast::float_distance(a, b) <= maxUlpsDiff;
+
+    // If signs are different, add ULP distances from minimum normal number on both sides of 0
+    return (2 + fast::float_distance(a > 0 ? a : b, std::numeric_limits<T>::min())
+              + fast::float_distance(a < 0 ? a : b, -std::numeric_limits<T>::min())) <= maxUlpsDiff;
 }
 
 template<>

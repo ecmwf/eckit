@@ -125,8 +125,10 @@ bool is_approximately_equal_ulps(T a, T b, T epsilon, int maxUlpsDiff) {
     if (signbit(a) == signbit(b)) return detail::float_distance(a, b) <= maxUlpsDiff;
 
     // If signs are different, add ULP distances from minimum normal number on both sides of 0
-    return (2 + detail::float_distance(a > 0 ? a : b, std::numeric_limits<T>::min())
-              + detail::float_distance(a < 0 ? a : b, -std::numeric_limits<T>::min())) <= maxUlpsDiff;
+    const int64_t dp = detail::float_distance(a > 0 ? a : b, std::numeric_limits<T>::min());
+    const int64_t dn = detail::float_distance(a < 0 ? a : b, -std::numeric_limits<T>::min());
+    // Protect against integer overlow in case float distance for both numbers is close to maxint
+    return dp < maxUlpsDiff && dn < maxUlpsDiff && (2 + dp + dn) <= maxUlpsDiff;
 }
 
 template<>

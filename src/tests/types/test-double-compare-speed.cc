@@ -56,7 +56,7 @@ void TestDoubleCompareSpeed::teardown() {
 
 void TestDoubleCompareSpeed::run()
 {
-    const size_t n = 10000000;
+    const size_t n = 30000000; // with this data set, on a modern cpu we expect > 25E6 /s
 
     setup();
 

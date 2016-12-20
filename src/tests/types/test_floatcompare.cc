@@ -89,6 +89,20 @@ BOOST_AUTO_TEST_CASE( test_negative_large_numbers )
    BOOST_CHECK(is_equal(-dMin, -dMin, dEps));
 }
 
+BOOST_AUTO_TEST_CASE( test_large_numbers_of_opposite_sign )
+{
+    BOOST_CHECK(! is_equal(-1000000,       1000000      ));
+    BOOST_CHECK(! is_equal(-1000000,       1000000.00001));
+    BOOST_CHECK(! is_equal(-1000000.00001, 1000000      ));
+
+    BOOST_CHECK(! is_equal(-1000000.0,     1000001.0    ));
+    BOOST_CHECK(! is_equal(-1000001.0,     1000000.0    ));
+
+    // -----------------------------------------------
+    BOOST_CHECK(! is_equal(-dMax, dMax      ));
+    BOOST_CHECK(! is_equal(-dMax, dMax, dEps));
+}
+
 BOOST_AUTO_TEST_CASE( test_ulp_around_one )
 {
    BOOST_TEST_MESSAGE( "test_ulp_around_one" );

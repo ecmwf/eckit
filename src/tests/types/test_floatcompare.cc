@@ -37,6 +37,7 @@ bool is_equal(float a, float b) {
 
 const float dEps = std::numeric_limits<float>::epsilon();
 const float dInf = std::numeric_limits<float>::infinity();
+const float sMin = std::numeric_limits<float>::denorm_min();
 const float dMin = std::numeric_limits<float>::min();
 const float dMax = std::numeric_limits<float>::max();
 const float qNaN = std::numeric_limits<float>::quiet_NaN();
@@ -86,6 +87,26 @@ BOOST_AUTO_TEST_CASE( test_negative_large_numbers )
 
    BOOST_CHECK(is_equal(-dMin, -dMin      ));
    BOOST_CHECK(is_equal(-dMin, -dMin, dEps));
+}
+
+BOOST_AUTO_TEST_CASE( test_ulp_around_one )
+{
+   BOOST_TEST_MESSAGE( "test_ulp_around_one" );
+
+   // ULP distances up to 10 are equal
+   // Going right from 1 by eps increases distance by 1
+   // Going left from 1 by eps increases distance by 2
+   for (int i = 0; i <= 10; ++i) {
+       BOOST_CHECK(is_equal(1.0 + i * dEps,   1.0,              dEps));
+       BOOST_CHECK(is_equal(1.0,              1.0 + i * dEps,   dEps));
+       BOOST_CHECK(is_equal(1.0 - i * dEps/2, 1.0,              dEps));
+       BOOST_CHECK(is_equal(1.0,              1.0 - i * dEps/2, dEps));
+   }
+   // ULP distances greater 10 are not equal
+   BOOST_CHECK(! is_equal(1.0 + 11 * dEps,   1.0,               dEps));
+   BOOST_CHECK(! is_equal(1.0,               1.0 + 11 * dEps,   dEps));
+   BOOST_CHECK(! is_equal(1.0 - 11 * dEps/2, 1.0,               dEps));
+   BOOST_CHECK(! is_equal(1.0,               1.0 - 11 * dEps/2, dEps));
 }
 
 BOOST_AUTO_TEST_CASE( test_numbers_around_one )
@@ -149,15 +170,15 @@ BOOST_AUTO_TEST_CASE( test_comparisons_involving_zero )
    BOOST_CHECK(! is_equal(-0.0001, 0.0   ));
    BOOST_CHECK(! is_equal(0.0,    -0.0001));
 
-   BOOST_CHECK(  is_equal(0.0,     1e-40, 0.01 ));
-   BOOST_CHECK(  is_equal(1e-40,   0.0,   0.01 ));
-   BOOST_CHECK(! is_equal(1e-40,   0.0,   1e-41));
-   BOOST_CHECK(! is_equal(0.0,     1e-40, 1e-41));
+   BOOST_CHECK(  is_equal(0.0,     1e-30, 0.01 ));
+   BOOST_CHECK(  is_equal(1e-30,   0.0,   0.01 ));
+   BOOST_CHECK(! is_equal(1e-30,   0.0,   1e-31));
+   BOOST_CHECK(! is_equal(0.0,     1e-30, 1e-31));
 
-   BOOST_CHECK(  is_equal(0.0,    -1e-40, 0.1  ));
-   BOOST_CHECK(  is_equal(-1e-40,  0.0,   0.1  ));
-   BOOST_CHECK(! is_equal(-1e-40,  0.0,   1e-41));
-   BOOST_CHECK(! is_equal(0.0,    -1e-40, 1e-41));
+   BOOST_CHECK(  is_equal(0.0,    -1e-30, 0.1  ));
+   BOOST_CHECK(  is_equal(-1e-30,  0.0,   0.1  ));
+   BOOST_CHECK(! is_equal(-1e-30,  0.0,   1e-31));
+   BOOST_CHECK(! is_equal(0.0,    -1e-30, 1e-31));
 }
 
 BOOST_AUTO_TEST_CASE( test_comparisons_involving_infinity )
@@ -165,11 +186,13 @@ BOOST_AUTO_TEST_CASE( test_comparisons_involving_infinity )
    BOOST_TEST_MESSAGE( "test_comparisons_involving_infinity" );
 
    if (std::numeric_limits<float>::has_infinity) {
-
-      BOOST_CHECK(is_equal( dInf,  dInf));
-      BOOST_CHECK(is_equal(-dInf, -dInf));
-   }
-   else {
+      BOOST_CHECK(  is_equal( dInf,  dInf));
+      BOOST_CHECK(  is_equal(-dInf, -dInf));
+      BOOST_CHECK(! is_equal( dInf,  dMax));
+      BOOST_CHECK(! is_equal( dMax,  dInf));
+      BOOST_CHECK(! is_equal(-dInf, -dMax));
+      BOOST_CHECK(! is_equal(-dMax, -dInf));
+   } else {
       BOOST_TEST_MESSAGE( "test_comparisons_involving_infinity NOT VALID on this platform" );
    }
 }
@@ -229,10 +252,10 @@ BOOST_AUTO_TEST_CASE( test_comparisons_opposite_side_of_zero )
 {
    BOOST_TEST_MESSAGE( "test_comparisons_opposite_side_of_zero" );
 
-   BOOST_CHECK(! is_equal(1.000000001, -1.0        ));
-   BOOST_CHECK(! is_equal(-1.0,         1.000000001));
-   BOOST_CHECK(! is_equal(-1.000000001, 1.0        ));
-   BOOST_CHECK(! is_equal(1.0,         -1.000000001));
+   BOOST_CHECK(! is_equal( 1.0000001, -1.0      ));
+   BOOST_CHECK(! is_equal(-1.0,        1.0000001));
+   BOOST_CHECK(! is_equal(-1.0000001,  1.0      ));
+   BOOST_CHECK(! is_equal( 1.0,       -1.0000001));
 
    BOOST_CHECK(  is_equal(   10.0 * dMin,    10.0 * -dMin));
    BOOST_CHECK(  is_equal(10000   * dMin, 10000   * -dMin));
@@ -242,12 +265,12 @@ BOOST_AUTO_TEST_CASE( test_comparisons_very_close_to_zero )
 {
    BOOST_TEST_MESSAGE( "test_comparisons_very_close_to_zero" );
 
-   BOOST_CHECK(  is_equal( dMin, -dMin));
-   BOOST_CHECK(  is_equal(-dMin,  dMin));
-   BOOST_CHECK(  is_equal( dMin,  0   ));
-   BOOST_CHECK(  is_equal( 0,     dMin));
-   BOOST_CHECK(  is_equal(-dMin,  0   ));
-   BOOST_CHECK(  is_equal( 0,    -dMin));
+   BOOST_CHECK(  is_equal( dMin, -dMin, dEps));
+   BOOST_CHECK(  is_equal(-dMin,  dMin, dEps));
+   BOOST_CHECK(  is_equal( dMin,  0   , dEps));
+   BOOST_CHECK(  is_equal( 0,     dMin, dEps));
+   BOOST_CHECK(  is_equal(-dMin,  0   , dEps));
+   BOOST_CHECK(  is_equal( 0,    -dMin, dEps));
 
 
    BOOST_CHECK(  is_equal( 0.000000001, -dMin       ));
@@ -260,6 +283,26 @@ BOOST_AUTO_TEST_CASE( test_comparisons_very_close_to_zero )
    BOOST_CHECK(! is_equal( 0.000000001,  dMin,        1e-10));
    BOOST_CHECK(! is_equal( dMin,         0.000000001, 1e-10));
    BOOST_CHECK(! is_equal(-dMin,         0.000000001, 1e-10));
+}
+
+BOOST_AUTO_TEST_CASE( test_comparisons_with_denormal_numbers )
+{
+   BOOST_TEST_MESSAGE( "test_comparisons_with_denormal_numbers" );
+
+   BOOST_CHECK(  is_equal( sMin, -sMin, dEps));
+   BOOST_CHECK(  is_equal(-sMin,  sMin, dEps));
+   BOOST_CHECK(  is_equal( sMin,  0   , dEps));
+   BOOST_CHECK(  is_equal( 0,     sMin, dEps));
+   BOOST_CHECK(  is_equal(-sMin,  0   , dEps));
+   BOOST_CHECK(  is_equal( 0,    -sMin, dEps));
+
+   const float lMin = dMin - sMin;  // largest denormal number
+   BOOST_CHECK(  is_equal( lMin, -lMin, dEps));
+   BOOST_CHECK(  is_equal(-lMin,  lMin, dEps));
+   BOOST_CHECK(  is_equal( lMin,  0   , dEps));
+   BOOST_CHECK(  is_equal( 0,     lMin, dEps));
+   BOOST_CHECK(  is_equal(-lMin,  0   , dEps));
+   BOOST_CHECK(  is_equal( 0,    -lMin, dEps));
 }
 
 BOOST_AUTO_TEST_CASE( test_comparisons_ulps )

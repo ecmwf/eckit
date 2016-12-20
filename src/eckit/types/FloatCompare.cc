@@ -7,127 +7,64 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
-// The following code is adapted from http://www.boost.org/doc/libs/1_62_0/boost/math/special_functions/next.hpp
-//
-//  (C) Copyright John Maddock 2008.
-//  Use, modification and distribution are subject to the
-//  Boost Software License, Version 1.0. (See accompanying file
-//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//----------------------------------------------------------------------------------------------------------------------
-
 namespace detail {
 
-template <class T>
-inline int sign(const T& z) {
-   return (z == 0) ? 0 : signbit(z) ? -1 : 1;
-}
+// FIXME: The following functions are available in std:: as of C++11:
+// * fpclassify
+// * isinf
+// * isnan
+// * signbit
+// For the moment we have to use the (non namespaced) versions from math.h
 
 template <class T>
-inline int digits() {
-    return std::numeric_limits<T>::radix == 2
-            ? std::numeric_limits<T>::digits
-            : ((std::numeric_limits<T>::digits + 1) * 1000L) / 301L;
+inline T abs(T);
+
+template<>
+double abs(double x) { return fabs(x); }
+
+template<>
+float abs(float x) { return fabsf(x); }
+
+// Used for accessing the integer representation of floating-point numbers
+// (aliasing through unions works on most platforms).
+union Double {
+    typedef double float_t;
+    typedef int64_t int_t;
+
+    float_t f_;
+    int_t i_;
+
+    Double(double x) : f_(x) {}
+};
+
+// Used for accessing the integer representation of floating-point numbers
+// (aliasing through unions works on most platforms).
+union Float {
+    typedef float float_t;
+    typedef int32_t int_t;
+
+    float_t f_;
+    int_t i_;
+
+    Float(float x) : f_(x) {}
+};
+
+// The difference between the bit representations of two floating point
+// numbers of the same sign interpreted as a signed integer is equal to their
+// distance from each other i.e. how many representable floating point numbers
+// they are "apart". This is a very fast way to compute this difference.
+
+Double::int_t float_distance(double x, double y) {
+    const Double::int_t dist = Double(x).i_ - Double(y).i_;
+    return dist >= 0 ? dist : -dist;
 }
 
-template <class T>
-T float_distance(const T& a, const T& b) {
-    //
-    // Error handling:
-    //
-    if (!isfinite(a)) {
-        std::ostringstream s;
-        s << "First argument must be finite, but got " << a << std::endl;
-        throw BadParameter(s.str()); // for efficiency don't use CodeLocation Here()
-    }
-    if (!isfinite(b)) {
-        std::ostringstream s;
-        s << "Second argument must be finite, but got " << b << std::endl;
-        throw BadParameter(s.str()); // for efficiency don't use CodeLocation Here()
-    }
-
-    //
-    // Special cases:
-    //
-    if(a > b)
-        return -float_distance(b, a);
-    if(a == b)
-        return T(0);
-    if(a == 0)
-        return 1 + fabs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b));
-    if(b == 0)
-        return 1 + fabs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
-    if(sign(a) != sign(b))
-        return 2 + fabs(float_distance(static_cast<T>((b < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), b))
-                 + fabs(float_distance(static_cast<T>((a < 0) ? T(-std::numeric_limits<T>::min()) : std::numeric_limits<T>::min()), a));
-    //
-    // By the time we get here, both a and b must have the same sign, we want
-    // b > a and both postive for the following logic:
-    //
-    if(a < 0)
-        return float_distance(static_cast<T>(-b), static_cast<T>(-a));
-
-//    ASSERT(a >= 0 && b >= a); // don't assert here -- this code is very efficiency sensitive
-
-    int expon;
-    //
-    // Note that if a is a denorm then the usual formula fails
-    // because we actually have fewer than digits<T>()
-    // significant bits in the representation:
-    //
-    frexp((fpclassify(a) == FP_SUBNORMAL) ? std::numeric_limits<T>::min() : a, &expon);
-    T upper = ldexp(T(1), expon);
-    T result = T(0);
-    expon = digits<T>() - expon;
-    //
-    // If b is greater than upper, then we *must* split the calculation
-    // as the size of the ULP changes with each order of magnitude change:
-    //
-    if(b > upper) {
-        result = float_distance(upper, b);
-    }
-    //
-    // Use compensated double-double addition to avoid rounding
-    // errors in the subtraction:
-    //
-    T mb, x, y, z;
-    if((fpclassify(a) == FP_SUBNORMAL) || (b - a < std::numeric_limits<T>::min())) {
-        //
-        // Special case - either one end of the range is a denormal, or else the difference is.
-        // The regular code will fail if we're using the SSE2 registers on Intel and either
-        // the FTZ or DAZ flags are set.
-        //
-        T a2 = ldexp(a, digits<T>());
-        T b2 = ldexp(b, digits<T>());
-        mb = -std::min(T(ldexp(upper, digits<T>())), b2);
-        x = a2 + mb;
-        z = x - a2;
-        y = (a2 - (x - z)) + (mb - z);
-
-        expon -= digits<T>();
-    } else {
-        mb = -std::min(upper, b);
-        x = a + mb;
-        z = x - a;
-        y = (a - (x - z)) + (mb - z);
-    }
-    if(x < 0)
-    {
-        x = -x;
-        y = -y;
-    }
-    result += ldexp(x, expon) + ldexp(y, expon);
-
-    //
-    // Result must be an integer:
-    //
-
-    // ASSERT(result == floor(result)); // don't assert here -- this code is very efficiency sensitive
-
-    return result;
+Float::int_t float_distance(float x, float y) {
+    const Float::int_t dist = Float(x).i_ - Float(y).i_;
+    return dist >= 0 ? dist : -dist;
 }
 
-}  // anonymous namespace
+}  // namespace detail
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -148,21 +85,45 @@ T float_distance(const T& a, const T& b) {
 /// then this function will again calculate ulpsDiff as one.
 /// In both cases the two numbers are the closest floats there are.
 ///
+/// Assumptions:
+///   * Bit identical numbers are equal for any epsilon.
+///   * A NaN is different from any number (even another NaN).
+///   * Infinity is different from any number but infinity (with the same sign).
+///   * Subnormal numbers are treated as equal to 0
+///   * +/-std::numeric_limits<T>::min() has ULP distance 1 from 0
+///   * -std::numeric_limits<T>::min() has ULP distance 2 from std::numeric_limits<T>::min()
+///   * ULP distance from 0 is 1 + ULP distance from std::numeric_limits<T>::min() (for positive numbers)
+///
 template< typename T >
 bool almostEqualUlps(T a, T b, T epsilon, int maxUlpsDiff) {
+
     // Bit identical is equal for any epsilon
     if (a == b) return true;
-    // NaNs are always different
-    if (isnan(a) || isnan(b)) return false;
+
+    // NaNs and infinity are always different
+    if (isnan(a) || isnan(b) || isinf(a) || isinf(b)) return false;
+
+    // Subnormal numbers are treated as 0
+    if (fpclassify(a) == FP_SUBNORMAL) a = 0;
+    if (fpclassify(b) == FP_SUBNORMAL) b = 0;
 
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.
-    T absDiff = fabs(a - b);
-    if (absDiff <= epsilon) return true;
+    if (detail::abs(a - b) <= epsilon) return true;
 
-    // Find the difference in ULPs
-    T ulpsDiff = fabs(detail::float_distance(a, b));
-    return ulpsDiff <= maxUlpsDiff;
+    // If either is zero, compare the absolute value of the other to the minimum normal number
+    if (a == 0) {
+        return (1 + detail::float_distance(detail::abs(b), std::numeric_limits<T>::min())) <= maxUlpsDiff;
+    }
+    if (b == 0) {
+        return (1 + detail::float_distance(detail::abs(a), std::numeric_limits<T>::min())) <= maxUlpsDiff;
+    }
+
+    if (signbit(a) == signbit(b)) return detail::float_distance(a, b) <= maxUlpsDiff;
+
+    // If signs are different, add ULP distances from minimum normal number on both sides of 0
+    return (2 + detail::float_distance(a > 0 ? a : b, std::numeric_limits<T>::min())
+              + detail::float_distance(a < 0 ? a : b, -std::numeric_limits<T>::min())) <= maxUlpsDiff;
 }
 
 template<>

@@ -6,6 +6,9 @@
 #include "eckit/types/FloatCompare.h"
 
 namespace eckit {
+namespace types {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace detail {
 
@@ -95,7 +98,7 @@ Float::int_t float_distance(float x, float y) {
 ///   * ULP distance from 0 is 1 + ULP distance from std::numeric_limits<T>::min() (for positive numbers)
 ///
 template< typename T >
-bool almostEqualUlps(T a, T b, T epsilon, int maxUlpsDiff) {
+bool is_approximately_equal_ulps(T a, T b, T epsilon, int maxUlpsDiff) {
 
     // Bit identical is equal for any epsilon
     if (a == b) return true;
@@ -127,15 +130,16 @@ bool almostEqualUlps(T a, T b, T epsilon, int maxUlpsDiff) {
 }
 
 template<>
-bool isApproxEqualUlps(float a, float b, float epsilon, int maxUlpsDiff) {
-    return almostEqualUlps(a, b, epsilon, maxUlpsDiff);
+bool is_approximately_equal(float a, float b, float epsilon, int maxUlpsDiff) {
+    return is_approximately_equal_ulps(a, b, epsilon, maxUlpsDiff);
 }
 
 template<>
-bool isApproxEqualUlps(double a, double b, double epsilon, int maxUlpsDiff) {
-    return almostEqualUlps(a, b, epsilon, maxUlpsDiff);
+bool is_approximately_equal(double a, double b, double epsilon, int maxUlpsDiff) {
+    return is_approximately_equal_ulps(a, b, epsilon, maxUlpsDiff);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
+} // namespace types
 } // namespace eckit

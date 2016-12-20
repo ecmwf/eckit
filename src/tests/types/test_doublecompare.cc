@@ -24,15 +24,15 @@ using namespace eckit::testing;
 namespace {
 
 bool is_equal(double a, double b, double epsilon, int maxUlps) {
-    return FloatCompare<double>::isApproximatelyEqual(a, b, epsilon, maxUlps);
+    return eckit::types::is_approximately_equal(a, b, epsilon, maxUlps);
 }
 
 bool is_equal(double a, double b, double epsilon) {
-    return FloatCompare<double>::isApproximatelyEqual(a, b, epsilon);
+    return eckit::types::is_approximately_equal(a, b, epsilon);
 }
 
 bool is_equal(double a, double b) {
-    return FloatCompare<double>::isApproximatelyEqual(a, b, 0.00001);
+    return eckit::types::is_approximately_equal(a, b, 0.00001);
 }
 
 const double dEps = std::numeric_limits<double>::epsilon();

@@ -43,7 +43,7 @@ void TestDoubleCompareSpeed::compare(size_t n)
 {
     for(size_t i = 0; i < n; ++i) {
         double x = (double) ::rand() / (double) RAND_MAX;
-        bool b = isApproxEqualUlps(x, double(0.5));
+        bool b = eckit::types::is_approximately_equal(x, double(0.5));
     }
 }
 

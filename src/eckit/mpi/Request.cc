@@ -28,29 +28,27 @@ Request::Request(int request) :
 
 Request::Request(RequestContent* p) :
     content_(p) {
-    content_->attach();
+    if( content_ ) { content_->attach(); }
 }
 
 Request::~Request() {
-    if( content_ ) content_->detach();
+    if( content_ ) { content_->detach(); }
 }
 
 Request::Request(const Request& s) : content_(s.content_) {
-    content_->attach();
+    if( content_ ) { content_->attach(); }
 }
 
 Request& Request::operator=(const Request& s) {
-    if( content_ ) {
-        content_->detach();
-        content_ = 0;
-    }
+    if( content_ ) { content_->detach(); }
     content_ = s.content_;
-    content_->attach();
+    if( content_ ) { content_->attach(); }
     return *this;
 }
 
 int Request::request() const {
-  return content_->request();
+    ASSERT(content_);
+    return content_->request();
 }
 
 RequestContent::~RequestContent() {

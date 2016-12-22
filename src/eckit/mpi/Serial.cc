@@ -71,13 +71,13 @@ public:
     }
 
     Request createSendRequest(const void* buffer, size_t count, Data::Code type, int tag) {
-        SerialRequest* request = new SendRequest(buffer,count,type,tag);
-        return registerRequest(request);
+        Request r = registerRequest(new SendRequest(buffer,count,type,tag));
+        send_[tag] = r;
+        return r;
     }
 
     Request createReceiveRequest(void* buffer, size_t count, Data::Code type, int tag) {
         SerialRequest* request = new ReceiveRequest(buffer,count,type,tag);
-        recv_[tag] = request;
         return registerRequest(request);
     }
 
@@ -89,9 +89,9 @@ public:
         return send_[tag];
     }
 
-    Request receiveRequest(int tag) {
-        return recv_[tag];
-    }
+//    Request receiveRequest(int tag) {
+//        return recv_[tag];
+//    }
 
     void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }
@@ -102,12 +102,9 @@ private:
         ++n_;
         if( n_ == requests_.size() ) n_ = 0;
         request->request_ = n_;
-        requests_[n_] = Request(request);
-        if( request->isReceive() )
-          recv_[request->tag()] = requests_[n_];
-        else
-          send_[request->tag()] = requests_[n_];
-        return requests_[n_];
+        Request r(request);
+        requests_[n_] = r;
+        return r;
     }
 
     SerialRequestPool()
@@ -119,8 +116,10 @@ private:
     ~SerialRequestPool() {}
 
     std::vector<Request> requests_;
+
     std::map<int,Request> send_;
-    std::map<int,Request> recv_;
+
+    //    std::map<int,Request> recv_;
 
     int n_;
 

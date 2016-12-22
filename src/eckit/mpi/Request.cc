@@ -17,8 +17,22 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class NullRequestContent : public RequestContent {
+public:
+
+    virtual ~NullRequestContent() {}
+
+    virtual void print(std::ostream& os) const { os << "NullRequest()"; }
+
+    virtual int request() const { return -1; }
+
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 Request::Request() :
-    content_(0) {
+    content_( new NullRequestContent()) {
+    content_->attach();
 }
 
 Request::Request(int request) :
@@ -28,26 +42,25 @@ Request::Request(int request) :
 
 Request::Request(RequestContent* p) :
     content_(p) {
-    if( content_ ) { content_->attach(); }
+    content_->attach();
 }
 
 Request::~Request() {
-    if( content_ ) { content_->detach(); }
+    content_->detach();
 }
 
 Request::Request(const Request& s) : content_(s.content_) {
-    if( content_ ) { content_->attach(); }
+    content_->attach();
 }
 
 Request& Request::operator=(const Request& s) {
-    if( content_ ) { content_->detach(); }
+    content_->detach();
     content_ = s.content_;
-    if( content_ ) { content_->attach(); }
+    content_->attach();
     return *this;
 }
 
 int Request::request() const {
-    ASSERT(content_);
     return content_->request();
 }
 

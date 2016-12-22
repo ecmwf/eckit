@@ -17,27 +17,24 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Status::Status() :
-    content_(0) {
-}
-
 Status::Status(StatusContent* p) :
     content_(p) {
-    if( content_ ) { content_->attach(); }
+    ASSERT(p);
+    content_->attach();
 }
 
 Status::~Status() {
-    if( content_ ) { content_->detach(); }
+    content_->detach();
 }
 
 Status::Status(const Status& s) : content_(s.content_) {
-    if( content_ ) { content_->attach(); }
+    content_->attach();
 }
 
 Status& Status::operator=(const Status& s) {
-    if( content_ ) { content_->detach(); }
+    content_->detach();
     content_ = s.content_;
-    if( content_ ) { content_->attach(); }
+    content_->attach();
     return *this;
 }
 

@@ -35,13 +35,16 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
+/// Status by construction has always a valid content_
+/// @invariant content_ is not null
+
 class Status {
 
 public: // methods
 
-    Status();
-
-    Status(StatusContent*);
+    /// @pre content is not null
+    Status(StatusContent* content);
 
     ~Status();
 

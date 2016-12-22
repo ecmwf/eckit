@@ -33,12 +33,19 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// Request by construction has always a valid content_
+/// @invariant content_ is not null
+
 class Request {
 
 public: // methods
 
+    /// Null request constructor
     Request();
+    /// Request constructor from the Comm() integer
+    /// Use only for interfacing with Fortran
     Request(int);
+    /// Constructor
     Request(RequestContent*);
 
     ~Request();
@@ -52,6 +59,8 @@ public: // methods
         return dynamic_cast<T&>(*content_);
     }
 
+    /// Returns this request interpreted as a int by the underlying implementation
+    /// Use only for interfacing with Fortran
     int request() const;
 
 private: // methods

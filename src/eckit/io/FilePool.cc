@@ -32,7 +32,7 @@ static void closeDataHandle(PathName&, DataHandle*& handle) {
     }
 }
 
-static bool inUse(const std::map<PathName,DataHandle*> store, const PathName& path) {
+static bool inUse(const std::map<PathName,DataHandle*>& store, const PathName& path) {
     return store.find(path) != store.end();
 }
 

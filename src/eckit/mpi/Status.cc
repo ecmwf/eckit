@@ -23,25 +23,21 @@ Status::Status() :
 
 Status::Status(StatusContent* p) :
     content_(p) {
-    content_->attach();
+    if( content_ ) { content_->attach(); }
 }
 
 Status::~Status() {
-    if( content_ ) {
-        content_->detach();
-    }
+    if( content_ ) { content_->detach(); }
 }
 
 Status::Status(const Status& s) : content_(s.content_) {
-    content_->attach();
+    if( content_ ) { content_->attach(); }
 }
 
 Status& Status::operator=(const Status& s) {
-    if( content_ ) {
-        content_->detach();
-    }
+    if( content_ ) { content_->detach(); }
     content_ = s.content_;
-    content_->attach();
+    if( content_ ) { content_->attach(); }
     return *this;
 }
 

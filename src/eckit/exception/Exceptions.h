@@ -227,42 +227,36 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 template<class T>
-inline T SysCall(T code,const char *msg,const CodeLocation& loc)
+inline T SysCall(T code,const char *msg, const char* file, int line, const char* func)
 {
     if(code<0)
-        throw FailedSystemCall(msg,loc,errno);
+        throw FailedSystemCall(msg, CodeLocation(file, line, func), errno);
     return code;
 }
 
 
 template<class T>
-inline void SysCall(long long code,const char *msg,const T& ctx,const CodeLocation& loc)
+inline void SysCall(long long code,const char *msg,const T& ctx, const char* file, int line, const char* func)
 {
     if(code<0)
     {
         std::ostringstream os;
         os << ctx;
-        throw FailedSystemCall(os.str(), msg, loc, errno);
+        throw FailedSystemCall(os.str(), msg, CodeLocation(file, line, func), errno);
     }
 }
 
 
-
-inline void ThrCall(int code,const char *msg, const CodeLocation& loc)
+inline void ThrCall(int code,const char *msg, const char* file, int line, const char* func)
 {
     if(code != 0) // Threads return errno in return code
-        handle_panic(msg,loc);
-    /*
-    {
-        throw FailedSystemCall(msg,line,file,proc,code);
-    }
-    */
+        handle_panic(msg, CodeLocation(file, line, func));
 }
 
-inline void Assert(int code,const char *msg, const CodeLocation& loc )
+inline void Assert(int code,const char *msg, const char* file, int line, const char* func)
 {
     if(code != 0) {
-        throw AssertionFailed(msg,loc);
+        throw AssertionFailed(msg, CodeLocation(file, line, func));
     }
 }
 
@@ -293,10 +287,10 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#define THRCALL(a)    ::eckit::ThrCall(a,#a,Here())
-#define SYSCALL(a)    ::eckit::SysCall(a,#a,Here())
-#define SYSCALL2(a,b) ::eckit::SysCall(a,#a,b,Here())
-#define ASSERT(a)     ::eckit::Assert(!(a),#a,Here())
+#define THRCALL(a)    ::eckit::ThrCall(a,#a, __FILE__, __LINE__, __FUNCTION__)
+#define SYSCALL(a)    ::eckit::SysCall(a,#a, __FILE__, __LINE__, __FUNCTION__)
+#define SYSCALL2(a,b) ::eckit::SysCall(a,#a,b, __FILE__, __LINE__, __FUNCTION__)
+#define ASSERT(a)     ::eckit::Assert(!(a),#a, __FILE__, __LINE__, __FUNCTION__)
 #define PANIC(a)      ::eckit::Panic((a),#a,Here())
 #define NOTIMP  throw ::eckit::NotImplemented(Here())
 

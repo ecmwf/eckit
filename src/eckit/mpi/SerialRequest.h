@@ -52,6 +52,7 @@ class SendRequest : public SerialRequest {
 public: // methods
 
     SendRequest(const void* buf, size_t count, Data::Code type, int tag);
+
     virtual ~SendRequest();
 
     virtual bool isReceive() const { return false; }

@@ -27,13 +27,13 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class SerialSendReceive {
+class SerialSendReceive : private NonCopyable {
 public:
 
     static SerialSendReceive& instance() {
         static SerialSendReceive inst;
         return inst;
-    };
+    }
 
     void addSend( const Request& send_request )
     {
@@ -47,21 +47,28 @@ public:
       return send;
     }
 
+    void lock() { mutex_.lock(); }
+    void unlock() { mutex_.unlock(); }
+
 private:
+
     SerialSendReceive() {}
     ~SerialSendReceive() {}
+
     std::deque<Request> send_queue_;
+
+    eckit::Mutex mutex_; ///< instance() creation is thread safe, but access thereon isn't so we need a mutex
 };
 
 
 
-class SerialRequestPool {
+class SerialRequestPool : private NonCopyable {
 public:
 
     static SerialRequestPool& instance() {
         static SerialRequestPool request_pool;
         return request_pool;
-    };
+    }
 
     Request createSendRequest(const void* buffer, size_t count, Data::Code type, int tag) {
         SerialRequest* request = new SendRequest(buffer,count,type,tag);
@@ -86,6 +93,9 @@ public:
         return recv_[tag];
     }
 
+    void lock() { mutex_.lock(); }
+    void unlock() { mutex_.unlock(); }
+
 private:
 
     Request registerRequest(SerialRequest* request) {
@@ -106,14 +116,15 @@ private:
         requests_.resize(100);
     }
 
-    ~SerialRequestPool() {
-    }
+    ~SerialRequestPool() {}
 
-
-    int n_;
     std::vector<Request> requests_;
     std::map<int,Request> send_;
     std::map<int,Request> recv_;
+
+    int n_;
+
+    eckit::Mutex mutex_; ///< instance() creation is thread safe, but access thereon isn't so we need a mutex
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -154,6 +165,9 @@ void Serial::abort(int) const {
 }
 
 Status Serial::wait(Request& req) const {
+
+    AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
+
     if( req.as<SerialRequest>().isReceive() ) {
 
       ReceiveRequest& recvReq = req.as<ReceiveRequest>();
@@ -182,7 +196,7 @@ Status Serial::wait(Request& req) const {
     }
 }
 
-Status Serial::probe(int source, int tag) const {
+Status Serial::probe(int source, int) const {
     ASSERT(source == 0);
     return status();
 }
@@ -254,6 +268,8 @@ void Serial::allToAllv(const void* sendbuf, const int sendcounts[], const int[],
 
 Status Serial::receive(void* recv, size_t count, Data::Code type, int source, int tag) const
 {
+    AutoLock<SerialSendReceive> lock(SerialSendReceive::instance());
+
     Request send_request = SerialSendReceive::instance().nextSend();
     SendRequest& send = send_request.as<SendRequest>();
     if( tag != anyTag() ) {
@@ -273,14 +289,17 @@ Status Serial::receive(void* recv, size_t count, Data::Code type, int source, in
 
 void Serial::send(const void* send, size_t count, Data::Code type, int dest, int tag) const
 {
+    AutoLock<SerialSendReceive> lock(SerialSendReceive::instance());
     SerialSendReceive::instance().addSend( Request( new SendRequest(send,count,type,tag) ) );
 }
 
 Request Serial::iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const {
+    AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
     return SerialRequestPool::instance().createReceiveRequest(recv,count,type,tag);
 }
 
 Request Serial::iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const {
+    AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
     return SerialRequestPool::instance().createSendRequest(send,count,type,tag);
 }
 
@@ -289,7 +308,8 @@ Status Serial::createStatus() {
 }
 
 Request Serial::request(int request) const {
-  return SerialRequestPool::instance()[request];
+    AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
+    return SerialRequestPool::instance()[request];
 }
 
 void Serial::print(std::ostream& os) const {

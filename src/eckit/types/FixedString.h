@@ -62,9 +62,11 @@ public:
 
 	bool operator<=(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) <= 0; }
 
-    /// The number of characters in the stored string, excluding the termination character if the string is shorter
-    /// than SIZE.
+    /// The number of characters in the stored string,
+    /// excluding the termination character if the string is shorter than SIZE.
 	size_t length() const;
+
+    bool empty() const { return length() == 0; }
 
     std::string asString() const;
     

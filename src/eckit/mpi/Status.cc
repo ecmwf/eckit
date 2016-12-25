@@ -17,6 +17,11 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+Status::Status() :
+    content_( new NullStatus() ) {
+    content_->attach();
+}
+
 Status::Status(StatusContent* p) :
     content_(p) {
     ASSERT(p);
@@ -39,6 +44,14 @@ Status& Status::operator=(const Status& s) {
 }
 
 StatusContent::~StatusContent() {
+}
+
+void NullStatus::print(std::ostream& os) const {
+    os << "NullStatus("
+       << "source=" << source()
+       << ",tag=" << tag()
+       << ",error=" << error()
+       << ")";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

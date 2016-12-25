@@ -42,7 +42,7 @@ public: // methods
 
     /// Null request constructor
     Request();
-    /// Request constructor from the Comm() integer
+    /// Request constructor from the Request() integer
     /// Use only for interfacing with Fortran
     Request(int);
     /// Constructor

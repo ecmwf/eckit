@@ -89,10 +89,6 @@ public:
         return send_[tag];
     }
 
-//    Request receiveRequest(int tag) {
-//        return recv_[tag];
-//    }
-
     void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }
 
@@ -118,8 +114,6 @@ private:
     std::vector<Request> requests_;
 
     std::map<int,Request> send_;
-
-    //    std::map<int,Request> recv_;
 
     int n_;
 

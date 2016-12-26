@@ -54,7 +54,8 @@ Request::Request(const Request& s) : content_(s.content_) {
 }
 
 Request& Request::operator=(const Request& s) {
-    content_->detach();
+    if( content_ )
+        content_->detach();
     content_ = s.content_;
     content_->attach();
     return *this;

@@ -11,6 +11,7 @@
 #ifndef eckit_mpi_SerialRequest_h
 #define eckit_mpi_SerialRequest_h
 
+#include "eckit/io/Buffer.h"
 #include "eckit/mpi/Request.h"
 #include "eckit/mpi/DataType.h"
 
@@ -51,13 +52,13 @@ class SendRequest : public SerialRequest {
 
 public: // methods
 
-    SendRequest(const void* buf, size_t count, Data::Code type, int tag);
+    SendRequest(const void* buffer, size_t count, Data::Code type, int tag);
 
     virtual ~SendRequest();
 
     virtual bool isReceive() const { return false; }
 
-    const void* buffer() const { return buf_; }
+    const void* buffer() const { return buffer_; }
 
     size_t count() const { return count_; }
 
@@ -67,7 +68,7 @@ public: // methods
 
 private:
 
-    void* buf_;
+    eckit::Buffer buffer_;
     size_t count_;
     int tag_;
     Data::Code type_;
@@ -79,11 +80,11 @@ class ReceiveRequest : public SerialRequest {
 
 public: // methods
 
-    ReceiveRequest(void* buf, size_t count, Data::Code type, int tag);
+    ReceiveRequest(void* buffer, size_t count, Data::Code type, int tag);
 
     virtual bool isReceive() const { return true; }
 
-    void* buffer() const { return buf_; }
+    void* buffer() { return buffer_; }
 
     size_t count() const { return count_; }
 
@@ -93,7 +94,7 @@ public: // methods
 
 private:
 
-    void* buf_;
+    eckit::Buffer buffer_;  ///< this buffer does not own the memory (see constructor with dummy bool)
     size_t count_;
     int tag_;
     Data::Code type_;

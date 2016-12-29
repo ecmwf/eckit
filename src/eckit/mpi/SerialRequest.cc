@@ -37,23 +37,20 @@ int SerialRequest::request() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SendRequest::SendRequest(const void* buf, size_t count, Data::Code type, int tag) :
-    buf_(0),
+SendRequest::SendRequest(const void* buffer, size_t count, Data::Code type, int tag) :
+    buffer_(static_cast<const char*>(buffer), count * dataSize[type]),
     count_(count),
     tag_(tag),
     type_(type) {
-    buf_ = ::operator new( count * dataSize[type] );
-    memcpy( buf_, buf, count * dataSize[type] );
 }
 
 SendRequest::~SendRequest() {
-    ::operator delete(buf_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ReceiveRequest::ReceiveRequest(void* buf, size_t count, Data::Code type, int tag) :
-    buf_(buf),
+ReceiveRequest::ReceiveRequest(void* buffer, size_t count, Data::Code type, int tag) :
+    buffer_(buffer, count * dataSize[type], false),
     count_(count),
     tag_(tag),
     type_(type) {

@@ -64,6 +64,7 @@ void WrapperTarget::write(const char* start, const char* end) {
 }
 
 void WrapperTarget::flush() {
+    target_->flush();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

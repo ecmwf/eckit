@@ -16,7 +16,6 @@
 #ifndef eckit_log_WrapperTarget_h
 #define eckit_log_WrapperTarget_h
 
-
 #include "eckit/log/LogTarget.h"
 
 namespace eckit {
@@ -48,6 +47,7 @@ protected:
     bool prefix_;
 
     friend class ChannelBuffer;
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

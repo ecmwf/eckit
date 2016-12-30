@@ -9,7 +9,7 @@
  */
 
 #include "eckit/log/FileTarget.h"
-#include "eckit/io/DataHandle.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
@@ -18,11 +18,11 @@ namespace eckit {
 FileTarget::FileTarget(const PathName &path):
     out_( path.asString().c_str() )
 {
-    ASSERT(out_);
+    if(!out_)
+        throw eckit::CantOpenFile(path.asString());
 }
 
 FileTarget::~FileTarget() {
-
 }
 
 void FileTarget::write(const char* start, const char* end) {

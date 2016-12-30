@@ -17,7 +17,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ColouringTarget::ColouringTarget(LogTarget* target, ColouringTarget::colourproc begin, ColouringTarget::colourproc end) {
+ColouringTarget::ColouringTarget(LogTarget* target, ColouringTarget::colourproc begin, ColouringTarget::colourproc end) :
+    WrapperTarget(target) {
 
     std::ostringstream beginss;
     beginss << *begin;

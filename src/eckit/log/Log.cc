@@ -304,6 +304,18 @@ void Log::addCallback(channel_callback_t cb, void* data) {
     }
 }
 
+void Log::flush()
+{
+    info().flush();
+    warning().flush();
+    error().flush();
+    debug().flush();
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().flush();
+    }
+}
+
 void Log::reset() {
     info().reset();
     warning().reset();

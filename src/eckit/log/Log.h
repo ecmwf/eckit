@@ -96,6 +96,7 @@ public: // methods
     static void setCallback(channel_callback_t cb, void* data = 0);
     static void addCallback(channel_callback_t cb, void* data = 0);
 
+    static void flush();
     static void reset();
 
 

@@ -22,7 +22,6 @@ PrefixTarget::PrefixTarget(const std::string& prefix, LogTarget* target, const c
     prefixLength_(prefix.size()),
     spaceLength_(::strlen(space))
 {
-
 }
 
 void PrefixTarget::writePrefix() {

@@ -59,6 +59,9 @@ static std::ostream& rotout() {
 RotationTarget::RotationTarget() {
 }
 
+RotationTarget::~RotationTarget() {
+}
+
 void RotationTarget::write(const char* start, const char* end) {
     AutoLock<StaticMutex> lock(local_mutex);
     rotout().write(start, end - start);

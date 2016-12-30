@@ -23,6 +23,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class MessageTarget : public LineBasedTarget {
+
 public: // methods
 
     MessageTarget();

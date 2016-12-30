@@ -26,6 +26,8 @@ public: // methods
 
     OStreamTarget(std::ostream& out);
 
+    virtual ~OStreamTarget();
+
     virtual void write(const char* start, const char* end);
     virtual void flush();
 

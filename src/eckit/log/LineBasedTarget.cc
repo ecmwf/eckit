@@ -59,6 +59,8 @@ void LineBasedTarget::write(const char* start, const char* end) {
 }
 
 void LineBasedTarget::flush() {
+    // LineBasedTarget doesn't flush() since the concrete classes treat each line independently
+    // and upon write(), and often don't require further flushing
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -23,7 +23,10 @@ TimeStampTarget::TimeStampTarget(const char* tag, LogTarget* target):
     WrapperTarget(target),
     tag_(tag)
 {
+}
 
+TimeStampTarget::~TimeStampTarget()
+{
 }
 
 void TimeStampTarget::writePrefix() {

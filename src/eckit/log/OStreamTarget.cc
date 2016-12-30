@@ -20,6 +20,10 @@ OStreamTarget::OStreamTarget(std::ostream& out):
     out_(out) {
 }
 
+OStreamTarget::~OStreamTarget()
+{
+}
+
 void OStreamTarget::write(const char* start, const char* end) {
     out_.write(start, end - start);
 }

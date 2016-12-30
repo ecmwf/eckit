@@ -34,10 +34,7 @@ public: // methods
     virtual void write(const char* start, const char* end) = 0;
     virtual void flush() = 0;
 
-protected:
-
     virtual ~LogTarget();
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

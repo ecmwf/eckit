@@ -25,8 +25,10 @@ namespace eckit {
 
 class FileTarget : public LogTarget {
 public:
+
     FileTarget( const PathName& path );
     ~FileTarget();
+
 private:
 
     virtual void write(const char* start, const char* end);

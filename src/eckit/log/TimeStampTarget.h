@@ -27,6 +27,8 @@ public:
 
     TimeStampTarget(const char* tag = "", LogTarget* target = 0);
 
+    virtual ~TimeStampTarget();
+
 private:
 
     virtual void writePrefix();

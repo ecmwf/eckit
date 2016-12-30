@@ -32,6 +32,8 @@ public:
 
     ColouringTarget(LogTarget* target, colourproc begin, colourproc end = &Colour::reset);
 
+    virtual ~ColouringTarget();
+
 private:
 
     virtual void writePrefix();

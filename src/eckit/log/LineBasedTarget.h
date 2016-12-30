@@ -22,6 +22,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class LineBasedTarget : public LogTarget {
+
 protected: // methods
 
     LineBasedTarget();

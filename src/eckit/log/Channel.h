@@ -28,12 +28,13 @@ typedef void (*channel_callback_t) (void* data, const char* msg);
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Output channel that is an std::ostream but more functional
-/// @todo consider merging Channel with MultiChannel
+
 class Channel : public std::ostream, private NonCopyable {
 
 public: // methods
 
     Channel(LogTarget* = 0);
+
     ~Channel();
 
     bool operator !() const;
@@ -65,11 +66,18 @@ private:
 };
 
 
+//----------------------------------------------------------------------------------------------------------------------
+
+
 class AutoIndent {
+
     Channel& channel_;
+
 public:
+
     AutoIndent(Channel& channel, const char* prefix = "") : channel_(channel) { channel_.indent(prefix); }
     ~AutoIndent() { channel_.unindent(); }
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

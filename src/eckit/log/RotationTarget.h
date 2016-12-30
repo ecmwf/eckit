@@ -27,6 +27,8 @@ public: // methods
 
     RotationTarget();
 
+    virtual ~RotationTarget();
+
     virtual void write(const char* start, const char* end);
     virtual void flush();
 

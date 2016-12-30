@@ -28,21 +28,22 @@ namespace eckit {
 
 class LogTarget;
 
-/// Generic base for buffers
-class ChannelBuffer : public std::streambuf,
-    private NonCopyable {
+/// Stream buffer to be usedby Channel
+class ChannelBuffer :
+        public std::streambuf,
+        private NonCopyable {
 
 private: // methods
 
     /// constructor, taking ownership of stream
     ChannelBuffer( std::size_t size = 1024 );
 
-    /// destructor, deallocates stream if has ownership
     virtual ~ChannelBuffer();
 
     bool active() const;
 
     void reset();
+
     void setTarget(LogTarget* target);
     void addTarget(LogTarget* target);
 
@@ -79,7 +80,6 @@ protected: // members
     std::vector<char> buffer_;
 
 private:
-
 
     friend class Channel;
 

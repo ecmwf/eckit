@@ -29,6 +29,10 @@ ColouringTarget::ColouringTarget(LogTarget* target, ColouringTarget::colourproc 
     end_ = endss.str();
 }
 
+ColouringTarget::~ColouringTarget()
+{
+}
+
 void ColouringTarget::writePrefix() {
     target_->write(begin_.c_str(), begin_.c_str() + begin_.size());
 }

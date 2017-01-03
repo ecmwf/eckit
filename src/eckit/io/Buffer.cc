@@ -78,12 +78,9 @@ void Buffer::copy(const char *p, size_t size)
 }
 
 void Buffer::swap(Buffer& rhs) {
-
-    ASSERT(owned_);
-    ASSERT(rhs.owned_);
-
-    std::swap(size_, rhs.size_);
     std::swap(buffer_, rhs.buffer_);
+    std::swap(size_, rhs.size_);
+    std::swap(owned_, rhs.owned_);
 }
 
 void eckit::Buffer::resize(size_t size)

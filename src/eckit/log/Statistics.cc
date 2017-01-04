@@ -20,7 +20,9 @@ namespace eckit {
 const size_t WIDTH = 34;
 
 Timer Statistics::timer_;
+
 //----------------------------------------------------------------------------------------------------------------------
+
 void Statistics::reportCount(std::ostream &out, const char *title, size_t value, const char *indent) {
     if (value)
     {

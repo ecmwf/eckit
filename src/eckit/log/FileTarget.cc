@@ -16,13 +16,19 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 FileTarget::FileTarget(const PathName &path):
-    out_( path.asString().c_str() )
+    out_( path.asString().c_str() ), deleteme_(path)
 {
     if(!out_)
         throw eckit::CantOpenFile(path.asString());
 }
 
 FileTarget::~FileTarget() {
+    std::cout << "\n\n\n"
+              << "Correctly called \"~FileTarget()\" for file \"" << deleteme_ << "\".\n"
+              << "Now uncomment line \"Main::initialise(argc,argv)\" in \"bug-ECKIT-175.cc\"\n"
+              << "and this message will no longer show."
+              << "\n\n\n"
+              << std::endl;
 }
 
 void FileTarget::write(const char* start, const char* end) {

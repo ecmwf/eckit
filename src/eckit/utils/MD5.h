@@ -89,7 +89,7 @@ private: // members
   typedef unsigned char *POINTER;
 
   /* UINT4 defines a four byte word */
-  typedef u_int32_t UINT4;
+  typedef uint32_t UINT4;
 
   /* MD5 context. */
   typedef struct {

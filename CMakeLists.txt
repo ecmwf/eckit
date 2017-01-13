@@ -28,30 +28,25 @@ ecbuild_declare_project()
 
 ecbuild_add_option( FEATURE EXPERIMENTAL
                     DEFAULT ON
-                    DESCRIPTION "Experimental features (not used in production)"
-                    PURPOSE "Enables MPI, MPISTUBS, ECKIT_MPI, ECKIT_MPISTUBS" )
+                    DESCRIPTION "Experimental features Armadillo, CUDA, MKL, ViennaCL (not used in production)" )
 
 ### eckit::mpi
 
 ecbuild_add_option( FEATURE MPI
                     DEFAULT ON
                     DESCRIPTION "Use system MPI libraries"
-                    PURPOSE "Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
 
 ### eckit::cmd
 
 ecbuild_add_option( FEATURE ECKIT_CMD
                     DESCRIPTION "Utilities for administration tools"
-                    PURPOSE "Build eckit_cmd library"
                     REQUIRED_PACKAGES "LEXYACC" )
 
 ### Eigen
 
 ecbuild_add_option( FEATURE EIGEN
-                    DESCRIPTION "Eigen support"
-                    TYPE RECOMMENDED
-                    PURPOSE "Eigen backend: accelerated dense and sparse matrix operations"
+                    DESCRIPTION "Eigen linear algebra library"
                     REQUIRED_PACKAGES Eigen3 )
 
 set_package_properties( Eigen3 PROPERTIES
@@ -70,8 +65,6 @@ endif()
 ecbuild_add_option( FEATURE ARMADILLO
                     CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "Armadillo linear algebra library"
-                    TYPE RECOMMENDED
-                    PURPOSE "Armadillo backend: accelerated dense matrix operations"
                     REQUIRED_PACKAGES Armadillo )
 
 set_package_properties( Armadillo PROPERTIES
@@ -89,27 +82,21 @@ ecbuild_add_option( FEATURE LAPACK
 
 ecbuild_add_option( FEATURE CUDA
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "CUDA GPU support"
-                    TYPE RECOMMENDED
-                    PURPOSE "CUDA backend: GPU linear algebra operations"
+                    DESCRIPTION "CUDA GPU linear algebra operations"
                     REQUIRED_PACKAGES CUDA )
 
 ### MKL
 
 ecbuild_add_option( FEATURE MKL
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "MKL support"
-                    TYPE RECOMMENDED
-                    PURPOSE "MKL backend: Accelerated linear algebra operations"
+                    DESCRIPTION "MKL linear algebra library"
                     REQUIRED_PACKAGES MKL )
 
 ### ViennaCL
 
 ecbuild_add_option( FEATURE VIENNACL
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "ViennaCL support for OpenCL"
-                    TYPE RECOMMENDED
-                    PURPOSE "ViennaCL backend: many-core linear algebra library"
+                    DESCRIPTION "ViennaCL OpenCL linear algebra operations"
                     REQUIRED_PACKAGES ViennaCL )
 
 set_package_properties( ViennaCL PROPERTIES

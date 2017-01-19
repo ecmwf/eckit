@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -28,12 +28,13 @@ typedef void (*channel_callback_t) (void* data, const char* msg);
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Output channel that is an std::ostream but more functional
-/// @todo consider merging Channel with MultiChannel
+
 class Channel : public std::ostream, private NonCopyable {
 
 public: // methods
 
     Channel(LogTarget* = 0);
+
     ~Channel();
 
     bool operator !() const;
@@ -65,11 +66,18 @@ private:
 };
 
 
+//----------------------------------------------------------------------------------------------------------------------
+
+
 class AutoIndent {
+
     Channel& channel_;
+
 public:
+
     AutoIndent(Channel& channel, const char* prefix = "") : channel_(channel) { channel_.indent(prefix); }
     ~AutoIndent() { channel_.unindent(); }
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

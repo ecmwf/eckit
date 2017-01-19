@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -17,7 +17,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Channel::Channel(LogTarget* target):
+Channel::Channel(LogTarget* target) :
     std::ostream(new ChannelBuffer()),
     buffer_(dynamic_cast<ChannelBuffer*>(rdbuf())) {
     ASSERT( buffer_ );

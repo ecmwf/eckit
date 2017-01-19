@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -301,6 +301,18 @@ void Log::addCallback(channel_callback_t cb, void* data) {
     std::vector<std::string> libs = eckit::system::Library::list();
     for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
         system::Library::lookup(*libname).debugChannel().addCallback(cb, data);
+    }
+}
+
+void Log::flush()
+{
+    info().flush();
+    warning().flush();
+    error().flush();
+    debug().flush();
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().flush();
     }
 }
 

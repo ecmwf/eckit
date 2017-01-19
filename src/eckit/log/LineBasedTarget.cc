@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -59,6 +59,8 @@ void LineBasedTarget::write(const char* start, const char* end) {
 }
 
 void LineBasedTarget::flush() {
+    // LineBasedTarget doesn't flush() since the concrete classes treat each line independently
+    // and upon write(), and often don't require further flushing
 }
 
 //----------------------------------------------------------------------------------------------------------------------

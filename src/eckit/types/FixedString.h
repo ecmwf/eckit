@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -62,9 +62,11 @@ public:
 
 	bool operator<=(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) <= 0; }
 
-    /// The number of characters in the stored string, excluding the termination character if the string is shorter
-    /// than SIZE.
+    /// The number of characters in the stored string,
+    /// excluding the termination character if the string is shorter than SIZE.
 	size_t length() const;
+
+    bool empty() const { return length() == 0; }
 
     std::string asString() const;
     

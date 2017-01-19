@@ -31,7 +31,7 @@ std::ostream& operator<<(std::ostream& s,const Point2& p)
 
 bool points_equal(const Point2 &a, const Point2 &b)
 {
-    return FloatCompare<double>::isApproximatelyEqual( Point2::distance2(a,b), 0.0 );
+    return eckit::types::is_approximately_equal<double>( Point2::distance2(a,b), 0.0 );
 }
 
 Point2::operator Value() const

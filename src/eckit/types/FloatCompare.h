@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -10,21 +10,23 @@
 
 /// @author Tiago Quintino
 /// @author Pedro Maciel
+/// @author Florian Rathgeber
 /// @date Jun 2015
 
-#ifndef eckit_FloatCompare_h
-#define eckit_FloatCompare_h
+#ifndef eckit_types_FloatCompare_h
+#define eckit_types_FloatCompare_h
 
 #include <limits>
 
 namespace eckit {
+namespace types {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Compare 2 floats with an absolute epsilon check (values near zero), then based on ULPs
 ///
 /// epsilon    : epsilon for floating-point absolute epsilon check (should be some
-///              small multiple of std::numeric_limits<T>::epsilon().
+///              small multiple of std::numeric_limits<T>::epsilon()).
 ///              Used to check values near zero
 /// maxUlpsDiff: maximum spacing between the floating-point numbers A and B
 ///              unit in the last place or unit of least precision. defaults to 10.
@@ -33,69 +35,81 @@ namespace eckit {
 ///              between A and B.
 ///
 /// Assumptions:
-///   * These functions *ignores* NAN, assumes we have enabled illegal operation exceptions,
-///     i.e so that you find out when you generate them.
-///   * Ignores infinities and overflow exceptions.
-///
+///   * Bit identical numbers are equal for any epsilon.
+///   * A NaN is different from any number (even another NaN).
+///   * Infinity is different from any number but infinity (with the same sign).
+///   * Subnormal numbers are treated as equal to 0
+///   * +/-std::numeric_limits<T>::min() has ULP distance 1 from 0
+///   * -std::numeric_limits<T>::min() has ULP distance 2 from std::numeric_limits<T>::min()
+///   * ULP distance from 0 is 1 + ULP distance from std::numeric_limits<T>::min() (for positive numbers)
 
+/// Compares values equality within a range defined by an epsilon and a
 /// This function only has specializations for double and float
-/// So it restricts the use of FloatCompare
 template< typename T >
-bool isApproxEqualUlps( T a, T b, T epsilon = std::numeric_limits<T>::epsilon(), int maxUlpsDiff = 10 );
+bool is_approximately_equal( T a, T b, T epsilon = std::numeric_limits<T>::epsilon(), int maxUlpsDiff = 10);
 
-
-/// Comparison class for Floating Point numbers
-/// Type T should be either float or double
+/// Compare values equality
 template< typename T >
-class FloatCompare {
-public:
+bool is_equal(const T& a,  const T& b)  { return (a == b); }
 
-    /// Compare values equality
-    static bool isEqual(const T& a,  const T& b)  { return (a == b); }
+/// Compare values inequality: "is greater or equal to"
+template< typename T >
+bool is_greater_or_equal(const T& a,  const T& b) { return (a >= b); }
 
-    /// Compare values inequality: "is greater or equal to"
-    static bool isGreaterEqual(const T& a,  const T& b) { return (a >= b); }
+/// Compare values inequality: "is greater or approximately equal to"
+template< typename T >
+bool is_approximately_greater_or_equal(const T& a,
+                                       const T& b,
+                                       T epsilon = std::numeric_limits<T>::epsilon(),
+                                       int maxUlpsDiff = 10)
+{
+    return (a >= b) || eckit::types::is_approximately_equal(a, b, epsilon, maxUlpsDiff);
+}
 
-    /// Compare values inequality: "is strictly greater than"
-    static bool isStrictlyGreater(const T& a,  const T& b)
-    {
-       return !isApproximatelyEqual(a, b) && a > b;
-    }
+/// Compare values inequality: "is less or approximately equal to"
+template< typename T >
+bool is_approximately_lesser_or_equal(const T& a,
+                                      const T& b,
+                                      T epsilon = std::numeric_limits<T>::epsilon(),
+                                      int maxUlpsDiff = 10)
+{
+    return (a <= b) || eckit::types::is_approximately_equal(a, b, epsilon, maxUlpsDiff);
+}
 
-    /// Compare values inequality: "is greater or approximately equal to"
-    static bool isApproximatelyGreaterOrEqual(const T& a,  const T& b) { return (a >= b) || isApproximatelyEqual(a,b); }
+/// Compare values inequality: "is strictly greater than"
+template< typename T >
+bool is_strictly_greater(const T& a,
+                         const T& b,
+                         T epsilon = std::numeric_limits<T>::epsilon(),
+                         int maxUlpsDiff = 10)
+{
+    return (a > b) && !eckit::types::is_approximately_equal(a, b, epsilon, maxUlpsDiff);
+}
 
-    /// Compare values equality, approximately
-    static bool isApproximatelyEqual( T a,
-                                      T b,
-                                      T epsilon = std::numeric_limits<float>::epsilon(),
-                                      int maxUlpsDiff = 10 ) { return isApproxEqualUlps(a,b,epsilon,maxUlpsDiff); }
 
-};
-
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Helper class that memorizes the comparison setttings
 template < typename T >
-class FloatApproxCompare {
+class CompareApproximatelyEqual {
 
 	T eps_;
 	int maxUlps_;
 
 public:
 
-	FloatApproxCompare( T eps = std::numeric_limits<T>::epsilon(), int maxUlps = 10 ) :
+    CompareApproximatelyEqual(T eps = std::numeric_limits<T>::epsilon(), int maxUlps = 10) :
 		eps_(eps),
 		maxUlps_(maxUlps)
 	{}
 
-        bool operator() ( const T& a,  const T& b) { return FloatCompare<T>::isApproximatelyEqual(a,b,eps_,maxUlps_); }
+    bool operator() (const T& a, const T& b) { return eckit::types::is_approximately_equal(a, b, eps_, maxUlps_); }
 
 };
 
-
 //----------------------------------------------------------------------------------------------------------------------
 
+} // namespace types
 } // namespace eckit
 
 #endif
-

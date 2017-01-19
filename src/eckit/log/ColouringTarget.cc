@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -17,7 +17,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ColouringTarget::ColouringTarget(LogTarget* target, ColouringTarget::colourproc begin, ColouringTarget::colourproc end) {
+ColouringTarget::ColouringTarget(LogTarget* target, ColouringTarget::colourproc begin, ColouringTarget::colourproc end) :
+    WrapperTarget(target) {
 
     std::ostringstream beginss;
     beginss << *begin;
@@ -26,6 +27,10 @@ ColouringTarget::ColouringTarget(LogTarget* target, ColouringTarget::colourproc 
     std::ostringstream endss;
     endss << *end;
     end_ = endss.str();
+}
+
+ColouringTarget::~ColouringTarget()
+{
 }
 
 void ColouringTarget::writePrefix() {

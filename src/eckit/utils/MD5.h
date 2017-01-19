@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -89,7 +89,7 @@ private: // members
   typedef unsigned char *POINTER;
 
   /* UINT4 defines a four byte word */
-  typedef u_int32_t UINT4;
+  typedef uint32_t UINT4;
 
   /* MD5 context. */
   typedef struct {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -75,6 +75,12 @@ void Buffer::copy(const std::string &s)
 void Buffer::copy(const char *p, size_t size)
 {
     ::memcpy(buffer_,p,size);
+}
+
+void Buffer::swap(Buffer& rhs) {
+    std::swap(buffer_, rhs.buffer_);
+    std::swap(size_, rhs.size_);
+    std::swap(owned_, rhs.owned_);
 }
 
 void eckit::Buffer::resize(size_t size)

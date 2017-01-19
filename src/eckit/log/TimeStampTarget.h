@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -26,6 +26,8 @@ class TimeStampTarget : public WrapperTarget {
 public:
 
     TimeStampTarget(const char* tag = "", LogTarget* target = 0);
+
+    virtual ~TimeStampTarget();
 
 private:
 

@@ -127,6 +127,9 @@ public:  // methods
     /// Gather methods to one root, variable data sizes per rank
     ///
 
+    template<typename Value>
+    void gatherv(const Value* sendbuf, size_t sendcount, Value* recvbuf, const int recvcounts[], const int displs[], size_t root) const;
+
     template<class CIter, class Iter>
     void gatherv(CIter first, CIter last, Iter rfirst, Iter rlast, const int recvcounts[], const int displs[], size_t root) const;
 
@@ -151,6 +154,9 @@ public:  // methods
     ///
     /// Scatter methods from one root, variable data sizes per rank, pointer to data (also covers scalar case)
     ///
+
+    template< typename Value >
+    void scatterv(const Value* sendbuf, const int sendcounts[], const int displs[], Value* recvbuf, int recvcount, size_t root) const;
 
     template<class CIter, class Iter>
     void scatterv(CIter first, CIter last, const int sendcounts[], const int displs[],
@@ -262,7 +268,7 @@ public:  // methods
     ///
     /// All to all of vector< vector<> >
     ///
-    
+
     template <typename T>
     void allToAll(const std::vector< std::vector<T> >& sendvec, std::vector< std::vector<T> >& recvvec) const;
 
@@ -478,6 +484,13 @@ void eckit::mpi::Comm::gather(const std::vector<T>& send, std::vector<T>& recv, 
 /// Gather methods to one root, variable data sizes per rank
 ///
 
+
+template<typename Value>
+void eckit::mpi::Comm::gatherv(const Value* sendbuf, size_t sendcount, Value* recvbuf, const int recvcounts[], const int displs[], size_t root) const  {
+
+  gatherv(sendbuf, sendcount, recvbuf, recvcounts, displs, Data::Type<Value>::code(), root);
+}
+
 template<class CIter, class Iter>
 void eckit::mpi::Comm::gatherv(CIter first, CIter last, Iter rfirst, Iter rlast, const int recvcounts[], const int displs[], size_t root) const {
 
@@ -545,6 +558,14 @@ void eckit::mpi::Comm::scatter(const std::vector<T>& send, std::vector<T>& recv,
 ///
 /// Scatter methods from one root, variable data sizes per rank, pointer to data (also covers scalar case)
 ///
+
+template< typename Value >
+void eckit::mpi::Comm::scatterv(const Value* sendbuf, const int sendcounts[], const int displs[], Value* recvbuf, int recvcount, size_t root) const {
+
+    size_t commsize = size();
+    ASSERT(root < commsize);
+    scatterv(sendbuf, sendcounts, displs, recvbuf, recvcount, Data::Type<Value>::code(), root);
+}
 
 template<class CIter, class Iter>
 void eckit::mpi::Comm::scatterv(CIter first, CIter last, const int sendcounts[], const int displs[], Iter rfirst, Iter rlast, size_t root) const {

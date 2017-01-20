@@ -15,10 +15,14 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 
-using namespace std;
+#include "eckit/testing/Setup.h"
+
 using namespace eckit;
+using namespace eckit::testing;
 
 //-----------------------------------------------------------------------------
+
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( test_eckit_resource )
 

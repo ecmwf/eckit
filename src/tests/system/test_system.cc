@@ -22,10 +22,14 @@
 #include "eckit/system/Library.h"
 #include "eckit/filesystem/LocalPathName.h"
 
-using namespace std;
+#include "eckit/testing/Setup.h"
+
 using namespace eckit;
+using namespace eckit::testing;
 
 //----------------------------------------------------------------------------------------------------------------------
+
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( test_eckit_resource_usage )
 
@@ -41,7 +45,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_resource_usage_0 )
 
         size_t after = system::ResourceUsage().maxResidentSetSize();
 
-        std::cout << "Memory usage " << after << std::endl;
+        BOOST_TEST_MESSAGE( "Memory usage " << after );
 
         BOOST_REQUIRE( before <= after );
     }

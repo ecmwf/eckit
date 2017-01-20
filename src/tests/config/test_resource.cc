@@ -21,39 +21,20 @@
 #include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"
 
-using namespace std;
+#include "eckit/testing/Setup.h"
+
 using namespace eckit;
+using namespace eckit::testing;
 
 //-----------------------------------------------------------------------------
 
-namespace eckit_test {
-
-struct TestFixture : public eckit::Tool {
-public:
-
-	TestFixture() : Tool( boost::unit_test::framework::master_test_suite().argc,
-						  boost::unit_test::framework::master_test_suite().argv )
-	{
-//		for( int i = 0; i <  boost::unit_test::framework::master_test_suite().argc; ++i )
-//			std::cout << "[" << boost::unit_test::framework::master_test_suite().argv[i] << "]" << std::endl;
-	}
-
-	virtual void run() {}
-};
-
-}
-
-//-----------------------------------------------------------------------------
-
-using namespace eckit_test;
-
-BOOST_GLOBAL_FIXTURE( TestFixture );
+BOOST_GLOBAL_FIXTURE( Setup );
 
 BOOST_AUTO_TEST_SUITE( test_eckit_resource )
 
 BOOST_AUTO_TEST_CASE( test_default )
 {
-    string s = Resource<string>("s","some");
+    std::string s = Resource<std::string>("s","some");
 
     BOOST_CHECK( s == "some" );
 
@@ -113,6 +94,8 @@ BOOST_AUTO_TEST_CASE( test_environment_var )
 
 BOOST_AUTO_TEST_CASE( test_config_file )
 {
+    // FIXME: re-enable this test
+
  //    ostringstream code;
 
  //    code << " buffer = 60 MB " << std::endl

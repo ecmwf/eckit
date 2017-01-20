@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_constructor )
     // perturb it a little
     Point delta(0.1, 0.1);
     Point testPoint = Point::add(refPoint, delta);
-    std::cout << "testPoint perturb " << testPoint.x(0) << ", " << testPoint.x(1) << std::endl;
+    BOOST_TEST_MESSAGE( "testPoint perturb " << testPoint.x(0) << ", " << testPoint.x(1) );
 
     Point nr = kd.nearestNeighbour(testPoint).point();
 
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_constructor )
         // make sure we differ by 0.5 along each axis
         for (unsigned int i = 0; i < Point::dimensions(); ++i)
         {
-            std::cout << "distance along point " << Point::distance(Point(0.0, 0.0), diff, i)  << std::endl;
+            BOOST_TEST_MESSAGE( "distance along point " << Point::distance(Point(0.0, 0.0), diff, i) );
             BOOST_CHECK_EQUAL(Point::distance(Point(0.0, 0.0), diff, i) , 0.5);
         }
 

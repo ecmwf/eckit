@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -12,7 +12,6 @@
 
 #include "ecbuild/boost_test_framework.h"
 
-#include "eckit/log/Log.h"
 #include "eckit/types/Types.h"
 #include "eckit/utils/RendezvousHash.h"
 #include "eckit/utils/Translator.h"
@@ -34,7 +33,7 @@ BOOST_AUTO_TEST_SUITE( test_eckit_rendezvous_hash )
 
 BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_constructor )
 {
-    Log::info() << Here() << std::endl;
+    BOOST_TEST_MESSAGE( Here() );
 
     std::set<std::string> nodes;
 
@@ -54,14 +53,14 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_constructor )
 
     std::string n = rendezvous.selectNode(dict);
 
-    Log::info() << n  << std::endl;
+    BOOST_TEST_MESSAGE( n );
 
     BOOST_CHECK_EQUAL( nodes.count(n), 1 );
 }
 
 BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_distribution )
 {
-    Log::info() << Here() << std::endl;
+    BOOST_TEST_MESSAGE( Here() );
 
     eckit::Translator<size_t,std::string> toStr;
 
@@ -115,12 +114,12 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_distribution )
 
     }
 
-    Log::info() << counts << std::endl;
+    BOOST_TEST_MESSAGE( counts );
 }
 
 BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_empty_dict )
 {
-    Log::info() << Here() << std::endl;
+    BOOST_TEST_MESSAGE( Here() );
 
     std::map<std::string, std::string> dict;
 
@@ -133,7 +132,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_empty_dict )
 
 BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_throws_empty_node_list )
 {
-    Log::info() << Here() << std::endl;
+    BOOST_TEST_MESSAGE( Here() );
 
     std::map<std::string, std::string> dict;
 
@@ -152,7 +151,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_throws_empty_node_list )
 
 BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_add_node )
 {
-    Log::info() << Here() << std::endl;
+    BOOST_TEST_MESSAGE( Here() );
 
     eckit::Translator<size_t,std::string> toStr;
 
@@ -197,7 +196,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_add_node )
         }
     }
 
-    Log::info() << counts << std::endl;
+    BOOST_TEST_MESSAGE( counts );
 
     std::map<std::string, size_t> counts2;
 
@@ -222,7 +221,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_add_node )
         }
     }
 
-    Log::info() << counts2 << std::endl;
+    BOOST_TEST_MESSAGE( counts2 );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

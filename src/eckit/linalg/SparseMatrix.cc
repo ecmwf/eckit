@@ -229,7 +229,7 @@ void SparseMatrix::load(const eckit::PathName &path)  {
 
 void SparseMatrix::dump(Buffer& buffer) const {
 
-    Length minimum = sizeof(SPMInfo) + sizeofData() + sizeofOuter() + sizeofInner();
+    size_t minimum = sizeof(SPMInfo) + sizeofData() + sizeofOuter() + sizeofInner();
     ASSERT( buffer.size() >= minimum);
 
     MemoryHandle mh(buffer);
@@ -249,9 +249,9 @@ void SparseMatrix::dump(Buffer& buffer) const {
 
     mh.write(&info, sizeof(SPMInfo));
 
-    ASSERT(mh.write(data_,  sizeofData())  == sizeofData());
-    ASSERT(mh.write(outer_, sizeofOuter()) == sizeofOuter());
-    ASSERT(mh.write(inner_, sizeofInner()) == sizeofInner());
+    ASSERT(mh.write(data_,  sizeofData())  == long(sizeofData()));
+    ASSERT(mh.write(outer_, sizeofOuter()) == long(sizeofOuter()));
+    ASSERT(mh.write(inner_, sizeofInner()) == long(sizeofInner()));
 }
 
 void SparseMatrix::swap(SparseMatrix &other) {

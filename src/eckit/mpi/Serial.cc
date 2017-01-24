@@ -96,7 +96,7 @@ private:
 
     Request registerRequest(SerialRequest* request) {
         ++n_;
-        if( n_ == requests_.size() ) n_ = 0;
+        if( size_t(n_) == requests_.size() ) n_ = 0;
         request->request_ = n_;
         Request r(request);
         requests_[n_] = r;

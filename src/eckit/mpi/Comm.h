@@ -439,13 +439,15 @@ void eckit::mpi::Comm::broadcast(Iter first, Iter last, size_t root) const {
 template<class CIter, class Iter>
 void eckit::mpi::Comm::gather(CIter first, CIter last, Iter rfirst, Iter rlast, size_t root) const {
 
-    size_t commsize = size();
+    typedef typename std::iterator_traits<CIter>::difference_type diff_t;
+
+    const size_t commsize = size();
     ASSERT(root < commsize);
 
-    typename std::iterator_traits<CIter>::difference_type sendcount = std::distance(first, last);
-    typename std::iterator_traits<CIter>::difference_type rsize = std::distance(rfirst, rlast);
+    const diff_t sendcount = std::distance(first, last);
+    const diff_t rsize = std::distance(rfirst, rlast);
     ASSERT(rsize % commsize == 0); /* receiving size is multiple of comm().size() */
-    size_t recvcount = rsize / commsize;
+    const diff_t recvcount = rsize / commsize;
     ASSERT(sendcount == recvcount);
 
     Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();

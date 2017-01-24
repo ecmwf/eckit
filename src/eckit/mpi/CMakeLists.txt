@@ -10,6 +10,7 @@ Request.cc
 Request.h
 Serial.cc
 Serial.h
+SerialData.h
 SerialStatus.cc
 SerialStatus.h
 SerialRequest.cc

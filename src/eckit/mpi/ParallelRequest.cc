@@ -15,9 +15,19 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+ParallelRequest::ParallelRequest() {
+}
+
+ParallelRequest::ParallelRequest(MPI_Request request) : request_(request) {
+}
+
 void ParallelRequest::print(std::ostream& os) const {
     os << "ParallelRequest("
        << ")";
+}
+
+int ParallelRequest::request() const {
+    return MPI_Request_c2f(request_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

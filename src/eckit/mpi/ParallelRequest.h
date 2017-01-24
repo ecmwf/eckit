@@ -24,9 +24,16 @@ class Parallel;
 
 class ParallelRequest : public RequestContent {
 
+private: // constructor
+
+    ParallelRequest();
+    ParallelRequest(MPI_Request);
+
 private: // methods
 
     virtual void print(std::ostream&) const;
+
+    virtual int request() const;
 
 private: // members
 

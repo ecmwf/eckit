@@ -485,13 +485,13 @@ BOOST_AUTO_TEST_CASE( test_nonblocking_send_receive )
 
   // Post a receive request
   if( comm.rank() == comm.size()-1 ) {
-    recvreq = comm.iReceive(recv,0,99);
+    recvreq = comm.iReceive(recv,0,tag);
   }
 
   // Post a send request
   if( comm.rank() == 0 ) {
     send = 0.5;
-    sendreq = comm.iSend(send,comm.size()-1,99);
+    sendreq = comm.iSend(send,comm.size()-1,tag);
   }
 
   // Wait for receiving to finish
@@ -523,25 +523,25 @@ BOOST_AUTO_TEST_CASE( test_blocking_send_receive )
   // Send1
   if( comm.rank() == 0 ) {
     send1 = 0.1;
-    comm.send(send1,comm.size()-1,99);
+    comm.send(send1,comm.size()-1,tag);
     send1 = 0.; // should not matter, as send() copies to internal mpi buffer
   }
 
   // Send2
   if( comm.rank() == 0 ) {
     send2 = 0.2;
-    comm.send(send2,comm.size()-1,99);
+    comm.send(send2,comm.size()-1,tag);
   }
 
   // Receive1
   if( comm.rank() == comm.size()-1 ) {
-    mpi::Status status = comm.receive(recv1,0,99);
+    mpi::Status status = comm.receive(recv1,0,tag);
     BOOST_CHECK_CLOSE(recv1,0.1,1.e-9);
   }
 
   // Receive2
   if( comm.rank() == comm.size()-1 ) {
-    mpi::Status status = comm.receive(recv2,0,99);
+    mpi::Status status = comm.receive(recv2,0,tag);
     BOOST_CHECK_CLOSE(recv2,0.2,1.e-9);
   }
 

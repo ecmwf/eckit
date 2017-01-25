@@ -392,9 +392,13 @@ struct FOpenDataHandle {
     DataHandle* handle_;
     const char* mode_;
     bool delete_on_close_;
+    Offset position_; // Keep track of position to cater for
 
     FOpenDataHandle(DataHandle* handle, const char* mode, bool delete_on_close):
-        handle_(handle), mode_(mode), delete_on_close_(delete_on_close) {
+        handle_(handle),
+        mode_(mode),
+        delete_on_close_(delete_on_close),
+        position_(0) {
 
 		bool ok = false;
 
@@ -419,7 +423,10 @@ struct FOpenDataHandle {
 static long readfn(void *data, char *buffer, long length) {
     try {
         FOpenDataHandle *fd = reinterpret_cast<FOpenDataHandle*>(data);
-        int len = fd->handle_->read(buffer, length);
+        long len = fd->handle_->read(buffer, length);
+        if(len > 0) {
+            fd->position_ += len;
+        }
         return (len == 0) ? -1 : len;
     }
     catch(std::exception& e) {
@@ -430,7 +437,11 @@ static long readfn(void *data, char *buffer, long length) {
 static long writefn(void *data, const char *buffer, long length){
     try{
         FOpenDataHandle *fd = reinterpret_cast<FOpenDataHandle*>(data);
-        return fd->handle_->write(buffer, length);
+        long len = fd->handle_->write(buffer, length);
+        if(len > 0) {
+            fd->position_ += len;
+        }
+        return len;
     }
     catch(std::exception& e) {
         return 0;
@@ -448,7 +459,7 @@ static long seekfn(void *data, long pos, int whence) {
                 break;
 
             case SEEK_CUR:
-                where = long(fd->handle_->position()) + pos;
+                where = long(fd->position_) + pos;
                 break;
 
             case SEEK_END:
@@ -459,7 +470,11 @@ static long seekfn(void *data, long pos, int whence) {
                 NOTIMP;
                 break;
         }
-        return fd->handle_->seek(where);
+        long w = fd->handle_->seek(where);
+        if(w >= 0) {
+            fd->position_ = w;
+        }
+        return w;
     }
     catch(std::exception& e) {
         return -1;

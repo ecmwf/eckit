@@ -443,7 +443,7 @@ long FOpenDataHandle::read(char *buffer, long length) {
         if(len > 0) {
             position_ += len;
         }
-        return (len == 0) ? -1 : len;
+        return len;
     }
     catch(std::exception& e) {
         return 0;
@@ -464,6 +464,7 @@ long FOpenDataHandle::write(const char *buffer, long length){
 }
 
 long FOpenDataHandle::seek(long pos, int whence) {
+
     try {
         long where = pos;
         switch(whence) {

@@ -10,6 +10,8 @@
 
 #include <cmath>
 
+#include "eckit/eckit_ecbuild_config.h"
+
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/io/DataHandle.h"
@@ -379,6 +381,133 @@ DataHandle* DataHandle::clone() const
     Log::error() << *this << std::endl;
     NOTIMP;
 }
+
 //-----------------------------------------------------------------------------
+
+#if defined(EC_HAVE_FOPENCOOKIE) || defined(EC_HAVE_FUNOPEN)
+
+struct FOpenDataHandle {
+
+    DataHandle* handle_;
+    const char* mode_;
+    bool delete_on_close_;
+
+    FOpenDataHandle(DataHandle* handle, const char* mode, bool delete_on_close):
+        handle_(handle), mode_(mode), delete_on_close_(delete_on_close) {}
+    ~FOpenDataHandle() {
+        if(delete_on_close_) {
+            delete handle_;
+        }
+    }
+};
+
+#ifdef EC_HAVE_FOPENCOOKIE
+
+
+FILE* DataHandle::fopen(const char* mode, bool delete_on_close) {
+    // typedef ssize_t
+    //  (cookie_read_function_t)(void *cookie, char *buf, size_t size);
+
+    //  typedef ssize_t
+    //  (cookie_write_function_t)(void *cookie, const char *buf, size_t size);
+
+    //  typedef int
+    //  (cookie_seek_function_t)(void *cookie, off64_t *offset, int whence);
+
+    //  typedef int
+    //  (cookie_close_function_t)(void *cookie);
+
+    //  typedef struct {
+    //      cookie_read_function_t  *read;
+    //      cookie_write_function_t *write;
+    //      cookie_seek_function_t  *seek;
+    //      cookie_close_function_t *close;
+    //  } cookie_io_functions_t;
+
+    //  FILE *
+    //  fopencookie(void *cookie, const char *mode,
+    //  cookie_io_functions_t io_funcs);
+        NOTIMP;
+
+}
+
+
+#else
+
+static int readfn(void *data, char *buffer, int length) {
+    try {
+        FOpenDataHandle *fd = reinterpret_cast<FOpenDataHandle*>(data);
+        int len = fd->handle_->read(buffer, length);
+        return (len == 0) ? -1 : len;
+    }
+    catch(std::exception& e) {
+        return 0;
+    }
+}
+
+static int writefn(void *data, const char *buffer, int length){
+    try{
+        FOpenDataHandle *fd = reinterpret_cast<FOpenDataHandle*>(data);
+        return fd->handle_->write(buffer, length);
+    }
+    catch(std::exception& e) {
+        return 0;
+    }
+}
+
+static fpos_t seekfn(void *data, fpos_t pos, int whence) {
+    try {
+        FOpenDataHandle *fd = reinterpret_cast<FOpenDataHandle*>(data);
+        fpos_t where = pos;
+        switch(whence) {
+
+            case SEEK_SET:
+                where = pos;
+                break;
+
+            case SEEK_CUR:
+                where = fpos_t(fd->handle_->position()) + pos;
+                break;
+
+            case SEEK_END:
+                where = fpos_t(fd->handle_->estimate()) - pos;
+                break;
+
+            default:
+                NOTIMP;
+                break;
+        }
+        return fd->handle_->seek(where);
+    }
+    catch(std::exception& e) {
+        return -1;
+    }
+}
+
+static int closefn(void *data) {
+    try {
+        FOpenDataHandle *fd = reinterpret_cast<FOpenDataHandle*>(data);
+        delete fd;
+        return 0;
+    }
+    catch(std::exception& e) {
+        return -1;
+    }
+}
+
+FILE* DataHandle::fopen(const char* mode, bool delete_on_close) {
+    return funopen(new FOpenDataHandle(this, mode, delete_on_close), &readfn, &writefn, &seekfn, &closefn);
+}
+
+#endif
+
+
+#else
+
+FILE* DataHandle::fopen(const char* mode, bool delete_on_close) {
+    NOTIMP;
+}
+
+#endif
 
 } // namespace eckit

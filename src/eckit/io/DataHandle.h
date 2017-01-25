@@ -14,6 +14,8 @@
 #ifndef eckit_DataHandle_h
 #define eckit_DataHandle_h
 
+#include <stdio.h>
+
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/filesystem/PathName.h"
@@ -91,6 +93,8 @@ public:
 
     virtual std::string name() const;
 
+    /// Create a FILE* from this handle
+    FILE* fopen(const char* mode, bool delete_on_close = false);
 
     /// Compare bytes
 	bool compare(DataHandle&);

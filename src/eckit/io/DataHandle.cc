@@ -509,15 +509,15 @@ FILE* DataHandle::fopen(const char* mode, bool delete_on_close) {
 #else
 
 static int _read(void *data, char *buffer, int length) {
-	return readfn(data, buf, size);
+	return readfn(data, buffer, length);
 }
 
 static int _write(void *data, const char *buffer, int length){
-	return writefn(data, buf, size);
+	return writefn(data, buffer, length);
 }
 
 static fpos_t _seek(void *data, fpos_t pos, int whence) {
-	return seekfn(data, offset, whence);
+	return seekfn(data, pos, whence);
 }
 
 static int _close(void *data) {

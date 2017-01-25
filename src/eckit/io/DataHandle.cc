@@ -93,7 +93,7 @@ void DataHandle::encode(Stream& s) const
 void DataHandle::flush()
 {
     std::ostringstream os;
-    os << "DataHandle::flush(" << *this << ")";
+    os << "DataHandle::flush() [" << *this << "]";
     throw NotImplemented(os.str(), Here());
 }
 
@@ -324,20 +324,20 @@ bool DataHandle::compare(DataHandle& other)
 
 Offset DataHandle::position() {
     std::ostringstream os;
-    os << "DataHandle::position(" << *this << ")";
+    os << "DataHandle::position() [" << *this << "]";
     throw NotImplemented(os.str(), Here());
 }
 
 void DataHandle::rewind() {
     std::ostringstream os;
-    os << "DataHandle::rewind(" << *this << ")";
+    os << "DataHandle::rewind() [" << *this << "]";
     throw NotImplemented(os.str(), Here());
 }
 
 Offset DataHandle::seek(const Offset& from)
 {
     std::ostringstream os;
-    os << "DataHandle::seek(" << *this << ")";
+    os << "DataHandle::seek(" << from << ") [" << *this << "]";
     throw NotImplemented(os.str(), Here());
 }
 
@@ -350,14 +350,14 @@ void DataHandle::skip(const Length& len)
 void DataHandle::restartReadFrom(const Offset& from)
 {
     std::ostringstream os;
-    os << "DataHandle::restartReadFrom(" << *this << ")";
+    os << "DataHandle::restartReadFrom(" << from << ") [" << *this << "]";
     throw NotImplemented(os.str(), Here());
 }
 
-void DataHandle::restartWriteFrom(const Offset&)
+void DataHandle::restartWriteFrom(const Offset& offset)
 {
     std::ostringstream os;
-    os << "DataHandle::restartWriteFrom(" << *this << ")";
+    os << "DataHandle::restartWriteFrom(" << offset << ") [" << *this << "]";
     throw NotImplemented(os.str(), Here());
 }
 
@@ -484,6 +484,11 @@ long FOpenDataHandle::seek(long pos, int whence) {
                 NOTIMP;
                 break;
         }
+
+        if(where == position_) {
+            return where;
+        }
+
         long w = handle_->seek(where);
         if(w >= 0) {
             position_ = w;

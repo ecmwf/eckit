@@ -21,6 +21,7 @@
 #include "eckit/log/Progress.h"
 #include "eckit/config/Resource.h"
 #include "eckit/log/Timer.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
@@ -393,48 +394,29 @@ struct FOpenDataHandle {
     bool delete_on_close_;
 
     FOpenDataHandle(DataHandle* handle, const char* mode, bool delete_on_close):
-        handle_(handle), mode_(mode), delete_on_close_(delete_on_close) {}
+        handle_(handle), mode_(mode), delete_on_close_(delete_on_close) {
+
+		bool ok = false;
+
+		if(::strcmp(mode, "r") == 0) { handle_->openForRead(); ok = true;}
+		if(::strcmp(mode, "w") == 0) { handle_->openForWrite(0); ok = true;}
+		if(::strcmp(mode, "a") == 0) { handle_->openForAppend(0); ok = true;}
+
+		ASSERT(ok);
+
+	}
+
     ~FOpenDataHandle() {
+
+	handle_->close();
+
         if(delete_on_close_) {
             delete handle_;
         }
     }
 };
 
-#ifdef EC_HAVE_FOPENCOOKIE
-
-
-FILE* DataHandle::fopen(const char* mode, bool delete_on_close) {
-    // typedef ssize_t
-    //  (cookie_read_function_t)(void *cookie, char *buf, size_t size);
-
-    //  typedef ssize_t
-    //  (cookie_write_function_t)(void *cookie, const char *buf, size_t size);
-
-    //  typedef int
-    //  (cookie_seek_function_t)(void *cookie, off64_t *offset, int whence);
-
-    //  typedef int
-    //  (cookie_close_function_t)(void *cookie);
-
-    //  typedef struct {
-    //      cookie_read_function_t  *read;
-    //      cookie_write_function_t *write;
-    //      cookie_seek_function_t  *seek;
-    //      cookie_close_function_t *close;
-    //  } cookie_io_functions_t;
-
-    //  FILE *
-    //  fopencookie(void *cookie, const char *mode,
-    //  cookie_io_functions_t io_funcs);
-        NOTIMP;
-
-}
-
-
-#else
-
-static int readfn(void *data, char *buffer, int length) {
+static long readfn(void *data, char *buffer, long length) {
     try {
         FOpenDataHandle *fd = reinterpret_cast<FOpenDataHandle*>(data);
         int len = fd->handle_->read(buffer, length);
@@ -445,7 +427,7 @@ static int readfn(void *data, char *buffer, int length) {
     }
 }
 
-static int writefn(void *data, const char *buffer, int length){
+static long writefn(void *data, const char *buffer, long length){
     try{
         FOpenDataHandle *fd = reinterpret_cast<FOpenDataHandle*>(data);
         return fd->handle_->write(buffer, length);
@@ -455,10 +437,10 @@ static int writefn(void *data, const char *buffer, int length){
     }
 }
 
-static fpos_t seekfn(void *data, fpos_t pos, int whence) {
+static long seekfn(void *data, long pos, int whence) {
     try {
         FOpenDataHandle *fd = reinterpret_cast<FOpenDataHandle*>(data);
-        fpos_t where = pos;
+        long where = pos;
         switch(whence) {
 
             case SEEK_SET:
@@ -466,11 +448,11 @@ static fpos_t seekfn(void *data, fpos_t pos, int whence) {
                 break;
 
             case SEEK_CUR:
-                where = fpos_t(fd->handle_->position()) + pos;
+                where = long(fd->handle_->position()) + pos;
                 break;
 
             case SEEK_END:
-                where = fpos_t(fd->handle_->estimate()) - pos;
+                where = long(fd->handle_->estimate()) - pos;
                 break;
 
             default:
@@ -495,8 +477,57 @@ static int closefn(void *data) {
     }
 }
 
+#ifdef EC_HAVE_FOPENCOOKIE
+
+static ssize_t _read(void *cookie, char *buf, size_t size) {
+	return readfn(cookie, buf, size);
+}
+
+static ssize_t _write(void *cookie, const char *buf, size_t size) {
+	return writefn(cookie, buf, size);
+}
+
+static int _seek(void *cookie, off64_t *offset, int whence) {
+	*offset =  seekfn(cookie, *offset, whence);
+	return *offset >= 0 ? 0 : -1;
+}
+
+static int _close(void *cookie) {
+	return closefn(cookie);
+}
+
 FILE* DataHandle::fopen(const char* mode, bool delete_on_close) {
-    return funopen(new FOpenDataHandle(this, mode, delete_on_close), &readfn, &writefn, &seekfn, &closefn);
+        ASSERT(sizeof(long) >= sizeof(size_t));
+        ASSERT(sizeof(long) >= sizeof(ssize_t));
+
+	cookie_io_functions_t f = {&_read, &_write, &_seek, &_close};
+	return  fopencookie(new FOpenDataHandle(this, mode, delete_on_close), mode, f);
+
+}
+
+
+#else
+
+static int _read(void *data, char *buffer, int length) {
+	return readfn(data, buf, size);
+}
+
+static int _write(void *data, const char *buffer, int length){
+	return writefn(data, buf, size);
+}
+
+static fpos_t _seek(void *data, fpos_t pos, int whence) {
+	return seekfn(data, offset, whence);
+}
+
+static int _close(void *data) {
+	return closefn(data);
+}
+
+
+FILE* DataHandle::fopen(const char* mode, bool delete_on_close) {
+    ASSERT(sizeof(long) >= sizeof(fpos_t));
+    return funopen(new FOpenDataHandle(this, mode, delete_on_close), &_read, &_write, &_seek, &_close);
 }
 
 #endif

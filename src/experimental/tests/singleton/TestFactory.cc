@@ -21,6 +21,12 @@ struct TestFactory::PImpl {
     typedef std::map<std::string,TestBuilder*> Store;
     Store register_;
 
+    ~PImpl() {
+        for(Store::iterator it = register_.begin(); it != register_.end(); ++it) {
+            delete it->second;
+        }
+    }
+
     void regist(const std::string& name, TestBuilder* builder)
     {
         std::cout << "registering builder [" << name << "]" << std::endl;

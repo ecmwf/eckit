@@ -34,7 +34,7 @@ SharedMemArray<T>::SharedMemArray(const PathName& path, const std::string& shmNa
 
 	AutoLock<Semaphore> lock(sem_);
 
-    typedef Padded<SharedMemArray<T>::Header,4096> PaddedHeader;
+    typedef Padded<typename SharedMemArray<T>::Header,4096> PaddedHeader;
 
     fd_ = ::shm_open(shmName_.c_str(), O_RDWR | O_CREAT, 0777);
 	if(fd_ < 0)

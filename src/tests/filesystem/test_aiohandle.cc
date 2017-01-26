@@ -14,10 +14,10 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/log/Log.h"
+#include "eckit/memory/ScopedPtr.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"
 
-using namespace std;
 using namespace eckit;
 
 namespace eckit {
@@ -41,13 +41,11 @@ public:
     void test_append();
 
     PathName path_;
-
 };
 
 
-void TestAIOHandle::test_write()
-{
-    DataHandle* aioh = new AIOHandle(path_);
+void TestAIOHandle::test_write() {
+    ScopedPtr<DataHandle> aioh(new AIOHandle(path_));
 
     aioh->openForWrite(0);
 
@@ -57,9 +55,7 @@ void TestAIOHandle::test_write()
 
     aioh->close();
 
-    delete aioh;
-
-    DataHandle* fh = path_.fileHandle();
+    ScopedPtr<DataHandle> fh(path_.fileHandle());
 
     fh->openForRead();
 
@@ -68,15 +64,12 @@ void TestAIOHandle::test_write()
     fh->read(buf2,buf2.size());
     fh->close();
 
-    delete fh;
-
-    ASSERT( buf == string(buf2) );
+    ASSERT( buf == std::string(buf2) );
 }
 
 
-void TestAIOHandle::test_append()
-{
-    DataHandle* aioh = new AIOHandle(path_);
+void TestAIOHandle::test_append() {
+    ScopedPtr<DataHandle> aioh(new AIOHandle(path_));
 
     aioh->openForAppend(0);
 
@@ -86,9 +79,7 @@ void TestAIOHandle::test_append()
 
     aioh->close();
 
-    delete aioh;
-
-    DataHandle* fh = path_.fileHandle();
+    ScopedPtr<DataHandle> fh(path_.fileHandle());
 
     fh->openForRead();
 
@@ -99,27 +90,22 @@ void TestAIOHandle::test_append()
     fh->read(buf2,buf2.size());
     fh->close();
 
-    delete fh;
-
-    ASSERT( buf == string(buf2) );
+    ASSERT( buf == std::string(buf2) );
 }
 
 
-void TestAIOHandle::setup()
-{
+void TestAIOHandle::setup() {
     std::string base = Resource<std::string>("$TMPDIR", "/tmp");
     path_ = PathName::unique( base + "/lolo" );
     path_ += ".dat";
 }
 
-void TestAIOHandle::teardown()
-{
+void TestAIOHandle::teardown() {
     path_.unlink();
 }
 
 
-void TestAIOHandle::run()
-{
+void TestAIOHandle::run() {
     setup();
 
     test_write();
@@ -138,4 +124,3 @@ int main(int argc,char **argv)
     eckit::test::TestAIOHandle app(argc,argv);
     return app.start();
 }
-

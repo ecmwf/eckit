@@ -441,7 +441,8 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_data_access ) {
     char* d = fs.data();
     const char* cd = fs.data();
 
-    BOOST_CHECK_EQUAL(d, cd);
+    // BOOST_CHECK_EQUAL does a string comparison for char*
+    BOOST_CHECK(d == cd);
 
     // Check that if we insert a \0 character appropriately, the accessible strings and lengths adjust correctly
 

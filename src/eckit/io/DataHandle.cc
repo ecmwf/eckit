@@ -551,12 +551,12 @@ static int _close(void *cookie) {
 	return closefn(cookie);
 }
 
-FILE* DataHandle::fopen(const char* mode, bool delete_on_close) {
+FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
         ASSERT(sizeof(long) >= sizeof(size_t));
         ASSERT(sizeof(long) >= sizeof(ssize_t));
 
 	cookie_io_functions_t f = {&_read, &_write, &_seek, &_close};
-	return  fopencookie(new FOpenDataHandle(this, mode, delete_on_close), mode, f);
+    return  ::fopencookie(new FOpenDataHandle(this, mode, delete_on_close), mode, f);
 
 }
 
@@ -578,16 +578,16 @@ static int _close(void *data) {
 	return closefn(data);
 }
 
-FILE* DataHandle::fopen(const char* mode, bool delete_on_close) {
+FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
     ASSERT(sizeof(long) >= sizeof(fpos_t));
-    return funopen(new FOpenDataHandle(this, mode, delete_on_close), &_read, &_write, &_seek, &_close);
+    return ::funopen(new FOpenDataHandle(this, mode, delete_on_close), &_read, &_write, &_seek, &_close);
 }
 
 #endif
 
 #else
 
-FILE* DataHandle::fopen(const char* mode, bool delete_on_close) {
+FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
     NOTIMP;
 }
 

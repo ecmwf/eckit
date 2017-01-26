@@ -94,7 +94,7 @@ public:
     virtual std::string name() const;
 
     /// Create a FILE* from this handle
-    FILE* fopen(const char* mode, bool delete_on_close = false);
+    FILE* openf(const char* mode, bool delete_on_close = false);
 
     /// Compare bytes
 	bool compare(DataHandle&);

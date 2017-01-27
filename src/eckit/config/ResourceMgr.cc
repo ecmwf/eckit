@@ -12,14 +12,16 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
-#include "eckit/thread/Mutex.h"
+#include "eckit/thread/StaticMutex.h"
 #include "eckit/config/ResourceMgr.h"
 
 #include <map>
 
 namespace eckit {
 
-static Mutex mutex;
+//----------------------------------------------------------------------------------------------------------------------
+
+static StaticMutex smutex;
 
 // this should be a member of ResourceMgr
 // it will be when I have tamed the xlC
@@ -32,17 +34,23 @@ bool ResourceMgr::inited_ = false;
 
 void ResourceMgr::reset()
 {
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<StaticMutex> lock(smutex);
     resmap.clear();
     inited_ = false;
 }
 
 // This has to be redone
 
+static const char* skip_spaces(const char* p) {
+    while (*p && isspace(*p)) p++;
+    return p;
+}
+
 bool ResourceMgr::parse(const char* p)
 {
-    while (*p && isspace(*p)) p++;
-    if (*p == 0 || *p == '#') return true;
+    p = skip_spaces(p);
+
+    if (*p == 0 || *p == '#') return true; // skip comments
 
     std::string s[3];
     int n = 0;
@@ -51,11 +59,11 @@ bool ResourceMgr::parse(const char* p)
     {
         const char *q = p;
 
-        while (*p && isspace(*p)) p++;
+        p = skip_spaces(p);
         while (*p && *p != ':' && *p != '.' && !isspace(*p) ) p++;
 
         int len = p - q;
-        while (*p && isspace(*p)) p++;
+        p = skip_spaces(p);
 
         s[n] = q; s[n].resize(len); n++;
 
@@ -74,8 +82,7 @@ bool ResourceMgr::parse(const char* p)
         }
 
         p++;
-        // skip blanks
-        while (*p && isspace(*p)) p++;
+        p = skip_spaces(p);
 
         // Remove trailing blanks
         int l = strlen(p) - 1;
@@ -115,7 +122,7 @@ void ResourceMgr::readConfigFile(const LocalPathName& file)
 
 void ResourceMgr::set(const std::string& name, const std::string& value)
 {
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<StaticMutex> lock(smutex);
     std::string s = name + ": " + value;
     if (!parse(s.c_str()))
         Log::warning() << "Failed to parse " << s << std::endl;
@@ -124,8 +131,7 @@ void ResourceMgr::set(const std::string& name, const std::string& value)
 bool ResourceMgr::lookUp(const std::string& kind, const std::string& owner,
                          const std::string& name, std::string& result)
 {
-
-    AutoLock<Mutex> lock(mutex);
+    AutoLock<StaticMutex> lock(smutex);
 
     if (!inited_)
     {
@@ -166,7 +172,7 @@ bool ResourceMgr::lookUp(const std::string& kind, const std::string& owner,
 
 }
 
-//=======================================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 ResourceQualifier::ResourceQualifier(const std::string& kind,
                                      const std::string& owner, const std::string& name):
@@ -196,6 +202,8 @@ int ResourceQualifier::operator<(const ResourceQualifier& other) const
     return strcmp(buf1, buf2) < 0;
 }
 
-}
+//----------------------------------------------------------------------------------------------------------------------
+
+} // namespace eckit
 
 

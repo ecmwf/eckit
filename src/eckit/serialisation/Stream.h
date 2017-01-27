@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -211,6 +211,12 @@ private:
     friend class BufferedWriter<Stream>;
     friend class BufferedReader<Stream>;
     friend class IOBuffer<Stream>;
+
+    friend std::ostream& operator<<(std::ostream& out, const Stream& s) {
+        s.print(out);
+        return out;
+    }
+
 };
 
 

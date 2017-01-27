@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -441,7 +441,8 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_data_access ) {
     char* d = fs.data();
     const char* cd = fs.data();
 
-    BOOST_CHECK_EQUAL(d, cd);
+    // BOOST_CHECK_EQUAL does a string comparison for char*
+    BOOST_CHECK(d == cd);
 
     // Check that if we insert a \0 character appropriately, the accessible strings and lengths adjust correctly
 
@@ -456,6 +457,27 @@ BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_data_access ) {
     d[4] = 'F';
     BOOST_CHECK_EQUAL(std::string(fs), "1234F6");
     BOOST_CHECK_EQUAL(fs.length(), 6);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_types_fixedstring_reassign_shorter_string ) {
+
+    ///< @see ECKIT-182
+
+    FixedString<64> fs;
+
+    fs = std::string("calvin");
+
+    BOOST_CHECK_EQUAL(fs, std::string("calvin")); /* this worked */
+
+    fs = std::string("calvin & hobbes");
+
+    BOOST_CHECK_EQUAL(fs, std::string("calvin & hobbes")); /* assinging longer string also worked */
+
+    fs = std::string("susie");
+
+    BOOST_CHECK_EQUAL(fs, std::string("susie")); /* but then assigning shorter did not, resulted "susien & hobbes" */
 }
 
 //----------------------------------------------------------------------------------------------------------------------

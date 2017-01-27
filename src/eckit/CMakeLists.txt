@@ -41,8 +41,9 @@ container/BSPTree.h
 
 container/MappedArray.h
 container/MappedArray.cc
-container/SimpleMappedArray.cc
-container/SimpleMappedArray.h
+
+container/SharedMemArray.h
+container/SharedMemArray.cc
 
 container/sptree/SPIterator.h
 container/sptree/SPNode.h
@@ -192,22 +193,22 @@ filesystem/marsfs/MarsFSClient.h
 filesystem/marsfs/MarsFSClient.cc )
 
 list( APPEND eckit_thread_srcs
-thread/Mutex.h
-thread/Mutex.cc
-thread/MutexCond.h
-thread/MutexCond.cc
-thread/AutoLock.h
-thread/AutoLocker.h
-thread/AutoLocker.cc#include "eckit/log/Channel.h"
-
-thread/Thread.h
-thread/Thread.cc
-thread/ThreadControler.h
-thread/ThreadControler.cc
-thread/ThreadPool.h
-thread/ThreadPool.cc
-thread/ThreadSingleton.h
-thread/Once.h )
+    thread/AutoLock.h
+    thread/Mutex.cc
+    thread/Mutex.h
+    thread/MutexCond.cc
+    thread/MutexCond.h
+    thread/Once.h
+    thread/StaticMutex.cc
+    thread/StaticMutex.h
+    thread/Thread.cc
+    thread/Thread.h
+    thread/ThreadControler.cc
+    thread/ThreadControler.h
+    thread/ThreadPool.cc
+    thread/ThreadPool.h
+    thread/ThreadSingleton.h
+)
 
 list( APPEND eckit_config_srcs
 config/Configurable.cc
@@ -301,10 +302,6 @@ log/FileTarget.h
 log/FileTarget.cc
 log/Log.h
 log/Log.cc
-# log/MonitorChannel.h
-# log/MonitorChannel.cc
-# log/MultiChannel.h
-# log/MultiChannel.cc
 log/OStreamHandle.h
 log/Plural.h
 log/Progress.h
@@ -321,6 +318,8 @@ log/LogTarget.h
 log/LogTarget.cc
 log/Timer.h
 log/Timer.cc
+log/ResourceUsage.h
+log/ResourceUsage.cc
 log/TimeStamp.h
 log/TimeStamp.cc
 log/UserChannel.h
@@ -418,6 +417,8 @@ os/Stat.h
 os/System.h
 os/System.cc
 os/AutoUmask.h
+os/SemLocker.h
+os/SemLocker.cc
 os/Semaphore.h
 os/Semaphore.cc
 os/SignalHandler.h
@@ -486,6 +487,8 @@ utils/MD5.h
 utils/MD5.cc
 utils/Regex.h
 utils/Regex.cc
+utils/RendezvousHash.h
+utils/RendezvousHash.cc
 utils/HyperCube.h
 utils/HyperCube.cc
 utils/RLE.h
@@ -586,10 +589,10 @@ endforeach()
 
 list( APPEND eckit_templates
 					container/CacheLRU.cc
-					container/BTree.cc
-					container/MappedArray.cc
-					container/SimpleMappedArray.cc
-					container/bsptree/BSPNode.cc
+                    container/BTree.cc
+                    container/MappedArray.cc
+                    container/SharedMemArray.cc
+                    container/bsptree/BSPNode.cc
 					container/kdtree/KDNode.cc
 					container/sptree/SPNode.cc
 					filesystem/BasePathNameT.cc

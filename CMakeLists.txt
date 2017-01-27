@@ -14,7 +14,7 @@ include( ecbuild_system NO_POLICY_SCOPE )
 
 ecbuild_requires_macro_version( 2.4 )
 
-set( PERSISTENT_NAMESPACE eckit CACHE INTERNAL "" )
+set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
 ###############################################################################
 # local project
@@ -28,30 +28,25 @@ ecbuild_declare_project()
 
 ecbuild_add_option( FEATURE EXPERIMENTAL
                     DEFAULT ON
-                    DESCRIPTION "Experimental features (not used in production)"
-                    PURPOSE "Enables MPI, MPISTUBS, ECKIT_MPI, ECKIT_MPISTUBS" )
+                    DESCRIPTION "Experimental features Armadillo, CUDA, MKL, ViennaCL (not used in production)" )
 
 ### eckit::mpi
 
 ecbuild_add_option( FEATURE MPI
                     DEFAULT ON
                     DESCRIPTION "Use system MPI libraries"
-                    PURPOSE "Support for MPI distributed parallelism"
                     REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
 
 ### eckit::cmd
 
 ecbuild_add_option( FEATURE ECKIT_CMD
                     DESCRIPTION "Utilities for administration tools"
-                    PURPOSE "Build eckit_cmd library"
                     REQUIRED_PACKAGES "LEXYACC" )
 
 ### Eigen
 
 ecbuild_add_option( FEATURE EIGEN
-                    DESCRIPTION "Eigen support"
-                    TYPE RECOMMENDED
-                    PURPOSE "Eigen backend: accelerated dense and sparse matrix operations"
+                    DESCRIPTION "Eigen linear algebra library"
                     REQUIRED_PACKAGES Eigen3 )
 
 set_package_properties( Eigen3 PROPERTIES
@@ -70,8 +65,6 @@ endif()
 ecbuild_add_option( FEATURE ARMADILLO
                     CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "Armadillo linear algebra library"
-                    TYPE RECOMMENDED
-                    PURPOSE "Armadillo backend: accelerated dense matrix operations"
                     REQUIRED_PACKAGES Armadillo )
 
 set_package_properties( Armadillo PROPERTIES
@@ -81,54 +74,29 @@ set_package_properties( Armadillo PROPERTIES
 
 ### LAPACK
 
-if( NOT ( BUILD_SITE MATCHES "cc[abt].*" ) )
-  ecbuild_add_option( FEATURE LAPACK
-                      DESCRIPTION "Linear Algebra PACKage"
-                      REQUIRED_PACKAGES "PROJECT LAPACK" )
-  if( HAVE_LAPACK )
-    if( TARGET lapack )
-      ecbuild_debug( "LAPACK found as CMake target lapack" )
-      set( LAPACK_LIBRARIES lapack )
-    endif()
-  endif()
-  ecbuild_debug_var( LAPACK_LIBRARIES )
-# Don't search for LAPACK on cc[abt] as it is provided by the cray-libsci module
-# which is loaded by default
-else()
-  set( _cray_libsci_loaded $ENV{CRAY_LIBSCI_DIR} )
-  ecbuild_add_option( FEATURE LAPACK
-                      CONDITION _cray_libsci_loaded
-                      DESCRIPTION "Linear Algebra PACKage")
-  if( HAVE_LAPACK )
-    ecbuild_debug( "LAPACK found, already loaded as part of Cray's libsci" )
-  endif()
-endif()
+ecbuild_add_option( FEATURE LAPACK
+                    DESCRIPTION "Linear Algebra PACKage"
+                    REQUIRED_PACKAGES "LAPACK" )
 
 ### CUDA
 
 ecbuild_add_option( FEATURE CUDA
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "CUDA GPU support"
-                    TYPE RECOMMENDED
-                    PURPOSE "CUDA backend: GPU linear algebra operations"
+                    DESCRIPTION "CUDA GPU linear algebra operations"
                     REQUIRED_PACKAGES CUDA )
 
 ### MKL
 
 ecbuild_add_option( FEATURE MKL
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "MKL support"
-                    TYPE RECOMMENDED
-                    PURPOSE "MKL backend: Accelerated linear algebra operations"
+                    DESCRIPTION "MKL linear algebra library"
                     REQUIRED_PACKAGES MKL )
 
 ### ViennaCL
 
 ecbuild_add_option( FEATURE VIENNACL
                     CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "ViennaCL support for OpenCL"
-                    TYPE RECOMMENDED
-                    PURPOSE "ViennaCL backend: many-core linear algebra library"
+                    DESCRIPTION "ViennaCL OpenCL linear algebra operations"
                     REQUIRED_PACKAGES ViennaCL )
 
 set_package_properties( ViennaCL PROPERTIES

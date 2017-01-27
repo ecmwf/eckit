@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -43,12 +43,7 @@ public: // types
 
 public: // methods
 
-    static void registerChannel(const std::string& key, Channel* channel);
-    static void removeChannel(const std::string& key);
-    static Channel& channel(const std::string& key);
-
     /// Channel for debug output
-
     static Channel& debug();
 
     /// Channel for informative messages
@@ -92,7 +87,6 @@ public: // methods
         return T::instance().debugChannel();
     }
 
-
     static void setStream(std::ostream& out);
     static void addStream(std::ostream& out);
 
@@ -102,6 +96,7 @@ public: // methods
     static void setCallback(channel_callback_t cb, void* data = 0);
     static void addCallback(channel_callback_t cb, void* data = 0);
 
+    static void flush();
     static void reset();
 
 
@@ -109,9 +104,6 @@ private: // methods
 
     Log();   ///< Private, non-instanciatable class
     ~Log();  ///< Private, non-instanciatable class
-
-
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

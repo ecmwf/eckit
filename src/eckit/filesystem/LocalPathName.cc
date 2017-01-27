@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -38,7 +38,7 @@
 #include "eckit/types/Types.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/thread/Once.h"
+#include "eckit/thread/StaticMutex.h"
 #include "eckit/utils/Regex.h"
 
 namespace eckit {
@@ -57,7 +57,7 @@ static void readPathsTable() {
     // eckit::Log::info() << "Loading library paths from " << path << std::endl;
 
     if (!in) {
-        eckit::Log::error() << path << eckit::Log::syserr << std::endl;
+        // eckit::Log::error() << path << eckit::Log::syserr << std::endl;
         return;
     }
 
@@ -96,7 +96,7 @@ static void readPathsTable() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static Once<Mutex> local_mutex;
+static StaticMutex local_mutex;
 
 // I need to come back here when we have a proper std::string class
 
@@ -206,7 +206,7 @@ bool LocalPathName::available() const
 
 LocalPathName LocalPathName::cwd()
 {
-    AutoLock<Mutex> lock(local_mutex);
+    AutoLock<StaticMutex> lock(local_mutex);
     char buf [PATH_MAX+1];
 	if(!getcwd(buf, sizeof(buf)))
 		throw FailedSystemCall("getcwd");
@@ -215,7 +215,7 @@ LocalPathName LocalPathName::cwd()
 
 LocalPathName LocalPathName::unique(const LocalPathName& path)
 {
-    AutoLock<Mutex> lock(local_mutex);
+    AutoLock<StaticMutex> lock(local_mutex);
 
     char hostname[256];
     SYSCALL(::gethostname(hostname, sizeof(hostname)));

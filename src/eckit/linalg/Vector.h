@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -10,6 +10,8 @@
 
 /// @file   Vector.h
 /// @author Florian Rathgeber
+/// @author Pedro Maciel
+/// @author Tiago Quintino
 /// @date   June 2015
 
 #ifndef eckit_linalg_Vector_h
@@ -24,11 +26,15 @@ class Stream;
 namespace eckit {
 namespace linalg {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-// TODO: provide a const view
+/// Vector for Linear Algebra operations
+///
+/// @todo provide a const view
+///
 class Vector {
-public:  // methods
+
+public: // methods
 
     // -- Constructors
 
@@ -47,7 +53,6 @@ public:  // methods
     /// Copy constructor
     Vector(const Vector&);
 
-    // TODO: make virtual if used as base class
     ~Vector();
 
     // -- Mutators
@@ -99,24 +104,18 @@ public:  // methods
 
 protected:  // member variables
 
-    /// Container
-    Scalar* array_;
+    Scalar* array_;  ///< Container
 
-    /// Vector length/size
-    Size length_;
+    Size length_;    ///< Vector length/size
 
-    /// Indicate ownership
-    bool own_;
-
+    bool own_;       ///< do we own the memory allocated in the container ?
 };
-
-//-----------------------------------------------------------------------------
 
 Stream& operator<<(Stream&, const Vector&);
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace linalg
+} // namespace linalg
 } // namespace eckit
 
 #endif

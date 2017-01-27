@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -15,10 +15,14 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 
-using namespace std;
+#include "eckit/testing/Setup.h"
+
 using namespace eckit;
+using namespace eckit::testing;
 
 //-----------------------------------------------------------------------------
+
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( test_eckit_resource )
 

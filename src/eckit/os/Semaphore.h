@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -8,32 +8,26 @@
  * does it submit to any jurisdiction.
  */
 
-// File Semaphore.h
-// Baudouin Raoult - ECMWF May 96
+/// @author Baudouin Raoult
+/// @date   May 1996
 
-#ifndef eckit_Semaphore_h
-#define eckit_Semaphore_h
+#ifndef eckit_os_Semaphore_h
+#define eckit_os_Semaphore_h
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/filesystem/PathName.h"
 
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Semaphore : private NonCopyable {
 
 public: // methods
 
-    /// Contructors
-
     Semaphore(const PathName& name,int count = 1);
-
-    /// Destructor
 
     ~Semaphore();
 
@@ -60,7 +54,7 @@ protected: // members
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

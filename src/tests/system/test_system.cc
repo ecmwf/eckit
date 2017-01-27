@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -22,10 +22,14 @@
 #include "eckit/system/Library.h"
 #include "eckit/filesystem/LocalPathName.h"
 
-using namespace std;
+#include "eckit/testing/Setup.h"
+
 using namespace eckit;
+using namespace eckit::testing;
 
 //----------------------------------------------------------------------------------------------------------------------
+
+BOOST_GLOBAL_FIXTURE(Setup);
 
 BOOST_AUTO_TEST_SUITE( test_eckit_resource_usage )
 
@@ -41,7 +45,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_resource_usage_0 )
 
         size_t after = system::ResourceUsage().maxResidentSetSize();
 
-        std::cout << "Memory usage " << after << std::endl;
+        ::free(m);
+
+        BOOST_TEST_MESSAGE( "Memory usage " << after );
 
         BOOST_REQUIRE( before <= after );
     }
@@ -70,9 +76,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_system_library )
 
         const Library& lib = Library::lookup(*libname);
 
-        BOOST_CHECK_NO_THROW( lib.path() );
+        BOOST_CHECK_NO_THROW( lib.etcDirectory() );
 
-        eckit::Log::info() << "Library " << lib.name() << " @ " << lib.path() << std::endl;
+        eckit::Log::info() << "Library " << lib.name() << " @ " << lib.etcDirectory() << std::endl;
     }
 }
 

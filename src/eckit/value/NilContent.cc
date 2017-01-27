@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -19,7 +19,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-ClassSpec NilContent::classSpec_ = {&Content::classSpec(),"NilContent",};
+ClassSpec NilContent::classSpec_ = {&Content::classSpec(), "NilContent",};
 Reanimator<NilContent> NilContent::reanimator_;
 
 
@@ -114,6 +114,10 @@ Content* NilContent::divNil(const NilContent&) const
 Content* NilContent::mod(const Content& other) const
 {
     return other.divNil(*this);
+}
+
+bool NilContent::contains(const Value&) const {
+    return false;
 }
 
 //-----------------------------------------------------------------------------

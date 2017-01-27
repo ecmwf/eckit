@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -10,17 +10,15 @@
 
 #include <cstdio>
 #include <errno.h>
-
 #include <sys/sem.h>
 
 #include "eckit/os/Semaphore.h"
 
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 struct sembuf _lock[] = {
 	{ 0, 0,  SEM_UNDO }, /* test */
@@ -47,8 +45,8 @@ Semaphore::Semaphore(const PathName& name,int count):
 	if(key == key_t(-1))
 		throw FailedSystemCall(std::string("ftok(") + name + std::string(")"));
 
-    /// @note cannot use Log::debug() of SYSCALL here, because Log is not yet initialized
-	// std::cout << "Creating semaphore path=" << name << ", count=" << count << ", key=" << hex << key << dec << std::endl; 
+    /// @note cannot use Log::debug() of SYSCALL here, because Log may not yet be initialized
+    // std::cout << "Creating semaphore path=" << name << ", count=" << count << ", key=" << hex << key << dec << std::endl;
 	if( (semaphore_ = semget(key, count_, 0666 | IPC_CREAT)) < 0 )
         perror("semget failed"), throw FailedSystemCall("semget");
 }
@@ -94,8 +92,6 @@ bool Semaphore::test(short unsigned int n)
 		return true;  // in use
 
 	throw FailedSystemCall("semop test");
-
-	return false;
 }
 
 pid_t  Semaphore::getpid() const
@@ -130,7 +126,7 @@ void Semaphore::lower(short unsigned int n)
 	SYSCALL(semop(semaphore_,&op,1));
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

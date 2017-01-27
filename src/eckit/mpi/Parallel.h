@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -91,13 +91,13 @@ protected:  // methods
 
     virtual Status status() const    { return createStatus(); }
 
-    virtual Request request() const  { return createRequest(); }
+    virtual Request request(int) const;
+
+    virtual int communicator() const;
 
     static Status  createStatus();
 
     static MPI_Status* toStatus(Status&);
-
-    static Request createRequest();
 
     static MPI_Request* toRequest(Request&);
 

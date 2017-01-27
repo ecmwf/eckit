@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -20,14 +20,13 @@
 #include "eckit/linalg/Vector.h"
 #include "util.h"
 
-//-----------------------------------------------------------------------------
-
 using namespace eckit::linalg;
 
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
 template <typename T>
 void test(const T& v, const T& r) {
     BOOST_CHECK_EQUAL(v.rows(), r.rows());
@@ -60,11 +59,13 @@ void stream_test(const T& t) {
     }
     if (filename.exists()) filename.unlink();
 }
-//-----------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Test linear algebra interface
 
 BOOST_AUTO_TEST_SUITE(test_eckit_la_streaming)
+
 BOOST_AUTO_TEST_CASE(test_stream_vector) {
     stream_test(V(5, 1., 2., 3., 4., 5.));
 }
@@ -74,18 +75,22 @@ BOOST_AUTO_TEST_CASE(test_stream_matrix) {
 }
 
 BOOST_AUTO_TEST_CASE(test_stream_sparsematrix) {
-    SparseMatrix S(3, 3);
+
     std::vector<Triplet> triplets;
+
     triplets.push_back(Triplet(0, 0, 2.));
     triplets.push_back(Triplet(0, 2, -3.));
     triplets.push_back(Triplet(1, 1, 2.));
     triplets.push_back(Triplet(2, 2, 2.));
-    S.setFromTriplets(triplets);
-    stream_test(S);
+
+    SparseMatrix smat(3, 3, triplets);
+
+    stream_test(smat);
 }
+
 BOOST_AUTO_TEST_SUITE_END()
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
+} // namespace test
 } // namespace eckit

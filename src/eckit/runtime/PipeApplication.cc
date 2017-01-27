@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,6 +8,8 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <fcntl.h>
+#include <unistd.h>
 #include <sys/resource.h>
 
 #include "eckit/config/Resource.h"
@@ -36,7 +38,7 @@ PipeApplication::PipeApplication(int argc, char** argv, const char* homeenv):
     Monitor::instance().parent(parent);
 
     // If we fork, avoid childs having the pipe open
-    SYSCALL(fcntl(in_, F_SETFD, FD_CLOEXEC));
+    SYSCALL(fcntl(in_,  F_SETFD, FD_CLOEXEC));
     SYSCALL(fcntl(out_, F_SETFD, FD_CLOEXEC));
 }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -21,8 +21,7 @@
 #include "eckit/runtime/Tool.h"
 
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
-#include "eckit/thread/Once.h"
+#include "eckit/thread/StaticMutex.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 
@@ -34,11 +33,11 @@ namespace eckit_test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static Once<Mutex> local_mutex;
+static StaticMutex static_mutex;
 
 static void callback_logger( void* ctxt, const char* msg )
 {
-    AutoLock<Mutex> lock(local_mutex); ///< usually global resources like this need to be protected by local_mutex
+    AutoLock<StaticMutex> lock(static_mutex); ///< usually global resources like this need to be protected by mutex
 
     std::cout << "[TEST] -- " << msg ;
 }

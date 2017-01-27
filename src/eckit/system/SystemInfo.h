@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -25,6 +25,14 @@ namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+struct Mem {
+    size_t resident_size_;
+    size_t virtual_size_;
+    Mem(size_t resident_size, size_t virtual_size):
+        resident_size_(resident_size),
+        virtual_size_(virtual_size) {}
+};
+
 class SystemInfo : private eckit::NonCopyable {
 
 public: // methods
@@ -34,6 +42,9 @@ public: // methods
     static const SystemInfo& instance();
 
     virtual eckit::LocalPathName executablePath() const = 0;
+
+    virtual size_t memoryAllocated() const = 0;
+    virtual Mem memoryUsage() const = 0;
 
 protected: // methods
 

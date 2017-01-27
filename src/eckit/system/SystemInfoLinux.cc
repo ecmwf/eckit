@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -13,6 +13,9 @@
 /// @date   May 2016
 
 #include <unistd.h>
+#include <malloc.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include <climits>
 #include <cstdlib>
@@ -37,6 +40,16 @@ LocalPathName SystemInfoLinux::executablePath() const
 	ssize_t size = SYSCALL(::readlink("/proc/self/exe", buffer, buffer.size()));
     std::string path(buffer, size);
     return LocalPathName(path).realName();
+}
+
+Mem SystemInfoLinux::memoryUsage() const {
+    struct rusage usage;
+    SYSCALL(getrusage(RUSAGE_SELF, &usage));
+    return Mem(usage.ru_maxrss * 1024, 0) ;
+}
+
+size_t SystemInfoLinux::memoryAllocated() const {
+    return mallinfo().uordblks;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

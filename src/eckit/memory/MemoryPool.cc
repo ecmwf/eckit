@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -15,29 +15,28 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/MemoryPool.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static pthread_mutex_t the_lock;
 
 static void get_lock()
 {
-    //cout << pthread_self() << " get_lock" << std::endl;
+    // std::cout << pthread_self() << " get_lock" << std::endl;
 	pthread_mutex_lock(&the_lock);
 }
 
 static void release_lock()
 {
-    //cout << pthread_self() << " release_lock" << std::endl;
+    // std::cout << pthread_self() << " release_lock" << std::endl;
 	pthread_mutex_unlock(&the_lock);
 }
 
 static void release_lock_parent()
 {
-    //cout << pthread_self() << " release_lock" << std::endl;
+    // std::cout << pthread_self() << " release_lock" << std::endl;
 	pthread_mutex_unlock(&the_lock);
 }
 
@@ -51,7 +50,7 @@ static void release_lock_child()
 
 	pthread_mutex_init(&the_lock,&attr);
 
-    //cout << pthread_self() << " release_lock" << std::endl;
+    // std::cout << pthread_self() << " release_lock" << std::endl;
 }
 
 // Don't use STL , Mutex, or Log to avoid re-entrance problems...
@@ -60,7 +59,7 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 
 static void _init(void)
 {
-    //cout << pthread_self() << " init" << std::endl;
+    // std::cout << pthread_self() << " init" << std::endl;
 
 	pthread_mutexattr_t attr;
 	pthread_mutexattr_init(&attr);
@@ -79,7 +78,7 @@ static void init()
 	pthread_once(&once,_init);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 union Align {
 	char      char_;
@@ -89,7 +88,7 @@ union Align {
 	float     float_;
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 struct MemBlk {
 
@@ -124,7 +123,8 @@ struct MemBlk {
 	void size(unsigned long long&,unsigned long long&);
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
 
 MemBlk* MemBlk::memList_ = 0;
 unsigned long long MemBlk::allocateCount_ = 0;
@@ -233,7 +233,7 @@ void MemoryPool::largeDeallocate(void* addr)
 	release_lock();
 }
 
-//-----------------------------------------------------------------------------
+
 
 const size_t WORD = sizeof(Align);
 
@@ -247,7 +247,7 @@ struct memblk {
 
 const long HEADER_SIZE = (sizeof(memblk) - WORD);
 
-//-----------------------------------------------------------------------------
+
 
 eckit::MemPool eckit::MemPool::transientPool = {
 	1, // 1 page
@@ -259,7 +259,7 @@ eckit::MemPool eckit::MemPool::permanentPool = {
 	0, // don't zero
 };
 
-//-----------------------------------------------------------------------------
+
 
 void *MemoryPool::fastAllocate(size_t s,MemPool& pool)
 {
@@ -419,7 +419,7 @@ void MemoryPool::info(std::ostream& out)
     release_lock();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

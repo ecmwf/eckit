@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -55,7 +55,7 @@ LinearAlgebraCUDA::LinearAlgebraCUDA() : LinearAlgebra("cuda") {}
 
 Scalar LinearAlgebraCUDA::dot(const Vector& x, const Vector& y) const {
     ASSERT( x.size() == y.size() );
-    const size_t size = x.size()*sizeof(Scalar);
+    const Size size = x.size()*sizeof(Scalar);
     Scalar r;
 
     Scalar* d_x; ///< device memory vector x
@@ -88,9 +88,9 @@ Scalar LinearAlgebraCUDA::dot(const Vector& x, const Vector& y) const {
 
 void LinearAlgebraCUDA::gemv(const Matrix& A, const Vector& x, Vector& y) const {
     ASSERT( x.size() == A.cols() && y.size() == A.rows() );
-    const size_t sizeA = A.rows()*A.cols()*sizeof(Scalar);
-    const size_t sizex = A.cols()*sizeof(Scalar);
-    const size_t sizey = A.rows()*sizeof(Scalar);
+    const Size sizeA = A.rows()*A.cols()*sizeof(Scalar);
+    const Size sizex = A.cols()*sizeof(Scalar);
+    const Size sizey = A.rows()*sizeof(Scalar);
 
     Scalar* d_A; ///< device memory matrix A
     Scalar* d_x; ///< device memory vector x
@@ -130,9 +130,9 @@ void LinearAlgebraCUDA::gemv(const Matrix& A, const Vector& x, Vector& y) const 
 
 void LinearAlgebraCUDA::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
     ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
-    const size_t sizeA = A.rows()*A.cols()*sizeof(Scalar);
-    const size_t sizeB = B.rows()*B.cols()*sizeof(Scalar);
-    const size_t sizeC = A.rows()*B.cols()*sizeof(Scalar);
+    const Size sizeA = A.rows()*A.cols()*sizeof(Scalar);
+    const Size sizeB = B.rows()*B.cols()*sizeof(Scalar);
+    const Size sizeC = A.rows()*B.cols()*sizeof(Scalar);
 
     Scalar* d_A; ///< device memory matrix A
     Scalar* d_B; ///< device memory matrix B
@@ -174,10 +174,11 @@ void LinearAlgebraCUDA::spmv(const SparseMatrix& A, const Vector& x, Vector& y) 
     ASSERT( x.size() == A.cols() && y.size() == A.rows() );
     // We expect indices to be 0-based
     ASSERT( A.outer()[0] == 0 );
-    const size_t sizeAnnz = A.nonZeros()*sizeof(Scalar);
-    const size_t sizeAptr = (A.rows()+1)*sizeof(Scalar);
-    const size_t sizex = A.cols()*sizeof(Scalar);
-    const size_t sizey = A.rows()*sizeof(Scalar);
+    const Size sizeArowptr = (A.rows()+1)*sizeof(Index);
+    const Size sizeAcolidx = A.nonZeros()*sizeof(Index);
+    const Size sizeAvalues = A.nonZeros()*sizeof(Scalar);
+    const Size sizex = A.cols()*sizeof(Scalar);
+    const Size sizey = A.rows()*sizeof(Scalar);
 
     Index* d_A_rowptr; ///< device memory matrix A row pointers
     Index* d_A_colidx; ///< device memory matrix A col indices
@@ -187,9 +188,9 @@ void LinearAlgebraCUDA::spmv(const SparseMatrix& A, const Vector& x, Vector& y) 
     cusparseHandle_t handle;
     cusparseMatDescr_t descr;
 
-    CALL_CUDA( cudaMalloc((void**) &d_A_rowptr, sizeAptr) );
-    CALL_CUDA( cudaMalloc((void**) &d_A_colidx, sizeAnnz) );
-    CALL_CUDA( cudaMalloc((void**) &d_A_values, sizeAnnz) );
+    CALL_CUDA( cudaMalloc((void**) &d_A_rowptr, sizeArowptr) );
+    CALL_CUDA( cudaMalloc((void**) &d_A_colidx, sizeAcolidx) );
+    CALL_CUDA( cudaMalloc((void**) &d_A_values, sizeAvalues) );
     CALL_CUDA( cudaMalloc((void**) &d_x, sizex) );
     CALL_CUDA( cudaMalloc((void**) &d_y, sizey) );
 
@@ -198,10 +199,10 @@ void LinearAlgebraCUDA::spmv(const SparseMatrix& A, const Vector& x, Vector& y) 
     cusparseSetMatType(descr,CUSPARSE_MATRIX_TYPE_GENERAL);
     cusparseSetMatIndexBase(descr,CUSPARSE_INDEX_BASE_ZERO);
 
-    CALL_CUDA( cudaMemcpy(d_A_rowptr, A.outer(), sizeAptr, cudaMemcpyHostToDevice) );
-    CALL_CUDA( cudaMemcpy(d_A_colidx, A.inner(), sizeAnnz, cudaMemcpyHostToDevice) );
-    CALL_CUDA( cudaMemcpy(d_A_values, A.data(),  sizeAnnz, cudaMemcpyHostToDevice) );
-    CALL_CUDA( cudaMemcpy(d_x,        x.data(),  sizex,    cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_A_rowptr, A.outer(), sizeArowptr, cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_A_colidx, A.inner(), sizeAcolidx, cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_A_values, A.data(),  sizeAvalues, cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_x,        x.data(),  sizex,       cudaMemcpyHostToDevice) );
 
     const Scalar alpha = 1.0;
     const Scalar beta  = 0.0;
@@ -235,10 +236,11 @@ void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) 
     ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
     // We expect indices to be 0-based
     ASSERT( A.outer()[0] == 0 );
-    const size_t sizeAnnz = A.nonZeros()*sizeof(Scalar);
-    const size_t sizeAptr = (A.rows()+1)*sizeof(Scalar);
-    const size_t sizeB = B.rows()*B.cols()*sizeof(Scalar);
-    const size_t sizeC = A.rows()*B.cols()*sizeof(Scalar);
+    const Size sizeArowptr = (A.rows()+1)*sizeof(Index);
+    const Size sizeAcolidx = A.nonZeros()*sizeof(Index);
+    const Size sizeAvalues = A.nonZeros()*sizeof(Scalar);
+    const Size sizeB = B.rows()*B.cols()*sizeof(Scalar);
+    const Size sizeC = A.rows()*B.cols()*sizeof(Scalar);
 
     Index* d_A_rowptr; ///< device memory matrix A row pointers
     Index* d_A_colidx; ///< device memory matrix A col indices
@@ -248,9 +250,9 @@ void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) 
     cusparseHandle_t handle;
     cusparseMatDescr_t descr;
 
-    CALL_CUDA( cudaMalloc((void**) &d_A_rowptr, sizeAptr) );
-    CALL_CUDA( cudaMalloc((void**) &d_A_colidx, sizeAnnz) );
-    CALL_CUDA( cudaMalloc((void**) &d_A_values, sizeAnnz) );
+    CALL_CUDA( cudaMalloc((void**) &d_A_rowptr, sizeArowptr) );
+    CALL_CUDA( cudaMalloc((void**) &d_A_colidx, sizeAcolidx) );
+    CALL_CUDA( cudaMalloc((void**) &d_A_values, sizeAvalues) );
     CALL_CUDA( cudaMalloc((void**) &d_B, sizeB) );
     CALL_CUDA( cudaMalloc((void**) &d_C, sizeC) );
 
@@ -259,10 +261,10 @@ void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) 
     cusparseSetMatType(descr,CUSPARSE_MATRIX_TYPE_GENERAL);
     cusparseSetMatIndexBase(descr,CUSPARSE_INDEX_BASE_ZERO);
 
-    CALL_CUDA( cudaMemcpy(d_A_rowptr, A.outer(), sizeAptr, cudaMemcpyHostToDevice) );
-    CALL_CUDA( cudaMemcpy(d_A_colidx, A.inner(), sizeAnnz, cudaMemcpyHostToDevice) );
-    CALL_CUDA( cudaMemcpy(d_A_values, A.data(),  sizeAnnz, cudaMemcpyHostToDevice) );
-    CALL_CUDA( cudaMemcpy(d_B,        B.data(),  sizeB,    cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_A_rowptr, A.outer(), sizeArowptr, cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_A_colidx, A.inner(), sizeAcolidx, cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_A_values, A.data(),  sizeAvalues, cudaMemcpyHostToDevice) );
+    CALL_CUDA( cudaMemcpy(d_B,        B.data(),  sizeB,       cudaMemcpyHostToDevice) );
 
     // FIXME: Should we transpose B and use cusparseDcsrmm2 instread?
     // http://docs.nvidia.com/cuda/cusparse/index.html#cusparse-lt-t-gt-csrmm2

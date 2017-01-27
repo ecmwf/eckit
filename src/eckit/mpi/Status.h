@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -35,11 +35,34 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class NullStatus : public StatusContent {
+public:
+
+    virtual ~NullStatus() {}
+
+    virtual int source() const { return -1; };
+    virtual int tag() const { return -1; };
+    virtual int error() const { return 1; };
+
+    virtual void print(std::ostream&) const;
+
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+/// Status by construction has always a valid content_
+/// @invariant content_ is not null
+
 class Status {
 
 public: // methods
 
-    Status(StatusContent*);
+    /// Null Status constructor
+    Status();
+
+    /// @pre content is not null
+    Status(StatusContent* content);
 
     ~Status();
 

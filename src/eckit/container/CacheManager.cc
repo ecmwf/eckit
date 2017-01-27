@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,77 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-#include "CacheManager.h"
-
-#include <sys/stat.h>
-
-#include <string>
-
-#include "eckit/config/Resource.h"
+#include "eckit/container/CacheManager.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class AutoUmask {
-    mode_t umask_;
-
-public:
-    explicit AutoUmask(mode_t u = 0) : umask_(::umask(u)) {}
-    ~AutoUmask() { ::umask(umask_); }
-};
-
-CacheManager::CacheManager(const std::string& name, const PathName& root, bool throwOnCacheMiss) :
-    name_(name),
-    root_(root),
-    throwOnCacheMiss_(throwOnCacheMiss) {
-}
-
-bool CacheManager::get(const key_t& k, PathName& v) const {
-    PathName p = entry(k);
-    if (p.exists()) {
-        v = p;
-        return true;
-    }
-
-    if(throwOnCacheMiss_) {
-        std::ostringstream oss;
-        oss << "CacheManager cache miss: key=" << k << ", path=" << p;
-        throw UserError(oss.str());
-    }
-
-    return false;
-}
-
-PathName CacheManager::entry(const key_t &key) const {
-    return root() / name() / version() / key + extension();
-}
-
-PathName CacheManager::stage(const key_t& k) const {
-
-    PathName p = entry(k);
-    AutoUmask umask(0);
-    // FIXME: mask does not seem to affect first level directory
-    p.dirName().mkdir(0777);  // ensure directory exists
-    Log::info() << "CacheManager creating file " << p << std::endl;
-    // unique file name avoids race conditions on the file from multiple processes
-    return PathName::unique(p);
-}
-
-bool CacheManager::commit(const key_t& k, const PathName& tmpfile) const
+eckit::CacheManagerBase::CacheManagerBase(const std::string& loaderName) :
+    loaderName_(loaderName)
 {
-    PathName file = entry(k);
-    try {
-        SYSCALL(::chmod(tmpfile.asString().c_str(), 0444));
-        PathName::rename( tmpfile, file );
-    } catch ( FailedSystemCall& e ) { // ignore failed system call -- another process nay have created the file meanwhile
-        Log::debug() << "Failed rename of cache file -- " << e.what() << std::endl;
-        return false;
-    }
-    return true;
 }
 
-void CacheManager::print(std::ostream& s) const { s << "CacheManager[name=" << name() << "]"; }
+std::string eckit::CacheManagerBase::loader() const {
+    return loaderName_;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -16,14 +16,12 @@
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"
 
-//-----------------------------------------------------------------------------
-
 using namespace eckit::linalg;
 
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 Vector V(Size s, ...) {
     Vector vec(s);
@@ -34,7 +32,6 @@ Vector V(Size s, ...) {
     return vec;
 }
 
-//-----------------------------------------------------------------------------
 
 Matrix M(Matrix::Size rows, Matrix::Size cols, ...) {
     Matrix mat(rows, cols);
@@ -47,7 +44,7 @@ Matrix M(Matrix::Size rows, Matrix::Size cols, ...) {
     return mat;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 } // namespace eckit

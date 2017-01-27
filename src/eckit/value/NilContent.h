@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -27,16 +27,16 @@ protected:
 
 // -- Constructors
 
-	NilContent();
-	NilContent(Stream&);
+    NilContent();
+    NilContent(Stream&);
 
 // -- Destructors
 
-	virtual ~NilContent();
+    virtual ~NilContent();
 
 // -- Overridden Methods
 
-	// From Content
+    // From Content
 
     virtual int compare(const Content& other) const;
 
@@ -62,23 +62,25 @@ protected:
     virtual int  compareDateTime(const DateTimeContent&)    const {return 1; }
 
     virtual Content* add(const Content&) const;
-	virtual Content* sub(const Content&) const;
-	virtual Content* mul(const Content&) const;
-	virtual Content* div(const Content&) const;
+    virtual Content* sub(const Content&) const;
+    virtual Content* mul(const Content&) const;
+    virtual Content* div(const Content&) const;
     virtual Content* mod(const Content&) const;
 
-	virtual Content* addNil(const NilContent&)  const;
-	virtual Content* subNil(const NilContent&)  const;
-	virtual Content* mulNil(const NilContent&)  const;
-	virtual Content* divNil(const NilContent&)  const;
+    virtual Content* addNil(const NilContent&)  const;
+    virtual Content* subNil(const NilContent&)  const;
+    virtual Content* mulNil(const NilContent&)  const;
+    virtual Content* divNil(const NilContent&)  const;
 
-	virtual bool     isNil()     const  { return true; }
-	virtual std::string   typeName()  const  { return "Nil"; }
-	virtual void     print(std::ostream&) const;
+    virtual bool     isNil()     const  { return true; }
+    virtual std::string   typeName()  const  { return "Nil"; }
+    virtual void     print(std::ostream&) const;
     virtual void   json(JSON&)     const;
     virtual Content* clone() const;
 
-	// From Streamable
+    virtual bool contains(const Value&) const;
+
+    // From Streamable
 
     virtual void     encode(Stream&)              const;
     virtual const    ReanimatorBase& reanimator() const { return reanimator_; }
@@ -88,8 +90,8 @@ private:
 
 // -- No copy allowed
 
-	NilContent(const NilContent&);
-	NilContent& operator=(const NilContent&);
+    NilContent(const NilContent&);
+    NilContent& operator=(const NilContent&);
 
 // -- Class Members
 
@@ -98,8 +100,8 @@ private:
 
 // -- Friends
 
-	friend class Reanimator<NilContent>;
-	friend class Value;
+    friend class Reanimator<NilContent>;
+    friend class Value;
 };
 
 

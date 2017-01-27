@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -11,27 +11,19 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/Mutex.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 Mutex::Mutex(char tag) :
 	exists_(false),
 	tag_(tag)
 {
-
-//#if defined(__GNUC__) && __GNUC__ < 3
-//#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
-//#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP { PTHREAD_MUTEX_RECURSIVE_NP }
-//#endif
-//	pthread_mutexattr_t attr = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-//#else
 	pthread_mutexattr_t attr;
 	THRCALL(::pthread_mutexattr_init(&attr));
 	THRCALL(::pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE));
-//#endif
 
 	THRCALL(::pthread_mutex_init(&mutex_,&attr));
 
@@ -46,13 +38,11 @@ Mutex::~Mutex()
 
 void Mutex::lock(void)
 {
-
 	if(!exists_)
 	{
         std::cerr << "Mutex used before being constructed" << std::endl;
         ::abort();
 	}
-
 	THRCALL(::pthread_mutex_lock(&mutex_));
 }
 
@@ -66,7 +56,7 @@ void Mutex::unlock(void)
 	THRCALL(::pthread_mutex_unlock(&mutex_));
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

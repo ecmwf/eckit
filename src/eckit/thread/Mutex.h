@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -19,14 +19,14 @@
 #include "eckit/eckit.h"
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Mutex : private NonCopyable {
-public:
+
+public: // methods
 
 // -- Contructors
 
@@ -42,9 +42,7 @@ public:
 	void unlock();
 	char tag() const { return tag_; }
 
-protected:
-
-// -- Members
+protected: // members
 
 	pthread_mutex_t mutex_;
 	bool            exists_;
@@ -52,7 +50,7 @@ protected:
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

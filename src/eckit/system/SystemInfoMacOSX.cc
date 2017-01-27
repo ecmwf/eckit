@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -14,6 +14,8 @@
 
 #include <sys/param.h>
 #include <mach-o/dyld.h>
+#include <mach/mach.h>
+#include <malloc/malloc.h>
 
 #include "eckit/system/SystemInfoMacOSX.h"
 
@@ -49,6 +51,25 @@ LocalPathName SystemInfoMacOSX::executablePath() const
     std::string path(buffer);
 
     return LocalPathName(path).realName();
+}
+
+Mem SystemInfoMacOSX::memoryUsage() const {
+    struct task_basic_info info;
+    mach_msg_type_number_t size = sizeof(info);
+
+    kern_return_t err = task_info(mach_task_self(),
+                                  TASK_BASIC_INFO,
+                                  (task_info_t)&info,
+                                  &size);
+
+    if ( err != KERN_SUCCESS ) {
+        throw eckit::FailedSystemCall(mach_error_string(err), Here());
+    }
+
+    return Mem(info.resident_size, info.virtual_size);}
+
+size_t SystemInfoMacOSX::memoryAllocated() const {
+    return mstats().bytes_used;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

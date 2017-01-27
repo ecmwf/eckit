@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -87,7 +87,7 @@ public: // because of a clang bug. Should be protected
     void kNearestNeighboursBruteForceX(Alloc& a,const Point& p, size_t k, NodeQueue& result, int depth) ;
 
     //==========================
-protected:
+public:
     Node* left(Alloc& a)  const { return a.convert(left_,  (Node*)0);   }
     Node* right(Alloc& a) const { return a.convert(right_, (Node*)0);  }
     Node* next(Alloc& a)  const { return a.convert(next_,  (Node*)0);   }

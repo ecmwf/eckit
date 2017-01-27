@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -21,7 +21,7 @@
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/memory/ScopedPtr.h"
-#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
@@ -42,7 +42,7 @@ public: // methods
 
     const std::string& name() const;
 
-    virtual LocalPathName path() const;
+    virtual std::string etcDirectory() const;
 
     virtual std::string expandPath(const std::string& path) const;
 
@@ -55,9 +55,10 @@ public: // methods
 
     virtual std::string version() const = 0;
     virtual std::string gitsha1(unsigned int count = 40) const = 0;
+
     virtual Channel& debugChannel() const;
 
-// Class methods
+public: // class methods
 
     static std::vector<std::string> list();
     static void list(std::ostream&);
@@ -88,6 +89,8 @@ private: // members
     mutable eckit::Mutex mutex_;
 
     mutable std::string libraryPath_;
+    mutable std::string etcDirectory_;
+
     mutable eckit::ScopedPtr<eckit::Channel> debugChannel_;
 
 };

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,7 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/mpi/SerialData.h"
 #include "eckit/mpi/SerialRequest.h"
+#include "eckit/log/Log.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 namespace mpi {
@@ -16,18 +19,41 @@ namespace mpi {
 //----------------------------------------------------------------------------------------------------------------------
 
 SerialRequest::SerialRequest() :
-    recvbuf_(NULL),
-    sendbuf_(NULL),
-    count_(0),
-    tag_(0),
-    type_(Data::MAX_DATA_CODE),
-    is_receive_(false)
-{
+    request_(-1) {
 }
+
+SerialRequest::~SerialRequest() {
+}
+
 
 void SerialRequest::print(std::ostream& os) const {
     os << "SerialRequest("
        << ")";
+}
+
+int SerialRequest::request() const {
+    return request_;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+SendRequest::SendRequest(const void* buffer, size_t count, Data::Code type, int tag) :
+    buffer_(static_cast<const char*>(buffer), count * dataSize[type]),
+    count_(count),
+    tag_(tag),
+    type_(type) {
+}
+
+SendRequest::~SendRequest() {
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+ReceiveRequest::ReceiveRequest(void* buffer, size_t count, Data::Code type, int tag) :
+    buffer_(buffer, count * dataSize[type], false),
+    count_(count),
+    tag_(tag),
+    type_(type) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -62,9 +62,11 @@ public:
 
 	bool operator<=(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) <= 0; }
 
-    /// The number of characters in the stored string, excluding the termination character if the string is shorter
-    /// than SIZE.
+    /// The number of characters in the stored string,
+    /// excluding the termination character if the string is shorter than SIZE.
 	size_t length() const;
+
+    bool empty() const { return length() == 0; }
 
     std::string asString() const;
     
@@ -110,14 +112,14 @@ FixedString<SIZE>:: FixedString(const std::string& s)
 template<int SIZE>
 FixedString<SIZE>:: FixedString(const FixedString& other)
 {
-	memcpy(data_,other.data_,SIZE);
+    ::memcpy(data_,other.data_,SIZE);
 }
 
 template<int SIZE>
 FixedString<SIZE>::FixedString(const char* s) {
     ASSERT(sizeof(char) == 1 && s && strlen(s) <= SIZE);
 	zero(data_);
-	memcpy(data_, s, strlen(s));
+    ::memcpy(data_, s, strlen(s));
 }
 
 template<int SIZE>
@@ -125,7 +127,7 @@ FixedString<SIZE>& FixedString<SIZE>::operator=(const FixedString& s)
 {
 	if (this != &s)
 	{
-		memcpy(data_,s.data_,SIZE);
+        ::memcpy(data_,s.data_,SIZE);
 	}
 	return *this;
 }
@@ -135,7 +137,10 @@ FixedString<SIZE>& FixedString<SIZE>::operator=(const std::string& s)
 {
 	ASSERT(s.length() <= SIZE && sizeof(s[0]) == 1);
 
-	memcpy(data_,s.c_str(),s.length());
+    ::memcpy(data_, s.c_str(), s.length());
+    if(s.length() < SIZE) {
+        ::memset(data_ + s.length(), 0, SIZE - s.length());
+    }
 
 	return *this;
 }

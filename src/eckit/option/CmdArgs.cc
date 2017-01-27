@@ -66,12 +66,17 @@ void CmdArgs::init(usage_proc usage, int args_count, int minimum_args, bool thro
 
             std::map<std::string, const option::Option *>::const_iterator j = opts.find(v[0]);
             if (j != opts.end()) {
-                if (v.size() == 1) {
-                    (*j).second->set(*this);
-                } else {
-                    std::vector<std::string>::const_iterator b = v.begin();
-                    ++b;
-                    (*j).second->set(StringTools::join("=", b, v.end()), *this);
+                try {
+                    if (v.size() == 1) {
+                        (*j).second->set(*this);
+                    } else {
+                        std::vector<std::string>::const_iterator b = v.begin();
+                        ++b;
+                        (*j).second->set(StringTools::join("=", b, v.end()), *this);
+                    }
+                } catch(UserError& e) {
+                    Log::info() << "Invalid value for option --" << v[0] << std::endl;
+                    error = true;
                 }
             } else {
                 Log::info() << "Invalid option --" << v[0] << std::endl;
@@ -111,11 +116,14 @@ void CmdArgs::init(usage_proc usage, int args_count, int minimum_args, bool thro
             Log::info() << std::endl;
         }
 
-        if (throw_on_error)
+        if (throw_on_error) {
+            for (std::vector<option::Option*>::iterator j = options_.begin(); j  != options_.end(); ++j) {
+                delete (*j);
+            }
             throw UserError("An error occurred in argument parsing", Here());
-        else
+        } else {
             ::exit(1);
-
+        }
     }
 }
 

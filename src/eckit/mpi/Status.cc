@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -17,13 +17,19 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+Status::Status() :
+    content_( new NullStatus() ) {
+    content_->attach();
+}
+
 Status::Status(StatusContent* p) :
     content_(p) {
+    ASSERT(p);
     content_->attach();
 }
 
 Status::~Status() {
-   content_->detach();
+    content_->detach();
 }
 
 Status::Status(const Status& s) : content_(s.content_) {
@@ -31,12 +37,21 @@ Status::Status(const Status& s) : content_(s.content_) {
 }
 
 Status& Status::operator=(const Status& s) {
+    content_->detach();
     content_ = s.content_;
     content_->attach();
     return *this;
 }
 
 StatusContent::~StatusContent() {
+}
+
+void NullStatus::print(std::ostream& os) const {
+    os << "NullStatus("
+       << "source=" << source()
+       << ",tag=" << tag()
+       << ",error=" << error()
+       << ")";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

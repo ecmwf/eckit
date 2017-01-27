@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -10,6 +10,8 @@
 
 #include <netinet/in.h>
 #include <assert.h>
+#include <stdint.h>
+
 
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
@@ -135,7 +137,7 @@ void Stream::badTag(Stream::tag need, Stream::tag got) {
     std::ostringstream os;
 
     os << "Bad tag found in stream ";
-    os << name();
+    os << *this;
     os << ". Expecting a " << need << ", got a " << got;
 
     Log::error() << os.str() << std::endl;
@@ -206,7 +208,7 @@ void Stream::writeTag(Stream::tag t) {
 
 Stream &Stream::operator<<(char x) {
     union {
-        u_int8_t u;
+        uint8_t u;
         int8_t s;
     } u;
     T("w char", x);
@@ -225,7 +227,7 @@ Stream &Stream::operator<<(unsigned char x) {
 
 Stream &Stream::operator<<(int x) {
     union {
-        u_int32_t u;
+        uint32_t u;
         int32_t s;
     } u;
     T("w int", x);
@@ -249,7 +251,7 @@ Stream &Stream::operator<<(unsigned int x) {
 
 Stream &Stream::operator<<(long x) {
     union {
-        u_int32_t u;
+        uint32_t u;
         int32_t s;
     } u;
     T("w long", x);
@@ -268,7 +270,7 @@ Stream &Stream::operator<<(unsigned long x) {
 
 Stream &Stream::operator<<(long long x) {
     union {
-        u_int64_t u;
+        uint64_t u;
         int64_t s;
     } u;
     T("w long long", x);
@@ -289,7 +291,7 @@ Stream &Stream::operator<<(unsigned long long x) {
 
 Stream &Stream::operator<<(short x) {
     union {
-        u_int16_t u;
+        uint16_t u;
         int16_t s;
     } u;
     T("w short", x);
@@ -412,7 +414,7 @@ Stream &Stream::operator<<(const std::exception &e) {
 
 Stream &Stream::operator>>(char &x) {
     union {
-        u_int8_t u;
+        uint8_t u;
         int8_t s;
     } u;
     readTag(tag_char);
@@ -431,7 +433,7 @@ Stream &Stream::operator>>(unsigned char &x) {
 
 Stream &Stream::operator>>(int &x) {
     union {
-        u_int32_t u;
+        uint32_t u;
         int32_t s;
     } u;
     readTag(tag_int);
@@ -456,7 +458,7 @@ Stream &Stream::operator>>(unsigned int &x) {
 
 Stream &Stream::operator>>(short &x) {
     union {
-        u_int16_t u;
+        uint16_t u;
         int16_t s;
     } u;
     readTag(tag_short);
@@ -475,7 +477,7 @@ Stream &Stream::operator>>(unsigned short &x) {
 
 Stream &Stream::operator>>(long &x) {
     union {
-        u_int32_t u;
+        uint32_t u;
         int32_t s;
     } u;
     readTag(tag_long);
@@ -494,12 +496,12 @@ Stream &Stream::operator>>(unsigned long &x) {
 
 Stream &Stream::operator>>(long long &x) {
     union {
-        u_int64_t u;
+        uint64_t u;
         int64_t s;
     } u;
     readTag(tag_long_long);
-    u_int64_t u1 = getLong();;
-    u_int64_t u2 = getLong();
+    uint64_t u1 = getLong();;
+    uint64_t u2 = getLong();
     u.u = (u1 << 32) | u2;
     x = u.s;
     T("r long long", x);

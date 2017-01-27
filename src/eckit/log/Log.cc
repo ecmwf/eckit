@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -23,6 +23,7 @@
 #include "eckit/log/FileTarget.h"
 
 #include "eckit/runtime/Main.h"
+#include "eckit/system/Library.h"
 
 #include "eckit/exception/Exceptions.h"
 
@@ -57,52 +58,6 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
-
-static Mutex* local_mutex;
-static pthread_once_t once = PTHREAD_ONCE_INIT;
-typedef std::map<std::string, Channel*> ChannelRegister;
-static ChannelRegister* channelsRegister;
-
-static void init() {
-    channelsRegister = new ChannelRegister();
-    local_mutex = new Mutex();
-}
-
-void Log::registerChannel(const std::string& key, Channel* channel) {
-    pthread_once(&once, init);
-    AutoLock<Mutex> lock(*local_mutex);
-
-    ASSERT(channel);
-    ChannelRegister::iterator itr = channelsRegister->find(key);
-    if (itr == channelsRegister->end()) {
-        channelsRegister->insert(std::make_pair(key, channel));
-    }
-    else {
-        std::ostringstream msg;
-        msg << "Channel with name " << key << " already registered";
-        throw SeriousBug(msg.str());
-    }
-}
-
-void Log::removeChannel(const std::string& key) {
-    pthread_once(&once, init);
-    AutoLock<Mutex> lock(*local_mutex);
-
-    ChannelRegister::iterator itr = channelsRegister->find(key);
-    if (itr != channelsRegister->end()) {
-        delete itr->second;
-        channelsRegister->erase(itr);
-    }
-}
-
-Channel& Log::channel(const std::string& key) {
-    pthread_once(&once, init);
-    AutoLock<Mutex> lock(*local_mutex);
-
-    ChannelRegister::iterator itr = channelsRegister->find(key);
-    ASSERT(itr != channelsRegister->end());
-    return *(itr->second);
-}
 
 struct CreateStatusChannel {
     Channel* operator()() {
@@ -275,6 +230,10 @@ void Log::setStream(std::ostream& out) {
     if (debug()) {
         debug().setStream(out);
     }
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().setStream(out);
+    }
 }
 void Log::addStream(std::ostream& out) {
     info().addStream(out);
@@ -282,6 +241,10 @@ void Log::addStream(std::ostream& out) {
     error().addStream(out);
     if (debug()) {
         debug().addStream(out);
+    }
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().addStream(out);
     }
 }
 
@@ -294,7 +257,12 @@ void Log::setFile(const std::string& path) {
     if (debug()) {
         debug().setTarget(file);
     }
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().setTarget(file);
+    }
 }
+
 void Log::addFile(const std::string& path) {
     LogTarget* file = new FileTarget(path);
 
@@ -303,6 +271,10 @@ void Log::addFile(const std::string& path) {
     error().addTarget(file);
     if (debug()) {
         debug().addTarget(file);
+    }
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().addTarget(file);
     }
 }
 
@@ -313,6 +285,10 @@ void Log::setCallback(channel_callback_t cb, void* data) {
     if (debug()) {
         debug().setCallback(cb, data);
     }
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().setCallback(cb, data);
+    }
 }
 
 void Log::addCallback(channel_callback_t cb, void* data) {
@@ -322,6 +298,22 @@ void Log::addCallback(channel_callback_t cb, void* data) {
     if (debug()) {
         debug().addCallback(cb, data);
     }
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().addCallback(cb, data);
+    }
+}
+
+void Log::flush()
+{
+    info().flush();
+    warning().flush();
+    error().flush();
+    debug().flush();
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().flush();
+    }
 }
 
 void Log::reset() {
@@ -329,6 +321,10 @@ void Log::reset() {
     warning().reset();
     error().reset();
     debug().reset();
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        system::Library::lookup(*libname).debugChannel().reset();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

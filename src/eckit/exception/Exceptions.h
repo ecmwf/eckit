@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -20,17 +20,18 @@
 #include "eckit/log/Log.h"
 #include "eckit/log/SavedStatus.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void handle_panic(const char*);
 void handle_panic(const char*, const CodeLocation&);
+void handle_panic_no_log(const char*, const CodeLocation&);
 
 /// @brief General purpose exception
 /// Derive other exceptions from this class and implement then in the class that throws them.
+
 class Exception : public std::exception {
 
 public: // methods
@@ -79,7 +80,8 @@ private: // members
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
 
 class SeriousBug : public Exception {
 public:
@@ -184,7 +186,7 @@ class FileError : public Exception {
 protected:
     FileError( const std::string& );
     FileError( const std::string&, const CodeLocation& );
-    FileError() {}
+    FileError();
 };
 
 class CantOpenFile : public FileError {
@@ -219,58 +221,60 @@ public:
 
 class UnexpectedState : public Exception {
 public:
-    UnexpectedState(const std::string& msg) : Exception(msg) {}
+    UnexpectedState(const std::string& msg);
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template<class T>
-inline T SysCall(T code,const char *msg,const CodeLocation& loc)
+inline T SysCall(T code,const char *msg, const char* file, int line, const char* func)
 {
     if(code<0)
-        throw FailedSystemCall(msg,loc,errno);
+        throw FailedSystemCall(msg, CodeLocation(file, line, func), errno);
     return code;
 }
 
-//-----------------------------------------------------------------------------
 
 template<class T>
-inline void SysCall(long long code,const char *msg,const T& ctx,const CodeLocation& loc)
+inline void SysCall(long long code,const char *msg,const T& ctx, const char* file, int line, const char* func)
 {
     if(code<0)
     {
         std::ostringstream os;
         os << ctx;
-        throw FailedSystemCall(os.str(), msg, loc, errno);
+        throw FailedSystemCall(os.str(), msg, CodeLocation(file, line, func), errno);
     }
 }
 
-//-----------------------------------------------------------------------------
 
-inline void ThrCall(int code,const char *msg, const CodeLocation& loc)
+inline void ThrCall(int code,const char *msg, const char* file, int line, const char* func)
 {
     if(code != 0) // Threads return errno in return code
-        handle_panic(msg,loc);
-    /*
-    {
-        throw FailedSystemCall(msg,line,file,proc,code);
-    }
-    */
+        handle_panic(msg, CodeLocation(file, line, func));
 }
 
-inline void Assert(int code,const char *msg, const CodeLocation& loc )
+inline void Assert(int code,const char *msg, const char* file, int line, const char* func)
 {
-    if(code != 0)
-        throw AssertionFailed(msg,loc);
+    if(code != 0) {
+        throw AssertionFailed(msg, CodeLocation(file, line, func));
+    }
 }
 
 inline void Panic(int code,const char *msg, const CodeLocation& loc )
 {
-    if(code != 0)
+    if(code != 0) {
         handle_panic(msg,loc);
+    }
 }
 
-//-----------------------------------------------------------------------------
+inline void PanicNoLog(int code, const char *msg, const CodeLocation& loc)
+{
+    if(code != 0) {
+        handle_panic_no_log(msg, loc);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /// For compatibility
 class OutOfMemory : public Exception {
@@ -281,16 +285,18 @@ public:
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-#define THRCALL(a)    ::eckit::ThrCall(a,#a,Here())
-#define SYSCALL(a)    ::eckit::SysCall(a,#a,Here())
-#define SYSCALL2(a,b) ::eckit::SysCall(a,#a,b,Here())
-#define ASSERT(a)     ::eckit::Assert(!(a),#a,Here())
+#define THRCALL(a)    ::eckit::ThrCall(a,#a, __FILE__, __LINE__, __FUNCTION__)
+#define SYSCALL(a)    ::eckit::SysCall(a,#a, __FILE__, __LINE__, __FUNCTION__)
+#define SYSCALL2(a,b) ::eckit::SysCall(a,#a,b, __FILE__, __LINE__, __FUNCTION__)
+#define ASSERT(a)     ::eckit::Assert(!(a),#a, __FILE__, __LINE__, __FUNCTION__)
 #define PANIC(a)      ::eckit::Panic((a),#a,Here())
 #define NOTIMP  throw ::eckit::NotImplemented(Here())
 
-//-----------------------------------------------------------------------------
+#define CHECK_CALL_NOLOG(a) ::eckit::PanicNoLog(a,#a,Here())
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -16,11 +16,10 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathName.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 #if 0
 typedef std::map<std::string,FileManager*>    FileManagerMap;
@@ -46,7 +45,6 @@ static void init(void)
 static Once<Mutex> local_mutex;
 static std::map<std::string,FileManager*> m;
 
-//-----------------------------------------------------------------------------
 
 FileManager::FileManager(const std::string& name):
         name_(name)
@@ -85,7 +83,8 @@ FileManager& FileManager::lookUp(const std::string& name)
     return *((*j).second);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
 
 #if 0
 
@@ -149,7 +148,8 @@ void FileManager::print(std::ostream& s) const
     s << "FileManager[" << name_ << "]";
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
 
 class LocalFileManager : public FileManager {
       
@@ -173,7 +173,7 @@ public:
     LocalFileManager(const std::string& name) : FileManager(name) {}
 };
 
-//-----------------------------------------------------------------------------
+
 
 class MarsFSFileManager : public FileManager {
   
@@ -197,12 +197,11 @@ public:
     MarsFSFileManager(const std::string& name) : FileManager(name) {}
 };
 
-//-----------------------------------------------------------------------------
 
 static LocalFileManager  manager1("unix");
 static LocalFileManager  manager3("file");
 static MarsFSFileManager manager2("marsfs");
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

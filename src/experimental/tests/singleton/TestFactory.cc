@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -20,6 +20,12 @@ struct TestFactory::PImpl {
 
     typedef std::map<std::string,TestBuilder*> Store;
     Store register_;
+
+    ~PImpl() {
+        for(Store::iterator it = register_.begin(); it != register_.end(); ++it) {
+            delete it->second;
+        }
+    }
 
     void regist(const std::string& name, TestBuilder* builder)
     {

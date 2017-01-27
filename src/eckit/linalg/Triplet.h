@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -20,7 +20,7 @@
 namespace eckit {
 namespace linalg {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Triplet of values compatible to Eigen::Triplet
 
@@ -29,13 +29,13 @@ public:
 
     Triplet() : row_(0), col_(0), val_(0) {}
 
-    Triplet(const Index& i, const Index& j, const Scalar& v = Scalar(0))
+    Triplet(const Size& i, const Size& j, const Scalar& v = Scalar(0))
         : row_(i), col_(j), val_(v)
     {}
 
-    const Index& row() const { return row_; }
+    const Size& row() const { return row_; }
 
-    const Index& col() const { return col_; }
+    const Size& col() const { return col_; }
 
     const Scalar& value() const { return val_; }
     Scalar& value() { return val_; }
@@ -50,14 +50,14 @@ public:
     }
 
 protected:
-    Index row_;
-    Index col_;
+    Size row_;
+    Size col_;
     Scalar val_;
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace linalg
+} // namespace linalg
 } // namespace eckit
 
 #endif

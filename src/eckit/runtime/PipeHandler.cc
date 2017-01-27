@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -14,8 +14,7 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/PipeHandler.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
-#include "eckit/thread/Once.h"
+#include "eckit/thread/StaticMutex.h"
 
 //-----------------------------------------------------------------------------
 
@@ -170,7 +169,7 @@ void PipeHandler<Request>::idle()
 
 //=========================================================================
 
-static Once<Mutex> PipeHandler_mutex_;
+static StaticMutex PipeHandler_static_mutex;
 
 template<class Request>
 void PipeHandler<Request>::start()
@@ -181,7 +180,7 @@ void PipeHandler<Request>::start()
     // thread is creating a pipe. The child process
     // will then also has a file descriptor for this pipe
 
-    AutoLock<Mutex> lock(PipeHandler_mutex_);
+    AutoLock<StaticMutex> lock(PipeHandler_static_mutex);
     Log::debug() << "PipeHandler - Locked..." << std::endl;
 
 

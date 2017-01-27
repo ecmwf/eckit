@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2016 ECMWF.
+ * (C) Copyright 1996-2017 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -26,6 +26,7 @@
 #include "eckit/utils/Translator.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/filesystem/LocalPathName.h"
 
 namespace eckit {
 namespace system {
@@ -138,11 +139,19 @@ const std::string& Library::name() const {
     return name_;
 }
 
-LocalPathName Library::path() const {
-    return LocalPathName(libraryPath()).dirName().dirName();
+std::string Library::etcDirectory() const {
+    eckit::AutoLock<Mutex> lock(mutex_);
+
+    if (etcDirectory_.empty()) {
+        etcDirectory_ = LocalPathName(libraryPath()).dirName().dirName().realName();
+    }
+
+    return etcDirectory_;
 }
 
 std::string Library::libraryPath() const {
+    eckit::AutoLock<Mutex> lock(mutex_);
+
     if (libraryPath_.empty()) {
         std::string p = eckit::System::addrToPath(addr());
         libraryPath_ = LocalPathName(p).realName();
@@ -158,7 +167,6 @@ Channel& Library::debugChannel() const
 
     std::string s = prefix_ + "_DEBUG";
 
-
     if (debug_) {
         debugChannel_.reset(new Channel(new PrefixTarget(s)));
     }
@@ -172,8 +180,10 @@ Channel& Library::debugChannel() const
 std::string Library::expandPath(const std::string& p) const {
 
     std::string s = "~" + name_;
+    ASSERT( p.substr(0, s.size()) == s);
+    ASSERT(p.size() == s.size() || p[s.size()] == '/');
 
-    std::string result = path() + "/" + p.substr(s.size());
+    std::string result = etcDirectory() + "/" + p.substr(s.size());
 
     return result;
 }

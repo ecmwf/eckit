@@ -99,6 +99,7 @@ public: // methods
     static void flush();
     static void reset();
 
+    static void print(std::ostream& os);
 
 private: // methods
 

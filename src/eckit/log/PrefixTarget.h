@@ -34,7 +34,12 @@ private:
     virtual void writePrefix();
     virtual void writeSuffix();
 
-private:
+protected:
+
+    void print(std::ostream& s) const;
+
+protected:
+
     std::string prefix_;
     const char* space_;
     size_t prefixLength_;

@@ -19,11 +19,11 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template< typename TYPE >
 struct NewAlloc0 {
@@ -37,7 +37,7 @@ struct NewAlloc1 {
     P1 p1_;
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template< typename T, typename A = NewAlloc0<T> >
 class ThreadSingleton : private NonCopyable {
@@ -66,7 +66,7 @@ private: // class methods
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template< typename T, typename A> pthread_once_t ThreadSingleton<T,A>::once_ = PTHREAD_ONCE_INIT;
 template< typename T, typename A> pthread_key_t ThreadSingleton<T,A>::key_;
@@ -85,14 +85,21 @@ ThreadSingleton<T,A>::ThreadSingleton( const A& alloc ) : alloc_( alloc )
 template< typename T, typename A>
 ThreadSingleton<T,A>::~ThreadSingleton()
 {
+    ::pthread_once(&once_,init);
+
+    T* value = (T*) ::pthread_getspecific(key_);
+    if(value) {
+        ::pthread_key_delete(key_);
+        delete value;
+    }
 }
 
 template< typename T, typename A>
 T& ThreadSingleton<T,A>::instance()
 {
-	pthread_once(&once_,init);
+    ::pthread_once(&once_,init);
 
-	T* value = (T*)pthread_getspecific(key_);
+    T* value = (T*) ::pthread_getspecific(key_);
 	if(!value)
 	{
         value = alloc_();
@@ -105,17 +112,17 @@ T& ThreadSingleton<T,A>::instance()
 template< typename T, typename A>
 void ThreadSingleton<T,A>::cleanUp(void* data)
 {
-	delete (T*)data;
-	pthread_setspecific(key_,0);
+    delete (T*) data;
+    ::pthread_setspecific(key_,0);
 }
 
 template< typename T, typename A>
 void ThreadSingleton<T,A>::init()
 {
-	pthread_key_create(&key_,cleanUp);
+    ::pthread_key_create(&key_,cleanUp);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

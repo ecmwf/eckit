@@ -24,10 +24,12 @@ Channel::Channel(LogTarget* target) :
     if (target) {
         buffer_->setTarget(target);
     }
+//    std::cerr << "Channel::Channel()" << std::endl;
 }
 
 
 Channel::~Channel() {
+//    std::cerr << "Channel::~Channel() " << *this << std::endl;
     delete buffer_;
 }
 
@@ -79,6 +81,10 @@ void Channel::addFile(const std::string& path) {
 
 void Channel::reset() {
     buffer_->reset();
+}
+
+void Channel::print(std::ostream& s) const {
+    s << "Channel(buffer=" << *buffer_ << ")";
 }
 
 void Channel::indent(const char* space) {

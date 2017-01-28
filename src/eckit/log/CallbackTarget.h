@@ -29,9 +29,13 @@ public:
 
     CallbackTarget(callback_t callback, void* context = 0);
 
+    virtual ~CallbackTarget();
+
 private:
 
     virtual void line(const char* line);
+
+    virtual void print(std::ostream& s) const;
 
 private:
     callback_t callback_;

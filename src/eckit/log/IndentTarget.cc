@@ -11,11 +11,10 @@
 
 #include "eckit/log/IndentTarget.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
 IndentTarget::IndentTarget(const std::string& prefix, LogTarget* target, const char* space):
@@ -24,6 +23,13 @@ IndentTarget::IndentTarget(const std::string& prefix, LogTarget* target, const c
 
 }
 
-//-----------------------------------------------------------------------------
+void IndentTarget::print(std::ostream& s) const
+{
+    s << "IndentTarget(prefix=" << prefix_ << ", space=" << space_;
+    if(target_) { s << ", target=" << *target_; }
+    s << ")";
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

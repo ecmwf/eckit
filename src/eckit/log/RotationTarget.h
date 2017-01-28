@@ -32,6 +32,8 @@ public: // methods
     virtual void write(const char* start, const char* end);
     virtual void flush();
 
+protected:
+    void print(std::ostream& s) const;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -22,8 +22,18 @@ CallbackTarget::CallbackTarget(callback_t callback, void *context):
 {
 }
 
+CallbackTarget::~CallbackTarget()
+{
+//    std::cerr << "CallbackTarget::~CallbackTarget()" << std::endl;
+}
+
 void CallbackTarget::line(const char* line) {
     callback_(context_, line);
+}
+
+void CallbackTarget::print(std::ostream& s) const
+{
+    s << "CallbackTarget()";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

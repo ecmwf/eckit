@@ -22,6 +22,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class OStreamTarget : public LogTarget {
+
 public: // methods
 
     OStreamTarget(std::ostream& out);
@@ -30,6 +31,7 @@ public: // methods
 
     virtual void write(const char* start, const char* end);
     virtual void flush();
+    virtual void print(std::ostream& s) const;
 
 private:
 

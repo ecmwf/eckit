@@ -81,6 +81,7 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         std::string execHome = eckit::system::SystemInfo::instance().executablePath().dirName().dirName();
         home_ = execHome;
     }
+
     instance_ = this;
 
     Loader::callAll(&Loader::execute);
@@ -93,6 +94,7 @@ Main::~Main() {
         std::cerr << BackTrace::dump() << std::endl;
         _exit(1);
     }
+
     instance_ = 0;
 }
 

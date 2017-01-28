@@ -35,13 +35,24 @@ namespace system {
 
 typedef std::map<std::string, Library*> LibraryMap;
 
+struct LibraryRegistry {
+
+    static LibraryRegistry& instance() {
+        static LibraryRegistry reg;
+        return reg;
+    }
+
+    LibraryMap map_;
+
+    LibraryMap& map() { return map_; }
+};
+
+
 static pthread_once_t once  = PTHREAD_ONCE_INIT;
 static eckit::Mutex* local_mutex = 0;
-static LibraryMap* m = 0;
 
 static void init() {
     local_mutex = new eckit::Mutex();
-    m = new LibraryMap();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -51,10 +62,11 @@ std::vector<std::string> Library::list() {
     std::vector<std::string> result;
 
     pthread_once(&once, init);
-
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    for (LibraryMap::const_iterator j = m->begin() ; j != m->end() ; ++j) {
+    LibraryMap& m = LibraryRegistry::instance().map();
+
+    for (LibraryMap::const_iterator j = m.begin() ; j != m.end() ; ++j) {
         result.push_back(j->first);
     }
     return result;
@@ -63,11 +75,12 @@ std::vector<std::string> Library::list() {
 void Library::list(std::ostream& out) {
 
     pthread_once(&once, init);
-
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
+    LibraryMap& m = LibraryRegistry::instance().map();
+
     const char* sep = "";
-    for (LibraryMap::const_iterator j = m->begin() ; j != m->end() ; ++j) {
+    for (LibraryMap::const_iterator j = m.begin() ; j != m.end() ; ++j) {
         out << sep << (*j).first;
         sep = ", ";
     }
@@ -76,26 +89,30 @@ void Library::list(std::ostream& out) {
 bool Library::exists(const std::string& name) {
 
     pthread_once(&once, init);
-
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-    LibraryMap::const_iterator j = m->find(name);
 
-    return (j != m->end());
+    LibraryMap& m = LibraryRegistry::instance().map();
+
+    LibraryMap::const_iterator j = m.find(name);
+
+    return (j != m.end());
 }
 
 const Library& Library::lookup(const std::string& name) {
 
     pthread_once(&once, init);
-
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-    LibraryMap::const_iterator j = m->find(name);
+
+    LibraryMap& m = LibraryRegistry::instance().map();
+
+    LibraryMap::const_iterator j = m.find(name);
 
     // eckit::Log::info() << "Looking for Library '" << name << "'" << std::endl;
 
-    if (j == m->end()) {
+    if (j == m.end()) {
         eckit::Log::error() << "No Library found with name '" << name << "'" << std::endl;
         eckit::Log::error() << "Registered libraries are:" << std::endl;
-        for (j = m->begin() ; j != m->end() ; ++j)
+        for (j = m.begin() ; j != m.end() ; ++j)
             eckit::Log::error() << "   " << (*j).first << std::endl;
         throw eckit::SeriousBug(std::string("No Library found with name ") + name);
     }
@@ -113,8 +130,10 @@ Library::Library(const std::string& name) :
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    ASSERT(m->find(name) == m->end());
-    (*m)[name] = this;
+    LibraryMap& m = LibraryRegistry::instance().map();
+
+    ASSERT(m.find(name) == m.end());
+    m[name] = this;
 
     std::transform(prefix_.begin(), prefix_.end(), prefix_.begin(), ::toupper);
 

@@ -34,6 +34,8 @@ public:
 
     virtual ~ColouringTarget();
 
+protected:
+    void print(std::ostream& s) const;
 private:
 
     virtual void writePrefix();

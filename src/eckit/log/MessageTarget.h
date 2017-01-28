@@ -31,6 +31,7 @@ public: // methods
 private:
 
     virtual void line(const char* line);
+    virtual void print(std::ostream& s) const;
 
 };
 

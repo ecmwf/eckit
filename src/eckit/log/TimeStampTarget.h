@@ -29,6 +29,9 @@ public:
 
     virtual ~TimeStampTarget();
 
+protected:
+    void print(std::ostream& s) const;
+
 private:
 
     virtual void writePrefix();

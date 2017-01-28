@@ -140,6 +140,13 @@ std::streambuf::int_type ChannelBuffer::sync()
     else return -1;
 }
 
+void ChannelBuffer::print(std::ostream& s) const
+{
+    s << "ChannelBuffer(size=" << buffer_.size();
+    if(target_) { s << ", target=" << *target_; }
+    s << ")";
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

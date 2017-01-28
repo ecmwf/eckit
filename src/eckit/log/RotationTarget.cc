@@ -71,6 +71,12 @@ void RotationTarget::flush() {
     rotout().flush();
 }
 
+void RotationTarget::print(std::ostream& s) const
+{
+    static std::string logfileFormat = Resource<std::string>("logfileFormat","~/log/%Y-%m-%d/out");
+    s << "RotationTarget(format=" << logfileFormat << ")";
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

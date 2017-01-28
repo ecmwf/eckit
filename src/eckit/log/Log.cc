@@ -249,6 +249,7 @@ void Log::addStream(std::ostream& out) {
 }
 
 void Log::setFile(const std::string& path) {
+
     LogTarget* file = new FileTarget(path);
 
     info().setTarget(file);
@@ -324,6 +325,17 @@ void Log::reset() {
     std::vector<std::string> libs = eckit::system::Library::list();
     for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
         system::Library::lookup(*libname).debugChannel().reset();
+    }
+}
+
+void Log::print(std::ostream& os) {
+    os << "Log::info() "    << info()    << std::endl;
+    os << "Log::warning() " << warning() << std::endl;
+    os << "Log::error() "   << error()   << std::endl;
+    os << "Log::debug() "   << debug()   << std::endl;
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        os << *libname << ".debug() " << system::Library::lookup(*libname).debugChannel() << std::endl;
     }
 }
 

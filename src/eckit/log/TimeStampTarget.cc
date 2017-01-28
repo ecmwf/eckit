@@ -51,6 +51,13 @@ void TimeStampTarget::writePrefix() {
 void TimeStampTarget::writeSuffix() {
 }
 
+void TimeStampTarget::print(std::ostream& s) const
+{
+    s << "TimeStampTarget(";
+    if(target_) { s<< "target=" << *target_ << ")"; }
+    s << ")";
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

@@ -17,6 +17,3 @@ endif()
 add_subdirectory( apps )
 
 add_subdirectory( tests )
-
-add_subdirectory( regressions )
-

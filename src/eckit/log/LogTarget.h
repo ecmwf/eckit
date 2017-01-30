@@ -42,7 +42,7 @@ protected:
         c.print(os); return os;
     }
 
-    virtual void print(std::ostream& s) const = 0;
+    virtual void print(std::ostream& s) const;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

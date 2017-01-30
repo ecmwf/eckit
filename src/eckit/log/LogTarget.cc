@@ -22,6 +22,11 @@ LogTarget::LogTarget() {
 LogTarget::~LogTarget() {
 }
 
+void LogTarget::print(std::ostream& s) const
+{
+    NOTIMP;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

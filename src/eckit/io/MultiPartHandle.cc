@@ -22,11 +22,13 @@ MultiPartHandle::MultiPartHandle(DataHandle* handle, const Length& size, MultiPa
     size_(size),
     prev_(prev),
     next_(0),
-    position_(0)
+    position_(0),
+    start_(0)
 {
     if(prev_) {
         ASSERT(prev_->next_ == 0);
         prev_->next_ = this;
+        start_ = prev_->start_ + prev_->size_;
     }
 }
 
@@ -42,7 +44,7 @@ Length MultiPartHandle::openForRead()
     if(prev_ == 0) {
         handle_->openForRead();
     }
-    position_ = 0;
+    rewind();
     return estimate();
 }
 
@@ -87,7 +89,8 @@ void MultiPartHandle::flush()
 
 void MultiPartHandle::rewind()
 {
-    NOTIMP;
+    handle_->seek(start_);
+    position_ = 0;
 }
 
 void MultiPartHandle::print(std::ostream& s) const
@@ -155,6 +158,8 @@ std::string MultiPartHandle::title() const
     os << "[";
     os << handle_->title();
     os << '|';
+    os << start_;
+    os << ':';
     os << size_;
     // if (datahandles_.size() > 0) os << datahandles_[0]->title();
     // if (datahandles_.size() > 1) os << ",...{" << datahandles_.size() << "}";

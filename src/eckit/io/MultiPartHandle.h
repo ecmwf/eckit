@@ -77,6 +77,7 @@ private:
     MultiPartHandle* prev_;
     MultiPartHandle* next_;
     Offset           position_;
+    Offset           start_;
 
 // -- Methods
 

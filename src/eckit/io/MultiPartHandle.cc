@@ -25,7 +25,7 @@ MultiPartHandle::MultiPartHandle(DataHandle* handle, const Length& size, MultiPa
     position_(0),
     start_(0)
 {
-    if(prev_) {
+    if (prev_) {
         ASSERT(prev_->next_ == 0);
         prev_->next_ = this;
         start_ = prev_->start_ + prev_->size_;
@@ -34,14 +34,14 @@ MultiPartHandle::MultiPartHandle(DataHandle* handle, const Length& size, MultiPa
 
 MultiPartHandle::~MultiPartHandle()
 {
-    if(next_ == 0) {
+    if (next_ == 0) {
         delete handle_;
     }
 }
 
 Length MultiPartHandle::openForRead()
 {
-    if(prev_ == 0) {
+    if (prev_ == 0) {
         handle_->openForRead();
     }
     rewind();
@@ -77,7 +77,7 @@ long MultiPartHandle::write(const void* buffer, long length)
 
 void MultiPartHandle::close()
 {
-    if(next_ == 0) {
+    if (next_ == 0) {
         handle_->close();
     }
 }
@@ -89,8 +89,7 @@ void MultiPartHandle::flush()
 
 void MultiPartHandle::rewind()
 {
-    handle_->seek(start_);
-    position_ = 0;
+    seek(0);
 }
 
 void MultiPartHandle::print(std::ostream& s) const
@@ -105,7 +104,7 @@ void MultiPartHandle::print(std::ostream& s) const
         // {
         //     if (i != 0)
         //         s << ",(";
-            handle_->print(s);
+        handle_->print(s);
         //     s << ")";
         // }
         s << ']';
@@ -119,12 +118,13 @@ bool MultiPartHandle::merge(DataHandle* other)
 
 Length MultiPartHandle::estimate()
 {
-   return size_;
+    return size_;
 }
 
 void MultiPartHandle::restartReadFrom(const Offset& from)
 {
-    NOTIMP;
+    Log::warning() << *this << " restart read from " << from << std::endl;
+    handle_->restartReadFrom(from + start_);
 }
 
 void MultiPartHandle::toRemote(Stream &s) const
@@ -151,6 +151,26 @@ bool MultiPartHandle::moveable() const
 {
     return false;
 }
+
+Offset MultiPartHandle::position() {
+    return position_;
+}
+
+Offset MultiPartHandle::seek(const Offset& offset) {
+    position_ = offset;
+    if(position_ > size_) {
+        position_ = (unsigned long long)size_;
+    }
+
+    ASSERT(handle_->seek(start_ + position_) == Offset(start_ + position_));
+    return position_;
+
+}
+
+void MultiPartHandle::skip(const Length &length) {
+    seek(position_ + length);
+}
+
 
 std::string MultiPartHandle::title() const
 {

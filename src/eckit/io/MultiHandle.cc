@@ -406,13 +406,14 @@ std::string MultiHandle::title() const
 //-----------------------------------------------------------------------------
 
 bool MultiHandle::compress(bool sorted) {
-    bool changed = false;
 
-    for (size_t i = 0; i < datahandles_.size(); i++) {
-        if (datahandles_[i]->compress(sorted)) {
-            changed = true;
-        }
+
+    if(sorted) {
+        NOTIMP;
     }
+
+
+    bool changed = false;
 
     for (size_t i = 0; i < datahandles_.size() - 1; i++) {
 
@@ -432,6 +433,10 @@ bool MultiHandle::compress(bool sorted) {
                 datahandles_[j] = new MultiPartHandle(h1, h2->estimate(), prev);
                 delete h2;
             }
+        }
+
+        if(h1->compress(sorted)) {
+            changed = true;
         }
 
     }

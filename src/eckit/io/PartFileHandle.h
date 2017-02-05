@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -55,11 +55,15 @@ public:
 	virtual long write(const void*,long);
 	virtual void close();
 	virtual void rewind();
+
 	virtual void print(std::ostream&) const;
 	virtual bool merge(DataHandle*);
 	virtual bool compress(bool = false);
 	virtual Length estimate();
+
 	virtual void restartReadFrom(const Offset& from);
+    virtual Offset seek(const Offset&);
+
     virtual void toRemote(Stream&) const;
     virtual void cost(std::map<std::string,Length>&, bool) const;
     virtual std::string title() const;

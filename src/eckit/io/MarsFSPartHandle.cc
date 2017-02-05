@@ -206,6 +206,24 @@ void MarsFSPartHandle::restartReadFrom(const Offset& from)
     ASSERT(from  == Offset(0) && estimate() == Length(0));
 }
 
+Offset MarsFSPartHandle::seek(const Offset& from)
+{
+    rewind();
+    long long len = from;
+    long long pos = 0;
+
+    for(index_ = 0; index_ < length_.size(); index_++)
+    {
+        long long e = length_[index_];
+        if(len >= pos && len < pos + e)
+        {
+            pos_ = len - pos;
+            return from;
+        }
+        pos += e;
+    }
+    return pos;
+}
 
 bool MarsFSPartHandle::merge(DataHandle* other)
 {

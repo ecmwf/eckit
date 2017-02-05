@@ -48,8 +48,12 @@ public:
     virtual void flush();
     virtual void rewind();
     virtual void print(std::ostream&) const;
+
 	void restartReadFrom(const Offset& from);
 
+    virtual Offset seek(const Offset&);
+    virtual Offset position();
+    virtual void skip(const Length &);
 
 	virtual bool merge(DataHandle*);
 	virtual bool compress(bool = false);

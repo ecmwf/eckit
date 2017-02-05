@@ -111,7 +111,7 @@ void TestMHHandle::test_write()
 
     delete fh;
 
-    ASSERT( memcmp(expect, result, 52) == 0 );
+    ASSERT( ::memcmp(expect, result, 52) == 0 );
 }
 
 

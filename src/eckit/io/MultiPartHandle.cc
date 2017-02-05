@@ -104,9 +104,10 @@ void MultiPartHandle::print(std::ostream& s) const
         // {
         //     if (i != 0)
         //         s << ",(";
-        handle_->print(s);
+        // handle_->print(s);
         //     s << ")";
         // }
+        s << handle_;
         s << ']';
     }
 }

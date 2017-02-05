@@ -54,25 +54,32 @@ void TestMHHandle::test_write()
     const char buf2 [] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     char expect[26 * 2];
 
+    // setformat(std::cout, Log::fullFormat);
+
     {
         FileHandle f1(path1_);
-        f1.openForWrite();
+        f1.openForWrite(0);
         f1.write(buf1, sizeof(buf1));
         f1.close();
+
+        std::cout << path1_ << std::endl;
     }
 
      {
         FileHandle f2(path2_);
-        f2.openForWrite();
+        f2.openForWrite(0);
         f2.write(buf2, sizeof(buf2));
         f2.close();
+
+        std::cout << path2_ << std::endl;
+
     }
 
     {
         MultiHandle mh1;
 
         char* e = expect;
-        for(i = 0; i < 26; i++) {
+        for(int i = 0; i < 26; i++) {
             mh1 += new PartFileHandle(path1_, i, 1);
             mh1 += new PartFileHandle(path2_, i, 1);
 
@@ -81,12 +88,15 @@ void TestMHHandle::test_write()
         }
 
         std::cout << mh1 << std::endl;
+        std::cout << mh1.estimate() << std::endl;
 
         mh1.compress();
 
         std::cout << mh1 << std::endl;
+        std::cout << mh1.estimate() << std::endl;
 
-        mh1.saveInto(path3_);
+        FileHandle f3(path3_);
+        mh1.saveInto(f3);
 
     }
 
@@ -94,58 +104,28 @@ void TestMHHandle::test_write()
 
     fh->openForRead();
 
-    Buffer result(26 * 2);
+    Buffer result(1024);
 
-    fh->read(result, result.size());
+    ASSERT(fh->read(result, result.size()) == 52);
     fh->close();
 
     delete fh;
 
-    ASSERT( expect == string(result) );
+    ASSERT( memcmp(expect, result, 52) == 0 );
 }
 
-
-void TestMHHandle::test_append()
-{
-    DataHandle* aioh = new AIOHandle(path_);
-
-    aioh->openForAppend(0);
-
-    const char buf [] = "53d50e63a50fba73f0151028a695a238ff06491c";
-
-    aioh->write(buf, sizeof(buf));
-
-    aioh->close();
-
-    delete aioh;
-
-    DataHandle* fh = path_.fileHandle();
-
-    fh->openForRead();
-
-    fh->seek( sizeof(buf) );
-
-    Buffer buf2(1024);
-
-    fh->read(buf2, buf2.size());
-    fh->close();
-
-    delete fh;
-
-    ASSERT( buf == string(buf2) );
-}
 
 
 void TestMHHandle::setup()
 {
     std::string base = Resource<std::string>("$TMPDIR", "/tmp");
-    path1_ = PathName::unique( base + "/lolo" );
+    path1_ = PathName::unique( base + "/path1" );
     path1_ += ".dat";
 
-    path2_ = PathName::unique( base + "/lolo" );
+    path2_ = PathName::unique( base + "/path2" );
     path2_ += ".dat";
 
-    path3_ = PathName::unique( base + "/lolo" );
+    path3_ = PathName::unique( base + "/path3" );
     path3_ += ".dat";
 }
 

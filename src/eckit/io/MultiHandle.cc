@@ -419,18 +419,21 @@ bool MultiHandle::compress(bool sorted) {
 
         DataHandle* h1 = datahandles_[i];
         MultiPartHandle* prev = 0;
+        Length len1 = h1->estimate();
 
         for (size_t j = i + 1; j < datahandles_.size(); j++) {
             DataHandle* h2 = datahandles_[j];
+            Length len2 = h2->estimate();
 
             if (h1->merge(h2)) {
 
                 if(prev == 0) {
-                    prev = new MultiPartHandle(h1, h1->estimate(), 0);
+                    prev = new MultiPartHandle(h1, len1, 0);
                     datahandles_[i] = prev;
                 }
 
-                datahandles_[j] = new MultiPartHandle(h1, h2->estimate(), prev);
+                prev = new MultiPartHandle(h1, len2, prev);
+                datahandles_[j] = prev;
                 delete h2;
             }
         }

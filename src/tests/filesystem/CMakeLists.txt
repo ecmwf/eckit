@@ -9,3 +9,8 @@ ecbuild_add_test( TARGET      eckit_test_localpathname
                   BOOST
                   SOURCES     test_localpathname.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_multihandle
+                  BOOST
+                  SOURCES     test_multihandle.cc
+                  LIBS        eckit )

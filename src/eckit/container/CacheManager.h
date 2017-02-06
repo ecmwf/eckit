@@ -241,7 +241,7 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
 
                 return path;
 
-            } catch (Exception& e) {
+            } catch (FailedSystemCall& e) {
                 eckit::Log::error() << "Error creating cache file: "
                                     << entry(key, *j)
                                     << " (" << e.what() << ")" << std::endl;

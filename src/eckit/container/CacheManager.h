@@ -65,27 +65,27 @@ public: // methods
 
 public: // methods
 
-    explicit CacheManager(const std::string& loaderName, const PathName& root, bool throwOnCacheMiss);
+    explicit CacheManager(const std::string& loaderName, const std::string& roots, bool throwOnCacheMiss);
 
     PathName getOrCreate(const key_t& key,
-        CacheContentCreator& creator,
-        value_type& value) const;
+                         CacheContentCreator& creator,
+                         value_type& value) const;
 
 private: // methods
 
 
-     bool get(const key_t& key, PathName& path) const;
+    bool get(const key_t& key, PathName& path) const;
 
-     PathName stage(const key_t& key) const;
+    PathName stage(const key_t& key, const PathName& root) const;
 
-     bool commit(const key_t& key, const PathName& path) const;
+    bool commit(const key_t& key, const PathName& path, const PathName& root) const;
 
-     PathName entry(const key_t& key) const;
+    PathName entry(const key_t& key, const std::string& root) const;
 
 
 private: // members
 
-    PathName root_;
+    std::vector<PathName> roots_;
     bool throwOnCacheMiss_;
 };
 
@@ -96,23 +96,37 @@ private: // members
 // NOTE : this should be in the .cc but we have the non-template CacheManagerBase there not to have duplicate symbols
 
 template<class Traits>
-CacheManager<Traits>::CacheManager(const std::string& loaderName, const PathName& root, bool throwOnCacheMiss) :
+CacheManager<Traits>::CacheManager(const std::string& loaderName, const std::string& roots, bool throwOnCacheMiss) :
     CacheManagerBase(loaderName),
-    root_(root),
     throwOnCacheMiss_(throwOnCacheMiss) {
+    eckit::Tokenizer parse(":");
+    std::vector<std::string> v;
+    parse(roots, v);
+    std::copy(v.begin(), v.end(), std::back_inserter(roots_));
 }
 
 template<class Traits>
 bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
-    PathName p = entry(key);
-    if (p.exists()) {
-        v = p;
-        return true;
+
+    for (std::vector<PathName>::const_iterator j = roots_.begin(); j != roots_.end(); ++j) {
+        PathName p = entry(key, *j);
+        if (p.exists()) {
+            v = p;
+            return true;
+        }
     }
 
     if (throwOnCacheMiss_) {
         std::ostringstream oss;
-        oss << "CacheManager cache miss: key=" << key << ", path=" << p;
+        oss << "CacheManager cache miss: key=" << key << ", tried:";
+
+        const char* sep = " ";
+        for (std::vector<PathName>::const_iterator j = roots_.begin(); j != roots_.end(); ++j) {
+            PathName p = entry(key, *j);
+            oss << sep << p;
+            sep = ", ";
+        }
+
         throw UserError(oss.str());
     }
 
@@ -120,9 +134,9 @@ bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
 }
 
 template<class Traits>
-PathName CacheManager<Traits>::entry(const key_t &key) const {
+PathName CacheManager<Traits>::entry(const key_t &key, const std::string& root) const {
     std::ostringstream oss;
-    oss <<  root_
+    oss <<  root
         << "/"
         << Traits::name()
         << "/"
@@ -134,9 +148,9 @@ PathName CacheManager<Traits>::entry(const key_t &key) const {
 }
 
 template<class Traits>
-PathName CacheManager<Traits>::stage(const key_t& key) const {
+PathName CacheManager<Traits>::stage(const key_t& key, const PathName& root) const {
 
-    PathName p = entry(key);
+    PathName p = entry(key, root);
     AutoUmask umask(0);
     // FIXME: mask does not seem to affect first level directory
     p.dirName().mkdir(0777);  // ensure directory exists
@@ -146,9 +160,9 @@ PathName CacheManager<Traits>::stage(const key_t& key) const {
 }
 
 template<class Traits>
-bool CacheManager<Traits>::commit(const key_t& key, const PathName& tmpfile) const
+bool CacheManager<Traits>::commit(const key_t& key, const PathName& tmpfile, const PathName& root) const
 {
-    PathName file = entry(key);
+    PathName file = entry(key, root);
     try {
         SYSCALL(::chmod(tmpfile.asString().c_str(), 0444));
         PathName::rename( tmpfile, file );
@@ -171,53 +185,78 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
     }
     else {
 
-        eckit::Log::info() << "Cache file "
-                           << entry(key)
-                           << " does not exist"
-                           << std::endl;
+        for (std::vector<PathName>::const_iterator j = roots_.begin(); j != roots_.end(); ++j) {
 
-
-        std::ostringstream oss;
-        oss << entry(key) << ".lock";
-
-        eckit::PathName lockFile(oss.str());
-
-        eckit::FileLock locker(lockFile);
-
-        eckit::AutoLock<eckit::FileLock> lock(locker);
-
-        // Some
-        if (!get(key, path)) {
-
-            eckit::Log::info() << "Creating coefficient cache file "
-                               << entry(key)
+            eckit::Log::info() << "Cache file "
+                               << entry(key, *j)
+                               << " does not exist"
                                << std::endl;
 
-            eckit::PathName tmp = stage(key);
-            creator.create(tmp, value);
-            Traits::save(*this, value, tmp);
-            ASSERT(commit(key, tmp));
-        }
-        else {
-            eckit::Log::info() << "Coefficient cache file "
-                               << entry(key)
-                               << " created by another process"
-                               << std::endl;
-            Traits::load(*this, value, path);
-        }
 
-        ASSERT(get(key, path));
+            std::ostringstream oss;
+            oss << entry(key, *j) << ".lock";
 
-        if (lockFile.exists()) {
             try {
-                lockFile.unlink();
-            } catch (...) {
+
+                eckit::PathName lockFile(oss.str());
+
+                eckit::FileLock locker(lockFile);
+
+                eckit::AutoLock<eckit::FileLock> lock(locker);
+
+                // Some
+                if (!get(key, path)) {
+
+                    eckit::Log::info() << "Creating coefficient cache file "
+                                       << entry(key, *j)
+                                       << std::endl;
+
+                    eckit::PathName tmp = stage(key, *j);
+                    creator.create(tmp, value);
+                    Traits::save(*this, value, tmp);
+                    ASSERT(commit(key, tmp, *j));
+                }
+                else {
+                    eckit::Log::info() << "Coefficient cache file "
+                                       << entry(key, *j)
+                                       << " created by another process"
+                                       << std::endl;
+                    Traits::load(*this, value, path);
+                }
+
+                ASSERT(get(key, path));
+
+                if (lockFile.exists()) {
+                    try {
+                        lockFile.unlink();
+                    } catch (...) {
+                    }
+                }
+
+                return path;
+
+            } catch (Exception& e) {
+                eckit::Log::error() << "Error creating cache file: "
+                                    << entry(key, *j)
+                                    << " (" << e.what() << ")" << std::endl;
             }
+
         }
 
     }
 
-    return path;
+    std::ostringstream oss;
+    oss << "CacheManager cannot create key=" << key << ", tried:";
+
+    const char* sep = " ";
+    for (std::vector<PathName>::const_iterator j = roots_.begin(); j != roots_.end(); ++j) {
+        PathName p = entry(key, *j);
+        oss << sep << p;
+        sep = ", ";
+    }
+
+    throw UserError(oss.str());
+
 }
 
 

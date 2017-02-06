@@ -1,6 +1,6 @@
 #include <math.h>
 #include <limits>
-#include <sstream>
+#include <sys/types.h>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"

@@ -64,8 +64,8 @@ private: // members
     bool           stopped_;
     bool           outputAtExit_;
 
-    struct timeval timeStart_;
-    struct timeval timeStop_;
+    struct ::timeval timeStart_;
+    struct ::timeval timeStop_;
 
     clock_t        cpuStart_;
     clock_t        cpuStop_;
@@ -75,7 +75,7 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-timeval operator-(const timeval&,const timeval&);
+::timeval operator-(const ::timeval&,const ::timeval&);
 
 //-----------------------------------------------------------------------------
 

@@ -56,8 +56,8 @@ protected:
 		char               name_[80];
 		double             rate_;
 		double             speed_;
-		timeval            start_;
-		timeval            last_;
+		::timeval            start_;
+		::timeval            last_;
 	};
 
 	Progress  progress_;
@@ -141,8 +141,8 @@ public:
 	double rate()  const             { return progress_.rate_;  }
 	double speed() const             { return progress_.speed_; }
 	const char *progressName() const { return progress_.name_;}
-	const timeval& progressStart() const { return progress_.start_;}
-	const timeval& progressLast() const  { return progress_.last_;}
+  const ::timeval& progressStart() const { return progress_.start_;}
+  const ::timeval& progressLast() const  { return progress_.last_;}
 
 	// ---------------------------------------------------------
 

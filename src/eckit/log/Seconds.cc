@@ -21,7 +21,7 @@ Seconds::Seconds(double seconds):
 {
 }
 
-Seconds::Seconds(const timeval& time):
+Seconds::Seconds(const ::timeval& time):
 	seconds_(time.tv_sec + time.tv_usec / 1000000.0)
 {
 }

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -300,6 +300,25 @@ void PartFileHandle::restartReadFrom(const Offset& from)
         pos += e;
     }
     ASSERT(from  == Offset(0) && estimate() == Length(0));
+}
+
+Offset PartFileHandle::seek(const Offset& from)
+{
+    rewind();
+    long long len = from;
+    long long pos = 0;
+
+    for(index_ = 0; index_ < length_.size(); index_++)
+    {
+        long long e = length_[index_];
+        if(len >= pos && len < pos + e)
+        {
+            pos_ = len - pos;
+            return from;
+        }
+        pos += e;
+    }
+    return pos;
 }
 
 

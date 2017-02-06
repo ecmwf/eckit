@@ -210,7 +210,7 @@ template<class PAYLOAD>
 ProducerConsumerTask<PAYLOAD>::ProducerConsumerTask(Consumer<PAYLOAD>& consumer,
                                                     ProducerConsumer<PAYLOAD>& owner,
                                                     OnePayload<PAYLOAD>* payloads):
-    Thread(false),
+    Thread(),
     owner_(owner),
     consumer_(consumer),
     payloads_(payloads)

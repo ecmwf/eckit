@@ -33,7 +33,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#ifndef _GNU_SOURCE
+#if (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
 
 static void handle_strerror_r(std::ostream& s, int e, char es[], int hs )
 {

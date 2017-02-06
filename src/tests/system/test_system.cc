@@ -45,6 +45,8 @@ BOOST_AUTO_TEST_CASE( test_eckit_resource_usage_0 )
 
         size_t after = system::ResourceUsage().maxResidentSetSize();
 
+        ::free(m);
+
         BOOST_TEST_MESSAGE( "Memory usage " << after );
 
         BOOST_REQUIRE( before <= after );

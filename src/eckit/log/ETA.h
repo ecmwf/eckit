@@ -14,6 +14,8 @@
 #ifndef eckit_ETA_h
 #define eckit_ETA_h
 
+#include <sys/time.h>
+
 #include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
@@ -28,7 +30,7 @@ public:
 // -- Contructors
 
 	ETA(double);
-	ETA(const struct timeval&);
+	ETA(const struct ::timeval&);
 
 // -- Operators
 

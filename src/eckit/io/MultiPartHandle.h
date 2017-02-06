@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File io/MultiHandle.h
+// File io/MultiPartHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef eckit_filesystem_MultiHandle_h
-#define eckit_filesystem_MultiHandle_h
+#ifndef eckit_filesystem_MultiPartHandle_h
+#define eckit_filesystem_MultiPartHandle_h
 
 #include "eckit/io/DataHandle.h"
 
@@ -22,27 +22,17 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class MultiHandle : public DataHandle {
+class MultiPartHandle : public DataHandle {
 public:
-
-	typedef std::vector<DataHandle*> HandleList;
 
 // -- Contructors
 
-	MultiHandle();
-	MultiHandle(const LengthList&);
-	MultiHandle(const HandleList&);
-	MultiHandle(const HandleList&,const LengthList&);
-	MultiHandle(Stream&);
+	MultiPartHandle(DataHandle* handle, const Length& length, MultiPartHandle* prev);
+
 
 // -- Destructor
 
-	~MultiHandle();
-
-// -- Operators
-
-	virtual void operator+=(DataHandle*);
-	virtual void operator+=(const Length&);
+	~MultiPartHandle();
 
 // -- Overridden methods
 
@@ -58,8 +48,12 @@ public:
     virtual void flush();
     virtual void rewind();
     virtual void print(std::ostream&) const;
+
 	void restartReadFrom(const Offset& from);
 
+    virtual Offset seek(const Offset&);
+    virtual Offset position();
+    virtual void skip(const Length &);
 
 	virtual bool merge(DataHandle*);
 	virtual bool compress(bool = false);
@@ -74,34 +68,26 @@ public:
 
     // From Streamable
 
-    virtual void encode(Stream&) const;
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
 // -- Class methods
 
-    static  const ClassSpec&  classSpec()        { return classSpec_;}
 
 private:
 
 // -- Members
 
-	HandleList			    datahandles_;
-	HandleList::iterator 	current_;
-	LengthList::iterator    curlen_;
-	LengthList              length_;
-	Length                  written_;
-	bool                    read_;
+    DataHandle*      handle_;
+    Length           size_;
+    MultiPartHandle* prev_;
+    MultiPartHandle* next_;
+    Offset           position_;
+    Offset           start_;
 
 // -- Methods
 
-	void openCurrent();
-	void open();
-	long read1(char*,long);
 
 // -- Class members
 
-	static  ClassSpec                 classSpec_;
-    static  Reanimator<MultiHandle>   reanimator_;
 
 };
 

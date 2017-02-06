@@ -36,7 +36,7 @@ MappedArray<T>::MappedArray(const PathName& path, unsigned long size):
 
 	AutoLock<Semaphore> lock(sem_);
 
-    typedef Padded<MappedArray<T>::Header,4096> PaddedHeader;
+    typedef Padded<typename MappedArray<T>::Header,4096> PaddedHeader;
 
 	fd_ = ::open(path.localPath(),O_RDWR | O_CREAT, 0777);
 	if(fd_ < 0)

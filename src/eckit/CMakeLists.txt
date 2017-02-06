@@ -111,6 +111,8 @@ io/SockBuf.h
 io/SockBuf.cc
 io/AIOHandle.h
 io/AIOHandle.cc
+io/SharedHandle.h
+io/SharedHandle.cc
 io/BufferedHandle.h
 io/BufferedHandle.cc
 io/MemoryHandle.h
@@ -129,8 +131,8 @@ io/MarsFSPartHandle.h
 io/MarsFSPartHandle.cc
 io/PartHandle.h
 io/PartHandle.cc
-io/SharedHandle.h
-io/SharedHandle.cc
+io/MultiPartHandle.h
+io/MultiPartHandle.cc
 io/StatsHandle.h
 io/StatsHandle.cc
 io/MoverHandle.h

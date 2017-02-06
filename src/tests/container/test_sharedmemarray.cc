@@ -34,9 +34,15 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
+struct ShmCleanup : Setup {
+    ~ShmCleanup() {
+        SYSCALL(::shm_unlink("/baz_hosts"));
+    }
+};
+
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_GLOBAL_FIXTURE( Setup );
+BOOST_GLOBAL_FIXTURE( ShmCleanup );
 
 BOOST_AUTO_TEST_SUITE( test_eckit_sharedmemarray )
 

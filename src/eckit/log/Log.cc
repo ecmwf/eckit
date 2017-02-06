@@ -33,7 +33,10 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
+// Linux defines _POSIX_C_SOURCE and _XOPEN_SOURCE
+// BSD defines _POSIX_VERSION and _XOPEN_VERSION
+// glibc defines _GNU_SOURCE and implements a non-XSI compliant strerror_r
+#if (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600 || _POSIX_VERSION >= 200112L || _XOPEN_VERSION >= 600) && ! _GNU_SOURCE
 
 static void handle_strerror_r(std::ostream& s, int e, char es[], int hs )
 {

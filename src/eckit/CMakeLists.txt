@@ -111,6 +111,8 @@ io/SockBuf.h
 io/SockBuf.cc
 io/AIOHandle.h
 io/AIOHandle.cc
+io/SharedHandle.h
+io/SharedHandle.cc
 io/BufferedHandle.h
 io/BufferedHandle.cc
 io/MemoryHandle.h

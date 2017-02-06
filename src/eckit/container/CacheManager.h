@@ -22,6 +22,7 @@
 #include <string>
 
 #include "eckit/eckit.h"
+#include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/io/FileLock.h"
 #include "eckit/thread/AutoLock.h"
@@ -103,6 +104,9 @@ CacheManager<Traits>::CacheManager(const std::string& loaderName, const std::str
     std::vector<std::string> v;
     parse(roots, v);
     std::copy(v.begin(), v.end(), std::back_inserter(roots_));
+
+    Log::debug<LibEcKit>() << "CacheManager roots " << roots_ << std::endl;
+
 }
 
 template<class Traits>
@@ -112,6 +116,7 @@ bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
         PathName p = entry(key, *j);
         if (p.exists()) {
             v = p;
+            Log::debug<LibEcKit>() << "CacheManager found path " << p << std::endl;
             return true;
         }
     }
@@ -182,6 +187,7 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
 
     if (get(key, path)) {
         Traits::load(*this, value, path);
+        return path;
     }
     else {
 

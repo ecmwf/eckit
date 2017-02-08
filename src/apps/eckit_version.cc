@@ -54,7 +54,6 @@ void Version::run()
     {
         Log::info() << eckit_version() << std::endl;
     }
-
 }
 
 } // namespace eckit

@@ -86,7 +86,6 @@ bool is_strictly_greater(const T& a,
     return (a > b) && !eckit::types::is_approximately_equal(a, b, epsilon, maxUlpsDiff);
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Helper class that memorizes the comparison setttings
@@ -110,6 +109,31 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace types
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Backward compatible (deprecated) interface
+
+template < typename T >
+class FloatCompare {
+
+public: // methods
+
+    static bool isApproximatelyEqual(const T& a, const T& b) {
+        return  is_approximately_equal(a, b);
+    }
+
+    static bool isStrictlyGreater(const T& a, const T& b) {
+        return  is_strictly_greater(a, b);
+    }
+
+    static bool isApproximatelyGreaterOrEqual(const T& a, const T& b) {
+        return  is_approximately_greater_or_equal(a, b);
+    }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 } // namespace eckit
 
 #endif

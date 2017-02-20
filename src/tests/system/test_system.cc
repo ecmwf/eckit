@@ -76,9 +76,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_system_library )
 
         const Library& lib = Library::lookup(*libname);
 
-        BOOST_CHECK_NO_THROW( lib.etcDirectory() );
+        BOOST_CHECK_NO_THROW( lib.prefixDirectory() );
 
-        eckit::Log::info() << "Library " << lib.name() << " @ " << lib.etcDirectory() << std::endl;
+        eckit::Log::info() << "Library " << lib.name() << " @ " << lib.prefixDirectory() << std::endl;
     }
 }
 

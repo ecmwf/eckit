@@ -158,14 +158,14 @@ const std::string& Library::name() const {
     return name_;
 }
 
-std::string Library::etcDirectory() const {
+std::string Library::prefixDirectory() const {
     eckit::AutoLock<Mutex> lock(mutex_);
 
-    if (etcDirectory_.empty()) {
-        etcDirectory_ = LocalPathName(libraryPath()).dirName().dirName().realName();
+    if (prefixDirectory_.empty()) {
+        prefixDirectory_ = LocalPathName(libraryPath()).dirName().dirName().realName();
     }
 
-    return etcDirectory_;
+    return prefixDirectory_;
 }
 
 std::string Library::libraryPath() const {
@@ -199,18 +199,44 @@ Channel& Library::debugChannel() const
 std::string Library::expandPath(const std::string& p) const {
 
     std::string s = "~" + name_;
-    ASSERT( p.substr(0, s.size()) == s);
+
+    ASSERT(p.substr(0, s.size()) == s);
     ASSERT(p.size() == s.size() || p[s.size()] == '/');
 
-    std::string result = etcDirectory() + "/" + p.substr(s.size());
+    // 1. if env variable LIBNAME_HOME exists, expand ~lib/ to its content
 
-    return result;
+    std::string libhome = prefix_ + "_HOME";
+    char* home = ::getenv(libhome.c_str());
+    if(home) {
+        std::string result = std::string(home) + "/" + p.substr(s.size());
+        return result;
+    }
+
+    // 2. try to walk up the path and check for paths that exist
+
+    const std::string extra = "/" + p.substr(s.size());
+
+    eckit::LocalPathName path = prefixDirectory();
+    eckit::LocalPathName root("/");
+    while(path != root) {
+
+        LocalPathName tmp = path + extra;
+
+        if(tmp.exists()) return tmp;
+
+        path = path.dirName();
+    }
+
+    // 3. as a last resort expand with prefix directory although we know the path doesn't exist
+
+    return prefixDirectory() + extra;
 }
 
 void Library::print(std::ostream &out) const {
     out << "Library("
         << "name=" << name_
-        << "path=" << libraryPath()
+        << ", path=" << libraryPath()
+        << ", prefix=" << prefixDirectory()
         << ")";
 }
 

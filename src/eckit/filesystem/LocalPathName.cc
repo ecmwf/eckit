@@ -398,6 +398,8 @@ static void expandTilde(std::string& path)
                 return;
             }
 
+            // in case the library is unknown (not registered), issue error
+
             std::ostringstream oss;
             oss << "Could not expand tilde in path " << path << std::endl;
 

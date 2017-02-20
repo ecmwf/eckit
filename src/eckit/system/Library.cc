@@ -218,11 +218,14 @@ std::string Library::expandPath(const std::string& p) const {
 
     eckit::LocalPathName path = prefixDirectory();
     eckit::LocalPathName root("/");
-    while(path != root) {
+
+    while(true) {
 
         LocalPathName tmp = path + extra;
 
         if(tmp.exists()) return tmp;
+
+        if(path == root) break;
 
         path = path.dirName();
     }

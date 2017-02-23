@@ -61,19 +61,18 @@ AutoClose::~AutoClose()
     }
 }
 
-static const char *b="KMGPH";
+static const char *b="kMGPEZY"; // support until Yottabyte :-)
+static const double yotta = 1024.*1024.*1024.*1024.*1024.*1024.*1024.;
 
 static double rate(double x,char& c)
 {
-    c = ' ';
-
-    // If there is a divide by zero (time period shorter than resolution of clock
-    // ticker) then we risk a segfault unless we proactively test!
-    if (std::isinf(x)) {
-        return 0.0;
+    if(std::isinf(x) || x > yotta) {
+        c = 'Y';
+        return 1;
     }
 
     const char* p = b;
+    c = ' ';
     while(x > 100)
     {
         x /= 1024;

@@ -407,11 +407,13 @@ std::string MultiHandle::title() const
 
 bool MultiHandle::compress(bool sorted) {
 
+    if(datahandles_.empty()) {
+        return false;
+    }
 
     if(sorted) {
         NOTIMP;
     }
-
 
     bool changed = false;
 

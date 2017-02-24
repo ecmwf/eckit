@@ -272,7 +272,7 @@ void Connector::unlock()
 {
 	ASSERT(locked_);
 	locked_ = false;
-	reset();
+	//reset();
 }
 
 void Connector::reset()

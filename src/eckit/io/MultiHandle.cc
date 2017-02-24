@@ -11,6 +11,7 @@
 #include "eckit/io/MultiHandle.h"
 #include "eckit/types/Types.h"
 #include "eckit/io/MultiPartHandle.h"
+#include "eckit/log/Timer.h"
 
 //-----------------------------------------------------------------------------
 
@@ -407,11 +408,12 @@ std::string MultiHandle::title() const
 
 bool MultiHandle::compress(bool sorted) {
 
+    Timer timer("Compress handle");
+
 
     if(sorted) {
         NOTIMP;
     }
-
 
     bool changed = false;
 

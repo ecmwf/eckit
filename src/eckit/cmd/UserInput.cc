@@ -386,7 +386,7 @@ static bool processCode(int c, context *s) {
     case CONTROL_C:
         write(1, "\r\n", 2);
         s->pos = 0;
-        s->curr->edit[0] = 0;
+        return processCode(0, s); // CONTROL_C behaves as CONTROL_D -- for backward compatibility to previous marsadm
         break;
 
     case CONTROL_G:

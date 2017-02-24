@@ -65,11 +65,11 @@ static double rate(double x, char& c)
 {
     if(x > yotta || std::isinf(x)) {
         c = 'Y';
-        return 1;
+        return 1.;
     }
 
-    const char* p = b;
     c = ' ';
+    const char* p = b;
     while(x > 100)
     {
         x /= 1024;
@@ -144,6 +144,9 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
         Timer timer("Save into");
         bool more = true;
 
+        char c1 = ' ';
+        char c2 = ' ';
+
         while(more)
         {
             more = false;
@@ -164,10 +167,10 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
                     watcher.watch(buffer,length);
                     lastRead = timer.elapsed();
 
-                    char c1 = ' ';
-                    char c2 = ' ';
-                    //			Log::message() << rate(length/r,c1)  << c1 << " " << rate(length/w,c2) << c2 << std::endl;
-                    Log::message() << rate(total/readTime, c1)  << c1 << " " << rate(total/writeTime, c2) << c2 << std::endl;
+                    double rRate = rate(total/readTime,  c1);
+                    double wRate = rate(total/writeTime, c2);
+
+                    Log::message() << rRate << c1 << " " << wRate << c2 << std::endl;
                 }
             }
             catch(RestartTransfer& retry)

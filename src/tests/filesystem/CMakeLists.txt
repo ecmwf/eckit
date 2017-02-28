@@ -16,3 +16,7 @@ ecbuild_add_test( TARGET      eckit_test_localpathname
                   LIBS        eckit )
 
 
+ecbuild_add_test( TARGET      eckit_test_restarthandle
+                  BOOST
+                  SOURCES     test_restarthandle.cc
+                  LIBS        eckit )

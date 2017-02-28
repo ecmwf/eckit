@@ -189,6 +189,9 @@ void PartFileHandle::openForAppend(const Length&)
 
 long PartFileHandle::read1(char *buffer,long length)
 {
+    
+    ASSERT(file_);
+    
     // skip empty entries if any
     while (index_ < offset_.size() && length_[index_] == Length(0))
         index_++;

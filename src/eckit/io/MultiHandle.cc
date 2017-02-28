@@ -411,8 +411,10 @@ bool MultiHandle::compress(bool sorted) {
     Timer timer("Compress handle");
 
     if(datahandles_.empty()) {
+
         return false;
     }
+    // return false;
 
     if(sorted) {
         NOTIMP;

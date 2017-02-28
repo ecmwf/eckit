@@ -82,9 +82,14 @@ private:
     MultiPartHandle* next_;
     Offset           position_;
     Offset           start_;
+    bool             opened_;
+    size_t           opens_;
 
 // -- Methods
 
+    MultiPartHandle& first();
+    void openHandle();
+    void closeHandle();
 
 // -- Class members
 

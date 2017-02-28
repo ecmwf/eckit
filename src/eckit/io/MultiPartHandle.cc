@@ -23,7 +23,9 @@ MultiPartHandle::MultiPartHandle(DataHandle* handle, const Length& size, MultiPa
     prev_(prev),
     next_(0),
     position_(0),
-    start_(0)
+    start_(0),
+    opened_(false),
+    opens_(0)
 {
     if (prev_) {
         ASSERT(prev_->next_ == 0);
@@ -41,9 +43,11 @@ MultiPartHandle::~MultiPartHandle()
 
 Length MultiPartHandle::openForRead()
 {
-    if (prev_ == 0) {
-        handle_->openForRead();
-    }
+    ASSERT(!opened_);
+    opened_ = true;
+
+    first().openHandle();
+
     rewind();
     return estimate();
 }
@@ -61,6 +65,7 @@ void MultiPartHandle::openForAppend(const Length& )
 
 long MultiPartHandle::read(void* buffer, long length)
 {
+    ASSERT(opened_);
     size_t left = size_ - position_;
     size_t size = std::min(left, size_t(length));
 
@@ -77,9 +82,9 @@ long MultiPartHandle::write(const void* buffer, long length)
 
 void MultiPartHandle::close()
 {
-    if (next_ == 0) {
-        handle_->close();
-    }
+    ASSERT(opened_);
+    opened_ = false;
+    first().closeHandle();
 }
 
 void MultiPartHandle::flush()
@@ -125,6 +130,7 @@ Length MultiPartHandle::estimate()
 void MultiPartHandle::restartReadFrom(const Offset& from)
 {
     Log::warning() << *this << " restart read from " << from << std::endl;
+    ASSERT(opened_);
     handle_->restartReadFrom(from + start_);
 }
 
@@ -194,6 +200,34 @@ bool MultiPartHandle::compress(bool sorted) {
     return false;
 }
 
+
 //-----------------------------------------------------------------------------
+
+MultiPartHandle& MultiPartHandle::first() {
+    MultiPartHandle* h = this;
+    while(h->prev_) {
+        h = h->prev_;
+    }
+    return *h;
+}
+
+void MultiPartHandle::openHandle() {
+    ASSERT(prev_ == 0);
+    if(opens_ == 0) {
+        handle_->openForRead();
+    }
+    opens_++;
+}
+
+void MultiPartHandle::closeHandle() {
+    ASSERT(prev_ == 0);
+    ASSERT(opens_ > 0);
+    opens_--;
+    if(opens_ == 0) {
+        handle_->close();
+    }
+}
+
+
 
 } // namespace eckit

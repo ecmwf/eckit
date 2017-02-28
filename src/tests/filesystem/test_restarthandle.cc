@@ -180,8 +180,9 @@ void TestMHHandle::test_write()
 
     std::cout << "-----" << std::endl;
 
+    MultiHandle mh1;
+
     {
-        MultiHandle mh1;
 
         for (int i = 0; i < 26; i++) {
 
@@ -203,7 +204,9 @@ void TestMHHandle::test_write()
 
     }
 
-    // DataHandle* fh = path3_.fileHandle();
+    DataHandle* fh = path3_.fileHandle();
+    ASSERT(fh->compare(mh1));
+    delete fh;
 
     // fh->openForRead();
 

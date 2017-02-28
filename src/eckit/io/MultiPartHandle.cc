@@ -131,7 +131,7 @@ void MultiPartHandle::restartReadFrom(const Offset& from)
 {
     Log::warning() << *this << " restart read from " << from << std::endl;
     ASSERT(opened_);
-    handle_->restartReadFrom(from + start_);
+    seek(from);
 }
 
 void MultiPartHandle::toRemote(Stream &s) const

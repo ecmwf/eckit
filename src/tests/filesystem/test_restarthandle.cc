@@ -237,9 +237,9 @@ void TestMHHandle::setup()
 
 void TestMHHandle::teardown()
 {
-    path1_.unlink();
-    path2_.unlink();
-    path3_.unlink();
+    if (path1_.exists()) path1_.unlink();
+    if (path2_.exists()) path2_.unlink();
+    if (path3_.exists()) path3_.unlink();
 }
 
 
@@ -247,7 +247,12 @@ void TestMHHandle::run()
 {
     setup();
 
-    test_write();
+    try {
+        test_write();
+    } catch (...) {
+        teardown();
+        throw;
+    }
 
     teardown();
 }

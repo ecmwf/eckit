@@ -135,6 +135,13 @@ void Main::taskID(long id) {
     taskID_ = id;
 }
 
+std::string Main::hostname()
+{
+    char hostname[256];
+    SYSCALL(::gethostname(hostname, sizeof(hostname)));
+    return hostname;
+}
+
 std::string Main::name() const {
     return name_;
 }

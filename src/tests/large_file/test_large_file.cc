@@ -28,6 +28,7 @@
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/filesystem/PathName.h"
 
 #define SIZE_2G 2147483648    // 2^31
 #define SIZE_1M    1048576    // 2^20
@@ -47,7 +48,7 @@ int main(int argc, char *argv[])
   int fd;
   char filename [] = "large.XXXXXX";
   if( ( fd = ::mkstemp( filename )) == -1 )
-    perror("cannot create temporary file"), exit(EXIT_FAILURE);
+    ::perror("cannot create temporary file"), ::exit(EXIT_FAILURE);
 
   std::cout << "openning file '" << filename << "'" << std::endl;
 
@@ -57,11 +58,11 @@ int main(int argc, char *argv[])
     
   // stretch the file size
   if( (long long) ::lseek(fd, TOTAL_SIZE-1, SEEK_SET) < 0 )
-    perror("Error calling lseek() to 'stretch' the file"), exit(EXIT_FAILURE);
+    ::perror("Error calling lseek() to 'stretch' the file"), ::exit(EXIT_FAILURE);
   
   // write something to the end of the file to actually resize it correctly
   if( ::write(fd, "", 1) != 1 )
-    close(fd), perror("Error writing last byte of the file"), exit(EXIT_FAILURE);
+    ::close(fd), perror("Error writing last byte of the file"), ::exit(EXIT_FAILURE);
 
   // lock the region beyond the 2GB limit until the EOF
 
@@ -78,6 +79,10 @@ int main(int argc, char *argv[])
   // unlock the region
   fl.l_type   = F_UNLCK;
   fcntl(fd, F_SETLK, &fl);
+
+  eckit::PathName file(filename);
+
+  file.unlink();
 
   return 0;
 }

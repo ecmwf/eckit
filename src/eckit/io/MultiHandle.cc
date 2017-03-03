@@ -421,26 +421,44 @@ bool MultiHandle::compress(bool sorted) {
     }
 
     bool changed = false;
+    std::vector<bool> skip(datahandles_.size(), false);
+    std::vector<Length> sizes(datahandles_.size());
+
+    for (size_t i = 0; i < datahandles_.size() ; i++) { 
+        sizes[i] = datahandles_[i]->estimate();
+    }
 
     for (size_t i = 0; i < datahandles_.size() - 1; i++) {
 
+        if(skip[i]) {
+            continue;
+        }
+
         DataHandle* h1 = datahandles_[i];
+
         MultiPartHandle* prev = 0;
-        Length len1 = h1->estimate();
+        Length len1 = sizes[i];
 
         for (size_t j = i + 1; j < datahandles_.size(); j++) {
+
+            if(skip[j]) {
+                continue;
+            }
+
             DataHandle* h2 = datahandles_[j];
-            Length len2 = h2->estimate();
+            Length len2 = sizes[j];
 
             if (h1->merge(h2)) {
 
                 if(prev == 0) {
                     prev = new MultiPartHandle(h1, len1, 0);
                     datahandles_[i] = prev;
+                    skip[i] = true;
                 }
 
                 prev = new MultiPartHandle(h1, len2, prev);
                 datahandles_[j] = prev;
+                skip[j] = true;
                 delete h2;
             }
         }

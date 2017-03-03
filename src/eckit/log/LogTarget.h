@@ -35,6 +35,14 @@ public: // methods
     virtual void flush() = 0;
 
     virtual ~LogTarget();
+
+protected:
+
+    friend std::ostream& operator<< (std::ostream& os, const LogTarget& c) {
+        c.print(os); return os;
+    }
+
+    virtual void print(std::ostream& s) const;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -31,6 +31,9 @@ public: // methods
 
     virtual ~TeeTarget();
 
+protected:
+    void print(std::ostream& s) const;
+
 private:
     LogTarget* left_;
     LogTarget* right_;

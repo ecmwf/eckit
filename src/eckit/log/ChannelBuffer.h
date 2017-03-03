@@ -81,6 +81,12 @@ protected: // members
 
 private:
 
+    friend std::ostream& operator<< (std::ostream& os, const ChannelBuffer& c) {
+        c.print(os); return os;
+    }
+
+    void print(std::ostream& s) const;
+
     friend class Channel;
 
 };

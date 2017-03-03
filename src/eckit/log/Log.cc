@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
+
 #include "eckit/config/LibEcKit.h"
 #include "eckit/log/Log.h"
 
@@ -33,17 +35,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#ifndef _GNU_SOURCE
+#if defined(_GNU_SOURCE)
 
-static void handle_strerror_r(std::ostream& s, int e, char es[], int hs )
-{
-    if ( hs == 0 )
-        s << " (" << es << ") " ;
-    else
-        s << " (errno = " << e << ") ";
-}
-
-#else // GNU implementation is not XSI compliant and returns char* instead of int
+/* To use with GNU libc strerror_r */
 
 static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
 {
@@ -53,6 +47,38 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
     else {
         s << " (errno = " << e << ") ";
     }
+}
+
+#elif (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600 || _POSIX_VERSION >= 200112L || _XOPEN_VERSION >= 600)
+
+/* To use with XSI-compliant strerror_r
+ *
+ * Linux defines _POSIX_C_SOURCE and _XOPEN_SOURCE
+ * BSD defines _POSIX_VERSION and _XOPEN_VERSION
+ * glibc defines _GNU_SOURCE and implements a non-XSI compliant strerror_r
+ */
+
+static void handle_strerror_r(std::ostream& s, int e, char es[], int hs )
+{
+    if ( hs == 0 ) {
+        s << " (" << es << ") " ;
+    }
+    else {
+        s << " (errno = " << e << ") ";
+    }
+}
+
+#else /* we don't know what to do */
+
+#warning "eckit doesn't recognise stderror_r since this isn't a GNU libc or a supported UNIX"
+
+/* This uses the deprecated sys_errlist[] error arrays */
+
+static void handle_strerror_r(std::ostream& s, int e, ... ) {
+    if (e < sys_nerr)
+        s << " (" << sys_errlist[e] << ") " ;
+    else
+        s << " (errno = " << e << ") ";
 }
 
 #endif
@@ -249,6 +275,7 @@ void Log::addStream(std::ostream& out) {
 }
 
 void Log::setFile(const std::string& path) {
+
     LogTarget* file = new FileTarget(path);
 
     info().setTarget(file);
@@ -324,6 +351,17 @@ void Log::reset() {
     std::vector<std::string> libs = eckit::system::Library::list();
     for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
         system::Library::lookup(*libname).debugChannel().reset();
+    }
+}
+
+void Log::print(std::ostream& os) {
+    os << "Log::info() "    << info()    << std::endl;
+    os << "Log::warning() " << warning() << std::endl;
+    os << "Log::error() "   << error()   << std::endl;
+    os << "Log::debug() "   << debug()   << std::endl;
+    std::vector<std::string> libs = eckit::system::Library::list();
+    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+        os << *libname << ".debug() " << system::Library::lookup(*libname).debugChannel() << std::endl;
     }
 }
 

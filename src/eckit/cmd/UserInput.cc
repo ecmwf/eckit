@@ -494,7 +494,7 @@ void UserInput::saveHistory(const char *path, int max) {
     entry *last = NULL;
     entry *e;
 
-    FILE *f = fopen(path, "w");
+    FILE *f = ::fopen(path, "w");
 
     if (!f) {
         perror(path);
@@ -523,7 +523,7 @@ void UserInput::saveHistory(const char *path, int max) {
 void UserInput::loadHistory(const char *path) {
 
     char line[10240];
-    FILE *f = fopen(path, "r");
+    FILE *f = ::fopen(path, "r");
 
     if (!f) {
         perror(path);

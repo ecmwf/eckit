@@ -10,11 +10,11 @@
 
 #include "eckit/eckit.h"
 
+#include <dirent.h>
 #include <limits.h>
 #include <stdlib.h>
-
+#include <unistd.h>
 #include <sys/stat.h>
-#include <dirent.h>
 #include <sys/statvfs.h>
 
 #include "eckit/filesystem/LocalPathName.h"
@@ -54,10 +54,10 @@ static void readPathsTable() {
 
     std::ifstream in(path.localPath());
 
-    // eckit::Log::info() << "Loading library paths from " << path << std::endl;
+    eckit::Log::debug() << "Loading library paths from " << path << std::endl;
 
     if (!in) {
-        // eckit::Log::error() << path << eckit::Log::syserr << std::endl;
+        eckit::Log::debug() << "Failed to read " << path << " -- " << eckit::Log::syserr << std::endl;
         return;
     }
 
@@ -196,7 +196,7 @@ LocalPathName LocalPathName::orphanName() const
 
 bool LocalPathName::exists() const
 {
-	return ::access(path_.c_str(),F_OK) == 0;
+    return ::access(path_.c_str(), F_OK) == 0;
 }
 
 bool LocalPathName::available() const
@@ -265,7 +265,7 @@ void LocalPathName::mkdir(short mode) const
 {
 	try
 	{
-		char path[MAXNAMLEN+1];
+		char path[PATH_MAX+1];
 
         size_t l = path_.length();
 
@@ -367,6 +367,7 @@ static void expandTilde(std::string& path)
             }
 
             // 1. match against a path defined in application / tool home ~/etc/paths
+            //    or file defined in $LIBRARY_CONFIG_PATHS
 
             pthread_once(&once, readPathsTable);
 
@@ -396,6 +397,8 @@ static void expandTilde(std::string& path)
                 path = eckit::system::Library::lookup(s).expandPath(path);
                 return;
             }
+
+            // in case the library is unknown (not registered), issue error
 
             std::ostringstream oss;
             oss << "Could not expand tilde in path " << path << std::endl;

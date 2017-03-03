@@ -22,6 +22,11 @@ void MessageTarget::line(const char* line) {
     Monitor::instance().message(line);
 }
 
+void MessageTarget::print(std::ostream& s) const
+{
+    s << "MessageTarget()";
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

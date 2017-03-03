@@ -34,6 +34,11 @@ void PrefixTarget::writePrefix() {
 void PrefixTarget::writeSuffix() {
 }
 
+void PrefixTarget::print(std::ostream& s) const
+{
+    s << "PrefixTarget(prefix=" << prefix_ << ", space=" << space_ << ")";
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

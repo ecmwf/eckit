@@ -22,6 +22,11 @@ void StatusTarget::line(const char* line) {
     Monitor::instance().status(line);
 }
 
+void StatusTarget::print(std::ostream& s) const
+{
+    s << "StatusTarget()";
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

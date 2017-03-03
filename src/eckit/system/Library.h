@@ -42,7 +42,7 @@ public: // methods
 
     const std::string& name() const;
 
-    virtual std::string etcDirectory() const;
+    virtual std::string prefixDirectory() const;
 
     virtual std::string expandPath(const std::string& path) const;
 
@@ -89,7 +89,7 @@ private: // members
     mutable eckit::Mutex mutex_;
 
     mutable std::string libraryPath_;
-    mutable std::string etcDirectory_;
+    mutable std::string prefixDirectory_;
 
     mutable eckit::ScopedPtr<eckit::Channel> debugChannel_;
 

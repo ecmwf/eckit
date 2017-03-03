@@ -71,8 +71,9 @@ private:
     virtual void writePrefix(){}
     virtual void writeSuffix(){}
 
-    std::string buffer_;
+    void print(std::ostream& s) const { s << "CapitalizerTarget()"; }
 
+    std::string buffer_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

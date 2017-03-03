@@ -176,6 +176,7 @@ add_subdirectory( bamboo )
 add_subdirectory( contrib )
 add_subdirectory( doc )
 add_subdirectory( src )
+add_subdirectory( regressions )
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files SOURCES
                        TODO AUTHORS README NOTICE LICENSE INSTALL ChangeLog COPYING )

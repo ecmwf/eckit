@@ -20,8 +20,8 @@ OStreamTarget::OStreamTarget(std::ostream& out):
     out_(out) {
 }
 
-OStreamTarget::~OStreamTarget()
-{
+OStreamTarget::~OStreamTarget() {
+//    std::cerr << "OStreamTarget::~OStreamTarget()" << std::endl;
 }
 
 void OStreamTarget::write(const char* start, const char* end) {
@@ -31,6 +31,10 @@ void OStreamTarget::flush() {
     out_.flush();
 }
 
+void OStreamTarget::print(std::ostream& s) const
+{
+    s << "OStreamTarget()";
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

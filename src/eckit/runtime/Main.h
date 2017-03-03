@@ -47,6 +47,9 @@ public: // methods
     long taskID() const;
     void taskID(long);
 
+    /// Platform agnostic hostname
+    static std::string hostname();
+
     // From Configurable
 
     virtual std::string name() const;

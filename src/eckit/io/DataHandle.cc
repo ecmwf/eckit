@@ -10,6 +10,8 @@
 
 #include <cmath>
 
+#include "eckit/eckit_ecbuild_config.h"
+
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/io/DataHandle.h"
@@ -19,6 +21,7 @@
 #include "eckit/log/Progress.h"
 #include "eckit/config/Resource.h"
 #include "eckit/log/Timer.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
@@ -70,6 +73,7 @@ static double rate(double x, char& c)
 
     c = ' ';
     const char* p = b;
+    c = ' ';
     while(x > 100)
     {
         x /= 1024;
@@ -88,8 +92,9 @@ void DataHandle::encode(Stream& s) const
 
 void DataHandle::flush()
 {
-    Log::error() << *this << std::endl;
-    NOTIMP;
+    std::ostringstream os;
+    os << "DataHandle::flush() [" << *this << "]";
+    throw NotImplemented(os.str(), Here());
 }
 
 Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher)
@@ -322,22 +327,22 @@ bool DataHandle::compare(DataHandle& other)
 }
 
 Offset DataHandle::position() {
-    Log::error() << *this << std::endl;
-    NOTIMP;
+    std::ostringstream os;
+    os << "DataHandle::position() [" << *this << "]";
+    throw NotImplemented(os.str(), Here());
 }
 
 void DataHandle::rewind() {
-    Log::error() << *this << std::endl;
     std::ostringstream os;
-    os << "NOT IMPLEMENTED DataHandle::rewind(" << *this << ")";
-    throw SeriousBug(os.str());
-    //NOTIMP;
+    os << "DataHandle::rewind() [" << *this << "]";
+    throw NotImplemented(os.str(), Here());
 }
 
 Offset DataHandle::seek(const Offset& from)
 {
-    Log::error() << *this << std::endl;
-    NOTIMP;
+    std::ostringstream os;
+    os << "DataHandle::seek(" << from << ") [" << *this << "]";
+    throw NotImplemented(os.str(), Here());
 }
 
 void DataHandle::skip(const Length& len)
@@ -348,14 +353,16 @@ void DataHandle::skip(const Length& len)
 
 void DataHandle::restartReadFrom(const Offset& from)
 {
-    Log::error() << *this << std::endl;
-    NOTIMP;
+    std::ostringstream os;
+    os << "DataHandle::restartReadFrom(" << from << ") [" << *this << "]";
+    throw NotImplemented(os.str(), Here());
 }
 
-void DataHandle::restartWriteFrom(const Offset&)
+void DataHandle::restartWriteFrom(const Offset& offset)
 {
-    Log::error() << *this << std::endl;
-    NOTIMP;
+    std::ostringstream os;
+    os << "DataHandle::restartWriteFrom(" << offset << ") [" << *this << "]";
+    throw NotImplemented(os.str(), Here());
 }
 
 void DataHandle::toLocal(Stream& s) const
@@ -379,9 +386,215 @@ void DataHandle::cost(std::map<std::string,Length>& c, bool read) const
 
 DataHandle* DataHandle::clone() const
 {
-    Log::error() << *this << std::endl;
+    std::ostringstream os;
+    os << "DataHandle::clone(" << *this << ")";
+    throw NotImplemented(os.str(), Here());
+}
+
+//-----------------------------------------------------------------------------
+
+#if defined(EC_HAVE_FOPENCOOKIE) || defined(EC_HAVE_FUNOPEN)
+
+class FOpenDataHandle {
+
+    DataHandle* handle_;
+    const char* mode_;
+    bool delete_on_close_;
+    Offset position_; // Keep track of position to cater for
+
+public:
+
+    FOpenDataHandle(DataHandle* handle, const char* mode, bool delete_on_close);
+    ~FOpenDataHandle() ;
+
+    long read(char *buffer, long length);
+    long write(const char *buffer, long length);
+    long seek(long pos, int whence) ;
+    int close() ;
+};
+
+
+
+FOpenDataHandle::FOpenDataHandle(DataHandle* handle, const char* mode, bool delete_on_close):
+    handle_(handle),
+    mode_(mode),
+    delete_on_close_(delete_on_close),
+    position_(0) {
+
+	bool ok = false;
+
+	if(::strcmp(mode, "r") == 0) { handle_->openForRead(); ok = true;}
+	if(::strcmp(mode, "w") == 0) { handle_->openForWrite(0); ok = true;}
+	if(::strcmp(mode, "a") == 0) { handle_->openForAppend(0); ok = true;}
+
+	ASSERT(ok);
+
+}
+
+FOpenDataHandle::~FOpenDataHandle() {
+
+   handle_->close();
+
+    if(delete_on_close_) {
+        delete handle_;
+    }
+}
+
+
+long FOpenDataHandle::read(char *buffer, long length) {
+    try {
+        long len = handle_->read(buffer, length);
+        if(len > 0) {
+            position_ += len;
+        }
+        return len;
+    }
+    catch(std::exception& e) {
+        return 0;
+    }
+}
+
+long FOpenDataHandle::write(const char *buffer, long length){
+    try{
+        long len = handle_->write(buffer, length);
+        if(len > 0) {
+            position_ += len;
+        }
+        return len;
+    }
+    catch(std::exception& e) {
+        return 0;
+    }
+}
+
+long FOpenDataHandle::seek(long pos, int whence) {
+
+    try {
+        long where = pos;
+        switch(whence) {
+
+            case SEEK_SET:
+                where = pos;
+                break;
+
+            case SEEK_CUR:
+                where = long(position_) + pos;
+                break;
+
+            case SEEK_END:
+                where = long(handle_->estimate()) - pos;
+                break;
+
+            default:
+                NOTIMP;
+                break;
+        }
+
+        if(where == position_) {
+            return where;
+        }
+
+        long w = handle_->seek(where);
+        if(w >= 0) {
+            position_ = w;
+        }
+        return w;
+    }
+    catch(std::exception& e) {
+        return -1;
+    }
+}
+
+int FOpenDataHandle::close() {
+    try {
+        delete this;
+        return 0;
+    }
+    catch(std::exception& e) {
+        return -1;
+    }
+}
+
+
+static long readfn(void *data, char *buffer, long length) {
+    FOpenDataHandle *fd = reinterpret_cast<FOpenDataHandle*>(data);
+    return fd->read(buffer, length);
+}
+
+static long writefn(void *data, const char *buffer, long length){
+    FOpenDataHandle *fd = reinterpret_cast<FOpenDataHandle*>(data);
+    return fd->write(buffer, length);
+}
+
+static long seekfn(void *data, long pos, int whence) {
+    FOpenDataHandle *fd = reinterpret_cast<FOpenDataHandle*>(data);
+    return fd->seek(pos, whence);
+}
+
+static int closefn(void *data) {
+    FOpenDataHandle *fd = reinterpret_cast<FOpenDataHandle*>(data);
+    return fd->close();
+}
+
+#ifdef EC_HAVE_FOPENCOOKIE
+
+static ssize_t _read(void *cookie, char *buf, size_t size) {
+	return readfn(cookie, buf, size);
+}
+
+static ssize_t _write(void *cookie, const char *buf, size_t size) {
+	return writefn(cookie, buf, size);
+}
+
+static int _seek(void *cookie, off64_t *offset, int whence) {
+	*offset =  seekfn(cookie, *offset, whence);
+	return *offset >= 0 ? 0 : -1;
+}
+
+static int _close(void *cookie) {
+	return closefn(cookie);
+}
+
+FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
+        ASSERT(sizeof(long) >= sizeof(size_t));
+        ASSERT(sizeof(long) >= sizeof(ssize_t));
+
+	cookie_io_functions_t f = {&_read, &_write, &_seek, &_close};
+    return  ::fopencookie(new FOpenDataHandle(this, mode, delete_on_close), mode, f);
+
+}
+
+#else
+
+static int _read(void *data, char *buffer, int length) {
+	return readfn(data, buffer, length);
+}
+
+static int _write(void *data, const char *buffer, int length){
+	return writefn(data, buffer, length);
+}
+
+static fpos_t _seek(void *data, fpos_t pos, int whence) {
+	return seekfn(data, pos, whence);
+}
+
+static int _close(void *data) {
+	return closefn(data);
+}
+
+FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
+    ASSERT(sizeof(long) >= sizeof(fpos_t));
+    return ::funopen(new FOpenDataHandle(this, mode, delete_on_close), &_read, &_write, &_seek, &_close);
+}
+
+#endif
+
+#else
+
+FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
     NOTIMP;
 }
-//-----------------------------------------------------------------------------
+
+#endif
 
 } // namespace eckit

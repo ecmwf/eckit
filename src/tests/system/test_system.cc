@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_system_info )
     BOOST_CHECK_NO_THROW( execPath = eckit::system::SystemInfo::instance().executablePath() );
     BOOST_CHECK( std::string(execPath).size() );
 
-    eckit::Log::info() << "execPath is " << execPath << std::endl;
+    Log::info() << "execPath is " << execPath << std::endl;
 }
 
 BOOST_AUTO_TEST_CASE( test_eckit_system_library )
@@ -76,10 +76,16 @@ BOOST_AUTO_TEST_CASE( test_eckit_system_library )
 
         const Library& lib = Library::lookup(*libname);
 
-        BOOST_CHECK_NO_THROW( lib.etcDirectory() );
+        BOOST_CHECK_NO_THROW( lib.prefixDirectory() );
 
-        eckit::Log::info() << "Library " << lib.name() << " @ " << lib.etcDirectory() << std::endl;
+        Log::info() << "Library " << lib.name() << " @ " << lib.prefixDirectory() << std::endl;
+        Log::info() << lib << std::endl;
     }
+
+    // this exercises the tilde expansion
+
+    BOOST_CHECK_NO_THROW( LocalPathName("~eckit/etc").exists() );
+    BOOST_CHECK_NO_THROW( LocalPathName("~eckit/etc/eckit/test/test.cfg").exists() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

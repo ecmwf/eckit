@@ -8,21 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-#include <netinet/in.h>
 #include <assert.h>
 #include <stdint.h>
-
+#include <sys/types.h>
+#include <netinet/in.h>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
 #include "eckit/serialisation/Stream.h"
 
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 #if 0
 #define T(a,x) do { std::cout << "Stream: " << a << " ->  "  << x << std::endl;} while(0)
@@ -779,7 +779,7 @@ void Stream::dump(std::ostream &out, const char *p, size_t len) {
     }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

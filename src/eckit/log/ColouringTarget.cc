@@ -41,6 +41,13 @@ void ColouringTarget::writeSuffix() {
     target_->write(end_.c_str(), end_.c_str() + end_.size());
 }
 
+void ColouringTarget::print(std::ostream& s) const
+{
+    s << "ColouringTarget(";
+    if(target_)  {s << "target=" << *target_;}
+    s << ")";
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

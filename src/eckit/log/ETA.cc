@@ -21,7 +21,7 @@ ETA::ETA(double ETA):
 {
 }
 
-ETA::ETA(const timeval& time):
+ETA::ETA(const ::timeval& time):
 	ETA_(time.tv_sec + time.tv_usec / 1000000.0)
 {
 }

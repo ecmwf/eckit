@@ -34,9 +34,13 @@ private:
     virtual void write(const char* start, const char* end);
     virtual void flush();
 
+    virtual void print(std::ostream& s) const;
+
 private:
 
     std::ofstream out_;
+    
+    PathName path_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

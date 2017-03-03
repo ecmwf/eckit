@@ -35,11 +35,10 @@ public: // methods
 
     Channel(LogTarget* = 0);
 
-    ~Channel();
+    virtual ~Channel();
 
     bool operator !() const;
     operator bool() const;
-
 
     void indent(const char* prefix = "");
     void unindent();
@@ -58,7 +57,13 @@ public: // methods
 
     void reset();
 
-private:
+private: // members
+
+    friend std::ostream& operator<< (std::ostream& os, const Channel& c) {
+        c.print(os); return os;
+    }
+
+    void print(std::ostream& s) const;
 
     ChannelBuffer* buffer_;
 

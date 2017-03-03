@@ -23,8 +23,8 @@ Timer Statistics::timer_;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Statistics::reportCount(std::ostream &out, const char *title, size_t value, const char *indent) {
-    if (value)
+void Statistics::reportCount(std::ostream &out, const char *title, size_t value, const char *indent, bool always) {
+    if (value || always)
     {
         out << indent
             << title
@@ -35,8 +35,8 @@ void Statistics::reportCount(std::ostream &out, const char *title, size_t value,
     }
 }
 
-void Statistics::reportUnit(std::ostream &out, const char *title, const char* unit, double value, const char *indent) {
-    if (value)
+void Statistics::reportUnit(std::ostream &out, const char *title, const char* unit, double value, const char *indent, bool always) {
+    if (value || always)
     {
         out << indent
             << title
@@ -50,8 +50,8 @@ void Statistics::reportUnit(std::ostream &out, const char *title, const char* un
 }
 
 
-void Statistics::reportRate(std::ostream &out, const char *title, unsigned long long value, const char *indent) {
-    if (value)
+void Statistics::reportRate(std::ostream &out, const char *title, unsigned long long value, const char *indent, bool always) {
+    if (value || always)
     {
         out << indent
             << title
@@ -63,8 +63,8 @@ void Statistics::reportRate(std::ostream &out, const char *title, unsigned long 
     }
 }
 
-void Statistics::reportBytes(std::ostream &out, const char *title, unsigned long long value, const char *indent) {
-    if (value)
+void Statistics::reportBytes(std::ostream &out, const char *title, unsigned long long value, const char *indent, bool always) {
+    if (value || always)
     {
         out << indent
             << title
@@ -76,8 +76,8 @@ void Statistics::reportBytes(std::ostream &out, const char *title, unsigned long
     }
 }
 
-void Statistics::reportTime(std::ostream &out, const char *title, const Timing &value, const char *indent) {
-    if (value.updates_)
+void Statistics::reportTime(std::ostream &out, const char *title, const Timing &value, const char *indent, bool always) {
+    if (value.updates_ || always)
     {
         out << indent
             << title
@@ -89,8 +89,8 @@ void Statistics::reportTime(std::ostream &out, const char *title, const Timing &
     }
 }
 
-void Statistics::reportTime(std::ostream &out, const char *title, double value, const char *indent) {
-    if (value)
+void Statistics::reportTime(std::ostream &out, const char *title, double value, const char *indent, bool always) {
+    if (value || always)
     {
         out << indent
             << title

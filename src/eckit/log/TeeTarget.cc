@@ -60,6 +60,14 @@ void TeeTarget::flush() {
     }
 }
 
+void TeeTarget::print(std::ostream& s) const
+{
+    s << "TeeTarget(";
+    if(left_)  {s << *left_;}
+    if(right_) {s << *right_;}
+    s << ")";
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

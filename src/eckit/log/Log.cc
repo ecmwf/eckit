@@ -312,9 +312,12 @@ void Log::setCallback(channel_callback_t cb, void* data) {
     if (debug()) {
         debug().setCallback(cb, data);
     }
+
     std::vector<std::string> libs = eckit::system::Library::list();
     for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
-        system::Library::lookup(*libname).debugChannel().setCallback(cb, data);
+        if (system::Library::lookup(*libname).debugChannel()) {
+            system::Library::lookup(*libname).debugChannel().setCallback(cb, data);
+        }
     }
 }
 

@@ -8,24 +8,26 @@
  * does it submit to any jurisdiction.
  */
 
-// File ClusterDisks.cc
-// Baudouin Raoult - (c) ECMWF Jul 11
+/// @date   Jun 2011
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
 
 
-#include "eckit/thread/AutoLock.h"
-#include "eckit/io/cluster/ClusterDisks.h"
-#include "eckit/filesystem/FileSpace.h"
-#include "eckit/parser/JSON.h"
-#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"
+#include "eckit/container/SharedMemArray.h"
+#include "eckit/filesystem/FileSpace.h"
+#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/io/cluster/NodeInfo.h"
+#include "eckit/parser/JSON.h"
 #include "eckit/parser/Tokenizer.h"
+#include "eckit/thread/AutoLock.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class ClusterDisk {
 	bool active_;
@@ -120,24 +122,105 @@ inline unsigned long version(ClusterDisk*)
 	return 1;
 }
 
-typedef MappedArray<ClusterDisk> DiskArray;
-static DiskArray* clusterDisks = 0;
+//----------------------------------------------------------------------------------------------------------------------
 
+class DiskArray : private eckit::NonCopyable {
+
+public:
+
+    typedef ClusterDisk*       iterator;
+    typedef const ClusterDisk* const_iterator;
+
+    virtual ~DiskArray() {}
+
+    virtual void sync() = 0;
+    virtual void lock() = 0;
+    virtual void unlock() = 0;
+
+    virtual iterator begin() = 0;
+    virtual iterator end() = 0;
+    virtual const_iterator begin() const = 0;
+    virtual const_iterator end()   const = 0;
+
+    virtual unsigned long size() = 0;
+    virtual ClusterDisk& operator[](unsigned long n) = 0;
+};
+
+class MemoryMappedDiskArray : public DiskArray {
+
+    virtual void sync() { map_.sync(); }
+    virtual void lock() { map_.lock(); }
+    virtual void unlock()  { map_.unlock(); }
+
+    virtual iterator begin()  { return map_.begin(); }
+    virtual iterator end()    { return map_.end(); }
+
+    virtual const_iterator begin() const   { return map_.begin(); }
+    virtual const_iterator end()   const   { return map_.end(); }
+
+    virtual unsigned long size()   { return map_.size(); }
+    virtual ClusterDisk& operator[](unsigned long n) { return map_[n]; }
+
+    MappedArray<ClusterDisk> map_;
+
+public:
+
+    MemoryMappedDiskArray(const PathName& path, unsigned long size) :
+        DiskArray(),
+        map_(path, size)
+    {}
+};
+
+class SharedMemoryDiskArray : public DiskArray {
+
+    virtual void sync() { map_.sync(); }
+    virtual void lock() { map_.lock(); }
+    virtual void unlock()  { map_.unlock(); }
+
+    virtual iterator begin()  { return map_.begin(); }
+    virtual iterator end()    { return map_.end(); }
+
+    virtual const_iterator begin() const   { return map_.begin(); }
+    virtual const_iterator end()   const   { return map_.end(); }
+
+    virtual unsigned long size()   { return map_.size(); }
+    virtual ClusterDisk& operator[](unsigned long n) { return map_[n]; }
+
+    SharedMemArray<ClusterDisk> map_;
+
+public:
+
+    SharedMemoryDiskArray(const PathName& path, const std::string& name, unsigned long size) :
+        DiskArray(),
+        map_(path, name, size)
+    {}
+};
+
+static DiskArray* clusterDisks = 0;
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 
-static std::vector<std::string> localPaths;
-
-static void init()
+static void diskarray_init()
 {
-	LocalPathName path("~/etc/cluster/disks"); // Avoid recursion...
-	clusterDisks = new DiskArray(path, 10240);
-}
+    LocalPathName path("~/etc/cluster/disks"); // Avoid recursion...
+    size_t disksArraySize  = Resource<size_t>("disksArraySize", 10240);
 
+    std::string diskArrayType = Resource<std::string>("disksArrayType","MemoryMapped");
+
+    if(diskArrayType == "MemoryMapped")
+        clusterDisks = new MemoryMappedDiskArray(path, disksArraySize);
+    else if(diskArrayType == "SharedMemory")
+        clusterDisks = new SharedMemoryDiskArray(path, "/etc-cluster-disks", disksArraySize);
+    else {
+        std::ostringstream oss;
+        oss << "Invalid diskArrayType : " << diskArrayType << ", valid types are 'MemoryMapped' and 'SharedMemory'" << std::endl;
+        throw eckit::BadParameter(oss.str(), Here());
+    }
+}
 
 
 void ClusterDisks::reset()
 {
-	pthread_once(&once, init);
+    pthread_once(&once, diskarray_init);
 	AutoLock<DiskArray> lock(*clusterDisks);
 
 	for(DiskArray::iterator k = clusterDisks->begin(); k != clusterDisks->end(); ++k)
@@ -147,8 +230,8 @@ void ClusterDisks::reset()
 void ClusterDisks::cleanup()
 {
     /*
-	pthread_once(&once, init);
-	AutoLock<DiskArray> lock(*clusterDisks);
+    pthread_once(&once, diskarray_init);
+    AutoLock<DiskArray> lock(*clusterDisks);
 
 	for(DiskArray::iterator k = clusterDisks->begin(); k != clusterDisks->end(); ++k)
         if((*k).active() && (*k).offline())
@@ -165,8 +248,8 @@ void ClusterDisks::forget(const NodeInfo& info)
 	if(info.name() == "marsfs")
 	{
 		time_t now = ::time(0);
-		pthread_once(&once, init);
-		AutoLock<DiskArray> lock(*clusterDisks);
+        pthread_once(&once, diskarray_init);
+        AutoLock<DiskArray> lock(*clusterDisks);
 
 		for(DiskArray::iterator k = clusterDisks->begin(); k != clusterDisks->end(); ++k)
 		{
@@ -185,8 +268,8 @@ void ClusterDisks::offLine(const NodeInfo& info)
 	if(info.name() == "marsfs")
 	{
 		time_t now = ::time(0);
-		pthread_once(&once, init);
-		AutoLock<DiskArray> lock(*clusterDisks);
+        pthread_once(&once, diskarray_init);
+        AutoLock<DiskArray> lock(*clusterDisks);
 
 		//cout << "=========== ClusterDisks::forget "  << info << std::endl;
 
@@ -204,7 +287,7 @@ void ClusterDisks::offLine(const NodeInfo& info)
 void ClusterDisks::update(const std::string& node, const std::string& type, const std::vector<std::string>& disks)
 {
 
-	pthread_once(&once, init);
+    pthread_once(&once, diskarray_init);
 
 	AutoLock<DiskArray> lock(*clusterDisks);
 
@@ -240,7 +323,7 @@ void ClusterDisks::update(const std::string& node, const std::string& type, cons
 
 void ClusterDisks::list(std::ostream& out)
 {
-	pthread_once(&once, init);
+    pthread_once(&once, diskarray_init);
 
 	AutoLock<DiskArray> lock(*clusterDisks);
 	for(DiskArray::const_iterator k = clusterDisks->begin(); k != clusterDisks->end(); ++k)
@@ -252,7 +335,7 @@ void ClusterDisks::list(std::ostream& out)
 
 void ClusterDisks::json(JSON& j)
 {
-	pthread_once(&once, init);
+    pthread_once(&once, diskarray_init);
 
 	j.startList();
 
@@ -272,7 +355,7 @@ void ClusterDisks::json(JSON& j)
 time_t ClusterDisks::lastModified(const std::string& type)
 {
 
-	pthread_once(&once, init);
+    pthread_once(&once, diskarray_init);
 
 	AutoLock<DiskArray> lock(*clusterDisks);
 
@@ -290,7 +373,7 @@ time_t ClusterDisks::lastModified(const std::string& type)
 void ClusterDisks::load(const std::string& type, std::vector<std::string>& disks)
 {
 
-	pthread_once(&once, init);
+    pthread_once(&once, diskarray_init);
 
 	AutoLock<DiskArray> lock(*clusterDisks);
 	for(DiskArray::const_iterator k = clusterDisks->begin(); k != clusterDisks->end(); ++k)
@@ -306,7 +389,7 @@ void ClusterDisks::load(const std::string& type, std::vector<std::string>& disks
 std::string ClusterDisks::node(const std::string& path)
 {
 
-	pthread_once(&once, init);
+    pthread_once(&once, diskarray_init);
 
 	DiskArray::const_iterator j = clusterDisks->end();
 
@@ -378,7 +461,7 @@ std::string ClusterDisks::node(const std::string& path)
 
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

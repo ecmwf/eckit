@@ -8,19 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-// File TxnEvent.h
-// Baudouin Raoult - ECMWF Jan 97
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date Jan 97
 
 #ifndef eckit_TxnEvent_h
 #define eckit_TxnEvent_h
 
 #include "eckit/serialisation/Streamable.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 typedef unsigned long long TxnID;
 
@@ -82,7 +82,7 @@ private:
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

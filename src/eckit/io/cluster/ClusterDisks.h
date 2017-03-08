@@ -8,19 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-// File ClusterDisks.h
-// Baudouin Raoult - (c) ECMWF Jul 11
+/// @date   Jun 2011
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
 
 #ifndef eckit_ClusterDisks_h
 #define eckit_ClusterDisks_h
 
-#include "eckit/eckit.h"
+#include <iosfwd>
+#include <string>
+#include <vector>
 
-//-----------------------------------------------------------------------------
+#include "eckit/io/cluster/NodeInfo.h"
+#include "eckit/parser/JSON.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class NodeInfo;
 class JSON;
@@ -48,7 +52,7 @@ public:
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -20,10 +20,6 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-int tounderscore(int p) {
-    return p == '/' ? '_' : p;
-}
-
 template<class T>
 SharedMemArray<T>::SharedMemArray(const PathName& path, const std::string& shmName, size_t size):
 	sem_(path),

@@ -8,22 +8,80 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/thread/AutoLock.h"
-#include "eckit/serialisation/FileStream.h"
-#include "eckit/runtime/Monitor.h"
+#include "eckit/config/Resource.h"
+#include "eckit/container/MappedArray.h"
+#include "eckit/container/SharedMemArray.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Seconds.h"
+#include "eckit/log/TimeStamp.h"
+#include "eckit/runtime/Monitor.h"
+#include "eckit/serialisation/FileStream.h"
+#include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-#include "eckit/log/TimeStamp.h"
-#include "eckit/utils/Translator.h"
 #include "eckit/transaction/TxnLog.h"
+#include "eckit/utils/Translator.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+
+class TxnArray : private eckit::NonCopyable {
+
+public:
+
+    typedef TxnID*       iterator;
+    typedef const TxnID* const_iterator;
+
+    virtual ~TxnArray() {}
+
+    virtual void lock() = 0;
+    virtual void unlock() = 0;
+
+    virtual unsigned long size() = 0;
+    virtual TxnID& operator[](unsigned long n) = 0;
+};
+
+class MemoryMappedTxnArray : public TxnArray {
+
+    virtual void lock() { map_.lock(); }
+    virtual void unlock()  { map_.unlock(); }
+
+    virtual unsigned long size()   { return map_.size(); }
+    virtual TxnID& operator[](unsigned long n) { return map_[n]; }
+
+    MappedArray<TxnID> map_;
+
+public:
+
+    MemoryMappedTxnArray(const PathName& path, unsigned long size) :
+        TxnArray(),
+        map_(path, size)
+    {}
+};
+
+class SharedMemoryTxnArray : public TxnArray {
+
+    virtual void lock() { map_.lock(); }
+    virtual void unlock()  { map_.unlock(); }
+
+    virtual unsigned long size()   { return map_.size(); }
+    virtual TxnID& operator[](unsigned long n) { return map_[n]; }
+
+    SharedMemArray<TxnID> map_;
+
+public:
+
+    SharedMemoryTxnArray(const PathName& path, const std::string& name, unsigned long size) :
+        TxnArray(),
+        map_(path, name, size)
+    {}
+};
+
+
+//----------------------------------------------------------------------------------------------------------------------
 
 static PathName pathName(const std::string& name)
 {
@@ -44,10 +102,27 @@ static PathName lockName(const std::string& name)
 template<class T>
 TxnLog<T>::TxnLog(const std::string& name):
 	path_(pathName(name)),
-	next_(path_ +  "/next"),
-	nextID_(next_,1)
+    next_(path_ +  "/next")
 {
-	AutoLock<MappedArray<TxnID> > lock(nextID_);
+    std::string txnArrayType = Resource<std::string>("txnArrayType", "MemoryMapped");
+
+    if(txnArrayType == "MemoryMapped") {
+        nextID_ = new MemoryMappedTxnArray(next_, 1);
+    }
+    else if(txnArrayType == "SharedMemory") {
+        std::string s = path_;
+        std::replace(s.begin(), s.end(), '/', '-');
+        nextID_ = new SharedMemoryTxnArray(next_, s, 1);
+    }
+    else {
+        std::ostringstream oss;
+        oss << "Invalid txnArrayType : " << txnArrayType << ", valid types are 'MemoryMapped' and 'SharedMemory'" << std::endl;
+        throw eckit::BadParameter(oss.str(), Here());
+    }
+
+
+
+    AutoLock<TxnArray > lock(*nextID_);
 	Log::debug() << "TxnLog file is " << path_ << std::endl;
 
 	PathName done = path_ + "/done";
@@ -71,10 +146,10 @@ PathName TxnLog<T>::name(T& event)
 template<class T>
 void TxnLog<T>::begin(T& event)
 {
-	AutoLock<MappedArray<TxnID> > lock(nextID_);
+    AutoLock<TxnArray > lock(*nextID_);
 
 	if(event.transactionID() == 0)
-		event.transactionID(++nextID_[0]);
+        event.transactionID(++(*nextID_)[0]);
 
 	PathName path = name(event);
 	ASSERT(!path.exists());
@@ -86,7 +161,7 @@ void TxnLog<T>::begin(T& event)
 template<class T>
 void TxnLog<T>::end(T& event,bool backup)
 {
-	AutoLock<MappedArray<TxnID> > lock(nextID_);
+    AutoLock<TxnArray > lock(*nextID_);
 
 	PathName path = name(event);
 
@@ -108,21 +183,21 @@ void TxnLog<T>::end(T& event,bool backup)
 
 template<class T>
 class RecoverThread : public Thread {
-	MappedArray<TxnID>& nextID_;
+    TxnArray& nextID_;
 	TxnRecoverer<T>&    client_;
 	std::vector<PathName>    result_;
 	long                age_;
 	time_t              now_;
 	virtual void run();
 public:
-	RecoverThread(const PathName&,MappedArray<TxnID>&,
+    RecoverThread(const PathName&,TxnArray&,
 		TxnRecoverer<T>&,long);
 	void recover();
 };
 
 template<class T>
 RecoverThread<T>::RecoverThread(const PathName& path,
-		MappedArray<TxnID>& nextID,
+        TxnArray& nextID,
 		TxnRecoverer<T>& client,
 		long age):
     nextID_(nextID),
@@ -130,7 +205,7 @@ RecoverThread<T>::RecoverThread(const PathName& path,
 	age_(age),
 	now_(::time(0))
 {
-	AutoLock<MappedArray<TxnID> > lock(nextID_);
+    AutoLock<TxnArray > lock(nextID_);
 	PathName::match(path+"/[0-9]*",result_);
 	
 	// Sort by ID to preserve order
@@ -186,12 +261,12 @@ void TxnLog<T>::recover(TxnRecoverer<T>& client,bool inThread,long age)
 {
 	if(inThread)
 	{
-		ThreadControler c(new RecoverThread<T>(path_,nextID_,client,age));
+        ThreadControler c(new RecoverThread<T>(path_,*nextID_,client,age));
 		c.start();
 	}
 	else
 	{
-		 RecoverThread<T> r(path_,nextID_,client,age);
+         RecoverThread<T> r(path_,*nextID_,client,age);
 		 r.recover();
 	}
 }
@@ -271,7 +346,7 @@ void TxnLog<T>::find(TxnFinder<T>& r)
 	}
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

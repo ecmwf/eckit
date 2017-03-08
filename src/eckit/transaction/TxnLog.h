@@ -8,22 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-// File TxnLog.h
-// Baudouin Raoult - ECMWF Jan 97
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date Jan 97
 
 #ifndef eckit_TxnLog_h
 #define eckit_TxnLog_h
 
 #include "eckit/runtime/Main.h"
-#include "eckit/container/MappedArray.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/transaction/TxnEvent.h"
 
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // T should be a subclass of TxnEvent
 
@@ -39,6 +38,13 @@ struct TxnFinder {
 	virtual bool found(T&) = 0;
 	virtual bool old() { return false; }
 };
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+class TxnArray;
+
 
 template<class T>
 class TxnLog {
@@ -74,12 +80,12 @@ private:
 
 	PathName           path_;
 	PathName           next_;   // Should be declared after 'path_'
-	MappedArray<TxnID> nextID_; // Should be declared after 'next_'
+    TxnArray*          nextID_; // Should be declared after 'next_'
 
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

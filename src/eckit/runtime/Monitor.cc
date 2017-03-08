@@ -12,15 +12,14 @@
 #include <signal.h>
 
 #include "eckit/config/Resource.h"
+#include "eckit/container/MappedArray.h"
+#include "eckit/container/SharedMemArray.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/thread/AutoLock.h"
-
-#include "eckit/os/BackTrace.h"
-#include "eckit/container/MappedArray.h"
-#include "eckit/container/SharedMemArray.h"
 
 namespace eckit {
 
@@ -88,7 +87,7 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 static void taskarray_init(void)
 {
     std::string  monitor = Resource<std::string>("monitorPath","~/etc/monitor");
-    long         size    = Resource<long>("monitorSize",1000);
+    size_t       size    = Resource<size_t>("monitorSize", 1000);
 
     std::string monitorArrayType = Resource<std::string>("monitorArrayType","MemoryMapped");
 

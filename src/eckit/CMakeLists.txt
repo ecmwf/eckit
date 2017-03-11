@@ -337,6 +337,8 @@ types/Types.h
 types/Types.cc
 types/Double.h
 types/Double.cc
+types/Fraction.h
+types/Fraction.cc
 types/FixedString.h
 types/FloatCompare.h
 types/FloatCompare.cc

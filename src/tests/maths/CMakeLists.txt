@@ -9,4 +9,3 @@ ecbuild_add_test( TARGET      eckit_test_matrix
                   SOURCES     test_matrix.cc
                   LIBS        eckit_maths eckit
 )
-

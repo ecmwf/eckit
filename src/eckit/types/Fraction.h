@@ -50,6 +50,8 @@ public: // operators
 		return double(top_) / double(bottom_);
 	}
 
+	operator long long() const;
+
 	Fraction operator-()  const {
 		return Fraction(-top_, bottom_, true);
 	}

@@ -133,6 +133,15 @@ void Fraction::print(std::ostream& out) const {
     }
 }
 
+Fraction::operator long long() const {
+    if (bottom_ == 1) {
+        return top_;
+    }
+    std::ostringstream oss;
+    oss << "Cannot convert fraction " << *this << " to integer";
+    throw eckit::SeriousBug(oss.str());
+}
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

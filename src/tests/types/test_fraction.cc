@@ -32,6 +32,7 @@ BOOST_AUTO_TEST_CASE( test_fraction )
     BOOST_CHECK_EQUAL( Fraction(0, 1), Fraction() );
     BOOST_CHECK_EQUAL( Fraction(-1, 2), Fraction(3, -6) );
     BOOST_CHECK_EQUAL( Fraction(0.3333333333333333), Fraction(1, 3) );
+    BOOST_CHECK_EQUAL( Fraction(0.9999999999999999), Fraction(1, 1) );
     BOOST_CHECK_EQUAL( Fraction(0.7), Fraction(7, 10) );
     BOOST_CHECK_EQUAL( Fraction(1, 3) + Fraction(2, 3), Fraction(10, 10) );
     BOOST_CHECK_EQUAL( Fraction(1, 3) - Fraction(2, 6), Fraction(0, 10) );

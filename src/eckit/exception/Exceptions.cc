@@ -431,17 +431,18 @@ void handle_panic(const char *msg)
     std::cout << "PANIC: " << msg << std::endl;
     std::cerr << "PANIC: " << msg << std::endl;
 
-    Log::status() << msg << std::endl;
+    std::cerr << "----------------------------------------\n"
+              << "BACKTRACE\n"
+              << "----------------------------------------\n"
+              << BackTrace::dump() << std::endl
+              << "----------------------------------------\n"
+              << std::endl;
 
+    _exit(1);
+
+#if 0
     Log::panic() << "PANIC IS CALLED!!!" << std::endl;
     Log::panic() << msg << std::endl;
-
-    Log::panic() << "----------------------------------------\n"
-                 << "BACKTRACE\n"
-                 << "----------------------------------------\n"
-                 << BackTrace::dump() << std::endl
-                 << "----------------------------------------\n"
-                 << std::endl;
 
     if(getenv("SLEEP_ON_PANIC"))
     {
@@ -452,6 +453,7 @@ void handle_panic(const char *msg)
         ::kill(::getpid(),SIGABRT);
 
     ::pause();
+#endif
 }
 
 void handle_panic(const char* msg, const CodeLocation& location )

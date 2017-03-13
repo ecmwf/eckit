@@ -14,40 +14,56 @@
 
 #include "eckit/types/Fraction.h"
 
-//-----------------------------------------------------------------------------
+#include "eckit/testing/Setup.h"
 
-namespace eckit_test {}
 
-//-----------------------------------------------------------------------------
-
-using namespace eckit_test;
 using namespace eckit;
+using namespace eckit::testing;
+
+BOOST_GLOBAL_FIXTURE( Setup );
 
 BOOST_AUTO_TEST_SUITE( test_eckit_fraction )
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE( test_fraction )
 {
+    // 0
+
     BOOST_CHECK_EQUAL( Fraction(0, 1), Fraction() );
+
+    BOOST_CHECK_THROW( Fraction(0, 0), std::exception ); // this prints a backtrace wi Assertion failed
+
+    // negative number
+
     BOOST_CHECK_EQUAL( Fraction(-1, 2), Fraction(3, -6) );
 
+    // decimals
+
     BOOST_CHECK_EQUAL( Fraction(0.16), Fraction(16, 100) );
+    BOOST_CHECK_EQUAL( Fraction(0.1616), Fraction(1616, 10000) );
 
-    // BOOST_CHECK_EQUAL( Fraction(0.714285), Fraction(5, 7) );
+    // 5 / 7
 
+    BOOST_CHECK( Fraction(0.714285) != Fraction(5, 7) );
+
+    BOOST_CHECK( Fraction(0.7142857142) != Fraction(5, 7) );
+
+    BOOST_CHECK_EQUAL( Fraction(0.71428571428),  Fraction(5, 7) );
     BOOST_CHECK_EQUAL( Fraction(0.714285714285), Fraction(5, 7) );
     BOOST_CHECK_EQUAL( Fraction(0.714285714286), Fraction(5, 7) );
 
     BOOST_CHECK_EQUAL( Fraction(0.714285714285714285), Fraction(5, 7) );
 
-    // BOOST_CHECK_EQUAL( Fraction(0.166), Fraction(1, 6) );
-    // BOOST_CHECK_EQUAL( Fraction(0.1666), Fraction(1, 6) );
-    // BOOST_CHECK_EQUAL( Fraction(0.16666), Fraction(1, 6) );
-    // BOOST_CHECK_EQUAL( Fraction(0.166666), Fraction(1, 6) );
-    // BOOST_CHECK_EQUAL( Fraction(0.1666666), Fraction(1, 6) );
-    // BOOST_CHECK_EQUAL( Fraction(0.16666666), Fraction(1, 6) );
-    // BOOST_CHECK_EQUAL( Fraction(0.166666666), Fraction(1, 6) );
+    // 1 / 6
+
+    BOOST_CHECK( Fraction(0.166) != Fraction(1, 6) );
+    BOOST_CHECK( Fraction(0.1666) != Fraction(1, 6) );
+    BOOST_CHECK( Fraction(0.16666) != Fraction(1, 6) );
+    BOOST_CHECK( Fraction(0.166666) != Fraction(1, 6) );
+    BOOST_CHECK( Fraction(0.1666666) != Fraction(1, 6) );
+    BOOST_CHECK( Fraction(0.16666666) != Fraction(1, 6) );
+    BOOST_CHECK( Fraction(0.166666666) != Fraction(1, 6) );
 
     BOOST_CHECK_EQUAL( Fraction(0.16666666666), Fraction(1, 6) );
     BOOST_CHECK_EQUAL( Fraction(0.166666666666), Fraction(1, 6) );
@@ -56,12 +72,24 @@ BOOST_AUTO_TEST_CASE( test_fraction )
     BOOST_CHECK_EQUAL( Fraction(0.166666666666666), Fraction(1, 6) );
     BOOST_CHECK_EQUAL( Fraction(0.1666666666666666), Fraction(1, 6) );
 
+    // 1 / 3
+
     BOOST_CHECK_EQUAL( Fraction(0.3333333333), Fraction(1, 3) );
 
     BOOST_CHECK_EQUAL( Fraction(0.3333333333333333), Fraction(1, 3) );
+
+    // 1 / 1
+
     BOOST_CHECK_EQUAL( Fraction(0.9999999999999999), Fraction(1, 1) );
+    BOOST_CHECK_EQUAL( Fraction(0.9999999999999999), Fraction(10, 10) );
+
+    // 7 / 10..
 
     BOOST_CHECK_EQUAL( Fraction(0.7), Fraction(7, 10) );
+    BOOST_CHECK_EQUAL( Fraction(0.07), Fraction(7, 100) );
+    BOOST_CHECK_EQUAL( Fraction(0.0000007), Fraction(7, 10000000) );
+
+    // operations
 
     BOOST_CHECK_EQUAL( Fraction(1, 3) + Fraction(2, 3), Fraction(10, 10) );
     BOOST_CHECK_EQUAL( Fraction(1, 3) - Fraction(2, 6), Fraction(0, 10) );
@@ -116,6 +144,6 @@ BOOST_AUTO_TEST_CASE( test_fraction )
 
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

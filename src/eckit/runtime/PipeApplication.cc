@@ -83,6 +83,7 @@ void PipeApplication::run()
 
         if (!select.ready(timeout)) {
             if (!debug) {
+                std::cerr << "Timeout, exiting -- PID " << ::getpid() << std::endl;
                 Log::warning() << "Timeout, exiting" << std::endl;
                 return;
             }

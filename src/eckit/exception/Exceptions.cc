@@ -438,7 +438,7 @@ void handle_panic(const char *msg)
               << "----------------------------------------\n"
               << std::endl;
 
-    if(::getenv("SLEEP_ON_PANIC"))
+    if(::getenv("STOP_ON_PANIC"))
     {
         pid_t pid = ::getpid();
 

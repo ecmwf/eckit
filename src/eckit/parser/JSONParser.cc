@@ -278,7 +278,7 @@ Value JSONParser::parseValue()
     }
 }
 
-JSONParser::JSONParser(std::istream &in) : StreamParser(in)
+JSONParser::JSONParser(std::istream &in, bool comments ) : StreamParser(in,comments)
 {
 }
 

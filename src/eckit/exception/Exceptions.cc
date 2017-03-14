@@ -431,27 +431,28 @@ void handle_panic(const char *msg)
     std::cout << "PANIC: " << msg << std::endl;
     std::cerr << "PANIC: " << msg << std::endl;
 
-    Log::status() << msg << std::endl;
+    std::cerr << "----------------------------------------\n"
+              << "BACKTRACE\n"
+              << "----------------------------------------\n"
+              << BackTrace::dump() << std::endl
+              << "----------------------------------------\n"
+              << std::endl;
 
-    Log::panic() << "PANIC IS CALLED!!!" << std::endl;
-    Log::panic() << msg << std::endl;
-
-    Log::panic() << "----------------------------------------\n"
-                 << "BACKTRACE\n"
-                 << "----------------------------------------\n"
-                 << BackTrace::dump() << std::endl
-                 << "----------------------------------------\n"
-                 << std::endl;
-
-    if(getenv("SLEEP_ON_PANIC"))
+    if(::getenv("STOP_ON_PANIC"))
     {
-        Log::panic() << "Use dbx -a " << getpid() << " or xldb -a " << getpid() << std::endl;
-        ::kill(::getpid(),SIGSTOP);
-    }
-    else
-        ::kill(::getpid(),SIGABRT);
+        pid_t pid = ::getpid();
 
-    ::pause();
+        std::cout << "Stopped process with PID " << pid
+                  << " - attach a debugger or send a SIGCONT signal to abort" << std::endl;
+
+        std::cerr << "Stopped process with PID " << pid
+                  << " - attach a debugger or send a SIGCONT signal to abort" << std::endl;
+
+        ::kill(pid, SIGSTOP);
+        ::kill(pid, SIGABRT);
+    }
+
+    _exit(1);
 }
 
 void handle_panic(const char* msg, const CodeLocation& location )

@@ -27,6 +27,11 @@ ecbuild_add_test( TARGET      eckit_test_fixedstring
                   SOURCES     test_fixedstring.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_fraction
+                  BOOST
+                  SOURCES     test_fraction.cc
+                  LIBS        eckit )
+
 # performance test
 
 ecbuild_add_test( TARGET      eckit-test-double-compare-speed

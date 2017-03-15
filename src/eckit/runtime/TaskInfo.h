@@ -18,6 +18,8 @@
 #include "eckit/types/Types.h"
 #include "eckit/runtime/TaskID.h"
 
+#include <sys/time.h>
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -540,7 +540,7 @@ if( EC_OS_NAME STREQUAL "linux" )
 elseif( EC_OS_NAME STREQUAL "macosx" )
     list( APPEND eckit_system_srcs system/SystemInfoMacOSX.h system/SystemInfoMacOSX.cc )
 else()
-    ecbuild_log_warning("eckit does not support SystemInfo for OS '${EC_OS_NAME}'")
+    ecbuild_warn("eckit does not support SystemInfo for OS '${EC_OS_NAME}'")
 endif()
 
 list( APPEND eckit_bases_srcs

@@ -13,13 +13,13 @@
 /// @author Simon Smart
 /// @date   March 2017
 
+#include <stdlib.h>
+
 #include <unistd.h>
-#include <malloc.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 
 #include <climits>
-#include <cstdlib>
 
 #include "eckit/system/SystemInfoFreeBSD.h"
 
@@ -50,7 +50,8 @@ Mem SystemInfoFreeBSD::memoryUsage() const {
 }
 
 size_t SystemInfoFreeBSD::memoryAllocated() const {
-    return mallinfo().uordblks;
+    NOTIMP;
+    // return ::mallinfo().uordblks;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

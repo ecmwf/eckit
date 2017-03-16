@@ -58,6 +58,7 @@ SystemInfo* makeSystemInfo(const std::string& system)
     if (StringTools::startsWith(ECKIT_OS_NAME, "FreeBSD")) {
         return new SystemInfoFreeBSD();
     }
+#endif
 
     NOTIMP;
 }

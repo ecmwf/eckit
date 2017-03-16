@@ -12,7 +12,7 @@
 
 #include "eckit/eckit.h"
 
-#ifdef EC_HAVE_EXECINFO_BACKTRACE
+#if defined(EC_HAVE_EXECINFO_BACKTRACE) || defined(__FreeBSD__)
 #include <execinfo.h>  // for backtrace
 #endif
 
@@ -34,7 +34,7 @@ std::string BackTrace::dump()
     
     std::ostringstream oss;
     
-#if defined( EC_HAVE_EXECINFO_BACKTRACE ) && !defined( _AIX )
+#if (defined( EC_HAVE_EXECINFO_BACKTRACE ) || defined(__FreeBSD__)) && !defined( _AIX )
 
     static Ordinal count = 0;
     ++count;

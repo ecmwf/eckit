@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/sysctl.h>
 
 #include <climits>
 
@@ -38,8 +39,17 @@ SystemInfoFreeBSD::~SystemInfoFreeBSD() {
 LocalPathName SystemInfoFreeBSD::executablePath() const
 {
     Buffer buffer(PATH_MAX);
-	ssize_t size = SYSCALL(::readlink("/proc/curproc/file", buffer, buffer.size()));
+
+    int mib[4];
+    mib[0] = CTL_KERN;
+    mib[1] = KERN_PROC;
+    mib[2] = KERN_PROC_PATHNAME;
+    mib[3] = -1;
+
+    size_t size = buffer.size();
+    SYSCALL(::sysctl(mib, 4, buffer, &size, NULL, 0));
     std::string path(buffer, size);
+
     return LocalPathName(path).realName();
 }
 

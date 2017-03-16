@@ -537,6 +537,8 @@ list( APPEND eckit_system_srcs
 
 if( EC_OS_NAME STREQUAL "linux" )
     list( APPEND eckit_system_srcs system/SystemInfoLinux.h system/SystemInfoLinux.cc )
+elseif( EC_OS_NAME STREQUAL "freebsd" )
+    list( APPEND eckit_system_srcs system/SystemInfoFreeBSD.h system/SystemInfoFreeBSD.cc )
 elseif( EC_OS_NAME STREQUAL "macosx" )
     list( APPEND eckit_system_srcs system/SystemInfoMacOSX.h system/SystemInfoMacOSX.cc )
 else()

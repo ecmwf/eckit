@@ -93,7 +93,7 @@ void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::s
     // ID column
     out << std::setw(11) << info.taskID();
     // Info column
-    out << std::setw(14) << info.message();
+    out << std::setw(22) << info.message();
     // Request column
     out << "  " << info.status();
 

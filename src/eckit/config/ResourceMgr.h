@@ -61,9 +61,11 @@ public: // class methods
 
     bool registCmdArgOptions(const std::string&);
 
-    ResourceMgr();
-
 private:
+
+    static void init();
+
+    ResourceMgr();
 
     bool lookUp_(const std::string&, const std::string&, const std::string&, std::string&);
 

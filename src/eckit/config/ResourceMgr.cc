@@ -25,13 +25,13 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 
 static ResourceMgr* mgr = 0;
 
-static void init() {
+void ResourceMgr::init() {
     mgr = new ResourceMgr();
 }
 
 ResourceMgr& ResourceMgr::instance()
 {
-    pthread_once(&once, init);
+    pthread_once(&once, ResourceMgr::init);
     return *mgr;
 }
 

@@ -128,6 +128,7 @@ void ResourceMgr::readConfigFile(const LocalPathName& file)
 void ResourceMgr::set(const std::string& name, const std::string& value)
 {
     AutoLock<StaticMutex> lock(smutex);
+
     std::string s = name + ": " + value;
     if (!parse(s.c_str()))
         Log::warning() << "Failed to parse " << s << std::endl;
@@ -181,6 +182,8 @@ bool ResourceMgr::lookUp_(const std::string& kind,
 
 bool ResourceMgr::registCmdArgOptions(const std::string&)
 {
+    AutoLock<StaticMutex> lock(smutex);
+
     NOTIMP;
 }
 
@@ -189,7 +192,6 @@ ResourceMgr::ResourceMgr() :
     resoptions_(),
     inited_(false)
 {
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------

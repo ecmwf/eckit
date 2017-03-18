@@ -27,7 +27,6 @@ static StaticMutex smutex;
 // it will be when I have tamed the xlC
 // template instanciation mechanism
 
-typedef std::map<ResourceQualifier, std::string> ResMap;
 
 static ResMap resmap;
 bool ResourceMgr::inited_ = false;
@@ -74,11 +73,10 @@ bool ResourceMgr::parse(const char* p)
         return false;
     else
     {
-        switch (n)
-        {
-        case 1: s[2] = s[0]; s[0] = ""; break;
-        case 2: s[2] = s[1]; s[1] = s[0]; s[0] = ""; break;
-        case 3: break;
+        switch (n) {
+            case 1: s[2] = s[0]; s[0] = ""; break;
+            case 2: s[2] = s[1]; s[1] = s[0]; s[0] = ""; break;
+            case 3: break;
         }
 
         p++;
@@ -113,9 +111,7 @@ void ResourceMgr::readConfigFile(const LocalPathName& file)
         cnt++;
         if (!parse(line))
         {
-            Log::warning() << "Invalid line, file " << file
-                           << " line " << cnt << std::endl;
-            Log::warning() << line << std::endl;
+            Log::warning() << "Invalid line, file " << file << " line " << cnt << " = " << line << std::endl;
         }
     }
 }
@@ -128,8 +124,10 @@ void ResourceMgr::set(const std::string& name, const std::string& value)
         Log::warning() << "Failed to parse " << s << std::endl;
 }
 
-bool ResourceMgr::lookUp(const std::string& kind, const std::string& owner,
-                         const std::string& name, std::string& result)
+bool ResourceMgr::lookUp(const std::string& kind,
+                         const std::string& owner,
+                         const std::string& name,
+                         std::string& result)
 {
     AutoLock<StaticMutex> lock(smutex);
 
@@ -174,8 +172,7 @@ bool ResourceMgr::lookUp(const std::string& kind, const std::string& owner,
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ResourceQualifier::ResourceQualifier(const std::string& kind,
-                                     const std::string& owner, const std::string& name):
+ResourceQualifier::ResourceQualifier(const std::string& kind, const std::string& owner, const std::string& name) :
     kind_(kind),
     owner_(owner),
     name_(name)

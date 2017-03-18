@@ -49,7 +49,7 @@ void ResourceBase::html(std::ostream& s,Url& url)
 	{
 		std::string v = url[n];
 		Log::info() << "New value for " << n << ": " << v << std::endl;
-		ResourceMgr::set(n,v);
+        ResourceMgr::instance().set(n,v);
 		Configurable::reconfigureAll();
 	}
 

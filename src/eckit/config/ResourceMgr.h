@@ -16,8 +16,10 @@
 #define eckit_config_ResourceMgr_H
 
 #include <string>
+#include <map>
 
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
@@ -53,31 +55,40 @@ class ResourceMgr : private eckit::NonCopyable {
 
 public: // class methods
 
+    static ResourceMgr& instance();
+
     static bool lookUp(const std::string&, const std::string&, const std::string&, std::string&);
+
+    bool registCmdArgOptions(const std::string&);
+
+    ResourceMgr();
 
 private:
 
+    bool lookUp_(const std::string&, const std::string&, const std::string&, std::string&);
+
     // Only for my friends
     // You should never call these, resources have a read-only semantics
-    static void reset();
-    static void set(const std::string&, const std::string&);
+    void reset();
+    void set(const std::string&, const std::string&);
 
     friend class ConfigCmd;
     friend class ResourceBase;
 
 private: // methods
 
-    ResourceMgr();
-
-    static void readConfigFile(const LocalPathName&);
-    static bool parse(const char*);
+    void readConfigFile(const LocalPathName&);
+    bool parse(const char*);
 
 private: // members
 
-    static bool inited_;
-
     typedef std::map<ResourceQualifier, std::string> ResMap;
 
+    ResMap resmap_;
+
+    std::map<std::string, std::string> resoptions_;
+
+    bool inited_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

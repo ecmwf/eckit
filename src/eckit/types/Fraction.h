@@ -44,6 +44,10 @@ public: // methods
 	Fraction(const std::string&);
 	Fraction(const char*);
 
+	bool integer() const {
+		return bottom_ == 1;
+	}
+
 public: // operators
 
 	operator double() const {

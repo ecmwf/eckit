@@ -44,6 +44,8 @@ public: // methods
 
     virtual std::string prefixDirectory() const;
 
+    virtual void libraryHome(const std::string&);
+
     virtual std::string expandPath(const std::string& path) const;
 
 //    virtual LocalPathName bin() const;
@@ -68,6 +70,7 @@ public: // class methods
 
 protected: // methods
 
+    virtual std::string home() const;
 
     virtual const void* addr() const = 0;
 
@@ -83,6 +86,7 @@ private: // members
 
     std::string name_;
     std::string prefix_;
+    std::string home_;    // if not set explicitly, will be empty
 
     bool debug_;
 

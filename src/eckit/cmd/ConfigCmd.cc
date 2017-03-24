@@ -26,7 +26,7 @@ ConfigCmd::~ConfigCmd() {
 
 void ConfigCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
     if (arg.exists(1) && arg.exists(2)) {
-        ResourceMgr::set(arg[1], arg[2]);
+        ResourceMgr::instance().set(arg[1], arg[2]);
         Configurable::reconfigureAll();
     }
 

@@ -337,6 +337,8 @@ types/Types.h
 types/Types.cc
 types/Double.h
 types/Double.cc
+types/Fraction.h
+types/Fraction.cc
 types/FixedString.h
 types/FloatCompare.h
 types/FloatCompare.cc
@@ -533,12 +535,16 @@ list( APPEND eckit_system_srcs
     system/SystemInfo.h
 )
 
+set(ECKIT_SYSTEM_EXTRA_LIBS "")
 if( EC_OS_NAME STREQUAL "linux" )
     list( APPEND eckit_system_srcs system/SystemInfoLinux.h system/SystemInfoLinux.cc )
+elseif( EC_OS_NAME STREQUAL "freebsd" )
+    list( APPEND eckit_system_srcs system/SystemInfoFreeBSD.h system/SystemInfoFreeBSD.cc )
+    list( APPEND ECKIT_SYSTEM_EXTRA_LIBS "execinfo" ) # Add in support for backtrace on FreeBSD
 elseif( EC_OS_NAME STREQUAL "macosx" )
     list( APPEND eckit_system_srcs system/SystemInfoMacOSX.h system/SystemInfoMacOSX.cc )
 else()
-    ecbuild_log_warning("eckit does not support SystemInfo for OS '${EC_OS_NAME}'")
+    ecbuild_warn("eckit does not support SystemInfo for OS '${EC_OS_NAME}'")
 endif()
 
 list( APPEND eckit_bases_srcs
@@ -638,7 +644,7 @@ ecbuild_add_library(TARGET eckit
 					INCLUDES
 						${AIO_INCLUDE_DIRS}
 					LIBS
-                        ${AIO_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS} )
+                        ${AIO_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS} ${ECKIT_SYSTEM_EXTRA_LIBS} )
 
 ### sub-directories
 

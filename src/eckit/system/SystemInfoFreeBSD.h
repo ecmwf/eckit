@@ -9,44 +9,43 @@
  */
 
 /// @author Baudouin Raoult
-/// @date Jun 2012
+/// @author Tiago Quintino
+/// @author Simon Smart
+/// @date   March 2017
 
-#ifndef eckit_JSONParser_h
-#define eckit_JSONParser_h
+#ifndef eckit_system_SystemInfoFreeBSD_H
+#define eckit_system_SystemInfoFreeBSD_H
 
-#include "eckit/parser/StreamParser.h"
-#include "eckit/types/Types.h"
-#include "eckit/value/Value.h"
+#include <iosfwd>
+
+#include "eckit/system/SystemInfo.h"
 
 namespace eckit {
+namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class JSONParser : public StreamParser {
+class SystemInfoFreeBSD : public SystemInfo {
 
 public: // methods
 
-    JSONParser(std::istream& in, bool comments = false);
+    virtual ~SystemInfoFreeBSD();
 
-    Value parse();
+    virtual eckit::LocalPathName executablePath() const;
 
-private: // methods
+    virtual size_t memoryAllocated() const;
+    virtual Mem memoryUsage() const;
 
-    Value parseTrue();
-    Value parseFalse();
-    Value parseNull();
-    Value parseValue();
-    Value parseObject();
-    Value parseArray();
-    Value parseString();
-    Value parseNumber();
+protected: // methods
 
-    void parseKeyValue(std::map<Value, Value> &);
+private: // members
 
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
+} // namespace system
 } // namespace eckit
 
 #endif
+

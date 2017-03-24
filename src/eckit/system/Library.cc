@@ -168,6 +168,23 @@ std::string Library::prefixDirectory() const {
     return prefixDirectory_;
 }
 
+std::string Library::home() const
+{
+    eckit::AutoLock<Mutex> lock(mutex_);
+
+    std::string libhome = prefix_ + "_HOME";
+    char* home = ::getenv(libhome.c_str());
+    if(home) { return home; }
+
+    return home_; // may return empty string (meaning not set)
+}
+
+void Library::libraryHome(const std::string& home)
+{
+    eckit::AutoLock<Mutex> lock(mutex_);
+    home_ = home;
+}
+
 std::string Library::libraryPath() const {
     eckit::AutoLock<Mutex> lock(mutex_);
 
@@ -203,12 +220,12 @@ std::string Library::expandPath(const std::string& p) const {
     ASSERT(p.substr(0, s.size()) == s);
     ASSERT(p.size() == s.size() || p[s.size()] == '/');
 
-    // 1. if env variable LIBNAME_HOME exists, expand ~lib/ to its content
+    // 1. if HOME is set for this library, either via env variable LIBNAME_HOME exists
+    //    or set in code expand ~lib/ to its content
 
-    std::string libhome = prefix_ + "_HOME";
-    char* home = ::getenv(libhome.c_str());
-    if(home) {
-        std::string result = std::string(home) + "/" + p.substr(s.size());
+    const std::string h = home();
+    if(!h.empty()) {
+        std::string result = h + "/" + p.substr(s.size());
         return result;
     }
 

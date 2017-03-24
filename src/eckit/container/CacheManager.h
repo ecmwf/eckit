@@ -186,6 +186,10 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
     PathName path;
 
     if (get(key, path)) {
+        eckit::Log::debug() << "Loading cache file "
+                           << path
+                           << std::endl;
+
         Traits::load(*this, value, path);
         return path;
     }
@@ -212,8 +216,7 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
 
                 // Some
                 if (!get(key, path)) {
-
-                    eckit::Log::info() << "Creating coefficient cache file "
+                    eckit::Log::info() << "Creating cache file "
                                        << entry(key, *j)
                                        << std::endl;
 
@@ -223,10 +226,10 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                     ASSERT(commit(key, tmp, *j));
                 }
                 else {
-                    eckit::Log::info() << "Coefficient cache file "
-                                       << entry(key, *j)
-                                       << " created by another process"
-                                       << std::endl;
+                    eckit::Log::debug() << "Loading cache file "
+                                        << entry(key, *j)
+                                        << " (created by another process)"
+                                        << std::endl;
                     Traits::load(*this, value, path);
                 }
 

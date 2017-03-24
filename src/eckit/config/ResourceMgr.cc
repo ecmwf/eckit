@@ -8,34 +8,42 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/runtime/Main.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/filesystem/LocalPathName.h"
-#include "eckit/log/Log.h"
-#include "eckit/thread/StaticMutex.h"
 #include "eckit/config/ResourceMgr.h"
 
-#include <map>
+#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/log/Log.h"
+#include "eckit/runtime/Main.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/StaticMutex.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 static StaticMutex smutex;
+static pthread_once_t once = PTHREAD_ONCE_INIT;
 
-// this should be a member of ResourceMgr
-// it will be when I have tamed the xlC
-// template instanciation mechanism
+static ResourceMgr* mgr = 0;
 
-typedef std::map<ResourceQualifier, std::string> ResMap;
+void ResourceMgr::init() {
+    mgr = new ResourceMgr();
+}
 
-static ResMap resmap;
-bool ResourceMgr::inited_ = false;
+ResourceMgr& ResourceMgr::instance()
+{
+    pthread_once(&once, ResourceMgr::init);
+    return *mgr;
+}
+
+bool ResourceMgr::lookUp(const std::string& s1, const std::string& s2, const std::string& s3, std::string& v)
+{
+    return ResourceMgr::instance().lookUp_(s1, s2, s3, v);
+}
 
 void ResourceMgr::reset()
 {
     AutoLock<StaticMutex> lock(smutex);
-    resmap.clear();
+    resmap_.clear();
     inited_ = false;
 }
 
@@ -74,11 +82,10 @@ bool ResourceMgr::parse(const char* p)
         return false;
     else
     {
-        switch (n)
-        {
-        case 1: s[2] = s[0]; s[0] = ""; break;
-        case 2: s[2] = s[1]; s[1] = s[0]; s[0] = ""; break;
-        case 3: break;
+        switch (n) {
+            case 1: s[2] = s[0]; s[0] = ""; break;
+            case 2: s[2] = s[1]; s[1] = s[0]; s[0] = ""; break;
+            case 3: break;
         }
 
         p++;
@@ -92,7 +99,7 @@ bool ResourceMgr::parse(const char* p)
         ResourceQualifier x(s[0], s[1], s[2]);
 
         std::string t = std::string(p, l + 1);
-        resmap[x] = t;
+        resmap_[x] = t;
     }
     return true;
 }
@@ -113,9 +120,7 @@ void ResourceMgr::readConfigFile(const LocalPathName& file)
         cnt++;
         if (!parse(line))
         {
-            Log::warning() << "Invalid line, file " << file
-                           << " line " << cnt << std::endl;
-            Log::warning() << line << std::endl;
+            Log::warning() << "Invalid line, file " << file << " line " << cnt << " = " << line << std::endl;
         }
     }
 }
@@ -123,13 +128,16 @@ void ResourceMgr::readConfigFile(const LocalPathName& file)
 void ResourceMgr::set(const std::string& name, const std::string& value)
 {
     AutoLock<StaticMutex> lock(smutex);
+
     std::string s = name + ": " + value;
     if (!parse(s.c_str()))
         Log::warning() << "Failed to parse " << s << std::endl;
 }
 
-bool ResourceMgr::lookUp(const std::string& kind, const std::string& owner,
-                         const std::string& name, std::string& result)
+bool ResourceMgr::lookUp_(const std::string& kind,
+                          const std::string& owner,
+                          const std::string& name,
+                          std::string& result)
 {
     AutoLock<StaticMutex> lock(smutex);
 
@@ -144,25 +152,25 @@ bool ResourceMgr::lookUp(const std::string& kind, const std::string& owner,
                        + Main::instance().name() + ".local");
     }
 
-    ResMap::iterator i = resmap.find(ResourceQualifier(kind, owner, name));
+    ResMap::iterator i = resmap_.find(ResourceQualifier(kind, owner, name));
 
-    if (i != resmap.end())
+    if (i != resmap_.end())
     {
         result = (*i).second;
         return true;
     }
 
-    i = resmap.find(ResourceQualifier("", owner, name));
+    i = resmap_.find(ResourceQualifier("", owner, name));
 
-    if (i != resmap.end())
+    if (i != resmap_.end())
     {
         result = (*i).second;
         return true;
     }
 
-    i = resmap.find(ResourceQualifier("", "", name));
+    i = resmap_.find(ResourceQualifier("", "", name));
 
-    if (i != resmap.end())
+    if (i != resmap_.end())
     {
         result = (*i).second;
         return true;
@@ -172,10 +180,23 @@ bool ResourceMgr::lookUp(const std::string& kind, const std::string& owner,
 
 }
 
+bool ResourceMgr::registCmdArgOptions(const std::string&)
+{
+    AutoLock<StaticMutex> lock(smutex);
+
+    NOTIMP;
+}
+
+ResourceMgr::ResourceMgr() :
+    resmap_(),
+    resoptions_(),
+    inited_(false)
+{
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
-ResourceQualifier::ResourceQualifier(const std::string& kind,
-                                     const std::string& owner, const std::string& name):
+ResourceQualifier::ResourceQualifier(const std::string& kind, const std::string& owner, const std::string& name) :
     kind_(kind),
     owner_(owner),
     name_(name)

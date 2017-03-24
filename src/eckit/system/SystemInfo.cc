@@ -29,6 +29,10 @@
 #include "eckit/system/SystemInfoLinux.h"
 #endif
 
+#if defined(__FreeBSD__)
+#include "eckit/system/SystemInfoFreeBSD.h"
+#endif
+
 namespace eckit {
 namespace system {
 
@@ -47,6 +51,12 @@ SystemInfo* makeSystemInfo(const std::string& system)
 #if defined(__linux__)
     if (StringTools::startsWith(ECKIT_OS_NAME, "Linux")) {
         return new SystemInfoLinux();
+    }
+#endif
+
+#if defined(__FreeBSD__)
+    if (StringTools::startsWith(ECKIT_OS_NAME, "FreeBSD")) {
+        return new SystemInfoFreeBSD();
     }
 #endif
 

@@ -8,52 +8,25 @@
  * does it submit to any jurisdiction.
  */
 
-// File ResourceMgr.h
-// Baudouin Raoult - ECMWF May 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   May 96
 
 #ifndef eckit_config_ResourceMgr_H
 #define eckit_config_ResourceMgr_H
+
+#include <string>
+#include <map>
+
+#include "eckit/memory/NonCopyable.h"
+#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
 class LocalPathName;
 
-class ResourceMgr {
-public:
 
-// -- Class methods
-
-    static bool lookUp(const std::string&, const std::string&, const std::string&, std::string&);
-
-private:
-
-    // Only for my friends
-    // You should never call these, resources have a read-only semantics
-    static void reset();
-    static void set(const std::string&, const std::string&);
-
-    friend class ConfigCmd;
-    friend class ResourceBase;
-
-private:
-
-    ResourceMgr();
-
-// No copy allowed
-
-    ResourceMgr(const ResourceMgr&);
-    ResourceMgr& operator=(const ResourceMgr&);
-
-// -- Members
-
-    static bool inited_;
-
-// -- Methods
-
-    static void readConfigFile(const LocalPathName&);
-    static bool parse(const char*);
-
-};
+//----------------------------------------------------------------------------------------------------------------------
 
 // A resource specifier
 
@@ -75,6 +48,54 @@ public:
 
 };
 
-}
+//----------------------------------------------------------------------------------------------------------------------
+
+
+class ResourceMgr : private eckit::NonCopyable {
+
+public: // class methods
+
+    static ResourceMgr& instance();
+
+    static bool lookUp(const std::string&, const std::string&, const std::string&, std::string&);
+
+    bool registCmdArgOptions(const std::string&);
+
+private:
+
+    static void init();
+
+    ResourceMgr();
+
+    bool lookUp_(const std::string&, const std::string&, const std::string&, std::string&);
+
+    // Only for my friends
+    // You should never call these, resources have a read-only semantics
+    void reset();
+    void set(const std::string&, const std::string&);
+
+    friend class ConfigCmd;
+    friend class ResourceBase;
+
+private: // methods
+
+    void readConfigFile(const LocalPathName&);
+    bool parse(const char*);
+
+private: // members
+
+    typedef std::map<ResourceQualifier, std::string> ResMap;
+
+    ResMap resmap_;
+
+    std::map<std::string, std::string> resoptions_;
+
+    bool inited_;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+} // namespace eckit
 
 #endif

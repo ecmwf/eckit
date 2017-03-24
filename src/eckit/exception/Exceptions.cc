@@ -34,6 +34,11 @@ Exception::Exception():  next_(first())
     first() = this;
 
     callStack_ = BackTrace::dump();
+
+
+    if(::getenv("LIBECKIT_DEBUG_EXCEPTION_DUMPS_BACKTRACE")) {
+        std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
+    }
 }
 
 Exception::~Exception() throw()
@@ -67,6 +72,12 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
     next_(first()),
     location_(location)
 {
+    callStack_ = BackTrace::dump();
+
+    if(::getenv("LIBECKIT_DEBUG_EXCEPTION_DUMPS_BACKTRACE")) {
+        std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
+    }
+
     Log::error() << "Exception: " << w << location_ << std::endl;
 
 #if 0
@@ -79,9 +90,8 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
     }
 #endif
 
-    callStack_ = BackTrace::dump();
-
     first() = this;
+
     Log::status() << "** " << w << location_ << std::endl;
 }
 

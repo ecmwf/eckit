@@ -256,6 +256,17 @@ public:  // methods
     void send(T& sendbuf, int dest, int tag) const;
 
     ///
+    /// Blocking send, until message recieved
+    ///
+
+    template <typename T>
+    void synchronisedSend(T* sendbuf, size_t count, int dest, int tag) const;
+
+    template <typename T>
+    void synchronisedSend(T& sendbuf, int dest, int tag) const;
+
+
+    ///
     /// Non-blocking send
     ///
 
@@ -313,6 +324,8 @@ public:  // methods
       virtual Status receive(void* recv, size_t count, Data::Code datatype, int source, int tag) const = 0;
 
       virtual void send(const void* send, size_t count, Data::Code datatype, int dest, int tag) const = 0;
+
+      virtual void synchronisedSend(const void* send, size_t count, Data::Code datatype, int dest, int tag) const = 0;
 
       virtual Request iReceive(void* recv, size_t count, Data::Code datatype, int source, int tag) const = 0;
 

@@ -286,6 +286,13 @@ void Serial::send(const void* send, size_t count, Data::Code type, int dest, int
     SerialSendReceive::instance().addSend( Request( new SendRequest(send,count,type,tag) ) );
 }
 
+void Serial::synchronisedSend(const void* send, size_t count, Data::Code type, int dest, int tag) const
+{
+    // TODO: see if this is good enough
+    AutoLock<SerialSendReceive> lock(SerialSendReceive::instance());
+    SerialSendReceive::instance().addSend( Request( new SendRequest(send,count,type,tag) ) );
+}
+
 Request Serial::iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const {
     AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
     return SerialRequestPool::instance().createReceiveRequest(recv,count,type,tag);

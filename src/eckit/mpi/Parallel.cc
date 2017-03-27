@@ -403,6 +403,15 @@ void Parallel::send(const void* send, size_t count, Data::Code type, int dest, i
     MPI_CALL( MPI_Send(const_cast<void*>(send), int(count), mpitype, dest, tag, comm_) );
 }
 
+void Parallel::synchronisedSend(const void* send, size_t count, Data::Code type, int dest, int tag) const
+{
+    ASSERT(count  < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+
+    MPI_CALL( MPI_Ssend(const_cast<void*>(send), int(count), mpitype, dest, tag, comm_) );
+}
+
 Request Parallel::iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const
 {
     ASSERT(count  < size_t(std::numeric_limits<int>::max()));

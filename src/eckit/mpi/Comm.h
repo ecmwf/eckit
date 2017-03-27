@@ -752,6 +752,17 @@ void eckit::mpi::Comm::send(T& sendbuf, int dest, int tag) const {
     send(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
 }
 
+template <typename T>
+void eckit::mpi::Comm::synchronisedSend(T* sendbuf, size_t count, int dest, int tag) const {
+    synchronisedSend(sendbuf, count, Data::Type<T>::code(), dest, tag);
+}
+
+template <typename T>
+void eckit::mpi::Comm::synchronisedSend(T& sendbuf, int dest, int tag) const {
+    synchronisedSend(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
+}
+
+
 ///
 /// Non-blocking send
 ///

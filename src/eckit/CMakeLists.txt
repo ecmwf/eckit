@@ -21,6 +21,10 @@ list( APPEND eckit_container_srcs
 
 container/BTree.h
 container/BTree.cc
+container/Trie.h
+container/Trie.cc
+container/TrieSet.h
+container/TrieSet.cc
 
 container/Cache.h
 container/CacheLRU.h
@@ -592,6 +596,7 @@ endforeach()
 list( APPEND eckit_templates
 					container/CacheLRU.cc
                     container/BTree.cc
+                    container/Trie.cc
                     container/MappedArray.cc
                     container/SharedMemArray.cc
                     container/bsptree/BSPNode.cc

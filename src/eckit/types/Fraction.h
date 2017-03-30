@@ -65,7 +65,7 @@ public: // operators
     }
 
     Fraction decimalPart() const {
-        return *this - intergralPart();
+        return *this - integralPart();
     }
 
     Fraction operator+(const Fraction& other) const {

@@ -142,6 +142,10 @@ BOOST_AUTO_TEST_CASE( test_fraction )
     }
 
 
+    // BOOST_CHECK_EQUAL(Fraction(5, 3).intergralPart(), 1);
+    // BOOST_CHECK_EQUAL(Fraction(5, 3).decimalPart(), Fraction(1, 3));
+
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

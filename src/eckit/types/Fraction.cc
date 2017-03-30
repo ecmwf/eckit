@@ -142,6 +142,7 @@ Fraction::operator long long() const {
     throw eckit::SeriousBug(oss.str());
 }
 
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

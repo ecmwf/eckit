@@ -69,7 +69,7 @@ bool Trie<T>::remove(const unsigned char* key)
         return (kids_.size() == 0); // Remove me if size if 0
 	}
 
-	int pos = int(*key) - int(from_);
+    size_t pos = int(*key) - int(from_);
 
     if( pos >= 0 && pos  < kids_.size() && kids_[pos])
         if(kids_[pos]->remove(key+1))
@@ -97,7 +97,7 @@ Trie<T>* Trie<T>::find(const unsigned char* key, bool make)
 	if(*key == 0) 
 		return this;
 
-    int pos = int(*key) - int(from_);
+    size_t pos = int(*key) - int(from_);
 
     if( pos >= 0 && pos  < kids_.size() && kids_[pos])
         return kids_[pos]->find(key+1, make);

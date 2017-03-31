@@ -23,8 +23,6 @@ container/BTree.h
 container/BTree.cc
 container/Trie.h
 container/Trie.cc
-container/TrieSet.h
-container/TrieSet.cc
 
 container/Cache.h
 container/CacheLRU.h

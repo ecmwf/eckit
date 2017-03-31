@@ -36,10 +36,11 @@ public: // methods
     Trie();
     ~Trie();
 
-	bool empty() const { return size_ == 0; }
+    bool empty() const { return kids_.empty() && !set_; }
 
     void insert(const std::string& key, T value);
     void remove(const std::string& key);
+    bool contains(const std::string& key) const;
     T*   find(const std::string& key) const;
 
 protected: // methods
@@ -55,7 +56,6 @@ private: // members
 private: // members
 
 	unsigned short   from_;
-	unsigned short   size_;
 
     /// Do we have a value in the value_ (or is just uninintialised POD/default constructed).
     bool set_;

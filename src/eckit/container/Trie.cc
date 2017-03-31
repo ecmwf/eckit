@@ -20,7 +20,6 @@ namespace eckit {
 template<class T>
 Trie<T>::Trie() :
     from_(0),
-    size_(0),
     set_(0),
     kids_(0) {}
 
@@ -28,7 +27,7 @@ Trie<T>::Trie() :
 template<class T>
 Trie<T>::~Trie() {
 
-    for(size_t i = 0; i < size_; i++) {
+    for (size_t i = 0; i < kids_.size(); i++) {
         if (kids_[i])
             delete(kids_[i]);
 	}
@@ -40,6 +39,7 @@ void Trie<T>::insert(const std::string& key, T value)
 	const char* k = key.c_str();
     Trie<T>* x = find((unsigned char*)k, true);
     x->value_ = value;
+    x->set_ = true;
 }
 
 template<class T>
@@ -53,7 +53,12 @@ T* Trie<T>::find(const std::string& key) const
 {
 	const char* k = key.c_str();
     Trie<T>* x = const_cast<Trie<T>*>(this)->find((unsigned char*)k, false);
-    return x ? &x->value_ : 0;
+    return (x && x->set_) ? &x->value_ : 0;
+}
+
+template<class T>
+bool Trie<T>::contains(const std::string& key) const {
+    return find(key) != 0;
 }
 
 template<class T>
@@ -61,12 +66,12 @@ bool Trie<T>::remove(const unsigned char* key)
 {
 	if(*key == 0) { 
         set_ = 0;
-		return (size_ == 0); // Remove me if size if 0
+        return (kids_.size() == 0); // Remove me if size if 0
 	}
 
 	int pos = int(*key) - int(from_);
 
-	if( pos >= 0 && pos  < size_ && kids_[pos])
+    if( pos >= 0 && pos  < kids_.size() && kids_[pos])
         if(kids_[pos]->remove(key+1))
         {
             delete kids_[pos];
@@ -74,11 +79,13 @@ bool Trie<T>::remove(const unsigned char* key)
 
 			// May be we should shrink the list here
 
-            for (size_t i = 0; i < size_; i++)
+            for (size_t i = 0; i < kids_.size(); i++)
                 if(kids_[i] != 0)
-					return false;
+                    return false;
 
-            return true; // delete me
+            // Delete me if I am not also a value
+            kids_.clear();
+            return !set_;
 		}
 
 	return false;
@@ -90,35 +97,36 @@ Trie<T>* Trie<T>::find(const unsigned char* key, bool make)
 	if(*key == 0) 
 		return this;
 
-	int pos = int(*key) - int(from_);
+    int pos = int(*key) - int(from_);
 
-	if( pos >= 0 && pos  < size_ && kids_[pos])
+    if( pos >= 0 && pos  < kids_.size() && kids_[pos])
         return kids_[pos]->find(key+1, make);
 
 	if(make) {
 
         // If outside of range, we need to expand the storage vector.
-        if(pos < 0 || pos >= size_) {
+        if(pos < 0 || pos >= kids_.size()) {
 
 			int from = 0;
 
-			if(size_ == 0) // First in
+            size_t sz;
+            if(kids_.empty()) // First in
 			{
-				size_ = 1;
+                sz = 1;
 				from_ = *key;
 			}
 			else if(pos<0)  // Insert before
 			{ 
-				size_ -= pos; 
-				from_  = *key; 
+                sz = kids_.size() - pos;
+                from_  = *key;
 				from   = -pos;
 			}
 			else // Insert after
 			{
-				size_ = pos+1;
-			}
+                sz = pos+1;
+            }
 
-            std::vector<Trie<T>*> kids(size_, 0);
+            std::vector<Trie<T>*> kids(sz, 0);
             std::copy(kids_.begin(), kids_.end(), kids.begin()+from);
 
 			kids_ = kids;
@@ -138,10 +146,10 @@ Trie<T>* Trie<T>::find(const unsigned char* key, bool make)
 template<class T>
 void Trie<T>::print(std::ostream& s) const
 {
-    if (value_)
+    if (set_)
         s << "(" << value_ << ")";
 
-    for (size_t i = 0; i < size_; i++) {
+    for (size_t i = 0; i < kids_.size(); i++) {
 		if(kids_[i])
 		{
 			s << (unsigned char)(from_ + i) << ' ';
@@ -149,7 +157,7 @@ void Trie<T>::print(std::ostream& s) const
         }
     }
 
-    if (size_ == 0)
+    if (kids_.empty())
         s << std::endl;
 }
 

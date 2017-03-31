@@ -48,13 +48,9 @@ BOOST_AUTO_TEST_CASE( test_trie_insertion )
 
     // Test something that branches off with a lower character value
 
-    Log::error() << "-------------------" << std::endl;
-
     tr.insert("a-different-string", 4321);
-    Log::error() << "------------------- FIND" << std::endl;
 
     BOOST_CHECK(tr.find("a-test-string") != 0);
-    Log::error() << "-------------------" << std::endl;
     BOOST_CHECK(*tr.find("a-test-string") == 1234);
 
     BOOST_CHECK(tr.find("a-different-string") != 0);

@@ -23,6 +23,8 @@ container/BTree.h
 container/BTree.cc
 container/Trie.h
 container/Trie.cc
+container/BloomFilter.h
+container/BloomFilter.cc
 
 container/Cache.h
 container/CacheLRU.h
@@ -595,6 +597,7 @@ list( APPEND eckit_templates
 					container/CacheLRU.cc
                     container/BTree.cc
                     container/Trie.cc
+                    container/BloomFilter.cc
                     container/MappedArray.cc
                     container/SharedMemArray.cc
                     container/bsptree/BSPNode.cc

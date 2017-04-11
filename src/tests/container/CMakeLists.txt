@@ -8,6 +8,11 @@ ecbuild_add_test( TARGET   eckit_test_btree
                   SOURCES  test_btree.cc
                   LIBS     eckit )
 
+ecbuild_add_test( TARGET   eckit_test_bloomfilter
+                  BOOST
+                  SOURCES  test_bloomfilter.cc
+                  LIBS     eckit )
+
 ecbuild_add_test( TARGET   eckit_test_trie
                   BOOST
                   SOURCES  test_trie.cc

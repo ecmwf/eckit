@@ -75,24 +75,18 @@ size_t BloomFilter<T>::elementCount(size_t nbits) {
 template<typename T>
 size_t BloomFilter<T>::index(const T& value) const {
 
-    // TODO: This involves creating an entirely unecessary std::string intermediate
-    //       --> Can in principle be optimised.
-    //       --> Either use a different hash function, or extract the digest in a
-    //           non-string form (n.b. it always has the same size buffer...).
-    //
+    // n.b. We could use any other hash, but MD5 is already in here.
 
     MD5 md5;
+    unsigned char md5_buf[16];
     md5.add(value);
-    std::string digest = md5.digest();
+    md5.numericalDigest(md5_buf);
 
-    // An MD5 is a hexadecimal number. Take the modulus incrementally
-    // Use an incremento of 2 bytes to avoid any possible negative overflows with 4-bytes and long.
+    // Take the modules incrementally
 
     size_t idx = 0;
-    for (size_t i = 0; i < digest.size(); i += 2) {
-        std::string tmp(&digest[i], 2);
-        idx = ((idx * 16 * 16) + strtol(tmp.c_str(), NULL, 16)) % size_;
-    }
+    for (size_t i = 0; i < sizeof(md5_buf); i++)
+        idx = ((idx * 256) + md5_buf[i]);
 
     return idx;
 }

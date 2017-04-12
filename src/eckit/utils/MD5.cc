@@ -331,6 +331,10 @@ MD5::digest_t MD5::digest() const {
     return digest_;
 }
 
+void MD5::numericalDigest(unsigned char out[16]) const {
+    MD5::Final(&out[0], &s_);
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

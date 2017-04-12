@@ -70,6 +70,7 @@ public:  // types
   operator std::string();
 
   digest_t digest() const;
+  void numericalDigest(unsigned char out[16]) const;
 
 private:  // types
 

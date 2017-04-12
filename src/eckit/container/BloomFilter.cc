@@ -86,7 +86,7 @@ size_t BloomFilter<T>::index(const T& value) const {
 
     size_t idx = 0;
     for (size_t i = 0; i < sizeof(md5_buf); i++)
-        idx = ((idx * 256) + md5_buf[i]);
+        idx = ((idx * 256) + md5_buf[i]) % size_;
 
     return idx;
 }

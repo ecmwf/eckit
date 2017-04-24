@@ -18,16 +18,16 @@
 
 namespace eckit {
 
-SHA1::SHA1() {
+SHA1::SHA1() : dirty_(true) {
     SHA1_Init(&ctx_);
 }
 
-SHA1::SHA1(const char* s) {
+SHA1::SHA1(const char* s) : dirty_(true)  {
     SHA1_Init(&ctx_);
     add( s, strlen(s) );
 }
 
-SHA1::SHA1(const std::string& s) {
+SHA1::SHA1(const std::string& s) : dirty_(true) {
     SHA1_Init(&ctx_);
     add( s.c_str(), s.size() );
 }
@@ -42,38 +42,39 @@ SHA1::~SHA1() {}
 void SHA1::add(const void* buffer, long length) {
     if (length > 0) {
         SHA1_Update(&ctx_, static_cast<const unsigned char*>(buffer), length);
-        if (!digest_.empty())
-            digest_ = digest_t(); // reset the digest
+        dirty_ = true;
     }
 }
 
 void SHA1::add(const char* x) { add(x, ::strlen(x)); }
 
 SHA1::operator std::string() {
-    return digest();
+    return std::string(digest());
 }
 
+static const char* hex = "0123456789abcdef";
+
 SHA1::digest_t SHA1::digest() const {
-    // recompute the digest
-    if (digest_.empty()) {
+
+    if (dirty_) { // recompute the digest
+
+        digest_[2*SHA_DIGEST_LENGTH] = 0; // null terminator
 
         unsigned char digest[SHA_DIGEST_LENGTH];
         SHA1_Final(digest, &ctx_);
 
+        // x[0] = hex[(digest[0] & 0xf0) >> 4];
+        // x[1] = hex[(digest[0] & 0xf)];
+        // x[2] = hex[(digest[1] & 0xf0) >> 4];
+        // x[3] = hex[(digest[1] & 0xf)];
 
-        char x [2*SHA_DIGEST_LENGTH];
-        static const char* hex = "0123456789abcdef";
         size_t j = 0;
-        for(size_t i=0; i<SHA_DIGEST_LENGTH; ++i) {
-            x[j++] = hex[(digest[i] & 0xf0) >> 4];
-            x[j++] = hex[(digest[i] & 0xf)];
+        for(size_t i = 0; i<SHA_DIGEST_LENGTH; ++i) {
+            digest_[j++] = hex[(digest[i] & 0xf0) >> 4];
+            digest_[j++] = hex[(digest[i] & 0xf)];
         }
-
-        digest_ = std::string(x, 2*SHA_DIGEST_LENGTH);
-
-        Log::info() << "digest is " << digest_ << std::endl;
-
     }
+
     return digest_;
 }
 

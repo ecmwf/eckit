@@ -19,6 +19,10 @@
 typedef int SHA_CTX;
 #endif
 
+#ifndef SHA_DIGEST_LENGTH
+#define SHA_DIGEST_LENGTH 20
+#endif
+
 #include <stdlib.h>
 #include <stdint.h>
 #include <string>
@@ -31,7 +35,7 @@ class SHA1 : private eckit::NonCopyable {
 
 public:  // types
 
-  typedef std::string digest_t;
+  typedef char* digest_t;
 
 public:  // types
 
@@ -69,10 +73,6 @@ public:  // types
   void add(const std::string& x)  { add(x.c_str(),x.size()); }
   void add(const char* x);
 
-  /// for generic objects
-  template <class T>
-  void add(const T& x) { x.hash(*this); }
-
   template<class T>
   SHA1& operator<<(const T& x) { add(x); return *this; }
 
@@ -88,12 +88,13 @@ private:  // types
   void add(const void*);
 
   /// Double hashing
-  void add(const SHA1& SHA1) { add(SHA1.digest()); }
+  void add(const SHA1& hash) { add(hash.digest()); }
 
 private: // members
 
   mutable SHA_CTX ctx_;
-  mutable digest_t digest_;
+  mutable char digest_[2*SHA_DIGEST_LENGTH+1];
+  mutable bool dirty_;
 
 };
 

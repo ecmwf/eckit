@@ -85,7 +85,7 @@ long MarsFSFile::read(void* buffer, long len) {
         std::string remoteHash;
         s >> remoteHash;
         Log::info() << "MarsFSFile local hash " << hash.digest() << " remote hash " << remoteHash << std::endl;
-        ASSERT(hash.digest() == remoteHash);
+        ASSERT(strcmp(hash.digest(), remoteHash.c_str()) == 0);
     }
 
     return size;

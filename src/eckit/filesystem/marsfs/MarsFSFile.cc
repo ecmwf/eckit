@@ -78,7 +78,7 @@ long MarsFSFile::read(void* buffer, long len) {
         eckit::MD4 hash(buffer, size);
         std::string remoteHash;
         s >> remoteHash;
-        Log::info() << "MarsFSFile local hash " << hash.digest() << " remote hash " << remoteHash << std::endl;
+//        Log::info() << "MarsFSFile local hash " << hash.digest() << " remote hash " << remoteHash << std::endl;
         ASSERT(hash.digest() == remoteHash);
     }
 
@@ -102,7 +102,7 @@ long MarsFSFile::write(const void* buffer, long len) {
     if(checksum) {
         eckit::MD4  hash(buffer, len);
         s << hash.digest();
-        Log::info() << "MarsFSFile sending hash " << hash.digest() << std::endl;
+//        Log::info() << "MarsFSFile sending hash " << hash.digest() << std::endl;
     }
 
     s >> size;

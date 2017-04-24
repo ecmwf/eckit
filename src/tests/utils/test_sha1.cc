@@ -15,6 +15,10 @@
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/utils/SHA1.h"
+#include "eckit/log/Timer.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/Seconds.h"
 
 using namespace std;
 using namespace eckit;
@@ -105,9 +109,34 @@ const char *testarray[4] =
             hash.add(testarray[i]);
         }
 
-        BOOST_CHECK_EQUAL( hash.digest(), std::string(resultarray[i]) );
+        BOOST_CHECK_EQUAL(strcmp(hash.digest(), resultarray[i]), 0);
     }
 }
+
+BOOST_AUTO_TEST_CASE( test_eckit_utils_sha1_performance )
+{
+    eckit::Buffer buffer(16*1024*1024);
+
+    eckit::Timer timer;
+
+    for(int i = 0; i < 250; ++i ) {
+
+        timer.start();
+
+        SHA1 hash;
+        for(size_t j=0; j < 1; ++j) {
+            hash.add(buffer, buffer.size());
+        }
+
+        hash.digest();
+
+        timer.stop();
+
+        std::cout << i << " sha1 " << hash.digest() << " rate " << Bytes(buffer.size(), timer) << std::endl;
+
+    }
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 

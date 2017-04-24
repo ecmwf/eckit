@@ -73,6 +73,8 @@ SHA1::digest_t SHA1::digest() const {
             digest_[j++] = hex[(digest[i] & 0xf0) >> 4];
             digest_[j++] = hex[(digest[i] & 0xf)];
         }
+
+        dirty_ = false;
     }
 
     return digest_;

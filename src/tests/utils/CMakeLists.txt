@@ -20,3 +20,9 @@ ecbuild_add_test( TARGET      eckit_test_rendezvoushash
                   BOOST
                   SOURCES     test_rendezvoushash.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_sha1
+                  BOOST
+                  CONDITION   ECKIT_HAVE_SSL
+                  SOURCES     test_sha1.cc
+                  LIBS        eckit )

@@ -498,6 +498,13 @@ utils/HyperCube.cc
 utils/RLE.h
 utils/RLE.cc )
 
+if(ECKIT_HAVE_SSL)
+    list( APPEND eckit_utils_srcs
+        utils/SHA1.h
+        utils/SHA1.cc
+    )
+endif()
+
 list( APPEND eckit_memory_srcs
 memory/Builder.h
 memory/Builder.cc
@@ -642,9 +649,10 @@ ecbuild_add_library(TARGET eckit
 					PERSISTENT
 						${eckit_persistent}
 					INCLUDES
-						${AIO_INCLUDE_DIRS}
+                        "${OPENSSL_INCLUDE_DIR}"
+                        "${AIO_INCLUDE_DIRS}"
 					LIBS
-                        ${AIO_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS} ${ECKIT_SYSTEM_EXTRA_LIBS} )
+                        ${OPENSSL_LIBRARIES} ${AIO_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS} ${ECKIT_SYSTEM_EXTRA_LIBS} )
 
 ### sub-directories
 

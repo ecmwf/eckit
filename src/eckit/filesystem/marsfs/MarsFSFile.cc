@@ -11,16 +11,22 @@
 // File MarsFSFile.cc
 // Baudouin Raoult - (c) ECMWF Jun 11
 
+#include "eckit/eckit_config.h"
 
 #include "eckit/filesystem/marsfs/MarsFSFile.h"
-#include "eckit/utils/MD5.h"
 #include "eckit/config/Resource.h"
 
-//-----------------------------------------------------------------------------
+#ifdef ECKIT_HAVE_SSL
+#include "eckit/utils/SHA1.h"
+typedef eckit::SHA1 HASH;
+#else
+#include "eckit/utils/MD5.h"
+typedef eckit::MD5  HASH;
+#endif
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 MarsFSFile::MarsFSFile(const MarsFSPath& path):
     MarsFSClient(path),
@@ -75,11 +81,11 @@ long MarsFSFile::read(void* buffer, long len) {
     ASSERT(data_.read(buffer, size) == size);
 
     if(checksum) {
-        eckit::MD5 md5(buffer, size);
-        std::string remoteMD5;
-        s >> remoteMD5;
-        Log::info() << "MarsFSFile MD5 local " << md5.digest() << " remote " << remoteMD5 << std::endl;
-        ASSERT(md5.digest() == remoteMD5);
+        HASH hash(buffer, size);
+        std::string remoteHash;
+        s >> remoteHash;
+        Log::info() << "MarsFSFile local hash " << hash.digest() << " remote hash " << remoteHash << std::endl;
+        ASSERT(hash.digest() == remoteHash);
     }
 
     return size;
@@ -100,9 +106,9 @@ long MarsFSFile::write(const void* buffer, long len) {
     ASSERT(data_.write(buffer, len) == len);
 
     if(checksum) {
-        eckit::MD5 md5(buffer, len);
-        s << md5.digest();
-        Log::info() << "MarsFSFile sending MD5 " << md5.digest() << std::endl;
+        HASH hash(buffer, len);
+        s << hash.digest();
+        Log::info() << "MarsFSFile sending hash " << hash.digest() << std::endl;
     }
 
     s >> size;
@@ -151,7 +157,7 @@ Length MarsFSFile::length()
     return size(path_.path());
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

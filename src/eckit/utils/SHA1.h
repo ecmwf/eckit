@@ -35,7 +35,7 @@ class SHA1 : private eckit::NonCopyable {
 
 public:  // types
 
-  typedef char* digest_t;
+  typedef std::string digest_t;
 
 public:  // types
 

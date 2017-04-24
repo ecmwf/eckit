@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -13,6 +13,8 @@
 
 
 #include "eckit/filesystem/marsfs/MarsFSFile.h"
+#include "eckit/utils/MD5.h"
+#include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------
 
@@ -57,6 +59,9 @@ Length MarsFSFile::open(const char* mode, bool overwrite)
 }
 
 long MarsFSFile::read(void* buffer, long len) {
+
+    static bool checksum = eckit::Resource<bool>("marsFSCheckSum", true);
+
     Stream& s = connector_;
     long size;
 
@@ -65,21 +70,41 @@ long MarsFSFile::read(void* buffer, long len) {
     s << len;
 
     s >> size;
+
     ASSERT(data_.isConnected());
     ASSERT(data_.read(buffer, size) == size);
+
+    if(checksum) {
+        eckit::MD5 md5(buffer, size);
+        std::string remoteMD5;
+        s >> remoteMD5;
+        Log::info() << "MarsFSFile MD5 local " << md5.digest() << " remote " << remoteMD5 << std::endl;
+        ASSERT(md5.digest() == remoteMD5);
+    }
 
     return size;
 }
 
 long MarsFSFile::write(const void* buffer, long len) {
+
+    static bool checksum = eckit::Resource<bool>("marsFSCheckSum", true);
+
     Stream& s = connector_;
     long size;
 
     s << "write";
+
     s << len;
 
     ASSERT(data_.isConnected());
     ASSERT(data_.write(buffer, len) == len);
+
+    if(checksum) {
+        eckit::MD5 md5(buffer, len);
+        s << md5.digest();
+        Log::info() << "MarsFSFile sending MD5 " << md5.digest() << std::endl;
+    }
+
     s >> size;
 
     return size;

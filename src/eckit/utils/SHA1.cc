@@ -63,11 +63,6 @@ SHA1::digest_t SHA1::digest() const {
         unsigned char digest[SHA_DIGEST_LENGTH];
         SHA1_Final(digest, &ctx_);
 
-        // x[0] = hex[(digest[0] & 0xf0) >> 4];
-        // x[1] = hex[(digest[0] & 0xf)];
-        // x[2] = hex[(digest[1] & 0xf0) >> 4];
-        // x[3] = hex[(digest[1] & 0xf)];
-
         size_t j = 0;
         for(size_t i = 0; i<SHA_DIGEST_LENGTH; ++i) {
             digest_[j++] = hex[(digest[i] & 0xf0) >> 4];

@@ -16,13 +16,7 @@
 #include "eckit/filesystem/marsfs/MarsFSFile.h"
 #include "eckit/config/Resource.h"
 
-#ifdef ECKIT_HAVE_SSL
-#include "eckit/utils/SHA1.h"
-typedef eckit::SHA1 HASH;
-#else
-#include "eckit/utils/MD5.h"
-typedef eckit::MD5  HASH;
-#endif
+#include "eckit/utils/MD4.h"
 
 namespace eckit {
 
@@ -81,11 +75,11 @@ long MarsFSFile::read(void* buffer, long len) {
     ASSERT(data_.read(buffer, size) == size);
 
     if(checksum) {
-        HASH hash(buffer, size);
+        eckit::MD4 hash(buffer, size);
         std::string remoteHash;
         s >> remoteHash;
         Log::info() << "MarsFSFile local hash " << hash.digest() << " remote hash " << remoteHash << std::endl;
-        ASSERT(strcmp(hash.digest(), remoteHash.c_str()) == 0);
+        ASSERT(hash.digest() == remoteHash);
     }
 
     return size;
@@ -106,7 +100,7 @@ long MarsFSFile::write(const void* buffer, long len) {
     ASSERT(data_.write(buffer, len) == len);
 
     if(checksum) {
-        HASH hash(buffer, len);
+        eckit::MD4  hash(buffer, len);
         s << hash.digest();
         Log::info() << "MarsFSFile sending hash " << hash.digest() << std::endl;
     }

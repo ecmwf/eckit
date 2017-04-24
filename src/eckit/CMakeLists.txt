@@ -494,8 +494,10 @@ utils/RLE.cc )
 
 if(ECKIT_HAVE_SSL)
     list( APPEND eckit_utils_srcs
-        utils/SHA1.h
-        utils/SHA1.cc
+      utils/SHA1.h
+      utils/SHA1.cc
+      utils/MD4.h
+      utils/MD4.cc
     )
 endif()
 

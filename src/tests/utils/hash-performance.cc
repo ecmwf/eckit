@@ -23,7 +23,7 @@ using namespace std;
 using namespace eckit;
 
 template <class HASH, int N, int M>
-void performance(char* name, eckit::Buffer& buffer, eckit::Timer& timer) {
+void performance(const char* name, eckit::Buffer& buffer, eckit::Timer& timer) {
 
     timer.start();
 

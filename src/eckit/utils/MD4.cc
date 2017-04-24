@@ -18,16 +18,16 @@
 
 namespace eckit {
 
-MD4::MD4() : dirty_(true) {
+MD4::MD4() {
     MD4_Init(&ctx_);
 }
 
-MD4::MD4(const char* s) : dirty_(true)  {
+MD4::MD4(const char* s) {
     MD4_Init(&ctx_);
     add( s, strlen(s) );
 }
 
-MD4::MD4(const std::string& s) : dirty_(true) {
+MD4::MD4(const std::string& s) {
     MD4_Init(&ctx_);
     add( s.c_str(), s.size() );
 }
@@ -42,34 +42,35 @@ MD4::~MD4() {}
 void MD4::add(const void* buffer, long length) {
     if (length > 0) {
         MD4_Update(&ctx_, static_cast<const unsigned char*>(buffer), length);
-        dirty_ = true;
+        if (!digest_.empty())
+            digest_ = digest_t(); // reset the digest
     }
 }
 
 void MD4::add(const char* x) { add(x, ::strlen(x)); }
 
 MD4::operator std::string() {
-    return std::string(digest());
+    return digest();
 }
 
 static const char* hex = "0123456789abcdef";
 
 MD4::digest_t MD4::digest() const {
 
-    if (dirty_) { // recompute the digest
-
-        digest_[2*MD4_DIGEST_LENGTH] = 0; // null terminator
+    if (digest_.empty()) { // recompute the digest
 
         unsigned char digest[MD4_DIGEST_LENGTH];
         MD4_Final(digest, &ctx_);
 
+        char x[2*MD4_DIGEST_LENGTH];
+
         size_t j = 0;
         for(size_t i = 0; i<MD4_DIGEST_LENGTH; ++i) {
-            digest_[j++] = hex[(digest[i] & 0xf0) >> 4];
-            digest_[j++] = hex[(digest[i] & 0xf)];
+            x[j++] = hex[(digest[i] & 0xf0) >> 4];
+            x[j++] = hex[(digest[i] & 0xf)];
         }
 
-        dirty_ = false;
+        digest_ = std::string(x, 2*MD4_DIGEST_LENGTH);
     }
 
     return digest_;

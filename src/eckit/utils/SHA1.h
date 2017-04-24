@@ -93,8 +93,7 @@ private:  // types
 private: // members
 
   mutable SHA_CTX ctx_;
-  mutable char digest_[2*SHA_DIGEST_LENGTH+1];
-  mutable bool dirty_;
+  mutable digest_t digest_;  ///< cached digest
 
 };
 

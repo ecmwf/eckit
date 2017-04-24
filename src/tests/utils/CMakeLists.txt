@@ -26,3 +26,8 @@ ecbuild_add_test( TARGET      eckit_test_sha1
                   CONDITION   ECKIT_HAVE_SSL
                   SOURCES     test_sha1.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      sha1-performance
+                  CONDITION   ECKIT_HAVE_SSL
+                  SOURCES     sha1-performance.cc
+                  LIBS        eckit )

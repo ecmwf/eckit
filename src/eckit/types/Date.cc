@@ -233,15 +233,15 @@ long Date::dateToJulian(long ddate)
 
 	long month,day,year;
 
-	year = ddate / 10000;
+    // Negative dates are relative to today
+    if(ddate <= 0)
+        return today() + ddate;
+
+    year = ddate / 10000;
 	ddate %= 10000;
 	month  = ddate / 100;
 	ddate %= 100;
 	day = ddate;
-
-	// Negative dates are relative to today
-	if(ddate <= 0)
-		return today() + ddate;
 
 	if(year < 100)
 	{

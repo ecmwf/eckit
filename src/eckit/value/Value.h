@@ -389,7 +389,7 @@ Value toValue(const std::map<K, V>& l) {
 
 template < typename T >
 DEPRECATED
-Value makeVectorValue(const T& v) {
+Value makeVectorValue(const std::vector<T>& v) {
     return toValue(v);
 }
 //----------------------------------------------------------------------------------------------------------------------

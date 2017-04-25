@@ -19,6 +19,19 @@
 
 namespace eckit {
 
+
+Value JSONParser::decodeFile(const PathName& path, bool comments) {
+    std::ifstream in(std::string(path).c_str());
+    if (!in)
+        throw eckit::CantOpenFile(path);
+    return JSONParser(in, comments).parse();
+}
+
+Value JSONParser::decodeString(const std::string& str, bool comments) {
+    std::istringstream in(str);
+    return JSONParser(in, comments).parse();
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 Value JSONParser::parseTrue()
@@ -44,12 +57,12 @@ Value JSONParser::parseNumber()
     bool real = false;
     std::string s;
     char c = next();
-    if(c == '-') {
+    if (c == '-') {
         s += c;
         c = next();
     }
 
-    switch(c) {
+    switch (c) {
     case '0': s += c; break;
     case '1':
     case '2':
@@ -61,7 +74,7 @@ Value JSONParser::parseNumber()
     case '8':
     case '9':
         s += c;
-        while(isdigit(peek())) {
+        while (isdigit(peek())) {
             s += next();
         }
         break;
@@ -70,47 +83,47 @@ Value JSONParser::parseNumber()
         break;
     }
 
-    if(peek() == '.') {
+    if (peek() == '.') {
         real = true;
         s += next();
         c = next();
-        if(!isdigit(c))
+        if (!isdigit(c))
             throw StreamParser::Error(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
         s += c;
-        while(isdigit(peek())) {
+        while (isdigit(peek())) {
             s += next();
         }
     }
 
 
     c = peek();
-    if(c == 'e' || c == 'E') {
+    if (c == 'e' || c == 'E') {
         real = true;
         s += next();
 
         c = next();
-        if(c == '-' || c == '+')
+        if (c == '-' || c == '+')
         {
             s += c;
             c = next();
         }
 
-        if(!isdigit(c))
+        if (!isdigit(c))
             throw StreamParser::Error(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
         s += c;
-        while(isdigit(peek())) {
+        while (isdigit(peek())) {
             s += next();
         }
 
     }
 
-    if(real) {
-        double d = Translator<std::string,double>()(s);
+    if (real) {
+        double d = Translator<std::string, double>()(s);
         return Value(d);
     }
     else
     {
-        long long d = Translator<std::string,long long>()(s);
+        long long d = Translator<std::string, long long>()(s);
         return Value(d);
     }
 }
@@ -119,13 +132,13 @@ Value JSONParser::parseString()
 {
     consume('"');
     std::string s;
-    for(;;)
+    for (;;)
     {
         char c = next(true);
-        if(c == '\\')
+        if (c == '\\')
         {
             c = next(true);
-            switch(c) {
+            switch (c) {
 
             case '"':
                 s += '"';
@@ -169,7 +182,7 @@ Value JSONParser::parseString()
         }
         else
         {
-            if(c == '"')
+            if (c == '"')
             {
                 return Value(s);
             }
@@ -180,7 +193,7 @@ Value JSONParser::parseString()
 
 }
 
-void JSONParser::parseKeyValue(std::map<Value,Value>& m)
+void JSONParser::parseKeyValue(std::map<Value, Value>& m)
 {
     Value k = parseString();
     consume(':');
@@ -193,20 +206,20 @@ Value JSONParser::parseObject()
 {
     consume("{");
     char c = peek();
-    if(c == '}')
+    if (c == '}')
     {
         consume(c);
         return Value::makeMap();
     }
 
-    std::map<Value,Value> m;
+    std::map<Value, Value> m;
 
-    for(;;) {
+    for (;;) {
 
         parseKeyValue(m);
 
         char c = peek();
-        if(c == '}')
+        if (c == '}')
         {
             consume(c);
             return Value::makeMap(m);
@@ -221,7 +234,7 @@ Value JSONParser::parseArray()
 {
     consume("[");
     char c = peek();
-    if(c == ']')
+    if (c == ']')
     {
         consume(c);
         //cout << "JSONTokenizer::parseArray <== " << std::endl;;
@@ -229,12 +242,12 @@ Value JSONParser::parseArray()
     }
 
     std::vector<Value> l;
-    for(;;) {
+    for (;;) {
 
         l.push_back(parseValue());
 
         char c = peek();
-        if(c == ']')
+        if (c == ']')
         {
             consume(c);
             //cout << "JSONTokenizer::parseArray <== " << std::endl;;
@@ -250,7 +263,7 @@ Value JSONParser::parseArray()
 Value JSONParser::parseValue()
 {
     char c = peek();
-    switch(c)
+    switch (c)
     {
 
     case 't': return parseTrue(); break;
@@ -278,7 +291,7 @@ Value JSONParser::parseValue()
     }
 }
 
-JSONParser::JSONParser(std::istream &in, bool comments ) : StreamParser(in,comments)
+JSONParser::JSONParser(std::istream &in, bool comments ) : StreamParser(in, comments)
 {
 }
 
@@ -286,7 +299,7 @@ Value JSONParser::parse()
 {
     Value v = parseValue();
     char c = peek();
-    if(c != 0)
+    if (c != 0)
         throw StreamParser::Error(std::string("JSONTokenizer::parse extra char '") + c + "'");
     return v;
 

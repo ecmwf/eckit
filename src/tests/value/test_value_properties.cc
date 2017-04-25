@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE( test_serialize )
     std::vector<Properties> property_list(2);
     property_list[0].set("int",numeric_limits<int>::max());
     property_list[1].set("string","foo");
-    p.set("list", makeVectorValue(property_list) );
+    p.set("list", toValue(property_list) );
 
     BOOST_TEST_MESSAGE("encoded Properties: " << p);
     {

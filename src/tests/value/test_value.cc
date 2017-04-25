@@ -2529,7 +2529,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_vector ) {
     for (int i = 99; i > 0; i -= 11)
         vint.push_back(i);
 
-    Value val = makeVectorValue(vint);
+    Value val = toValue(vint);
 
     BOOST_CHECK(val.isList());
     BOOST_CHECK_EQUAL(val.as<ValueList>().size(), 9);
@@ -2545,7 +2545,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_list ) {
     for (int i = 99; i > 0; i -= 11)
         lint.push_back(i);
 
-    Value val = makeVectorValue(lint);
+    Value val = toValue(lint);
 
     BOOST_CHECK(val.isList());
     BOOST_CHECK_EQUAL(val.as<ValueList>().size(), 9);

@@ -30,6 +30,10 @@ public: // methods
 
     Value parse();
 
+
+    static Value decodeFile(const PathName& path, bool comments = false);
+    static Value decodeString(const std::string& str, bool comments = false);
+
 private: // methods
 
     Value parseTrue();
@@ -44,6 +48,7 @@ private: // methods
     void parseKeyValue(std::map<Value, Value> &);
 
 };
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -392,6 +392,12 @@ DEPRECATED
 Value makeVectorValue(const std::vector<T>& v) {
     return toValue(v);
 }
+
+template < typename T >
+DEPRECATED
+Value makeVectorValue(const std::list<T>& v) {
+    return toValue(v);
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 template< typename T >

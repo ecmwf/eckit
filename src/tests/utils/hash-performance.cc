@@ -50,7 +50,7 @@ int main(int argc, char const *argv[])
 
     eckit::Timer timer;
 
-    incremental<eckit::xxHash,  20, 1>("xxHash", buffer, timer);
+    incremental<eckit::xxHash,  200, 1>("xxHash", buffer, timer);
     incremental<eckit::MD4,     20, 1>("MD4",    buffer, timer);
     incremental<eckit::MD5,     20, 1>("MD5",    buffer, timer);
     incremental<eckit::SHA1,    20, 1>("SHA1",   buffer, timer);

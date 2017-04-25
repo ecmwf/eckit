@@ -363,7 +363,7 @@ Value toValue( const std::vector<T>& l )
 
 
 template < typename T, typename U >
-Value toValue(std::pair<T, U>& v, const Value& value) {
+Value toValue(const std::pair<T, U>& v) {
     ValueList r;
     r.push_back( v.first );
     r.push_back( v.second );
@@ -372,12 +372,25 @@ Value toValue(std::pair<T, U>& v, const Value& value) {
 
 
 template < typename K, typename V >
-Value toValue(std::map<K, V>& l) {
+Value toValue(const std::map<K, V>& l) {
     ValueMap r;
     for (typename std::map<K, V>::const_iterator j = l.begin(); j != l.end(); ++j) {
         r[toValue((*j).first)] = toValue((*j).second);
     }
     return Value::makeMap(r);
+}
+
+#ifdef __GNUC__
+#define DEPRECATED __attribute__((deprecated))
+#else
+#define DEPRECATED /**/
+#endif
+
+
+template < typename T >
+DEPRECATED
+Value makeVectorValue(const T& v) {
+    return toValue(v);
 }
 //----------------------------------------------------------------------------------------------------------------------
 

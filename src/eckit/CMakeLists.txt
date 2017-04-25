@@ -483,6 +483,10 @@ persist/Isa.cc )
 list( APPEND eckit_utils_srcs
 utils/Translator.h
 utils/Translator.cc
+utils/Hash.h
+utils/Hash.cc
+utils/MD4.h
+utils/MD4.cc
 utils/MD5.h
 utils/MD5.cc
 utils/Regex.h
@@ -496,8 +500,13 @@ if(ECKIT_HAVE_SSL)
     list( APPEND eckit_utils_srcs
       utils/SHA1.h
       utils/SHA1.cc
-      utils/MD4.h
-      utils/MD4.cc
+    )
+endif()
+
+if(ECKIT_HAVE_XXHASH)
+    list( APPEND eckit_utils_srcs
+      utils/xxHash.h
+      utils/xxHash.cc
     )
 endif()
 
@@ -607,11 +616,16 @@ ecbuild_add_library(TARGET eckit
 						${eckit_templates}
 					PERSISTENT
 						${eckit_persistent}
-					INCLUDES
+                    PRIVATE_INCLUDES
+                        "${XXHASH_INCLUDE_DIRS}"
+                    INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
                         "${AIO_INCLUDE_DIRS}"
 					LIBS
-                        ${OPENSSL_LIBRARIES} ${AIO_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} )
+                        ${OPENSSL_LIBRARIES}
+                        ${XXHASH_LIBRARIES}
+                        ${AIO_LIBRARIES}
+                        ${CMAKE_THREAD_LIBS_INIT} )
 
 ### sub-directories
 

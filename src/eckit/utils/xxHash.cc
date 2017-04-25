@@ -8,39 +8,44 @@
  * does it submit to any jurisdiction.
  */
 
+
+#include <iostream>
 #include <cstring>
 
 #include "eckit/exception/Exceptions.h"
 
-#include "eckit/utils/SHA1.h"
-
+#include "eckit/utils/xxHash.h"
 
 namespace eckit {
 
-SHA1::SHA1() {
-    SHA1_Init(&ctx_);
+xxHash::xxHash() {
+    ctx_ = XXH64_createState();
+    XXH64_reset(ctx_, 0);
 }
 
-SHA1::SHA1(const char* s)  {
-    SHA1_Init(&ctx_);
+xxHash::xxHash(const char* s) {
+    ctx_ = XXH64_createState();
+    XXH64_reset(ctx_, 0);
     add( s, strlen(s) );
 }
 
-SHA1::SHA1(const std::string& s) {
-    SHA1_Init(&ctx_);
+xxHash::xxHash(const std::string& s) {
+    ctx_ = XXH64_createState();
+    XXH64_reset(ctx_, 0);
     add( s.c_str(), s.size() );
 }
 
-SHA1::SHA1(const void* data, size_t len) {
-    SHA1_Init(&ctx_);
+xxHash::xxHash(const void* data, size_t len) {
+    ctx_ = XXH64_createState();
+    XXH64_reset(ctx_, 0);
     add( data, len );
 }
 
-SHA1::~SHA1() {}
+xxHash::~xxHash() {}
 
-void SHA1::add(const void* buffer, long length) {
+void xxHash::add(const void* buffer, long length) {
     if (length > 0) {
-        SHA1_Update(&ctx_, static_cast<const unsigned char*>(buffer), length);
+        XXH64_update(ctx_, static_cast<const unsigned char*>(buffer), length);
         if (!digest_.empty())
             digest_ = digest_t(); // reset the digest
     }
@@ -48,22 +53,20 @@ void SHA1::add(const void* buffer, long length) {
 
 static const char* hex = "0123456789abcdef";
 
-SHA1::digest_t SHA1::digest() const {
+xxHash::digest_t xxHash::digest() const {
 
     if (digest_.empty()) { // recompute the digest
 
-        unsigned char digest[SHA_DIGEST_LENGTH];
-        SHA1_Final(digest, &ctx_);
+        XXH64_hash_t hash =  XXH64_digest(ctx_);
 
-        char x[2*SHA_DIGEST_LENGTH];
+        char buffer[2 * 8];
 
-        size_t j = 0;
-        for(size_t i = 0; i<SHA_DIGEST_LENGTH; ++i) {
-            x[j++] = hex[(digest[i] & 0xf0) >> 4];
-            x[j++] = hex[(digest[i] & 0xf)];
+        for(int i = 2*8; i--; ) {
+            buffer[i] = hex[hash & 15];
+            hash >>= 4;
         }
 
-        digest_ = std::string(x, 2*SHA_DIGEST_LENGTH);
+        digest_ = std::string(buffer, buffer+2*8);
     }
 
     return digest_;

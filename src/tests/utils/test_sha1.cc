@@ -106,7 +106,7 @@ const char *testarray[4] =
 
         SHA1 hash;
         for(size_t j=0; j < n[i]; ++j) {
-            hash.add(testarray[i]);
+            hash.add(testarray[i], ::strlen(testarray[i]));
         }
 
         BOOST_CHECK_EQUAL(hash.digest(), std::string(resultarray[i]));

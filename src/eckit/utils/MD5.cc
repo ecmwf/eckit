@@ -38,10 +38,6 @@ void MD5::add(const void* buffer, long length) {
     }
 }
 
-MD5::operator std::string() {
-  return digest();
-}
-
 MD5::digest_t MD5::digest() const {
     // recompute the digest
     if (digest_.empty()) { 

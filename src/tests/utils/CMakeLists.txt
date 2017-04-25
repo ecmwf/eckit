@@ -28,7 +28,16 @@ ecbuild_add_test( TARGET      eckit_test_md4
                               SOURCES     test_md4.cc
                               LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_xxhash
+                              BOOST
+                              CONDITION   ECKIT_HAVE_XXHASH
+                              SOURCES     test_xxhash.cc
+                              LIBS        eckit )
+
 ecbuild_add_test( TARGET      hash-performance
-                  CONDITION   ECKIT_HAVE_SSL
+                  CONDITION   ECKIT_HAVE_SSL AND ECKIT_HAVE_XXHASH
+                  INCLUDES
+                      "${XXHASH_INCLUDE_DIRS}"
+                      "${OPENSSL_INCLUDE_DIR}"
                   SOURCES     hash-performance.cc
                   LIBS        eckit )

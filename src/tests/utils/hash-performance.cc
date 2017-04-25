@@ -18,12 +18,13 @@
 #include "eckit/utils/SHA1.h"
 #include "eckit/utils/MD5.h"
 #include "eckit/utils/MD4.h"
+#include "eckit/utils/xxHash.h"
 
 using namespace std;
 using namespace eckit;
 
 template <class HASH, int N, int M>
-void performance(const char* name, eckit::Buffer& buffer, eckit::Timer& timer) {
+void incremental(const char* name, eckit::Buffer& buffer, eckit::Timer& timer) {
 
     timer.start();
 
@@ -42,15 +43,17 @@ void performance(const char* name, eckit::Buffer& buffer, eckit::Timer& timer) {
 
 }
 
+
 int main(int argc, char const *argv[])
 {
     eckit::Buffer buffer(8*1024*1024);
 
     eckit::Timer timer;
 
-    performance<eckit::MD4,  20, 1>("MD4", buffer, timer);
-    performance<eckit::MD5,  20, 1>("MD5", buffer, timer);
-    performance<eckit::SHA1, 20, 1>("SHA1", buffer, timer);
+    incremental<eckit::xxHash,  20, 1>("xxHash", buffer, timer);
+    incremental<eckit::MD4,     20, 1>("MD4",    buffer, timer);
+    incremental<eckit::MD5,     20, 1>("MD5",    buffer, timer);
+    incremental<eckit::SHA1,    20, 1>("SHA1",   buffer, timer);
 
     return 0;
 }

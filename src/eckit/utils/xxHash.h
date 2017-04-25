@@ -8,48 +8,42 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_MD4_H
-#define eckit_utils_MD4_H
+#ifndef eckit_utils_xxHash_H
+#define eckit_utils_xxHash_H
 
 #include "eckit/eckit_config.h"
 
-#ifdef ECKIT_HAVE_SSL
-#include <openssl/md4.h>
-#else
-typedef int MD4_CTX;
-#endif
-
-#ifndef MD4_DIGEST_LENGTH
-#define MD4_DIGEST_LENGTH 16
+#ifdef ECKIT_HAVE_XXHASH
+#include "xxhash/xxhash.h"
 #endif
 
 #include "eckit/utils/Hash.h"
 
 namespace eckit {
 
-class MD4 : public Hash {
+class xxHash : public Hash {
 
 public:  // types
 
-  MD4();
+  xxHash();
 
-  explicit MD4(const char*);
-  explicit MD4(const std::string&);
+  explicit xxHash(const char*);
+  explicit xxHash(const std::string&);
 
-  MD4(const void* data, size_t len);
+  xxHash(const void* data, size_t len);
 
-  virtual ~MD4();
+  virtual ~xxHash();
 
   virtual void add(const void*, long);
 
   virtual digest_t digest() const;
 
   template<class T>
-  MD4& operator<<(const T& x) { add(x); return *this; }
+  xxHash& operator<<(const T& x) { add(x); return *this; }
 
 private: // members
 
-  mutable MD4_CTX ctx_;
+  XXH64_state_t* ctx_;
 
 };
 

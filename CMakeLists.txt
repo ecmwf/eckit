@@ -88,6 +88,15 @@ ecbuild_add_option( FEATURE SSL
 
 ecbuild_info("OpenSSL ${OPENSSL_FOUND} ${OPENSSL_VERSION} : libs ${OPENSSL_LIBRARIES} incs ${OPENSSL_INCLUDE_DIR}")
 
+### xxHash
+
+ecbuild_add_option( FEATURE XXHASH
+                    DESCRIPTION "Use xxHash for non-crypto hashing in data integrity checks"
+                    PURPOSE     "xxHash support"
+                    REQUIRED_PACKAGES "PROJECT xxHash" )
+
+ecbuild_info("xxHash ${XXHASH_FOUND}  : libs ${XXHASH_LIBRARIES} incs ${XXHASH_INCLUDE_DIRS}")
+
 #### CUDA
 
 ecbuild_add_option( FEATURE CUDA

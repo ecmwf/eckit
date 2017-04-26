@@ -99,8 +99,6 @@ private:
 
     eckit::ScopedPtr<Hash> hash_;
 
-    bool doHash_;
-
 // -- Methods
 	// None
 

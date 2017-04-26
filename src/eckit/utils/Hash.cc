@@ -47,7 +47,7 @@ HashFactory::~HashFactory() {
     m->erase(name_);
 }
 
-bool HashFactory::has(const std::__1::string& name)
+bool HashFactory::has(const std::string& name)
 {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);

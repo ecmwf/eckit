@@ -98,11 +98,6 @@ TCPSocket& TCPSocket::operator=(TCPSocket& other)
     return *this;
 }
 
-long TCPSocket::write(const void* buf, long length)
-{
-    writeAndHash(buf, length, 0);
-}
-
 void TCPSocket::closeOutput()
 {
   SYSCALL(::shutdown(socket_, SHUT_WR));
@@ -113,8 +108,8 @@ void TCPSocket::closeInput()
   SYSCALL(::shutdown(socket_, SHUT_RD));
 }
 
-long TCPSocket::writeAndHash(const void* buf, long length, Hash* hash)
-{
+long TCPSocket::write(const void* buf, long length) {
+
     // Allow zero length packets
     if(length == 0)
         return ::write(socket_,buf,length);
@@ -132,10 +127,6 @@ long TCPSocket::writeAndHash(const void* buf, long length, Hash* hash)
         }
 
         if(len == 0) return sent;
-
-        if(hash) {
-            hash->add(p,len);
-        }
 
         sent   += len;
         length -= len;

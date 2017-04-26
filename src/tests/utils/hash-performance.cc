@@ -22,7 +22,7 @@ using namespace std;
 using namespace eckit;
 
 template <int N, int M>
-void incremental(const char* name, Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
+void timeAdd(Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
 
     timer.start();
 
@@ -35,33 +35,51 @@ void incremental(const char* name, Hash& hash, eckit::Buffer& buffer, eckit::Tim
 
     timer.stop();
 
-    std::cout << name << " rate " << Bytes(N*M*buffer.size(), timer) << std::endl;
+    std::cout << " - add()     rate " << Bytes(N*M*buffer.size(), timer) << std::endl;
+}
+
+template <int N>
+void timeCompute(Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
+
+    timer.start();
+
+    for(int i = 0; i < N; ++i ) {
+            std::string s = hash.compute(buffer, buffer.size());
+        }
+
+    timer.stop();
+
+    std::cout << " - compute() rate " << Bytes(N*buffer.size(), timer) << std::endl;
 }
 
 
 int main(int argc, char const *argv[])
 {
-    eckit::Buffer buffer(8*1024*1024);
+    eckit::Buffer buffer(4*1024*1024);
+    eckit::Buffer buffer2(64*1024*1024);
     eckit::Timer timer;
 
-    const char *hashes[5] =
+    const char *hashes[4] =
     {
         "xxHash",
         "MD4",
         "MD5",
-        "SHA1",
-        "None"
+        "SHA1"
     };
 
-    for(int i = 0; i < 5; ++i) {
+    for(int i = 0; i < 4; ++i) {
 
         std::string name = hashes[i];
 
         if(eckit::HashFactory::has(name)) {
 
+            std::cout << name << std::endl;
+
             eckit::ScopedPtr<eckit::Hash> hash( eckit::HashFactory::build(name) );
 
-            incremental<20,1>(hashes[i], *hash, buffer, timer);
+            timeAdd<20,1>  (*hash, buffer, timer);
+            timeCompute<5> (*hash, buffer2, timer);
+
         }
     }
 

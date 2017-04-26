@@ -61,8 +61,6 @@ public:
 	// I/O
     long write(const void* buf, long length);
 
-    long writeAndHash(const void* buf, long length, Hash* hash = 0);
-
 	/// Read from a TCP socket
 	///
 	/// \param buf The buffer to read into

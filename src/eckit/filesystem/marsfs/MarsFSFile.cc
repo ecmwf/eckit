@@ -27,7 +27,7 @@ MarsFSFile::MarsFSFile(const MarsFSPath& path):
 {
     static std::string marsFsHashing = eckit::Resource<std::string>("marsFsHashing", "None");
     hash_.reset( eckit::HashFactory::build(marsFsHashing) );
-    doHash_ = (marsFsHashing == "None");
+    doHash_ = (marsFsHashing != "None");
 }
 
 MarsFSFile::~MarsFSFile()

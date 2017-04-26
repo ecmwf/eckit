@@ -302,7 +302,7 @@ template<class T, class F>
 long Connector::socketIo(F proc, T buf, long len, const char* msg)
 {
 	TCPSocket& s = socket();
-	long l = (s.*proc)(buf, len);
+    long l = (s.*proc)(buf, len);
 	if (l != len)
 	{
 		reset();

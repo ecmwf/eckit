@@ -31,6 +31,8 @@ public:  // types
 
   virtual ~MD5();
 
+  virtual void reset() const;
+
   virtual digest_t compute(const void*, long);
 
   virtual void add(const void*, long);

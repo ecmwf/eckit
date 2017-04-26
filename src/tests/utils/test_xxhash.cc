@@ -70,6 +70,21 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_xxhash_compute )
     BOOST_CHECK_EQUAL( res , hash.compute(msg.c_str(), msg.size()));
 }
 
+BOOST_AUTO_TEST_CASE( test_eckit_utils_xxhash_reset )
+{
+    xxHash hash( "FOOBAR" );
+
+    hash.reset(); // reset initial state
+
+    std::string msg ( "The quick brown fox jumps over the lazy dog" );
+
+    hash.add(msg.c_str(), msg.size());
+
+    std::string res ("0b242d361fda71bc");
+
+    BOOST_CHECK_EQUAL( res , hash.digest());
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 

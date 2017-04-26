@@ -35,6 +35,8 @@ public:  // methods
 
   virtual ~Hash();
 
+  virtual void reset() const = 0;
+
   virtual digest_t digest() const = 0;
 
   // for one shot, stateless computation of the hash of the buffer
@@ -94,6 +96,8 @@ public:  // types
   NoHash();
 
   virtual ~NoHash();
+
+  virtual void reset() const;
 
   virtual digest_t compute(const void*, long);
 

@@ -76,6 +76,21 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_md4_compute )
     BOOST_CHECK_EQUAL( res , hash.compute(msg.c_str(), msg.size()));
 }
 
+BOOST_AUTO_TEST_CASE( test_eckit_utils_md4_reset )
+{
+    MD4 hash( "FOOBAR" );
+
+    hash.reset(); // reset initial state
+
+    std::string msg ( "The quick brown fox jumps over the lazy dog" );
+
+    hash.add(msg.c_str(), msg.size());
+
+    std::string res ("1bee69a46ba811185c194762abaeae90");
+
+    BOOST_CHECK_EQUAL( res , hash.digest());
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 

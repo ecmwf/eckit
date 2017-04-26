@@ -76,6 +76,21 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_compute )
     BOOST_CHECK_EQUAL( res , hash.compute(msg.c_str(), msg.size()));
 }
 
+BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_reset )
+{
+    MD5 hash( "FOOBAR" );
+
+    hash.reset(); // reset initial state
+
+    std::string msg ( "The quick brown fox jumps over the lazy dog" );
+
+    hash.add(msg.c_str(), msg.size());
+
+    std::string res ("9e107d9d372bb6826bd81d3542a419d6");
+
+    BOOST_CHECK_EQUAL( res , hash.digest());
+}
+
 
 //-----------------------------------------------------------------------------
 

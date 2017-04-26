@@ -30,6 +30,11 @@ MD5::MD5(const void* data, size_t len) {
 
 MD5::~MD5() {}
 
+void MD5::reset() const
+{
+    md5_init(&s_);
+}
+
 Hash::digest_t MD5::compute(const void* buffer, long size)
 {
     MD5 hash(buffer, size);

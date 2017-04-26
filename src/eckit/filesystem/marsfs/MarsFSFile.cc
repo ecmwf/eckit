@@ -91,7 +91,7 @@ long MarsFSFile::write(const void* buffer, long len) {
 
     s << len;
 
-    hash_.reset();
+    hash_->reset(); // clean hash
 
     ASSERT(data_.isConnected());
     ASSERT(data_.writeAndHash(buffer, len, hash_.get()) == len);

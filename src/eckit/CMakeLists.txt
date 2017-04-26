@@ -489,8 +489,6 @@ utils/Translator.h
 utils/Translator.cc
 utils/Hash.h
 utils/Hash.cc
-utils/MD4.h
-utils/MD4.cc
 utils/MD5.h
 utils/MD5.cc
 utils/Regex.h
@@ -504,6 +502,8 @@ utils/RLE.cc )
 
 if(ECKIT_HAVE_SSL)
     list( APPEND eckit_utils_srcs
+      utils/MD4.h
+      utils/MD4.cc
       utils/SHA1.h
       utils/SHA1.cc
     )

@@ -15,6 +15,8 @@
 
 #ifdef ECKIT_HAVE_XXHASH
 #include "xxhash/xxhash.h"
+#else
+#error "eckit was not configured with xxHash, xxHash is disabled. Use conditional ECKIT_HAVE_XXHASH from eckit/eckit_config.h"
 #endif
 
 #include "eckit/utils/Hash.h"
@@ -33,6 +35,8 @@ public:  // types
   xxHash(const void* data, size_t len);
 
   virtual ~xxHash();
+
+  virtual digest_t compute(const void*, long);
 
   virtual void add(const void*, long);
 

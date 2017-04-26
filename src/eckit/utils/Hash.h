@@ -21,6 +21,8 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class Hash : private eckit::NonCopyable {
 
 public:  // types
@@ -35,6 +37,10 @@ public:  // methods
 
   virtual digest_t digest() const = 0;
 
+  // for one shot, stateless computation of the hash of the buffer
+  virtual digest_t compute(const void*, long) = 0;
+
+  // for incremental hashing
   virtual void add(const void*, long) = 0;
 
   void add(char x){ add(&x, sizeof(x)); }
@@ -78,6 +84,54 @@ protected: // members
   mutable digest_t digest_;  ///< cached digest
 
 };
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class NoHash : public Hash {
+
+public:  // types
+
+  NoHash();
+
+  virtual ~NoHash();
+
+  virtual digest_t compute(const void*, long);
+
+  virtual void add(const void*, long);
+
+  virtual digest_t digest() const;
+
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class HashFactory {
+
+    std::string name_;
+    virtual Hash* make() = 0;
+
+  protected:
+
+    HashFactory(const std::string &);
+    virtual ~HashFactory();
+
+  public:
+
+    static void list(std::ostream &);
+    static Hash* build(const std::string&);
+
+};
+
+template< class T>
+class HashBuilder : public HashFactory {
+    virtual Hash* make() {
+        return new T();
+    }
+  public:
+    HashBuilder(const std::string &name) : HashFactory(name) {}
+};
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // end namespace eckit
 

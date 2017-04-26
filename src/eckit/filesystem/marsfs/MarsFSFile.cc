@@ -16,8 +16,6 @@
 #include "eckit/filesystem/marsfs/MarsFSFile.h"
 #include "eckit/config/Resource.h"
 
-#include "eckit/utils/MD4.h"
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -27,6 +25,8 @@ MarsFSFile::MarsFSFile(const MarsFSPath& path):
     path_(path),
 	lock_(connector_)
 {
+    static std::string marsFsHashing = eckit::Resource<std::string>("marsFsHashing", "None");
+    hash_.reset( eckit::HashFactory::build(marsFsHashing) );
 }
 
 MarsFSFile::~MarsFSFile()
@@ -74,20 +74,15 @@ long MarsFSFile::read(void* buffer, long len) {
     ASSERT(data_.isConnected());
     ASSERT(data_.read(buffer, size) == size);
 
-    if(checksum) {
-        eckit::MD4 hash(buffer, size);
-        std::string remoteHash;
-        s >> remoteHash;
-//        Log::info() << "MarsFSFile local hash " << hash.digest() << " remote hash " << remoteHash << std::endl;
-        ASSERT(hash.digest() == remoteHash);
-    }
+    // hash integrety check
+    std::string remoteHash;
+    s >> remoteHash;
+    ASSERT(hash_->compute(buffer, size) == remoteHash);
 
     return size;
 }
 
 long MarsFSFile::write(const void* buffer, long len) {
-
-    static bool checksum = eckit::Resource<bool>("marsFSCheckSum", true);
 
     Stream& s = connector_;
     long size;
@@ -99,11 +94,8 @@ long MarsFSFile::write(const void* buffer, long len) {
     ASSERT(data_.isConnected());
     ASSERT(data_.write(buffer, len) == len);
 
-    if(checksum) {
-        eckit::MD4  hash(buffer, len);
-        s << hash.digest();
-//        Log::info() << "MarsFSFile sending hash " << hash.digest() << std::endl;
-    }
+    // hash integrety check
+    s << hash_->compute(buffer, len);
 
     s >> size;
 

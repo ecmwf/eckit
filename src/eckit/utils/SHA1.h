@@ -16,7 +16,7 @@
 #ifdef ECKIT_HAVE_SSL
 #include <openssl/sha.h>
 #else
-typedef int SHA_CTX;
+#error "eckit was not configured with OpenSSL, SHA1 is disabled. Use conditional ECKIT_HAVE_SSL from eckit/eckit_config.h"
 #endif
 
 #ifndef SHA_DIGEST_LENGTH
@@ -39,6 +39,8 @@ public:  // types
   SHA1(const void* data, size_t len);
 
   virtual ~SHA1();
+
+  virtual digest_t compute(const void*, long);
 
   virtual void add(const void*, long);
 

@@ -60,6 +60,16 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_xxHash_test_suite )
     BOOST_CHECK_EQUAL( xxHash("abc").digest(), std::string("44bc2cf5ad770999"));
 }
 
+BOOST_AUTO_TEST_CASE( test_eckit_utils_xxhash_compute )
+{
+    std::string msg ( "The quick brown fox jumps over the lazy dog" );
+
+    std::string res ("0b242d361fda71bc");
+
+    xxHash hash;
+    BOOST_CHECK_EQUAL( res , hash.compute(msg.c_str(), msg.size()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 

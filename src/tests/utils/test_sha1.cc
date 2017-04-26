@@ -113,6 +113,16 @@ const char *testarray[4] =
     }
 }
 
+BOOST_AUTO_TEST_CASE( test_eckit_utils_sha1_compute )
+{
+    std::string msg ( "The quick brown fox jumps over the lazy dog" );
+
+    std::string res ("2fd4e1c67a2d28fced849ee1bb76e7391b93eb12");
+
+    SHA1 hash;
+    BOOST_CHECK_EQUAL( res , hash.compute(msg.c_str(), msg.size()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 

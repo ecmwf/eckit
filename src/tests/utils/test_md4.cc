@@ -66,6 +66,16 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_md4_test_suite_from_rfc1320 )
     BOOST_CHECK_EQUAL( MD4("12345678901234567890123456789012345678901234567890123456789012345678901234567890").digest(), std::string("e33b4ddc9c38f2199c3e7b164fcc0536"));
 }
 
+BOOST_AUTO_TEST_CASE( test_eckit_utils_md4_compute )
+{
+    std::string msg ( "The quick brown fox jumps over the lazy cog" );
+
+    std::string res ("b86e130ce7028da59e672d56ad0113df");
+
+    MD4 hash;
+    BOOST_CHECK_EQUAL( res , hash.compute(msg.c_str(), msg.size()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 

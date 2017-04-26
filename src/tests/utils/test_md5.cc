@@ -66,6 +66,17 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_double_add )
 	BOOST_CHECK_EQUAL( res , md5.digest() );
 }
 
+BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_compute )
+{
+    std::string msg ( "The quick brown fox jumps over the lazy dog" );
+
+    std::string res ("9e107d9d372bb6826bd81d3542a419d6");
+
+    MD5 hash;
+    BOOST_CHECK_EQUAL( res , hash.compute(msg.c_str(), msg.size()));
+}
+
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -11,7 +11,7 @@ ecbuild_add_test( TARGET      eckit_test_tokenizer
                   SOURCES     test_tokenizer.cc
                   LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_utils
+ecbuild_add_test( TARGET      eckit_test_md5
                   BOOST
                   SOURCES     test_md5.cc
                   LIBS        eckit )

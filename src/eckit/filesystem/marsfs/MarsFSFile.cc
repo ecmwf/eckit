@@ -27,7 +27,6 @@ MarsFSFile::MarsFSFile(const MarsFSPath& path):
 {
     static std::string marsFsHashing = eckit::Resource<std::string>("marsFsHashing", "None");
     hash_.reset( eckit::HashFactory::build(marsFsHashing) );
-    doHash_ = (marsFsHashing != "None");
 }
 
 MarsFSFile::~MarsFSFile()
@@ -74,9 +73,8 @@ long MarsFSFile::read(void* buffer, long len) {
     ASSERT(data_.read(buffer, size) == size);
 
     // hash integrety check
-    if(doHash_)
     {
-        Timer t("MarsFSFile::read() hashing");
+        // Timer t("MarsFSFile::read() hashing");
         std::string remoteHash;
         s >> remoteHash;
         ASSERT(hash_->compute(buffer, size) == remoteHash);
@@ -97,9 +95,8 @@ long MarsFSFile::write(const void* buffer, long len) {
     ASSERT(data_.write(buffer, len) == len);
 
     // hash integrety check
-    if(doHash_)
     {
-        Timer t("MarsFSFile::write() hashing");
+        // Timer t("MarsFSFile::write() hashing");
         s << hash_->compute(buffer, len);
     }
 

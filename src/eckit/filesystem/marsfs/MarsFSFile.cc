@@ -60,8 +60,6 @@ Length MarsFSFile::open(const char* mode, bool overwrite)
 
 long MarsFSFile::read(void* buffer, long len) {
 
-    static bool checksum = eckit::Resource<bool>("marsFSCheckSum", true);
-
     Stream& s = connector_;
     long size;
 

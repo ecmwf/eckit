@@ -116,7 +116,8 @@ Hash::digest_t NoHash::digest() const {
 }
 
 namespace  {
-    HashBuilder<NoHash> builder("NoHash");
+    HashBuilder<NoHash> builder1("None");
+    HashBuilder<NoHash> builder2("NoHash");
 }
 //----------------------------------------------------------------------------------------------------------------------
 

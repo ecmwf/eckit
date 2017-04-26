@@ -16,7 +16,7 @@
 #ifdef ECKIT_HAVE_SSL
 #include <openssl/md4.h>
 #else
-typedef int MD4_CTX;
+#error "eckit was not configured with OpenSSL, SHA1 is disabled. Use conditional ECKIT_HAVE_SSL from eckit/eckit_config.h"
 #endif
 
 #ifndef MD4_DIGEST_LENGTH
@@ -39,6 +39,8 @@ public:  // types
   MD4(const void* data, size_t len);
 
   virtual ~MD4();
+
+  virtual digest_t compute(const void*, long);
 
   virtual void add(const void*, long);
 

@@ -16,9 +16,35 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
+static const char* hex = "0123456789abcdef";
+static std::string toString(unsigned char digest[MD4_DIGEST_LENGTH]) {
+
+    char x[2*MD4_DIGEST_LENGTH];
+
+    size_t j = 0;
+    for(size_t i = 0; i<MD4_DIGEST_LENGTH; ++i) {
+        x[j++] = hex[(digest[i] & 0xf0) >> 4];
+        x[j++] = hex[(digest[i] & 0xf)];
+    }
+
+    return std::string(x, 2*MD4_DIGEST_LENGTH);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 MD4::~MD4() {}
 
-#ifdef ECKIT_HAVE_SSL
+Hash::digest_t MD4::compute(const void* buffer, long size)
+{
+    MD4_CTX s;
+    MD4_Init(&s);
+    MD4_Update(&s, static_cast<const unsigned char*>(buffer), size);
+    unsigned char digest[MD4_DIGEST_LENGTH];
+    MD4_Final(digest, &s);
+    return toString(digest);
+}
 
 MD4::MD4() {
     MD4_Init(&ctx_);
@@ -47,55 +73,19 @@ void MD4::add(const void* buffer, long length) {
     }
 }
 
-static const char* hex = "0123456789abcdef";
-
 MD4::digest_t MD4::digest() const {
 
-    if (digest_.empty()) { // recompute the digest
-
+    if (digest_.empty()) { // recompute the digests
         unsigned char digest[MD4_DIGEST_LENGTH];
         MD4_Final(digest, &ctx_);
-
-        char x[2*MD4_DIGEST_LENGTH];
-
-        size_t j = 0;
-        for(size_t i = 0; i<MD4_DIGEST_LENGTH; ++i) {
-            x[j++] = hex[(digest[i] & 0xf0) >> 4];
-            x[j++] = hex[(digest[i] & 0xf)];
-        }
-
-        digest_ = std::string(x, 2*MD4_DIGEST_LENGTH);
+        digest_ = toString(digest);
     }
 
     return digest_;
 }
 
-#else
-
-MD4::MD4() {
-  NOTIMP;
+namespace  {
+    HashBuilder<MD4> builder("MD4");
 }
-
-MD4::MD4(const char* s) {
-  NOTIMP;
-}
-
-MD4::MD4(const std::string& s) {
-  NOTIMP;
-}
-
-MD4::MD4(const void* data, size_t len) {
-  NOTIMP;
-}
-
-void MD4::add(const void* buffer, long length) {
-  NOTIMP;
-}
-
-MD4::digest_t MD4::digest() const {
-  NOTIMP;
-}
-
-#endif
 
 } // namespace eckit

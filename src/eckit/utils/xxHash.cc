@@ -43,6 +43,12 @@ xxHash::xxHash(const void* data, size_t len) {
 
 xxHash::~xxHash() {}
 
+Hash::digest_t xxHash::compute(const void* buffer, long size)
+{
+    XXH64_hash_t hash = XXH64(buffer, size, 0);
+    NOTIMP;
+}
+
 void xxHash::add(const void* buffer, long length) {
     if (length > 0) {
         XXH64_update(ctx_, static_cast<const unsigned char*>(buffer), length);
@@ -70,6 +76,10 @@ xxHash::digest_t xxHash::digest() const {
     }
 
     return digest_;
+}
+
+namespace  {
+    HashBuilder<xxHash> builder("xxHash");
 }
 
 } // namespace eckit

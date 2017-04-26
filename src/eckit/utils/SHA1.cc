@@ -38,6 +38,12 @@ SHA1::SHA1(const void* data, size_t len) {
 
 SHA1::~SHA1() {}
 
+Hash::digest_t SHA1::compute(const void* buffer, long size)
+{
+    SHA1 hash(buffer, size);
+    return hash.digest();
+}
+
 void SHA1::add(const void* buffer, long length) {
     if (length > 0) {
         SHA1_Update(&ctx_, static_cast<const unsigned char*>(buffer), length);
@@ -67,6 +73,10 @@ SHA1::digest_t SHA1::digest() const {
     }
 
     return digest_;
+}
+
+namespace  {
+    HashBuilder<SHA1> builder("SHA1");
 }
 
 } // namespace eckit

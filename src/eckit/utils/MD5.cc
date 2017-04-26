@@ -30,6 +30,12 @@ MD5::MD5(const void* data, size_t len) {
 
 MD5::~MD5() {}
 
+Hash::digest_t MD5::compute(const void* buffer, long size)
+{
+    MD5 hash(buffer, size);
+    return hash.digest();
+}
+
 void MD5::add(const void* buffer, long length) {
     if (length > 0) {
         md5_add(&s_, static_cast<const unsigned char*>(buffer), length);
@@ -297,6 +303,10 @@ void MD5::md5_end(State* s, char *digest) {
             (ui) (s->h1 & 0xff), (ui) ((s->h1 >> 8) & 0xff), (ui) ((s->h1 >> 16) & 0xff), (ui) ((s->h1 >> 24) & 0xff),
             (ui) (s->h2 & 0xff), (ui) ((s->h2 >> 8) & 0xff), (ui) ((s->h2 >> 16) & 0xff), (ui) ((s->h2 >> 24) & 0xff),
             (ui) (s->h3 & 0xff), (ui) ((s->h3 >> 8) & 0xff), (ui) ((s->h3 >> 16) & 0xff), (ui) ((s->h3 >> 24) & 0xff));
+}
+
+namespace  {
+    HashBuilder<MD5> builder("MD5");
 }
 
 } // namespace eckit

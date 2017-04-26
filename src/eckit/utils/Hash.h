@@ -117,6 +117,7 @@ class HashFactory {
 
   public:
 
+    static bool has(const std::string& name);
     static void list(std::ostream &);
     static Hash* build(const std::string&);
 

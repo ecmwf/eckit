@@ -15,22 +15,18 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 
-#include "eckit/utils/SHA1.h"
-#include "eckit/utils/MD5.h"
-#include "eckit/utils/MD4.h"
-#include "eckit/utils/xxHash.h"
+#include "eckit/utils/Hash.h"
+#include "eckit/memory/ScopedPtr.h"
 
 using namespace std;
 using namespace eckit;
 
-template <class HASH, int N, int M>
-void incremental(const char* name, eckit::Buffer& buffer, eckit::Timer& timer) {
+template <int N, int M>
+void incremental(const char* name, Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
 
     timer.start();
 
     for(int i = 0; i < N; ++i ) {
-
-        HASH hash;
         for(size_t j=0; j < M; ++j) {
             hash.add(buffer, buffer.size());
         }
@@ -40,20 +36,34 @@ void incremental(const char* name, eckit::Buffer& buffer, eckit::Timer& timer) {
     timer.stop();
 
     std::cout << name << " rate " << Bytes(N*M*buffer.size(), timer) << std::endl;
-
 }
 
 
 int main(int argc, char const *argv[])
 {
     eckit::Buffer buffer(8*1024*1024);
-
     eckit::Timer timer;
 
-    incremental<eckit::xxHash,  200, 1>("xxHash", buffer, timer);
-    incremental<eckit::MD4,     20, 1>("MD4",    buffer, timer);
-    incremental<eckit::MD5,     20, 1>("MD5",    buffer, timer);
-    incremental<eckit::SHA1,    20, 1>("SHA1",   buffer, timer);
+    const char *hashes[5] =
+    {
+        "xxHash",
+        "MD4",
+        "MD5",
+        "SHA1",
+        "None"
+    };
+
+    for(int i = 0; i < 5; ++i) {
+
+        std::string name = hashes[i];
+
+        if(eckit::HashFactory::has(name)) {
+
+            eckit::ScopedPtr<eckit::Hash> hash( eckit::HashFactory::build(name) );
+
+            incremental<20,1>(hashes[i], *hash, buffer, timer);
+        }
+    }
 
     return 0;
 }

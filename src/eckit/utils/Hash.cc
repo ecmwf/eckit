@@ -34,7 +34,6 @@ HashFactory::HashFactory(const std::string& name):
     name_(name) {
 
     pthread_once(&once, init);
-
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     ASSERT(m->find(name) == m->end());
@@ -48,10 +47,17 @@ HashFactory::~HashFactory() {
     m->erase(name_);
 }
 
+bool HashFactory::has(const std::__1::string& name)
+{
+    pthread_once(&once, init);
+    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+
+    return m->find(name) != m->end();
+}
 
 void HashFactory::list(std::ostream& out) {
-    pthread_once(&once, init);
 
+    pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     const char* sep = "";
@@ -65,8 +71,8 @@ void HashFactory::list(std::ostream& out) {
 Hash *HashFactory::build(const std::string &name) {
 
     pthread_once(&once, init);
-
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+
     std::map<std::string, HashFactory *>::const_iterator j = m->find(name);
 
     eckit::Log::debug() << "Looking for HashFactory [" << name << "]" << std::endl;

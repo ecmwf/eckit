@@ -91,13 +91,16 @@ long MarsFSFile::write(const void* buffer, long len) {
 
     s << len;
 
+    hash_.reset();
+
     ASSERT(data_.isConnected());
-    ASSERT(data_.write(buffer, len) == len);
+    ASSERT(data_.writeAndHash(buffer, len, hash_.get()) == len);
 
     // hash integrety check
     {
         // Timer t("MarsFSFile::write() hashing");
-        s << hash_->compute(buffer, len);
+        // s << hash_->compute(buffer, len);
+        s << hash_->digest();
     }
 
     s >> size;

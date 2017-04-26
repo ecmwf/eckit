@@ -104,6 +104,9 @@ NoHash::NoHash() {
 NoHash::~NoHash() {
 }
 
+void NoHash::reset() const {
+}
+
 Hash::digest_t NoHash::compute(const void*, long) {
     return std::string();
 }

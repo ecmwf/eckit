@@ -38,6 +38,11 @@ SHA1::SHA1(const void* data, size_t len) {
 
 SHA1::~SHA1() {}
 
+void SHA1::reset() const
+{
+    SHA1_Init(&ctx_);
+}
+
 Hash::digest_t SHA1::compute(const void* buffer, long size)
 {
     SHA1 hash(buffer, size);

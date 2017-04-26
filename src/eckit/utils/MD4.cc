@@ -36,6 +36,11 @@ static std::string toString(unsigned char digest[MD4_DIGEST_LENGTH]) {
 
 MD4::~MD4() {}
 
+void MD4::reset() const
+{
+    MD4_Init(&ctx_);
+}
+
 Hash::digest_t MD4::compute(const void* buffer, long size)
 {
     MD4_CTX s;

@@ -60,6 +60,11 @@ xxHash::xxHash(const void* data, size_t len) {
 
 xxHash::~xxHash() {}
 
+void xxHash::reset() const
+{
+    XXH64_reset(ctx_, 0);
+}
+
 Hash::digest_t xxHash::compute(const void* buffer, long size)
 {
     XXH64_hash_t hash = XXH64(buffer, size, 0);

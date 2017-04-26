@@ -27,6 +27,7 @@ void timeAdd(Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
     timer.start();
 
     for(int i = 0; i < N; ++i ) {
+        hash.reset();
         for(size_t j=0; j < M; ++j) {
             hash.add(buffer, buffer.size());
         }

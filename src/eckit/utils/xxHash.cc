@@ -18,6 +18,23 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
+static const char* hex = "0123456789abcdef";
+static std::string toString(XXH64_hash_t hash) {
+
+    char buffer[2 * 8];
+
+    for(int i = 2*8; i--; ) {
+        buffer[i] = hex[hash & 15];
+        hash >>= 4;
+    }
+
+    return std::string(buffer, buffer+2*8);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 xxHash::xxHash() {
     ctx_ = XXH64_createState();
     XXH64_reset(ctx_, 0);
@@ -46,7 +63,7 @@ xxHash::~xxHash() {}
 Hash::digest_t xxHash::compute(const void* buffer, long size)
 {
     XXH64_hash_t hash = XXH64(buffer, size, 0);
-    NOTIMP;
+    return toString(hash);
 }
 
 void xxHash::add(const void* buffer, long length) {
@@ -57,22 +74,13 @@ void xxHash::add(const void* buffer, long length) {
     }
 }
 
-static const char* hex = "0123456789abcdef";
-
 xxHash::digest_t xxHash::digest() const {
 
     if (digest_.empty()) { // recompute the digest
 
         XXH64_hash_t hash =  XXH64_digest(ctx_);
 
-        char buffer[2 * 8];
-
-        for(int i = 2*8; i--; ) {
-            buffer[i] = hex[hash & 15];
-            hash >>= 4;
-        }
-
-        digest_ = std::string(buffer, buffer+2*8);
+        digest_ = toString(hash);
     }
 
     return digest_;

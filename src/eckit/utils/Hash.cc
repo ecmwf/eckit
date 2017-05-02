@@ -111,7 +111,7 @@ Hash::digest_t NoHash::compute(const void*, long) {
     return std::string();
 }
 
-void NoHash::add(const void*, long) {
+void NoHash::update(const void*, long) {
 }
 
 Hash::digest_t NoHash::digest() const {

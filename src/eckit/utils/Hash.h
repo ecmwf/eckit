@@ -42,35 +42,39 @@ public:  // methods
   // for one shot, stateless computation of the hash of the buffer
   virtual digest_t compute(const void*, long) = 0;
 
-  // for incremental hashing
-  virtual void add(const void*, long) = 0;
+  void add(char x){ update(&x, sizeof(x)); }
+  void add(unsigned char x){ update(&x, sizeof(x)); }
 
-  void add(char x){ add(&x, sizeof(x)); }
-  void add(unsigned char x){ add(&x, sizeof(x)); }
+  void add(bool x){ update(&x, sizeof(x)); }
 
-  void add(bool x){ add(&x, sizeof(x)); }
+  void add(int x){ update(&x, sizeof(x)); }
+  void add(unsigned int x){ update(&x, sizeof(x)); }
 
-  void add(int x){ add(&x, sizeof(x)); }
-  void add(unsigned int x){ add(&x, sizeof(x)); }
+  void add(short x){ update(&x, sizeof(x)); }
+  void add(unsigned short x){ update(&x, sizeof(x)); }
 
-  void add(short x){ add(&x, sizeof(x)); }
-  void add(unsigned short x){ add(&x, sizeof(x)); }
+  void add(long x){ update(&x, sizeof(x)); }
+  void add(unsigned long x){ update(&x, sizeof(x)); }
 
-  void add(long x){ add(&x, sizeof(x)); }
-  void add(unsigned long x){ add(&x, sizeof(x)); }
+  void add(long long x){ update(&x, sizeof(x)); }
+  void add(unsigned long long x){ update(&x, sizeof(x)); }
 
-  void add(long long x){ add(&x, sizeof(x)); }
-  void add(unsigned long long x){ add(&x, sizeof(x)); }
+  void add(float x){ update(&x, sizeof(x)); }
+  void add(double x){ update(&x, sizeof(x)); }
 
-  void add(float x){ add(&x, sizeof(x)); }
-  void add(double x){ add(&x, sizeof(x)); }
+  void add(const void* x, long size) { update(x, size); }
 
-  void add(const std::string& x) { add(x.c_str(), x.size()); }
+  void add(const std::string& x) { update(x.c_str(), x.size()); }
 
   template<class T>
   Hash& operator<<(const T& x) { add(x); return *this; }
 
   operator std::string() { return digest(); }
+
+protected: // methods
+
+  // for incremental hashing
+  virtual void update(const void*, long) = 0;
 
 private:  // types
 
@@ -101,7 +105,7 @@ public:  // types
 
   virtual digest_t compute(const void*, long);
 
-  virtual void add(const void*, long);
+  virtual void update(const void*, long);
 
   virtual digest_t digest() const;
 

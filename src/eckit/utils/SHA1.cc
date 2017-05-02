@@ -49,7 +49,7 @@ Hash::digest_t SHA1::compute(const void* buffer, long size)
     return hash.digest();
 }
 
-void SHA1::add(const void* buffer, long length) {
+void SHA1::update(const void* buffer, long length) {
     if (length > 0) {
         SHA1_Update(&ctx_, static_cast<const unsigned char*>(buffer), length);
         if (!digest_.empty())

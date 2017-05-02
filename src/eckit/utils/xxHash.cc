@@ -71,7 +71,7 @@ Hash::digest_t xxHash::compute(const void* buffer, long size)
     return toString(hash);
 }
 
-void xxHash::add(const void* buffer, long length) {
+void xxHash::update(const void* buffer, long length) {
     if (length > 0) {
         XXH64_update(ctx_, static_cast<const unsigned char*>(buffer), length);
         if (!digest_.empty())

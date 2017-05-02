@@ -70,7 +70,7 @@ MD4::MD4(const void* data, size_t len) {
     add( data, len );
 }
 
-void MD4::add(const void* buffer, long length) {
+void MD4::update(const void* buffer, long length) {
     if (length > 0) {
         MD4_Update(&ctx_, static_cast<const unsigned char*>(buffer), length);
         if (!digest_.empty())

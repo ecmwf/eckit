@@ -8,78 +8,40 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_MD5RFC1321_H
-#define eckit_utils_MD5RFC1321_H
+#ifndef eckit_utils_MD5_H
+#define eckit_utils_MD5_H
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <string>
+#ifndef MD5_DIGEST_LENGTH
+#define MD5_DIGEST_LENGTH 16
+#endif
 
-#include "eckit/memory/NonCopyable.h"
+#include "eckit/utils/Hash.h"
 
 namespace eckit {
 
-class MD5 : private eckit::NonCopyable {
-
-public:  // types
-
-  typedef std::string digest_t;
+class MD5 : public Hash {
 
 public:  // types
 
   MD5();
 
-  explicit MD5(const digest_t&);
+  explicit MD5(const char*);
+  explicit MD5(const std::string&);
 
   MD5(const void* data, size_t len);
 
-  ~MD5();
+  virtual ~MD5();
 
-  void add(const void*, long);
+  virtual void reset() const;
 
-  void add(char x){ add(&x, sizeof(x)); }
-  void add(unsigned char x){ add(&x, sizeof(x)); }
+  virtual digest_t compute(const void*, long);
 
-  void add(bool x){ add(&x, sizeof(x)); }
+  virtual void update(const void*, long);
 
-  void add(int x){ add(&x, sizeof(x)); }
-  void add(unsigned int x){ add(&x, sizeof(x)); }
-
-  void add(short x){ add(&x, sizeof(x)); }
-  void add(unsigned short x){ add(&x, sizeof(x)); }
-
-  void add(long x){ add(&x, sizeof(x)); }
-  void add(unsigned long x){ add(&x, sizeof(x)); }
-
-  void add(long long x){ add(&x, sizeof(x)); }
-  void add(unsigned long long x){ add(&x, sizeof(x)); }
-
-  void add(float x){ add(&x, sizeof(x)); }
-  void add(double x){ add(&x, sizeof(x)); }
-
-  void add(const std::string& x)  { add(x.c_str(),x.size()); }
-  void add(const char* x) { add(std::string(x)); }
-  
-  /// for generic objects
-  template <class T>
-  void add(const T& x) { x.hash(*this); }
+  virtual digest_t digest() const;
 
   template<class T>
   MD5& operator<<(const T& x) { add(x); return *this; }
-
-  operator std::string();
-
-  digest_t digest() const;
-
-private:  // types
-
-  // Make sure this is not called with a pointer
-  template<class T>
-  void add(const T* x);
-  void add(const void*);
-
-  /// Double hashing
-  void add(const MD5& md5) { add(md5.digest()); }
 
 private: // members
 
@@ -101,11 +63,11 @@ private: // members
   mutable MD5_CTX s_;
 
   static void Init    (MD5_CTX *);
-  static void Update  (MD5_CTX *, unsigned char *, unsigned int);
+  static void Update  (MD5_CTX *, const unsigned char *, unsigned int);
   static void Final   (unsigned char [16], MD5_CTX *);
-  static void Transform (UINT4 [4], unsigned char [64]);
+  static void Transform (UINT4 [4], const unsigned char [64]);
   static void Encode (unsigned char *, UINT4 *, unsigned int);
-  static void Decode (UINT4 *, unsigned char *, unsigned int);
+  static void Decode (UINT4 *, const unsigned char *, unsigned int);
 
 };
 

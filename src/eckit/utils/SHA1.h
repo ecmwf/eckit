@@ -44,7 +44,7 @@ public:  // types
 
   virtual digest_t compute(const void*, long);
 
-  virtual void add(const void*, long);
+  virtual void update(const void*, long);
 
   virtual digest_t digest() const;
 

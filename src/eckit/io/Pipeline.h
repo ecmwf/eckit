@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File DblBuffer.h
+// File Pipeline.h
 // Baudouin Raoult - ECMWF Feb 97
 
-#ifndef eckit_DblBuffer_h
-#define eckit_DblBuffer_h
+#ifndef eckit_Pipeline_h
+#define eckit_Pipeline_h
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
@@ -25,21 +25,22 @@
 namespace eckit {
 
 namespace {
-    class DblBufferTask;
+    class PipelineReader;
+    class PipelineExecutor;
 }
 
 //-----------------------------------------------------------------------------
 
-class DblBuffer : private NonCopyable {
+class Pipeline : private NonCopyable {
 public:
 
 // -- Contructors
 
-	DblBuffer(long count = 5, long size = 1024*1024, TransferWatcher& = TransferWatcher::dummy());
+	Pipeline(TransferWatcher& = TransferWatcher::dummy());
 
 // -- Destructor
 
-	~DblBuffer();
+	virtual ~Pipeline();
 
 // -- Methods
 
@@ -49,9 +50,11 @@ public:
     void   error(const std::string&);
 	void   restart(RestartTransfer&);
 
-private: // methods
 
-	Length copy(DataHandle&,DataHandle&,const Length&);
+private:
+
+    virtual void execute(DataHandle& in,DataHandle& out) = 0;
+
 
 private: // members
 
@@ -73,7 +76,8 @@ private: // members
 
 // -- Friends
 
-	friend class DblBufferTask;
+    friend class PipelineExecutor;
+    friend class PipelineReader;
 
 };
 

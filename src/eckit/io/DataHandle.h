@@ -78,9 +78,9 @@ public:
 
 	// Save into an other datahandle
 
-	virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy());
+	virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy(), bool dblBufferOK = true);
 
-	Length saveInto(const PathName&, TransferWatcher& = TransferWatcher::dummy()); // Save into a file
+	Length saveInto(const PathName&, TransferWatcher& = TransferWatcher::dummy(), bool dblBufferOK = true); // Save into a file
 
     /// Quiet version of saveInto. Does not support progess, restart and double buffering
     Length copyTo(DataHandle&);

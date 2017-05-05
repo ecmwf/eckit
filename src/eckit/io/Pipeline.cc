@@ -47,9 +47,11 @@ PipelineReader::PipelineReader(Pipeline& owner, DataHandle& in, DataHandle& out)
 
 void PipelineReader::run() {
     try {
-        in_.saveInto(out_, owner_.watcher_);
+        in_.saveInto(out_, owner_.watcher_, false);
     }
     catch (std::exception& e) {
+        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+        Log::error() << "** Exception is handled" << std::endl;
         owner_.error(e.what());
     }
 }
@@ -75,6 +77,8 @@ void PipelineExecutor::run() {
         owner_.execute(in_, out_);
     }
     catch (std::exception& e) {
+        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+        Log::error() << "** Exception is handled" << std::endl;
         owner_.error(e.what());
     }
 }
@@ -129,9 +133,11 @@ Length Pipeline::copy(DataHandle& in, DataHandle& out)
     Length total = 0;
 
     try {
-        total = process_in.saveInto(out, watcher_);
+        total = process_in.saveInto(out, watcher_, false);
     }
     catch (std::exception& e) {
+        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+        Log::error() << "** Exception is handled" << std::endl;
         error(e.what());
     }
 
@@ -139,6 +145,8 @@ Length Pipeline::copy(DataHandle& in, DataHandle& out)
         thread1.wait();
     }
     catch (std::exception& e) {
+        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+        Log::error() << "** Exception is handled" << std::endl;
         error(e.what());
     }
 
@@ -146,6 +154,8 @@ Length Pipeline::copy(DataHandle& in, DataHandle& out)
         thread2.wait();
     }
     catch (std::exception& e) {
+        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+        Log::error() << "** Exception is handled" << std::endl;
         error(e.what());
     }
 

@@ -24,11 +24,6 @@
 
 namespace eckit {
 
-namespace {
-    class PipelineReader;
-    class PipelineExecutor;
-}
-
 //-----------------------------------------------------------------------------
 
 class Pipeline : private NonCopyable {
@@ -60,9 +55,18 @@ private: // members
 
 	Mutex  mutex_;
 
+    long   count_;
+	long   bufSize_;
+
+	Length inBytes_;
+	Length outBytes_;
+
 	bool error_;
     std::string why_;
 
+    bool restart_;
+
+	Offset restartFrom_;
 	TransferWatcher& watcher_;
 
 // -- Friends

@@ -28,8 +28,6 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-namespace {
-
 
 class PipelineReader : public Thread {
     Pipeline&     owner_;
@@ -47,11 +45,9 @@ PipelineReader::PipelineReader(Pipeline& owner, DataHandle& in, DataHandle& out)
 
 void PipelineReader::run() {
     try {
-        in_.saveInto(out_, owner_.watcher_, false);
+        in_.saveInto(out_, owner_.watcher_);
     }
     catch (std::exception& e) {
-        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception is handled" << std::endl;
         owner_.error(e.what());
     }
 }
@@ -70,15 +66,13 @@ public:
 PipelineExecutor::PipelineExecutor(Pipeline& owner, DataHandle& in, DataHandle& out):
     owner_(owner), in_(in), out_(out) {}
 
-}
+
 
 void PipelineExecutor::run() {
     try {
         owner_.execute(in_, out_);
     }
     catch (std::exception& e) {
-        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception is handled" << std::endl;
         owner_.error(e.what());
     }
 }
@@ -133,11 +127,9 @@ Length Pipeline::copy(DataHandle& in, DataHandle& out)
     Length total = 0;
 
     try {
-        total = process_in.saveInto(out, watcher_, false);
+        total = process_in.saveInto(out, watcher_);
     }
     catch (std::exception& e) {
-        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception is handled" << std::endl;
         error(e.what());
     }
 
@@ -145,8 +137,6 @@ Length Pipeline::copy(DataHandle& in, DataHandle& out)
         thread1.wait();
     }
     catch (std::exception& e) {
-        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception is handled" << std::endl;
         error(e.what());
     }
 
@@ -154,8 +144,6 @@ Length Pipeline::copy(DataHandle& in, DataHandle& out)
         thread2.wait();
     }
     catch (std::exception& e) {
-        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception is handled" << std::endl;
         error(e.what());
     }
 

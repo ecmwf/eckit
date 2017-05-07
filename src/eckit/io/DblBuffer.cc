@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- *
+ * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * In applying this licence, ECMWF does not waive the privileges and immunities 
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -24,7 +24,6 @@
 
 namespace eckit {
 
-namespace {
 //-----------------------------------------------------------------------------
 
 class DblBufferError : public Exception {
@@ -55,18 +54,16 @@ class DblBufferTask : public Thread {
     virtual void run();
 };
 
-}
-
 DblBuffer::DblBuffer(long count,long size,TransferWatcher& watcher):
     count_(count),
     bufSize_(size),
     error_(false),
     restart_(false),
     restartFrom_(0),
-    watcher_(watcher)
+    watcher_(watcher)    
 {
-    Log::info() << "Double buffering: " <<
-        count_ <<  " buffers of " << Bytes(size) << " is " << Bytes(count*size)
+    Log::info() << "Double buffering: " << 
+        count_ <<  " buffers of " << Bytes(size) << " is " << Bytes(count*size) 
         << std::endl;
 }
 
@@ -90,7 +87,7 @@ inline bool DblBuffer::error()
 void DblBuffer::restart(RestartTransfer& retry)
 {
     AutoLock<Mutex> lock(mutex_);
-    Log::warning() << "Retrying transfer from " << retry.from()
+    Log::warning() << "Retrying transfer from " << retry.from() 
         << " (" << Bytes(retry.from()) << ")" << std::endl;
     error_       = true;
     restart_     = true;
@@ -120,10 +117,10 @@ Length DblBuffer::copy(DataHandle& in,DataHandle& out)
             Log::info() << "Copied: " << copied << ", estimate: " << estimate << std::endl;
             ASSERT(copied == estimate);
         }
-        catch(RestartTransfer& retry)
-        {
-            Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")" << std::endl;
-            in.restartReadFrom(retry.from());
+        catch(RestartTransfer& retry) 
+        { 
+            Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")" << std::endl; 
+            in.restartReadFrom(retry.from()); 
             out.restartWriteFrom(retry.from());
             estimate = total - retry.from();
             more = true;
@@ -185,7 +182,7 @@ Length DblBuffer::copy(DataHandle& in,DataHandle& out,const Length& estimate)
             if(first == 0) first = rate;
 
 			watcher_.watch(buffers[i].buffer_, buffers[i].length_);
-        }
+        } 
         catch(RestartTransfer& retry)
         {
             Log::warning() << "RestartTransfer: Exiting reader thread" << std::endl;
@@ -194,7 +191,7 @@ Length DblBuffer::copy(DataHandle& in,DataHandle& out,const Length& estimate)
         }
         catch(std::exception& e)
         {
-            Log::error() << "** " << e.what()
+            Log::error() << "** " << e.what() 
                 << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is handled" << std::endl;
             buffers[i].length_ = -1;

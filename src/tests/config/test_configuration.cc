@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( test_json_configuration )
       "\n" "  ]"
       "\n" "}"
       "\n");
-    std::ofstream jsonfile (jsonpath);
+    std::ofstream jsonfile (jsonpath.c_str());
     jsonfile << jsonstr;
   }
 

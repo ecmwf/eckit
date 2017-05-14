@@ -283,6 +283,11 @@ public:  // methods
     template <typename T>
     void allToAll(const std::vector< std::vector<T> >& sendvec, std::vector< std::vector<T> >& recvvec) const;
 
+    ///
+    /// Read file on one rank, and broadcast
+    ///
+
+    virtual std::string broadcastFile( const std::string& filepath, size_t root ) const = 0;
 
 
     /// @brief The communicator

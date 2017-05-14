@@ -20,6 +20,7 @@
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/filesystem/PathName.h"
 
 namespace eckit {
 namespace mpi {
@@ -461,6 +462,44 @@ MPI_Request* Parallel::toRequest(Request& req) {
 
 int Parallel::communicator() const {
     return MPI_Comm_c2f(comm_);
+}
+
+std::string Parallel::broadcastFile( const std::string& filepath, size_t root ) const {
+
+    ASSERT( static_cast<size_t>(root) < size() );
+    std::vector<char> buf;
+    long len(0);
+
+    if( rank() == static_cast<size_t>(root) ) {
+
+      PathName p(filepath);
+      if( not p.exists() ) {
+        len = -1;
+      } else {
+
+        std::ifstream in( p.asString().c_str(), std::ios::in | std::ios::binary | std::ios::ate );
+        if (!in) {
+          len = -1;
+        } else {
+
+          len = in.tellg();
+          in.seekg(0, std::ios::beg);
+          buf.resize(len);
+          in.read(buf.data(), len);
+          in.close();
+        }
+      }
+    }
+    Comm::broadcast(len,root);
+
+    if( len == -1 ) {
+      throw CantOpenFile( PathName(filepath).asString() );
+    }
+    if( len > 0 ) {
+      if( buf.empty() ) buf.resize(len);
+      Comm::broadcast(buf.data(),len,root);
+    }
+    return std::string(buf.data(), len);
 }
 
 CommBuilder<Parallel> ParallelBuilder("parallel");

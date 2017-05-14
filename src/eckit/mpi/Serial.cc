@@ -21,6 +21,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/maths/Functions.h"
+#include "eckit/filesystem/PathName.h"
 
 namespace eckit {
 namespace mpi {
@@ -319,6 +320,23 @@ void Serial::print(std::ostream& os) const {
 int Serial::communicator() const {
     return 0;
 }
+
+std::string Serial::broadcastFile( const std::string& filepath, size_t root ) const {
+
+  PathName p(filepath);
+  if( not p.exists() ) throw CantOpenFile( p.asString() );
+
+  std::ifstream in( p.asString().c_str(), std::ios::in | std::ios::binary | std::ios::ate );
+  if (!in) throw CantOpenFile( p.asString() );
+
+  std::ifstream::pos_type len = in.tellg();
+  in.seekg(0, std::ios::beg);
+  std::vector<char> buf(len);
+  in.read(buf.data(), len);
+
+  return std::string(buf.data(), len);
+}
+
 
 CommBuilder<Serial> SerialBuilder("serial");
 

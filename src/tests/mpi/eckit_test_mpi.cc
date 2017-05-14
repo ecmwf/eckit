@@ -11,6 +11,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/types/Types.h"
 #include "eckit/mpi/Comm.h"
+#include "eckit/filesystem/LocalPathName.h"
 
 #define BOOST_TEST_MODULE eckit_test_mpi
 #include "ecbuild/boost_test_framework.h"
@@ -549,6 +550,24 @@ BOOST_AUTO_TEST_CASE( test_blocking_send_receive )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_CASE( test_broadcastFile )
+{
+  mpi::Comm& comm = mpi::comm("world");
+  int root = 0;
+
+  std::string str = "Hello World!\n";
+  LocalPathName path("test_mpi_broadcastFile.txt");
+  if ( comm.rank() == root )
+  {
+    std::ofstream file( path.c_str(), std::ios_base::out );
+    file << str;
+    file.close();
+  }
+
+  BOOST_CHECK_EQUAL( comm.broadcastFile(path,root), str );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE( test_allToAllv )
 {

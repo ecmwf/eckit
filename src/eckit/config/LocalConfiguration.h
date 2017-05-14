@@ -49,6 +49,9 @@ public: // methods
     LocalConfiguration& set(const std::string& name, const std::vector<long>& value);
     LocalConfiguration& set(const std::string& name, const std::vector<double>& value);
 
+    LocalConfiguration& set(const std::string& name, const LocalConfiguration& value);
+    LocalConfiguration& set(const std::string& name, const std::vector<LocalConfiguration>& value);
+
 protected:
 
     friend class Configuration;
@@ -60,8 +63,8 @@ protected:
 
 private:
 
-    void set(const std::vector<std::string> &path, size_t i, Value &root, const Value &value);
-    void set(const std::string &s, const Value &value);
+    void setValue(const std::vector<std::string> &path, size_t i, Value &root, const Value &value);
+    void setValue(const std::string &s, const Value &value);
 
 };
 

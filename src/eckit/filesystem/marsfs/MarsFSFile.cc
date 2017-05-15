@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -11,20 +11,22 @@
 // File MarsFSFile.cc
 // Baudouin Raoult - (c) ECMWF Jun 11
 
+#include "eckit/eckit_config.h"
 
 #include "eckit/filesystem/marsfs/MarsFSFile.h"
-
-//-----------------------------------------------------------------------------
+#include "eckit/config/Resource.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 MarsFSFile::MarsFSFile(const MarsFSPath& path):
     MarsFSClient(path),
     path_(path),
 	lock_(connector_)
 {
+    static std::string marsFsHashing = eckit::Resource<std::string>("marsFsHashing", "None");
+    hash_.reset( eckit::HashFactory::build(marsFsHashing) );
 }
 
 MarsFSFile::~MarsFSFile()
@@ -57,6 +59,7 @@ Length MarsFSFile::open(const char* mode, bool overwrite)
 }
 
 long MarsFSFile::read(void* buffer, long len) {
+
     Stream& s = connector_;
     long size;
 
@@ -65,21 +68,38 @@ long MarsFSFile::read(void* buffer, long len) {
     s << len;
 
     s >> size;
+
     ASSERT(data_.isConnected());
     ASSERT(data_.read(buffer, size) == size);
 
+    // hash integrety check
+    {
+        // Timer t("MarsFSFile::read() hashing");
+        std::string remoteHash;
+        s >> remoteHash;
+        ASSERT(hash_->compute(buffer, size) == remoteHash);
+    }
     return size;
 }
 
 long MarsFSFile::write(const void* buffer, long len) {
+
     Stream& s = connector_;
     long size;
 
     s << "write";
+
     s << len;
 
     ASSERT(data_.isConnected());
     ASSERT(data_.write(buffer, len) == len);
+
+    // hash integrety check
+    {
+        // Timer t("MarsFSFile::write() hashing");
+        s << hash_->compute(buffer, len);
+    }
+
     s >> size;
 
     return size;
@@ -115,8 +135,6 @@ void MarsFSFile::skip(const Length& n)
 
 void MarsFSFile::close()
 {
-    data_.close();
-
     Stream& s = connector_;
     bool ok;
     s << "close";
@@ -128,7 +146,7 @@ Length MarsFSFile::length()
     return size(path_.path());
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

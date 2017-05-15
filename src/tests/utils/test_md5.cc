@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -86,6 +86,34 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_test_suite_from_rfc1321 )
     BOOST_CHECK_EQUAL( MD5("12345678901234567890123456789012345678901234567890123456789012345678901234567890").digest(),
                        "57edf4a22be3c955ac49da2e2107b67a" );
 }
+
+BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_compute )
+{
+    std::string msg ( "The quick brown fox jumps over the lazy dog" );
+
+    std::string res ("9e107d9d372bb6826bd81d3542a419d6");
+
+    MD5 hash;
+    BOOST_CHECK_EQUAL( res , hash.compute(msg.c_str(), msg.size()));
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_reset )
+{
+    MD5 hash( "FOOBAR" );
+
+    hash.reset(); // reset initial state
+
+    std::string msg ( "The quick brown fox jumps over the lazy dog" );
+
+    hash.add(msg.c_str(), msg.size());
+
+    std::string res ("9e107d9d372bb6826bd81d3542a419d6");
+
+    BOOST_CHECK_EQUAL( res , hash.digest());
+}
+
+
+//-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
 

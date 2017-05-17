@@ -8,6 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#define OMPI_SKIP_MPICXX 1
+#define MPICH_SKIP_MPICXX 1
+
 #include <mpi.h>
 
 #include "eckit/mpi/Comm.h"

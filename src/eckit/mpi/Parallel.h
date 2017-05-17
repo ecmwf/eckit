@@ -11,6 +11,9 @@
 #ifndef eckit_mpi_Parallel_h
 #define eckit_mpi_Parallel_h
 
+#define OMPI_SKIP_MPICXX 1
+#define MPICH_SKIP_MPICXX 1
+
 #include <mpi.h>
 
 #include "eckit/mpi/Comm.h"

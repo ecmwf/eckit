@@ -96,7 +96,7 @@ void MD5::Init (MD5_CTX *context)
    operation, processing another message block, and updating the
    context.
  */
-void MD5::Update (MD5_CTX *context, unsigned char *input, unsigned int inputLen)
+void MD5::Update (MD5_CTX *context, const unsigned char *input, unsigned int inputLen)
 {
     unsigned int i, index, partLen;
 
@@ -129,7 +129,7 @@ void MD5::Update (MD5_CTX *context, unsigned char *input, unsigned int inputLen)
 
 /* MD5 finalization. Ends an MD5 message-digest operation, writing the the message digest and zeroizing the context.
  */
-void MD5::Final (unsigned char digest[16], MD5_CTX *context)
+void MD5::Final (unsigned char digest[MD5_DIGEST_LENGTH], MD5_CTX *context)
 {
   unsigned char bits[8];
   unsigned int index, padLen;
@@ -154,7 +154,7 @@ void MD5::Final (unsigned char digest[16], MD5_CTX *context)
 
 /* MD5 basic transformation. Transforms state based on block.
  */
-void MD5::Transform (UINT4 state[4], unsigned char block[64])
+void MD5::Transform (UINT4 state[4], const unsigned char block[64])
 {
   UINT4 a = state[0];
   UINT4 b = state[1];
@@ -265,7 +265,7 @@ void MD5::Encode (unsigned char *output, UINT4 *input, unsigned int len)
 /* Decodes input (unsigned char) into output (UINT4). Assumes len is
    a multiple of 4.
  */
-void MD5::Decode(UINT4 *output, unsigned char *input, unsigned int len)
+void MD5::Decode(UINT4 *output, const unsigned char *input, unsigned int len)
 {
   unsigned int i, j;
 
@@ -278,11 +278,49 @@ void MD5::Decode(UINT4 *output, unsigned char *input, unsigned int len)
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static const char* hex = "0123456789abcdef";
+static std::string toString(unsigned char digest[MD5_DIGEST_LENGTH]) {
+
+    char x[2*MD5_DIGEST_LENGTH];
+
+    size_t j = 0;
+    for(size_t i = 0; i<MD5_DIGEST_LENGTH; ++i) {
+        x[j++] = hex[(digest[i] & 0xf0) >> 4];
+        x[j++] = hex[(digest[i] & 0xf)];
+    }
+
+    return std::string(x, 2*MD5_DIGEST_LENGTH);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+MD5::~MD5() {}
+
+void MD5::reset() const
+{
+    Init(&s_);
+}
+
+Hash::digest_t MD5::compute(const void* buffer, long size)
+{
+    MD5_CTX s;
+    Init(&s);
+    Update(&s, static_cast<const unsigned char*>(buffer), size);
+    unsigned char digest[MD5_DIGEST_LENGTH];
+    Final(digest, &s);
+    return toString(digest);
+}
+
 MD5::MD5() {
     Init(&s_);
 }
 
-MD5::MD5(const digest_t& s) {
+MD5::MD5(const char* s) {
+    Init(&s_);
+    add( s, strlen(s) );
+}
+
+MD5::MD5(const std::string& s) {
     Init(&s_);
     add( s.c_str(), s.size() );
 }
@@ -292,9 +330,7 @@ MD5::MD5(const void* data, size_t len) {
     add( data, len );
 }
 
-MD5::~MD5() {}
-
-void MD5::add(const void* buffer, long length) {
+void MD5::update(const void* buffer, long length) {
 
     if(length > std::numeric_limits<unsigned int>::max()) {
         throw BadParameter("Buffer length too large for MD5 algorithm", Here());
@@ -308,31 +344,22 @@ void MD5::add(const void* buffer, long length) {
     }
 }
 
-MD5::operator std::string() {
-  return digest();
-}
-
 MD5::digest_t MD5::digest() const {
 
     // recompute the digest
     if (digest_.empty()) {
-        unsigned char digest[16];
+        unsigned char digest[MD5_DIGEST_LENGTH];
         MD5::Final(digest, &s_);
-
-        char tmp[33] = {0};
-
-        for(int i = 0; i < 16; i++) {
-            sprintf(&tmp[2*i], "%02x", digest[i]);
-        }
-
-        digest_ = std::string(tmp);
+        digest_ = toString(digest);
     }
 
     return digest_;
 }
 
+namespace  {
+    HashBuilder<MD5> builder("MD5");
+}
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 } // namespace eckit

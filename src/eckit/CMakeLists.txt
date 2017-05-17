@@ -489,6 +489,8 @@ persist/Isa.cc )
 list( APPEND eckit_utils_srcs
 utils/Translator.h
 utils/Translator.cc
+utils/Hash.h
+utils/Hash.cc
 utils/MD5.h
 utils/MD5.cc
 utils/Regex.h
@@ -499,6 +501,22 @@ utils/HyperCube.h
 utils/HyperCube.cc
 utils/RLE.h
 utils/RLE.cc )
+
+if(ECKIT_HAVE_SSL)
+    list( APPEND eckit_utils_srcs
+      utils/MD4.h
+      utils/MD4.cc
+      utils/SHA1.h
+      utils/SHA1.cc
+    )
+endif()
+
+if(ECKIT_HAVE_XXHASH)
+    list( APPEND eckit_utils_srcs
+      utils/xxHash.h
+      utils/xxHash.cc
+    )
+endif()
 
 list( APPEND eckit_memory_srcs
 memory/Builder.h
@@ -643,10 +661,18 @@ ecbuild_add_library(TARGET eckit
 						${eckit_templates}
 					PERSISTENT
 						${eckit_persistent}
-					INCLUDES
-						${AIO_INCLUDE_DIRS}
+                    PRIVATE_INCLUDES
+                        "${XXHASH_INCLUDE_DIRS}"
+                    INCLUDES
+                        "${OPENSSL_INCLUDE_DIR}"
+                        "${AIO_INCLUDE_DIRS}"
 					LIBS
-                        ${AIO_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS} ${ECKIT_SYSTEM_EXTRA_LIBS} )
+                        ${OPENSSL_LIBRARIES}
+                        ${XXHASH_LIBRARIES}
+                        ${AIO_LIBRARIES}
+                        ${CMAKE_THREAD_LIBS_INIT}
+                        ${CMAKE_DL_LIBS}
+                        ${ECKIT_SYSTEM_EXTRA_LIBS} )
 
 ### sub-directories
 

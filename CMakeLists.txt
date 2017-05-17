@@ -78,7 +78,26 @@ ecbuild_add_option( FEATURE LAPACK
                     DESCRIPTION "Linear Algebra PACKage"
                     REQUIRED_PACKAGES "LAPACK" )
 
-### CUDA
+### OpenSSL (for SHA1)
+
+ecbuild_add_option( FEATURE SSL
+                    DESCRIPTION "OpenSSL support"
+                    TYPE RECOMMENDED
+                    PURPOSE "OpenSSL provides crypto and hashing algorithms including SHA1"
+                    REQUIRED_PACKAGES OpenSSL )
+
+ecbuild_info("OpenSSL ${OPENSSL_FOUND} ${OPENSSL_VERSION} : libs ${OPENSSL_LIBRARIES} incs ${OPENSSL_INCLUDE_DIR}")
+
+### xxHash
+
+ecbuild_add_option( FEATURE XXHASH
+                    DESCRIPTION "Use xxHash for non-crypto hashing in data integrity checks"
+                    PURPOSE     "xxHash support"
+                    REQUIRED_PACKAGES "PROJECT xxHash" )
+
+ecbuild_info("xxHash ${XXHASH_FOUND}  : libs ${XXHASH_LIBRARIES} incs ${XXHASH_INCLUDE_DIRS}")
+
+#### CUDA
 
 ecbuild_add_option( FEATURE CUDA
                     CONDITION HAVE_EXPERIMENTAL

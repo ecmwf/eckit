@@ -65,6 +65,7 @@ public:  // methods
   void add(const void* x, long size) { update(x, size); }
 
   void add(const std::string& x) { update(x.c_str(), x.size()); }
+  void add(const char* x) { add(std::string(x)); }
 
   template<class T>
   Hash& operator<<(const T& x) { add(x); return *this; }

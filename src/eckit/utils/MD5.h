@@ -67,7 +67,7 @@ public:  // types
   void add(const void* x, long size) { update(x, size); }
 
   void add(const std::string& x) { update(x.c_str(), x.size()); }
-  void add(const char* x) { add(std::string(x)); }
+  void add(const char* x) { update(x, std::strlen(x)); }
 
   // for generic objects
   template<class T>

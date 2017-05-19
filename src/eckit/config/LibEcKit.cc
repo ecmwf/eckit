@@ -23,12 +23,11 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static LibEcKit libeckit;
-
 LibEcKit::LibEcKit() : Library("eckit") {}
 
 const LibEcKit& LibEcKit::instance()
 {
+    static LibEcKit libeckit;
     return libeckit;
 }
 

@@ -15,17 +15,24 @@
 
 #include "ecbuild/boost_test_framework.h"
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
-
+#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/system/ResourceUsage.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/system/Library.h"
-#include "eckit/filesystem/LocalPathName.h"
 
 #include "eckit/testing/Setup.h"
 
 using namespace eckit;
-using namespace eckit::testing;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+struct Setup : eckit::testing::Setup {
+    Setup() : eckit::testing::Setup() {
+        LibEcKit::instance();
+    }
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 

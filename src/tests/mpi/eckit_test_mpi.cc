@@ -16,7 +16,7 @@
 #define BOOST_TEST_MODULE eckit_test_mpi
 #include "ecbuild/boost_test_framework.h"
 
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/CommSetup.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ inline boost::wrap_stringstream& operator<<(boost::wrap_stringstream& wrapped, s
 using namespace eckit;
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE( Setup );
+BOOST_GLOBAL_FIXTURE( CommSetup );
 
 BOOST_AUTO_TEST_CASE( test_rank_size )
 {
@@ -564,7 +564,7 @@ BOOST_AUTO_TEST_CASE( test_broadcastFile )
     file.close();
   }
 
-  BOOST_CHECK_EQUAL( comm.broadcastFile(path,root), str );
+  BOOST_CHECK_EQUAL( comm.broadcastFile(path, root).str(), str );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

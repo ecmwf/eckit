@@ -22,6 +22,8 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/maths/Functions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/memory/ScopedPtr.h"
+#include "eckit/io/DataHandle.h"
 
 namespace eckit {
 namespace mpi {
@@ -321,20 +323,26 @@ int Serial::communicator() const {
     return 0;
 }
 
-std::string Serial::broadcastFile( const std::string& filepath, size_t root ) const {
+eckit::SharedBuffer Serial::broadcastFile( const PathName& filepath, size_t ) const {
 
-  PathName p(filepath);
-  if( not p.exists() ) throw CantOpenFile( p.asString() );
+    eckit::Buffer* buffer;
 
-  std::ifstream in( p.asString().c_str(), std::ios::in | std::ios::binary | std::ios::ate );
-  if (!in) throw CantOpenFile( p.asString() );
+    eckit::ScopedPtr<DataHandle> dh( filepath.fileHandle() );
 
-  std::ifstream::pos_type len = in.tellg();
-  in.seekg(0, std::ios::beg);
-  std::vector<char> buf(len);
-  in.read(buf.data(), len);
+    Length len = dh->openForRead(); AutoClose closer(*dh);
+    buffer = new eckit::Buffer(len);
+    dh->read(buffer->data(), len);
 
-  return std::string(buf.data(), len);
+    if(not len) {
+        throw ShortFile( filepath );
+    }
+
+    if(filepath.isDir()) {
+        errno = EISDIR;
+        throw CantOpenFile( filepath );
+    }
+
+    return eckit::SharedBuffer(buffer);
 }
 
 

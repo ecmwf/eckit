@@ -89,7 +89,7 @@ protected:  // methods
 
     virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const;
 
-    virtual std::string broadcastFile( const std::string& filepath, size_t root ) const;
+    virtual eckit::SharedBuffer broadcastFile( const eckit::PathName& filepath, size_t root ) const;
 
     virtual void print(std::ostream&) const;
 

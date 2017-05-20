@@ -21,6 +21,8 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/io/DataHandle.h"
+#include "eckit/memory/ScopedPtr.h"
 
 namespace eckit {
 namespace mpi {
@@ -464,42 +466,56 @@ int Parallel::communicator() const {
     return MPI_Comm_c2f(comm_);
 }
 
-std::string Parallel::broadcastFile( const std::string& filepath, size_t root ) const {
+eckit::SharedBuffer Parallel::broadcastFile( const PathName& filepath, size_t root ) const {
 
-    ASSERT( static_cast<size_t>(root) < size() );
-    std::vector<char> buf;
-    long len(0);
+    ASSERT( root < size() );
 
-    if( rank() == static_cast<size_t>(root) ) {
+    bool isRoot = rank() == root;
 
-      PathName p(filepath);
-      if( not p.exists() ) {
-        len = -1;
-      } else {
+    eckit::Buffer* buffer;
 
-        std::ifstream in( p.asString().c_str(), std::ios::in | std::ios::binary | std::ios::ate );
-        if (!in) {
-          len = -1;
-        } else {
+    struct BFileOp {
+        size_t  len_;
+        errno_t err_;
+    } op = {0,0};
 
-          len = in.tellg();
-          in.seekg(0, std::ios::beg);
-          buf.resize(len);
-          in.read(buf.data(), len);
-          in.close();
+    errno = 0;
+
+    if(isRoot) {
+        try {                
+            eckit::ScopedPtr<DataHandle> dh( filepath.fileHandle() );
+
+            op.len_ = dh->openForRead(); AutoClose closer(*dh);
+            buffer = new eckit::Buffer(op.len_);
+            dh->read(buffer->data(), op.len_);
+
+            if(filepath.isDir()) { op.err_ = EISDIR; }
+
+        } catch (Exception& e) {
+            op.len_ = -1;
+            op.err_ = errno;
         }
-      }
     }
-    Comm::broadcast(len,root);
 
-    if( len == -1 ) {
-      throw CantOpenFile( PathName(filepath).asString() );
+    broadcast(&op, sizeof(op), Data::BYTE, root);
+
+    errno = op.err_;  // set errno to ensure consistent error messages across MPI tasks
+
+    if(op.err_) {
+        throw CantOpenFile( filepath );
     }
-    if( len > 0 ) {
-      if( buf.empty() ) buf.resize(len);
-      Comm::broadcast(buf.data(),len,root);
+
+    if(not op.len_) {
+        throw ShortFile( filepath );
     }
-    return std::string(buf.data(), len);
+
+    if(!isRoot) {
+        buffer = new eckit::Buffer(op.len_);
+    }
+
+    broadcast(*buffer, op.len_, Data::BYTE, root);
+
+    return eckit::SharedBuffer(buffer);
 }
 
 CommBuilder<Parallel> ParallelBuilder("parallel");

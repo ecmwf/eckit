@@ -18,6 +18,8 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Buffer.h"
 
 #include "eckit/mpi/Buffer.h"
 #include "eckit/mpi/DataType.h"
@@ -43,6 +45,14 @@ void addComm(const char* name, int comm);
 
 /// Check if a communicator is registered
 bool hasComm(const char* name);
+
+/// Finalizes all the comms that are registered
+///
+/// @note This should not be necessary to be called, since all singletong Comms finalise themselves on destruction
+///       when application shutsdown. Currently there is a bug in OpenMPI on MacOSX that implies that finalization
+///       must be called explicitly before exiting main(). This is the only current reason to use this function.
+///
+void finalizeAllComms();
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -287,8 +297,7 @@ public:  // methods
     /// Read file on one rank, and broadcast
     ///
 
-    virtual std::string broadcastFile( const std::string& filepath, size_t root ) const = 0;
-
+    virtual eckit::SharedBuffer broadcastFile( const eckit::PathName& filepath, size_t root ) const = 0;
 
     /// @brief The communicator
     virtual int communicator() const = 0;

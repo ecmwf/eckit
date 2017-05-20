@@ -11,32 +11,30 @@
 /// @file   Setup.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date   Aug 2016
+/// @date   May 2017
 
-#ifndef eckit_testing_Setup_h
-#define eckit_testing_Setup_h
+#ifndef eckit_testing_CommSetup_h
+#define eckit_testing_CommSetup_h
 
 #include "eckit/runtime/Main.h"
+#include "eckit/mpi/Comm.h"
 
 namespace eckit {
 namespace testing {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-struct Setup {
-    Setup() {
+/// A special Setup for parallel tests because MPI needs to be explicitly finalised on the MacOSX
+/// If we solve that this class should disappear and use Setup directly
+
+struct CommSetup {
+    CommSetup() {
         eckit::Main::initialise(boost::unit_test::framework::master_test_suite().argc,
                                 boost::unit_test::framework::master_test_suite().argv);
-
-//        eckit::Main::instance().assertDumps(false);
-    }
- };
-
-//----------------------------------------------------------------------------------------------------------------------
-
-struct CommSetup : public Setup {
-    CommSetup() : Setup() {
-    }
+        }
+    ~CommSetup() {
+        eckit::mpi::finalizeAllComms();
+        }
  };
 
 //----------------------------------------------------------------------------------------------------------------------

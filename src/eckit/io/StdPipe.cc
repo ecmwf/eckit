@@ -28,9 +28,11 @@ StdPipe::StdPipe(const std::string& name,const std::string& mode)
 
 StdPipe::~StdPipe()
 {
-	if(file_)
-		if(pclose(file_))
-			throw FailedSystemCall("pclose");
+    if (file_) {
+        if (pclose(file_) == -1) {
+            throw FailedSystemCall("pclose");
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------

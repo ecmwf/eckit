@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-@author Baudouin Raoult
+/// @author Baudouin Raoult
 
 #ifndef eckit_io_StdPipe_h
 #define eckit_io_StdPipe_h

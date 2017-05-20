@@ -21,6 +21,9 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/maths/Functions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/memory/ScopedPtr.h"
+#include "eckit/io/DataHandle.h"
 
 namespace eckit {
 namespace mpi {
@@ -319,6 +322,29 @@ void Serial::print(std::ostream& os) const {
 int Serial::communicator() const {
     return 0;
 }
+
+eckit::SharedBuffer Serial::broadcastFile( const PathName& filepath, size_t ) const {
+
+    eckit::Buffer* buffer;
+
+    eckit::ScopedPtr<DataHandle> dh( filepath.fileHandle() );
+
+    Length len = dh->openForRead(); AutoClose closer(*dh);
+    buffer = new eckit::Buffer(len);
+    dh->read(buffer->data(), len);
+
+    if(not len) {
+        throw ShortFile( filepath );
+    }
+
+    if(filepath.isDir()) {
+        errno = EISDIR;
+        throw CantOpenFile( filepath );
+    }
+
+    return eckit::SharedBuffer(buffer);
+}
+
 
 CommBuilder<Serial> SerialBuilder("serial");
 

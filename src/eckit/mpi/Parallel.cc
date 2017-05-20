@@ -20,6 +20,9 @@
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/DataHandle.h"
+#include "eckit/memory/ScopedPtr.h"
 
 namespace eckit {
 namespace mpi {
@@ -461,6 +464,58 @@ MPI_Request* Parallel::toRequest(Request& req) {
 
 int Parallel::communicator() const {
     return MPI_Comm_c2f(comm_);
+}
+
+eckit::SharedBuffer Parallel::broadcastFile( const PathName& filepath, size_t root ) const {
+
+    ASSERT( root < size() );
+
+    bool isRoot = rank() == root;
+
+    eckit::Buffer* buffer;
+
+    struct BFileOp {
+        size_t  len_;
+        errno_t err_;
+    } op = {0,0};
+
+    errno = 0;
+
+    if(isRoot) {
+        try {                
+            eckit::ScopedPtr<DataHandle> dh( filepath.fileHandle() );
+
+            op.len_ = dh->openForRead(); AutoClose closer(*dh);
+            buffer = new eckit::Buffer(op.len_);
+            dh->read(buffer->data(), op.len_);
+
+            if(filepath.isDir()) { op.err_ = EISDIR; }
+
+        } catch (Exception& e) {
+            op.len_ = -1;
+            op.err_ = errno;
+        }
+    }
+
+    broadcast(&op, sizeof(op), Data::BYTE, root);
+
+    errno = op.err_;  // set errno to ensure consistent error messages across MPI tasks
+
+    if(op.err_) {
+        throw CantOpenFile( filepath );
+    }
+
+    if(not op.len_) {
+        throw ShortFile( filepath );
+    }
+
+    if(!isRoot) {
+        buffer = new eckit::Buffer(op.len_);
+    }
+
+    broadcast(*buffer, op.len_, Data::BYTE, root);
+
+    return eckit::SharedBuffer(buffer);
 }
 
 CommBuilder<Parallel> ParallelBuilder("parallel");

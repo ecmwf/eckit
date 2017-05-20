@@ -85,6 +85,14 @@ public:
         return false;
     }
 
+    void finalizeAllComms() {
+        std::map<std::string, Comm*>::iterator itr = communicators.begin();
+        for(; itr != communicators.end(); ++itr) {
+            delete itr->second;
+        }
+        communicators.clear();
+    }
+
     Comm& getComm(const char* name = 0) {
 
         AutoLock<Mutex> lock(mutex_);
@@ -223,6 +231,10 @@ void addComm(const char* name, int comm)
 
 bool hasComm(const char* name) {
     return Environment::instance().hasComm(name);
+}
+
+void finalizeAllComms() {
+    return Environment::instance().finalizeAllComms();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

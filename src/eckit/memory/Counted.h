@@ -94,9 +94,6 @@ public:
 
     virtual ~Counted();
 
-//  void *operator new(size_t s)  { return MemoryPool::fastAllocate(s);}
-//  void operator delete(void* p) { MemoryPool::fastDeallocate(p);     }
-
 private: // members
 
     mutable size_t count_;

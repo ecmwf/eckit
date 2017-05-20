@@ -11,11 +11,12 @@
 #include "eckit/log/Log.h"
 #include "eckit/types/Types.h"
 #include "eckit/mpi/Comm.h"
+#include "eckit/filesystem/LocalPathName.h"
 
 #define BOOST_TEST_MODULE eckit_test_mpi
 #include "ecbuild/boost_test_framework.h"
 
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/CommSetup.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -39,7 +40,7 @@ inline boost::wrap_stringstream& operator<<(boost::wrap_stringstream& wrapped, s
 using namespace eckit;
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE( Setup );
+BOOST_GLOBAL_FIXTURE( CommSetup );
 
 BOOST_AUTO_TEST_CASE( test_rank_size )
 {
@@ -549,6 +550,24 @@ BOOST_AUTO_TEST_CASE( test_blocking_send_receive )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_CASE( test_broadcastFile )
+{
+  mpi::Comm& comm = mpi::comm("world");
+  int root = 0;
+
+  std::string str = "Hello World!\n";
+  LocalPathName path("test_mpi_broadcastFile.txt");
+  if ( comm.rank() == root )
+  {
+    std::ofstream file( path.c_str(), std::ios_base::out );
+    file << str;
+    file.close();
+  }
+
+  BOOST_CHECK_EQUAL( comm.broadcastFile(path, root).str(), str );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE( test_allToAllv )
 {

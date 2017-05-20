@@ -356,6 +356,10 @@ MD5::digest_t MD5::digest() const {
     return digest_;
 }
 
+void MD5::numericalDigest(unsigned char out[MD5_DIGEST_LENGTH]) const {
+    MD5::Final(&out[0], &s_);
+}
+
 namespace  {
     HashBuilder<MD5> builder("MD5");
 }

@@ -25,14 +25,7 @@
 #include "eckit/testing/Setup.h"
 
 using namespace eckit;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-struct Setup : eckit::testing::Setup {
-    Setup() : eckit::testing::Setup() {
-        LibEcKit::instance();
-    }
-};
+using namespace eckit::testing;
 
 //----------------------------------------------------------------------------------------------------------------------
 

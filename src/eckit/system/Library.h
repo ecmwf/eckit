@@ -101,6 +101,21 @@ private: // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
+template <class T>
+struct LibraryRegistration {
+    LibraryRegistration() {
+        T::instance();
+    }
+};
+
+#define REGISTER_LIBRARY(X)                             \
+static eckit::system::LibraryRegistration<X> libregist; \
+void force_link_library_register(void*) {               \
+    force_link_library_register(&libregist);            \
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 } // namespace system
 } // namespace eckit
 

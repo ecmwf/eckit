@@ -23,6 +23,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+REGISTER_LIBRARY(LibEcKit);
+
 LibEcKit::LibEcKit() : Library("eckit") {}
 
 const LibEcKit& LibEcKit::instance()

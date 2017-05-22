@@ -9,6 +9,7 @@
 */
 
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "eckit/bases/Loader.h"
 #include "eckit/filesystem/LocalPathName.h"

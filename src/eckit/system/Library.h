@@ -68,6 +68,9 @@ public: // class methods
     static bool exists(const std::string& name);
     static const Library& lookup(const std::string& name);
 
+    void lock()   { mutex_.lock(); }
+    void unlock() { mutex_.unlock(); }
+
 protected: // methods
 
     virtual std::string home() const;

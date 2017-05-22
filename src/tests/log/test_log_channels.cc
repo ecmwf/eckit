@@ -18,6 +18,7 @@
 #include <fstream>
 #include <cassert>
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/filesystem/LocalPathName.h"
@@ -167,7 +168,7 @@ void on_signal_dumpbacktrace(int signum)
 {
     printf("Caught signal %d\n",signum);
     std::cerr << BackTrace::dump() << std::endl;
-    ::abort();
+    eckit::LibEcKit::instance().abort();
 }
 
 int main(int argc,char **argv)

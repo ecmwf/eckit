@@ -476,7 +476,7 @@ eckit::SharedBuffer Parallel::broadcastFile( const PathName& filepath, size_t ro
 
     struct BFileOp {
         size_t  len_;
-        errno_t err_;
+        int err_;
     } op = {0,0};
 
     errno = 0;

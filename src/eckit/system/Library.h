@@ -110,8 +110,8 @@ struct LibraryRegistration {
 
 #define REGISTER_LIBRARY(X)                             \
 static eckit::system::LibraryRegistration<X> libregist; \
-void force_link_library_register(void*) {               \
-    force_link_library_register(&libregist);            \
+void force_link_library_register_##X(void*) {           \
+    force_link_library_register_##X(&libregist);        \
 }
 
 //----------------------------------------------------------------------------------------------------------------------

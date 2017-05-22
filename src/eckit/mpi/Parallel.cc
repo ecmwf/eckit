@@ -10,6 +10,8 @@
 
 #include "eckit/mpi/Parallel.h"
 
+#include <errno.h>
+#include <unistd.h>
 #include <limits>
 #include <sstream>
 

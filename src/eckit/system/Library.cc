@@ -179,6 +179,14 @@ std::string Library::home() const
     return home_; // may return empty string (meaning not set)
 }
 
+std::string Library::libraryHome() const {
+    std::string h = home();
+    if (!h.empty()) {
+        return h;
+    }
+    return prefixDirectory();
+}
+
 void Library::libraryHome(const std::string& home)
 {
     eckit::AutoLock<Mutex> lock(mutex_);

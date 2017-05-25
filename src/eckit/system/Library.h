@@ -44,6 +44,7 @@ public: // methods
 
     virtual std::string prefixDirectory() const;
 
+    virtual std::string libraryHome() const;
     virtual void libraryHome(const std::string&);
 
     virtual std::string expandPath(const std::string& path) const;

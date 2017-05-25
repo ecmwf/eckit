@@ -10,6 +10,8 @@
 
 #include "eckit/mpi/Parallel.h"
 
+#include <errno.h>
+#include <unistd.h>
 #include <limits>
 #include <sstream>
 
@@ -475,14 +477,14 @@ eckit::SharedBuffer Parallel::broadcastFile( const PathName& filepath, size_t ro
     eckit::Buffer* buffer;
 
     struct BFileOp {
+        int     err_;
         size_t  len_;
-        int err_;
     } op = {0,0};
 
     errno = 0;
 
     if(isRoot) {
-        try {                
+        try {
             eckit::ScopedPtr<DataHandle> dh( filepath.fileHandle() );
 
             op.len_ = dh->openForRead(); AutoClose closer(*dh);
@@ -492,8 +494,8 @@ eckit::SharedBuffer Parallel::broadcastFile( const PathName& filepath, size_t ro
             if(filepath.isDir()) { op.err_ = EISDIR; }
 
         } catch (Exception& e) {
-            op.len_ = -1;
             op.err_ = errno;
+            op.len_ = -1;
         }
     }
 

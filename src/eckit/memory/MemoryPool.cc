@@ -11,8 +11,9 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#include "eckit/log/Bytes.h"
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Bytes.h"
 #include "eckit/memory/MemoryPool.h"
 
 
@@ -224,8 +225,8 @@ void MemoryPool::largeDeallocate(void* addr)
 
 	if(!(m->check() && m->inUse())) {
         std::cerr << "deallocating a bad block" << std::endl;
-		abort();
-	}
+        LibEcKit::instance().abort();
+    }
 
 //	std::cout << "Releasing " << m->size_ << std::endl;
 	m->inUse(false);
@@ -346,7 +347,7 @@ void MemoryPool::fastDeallocate(void *p,MemPool& pool)
 	}
 
     std::cerr << Here() << std::endl;
-	abort();
+    LibEcKit::instance().abort();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

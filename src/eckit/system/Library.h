@@ -68,6 +68,9 @@ public: // class methods
     static bool exists(const std::string& name);
     static const Library& lookup(const std::string& name);
 
+    void lock()   { mutex_.lock(); }
+    void unlock() { mutex_.unlock(); }
+
 protected: // methods
 
     virtual std::string home() const;
@@ -110,8 +113,8 @@ struct LibraryRegistration {
 
 #define REGISTER_LIBRARY(X)                             \
 static eckit::system::LibraryRegistration<X> libregist; \
-void force_link_library_register(void*) {               \
-    force_link_library_register(&libregist);            \
+void force_link_library_register_##X(void*) {           \
+    force_link_library_register_##X(&libregist);        \
 }
 
 //----------------------------------------------------------------------------------------------------------------------

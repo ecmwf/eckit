@@ -1,9 +1,3 @@
-ecbuild_add_test( TARGET   eckit_test_config
-                  BOOST
-                  SOURCES  test_config.cc
-                  ENABLED  OFF
-                  LIBS     eckit )
-
 ecbuild_add_test( TARGET   eckit_test_resource
                   BOOST
                   SOURCES  test_resource.cc

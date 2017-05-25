@@ -10,6 +10,7 @@
 
 #include "eckit/mpi/Serial.h"
 
+#include <errno.h>
 #include <unistd.h>
 #include <limits>
 #include <deque>

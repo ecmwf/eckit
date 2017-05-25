@@ -35,6 +35,10 @@ class Configuration : public Parametrisation {
 
 public: // methods
 
+    // -- Destructor
+
+    virtual ~Configuration();
+
     // Fast access, will throw an exception
 
     bool getBool(const std::string &name) const;
@@ -100,8 +104,6 @@ protected: // methods
     Configuration(const Configuration&, const std::string& path); ///< sub-select a subconfiguration
 
     Configuration &operator=(const Configuration &);
-
-    virtual ~Configuration();
 
     Value lookUp(const std::string&) const;
     Value lookUp(const std::string &, bool &) const;

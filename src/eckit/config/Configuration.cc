@@ -17,6 +17,7 @@
 #include "eckit/config/Configuration.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/parser/JSON.h"
 
 namespace eckit {
 
@@ -468,6 +469,10 @@ std::vector<std::string> Configuration::getStringVector(const std::string &name,
     return result;
 }
 
+void Configuration::json( JSON& s ) const
+{
+    s << root_;
+}
 
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -26,6 +26,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class LocalConfiguration;
+class JSON;
 
 class Configuration : public Parametrisation {
 
@@ -127,6 +128,9 @@ protected: // members
     char separator_;
 
 private: // methods
+
+    void json(JSON& s) const;
+    friend JSON& operator<<(JSON& s, const Configuration& v) { v.json(s); return s; }
 
     template <class T>
     void _get(const std::string&, T&) const;

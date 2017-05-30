@@ -39,7 +39,6 @@ static Value root(const std::string &path) {
     return root(in);
 }
 
-
 static Value root(Stream& in) {
     std::string val;
     in.next(val);
@@ -47,8 +46,12 @@ static Value root(Stream& in) {
     return root(iss);
 }
 
+static Value root_from_string(const std::string &str) {
+    std::istringstream in(str);
+    return root(in);
+}
 
-JSONConfiguration::JSONConfiguration(const eckit::PathName &path, char separator):
+JSONConfiguration::JSONConfiguration(const PathName &path, char separator):
     Configuration(root(path), separator),
     path_(path) {
 }
@@ -58,9 +61,20 @@ JSONConfiguration::JSONConfiguration(std::istream &in, char separator):
     path_("<istream>") {
 }
 
-JSONConfiguration::JSONConfiguration(Stream& in, char separator)
-    : Configuration(root(in), separator),
-      path_("<Stream>") {}
+JSONConfiguration::JSONConfiguration(Stream& in, char separator):
+    Configuration(root(in), separator),
+    path_("<Stream>") {
+}
+
+JSONConfiguration::JSONConfiguration(const std::string& str, char separator):
+    Configuration(root_from_string(str), separator),
+    path_("<string>") {
+}
+
+JSONConfiguration::JSONConfiguration(const SharedBuffer& buffer, char separator):
+    Configuration(root_from_string(buffer.str()), separator),
+    path_("<Buffer>") {
+}
 
 JSONConfiguration::~JSONConfiguration() {
 }

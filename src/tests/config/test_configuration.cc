@@ -28,22 +28,24 @@ BOOST_AUTO_TEST_SUITE( test_eckit_config )
 
 BOOST_AUTO_TEST_CASE( test_json_configuration )
 {
-  std::string jsonpath = "test_json_configuration.json";
+  PathName jsonpath = "test_json_configuration.json";
+
+  std::string jsonstr(
+    "\n" "{"
+    "\n" "  \"manager\" : { \"name\" : \"Sidonia\" , \"office\" : 1 },"
+    "\n" "  \"staff\" : ["
+    "\n" "    { \"name\" : \"Suske\" , \"office\" : 2 },"
+    "\n" "    { \"name\" : \"Wiske\" , \"office\" : 3 }"
+    "\n" "  ]"
+    "\n" "}"
+    "\n");
 
   {
-    std::string jsonstr(
-      "\n" "{"
-      "\n" "  \"manager\" : { \"name\" : \"Sidonia\" , \"office\" : 1 },"
-      "\n" "  \"staff\" : ["
-      "\n" "    { \"name\" : \"Suske\" , \"office\" : 2 },"
-      "\n" "    { \"name\" : \"Wiske\" , \"office\" : 3 }"
-      "\n" "  ]"
-      "\n" "}"
-      "\n");
-    std::ofstream jsonfile (jsonpath.c_str());
+    std::ofstream jsonfile (jsonpath.localPath());
     jsonfile << jsonstr;
   }
 
+  JSONConfiguration conf_from_str(jsonstr);
   JSONConfiguration conf(jsonpath);
   LocalConfiguration manager;
   std::vector<LocalConfiguration> staff;

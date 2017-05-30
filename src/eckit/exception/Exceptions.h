@@ -147,7 +147,8 @@ public:
 
 class Abort : public Exception {
 public:
-    Abort(const std::string&);
+    Abort( const std::string& );
+    Abort( const std::string&, const CodeLocation& );
 };
 
 class Cancel : public Exception {

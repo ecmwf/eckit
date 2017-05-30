@@ -24,17 +24,18 @@ namespace testing {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// A special Setup for parallel tests because MPI needs to be explicitly finalised on the MacOSX
+/// A special Setup for parallel tests because MPI needs to be explicitly finalised on the MacOSX (see ECKIT-166)
 /// If we solve that this class should disappear and use Setup directly
 
 struct CommSetup {
     CommSetup() {
         eckit::Main::initialise(boost::unit_test::framework::master_test_suite().argc,
                                 boost::unit_test::framework::master_test_suite().argv);
-        }
+    }
+
     ~CommSetup() {
-        eckit::mpi::finalizeAllComms();
-        }
+        eckit::mpi::finaliseAllComms();
+    }
  };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -323,6 +323,11 @@ Abort::Abort(const std::string& r):
 {
 }
 
+Abort::Abort( const std::string& r, const CodeLocation& loc ):
+    Exception(std::string("Abort: ") + r, loc)
+{
+}
+
 Retry::Retry(const std::string& r):
     Exception(std::string("Retry: ") + r)
 {

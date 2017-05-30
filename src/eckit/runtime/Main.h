@@ -50,7 +50,12 @@ public: // methods
 
     // From Configurable
 
-    virtual std::string name() const;
+    /// Name of the program as called from the command-line
+    virtual const std::string& name() const;
+
+    /// Name to display in logs. Default is name(), but can be configured
+    /// differently.
+    virtual const std::string& displayName() const;
 
     /// Ensure that there exits a Main object. This is to be used
     /// For unit tests and fortran bindinds only

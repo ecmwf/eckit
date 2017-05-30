@@ -143,8 +143,12 @@ std::string Main::hostname()
     return hostname;
 }
 
-std::string Main::name() const {
+const std::string& Main::name() const {
     return name_;
+}
+
+const std::string& Main::displayName() const {
+    return displayName_;
 }
 
 bool Main::ready() {

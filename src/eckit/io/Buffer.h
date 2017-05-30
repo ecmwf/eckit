@@ -83,6 +83,7 @@ public: // methods
         buffer_->attach();
     }
 
+    /// @note Takes ownership of the buffer
     SharedBuffer(Buffer* b) {
         ASSERT(b);
         buffer_ = b;

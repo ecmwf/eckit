@@ -85,7 +85,7 @@ public:
         return false;
     }
 
-    void finalizeAllComms() {
+    void finaliseAllComms() {
         std::map<std::string, Comm*>::iterator itr = communicators.begin();
         for(; itr != communicators.end(); ++itr) {
             delete itr->second;
@@ -233,8 +233,8 @@ bool hasComm(const char* name) {
     return Environment::instance().hasComm(name);
 }
 
-void finalizeAllComms() {
-    return Environment::instance().finalizeAllComms();
+void finaliseAllComms() {
+    return Environment::instance().finaliseAllComms();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

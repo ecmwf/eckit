@@ -46,13 +46,13 @@ void addComm(const char* name, int comm);
 /// Check if a communicator is registered
 bool hasComm(const char* name);
 
-/// Finalizes all the comms that are registered
+/// Finalises all the comms that are registered
 ///
 /// @note This should not be necessary to be called, since all singletong Comms finalise themselves on destruction
-///       when application shutsdown. Currently there is a bug in OpenMPI on MacOSX that implies that finalization
-///       must be called explicitly before exiting main(). This is the only current reason to use this function.
-///
-void finalizeAllComms();
+///       when application shutsdown. Currently there is a bug in OpenMPI on MacOSX (see ECKIT-166) that implies
+///       that MPI_Finalize must be called explicitly before exiting main(). This is the only current reason to use
+///       this function.
+void finaliseAllComms();
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -107,12 +107,12 @@ public: // methods
     operator void*()                 { return *buffer_; }
     operator const void*() const     { return *buffer_; }
 
-    size_t size() const		 { return buffer_->size(); }
+    size_t size() const              { return buffer_->size(); }
 
     /// Careful, use str() to convert the contents of a buffer to a string
     /// and don't rely on the contents to be null terminated
 
-    std::string str() { return std::string(*buffer_, size()); }
+    std::string str() const { return std::string(*buffer_, size()); }
 
 private:
 

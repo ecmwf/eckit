@@ -16,6 +16,7 @@
 #define eckit_JSONConfiguration_H
 
 #include "eckit/config/Configuration.h"
+#include "eckit/io/Buffer.h"
 
 
 namespace eckit {
@@ -31,9 +32,11 @@ class JSONConfiguration : public Configuration {
 
     // -- Contructors
 
-    JSONConfiguration(const eckit::PathName &path, char separator = '.');
+    JSONConfiguration(const PathName &path, char separator = '.');
     JSONConfiguration(std::istream &, char separator = '.');
     JSONConfiguration(Stream&, char separator = '.');
+    JSONConfiguration(const std::string&, char separator = '.');
+    JSONConfiguration(const SharedBuffer&, char separator = '.');
 
     virtual ~JSONConfiguration(); // Change to virtual if base class
 

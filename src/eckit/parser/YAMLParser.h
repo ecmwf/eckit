@@ -8,39 +8,29 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file   Setup.h
 /// @author Baudouin Raoult
-/// @author Tiago Quintino
-/// @date   May 2017
+/// @date Jun 2012
 
-#ifndef eckit_testing_CommSetup_h
-#define eckit_testing_CommSetup_h
+#ifndef eckit_YAMLParser_h
+#define eckit_YAMLParser_h
 
-#include "eckit/runtime/Main.h"
-#include "eckit/mpi/Comm.h"
+#include "eckit/parser/ObjectParser.h"
 
 namespace eckit {
-namespace testing {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// A special Setup for parallel tests because MPI needs to be explicitly finalised on the MacOSX (see ECKIT-166)
-/// If we solve that this class should disappear and use Setup directly
+class YAMLParser : public ObjectParser {
 
-struct CommSetup {
-    CommSetup() {
-        eckit::Main::initialise(boost::unit_test::framework::master_test_suite().argc,
-                                boost::unit_test::framework::master_test_suite().argv);
-    }
+public: // methods
 
-    ~CommSetup() {
-        eckit::mpi::finaliseAllComms();
-    }
- };
+    YAMLParser(std::istream& in);
+
+};
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace testing
 } // namespace eckit
 
 #endif

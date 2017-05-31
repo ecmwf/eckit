@@ -383,8 +383,12 @@ parser/Tokenizer.h
 parser/Tokenizer.cc
 parser/JSON.h
 parser/JSON.cc
+parser/ObjectParser.h
+parser/ObjectParser.cc
 parser/JSONParser.h
 parser/JSONParser.cc
+parser/YAMLParser.h
+parser/YAMLParser.cc
 parser/JSONDataBlob.h
 parser/JSONDataBlob.cc
 parser/JSONMetadata.h

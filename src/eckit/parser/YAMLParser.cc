@@ -8,29 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
+/// @file   YAMLParser.h
 /// @author Baudouin Raoult
-/// @date Jun 2012
+/// @author Tiago Quintino
+/// @date   Jun 2012
 
-#ifndef eckit_JSONParser_h
-#define eckit_JSONParser_h
-
-#include "eckit/parser/ObjectParser.h"
+#include "eckit/value/Value.h"
+#include "eckit/parser/YAMLParser.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
 
-class JSONParser : public ObjectParser {
-
-public: // methods
-
-    JSONParser(std::istream& in);
-
-};
-
+YAMLParser::YAMLParser(std::istream &in):
+    ObjectParser(in, false)
+{
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
-
-#endif

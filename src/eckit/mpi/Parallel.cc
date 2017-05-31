@@ -484,7 +484,7 @@ eckit::SharedBuffer Parallel::broadcastFile( const PathName& filepath, size_t ro
     errno = 0;
 
     if(isRoot) {
-        try {                
+        try {
             eckit::ScopedPtr<DataHandle> dh( filepath.fileHandle() );
 
             op.len_ = dh->openForRead(); AutoClose closer(*dh);

@@ -41,13 +41,19 @@ public: // methods
 
     LocalConfiguration& set(const std::string &name, const std::string &value);
     LocalConfiguration& set(const std::string &name, const char *value);
-    LocalConfiguration& set(const std::string &name, double value);
-    LocalConfiguration& set(const std::string &name, long value);
     LocalConfiguration& set(const std::string &name, bool value);
+    LocalConfiguration& set(const std::string &name, int value);
+    LocalConfiguration& set(const std::string &name, long value);
     LocalConfiguration& set(const std::string& name, size_t value);
+    LocalConfiguration& set(const std::string &name, float value);
+    LocalConfiguration& set(const std::string &name, double value);
 
+    LocalConfiguration& set(const std::string& name, const std::vector<int>& value);
     LocalConfiguration& set(const std::string& name, const std::vector<long>& value);
+    LocalConfiguration& set(const std::string& name, const std::vector<size_t>& value);
+    LocalConfiguration& set(const std::string& name, const std::vector<float>& value);
     LocalConfiguration& set(const std::string& name, const std::vector<double>& value);
+    LocalConfiguration& set(const std::string& name, const std::vector<std::string>& value);
 
     LocalConfiguration& set(const std::string& name, const LocalConfiguration& value);
     LocalConfiguration& set(const std::string& name, const std::vector<LocalConfiguration>& value);

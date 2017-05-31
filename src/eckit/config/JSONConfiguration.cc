@@ -12,15 +12,7 @@
 /// @date Jul 2015
 
 #include "eckit/config/JSONConfiguration.h"
-
-
-// #include <iostream>
-// #include <limits>
-// #include "eckit/filesystem/PathName.h"
 #include "eckit/parser/JSONParser.h"
-// #include "mir/util/Parser.h"
-// #include "eckit/parser/Tokenizer.h"
-
 
 namespace eckit {
 

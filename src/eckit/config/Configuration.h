@@ -26,6 +26,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class LocalConfiguration;
+class JSON;
 
 class Configuration : public Parametrisation {
 
@@ -49,6 +50,13 @@ public: // methods
     double getDouble(const std::string &name) const;
     std::string getString(const std::string &name) const;
 
+    std::vector<int> getIntVector(const std::string &name) const;
+    std::vector<long> getLongVector(const std::string &name) const;
+    std::vector<size_t> getUnsignedVector(const std::string &name) const;
+    std::vector<float> getFloatVector(const std::string &name) const;
+    std::vector<double> getDoubleVector(const std::string &name) const;
+    std::vector<std::string> getStringVector(const std::string &name) const;
+
     // Access with default in case of falure
 
     bool getBool(const std::string &name, const bool& defaultValue) const;
@@ -59,13 +67,12 @@ public: // methods
     double getDouble(const std::string &name, const double& defaultValue) const;
     std::string getString(const std::string &name, const std::string& defaultValue) const;
 
-
-    std::vector<int> getIntVector(const std::string &name) const;
-    std::vector<long> getLongVector(const std::string &name) const;
-    std::vector<size_t> getUnsignedVector(const std::string &name) const;
-    std::vector<float> getFloatVector(const std::string &name) const;
-    std::vector<double> getDoubleVector(const std::string &name) const;
-    std::vector<std::string> getStringVector(const std::string &name) const;
+    std::vector<int> getIntVector(const std::string &name, const std::vector<int>& defaultValue) const;
+    std::vector<long> getLongVector(const std::string &name, const std::vector<long>& defaultValue) const;
+    std::vector<size_t> getUnsignedVector(const std::string &name, const std::vector<size_t>& defaultValue) const;
+    std::vector<float> getFloatVector(const std::string &name, const std::vector<float>& defaultValue) const;
+    std::vector<double> getDoubleVector(const std::string &name, const std::vector<double>& defaultValue) const;
+    std::vector<std::string> getStringVector(const std::string &name, const std::vector<std::string>& defaultValue) const;
 
     // Access to LocalConfiguration
 
@@ -81,13 +88,18 @@ public: // methods
 
     virtual bool get(const std::string &name, std::string &value) const;
     virtual bool get(const std::string &name, bool &value) const;
+    virtual bool get(const std::string &name, int &value) const;
     virtual bool get(const std::string &name, long &value) const;
+    virtual bool get(const std::string &name, size_t &value) const;
+    virtual bool get(const std::string &name, float &value) const;
     virtual bool get(const std::string &name, double &value) const;
 
+    virtual bool get(const std::string &name, std::vector<int> &value) const;
     virtual bool get(const std::string &name, std::vector<long> &value) const;
+    virtual bool get(const std::string &name, std::vector<size_t> &value) const;
+    virtual bool get(const std::string &name, std::vector<float> &value) const;
     virtual bool get(const std::string &name, std::vector<double> &value) const;
     virtual bool get(const std::string &name, std::vector<std::string> &value) const;
-    virtual bool get(const std::string &name, size_t &value) const;
 
     bool get(const std::string &name, std::vector<LocalConfiguration>&) const;
     bool get(const std::string &name, LocalConfiguration&) const;
@@ -116,6 +128,9 @@ protected: // members
     char separator_;
 
 private: // methods
+
+    void json(JSON& s) const;
+    friend JSON& operator<<(JSON& s, const Configuration& v) { v.json(s); return s; }
 
     template <class T>
     void _get(const std::string&, T&) const;

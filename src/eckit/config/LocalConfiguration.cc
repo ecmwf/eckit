@@ -76,6 +76,11 @@ void LocalConfiguration::setValue(const std::string &s, const eckit::Value &valu
     setValue(path, 0, root_, value);
 }
 
+LocalConfiguration& LocalConfiguration::set(const std::string &s, int value)  {
+    setValue(s, eckit::Value(value));
+    return *this;
+}
+
 LocalConfiguration& LocalConfiguration::set(const std::string &s, long value)  {
     setValue(s, eckit::Value(value));
     return *this;
@@ -89,6 +94,11 @@ LocalConfiguration& LocalConfiguration::set(const std::string &s, const char *va
 
 
 LocalConfiguration& LocalConfiguration::set(const std::string &s, const std::string &value)  {
+    setValue(s, eckit::Value(value));
+    return *this;
+}
+
+LocalConfiguration& LocalConfiguration::set(const std::string &s, float value)  {
     setValue(s, eckit::Value(value));
     return *this;
 }
@@ -108,9 +118,37 @@ LocalConfiguration& LocalConfiguration::set(const std::string &s, size_t value) 
     return *this;
 }
 
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<int>& value) {
+    ValueList values;
+    for (std::vector<int>::const_iterator v = value.begin(); v != value.end(); ++v) {
+        values.push_back(eckit::Value(*v));
+    }
+    setValue(s, values);
+    return *this;
+}
+
 LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<long>& value) {
     ValueList values;
     for (std::vector<long>::const_iterator v = value.begin(); v != value.end(); ++v) {
+        values.push_back(eckit::Value(*v));
+    }
+    setValue(s, values);
+    return *this;
+}
+
+
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<size_t>& value) {
+    ValueList values;
+    for (std::vector<size_t>::const_iterator v = value.begin(); v != value.end(); ++v) {
+        values.push_back(eckit::Value(*v));
+    }
+    setValue(s, values);
+    return *this;
+}
+
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<float>& value) {
+    ValueList values;
+    for (std::vector<float>::const_iterator v = value.begin(); v != value.end(); ++v) {
         values.push_back(eckit::Value(*v));
     }
     setValue(s, values);
@@ -125,6 +163,16 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vec
     setValue(s, values);
     return *this;
 }
+
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<std::string>& value) {
+    ValueList values;
+    for (std::vector<std::string>::const_iterator v = value.begin(); v != value.end(); ++v) {
+        values.push_back(eckit::Value(*v));
+    }
+    setValue(s, values);
+    return *this;
+}
+
 
 LocalConfiguration& LocalConfiguration::set(const std::string &s, const LocalConfiguration& value)  {
     setValue(s, value.root_);

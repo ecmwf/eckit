@@ -11,8 +11,8 @@
 /// @author Baudouin Raoult
 /// @date Jun 2012
 
-#ifndef eckit_JSONParser_h
-#define eckit_JSONParser_h
+#ifndef eckit_YAMLParser_h
+#define eckit_YAMLParser_h
 
 #include "eckit/parser/ObjectParser.h"
 
@@ -20,11 +20,11 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class JSONParser : public ObjectParser {
+class YAMLParser : public ObjectParser {
 
 public: // methods
 
-    JSONParser(std::istream& in);
+    YAMLParser(std::istream& in);
 
 };
 

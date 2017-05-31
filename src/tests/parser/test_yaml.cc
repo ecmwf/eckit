@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_parser_from_istream ) {
 
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_parser_from_file ) {
 
-    Value v =  YAMLParser::decodeFile("foo.yaml");
+    Value v =  YAMLParser::decodeFile("test.yaml");
 
     BOOST_TEST_MESSAGE( v );
     BOOST_TEST_MESSAGE( v["a"] );

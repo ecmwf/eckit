@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_SUITE( test_eckit_parser_yaml )
 #define QUOTE(...) #__VA_ARGS__
 
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value ) {
+BOOST_AUTO_TEST_CASE( test_eckit_yaml_parser_from_istream ) {
     std::istringstream in(QUOTE({ "a" : [true, false, 3],
                                   "b" : 42.3 ,
                                   "c" : null,
@@ -73,6 +73,43 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value ) {
 
     BOOST_CHECK( v["e"].isString() );
     BOOST_CHECK_EQUAL( v["e"].as<string>(), "867017db84f4bc2b5078ca56ffd3b9b9" );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( test_eckit_yaml_parser_from_file ) {
+
+    Value v =  YAMLParser::decodeFile("foo.yaml");
+
+    BOOST_TEST_MESSAGE( v );
+    BOOST_TEST_MESSAGE( v["a"] );
+    BOOST_TEST_MESSAGE( v["a"][2] );
+
+    BOOST_CHECK( v.isMap() );
+    BOOST_CHECK_EQUAL( v.as<ValueMap>().size(), 5 );
+
+    BOOST_CHECK( v["a"].isList() );
+    BOOST_CHECK_EQUAL( v["a"].as<ValueList>().size(), 3 );
+
+
+    BOOST_CHECK( v["a"][0].isBool() );
+    BOOST_CHECK_EQUAL( v["a"][0].as<bool>(), true );
+
+    BOOST_CHECK( v["a"][1].isBool() );
+    BOOST_CHECK_EQUAL( v["a"][1].as<bool>(), false );
+
+    BOOST_CHECK( v["a"][2].isNumber() );
+    BOOST_CHECK_EQUAL( (int) v["a"][2], 3 );
+
+    BOOST_CHECK( v["b"].isDouble() );
+    BOOST_CHECK_LT( v["b"].as<double>() - 42.3, 1E-12 );
+
+    BOOST_CHECK( v["c"].isNil() );
+
+    BOOST_CHECK( v["d"].isString() );
+
+    BOOST_CHECK( v["e"].isString() );
+    BOOST_CHECK_EQUAL( v["e"].as<string>(), "769b654c42b759e3604e4fa37f0e721dc4797818" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -135,7 +172,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_map ) {
 BOOST_AUTO_TEST_CASE( test_eckit_parser_eof ) {
     istringstream in("");
     YAMLParser p(in);
-
     BOOST_CHECK_THROW(p.next(), StreamParser::Error);
 }
 

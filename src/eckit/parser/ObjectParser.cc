@@ -32,6 +32,9 @@ Value ObjectParser::decodeString(const std::string& str, bool comments) {
     return ObjectParser(in, comments).parse();
 }
 
+ObjectParser::~ObjectParser() {
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 Value ObjectParser::parseTrue()

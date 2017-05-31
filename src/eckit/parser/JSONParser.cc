@@ -25,6 +25,13 @@ JSONParser::JSONParser(std::istream &in):
 {
 }
 
+Value JSONParser::decodeFile(const PathName& path) {
+    return ObjectParser::decodeFile(path, false);
+}
+
+Value JSONParser::decodeString(const std::string& str) {
+    return ObjectParser::decodeString(str, false);
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

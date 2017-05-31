@@ -26,6 +26,9 @@ public: // methods
 
     YAMLParser(std::istream& in);
 
+    static Value decodeFile(const PathName& path);
+    static Value decodeString(const std::string& str);
+
 };
 
 

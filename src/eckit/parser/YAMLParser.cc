@@ -21,8 +21,16 @@ namespace eckit {
 
 
 YAMLParser::YAMLParser(std::istream &in):
-    ObjectParser(in, false)
+    ObjectParser(in, true)
 {
+}
+
+Value YAMLParser::decodeFile(const PathName& path) {
+    return ObjectParser::decodeFile(path, true);
+}
+
+Value YAMLParser::decodeString(const std::string& str) {
+    return ObjectParser::decodeString(str, true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

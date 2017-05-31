@@ -26,26 +26,29 @@ class ObjectParser : public StreamParser {
 
 public: // methods
 
+    virtual ~ObjectParser();
+
+    virtual Value parse();
+
+protected:
+
     ObjectParser(std::istream& in, bool comments = false);
-
-    Value parse();
-
 
     static Value decodeFile(const PathName& path, bool comments = false);
     static Value decodeString(const std::string& str, bool comments = false);
 
 private: // methods
 
-    Value parseTrue();
-    Value parseFalse();
-    Value parseNull();
-    Value parseValue();
-    Value parseObject();
-    Value parseArray();
-    Value parseString();
-    Value parseNumber();
+    virtual Value parseTrue();
+    virtual Value parseFalse();
+    virtual Value parseNull();
+    virtual Value parseValue();
+    virtual Value parseObject();
+    virtual Value parseArray();
+    virtual Value parseString();
+    virtual Value parseNumber();
 
-    void parseKeyValue(std::map<Value, Value> &);
+    virtual void parseKeyValue(std::map<Value, Value> &);
 
 };
 

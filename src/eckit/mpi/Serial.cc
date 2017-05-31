@@ -158,7 +158,9 @@ void Serial::barrier() const {
 }
 
 void Serial::abort(int) const {
-    throw Abort("MPI Abort called");
+    // Don't use std::abort as it would raise SIGABRT.
+    // MPI_Abort also does not raise SIGABRT
+    std::exit(EXIT_FAILURE);
 }
 
 Status Serial::wait(Request& req) const {

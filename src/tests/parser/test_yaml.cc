@@ -28,8 +28,16 @@ BOOST_AUTO_TEST_SUITE( test_eckit_parser_yaml )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+#define QUOTE(...) #__VA_ARGS__
+
+
 BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value ) {
-    std::istringstream in("{ \"a\" : [true, false, 3], \"b\" : 42.3 , \"c\" : null, \"d\" : \"y\n\tr\rh\", \"e\" : \"867017db84f4bc2b5078ca56ffd3b9b9\"}");
+    std::istringstream in(QUOTE({ "a" : [true, false, 3],
+                                  "b" : 42.3 ,
+                                  "c" : null,
+                                  "d" : "y\n\tr\rh",
+                                  "e" : "867017db84f4bc2b5078ca56ffd3b9b9"}
+                                ));
     YAMLParser p(in);
 
     Value v = p.parse();
@@ -70,6 +78,8 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value ) {
 //----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_set ) {
+
+
     istringstream in("[ \"a\" , \"b\", \"c\" ]" );
     YAMLParser p(in);
     Value v = p.parse();

@@ -18,8 +18,7 @@ namespace eckit {
 
 static Value root(std::istream &in) {
     ASSERT(in);
-    bool accept_comments = true;
-    eckit::JSONParser parser(in,accept_comments);
+    eckit::JSONParser parser(in);
     Value root = parser.parse();
     return root;
 }

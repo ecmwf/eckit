@@ -124,7 +124,7 @@ void Application::start() {
     } catch (std::exception& e) {
         status = 1;
         Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception is terminates " << displayName_ << std::endl;
+        Log::error() << "** Exception terminates " << displayName_ << std::endl;
     }
 
     Log::info() << "** End of " << displayName_ << " (" << argv(0) << ")  **" << std::endl;

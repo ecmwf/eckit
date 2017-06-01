@@ -136,6 +136,63 @@ struct YAMLItemKey : public YAMLItem {
 
 
 
+struct YAMLItemEntry : public YAMLItem {
+
+    virtual void print(std::ostream& s) const {
+        s << "YAMLItemEntry[indent=" << indent_ << "]";
+    }
+
+    YAMLItemEntry(size_t indent): YAMLItem(indent) {}
+
+    Value parse(YAMLParser& parser) const {
+        std::vector<Value> l;
+
+        bool more = true;
+        while (more) {
+
+            const YAMLItem& next = parser.peekItem();
+
+            if (next.indent_ == indent_) {
+                // Special case
+                l.push_back(Value()); // null
+                const YAMLItem* advance = &parser.nextItem();
+                ASSERT(dynamic_cast<const YAMLItemEntry*>(advance));
+                continue;
+            }
+
+            if (next.indent_ < indent_) {
+                // Special case
+                l.push_back(Value()); // null
+                more = false;
+                continue;
+            }
+
+            if (next.indent_ > indent_) {
+                l.push_back(parser.nextItem().parse(parser));
+            }
+
+            const YAMLItem& peek = parser.peekItem();
+
+            if (peek.indent_ < indent_) {
+                more = false;
+                continue;
+            }
+
+            if (peek.indent_ == indent_) {
+                const YAMLItem* advance = &parser.nextItem();
+                ASSERT(dynamic_cast<const YAMLItemEntry*>(advance));
+                continue;
+            }
+
+            ASSERT(false);
+
+        }
+
+        return Value::makeList(l);
+
+    }
+
+};
 
 YAMLParser::YAMLParser(std::istream &in):
     ObjectParser(in, true) {
@@ -234,7 +291,13 @@ void YAMLParser::loadItem()
         break;
 
     case '-':
-        item = new YAMLItemValue(indent, Value("-"));
+        consume('-');
+        c = peek(true);
+        if (c == ' ') {
+            item = new YAMLItemEntry(indent);
+        } else {
+            ASSERT(false);
+        }
         break;
 
     case '0':

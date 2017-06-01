@@ -55,6 +55,7 @@ private:
     void popIndent();
 
     friend struct YAMLItemKey;
+    friend struct YAMLItemEntry;
 
 };
 

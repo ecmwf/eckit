@@ -25,6 +25,7 @@ namespace eckit {
 
 StreamParser::StreamParser(std::istream &in, bool comments, const char* comment) :
     line_(0),
+    pos_(0),
     in_(in),
     comments_(comments)
 {
@@ -32,6 +33,18 @@ StreamParser::StreamParser(std::istream &in, bool comments, const char* comment)
         comment_.insert(*comment++);
     }
 }
+
+char StreamParser::get() {
+    char c = 0;
+    in_.get(c);
+    pos_++;
+    if (c == '\n') {
+        line_++;
+        pos_ = 0;
+    }
+    return c;
+}
+
 
 char StreamParser::peek(bool spaces)
 {
@@ -45,7 +58,7 @@ char StreamParser::peek(bool spaces)
         if (comments_ && comment_.find(c) != comment_.end())
         {
             while (in_.peek() != '\n' && !in_.eof()) {
-                in_.get(c);
+                c = get();
             }
             if (in_.eof()) {
                 return 0;
@@ -60,8 +73,7 @@ char StreamParser::peek(bool spaces)
         }
         else {
 //            std::cout << "skip(" << c << ")" << std::endl;
-            in_.get(c);
-            if (c == '\n') { line_++; }
+            c = get();
         }
     }
 }
@@ -71,16 +83,17 @@ char StreamParser::next(bool spaces)
     char c;
     for (;;)
     {
-        in_.get(c);
+        c = get();
         if (in_.eof())
             throw StreamParser::Error(std::string("StreamParser::next reached eof"));
 
-        if (c == '\n') { line_++; }
+        pos_++;
+        if (c == '\n') { line_++; pos_ = 0;}
 
         if (comments_ && comment_.find(c) != comment_.end())
         {
             while (in_.peek() != '\n' && !in_.eof()) {
-                in_.get(c);
+                c = get();
             }
             if (in_.eof()) {
                 throw StreamParser::Error(std::string("StreamParser::next reached eof"));

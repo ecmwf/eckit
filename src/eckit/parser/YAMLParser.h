@@ -14,20 +14,47 @@
 #ifndef eckit_YAMLParser_h
 #define eckit_YAMLParser_h
 
+#include <deque>
+
 #include "eckit/parser/ObjectParser.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
+struct YAMLItem;
+
 class YAMLParser : public ObjectParser {
+
+
 
 public: // methods
 
-    YAMLParser(std::istream& in);
+    YAMLParser(std::istream & in);
+    virtual ~YAMLParser();
 
-    static Value decodeFile(const PathName& path);
-    static Value decodeString(const std::string& str);
+    static Value decodeFile(const PathName & path);
+    static Value decodeString(const std::string & str);
+
+private:
+
+    std::deque<YAMLItem*> items_;
+
+private:
+
+    void loadItem();
+    const YAMLItem& nextItem();
+    const YAMLItem& peekItem();
+
+    virtual Value parseValue();
+    virtual Value parseString();
+
+
+    void pushIndent();
+    void popIndent();
+
+    friend struct YAMLItemKey;
 
 };
 

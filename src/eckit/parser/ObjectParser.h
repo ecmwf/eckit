@@ -34,19 +34,18 @@ protected:
 
     ObjectParser(std::istream& in, bool comments = false);
 
-    static Value decodeFile(const PathName& path, bool comments = false);
-    static Value decodeString(const std::string& str, bool comments = false);
-
-private: // methods
+protected: // methods
 
     virtual Value parseTrue();
     virtual Value parseFalse();
     virtual Value parseNull();
-    virtual Value parseValue();
+    virtual Value parseValue() = 0;
     virtual Value parseObject();
     virtual Value parseArray();
     virtual Value parseString();
     virtual Value parseNumber();
+
+    virtual Value parseJSON();
 
     virtual void parseKeyValue(std::map<Value, Value> &);
 

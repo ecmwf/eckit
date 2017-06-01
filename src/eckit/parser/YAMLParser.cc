@@ -16,22 +16,306 @@
 #include "eckit/value/Value.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/memory/Counted.h"
 
 namespace eckit {
 
 
+struct YAMLItem : public Counted {
+
+    long indent_;
+    Value value_;
+
+
+    virtual void print(std::ostream& s) const = 0;
+    virtual Value parse(YAMLParser& parser) const {
+        return value_;
+    }
+
+    YAMLItem(long indent = 0, const Value& value = Value()):
+        indent_(indent),
+        value_(value) {}
+
+    virtual ~YAMLItem() {};
+
+    friend std::ostream& operator<<(std::ostream& s, const YAMLItem& item)
+    { item.print(s); return s;}
+};
+
+
+struct YAMLItemEOF : public YAMLItem {
+
+    virtual void print(std::ostream& s) const {
+        s << "YAMLItemEOF";
+    }
+
+
+    YAMLItemEOF(): YAMLItem(-1) {}
+
+
+};
+
+
+struct YAMLItemValue : public YAMLItem {
+
+    virtual void print(std::ostream& s) const {
+        s << "YAMLItemValue[value=" << value_ << ", indent=" << indent_ << "]";
+    }
+
+    YAMLItemValue(size_t indent, const Value& value): YAMLItem(indent, value) {}
+
+};
+
+struct YAMLItemKey : public YAMLItem {
+
+    virtual void print(std::ostream& s) const {
+        s << "YAMLItemKey[value=" << value_ << ", indent=" << indent_ << "]";
+    }
+
+    YAMLItemKey(const YAMLItem& item): YAMLItem(item.indent_, item.value_) {}
+
+    Value parse(YAMLParser& parser) const {
+        std::map<Value, Value> m;
+
+
+        const YAMLItem* key = this;
+
+        bool more = true;
+        while (more) {
+
+
+            const YAMLItem& next = parser.peekItem();
+
+            std::cout << "key " <<  *key << " => " << next << std::endl;
+
+            if (next.indent_ == key->indent_) {
+                // Special case
+                m[key->value_] = Value(); // null
+                key = &parser.nextItem();
+                ASSERT(dynamic_cast<const YAMLItemKey*>(key));
+                continue;
+            }
+
+            if (next.indent_ < key->indent_) {
+                // Special case
+                m[key->value_] = Value(); // null
+                more = false;
+                continue;
+            }
+
+            if (next.indent_ > key->indent_) {
+                m[key->value_] = parser.nextItem().parse(parser);
+            }
+
+            const YAMLItem& peek = parser.peekItem();
+
+
+            std::cout << "key " <<  *key << " !! " << peek << std::endl;
+
+
+            if (peek.indent_ < key->indent_) {
+                more = false;
+                continue;
+            }
+
+            if (peek.indent_ == key->indent_) {
+                key = &parser.nextItem();
+                ASSERT(dynamic_cast<const YAMLItemKey*>(key));
+                continue;
+            }
+
+            ASSERT(false);
+
+        }
+
+        return Value::makeMap(m);
+
+    }
+
+};
+
+
+
+
 YAMLParser::YAMLParser(std::istream &in):
-    ObjectParser(in, true)
-{
+    ObjectParser(in, true) {
+}
+
+YAMLParser::~YAMLParser() {
+    for (std::deque<YAMLItem*>::iterator j = items_.begin(); j != items_.end(); ++j) {
+        (*j)->detach();
+    }
 }
 
 Value YAMLParser::decodeFile(const PathName& path) {
-    return ObjectParser::decodeFile(path, true);
+    std::ifstream in(std::string(path).c_str());
+    if (!in)
+        throw eckit::CantOpenFile(path);
+    return YAMLParser(in).parse();
 }
 
 Value YAMLParser::decodeString(const std::string& str) {
-    return ObjectParser::decodeString(str, true);
+    std::istringstream in(str);
+    return YAMLParser(in).parse();
 }
+
+
+Value YAMLParser::parseString() {
+
+
+    char c = peek();
+
+    if (c == '\"') {
+        return ObjectParser::parseString();
+    }
+
+    std::string s;
+    size_t last = 0;
+    size_t i = 0;
+
+    while (c != ':' && c != '\n' && c != 0) {
+        char p = next(true);
+        s += p;
+        if (!::isspace(p)) {
+            last = i;
+        }
+        c = peek(true);
+        i++;
+    }
+
+    s = s.substr(0, last + 1);
+
+    if (s == "null") {
+        return Value();
+    }
+
+    if (s == "false") {
+        return Value(false);
+    }
+
+    if (s == "true") {
+        return Value(true);
+    }
+
+    return Value("|" + s + "|");
+}
+
+void YAMLParser::loadItem()
+{
+
+    if (!items_.empty()) {
+        return;
+    }
+
+    char c = peek();
+
+    size_t indent = pos_;
+
+    YAMLItem* item = 0;
+
+
+    switch (c)
+    {
+
+    case 0:
+        item = new YAMLItemEOF();
+        break;
+
+    case '{':
+        item = new YAMLItemValue(indent, parseJSON());
+        break;
+
+    case '[':
+        item = new YAMLItemValue(indent, parseJSON());
+        break;
+
+    case '\"':
+        item = new YAMLItemValue(indent, parseString());
+        break;
+
+    case '-':
+        item = new YAMLItemValue(indent, Value("-"));
+        break;
+
+    case '0':
+        item = new YAMLItemValue(indent, parseNumber());
+        break;
+
+    case '1':
+        item = new YAMLItemValue(indent, parseNumber());
+        break;
+
+    case '2':
+        item = new YAMLItemValue(indent, parseNumber());
+        break;
+
+    case '3':
+        item = new YAMLItemValue(indent, parseNumber());
+        break;
+
+    case '4':
+        item = new YAMLItemValue(indent, parseNumber());
+        break;
+
+    case '5':
+        item = new YAMLItemValue(indent, parseNumber());
+        break;
+
+    case '6':
+        item = new YAMLItemValue(indent, parseNumber());
+        break;
+
+    case '7':
+        item = new YAMLItemValue(indent, parseNumber());
+        break;
+
+    case '8':
+        item = new YAMLItemValue(indent, parseNumber());
+        break;
+
+    case '9':
+        item = new YAMLItemValue(indent, parseNumber());
+        break;
+
+    default:
+        item = new YAMLItemValue(indent, parseString());
+        break;
+
+    }
+
+    ASSERT(item);
+
+    if (peek() == ':') {
+        consume(':');
+        item = new YAMLItemKey(*item);
+    }
+
+    std::cout << "item -> " << (*item) << std::endl;
+
+    item->attach();
+    items_.push_back(item);
+
+}
+
+const YAMLItem& YAMLParser::nextItem() {
+    loadItem();
+    ASSERT(!items_.empty());
+
+    YAMLItem* last = items_.front();
+    items_.pop_front();
+    return *last;
+}
+
+const YAMLItem& YAMLParser::peekItem() {
+    loadItem();
+    ASSERT(!items_.empty());
+    return *items_.front();
+}
+
+Value YAMLParser::parseValue() {
+    return nextItem().parse(*this);
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

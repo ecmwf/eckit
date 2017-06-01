@@ -20,18 +20,6 @@
 namespace eckit {
 
 
-Value ObjectParser::decodeFile(const PathName& path, bool comments) {
-    std::ifstream in(std::string(path).c_str());
-    if (!in)
-        throw eckit::CantOpenFile(path);
-    return ObjectParser(in, comments).parse();
-}
-
-Value ObjectParser::decodeString(const std::string& str, bool comments) {
-    std::istringstream in(str);
-    return ObjectParser(in, comments).parse();
-}
-
 ObjectParser::~ObjectParser() {
 }
 
@@ -82,7 +70,7 @@ Value ObjectParser::parseNumber()
         }
         break;
     default:
-        throw StreamParser::Error(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
+        throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
         break;
     }
 
@@ -91,7 +79,7 @@ Value ObjectParser::parseNumber()
         s += next();
         c = next();
         if (!isdigit(c))
-            throw StreamParser::Error(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
+            throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
         s += c;
         while (isdigit(peek())) {
             s += next();
@@ -112,7 +100,7 @@ Value ObjectParser::parseNumber()
         }
 
         if (!isdigit(c))
-            throw StreamParser::Error(std::string("JSONTokenizer::parseNumber invalid char '") + c + "'");
+            throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
         s += c;
         while (isdigit(peek())) {
             s += next();
@@ -176,10 +164,10 @@ Value ObjectParser::parseString()
                 break;
 
             case 'u':
-                throw StreamParser::Error(std::string("JSONTokenizer::parseString \\uXXXX format not supported"));
+                throw StreamParser::Error(std::string("ObjectParser::parseString \\uXXXX format not supported"));
                 break;
             default:
-                throw StreamParser::Error(std::string("JSONTokenizer::parseString invalid \\ char '") + c + "'");
+                throw StreamParser::Error(std::string("ObjectParser::parseString invalid \\ char '") + c + "'");
                 break;
             }
         }
@@ -240,7 +228,7 @@ Value ObjectParser::parseArray()
     if (c == ']')
     {
         consume(c);
-        //cout << "JSONTokenizer::parseArray <== " << std::endl;;
+        //cout << "ObjectParser::parseArray <== " << std::endl;;
         return Value::makeList();
     }
 
@@ -253,7 +241,7 @@ Value ObjectParser::parseArray()
         if (c == ']')
         {
             consume(c);
-            //cout << "JSONTokenizer::parseArray <== " << std::endl;;
+            //cout << "ObjectParser::parseArray <== " << std::endl;;
             return Value::makeList(l);
         }
 
@@ -263,7 +251,7 @@ Value ObjectParser::parseArray()
 }
 
 
-Value ObjectParser::parseValue()
+Value ObjectParser::parseJSON()
 {
     char c = peek();
     switch (c)
@@ -289,12 +277,14 @@ Value ObjectParser::parseValue()
     case '9': return parseNumber(); break;
 
     default:
-        throw StreamParser::Error(std::string("JSONTokenizer::parseValue unexpected char '") + c + "'");
+        throw StreamParser::Error(std::string("YAMLParser::parseValue unexpected char '") + c + "'");
         break;
     }
 }
 
-ObjectParser::ObjectParser(std::istream &in, bool comments ) : StreamParser(in, comments)
+
+ObjectParser::ObjectParser(std::istream &in, bool comments ):
+    StreamParser(in, comments)
 {
 }
 
@@ -303,7 +293,7 @@ Value ObjectParser::parse()
     Value v = parseValue();
     char c = peek();
     if (c != 0)
-        throw StreamParser::Error(std::string("JSONTokenizer::parse extra char '") + c + "'");
+        throw StreamParser::Error(std::string("ObjectParser::parse extra char '") + c + "'");
     return v;
 
 }

@@ -1,10 +1,5 @@
-# begin
-{
-    "a" : [true, false, 3],
-    "b" : 42.3 ,
-    "c" : null,
-    # this is a comment
-    "d" : "foo bar",
-    "e" : "769b654c42b759e3604e4fa37f0e721dc4797818"
-}
-# end
+a: b
+c: d
+e:
+  f:g
+  h:i

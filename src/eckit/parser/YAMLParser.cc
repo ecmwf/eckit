@@ -317,15 +317,11 @@ Value YAMLParser::parseMultiLineString() {
 
     }
 
-
     if (empty) {
         return Value("");
     }
 
-
-
     return Value(result);
-
 }
 
 Value YAMLParser::parseStringOrNumber() {

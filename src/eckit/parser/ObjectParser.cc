@@ -46,6 +46,8 @@ Value ObjectParser::parseNull()
 Value ObjectParser::parseNumber()
 {
     bool real = false;
+    bool string = false;
+
     std::string s;
     char c = next();
     if (c == '-') {
@@ -106,6 +108,10 @@ Value ObjectParser::parseNumber()
             s += next();
         }
 
+    }
+
+    if (string) {
+        return Value(s);
     }
 
     if (real) {
@@ -283,8 +289,9 @@ Value ObjectParser::parseJSON()
 }
 
 
-ObjectParser::ObjectParser(std::istream &in, bool comments ):
-    StreamParser(in, comments)
+ObjectParser::ObjectParser(std::istream &in, bool comments, bool strictNumbers ):
+    StreamParser(in, comments),
+    strictNumbers_(strictNumbers)
 {
 }
 

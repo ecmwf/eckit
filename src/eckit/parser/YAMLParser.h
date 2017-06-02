@@ -40,6 +40,8 @@ public: // methods
 private:
 
     std::deque<YAMLItem*> items_;
+    std::vector<char> stop_;
+    std::vector<char> comma_;
 
 private:
 

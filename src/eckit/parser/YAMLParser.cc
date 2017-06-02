@@ -86,8 +86,6 @@ struct YAMLItemKey : public YAMLItem {
 
             const YAMLItem& next = parser.peekItem();
 
-            std::cout << "key " <<  *key << " => " << next << std::endl;
-
             if (next.indent_ == key->indent_) {
                 // Special case
                 m[key->value_] = Value(); // null
@@ -108,10 +106,6 @@ struct YAMLItemKey : public YAMLItem {
             }
 
             const YAMLItem& peek = parser.peekItem();
-
-
-            std::cout << "key " <<  *key << " !! " << peek << std::endl;
-
 
             if (peek.indent_ < key->indent_) {
                 more = false;
@@ -195,7 +189,9 @@ struct YAMLItemEntry : public YAMLItem {
 };
 
 YAMLParser::YAMLParser(std::istream &in):
-    ObjectParser(in, true) {
+    ObjectParser(in, true, false) {
+    stop_.push_back(0);
+    comma_.push_back(0);
 }
 
 YAMLParser::~YAMLParser() {
@@ -230,7 +226,7 @@ Value YAMLParser::parseString() {
     size_t last = 0;
     size_t i = 0;
 
-    while (c != ':' && c != '\n' && c != 0) {
+    while (c != ':' && c != '\n' && c != 0 && c != stop_.back() && c != comma_.back()) {
         char p = next(true);
         s += p;
         if (!::isspace(p)) {
@@ -279,11 +275,19 @@ void YAMLParser::loadItem()
         break;
 
     case '{':
+        stop_.push_back('}');
+        comma_.push_back(',');
         item = new YAMLItemValue(indent, parseJSON());
+        stop_.pop_back();
+        comma_.pop_back();
         break;
 
     case '[':
+        stop_.push_back(']');
+        comma_.push_back(',');
         item = new YAMLItemValue(indent, parseJSON());
+        stop_.pop_back();
+        comma_.pop_back();
         break;
 
     case '\"':
@@ -293,55 +297,27 @@ void YAMLParser::loadItem()
     case '-':
         consume('-');
         c = peek(true);
-        if (c == ' ') {
+        if (::isspace(c)) {
             item = new YAMLItemEntry(indent);
         } else {
-            ASSERT(false);
+            if (::isdigit(c)) {
+                item = new YAMLItemValue(indent, -parseNumber());
+            }
+            else {
+                item = new YAMLItemValue(indent, Value("-") + parseString());
+            }
         }
         break;
 
-    case '0':
-        item = new YAMLItemValue(indent, parseNumber());
-        break;
-
-    case '1':
-        item = new YAMLItemValue(indent, parseNumber());
-        break;
-
-    case '2':
-        item = new YAMLItemValue(indent, parseNumber());
-        break;
-
-    case '3':
-        item = new YAMLItemValue(indent, parseNumber());
-        break;
-
-    case '4':
-        item = new YAMLItemValue(indent, parseNumber());
-        break;
-
-    case '5':
-        item = new YAMLItemValue(indent, parseNumber());
-        break;
-
-    case '6':
-        item = new YAMLItemValue(indent, parseNumber());
-        break;
-
-    case '7':
-        item = new YAMLItemValue(indent, parseNumber());
-        break;
-
-    case '8':
-        item = new YAMLItemValue(indent, parseNumber());
-        break;
-
-    case '9':
-        item = new YAMLItemValue(indent, parseNumber());
-        break;
 
     default:
-        item = new YAMLItemValue(indent, parseString());
+        if (::isdigit(c)) {
+            item = new YAMLItemValue(indent, parseNumber());
+        }
+        else {
+            item = new YAMLItemValue(indent, parseString());
+
+        }
         break;
 
     }

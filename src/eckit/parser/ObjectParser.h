@@ -32,7 +32,10 @@ public: // methods
 
 protected:
 
-    ObjectParser(std::istream& in, bool comments = false);
+    ObjectParser(std::istream& in, bool comments, bool strictNumbers);
+
+protected:
+    bool strictNumbers_;
 
 protected: // methods
 

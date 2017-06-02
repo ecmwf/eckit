@@ -34,7 +34,7 @@ StreamParser::StreamParser(std::istream &in, bool comments, const char* comment)
     }
 }
 
-char StreamParser::get() {
+char StreamParser::_get() {
     char c = 0;
     in_.get(c);
     pos_++;
@@ -46,21 +46,33 @@ char StreamParser::get() {
 }
 
 
+char StreamParser::_peek() {
+    return in_.peek();
+}
+
+bool StreamParser::_eof() {
+    return in_.eof();
+}
+
+void StreamParser::putback(char c) {
+    in_.putback(c);
+}
+
 char StreamParser::peek(bool spaces)
 {
     for (;;)
     {
-        char c = in_.peek();
+        char c = _peek();
 
-        if (in_.eof())
+        if (_eof())
             return 0;
 
         if (comments_ && comment_.find(c) != comment_.end())
         {
-            while (in_.peek() != '\n' && !in_.eof()) {
-                c = get();
+            while (_peek() != '\n' && !_eof()) {
+                c = _get();
             }
-            if (in_.eof()) {
+            if (_eof()) {
                 return 0;
             }
             return peek(spaces);
@@ -73,7 +85,7 @@ char StreamParser::peek(bool spaces)
         }
         else {
 //            std::cout << "skip(" << c << ")" << std::endl;
-            c = get();
+            c = _get();
         }
     }
 }
@@ -83,19 +95,16 @@ char StreamParser::next(bool spaces)
     char c;
     for (;;)
     {
-        c = get();
-        if (in_.eof())
+        c = _get();
+        if (_eof())
             throw StreamParser::Error(std::string("StreamParser::next reached eof"));
-
-        pos_++;
-        if (c == '\n') { line_++; pos_ = 0;}
 
         if (comments_ && comment_.find(c) != comment_.end())
         {
-            while (in_.peek() != '\n' && !in_.eof()) {
-                c = get();
+            while (_peek() != '\n' && !_eof()) {
+                c = _get();
             }
-            if (in_.eof()) {
+            if (_eof()) {
                 throw StreamParser::Error(std::string("StreamParser::next reached eof"));
             }
             return next(spaces);

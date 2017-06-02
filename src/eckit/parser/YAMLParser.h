@@ -52,7 +52,11 @@ private:
     const YAMLItem& peekItem();
 
     virtual Value parseValue();
+
     virtual Value parseString();
+    virtual Value parseNumber();
+    virtual Value parseStringOrNumber();
+    virtual Value parseMultiLineString();
 
 
     void pushIndent();

@@ -17,6 +17,7 @@
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/memory/Counted.h"
+#include "eckit/utils/Regex.h"
 
 namespace eckit {
 
@@ -212,7 +213,7 @@ YAMLParser::~YAMLParser() {
     for (std::deque<YAMLItem*>::iterator j = items_.begin(); j != items_.end(); ++j) {
         (*j)->detach();
     }
-    if(last_) {
+    if (last_) {
         last_->detach();
     }
 }
@@ -229,14 +230,115 @@ Value YAMLParser::decodeString(const std::string& str) {
     return YAMLParser(in).parse();
 }
 
-
 Value YAMLParser::parseString() {
+    return parseStringOrNumber();
+}
+
+
+Value YAMLParser::parseNumber() {
+    return parseStringOrNumber();
+}
+
+
+
+static Value toValue(const std::string& s)
+{
+
+    static Regex real("^[-+]?[0-9]+\\.?[0-9]+([eE][-+]?[0-9]+)?$", false, true);
+    static Regex integer("^[-+]?[0-9]+$", false, true);
+
+    if (integer.match(s)) {
+        long long d = Translator<std::string, long long>()(s);
+        return Value(d);
+    }
+
+    if (real.match(s))
+    {
+        double d = Translator<std::string, double>()(s);
+        return Value(d);
+    }
+
+    if (s == "null") {
+        return Value();
+    }
+
+    if (s == "false") {
+        return Value(false);
+    }
+
+    if (s == "true") {
+        return Value(true);
+    }
+
+    return Value("|" + s + "|");
+}
+
+Value YAMLParser::parseMultiLineString() {
+    consume('|');
+
+    std::string result;
+    char c;
+    bool empty = true;
+
+    size_t indent = 0;
+
+    while ((c = peek(true)) != 0) {
+        c = next(true);
+        if(c == '\n') {
+            break;
+        }
+    }
+
+    while ((c = peek(true)) != 0) {
+
+        if (c == '\n') {
+            result += next(true);
+            continue;
+        }
+
+        if (!isspace(c)) {
+            if (indent == 0) {
+                indent = pos_;
+            }
+
+            if (pos_ < indent) {
+                break;
+            }
+
+            empty = false;
+            result += next(true);
+            continue;
+        }
+
+        c = next(true);
+        if (!empty && pos_ > indent) {
+            result += c;
+        }
+
+    }
+
+
+    if (empty) {
+        return Value("");
+    }
+
+
+
+    return Value(result);
+
+}
+
+Value YAMLParser::parseStringOrNumber() {
 
 
     char c = peek();
 
     if (c == '\"') {
         return ObjectParser::parseString();
+    }
+
+    if (c == '|') {
+        return parseMultiLineString();
     }
 
     std::string s;
@@ -253,21 +355,7 @@ Value YAMLParser::parseString() {
         i++;
     }
 
-    s = s.substr(0, last + 1);
-
-    if (s == "null") {
-        return Value();
-    }
-
-    if (s == "false") {
-        return Value(false);
-    }
-
-    if (s == "true") {
-        return Value(true);
-    }
-
-    return Value("|" + s + "|");
+    return toValue(s.substr(0, last + 1));
 }
 
 void YAMLParser::loadItem()
@@ -314,27 +402,17 @@ void YAMLParser::loadItem()
     case '-':
         consume('-');
         c = peek(true);
-        if (::isspace(c)) {
+        if (::isspace(c) || c == 0 || c == '\n') {
             item = new YAMLItemEntry(indent);
         } else {
-            if (::isdigit(c)) {
-                item = new YAMLItemValue(indent, -parseNumber());
-            }
-            else {
-                item = new YAMLItemValue(indent, Value("-") + parseString());
-            }
+            putback('-');
+            item = new YAMLItemValue(indent, parseStringOrNumber());
         }
         break;
 
 
     default:
-        if (::isdigit(c)) {
-            item = new YAMLItemValue(indent, parseNumber());
-        }
-        else {
-            item = new YAMLItemValue(indent, parseString());
-
-        }
+        item = new YAMLItemValue(indent, parseStringOrNumber());
         break;
 
     }
@@ -357,7 +435,7 @@ const YAMLItem& YAMLParser::nextItem() {
     loadItem();
     ASSERT(!items_.empty());
 
-    if(last_) {
+    if (last_) {
         last_->detach();
     }
 

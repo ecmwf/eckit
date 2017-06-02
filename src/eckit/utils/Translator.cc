@@ -143,6 +143,29 @@ double Translator<std::string,double>::operator()(const std::string& s)
     //    return atof(s.c_str());
 }
 
+float Translator<std::string,float>::operator()(const std::string& s)
+{
+    char* pend;
+    errno = 0;
+
+    float f = ::strtof( s.c_str(), &pend );
+
+//    ECKIT_DEBUG_VAR( d );
+//    ECKIT_DEBUG_VAR( s );
+//    ECKIT_DEBUG_VAR( s.size() );
+//    ECKIT_DEBUG_VAR( pend - s.c_str() );
+//    ECKIT_DEBUG_VAR( errno );
+
+    if( s.empty() || s[0] == ' ' || static_cast<size_t>(pend - s.c_str()) != s.size() || (errno != 0) )
+    {
+        throw BadParameter( "Bad conversion from std::string '" + s + "' to float" , Here() );
+    }
+
+    return f;
+
+    //    return atof(s.c_str());
+}
+
 unsigned long Translator<std::string,unsigned long>::operator()(const std::string& s)
 {
     char *more;

@@ -1,4 +1,4 @@
-list( APPEND regressions ECKIT-175 ECKIT-221 )
+list( APPEND regressions ECKIT-175 ECKIT-221 ECKIT-166 )
 
 foreach( r ${regressions} )
 

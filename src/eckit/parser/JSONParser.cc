@@ -21,7 +21,7 @@ namespace eckit {
 
 
 JSONParser::JSONParser(std::istream &in):
-    ObjectParser(in, false, true)
+    ObjectParser(in, false)
 {
 }
 

@@ -28,8 +28,14 @@ struct YAMLItem : public Counted {
 
 
     virtual void print(std::ostream& s) const = 0;
+
+    virtual Value value(YAMLParser& parser) const = 0;
+
     virtual Value parse(YAMLParser& parser) const {
-        return value_;
+        attach(); // Don't get deleted
+        Value v = value(parser);
+        detach();
+        return v;
     }
 
     YAMLItem(long indent = 0, const Value& value = Value()):
@@ -49,6 +55,9 @@ struct YAMLItemEOF : public YAMLItem {
         s << "YAMLItemEOF";
     }
 
+    virtual Value value(YAMLParser& parser) const  {
+        return Value();
+    }
 
     YAMLItemEOF(): YAMLItem(-1) {}
 
@@ -60,6 +69,10 @@ struct YAMLItemValue : public YAMLItem {
 
     virtual void print(std::ostream& s) const {
         s << "YAMLItemValue[value=" << value_ << ", indent=" << indent_ << "]";
+    }
+
+    virtual Value value(YAMLParser& parser) const  {
+        return value_;
     }
 
     YAMLItemValue(size_t indent, const Value& value): YAMLItem(indent, value) {}
@@ -74,7 +87,7 @@ struct YAMLItemKey : public YAMLItem {
 
     YAMLItemKey(const YAMLItem& item): YAMLItem(item.indent_, item.value_) {}
 
-    Value parse(YAMLParser& parser) const {
+    Value value(YAMLParser& parser) const {
         std::map<Value, Value> m;
 
 
@@ -138,7 +151,7 @@ struct YAMLItemEntry : public YAMLItem {
 
     YAMLItemEntry(size_t indent): YAMLItem(indent) {}
 
-    Value parse(YAMLParser& parser) const {
+    Value value(YAMLParser& parser) const {
         std::vector<Value> l;
 
         bool more = true;
@@ -189,7 +202,8 @@ struct YAMLItemEntry : public YAMLItem {
 };
 
 YAMLParser::YAMLParser(std::istream &in):
-    ObjectParser(in, true, false) {
+    ObjectParser(in, true),
+    last_(0) {
     stop_.push_back(0);
     comma_.push_back(0);
 }
@@ -197,6 +211,9 @@ YAMLParser::YAMLParser(std::istream &in):
 YAMLParser::~YAMLParser() {
     for (std::deque<YAMLItem*>::iterator j = items_.begin(); j != items_.end(); ++j) {
         (*j)->detach();
+    }
+    if(last_) {
+        last_->detach();
     }
 }
 
@@ -340,9 +357,16 @@ const YAMLItem& YAMLParser::nextItem() {
     loadItem();
     ASSERT(!items_.empty());
 
-    YAMLItem* last = items_.front();
+    if(last_) {
+        last_->detach();
+    }
+
+    last_ = items_.front();
+    last_->attach();
+
     items_.pop_front();
-    return *last;
+
+    return *last_;
 }
 
 const YAMLItem& YAMLParser::peekItem() {

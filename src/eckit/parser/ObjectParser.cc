@@ -289,9 +289,8 @@ Value ObjectParser::parseJSON()
 }
 
 
-ObjectParser::ObjectParser(std::istream &in, bool comments, bool strictNumbers ):
-    StreamParser(in, comments),
-    strictNumbers_(strictNumbers)
+ObjectParser::ObjectParser(std::istream &in, bool comments):
+    StreamParser(in, comments)
 {
 }
 

@@ -108,16 +108,18 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_6 ) {
 }
 
 /*
-
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_7 ) {
     Value v =  YAMLParser::decodeFile("2.7.yaml");
     std::cout << "2.7.yaml " << v << std::endl;
 }
+*/
 
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_8 ) {
     Value v =  YAMLParser::decodeFile("2.8.yaml");
     std::cout << "2.8.yaml " << v << std::endl;
 }
+*/
 
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_9 ) {
     Value v =  YAMLParser::decodeFile("2.9.yaml");
@@ -129,45 +131,55 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_10 ) {
     std::cout << "2.10.yaml " << v << std::endl;
 }
 
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_11 ) {
     Value v =  YAMLParser::decodeFile("2.11.yaml");
     std::cout << "2.11.yaml " << v << std::endl;
 }
+*/
 
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_12 ) {
     Value v =  YAMLParser::decodeFile("2.12.yaml");
     std::cout << "2.12.yaml " << v << std::endl;
 }
-
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_13 ) {
     Value v =  YAMLParser::decodeFile("2.13.yaml");
     std::cout << "2.13.yaml " << v << std::endl;
 }
-
+*/
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_14 ) {
     Value v =  YAMLParser::decodeFile("2.14.yaml");
     std::cout << "2.14.yaml " << v << std::endl;
 }
-
+*/
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_15 ) {
     Value v =  YAMLParser::decodeFile("2.15.yaml");
     std::cout << "2.15.yaml " << v << std::endl;
 }
-
+*/
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_16 ) {
     Value v =  YAMLParser::decodeFile("2.16.yaml");
     std::cout << "2.16.yaml " << v << std::endl;
 }
+*/
 
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_17 ) {
     Value v =  YAMLParser::decodeFile("2.17.yaml");
     std::cout << "2.17.yaml " << v << std::endl;
 }
+*/
 
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_18 ) {
     Value v =  YAMLParser::decodeFile("2.18.yaml");
     std::cout << "2.18.yaml " << v << std::endl;
 }
+*/
 
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_19 ) {
     Value v =  YAMLParser::decodeFile("2.19.yaml");
@@ -190,41 +202,43 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_22 ) {
     std::cout << "2.22.yaml " << v << std::endl;
 }
 
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_23 ) {
     Value v =  YAMLParser::decodeFile("2.23.yaml");
     std::cout << "2.23.yaml " << v << std::endl;
 }
+*/
 
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_24 ) {
     Value v =  YAMLParser::decodeFile("2.24.yaml");
     std::cout << "2.24.yaml " << v << std::endl;
 }
+*/
 
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_25 ) {
     Value v =  YAMLParser::decodeFile("2.25.yaml");
     std::cout << "2.25.yaml " << v << std::endl;
 }
-
+*/
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_26 ) {
     Value v =  YAMLParser::decodeFile("2.26.yaml");
     std::cout << "2.26.yaml " << v << std::endl;
 }
-
+*/
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_27 ) {
     Value v =  YAMLParser::decodeFile("2.27.yaml");
     std::cout << "2.27.yaml " << v << std::endl;
 }
-
+*/
+/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_28 ) {
     Value v =  YAMLParser::decodeFile("2.28.yaml");
     std::cout << "2.28.yaml " << v << std::endl;
 }
-
-BOOST_AUTO_TEST_CASE( test_eckit_yaml_29 ) {
-    Value v =  YAMLParser::decodeFile("2.29.yaml");
-    std::cout << "2.29.yaml " << v << std::endl;
-}
-
 */
 
 // BOOST_AUTO_TEST_CASE( test_eckit_yaml_parser_from_file ) {

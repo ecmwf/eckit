@@ -66,6 +66,42 @@ struct YAMLItemEOF : public YAMLItem {
 };
 
 
+struct YAMLItemStartDocument : public YAMLItem {
+
+    virtual void print(std::ostream& s) const {
+        s << "YAMLItemStartDocument";
+    }
+
+
+    Value value(YAMLParser& parser) const {
+        std::vector<Value> l;
+
+        bool more = true;
+        while (more) {
+
+            l.push_back(parser.parseValue());
+
+            const YAMLItem& next = parser.peekItem();
+            more = false;
+
+
+        }
+
+        if (l.size() == 1) {
+            return l[0];
+        }
+
+        return Value::makeList(l);
+
+    }
+
+
+    YAMLItemStartDocument(YAMLItem& item): YAMLItem(-1) {item.detach();}
+
+};
+
+
+
 struct YAMLItemValue : public YAMLItem {
 
     virtual void print(std::ostream& s) const {
@@ -80,13 +116,45 @@ struct YAMLItemValue : public YAMLItem {
 
 };
 
+struct YAMLItemAnchor : public YAMLItem {
+
+    virtual void print(std::ostream& s) const {
+        s << "YAMLItemAnchor[value=" << value_ << ", indent=" << indent_ << "]";
+    }
+
+    virtual Value value(YAMLParser& parser) const  {
+        Value v = parser.nextItem().value(parser);
+        parser.anchor(value_, v);
+        return v;
+    }
+
+    YAMLItemAnchor(size_t indent, const Value& value): YAMLItem(indent, value) {}
+
+};
+
+struct YAMLItemReference : public YAMLItem {
+
+    virtual void print(std::ostream& s) const {
+        s << "YAMLItemReference[value=" << value_ << ", indent=" << indent_ << "]";
+    }
+
+    virtual Value value(YAMLParser& parser) const  {
+        return parser.anchor(value_);
+    }
+
+    YAMLItemReference(size_t indent, const Value& value): YAMLItem(indent, value) {}
+
+};
+
 struct YAMLItemKey : public YAMLItem {
 
     virtual void print(std::ostream& s) const {
         s << "YAMLItemKey[value=" << value_ << ", indent=" << indent_ << "]";
     }
 
-    YAMLItemKey(const YAMLItem& item): YAMLItem(item.indent_, item.value_) {}
+    YAMLItemKey(const YAMLItem& item): YAMLItem(item.indent_, item.value_) {
+        item.detach();
+    }
 
     Value value(YAMLParser& parser) const {
         std::map<Value, Value> m;
@@ -202,6 +270,25 @@ struct YAMLItemEntry : public YAMLItem {
 
 };
 
+
+
+struct YAMLItemEndDocument : public YAMLItem {
+
+    virtual void print(std::ostream& s) const {
+        s << "YAMLItemEndDocument";
+    }
+
+    virtual Value value(YAMLParser& parser) const  {
+        return Value();
+    }
+
+    YAMLItemEndDocument(YAMLItem& item): YAMLItem(-1) {item.detach();}
+
+};
+
+
+
+
 YAMLParser::YAMLParser(std::istream &in):
     ObjectParser(in, true),
     last_(0) {
@@ -270,7 +357,7 @@ static Value toValue(const std::string& s)
         return Value(true);
     }
 
-    return Value("|" + s + "|");
+    return Value(s);
 }
 
 Value YAMLParser::parseMultiLineString() {
@@ -284,7 +371,7 @@ Value YAMLParser::parseMultiLineString() {
 
     while ((c = peek(true)) != 0) {
         c = next(true);
-        if(c == '\n') {
+        if (c == '\n') {
             break;
         }
     }
@@ -366,6 +453,7 @@ void YAMLParser::loadItem()
     size_t indent = pos_;
 
     YAMLItem* item = 0;
+    std::string key;
 
 
     switch (c)
@@ -403,12 +491,41 @@ void YAMLParser::loadItem()
         } else {
             putback('-');
             item = new YAMLItemValue(indent, parseStringOrNumber());
+            if (indent == 0) {
+                if (item->value_ == "---") {
+                    item = new YAMLItemStartDocument(*item);
+                }
+            }
         }
         break;
 
+    case '&':
+        consume('&');
+        c = peek(true);
+        while (!(::isspace(c) || c == 0 || c == '\n')) {
+            key += next();
+            c = peek(true);
+        }
+        item = new YAMLItemAnchor(indent, key);
+        break;
+
+    case '*':
+        consume('*');
+        c = peek(true);
+        while (!(::isspace(c) || c == 0 || c == '\n')) {
+            key += next();
+            c = peek(true);
+        }
+        item = new YAMLItemReference(indent, key);
+        break;
 
     default:
         item = new YAMLItemValue(indent, parseStringOrNumber());
+        if (indent == 0) {
+            if (item->value_ == "...") {
+                item = new YAMLItemEndDocument(*item);
+            }
+        }
         break;
 
     }
@@ -425,6 +542,16 @@ void YAMLParser::loadItem()
     item->attach();
     items_.push_back(item);
 
+}
+
+void YAMLParser::anchor(const Value& key, const Value& value) {
+    anchors_[key] = value;
+}
+
+Value YAMLParser::anchor(const Value& key) const {
+    std::map<Value, Value>::const_iterator j = anchors_.find(key);
+    ASSERT(j != anchors_.end());
+    return (*j).second;
 }
 
 const YAMLItem& YAMLParser::nextItem() {

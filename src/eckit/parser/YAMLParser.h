@@ -44,6 +44,7 @@ private:
 
     std::vector<char> stop_;
     std::vector<char> comma_;
+    std::map<Value, Value> anchors_;
 
 private:
 
@@ -59,11 +60,15 @@ private:
     virtual Value parseMultiLineString();
 
 
-    void pushIndent();
-    void popIndent();
+    void anchor(const Value& key, const Value& value);
+    Value anchor(const Value& key) const;
 
     friend struct YAMLItemKey;
     friend struct YAMLItemEntry;
+    friend struct YAMLItemStartDocument;
+    friend struct YAMLItemEndDocument;
+    friend struct YAMLItemAnchor;
+    friend struct YAMLItemReference;
 
 };
 

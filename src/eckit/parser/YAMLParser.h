@@ -52,12 +52,18 @@ private:
     const YAMLItem& nextItem();
     const YAMLItem& peekItem();
 
+    std::string nextWord();
+    size_t consumeChars(char);
+    Value consumeJSON(char);
+
     virtual Value parseValue();
 
     virtual Value parseString();
     virtual Value parseNumber();
-    virtual Value parseStringOrNumber();
-    virtual Value parseMultiLineString();
+
+     Value parseStringOrNumber();
+     Value parseMultiLineString();
+     Value parseFoldedLineString();
 
 
     void anchor(const Value& key, const Value& value);

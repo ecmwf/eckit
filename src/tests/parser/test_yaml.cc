@@ -36,8 +36,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_parser_from_istream ) {
                                   "b" : 42.3 ,
                                   "c" : null,
                                   "d" : "y\n\tr\rh",
-                                  "e" : "867017db84f4bc2b5078ca56ffd3b9b9"}
-                                ));
+                                  "e" : "867017db84f4bc2b5078ca56ffd3b9b9"
+                                }
+                               ));
     YAMLParser p(in);
 
     Value v = p.parse();
@@ -80,26 +81,74 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_parser_from_istream ) {
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_1 ) {
     Value v =  YAMLParser::decodeFile("2.1.yaml");
     std::cout << "2.1.yaml " << v << std::endl;
+
+    BOOST_CHECK( v.isList() );
+    BOOST_CHECK_EQUAL( v.size(), 3 );
+
+    BOOST_CHECK_EQUAL( v[0], "Mark McGwire" );
+    BOOST_CHECK_EQUAL( v[1], "Sammy Sosa" );
+    BOOST_CHECK_EQUAL( v[2], "Ken Griffey" );
+
 }
 
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_2 ) {
     Value v =  YAMLParser::decodeFile("2.2.yaml");
     std::cout << "2.2.yaml " << v << std::endl;
+
+    BOOST_CHECK( v.isMap() );
+    BOOST_CHECK_EQUAL( v.keys().size(), 3 );
+
+    BOOST_CHECK_EQUAL( v["hr"], Value(65) );
+    BOOST_CHECK_EQUAL( v["avg"], Value(0.278) );
+    BOOST_CHECK_EQUAL( v["rbi"], Value(147) );
 }
 
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_3 ) {
     Value v =  YAMLParser::decodeFile("2.3.yaml");
     std::cout << "2.3.yaml " << v << std::endl;
+
+    BOOST_CHECK( v.isMap() );
+    BOOST_CHECK_EQUAL( v.keys().size(), 2 );
+
+    BOOST_CHECK( v["american"].isList() );
+    BOOST_CHECK_EQUAL( v["american"].size(), 3 );
+
+    BOOST_CHECK( v["national"].isList() );
+    BOOST_CHECK_EQUAL( v["national"].size(), 3 );
 }
 
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_4 ) {
     Value v =  YAMLParser::decodeFile("2.4.yaml");
     std::cout << "2.4.yaml " << v << std::endl;
+
+    BOOST_CHECK( v.isList() );
+    BOOST_CHECK_EQUAL( v.size(), 2 );
+
+    BOOST_CHECK( v[0].isMap() );
+    BOOST_CHECK_EQUAL( v[0].keys().size(), 3 );
+
+    BOOST_CHECK( v[1].isMap() );
+    BOOST_CHECK_EQUAL( v[1].keys().size(), 3 );
+
 }
 
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_5 ) {
     Value v =  YAMLParser::decodeFile("2.5.yaml");
     std::cout << "2.5.yaml " << v << std::endl;
+
+    BOOST_CHECK( v.isList() );
+    BOOST_CHECK_EQUAL( v.size(), 3 );
+
+    BOOST_CHECK( v[0].isList() );
+    BOOST_CHECK_EQUAL( v[0].size(), 3 );
+
+    BOOST_CHECK( v[1].isList() );
+    BOOST_CHECK_EQUAL( v[1].size(), 3 );
+
+
+    BOOST_CHECK( v[2].isList() );
+    BOOST_CHECK_EQUAL( v[2].size(), 3 );
+
 }
 
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_6 ) {
@@ -107,19 +156,15 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_6 ) {
     std::cout << "2.6.yaml " << v << std::endl;
 }
 
-/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_7 ) {
     Value v =  YAMLParser::decodeFile("2.7.yaml");
     std::cout << "2.7.yaml " << v << std::endl;
 }
-*/
 
-/*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_8 ) {
     Value v =  YAMLParser::decodeFile("2.8.yaml");
     std::cout << "2.8.yaml " << v << std::endl;
 }
-*/
 
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_9 ) {
     Value v =  YAMLParser::decodeFile("2.9.yaml");
@@ -148,12 +193,13 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_13 ) {
     std::cout << "2.13.yaml " << v << std::endl;
 }
 */
-/*
+
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_14 ) {
     Value v =  YAMLParser::decodeFile("2.14.yaml");
     std::cout << "2.14.yaml " << v << std::endl;
+    BOOST_CHECK_EQUAL(v, "Mark McGwire's year was crippled by a knee injury.");
 }
-*/
+
 /*
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_15 ) {
     Value v =  YAMLParser::decodeFile("2.15.yaml");
@@ -202,44 +248,43 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_22 ) {
     std::cout << "2.22.yaml " << v << std::endl;
 }
 
-/*
-BOOST_AUTO_TEST_CASE( test_eckit_yaml_23 ) {
-    Value v =  YAMLParser::decodeFile("2.23.yaml");
-    std::cout << "2.23.yaml " << v << std::endl;
-}
-*/
 
-/*
-BOOST_AUTO_TEST_CASE( test_eckit_yaml_24 ) {
-    Value v =  YAMLParser::decodeFile("2.24.yaml");
-    std::cout << "2.24.yaml " << v << std::endl;
-}
-*/
+// BOOST_AUTO_TEST_CASE( test_eckit_yaml_23 ) {
+//     Value v =  YAMLParser::decodeFile("2.23.yaml");
+//     std::cout << "2.23.yaml " << v << std::endl;
+// }
 
-/*
+
+
+// BOOST_AUTO_TEST_CASE( test_eckit_yaml_24 ) {
+//     Value v =  YAMLParser::decodeFile("2.24.yaml");
+//     std::cout << "2.24.yaml " << v << std::endl;
+// }
+
+
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_25 ) {
     Value v =  YAMLParser::decodeFile("2.25.yaml");
     std::cout << "2.25.yaml " << v << std::endl;
 }
-*/
-/*
+
+
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_26 ) {
     Value v =  YAMLParser::decodeFile("2.26.yaml");
     std::cout << "2.26.yaml " << v << std::endl;
 }
-*/
-/*
+
+
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_27 ) {
     Value v =  YAMLParser::decodeFile("2.27.yaml");
     std::cout << "2.27.yaml " << v << std::endl;
 }
-*/
-/*
+
+
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_28 ) {
     Value v =  YAMLParser::decodeFile("2.28.yaml");
     std::cout << "2.28.yaml " << v << std::endl;
 }
-*/
+
 
 // BOOST_AUTO_TEST_CASE( test_eckit_yaml_parser_from_file ) {
 
@@ -247,35 +292,35 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_28 ) {
 
 //     std::cout << "test.yaml " << v << std::endl;
 
-    // BOOST_TEST_MESSAGE( v );
-    // BOOST_TEST_MESSAGE( v["a"] );
-    // BOOST_TEST_MESSAGE( v["a"][2] );
+// BOOST_TEST_MESSAGE( v );
+// BOOST_TEST_MESSAGE( v["a"] );
+// BOOST_TEST_MESSAGE( v["a"][2] );
 
-    // BOOST_CHECK( v.isMap() );
-    // BOOST_CHECK_EQUAL( v.as<ValueMap>().size(), 5 );
+// BOOST_CHECK( v.isMap() );
+// BOOST_CHECK_EQUAL( v.as<ValueMap>().size(), 5 );
 
-    // BOOST_CHECK( v["a"].isList() );
-    // BOOST_CHECK_EQUAL( v["a"].as<ValueList>().size(), 3 );
+// BOOST_CHECK( v["a"].isList() );
+// BOOST_CHECK_EQUAL( v["a"].as<ValueList>().size(), 3 );
 
 
-    // BOOST_CHECK( v["a"][0].isBool() );
-    // BOOST_CHECK_EQUAL( v["a"][0].as<bool>(), true );
+// BOOST_CHECK( v["a"][0].isBool() );
+// BOOST_CHECK_EQUAL( v["a"][0].as<bool>(), true );
 
-    // BOOST_CHECK( v["a"][1].isBool() );
-    // BOOST_CHECK_EQUAL( v["a"][1].as<bool>(), false );
+// BOOST_CHECK( v["a"][1].isBool() );
+// BOOST_CHECK_EQUAL( v["a"][1].as<bool>(), false );
 
-    // BOOST_CHECK( v["a"][2].isNumber() );
-    // BOOST_CHECK_EQUAL( (int) v["a"][2], 3 );
+// BOOST_CHECK( v["a"][2].isNumber() );
+// BOOST_CHECK_EQUAL( (int) v["a"][2], 3 );
 
-    // BOOST_CHECK( v["b"].isDouble() );
-    // BOOST_CHECK_LT( v["b"].as<double>() - 42.3, 1E-12 );
+// BOOST_CHECK( v["b"].isDouble() );
+// BOOST_CHECK_LT( v["b"].as<double>() - 42.3, 1E-12 );
 
-    // BOOST_CHECK( v["c"].isNil() );
+// BOOST_CHECK( v["c"].isNil() );
 
-    // BOOST_CHECK( v["d"].isString() );
+// BOOST_CHECK( v["d"].isString() );
 
-    // BOOST_CHECK( v["e"].isString() );
-    // BOOST_CHECK_EQUAL( v["e"].as<string>(), "769b654c42b759e3604e4fa37f0e721dc4797818" );
+// BOOST_CHECK( v["e"].isString() );
+// BOOST_CHECK_EQUAL( v["e"].as<string>(), "769b654c42b759e3604e4fa37f0e721dc4797818" );
 // }
 
 //----------------------------------------------------------------------------------------------------------------------

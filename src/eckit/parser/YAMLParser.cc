@@ -47,6 +47,12 @@ struct YAMLItem : public Counted {
 
     friend std::ostream& operator<<(std::ostream& s, const YAMLItem& item)
     { item.print(s); return s;}
+
+
+    virtual bool isStartDocument() const { return false; }
+    virtual bool isEndDocument() const { return false; }
+    virtual bool isEOF() const { return false; }
+
 };
 
 
@@ -61,6 +67,7 @@ struct YAMLItemEOF : public YAMLItem {
     }
 
     YAMLItemEOF(): YAMLItem(-1) {}
+    virtual bool isEOF() const { return true; }
 
 
 };
@@ -81,9 +88,19 @@ struct YAMLItemStartDocument : public YAMLItem {
 
             l.push_back(parser.parseValue());
 
-            const YAMLItem& next = parser.peekItem();
-            more = false;
+            for (;;) {
+                const YAMLItem& next = parser.peekItem();
+                if (next.isEOF()) {
+                    more = false;
+                    break;
+                }
 
+                if (!next.isEndDocument()) {
+                    break;
+                }
+
+                parser.nextItem();
+            }
 
         }
 
@@ -96,7 +113,10 @@ struct YAMLItemStartDocument : public YAMLItem {
     }
 
 
-    YAMLItemStartDocument(YAMLItem& item): YAMLItem(-1) {item.detach();}
+    YAMLItemStartDocument(): YAMLItem(-1) {}
+
+
+    virtual bool isStartDocument() const { return true; }
 
 };
 
@@ -282,7 +302,10 @@ struct YAMLItemEndDocument : public YAMLItem {
         return Value();
     }
 
-    YAMLItemEndDocument(YAMLItem& item): YAMLItem(-1) {item.detach();}
+    YAMLItemEndDocument(): YAMLItem(-1) {}
+
+
+    virtual bool isEndDocument() const { return true; }
 
 };
 
@@ -360,6 +383,10 @@ static Value toValue(const std::string& s)
     return Value(s);
 }
 
+Value YAMLParser::parseFoldedLineString() {
+    consume('>');
+}
+
 Value YAMLParser::parseMultiLineString() {
     consume('|');
 
@@ -411,10 +438,45 @@ Value YAMLParser::parseMultiLineString() {
     return Value(result);
 }
 
+std::string YAMLParser::nextWord() {
+    std::string word;
+    char c = peek(true);
+
+    while (!(::isspace(c) || c == 0 || c == '\n')) {
+        word += next();
+        c = peek(true);
+    }
+
+    return word;
+}
+
+Value YAMLParser::consumeJSON(char ket) {
+    stop_.push_back(ket);
+    comma_.push_back(',');
+    Value v = parseJSON();
+    stop_.pop_back();
+    comma_.pop_back();
+    return v;
+}
+
+
+size_t YAMLParser::consumeChars(char which) {
+    char c = peek(true);
+    size_t cnt = 0;
+
+    while (c == which) {
+        consume(which);
+        c = peek(true);
+        cnt++;
+    }
+    return cnt;
+}
+
 Value YAMLParser::parseStringOrNumber() {
 
 
     char c = peek();
+    size_t indent = pos_;
 
     if (c == '\"') {
         return ObjectParser::parseString();
@@ -424,21 +486,41 @@ Value YAMLParser::parseStringOrNumber() {
         return parseMultiLineString();
     }
 
-    std::string s;
-    size_t last = 0;
-    size_t i = 0;
-
-    while (c != ':' && c != '\n' && c != 0 && c != stop_.back() && c != comma_.back()) {
-        char p = next(true);
-        s += p;
-        if (!::isspace(p)) {
-            last = i;
-        }
-        c = peek(true);
-        i++;
+    if (c == '>') {
+        return parseFoldedLineString();
     }
 
-    return toValue(s.substr(0, last + 1));
+    std::string result;
+
+    while (pos_ >= indent) {
+
+        std::string s;
+        size_t last = 0;
+        size_t i = 0;
+
+        while (c != ':' && c != '\n' && c != 0 && c != stop_.back() && c != comma_.back()) {
+            char p = next(true);
+            s += p;
+            if (!::isspace(p)) {
+                last = i;
+            }
+            c = peek(true);
+            i++;
+        }
+
+        if (result.size()) {
+            result += ' ';
+        }
+        result += s.substr(0, last + 1);
+
+        c = peek();
+
+        if (!(c != ':' && c != '\n' && c != 0 && c != stop_.back() && c != comma_.back())) {
+            break;
+        }
+    }
+
+    return toValue(result);
 }
 
 void YAMLParser::loadItem()
@@ -454,6 +536,7 @@ void YAMLParser::loadItem()
 
     YAMLItem* item = 0;
     std::string key;
+    size_t cnt = 0;
 
 
     switch (c)
@@ -464,19 +547,11 @@ void YAMLParser::loadItem()
         break;
 
     case '{':
-        stop_.push_back('}');
-        comma_.push_back(',');
-        item = new YAMLItemValue(indent, parseJSON());
-        stop_.pop_back();
-        comma_.pop_back();
+        item = new YAMLItemValue(indent, consumeJSON('}'));
         break;
 
     case '[':
-        stop_.push_back(']');
-        comma_.push_back(',');
-        item = new YAMLItemValue(indent, parseJSON());
-        stop_.pop_back();
-        comma_.pop_back();
+        item = new YAMLItemValue(indent, consumeJSON(']'));
         break;
 
     case '\"':
@@ -484,48 +559,56 @@ void YAMLParser::loadItem()
         break;
 
     case '-':
-        consume('-');
-        c = peek(true);
-        if (::isspace(c) || c == 0 || c == '\n') {
+
+        cnt = consumeChars('-');
+
+        switch (cnt) {
+        case 1:
             item = new YAMLItemEntry(indent);
-        } else {
-            putback('-');
+            break;
+
+        case 3:
+            item = new YAMLItemStartDocument();
+            break;
+
+        default:
+            while (cnt--) { putback('-');}
             item = new YAMLItemValue(indent, parseStringOrNumber());
-            if (indent == 0) {
-                if (item->value_ == "---") {
-                    item = new YAMLItemStartDocument(*item);
-                }
-            }
+            break;
         }
+
+        break;
+
+    case '.':
+
+        cnt = consumeChars('.');
+
+        switch (cnt) {
+
+        case 3:
+            item = new YAMLItemEndDocument();
+            break;
+
+        default:
+            while (cnt--) { putback('.');}
+            item = new YAMLItemValue(indent, parseStringOrNumber());
+            break;
+        }
+
         break;
 
     case '&':
         consume('&');
-        c = peek(true);
-        while (!(::isspace(c) || c == 0 || c == '\n')) {
-            key += next();
-            c = peek(true);
-        }
-        item = new YAMLItemAnchor(indent, key);
+        item = new YAMLItemAnchor(indent, nextWord());
         break;
 
     case '*':
         consume('*');
-        c = peek(true);
-        while (!(::isspace(c) || c == 0 || c == '\n')) {
-            key += next();
-            c = peek(true);
-        }
-        item = new YAMLItemReference(indent, key);
+        item = new YAMLItemReference(indent, nextWord());
         break;
 
     default:
         item = new YAMLItemValue(indent, parseStringOrNumber());
-        if (indent == 0) {
-            if (item->value_ == "...") {
-                item = new YAMLItemEndDocument(*item);
-            }
-        }
         break;
 
     }

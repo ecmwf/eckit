@@ -356,6 +356,16 @@ static Value toValue(const std::string& s)
 
     static Regex real("^[-+]?[0-9]+\\.?[0-9]+([eE][-+]?[0-9]+)?$", false, true);
     static Regex integer("^[-+]?[0-9]+$", false, true);
+    static Regex hex("^0x[0-9a-zA-Z]+$", false, true);
+    static Regex octal("^0[0-9]+$", false, true);
+
+    if (octal.match(s)) {
+        return Value(strtol(s.c_str(), 0, 0));
+    }
+
+    if (hex.match(s)) {
+        return Value(strtol(s.c_str(), 0, 0));
+    }
 
     if (integer.match(s)) {
         long long d = Translator<std::string, long long>()(s);
@@ -383,60 +393,6 @@ static Value toValue(const std::string& s)
     return Value(s);
 }
 
-Value YAMLParser::parseFoldedLineString() {
-    consume('>');
-}
-
-Value YAMLParser::parseMultiLineString() {
-    consume('|');
-
-    std::string result;
-    char c;
-    bool empty = true;
-
-    size_t indent = 0;
-
-    while ((c = peek(true)) != 0) {
-        c = next(true);
-        if (c == '\n') {
-            break;
-        }
-    }
-
-    while ((c = peek(true)) != 0) {
-
-        if (c == '\n') {
-            result += next(true);
-            continue;
-        }
-
-        if (!isspace(c)) {
-            if (indent == 0) {
-                indent = pos_;
-            }
-
-            if (pos_ < indent) {
-                break;
-            }
-
-            empty = false;
-            result += next(true);
-            continue;
-        }
-
-        c = next(true);
-        if (!empty && pos_ > indent) {
-            result += c;
-        }
-
-    }
-
-    if (empty) {
-        return Value("");
-    }
-
-    return Value(result);
-}
 
 std::string YAMLParser::nextWord() {
     std::string word;
@@ -472,33 +428,52 @@ size_t YAMLParser::consumeChars(char which) {
     return cnt;
 }
 
+bool YAMLParser::endOfToken(char c) {
+    return (c == ':' || c == '\n' || c == 0 || c == stop_.back() || c == comma_.back());
+}
+
 Value YAMLParser::parseStringOrNumber() {
 
-
+    bool multi = false;
+    bool folded = false;
+    bool string = false;
     char c = peek();
-    size_t indent = pos_;
 
     if (c == '\"') {
         return ObjectParser::parseString();
     }
 
     if (c == '|') {
-        return parseMultiLineString();
+        consume('|');
+        multi = true;
+        string = true;
     }
 
     if (c == '>') {
-        return parseFoldedLineString();
+        consume('>');
+        folded = true;
+        string = true;
     }
+
+
+    c = peek();
+    size_t indent = pos_;
+    size_t line = line_;
 
     std::string result;
 
+    bool was_indented;
+
     while (pos_ >= indent) {
 
+        size_t start = pos_;
+        bool add_cr = (folded && (pos_ != indent)) || multi || was_indented;
+        bool add_indent = (folded && (pos_ != indent)) || multi;
         std::string s;
         size_t last = 0;
         size_t i = 0;
 
-        while (c != ':' && c != '\n' && c != 0 && c != stop_.back() && c != comma_.back()) {
+        while (!endOfToken(c)) {
             char p = next(true);
             s += p;
             if (!::isspace(p)) {
@@ -509,15 +484,39 @@ Value YAMLParser::parseStringOrNumber() {
         }
 
         if (result.size()) {
-            result += ' ';
+            if (add_cr) {
+                for (size_t i = line ; i < line_ ; i++) {
+                    result += '\n';
+                }
+            }
+            else {
+                result += ' ';
+            }
         }
+
+        if (add_indent) {
+            for (size_t i = indent ; i < start; i++) {
+                result += ' ';
+            }
+        }
+
+
         result += s.substr(0, last + 1);
+        line = line_;
 
         c = peek();
 
-        if (!(c != ':' && c != '\n' && c != 0 && c != stop_.back() && c != comma_.back())) {
+        if (endOfToken(c)) {
             break;
         }
+
+        was_indented = add_indent;
+    }
+
+    if (string) {  for (size_t i = line ; i < line_ ; i++) {
+                    result += '\n';
+                }
+        return Value(result);
     }
 
     return toValue(result);

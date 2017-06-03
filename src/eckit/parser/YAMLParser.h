@@ -56,14 +56,14 @@ private:
     size_t consumeChars(char);
     Value consumeJSON(char);
 
+    bool endOfToken(char);
+
     virtual Value parseValue();
 
     virtual Value parseString();
     virtual Value parseNumber();
 
      Value parseStringOrNumber();
-     Value parseMultiLineString();
-     Value parseFoldedLineString();
 
 
     void anchor(const Value& key, const Value& value);

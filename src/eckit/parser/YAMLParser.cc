@@ -18,6 +18,7 @@
 #include "eckit/utils/Translator.h"
 #include "eckit/memory/Counted.h"
 #include "eckit/utils/Regex.h"
+#include "eckit/types/Time.h"
 
 namespace eckit {
 
@@ -174,6 +175,9 @@ struct YAMLItemKey : public YAMLItem {
 
     YAMLItemKey(const YAMLItem& item): YAMLItem(item.indent_, item.value_) {
         item.detach();
+        std::string v(value_);
+        ASSERT(v.size());
+        value_ = v.substr(0, v.size() - 1);
     }
 
     Value value(YAMLParser& parser) const {
@@ -317,6 +321,8 @@ YAMLParser::YAMLParser(std::istream &in):
     last_(0) {
     stop_.push_back(0);
     comma_.push_back(0);
+        colon_.push_back(0);
+
 }
 
 YAMLParser::~YAMLParser() {
@@ -341,12 +347,14 @@ Value YAMLParser::decodeString(const std::string& str) {
 }
 
 Value YAMLParser::parseString() {
-    return parseStringOrNumber();
+    bool ignore;
+    return parseStringOrNumber(ignore);
 }
 
 
 Value YAMLParser::parseNumber() {
-    return parseStringOrNumber();
+        bool ignore;
+    return parseStringOrNumber(ignore);
 }
 
 
@@ -358,6 +366,13 @@ static Value toValue(const std::string& s)
     static Regex integer("^[-+]?[0-9]+$", false, true);
     static Regex hex("^0x[0-9a-zA-Z]+$", false, true);
     static Regex octal("^0[0-9]+$", false, true);
+    static Regex time("[0-9]+:[0-9]+:[0-9]+$", false, true);
+
+    /*
+    if (time.match(s)) {
+        return Value(Time(s));
+    }
+    */
 
     if (octal.match(s)) {
         return Value(strtol(s.c_str(), 0, 0));
@@ -409,9 +424,11 @@ std::string YAMLParser::nextWord() {
 Value YAMLParser::consumeJSON(char ket) {
     stop_.push_back(ket);
     comma_.push_back(',');
+    colon_.push_back(':');
     Value v = parseJSON();
     stop_.pop_back();
     comma_.pop_back();
+    colon_.pop_back();
     return v;
 }
 
@@ -429,10 +446,10 @@ size_t YAMLParser::consumeChars(char which) {
 }
 
 bool YAMLParser::endOfToken(char c) {
-    return (c == ':' || c == '\n' || c == 0 || c == stop_.back() || c == comma_.back());
+    return (c == '\n' || c == 0 || c == stop_.back() || c == comma_.back() || c == colon_.back());
 }
 
-Value YAMLParser::parseStringOrNumber() {
+Value YAMLParser::parseStringOrNumber(bool& isKey) {
 
     bool multi = false;
     bool folded = false;
@@ -473,6 +490,10 @@ Value YAMLParser::parseStringOrNumber() {
         size_t last = 0;
         size_t i = 0;
 
+        bool colon = (c == ':');
+
+        isKey = false;
+
         while (!endOfToken(c)) {
             char p = next(true);
             s += p;
@@ -481,6 +502,15 @@ Value YAMLParser::parseStringOrNumber() {
             }
             c = peek(true);
             i++;
+
+            // std::cout << "++++ " << s << " " << colon << " " << (endOfToken(c) || c == ' ') << std::endl;
+
+            if (colon && (endOfToken(c) || c == ' ')) {
+                isKey = true;
+                break;
+            }
+
+            colon = (c == ':');
         }
 
         if (result.size()) {
@@ -500,9 +530,13 @@ Value YAMLParser::parseStringOrNumber() {
             }
         }
 
-
         result += s.substr(0, last + 1);
         line = line_;
+
+        if (isKey) {
+            return Value(result);
+        }
+
 
         c = peek();
 
@@ -513,9 +547,10 @@ Value YAMLParser::parseStringOrNumber() {
         was_indented = add_indent;
     }
 
-    if (string) {  for (size_t i = line ; i < line_ ; i++) {
-                    result += '\n';
-                }
+    if (string) {
+        for (size_t i = line ; i < line_ ; i++) {
+            result += '\n';
+        }
         return Value(result);
     }
 
@@ -536,6 +571,7 @@ void YAMLParser::loadItem()
     YAMLItem* item = 0;
     std::string key;
     size_t cnt = 0;
+    bool isKey = false;
 
 
     switch (c)
@@ -572,7 +608,7 @@ void YAMLParser::loadItem()
 
         default:
             while (cnt--) { putback('-');}
-            item = new YAMLItemValue(indent, parseStringOrNumber());
+            item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
             break;
         }
 
@@ -590,7 +626,7 @@ void YAMLParser::loadItem()
 
         default:
             while (cnt--) { putback('.');}
-            item = new YAMLItemValue(indent, parseStringOrNumber());
+            item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
             break;
         }
 
@@ -607,16 +643,19 @@ void YAMLParser::loadItem()
         break;
 
     default:
-        item = new YAMLItemValue(indent, parseStringOrNumber());
+        item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
         break;
 
     }
 
     ASSERT(item);
 
-    if (peek() == ':') {
-        consume(':');
-        item = new YAMLItemKey(*item);
+    if (isKey) {
+        std::string v(item->value_);
+
+        if (v.size() && v[v.size() - 1] == ':') {
+            item = new YAMLItemKey(*item);
+        }
     }
 
     std::cout << "item -> " << (*item) << std::endl;

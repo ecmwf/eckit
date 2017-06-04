@@ -44,6 +44,8 @@ private:
 
     std::vector<char> stop_;
     std::vector<char> comma_;
+    std::vector<char> colon_;
+
     std::map<Value, Value> anchors_;
 
 private:
@@ -56,6 +58,9 @@ private:
     size_t consumeChars(char);
     Value consumeJSON(char);
 
+
+    std::string nextToken(size_t& spaces, size_t& lines);
+
     bool endOfToken(char);
 
     virtual Value parseValue();
@@ -63,7 +68,7 @@ private:
     virtual Value parseString();
     virtual Value parseNumber();
 
-     Value parseStringOrNumber();
+    Value parseStringOrNumber(bool& isKey);
 
 
     void anchor(const Value& key, const Value& value);

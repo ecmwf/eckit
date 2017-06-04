@@ -36,72 +36,21 @@ static std::string toJSON(const Value& v) {
     return oss.str();
 }
 
+// BOOST_AUTO_TEST_CASE( test_eckit_yaml_1 ) {
+//     Value v =  YAMLParser::decodeFile("2.1.yaml");
+//     std::cout << "2.1.yaml " << v << std::endl;
+//     std::cout << toJSON(v) << std::endl;
 
-#define QUOTE(...) #__VA_ARGS__
-#if 0
+//     BOOST_CHECK( v.isList() );
+//     BOOST_CHECK_EQUAL( v.size(), 3 );
 
-BOOST_AUTO_TEST_CASE( test_eckit_yaml_parser_from_istream ) {
-    std::istringstream in(QUOTE({ "a" : [true, false, 3],
-                                  "b" : 42.3 ,
-                                  "c" : null,
-                                  "d" : "y\n\tr\rh",
-                                  "e" : "867017db84f4bc2b5078ca56ffd3b9b9"
-                                }
-                               ));
-    YAMLParser p(in);
+//     BOOST_CHECK_EQUAL( v[0], "Mark McGwire" );
+//     BOOST_CHECK_EQUAL( v[1], "Sammy Sosa" );
+//     BOOST_CHECK_EQUAL( v[2], "Ken Griffey" );
 
-    Value v = p.parse();
+//     // BOOST_CHECK_EQUAL(toJSON(v), "[\"Mark McGwire\",\"Sammy Sosa\",\"Ken Griffey\"]");
 
-//    Log::info() << "yaml " << v << std::endl;
-
-    BOOST_TEST_MESSAGE( v );
-    BOOST_TEST_MESSAGE( v["a"] );
-    BOOST_TEST_MESSAGE( v["a"][2] );
-
-    BOOST_CHECK( v.isMap() );
-    BOOST_CHECK_EQUAL( v.as<ValueMap>().size(), 5 );
-
-    BOOST_CHECK( v["a"].isList() );
-    BOOST_CHECK_EQUAL( v["a"].as<ValueList>().size(), 3 );
-
-
-    BOOST_CHECK( v["a"][0].isBool() );
-    BOOST_CHECK_EQUAL( v["a"][0].as<bool>(), true );
-
-    BOOST_CHECK( v["a"][1].isBool() );
-    BOOST_CHECK_EQUAL( v["a"][1].as<bool>(), false );
-
-    BOOST_CHECK( v["a"][2].isNumber() );
-    BOOST_CHECK_EQUAL( (int) v["a"][2], 3 );
-
-    BOOST_CHECK( v["b"].isDouble() );
-    BOOST_CHECK_LT( v["b"].as<double>() - 42.3, 1E-12 );
-
-    BOOST_CHECK( v["c"].isNil() );
-
-    BOOST_CHECK( v["d"].isString() );
-
-    BOOST_CHECK( v["e"].isString() );
-    BOOST_CHECK_EQUAL( v["e"].as<string>(), "867017db84f4bc2b5078ca56ffd3b9b9" );
-}
-#endif
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_eckit_yaml_1 ) {
-    Value v =  YAMLParser::decodeFile("2.1.yaml");
-    std::cout << "2.1.yaml " << v << std::endl;
-    std::cout << toJSON(v) << std::endl;
-
-    BOOST_CHECK( v.isList() );
-    BOOST_CHECK_EQUAL( v.size(), 3 );
-
-    BOOST_CHECK_EQUAL( v[0], "Mark McGwire" );
-    BOOST_CHECK_EQUAL( v[1], "Sammy Sosa" );
-    BOOST_CHECK_EQUAL( v[2], "Ken Griffey" );
-
-    // BOOST_CHECK_EQUAL(toJSON(v), "[\"Mark McGwire\",\"Sammy Sosa\",\"Ken Griffey\"]");
-
-}
+// }
 
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_2 ) {
     Value v =  YAMLParser::decodeFile("2.2.yaml");
@@ -363,107 +312,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_27 ) {
 // }
 
 
-// BOOST_AUTO_TEST_CASE( test_eckit_yaml_parser_from_file ) {
 
-//     Value v =  YAMLParser::decodeFile("test.yaml");
-
-//     std::cout << "test.yaml " << v << std::endl;
-
-// BOOST_TEST_MESSAGE( v );
-// BOOST_TEST_MESSAGE( v["a"] );
-// BOOST_TEST_MESSAGE( v["a"][2] );
-
-// BOOST_CHECK( v.isMap() );
-// BOOST_CHECK_EQUAL( v.as<ValueMap>().size(), 5 );
-
-// BOOST_CHECK( v["a"].isList() );
-// BOOST_CHECK_EQUAL( v["a"].as<ValueList>().size(), 3 );
-
-
-// BOOST_CHECK( v["a"][0].isBool() );
-// BOOST_CHECK_EQUAL( v["a"][0].as<bool>(), true );
-
-// BOOST_CHECK( v["a"][1].isBool() );
-// BOOST_CHECK_EQUAL( v["a"][1].as<bool>(), false );
-
-// BOOST_CHECK( v["a"][2].isNumber() );
-// BOOST_CHECK_EQUAL( (int) v["a"][2], 3 );
-
-// BOOST_CHECK( v["b"].isDouble() );
-// BOOST_CHECK_LT( v["b"].as<double>() - 42.3, 1E-12 );
-
-// BOOST_CHECK( v["c"].isNil() );
-
-// BOOST_CHECK( v["d"].isString() );
-
-// BOOST_CHECK( v["e"].isString() );
-// BOOST_CHECK_EQUAL( v["e"].as<string>(), "769b654c42b759e3604e4fa37f0e721dc4797818" );
-// }
-
-//----------------------------------------------------------------------------------------------------------------------
-#if 0
-BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_set ) {
-
-
-    istringstream in("[ \"a\" , \"b\", \"c\" ]" );
-    YAMLParser p(in);
-    Value v = p.parse();
-
-//    Log::info() << "yaml " << v << std::endl;
-
-
-    BOOST_TEST_MESSAGE( v );
-
-    BOOST_CHECK( v.isList() );
-    BOOST_CHECK_EQUAL( v.as<ValueList>().size(), 3 );
-
-    BOOST_CHECK( v[0].isString() );
-    BOOST_CHECK_EQUAL( v[0].as<string>(), "a" );
-
-    BOOST_CHECK( v[1].isString() );
-    BOOST_CHECK_EQUAL( v[1].as<string>(), "b" );
-
-    BOOST_CHECK( v[2].isString() );
-    BOOST_CHECK_EQUAL( v[2].as<string>(), "c" );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_map ) {
-    istringstream in("{ \"a\" : \"AAA\", \"b\" : 0.0 , \"c\" : \"null\", \"d\" : \"\"}" );
-    YAMLParser p(in);
-    Value v = p.parse();
-
-//    Log::info() << "yaml " << v << std::endl;
-
-
-    BOOST_TEST_MESSAGE( v );
-
-    BOOST_CHECK( v.isMap() );
-    BOOST_CHECK_EQUAL( v.as<ValueMap>().size(), 4 );
-
-    BOOST_CHECK( v["a"].isString() );
-    BOOST_CHECK_EQUAL( v["a"].as<string>(), "AAA" );
-
-    BOOST_CHECK( v["b"].isDouble() );
-    BOOST_CHECK_EQUAL( v["b"].as<double>(), 0.0 );
-
-    BOOST_CHECK( v["c"].isString() );
-    BOOST_CHECK_EQUAL( v["c"].as<string>(), "null" );
-
-    BOOST_CHECK( v["d"].isString() );
-    BOOST_CHECK_EQUAL( v["d"].as<string>(), "" );
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_eckit_parser_eof ) {
-    istringstream in("");
-    YAMLParser p(in);
-    BOOST_CHECK_THROW(p.next(), StreamParser::Error);
-}
-
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 

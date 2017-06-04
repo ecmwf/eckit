@@ -10,6 +10,8 @@
 
 
 #include "eckit/value/DateContent.h"
+#include "eckit/value/TimeContent.h"
+#include "eckit/value/DateTimeContent.h"
 #include "eckit/value/ListContent.h"
 #include "eckit/value/NilContent.h"
 #include "eckit/value/NumberContent.h"
@@ -111,6 +113,18 @@ Value::Value(const Date& d):
 	content_(new DateContent(d))
 {
 	content_->attach();
+}
+
+Value::Value(const Time& d):
+    content_(new TimeContent(d))
+{
+    content_->attach();
+}
+
+Value::Value(const DateTime& d):
+    content_(new DateTimeContent(d))
+{
+    content_->attach();
 }
 
 Value::Value(Stream& s):

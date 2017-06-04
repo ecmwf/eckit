@@ -403,6 +403,10 @@ value/Content.h
 value/Content.cc
 value/DateContent.h
 value/DateContent.cc
+value/TimeContent.h
+value/TimeContent.cc
+value/DateTimeContent.h
+value/DateTimeContent.cc
 value/DispatchParams.h
 value/DoubleContent.h
 value/DoubleContent.cc

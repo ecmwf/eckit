@@ -658,7 +658,7 @@ void YAMLParser::loadItem()
         }
     }
 
-    std::cout << "item -> " << (*item) << std::endl;
+    // std::cout << "item -> " << (*item) << std::endl;
 
     item->attach();
     items_.push_back(item);

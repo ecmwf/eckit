@@ -311,7 +311,11 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_27 ) {
 //     std::cout << toJSON(v) << std::endl;
 // }
 
-
+ BOOST_AUTO_TEST_CASE( test_eckit_yaml_cfg_1 ) {
+     Value v =  YAMLParser::decodeFile("cfg.1.yaml");
+     std::cout << "cfg.1.yaml " << v << std::endl;
+     std::cout << toJSON(v) << std::endl;
+ }
 
 
 //----------------------------------------------------------------------------------------------------------------------

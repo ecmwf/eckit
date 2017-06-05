@@ -65,7 +65,7 @@ private:
 
     virtual Value parseValue();
 
-    virtual Value parseString();
+    virtual Value parseString(char quote='"');
     virtual Value parseNumber();
 
     Value parseStringOrNumber(bool& isKey);

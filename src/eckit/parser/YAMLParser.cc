@@ -346,7 +346,7 @@ Value YAMLParser::decodeString(const std::string& str) {
     return YAMLParser(in).parse();
 }
 
-Value YAMLParser::parseString() {
+Value YAMLParser::parseString(char quote) {
     bool ignore;
     return parseStringOrNumber(ignore);
 }
@@ -456,8 +456,8 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
     bool string = false;
     char c = peek();
 
-    if (c == '\"') {
-        return ObjectParser::parseString();
+    if (c == '"' || c == '\"') {
+        return ObjectParser::parseString(c);
     }
 
     if (c == '|') {

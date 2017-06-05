@@ -42,7 +42,7 @@ protected: // methods
     virtual Value parseValue() = 0;
     virtual Value parseObject();
     virtual Value parseArray();
-    virtual Value parseString();
+    virtual Value parseString(char quote='"');
     virtual Value parseNumber();
 
     virtual Value parseJSON();

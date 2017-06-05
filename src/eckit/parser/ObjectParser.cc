@@ -125,9 +125,9 @@ Value ObjectParser::parseNumber()
     }
 }
 
-Value ObjectParser::parseString()
+Value ObjectParser::parseString(char quote)
 {
-    consume('"');
+    consume(quote);
     std::string s;
     for (;;)
     {
@@ -136,10 +136,6 @@ Value ObjectParser::parseString()
         {
             c = next(true);
             switch (c) {
-
-            case '"':
-                s += '"';
-                break;
 
             case '\\':
                 s += '\\';
@@ -172,14 +168,20 @@ Value ObjectParser::parseString()
             case 'u':
                 throw StreamParser::Error(std::string("ObjectParser::parseString \\uXXXX format not supported"));
                 break;
+
             default:
-                throw StreamParser::Error(std::string("ObjectParser::parseString invalid \\ char '") + c + "'");
+                if (c == quote) {
+                    s += c;
+                }
+                else {
+                    throw StreamParser::Error(std::string("ObjectParser::parseString invalid escaped char '") + c + "'");
+                }
                 break;
             }
         }
         else
         {
-            if (c == '"')
+            if (c == quote)
             {
                 return Value(s);
             }

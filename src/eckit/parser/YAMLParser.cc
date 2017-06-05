@@ -224,7 +224,9 @@ struct YAMLItemKey : public YAMLItem {
                 continue;
             }
 
-            ASSERT(false);
+            std::ostringstream oss;
+            oss << "Invalid sequence " << *key << " then " << next << " then " << peek << std::endl;
+            throw eckit::SeriousBug(oss.str());
 
         }
 
@@ -284,7 +286,10 @@ struct YAMLItemEntry : public YAMLItem {
                 continue;
             }
 
-            ASSERT(false);
+            std::ostringstream oss;
+            oss << "Invalid sequence " << *this << " then " << next << " then " << peek << std::endl;
+            throw eckit::SeriousBug(oss.str());
+
 
         }
 
@@ -321,7 +326,7 @@ YAMLParser::YAMLParser(std::istream &in):
     last_(0) {
     stop_.push_back(0);
     comma_.push_back(0);
-        colon_.push_back(0);
+    colon_.push_back(0);
 
 }
 
@@ -353,7 +358,7 @@ Value YAMLParser::parseString(char quote) {
 
 
 Value YAMLParser::parseNumber() {
-        bool ignore;
+    bool ignore;
     return parseStringOrNumber(ignore);
 }
 
@@ -442,8 +447,16 @@ size_t YAMLParser::consumeChars(char which) {
         c = peek(true);
         cnt++;
     }
-    return cnt;
-}
+
+    if(c == ' ' || c == '\n'){
+        return cnt;
+    }
+
+    while(cnt-- > 0) {
+        putback(which);
+    }
+    return 0;
+ }
 
 bool YAMLParser::endOfToken(char c) {
     return (c == '\n' || c == 0 || c == stop_.back() || c == comma_.back() || c == colon_.back());

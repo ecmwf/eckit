@@ -16,30 +16,22 @@
 			"name": "eckit",
 			"shell_cmd": "make",
 			"syntax": "Packages/CMakeBuilder/Syntax/Make.sublime-syntax",
-			"working_dir": "${project_path}/../../build/eckit",
-			"variants" : [
+			"variants":
+			[
 				{
-					"name":"clean",
-					"shell_cmd": "make clean",
+					"name": "clean",
+					"shell_cmd": "make clean"
 				}
-			]
+			],
+			"working_dir": "${project_path}/../../build/eckit"
 		},
 		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "Anaconda Python Builder",
 			"selector": "source.python",
 			"shell_cmd": "\"python\" -u \"$file\""
-		},
-
-	],
-	"cmake":
-	{
-		"build_folder": "${project_path}/../../build/eckit",
-		"command_line_overrides":
-		{
-			"DEVELOPER_MODE": 1
 		}
-	},
+	],
 	"folders":
 	[
 		{
@@ -53,5 +45,16 @@
 			"follow_symlinks": true,
 			"path": "."
 		}
-	]
+	],
+	"settings":
+	{
+		"cmake":
+		{
+			"build_folder": "${project_path}/../../build/eckit",
+			"command_line_overrides":
+			{
+				"DEVELOPER_MODE": 1
+			}
+		}
+	}
 }

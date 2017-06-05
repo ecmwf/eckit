@@ -14,6 +14,9 @@
 #ifndef mir_stats_detail_ScalarMinMaxFn_h
 #define mir_stats_detail_ScalarMinMaxFn_h
 
+#include <cstddef>
+#include <limits>
+
 
 namespace mir {
 namespace stats {

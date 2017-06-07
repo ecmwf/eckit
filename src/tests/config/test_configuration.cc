@@ -16,7 +16,7 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/config/LocalConfiguration.h"
-#include "eckit/config/JSONConfiguration.h"
+#include "eckit/config/YAMLConfiguration.h"
 #include "eckit/types/Types.h"
 #include "eckit/testing/Setup.h"
 
@@ -209,8 +209,8 @@ BOOST_AUTO_TEST_CASE( test_json_configuration )
     jsonfile << jsonstr;
   }
 
-  JSONConfiguration conf_from_str(jsonstr);
-  JSONConfiguration conf(jsonpath);
+  YAMLConfiguration conf_from_str(jsonstr);
+  YAMLConfiguration conf(jsonpath);
   LocalConfiguration manager;
   std::vector<LocalConfiguration> staff;
 

@@ -58,7 +58,7 @@ bool Translator<std::string,bool>::operator()(const std::string& s)
     if(s == "yes"|| s == "on"  || s == "true")  return true;
 
     // Catter for ints
-    return atoi(s.c_str());
+    return atoi(s.c_str()); // 0 is returned on non-conversion
 }
 
 std::string Translator<int,std::string>::operator()(int value)

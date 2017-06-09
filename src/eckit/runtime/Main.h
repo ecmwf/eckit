@@ -66,7 +66,7 @@ public: // methods
 
     // Check if debugging was set to on (either through environment variable "DEBUG=1",
     // or command-line argument "--debug" or "-debug".
-    bool debug() const;
+    virtual bool debug() const;
 
     /// Channel handling
 

@@ -124,21 +124,62 @@ BOOST_AUTO_TEST_CASE( test_exists )
    BOOST_TEST_MESSAGE("created " << cwd.created());
 }
 
-//file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/1)
-//file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/2)
-//file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/2/1)
-//file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/bar)
-//file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/baz)
+BOOST_AUTO_TEST_CASE( test_relative_path )
+{
+    LocalPathName foobar ("/foo/bar/1/2");
+    LocalPathName foozing("/foo/zing/3");
+    LocalPathName baz("/baz/koko/4");
+    LocalPathName root("/");
+
+    // shorter relative to longer
+
+    LocalPathName r1 = foozing.relativePath(foobar);
+
+    BOOST_CHECK_EQUAL( r1 , LocalPathName("../../../zing/3") );
+
+    // longer relative to shorter
+
+    LocalPathName r2 = foobar.relativePath(foozing);
+
+    BOOST_CHECK_EQUAL( r2 , LocalPathName("../../bar/1/2") );
+
+    // same relative to same
+
+    LocalPathName r3 = foobar.relativePath(foobar);
+
+    BOOST_CHECK_EQUAL( r3 , LocalPathName(".") );
+
+    // relative to root
+
+    BOOST_CHECK_EQUAL( foobar.relativePath("/") , LocalPathName("foo/bar/1/2") );
+
+    // root relative to path
+
+    BOOST_CHECK_EQUAL( root.relativePath(foobar) , LocalPathName("../../../..") );
+}
 
 BOOST_AUTO_TEST_CASE( test_children )
 {
-   LocalPathName cwd = LocalPathName::cwd();
+    std::set<LocalPathName> reference;
+    reference.insert("testdir/foo");
+    reference.insert("testdir/foo/1");
+    reference.insert("testdir/foo/2");
+    reference.insert("testdir/foo/2/1");
+    reference.insert("testdir/bar");
+    reference.insert("testdir/baz");
 
-   std::vector<LocalPathName> files;
-   std::vector<LocalPathName> directories;
+    LocalPathName t = LocalPathName::cwd() + "/testdir";
 
-   cwd.children(files, directories);
+    std::vector<LocalPathName> files;
+    std::vector<LocalPathName> dirs;
 
+    t.children(files, dirs);
+
+    for(std::vector<LocalPathName>::const_iterator d = dirs.begin(); d != dirs.end(); ++d) {
+        LocalPathName r = d->relativePath(LocalPathName::cwd());
+//        std::cout << "relative path " << r << std::endl;
+        BOOST_CHECK(reference.find(r) != reference.end());
+    }
 }
 
 BOOST_AUTO_TEST_CASE( test_basename )

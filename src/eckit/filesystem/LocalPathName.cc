@@ -560,6 +560,50 @@ void LocalPathName::match(const LocalPathName& root,std::vector<LocalPathName>& 
 
 }
 
+LocalPathName LocalPathName::relativePath(const LocalPathName& other) const {
+
+    ASSERT(path_.size() && path_[0] == '/'); // ensure this path is absolute
+    ASSERT(other.path_.size() && other.path_[0] == '/'); // ensure other path is absolute
+
+    eckit::Tokenizer tokens("/");
+
+    std::vector<std::string> s1;
+    tokens(path_, s1);
+
+    std::vector<std::string> s2;
+    tokens(other.path_, s2);
+
+    // find common token
+    std::vector<std::string>::const_iterator i = s1.begin();
+    std::vector<std::string>::const_iterator j = s2.begin();
+    for(; i != s1.end() && j != s2.end(); ++i, ++j) {
+//        std::cout << "comparing " << *i << " " << *j << std::endl;
+        if(*i != *j) {
+            break;
+        }
+    }
+
+    std::string result;
+    const char* p = 0;
+
+    for(std::vector<std::string>::const_iterator r = j; r != s2.end(); ++r) {
+        if(p) result += p;
+        result += "..";
+        p = "/";
+    }
+
+    for(std::vector<std::string>::const_iterator r = i; r != s1.end(); ++r) {
+        if(p) result += p;
+        result += *r;
+        p = "/";
+    }
+
+    if(result.empty()) { result = "."; }
+
+    return result;
+}
+
+
 void LocalPathName::children(std::vector<LocalPathName>& files,std::vector<LocalPathName>& directories)
 	const
 {

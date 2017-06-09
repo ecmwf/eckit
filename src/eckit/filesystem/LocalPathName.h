@@ -121,6 +121,11 @@ public:
 
 // Methods
 
+    /// @returns a relative filepath to path to an optional start directory.
+    /// This is a pure path computation, no filesystem is accessed to confirm the existence or nature of path
+    /// @pre both paths need to be absolute paths, i.e starting with "/"
+    LocalPathName relativePath(const LocalPathName& other) const;
+
     /// Directory part of the path
     /// @return directory part of the path
     LocalPathName dirName() const;

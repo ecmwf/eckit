@@ -124,6 +124,22 @@ BOOST_AUTO_TEST_CASE( test_exists )
    BOOST_TEST_MESSAGE("created " << cwd.created());
 }
 
+//file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/1)
+//file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/2)
+//file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/2/1)
+//file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/bar)
+//file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/baz)
+
+BOOST_AUTO_TEST_CASE( test_children )
+{
+   LocalPathName cwd = LocalPathName::cwd();
+
+   std::vector<LocalPathName> files;
+   std::vector<LocalPathName> directories;
+
+   cwd.children(files, directories);
+
+}
 
 BOOST_AUTO_TEST_CASE( test_basename )
 {

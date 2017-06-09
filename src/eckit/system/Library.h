@@ -61,6 +61,8 @@ public: // methods
 
     virtual Channel& debugChannel() const;
 
+    virtual bool debug() const { return debug_; }
+
 public: // class methods
 
     static std::vector<std::string> list();

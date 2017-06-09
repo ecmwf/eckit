@@ -64,6 +64,10 @@ public: // methods
     // To be used before main() to check if the instance is ready
     static bool ready();
 
+    // Check if debugging was set to on (either through environment variable "DEBUG=1",
+    // or command-line argument "--debug" or "-debug".
+    virtual bool debug() const;
+
     /// Channel handling
 
     virtual LogTarget* createInfoLogTarget() const;

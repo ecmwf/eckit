@@ -598,16 +598,23 @@ void LocalPathName::children(std::vector<LocalPathName>& files,std::vector<Local
 				continue;
 
 		LocalPathName full = *this + "/" + e->d_name;
+
+#if defined(EC_HAVE_DIRENT_D_TYPE)
+        if(e->d_type == DT_DIR)
+            directories.push_back(full);
+        else
+            files.push_back(full);
+#else
         Stat::Struct info;
         if(Stat::stat(full.c_str(),&info) == 0)
-		{
-			if(S_ISDIR(info.st_mode))
-				directories.push_back(full);
-			else
-				files.push_back(full);
-		}
-		else Log::error() << "Cannot stat " << full << Log::syserr << std::endl;
-
+        {
+            if(S_ISDIR(info.st_mode))
+                directories.push_back(full);
+            else
+                files.push_back(full);
+        }
+        else Log::error() << "Cannot stat " << full << Log::syserr << std::endl;
+#endif
 	}
 }
 

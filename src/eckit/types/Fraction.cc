@@ -12,6 +12,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/utils/MD5.h"
 
 #include <limits>
 #include <cmath>
@@ -142,6 +143,10 @@ Fraction::operator long long() const {
     throw eckit::SeriousBug(oss.str());
 }
 
+void Fraction::hash(MD5& md5) const {
+    md5 << top_;
+    md5 << bottom_;
+}
 
 //-----------------------------------------------------------------------------
 

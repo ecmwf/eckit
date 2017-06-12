@@ -20,6 +20,8 @@
 
 namespace eckit {
 
+class MD5;
+
 //-----------------------------------------------------------------------------
 
 
@@ -200,6 +202,8 @@ public: // operators
     Fraction& operator*=(T other) {
         return (*this) *= Fraction(other);
     }
+
+    void hash(eckit::MD5&) const;
 
 private: // members
 

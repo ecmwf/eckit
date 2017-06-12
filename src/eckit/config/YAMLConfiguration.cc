@@ -11,14 +11,14 @@
 /// @author Baudouin Raoult
 /// @date Jul 2015
 
-#include "eckit/config/JSONConfiguration.h"
-#include "eckit/parser/JSONParser.h"
+#include "eckit/config/YAMLConfiguration.h"
+#include "eckit/parser/YAMLParser.h"
 
 namespace eckit {
 
 static Value root(std::istream &in) {
     ASSERT(in);
-    eckit::JSONParser parser(in);
+    eckit::YAMLParser parser(in);
     Value root = parser.parse();
     return root;
 }
@@ -43,36 +43,36 @@ static Value root_from_string(const std::string &str) {
     return root(in);
 }
 
-JSONConfiguration::JSONConfiguration(const PathName &path, char separator):
+YAMLConfiguration::YAMLConfiguration(const PathName &path, char separator):
     Configuration(root(path), separator),
     path_(path) {
 }
 
-JSONConfiguration::JSONConfiguration(std::istream &in, char separator):
+YAMLConfiguration::YAMLConfiguration(std::istream &in, char separator):
     Configuration(root(in), separator),
     path_("<istream>") {
 }
 
-JSONConfiguration::JSONConfiguration(Stream& in, char separator):
+YAMLConfiguration::YAMLConfiguration(Stream& in, char separator):
     Configuration(root(in), separator),
     path_("<Stream>") {
 }
 
-JSONConfiguration::JSONConfiguration(const std::string& str, char separator):
+YAMLConfiguration::YAMLConfiguration(const std::string& str, char separator):
     Configuration(root_from_string(str), separator),
     path_("<string>") {
 }
 
-JSONConfiguration::JSONConfiguration(const SharedBuffer& buffer, char separator):
+YAMLConfiguration::YAMLConfiguration(const SharedBuffer& buffer, char separator):
     Configuration(root_from_string(buffer.str()), separator),
     path_("<Buffer>") {
 }
 
-JSONConfiguration::~JSONConfiguration() {
+YAMLConfiguration::~YAMLConfiguration() {
 }
 
-void JSONConfiguration::print(std::ostream &out) const {
-    out << "JSONConfiguration[path=" << path_ << ", root=" << root_ << "]";
+void YAMLConfiguration::print(std::ostream &out) const {
+    out << "YAMLConfiguration[path=" << path_ << ", root=" << root_ << "]";
 }
 
 } // namespace eckit

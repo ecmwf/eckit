@@ -25,6 +25,25 @@ JSONParser::JSONParser(std::istream &in):
 {
 }
 
+Value JSONParser::decodeFile(const PathName& path) {
+    std::ifstream in(std::string(path).c_str());
+    if (!in)
+        throw eckit::CantOpenFile(path);
+    return JSONParser(in).parse();
+}
+
+Value JSONParser::decodeString(const std::string& str) {
+    std::istringstream in(str);
+    return JSONParser(in).parse();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+Value JSONParser::parseValue()
+{
+   return parseJSON();
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

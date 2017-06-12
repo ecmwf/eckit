@@ -20,3 +20,9 @@ ecbuild_add_test( TARGET      eckit_test_restarthandle
                   BOOST
                   SOURCES     test_restarthandle.cc
                   LIBS        eckit )
+
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/1)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/2)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/2/1)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/bar)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/baz)

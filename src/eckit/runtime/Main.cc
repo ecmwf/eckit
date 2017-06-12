@@ -166,6 +166,10 @@ void Main::initialise(int argc, char** argv, const char* homeenv) {
     }
 }
 
+bool Main::debug() const {
+    return debug_;
+}
+
 LogTarget* Main::createInfoLogTarget() const {
     return createDefaultLogTarget();
 }

@@ -58,7 +58,7 @@ bool Translator<std::string,bool>::operator()(const std::string& s)
     if(s == "yes"|| s == "on"  || s == "true")  return true;
 
     // Catter for ints
-    return atoi(s.c_str());
+    return atoi(s.c_str()); // 0 is returned on non-conversion
 }
 
 std::string Translator<int,std::string>::operator()(int value)
@@ -139,6 +139,29 @@ double Translator<std::string,double>::operator()(const std::string& s)
     }
 
     return d;
+
+    //    return atof(s.c_str());
+}
+
+float Translator<std::string,float>::operator()(const std::string& s)
+{
+    char* pend;
+    errno = 0;
+
+    float f = ::strtof( s.c_str(), &pend );
+
+//    ECKIT_DEBUG_VAR( d );
+//    ECKIT_DEBUG_VAR( s );
+//    ECKIT_DEBUG_VAR( s.size() );
+//    ECKIT_DEBUG_VAR( pend - s.c_str() );
+//    ECKIT_DEBUG_VAR( errno );
+
+    if( s.empty() || s[0] == ' ' || static_cast<size_t>(pend - s.c_str()) != s.size() || (errno != 0) )
+    {
+        throw BadParameter( "Bad conversion from std::string '" + s + "' to float" , Here() );
+    }
+
+    return f;
 
     //    return atof(s.c_str());
 }

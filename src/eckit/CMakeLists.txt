@@ -227,7 +227,6 @@ config/Configured.cc
 config/Configured.h
 config/EtcTable.cc
 config/EtcTable.h
-config/JSONConfiguration.cc
 config/JSONConfiguration.h
 config/LibEcKit.cc
 config/LibEcKit.h
@@ -239,6 +238,8 @@ config/Resource.cc
 config/ResourceBase.cc
 config/ResourceMgr.cc
 config/ResourceMgr.h
+config/YAMLConfiguration.cc
+config/YAMLConfiguration.h
 )
 
 list( APPEND eckit_runtime_srcs
@@ -403,6 +404,10 @@ value/Content.h
 value/Content.cc
 value/DateContent.h
 value/DateContent.cc
+value/TimeContent.h
+value/TimeContent.cc
+value/DateTimeContent.h
+value/DateTimeContent.cc
 value/DispatchParams.h
 value/DoubleContent.h
 value/DoubleContent.cc

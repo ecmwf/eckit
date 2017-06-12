@@ -35,8 +35,7 @@ Exception::Exception():  next_(first())
 
     callStack_ = BackTrace::dump();
 
-
-    if(::getenv("LIBECKIT_DEBUG_EXCEPTION_DUMPS_BACKTRACE")) {
+    if(::getenv("ECKIT_EXCEPTION_DUMPS_BACKTRACE")) {
         std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
     }
 }
@@ -74,11 +73,13 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
 {
     callStack_ = BackTrace::dump();
 
-    if(::getenv("LIBECKIT_DEBUG_EXCEPTION_DUMPS_BACKTRACE")) {
+    if(::getenv("ECKIT_EXCEPTION_DUMPS_BACKTRACE")) {
         std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
     }
 
-    Log::error() << "Exception: " << w << location_ << std::endl;
+    if(! ::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
+        Log::error() << "Exception: " << w << " " << location_ << std::endl;
+    }
 
 #if 0
     if(next_) {

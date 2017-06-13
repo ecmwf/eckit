@@ -195,7 +195,9 @@ void Fraction::decode(Stream& s) {
 
 void Fraction::normalise() {
     if (bottom_ > MAX_DENOM || std::abs(top_) > MAX_DENOM) {
+
         value_type sign = 1;
+
         if (top_ < 0) {
             sign = -sign;
             top_ = -top_;

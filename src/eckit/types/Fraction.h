@@ -15,12 +15,14 @@
 #define eckit_Fraction_h
 
 #include <string>
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
 class MD5;
+class Stream;
 
 //-----------------------------------------------------------------------------
 
@@ -70,22 +72,32 @@ public: // operators
         return *this - integralPart();
     }
 
+    static void overflow(long long a, long long b);
+
+    static long long mul(long long a, long long b) {
+        if (b > 0 && a >  std::numeric_limits<long long>::max() / b) {
+            overflow(a, b);
+        }
+        return a * b;
+    }
+
     Fraction operator+(const Fraction& other) const {
-        return Fraction(top_ * other.bottom_ + bottom_ * other.top_,
-                        bottom_ * other.bottom_);
+        return Fraction(mul(top_, other.bottom_) + mul(bottom_, other.top_),
+                        mul(bottom_, other.bottom_));
     }
 
     Fraction operator-(const Fraction& other) const {
-        return Fraction(top_ * other.bottom_ - bottom_ * other.top_,
-                        bottom_ * other.bottom_);
+        return Fraction(mul(top_, other.bottom_) - mul(bottom_, other.top_),
+                        mul(bottom_, other.bottom_));
     }
 
     Fraction operator/(const Fraction& other) const {
-        return Fraction(top_ * other.bottom_, bottom_ * other.top_);
+        return  Fraction(mul(top_,other.bottom_), mul(bottom_,other.top_));
+
     }
 
     Fraction operator*(const Fraction& other) const {
-        return Fraction(top_ * other.top_, bottom_ * other.bottom_);
+        return Fraction(mul(top_, other.top_), mul(bottom_, other.bottom_));
     }
 
     bool operator==(const Fraction& other) const {
@@ -93,23 +105,23 @@ public: // operators
     }
 
     bool operator<(const Fraction& other) const {
-        return top_ * other.bottom_ < bottom_ * other.top_;
+        return mul(top_, other.bottom_) < mul(bottom_, other.top_);
     }
 
     bool operator<=(const Fraction& other) const {
-        return top_ * other.bottom_ <= bottom_ * other.top_;
+        return mul(top_, other.bottom_) <= mul(bottom_, other.top_);
     }
 
     bool operator!=(const Fraction& other) const {
-        return top_ * other.bottom_ != bottom_ * other.top_;
+        return mul(top_, other.bottom_) != mul(bottom_, other.top_);
     }
 
     bool operator>(const Fraction& other) const {
-        return top_ * other.bottom_ > bottom_ * other.top_;
+        return mul(top_, other.bottom_) > mul(bottom_, other.top_);
     }
 
     bool operator>=(const Fraction& other) const {
-        return top_ * other.bottom_ >= bottom_ * other.top_;
+        return mul(top_, other.bottom_) >= mul(bottom_, other.top_);
     }
 
     Fraction& operator+=(const Fraction& other) {
@@ -211,6 +223,8 @@ private: // members
     long long bottom_;
 
     void print(std::ostream& out) const;
+    void encode(Stream& out) const;
+    void decode(Stream& out);
 
 
     friend std::ostream& operator<<(std::ostream& s, const Fraction& x) {
@@ -218,6 +232,16 @@ private: // members
         return s;
     }
 
+
+    friend Stream& operator<<(Stream& s, const Fraction& x) {
+        x.encode(s);
+        return s;
+    }
+
+    friend Stream& operator>>(Stream& s, Fraction& x) {
+        x.decode(s);
+        return s;
+    }
 
 };
 

@@ -12,6 +12,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/utils/MD5.h"
 
 #include <limits>
@@ -84,6 +85,8 @@ Fraction::Fraction(double x) {
         x = 1.0 / (x - a);
 
         if (x > std::numeric_limits<long long>::max()) {
+
+        // if (x > std::numeric_limits<long long>::max()) {
             break;
         }
 
@@ -125,12 +128,19 @@ Fraction::Fraction(const char* c) {
 }
 
 
+void Fraction::overflow(long long a, long long b) {
+    std::ostringstream oss;
+    oss << "Fraction overflow " << a << " * " << b;
+    throw eckit::SeriousBug(oss.str());
+}
+
+
 void Fraction::print(std::ostream& out) const {
     if (bottom_ == 1) {
         out << top_;
     }
     else {
-        out << top_ << '/' << bottom_;
+        out << top_ << ':' << bottom_;
     }
 }
 
@@ -148,6 +158,16 @@ void Fraction::hash(MD5& md5) const {
     md5 << bottom_;
 }
 
+
+void Fraction::encode(Stream& s) const {
+    s << top_;
+    s << bottom_;
+}
+
+void Fraction::decode(Stream& s) {
+    s >> top_;
+    s >> bottom_;
+}
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

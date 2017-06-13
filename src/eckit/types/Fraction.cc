@@ -211,6 +211,20 @@ void Fraction::normalise() {
         top_ *= sign;
     }
 }
+
+
+namespace types {
+
+bool is_approximately_equal(const Fraction& f1, const Fraction& f2) {
+    return f1 == f2;
+}
+
+bool is_strictly_greater(const Fraction& f1, const Fraction& f2) {
+    return f1 > f2;
+}
+
+}
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

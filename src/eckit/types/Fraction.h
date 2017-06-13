@@ -17,6 +17,8 @@
 #include <string>
 #include "eckit/exception/Exceptions.h"
 #include <limits>
+#include "eckit/types/FloatCompare.h"
+
 
 //-----------------------------------------------------------------------------
 
@@ -87,7 +89,7 @@ public: // operators
         return a * b;
     }
 
-     static value_type add(value_type a, value_type b) {
+    static value_type add(value_type a, value_type b) {
         // if (b > 0 && a >  std::numeric_limits<value_type>::max() / b) {
         //     overflow(a, b, '*');
         // }
@@ -112,7 +114,7 @@ public: // operators
     }
 
     Fraction operator/(const Fraction& other) const {
-        return  Fraction(mul(top_,other.bottom_), mul(bottom_,other.top_));
+        return  Fraction(mul(top_, other.bottom_), mul(bottom_, other.top_));
 
     }
 
@@ -325,6 +327,10 @@ bool operator>=(T n, const Fraction& f)
     return Fraction(n) >= f;
 }
 
+namespace types {
+bool is_approximately_equal(const Fraction& f1, const Fraction& f2);
+bool is_strictly_greater(const Fraction& f1, const Fraction& f2);
+}
 
 //-----------------------------------------------------------------------------
 

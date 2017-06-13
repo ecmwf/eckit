@@ -163,7 +163,7 @@ void Fraction::print(std::ostream& out) const {
         out << top_;
     }
     else {
-        out << top_ << ':' << bottom_;
+        out << top_ << '/' << bottom_;
     }
 }
 

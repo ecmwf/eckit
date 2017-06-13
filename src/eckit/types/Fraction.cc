@@ -22,13 +22,13 @@
 
 namespace eckit {
 
-const long long max = std::sqrt(std::numeric_limits<long long>::max());
+const Fraction::value_type MAX_DENOM = std::sqrt(std::numeric_limits<Fraction::value_type>::max());
 
 
-static long long gcd(long long a, long long b) {
+static Fraction::value_type gcd(Fraction::value_type a, Fraction::value_type b) {
     while (b != 0)
     {
-        long long r = a % b;
+        Fraction::value_type r = a % b;
         a = b;
         b = r;
     }
@@ -37,11 +37,11 @@ static long long gcd(long long a, long long b) {
 
 //-----------------------------------------------------------------------------
 
-Fraction::Fraction(long long top, long long bottom) {
+Fraction::Fraction(value_type top, value_type bottom) {
 
     ASSERT(bottom != 0);
 
-    long long sign = 1;
+    value_type sign = 1;
     if (top < 0) {
         top = -top;
         sign = -sign;
@@ -52,26 +52,48 @@ Fraction::Fraction(long long top, long long bottom) {
         sign = -sign;
     }
 
-    long long g = gcd(top, bottom);
-    top_ = sign * top / g;
-    bottom_ = bottom / g;
+    value_type g = gcd(top, bottom);
+    top =  top / g;
+    bottom = bottom / g;
+
+    // std::cout << "top " << top << " bottom " << bottom << " " << MAX_DENOM << std::endl;
+
+    while (bottom >= MAX_DENOM) {
+        bottom >>= 1;
+        top >>= 1;
+    }
+
+
+    top_ = sign * top;
+    bottom_ = bottom;
+    ASSERT(top_ < MAX_DENOM);
+
+    ASSERT(bottom_ < MAX_DENOM);
+}
+
+Fraction::Fraction(value_type top, value_type bottom, bool):
+    top_(top),
+    bottom_(bottom) {
+            // std::cout << "top " << top << " bottom " << bottom << " " << MAX_DENOM << std::endl;
+    ASSERT(top_ < MAX_DENOM);
+    ASSERT(bottom_ < MAX_DENOM);
 }
 
 
 Fraction::Fraction(double x) {
-    long long sign = 1;
+    value_type sign = 1;
     if (x < 0) {
         sign = -sign;
         x = -x;
     }
 
-    long long m00 = 1, m11 = 1, m01 = 0, m10 = 0;
-    long long a = x;
-    long long t2 = m10 * a + m11;
+    value_type m00 = 1, m11 = 1, m01 = 0, m10 = 0;
+    value_type a = x;
+    value_type t2 = m10 * a + m11;
 
-    while (t2 <= max) {
+    while (t2 <= MAX_DENOM) {
 
-        long long t1  = m00 * a + m01;
+        value_type t1  = m00 * a + m01;
         m01 = m00;
         m00 = t1;
 
@@ -84,9 +106,7 @@ Fraction::Fraction(double x) {
 
         x = 1.0 / (x - a);
 
-        if (x > std::numeric_limits<long long>::max()) {
-
-        // if (x > std::numeric_limits<long long>::max()) {
+        if (x > std::numeric_limits<value_type>::max()) {
             break;
         }
 
@@ -94,8 +114,16 @@ Fraction::Fraction(double x) {
         t2 = m10 * a + m11;
     }
 
+    while (m10 >= MAX_DENOM || m00 >= MAX_DENOM) {
+        m00 >>= 1;
+        m10 >>= 1;
+    }
+
     top_ = sign * m00;
     bottom_ = m10;
+
+    ASSERT(top_ < MAX_DENOM);
+    ASSERT(bottom_ < MAX_DENOM);
 
 }
 
@@ -106,10 +134,11 @@ Fraction::Fraction(const std::string& s) {
     parse(s, v);
     if (v.size() > 1) {
         ASSERT(v.size() == 2);
-        static Translator<std::string, long long> s2l;
+        static Translator<std::string, value_type> s2l;
         Fraction f(s2l(v[0]), s2l(v[1]));
         top_ = f.top_;
         bottom_ = f.bottom_;
+        ASSERT(bottom_ < MAX_DENOM);
         return;
     }
 
@@ -118,6 +147,9 @@ Fraction::Fraction(const std::string& s) {
     top_ = f.top_;
     bottom_ = f.bottom_;
 
+    ASSERT(top_ < MAX_DENOM);
+    ASSERT(bottom_ < MAX_DENOM);
+
 }
 
 Fraction::Fraction(const char* c) {
@@ -125,12 +157,16 @@ Fraction::Fraction(const char* c) {
     Fraction f(s);
     top_ = f.top_;
     bottom_ = f.bottom_;
+
+
+    ASSERT(top_ < MAX_DENOM);
+    ASSERT(bottom_ < MAX_DENOM);
 }
 
 
-void Fraction::overflow(long long a, long long b) {
+void Fraction::overflow(value_type a, value_type b, char op) {
     std::ostringstream oss;
-    oss << "Fraction overflow " << a << " * " << b;
+    oss << "Fraction overflow " << a << op << b;
     throw eckit::SeriousBug(oss.str());
 }
 
@@ -144,7 +180,7 @@ void Fraction::print(std::ostream& out) const {
     }
 }
 
-Fraction::operator long long() const {
+Fraction::operator value_type() const {
     if (bottom_ == 1) {
         return top_;
     }
@@ -167,6 +203,9 @@ void Fraction::encode(Stream& s) const {
 void Fraction::decode(Stream& s) {
     s >> top_;
     s >> bottom_;
+
+    ASSERT(top_ < MAX_DENOM);
+    ASSERT(bottom_ < MAX_DENOM);
 }
 //-----------------------------------------------------------------------------
 

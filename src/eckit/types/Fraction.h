@@ -28,12 +28,17 @@ class Stream;
 
 
 class Fraction {
+public:
+    typedef long long value_type;
+    typedef long precision_type;
+
 private:
 
-    Fraction(long long top, long long bottom, bool): top_(top), bottom_(bottom) {}
+    Fraction(value_type top, value_type bottom, bool);
 
 
 public: // methods
+
 
 // -- Contructors
 
@@ -42,7 +47,7 @@ public: // methods
     template<class T>
     Fraction(T top): top_(top), bottom_(1) {}
 
-    Fraction(long long top, long long bottom);
+    Fraction(value_type top, value_type bottom);
 
     Fraction(double);
     Fraction(const std::string&);
@@ -58,13 +63,13 @@ public: // operators
         return double(top_) / double(bottom_);
     }
 
-    operator long long() const;
+    operator value_type() const;
 
     Fraction operator-()  const {
         return Fraction(-top_, bottom_, true);
     }
 
-    long long integralPart() const {
+    value_type integralPart() const {
         return top_ / bottom_;
     }
 
@@ -72,22 +77,36 @@ public: // operators
         return *this - integralPart();
     }
 
-    static void overflow(long long a, long long b);
+    static void overflow(value_type a, value_type b, char op);
 
-    static long long mul(long long a, long long b) {
-        if (b > 0 && a >  std::numeric_limits<long long>::max() / b) {
-            overflow(a, b);
+    static value_type mul(value_type a, value_type b) {
+        if (b > 0 && a >  std::numeric_limits<value_type>::max() / b) {
+            overflow(a, b, '*');
         }
         return a * b;
     }
 
+     static value_type add(value_type a, value_type b) {
+        // if (b > 0 && a >  std::numeric_limits<value_type>::max() / b) {
+        //     overflow(a, b, '*');
+        // }
+        return a + b;
+    }
+
+    static value_type sub(value_type a, value_type b) {
+        // if (b > 0 && a >  std::numeric_limits<value_type>::max() / b) {
+        //     overflow(a, b, '*');
+        // }
+        return a - b;
+    }
+
     Fraction operator+(const Fraction& other) const {
-        return Fraction(mul(top_, other.bottom_) + mul(bottom_, other.top_),
+        return Fraction(add(mul(top_, other.bottom_), mul(bottom_, other.top_)),
                         mul(bottom_, other.bottom_));
     }
 
     Fraction operator-(const Fraction& other) const {
-        return Fraction(mul(top_, other.bottom_) - mul(bottom_, other.top_),
+        return Fraction(sub(mul(top_, other.bottom_), mul(bottom_, other.top_)),
                         mul(bottom_, other.bottom_));
     }
 
@@ -219,8 +238,8 @@ public: // operators
 
 private: // members
 
-    long long top_;
-    long long bottom_;
+    value_type top_;
+    value_type bottom_;
 
     void print(std::ostream& out) const;
     void encode(Stream& out) const;

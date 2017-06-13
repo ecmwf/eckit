@@ -36,7 +36,7 @@ public:
 private:
 
     Fraction(value_type top, value_type bottom, bool);
-
+    void normalise();
 
 public: // methods
 

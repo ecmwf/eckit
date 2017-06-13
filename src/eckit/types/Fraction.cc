@@ -56,27 +56,17 @@ Fraction::Fraction(value_type top, value_type bottom) {
     top =  top / g;
     bottom = bottom / g;
 
-    // std::cout << "top " << top << " bottom " << bottom << " " << MAX_DENOM << std::endl;
-
-    while (bottom >= MAX_DENOM) {
-        bottom >>= 1;
-        top >>= 1;
-    }
-
-
     top_ = sign * top;
     bottom_ = bottom;
-    ASSERT(top_ < MAX_DENOM);
 
-    ASSERT(bottom_ < MAX_DENOM);
+    normalise();
 }
 
 Fraction::Fraction(value_type top, value_type bottom, bool):
     top_(top),
     bottom_(bottom) {
-            // std::cout << "top " << top << " bottom " << bottom << " " << MAX_DENOM << std::endl;
-    ASSERT(top_ < MAX_DENOM);
-    ASSERT(bottom_ < MAX_DENOM);
+
+    normalise();
 }
 
 
@@ -122,8 +112,7 @@ Fraction::Fraction(double x) {
     top_ = sign * m00;
     bottom_ = m10;
 
-    ASSERT(top_ < MAX_DENOM);
-    ASSERT(bottom_ < MAX_DENOM);
+    normalise();
 
 }
 
@@ -138,7 +127,9 @@ Fraction::Fraction(const std::string& s) {
         Fraction f(s2l(v[0]), s2l(v[1]));
         top_ = f.top_;
         bottom_ = f.bottom_;
-        ASSERT(bottom_ < MAX_DENOM);
+
+        normalise();
+
         return;
     }
 
@@ -147,8 +138,7 @@ Fraction::Fraction(const std::string& s) {
     top_ = f.top_;
     bottom_ = f.bottom_;
 
-    ASSERT(top_ < MAX_DENOM);
-    ASSERT(bottom_ < MAX_DENOM);
+    normalise();
 
 }
 
@@ -157,10 +147,7 @@ Fraction::Fraction(const char* c) {
     Fraction f(s);
     top_ = f.top_;
     bottom_ = f.bottom_;
-
-
-    ASSERT(top_ < MAX_DENOM);
-    ASSERT(bottom_ < MAX_DENOM);
+    normalise();
 }
 
 
@@ -203,9 +190,24 @@ void Fraction::encode(Stream& s) const {
 void Fraction::decode(Stream& s) {
     s >> top_;
     s >> bottom_;
+    normalise();
+}
 
-    ASSERT(top_ < MAX_DENOM);
-    ASSERT(bottom_ < MAX_DENOM);
+void Fraction::normalise() {
+    if (bottom_ > MAX_DENOM || std::abs(top_) > MAX_DENOM) {
+        value_type sign = 1;
+        if (top_ < 0) {
+            sign = -sign;
+            top_ = -top_;
+        }
+
+        while (bottom_ > MAX_DENOM || top_ > MAX_DENOM) {
+            top_ >>= 1;
+            bottom_ >>= 1;
+        }
+
+        top_ *= sign;
+    }
 }
 //-----------------------------------------------------------------------------
 

@@ -16,6 +16,7 @@
 
 #include <string>
 #include "eckit/exception/Exceptions.h"
+#include <limits>
 
 //-----------------------------------------------------------------------------
 

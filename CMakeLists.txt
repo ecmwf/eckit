@@ -138,6 +138,10 @@ find_package( Threads REQUIRED )
 
 find_package( Curses REQUIRED )
 
+### c math library, needed when including "math.h"
+
+find_package( CMath )
+
 ###############################################################################
 # checks
 

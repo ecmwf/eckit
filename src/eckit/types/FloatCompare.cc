@@ -1,4 +1,6 @@
-#include <cmath>
+//#include <cmath>
+
+#include <math.h>
 #include <limits>
 #include <sys/types.h>
 
@@ -107,8 +109,8 @@ bool is_approximately_equal_ulps(T a, T b, T epsilon, int maxUlpsDiff) {
     if (isnan(a) || isnan(b) || isinf(a) || isinf(b)) return false;
 
     // Subnormal numbers are treated as 0
-    if (std::fpclassify(a) == FP_SUBNORMAL) a = 0;
-    if (std::fpclassify(b) == FP_SUBNORMAL) b = 0;
+    if (fpclassify(a) == FP_SUBNORMAL) a = 0;
+    if (fpclassify(b) == FP_SUBNORMAL) b = 0;
 
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.
@@ -122,7 +124,7 @@ bool is_approximately_equal_ulps(T a, T b, T epsilon, int maxUlpsDiff) {
         return (1 + detail::float_distance(detail::abs(a), std::numeric_limits<T>::min())) <= maxUlpsDiff;
     }
 
-    if (std::signbit(a) == std::signbit(b)) return detail::float_distance(a, b) <= maxUlpsDiff;
+    if (signbit(a) == signbit(b)) return detail::float_distance(a, b) <= maxUlpsDiff;
 
     // If signs are different, add ULP distances from minimum normal number on both sides of 0
     const int64_t dp = detail::float_distance(a > 0 ? a : b, std::numeric_limits<T>::min());

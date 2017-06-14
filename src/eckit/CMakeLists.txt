@@ -685,6 +685,7 @@ ecbuild_add_library(TARGET eckit
                         ${OPENSSL_LIBRARIES}
                         ${XXHASH_LIBRARIES}
                         ${AIO_LIBRARIES}
+                        ${CMATH_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT}
                         ${CMAKE_DL_LIBS}
                         ${ECKIT_SYSTEM_EXTRA_LIBS} )

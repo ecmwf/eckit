@@ -216,12 +216,11 @@ void Fraction::normalise() {
 namespace types {
 
 bool is_approximately_equal(const Fraction& f1, const Fraction& f2) {
+    // std::cout << "is_approximately_equal " << double(f1)
+    // << " " << double(f2) << " => " << double(f1  - f2) << std::endl;
     return f1 == f2;
 }
 
-bool is_strictly_greater(const Fraction& f1, const Fraction& f2) {
-    return f1 > f2;
-}
 
 }
 

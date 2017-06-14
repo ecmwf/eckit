@@ -33,7 +33,9 @@ class Stream;
 class Fraction {
 public:
     typedef long long value_type;
-    typedef long precision_type;
+
+    // typedef __int128 value_type;
+
 
 private:
 
@@ -48,13 +50,14 @@ public: // methods
     Fraction(): top_(0), bottom_(1) {}
 
     template<class T>
-    Fraction(T top): top_(top), bottom_(1) {}
+    explicit Fraction(T top): top_(top), bottom_(1) {}
 
     Fraction(value_type top, value_type bottom);
 
     Fraction(double);
-    Fraction(const std::string&);
-    Fraction(const char*);
+
+    explicit Fraction(const std::string&);
+    explicit Fraction(const char*);
 
     bool integer() const {
         return bottom_ == 1;
@@ -82,21 +85,21 @@ public: // operators
 
     static void overflow(value_type a, value_type b, char op);
 
-    static value_type mul(value_type a, value_type b) {
+    static value_type mul(bool& overflow, value_type a, value_type b) {
         if (b > 0 && a >  std::numeric_limits<value_type>::max() / b) {
-            overflow(a, b, '*');
+            overflow = true;
         }
         return a * b;
     }
 
-    static value_type add(value_type a, value_type b) {
+    static value_type add(bool& overflow, value_type a, value_type b) {
         // if (b > 0 && a >  std::numeric_limits<value_type>::max() / b) {
         //     overflow(a, b, '*');
         // }
         return a + b;
     }
 
-    static value_type sub(value_type a, value_type b) {
+    static value_type sub(bool& overflow, value_type a, value_type b) {
         // if (b > 0 && a >  std::numeric_limits<value_type>::max() / b) {
         //     overflow(a, b, '*');
         // }
@@ -104,46 +107,95 @@ public: // operators
     }
 
     Fraction operator+(const Fraction& other) const {
-        return Fraction(add(mul(top_, other.bottom_), mul(bottom_, other.top_)),
-                        mul(bottom_, other.bottom_));
+        bool overflow = false;
+        Fraction result = Fraction(
+                              add(overflow,
+                                  mul(overflow, top_, other.bottom_),
+                                  mul(overflow, bottom_, other.top_)),
+                              mul(overflow, bottom_, other.bottom_));
+        if (overflow) {
+            result = Fraction(double(*this) + double(other));
+        }
+        return result;
     }
 
     Fraction operator-(const Fraction& other) const {
-        return Fraction(sub(mul(top_, other.bottom_), mul(bottom_, other.top_)),
-                        mul(bottom_, other.bottom_));
+        bool overflow = false;
+        Fraction result = Fraction(
+                              sub(overflow,
+                                  mul(overflow, top_, other.bottom_),
+                                  mul(overflow, bottom_, other.top_)),
+                              mul(overflow, bottom_, other.bottom_));
+        if (overflow) {
+            result = Fraction(double(*this) - double(other));
+        }
+        return result;
     }
 
     Fraction operator/(const Fraction& other) const {
-        return  Fraction(mul(top_, other.bottom_), mul(bottom_, other.top_));
+        bool overflow = false;
+        Fraction result =  Fraction(mul(overflow, top_, other.bottom_),
+                                    mul(overflow, bottom_, other.top_));
+        if (overflow) {
+            result = Fraction(double(*this) / double(other));
+        }
+        return result;
 
     }
 
     Fraction operator*(const Fraction& other) const {
-        return Fraction(mul(top_, other.top_), mul(bottom_, other.bottom_));
+        bool overflow = false;
+        Fraction result = Fraction(mul(overflow, top_, other.top_),
+                                   mul(overflow, bottom_, other.bottom_));
+        if (overflow) {
+            result = Fraction(double(*this) * double(other));
+        }
+        return result;
     }
 
     bool operator==(const Fraction& other) const {
+        // Assumes canonical form
         return top_ == other.top_ && bottom_ == other.bottom_;
     }
 
     bool operator<(const Fraction& other) const {
-        return mul(top_, other.bottom_) < mul(bottom_, other.top_);
+        bool overflow = false;
+        bool result = mul(overflow, top_, other.bottom_) < mul(overflow, bottom_, other.top_);
+        if (overflow) {
+            result = double(*this) < double(other);
+        }
+        return result;
     }
 
     bool operator<=(const Fraction& other) const {
-        return mul(top_, other.bottom_) <= mul(bottom_, other.top_);
+        bool overflow = false;
+        bool result = mul(overflow, top_, other.bottom_) <= mul(overflow, bottom_, other.top_);
+        if (overflow) {
+            result = double(*this) <= double(other);
+        }
+        return result;
     }
 
     bool operator!=(const Fraction& other) const {
-        return mul(top_, other.bottom_) != mul(bottom_, other.top_);
+        return !(*this == other);
     }
 
     bool operator>(const Fraction& other) const {
-        return mul(top_, other.bottom_) > mul(bottom_, other.top_);
+        bool overflow = false;
+        bool result = mul(overflow, top_, other.bottom_) > mul(overflow, bottom_, other.top_);
+        if (overflow) {
+            result = double(*this) > double(other);
+        }
+        return result;
     }
 
     bool operator>=(const Fraction& other) const {
-        return mul(top_, other.bottom_) >= mul(bottom_, other.top_);
+        bool overflow = false;
+        bool result = mul(overflow, top_, other.bottom_) >= mul(overflow, bottom_, other.top_);
+        if (overflow) {
+            result = double(*this) >= double(other);
+        }
+        return result;
     }
 
     Fraction& operator+=(const Fraction& other) {
@@ -325,11 +377,6 @@ template<class T>
 bool operator>=(T n, const Fraction& f)
 {
     return Fraction(n) >= f;
-}
-
-namespace types {
-bool is_approximately_equal(const Fraction& f1, const Fraction& f2);
-bool is_strictly_greater(const Fraction& f1, const Fraction& f2);
 }
 
 //-----------------------------------------------------------------------------

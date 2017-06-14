@@ -49,12 +49,14 @@ public: // methods
 
     Fraction(): top_(0), bottom_(1) {}
 
-    template<class T>
-    explicit Fraction(T top): top_(top), bottom_(1) {}
+    // template<class T>
+    // explicit Fraction(T top): top_(top), bottom_(1) {}
 
     Fraction(value_type top, value_type bottom);
 
-    Fraction(double);
+    explicit Fraction(double);
+    // Fraction(const Fraction& other):
+    //     top_(other.top_), bottom_(other.bottom_) {}
 
     explicit Fraction(const std::string&);
     explicit Fraction(const char*);

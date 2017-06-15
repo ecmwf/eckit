@@ -150,14 +150,6 @@ Fraction::Fraction(const char* c) {
     normalise();
 }
 
-
-void Fraction::overflow(value_type a, value_type b, char op) {
-    std::ostringstream oss;
-    oss << "Fraction overflow " << a << op << b;
-    throw eckit::SeriousBug(oss.str());
-}
-
-
 void Fraction::print(std::ostream& out) const {
     if (bottom_ == 1) {
         out << top_;
@@ -192,6 +184,126 @@ void Fraction::decode(Stream& s) {
     s >> bottom_;
     normalise();
 }
+
+//======================================
+
+
+inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
+    if (b > 0 && a >  std::numeric_limits<Fraction::value_type>::max() / b) {
+        overflow = true;
+    }
+    return a * b;
+}
+
+inline Fraction::value_type add(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
+    // if (b > 0 && a >  std::numeric_limits<Fraction::value_type>::max() / b) {
+    //     overflow(a, b, '*');
+    // }
+    return a + b;
+}
+
+inline Fraction::value_type sub(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
+    // if (b > 0 && a >  std::numeric_limits<Fraction::value_type>::max() / b) {
+    //     overflow(a, b, '*');
+    // }
+    return a - b;
+}
+
+Fraction Fraction::operator+(const Fraction& other) const {
+    bool overflow = false;
+    Fraction result = Fraction(
+                          add(overflow,
+                              mul(overflow, top_, other.bottom_),
+                              mul(overflow, bottom_, other.top_)),
+                          mul(overflow, bottom_, other.bottom_));
+    if (overflow) {
+        result = Fraction(double(*this) + double(other));
+    }
+    return result;
+}
+
+Fraction Fraction::operator-(const Fraction& other) const {
+    bool overflow = false;
+    Fraction result = Fraction(
+                          sub(overflow,
+                              mul(overflow, top_, other.bottom_),
+                              mul(overflow, bottom_, other.top_)),
+                          mul(overflow, bottom_, other.bottom_));
+    if (overflow) {
+        result = Fraction(double(*this) - double(other));
+    }
+    return result;
+}
+
+Fraction Fraction::operator/(const Fraction& other) const {
+    bool overflow = false;
+    Fraction result =  Fraction(mul(overflow, top_, other.bottom_),
+                                mul(overflow, bottom_, other.top_));
+    if (overflow) {
+        result = Fraction(double(*this) / double(other));
+    }
+    return result;
+
+}
+
+Fraction Fraction::operator*(const Fraction& other) const {
+    bool overflow = false;
+    Fraction result = Fraction(mul(overflow, top_, other.top_),
+                               mul(overflow, bottom_, other.bottom_));
+    if (overflow) {
+        result = Fraction(double(*this) * double(other));
+    }
+    return result;
+}
+
+bool Fraction::operator==(const Fraction& other) const {
+    // Assumes canonical form
+    return top_ == other.top_ && bottom_ == other.bottom_;
+}
+
+bool Fraction::operator<(const Fraction& other) const {
+    bool overflow = false;
+    bool result = mul(overflow, top_, other.bottom_) < mul(overflow, bottom_, other.top_);
+    if (overflow) {
+        result = double(*this) < double(other);
+    }
+    return result;
+}
+
+bool Fraction::operator<=(const Fraction& other) const {
+    bool overflow = false;
+    bool result = mul(overflow, top_, other.bottom_) <= mul(overflow, bottom_, other.top_);
+    if (overflow) {
+        result = double(*this) <= double(other);
+    }
+    return result;
+}
+
+bool Fraction::operator!=(const Fraction& other) const {
+    return !(*this == other);
+}
+
+bool Fraction::operator>(const Fraction& other) const {
+    bool overflow = false;
+    bool result = mul(overflow, top_, other.bottom_) > mul(overflow, bottom_, other.top_);
+    if (overflow) {
+        result = double(*this) > double(other);
+    }
+    return result;
+}
+
+bool Fraction::operator>=(const Fraction& other) const {
+    bool overflow = false;
+    bool result = mul(overflow, top_, other.bottom_) >= mul(overflow, bottom_, other.top_);
+    if (overflow) {
+        result = double(*this) >= double(other);
+    }
+    return result;
+}
+
+
+
+//======================================
 
 void Fraction::normalise() {
     if (bottom_ > MAX_DENOM || std::abs(top_) > MAX_DENOM) {

@@ -95,120 +95,25 @@ public: // operators
         return *this - integralPart();
     }
 
-    static void overflow(value_type a, value_type b, char op);
+    Fraction operator+(const Fraction& other) const;
 
-    static value_type mul(bool& overflow, value_type a, value_type b) {
-        if (b > 0 && a >  std::numeric_limits<value_type>::max() / b) {
-            overflow = true;
-        }
-        return a * b;
-    }
+    Fraction operator-(const Fraction& other) const;
 
-    static value_type add(bool& overflow, value_type a, value_type b) {
-        // if (b > 0 && a >  std::numeric_limits<value_type>::max() / b) {
-        //     overflow(a, b, '*');
-        // }
-        return a + b;
-    }
+    Fraction operator/(const Fraction& other) const;
 
-    static value_type sub(bool& overflow, value_type a, value_type b) {
-        // if (b > 0 && a >  std::numeric_limits<value_type>::max() / b) {
-        //     overflow(a, b, '*');
-        // }
-        return a - b;
-    }
+    Fraction operator*(const Fraction& other) const;
 
-    Fraction operator+(const Fraction& other) const {
-        bool overflow = false;
-        Fraction result = Fraction(
-                              add(overflow,
-                                  mul(overflow, top_, other.bottom_),
-                                  mul(overflow, bottom_, other.top_)),
-                              mul(overflow, bottom_, other.bottom_));
-        if (overflow) {
-            result = Fraction(double(*this) + double(other));
-        }
-        return result;
-    }
+    bool operator==(const Fraction& other) const;
 
-    Fraction operator-(const Fraction& other) const {
-        bool overflow = false;
-        Fraction result = Fraction(
-                              sub(overflow,
-                                  mul(overflow, top_, other.bottom_),
-                                  mul(overflow, bottom_, other.top_)),
-                              mul(overflow, bottom_, other.bottom_));
-        if (overflow) {
-            result = Fraction(double(*this) - double(other));
-        }
-        return result;
-    }
+    bool operator<(const Fraction& other) const;
 
-    Fraction operator/(const Fraction& other) const {
-        bool overflow = false;
-        Fraction result =  Fraction(mul(overflow, top_, other.bottom_),
-                                    mul(overflow, bottom_, other.top_));
-        if (overflow) {
-            result = Fraction(double(*this) / double(other));
-        }
-        return result;
+    bool operator<=(const Fraction& other) const;
 
-    }
+    bool operator!=(const Fraction& other) const;
 
-    Fraction operator*(const Fraction& other) const {
-        bool overflow = false;
-        Fraction result = Fraction(mul(overflow, top_, other.top_),
-                                   mul(overflow, bottom_, other.bottom_));
-        if (overflow) {
-            result = Fraction(double(*this) * double(other));
-        }
-        return result;
-    }
+    bool operator>(const Fraction& other) const;
 
-    bool operator==(const Fraction& other) const {
-        // Assumes canonical form
-        return top_ == other.top_ && bottom_ == other.bottom_;
-    }
-
-    bool operator<(const Fraction& other) const {
-        bool overflow = false;
-        bool result = mul(overflow, top_, other.bottom_) < mul(overflow, bottom_, other.top_);
-        if (overflow) {
-            result = double(*this) < double(other);
-        }
-        return result;
-    }
-
-    bool operator<=(const Fraction& other) const {
-        bool overflow = false;
-        bool result = mul(overflow, top_, other.bottom_) <= mul(overflow, bottom_, other.top_);
-        if (overflow) {
-            result = double(*this) <= double(other);
-        }
-        return result;
-    }
-
-    bool operator!=(const Fraction& other) const {
-        return !(*this == other);
-    }
-
-    bool operator>(const Fraction& other) const {
-        bool overflow = false;
-        bool result = mul(overflow, top_, other.bottom_) > mul(overflow, bottom_, other.top_);
-        if (overflow) {
-            result = double(*this) > double(other);
-        }
-        return result;
-    }
-
-    bool operator>=(const Fraction& other) const {
-        bool overflow = false;
-        bool result = mul(overflow, top_, other.bottom_) >= mul(overflow, bottom_, other.top_);
-        if (overflow) {
-            result = double(*this) >= double(other);
-        }
-        return result;
-    }
+    bool operator>=(const Fraction& other) const;
 
     Fraction& operator+=(const Fraction& other) {
         *this = (*this) + other;
@@ -317,7 +222,6 @@ private: // members
         x.print(s);
         return s;
     }
-
 
     friend Stream& operator<<(Stream& s, const Fraction& x) {
         x.encode(s);

@@ -54,7 +54,17 @@ public: // methods
 
     Fraction(value_type top, value_type bottom);
 
-    explicit Fraction(double);
+    explicit Fraction(double n);
+    explicit Fraction(int n): top_(n), bottom_(1) {}
+    explicit Fraction(short n): top_(n), bottom_(1) {}
+    explicit Fraction(long n): top_(n), bottom_(1) {}
+    explicit Fraction(long long n): top_(n), bottom_(1) {}
+
+    explicit Fraction(unsigned int n): top_(n), bottom_(1) {}
+    explicit Fraction(unsigned short n): top_(n), bottom_(1) {}
+    explicit Fraction(unsigned long n): top_(n), bottom_(1) {}
+    explicit Fraction(unsigned long long n): top_(n), bottom_(1) {}
+
     // Fraction(const Fraction& other):
     //     top_(other.top_), bottom_(other.bottom_) {}
 
@@ -324,6 +334,7 @@ private: // members
 template<class T>
 Fraction operator+(T n, const Fraction& f)
 {
+    // static_assert(std::is_same<T, long long>::value,"some meaningful error message");
     return Fraction(n) + f;
 }
 

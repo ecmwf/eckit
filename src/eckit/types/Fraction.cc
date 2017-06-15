@@ -261,6 +261,70 @@ bool Fraction::operator==(const Fraction& other) const {
     return top_ == other.top_ && bottom_ == other.bottom_;
 }
 
+static Fraction::value_type compare(Fraction::value_type t1, Fraction::value_type b1, Fraction::value_type t2, Fraction::value_type b2) {
+    Fraction::value_type s1 = 1;
+    Fraction::value_type s2 = 1;
+
+    if (t1 < 0) {
+        s1 = -1;
+        t1 = -t1;
+    }
+
+    if (t2 < 0) {
+        s2 = -1;
+        t2 = -t2;
+    }
+
+    if (s1 != s2) {
+
+        if (s1 < s2) {
+            return -1;
+        }
+        else {
+            return 1;
+        }
+    }
+
+    Fraction::value_type g;
+
+    std::cout << t1 << "/" << b1 << " " << t2 << "/" << b2 << std::endl;
+
+    bool more = true;
+    while (more) {
+        more = false;
+
+        g = gcd(t1, t2);
+        if (g != 1) {
+            t1 = t1 / g;
+            t2 = t2 / g;
+            more = true;
+        }
+        g = gcd(b1, b2);
+        if (g != 1) {
+            b1 = b1 / g;
+            b2 = b2 / g;
+            more = true;
+        }
+
+        g = gcd(t1, b1);
+        if (g != 1) {
+            t1 = t1 / g;
+            b1 = b1 / g;
+            more = true;
+        }
+        g = gcd(t2, b2);
+        if (g != 1) {
+            t2 = t2 / g;
+            b2 = b2 / g;
+            more = true;
+        }
+    }
+
+    std::cout << t1 << "/" << b1 << " " << t2 << "/" << b2 << std::endl;
+
+
+}
+
 bool Fraction::operator<(const Fraction& other) const {
     bool overflow = false;
     bool result = mul(overflow, top_, other.bottom_) < mul(overflow, bottom_, other.top_);
@@ -319,6 +383,10 @@ void Fraction::normalise() {
             top_ >>= 1;
             bottom_ >>= 1;
         }
+
+        value_type g = gcd(top_, bottom_);
+        top_ =  top_ / g;
+        bottom_ = bottom_ / g;
 
         top_ *= sign;
     }

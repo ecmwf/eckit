@@ -124,8 +124,11 @@ BOOST_AUTO_TEST_CASE( test_fraction )
     BOOST_CHECK_EQUAL(Fraction(M_PI) > Fraction(M_E), true);
     BOOST_CHECK_EQUAL(Fraction(M_E) > Fraction(M_SQRT2), true);
 
-    BOOST_CHECK_EQUAL(Fraction(M_PI), Fraction(1200000, 1));
+    std::cout << "pi = " << (M_PI - double(Fraction(M_PI))) << std::endl;
+    std::cout << "e = " << (M_E - double(Fraction(M_E))) << std::endl;
+    std::cout << "sqrt2 = " << (M_SQRT2 - double(Fraction(M_SQRT2))) << std::endl;
 
+    // BOOST_CHECK_EQUAL(Fraction(M_PI), Fraction(1200000, 1));
     {
         Fraction west(-12), east(1.2), increment(1.2);
 
@@ -145,7 +148,6 @@ BOOST_AUTO_TEST_CASE( test_fraction )
         }
         BOOST_CHECK_EQUAL(f, east);
     }
-
 
     // BOOST_CHECK_EQUAL(Fraction(5, 3).intergralPart(), 1);
     // BOOST_CHECK_EQUAL(Fraction(5, 3).decimalPart(), Fraction(1, 3));

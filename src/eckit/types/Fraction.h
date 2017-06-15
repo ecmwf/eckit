@@ -36,12 +36,6 @@ public:
 
     // typedef __int128 value_type;
 
-
-private:
-
-    Fraction(value_type top, value_type bottom, bool);
-    void normalise();
-
 public: // methods
 
 
@@ -84,7 +78,7 @@ public: // operators
     operator value_type() const;
 
     Fraction operator-()  const {
-        return Fraction(-top_, bottom_, true);
+        return Fraction(-top_, bottom_);
     }
 
     value_type integralPart() const {
@@ -155,6 +149,7 @@ public: // operators
         return *this * Fraction(other);
     }
 
+    //====================================
 
     template<class T>
     bool operator==(T other) const {

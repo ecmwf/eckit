@@ -22,6 +22,7 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/memory/ScopedPtr.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/config/Configuration.h"
 
 namespace eckit {
 
@@ -45,23 +46,22 @@ public: // methods
     virtual std::string prefixDirectory() const;
 
     virtual std::string libraryHome() const;
+
     virtual void libraryHome(const std::string&);
 
     virtual std::string expandPath(const std::string& path) const;
 
-//    virtual LocalPathName bin() const;
-//    virtual LocalPathName lib() const;
-//    virtual LocalPathName share() const;
-//    virtual LocalPathName etc() const;
-
     std::string libraryPath() const;
 
     virtual std::string version() const = 0;
+
     virtual std::string gitsha1(unsigned int count = 40) const = 0;
+
+    virtual bool debug() const { return debug_; }
 
     virtual Channel& debugChannel() const;
 
-    virtual bool debug() const { return debug_; }
+    virtual const Configuration& configuration() const;
 
 public: // class methods
 
@@ -102,6 +102,8 @@ private: // members
     mutable std::string prefixDirectory_;
 
     mutable eckit::ScopedPtr<eckit::Channel> debugChannel_;
+
+    mutable eckit::ScopedPtr<eckit::Configuration> configuration_;
 
 };
 

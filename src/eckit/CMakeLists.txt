@@ -234,7 +234,7 @@ config/LocalConfiguration.cc
 config/LocalConfiguration.h
 config/Parametrisation.h
 config/Resource.h
-config/Resource.cc
+config/ResourceBase.h
 config/ResourceBase.cc
 config/ResourceMgr.cc
 config/ResourceMgr.h
@@ -640,7 +640,6 @@ list( APPEND eckit_templates
 					container/sptree/SPNode.cc
 					filesystem/BasePathNameT.cc
 					io/FileBase.cc
-					config/Resource.cc
 					runtime/PipeHandler.cc
 					serialisation/Reanimator.cc
 					transaction/TxnLog.cc

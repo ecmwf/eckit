@@ -234,7 +234,11 @@ const Configuration& Library::configuration() const
 
     eckit::PathName cfgpath = eckit::Resource<eckit::PathName>(s.c_str(), p.c_str());
 
-    configuration_.reset( new eckit::YAMLConfiguration(cfgpath) );
+    eckit::Configuration* cfg = cfgpath.exists() ?
+                                    new eckit::YAMLConfiguration(cfgpath) :
+                                    new eckit::YAMLConfiguration(std::string(""));
+
+    configuration_.reset(cfg);
 
     return *configuration_;
 }

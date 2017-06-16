@@ -88,5 +88,10 @@ BOOST_AUTO_TEST_CASE( test_eckit_system_library )
     BOOST_CHECK_NO_THROW( LocalPathName("~eckit/etc/eckit/test/test.cfg").exists() );
 }
 
+BOOST_AUTO_TEST_CASE( test_libeckit )
+{
+    BOOST_CHECK_NO_THROW(LibEcKit::instance().configuration()); // tests an empty configuration
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

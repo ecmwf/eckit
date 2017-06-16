@@ -14,6 +14,7 @@
 
 #include "ecbuild/boost_test_framework.h"
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
 #include "eckit/log/Bytes.h"
@@ -92,31 +93,18 @@ BOOST_AUTO_TEST_CASE( test_environment_var )
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_config_file )
+BOOST_AUTO_TEST_CASE( test_libresource )
 {
-    // FIXME: re-enable this test
+    long i = LibResource<long,LibEcKit>("foo-bar;$FOOBAR", 1024*1024);
 
- //    ostringstream code;
+    BOOST_CHECK_EQUAL(i , 1024*1024);
 
- //    code << " buffer = 60 MB " << std::endl
- //         << " b = foo " << std::endl
- //         << " [ if class = od ] { b = bar }" << std::endl;
 
- //    istringstream in(code.str());
+    char v [] = "TEST_FOOBAZ=fooBAZ";
+    putenv(v);
+    std::string foobaz = LibResource<std::string,LibEcKit>("foo-baz;$TEST_FOOBAZ", "foobazzzzzzz");
 
- //    ResourceMgr::instance().appendConfig(in);
-
- //    StringDict args;
-
- //    args["class"] = "od";
-
-	// std::string bar = Resource<string>("b","none",args);
-
-	// BOOST_CHECK_EQUAL( bar , std::string("bar") );
-
- //    unsigned long long buffer = Resource<unsigned long long>("buffer",0);
-
-	// BOOST_CHECK_EQUAL( buffer , Bytes::MiB(60) );
+    BOOST_CHECK_EQUAL(foobaz, "fooBAZ");
 }
 
 //-----------------------------------------------------------------------------

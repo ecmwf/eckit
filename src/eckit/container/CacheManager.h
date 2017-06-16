@@ -29,6 +29,7 @@
 #include "eckit/os/AutoUmask.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/parser/Tokenizer.h"
 
 namespace eckit {
 

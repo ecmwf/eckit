@@ -295,7 +295,7 @@ bool Fraction::operator>(const Fraction& other) const {
 
 bool Fraction::operator>=(const Fraction& other) const {
     bool overflow = false;
-    bool result = mul(overflow, top_, other.bottom_) < mul(overflow, other.top_, bottom_);
+    bool result = mul(overflow, top_, other.bottom_) >= mul(overflow, other.top_, bottom_);
     if (overflow) {
         return double(*this) < double(other);
     }

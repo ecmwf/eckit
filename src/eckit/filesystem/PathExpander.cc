@@ -114,7 +114,7 @@ public:
 
         std::string newpath = StringTools::substitute(path, m);
 
-        std::cout << "Path expansion " << path << " --> " << newpath << std::endl;
+//        std::cout << "Path expansion " << path << " --> " << newpath << std::endl;
 
         return newpath;
     }
@@ -139,7 +139,7 @@ public:
 
         std::string newpath = StringTools::substitute(path, m);
 
-        std::cout << "Path expansion " << path << " --> " << newpath << std::endl;
+//        std::cout << "Path expansion " << path << " --> " << newpath << std::endl;
 
         return newpath;
     }

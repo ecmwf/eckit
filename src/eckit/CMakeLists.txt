@@ -172,6 +172,8 @@ io/cluster/NodeInfo.cc )
 
 list( APPEND eckit_filesystem_srcs
 filesystem/FileSystemSize.h
+filesystem/PathExpander.h
+filesystem/PathExpander.cc
 filesystem/PathName.h
 filesystem/PathName.cc
 filesystem/BasePathNameT.h

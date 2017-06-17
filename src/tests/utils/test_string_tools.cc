@@ -16,11 +16,10 @@
 using namespace std;
 using namespace eckit;
 
-//-----------------------------------------------------------------------------
 
 namespace eckit_test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class TestStringTools : public Tool {
 public:
@@ -33,28 +32,29 @@ public:
 
 protected:
     
-    void test_substitute();
-    void test_substituteVariables();
-    void test_startsWith();
-    void test_trim();
-    void test_front_trim();
-    void test_back_trim();
+    void substitute();
+    void listVariables();
+    void startsWith();
+    void endsWith();
+    void trim();
+    void front_trim();
+    void back_trim();
 
 };
 
-//-----------------------------------------------------------------------------
+
             
 void TestStringTools::run()
 {
-    test_substitute();
-    test_substituteVariables();
-    test_startsWith();
-    test_trim();
-    test_front_trim();
-    test_back_trim();
+    substitute();
+    listVariables();
+    startsWith();
+    trim();
+    front_trim();
+    back_trim();
 }
 
-void TestStringTools::test_substitute()
+void TestStringTools::substitute()
 {
     StringDict m;
 
@@ -68,18 +68,18 @@ void TestStringTools::test_substitute()
     ASSERT( out == "od:none:oper" );    
 }
 
-void TestStringTools::test_substituteVariables()
+void TestStringTools::listVariables()
 {
     string in ( "{class}:none:{stream}" );
 
-    StringList out = StringTools::substituteVariables(in);
+    StringList out = StringTools::listVariables(in);
     
     ASSERT( out.size() == 2 );    
     ASSERT( out[0] == "class" );    
     ASSERT( out[1] == "stream" );    
 }
 
-void TestStringTools::test_startsWith()
+void TestStringTools::startsWith()
 {
     string in ( "_lolo_test" );
     string s1 ( "_lolo" );
@@ -94,7 +94,24 @@ void TestStringTools::test_startsWith()
     ASSERT( !StringTools::startsWith(in,s3) );
 }
 
-void TestStringTools::test_trim()
+void TestStringTools::endsWith()
+{
+    string in ( "_lolo_test" );
+    ASSERT(  StringTools::endsWith(in,"") );
+    ASSERT(  StringTools::endsWith(in,in) );
+    ASSERT(  StringTools::endsWith(in,"t") );
+
+    string s1 ( "_test" );
+    ASSERT(  StringTools::endsWith(in,s1) );
+
+    string s2 ( "lolo" );
+    ASSERT( !StringTools::endsWith(in,s2) );
+
+    string s3 ( "_lolo_test333" );
+    ASSERT( !StringTools::endsWith(in,s3) );
+}
+
+void TestStringTools::trim()
 {
     string t1 ( "   lolo_test    " );
     ASSERT(  StringTools::trim(t1) == string("lolo_test") );
@@ -118,7 +135,7 @@ void TestStringTools::test_trim()
     ASSERT(  StringTools::trim(t7,"0") == string("1") );
 }
 
-void TestStringTools::test_front_trim()
+void TestStringTools::front_trim()
 {
     string t1 ( "   lolo_test    " );
     ASSERT(  StringTools::front_trim(t1) == string("lolo_test    ") );
@@ -142,7 +159,7 @@ void TestStringTools::test_front_trim()
     ASSERT(  StringTools::front_trim(t7,"0") == string("10") );
 }
 
-void TestStringTools::test_back_trim()
+void TestStringTools::back_trim()
 {
     string t1 ( "   lolo_test    " );
 
@@ -169,11 +186,10 @@ void TestStringTools::test_back_trim()
     ASSERT(  StringTools::back_trim(t7,"0") == string("000001") );
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit_test
 
-//-----------------------------------------------------------------------------
 
 int main(int argc,char **argv)
 {

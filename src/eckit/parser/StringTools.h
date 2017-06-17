@@ -19,18 +19,21 @@
 
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
 class StringTools : private NonCopyable {
 public:
 
     static std::string substitute(const std::string&, const std::map<std::string, std::string>&);
+
+    /// @deprecated Use extract variables
     static std::vector<std::string>  substituteVariables( const std::string& );
+
+    static std::vector<std::string>  listVariables(const std::string&);
 
 	static std::string upper(const std::string &);
 	static std::string lower(const std::string &);
@@ -50,6 +53,8 @@ public:
                                                  std::vector<std::string>::const_iterator end);
 
     static bool startsWith( const std::string& str, const std::string& substr );
+    static bool beginsWith( const std::string& str, const std::string& substr );
+    static bool endsWith( const std::string& str, const std::string& substr );
 
 private:
 
@@ -58,7 +63,7 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

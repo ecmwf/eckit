@@ -691,7 +691,8 @@ ecbuild_add_library(TARGET eckit
                         ${CMATH_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT}
                         ${CMAKE_DL_LIBS}
-                        ${ECKIT_SYSTEM_EXTRA_LIBS} )
+                        ${ECKIT_SYSTEM_EXTRA_LIBS}
+                   LINKER_LANGUAGE CXX )
 
 ### sub-directories
 

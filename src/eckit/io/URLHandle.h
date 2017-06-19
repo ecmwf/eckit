@@ -15,7 +15,12 @@
 #define eckit_filesystem_URLHandle_h
 
 #include "eckit/io/DataHandle.h"
+#include "eckit/eckit_config.h"
+
+
+#ifdef ECKIT_HAVE_CURL
 #include <curl/curl.h>
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -26,16 +31,21 @@ namespace eckit {
 class URLHandle : public DataHandle {
 public:
 
+	typedef std::map<std::string, std::string> Headers;
+
 // -- Exceptions
 
 // -- Contructors
 
-	URLHandle(const std::string&);
+	URLHandle(const std::string&,
+	          const Headers& = Headers(),
+	          const std::string& method = "GET");
+
 	URLHandle(Stream&);
 
 // -- Destructor
 
-	~URLHandle() {}
+	~URLHandle();
 
 // -- Overridden methods
 
@@ -66,18 +76,22 @@ private:
 
 	std::string url_;
 	std::string method_;
+	Headers sendHeaders_;
 
-
+#ifdef ECKIT_HAVE_CURL
 	int active_;
 	long long pos_;
 	size_t errors_;
 	std::string lastError_;
+	bool body_;
 
 	CURLcode curl_error_;
 	CURLM *multi_handle_;
 	CURL *curl_;
 	struct curl_slist *chunk_;
 
+
+	size_t size_;
 
 	size_t len_;
 	char* buffer_;
@@ -102,6 +116,9 @@ private:
 	long long transferStart();
 
 	int transferEnd();
+	void cleanup();
+
+#endif
 
 // -- Class members
 

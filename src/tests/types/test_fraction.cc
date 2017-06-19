@@ -9,7 +9,7 @@
  */
 
 #define BOOST_TEST_MODULE test_eckit_fraction
-
+#include <cmath>
 #include "ecbuild/boost_test_framework.h"
 
 #include "eckit/types/Fraction.h"
@@ -121,6 +121,14 @@ BOOST_AUTO_TEST_CASE( test_fraction )
     BOOST_CHECK_EQUAL(Fraction("1e+6"), Fraction(1000000, 1));
     BOOST_CHECK_EQUAL(Fraction("1.2e+6"), Fraction(1200000, 1));
 
+    BOOST_CHECK_EQUAL(Fraction(M_PI) > Fraction(M_E), true);
+    BOOST_CHECK_EQUAL(Fraction(M_E) > Fraction(M_SQRT2), true);
+
+    std::cout << "pi = " << (M_PI - double(Fraction(M_PI))) << std::endl;
+    std::cout << "e = " << (M_E - double(Fraction(M_E))) << std::endl;
+    std::cout << "sqrt2 = " << (M_SQRT2 - double(Fraction(M_SQRT2))) << std::endl;
+
+    // BOOST_CHECK_EQUAL(Fraction(M_PI), Fraction(1200000, 1));
     {
         Fraction west(-12), east(1.2), increment(1.2);
 
@@ -140,7 +148,6 @@ BOOST_AUTO_TEST_CASE( test_fraction )
         }
         BOOST_CHECK_EQUAL(f, east);
     }
-
 
     // BOOST_CHECK_EQUAL(Fraction(5, 3).intergralPart(), 1);
     // BOOST_CHECK_EQUAL(Fraction(5, 3).decimalPart(), Fraction(1, 3));

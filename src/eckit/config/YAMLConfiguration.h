@@ -17,20 +17,18 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/io/Buffer.h"
-
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 class PathName;
 class Stream;
 
-class YAMLConfiguration : public Configuration {
-  public:
+class YAMLConfiguration :
+        public Configuration,
+        private eckit::NonCopyable {
 
-    // -- Exceptions
-    // None
-
-    // -- Contructors
+public:
 
     YAMLConfiguration(const PathName &path, char separator = '.');
     YAMLConfiguration(std::istream &, char separator = '.');
@@ -38,83 +36,17 @@ class YAMLConfiguration : public Configuration {
     YAMLConfiguration(const std::string&, char separator = '.');
     YAMLConfiguration(const SharedBuffer&, char separator = '.');
 
-    virtual ~YAMLConfiguration(); // Change to virtual if base class
+    virtual ~YAMLConfiguration();
 
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-
-
-    // -- Overridden methods
-
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-
-
-  protected:
-
-
-    // -- Destructor
-
-    // -- Members
-    // None
-
-    // -- Methods
-
-    // void print(ostream&) const; // Change to virtual if base class
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-  private:
-
-    // No copy allowed
-
-    YAMLConfiguration(const YAMLConfiguration &);
-    YAMLConfiguration &operator=(const YAMLConfiguration &);
-
-    // Make private so no one modifies it
-
-    // -- Members
+private: // members
 
     std::string path_;
 
-
-    // -- Methods
-
-
-    // -- Overridden methods
-
-    // From MIRParametrisation
     virtual void print(std::ostream &) const;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-
-    //friend ostream& operator<<(ostream& s,const YAMLConfiguration& p)
-    //  { p.print(s); return s; }
 
 };
 
-
 } // namespace eckit
+
 #endif
 

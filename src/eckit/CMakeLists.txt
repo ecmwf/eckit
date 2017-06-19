@@ -172,6 +172,8 @@ io/cluster/NodeInfo.cc )
 
 list( APPEND eckit_filesystem_srcs
 filesystem/FileSystemSize.h
+filesystem/PathExpander.h
+filesystem/PathExpander.cc
 filesystem/PathName.h
 filesystem/PathName.cc
 filesystem/BasePathNameT.h
@@ -234,7 +236,7 @@ config/LocalConfiguration.cc
 config/LocalConfiguration.h
 config/Parametrisation.h
 config/Resource.h
-config/Resource.cc
+config/ResourceBase.h
 config/ResourceBase.cc
 config/ResourceMgr.cc
 config/ResourceMgr.h
@@ -640,7 +642,6 @@ list( APPEND eckit_templates
 					container/sptree/SPNode.cc
 					filesystem/BasePathNameT.cc
 					io/FileBase.cc
-					config/Resource.cc
 					runtime/PipeHandler.cc
 					serialisation/Reanimator.cc
 					transaction/TxnLog.cc
@@ -685,6 +686,7 @@ ecbuild_add_library(TARGET eckit
                         ${OPENSSL_LIBRARIES}
                         ${XXHASH_LIBRARIES}
                         ${AIO_LIBRARIES}
+                        ${CMATH_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT}
                         ${CMAKE_DL_LIBS}
                         ${ECKIT_SYSTEM_EXTRA_LIBS}

@@ -21,6 +21,12 @@ ecbuild_add_test( TARGET      eckit_test_restarthandle
                   SOURCES     test_restarthandle.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_pathexpander
+                  BOOST
+                  SOURCES     test_pathexpander.cc
+                  ENVIRONMENT "CURRENT_TEST_DIR=${CMAKE_CURRENT_BINARY_DIR}"
+                  LIBS        eckit )
+
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/1)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/2)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/2/1)

@@ -41,7 +41,7 @@ public: // methods
 
     /// Destructor
     /// @throws nothing
-    ~Exception() throw();
+    virtual ~Exception() throw();
 
     virtual const char *what() const throw() {  return what_.c_str(); }
     virtual bool retryOnServer() const        { return false; }

@@ -15,34 +15,55 @@
 #define eckit_Fraction_h
 
 #include <string>
+#include "eckit/exception/Exceptions.h"
+#include <limits>
+#include "eckit/types/FloatCompare.h"
+
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
+class MD5;
+class Stream;
+
 //-----------------------------------------------------------------------------
 
 
 class Fraction {
-private:
+public:
+    typedef long long value_type;
 
-    Fraction(long long top, long long bottom, bool): top_(top), bottom_(bottom) {}
-
+    // typedef __int128 value_type;
 
 public: // methods
+
 
 // -- Contructors
 
     Fraction(): top_(0), bottom_(1) {}
 
-    template<class T>
-    Fraction(T top): top_(top), bottom_(1) {}
+    // template<class T>
+    // explicit Fraction(T top): top_(top), bottom_(1) {}
 
-    Fraction(long long top, long long bottom);
+    Fraction(value_type top, value_type bottom);
 
-    Fraction(double);
-    Fraction(const std::string&);
-    Fraction(const char*);
+    explicit Fraction(double n);
+    explicit Fraction(int n): top_(n), bottom_(1) {}
+    explicit Fraction(short n): top_(n), bottom_(1) {}
+    explicit Fraction(long n): top_(n), bottom_(1) {}
+    explicit Fraction(long long n): top_(n), bottom_(1) {}
+
+    explicit Fraction(unsigned int n): top_(n), bottom_(1) {}
+    explicit Fraction(unsigned short n): top_(n), bottom_(1) {}
+    explicit Fraction(unsigned long n): top_(n), bottom_(1) {}
+    explicit Fraction(unsigned long long n): top_(n), bottom_(1) {}
+
+    // Fraction(const Fraction& other):
+    //     top_(other.top_), bottom_(other.bottom_) {}
+
+    explicit Fraction(const std::string&);
+    explicit Fraction(const char*);
 
     bool integer() const {
         return bottom_ == 1;
@@ -54,13 +75,13 @@ public: // operators
         return double(top_) / double(bottom_);
     }
 
-    operator long long() const;
+    operator value_type() const;
 
     Fraction operator-()  const {
-        return Fraction(-top_, bottom_, true);
+        return Fraction(-top_, bottom_);
     }
 
-    long long integralPart() const {
+    value_type integralPart() const {
         return top_ / bottom_;
     }
 
@@ -68,47 +89,25 @@ public: // operators
         return *this - integralPart();
     }
 
-    Fraction operator+(const Fraction& other) const {
-        return Fraction(top_ * other.bottom_ + bottom_ * other.top_,
-                        bottom_ * other.bottom_);
-    }
+    Fraction operator+(const Fraction& other) const;
 
-    Fraction operator-(const Fraction& other) const {
-        return Fraction(top_ * other.bottom_ - bottom_ * other.top_,
-                        bottom_ * other.bottom_);
-    }
+    Fraction operator-(const Fraction& other) const;
 
-    Fraction operator/(const Fraction& other) const {
-        return Fraction(top_ * other.bottom_, bottom_ * other.top_);
-    }
+    Fraction operator/(const Fraction& other) const;
 
-    Fraction operator*(const Fraction& other) const {
-        return Fraction(top_ * other.top_, bottom_ * other.bottom_);
-    }
+    Fraction operator*(const Fraction& other) const;
 
-    bool operator==(const Fraction& other) const {
-        return top_ == other.top_ && bottom_ == other.bottom_;
-    }
+    bool operator==(const Fraction& other) const;
 
-    bool operator<(const Fraction& other) const {
-        return top_ * other.bottom_ < bottom_ * other.top_;
-    }
+    bool operator<(const Fraction& other) const;
 
-    bool operator<=(const Fraction& other) const {
-        return top_ * other.bottom_ <= bottom_ * other.top_;
-    }
+    bool operator<=(const Fraction& other) const;
 
-    bool operator!=(const Fraction& other) const {
-        return top_ * other.bottom_ != bottom_ * other.top_;
-    }
+    bool operator!=(const Fraction& other) const;
 
-    bool operator>(const Fraction& other) const {
-        return top_ * other.bottom_ > bottom_ * other.top_;
-    }
+    bool operator>(const Fraction& other) const;
 
-    bool operator>=(const Fraction& other) const {
-        return top_ * other.bottom_ >= bottom_ * other.top_;
-    }
+    bool operator>=(const Fraction& other) const;
 
     Fraction& operator+=(const Fraction& other) {
         *this = (*this) + other;
@@ -150,6 +149,7 @@ public: // operators
         return *this * Fraction(other);
     }
 
+    //====================================
 
     template<class T>
     bool operator==(T other) const {
@@ -201,12 +201,16 @@ public: // operators
         return (*this) *= Fraction(other);
     }
 
+    void hash(eckit::MD5&) const;
+
 private: // members
 
-    long long top_;
-    long long bottom_;
+    value_type top_;
+    value_type bottom_;
 
     void print(std::ostream& out) const;
+    void encode(Stream& out) const;
+    void decode(Stream& out);
 
 
     friend std::ostream& operator<<(std::ostream& s, const Fraction& x) {
@@ -214,12 +218,22 @@ private: // members
         return s;
     }
 
+    friend Stream& operator<<(Stream& s, const Fraction& x) {
+        x.encode(s);
+        return s;
+    }
+
+    friend Stream& operator>>(Stream& s, Fraction& x) {
+        x.decode(s);
+        return s;
+    }
 
 };
 
 template<class T>
 Fraction operator+(T n, const Fraction& f)
 {
+    // static_assert(std::is_same<T, long long>::value,"some meaningful error message");
     return Fraction(n) + f;
 }
 
@@ -276,7 +290,6 @@ bool operator>=(T n, const Fraction& f)
 {
     return Fraction(n) >= f;
 }
-
 
 //-----------------------------------------------------------------------------
 

@@ -125,6 +125,8 @@ io/EmptyHandle.h
 io/EmptyHandle.cc
 io/FTPHandle.h
 io/FTPHandle.cc
+io/URLHandle.h
+io/URLHandle.cc
 io/FileDescHandle.h
 io/FileDescHandle.cc
 io/FileHandle.h

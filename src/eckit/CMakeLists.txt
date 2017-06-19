@@ -678,12 +678,14 @@ ecbuild_add_library(TARGET eckit
 					PERSISTENT
 						${eckit_persistent}
                     PRIVATE_INCLUDES
+                        "${CURL_INCLUDE_DIRS}"
                         "${XXHASH_INCLUDE_DIRS}"
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
                         "${AIO_INCLUDE_DIRS}"
 					LIBS
                         ${OPENSSL_LIBRARIES}
+                        ${CURL_LIBRARIES}
                         ${XXHASH_LIBRARIES}
                         ${AIO_LIBRARIES}
                         ${CMATH_LIBRARIES}

@@ -98,6 +98,11 @@ ecbuild_add_option( FEATURE XXHASH
 
 ecbuild_info("xxHash ${XXHASH_FOUND}  : libs ${XXHASH_LIBRARIES} incs ${XXHASH_INCLUDE_DIRS}")
 
+#### Curl
+
+ecbuild_add_option( FEATURE CURL
+                    DESCRIPTION "Curl library for transfering data with URLs"
+                    REQUIRED_PACKAGES CURL )
 #### CUDA
 
 ecbuild_add_option( FEATURE CUDA

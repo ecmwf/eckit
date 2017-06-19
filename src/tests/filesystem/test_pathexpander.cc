@@ -35,7 +35,10 @@ BOOST_AUTO_TEST_CASE( test_expands )
     std::string s = "{CWD}/tmp/foo";
     std::string r = std::string(::getenv("CURRENT_TEST_DIR")) + std::string("/tmp/foo");
 
-    BOOST_CHECK_EQUAL( PathExpander::expand("CWD", s), r);
+    LocalPathName ps = LocalPathName(PathExpander::expand("CWD", s)).realName();
+    LocalPathName pr = LocalPathName(r).realName();
+
+    BOOST_CHECK_EQUAL(ps.c_str(), pr.c_str());
 }
 
 BOOST_AUTO_TEST_CASE( test_missing_keys )

@@ -19,3 +19,7 @@ add_subdirectory( types )
 add_subdirectory( utils )
 add_subdirectory( value )
 add_subdirectory( system )
+
+if( HAVE_EXPERIMENTAL )
+  add_subdirectory( experimental )
+endif()

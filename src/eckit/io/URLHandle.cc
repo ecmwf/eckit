@@ -32,7 +32,6 @@ namespace eckit {
 ClassSpec URLHandle::classSpec_ = {&DataHandle::classSpec(), "URLHandle",};
 Reanimator<URLHandle> URLHandle::reanimator_;
 
-#define INITIAL_BUFFER_SIZE 1024
 
 // curl_global_init(CURL_GLOBAL_DEFAULT);
 
@@ -41,7 +40,7 @@ void URLHandle::print(std::ostream&s) const
 	s << "URLHandle[url=" << url_ << ']';
 }
 
-void URLHandle::encode(Stream& s) const
+void URLHandle::encode(Stream&s) const
 {
 	NOTIMP;
 	DataHandle::encode(s);
@@ -49,7 +48,7 @@ void URLHandle::encode(Stream& s) const
 	// s << headers_;
 }
 
-URLHandle::URLHandle(Stream& s):
+URLHandle::URLHandle(Stream&s):
 	DataHandle(s)
 {
 	NOTIMP;
@@ -60,37 +59,32 @@ URLHandle::URLHandle(Stream& s):
 #ifdef ECKIT_HAVE_CURL
 
 
-URLHandle::URLHandle(const std::string& url,
-                     const Headers& headers,
-                     const std::string& method):
+URLHandle::URLHandle(const std::string&url,
+                     const Headers&headers,
+                     const std::string&method):
 	url_(url),
 	sendHeaders_(headers),
 	method_(method),
 	active_(0),
-	pos_(0),
-	errors_(0),
-	multi_handle_(0),
+	multi_(0),
 	curl_(0),
 	chunk_(0),
-	len_(0),
-	buffer_(0),
 	body_(false),
-	size_(0)
+	contentLength_(0)
 {
 }
 
 URLHandle::~URLHandle() {
 	cleanup();
+
+
 }
 
 void URLHandle::cleanup() {
 	if (curl_) {
-
-		// Is that needed?
-		// if(multi_handle_) {
-		// 	curl_multi_remove_handle(multi_handle_, curl_);
-		// }
-
+		if (multi_) {
+			curl_multi_remove_handle(multi_, curl_);
+		}
 		curl_easy_cleanup(curl_);
 	}
 
@@ -98,15 +92,16 @@ void URLHandle::cleanup() {
 		curl_slist_free_all(chunk_);
 	}
 
+	if (multi_) {
+		curl_multi_cleanup(multi_);
+	}
 
-	multi_handle_ = 0;
+
+	multi_ = 0;
 	chunk_ = 0;
 	curl_ = 0;
 
-	if (buffer_) {
-		free(buffer_);
-	}
-	buffer_ = 0;
+	buffer_.clear();
 }
 
 
@@ -115,7 +110,6 @@ Length URLHandle::openForRead()
 	curl_  = curl_easy_init();
 	ASSERT(curl_);
 
-	errors_ = 0;
 
 	const char* verbose = "1";
 
@@ -161,9 +155,9 @@ Length URLHandle::openForRead()
 	}
 
 	Translator<std::string, size_t> s2l;
-	size_ = s2l((*j).second);
+	contentLength_ = s2l((*j).second);
 
-	return size_;
+	return contentLength_;
 
 }
 
@@ -179,18 +173,8 @@ void URLHandle::openForAppend(const Length&)
 
 long URLHandle::read(void* buffer, long length)
 {
-	if (length > size_) {
-		length = size_;
-	}
-
-	if (length) {
-		waitForData(length);
-		memcpy(buffer, buffer_, length);
-	}
-
-	size_ -= length;
-	return length;
-
+	waitForData(length);
+	return buffer_.read(buffer, length);
 }
 
 long URLHandle::write(const void* buffer, long length)
@@ -225,7 +209,7 @@ void URLHandle::call(const char* what, CURLcode code)
 	{
 		std::ostringstream oss;
 		oss << what << " failed: " << curl_easy_strerror(code);
-		errors_++;
+		// errors_++;
 	}
 }
 
@@ -237,7 +221,7 @@ void URLHandle::call(const char* what, CURLMcode code)
 	{
 		std::ostringstream oss;
 		oss << what << " failed: " << curl_multi_strerror(code);
-		errors_++;
+		// errors_++;
 	}
 }
 
@@ -246,10 +230,7 @@ void URLHandle::waitForData(size_t size)
 	fd_set fdr, fdw, fdx;
 	struct timeval timeout;
 
-	if ((!active_) || (pos_ > size))
-		return;
-
-	do {
+	while (active_  >= 0 && size <= buffer_.length()) {
 		int maxfd = -1;
 		long time = -1;
 
@@ -257,7 +238,7 @@ void URLHandle::waitForData(size_t size)
 		FD_ZERO(&fdw);
 		FD_ZERO(&fdx);
 
-		_(curl_multi_timeout(multi_handle_, &time));
+		_(curl_multi_timeout(multi_, &time));
 		if (time >= 0) {
 			timeout.tv_sec = time / 1000;
 			if (timeout.tv_sec > 1)
@@ -267,46 +248,24 @@ void URLHandle::waitForData(size_t size)
 		}
 		else
 		{
-			timeout.tv_sec = 60;
+			timeout.tv_sec = 1;
 			timeout.tv_usec = 0;
 		}
 
-		_(curl_multi_fdset(multi_handle_, &fdr, &fdw, &fdx, &maxfd));
+		_(curl_multi_fdset(multi_, &fdr, &fdw, &fdx, &maxfd));
 
-		if (::select(maxfd + 1, &fdr, &fdw, &fdx, &timeout) == -1)
-		{
-			lastError_ = "select";
-			errors_++;
-		}
-		else {
-			_(curl_multi_perform(multi_handle_, &active_));
-		}
+		SYSCALL (::select(maxfd + 1, &fdr, &fdw, &fdx, &timeout));
 
-	} while (active_ && (pos_ < size));
+		_(curl_multi_perform(multi_, &active_));
+
+
+	}
 
 }
 
 size_t URLHandle::transferRead(void *ptr, size_t size)
 {
-	waitForData(size);
-
-	if (pos_ == 0)
-		return 0; /* EOF */
-
-	if (pos_ < size)
-		size = pos_;
-
-	memcpy(ptr, buffer_, size);
-
-	if (pos_ - size <= 0)
-	{
-		pos_ = 0;
-	}
-	else
-	{
-		memmove(buffer_, buffer_ + size, pos_ - size);
-		pos_ -= size;
-	}
+	NOTIMP;
 
 	return size;
 }
@@ -318,37 +277,8 @@ size_t URLHandle::writeCallback( void *ptr, size_t size, size_t nmemb, void *use
 
 size_t URLHandle::transferWrite( void *ptr, size_t size, size_t nmemb)
 {
-	size *= nmemb;
-
-	std::cout << "URLHandle::transferWrite size = " << size << std::endl;
-
-	if (buffer_ == NULL)
-	{
-		len_    = INITIAL_BUFFER_SIZE;
-		buffer_ = (char*)malloc(len_);
-	}
-
-	if (pos_ + size > len_) {
-
-		while (pos_ + size > len_) {
-			len_ *= 2;
-		}
-
-		buffer_ = (char*)realloc(buffer_, len_);
-		if (!buffer_)
-		{
-			errors_++;
-			return 0;
-		}
-	}
-
-	memcpy(buffer_ + pos_, ptr, size);
-	pos_ += size;
-
-	std::cout << "URLHandle::transferWrite pos = " << pos_ << std::endl;
-	std::cout << "URLHandle::transferWrite total = " << size_ << std::endl;
-
-	return size;
+	std::cout << "URLHandle::transferWrite size = " << size * nmemb << std::endl;
+	return buffer_.write(ptr, size * nmemb);
 }
 
 size_t URLHandle::headersCallback( void *ptr, size_t size, size_t nmemb, void *userdata) {
@@ -393,13 +323,12 @@ long long URLHandle::transferStart()
 {
 
 
-	if (!multi_handle_) {
-		multi_handle_ = curl_multi_init();
+	if (!multi_) {
+		multi_ = curl_multi_init();
 	}
 
 
-	pos_  = 0;
-
+	buffer_.clear();
 
 	_(curl_easy_setopt(curl_, CURLOPT_HEADERFUNCTION , &headersCallback));
 	_(curl_easy_setopt(curl_, CURLOPT_HEADERDATA , this));
@@ -407,13 +336,13 @@ long long URLHandle::transferStart()
 	_(curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, &writeCallback));
 	_(curl_easy_setopt(curl_, CURLOPT_WRITEDATA, this));
 
-	_(curl_multi_add_handle(multi_handle_, curl_));
+	_(curl_multi_add_handle(multi_, curl_));
 
-	_(curl_multi_perform(multi_handle_, &active_));
+	_(curl_multi_perform(multi_, &active_));
 
 
 
-	// if((api->pos == 0) && (!api->active)) {
+	// if((api->pos == 0) &&(!api->active)) {
 	// 	curl_multi_remove_handle(multi_handle, curl_);
 	// 	api->error++;
 	// }
@@ -435,9 +364,9 @@ int URLHandle::transferEnd()
 }
 #else
 
-URLHandle::URLHandle(const std::string& url,
-                     const Headers& headers,
-                     const std::string& method)
+URLHandle::URLHandle(const std::string&url,
+                     const Headers&headers,
+                     const std::string&method)
 {
 	throw eckit::SeriousBug("URLHandle: eckit not compiled with CURL support");
 }

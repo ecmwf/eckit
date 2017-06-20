@@ -16,6 +16,8 @@
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/eckit_config.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/CircularBuffer.h"
 
 
 #ifdef ECKIT_HAVE_CURL
@@ -25,6 +27,8 @@
 //-----------------------------------------------------------------------------
 
 namespace eckit {
+
+class CircularBuffer;
 
 //-----------------------------------------------------------------------------
 
@@ -80,28 +84,23 @@ private:
 
 #ifdef ECKIT_HAVE_CURL
 	int active_;
-	long long pos_;
-	size_t errors_;
-	std::string lastError_;
 	bool body_;
 
-	CURLcode curl_error_;
-	CURLM *multi_handle_;
+	CURLM *multi_;
 	CURL *curl_;
 	struct curl_slist *chunk_;
 
 
-	size_t size_;
+	CircularBuffer buffer_;
+	size_t contentLength_;
 
-	size_t len_;
-	char* buffer_;
 
 	std::map<std::string, std::string> receivedHeaders_;
 
 
 // -- Methods
 
-	void waitForData(size_t size);
+	void waitForData(size_t);
 
 	void call(const char* what, CURLcode code);
 	void call(const char* what, CURLMcode code);
@@ -117,6 +116,8 @@ private:
 
 	int transferEnd();
 	void cleanup();
+
+
 
 #endif
 

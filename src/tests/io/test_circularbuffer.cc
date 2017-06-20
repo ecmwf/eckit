@@ -34,24 +34,28 @@ BOOST_AUTO_TEST_CASE( test_eckit_circularbuffer )
 {
     CircularBuffer buffer(20);
 
-    std::string lower;
-    for (char c = 'a'; c <= 'z'; ++c) {
-        buffer.write(&c, 1);
-        lower += c;
+
+    for (size_t j = 0; j < 100; ++j) {
+
+        std::string lower;
+        for (char c = 'a'; c <= 'z'; ++c) {
+            buffer.write(&c, 1);
+            lower += c;
+        }
+
+        std::string upper;
+        for (char c = 'A'; c <= 'Z'; ++c) {
+            buffer.write(&c, 1);
+            upper += c;
+        }
+
+        char q[26];
+        BOOST_CHECK_EQUAL(buffer.read(q, 26), 26);
+        BOOST_CHECK_EQUAL(lower, std::string(q, q + 26));
+
+        BOOST_CHECK_EQUAL(buffer.read(q, 26), 26);
+        BOOST_CHECK_EQUAL(upper, std::string(q, q + 26));
     }
-
-    std::string upper;
-    for (char c = 'A'; c <= 'Z'; ++c) {
-        buffer.write(&c, 1);
-        upper += c;
-    }
-
-    char q[26];
-    BOOST_CHECK_EQUAL(buffer.read(q, 26), 26);
-    BOOST_CHECK_EQUAL(lower, std::string(q, q + 26));
-
-    BOOST_CHECK_EQUAL(buffer.read(q, 26), 26);
-    BOOST_CHECK_EQUAL(upper, std::string(q, q + 26));
 
 
 }

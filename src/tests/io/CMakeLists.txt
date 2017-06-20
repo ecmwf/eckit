@@ -12,3 +12,8 @@ ecbuild_add_test( TARGET  eckit_test_urlhandle
                   BOOST
                   SOURCES test_urlhandle.cc
                   LIBS    eckit )
+
+ecbuild_add_test( TARGET  eckit_test_circularbuffer
+                  BOOST
+                  SOURCES test_circularbuffer.cc
+                  LIBS    eckit )

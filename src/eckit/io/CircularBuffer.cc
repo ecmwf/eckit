@@ -38,14 +38,25 @@ CircularBuffer::~CircularBuffer()
 size_t CircularBuffer::write(const void* buffer, size_t length) {
     size_t left = size_ - used_;
 
+    // std::cout << "CircularBuffer::write(" << length << ") left = " << left << std::endl;
+    // std::cout << "Pos " << pos_ << ", used " << used_ <<  std::endl;
+
     if (length > left) {
         size_t newsize = eckit::round(size_ + length, increment_);
+
+    // std::cout << "Newsize " << newsize<<  std::endl;
+
+
         char* buffer = new char[newsize];
         ASSERT(buffer);
 
-        ASSERT(read(buffer, used_) == used_);
+        size_t save = used_;
+
+        ASSERT(read(buffer, save) == save);
 
         pos_ = 0;
+        used_ = save;
+
         size_ = newsize;
         delete[] buffer_;
         buffer_ = buffer;
@@ -60,16 +71,24 @@ size_t CircularBuffer::write(const void* buffer, size_t length) {
     ::memcpy(buffer_ + start, p, n);
     ::memcpy(buffer_, p + n, length - n);
 
+    used_ += length;
+
     return length;
 
 }
 
 size_t CircularBuffer::read(void* buffer, size_t length) {
+
+    // std::cout << "CircularBuffer::read(" << length << ") used = " << used_ << std::endl;
+
     size_t len = std::min(used_, length);
+    // std::cout << "Len " << len << std::endl;
 
     char* p = static_cast<char*>(buffer);
 
-    size_t n = size_ - pos_;
+    size_t n = std::min(size_ - pos_, len);
+    // std::cout << "Pos " << pos_ << " n " << n << std::endl;
+
     ::memcpy(p, buffer_ + pos_, n);
     ::memcpy(p + n, buffer_, len - n);
 

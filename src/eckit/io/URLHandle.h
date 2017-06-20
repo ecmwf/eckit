@@ -19,9 +19,13 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/CircularBuffer.h"
 
+// #undef ECKIT_HAVE_CURL
 
 #ifdef ECKIT_HAVE_CURL
 #include <curl/curl.h>
+#else
+typedef int CURLM;
+typedef int CURL;
 #endif
 
 //-----------------------------------------------------------------------------
@@ -35,96 +39,92 @@ class CircularBuffer;
 class URLHandle : public DataHandle {
 public:
 
-	typedef std::map<std::string, std::string> Headers;
+    class URLException : public Exception {
+        int code_;
+    public:
+        URLException(const std::string& what, int code):
+            Exception(what), code_(code) {}
+        int code() const { return code_; }
+    };
+
+    typedef std::map<std::string, std::string> Headers;
 
 // -- Exceptions
 
 // -- Contructors
 
-	URLHandle(const std::string&,
-	          const Headers& = Headers(),
-	          const std::string& method = "GET");
+    URLHandle(const std::string&,
+              const Headers& = Headers(),
+              const std::string& method = "GET");
 
-	URLHandle(Stream&);
+    URLHandle(Stream&);
 
 // -- Destructor
 
-	~URLHandle();
+    ~URLHandle();
 
 // -- Overridden methods
 
-	// From DataHandle
+    // From DataHandle
 
-	virtual Length openForRead();
-	virtual void openForWrite(const Length&);
-	virtual void openForAppend(const Length&);
+    virtual Length openForRead();
+    virtual void openForWrite(const Length&);
+    virtual void openForAppend(const Length&);
 
-	virtual long read(void*, long);
-	virtual long write(const void*, long);
-	virtual void close();
-	// virtual void rewind();
-	virtual void print(std::ostream&) const;
+    virtual long read(void*, long);
+    virtual long write(const void*, long);
+    virtual void close();
+    // virtual void rewind();
+    virtual void print(std::ostream&) const;
 
-	// From Streamable
+    // From Streamable
 
-	virtual void encode(Stream&) const;
-	virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const;
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
 // -- Class methods
 
-	static  const ClassSpec&  classSpec()        { return classSpec_;}
+    static  const ClassSpec&  classSpec()        { return classSpec_;}
 
 private:
 
 // -- Members
 
-	std::string url_;
-	std::string method_;
-	Headers sendHeaders_;
+    std::string url_;
+    std::string method_;
+    Headers sendHeaders_;
 
-#ifdef ECKIT_HAVE_CURL
-	int active_;
-	bool body_;
+    int active_;
+    bool body_;
 
-	CURLM *multi_;
-	CURL *curl_;
-	struct curl_slist *chunk_;
+    CURLM *multi_;
+    CURL *curl_;
 
+    CircularBuffer buffer_;
 
-	CircularBuffer buffer_;
-	size_t contentLength_;
-
-
-	std::map<std::string, std::string> receivedHeaders_;
-
+    Headers receivedHeaders_;
 
 // -- Methods
 
-	void waitForData(size_t);
+    void waitForData(size_t);
+    void waitForData();
 
-	void call(const char* what, CURLcode code);
-	void call(const char* what, CURLMcode code);
+    size_t transferRead(void *ptr, size_t size);
+    size_t transferWrite( void *ptr, size_t size, size_t nmemb);
+    size_t receiveHeaders( void *ptr, size_t size, size_t nmemb);
 
-	size_t transferRead(void *ptr, size_t size);
-	size_t transferWrite( void *ptr, size_t size, size_t nmemb);
-	size_t receiveHeaders( void *ptr, size_t size, size_t nmemb);
+    static size_t writeCallback(void *ptr, size_t size, size_t nmemb, void *userdata);
+    static size_t headersCallback( void *ptr, size_t size, size_t nmemb, void *userdata);
 
-	static size_t writeCallback(void *ptr, size_t size, size_t nmemb, void *userdata);
-	static size_t headersCallback( void *ptr, size_t size, size_t nmemb, void *userdata);
+    long long transferStart();
 
-	long long transferStart();
-
-	int transferEnd();
-	void cleanup();
-
-
-
-#endif
+    int transferEnd();
+    void cleanup();
 
 // -- Class members
 
-	static  ClassSpec               classSpec_;
-	static  Reanimator<URLHandle>  reanimator_;
+    static  ClassSpec               classSpec_;
+    static  Reanimator<URLHandle>  reanimator_;
 
 };
 

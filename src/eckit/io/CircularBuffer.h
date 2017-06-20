@@ -17,6 +17,7 @@
 #include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
@@ -40,6 +41,8 @@ public: // methods
 
 
 private: // members
+
+    mutable Mutex mutex_;
 
     char*  buffer_;
     size_t increment_;

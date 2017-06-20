@@ -12,6 +12,7 @@
 #include "eckit/io/CircularBuffer.h"
 #include "eckit/memory/MemoryPool.h"
 #include "eckit/maths/Functions.h"
+#include "eckit/thread/AutoLock.h"
 
 namespace eckit {
 
@@ -36,6 +37,10 @@ CircularBuffer::~CircularBuffer()
 
 
 size_t CircularBuffer::write(const void* buffer, size_t length) {
+
+    AutoLock<Mutex> lock(mutex_);
+
+
     size_t left = size_ - used_;
 
     // std::cout << "CircularBuffer::write(" << length << ") left = " << left << std::endl;
@@ -44,7 +49,7 @@ size_t CircularBuffer::write(const void* buffer, size_t length) {
     if (length > left) {
         size_t newsize = eckit::round(size_ + length, increment_);
 
-    // std::cout << "Newsize " << newsize<<  std::endl;
+        // std::cout << "Newsize " << newsize<<  std::endl;
 
 
         char* buffer = new char[newsize];
@@ -79,6 +84,9 @@ size_t CircularBuffer::write(const void* buffer, size_t length) {
 
 size_t CircularBuffer::read(void* buffer, size_t length) {
 
+    AutoLock<Mutex> lock(mutex_);
+
+
     // std::cout << "CircularBuffer::read(" << length << ") used = " << used_ << std::endl;
 
     size_t len = std::min(used_, length);
@@ -99,10 +107,14 @@ size_t CircularBuffer::read(void* buffer, size_t length) {
 }
 
 size_t CircularBuffer::length() const {
+    AutoLock<Mutex> lock(mutex_);
+
     return used_;
 }
 
 void CircularBuffer::clear() {
+    AutoLock<Mutex> lock(mutex_);
+
     pos_ = 0;
     used_ = 0;
 }

@@ -115,6 +115,9 @@ public: // methods
 
     std::string str() const { return std::string(*buffer_, size()); }
 
+    operator const Buffer&() const { return *buffer_; }
+    operator Buffer&() { return *buffer_; }
+
 private:
 
     Buffer* buffer_;

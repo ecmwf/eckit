@@ -8,37 +8,34 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_FileName_h
-#define eckit_FileName_h
+
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   June 2017
+
+#ifndef eckit_filesystem_URI_h
+#define eckit_filesystem_URI_h
 
 #include "eckit/eckit.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Stream;
 class DataHandle;
 
-class FileName {
-public:
+class URI {
 
-// -- Contructors
+public: // methods
 
-	FileName(const std::string&);
-//	FileName(const std::string&,const std::string&);
+	URI(const std::string&);
 	
+	~URI(); 
 
-// -- Destructor
-
-	~FileName(); 
-
-// -- Methods
-    
     bool exists() const;
 
 	DataHandle*  newWriteHandle() const;
@@ -57,14 +54,11 @@ private: // members
 	std::string name_;
 	std::string scheme_;
 
-// -- Friends
-
-	friend std::ostream& operator<<(std::ostream& s,const FileName& p)
-		{ p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s,const URI& p) { p.print(s); return s; }
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

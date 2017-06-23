@@ -187,10 +187,6 @@ filesystem/BasePathNameT.cc
 filesystem/BasePathName.h
 filesystem/LocalPathName.h
 filesystem/LocalPathName.cc
-filesystem/FileManager.h
-filesystem/FileManager.cc
-filesystem/FileName.h
-filesystem/FileName.cc
 filesystem/FileSpace.h
 filesystem/FileSpace.cc
 filesystem/FileSpaceStrategies.h
@@ -206,7 +202,11 @@ filesystem/marsfs/MarsFSFile.cc
 filesystem/marsfs/MarsFSPath.h
 filesystem/marsfs/MarsFSPath.cc
 filesystem/marsfs/MarsFSClient.h
-filesystem/marsfs/MarsFSClient.cc )
+filesystem/marsfs/MarsFSClient.cc
+filesystem/URIManager.h
+filesystem/URIManager.cc
+filesystem/URI.h
+filesystem/URI.cc )
 
 list( APPEND eckit_thread_srcs
     thread/AutoLock.h

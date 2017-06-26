@@ -19,9 +19,9 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 CircularBuffer::CircularBuffer(size_t size):
-    size_(size),
-    increment_(size),
     buffer_(new char[size]),
+    increment_(size),
+    size_(size),
     pos_(0),
     used_(0)
 

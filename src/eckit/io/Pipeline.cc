@@ -22,17 +22,17 @@
 #include "eckit/log/Timer.h"
 #include "eckit/io/FileDescHandle.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
 class PipelineReader : public Thread {
     Pipeline&     owner_;
-    DataHandle&   out_;
     DataHandle&   in_;
+    DataHandle&   out_;
 
 public:
     PipelineReader(Pipeline& owner_, DataHandle& in, DataHandle& out);
@@ -55,8 +55,8 @@ void PipelineReader::run() {
 
 class PipelineExecutor : public Thread {
     Pipeline&     owner_;
-    DataHandle&   out_;
     DataHandle&   in_;
+    DataHandle&   out_;
 
 public:
     PipelineExecutor(Pipeline& owner_, DataHandle& in, DataHandle& out);
@@ -155,7 +155,7 @@ Length Pipeline::copy(DataHandle& in, DataHandle& out)
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

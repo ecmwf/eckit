@@ -20,19 +20,19 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-typedef std::map<std::string, URIManager*> FileManagerMap;
+typedef std::map<std::string, URIManager*> URIManagerMap;
 
 // Builds the map on demand, needed for correct static initialization because factories can be initialized first
-struct FileManagerRegistry {
+struct URIManagerRegistry {
 
-    static FileManagerRegistry& instance() {
-        static FileManagerRegistry reg;
+    static URIManagerRegistry& instance() {
+        static URIManagerRegistry reg;
         return reg;
     }
 
-    FileManagerMap map_;
+    URIManagerMap map_;
 
-    FileManagerMap& map() { return map_; }
+    URIManagerMap& map() { return map_; }
 };
 
 
@@ -45,7 +45,7 @@ URIManager::URIManager(const std::string& name):
 {
     
     AutoLock<StaticMutex> lock(local_mutex);
-    FileManagerMap& m = FileManagerRegistry::instance().map();
+    URIManagerMap& m = URIManagerRegistry::instance().map();
 
     ASSERT(m.find(name) == m.end());
     m[name] = this;
@@ -54,7 +54,7 @@ URIManager::URIManager(const std::string& name):
 URIManager::~URIManager()
 {
     AutoLock<StaticMutex> lock(local_mutex);
-    FileManagerMap& m = FileManagerRegistry::instance().map();
+    URIManagerMap& m = URIManagerRegistry::instance().map();
 
     m.erase(name_);
 }
@@ -63,7 +63,7 @@ URIManager& URIManager::lookUp(const std::string& name)
 {
  
     AutoLock<StaticMutex> lock(local_mutex);
-    FileManagerMap& m = FileManagerRegistry::instance().map();
+    URIManagerMap& m = URIManagerRegistry::instance().map();
 
     std::map<std::string, URIManager*>::const_iterator j = m.find(name);
     
@@ -114,7 +114,7 @@ public:
 
 
 
-class MarsFSFileManager : public URIManager {
+class MarsFSManager : public URIManager {
   
     virtual bool exists(const URI& f) {
         return PathName(f.scheme() + ":" + f.name()).exists();
@@ -133,13 +133,13 @@ class MarsFSFileManager : public URIManager {
     }
 
 public:
-    MarsFSFileManager(const std::string& name) : URIManager(name) {}
+    MarsFSManager(const std::string& name) : URIManager(name) {}
 };
 
 
 static LocalFileManager  manager_unix("unix");
 static LocalFileManager  manager_file("file");
-static MarsFSFileManager manager_marsfs("marsfs");
+static MarsFSManager     manager_marsfs("marsfs");
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -180,12 +180,12 @@ public:
 
 // -- Copy
 
-	Value(const Value&);
-	Value& operator=(const Value&);
+    Value(const Value&);
+    Value& operator=(const Value&);
 
 // -- Destructor
 
-	~Value();
+    ~Value();
 
 // -- Operators
 
@@ -284,8 +284,8 @@ public:
     bool     isTime()     const { return content_->isTime(); }
     bool     isDateTime() const { return content_->isDateTime(); }
 
-    Value	 tail() const;
-    Value	 head() const;
+    Value    tail() const;
+    Value    head() const;
 
     Value    clone() const;
     bool     shared() const; // Ensure that value is not shared
@@ -299,13 +299,14 @@ public:
     static Value makeMap();
     static Value makeMap(const ValueMap&);
 
+
 protected:
 
-	Value(Content*);
+    Value(Content*);
 
 private: // members
 
-	Content* content_;
+    Content* content_;
 
 private: // methods
 
@@ -314,34 +315,135 @@ private: // methods
     void encode(Stream& s) const    { s << *content_; }
 
     friend JSON& operator<<(JSON& s, const Value& v) { v.json(s);  return s; }
-	friend std::ostream& operator<<(std::ostream& s, const Value& v) { v.print(s);  return s; }
-	friend Stream&  operator<<(Stream&  s, const Value& v) { v.encode(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const Value& v) { v.print(s);  return s; }
+    friend Stream&  operator<<(Stream&  s, const Value& v) { v.encode(s); return s; }
 
-	friend class Content;
+    friend class Content;
 
 };
 
 //----------------------------------------------------------------------------------------------------------------------
+template< typename T >
+Value toValue(const T& v) {
+    return Value(v);
+}
 
 template < typename T >
-Value makeVectorValue( const std::vector<T>& v )
-{
+Value toValue( const std::set<T>& l ) {
     ValueList r;
-    r.reserve(v.size());
-    for( size_t i = 0; i < v.size(); ++i )
-        r.push_back( Value(v[i]) );
+    r.reserve(l.size());
+    for (typename std::set<T>::const_iterator j = l.begin(); j != l.end(); ++j) {
+        r.push_back( toValue( *j ) );
+    }
     return Value::makeList(r);
 }
 
 template < typename T >
-Value makeVectorValue( const std::list<T>& l )
+Value toValue( const std::list<T>& l )
 {
     ValueList r;
     r.reserve(l.size());
-    for(typename std::list<T>::const_iterator j = l.begin(); j != l.end(); ++j) {
-        r.push_back( Value( *j ) );
+    for (typename std::list<T>::const_iterator j = l.begin(); j != l.end(); ++j) {
+        r.push_back( toValue( *j ) );
     }
     return Value::makeList(r);
+}
+
+
+template < typename T >
+Value toValue( const std::vector<T>& l )
+{
+    ValueList r;
+    r.reserve(l.size());
+    for (typename  std::vector<T>::const_iterator j = l.begin(); j != l.end(); ++j) {
+        r.push_back( toValue( *j ) );
+    }
+    return Value::makeList(r);
+}
+
+
+template < typename T, typename U >
+Value toValue(const std::pair<T, U>& v) {
+    ValueList r;
+    r.push_back( v.first );
+    r.push_back( v.second );
+    return Value::makeList(r);
+}
+
+
+template < typename K, typename V >
+Value toValue(const std::map<K, V>& l) {
+    ValueMap r;
+    for (typename std::map<K, V>::const_iterator j = l.begin(); j != l.end(); ++j) {
+        r[toValue((*j).first)] = toValue((*j).second);
+    }
+    return Value::makeMap(r);
+}
+
+#ifdef __GNUC__
+#define DEPRECATED __attribute__((deprecated))
+#else
+#define DEPRECATED /**/
+#endif
+
+
+template < typename T >
+DEPRECATED
+Value makeVectorValue(const std::vector<T>& v) {
+    return toValue(v);
+}
+
+template < typename T >
+DEPRECATED
+Value makeVectorValue(const std::list<T>& v) {
+    return toValue(v);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+template< typename T >
+void fromValue(T& v, const Value& value) {
+    v = T(value);
+}
+
+template < typename T >
+void fromValue(std::vector<T>& v, const Value& value) {
+    v.clear();
+    for (size_t i = 0; i < value.size(); ++i) {
+        T tmp;
+        fromValue(tmp, value[i]);
+        v.push_back(tmp);
+    }
+}
+
+
+template < typename T, typename U >
+void fromValue(std::pair<T, U>& v, const Value& value) {
+    ASSERT(value.size() == 2);
+    fromValue(v.first, value[0]);
+    fromValue(v.second, value[1]);
+}
+
+template < typename T >
+void fromValue(std::set<T>& v, const Value& value) {
+    v.clear();
+    for (size_t i = 0; i < value.size(); ++i) {
+        T tmp;
+        fromValue(tmp, value[i]);
+        v.insert(tmp);
+    }
+}
+
+template < typename K, typename V >
+void fromValue(std::map<K, V>& v, const Value& value) {
+    v.clear();
+    Value keys = value.keys();
+    for (size_t i = 0; i < keys.size(); ++i) {
+        Value k = keys[i];
+        K key;
+
+        fromValue(key, k);
+        fromValue(v[key], value[k]);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

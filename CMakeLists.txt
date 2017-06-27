@@ -24,6 +24,12 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
+### C++11 compiler flag
+
+ecbuild_add_option( FEATURE CXX11
+                    DEFAULT OFF
+                    DESCRIPTION "Use C++11 compiler flag" )
+
 ### Experimental features
 
 ecbuild_add_option( FEATURE EXPERIMENTAL
@@ -50,9 +56,8 @@ ecbuild_add_option( FEATURE EIGEN
                     REQUIRED_PACKAGES Eigen3 )
 
 set_package_properties( Eigen3 PROPERTIES
-                        TYPE RECOMMENDED
                         DESCRIPTION "C++ template library for linear algebra"
-                        PURPOSE "Dense and sparse matrix operations" )
+                      )
 
 if( ENABLE_EIGEN )
     # TODO: we should add here a test that we can compile Eigen without problems
@@ -69,8 +74,7 @@ ecbuild_add_option( FEATURE ARMADILLO
 
 set_package_properties( Armadillo PROPERTIES
                         DESCRIPTION "C++ linear algebra"
-                        TYPE RECOMMENDED
-                        PURPOSE "Dense matrix operations" )
+                      )
 
 ### LAPACK
 
@@ -82,8 +86,6 @@ ecbuild_add_option( FEATURE LAPACK
 
 ecbuild_add_option( FEATURE SSL
                     DESCRIPTION "OpenSSL support"
-                    TYPE RECOMMENDED
-                    PURPOSE "OpenSSL provides crypto and hashing algorithms including SHA1"
                     REQUIRED_PACKAGES OpenSSL )
 
 ecbuild_info("OpenSSL ${OPENSSL_FOUND} ${OPENSSL_VERSION} : libs ${OPENSSL_LIBRARIES} incs ${OPENSSL_INCLUDE_DIR}")
@@ -92,7 +94,6 @@ ecbuild_info("OpenSSL ${OPENSSL_FOUND} ${OPENSSL_VERSION} : libs ${OPENSSL_LIBRA
 
 ecbuild_add_option( FEATURE XXHASH
                     DESCRIPTION "Use xxHash for non-crypto hashing in data integrity checks"
-                    PURPOSE     "xxHash support"
                     REQUIRED_PACKAGES "PROJECT xxHash" )
 
 ecbuild_info("xxHash ${XXHASH_FOUND}  : libs ${XXHASH_LIBRARIES} incs ${XXHASH_INCLUDE_DIRS}")
@@ -136,6 +137,10 @@ find_package( Threads REQUIRED )
 ### Curses (for CmdApplication)
 
 find_package( Curses REQUIRED )
+
+### c math library, needed when including "math.h"
+
+find_package( CMath )
 
 ###############################################################################
 # checks
@@ -191,10 +196,15 @@ if( HAVE_EIGEN )
     include_directories( ${EIGEN3_INCLUDE_DIR} )
 endif()
 
+if( HAVE_CXX11 )
+    ecbuild_add_cxx11_flags()
+endif()
+
 add_subdirectory( bamboo )
 add_subdirectory( contrib )
 add_subdirectory( doc )
 add_subdirectory( src )
+add_subdirectory( tests )
 add_subdirectory( regressions )
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files SOURCES

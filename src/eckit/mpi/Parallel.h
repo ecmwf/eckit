@@ -11,6 +11,9 @@
 #ifndef eckit_mpi_Parallel_h
 #define eckit_mpi_Parallel_h
 
+#define OMPI_SKIP_MPICXX 1
+#define MPICH_SKIP_MPICXX 1
+
 #include <mpi.h>
 
 #include "eckit/mpi/Comm.h"
@@ -83,9 +86,13 @@ protected:  // methods
 
     virtual void send(const void* send, size_t count, Data::Code type, int dest, int tag) const;
 
+    virtual void synchronisedSend(const void* send, size_t count, Data::Code type, int dest, int tag) const;
+
     virtual Request iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const;
 
     virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const;
+
+    virtual eckit::SharedBuffer broadcastFile( const eckit::PathName& filepath, size_t root ) const;
 
     virtual void print(std::ostream&) const;
 

@@ -21,6 +21,10 @@ list( APPEND eckit_container_srcs
 
 container/BTree.h
 container/BTree.cc
+container/Trie.h
+container/Trie.cc
+container/BloomFilter.h
+container/BloomFilter.cc
 
 container/Cache.h
 container/CacheLRU.h
@@ -153,6 +157,8 @@ io/TCPSocketHandle.h
 io/TCPSocketHandle.cc
 io/TeeHandle.h
 io/TeeHandle.cc
+io/Pipeline.h
+io/Pipeline.cc
 io/HandleHolder.h
 io/HandleHolder.cc
 io/cluster/ClusterDisks.h
@@ -166,6 +172,8 @@ io/cluster/NodeInfo.cc )
 
 list( APPEND eckit_filesystem_srcs
 filesystem/FileSystemSize.h
+filesystem/PathExpander.h
+filesystem/PathExpander.cc
 filesystem/PathName.h
 filesystem/PathName.cc
 filesystem/BasePathNameT.h
@@ -221,7 +229,6 @@ config/Configured.cc
 config/Configured.h
 config/EtcTable.cc
 config/EtcTable.h
-config/JSONConfiguration.cc
 config/JSONConfiguration.h
 config/LibEcKit.cc
 config/LibEcKit.h
@@ -229,10 +236,12 @@ config/LocalConfiguration.cc
 config/LocalConfiguration.h
 config/Parametrisation.h
 config/Resource.h
-config/Resource.cc
+config/ResourceBase.h
 config/ResourceBase.cc
 config/ResourceMgr.cc
 config/ResourceMgr.h
+config/YAMLConfiguration.cc
+config/YAMLConfiguration.h
 )
 
 list( APPEND eckit_runtime_srcs
@@ -377,8 +386,12 @@ parser/Tokenizer.h
 parser/Tokenizer.cc
 parser/JSON.h
 parser/JSON.cc
+parser/ObjectParser.h
+parser/ObjectParser.cc
 parser/JSONParser.h
 parser/JSONParser.cc
+parser/YAMLParser.h
+parser/YAMLParser.cc
 parser/JSONDataBlob.h
 parser/JSONDataBlob.cc
 parser/JSONMetadata.h
@@ -393,6 +406,10 @@ value/Content.h
 value/Content.cc
 value/DateContent.h
 value/DateContent.cc
+value/TimeContent.h
+value/TimeContent.cc
+value/DateTimeContent.h
+value/DateTimeContent.cc
 value/DispatchParams.h
 value/DoubleContent.h
 value/DoubleContent.cc
@@ -616,6 +633,8 @@ endforeach()
 list( APPEND eckit_templates
 					container/CacheLRU.cc
                     container/BTree.cc
+                    container/Trie.cc
+                    container/BloomFilter.cc
                     container/MappedArray.cc
                     container/SharedMemArray.cc
                     container/bsptree/BSPNode.cc
@@ -623,7 +642,6 @@ list( APPEND eckit_templates
 					container/sptree/SPNode.cc
 					filesystem/BasePathNameT.cc
 					io/FileBase.cc
-					config/Resource.cc
 					runtime/PipeHandler.cc
 					serialisation/Reanimator.cc
 					transaction/TxnLog.cc
@@ -668,9 +686,11 @@ ecbuild_add_library(TARGET eckit
                         ${OPENSSL_LIBRARIES}
                         ${XXHASH_LIBRARIES}
                         ${AIO_LIBRARIES}
+                        ${CMATH_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT}
                         ${CMAKE_DL_LIBS}
-                        ${ECKIT_SYSTEM_EXTRA_LIBS} )
+                        ${ECKIT_SYSTEM_EXTRA_LIBS}
+                   LINKER_LANGUAGE CXX )
 
 ### sub-directories
 

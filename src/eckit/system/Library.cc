@@ -19,6 +19,8 @@
 #include "eckit/system/Library.h"
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/config/Resource.h"
+#include "eckit/config/YAMLConfiguration.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
@@ -179,6 +181,14 @@ std::string Library::home() const
     return home_; // may return empty string (meaning not set)
 }
 
+std::string Library::libraryHome() const {
+    std::string h = home();
+    if (!h.empty()) {
+        return h;
+    }
+    return prefixDirectory();
+}
+
 void Library::libraryHome(const std::string& home)
 {
     eckit::AutoLock<Mutex> lock(mutex_);
@@ -211,6 +221,26 @@ Channel& Library::debugChannel() const
     }
 
     return *debugChannel_;
+}
+
+const Configuration& Library::configuration() const
+{
+    eckit::AutoLock<Mutex> lock(mutex_);
+
+    if(configuration_) return *configuration_;
+
+    std::string s = "$" + prefix_ + "_CONFIG_PATH";
+    std::string p = "~" + name_ + "/etc/" + name_ + "/config.yaml";
+
+    eckit::PathName cfgpath = eckit::Resource<eckit::PathName>(s.c_str(), p.c_str());
+
+    eckit::Configuration* cfg = cfgpath.exists() ?
+                                    new eckit::YAMLConfiguration(cfgpath) :
+                                    new eckit::YAMLConfiguration(std::string(""));
+
+    configuration_.reset(cfg);
+
+    return *configuration_;
 }
 
 std::string Library::expandPath(const std::string& p) const {

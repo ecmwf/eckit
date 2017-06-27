@@ -76,6 +76,8 @@ public:  // types
   template<class T>
   MD5& operator<<(const T& x) { add(x); return *this; }
 
+  void numericalDigest(unsigned char out[MD5_DIGEST_LENGTH]) const;
+
 private: // members
 
   mutable digest_t digest_;  ///< cached digest

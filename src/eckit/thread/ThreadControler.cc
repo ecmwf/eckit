@@ -106,7 +106,7 @@ void ThreadControler::execute()
     }
     catch(std::exception& e) {
         Log::error() << "** " << e.what() << " Caught in "   << Here() << std::endl;
-        Log::error() << "** Exception is terminates thread " << pthread_self() << std::endl;
+        Log::error() << "** Exception terminates thread " << pthread_self() << std::endl;
     }
 
     if(proc->autodel_)

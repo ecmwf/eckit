@@ -12,21 +12,25 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/utils/MD5.h"
 
 #include <limits>
 #include <cmath>
+
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
-const long long max = std::sqrt(std::numeric_limits<long long>::max());
+const Fraction::value_type MAX_DENOM = std::sqrt(std::numeric_limits<Fraction::value_type>::max());
+// const Fraction::value_type MAX_DENOM = std::numeric_limits<Fraction::value_type>::max() >> 1;
 
 
-static long long gcd(long long a, long long b) {
+static Fraction::value_type gcd(Fraction::value_type a, Fraction::value_type b) {
     while (b != 0)
     {
-        long long r = a % b;
+        Fraction::value_type r = a % b;
         a = b;
         b = r;
     }
@@ -35,11 +39,11 @@ static long long gcd(long long a, long long b) {
 
 //-----------------------------------------------------------------------------
 
-Fraction::Fraction(long long top, long long bottom) {
+Fraction::Fraction(value_type top, value_type bottom) {
 
     ASSERT(bottom != 0);
 
-    long long sign = 1;
+    value_type sign = 1;
     if (top < 0) {
         top = -top;
         sign = -sign;
@@ -50,26 +54,29 @@ Fraction::Fraction(long long top, long long bottom) {
         sign = -sign;
     }
 
-    long long g = gcd(top, bottom);
-    top_ = sign * top / g;
-    bottom_ = bottom / g;
+    value_type g = gcd(top, bottom);
+    top =  top / g;
+    bottom = bottom / g;
+
+    top_ = sign * top;
+    bottom_ = bottom;
+
 }
 
-
 Fraction::Fraction(double x) {
-    long long sign = 1;
+    value_type sign = 1;
     if (x < 0) {
         sign = -sign;
         x = -x;
     }
 
-    long long m00 = 1, m11 = 1, m01 = 0, m10 = 0;
-    long long a = x;
-    long long t2 = m10 * a + m11;
+    value_type m00 = 1, m11 = 1, m01 = 0, m10 = 0;
+    value_type a = x;
+    value_type t2 = m10 * a + m11;
 
-    while (t2 <= max) {
+    while (t2 <= MAX_DENOM) {
 
-        long long t1  = m00 * a + m01;
+        value_type t1  = m00 * a + m01;
         m01 = m00;
         m00 = t1;
 
@@ -82,7 +89,7 @@ Fraction::Fraction(double x) {
 
         x = 1.0 / (x - a);
 
-        if (x > std::numeric_limits<long long>::max()) {
+        if (x > std::numeric_limits<value_type>::max()) {
             break;
         }
 
@@ -90,8 +97,23 @@ Fraction::Fraction(double x) {
         t2 = m10 * a + m11;
     }
 
-    top_ = sign * m00;
-    bottom_ = m10;
+    while (m10 >= MAX_DENOM || m00 >= MAX_DENOM) {
+        m00 >>= 1;
+        m10 >>= 1;
+    }
+
+    value_type top = m00;
+    value_type bottom = m10;
+
+    value_type g = gcd(top, bottom);
+    top =  top / g;
+    bottom = bottom / g;
+
+    top_ = sign * top;
+    bottom_ = bottom;
+
+
+
 
 }
 
@@ -102,10 +124,13 @@ Fraction::Fraction(const std::string& s) {
     parse(s, v);
     if (v.size() > 1) {
         ASSERT(v.size() == 2);
-        static Translator<std::string, long long> s2l;
+        static Translator<std::string, value_type> s2l;
         Fraction f(s2l(v[0]), s2l(v[1]));
         top_ = f.top_;
         bottom_ = f.bottom_;
+
+
+
         return;
     }
 
@@ -113,6 +138,7 @@ Fraction::Fraction(const std::string& s) {
     Fraction f(s2d(s));
     top_ = f.top_;
     bottom_ = f.bottom_;
+
 
 }
 
@@ -123,7 +149,6 @@ Fraction::Fraction(const char* c) {
     bottom_ = f.bottom_;
 }
 
-
 void Fraction::print(std::ostream& out) const {
     if (bottom_ == 1) {
         out << top_;
@@ -133,16 +158,150 @@ void Fraction::print(std::ostream& out) const {
     }
 }
 
-Fraction::operator long long() const {
+Fraction::operator value_type() const {
     if (bottom_ == 1) {
         return top_;
     }
     std::ostringstream oss;
-    oss << "Cannot convert fraction " << *this << " to integer";
+    oss << "Cannot convert fraction " << *this << " (" << double(*this) << ") to integer";
     throw eckit::SeriousBug(oss.str());
 }
 
-//-----------------------------------------------------------------------------
+void Fraction::hash(MD5& md5) const {
+    md5 << top_;
+    md5 << bottom_;
+}
+
+
+void Fraction::encode(Stream& s) const {
+    s << top_;
+    s << bottom_;
+}
+
+void Fraction::decode(Stream& s) {
+    s >> top_;
+    s >> bottom_;
+}
+
+//======================================
+
+
+inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
+    if (b > 0 && (a > std::numeric_limits<Fraction::value_type>::max() / b)) {
+        overflow = true;
+    }
+    return a * b;
+}
+
+inline Fraction::value_type add(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
+
+    if (a >= 0 && b >= 0 && (a > std::numeric_limits<Fraction::value_type>::max() - b)) {
+        overflow = true;
+    }
+
+    if (a <= 0 && b <= 0 && (-a > std::numeric_limits<Fraction::value_type>::max() + b)) {
+        overflow = true;
+    }
+
+    return a + b;
+}
+
+inline Fraction::value_type sub(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
+    return add(overflow, a, -b);
+}
+
+Fraction Fraction::operator+(const Fraction& other) const {
+    bool overflow = false;
+    Fraction result = Fraction(
+                          add(overflow,
+                              mul(overflow, top_, other.bottom_),
+                              mul(overflow, bottom_, other.top_)),
+                          mul(overflow, bottom_, other.bottom_));
+    if (overflow) {
+        result = Fraction(double(*this) + double(other));
+    }
+    return result;
+}
+
+Fraction Fraction::operator-(const Fraction& other) const {
+    bool overflow = false;
+    Fraction result = Fraction(
+                          sub(overflow,
+                              mul(overflow, top_, other.bottom_),
+                              mul(overflow, bottom_, other.top_)),
+                          mul(overflow, bottom_, other.bottom_));
+    if (overflow) {
+        result = Fraction(double(*this) - double(other));
+    }
+    return result;
+}
+
+Fraction Fraction::operator/(const Fraction& other) const {
+    bool overflow = false;
+    Fraction result =  Fraction(mul(overflow, top_, other.bottom_),
+                                mul(overflow, bottom_, other.top_));
+    if (overflow) {
+        result = Fraction(double(*this) / double(other));
+    }
+    return result;
+
+}
+
+Fraction Fraction::operator*(const Fraction& other) const {
+    bool overflow = false;
+    Fraction result = Fraction(mul(overflow, top_, other.top_),
+                               mul(overflow, bottom_, other.bottom_));
+    if (overflow) {
+        result = Fraction(double(*this) * double(other));
+    }
+    return result;
+}
+
+bool Fraction::operator==(const Fraction& other) const {
+    // Assumes canonical form
+    return top_ == other.top_ && bottom_ == other.bottom_;
+}
+
+bool Fraction::operator!=(const Fraction& other) const {
+    return !(*this == other);
+}
+
+bool Fraction::operator<(const Fraction& other) const {
+    bool overflow = false;
+    bool result = mul(overflow, top_, other.bottom_) < mul(overflow, other.top_, bottom_);
+    if (overflow) {
+        return double(*this) < double(other);
+    }
+    return result;
+}
+
+bool Fraction::operator<=(const Fraction& other) const {
+    bool overflow = false;
+    bool result = mul(overflow, top_, other.bottom_) <= mul(overflow, other.top_, bottom_);
+    if (overflow) {
+        return double(*this) <= double(other);
+    }
+    return result;
+}
+
+bool Fraction::operator>(const Fraction& other) const {
+    bool overflow = false;
+    bool result = mul(overflow, top_, other.bottom_) > mul(overflow, other.top_, bottom_);
+    if (overflow) {
+        return double(*this) > double(other);
+    }
+    return result;
+}
+
+bool Fraction::operator>=(const Fraction& other) const {
+    bool overflow = false;
+    bool result = mul(overflow, top_, other.bottom_) >= mul(overflow, other.top_, bottom_);
+    if (overflow) {
+        return double(*this) < double(other);
+    }
+    return result;
+}
+
 
 } // namespace eckit
 

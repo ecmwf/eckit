@@ -68,6 +68,10 @@ struct Translator<std::string,double>
     { double   operator()(const std::string&); };
 
 template<>
+struct Translator<std::string,float>
+    { float operator()(const std::string&); };
+
+template<>
 struct Translator<long,std::string>
     { std::string operator()(long);          };
 

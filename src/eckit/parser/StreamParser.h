@@ -44,10 +44,12 @@ public: // methods
     void consume(const char*);
 
     void expect(const char*);
+    void putback(char);
 
 protected: // members
 
     size_t line_;
+    size_t pos_;
 
 private: // members
 
@@ -55,6 +57,10 @@ private: // members
 
     bool comments_;
     std::set<char> comment_;
+
+    char _get();
+    char _peek();
+    bool _eof();
 
 };
 

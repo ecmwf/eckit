@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -eux
+
+cd @CMAKE_CURRENT_BINARY_DIR@
+
+exe="./ECKIT-221.x"
+
+fname="file1.txt"
+str="abc123"
+
+### Case 1 - Serial
+
+function create_file {
+  rm -f $fname*
+  echo "$str" >> $fname
+  echo "$str" >> $fname
+  echo "$str" >> $fname
+}
+
+create_file
+
+$exe "$fname"
+
+cmp "$fname" "$fname.0"
+
+### Case 2 - Parallel
+
+if [ "@ECKIT_HAVE_MPI@" == "1" ]; then
+
+  create_file
+
+  @MPIEXEC@ -np 4 $exe "$fname"
+
+  for i in 0 1 2 3; do
+    cmp "$fname" "$fname.$i"
+  done
+
+fi
+
+echo "OK"

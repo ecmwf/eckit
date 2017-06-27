@@ -22,6 +22,7 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/memory/ScopedPtr.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/config/Configuration.h"
 
 namespace eckit {
 
@@ -44,21 +45,23 @@ public: // methods
 
     virtual std::string prefixDirectory() const;
 
+    virtual std::string libraryHome() const;
+
     virtual void libraryHome(const std::string&);
 
     virtual std::string expandPath(const std::string& path) const;
 
-//    virtual LocalPathName bin() const;
-//    virtual LocalPathName lib() const;
-//    virtual LocalPathName share() const;
-//    virtual LocalPathName etc() const;
-
     std::string libraryPath() const;
 
     virtual std::string version() const = 0;
+
     virtual std::string gitsha1(unsigned int count = 40) const = 0;
 
+    virtual bool debug() const { return debug_; }
+
     virtual Channel& debugChannel() const;
+
+    virtual const Configuration& configuration() const;
 
 public: // class methods
 
@@ -67,6 +70,9 @@ public: // class methods
 
     static bool exists(const std::string& name);
     static const Library& lookup(const std::string& name);
+
+    void lock()   { mutex_.lock(); }
+    void unlock() { mutex_.unlock(); }
 
 protected: // methods
 
@@ -97,6 +103,8 @@ private: // members
 
     mutable eckit::ScopedPtr<eckit::Channel> debugChannel_;
 
+    mutable eckit::ScopedPtr<eckit::Configuration> configuration_;
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -110,8 +118,8 @@ struct LibraryRegistration {
 
 #define REGISTER_LIBRARY(X)                             \
 static eckit::system::LibraryRegistration<X> libregist; \
-void force_link_library_register(void*) {               \
-    force_link_library_register(&libregist);            \
+void force_link_library_register_##X(void*) {           \
+    force_link_library_register_##X(&libregist);        \
 }
 
 //----------------------------------------------------------------------------------------------------------------------

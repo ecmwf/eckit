@@ -15,102 +15,13 @@
 #ifndef eckit_JSONConfiguration_H
 #define eckit_JSONConfiguration_H
 
-#include "eckit/config/Configuration.h"
+#warning eckit::JSONConfiguration is deprecated in favour of eckit::YAMLConfiguration found in header "eckit/config/YAMLConfiguration.h", as a drop-in replacement.
 
+#include "eckit/config/YAMLConfiguration.h"
 
 namespace eckit {
 
-class PathName;
-class Stream;
-
-class JSONConfiguration : public Configuration {
-  public:
-
-    // -- Exceptions
-    // None
-
-    // -- Contructors
-
-    JSONConfiguration(const eckit::PathName &path, char separator = '.');
-    JSONConfiguration(std::istream &, char separator = '.');
-    JSONConfiguration(Stream&, char separator = '.');
-
-    virtual ~JSONConfiguration(); // Change to virtual if base class
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-
-
-    // -- Overridden methods
-
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-
-
-  protected:
-
-
-    // -- Destructor
-
-    // -- Members
-    // None
-
-    // -- Methods
-
-    // void print(ostream&) const; // Change to virtual if base class
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-  private:
-
-    // No copy allowed
-
-    JSONConfiguration(const JSONConfiguration &);
-    JSONConfiguration &operator=(const JSONConfiguration &);
-
-    // Make private so no one modifies it
-
-    // -- Members
-
-    std::string path_;
-
-
-    // -- Methods
-
-
-    // -- Overridden methods
-
-    // From MIRParametrisation
-    virtual void print(std::ostream &) const;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-
-    //friend ostream& operator<<(ostream& s,const JSONConfiguration& p)
-    //  { p.print(s); return s; }
-
-};
-
+typedef YAMLConfiguration JSONConfiguration;
 
 } // namespace eckit
 #endif

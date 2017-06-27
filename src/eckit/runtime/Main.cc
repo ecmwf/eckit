@@ -9,6 +9,7 @@
 */
 
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "eckit/bases/Loader.h"
 #include "eckit/filesystem/LocalPathName.h"
@@ -142,8 +143,12 @@ std::string Main::hostname()
     return hostname;
 }
 
-std::string Main::name() const {
+const std::string& Main::name() const {
     return name_;
+}
+
+const std::string& Main::displayName() const {
+    return displayName_;
 }
 
 bool Main::ready() {
@@ -159,6 +164,10 @@ void Main::initialise(int argc, char** argv, const char* homeenv) {
     if (instance_ == 0) {
         new Library(argc, argv, homeenv);
     }
+}
+
+bool Main::debug() const {
+    return debug_;
 }
 
 LogTarget* Main::createInfoLogTarget() const {

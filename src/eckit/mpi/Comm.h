@@ -18,6 +18,8 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Buffer.h"
 
 #include "eckit/mpi/Buffer.h"
 #include "eckit/mpi/DataType.h"
@@ -43,6 +45,14 @@ void addComm(const char* name, int comm);
 
 /// Check if a communicator is registered
 bool hasComm(const char* name);
+
+/// Finalises all the comms that are registered
+///
+/// @note This should not be necessary to be called, since all singletong Comms finalise themselves on destruction
+///       when application shutsdown. Currently there is a bug in OpenMPI on MacOSX (see ECKIT-166) that implies
+///       that MPI_Finalize must be called explicitly before exiting main(). This is the only current reason to use
+///       this function.
+void finaliseAllComms();
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -256,6 +266,17 @@ public:  // methods
     void send(T& sendbuf, int dest, int tag) const;
 
     ///
+    /// Blocking send, until message recieved
+    ///
+
+    template <typename T>
+    void synchronisedSend(T* sendbuf, size_t count, int dest, int tag) const;
+
+    template <typename T>
+    void synchronisedSend(T& sendbuf, int dest, int tag) const;
+
+
+    ///
     /// Non-blocking send
     ///
 
@@ -272,7 +293,11 @@ public:  // methods
     template <typename T>
     void allToAll(const std::vector< std::vector<T> >& sendvec, std::vector< std::vector<T> >& recvvec) const;
 
+    ///
+    /// Read file on one rank, and broadcast
+    ///
 
+    virtual eckit::SharedBuffer broadcastFile( const eckit::PathName& filepath, size_t root ) const = 0;
 
     /// @brief The communicator
     virtual int communicator() const = 0;
@@ -313,6 +338,8 @@ public:  // methods
       virtual Status receive(void* recv, size_t count, Data::Code datatype, int source, int tag) const = 0;
 
       virtual void send(const void* send, size_t count, Data::Code datatype, int dest, int tag) const = 0;
+
+      virtual void synchronisedSend(const void* send, size_t count, Data::Code datatype, int dest, int tag) const = 0;
 
       virtual Request iReceive(void* recv, size_t count, Data::Code datatype, int source, int tag) const = 0;
 
@@ -738,6 +765,17 @@ template <typename T>
 void eckit::mpi::Comm::send(T& sendbuf, int dest, int tag) const {
     send(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
 }
+
+template <typename T>
+void eckit::mpi::Comm::synchronisedSend(T* sendbuf, size_t count, int dest, int tag) const {
+    synchronisedSend(sendbuf, count, Data::Type<T>::code(), dest, tag);
+}
+
+template <typename T>
+void eckit::mpi::Comm::synchronisedSend(T& sendbuf, int dest, int tag) const {
+    synchronisedSend(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
+}
+
 
 ///
 /// Non-blocking send

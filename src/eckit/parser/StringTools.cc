@@ -14,11 +14,10 @@
 #include "eckit/parser/StringTools.h"
 #include "eckit/parser/Tokenizer.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
 std::string StringTools::substitute(const std::string& s,const std::map<std::string,std::string>& m)
@@ -77,7 +76,12 @@ std::string StringTools::substitute(const std::string& s,const std::map<std::str
     return result;
 }
 
-std::vector<std::string> StringTools::substituteVariables(const std::string & s)
+std::vector<std::string> StringTools::substituteVariables(const std::string& s)
+{
+    return listVariables(s);
+}
+
+std::vector<std::string> StringTools::listVariables(const std::string& s)
 {
     std::vector<std::string> result;
     size_t len = s.length();
@@ -213,7 +217,7 @@ std::string StringTools::join(const std::string &delimiter, const std::vector<st
 
 bool StringTools::startsWith(const std::string& str, const std::string& substr)
 {
-    if( ! substr.size() || str.size() < substr.size() )
+    if(substr.empty() || str.size() < substr.size() )
         return false;
 
     for( std::string::size_type i = 0; i < substr.size();  ++i )
@@ -223,7 +227,26 @@ bool StringTools::startsWith(const std::string& str, const std::string& substr)
     return true;
 }
 
-//-----------------------------------------------------------------------------
+bool StringTools::beginsWith(const std::string& str, const std::string& substr)
+{
+    return startsWith(str, substr);
+}
+
+bool StringTools::endsWith(const std::string& str, const std::string& substr)
+{
+    if(substr.empty() || str.size() < substr.size())
+        return false;
+
+    std::string::const_reverse_iterator rj = str.rbegin();
+    for(std::string::const_reverse_iterator ri = substr.rbegin(); ri != substr.rend(); ++ri, ++rj) {
+        if(*ri != *rj )
+            return false;
+    }
+
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

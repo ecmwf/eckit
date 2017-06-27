@@ -14,36 +14,27 @@
 #ifndef eckit_JSONParser_h
 #define eckit_JSONParser_h
 
-#include "eckit/parser/StreamParser.h"
-#include "eckit/types/Types.h"
-#include "eckit/value/Value.h"
+#include "eckit/parser/ObjectParser.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class JSONParser : public StreamParser {
+class JSONParser : public ObjectParser {
 
 public: // methods
 
-    JSONParser(std::istream& in, bool comments = false);
+    JSONParser(std::istream& in);
 
-    Value parse();
+    static Value decodeFile(const PathName& path);
+    static Value decodeString(const std::string& str);
 
-private: // methods
+private:
 
-    Value parseTrue();
-    Value parseFalse();
-    Value parseNull();
-    Value parseValue();
-    Value parseObject();
-    Value parseArray();
-    Value parseString();
-    Value parseNumber();
-
-    void parseKeyValue(std::map<Value, Value> &);
+    virtual Value parseValue();
 
 };
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

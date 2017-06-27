@@ -25,6 +25,7 @@ namespace eckit {
 
 StreamParser::StreamParser(std::istream &in, bool comments, const char* comment) :
     line_(0),
+    pos_(0),
     in_(in),
     comments_(comments)
 {
@@ -33,21 +34,45 @@ StreamParser::StreamParser(std::istream &in, bool comments, const char* comment)
     }
 }
 
+char StreamParser::_get() {
+    char c = 0;
+    in_.get(c);
+    pos_++;
+    if (c == '\n') {
+        line_++;
+        pos_ = 0;
+    }
+    return c;
+}
+
+
+char StreamParser::_peek() {
+    return in_.peek();
+}
+
+bool StreamParser::_eof() {
+    return in_.eof();
+}
+
+void StreamParser::putback(char c) {
+    in_.putback(c);
+}
+
 char StreamParser::peek(bool spaces)
 {
     for (;;)
     {
-        char c = in_.peek();
+        char c = _peek();
 
-        if (in_.eof())
+        if (_eof())
             return 0;
 
         if (comments_ && comment_.find(c) != comment_.end())
         {
-            while (in_.peek() != '\n' && !in_.eof()) {
-                in_.get(c);
+            while (_peek() != '\n' && !_eof()) {
+                c = _get();
             }
-            if (in_.eof()) {
+            if (_eof()) {
                 return 0;
             }
             return peek(spaces);
@@ -60,8 +85,7 @@ char StreamParser::peek(bool spaces)
         }
         else {
 //            std::cout << "skip(" << c << ")" << std::endl;
-            in_.get(c);
-            if (c == '\n') { line_++; }
+            c = _get();
         }
     }
 }
@@ -71,18 +95,16 @@ char StreamParser::next(bool spaces)
     char c;
     for (;;)
     {
-        in_.get(c);
-        if (in_.eof())
+        c = _get();
+        if (_eof())
             throw StreamParser::Error(std::string("StreamParser::next reached eof"));
-
-        if (c == '\n') { line_++; }
 
         if (comments_ && comment_.find(c) != comment_.end())
         {
-            while (in_.peek() != '\n' && !in_.eof()) {
-                in_.get(c);
+            while (_peek() != '\n' && !_eof()) {
+                c = _get();
             }
-            if (in_.eof()) {
+            if (_eof()) {
                 throw StreamParser::Error(std::string("StreamParser::next reached eof"));
             }
             return next(spaces);

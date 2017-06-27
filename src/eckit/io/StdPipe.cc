@@ -11,16 +11,13 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/StdPipe.h"
 
-
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 StdPipe::StdPipe(const std::string& name,const std::string& mode)
 {
-	file_ = popen(name.c_str(),mode.c_str());
+	file_ = ::popen(name.c_str(),mode.c_str());
 
 	if(file_ == 0)
 		throw CantOpenFile(name);
@@ -28,12 +25,14 @@ StdPipe::StdPipe(const std::string& name,const std::string& mode)
 
 StdPipe::~StdPipe()
 {
-	if(file_)
-		if(pclose(file_))
-			throw FailedSystemCall("pclose");
+    if (file_) {
+        if (::pclose(file_) == -1) {
+            throw FailedSystemCall("pclose");
+        }
+    }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

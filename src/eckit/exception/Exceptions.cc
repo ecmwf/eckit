@@ -11,17 +11,17 @@
 #include <unistd.h>
 #include <signal.h>
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/ThreadSingleton.h"
 #include "eckit/runtime/Main.h"
 
 #include "eckit/os/BackTrace.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static Exception*& first()
 {
@@ -35,8 +35,7 @@ Exception::Exception():  next_(first())
 
     callStack_ = BackTrace::dump();
 
-
-    if(::getenv("LIBECKIT_DEBUG_EXCEPTION_DUMPS_BACKTRACE")) {
+    if(::getenv("ECKIT_EXCEPTION_DUMPS_BACKTRACE")) {
         std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
     }
 }
@@ -74,11 +73,13 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
 {
     callStack_ = BackTrace::dump();
 
-    if(::getenv("LIBECKIT_DEBUG_EXCEPTION_DUMPS_BACKTRACE")) {
+    if(::getenv("ECKIT_EXCEPTION_DUMPS_BACKTRACE")) {
         std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
     }
 
-    Log::error() << "Exception: " << w << location_ << std::endl;
+    if(! ::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
+        Log::error() << "Exception: " << w << " " << location_ << std::endl;
+    }
 
 #if 0
     if(next_) {
@@ -198,12 +199,13 @@ AssertionFailed::AssertionFailed(const std::string& w):
 {
     Log::status() << what() << std::endl;
 
-    // if(Main::instance().assertAborts())
-    // {
-        std::cout << what() << std::endl;
-        std::cout << BackTrace::dump() << std::endl;
-    //     Main::instance().abort();
-    // }
+    std::cout << what() << std::endl;
+    std::cout << BackTrace::dump() << std::endl;
+
+     if(::getenv("ECKIT_ASSERT_ABORTS"))
+     {
+         LibEcKit::instance().abort();
+     }
 }
 
 AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc)
@@ -216,12 +218,13 @@ AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc
     reason(s.str());
     Log::status() << what() << std::endl;
 
-    // if(Main::instance().assertAborts())
-    // {
-        std::cout << what() << std::endl;
-        std::cout << BackTrace::dump() << std::endl;
-    //     Main::instance().abort();
-    // }
+    std::cout << what() << std::endl;
+    std::cout << BackTrace::dump() << std::endl;
+
+    if(::getenv("ECKIT_ASSERT_ABORTS"))
+    {
+        LibEcKit::instance().abort();
+    }
 }
 
 AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
@@ -234,12 +237,13 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
     reason(s.str());
     Log::status() << what() << std::endl;
 
-    //if(Main::instance().assertAborts())
-    //{
-        std::cout << what() << std::endl;
-        std::cout << BackTrace::dump() << std::endl;
-        //Main::instance().abort();
-    //}
+    std::cout << what() << std::endl;
+    std::cout << BackTrace::dump() << std::endl;
+
+    if(::getenv("ECKIT_ASSERT_ABORTS"))
+    {
+        LibEcKit::instance().abort();
+    }
 }
 
 BadParameter::BadParameter(const std::string& w):
@@ -317,6 +321,11 @@ Stop::Stop(const std::string& r):
 
 Abort::Abort(const std::string& r):
     Exception(std::string("Abort: ") + r)
+{
+}
+
+Abort::Abort( const std::string& r, const CodeLocation& loc ):
+    Exception(std::string("Abort: ") + r, loc)
 {
 }
 

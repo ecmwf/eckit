@@ -8,24 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-// File StdPipe.h
-// Baudouin Raoult - ECMWF Jun 96
+/// @author Baudouin Raoult
 
-#ifndef eckit_StdPipe_h
-#define eckit_StdPipe_h
+#ifndef eckit_io_StdPipe_h
+#define eckit_io_StdPipe_h
 
 #include <stdio.h>
 #include <string>
 
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
-
-// Simple wrapper around a stdio file
+//----------------------------------------------------------------------------------------------------------------------
 
 class StdPipe {
 public:
@@ -55,8 +49,7 @@ private:
 
 };
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

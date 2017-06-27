@@ -12,6 +12,8 @@
 #include "eckit/types/Types.h"
 #include "eckit/io/MultiPartHandle.h"
 #include "eckit/log/Timer.h"
+#include "eckit/config/Resource.h"
+
 
 //-----------------------------------------------------------------------------
 
@@ -414,7 +416,14 @@ bool MultiHandle::compress(bool sorted) {
 
         return false;
     }
-    // return false;
+
+    // BR: TODO: This is a hack: if moverTransfer is true, the MultiHandle will be sent to a 
+    // mover. So we do not compress() here, as the MultiPartHandle is not movable()
+    // The compress() will happen in the mover. We need a better solution
+    static const bool moverTransfer = Resource<bool>("-mover;moverTransfer",0);
+    if(moverTransfer) {
+        return false;
+    }
 
     if(sorted) {
         NOTIMP;

@@ -116,7 +116,7 @@ struct SPMInfo {
 
 SparseMatrix::SparseMatrix(const eckit::Buffer& buffer)
 {
-    size_t buffsize = buffer.size();
+    size_t size = buffer.size();
 
     const char* b = buffer;
     char* addr = const_cast<char*>(b);
@@ -146,9 +146,44 @@ SparseMatrix::SparseMatrix(const eckit::Buffer& buffer)
 
     // check offsets don't segfault
 
-    ASSERT(info.data_  + sizeofData()  <= buffsize);
-    ASSERT(info.outer_ + sizeofOuter() <= buffsize);
-    ASSERT(info.inner_ + sizeofInner() <= buffsize);
+    ASSERT(info.data_  + sizeofData()  <= size);
+    ASSERT(info.outer_ + sizeofOuter() <= size);
+    ASSERT(info.inner_ + sizeofInner() <= size);
+}
+
+SparseMatrix::SparseMatrix(const void* buffer, size_t size)
+{
+    void* b = const_cast<void*>(buffer);
+    char* addr = static_cast<char*>(b);
+
+    eckit::MemoryHandle mh(buffer, size);
+    mh.openForRead();
+
+    struct SPMInfo info;
+    mh.read(&info, sizeof(SPMInfo));
+
+    ASSERT(info.size_ && info.rows_ && info.cols_);
+    ASSERT(info.data_ > 0 && info.outer_ > 0 && info.inner_ > 0);
+
+    own_  = false;
+    size_ = info.size_;
+    rows_ = info.rows_;
+    cols_ = info.cols_;
+
+    ASSERT(size >= sizeof(SPMInfo) +
+                           + sizeofData()
+                           + sizeofOuter()
+                           + sizeofInner() );
+
+    data_  = reinterpret_cast<Scalar*>(addr + info.data_);
+    outer_ = reinterpret_cast<Index*>(addr + info.outer_);
+    inner_ = reinterpret_cast<Index*>(addr + info.inner_);
+
+    // check offsets don't segfault
+
+    ASSERT(info.data_  + sizeofData()  <= size);
+    ASSERT(info.outer_ + sizeofOuter() <= size);
+    ASSERT(info.inner_ + sizeofInner() <= size);
 }
 
 SparseMatrix::~SparseMatrix() {
@@ -234,6 +269,33 @@ void SparseMatrix::dump(Buffer& buffer) const {
 
     MemoryHandle mh(buffer);
     mh.openForWrite(buffer.size());
+
+    SPMInfo info;
+
+    info.size_  = nonZeros();
+    info.rows_  = rows();
+    info.cols_  = cols();
+
+    info.data_  = sizeof(SPMInfo);
+    info.outer_ = info.data_  + sizeofData();
+    info.inner_ = info.outer_ + sizeofOuter();
+
+    /// @todo we should try to get these memory aligned (to say 64 bytes)
+
+    mh.write(&info, sizeof(SPMInfo));
+
+    ASSERT(mh.write(data_,  sizeofData())  == long(sizeofData()));
+    ASSERT(mh.write(outer_, sizeofOuter()) == long(sizeofOuter()));
+    ASSERT(mh.write(inner_, sizeofInner()) == long(sizeofInner()));
+}
+
+void SparseMatrix::dump(void* buffer, size_t size) const {
+
+    size_t minimum = sizeof(SPMInfo) + sizeofData() + sizeofOuter() + sizeofInner();
+    ASSERT(size >= minimum);
+
+    MemoryHandle mh(buffer, size);
+    mh.openForWrite(size);
 
     SPMInfo info;
 

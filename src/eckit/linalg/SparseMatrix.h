@@ -53,11 +53,14 @@ public:  // methods
     /// Constructor from triplets
     SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets);
 
-    /// Construct vector from existing data (does NOT take ownership)
+    /// Construct matrix from existing data (does NOT take ownership)
     SparseMatrix(Scalar* values, Size size, Size rows, Size cols, Index* outer, Index* inner);
 
-    /// Construct vector from existing data (does NOT take ownership)
+    /// Construct matrix from existing data (does NOT take ownership)
     SparseMatrix(const eckit::Buffer& buffer);
+
+    /// Construct matrix from existing data (does NOT take ownership)
+    SparseMatrix(const void* buffer, size_t size);
 
     /// Constructor from Stream
     SparseMatrix(Stream& v);
@@ -87,6 +90,7 @@ public:
     void load(const eckit::PathName& path);
 
     void dump(eckit::Buffer& buffer) const;
+    void dump(void* buffer, size_t size) const;
 
     void swap(SparseMatrix& other);
 

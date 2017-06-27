@@ -54,8 +54,7 @@ Vector::Vector(Stream& stream) :
     resize(length);
 
     ASSERT(length_ > 0);
-    Buffer b(array_, length*sizeof(Scalar), /* dummy */ true);
-    stream >> b;
+    stream.readBlob(array_, length*sizeof(Scalar));
 }
 
 
@@ -115,10 +114,8 @@ void Vector::fill(Scalar value) {
 
 
 void Vector::encode(Stream& stream) const {
-  Buffer b(array_, length_*sizeof(Scalar), /* dummy */ true);
-
   stream << length_;
-  stream << b;
+  stream.writeBlob(array_, length_*sizeof(Scalar));
 }
 
 

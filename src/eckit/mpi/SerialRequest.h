@@ -84,7 +84,10 @@ public: // methods
 
     virtual bool isReceive() const { return true; }
 
+    /// Non const access is needed
     void* buffer() { return buffer_; }
+
+    const void* buffer() const { return buffer_; }
 
     size_t count() const { return count_; }
 
@@ -94,7 +97,8 @@ public: // methods
 
 private:
 
-    eckit::Buffer buffer_;  ///< this buffer does not own the memory (see constructor with dummy bool)
+    void* buffer_;
+    size_t size_;
     size_t count_;
     int tag_;
     Data::Code type_;

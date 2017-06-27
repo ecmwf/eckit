@@ -13,7 +13,6 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/filesystem/PathName.h"
 
 
 namespace eckit {

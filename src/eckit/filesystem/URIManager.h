@@ -30,8 +30,6 @@ class DataHandle;
 class URIManager {
 public:
 
-// - Methods
-
     virtual bool exists(const URI&) = 0;
     
     virtual DataHandle*  newWriteHandle(const URI&) = 0;
@@ -43,7 +41,8 @@ public:
 protected:
 
 	URIManager(const std::string&);
-	virtual ~URIManager();
+
+    virtual ~URIManager();
 
 	virtual void print(std::ostream&) const;
 
@@ -51,30 +50,9 @@ private:
 
 	std::string name_;
 
-	friend std::ostream& operator<<(std::ostream& s,const URIManager& p)
-			{ p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s,const URIManager& p) { p.print(s); return s; }
 
 };
-
-//----------------------------------------------------------------------------------------------------------------------
-
-#if 0
-class FileManagerFactory {
-	std::string name_;
-	virtual URIManager* make(const std::string&) = 0 ;
-public:
-	static URIManager* build(const std::string&);
-	FileManagerFactory(const std::string&);
-	virtual ~FileManagerFactory();
-};
-
-template<class T>
-class FileManagerBuilder : public FileManagerFactory {
-	virtual URIManager* make(const std::string& name) { return new T(name); }
-public:
-	FileManagerBuilder(const std::string& name) : FileManagerFactory(name) {}
-};
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 

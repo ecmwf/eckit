@@ -11,18 +11,19 @@
 /// @author Baudouin Raoult
 /// @date JUl 2015
 
-
 #ifndef eckit_YAMLConfiguration_H
 #define eckit_YAMLConfiguration_H
 
 #include "eckit/config/Configuration.h"
-#include "eckit/io/Buffer.h"
+#include "eckit/io/SharedBuffer.h"
 #include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 class PathName;
 class Stream;
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class YAMLConfiguration :
         public Configuration,
@@ -45,6 +46,8 @@ private: // members
     virtual void print(std::ostream &) const;
 
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

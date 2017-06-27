@@ -22,14 +22,11 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// Uncomment following line to reintroduce ECKIT-166 bug.
-// #define REPRODUCE_ECKIT_166
-// TODO: Delete the code below guareded by "#ifdef REPRODUCE_ECKIT_166"
-
 class Environment {
 public:
 
     static const char* getDefaultComm() {
+
         // Force a given communicator (only required if e.g. running serial applications with MPI)
         if (const char* forcedComm = ::getenv("ECKIT_MPI_FORCE")) {
             return forcedComm;
@@ -139,35 +136,6 @@ public:
         communicators[name] = pComm;
     }
 
-#ifdef REPRODUCE_ECKIT_166
-    CommFactory& getFactory(const std::string& name) {
-
-        AutoLock<Mutex> lock(mutex_);
-
-        std::map<std::string, CommFactory *>::const_iterator j = factories.find(name);
-
-        if (j != factories.end()) { return *(j->second); }
-
-        eckit::Log::error() << "No CommFactory for [" << name << "]" << std::endl;
-        eckit::Log::error() << "CommFactories are:" << std::endl;
-        for (j = factories.begin() ; j != factories.end() ; ++j)
-            eckit::Log::error() << "   " << (*j).first << std::endl;
-
-        throw eckit::SeriousBug(std::string("No CommFactory called ") + name);
-    }
-
-    void registFactory(const std::string& name, CommFactory* f) {
-        AutoLock<Mutex> lock(mutex_);
-        ASSERT(factories.find(name) == factories.end());
-        factories[name] = f;
-    }
-
-    void unregistFactory(const std::string& name) {
-        AutoLock<Mutex> lock(mutex_);
-        factories.erase(name);
-    }
-#endif
-
     Environment() : default_(0) {}
 
     ~Environment() {
@@ -181,10 +149,6 @@ public:
     Comm* default_;
 
     std::map<std::string, Comm*> communicators;
-
-#ifdef REPRODUCE_ECKIT_166
-    std::map<std::string, CommFactory*> factories;
-#endif
 
     eckit::Mutex mutex_;
 };
@@ -234,10 +198,6 @@ private:
   eckit::Mutex mutex_;
 };
 
-#ifdef REPRODUCE_ECKIT_166
-#define CommFactories Environment
-#endif
-
 CommFactory::CommFactory(const std::string &name):
     name_(name) {
     CommFactories::instance().registFactory(name, this);
@@ -255,10 +215,6 @@ Comm*CommFactory::build(const std::string& name, int comm)
 {
     return CommFactories::instance().getFactory(name).make(comm);
 }
-
-#ifdef REPRODUCE_ECKIT_166
-#undef CommFactories
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 

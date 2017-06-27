@@ -10,14 +10,16 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date July 1996
+/// @date   July 1996
 
-#ifndef eckit_Buffer_h
-#define eckit_Buffer_h
+#ifndef eckit_io_Buffer_h
+#define eckit_io_Buffer_h
+
+#include <string>
 
 #include "eckit/eckit.h"
 
-#include "eckit/memory/Counted.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -25,16 +27,13 @@ namespace eckit {
 
 // A simple class to implement buffers
 
-class Buffer : public eckit::Counted {
+class Buffer : private NonCopyable {
 
 public: // methods
 
     Buffer(size_t size);
     Buffer(const std::string& s);
     Buffer(const char*, size_t size);
-
-    /// Constructor that does not take ownership of the data
-    Buffer(void*, size_t size, bool dummy);
 
     ~Buffer();
 
@@ -46,7 +45,7 @@ public: // methods
 
     void* data() { return buffer_; }
 
-    size_t size() const		 { return size_; }
+    size_t size() const { return size_; }
 
     void resize(size_t size);
 
@@ -64,61 +63,6 @@ private: // members
 
     void*  buffer_;
     size_t size_;
-
-    bool   owned_;
-
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/// A buffer that can be shared and is thread-safe
-/// Note that this buffer, once shared should be for read-only shared-access (at the moment)
-/// because access is not controlled by locking, only allocation and deallocation
-
-class SharedBuffer {
-
-public: // methods
-
-    SharedBuffer(size_t size) : buffer_(new Buffer(size)) {
-        buffer_->attach();
-    }
-
-    /// @note Takes ownership of the buffer
-    SharedBuffer(Buffer* b) {
-        ASSERT(b);
-        buffer_ = b;
-        buffer_->attach();
-    }
-
-    ~SharedBuffer() {
-        buffer_->detach();
-    }
-
-    SharedBuffer(const SharedBuffer& s) : buffer_(s.buffer_) {
-        buffer_->attach();
-    }
-
-    SharedBuffer& operator=(const SharedBuffer& s) {
-        if(buffer_) { buffer_->detach(); }
-        buffer_ = s.buffer_;
-        buffer_->attach();
-        return *this;
-    }
-
-    operator void*()                 { return *buffer_; }
-    operator const void*() const     { return *buffer_; }
-
-    size_t size() const              { return buffer_->size(); }
-
-    /// Careful, use str() to convert the contents of a buffer to a string
-    /// and don't rely on the contents to be null terminated
-
-    std::string str() const { return std::string(*buffer_, size()); }
-
-private:
-
-    Buffer* buffer_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -84,9 +84,10 @@ io/DataBlob.h
 io/DataBlob.cc
 io/Buffer.cc
 io/Buffer.h
+io/SharedBuffer.cc
+io/SharedBuffer.h
 io/CircularBuffer.cc
 io/CircularBuffer.h
-io/Buffer.cc
 io/BufferCache.h
 io/BufferCache.cc
 io/FileLocker.h

@@ -474,7 +474,7 @@ eckit::SharedBuffer Parallel::broadcastFile( const PathName& filepath, size_t ro
 
     bool isRoot = rank() == root;
 
-    eckit::Buffer* buffer;
+    eckit::CountedBuffer* buffer;
 
     struct BFileOp {
         int     err_;
@@ -488,7 +488,7 @@ eckit::SharedBuffer Parallel::broadcastFile( const PathName& filepath, size_t ro
             eckit::ScopedPtr<DataHandle> dh( filepath.fileHandle() );
 
             op.len_ = dh->openForRead(); AutoClose closer(*dh);
-            buffer = new eckit::Buffer(op.len_);
+            buffer = new eckit::CountedBuffer(op.len_);
             dh->read(buffer->data(), op.len_);
 
             if(filepath.isDir()) { op.err_ = EISDIR; }
@@ -512,7 +512,7 @@ eckit::SharedBuffer Parallel::broadcastFile( const PathName& filepath, size_t ro
     }
 
     if(!isRoot) {
-        buffer = new eckit::Buffer(op.len_);
+        buffer = new eckit::CountedBuffer(op.len_);
     }
 
     broadcast(*buffer, op.len_, Data::BYTE, root);
@@ -520,7 +520,7 @@ eckit::SharedBuffer Parallel::broadcastFile( const PathName& filepath, size_t ro
     return eckit::SharedBuffer(buffer);
 }
 
-CommBuilder<Parallel> ParallelBuilder("parallel");
+static CommBuilder<Parallel> ParallelBuilder("parallel");
 
 //----------------------------------------------------------------------------------------------------------------------
 

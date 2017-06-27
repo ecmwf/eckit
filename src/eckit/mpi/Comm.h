@@ -19,7 +19,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/io/Buffer.h"
+#include "eckit/io/SharedBuffer.h"
 
 #include "eckit/mpi/Buffer.h"
 #include "eckit/mpi/DataType.h"

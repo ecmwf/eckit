@@ -30,15 +30,14 @@ class CircularBuffer : public eckit::NonCopyable {
 public: // methods
 
     CircularBuffer(size_t size = 64 * 1024);
-    ~CircularBuffer();
 
+    ~CircularBuffer();
 
     size_t write(const void* buffer, size_t length);
     size_t read(void* buffer, size_t length);
 
     size_t length() const;
     void clear();
-
 
 private: // members
 

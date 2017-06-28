@@ -33,7 +33,7 @@ struct Timing {
 
     Timing(): elapsed_(0), cpu_(0), updates_(0) {}
     Timing(double elapsed, double cpu, size_t updates): elapsed_(elapsed), cpu_(cpu), updates_(updates) {}
-    Timing(Timer& timer): elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()), updates_(0) {}
+    Timing(Timer& timer): elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()), updates_(1) {}
     Timing& operator+=(const Timing&);
     Timing operator-(const Timing&) const;
     Timing& operator/=(size_t);

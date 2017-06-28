@@ -41,7 +41,7 @@ struct Timing {
 
 Stream& operator>>(Stream&, Timing&);
 Stream& operator<<(Stream&, const Timing&);
-
+std::ostream& operator<<(std::ostream&, const Timing&);
 
 class AutoTiming {
     Timer& timer_;

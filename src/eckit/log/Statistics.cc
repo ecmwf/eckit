@@ -143,6 +143,11 @@ Stream &operator>>(Stream & s, Timing & t) {
     return s;
 }
 
+std::ostream& operator<<(std::ostream& s, const Timing& t) {
+    s << t.elapsed_;
+    return s;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

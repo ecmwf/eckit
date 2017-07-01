@@ -173,10 +173,14 @@ struct YAMLItemKey : public YAMLItem {
         s << "YAMLItemKey[value=" << value_ << ", indent=" << indent_ << "]";
     }
 
-    YAMLItemKey(const YAMLItem& item): YAMLItem(item.indent_, item.value_) {
+    YAMLItemKey(YAMLItem* item): YAMLItem(item->indent_, item->value_) {
         std::string v(value_);
         ASSERT(v.size());
         value_ = v.substr(0, v.size() - 1);
+
+        // Trigger deletion
+        item->attach();
+        item->detach();
     }
 
     Value value(YAMLParser& parser) const {
@@ -666,10 +670,7 @@ void YAMLParser::loadItem()
         std::string v(item->value_);
 
         if (v.size() && v[v.size() - 1] == ':') {
-            YAMLItem* old = item;
-            old->attach(); // Will be detached
-            item = new YAMLItemKey(*old);
-            old->detach();
+            item = new YAMLItemKey(item);
         }
     }
 

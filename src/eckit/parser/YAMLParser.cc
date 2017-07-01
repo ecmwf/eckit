@@ -335,6 +335,7 @@ YAMLParser::YAMLParser(std::istream &in):
 
 YAMLParser::~YAMLParser() {
     for (std::deque<YAMLItem*>::iterator j = items_.begin(); j != items_.end(); ++j) {
+        eckit::Log::warning() << "YAMLParser::~YAMLParser left over: " << (*j) << std::endl;
         (*j)->detach();
     }
     if (last_) {
@@ -715,7 +716,7 @@ const YAMLItem& YAMLParser::peekItem() {
 
 Value YAMLParser::parseValue() {
     Value v = nextItem().parse(*this);
-    ASSERT(items_.empty());
+    // ASSERT(items_.empty());
     return v;
 }
 

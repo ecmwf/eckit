@@ -714,7 +714,9 @@ const YAMLItem& YAMLParser::peekItem() {
 }
 
 Value YAMLParser::parseValue() {
-    return nextItem().parse(*this);
+    Value v = nextItem().parse(*this);
+    ASSERT(items_.empty());
+    return v;
 }
 
 

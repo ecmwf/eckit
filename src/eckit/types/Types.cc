@@ -16,55 +16,51 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template<class T>
-void operator<<(Stream& s,const std::vector<T>& t)
-{
-	s << Ordinal(t.size());
+Stream& operator<<(Stream& s,const std::vector<T>& t) {
+    s << Ordinal(t.size());
     for(typename std::vector<T>::const_iterator i = t.begin(); i != t.end() ; ++i)
-		s << (*i);
+        s << (*i);
+    return s;
 }
 
 template<class T>
-void operator>>(Stream& s, std::vector<T>& t)
-{
+Stream& operator>>(Stream& s, std::vector<T>& t) {
+    Ordinal size;
+    s >> size;
 
-	Ordinal size;
-	s >> size;
+    t.clear();
+    t.reserve(size);
 
-	t.clear();
-	t.reserve(size);
-
-	for(Ordinal i = 0; i < size; i++)
-	{
-		T n;
-		s >> n;
-		t.push_back(n);
-	}
+    for(Ordinal i = 0; i < size; i++) {
+        T n;
+        s >> n;
+        t.push_back(n);
+    }
+    return s;
 }
 
 template<class K, class V>
-void operator<<(Stream& s,const std::map<K,V>& t)
-{
+Stream& operator<<(Stream& s,const std::map<K,V>& t) {
     s << Ordinal(t.size());
     for(typename std::map<K,V>::const_iterator i = t.begin(); i != t.end() ; ++i)
         s << i->first << i->second;
+    return s;
 }
 
 template<class K, class V>
-void operator>>(Stream& s, std::map<K,V>& t)
-{
+Stream& operator>>(Stream& s, std::map<K,V>& t) {
+    Ordinal size;
+    s >> size;
 
-	Ordinal size;
-	s >> size;
+    t.clear();
 
-	t.clear();
-
-	for(Ordinal i = 0; i < size; i++)
-	{
-		K k;
-		s >> k;
+    for(Ordinal i = 0; i < size; i++) {
+        K k;
+        s >> k;
         V v(s);
-		t[k] = v;
-	}
+        t[k] = v;
+    }
+    return s;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/container/CacheLRU.h"
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------

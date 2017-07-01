@@ -104,6 +104,8 @@ public:
     // Blobs
     Stream& operator>>(Buffer&);
 
+    Stream& operator>>(std::map<std::string, std::string>&);
+
 // -- Methods
 
     bool next(std::string&);

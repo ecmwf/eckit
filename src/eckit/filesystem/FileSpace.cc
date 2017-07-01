@@ -151,10 +151,12 @@ void FileSpace::load() const
 
 	std::vector<std::string> disks;
 
-	char line[1024];
-	while(in >> line)
-		if(line[0] != 0 || line[0] != '#')
+    char line[1024] = {0,};
+    while(in >> line) {
+        if(line[0] != 0 || line[0] != '#') {
 			disks.push_back(line);
+        }
+    }
 
 	ClusterDisks::load(name_, disks);
 

@@ -74,6 +74,7 @@ protected:
 	virtual std::string  typeName() const       { return "Time"; }
 	virtual bool    isTime() const         { return true; }
     virtual Content* clone() const;
+    virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
 
     // -- From Streamable
 

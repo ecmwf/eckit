@@ -82,6 +82,7 @@ protected:
     virtual bool contains(const Value& key) const;
     virtual Content* clone() const;
     virtual size_t size() const;
+    virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
 
     // -- From Streamable
 

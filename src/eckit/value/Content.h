@@ -189,6 +189,8 @@ protected:
 // -- Methods
 
 	virtual void   print(std::ostream&) const  = 0;
+    virtual void   dump(std::ostream&, size_t, bool indent=true) const  = 0;
+
 	virtual std::string typeName()      const = 0;
     virtual void   json(JSON&)     const  = 0;
     virtual Content* clone() const = 0;

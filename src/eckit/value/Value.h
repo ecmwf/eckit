@@ -261,6 +261,9 @@ public:
     Value keys() const;
     size_t size() const;
 
+    std::ostream& dump(std::ostream& out, size_t depth=0, bool indent=true) const;
+
+
 public:
     bool contains(const char*) const;
     bool contains(const std::string&) const;

@@ -86,6 +86,7 @@ protected:
 	virtual std::string  typeName()      const { return "Number"; }
 	virtual bool    isNumber()      const { return true; }
     virtual Content* clone() const;
+    virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
 
     // -- From Streamable
 

@@ -110,6 +110,17 @@ Content* DateContent::mod(const Content& other) const
     return other.modDate(*this);
 }
 
+
+void DateContent::dump(std::ostream& out, size_t depth, bool indent) const {
+    if (indent) {
+        while (depth-- > 0) {
+            out << ' ';
+        }
+    }
+    out << "date(" << value_ << ")";
+}
+
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

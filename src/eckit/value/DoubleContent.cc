@@ -20,7 +20,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-ClassSpec DoubleContent::classSpec_ = {&Content::classSpec(),"DoubleContent",};
+ClassSpec DoubleContent::classSpec_ = {&Content::classSpec(), "DoubleContent",};
 Reanimator<DoubleContent> DoubleContent::reanimator_;
 
 DoubleContent::DoubleContent(double l):
@@ -68,9 +68,9 @@ int DoubleContent::compare(const Content& other) const
 int DoubleContent::compareDouble(const DoubleContent& other) const
 {
     double dif = (value_ - other.value_);
-    if(dif == 0)
+    if (dif == 0)
         return dif;
-    if(dif<0)
+    if (dif < 0)
         return -1;
     return 1;
 }
@@ -78,9 +78,9 @@ int DoubleContent::compareDouble(const DoubleContent& other) const
 int DoubleContent::compareNumber(const NumberContent& other) const
 {
     double dif = (value_ - other.value_);
-    if(dif == 0)
+    if (dif == 0)
         return dif;
-    if(dif<0)
+    if (dif < 0)
         return -1;
     return 1;
 }
@@ -92,7 +92,7 @@ void DoubleContent::value(double& l) const
 
 void DoubleContent::value(std::string& s) const
 {
-    s = Translator<double,std::string>()(value_);
+    s = Translator<double, std::string>()(value_);
 }
 
 Content* DoubleContent::add(const Content& other) const
@@ -145,6 +145,16 @@ Value DoubleContent::negate() const
 {
     return Value(-value_);
 }
+
+void DoubleContent::dump(std::ostream& out, size_t depth, bool indent) const {
+    if (indent) {
+        while (depth-- > 0) {
+            out << ' ';
+        }
+    }
+    out << "double(" << value_ << ")";
+}
+
 
 //-----------------------------------------------------------------------------
 

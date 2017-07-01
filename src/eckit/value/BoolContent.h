@@ -80,6 +80,8 @@ protected:
     //        virtual Content* divNumber(const NumberContent&) const;
 
     virtual void    print(std::ostream&) const;
+    virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
+
     virtual void    json(JSON&)     const;
     virtual std::string  typeName()      const { return "Bool"; }
     virtual bool    isBool()      const { return true; }

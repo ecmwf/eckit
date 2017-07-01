@@ -383,6 +383,12 @@ size_t Value::size() const
 {
     return content_->size();
 }
+
+std::ostream& Value::dump(std::ostream& out, size_t depth, bool indent) const {
+    content_->dump(out, depth, indent);
+    return out;
+}
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

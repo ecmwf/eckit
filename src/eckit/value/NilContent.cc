@@ -120,6 +120,15 @@ bool NilContent::contains(const Value&) const {
     return false;
 }
 
+void NilContent::dump(std::ostream& out, size_t depth, bool indent) const {
+    if (indent) {
+        while (depth-- > 0) {
+            out << ' ';
+        }
+    }
+    out << "nil";
+}
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

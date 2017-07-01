@@ -18,7 +18,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-ClassSpec MapContent::classSpec_ = {&Content::classSpec(),"MapContent",};
+ClassSpec MapContent::classSpec_ = {&Content::classSpec(), "MapContent",};
 Reanimator<MapContent>  MapContent::reanimator_;
 
 
@@ -37,7 +37,7 @@ MapContent::MapContent(Stream& s):
 {
     bool more;
     s >> more;
-    while(more)
+    while (more)
     {
         Value k(s);
         Value v(s);
@@ -50,7 +50,7 @@ MapContent::MapContent(Stream& s):
 void MapContent::encode(Stream& s) const
 {
     Content::encode(s);
-    for(ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j)
+    for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j)
     {
         s << true;
         s << (*j).first;
@@ -85,9 +85,9 @@ int MapContent::compare(const Content& other)const
 
 int MapContent::compareMap(const MapContent& other) const
 {
-    if(value_ == other.value_)
+    if (value_ == other.value_)
         return 0;
-    if(value_ < other.value_)
+    if (value_ < other.value_)
         return -1;
     return 1;
 
@@ -95,7 +95,7 @@ int MapContent::compareMap(const MapContent& other) const
 
 Value MapContent::keys() const {
     ValueList list;
-    for(ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
+    for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
         list.push_back((*j).first);
     }
     return Value::makeList(list);
@@ -104,9 +104,9 @@ Value MapContent::keys() const {
 void MapContent::print(std::ostream& s) const
 {
     s << '{';
-    for(ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j)
+    for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j)
     {
-        if(j != value_.begin()) s << " , ";
+        if (j != value_.begin()) s << " , ";
         s << (*j).first;
         s << " => ";
         s << (*j).second;
@@ -117,7 +117,7 @@ void MapContent::print(std::ostream& s) const
 void MapContent::json(JSON& s) const
 {
     s.startObject();
-    for(ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j)
+    for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j)
     {
         s << (*j).first;
         s << (*j).second;
@@ -128,7 +128,7 @@ void MapContent::json(JSON& s) const
 
 Content* MapContent::clone() const {
     ValueMap v;
-    for(ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
+    for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
         v[(*j).first.clone()] = (*j).second.clone();
     }
     return new MapContent(v);
@@ -159,6 +159,40 @@ Content* MapContent::mod(const Content& other) const
 {
     return other.modMap(*this);
 }
+
+
+void MapContent::dump(std::ostream& out, size_t depth, bool indent) const {
+
+    if (indent) {
+        size_t n = depth;
+        while (n-- > 0) {
+            out << ' ';
+        }
+    }
+
+    out << "{";
+    const char* sep = "\n";
+
+    for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j)
+    {
+        out << sep;
+        (*j).first.dump(out, depth + 3);
+        out << ": ";
+        (*j).second.dump(out, depth + 3, false);
+        sep = ",\n";
+    }
+
+    if (!value_.empty()) {
+        out << '\n';
+        size_t n = depth;
+        while (n-- > 0) {
+            out << ' ';
+        }
+    }
+
+    out << "}";
+}
+
 
 //-----------------------------------------------------------------------------
 

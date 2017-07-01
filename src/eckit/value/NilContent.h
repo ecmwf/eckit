@@ -77,6 +77,7 @@ protected:
     virtual void     print(std::ostream&) const;
     virtual void   json(JSON&)     const;
     virtual Content* clone() const;
+    virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
 
     virtual bool contains(const Value&) const;
 

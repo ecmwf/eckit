@@ -568,6 +568,22 @@ Stream &Stream::operator>>(Buffer &x) {
     return *this;
 }
 
+Stream&Stream::operator>>(std::map<std::string, std::string>& m) {
+    unsigned long size;
+    *this >> size;
+
+    m.clear();
+
+    for(unsigned long i = 0; i < size; i++) {
+        std::string k;
+        *this >> k;
+        std::string v;
+        *this >> v;
+        m[k] = v;
+    }
+    return *this;
+}
+
 Stream &Stream::operator>>(double &x) {
     readTag(tag_double);
     Double d;

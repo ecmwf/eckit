@@ -138,7 +138,9 @@ void StringContent::dump(std::ostream& out, size_t depth, bool indent) const {
             out << ' ';
         }
     }
-    out << "string(" << value_ << ")";
+    // out << "string(" << value_ << ")";
+    out << '"' << value_ << '"';
+
 }
 
 //-----------------------------------------------------------------------------

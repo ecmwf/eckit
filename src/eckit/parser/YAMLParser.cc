@@ -45,7 +45,7 @@ struct YAMLItem : public Counted {
         value_(value) {}
 
     virtual ~YAMLItem() {
-        std::cout << "~YAMLItem " << value_ << std::endl;
+        // std::cout << "~YAMLItem " << value_ << std::endl;
     };
 
     friend std::ostream& operator<<(std::ostream& s, const YAMLItem& item)

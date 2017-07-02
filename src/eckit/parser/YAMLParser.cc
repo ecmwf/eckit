@@ -44,7 +44,9 @@ struct YAMLItem : public Counted {
         indent_(indent),
         value_(value) {}
 
-    virtual ~YAMLItem() {};
+    virtual ~YAMLItem() {
+        std::cout << "~YAMLItem " << value_ << std::endl;
+    };
 
     friend std::ostream& operator<<(std::ostream& s, const YAMLItem& item)
     { item.print(s); return s;}
@@ -452,15 +454,15 @@ size_t YAMLParser::consumeChars(char which) {
         cnt++;
     }
 
-    if(c == ' ' || c == '\n'){
+    if (c == ' ' || c == '\n') {
         return cnt;
     }
 
-    while(cnt-- > 0) {
+    while (cnt-- > 0) {
         putback(which);
     }
     return 0;
- }
+}
 
 bool YAMLParser::endOfToken(char c) {
     return (c == '\n' || c == 0 || c == stop_.back() || c == comma_.back() || c == colon_.back());

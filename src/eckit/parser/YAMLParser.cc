@@ -703,7 +703,7 @@ const YAMLItem& YAMLParser::nextItem() {
     }
 
     last_ = items_.front();
-    last_->attach();
+    // last_->attach();
 
     items_.pop_front();
 

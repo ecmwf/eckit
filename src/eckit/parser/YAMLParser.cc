@@ -59,6 +59,15 @@ struct YAMLItem : public Counted {
 };
 
 
+class YAMLItemLock {
+    const YAMLItem* item_;
+public:
+    YAMLItemLock(const YAMLItem* item): item_(item) { item_->attach(); }
+    ~YAMLItemLock() { item_->detach(); }
+
+};
+
+
 struct YAMLItemEOF : public YAMLItem {
 
     virtual void print(std::ostream& s) const {
@@ -172,21 +181,24 @@ struct YAMLItemReference : public YAMLItem {
 struct YAMLItemKey : public YAMLItem {
 
     virtual void print(std::ostream& s) const {
+        for (size_t i = 0; i < indent_; i++) { s << ' '; }
         s << "YAMLItemKey[value=" << value_ << ", indent=" << indent_ << "]";
     }
 
     YAMLItemKey(YAMLItem* item): YAMLItem(item->indent_, item->value_) {
+
+        YAMLItemLock lock(item); // Trigger deletion
+
         std::string v(value_);
         ASSERT(v.size());
         value_ = v.substr(0, v.size() - 1);
 
-        // Trigger deletion
-        item->attach();
-        item->detach();
     }
 
     Value value(YAMLParser& parser) const {
         std::map<Value, Value> m;
+
+        YAMLItemLock lock(this);
 
 
         const YAMLItem* key = this;
@@ -196,6 +208,8 @@ struct YAMLItemKey : public YAMLItem {
 
 
             const YAMLItem& next = parser.peekItem();
+
+            // std::cout << "key " << *key << " next " << next << std::endl;
 
             if (next.indent_ == key->indent_) {
                 // Special case
@@ -217,6 +231,7 @@ struct YAMLItemKey : public YAMLItem {
             }
 
             const YAMLItem& peek = parser.peekItem();
+            // std::cout << "key " << *key << " peek " << peek << std::endl;
 
             if (peek.indent_ < key->indent_) {
                 more = false;
@@ -254,6 +269,8 @@ struct YAMLItemEntry : public YAMLItem {
     Value value(YAMLParser& parser) const {
         std::vector<Value> l;
 
+        YAMLItemLock lock(this);
+
         bool more = true;
         while (more) {
 
@@ -287,6 +304,7 @@ struct YAMLItemEntry : public YAMLItem {
 
             if (peek.indent_ == indent_) {
                 const YAMLItem* advance = &parser.nextItem();
+                // std::cout << "advance " << *advance << std::endl;
                 ASSERT(dynamic_cast<const YAMLItemEntry*>(advance));
                 continue;
             }
@@ -337,7 +355,7 @@ YAMLParser::YAMLParser(std::istream &in):
 
 YAMLParser::~YAMLParser() {
     for (std::deque<YAMLItem*>::iterator j = items_.begin(); j != items_.end(); ++j) {
-        eckit::Log::warning() << "YAMLParser::~YAMLParser left over: " << (*j) << std::endl;
+        // eckit::Log::warning() << "YAMLParser::~YAMLParser left over: " << *(*j) << std::endl;
         (*j)->detach();
     }
     if (last_) {
@@ -618,7 +636,7 @@ void YAMLParser::loadItem()
 
         switch (cnt) {
         case 1:
-            item = new YAMLItemEntry(indent);
+            item = new YAMLItemEntry(indent + 1);
             break;
 
         case 3:
@@ -677,7 +695,7 @@ void YAMLParser::loadItem()
         }
     }
 
-    // std::cout << "item -> " << (*item) << std::endl;
+    // std::cout << "YAMLItem -> " << (*item) << std::endl;
 
     item->attach();
     items_.push_back(item);
@@ -703,7 +721,7 @@ const YAMLItem& YAMLParser::nextItem() {
     }
 
     last_ = items_.front();
-    // last_->attach();
+    last_->attach();
 
     items_.pop_front();
 

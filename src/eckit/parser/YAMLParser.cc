@@ -62,8 +62,16 @@ struct YAMLItem : public Counted {
 class YAMLItemLock {
     const YAMLItem* item_;
 public:
-    YAMLItemLock(const YAMLItem* item): item_(item) { item_->attach(); }
-    ~YAMLItemLock() { item_->detach(); }
+    YAMLItemLock(const YAMLItem* item): item_(0) { set(item); }
+    ~YAMLItemLock() { set(0); }
+
+    void set(const YAMLItem* item) {
+        if (item != item_) {
+            if (item_) item_->detach();
+            item_ = item;
+            if (item_) item_->attach();
+        }
+    }
 
 };
 
@@ -195,6 +203,7 @@ struct YAMLItemKey : public YAMLItem {
 
     }
 
+
     Value value(YAMLParser& parser) const {
         std::map<Value, Value> m;
 
@@ -216,6 +225,7 @@ struct YAMLItemKey : public YAMLItem {
                 m[key->value_] = Value(); // null
                 key = &parser.nextItem();
                 ASSERT(dynamic_cast<const YAMLItemKey*>(key));
+                lock.set(key);
                 continue;
             }
 
@@ -241,6 +251,7 @@ struct YAMLItemKey : public YAMLItem {
             if (peek.indent_ == key->indent_) {
                 key = &parser.nextItem();
                 ASSERT(dynamic_cast<const YAMLItemKey*>(key));
+                lock.set(key);
                 continue;
             }
 
@@ -721,7 +732,7 @@ const YAMLItem& YAMLParser::nextItem() {
     }
 
     last_ = items_.front();
-    last_->attach();
+    // last_->attach();
 
     items_.pop_front();
 

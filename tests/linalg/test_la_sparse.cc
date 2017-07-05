@@ -142,6 +142,19 @@ BOOST_AUTO_TEST_CASE(test_set_from_triplets) {
     //BOOST_CHECK_THROW(S(2, 2, 2, 1, 1, 1., 0, 0, 1.), AssertionFailed);
 }
 
+BOOST_AUTO_TEST_CASE(test_set_copy_constructor) {
+    {
+        SparseMatrix B(A);
+
+        BOOST_CHECK_EQUAL(B.nonZeros(), 4);
+
+        Index outer[4] = {0, 2, 3, 4};
+        Index inner[4] = {0, 2, 1, 2};
+        Scalar data[4] = {2., -3., 2., 2.};
+        test(B, outer, inner, data);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(test_identity) {
 
     {

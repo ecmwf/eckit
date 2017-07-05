@@ -18,6 +18,7 @@
 // For endianness
 #include "eckit/eckit.h"
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/BufferedHandle.h"
@@ -48,9 +49,9 @@ public:
 
         SparseMatrix::Layout p;
 
-        p.buffer_ = ::malloc(shape.allocSize());
+        void* buffer = ::malloc(shape.allocSize());
 
-        char* addr = static_cast<char*>(p.buffer_);
+        char* addr = static_cast<char*>(buffer);
 
         p.data_  = reinterpret_cast<Scalar*>(addr);
         p.outer_ = reinterpret_cast<Index*>(addr + shape.sizeofData());
@@ -223,30 +224,7 @@ void SparseMatrix::load(const void* buffer, size_t bufferSize, Layout& layout, S
 }
 
 void SparseMatrix::dump(Buffer& buffer) const {
-
-    size_t minimum = sizeof(SPMInfo) + shape_.sizeofData() + shape_.sizeofOuter() + shape_.sizeofInner();
-    ASSERT( buffer.size() >= minimum);
-
-    MemoryHandle mh(buffer);
-    mh.openForWrite(buffer.size());
-
-    SPMInfo info;
-
-    info.size_  = nonZeros();
-    info.rows_  = rows();
-    info.cols_  = cols();
-
-    info.data_  = sizeof(SPMInfo);
-    info.outer_ = info.data_  + shape_.sizeofData();
-    info.inner_ = info.outer_ + shape_.sizeofOuter();
-
-    /// @todo we should try to get these memory aligned (to say 64 bytes)
-
-    mh.write(&info, sizeof(SPMInfo));
-
-    ASSERT(mh.write(spm_.data_,  shape_.sizeofData())  == long(shape_.sizeofData()));
-    ASSERT(mh.write(spm_.outer_, shape_.sizeofOuter()) == long(shape_.sizeofOuter()));
-    ASSERT(mh.write(spm_.inner_, shape_.sizeofInner()) == long(shape_.sizeofInner()));
+    SparseMatrix::dump(buffer.data(), buffer.size());
 }
 
 void SparseMatrix::dump(void* buffer, size_t size) const {
@@ -267,6 +245,12 @@ void SparseMatrix::dump(void* buffer, size_t size) const {
     info.outer_ = info.data_  + shape_.sizeofData();
     info.inner_ = info.outer_ + shape_.sizeofOuter();
 
+    Log::debug<LibEcKit>() << "Dumping matrix : "
+                           << " rows " << rows()
+                           << " cols " << cols()
+                           << " footprint " << footprint()
+                           << std::endl;
+
     /// @todo we should try to get these memory aligned (to say 64 bytes)
 
     mh.write(&info, sizeof(SPMInfo));
@@ -278,8 +262,8 @@ void SparseMatrix::dump(void* buffer, size_t size) const {
 
 void SparseMatrix::swap(SparseMatrix &other) {
 
-    std::swap(spm_,  other.spm_);
-    std::swap(shape_,  other.shape_);
+    std::swap(spm_,   other.spm_);
+    std::swap(shape_, other.shape_);
 
     owner_.swap(other.owner_);
 }
@@ -393,7 +377,7 @@ SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
 }
 
 
-void SparseMatrix::encode(Stream &s) const {
+void SparseMatrix::encode(Stream& s) const {
 
     s << shape_.rows_;
     s << shape_.cols_;
@@ -410,7 +394,7 @@ void SparseMatrix::encode(Stream &s) const {
 }
 
 
-void SparseMatrix::decode(Stream &s) {
+void SparseMatrix::decode(Stream& s) {
 
     Size rows;
     Size cols;
@@ -437,6 +421,12 @@ void SparseMatrix::decode(Stream &s) {
     owner_.reset( new detail::StandardAllocator() );
 
     reserve(rows, cols, nnz);
+
+    Log::debug<LibEcKit>() << "Decoding matrix : "
+                           << " rows " << rows
+                           << " cols " << cols
+                           << " footprint " << footprint()
+                           << std::endl;
 
     s.readLargeBlob(spm_.outer_, shape_.outerSize() * sizeof(Index));
     s.readLargeBlob(spm_.inner_, shape_.innerSize() * sizeof(Index));

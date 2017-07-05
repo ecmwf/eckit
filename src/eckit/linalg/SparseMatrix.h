@@ -45,16 +45,14 @@ public: // types
 
     struct Layout {
 
-        Layout() : buffer_(0), data_(0), outer_(0), inner_(0) {}
+        Layout() : data_(0), outer_(0), inner_(0) {}
 
         void reset() {
-            buffer_ = 0;
             data_   = 0;
             outer_  = 0;
             inner_  = 0;
         }
 
-        void*        buffer_; ///< full memory
         Scalar*      data_;   ///< matrix entries, sized with number of non-zeros (nnz)
         Index*       outer_;  ///< start of rows
         Index*       inner_;  ///< column indices

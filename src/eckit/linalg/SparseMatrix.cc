@@ -278,13 +278,8 @@ void SparseMatrix::dump(void* buffer, size_t size) const {
 
 void SparseMatrix::swap(SparseMatrix &other) {
 
-    std::swap(spm_.data_,  other.spm_.data_);
-    std::swap(spm_.outer_, other.spm_.outer_);
-    std::swap(spm_.inner_, other.spm_.inner_);
-
-    std::swap(shape_.size_,  other.shape_.size_);
-    std::swap(shape_.rows_,  other.shape_.rows_);
-    std::swap(shape_.cols_,  other.shape_.cols_);
+    std::swap(spm_,  other.spm_);
+    std::swap(shape_,  other.shape_);
 
     owner_.swap(other.owner_);
 }

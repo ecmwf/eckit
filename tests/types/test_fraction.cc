@@ -149,6 +149,11 @@ BOOST_AUTO_TEST_CASE( test_fraction )
         BOOST_CHECK_EQUAL(f, east);
     }
 
+
+    BOOST_CHECK_EQUAL(Fraction(241.85) / Fraction(0.175), 1382);
+    BOOST_CHECK_EQUAL(Fraction(284.025) / Fraction(0.175), 1623);
+
+
     // BOOST_CHECK_EQUAL(Fraction(5, 3).intergralPart(), 1);
     // BOOST_CHECK_EQUAL(Fraction(5, 3).decimalPart(), Fraction(1, 3));
 

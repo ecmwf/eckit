@@ -43,8 +43,6 @@ namespace detail {
 class StandardAllocator : public SparseMatrix::Allocator {
 public:
 
-    StandardAllocator() {}
-
     virtual SparseMatrix::Layout allocate(SparseMatrix::Shape& shape) {
 
         SparseMatrix::Layout p;
@@ -65,12 +63,35 @@ public:
     }
 };
 
+class BufferAllocator : public SparseMatrix::Allocator {
+public:
+
+    BufferAllocator(const Buffer& buffer) : buffer_(buffer, buffer.size()) {}
+
+    virtual eckit::linalg::SparseMatrix::Layout allocate(eckit::linalg::SparseMatrix::Shape& shape) {
+
+        using namespace eckit::linalg;
+
+        SparseMatrix::Layout layout;
+
+        eckit::linalg::SparseMatrix::load(buffer_.data(), buffer_.size(), layout, shape);
+
+        return layout;
+    }
+
+    virtual void deallocate(eckit::linalg::SparseMatrix::Layout, eckit::linalg::SparseMatrix::Shape) {
+    }
+
+    Buffer buffer_;
+};
+
 } // namespace detail
 
 //----------------------------------------------------------------------------------------------------------------------
 
 SparseMatrix::SparseMatrix(Allocator* alloc) {
     owner_.reset( alloc ? alloc : new detail::StandardAllocator() );
+    spm_ = owner_->allocate(shape_);
 }
 
 SparseMatrix::SparseMatrix(Size rows, Size cols, Allocator* alloc) {
@@ -81,7 +102,7 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, Allocator* alloc) {
 SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets) :
     owner_(new detail::StandardAllocator()) {
 
-    reserve(rows, cols, triplets.size()); // Allocate memory 1 triplet per non-zero
+    reserve(rows, cols, triplets.size()); // allocate memory 1 triplet per non-zero
 
     Size pos = 0;
     Size row = 0;
@@ -117,6 +138,12 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
 SparseMatrix::SparseMatrix(Stream& s) {
     owner_.reset( new detail::StandardAllocator() );
     decode(s);
+}
+
+SparseMatrix::SparseMatrix(const Buffer& buffer)
+{
+    owner_.reset(new detail::BufferAllocator(buffer));
+    spm_ = owner_->allocate(shape_);
 }
 
 SparseMatrix::SparseMatrix(const SparseMatrix& other) {
@@ -171,7 +198,7 @@ void SparseMatrix::reserve(Size rows, Size cols, Size nnz) {
 
 void SparseMatrix::save(const eckit::PathName &path) const {
     FileStream s(path, "w");
-    s << *this;
+    encode(s);
 }
 
 
@@ -207,6 +234,13 @@ void SparseMatrix::load(const void* buffer, size_t bufferSize, Layout& layout, S
     shape.size_ = info.size_;
     shape.rows_ = info.rows_;
     shape.cols_ = info.cols_;
+
+    Log::debug<LibEcKit>() << "Loading matrix from buffer: "
+                           << " rows " << shape.rows_
+                           << " cols " << shape.cols_
+                           << " nnzs " << shape.size_
+                           << " allocSize " << shape.allocSize()
+                           << std::endl;
 
     ASSERT(bufferSize >= sizeof(SPMInfo) + shape.sizeofData() + shape.sizeofOuter() + shape.sizeofInner() );
 
@@ -246,9 +280,10 @@ void SparseMatrix::dump(void* buffer, size_t size) const {
     info.inner_ = info.outer_ + shape_.sizeofOuter();
 
     Log::debug<LibEcKit>() << "Dumping matrix : "
-                           << " rows " << rows()
-                           << " cols " << cols()
-                           << " footprint " << footprint()
+                           << " rows " << info.rows_
+                           << " cols " << info.cols_
+                           << " nnzs " << info.size_
+                           << " allocSize " << shape_.allocSize()
                            << std::endl;
 
     /// @todo we should try to get these memory aligned (to say 64 bytes)
@@ -388,6 +423,13 @@ void SparseMatrix::encode(Stream& s) const {
     s << sizeof(Scalar);
     s << sizeof(Size);
 
+    Log::debug<LibEcKit>() << "Encoding matrix : "
+                           << " rows " << rows()
+                           << " cols " << cols()
+                           << " nnz " << nonZeros()
+                           << " footprint " << footprint()
+                           << std::endl;
+
     s.writeLargeBlob(spm_.outer_, shape_.outerSize() * sizeof(Index));
     s.writeLargeBlob(spm_.inner_, shape_.innerSize() * sizeof(Index));
     s.writeLargeBlob(spm_.data_,  shape_.dataSize()  * sizeof(Scalar));
@@ -425,6 +467,7 @@ void SparseMatrix::decode(Stream& s) {
     Log::debug<LibEcKit>() << "Decoding matrix : "
                            << " rows " << rows
                            << " cols " << cols
+                           << " nnz " << nnz
                            << " footprint " << footprint()
                            << std::endl;
 

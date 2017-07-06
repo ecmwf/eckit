@@ -44,6 +44,7 @@ public: // methods
     operator const void*() const     { return buffer_; }
 
     void* data() { return buffer_; }
+    const void* data() const { return buffer_; }
 
     size_t size() const { return size_; }
 

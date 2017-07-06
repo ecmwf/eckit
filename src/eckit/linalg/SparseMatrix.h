@@ -124,19 +124,11 @@ public:  // methods
     /// Constructor from triplets
     SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets);
 
-#if 0
-    /// Construct matrix from existing data (does NOT take ownership)
-    SparseMatrix(Scalar* values, Size size, Size rows, Size cols, Index* outer, Index* inner);
-
-    /// Construct matrix from existing data (does NOT take ownership)
-    SparseMatrix(const eckit::Buffer& buffer);
-
-    /// Construct matrix from existing data (does NOT take ownership)
-    SparseMatrix(const void* buffer, size_t size);
-#endif
-
     /// Constructor from Stream
     SparseMatrix(Stream& v);
+
+    /// Constructor from Buffer
+    SparseMatrix(const Buffer&);
 
     ~SparseMatrix();
 

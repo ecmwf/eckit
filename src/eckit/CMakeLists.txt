@@ -603,7 +603,9 @@ list( APPEND eckit_transaction_srcs
 )
 
 list( APPEND eckit_testing_srcs
-testing/Setup.h
+    testing/Setup.h
+    testing/lest.h
+    testing/Test.h
 )
 
 list( APPEND eckit_dirs

@@ -27,7 +27,7 @@ ecbuild_declare_project()
 ### C++11 compiler flag
 
 ecbuild_add_option( FEATURE CXX11
-                    DEFAULT OFF
+                    DEFAULT ON
                     DESCRIPTION "Use C++11 compiler flag" )
 
 ### Experimental features

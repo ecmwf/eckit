@@ -16,6 +16,7 @@
 #include "eckit/log/Bytes.h"
 
 #include "eckit/system/SystemInfo.h"
+#include "eckit/memory/MemoryPool.h"
 
 namespace eckit {
 
@@ -50,11 +51,33 @@ void ResourceUsage::init() {
     rss_ = sysinfo.memoryUsage().resident_size_;
     malloc_ = sysinfo.memoryAllocated();
 
-    out_ << name_ << " => resident size: "
-         << eckit::Bytes(rss_);
-    out_ << ", allocated: "
-         << eckit::Bytes(malloc_);
-    out_ << std::endl;
+    MemoryPool::info(transientUsed_, transientFree_, MemPool::transientPool);
+    MemoryPool::info(permanentUsed_, permanentFree_, MemPool::permanentPool);
+    MemoryPool::large(largeUsed_, largeFree_);
+
+    out_ << name_
+         << " => resident size: "
+         << eckit::Bytes(rss_)
+         << ", allocated: "
+         << eckit::Bytes(malloc_)
+
+         << ", large [used: "
+         << eckit::Bytes(largeUsed_)
+         << ", free: "
+         << eckit::Bytes(largeFree_)
+
+         << "], transient [used: "
+         << eckit::Bytes(transientUsed_)
+         << ", free: "
+         << eckit::Bytes(transientFree_)
+
+         << "], [permanent used: "
+         << eckit::Bytes(permanentUsed_)
+
+         << ", free: "
+         << eckit::Bytes(permanentFree_)
+         << "]"
+         << std::endl;
 }
 
 ResourceUsage::~ResourceUsage()
@@ -64,6 +87,22 @@ ResourceUsage::~ResourceUsage()
 
     size_t rss = sysinfo.memoryUsage().resident_size_;
     size_t malloc = sysinfo.memoryAllocated();
+
+    size_t largeUsed;
+
+    size_t transientUsed;
+    size_t permanentUsed;
+
+    size_t largeFree;
+
+    size_t transientFree;
+    size_t permanentFree;
+
+
+    MemoryPool::info(transientUsed, transientFree, MemPool::transientPool);
+    MemoryPool::info(permanentUsed, permanentFree, MemPool::permanentPool);
+    MemoryPool::large(largeUsed, largeFree);
+
 
     out_ << name_ << " <= resident size: "
          << eckit::Bytes(rss);
@@ -86,6 +125,84 @@ ResourceUsage::~ResourceUsage()
     if ( malloc < malloc_) {
         out_ << " (-" << eckit::Bytes(malloc_ - malloc) << ")";
     }
+
+//========================
+    out_ << ", large [used: "
+         << eckit::Bytes(largeUsed);
+
+    if ( largeUsed > largeUsed_) {
+        out_ << " (+" << eckit::Bytes(largeUsed - largeUsed_) << ")";
+    }
+
+    if ( largeUsed < largeUsed_) {
+        out_ << " (-" << eckit::Bytes(largeUsed_ - largeUsed) << ")";
+    }
+
+    out_ << ", free: "
+         << eckit::Bytes(largeFree);
+
+    if ( largeFree > largeFree_) {
+        out_ << " (+" << eckit::Bytes(largeFree - largeFree_) << ")";
+    }
+
+    if ( largeFree < largeFree_) {
+        out_ << " (-" << eckit::Bytes(largeFree_ - largeFree) << ")";
+    }
+    //========================
+
+    out_ << "], transient [used: "
+         << eckit::Bytes(transientUsed);
+
+    if ( transientUsed > transientUsed_) {
+        out_ << " (+" << eckit::Bytes(transientUsed - transientUsed_) << ")";
+    }
+
+    if ( transientUsed < transientUsed_) {
+        out_ << " (-" << eckit::Bytes(transientUsed_ - transientUsed) << ")";
+    }
+
+
+    out_ << ", free: "
+         << eckit::Bytes(transientFree);
+
+    if ( transientFree > transientFree_) {
+        out_ << " (+" << eckit::Bytes(transientFree - transientFree_) << ")";
+    }
+
+    if ( transientFree < transientFree_) {
+        out_ << " (-" << eckit::Bytes(transientFree_ - transientFree) << ")";
+    }
+
+
+//========================
+
+    out_ << "], permanent [used: "
+         << eckit::Bytes(permanentUsed);
+
+    if ( permanentUsed > permanentUsed_) {
+        out_ << " (+" << eckit::Bytes(permanentUsed - permanentUsed_) << ")";
+    }
+
+    if ( permanentUsed < permanentUsed_) {
+        out_ << " (-" << eckit::Bytes(permanentUsed_ - permanentUsed) << ")";
+    }
+
+
+    out_ << ", free: "
+         << eckit::Bytes(permanentFree);
+
+    if ( permanentFree > permanentFree_) {
+        out_ << " (+" << eckit::Bytes(permanentFree - permanentFree_) << ")";
+    }
+
+    if ( permanentFree < permanentFree_) {
+        out_ << " (-" << eckit::Bytes(permanentFree_ - permanentFree) << ")";
+    }
+
+//========================
+
+
+    out_ << "]";
     out_ << std::endl;
 }
 

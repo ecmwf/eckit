@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -47,10 +47,14 @@ public: // class methods
 	static void* largeAllocate(size_t);
 	static void  largeDeallocate(void*);
 
-	static void* fastAllocate(size_t,MemPool& = MemPool::transientPool);
-	static void  fastDeallocate(void*,MemPool& = MemPool::transientPool);
+	static void* fastAllocate(size_t, MemPool& = MemPool::transientPool);
+	static void  fastDeallocate(void*, MemPool& = MemPool::transientPool);
 
 	static void info(std::ostream&);
+
+	static void info(size_t& used, size_t& free, MemPool&);
+	static void large(size_t& used, size_t& free);
+
 
 private: // methods
 

@@ -43,13 +43,17 @@ namespace detail {
 class StandardAllocator : public SparseMatrix::Allocator {
 public:
 
+    StandardAllocator() : membuff_(0) {}
+
     virtual SparseMatrix::Layout allocate(SparseMatrix::Shape& shape) {
+
+        if(shape.allocSize() > membuff_.size()) {
+            membuff_.resize(shape.allocSize());
+        }
 
         SparseMatrix::Layout p;
 
-        void* buffer = ::malloc(shape.allocSize());
-
-        char* addr = static_cast<char*>(buffer);
+        char* addr = membuff_;
 
         p.data_  = reinterpret_cast<Scalar*>(addr);
         p.outer_ = reinterpret_cast<Index*>(addr + shape.sizeofData());
@@ -59,8 +63,9 @@ public:
     }
 
     virtual void deallocate(SparseMatrix::Layout p, SparseMatrix::Shape) {
-        ::free(p.data_);
     }
+
+    eckit::Buffer membuff_;
 };
 
 class BufferAllocator : public SparseMatrix::Allocator {

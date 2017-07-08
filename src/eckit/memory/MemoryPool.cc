@@ -79,6 +79,22 @@ static void init()
     pthread_once(&once, _init);
 }
 
+namespace {
+
+class Lock {
+public:
+    Lock() {
+        init();
+        get_lock();
+    }
+
+    ~Lock() {
+        release_lock();
+    }
+};
+
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 union Align {
@@ -199,7 +215,8 @@ void MemBlk::size(unsigned long long& total, unsigned long long& inuse)
 }
 
 void MemoryPool::large(size_t& used, size_t& free) {
-    get_lock();
+
+    Lock lock;
 
     unsigned long long total = 0;
     unsigned long long left = 0;
@@ -208,32 +225,27 @@ void MemoryPool::large(size_t& used, size_t& free) {
     used = total;
     free = left;
 
-    release_lock();
-
 }
 
 
 void* MemoryPool::largeAllocate(size_t size)
 {
-    init();
+    Lock lock;
 
     MemBlk *m  = 0;
     void *addr = 0;
 
-    get_lock();
     MemBlk::allocateCount_++;
     m = MemBlk::find(size > 0 ? size : 1);
     addr = m->addr();
-    release_lock();
 
     return addr;
 }
 
 void MemoryPool::largeDeallocate(void* addr)
 {
-    init();
+    Lock lock;
 
-    get_lock();
     MemBlk::releaseCount_++;
 
     MemBlk *m = (MemBlk*)((char*)addr - sizeof(MemBlk));
@@ -246,7 +258,6 @@ void MemoryPool::largeDeallocate(void* addr)
 //  std::cout << "Releasing " << m->size_ << std::endl;
     m->inUse(false);
 
-    release_lock();
 }
 
 
@@ -284,12 +295,7 @@ static size_t permanentFree();
 
 void *MemoryPool::fastAllocate(size_t s, MemPool& pool)
 {
-#ifdef __hpux
-    return new char[s];
-#endif
-    init();
-
-    get_lock();
+    Lock lock;
 
     memblk *m = pool.first_;
 
@@ -327,21 +333,14 @@ void *MemoryPool::fastAllocate(size_t s, MemPool& pool)
     m->left_ -= s;
     m->count_++;
 
-    release_lock();
 
     return p;
 }
 
 void MemoryPool::fastDeallocate(void *p, MemPool& pool)
 {
-#ifdef __hpux
-    char* x = (char*)p;
-    delete[] x;
-    return;
-#endif
 
-    init();
-    get_lock();
+    Lock lock;
 
     memblk *m = pool.first_;
     memblk *n = 0;
@@ -358,7 +357,6 @@ void MemoryPool::fastDeallocate(void *p, MemPool& pool)
                 else pool.first_ = m->next_;
                 largeDeallocate(m);
             }
-            release_lock();
             return;
         }
 
@@ -372,8 +370,9 @@ void MemoryPool::fastDeallocate(void *p, MemPool& pool)
 
 //----------------------------------------------------------------------------------------------------------------------
 void MemoryPool::info(size_t& used, size_t& free, MemPool& pool) {
-    init();
-    get_lock();
+
+
+    Lock lock;
 
     memblk *m = pool.first_;
 
@@ -386,8 +385,6 @@ void MemoryPool::info(size_t& used, size_t& free, MemPool& pool) {
         m = m->next_;
     }
 
-    release_lock();
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -395,9 +392,8 @@ void MemoryPool::info(size_t& used, size_t& free, MemPool& pool) {
 void MemoryPool::info(std::ostream& out)
 {
     {
-        init();
 
-        get_lock();
+        Lock lock;
 
 #if 0
 
@@ -457,7 +453,6 @@ void MemoryPool::info(std::ostream& out)
         m = m->next_;
     }
 
-    release_lock();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

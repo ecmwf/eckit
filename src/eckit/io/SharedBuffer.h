@@ -77,7 +77,7 @@ public: // methods
 
     size_t size() const { return buffer_->size(); }
 
-    void resize(size_t size) { buffer_->resize(size); }
+    // void resize(size_t size) { buffer_->resize(size); }
 
     /// Careful, use str() to convert the contents of a buffer to a string
     /// and don't rely on the contents to be null terminated

@@ -549,6 +549,8 @@ memory/Factory.h
 memory/Owned.h
 memory/MemoryPool.h
 memory/MemoryPool.cc
+memory/MemoryBuffer.h
+memory/MemoryBuffer.cc
 memory/SharedPtr.h
 memory/Padded.h
 memory/MapAllocator.h

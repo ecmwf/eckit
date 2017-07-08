@@ -9,21 +9,20 @@
  */
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/Buffer.h"
-#include "eckit/memory/MemoryPool.h"
+#include "eckit/memory/MemoryBuffer.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Buffer::Buffer(size_t size):
+MemoryBuffer::MemoryBuffer(size_t size):
     buffer_(0),
     size_(size)
 {
 	create();
 }
 
-Buffer::Buffer(const char* p, size_t size):
+MemoryBuffer::MemoryBuffer(const char* p, size_t size):
     buffer_(0),
     size_(size)
 {
@@ -31,7 +30,7 @@ Buffer::Buffer(const char* p, size_t size):
     copy(p,size);
 }
 
-Buffer::Buffer(const std::string& s):
+MemoryBuffer::MemoryBuffer(const std::string& s):
     buffer_(0),
     size_(s.length()+1)
 {
@@ -40,42 +39,44 @@ Buffer::Buffer(const std::string& s):
 }
 
 
-Buffer::~Buffer()
+MemoryBuffer::~MemoryBuffer()
 {
     destroy();
 }
 
-void Buffer::create()
+void MemoryBuffer::create()
 {
-    buffer_ = MemoryPool::largeAllocate(size_);
+    buffer_ = new char[size_];
+    ASSERT(buffer_);
 }
 
-void Buffer::destroy()
+void MemoryBuffer::destroy()
 {
-    MemoryPool::largeDeallocate(buffer_);
+    char *p = static_cast<char*>(buffer_);
+    delete[] p;
 }
 
-void Buffer::copy(const std::string &s)
+void MemoryBuffer::copy(const std::string &s)
 {
     ::strcpy(static_cast<char*>(buffer_), s.c_str());
 }
 
-void Buffer::copy(const char *p, size_t size)
+void MemoryBuffer::copy(const char *p, size_t size)
 {
     ::memcpy(buffer_,p,size);
 }
 
-// void Buffer::swap(Buffer& rhs) {
-//     std::swap(buffer_, rhs.buffer_);
-//     std::swap(size_, rhs.size_);
-// }
+void MemoryBuffer::swap(MemoryBuffer& rhs) {
+    std::swap(buffer_, rhs.buffer_);
+    std::swap(size_, rhs.size_);
+}
 
-// void eckit::Buffer::resize(size_t size)
-// {
-//     destroy();
-//     size_ = size;
-//     create();
-// }
+void eckit::MemoryBuffer::resize(size_t size)
+{
+    destroy();
+    size_ = size;
+    create();
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

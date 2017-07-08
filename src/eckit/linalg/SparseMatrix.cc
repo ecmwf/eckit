@@ -25,6 +25,7 @@
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/io/MemoryHandle.h"
+#include "eckit/memory/MemoryBuffer.h"
 
 
 namespace eckit {
@@ -65,13 +66,13 @@ public:
     virtual void deallocate(SparseMatrix::Layout p, SparseMatrix::Shape) {
     }
 
-    eckit::Buffer membuff_;
+    eckit::MemoryBuffer membuff_;
 };
 
 class BufferAllocator : public SparseMatrix::Allocator {
 public:
 
-    BufferAllocator(const Buffer& buffer) : buffer_(buffer, buffer.size()) {}
+    BufferAllocator(const MemoryBuffer& buffer) : buffer_(buffer, buffer.size()) {}
 
     virtual eckit::linalg::SparseMatrix::Layout allocate(eckit::linalg::SparseMatrix::Shape& shape) {
 
@@ -87,7 +88,7 @@ public:
     virtual void deallocate(eckit::linalg::SparseMatrix::Layout, eckit::linalg::SparseMatrix::Shape) {
     }
 
-    Buffer buffer_;
+    MemoryBuffer buffer_;
 };
 
 } // namespace detail
@@ -145,7 +146,7 @@ SparseMatrix::SparseMatrix(Stream& s) {
     decode(s);
 }
 
-SparseMatrix::SparseMatrix(const Buffer& buffer)
+SparseMatrix::SparseMatrix(const MemoryBuffer& buffer)
 {
     owner_.reset(new detail::BufferAllocator(buffer));
     spm_ = owner_->allocate(shape_);
@@ -262,7 +263,7 @@ void SparseMatrix::load(const void* buffer, size_t bufferSize, Layout& layout, S
     ASSERT(info.inner_ + shape.sizeofInner() <= bufferSize);
 }
 
-void SparseMatrix::dump(Buffer& buffer) const {
+void SparseMatrix::dump(MemoryBuffer& buffer) const {
     SparseMatrix::dump(buffer.data(), buffer.size());
 }
 

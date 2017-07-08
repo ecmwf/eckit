@@ -12,8 +12,8 @@
 /// @author Tiago Quintino
 /// @date   July 1996
 
-#ifndef eckit_io_Buffer_h
-#define eckit_io_Buffer_h
+#ifndef eckit_memory_MemoryBlock_h
+#define eckit_memory_MemoryBlock_h
 
 #include <string>
 
@@ -27,15 +27,15 @@ namespace eckit {
 
 // A simple class to implement buffers
 
-class Buffer : private NonCopyable {
+class MemoryBuffer : private NonCopyable {
 
 public: // methods
 
-    Buffer(size_t size);
-    Buffer(const std::string& s);
-    Buffer(const char*, size_t size);
+    MemoryBuffer(size_t size);
+    MemoryBuffer(const std::string& s);
+    MemoryBuffer(const char*, size_t size);
 
-    ~Buffer();
+    ~MemoryBuffer();
 
     operator char*()                 { return static_cast<char*>(buffer_); }
     operator const char*() const     { return static_cast<const char*>(buffer_); }
@@ -48,9 +48,9 @@ public: // methods
 
     size_t size() const { return size_; }
 
-    // void resize(size_t size);
+    void resize(size_t size);
 
-    // void swap(Buffer& rhs);
+    void swap(MemoryBuffer& rhs);
 
 protected: // methods
 

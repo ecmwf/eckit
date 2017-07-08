@@ -25,7 +25,7 @@
 #include "eckit/linalg/Triplet.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/memory/ScopedPtr.h"
-#include "eckit/io/Buffer.h"
+#include "eckit/memory/MemoryBuffer.h"
 #include "eckit/io/MemoryHandle.h"
 
 namespace eckit {
@@ -127,8 +127,8 @@ public:  // methods
     /// Constructor from Stream
     SparseMatrix(Stream& v);
 
-    /// Constructor from Buffer
-    SparseMatrix(const Buffer&);
+    /// Constructor from MemoryBuffer
+    SparseMatrix(const MemoryBuffer&);
 
     ~SparseMatrix();
 
@@ -154,7 +154,7 @@ public:
     void save(const eckit::PathName& path) const;
     void load(const eckit::PathName& path);
 
-    void dump(eckit::Buffer& buffer) const;
+    void dump(eckit::MemoryBuffer& buffer) const;
     void dump(void* buffer, size_t size) const;
 
     static void load(const void* buffer, size_t bufferSize, Layout& layout, Shape& shape); ///< from dump()

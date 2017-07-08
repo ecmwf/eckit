@@ -36,31 +36,31 @@ KDNode<Traits>::KDNode(const Value& value, size_t axis):
 
 
 template<class Traits>
-void KDNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth)
+void KDNode<Traits>::nearestNeighbourX(Alloc& a, const Point& p, Node*& best, double& max, int depth)
 {
     a.statsVisitNode();
 
     bool left_visited = false;
     bool right_visited = false;
 
-    if(p.x(axis_) < this->value_.point().x(axis_))
+    if (p.x(axis_) < this->value_.point().x(axis_))
     {
-        if(this->left_) {
-            this->left(a)->nearestNeighbourX(a, p, best, max, depth+1);
+        if (this->left_) {
+            this->left(a)->nearestNeighbourX(a, p, best, max, depth + 1);
             left_visited = true;
         }
     }
     else
     {
-        if(this->right_) {
-            this->right(a)->nearestNeighbourX(a, p, best, max, depth+1);
+        if (this->right_) {
+            this->right(a)->nearestNeighbourX(a, p, best, max, depth + 1);
             right_visited = true;
         }
     }
 
     double d   = Point::distance(p, this->value_.point());
 
-    if(d < max) {
+    if (d < max) {
         max = d;
         best = this;
         a.statsNewCandidateOK();
@@ -72,23 +72,23 @@ void KDNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, dou
 
     d = Point::distance(p, this->value_.point(), axis_);
 
-    if(d < max)
+    if (d < max)
     {
 
         // Visit other subtree...
         a.statsCrossOver();
 
-        if(p.x(axis_) < this->value_.point().x(axis_))
+        if (p.x(axis_) < this->value_.point().x(axis_))
         {
-            if(this->right_ && !right_visited) {
-                this->right(a)->nearestNeighbourX(a, p, best, max, depth+1);
+            if (this->right_ && !right_visited) {
+                this->right(a)->nearestNeighbourX(a, p, best, max, depth + 1);
             }
 
         }
         else {
 
-            if(this->left_ && !left_visited) {
-                this->left(a)->nearestNeighbourX(a, p, best, max, depth+1);
+            if (this->left_ && !left_visited) {
+                this->left(a)->nearestNeighbourX(a, p, best, max, depth + 1);
             }
         }
     }
@@ -100,35 +100,35 @@ void KDNode<Traits>::nearestNeighbourX(Alloc& a,const Point& p, Node*& best, dou
 //===
 
 template<class Traits>
-void KDNode<Traits>::kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth)
+void KDNode<Traits>::kNearestNeighboursX(Alloc& a, const Point& p , size_t k, NodeQueue& result, int depth)
 {
-    if(p.x(axis_) < this->value_.point().x(axis_))
+    if (p.x(axis_) < this->value_.point().x(axis_))
     {
-        if(this->left_) this->left(a)->kNearestNeighboursX(a, p, k, result, depth+1);
+        if (this->left_) this->left(a)->kNearestNeighboursX(a, p, k, result, depth + 1);
     }
     else
     {
-        if(this->right_) this->right(a)->kNearestNeighboursX(a, p, k, result, depth+1);
+        if (this->right_) this->right(a)->kNearestNeighboursX(a, p, k, result, depth + 1);
     }
 
     double d   = Point::distance(p, this->value_.point());
     Node* self = this;
     result.push(self, a.convert(self), d);
 
-    if(Point::distance(p, this->value_.point(), axis_) <= result.largest())
+    if (Point::distance(p, this->value_.point(), axis_) <= result.largest())
     {
 
         // Visit other subtree...
         a.statsCrossOver();
 
-        if(p.x(axis_) < this->value_.point().x(axis_))
+        if (p.x(axis_) < this->value_.point().x(axis_))
         {
-            if(this->right_) this->right(a)->kNearestNeighboursX(a, p,k, result, depth+1);
+            if (this->right_) this->right(a)->kNearestNeighboursX(a, p, k, result, depth + 1);
 
         }
         else {
 
-            if(this->left_) this->left(a)->kNearestNeighboursX(a, p, k, result, depth+1);
+            if (this->left_) this->left(a)->kNearestNeighboursX(a, p, k, result, depth + 1);
         }
     }
 }
@@ -138,7 +138,7 @@ void KDNode<Traits>::kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, Node
 template<class Value>
 struct sorter {
     int axis_;
-    bool operator() (const Value& a,const Value& b)
+    bool operator() (const Value& a, const Value& b)
     { return (a.point().x(axis_) < b.point().x(axis_)); }
     sorter(size_t axis) : axis_(axis) {}
 };
@@ -150,7 +150,7 @@ KDNode<Traits>* KDNode<Traits>::build(Alloc& a,
                                       const ITER& begin,
                                       const ITER& end, int depth)
 {
-    if(end == begin)
+    if (end == begin)
         return 0;
 
     a.statsDepth(depth);
@@ -161,54 +161,80 @@ KDNode<Traits>* KDNode<Traits>::build(Alloc& a,
 
     //std::sort(begin, end, sorter<Point>(axis));
 
-    size_t median = (end - begin)/2;
+    size_t median = (end - begin) / 2;
 
     std::nth_element(begin, begin + median, end, sorter<Value>(axis));
 
     ITER e2 = begin + median;
-    ITER b2 = begin + median+1;
+    ITER b2 = begin + median + 1;
 
 
-    KDNode* n = a.newNode2(*e2, axis,(KDNode*)0);
+    KDNode* n = a.newNode2(*e2, axis, (KDNode*)0);
 
-    n->left(a,build(a, begin, e2, depth + 1));
-    n->right(a,build(a, b2,   end, depth + 1));
+    n->left(a, build(a, begin, e2, depth + 1));
+    n->right(a, build(a, b2,   end, depth + 1));
 
     return n;
 
 }
 
+
 template<class Traits>
-void KDNode<Traits>::findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth)
+KDNode<Traits>* KDNode<Traits>::insert(Alloc& a, const Value& value, KDNode<Traits>* node,  int depth)
 {
-    if(p.x(axis_) < this->value_.point().x(axis_))
+
+
+    //size_t k    = Point::size(*begin);
+    size_t k    = Point::DIMS;
+    size_t axis = depth % k;
+
+
+    if (node == 0) {
+        return a.newNode2(value, axis, (KDNode*)0);
+    }
+
+    if (value.point().x(axis) <= node->value_.point().x(axis)) {
+        node->left(a, insert(a, value, node->left(a), depth + 1 ));
+    }
+    else {
+        node->right(a, insert(a, value, node->right(a), depth + 1 ));
+    }
+
+    return node;
+
+}
+
+template<class Traits>
+void KDNode<Traits>::findInSphereX(Alloc& a, const Point& p , double radius, NodeList& result, int depth)
+{
+    if (p.x(axis_) < this->value_.point().x(axis_))
     {
-        if(this->left_) this->left(a)->findInSphereX(a, p, radius, result, depth+1);
+        if (this->left_) this->left(a)->findInSphereX(a, p, radius, result, depth + 1);
     }
     else
     {
-        if(this->right_) this->right(a)->findInSphereX(a, p, radius, result, depth+1);
+        if (this->right_) this->right(a)->findInSphereX(a, p, radius, result, depth + 1);
     }
 
     double d   = Point::distance(p, this->value_.point());
-    if(d <= radius) {
-        result.push_back(NodeInfo(this, a.convert(this) ,d));
+    if (d <= radius) {
+        result.push_back(NodeInfo(this, a.convert(this) , d));
     }
 
 
-    if(Point::distance(p, this->value_.point(), axis_) <= radius)
+    if (Point::distance(p, this->value_.point(), axis_) <= radius)
     {
 
         // Visit other subtree...
 
-        if(p.x(axis_) < this->value_.point().x(axis_))
+        if (p.x(axis_) < this->value_.point().x(axis_))
         {
-            if(this->right_) this->right(a)->findInSphereX(a, p,radius, result, depth+1);
+            if (this->right_) this->right(a)->findInSphereX(a, p, radius, result, depth + 1);
 
         }
         else {
 
-            if(this->left_) this->left(a)->findInSphereX(a, p, radius, result, depth+1);
+            if (this->left_) this->left(a)->findInSphereX(a, p, radius, result, depth + 1);
         }
     }
 }

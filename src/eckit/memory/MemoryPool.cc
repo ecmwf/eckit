@@ -221,7 +221,10 @@ void MemoryPool::large(size_t& used, size_t& free) {
     unsigned long long total = 0;
     unsigned long long left = 0;
 
-    MemBlk::memList_->size(total, left);
+    if (MemBlk::memList_) {
+        MemBlk::memList_->size(total, left);
+    }
+
     used = total;
     free = left;
 

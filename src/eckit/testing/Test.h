@@ -15,9 +15,15 @@
 #ifndef eckit_testing_Test_h
 #define eckit_testing_Test_h
 
-#include "eckit/runtime/Main.h"
-#include "eckit/testing/lest.h"
+#include "eckit/eckit_config.h"
 #include "eckit/log/Log.h"
+#include "eckit/runtime/Main.h"
+
+#ifdef ECKIT_HAVE_CXX11
+#include "eckit/testing/lest.h"
+#else
+#include "eckit/testing/lest_cpp03.h"
+#endif
 
 namespace eckit {
 namespace testing {
@@ -25,16 +31,24 @@ namespace testing {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-using Test = lest::test;
+
+static lest::tests& specification() {
+    static lest::tests spec;
+    return spec;
+}
 
 
-template <std::size_t N>
-int run_tests(Test const (&specification)[N], int argc, char* argv[]) {
+int run_tests(int argc, char* argv[]) {
 
     eckit::Main::initialise(argc, argv);
 
-    return lest::run(specification, argc, argv, eckit::Log::info());
+    return lest::run(specification(), argc, argv, eckit::Log::info());
 }
+
+
+// The CASE macro will now work with both C++11 and C++03 versions of lest
+
+#define CASE(proposition) lest_CASE( specification(), proposition )
 
 
 //----------------------------------------------------------------------------------------------------------------------

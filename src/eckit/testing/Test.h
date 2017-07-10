@@ -20,7 +20,14 @@
 #include "eckit/runtime/Main.h"
 
 #ifdef ECKIT_HAVE_CXX11
+
+#if __cplusplus <= 199711L
+#error "eckit is configured with C++11 support, but the current compiler doesn't support C++11"
+#endif
+
+#define lest_FEATURE_AUTO_REGISTER 1
 #include "eckit/testing/lest.h"
+
 #else
 #include "eckit/testing/lest_cpp03.h"
 #endif
@@ -48,6 +55,7 @@ int run_tests(int argc, char* argv[]) {
 
 // The CASE macro will now work with both C++11 and C++03 versions of lest
 
+#undef CASE
 #define CASE(proposition) lest_CASE( specification(), proposition )
 
 

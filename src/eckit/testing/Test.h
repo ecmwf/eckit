@@ -32,6 +32,11 @@
 #include "eckit/testing/lest_cpp03.h"
 #endif
 
+// This pragma disables warnings in qtcreator using Clang Code Model. These warnings are due to the
+// expression decomposing functionality in lest, which intentionally does weird things by considering
+// the operator precedence rules.
+# pragma clang diagnostic ignored "-Woverloaded-shift-op-parentheses"
+
 namespace eckit {
 namespace testing {
 

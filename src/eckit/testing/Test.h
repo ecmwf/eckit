@@ -25,11 +25,11 @@ namespace testing {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-using LestTest = lest::test;
+using Test = lest::test;
 
 
 template <std::size_t N>
-int runTests(LestTest const (&specification)[N], int argc, char* argv[]) {
+int run_tests(Test const (&specification)[N], int argc, char* argv[]) {
 
     eckit::Main::initialise(argc, argv);
 

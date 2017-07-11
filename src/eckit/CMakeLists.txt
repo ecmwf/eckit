@@ -605,8 +605,12 @@ list( APPEND eckit_transaction_srcs
 )
 
 list( APPEND eckit_testing_srcs
-testing/Setup.h
+    testing/Setup.h
+    testing/Test.h
+    testing/lest.h
+    testing/lest_cpp03.h
 )
+
 
 list( APPEND eckit_dirs
 	bases

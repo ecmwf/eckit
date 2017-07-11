@@ -17,6 +17,7 @@
 #cmakedefine ECKIT_HAVE_SSL
 #cmakedefine ECKIT_HAVE_XXHASH
 #cmakedefine ECKIT_HAVE_CURL
+#cmakedefine ECKIT_HAVE_CXX11
 
 #define ECKIT_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
 #define ECKIT_BUILD_DIR      "@CMAKE_BINARY_DIR@"

@@ -10,20 +10,22 @@
 
 #define BOOST_TEST_MODULE test_eckit_value
 
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/value/Value.h"
+#include "eckit/types/FloatCompare.h"
 
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/Test.h"
+
+// Disable warnings for old-style casts in these tests. They are intentional
+#pragma clang diagnostic ignored "-Wold-style-cast"
 
 using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
+using eckit::types::is_approximately_equal;
+
 namespace eckit {
 namespace test {
-
-BOOST_GLOBAL_FIXTURE(Setup);
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -42,7 +44,7 @@ BOOST_GLOBAL_FIXTURE(Setup);
 namespace {
 
     // Helper functions, so that we can put operator expressions inside callables that can be passed into
-    // BOOST_CHECK_THROW
+    // EXPECT_THROWS_AS
 
     Value ValueAdd(const Value& lhs, const Value& rhs) { return lhs + rhs; }
     Value ValueSub(const Value& lhs, const Value& rhs) { return lhs - rhs; }
@@ -59,21 +61,13 @@ namespace {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
-// TODO:
-// - Tests for Stream
-// - Test json, print, encode
-
-
-BOOST_AUTO_TEST_SUITE( test_eckit_value )
-
-//----------------------------------------------------------------------------------------------------------------------
 //
 // Test the behaviour of bools first
 //
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_cast ) {
+CASE( "Booleans cast correctly in/out of Value" ) {
+
     Value val_true(true);
     Value val_false(false);
 
@@ -81,81 +75,81 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_cast ) {
     // Access and conversion of bools
     //
 
-    BOOST_CHECK_EQUAL(bool(val_true), true);
-    BOOST_CHECK_EQUAL(bool(val_false), false);
-    BOOST_CHECK_EQUAL(val_true.as<bool>(), true);
-    BOOST_CHECK_EQUAL(val_false.as<bool>(), false);
+    EXPECT(bool(val_true));
+    EXPECT(!bool(val_false));
+    EXPECT(val_true.as<bool>());
+    EXPECT(!val_false.as<bool>());
 
     // Integer type conversions
-    BOOST_CHECK_EQUAL(int(val_true), 1);
-    BOOST_CHECK_EQUAL(int(val_false), 0);
-    BOOST_CHECK_EQUAL(val_true.as<long long>(), 1);
-    BOOST_CHECK_EQUAL(val_false.as<long long>(), 0);
+    EXPECT(int(val_true) == 1);
+    EXPECT(int(val_false) == 0);
+    EXPECT(val_true.as<long long>() == 1);
+    EXPECT(val_false.as<long long>() == 0);
 
     // For pretty printing
 
-    BOOST_CHECK_EQUAL(std::string(val_true), "true");
-    BOOST_CHECK_EQUAL(std::string(val_false), "false");
-    BOOST_CHECK_EQUAL(val_true.as<std::string>(), "true");
-    BOOST_CHECK_EQUAL(val_false.as<std::string>(), "false");
+    EXPECT(std::string(val_true) == "true");
+    EXPECT(std::string(val_false) == "false");
+    EXPECT(val_true.as<std::string>() == "true");
+    EXPECT(val_false.as<std::string>() == "false");
 
     // ValueList is a bit of an odd one --> it just puts the value in a list of one element...
 
     ValueList vl_true(val_true.as<ValueList>());
     ValueList vl_false = val_false;
-    BOOST_CHECK_EQUAL(vl_true.size(), 1);
-    BOOST_CHECK_EQUAL(vl_false.size(), 1);
-    BOOST_CHECK_EQUAL(vl_true[0].as<bool>(), true);
-    BOOST_CHECK_EQUAL(vl_false[0].as<bool>(), false);
+    EXPECT(vl_true.size() == 1);
+    EXPECT(vl_false.size() == 1);
+    EXPECT(vl_true[0].as<bool>() == true);
+    EXPECT(vl_false[0].as<bool>() == false);
 
     // And all the invalid conversions
 
     /// For some reason, Value(bool) happily converts to double...
-    /// BOOST_CHECK_THROW(val_false.as<double>(), BadConversion);
+    /// EXPECT_THROWS_AS(val_false.as<double>(), BadConversion);
 
     /// Length/Offset are just integers, so bool-->Offset conversion works...!!!
-    /// BOOST_CHECK_THROW(Length(val_false), BadConversion);
-    /// BOOST_CHECK_THROW(Offset(val_false), BadConversion);
+    /// EXPECT_THROWS_AS(Length(val_false), BadConversion);
+    /// EXPECT_THROWS_AS(Offset(val_false), BadConversion);
 
-    BOOST_CHECK_THROW(val_false.as<Time>(), BadConversion);
-    BOOST_CHECK_THROW(val_false.as<Date>(), BadConversion);
-    BOOST_CHECK_THROW(val_false.as<DateTime>(), BadConversion);
-    BOOST_CHECK_THROW(val_false.as<ValueMap>(), BadConversion);
+    EXPECT_THROWS_AS(val_false.as<Time>(), BadConversion);
+    EXPECT_THROWS_AS(val_false.as<Date>(), BadConversion);
+    EXPECT_THROWS_AS(val_false.as<DateTime>(), BadConversion);
+    EXPECT_THROWS_AS(val_false.as<ValueMap>(), BadConversion);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_type ) {
+CASE( "Type knowledge is correct for booleans" ) {
     Value val_true(true);
     Value val_false(false);
 
-    BOOST_CHECK(val_true.isBool());
-    BOOST_CHECK(val_false.isBool());
+    EXPECT(val_true.isBool());
+    EXPECT(val_false.isBool());
 
-    BOOST_CHECK(!val_true.isNil());
-    BOOST_CHECK(!val_true.isNumber());
-    BOOST_CHECK(!val_true.isDouble());
-    BOOST_CHECK(!val_true.isString());
-    BOOST_CHECK(!val_true.isList());
-    BOOST_CHECK(!val_true.isMap());
-    BOOST_CHECK(!val_true.isDate());
-    BOOST_CHECK(!val_true.isTime());
-    BOOST_CHECK(!val_true.isDateTime());
+    EXPECT(!val_true.isNil());
+    EXPECT(!val_true.isNumber());
+    EXPECT(!val_true.isDouble());
+    EXPECT(!val_true.isString());
+    EXPECT(!val_true.isList());
+    EXPECT(!val_true.isMap());
+    EXPECT(!val_true.isDate());
+    EXPECT(!val_true.isTime());
+    EXPECT(!val_true.isDateTime());
 
-    BOOST_CHECK(!val_false.isNil());
-    BOOST_CHECK(!val_false.isNumber());
-    BOOST_CHECK(!val_false.isDouble());
-    BOOST_CHECK(!val_false.isString());
-    BOOST_CHECK(!val_false.isList());
-    BOOST_CHECK(!val_false.isMap());
-    BOOST_CHECK(!val_false.isDate());
-    BOOST_CHECK(!val_false.isTime());
-    BOOST_CHECK(!val_false.isDateTime());
+    EXPECT(!val_false.isNil());
+    EXPECT(!val_false.isNumber());
+    EXPECT(!val_false.isDouble());
+    EXPECT(!val_false.isString());
+    EXPECT(!val_false.isList());
+    EXPECT(!val_false.isMap());
+    EXPECT(!val_false.isDate());
+    EXPECT(!val_false.isTime());
+    EXPECT(!val_false.isDateTime());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_comparisons ) {
+CASE( "Booleans compare with other booleans, and are well ordered to other Value" ) {
     Value val_true1(true);
     Value val_true2(true);
     Value val_false1(false);
@@ -170,231 +164,232 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_comparisons ) {
     // WARNING: This logic is inverted from all the other Value types. Should probably be checked.
     // ************************
 
-    BOOST_CHECK(val_true1.compare(val_true1) == -1);
-    BOOST_CHECK(val_true1.compare(val_true2) == -1);
-    BOOST_CHECK(val_false1.compare(val_false1) == 1);
-    BOOST_CHECK(val_false1.compare(val_false2) == 1);
+    EXPECT(val_true1.compare(val_true1) == -1);
+    EXPECT(val_true1.compare(val_true2) == -1);
+    EXPECT(val_false1.compare(val_false1) == 1);
+    EXPECT(val_false1.compare(val_false2) == 1);
 
-    BOOST_CHECK(val_true1.compare(val_false1) == 0);
-    BOOST_CHECK(val_false2.compare(val_true2) == 0);
+    EXPECT(val_true1.compare(val_false1) == 0);
+    EXPECT(val_false2.compare(val_true2) == 0);
 
     // Check comparisons with other types of data.
 
-    BOOST_CHECK(val_true1.compare(Value(1234)) > 0); // Only need 1 integral test, they are all the same.
-    BOOST_CHECK(val_true1.compare(Value(1234.5)) > 0);
-    BOOST_CHECK(val_true1.compare(Value("test str")) > 0);
-    BOOST_CHECK(val_true1.compare(Value(std::string("testing string"))) > 0);
-    BOOST_CHECK(val_true1.compare(Value(ValueMap())) > 0);
-    BOOST_CHECK(val_true1.compare(Value(Date(2016, 3, 30))) > 0);
-    BOOST_CHECK(val_true1.compare(ValueList()) > 0);
+    EXPECT(val_true1.compare(Value(1234)) > 0); // Only need 1 integral test, they are all the same.
+    EXPECT(val_true1.compare(Value(1234.5)) > 0);
+    EXPECT(val_true1.compare(Value("test str")) > 0);
+    EXPECT(val_true1.compare(Value(std::string("testing string"))) > 0);
+    EXPECT(val_true1.compare(Value(ValueMap())) > 0);
+    EXPECT(val_true1.compare(Value(Date(2016, 3, 30))) > 0);
+    EXPECT(val_true1.compare(ValueList()) > 0);
 
-    BOOST_CHECK(Value(1234).compare(val_false1) < 0); // Only need 1 integral test, they are all the same.
-    BOOST_CHECK(Value(1234.5).compare(val_false1) < 0);
-    BOOST_CHECK(Value("test str").compare(val_false1) < 0);
-    BOOST_CHECK(Value(std::string("testing string")).compare(val_false1) < 0);
-    BOOST_CHECK(Value(ValueMap()).compare(val_false1) < 0);
-    BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val_false1) < 0);
-    BOOST_CHECK(Value(ValueList()).compare(val_false1) < 0);
+    EXPECT(Value(1234).compare(val_false1) < 0); // Only need 1 integral test, they are all the same.
+    EXPECT(Value(1234.5).compare(val_false1) < 0);
+    EXPECT(Value("test str").compare(val_false1) < 0);
+    EXPECT(Value(std::string("testing string")).compare(val_false1) < 0);
+    EXPECT(Value(ValueMap()).compare(val_false1) < 0);
+    EXPECT(Value(Date(2016, 3, 30)).compare(val_false1) < 0);
+    EXPECT(Value(ValueList()).compare(val_false1) < 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_index_operator ) {
+CASE( "Indexing is not a valid operation for booleans" ) {
     // No indexing operations should work on a bool...
 
     Value val_true(true);
     Value val_false(false);
 
-    BOOST_CHECK_THROW(val_true["idx"], BadOperator);
-    BOOST_CHECK_THROW(val_true[std::string("idx")], BadOperator);
-    BOOST_CHECK_THROW(val_true[123], BadOperator);
-    BOOST_CHECK_THROW(val_true[Value(123)], BadOperator);
+    EXPECT_THROWS_AS(val_true["idx"], BadOperator);
+    EXPECT_THROWS_AS(val_true[std::string("idx")], BadOperator);
+    EXPECT_THROWS_AS(val_true[123], BadOperator);
+    EXPECT_THROWS_AS(val_true[Value(123)], BadOperator);
 
-    BOOST_CHECK_THROW(val_false["idx"], BadOperator);
-    BOOST_CHECK_THROW(val_false[std::string("idx")], BadOperator);
-    BOOST_CHECK_THROW(val_false[123], BadOperator);
-    BOOST_CHECK_THROW(val_false[Value(123)], BadOperator);
+    EXPECT_THROWS_AS(val_false["idx"], BadOperator);
+    EXPECT_THROWS_AS(val_false[std::string("idx")], BadOperator);
+    EXPECT_THROWS_AS(val_false[123], BadOperator);
+    EXPECT_THROWS_AS(val_false[Value(123)], BadOperator);
 
     // Test the matching contains() function too
 
-    BOOST_CHECK_THROW(val_true.contains("idx"), BadOperator);
-    BOOST_CHECK_THROW(val_true.contains(std::string("idx")), BadOperator);
-    BOOST_CHECK_THROW(val_true.contains(123), BadOperator);
-    BOOST_CHECK_THROW(val_true.contains(Value(123)), BadOperator);
+    EXPECT_THROWS_AS(val_true.contains("idx"), BadOperator);
+    EXPECT_THROWS_AS(val_true.contains(std::string("idx")), BadOperator);
+    EXPECT_THROWS_AS(val_true.contains(123), BadOperator);
+    EXPECT_THROWS_AS(val_true.contains(Value(123)), BadOperator);
 
-    BOOST_CHECK_THROW(val_false.contains("idx"), BadOperator);
-    BOOST_CHECK_THROW(val_false.contains(std::string("idx")), BadOperator);
-    BOOST_CHECK_THROW(val_false.contains(123), BadOperator);
-    BOOST_CHECK_THROW(val_false.contains(Value(123)), BadOperator);
+    EXPECT_THROWS_AS(val_false.contains("idx"), BadOperator);
+    EXPECT_THROWS_AS(val_false.contains(std::string("idx")), BadOperator);
+    EXPECT_THROWS_AS(val_false.contains(123), BadOperator);
+    EXPECT_THROWS_AS(val_false.contains(Value(123)), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_add_operator ) {
+CASE( "Addition is not a valid operation for booleans" ) {
     // There are no valid boolean addition operations.
 
     Value val(true);
 
-    BOOST_CHECK_THROW(ValueAdd(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAdd(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAddSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_subtract_operator ) {
+CASE( "Subtraction is not a valid operation for booleans" ) {
     // There are no valid boolean subtraction operations.
 
     Value val(true);
 
-    BOOST_CHECK_THROW(ValueSub(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSub(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSubSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_multiply_operator ) {
+CASE( "Multiplication is not a valid operation for booleans" ) {
     // There are no valid boolean multiplication operations.
 
     Value val(true);
 
-    BOOST_CHECK_THROW(ValueMul(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMul(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMulSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_divide_operator ) {
+CASE( "Division is not a valid operation for booleans" ) {
     // There are no valid boolean division operations.
 
     Value val(true);
 
-    BOOST_CHECK_THROW(ValueDiv(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDiv(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDivSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_modulo_operator ) {
+CASE( "The modulo operator is not a valid operation for booleans" ) {
     // There are no valid boolean modulo operations.
 
     Value val(true);
 
-    BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMod(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueModSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_bool_head_tail ) {
+CASE( "Head/tail tests are disabled for booleans" ) {
     Value val(true);
 
-    /// BOOST_CHECK_THROW(val.head(), AssertationError);
-    /// BOOST_CHECK_THROW(val.tail(), AssertationError);
+    /// EXPECT_THROWS_AS(val.head(), AssertationError);
+    /// EXPECT_THROWS_AS(val.tail(), AssertationError);
+    EXPECT(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -403,7 +398,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_bool_head_tail ) {
 //
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_cast ) {
+CASE( "Test that integers cast correctly in value" ) {
     // Note that _all_ the integer types are stored as a signed long long
     // --> There are constraints on the size that can be stored
     Value val_zero(0U);
@@ -412,84 +407,84 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_cast ) {
 
     // Integer conversions
 
-    BOOST_CHECK_EQUAL(val_zero.as<long long>(), 0);
-    BOOST_CHECK_EQUAL(val_int.as<long long>(), 12345);
-    BOOST_CHECK_EQUAL(val_long.as<long long>(), -2147483647);
+    EXPECT(val_zero.as<long long>() == 0);
+    EXPECT(val_int.as<long long>() == 12345);
+    EXPECT(val_long.as<long long>() == -2147483647);
 
-    BOOST_CHECK_EQUAL(int(val_zero), 0);
+    EXPECT(int(val_zero) == 0);
 
-    BOOST_CHECK_EQUAL(int(val_int), 12345);
-    BOOST_CHECK_EQUAL((unsigned int)(val_int), 12345);
-    BOOST_CHECK_EQUAL(short(val_int), 12345);
-    BOOST_CHECK_EQUAL((unsigned short)(val_int), 12345);
-    BOOST_CHECK_EQUAL(long(val_int), 12345);
-    BOOST_CHECK_EQUAL((unsigned long)(val_int), 12345);
-    BOOST_CHECK_EQUAL((long long)(val_int), 12345);
-    BOOST_CHECK_EQUAL((unsigned long long)(val_int), 12345);
+    EXPECT(int(val_int) == 12345);
+    EXPECT((unsigned int)(val_int) == 12345);
+    EXPECT(short(val_int) == 12345);
+    EXPECT((unsigned short)(val_int) == 12345);
+    EXPECT(long(val_int) == 12345);
+    EXPECT((unsigned long)(val_int) == 12345);
+    EXPECT((long long)(val_int) == 12345);
+    EXPECT((unsigned long long)(val_int) == 12345);
 
     // NOTE that using an unsigned variable does NOT cause the check to fail, unless there is an overflow. The
     // compiler will assume that everything is fine, and just do a bitwise check...
-    BOOST_CHECK_EQUAL(int(val_long), -2147483647);
-    BOOST_CHECK_EQUAL((unsigned int)(val_long), -2147483647);
-//    BOOST_CHECK(short(val_long) != -2147483647);             // a short ranges [−32767, +32767] so this is always true
-//    BOOST_CHECK((unsigned short)(val_long) != -2147483647);  // unsigned is always positive
-    BOOST_CHECK_EQUAL(long(val_long), -2147483647);
-    BOOST_CHECK_EQUAL((unsigned long)(val_long), -2147483647);
-    BOOST_CHECK_EQUAL((long long)(val_long), -2147483647);
-    BOOST_CHECK_EQUAL((unsigned long long)(val_long), -2147483647);
+    EXPECT(int(val_long) == -2147483647);
+    EXPECT((unsigned int)(val_long) == -2147483647);
+//    EXPECT(short(val_long) != -2147483647);             // a short ranges [−32767, +32767] so this is always true
+//    EXPECT((unsigned short)(val_long) != -2147483647);  // unsigned is always positive
+    EXPECT(long(val_long) == -2147483647);
+    EXPECT((unsigned long)(val_long) == -2147483647);
+    EXPECT((long long)(val_long) == -2147483647);
+    EXPECT((unsigned long long)(val_long) == -2147483647);
 
     // Check boolean conversion
 
-    BOOST_CHECK(!val_zero);
-    BOOST_CHECK(val_int);
-    BOOST_CHECK(val_long);
-    BOOST_CHECK(!val_zero.as<bool>());
-    BOOST_CHECK(val_int.as<bool>());
-    BOOST_CHECK(val_long.as<bool>());
+    EXPECT(!val_zero);
+    EXPECT(val_int);
+    EXPECT(val_long);
+    EXPECT(!val_zero.as<bool>());
+    EXPECT(val_int.as<bool>());
+    EXPECT(val_long.as<bool>());
 
     // Check double conversion
 
-    BOOST_CHECK_CLOSE(double(val_zero), 0.0, 1.0e-6);
-    BOOST_CHECK_CLOSE(double(val_int), 12345.0, 1.0e-6);
-    BOOST_CHECK_CLOSE(double(val_long), -2147483647.0, 1.0e-6);
-    BOOST_CHECK_CLOSE(val_zero.as<double>(), 0.0, 1.0e-6);
-    BOOST_CHECK_CLOSE(val_int.as<double>(), 12345.0, 1.0e-6);
-    BOOST_CHECK_CLOSE(val_long.as<double>(), -2147483647.0, 1.0e-6);
+    EXPECT(is_approximately_equal(double(val_zero), 0.0, 1.0e-6));
+    EXPECT(is_approximately_equal(double(val_int), 12345.0, 1.0e-6));
+    EXPECT(is_approximately_equal(double(val_long), -2147483647.0, 1.0e-6));
+    EXPECT(is_approximately_equal(val_zero.as<double>(), 0.0, 1.0e-6));
+    EXPECT(is_approximately_equal(val_int.as<double>(), 12345.0, 1.0e-6));
+    EXPECT(is_approximately_equal(val_long.as<double>(), -2147483647.0, 1.0e-6));
 
     // Check pretty printing
 
-    BOOST_CHECK_EQUAL(std::string(val_zero), "0");
-    BOOST_CHECK_EQUAL(std::string(val_int), "12345");
-    BOOST_CHECK_EQUAL(std::string(val_long), "-2147483647");
-    BOOST_CHECK_EQUAL(val_zero.as<std::string>(), "0");
-    BOOST_CHECK_EQUAL(val_int.as<std::string>(), "12345");
-    BOOST_CHECK_EQUAL(val_long.as<std::string>(), "-2147483647");
+    EXPECT(std::string(val_zero) == "0");
+    EXPECT(std::string(val_int) == "12345");
+    EXPECT(std::string(val_long) == "-2147483647");
+    EXPECT(val_zero.as<std::string>() == "0");
+    EXPECT(val_int.as<std::string>() == "12345");
+    EXPECT(val_long.as<std::string>() == "-2147483647");
 
     // ValueList is a bit of an odd one --> it just puts the value in a list of one element...
 
     ValueList vl(val_int.as<ValueList>());
-    BOOST_CHECK_EQUAL(vl.size(), 1);
-    BOOST_CHECK_EQUAL(vl[0].as<long long>(), 12345);
+    EXPECT(vl.size() == 1);
+    EXPECT(vl[0].as<long long>() == 12345);
 
     // And the conversions to Length/Offset, oooer.
     // It would be nicer if these didn't work...
 
     Length len = val_int; // Avoid ambiguities. Gah.
     Offset off = val_int;
-    BOOST_CHECK_EQUAL(len, Length(12345));
-    BOOST_CHECK_EQUAL(off, Offset(12345));
+    EXPECT(len == Length(12345));
+    EXPECT(off == Offset(12345));
 
     // And the invalid conversions
 
-    BOOST_CHECK_THROW(val_int.as<Time>(), BadConversion);
-    BOOST_CHECK_THROW(val_int.as<Date>(), BadConversion);
-    BOOST_CHECK_THROW(val_int.as<DateTime>(), BadConversion);
-    BOOST_CHECK_THROW(val_int.as<ValueMap>(), BadConversion);
+    EXPECT_THROWS_AS(val_int.as<Time>(), BadConversion);
+    EXPECT_THROWS_AS(val_int.as<Date>(), BadConversion);
+    EXPECT_THROWS_AS(val_int.as<DateTime>(), BadConversion);
+    EXPECT_THROWS_AS(val_int.as<ValueMap>(), BadConversion);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_unsigned_overflow ) {
+CASE( "Test the overflow behaviour of integers" ) {
     // Internally a Value(unsigned long long) is stored as a long long, as with all the other integer types. This should
     // give very predictable overflow behaviour
 
@@ -497,56 +492,56 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_unsigned_overflow ) {
     Value val_min(-9223372036854775807);
     Value val_overflow(9223372036854775808U);
 
-    BOOST_CHECK_EQUAL((long long)val_max, 9223372036854775807);
-    BOOST_CHECK_EQUAL((long long)val_min, -9223372036854775807);
-    BOOST_CHECK((unsigned long long)(val_min) != 9223372036854775808U);
+    EXPECT((long long)val_max == 9223372036854775807);
+    EXPECT((long long)val_min == -9223372036854775807);
+    EXPECT((unsigned long long)(val_min) != 9223372036854775808U);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_type ) {
+CASE( "Test type knowledge of integers in Value" ) {
     Value val_int(12345);
     Value val_long(2147483647);
     Value val_longlong(-9223372036854775807);
 
-    BOOST_CHECK(val_int.isNumber());
-    BOOST_CHECK(val_long.isNumber());
-    BOOST_CHECK(val_longlong.isNumber());
+    EXPECT(val_int.isNumber());
+    EXPECT(val_long.isNumber());
+    EXPECT(val_longlong.isNumber());
 
-    BOOST_CHECK(!val_int.isNil());
-    BOOST_CHECK(!val_int.isBool());
-    BOOST_CHECK(!val_int.isDouble());
-    BOOST_CHECK(!val_int.isString());
-    BOOST_CHECK(!val_int.isList());
-    BOOST_CHECK(!val_int.isMap());
-    BOOST_CHECK(!val_int.isDate());
-    BOOST_CHECK(!val_int.isTime());
-    BOOST_CHECK(!val_int.isDateTime());
+    EXPECT(!val_int.isNil());
+    EXPECT(!val_int.isBool());
+    EXPECT(!val_int.isDouble());
+    EXPECT(!val_int.isString());
+    EXPECT(!val_int.isList());
+    EXPECT(!val_int.isMap());
+    EXPECT(!val_int.isDate());
+    EXPECT(!val_int.isTime());
+    EXPECT(!val_int.isDateTime());
 
-    BOOST_CHECK(!val_long.isNil());
-    BOOST_CHECK(!val_long.isBool());
-    BOOST_CHECK(!val_long.isDouble());
-    BOOST_CHECK(!val_long.isString());
-    BOOST_CHECK(!val_long.isList());
-    BOOST_CHECK(!val_long.isMap());
-    BOOST_CHECK(!val_long.isDate());
-    BOOST_CHECK(!val_long.isTime());
-    BOOST_CHECK(!val_long.isDateTime());
+    EXPECT(!val_long.isNil());
+    EXPECT(!val_long.isBool());
+    EXPECT(!val_long.isDouble());
+    EXPECT(!val_long.isString());
+    EXPECT(!val_long.isList());
+    EXPECT(!val_long.isMap());
+    EXPECT(!val_long.isDate());
+    EXPECT(!val_long.isTime());
+    EXPECT(!val_long.isDateTime());
 
-    BOOST_CHECK(!val_longlong.isNil());
-    BOOST_CHECK(!val_longlong.isBool());
-    BOOST_CHECK(!val_longlong.isDouble());
-    BOOST_CHECK(!val_longlong.isString());
-    BOOST_CHECK(!val_longlong.isList());
-    BOOST_CHECK(!val_longlong.isMap());
-    BOOST_CHECK(!val_longlong.isDate());
-    BOOST_CHECK(!val_longlong.isTime());
-    BOOST_CHECK(!val_longlong.isDateTime());
+    EXPECT(!val_longlong.isNil());
+    EXPECT(!val_longlong.isBool());
+    EXPECT(!val_longlong.isDouble());
+    EXPECT(!val_longlong.isString());
+    EXPECT(!val_longlong.isList());
+    EXPECT(!val_longlong.isMap());
+    EXPECT(!val_longlong.isDate());
+    EXPECT(!val_longlong.isTime());
+    EXPECT(!val_longlong.isDateTime());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_comparisons ) {
+CASE( "Test comparisons with integers" ) {
     Value val1(1234);
     Value val2(1234);
     Value val3(4321);
@@ -556,223 +551,224 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_comparisons ) {
 
     // Check comparisons with same type of data
 
-    BOOST_CHECK(val1.compare(val1) == 0);
-    BOOST_CHECK(val1.compare(val2) == 0);
-    BOOST_CHECK(val2.compare(val1) == 0);
+    EXPECT(val1.compare(val1) == 0);
+    EXPECT(val1.compare(val2) == 0);
+    EXPECT(val2.compare(val1) == 0);
 
-    BOOST_CHECK(val1.compare(val3) == -1);
-    BOOST_CHECK(val3.compare(val1) == 1);
+    EXPECT(val1.compare(val3) == -1);
+    EXPECT(val3.compare(val1) == 1);
 
     // Check comparisons with floating point values ... these get checked by value
     Value val_f1(1234.0);
     Value val_f2(2222.0);
 
-    BOOST_CHECK(val_f1.compare(val1) == 0);
-    BOOST_CHECK(val1.compare(val_f1) == 0);
+    EXPECT(val_f1.compare(val1) == 0);
+    EXPECT(val1.compare(val_f1) == 0);
 
-    BOOST_CHECK(val1.compare(val_f2) == -1);
-    BOOST_CHECK(val3.compare(val_f2) == 1);
-    BOOST_CHECK(val_f2.compare(val1) == 1);
-    BOOST_CHECK(val_f2.compare(val3) == -1);
+    EXPECT(val1.compare(val_f2) == -1);
+    EXPECT(val3.compare(val_f2) == 1);
+    EXPECT(val_f2.compare(val1) == 1);
+    EXPECT(val_f2.compare(val3) == -1);
 
     // Check comparisons with other types of data.
 
-    BOOST_CHECK(val1.compare(Value(true)) < 0);
-    BOOST_CHECK(val1.compare(Value("test str")) > 0);
-    BOOST_CHECK(val1.compare(Value(std::string("testing string"))) > 0);
-    BOOST_CHECK(val1.compare(Value(ValueMap())) > 0);
-    BOOST_CHECK(val1.compare(Value(Date(2016, 3, 30))) > 0);
-    BOOST_CHECK(val1.compare(ValueList()) > 0);
+    EXPECT(val1.compare(Value(true)) < 0);
+    EXPECT(val1.compare(Value("test str")) > 0);
+    EXPECT(val1.compare(Value(std::string("testing string"))) > 0);
+    EXPECT(val1.compare(Value(ValueMap())) > 0);
+    EXPECT(val1.compare(Value(Date(2016, 3, 30))) > 0);
+    EXPECT(val1.compare(ValueList()) > 0);
 
-    BOOST_CHECK(Value(true).compare(val1) > 0);
-    BOOST_CHECK(Value("test str").compare(val1) < 0);
-    BOOST_CHECK(Value(std::string("testing string")).compare(val1) < 0);
-    BOOST_CHECK(Value(ValueMap()).compare(val1) < 0);
-    BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
-    BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
+    EXPECT(Value(true).compare(val1) > 0);
+    EXPECT(Value("test str").compare(val1) < 0);
+    EXPECT(Value(std::string("testing string")).compare(val1) < 0);
+    EXPECT(Value(ValueMap()).compare(val1) < 0);
+    EXPECT(Value(Date(2016, 3, 30)).compare(val1) < 0);
+    EXPECT(Value(ValueList()).compare(val1) < 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_index_operator ) {
+CASE( "Indexing is not a valid operatior for integers" ) {
     // No indexing operations should work on an integer...
 
     Value val(1234);
 
-    BOOST_CHECK_THROW(val["idx"], BadOperator);
-    BOOST_CHECK_THROW(val[std::string("idx")], BadOperator);
-    BOOST_CHECK_THROW(val[123], BadOperator);
-    BOOST_CHECK_THROW(val[Value(123)], BadOperator);
+    EXPECT_THROWS_AS(val["idx"], BadOperator);
+    EXPECT_THROWS_AS(val[std::string("idx")], BadOperator);
+    EXPECT_THROWS_AS(val[123], BadOperator);
+    EXPECT_THROWS_AS(val[Value(123)], BadOperator);
 
     // Test the matching contains() function too
 
-    BOOST_CHECK_THROW(val.contains("idx"), BadOperator);
-    BOOST_CHECK_THROW(val.contains(std::string("idx")), BadOperator);
-    BOOST_CHECK_THROW(val.contains(123), BadOperator);
-    BOOST_CHECK_THROW(val.contains(Value(123)), BadOperator);
+    EXPECT_THROWS_AS(val.contains("idx"), BadOperator);
+    EXPECT_THROWS_AS(val.contains(std::string("idx")), BadOperator);
+    EXPECT_THROWS_AS(val.contains(123), BadOperator);
+    EXPECT_THROWS_AS(val.contains(Value(123)), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_add_operator ) {
+CASE( "Addition only works between two integers" ) {
     Value val(123);
 
-    BOOST_CHECK_THROW(ValueAdd(val, true), BadOperator);
-    BOOST_CHECK_EQUAL(ValueAdd(val, 1234).as<long long>(), 1357);
-    BOOST_CHECK_THROW(ValueAdd(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, true), BadOperator);
+    EXPECT(ValueAdd(val, 1234).as<long long>() == 1357);
+    EXPECT_THROWS_AS(ValueAdd(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAdd(true, val), BadOperator);
-    BOOST_CHECK_EQUAL(ValueAdd(1234, val).as<long long>(), 1357);
-    BOOST_CHECK_THROW(ValueAdd(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(true, val), BadOperator);
+    EXPECT(ValueAdd(1234, val).as<long long>() == 1357);
+    EXPECT_THROWS_AS(ValueAdd(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAddSelf(val, true), BadOperator);
-    BOOST_CHECK_EQUAL(ValueAddSelf(val, 1234).as<long long>(), 1357);;
+    EXPECT_THROWS_AS(ValueAddSelf(val, true), BadOperator);
+    EXPECT(ValueAddSelf(val, 1234).as<long long>() == 1357);;
     val = Value(123);
-    BOOST_CHECK_THROW(ValueAddSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_subtract_operator ) {
+CASE( "Subtraction only works between two integers" ) {
     Value val(123);
 
-    BOOST_CHECK_THROW(ValueSub(val, true), BadOperator);
-    BOOST_CHECK_EQUAL(ValueSub(val, 1234).as<long long>(), -1111);
-    BOOST_CHECK_THROW(ValueSub(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, true), BadOperator);
+    EXPECT(ValueSub(val, 1234).as<long long>() == -1111);
+    EXPECT_THROWS_AS(ValueSub(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSub(true, val), BadOperator);
-    BOOST_CHECK_EQUAL(ValueSub(1234, val).as<long long>(), 1111);
-    BOOST_CHECK_THROW(ValueSub(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(true, val), BadOperator);
+    EXPECT(ValueSub(1234, val).as<long long>() == 1111);
+    EXPECT_THROWS_AS(ValueSub(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSubSelf(val, true), BadOperator);
-    BOOST_CHECK_EQUAL(ValueSubSelf(val, 1234).as<long long>(), -1111);
+    EXPECT_THROWS_AS(ValueSubSelf(val, true), BadOperator);
+    EXPECT(ValueSubSelf(val, 1234).as<long long>() == -1111);
     val = Value(123);
-    BOOST_CHECK_THROW(ValueSubSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_multiply_operator ) {
+CASE( "Multiplication only works between 2 integers" ) {
     Value val(123);
 
-    BOOST_CHECK_THROW(ValueMul(val, true), BadOperator);
-    BOOST_CHECK_EQUAL(ValueMul(val, 1234).as<long long>(), 151782);
-    BOOST_CHECK_THROW(ValueMul(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, true), BadOperator);
+    EXPECT(ValueMul(val, 1234).as<long long>() == 151782);
+    EXPECT_THROWS_AS(ValueMul(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMul(true, val), BadOperator);
-    BOOST_CHECK_EQUAL(ValueMul(1234, val).as<long long>(), 151782);
-    BOOST_CHECK_THROW(ValueMul(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(true, val), BadOperator);
+    EXPECT(ValueMul(1234, val).as<long long>() == 151782);
+    EXPECT_THROWS_AS(ValueMul(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMulSelf(val, true), BadOperator);
-    BOOST_CHECK_EQUAL(ValueMulSelf(val, 1234).as<long long>(), 151782);
+    EXPECT_THROWS_AS(ValueMulSelf(val, true), BadOperator);
+    EXPECT(ValueMulSelf(val, 1234).as<long long>() == 151782);
     val = Value(123);
-    BOOST_CHECK_THROW(ValueMulSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_divide_operator ) {
+CASE( "Division only works between 2 integers" ) {
     Value val(1476);
 
-    BOOST_CHECK_THROW(ValueDiv(val, true), BadOperator);
-    BOOST_CHECK_EQUAL(ValueDiv(val, 12).as<long long>(), 123);
-    BOOST_CHECK_THROW(ValueDiv(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
+    EXPECT(ValueDiv(val, 12).as<long long>() == 123);
+    EXPECT_THROWS_AS(ValueDiv(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDiv(true, val), BadOperator);
-    BOOST_CHECK_EQUAL(ValueDiv(12, val).as<long long>(), 0);
-    BOOST_CHECK_THROW(ValueDiv(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(true, val), BadOperator);
+    EXPECT(ValueDiv(12, val).as<long long>() == 0);
+    EXPECT_THROWS_AS(ValueDiv(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDivSelf(val, true), BadOperator);
-    BOOST_CHECK_EQUAL(ValueDivSelf(val, 12).as<long long>(), 123);
+    EXPECT_THROWS_AS(ValueDivSelf(val, true), BadOperator);
+    EXPECT(ValueDivSelf(val, 12).as<long long>() == 123);
     val = Value(1476);
-    BOOST_CHECK_THROW(ValueDivSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_modulo_operator ) {
+CASE( "Module operator currently not defined for integers" ) {
     Value val(123);
 
-    BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMod(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueModSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_integer_head_tail ) {
+CASE( "Head and tail tests currently disabled for integers" ) {
     Value val(12345);
 
-    /// BOOST_CHECK_THROW(val.head(), AssertationError);
-    /// BOOST_CHECK_THROW(val.tail(), AssertationError);
+    /// EXPECT_THROWS_AS(val.head(), AssertationError);
+    /// EXPECT_THROWS_AS(val.tail(), AssertationError);
+    EXPECT(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -781,61 +777,61 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_integer_head_tail ) {
 //
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_cast ) {
+CASE( "Doubles cast into and out of Value correctly" ) {
     Value val_zero(0.0);
     Value val_double(99999999999999999999999999999.9);
 
     // Double conversions
 
-    BOOST_CHECK_CLOSE(val_zero.as<double>(), 0.0, 1.0e-10);
-    BOOST_CHECK_CLOSE(val_double.as<double>(), 99999999999999999999999999999.9, 1.0e-10);
+    EXPECT(is_approximately_equal(val_zero.as<double>(), 0.0, 1.0e-10));
+    EXPECT(is_approximately_equal(val_double.as<double>(), 99999999999999999999999999999.9, 1.0e-10));
 
-    BOOST_CHECK_CLOSE(double(val_zero), 0.0, 1.0e-10);
-    BOOST_CHECK_CLOSE(double(val_double), 99999999999999999999999999999.9, 1.0e-10);
+    EXPECT(is_approximately_equal(double(val_zero), 0.0, 1.0e-10));
+    EXPECT(is_approximately_equal(double(val_double), 99999999999999999999999999999.9, 1.0e-10));
 
     // Check pretty printing
     /// @note rounding of values for pretty printing
 
-    BOOST_CHECK_EQUAL(std::string(val_zero), "0");
-    BOOST_CHECK_EQUAL(std::string(val_double), "1e+29");
-    BOOST_CHECK_EQUAL(val_zero.as<std::string>(), "0");
-    BOOST_CHECK_EQUAL(val_double.as<std::string>(), "1e+29");
+    EXPECT(std::string(val_zero) == "0");
+    EXPECT(std::string(val_double) == "1e+29");
+    EXPECT(val_zero.as<std::string>() == "0");
+    EXPECT(val_double.as<std::string>() == "1e+29");
 
     // ValueList is a bit of an odd one --> it just puts the value in a list of one element...
 
     ValueList vl(val_double.as<ValueList>());
-    BOOST_CHECK_EQUAL(vl.size(), 1);
-    BOOST_CHECK_CLOSE(vl[0].as<double>(), 99999999999999999999999999999.9, 1.0e-10);
+    EXPECT(vl.size() == 1);
+    EXPECT(is_approximately_equal(vl[0].as<double>(), 99999999999999999999999999999.9, 1.0e-10));
 
-    BOOST_CHECK_THROW(val_double.as<bool>(), BadConversion);
-    BOOST_CHECK_THROW(val_double.as<long long>(), BadConversion);
-    BOOST_CHECK_THROW(val_double.as<Time>(), BadConversion);
-    BOOST_CHECK_THROW(val_double.as<Date>(), BadConversion);
-    BOOST_CHECK_THROW(val_double.as<DateTime>(), BadConversion);
-    BOOST_CHECK_THROW(val_double.as<ValueMap>(), BadConversion);
+    EXPECT_THROWS_AS(val_double.as<bool>(), BadConversion);
+    EXPECT_THROWS_AS(val_double.as<long long>(), BadConversion);
+    EXPECT_THROWS_AS(val_double.as<Time>(), BadConversion);
+    EXPECT_THROWS_AS(val_double.as<Date>(), BadConversion);
+    EXPECT_THROWS_AS(val_double.as<DateTime>(), BadConversion);
+    EXPECT_THROWS_AS(val_double.as<ValueMap>(), BadConversion);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_type ) {
+CASE( "Types are correctly reported for doubles" ) {
     Value val_double(-99999999999999999999999999999.9);
 
-    BOOST_CHECK(val_double.isDouble());
+    EXPECT(val_double.isDouble());
 
-    BOOST_CHECK(!val_double.isNil());
-    BOOST_CHECK(!val_double.isBool());
-    BOOST_CHECK(!val_double.isNumber());
-    BOOST_CHECK(!val_double.isString());
-    BOOST_CHECK(!val_double.isList());
-    BOOST_CHECK(!val_double.isMap());
-    BOOST_CHECK(!val_double.isDate());
-    BOOST_CHECK(!val_double.isTime());
-    BOOST_CHECK(!val_double.isDateTime());
+    EXPECT(!val_double.isNil());
+    EXPECT(!val_double.isBool());
+    EXPECT(!val_double.isNumber());
+    EXPECT(!val_double.isString());
+    EXPECT(!val_double.isList());
+    EXPECT(!val_double.isMap());
+    EXPECT(!val_double.isDate());
+    EXPECT(!val_double.isTime());
+    EXPECT(!val_double.isDateTime());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_comparisons ) {
+CASE( "Doubles compare with other doubles, and form a well defined order with other Values" ) {
     Value val1(1234.0);
     Value val2(1234.0);
     Value val3(4321.0);
@@ -845,223 +841,224 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_comparisons ) {
 
     // Check comparisons with same type of data
 
-    BOOST_CHECK(val1.compare(val1) == 0);
-    BOOST_CHECK(val1.compare(val2) == 0);
-    BOOST_CHECK(val2.compare(val1) == 0);
+    EXPECT(val1.compare(val1) == 0);
+    EXPECT(val1.compare(val2) == 0);
+    EXPECT(val2.compare(val1) == 0);
 
-    BOOST_CHECK(val1.compare(val3) == -1);
-    BOOST_CHECK(val3.compare(val1) == 1);
+    EXPECT(val1.compare(val3) == -1);
+    EXPECT(val3.compare(val1) == 1);
 
     // Check comparisons with integer values ... these get checked by value
     Value val_i1(1234);
     Value val_i2(2222);
 
-    BOOST_CHECK(val_i1.compare(val1) == 0);
-    BOOST_CHECK(val1.compare(val_i1) == 0);
+    EXPECT(val_i1.compare(val1) == 0);
+    EXPECT(val1.compare(val_i1) == 0);
 
-    BOOST_CHECK(val1.compare(val_i2) == -1);
-    BOOST_CHECK(val3.compare(val_i2) == 1);
-    BOOST_CHECK(val_i2.compare(val1) == 1);
-    BOOST_CHECK(val_i2.compare(val3) == -1);
+    EXPECT(val1.compare(val_i2) == -1);
+    EXPECT(val3.compare(val_i2) == 1);
+    EXPECT(val_i2.compare(val1) == 1);
+    EXPECT(val_i2.compare(val3) == -1);
 
     // Check comparisons with other types of data.
 
-    BOOST_CHECK(val1.compare(Value(true)) < 0);
-    BOOST_CHECK(val1.compare(Value("test str")) > 0);
-    BOOST_CHECK(val1.compare(Value(std::string("testing string"))) > 0);
-    BOOST_CHECK(val1.compare(Value(ValueMap())) > 0);
-    BOOST_CHECK(val1.compare(Value(Date(2016, 3, 30))) > 0);
-    BOOST_CHECK(val1.compare(ValueList()) > 0);
+    EXPECT(val1.compare(Value(true)) < 0);
+    EXPECT(val1.compare(Value("test str")) > 0);
+    EXPECT(val1.compare(Value(std::string("testing string"))) > 0);
+    EXPECT(val1.compare(Value(ValueMap())) > 0);
+    EXPECT(val1.compare(Value(Date(2016, 3, 30))) > 0);
+    EXPECT(val1.compare(ValueList()) > 0);
 
-    BOOST_CHECK(Value(true).compare(val1) > 0);
-    BOOST_CHECK(Value("test str").compare(val1) < 0);
-    BOOST_CHECK(Value(std::string("testing string")).compare(val1) < 0);
-    BOOST_CHECK(Value(ValueMap()).compare(val1) < 0);
-    BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
-    BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
+    EXPECT(Value(true).compare(val1) > 0);
+    EXPECT(Value("test str").compare(val1) < 0);
+    EXPECT(Value(std::string("testing string")).compare(val1) < 0);
+    EXPECT(Value(ValueMap()).compare(val1) < 0);
+    EXPECT(Value(Date(2016, 3, 30)).compare(val1) < 0);
+    EXPECT(Value(ValueList()).compare(val1) < 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_index_operator ) {
+CASE( "Indexing doesn't make any sense on doubles" ) {
     // No indexing operations should work on a double...
 
     Value val(1234.45);
 
-    BOOST_CHECK_THROW(val["idx"], BadOperator);
-    BOOST_CHECK_THROW(val[std::string("idx")], BadOperator);
-    BOOST_CHECK_THROW(val[123], BadOperator);
-    BOOST_CHECK_THROW(val[Value(123)], BadOperator);
+    EXPECT_THROWS_AS(val["idx"], BadOperator);
+    EXPECT_THROWS_AS(val[std::string("idx")], BadOperator);
+    EXPECT_THROWS_AS(val[123], BadOperator);
+    EXPECT_THROWS_AS(val[Value(123)], BadOperator);
 
     // Test the matching contains() function too
 
-    BOOST_CHECK_THROW(val.contains("idx"), BadOperator);
-    BOOST_CHECK_THROW(val.contains(std::string("idx")), BadOperator);
-    BOOST_CHECK_THROW(val.contains(123), BadOperator);
-    BOOST_CHECK_THROW(val.contains(Value(123)), BadOperator);
+    EXPECT_THROWS_AS(val.contains("idx"), BadOperator);
+    EXPECT_THROWS_AS(val.contains(std::string("idx")), BadOperator);
+    EXPECT_THROWS_AS(val.contains(123), BadOperator);
+    EXPECT_THROWS_AS(val.contains(Value(123)), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_add_operator ) {
+CASE( "Addition works for doubles only with other doubles" ) {
     Value val(123.45);
 
-    BOOST_CHECK_THROW(ValueAdd(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, 1234), BadOperator);
-    BOOST_CHECK_CLOSE(ValueAdd(val, 66.6).as<double>(), 190.05, 1.0e-10);
-    BOOST_CHECK_THROW(ValueAdd(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, 1234), BadOperator);
+    EXPECT(is_approximately_equal(ValueAdd(val, 66.6).as<double>(), 190.05, 1.0e-10));
+    EXPECT_THROWS_AS(ValueAdd(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAdd(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(1234, val), BadOperator);
-    BOOST_CHECK_CLOSE(ValueAdd(66.6, val).as<double>(), 190.05, 1.0e-10);
-    BOOST_CHECK_THROW(ValueAdd("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(1234, val), BadOperator);
+    EXPECT(is_approximately_equal(ValueAdd(66.6, val).as<double>(), 190.05, 1.0e-10));
+    EXPECT_THROWS_AS(ValueAdd("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAddSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, 1234), BadOperator);
-    BOOST_CHECK_CLOSE(ValueAddSelf(val, 66.6).as<double>(), 190.05, 1.0e-10);
+    EXPECT_THROWS_AS(ValueAddSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, 1234), BadOperator);
+    EXPECT(is_approximately_equal(ValueAddSelf(val, 66.6).as<double>(), 190.05, 1.0e-10));
     val = Value(123.45);
-    BOOST_CHECK_THROW(ValueAddSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_subtract_operator ) {
+CASE( "Subtraction works for doubles only with other doubles" ) {
     Value val(123.45);
 
-    BOOST_CHECK_THROW(ValueSub(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, 1234), BadOperator);
-    BOOST_CHECK_CLOSE(ValueSub(val, 66.6).as<double>(), 56.85, 1.0e-10);
-    BOOST_CHECK_THROW(ValueSub(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, 1234), BadOperator);
+    EXPECT(is_approximately_equal(ValueSub(val, 66.6).as<double>(), 56.85, 1.0e-10));
+    EXPECT_THROWS_AS(ValueSub(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSub(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(1234, val), BadOperator);
-    BOOST_CHECK_CLOSE(ValueSub(66.6, val).as<double>(), -56.85, 1.0e-10);
-    BOOST_CHECK_THROW(ValueSub("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(1234, val), BadOperator);
+    EXPECT(is_approximately_equal(ValueSub(66.6, val).as<double>(), -56.85, 1.0e-10));
+    EXPECT_THROWS_AS(ValueSub("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSubSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, 1234), BadOperator);
-    BOOST_CHECK_CLOSE(ValueSubSelf(val, 66.6).as<double>(), 56.85, 1.0e-10);
+    EXPECT_THROWS_AS(ValueSubSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, 1234), BadOperator);
+    EXPECT(is_approximately_equal(ValueSubSelf(val, 66.6).as<double>(), 56.85, 1.0e-10));
     val = Value(123.45);
-    BOOST_CHECK_THROW(ValueSubSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_multiply_operator ) {
+CASE( "Multiplication works for doubles only with other doubles" ) {
     Value val(123.45);
 
-    BOOST_CHECK_THROW(ValueMul(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, 1234), BadOperator);
-    BOOST_CHECK_CLOSE(ValueMul(val, 66.6).as<double>(), 8221.77, 1.0e-10);
-    BOOST_CHECK_THROW(ValueMul(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, 1234), BadOperator);
+    EXPECT(is_approximately_equal(ValueMul(val, 66.6).as<double>(), 8221.77, 1.0e-10));
+    EXPECT_THROWS_AS(ValueMul(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMul(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(1234, val), BadOperator);
-    BOOST_CHECK_CLOSE(ValueMul(66.6, val).as<double>(), 8221.77, 1.0e-10);
-    BOOST_CHECK_THROW(ValueMul("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(1234, val), BadOperator);
+    EXPECT(is_approximately_equal(ValueMul(66.6, val).as<double>(), 8221.77, 1.0e-10));
+    EXPECT_THROWS_AS(ValueMul("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMulSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, 1234), BadOperator);
-    BOOST_CHECK_CLOSE(ValueMulSelf(val, 66.6).as<double>(), 8221.77, 1.0e-10);
+    EXPECT_THROWS_AS(ValueMulSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, 1234), BadOperator);
+    EXPECT(is_approximately_equal(ValueMulSelf(val, 66.6).as<double>(), 8221.77, 1.0e-10));
     val = Value(123.45);
-    BOOST_CHECK_THROW(ValueMulSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_divide_operator ) {
+CASE( "Division works for doubles only with other doubles" ) {
     Value val(123.45);
 
-    BOOST_CHECK_THROW(ValueDiv(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, 1234), BadOperator);
-    BOOST_CHECK_CLOSE(ValueDiv(val, 66.6).as<double>(), 1.853603604, 1.0e-6);
-    BOOST_CHECK_THROW(ValueDiv(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, 1234), BadOperator);
+    EXPECT(is_approximately_equal(ValueDiv(val, 66.6).as<double>(), 1.853603604, 1.0e-6));
+    EXPECT_THROWS_AS(ValueDiv(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDiv(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(1234, val), BadOperator);
-    BOOST_CHECK_CLOSE(ValueDiv(66.6, val).as<double>(), 0.539489671, 1.0e-6);
-    BOOST_CHECK_THROW(ValueDiv("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(1234, val), BadOperator);
+    EXPECT(is_approximately_equal(ValueDiv(66.6, val).as<double>(), 0.539489671, 1.0e-6));
+    EXPECT_THROWS_AS(ValueDiv("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDivSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, 1234), BadOperator);
-    BOOST_CHECK_CLOSE(ValueDivSelf(val, 66.6).as<double>(), 1.853603604, 1.0e-6);
+    EXPECT_THROWS_AS(ValueDivSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, 1234), BadOperator);
+    EXPECT(is_approximately_equal(ValueDivSelf(val, 66.6).as<double>(), 1.853603604, 1.0e-6));
     val = Value(123.45);
-    BOOST_CHECK_THROW(ValueDivSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_modulo_operator ) {
+CASE( "The modulo operator is invalid for doubles" ) {
     Value val(123.45);
 
-    BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMod(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueModSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_double_head_tail ) {
+CASE( "head and tail are currently not tested for doubles" ) {
     Value val(123.45);
 
-    /// BOOST_CHECK_THROW(val.head(), AssertationError);
-    /// BOOST_CHECK_THROW(val.tail(), AssertationError);
+    /// EXPECT_THROWS_AS(val.head(), AssertationError);
+    /// EXPECT_THROWS_AS(val.tail(), AssertationError);
+    EXPECT(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1070,49 +1067,49 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_double_head_tail ) {
 //
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_cast ) {
+CASE( "Values cast in- and out- of strings as required" ) {
     Value val_null("");
     Value val_char("test string");
     Value val_str(std::string("test string 2"));
 
     // String conversion
 
-    BOOST_CHECK_EQUAL(std::string(val_null), "");
-    BOOST_CHECK_EQUAL(std::string(val_char), "test string");
-    BOOST_CHECK_EQUAL(std::string(val_str), "test string 2");
+    EXPECT(std::string(val_null) == "");
+    EXPECT(std::string(val_char) == "test string");
+    EXPECT(std::string(val_str) == "test string 2");
 
-    BOOST_CHECK_EQUAL(val_null.as<std::string>(), "");
-    BOOST_CHECK_EQUAL(val_char.as<std::string>(), "test string");
-    BOOST_CHECK_EQUAL(val_str.as<std::string>(), "test string 2");
+    EXPECT(val_null.as<std::string>() == "");
+    EXPECT(val_char.as<std::string>() == "test string");
+    EXPECT(val_str.as<std::string>() == "test string 2");
 
     // ValueList is a bit of an odd one --> it just puts the value in a list of one element...
 
     ValueList vl(val_str.as<ValueList>());
-    BOOST_CHECK_EQUAL(vl.size(), 1);
-    BOOST_CHECK_EQUAL(vl[0].as<std::string>(), "test string 2");
+    EXPECT(vl.size() == 1);
+    EXPECT(vl[0].as<std::string>() == "test string 2");
 
     // And the invalid conversions
 
-    BOOST_CHECK_THROW(val_str.as<bool>(), BadConversion);
-    /// BOOST_CHECK_THROW(val_str.as<long long>(), BadConversion); // This will return zero, not throw
-    BOOST_CHECK_THROW(val_str.as<double>(), BadParameter); // n.b. BadParameter, not BadConversion
-    BOOST_CHECK_THROW(val_str.as<Time>(), BadConversion);
-    BOOST_CHECK_THROW(val_str.as<Date>(), BadConversion);
-    BOOST_CHECK_THROW(val_str.as<DateTime>(), BadConversion);
-    BOOST_CHECK_THROW(val_str.as<ValueMap>(), BadConversion);
+    EXPECT_THROWS_AS(val_str.as<bool>(), BadConversion);
+    /// EXPECT_THROWS_AS(val_str.as<long long>(), BadConversion); // This will return zero, not throw
+    EXPECT_THROWS_AS(val_str.as<double>(), BadParameter); // n.b. BadParameter, not BadConversion
+    EXPECT_THROWS_AS(val_str.as<Time>(), BadConversion);
+    EXPECT_THROWS_AS(val_str.as<Date>(), BadConversion);
+    EXPECT_THROWS_AS(val_str.as<DateTime>(), BadConversion);
+    EXPECT_THROWS_AS(val_str.as<ValueMap>(), BadConversion);
 
-    BOOST_CHECK_THROW(val_null.as<bool>(), BadConversion);
-    /// BOOST_CHECK_THROW(val_null.as<long long>(), BadConversion); // This will return zero, not throw
-    BOOST_CHECK_THROW(val_null.as<double>(), BadParameter); // n.b. BadParameter, not BadConversion`
-    BOOST_CHECK_THROW(val_null.as<Time>(), BadConversion);
-    BOOST_CHECK_THROW(val_null.as<Date>(), BadConversion);
-    BOOST_CHECK_THROW(val_null.as<DateTime>(), BadConversion);
-    BOOST_CHECK_THROW(val_null.as<ValueMap>(), BadConversion);
+    EXPECT_THROWS_AS(val_null.as<bool>(), BadConversion);
+    /// EXPECT_THROWS_AS(val_null.as<long long>(), BadConversion); // This will return zero, not throw
+    EXPECT_THROWS_AS(val_null.as<double>(), BadParameter); // n.b. BadParameter, not BadConversion`
+    EXPECT_THROWS_AS(val_null.as<Time>(), BadConversion);
+    EXPECT_THROWS_AS(val_null.as<Date>(), BadConversion);
+    EXPECT_THROWS_AS(val_null.as<DateTime>(), BadConversion);
+    EXPECT_THROWS_AS(val_null.as<ValueMap>(), BadConversion);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_cast_bool ) {
+CASE( "Boolean strings automatically cast to bools as required" ) {
     // Boolean casting for Value(StringContent) types is a bit complicated, as it allows strings to be used to
     // represent truthy values, but nothing else
 
@@ -1121,98 +1118,98 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_cast_bool ) {
     Value val_true3("yes");
     Value val_true4("1");
 
-    BOOST_CHECK(bool(val_true1));
-    BOOST_CHECK(bool(val_true2));
-    BOOST_CHECK(bool(val_true3));
-    BOOST_CHECK(bool(val_true4));
+    EXPECT(bool(val_true1));
+    EXPECT(bool(val_true2));
+    EXPECT(bool(val_true3));
+    EXPECT(bool(val_true4));
 
-    BOOST_CHECK(val_true1.as<bool>());
-    BOOST_CHECK(val_true2.as<bool>());
-    BOOST_CHECK(val_true3.as<bool>());
-    BOOST_CHECK(val_true4.as<bool>());
+    EXPECT(val_true1.as<bool>());
+    EXPECT(val_true2.as<bool>());
+    EXPECT(val_true3.as<bool>());
+    EXPECT(val_true4.as<bool>());
 
     Value val_false1("false");
     Value val_false2("off");
     Value val_false3("no");
     Value val_false4("0");
 
-    BOOST_CHECK(!bool(val_false1));
-    BOOST_CHECK(!bool(val_false2));
-    BOOST_CHECK(!bool(val_false3));
-    BOOST_CHECK(!bool(val_false4));
+    EXPECT(!bool(val_false1));
+    EXPECT(!bool(val_false2));
+    EXPECT(!bool(val_false3));
+    EXPECT(!bool(val_false4));
 
-    BOOST_CHECK(!val_false1.as<bool>());
-    BOOST_CHECK(!val_false2.as<bool>());
-    BOOST_CHECK(!val_false3.as<bool>());
-    BOOST_CHECK(!val_false4.as<bool>());
+    EXPECT(!val_false1.as<bool>());
+    EXPECT(!val_false2.as<bool>());
+    EXPECT(!val_false3.as<bool>());
+    EXPECT(!val_false4.as<bool>());
 
     Value val_other("other");
 
-    BOOST_CHECK_THROW(val_other.as<bool>(), BadConversion);
+    EXPECT_THROWS_AS(val_other.as<bool>(), BadConversion);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_vaule_string_cast_numbers ) {
+CASE( "Numerical strings automatically cast to numbers as required" ) {
     Value val_double("123.45");
     Value val_int("12345");
     Value val_other("string");
 
     // Test conversions to integers
 
-    BOOST_CHECK_EQUAL((int)(val_double), 123);
-    BOOST_CHECK_EQUAL((int)(val_int), 12345);
+    EXPECT((int)(val_double) == 123);
+    EXPECT((int)(val_int) == 12345);
 
-    BOOST_CHECK_EQUAL(val_double.as<long long>(), 123);
-    BOOST_CHECK_EQUAL(val_int.as<long long>(), 12345);
+    EXPECT(val_double.as<long long>() == 123);
+    EXPECT(val_int.as<long long>() == 12345);
 
     /// Integer conversion returns zero, rather than throwing, on no matching input
-    /// BOOST_CHECK_THROW(val_other.as<long long>(), std::exception);
-    BOOST_CHECK_EQUAL(val_other.as<long long>(), 0);
+    /// EXPECT_THROWS_AS(val_other.as<long long>(), std::exception);
+    EXPECT(val_other.as<long long>() == 0);
 
     // Test conversions to doubles
 
-    BOOST_CHECK_CLOSE((double)(val_double), 123.45, 1.0e-10);
-    BOOST_CHECK_CLOSE((double)(val_int), 12345.0, 1.0e-10);
+    EXPECT(is_approximately_equal((double)(val_double), 123.45, 1.0e-10));
+    EXPECT(is_approximately_equal((double)(val_int), 12345.0, 1.0e-10));
 
-    BOOST_CHECK_CLOSE(val_double.as<double>(), 123.45, 1.0e-10);
-    BOOST_CHECK_CLOSE(val_int.as<double>(), 12345.0, 1.0e-10);
-    BOOST_CHECK_THROW(val_other.as<double>(), BadParameter);
+    EXPECT(is_approximately_equal(val_double.as<double>(), 123.45, 1.0e-10));
+    EXPECT(is_approximately_equal(val_int.as<double>(), 12345.0, 1.0e-10));
+    EXPECT_THROWS_AS(val_other.as<double>(), BadParameter);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_type ) {
+CASE( "Types are reported correctly for strings" ) {
     Value val_null("");
     Value val_str("This is a test string");
 
-    BOOST_CHECK(val_null.isString());
-    BOOST_CHECK(val_str.isString());
+    EXPECT(val_null.isString());
+    EXPECT(val_str.isString());
 
-    BOOST_CHECK(!val_null.isNil());
-    BOOST_CHECK(!val_null.isBool());
-    BOOST_CHECK(!val_null.isNumber());
-    BOOST_CHECK(!val_null.isDouble());
-    BOOST_CHECK(!val_null.isList());
-    BOOST_CHECK(!val_null.isMap());
-    BOOST_CHECK(!val_null.isDate());
-    BOOST_CHECK(!val_null.isTime());
-    BOOST_CHECK(!val_null.isDateTime());
+    EXPECT(!val_null.isNil());
+    EXPECT(!val_null.isBool());
+    EXPECT(!val_null.isNumber());
+    EXPECT(!val_null.isDouble());
+    EXPECT(!val_null.isList());
+    EXPECT(!val_null.isMap());
+    EXPECT(!val_null.isDate());
+    EXPECT(!val_null.isTime());
+    EXPECT(!val_null.isDateTime());
 
-    BOOST_CHECK(!val_str.isNil());
-    BOOST_CHECK(!val_str.isBool());
-    BOOST_CHECK(!val_str.isNumber());
-    BOOST_CHECK(!val_str.isDouble());
-    BOOST_CHECK(!val_str.isList());
-    BOOST_CHECK(!val_str.isMap());
-    BOOST_CHECK(!val_str.isDate());
-    BOOST_CHECK(!val_str.isTime());
-    BOOST_CHECK(!val_str.isDateTime());
+    EXPECT(!val_str.isNil());
+    EXPECT(!val_str.isBool());
+    EXPECT(!val_str.isNumber());
+    EXPECT(!val_str.isDouble());
+    EXPECT(!val_str.isList());
+    EXPECT(!val_str.isMap());
+    EXPECT(!val_str.isDate());
+    EXPECT(!val_str.isTime());
+    EXPECT(!val_str.isDateTime());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_comparisons ) {
+CASE( "Ensure a well defined ordering of strings with other Values()" ) {
     Value val1("a");
     Value val2("a");
     Value val3("b");
@@ -1223,219 +1220,220 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_comparisons ) {
     // Check comparisons with same type of data
     // Comparison makes use of strcmp
 
-    BOOST_CHECK(val1.compare(val1) == 0);
-    BOOST_CHECK(val1.compare(val2) == 0);
-    BOOST_CHECK(val2.compare(val1) == 0);
+    EXPECT(val1.compare(val1) == 0);
+    EXPECT(val1.compare(val2) == 0);
+    EXPECT(val2.compare(val1) == 0);
 
-    BOOST_CHECK(val1.compare(val3) == -1);
-    BOOST_CHECK(val3.compare(val1) == 1);
+    EXPECT(val1.compare(val3) == -1);
+    EXPECT(val3.compare(val1) == 1);
 
     // Check comparisons with other types of data.
 
-    BOOST_CHECK(val1.compare(Value(true)) < 0);
-    BOOST_CHECK(val1.compare(Value(123)) < 0);
-    BOOST_CHECK(val1.compare(Value(123.45)) < 0);
-    BOOST_CHECK(val1.compare(Value(ValueMap())) > 0);
-    BOOST_CHECK(val1.compare(Value(Date(2016, 3, 30))) > 0);
-    BOOST_CHECK(val1.compare(ValueList()) > 0);
+    EXPECT(val1.compare(Value(true)) < 0);
+    EXPECT(val1.compare(Value(123)) < 0);
+    EXPECT(val1.compare(Value(123.45)) < 0);
+    EXPECT(val1.compare(Value(ValueMap())) > 0);
+    EXPECT(val1.compare(Value(Date(2016, 3, 30))) > 0);
+    EXPECT(val1.compare(ValueList()) > 0);
 
-    BOOST_CHECK(Value(true).compare(val1) > 0);
-    BOOST_CHECK(Value(123).compare(val1) > 0);
-    BOOST_CHECK(Value(123.45).compare(val1) > 0);
-    BOOST_CHECK(Value(ValueMap()).compare(val1) < 0);
-    BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
-    BOOST_CHECK(Value(ValueList()).compare(val1) < 0);
+    EXPECT(Value(true).compare(val1) > 0);
+    EXPECT(Value(123).compare(val1) > 0);
+    EXPECT(Value(123.45).compare(val1) > 0);
+    EXPECT(Value(ValueMap()).compare(val1) < 0);
+    EXPECT(Value(Date(2016, 3, 30)).compare(val1) < 0);
+    EXPECT(Value(ValueList()).compare(val1) < 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_index_operator ) {
+CASE( "Indexing on a string is not done through Value()" ) {
     // No indexing operations should work on a string...
 
     Value val_char("test string 1");
     Value val_str(std::string("test string 2"));
 
-    BOOST_CHECK_THROW(val_char["idx"], BadOperator);
-    BOOST_CHECK_THROW(val_char[std::string("idx")], BadOperator);
-    BOOST_CHECK_THROW(val_char[123], BadOperator);
-    BOOST_CHECK_THROW(val_char[Value(123)], BadOperator);
+    EXPECT_THROWS_AS(val_char["idx"], BadOperator);
+    EXPECT_THROWS_AS(val_char[std::string("idx")], BadOperator);
+    EXPECT_THROWS_AS(val_char[123], BadOperator);
+    EXPECT_THROWS_AS(val_char[Value(123)], BadOperator);
 
-    BOOST_CHECK_THROW(val_str["idx"], BadOperator);
-    BOOST_CHECK_THROW(val_str[std::string("idx")], BadOperator);
-    BOOST_CHECK_THROW(val_str[123], BadOperator);
-    BOOST_CHECK_THROW(val_str[Value(123)], BadOperator);
+    EXPECT_THROWS_AS(val_str["idx"], BadOperator);
+    EXPECT_THROWS_AS(val_str[std::string("idx")], BadOperator);
+    EXPECT_THROWS_AS(val_str[123], BadOperator);
+    EXPECT_THROWS_AS(val_str[Value(123)], BadOperator);
 
     // Test the matching contains() function too
 
-    BOOST_CHECK_THROW(val_char.contains("idx"), BadOperator);
-    BOOST_CHECK_THROW(val_char.contains(std::string("idx")), BadOperator);
-    BOOST_CHECK_THROW(val_char.contains(123), BadOperator);
-    BOOST_CHECK_THROW(val_char.contains(Value(123)), BadOperator);
+    EXPECT_THROWS_AS(val_char.contains("idx"), BadOperator);
+    EXPECT_THROWS_AS(val_char.contains(std::string("idx")), BadOperator);
+    EXPECT_THROWS_AS(val_char.contains(123), BadOperator);
+    EXPECT_THROWS_AS(val_char.contains(Value(123)), BadOperator);
 
-    BOOST_CHECK_THROW(val_str.contains("idx"), BadOperator);
-    BOOST_CHECK_THROW(val_str.contains(std::string("idx")), BadOperator);
-    BOOST_CHECK_THROW(val_str.contains(123), BadOperator);
-    BOOST_CHECK_THROW(val_str.contains(Value(123)), BadOperator);
+    EXPECT_THROWS_AS(val_str.contains("idx"), BadOperator);
+    EXPECT_THROWS_AS(val_str.contains(std::string("idx")), BadOperator);
+    EXPECT_THROWS_AS(val_str.contains(123), BadOperator);
+    EXPECT_THROWS_AS(val_str.contains(Value(123)), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_add_operator ) {
+CASE( "Addition is only valid for pairs of strings" ) {
     Value val("test string");
 
-    BOOST_CHECK_THROW(ValueAdd(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, 66.6), BadOperator);
-    BOOST_CHECK_EQUAL(ValueAdd(val, "hi").as<std::string>(), "test stringhi");
-    BOOST_CHECK_THROW(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, 66.6), BadOperator);
+    EXPECT(ValueAdd(val, "hi").as<std::string>() == "test stringhi");
+    EXPECT_THROWS_AS(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAdd(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(66.6, val), BadOperator);
-    BOOST_CHECK_EQUAL(ValueAdd("hi", val), "hitest string");
-    BOOST_CHECK_THROW(ValueAdd(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(66.6, val), BadOperator);
+    EXPECT(ValueAdd("hi", val) == "hitest string");
+    EXPECT_THROWS_AS(ValueAdd(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAddSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_EQUAL(ValueAddSelf(val, "hi").as<std::string>(), "test stringhi");
+    EXPECT_THROWS_AS(ValueAddSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, 66.6), BadOperator);
+    EXPECT(ValueAddSelf(val, "hi").as<std::string>() == "test stringhi");
     val = Value("test string");
-    BOOST_CHECK_THROW(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_subtract_operator ) {
+CASE( "Subtraction is invalid for strings" ) {
     Value val("test string");
 
-    BOOST_CHECK_THROW(ValueSub(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSub(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSubSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_multiply_operator ) {
+CASE( "Multiplication is invalid for strings" ) {
     Value val("test string");
 
-    BOOST_CHECK_THROW(ValueMul(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMul(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMulSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_divide_operator ) {
+CASE( "Division is invalid for strings" ) {
     Value val("test string");
 
-    BOOST_CHECK_THROW(ValueDiv(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDiv(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDivSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_modulo_operator ) {
+CASE( "The modulo operator is invalid for strings" ) {
     Value val("test string");
 
-    BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMod(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueModSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_string_head_tail ) {
+CASE( "Head/tail tests are disabled for strings" ) {
     Value val("this is a test string");
 
-    /// BOOST_CHECK_THROW(val.head(), AssertationError);
-    /// BOOST_CHECK_THROW(val.tail(), AssertationError);
+    /// EXPECT_THROWS_AS(val.head(), AssertationError);
+    /// EXPECT_THROWS_AS(val.tail(), AssertationError);
+    EXPECT(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1444,7 +1442,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_string_head_tail ) {
 //
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_cast ) {
+CASE( "Data is corretctly moved into/out of ValueMap" ) {
     // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueMap vm;
@@ -1459,29 +1457,29 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_cast ) {
     // n.b. We cannot compare eqality of ValueMaps, as the internal Values have been copied, and as a result the
     //      operator== will return false, as it depends only on the memory address of the internal Content.
 
-    BOOST_CHECK_EQUAL(((ValueMap)val)[123].as<long long>(), 123);
-    BOOST_CHECK_EQUAL(val.as<ValueMap>()[123].as<long long>(), 123);
+    EXPECT(((ValueMap)val)[123].as<long long>() == 123);
+    EXPECT(val.as<ValueMap>()[123].as<long long>() == 123);
 
     // ValueList is a bit of an odd one --> it just puts the value in a list of one element...
 
     ValueList vl(val.as<ValueList>());
-    BOOST_CHECK_EQUAL(vl.size(), 1);
-    BOOST_CHECK_EQUAL(vl[0].as<ValueMap>()[123].as<long long>(), 123);
+    EXPECT(vl.size() == 1);
+    EXPECT(vl[0].as<ValueMap>()[123].as<long long>() == 123);
 
     // And the invalid conversions
 
-    BOOST_CHECK_THROW(val.as<bool>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<long long>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<double>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<std::string>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<Time>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<Date>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<DateTime>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<bool>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<long long>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<double>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<std::string>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<Time>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<Date>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<DateTime>(), BadConversion);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_type ) {
+CASE( "Types are reported correctly for ValueMap" ) {
     // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueMap vm;
@@ -1492,22 +1490,22 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_type ) {
 
     Value val(vm);
 
-    BOOST_CHECK(val.isMap());
+    EXPECT(val.isMap());
 
-    BOOST_CHECK(!val.isNil());
-    BOOST_CHECK(!val.isBool());
-    BOOST_CHECK(!val.isNumber());
-    BOOST_CHECK(!val.isDouble());
-    BOOST_CHECK(!val.isString());
-    BOOST_CHECK(!val.isList());
-    BOOST_CHECK(!val.isDate());
-    BOOST_CHECK(!val.isTime());
-    BOOST_CHECK(!val.isDateTime());
+    EXPECT(!val.isNil());
+    EXPECT(!val.isBool());
+    EXPECT(!val.isNumber());
+    EXPECT(!val.isDouble());
+    EXPECT(!val.isString());
+    EXPECT(!val.isList());
+    EXPECT(!val.isDate());
+    EXPECT(!val.isTime());
+    EXPECT(!val.isDateTime());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_comparisons ) {
+CASE( "Test comparisons using ValueMap" ) {
     // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueMap vm;
@@ -1526,35 +1524,35 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_comparisons ) {
     // Check comparisons with same type of data
     // Comparison makes use of strcmp
 
-    BOOST_CHECK(val1.compare(val1) == 0);
-    BOOST_CHECK(val1.compare(val2) == 0);
-    BOOST_CHECK(val2.compare(val1) == 0);
+    EXPECT(val1.compare(val1) == 0);
+    EXPECT(val1.compare(val2) == 0);
+    EXPECT(val2.compare(val1) == 0);
 
-    BOOST_CHECK(val1.compare(val3) == 1);
-    BOOST_CHECK(val3.compare(val1) == -1);
+    EXPECT(val1.compare(val3) == 1);
+    EXPECT(val3.compare(val1) == -1);
 
     // Check comparisons with other types of data.
 
-    BOOST_CHECK(val1.compare(Value(true)) < 0);
-    BOOST_CHECK(val1.compare(Value(123)) < 0);
-    BOOST_CHECK(val1.compare(Value(123.45)) < 0);
-    BOOST_CHECK(val1.compare(Value(std::string("test string"))) < 0);
-    BOOST_CHECK(val1.compare(ValueList()) < 0);
-    BOOST_CHECK(val1.compare(Value(Date(2016, 3, 30))) > 0);
+    EXPECT(val1.compare(Value(true)) < 0);
+    EXPECT(val1.compare(Value(123)) < 0);
+    EXPECT(val1.compare(Value(123.45)) < 0);
+    EXPECT(val1.compare(Value(std::string("test string"))) < 0);
+    EXPECT(val1.compare(ValueList()) < 0);
+    EXPECT(val1.compare(Value(Date(2016, 3, 30))) > 0);
 
-    BOOST_CHECK(Value(true).compare(val1) > 0);
-    BOOST_CHECK(Value(123).compare(val1) > 0);
-    BOOST_CHECK(Value(123.45).compare(val1) > 0);
-    BOOST_CHECK(Value(std::string("test string")).compare(val1) > 0);
-    BOOST_CHECK(Value(ValueList()).compare(val1) > 0);
+    EXPECT(Value(true).compare(val1) > 0);
+    EXPECT(Value(123).compare(val1) > 0);
+    EXPECT(Value(123.45).compare(val1) > 0);
+    EXPECT(Value(std::string("test string")).compare(val1) > 0);
+    EXPECT(Value(ValueList()).compare(val1) > 0);
 
     /// This is currently correct in MapContent.h
-    /// BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
+    /// EXPECT(Value(Date(2016, 3, 30)).compare(val1) < 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_index_operator ) {
+CASE( "Tets indexing for ValueMap" ) {
     // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueMap vm;
@@ -1567,20 +1565,20 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_index_operator ) {
 
     // Check with existent keys of the various types
 
-    BOOST_CHECK_EQUAL(val[123].as<long long>(), 456);
-    BOOST_CHECK_EQUAL(val["abc"].as<std::string>(), "def");
-    BOOST_CHECK_EQUAL(val[std::string("abc")].as<std::string>(), "def");
+    EXPECT(val[123].as<long long>() == 456);
+    EXPECT(val["abc"].as<std::string>() == "def");
+    EXPECT(val[std::string("abc")].as<std::string>() == "def");
 
     /// None of these seem to work with boolean indices
-    /// BOOST_CHECK_EQUAL(val[true].as<bool>(), false);
+    /// EXPECT(val[true].as<bool>(), false);
 
-    BOOST_CHECK_EQUAL(val[Value(123)].as<long long>(), 456);
-    BOOST_CHECK_EQUAL(val[Value("abc")].as<std::string>(), "def");
-    BOOST_CHECK_EQUAL(val[Value(std::string("abc"))].as<std::string>(), "def");
-    BOOST_CHECK_CLOSE(val[Value(123.45)].as<double>(), 543.21, 1.0e-10);
+    EXPECT(val[Value(123)].as<long long>() == 456);
+    EXPECT(val[Value("abc")].as<std::string>() == "def");
+    EXPECT(val[Value(std::string("abc"))].as<std::string>() == "def");
+    EXPECT(is_approximately_equal(val[Value(123.45)].as<double>(), 543.21, 1.0e-10));
 
     /// Indexing by Value(bool) doesn't seem to work
-    /// BOOST_CHECK_EQUAL(val[Value(true)].as<bool>(), false);
+    /// EXPECT(val[Value(true)].as<bool>(), false);
 
     // And with values that don't exist
 
@@ -1590,192 +1588,193 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_index_operator ) {
     cv[10];
     Log::info() << cv << std::endl;
 
-    /// BOOST_CHECK(!cv.contains(10));
+    /// EXPECT(!cv.contains(10));
 
     // Test the matching contains() function too
 
-    BOOST_CHECK(val.contains(123));
-    BOOST_CHECK(val.contains("abc"));
-    BOOST_CHECK(val.contains(std::string("abc")));
-    BOOST_CHECK(val.contains(Value(123.45)));
-    /// BOOST_CHECK(val.contains(Value(true)));
+    EXPECT(val.contains(123));
+    EXPECT(val.contains("abc"));
+    EXPECT(val.contains(std::string("abc")));
+    EXPECT(val.contains(Value(123.45)));
+    /// EXPECT(val.contains(Value(true)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_add_operator ) {
+CASE( "Test that addition is invalid for ValueMap" ) {
     // There are no valid ValueMap addition operations.
 
     ValueMap vm;
     Value val(vm);
 
-    BOOST_CHECK_THROW(ValueAdd(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAdd(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAddSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_subtract_operator ) {
+CASE( "Test that subtraction is invalid for ValueMap" ) {
     // There are no valid ValueMap subtraction operations.
 
     ValueMap vm;
     Value val(vm);
 
-    BOOST_CHECK_THROW(ValueSub(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSub(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSubSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_multiply_operator ) {
+CASE( "Tets that multiplication is invalid for ValueMap" ) {
     // There are no valid ValueMap multiplication operations.
 
     ValueMap vm;
     Value val(vm);
 
-    BOOST_CHECK_THROW(ValueMul(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMul(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMulSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_divide_operator ) {
+CASE( "Test that division is invalid for ValueMap" ) {
     // There are no valid ValueMap division operations.
 
     ValueMap vm;
     Value val(vm);
 
-    BOOST_CHECK_THROW(ValueDiv(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDiv(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDivSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_modulo_operator ) {
+CASE( "Test that the module operator is invalid for ValueMap" ) {
     // There are no valid ValueMap modulo operations.
 
     ValueMap vm;
     Value val(vm);
 
-    BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMod(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueModSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_map_head_tail ) {
+CASE( "Test head/tail functionality for ValueMap" ) {
     ValueMap vm;
     vm[123] = 456;
 
     Value val(vm);
 
-    /// BOOST_CHECK_THROW(val.head(), AssertationError);
-    /// BOOST_CHECK_THROW(val.tail(), AssertationError);
+    /// EXPECT_THROWS_AS(val.head(), AssertationError);
+    /// EXPECT_THROWS_AS(val.tail(), AssertationError);
+    EXPECT(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1784,8 +1783,8 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_map_head_tail ) {
 //
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_cast ) {
-    // A ValueMap is just a std::list<Value>. No point in testing the functionality of stl. Just test what
+CASE( "Test casting values into ValueList" ) {
+    // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueList vl;
     vl.push_back(123);
@@ -1800,24 +1799,24 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_cast ) {
     //      operator== will return false, as it depends only on the memory address of the internal Content.
 
     ValueList casted_vl = val;
-    BOOST_CHECK_EQUAL(casted_vl[0].as<long long>(), 123);
-    BOOST_CHECK_EQUAL(val.as<ValueList>()[0].as<long long>(), 123);
+    EXPECT(casted_vl[0].as<long long>() == 123);
+    EXPECT(val.as<ValueList>()[0].as<long long>() == 123);
 
     // And the invalid conversions
 
-    BOOST_CHECK_THROW(val.as<bool>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<long long>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<double>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<std::string>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<Time>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<Date>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<DateTime>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<ValueMap>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<bool>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<long long>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<double>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<std::string>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<Time>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<Date>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<DateTime>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<ValueMap>(), BadConversion);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_type ) {
+CASE( "Test type knowledge for ValueList" ) {
     // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueList vl;
@@ -1828,22 +1827,22 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_type ) {
 
     Value val(vl);
 
-    BOOST_CHECK(val.isList());
+    EXPECT(val.isList());
 
-    BOOST_CHECK(!val.isNil());
-    BOOST_CHECK(!val.isBool());
-    BOOST_CHECK(!val.isNumber());
-    BOOST_CHECK(!val.isDouble());
-    BOOST_CHECK(!val.isString());
-    BOOST_CHECK(!val.isMap());
-    BOOST_CHECK(!val.isDate());
-    BOOST_CHECK(!val.isTime());
-    BOOST_CHECK(!val.isDateTime());
+    EXPECT(!val.isNil());
+    EXPECT(!val.isBool());
+    EXPECT(!val.isNumber());
+    EXPECT(!val.isDouble());
+    EXPECT(!val.isString());
+    EXPECT(!val.isMap());
+    EXPECT(!val.isDate());
+    EXPECT(!val.isTime());
+    EXPECT(!val.isDateTime());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_comparisons ) {
+CASE( "Test comparisons by value for ValueList" ) {
     // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueList vl;
@@ -1862,35 +1861,35 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_comparisons ) {
     // Check comparisons with same type of data
     // Comparison makes use of strcmp
 
-    BOOST_CHECK(val1.compare(val1) == 0);
-    BOOST_CHECK(val1.compare(val2) == 0);
-    BOOST_CHECK(val2.compare(val1) == 0);
+    EXPECT(val1.compare(val1) == 0);
+    EXPECT(val1.compare(val2) == 0);
+    EXPECT(val2.compare(val1) == 0);
 
-    BOOST_CHECK(val1.compare(val3) == -1);
-    BOOST_CHECK(val3.compare(val1) == 1);
+    EXPECT(val1.compare(val3) == -1);
+    EXPECT(val3.compare(val1) == 1);
 
     // Check comparisons with other types of data.
 
-    BOOST_CHECK(val1.compare(Value(true)) < 0);
-    BOOST_CHECK(val1.compare(Value(123)) < 0);
-    BOOST_CHECK(val1.compare(Value(123.45)) < 0);
-    BOOST_CHECK(val1.compare(Value(std::string("test string"))) < 0);
-    BOOST_CHECK(val1.compare(ValueMap()) > 0);
-    BOOST_CHECK(val1.compare(Value(Date(2016, 3, 30))) > 0);
+    EXPECT(val1.compare(Value(true)) < 0);
+    EXPECT(val1.compare(Value(123)) < 0);
+    EXPECT(val1.compare(Value(123.45)) < 0);
+    EXPECT(val1.compare(Value(std::string("test string"))) < 0);
+    EXPECT(val1.compare(ValueMap()) > 0);
+    EXPECT(val1.compare(Value(Date(2016, 3, 30))) > 0);
 
-    BOOST_CHECK(Value(true).compare(val1) > 0);
-    BOOST_CHECK(Value(123).compare(val1) > 0);
-    BOOST_CHECK(Value(123.45).compare(val1) > 0);
-    BOOST_CHECK(Value(std::string("test string")).compare(val1) > 0);
-    BOOST_CHECK(Value(ValueMap()).compare(val1) < 0);
+    EXPECT(Value(true).compare(val1) > 0);
+    EXPECT(Value(123).compare(val1) > 0);
+    EXPECT(Value(123.45).compare(val1) > 0);
+    EXPECT(Value(std::string("test string")).compare(val1) > 0);
+    EXPECT(Value(ValueMap()).compare(val1) < 0);
 
     /// This is currently correct in MapContent.h
-    /// BOOST_CHECK(Value(Date(2016, 3, 30)).compare(val1) < 0);
+    /// EXPECT(Value(Date(2016, 3, 30)).compare(val1) < 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_index_operator ) {
+CASE( "Test that indexing has the correct semantics for ValueList" ) {
     // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
     // it does when wrapped.
     ValueList vl;
@@ -1903,67 +1902,67 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_index_operator ) {
 
     // Check with existent keys of the various types
 
-    BOOST_CHECK_EQUAL(val[0].as<long long>(), 123);
-    BOOST_CHECK_EQUAL(val[1].as<std::string>(), "abc");
-    BOOST_CHECK_CLOSE(val[2].as<double>(), 1234.56, 1.0e-10);
-    BOOST_CHECK_EQUAL(val[3].as<bool>(), false);
+    EXPECT(val[0].as<long long>() == 123);
+    EXPECT(val[1].as<std::string>() == "abc");
+    EXPECT(is_approximately_equal(val[2].as<double>(), 1234.56, 1.0e-10));
+    EXPECT(val[3].as<bool>() == false);
 
-    BOOST_CHECK_EQUAL(int(val[Value(0)]), 123);
-    BOOST_CHECK_EQUAL(std::string(val[Value(1)]), "abc");
-    BOOST_CHECK_CLOSE(double(val[Value(2)]), 1234.56, 1.0e-10);
-    BOOST_CHECK_EQUAL(bool(val[Value(3)]), false);
+    EXPECT(int(val[Value(0)]) == 123);
+    EXPECT(std::string(val[Value(1)]) == "abc");
+    EXPECT(is_approximately_equal(double(val[Value(2)]), 1234.56, 1.0e-10));
+    EXPECT(bool(val[Value(3)]) == false);
 
     // And with values that don't exist
 
-    BOOST_CHECK_THROW(val[-1], AssertionFailed);
-    BOOST_CHECK_THROW(val[4], AssertionFailed);
-    BOOST_CHECK_THROW(val[Value(-1)], AssertionFailed);
-    BOOST_CHECK_THROW(val[Value(4)], AssertionFailed);
+    EXPECT_THROWS_AS(val[-1], AssertionFailed);
+    EXPECT_THROWS_AS(val[4], AssertionFailed);
+    EXPECT_THROWS_AS(val[Value(-1)], AssertionFailed);
+    EXPECT_THROWS_AS(val[Value(4)], AssertionFailed);
 
     /// Value(std::string) silently casts to 0, which means this returns val[0] spuriously
-    /// BOOST_CHECK_THROW(val["hello"], AssertionFailed);
-    /// BOOST_CHECK_THROW(val[std::string("hello")], AssertionFailed);
-    /// BOOST_CHECK_THROW(val[Value("hello")], AssertionFailed);
+    /// EXPECT_THROWS_AS(val["hello"], AssertionFailed);
+    /// EXPECT_THROWS_AS(val[std::string("hello")], AssertionFailed);
+    /// EXPECT_THROWS_AS(val[Value("hello")], AssertionFailed);
 
     // Value(bool) automagically converts to a long, so these return elements 1, 0 respectively...
-    // BOOST_CHECK_THROW(val[Value(true)], BadConversion);
-    // BOOST_CHECK_THROW(val[Value(false)], BadConversion);
+    // EXPECT_THROWS_AS(val[Value(true)], BadConversion);
+    // EXPECT_THROWS_AS(val[Value(false)], BadConversion);
 
-    BOOST_CHECK_THROW(val[Value(666.66)], BadConversion);
-    BOOST_CHECK_THROW(val[Value(ValueList())], BadConversion);
-    BOOST_CHECK_THROW(val[Value(ValueMap())], BadConversion);
-    BOOST_CHECK_THROW(val[Value(Date(2016, 3, 31))], BadConversion);
+    EXPECT_THROWS_AS(val[Value(666.66)], BadConversion);
+    EXPECT_THROWS_AS(val[Value(ValueList())], BadConversion);
+    EXPECT_THROWS_AS(val[Value(ValueMap())], BadConversion);
+    EXPECT_THROWS_AS(val[Value(Date(2016, 3, 31))], BadConversion);
 
     // Test the matching contains() function too
 
-    BOOST_CHECK(!val.contains(-1));
-    BOOST_CHECK(val.contains(0));
-    BOOST_CHECK(val.contains(1));
-    BOOST_CHECK(val.contains(2));
-    BOOST_CHECK(val.contains(3));
-    BOOST_CHECK(!val.contains(4));
+    EXPECT(!val.contains(-1));
+    EXPECT(val.contains(0));
+    EXPECT(val.contains(1));
+    EXPECT(val.contains(2));
+    EXPECT(val.contains(3));
+    EXPECT(!val.contains(4));
 
-    BOOST_CHECK(!val.contains(Value(-1)));
-    BOOST_CHECK(val.contains(Value(0)));
-    BOOST_CHECK(val.contains(Value(1)));
-    BOOST_CHECK(val.contains(Value(2)));
-    BOOST_CHECK(val.contains(Value(3)));
-    BOOST_CHECK(!val.contains(Value(4)));
+    EXPECT(!val.contains(Value(-1)));
+    EXPECT(val.contains(Value(0)));
+    EXPECT(val.contains(Value(1)));
+    EXPECT(val.contains(Value(2)));
+    EXPECT(val.contains(Value(3)));
+    EXPECT(!val.contains(Value(4)));
 
     /// Same oddities as above...
-    /// BOOST_CHECK(!val.contains("hello"));
-    /// BOOST_CHECK(!val.contains(std::string("hello")));
-    /// BOOST_CHECK(!val.contains(Value("hello")));
+    /// EXPECT(!val.contains("hello"));
+    /// EXPECT(!val.contains(std::string("hello")));
+    /// EXPECT(!val.contains(Value("hello")));
 
-    BOOST_CHECK_THROW(val.contains(Value(666.66)), BadConversion);
-    BOOST_CHECK_THROW(val.contains(Value(ValueList())), BadConversion);
-    BOOST_CHECK_THROW(val.contains(Value(ValueMap())), BadConversion);
-    BOOST_CHECK_THROW(val.contains(Value(Date(2016, 3, 31))), BadConversion);
+    EXPECT_THROWS_AS(val.contains(Value(666.66)), BadConversion);
+    EXPECT_THROWS_AS(val.contains(Value(ValueList())), BadConversion);
+    EXPECT_THROWS_AS(val.contains(Value(ValueMap())), BadConversion);
+    EXPECT_THROWS_AS(val.contains(Value(Date(2016, 3, 31))), BadConversion);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_add_operator ) {
+CASE( "Test that addititon has the correct semantics for ValueList" ) {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -1974,184 +1973,184 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_add_operator ) {
     vl2.push_back(Date(2016, 3, 31));
     Value val2(vl2);
 
-    BOOST_CHECK_THROW(ValueAdd(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAdd(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAddSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 
     Value tmp1 = val + val2;
-    BOOST_CHECK_EQUAL(tmp1.as<ValueList>().size(), 4);
-    BOOST_CHECK_EQUAL(tmp1[0].as<long long>(), 123);
-    BOOST_CHECK_EQUAL(tmp1[1].as<std::string>(), "abc");
-    BOOST_CHECK_EQUAL(tmp1[2].as<bool>(), true);
-    BOOST_CHECK_EQUAL(tmp1[3].as<Date>(), Date(2016, 3, 31));
+    EXPECT(tmp1.as<ValueList>().size() == 4);
+    EXPECT(tmp1[0].as<long long>() == 123);
+    EXPECT(tmp1[1].as<std::string>() == "abc");
+    EXPECT(tmp1[2].as<bool>() == true);
+    EXPECT(tmp1[3].as<Date>() == Date(2016, 3, 31));
 
     Value tmp2 = val2 + val;
-    BOOST_CHECK_EQUAL(tmp2.as<ValueList>().size(), 4);
-    BOOST_CHECK_EQUAL(tmp2[0].as<bool>(), true);
-    BOOST_CHECK_EQUAL(tmp2[1].as<Date>(), Date(2016, 3, 31));
-    BOOST_CHECK_EQUAL(tmp2[2].as<long long>(), 123);
-    BOOST_CHECK_EQUAL(tmp2[3].as<std::string>(), "abc");
+    EXPECT(tmp2.as<ValueList>().size() == 4);
+    EXPECT(tmp2[0].as<bool>() == true);
+    EXPECT(tmp2[1].as<Date>() == Date(2016, 3, 31));
+    EXPECT(tmp2[2].as<long long>() == 123);
+    EXPECT(tmp2[3].as<std::string>() == "abc");
 
     val += val2;
-    BOOST_CHECK_EQUAL(val.as<ValueList>().size(), 4);
-    BOOST_CHECK_EQUAL(val[0].as<long long>(), 123);
-    BOOST_CHECK_EQUAL(val[1].as<std::string>(), "abc");
-    BOOST_CHECK_EQUAL(val[2].as<bool>(), true);
-    BOOST_CHECK_EQUAL(val[3].as<Date>(), Date(2016, 3, 31));
+    EXPECT(val.as<ValueList>().size() == 4);
+    EXPECT(val[0].as<long long>() == 123);
+    EXPECT(val[1].as<std::string>() == "abc");
+    EXPECT(val[2].as<bool>() == true);
+    EXPECT(val[3].as<Date>() == Date(2016, 3, 31));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_subtract_operator ) {
+CASE( "Test that subtraction is invalid for ValueLists" ) {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
     Value val(vl);
 
-    BOOST_CHECK_THROW(ValueSub(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSub(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSubSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_multiply_operator ) {
+CASE( "Test that multiplication is invalid for ValueList" ) {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
     Value val(vl);
 
-    BOOST_CHECK_THROW(ValueMul(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMul(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMulSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_divide_operator ) {
+CASE( "Test that division is invalid for ValueList" ) {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
     Value val(vl);
 
-    BOOST_CHECK_THROW(ValueDiv(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDiv(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDivSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_modulo_operator ) {
+CASE( "Test that modulo is an invalid operator for ValueList" ) {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
     Value val(vl);
 
-    BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMod(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueModSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_list_head_tail ) {
+CASE( "Test that head/tail work correctly for ValueList" ) {
     ValueList vl;
     vl.push_back(123);
     vl.push_back(666.66);
@@ -2161,9 +2160,9 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_head_tail ) {
     Value val(vl);
 
     Log::info() << "H" << val << " - " << val.head() << std::endl;
-    BOOST_CHECK_EQUAL(val.head().as<long long>(), 123);
+    EXPECT(val.head().as<long long>() == 123);
     Log::info() << "T" << val << " - " << val.tail() << std::endl;
-    /// BOOST_CHECK_EQUAL(val.tail().as<std::string>(), "test str");
+    /// EXPECT(val.tail().as<std::string>(), "test str");
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2172,7 +2171,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_list_head_tail ) {
 //
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_cast ) {
+CASE( "Test that dates cast correctly" ) {
     Value val(Date(2016, 3, 31));
 
     //
@@ -2180,47 +2179,47 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_cast ) {
     //
 
     Date tmp = val;
-    BOOST_CHECK_EQUAL(tmp, Date(2016, 3, 31));
-    BOOST_CHECK_EQUAL(val.as<Date>(), Date(2016, 3, 31));
+    EXPECT(tmp == Date(2016, 3, 31));
+    EXPECT(val.as<Date>() == Date(2016, 3, 31));
 
     // ValueList is a bit of an odd one --> it just puts the value in a list of one element...
 
     ValueList vl = val;
-    BOOST_CHECK_EQUAL(vl.size(), 1);
-    BOOST_CHECK_EQUAL(vl[0].as<Date>(), Date(2016, 3, 31));
+    EXPECT(vl.size() == 1);
+    EXPECT(vl[0].as<Date>() == Date(2016, 3, 31));
 
     // And all the invalid conversions
 
-    BOOST_CHECK_THROW(val.as<bool>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<double>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<long long>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<std::string>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<Time>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<DateTime>(), BadConversion);
-    BOOST_CHECK_THROW(val.as<ValueMap>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<bool>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<double>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<long long>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<std::string>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<Time>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<DateTime>(), BadConversion);
+    EXPECT_THROWS_AS(val.as<ValueMap>(), BadConversion);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_type ) {
+CASE( "Test that type knowledge is correct for dates" ) {
     Value val(Date(2016, 3, 31));
 
-    BOOST_CHECK(val.isDate());
+    EXPECT(val.isDate());
 
-    BOOST_CHECK(!val.isNil());
-    BOOST_CHECK(!val.isBool());
-    BOOST_CHECK(!val.isNumber());
-    BOOST_CHECK(!val.isDouble());
-    BOOST_CHECK(!val.isString());
-    BOOST_CHECK(!val.isList());
-    BOOST_CHECK(!val.isMap());
-    BOOST_CHECK(!val.isDateTime());
-    BOOST_CHECK(!val.isTime());
+    EXPECT(!val.isNil());
+    EXPECT(!val.isBool());
+    EXPECT(!val.isNumber());
+    EXPECT(!val.isDouble());
+    EXPECT(!val.isString());
+    EXPECT(!val.isList());
+    EXPECT(!val.isMap());
+    EXPECT(!val.isDateTime());
+    EXPECT(!val.isTime());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_comparisons ) {
+CASE( "Test that comparisons work correctly for dates" ) {
     Value val1(Date(2016, 3, 31));
     Value val2(Date(2016, 3, 31));
     Value val3(Date(2016, 4, 30));
@@ -2232,211 +2231,212 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_comparisons ) {
     // Comparison makes use of strcmp
 
     /// Value(Date) compare function is rather broken...
-    /// BOOST_CHECK(val1.compare(val1) == 0);
-    /// BOOST_CHECK(val1.compare(val2) == 0);
-    /// BOOST_CHECK(val2.compare(val1) == 0);
+    /// EXPECT(val1.compare(val1) == 0);
+    /// EXPECT(val1.compare(val2) == 0);
+    /// EXPECT(val2.compare(val1) == 0);
 
-    /// BOOST_CHECK(val1.compare(val3) == -1);
-    BOOST_CHECK(val3.compare(val1) == 1);
+    /// EXPECT(val1.compare(val3) == -1);
+    EXPECT(val3.compare(val1) == 1);
 
     // Check comparisons with other types of data.
 
-    BOOST_CHECK(val1.compare(Value(true)) < 0);
-    BOOST_CHECK(val1.compare(Value(123)) < 0);
-    BOOST_CHECK(val1.compare(Value(123.45)) < 0);
-    BOOST_CHECK(val1.compare(Value("testing")) < 0);
+    EXPECT(val1.compare(Value(true)) < 0);
+    EXPECT(val1.compare(Value(123)) < 0);
+    EXPECT(val1.compare(Value(123.45)) < 0);
+    EXPECT(val1.compare(Value("testing")) < 0);
     /// There is a bug in the ValueMap implementation, so this would fail
-    /// BOOST_CHECK(val1.compare(Value(ValueMap())) < 0);
-    BOOST_CHECK(val1.compare(ValueList()) < 0);
+    /// EXPECT(val1.compare(Value(ValueMap())) < 0);
+    EXPECT(val1.compare(ValueList()) < 0);
 
-    BOOST_CHECK(Value(true).compare(val1) > 0);
-    BOOST_CHECK(Value(123).compare(val1) > 0);
-    BOOST_CHECK(Value(123.45).compare(val1) > 0);
-    BOOST_CHECK(Value("testing").compare(val1) > 0);
-    BOOST_CHECK(Value(ValueMap()).compare(val1) > 0);
-    BOOST_CHECK(Value(ValueList()).compare(val1) > 0);
+    EXPECT(Value(true).compare(val1) > 0);
+    EXPECT(Value(123).compare(val1) > 0);
+    EXPECT(Value(123.45).compare(val1) > 0);
+    EXPECT(Value("testing").compare(val1) > 0);
+    EXPECT(Value(ValueMap()).compare(val1) > 0);
+    EXPECT(Value(ValueList()).compare(val1) > 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_index_operator ) {
+CASE( "Test that indexing is invalid for dates" ) {
     Value val(Date(2016, 3, 31));
 
-    BOOST_CHECK_THROW(val["idx"], BadOperator);
-    BOOST_CHECK_THROW(val[std::string("idx")], BadOperator);
-    BOOST_CHECK_THROW(val[123], BadOperator);
-    BOOST_CHECK_THROW(val[Value(123)], BadOperator);
+    EXPECT_THROWS_AS(val["idx"], BadOperator);
+    EXPECT_THROWS_AS(val[std::string("idx")], BadOperator);
+    EXPECT_THROWS_AS(val[123], BadOperator);
+    EXPECT_THROWS_AS(val[Value(123)], BadOperator);
 
     // Test the matching contains() function too
 
-    BOOST_CHECK_THROW(val.contains("idx"), BadOperator);
-    BOOST_CHECK_THROW(val.contains(std::string("idx")), BadOperator);
-    BOOST_CHECK_THROW(val.contains(123), BadOperator);
-    BOOST_CHECK_THROW(val.contains(Value(123)), BadOperator);
+    EXPECT_THROWS_AS(val.contains("idx"), BadOperator);
+    EXPECT_THROWS_AS(val.contains(std::string("idx")), BadOperator);
+    EXPECT_THROWS_AS(val.contains(123), BadOperator);
+    EXPECT_THROWS_AS(val.contains(Value(123)), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_add_operator ) {
+CASE( "Test that addition is invalid for dates" ) {
     Value val(Date(2016, 3, 31));
 
-    BOOST_CHECK_THROW(ValueAdd(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAdd(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueAdd(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueAdd(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueAddSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, Date(2016, 3, 31)), BadOperator);
     val = Date(2016, 3, 31);
-    BOOST_CHECK_THROW(ValueAddSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueAddSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_subtract_operator ) {
+CASE( "Test that subtraction is invalid for dates" ) {
     Value val(Date(2016, 3, 31));
 
-    BOOST_CHECK_THROW(ValueSub(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, "hi"), BadOperator);
     /// The sign of the following test is wrong. SHOULD be +2
-    BOOST_CHECK_EQUAL(ValueSub(val, Date(2016, 3, 29)).as<long long>(), -2);
-    BOOST_CHECK_THROW(ValueSub(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(val, ValueMap()), BadOperator);
+    EXPECT(ValueSub(val, Date(2016, 3, 29)).as<long long>() == -2);
+    EXPECT_THROWS_AS(ValueSub(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSub(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub("hi", val), BadOperator);
     /// The sign of the following test is wrong. SHOULD be -2
-    BOOST_CHECK_EQUAL(ValueSub(Date(2016, 3, 29), val).as<long long>(), 2);
-    BOOST_CHECK_THROW(ValueSub(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueSub(ValueMap(), val), BadOperator);
+    EXPECT(ValueSub(Date(2016, 3, 29), val).as<long long>() == 2);
+    EXPECT_THROWS_AS(ValueSub(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueSub(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueSubSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, "hi"), BadOperator);
     /// The sign of the following test is wrong. SHOULD be +2
-    BOOST_CHECK_EQUAL(ValueSubSelf(val, Date(2016, 3, 29)).as<long long>(), -2);
+    EXPECT(ValueSubSelf(val, Date(2016, 3, 29)).as<long long>() == -2);
     val = Date(2016, 3, 31);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueSubSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_multiply_operator ) {
+CASE( "Test that division is invalid for dates" ) {
     Value val(Date(2016, 3, 31));
 
-    BOOST_CHECK_THROW(ValueMul(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMul(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMul(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMul(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMulSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMulSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_divide_operator ) {
+CASE( "Test that division is invalid for dates" ) {
     Value val(Date(2016, 3, 31));
 
-    BOOST_CHECK_THROW(ValueDiv(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDiv(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueDiv(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueDivSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueDivSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_modulo_operator ) {
+CASE( "Test that modulo is invalid on dates" ) {
     Value val(Date(2016, 3, 31));
 
-    BOOST_CHECK_THROW(ValueMod(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(val, ValueMap()), BadOperator);
 
-    BOOST_CHECK_THROW(ValueMod(true, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(1234, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(66.6, val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod("hi", val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(Date(2016, 3, 31), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueList(), val), BadOperator);
-    BOOST_CHECK_THROW(ValueMod(ValueMap(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(true, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(1234, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(66.6, val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod("hi", val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(Date(2016, 3, 31), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueList(), val), BadOperator);
+    EXPECT_THROWS_AS(ValueMod(ValueMap(), val), BadOperator);
 
-    BOOST_CHECK_THROW(ValueModSelf(val, true), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 1234), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, 66.6), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, "hi"), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueList()), BadOperator);
-    BOOST_CHECK_THROW(ValueModSelf(val, ValueMap()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, true), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, 66.6), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, "hi"), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueList()), BadOperator);
+    EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_date_head_tail ) {
+CASE( "Test head/tail functionality on dates" ) {
     Value val(Date(2016, 3, 31));
 
-    /// BOOST_CHECK_THROW(val.head(), AssertationError);
-    /// BOOST_CHECK_THROW(val.tail(), AssertationError);
+    /// EXPECT_THROWS_AS(val.head(), AssertationError);
+    /// EXPECT_THROWS_AS(val.tail(), AssertationError);
+    EXPECT(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2445,13 +2445,13 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_date_head_tail ) {
 //
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_makelist ) {
+CASE( "Test creation of lists in Value" ) {
     // Test the trivial version
 
     Value val1 = Value::makeList();
 
-    BOOST_CHECK(val1.isList());
-    BOOST_CHECK_EQUAL(val1.as<ValueList>().size(), 0);
+    EXPECT(val1.isList());
+    EXPECT(val1.as<ValueList>().size() == 0);
 
     // Can we wrap an arbitrary ValueList?
 
@@ -2463,42 +2463,42 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_makelist ) {
 
     Value val2 = Value::makeList(vl);
 
-    BOOST_CHECK(val2.isList());
+    EXPECT(val2.isList());
 
-    BOOST_CHECK_EQUAL(val2.as<ValueList>().size(), 4);
-    BOOST_CHECK_EQUAL(val2[0].as<long long>(), 123);
-    BOOST_CHECK_EQUAL(val2[1].as<std::string>(), "abc");
-    BOOST_CHECK_CLOSE(val2[2].as<double>(), 1234.56, 1.0e-10);
-    BOOST_CHECK_EQUAL(val2[3].as<bool>(), false);
+    EXPECT(val2.as<ValueList>().size() == 4);
+    EXPECT(val2[0].as<long long>() == 123);
+    EXPECT(val2[1].as<std::string>() == "abc");
+    EXPECT(is_approximately_equal(val2[2].as<double>(), 1234.56, 1.0e-10));
+    EXPECT(val2[3].as<bool>() == false);
 
     // Applied to a value, it puts the element in first
 
     Value val3 = Value::makeList(val2);
 
-    BOOST_CHECK(val3.isList());
+    EXPECT(val3.isList());
 
-    BOOST_CHECK_EQUAL(val3.as<ValueList>().size(), 1);
-    BOOST_CHECK(val3[0].isList());
-    BOOST_CHECK_EQUAL(val3[0].as<ValueList>()[0].as<long long>(), 123);
+    EXPECT(val3.as<ValueList>().size() == 1);
+    EXPECT(val3[0].isList());
+    EXPECT(val3[0].as<ValueList>()[0].as<long long>() == 123);
 
     // This should work with all the things that can cast into values
 
     Value val4 = Value::makeList(1234);
 
-    BOOST_CHECK(val4.isList());
-    BOOST_CHECK_EQUAL(val4.as<ValueList>().size(), 1);
-    BOOST_CHECK_EQUAL(val4[0].as<long long>(), 1234);
+    EXPECT(val4.isList());
+    EXPECT(val4.as<ValueList>().size() == 1);
+    EXPECT(val4[0].as<long long>() == 1234);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_makemap ) {
+CASE( "Test behaviour of maps in value" ) {
     // Test the trivial version
 
     Value val1 = Value::makeMap();
 
-    BOOST_CHECK(val1.isMap());
-    BOOST_CHECK_EQUAL(val1.as<ValueMap>().size(), 0);
+    EXPECT(val1.isMap());
+    EXPECT(val1.as<ValueMap>().size() == 0);
 
     // Can we wrap an arbitrary ValueMap?
 
@@ -2510,19 +2510,19 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_makemap ) {
 
     Value val2 = Value::makeMap(vm);
 
-    BOOST_CHECK(val2.isMap());
+    EXPECT(val2.isMap());
 
-    BOOST_CHECK_EQUAL(val2.as<ValueMap>().size(), 4);
-    BOOST_CHECK_EQUAL(val2[123].as<long long>(), 456);
-    BOOST_CHECK_EQUAL(val2["abc"].as<std::string>(), "def");
-    BOOST_CHECK_CLOSE(val2[Value(1234.56)].as<double>(), 666.66, 1.0e-10);
+    EXPECT(val2.as<ValueMap>().size() == 4);
+    EXPECT(val2[123].as<long long>() == 456);
+    EXPECT(val2["abc"].as<std::string>() == "def");
+    EXPECT(is_approximately_equal(val2[Value(1234.56)].as<double>(), 666.66, 1.0e-10));
     /// Cannot index using bools
-    /// BOOST_CHECK_EQUAL(val2[3].as<bool>(), false);
+    /// EXPECT(val2[3].as<bool>(), false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_vector ) {
+CASE( "Test automatic creation of valuelists from vectors" ) {
     // n.b. This is templated, so will work for a std::vector<T> for any T for which a Value can be constructed.
 
     std::vector<int> vint;
@@ -2531,14 +2531,14 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_vector ) {
 
     Value val = toValue(vint);
 
-    BOOST_CHECK(val.isList());
-    BOOST_CHECK_EQUAL(val.as<ValueList>().size(), 9);
-    BOOST_CHECK_EQUAL(val[4].as<long long>(), 55);
+    EXPECT(val.isList());
+    EXPECT(val.as<ValueList>().size() == 9);
+    EXPECT(val[4].as<long long>() == 55);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_list ) {
+CASE( "Test automatic creation of valuelists from lists" ) {
     // n.b. This is templated, so will work for a std::list<T> for any T for which a Value can be constructed.
 
     std::list<int> lint;
@@ -2547,14 +2547,14 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_makelist_list ) {
 
     Value val = toValue(lint);
 
-    BOOST_CHECK(val.isList());
-    BOOST_CHECK_EQUAL(val.as<ValueList>().size(), 9);
-    BOOST_CHECK_EQUAL(val[4].as<long long>(), 55);
+    EXPECT(val.isList());
+    EXPECT(val.as<ValueList>().size() == 9);
+    EXPECT(val[4].as<long long>() == 55);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_value_wrapper_types ) {
+CASE( "Test eckit integer-wrapper types in Value" ) {
     // There are some constructors that have been added for easy conversion, that aren't actually part of the
     // internal interface
 
@@ -2562,63 +2562,66 @@ BOOST_AUTO_TEST_CASE( test_eckit_value_wrapper_types ) {
 
     Value val_length(Length(12345));
 
-    BOOST_CHECK(val_length.isNumber());
+    EXPECT(val_length.isNumber());
 
-    BOOST_CHECK(!val_length.isNil());
-    BOOST_CHECK(!val_length.isBool());
-    BOOST_CHECK(!val_length.isDouble());
-    BOOST_CHECK(!val_length.isString());
-    BOOST_CHECK(!val_length.isList());
-    BOOST_CHECK(!val_length.isMap());
-    BOOST_CHECK(!val_length.isDate());
-    BOOST_CHECK(!val_length.isTime());
-    BOOST_CHECK(!val_length.isDateTime());
+    EXPECT(!val_length.isNil());
+    EXPECT(!val_length.isBool());
+    EXPECT(!val_length.isDouble());
+    EXPECT(!val_length.isString());
+    EXPECT(!val_length.isList());
+    EXPECT(!val_length.isMap());
+    EXPECT(!val_length.isDate());
+    EXPECT(!val_length.isTime());
+    EXPECT(!val_length.isDateTime());
 
-    BOOST_CHECK_EQUAL(int(val_length), 12345);
-    BOOST_CHECK_EQUAL(val_length.as<long long>(), 12345);
+    EXPECT(int(val_length) == 12345);
+    EXPECT(val_length.as<long long>() == 12345);
 
     // Offset type
 
     Value val_offset(Offset(54321));
 
-    BOOST_CHECK(val_offset.isNumber());
+    EXPECT(val_offset.isNumber());
 
-    BOOST_CHECK(!val_offset.isNil());
-    BOOST_CHECK(!val_offset.isBool());
-    BOOST_CHECK(!val_offset.isDouble());
-    BOOST_CHECK(!val_offset.isString());
-    BOOST_CHECK(!val_offset.isList());
-    BOOST_CHECK(!val_offset.isMap());
-    BOOST_CHECK(!val_offset.isDate());
-    BOOST_CHECK(!val_offset.isTime());
-    BOOST_CHECK(!val_offset.isDateTime());
+    EXPECT(!val_offset.isNil());
+    EXPECT(!val_offset.isBool());
+    EXPECT(!val_offset.isDouble());
+    EXPECT(!val_offset.isString());
+    EXPECT(!val_offset.isList());
+    EXPECT(!val_offset.isMap());
+    EXPECT(!val_offset.isDate());
+    EXPECT(!val_offset.isTime());
+    EXPECT(!val_offset.isDateTime());
 
-    BOOST_CHECK_EQUAL(int(val_offset), 54321);
-    BOOST_CHECK_EQUAL(val_offset.as<long long>(), 54321);
+    EXPECT(int(val_offset) == 54321);
+    EXPECT(val_offset.as<long long>() == 54321);
 
     // PathName type
 
     Value val_pathname(PathName("/usr/bin"));
 
-    BOOST_CHECK(val_pathname.isString());
+    EXPECT(val_pathname.isString());
 
-    BOOST_CHECK(!val_pathname.isNil());
-    BOOST_CHECK(!val_pathname.isBool());
-    BOOST_CHECK(!val_pathname.isDouble());
-    BOOST_CHECK(!val_pathname.isNumber());
-    BOOST_CHECK(!val_pathname.isList());
-    BOOST_CHECK(!val_pathname.isMap());
-    BOOST_CHECK(!val_pathname.isDate());
-    BOOST_CHECK(!val_pathname.isTime());
-    BOOST_CHECK(!val_pathname.isDateTime());
+    EXPECT(!val_pathname.isNil());
+    EXPECT(!val_pathname.isBool());
+    EXPECT(!val_pathname.isDouble());
+    EXPECT(!val_pathname.isNumber());
+    EXPECT(!val_pathname.isList());
+    EXPECT(!val_pathname.isMap());
+    EXPECT(!val_pathname.isDate());
+    EXPECT(!val_pathname.isTime());
+    EXPECT(!val_pathname.isDateTime());
 
-    BOOST_CHECK_EQUAL(std::string(val_pathname), "/usr/bin");
-    BOOST_CHECK_EQUAL(val_pathname.as<std::string>(), "/usr/bin");
+    EXPECT(std::string(val_pathname) == "/usr/bin");
+    EXPECT(val_pathname.as<std::string>() == "/usr/bin");
 }
-
-BOOST_AUTO_TEST_SUITE_END()
 
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace test
 } // namespace eckit
+
+
+int main(int argc, char* argv[]) {
+    run_tests(argc, argv);
+}

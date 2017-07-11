@@ -64,6 +64,12 @@ public: // methods
 
     // has, get and set methods are inherited from LocalConfiguration in their entirety
 
+    std::vector<std::string>::const_iterator begin() const { return args_.begin(); }
+    std::vector<std::string>::const_iterator end() const { return args_.end(); }
+
+    std::vector<std::string>::iterator begin() { return args_.begin(); }
+    std::vector<std::string>::iterator end() { return args_.end(); }
+
 private: // methods
 
     void init(usage_proc usage, int args_count, int minumum_args, bool throw_on_errror);

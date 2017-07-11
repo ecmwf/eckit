@@ -605,13 +605,10 @@ list( APPEND eckit_transaction_srcs
 list( APPEND eckit_testing_srcs
     testing/Setup.h
     testing/Test.h
+    testing/lest.h
+    testing/lest_cpp03.h
 )
 
-if (HAVE_CXX11)
-    list( APPEND eckit_testing_srcs testing/lest.h )
-else()
-    list( APPEND eckit_testing_srcs testing/lest_cpp03.h )
-endif()
 
 list( APPEND eckit_dirs
 	bases

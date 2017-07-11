@@ -1,6 +1,16 @@
 //#include <cmath>
 
+// Some of the math.h/cmath functions are not clean when switching to C++11
+#if __cplusplus <= 199711L
+#include <math.h>
+#else
 #include <cmath>
+#define fpclassify(x) std::fpclassify((x))
+#define isinf(x) std::isinf((x))
+#define isnan(x) std::isnan((x))
+#define signbit(x) std::signbit((x))
+#endif
+
 #include <limits>
 #include <sys/types.h>
 
@@ -106,11 +116,11 @@ bool is_approximately_equal_ulps(T a, T b, T epsilon, int maxUlpsDiff) {
     if (a == b) return true;
 
     // NaNs and infinity are always different
-    if (std::isnan(a) || std::isnan(b) || std::isinf(a) || std::isinf(b)) return false;
+    if (isnan(a) || isnan(b) || isinf(a) || isinf(b)) return false;
 
     // Subnormal numbers are treated as 0
-    if (std::fpclassify(a) == FP_SUBNORMAL) a = 0;
-    if (std::fpclassify(b) == FP_SUBNORMAL) b = 0;
+    if (fpclassify(a) == FP_SUBNORMAL) a = 0;
+    if (fpclassify(b) == FP_SUBNORMAL) b = 0;
 
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.
@@ -124,7 +134,7 @@ bool is_approximately_equal_ulps(T a, T b, T epsilon, int maxUlpsDiff) {
         return (1 + detail::float_distance(detail::abs(a), std::numeric_limits<T>::min())) <= maxUlpsDiff;
     }
 
-    if (std::signbit(a) == std::signbit(b)) return detail::float_distance(a, b) <= maxUlpsDiff;
+    if (signbit(a) == signbit(b)) return detail::float_distance(a, b) <= maxUlpsDiff;
 
     // If signs are different, add ULP distances from minimum normal number on both sides of 0
     const int64_t dp = detail::float_distance(a > 0 ? a : b, std::numeric_limits<T>::min());

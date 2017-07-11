@@ -37,7 +37,7 @@ SystemInfoLinux::~SystemInfoLinux() {
 LocalPathName SystemInfoLinux::executablePath() const
 {
     MemoryBuffer buffer(PATH_MAX);
-	ssize_t size = SYSCALL(::readlink("/proc/self/exe", buffer, buffer.size()));
+    ssize_t size = SYSCALL(::readlink("/proc/self/exe", buffer, buffer.size()));
     std::string path(buffer, size);
     return LocalPathName(path).realName();
 }
@@ -45,7 +45,45 @@ LocalPathName SystemInfoLinux::executablePath() const
 Mem SystemInfoLinux::memoryUsage() const {
     struct rusage usage;
     SYSCALL(getrusage(RUSAGE_SELF, &usage));
-    return Mem(usage.ru_maxrss * 1024, 0) ;
+
+    std::ostringstream oss;
+    oss << "/proc/" << ::getpid() << "/maps";
+
+    std::ifstream in(oss.str().c_str());
+    char line[10240] = {0,};
+    size_t shared = 0;
+
+    while (in.getline(line, sizeof(line)-1)) {
+
+        char *p = line;
+        while(*p) {
+            if(*p == '-') {
+                *p = ' ';
+                }
+                p++;
+            }
+
+        std::istringstream iss(line);
+
+
+        size_t begin, end;
+        std::string perms;
+
+        iss >> std::hex >> begin >> end >> perms;
+
+        // std::cout << begin << " " b<< end << " - "  << perms << std::endl;
+
+
+
+        if(!perms.empty() && perms[perms.size()-1] == 's') {
+            shared += end - begin;
+        }
+    }
+
+    // std::cout << shared << std::endl;
+
+
+    return Mem(usage.ru_maxrss * 1024, 0, shared) ;
 }
 
 size_t SystemInfoLinux::memoryAllocated() const {

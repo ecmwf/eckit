@@ -114,6 +114,28 @@ long Translator<std::string,long>::operator()(const std::string& s)
 }
 
 
+short Translator<std::string,short>::operator()(const std::string& s)
+{
+    char *more;
+    long result =  strtol(s.c_str(),&more,10);
+    result = result * multiplier(more);
+
+    ASSERT( short(result) == result);
+    return result;
+}
+
+
+unsigned char Translator<std::string,unsigned char>::operator()(const std::string& s)
+{
+    char *more;
+    long result =  strtol(s.c_str(),&more,10);
+    result = result * multiplier(more);
+
+    ASSERT( static_cast<unsigned char>(result) == result);
+    return result;
+}
+
+
 std::string Translator<unsigned char,std::string>::operator()(unsigned char value)
 {
     std::ostringstream s;

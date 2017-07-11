@@ -94,12 +94,20 @@ struct Translator<std::string,long>
     { long   operator()(const std::string&); };
 
 template<>
+struct Translator<std::string,short>
+    { short   operator()(const std::string&); };
+
+template<>
 struct Translator<unsigned long,std::string>
     { std::string operator()(unsigned long);          };
 
 template<>
 struct Translator<std::string,unsigned long>
     { unsigned long   operator()(const std::string&); };
+
+template<>
+struct Translator<std::string,unsigned char>
+    { unsigned char   operator()(const std::string&); };
 
 template<>
 struct Translator<std::string,unsigned long long>

@@ -64,6 +64,8 @@ Fraction::Fraction(value_type top, value_type bottom) {
 }
 
 Fraction::Fraction(double x) {
+
+    double value = x;
     value_type sign = 1;
     if (x < 0) {
         sign = -sign;

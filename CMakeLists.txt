@@ -80,7 +80,7 @@ set_package_properties( Armadillo PROPERTIES
 
 ecbuild_add_option( FEATURE LAPACK
                     DESCRIPTION "Linear Algebra PACKage"
-                    REQUIRED_PACKAGES "LAPACK" )
+                    REQUIRED_PACKAGES "LAPACK QUIET" )
 
 ### OpenSSL (for SHA1)
 

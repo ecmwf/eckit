@@ -61,9 +61,11 @@ public:
     {
         Alloc& a = this->alloc_;
         Node* root = Node::insert(a, value, a.convert(this->root_, (Node*)0), 0);
-        if(root != this->root_) {
-            a.root(root);
-            this->root_ = root;
+
+        if(a.convert(root) != this->root_)
+        {
+            a.root(a.convert(root));
+            this->root_ = a.convert(root);
         }
     }
 

@@ -22,7 +22,8 @@
 namespace eckit {
 
 template<class Traits, class NodeType>
-SPNode<Traits,NodeType>::SPNode(const Value& value):
+template<class V>
+SPNode<Traits,NodeType>::SPNode(const V& value):
     value_(value),
     left_(0),
     right_(0),

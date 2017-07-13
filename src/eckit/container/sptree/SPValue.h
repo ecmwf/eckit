@@ -30,6 +30,10 @@ public:
     SPValue(const Point& point, const Payload& payload):
         point_(point), payload_(payload) {}
 
+    template<class V>
+    SPValue(const V& v):
+        point_(v.point()), payload_(v.payload()) {}
+
     const Point& point() const   { return point_; }
     const Payload& payload() const { return payload_; }
 
@@ -51,7 +55,7 @@ public:
     }
 
     bool operator<(const SPValue& other) const
-        { return point() < other.point(); }
+    { return point() < other.point(); }
 };
 
 } // end namespace

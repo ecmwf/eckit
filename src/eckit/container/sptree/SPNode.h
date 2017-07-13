@@ -47,7 +47,11 @@ protected:
 
 
 public:
-    SPNode(const Value& value);
+    // SPNode(const Value& value);
+
+    template<class V>
+    SPNode(const V& value);
+
     ~SPNode() {}
 
     NodeInfo nearestNeighbour(Alloc& a,const Point& p);

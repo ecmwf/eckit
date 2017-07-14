@@ -11,6 +11,7 @@
 #ifndef KDTree_H
 #define KDTree_H
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/container/sptree/SPTree.h"
 #include "eckit/container/kdtree/KDNode.h"
 

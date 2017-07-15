@@ -87,16 +87,6 @@ Results Angle::calculate(const data::MIRField& field) const {
         results.absoluteQuantity2 ("variance", w) = stats.variance();
         results.absoluteQuantity  ("stddev",   w) = stats.standardDeviation();
 
-#if 0
-        const std::complex<double> skew = stats.skewness();
-        const std::complex<double> kurt = stats.kurtosis();
-
-        results.uncomparableQuantity("skewness-real", w) = skew.real();
-        results.uncomparableQuantity("skewness-imag", w) = skew.imag();
-        results.uncomparableQuantity("kurtosis-real", w) = kurt.real();
-        results.uncomparableQuantity("kurtosis-imag", w) = kurt.imag();
-#endif
-
         results.counter("count-non-missing", w) = stats.countNonMissing();
         results.counter("count-missing",     w) = stats.countMissing();
 

@@ -69,7 +69,7 @@ Fraction::Fraction(double x) {
     double value = x;
 
     ASSERT(!std::isnan(value));
-    ASSERT(fabs(value) < 1e30);
+    // ASSERT(fabs(value) < 1e30);
 
 
     value_type sign = 1;
@@ -81,6 +81,8 @@ Fraction::Fraction(double x) {
     value_type m00 = 1, m11 = 1, m01 = 0, m10 = 0;
     value_type a = x;
     value_type t2 = m10 * a + m11;
+
+    size_t cnt = 0;
 
     while (t2 <= MAX_DENOM) {
 
@@ -103,6 +105,12 @@ Fraction::Fraction(double x) {
 
         a = x;
         t2 = m10 * a + m11;
+
+        if(cnt > 10000) {
+            std::ostringstream oss;
+            oss << "Cannot compute fraction from " << value << std::endl;
+            throw eckit::SeriousBug(oss.str());
+        }
     }
 
     while (m10 >= MAX_DENOM || m00 >= MAX_DENOM) {

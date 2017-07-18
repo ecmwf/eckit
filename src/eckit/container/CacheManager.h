@@ -108,14 +108,14 @@ CacheManager<Traits>::CacheManager(const std::string& loaderName, const std::str
     std::vector<std::string> v;
     parse(roots, v);
 
-    for(std::vector<std::string>::const_iterator i = v.begin(); i != v.end(); ++i) {
+    for (std::vector<std::string>::const_iterator i = v.begin(); i != v.end(); ++i) {
 
         std::string path = *i;
 
         // entries with e.g. {CWDFS}/cache will be expanded with PathExpander factory CWDFS
 
         StringList vl = StringTools::listVariables(path);
-        for(StringList::const_iterator var = vl.begin(); var != vl.end(); ++var) {
+        for (StringList::const_iterator var = vl.begin(); var != vl.end(); ++var) {
             path = PathExpander::expand(*var, path);
         }
 
@@ -204,8 +204,8 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
 
     if (get(key, path)) {
         eckit::Log::debug() << "Loading cache file "
-                           << path
-                           << std::endl;
+                            << path
+                            << std::endl;
 
         Traits::load(*this, value, path);
         return path;
@@ -214,51 +214,23 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
 
         for (std::vector<PathName>::const_iterator j = roots_.begin(); j != roots_.end(); ++j) {
 
-            eckit::Log::info() << "Cache file "
-                               << entry(key, *j)
-                               << " does not exist"
-                               << std::endl;
-
-
-            std::ostringstream oss;
-            oss << entry(key, *j) << ".lock";
-
             try {
 
-                eckit::PathName lockFile(oss.str());
+                eckit::Log::info() << "Cache file "
+                                   << entry(key, *j)
+                                   << " does not exist"
+                                   << std::endl;
 
-                eckit::FileLock locker(lockFile);
+                eckit::Log::info() << "Creating cache file "
+                                   << entry(key, *j)
+                                   << std::endl;
 
-                eckit::AutoLock<eckit::FileLock> lock(locker);
-
-                // Some
-                if (!get(key, path)) {
-                    eckit::Log::info() << "Creating cache file "
-                                       << entry(key, *j)
-                                       << std::endl;
-
-                    eckit::PathName tmp = stage(key, *j);
-                    creator.create(tmp, value);
-                    Traits::save(*this, value, tmp);
-                    ASSERT(commit(key, tmp, *j));
-                }
-                else {
-                    eckit::Log::debug() << "Loading cache file "
-                                        << entry(key, *j)
-                                        << " (created by another process)"
-                                        << std::endl;
-                    Traits::load(*this, value, path);
-                }
+                eckit::PathName tmp = stage(key, *j);
+                creator.create(tmp, value);
+                Traits::save(*this, value, tmp);
+                ASSERT(commit(key, tmp, *j));
 
                 ASSERT(get(key, path));
-
-                if (lockFile.exists()) {
-                    try {
-                        lockFile.unlink();
-                    } catch (...) {
-                    }
-                }
-
                 return path;
 
             } catch (FailedSystemCall& e) {

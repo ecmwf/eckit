@@ -53,6 +53,13 @@ private: // members
 
 };
 
+class CacheManagerNoLock {
+public:
+    CacheManagerNoLock(const std::string&) {}
+    void lock() {}
+    void unlock() {}
+};
+
 template <class Traits>
 class CacheManager : public CacheManagerBase {
 
@@ -219,17 +226,10 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                                << " does not exist"
                                << std::endl;
 
-
-            std::ostringstream oss;
-            oss << entry(key, *j) << ".lock";
-
             try {
 
-                eckit::PathName lockFile(oss.str());
-
-                eckit::FileLock locker(lockFile);
-
-                eckit::AutoLock<eckit::FileLock> lock(locker);
+                typename Traits::Locker locker(entry(key, *j));
+                eckit::AutoLock<typename Traits::Locker> lock(locker);
 
                 // Some
                 if (!get(key, path)) {
@@ -251,13 +251,6 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                 }
 
                 ASSERT(get(key, path));
-
-                if (lockFile.exists()) {
-                    try {
-                        lockFile.unlink();
-                    } catch (...) {
-                    }
-                }
 
                 return path;
 

@@ -165,7 +165,7 @@ void ProgressTimer::operator++()
     if (doOutput) {
         lastTime_ = elapsed();
         double rate = counter_ / lastTime_;
-        output() << eckit::Plural(counter_, unit_) << " ..."  << eckit::Seconds(lastTime_)
+        output() << eckit::Plural(counter_, unit_) << " in "  << eckit::Seconds(lastTime_)
                  << ", rate: " << rate << " " << unit_ << "s/s"
                  << ", ETA: " << eckit::ETA( (limit_ - counter_) / rate )
                  << std::endl;

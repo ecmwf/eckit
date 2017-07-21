@@ -13,6 +13,7 @@
 
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
+#include "eckit/log/TraceTimer.h"
 #include "eckit/memory/NonCopyable.h"
 
 

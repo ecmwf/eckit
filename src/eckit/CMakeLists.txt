@@ -334,8 +334,11 @@ log/Statistics.h
 log/Statistics.cc
 log/LogTarget.h
 log/LogTarget.cc
+log/ProgressTimer.h
+log/ProgressTimer.cc
 log/Timer.h
 log/Timer.cc
+log/TraceTimer.h
 log/ResourceUsage.h
 log/ResourceUsage.cc
 log/TimeStamp.h

@@ -57,6 +57,8 @@ protected: // methods
 
     void takeTime();
 
+    std::ostream& output() { return out_ << name_ << ": "; }
+
 private: // members
 
     std::string    name_;
@@ -78,17 +80,6 @@ private: // members
 ::timeval operator-(const ::timeval&,const ::timeval&);
 
 //-----------------------------------------------------------------------------
-
-template<class T>
-class TraceTimer : public Timer {
-public:
-
-    explicit TraceTimer( const char* name):
-        Timer(name, eckit::Log::debug<T>()) {}
-
-    explicit TraceTimer( const std::string& name):
-        Timer(name, eckit::Log::debug<T>()) {}
-};
 
 } // namespace eckit
 

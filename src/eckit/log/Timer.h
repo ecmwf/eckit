@@ -81,52 +81,6 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-template<class T>
-class TraceTimer : public Timer {
-public:
-
-    explicit TraceTimer( const char* name):
-        Timer(name, eckit::Log::debug<T>()) {}
-
-    explicit TraceTimer( const std::string& name):
-        Timer(name, eckit::Log::debug<T>()) {}
-};
-
-//-----------------------------------------------------------------------------
-
-class ProgressTimer : public Timer {
-public:
-
-    /// @param name of the timer, used for output
-    /// @param limit counter maximum value
-    /// @param unit counter unit (singular)
-    /// @param countedProgress how often to output progress, based on count
-    /// @param o output stream
-    ProgressTimer(const std::string& name, size_t limit, const std::string& unit, size_t progressCounted = 10000, std::ostream& o = Log::info());
-
-    /// @param name of the timer, used for output
-    /// @param limit counter maximum value
-    /// @param unit counter unit (singular)
-    /// @param timedProgress how often to output progress, based on elapsed time
-    /// @param o output stream
-    ProgressTimer(const std::string& name, size_t limit, const std::string& unit, double progressTimed = 10., std::ostream& o = Log::info());
-
-    void operator++();
-
-private: // members
-
-    const size_t limit_;
-    const std::string unit_;
-
-    const size_t progressCounted_;
-    const double progressTimed_;
-
-    size_t counter_;
-    double lastTime_;
-};
-
-//-----------------------------------------------------------------------------
-
 } // namespace eckit
 
 #endif

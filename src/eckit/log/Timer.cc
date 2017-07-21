@@ -8,8 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/log/ETA.h"
-#include "eckit/log/Plural.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
 
@@ -130,50 +128,6 @@ void Timer::takeTime()
     }
 
     return diff;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-ProgressTimer::ProgressTimer(const std::string& name, size_t limit, const std::string& unit, size_t progressCounted, std::ostream& o):
-    Timer(name, o),
-    limit_(limit),
-    unit_(unit),
-    progressCounted_(progressCounted),
-    progressTimed_(-1),
-    counter_(0),
-    lastTime_(0.)
-{
-}
-
-ProgressTimer::ProgressTimer(const std::string& name, size_t limit, const std::string& unit, double progressTimed, std::ostream& o):
-    Timer(name, o),
-    limit_(limit),
-    unit_(unit),
-    progressCounted_(0),
-    progressTimed_(progressTimed),
-    counter_(0),
-    lastTime_(0.)
-{
-}
-
-void ProgressTimer::operator++()
-{
-    bool doOutput = counter_ && (
-                (progressCounted_ > 0 && counter_ % progressCounted_ == 0) ||
-                (progressTimed_ > 0. && lastTime_ + progressTimed_ < elapsed()) );
-
-    if (doOutput) {
-        lastTime_ = elapsed();
-        double rate = counter_ / lastTime_;
-        output() << eckit::Plural(counter_, unit_) << " in "  << eckit::Seconds(lastTime_)
-                 << ", rate: " << rate << " " << unit_ << "s/s"
-                 << ", ETA: " << eckit::ETA( (limit_ - counter_) / rate )
-                 << std::endl;
-    }
-
-    if (counter_ < limit_) {
-        ++counter_;
-    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -15,58 +15,149 @@
 #ifndef eckit_testing_Test_h
 #define eckit_testing_Test_h
 
-#include "eckit/eckit_config.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
+#include "eckit/exception/Exceptions.h"
 
-#ifdef ECKIT_HAVE_CXX11
+#include <vector>
 
-#if __cplusplus <= 199711L
-#error "eckit is configured with C++11 support, but the current compiler doesn't support C++11"
-#endif
-
-#define lest_FEATURE_AUTO_REGISTER 1
-#include "eckit/testing/lest.h"
-
-#else
-#include "eckit/testing/lest_cpp03.h"
-#endif
-
-// This pragma disables warnings in qtcreator using Clang Code Model. These warnings are due to the
-// expression decomposing functionality in lest, which intentionally does weird things by considering
-// the operator precedence rules.
-# pragma clang diagnostic ignored "-Woverloaded-shift-op-parentheses"
 
 namespace eckit {
 namespace testing {
 
+//----------------------------------------------------------------------------------------------------------------------
+
+class TestException : public Exception {
+public:
+    TestException(const std::string& w, const CodeLocation& l) :
+        Exception(w, l) {}
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// A test is defined by a description and a function pointer.
 
-static lest::tests& specification() {
-    static lest::tests spec;
-    return spec;
+class Test {
+
+public: // methods
+
+    Test(const std::string& description, void (*testFn)()) :
+        description_(description),
+        testFn_(testFn) {}
+
+    void run() const { testFn_(); }
+
+    const std::string& description() const { return description_; }
+
+private: // members
+
+    std::string description_;
+
+    void (* testFn_)();
+};
+
+std::vector<Test>& specification() {
+    static std::vector<Test> tests;
+    return tests;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Tests are registered using a static object, that is initialised before main()
+
+class TestRegister {
+public:
+    TestRegister(const std::string& description, void (*testFn)()) {
+        specification().push_back(Test(description, testFn));
+    }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
 
 int run_tests(int argc, char* argv[]) {
 
     eckit::Main::initialise(argc, argv);
 
-    return lest::run(specification(), argc, argv, eckit::Log::info());
+    eckit::Log::info() << "Running " << specification().size() << " tests: " << std::endl;
+
+    // Keep track of failures
+
+    std::vector<std::string> failures;
+    size_t num_tests = specification().size();
+
+    // Suppress noisy exceptions in eckit (we may throw many, and intentionally!!!)
+
+    ::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", true);
+    ::setenv("ECKIT_ASSERT_FAILED_IS_SILENT", "1", true);
+
+    for (size_t i = 0; i < num_tests; i++) {
+
+        const Test& test(specification()[i]);
+
+//        eckit::Log::info() << "Running test: " << test.description() << std::endl;
+//        eckit::Log::info() << "." << std::flush;
+        try {
+            test.run();
+        } catch (const TestException& e) {
+            eckit::Log::info() << "Test failed: " << test.description()
+                               << ": " << e.what() << std::endl;
+            failures.push_back(test.description());
+        } catch (...) {
+            eckit::Log::info() << "Unhandled exception caught in test: "
+                               << test.description() << std::endl;
+            failures.push_back(test.description());
+        }
+    }
+
+    eckit::Log::info() << std::endl << "Ran " << num_tests << " tests" << std::endl;
+    eckit::Log::info() << num_tests - failures.size() << " succeeded" << std::endl;
+    eckit::Log::info() << failures.size() << " failed ..." << std::endl;
+    eckit::Log::info() << std::endl;
+    for (size_t i = 0; i < failures.size(); i++) {
+        eckit::Log::info() << "    " << failures[i] << std::endl;
+    }
+
+    return failures.empty() ? 0 : 1;
 }
-
-
-// The CASE macro will now work with both C++11 and C++03 versions of lest
-
-#undef CASE
-#define CASE(proposition) lest_CASE( specification(), proposition )
-
 
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace testing
 } // namespace eckit
+
+// Helper macros for unique naming
+
+#define UNIQUE_NAME2( name, line ) UNIQUE_NAME( name, line )
+#define UNIQUE_NAME( name, line ) name ## line
+
+
+#define CASE(description) \
+void UNIQUE_NAME2(test_, __LINE__) (); \
+static TestRegister UNIQUE_NAME2(test_registration_, __LINE__)(description, &UNIQUE_NAME2(test_, __LINE__)); \
+void UNIQUE_NAME2(test_, __LINE__) ()
+
+
+#define EXPECT(expr) \
+    do { \
+        if (!(expr)) { \
+            throw TestException("EXPECT condition failed: " #expr, Here()); \
+        } \
+    } while(false)
+
+
+#define EXPECT_THROWS_AS(expr, excpt) \
+    do { \
+        try { \
+            expr; \
+        } catch (excpt& e) { \
+            break; \
+        } \
+        throw TestException("Expected exception (" #excpt ")not thrown in: " #expr, Here()); \
+    } while(false)
+
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 #endif // eckit_testing_Test_h

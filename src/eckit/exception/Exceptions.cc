@@ -199,8 +199,10 @@ AssertionFailed::AssertionFailed(const std::string& w):
 {
     Log::status() << what() << std::endl;
 
-    std::cout << what() << std::endl;
-    std::cout << BackTrace::dump() << std::endl;
+    if(!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
+    }
 
      if(::getenv("ECKIT_ASSERT_ABORTS"))
      {

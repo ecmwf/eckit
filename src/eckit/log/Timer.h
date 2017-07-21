@@ -57,7 +57,7 @@ protected: // methods
 
     void takeTime();
 
-    std::ostream& output() { return out_; }
+    std::ostream& output() { return out_ << name_ << ": "; }
 
 private: // members
 

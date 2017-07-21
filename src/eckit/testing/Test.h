@@ -149,7 +149,7 @@ void UNIQUE_NAME2(test_, __LINE__) ()
     do { \
         try { \
             expr; \
-        } catch (excpt& e) { \
+        } catch (excpt&) { \
             break; \
         } \
         throw TestException("Expected exception (" #excpt ")not thrown in: " #expr, Here()); \

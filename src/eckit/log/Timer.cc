@@ -158,21 +158,14 @@ ProgressTimer::ProgressTimer(const std::string& name, size_t limit, const std::s
 
 void ProgressTimer::operator++()
 {
-    bool doOutput = false;
-    if (counter_ && progressCounted_ > 0) {
-        if (counter_ % progressCounted_ == 0) {
-            doOutput = true;
-        }
-    } else if (counter_ && progressTimed_ > 0.) {
-        if (lastTime_ + progressTimed_ < elapsed()) {
-            lastTime_ = elapsed();
-            doOutput = true;
-        }
-    }
+    bool doOutput = counter_ && (
+                (progressCounted_ > 0 && counter_ % progressCounted_ == 0) ||
+                (progressTimed_ > 0. && lastTime_ + progressTimed_ < elapsed()) );
 
     if (doOutput) {
-        double rate = counter_ / elapsed();
-        output() << eckit::Plural(counter_, unit_) << " ..."  << eckit::Seconds(elapsed())
+        lastTime_ = elapsed();
+        double rate = counter_ / lastTime_;
+        output() << eckit::Plural(counter_, unit_) << " ..."  << eckit::Seconds(lastTime_)
                  << ", rate: " << rate << " " << unit_ << "s/s"
                  << ", ETA: " << eckit::ETA( (limit_ - counter_) / rate )
                  << std::endl;

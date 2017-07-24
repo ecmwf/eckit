@@ -75,7 +75,7 @@ CASE( "Booleans cast correctly in/out of Value" ) {
     // Access and conversion of bools
     //
 
-    EXPECT(!bool(val_true));
+    EXPECT(bool(val_true));
     EXPECT(!bool(val_false));
     EXPECT(val_true.as<bool>());
     EXPECT(!val_false.as<bool>());

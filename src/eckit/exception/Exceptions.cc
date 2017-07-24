@@ -197,9 +197,9 @@ SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
 AssertionFailed::AssertionFailed(const std::string& w):
     Exception(std::string("Assertion failed: ") + w)
 {
-    Log::status() << what() << std::endl;
-
     if(!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
+        Log::status() << what() << std::endl;
+
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
     }
@@ -214,14 +214,16 @@ AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc
 {
     std::ostringstream s;
 
-    s << "Assertion failed: " << msg << " in " << loc.func()
-      << ", line " << loc.line() << " of " << loc.file();
+    if(!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
+        s << "Assertion failed: " << msg << " in " << loc.func()
+          << ", line " << loc.line() << " of " << loc.file();
 
-    reason(s.str());
-    Log::status() << what() << std::endl;
+        reason(s.str());
+        Log::status() << what() << std::endl;
 
-    std::cout << what() << std::endl;
-    std::cout << BackTrace::dump() << std::endl;
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
+    }
 
     if(::getenv("ECKIT_ASSERT_ABORTS"))
     {
@@ -233,14 +235,16 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
 {
     std::ostringstream s;
 
-    s << "Assertion failed: " << msg << " in " << loc.func()
-      << ", line " << loc.line() << " of " << loc.file();
+    if(!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
+        s << "Assertion failed: " << msg << " in " << loc.func()
+          << ", line " << loc.line() << " of " << loc.file();
 
-    reason(s.str());
-    Log::status() << what() << std::endl;
+        reason(s.str());
+        Log::status() << what() << std::endl;
 
-    std::cout << what() << std::endl;
-    std::cout << BackTrace::dump() << std::endl;
+        std::cout << what() << std::endl;
+        std::cout << BackTrace::dump() << std::endl;
+    }
 
     if(::getenv("ECKIT_ASSERT_ABORTS"))
     {

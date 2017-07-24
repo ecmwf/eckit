@@ -20,6 +20,7 @@
 #include "eckit/exception/Exceptions.h"
 
 #include <vector>
+#include <sstream>
 
 
 namespace eckit {
@@ -140,7 +141,7 @@ void UNIQUE_NAME2(test_, __LINE__) ()
 #define EXPECT(expr) \
     do { \
         if (!(expr)) { \
-            throw TestException("EXPECT condition failed: " #expr, Here()); \
+            throw eckit::testing::TestException("EXPECT condition failed: " #expr, Here()); \
         } \
     } while(false)
 
@@ -152,9 +153,35 @@ void UNIQUE_NAME2(test_, __LINE__) ()
         } catch (excpt&) { \
             break; \
         } \
-        throw TestException("Expected exception (" #excpt ")not thrown in: " #expr, Here()); \
+        throw eckit::testing::TestException("Expected exception (" #excpt ")not thrown in: " #expr, Here()); \
     } while(false)
 
+
+// Convert to TestException
+#define EXPECT_NO_THROW(expr) \
+    do { \
+        try { \
+            expr; \
+        } catch (std::exception& e) { \
+            std::stringstream ss; \
+            ss << "Unexpected exception caught: " << e.what(); \
+            throw eckit::testing::TestException(ss.str(), Here()); \
+        } catch (...) { \
+            throw eckit::testing::TestException("Unexpected and unknown exception caught", Here()); \
+        } \
+    } while(false)
+
+
+#define SETUP(name) \
+    int _test_num = 0; \
+    int _test = 0; \
+    int _test_count = 1; \
+    for ( ; _test_num = 0, _test < _test_count; _test++)
+
+#define SECTION(name) \
+    _test_num += 1; \
+    _test_count = _test_num; \
+    if ((_test_num - 1) == _test)
 
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -101,7 +101,8 @@ int run_tests(int argc, char* argv[]) {
             test.run();
         } catch (const TestException& e) {
             eckit::Log::info() << "Test failed: " << test.description()
-                               << ": " << e.what() << std::endl;
+                               << ": " << e.what()
+                               << " @ " << e.location() << std::endl;
             failures.push_back(test.description());
         } catch (...) {
             eckit::Log::info() << "Unhandled exception caught in test: "

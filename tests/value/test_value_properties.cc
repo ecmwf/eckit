@@ -8,11 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_value_properties
-
 #include <limits>
-
-#include "ecbuild/boost_test_framework.h"
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
@@ -20,8 +16,11 @@
 #include "eckit/types/Date.h"
 #include "eckit/value/Properties.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
 //-----------------------------------------------------------------------------
 
@@ -29,11 +28,10 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE( test_eckit_value_properties )
 
-BOOST_AUTO_TEST_CASE( test_serialize )
+CASE( "Test serialization" )
 {
-    BOOST_TEST_MESSAGE("(de)serialize Properties to/from file");
+    MESSAGE("(de)serialize Properties to/from file");
     PathName filename = PathName::unique( "data" );
     std::string filepath = filename.asString();
     Properties p;
@@ -72,7 +70,7 @@ BOOST_AUTO_TEST_CASE( test_serialize )
     property_list[1].set("string","foo");
     p.set("list", toValue(property_list) );
 
-    BOOST_TEST_MESSAGE("encoded Properties: " << p);
+    MESSAGE("encoded Properties: " << p);
     {
         FileStream sout( filepath.c_str(), "w" );
         sout << p;
@@ -80,31 +78,31 @@ BOOST_AUTO_TEST_CASE( test_serialize )
     {
         FileStream sin( filepath.c_str(), "r" );
         Properties p2(sin);
-        BOOST_TEST_MESSAGE("decoded Properties: " << p2);
-        BOOST_CHECK_EQUAL((bool)p["bool"], (bool)p2["bool"]);
-        BOOST_CHECK_EQUAL(p["int"], p2["int"]);
-        BOOST_CHECK_EQUAL(p["unsigned int"], p2["unsigned int"]);
-        BOOST_CHECK_EQUAL(p["long long"], p2["long long"]);
-        BOOST_CHECK_EQUAL(p["unsigned long long"], p2["unsigned long long"]);
-        BOOST_CHECK_EQUAL(p["double"], p2["double"]);
-        BOOST_CHECK_EQUAL(p["string"], p2["string"]);
-        BOOST_CHECK_EQUAL(p["Length"], p2["Length"]);
-        BOOST_CHECK(p["Date"].compare(p2["Date"])); // FIXME: equality check fails
-        // BOOST_CHECK_EQUAL(p["Time"], p2["Time"]);  <-- not implemented
-        // BOOST_CHECK_EQUAL(p["DateTime"], p2["DateTime"]); <-- not implemented
-        BOOST_CHECK_EQUAL(p["PathName"], p2["PathName"]);
-        BOOST_CHECK_EQUAL(p["Vector"], p2["Vector"]);
-        BOOST_CHECK_EQUAL(p["Map"], p2["Map"]);
+        MESSAGE("decoded Properties: " << p2);
+        EXPECT((bool)p["bool"] == (bool)p2["bool"]);
+        EXPECT(p["int"] == p2["int"]);
+        EXPECT(p["unsigned int"] == p2["unsigned int"]);
+        EXPECT(p["long long"] == p2["long long"]);
+        EXPECT(p["unsigned long long"] == p2["unsigned long long"]);
+        EXPECT(p["double"] == p2["double"]);
+        EXPECT(p["string"] == p2["string"]);
+        EXPECT(p["Length"] == p2["Length"]);
+        EXPECT(p["Date"].compare(p2["Date"]) == 0); // FIXME: equality check fails
+        // EXPECT(p["Time"] == p2["Time"]);  <-- not implemented
+        // EXPECT(p["DateTime"] == p2["DateTime"]); <-- not implemented
+        EXPECT(p["PathName"] == p2["PathName"]);
+        EXPECT(p["Vector"] == p2["Vector"]);
+        EXPECT(p["Map"] == p2["Map"]);
     }
     if (filename.exists()) filename.unlink();
 
     Properties access_nested = p.get("Nested");
 
     eckit::ValueList access_list = p.get("list");
-    BOOST_TEST_MESSAGE("encoded list: " <<  access_list );
+    MESSAGE("encoded list: " <<  access_list );
     std::vector<eckit::Properties> access_property_list(access_list.begin(),access_list.end());
 
-    BOOST_TEST_MESSAGE("encoded Nested: " << access_nested);
+    MESSAGE("encoded Nested: " << access_nested);
     {
         FileStream sout( filepath.c_str(), "w" );
         sout << p;
@@ -114,6 +112,8 @@ BOOST_AUTO_TEST_CASE( test_serialize )
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
-
 } // namespace eckit_test
+
+int main(int argc, char* argv[]) {
+    return run_tests(argc, argv);
+}

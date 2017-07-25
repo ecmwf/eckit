@@ -184,6 +184,8 @@ void UNIQUE_NAME2(test_, __LINE__) ()
     _test_count = _test_num; \
     if ((_test_num - 1) == _test)
 
+#define MESSAGE(msg) \
+    eckit::Log::info() << msg << std::endl;
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -13,8 +13,6 @@
 
 #include "mir/stats/CountOutsideRange.h"
 
-#include <limits>
-#include <sstream>
 #include "mir/util/Compare.h"
 
 

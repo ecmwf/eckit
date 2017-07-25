@@ -14,6 +14,7 @@
 #ifndef mir_stats_detail_CountMissingValuesFn_h
 #define mir_stats_detail_CountMissingValuesFn_h
 
+#include <cstddef>
 #include "mir/util/Compare.h"
 
 

@@ -87,7 +87,6 @@ inline int run( std::vector<Test> const & tests, TestVerbosity v = AllFailures) 
     ::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", true);
     ::setenv("ECKIT_ASSERT_FAILED_IS_SILENT", "1", true);
     ::setenv("ECKIT_SERIOUS_BUG_IS_SILENT", "1", true);
-    
     for (size_t i = 0; i < num_tests; i++) {
 
         const Test& test(tests[i]);

@@ -90,6 +90,7 @@ int run_tests(int argc, char* argv[]) {
 
     ::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", true);
     ::setenv("ECKIT_ASSERT_FAILED_IS_SILENT", "1", true);
+    ::setenv("ECKIT_SERIOUS_BUG_IS_SILENT", "1", true);
 
     for (size_t i = 0; i < num_tests; i++) {
 
@@ -103,6 +104,11 @@ int run_tests(int argc, char* argv[]) {
             eckit::Log::info() << "Test failed: " << test.description()
                                << ": " << e.what()
                                << " @ " << e.location() << std::endl;
+            failures.push_back(test.description());
+        } catch (std::exception& e) {
+            eckit::Log::info() << "Unhandled exception caught in test: "
+                               << test.description()
+                               << " : " << e.what() << std::endl;
             failures.push_back(test.description());
         } catch (...) {
             eckit::Log::info() << "Unhandled exception caught in test: "

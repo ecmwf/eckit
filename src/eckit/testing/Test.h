@@ -75,53 +75,83 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-int run_tests(int argc, char* argv[]) {
+enum  TestVerbosity { Silent = 0, Summary = 1, AllFailures = 2};
 
-    eckit::Main::initialise(argc, argv);
-
-    eckit::Log::info() << "Running " << specification().size() << " tests: " << std::endl;
+inline int run( std::vector<Test> const & tests, TestVerbosity v = AllFailures) {
 
     // Keep track of failures
-
     std::vector<std::string> failures;
-    size_t num_tests = specification().size();
-
+    size_t num_tests = tests.size();
+    
     // Suppress noisy exceptions in eckit (we may throw many, and intentionally!!!)
-
     ::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", true);
     ::setenv("ECKIT_ASSERT_FAILED_IS_SILENT", "1", true);
-
+    ::setenv("ECKIT_SERIOUS_BUG_IS_SILENT", "1", true);
+    
     for (size_t i = 0; i < num_tests; i++) {
 
-        const Test& test(specification()[i]);
+        const Test& test(tests[i]);
 
-//        eckit::Log::info() << "Running test: " << test.description() << std::endl;
-//        eckit::Log::info() << "." << std::flush;
         try {
             test.run();
-        } catch (const TestException& e) {
-            eckit::Log::info() << "Test failed: " << test.description()
-                               << ": " << e.what()
-                               << " @ " << e.location() << std::endl;
+        } catch (TestException& e) {
+            if (v >= Summary)
+                eckit::Log::info()  << "Test \"" << test.description() << "\" failed: "
+                                    << e.what() << " @ " << e.location() << std::endl;
+            failures.push_back(test.description());
+        } catch (eckit::Exception& e) {
+            if (v >= Summary)
+                eckit::Log::info() << "Test \"" << test.description() << "\" failed with unhandled eckit::Exception: "
+                                   << e.what() << " @ " << e.location() << std::endl;
+            failures.push_back(test.description());
+        } catch (std::exception& e) {
+            if (v >= Summary)
+                eckit::Log::info() << "Test \"" << test.description() << "\" failed with unhandled exception: "
+                                   << e.what() << " @ " << std::endl;
             failures.push_back(test.description());
         } catch (...) {
-            eckit::Log::info() << "Unhandled exception caught in test: "
-                               << test.description() << std::endl;
+            if (v >= Summary)
+                eckit::Log::info() << "Test \"" << test.description() << "\" failed with unknown unhandled exception."
+                                   << std::endl;
             failures.push_back(test.description());
         }
     }
 
-    eckit::Log::info() << std::endl << "Ran " << num_tests << " tests" << std::endl;
-    eckit::Log::info() << num_tests - failures.size() << " succeeded" << std::endl;
-    eckit::Log::info() << failures.size() << " failed ..." << std::endl;
-    eckit::Log::info() << std::endl;
-    for (size_t i = 0; i < failures.size(); i++) {
-        eckit::Log::info() << "    " << failures[i] << std::endl;
+    if (v >= AllFailures) {
+        for (size_t i = 0; i < failures.size(); i++) {
+            eckit::Log::info() << "\tFAILED: " << failures[i] << std::endl;
+        }
     }
 
-    return failures.empty() ? 0 : 1;
+    return failures.size();
+
 }
 
+template<std::size_t N>
+inline int run( Test const (&specification)[N], TestVerbosity v = AllFailures) {
+    return run( std::vector<Test>(specification, specification+N), v );
+}
+
+int run_tests_main( std::vector<Test> const & tests, int argc, char * argv[] ) {
+    eckit::Main::initialise( argc, argv );
+    eckit::Log::info() << "Running " << tests.size() << " tests:" << std::endl;
+    int failures = run( tests );
+    eckit::Log::info() << failures << " tests failed out of " << tests.size() << "." << std::endl;
+    return failures;
+}
+
+template<std::size_t N>
+int run_tests( Test const (&specification)[N], int argc, char* argv[] ) {
+    return run_tests_main( std::vector<Test>(specification, specification+N), argc, argv);
+}
+
+int run_tests( std::vector<Test> const & tests, int argc, char* argv[]) {
+    return run_tests_main( tests, argc, argv );
+}
+
+int run_tests(int argc, char* argv[]) {
+    return run_tests_main( specification(), argc, argv );
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace testing
@@ -132,11 +162,23 @@ int run_tests(int argc, char* argv[]) {
 #define UNIQUE_NAME2( name, line ) UNIQUE_NAME( name, line )
 #define UNIQUE_NAME( name, line ) name ## line
 
+#ifndef ECKIT_TESTING_SELF_REGISTER_CASES
+#define ECKIT_TESTING_SELF_REGISTER_CASES 1
+#endif
+
+#if ECKIT_TESTING_SELF_REGISTER_CASES
 
 #define CASE(description) \
 void UNIQUE_NAME2(test_, __LINE__) (); \
 static TestRegister UNIQUE_NAME2(test_registration_, __LINE__)(description, &UNIQUE_NAME2(test_, __LINE__)); \
 void UNIQUE_NAME2(test_, __LINE__) ()
+
+#else // ECKIT_TESTING_SELF_REGISTER_CASES
+
+#define CASE(description, ... ) \
+    description, [__VA_ARGS__]()
+
+#endif //ECKIT_TESTING_SELF_REGISTER_CASES
 
 
 #define EXPECT(expr) \
@@ -146,6 +188,8 @@ void UNIQUE_NAME2(test_, __LINE__) ()
         } \
     } while(false)
 
+#define EXPECT_NOT(expr) \
+    EXPECT(!(expr))
 
 #define EXPECT_THROWS_AS(expr, excpt) \
     do { \
@@ -171,6 +215,17 @@ void UNIQUE_NAME2(test_, __LINE__) ()
             throw eckit::testing::TestException("Unexpected and unknown exception caught", Here()); \
         } \
     } while(false)
+
+#define EXPECT_THROWS(expr) \
+    do { \
+        try { \
+            expr; \
+        } catch (...) { \
+            break; \
+        } \
+        throw eckit::testing::TestException("Exception expected but was not thrown", Here()); \
+    } while(false)
+
 
 
 #define SETUP(name) \

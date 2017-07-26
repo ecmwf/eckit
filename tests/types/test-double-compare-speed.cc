@@ -13,33 +13,19 @@
 #include "eckit/log/Timer.h"
 #include "eckit/log/BigNum.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/runtime/Tool.h"
+
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
 namespace eckit {
 namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class TestDoubleCompareSpeed : public Tool {
-public:
-
-    TestDoubleCompareSpeed(int argc,char **argv): Tool(argc,argv) {}
-
-    ~TestDoubleCompareSpeed() {}
-
-    virtual void run();
-    
-    void setup();
-    void teardown();
-
-    void compare(size_t n);
-    
-};
-
-void TestDoubleCompareSpeed::compare(size_t n)
+void compare(size_t n)
 {
     for(size_t i = 0; i < n; ++i) {
         double x = (double) ::rand() / (double) RAND_MAX;
@@ -47,18 +33,11 @@ void TestDoubleCompareSpeed::compare(size_t n)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-void TestDoubleCompareSpeed::setup() {
-}
-
-void TestDoubleCompareSpeed::teardown() {
-}
-
-void TestDoubleCompareSpeed::run()
+CASE ( "TestDoubleCompareSpeed" )
 {
     const size_t n = 30000000; // with this data set, on a modern cpu we expect > 25E6 /s
-
-    setup();
 
     eckit::Timer t;
     
@@ -66,17 +45,15 @@ void TestDoubleCompareSpeed::run()
 
     eckit::Log::info() << "Double compare speed: " << eckit::BigNum(n / t.elapsed()) << " /s" << std::endl;
     
-    teardown();
 }
+
+//-----------------------------------------------------------------------------
 
 } // namespace test
 } // namespace eckit
 
-//----------------------------------------------------------------------------------------------------------------------
-
 int main(int argc,char **argv)
 {
-    eckit::test::TestDoubleCompareSpeed app(argc,argv);
-    return app.start();
+    return run_tests ( argc, argv );
 }
 

@@ -10,16 +10,16 @@
 
 #include <cmath>
 
-#define BOOST_TEST_MODULE test_eckit_types
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/types/FloatCompare.h"
 
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/Test.h"
 
+using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
 
 namespace {
 
@@ -47,173 +47,169 @@ const float sNaN = std::numeric_limits<float>::signaling_NaN();
 
 //-----------------------------------------------------------------------------
 
-BOOST_GLOBAL_FIXTURE(Setup);
-
-BOOST_AUTO_TEST_SUITE( test_eckit_floatcompare )
-
-BOOST_AUTO_TEST_CASE( test_large_numbers )
+CASE( "test_large_numbers" )
 {
-   BOOST_TEST_MESSAGE( "test_large_numbers" );
+   Log::info() << "test_large_numbers" << std::endl;
 
-   BOOST_CHECK(  is_equal(1000000,       1000000      ));
-   BOOST_CHECK(  is_equal(1000000,       1000000.00001));
-   BOOST_CHECK(  is_equal(1000000.00001, 1000000      ));
+   EXPECT(  is_equal(1000000,       1000000      ));
+   EXPECT(  is_equal(1000000,       1000000.00001));
+   EXPECT(  is_equal(1000000.00001, 1000000      ));
 
-   BOOST_CHECK(! is_equal(1000000.0,     1000001.0    ));
-   BOOST_CHECK(! is_equal(1000001.0,     1000000.0    ));
+   EXPECT(! is_equal(1000000.0,     1000001.0    ));
+   EXPECT(! is_equal(1000001.0,     1000000.0    ));
 
    // -----------------------------------------------
-   BOOST_CHECK(is_equal(dMax, dMax));
-   BOOST_CHECK(is_equal(dMax, dMax, dEps));
+   EXPECT(is_equal(dMax, dMax));
+   EXPECT(is_equal(dMax, dMax, dEps));
 
-   BOOST_CHECK(is_equal(dMin, dMin));
-   BOOST_CHECK(is_equal(dMin, dMin, dEps));
+   EXPECT(is_equal(dMin, dMin));
+   EXPECT(is_equal(dMin, dMin, dEps));
 }
 
-BOOST_AUTO_TEST_CASE( test_negative_large_numbers )
+CASE( "test_negative_large_numbers" )
 {
-   BOOST_TEST_MESSAGE( "test_negative_large_numbers " << dMin );
+   Log::info() << "test_negative_large_numbers " << dMin << std::endl;
 
-   BOOST_CHECK(  is_equal(-1000000,       -1000000      ));
-   BOOST_CHECK(  is_equal(-1000000,       -1000000.00001));
-   BOOST_CHECK(  is_equal(-1000000.00001, -1000000      ));
+   EXPECT(  is_equal(-1000000,       -1000000      ));
+   EXPECT(  is_equal(-1000000,       -1000000.00001));
+   EXPECT(  is_equal(-1000000.00001, -1000000      ));
 
-   BOOST_CHECK(! is_equal(-1000000.0,     -1000001.0    ));
-   BOOST_CHECK(! is_equal(-1000001.0,     -1000000.0    ));
+   EXPECT(! is_equal(-1000000.0,     -1000001.0    ));
+   EXPECT(! is_equal(-1000001.0,     -1000000.0    ));
 
    // -----------------------------------------------
-   BOOST_CHECK(is_equal(-dMax, -dMax      ));
-   BOOST_CHECK(is_equal(-dMax, -dMax, dEps));
+   EXPECT(is_equal(-dMax, -dMax      ));
+   EXPECT(is_equal(-dMax, -dMax, dEps));
 
-   BOOST_CHECK(is_equal(-dMin, -dMin      ));
-   BOOST_CHECK(is_equal(-dMin, -dMin, dEps));
+   EXPECT(is_equal(-dMin, -dMin      ));
+   EXPECT(is_equal(-dMin, -dMin, dEps));
 }
 
-BOOST_AUTO_TEST_CASE( test_large_numbers_of_opposite_sign )
+CASE( "test_large_numbers_of_opposite_sign" )
 {
-    BOOST_CHECK(! is_equal(-1000000,       1000000      ));
-    BOOST_CHECK(! is_equal(-1000000,       1000000.00001));
-    BOOST_CHECK(! is_equal(-1000000.00001, 1000000      ));
+    EXPECT(! is_equal(-1000000,       1000000      ));
+    EXPECT(! is_equal(-1000000,       1000000.00001));
+    EXPECT(! is_equal(-1000000.00001, 1000000      ));
 
-    BOOST_CHECK(! is_equal(-1000000.0,     1000001.0    ));
-    BOOST_CHECK(! is_equal(-1000001.0,     1000000.0    ));
+    EXPECT(! is_equal(-1000000.0,     1000001.0    ));
+    EXPECT(! is_equal(-1000001.0,     1000000.0    ));
 
     // -----------------------------------------------
-    BOOST_CHECK(! is_equal(-dMax, dMax      ));
-    BOOST_CHECK(! is_equal(-dMax, dMax, dEps));
+    EXPECT(! is_equal(-dMax, dMax      ));
+    EXPECT(! is_equal(-dMax, dMax, dEps));
 }
 
-BOOST_AUTO_TEST_CASE( test_ulp_around_one )
+CASE( "test_ulp_around_one" )
 {
-   BOOST_TEST_MESSAGE( "test_ulp_around_one" );
+   Log::info() << "test_ulp_around_one" << std::endl;
 
    // ULP distances up to 10 are equal
    // Going right from 1 by eps increases distance by 1
    // Going left from 1 by eps increases distance by 2
    for (int i = 0; i <= 10; ++i) {
-       BOOST_CHECK(is_equal(1.0 + i * dEps,   1.0,              dEps));
-       BOOST_CHECK(is_equal(1.0,              1.0 + i * dEps,   dEps));
-       BOOST_CHECK(is_equal(1.0 - i * dEps/2, 1.0,              dEps));
-       BOOST_CHECK(is_equal(1.0,              1.0 - i * dEps/2, dEps));
+       EXPECT(is_equal(1.0 + i * dEps,   1.0,              dEps));
+       EXPECT(is_equal(1.0,              1.0 + i * dEps,   dEps));
+       EXPECT(is_equal(1.0 - i * dEps/2, 1.0,              dEps));
+       EXPECT(is_equal(1.0,              1.0 - i * dEps/2, dEps));
    }
    // ULP distances greater 10 are not equal
-   BOOST_CHECK(! is_equal(1.0 + 11 * dEps,   1.0,               dEps));
-   BOOST_CHECK(! is_equal(1.0,               1.0 + 11 * dEps,   dEps));
-   BOOST_CHECK(! is_equal(1.0 - 11 * dEps/2, 1.0,               dEps));
-   BOOST_CHECK(! is_equal(1.0,               1.0 - 11 * dEps/2, dEps));
+   EXPECT(! is_equal(1.0 + 11 * dEps,   1.0,               dEps));
+   EXPECT(! is_equal(1.0,               1.0 + 11 * dEps,   dEps));
+   EXPECT(! is_equal(1.0 - 11 * dEps/2, 1.0,               dEps));
+   EXPECT(! is_equal(1.0,               1.0 - 11 * dEps/2, dEps));
 }
 
-BOOST_AUTO_TEST_CASE( test_numbers_around_one )
+CASE( "test_numbers_around_one" )
 {
-   BOOST_TEST_MESSAGE( "test_numbers_around_one" );
+   Log::info() << "test_numbers_around_one" << std::endl;
 
-   BOOST_CHECK(  is_equal(1.0000001, 1.0000002));
-   BOOST_CHECK(  is_equal(1.0000002, 1.0000001));
+   EXPECT(  is_equal(1.0000001, 1.0000002));
+   EXPECT(  is_equal(1.0000002, 1.0000001));
 
-   BOOST_CHECK(  is_equal(1.123456,  1.123457 ));
-   BOOST_CHECK(  is_equal(1.12345,   1.12344, 0.001));
+   EXPECT(  is_equal(1.123456,  1.123457 ));
+   EXPECT(  is_equal(1.12345,   1.12344, 0.001));
 
-   BOOST_CHECK(! is_equal(1.0001,    1.0002   ));
-   BOOST_CHECK(! is_equal(1.0002,    1.0001   ));
+   EXPECT(! is_equal(1.0001,    1.0002   ));
+   EXPECT(! is_equal(1.0002,    1.0001   ));
 }
 
-BOOST_AUTO_TEST_CASE( test_numbers_around_negative_one )
+CASE( "test_numbers_around_negative_one" )
 {
-   BOOST_TEST_MESSAGE( "test_numbers_around_negative_one" );
+   Log::info() << "test_numbers_around_negative_one" << std::endl;
 
-   BOOST_CHECK(  is_equal(-1.0000001, -1.0000002));
-   BOOST_CHECK(  is_equal(-1.0000002, -1.0000001));
+   EXPECT(  is_equal(-1.0000001, -1.0000002));
+   EXPECT(  is_equal(-1.0000002, -1.0000001));
 
-   BOOST_CHECK(! is_equal(-1.0001,    -1.0002   ));
-   BOOST_CHECK(! is_equal(-1.0002,    -1.0001   ));
+   EXPECT(! is_equal(-1.0001,    -1.0002   ));
+   EXPECT(! is_equal(-1.0002,    -1.0001   ));
 }
 
-BOOST_AUTO_TEST_CASE( test_numbers_between_one_and_zero )
+CASE( "test_numbers_between_one_and_zero" )
 {
-   BOOST_TEST_MESSAGE( "test_numbers_between_one_and_zero" );
+   Log::info() << "test_numbers_between_one_and_zero" << std::endl;
 
-   BOOST_CHECK(  is_equal(0.000000001000001, 0.000000001000002));
-   BOOST_CHECK(  is_equal(0.000000001000002, 0.000000001000001));
+   EXPECT(  is_equal(0.000000001000001, 0.000000001000002));
+   EXPECT(  is_equal(0.000000001000002, 0.000000001000001));
 
-   BOOST_CHECK(! is_equal(0.0012,            0.0011           ));
-   BOOST_CHECK(! is_equal(0.0011,            0.0012           ));
+   EXPECT(! is_equal(0.0012,            0.0011           ));
+   EXPECT(! is_equal(0.0011,            0.0012           ));
 
 }
 
-BOOST_AUTO_TEST_CASE( test_numbers_between_minusone_and_zero )
+CASE( "test_numbers_between_minusone_and_zero" )
 {
-   BOOST_TEST_MESSAGE( "test_numbers_between_minusone_and_zero" );
+   Log::info() << "test_numbers_between_minusone_and_zero" << std::endl;
 
-   BOOST_CHECK(  is_equal(-0.000000001000001, -0.000000001000002));
-   BOOST_CHECK(  is_equal(-0.000000001000002, -0.000000001000001));
+   EXPECT(  is_equal(-0.000000001000001, -0.000000001000002));
+   EXPECT(  is_equal(-0.000000001000002, -0.000000001000001));
 
-   BOOST_CHECK(! is_equal(-0.0012,            -0.0011           ));
-   BOOST_CHECK(! is_equal(-0.0011,            -0.0012           ));
+   EXPECT(! is_equal(-0.0012,            -0.0011           ));
+   EXPECT(! is_equal(-0.0011,            -0.0012           ));
 }
 
-BOOST_AUTO_TEST_CASE( test_comparisons_involving_zero )
+CASE( "test_comparisons_involving_zero" )
 {
-   BOOST_TEST_MESSAGE( "test_comparisons_involving_zero" );
+   Log::info() << "test_comparisons_involving_zero" << std::endl;
 
-   BOOST_CHECK(  is_equal(0.0,     0.0   ));
-   BOOST_CHECK(  is_equal(0.0,    -0.0   ));
-   BOOST_CHECK(  is_equal(-0.0,   -0.0   ));
+   EXPECT(  is_equal(0.0,     0.0   ));
+   EXPECT(  is_equal(0.0,    -0.0   ));
+   EXPECT(  is_equal(-0.0,   -0.0   ));
 
-   BOOST_CHECK(! is_equal(0.0001,  0.0   ));
-   BOOST_CHECK(! is_equal(0.0,     0.0001));
-   BOOST_CHECK(! is_equal(-0.0001, 0.0   ));
-   BOOST_CHECK(! is_equal(0.0,    -0.0001));
+   EXPECT(! is_equal(0.0001,  0.0   ));
+   EXPECT(! is_equal(0.0,     0.0001));
+   EXPECT(! is_equal(-0.0001, 0.0   ));
+   EXPECT(! is_equal(0.0,    -0.0001));
 
-   BOOST_CHECK(  is_equal(0.0,     1e-30, 0.01 ));
-   BOOST_CHECK(  is_equal(1e-30,   0.0,   0.01 ));
-   BOOST_CHECK(! is_equal(1e-30,   0.0,   1e-31));
-   BOOST_CHECK(! is_equal(0.0,     1e-30, 1e-31));
+   EXPECT(  is_equal(0.0,     1e-30, 0.01 ));
+   EXPECT(  is_equal(1e-30,   0.0,   0.01 ));
+   EXPECT(! is_equal(1e-30,   0.0,   1e-31));
+   EXPECT(! is_equal(0.0,     1e-30, 1e-31));
 
-   BOOST_CHECK(  is_equal(0.0,    -1e-30, 0.1  ));
-   BOOST_CHECK(  is_equal(-1e-30,  0.0,   0.1  ));
-   BOOST_CHECK(! is_equal(-1e-30,  0.0,   1e-31));
-   BOOST_CHECK(! is_equal(0.0,    -1e-30, 1e-31));
+   EXPECT(  is_equal(0.0,    -1e-30, 0.1  ));
+   EXPECT(  is_equal(-1e-30,  0.0,   0.1  ));
+   EXPECT(! is_equal(-1e-30,  0.0,   1e-31));
+   EXPECT(! is_equal(0.0,    -1e-30, 1e-31));
 }
 
-BOOST_AUTO_TEST_CASE( test_comparisons_involving_infinity )
+CASE( "test_comparisons_involving_infinity" )
 {
-   BOOST_TEST_MESSAGE( "test_comparisons_involving_infinity" );
+   Log::info() << "test_comparisons_involving_infinity" << std::endl;
 
    if (std::numeric_limits<float>::has_infinity) {
-      BOOST_CHECK(  is_equal( dInf,  dInf));
-      BOOST_CHECK(  is_equal(-dInf, -dInf));
-      BOOST_CHECK(! is_equal( dInf,  dMax));
-      BOOST_CHECK(! is_equal( dMax,  dInf));
-      BOOST_CHECK(! is_equal(-dInf, -dMax));
-      BOOST_CHECK(! is_equal(-dMax, -dInf));
+      EXPECT(  is_equal( dInf,  dInf));
+      EXPECT(  is_equal(-dInf, -dInf));
+      EXPECT(! is_equal( dInf,  dMax));
+      EXPECT(! is_equal( dMax,  dInf));
+      EXPECT(! is_equal(-dInf, -dMax));
+      EXPECT(! is_equal(-dMax, -dInf));
    } else {
-      BOOST_TEST_MESSAGE( "test_comparisons_involving_infinity NOT VALID on this platform" );
+      Log::info() << "test_comparisons_involving_infinity NOT VALID on this platform" << std::endl;
    }
 }
 
-BOOST_AUTO_TEST_CASE( test_comparisons_involving_nan )
+CASE( "test_comparisons_involving_nan" )
 {
-    BOOST_TEST_MESSAGE( "test_comparisons_involving_nan" );
+    Log::info() << "test_comparisons_involving_nan" << std::endl;
 
     // The value NaN (Not a Number) is used to represent a value that does not represent a real number.
     // NaN's are represented by a bit pattern with an exponent of all 1s and a non-zero fraction. T
@@ -229,115 +225,124 @@ BOOST_AUTO_TEST_CASE( test_comparisons_involving_nan )
 
     // Semantically, QNaN's denote indeterminate operations, while SNaN's denote invalid operations.
 
-    BOOST_CHECK(! is_equal( qNaN,  qNaN));
-    BOOST_CHECK(! is_equal( qNaN,  0.0 ));
-    BOOST_CHECK(! is_equal(-0.0 ,  qNaN));
-    BOOST_CHECK(! is_equal( qNaN, -0.0 ));
-    BOOST_CHECK(! is_equal( 0.0 ,  qNaN));
-    BOOST_CHECK(! is_equal( qNaN,  dInf));
-    BOOST_CHECK(! is_equal( dInf,  qNaN));
-    BOOST_CHECK(! is_equal( qNaN,  dMax));
-    BOOST_CHECK(! is_equal( dMax,  qNaN));
-    BOOST_CHECK(! is_equal( qNaN, -dMax));
-    BOOST_CHECK(! is_equal(-dMax,  qNaN));
-    BOOST_CHECK(! is_equal( qNaN,  dMin));
-    BOOST_CHECK(! is_equal( dMin,  qNaN));
-    BOOST_CHECK(! is_equal( qNaN, -dMin));
-    BOOST_CHECK(! is_equal(-dMin,  qNaN));
+    EXPECT(! is_equal( qNaN,  qNaN));
+    EXPECT(! is_equal( qNaN,  0.0 ));
+    EXPECT(! is_equal(-0.0 ,  qNaN));
+    EXPECT(! is_equal( qNaN, -0.0 ));
+    EXPECT(! is_equal( 0.0 ,  qNaN));
+    EXPECT(! is_equal( qNaN,  dInf));
+    EXPECT(! is_equal( dInf,  qNaN));
+    EXPECT(! is_equal( qNaN,  dMax));
+    EXPECT(! is_equal( dMax,  qNaN));
+    EXPECT(! is_equal( qNaN, -dMax));
+    EXPECT(! is_equal(-dMax,  qNaN));
+    EXPECT(! is_equal( qNaN,  dMin));
+    EXPECT(! is_equal( dMin,  qNaN));
+    EXPECT(! is_equal( qNaN, -dMin));
+    EXPECT(! is_equal(-dMin,  qNaN));
 
-    BOOST_CHECK(! is_equal( sNaN,  sNaN));
-    BOOST_CHECK(! is_equal( sNaN,  0.0 ));
-    BOOST_CHECK(! is_equal(-0.0 ,  sNaN));
-    BOOST_CHECK(! is_equal( sNaN, -0.0 ));
-    BOOST_CHECK(! is_equal( 0.0 ,  sNaN));
-    BOOST_CHECK(! is_equal( sNaN,  dInf));
-    BOOST_CHECK(! is_equal( dInf,  sNaN));
-    BOOST_CHECK(! is_equal( sNaN,  dMax));
-    BOOST_CHECK(! is_equal( dMax,  sNaN));
-    BOOST_CHECK(! is_equal( sNaN, -dMax));
-    BOOST_CHECK(! is_equal(-dMax,  sNaN));
-    BOOST_CHECK(! is_equal( sNaN,  dMin));
-    BOOST_CHECK(! is_equal( dMin,  sNaN));
-    BOOST_CHECK(! is_equal( sNaN, -dMin));
-    BOOST_CHECK(! is_equal(-dMin,  sNaN));
+    EXPECT(! is_equal( sNaN,  sNaN));
+    EXPECT(! is_equal( sNaN,  0.0 ));
+    EXPECT(! is_equal(-0.0 ,  sNaN));
+    EXPECT(! is_equal( sNaN, -0.0 ));
+    EXPECT(! is_equal( 0.0 ,  sNaN));
+    EXPECT(! is_equal( sNaN,  dInf));
+    EXPECT(! is_equal( dInf,  sNaN));
+    EXPECT(! is_equal( sNaN,  dMax));
+    EXPECT(! is_equal( dMax,  sNaN));
+    EXPECT(! is_equal( sNaN, -dMax));
+    EXPECT(! is_equal(-dMax,  sNaN));
+    EXPECT(! is_equal( sNaN,  dMin));
+    EXPECT(! is_equal( dMin,  sNaN));
+    EXPECT(! is_equal( sNaN, -dMin));
+    EXPECT(! is_equal(-dMin,  sNaN));
 }
 
-BOOST_AUTO_TEST_CASE( test_comparisons_opposite_side_of_zero )
+CASE( "test_comparisons_opposite_side_of_zero" )
 {
-   BOOST_TEST_MESSAGE( "test_comparisons_opposite_side_of_zero" );
+   Log::info() << "test_comparisons_opposite_side_of_zero" << std::endl;
 
-   BOOST_CHECK(! is_equal( 1.0000001, -1.0      ));
-   BOOST_CHECK(! is_equal(-1.0,        1.0000001));
-   BOOST_CHECK(! is_equal(-1.0000001,  1.0      ));
-   BOOST_CHECK(! is_equal( 1.0,       -1.0000001));
+   EXPECT(! is_equal( 1.0000001, -1.0      ));
+   EXPECT(! is_equal(-1.0,        1.0000001));
+   EXPECT(! is_equal(-1.0000001,  1.0      ));
+   EXPECT(! is_equal( 1.0,       -1.0000001));
 
-   BOOST_CHECK(  is_equal(   10.0 * dMin,    10.0 * -dMin));
-   BOOST_CHECK(  is_equal(10000   * dMin, 10000   * -dMin));
+   EXPECT(  is_equal(   10.0 * dMin,    10.0 * -dMin));
+   EXPECT(  is_equal(10000   * dMin, 10000   * -dMin));
 }
 
-BOOST_AUTO_TEST_CASE( test_comparisons_very_close_to_zero )
+CASE( "test_comparisons_very_close_to_zero" )
 {
-   BOOST_TEST_MESSAGE( "test_comparisons_very_close_to_zero" );
+   Log::info() << "test_comparisons_very_close_to_zero" << std::endl;
 
-   BOOST_CHECK(  is_equal( dMin, -dMin, dEps));
-   BOOST_CHECK(  is_equal(-dMin,  dMin, dEps));
-   BOOST_CHECK(  is_equal( dMin,  0   , dEps));
-   BOOST_CHECK(  is_equal( 0,     dMin, dEps));
-   BOOST_CHECK(  is_equal(-dMin,  0   , dEps));
-   BOOST_CHECK(  is_equal( 0,    -dMin, dEps));
-
-
-   BOOST_CHECK(  is_equal( 0.000000001, -dMin       ));
-   BOOST_CHECK(  is_equal( 0.000000001,  dMin       ));
-   BOOST_CHECK(  is_equal( dMin,         0.000000001));
-   BOOST_CHECK(  is_equal(-dMin,         0.000000001));
+   EXPECT(  is_equal( dMin, -dMin, dEps));
+   EXPECT(  is_equal(-dMin,  dMin, dEps));
+   EXPECT(  is_equal( dMin,  0   , dEps));
+   EXPECT(  is_equal( 0,     dMin, dEps));
+   EXPECT(  is_equal(-dMin,  0   , dEps));
+   EXPECT(  is_equal( 0,    -dMin, dEps));
 
 
-   BOOST_CHECK(! is_equal( 0.000000001, -dMin,        1e-10));
-   BOOST_CHECK(! is_equal( 0.000000001,  dMin,        1e-10));
-   BOOST_CHECK(! is_equal( dMin,         0.000000001, 1e-10));
-   BOOST_CHECK(! is_equal(-dMin,         0.000000001, 1e-10));
+   EXPECT(  is_equal( 0.000000001, -dMin       ));
+   EXPECT(  is_equal( 0.000000001,  dMin       ));
+   EXPECT(  is_equal( dMin,         0.000000001));
+   EXPECT(  is_equal(-dMin,         0.000000001));
+
+
+   EXPECT(! is_equal( 0.000000001, -dMin,        1e-10));
+   EXPECT(! is_equal( 0.000000001,  dMin,        1e-10));
+   EXPECT(! is_equal( dMin,         0.000000001, 1e-10));
+   EXPECT(! is_equal(-dMin,         0.000000001, 1e-10));
 }
 
-BOOST_AUTO_TEST_CASE( test_comparisons_with_denormal_numbers )
+CASE( "test_comparisons_with_denormal_numbers" )
 {
-   BOOST_TEST_MESSAGE( "test_comparisons_with_denormal_numbers" );
+   Log::info() << "test_comparisons_with_denormal_numbers" << std::endl;
 
-   BOOST_CHECK(  is_equal( sMin, -sMin, dEps));
-   BOOST_CHECK(  is_equal(-sMin,  sMin, dEps));
-   BOOST_CHECK(  is_equal( sMin,  0   , dEps));
-   BOOST_CHECK(  is_equal( 0,     sMin, dEps));
-   BOOST_CHECK(  is_equal(-sMin,  0   , dEps));
-   BOOST_CHECK(  is_equal( 0,    -sMin, dEps));
+   EXPECT(  is_equal( sMin, -sMin, dEps));
+   EXPECT(  is_equal(-sMin,  sMin, dEps));
+   EXPECT(  is_equal( sMin,  0   , dEps));
+   EXPECT(  is_equal( 0,     sMin, dEps));
+   EXPECT(  is_equal(-sMin,  0   , dEps));
+   EXPECT(  is_equal( 0,    -sMin, dEps));
 
    const float lMin = dMin - sMin;  // largest denormal number
-   BOOST_CHECK(  is_equal( lMin, -lMin, dEps));
-   BOOST_CHECK(  is_equal(-lMin,  lMin, dEps));
-   BOOST_CHECK(  is_equal( lMin,  0   , dEps));
-   BOOST_CHECK(  is_equal( 0,     lMin, dEps));
-   BOOST_CHECK(  is_equal(-lMin,  0   , dEps));
-   BOOST_CHECK(  is_equal( 0,    -lMin, dEps));
+   EXPECT(  is_equal( lMin, -lMin, dEps));
+   EXPECT(  is_equal(-lMin,  lMin, dEps));
+   EXPECT(  is_equal( lMin,  0   , dEps));
+   EXPECT(  is_equal( 0,     lMin, dEps));
+   EXPECT(  is_equal(-lMin,  0   , dEps));
+   EXPECT(  is_equal( 0,    -lMin, dEps));
 }
 
-BOOST_AUTO_TEST_CASE( test_comparisons_ulps )
+CASE( "test_comparisons_ulps" )
 {
-   BOOST_TEST_MESSAGE( "test_comparisons_ulps" );
+   Log::info() << "test_comparisons_ulps" << std::endl;
 
-   BOOST_CHECK(  is_equal( dMin, -dMin, 0, 2));
-   BOOST_CHECK(  is_equal(-dMin,  dMin, 0, 2));
-   BOOST_CHECK(  is_equal( dMin,  0   , 0, 1));
-   BOOST_CHECK(  is_equal( 0,     dMin, 0, 1));
-   BOOST_CHECK(  is_equal(-dMin,  0   , 0, 1));
-   BOOST_CHECK(  is_equal( 0,    -dMin, 0, 1));
+   EXPECT(  is_equal( dMin, -dMin, 0, 2));
+   EXPECT(  is_equal(-dMin,  dMin, 0, 2));
+   EXPECT(  is_equal( dMin,  0   , 0, 1));
+   EXPECT(  is_equal( 0,     dMin, 0, 1));
+   EXPECT(  is_equal(-dMin,  0   , 0, 1));
+   EXPECT(  is_equal( 0,    -dMin, 0, 1));
 
-   BOOST_CHECK(! is_equal( dMin, -dMin, 0, 1));
-   BOOST_CHECK(! is_equal(-dMin,  dMin, 0, 1));
-   BOOST_CHECK(! is_equal( dMin,  0   , 0, 0));
-   BOOST_CHECK(! is_equal( 0,     dMin, 0, 0));
-   BOOST_CHECK(! is_equal(-dMin,  0   , 0, 0));
-   BOOST_CHECK(! is_equal( 0,    -dMin, 0, 0));
+   EXPECT(! is_equal( dMin, -dMin, 0, 1));
+   EXPECT(! is_equal(-dMin,  dMin, 0, 1));
+   EXPECT(! is_equal( dMin,  0   , 0, 0));
+   EXPECT(! is_equal( 0,     dMin, 0, 0));
+   EXPECT(! is_equal(-dMin,  0   , 0, 0));
+   EXPECT(! is_equal( 0,    -dMin, 0, 0));
 }
-
-BOOST_AUTO_TEST_SUITE_END()
 
 //-----------------------------------------------------------------------------
+
+} // namespace test
+} // namespace eckit
+
+//-----------------------------------------------------------------------------
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}
+

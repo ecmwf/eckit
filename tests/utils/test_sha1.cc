@@ -8,11 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_utils
 
 #include <iostream>
-
-#include "ecbuild/boost_test_framework.h"
 
 #include "eckit/utils/SHA1.h"
 #include "eckit/log/Timer.h"
@@ -20,8 +17,11 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
 
 namespace eckit {
@@ -29,68 +29,66 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE( test_eckit_utils_sha1 )
-
-BOOST_AUTO_TEST_CASE( test_eckit_utils_sha1_constructor )
+CASE ( "test_eckit_utils_sha1_constructor" )
 {
     SHA1 hash;
 
-        const char* msg = "The quick brown fox jumps over the lazy dog";
+    const char* msg = "The quick brown fox jumps over the lazy dog";
 
-        hash.add(msg,strlen(msg));
+    hash.add(msg,strlen(msg));
 
-        std::string res ("2fd4e1c67a2d28fced849ee1bb76e7391b93eb12");
+    std::string res ("2fd4e1c67a2d28fced849ee1bb76e7391b93eb12");
 
-        BOOST_CHECK_EQUAL( res , hash.digest() );
+    EXPECT( res == hash.digest() );
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_sha1_constructor_string )
+CASE ( "test_eckit_utils_sha1_constructor_string" )
 {
     SHA1 hash( "Few quips galvanized the mock jury box" );
 
-        std::string res ("4c135b5afa7f415e71a509b747c1391811fdc52c");
+    std::string res ("4c135b5afa7f415e71a509b747c1391811fdc52c");
 
-        BOOST_CHECK_EQUAL( res , hash.digest() );
+    EXPECT( res == hash.digest() );
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_sha1_double_add )
+CASE ( "test_eckit_utils_sha1_double_add" )
 {
     SHA1 hash;
 
-        const char* msg = "The quick brown fox jumps over the lazy dog";
+    const char* msg = "The quick brown fox jumps over the lazy dog";
 
-        hash.add(msg,strlen(msg));
-        hash.add(msg,strlen(msg));
+    hash.add(msg,strlen(msg));
+    hash.add(msg,strlen(msg));
 
-        std::string res ("86c842aa0249527aad022bab2f8a9b4d77b82b12");
+    std::string res ("86c842aa0249527aad022bab2f8a9b4d77b82b12");
 
-        BOOST_CHECK_EQUAL( res , hash.digest() );
+    EXPECT( res == hash.digest() );
 }
 
 // original test suite from RFC-3174
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_sha1_test_suite_from_rfc3174 )
-{
+CASE ( "test_eckit_utils_sha1_test_suite_from_rfc3174" ) {
 
     /*
      *  Define patterns for testing
      */
-#define TEST1   "abc"
-#define TEST2a  "abcdbcdecdefdefgefghfghighijhi"
-#define TEST2b  "jkijkljklmklmnlmnomnopnopq"
-#define TEST2   TEST2a TEST2b
-#define TEST3   "a"
-#define TEST4a  "01234567012345670123456701234567"
-#define TEST4b  "01234567012345670123456701234567"
+    #define TEST1   "abc"
+    #define TEST2a  "abcdbcdecdefdefgefghfghighijhi"
+    #define TEST2b  "jkijkljklmklmnlmnomnopnopq"
+    #define TEST2   TEST2a TEST2b
+    #define TEST3   "a"
+    #define TEST4a  "01234567012345670123456701234567"
+    #define TEST4b  "01234567012345670123456701234567"
     /* an exact multiple of 512 bits */
-#define TEST4   TEST4a TEST4b
-const char *testarray[4] =
-{
-    TEST1,
-    TEST2,
-    TEST3,
-    TEST4
-};
+    #define TEST4   TEST4a TEST4b
+
+    const char *testarray[4] =
+    {
+        TEST1,
+        TEST2,
+        TEST3,
+        TEST4
+    };
 
     const char *resultarray[4] =
     {
@@ -109,21 +107,21 @@ const char *testarray[4] =
             hash.add(testarray[i], ::strlen(testarray[i]));
         }
 
-        BOOST_CHECK_EQUAL(hash.digest(), std::string(resultarray[i]));
+        EXPECT(hash.digest() == std::string(resultarray[i]));
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_sha1_compute )
+CASE ( "test_eckit_utils_sha1_compute" )
 {
     std::string msg ( "The quick brown fox jumps over the lazy dog" );
 
     std::string res ("2fd4e1c67a2d28fced849ee1bb76e7391b93eb12");
 
     SHA1 hash;
-    BOOST_CHECK_EQUAL( res , hash.compute(msg.c_str(), msg.size()));
+    EXPECT ( res == hash.compute(msg.c_str(), msg.size()));
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_sha1_reset )
+CASE ( "test_eckit_utils_sha1_reset" )
 {
     SHA1 hash( "FOOBAR" );
 
@@ -135,14 +133,15 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_sha1_reset )
 
     std::string res ("2fd4e1c67a2d28fced849ee1bb76e7391b93eb12");
 
-    BOOST_CHECK_EQUAL( res , hash.digest());
+    EXPECT( res == hash.digest());
 }
-
-BOOST_AUTO_TEST_SUITE_END()
-
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
 } // end namespace test
 } // end namespace eckit
+
+int main ( int argc, char * argv[]) {
+    return run_tests( argc, argv );
+}

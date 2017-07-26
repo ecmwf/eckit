@@ -8,15 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_utils
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/types/Types.h"
 #include "eckit/utils/RendezvousHash.h"
 #include "eckit/utils/Translator.h"
 
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
@@ -27,13 +23,9 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_GLOBAL_FIXTURE( Setup );
-
-BOOST_AUTO_TEST_SUITE( test_eckit_rendezvous_hash )
-
-BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_constructor )
+CASE ( "test_eckit_utils_rendezvous_hash_constructor" )
 {
-    BOOST_TEST_MESSAGE( Here() );
+    Log::info() << Here() << std::endl;
 
     std::set<std::string> nodes;
 
@@ -53,14 +45,14 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_constructor )
 
     std::string n = rendezvous.selectNode(dict);
 
-    BOOST_TEST_MESSAGE( n );
+    Log::info() << n << std::endl;
 
-    BOOST_CHECK_EQUAL( nodes.count(n), 1 );
+    EXPECT( nodes.count(n) == 1 );
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_distribution )
+CASE ( "test_eckit_utils_rendezvous_hash_distribution" )
 {
-    BOOST_TEST_MESSAGE( Here() );
+    Log::info() << Here() << std::endl;
 
     eckit::Translator<size_t,std::string> toStr;
 
@@ -114,12 +106,12 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_distribution )
 
     }
 
-    BOOST_TEST_MESSAGE( counts );
+    Log::info() << counts << std::endl;
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_empty_dict )
+CASE ( "test_eckit_utils_rendezvous_hash_empty_dict" )
 {
-    BOOST_TEST_MESSAGE( Here() );
+    Log::info() << Here() << std::endl;
 
     std::map<std::string, std::string> dict;
 
@@ -127,12 +119,12 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_empty_dict )
     rendezvous.addNode("node01");
     rendezvous.addNode("node02");
 
-    BOOST_CHECK_NO_THROW(rendezvous.selectNode(dict)); /* don't throw on empty dictionary */
+    EXPECT_NO_THROW(rendezvous.selectNode(dict)); /* don't throw on empty dictionary */
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_throws_empty_node_list )
+CASE ( "test_eckit_utils_rendezvous_hash_throws_empty_node_list" )
 {
-    BOOST_TEST_MESSAGE( Here() );
+    Log::info() << Here() << std::endl;
 
     std::map<std::string, std::string> dict;
 
@@ -141,17 +133,17 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_throws_empty_node_list )
     dict["stream"] = "oper";
     dict["type"]   = "fc";
 
-    BOOST_CHECK_THROW(rendezvous.selectNode(dict), eckit::BadParameter); /* throw on empty node list */
+    EXPECT_THROWS_AS( rendezvous.selectNode(dict), eckit::BadParameter ); /* throw on empty node list */
 
     rendezvous.addNode("node01");
     rendezvous.addNode("node02");
 
-    BOOST_CHECK_NO_THROW(rendezvous.selectNode(dict));
+    EXPECT_NO_THROW( rendezvous.selectNode(dict) );
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_add_node )
+CASE ( "test_eckit_utils_rendezvous_hash_add_node" )
 {
-    BOOST_TEST_MESSAGE( Here() );
+    Log::info() << Here() << std::endl;
 
     eckit::Translator<size_t,std::string> toStr;
 
@@ -196,7 +188,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_add_node )
         }
     }
 
-    BOOST_TEST_MESSAGE( counts );
+    Log::info() << counts << std::endl;
 
     std::map<std::string, size_t> counts2;
 
@@ -221,13 +213,14 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_rendezvous_hash_add_node )
         }
     }
 
-    BOOST_TEST_MESSAGE( counts2 );
+    Log::info() << counts2 << std::endl;
 }
-
-BOOST_AUTO_TEST_SUITE_END()
 
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace test
 } // namespace eckit
 
+int main (int argc, char * argv[]) {
+    return run_tests( argc, argv );
+}

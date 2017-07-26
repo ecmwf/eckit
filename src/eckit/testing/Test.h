@@ -100,19 +100,21 @@ int run_tests(int argc, char* argv[]) {
 //        eckit::Log::info() << "." << std::flush;
         try {
             test.run();
-        } catch (const TestException& e) {
-            eckit::Log::info() << "Test failed: " << test.description()
-                               << ": " << e.what()
-                               << " @ " << e.location() << std::endl;
+        } catch (TestException& e) {
+            eckit::Log::info() << "Test \"" << test.description() << "\" failed: "
+                               << e.what() << " @ " << e.location() << std::endl;
+            failures.push_back(test.description());
+        } catch (eckit::Exception& e) {
+            eckit::Log::info() << "Test \"" << test.description() << "\" failed with unhandled eckit::Exception: "
+                               << e.what() << " @ " << e.location() << std::endl;
             failures.push_back(test.description());
         } catch (std::exception& e) {
-            eckit::Log::info() << "Unhandled exception caught in test: "
-                               << test.description()
-                               << " : " << e.what() << std::endl;
+            eckit::Log::info() << "Test \"" << test.description() << "\" failed with unhandled exception: "
+                               << e.what() << " @ " << std::endl;
             failures.push_back(test.description());
         } catch (...) {
-            eckit::Log::info() << "Unhandled exception caught in test: "
-                               << test.description() << std::endl;
+            eckit::Log::info() << "Test \"" << test.description() << "\" failed with unknown unhandled exception."
+                               << std::endl;
             failures.push_back(test.description());
         }
     }

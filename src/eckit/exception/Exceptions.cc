@@ -98,7 +98,9 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
 
 void Exception::reason(const std::string& w)
 {
-    Log::error() << "Exception: " << w << std::endl;
+    if(! ::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
+        Log::error() << "Exception: " << w << std::endl;
+    }
     what_ = w;
 }
 
@@ -179,10 +181,10 @@ SeriousBug::SeriousBug(const std::string& w) : Exception(std::string("Serious Bu
 
 SeriousBug::SeriousBug(const std::string& msg, const CodeLocation& loc)
 {
+    std::ostringstream s;
+    s << "SeriousBug: " << msg << " " << " in " << loc;
+    reason(s.str());
     if(!::getenv("ECKIT_SERIOUS_BUG_IS_SILENT")) {
-        std::ostringstream s;
-        s << "SeriousBug: " << msg << " " << " in " << loc;
-        reason(s.str());
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
     }
@@ -190,10 +192,10 @@ SeriousBug::SeriousBug(const std::string& msg, const CodeLocation& loc)
 
 SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
 {
+    std::ostringstream s;
+    s << "SeriousBug: " << msg << " " << " in " << loc;
+    reason(s.str());
     if(!::getenv("ECKIT_SERIOUS_BUG_IS_SILENT")) {
-        std::ostringstream s;
-        s << "SeriousBug: " << msg << " " << " in " << loc;
-        reason(s.str());
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
     }
@@ -219,12 +221,12 @@ AssertionFailed::AssertionFailed(const std::string& w):
 AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc)
 {
     std::ostringstream s;
+    s << "Assertion failed: " << msg << " in " << loc.func()
+      << ", line " << loc.line() << " of " << loc.file();
+
+    reason(s.str());
 
     if(!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
-        s << "Assertion failed: " << msg << " in " << loc.func()
-          << ", line " << loc.line() << " of " << loc.file();
-
-        reason(s.str());
         Log::status() << what() << std::endl;
 
         std::cout << what() << std::endl;
@@ -241,11 +243,12 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
 {
     std::ostringstream s;
 
-    if(!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
-        s << "Assertion failed: " << msg << " in " << loc.func()
-          << ", line " << loc.line() << " of " << loc.file();
+    s << "Assertion failed: " << msg << " in " << loc.func()
+      << ", line " << loc.line() << " of " << loc.file();
 
-        reason(s.str());
+    reason(s.str());
+
+    if(!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
         Log::status() << what() << std::endl;
 
         std::cout << what() << std::endl;

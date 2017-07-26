@@ -31,7 +31,7 @@ namespace eckit_test {
 
 CASE( "Test serialization" )
 {
-    MESSAGE("(de)serialize Properties to/from file");
+    eckit::Log::info() << "(de)serialize Properties to/from file" << std::endl;
     PathName filename = PathName::unique( "data" );
     std::string filepath = filename.asString();
     Properties p;
@@ -70,7 +70,7 @@ CASE( "Test serialization" )
     property_list[1].set("string","foo");
     p.set("list", toValue(property_list) );
 
-    MESSAGE("encoded Properties: " << p);
+    eckit::Log::info() << "encoded Properties: " << p << std::endl;
     {
         FileStream sout( filepath.c_str(), "w" );
         sout << p;
@@ -78,7 +78,7 @@ CASE( "Test serialization" )
     {
         FileStream sin( filepath.c_str(), "r" );
         Properties p2(sin);
-        MESSAGE("decoded Properties: " << p2);
+        eckit::Log::info() << "decoded Properties: " << p2 << std::endl;
         EXPECT((bool)p["bool"] == (bool)p2["bool"]);
         EXPECT(p["int"] == p2["int"]);
         EXPECT(p["unsigned int"] == p2["unsigned int"]);
@@ -99,10 +99,10 @@ CASE( "Test serialization" )
     Properties access_nested = p.get("Nested");
 
     eckit::ValueList access_list = p.get("list");
-    MESSAGE("encoded list: " <<  access_list );
+    eckit::Log::info() << "encoded list: " <<  access_list  << std::endl;
     std::vector<eckit::Properties> access_property_list(access_list.begin(),access_list.end());
 
-    MESSAGE("encoded Nested: " << access_nested);
+    eckit::Log::info() << "encoded Nested: " << access_nested << std::endl;
     {
         FileStream sout( filepath.c_str(), "w" );
         sout << p;

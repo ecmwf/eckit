@@ -16,18 +16,19 @@
 #include <stdint.h>
 #include <limits>
 
-#define BOOST_TEST_MODULE TestStreamable
-#include "ecbuild/boost_test_framework.h"
-
-#include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/Streamable.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
 namespace eckit {
 namespace test {
+
+//-----------------------------------------------------------------------------
 
 template <typename T>
 class TestItem : public Streamable {
@@ -112,10 +113,12 @@ ClassSpec TestItem<double>::classSpec_ = {&Streamable::classSpec(),"TestItemDoub
 template <>
 ClassSpec TestItem<string>::classSpec_ = {&Streamable::classSpec(),"TestItemString",};
 
+//-----------------------------------------------------------------------------
+
 #define test_decode(TYPE, INITIAL, SUFFIX) \
-BOOST_AUTO_TEST_CASE( test_decode_##TYPE##_##SUFFIX ) \
+CASE ( "test_decode_" #TYPE "_" #SUFFIX ) \
 { \
-	BOOST_TEST_MESSAGE("Manually (de)serialise Streamable with " #TYPE " member"); \
+	Log::info()  << "Manually (de)serialise Streamable with " #TYPE " member" << std::endl; \
 	PathName filename = PathName::unique( "data" ); \
 	std::string filepath = filename.asString(); \
 	TestItem<TYPE> t(INITIAL); \
@@ -126,17 +129,17 @@ BOOST_AUTO_TEST_CASE( test_decode_##TYPE##_##SUFFIX ) \
 	{ \
 		FileStream sin( filepath.c_str(), "r" ); \
 		TestItem<TYPE> t2(sin); \
-		BOOST_TEST_MESSAGE("original: " << t.payload_); \
-		BOOST_TEST_MESSAGE("streamed: " << t2.payload_); \
-		BOOST_CHECK(t.payload_ == t2.payload_); \
+		Log::info()  << "original: " << t.payload_ << std::endl; \
+		Log::info()  << "streamed: " << t2.payload_ << std::endl; \
+		EXPECT(t.payload_ == t2.payload_); \
 	} \
 	if (filename.exists()) filename.unlink(); \
 }
 
 #define test_reanimate(TYPE, INITIAL, SUFFIX) \
-BOOST_AUTO_TEST_CASE( test_reanimate_##TYPE##_##SUFFIX ) \
+CASE ( "test_reanimate_" #TYPE "_" #SUFFIX ) \
 { \
-	BOOST_TEST_MESSAGE("(de)serialise Streamable with " #TYPE " member via Reanimator"); \
+	Log::info()  << "(de)serialise Streamable with " #TYPE " member via Reanimator" << std::endl; \
 	PathName filename = PathName::unique( "data" ); \
 	std::string filepath = filename.asString(); \
 	TestItem<TYPE> t(INITIAL); \
@@ -147,14 +150,12 @@ BOOST_AUTO_TEST_CASE( test_reanimate_##TYPE##_##SUFFIX ) \
 	{ \
 		FileStream sin( filepath.c_str(), "r" ); \
 		TestItem<TYPE>* t2 = eckit::Reanimator< TestItem<TYPE> >::reanimate(sin); \
-		BOOST_TEST_MESSAGE("orginal: " << t.payload_); \
-		BOOST_TEST_MESSAGE("streamed: " << t2->payload_); \
-		BOOST_CHECK(t.payload_ == t2->payload_); \
+		Log::info()  << "orginal: " << t.payload_ << std::endl; \
+		Log::info()  << "streamed: " << t2->payload_ << std::endl; \
+		EXPECT(t.payload_ == t2->payload_); \
 	} \
 	if (filename.exists()) filename.unlink(); \
 }
-
-BOOST_AUTO_TEST_SUITE( TestStreamable )
 
 test_decode(char, 'A', max)
 test_decode(char, 'z', min)
@@ -215,7 +216,12 @@ test_reanimate(double, numeric_limits<double>::min(), min)
 test_decode(string, "Hello, World!", _)
 test_reanimate(string, "Hello, World!", _)
 
-BOOST_AUTO_TEST_SUITE_END()
+//-----------------------------------------------------------------------------
 
 } // namespace test
-} // namespace hermes
+} // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}

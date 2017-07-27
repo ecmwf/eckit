@@ -10,98 +10,86 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/types/Types.h"
+#include "eckit/types/FloatCompare.h"
 #include "eckit/mpi/Comm.h"
 #include "eckit/filesystem/LocalPathName.h"
 
-#define BOOST_TEST_MODULE eckit_test_mpi
-#include "ecbuild/boost_test_framework.h"
+//#include "eckit/testing/CommSetup.h"
 
-#include "eckit/testing/CommSetup.h"
+#include "eckit/testing/Test.h"
 
-//----------------------------------------------------------------------------------------------------------------------
-
-// Teach boost how to write a std::vector<T>
-namespace boost {
-
-template <typename T>
-inline boost::wrap_stringstream& operator<<(boost::wrap_stringstream& wrapped, std::vector<T> const& v)
-{
-    wrapped << '[';
-    for (int j=0; j<v.size(); ++j) {
-        wrapped << (j!=0 ? "," : "") << v[j];
-    }
-    return wrapped << ']';
-}
-
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
+using namespace std;
 using namespace eckit;
+using namespace eckit::types;
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE( CommSetup );
+namespace eckit {
+namespace test {
 
-BOOST_AUTO_TEST_CASE( test_rank_size )
+//-----------------------------------------------------------------------------
+
+int argc;
+char ** argv;
+
+//BOOST_GLOBAL_FIXTURE( CommSetup );
+
+CASE( "test_rank_size" )
 {
-    BOOST_CHECK_NO_THROW( mpi::comm().size() );
-    BOOST_CHECK_NO_THROW( mpi::comm().rank() );
+    EXPECT_NO_THROW( mpi::comm().size() );
+    EXPECT_NO_THROW( mpi::comm().rank() );
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_broadcast )
+CASE( "test_broadcast" )
 {
-  size_t root = 0;
+    size_t root = 0;
 
-  int d[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    int d[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    std::vector<int> expect ( std::begin(d), std::end(d) );
 
-  BOOST_TEST_CHECKPOINT("Test value");
-  {
-    float val;
-    if( mpi::comm().rank() == root ) {
-      val = 3.14f;
-    }
-
-    float* pval = &val;
-    BOOST_CHECK_NO_THROW( mpi::comm().broadcast(val, root) );
-    BOOST_CHECK_NO_THROW( mpi::comm().broadcast(pval, pval+1, root) );
-
-    // check results
-    BOOST_CHECK_CLOSE( val, 3.14f, 0.0001 );
-  }
-
-  BOOST_TEST_CHECKPOINT("Test vector");
-  {
-    std::vector<int> data(10);
-    if(mpi::comm().rank() == root) {
-      data.assign(d,d+10);
-    }
-    BOOST_CHECK_NO_THROW( mpi::comm().broadcast(data, root) );
-
-    // check results
-    BOOST_CHECK_EQUAL( data.size(), 10u );
-    BOOST_CHECK_EQUAL_COLLECTIONS(data.begin(),data.end(),d,d+10);
-  }
-
-  BOOST_TEST_CHECKPOINT("Test raw data");
-  {
-    std::vector<int> data(10);
-    if( mpi::comm().rank() == root )
+    Log::info() << "Test value" << std::endl;
     {
-      data.assign(d,d+10);
+        float val;
+        if( mpi::comm().rank() == root ) {
+            val = 3.14f;
+        }
+        float* pval = &val;
+        EXPECT_NO_THROW( mpi::comm().broadcast(val, root) );
+        EXPECT_NO_THROW( mpi::comm().broadcast(pval, pval+1, root) );
+
+        // check results
+        EXPECT( is_approximately_equal(val, 3.14f, 0.0001f) );
+    }
+    Log::info() << "Test vector" << std::endl;
+    {
+        std::vector<int> data(10);
+        if(mpi::comm().rank() == root) {
+        data.assign(d,d+10);
+        }
+        EXPECT_NO_THROW( mpi::comm().broadcast(data, root) );
+
+        // check results
+        EXPECT( data.size() == 10u );
+        EXPECT( data == expect );
     }
 
-    BOOST_CHECK_NO_THROW( mpi::comm().broadcast(data.begin(), data.end(), root) );
+    Log::info() << "Test raw data" << std::endl;
+    {
+        std::vector<int> data(10);
+        if( mpi::comm().rank() == root )
+        {
+        data.assign(d,d+10);
+        }
 
-    // check results
-    BOOST_CHECK_EQUAL_COLLECTIONS(data.begin(), data.end(), d, d+10);
-  }
+        EXPECT_NO_THROW( mpi::comm().broadcast(data.begin(), data.end(), root) );
+
+        // check results
+        EXPECT (data == expect);
+    }
+
+
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_gather_scalar )
+CASE( "test_gather_scalar" )
 {
     size_t size = mpi::comm().size();
     size_t rank = mpi::comm().rank();
@@ -112,7 +100,7 @@ BOOST_AUTO_TEST_CASE( test_gather_scalar )
 
     size_t root = 0; /* master */
 
-    BOOST_CHECK_NO_THROW( mpi::comm().gather(send, recv, root) );
+    EXPECT_NO_THROW( mpi::comm().gather(send, recv, root) );
 
     if(rank == root) {
         std::vector<size_t> expected(size);
@@ -120,13 +108,11 @@ BOOST_AUTO_TEST_CASE( test_gather_scalar )
             expected[j] = 777 + j;
         }
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
+        EXPECT( recv == expected );
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_gather_nscalars )
+CASE( "test_gather_nscalars" )
 {
     for(size_t N = 1; N < 10; ++N) {
 
@@ -149,25 +135,23 @@ BOOST_AUTO_TEST_CASE( test_gather_nscalars )
 
         size_t root = 0; /* master */
 
-        BOOST_CHECK_NO_THROW( mpi::comm().gather(send, recv, root) );
+        EXPECT_NO_THROW( mpi::comm().gather(send, recv, root) );
 
         if(rank == root) {
-            BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
+            EXPECT( recv == expected );
         }
 
         std::vector<long> recv2(size*N);
 
-        BOOST_CHECK_NO_THROW( mpi::comm().gather(send.begin(), send.end(), recv2.begin(), recv2.end(), root) );
+        EXPECT_NO_THROW( mpi::comm().gather(send.begin(), send.end(), recv2.begin(), recv2.end(), root) );
 
         if(rank == root) {
-            BOOST_CHECK_EQUAL_COLLECTIONS(recv2.begin(), recv2.end(), expected.begin(), expected.end());
+            EXPECT( recv2 == expected );
         }
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_gatherv_equal_stride )
+CASE( "test_gatherv_equal_stride" )
 {
     size_t root = 0;
     size_t size = mpi::comm().size();
@@ -191,7 +175,7 @@ BOOST_AUTO_TEST_CASE( test_gatherv_equal_stride )
         recvcounts[i] = int(stride);
     }
 
-    BOOST_CHECK_NO_THROW( mpi::comm().gatherv(send, recv, recvcounts, displs, root) );
+    EXPECT_NO_THROW( mpi::comm().gatherv(send, recv, recvcounts, displs, root) );
 
     std::vector<long> expected(size * stride);
     for(size_t i = 0; i < size; ++i) {
@@ -201,13 +185,11 @@ BOOST_AUTO_TEST_CASE( test_gatherv_equal_stride )
     }
 
     if(rank == root) {
-        BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
+        EXPECT( recv == expected );
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_gatherv_unequal_stride )
+CASE( "test_gatherv_unequal_stride" )
 {
     size_t root = 0;
     size_t size = mpi::comm().size();
@@ -233,7 +215,7 @@ BOOST_AUTO_TEST_CASE( test_gatherv_unequal_stride )
 
     std::vector<long> recv(recvsize);
 
-    BOOST_CHECK_NO_THROW( mpi::comm().gatherv(send, recv, recvcounts, displs, root) );
+    EXPECT_NO_THROW( mpi::comm().gatherv(send, recv, recvcounts, displs, root) );
 
     size_t e = 0;
     std::vector<long> expected(recvsize);
@@ -244,13 +226,11 @@ BOOST_AUTO_TEST_CASE( test_gatherv_unequal_stride )
     }
 
     if(rank == root) {
-        BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
+        EXPECT( recv == expected );
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_scatter_scalar )
+CASE( "test_scatter_scalar" )
 {
     size_t size = mpi::comm().size();
     std::vector<long> send(size);
@@ -262,16 +242,14 @@ BOOST_AUTO_TEST_CASE( test_scatter_scalar )
 
     size_t root = 0; /* master */
 
-    BOOST_CHECK_NO_THROW( mpi::comm().scatter(send, recv, root) );
+    EXPECT_NO_THROW( mpi::comm().scatter(send, recv, root) );
 
     size_t rank = mpi::comm().rank();
 
-    BOOST_CHECK_EQUAL(recv, rank*rank - 1);
+    EXPECT( recv == rank*rank - 1 );
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_scatter_nscalars )
+CASE( "test_scatter_nscalars" )
 {
     for(size_t N = 1; N < 4; ++N) {
 
@@ -287,7 +265,7 @@ BOOST_AUTO_TEST_CASE( test_scatter_nscalars )
 
         size_t root = 0; /* master */
 
-        BOOST_CHECK_NO_THROW( mpi::comm().scatter(send, recv, root) );
+        EXPECT_NO_THROW( mpi::comm().scatter(send, recv, root) );
 
         size_t rank = mpi::comm().rank();
 
@@ -297,20 +275,16 @@ BOOST_AUTO_TEST_CASE( test_scatter_nscalars )
             expected[n] = long(rank*rank - n);
         }
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
+        EXPECT( recv == expected );
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_scatterv )
+CASE( "test_scatterv" )
 {
      /// TODO
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_allReduce )
+CASE( "test_allReduce" )
 {
   int d = int(mpi::comm().rank()) + 1;
 
@@ -327,7 +301,7 @@ BOOST_AUTO_TEST_CASE( test_allReduce )
     p *= (j+1);
   }
 
-  BOOST_TEST_CHECKPOINT("Testing all_reduce");
+  Log::info() << "Testing all_reduce" << std::endl;
   {
     int sum;
     int prod;
@@ -337,31 +311,31 @@ BOOST_AUTO_TEST_CASE( test_allReduce )
     std::pair<double,int> maxloc;
     std::pair<double,int> minloc;
 
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduce(d, sum,    mpi::sum())   );
+    EXPECT_NO_THROW( mpi::comm().allReduce(d, sum,    mpi::sum())   );
 
-    BOOST_CHECK_EQUAL( sum, s );
+    EXPECT ( sum == s );
 
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduce(d, prod,   mpi::prod()) );
+    EXPECT_NO_THROW( mpi::comm().allReduce(d, prod,   mpi::prod()) );
 
-    BOOST_CHECK_EQUAL( prod, p );
+    EXPECT ( prod == p );
 
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduce(d, max,    mpi::max())   );
+    EXPECT_NO_THROW( mpi::comm().allReduce(d, max,    mpi::max())   );
 
-    BOOST_CHECK_EQUAL( size_t(max), mpi::comm().size() );
+    EXPECT ( size_t(max) == mpi::comm().size() );
 
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduce(d, min,    mpi::min())   );
+    EXPECT_NO_THROW( mpi::comm().allReduce(d, min,    mpi::min())   );
 
-    BOOST_CHECK_EQUAL( min, 1 );
+    EXPECT ( min == 1 );
 
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduce(v, maxloc, mpi::maxloc())   );
+    EXPECT_NO_THROW( mpi::comm().allReduce(v, maxloc, mpi::maxloc())   );
 
-    BOOST_CHECK_EQUAL( maxloc.first, -double(1) );
-    BOOST_CHECK_EQUAL( maxloc.second, 0 );
+    EXPECT ( maxloc.first == -double(1) );
+    EXPECT ( maxloc.second == 0 );
 
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduce(v, minloc, mpi::minloc())   );
+    EXPECT_NO_THROW( mpi::comm().allReduce(v, minloc, mpi::minloc())   );
 
-    BOOST_CHECK_EQUAL( minloc.first, -double(mpi::comm().size()) );
-    BOOST_CHECK_EQUAL( size_t(minloc.second), mpi::comm().size()-1 );
+    EXPECT ( minloc.first == -double(mpi::comm().size()) );
+    EXPECT ( size_t(minloc.second) == mpi::comm().size()-1 );
   }
 
   std::vector<float> arr(5, mpi::comm().rank()+1);
@@ -370,76 +344,76 @@ BOOST_AUTO_TEST_CASE( test_allReduce )
   std::cout << std::flush;
   mpi::comm().barrier();
 
-  BOOST_TEST_CHECKPOINT("Testing all_reduce inplace");
+  Log::info() << "Testing all_reduce inplace" << std::endl;
   {
     int sum = d;
     int prod = d;
     int max = d;
     int min = d;
 
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(sum, mpi::sum())   );
-    BOOST_CHECK_EQUAL( sum, s );
+    EXPECT_NO_THROW( mpi::comm().allReduceInPlace(sum, mpi::sum())   );
+    EXPECT( sum == s );
 
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(prod, mpi::prod()) );
-    BOOST_CHECK_EQUAL( prod, p );
+    EXPECT_NO_THROW( mpi::comm().allReduceInPlace(prod, mpi::prod()) );
+    EXPECT( prod == p );
 
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(max, mpi::max())   );
-    BOOST_CHECK_EQUAL( size_t(max), mpi::comm().size() );
+    EXPECT_NO_THROW( mpi::comm().allReduceInPlace(max, mpi::max())   );
+    EXPECT( size_t(max) == mpi::comm().size() );
 
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(min, mpi::min())   );
-    BOOST_CHECK_EQUAL( min, 1 );
+    EXPECT_NO_THROW( mpi::comm().allReduceInPlace(min, mpi::min())   );
+    EXPECT( min == 1 );
 
     std::vector<float> expected;
 
     expected = std::vector<float>(5, mpi::comm().size());
     std::vector<float> maxvec = arr;
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(maxvec.begin(), maxvec.end(), mpi::max()) );
-    BOOST_CHECK_EQUAL_COLLECTIONS(maxvec.begin(),maxvec.end(),expected.begin(),expected.end());
+    EXPECT_NO_THROW( mpi::comm().allReduceInPlace(maxvec.begin(), maxvec.end(), mpi::max()) );
+    EXPECT ( maxvec == expected );
 
     expected = std::vector<float>(5,1);
     std::vector<float> minvec = arr;
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(minvec.begin(),minvec.end(), mpi::min()) );
-    BOOST_CHECK_EQUAL_COLLECTIONS(minvec.begin(),minvec.end(),expected.begin(),expected.end());
+    EXPECT_NO_THROW( mpi::comm().allReduceInPlace(minvec.begin(),minvec.end(), mpi::min()) );
+    EXPECT ( minvec == expected );
 
     expected = std::vector<float>(5,s);
     std::vector<float> sumvec = arr;
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(sumvec.begin(),sumvec.end(), mpi::sum()) );
-    BOOST_CHECK_EQUAL_COLLECTIONS(sumvec.begin(),sumvec.end(),expected.begin(),expected.end());
+    EXPECT_NO_THROW( mpi::comm().allReduceInPlace(sumvec.begin(),sumvec.end(), mpi::sum()) );
+    EXPECT ( sumvec == expected );
 
     expected = std::vector<float>(5,p);
     std::vector<float> prodvec = arr;
-    BOOST_CHECK_NO_THROW( mpi::comm().allReduceInPlace(prodvec.begin(),prodvec.end(), mpi::prod()) );
-    BOOST_CHECK_EQUAL_COLLECTIONS(prodvec.begin(),prodvec.end(),expected.begin(),expected.end());
+    EXPECT_NO_THROW( mpi::comm().allReduceInPlace(prodvec.begin(),prodvec.end(), mpi::prod()) );
+    EXPECT ( prodvec == expected );
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_allGather )
+CASE( "test_allGather" )
 {
     // Scalar
 
     int send = mpi::comm().rank();
     std::vector<int> recv(mpi::comm().size());
 
-    BOOST_CHECK_NO_THROW( mpi::comm().allGather(send, recv.begin(), recv.end()) );
+    EXPECT_NO_THROW( mpi::comm().allGather(send, recv.begin(), recv.end()) );
 
     std::vector<int> expected(mpi::comm().size());
     for(size_t j = 0; j < expected.size(); ++j) {
         expected[j] = int(j);
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
+    EXPECT ( recv == expected );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_allGatherv )
+CASE( "test_allGatherv" )
 {
   std::vector<int> send(mpi::comm().rank(), mpi::comm().rank());
   mpi::Buffer<int> recv(mpi::comm().size());
 
-  BOOST_CHECK_NO_THROW( mpi::comm().allGatherv(send.begin(), send.end(), recv) );
+  EXPECT_NO_THROW( mpi::comm().allGatherv(send.begin(), send.end(), recv) );
 
   // check results
   std::vector<int> expected;
@@ -449,17 +423,17 @@ BOOST_AUTO_TEST_CASE( test_allGatherv )
       expected.push_back(j);
   }
 
-  BOOST_CHECK_EQUAL_COLLECTIONS(recv.begin(), recv.end(), expected.begin(), expected.end());
+  EXPECT ( recv.buffer == expected );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_allToAll )
+CASE( "test_allToAll" )
 {
   std::vector< std::vector<int> > send(mpi::comm().size(), std::vector<int>(1, mpi::comm().rank()));
   std::vector< std::vector<int> > recv(mpi::comm().size());
 
-  BOOST_CHECK_NO_THROW( mpi::comm().allToAll(send, recv) );
+  EXPECT_NO_THROW( mpi::comm().allToAll(send, recv) );
 
   // check results
   std::vector< std::vector<int> > expected(mpi::comm().size());
@@ -467,15 +441,15 @@ BOOST_AUTO_TEST_CASE( test_allToAll )
     expected[j] = std::vector<int>(1,int(j));
   }
 
-  BOOST_CHECK_EQUAL(recv.size(), expected.size());
+  EXPECT( recv.size() == expected.size() );
   for (size_t i = 0; i < mpi::comm().size(); ++i) {
-      BOOST_CHECK_EQUAL_COLLECTIONS(recv[i].begin(), recv[i].end(), expected[i].begin(), expected[i].end());
+      EXPECT ( recv[i] == expected[i] );
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_nonblocking_send_receive )
+CASE( "test_nonblocking_send_receive" )
 {
   mpi::Comm& comm = mpi::comm("world");
   int tag = 99;
@@ -498,10 +472,10 @@ BOOST_AUTO_TEST_CASE( test_nonblocking_send_receive )
   // Wait for receiving to finish
   if( comm.rank() == comm.size()-1 ) {
     mpi::Status recvstatus = comm.wait(recvreq);
-    BOOST_CHECK_CLOSE(recv,0.5,1.e-9);
+    EXPECT( is_approximately_equal( recv, 0.5, 1.e-9 ) );
   }
   else {
-    BOOST_CHECK_CLOSE(recv,1.,1.e-9);
+    EXPECT( is_approximately_equal( recv, 1., 1.e-9 ) );
   }
 
   // Wait for sending to finish
@@ -513,7 +487,7 @@ BOOST_AUTO_TEST_CASE( test_nonblocking_send_receive )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_blocking_send_receive )
+CASE( "test_blocking_send_receive" )
 {
   mpi::Comm& comm = mpi::comm("world");
   int tag = 99;
@@ -537,20 +511,20 @@ BOOST_AUTO_TEST_CASE( test_blocking_send_receive )
   // Receive1
   if( comm.rank() == comm.size()-1 ) {
     mpi::Status status = comm.receive(recv1,0,tag);
-    BOOST_CHECK_CLOSE(recv1,0.1,1.e-9);
+    EXPECT( is_approximately_equal(recv1,0.1,1.e-9) );
   }
 
   // Receive2
   if( comm.rank() == comm.size()-1 ) {
     mpi::Status status = comm.receive(recv2,0,tag);
-    BOOST_CHECK_CLOSE(recv2,0.2,1.e-9);
+    EXPECT( is_approximately_equal(recv2,0.2,1.e-9) );
   }
 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_broadcastFile )
+CASE( "test_broadcastFile" )
 {
   mpi::Comm& comm = mpi::comm("world");
   int root = 0;
@@ -564,12 +538,19 @@ BOOST_AUTO_TEST_CASE( test_broadcastFile )
     file.close();
   }
 
-  BOOST_CHECK_EQUAL( comm.broadcastFile(path, root).str(), str );
+  EXPECT( comm.broadcastFile(path, root).str() == str );
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_allToAllv )
+} // namespace test
+} // namespace eckit
+
+int main(int argc,char **argv)
 {
-    // TODO
+    eckit::test::argc = argc;
+    eckit::test::argv = argv;
+    int failures =  run_tests ( argc, argv );
+    eckit::mpi::finaliseAllComms();
+    return failures;
 }

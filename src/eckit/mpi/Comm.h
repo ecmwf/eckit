@@ -181,7 +181,7 @@ public:  // methods
     ///
 
     template <typename T>
-    void allReduce(T send, T& recv, Operation::Code op) const;
+    void allReduce(const T send, T& recv, Operation::Code op) const;
 
     template <typename T>
     void allReduce(const T* send, T* recv, size_t count, Operation::Code op) const;
@@ -208,7 +208,7 @@ public:  // methods
     ///
 
     template <typename T, typename Iter>
-    void allGather(T sendval, Iter rfirst, Iter rlast) const;
+    void allGather(const T sendval, Iter rfirst, Iter rlast) const;
 
     ///
     /// Gather methods from all, variable data sizes per rank
@@ -260,20 +260,20 @@ public:  // methods
     ///
 
     template <typename T>
-    void send(T* sendbuf, size_t count, int dest, int tag) const;
+    void send(const T* sendbuf, size_t count, int dest, int tag) const;
 
     template <typename T>
-    void send(T& sendbuf, int dest, int tag) const;
+    void send(const T& sendbuf, int dest, int tag) const;
 
     ///
     /// Blocking send, until message recieved
     ///
 
     template <typename T>
-    void synchronisedSend(T* sendbuf, size_t count, int dest, int tag) const;
+    void synchronisedSend(const T* sendbuf, size_t count, int dest, int tag) const;
 
     template <typename T>
-    void synchronisedSend(T& sendbuf, int dest, int tag) const;
+    void synchronisedSend(const T& sendbuf, int dest, int tag) const;
 
 
     ///
@@ -281,10 +281,10 @@ public:  // methods
     ///
 
     template <typename T>
-    Request iSend(T* sendbuf, size_t count, int dest, int tag) const;
+    Request iSend(const T* sendbuf, size_t count, int dest, int tag) const;
 
     template <typename T>
-    Request iSend(T& sendbuf, int dest, int tag) const;
+    Request iSend(const T& sendbuf, int dest, int tag) const;
 
     ///
     /// All to all of vector< vector<> >
@@ -627,7 +627,7 @@ void eckit::mpi::Comm::scatterv(CIter first, CIter last, const std::vector<int>&
 ///
 
 template <typename T>
-void eckit::mpi::Comm::allReduce(T send, T& recv, Operation::Code op) const {
+void eckit::mpi::Comm::allReduce(const T send, T& recv, Operation::Code op) const {
     allReduce(&send, &recv, 1, Data::Type<T>::code(), op);
 }
 
@@ -757,22 +757,22 @@ eckit::mpi::Status eckit::mpi::Comm::receive(T& recv, int source, int tag) const
 ///
 
 template <typename T>
-void eckit::mpi::Comm::send(T* sendbuf, size_t count, int dest, int tag) const {
+void eckit::mpi::Comm::send(const T* sendbuf, size_t count, int dest, int tag) const {
     send(sendbuf, count, Data::Type<T>::code(), dest, tag);
 }
 
 template <typename T>
-void eckit::mpi::Comm::send(T& sendbuf, int dest, int tag) const {
+void eckit::mpi::Comm::send(const T& sendbuf, int dest, int tag) const {
     send(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
 }
 
 template <typename T>
-void eckit::mpi::Comm::synchronisedSend(T* sendbuf, size_t count, int dest, int tag) const {
+void eckit::mpi::Comm::synchronisedSend(const T* sendbuf, size_t count, int dest, int tag) const {
     synchronisedSend(sendbuf, count, Data::Type<T>::code(), dest, tag);
 }
 
 template <typename T>
-void eckit::mpi::Comm::synchronisedSend(T& sendbuf, int dest, int tag) const {
+void eckit::mpi::Comm::synchronisedSend(const T& sendbuf, int dest, int tag) const {
     synchronisedSend(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
 }
 
@@ -782,12 +782,12 @@ void eckit::mpi::Comm::synchronisedSend(T& sendbuf, int dest, int tag) const {
 ///
 
 template <typename T>
-eckit::mpi::Request eckit::mpi::Comm::iSend(T* sendbuf, size_t count, int dest, int tag) const {
+eckit::mpi::Request eckit::mpi::Comm::iSend(const T* sendbuf, size_t count, int dest, int tag) const {
     return iSend(sendbuf, count, Data::Type<T>::code(), dest, tag);
 }
 
 template <typename T>
-eckit::mpi::Request eckit::mpi::Comm::iSend(T& sendbuf, int dest, int tag) const {
+eckit::mpi::Request eckit::mpi::Comm::iSend(const T& sendbuf, int dest, int tag) const {
     return iSend(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
 }
 

@@ -131,8 +131,9 @@ inline int run( Test const (&specification)[N], TestVerbosity v = AllFailures) {
     return run( std::vector<Test>(specification, specification+N), v );
 }
 
-int run_tests_main( std::vector<Test> const & tests, int argc, char * argv[] ) {
-    eckit::Main::initialise( argc, argv );
+int run_tests_main( std::vector<Test> const & tests, int argc, char * argv[], bool initEckitMain = true ) {
+    if (initEckitMain)
+        eckit::Main::initialise( argc, argv );
     eckit::Log::info() << "Running " << tests.size() << " tests:" << std::endl;
     int failures = run( tests );
     eckit::Log::info() << failures << " tests failed out of " << tests.size() << "." << std::endl;
@@ -148,9 +149,10 @@ int run_tests( std::vector<Test> const & tests, int argc, char* argv[]) {
     return run_tests_main( tests, argc, argv );
 }
 
-int run_tests(int argc, char* argv[]) {
-    return run_tests_main( specification(), argc, argv );
+int run_tests(int argc, char* argv[], bool initEckitMain = true) {
+    return run_tests_main( specification(), argc, argv, initEckitMain );
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace testing

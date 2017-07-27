@@ -8,28 +8,22 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_parser
-
-#include "ecbuild/boost_test_framework.h"
-
-//#include "eckit/log/Log.h"
+#include "eckit/log/Log.h"
 #include "eckit/parser/JSONParser.h"
 #include "eckit/parser/JSON.h"
 
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
-
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE(Setup);
-
-BOOST_AUTO_TEST_SUITE( test_eckit_parser_json )
+namespace eckit {
+namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value ) {
+CASE( "test_eckit_parser_parse_to_value" ) {
     std::istringstream in("{ \"a\" : [true, false, 3], \"b\" : 42.3 , \"c\" : null, \"d\" : \"y\n\tr\rh\", \"e\" : \"867017db84f4bc2b5078ca56ffd3b9b9\"}");
     JSONParser p(in);
 
@@ -37,43 +31,43 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_value ) {
 
 //    Log::info() << "json " << v << std::endl;
 
-    BOOST_TEST_MESSAGE( v );
-    BOOST_TEST_MESSAGE( v["a"] );
-    BOOST_TEST_MESSAGE( v["a"][2] );
+    Log::info() << v << std::endl;
+    Log::info() << v["a"] << std::endl;
+    Log::info() << v["a"][2] << std::endl;
 
     JSON j(cout);
     j << v;
 
-    BOOST_CHECK( v.isMap() );
-    BOOST_CHECK_EQUAL( v.as<ValueMap>().size(), 5 );
+    EXPECT( v.isMap() );
+    EXPECT( v.as<ValueMap>().size() == 5 );
 
-    BOOST_CHECK( v["a"].isList() );
-    BOOST_CHECK_EQUAL( v["a"].as<ValueList>().size(), 3 );
+    EXPECT( v["a"].isList() );
+    EXPECT( v["a"].as<ValueList>().size() == 3 );
 
 
-    BOOST_CHECK( v["a"][0].isBool() );
-    BOOST_CHECK_EQUAL( v["a"][0].as<bool>(), true );
+    EXPECT( v["a"][0].isBool() );
+    EXPECT( v["a"][0].as<bool>() == true );
 
-    BOOST_CHECK( v["a"][1].isBool() );
-    BOOST_CHECK_EQUAL( v["a"][1].as<bool>(), false );
+    EXPECT( v["a"][1].isBool() );
+    EXPECT( v["a"][1].as<bool>() == false );
 
-    BOOST_CHECK( v["a"][2].isNumber() );
-    BOOST_CHECK_EQUAL( (int) v["a"][2], 3 );
+    EXPECT( v["a"][2].isNumber() );
+    EXPECT( (int) v["a"][2] == 3 );
 
-    BOOST_CHECK( v["b"].isDouble() );
-    BOOST_CHECK_LT( v["b"].as<double>() - 42.3, 1E-12 );
+    EXPECT( v["b"].isDouble() );
+    EXPECT( v["b"].as<double>() - 42.3 < 1E-12 );
 
-    BOOST_CHECK( v["c"].isNil() );
+    EXPECT( v["c"].isNil() );
 
-    BOOST_CHECK( v["d"].isString() );
+    EXPECT( v["d"].isString() );
 
-    BOOST_CHECK( v["e"].isString() );
-    BOOST_CHECK_EQUAL( v["e"].as<string>(), "867017db84f4bc2b5078ca56ffd3b9b9" );
+    EXPECT( v["e"].isString() );
+    EXPECT( v["e"].as<string>() == "867017db84f4bc2b5078ca56ffd3b9b9" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_set ) {
+CASE( "test_eckit_parser_parse_to_set" ) {
     istringstream in("[ \"a\" , \"b\", \"c\" ]" );
     JSONParser p(in);
     Value v = p.parse();
@@ -81,24 +75,24 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_set ) {
 //    Log::info() << "json " << v << std::endl;
 
 
-    BOOST_TEST_MESSAGE( v );
+    Log::info() << v << std::endl;
 
-    BOOST_CHECK( v.isList() );
-    BOOST_CHECK_EQUAL( v.as<ValueList>().size(), 3 );
+    EXPECT( v.isList() );
+    EXPECT( v.as<ValueList>().size() == 3 );
 
-    BOOST_CHECK( v[0].isString() );
-    BOOST_CHECK_EQUAL( v[0].as<string>(), "a" );
+    EXPECT( v[0].isString() );
+    EXPECT( v[0].as<string>() == "a" );
 
-    BOOST_CHECK( v[1].isString() );
-    BOOST_CHECK_EQUAL( v[1].as<string>(), "b" );
+    EXPECT( v[1].isString() );
+    EXPECT( v[1].as<string>() == "b" );
 
-    BOOST_CHECK( v[2].isString() );
-    BOOST_CHECK_EQUAL( v[2].as<string>(), "c" );
+    EXPECT( v[2].isString() );
+    EXPECT( v[2].as<string>() == "c" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_map ) {
+CASE( "test_eckit_parser_parse_to_map" ) {
     istringstream in("{ \"a\" : \"AAA\", \"b\" : 0.0 , \"c\" : \"null\", \"d\" : \"\"}" );
     JSONParser p(in);
     Value v = p.parse();
@@ -106,33 +100,39 @@ BOOST_AUTO_TEST_CASE( test_eckit_parser_parse_to_map ) {
 //    Log::info() << "json " << v << std::endl;
 
 
-    BOOST_TEST_MESSAGE( v );
+    Log::info() << v << std::endl;
 
-    BOOST_CHECK( v.isMap() );
-    BOOST_CHECK_EQUAL( v.as<ValueMap>().size(), 4 );
+    EXPECT( v.isMap() );
+    EXPECT( v.as<ValueMap>().size() == 4 );
 
-    BOOST_CHECK( v["a"].isString() );
-    BOOST_CHECK_EQUAL( v["a"].as<string>(), "AAA" );
+    EXPECT( v["a"].isString() );
+    EXPECT( v["a"].as<string>() == "AAA" );
 
-    BOOST_CHECK( v["b"].isDouble() );
-    BOOST_CHECK_EQUAL( v["b"].as<double>(), 0.0 );
+    EXPECT( v["b"].isDouble() );
+    EXPECT( v["b"].as<double>() == 0.0 );
 
-    BOOST_CHECK( v["c"].isString() );
-    BOOST_CHECK_EQUAL( v["c"].as<string>(), "null" );
+    EXPECT( v["c"].isString() );
+    EXPECT( v["c"].as<string>() == "null" );
 
-    BOOST_CHECK( v["d"].isString() );
-    BOOST_CHECK_EQUAL( v["d"].as<string>(), "" );
+    EXPECT( v["d"].isString() );
+    EXPECT( v["d"].as<string>() == "" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_eckit_parser_eof ) {
+CASE( "test_eckit_parser_eof" ) {
     istringstream in("");
     JSONParser p(in);
 
-    BOOST_CHECK_THROW(p.next(), StreamParser::Error);
+    EXPECT_THROWS_AS(p.next(), StreamParser::Error);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+} // namespace test
+} // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}

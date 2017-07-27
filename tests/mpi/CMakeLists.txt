@@ -4,7 +4,6 @@ ecbuild_add_test(
     CONDITION   HAVE_MPI
     LIBS eckit_mpi
     MPI 4
-    BOOST
 )
 
  ecbuild_add_test(

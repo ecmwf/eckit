@@ -44,7 +44,7 @@ public:
     void start();
     void stop();
 
-	double elapsed();
+    double elapsed();
     double elapsed_cpu();
 
     const std::string& name() const { return name_; }

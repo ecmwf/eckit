@@ -93,6 +93,12 @@ inline int run( std::vector<Test>& tests, TestVerbosity v = AllFailures) {
     // Keep track of failures
     std::vector<std::string> failures;
     size_t num_tests = tests.size();
+
+    if (num_tests == 0) {
+        if (v >= Summary)
+            eckit::Log::info() << "Eckit testing found no test cases to run." << std::endl;
+        return -1;
+    }
     
     // Suppress noisy exceptions in eckit (we may throw many, and intentionally!!!)
     ::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", true);

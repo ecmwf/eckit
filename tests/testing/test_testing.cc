@@ -129,7 +129,6 @@ Tests tests = {
         EXPECT( 1 + 6 == 7 );
         EXPECT( 8 - 1 == 7 );
     }},
-    
     { CASE( "run() returns the correct failure count" ) {
         Tests pass   = {{ CASE( "P"  ) { EXPECT( 1==1 ); } }};
         Tests fail_1 = {{ CASE( "F1" ) { EXPECT( 0==1 ); } }};
@@ -140,6 +139,10 @@ Tests tests = {
         EXPECT( 0 == run( pass   , TestVerbosity::Silent ) );
         EXPECT( 1 == run( fail_1 , TestVerbosity::Silent ) );
         EXPECT( 3 == run( fail_3 , TestVerbosity::Silent ) );
+    }},
+    { CASE( "run() returns -1 if no CASE() is found" ) {
+        Tests empty   = {};
+        EXPECT( -1 == run( empty , TestVerbosity::Silent ) );
     }},
     { CASE( "Setup creates a fresh fixture for each section" ) {
         

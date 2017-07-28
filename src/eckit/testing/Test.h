@@ -47,7 +47,10 @@ public: // methods
         description_(description),
         testFn_(testFn) {}
 
-    void run() { testFn_(subsection_); }
+    void run() {
+        subsection_ = "";
+        testFn_(subsection_);
+    }
 
     std::string description() const {
         if (subsection_.length() != 0) {

@@ -26,6 +26,8 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
+typedef std::vector<Test> Tests;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 // These unit tests test the eckit testing framework itself.
@@ -36,7 +38,7 @@ void ThrowStd() {
     throw std::exception();
 }
 
-Test tests[] = {
+Tests tests = {
     { CASE( "CASE with no EXPECT passes" ) {
 
     }},
@@ -66,8 +68,8 @@ Test tests[] = {
     }},
 
     { CASE( "EXPECT succeeds for success (true) and failure (false)" ) {
-        Test pass[] = {{ CASE("P") { EXPECT( true  ); } }};
-        Test fail[] = {{ CASE("F") { EXPECT( false ); } }};
+        Tests pass = {{ CASE("P") { EXPECT( true  ); } }};
+        Tests fail = {{ CASE("F") { EXPECT( false ); } }};
         
         EXPECT( 0 == run(pass, TestVerbosity::Silent) );
         EXPECT( 1 == run(fail, TestVerbosity::Silent) );
@@ -129,9 +131,9 @@ Test tests[] = {
     }},
     
     { CASE( "run() returns the correct failure count" ) {
-        Test pass  [] = {{ CASE( "P"  ) { EXPECT( 1==1 ); } }};
-        Test fail_1[] = {{ CASE( "F1" ) { EXPECT( 0==1 ); } }};
-        Test fail_3[] = {{ CASE( "F1" ) { EXPECT( 0==1 ); } },
+        Tests pass   = {{ CASE( "P"  ) { EXPECT( 1==1 ); } }};
+        Tests fail_1 = {{ CASE( "F1" ) { EXPECT( 0==1 ); } }};
+        Tests fail_3 = {{ CASE( "F1" ) { EXPECT( 0==1 ); } },
                          { CASE( "F2" ) { EXPECT( 0==1 ); } },
                          { CASE( "F3" ) { EXPECT( 0==1 ); } }};
 

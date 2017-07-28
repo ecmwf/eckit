@@ -137,11 +137,6 @@ inline int run( std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
 }
 
-template<std::size_t N>
-inline int run( Test (&specification)[N], TestVerbosity v = AllFailures) {
-    return run( std::vector<Test>(specification, specification+N), v );
-}
-
 int run_tests_main( std::vector<Test>& tests, int argc, char * argv[], bool initEckitMain = true ) {
     if (initEckitMain)
         eckit::Main::initialise( argc, argv );
@@ -149,11 +144,6 @@ int run_tests_main( std::vector<Test>& tests, int argc, char * argv[], bool init
     int failures = run( tests );
     eckit::Log::info() << failures << " tests failed out of " << tests.size() << "." << std::endl;
     return failures;
-}
-
-template<std::size_t N>
-int run_tests( Test (&specification)[N], int argc, char* argv[] ) {
-    return run_tests_main( std::vector<Test>(specification, specification+N), argc, argv);
 }
 
 int run_tests( std::vector<Test>& tests, int argc, char* argv[]) {

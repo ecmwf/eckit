@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <sstream>
+#include <string>
 
 
 namespace eckit {
@@ -42,19 +43,26 @@ class Test {
 
 public: // methods
 
-    Test(const std::string& description, void (*testFn)()) :
+    Test(const std::string& description, void (*testFn)(std::string&)) :
         description_(description),
         testFn_(testFn) {}
 
-    void run() const { testFn_(); }
+    void run() { testFn_(subsection_); }
 
-    const std::string& description() const { return description_; }
+    std::string description() const {
+        if (subsection_.length() != 0) {
+            return description_ + " (section: " + subsection_ + ")";
+        } else {
+            return description_;
+        }
+    }
 
 private: // members
 
     std::string description_;
+    std::string subsection_;
 
-    void (* testFn_)();
+    void (* testFn_)(std::string&);
 };
 
 std::vector<Test>& specification() {
@@ -68,7 +76,7 @@ std::vector<Test>& specification() {
 
 class TestRegister {
 public:
-    TestRegister(const std::string& description, void (*testFn)()) {
+    TestRegister(const std::string& description, void (*testFn)(std::string&)) {
         specification().push_back(Test(description, testFn));
     }
 };
@@ -77,7 +85,7 @@ public:
 
 enum  TestVerbosity { Silent = 0, Summary = 1, AllFailures = 2};
 
-inline int run( std::vector<Test> const & tests, TestVerbosity v = AllFailures) {
+inline int run( std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
     // Keep track of failures
     std::vector<std::string> failures;
@@ -89,7 +97,7 @@ inline int run( std::vector<Test> const & tests, TestVerbosity v = AllFailures) 
     ::setenv("ECKIT_SERIOUS_BUG_IS_SILENT", "1", true);
     for (size_t i = 0; i < num_tests; i++) {
 
-        const Test& test(tests[i]);
+        Test& test(tests[i]);
 
         try {
             test.run();
@@ -127,11 +135,11 @@ inline int run( std::vector<Test> const & tests, TestVerbosity v = AllFailures) 
 }
 
 template<std::size_t N>
-inline int run( Test const (&specification)[N], TestVerbosity v = AllFailures) {
+inline int run( Test (&specification)[N], TestVerbosity v = AllFailures) {
     return run( std::vector<Test>(specification, specification+N), v );
 }
 
-int run_tests_main( std::vector<Test> const & tests, int argc, char * argv[], bool initEckitMain = true ) {
+int run_tests_main( std::vector<Test>& tests, int argc, char * argv[], bool initEckitMain = true ) {
     if (initEckitMain)
         eckit::Main::initialise( argc, argv );
     eckit::Log::info() << "Running " << tests.size() << " tests:" << std::endl;
@@ -141,11 +149,11 @@ int run_tests_main( std::vector<Test> const & tests, int argc, char * argv[], bo
 }
 
 template<std::size_t N>
-int run_tests( Test const (&specification)[N], int argc, char* argv[] ) {
+int run_tests( Test (&specification)[N], int argc, char* argv[] ) {
     return run_tests_main( std::vector<Test>(specification, specification+N), argc, argv);
 }
 
-int run_tests( std::vector<Test> const & tests, int argc, char* argv[]) {
+int run_tests( std::vector<Test>& tests, int argc, char* argv[]) {
     return run_tests_main( tests, argc, argv );
 }
 
@@ -170,14 +178,14 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 #if ECKIT_TESTING_SELF_REGISTER_CASES
 
 #define CASE(description) \
-void UNIQUE_NAME2(test_, __LINE__) (); \
+void UNIQUE_NAME2(test_, __LINE__) (std::string&); \
 static TestRegister UNIQUE_NAME2(test_registration_, __LINE__)(description, &UNIQUE_NAME2(test_, __LINE__)); \
-void UNIQUE_NAME2(test_, __LINE__) ()
+void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
 
 #else // ECKIT_TESTING_SELF_REGISTER_CASES
 
 #define CASE(description, ... ) \
-    description, [__VA_ARGS__]()
+    description, [__VA_ARGS__](std::string& _test_subsection)
 
 #endif //ECKIT_TESTING_SELF_REGISTER_CASES
 
@@ -233,11 +241,13 @@ void UNIQUE_NAME2(test_, __LINE__) ()
     int _test_num = 0; \
     int _test = 0; \
     int _test_count = 1; \
+    _test_subsection = "setup: " name; \
     for ( ; _test_num = 0, _test < _test_count; _test++)
 
 #define SECTION(name) \
     _test_num += 1; \
     _test_count = _test_num; \
+    _test_subsection = name; \
     if ((_test_num - 1) == _test)
 
 

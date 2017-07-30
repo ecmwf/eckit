@@ -38,7 +38,7 @@ bool HttpHeader::compare::operator()(const std::string& a,const std::string& b) 
 
 HttpHeader::HttpHeader():
 	version_("HTTP/1.0"),
-	statusCode_(200),
+	statusCode_(HttpErrors::OK),
 	contentLength_(0),
 	content_(0,false)
 {

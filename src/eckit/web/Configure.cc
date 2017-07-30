@@ -34,10 +34,10 @@ void Configurable::htmlResources(std::ostream& s,Url& url)
 {
 	for(Set::const_iterator i=resources_.begin();
 		i != resources_.end();++i)
-		(*i)->html(s,url);
+		(*i)->GET(s,url);
 }
 
-void ResourceBase::html(std::ostream& s,Url& url)
+void ResourceBase::GET(std::ostream& s,Url& url)
 {
 
 	std::string n = name();
@@ -69,12 +69,12 @@ void ResourceBase::html(std::ostream& s,Url& url)
 
 class ConfigResource : public HtmlResource {
 	virtual bool restricted() { return true; }
-	virtual void html(std::ostream&,Url&);
+	virtual void GET(std::ostream&,Url&);
 public:
 	ConfigResource() : HtmlResource("/config") {}
 };
 
-void ConfigResource::html(std::ostream& s,Url& url)
+void ConfigResource::GET(std::ostream& s,Url& url)
 {
 	Configurable::htmlAllResources(s,url);
 }

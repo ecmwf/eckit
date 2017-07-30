@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -80,9 +80,9 @@ AgentResource::~AgentResource()
 {
 }
 
-void AgentResource::html(std::ostream&,Url& url)
+void AgentResource::GET(std::ostream&,Url& url)
 {
-	static std::ifstream in("/dev/null");	
+	static std::ifstream in("/dev/null");
     static std::ofstream out("/dev/null");
 
 	MemStream s(url.headerIn().content(), url.headerIn().contentLength());
@@ -90,7 +90,7 @@ void AgentResource::html(std::ostream&,Url& url)
 	std::string token = url.headerIn().getHeader("mars-token");
 
     std::cout << "Token is " << token << std::endl;
-	
+
 	JavaAgent::serve(s,in,out);
 	url.headerOut().content(s.data(),s.length());
 

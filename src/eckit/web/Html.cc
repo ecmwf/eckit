@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -25,9 +25,9 @@ namespace eckit {
 
 std::ostream& operator<<(std::ostream& s,const Html::Tag& tag)
 {
-	s << HttpBuf::dontEncode;	
+	s << HttpBuf::dontEncode;
 	tag.print(s);
-	s << HttpBuf::doEncode;	
+	s << HttpBuf::doEncode;
 	return s;
 }
 
@@ -87,7 +87,7 @@ std::string Html::removeHex(const std::string& s)
 	{
 		if(s[index] == '+')
 		{
-			t += ' ';	
+			t += ' ';
 		} else if(s[index] == '%')
 		{
 			char h = s[index+1];
@@ -130,7 +130,7 @@ void Html::Include::print(std::ostream& s) const
 
 	std::ifstream in(path.localPath());
 
-	if(!in) 
+	if(!in)
 	{
 		s << path << ": " << Log::syserr << std::endl;
 		return ;
@@ -224,7 +224,7 @@ Html::Substitute::~Substitute()
 }
 
 
-std::string& Html::Substitute::operator[](const std::string& p) 
+std::string& Html::Substitute::operator[](const std::string& p)
 {
 	return map_[p];
 }
@@ -252,9 +252,9 @@ void Html::Class::print(std::ostream& s) const
 	if(p.length()) s << Link(base+p) << p << Link();
 }
 
-void Html::BeginForm::print(std::ostream& s) const  
-{ 
-	s << "<FORM METHOD=\"POST\""; 
+void Html::BeginForm::print(std::ostream& s) const
+{
+	s << "<FORM METHOD=\"POST\"";
 
 	if(str_.length())
 		s << " ACTION=\"" << str_ << "\"";
@@ -263,15 +263,15 @@ void Html::BeginForm::print(std::ostream& s) const
 }
 
 void Html::EndForm::print(std::ostream& s) const
-{ 
-	s << "</FORM>"; 
+{
+	s << "</FORM>";
 }
 
 void Html::TextField::print(std::ostream& s) const
 {
-	s << title_ << HttpBuf::dontEncode;	
+	s << title_ << HttpBuf::dontEncode;
 	s << "<INPUT NAME=\"" << name_ << "\" VALUE=\"" << value_ << "\">";
-	s << HttpBuf::doEncode;	
+	s << HttpBuf::doEncode;
 }
 
 void Html::HiddenField::print(std::ostream& s) const
@@ -294,7 +294,7 @@ void Html::Button::print(std::ostream& s) const
 void Html::BeginTextArea::print(std::ostream& s) const
 {
 	s << HttpBuf::dontEncode;
-	s << "<TEXTAREA NAME=\"" << name_ 
+	s << "<TEXTAREA NAME=\"" << name_
 	   << "\" ROWS=" << row_ << " COLS=" << col_ << ">";
 }
 
@@ -308,12 +308,12 @@ void Html::EndTextArea::print(std::ostream& s) const
 class ImageProvider : public HtmlResource {
 public:
     ImageProvider(): HtmlResource(Html::Image::resource()) { }
-    void html(std::ostream& , Url&);
+    void GET(std::ostream& , Url&);
 };
 
 static ImageProvider imageProvider;
 
-void ImageProvider::html(std::ostream& out, Url& url)
+void ImageProvider::GET(std::ostream& out, Url& url)
 {
 	eckit::PathName path = eckit::Resource<PathName>("imagePath","~/html/image");
 
@@ -321,9 +321,9 @@ void ImageProvider::html(std::ostream& out, Url& url)
 		path = path + "/" + url[i] ;
 
 	std::ifstream in(path.localPath());
-	if(!in)	
+	if(!in)
 	{
-		(url.headerOut()).status(404);  // Not Found
+		url.status(HttpErrors::NOT_FOUND);  // Not Found
 		out << path << ": " << Log::syserr << std::endl;
 	}
 	else
@@ -344,20 +344,20 @@ class HtmlProvider : public HtmlResource {
 public:
 	HtmlProvider(): HtmlResource("/html") { }
 	virtual ~HtmlProvider() {}
-	void html(std::ostream& , Url&);
+	void GET(std::ostream& , Url&);
 };
 
 static HtmlProvider htmlProvider;
 
-void HtmlProvider::html(std::ostream& s, Url& url)
+void HtmlProvider::GET(std::ostream& s, Url& url)
 {
-	std::string path; 
+	std::string path;
 
 	for(int i = 1; i < url.size() ; i++)
 		path += "/" + url[i] ;
 
 	Html::Substitute empty;
-	Html::Include include(path,empty); 
+	Html::Include include(path,empty);
 	s << include;
 }
 
@@ -379,7 +379,7 @@ void Html::TableTag::print(std::ostream& s) const
 	s << '<' << tag_;
 
 	if(align_) {
-		
+
 		if( (align_&Center) ) s << " ALIGN=center";
 		if( (align_&Left  ) ) s << " ALIGN=left";
 		if( (align_&Right ) ) s << " ALIGN=right";

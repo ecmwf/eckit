@@ -32,15 +32,17 @@ void HtmlObject::HEAD(std::ostream&s, Url& url) {
 }
 
 void HtmlObject::GET(std::ostream&s, Url& url) {
-    std::ostringstream oss;
-    oss << url.method() << " not supported for " << *this << " (url=" << url << ")";
-    throw eckit::UserError(oss.str());
+    // std::ostringstream oss;
+    // oss << url.method() << " not supported for " << *this << " (url=" << url << ")";
+    // throw eckit::UserError(oss.str());
+    html(s, url);
 }
 
 void HtmlObject::POST(std::ostream&s, Url& url) {
-    std::ostringstream oss;
-    oss << url.method() << " not supported for " << *this << " (url=" << url << ")";
-    throw eckit::UserError(oss.str());
+    // std::ostringstream oss;
+    // oss << url.method() << " not supported for " << *this << " (url=" << url << ")";
+    // throw eckit::UserError(oss.str());
+    html(s, url);
 }
 
 void HtmlObject::PUT(std::ostream&s, Url& url) {
@@ -91,6 +93,10 @@ void HtmlObject::print(std::ostream& s) const {
 
 void HtmlObject::java(JavaAgent&) {
 }
+
+void HtmlObject::html(std::ostream&s, Url& url) {
+}
+
 
 //-----------------------------------------------------------------------------
 

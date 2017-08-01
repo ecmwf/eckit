@@ -371,6 +371,22 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_text_3 ) {
 
 
 }
+BOOST_AUTO_TEST_CASE( test_eckit_yaml_text_4 ) {
+
+    const char* text = R"YAML(
+---
+165:
+- 10u
+- 10 metre u wind component
+)YAML";
+
+    Value v =  YAMLParser::decodeString(text);
+     v.dump(std::cout) << std::endl;
+
+
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

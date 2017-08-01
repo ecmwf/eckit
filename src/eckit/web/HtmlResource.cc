@@ -24,7 +24,8 @@ namespace eckit {
 
 HtmlResourceMap HtmlResource::resources_;
 
-HtmlResource::HtmlResource(const std::string& s)
+HtmlResource::HtmlResource(const std::string& s):
+	resourceUrl_(s)
 {
 	resources_.init();
 	(*resources_)[s] = this;

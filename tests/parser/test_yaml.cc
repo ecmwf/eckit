@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_14 ) {
     std::cout << v << std::endl;
     std::cout << "----------" << std::endl;
 
- BOOST_CHECK_EQUAL(v, "Mark McGwire's year was crippled by a knee injury.");
+    BOOST_CHECK_EQUAL(v, "Mark McGwire's year was crippled by a knee injury.");
 }
 
 BOOST_AUTO_TEST_CASE( test_eckit_yaml_15 ) {
@@ -311,13 +311,46 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_27 ) {
 //     std::cout << toJSON(v) << std::endl;
 // }
 
- BOOST_AUTO_TEST_CASE( test_eckit_yaml_cfg_1 ) {
-     Value v =  YAMLParser::decodeFile("cfg.1.yaml");
-     std::cout << "cfg.1.yaml " << v << std::endl;
-     std::cout << toJSON(v) << std::endl;
- }
+BOOST_AUTO_TEST_CASE( test_eckit_yaml_cfg_1 ) {
+    Value v =  YAMLParser::decodeFile("cfg.1.yaml");
+    std::cout << "cfg.1.yaml " << v << std::endl;
+    std::cout << toJSON(v) << std::endl;
+}
 
 
+BOOST_AUTO_TEST_CASE( test_eckit_yaml_text_1 ) {
+
+    const char* text = R"YAML(
+---
+base: &base
+    name: shared1
+    address: shared2
+
+foo: &foo
+    <<: *base
+    age: 10
+
+bar: &bar
+    <<: *base
+    age: 20
+)YAML";
+
+    Value v =  YAMLParser::decodeString(text);
+     v.dump(std::cout) << std::endl;
+}
+
+
+BOOST_AUTO_TEST_CASE( test_eckit_yaml_text_2 ) {
+
+    const char* text = R"YAML(
+---
+1: 2
+)YAML";
+
+    Value v =  YAMLParser::decodeString(text);
+     v.dump(std::cout) << std::endl;
+
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

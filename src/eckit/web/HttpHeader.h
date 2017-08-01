@@ -54,6 +54,7 @@ public: // methods
     bool authenticated() const;
     void forward(const std::string& );
     void dontCache();
+    void retryAfter(long);
 
     const std::string& type() const;
 

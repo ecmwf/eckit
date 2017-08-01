@@ -29,10 +29,11 @@ const std::string Content_Type     = "Content-Type";
 const std::string Content_Length   = "Content-Length";
 const std::string Location         = "Location";
 const std::string DefaultType      = "application/x-www-form-urlencoded";
+const std::string Retry_After      = "Retry-After";
 
-bool HttpHeader::compare::operator()(const std::string& a,const std::string& b) const
+bool HttpHeader::compare::operator()(const std::string& a, const std::string& b) const
 {
-	return strcasecmp(a.c_str(),b.c_str()) < 0;
+	return strcasecmp(a.c_str(), b.c_str()) < 0;
 }
 
 
@@ -40,20 +41,20 @@ HttpHeader::HttpHeader():
 	version_("HTTP/1.0"),
 	statusCode_(HttpErrors::OK),
 	contentLength_(0),
-	content_(0,false)
+	content_(0, false)
 {
 	header_[Content_Type] = " text/html";
 }
 
-HttpHeader& HttpHeader::operator=(std::map<std::string,std::string,std::less<std::string> >& parsed)
+HttpHeader& HttpHeader::operator=(std::map<std::string, std::string, std::less<std::string> >& parsed)
 {
-    for(std::map<std::string,std::string,std::less<std::string> >::const_iterator i = parsed.begin();
-		i != parsed.end(); ++i)
-			header_[(*i).first] = (*i).second;
+	for (std::map<std::string, std::string, std::less<std::string> >::const_iterator i = parsed.begin();
+	        i != parsed.end(); ++i)
+		header_[(*i).first] = (*i).second;
 
 	Map::const_iterator j = header_.find(Content_Length);
 
-	if(j != header_.end())
+	if (j != header_.end())
 		contentLength_ = atol(((*j).second).c_str());
 	else
 		contentLength_ = 0;
@@ -73,45 +74,44 @@ void HttpHeader::print(std::ostream& s) const
 
 	// General-Header : Date, Pragma
 
-	s << "Cache-Control: no-cache" << std::endl;
+	s << "Cache-Control: no-cache" << '\r' << '\n';
 
 	// Response-Header: Location, Server, WWW-Authenticate
-	s << "MIME-Version: 1.0" << std::endl;
+	s << "MIME-Version: 1.0" << '\r' << '\n';
 
-	Map::const_iterator i = header_.find(Location);
-	if( i != header_.end() )
-		s << (*i).first <<  ": " << (*i).second << std::endl;
-
-	i = header_.find(WWW_Authenticate);
-	if( i != header_.end() )
-	{
-		s << "This is the debug output... " << std::endl;
-		s << (*i).first <<  ": " << (*i).second << std::endl;
+	for (Map::const_iterator i = header_.begin(); i != header_.end(); ++i) {
+		s << (*i).first <<  ": " << (*i).second << '\r' << '\n';
 	}
 
-	// Entity-Header  : Allow, Content-Encoding,
-	// Content-Length, Content-Type, Expires, Last-Modified
+	s << Content_Length << ": " << contentLength_ + content_.size() << '\r' << '\n';
 
-	s << Content_Length << ": " << contentLength_ + content_.size() << std::endl;
+	// i = header_.find(Content_Type);
 
-	i = header_.find(Content_Type);
-
-	if( i != header_.end() )
-		s << (*i).first <<  ": " << (*i).second;
+	// if ( i != header_.end() )
+	// 	s << (*i).first <<  ": " << (*i).second;
 
 	// CRLF
-	s << '\r' << '\n' << std::endl;
+	s << '\r' << '\n';
 
 
 	long len = content_.size();
 	const char *p  = content_;
-	while(len-->0)
+	while (len-- > 0)
 		s.put(*p++);
 }
 
 void HttpHeader::forward(const std::string& s)
 {
 	header_[Location] = s;
+}
+
+void HttpHeader::retryAfter(long s)
+{
+	std::ostringstream oss;
+	oss << s;
+	header_[Retry_After] = oss.str();
+	Log::debug() << "HttpHeader::retryAfter " << s << std::endl;
+	Log::debug() <<  *this << std::endl;
 }
 
 void HttpHeader::length(const long l)
@@ -131,12 +131,12 @@ void HttpHeader::type(const std::string& s)
 
 const std::string& HttpHeader::type() const
 {
-    Map::const_iterator i = header_.find(Content_Type);
+	Map::const_iterator i = header_.find(Content_Type);
 
-    if( i != header_.end() )
-        return (*i).second;
+	if ( i != header_.end() )
+		return (*i).second;
 
-    return DefaultType;
+	return DefaultType;
 }
 
 void HttpHeader::status(const long code)
@@ -158,22 +158,22 @@ bool HttpHeader::authenticated() const
 {
 	Map::const_iterator i = header_.find(Authorization);
 
-	if(i != header_.end())
+	if (i != header_.end())
 	{
 		const char *s = (*i).second.c_str();
 
-		while(*s != ' ' && *s != '\t') s++;
-		while(*s == ' ' || *s == '\t') s++;
+		while (*s != ' ' && *s != '\t') s++;
+		while (*s == ' ' || *s == '\t') s++;
 
 		unsigned char b64[256];
-		for(int j = 0; j < 256; j++) b64[j] = 64;
+		for (int j = 0; j < 256; j++) b64[j] = 64;
 
-		for(unsigned char c = 'A'; c <= 'Z' ; c++) b64[c] = c - 'A';
-		for(unsigned char c = 'a'; c <= 'z' ; c++) b64[c] = c - 'a' + 26;
-		for(unsigned char c = '0'; c <= '9' ; c++) b64[c] = c - '0' + 52;
+		for (unsigned char c = 'A'; c <= 'Z' ; c++) b64[c] = c - 'A';
+		for (unsigned char c = 'a'; c <= 'z' ; c++) b64[c] = c - 'a' + 26;
+		for (unsigned char c = '0'; c <= '9' ; c++) b64[c] = c - '0' + 52;
 
-		b64['+']=62;
-		b64['/']=63;
+		b64['+'] = 62;
+		b64['/'] = 63;
 
 		const unsigned char *p = (const unsigned char*)s;
 
@@ -181,11 +181,11 @@ bool HttpHeader::authenticated() const
 
 		int n = 2;
 
-		while(b64[*p] < 64 && b64[*(p+1)] < 64)
+		while (b64[*p] < 64 && b64[*(p + 1)] < 64)
 		{
-			q += char((b64[p[0]] << n) | (b64[p[1]] >> (6-n)));
+			q += char((b64[p[0]] << n) | (b64[p[1]] >> (6 - n)));
 			n += 2;
-			if(n == 8) {
+			if (n == 8) {
 				p++;
 				n = 2;
 			}
@@ -197,26 +197,26 @@ bool HttpHeader::authenticated() const
 
 		Tokenizer parse(":");
 		std::vector<std::string> v;
-		parse(q,v);
-		if(v.size()==2 && v[0] == "mars" && v[1]=="clave")
+		parse(q, v);
+		if (v.size() == 2 && v[0] == "mars" && v[1] == "clave")
 		{
-            Log::info() << "client authenticated " << q << " -> " << (*i).second << std::endl;
+			Log::info() << "client authenticated " << q << " -> " << (*i).second << std::endl;
 			return true;
 		}
 
-        Log::info() << "client denied " << q << " -> " << (*i).second << std::endl;
+		Log::info() << "client denied " << q << " -> " << (*i).second << std::endl;
 	}
 
 	return false;
 }
 
-void HttpHeader::content(const char* p,long len)
+void HttpHeader::content(const char* p, long len)
 {
 	content_.resize(len);
-	::memcpy((char*)content_,p,len);
+	::memcpy((char*)content_, p, len);
 }
 
-void HttpHeader::setHeader(const std::string& k,const std::string& v)
+void HttpHeader::setHeader(const std::string& k, const std::string& v)
 {
 	header_[k] = v;
 }

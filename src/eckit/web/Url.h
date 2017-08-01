@@ -104,6 +104,14 @@ public:
 		headerOut().forward(s);
 	}
 
+	void location(const std::string& s) {
+		headerOut().forward(s);
+	}
+
+	void retryAfter(long s) {
+		headerOut().retryAfter(s);
+	}
+
 	void dontCache() {
 		headerOut().dontCache();
 	}

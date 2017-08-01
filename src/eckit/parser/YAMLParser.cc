@@ -460,6 +460,12 @@ static Value toValue(const std::string& s)
         return Value(true);
     }
 
+    if(s.length()) {
+        ASSERT(s[0] != '"');
+         ASSERT(s[0] != '\'');
+    }
+
+
     return Value(s);
 }
 
@@ -519,7 +525,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
     bool string = false;
     char c = peek();
 
-    if (c == '"' || c == '\"') {
+    if (c == '"' || c == '\'') {
         return ObjectParser::parseString(c);
     }
 

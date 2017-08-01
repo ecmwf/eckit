@@ -350,6 +350,26 @@ BOOST_AUTO_TEST_CASE( test_eckit_yaml_text_2 ) {
     Value v =  YAMLParser::decodeString(text);
      v.dump(std::cout) << std::endl;
 
+
+     ValueMap m(v);
+
+     BOOST_CHECK(v.keys()[0].isNumber());
+
+}
+
+
+BOOST_AUTO_TEST_CASE( test_eckit_yaml_text_3 ) {
+
+    const char* text = R"YAML(
+---
+- '1'
+- '2'
+)YAML";
+
+    Value v =  YAMLParser::decodeString(text);
+     v.dump(std::cout) << std::endl;
+
+
 }
 //----------------------------------------------------------------------------------------------------------------------
 

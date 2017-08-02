@@ -22,6 +22,7 @@
 
 namespace eckit {
 
+static Value toValue(const std::string& s);
 
 struct YAMLItem : public Counted {
 
@@ -199,7 +200,7 @@ struct YAMLItemKey : public YAMLItem {
 
         std::string v(value_);
         ASSERT(v.size());
-        value_ = v.substr(0, v.size() - 1);
+        value_ = toValue(v.substr(0, v.size() - 1));
 
     }
 
@@ -237,7 +238,19 @@ struct YAMLItemKey : public YAMLItem {
             }
 
             if (next.indent_ > key->indent_) {
-                m[key->value_] = parser.nextItem().parse(parser);
+                static Value import("<<");
+                Value k = key->value_;
+                Value v = parser.nextItem().parse(parser);
+
+                if (k == import) {
+                    ValueMap vmap(v);
+                    for (ValueMap::const_iterator it = vmap.begin(); it != vmap.end(); ++it) {
+                        m[(*it).first] = (*it).second;
+                    }
+                }
+                else {
+                    m[k] = v;
+                }
             }
 
             const YAMLItem& peek = parser.peekItem();
@@ -414,6 +427,8 @@ static Value toValue(const std::string& s)
     }
     */
 
+    // std::cout << "TO VALUE " << s << std::endl;
+
     if (octal.match(s)) {
         return Value(strtol(s.c_str(), 0, 0));
     }
@@ -444,6 +459,12 @@ static Value toValue(const std::string& s)
     if (s == "true") {
         return Value(true);
     }
+
+    if(s.length()) {
+        ASSERT(s[0] != '"');
+         ASSERT(s[0] != '\'');
+    }
+
 
     return Value(s);
 }
@@ -504,7 +525,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
     bool string = false;
     char c = peek();
 
-    if (c == '"' || c == '\"') {
+    if (c == '"' || c == '\'') {
         return ObjectParser::parseString(c);
     }
 
@@ -637,8 +658,12 @@ void YAMLParser::loadItem()
         item = new YAMLItemValue(indent, consumeJSON(']'));
         break;
 
-    case '\"':
-        item = new YAMLItemValue(indent, parseString());
+    case '"':
+        item = new YAMLItemValue(indent, parseString('"'));
+        break;
+
+    case '\'':
+        item = new YAMLItemValue(indent, parseString('\''));
         break;
 
     case '-':
@@ -719,7 +744,11 @@ void YAMLParser::anchor(const Value& key, const Value& value) {
 
 Value YAMLParser::anchor(const Value& key) const {
     std::map<Value, Value>::const_iterator j = anchors_.find(key);
-    ASSERT(j != anchors_.end());
+    if (j == anchors_.end()) {
+        std::ostringstream oss;
+        oss << "YAMLParser: cannot find anchor [" << key << "]";
+        throw eckit::UserError(oss.str());
+    }
     return (*j).second;
 }
 

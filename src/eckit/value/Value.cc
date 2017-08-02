@@ -27,12 +27,21 @@
 
 namespace eckit {
 
+namespace {
+class Nil : public NilContent {
+public:
+    Nil() { attach(); }
+};
+
+static Nil nil;
+}
+
 //-----------------------------------------------------------------------------
 
 Value::Value():
-	content_(new NilContent())
+    content_(&nil)
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(int l):
@@ -42,9 +51,9 @@ Value::Value(int l):
 }
 
 Value::Value(long long l):
-	content_(new NumberContent(l))
+    content_(new NumberContent(l))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(unsigned long long l):
@@ -86,33 +95,33 @@ Value::Value(double l):
 }
 
 Value::Value(const std::string& s):
-	content_(new StringContent(s))
+    content_(new StringContent(s))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(const char* s):
-	content_(new StringContent(s))
+    content_(new StringContent(s))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(const Length& l):
-	content_(new NumberContent(l))
+    content_(new NumberContent(l))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(const PathName& p):
-	content_(new StringContent(p.asString()))
+    content_(new StringContent(p.asString()))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(const Date& d):
-	content_(new DateContent(d))
+    content_(new DateContent(d))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(const Time& d):
@@ -136,13 +145,13 @@ Value::Value(Stream& s):
 
 Value::~Value()
 {
-	content_->detach();
+    content_->detach();
 }
 
 Value::Value(const Value& other):
-	content_(other.content_)
+    content_(other.content_)
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value Value::clone() const {
@@ -155,55 +164,55 @@ bool Value::shared() const {
 
 Value& Value::operator=(const Value& other)
 {
-	other.content_->attach();
-	content_->detach();
-	content_ = other.content_;
+    other.content_->attach();
+    content_->detach();
+    content_ = other.content_;
 
-	return *this;
+    return *this;
 }
 
 Value Value::operator+(const Value& v) const
 {
-	return Value(content_->add(*(v.content_)));
+    return Value(content_->add(*(v.content_)));
 }
 
 Value& Value::operator+=(const Value& v)
 {
-	*this = *this + v;
-	return *this;
+    *this = *this + v;
+    return *this;
 }
 
 Value Value::operator-(const Value& v) const
 {
-	return Value(content_->sub(*(v.content_)));
+    return Value(content_->sub(*(v.content_)));
 }
 
 Value& Value::operator-=(const Value& v)
 {
-	*this = *this - v;
-	return *this;
+    *this = *this - v;
+    return *this;
 }
 
 Value Value::operator*(const Value& v) const
 {
-	return Value(content_->mul(*(v.content_)));
+    return Value(content_->mul(*(v.content_)));
 }
 
 Value& Value::operator*=(const Value& v)
 {
-	*this = *this * v;
-	return *this;
+    *this = *this * v;
+    return *this;
 }
 
 Value Value::operator/(const Value& v) const
 {
-	return Value(content_->div(*(v.content_)));
+    return Value(content_->div(*(v.content_)));
 }
 
 Value& Value::operator/=(const Value& v)
 {
-	*this = *this / v;
-	return *this;
+    *this = *this / v;
+    return *this;
 }
 
 Value Value::operator%(const Value& v) const
@@ -219,7 +228,7 @@ Value& Value::operator%=(const Value& v)
 
 Value Value::makeList()
 {
-	return Value(new ListContent());
+    return Value(new ListContent());
 }
 
 Value Value::makeMap()
@@ -234,7 +243,7 @@ Value Value::makeMap(const ValueMap & m)
 
 Value Value::makeList(const Value& v)
 {
-	return Value(new ListContent(v));
+    return Value(new ListContent(v));
 }
 
 Value Value::makeList(const ValueList& v)
@@ -243,61 +252,61 @@ Value Value::makeList(const ValueList& v)
 }
 
 Value::Value(const ValueList& v):
-	content_(new ListContent(v))
+    content_(new ListContent(v))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(const ValueMap& m):
-	content_(new MapContent(m))
+    content_(new MapContent(m))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(Content* c):
-	content_(c)
+    content_(c)
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value Value::head() const
 {
-	ValueList v;
-	content_->value(v);
+    ValueList v;
+    content_->value(v);
 
-//	std::cout << __FUNCTION__ << " " << *this << " " << v.size() << std::endl;
+//  std::cout << __FUNCTION__ << " " << *this << " " << v.size() << std::endl;
 
-	return v.size() > 0 ? v[0] : Value();
+    return v.size() > 0 ? v[0] : Value();
 }
 
 Value Value::tail() const
 {
-	ValueList v;
-	content_->value(v);
+    ValueList v;
+    content_->value(v);
 
-//	std::cout << __FUNCTION__ << " " << *this << " " << v.size() << std::endl;
+//  std::cout << __FUNCTION__ << " " << *this << " " << v.size() << std::endl;
 
-	if (v.size() > 1)
-	{
-		v.erase(v.begin());
-		return v;
-	}
-	else
-		return Value();
+    if (v.size() > 1)
+    {
+        v.erase(v.begin());
+        return v;
+    }
+    else
+        return Value();
 }
 
 Value::operator ValueList() const
 {
-	ValueList v;
-	content_->value(v);
-	return v;
+    ValueList v;
+    content_->value(v);
+    return v;
 }
 
 Value::operator ValueMap() const
 {
-	ValueMap v;
-	content_->value(v);
-	return v;
+    ValueMap v;
+    content_->value(v);
+    return v;
 }
 
 //=========================================================

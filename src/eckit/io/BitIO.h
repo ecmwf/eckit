@@ -39,21 +39,25 @@ public: // methods
 
     size_t count() const;
 
-    void write(unsigned long code, size_t nbits);
+    void write(size_t code, size_t nbits);
     void flush();
 
 //=============================
 
-    unsigned long read(size_t nbits, unsigned long EOF_MARKER = 256);
+    size_t read(size_t nbits, size_t EOF_MARKER = 0);
 
 
 private: // members
 
     DataHandle& handle_;
-    unsigned long long buffer_;
+
     size_t used_;
-    unsigned char bits_;
+    unsigned long long buffer_;
     size_t count_;
+    bool write_;
+
+//   ---
+
 
 // -- Class members
 

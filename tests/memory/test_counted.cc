@@ -12,25 +12,22 @@
 
 #include "eckit/eckit_config.h"
 
-#define BOOST_TEST_MODULE test_eckit_memory_counted
-
-#include "ecbuild/boost_test_framework.h"
-
-#include <boost/test/test_case_template.hpp>
-#include <boost/mpl/list.hpp>
-
 #include "eckit/memory/Counted.h"
 #include "eckit/memory/Owned.h"
 #include "eckit/memory/SharedPtr.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
 
 //-----------------------------------------------------------------------------
-
-namespace eckit_test {
 
 struct FooLock : public OwnedLock
 {
@@ -48,176 +45,227 @@ struct FooNoLock : public OwnedNoLock
     int i;
 };
 
-}
+template <typename F>
+void TestDefault () {
 
-typedef boost::mpl::list< eckit_test::FooLock, eckit_test::FooNoLock > test_types;
-
-//-----------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_SUITE( test_eckit_memory_counted )
-
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_default, F, test_types )
-{
     typename F::ptype p;
-
-    BOOST_CHECK( !p );
-    BOOST_CHECK( p.get() == 0 );
+    EXPECT( !p );
+    EXPECT( p.get() == 0 );
 
     p.reset( new F(10) );
 
-    BOOST_CHECK( p );
-    BOOST_CHECK( p.unique() );
+    EXPECT( p );
+    EXPECT( p.unique() );
 
     p.release();
 
-    BOOST_CHECK( !p );
-    BOOST_CHECK_EQUAL( p.owners() , 0 );
+    EXPECT( !p );
+    EXPECT( p.owners() == 0 );
+
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_copy, F, test_types )
-{
+template <typename F>
+void TestCopy () {
+
     typename F::ptype p1;
     typename F::ptype p2;
     typename F::ptype p3;
 
-    BOOST_CHECK( !p1 );
-    BOOST_CHECK_EQUAL( p1.owners() , 0 );
+    EXPECT( !p1 );
+    EXPECT( p1.owners() == 0 );
 
     p1.reset( new F(10) );
 
-    BOOST_CHECK( p1->i == 10 );
+    EXPECT( p1->i == 10 );
 
     p1->i = 20;
 
-    BOOST_CHECK( p1 != p2 );
-    BOOST_CHECK( p1 != p3 );
-    BOOST_CHECK( p2 == p3 );
+    EXPECT( p1 != p2 );
+    EXPECT( p1 != p3 );
+    EXPECT( p2 == p3 );
 
-    BOOST_CHECK(  p1 );
-    BOOST_CHECK( !p2 );
-    BOOST_CHECK( !p3 );
+    EXPECT(  p1 );
+    EXPECT( !p2 );
+    EXPECT( !p3 );
 
-    BOOST_CHECK_EQUAL( p1.owners() , 1 );
-    BOOST_CHECK_EQUAL( p2.owners() , 0 );
-    BOOST_CHECK_EQUAL( p3.owners() , 0 );
+    EXPECT( p1.owners() == 1 );
+    EXPECT( p2.owners() == 0 );
+    EXPECT( p3.owners() == 0 );
 
     p2.reset(p1);
 
-    BOOST_CHECK_EQUAL( p1->i , 20 );
-    BOOST_CHECK_EQUAL( p2->i , 20 );
+    EXPECT( p1->i == 20 );
+    EXPECT( p2->i == 20 );
 
     p1->i = 30;
 
-    BOOST_CHECK_EQUAL( p1->i , 30 );
-    BOOST_CHECK_EQUAL( p2->i , 30 );
+    EXPECT( p1->i == 30 );
+    EXPECT( p2->i == 30 );
 
-    BOOST_CHECK( p1 == p2 );
-    BOOST_CHECK( p1 != p3 );
-    BOOST_CHECK( p2 != p3 );
+    EXPECT( p1 == p2 );
+    EXPECT( p1 != p3 );
+    EXPECT( p2 != p3 );
 
-    BOOST_CHECK(  p1 );
-    BOOST_CHECK(  p2 );
-    BOOST_CHECK( !p3 );
+    EXPECT(  p1 );
+    EXPECT(  p2 );
+    EXPECT( !p3 );
 
-    BOOST_CHECK_EQUAL( p1.owners() , 2 );
-    BOOST_CHECK_EQUAL( p2.owners() , 2 );
-    BOOST_CHECK_EQUAL( p3.owners() , 0 );
+    EXPECT( p1.owners() == 2 );
+    EXPECT( p2.owners() == 2 );
+    EXPECT( p3.owners() == 0 );
 
     p3 = p1;
 
     p1->i = 40;
 
-    BOOST_CHECK_EQUAL( p1->i , 40 );
-    BOOST_CHECK_EQUAL( p2->i , 40 );
-    BOOST_CHECK_EQUAL( p3->i , 40 );
+    EXPECT( p1->i == 40 );
+    EXPECT( p2->i == 40 );
+    EXPECT( p3->i == 40 );
 
-    BOOST_CHECK( p1 == p2 );
-    BOOST_CHECK( p1 == p3 );
-    BOOST_CHECK( p2 == p3 );
+    EXPECT( p1 == p2 );
+    EXPECT( p1 == p3 );
+    EXPECT( p2 == p3 );
 
-    BOOST_CHECK( p1 );
-    BOOST_CHECK( p2 );
-    BOOST_CHECK( p3 );
+    EXPECT( p1 );
+    EXPECT( p2 );
+    EXPECT( p3 );
 
-    BOOST_CHECK_EQUAL( p1.owners() , 3 );
-    BOOST_CHECK_EQUAL( p2.owners() , 3 );
-    BOOST_CHECK_EQUAL( p3.owners() , 3 );
+    EXPECT( p1.owners() == 3 );
+    EXPECT( p2.owners() == 3 );
+    EXPECT( p3.owners() == 3 );
 
     p1.release();
 
-    BOOST_CHECK( !p1 );
-    BOOST_CHECK(  p2 );
-    BOOST_CHECK(  p3 );
+    EXPECT( !p1 );
+    EXPECT(  p2 );
+    EXPECT(  p3 );
 
-    BOOST_CHECK_EQUAL( p1.owners() , 0 );
-    BOOST_CHECK_EQUAL( p2.owners() , 2 );
-    BOOST_CHECK_EQUAL( p3.owners() , 2 );
+    EXPECT( p1.owners() == 0 );
+    EXPECT( p2.owners() == 2 );
+    EXPECT( p3.owners() == 2 );
 
     p2.release();
 
-    BOOST_CHECK( !p1 );
-    BOOST_CHECK( !p2 );
-    BOOST_CHECK(  p3 );
+    EXPECT( !p1 );
+    EXPECT( !p2 );
+    EXPECT(  p3 );
 
-    BOOST_CHECK_EQUAL( p1.owners() , 0 );
-    BOOST_CHECK_EQUAL( p2.owners() , 0 );
-    BOOST_CHECK_EQUAL( p3.owners() , 1 );
+    EXPECT( p1.owners() == 0 );
+    EXPECT( p2.owners() == 0 );
+    EXPECT( p3.owners() == 1 );
 
     p3.release();
 
-    BOOST_CHECK( !p1 );
-    BOOST_CHECK( !p2 );
-    BOOST_CHECK( !p3 );
+    EXPECT( !p1 );
+    EXPECT( !p2 );
+    EXPECT( !p3 );
 
-    BOOST_CHECK_EQUAL( p1.owners() , 0 );
-    BOOST_CHECK_EQUAL( p2.owners() , 0 );
-    BOOST_CHECK_EQUAL( p3.owners() , 0 );
+    EXPECT( p1.owners() == 0 );
+    EXPECT( p2.owners() == 0 );
+    EXPECT( p3.owners() == 0 );
+
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_release, F, test_types )
+template <typename F>
+void TestRelease( )
 {
     typename F::ptype p;
 
-    BOOST_CHECK( !p );
+    EXPECT( !p );
 
     p.release();
 
-    BOOST_CHECK( !p );
+    EXPECT( !p );
 
     p.reset( new F(10) );
 
-    BOOST_CHECK( p );
+    EXPECT( p );
 
     p.release();
 
-    BOOST_CHECK( !p );
+    EXPECT( !p );
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_swap, F, test_types )
+template <typename F>
+void TestSwap( )
 {
     typename F::ptype p1( new F(10) );
     typename F::ptype p2( new F(5) );
 
-    BOOST_CHECK( p1 );
-    BOOST_CHECK( p2 );
+    EXPECT( p1 );
+    EXPECT( p2 );
 
-    BOOST_CHECK( p1.unique() );
-    BOOST_CHECK( p2.unique() );
+    EXPECT( p1.unique() );
+    EXPECT( p2.unique() );
 
 
-    BOOST_CHECK_EQUAL( p1->i , 10 );
-    BOOST_CHECK_EQUAL( p2->i , 5 );
+    EXPECT( p1->i == 10 );
+    EXPECT( p2->i == 5 );
 
     p1.swap(p2);
 
-    BOOST_CHECK_EQUAL( p1->i , 5 );
-    BOOST_CHECK_EQUAL( p2->i , 10 );
+    EXPECT( p1->i == 5 );
+    EXPECT( p2->i == 10 );
 
-    BOOST_CHECK( p1.unique() );
-    BOOST_CHECK( p2.unique() );
+    EXPECT( p1.unique() );
+    EXPECT( p2.unique() );
 
-    BOOST_CHECK( p1 );
-    BOOST_CHECK( p2 );
+    EXPECT( p1 );
+    EXPECT( p2 );
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+//-----------------------------------------------------------------------------
+
+CASE ( "test_default" ) {
+    SETUP( "" ) {
+        SECTION( "Type FooLock") {
+            TestDefault< FooLock > ();
+        }
+        SECTION( "Type FooNoLock") {
+            TestDefault< FooNoLock > ();
+        }
+    }
+}
+
+CASE ( "test_copy" ) {
+    SETUP( "" ) {
+        SECTION( "Type FooLock") {
+            TestCopy< FooLock > ();
+        }
+        SECTION( "Type FooNoLock") {
+            TestCopy< FooNoLock > ();
+        }
+    }
+}
+
+CASE ( "test_release" ) {
+    SETUP( "" ) {
+        SECTION( "Type FooLock") {
+            TestRelease< FooLock > ();
+        }
+        SECTION( "Type FooNoLock") {
+            TestRelease< FooNoLock > ();
+        }
+    }
+}
+
+CASE ( "test_swap" ) {
+    SETUP( "" ) {
+        SECTION( "Type FooLock") {
+            TestSwap< FooLock > ();
+        }
+        SECTION( "Type FooNoLock") {
+            TestSwap< FooNoLock > ();
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+} // namespace test
+} // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}

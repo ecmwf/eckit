@@ -11,6 +11,7 @@
 #ifndef eckit_BitIO_h
 #define eckit_BitIO_h
 
+#include <bitset>
 
 #include "eckit/eckit.h"
 
@@ -51,8 +52,9 @@ private: // members
 
     DataHandle& handle_;
 
-    size_t used_;
     unsigned long long buffer_;
+
+    size_t used_;
     size_t count_;
     bool write_;
 

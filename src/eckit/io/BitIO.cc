@@ -11,9 +11,11 @@
 
 #include "eckit/io/BitIO.h"
 #include "eckit/io/DataHandle.h"
+#include <bitset>
 
 
 namespace eckit {
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -58,7 +60,7 @@ void BitIO::write(size_t code, size_t nbits) {
 
         buffer_ <<= s;
         buffer_ |= (code >> (nbits - s)) & masks[s];
-        code <<= s;
+        // code <<= s;
 
         used_ += s;
         nbits -= s;
@@ -69,16 +71,40 @@ void BitIO::write(size_t code, size_t nbits) {
 
 
 void BitIO::flush() {
-    while (used_ > 0)
+    const size_t BITS = sizeof(buffer_) * 8;
+
+
+    // buffer_ <<= (BITS - used_);
+
+    // std::cout << "flush " << used_
+    // << " " << std::bitset<BITS>(buffer_) << std::endl;
+
+    size_t nbits = used_;
+// ccc-cccc.cccc
+    while (nbits)
     {
-        unsigned char c =  (buffer_ >> (8L * sizeof(buffer_) - 8L));
+        size_t s = std::min(nbits, size_t(8));
+
+        unsigned char c =  (buffer_ >> (nbits - s )) & masks[s];
+
+        c <<= (8-s);
+
+        // std::cout << "write " << std::bitset<8>(c);
+        // if(::isprint(c)) {
+        // std::cout << " " << char(c);
+
+        // }
+        // std::cout <<  ' ' << s <<std::endl;
 
         ASSERT(handle_.write(&c, 1) == 1);
         count_++;
 
-        buffer_ <<= 8L;
-        used_    -= std::min(size_t(8), used_);
+        // buffer_ <<= s;
+        nbits    -= s;
     }
+
+    buffer_ = 0;
+    used_ = 0;
 }
 
 

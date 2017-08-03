@@ -44,7 +44,7 @@ public:
     void start();
     void stop();
 
-	double elapsed();
+    double elapsed();
     double elapsed_cpu();
 
     const std::string& name() const { return name_; }
@@ -56,6 +56,8 @@ public:
 protected: // methods
 
     void takeTime();
+
+    std::ostream& output() { return out_ << name_ << ": "; }
 
 private: // members
 
@@ -78,17 +80,6 @@ private: // members
 ::timeval operator-(const ::timeval&,const ::timeval&);
 
 //-----------------------------------------------------------------------------
-
-template<class T>
-class TraceTimer : public Timer {
-public:
-
-    explicit TraceTimer( const char* name):
-        Timer(name, eckit::Log::debug<T>()) {}
-
-    explicit TraceTimer( const std::string& name):
-        Timer(name, eckit::Log::debug<T>()) {}
-};
 
 } // namespace eckit
 

@@ -49,9 +49,9 @@ void BitIO::write(size_t code, size_t nbits) {
     while (nbits) {
 
         if (used_ == BITS) {
-            ASSERT(handle_.write(&buffer_, sizeof(buffer_)) == sizeof(buffer_));
-            used_ = 0;
-            buffer_ = 0;
+            flush();
+            ASSERT(used_ == 0);
+            ASSERT(buffer_ == 0);
         }
 
         size_t s = std::min(std::min(nbits, BITS - used_), size_t(8));
@@ -94,8 +94,18 @@ size_t BitIO::read(size_t nbits, size_t EOF_MARKER) {
 
         if (used_ == 0) {
 
-            long n = handle_.read(&buffer_, sizeof(buffer_));
-            if (n <= 0) {
+            buffer_ = 0;
+            for (size_t i = 0; i < sizeof(buffer_); i++) {
+                unsigned char c;
+                if (handle_.read(&c, 1) <= 0 ) {
+                    break;
+                }
+                buffer_ <<= 8;
+                buffer_ |= c;
+                used_ += 8;
+            }
+
+            if (used_ == 0) {
                 if (EOF_MARKER) {
                     return EOF_MARKER;
                 }
@@ -103,7 +113,6 @@ size_t BitIO::read(size_t nbits, size_t EOF_MARKER) {
                 oss << "Failed to read from " << handle_;
                 throw eckit::ReadError(oss.str());
             }
-            used_ = n * 8;
         }
 
         size_t s = std::min(std::min(nbits, used_), size_t(8));

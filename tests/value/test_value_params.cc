@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 #include <limits>
+#include <sys/types.h>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/FileStream.h"

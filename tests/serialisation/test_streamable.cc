@@ -15,7 +15,9 @@
 // which requires enabling c++0x mode for including cstdint
 #include <stdint.h>
 #include <limits>
+#include <sys/types.h>
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/Streamable.h"
 

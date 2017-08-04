@@ -17,3 +17,13 @@ ecbuild_add_test( TARGET  eckit_test_circularbuffer
                   BOOST
                   SOURCES test_circularbuffer.cc
                   LIBS    eckit )
+
+ecbuild_add_test( TARGET      eckit_test_compress
+                  BOOST
+                  SOURCES     test_compress.cc
+                  LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_bitio
+                  BOOST
+                  SOURCES     test_bitio.cc
+                  LIBS        eckit )

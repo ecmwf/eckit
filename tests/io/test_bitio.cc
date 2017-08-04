@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_2 ) {
 
     for (size_t nbits = 7; nbits <= 32; ++nbits) {
 
-        std::cout  << std::dec << "nbits=" << nbits << std::endl;
+        // std::cout  << std::dec << "nbits=" << nbits << std::endl;
 
         const char* pattern = "0123456789";
 
@@ -116,6 +116,25 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_2 ) {
     }
 }
 
+
+BOOST_AUTO_TEST_CASE( test_eckit_bitio_3 ) {
+
+    const char* pattern = "TOBEORNOTTOBEORTOBEORNOT#";
+
+    MemoryHandle h(pattern, strlen(pattern));
+    h.openForRead();
+
+    BitIO io(h);
+    const char*p = pattern;
+    while (*p) {
+        char c = io.read(8);
+        BOOST_CHECK_EQUAL(*p, c);
+        p++;
+    }
+
+    BOOST_CHECK_EQUAL(io.read(8, 257), 257);
+
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

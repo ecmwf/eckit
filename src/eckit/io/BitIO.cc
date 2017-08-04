@@ -139,6 +139,8 @@ size_t BitIO::read(size_t nbits, size_t EOF_MARKER) {
                 oss << "Failed to read from " << handle_;
                 throw eckit::ReadError(oss.str());
             }
+            
+            buffer_ <<= (BITS - used_);
         }
 
         size_t s = std::min(std::min(nbits, used_), size_t(8));

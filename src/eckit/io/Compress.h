@@ -27,10 +27,15 @@ class Compress  {
 
 public: // methods
 
-// -- Class members
+    Compress(size_t maxBits = 16);
+// --
 
-    static size_t decode(DataHandle& in, DataHandle& out);
-    static size_t encode(DataHandle& in, DataHandle& out);
+    size_t decode(DataHandle& in, DataHandle& out);
+    size_t encode(DataHandle& in, DataHandle& out);
+
+private:
+
+    const size_t maxBits_;
 
 };
 

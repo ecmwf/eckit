@@ -8,10 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_BitIO_h
-#define eckit_BitIO_h
+#ifndef eckit_Base64_h
+#define eckit_Base64_h
 
-#include <bitset>
 
 #include "eckit/eckit.h"
 
@@ -24,46 +23,20 @@ class DataHandle;
 
 //-----------------------------------------------------------------------------
 
-class BitIO  {
+class Base64  {
 
 public: // methods
 
-    /// Contructor
+    Base64(bool url = false);
+// --
 
-    BitIO(DataHandle& handle);
+    size_t decode(DataHandle& in, DataHandle& out);
+    size_t encode(DataHandle& in, DataHandle& out);
 
-    /// Destructor
+private:
 
-    ~BitIO();
-
-    // From DataHandle
-
-    size_t count() const;
-
-    void write(size_t code, size_t nbits);
-    void flush();
-
-//=============================
-
-    size_t read(size_t nbits, size_t EOF_MARKER = 0);
-    size_t readAny(size_t& nbits);
-
-
-private: // members
-
-    DataHandle& handle_;
-
-    unsigned long long buffer_;
-
-    size_t used_;
-    size_t count_;
-    bool write_;
-
-//   ---
-
-
-// -- Class members
-
+    unsigned char encode_[256];
+    unsigned char decode_[256];
 
 };
 

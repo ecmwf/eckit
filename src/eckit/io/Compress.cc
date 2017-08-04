@@ -16,9 +16,16 @@
 // This code is written for readibility, not speed
 // See https://users.cs.cf.ac.uk/Dave.Marshall/Multimedia/node214.html
 // for a description of the algorythm
+// and https://www.cs.duke.edu/csed/curious/compression/lzw.html
+
 
 
 namespace eckit {
+
+
+inline static size_t MAX_CODE(size_t nbits) {
+    return (1 << nbits) - 1;
+}
 
 enum {
     RESET_TABLE = 256,
@@ -29,7 +36,6 @@ enum {
     BITS_MAX = 16   ,
 
 };
-
 
 static void print_code(std::ostream& out, size_t s) {
 
@@ -144,13 +150,11 @@ void Entry::output(eckit::BitIO& out, size_t nbits) const {
               << ")"
               << std::endl;
 
+    ASSERT(code_ <= MAX_CODE(nbits));
     out.write(code_, nbits);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-inline static size_t MAX_CODE(size_t nbits) {
-    return (1 << nbits) - 1;
-}
 
 static inline size_t next_byte(BitIO& in) {
     size_t byte = in.read(8, END_MARKER);
@@ -201,15 +205,13 @@ size_t Compress::encode(DataHandle& in, DataHandle& out)
             // '*j' is the same as 'wp'
             // but should contain a valid code
             w = *j;
-            continue;
         }
-
-        wk.code(next_code++);
-        code_table.insert(wk);
-
-        w.output(bout, nbits);
-
-        w = k;
+        else {
+            w.output(bout, nbits);
+            wk.code(next_code++);
+            code_table.insert(wk);
+            w = k;
+        }
 
     }
 
@@ -226,20 +228,16 @@ size_t Compress::encode(DataHandle& in, DataHandle& out)
 //----------------------------------------------------------------------------------------------------------------------
 
 
-static void init_table( std::vector<Entry>& table) {
+static void init_table( std::map<size_t, Entry>& table) {
     table.clear();
     for (size_t i = 0; i < 256; ++i) {
-        table.push_back(Entry(i));
+        table[i] = Entry(i);
     }
-
-    table.push_back(RESET_TABLE);
-    table.push_back(END_MARKER);
-
 }
 
 size_t Compress::decode(DataHandle& in, DataHandle& out)
 {
-    std::vector<Entry> table;
+    std::map<size_t, Entry> table;
     init_table(table);
 
     BitIO bin(in);
@@ -248,6 +246,7 @@ size_t Compress::decode(DataHandle& in, DataHandle& out)
     size_t nbits = BITS_MIN;
 
     Entry w;
+    size_t next_code = FIRST_CODE;
 
     for (;;) {
 
@@ -267,7 +266,7 @@ size_t Compress::decode(DataHandle& in, DataHandle& out)
 
             nbits = BITS_MIN;
             // max_code = MAX_CODE(nbits);
-            // next_code = FIRST_CODE;
+            next_code = FIRST_CODE;
             init_table(table);
             // prev = END_MARKER;
 
@@ -287,12 +286,23 @@ size_t Compress::decode(DataHandle& in, DataHandle& out)
             continue;
         }
 
-        Entry e = table.at(k);
+        Entry e;
+
+        auto j = table.find(k);
+        if(j != table.end()) {
+            e = (*j).second;
+        }
+        else {
+            ASSERT(k == next_code);
+            e = w + w.firstChar();
+        }
+
         e.output(bout);
 
         Entry n = w + e.firstChar();
-        n.code(table.size());
-        table.push_back(n);
+        n.code(next_code);
+        table[next_code] = n;
+        next_code++;
 
         std::cout << "Add code " << n << std::endl;
 

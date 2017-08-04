@@ -75,13 +75,22 @@ static std::string test(const char* text) {
 }
 
 
+
 BOOST_AUTO_TEST_CASE( test_eckit_compress_1 ) {
     const char* pattern = "TOBEORNOTTOBEORTOBEORNOT#";
-    // const char* pattern = "ABCABCABCABCABCABC";
 
     std::string s = test(pattern);
     BOOST_CHECK_EQUAL(s, std::string(pattern));
 }
+
+
+BOOST_AUTO_TEST_CASE( test_eckit_compress_2 ) {
+    const char* pattern = "ABCABCABCABCABCABC";
+
+    std::string s = test(pattern);
+    BOOST_CHECK_EQUAL(s, std::string(pattern));
+}
+
 
 
 //----------------------------------------------------------------------------------------------------------------------

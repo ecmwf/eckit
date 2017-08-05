@@ -159,18 +159,21 @@ HttpStream::~HttpStream()
 
 void HttpStream::write(std::ostream& s, Url& url, DataHandle& stream)
 {
-
-	DataHandle* handle = 0;// url.streamFrom();
+	DataHandle* handle = url.streamFrom();
 	if (handle) {
 		HttpHeader& header = url.headerOut();
-		header.length(handle->openForRead());
+
+		header.length(handle->estimate());
+		header.type("application/octet-stream");
 
 		AutoClose close(*handle);
 		s << header;
 
-		Log::debug() << "Header: " << std::endl;
-		Log::debug() << header;
-
+		if (Log::debug()) {
+			Log::debug() << "Header: " << std::endl;
+			Log::debug() << header;
+			Log::debug() << "Tranfer " << handle->estimate() << " bytes" << std::endl;
+		}
 		handle->saveInto(stream);
 	}
 	else {

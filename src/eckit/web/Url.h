@@ -101,6 +101,10 @@ public:
 		headerOut().status(s, message);
 	}
 
+	void type(const std::string& type) {
+		headerOut().type(type);
+	}
+
 	void forward(const std::string& s) {
 		headerOut().forward(s);
 	}

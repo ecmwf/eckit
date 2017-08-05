@@ -70,7 +70,57 @@ void HttpHeader::print(std::ostream& s) const
 {
 
 	// Status line + CRLF
-	s << version_ << ' ' << statusCode_ << " Document follows" << '\r' << '\n';
+	s << version_ << ' ' << statusCode_ << ' ';
+
+	if (message_.empty()) {
+		switch (statusCode_) {
+
+		case HttpErrors::OK:
+			s << "OK";
+			break;
+
+		case HttpErrors::CREATED:
+			s << "Created";
+			break;
+
+		case HttpErrors::ACCEPTED:
+			s << "Accepted";
+			break;
+
+		case HttpErrors::NO_CONTENT:
+			s << "No Content";
+			break;
+
+		case HttpErrors::SEE_OTHER:
+			s << "See Other";
+			break;
+
+		case HttpErrors::NOT_FOUND:
+			s << "Not Found";
+			break;
+
+		case HttpErrors::NOT_IMPLEMENTED:
+			s << "Not Implemented";
+			break;
+
+		case HttpErrors::INTERNAL_SERVER_ERROR:
+			s << "Internal Server Error";
+			break;
+
+		case HttpErrors::BAD_REQUEST:
+			s << "Bad Request";
+			break;
+
+		case HttpErrors::UNAUTHORIZED:
+			s << "Unauthorized";
+			break;
+		}
+	}
+	else {
+		s << message_;
+	}
+
+	s << '\r' << '\n';
 
 	// General-Header : Date, Pragma
 
@@ -139,15 +189,16 @@ const std::string& HttpHeader::type() const
 	return DefaultType;
 }
 
-void HttpHeader::status(const long code)
+void HttpHeader::status(const long code, const std::string& message)
 {
 	statusCode_ = code;
+	message_ = message;
 }
 
 void HttpHeader::authenticate(const std::string& login)
 {
 	header_[WWW_Authenticate] = ("Basic realm=\"" + login + "\"");
-	status(401);
+	status(HttpErrors::UNAUTHORIZED);
 }
 
 void HttpHeader::dontCache()

@@ -44,9 +44,6 @@ static std::string test(const char* text) {
         MemoryHandle in(text, strlen(text));
         MemoryHandle out(compressed, sizeof(compressed));
 
-        in.openForRead();
-        out.openForWrite(0);
-
         s = compress.encode(in, out);
         std::cout << "Compress from " << strlen(text) << " to " << s << std::endl;
     }
@@ -54,9 +51,6 @@ static std::string test(const char* text) {
     {
         MemoryHandle in(compressed, s);
         MemoryHandle out(uncompressed, sizeof(uncompressed));
-
-        in.openForRead();
-        out.openForWrite(0);
 
         t = compress.decode(in, out);
         std::cout << "Uncompress from " << s << " to " << t << std::endl;
@@ -123,9 +117,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_compress_4 ) {
             MemoryHandle in(original, sizeof(original));
             MemoryHandle out(compressed, sizeof(compressed));
 
-            in.openForRead();
-            out.openForWrite(0);
-
             s = compress.encode(in, out);
 
             std::cout << "Compress from "
@@ -139,9 +130,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_compress_4 ) {
         {
             MemoryHandle in(compressed, s);
             MemoryHandle out(uncompressed, sizeof(uncompressed));
-
-            in.openForRead();
-            out.openForWrite(0);
 
             t = compress.decode(in, out);
             std::cout << "Uncompress from " << s << " to " << t << std::endl;

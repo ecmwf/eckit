@@ -28,6 +28,7 @@ Reanimator<MemoryHandle> MemoryHandle::reanimator_;
 MemoryHandle::MemoryHandle(const Buffer& buffer):
     address_(const_cast<Buffer&>(buffer)),
     size_(buffer.size()),
+    capacity_(buffer.size()),
     opened_(false),
     readOnly_(true),
     read_(false),
@@ -41,6 +42,7 @@ MemoryHandle::MemoryHandle(const Buffer& buffer):
 MemoryHandle::MemoryHandle(Buffer& buffer):
     address_(buffer),
     size_(buffer.size()),
+    capacity_(buffer.size()),
     opened_(false),
     readOnly_(false),
     read_(false),
@@ -53,6 +55,7 @@ MemoryHandle::MemoryHandle(Buffer& buffer):
 MemoryHandle::MemoryHandle(const void* address, size_t size):
     address_(const_cast<char*>(reinterpret_cast<const char*>(address))),
     size_(size),
+    capacity_(size),
     opened_(false),
     readOnly_(true),
     read_(false),
@@ -66,6 +69,7 @@ MemoryHandle::MemoryHandle(const void* address, size_t size):
 MemoryHandle::MemoryHandle(void* address, size_t size):
     address_(reinterpret_cast<char*>(address)),
     size_(size),
+    capacity_(size),
     opened_(false),
     readOnly_(false),
     read_(false),
@@ -78,7 +82,8 @@ MemoryHandle::MemoryHandle(void* address, size_t size):
 
 MemoryHandle::MemoryHandle(size_t size, bool grow):
     address_(0),
-    size_(size),
+    size_(0),
+    capacity_(size),
     opened_(false),
     readOnly_(false),
     read_(false),
@@ -86,7 +91,7 @@ MemoryHandle::MemoryHandle(size_t size, bool grow):
     owned_(true),
     position_(0)
 {
-    address_ = new char[size_];
+    address_ = new char[capacity_];
     ASSERT(address_);
 }
 
@@ -147,14 +152,19 @@ long MemoryHandle::write(const void* buffer, long length)
 
     if (grow_ && (left < length)) {
 
-        size_t newsize = round(size_ + length, 1024 * 1024);
-        char* newdata = new char[newsize];
-        ASSERT(newdata);
+        if ((capacity_ - position_) < length) {
+            size_t newcapacity = round(capacity_ + length, 1024 * 1024);
+            char* newdata = new char[newcapacity];
+            ASSERT(newdata);
 
-        ::memcpy(newdata, address_, position_);
-        delete[] address_;
-        address_ = newdata;
-        size_ = newsize;
+            ::memcpy(newdata, address_, position_);
+            delete[] address_;
+            address_ = newdata;
+            capacity_ = newcapacity;
+
+        }
+
+        size_ += length;
 
         left = size_ - position_;
     }
@@ -221,6 +231,14 @@ const void* MemoryHandle::data() const {
     return address_;
 }
 
+size_t MemoryHandle::size() const {
+    return size_;
+}
+
+
+std::string MemoryHandle::str() const {
+    return std::string(address_, address_ + position_);
+}
 
 //-----------------------------------------------------------------------------
 

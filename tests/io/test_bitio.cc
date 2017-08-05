@@ -39,7 +39,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_1 ) {
 
     {
         MemoryHandle h(b);
-        h.openForWrite(0);
 
         BitIO io(h);
         for (size_t k = 0; k < 17; k++) {
@@ -55,7 +54,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_1 ) {
 
     {
         MemoryHandle h(b);
-        h.openForRead();
 
         BitIO io(h);
         for (size_t k = 0; k < 17; k++) {
@@ -91,7 +89,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_2 ) {
 
         {
             MemoryHandle h(b);
-            h.openForWrite(0);
 
             BitIO io(h);
             const char*p = pattern;
@@ -103,7 +100,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_2 ) {
 
         {
             MemoryHandle h(b);
-            h.openForRead();
 
             BitIO io(h);
             const char*p = pattern;
@@ -122,7 +118,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_3 ) {
     const char* pattern = "TOBEORNOTTOBEORTOBEORNOT#";
 
     MemoryHandle h(pattern, strlen(pattern));
-    h.openForRead();
 
     BitIO io(h);
     const char*p = pattern;
@@ -141,7 +136,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_4 ) {
     const char* pattern = "A";
 
     MemoryHandle h(pattern, strlen(pattern));
-    h.openForRead();
 
     BitIO io(h);
 
@@ -159,7 +153,6 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_5 ) {
     const unsigned char pattern[] = {0xff};
 
     MemoryHandle h(pattern, sizeof(pattern));
-    h.openForRead();
 
     BitIO io(h, true);
 

@@ -13,6 +13,8 @@
 #include "eckit/web/Html.h"
 #include "eckit/web/HtmlResource.h"
 #include "eckit/web/Url.h"
+#include "eckit/parser/JSON.h"
+
 
 //-----------------------------------------------------------------------------
 
@@ -64,55 +66,91 @@ void HtmlResource::dispatch(eckit::Stream& s, std::istream& in, std::ostream& ou
 
 			const std::string& method = url.method();
 
-			if (method == "GET") {
-				r->GET(out, url);
-				return;
-			}
+			try {
 
-			if (method == "HEAD") {
-				r->HEAD(out, url);
-				return;
-			}
+				if (method == "GET") {
+					r->GET(out, url);
+					return;
+				}
 
-			if (method == "POST") {
-				r->POST(out, url);
-				return;
-			}
+				if (method == "HEAD") {
+					r->HEAD(out, url);
+					return;
+				}
 
-			if (method == "PUT") {
-				r->PUT(out, url);
-				return;
-			}
+				if (method == "POST") {
+					r->POST(out, url);
+					return;
+				}
 
-			if (method == "DELETE") {
-				r->DELETE(out, url);
-				return;
-			}
+				if (method == "PUT") {
+					r->PUT(out, url);
+					return;
+				}
 
-			if (method == "TRACE") {
-				r->TRACE(out, url);
-				return;
-			}
+				if (method == "DELETE") {
+					r->DELETE(out, url);
+					return;
+				}
 
-			if (method == "OPTIONS") {
-				r->OPTIONS(out, url);
-				return;
-			}
+				if (method == "TRACE") {
+					r->TRACE(out, url);
+					return;
+				}
 
-			if (method == "CONNECT") {
-				r->CONNECT(out, url);
-				return;
-			}
+				if (method == "OPTIONS") {
+					r->OPTIONS(out, url);
+					return;
+				}
 
-			if (method == "PATCH") {
-				r->PATCH(out, url);
-				return;
-			}
+				if (method == "CONNECT") {
+					r->CONNECT(out, url);
+					return;
+				}
 
-			std::ostringstream oss;
-			oss << "Unsupported HTTP method " << method << " url=" << url;
-			throw eckit::UserError(oss.str());
+				if (method == "PATCH") {
+					r->PATCH(out, url);
+					return;
+				}
+
+				std::ostringstream oss;
+				oss << "Unsupported HTTP method " << method << " url=" << url;
+				throw eckit::MethodNotYetImplemented(oss.str());
+
+			}
+			catch (eckit::MethodNotYetImplemented& e) {
+				url.status(HttpErrors::NOT_IMPLEMENTED, e.what());
+				JSON json(out);
+				json.startObject();
+				json << "error" << e.what();
+				json.endObject();
+
+			}
+			catch (eckit::NotImplemented& e) {
+				url.status(HttpErrors::NOT_IMPLEMENTED, e.what());
+				JSON json(out);
+				json.startObject();
+				json << "error" << e.what();
+				json.endObject();
+
+			}
+			catch (eckit::UserError& e) {
+				url.status(HttpErrors::BAD_REQUEST, e.what());
+				JSON json(out);
+				json.startObject();
+				json << "error" << e.what();
+				json.endObject();
+
+			}
+			catch (eckit::Exception& e) {
+				url.status(HttpErrors::INTERNAL_SERVER_ERROR, e.what());
+				JSON json(out);
+				json.startObject();
+				json << "error" << e.what();
+				json.endObject();
+			}
 			return;
+
 		}
 	}
 

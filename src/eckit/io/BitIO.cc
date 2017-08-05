@@ -26,13 +26,17 @@ BitIO::BitIO(DataHandle& handle, bool padded):
     bits_(0),
     write_(false),
     eof_(false),
-    padded_(padded) {
+    padded_(padded),
+    opened_(false) {
 
 }
 
 BitIO::~BitIO() {
     if (write_) {
         flush();
+    }
+    if (opened_) {
+        handle_.close();
     }
 }
 
@@ -45,6 +49,11 @@ void BitIO::write(size_t code, size_t nbits) {
 
     const size_t BITS = sizeof(buffer_) * 8;
     write_ = true;
+
+    if (!opened_) {
+        handle_.openForWrite(0);
+        opened_ = true;
+    }
 
     while (nbits) {
 
@@ -77,6 +86,7 @@ void BitIO::flush() {
 
     // std::cout << "flush " << used_
     // << " " << std::bitset<BITS>(buffer_) << std::endl;
+    // std::cout << "bits " << bitCount() << std::endl;
 
     size_t nbits = used_;
 // ccc-cccc.cccc
@@ -111,6 +121,11 @@ void BitIO::flush() {
 
 size_t BitIO::read(size_t nbits, size_t EOF_MARKER) {
 
+    if (!opened_) {
+        handle_.openForRead();
+        opened_ = true;
+    }
+
     size_t result  = 0;
     const size_t BITS = sizeof(buffer_) * 8;
     size_t count = 0;
@@ -138,7 +153,8 @@ size_t BitIO::read(size_t nbits, size_t EOF_MARKER) {
 
             if (used_ == 0) {
 
-                if (padded_ && count) {
+                if (padded_ && count > 0) {
+                    padded_ = false;
                     return result << (asked - count);
                 }
 

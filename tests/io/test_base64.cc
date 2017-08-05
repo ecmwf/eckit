@@ -44,9 +44,6 @@ static std::string test(const char* text, const char* expect) {
         MemoryHandle in(text, strlen(text));
         MemoryHandle out(base64ed, sizeof(base64ed));
 
-        in.openForRead();
-        out.openForWrite(0);
-
         s = base64.encode(in, out);
         std::cout << "Base64 from " << strlen(text) << " to " << s << std::endl;
     }
@@ -61,9 +58,6 @@ static std::string test(const char* text, const char* expect) {
     {
         MemoryHandle in(base64ed, s);
         MemoryHandle out(unbase64ed, sizeof(unbase64ed));
-
-        in.openForRead();
-        out.openForWrite(0);
 
         t = base64.decode(in, out);
         std::cout << "Unbase64 from " << s << " to " << t << std::endl;

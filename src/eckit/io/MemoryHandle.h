@@ -46,6 +46,8 @@ public:
 // -- Methods
 
     const void* data() const;
+    std::string str() const;
+    size_t size() const;
 
 
 // -- Overridden methods
@@ -91,6 +93,7 @@ private: // members
 
     char*          address_;
     size_t         size_;
+    size_t         capacity_;
 
     bool           opened_;
     bool           readOnly_;

@@ -96,8 +96,8 @@ public:
 		headerOut().authenticate(realm);
 	}
 
-	void status(int s) {
-		headerOut().status(s);
+	void status(int s, const std::string& message = "") {
+		headerOut().status(s, message);
 	}
 
 	void forward(const std::string& s) {

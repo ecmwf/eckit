@@ -46,41 +46,29 @@ void HtmlObject::POST(std::ostream&s, Url& url) {
 }
 
 void HtmlObject::PUT(std::ostream&s, Url& url) {
-    std::ostringstream oss;
-    oss << url.method() << " not supported for " << *this << " (url=" << url << ")";
-    throw eckit::UserError(oss.str());
+    NOTIMP;
 }
 
 void HtmlObject::DELETE(std::ostream&s, Url& url) {
-    std::ostringstream oss;
-    oss << url.method() << " not supported for " << *this << " (url=" << url << ")";
-    throw eckit::UserError(oss.str());
+    NOTIMP;
 }
 
 void HtmlObject::TRACE(std::ostream&s, Url& url) {
-    std::ostringstream oss;
-    oss << url.method() << " not supported for " << *this << " (url=" << url << ")";
-    throw eckit::UserError(oss.str());
+    NOTIMP;
 }
 
 void HtmlObject::OPTIONS(std::ostream&s, Url& url) {
-    std::ostringstream oss;
-    oss << url.method() << " not supported for " << *this << " (url=" << url << ")";
-    throw eckit::UserError(oss.str());
+    NOTIMP;
 }
 
 void HtmlObject::CONNECT(std::ostream&s, Url& url) {
-    std::ostringstream oss;
-    oss << url.method() << " not supported for " << *this << " (url=" << url << ")";
-    throw eckit::UserError(oss.str());
+    NOTIMP;
+
 }
 
 void HtmlObject::PATCH(std::ostream&s, Url& url) {
-    std::ostringstream oss;
-    oss << url.method() << " not supported for " << *this << " (url=" << url << ")";
-    throw eckit::UserError(oss.str());
+    NOTIMP;
 }
-
 
 
 void HtmlObject::substitute(std::ostream& s, const std::string& p) {

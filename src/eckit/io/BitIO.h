@@ -65,6 +65,7 @@ private: // members
     bool write_;
     bool eof_;
     bool padded_;
+    bool opened_;
 
 //   ---
 

@@ -32,7 +32,10 @@ enum HttpErrors {
     NO_CONTENT = 204,
     SEE_OTHER = 303,
     NOT_FOUND = 404,
-    NOT_IMPLEMENTED = 501
+    NOT_IMPLEMENTED = 501,
+    INTERNAL_SERVER_ERROR = 500,
+    BAD_REQUEST = 400,
+    UNAUTHORIZED = 401,
 };
 
 
@@ -49,7 +52,7 @@ public: // methods
     void length(const long);
     long contentLength() const;
     void type(const std::string& );
-    void status(const long);
+    void status(const long, const std::string& message = "");
     void authenticate(const std::string& );
     bool authenticated() const;
     void forward(const std::string& );
@@ -73,6 +76,7 @@ private: // members
     std::string version_;
     long   statusCode_;
     long   contentLength_;
+    std::string message_;
 
     struct compare {
         bool operator()(const std::string&, const std::string&) const;

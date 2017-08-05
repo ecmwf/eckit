@@ -16,6 +16,7 @@
 
 #include "eckit/value/Value.h"
 #include "eckit/web/HttpHeader.h"
+#include "eckit/memory/ScopedPtr.h"
 
 //-----------------------------------------------------------------------------
 
@@ -130,6 +131,10 @@ public:
 		return remaining_;
 	}
 
+	void streamFrom(DataHandle*);
+
+	DataHandle* streamFrom();
+
 protected:
 
 // -- Methods
@@ -151,6 +156,9 @@ private:
 
 	eckit::Value          json_;
 	std::vector<std::string> remaining_;
+
+	eckit::ScopedPtr<DataHandle> handle_;
+
 
 // -- Methods
 

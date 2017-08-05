@@ -13,6 +13,7 @@
 #include "eckit/web/HttpService.h"
 #include "eckit/web/HttpUser.h"
 #include "eckit/web/Url.h"
+#include "eckit/io/TCPSocketHandle.h"
 
 //-----------------------------------------------------------------------------
 
@@ -62,8 +63,13 @@ void HttpUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out)
 		             << Here() << std::endl;
 		Log::error() << "** Exception is ignored" << std::endl;
 		http << "Exception caught: " << e.what() << std::endl;
+		return;
 	}
-	http.write(out, url);
+
+
+
+	InstantTCPSocketHandle stream(protocol_);
+	http.write(out, url, stream);
 }
 
 //-----------------------------------------------------------------------------

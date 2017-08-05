@@ -29,14 +29,11 @@ static const char* codes_url = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 Base64::Base64(bool url) {
     const char *p = url ? codes_url : codes_b64;
 
-    for (size_t i = 0; i < sizeof(encode_); i++) {
-        encode_[i] = 0;
-    }
-
     size_t i = 0;
     while (*p) {
+        size_t j = *p;
         encode_[i] = *p;
-        decode_[*p] = i;
+        decode_[j] = i;
         p++;
         i++;
     }
@@ -45,20 +42,40 @@ Base64::Base64(bool url) {
 
 size_t Base64::encode(DataHandle& in, DataHandle& out)
 {
-    BitIO bin(in);
+    const size_t EOI_MARKER = 256;
+
+    BitIO bin(in, true);
     BitIO bout(out);
 
-    size_t nbits = 6;
     size_t c;
 
-    while ((c = bin.read(nbits, 256)) != 256) {
-        std::cout << c << " -> " << encode_[c] << std::endl;
-        ASSERT(encode_[c]);
+    while ((c = bin.read(6, EOI_MARKER)) != EOI_MARKER) {
         bout.write(encode_[c], 8);
     }
 
-    bout.flush();
-    return bout.count();
+    switch (bin.bitCount() % 6) {
+
+    case 0: // No padding
+        break;
+
+    case 2:
+        bout.write('=', 8);
+        bout.write('=', 8);
+        break;
+
+    case 4:
+        bout.write('=', 8);
+        break;
+
+    default:  {
+        std::ostringstream oss;
+        oss << "Base64: invalid padding: " << (bin.bitCount() % 6);
+        throw eckit::SeriousBug(oss.str());
+    }
+
+    }
+
+    return bout.byteCount();
 
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -66,18 +83,36 @@ size_t Base64::encode(DataHandle& in, DataHandle& out)
 size_t Base64::decode(DataHandle& in, DataHandle& out)
 {
 
+    const size_t EOI_MARKER = 256;
+
     BitIO bin(in);
     BitIO bout(out);
 
-    size_t nbits = 8;
-    size_t c;
+    size_t c = bin.read(8, EOI_MARKER);
+    size_t prev = EOI_MARKER;
 
-    while ((c = bin.read(nbits, 256)) != 256) {
-        bout.write(decode_[c], 6);
+    while (c != EOI_MARKER) {
+
+        if (c == '=') {
+            size_t left = 8 - (bout.bitCount() % 8);
+            bout.write(decode_[prev] >> (6 - left), left);
+            prev = EOI_MARKER;
+            break;
+        }
+
+        if (prev != EOI_MARKER) {
+            bout.write(decode_[prev], 6);
+        }
+
+        prev = c;
+        c = bin.read(8, EOI_MARKER);
     }
 
-    bout.flush();
-    return bout.count();
+    if (prev != EOI_MARKER) {
+        bout.write(decode_[prev], 6);
+    }
+
+    return bout.byteCount();
 }
 //----------------------------------------------------------------------------------------------------------------------
 } // namespace eckit

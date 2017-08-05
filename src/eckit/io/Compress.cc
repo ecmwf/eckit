@@ -247,9 +247,8 @@ size_t Compress::encode(DataHandle& in, DataHandle& out)
     }
 
     eoi.output(bout, nbits);
-    bout.flush();
 
-    return bout.count();
+    return bout.byteCount();
 
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -345,8 +344,7 @@ size_t Compress::decode(DataHandle& in, DataHandle& out)
 
     }
 
-    bout.flush();
-    return bout.count();
+    return bout.byteCount();
 }
 //----------------------------------------------------------------------------------------------------------------------
 } // namespace eckit

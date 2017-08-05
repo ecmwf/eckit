@@ -53,7 +53,7 @@ static std::string test(const char* text, const char* expect) {
 
     std::string v(base64ed, base64ed + s);
 
-    std::cout << "[" << v << "]" << std::endl;
+    std::cout << "encoded is [" << v << "]" << std::endl;
 
     BOOST_CHECK_EQUAL(v, expect);
 
@@ -70,6 +70,8 @@ static std::string test(const char* text, const char* expect) {
     }
 
     std::string u(unbase64ed, unbase64ed + t);
+        std::cout << "decoded is [" << u << "]" << std::endl;
+
 
     std::cout << text << std::endl;
     std::cout << u << std::endl;

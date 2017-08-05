@@ -135,6 +135,44 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_3 ) {
     BOOST_CHECK_EQUAL(io.read(8, 257), 257);
 
 }
+
+BOOST_AUTO_TEST_CASE( test_eckit_bitio_4 ) {
+
+    const char* pattern = "A";
+
+    MemoryHandle h(pattern, strlen(pattern));
+    h.openForRead();
+
+    BitIO io(h);
+
+    io.read(6);
+    BOOST_CHECK_THROW(io.read(6), std::exception);
+
+
+
+    BOOST_CHECK_EQUAL(io.read(8, 257), 257);
+
+}
+
+BOOST_AUTO_TEST_CASE( test_eckit_bitio_5 ) {
+
+    const unsigned char pattern[] = {0xff};
+
+    MemoryHandle h(pattern, sizeof(pattern));
+    h.openForRead();
+
+    BitIO io(h, true);
+
+    BOOST_CHECK_EQUAL(io.read(6, 256), 0x3f);
+    BOOST_CHECK_EQUAL(io.read(6, 256), 0x30);
+    BOOST_CHECK_EQUAL(io.read(6, 256), 256);
+
+    BOOST_CHECK_EQUAL(io.bitCount(), 8);
+
+
+    BOOST_CHECK_EQUAL(io.read(8, 257), 257);
+
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

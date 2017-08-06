@@ -138,8 +138,10 @@ long TCPSocket::write(const void* buf, long length) {
                 newline_ = false;
             }
 
-            if (p[i] == '\n') {
-                std::cout << std::endl;
+            if (p[i] == '\r') {
+                std::cout << "\\r";
+            } else if (p[i] == '\n') {
+                std::cout << "\\n" << std::endl;
                 newline_ = true;
             }
             else {
@@ -256,8 +258,10 @@ long TCPSocket::read(void *buf, long length)
                     newline_ = false;
                 }
 
-                if (p[i] == '\n') {
-                    std::cout << std::endl;
+                if (p[i] == '\r') {
+                    std::cout << "\\r";
+                } else if (p[i] == '\n') {
+                    std::cout << "\\n" << std::endl;
                     newline_ = true;
                 }
                 else {

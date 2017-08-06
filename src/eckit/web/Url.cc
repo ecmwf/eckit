@@ -15,6 +15,7 @@
 #include "eckit/web/Html.h"
 #include "eckit/web/Url.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/parser/Tokenizer.h"
 
 
 //-----------------------------------------------------------------------------
@@ -36,6 +37,9 @@ inline void header(char c)
 
 void Url::parse(const std::string& url, bool param)
 {
+
+
+
 
 	int size    = url.length();
 	int index   = 0;

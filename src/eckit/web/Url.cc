@@ -53,14 +53,25 @@ void Url::parse(const std::string& url, bool param)
 			break;
 
 		case '=':
-			p     = s;
-			s     = "";
+			if (param) {
+				p     = s;
+				s     = "";
+			}
+			else {
+				s += url[index];
+			}
 			break;
 
+
 		case '&':
-			map_[Html::removeHex(p)] = Html::removeHex(s);
-			s       = "";
-			p       = "";
+			if (param) {
+				map_[Html::removeHex(p)] = Html::removeHex(s);
+				s       = "";
+				p       = "";
+			}
+			else {
+				s += url[index];
+			}
 			break;
 
 		case '+':

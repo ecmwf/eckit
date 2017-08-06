@@ -168,6 +168,7 @@ void HttpStream::write(std::ostream& s, Url& url, DataHandle& stream)
 
 		AutoClose close(*handle);
 		s << header;
+		s.flush();
 
 		if (Log::debug()) {
 			Log::debug() << "Header: " << std::endl;

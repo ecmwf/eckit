@@ -14,6 +14,7 @@
 #include "eckit/web/HttpUser.h"
 #include "eckit/web/Url.h"
 #include "eckit/io/TCPSocketHandle.h"
+#include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------
 
@@ -49,6 +50,8 @@ HttpUser::~HttpUser()
 
 void HttpUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out)
 {
+	static bool debug = Resource<bool>("-debug-http", false);
+	protocol_.debug(debug);
 
 	HttpStream http;
 

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -93,11 +93,13 @@ public:
 
 	void          bufferSize(int n) { bufSize_ = n; }
 	virtual int  socket();
-	
+
 	void closeOutput();
     void closeInput();
 
-// -- Class methods 
+    void debug(bool on);
+
+// -- Class methods
 
     static std::string  addrToHost(in_addr);
     static in_addr hostToAddr(const std::string&);
@@ -115,6 +117,8 @@ protected:
     std::string   localHost_;   // local host
 	in_addr  localAddr_;   // local ip adress
 	int      bufSize_;
+    bool     debug_;
+    bool     newline_;
 
 // -- Methods
 

@@ -60,7 +60,8 @@ TCPSocket::TCPSocket():
     localAddr_(none),
     bufSize_(0),
     debug_(false),
-    newline_(true)
+    newline_(true),
+    mode_(0)
 {
 }
 
@@ -75,7 +76,8 @@ TCPSocket::TCPSocket(TCPSocket& other):
     localAddr_(other.remoteAddr_),
     bufSize_(0),
     debug_(false),
-    newline_(true)
+    newline_(true),
+    mode_(0)
 {
     other.socket_ = -1;  // Detach socket from other
 }
@@ -98,6 +100,7 @@ TCPSocket& TCPSocket::operator=(TCPSocket& other)
     localPort_  = other.remotePort_;
     debug_      = other.debug_;
     newline_    = other.newline_;
+    mode_       = other.mode_;
 
     other.socket_ = -1;  // Detach socket from other
 
@@ -121,6 +124,13 @@ long TCPSocket::write(const void* buf, long length) {
         return ::write(socket_, buf, length);
 
     if (debug_) {
+
+        if (mode_ != 'w') {
+            newline_ = true;
+            std::cout << std::endl << std::endl;
+            mode_ = 'w';
+        }
+
         const char* p = reinterpret_cast<const char *>(buf);
         for (size_t i = 0; i < std::min(length, 512L); i++) {
             if (newline_) {
@@ -233,6 +243,13 @@ long TCPSocket::read(void *buf, long length)
 
 
         if (debug_) {
+
+            if (mode_ != 'r') {
+                newline_ = true;
+                std::cout << std::endl << std::endl;
+                mode_ = 'r';
+            }
+
             for (size_t i = 0; i < std::min(len, 512L); i++) {
                 if (newline_) {
                     std::cout << "<<< ";
@@ -754,6 +771,7 @@ bool TCPSocket::stillConnected() const
 void TCPSocket::debug(bool on) {
     debug_ = on;
     newline_ = true;
+    mode_ = 0;
 }
 
 //-----------------------------------------------------------------------------

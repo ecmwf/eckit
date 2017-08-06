@@ -14,6 +14,7 @@
 #include "eckit/web/HtmlResource.h"
 #include "eckit/web/Url.h"
 #include "eckit/parser/JSON.h"
+#include "eckit/types/Types.h"
 
 
 //-----------------------------------------------------------------------------
@@ -63,6 +64,8 @@ void HtmlResource::dispatch(eckit::Stream& s, std::istream& in, std::ostream& ou
 				v.push_back(url[i]);
 			}
 			url.remaining(v);
+
+			Log::debug() << "HTTP resource [" << str << "] remaining " << v << std::endl;
 
 			const std::string& method = url.method();
 

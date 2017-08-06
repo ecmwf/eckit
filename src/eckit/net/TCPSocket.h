@@ -117,8 +117,11 @@ protected:
     std::string   localHost_;   // local host
 	in_addr  localAddr_;   // local ip adress
 	int      bufSize_;
+
+    // Debug
     bool     debug_;
     bool     newline_;
+    char     mode_;
 
 // -- Methods
 

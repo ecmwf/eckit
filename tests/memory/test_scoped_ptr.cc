@@ -11,17 +11,20 @@
 #include <cmath>
 #include <iostream>
 
-#define BOOST_TEST_MODULE test_eckit_memory_scoped_ptr
-
-#include "ecbuild/boost_test_framework.h"
 
 #include "eckit/memory/Owned.h"
 #include "eckit/memory/ScopedPtr.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
 
 /// These tests are similar to the test for boost scoped_ptr and shared ptrs
 /// This allows as in the future to drop out, our own home grown managed
@@ -29,10 +32,8 @@ using namespace eckit;
 
 //-----------------------------------------------------------------------------
 
-namespace eckit_test {
-
 template<class T>
-void ck( const T* v1, T v2 ) { BOOST_CHECK_EQUAL( *v1, v2 ); }
+void ck( const T* v1, T v2 ) { EXPECT ( *v1 == v2 ); }
 
 namespace {
    static int UDT_use_count = 0;  // independent of pointer maintained counts
@@ -69,8 +70,6 @@ Incomplete * check_incomplete( ScopedPtr<Incomplete>& incomplete )
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit_test
-
 // TODO issues:
 // o/ test shared ptr, in STL containers
 // o/ <Not applicable> weak shared ptr
@@ -78,58 +77,62 @@ Incomplete * check_incomplete( ScopedPtr<Incomplete>& incomplete )
 // o/ <Not applicable> custom deletor
 // o/ <Not applicable> ? static pointer cast
 
-using namespace eckit_test;
-
-BOOST_AUTO_TEST_SUITE( test_eckit_memory_scope_ptr )
-
-BOOST_AUTO_TEST_CASE( test_scoped_ptr_empty_constructor )
+CASE ( "test_scoped_ptr_empty_constructor" )
 {
   ScopedPtr<long> sp;
 
-  BOOST_CHECK_EQUAL( sp.get(), ScopedPtr<long>::pointer_type(0) );
+  EXPECT ( sp.get() == ScopedPtr<long>::pointer_type(0) );
 
-  BOOST_CHECK_EQUAL( sp.release(), ScopedPtr<long>::pointer_type(0) );
+  EXPECT ( sp.release() == ScopedPtr<long>::pointer_type(0) );
 
-  BOOST_CHECK( !sp );
+  EXPECT ( !sp );
 
-  BOOST_CHECK_NO_THROW( sp.reset() );
+  EXPECT_NO_THROW ( sp.reset() );
 }
 
-BOOST_AUTO_TEST_CASE( test_scoped_ptr )
+CASE ( "test_scoped_ptr" )
 {
 //   std::cout << "test ScopedPtr with a built-in type\n";
    {
       long * lp = new long;
       ScopedPtr<long> sp ( lp );
-      BOOST_CHECK( sp );
-      BOOST_CHECK_EQUAL( sp.get(), lp );
-      BOOST_CHECK_EQUAL( lp, sp.get() );
-      BOOST_CHECK_EQUAL( &*sp, lp );
+      EXPECT( sp );
+      EXPECT( sp.get() == lp );
+      EXPECT( lp == sp.get() );
+      EXPECT( &*sp == lp );
 
       *sp = 1234568901L;
-      BOOST_CHECK_EQUAL( *sp, 1234568901L );
-      BOOST_CHECK_EQUAL( *lp, 1234568901L );
+      EXPECT( *sp == 1234568901L );
+      EXPECT( *lp == 1234568901L );
       ck( static_cast<long*>(sp.get()), 1234568901L );
       ck( lp, *sp );
 
       sp.reset();
 
-      BOOST_CHECK_EQUAL( sp.get(), ScopedPtr<long>::pointer_type(0) );
+      EXPECT( sp.get() == ScopedPtr<long>::pointer_type(0) );
    }
 
 //   std::cout << "test ScopedPtr with a user defined type\n";
    {
       ScopedPtr<UDT> udt_sp ( new UDT( 999888777 ) );
-      BOOST_CHECK_EQUAL( udt_sp->value(), 999888777 );
+      EXPECT( udt_sp->value() == 999888777 );
       udt_sp.reset();
       udt_sp.reset( new UDT( 111222333 ) );
-      BOOST_CHECK_EQUAL( udt_sp->value(), 111222333 );
+      EXPECT( udt_sp->value() == 111222333 );
       udt_sp.reset( new UDT( 333222111 ) );
-      BOOST_CHECK_EQUAL( udt_sp->value(), 333222111 );
+      EXPECT( udt_sp->value() == 333222111 );
 
       udt_sp.reset();
-      BOOST_CHECK_EQUAL( udt_sp.get(), ScopedPtr<UDT>::pointer_type(0) );
+      EXPECT( udt_sp.get() == ScopedPtr<UDT>::pointer_type(0) );
    }
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+//-----------------------------------------------------------------------------
+
+} // namespace test
+} // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}

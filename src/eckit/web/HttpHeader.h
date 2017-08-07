@@ -18,6 +18,7 @@
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/io/ResizableBuffer.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
@@ -25,17 +26,31 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-enum HttpErrors {
-    OK = 200,
-    CREATED = 201,
-    ACCEPTED = 202,
-    NO_CONTENT = 204,
-    SEE_OTHER = 303,
-    NOT_FOUND = 404,
-    NOT_IMPLEMENTED = 501,
-    INTERNAL_SERVER_ERROR = 500,
-    BAD_REQUEST = 400,
-    UNAUTHORIZED = 401,
+class HttpError : public Exception {
+
+    size_t status_;
+
+public:
+
+    enum  {
+        OK = 200,
+        CREATED = 201,
+        ACCEPTED = 202,
+        NO_CONTENT = 204,
+        SEE_OTHER = 303,
+        NOT_FOUND = 404,
+        NOT_IMPLEMENTED = 501,
+        INTERNAL_SERVER_ERROR = 500,
+        BAD_REQUEST = 400,
+        UNAUTHORIZED = 401,
+    };
+
+public:
+    HttpError(size_t status, const std::string& msg = "HttpError"):
+        Exception(msg),
+        status_(status) {}
+
+    size_t status() const { return status_; }
 };
 
 

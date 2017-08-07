@@ -121,8 +121,15 @@ void HtmlResource::dispatch(eckit::Stream& s, std::istream& in, std::ostream& ou
 				throw eckit::MethodNotYetImplemented(oss.str());
 
 			}
+			catch (eckit::HttpError& e) {
+				url.status(e.status(), e.what());
+				JSON json(out);
+				json.startObject();
+				json << "error" << e.what();
+				json.endObject();
+			}
 			catch (eckit::MethodNotYetImplemented& e) {
-				url.status(HttpErrors::NOT_IMPLEMENTED, e.what());
+				url.status(HttpError::NOT_IMPLEMENTED, e.what());
 				JSON json(out);
 				json.startObject();
 				json << "error" << e.what();
@@ -130,7 +137,7 @@ void HtmlResource::dispatch(eckit::Stream& s, std::istream& in, std::ostream& ou
 
 			}
 			catch (eckit::NotImplemented& e) {
-				url.status(HttpErrors::NOT_IMPLEMENTED, e.what());
+				url.status(HttpError::NOT_IMPLEMENTED, e.what());
 				JSON json(out);
 				json.startObject();
 				json << "error" << e.what();
@@ -138,7 +145,7 @@ void HtmlResource::dispatch(eckit::Stream& s, std::istream& in, std::ostream& ou
 
 			}
 			catch (eckit::UserError& e) {
-				url.status(HttpErrors::BAD_REQUEST, e.what());
+				url.status(HttpError::BAD_REQUEST, e.what());
 				JSON json(out);
 				json.startObject();
 				json << "error" << e.what();
@@ -146,7 +153,7 @@ void HtmlResource::dispatch(eckit::Stream& s, std::istream& in, std::ostream& ou
 
 			}
 			catch (eckit::Exception& e) {
-				url.status(HttpErrors::INTERNAL_SERVER_ERROR, e.what());
+				url.status(HttpError::INTERNAL_SERVER_ERROR, e.what());
 				JSON json(out);
 				json.startObject();
 				json << "error" << e.what();

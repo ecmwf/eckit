@@ -323,7 +323,7 @@ void ImageProvider::GET(std::ostream& out, Url& url)
 	std::ifstream in(path.localPath());
 	if(!in)
 	{
-		url.status(HttpErrors::NOT_FOUND);  // Not Found
+		url.status(HttpError::NOT_FOUND);  // Not Found
 		out << path << ": " << Log::syserr << std::endl;
 	}
 	else

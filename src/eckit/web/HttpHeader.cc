@@ -39,7 +39,7 @@ bool HttpHeader::compare::operator()(const std::string& a, const std::string& b)
 
 HttpHeader::HttpHeader():
 	version_("HTTP/1.0"),
-	statusCode_(HttpErrors::OK),
+	statusCode_(HttpError::OK),
 	contentLength_(0),
 	content_(0, false)
 {
@@ -75,43 +75,43 @@ void HttpHeader::print(std::ostream& s) const
 	if (message_.empty()) {
 		switch (statusCode_) {
 
-		case HttpErrors::OK:
+		case HttpError::OK:
 			s << "OK";
 			break;
 
-		case HttpErrors::CREATED:
+		case HttpError::CREATED:
 			s << "Created";
 			break;
 
-		case HttpErrors::ACCEPTED:
+		case HttpError::ACCEPTED:
 			s << "Accepted";
 			break;
 
-		case HttpErrors::NO_CONTENT:
+		case HttpError::NO_CONTENT:
 			s << "No Content";
 			break;
 
-		case HttpErrors::SEE_OTHER:
+		case HttpError::SEE_OTHER:
 			s << "See Other";
 			break;
 
-		case HttpErrors::NOT_FOUND:
+		case HttpError::NOT_FOUND:
 			s << "Not Found";
 			break;
 
-		case HttpErrors::NOT_IMPLEMENTED:
+		case HttpError::NOT_IMPLEMENTED:
 			s << "Not Implemented";
 			break;
 
-		case HttpErrors::INTERNAL_SERVER_ERROR:
+		case HttpError::INTERNAL_SERVER_ERROR:
 			s << "Internal Server Error";
 			break;
 
-		case HttpErrors::BAD_REQUEST:
+		case HttpError::BAD_REQUEST:
 			s << "Bad Request";
 			break;
 
-		case HttpErrors::UNAUTHORIZED:
+		case HttpError::UNAUTHORIZED:
 			s << "Unauthorized";
 			break;
 		}
@@ -198,7 +198,7 @@ void HttpHeader::status(const long code, const std::string& message)
 void HttpHeader::authenticate(const std::string& login)
 {
 	header_[WWW_Authenticate] = ("Basic realm=\"" + login + "\"");
-	status(HttpErrors::UNAUTHORIZED);
+	status(HttpError::UNAUTHORIZED);
 }
 
 void HttpHeader::dontCache()

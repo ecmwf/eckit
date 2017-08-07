@@ -39,7 +39,7 @@ void JavaResource::GET(std::ostream& s,Url& url)
 	std::ifstream in(path.localPath());
 	if(!in)
 	{
-		url.status(HttpErrors::NOT_FOUND);  // Not Found
+		url.status(HttpError::NOT_FOUND);  // Not Found
 		s << path << ": " << Log::syserr << std::endl;
 	}
 	else

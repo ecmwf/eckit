@@ -15,6 +15,7 @@
 #include "eckit/web/Url.h"
 #include "eckit/io/TCPSocketHandle.h"
 #include "eckit/config/Resource.h"
+#include "eckit/runtime/Monitor.h"
 
 //-----------------------------------------------------------------------------
 
@@ -23,7 +24,7 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 HttpService::HttpService(int port):
-	NetService(port)
+	NetService(port, true)
 {
 }
 
@@ -56,6 +57,7 @@ void HttpUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out)
 	HttpStream http;
 
 	Url url(in);
+	Monitor::instance().name(url.method());
 
 	try {
 		HtmlResource::dispatch(s, in, http, url);
@@ -73,6 +75,9 @@ void HttpUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out)
 
 	InstantTCPSocketHandle stream(protocol_);
 	http.write(out, url, stream);
+
+	Monitor::instance().show(false);
+
 }
 
 //-----------------------------------------------------------------------------

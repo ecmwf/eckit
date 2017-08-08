@@ -12,78 +12,48 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
-namespace eckit_test {
+namespace eckit {
+namespace test {
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-class TestLog : public Tool {
-public:
-
-    TestLog(int argc,char **argv): Tool(argc,argv) {}
-
-    virtual void run();
-
-    void test_debug();
-    void test_info();
-    void test_warning();
-    void test_error();
-    void test_panic();
-    void test_strerr();
-};
-
-
-void TestLog::test_debug()
-{
+CASE ( "test_debug" ) {
     Log::debug()         << "debug message 1" << std::endl;
 }
 
-void TestLog::test_info()
-{
+CASE ( "test_info" ) {
     Log::info()         << "info message 1" << std::endl;
 }
 
-void TestLog::test_warning()
-{
+CASE ( "test_warning" ) {
     Log::warning()         << "warning message 1" << std::endl;
 }
 
-void TestLog::test_error()
-{
+CASE ( "test_error" ) {
     Log::error()         << "error message 1" << std::endl;
 }
 
-void TestLog::test_panic()
-{
+CASE ( "test_panic" ) {
     Log::panic()         << "panic message 1" << std::endl;
 }
 
-void TestLog::test_strerr()
-{
+CASE ( "test_strerr" ) {
     LocalPathName p("/tmp/edfpmjq3480hfnsribnzasdfibv");
     p.unlink();
 }
 
-void TestLog::run()
-{
-    test_debug();
-    test_info();
-    test_warning();
-    test_error();
-    test_panic();
-    test_strerr();
-}
+//-----------------------------------------------------------------------------
 
-
-} // namespace eckit_test
-
-//----------------------------------------------------------------------------------------------------------------------
+} // namespace test
+} // namespace eckit
 
 int main(int argc,char **argv)
 {
-    eckit_test::TestLog app(argc,argv);
-    return app.start();
+    return run_tests ( argc, argv );
 }
-

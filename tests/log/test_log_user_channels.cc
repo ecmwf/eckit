@@ -9,29 +9,25 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_user_channels
-
 #include <iostream>
-
-#include "ecbuild/boost_test_framework.h"
 
 #include "eckit/log/Channel.h"
 #include "eckit/log/ColouringTarget.h"
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/runtime/Main.h"
 
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/Test.h"
 
+using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE(Setup);
+namespace eckit {
+namespace test {
 
-BOOST_AUTO_TEST_SUITE(test_eckit_user_log_channels)
+//-----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE(test_eckit_user_log_channel_registration) {
+CASE ( "test_eckit_user_log_channel_registration" ) {
 
     // FIXME: re-enable this test
 
@@ -40,6 +36,13 @@ BOOST_AUTO_TEST_CASE(test_eckit_user_log_channel_registration) {
 //    BOOST_CHECK_NO_THROW( Log::channel("mychannel") << "TEST MY VERY OWN CHANNEL" << std::endl );
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+} // namespace test
+} // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}
+

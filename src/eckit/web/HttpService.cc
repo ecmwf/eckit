@@ -23,8 +23,13 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
+static bool showHttpRequests() {
+	static bool show = Resource<bool>("showHttpRequests", true);
+	return show;
+}
+
 HttpService::HttpService(int port):
-	NetService(port, true)
+	NetService(port, showHttpRequests())
 {
 }
 

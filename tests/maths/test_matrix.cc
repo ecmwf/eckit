@@ -8,25 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_matrix
-
-#include "ecbuild/boost_test_framework.h"
 
 #include "eckit/maths/Matrix.h"
+#include "eckit/types/FloatCompare.h"
+
+#include "eckit/testing/Test.h"
+
+using namespace std;
+using namespace eckit;
+using namespace eckit::testing;
+using namespace eckit::types;
+
+namespace eckit {
+namespace test {
 
 //-----------------------------------------------------------------------------
 
-namespace eckit_test {}
-
-//-----------------------------------------------------------------------------
-
-using namespace eckit_test;
-
-BOOST_AUTO_TEST_SUITE( test_eckit_matrix )
-
-//-----------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_determinant )
+CASE ( "test_determinant" )
 {
   typedef eckit::maths::Matrix<double> Matrix;
 
@@ -37,11 +35,11 @@ BOOST_AUTO_TEST_CASE( test_determinant )
   m(3,0) =  1.;  m(3,1) =  5.; m(3,2) =  5.; m(3,3) =  3.; m(3,4) =  2.;
   m(4,0) =  1.;  m(4,1) =  3.; m(4,2) =  6.; m(4,3) =  8.; m(4,4) = 10.;
 
-  BOOST_CHECK_CLOSE( m.determinant(), 1124, 1.e-10 );
+  EXPECT ( is_approximately_equal( m.determinant(), 1124., 1.e-10 ) );
 }
 
 //-----------------------------------------------------------------------------
-BOOST_AUTO_TEST_CASE( test_inverse )
+CASE ( "test_inverse" )
 {
   typedef eckit::maths::Matrix<double> Matrix;
 
@@ -72,13 +70,20 @@ BOOST_AUTO_TEST_CASE( test_inverse )
   // Verify results
   for( int i=0; i<m.rows(); ++i) {
     for( int j=0; j<m.cols(); ++j) {
-      BOOST_CHECK_CLOSE(mi(i,j),minv(i,j),1.e-4);
-      if( i==j ) BOOST_CHECK_CLOSE( I(i,j),1.,1.e-8);
-      else BOOST_CHECK_SMALL( I(i,j), 1.e-10 );
+      EXPECT ( is_approximately_equal ( mi(i,j),minv(i,j),1.e-4 ) );
+      if( i==j ) EXPECT( is_approximately_equal( I(i,j), 1., 1.e-8 ) );
+      else EXPECT ( is_approximately_equal ( I(i,j), 0., 1.e-10 ) );
     }
   }
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+} // namespace test
+} // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}
+

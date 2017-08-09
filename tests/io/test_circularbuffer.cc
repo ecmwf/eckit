@@ -12,25 +12,21 @@
 #include <iostream>
 #include <string>
 
-#define BOOST_TEST_MODULE test_eckit_io
 #include "eckit/eckit_config.h"
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/io/CircularBuffer.h"
-#include "eckit/testing/Setup.h"
+
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE( Setup );
+namespace eckit {
+namespace test {
 
-BOOST_AUTO_TEST_SUITE( test_eckit_circularbuffer )
+//-----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( test_eckit_circularbuffer )
+CASE ( "test_eckit_circularbuffer" )
 {
     CircularBuffer buffer(20);
 
@@ -50,20 +46,24 @@ BOOST_AUTO_TEST_CASE( test_eckit_circularbuffer )
         }
 
         char q[26];
-        BOOST_CHECK_EQUAL(buffer.read(q, 26), 26);
-        BOOST_CHECK_EQUAL(lower, std::string(q, q + 26));
+        EXPECT(buffer.read(q, 26) == 26);
+        EXPECT(lower == std::string(q, q + 26));
 
-        BOOST_CHECK_EQUAL(buffer.read(q, 26), 26);
-        BOOST_CHECK_EQUAL(upper, std::string(q, q + 26));
+        EXPECT(buffer.read(q, 26) == 26);
+        EXPECT(upper == std::string(q, q + 26));
     }
 
 
 }
 
+//-----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------
+} // namespace test
+} // namespace eckit
 
-BOOST_AUTO_TEST_SUITE_END()
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}
 
-// ----------------------------------------------------------------------------------------
 

@@ -23,7 +23,9 @@ void InstantTCPSocketHandle::print(std::ostream& s) const
 
 
 InstantTCPSocketHandle::InstantTCPSocketHandle(TCPSocket& s):
-    connection_(s)
+    connection_(s),
+    read_(true),
+    position_(0)
 {
 }
 
@@ -33,11 +35,15 @@ InstantTCPSocketHandle::~InstantTCPSocketHandle()
 
 Length InstantTCPSocketHandle::openForRead()
 {
+    read_ = true;
+    position_ = 0;
     return 0;
 }
 
 void InstantTCPSocketHandle::openForWrite(const Length&)
 {
+    read_ = false;
+    position_ = 0;
 }
 
 void InstantTCPSocketHandle::openForAppend(const Length&)
@@ -47,12 +53,20 @@ void InstantTCPSocketHandle::openForAppend(const Length&)
 
 long InstantTCPSocketHandle::read(void* buffer, long length)
 {
-    return connection_.read(buffer, length);
+    long n = connection_.read(buffer, length);
+    if (n > 0) {
+        position_ += n;
+    }
+    return n;
 }
 
 long InstantTCPSocketHandle::write(const void* buffer, long length)
 {
-    return connection_.write(buffer, length);
+    long n =  connection_.write(buffer, length);
+    if (n > 0) {
+        position_ += n;
+    }
+    return n;
 }
 
 void InstantTCPSocketHandle::close()
@@ -61,14 +75,21 @@ void InstantTCPSocketHandle::close()
 
 void InstantTCPSocketHandle::rewind()
 {
-    NOTIMP;
+    seek(0);
 }
 
 Offset InstantTCPSocketHandle::seek(const Offset& o) {
 
-    if (o != Offset(0)) {
+
+    if (o < position_) {
         NOTIMP;
     }
+
+    while (position_ < o) {
+        char c[10240];
+        read(c, std::min(sizeof(c), size_t(o - position_)));
+    }
+
     return o;
 }
 

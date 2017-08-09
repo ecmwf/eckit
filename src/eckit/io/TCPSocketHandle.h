@@ -72,6 +72,9 @@ private:
 	InstantTCPSocketHandle& operator=(const InstantTCPSocketHandle&);
 
 
+	bool read_;
+	Offset position_;
+
 // -- Class members
 
 

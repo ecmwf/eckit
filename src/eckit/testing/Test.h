@@ -238,7 +238,12 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
     do { \
         ptrdiff_t _a_size = a_end - a_begin; \
         ptrdiff_t _b_size = b_end - b_begin; \
-        EXPECT( _a_size == _b_size ); \
+        if ( _a_size != _b_size ) { \
+            std::stringstream ss; \
+            ss << "EXPECT_ALL_EQUAL condition failed, sizes are different: " \
+               << " (a: " << _a_size << ", b: " << _b_size << ")"; \
+            throw eckit::testing::TestException(ss.str(), Here()); \
+        } \
         for (int _aa = 0, _bb = 0; _aa < _a_size || _bb < _b_size; _aa++, _bb++) { \
             if ( !( *(a_begin + _aa) == *(b_begin + _bb) )) { \
                 std::stringstream ss; \

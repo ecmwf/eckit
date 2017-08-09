@@ -51,6 +51,7 @@ public:
 	virtual void close();
 	virtual void rewind();
 	virtual void print(std::ostream&) const;
+	virtual Offset seek(const Offset&);
 
 	// From Streamable
 

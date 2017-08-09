@@ -64,6 +64,14 @@ void InstantTCPSocketHandle::rewind()
     NOTIMP;
 }
 
+Offset InstantTCPSocketHandle::seek(const Offset& o) {
+
+    if (o != Offset(0)) {
+        NOTIMP;
+    }
+    return o;
+}
+
 //-----------------------------------------------------------------------------
 
 TCPSocketHandle::TCPSocketHandle(TCPSocket& socket):

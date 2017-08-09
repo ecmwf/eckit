@@ -28,6 +28,22 @@ namespace test {
 
 typedef std::vector<Test> Tests;
 
+namespace unequal_arrays {
+    std::vector<int> a = { 1, 2, 3 };
+    std::vector<int> b = { 1, 2, 3, 4 };
+    int arr[3] = { 1, 2, 4 };
+    std::vector<string> s = { "1", "22", "333" };
+    std::string arr_s[3] = { "1", "22", "444" };
+}
+
+namespace equal_arrays {
+    std::vector<int> a = { 1, 2, 3 };
+    std::vector<int> b = { 1, 2, 3 };
+    int arr[3] = { 1, 2, 3 };
+    std::vector<string> s = { "1", "22", "333" };
+    std::string arr_s[3] = { "1", "22", "333" };
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 // These unit tests test the eckit testing framework itself.
@@ -213,7 +229,59 @@ Tests tests = {
             }
         }
 
-    }}
+    }},
+    { CASE( "EXPECT_ALL_EQUAL compares equal arrays correctly" ) {
+        using namespace eckit::test::equal_arrays;
+        EXPECT_ALL_EQUAL( &a[0], &a[0] + 3,   &b[0], &b[0] + 3 );
+        EXPECT_ALL_EQUAL( a.begin(), a.end(), &b[0], &b[0] + 3 );
+        EXPECT_ALL_EQUAL( a.begin(), a.end(), b.begin(), b.end() );
+        EXPECT_ALL_EQUAL( &a[0], &a[0] + 3, arr, arr + 3 );
+        EXPECT_ALL_EQUAL( a.begin(), a.end(), arr, arr + 3 );
+
+        EXPECT_ALL_EQUAL( s.begin(), s.end(), arr_s, arr_s + 3 );
+        EXPECT_ALL_EQUAL( &s[0], &s[0] + 3, arr_s, arr_s + 3 );
+    }},
+    { CASE("EXPECT_ALL_EQUAL compares unequal arrays correctly") {
+        // -- There is no "EXPECT_NOT_ALL_EQUAL" or equivalent, so the best way to test
+        //    correct failures is to put each test inside a case and check that the correct
+        //    number of cases fail.
+        Tests tests = {
+            { CASE( "Should pass" ) {
+                using namespace eckit::test::unequal_arrays;
+                EXPECT_ALL_EQUAL( &a[0], &a[0] + 3,   &b[0], &b[0] + 3 ); // Should pass
+                EXPECT_ALL_EQUAL( a.begin(), a.end(), &b[0], &b[0] + 3 ); // Should pass
+            }},
+            { CASE ( "Should fail, wrong values (1 != 2) ") {
+                using namespace eckit::test::unequal_arrays;
+                EXPECT_ALL_EQUAL( a.begin(), a.end(), &b[1], &b[1] + 3 );
+            }},
+            { CASE ( "Should fail, wrong size") {
+                using namespace eckit::test::unequal_arrays;
+                EXPECT_ALL_EQUAL( &a[0], &a[0] + 3,   b.begin(), b.end() );
+            }},
+            { CASE ( "Should fail, wrong size") {
+                using namespace eckit::test::unequal_arrays;
+                EXPECT_ALL_EQUAL( a.begin(), a.end(), b.begin(), b.end() );
+            }},
+            { CASE ( "Should fail, wrong values (3 != 4)") {
+                using namespace eckit::test::unequal_arrays;
+                EXPECT_ALL_EQUAL( &a[0], &a[0] + 3, arr, arr + 3 );
+            }},
+            { CASE ( "Should fail, wrong values (3 != 4)") {
+                using namespace eckit::test::unequal_arrays;
+                EXPECT_ALL_EQUAL( a.begin(), a.end(), arr, arr + 3 );
+            }},
+            { CASE ( "Should fail, wrong values (333 != 444)") {
+                using namespace eckit::test::unequal_arrays;
+                EXPECT_ALL_EQUAL( s.begin(), s.end(), arr_s, arr_s + 3 );
+            }},
+            { CASE ( "Should fail, wrong values (333 != 444)") {
+                using namespace eckit::test::unequal_arrays;
+                EXPECT_ALL_EQUAL( &s[0], &s[0] + 3, arr_s, arr_s + 3 );
+            }},
+        };
+        EXPECT( 7 == run( tests , TestVerbosity::Silent ) ); // Total of 7 tests ^ should fail.
+    }},
 };
 
 //----------------------------------------------------------------------------------------------------------------------

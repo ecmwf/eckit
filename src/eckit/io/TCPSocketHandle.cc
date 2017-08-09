@@ -80,7 +80,7 @@ void InstantTCPSocketHandle::rewind()
 
 Offset InstantTCPSocketHandle::seek(const Offset& o) {
 
-
+    ASSERT(read_);
     if (o < position_) {
         NOTIMP;
     }

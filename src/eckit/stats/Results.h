@@ -45,15 +45,10 @@ public:
 
     // -- Constructors
 
-    Results(size_t dimensions=1) {
-        if (dimensions) {
-            resize(dimensions);
-        }
-    }
+    Results(size_t dimensions=1);
 
     // -- Destructor
-
-    virtual ~Results() {}
+    // None
 
     // -- Convertors
     // None
@@ -71,7 +66,6 @@ public:
             size_t referenceCounter=1 ) const;
 
     using std::vector< results_entry_t >::size;
-    using std::vector< results_entry_t >::resize;
 
     size_t& counter              (const std::string& name, size_t which=0);
     double& absoluteQuantity     (const std::string& name, size_t which=0);
@@ -96,7 +90,7 @@ private:
 
     // -- Methods
 
-    virtual void print(std::ostream&) const;
+    void print(std::ostream&) const;
 
     // -- Overridden methods
     // None

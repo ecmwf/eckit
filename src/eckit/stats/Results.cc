@@ -94,6 +94,11 @@ bool compare_integers(const map_integer_t& a, const map_integer_t& b) {
 }  // (anonymous namespace)
 
 
+Results::Results(size_t dimensions) : vector(dimensions) {
+    ASSERT(!empty());
+}
+
+
 bool Results::compare(
         const Results& other,
         double absoluteTolerance,

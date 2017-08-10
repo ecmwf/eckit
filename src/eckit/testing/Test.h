@@ -234,27 +234,6 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
         throw eckit::testing::TestException("Exception expected but was not thrown", Here()); \
     } while(false)
 
-#define EXPECT_ALL_EQUAL(a_begin, a_end, b_begin, b_end) \
-    do { \
-        ptrdiff_t _a_size = a_end - a_begin; \
-        ptrdiff_t _b_size = b_end - b_begin; \
-        if ( _a_size != _b_size ) { \
-            std::stringstream ss; \
-            ss << "EXPECT_ALL_EQUAL condition failed, sizes are different: " \
-               << " (a: " << _a_size << ", b: " << _b_size << ")"; \
-            throw eckit::testing::TestException(ss.str(), Here()); \
-        } \
-        for (int _aa = 0, _bb = 0; _aa < _a_size || _bb < _b_size; _aa++, _bb++) { \
-            if ( !( *(a_begin + _aa) == *(b_begin + _bb) )) { \
-                std::stringstream ss; \
-                ss << "EXPECT_ALL_EQUAL condition failed at index: " << _aa \
-                   << " ( " << *(a_begin + _aa) << " != " << *(b_begin + _bb) << " )"; \
-                throw eckit::testing::TestException(ss.str(), Here()); \
-            } \
-        }\
-    } while (false)
-
-
 #define SETUP(name) \
     int _test_num = 0; \
     int _test = 0; \

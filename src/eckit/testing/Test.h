@@ -15,14 +15,15 @@
 #ifndef eckit_testing_Test_h
 #define eckit_testing_Test_h
 
+#include <vector>
+#include <sstream>
+#include <string>
+
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
 
-#include <vector>
-#include <sstream>
-#include <string>
 
 namespace eckit {
 namespace testing {
@@ -41,7 +42,7 @@ public:
 
 class Test {
 
-public: // methods
+public:  // methods
 
     Test(const std::string& description, void (*testFn)(std::string&)) :
         description_(description),
@@ -60,7 +61,7 @@ public: // methods
         }
     }
 
-private: // members
+private:  // members
 
     std::string description_;
     std::string subsection_;
@@ -90,54 +91,54 @@ public:
 /// and STL vectors. Does not copy or modify the original array. Does not work on non-contiguous data sets.
 /// Note that STL containers can (and should) use the built-in comparison operators (==, !=, >=, etc.) instead.
 template< typename T >
-class array_view {
+class ArrayView {
 public:
 
     // -- Constructors
-    array_view(const T* data, size_t size) : data_(data), size_(size) {}
-    array_view(const T* begin, const T* end) : data_(begin), size_(end-begin) {}
-    array_view(const std::vector<T> & vec ) : data_(&vec[0]), size_(vec.size()) {}
+    ArrayView(const T* data, size_t size) : data_(data), size_(size) {}
+    ArrayView(const T* begin, const T* end) : data_(begin), size_(end-begin) {}
+    explicit ArrayView(const std::vector<T> & vec) : data_(&vec[0]), size_(vec.size()) {}
 
     // -- Accessors
     const T& operator[](int i) const { return data_[i]; }
     const T& at(int i) const { return data_[i]; }
     const size_t size() const { return size_; }
     const T * data() const { return data_; }
-    
+
     // -- Comparison Operators
     template < typename U >
-    bool operator==(const array_view<U> & other) const {
-        return compare_equal_( other.data(), other.size() );
-    }
-    
-    template < typename U >
-    bool operator==(const std::vector<U> & other) const {
-        return compare_equal_( &other[0], other.size() );
-    }
-    
-    template < typename U >
-    bool operator!=(const array_view<U> & other) const {
-        return !compare_equal_( other.data(), other.size() );
-    }
-    
-    template < typename U >
-    bool operator!=(const std::vector<U> & other) const {
-        return !compare_equal_( &other[0], other.size() );
+    bool operator==(const ArrayView<U> & other) const {
+        return compareEqual_( other.data(), other.size() );
     }
 
     template < typename U >
-    bool is_approximately_equal( const array_view<U> & other, const U tolerance) const {
-        return compare_approx_equal_( other.data(), other.size(), tolerance );
+    bool operator==(const std::vector<U> & other) const {
+        return compareEqual_( &other[0], other.size() );
+    }
+
+    template < typename U >
+    bool operator!=(const ArrayView<U> & other) const {
+        return !compareEqual_( other.data(), other.size() );
+    }
+
+    template < typename U >
+    bool operator!=(const std::vector<U> & other) const {
+        return !compareEqual_( &other[0], other.size() );
+    }
+
+    template < typename U >
+    bool isApproximatelyEqual(const ArrayView<U> & other, const U tolerance) const {
+        return compareApproxEqual_( other.data(), other.size(), tolerance );
     }
     template < typename U >
-    bool is_approximately_equal( const std::vector<U> & other, const U tolerance) const {
-        return compare_approx_equal_( &other[0], other.size(), tolerance );
-    } 
+    bool isApproximatelyEqual(const std::vector<U> & other, const U tolerance) const {
+        return compareApproxEqual_( &other[0], other.size(), tolerance );
+    }
 
 private:
     // -- Private Methods
     template < typename U >
-    bool compare_equal_( const U * data, const size_t size ) const {
+    bool compareEqual_(const U * data, const size_t size) const {
         if ( size != this->size() ) return false;
         if ( size == 0 ) return true;
         for ( int i = 0; i < this->size(); i++ )
@@ -147,11 +148,11 @@ private:
     }
 
     template< typename U >
-    bool compare_approx_equal_( const U * data, const size_t size, const U epsilon ) const {
+    bool compareApproxEqual_(const U * data, const size_t size, const U epsilon) const {
         if ( size != this->size() ) return false;
         if ( size == 0 ) return true;
         for ( int i = 0; i < this->size(); i++ ) {
-            if ( ! eckit::types::is_approximately_equal(this->at(i), data[i], epsilon ))
+            if ( !eckit::types::is_approximately_equal(this->at(i), data[i], epsilon))
                 return false;
         }
         return true;
@@ -163,46 +164,46 @@ private:
 };
 
 template <typename T>
-static array_view<T> make_view( const T * data, size_t size ) { 
-    return array_view<T>(data,size); 
+static ArrayView<T> make_view(const T * data, size_t size) {
+    return ArrayView<T>(data, size);
 }
 template <typename T>
-static array_view<T> make_view( const T * begin, const T * end ) { 
-    return array_view<T>(begin,end); 
+static ArrayView<T> make_view(const T * begin, const T * end) {
+    return ArrayView<T>(begin, end);
 }
 template <typename T>
-static array_view<T> make_view( const std::vector<T> & source ) { 
-    return array_view<T>( source ); 
+static ArrayView<T> make_view(const std::vector<T> & source) {
+    return ArrayView<T>( source );
 }
 
 template< typename U >
-static bool is_approximately_equal(const array_view<U> a, const array_view<U> b, const U epsilon) {
-    return a.is_approximately_equal(b, epsilon);
+static bool is_approximately_equal(const ArrayView<U> a, const ArrayView<U> b, const U epsilon) {
+    return a.isApproximatelyEqual(b, epsilon);
 }
 
 template< typename U >
-static bool is_approximately_equal(const array_view<U> a, const std::vector<U> b, const U epsilon) {
-    return a.is_approximately_equal(b, epsilon);
+static bool is_approximately_equal(const ArrayView<U> a, const std::vector<U> b, const U epsilon) {
+    return a.isApproximatelyEqual(b, epsilon);
 }
 
 template< typename U >
-static bool is_approximately_equal(const std::vector<U> a, const array_view<U> b, const U epsilon) {
-    return b.is_approximately_equal(a, epsilon);
+static bool is_approximately_equal(const std::vector<U> a, const ArrayView<U> b, const U epsilon) {
+    return b.isApproximatelyEqual(a, epsilon);
 }
 
 // Note: std has no approx_equal comparison for two vectors
 template< typename U >
 static bool is_approximately_equal(const std::vector<U> a, const std::vector<U> b, const U epsilon) {
-    return array_view<U>(a).is_approximately_equal(b, epsilon);
+    return ArrayView<U>(a).isApproximatelyEqual(b, epsilon);
 }
 
 template < typename U >
-bool operator==(const std::vector<U> & lhs, const array_view<U> & rhs) {
+bool operator==(const std::vector<U> & lhs, const ArrayView<U> & rhs) {
     return rhs == lhs;
 }
 
 template < typename U >
-bool operator!=(const std::vector<U> & lhs, const array_view<U> & rhs) {
+bool operator!=(const std::vector<U> & lhs, const ArrayView<U> & rhs) {
     return rhs != lhs;
 }
 
@@ -211,7 +212,7 @@ bool operator!=(const std::vector<U> & lhs, const array_view<U> & rhs) {
 enum  TestVerbosity { Silent = 0, Summary = 1, AllFailures = 2};
 enum  InitEckitMain { NoInitEckitMain = 0, DoInitEckitMain = 1 };
 
-inline int run( std::vector<Test>& tests, TestVerbosity v = AllFailures) {
+inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
     // Keep track of failures
     std::vector<std::string> failures;
@@ -222,7 +223,7 @@ inline int run( std::vector<Test>& tests, TestVerbosity v = AllFailures) {
             eckit::Log::info() << "Eckit testing found no test cases to run." << std::endl;
         return -1;
     }
-    
+
     // Suppress noisy exceptions in eckit (we may throw many, and intentionally!!!)
     ::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", true);
     ::setenv("ECKIT_ASSERT_FAILED_IS_SILENT", "1", true);
@@ -266,16 +267,16 @@ inline int run( std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
 }
 
-int run_tests_main( std::vector<Test>& tests, int argc, char * argv[], bool initEckitMain = true ) {
+int run_tests_main(std::vector<Test>& tests, int argc, char * argv[], bool initEckitMain = true) {
     if (initEckitMain)
-        eckit::Main::initialise( argc, argv );
+        eckit::Main::initialise(argc, argv);
     eckit::Log::info() << "Running " << tests.size() << " tests:" << std::endl;
-    int failures = run( tests );
+    int failures = run(tests);
     eckit::Log::info() << failures << " tests failed out of " << tests.size() << "." << std::endl;
     return failures;
 }
 
-int run_tests( std::vector<Test>& tests, int argc, char* argv[]) {
+int run_tests(std::vector<Test>& tests, int argc, char* argv[]) {
     return run_tests_main( tests, argc, argv );
 }
 
@@ -285,13 +286,13 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace testing
-} // namespace eckit
+}  // namespace testing
+}  // namespace eckit
 
 // Helper macros for unique naming
 
-#define UNIQUE_NAME2( name, line ) UNIQUE_NAME( name, line )
-#define UNIQUE_NAME( name, line ) name ## line
+#define UNIQUE_NAME2(name, line) UNIQUE_NAME(name, line)
+#define UNIQUE_NAME(name, line) name ## line
 
 #ifndef ECKIT_TESTING_SELF_REGISTER_CASES
 #define ECKIT_TESTING_SELF_REGISTER_CASES 1
@@ -304,12 +305,12 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string&); \
 static TestRegister UNIQUE_NAME2(test_registration_, __LINE__)(description, &UNIQUE_NAME2(test_, __LINE__)); \
 void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
 
-#else // ECKIT_TESTING_SELF_REGISTER_CASES
+#else  // ECKIT_TESTING_SELF_REGISTER_CASES
 
-#define CASE(description, ... ) \
+#define CASE(description, ...) \
     description, [__VA_ARGS__](std::string& _test_subsection)
 
-#endif //ECKIT_TESTING_SELF_REGISTER_CASES
+#endif  // ECKIT_TESTING_SELF_REGISTER_CASES
 
 
 #define EXPECT(expr) \
@@ -317,7 +318,7 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
         if (!(expr)) { \
             throw eckit::testing::TestException("EXPECT condition failed: " #expr, Here()); \
         } \
-    } while(false)
+    } while (false)
 
 #define EXPECT_NOT(expr) \
     EXPECT(!(expr))
@@ -330,7 +331,7 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
             break; \
         } \
         throw eckit::testing::TestException("Expected exception (" #excpt ")not thrown in: " #expr, Here()); \
-    } while(false)
+    } while (false)
 
 
 // Convert to TestException
@@ -345,7 +346,7 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
         } catch (...) { \
             throw eckit::testing::TestException("Unexpected and unknown exception caught", Here()); \
         } \
-    } while(false)
+    } while (false)
 
 #define EXPECT_THROWS(expr) \
     do { \
@@ -355,7 +356,7 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
             break; \
         } \
         throw eckit::testing::TestException("Exception expected but was not thrown", Here()); \
-    } while(false)
+    } while (false)
 
 #define SETUP(name) \
     int _test_num = 0; \
@@ -374,4 +375,4 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
 //----------------------------------------------------------------------------------------------------------------------
 
 
-#endif // eckit_testing_Test_h
+#endif  // eckit_testing_Test_h

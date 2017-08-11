@@ -18,8 +18,6 @@
 // Disable warnings for old-style casts in these tests. They are intentional
 #pragma clang diagnostic ignored "-Wold-style-cast"
 
-using namespace std;
-using namespace eckit;
 using namespace eckit::testing;
 
 
@@ -60,7 +58,7 @@ Tests tests = {
 
     { CASE( "EXPECT creates an exception on failure" ) {
         Test fail = { CASE("F") { EXPECT( false ); } };
-        
+
         do {
             try { fail.run(); } catch ( const TestException& e ) { break; }
             throw eckit::testing::TestException("No exception thrown in EXPECT.", Here());
@@ -70,7 +68,7 @@ Tests tests = {
     { CASE( "EXPECT succeeds for success (true) and failure (false)" ) {
         Tests pass = {{ CASE("P") { EXPECT( true  ); } }};
         Tests fail = {{ CASE("F") { EXPECT( false ); } }};
-        
+
         EXPECT( 0 == run(pass, TestVerbosity::Silent) );
         EXPECT( 1 == run(fail, TestVerbosity::Silent) );
     }},
@@ -130,11 +128,11 @@ Tests tests = {
         EXPECT( 8 - 1 == 7 );
     }},
     { CASE( "run() returns the correct failure count" ) {
-        Tests pass   = {{ CASE( "P"  ) { EXPECT( 1==1 ); } }};
-        Tests fail_1 = {{ CASE( "F1" ) { EXPECT( 0==1 ); } }};
-        Tests fail_3 = {{ CASE( "F1" ) { EXPECT( 0==1 ); } },
-                         { CASE( "F2" ) { EXPECT( 0==1 ); } },
-                         { CASE( "F3" ) { EXPECT( 0==1 ); } }};
+        Tests pass   = {{ CASE( "P"  ) { EXPECT( 1 == 1 ); } }};
+        Tests fail_1 = {{ CASE( "F1" ) { EXPECT( 0 == 1 ); } }};
+        Tests fail_3 = {{ CASE( "F1" ) { EXPECT( 0 == 1 ); } },
+                         { CASE( "F2" ) { EXPECT( 0 == 1 ); } },
+                         { CASE( "F3" ) { EXPECT( 0 == 1 ); } }};
 
         EXPECT( 0 == run( pass   , TestVerbosity::Silent ) );
         EXPECT( 1 == run( fail_1 , TestVerbosity::Silent ) );
@@ -145,11 +143,11 @@ Tests tests = {
         EXPECT( -1 == run( empty , TestVerbosity::Silent ) );
     }},
     { CASE( "Setup creates a fresh fixture for each section" ) {
-        
+
         SETUP("Context") {
             int i = 7;
 
-            SECTION("S1") { 
+            SECTION("S1") {
                 i = 42;
             }
             SECTION("S2") {
@@ -220,58 +218,58 @@ Tests tests = {
         std::vector<int> b = { 1, 2, 3 };
         int arr[3] = { 1, 2, 3 };
 
-        std::vector<string> s = { "1", "22", "333" };
+        std::vector<std::string> s = { "1", "22", "333" };
         std::string arr_s[3] = { "1", "22", "333" };
-        
+
         std::vector<double> d1 = { 1., 2., 3. };
         std::vector<double> d2 = { 1., 2., 3. };
 
         // Check basic comparisons and initializations
-        EXPECT ( make_view( &a[0], &a[0] + 3)   == make_view( &b[0], &b[0] + 3 ) );
-        EXPECT ( make_view( &a[0], 3)           == make_view( &b[0], 3 ) );
-        EXPECT ( make_view( &a[0], &a[0] + 3 )  == make_view( arr, arr + 3) );
-        EXPECT ( make_view( &a[0], 3 )          == make_view( arr, 3 ) );
+        EXPECT ( make_view( a.data(), a.data() + 3)   == make_view( b.data(), b.data() + 3 ) );
+        EXPECT ( make_view( a.data(), 3)              == make_view( b.data(), 3 ) );
+        EXPECT ( make_view( a.data(), a.data() + 3 )  == make_view( arr, arr + 3) );
+        EXPECT ( make_view( a.data(), 3 )             == make_view( arr, 3 ) );
         EXPECT ( make_view( a ) == make_view( arr, arr + 3 ) );
         EXPECT ( make_view( s ) == make_view( arr_s, arr_s + 3) );
-        EXPECT ( make_view( &s[0], &s[0] + 3)   == make_view( arr_s, arr_s + 3) );
-        EXPECT ( make_view( a ) == make_view( &b[0], &b[0] + 3 ) );
+        EXPECT ( make_view( s.data(), s.data() + 3)   == make_view( arr_s, arr_s + 3) );
+        EXPECT ( make_view( a ) == make_view( b.data(), b.data() + 3 ) );
         EXPECT ( make_view( a ) == make_view( b ) );
-        EXPECT ( make_view( &d1[0], 3) == make_view( &d2[0], 3 ) );
-        EXPECT ( make_view( &d1[0], 3) == make_view( &d2[0], 3 ) );
+        EXPECT ( make_view( d1.data(), 3) == make_view( d2.data(), 3 ) );
+        EXPECT ( make_view( d1.data(), 3) == make_view( d2.data(), 3 ) );
 
-        EXPECT ( make_view( &a[0], &a[0] + 3 ).size() == 3 );
-        EXPECT ( make_view( &a[0], 3 ).size()         == 3 );
-        EXPECT ( make_view( a ).size()               == a.size() );
-        EXPECT ( make_view( s ).size()               == s.size() );
+        EXPECT ( make_view( a.data(), a.data() + 3 ).size() == 3 );
+        EXPECT ( make_view( a.data(), 3 ).size()            == 3 );
+        EXPECT ( make_view( a ).size()                      == a.size() );
+        EXPECT ( make_view( s ).size()                      == s.size() );
 
         // Check sub-array comparisons
-        EXPECT ( make_view( &a[0], &a[0] + 2)   == make_view( &b[0], &b[0] + 2 ) );
-        EXPECT ( make_view( &a[1], &a[1] + 2)   == make_view( &b[1], &b[1] + 2 ) );
-        EXPECT ( make_view( &a[1], &a[1] + 2)   != make_view( &b[0], &b[0] + 2 ) ); // values not equal
-        EXPECT ( make_view( &a[0], &a[0] + 3)   != make_view( &b[0], &b[0] + 2 ) ); // not same size
-        EXPECT ( make_view( &a[0], 2)           == make_view( &b[0], 2 ) );
-        EXPECT ( make_view( &a[0], 2)           == make_view( &b[0], 2 ) );
+        EXPECT ( make_view( a.data(), a.data() + 2)     == make_view( b.data(), b.data() + 2 ) );
+        EXPECT ( make_view( &a[1], &a[1] + 2)           == make_view( &b[1], &b[1] + 2 ) );
+        EXPECT ( make_view( &a[1], &a[1] + 2)           != make_view( b.data(), b.data() + 2 ) );  // values not equal
+        EXPECT ( make_view( a.data(), a.data() + 3)     != make_view( b.data(), b.data() + 2 ) );  // not same size
+        EXPECT ( make_view( a.data(), 2)                == make_view( b.data(), 2 ) );
+        EXPECT ( make_view( a.data(), 2)                == make_view( b.data(), 2 ) );
 
         // Check != is the same as !(==)
-        EXPECT ( ! (make_view( &a[0], &a[0] + 3)   != make_view( &b[0], &b[0] + 3 ) ) );
-        EXPECT ( ! (make_view( &a[0], &a[0] + 3)   == make_view( &b[0], &b[0] + 2 ) ) ); // not same size
-        EXPECT ( ! (make_view( &a[1], &a[1] + 2)   == make_view( &b[0], &b[0] + 2 ) ) ); // values not equal
+        EXPECT ( !(make_view( a.data(), a.data() + 3)   != make_view( b.data(), b.data() + 3 ) ) );
+        EXPECT ( !(make_view( a.data(), a.data() + 3)   == make_view( b.data(), b.data() + 2 ) ) );  // not same size
+        EXPECT ( !(make_view( &a[1], &a[1] + 2)         == make_view( b.data(), b.data() + 2 ) ) );  // values not equal
 
-        // Check comparisons against std::vector        
+        // Check comparisons against std::vector
         EXPECT ( a == make_view( b ) );
         EXPECT ( make_view( a ) == b );
-    
+
         // Check type recognition of make_view vs explicit constructor
-        EXPECT ( array_view<int>( a ) == make_view( a )  );
-        EXPECT ( array_view<std::string>( s ) == make_view( s ) );
+        EXPECT ( ArrayView<int>( a ) == make_view( a )  );
+        EXPECT ( ArrayView<std::string>( s ) == make_view( s ) );
 
         // Check approximately equals
         d2[2] = 2.99;
-        EXPECT ( is_approximately_equal( make_view( d1), make_view( d2 ), 0.02 ));     
+        EXPECT ( is_approximately_equal( make_view( d1), make_view( d2 ), 0.02 ));
         EXPECT ( !is_approximately_equal( make_view( d1 ), make_view(  d2 ), 0.0001 ));      // array vs array
-        EXPECT ( !is_approximately_equal( d1, d2, 0.0001 ));                                                              // vector vs vector    
-        EXPECT ( !is_approximately_equal( make_view( d1 ), d2, 0.0001 ));                                 // array vs vector
-        EXPECT ( !is_approximately_equal( d1, make_view( d2), 0.0001 ));                                 // vector vs array
+        EXPECT ( !is_approximately_equal( d1, d2, 0.0001 ));                                 // vector vs vector
+        EXPECT ( !is_approximately_equal( make_view( d1 ), d2, 0.0001 ));                    // array vs vector
+        EXPECT ( !is_approximately_equal( d1, make_view( d2), 0.0001 ));                     // vector vs array
 
 
     }},
@@ -279,12 +277,12 @@ Tests tests = {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
 
 
 int main(int argc, char* argv[]) {
     eckit::Main::initialise(argc, argv);
-    return run_tests(eckit::test::tests, argc, argv);
+    return eckit::testing::run_tests(eckit::test::tests, argc, argv);
 }

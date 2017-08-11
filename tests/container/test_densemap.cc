@@ -10,104 +10,98 @@
 
 #include <cmath>
 
-#define BOOST_TEST_MODULE eckit_test_densemap
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/container/DenseMap.h"
-
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE(Setup);
+namespace eckit {
+namespace test {
 
-BOOST_AUTO_TEST_SUITE( test_eckit_container_densemap )
+//-----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------
+CASE( "test_eckit_container_densemap_0" ) {
 
-BOOST_AUTO_TEST_CASE( test_eckit_container_densemap_0 ) {
+   DenseMap<std::string, int> m;
 
-   DenseMap<std::string,int> m;
+   EXPECT_NO_THROW( m.insert( "two",  2 ) );
+   EXPECT_NO_THROW( m.insert( "four", 4 ) );
+   EXPECT_NO_THROW( m.insert( "nine", 9 ) );
 
-   BOOST_CHECK_NO_THROW( m.insert( "two",  2 ) );
-   BOOST_CHECK_NO_THROW( m.insert( "four", 4 ) );
-   BOOST_CHECK_NO_THROW( m.insert( "nine", 9 ) );
-
-   BOOST_CHECK_EQUAL( m.size(), 3 );
+   EXPECT( m.size() == 3 );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_map_string_int ) {
-    DenseMap<std::string,int> m;
+CASE( "test_map_string_int" ) {
+    DenseMap<std::string, int> m;
 
     //
 
     m.insert( "two",  2 );
 
-	BOOST_CHECK( !m.sorted() );
+    EXPECT( !m.sorted() );
 
-	BOOST_CHECK( m.size() == 1 );
+    EXPECT( m.size() == 1 );
 
     m.sort();
 
-	BOOST_CHECK( m.sorted() );
+    EXPECT( m.sorted() );
 
-	BOOST_CHECK( m.get("two") == 2 );
+    EXPECT( m.get("two") == 2 );
 
     //
 
     m.insert( "four", 4 );
     m.insert( "nine", 9 );
 
-	BOOST_CHECK( !m.sorted() );
+    EXPECT( !m.sorted() );
 
     m.sort();
 
-	BOOST_CHECK( m.sorted() );
+    EXPECT( m.sorted() );
 
-	BOOST_CHECK( m.size() == 3 );
+    EXPECT( m.size() == 3 );
 
-	BOOST_CHECK( m.get("two") == 2 );
-	BOOST_CHECK( m.get("four") == 4 );
-	BOOST_CHECK( m.get("nine") == 9 );
+    EXPECT( m.get("two") == 2 );
+    EXPECT( m.get("four") == 4 );
+    EXPECT( m.get("nine") == 9 );
 
     // failed find
 
-	BOOST_CHECK( ! m.has("one") );
+    EXPECT( !m.has("one") );
 
     // replace an existing value
 
-    m.replace( "four", 44 );  
+    m.replace( "four", 44 );
     m.replace( "nine", 99 );
 
-	BOOST_CHECK( m.sorted() ); // still sorted
+    EXPECT( m.sorted() );  // still sorted
 
-	BOOST_CHECK( m.size() == 3 );
+    EXPECT( m.size() == 3 );
 
-	BOOST_CHECK( m.get("two") == 2 );
-	BOOST_CHECK( m.get("four") == 44 );
-	BOOST_CHECK( m.get("nine") == 99 );
+    EXPECT( m.get("two") == 2 );
+    EXPECT( m.get("four") == 44 );
+    EXPECT( m.get("nine") == 99 );
 
     // replace into non-existing
 
-	BOOST_CHECK( m.size() == 3 );
+    EXPECT( m.size() == 3 );
 
-    m.replace( "five", 555 );  
+    m.replace( "five", 555 );
 
-	BOOST_CHECK( !m.sorted() );
+    EXPECT( !m.sorted() );
     m.sort();
 
-	BOOST_CHECK( m.get("two") == 2 );
-	BOOST_CHECK( m.get("four") == 44 );
-	BOOST_CHECK( m.get("nine") == 99 );
-	BOOST_CHECK( m.get("five") == 555 );
+    EXPECT( m.get("two") == 2 );
+    EXPECT( m.get("four") == 44 );
+    EXPECT( m.get("nine") == 99 );
+    EXPECT( m.get("five") == 555 );
 
-	BOOST_CHECK( m.size() == 4 );
+    EXPECT( m.size() == 4 );
 
     //
     // std::cout << m << std::endl;
@@ -116,76 +110,85 @@ BOOST_AUTO_TEST_CASE( test_map_string_int ) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_map_int_string ) {
-    DenseMap<unsigned,std::string> m;
+CASE( "test_map_int_string" ) {
+    DenseMap<unsigned, std::string> m;
 
     //
 
     m.insert( 2, "two" );
 
-	BOOST_CHECK( !m.sorted() );
+    EXPECT( !m.sorted() );
 
-	BOOST_CHECK( m.size() == 1 );
+    EXPECT( m.size() == 1 );
 
     m.sort();
 
-	BOOST_CHECK( m.sorted() );
+    EXPECT( m.sorted() );
 
-	BOOST_CHECK( m.get(2) == "two" );
+    EXPECT( m.get(2) == "two" );
 
     //
 
     m.insert( 4, "four" );
     m.insert( 9, "nine" );
 
-	BOOST_CHECK( !m.sorted() );
+    EXPECT( !m.sorted() );
 
     m.sort();
 
-	BOOST_CHECK( m.sorted() );
+    EXPECT( m.sorted() );
 
-	BOOST_CHECK( m.size() == 3 );
+    EXPECT( m.size() == 3 );
 
-	BOOST_CHECK( m.get(2) == "two" );
-	BOOST_CHECK( m.get(4) == "four" );
-	BOOST_CHECK( m.get(9) == "nine" );
+    EXPECT( m.get(2) == "two" );
+    EXPECT( m.get(4) == "four" );
+    EXPECT( m.get(9) == "nine" );
 
     // failed find
 
-	BOOST_CHECK( m.find(1) == m.end() );
+    EXPECT( m.find(1) == m.end() );
 
     // replace an existing value
 
-    m.replace( 4, "FOUR" );  
+    m.replace( 4, "FOUR" );
     m.replace( 9, "NINE" );
 
-	BOOST_CHECK( m.sorted() ); // still sorted
+    EXPECT( m.sorted() );  // still sorted
 
-	BOOST_CHECK( m.size() == 3 );
+    EXPECT( m.size() == 3 );
 
-	BOOST_CHECK( m.get(2) == "two" );
-	BOOST_CHECK( m.get(4) == "FOUR" );
-	BOOST_CHECK( m.get(9) == "NINE" );
+    EXPECT( m.get(2) == "two" );
+    EXPECT( m.get(4) == "FOUR" );
+    EXPECT( m.get(9) == "NINE" );
 
     // replace into non-existing
 
-	BOOST_CHECK( m.size() == 3 );
+    EXPECT( m.size() == 3 );
 
-    m.replace( 5, "five" );  
+    m.replace( 5, "five" );
 
-	BOOST_CHECK( !m.sorted() );
+    EXPECT( !m.sorted() );
     m.sort();
 
-	BOOST_CHECK( m.get(2) == "two" );
-	BOOST_CHECK( m.get(5) == "five" );
-	BOOST_CHECK( m.get(4) == "FOUR" );
-	BOOST_CHECK( m.get(9) == "NINE" );
+    EXPECT( m.get(2) == "two" );
+    EXPECT( m.get(5) == "five" );
+    EXPECT( m.get(4) == "FOUR" );
+    EXPECT( m.get(9) == "NINE" );
+    EXPECT( m.get(9) == "NINE" );
 
-	BOOST_CHECK( m.size() == 4 );
+    EXPECT( m.size() == 4 );
 
     // std::cout << m << std::endl;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+}  // namespace test
+}  // namespace eckit
+
+int main(int argc, char **argv)
+{
+    return run_tests ( argc, argv );
+}
+
+

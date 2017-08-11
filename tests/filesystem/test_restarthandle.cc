@@ -19,13 +19,16 @@
 #include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"
 #include "eckit/io/HandleHolder.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
 namespace eckit {
 namespace test {
 
+//-----------------------------------------------------------------------------
 
 class Restart : public DataHandle, public HandleHolder {
     Length total_;
@@ -110,36 +113,26 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class TestMHHandle : public Tool {
+class TestMHHandle {
 public:
-
-    TestMHHandle(int argc, char **argv): Tool(argc, argv) {}
-
-    ~TestMHHandle() {}
-
-    virtual void run();
-
     void setup();
     void teardown();
-
     void test_write();
 
     PathName path1_;
     PathName path2_;
     PathName path3_;
-
 };
 
 
 void TestMHHandle::test_write()
 {
-    const char buf1 [] = "abcdefghijklmnopqrstuvwxyz";
-    const char buf2 [] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const char buf1[] = "abcdefghijklmnopqrstuvwxyz";
+    const char buf2[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     const size_t N = 1024 * 1024 * 64;
 
     // setformat(std::cout, Log::fullFormat);
-
 
     {
 
@@ -205,7 +198,7 @@ void TestMHHandle::test_write()
     }
 
     DataHandle* fh = path3_.fileHandle();
-    ASSERT(fh->compare(mh1));
+    EXPECT(fh->compare(mh1));
     delete fh;
 
     // fh->openForRead();
@@ -243,28 +236,27 @@ void TestMHHandle::teardown()
 }
 
 
-void TestMHHandle::run()
+CASE ("test_restarthandle")
 {
-    setup();
-
+    TestMHHandle test;
+    test.setup();
     try {
-        test_write();
+        test.test_write();
     } catch (...) {
-        teardown();
+        test.teardown();
         throw;
     }
-
-    teardown();
+    test.teardown();
 }
 
-} // namespace test
-} // namespace eckit
+//-----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------
+}  // namespace test
+}  // namespace eckit
 
 int main(int argc, char **argv)
 {
-    eckit::test::TestMHHandle app(argc, argv);
-    return app.start();
+    return run_tests ( argc, argv );
 }
+
 

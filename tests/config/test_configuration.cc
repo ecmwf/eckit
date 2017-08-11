@@ -8,50 +8,42 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_configuration
-
-#include "ecbuild/boost_test_framework.h"
-
 #include <fstream>
 
 #include "eckit/log/Log.h"
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/types/Types.h"
-#include "eckit/testing/Setup.h"
-
-namespace eckit {
-namespace test {
-    template<typename T> std::vector<T> make_vector( const T& t1, const T& t2 ) {
-        std::vector<T> result;
-        result.push_back(t1);
-        result.push_back(t2);
-        return result;
-    }
-    template<typename T> std::vector<T> make_vector( const T& t1, const T& t2, const T& t3 ) {
-        std::vector<T> result;
-        result.push_back(t1);
-        result.push_back(t2);
-        result.push_back(t3);
-        return result;
-    }
-}
-}
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
-using namespace eckit::test;
 using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
 
 //-----------------------------------------------------------------------------
 
-BOOST_GLOBAL_FIXTURE( Setup );
+template<typename T> std::vector<T> make_vector( const T& t1, const T& t2 ) {
+    std::vector<T> result;
+    result.push_back(t1);
+    result.push_back(t2);
+    return result;
+}
+template<typename T> std::vector<T> make_vector( const T& t1, const T& t2, const T& t3 ) {
+    std::vector<T> result;
+    result.push_back(t1);
+    result.push_back(t2);
+    result.push_back(t3);
+    return result;
+}
 
-BOOST_AUTO_TEST_SUITE( test_eckit_config )
+//-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_configuration_interface )
+CASE( "test_configuration_interface" )
 {
-    bool                value_bool            = bool(true); 
+    bool                value_bool            = bool(true);
     int                 value_int             = int(1);
     long                value_long            = long(2);
     size_t              value_size_t          = size_t(3);
@@ -64,7 +56,7 @@ BOOST_AUTO_TEST_CASE( test_configuration_interface )
     std::vector<float>  value_arr_float       = make_vector(1.234567f,2.345678f);
     std::vector<double> value_arr_double      = make_vector(1.234567,2.345678);
     std::vector<std::string> value_arr_string = make_vector(std::string("hello"),std::string("world"));
-  
+
     bool                      result_bool;
     int                       result_int;
     long                      result_long;
@@ -96,101 +88,101 @@ BOOST_AUTO_TEST_CASE( test_configuration_interface )
         local.set("arr_string", value_arr_string);
     }
     const Configuration& conf = local;
-  
-    BOOST_CHECK( ! conf.get("missing",result_bool)       );
-    BOOST_CHECK( ! conf.get("missing",result_int)        );
-    BOOST_CHECK( ! conf.get("missing",result_long)       );
-    BOOST_CHECK( ! conf.get("missing",result_size_t)     );
-    BOOST_CHECK( ! conf.get("missing",result_float)      );
-    BOOST_CHECK( ! conf.get("missing",result_double)     );
-    BOOST_CHECK( ! conf.get("missing",result_string)     );
-    BOOST_CHECK( ! conf.get("missing",result_arr_int)    );
-    BOOST_CHECK( ! conf.get("missing",result_arr_long)   );
-    BOOST_CHECK( ! conf.get("missing",result_arr_size_t) );
-    BOOST_CHECK( ! conf.get("missing",result_arr_float)  );
-    BOOST_CHECK( ! conf.get("missing",result_arr_double) );
-    BOOST_CHECK( ! conf.get("missing",result_arr_string) );
-  
-    BOOST_CHECK( conf.get("bool",       result_bool)       );
-    BOOST_CHECK( conf.get("int",        result_int)        );
-    BOOST_CHECK( conf.get("long",       result_long)       );
-    BOOST_CHECK( conf.get("size_t",     result_size_t)     );
-    BOOST_CHECK( conf.get("float",      result_float)      );
-    BOOST_CHECK( conf.get("double",     result_double)     );
-    BOOST_CHECK( conf.get("string",     result_string)     );
-    BOOST_CHECK( conf.get("arr_int",    result_arr_int)    );
-    BOOST_CHECK( conf.get("arr_long",   result_arr_long)   );
-    BOOST_CHECK( conf.get("arr_size_t", result_arr_size_t) );
-    BOOST_CHECK( conf.get("arr_float",  result_arr_float)  );
-    BOOST_CHECK( conf.get("arr_double", result_arr_double) );
-    BOOST_CHECK( conf.get("arr_string", result_arr_string) );
-  
-    BOOST_CHECK_EQUAL( result_bool,       value_bool      );
-    BOOST_CHECK_EQUAL( result_int,        value_int       );
-    BOOST_CHECK_EQUAL( result_long,       value_long      );
-    BOOST_CHECK_EQUAL( result_size_t,     value_size_t    );
-    BOOST_CHECK_EQUAL( result_float,      value_float     );
-    BOOST_CHECK_EQUAL( result_double,     value_double    );
-    BOOST_CHECK_EQUAL( result_string,     value_string    );
-    BOOST_CHECK_EQUAL( result_arr_int,    value_arr_int   );
-    BOOST_CHECK_EQUAL( result_arr_long,   value_arr_long  );
-    BOOST_CHECK_EQUAL( result_arr_size_t, value_arr_size_t);
-    BOOST_CHECK_EQUAL( result_arr_float,  value_arr_float );
-    BOOST_CHECK_EQUAL( result_arr_double, value_arr_double);
-    BOOST_CHECK_EQUAL( result_arr_string, value_arr_string);
 
-    BOOST_CHECK_EQUAL( conf.getBool          ("bool"),       value_bool       );
-    BOOST_CHECK_EQUAL( conf.getInt           ("int"),        value_int        );
-    BOOST_CHECK_EQUAL( conf.getLong          ("long"),       value_long       );
-    BOOST_CHECK_EQUAL( conf.getUnsigned      ("size_t"),     value_size_t     );
-    BOOST_CHECK_EQUAL( conf.getFloat         ("float"),      value_float      );
-    BOOST_CHECK_EQUAL( conf.getDouble        ("double"),     value_double     );
-    BOOST_CHECK_EQUAL( conf.getString        ("string"),     value_string     );
-    BOOST_CHECK_EQUAL( conf.getIntVector     ("arr_int"),    value_arr_int    );
-    BOOST_CHECK_EQUAL( conf.getLongVector    ("arr_long"),   value_arr_long   );
-    BOOST_CHECK_EQUAL( conf.getUnsignedVector("arr_size_t"), value_arr_size_t );
-    BOOST_CHECK_EQUAL( conf.getFloatVector   ("arr_float"),  value_arr_float  );
-    BOOST_CHECK_EQUAL( conf.getDoubleVector  ("arr_double"), value_arr_double );
-    BOOST_CHECK_EQUAL( conf.getStringVector  ("arr_string"), value_arr_string );
+    EXPECT( !conf.get("missing", result_bool)       );
+    EXPECT( !conf.get("missing", result_int)        );
+    EXPECT( !conf.get("missing", result_long)       );
+    EXPECT( !conf.get("missing", result_size_t)     );
+    EXPECT( !conf.get("missing", result_float)      );
+    EXPECT( !conf.get("missing", result_double)     );
+    EXPECT( !conf.get("missing", result_string)     );
+    EXPECT( !conf.get("missing", result_arr_int)    );
+    EXPECT( !conf.get("missing", result_arr_long)   );
+    EXPECT( !conf.get("missing", result_arr_size_t) );
+    EXPECT( !conf.get("missing", result_arr_float)  );
+    EXPECT( !conf.get("missing", result_arr_double) );
+    EXPECT( !conf.get("missing", result_arr_string) );
+
+    EXPECT( conf.get("bool",       result_bool)       );
+    EXPECT( conf.get("int",        result_int)        );
+    EXPECT( conf.get("long",       result_long)       );
+    EXPECT( conf.get("size_t",     result_size_t)     );
+    EXPECT( conf.get("float",      result_float)      );
+    EXPECT( conf.get("double",     result_double)     );
+    EXPECT( conf.get("string",     result_string)     );
+    EXPECT( conf.get("arr_int",    result_arr_int)    );
+    EXPECT( conf.get("arr_long",   result_arr_long)   );
+    EXPECT( conf.get("arr_size_t", result_arr_size_t) );
+    EXPECT( conf.get("arr_float",  result_arr_float)  );
+    EXPECT( conf.get("arr_double", result_arr_double) );
+    EXPECT( conf.get("arr_string", result_arr_string) );
+
+    EXPECT( result_bool       == value_bool      );
+    EXPECT( result_int        == value_int       );
+    EXPECT( result_long       == value_long      );
+    EXPECT( result_size_t     == value_size_t    );
+    EXPECT( result_float      == value_float     );
+    EXPECT( result_double     == value_double    );
+    EXPECT( result_string     == value_string    );
+    EXPECT( result_arr_int    == value_arr_int   );
+    EXPECT( result_arr_long   == value_arr_long  );
+    EXPECT( result_arr_size_t == value_arr_size_t);
+    EXPECT( result_arr_float  == value_arr_float );
+    EXPECT( result_arr_double == value_arr_double);
+    EXPECT( result_arr_string == value_arr_string);
+
+    EXPECT( conf.getBool          ("bool")       == value_bool       );
+    EXPECT( conf.getInt           ("int")        == value_int        );
+    EXPECT( conf.getLong          ("long")       == value_long       );
+    EXPECT( conf.getUnsigned      ("size_t")     == value_size_t     );
+    EXPECT( conf.getFloat         ("float")      == value_float      );
+    EXPECT( conf.getDouble        ("double")     == value_double     );
+    EXPECT( conf.getString        ("string")     == value_string     );
+    EXPECT( conf.getIntVector     ("arr_int")    == value_arr_int    );
+    EXPECT( conf.getLongVector    ("arr_long")   == value_arr_long   );
+    EXPECT( conf.getUnsignedVector("arr_size_t") == value_arr_size_t );
+    EXPECT( conf.getFloatVector   ("arr_float")  == value_arr_float  );
+    EXPECT( conf.getDoubleVector  ("arr_double") == value_arr_double );
+    EXPECT( conf.getStringVector  ("arr_string") == value_arr_string );
 
     // Get throwing
 
-    BOOST_CHECK_THROW( conf.getBool          ("missing"), eckit::Exception );
-    BOOST_CHECK_THROW( conf.getInt           ("missing"), eckit::Exception );
-    BOOST_CHECK_THROW( conf.getLong          ("missing"), eckit::Exception );
-    BOOST_CHECK_THROW( conf.getUnsigned      ("missing"), eckit::Exception );
-    BOOST_CHECK_THROW( conf.getFloat         ("missing"), eckit::Exception );
-    BOOST_CHECK_THROW( conf.getDouble        ("missing"), eckit::Exception );
-    BOOST_CHECK_THROW( conf.getString        ("missing"), eckit::Exception );
-    BOOST_CHECK_THROW( conf.getIntVector     ("missing"), eckit::Exception );
-    BOOST_CHECK_THROW( conf.getLongVector    ("missing"), eckit::Exception );
-    BOOST_CHECK_THROW( conf.getUnsignedVector("missing"), eckit::Exception );
-    BOOST_CHECK_THROW( conf.getFloatVector   ("missing"), eckit::Exception );
-    BOOST_CHECK_THROW( conf.getDoubleVector  ("missing"), eckit::Exception );
-    BOOST_CHECK_THROW( conf.getStringVector  ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getBool          ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getInt           ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getLong          ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getUnsigned      ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getFloat         ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getDouble        ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getString        ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getIntVector     ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getLongVector    ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getUnsignedVector("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getFloatVector   ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getDoubleVector  ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getStringVector  ("missing"), eckit::Exception );
 
-  
+
     // Get with default values instead of throwing
-    BOOST_CHECK_EQUAL( conf.getBool          ("missing",value_bool),       value_bool       );
-    BOOST_CHECK_EQUAL( conf.getInt           ("missing",value_int),        value_int        );
-    BOOST_CHECK_EQUAL( conf.getLong          ("missing",value_long),       value_long       );
-    BOOST_CHECK_EQUAL( conf.getUnsigned      ("missing",value_size_t),     value_size_t     );
-    BOOST_CHECK_EQUAL( conf.getFloat         ("missing",value_float),      value_float      );
-    BOOST_CHECK_EQUAL( conf.getDouble        ("missing",value_double),     value_double     );
-    BOOST_CHECK_EQUAL( conf.getString        ("missing",value_string),     value_string     );
-    BOOST_CHECK_EQUAL( conf.getIntVector     ("missing",value_arr_int),    value_arr_int    );
-    BOOST_CHECK_EQUAL( conf.getLongVector    ("missing",value_arr_long),   value_arr_long   );
-    BOOST_CHECK_EQUAL( conf.getUnsignedVector("missing",value_arr_size_t), value_arr_size_t );
-    BOOST_CHECK_EQUAL( conf.getFloatVector   ("missing",value_arr_float ), value_arr_float  );
-    BOOST_CHECK_EQUAL( conf.getDoubleVector  ("missing",value_arr_double), value_arr_double );
-    BOOST_CHECK_EQUAL( conf.getStringVector  ("missing",value_arr_string), value_arr_string );
+    EXPECT( conf.getBool          ("missing", value_bool)       == value_bool       );
+    EXPECT( conf.getInt           ("missing", value_int)        == value_int        );
+    EXPECT( conf.getLong          ("missing", value_long)       == value_long       );
+    EXPECT( conf.getUnsigned      ("missing", value_size_t)     == value_size_t     );
+    EXPECT( conf.getFloat         ("missing", value_float)      == value_float      );
+    EXPECT( conf.getDouble        ("missing", value_double)     == value_double     );
+    EXPECT( conf.getString        ("missing", value_string)     == value_string     );
+    EXPECT( conf.getIntVector     ("missing", value_arr_int)    == value_arr_int    );
+    EXPECT( conf.getLongVector    ("missing", value_arr_long)   == value_arr_long   );
+    EXPECT( conf.getUnsignedVector("missing", value_arr_size_t) == value_arr_size_t );
+    EXPECT( conf.getFloatVector   ("missing", value_arr_float)  == value_arr_float  );
+    EXPECT( conf.getDoubleVector  ("missing", value_arr_double) == value_arr_double );
+    EXPECT( conf.getStringVector  ("missing", value_arr_string) == value_arr_string );
 
 }
 
 //-----------------------------------------------------------------------------
 
 
-BOOST_AUTO_TEST_CASE( test_json_configuration )
+CASE( "test_json_configuration" )
 {
   PathName jsonpath = "test_json_configuration.json";
 
@@ -214,74 +206,82 @@ BOOST_AUTO_TEST_CASE( test_json_configuration )
   LocalConfiguration manager;
   std::vector<LocalConfiguration> staff;
 
-  BOOST_CHECK( conf.get("manager",manager) );
-  BOOST_CHECK( conf.get("staff",staff) );
+  EXPECT( conf.get("manager", manager) );
+  EXPECT( conf.get("staff", staff) );
 
   std::string name;
   int office;
 
-  BOOST_CHECK( manager.get("name",name) );
-  BOOST_CHECK( manager.get("office",office) );
-  BOOST_CHECK_EQUAL( name, std::string("Sidonia") );
-  BOOST_CHECK_EQUAL( office, 1 );
+  EXPECT( manager.get("name", name) );
+  EXPECT( manager.get("office", office) );
+  EXPECT( name == std::string("Sidonia") );
+  EXPECT( office == 1 );
 
-  BOOST_CHECK( staff[0].get("name",name) );
-  BOOST_CHECK( staff[0].get("office",office) );
-  BOOST_CHECK_EQUAL( name, std::string("Suske") );
-  BOOST_CHECK_EQUAL( office, 2 );
+  EXPECT( staff[0].get("name", name) );
+  EXPECT( staff[0].get("office", office) );
+  EXPECT( name == std::string("Suske") );
+  EXPECT( office == 2 );
 
-  BOOST_CHECK( staff[1].get("name",name) );
-  BOOST_CHECK( staff[1].get("office",office) );
-  BOOST_CHECK_EQUAL( name, std::string("Wiske") );
-  BOOST_CHECK_EQUAL( office, 3 );
+  EXPECT( staff[1].get("name", name) );
+  EXPECT( staff[1].get("office", office) );
+  EXPECT( name == std::string("Wiske") );
+  EXPECT( office == 3 );
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_local_configuration )
+CASE( "test_local_configuration" )
 {
   LocalConfiguration local;
   {
     LocalConfiguration manager;
-    manager.set("name","Sidonia");
-    manager.set("office",1);
+    manager.set("name", "Sidonia");
+    manager.set("office", 1);
 
     std::vector<LocalConfiguration> staff(2);
-    staff[0].set("name","Suske");
-    staff[1].set("name","Wiske");
-    staff[0].set("office",2);
-    staff[1].set("office",3);
+    staff[0].set("name", "Suske");
+    staff[1].set("name", "Wiske");
+    staff[0].set("office", 2);
+    staff[1].set("office", 3);
 
-    local.set("manager",manager);
-    local.set("staff",staff);
+    local.set("manager", manager);
+    local.set("staff", staff);
   }
   const Configuration& conf = local;
 
   LocalConfiguration manager;
   std::vector<LocalConfiguration> staff;
 
-  BOOST_CHECK( conf.get("manager",manager) );
-  BOOST_CHECK( conf.get("staff",staff) );
+  EXPECT( conf.get("manager", manager) );
+  EXPECT( conf.get("staff", staff) );
 
   std::string name;
   int office;
 
-  BOOST_CHECK( manager.get("name",name) );
-  BOOST_CHECK( manager.get("office",office) );
-  BOOST_CHECK_EQUAL( name, std::string("Sidonia") );
-  BOOST_CHECK_EQUAL( office, 1 );
+  EXPECT( manager.get("name", name) );
+  EXPECT( manager.get("office", office) );
+  EXPECT( name == std::string("Sidonia") );
+  EXPECT( office == 1 );
 
-  BOOST_CHECK( staff[0].get("name",name) );
-  BOOST_CHECK( staff[0].get("office",office) );
-  BOOST_CHECK_EQUAL( name, std::string("Suske") );
-  BOOST_CHECK_EQUAL( office, 2 );
+  EXPECT( staff[0].get("name", name) );
+  EXPECT( staff[0].get("office", office) );
+  EXPECT( name == std::string("Suske") );
+  EXPECT( office == 2 );
 
-  BOOST_CHECK( staff[1].get("name",name) );
-  BOOST_CHECK( staff[1].get("office",office) );
-  BOOST_CHECK_EQUAL( name, std::string("Wiske") );
-  BOOST_CHECK_EQUAL( office, 3 );
+  EXPECT( staff[1].get("name", name) );
+  EXPECT( staff[1].get("office", office) );
+  EXPECT( name == std::string("Wiske") );
+  EXPECT( office == 3 );
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+}  // namespace test
+}  // namespace eckit
+
+int main(int argc, char **argv)
+{
+    return run_tests ( argc, argv );
+}
+
+

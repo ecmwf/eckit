@@ -31,9 +31,9 @@ CASE ( "test_eckit_user_log_channel_registration" ) {
 
     // FIXME: re-enable this test
 
-//    BOOST_CHECK_NO_THROW( Log::registerChannel("mychannel", new Channel(new ColouringTarget(new OStreamTarget(std::cout), &Colour::green))) );
+//    EXPECT_NO_THROW( Log::registerChannel("mychannel", new Channel(new ColouringTarget(new OStreamTarget(std::cout), &Colour::green))) );
 
-//    BOOST_CHECK_NO_THROW( Log::channel("mychannel") << "TEST MY VERY OWN CHANNEL" << std::endl );
+//    EXPECT_NO_THROW( Log::channel("mychannel") << "TEST MY VERY OWN CHANNEL" << std::endl );
 }
 
 //-----------------------------------------------------------------------------

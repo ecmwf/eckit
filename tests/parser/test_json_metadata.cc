@@ -112,10 +112,8 @@ CASE ( "test_eckit_json_metadata_get_double" ) {
     md.get("key1", dbl_tmp);
     EXPECT( is_approximately_equal( dbl_tmp, 123.45, 1.0e-6));
 
-    // N.b. float compared to int worked with BOOST_CHECK_CLOSE.
-    // It does not work with eckit::types::is_approximately_equal
     md.get("key4", dbl_tmp);
-    //EXPECT( is_approximately_equal( dbl_tmp, 123, 1.0e-6 ) );
+    EXPECT( is_approximately_equal( dbl_tmp, static_cast<double>(123), 1.0e-6 ) );
 
     // Throws on incorrect type
     EXPECT_THROWS_AS( md.get("key3", dbl_tmp), BadCast );

@@ -212,8 +212,8 @@ CASE( "test_eckit_option_cmdargs_double_vector" ) {
     EXPECT(tmpv.size() == 4);
     EXPECT(is_approximately_equal( tmpv[0], -123.45, 1.0e-8 ) );
     EXPECT(is_approximately_equal( tmpv[1], 67.8, 1.0e-8 ) );
-    EXPECT(is_approximately_equal( tmpv[2], (double)90, 1.0e-8 ) ); // NB. Direct replacement for boost CHECK_CLOSE(double, int, tol) not available.
-    EXPECT(is_approximately_equal( tmpv[3], (double)-123, 1.0e-8 ) ); // NB. Direct replacement for boost CHECK_CLOSE(double, int, tol) not available.
+    EXPECT(is_approximately_equal( tmpv[2], static_cast<double>(90), 1.0e-8 ) );
+    EXPECT(is_approximately_equal( tmpv[3], static_cast<double>(-123), 1.0e-8 ) );
 
     EXPECT(tmpv == args.getDoubleVector("arg"));
 }
@@ -233,11 +233,11 @@ CASE( "test_eckit_option_cmdargs_vector_size_check" ) {
 
 //-----------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
+int main(int argc, char **argv)
 {
-    return run_tests ( argc, argv, false ); // will not call main::initialize
+    return run_tests ( argc, argv, false );  // will not call main::initialize
 }
 

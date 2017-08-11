@@ -14,8 +14,6 @@
 #include "eckit/mpi/Comm.h"
 #include "eckit/filesystem/LocalPathName.h"
 
-//#include "eckit/testing/CommSetup.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace eckit;
@@ -29,8 +27,6 @@ namespace test {
 
 int argc;
 char ** argv;
-
-//BOOST_GLOBAL_FIXTURE( CommSetup );
 
 CASE( "test_rank_size" )
 {

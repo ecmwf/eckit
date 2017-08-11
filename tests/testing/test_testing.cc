@@ -28,22 +28,6 @@ namespace test {
 
 typedef std::vector<Test> Tests;
 
-namespace unequal_arrays {
-    std::vector<int> a = { 1, 2, 3 };
-    std::vector<int> b = { 1, 2, 3, 4 };
-    int arr[3] = { 1, 2, 4 };
-    std::vector<string> s = { "1", "22", "333" };
-    std::string arr_s[3] = { "1", "22", "444" };
-}
-
-namespace equal_arrays {
-    std::vector<int> a = { 1, 2, 3 };
-    std::vector<int> b = { 1, 2, 3 };
-    int arr[3] = { 1, 2, 3 };
-    std::vector<string> s = { "1", "22", "333" };
-    std::string arr_s[3] = { "1", "22", "333" };
-}
-
 //----------------------------------------------------------------------------------------------------------------------
 
 // These unit tests test the eckit testing framework itself.
@@ -228,6 +212,67 @@ Tests tests = {
                 EXPECT ( a != b );
             }
         }
+
+    }},
+    { CASE( "Test comparisons of c-style arrays" ) {
+
+        std::vector<int> a = { 1, 2, 3 };
+        std::vector<int> b = { 1, 2, 3 };
+        int arr[3] = { 1, 2, 3 };
+
+        std::vector<string> s = { "1", "22", "333" };
+        std::string arr_s[3] = { "1", "22", "333" };
+        
+        std::vector<double> d1 = { 1., 2., 3. };
+        std::vector<double> d2 = { 1., 2., 3. };
+
+        // Check basic comparisons and initializations
+        EXPECT ( make_view( &a[0], &a[0] + 3)   == make_view( &b[0], &b[0] + 3 ) );
+        EXPECT ( make_view( &a[0], 3)           == make_view( &b[0], 3 ) );
+        EXPECT ( make_view( &a[0], &a[0] + 3 )  == make_view( arr, arr + 3) );
+        EXPECT ( make_view( &a[0], 3 )          == make_view( arr, 3 ) );
+        EXPECT ( make_view( a ) == make_view( arr, arr + 3 ) );
+        EXPECT ( make_view( s ) == make_view( arr_s, arr_s + 3) );
+        EXPECT ( make_view( &s[0], &s[0] + 3)   == make_view( arr_s, arr_s + 3) );
+        EXPECT ( make_view( a ) == make_view( &b[0], &b[0] + 3 ) );
+        EXPECT ( make_view( a ) == make_view( b ) );
+        EXPECT ( make_view( &d1[0], 3) == make_view( &d2[0], 3 ) );
+        EXPECT ( make_view( &d1[0], 3) == make_view( &d2[0], 3 ) );
+
+        EXPECT ( make_view( &a[0], &a[0] + 3 ).size() == 3 );
+        EXPECT ( make_view( &a[0], 3 ).size()         == 3 );
+        EXPECT ( make_view( a ).size()               == a.size() );
+        EXPECT ( make_view( s ).size()               == s.size() );
+
+        // Check sub-array comparisons
+        EXPECT ( make_view( &a[0], &a[0] + 2)   == make_view( &b[0], &b[0] + 2 ) );
+        EXPECT ( make_view( &a[1], &a[1] + 2)   == make_view( &b[1], &b[1] + 2 ) );
+        EXPECT ( make_view( &a[1], &a[1] + 2)   != make_view( &b[0], &b[0] + 2 ) ); // values not equal
+        EXPECT ( make_view( &a[0], &a[0] + 3)   != make_view( &b[0], &b[0] + 2 ) ); // not same size
+        EXPECT ( make_view( &a[0], 2)           == make_view( &b[0], 2 ) );
+        EXPECT ( make_view( &a[0], 2)           == make_view( &b[0], 2 ) );
+
+        // Check != is the same as !(==)
+        EXPECT ( ! (make_view( &a[0], &a[0] + 3)   != make_view( &b[0], &b[0] + 3 ) ) );
+        EXPECT ( ! (make_view( &a[0], &a[0] + 3)   == make_view( &b[0], &b[0] + 2 ) ) ); // not same size
+        EXPECT ( ! (make_view( &a[1], &a[1] + 2)   == make_view( &b[0], &b[0] + 2 ) ) ); // values not equal
+
+        // Check comparisons against std::vector        
+        EXPECT ( a == make_view( b ) );
+        EXPECT ( make_view( a ) == b );
+    
+        // Check type recognition of make_view vs explicit constructor
+        EXPECT ( array_view<int>( a ) == make_view( a )  );
+        EXPECT ( array_view<std::string>( s ) == make_view( s ) );
+
+        // Check approximately equals
+        d2[2] = 2.99;
+        EXPECT ( is_approximately_equal( make_view( d1), make_view( d2 ), 0.02 ));     
+        EXPECT ( !is_approximately_equal( make_view( d1 ), make_view(  d2 ), 0.0001 ));      // array vs array
+        EXPECT ( !is_approximately_equal( d1, d2, 0.0001 ));                                                              // vector vs vector    
+        EXPECT ( !is_approximately_equal( make_view( d1 ), d2, 0.0001 ));                                 // array vs vector
+        EXPECT ( !is_approximately_equal( d1, make_view( d2), 0.0001 ));                                 // vector vs array
+
 
     }},
 };

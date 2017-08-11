@@ -18,11 +18,11 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/types/FloatCompare.h"
 
 #include <vector>
 #include <sstream>
 #include <string>
-
 
 namespace eckit {
 namespace testing {
@@ -86,7 +86,131 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// A helper class which wraps c-style arrays and implements comparison operators to compare with other views
+/// and STL vectors. Does not copy or modify the original array. Note that STL containers can (and should) use the built-in
+/// comparison operators (==, !=, >=, etc.) instead.
+
+template< typename T >
+class array_view {
+public:
+
+    // -- Constructors
+    array_view(const T* data, size_t size) : data_(data), size_(size) {}
+    array_view(const T* begin, const T* end) : data_(begin), size_(end-begin) {}
+    array_view(const std::vector<T> & vec ) : data_(&vec[0]), size_(vec.size()) {}
+
+    // -- Accessors
+    const T& operator[](int i) const { return data_[i]; }
+    const T& at(int i) const { return data_[i]; }
+    const size_t size() const { return size_; }
+    const T * data() const { return data_; }
+    
+    // -- Comparison Operators
+    template < typename U >
+    bool operator==(const array_view<U> & other) const {
+        return compare_equal_( other.data(), other.size() );
+    }
+    
+    template < typename U >
+    bool operator==(const std::vector<U> & other) const {
+        return compare_equal_( &other[0], other.size() );
+    }
+    
+    template < typename U >
+    bool operator!=(const array_view<U> & other) const {
+        return !compare_equal_( other.data(), other.size() );
+    }
+    
+    template < typename U >
+    bool operator!=(const std::vector<U> & other) const {
+        return !compare_equal_( &other[0], other.size() );
+    }
+
+    template < typename U >
+    bool is_approximately_equal( const array_view<U> & other, const U tolerance) const {
+        return compare_approx_equal_( other.data(), other.size(), tolerance );
+    }
+    template < typename U >
+    bool is_approximately_equal( const std::vector<U> & other, const U tolerance) const {
+        return compare_approx_equal_( &other[0], other.size(), tolerance );
+    } 
+
+private:
+    // -- Private Methods
+    template < typename U >
+    bool compare_equal_( const U * data, const size_t size ) const {
+        if ( size != this->size() ) return false;
+        if ( size == 0 ) return true;
+        for ( int i = 0; i < this->size(); i++ )
+            if (data[i] != this->at(i))
+                return false;
+        return true;
+    }
+
+    template< typename U >
+    bool compare_approx_equal_( const U * data, const size_t size, const U epsilon ) const {
+        if ( size != this->size() ) return false;
+        if ( size == 0 ) return true;
+        for ( int i = 0; i < this->size(); i++ ) {
+            if ( ! eckit::types::is_approximately_equal(this->at(i), data[i], epsilon ))
+                return false;
+        }
+        return true;
+    }
+
+    // -- Private Fields
+    const T* data_;
+    const size_t size_;
+};
+
+template <typename T>
+static array_view<T> make_view( const T * data, size_t size ) { 
+    return array_view<T>(data,size); 
+}
+template <typename T>
+static array_view<T> make_view( const T * begin, const T * end ) { 
+    return array_view<T>(begin,end); 
+}
+template <typename T>
+static array_view<T> make_view( const std::vector<T> & source ) { 
+    return array_view<T>( source ); 
+}
+
+template< typename U >
+static bool is_approximately_equal(const array_view<U> a, const array_view<U> b, const U epsilon) {
+    return a.is_approximately_equal(b, epsilon);
+}
+
+template< typename U >
+static bool is_approximately_equal(const array_view<U> a, const std::vector<U> b, const U epsilon) {
+    return a.is_approximately_equal(b, epsilon);
+}
+
+template< typename U >
+static bool is_approximately_equal(const std::vector<U> a, const array_view<U> b, const U epsilon) {
+    return b.is_approximately_equal(a, epsilon);
+}
+
+// Note: std has no approx_equal comparison for two vectors
+template< typename U >
+static bool is_approximately_equal(const std::vector<U> a, const std::vector<U> b, const U epsilon) {
+    return array_view<U>(a).is_approximately_equal(b, epsilon);
+}
+
+template < typename U >
+bool operator==(const std::vector<U> & lhs, const array_view<U> & rhs) {
+    return rhs == lhs;
+}
+
+template < typename U >
+bool operator!=(const std::vector<U> & lhs, const array_view<U> & rhs) {
+    return rhs != lhs;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 enum  TestVerbosity { Silent = 0, Summary = 1, AllFailures = 2};
+enum  InitEckitMain { NoInitEckitMain = 0, DoInitEckitMain = 1 };
 
 inline int run( std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 

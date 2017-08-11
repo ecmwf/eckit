@@ -87,9 +87,8 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 /// A helper class which wraps c-style arrays and implements comparison operators to compare with other views
-/// and STL vectors. Does not copy or modify the original array. Note that STL containers can (and should) use the built-in
-/// comparison operators (==, !=, >=, etc.) instead.
-
+/// and STL vectors. Does not copy or modify the original array. Does not work on non-contiguous data sets.
+/// Note that STL containers can (and should) use the built-in comparison operators (==, !=, >=, etc.) instead.
 template< typename T >
 class array_view {
 public:

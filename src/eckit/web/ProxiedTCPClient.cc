@@ -59,8 +59,9 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
             return socket;
     }
 
+    throw SeriousBug("ProxiedTCPServer: invalid header");
 
-    return socket;
+    // return socket;
 }
 
 void ProxiedTCPClient::print(std::ostream& s) const {

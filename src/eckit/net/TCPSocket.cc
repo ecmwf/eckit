@@ -790,8 +790,8 @@ void TCPSocket::print(std::ostream& s) const {
 
 }
 
-std::ostream& operator<<(std::ostream& s,in_addr) {
-    s << "TODO";
+std::ostream& operator<<(std::ostream& s,in_addr a) {
+    s << inet_ntoa(a);
     return s;
 }
 

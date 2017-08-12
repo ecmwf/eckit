@@ -57,6 +57,12 @@ TCPSocket& ProxiedTCPServer::accept(const std::string& message, int timeout, boo
     throw SeriousBug("ProxiedTCPServer: invalid header");
 }
 
+
+void ProxiedTCPServer::print(std::ostream& s) const {
+    s << "ProxiedTCPServer[";
+    TCPServer::print(s);
+    s << "]";
+}
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

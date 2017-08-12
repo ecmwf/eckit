@@ -45,6 +45,14 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
     return socket;
 }
 
+void ProxiedTCPClient::print(std::ostream& s) const {
+    s << "ProxiedTCPClient["
+      << "proxyHost=" << proxyHost_
+      << "proxyPort=" << proxyPort_
+      << ",";
+    TCPClient::print(s);
+    s << "]";
+}
 
 //-----------------------------------------------------------------------------
 

@@ -65,7 +65,8 @@ private:
     ProxiedTCPServer(const ProxiedTCPServer&);
     ProxiedTCPServer& operator=(const ProxiedTCPServer&);
 
-    // To be used by Select
+    //
+    virtual void print(std::ostream& s) const;
 
 };
 

@@ -72,6 +72,10 @@ protected:
 
     virtual void bind();
 
+protected:
+
+    virtual void print(std::ostream& s) const;
+
 private:
 
 // No copy allowed

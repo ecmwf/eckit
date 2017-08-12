@@ -778,6 +778,24 @@ void TCPSocket::debug(bool on) {
     mode_ = 0;
 }
 
+void TCPSocket::print(std::ostream& s) const {
+    s << "TCPSocket[socket=" << socket_
+      << ",localPort=" << localPort_
+      << ",remotePort=" << remotePort_
+      << ",remoteHost=" << remoteHost_
+      << ",remoteAddr=" << remoteAddr_
+      << ",localHost=" << localHost_
+      << ",localAddr_=" << localAddr_
+      << "]";
+
+}
+
+std::ostream& operator<<(std::ostream& s,in_addr) {
+    s << "TODO";
+    return s;
+}
+
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

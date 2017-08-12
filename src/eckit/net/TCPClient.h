@@ -38,6 +38,10 @@ public:
 
 	virtual TCPSocket& connect(const std::string& host,int port, int retries = 5, int timeout = 0);
 
+protected:
+
+    virtual void print(std::ostream& s) const;
+
 private:
 
 // No copy allowed

@@ -127,6 +127,7 @@ protected:
 
 	int newSocket(int);
 
+    virtual void print(std::ostream& s) const;
 
 
 private:
@@ -138,6 +139,8 @@ private:
 
 // -- Friends
 
+    friend std::ostream& operator<<(std::ostream& s,const TCPSocket& socket)
+        { socket.print(s); return s;}
 
 };
 

@@ -52,6 +52,7 @@ private:
 
 // -- Overridden methods
 
+    virtual void print(std::ostream& s) const;
 
 };
 

@@ -35,7 +35,7 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
     const char * crlf = "\r\n";
 
     std::ostringstream oss;
-    oss << "CONNECT " << host << ":" << port << "HTTP/1.0" << crlf;
+    oss << "CONNECT " << host << ":" << port << " HTTP/1.0" << crlf;
     oss << "User-agent: eckit/1.0" << crlf;
     oss << crlf;
 

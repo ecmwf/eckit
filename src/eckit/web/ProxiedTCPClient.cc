@@ -42,6 +42,24 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
     std::string header(oss.str());
     ASSERT(socket.write(&header[0], header.size()) == header.size());
 
+
+// Strip http-header
+
+    char c;
+    unsigned long x = 0;
+    unsigned long end = ('\r' << 24L) | ('\n' << 16L ) | ('\r' << 8L) | '\n';
+
+    while (socket.read(&c, 1) == 1) {
+
+        x <<= 8L;
+        x |= c;
+        x &= 0xffffffff;
+
+        if (x == end)
+            return socket;
+    }
+
+
     return socket;
 }
 

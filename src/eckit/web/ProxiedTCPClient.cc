@@ -44,8 +44,6 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
     std::string header(oss.str());
     ASSERT(socket.write(&header[0], header.size()) == header.size());
 
-
-
 // Strip http-header
 
     char c;
@@ -58,8 +56,9 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
         x |= c;
         x &= 0xffffffff;
 
-        if (x == end)
+        if (x == end) {
             return socket;
+        }
     }
 
     throw SeriousBug("ProxiedTCPServer: invalid header");

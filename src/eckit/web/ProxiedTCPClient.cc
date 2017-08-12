@@ -32,6 +32,8 @@ ProxiedTCPClient::~ProxiedTCPClient()
 TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retries, int timeout) {
     TCPSocket& socket = TCPClient::connect(proxyHost_, proxyPort_, retries, timeout);
 
+    socket.debug(debug_);
+
     const char * crlf = "\r\n";
 
     std::ostringstream oss;
@@ -41,6 +43,7 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
 
     std::string header(oss.str());
     ASSERT(socket.write(&header[0], header.size()) == header.size());
+
 
 
 // Strip http-header

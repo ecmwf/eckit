@@ -259,7 +259,9 @@ bool HttpHeader::authenticated() const
 
 void HttpHeader::content(const char* p, long len)
 {
+	content_.openForWrite(0);
 	content_.write(p, len);
+	content_.close();
 }
 
 void HttpHeader::setHeader(const std::string& k, const std::string& v)

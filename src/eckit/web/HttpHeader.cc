@@ -42,7 +42,8 @@ bool HttpHeader::compare::operator()(const std::string& a, const std::string& b)
 HttpHeader::HttpHeader():
 	version_("HTTP/1.0"),
 	statusCode_(HttpError::OK),
-	contentLength_(0)
+	contentLength_(0),
+	received_(false)
 {
 	header_[Content_Type] = "text/html";
 	header_["Cache-Control"] = "no-cache";
@@ -71,6 +72,8 @@ HttpHeader::~HttpHeader()
 
 void HttpHeader::print(std::ostream& s) const
 {
+
+	const char* CRLF = "\r\n";
 
 	// Status line + CRLF
 	s << version_ << ' ' << statusCode_ << ' ';
@@ -123,22 +126,18 @@ void HttpHeader::print(std::ostream& s) const
 		s << message_;
 	}
 
-	s << '\r' << '\n';
+	s << CRLF;
 
 
 	for (Map::const_iterator i = header_.begin(); i != header_.end(); ++i) {
-		s << (*i).first <<  ": " << (*i).second << '\r' << '\n';
+		s << (*i).first <<  ": " << (*i).second << CRLF;
 	}
 
-	s << Content_Length << ": " << contentLength_ + content_.size() << '\r' << '\n';
+	if (!received_) {
+		s << Content_Length << ": " << contentLength_ + content_.size() << CRLF;
+	}
 
-	// i = header_.find(Content_Type);
-
-	// if ( i != header_.end() )
-	// 	s << (*i).first <<  ": " << (*i).second;
-
-	// CRLF
-	s << '\r' << '\n';
+	s << CRLF;
 
 
 	long len = content_.size();
@@ -294,7 +293,8 @@ static std::string nextLine(TCPSocket& socket) {
 	}
 }
 
-HttpHeader::HttpHeader(TCPSocket& socket) {
+HttpHeader::HttpHeader(TCPSocket& socket):
+	received_(true) {
 	std::string line = nextLine(socket);
 
 	size_t i = line.find_first_of(' ');
@@ -335,7 +335,7 @@ HttpHeader::HttpHeader(TCPSocket& socket) {
 }
 
 void HttpHeader::checkForStatus() const {
-	if(statusCode_ != HttpError::OK) {
+	if (statusCode_ != HttpError::OK) {
 		throw HttpError(statusCode_, message_);
 	}
 }

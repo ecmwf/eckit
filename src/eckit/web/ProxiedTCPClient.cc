@@ -48,7 +48,7 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
 
     // Strip http-header
     HttpHeader header(socket);
-    std::cout << header << std::endl;
+    std::cout << std::endl << header << std::endl << std::endl;
     header.checkForStatus();
 
     return socket;

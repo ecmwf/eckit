@@ -98,6 +98,7 @@ private: // members
     long   statusCode_;
     long   contentLength_;
     std::string message_;
+    bool received_;
 
     struct compare {
         bool operator()(const std::string&, const std::string&) const;

@@ -286,7 +286,12 @@ const std::string& Url::operator[](int n) const
 
 eckit::Value Url::json() const {
 	const char* p = in_.content();
-	return JSONParser::decodeString(p ? p : "null");
+
+	std::cout << "================" << std::endl;
+	std::cout << p << std::endl;
+	std::cout << "================" << std::endl;
+
+	return JSONParser::decodeString(p);
 }
 
 std::string Url::str() const

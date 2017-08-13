@@ -85,7 +85,8 @@ void AgentResource::GET(std::ostream&,Url& url)
 	static std::ifstream in("/dev/null");
     static std::ofstream out("/dev/null");
 
-	MemStream s(url.headerIn().content(), url.headerIn().contentLength());
+    std::string content = url.headerIn().content();
+	MemStream s(content.data(), content.length());
 
 	std::string token = url.headerIn().getHeader("mars-token");
 

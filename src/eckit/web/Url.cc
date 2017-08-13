@@ -285,7 +285,7 @@ const std::string& Url::operator[](int n) const
 }
 
 eckit::Value Url::json() const {
-	const char* p = in_.content();
+	std::string p = in_.content();
 
 	std::cout << "================" << std::endl;
 	std::cout << p << std::endl;

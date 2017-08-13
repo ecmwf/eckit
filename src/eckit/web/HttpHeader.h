@@ -84,7 +84,7 @@ public: // methods
     void setHeader(const std::string&, const std::string&);
 
     void  content(const char*, long);
-    const char* content() const;
+    std::string content() const;
 
     void checkForStatus() const;
 

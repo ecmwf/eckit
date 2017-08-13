@@ -141,7 +141,7 @@ void HttpHeader::print(std::ostream& s) const
 
 
 	long len = content_.size();
-	const char *p  = content();
+	const char *p  = static_cast<const char*>(content_.data());
 	while (len-- > 0)
 		s.put(*p++);
 }
@@ -274,7 +274,9 @@ const std::string& HttpHeader::getHeader(const std::string& k) const
 	return ((HttpHeader*)this)->header_[k];
 }
 
-const char* HttpHeader::content() const { return static_cast<const char*>(content_.data()); }
+std::string HttpHeader::content() const {
+	return content_.str();
+}
 
 //-----------------------------------------------------------------------------
 

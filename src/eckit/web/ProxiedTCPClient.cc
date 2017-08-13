@@ -11,6 +11,7 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/web/ProxiedTCPClient.h"
+#include "eckit/web/HttpHeader.h"
 
 //-----------------------------------------------------------------------------
 
@@ -41,29 +42,16 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
     oss << "User-agent: eckit/1.0" << crlf;
     oss << crlf;
 
-    std::string header(oss.str());
-    ASSERT(socket.write(&header[0], header.size()) == header.size());
+    std::string request(oss.str());
+    ASSERT(socket.write(&request[0], request.size()) == request.size());
 
-// Strip http-header
 
-    char c;
-    unsigned long x = 0;
-    unsigned long end = ('\r' << 24L) | ('\n' << 16L ) | ('\r' << 8L) | '\n';
+    // Strip http-header
+    HttpHeader header(socket);
+    std::cout << header << std::endl;
+    header.checkForStatus();
 
-    while (socket.read(&c, 1) == 1) {
-
-        x <<= 8L;
-        x |= c;
-        x &= 0xffffffff;
-
-        if (x == end) {
-            return socket;
-        }
-    }
-
-    throw SeriousBug("ProxiedTCPServer: invalid header");
-
-    // return socket;
+    return socket;
 }
 
 void ProxiedTCPClient::print(std::ostream& s) const {

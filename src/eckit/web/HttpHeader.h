@@ -17,12 +17,14 @@
 #include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/io/ResizableBuffer.h"
+#include "eckit/io/MemoryHandle.h"
 #include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
+
+class TCPSocket;
 
 //-----------------------------------------------------------------------------
 
@@ -59,6 +61,8 @@ class HttpHeader : private eckit::NonCopyable {
 public: // methods
 
     HttpHeader();
+    HttpHeader(TCPSocket&);
+
 
     ~HttpHeader();
 
@@ -80,7 +84,9 @@ public: // methods
     void setHeader(const std::string&, const std::string&);
 
     void  content(const char*, long);
-    const char* content() const { return content_; }
+    const char* content() const;
+
+    void checkForStatus() const;
 
 protected: // methods
 
@@ -100,7 +106,7 @@ private: // members
     typedef std::map<std::string, std::string, HttpHeader::compare> Map;
 
     Map header_;
-    eckit::ResizableBuffer content_;
+    eckit::MemoryHandle content_;
 
 private: // methods
 

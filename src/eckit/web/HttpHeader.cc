@@ -12,6 +12,8 @@
 #include "eckit/log/Log.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/web/HttpHeader.h"
+#include "eckit/net/TCPSocket.h"
+#include "eckit/utils/Translator.h"
 
 //-----------------------------------------------------------------------------
 
@@ -40,10 +42,11 @@ bool HttpHeader::compare::operator()(const std::string& a, const std::string& b)
 HttpHeader::HttpHeader():
 	version_("HTTP/1.0"),
 	statusCode_(HttpError::OK),
-	contentLength_(0),
-	content_(0, false)
+	contentLength_(0)
 {
-	header_[Content_Type] = " text/html";
+	header_[Content_Type] = "text/html";
+	header_["Cache-Control"] = "no-cache";
+	header_["MIME-Version"] = "1.0";
 }
 
 HttpHeader& HttpHeader::operator=(std::map<std::string, std::string, std::less<std::string> >& parsed)
@@ -122,12 +125,6 @@ void HttpHeader::print(std::ostream& s) const
 
 	s << '\r' << '\n';
 
-	// General-Header : Date, Pragma
-
-	s << "Cache-Control: no-cache" << '\r' << '\n';
-
-	// Response-Header: Location, Server, WWW-Authenticate
-	s << "MIME-Version: 1.0" << '\r' << '\n';
 
 	for (Map::const_iterator i = header_.begin(); i != header_.end(); ++i) {
 		s << (*i).first <<  ": " << (*i).second << '\r' << '\n';
@@ -145,7 +142,7 @@ void HttpHeader::print(std::ostream& s) const
 
 
 	long len = content_.size();
-	const char *p  = content_;
+	const char *p  = content();
 	while (len-- > 0)
 		s.put(*p++);
 }
@@ -263,8 +260,7 @@ bool HttpHeader::authenticated() const
 
 void HttpHeader::content(const char* p, long len)
 {
-	content_.resize(len);
-	::memcpy((char*)content_, p, len);
+	content_.write(p, len);
 }
 
 void HttpHeader::setHeader(const std::string& k, const std::string& v)
@@ -276,6 +272,74 @@ const std::string& HttpHeader::getHeader(const std::string& k) const
 {
 	return ((HttpHeader*)this)->header_[k];
 }
+
+const char* HttpHeader::content() const { return static_cast<const char*>(content_.data()); }
+
+//-----------------------------------------------------------------------------
+
+static std::string nextLine(TCPSocket& socket) {
+	char c;
+	std::string s;
+
+	for (;;) {
+		ASSERT(socket.read(&c, 1) == 1);
+		if (c == '\r') {
+			ASSERT(socket.read(&c, 1) == 1);
+			ASSERT(c == '\n');
+			return s;
+		}
+
+		s += c;
+		ASSERT(s.length() < 32768);
+	}
+}
+
+HttpHeader::HttpHeader(TCPSocket& socket) {
+	std::string line = nextLine(socket);
+
+	size_t i = line.find_first_of(' ');
+	ASSERT(i != std::string::npos);
+
+	version_ = line.substr(0, i);
+
+	line.erase(0, i + 1);
+
+	i = line.find_first_of(' ');
+	ASSERT(i != std::string::npos);
+	statusCode_ = Translator<std::string, long>()(line.substr(0, i));
+
+	line.erase(0, i + 1);
+	message_ = line;
+
+
+	line = nextLine(socket);
+	while (!line.empty()) {
+
+		size_t i = line.find_first_of(':');
+		ASSERT(i != std::string::npos);
+
+		std::string key = line.substr(0, i);
+		while (!key.empty() && key[key.length() - 1 ] == ' ') {
+			key.erase(key.length() - 1, 1);
+		}
+
+		std::string value = line.substr(i + 1, line.length());
+		while (!value.empty() && value[0] == ' ') {
+			value.erase(0, 1);
+		}
+
+		header_[key] = value;
+
+		line = nextLine(socket);
+	}
+}
+
+void HttpHeader::checkForStatus() const {
+	if(statusCode_ != HttpError::OK) {
+		throw HttpError(statusCode_, message_);
+	}
+}
+
 
 //-----------------------------------------------------------------------------
 

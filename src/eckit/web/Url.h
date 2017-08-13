@@ -123,9 +123,7 @@ public:
 
 	void cgiParam(std::ostream&, char sep = ' ') const;
 
-	const eckit::Value& json() const {
-		return json_;
-	}
+	eckit::Value json() const;
 
 	void remaining(const std::vector<std::string>& remaining) {
 		remaining_ = remaining;
@@ -158,7 +156,6 @@ private:
 
 	std::string		   method_;
 
-	eckit::Value          json_;
 	std::vector<std::string> remaining_;
 
 	eckit::ScopedPtr<DataHandle> handle_;

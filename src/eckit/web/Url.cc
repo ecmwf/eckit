@@ -204,15 +204,6 @@ void Url::parse(std::istream& in)
 
 		in_.content(content, len);
 
-		if (type == JSONType)
-		{
-			const char* p = in_.content();
-			std::istringstream in(p ? p : "null");
-
-			JSONParser q(in);
-			json_ = q.parse();
-		}
-
 	}
 
 	Log::debug() << *this << std::endl;
@@ -293,6 +284,10 @@ const std::string& Url::operator[](int n) const
 	return url_[n];
 }
 
+eckit::Value Url::json() const {
+	const char* p = in_.content();
+	return JSONParser::decodeString(p ? p : "null");
+}
 
 std::string Url::str() const
 {
@@ -346,6 +341,8 @@ UrlAccess& UrlAccess::operator=(const std::string& s)
 	url_.set(s_, s);
 	return *this;
 }
+
+
 
 
 //-----------------------------------------------------------------------------

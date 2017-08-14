@@ -65,7 +65,7 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
                 *connected = false;
                 return *this;
             }
-            Log::status() << message << std::endl;
+            Log::status() << message << " (port " << port_ << ")" << std::endl;
         }
 
         if ((socket_ = ::accept(listen_,

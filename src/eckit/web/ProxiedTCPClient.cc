@@ -35,12 +35,12 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
 
     socket.debug(debug_);
 
-    const char * crlf = "\r\n";
+    const char * CRLF = "\r\n";
 
     std::ostringstream oss;
-    oss << "CONNECT " << host << ":" << port << " HTTP/1.0" << crlf;
-    oss << "User-agent: eckit/1.0" << crlf;
-    oss << crlf;
+    oss << "CONNECT " << host << ":" << port << " HTTP/1.0" << CRLF;
+    oss << "User-agent: eckit/1.0" << CRLF;
+    oss << CRLF;
 
     std::string request(oss.str());
     ASSERT(socket.write(&request[0], request.size()) == request.size());

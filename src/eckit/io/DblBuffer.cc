@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -19,6 +19,7 @@
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 #include "eckit/log/Timer.h"
+#include "eckit/runtime/Monitor.h"
 
 //-----------------------------------------------------------------------------
 
@@ -27,11 +28,11 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 class DblBufferError : public Exception {
-    public:
-        DblBufferError(const std::string& what)
-        {
-            reason(std::string("Double buffer error: ") + what);
-        }
+public:
+    DblBufferError(const std::string& what)
+    {
+        reason(std::string("Double buffer error: ") + what);
+    }
 };
 
 
@@ -49,22 +50,23 @@ class DblBufferTask : public Thread {
     DataHandle&        out_;
     Length             estimate_;
     OneBuffer*         buffers_;
-    public:
-    DblBufferTask(DataHandle&,DblBuffer&,OneBuffer*,const Length&);
+    long               parent_;
+public:
+    DblBufferTask(DataHandle&, DblBuffer&, OneBuffer*, const Length&, long parent);
     virtual void run();
 };
 
-DblBuffer::DblBuffer(long count,long size,TransferWatcher& watcher):
+DblBuffer::DblBuffer(long count, long size, TransferWatcher& watcher):
     count_(count),
     bufSize_(size),
     error_(false),
     restart_(false),
     restartFrom_(0),
-    watcher_(watcher)    
+    watcher_(watcher)
 {
-    Log::info() << "Double buffering: " << 
-        count_ <<  " buffers of " << Bytes(size) << " is " << Bytes(count*size) 
-        << std::endl;
+    Log::info() << "Double buffering: " <<
+                count_ <<  " buffers of " << Bytes(size) << " is " << Bytes(count * size)
+                << std::endl;
 }
 
 DblBuffer::~DblBuffer()
@@ -87,15 +89,15 @@ inline bool DblBuffer::error()
 void DblBuffer::restart(RestartTransfer& retry)
 {
     AutoLock<Mutex> lock(mutex_);
-    Log::warning() << "Retrying transfer from " << retry.from() 
-        << " (" << Bytes(retry.from()) << ")" << std::endl;
+    Log::warning() << "Retrying transfer from " << retry.from()
+                   << " (" << Bytes(retry.from()) << ")" << std::endl;
     error_       = true;
     restart_     = true;
     restartFrom_ = retry.from();
 
 }
 
-Length DblBuffer::copy(DataHandle& in,DataHandle& out)
+Length DblBuffer::copy(DataHandle& in, DataHandle& out)
 {
 
     Timer timer("Double buffer");
@@ -109,47 +111,47 @@ Length DblBuffer::copy(DataHandle& in,DataHandle& out)
 
 
     bool more = true;
-    while(more)
+    while (more)
     {
         more = false;
         try {
-            Length copied = copy(in,out,estimate);
+            Length copied = copy(in, out, estimate);
             Log::info() << "Copied: " << copied << ", estimate: " << estimate << std::endl;
             ASSERT(copied == estimate);
         }
-        catch(RestartTransfer& retry) 
-        { 
-            Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")" << std::endl; 
-            in.restartReadFrom(retry.from()); 
+        catch (RestartTransfer& retry)
+        {
+            Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")" << std::endl;
+            in.restartReadFrom(retry.from());
             out.restartWriteFrom(retry.from());
             estimate = total - retry.from();
             more = true;
         }
     }
 
-    Log::info() << "Transfer rate " << Bytes(estimate,timer) << std::endl;
+    Log::info() << "Transfer rate " << Bytes(estimate, timer) << std::endl;
     return total;
 }
 
-Length DblBuffer::copy(DataHandle& in,DataHandle& out,const Length& estimate)
+Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate)
 {
     Buffer bigbuf(count_ * bufSize_);
 
     OneBuffer* buffers = new OneBuffer[count_];
 
     char *addr = bigbuf;
-    for(int j = 0; j < count_; j++)
+    for (int j = 0; j < count_; j++)
     {
         buffers[j].buffer_ = addr;
         addr              += bufSize_;
     }
 
-    Progress progress("Reading data",0,estimate);
+    Progress progress("Reading data", 0, estimate);
 
     error_   = false;
     inBytes_ = outBytes_ = 0;
 
-    ThreadControler thread(new DblBufferTask(out,*this,buffers,estimate),false);
+    ThreadControler thread(new DblBufferTask(out, *this, buffers, estimate, Monitor::instance().self()), false);
 
     thread.start();
 
@@ -159,40 +161,40 @@ Length DblBuffer::copy(DataHandle& in,DataHandle& out,const Length& estimate)
     double rate = 0;
     double first = 0;
 
-	watcher_.watch(0,0);
+    watcher_.watch(0, 0);
 
-    while(!error())
+    while (!error())
     {
         Log::message() << "Wait " << i << std::endl;
         AutoLock<MutexCond> lock(buffers[i].cond_);
 
-        while(buffers[i].full_)
+        while (buffers[i].full_)
             buffers[i].cond_.wait();
 
-        if(error())
+        if (error())
             break;
 
         Log::message() << "Read " << i << std::endl;
         try {
             double x = reader.elapsed();
-            buffers[i].length_ = in.read(buffers[i].buffer_,bufSize_);
+            buffers[i].length_ = in.read(buffers[i].buffer_, bufSize_);
             double s = reader.elapsed() - x;
-            Log::status() << Bytes(estimate) << " at " << Bytes(buffers[i].length_/s) << "/s" << std::endl;
+            Log::status() << Bytes(estimate) << " at " << Bytes(buffers[i].length_ / s) << "/s" << std::endl;
             rate += s;
-            if(first == 0) first = rate;
+            if (first == 0) first = rate;
 
-			watcher_.watch(buffers[i].buffer_, buffers[i].length_);
-        } 
-        catch(RestartTransfer& retry)
+            watcher_.watch(buffers[i].buffer_, buffers[i].length_);
+        }
+        catch (RestartTransfer& retry)
         {
             Log::warning() << "RestartTransfer: Exiting reader thread" << std::endl;
             buffers[i].length_ = -1;
             restart(retry);
         }
-        catch(std::exception& e)
+        catch (std::exception& e)
         {
-            Log::error() << "** " << e.what() 
-                << " Caught in " << Here() << std::endl;
+            Log::error() << "** " << e.what()
+                         << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is handled" << std::endl;
             buffers[i].length_ = -1;
             error(e.what());
@@ -201,13 +203,13 @@ Length DblBuffer::copy(DataHandle& in,DataHandle& out,const Length& estimate)
 
         buffers[i].full_ = true;
 
-        if(buffers[i].length_ == 0)
+        if (buffers[i].length_ == 0)
         {
             buffers[i].cond_.signal();
             break;
         }
 
-        if(buffers[i].length_ < 0)
+        if (buffers[i].length_ < 0)
         {
             ASSERT(error());
             Log::warning() << "Read error... " << why_ << std::endl;
@@ -226,15 +228,15 @@ Length DblBuffer::copy(DataHandle& in,DataHandle& out,const Length& estimate)
     }
 
     Log::info() << "Read done " << Bytes(inBytes_) << std::endl;
-    Log::info() << "Read rate " << Bytes(inBytes_/rate) << "/s" << std::endl;
-    if(first != rate)
-        Log::info()   << "Read rate no mount " << Bytes(inBytes_/(rate-first)) << "/s" << std::endl;
+    Log::info() << "Read rate " << Bytes(inBytes_ / rate) << "/s" << std::endl;
+    if (first != rate)
+        Log::info()   << "Read rate no mount " << Bytes(inBytes_ / (rate - first)) << "/s" << std::endl;
 
     thread.wait();
     delete[] buffers;
 
-    if(error_) {
-        if(restart_) throw RestartTransfer(restartFrom_);
+    if (error_) {
+        if (restart_) throw RestartTransfer(restartFrom_);
         throw  DblBufferError(why_);
     }
 
@@ -244,38 +246,42 @@ Length DblBuffer::copy(DataHandle& in,DataHandle& out,const Length& estimate)
 
 }
 
-DblBufferTask::DblBufferTask(DataHandle& out,DblBuffer& owner,OneBuffer* buffers,
-        const Length& estimate):
+DblBufferTask::DblBufferTask(DataHandle& out, DblBuffer& owner, OneBuffer* buffers,
+                             const Length& estimate,
+                             long parent):
     Thread(false),
     owner_(owner),
     out_(out),
     estimate_(estimate),
-    buffers_(buffers)
+    buffers_(buffers),
+    parent_(parent)
 {
 }
 
 void DblBufferTask::run()
 {
+    Monitor::instance().parent(parent_);
+
     Log::status() << "Double buffering " << Bytes(estimate_) << std::endl;
-    Progress progress("Writing data",0,estimate_);
+    Progress progress("Writing data", 0, estimate_);
 
     int i    = 0;
     Timer writer("Double buffer writer");
     double rate = 0;
     double first = 0;
 
-    while(!owner_.error())
+    while (!owner_.error())
     {
         Log::message() << "Wait " << i << std::endl;
         AutoLock<MutexCond> lock(buffers_[i].cond_);
 
-        while(!buffers_[i].full_)
+        while (!buffers_[i].full_)
             buffers_[i].cond_.wait();
 
-        if(owner_.error())
+        if (owner_.error())
             break;
 
-        if(buffers_[i].length_ == 0)
+        if (buffers_[i].length_ == 0)
             break;
 
         long length = -1;
@@ -283,24 +289,24 @@ void DblBufferTask::run()
         Log::message() << "Write " << i << std::endl;
         try {
             double x = writer.elapsed();
-            length = out_.write(buffers_[i].buffer_,buffers_[i].length_);
+            length = out_.write(buffers_[i].buffer_, buffers_[i].length_);
             double s = writer.elapsed() - x;
-            Log::status() << Bytes(buffers_[i].length_/s) << "/s" << std::endl;
+            Log::status() << Bytes(buffers_[i].length_ / s) << "/s" << std::endl;
             rate += s;
-            if(first == 0) first = rate;
+            if (first == 0) first = rate;
 
             ASSERT(length == buffers_[i].length_);
         }
-        catch(RestartTransfer& retry)
+        catch (RestartTransfer& retry)
         {
             Log::warning() << "RestartTransfer: Exiting writer thread" << std::endl;
             length = -1;
             owner_.restart(retry);
         }
-        catch(std::exception& e)
+        catch (std::exception& e)
         {
             Log::error() << "** " << e.what() << " Caught in " <<
-                Here() << std::endl;
+                         Here() << std::endl;
             Log::error() << "** Exception is handled" << std::endl;
             length = -1;
             owner_.error(e.what());
@@ -309,7 +315,7 @@ void DblBufferTask::run()
 
         buffers_[i].full_ = false;
 
-        if(length < 0)
+        if (length < 0)
         {
             ASSERT(owner_.error());
             buffers_[i].cond_.signal();
@@ -328,9 +334,9 @@ void DblBufferTask::run()
     }
 
     Log::info() << "Write done " << Bytes(owner_.outBytes_) << std::endl;
-    Log::info() << "Write rate " << Bytes(owner_.outBytes_/rate) << "/s" << std::endl;
-    if(rate != first)
-        Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_/(rate-first)) << "/s" << std::endl;
+    Log::info() << "Write rate " << Bytes(owner_.outBytes_ / rate) << "/s" << std::endl;
+    if (rate != first)
+        Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_ / (rate - first)) << "/s" << std::endl;
 }
 
 //-----------------------------------------------------------------------------

@@ -57,7 +57,7 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
         int delay = timeout ? timeout : 10;
 
         Select select(listen_);
-        Log::status() << message << std::endl;
+        Log::status() << message << " (port " << port_ << ")" << std::endl;
 
         while (!select.ready(delay)) {
             if (timeout && !connected) throw TimeOut(message, timeout);

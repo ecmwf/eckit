@@ -75,7 +75,7 @@ private:
 
 // -- Methods
 
-	PathName name(T& event);
+	PathName name(const T& event);
 
 // -- Members
 

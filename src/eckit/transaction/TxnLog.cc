@@ -135,7 +135,7 @@ TxnLog<T>::~TxnLog()
 }
 
 template<class T>
-PathName TxnLog<T>::name(T& event)
+PathName TxnLog<T>::name(const T& event)
 {
     std::ostringstream s;
     s << std::setfill('0') << std::setw(10) << event.transactionID();

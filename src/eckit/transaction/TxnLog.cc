@@ -159,9 +159,9 @@ void TxnLog<T>::begin(T& event)
 }
 
 template<class T>
-void TxnLog<T>::update(T& event)
+void TxnLog<T>::update(const T& event)
 {
-    AutoLock<TxnArray > lock(*nextID_);
+    // AutoLock<TxnArray > lock(*nextID_);
 
     PathName path = name(event);
     PathName next = path + ".tmp";

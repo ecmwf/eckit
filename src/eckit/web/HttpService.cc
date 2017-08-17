@@ -23,8 +23,8 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-HttpService::HttpService(int port):
-	NetService(port)
+HttpService::HttpService(int port, bool visible):
+	NetService(port, visible)
 {
 }
 

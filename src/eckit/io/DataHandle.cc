@@ -22,6 +22,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/log/Timer.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/memory/ScopedPtr.h"
 
 //-----------------------------------------------------------------------------
 
@@ -212,7 +213,7 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
 
 Length DataHandle::saveInto(const PathName& path,TransferWatcher& w, bool dblBufferOK)
 {
-    std::auto_ptr<DataHandle> file(path.fileHandle());
+    eckit::ScopedPtr<DataHandle> file(path.fileHandle());
     return saveInto(*file,w,dblBufferOK);
 }
 

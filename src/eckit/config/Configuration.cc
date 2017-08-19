@@ -25,7 +25,7 @@ namespace eckit {
 
 class ConfigurationNotFound : public Exception {
 
-  public:
+public:
     ConfigurationNotFound(const std::string& name) {
         std::ostringstream s;
         s << "ConfigurationNotFound: [" << name << "]";
@@ -41,7 +41,7 @@ Configuration::Configuration(const Configuration& other, const std::string& path
 
     bool found = false;
     root_ = lookUp(path, found);
-    if(!found) throw ConfigurationNotFound(path);
+    if (!found) throw ConfigurationNotFound(path);
 }
 
 Configuration::Configuration(const Configuration &other):
@@ -93,7 +93,7 @@ eckit::Value Configuration::lookUp(const std::string &s, bool &found) const {
 eckit::Value Configuration::lookUp(const std::string &name) const {
     bool found = false;
     eckit::Value v = lookUp(name, found);
-    if(!found) throw ConfigurationNotFound(name);
+    if (!found) throw ConfigurationNotFound(name);
     return v;
 }
 
@@ -263,7 +263,7 @@ bool Configuration::get(const std::string &name, std::vector<std::string> &value
 
 bool Configuration::get(const std::string &name, LocalConfiguration& value) const {
     bool found = has(name);
-    if(found) {
+    if (found) {
         value = LocalConfiguration(*this, name);
     }
     return found;
@@ -288,7 +288,7 @@ bool Configuration::get(const std::string &name, std::vector<LocalConfiguration>
 
 template<class T>
 void Configuration::_get(const std::string &name, T& value) const {
-    if(!get(name, value)) {
+    if (!get(name, value)) {
         throw ConfigurationNotFound(name);
     }
 }
@@ -386,7 +386,7 @@ LocalConfiguration Configuration::getSubConfiguration(const std::string &name) c
 
 template<class T>
 void Configuration::_getWithDefault(const std::string &name, T& value, const T& defaultVal) const {
-    if(!get(name, value)) {
+    if (!get(name, value)) {
         value = defaultVal;
     }
 }
@@ -474,6 +474,14 @@ void Configuration::json( JSON& s ) const
     s << root_;
 }
 
+std::vector<std::string> Configuration::keys() const {
+    std::vector<std::string> result;
+    ValueMap m = root_;
+    for(ValueMap::const_iterator j = m.begin(); j != m.end(); ++j) {
+        result.push_back((*j).first);
+    }
+    return result;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

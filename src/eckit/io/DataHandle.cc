@@ -182,8 +182,11 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
             catch(RestartTransfer& retry)
             {
                 Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")" << std::endl;
+
                 restartReadFrom(retry.from());
                 other.restartWriteFrom(retry.from());
+                watcher.restartFrom(retry.from());
+
                 Log::warning() << "Total so far " << total << std::endl;
                 total = Length(0) + retry.from();
                 Log::warning() << "New total " << total << std::endl;

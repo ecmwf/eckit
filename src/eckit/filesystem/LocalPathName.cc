@@ -16,6 +16,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 #include "eckit/filesystem/LocalPathName.h"
 
@@ -64,7 +66,7 @@ static void readPathsTable() {
     eckit::Tokenizer parse(" ");
 
     char line[1024];
-    while(in.getline(line, sizeof(line))) {
+    while (in.getline(line, sizeof(line))) {
         std::vector<std::string> s;
         parse(line, s);
 
@@ -106,24 +108,24 @@ LocalPathName LocalPathName::baseName(bool ext) const
     int n = -1;
     int i = 0;
 
-    while(*q) {
-        if(*q == '/') n = i;
+    while (*q) {
+        if (*q == '/') n = i;
         q++;
         i++;
     }
 
     std::string s(path_.c_str() + n + 1);
-    if(!ext)
+    if (!ext)
     {
-         n = -1;
-         i = 0;
-         q = s.c_str();
-         while(*q) {
-             if(*q == '.') { n = i; break; }
-             q++;
-             i++;
-         }
-         if(n>= 0) s.resize(n);
+        n = -1;
+        i = 0;
+        q = s.c_str();
+        while (*q) {
+            if (*q == '.') { n = i; break; }
+            q++;
+            i++;
+        }
+        if (n >= 0) s.resize(n);
     }
     return s;
 
@@ -143,21 +145,21 @@ LocalPathName LocalPathName::dirName() const
     int n = -1;
     int i = 0;
     const char *q = path_.c_str();
-    while(*q) {
-        if(*q == '/') n = i;
+    while (*q) {
+        if (*q == '/') n = i;
         q++;
         i++;
     }
 
-    switch(n)
+    switch (n)
     {
-        case -1:
-            return std::string(".");
-            break;
+    case -1:
+        return std::string(".");
+        break;
 
-        case 0:
-            return std::string("/");
-            break;
+    case 0:
+        return std::string("/");
+        break;
 
     }
 
@@ -170,9 +172,9 @@ LocalPathName LocalPathName::dirName() const
 BasePathName* LocalPathName::checkClusterNode() const
 {
     std::string n = ClusterDisks::node(path_);
-    if(n != "local") {
+    if (n != "local") {
 //        Log::warning() << *this << " is now on node [" << n << "]" << std::endl;
-        return new BasePathNameT<MarsFSPath>(MarsFSPath(n,path_));
+        return new BasePathNameT<MarsFSPath>(MarsFSPath(n, path_));
     }
     return new BasePathNameT<LocalPathName>(LocalPathName(path_));
 }
@@ -181,13 +183,13 @@ LocalPathName LocalPathName::orphanName() const
 {
 
     std::ostringstream os;
-	os << mountPoint()  << "/orphans/";
+    os << mountPoint()  << "/orphans/";
 
     const char *q = path_.c_str();
-    while(*q) {
-        if(*q == '/')  os << '_';
-		else os << *q;
-		q++;
+    while (*q) {
+        if (*q == '/')  os << '_';
+        else os << *q;
+        q++;
     }
 
     return os.str();
@@ -201,15 +203,15 @@ bool LocalPathName::exists() const
 
 bool LocalPathName::available() const
 {
-	return true;
+    return true;
 }
 
 LocalPathName LocalPathName::cwd()
 {
     AutoLock<StaticMutex> lock(local_mutex);
-    char buf [PATH_MAX+1];
-	if(!getcwd(buf, sizeof(buf)))
-		throw FailedSystemCall("getcwd");
+    char buf [PATH_MAX + 1];
+    if (!getcwd(buf, sizeof(buf)))
+        throw FailedSystemCall("getcwd");
     return LocalPathName( buf );
 }
 
@@ -226,92 +228,92 @@ LocalPathName LocalPathName::unique(const LocalPathName& path)
     std::ostringstream os;
     os << path << '.' << TimeStamp(format) << '.' << hostname << '.' << n++;
 
-    while(::access(os.str().c_str(),F_OK) == 0)
-	{
+    while (::access(os.str().c_str(), F_OK) == 0)
+    {
         std::ostringstream os;
         os << path << '.' << TimeStamp(format) << '.' << hostname << '.' << n++;
-	}
+    }
 
     LocalPathName result(os.str());
-	result.dirName().mkdir();
-	return result;
+    result.dirName().mkdir();
+    return result;
 }
 
 static void mkdir_if_not_exists( const char* path, short mode )
 {
-	Stat::Struct info;
+    Stat::Struct info;
 
-	if( Stat::stat( path, &info) < 0 )
-	{
-		if( errno == ENOENT ) // no such file or dir
-		{
-			if(::mkdir(path,mode) < 0)
-			{
+    if ( Stat::stat( path, &info) < 0 )
+    {
+        if ( errno == ENOENT ) // no such file or dir
+        {
+            if (::mkdir(path, mode) < 0)
+            {
                 /* don't throw error if it was created meanwhile by another process */
-                if( errno != EEXIST ) {
+                if ( errno != EEXIST ) {
                     throw FailedSystemCall(std::string("mkdir ") + path);
                 }
-			}
-		}
-		else // stat fails for unknown reason
-		{
-			throw FailedSystemCall( std::string("stat ") + path);
-		}
-	}
+            }
+        }
+        else // stat fails for unknown reason
+        {
+            throw FailedSystemCall( std::string("stat ") + path);
+        }
+    }
 
 }
 
 void LocalPathName::mkdir(short mode) const
 {
-	try
-	{
-		char path[PATH_MAX+1];
+    try
+    {
+        char path[PATH_MAX + 1];
 
         size_t l = path_.length();
 
-		ASSERT( sizeof(path) > l );
+        ASSERT( sizeof(path) > l );
 
-		::strcpy( path, path_.c_str()  );
+        ::strcpy( path, path_.c_str()  );
 
-        for(size_t i=1; i < l; i++)
-		{
-			if(path[i] == '/')
-			{
-				path[i] = 0;
+        for (size_t i = 1; i < l; i++)
+        {
+            if (path[i] == '/')
+            {
+                path[i] = 0;
 
-				mkdir_if_not_exists(path,mode);
+                mkdir_if_not_exists(path, mode);
 
-				path[i] = '/'; // put slash back
-			}
-		}
+                path[i] = '/'; // put slash back
+            }
+        }
 
-		mkdir_if_not_exists(path,mode);
-	}
-	catch( FailedSystemCall& e )
-	{
-		Log::error() << "Failed to mkdir " << path_ << std::endl;
-		throw;
-	}
+        mkdir_if_not_exists(path, mode);
+    }
+    catch ( FailedSystemCall& e )
+    {
+        Log::error() << "Failed to mkdir " << path_ << std::endl;
+        throw;
+    }
 }
 
-void LocalPathName::link(const LocalPathName& from,const LocalPathName& to)
+void LocalPathName::link(const LocalPathName& from, const LocalPathName& to)
 {
-	if(::link(from.c_str(),to.c_str()) != 0)
-		throw FailedSystemCall(std::string("::link(") + from.path_ + ',' + to.path_ + ')');
+    if (::link(from.c_str(), to.c_str()) != 0)
+        throw FailedSystemCall(std::string("::link(") + from.path_ + ',' + to.path_ + ')');
 }
 
-void LocalPathName::rename(const LocalPathName& from,const LocalPathName& to)
+void LocalPathName::rename(const LocalPathName& from, const LocalPathName& to)
 {
-	if(::rename(from.c_str(),to.c_str()) != 0)
-		throw FailedSystemCall(std::string("::rename(") + from.path_ + ',' + to.path_ + ')');
+    if (::rename(from.c_str(), to.c_str()) != 0)
+        throw FailedSystemCall(std::string("::rename(") + from.path_ + ',' + to.path_ + ')');
 }
 
 void LocalPathName::unlink() const
 {
-	Log::info() << "Unlink " << path_ << std::endl;
-	if(::unlink(path_.c_str()) != 0)
+    Log::info() << "Unlink " << path_ << std::endl;
+    if (::unlink(path_.c_str()) != 0)
     {
-        if(errno != ENOENT)
+        if (errno != ENOENT)
             throw FailedSystemCall(std::string("unlink ") + path_);
         else
             Log::info() << "Unlink failed " << path_ << Log::syserr << std::endl;
@@ -320,10 +322,10 @@ void LocalPathName::unlink() const
 
 void LocalPathName::rmdir() const
 {
-	Log::info() << "Rmdir " << path_ << std::endl;
-	if(::rmdir(path_.c_str()) != 0)
+    Log::info() << "Rmdir " << path_ << std::endl;
+    if (::rmdir(path_.c_str()) != 0)
     {
-        if(errno != ENOENT)
+        if (errno != ENOENT)
             throw FailedSystemCall(std::string("rmdir ") + path_);
         else
             Log::info() << "Rmdir failed " << path_ << Log::syserr << std::endl;
@@ -331,40 +333,47 @@ void LocalPathName::rmdir() const
 }
 
 
-void operator<<(Stream& s,const LocalPathName& path)
+void operator<<(Stream& s, const LocalPathName& path)
 {
-	s << path.path_;
+    s << path.path_;
 }
 
-void operator>>(Stream& s,LocalPathName& path)
+void operator>>(Stream& s, LocalPathName& path)
 {
-	s >> path.path_;
+    s >> path.path_;
 }
 
 LocalPathName LocalPathName::fullName() const
 {
-	if(path_.length()  > 0 && path_[0] != '/')
+    if (path_.length()  > 0 && path_[0] != '/')
     {
         char buf[PATH_MAX];
-		return LocalPathName(std::string(getcwd(buf,PATH_MAX)) + "/" + path_);
+        return LocalPathName(std::string(getcwd(buf, PATH_MAX)) + "/" + path_);
     }
 
     return *this;
 }
 
 
-static void expandTilde(std::string& path)
+static void expandTilde(std::string& path, bool tildeIsUserHome)
 {
-    if(path[0] == '~')
+    if (path[0] == '~')
     {
-        if(path.length() > 1 && path[1] != '/') {
+        if (path.length() > 1 && path[1] != '/') {
+
+            if (tildeIsUserHome) {
+                NOTIMP;
+            }
 
             std::string s;
             size_t j = 1;
-            while(j < path.length() && path[j] != '/') {
+            while (j < path.length() && path[j] != '/') {
                 s += path[j];
                 j++;
             }
+
+
+
 
             // 1. match against a path defined in application / tool home ~/etc/paths
             //    or file defined in $LIBRARY_CONFIG_PATHS
@@ -374,26 +383,26 @@ static void expandTilde(std::string& path)
             std::vector<std::pair<std::string, std::string> >::const_iterator best = pathsTable.end();
             size_t match = 0;
 
-            for(std::vector<std::pair<std::string, std::string> >::const_iterator k = pathsTable.begin(); k != pathsTable.end(); ++k) {
+            for (std::vector<std::pair<std::string, std::string> >::const_iterator k = pathsTable.begin(); k != pathsTable.end(); ++k) {
                 const std::string& prefix = (*k).first;
                 size_t m = prefix.length();
 
-                if(path.substr(0, m) == prefix) { // longest match is selected
-                    if(m > match) {
+                if (path.substr(0, m) == prefix) { // longest match is selected
+                    if (m > match) {
                         match = m;
                         best = k;
                     }
                 }
             }
 
-            if(match) {
+            if (match) {
                 path = (*best).second + "/" + path.substr(match);
                 return;
             }
 
             // 2. if it has the form ~libname/, then delegate to the matching library to expand the path
 
-            if(eckit::system::Library::exists(s)) {
+            if (eckit::system::Library::exists(s)) {
                 path = eckit::system::Library::lookup(s).expandPath(path);
                 return;
             }
@@ -406,157 +415,166 @@ static void expandTilde(std::string& path)
             throw SeriousBug(oss.str());
         }
 
+        if (tildeIsUserHome) {
+
+            struct passwd * pw = ::getpwuid(::geteuid());
+            ASSERT(pw);
+            path = std::string(pw->pw_dir)  + "/" + path.substr(1);
+            return;
+
+        }
+
         // 3. expand ~/ with registered home
 
         path =  Main::instance().home() + "/" + path.substr(1);
     }
 }
 
-LocalPathName& LocalPathName::tidy()
+LocalPathName& LocalPathName::tidy(bool tildeIsUserHome)
 {
-	if(path_.length() == 0) return *this;
+    if (path_.length() == 0) return *this;
 
-    expandTilde(path_);
+    expandTilde(path_, tildeIsUserHome);
 
-	bool more = true;
-	bool last = (path_[path_.length()-1] == '/');
-
-
-	size_t p = 0;
-	size_t q = 0;
-
-	std::vector<std::string> v;
-
-	while( (p = path_.find('/',q)) != std::string::npos )
-	{
-		v.push_back(std::string(path_,q,p-q));
-		q = p+1;
-	}
-
-	v.push_back(std::string(path_,q));
+    bool more = true;
+    bool last = (path_[path_.length() - 1] == '/');
 
 
-	while(more)
-	{
-		more   = false;
+    size_t p = 0;
+    size_t q = 0;
 
-		std::vector<std::string>::iterator i = v.begin();
-		std::vector<std::string>::iterator j = i+1;
+    std::vector<std::string> v;
+
+    while ( (p = path_.find('/', q)) != std::string::npos )
+    {
+        v.push_back(std::string(path_, q, p - q));
+        q = p + 1;
+    }
+
+    v.push_back(std::string(path_, q));
 
 
-		while( j != v.end() )
-		{
-			if( (*j) == "" || (*j) == ".")
-			{
-				v.erase(j);
-				more = true;
-				break;
-			}
+    while (more)
+    {
+        more   = false;
 
-			if( (*j) == ".." && (*i) != "..")
-			{
-				if ((*i) != "")
-					*i = ".";
-				v.erase(j);
-				more = true;
-				break;
-			}
+        std::vector<std::string>::iterator i = v.begin();
+        std::vector<std::string>::iterator j = i + 1;
 
-			++i;
-			++j;
 
-		}
+        while ( j != v.end() )
+        {
+            if ( (*j) == "" || (*j) == ".")
+            {
+                v.erase(j);
+                more = true;
+                break;
+            }
 
-	}
+            if ( (*j) == ".." && (*i) != "..")
+            {
+                if ((*i) != "")
+                    *i = ".";
+                v.erase(j);
+                more = true;
+                break;
+            }
 
-	path_ = "";
+            ++i;
+            ++j;
 
-    for(size_t i = 0; i < v.size() ; i++)
-	{
-		path_ += v[i];
-		if(i != v.size() - 1)
-			path_ += '/';
-	}
+        }
 
-	if(last) path_ += '/';
+    }
 
-	return *this;
+    path_ = "";
+
+    for (size_t i = 0; i < v.size() ; i++)
+    {
+        path_ += v[i];
+        if (i != v.size() - 1)
+            path_ += '/';
+    }
+
+    if (last) path_ += '/';
+
+    return *this;
 }
 
 class StdDir {
-	DIR *d_;
+    DIR *d_;
 public:
-	StdDir(const LocalPathName& p) { d_ = opendir(p.localPath());}
-	~StdDir()                 { if(d_) closedir(d_);    }
-	operator DIR*()           { return d_;              }
+    StdDir(const LocalPathName& p) { d_ = opendir(p.localPath());}
+    ~StdDir()                 { if (d_) closedir(d_);    }
+    operator DIR*()           { return d_;              }
 };
 
-void LocalPathName::match(const LocalPathName& root,std::vector<LocalPathName>& result,bool rec)
+void LocalPathName::match(const LocalPathName& root, std::vector<LocalPathName>& result, bool rec)
 {
-	// Note that pattern matching will only be done
-	// on the base name.
+    // Note that pattern matching will only be done
+    // on the base name.
 
-	LocalPathName dir   = root.dirName();
-	std::string   base  = root.baseName();
+    LocalPathName dir   = root.dirName();
+    std::string   base  = root.baseName();
 
 //    Log::info() << "dir  = " << dir << std::endl;
 //    Log::info() << "base = " << base << std::endl;
 
-	// all those call should be members of LocalPathName
+    // all those call should be members of LocalPathName
 
     //long len = base.length() * 2 + 2;
 
-	Regex re(base,true);
+    Regex re(base, true);
 
-	StdDir d(dir);
+    StdDir d(dir);
 
-	if(d == 0)
-	{
-		Log::error() << "opendir(" << dir << ")" << Log::syserr << std::endl;
-		throw FailedSystemCall(std::string("opendir(") + std::string(dir) + ")");
-	}
+    if (d == 0)
+    {
+        Log::error() << "opendir(" << dir << ")" << Log::syserr << std::endl;
+        throw FailedSystemCall(std::string("opendir(") + std::string(dir) + ")");
+    }
 
-	struct dirent buf;
+    struct dirent buf;
 
 
-	for(;;)
-	{
-		struct dirent *e;
+    for (;;)
+    {
+        struct dirent *e;
 #ifdef EC_HAVE_READDIR_R
-		errno = 0;
-		if(readdir_r(d,&buf,&e) != 0)
+        errno = 0;
+        if (readdir_r(d, &buf, &e) != 0)
         {
-			if(errno)
-				throw FailedSystemCall("readdir_r");
-			else
-				e = 0;
+            if (errno)
+                throw FailedSystemCall("readdir_r");
+            else
+                e = 0;
         }
 #else
-		e = readdir(d);
+        e = readdir(d);
 #endif
 
-		if(e == 0)
-			break;
+        if (e == 0)
+            break;
 
 //        Log::info() << "e->d_name = " << e->d_name << std::endl;
 
-		if(re.match(e->d_name))
-		{
+        if (re.match(e->d_name))
+        {
 //            Log::info() << "match !!! ---> " << e->d_name << std::endl;
 
-			LocalPathName path = std::string(dir) + std::string("/") + std::string(e->d_name);
-			result.push_back(path);
-		}
+            LocalPathName path = std::string(dir) + std::string("/") + std::string(e->d_name);
+            result.push_back(path);
+        }
 
-		if(rec && e->d_name[0] != '.')
-		{
-			LocalPathName full = dir + "/" + e->d_name;
+        if (rec && e->d_name[0] != '.')
+        {
+            LocalPathName full = dir + "/" + e->d_name;
             Stat::Struct info;
-            SYSCALL(Stat::lstat(full.c_str(),&info));
-			if(S_ISDIR(info.st_mode))
-				match(full+"/"+base,result,true);
-		}
-	}
+            SYSCALL(Stat::lstat(full.c_str(), &info));
+            if (S_ISDIR(info.st_mode))
+                match(full + "/" + base, result, true);
+        }
+    }
 
 }
 
@@ -576,9 +594,9 @@ LocalPathName LocalPathName::relativePath(const LocalPathName& other) const {
     // find common token
     std::vector<std::string>::const_iterator i = s1.begin();
     std::vector<std::string>::const_iterator j = s2.begin();
-    for(; i != s1.end() && j != s2.end(); ++i, ++j) {
+    for (; i != s1.end() && j != s2.end(); ++i, ++j) {
 //        std::cout << "comparing " << *i << " " << *j << std::endl;
-        if(*i != *j) {
+        if (*i != *j) {
             break;
         }
     }
@@ -586,86 +604,86 @@ LocalPathName LocalPathName::relativePath(const LocalPathName& other) const {
     std::string result;
     const char* p = 0;
 
-    for(std::vector<std::string>::const_iterator r = j; r != s2.end(); ++r) {
-        if(p) result += p;
+    for (std::vector<std::string>::const_iterator r = j; r != s2.end(); ++r) {
+        if (p) result += p;
         result += "..";
         p = "/";
     }
 
-    for(std::vector<std::string>::const_iterator r = i; r != s1.end(); ++r) {
-        if(p) result += p;
+    for (std::vector<std::string>::const_iterator r = i; r != s1.end(); ++r) {
+        if (p) result += p;
         result += *r;
         p = "/";
     }
 
-    if(result.empty()) { result = "."; }
+    if (result.empty()) { result = "."; }
 
     return result;
 }
 
 
-void LocalPathName::children(std::vector<LocalPathName>& files,std::vector<LocalPathName>& directories)
-	const
+void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<LocalPathName>& directories)
+const
 {
-	StdDir d(*this);
+    StdDir d(*this);
 
-	if(d == 0)
-	{
-		Log::error() << "opendir(" << *this << ")" << Log::syserr << std::endl;
-		throw FailedSystemCall("opendir");
-	}
+    if (d == 0)
+    {
+        Log::error() << "opendir(" << *this << ")" << Log::syserr << std::endl;
+        throw FailedSystemCall("opendir");
+    }
 
-	struct dirent buf;
+    struct dirent buf;
 
 
-	for(;;)
-	{
-		struct dirent *e;
+    for (;;)
+    {
+        struct dirent *e;
 #ifdef EC_HAVE_READDIR_R
-		errno = 0;
-		if(readdir_r(d,&buf,&e) != 0)
+        errno = 0;
+        if (readdir_r(d, &buf, &e) != 0)
         {
-			if(errno)
-				throw FailedSystemCall("readdir_r");
-			else
-				e = 0;
+            if (errno)
+                throw FailedSystemCall("readdir_r");
+            else
+                e = 0;
         }
 #else
-		e = readdir(d);
+        e = readdir(d);
 #endif
 
-		if(e == 0)
-			break;
+        if (e == 0)
+            break;
 
-		if(e->d_name[0] == '.')
-			if(e->d_name[1] == 0 || (e->d_name[1] =='.' && e->d_name[2] == 0))
-				continue;
+        if (e->d_name[0] == '.')
+            if (e->d_name[1] == 0 || (e->d_name[1] == '.' && e->d_name[2] == 0))
+                continue;
 
-		LocalPathName full = *this + "/" + e->d_name;
+        LocalPathName full = *this + "/" + e->d_name;
 
 #if defined(EC_HAVE_DIRENT_D_TYPE)
-        if(e->d_type == DT_DIR)
+        if (e->d_type == DT_DIR)
             directories.push_back(full);
         else
             files.push_back(full);
 #else
         Stat::Struct info;
-        if(Stat::stat(full.c_str(),&info) == 0)
+        if (Stat::stat(full.c_str(), &info) == 0)
         {
-            if(S_ISDIR(info.st_mode))
+            if (S_ISDIR(info.st_mode))
                 directories.push_back(full);
             else
                 files.push_back(full);
         }
         else Log::error() << "Cannot stat " << full << Log::syserr << std::endl;
 #endif
-	}
+    }
 }
 
 void LocalPathName::touch() const
 {
-	dirName().mkdir();
-	StdFile f(*this,"a"); // This should touch the file
+    dirName().mkdir();
+    StdFile f(*this, "a"); // This should touch the file
 }
 
 // This routine is used by TxnLog. It is important that
@@ -674,137 +692,137 @@ void LocalPathName::touch() const
 
 void LocalPathName::empty() const
 {
-	StdFile f(*this,"w"); // This should clear the file
+    StdFile f(*this, "w"); // This should clear the file
 }
 
 void LocalPathName::copy(const LocalPathName& other) const
 {
-	FileHandle in(*this);
-	FileHandle out(other);
-	in.saveInto(out);
+    FileHandle in(*this);
+    FileHandle out(other);
+    in.saveInto(out);
 }
 
 void LocalPathName::backup() const
 {
-	copy(unique(*this));
+    copy(unique(*this));
 }
 
 Length LocalPathName::size() const
 {
     Stat::Struct info;
 
-    if(Stat::stat(path_.c_str(),&info) < 0)
-		throw FailedSystemCall(path_);
+    if (Stat::stat(path_.c_str(), &info) < 0)
+        throw FailedSystemCall(path_);
 
-	// Should ASSERT(is file)
+    // Should ASSERT(is file)
 
-	return info.st_size;
+    return info.st_size;
 }
 
 time_t LocalPathName::created() const
 {
     Stat::Struct info;
-    if(Stat::stat(path_.c_str(),&info) < 0)
-		throw FailedSystemCall(path_);
-	return info.st_ctime;
+    if (Stat::stat(path_.c_str(), &info) < 0)
+        throw FailedSystemCall(path_);
+    return info.st_ctime;
 }
 
 time_t LocalPathName::lastModified() const
 {
     Stat::Struct info;
-    if(Stat::stat(path_.c_str(),&info) < 0)
-		throw FailedSystemCall(path_);
-	return info.st_mtime;
+    if (Stat::stat(path_.c_str(), &info) < 0)
+        throw FailedSystemCall(path_);
+    return info.st_mtime;
 }
 
 time_t LocalPathName::lastAccess() const
 {
     Stat::Struct info;
-    SYSCALL(Stat::stat(path_.c_str(),&info));
-	return info.st_atime;
+    SYSCALL(Stat::stat(path_.c_str(), &info));
+    return info.st_atime;
 }
 
 bool LocalPathName::isDir() const
 {
     Stat::Struct info;
-    SYSCALL(Stat::stat(path_.c_str(),&info));
-	return S_ISDIR(info.st_mode);
+    SYSCALL(Stat::stat(path_.c_str(), &info));
+    return S_ISDIR(info.st_mode);
 }
 
 bool LocalPathName::isLink() const
 {
     Stat::Struct info;
-    SYSCALL(Stat::lstat(path_.c_str(),&info));
+    SYSCALL(Stat::lstat(path_.c_str(), &info));
     return S_ISLNK(info.st_mode);
 }
 
 bool LocalPathName::sameAs(const LocalPathName& other) const
 {
-	if(!exists() || !other.exists())
-		return false;
+    if (!exists() || !other.exists())
+        return false;
 
-    Stat::Struct info1; SYSCALL(Stat::stat(path_.c_str(),&info1));
-    Stat::Struct info2; SYSCALL(Stat::stat(other.path_.c_str(),&info2));
-	return (info1.st_dev == info2.st_dev) && (info1.st_ino == info2.st_ino);
+    Stat::Struct info1; SYSCALL(Stat::stat(path_.c_str(), &info1));
+    Stat::Struct info2; SYSCALL(Stat::stat(other.path_.c_str(), &info2));
+    return (info1.st_dev == info2.st_dev) && (info1.st_ino == info2.st_ino);
 }
 
 LocalPathName LocalPathName::realName() const
 {
-	char result[PATH_MAX+1];
-	// This code is certainly machine dependant
-	if(!::realpath(c_str(), result))
-		throw FailedSystemCall(std::string("realpath ") + path_);
-	return result;
+    char result[PATH_MAX + 1];
+    // This code is certainly machine dependant
+    if (!::realpath(c_str(), result))
+        throw FailedSystemCall(std::string("realpath ") + path_);
+    return result;
 #if 0
-	char save[PATH_MAX+1];
-	if(!getcwd(save,sizeof(save)))
-		throw FailedSystemCall("getcwd");
+    char save[PATH_MAX + 1];
+    if (!getcwd(save, sizeof(save)))
+        throw FailedSystemCall("getcwd");
 
-	bool direct = isDir();
+    bool direct = isDir();
 
-	if(direct)
-	 	SYSCALL(::chdir(path_.c_str()));
-	else
-		SYSCALL(::chdir(dirName().path_.c_str()));
+    if (direct)
+        SYSCALL(::chdir(path_.c_str()));
+    else
+        SYSCALL(::chdir(dirName().path_.c_str()));
 
-	char dir[PATH_MAX+1];
-	if(!getcwd(dir,sizeof(dir)))
-	{
-		PANIC(::chdir(save) != 0); // We must go back
-		throw FailedSystemCall("getcwd");
-	}
+    char dir[PATH_MAX + 1];
+    if (!getcwd(dir, sizeof(dir)))
+    {
+        PANIC(::chdir(save) != 0); // We must go back
+        throw FailedSystemCall("getcwd");
+    }
 
-	if(direct)
-		return LocalPathName(dir);
-	else
-		return LocalPathName(std::string(dir) + "/" + baseName());
+    if (direct)
+        return LocalPathName(dir);
+    else
+        return LocalPathName(std::string(dir) + "/" + baseName());
 #endif
 
 }
 
 void LocalPathName::truncate(Length len) const
 {
-	SYSCALL(::truncate(path_.c_str(),len));
+    SYSCALL(::truncate(path_.c_str(), len));
 }
 
 void LocalPathName::reserve(const Length& len) const
 {
-	ASSERT(!exists() || size() == Length(0));
+    ASSERT(!exists() || size() == Length(0));
 
-	PartFileHandle part("/dev/zero",0,len);
-	FileHandle     file(*this);
+    PartFileHandle part("/dev/zero", 0, len);
+    FileHandle     file(*this);
 
-	Log::status() << "Reserving " << Bytes(len) << std::endl;
-	part.saveInto(file);
+    Log::status() << "Reserving " << Bytes(len) << std::endl;
+    part.saveInto(file);
 }
 
 void LocalPathName::fileSystemSize(FileSystemSize& fs) const
 {
     struct statvfs d;
-    SYSCALL(::statvfs(path_.c_str(),&d));
-	long unavail = (d.f_bfree - d.f_bavail);
-    fs.available = (unsigned long long)d.f_bavail*(unsigned long long)d.f_bsize;
-    fs.total     = (unsigned long long)(d.f_blocks-unavail)*(unsigned long long)d.f_bsize;
+    SYSCALL(::statvfs(path_.c_str(), &d));
+    long unavail = (d.f_bfree - d.f_bavail);
+    fs.available = (unsigned long long)d.f_bavail * (unsigned long long)d.f_bsize;
+    fs.total     = (unsigned long long)(d.f_blocks - unavail) * (unsigned long long)d.f_bsize;
 }
 
 
@@ -825,24 +843,24 @@ DataHandle* LocalPathName::partHandle(const Offset& o, const Length& l) const
 
 LocalPathName LocalPathName::mountPoint() const
 {
-//	dev_t last;
+//  dev_t last;
     Stat::Struct s;
-	LocalPathName p(*this);
+    LocalPathName p(*this);
 
-	ASSERT(p.path_.length() > 0 && p.path_[0] == '/');
+    ASSERT(p.path_.length() > 0 && p.path_[0] == '/');
 
-    SYSCALL2(Stat::stat(p.c_str(),&s),p);
-	dev_t dev = s.st_dev;
+    SYSCALL2(Stat::stat(p.c_str(), &s), p);
+    dev_t dev = s.st_dev;
 
-	while(p != "/") {
-		LocalPathName q(p.dirName());
-        SYSCALL(Stat::stat(q.c_str(),&s));
-		if(s.st_dev != dev)
-			return p;
-		p = q;
-	}
+    while (p != "/") {
+        LocalPathName q(p.dirName());
+        SYSCALL(Stat::stat(q.c_str(), &s));
+        if (s.st_dev != dev)
+            return p;
+        p = q;
+    }
 
-	return p;
+    return p;
 }
 
 void LocalPathName::syncParentDirectory() const

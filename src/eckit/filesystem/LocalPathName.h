@@ -32,18 +32,18 @@ class BasePathName;
 class LocalPathName {
 public:
 
-    friend void operator<<(Stream&,const LocalPathName&);
-    friend void operator>>(Stream&,LocalPathName&);
+    friend void operator<<(Stream&, const LocalPathName&);
+    friend void operator>>(Stream&, LocalPathName&);
 
-    friend std::ostream& operator<<(std::ostream& s,const LocalPathName& p)
+    friend std::ostream& operator<<(std::ostream& s, const LocalPathName& p)
     {
         return s << p.path_;
     }
 
 // Contructors
 
-    LocalPathName(const char* p = "/")    : path_(p) { tidy(); }
-    LocalPathName(const std::string& p)        : path_(p) { tidy(); }
+    LocalPathName(const char* p = "/", bool tildeIsUserHome = false)    : path_(p) { tidy(tildeIsUserHome); }
+    LocalPathName(const std::string& p, bool tildeIsUserHome = false)        : path_(p) { tidy(tildeIsUserHome); }
     LocalPathName(const LocalPathName& p) : path_(p.path_) {}
 
 // Assignment
@@ -243,15 +243,15 @@ public:
     DataHandle* partHandle(const OffsetList&, const LengthList&) const;
     DataHandle* partHandle(const Offset&, const Length&) const;
 
-     void syncParentDirectory() const;
+    void syncParentDirectory() const;
 
 // Class methods
 
     static LocalPathName unique(const LocalPathName&);
-    static void match(const LocalPathName&,std::vector<LocalPathName>&,bool=false);
-    static void link(const LocalPathName& from,const LocalPathName& to);
-    static void rename(const LocalPathName& from,const LocalPathName& to);
-    static void rename(const LocalPathName& from,const std::string& newBase);
+    static void match(const LocalPathName&, std::vector<LocalPathName>&, bool = false);
+    static void link(const LocalPathName& from, const LocalPathName& to);
+    static void rename(const LocalPathName& from, const LocalPathName& to);
+    static void rename(const LocalPathName& from, const std::string& newBase);
 
     static LocalPathName cwd();
 
@@ -263,21 +263,21 @@ private:
 
 // Methods
 
-    LocalPathName& tidy();
+    LocalPathName& tidy(bool tildeIsUserHome = false);
 
 // friend
 
-    friend LocalPathName operator+(const LocalPathName& p,const std::string& s)
+    friend LocalPathName operator+(const LocalPathName& p, const std::string& s)
     {
         return LocalPathName(p.path_ + s);
     }
 
-    friend LocalPathName operator+(const LocalPathName& p,const char* s)
+    friend LocalPathName operator+(const LocalPathName& p, const char* s)
     {
         return LocalPathName(p.path_ + s);
     }
 
-    friend LocalPathName operator+(const LocalPathName& p,char s)
+    friend LocalPathName operator+(const LocalPathName& p, char s)
     {
         return LocalPathName(p.path_ + s);
     }

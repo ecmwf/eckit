@@ -81,6 +81,8 @@ public: // methods
 
     std::vector<LocalConfiguration> getSubConfigurations(const std::string &name) const;
 
+    std::vector<LocalConfiguration> getSubConfigurations() const;
+
     LocalConfiguration getSubConfiguration(const std::string &name) const;
 
     char separator() const;

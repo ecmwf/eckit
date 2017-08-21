@@ -378,6 +378,18 @@ std::vector<LocalConfiguration> Configuration::getSubConfigurations(const std::s
     return result;
 }
 
+std::vector<LocalConfiguration> Configuration::getSubConfigurations() const {
+    std::vector<LocalConfiguration> result;
+
+    const eckit::Value& v = root_;
+    int i = 0;
+    while (v.contains(i)) {
+        result.push_back(LocalConfiguration(v[i], separator_));
+        i++;
+    }
+    return result;
+}
+
 LocalConfiguration Configuration::getSubConfiguration(const std::string &name) const {
     LocalConfiguration result;
     if (has(name)) _get(name, result);
@@ -477,7 +489,7 @@ void Configuration::json( JSON& s ) const
 std::vector<std::string> Configuration::keys() const {
     std::vector<std::string> result;
     ValueMap m = root_;
-    for(ValueMap::const_iterator j = m.begin(); j != m.end(); ++j) {
+    for (ValueMap::const_iterator j = m.begin(); j != m.end(); ++j) {
         result.push_back((*j).first);
     }
     return result;

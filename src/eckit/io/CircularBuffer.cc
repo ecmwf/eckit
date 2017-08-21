@@ -18,12 +18,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CircularBuffer::CircularBuffer(size_t size):
+CircularBuffer::CircularBuffer(size_t size, size_t capacity):
     buffer_(new char[size]),
     increment_(size),
     size_(size),
     pos_(0),
-    used_(0)
+    used_(0),
+    capacity_(capacity)
 
 {
     ASSERT(buffer_);
@@ -48,6 +49,12 @@ size_t CircularBuffer::write(const void* buffer, size_t length) {
 
     if (length > left) {
         size_t newsize = eckit::round(size_ + length, increment_);
+
+        if (newsize > capacity_) {
+            std::ostringstream oss;
+            oss << "CircularBuffer: cannot grow beyound capacity of " << capacity_ << " bytes";
+            throw eckit::SeriousBug(oss.str());
+        }
 
         // std::cout << "Newsize " << newsize<<  std::endl;
 
@@ -117,6 +124,11 @@ void CircularBuffer::clear() {
 
     pos_ = 0;
     used_ = 0;
+}
+
+size_t CircularBuffer::capacity() const {
+    AutoLock<Mutex> lock(mutex_);
+    return capacity_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

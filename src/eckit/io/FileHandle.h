@@ -16,6 +16,7 @@
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/memory/ScopedPtr.h"
 
 //-----------------------------------------------------------------------------
 
@@ -87,7 +88,7 @@ private:
 	bool                overwrite_;
 	FILE*               file_;
 	bool                read_;
-    std::auto_ptr<Buffer>    buffer_;
+    eckit::ScopedPtr<Buffer>    buffer_;
 
 // -- Methods
 

@@ -32,7 +32,7 @@ public:
 
 	ResizableBuffer(size_t size);
 	ResizableBuffer(const std::string& s);
-	ResizableBuffer(const char*,size_t size);
+	ResizableBuffer(const char*, size_t size);
 
 // -- Destructor
 

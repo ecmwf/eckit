@@ -25,8 +25,10 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-MarsFSPath::MarsFSPath(const std::string& path)
+MarsFSPath::MarsFSPath(const std::string& path, bool tildeIsUserHome)
 {
+    ASSERT(!tildeIsUserHome);
+
     std::string p = path;
     //node_ = NodeInfo::thisNode().node();
 

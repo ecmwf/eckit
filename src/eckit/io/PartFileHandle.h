@@ -68,6 +68,7 @@ public:
     virtual void cost(std::map<std::string,Length>&, bool) const;
     virtual std::string title() const;
     virtual bool moveable() const { return true; }
+    virtual DataHandle* clone() const;
 
 	// From Streamable
 

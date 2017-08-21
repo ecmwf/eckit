@@ -45,8 +45,8 @@ public:
 
     // Contructors
 
-    PathName(const char* p = "/");
-    PathName(const std::string& p);
+    PathName(const char* p = "/", bool tildeIsUserHome = false);
+    PathName(const std::string& p, bool tildeIsUserHome = false);
     PathName(const PathName& p);
     PathName(const LocalPathName&);
     PathName(const MarsFSPath&);

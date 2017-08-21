@@ -118,6 +118,12 @@ io/SockBuf.h
 io/SockBuf.cc
 io/AIOHandle.h
 io/AIOHandle.cc
+io/BitIO.h
+io/BitIO.cc
+io/Compress.h
+io/Compress.cc
+io/Base64.h
+io/Base64.cc
 io/SharedHandle.h
 io/SharedHandle.cc
 io/BufferedHandle.h

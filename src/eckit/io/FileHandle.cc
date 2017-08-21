@@ -209,6 +209,7 @@ void FileHandle::close()
         Log::warning() << "Closing FileHandle " << name_ << ", file is not opened" << std::endl;
     }
     buffer_.reset(0);
+    file_ = 0;
 }
 
 void FileHandle::rewind()

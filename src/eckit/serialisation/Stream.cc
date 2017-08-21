@@ -22,6 +22,11 @@
 
 namespace eckit {
 
+Stream::BadTag::BadTag(const std::string& what):
+    Exception(what) {
+    dumpStackTrace(std::cerr);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 #if 0

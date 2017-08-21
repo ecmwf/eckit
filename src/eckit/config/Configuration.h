@@ -74,6 +74,9 @@ public: // methods
     std::vector<double> getDoubleVector(const std::string &name, const std::vector<double>& defaultValue) const;
     std::vector<std::string> getStringVector(const std::string &name, const std::vector<std::string>& defaultValue) const;
 
+
+    std::vector<std::string> keys() const;
+
     // Access to LocalConfiguration
 
     std::vector<LocalConfiguration> getSubConfigurations(const std::string &name) const;
@@ -140,7 +143,7 @@ private: // methods
 
     virtual void print(std::ostream &) const = 0;
 
-    friend std::ostream& operator<<(std::ostream& s,const Configuration& p) { p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const Configuration& p) { p.print(s); return s; }
 
 };
 

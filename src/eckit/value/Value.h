@@ -248,10 +248,10 @@ public:
     Value operator%(const Value&) const;
     Value& operator%=(const Value&);
 
-    const Value& operator[](const char*) const;
-    const Value& operator[](const std::string&) const;
-    const Value& operator[](const Value&) const;
-    const Value& operator[](int) const;
+    Value operator[](const char*) const;
+    Value operator[](const std::string&) const;
+    Value operator[](const Value&) const;
+    Value operator[](int) const;
 
     Value& operator[](const char*);
     Value& operator[](const std::string&);
@@ -261,7 +261,7 @@ public:
     Value keys() const;
     size_t size() const;
 
-    std::ostream& dump(std::ostream& out, size_t depth=0, bool indent=true) const;
+    std::ostream& dump(std::ostream& out, size_t depth = 0, bool indent = true) const;
 
 
 public:
@@ -270,7 +270,8 @@ public:
     bool contains(const Value&) const;
     bool contains(int) const;
 
-    Value& element(const std::string&);
+    Value& element(const Value&);
+    Value element(const Value&) const;
 
     // -- Methods
 
@@ -316,6 +317,9 @@ private: // methods
     void json(JSON& s) const        { s << *content_; }
     void print(std::ostream& s) const    { s << *content_; }
     void encode(Stream& s) const    { s << *content_; }
+
+
+    void update();
 
     friend JSON& operator<<(JSON& s, const Value& v) { v.json(s);  return s; }
     friend std::ostream& operator<<(std::ostream& s, const Value& v) { v.print(s);  return s; }

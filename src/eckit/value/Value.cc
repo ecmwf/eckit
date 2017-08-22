@@ -309,53 +309,6 @@ Value::operator ValueMap() const
     return v;
 }
 
-//=========================================================
-const Value& Value::operator[](const Value& key) const
-{
-    return content_->element(key);
-}
-
-const Value& Value::operator[](const char* key) const
-{
-    return content_->element(Value(std::string(key)));
-}
-
-const Value& Value::operator[](const std::string& key) const
-{
-    return content_->element(Value(key));
-}
-
-//=========================================================
-
-Value& Value::operator[](const Value& key)
-{
-    return content_->element(key);
-}
-
-Value& Value::operator[](const char* key)
-{
-    return content_->element(Value(std::string(key)));
-}
-
-Value& Value::operator[](const std::string& key)
-{
-    return content_->element(Value(key));
-}
-
-Value& Value::operator[](int key)
-{
-    return content_->element(Value(key));
-}
-//=========================================================
-
-Value& Value::element(const std::string& key) {
-    return content_->element(Value(key));
-}
-
-const Value& Value::operator[](int key) const
-{
-    return content_->element(Value(key));
-}
 
 bool Value::contains(const Value& key) const
 {
@@ -364,24 +317,23 @@ bool Value::contains(const Value& key) const
 
 bool Value::contains(const char* key) const
 {
-    return content_->contains(Value(std::string(key)));
+    return content_->contains(key);
 }
 
 bool Value::contains(const std::string& key) const
 {
-    return content_->contains(Value(key));
+    return content_->contains(key);
 }
 
 bool Value::contains(int key) const
 {
-    return content_->contains(Value(key));
+    return content_->contains(key);
 }
 
 Value Value::operator-() const
 {
     return content_->negate();
 }
-
 
 Value Value::keys() const
 {
@@ -398,6 +350,56 @@ std::ostream& Value::dump(std::ostream& out, size_t depth, bool indent) const {
     return out;
 }
 
+//-----------------------------------------------------------------------------
+Value Value::operator[](const char* key) const {
+    return element(Value(key));
+}
+
+Value Value::operator[](const std::string& key) const {
+    return element(Value(key));
+}
+
+Value Value::operator[](const Value& key) const {
+    return element(key);
+}
+
+Value Value::operator[](int key) const {
+    return element(Value(key));
+}
+
+Value& Value::operator[](const char* key) {
+    return element(Value(key));
+}
+
+Value& Value::operator[](const std::string& key) {
+    return element(Value(key));
+}
+
+Value& Value::operator[](const Value& key) {
+    return element(key);
+}
+
+Value& Value::operator[](int key) {
+    return element(Value(key));
+}
+
+Value& Value::element(const Value& key) {
+    update();
+    return content_->element(key);
+}
+
+Value Value::element(const Value& key) const {
+    return content_->element(key);
+}
+
+void Value::update() {
+    if (content_->count() > 1) {
+        Content* c = content_->clone();
+        content_->attach();
+        content_ = c;
+        content_->attach();
+    }
+}
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

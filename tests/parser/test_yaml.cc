@@ -365,7 +365,7 @@ CASE( "test_eckit_yaml_text_3" ) {
 }
 
 
-EXPECT( "test_eckit_yaml_text_4" ) {
+CASE( "test_eckit_yaml_text_4" ) {
 
     const char* text = R"YAML(
 ---

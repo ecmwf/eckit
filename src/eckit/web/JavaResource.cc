@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -30,16 +30,16 @@ JavaResource::~JavaResource()
 {
 }
 
-void JavaResource::html(std::ostream& s,Url& url)
+void JavaResource::GET(std::ostream& s,Url& url)
 {
 	url.dontCache();
 
 	eckit::PathName path("~/http/" + url.name());
 
 	std::ifstream in(path.localPath());
-	if(!in)	
+	if(!in)
 	{
-		(url.headerOut()).status(404);  // Not Found
+		url.status(HttpError::NOT_FOUND);  // Not Found
 		s << path << ": " << Log::syserr << std::endl;
 	}
 	else

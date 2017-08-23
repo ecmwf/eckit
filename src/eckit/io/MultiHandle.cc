@@ -319,6 +319,15 @@ Length MultiHandle::estimate()
     return total;
 }
 
+DataHandle* MultiHandle::clone() const {
+    MultiHandle* mh = new MultiHandle();
+    for (size_t i = 0; i < datahandles_.size(); i++) {
+        (*mh) += datahandles_[i]->clone();
+    }
+    return mh;
+}
+
+
 void MultiHandle::restartReadFrom(const Offset& from)
 {
     Log::warning() << *this << " restart read from " << from << std::endl;
@@ -412,20 +421,20 @@ bool MultiHandle::compress(bool sorted) {
 
     Timer timer("Compress handle");
 
-    if(datahandles_.empty()) {
+    if (datahandles_.empty()) {
 
         return false;
     }
 
-    // BR: TODO: This is a hack: if moverTransfer is true, the MultiHandle will be sent to a 
+    // BR: TODO: This is a hack: if moverTransfer is true, the MultiHandle will be sent to a
     // mover. So we do not compress() here, as the MultiPartHandle is not movable()
     // The compress() will happen in the mover. We need a better solution
-    static const bool moverTransfer = Resource<bool>("-mover;moverTransfer",0);
-    if(moverTransfer) {
+    static const bool moverTransfer = Resource<bool>("-mover;moverTransfer", 0);
+    if (moverTransfer) {
         return false;
     }
 
-    if(sorted) {
+    if (sorted) {
         NOTIMP;
     }
 
@@ -433,13 +442,13 @@ bool MultiHandle::compress(bool sorted) {
     std::vector<bool> skip(datahandles_.size(), false);
     std::vector<Length> sizes(datahandles_.size());
 
-    for (size_t i = 0; i < datahandles_.size() ; i++) { 
+    for (size_t i = 0; i < datahandles_.size() ; i++) {
         sizes[i] = datahandles_[i]->estimate();
     }
 
     for (size_t i = 0; i < datahandles_.size() - 1; i++) {
 
-        if(skip[i]) {
+        if (skip[i]) {
             continue;
         }
 
@@ -450,7 +459,7 @@ bool MultiHandle::compress(bool sorted) {
 
         for (size_t j = i + 1; j < datahandles_.size(); j++) {
 
-            if(skip[j]) {
+            if (skip[j]) {
                 continue;
             }
 
@@ -459,7 +468,7 @@ bool MultiHandle::compress(bool sorted) {
 
             if (h1->merge(h2)) {
 
-                if(prev == 0) {
+                if (prev == 0) {
                     prev = new MultiPartHandle(h1, len1, 0);
                     datahandles_[i] = prev;
                     skip[i] = true;
@@ -472,7 +481,7 @@ bool MultiHandle::compress(bool sorted) {
             }
         }
 
-        if(h1->compress(sorted)) {
+        if (h1->compress(sorted)) {
             changed = true;
         }
 

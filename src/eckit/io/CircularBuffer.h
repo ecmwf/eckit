@@ -14,6 +14,8 @@
 #ifndef eckit_CircularBuffer_h
 #define eckit_CircularBuffer_h
 
+#include <limits>
+
 #include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"
@@ -29,7 +31,7 @@ class CircularBuffer : public eckit::NonCopyable {
 
 public: // methods
 
-    CircularBuffer(size_t size = 64 * 1024);
+    CircularBuffer(size_t size = 64 * 1024, size_t capactity = std::numeric_limits<size_t>::max());
 
     ~CircularBuffer();
 
@@ -37,6 +39,8 @@ public: // methods
     size_t read(void* buffer, size_t length);
 
     size_t length() const;
+    size_t capacity() const;
+
     void clear();
 
 private: // members
@@ -46,6 +50,7 @@ private: // members
     char*  buffer_;
     size_t increment_;
     size_t size_;
+    size_t capacity_;
 
     size_t pos_;
     size_t used_;

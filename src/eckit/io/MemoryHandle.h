@@ -28,17 +28,26 @@ public:
 
 
 
-	MemoryHandle(const Buffer&);
+    MemoryHandle(const Buffer&);
     MemoryHandle(Buffer&);
 
-	MemoryHandle(const void* address,size_t size);
-    MemoryHandle(void* address,size_t size);
+    MemoryHandle(const void* address, size_t size);
+    MemoryHandle(void* address, size_t size);
+
+
+    MemoryHandle(size_t size = 1024 * 1024, bool grow = true);
 
     /// Destructor
 
-	virtual ~MemoryHandle();
+    virtual ~MemoryHandle();
 
 // -- Operators
+
+// -- Methods
+
+    const void* data() const;
+    std::string str() const;
+    size_t size() const;
 
 
 // -- Overridden methods
@@ -49,8 +58,8 @@ public:
     virtual void openForWrite(const Length&);
     virtual void openForAppend(const Length&);
 
-    virtual long read(void*,long);
-    virtual long write(const void*,long);
+    virtual long read(void*, long);
+    virtual long write(const void*, long);
     virtual void close();
     virtual void flush();
     virtual void rewind();
@@ -59,8 +68,8 @@ public:
 
     virtual Offset seek(const Offset&);
 
-	virtual Length estimate();
-	virtual Offset position();
+    virtual Length estimate();
+    virtual Offset position();
 
     virtual DataHandle* clone() const;
 
@@ -82,12 +91,16 @@ private: // methods
 
 private: // members
 
-	char*          address_;
-    const size_t   size_;
+    char*          address_;
+    size_t         size_;
+    size_t         capacity_;
 
     bool           opened_;
     bool           readOnly_;
     bool           read_;
+    bool           grow_;
+    bool           owned_;
+
     Offset         position_;
 
     virtual std::string title() const;
@@ -95,7 +108,7 @@ private: // members
 // -- Class members
 
 #if 0
-	static  ClassSpec                 classSpec_;
+    static  ClassSpec                 classSpec_;
     static  Reanimator<MemoryHandle>  reanimator_;
 #endif
 

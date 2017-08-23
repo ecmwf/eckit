@@ -35,7 +35,7 @@ Exception::Exception():  next_(first())
 
     callStack_ = BackTrace::dump();
 
-    if(::getenv("ECKIT_EXCEPTION_DUMPS_BACKTRACE")) {
+    if (::getenv("ECKIT_EXCEPTION_DUMPS_BACKTRACE")) {
         std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
     }
 }
@@ -54,11 +54,11 @@ void Exception::exceptionStack(std::ostream& out, bool callStack)
 {
     out << "Exception stack: " << std::endl;
     Exception* e =  first();
-    while(e)
+    while (e)
     {
         out << e->what() << std::endl;
 
-        if(callStack)
+        if (callStack)
             out << e->callStack() << std::endl << std::endl;
 
         e = e->next_;
@@ -73,16 +73,16 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
 {
     callStack_ = BackTrace::dump();
 
-    if(::getenv("ECKIT_EXCEPTION_DUMPS_BACKTRACE")) {
+    if (::getenv("ECKIT_EXCEPTION_DUMPS_BACKTRACE")) {
         std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
     }
 
-    if(! ::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
+    if (! ::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
         Log::error() << "Exception: " << w << " " << location_ << std::endl;
     }
 
 #if 0
-    if(next_) {
+    if (next_) {
         Log::error() << "Exception: stack containts " << next_->what() << std::endl;
     }
     else
@@ -95,6 +95,11 @@ Exception::Exception(const std::string& w, const CodeLocation& location):
 
     Log::status() << "** " << w << location_ << std::endl;
 }
+
+void Exception::dumpStackTrace(std::ostream& out) {
+    out << "Exception dumping backtrace: " << callStack_ << std::endl;
+}
+
 
 void Exception::reason(const std::string& w)
 {
@@ -149,7 +154,7 @@ FailedSystemCall::FailedSystemCall(const std::string& msg, const CodeLocation& l
     Log::status() << what() << std::endl;
 }
 
-FailedSystemCall::FailedSystemCall(const char* msg,const CodeLocation& loc,int err)
+FailedSystemCall::FailedSystemCall(const char* msg, const CodeLocation& loc, int err)
 {
     std::ostringstream s;
 
@@ -160,7 +165,7 @@ FailedSystemCall::FailedSystemCall(const char* msg,const CodeLocation& loc,int e
     Log::status() << what() << std::endl;
 }
 
-FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, const CodeLocation& loc,int err)
+FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, const CodeLocation& loc, int err)
 {
     std::ostringstream s;
 
@@ -190,7 +195,7 @@ SeriousBug::SeriousBug(const std::string& msg, const CodeLocation& loc)
     }
 }
 
-SeriousBug::SeriousBug(const char* msg,const CodeLocation& loc)
+SeriousBug::SeriousBug(const char* msg, const CodeLocation& loc)
 {
     std::ostringstream s;
     s << "SeriousBug: " << msg << " " << " in " << loc;
@@ -212,10 +217,10 @@ AssertionFailed::AssertionFailed(const std::string& w):
         std::cout << BackTrace::dump() << std::endl;
     }
 
-     if(::getenv("ECKIT_ASSERT_ABORTS"))
-     {
-         LibEcKit::instance().abort();
-     }
+    if (::getenv("ECKIT_ASSERT_ABORTS"))
+    {
+        LibEcKit::instance().abort();
+    }
 }
 
 AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc)
@@ -233,7 +238,7 @@ AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc
         std::cout << BackTrace::dump() << std::endl;
     }
 
-    if(::getenv("ECKIT_ASSERT_ABORTS"))
+    if (::getenv("ECKIT_ASSERT_ABORTS"))
     {
         LibEcKit::instance().abort();
     }
@@ -255,7 +260,7 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
         std::cout << BackTrace::dump() << std::endl;
     }
 
-    if(::getenv("ECKIT_ASSERT_ABORTS"))
+    if (::getenv("ECKIT_ASSERT_ABORTS"))
     {
         LibEcKit::instance().abort();
     }
@@ -294,7 +299,7 @@ NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& 
     ss << "Not implemented: " << s << loc;
 
     reason(ss.str());
-	Log::status() << what() << std::endl;
+    Log::status() << what() << std::endl;
 
     std::cout << what() << std::endl;
     std::cout << BackTrace::dump() << std::endl;
@@ -324,7 +329,7 @@ UserError::UserError(const std::string& r):
 {
 }
 
-UserError::UserError(const std::string& r,const std::string& x):
+UserError::UserError(const std::string& r, const std::string& x):
     Exception(std::string("UserError: ") + r + " : " + x)
 {
 }
@@ -362,16 +367,16 @@ OutOfRange::OutOfRange(unsigned long long index, unsigned long long max)
     reason(s.str());
 }
 
-OutOfRange::OutOfRange(unsigned long long index, unsigned long long max,const CodeLocation& loc)
+OutOfRange::OutOfRange(unsigned long long index, unsigned long long max, const CodeLocation& loc)
 {
-  std::ostringstream s;
-  s << "Out of range accessing element " << index
-    << ", but maximum is " << max - 1;
-  Exception(s.str(), loc);
+    std::ostringstream s;
+    s << "Out of range accessing element " << index
+      << ", but maximum is " << max - 1;
+    Exception(s.str(), loc);
 }
 
-OutOfRange::OutOfRange(const std::string& w,const CodeLocation& loc):
-    Exception(std::string("OutOfRange: ")+w,loc)
+OutOfRange::OutOfRange(const std::string& w, const CodeLocation& loc):
+    Exception(std::string("OutOfRange: ") + w, loc)
 {
 }
 
@@ -401,7 +406,7 @@ CantOpenFile::CantOpenFile(const std::string& file, bool retry):
 {
     std::ostringstream s;
     s << "Cannot open " << file << " " << Log::syserr;
-    if(retry) s << " (retry ok)";
+    if (retry) s << " (retry ok)";
     reason(s.str());
     Log::status() << what() << std::endl;
 }
@@ -411,7 +416,7 @@ CantOpenFile::CantOpenFile(const std::string& file, const CodeLocation& loc, boo
 {
     std::ostringstream s;
     s << "Cannot open " << file << " " << Log::syserr;
-    if(retry) s << " (retry ok)";
+    if (retry) s << " (retry ok)";
     s << loc;
     reason(s.str());
     Log::status() << what() << std::endl;
@@ -472,7 +477,7 @@ void handle_panic(const char *msg)
               << "----------------------------------------\n"
               << std::endl;
 
-    if(::getenv("STOP_ON_PANIC"))
+    if (::getenv("STOP_ON_PANIC"))
     {
         pid_t pid = ::getpid();
 

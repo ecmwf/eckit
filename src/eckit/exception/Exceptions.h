@@ -12,6 +12,7 @@
 #define eckit_Exceptions_h
 
 #include <errno.h>
+#include <iosfwd>
 
 #include "eckit/eckit.h"
 #include "eckit/eckit_version.h"
@@ -54,6 +55,8 @@ public: // methods
     const std::string& callStack() const { return callStack_; }
 
     const CodeLocation& location() const { return location_; }
+
+    void dumpStackTrace(std::ostream& = std::cout);
 
 protected: // methods
 

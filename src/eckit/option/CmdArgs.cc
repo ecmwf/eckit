@@ -72,7 +72,8 @@ void CmdArgs::init(usage_proc usage, int args_count, int minimum_args, bool thro
                     } else {
                         std::vector<std::string>::const_iterator b = v.begin();
                         ++b;
-                        (*j).second->set(StringTools::join("=", b, v.end()), *this);
+                        std::vector<std::string>::const_iterator e = v.end();
+                        (*j).second->set(StringTools::join("=", b, e), *this);
                     }
                 } catch(UserError& e) {
                     Log::info() << "Invalid value for option --" << v[0] << std::endl;

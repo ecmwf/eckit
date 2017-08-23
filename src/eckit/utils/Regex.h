@@ -30,7 +30,7 @@ public:
 
 // -- Contructors
 
-	Regex(const std::string& = ".*",bool shell = false, bool extended=false);
+	Regex(const std::string& = ".*",bool shell = false, bool extended=true);
 	Regex(const Regex&);
 
 	~Regex();

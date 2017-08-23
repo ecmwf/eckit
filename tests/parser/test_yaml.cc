@@ -187,7 +187,7 @@ CASE ( "test_eckit_yaml_14" ) {
     std::cout << v << std::endl;
     std::cout << "----------" << std::endl;
 
- EXPECT(v == "Mark McGwire's year was crippled by a knee injury.");
+    EXPECT(v == "Mark McGwire's year was crippled by a knee injury.");
 }
 
 CASE ( "test_eckit_yaml_15" ) {
@@ -305,11 +305,78 @@ CASE ( "test_eckit_yaml_27" ) {
 //     std::cout << toJSON(v) << std::endl;
 // }
 
- CASE ( "test_eckit_yaml_cfg_1" ) {
+CASE ( "test_eckit_yaml_cfg_1" ) {
      Value v =  YAMLParser::decodeFile("cfg.1.yaml");
      std::cout << "cfg.1.yaml " << v << std::endl;
      std::cout << toJSON(v) << std::endl;
- }
+}
+
+
+CASE( "test_eckit_ymal_text_1" ) {
+
+    const char* text = R"YAML(
+---
+base: &base
+    name: shared1
+    address: shared2
+
+foo: &foo
+    <<: *base
+    age: 10
+
+bar: &bar
+    <<: *base
+    age: 20
+)YAML";
+
+    Value v =  YAMLParser::decodeString(text);
+     v.dump(std::cout) << std::endl;
+}
+
+
+CASE( "test_eckit_yaml_text_2" ) {
+
+    const char* text = R"YAML(
+---
+1: 2
+)YAML";
+
+    Value v =  YAMLParser::decodeString(text);
+     v.dump(std::cout) << std::endl;
+
+
+     ValueMap m(v);
+
+     EXPECT(v.keys()[0].isNumber());
+
+}
+
+
+CASE( "test_eckit_yaml_text_3" ) {
+
+    const char* text = R"YAML(
+---
+- '1'
+- '2'
+)YAML";
+
+    Value v =  YAMLParser::decodeString(text);
+     v.dump(std::cout) << std::endl;
+}
+
+
+EXPECT( "test_eckit_yaml_text_4" ) {
+
+    const char* text = R"YAML(
+---
+165:
+- 10u
+- 10 metre u wind component
+)YAML";
+
+    Value v =  YAMLParser::decodeString(text);
+     v.dump(std::cout) << std::endl;
+}
 
 
 //-----------------------------------------------------------------------------

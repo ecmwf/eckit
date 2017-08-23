@@ -13,3 +13,18 @@ ecbuild_add_test( TARGET  eckit_test_urlhandle
 ecbuild_add_test( TARGET  eckit_test_circularbuffer
                   SOURCES test_circularbuffer.cc
                   LIBS    eckit )
+
+ecbuild_add_test( TARGET      eckit_test_compress
+                  BOOST
+                  SOURCES     test_compress.cc
+                  LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_bitio
+                  BOOST
+                  SOURCES     test_bitio.cc
+                  LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_base64
+                  BOOST
+                  SOURCES     test_base64.cc
+                  LIBS        eckit )

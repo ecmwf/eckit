@@ -141,7 +141,7 @@ void Content::value(ValueList & v) const
 
 bool Content::operator==(const Content& other) const
 {
-	Log::debug() << *this << " == " << other << std::endl;
+	// Log::debug() << *this << " == " << other << std::endl;
 	return (this->compare(other) == 0);
 }
 

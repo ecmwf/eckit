@@ -25,7 +25,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static BasePathName* make(const std::string& p) {
+static BasePathName* make(const std::string& p, bool tildeIsUserHome) {
 
     if(p.find("marsfs:") == 0)
         return new BasePathNameT<MarsFSPath>(p);
@@ -36,17 +36,17 @@ static BasePathName* make(const std::string& p) {
         return new BasePathNameT<MarsFSPath>(std::string("marsfs://") + node +  p , ext);
     */
 
-    return new BasePathNameT<LocalPathName>(p);
+    return new BasePathNameT<LocalPathName>(p, tildeIsUserHome);
 }
 
-PathName::PathName(const char* p)
+PathName::PathName(const char* p, bool tildeIsUserHome)
 {
-	path_ = make(p);
+	path_ = make(p, tildeIsUserHome);
 }
 
-PathName::PathName(const std::string& p)
+PathName::PathName(const std::string& p, bool tildeIsUserHome)
 {
-	path_ = make(p);
+	path_ = make(p, tildeIsUserHome);
 }
 
 PathName::PathName(const PathName& other):

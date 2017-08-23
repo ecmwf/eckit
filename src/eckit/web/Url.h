@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -16,6 +16,7 @@
 
 #include "eckit/value/Value.h"
 #include "eckit/web/HttpHeader.h"
+#include "eckit/memory/ScopedPtr.h"
 
 //-----------------------------------------------------------------------------
 
@@ -30,10 +31,10 @@ class Url;
 class UrlAccess {
 	Url&   url_;
 	std::string s_;
-	
+
 
 public:
-	UrlAccess(Url& url,const std::string& s) : url_(url), s_(s) {}
+	UrlAccess(Url& url, const std::string& s) : url_(url), s_(s) {}
 
 	operator std::string();
 	operator long();
@@ -47,7 +48,7 @@ public:
 class Url : private eckit::NonCopyable {
 public:
 
-	enum { 
+	enum {
 		notFound = 404
 	};
 
@@ -58,10 +59,10 @@ public:
 
 // -- Destructor
 
-    ~Url();
+	~Url();
 
 // -- Operators
-	
+
 	UrlAccess operator[](const std::string&);
 
 // -- Methods
@@ -69,7 +70,7 @@ public:
 	void erase(const std::string&);
 
 
-	void set(const std::string&,const std::string&);
+	void set(const std::string&, const std::string&);
 	const std::string& get(const std::string&);
 
 	const std::string& method() { return method_;}
@@ -88,56 +89,87 @@ public:
 	int size() const;
 	const std::string& operator[](int) const;
 
-	bool authenticated()
-		{ return headerIn().authenticated(); }
+	bool authenticated() {
+		return headerIn().authenticated();
+	}
 
-	void authenticate(const std::string& realm = "MARS") 
-		{ headerOut().authenticate(realm); }
+	void authenticate(const std::string& realm = "MARS") {
+		headerOut().authenticate(realm);
+	}
 
-	void status(int s)
-		{ headerOut().status(s); }
+	void status(int s, const std::string& message = "") {
+		headerOut().status(s, message);
+	}
 
-	void forward(const std::string& s)
-		{ headerOut().forward(s); }
+	void type(const std::string& type) {
+		headerOut().type(type);
+	}
 
-	void dontCache()
-		{ headerOut().dontCache(); }
+	void forward(const std::string& s) {
+		headerOut().forward(s);
+	}
 
-	void cgiParam(std::ostream&,char sep = ' ') const;
+	void location(const std::string& s) {
+		headerOut().forward(s);
+	}
 
-    const eckit::Value& json() const
-        { return json_; }
+	void retryAfter(long s) {
+		headerOut().retryAfter(s);
+	}
+
+	void dontCache() {
+		headerOut().dontCache();
+	}
+
+	void cgiParam(std::ostream&, char sep = ' ') const;
+
+	eckit::Value json() const;
+
+	void remaining(const std::vector<std::string>& remaining) {
+		remaining_ = remaining;
+	}
+
+	const std::vector<std::string>& remaining() const {
+		return remaining_;
+	}
+
+	void streamFrom(DataHandle*);
+
+	DataHandle* streamFrom();
 
 protected:
 
 // -- Methods
-	
-    void print(std::ostream&) const;
+
+	void print(std::ostream&) const;
 
 private:
 
 // -- Members
 
-    typedef std::map<std::string,std::string,std::less<std::string> > Map;
+	typedef std::map<std::string, std::string, std::less<std::string> > Map;
 
 	Map            map_;
-    std::vector<std::string> url_;
+	std::vector<std::string> url_;
 	HttpHeader     in_;
 	HttpHeader     out_;
 
 	std::string		   method_;
 
-    eckit::Value          json_;
+	std::vector<std::string> remaining_;
+
+	eckit::ScopedPtr<DataHandle> handle_;
+
 
 // -- Methods
 
-	void parse(const std::string&,bool);
+	void parse(const std::string&, bool);
 	void parse(std::istream&);
 
 // -- Friends
 
-	friend std::ostream& operator<<(std::ostream& s,const Url& p)
-		{ p.print(s); return s; }
+	friend std::ostream& operator<<(std::ostream& s, const Url& p)
+	{ p.print(s); return s; }
 
 };
 

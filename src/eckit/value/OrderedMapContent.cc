@@ -27,8 +27,8 @@ OrderedMapContent::OrderedMapContent() {
 
 OrderedMapContent::OrderedMapContent(const ValueMap& v, const ValueList& keys):
     MapContent(v) {
-    ASSERT(keys.size() == v.size());
 
+    ASSERT(keys.size() == v.size());
     keys_ = keys;
 }
 
@@ -65,7 +65,7 @@ Value OrderedMapContent::keys() const {
 
 Value& OrderedMapContent::element(const Value& key)
 {
-    if(value_.find(key) == value_.end()) {
+    if (value_.find(key) == value_.end()) {
         keys_.push_back(key);
     }
     return value_[key];

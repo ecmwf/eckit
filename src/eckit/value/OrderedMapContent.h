@@ -77,7 +77,6 @@ private:
 
 // -- Members
 
-    ValueMap value_;
     ValueList keys_;
 
 // -- Class Members

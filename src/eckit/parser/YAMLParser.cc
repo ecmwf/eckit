@@ -205,10 +205,20 @@ struct YAMLItemKey : public YAMLItem {
     }
 
 
+    void set(ValueMap& m, ValueList& l, const Value& k, const Value& v) const {
+
+        if (m.find(k) == m.end()) {
+            l.push_back(k);
+        }
+
+        m[k] = v;
+    }
+
+
     Value value(YAMLParser& parser) const {
 
-        ValueMap m;
-        ValueList l;
+        ValueMap _m;
+        ValueList _l;
 
         YAMLItemLock lock(this);
 
@@ -225,8 +235,7 @@ struct YAMLItemKey : public YAMLItem {
 
             if (next.indent_ == key->indent_) {
                 // Special case
-                m[key->value_] = Value(); // null
-                l.push_back(key->value_);
+                set(_m, _l, key->value_, Value()); // null
 
                 key = &parser.nextItem();
                 ASSERT(dynamic_cast<const YAMLItemKey*>(key));
@@ -236,8 +245,7 @@ struct YAMLItemKey : public YAMLItem {
 
             if (next.indent_ < key->indent_) {
                 // Special case
-                m[key->value_] = Value(); // null
-                l.push_back(key->value_);
+                set(_m, _l, key->value_, Value()); // null
 
                 more = false;
                 continue;
@@ -249,15 +257,14 @@ struct YAMLItemKey : public YAMLItem {
                 Value v = parser.nextItem().parse(parser);
 
                 if (k == import) {
-                    ValueMap vmap(v);
-                    for (ValueMap::const_iterator it = vmap.begin(); it != vmap.end(); ++it) {
-                        m[(*it).first] = (*it).second;
-                        l.push_back((*it).first);
+                    Value keys = v.keys();
+                    for (size_t i = 0; i < keys.size(); ++i) {
+                        Value k = keys[i];
+                        set(_m, _l, k, v[k]);
                     }
                 }
                 else {
-                    m[k] = v;
-                    l.push_back(k);
+                    set(_m, _l, k, v);
                 }
             }
 
@@ -282,7 +289,7 @@ struct YAMLItemKey : public YAMLItem {
 
         }
 
-        return Value::makeOrderedMap(m, l);
+        return Value::makeOrderedMap(_m, _l);
 
     }
 
@@ -468,9 +475,9 @@ static Value toValue(const std::string& s)
         return Value(true);
     }
 
-    if(s.length()) {
+    if (s.length()) {
         ASSERT(s[0] != '"');
-         ASSERT(s[0] != '\'');
+        ASSERT(s[0] != '\'');
     }
 
 

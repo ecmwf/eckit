@@ -192,13 +192,22 @@ Value ObjectParser::parseString(char quote)
 
 }
 
+static void set(ValueMap& m, ValueList& l, const Value& k, const Value& v) {
+
+    if (m.find(k) == m.end()) {
+        l.push_back(k);
+    }
+
+    m[k] = v;
+}
+
 void ObjectParser::parseKeyValue(ValueMap& m, ValueList& l)
 {
     Value k = parseString();
     consume(':');
     Value v = parseValue();
 
-    m[k] = v;
+    set(m, l, k, v);
 }
 
 Value ObjectParser::parseObject()

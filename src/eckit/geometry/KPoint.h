@@ -78,13 +78,19 @@ public:
 
     static size_t dimensions() { return SIZE; }
 
-    friend std::ostream& operator<<(std::ostream& s,const KPoint& p)
+    void print(std::ostream& s) const
     {
         char z = '{';
-        for(size_t i = 0; i < dimensions(); ++i) {
-            s << z << p.x_[i]; z = ',';
+        for(size_t i = 0; i < SIZE; ++i) {
+            s << z << x_[i];
+            z = ',';
         }
-        s << "}";
+        s << '}';
+    }
+
+    friend std::ostream& operator<<(std::ostream& s,const KPoint& p)
+    {
+        p.print(s);
         return s;
     }
 

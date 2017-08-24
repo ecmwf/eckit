@@ -63,6 +63,14 @@ Value OrderedMapContent::keys() const {
     return keys_;
 }
 
+Value& OrderedMapContent::element(const Value& key)
+{
+    if(value_.find(key) == value_.end()) {
+        keys_.push_back(key);
+    }
+    return value_[key];
+}
+
 void OrderedMapContent::print(std::ostream& s) const
 {
     s << '{';

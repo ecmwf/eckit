@@ -19,6 +19,7 @@
 #include "eckit/value/BoolContent.h"
 #include "eckit/value/DoubleContent.h"
 #include "eckit/value/MapContent.h"
+#include "eckit/value/OrderedMapContent.h"
 #include "eckit/value/Value.h"
 #include "eckit/io/Length.h"
 #include "eckit/filesystem/PathName.h"
@@ -236,9 +237,19 @@ Value Value::makeMap()
     return Value(new MapContent());
 }
 
-Value Value::makeMap(const ValueMap & m)
+Value Value::makeOrderedMap()
+{
+    return Value(new OrderedMapContent());
+}
+
+Value Value::makeMap(const ValueMap& m)
 {
     return Value(new MapContent(m));
+}
+
+Value Value::makeOrderedMap(const ValueMap& m, const ValueList& l)
+{
+    return Value(new OrderedMapContent(m, l));
 }
 
 Value Value::makeList(const Value& v)

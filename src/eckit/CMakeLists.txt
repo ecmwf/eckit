@@ -434,6 +434,8 @@ value/ListContent.h
 value/ListContent.cc
 value/MapContent.h
 value/MapContent.cc
+value/OrderedMapContent.h
+value/OrderedMapContent.cc
 value/NilContent.h
 value/NilContent.cc
 value/NumberContent.h

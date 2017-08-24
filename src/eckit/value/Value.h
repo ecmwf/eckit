@@ -303,6 +303,9 @@ public:
     static Value makeMap();
     static Value makeMap(const ValueMap&);
 
+    static Value makeOrderedMap();
+    static Value makeOrderedMap(const ValueMap&, const ValueList&);
+
 
 protected:
 

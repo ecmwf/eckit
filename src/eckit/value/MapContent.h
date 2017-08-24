@@ -94,6 +94,10 @@ protected:
 
     static  const ClassSpec&  classSpec()         { return classSpec_;}
 
+protected:
+
+    ValueMap value_;
+
 private:
 
     MapContent(const MapContent&);
@@ -101,7 +105,6 @@ private:
 
 // -- Members
 
-    ValueMap value_;
 
 // -- Class Members
 

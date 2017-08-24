@@ -26,9 +26,9 @@ MapContent::MapContent()
 {
 }
 
-MapContent::MapContent(const ValueMap& v)
+MapContent::MapContent(const ValueMap& v):
+    value_(v)
 {
-    value_ = v;
 }
 
 

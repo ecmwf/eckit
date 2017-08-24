@@ -206,7 +206,9 @@ struct YAMLItemKey : public YAMLItem {
 
 
     Value value(YAMLParser& parser) const {
-        std::map<Value, Value> m;
+
+        ValueMap m;
+        ValueList l;
 
         YAMLItemLock lock(this);
 
@@ -224,6 +226,8 @@ struct YAMLItemKey : public YAMLItem {
             if (next.indent_ == key->indent_) {
                 // Special case
                 m[key->value_] = Value(); // null
+                l.push_back(key->value_);
+
                 key = &parser.nextItem();
                 ASSERT(dynamic_cast<const YAMLItemKey*>(key));
                 lock.set(key);
@@ -233,6 +237,8 @@ struct YAMLItemKey : public YAMLItem {
             if (next.indent_ < key->indent_) {
                 // Special case
                 m[key->value_] = Value(); // null
+                l.push_back(key->value_);
+
                 more = false;
                 continue;
             }
@@ -246,10 +252,12 @@ struct YAMLItemKey : public YAMLItem {
                     ValueMap vmap(v);
                     for (ValueMap::const_iterator it = vmap.begin(); it != vmap.end(); ++it) {
                         m[(*it).first] = (*it).second;
+                        l.push_back((*it).first);
                     }
                 }
                 else {
                     m[k] = v;
+                    l.push_back(k);
                 }
             }
 
@@ -274,7 +282,7 @@ struct YAMLItemKey : public YAMLItem {
 
         }
 
-        return Value::makeMap(m);
+        return Value::makeOrderedMap(m, l);
 
     }
 

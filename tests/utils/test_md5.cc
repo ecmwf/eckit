@@ -8,14 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_utils
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/utils/MD5.h"
+
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
 
 namespace eckit {
@@ -23,9 +22,7 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE( test_eckit_utils_md5 )
-
-BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_constructor )
+CASE ( "test_eckit_utils_md5_constructor" )
 {
     MD5 md5;
 
@@ -35,19 +32,19 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_constructor )
 
 	std::string res ("9e107d9d372bb6826bd81d3542a419d6");
 
-	BOOST_CHECK_EQUAL( res , md5.digest() );
+	EXPECT( res == md5.digest() );
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_constructor_string )
+CASE ( "test_eckit_utils_md5_constructor_string" )
 {
     MD5 md5( "Few quips galvanized the mock jury box" );
 
 	std::string res ("01190cddf60f758278c728e768d218ff");
 
-	BOOST_CHECK_EQUAL( res , md5.digest() );
+	EXPECT( res == md5.digest() );
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_double_add )
+CASE ( "test_eckit_utils_md5_double_add" )
 {
     MD5 md5;
 
@@ -58,46 +55,46 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_double_add )
 
 	std::string res ("d27c6d8bcaa695e377d32387e115763c");
 
-	BOOST_CHECK_EQUAL( res , md5.digest() );
+	EXPECT( res == md5.digest() );
 }
 
 // original test suite from RFC-1321
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_test_suite_from_rfc1321 )
+CASE ( "test_eckit_utils_md5_test_suite_from_rfc1321" )
 {
-    BOOST_CHECK_EQUAL( MD5("").digest(),
+    EXPECT( MD5("").digest() ==
                        "d41d8cd98f00b204e9800998ecf8427e" );
 
-    BOOST_CHECK_EQUAL( MD5("a").digest(),
+    EXPECT( MD5("a").digest() ==
                        "0cc175b9c0f1b6a831c399e269772661" );
 
-    BOOST_CHECK_EQUAL( MD5("abc").digest(),
+    EXPECT( MD5("abc").digest() ==
                        "900150983cd24fb0d6963f7d28e17f72" );
 
-    BOOST_CHECK_EQUAL( MD5("message digest").digest(),
+    EXPECT( MD5("message digest").digest() ==
                        "f96b697d7cb7938d525a2f31aaf161d0" );
 
-    BOOST_CHECK_EQUAL( MD5("abcdefghijklmnopqrstuvwxyz").digest(),
+    EXPECT( MD5("abcdefghijklmnopqrstuvwxyz").digest() ==
                        "c3fcd3d76192e4007dfb496cca67e13b" );
 
-    BOOST_CHECK_EQUAL( MD5("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789").digest(),
+    EXPECT( MD5("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789").digest() ==
                        "d174ab98d277d9f5a5611c2c9f419d9f" );
 
-    BOOST_CHECK_EQUAL( MD5("12345678901234567890123456789012345678901234567890123456789012345678901234567890").digest(),
+    EXPECT( MD5("12345678901234567890123456789012345678901234567890123456789012345678901234567890").digest() ==
                        "57edf4a22be3c955ac49da2e2107b67a" );
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_compute )
+CASE ( "test_eckit_utils_md5_compute" )
 {
     std::string msg ( "The quick brown fox jumps over the lazy dog" );
 
     std::string res ("9e107d9d372bb6826bd81d3542a419d6");
 
     MD5 hash;
-    BOOST_CHECK_EQUAL( res , hash.compute(msg.c_str(), msg.size()));
+    EXPECT( res == hash.compute(msg.c_str(), msg.size()));
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_reset )
+CASE ( "test_eckit_utils_md5_reset" )
 {
     MD5 hash( "FOOBAR" );
 
@@ -109,17 +106,16 @@ BOOST_AUTO_TEST_CASE( test_eckit_utils_md5_reset )
 
     std::string res ("9e107d9d372bb6826bd81d3542a419d6");
 
-    BOOST_CHECK_EQUAL( res , hash.digest());
+    EXPECT( res == hash.digest());
 }
-
-
-//-----------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_SUITE_END()
-
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
 } // end namespace test
 } // end namespace eckit
+
+int main (int argc, char * argv[]) {
+    return run_tests( argc, argv );
+}
+

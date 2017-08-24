@@ -8,39 +8,40 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cassert>
-#include <iostream>
-
-#include <cstdio>
-#include <cstdlib>
-
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
-
 #include <sys/types.h>
+#include <sys/mman.h>
+#include <cstdlib>
+#include <cmath>
+#include <cassert>
+#include <cstdio>
 
 #include <limits>
-#include <cmath>
-
-#include <sys/mman.h>
+#include <iostream>
 
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/testing/Test.h"
 
+#define TOTAL_SIZE  (SIZE_2G+SIZE_1M)  // 2Gb + 1Mb file
+// #define TOTAL_SIZE  2*SIZE_2G // 4Gb file
 #define SIZE_2G 2147483648    // 2^31
 #define SIZE_1M    1048576    // 2^20
 
-#define TOTAL_SIZE  (SIZE_2G+SIZE_1M) // 2Gb + 1Mb file
-
-// #define TOTAL_SIZE  2*SIZE_2G // 4Gb file
-
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
-int main(int argc, char *argv[])
+namespace eckit {
+namespace test {
+
+//-----------------------------------------------------------------------------
+
+CASE("test_large_file")
 {
   std::cout << "off_t can index " <<  Bytes( std::pow( 2.0, (int) sizeof(off_t)*8 ) ) << std::endl;
 
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
   // stretch the file size
   if( (long long) ::lseek(fd, TOTAL_SIZE-1, SEEK_SET) < 0 )
     ::perror("Error calling lseek() to 'stretch' the file"), ::exit(EXIT_FAILURE);
-  
+
   // write something to the end of the file to actually resize it correctly
   if( ::write(fd, "", 1) != 1 )
     ::close(fd), perror("Error writing last byte of the file"), ::exit(EXIT_FAILURE);
@@ -83,6 +84,14 @@ int main(int argc, char *argv[])
   eckit::PathName file(filename);
 
   file.unlink();
+}
 
-  return 0;
+//-----------------------------------------------------------------------------
+
+}  // namespace test
+}  // namespace eckit
+
+int main(int argc, char **argv)
+{
+    return run_tests ( argc, argv );
 }

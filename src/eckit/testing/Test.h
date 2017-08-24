@@ -15,58 +15,364 @@
 #ifndef eckit_testing_Test_h
 #define eckit_testing_Test_h
 
-#include "eckit/eckit_config.h"
+#include <vector>
+#include <sstream>
+#include <string>
+
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/types/FloatCompare.h"
 
-#ifdef ECKIT_HAVE_CXX11
-
-#if __cplusplus <= 199711L
-#error "eckit is configured with C++11 support, but the current compiler doesn't support C++11"
-#endif
-
-#define lest_FEATURE_AUTO_REGISTER 1
-#include "eckit/testing/lest.h"
-
-#else
-#include "eckit/testing/lest_cpp03.h"
-#endif
-
-// This pragma disables warnings in qtcreator using Clang Code Model. These warnings are due to the
-// expression decomposing functionality in lest, which intentionally does weird things by considering
-// the operator precedence rules.
-# pragma clang diagnostic ignored "-Woverloaded-shift-op-parentheses"
 
 namespace eckit {
 namespace testing {
 
+//----------------------------------------------------------------------------------------------------------------------
+
+class TestException : public Exception {
+public:
+    TestException(const std::string& w, const CodeLocation& l) :
+        Exception(w, l) {}
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// A test is defined by a description and a function pointer.
+
+class Test {
+
+public:  // methods
+
+    Test(const std::string& description, void (*testFn)(std::string&)) :
+        description_(description),
+        testFn_(testFn) {}
+
+    void run() {
+        subsection_ = "";
+        testFn_(subsection_);
+    }
+
+    std::string description() const {
+        if (subsection_.length() != 0) {
+            return description_ + " (section: " + subsection_ + ")";
+        } else {
+            return description_;
+        }
+    }
+
+private:  // members
+
+    std::string description_;
+    std::string subsection_;
+
+    void (* testFn_)(std::string&);
+};
+
+std::vector<Test>& specification() {
+    static std::vector<Test> tests;
+    return tests;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Tests are registered using a static object, that is initialised before main()
+
+class TestRegister {
+public:
+    TestRegister(const std::string& description, void (*testFn)(std::string&)) {
+        specification().push_back(Test(description, testFn));
+    }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// A helper class which wraps c-style arrays and implements comparison operators to compare with other views
+/// and STL vectors. Does not copy or modify the original array. Does not work on non-contiguous data sets.
+/// Note that STL containers can (and should) use the built-in comparison operators (==, !=, >=, etc.) instead.
+template< typename T >
+class ArrayView {
+public:
+
+    // -- Constructors
+    ArrayView(const T* data, size_t size) : data_(data), size_(size) {}
+    ArrayView(const T* begin, const T* end) : data_(begin), size_(end-begin) {}
+    explicit ArrayView(const std::vector<T> & vec) : data_(&vec[0]), size_(vec.size()) {}
+
+    // -- Accessors
+    const T& operator[](int i) const { return data_[i]; }
+    const T& at(int i) const { return data_[i]; }
+    const size_t size() const { return size_; }
+    const T * data() const { return data_; }
+
+    // -- Comparison Operators
+    template < typename U >
+    bool operator==(const ArrayView<U> & other) const {
+        return compareEqual_( other.data(), other.size() );
+    }
+
+    template < typename U >
+    bool operator==(const std::vector<U> & other) const {
+        return compareEqual_( &other[0], other.size() );
+    }
+
+    template < typename U >
+    bool operator!=(const ArrayView<U> & other) const {
+        return !compareEqual_( other.data(), other.size() );
+    }
+
+    template < typename U >
+    bool operator!=(const std::vector<U> & other) const {
+        return !compareEqual_( &other[0], other.size() );
+    }
+
+    template < typename U >
+    bool isApproximatelyEqual(const ArrayView<U> & other, const U tolerance) const {
+        return compareApproxEqual_( other.data(), other.size(), tolerance );
+    }
+    template < typename U >
+    bool isApproximatelyEqual(const std::vector<U> & other, const U tolerance) const {
+        return compareApproxEqual_( &other[0], other.size(), tolerance );
+    }
+
+private:
+    // -- Private Methods
+    template < typename U >
+    bool compareEqual_(const U * data, const size_t size) const {
+        if ( size != this->size() ) return false;
+        if ( size == 0 ) return true;
+        for ( int i = 0; i < this->size(); i++ )
+            if (data[i] != this->at(i))
+                return false;
+        return true;
+    }
+
+    template< typename U >
+    bool compareApproxEqual_(const U * data, const size_t size, const U epsilon) const {
+        if ( size != this->size() ) return false;
+        if ( size == 0 ) return true;
+        for ( int i = 0; i < this->size(); i++ ) {
+            if ( !eckit::types::is_approximately_equal(this->at(i), data[i], epsilon))
+                return false;
+        }
+        return true;
+    }
+
+    // -- Private Fields
+    const T* data_;
+    const size_t size_;
+};
+
+template <typename T>
+static ArrayView<T> make_view(const T * data, size_t size) {
+    return ArrayView<T>(data, size);
+}
+template <typename T>
+static ArrayView<T> make_view(const T * begin, const T * end) {
+    return ArrayView<T>(begin, end);
+}
+template <typename T>
+static ArrayView<T> make_view(const std::vector<T> & source) {
+    return ArrayView<T>( source );
+}
+
+template< typename U >
+static bool is_approximately_equal(const ArrayView<U> a, const ArrayView<U> b, const U epsilon) {
+    return a.isApproximatelyEqual(b, epsilon);
+}
+
+template< typename U >
+static bool is_approximately_equal(const ArrayView<U> a, const std::vector<U> b, const U epsilon) {
+    return a.isApproximatelyEqual(b, epsilon);
+}
+
+template< typename U >
+static bool is_approximately_equal(const std::vector<U> a, const ArrayView<U> b, const U epsilon) {
+    return b.isApproximatelyEqual(a, epsilon);
+}
+
+// Note: std has no approx_equal comparison for two vectors
+template< typename U >
+static bool is_approximately_equal(const std::vector<U> a, const std::vector<U> b, const U epsilon) {
+    return ArrayView<U>(a).isApproximatelyEqual(b, epsilon);
+}
+
+template < typename U >
+bool operator==(const std::vector<U> & lhs, const ArrayView<U> & rhs) {
+    return rhs == lhs;
+}
+
+template < typename U >
+bool operator!=(const std::vector<U> & lhs, const ArrayView<U> & rhs) {
+    return rhs != lhs;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+enum  TestVerbosity { Silent = 0, Summary = 1, AllFailures = 2};
+enum  InitEckitMain { NoInitEckitMain = 0, DoInitEckitMain = 1 };
+
+inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
+
+    // Keep track of failures
+    std::vector<std::string> failures;
+    size_t num_tests = tests.size();
+
+    if (num_tests == 0) {
+        if (v >= Summary)
+            eckit::Log::info() << "Eckit testing found no test cases to run." << std::endl;
+        return -1;
+    }
+
+    // Suppress noisy exceptions in eckit (we may throw many, and intentionally!!!)
+    ::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", true);
+    ::setenv("ECKIT_ASSERT_FAILED_IS_SILENT", "1", true);
+    ::setenv("ECKIT_SERIOUS_BUG_IS_SILENT", "1", true);
+    for (size_t i = 0; i < num_tests; i++) {
+
+        Test& test(tests[i]);
+
+        try {
+            test.run();
+        } catch (TestException& e) {
+            if (v >= Summary)
+                eckit::Log::info()  << "Test \"" << test.description() << "\" failed: "
+                                    << e.what() << " @ " << e.location() << std::endl;
+            failures.push_back(test.description());
+        } catch (eckit::Exception& e) {
+            if (v >= Summary)
+                eckit::Log::info() << "Test \"" << test.description() << "\" failed with unhandled eckit::Exception: "
+                                   << e.what() << " @ " << e.location() << std::endl;
+            failures.push_back(test.description());
+        } catch (std::exception& e) {
+            if (v >= Summary)
+                eckit::Log::info() << "Test \"" << test.description() << "\" failed with unhandled exception: "
+                                   << e.what() << " @ " << std::endl;
+            failures.push_back(test.description());
+        } catch (...) {
+            if (v >= Summary)
+                eckit::Log::info() << "Test \"" << test.description() << "\" failed with unknown unhandled exception."
+                                   << std::endl;
+            failures.push_back(test.description());
+        }
+    }
+
+    if (v >= AllFailures) {
+        for (size_t i = 0; i < failures.size(); i++) {
+            eckit::Log::info() << "\tFAILED: " << failures[i] << std::endl;
+        }
+    }
+
+    return failures.size();
+
+}
+
+int run_tests_main(std::vector<Test>& tests, int argc, char * argv[], bool initEckitMain = true) {
+    if (initEckitMain)
+        eckit::Main::initialise(argc, argv);
+    eckit::Log::info() << "Running " << tests.size() << " tests:" << std::endl;
+    int failures = run(tests);
+    eckit::Log::info() << failures << " tests failed out of " << tests.size() << "." << std::endl;
+    return failures;
+}
+
+int run_tests(std::vector<Test>& tests, int argc, char* argv[]) {
+    return run_tests_main( tests, argc, argv );
+}
+
+int run_tests(int argc, char* argv[], bool initEckitMain = true) {
+    return run_tests_main( specification(), argc, argv, initEckitMain );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace testing
+}  // namespace eckit
+
+// Helper macros for unique naming
+
+#define UNIQUE_NAME2(name, line) UNIQUE_NAME(name, line)
+#define UNIQUE_NAME(name, line) name ## line
+
+#ifndef ECKIT_TESTING_SELF_REGISTER_CASES
+#define ECKIT_TESTING_SELF_REGISTER_CASES 1
+#endif
+
+#if ECKIT_TESTING_SELF_REGISTER_CASES
+
+#define CASE(description) \
+void UNIQUE_NAME2(test_, __LINE__) (std::string&); \
+static TestRegister UNIQUE_NAME2(test_registration_, __LINE__)(description, &UNIQUE_NAME2(test_, __LINE__)); \
+void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
+
+#else  // ECKIT_TESTING_SELF_REGISTER_CASES
+
+#define CASE(description, ...) \
+    description, [__VA_ARGS__](std::string& _test_subsection)
+
+#endif  // ECKIT_TESTING_SELF_REGISTER_CASES
+
+
+#define EXPECT(expr) \
+    do { \
+        if (!(expr)) { \
+            throw eckit::testing::TestException("EXPECT condition failed: " #expr, Here()); \
+        } \
+    } while (false)
+
+#define EXPECT_NOT(expr) \
+    EXPECT(!(expr))
+
+#define EXPECT_THROWS_AS(expr, excpt) \
+    do { \
+        try { \
+            expr; \
+        } catch (excpt&) { \
+            break; \
+        } \
+        throw eckit::testing::TestException("Expected exception (" #excpt ")not thrown in: " #expr, Here()); \
+    } while (false)
+
+
+// Convert to TestException
+#define EXPECT_NO_THROW(expr) \
+    do { \
+        try { \
+            expr; \
+        } catch (std::exception& e) { \
+            std::stringstream ss; \
+            ss << "Unexpected exception caught: " << e.what(); \
+            throw eckit::testing::TestException(ss.str(), Here()); \
+        } catch (...) { \
+            throw eckit::testing::TestException("Unexpected and unknown exception caught", Here()); \
+        } \
+    } while (false)
+
+#define EXPECT_THROWS(expr) \
+    do { \
+        try { \
+            expr; \
+        } catch (...) { \
+            break; \
+        } \
+        throw eckit::testing::TestException("Exception expected but was not thrown", Here()); \
+    } while (false)
+
+#define SETUP(name) \
+    int _test_num = 0; \
+    int _test = 0; \
+    int _test_count = 1; \
+    _test_subsection = "setup: " name; \
+    for ( ; _test_num = 0, _test < _test_count; _test++)
+
+#define SECTION(name) \
+    _test_num += 1; \
+    _test_count = _test_num; \
+    _test_subsection = name; \
+    if ((_test_num - 1) == _test)
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
-static lest::tests& specification() {
-    static lest::tests spec;
-    return spec;
-}
-
-
-int run_tests(int argc, char* argv[]) {
-
-    eckit::Main::initialise(argc, argv);
-
-    return lest::run(specification(), argc, argv, eckit::Log::info());
-}
-
-
-// The CASE macro will now work with both C++11 and C++03 versions of lest
-
-#undef CASE
-#define CASE(proposition) lest_CASE( specification(), proposition )
-
-
-//----------------------------------------------------------------------------------------------------------------------
-
-} // namespace testing
-} // namespace eckit
-
-#endif // eckit_testing_Test_h
+#endif  // eckit_testing_Test_h

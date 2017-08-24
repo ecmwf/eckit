@@ -10,39 +10,29 @@
 
 #include <list>
 
-#define BOOST_TEST_MODULE test_eckit_geometry
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/container/KDTree.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/os/Semaphore.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 using namespace eckit::geometry;
 
-using namespace std;
-using namespace eckit;
+namespace eckit {
+namespace test {
 
 //-----------------------------------------------------------------------------
-
-namespace eckit_test {
 
 struct TestTreeTrait {
     typedef Point2   Point;
     typedef double   Payload;
 };
 
-}
-
 //-----------------------------------------------------------------------------
 
-using namespace eckit_test;
-
-BOOST_AUTO_TEST_SUITE( test_eckit_container_kdtree )
-
-BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_constructor )
+CASE("test_eckit_container_kdtree_constructor")
 {
     typedef KDTreeMemory<TestTreeTrait> Tree;
 
@@ -69,20 +59,20 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_constructor )
     // perturb it a little
     Point delta(0.1, 0.1);
     Point testPoint = Point::add(refPoint, delta);
-    BOOST_TEST_MESSAGE( "testPoint perturb " << testPoint.x(0) << ", " << testPoint.x(1) );
+    Log::info() << "testPoint perturb " << testPoint.x(0) << ", " << testPoint.x(1) << std::endl;
 
     Point nr = kd.nearestNeighbour(testPoint).point();
 
     // we should find the same point
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        BOOST_CHECK_EQUAL(nr.x(i) , refPoint.x(i));
+        EXPECT(nr.x(i) == refPoint.x(i));
 
 
     // test exact match to a point
 
     nr = kd.nearestNeighbour(refPoint).point();
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        BOOST_CHECK_EQUAL(nr.x(i) , refPoint.x(i));
+        EXPECT(nr.x(i) == refPoint.x(i));
 
 
     // test "off the scale" - i.e. not within a group of points
@@ -92,7 +82,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_constructor )
     nr = kd.nearestNeighbour(testPoint).point();
 
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        BOOST_CHECK_EQUAL(nr.x(i) , points.back().point().x(i));
+        EXPECT(nr.x(i) == points.back().point().x(i));
 
     // and negatively
     //
@@ -102,7 +92,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_constructor )
     nr = kd.nearestNeighbour(testPoint).point();
 
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        BOOST_CHECK_EQUAL(nr.x(i) , points.front().point().x(i));
+        EXPECT(nr.x(i) == points.front().point().x(i));
 
 
     // test N nearest
@@ -118,15 +108,15 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_constructor )
         // make sure we differ by 0.5 along each axis
         for (unsigned int i = 0; i < Point::dimensions(); ++i)
         {
-            BOOST_TEST_MESSAGE( "distance along point " << Point::distance(Point(0.0, 0.0), diff, i) );
-            BOOST_CHECK_EQUAL(Point::distance(Point(0.0, 0.0), diff, i) , 0.5);
+            Log::info() << "distance along point " << Point::distance(Point(0.0, 0.0), diff, i) << std::endl;
+            EXPECT( Point::distance(Point(0.0, 0.0), diff, i) == 0.5 );
         }
 
     }
 
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_insert )
+CASE("test_eckit_container_kdtree_insert")
 {
     typedef KDTreeMemory<TestTreeTrait> Tree;
 
@@ -153,20 +143,20 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_insert )
     // perturb it a little
     Point delta(0.1, 0.1);
     Point testPoint = Point::add(refPoint, delta);
-    BOOST_TEST_MESSAGE( "testPoint perturb " << testPoint.x(0) << ", " << testPoint.x(1) );
+    Log::info() << "testPoint perturb " << testPoint.x(0) << ", " << testPoint.x(1) << std::endl;
 
     Point nr = kd.nearestNeighbour(testPoint).point();
 
     // we should find the same point
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        BOOST_CHECK_EQUAL(nr.x(i) , refPoint.x(i));
+        EXPECT( nr.x(i) == refPoint.x(i) );
 
 
     // test exact match to a point
 
     nr = kd.nearestNeighbour(refPoint).point();
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        BOOST_CHECK_EQUAL(nr.x(i) , refPoint.x(i));
+        EXPECT( nr.x(i) == refPoint.x(i) );
 
 
     // test "off the scale" - i.e. not within a group of points
@@ -176,7 +166,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_insert )
     nr = kd.nearestNeighbour(testPoint).point();
 
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        BOOST_CHECK_EQUAL(nr.x(i) , points.back().point().x(i));
+        EXPECT( nr.x(i) == points.back().point().x(i) );
 
     // and negatively
     //
@@ -186,7 +176,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_insert )
     nr = kd.nearestNeighbour(testPoint).point();
 
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        BOOST_CHECK_EQUAL(nr.x(i) , points.front().point().x(i));
+        EXPECT( nr.x(i) == points.front().point().x(i) );
 
 
     // test N nearest
@@ -202,13 +192,20 @@ BOOST_AUTO_TEST_CASE( test_eckit_container_kdtree_insert )
         // make sure we differ by 0.5 along each axis
         for (unsigned int i = 0; i < Point::dimensions(); ++i)
         {
-            BOOST_TEST_MESSAGE( "distance along point " << Point::distance(Point(0.0, 0.0), diff, i) );
-            BOOST_CHECK_EQUAL(Point::distance(Point(0.0, 0.0), diff, i) , 0.5);
+            Log::info() << "distance along point " << Point::distance(Point(0.0, 0.0), diff, i) << std::endl;
+            EXPECT( Point::distance(Point(0.0, 0.0), diff, i) == 0.5 );
         }
 
     }
 
 }
+
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+}  // namespace test
+}  // namespace eckit
+
+int main(int argc, char **argv)
+{
+    return run_tests ( argc, argv );
+}

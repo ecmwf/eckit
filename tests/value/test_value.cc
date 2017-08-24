@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_value
 
 #include "eckit/value/Value.h"
 #include "eckit/types/FloatCompare.h"
@@ -2623,5 +2622,5 @@ CASE( "Test eckit integer-wrapper types in Value" ) {
 
 
 int main(int argc, char* argv[]) {
-    run_tests(argc, argv);
+    return run_tests(argc, argv);
 }

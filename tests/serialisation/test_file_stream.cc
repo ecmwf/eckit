@@ -10,17 +10,20 @@
 
 #include <cstdlib>
 #include <cstdio>
-
-#define BOOST_TEST_MODULE TestStreamable
-#include "ecbuild/boost_test_framework.h"
+#include <sys/types.h>
 
 #include "eckit/serialisation/FileStream.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
 namespace eckit {
 namespace test {
+
+//-----------------------------------------------------------------------------
 
 namespace {
 
@@ -69,39 +72,32 @@ struct F {
 
 PathName F::filename = PathName::unique( "data" );
 
+//-----------------------------------------------------------------------------
 
-BOOST_GLOBAL_FIXTURE( F );
-
-BOOST_AUTO_TEST_SUITE( TestFileStream )
-
-BOOST_AUTO_TEST_CASE( write_data )
+CASE ( "write_data" )
 {
-    BOOST_TEST_MESSAGE("Write to FileStream");
     FileStream sout( F::filename, "w" );
-
     sout << i_char
-         << i_uchar
-         << i_bool
-         << i_int
-         << i_uint
-         << i_short
-         << i_ushort
-         << i_long
-         << i_ulong
-         << i_longlong
-         << i_ulonglong
+        << i_uchar
+        << i_bool
+        << i_int
+        << i_uint
+        << i_short
+        << i_ushort
+        << i_long
+        << i_ulong
+        << i_longlong
+        << i_ulonglong
 //         << i_float
-         << i_double
-         << i_string
-         << i_charp
+        << i_double
+        << i_string
+        << i_charp
     ;
 }
 
-BOOST_AUTO_TEST_CASE( read_data )
+CASE( "read_data" )
 {
-    BOOST_TEST_MESSAGE("Read from FileStream");
     FileStream sin( F::filename, "r" );
-
     sin
         >> v_char
         >> v_uchar
@@ -121,27 +117,27 @@ BOOST_AUTO_TEST_CASE( read_data )
     ;
 }
 
-BOOST_AUTO_TEST_CASE( check_data )
+CASE( "check_data" )
 {
-    BOOST_CHECK_EQUAL( v_char,      i_char );
-    BOOST_CHECK_EQUAL( v_uchar,     i_uchar );
-    BOOST_CHECK_EQUAL( v_bool,      i_bool );
-    BOOST_CHECK_EQUAL( v_int,       i_int );
-    BOOST_CHECK_EQUAL( v_uint,      i_uint );
-    BOOST_CHECK_EQUAL( v_short,     i_short );
-    BOOST_CHECK_EQUAL( v_ushort,    i_ushort );
-    BOOST_CHECK_EQUAL( v_long,      i_long );
-    BOOST_CHECK_EQUAL( v_ulong,     i_ulong );
-    BOOST_CHECK_EQUAL( v_longlong,  i_longlong );
-    BOOST_CHECK_EQUAL( v_ulonglong, i_ulonglong );
-//  BOOST_CHECK_EQUAL( v_float,     i_float );
-    BOOST_CHECK_EQUAL( v_double,    i_double );
-    BOOST_CHECK_EQUAL( v_string,    i_string );
-    BOOST_CHECK_EQUAL( v_charp,     i_charp );
+    EXPECT( v_char      ==      i_char );
+    EXPECT( v_uchar     ==     i_uchar );
+    EXPECT( v_bool      ==      i_bool );
+    EXPECT( v_int       ==       i_int );
+    EXPECT( v_uint      ==      i_uint );
+    EXPECT( v_short     ==     i_short );
+    EXPECT( v_ushort    ==    i_ushort );
+    EXPECT( v_long      ==      i_long );
+    EXPECT( v_ulong     ==     i_ulong );
+    EXPECT( v_longlong  ==  i_longlong );
+    EXPECT( v_ulonglong == i_ulonglong );
+//  EXPECT( v_float     ==     i_float );
+    EXPECT( v_double    ==    i_double );
+    EXPECT( v_string    ==    i_string );
+    EXPECT( v_charp     ==     i_charp );
 }
 
-BOOST_AUTO_TEST_CASE( stream_object ) {
-    BOOST_TEST_MESSAGE("Stream an object");
+CASE ( "stream_object" ) {
+    Log::info()  << "Stream an object" << std::endl;
     const std::string k("key");
     const std::string v("value");
     {
@@ -153,19 +149,19 @@ BOOST_AUTO_TEST_CASE( stream_object ) {
     }
     {
         FileStream sin( F::filename, "r" );
-        BOOST_CHECK( sin.next() );
+        EXPECT( sin.next() );
         std::string s;
         sin >> s;
-        BOOST_CHECK_EQUAL( s, k );
+        EXPECT( s == k );
         sin >> s;
-        BOOST_CHECK_EQUAL( s, v );
-        BOOST_CHECK( sin.endObjectFound() );
-        BOOST_CHECK( !sin.next() );
+        EXPECT( s == v );
+        EXPECT( sin.endObjectFound() );
+        EXPECT( !sin.next() );
     }
 }
 
-BOOST_AUTO_TEST_CASE( stream_string ) {
-    BOOST_TEST_MESSAGE("Stream a string");
+CASE( "stream_string" ) {
+    Log::info() << "Stream a string" << std::endl;
     {
         FileStream sout( F::filename, "w" );
         sout << i_string;
@@ -173,13 +169,18 @@ BOOST_AUTO_TEST_CASE( stream_string ) {
     {
         FileStream sin( F::filename, "r" );
         std::string s;
-        BOOST_CHECK( sin.next(s) );
-        BOOST_CHECK_EQUAL( s, i_string );
-        BOOST_CHECK( !sin.next() );
+        EXPECT( sin.next(s) );
+        EXPECT( s == i_string );
+        EXPECT( !sin.next() );
     }
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+//-----------------------------------------------------------------------------
 
 } // namespace test
 } // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}

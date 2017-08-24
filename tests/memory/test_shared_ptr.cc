@@ -10,25 +10,21 @@
 
 #include <cmath>
 
-#define BOOST_TEST_MODULE test_eckit_memory_shared_ptr
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/memory/Owned.h"
 #include "eckit/memory/SharedPtr.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
-/// These tests are similar to the test for boost scoped_ptr and shared ptrs
-/// This allows as in the future to drop out, our own home grown managed
-/// ptr's in favour of the standards.
+namespace eckit {
+namespace test {
 
 //-----------------------------------------------------------------------------
-
-namespace eckit_test {
 
 class Incomplete;
 
@@ -38,7 +34,7 @@ Incomplete * get_ptr(  eckit::SharedPtr<Incomplete>& incomplete )
 }
 
 template<class T>
-void ck( const T* v1, T v2 ) { BOOST_CHECK( *v1 == v2 ); }
+void ck( const T* v1, T v2 ) { EXPECT( *v1 == v2 ); }
 
 namespace {
    int UDT_use_count;  // independent of pointer maintained counts
@@ -88,10 +84,6 @@ eckit::SharedPtr<T> add_another_shareptr( T* p )
 	return eckit::SharedPtr<T>( p );
 }
 
-} // namespace eckit_test
-
-using namespace eckit_test;
-
 //-----------------------------------------------------------------------------
 
 // TODO issues:
@@ -105,74 +97,72 @@ using namespace eckit_test;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE( test_eckit_memory_shared_ptr )
-
-BOOST_AUTO_TEST_CASE( test_intrusive_shared_ptr )
+CASE ( "test_intrusive_shared_ptr" )
 {
 
 //   std::cout << "test SharedPtr with a user defined type\n";
    {
       UDT_use_count = 0;
       UDT * up = new UDT(0);
-      BOOST_CHECK( up->value() == 0 );
+      EXPECT( up->value() == 0 );
 
 	  eckit::SharedPtr<UDT> sup1 ( up );
-	  BOOST_CHECK( up == sup1.get() );
-	  BOOST_CHECK( sup1.use_count() == 1 );
-	  BOOST_CHECK( sup1.unique());
+	  EXPECT( up == sup1.get() );
+	  EXPECT( sup1.use_count() == 1 );
+	  EXPECT( sup1.unique());
 
 	  sup1->value( 54321 ) ;
-	  BOOST_CHECK( sup1->value() == 54321 );
-      BOOST_CHECK( up->value() == 54321 );
+	  EXPECT( sup1->value() == 54321 );
+      EXPECT( up->value() == 54321 );
 
       eckit::SharedPtr<UDT> sup2;
 	  sup2 = sup1;
-      BOOST_CHECK( sup2->value() == 54321 );
-	  BOOST_CHECK( sup1.use_count() == 2 );
-      BOOST_CHECK( sup2.use_count() == 2 );
-      BOOST_CHECK( !sup2.unique());
-	  BOOST_CHECK( !sup1.unique());
+      EXPECT( sup2->value() == 54321 );
+	  EXPECT( sup1.use_count() == 2 );
+      EXPECT( sup2.use_count() == 2 );
+      EXPECT( !sup2.unique());
+	  EXPECT( !sup1.unique());
 
 //      cout << "eckit::SharedPtr check self assignment\n";
       sup2 = sup2;
-      BOOST_CHECK( sup2->value() == 54321 );
-	  BOOST_CHECK( sup1.use_count() == 2 );
-      BOOST_CHECK( sup2.use_count() == 2 );
+      EXPECT( sup2->value() == 54321 );
+	  EXPECT( sup1.use_count() == 2 );
+      EXPECT( sup2.use_count() == 2 );
 
 	  // check return creates from function
 
 	  eckit::SharedPtr<UDT> sup3 = add_another_shareptr( up );
-	  BOOST_CHECK( sup3->value() == 54321 );
-	  BOOST_CHECK( sup1.use_count() == 3 );
-	  BOOST_CHECK( sup2.use_count() == 3 );
-	  BOOST_CHECK( sup3.use_count() == 3 );
+	  EXPECT( sup3->value() == 54321 );
+	  EXPECT( sup1.use_count() == 3 );
+	  EXPECT( sup2.use_count() == 3 );
+	  EXPECT( sup3.use_count() == 3 );
 
    }
 
-    BOOST_CHECK_EQUAL( UDT_use_count , 0 );
+    EXPECT( UDT_use_count == 0 );
 
    {
 //      std::cout << "test SharedPtr swap\n";
 	  eckit::SharedPtr<UDT> sup1 ( new UDT(0) );
-	  BOOST_CHECK(sup1.get() != 0);
-	  BOOST_CHECK(sup1.use_count() == 1 );
-	  BOOST_CHECK(sup1.unique());
+	  EXPECT(sup1.get() != 0);
+	  EXPECT(sup1.use_count() == 1 );
+	  EXPECT(sup1.unique());
 
       eckit::SharedPtr<UDT> sup2;
-      BOOST_CHECK(sup2.use_count() == 0 );
-      BOOST_CHECK(sup2.get() == 0);
+      EXPECT(sup2.use_count() == 0 );
+      EXPECT(sup2.get() == 0);
 
 	  sup1.swap(sup2);
 
-      BOOST_CHECK(sup2.get() != 0);
-      BOOST_CHECK(sup2.use_count() == 1 );
-      BOOST_CHECK(sup2.unique());
+      EXPECT(sup2.get() != 0);
+      EXPECT(sup2.use_count() == 1 );
+      EXPECT(sup2.unique());
 
-	  BOOST_CHECK(sup1.use_count() == 0 );
-	  BOOST_CHECK(sup1.get() == 0);
+	  EXPECT(sup1.use_count() == 0 );
+	  EXPECT(sup1.get() == 0);
    }
 
-   BOOST_CHECK_EQUAL( UDT_use_count , 0 );
+   EXPECT( UDT_use_count == 0 );
 
 
    //   std::cout << "test SharedPtr with a user defined type in std::vector\n";
@@ -182,7 +172,7 @@ BOOST_AUTO_TEST_CASE( test_intrusive_shared_ptr )
       vec.push_back(eckit::SharedPtr<UDT>(new UDT(1)));
       vec.push_back(eckit::SharedPtr<UDT>(new UDT(2)));
    }
-   BOOST_CHECK_EQUAL( UDT_use_count , 0 );
+   EXPECT( UDT_use_count == 0 );
 
    //   std::cout << "test SharedPtr with a user defined type in std::set\n";
    {
@@ -191,7 +181,7 @@ BOOST_AUTO_TEST_CASE( test_intrusive_shared_ptr )
       vec.insert(eckit::SharedPtr<UDT>(new UDT(1)));
       vec.insert(eckit::SharedPtr<UDT>(new UDT(3)));
    }
-   BOOST_CHECK_EQUAL( UDT_use_count , 0 );
+   EXPECT( UDT_use_count == 0 );
 
    //   std::cout << "test SharedPtr with a user defined type in std::map\n";
    {
@@ -200,10 +190,16 @@ BOOST_AUTO_TEST_CASE( test_intrusive_shared_ptr )
       map.insert(std::make_pair(std::string("secon"),eckit::SharedPtr<UDT>(new UDT(1))));
       map.insert(std::make_pair(std::string("third"),eckit::SharedPtr<UDT>(new UDT(2))));
    }
-   BOOST_CHECK_EQUAL( UDT_use_count , 0 );
+   EXPECT( UDT_use_count == 0 );
 
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+} // namespace test
+} // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}

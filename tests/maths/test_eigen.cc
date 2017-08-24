@@ -8,23 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_maths_eigen
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/maths/Eigen.h"
 
+#include "eckit/testing/Test.h"
+
+using namespace std;
+using namespace eckit;
+using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
+
 //-----------------------------------------------------------------------------
 
-namespace eckit_test {}
-
-//-----------------------------------------------------------------------------
-
-using namespace eckit_test;
-
-BOOST_AUTO_TEST_SUITE( test_eckit_resource )
-
-BOOST_AUTO_TEST_CASE( test_default )
+CASE ( "test_default" )
 {
     Eigen::Vector3d v1;
     Eigen::Vector3d v2;
@@ -35,4 +32,11 @@ BOOST_AUTO_TEST_CASE( test_default )
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+} // namespace test
+} // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}
+

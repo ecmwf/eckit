@@ -12,52 +12,54 @@
 #include <iostream>
 #include <string>
 
-#define BOOST_TEST_MODULE test_eckit_io
 #include "eckit/eckit_config.h"
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/io/URLHandle.h"
-#include "eckit/testing/Setup.h"
+
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE( Setup );
+namespace eckit {
+namespace test {
 
-BOOST_AUTO_TEST_SUITE( test_eckit_urlhandle )
+//-----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------
 #ifdef ECKIT_HAVE_CURL
 
-BOOST_AUTO_TEST_CASE( test_urlhandle_get )
+CASE( "test_urlhandle_get" )
 {
     URLHandle h("https://www.ecmwf.int/");
     h.saveInto("/tmp/test_urlhandle_get.html");
 }
 
-BOOST_AUTO_TEST_CASE( test_urlhandle_redirect )
+CASE( "test_urlhandle_redirect" )
 {
     URLHandle h("http://www.ecmwf.int");
     h.saveInto("/tmp/test_urlhandle_get.html");
 }
 
-BOOST_AUTO_TEST_CASE( test_urlhandle_404 )
+CASE( "test_urlhandle_404" )
 {
     // TODO: catch URLHandle::URLException and check code
     // URLHandle h("http://download.ecmwf.org/foobar");
     // h.saveInto("/tmp/test_urlhandle_get.html");
 }
 #else
-BOOST_AUTO_TEST_CASE( test_urlhandle )
+CASE( "test_urlhandle" )
 {
 }
 #endif
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+} // namespace test
+} // namespace eckit
 
-// ----------------------------------------------------------------------------------------
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}
+
 

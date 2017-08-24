@@ -8,10 +8,6 @@
  * nor does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_la_linalg
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/runtime/Main.h"
@@ -19,22 +15,17 @@
 #include "eckit/linalg/LinearAlgebra.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"
-#include "util.h"
+#include "./util.h"
 
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/Test.h"
 
+using namespace eckit;
 using namespace eckit::testing;
-using namespace eckit::linalg;
 
 namespace eckit {
 namespace test {
 
-// Set linear algebra backend
-struct Setup : testing::Setup {
-    Setup() : testing::Setup() {
-        LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
-    }
-};
+//-----------------------------------------------------------------------------
 
 struct Fixture {
 
@@ -44,48 +35,60 @@ struct Fixture {
 
     Vector x;
     Matrix A;
-   const LinearAlgebra& linalg;
+    const LinearAlgebra& linalg;
 };
 
 
 template <class T>
 void test(const T& v, const T& r) {
-    BOOST_CHECK_EQUAL_COLLECTIONS(v.data(), v.data() + v.size(), r.data(), r.data() + r.size());
+    EXPECT( make_view(v.data(), v.data() + v.size()) == make_view(r.data(), r.data() + r.size()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Test linear algebra interface
 
-BOOST_GLOBAL_FIXTURE(Setup);
+CASE ( "test_eckit_la_sparse" ) {
 
-BOOST_FIXTURE_TEST_SUITE(test_eckit_la_linalg, Fixture)
+    SETUP("Fixture") {
+        Fixture F;
 
-BOOST_AUTO_TEST_CASE(test_dot) {
-    BOOST_CHECK_EQUAL(linalg.dot(x, x), 21.);
-    BOOST_TEST_MESSAGE("dot of vectors of different sizes should fail");
-    BOOST_CHECK_THROW(linalg.dot(x, Vector(2)), AssertionFailed);
+        SECTION("test_dot") {
+            EXPECT(F.linalg.dot(F.x, F.x) == 21.);
+            Log::info() << "dot of vectors of different sizes should fail" << std::endl;
+            EXPECT_THROWS_AS(F.linalg.dot(F.x, Vector(2)), AssertionFailed);
+        }
+
+        SECTION("test_gemv") {
+            Vector y(2);
+            F.linalg.gemv(F.A, V(2, -1., -2.), y);
+            test(y, V(2, 3., 0.));
+            Log::info() << "gemv of matrix and vector of nonmatching sizes should fail" << std::endl;
+            EXPECT_THROWS_AS(F.linalg.gemv(F.A, F.x, y), AssertionFailed);
+        }
+
+        SECTION("test_gemm") {
+            Matrix B(2, 2);
+            F.linalg.gemm(F.A, F.A, B);
+            test(B, M(2, 2, 9., -6., -12., 12.));
+            Log::info() << "gemm of matrices of nonmatching sizes should fail" << std::endl;
+            EXPECT_THROWS_AS(F.linalg.gemm(F.A, Matrix(1, 2), B), AssertionFailed);
+        }
+    }
 }
 
-BOOST_AUTO_TEST_CASE(test_gemv) {
-    Vector y(2);
-    linalg.gemv(A, V(2, -1., -2.), y);
-    test(y, V(2, 3., 0.));
-    BOOST_TEST_MESSAGE("gemv of matrix and vector of nonmatching sizes should fail");
-    BOOST_CHECK_THROW(linalg.gemv(A, x, y), AssertionFailed);
+
+
+//-----------------------------------------------------------------------------
+
+}  // namespace test
+}  // namespace eckit
+
+int main(int argc, char **argv)
+{
+    eckit::Main::initialise( argc, argv );
+    // Set linear algebra backend
+    LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
+
+    return run_tests ( argc, argv, false );
 }
-
-BOOST_AUTO_TEST_CASE(test_gemm) {
-    Matrix B(2, 2);
-    linalg.gemm(A, A, B);
-    test(B, M(2, 2, 9., -6., -12., 12.));
-    BOOST_TEST_MESSAGE("gemm of matrices of nonmatching sizes should fail");
-    BOOST_CHECK_THROW(linalg.gemm(A, Matrix(1, 2), B), AssertionFailed);
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-//----------------------------------------------------------------------------------------------------------------------
-
-} // namespace test
-} // namespace eckittest

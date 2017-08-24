@@ -9,35 +9,19 @@
  */
 
 #include "eckit/thread/Mutex.h"
-#include "eckit/runtime/Tool.h"
+
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
 
 //-----------------------------------------------------------------------------
 
-namespace eckit_test {
-
-//-----------------------------------------------------------------------------
-
-class TestMutex : public Tool {
-public:
-
-    TestMutex(int argc,char **argv): Tool(argc,argv) {}
-
-    ~TestMutex() {}
-
-    virtual void run();
-
-protected:
-    
-    void test_constructor();
-    
-};
-
-//-----------------------------------------------------------------------------
-
-void TestMutex::test_constructor()
+CASE( "TestMutex" )
 {
     Mutex* m = new Mutex();
     
@@ -48,22 +32,14 @@ void TestMutex::test_constructor()
     delete m;   
 }
 
-//-----------------------------------------------------------------------------
-            
-void TestMutex::run()
-{
-    test_constructor();
-}
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit_test
-
-//-----------------------------------------------------------------------------
+} // namespace test
+} // namespace eckit
 
 int main(int argc,char **argv)
 {
-    eckit_test::TestMutex app(argc,argv);
-    return app.start();
+    return run_tests ( argc, argv );
 }
 

@@ -8,123 +8,116 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_filesystem
-
 #include <string>
-
-#include "ecbuild/boost_test_framework.h"
 
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/FileSystemSize.h"
-
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE(Setup);
-
+namespace eckit {
+namespace test {
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE( TestLocalPathName )
-
-BOOST_AUTO_TEST_CASE( test_constructors )
+CASE( "test_constructors" )
 {
-   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_constructors");
+   Log::info() << "eckit::filesystem:: ...test_constructors" << std::endl;
 
    LocalPathName p;
-   BOOST_CHECK_MESSAGE(p == "/","Expected '/'");
+   EXPECT(p == "/");
 
    LocalPathName p1("/fred/bill");
-   BOOST_CHECK_MESSAGE(p1 == "/fred/bill","Expected '/fred/bill' but found " << p);
+   EXPECT(p1 == "/fred/bill");
 
    LocalPathName p2(p1);
-   BOOST_CHECK_MESSAGE(p1 == p2,"Expected p1 == p2");
+   EXPECT(p1 == p2);
 }
 
-BOOST_AUTO_TEST_CASE( test_assignment )
+CASE( "test_assignment" )
 {
-   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_assignment");
+   Log::info() << "eckit::filesystem:: ...test_assignment" << std::endl;
 
    LocalPathName p;
    LocalPathName pd;
    p = pd;
-   BOOST_CHECK_MESSAGE(p == "/","Expected '/'");
+   EXPECT(p == "/");
 
    LocalPathName p1("/fred/bill");
    LocalPathName p2;
    p2 = p1;
-   BOOST_CHECK_MESSAGE(p2 == "/fred/bill","Expected '/fred/bill' but found " << p);
+   EXPECT(p2 == "/fred/bill");
 
    LocalPathName p3;
    p3 = "/fred";
-   BOOST_CHECK_MESSAGE(p3 == "/fred","Expected '/fred'");
+   EXPECT(p3 == "/fred");
 
    LocalPathName p4;
    p4 = std::string("/fredd");
-   BOOST_CHECK_MESSAGE(p4 == "/fredd","Expected '/fredd'");
+   EXPECT(p4 == "/fredd");
 }
 
-BOOST_AUTO_TEST_CASE( test_operators )
+CASE( "test_operators" )
 {
-   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_operators");
+   Log::info() << "eckit::filesystem:: ...test_operators" << std::endl;
 
    LocalPathName p;
 
    p += "fred";
 
-   BOOST_CHECK_MESSAGE(p == "/fred","Expected '/fred'  but found " << p);
+   EXPECT(p == "/fred");
 
    p += "/joe/90";
 
-   BOOST_CHECK_MESSAGE(p == "/fred/joe/90","Expected '/fred/joe/90'  but found " << p);
+   EXPECT(p == "/fred/joe/90");
 
    p += '/';
 
-   BOOST_CHECK_MESSAGE(p == "/fred/joe/90/","Expected '/fred/joe/90/'  but found " << p);
+   EXPECT(p == "/fred/joe/90/");
 }
 
 
-BOOST_AUTO_TEST_CASE( test_dir_name )
+CASE( "test_dir_name" )
 {
-   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_dir_name");
+   Log::info() << "eckit::filesystem:: ...test_dir_name" << std::endl;
 
    LocalPathName p("/fred/bill");
-   BOOST_CHECK_MESSAGE(p.dirName() == "/fred","Expected dirName to be '/fred' but found " << p.dirName());
-   BOOST_CHECK_MESSAGE(p.fullName() == "/fred/bill","Expected fullName to be '/fred/bill' but found " << p.fullName());
+   EXPECT(p.dirName() == "/fred");
+   EXPECT(p.fullName() == "/fred/bill");
 
    // when no leading '/' on pathname, we append cwd to path, for fullName()
    LocalPathName p2("fred");
    LocalPathName expected = LocalPathName::cwd() + "/" + "fred";
-   BOOST_CHECK_MESSAGE(p2.fullName() == expected,"Expected " << expected << " but found " << p2.fullName());
+   EXPECT(p2.fullName() == expected);
 }
 
-BOOST_AUTO_TEST_CASE( test_exists )
+CASE( "test_exists" )
 {
-   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_exists");
+   Log::info() << "eckit::filesystem:: ...test_exists" << std::endl;
 
    LocalPathName cwd = LocalPathName::cwd();
 
-   BOOST_CHECK_MESSAGE(cwd.exists(),"Current working directory must exist");
-   BOOST_CHECK_MESSAGE(cwd.isDir(),"Must be a directory");
+   EXPECT(cwd.exists());
+   EXPECT(cwd.isDir());
 
    LocalPathName acwd = LocalPathName::cwd();
-   BOOST_CHECK_MESSAGE(cwd.sameAs(acwd),"The directories must be the same");
+   EXPECT(cwd.sameAs(acwd));
 
-   BOOST_TEST_MESSAGE("cwd " << cwd);
-   BOOST_TEST_MESSAGE("cwd.mountPoint() " << cwd.mountPoint());
-   BOOST_TEST_MESSAGE("cwd.realName() " << cwd.realName());
-   BOOST_TEST_MESSAGE("cwd.node() " << cwd.node());
-   BOOST_TEST_MESSAGE("cwd.path() " << cwd.path());
-   BOOST_TEST_MESSAGE("size " << cwd.size());
-   BOOST_TEST_MESSAGE("lastAccess " << cwd.lastAccess());
-   BOOST_TEST_MESSAGE("lastModified " << cwd.lastModified());
-   BOOST_TEST_MESSAGE("created " << cwd.created());
+   Log::info() << "cwd " << cwd << std::endl;
+   Log::info() << "cwd.mountPoint() " << cwd.mountPoint() << std::endl;
+   Log::info() << "cwd.realName() " << cwd.realName() << std::endl;
+   Log::info() << "cwd.node() " << cwd.node() << std::endl;
+   Log::info() << "cwd.path() " << cwd.path() << std::endl;
+   Log::info() << "size " << cwd.size() << std::endl;
+   Log::info() << "lastAccess " << cwd.lastAccess() << std::endl;
+   Log::info() << "lastModified " << cwd.lastModified() << std::endl;
+   Log::info() << "created " << cwd.created() << std::endl;
 }
 
-BOOST_AUTO_TEST_CASE( test_relative_path )
+CASE( "test_relative_path" )
 {
     LocalPathName foobar ("/foo/bar/1/2");
     LocalPathName foozing("/foo/zing/3");
@@ -135,30 +128,30 @@ BOOST_AUTO_TEST_CASE( test_relative_path )
 
     LocalPathName r1 = foozing.relativePath(foobar);
 
-    BOOST_CHECK_EQUAL( r1 , LocalPathName("../../../zing/3") );
+    EXPECT( r1 == LocalPathName("../../../zing/3") );
 
     // longer relative to shorter
 
     LocalPathName r2 = foobar.relativePath(foozing);
 
-    BOOST_CHECK_EQUAL( r2 , LocalPathName("../../bar/1/2") );
+    EXPECT( r2 == LocalPathName("../../bar/1/2") );
 
     // same relative to same
 
     LocalPathName r3 = foobar.relativePath(foobar);
 
-    BOOST_CHECK_EQUAL( r3 , LocalPathName(".") );
+    EXPECT( r3 == LocalPathName(".") );
 
     // relative to root
 
-    BOOST_CHECK_EQUAL( foobar.relativePath("/") , LocalPathName("foo/bar/1/2") );
+    EXPECT( foobar.relativePath("/") == LocalPathName("foo/bar/1/2") );
 
     // root relative to path
 
-    BOOST_CHECK_EQUAL( root.relativePath(foobar) , LocalPathName("../../../..") );
+    EXPECT( root.relativePath(foobar) == LocalPathName("../../../..") );
 }
 
-BOOST_AUTO_TEST_CASE( test_children )
+CASE( "test_children" )
 {
     std::set<LocalPathName> reference;
     reference.insert("testdir/foo");
@@ -178,79 +171,86 @@ BOOST_AUTO_TEST_CASE( test_children )
     for(std::vector<LocalPathName>::const_iterator d = dirs.begin(); d != dirs.end(); ++d) {
         LocalPathName r = d->relativePath(LocalPathName::cwd());
 //        std::cout << "relative path " << r << std::endl;
-        BOOST_CHECK(reference.find(r) != reference.end());
+        EXPECT(reference.find(r) != reference.end());
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_basename )
+CASE( "test_basename" )
 {
-   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_basename");
+   Log::info() << "eckit::filesystem:: ...test_basename" << std::endl;
 
    LocalPathName p1;
-   BOOST_CHECK_MESSAGE(p1.baseName(false) == "","Expected empty string  but found " << p1.baseName(false));
-   BOOST_CHECK_MESSAGE(p1.baseName(true) == "","Expected empty string  but found " << p1.baseName(true));
+   EXPECT(p1.baseName(false) == "");
+   EXPECT(p1.baseName(true) == "");
 
    LocalPathName p2("fred");
-   BOOST_CHECK_MESSAGE(p2.baseName(false) == "fred","Expected 'fred' but found " << p2.baseName(false));
-   BOOST_CHECK_MESSAGE(p2.baseName(true) == "fred","Expected 'fred' but found " << p2.baseName(true));
+   EXPECT(p2.baseName(false) == "fred");
+   EXPECT(p2.baseName(true) == "fred");
 
    LocalPathName p("/a/made/up/path/that/does/not/exist/file.ok");
-   BOOST_CHECK_MESSAGE(p.baseName(false) == "file","Expected 'file'  but found " << p.baseName(false));
-   BOOST_CHECK_MESSAGE(p.baseName(true) == "file.ok","Expected 'file.ok'  but found " << p.baseName(true));
+   EXPECT(p.baseName(false) == "file");
+   EXPECT(p.baseName(true) == "file.ok");
 }
 
-BOOST_AUTO_TEST_CASE( test_extension )
+CASE( "test_extension" )
 {
-   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_extension");
+   Log::info() << "eckit::filesystem:: ...test_extension" << std::endl;
 
    LocalPathName p1;
-   BOOST_CHECK_MESSAGE(p1.extension() == "", "Expected empty string  but found " << p1.extension());
+   EXPECT(p1.extension() == "");
 
    LocalPathName p2("fred");
-   BOOST_CHECK_MESSAGE(p2.extension() == "", "Expected empty string  but found " << p2.extension());
+   EXPECT(p2.extension() == "");
    LocalPathName p3("/path/to/fred");
-   BOOST_CHECK_MESSAGE(p3.extension() == "", "Expected empty string  but found " << p3.extension());
+   EXPECT(p3.extension() == "");
    LocalPathName p4("/path/with.dot/to/fred");
-   BOOST_CHECK_MESSAGE(p4.extension() == "", "Expected empty string  but found " << p4.extension());
+   EXPECT(p4.extension() == "");
 
    LocalPathName p5("fred.");
-   BOOST_CHECK_MESSAGE(p5.extension() == ".", "Expected '.'  but found " << p5.extension());
+   EXPECT(p5.extension() == ".");
    LocalPathName p6("/path/to/fred.ext");
-   BOOST_CHECK_MESSAGE(p6.extension() == ".ext", "Expected '.ext'  but found " << p6.extension());
+   EXPECT(p6.extension() == ".ext");
    LocalPathName p7("/path/with.dot/to/fred.ext");
-   BOOST_CHECK_MESSAGE(p7.extension() == ".ext", "Expected '.ext'  but found " << p7.extension());
+   EXPECT(p7.extension() == ".ext");
 }
 
-BOOST_AUTO_TEST_CASE( test_fileSystemSize )
+CASE( "test_fileSystemSize" )
 {
-   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_fileSystemSize");
+   Log::info() << "eckit::filesystem:: ...test_fileSystemSize" << std::endl;
 
    LocalPathName cwd = LocalPathName::cwd();
    FileSystemSize fs;
    cwd.fileSystemSize(fs);
 
-   BOOST_TEST_MESSAGE("cwd " << cwd);
-   BOOST_TEST_MESSAGE("fs.available " << fs.available);
-   BOOST_TEST_MESSAGE("fs.total " << fs.total);
+   Log::info() << "cwd " << cwd << std::endl;
+   Log::info() << "fs.available " << fs.available << std::endl;
+   Log::info() << "fs.total " << fs.total << std::endl;
 
-   BOOST_CHECK_MESSAGE(fs.available > 0,"Expected file system available  > 0 ");
-   BOOST_CHECK_MESSAGE(fs.total > 0,"Expected file system total  > 0 ");
+   EXPECT(fs.available > 0);
+   EXPECT(fs.total > 0);
 }
 
-BOOST_AUTO_TEST_CASE( test_unique )
+CASE( "test_unique" )
 {
-   BOOST_TEST_MESSAGE("eckit::filesystem:: ...test_unique");
+   Log::info() << "eckit::filesystem:: ...test_unique" << std::endl;
 
    LocalPathName unique = LocalPathName::unique(LocalPathName::cwd());
 
    unique.mkdir();
 
-   BOOST_CHECK_MESSAGE(unique.exists(),"Expected '" << unique << "' to exist ");
+   EXPECT(unique.exists());
 
    unique.rmdir();
-   BOOST_CHECK_MESSAGE(!unique.exists(),"Expected '" << unique << "' to be removed ");
+   EXPECT(!unique.exists());
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+}  // namespace test
+}  // namespace eckit
+
+int main(int argc, char **argv)
+{
+    return run_tests ( argc, argv );
+}
+

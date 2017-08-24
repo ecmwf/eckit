@@ -11,18 +11,15 @@ ecbuild_add_test( TARGET      eckit_test_aiohandle
                   LIBS        eckit )
 
 ecbuild_add_test( TARGET      eckit_test_localpathname
-                  BOOST
                   SOURCES     test_localpathname.cc
                   LIBS        eckit )
 
 
 ecbuild_add_test( TARGET      eckit_test_restarthandle
-                  BOOST
                   SOURCES     test_restarthandle.cc
                   LIBS        eckit )
 
 ecbuild_add_test( TARGET      eckit_test_pathexpander
-                  BOOST
                   SOURCES     test_pathexpander.cc
                   ENVIRONMENT "CURRENT_TEST_DIR=${CMAKE_CURRENT_BINARY_DIR}"
                   LIBS        eckit )

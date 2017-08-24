@@ -24,6 +24,17 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
 
+#include "eckit/testing/Test.h"
+
+using namespace std;
+using namespace eckit;
+using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
+
+//-----------------------------------------------------------------------------
+
 int get_pagesize()
 {
     int pagesize;
@@ -58,15 +69,14 @@ int get_pagesize()
 #define SIZE_UP  (ELEM_UP*sizeof(int))
 #define SIZE_LW  (ELEM_LW*sizeof(int))
 
-using namespace std;
-using namespace eckit;
+//-----------------------------------------------------------------------------
 
-int main(int argc, char *argv[])
+CASE ( "Test memory map" )
 {
     // compute the 2GB limit and its number of pages
     int pagesize = get_pagesize();
     size_t nbpages_2gb = SIZE_2G / pagesize;
-    ASSERT( nbpages_2gb * pagesize == SIZE_2G );
+    EXPECT( nbpages_2gb * pagesize == SIZE_2G );
 
     std::cout << Bytes(SIZE_2G) << " are " <<  nbpages_2gb << " memory pages" << std::endl;
 
@@ -114,6 +124,15 @@ int main(int argc, char *argv[])
     // remove the file -- its large!
     if( ::unlink(filename) == -1 )
       perror("Error removing the file"), exit(EXIT_FAILURE);
+      
+}
 
-    return 0;
+//-----------------------------------------------------------------------------
+
+} // namespace test
+} // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
 }

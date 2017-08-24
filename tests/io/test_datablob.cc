@@ -12,20 +12,22 @@
 #include <iostream>
 #include <string>
 
-#define BOOST_TEST_MODULE test_eckit_io
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/io/DataBlob.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/memory/ScopedPtr.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/types/Metadata.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
-// ----------------------------------------------------------------------------------------
+namespace eckit {
+namespace test {
+
+//-----------------------------------------------------------------------------
 
 namespace {
 
@@ -74,19 +76,17 @@ namespace {
 
 // ----------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE( test_eckit_io_datablob )
-
-BOOST_AUTO_TEST_CASE( test_eckit_io_datablob_factory_generate )
+CASE ( "test_eckit_io_datablob_factory_generate" )
 {
     ScopedPtr<DataBlob> blob(DataBlobFactory::build("test", NULL, 0));
 
     // Check that we generate a blob of the correct type (and implicitly that the factory
     // is correctly registered).
     TestDataBlob * testBlob = dynamic_cast<TestDataBlob*>(blob.get());
-    BOOST_CHECK(testBlob);
+    EXPECT( testBlob );
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_io_datablob_factory_list )
+CASE ( "test_eckit_io_datablob_factory_list" )
 {
     // DataBlobFactory::list appends the results to a ostream&, so we need to extract them.
     std::stringstream ss;
@@ -97,11 +97,17 @@ BOOST_AUTO_TEST_CASE( test_eckit_io_datablob_factory_list )
     Tokenizer(" ,")(ss.str(), bits);
 
     // We expect the file and MultIO factories to be in there too...
-    BOOST_CHECK(std::find(bits.begin(), bits.end(), "json") != bits.end());
-    BOOST_CHECK(std::find(bits.begin(), bits.end(), "test") != bits.end());
+    EXPECT ( std::find( bits.begin(), bits.end(), "json" ) != bits.end() );
+    EXPECT ( std::find( bits.begin(), bits.end(), "test" ) != bits.end() );
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+//-----------------------------------------------------------------------------
 
-// ----------------------------------------------------------------------------------------
+} // namespace test
+} // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}
 

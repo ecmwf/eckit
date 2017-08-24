@@ -12,27 +12,22 @@
 
 #include "eckit/eckit_config.h"
 
-#define BOOST_TEST_MODULE TestTranslator
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/StringTools.h"
 #include "eckit/utils/Translator.h"
 
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE(Setup);
-
-BOOST_AUTO_TEST_SUITE( TestTranslator )
+namespace eckit {
+namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_translator_string_double ) {
+CASE ( "test_translator_string_double" ) {
     double half = 0.5;
     double zero = 0.0;
     double hund = 100.0;
@@ -40,70 +35,75 @@ BOOST_AUTO_TEST_CASE( test_translator_string_double ) {
 
     Translator<string,double> t;
 
-    BOOST_CHECK( half == t( "0.5" ) );
+    EXPECT( half == t( "0.5" ) );
 
-    BOOST_CHECK( hund == t( "1e2"  ) );
-    BOOST_CHECK( hund == t( "1E2"  ) );
-    BOOST_CHECK( hund == t( "1.e2"  ) );
-    BOOST_CHECK( hund == t( "1.E2"  ) );
-    BOOST_CHECK( hund == t( "1.0e2"  ) );
-    BOOST_CHECK( hund == t( "1.0E2"  ) );
-    BOOST_CHECK( hund == t( "1e002"  ) );
-    BOOST_CHECK( hund == t( "1E002"  ) );
-    BOOST_CHECK( hund == t( "1.0e002"  ) );
-    BOOST_CHECK( hund == t( "1.0E002"  ) );
+    EXPECT( hund == t( "1e2"  ) );
+    EXPECT( hund == t( "1E2"  ) );
+    EXPECT( hund == t( "1.e2"  ) );
+    EXPECT( hund == t( "1.E2"  ) );
+    EXPECT( hund == t( "1.0e2"  ) );
+    EXPECT( hund == t( "1.0E2"  ) );
+    EXPECT( hund == t( "1e002"  ) );
+    EXPECT( hund == t( "1E002"  ) );
+    EXPECT( hund == t( "1.0e002"  ) );
+    EXPECT( hund == t( "1.0E002"  ) );
 
-    BOOST_CHECK( zero == t( "0"       ) );
-    BOOST_CHECK( zero == t( "0."      ) );
-    BOOST_CHECK( zero == t( "0.0"     ) );
-    BOOST_CHECK( zero == t( "0.00"    ) );
-    BOOST_CHECK( zero == t( "0.0e0"   ) );
-    BOOST_CHECK( zero == t( "0.0e-0"  ) );
-    BOOST_CHECK( zero == t( "0.0e+0"  ) );
-    BOOST_CHECK( zero == t( "+0"      ) );
-    BOOST_CHECK( zero == t( "+0."     ) );
-    BOOST_CHECK( zero == t( "+0.0"    ) );
-    BOOST_CHECK( zero == t( "+0.00"   ) );
-    BOOST_CHECK( zero == t( "+0.0e0"  ) );
-    BOOST_CHECK( zero == t( "+0.0e-0" ) );
-    BOOST_CHECK( zero == t( "+0.0e+0" ) );
-    BOOST_CHECK( zero == t( "-0"      ) );
-    BOOST_CHECK( zero == t( "-0."     ) );
-    BOOST_CHECK( zero == t( "-0.0"    ) );
-    BOOST_CHECK( zero == t( "-0.00"   ) );
-    BOOST_CHECK( zero == t( "-0.0e0"  ) );
-    BOOST_CHECK( zero == t( "-0.0e-0" ) );
-    BOOST_CHECK( zero == t( "-0.0e+0" ) );
+    EXPECT( zero == t( "0"       ) );
+    EXPECT( zero == t( "0."      ) );
+    EXPECT( zero == t( "0.0"     ) );
+    EXPECT( zero == t( "0.00"    ) );
+    EXPECT( zero == t( "0.0e0"   ) );
+    EXPECT( zero == t( "0.0e-0"  ) );
+    EXPECT( zero == t( "0.0e+0"  ) );
+    EXPECT( zero == t( "+0"      ) );
+    EXPECT( zero == t( "+0."     ) );
+    EXPECT( zero == t( "+0.0"    ) );
+    EXPECT( zero == t( "+0.00"   ) );
+    EXPECT( zero == t( "+0.0e0"  ) );
+    EXPECT( zero == t( "+0.0e-0" ) );
+    EXPECT( zero == t( "+0.0e+0" ) );
+    EXPECT( zero == t( "-0"      ) );
+    EXPECT( zero == t( "-0."     ) );
+    EXPECT( zero == t( "-0.0"    ) );
+    EXPECT( zero == t( "-0.00"   ) );
+    EXPECT( zero == t( "-0.0e0"  ) );
+    EXPECT( zero == t( "-0.0e-0" ) );
+    EXPECT( zero == t( "-0.0e+0" ) );
 
     /// weird cases that actually pass
 
-    BOOST_CHECK_NO_THROW( t( "inf" ) ); // inf is acceptable, case insensitive
-    BOOST_CHECK_NO_THROW( t( "INF" ) ); // INF is acceptable, case insensitive
-    BOOST_CHECK_NO_THROW( t( "infinity" ) ); // infinity is acceptable, case insensitive
-    BOOST_CHECK_NO_THROW( t( "INFINITY" ) ); // INFINITY is acceptable, case insensitive
+    EXPECT_NO_THROW( t( "inf" ) ); // inf is acceptable, case insensitive
+    EXPECT_NO_THROW( t( "INF" ) ); // INF is acceptable, case insensitive
+    EXPECT_NO_THROW( t( "infinity" ) ); // infinity is acceptable, case insensitive
+    EXPECT_NO_THROW( t( "INFINITY" ) ); // INFINITY is acceptable, case insensitive
 
-    BOOST_CHECK_NO_THROW( t( "nan" ) ); // nan is acceptable, case insensitive
-    BOOST_CHECK_NO_THROW( t( "NAN" ) ); // NAN is acceptable, case insensitive
+    EXPECT_NO_THROW( t( "nan" ) ); // nan is acceptable, case insensitive
+    EXPECT_NO_THROW( t( "NAN" ) ); // NAN is acceptable, case insensitive
 
-    BOOST_CHECK( zero == t( "0x0" ) );   // hexadecimal is acceptable
-    BOOST_CHECK( ten  == t( "0xA" ) );   // hexadecimal is acceptable
+    EXPECT( zero == t( "0x0" ) );   // hexadecimal is acceptable
+    EXPECT( ten  == t( "0xA" ) );   // hexadecimal is acceptable
 
     /// these should fail ...
 
-    BOOST_CHECK_THROW( t( "" ), BadParameter ); // empty string
+    EXPECT_THROWS_AS( t( "" ), BadParameter ); // empty string
 
-    BOOST_CHECK_THROW( t("0.5 "), BadParameter ); // no spaces accepted -- we are being extra strict
-    BOOST_CHECK_THROW( t(" 0.5"), BadParameter ); // no spaces accepted -- we are being extra strict
-    BOOST_CHECK_THROW( t(" 0.5   "), BadParameter ); // no spaces accepted -- we are being extra strict
+    EXPECT_THROWS_AS( t("0.5 "), BadParameter ); // no spaces accepted -- we are being extra strict
+    EXPECT_THROWS_AS( t(" 0.5"), BadParameter ); // no spaces accepted -- we are being extra strict
+    EXPECT_THROWS_AS( t(" 0.5   "), BadParameter ); // no spaces accepted -- we are being extra strict
 
-    BOOST_CHECK_THROW( t( "1e+10000" ), BadParameter ); // overflow,  max ~ 1.79769e+308
-    BOOST_CHECK_THROW( t( "1e-10000" ), BadParameter ); // underflow, min ~ 2.22507e-308
+    EXPECT_THROWS_AS( t( "1e+10000" ), BadParameter ); // overflow,  max ~ 1.79769e+308
+    EXPECT_THROWS_AS( t( "1e-10000" ), BadParameter ); // underflow, min ~ 2.22507e-308
 
-    BOOST_CHECK_THROW( t( "0.5a"   ), BadParameter );
-    BOOST_CHECK_THROW( t( "foobar"  ), BadParameter );
-    BOOST_CHECK_THROW( t( "foo555bar" ), BadParameter );
+    EXPECT_THROWS_AS( t( "0.5a"   ), BadParameter );
+    EXPECT_THROWS_AS( t( "foobar"  ), BadParameter );
+    EXPECT_THROWS_AS( t( "foo555bar" ), BadParameter );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+} // namespace test
+} // namespace eckit
+
+int main (int argc, char * argv[] ) {
+    return run_tests( argc, argv );
+}

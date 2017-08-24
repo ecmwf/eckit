@@ -30,11 +30,11 @@ ecbuild_add_test( TARGET      eckit_test_md4
                   SOURCES     test_md4.cc
                   LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_xxhash
-                  CONDITION   ECKIT_HAVE_XXHASH
-                  INCLUDES    "${XXHASH_INCLUDE_DIRS}"
-                  SOURCES     test_xxhash.cc
-                  LIBS        eckit )
+#ecbuild_add_test( TARGET      eckit_test_xxhash
+#                  CONDITION   ECKIT_HAVE_XXHASH
+#                  INCLUDES    "${XXHASH_INCLUDE_DIRS}"
+#                  SOURCES     test_xxhash.cc
+#                  LIBS        eckit )
 
 ecbuild_add_test( TARGET      hash-performance
                   SOURCES     hash-performance.cc

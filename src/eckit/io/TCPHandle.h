@@ -47,6 +47,9 @@ public:
 	virtual long write(const void*,long);
 	virtual void close();
 	virtual void rewind();
+
+    virtual DataHandle* clone() const;
+
 	virtual void print(std::ostream&) const;
 	virtual std::string title() const;
     virtual bool moveable() const { return true; }

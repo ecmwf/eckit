@@ -8,32 +8,24 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_parser
-
-#include "ecbuild/boost_test_framework.h"
-
-//#include "eckit/log/Log.h"
 #include "eckit/io/BitIO.h"
 #include "eckit/io/Buffer.h"
 
-#include "eckit/testing/Setup.h"
 #include "eckit/io/MemoryHandle.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
-
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE(Setup);
+namespace eckit {
+namespace test {
 
-BOOST_AUTO_TEST_SUITE( test_eckit_bitio )
+//-----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------
+CASE( "test_eckit_bitio_1" ) {
 
-
-BOOST_AUTO_TEST_CASE( test_eckit_bitio_1 ) {
-
-    size_t N = sizeof(size_t) * 8 ;
+    size_t N = sizeof(size_t) * 8;
 
     Buffer b(17 * 31 * N * sizeof(size_t) * 2);
 
@@ -67,7 +59,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_1 ) {
                         std::cout << "i=" << i << std::endl;
                         std::cout << "j=" << j << std::endl;
                     }
-                    BOOST_CHECK_EQUAL(r, s);
+                    EXPECT(r == s);
                 }
                 s <<= 1;
             }
@@ -77,7 +69,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_1 ) {
 
 
 
-BOOST_AUTO_TEST_CASE( test_eckit_bitio_2 ) {
+CASE( "test_eckit_bitio_2" ) {
 
     for (size_t nbits = 7; nbits <= 32; ++nbits) {
 
@@ -105,7 +97,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_2 ) {
             const char*p = pattern;
             while (*p) {
                 char c = io.read(nbits);
-                BOOST_CHECK_EQUAL(*p, c);
+                EXPECT(*p == c);
                 p++;
             }
         }
@@ -113,7 +105,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_2 ) {
 }
 
 
-BOOST_AUTO_TEST_CASE( test_eckit_bitio_3 ) {
+CASE( "test_eckit_bitio_3" ) {
 
     const char* pattern = "TOBEORNOTTOBEORTOBEORNOT#";
 
@@ -123,15 +115,15 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_3 ) {
     const char*p = pattern;
     while (*p) {
         char c = io.read(8);
-        BOOST_CHECK_EQUAL(*p, c);
+        EXPECT(*p == c);
         p++;
     }
 
-    BOOST_CHECK_EQUAL(io.read(8, 257), 257);
+    EXPECT(io.read(8, 257) == 257);
 
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_bitio_4 ) {
+CASE( "test_eckit_bitio_4" ) {
 
     const char* pattern = "A";
 
@@ -140,15 +132,15 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_4 ) {
     BitIO io(h);
 
     io.read(6);
-    BOOST_CHECK_THROW(io.read(6), std::exception);
+    EXPECT_THROWS_AS(io.read(6), std::exception);
 
 
 
-    BOOST_CHECK_EQUAL(io.read(8, 257), 257);
+    EXPECT(io.read(8, 257) == 257);
 
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_bitio_5 ) {
+CASE( "test_eckit_bitio_5" ) {
 
     const unsigned char pattern[] = {0xff};
 
@@ -156,16 +148,24 @@ BOOST_AUTO_TEST_CASE( test_eckit_bitio_5 ) {
 
     BitIO io(h, true);
 
-    BOOST_CHECK_EQUAL(io.read(6, 256), 0x3f);
-    BOOST_CHECK_EQUAL(io.read(6, 256), 0x30);
-    BOOST_CHECK_EQUAL(io.read(6, 256), 256);
+    EXPECT(io.read(6, 256) == 0x3f);
+    EXPECT(io.read(6, 256) == 0x30);
+    EXPECT(io.read(6, 256) == 256);
 
-    BOOST_CHECK_EQUAL(io.bitCount(), 8);
+    EXPECT(io.bitCount() == 8);
 
 
-    BOOST_CHECK_EQUAL(io.read(8, 257), 257);
+    EXPECT(io.read(8, 257) == 257);
 
 }
-//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+//-----------------------------------------------------------------------------
+
+}  // namespace test
+}  // namespace eckit
+
+int main(int argc, char **argv)
+{
+    return run_tests ( argc, argv );
+}
+

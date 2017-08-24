@@ -8,30 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_parser
-
-#include "ecbuild/boost_test_framework.h"
-
-//#include "eckit/log/Log.h"
 #include "eckit/io/Base64.h"
-
-#include "eckit/testing/Setup.h"
 #include "eckit/io/MemoryHandle.h"
+
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
-
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE(Setup);
+namespace eckit {
+namespace test {
 
-BOOST_AUTO_TEST_SUITE( test_eckit_compress )
-
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 static std::string test(const char* text, const char* expect) {
-    char base64ed[10240] = {0,};
-    char unbase64ed[10240] = {0,};
+    char base64ed[10240] = {0, };
+    char unbase64ed[10240] = {0, };
 
     Base64 base64;
 
@@ -52,7 +45,7 @@ static std::string test(const char* text, const char* expect) {
 
     std::cout << "encoded is [" << v << "]" << std::endl;
 
-    BOOST_CHECK_EQUAL(v, expect);
+    EXPECT(v == expect);
 
     std::cout << "-----------------------" << std::endl;
     {
@@ -78,30 +71,33 @@ static std::string test(const char* text, const char* expect) {
     return u;
 }
 
+//-----------------------------------------------------------------------------
 
-
-BOOST_AUTO_TEST_CASE( test_eckit_base64_1 ) {
+CASE( "test_eckit_base64_1" ) {
     {
         const char* pattern = "Man";
         std::string s = test(pattern, "TWFu");
-        BOOST_CHECK_EQUAL(s, std::string(pattern));
+        EXPECT(s == std::string(pattern));
     }
     {
         const char* pattern = "M";
         std::string s = test(pattern, "TQ==");
-        BOOST_CHECK_EQUAL(s, std::string(pattern));
+        EXPECT(s == std::string(pattern));
     }
     {
         const char* pattern = "Ma";
         std::string s = test(pattern, "TWE=");
-        BOOST_CHECK_EQUAL(s, std::string(pattern));
+        EXPECT(s == std::string(pattern));
     }
 }
 
+//-----------------------------------------------------------------------------
 
+}  // namespace test
+}  // namespace eckit
 
+int main(int argc, char **argv)
+{
+    return run_tests ( argc, argv );
+}
 
-
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_SUITE_END()

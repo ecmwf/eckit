@@ -8,30 +8,22 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_parser
-
-#include "ecbuild/boost_test_framework.h"
-
-//#include "eckit/log/Log.h"
 #include "eckit/io/Compress.h"
-
-#include "eckit/testing/Setup.h"
 #include "eckit/io/MemoryHandle.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
-
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE(Setup);
+namespace eckit {
+namespace test {
 
-BOOST_AUTO_TEST_SUITE( test_eckit_compress )
-
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 static std::string test(const char* text) {
-    char compressed[10240] = {0,};
-    char uncompressed[10240] = {0,};
+    char compressed[10240] = {0, };
+    char uncompressed[10240] = {0, };
 
     Compress compress(16);
 
@@ -70,33 +62,33 @@ static std::string test(const char* text) {
     return u;
 }
 
+//-----------------------------------------------------------------------------
 
-
-BOOST_AUTO_TEST_CASE( test_eckit_compress_1 ) {
+CASE( "test_eckit_compress_1" ) {
     const char* pattern = "TOBEORNOTTOBEORTOBEORNOT#";
 
     std::string s = test(pattern);
-    BOOST_CHECK_EQUAL(s, std::string(pattern));
+    EXPECT(s == std::string(pattern));
 }
 
 
-BOOST_AUTO_TEST_CASE( test_eckit_compress_2 ) {
+CASE( "test_eckit_compress_2" ) {
     const char* pattern = "ABCABCABCABCABCABC";
 
     std::string s = test(pattern);
-    BOOST_CHECK_EQUAL(s, std::string(pattern));
+    EXPECT(s == std::string(pattern));
 }
 
-BOOST_AUTO_TEST_CASE( test_eckit_compress_3 ) {
+CASE( "test_eckit_compress_3" ) {
     const char* pattern = "";
 
     std::string s = test(pattern);
-    BOOST_CHECK_EQUAL(s, std::string(pattern));
+    EXPECT(s == std::string(pattern));
 }
 
 
 
-BOOST_AUTO_TEST_CASE( test_eckit_compress_4 ) {
+CASE( "test_eckit_compress_4" ) {
 
     char original[102400];
     char compressed[102400 * 2];
@@ -136,16 +128,21 @@ BOOST_AUTO_TEST_CASE( test_eckit_compress_4 ) {
 
         }
 
-        BOOST_CHECK_EQUAL(sizeof(original), t);
+        EXPECT(sizeof(original) == t);
 
         for (size_t i = 0; i < sizeof(original); ++i) {
-            BOOST_CHECK_EQUAL(original[i], uncompressed[i]);
+            EXPECT(original[i] == uncompressed[i]);
         }
     }
 }
 
+//-----------------------------------------------------------------------------
 
+}  // namespace test
+}  // namespace eckit
 
-//----------------------------------------------------------------------------------------------------------------------
+int main(int argc, char **argv)
+{
+    return run_tests ( argc, argv );
+}
 
-BOOST_AUTO_TEST_SUITE_END()

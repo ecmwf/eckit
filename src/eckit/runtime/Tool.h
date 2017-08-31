@@ -37,6 +37,17 @@ public: // methods
 
 	virtual void run() = 0;
 
+    virtual LogTarget* createWarningLogTarget() const;
+    virtual LogTarget* createErrorLogTarget() const;
+
+protected: // method
+
+    void sendLogErrWarnToStdOut(bool send) { sendLogErrWarnToStdOut_ = send; }
+
+private: // members
+
+    bool sendLogErrWarnToStdOut_;
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

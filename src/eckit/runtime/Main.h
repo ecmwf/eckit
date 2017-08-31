@@ -54,6 +54,9 @@ public: // methods
 
     virtual std::string name() const;
 
+    /// Name displayed in the Monitor
+    virtual std::string displayName() const;
+
     /// Ensure that there exits a Main object. This is to be used
     /// For unit tests and fortran bindinds only
     static void initialise(int argc, char** argv, const char* homeenv = 0);

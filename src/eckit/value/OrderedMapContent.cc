@@ -56,7 +56,10 @@ OrderedMapContent::~OrderedMapContent()
 
 void OrderedMapContent::value(ValueMap& v) const
 {
-    NOTIMP;
+    v.clear();
+    for (ValueList::const_iterator j = keys_.begin(); j != keys_.end(); ++j) {
+        v[(*j)] = value(*j);
+    }
 }
 
 Value OrderedMapContent::keys() const {

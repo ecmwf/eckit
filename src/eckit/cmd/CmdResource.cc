@@ -282,7 +282,8 @@ void CmdResource::append(CmdResource* cmd, CmdArg& args, std::istream& in, std::
 }
 
 void CmdResource::pipe(CmdResource* cmd, CmdArg& args, std::istream& in, std::ostream&) {
-    const std::string to = args["|"];
+
+    const std::string to = args["|"]; // everything after the pipe
 
     StdPipe pipe(to, "w");
     StdioBuf buf(pipe);

@@ -104,7 +104,7 @@ public:
 
 // -- Methods
 
-	void  out(char*,char*);
+    void  out(char*, char*);
 	bool  busy(bool = false);
 	const char *name()   const { return name_;  }
 	const char *kind()   const { return kind_;  }

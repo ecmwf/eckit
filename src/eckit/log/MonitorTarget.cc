@@ -1,4 +1,3 @@
-
 /*
  * (C) Copyright 1996-2017 ECMWF.
  *
@@ -9,49 +8,29 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Tiago Quintino
-/// @date Sep 2012
 
-#ifndef eckit_Tool_h
-#define eckit_Tool_h
+#include "eckit/log/MonitorTarget.h"
+#include "eckit/runtime/Monitor.h"
 
-#include "eckit/runtime/Main.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Tool : public Main {
+MonitorTarget::MonitorTarget(LogTarget* target) : WrapperTarget(target)
+{
+}
 
-public: // methods
+MonitorTarget::~MonitorTarget()
+{
+}
 
-    /// Contructors
-
-    Tool(int argc, char **argv, const char* homeenv = 0);
-
-    /// Destructor
-
-	virtual ~Tool();
-
-    int start();
-
-	virtual void run() = 0;
-
-    virtual LogTarget* createWarningLogTarget() const;
-    virtual LogTarget* createErrorLogTarget() const;
-
-protected: // method
-
-    void sendLogErrWarnToStdOut(bool send) { sendLogErrWarnToStdOut_ = send; }
-
-private: // members
-
-    bool sendLogErrWarnToStdOut_;
-
-};
+void MonitorTarget::write(const char* start, const char* end)
+{
+    Monitor::instance().out(const_cast<char*>(start), const_cast<char*>(end));
+    target_->write(start, end);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
-
-#endif

@@ -10,6 +10,7 @@
 
 /// @file PipeApplication.h
 /// @author Baudouin Raoult
+/// @author Tiago Quintino
 /// @author Florian Rathgeber
 
 #ifndef eckit_PipeApplication_h
@@ -18,13 +19,12 @@
 #include "eckit/config/Resource.h"
 #include "eckit/runtime/Application.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
 class Stream;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class PipeApplication : public Application {
 
@@ -50,7 +50,7 @@ private: // members
     virtual void run();
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -8,17 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-// #include <stdlib.h>
-
 #include "eckit/runtime/Tool.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/OStreamTarget.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 Tool::Tool(int argc, char **argv, const char* homeenv) :
-    Main(argc, argv, homeenv)
+    Main(argc, argv, homeenv),
+    sendLogErrWarnToStdOut_(false)
 {
 }
 
@@ -45,6 +45,14 @@ int Tool::start()
     }
 
     return status;
+}
+
+LogTarget* Tool::createWarningLogTarget() const  {
+    return new OStreamTarget(sendLogErrWarnToStdOut_ ? std::cout : std::cerr );
+}
+
+LogTarget* Tool::createErrorLogTarget() const  {
+    return new OStreamTarget(sendLogErrWarnToStdOut_ ? std::cout : std::cerr );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

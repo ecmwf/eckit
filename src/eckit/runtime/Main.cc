@@ -51,6 +51,8 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         debug_ = eckit::Translator<std::string, bool>()(::getenv("DEBUG"));
     }
 
+    name_ = displayName_ = PathName(argv[0]).baseName(false);
+
     for (size_t i = 1; i < size_t(argc); ++i) {
 
         // Old style
@@ -68,11 +70,14 @@ Main::Main(int argc, char** argv, const char* homeenv) :
             debug_ = eckit::Translator<std::string, bool>()(argv[i] + 8);
         }
 
+        // Old style -name
+        if (::strcmp(argv[i], "-name")==0) {
+            ASSERT(argc > i+1);
+            displayName_ = argv[i+1];
+        }
     }
 
     ::srand(::getpid() + ::time(0));
-
-    name_ = displayName_ = PathName(argv[0]).baseName(false);
 
     const char* home = homeenv ? ::getenv(homeenv) : 0;
 

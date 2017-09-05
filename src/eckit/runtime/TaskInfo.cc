@@ -19,11 +19,11 @@
 #include "eckit/log/Timer.h"
 #include "eckit/os/SignalHandler.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 TaskInfo::TaskInfo()
 {
@@ -35,7 +35,7 @@ TaskInfo::TaskInfo()
     thread_ = pthread_self();
     pos_    = 0;
     start_  = ::time(0);
-    strncpy(name_, Main::instance().name().c_str(), sizeof(name_) - 1);
+    strncpy(name_, Main::instance().displayName().c_str(), sizeof(name_) - 1);
     strcpy(kind_, name_);
     strcpy(application_, name_);
     strcpy(status_, "Starting");
@@ -206,7 +206,7 @@ void TaskInfo::parent(long p)
     if (p != -1) depth_ = Monitor::instance().tasks()[p].depth() + 1;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

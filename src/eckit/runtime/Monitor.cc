@@ -241,7 +241,7 @@ long Monitor::self()
 	return slot_;
 }
 
-void Monitor::out(char* from,char *to)
+void Monitor::out(char* from, char *to)
 {
     if(!ready_) return;
     task()->out(from,to);

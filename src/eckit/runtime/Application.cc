@@ -72,7 +72,8 @@ Application::Application(int argc, char** argv, const char* homeenv):
     Main(argc, argv, homeenv),
     running_(false)
 {
-    reserve_ = new char[20 * 1024]; // In case we runout of memeory
+    reserve_ = new char[20 * 1024]; // In case we runout of memory
+
     std::set_new_handler(&catch_new_handler);
     std::set_terminate(&catch_terminate);
     std::set_unexpected(&catch_unexpected);
@@ -89,8 +90,6 @@ Application::~Application() {
     Monitor::instance().shutdown();
 }
 
-//-----------------------------------------------------------------------------
-
 LogTarget* Application::createInfoLogTarget() const {
     return new TimeStampTarget("(I)");
 }
@@ -106,8 +105,6 @@ LogTarget* Application::createErrorLogTarget() const {
 LogTarget* Application::createDebugLogTarget() const {
     return new TimeStampTarget("(D)");
 }
-
-//-----------------------------------------------------------------------------
 
 void Application::start() {
     int status = 0;
@@ -153,6 +150,7 @@ void Application::terminate() {
 
 
 void Application::unique() {
+
     PathName lockFile("~/locks/" + name_);
 
     if (!lockFile.exists()) lockFile.touch();
@@ -183,6 +181,6 @@ time_t Application::uptime() {
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

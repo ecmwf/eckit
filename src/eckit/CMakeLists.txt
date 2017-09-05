@@ -288,6 +288,8 @@ log/TeeTarget.h
 log/TeeTarget.cc
 log/StatusTarget.h
 log/StatusTarget.cc
+log/MonitorTarget.h
+log/MonitorTarget.cc
 log/MessageTarget.h
 log/MessageTarget.cc
 log/ChannelBuffer.h

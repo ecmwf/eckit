@@ -52,6 +52,7 @@ Length MarsFSFile::open(const char* mode, bool overwrite)
     s << overwrite;
     s >> port;
 
+    Log::info() << "MarsFSFile::open " << path_ << " " << mode << ", host=" << connector_.host() << ", port=" << port << std::endl;
     data_.connect(connector_.host() , port);
 
     s >> length;

@@ -406,9 +406,9 @@ Value Value::element(const Value& key) const {
 void Value::update() {
     if (content_->count() > 1) {
         Content* c = content_->clone();
-        content_->attach();
+        c->attach();
         content_ = c;
-        content_->attach();
+        content_->detach();
     }
 }
 //-----------------------------------------------------------------------------

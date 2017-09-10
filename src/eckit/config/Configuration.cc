@@ -82,7 +82,10 @@ eckit::Value Configuration::lookUp(const std::string &s, bool &found) const {
             found = false;
             return result;
         }
-        result = result[key];
+        // For some strange reasons clang decide to use
+        // the non-const version, that will clone the internat map
+        const Value& const_result = result;
+        result = const_result[key];
     }
 
     found = true;

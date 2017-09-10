@@ -407,8 +407,8 @@ void Value::update() {
     if (content_->count() > 1) {
         Content* c = content_->clone();
         c->attach();
-        content_ = c;
         content_->detach();
+        content_ = c;
     }
 }
 //-----------------------------------------------------------------------------

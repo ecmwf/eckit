@@ -14,3 +14,7 @@ ecbuild_add_test( TARGET   eckit_test_value_properties
 ecbuild_add_test( TARGET   eckit_test_value
                   SOURCES  test_value.cc
                   LIBS     eckit )
+
+ecbuild_add_test( TARGET   eckit_test_value_const
+                  SOURCES  test_value_const.cc
+                  LIBS     eckit )

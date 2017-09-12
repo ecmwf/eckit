@@ -165,12 +165,15 @@ bool Value::shared() const {
 
 Value& Value::operator=(const Value& other)
 {
-    other.content_->attach();
-    content_->detach();
+    Content* current = content_;
+
     content_ = other.content_;
+    content_->attach();
+    current->detach();
 
     return *this;
 }
+
 
 Value Value::operator+(const Value& v) const
 {

@@ -23,6 +23,22 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+Value foo() {
+  const Value y = JSONParser::decodeString( "{\"foo\":true}" );
+  Value x = y;
+  x =  x["foo"];
+  return x;
+}
+
+CASE( "ECKIT-260 : Assign a value to another accessed on a map" ) {
+
+    Value x = foo();
+
+    EXPECT( x.as<bool>() == true );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 CASE( "ECKIT-260 : Assign a value to another accessed on a map" ) {
 
     Value x = JSONParser::decodeString( "{\"foo\":true}" );

@@ -364,6 +364,10 @@ std::ostream& Value::dump(std::ostream& out, size_t depth, bool indent) const {
     return out;
 }
 
+std::string Value::typeName() const {
+    return content_->typeName();
+}
+
 //-----------------------------------------------------------------------------
 Value Value::operator[](const char* key) const {
     return element(Value(key));

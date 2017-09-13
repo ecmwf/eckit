@@ -263,6 +263,7 @@ public:
 
     std::ostream& dump(std::ostream& out, size_t depth = 0, bool indent = true) const;
 
+    std::string typeName() const;
 
 public:
     bool contains(const char*) const;

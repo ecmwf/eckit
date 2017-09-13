@@ -64,7 +64,7 @@ int BoolContent::compare(const Content& other) const
 
 int BoolContent::compareBool(const BoolContent& other) const
 {
-    if (value_ - other.value_)
+    if (!(value_ - other.value_) )
         return 0;
     if (!value_)
         return -1;

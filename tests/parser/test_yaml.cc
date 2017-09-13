@@ -256,6 +256,62 @@ CASE ( "test_eckit_yaml_21" ) {
     std::cout << toJSON(v) << std::endl;
 }
 
+CASE( "test_eckit_yaml_21_extra" ) {
+
+    // Associated with ECKIT-260:
+    // Case test_eckit_yaml_21 caused problems, because "true"/"false" is interpreted as a bool (rather than string) and comparators were broken.
+    // Here we check that these keys are interpreted and compared correctly.
+
+    // null: ~
+    // true: y
+    // false: n
+    // string: '12345'
+
+    // Check decoding of true, false, null, etc.
+    EXPECT( YAMLParser::decodeString("null").typeName() == "Nil" );
+    EXPECT( YAMLParser::decodeString("false").typeName() == "Bool" );
+    EXPECT( YAMLParser::decodeString("~").typeName() == "String" );
+    EXPECT( YAMLParser::decodeString("y").typeName() == "String" );
+    EXPECT( YAMLParser::decodeString("n").typeName() == "String" );
+    EXPECT( YAMLParser::decodeString("string").typeName() == "String" );
+    EXPECT( YAMLParser::decodeString("'12345'").typeName() == "String" );
+
+    EXPECT( YAMLParser::decodeString("null") == Value() );
+    EXPECT( YAMLParser::decodeString("false") == Value(false) );
+
+    EXPECT( YAMLParser::decodeString("true").typeName() == "Bool" );
+    EXPECT( Value(true).typeName() == "Bool" );
+    EXPECT( Value(true) == Value(true) );
+    EXPECT( YAMLParser::decodeString("true") == YAMLParser::decodeString("true")  );
+    EXPECT( YAMLParser::decodeString("true") == Value(true) );
+
+    EXPECT( YAMLParser::decodeString("false").typeName() == "Bool" );
+    EXPECT( Value(false).typeName() == "Bool" );
+    EXPECT( Value(false) == Value(false) );
+    EXPECT( YAMLParser::decodeString("false") == YAMLParser::decodeString("false")  );
+    EXPECT( YAMLParser::decodeString("false") == Value(false) );
+
+    EXPECT( Value(false) != Value(true) );
+    EXPECT( YAMLParser::decodeString("false") != YAMLParser::decodeString("true")  );
+    EXPECT( YAMLParser::decodeString("false") != Value(true) );
+
+    EXPECT( Value(true) != Value(false) );
+    EXPECT( YAMLParser::decodeString("true") != YAMLParser::decodeString("false")  );
+    EXPECT( YAMLParser::decodeString("true") != Value(false) );
+
+    // Check ordering and comparisons
+    EXPECT(Value() == Value());
+    EXPECT(Value() < Value(true));
+    EXPECT(Value() < Value(false));
+    EXPECT(Value(false) == Value(false));
+    EXPECT(Value(true) == Value(true));
+    EXPECT(Value(false) < Value(true));
+    EXPECT(!(Value(true) < Value(true)));
+    EXPECT(!(Value(false) < Value(false)));
+    EXPECT(Value("Something") == Value("Something"));
+
+}
+
 CASE ( "test_eckit_yaml_22" ) {
     Value v =  YAMLParser::decodeFile("2.22.yaml");
     std::cout << "2.22.yaml " << v << std::endl;

@@ -114,7 +114,7 @@ std::string BackTrace::dump()
     
     free(strings);
     
-    oss << "\nexit dumping backtrace ...";
+    oss << "\nend of backtrace dump ...";
     
 #else
     oss << "\ndumping backtrace not supported on this system";

@@ -13,32 +13,31 @@
 #include "eckit/value/Value.h"
 #include "eckit/os/BackTrace.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
 
-
 BadConversion::BadConversion(const std::string& w, const CodeLocation& loc) :
     Exception(std::string("Bad Conversion: ") + w, loc) {
-    std::cout << what() << std::endl;
-    std::cout << BackTrace::dump() << std::endl;
+//    std::cout << what() << std::endl;
+//    std::cout << BackTrace::dump() << std::endl;
 }
 
 BadComparison::BadComparison(const std::string& w, const CodeLocation& loc) :
     Exception(std::string("Bad Comparison: ") + w, loc) {
-    std::cout << what() << std::endl;
-    std::cout << BackTrace::dump() << std::endl;
+//    std::cout << what() << std::endl;
+//    std::cout << BackTrace::dump() << std::endl;
 }
 
 BadOperator::BadOperator(const std::string& w, const CodeLocation& loc) :
     Exception(std::string("Bad operator: ") + w, loc) {
-    std::cout << what() << std::endl;
-    std::cout << BackTrace::dump() << std::endl;
+//    std::cout << what() << std::endl;
+//    std::cout << BackTrace::dump() << std::endl;
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 ClassSpec Content::classSpec_ = {&Streamable::classSpec(), "Content",};
 Reanimator<Content> Content::reanimator_;
@@ -594,6 +593,6 @@ Streamable* Reanimator<Content>::ressucitate(Stream& s) const
 }
 #endif
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

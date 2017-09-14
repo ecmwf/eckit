@@ -64,12 +64,13 @@ int BoolContent::compare(const Content& other) const
 
 int BoolContent::compareBool(const BoolContent& other) const
 {
-    if (!(value_ - other.value_) )
-        return 0;
-    if (!value_)
-        return -1;
+    bool equal = !(value_ - other.value_);
 
-    return 1;
+    if (equal) return 0; // both equal in value, hence 0
+
+    if (!value_) return -1; // this is false, hence smaller than other
+
+    return 1;  // this is true, hence larger than other
 }
 
 void BoolContent::value(bool& l) const

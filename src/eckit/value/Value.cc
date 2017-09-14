@@ -24,23 +24,30 @@
 #include "eckit/io/Length.h"
 #include "eckit/filesystem/PathName.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
 namespace {
+
 class Nil : public NilContent {
 public:
-    Nil() { attach(); }
+    Nil() { attach(); } // the only instance of Nil (below) *will* be leaked at_exit()
 };
 
-static Nil nil;
+static Nil* nil = 0; // must be a pointer, so we control when is created to respect order of destruction at_exit()
+
+Nil* nill() {
+    if(!nil) nil = new Nil();
+    return nil;
 }
 
-//-----------------------------------------------------------------------------
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 Value::Value():
-    content_(&nil)
+    content_(nill())
 {
     content_->attach();
 }
@@ -146,6 +153,7 @@ Value::Value(Stream& s):
 
 Value::~Value()
 {
+    std::cerr << "~Value : " << *this << std::endl;
     content_->detach();
 }
 
@@ -368,7 +376,6 @@ std::string Value::typeName() const {
     return content_->typeName();
 }
 
-//-----------------------------------------------------------------------------
 Value Value::operator[](const char* key) const {
     return element(Value(key));
 }
@@ -418,7 +425,8 @@ void Value::update() {
         content_ = c;
     }
 }
-//-----------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -23,12 +23,14 @@ namespace test {
 
 CASE( "TestMutex" )
 {
-    Mutex* m = new Mutex();
+    Mutex* m = 0;
+
+    EXPECT_NO_THROW( m = new Mutex() );
     
-    m->lock();
+    EXPECT_NO_THROW( m->lock() );
     
-    m->unlock();
-    
+    EXPECT_NO_THROW( m->unlock() );
+
     delete m;   
 }
 

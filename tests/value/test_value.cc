@@ -155,7 +155,7 @@ CASE( "Booleans compare with other booleans, and are well ordered to other Value
     Value val_false2(false);
 
     // n.b. These comparisons are designed to define a well defined order between different data types
-    // bool [false < true] > number > string > nil > list > map > Date > Time > DateTime
+    // bool [true > false] > number > string > nil > list > map > Date > Time > DateTime
 
     // Check comparisons with same type of data
 

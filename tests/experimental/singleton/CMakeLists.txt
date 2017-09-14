@@ -17,4 +17,4 @@ ecbuild_add_library( TARGET      eckit_test_experimental_singleton_builder2
 
 ecbuild_add_test( TARGET      eckit_test_experimental_singleton_singleton
                   SOURCES     test_singleton.cc
-                  LIBS        eckit_test_builder1 eckit_test_builder2 )
+                  LIBS        eckit_test_experimental_singleton_builder1 eckit_test_experimental_singleton_builder2 )

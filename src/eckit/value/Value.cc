@@ -37,7 +37,7 @@ public:
 
 static Nil* nil = 0; // must be a pointer, so we control when is created to respect order of destruction at_exit()
 
-Nil* nill() {
+static Nil* nill() {
     if(!nil) nil = new Nil();
     return nil;
 }
@@ -153,7 +153,6 @@ Value::Value(Stream& s):
 
 Value::~Value()
 {
-    std::cerr << "~Value : " << *this << std::endl;
     content_->detach();
 }
 

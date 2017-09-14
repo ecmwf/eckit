@@ -25,6 +25,12 @@ namespace eckit {
 /// @returns rounds x to multiple of n
 size_t round(size_t x, size_t n);
 
+/// @returns the sign of ordereable types that support the subtraction operator
+template <typename T>
+int sign(T v) {
+    return (T(0) < v) - (v < T(0));
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

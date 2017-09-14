@@ -295,8 +295,6 @@ Value Value::head() const
     ValueList v;
     content_->value(v);
 
-//  std::cout << __FUNCTION__ << " " << *this << " " << v.size() << std::endl;
-
     return v.size() > 0 ? v[0] : Value();
 }
 
@@ -305,15 +303,13 @@ Value Value::tail() const
     ValueList v;
     content_->value(v);
 
-//  std::cout << __FUNCTION__ << " " << *this << " " << v.size() << std::endl;
-
-    if (v.size() > 1)
-    {
+    if (v.size() > 1) {
         v.erase(v.begin());
         return v;
     }
-    else
+    else {
         return Value();
+    }
 }
 
 Value::operator ValueList() const

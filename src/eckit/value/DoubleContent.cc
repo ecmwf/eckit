@@ -12,13 +12,12 @@
 #include "eckit/value/DoubleContent.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/value/NumberContent.h"
+#include "eckit/maths/Functions.h"
 #include "eckit/parser/JSON.h"
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 ClassSpec DoubleContent::classSpec_ = {&Content::classSpec(), "DoubleContent",};
 Reanimator<DoubleContent> DoubleContent::reanimator_;
@@ -67,22 +66,16 @@ int DoubleContent::compare(const Content& other) const
 
 int DoubleContent::compareDouble(const DoubleContent& other) const
 {
-    double dif = (value_ - other.value_);
-    if (dif == 0)
-        return dif;
-    if (dif < 0)
-        return -1;
-    return 1;
+    double diff = (value_ - other.value_);
+
+    return eckit::sign(diff);
 }
 
 int DoubleContent::compareNumber(const NumberContent& other) const
 {
-    double dif = (value_ - other.value_);
-    if (dif == 0)
-        return dif;
-    if (dif < 0)
-        return -1;
-    return 1;
+    double diff = (value_ - other.value_);
+
+    return eckit::sign(diff);
 }
 
 void DoubleContent::value(double& l) const
@@ -156,7 +149,7 @@ void DoubleContent::dump(std::ostream& out, size_t depth, bool indent) const {
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

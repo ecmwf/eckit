@@ -16,6 +16,7 @@
 
 // Disable warnings for old-style casts in these tests. They are intentional
 #pragma clang diagnostic ignored "-Wold-style-cast"
+#pragma clang diagnostic ignored "-Wunused-parameter"
 
 using namespace std;
 using namespace eckit;
@@ -103,12 +104,15 @@ CASE( "Booleans cast correctly in/out of Value" ) {
 
     // And all the invalid conversions
 
-    /// For some reason, Value(bool) happily converts to double...
-    /// EXPECT_THROWS_AS(val_false.as<double>(), BadConversion);
+    // For some reason, Value(bool) happily converts to double...
+    // FIXME: EXPECT_THROWS_AS(val_false.as<double>(), BadConversion);
 
-    /// Length/Offset are just integers, so bool-->Offset conversion works...!!!
-    /// EXPECT_THROWS_AS(Length(val_false), BadConversion);
-    /// EXPECT_THROWS_AS(Offset(val_false), BadConversion);
+    EXPECT(Value(false).as<double>() == 0.0); // FIXME: Do we want this?
+    EXPECT(Value(true).as<double>() == 1.0);  // FIXME: Do we want this?
+
+    // Length/Offset are just integers, so bool-->Offset conversion works...!!!
+    // FIXME: EXPECT_THROWS_AS(Length(val_false), BadConversion);
+    // FIXME: EXPECT_THROWS_AS(Offset(val_false), BadConversion);
 
     EXPECT_THROWS_AS(val_false.as<Time>(), BadConversion);
     EXPECT_THROWS_AS(val_false.as<Date>(), BadConversion);
@@ -417,7 +421,7 @@ CASE( "Test that integers cast correctly in value" ) {
     EXPECT((long long)(val_int) == 12345);
     EXPECT((unsigned long long)(val_int) == 12345);
 
-    // NOTE that using an unsigned variable does NOT cause the check to fail, unless there is an overflow. The
+    // Note that using an unsigned variable does NOT cause the check to fail, unless there is an overflow. The
     // compiler will assume that everything is fine, and just do a bitwise check...
     EXPECT(int(val_long) == -2147483647);
     EXPECT((unsigned int)(val_long) == -2147483647);
@@ -758,12 +762,12 @@ CASE( "Module operator currently not defined for integers" ) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "Head and tail tests currently disabled for integers" ) {
+CASE( "Integer has semantics of single list with a double for head and tail" ) {
+
     Value val(12345);
 
-    /// EXPECT_THROWS_AS(val.head(), AssertationError);
-    /// EXPECT_THROWS_AS(val.tail(), AssertationError);
-    EXPECT(true);
+    EXPECT(val.head() == Value(12345));
+    EXPECT(val.tail() == Value());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1048,12 +1052,12 @@ CASE( "The modulo operator is invalid for doubles" ) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "head and tail are currently not tested for doubles" ) {
+CASE( "Double has semantics of single list with a double for head and tail" ) {
+
     Value val(123.45);
 
-    /// EXPECT_THROWS_AS(val.head(), AssertationError);
-    /// EXPECT_THROWS_AS(val.tail(), AssertationError);
-    EXPECT(true);
+    EXPECT(val.head() == Value(123.45));
+    EXPECT(val.tail() == Value());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

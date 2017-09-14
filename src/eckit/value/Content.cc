@@ -213,6 +213,12 @@ int Content::compareMap(const MapContent&) const
     return 0;
 }
 
+//int Content::compareOrderedMap(const OrderedMapContent&) const
+//{
+//    badComparison("Map");
+//    return 0;
+//}
+
 int Content::compareDate(const DateContent&) const
 {
     badComparison("Date");

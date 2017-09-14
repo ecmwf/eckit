@@ -68,6 +68,26 @@ CASE( "ECKIT-265 : Date comparison in values is correctly ordered" ) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE( "There is a Total Order between types" ) {
+
+    // Total order between types:
+    // bool [ true > false ] > number > string > nil > list > map > orderedmap > Date > Time > DateTime
+
+    EXPECT( Value(true) > Value(false) );
+    EXPECT( Value(false) > Value(int(1)) );
+    EXPECT( Value(int(2)) > Value(std::string("foo")) );
+    EXPECT( Value(std::string("foo")) > Value() );
+    EXPECT( Value() > Value::makeList() );
+    EXPECT( Value::makeList() > Value::makeMap() );
+//    EXPECT( Value::makeMap() > Value::makeOrderedMap() );
+//    EXPECT( Value::makeOrderedMap() > Value(Date(2016,5,1)) );
+//    EXPECT( Value::makeMap() > Value(Date(2016,5,1)) );
+    EXPECT( Value(Date(2016,5,1)) > Value(Time(1000)) );
+    EXPECT( Value(Time(1000)) > Value(DateTime()) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 } // namespace test
 } // namespace eckit
 

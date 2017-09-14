@@ -22,11 +22,9 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-//-----------------------------------------------------------------------------
-
 namespace eckit_test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
 CASE( "Test serialization" )
@@ -87,7 +85,7 @@ CASE( "Test serialization" )
         EXPECT(p["double"] == p2["double"]);
         EXPECT(p["string"] == p2["string"]);
         EXPECT(p["Length"] == p2["Length"]);
-        EXPECT(p["Date"].compare(p2["Date"])); // FIXME: equality check fails
+        EXPECT(p["Date"]   == p2["Date"]);
         // EXPECT(p["Time"] == p2["Time"]);  <-- not implemented
         // EXPECT(p["DateTime"] == p2["DateTime"]); <-- not implemented
         EXPECT(p["PathName"] == p2["PathName"]);
@@ -110,7 +108,7 @@ CASE( "Test serialization" )
 
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit_test
 

@@ -51,6 +51,7 @@ class StringContent;
 class NilContent;
 class ListContent;
 class MapContent;
+class OrderedMapContent;
 class DateContent;
 class TimeContent;
 class DateTimeContent;
@@ -81,7 +82,8 @@ public:
     virtual int  compareString(const StringContent&) const;
     virtual int  compareNil(const NilContent&)       const;
     virtual int  compareList(const ListContent&)     const;
-    virtual int  compareMap(const MapContent&)     const;
+    virtual int  compareMap(const MapContent&)        const;
+//    virtual int  compareOrderedMap(const OrderedMapContent&)  const;
     virtual int  compareDate(const DateContent&)         const;
     virtual int  compareTime(const TimeContent&)         const;
     virtual int  compareDateTime(const DateTimeContent&) const;

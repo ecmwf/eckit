@@ -192,7 +192,7 @@ void test_vals(const Params& p)
     EXPECT((double)p["double"] == dmax);
     EXPECT(p["string"] == "foo");
     EXPECT(p["Length"] == Length(42));
-    EXPECT(p["Date"].compare(Date(2015, 2, 1))); // FIXME: equality check fails
+    EXPECT(p["Date"] == (Date(2015, 2, 1)));
     EXPECT(p["PathName"] == PathName("/var/tmp"));
 }
 

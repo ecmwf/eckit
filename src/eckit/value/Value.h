@@ -69,11 +69,7 @@ namespace eckit {
 ///
 ///    Value(true) != Value(true)
 ///
-/// 8. Value(bool)::compare() has inverted sense to the other compare methods
-///
-///    - It will return 0 if the Values are different
-///    - It will return -1 if the values are true
-///    - It will return 1 if the values are false
+/// 8. ECKIT-260 (FIXED)
 ///
 /// 9. On conversion falure Value(std::string> --> long long, zero is returned rather than an exception being thrown.
 ///
@@ -120,11 +116,7 @@ namespace eckit {
 ///
 /// 20. Subtraction operators for Value(Date) have a sign error. A later date minus a newer date should be positive.
 ///
-/// 21. compare() function for Value(Date()) is buggy. Currently:
-///
-///     date1 == date2 --> 1
-///     date1 <  date2 --> -1
-///     date1 >  date2 --> 0
+/// 21. ECKIT-265 (FIXED)
 ///
 /// 22. The Value::head() and Value::tail() members make an entire copy of the contained ValueList before selecting
 ///     and returning the head/tail element (which is copied). This will involve head allocations (and then

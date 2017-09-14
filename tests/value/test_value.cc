@@ -159,17 +159,13 @@ CASE( "Booleans compare with other booleans, and are well ordered to other Value
 
     // Check comparisons with same type of data
 
-    // ************************
-    // WARNING: This logic is inverted from all the other Value types. Should probably be checked.
-    // ************************
+    EXPECT(val_true1.compare(val_true1) == 0);
+    EXPECT(val_true1.compare(val_true2) == 0);
+    EXPECT(val_false1.compare(val_false1) == 0);
+    EXPECT(val_false1.compare(val_false2) == 0);
 
-    EXPECT(val_true1.compare(val_true1) == -1);
-    EXPECT(val_true1.compare(val_true2) == -1);
-    EXPECT(val_false1.compare(val_false1) == 1);
-    EXPECT(val_false1.compare(val_false2) == 1);
-
-    EXPECT(val_true1.compare(val_false1) == 0);
-    EXPECT(val_false2.compare(val_true2) == 0);
+    EXPECT(val_true1.compare(val_false1) == 1);
+    EXPECT(val_false2.compare(val_true2) == -1);
 
     // Check comparisons with other types of data.
 

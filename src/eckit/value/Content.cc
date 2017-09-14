@@ -148,7 +148,7 @@ void Content::value(DateTime&) const
     badConvertion("DateTime");
 }
 
-void Content::value(ValueMap & v) const
+void Content::value(ValueMap&) const
 {
     badConvertion("Map");
 }
@@ -157,7 +157,7 @@ void Content::value(ValueMap & v) const
 void Content::value(ValueList & v) const
 {
     // Cast away constness, so the Contnt can be attached by the value
-    v.push_back(Value((Content*)this));
+    v.push_back(Value(const_cast<Content*>(this)));
 }
 
 bool Content::operator==(const Content& other) const
@@ -587,7 +587,7 @@ Content* Content::modDateTime(const DateTimeContent&) const
 
 #ifndef IBM
 template<>
-Streamable* Reanimator<Content>::ressucitate(Stream& s) const
+Streamable* Reanimator<Content>::ressucitate(Stream&) const
 {
     return 0;
 }

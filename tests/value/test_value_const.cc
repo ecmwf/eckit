@@ -49,6 +49,25 @@ CASE( "ECKIT-260 : Assign a value to another accessed on a map" ) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE( "ECKIT-265 : Date comparison in values is correctly ordered" ) {
+
+    EXPECT( Value(Date(2016, 3, 31)) == Value(Date(2016, 3, 31)) );
+    EXPECT( Value(Date(2017, 3, 31)) > Value(Date(2016, 3, 31)) );
+    EXPECT( Value(Date(2016, 3, 31)) < Value(Date(2017, 3, 31)) );
+
+    EXPECT( Value(Date(2016, 3, 31)) >= Value(Date(2016, 3, 31)) );
+    EXPECT( Value(Date(2016, 3, 31)) <= Value(Date(2016, 3, 31)) );
+
+    EXPECT( !(Value(Date(2016, 3, 31)) > Value(Date(2017, 3, 31))) );
+    EXPECT( !(Value(Date(2017, 3, 31)) < Value(Date(2017, 3, 31))) );
+
+    EXPECT( Value(Date(2016, 5, 1)).compare(Value(Date(2016, 5, 1))) == 0);
+    EXPECT( Value(Date(2016, 3, 1)).compare(Value(Date(2016, 5, 1))) == -1);
+    EXPECT( Value(Date(2016,11, 1)).compare(Value(Date(2016, 5, 1))) == 1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 } // namespace test
 } // namespace eckit
 
